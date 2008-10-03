@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id$
+// $Id: TTEffAnalyzer.h,v 1.1 2008/10/01 13:09:30 chinhan Exp $
 //
 //
 
@@ -48,7 +48,15 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
+      virtual void fillPFTau(const reco::PFTau&); 
+
       // ----------member data ---------------------------
+      edm::InputTag  PFTaus_; //Path to analyze
+      std::string rootFile_;
+
+      // PF Variables
+      int NEGCandsInAnnulus,NHadCandsInAnnulus;
+      float PFPt, PFEt,PFEta,PFPhi,PFEGIsolEt,PFHighestClusterEt;
 
       L1TauEfficiencyAnalyzer _L1analyzer;
 };

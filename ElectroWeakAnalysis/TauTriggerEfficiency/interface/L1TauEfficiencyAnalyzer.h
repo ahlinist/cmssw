@@ -46,13 +46,15 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
         virtual void beginJob(const edm::EventSetup&);
         virtual void endJob();
 
+        virtual void beginEvent(const edm::Event&, const edm::EventSetup&);
+        virtual void analyzeTau(const reco::PFTau&, const edm::EventSetup&);
+
    private:
 	bool L1TauFound(const math::XYZTLorentzVector&);
 
         // Input parameters
 	InputTag L1extraTauJetSource;  
 	double   jetMatchingCone;
-        std::string rootFile_;   // Output file name
 
         Handle<L1JetParticleCollection> l1TauHandle;
 
@@ -60,11 +62,9 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
             nSelectedEvents;
 
         // Output file, tree and related variables
-        TFile *l1file;
         TTree *l1tree;
 
         float jetPt, jetEta, jetPhi;
         int hasL1Jet;
-        float PFPt, PFEta, PFPhi;
 };
 #endif

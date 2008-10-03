@@ -11,7 +11,7 @@ process.MessageLogger.cout = cms.untracked.PSet(
     threshold = cms.untracked.string("INFO")     # print LogInfos and above
 #    threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
     )
-process.MessageLogger.debugModules = cms.untracked.vstring("L1TauEfficiencyAnalysis")
+process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -22,9 +22,10 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
+        PFTauCollection         = cms.InputTag("IdentifiedTaus"),
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
 	JetMatchingCone		= cms.double(0.5),
-        outputFileName          = cms.string("test-l1.root")
+        outputFileName          = cms.string("test.root")
 )
 
 process.runEDAna = cms.Path(
