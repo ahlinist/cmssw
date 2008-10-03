@@ -9,7 +9,8 @@ HTEventSelector::HTEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   minHT_ ( pset.getParameter<double>("minHT") ),
-  minPt_ ( pset.getParameter<double>("minPt") )
+  minPt_ ( pset.getParameter<double>("minPt") ),
+  maxEta_ ( pset.getParameter<double>("maxEta") )
 { 
 
   // Store computed HT
@@ -35,7 +36,7 @@ HTEventSelector::select (const edm::Event& event) const
   float myHT = 0.0;
   edm::View<pat::Jet>::const_iterator iJet = jetHandle->begin();
   while ( iJet != jetHandle->end() ) {
-    if ( iJet->pt() > minPt_ ) myHT += iJet->et();
+    if ( iJet->pt()>minPt_ && fabs(iJet->eta())<maxEta_ ) myHT += iJet->et();
     ++iJet;
   }
 
