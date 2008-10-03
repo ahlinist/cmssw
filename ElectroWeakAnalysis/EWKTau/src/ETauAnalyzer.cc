@@ -33,8 +33,8 @@ ETauAnalyzer::ETauAnalyzer(const edm::ParameterSet& cfg):
   hSelTrkIsoElecEta=fs->make<TH1F>("SelTrkIsoElecEta","SelTrkIsoElecEta",60,-3.,3.);
   hSelEclIsoElecEta=fs->make<TH1F>("SelEclIsoElecEta","SelEclIsoElecEta",60,-3.,3.);
   hSelHclIsoElecEta=fs->make<TH1F>("SelHclIsoElecEta","SelHclIsoElecEta",60,-3.,3.);
-  hSelIdElecEta=fs->make<TH1F>("SelIdElecEta","SelIdElecEta",60,3.,-3.);
-  hSelIpElecEta=fs->make<TH1F>("SelIpElecEta","SelIpElecEta",60,3.,-3.);  
+  hSelIdElecEta=fs->make<TH1F>("SelIdElecEta","SelIdElecEta",60,-3.,3.);
+  hSelIpElecEta=fs->make<TH1F>("SelIpElecEta","SelIpElecEta",60,-3.,3.);  
 
   hPatL1ElecPhi=fs->make<TH1F>("PatL1ElecPhi","PatL1ElecPhi",60,-3.,3.);
   hSelKinElecPhi=fs->make<TH1F>("SelKinElecPhi","SelKinElecPhi",60,-3.,3.);
@@ -219,7 +219,8 @@ void ETauAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& setup)
 	if(doMetCuts_ && metCuts[3]<eMetMass_ || !doMetCuts_){
 	  m_count_sel++;
 	  hSelHisto->Fill(m_count_sel+0.5);
-	  std::cout<<tauLV.Et()<<"::"<<elecLV.Et()<<"::"<<(tauLV+elecLV).M()<<"::"<<tauLV.DeltaR(elecLV)<<"::"<<tau.electronPreIDDecision()<<std::endl;
+	  std::cout<<tauLV.Et()<<"::"<<elecLV.Et()<<"::"<<(tauLV+elecLV).M()<<"::"<<
+	    tauLV.DeltaR(elecLV)<<"::"<<tau.electronPreIDDecision()<<std::endl;
 	  hMvis->Fill((tauLV+elecLV).M());
 	}
       }		    
@@ -290,11 +291,14 @@ void ETauAnalyzer::FillTauHists(const edm::Event& evt,edm::InputTag tag,
 	 tau!=taus->end(); ++tau){
       if(doMatching_){
 	LorentzVector tLV;
+	tLV.SetPxPyPzE(tau->px(),tau->py(),tau->pz(),tau->energy());
+	std::vector<int> refInd;
 	for(size_t i=0;i<m_tRefs->size();i++)
 	  {
-	    tLV.SetPxPyPzE(tau->px(),tau->py(),tau->pz(),tau->energy());
 	    if(ROOT::Math::VectorUtil::DeltaR(tLV,m_tRefs->at(i))<0.1){
-	      if(doZee_&&taus->size()>=m_refInd.size()){
+	      refInd.push_back(i);
+	      matched = true;
+	      if(doZee_){
 		for(size_t j=0;j<m_refInd.size();j++)
 		  {
 		    if((m_tRefs->at(m_refInd[j])+tLV).M()>70.&&
@@ -304,16 +308,16 @@ void ETauAnalyzer::FillTauHists(const edm::Event& evt,edm::InputTag tag,
 		      hphi->Fill(tau->phi());
 		    }
 		  }
-	      }// if(doZee...
-	      else {
+	      }
+	      if(!doZee_){
 		het->Fill(tau->et());
 		heta->Fill(tau->eta());
 		hphi->Fill(tau->phi());
 	      }
-	      matched = true;
-	    }// if(DR<0.1...
-	  }// for(Refs...
-      }// if(doMatching...
+	    }
+	  }
+	
+      }//if(doMatching_...
       else {
 	het->Fill(tau->et());
 	heta->Fill(tau->eta());
@@ -380,6 +384,9 @@ void ETauAnalyzer::TuneIsoDeposit(const pat::Electron& elec,std::string isoType)
     
   vetos.push_back(IsoDepositVetoFactory::make(veto_1.c_str()));
   vetos.push_back(IsoDepositVetoFactory::make(veto_2.c_str()));
+  for(size_t i=0;i<vetos.size();i++)
+    vetos[i]->centerOn(isoDep->eta(),isoDep->phi());
+  
   for(int i=1;i<10;i++)
     {
       double isoVal=0.;

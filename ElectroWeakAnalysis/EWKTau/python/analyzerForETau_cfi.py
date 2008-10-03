@@ -13,14 +13,12 @@ analyzeETau = cms.EDAnalyzer("ETauAnalyzer",
                                  ),
   TauInputTags = cms.VInputTag(
                                 "layer1TausForETauKin"
-                                ,"layer1TausForETauLdgTrk"
-                                ,"layer1TausForETauLdgTrkPt"
-                                ,"layer1TausForETauTrkIsod"
-                                ,"layer1TausForETauEclIsod"
-##                                ,"layer1TausForETauEclIsod"
-##                                ,"layer1TausForETauEclIsod"
-                                ,"layer1TausForETauElecRej"
-                                ,"select1Or3SigTrackTausForETau"
+                               ,"layer1TausForETauLdgTrk"
+                               ,"layer1TausForETauLdgTrkPt"
+                               ,"layer1TausForETauTrkIsod"
+                               ,"layer1TausForETauEclIsod"
+                               ,"layer1TausForETauElecRej"
+                               ,"select1Or3SigTrackTausForETau"
                                 ),
 
   RefInputTags = cms.VInputTag(
@@ -33,6 +31,6 @@ analyzeETau = cms.EDAnalyzer("ETauAnalyzer",
   eMetDphiCut = cms.double(2.4),
   eMetMassCut = cms.double(60),
   DoTauIdAfterElecId = cms.bool(True),
-  DoMatching = cms.bool(False),
-  DoZee = cms.bool(False)
+  DoMatching = cms.bool(True),
+  DoZee = cms.bool(True)
 )
