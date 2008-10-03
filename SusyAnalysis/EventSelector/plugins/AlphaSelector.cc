@@ -12,7 +12,7 @@ AlphaSelector::AlphaSelector (const edm::ParameterSet& pset ) :
   // Define variables to store
   defineVariable("twoJetMass");
   defineVariable("jet2Et");
-  defineVariable("Alpha_Lisa");
+  defineVariable("AlphaLisa");
 }
 
 //________________________________________________________________________________________
@@ -27,11 +27,11 @@ AlphaSelector::select (const edm::Event& event) const
   edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
-    edm::LogWarning("JetEventSelector") << "No Jet results for InputTag " << jetTag_;
+    edm::LogWarning("AlphaSelector") << "No Jet results for InputTag " << jetTag_;
     return false;
   }
   if(jetHandle->size()<2)  {
-    edm::LogWarning("JetEventSelector") << "Too few jets to calculate dijet alpha";
+    edm::LogWarning("AlphaSelector") << "Too few jets to calculate dijet alpha";
     return false;
   }
 
@@ -43,7 +43,7 @@ AlphaSelector::select (const edm::Event& event) const
   // Store variables
   setVariable("jet2Et",jet2Et);
   setVariable("twoJetMass",twoJetMass);
-  setVariable("Alpha_Lisa",aAlpha);
+  setVariable("AlphaLisa",aAlpha);
 
   // Return selection
   return (aAlpha > minAlpha_);
