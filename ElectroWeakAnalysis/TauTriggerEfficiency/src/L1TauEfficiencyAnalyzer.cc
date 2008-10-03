@@ -97,7 +97,7 @@ void L1TauEfficiencyAnalyzer::analyzeTau(const reco::PFTau& tau, const edm::Even
     float minDR = 99999999.;
     for(iTau = l1Taus.begin(); iTau != l1Taus.end(); ++iTau){
       double DR = deltaR(iTau->eta(), iTau->phi(), tau.eta(), tau.phi());
-      if(DR < jetMatchingCone) {
+      if(DR < jetMatchingCone && DR < minDR) {
         minDR = DR;
         jetPt = iTau->pt();
         jetEta = iTau->eta();
