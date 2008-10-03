@@ -19,7 +19,7 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-
+#include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 
 #include "TH1.h"
 #include "TLorentzVector.h"
