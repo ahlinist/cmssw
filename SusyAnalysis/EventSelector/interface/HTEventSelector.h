@@ -2,9 +2,11 @@
 #define SusyAnalysis_EventSelector_HTEventSelector_h_
 /// Selector for HT
 ///
-/// Computes HT from all jets and cuts on it
+/// Computes HT from jets after selection on pT and |eta|
+///   and cuts on it. HT is defined as scalar sum of the 
+///   the transverse jet energies.
 ///
-/// $Id: HTEventSelector.h,v 1.2 2008/05/23 15:48:21 fronga Exp $
+/// $Id: HTEventSelector.h,v 1.3 2008/05/28 14:05:14 fronga Exp $
 
 // system include files
 #include <memory>
@@ -26,5 +28,6 @@ private:
   edm::InputTag jetTag_; ///< tag for input collection
   float minHT_;          ///< lower HT cut 
   float minPt_;          ///< minimum Pt of jets taken into account
+  float maxEta_;         ///< maximum Eta of jets taken into account
 };
 #endif
