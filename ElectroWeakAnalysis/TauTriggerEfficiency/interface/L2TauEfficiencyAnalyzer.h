@@ -32,12 +32,17 @@ typedef std::vector<LV>            LVColl;
 
 class L2TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    public:
+      explicit L2TauEfficiencyAnalyzer();
       explicit L2TauEfficiencyAnalyzer(const edm::ParameterSet&);
       ~L2TauEfficiencyAnalyzer();
+      void Setup(const edm::ParameterSet&,TTree*);
+      void fill(const edm::Event&,const reco::PFTau&);
 
    private:
       virtual void beginJob(const edm::EventSetup&) ;
+
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
+      
       virtual void endJob() ;
 
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );

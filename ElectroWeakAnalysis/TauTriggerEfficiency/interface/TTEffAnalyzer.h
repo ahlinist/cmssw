@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.1 2008/10/01 13:09:30 chinhan Exp $
+// $Id: TTEffAnalyzer.h,v 1.2 2008/10/03 11:48:40 mkortela Exp $
 //
 //
 
@@ -31,6 +31,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
 
 
 //
@@ -50,14 +51,22 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       virtual void fillPFTau(const reco::PFTau&); 
 
+      //Helper function :RMS of the PF Candidates
+      std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
+
       // ----------member data ---------------------------
       edm::InputTag  PFTaus_; //Path to analyze
       std::string rootFile_;
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
-      float PFPt, PFEt,PFEta,PFPhi,PFEGIsolEt,PFHighestClusterEt;
-
+      float PFPt, PFEt,PFEta,PFPhi,PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
+      
       L1TauEfficiencyAnalyzer _L1analyzer;
+      L2TauEfficiencyAnalyzer _L2analyzer;
+
+
+
+
 };
 
