@@ -25,6 +25,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         PFTauCollection         = cms.InputTag("IdentifiedTaus"),
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
 	JetMatchingCone		= cms.double(0.5),
+        L2AssociationCollection = cms.InputTag("hltL2DoubleTauIsolationProducer","L2TauIsolationInfoAssociator"),
+        L2matchingDeltaR        = cms.double(0.3)
         outputFileName          = cms.string("test.root")
 )
 

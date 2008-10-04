@@ -4,6 +4,13 @@
 #include <iomanip>
 #include <fstream>
 
+L2TauEfficiencyAnalyzer::L2TauEfficiencyAnalyzer()
+{
+
+
+}
+
+
 L2TauEfficiencyAnalyzer::L2TauEfficiencyAnalyzer(const edm::ParameterSet& iConfig):
  PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
  l2TauInfoAssoc_(iConfig.getParameter<edm::InputTag>("L2AssociationCollection")),
@@ -45,9 +52,70 @@ L2TauEfficiencyAnalyzer::L2TauEfficiencyAnalyzer(const edm::ParameterSet& iConfi
 
 }
 
+void
+L2TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l2tree)
+{
+  l2TauInfoAssoc_ = iConfig.getParameter<edm::InputTag>("L2AssociationCollection");
+  matchDR_ = iConfig.getParameter<double>("L2matchingDeltaR");
+
+  //Setup Branches
+  l2tree->Branch("L2ECALIsolationEt",&ecalIsol_Et,"L2ECALIsolationEt/F");
+  l2tree->Branch("L2TowerIsolationEt",&towerIsol_Et,"L2TowerIsolationEt/F");
+  l2tree->Branch("L2ClusterEtaRMS",&cl_etaRMS,"L2ClusterEtaRMS/F");
+  l2tree->Branch("L2ClusterPhiRMS",&cl_phiRMS,"L2ClusterPhiRMS/F");
+  l2tree->Branch("L2ClusterDeltaRRMS",&cl_drRMS,"L2ClusterDeltaRRMS/F");
+  l2tree->Branch("L2NClustersInAnnulus",&cl_Nclusters,"L2NClustersInAnnulus/I");
+  l2tree->Branch("L2SeedTowerEt",&seedTowerEt,"L2SeedTowerEt/F");
+  l2tree->Branch("L2JetEt",&JetEt,"L2JetEt/F");
+  l2tree->Branch("L2JetEta",&JetEta,"L2JetEta/F");
+  l2tree->Branch("L2JetPhi",&JetPhi,"L2JetPhi/F");
+  l2tree->Branch("L2HadEnergyFraction",&hadFraction,"L2HadEnergyFraction/F");
+  l2tree->Branch("L2NTowers60",&NTowers60,"L2NTowers60/I");
+  l2tree->Branch("L2NTowers90",&NTowers90,"L2NTowers90/I");
+  l2tree->Branch("hasMatchedL2Jet",&hasL2Jet,"hasMatchedL2Jet/I");
+}
+
+
 
 L2TauEfficiencyAnalyzer::~L2TauEfficiencyAnalyzer()
 {
+}
+
+
+
+
+void
+L2TauEfficiencyAnalyzer::fill(const edm::Event&iEvent,const reco::PFTau& tau)
+{
+   using namespace edm;
+   using namespace reco;
+
+
+	   //Reset the variables
+	   ecalIsol_Et=0.;
+	   towerIsol_Et=0.;
+	   cl_etaRMS=0.;
+	   cl_phiRMS=0.;
+	   cl_drRMS=0.;
+	   cl_Nclusters=0;
+	   seedTowerEt = 0.;
+	   JetEt=0.;
+	   JetEta=0.;
+	   JetPhi=0.;
+	   hadFraction =0.;
+	   NTowers60=0;
+	   NTowers90=0;
+	   hasL2Jet=0;
+
+
+  //Now look if there is L2 Association in the evnt.If yes,match to the L2 and fill L2 Variables
+  Handle<L2TauInfoAssociation> l2TauInfoAssoc; //Handle to the input (L2 Tau Info Association)
+   if(iEvent.getByLabel(l2TauInfoAssoc_,l2TauInfoAssoc))//get the handle
+     {
+       matchAndFillL2(tau,*l2TauInfoAssoc);
+     }
+   
+
 }
 
 
@@ -191,7 +259,7 @@ L2TauEfficiencyAnalyzer::matchAndFillL2(const reco::PFTau& pjet,const L2TauInfoA
  //Also find the nearest Matched MC Particle to your Jet (to be complete)
 
  
- bool matched=false;
+
  double delta_min=100.;
  L2TauInfoAssociation::const_iterator matchIt;
 
