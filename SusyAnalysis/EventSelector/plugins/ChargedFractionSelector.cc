@@ -46,23 +46,25 @@ ChargedFractionSelector::select (const edm::Event& event) const
   for ( edm::View< pat::Jet >::const_iterator iJet = jets->begin();
         iJet != jets->end(); ++iJet )
     {
+      float trackPtSum(0.);
       const reco::TrackRefVector& jetTracks = iJet->associatedTracks();
       // Acceptance cuts
       if (    iJet->pt()        > minPt_
            && fabs(iJet->eta()) < maxEta_ 
            && jetTracks.size()  >= minTracks_ ) {
+	nJets++;
         // Loop on associated tracks
         for ( reco::TrackRefVector::const_iterator iTrack = jetTracks.begin();
               iTrack!= jetTracks.end(); ++iTrack ) {
-          etFrac += (*iTrack)->pt()/iJet->et();
-          nJets++;
+          trackPtSum += (*iTrack)->pt();
         }
+	etFrac += trackPtSum/iJet->et();
       }
     }
   
   // Average charge fraction: if no jets, keep default (extreme) value
   double chFraction = 0.;
-  if ( jets->size()>0 ) {
+  if ( nJets>0 ) {
     chFraction = etFrac/static_cast<float>(nJets);
     setVariable("chFraction",chFraction); // Cache variable
     setVariable("numberOfJets",static_cast<float>(nJets)); // Cache variable
