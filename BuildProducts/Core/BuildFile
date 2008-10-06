@@ -27,7 +27,6 @@
 <use name=ktjet>
 <use name=mcdb>
 <use name=meschach>
-<use name=mimetic>
 <use name=openssl>
 <use name=oracle>
 <use name=pcre>
@@ -35,7 +34,6 @@
 <use name=root>
 <use name=rootcintex>
 <use name=rootcore>
-<use name=roothtml>
 <use name=rootmath>
 <use name=rootmlp>
 <use name=rootrflx>
@@ -48,10 +46,7 @@
 <use name=sigcpp>
 <use name=sockets>
 <use name=uuid>
-<use name=x11>
-<use name=xdaq>
 <use name=xerces-c>
-<use name=xrootd>
 <use name=zlib>
 <use name=FileCatalog>
 <use name=RelationalAccess>
@@ -59,7 +54,6 @@
 <use name=Collection>
 <use name=ObjectRelationalAccess>
 <use name=tkonlinesw>
-<lib name=XMLIO>
 <export>
   <lib name=CMSSWCore>
 </export>
