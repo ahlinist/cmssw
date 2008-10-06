@@ -4,7 +4,7 @@
 ///
 /// Performs a number of selections based on MET and jets topology:
 /// - at least 3 jets (otherwise the variables are not calculated)
-/// - minimum delta-phi between MET and any of the (up to 4) leading jets
+/// - minimum delta-phi between MET and any of the (up to N) leading jets
 /// - minimum delta-phi between MET and second leading jet 
 /// - minimum R1 and R2 distances (between MET and 2 leading jets)
 ///
@@ -34,6 +34,7 @@ private:
   float metDphiMin_;     ///< Minimum angle between MET and any leading jet
   float dPhiJet2MetMin_; ///< Minimum angle between MET and 2nd leading jet
   float rDistJetsMin_;   ///< Minimum R1 and R2
+  unsigned int nJetsMetIso_; ///<  Nr. of jets for MET isolation
 
   pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
 };
