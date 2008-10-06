@@ -15,7 +15,8 @@ MetJetEventSelector::MetJetEventSelector (const edm::ParameterSet& pset) :
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   metDphiMin_    ( pset.getParameter<double>("metDPhiMin")     ),
   dPhiJet2MetMin_( pset.getParameter<double>("dPhiJet2MetMin") ),
-  rDistJetsMin_  ( pset.getParameter<double>("rDistJetsMin")   )
+  rDistJetsMin_  ( pset.getParameter<double>("rDistJetsMin")   ),
+  nJetsMetIso_(pset.getParameter<unsigned int>("NJets_metIso"))
 {
   // uncorrection type
   uncorrType_ = pat::uncorrectionTypeMET(pset.getParameter<std::string>("uncorrTypeMet"));
@@ -71,11 +72,11 @@ MetJetEventSelector::select (const edm::Event& event) const
   // Compute variables
   //
 
-  // MET "isolation" (calculated on at most 4 jets)
+  // MET "isolation" (calculated on at most nJetsMetIso_ jets)
   float metIso = 100.;
   double metPhi =  uncorrType_==pat::MET::uncorrMAXN ?
     met.phi() : met.uncorrectedPhi(uncorrType_);
-  for ( unsigned int iJet=0; iJet<4 && iJet<jets.size(); ++iJet) {
+  for ( unsigned int iJet=0; iJet<nJetsMetIso_ && iJet<jets.size(); ++iJet) {
     double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),metPhi) );
     if ( metIso > deltaPhiAbs ) metIso = deltaPhiAbs;
   }
