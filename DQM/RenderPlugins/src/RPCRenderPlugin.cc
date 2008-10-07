@@ -47,13 +47,11 @@ void RPCRenderPlugin::postDraw(TCanvas *c,const DQMNet::CoreObject &o,const VisD
   TText tt;
   tt.SetTextSize(0.12);
 
-  if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ){
-    tt.SetTextColor(3);
-    tt.DrawTextNDC(0.5, 0.5, "OK");
-    return;
-  }
-
-
+ //  if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ){
+//     tt.SetTextColor(3);
+//     tt.DrawTextNDC(0.5, 0.5, "OK");
+//     return;
+//   }
   if(dynamic_cast<TH2*>( o.object ) ) postDrawTH2(c,o); 
 
 }
@@ -87,6 +85,7 @@ void RPCRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( o.name.find("AfterPulse")!= std::string::npos) {
+    obj->SetStats( kTRUE );
     obj->SetOption( "SCAT" );
     return;
   }
@@ -121,7 +120,9 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    return;
  }
 
- if(o.name.find("Occupancy") != std::string::npos){ //sector occupancy plots
+ if(o.name.find("Occupancy") != std::string::npos && 
+    o.name.find("Sector") != std::string::npos &&
+   o.name.find("Wheel") != std::string::npos  ){ //sector occupancy plots
    TLine line;
    line.SetLineWidth(2);// Draw lines to delimitate the end of the roll
    //rb1in
@@ -139,6 +140,15 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    //rb3
    line.DrawLine(43, 9.5, 43, 13.5);
    return;
+ }
+
+ if(o.name.find("Occupancy") != std::string::npos){//summary occupancy plots
+   obj->GetXaxis()->SetNdivisions(-510);
+   obj->GetYaxis()->SetNdivisions(-510);
+   obj->GetXaxis()->CenterLabels();
+   obj->GetYaxis()->CenterLabels();
+   c->SetGridx();
+   c->SetGridy(); 
  }
  
  if( o.name.find("AfterPulse")!= std::string::npos) {//afterpulse 2D plots
