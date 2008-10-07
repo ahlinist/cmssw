@@ -380,7 +380,7 @@ process.evtgenproducer = cms.EDProducer("EvtGenProducer",
         'MDCY(277,1) = 0', 
         'MDCY(293,1) = 0', 
         'MDCY(105,1) = 0', 
-        'MSEL=5         ! b-bbar')
+        'MSEL=1         ! b-bbar')
 )
 
 process.bfilter = cms.EDFilter("PythiaFilter",
