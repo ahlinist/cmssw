@@ -84,7 +84,7 @@ ParameterSetDescription::validate(const edm::ParameterSet& ) const
     return;
   }
   if( not anythingAllowed() ) {
-    throw cms::Exception("InvalidConfiguration");
+    throw edm::Exception(errors::Configuration);
   }
    */
 }

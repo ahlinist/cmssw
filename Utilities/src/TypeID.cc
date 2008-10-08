@@ -20,7 +20,7 @@ namespace edm {
   std::string typeToClassName(const std::type_info& iType) {
     ROOT::Reflex::Type t = ROOT::Reflex::Type::ByTypeInfo(iType);
     if (!bool(t)) {
-      throw edm::Exception(errors::ProductNotFound,"NoMatch")
+      throw edm::Exception(errors::DictionaryNotFound,"NoMatch")
       << "TypeID::className: No dictionary for class " << iType.name() << '\n';
     }
     return t.Name(ROOT::Reflex::SCOPED);

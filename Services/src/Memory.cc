@@ -180,7 +180,7 @@ namespace edm {
       
       if((fd_=open(ost.str().c_str(),O_RDONLY))<0)
 	{
-	  throw cms::Exception("Configuration")
+	  throw edm::Exception(errors::Configuration)
 	    << "Memory checker server: Failed to open " << ost.str() << std::endl;
 	}
 #endif
