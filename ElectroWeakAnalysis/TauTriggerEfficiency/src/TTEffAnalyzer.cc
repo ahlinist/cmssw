@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.2 2008/10/03 11:48:40 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.3 2008/10/04 00:51:36 bachtis Exp $
 //
 //
 
@@ -87,7 +87,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    edm::Handle<PFTauCollection> PFTaus;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-     _L1analyzer.beginEvent(iEvent, iSetup);
+     //_L1analyzer.beginEvent(iEvent, iSetup);
      
      //std::cout << "Collection size " << PFTaus->size() << std::endl; 
      for(PFTauCollection::const_iterator iTau = PFTaus->begin(); iTau != PFTaus->end(); ++iTau) {
@@ -95,7 +95,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        fillPFTau(*iTau);
 
        // Call individual analyzers
-       _L1analyzer.analyzeTau(*iTau,iSetup);
+       _L1analyzer.fill(iEvent,*iTau);
        _L2analyzer.fill(iEvent,*iTau);
 
        // Finally, fill the entry to tree
@@ -118,12 +118,12 @@ TTEffAnalyzer::fillPFTau(const reco::PFTau& tau) {
   NHadCandsInAnnulus = tau.isolationPFChargedHadrCands().size() + tau.isolationPFNeutrHadrCands().size();
 
   //get RMS Values of Candidates
+  /*
   std::vector<double> rms = clusterSeparation(tau.isolationPFGammaCands(),tau.signalPFCands());
   PFEGEtaRMS = rms[0];
   PFEGPhiRMS = rms[1];
   PFEGDrRMS = rms[2];
-
-
+  */
 
 }
 
