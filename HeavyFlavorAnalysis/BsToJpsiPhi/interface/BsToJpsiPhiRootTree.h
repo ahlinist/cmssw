@@ -15,6 +15,11 @@
 #include "RecoVertex/VertexTools/interface/VertexDistance3D.h"
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
+// #include ""
+// #include "HepMC/HepLorentzVector"
+// #include "HepMC/GenVertex.h"
 /**
 * 
 * Class to fill a root tree for the angular BsToJpsiPhi analysis
@@ -118,7 +123,7 @@ private:
 			dyz=recoVertex.covariance(1,2);
 			dzx=recoVertex.covariance(2,0);
 		}
-		void set(const HepLorentzVector & vertex)
+		void set(math::XYZTLorentzVectorD const & vertex)
 		{
 			x=vertex.x();
 			y=vertex.y();

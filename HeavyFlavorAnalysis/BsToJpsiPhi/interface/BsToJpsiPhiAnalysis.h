@@ -41,6 +41,7 @@
 #include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/BsToJpsiPhiRootTree.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 // #include "RecoVertex/KinematicFitPrimitives/interface/"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include <TFile.h>
 #include <TH1F.h>
 
@@ -68,9 +69,9 @@ private:
 	TrackAssociatorByHits * associatorByHits_;
 
 	std::string outputFile_; // output file
-	std::string bCandLabel_; // label of candidate producer
-	std::string trackLabel_; // label of track producer
-	std::string vertexLabel_; //label of vertex producer
+	edm::InputTag bCandLabel_; // label of candidate producer
+	edm::InputTag trackLabel_; // label of track producer
+	edm::InputTag vertexLabel_; //label of vertex producer
 	bool isSim_; // is it simulated data
 	double deltaR_; //for matching sim and reco tracks
 	
