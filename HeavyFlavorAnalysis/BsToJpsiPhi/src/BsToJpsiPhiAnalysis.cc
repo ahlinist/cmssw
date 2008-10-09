@@ -5,7 +5,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Common/interface/EDProduct.h"
-#include "FWCore/Framework/interface/Handle.h"
+// #include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -27,7 +28,10 @@
 #include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
 #include "RecoVertex/KinematicFit/interface/MassKinematicConstraint.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Candidate/interface/CompositeCandidate.h"
+#include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+// #include ""
 
 #include <iostream>
 #include <TMath.h>
@@ -38,9 +42,9 @@ using namespace std;
 
 BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : theConfig_(iConfig)
 {
-	bCandLabel_ = iConfig.getParameter<std::string>("BCandLabel");
-	trackLabel_ = iConfig.getParameter<std::string>("TrackLabel");
-	vertexLabel_ = iConfig.getParameter<std::string>("VertexLabel");
+	bCandLabel_ = iConfig.getParameter<InputTag>("BCandLabel");
+	trackLabel_ = iConfig.getParameter<InputTag>("TrackLabel");
+	vertexLabel_ = iConfig.getParameter<InputTag>("VertexLabel");
 	outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
 	kvfPSet_ = iConfig.getParameter<edm::ParameterSet>("KVFParameters");
 	isSim_ = iConfig.getParameter<bool>("isSim");
@@ -49,6 +53,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
 	edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
 
 }
+
 
 
 BsToJpsiPhiAnalysis::~BsToJpsiPhiAnalysis() {
@@ -103,7 +108,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		edm::LogInfo("HeavyFlavorAnalysis/BsToJpsiPhiAnalysis") << "Reconstructing event number: " << iEvent.id() << "\n";
 	
 		//get the Bs collection 
-		edm::Handle<CandidateCollection> bCandCollection;
+// 		edm::Handle<CompositeCandidateCollection> bCandCollection;
+		edm::Handle<CandidateView> bCandCollection;
 		iEvent.getByLabel(bCandLabel_,bCandCollection);
 		
 		edm::LogInfo("HeavyFlavorAnalysis/BsToJpsiPhiAnalysis") << "Found: " << bCandCollection->size() << " reconstructed Bs" << "\n";
@@ -117,24 +123,27 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		} else {
 			primaryVertex = 0;
 		}
-			
+// 		cout << "test1" << endl;
 		// get the builder to transform tracks to TransientTrack
 		edm::ESHandle<TransientTrackBuilder> theB;
 		iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
-		
+// 		cout << "test2" << endl;		
 		// is the a Bs candidate and a primary vertex?
 		if(bCandCollection->size()>0 && primaryVertex != 0) {
 			
 			// get the simVertex collection and decay vertex
+// 			cout << "test3" << endl;
 			edm::Handle<TrackingVertexCollection> trackingTruthVertexCollectionH;
 			const TrackingVertexCollection *trackingTruthVertexCollection = 0;
 			const TrackingVertex * simVertex = 0;
 			if(isSim_){
-				iEvent.getByLabel("trackingtruthprod", trackingTruthVertexCollectionH);
+				iEvent.getByLabel("mergedtruth", trackingTruthVertexCollectionH);
 				trackingTruthVertexCollection   = trackingTruthVertexCollectionH.product();
+// 				cout << "trackingTruthVertexCollection: " << trackingTruthVertexCollection << endl;
 				simVertex = getSimVertex(trackingTruthVertexCollection);
+// 				cout << "simVertex: " << simVertex << endl;
 			}
-			
+// 			cout << "test4" << endl;
 			// association: does not work in CMSSW_1_3_6 on triggerd events
 			// use deltaR association istead
 			
@@ -152,9 +161,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 // 			cout << "after association" << endl;
 			
 			// loop over Bs candidates
-			for (CandidateCollection::const_iterator bit=(*bCandCollection).begin();bit!=(*bCandCollection).end();bit++) {
+// 			for (CompositeCandidateCollection::const_iterator bit=(*bCandCollection).begin();bit!=(*bCandCollection).end();bit++) {
+			for (CandidateView::const_iterator bit=(*bCandCollection).begin();bit!=(*bCandCollection).end();bit++) {
 				bsRootTree_->resetEntries();
-				
+// 				cout << "test5" << endl;
 				// are the particles associated?
 				bool trueMuPlus = false;			
 				bool trueMuMinus = false;
@@ -167,16 +177,22 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 				if ((*bit).numberOfDaughters()!=2){
 					continue;
 				}
-				
+// 				cout << "test5" << endl;
 				// get the jpsi candidate
 				const Candidate *jpsi = bit->daughter(0);
+// 				cout << "test6" << endl;
 				TransientTrack muPlusTk;				
 				TransientTrack muMinusTk;	
 				//loop over muons				
 				for (Candidate::const_iterator muit=jpsi->begin();muit!=jpsi->end();muit++){	
-					const Muon * mucand = dynamic_cast<const Muon *> (&(*muit));
+					const Muon  * mucand = dynamic_cast<const Muon*> (&*muit->masterClone());
+// 					cout << muit->isMuon() << endl;
+// 					cout << mucand << endl;
+					if(mucand == 0 ) continue;
 					TrackRef mutk = mucand->track();
+// 					cout << "test8" << endl;
 					TransientTrack muttkp   = (*theB).build(&mutk);				
+// 					cout << "test9" << endl;
 					if(muttkp.charge() > 0){
 						muPlusTk = muttkp; 
 						if(isSim_ && (simVertex != 0)){
@@ -190,7 +206,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 								}
 							}
 							double dR = deltaRRecoSim(&muPlusTk , &tpr);			
-							cout << "delta R: " << dR << endl;
+// 							cout << "delta R: " << dR << endl;
 							if(dR < deltaR_){
 								trueMuPlus = true;
 							}
@@ -214,7 +230,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 								}
 							}			
 							double dR = deltaRRecoSim(&muMinusTk , &tpr);			
-							cout << "delta R: " << dR << endl;
+// 							cout << "delta R: " << dR << endl;
 							if(dR < deltaR_){
 								trueMuMinus = true;
 							}
@@ -227,13 +243,16 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 						}
 					}
 				}//end loop over muons
-				
+// 				cout << "test10" << endl;
 				const Candidate *phi = bit->daughter(1);
 				TransientTrack kPlusTk;				
 				TransientTrack kMinusTk;				
 				//loop over kaons				
-				for (Candidate::const_iterator kit=phi->begin();kit!=phi->end();kit++){
-					const RecoCandidate* kcand = dynamic_cast<const RecoCandidate*> (&(*kit));
+				for (Candidate::const_iterator kit=phi->begin();kit!=phi->end();kit++){					
+// 					cout << "test11" << endl;
+					const RecoCandidate* kcand = dynamic_cast<const RecoCandidate*> (&*kit->masterClone());
+// 					cout << "test12 " << kcand << endl;
+					if(kcand == 0) continue;
 					TrackRef ktk = kcand->track();
 					TransientTrack kttkp   = (*theB).build(&ktk);
 					if(kttkp.charge() > 0 ){
@@ -249,7 +268,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 								}
 							}			
 							double dR = deltaRRecoSim(&kPlusTk , &tpr);			
-							cout << "delta R: " << dR << endl;
+// 							cout << "delta R: " << dR << endl;
 							if(dR < deltaR_){
 								trueKPlus = true;
 							}
@@ -273,7 +292,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 								}
 							}			
 							double dR = deltaRRecoSim(&kMinusTk , &tpr);			
-							cout << "delta R: " << dR << endl;
+// 							cout << "delta R: " << dR << endl;
 							if(dR < deltaR_){
 								trueKMinus = true;
 							}
@@ -381,38 +400,49 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 		bool muminus = false;
 		bool muplus = false;
 		// look if the daughters of the vertex are mu+, mu-, k+ and k-
-        if (v->daughterTracks().size()==4) {
+    if (v->daughterTracks().size()==4) {
 			for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
 				if((**dt).pdgId() == -13){
 		   			muplus = true;
+// 						cout << "found mu+" << endl;
 				}
 				if((**dt).pdgId() == 13){
 					muminus = true;
+// 					cout << "found mu-" << endl;
 				}
 				if((**dt).pdgId() == 321){
 					kplus = true;
+// 					cout << "found K+" << endl;
 				}
 				if((**dt).pdgId() == -321){
 					kminus = true;
+// 					cout << "found K+" << endl;
 				}
 			}
 		}
-		
+		if(kplus && kminus && muminus && muplus){
+// 			cout << "number of genVertices: " << v->genVertices().size() << endl;
+		}
 		// look if the mothers of the vertex are Bs, Jpsi and phi 
-        if (v->genVertices().size() == 3) {
+    if (v->genVertices().size() == 3) {
 			for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
-				if( ((**dt).mother()->pdg_id() == 531) || ((**dt).mother()->pdg_id() == -531) ){
+				if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
+				if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 531) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -531)) ){
 					bs = true;
+					cout << "found Bs" << endl;
 				}
-				if( ((**dt).mother()->pdg_id() == 443) || ((**dt).mother()->pdg_id() == -443) ){
+				if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
 					jpsi = true;
+// 					cout << "found jpsi" << endl;
 				}
-				if( ((**dt).mother()->pdg_id() == 333) || ((**dt).mother()->pdg_id() == -333) ){
+				if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 333) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -333)) ){
 					phi = true;
+// 					cout << "found phi" << endl;
 				}
 			}
 		}
-		if(bs & jpsi & phi & kplus & kminus & muminus & muplus){ 
+// 		if(bs && jpsi && phi && kplus && kminus && muminus && muplus){ 
+		if(kplus && kminus && muminus && muplus){ 
 			return &(*v);
 		}
 	}
