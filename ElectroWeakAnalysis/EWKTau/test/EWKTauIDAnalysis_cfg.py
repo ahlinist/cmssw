@@ -16,7 +16,7 @@ process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff"
 
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
-        'testFEVT.root'
+        'file:testFEVT.root'
   )
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10))
@@ -111,10 +111,15 @@ process.selectedLayer1MuonsPFGammaIso10 = cms.EDProducer("PATMuonPFParticleIsola
      IsolationMaxCut = cms.double(10.0),
 )
 
+process.selectTrkIsoMuForEWKTau = cms.EDProducer("PATMuonSelector",       
+     src = cms.InputTag("selectedLayer1MuonsPFGammaIso10"),   
+     cut = cms.string('trackIso < 10.0')   
+)
+
 ####### Define the b jet rejection module #######
 
 process.selectedLayer1MuonsBJetRejection = cms.EDProducer("PATMuonSVAssociatorSelection",
-     src = cms.InputTag("selectedLayer1MuonsPFGammaIso10"),
+     src = cms.InputTag("selectTrkIsoMuForEWKTau"),
      TrackProducer = cms.string('generalTracks'),
      VertexProducer = cms.string('offlinePrimaryVertices'),
      VFParameters = cms.PSet(
@@ -138,7 +143,22 @@ process.selectedLayer1MuonsSeperatedFromPATTau = cms.EDProducer("PATMuonPATTauSe
      DeltaRMaxCut = cms.double(999.0),
 )
 
-process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPt20 * process.selectedLayer1MuonsEta21 * process.selectedLayer1MuonsIP * process.selectedLayer1MuonsPFGammaIso10 * process.selectedLayer1MuonsBJetRejection)
+process.selectedLayer1MuonsSatisfyingMassCut = cms.EDProducer("PATMuonPATTauMassSelection",
+     src = cms.InputTag("allLayer1MuForEWKTau"),
+     TauSource = cms.InputTag("allLayer1Taus"),
+     MassMinCut = cms.double(40.0),
+     MassMaxCut = cms.double(100.0),
+)
+
+process.selectedLayer1MuonsSatisfyingMetDelPhi = cms.EDProducer("PATMuonPATMetDelPhiSelection",
+     src = cms.InputTag("allLayer1MuForEWKTau"),
+     MetSource = cms.InputTag("allLayer1Mets"),
+     DelPhiMinCut = cms.double(-999.0),
+     DelPhiMaxCut = cms.double(999.0),
+)
+
+process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPt20 * process.selectedLayer1MuonsEta21 * process.selectedLayer1MuonsIP * process.selectedLayer1MuonsPFGammaIso10 * process.selectTrkIsoMuForEWKTau * process.selectedLayer1MuonsBJetRejection)
+#process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPt20)
 #process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsBJetRejection)
 #process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsSeperatedFromPATTau)
 #process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPFGammaIso10)
