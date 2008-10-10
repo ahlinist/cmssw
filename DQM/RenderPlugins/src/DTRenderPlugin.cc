@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.26 2008/08/22 11:52:02 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.27 2008/09/25 08:52:42 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.26 $
-  \date $Date: 2008/08/22 11:52:02 $
+  \version $Revision: 1.27 $
+  \date $Date: 2008/09/25 08:52:42 $
 */
 
 #include "TProfile2D.h"
@@ -88,6 +88,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   TH2F* obj = dynamic_cast<TH2F*>( o.object );
   assert( obj );
 
+
   // This applies to all
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetPadBorderMode(0);
@@ -99,7 +100,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   obj->SetOption("colz");
 
-  c->SetLogz(0);
+  if(obj->GetEntries() != 0) c->SetLogz(0);
 
   //gStyle->SetLabelSize(0.7);
   obj->GetXaxis()->SetLabelSize(0.07);
@@ -129,6 +130,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
+//     obj->SetOption("text");
+//     obj->SetMarkerSize( 2 );
+//     gStyle->SetPaintTextFormat("2.0f");
     c->SetGrid(1,1);
     return;
   }
@@ -155,7 +159,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( o.name.find("ROSError") != std::string::npos ) {
     c->SetGrid(1,1);
     c->SetBottomMargin(0.15);
-    c->SetLeftMargin(0.2);
+    c->SetLeftMargin(0.12);
     obj->GetXaxis()->SetLabelSize(0.05);
     obj->GetYaxis()->SetLabelSize(0.05);
     return;
@@ -173,8 +177,10 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
     obj->GetXaxis()->LabelsOption("v");
-    c->SetBottomMargin(0.25);
-    c->SetLeftMargin(0.15);
+    c->SetBottomMargin(0.28);
+    c->SetLeftMargin(0.14);
+    c->SetRightMargin(0.14);
+
     return;
   }
 
@@ -487,7 +493,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   
 
   if( o.name.find("ROSEventLenght") != std::string::npos ) {
-    c->SetLogy(1);
+     if(obj->GetEntries() != 0) c->SetLogy(1);
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
 //     c->SetGrid(1,1);
@@ -510,13 +516,13 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( o.name.find( "EventLenght" ) != std::string::npos ) {
     gStyle->SetOptStat( 1111111 );
     obj->SetStats( kTRUE );
-    c->SetLogy(1);
+     if(obj->GetEntries() != 0) c->SetLogy(1);
     return;
   }
 
 
   if( o.name.find( "FED770TTSValues_Percent" ) != std::string::npos ) {
-    c->SetLogy( 1 );
+     if(obj->GetEntries() != 0) c->SetLogy( 1 );
     return;
   }
 
@@ -587,11 +593,18 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( o.name.find( "NoiseRateSummary" ) != std::string::npos ) {
 
-    c->SetLogy(1);
+     if(obj->GetEntries() != 0) c->SetLogy(1);
     if(obj->GetEntries() != 0) c->SetLogx(1);
     return;
   }
 
+
+  if(o.name.find("FEDIntegrity" ) < o.name.size()) {
+    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    c->SetGrid(1,0);
+    return;
+  }
 
   return;
 
@@ -638,6 +651,71 @@ void DTRenderPlugin::postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
 }
 
 void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
+
+  if(o.name.find("DataIntegritySummary") != std::string::npos) {
+    static TLatex *whm2Label =  new TLatex(-1.5,770.1,"(Wheel -2)");
+    whm2Label->SetTextSize(0.042);
+    whm2Label->Draw("same");
+
+    static TLatex *whm1Label =  new TLatex(-1.5,771.1,"(Wheel -1)");
+    whm1Label->SetTextSize(0.042);
+    whm1Label->Draw("same");
+
+    static TLatex *wh0Label =  new TLatex(-1.5,772.1,"(Wheel 0)");
+    wh0Label->SetTextSize(0.042);
+    wh0Label->Draw("same");
+
+    static TLatex *whp1Label =  new TLatex(-1.5,773.1,"(Wheel +1)");
+    whp1Label->SetTextSize(0.042);
+    whp1Label->Draw("same");
+
+    static TLatex *whp2Label =  new TLatex(-1.5,774.1,"(Wheel +2)");
+    whp2Label->SetTextSize(0.042);
+    whp2Label->Draw("same");
+
+
+    return;
+  }
+
+  if(o.name.find("ROSError") != std::string::npos) {
+    TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+    int nBinsX = histo->GetNbinsX();
+
+    static TLine *lineMB1 = new TLine(0,6,nBinsX,6); 
+    lineMB1->Draw("same");
+    static TLatex *mb1Label = new TLatex(5,1.5,"MB1");
+    mb1Label->SetTextColor(kGray);
+    mb1Label->SetTextSize(0.11);
+    mb1Label->Draw("same");
+
+    static TLine *lineMB2 = new TLine(0,12,nBinsX,12); 
+    lineMB2->Draw("same");
+    static TLatex *mb2Label = new TLatex(5,7.5,"MB2");
+    mb2Label->SetTextColor(kGray);
+    mb2Label->SetTextSize(0.11);
+    mb2Label->Draw("same");
+
+    static TLine *lineMB3 = new TLine(0,18,nBinsX,18); 
+    lineMB3->Draw("same");
+    static TLatex *mb3Label = new TLatex(5,13.5,"MB3");
+    mb3Label->SetTextColor(kGray);
+    mb3Label->SetTextSize(0.11);
+    mb3Label->Draw("same");
+
+    static TLine *lineMB4 = new TLine(0,24,nBinsX,24); 
+    lineMB4->Draw("same");
+    static TLatex *mb4Label = new TLatex(5,19.5,"MB4");
+    mb4Label->SetTextColor(kGray);
+    mb4Label->SetTextSize(0.11);
+    mb4Label->Draw("same");
+
+    static TLine *lineMB3b = new TLine(0,25,nBinsX,25); 
+    lineMB3b->Draw("same");
+
+    return;
+  }
+  
+
   if(o.name.find("Summary_W") != std::string::npos) {
     labelMB4Sect4and13_wheel->Draw("same");
     labelMB4Sect10and14_wheel->Draw("same");
@@ -664,6 +742,7 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 }
 
 void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
+
   if( o.name.find("ROSEventLenght") != std::string::npos ) {
     TH1F * histo =  dynamic_cast<TH1F*>( o.object );
     int nBins = histo->GetNbinsX();
