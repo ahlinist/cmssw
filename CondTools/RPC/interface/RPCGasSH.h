@@ -5,8 +5,8 @@
  * \class RpcGasSH
  *  Core of RPC PopCon Appication
  *
- *  $Date: 2008/07/31 14:50:15 $
- *  $Revision: 1.1 $
+ *  $Date: 2008/08/28 10:28:45 $
+ *  $Revision: 1.3 $
  *  \author D. Pagano - Dip. Fis. Nucl. e Teo. & INFN Pavia
  */
 
@@ -17,8 +17,8 @@
 
 #include "CondCore/PopCon/interface/PopConSourceHandler.h"
 
-#include "CondFormats/RPCObjects/interface/RPCGasT.h"
-#include "CondFormats/DataRecord/interface/RPCGasTRcd.h"
+#include "CondFormats/RPCObjects/interface/RPCObGas.h"
+#include "CondFormats/DataRecord/interface/RPCObGasRcd.h"
 #include "CoralBase/TimeStamp.h"
 #include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
 #include "CondTools/RPC/interface/RPCFw.h"
@@ -26,15 +26,14 @@
 
 
 namespace popcon{
-  class RpcGasTData : public popcon::PopConSourceHandler<RPCGasT>{
+  class RpcObGasData : public popcon::PopConSourceHandler<RPCObGas>{
   public:
     void getNewObjects();
     std::string id() const { return m_name;}
-    ~RpcGasTData(); 
-    RpcGasTData(const edm::ParameterSet& pset); 
+    ~RpcObGasData(); 
+    RpcObGasData(const edm::ParameterSet& pset); 
 
-    RPCGasT* Gasdata;
-    RPCGasT* Tdata;
+    RPCObGas* Gasdata;
 
     int snc;
     int niov;	    
