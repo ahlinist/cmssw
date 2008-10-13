@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.6 2008/07/04 16:24:52 lorenzo Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.7 2008/08/22 11:52:02 lat Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 1.6 $
-  \date $Date: 2008/07/04 16:24:52 $
+  \version $Revision: 1.7 $
+  \date $Date: 2008/08/22 11:52:02 $
 */
 
 #include "TH1F.h"
@@ -94,19 +94,19 @@ bool L1TdeRCTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImg
   std::cout << "L1TdeRCTRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/ServiceData/" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm/" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TMonitor/L1TdeRCT/NisoeEm/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm/ServiceData/" ) != std::string::npos ) {
     return true;
   }
 
@@ -375,42 +375,50 @@ void L1TdeRCTRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o
 
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
-  if( name.find( "rctIsoEmEff1" ) != std::string::npos ) {
+  if( name.find( "rctIsoEmEff1" ) != std::string::npos &&
+  name.find( "rctIsoEmEff1" ) != name.find( "rctIsoEmEff1Occ" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmEff2" ) != std::string::npos ) {
+  if( name.find( "rctIsoEmEff2" ) != std::string::npos &&
+  name.find( "rctIsoEmEff2" ) != name.find( "rctIsoEmEff2Occ" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmIneff" ) != std::string::npos ) {
+  if( name.find( "rctIsoEmIneff" ) != std::string::npos &&
+  name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneffOcc" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctIsoEmOvereff" ) != std::string::npos ) {
+  if( name.find( "rctIsoEmOvereff" ) != std::string::npos &&
+  name.find( "rctIsoEmOvereff" ) != name.find( "rctIsoEmOvereffOcc" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmEff1" ) != std::string::npos ) {
+  if( name.find( "rctNisoEmEff1" ) != std::string::npos &&
+  name.find( "rctNisoEmEff1" ) != name.find( "rctNisoEmEff1Occ") ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmEff2" ) != std::string::npos ) {
+  if( name.find( "rctNisoEmEff2" ) != std::string::npos && 
+  name.find( "rctNisoEmEff2" ) != name.find( "rctNisoEmEff2Occ" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmIneff" ) != std::string::npos ) {
+  if( name.find( "rctNisoEmIneff" ) != std::string::npos &&
+  name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneffOcc" ) ) {
     dummybox->Draw("box,same");
     return;
   }
 
-  if( name.find( "rctNisoEmOvereff" ) != std::string::npos ) {
+  if( name.find( "rctNisoEmOvereff" ) != std::string::npos &&
+  name.find( "rctNisoEmOvereff" ) != name.find( "rctNisoEmOvereffOcc" ) ) {
     dummybox->Draw("box,same");
     return;
   }
