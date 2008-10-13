@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.2 2008/09/29 18:00:09 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.1 2008/09/30 09:10:59 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -17,8 +17,8 @@
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
-#include "TH1F.h"
-#include "TH2F.h"
+#include "TFile.h"
+#include "TTree.h"
 
 class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    public:
@@ -33,37 +33,33 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       edm::InputTag l25JetSource;
       edm::InputTag l25PtCutSource;
       edm::InputTag l25IsoSource;
-      TH1F* tauPt;
-      TH1F* tauInvPt;
-      TH1F* tauEt;
-      TH1F* tauEta;
-      TH1F* tauPhi;
-      TH1F* tauTjDR;
-      TH1F* tauTrkC05;
-      TH1F* tauTrkIso;
-      TH1F* tauTrkSig;
-      TH1F* l25Et;
-      TH1F* l25Phi;
-      TH1F* l25Eta;
-      TH1F* l25Pt;
-      TH1F* l25PtCut;
-      TH1F* l25InvPt;
-      TH1F* l25Iso;
-      TH1F* l25TjDR;
-      TH1F* l25TrkQPx;
-      TH1F* leadDR;
-      TH2F* Pt;
-      TH2F* Et;
-      TH2F* Eta;
-      TH2F* Phi;
-      TH2F* TjDR;
-      TH2F* TrkC05;
-      TH2F* TrkSig;
-      TH1F* effInvPt;
-      TH1F* effPtCut;
-      TH1F* effIso;
-      TH1F* effDR;
-      TH1F* matchDR;
-      TH1F* minDR;
+      edm::InputTag outputFileName;
+      std::string rootFile_;
+      TFile* l25file;
+      TTree* l25tree;
+      float tauPt;
+      float tauInvPt;
+      float tauInvPt1;
+      float tauInvPt3;
+      float tauInvPtm;
+      float tauInvPtm1;
+      float tauInvPtm3;
+      float tauEt;
+      float tauEta;
+      float tauPhi;
+      float tauTjDR;
+      float tauTrkC05;
+      float tauTrkSig;
+      float l25Et;
+      float l25Phi;
+      float l25Eta;
+      float l25Pt;
+      float l25PtCut;
+      float l25InvPt;
+      float l25InvPt1;
+      float l25InvPt3;
+      float l25Iso;
+      float l25TjDR;
+      float l25TrkQPx;
       double matchingCone;
 };
