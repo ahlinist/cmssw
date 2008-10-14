@@ -11,6 +11,7 @@ from RecoBTag.Analysis.bTagGenericAnalysis_cff import *
 from RecoBTag.Analysis.bTagSimpleSVAnalysis_cff import *
 from RecoBTag.Analysis.bTagSoftLeptonAnalysis_cff import *
 from RecoBTag.Analysis.bTagSoftLeptonByPtAnalysis_cff import *
+from RecoBTag.Analysis.bTagSoftLeptonByIPAnalysis_cff import *
 from RecoBTag.Analysis.bTagCommon_cff import *
 
 bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
@@ -73,6 +74,10 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
         cms.PSet(
             bTagSoftLeptonByPtAnalysisBlock,
             label = cms.InputTag("softMuonByPtBJetTags")
+        ), 
+        cms.PSet(
+            bTagSoftLeptonByIPAnalysisBlock,
+            label = cms.InputTag("softMuonByIP3dBJetTags")
         ), 
         cms.PSet(
             bTagSoftLeptonAnalysisBlock,
