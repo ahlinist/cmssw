@@ -10,7 +10,9 @@ from RecoBTag.Analysis.bTagTrackBProbabilityAnalysis_cff import *
 from RecoBTag.Analysis.bTagGenericAnalysis_cff import *
 from RecoBTag.Analysis.bTagSimpleSVAnalysis_cff import *
 from RecoBTag.Analysis.bTagSoftLeptonAnalysis_cff import *
+from RecoBTag.Analysis.bTagSoftLeptonByPtAnalysis_cff import *
 from RecoBTag.Analysis.bTagCommon_cff import *
+
 bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
     # parameters common to all tagger algorithms
     bTagCommonBlock,
@@ -67,6 +69,10 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
         cms.PSet(
             bTagSoftLeptonAnalysisBlock,
             label = cms.InputTag("softMuonNoIPBJetTags")
+        ), 
+        cms.PSet(
+            bTagSoftLeptonByPtAnalysisBlock,
+            label = cms.InputTag("softMuonByPtBJetTags")
         ), 
         cms.PSet(
             bTagSoftLeptonAnalysisBlock,
