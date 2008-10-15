@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.3 2008/10/13 16:57:54 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.4 2008/10/14 15:21:10 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -39,7 +39,9 @@ L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iCon
   l25tree->Branch("l25TrkQPx", &l25TrkQPx, "l25TrkQPx/F" );
   l25tree->Branch("l25PtCut", &l25PtCut,"l25PtCut/F" );
   l25tree->Branch("l25Iso", &l25Iso,"l25Iso/F" );
-  l25tree->Branch("l25Depth", &l25Depth,"l25Depth/F" );
+  l25tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
+  l25tree->Branch("minDR", &minDR,"minDR/F" );
+  l25tree->Branch("bareEt", &bareEt,"bareEt/F" );
 }
 
 L25TauEfficiencyAnalyzer::~L25TauEfficiencyAnalyzer(){
@@ -54,11 +56,16 @@ Handle<CaloJetCollection> ptJets;
 iEvent.getByLabel(l25PtCutSource, ptJets);
 Handle<CaloJetCollection> isoJets;
 iEvent.getByLabel(l25IsoSource, isoJets);
-l25Depth = 0; // no match
+vector<double> drs;
 for(unsigned int i = 0; i < taus->size(); i++){
+l25Depth = 0; // no match
+drs.clear();
+minDR = -1;
+bareEt = taus->at(i).et();
 const TrackRef leadPFTrk = taus->at(i).leadPFChargedHadrCand()->trackRef();
 if(&(*tags)){
-for(unsigned int j = 0; j < tags->size(); j++){ // bare L2.5 Taus
+for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
+drs.push_back(deltaR(taus->at(i), *(tags->at(j).jet())));
 if(deltaR(taus->at(i), *(tags->at(j).jet())) < matchingCone){ // dr < matchingCone
 l25Depth = 1; // L2 match
 tauTrkC05  = ( taus->at(i).pfTauTagInfoRef()->PFChargedHadrCands().size() );
@@ -86,6 +93,10 @@ if(taus->at(i).signalPFChargedHadrCands().size() == 1) tauInvPtm1  = (1.0/leadPF
 if(taus->at(i).signalPFChargedHadrCands().size() == 3) tauInvPtm3  = (1.0/leadPFTrk->pt() );
 }// good lead cand
 }// pf and l25 tau match dr < matchingCone
+if(drs.size() > 0){
+if(drs.size() > 1) sort(drs.begin(),drs.end());
+minDR = drs.at(0);
+}// sort drs
 }// for jet loop
 }// non empty collection
 
@@ -109,9 +120,8 @@ l25Iso  = (taus->at(i).et() );
 }// pf and l25 tau match dr < matchingCone
 }// for jet loop
 }// non empty collection
-
-}// for tau loop
 l25tree -> Fill();
+}// for tau loop
 }// analyzer ends here
 void L25TauEfficiencyAnalyzer::beginJob(const edm::EventSetup&) {}
 void L25TauEfficiencyAnalyzer::endJob() {}
