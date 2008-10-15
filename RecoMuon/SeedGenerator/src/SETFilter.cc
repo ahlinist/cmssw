@@ -77,11 +77,6 @@ SETFilter::SETFilter(const ParameterSet& par,
   
   thePropagatorName = par.getParameter<string>("Propagator");
 
-  //---- SET
-  // none of the above is needed (maybe Direction?); Propagator may be usefull
-  // problem...
-  //theBWLightFitterName = par.getParameter<string>("BWLightFitterName");
-  theBWLightFitterName = "KFFitterForRefitOutsideIn";
   //----
 }
 
@@ -129,8 +124,10 @@ void SETFilter::incrementChamberCounters(const DetLayer *layer){
 
 
 //---- the SET FW-fitter
+//bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
+//			     Trajectory &trajectory){ 
 bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
-				     Trajectory &trajectory){ 
+			   std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet){
   // this is the SET algorithm fit
 
   // reset the fitter 
@@ -147,10 +144,10 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
     std::cout<<" iSet = "<<iSet<<std::endl;
     //---- start fit from the origin
     Hep3Vector origin (0.,0.,0.);
-    std::vector < TrajectoryMeasurement > trajectoryMeasurementsInTheSet;
+    std::vector < TrajectoryMeasurement > trajectoryMeasurementsInTheSet_tmp;
     //---- Find minimum chi2 (corresponding to a specific 3D-momentum)    
     chi2AllCombinations[iSet]  = findMinChi2(iSet, origin, validSegmentsSet[iSet], lastUpdatedTSOS_Vect,
-                                             trajectoryMeasurementsInTheSet);
+                                             trajectoryMeasurementsInTheSet_tmp);
   }
   //---- Find the best muon candidate (min chi2) in the cluster; find more candidates?
   std::vector < double >::iterator itMin = min_element(chi2AllCombinations.begin(),chi2AllCombinations.end());
@@ -167,9 +164,10 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
     // loop over all measurements in the set
     for(unsigned int iMeas =0; iMeas<theBestCandidate->trajectoryMeasurementsInTheSet.size();++iMeas){
       // bild a trajectory
-      trajectory.push(theBestCandidate->trajectoryMeasurementsInTheSet[iMeas],
-                      theBestCandidate->trajectoryMeasurementsInTheSet[iMeas].estimate());
+      //trajectory.push(theBestCandidate->trajectoryMeasurementsInTheSet[iMeas],
+      //              theBestCandidate->trajectoryMeasurementsInTheSet[iMeas].estimate());
 
+      trajectoryMeasurementsInTheSet.push_back(theBestCandidate->trajectoryMeasurementsInTheSet[iMeas]);
       const DetLayer *layer = theBestCandidate->trajectoryMeasurementsInTheSet[iMeas].layer();
 
       incrementChamberCounters(layer);
@@ -177,7 +175,7 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
       theDetLayers.push_back(layer);
 
     }
-    theLastUpdatedTSOS = trajectory.lastMeasurement().forwardPredictedState();
+    theLastUpdatedTSOS = trajectoryMeasurementsInTheSet.at(trajectoryMeasurementsInTheSet.size()-1).forwardPredictedState();
     //std::cout<<" THE OUTPUT FROM FW FILTER: |P| = "<<theBestCandidate->momentum.mag()<<
     //" theta = "<<theBestCandidate->momentum.theta()<<" phi = "<<theBestCandidate->momentum.phi()<<std::endl;
   }
@@ -188,87 +186,18 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
   return validTrajectory;
 }
 
-//---- the SET BW fitter
-std::pair<bool, Trajectory> 
-SETFilter::bwfit_SET(const TrajectorySeed &trajectorySeed  , 
-				  const TransientTrackingRecHit::ConstRecHitContainer & trajRH,
-				  const TrajectoryStateOnSurface & firstTsos) {
-  // get the actual fitter - Kalman fit
-  theService->eventSetup().get<TrackingComponentsRecord>().get(theBWLightFitterName, theBWLightFitter);
-  vector<Trajectory> refitted;
-  Trajectory trajectory;
-  // the actual Kalman Fit
-  refitted = theBWLightFitter->fit(trajectorySeed, trajRH, firstTsos);                                  
-  if(!refitted.empty()){
-    // under tests...
-    bool applyPruning = false;
-    if(applyPruning){
-      double previousTheta = trajRH[0]->globalPosition().theta();
-      double previousWeight = 0.;
-      std::vector <double> weights(trajRH.size());
-      std::vector <double> weight_diff(trajRH.size());
-      for(uint iRH = 0; iRH<trajRH.size();++iRH){
-	double weight = trajRH[iRH]->globalPosition().theta() - previousTheta;
-	weights.at(iRH)= weight;
-	double weightDiff = weight + previousWeight;
-	weight_diff.at(iRH) = weightDiff;
-	std::cout<<" iRH = "<<iRH<<" globPos"<< trajRH[iRH]->globalPosition()<<" weight = "<<weight<<" weightDiff = "<<weightDiff<<std::endl;
-	previousTheta = trajRH[iRH]->globalPosition().theta();
-	previousWeight = weight;
-
-      }
-      Trajectory::DataContainer measurements_segments = refitted.front().measurements();
-      if(measurements_segments.size() != trajRH.size()){
-	std::cout<<" measurements_segments.size() = "<<measurements_segments.size()<<
-	  " trajRH.size() = "<<trajRH.size()<<std::endl;
-	std::cout<<" THIS IS NOT SUPPOSED TO HAPPEN! CHECK THE CODE (pruning)"<<std::endl;
-      }
-      std::vector <int> badHits;
-      TransientTrackingRecHit::ConstRecHitContainer trajRH_pruned;
-      for(uint iMeas = 0; iMeas<measurements_segments.size();++iMeas){
-	// we have to apply pruning on the base of intermed. chi2 of measurements
-	// and then refit again!
-	std::cout<<" after refitter : iMeas = "<<iMeas<<"  estimate() = "<< measurements_segments[iMeas].estimate()<<
-	  " globPos = "<< measurements_segments[iMeas].recHit()->globalPosition()<<std::endl;
-	//const TransientTrackingRecHit::ConstRecHitContainer trajRH_pruned;
-	bool pruningCondition = fabs(weights[iMeas])>0.0011 && fabs(weight_diff[iMeas])>0.0011;
-	std::cout<<" weights[iMeas] = "<<weights[iMeas]<<" weight_diff[iMeas] = "<<weight_diff[iMeas]<<" pruningCondition = "<<pruningCondition<<std::endl;
-	//bool pruningCondition = (measurements_segments[iMeas].estimate()>50);
-	if(iMeas && pruningCondition && measurements_segments.size() == trajRH.size()){// first is kept for technical reasons (for now)
-	  badHits.push_back(iMeas);
-	}
-	else{
-	  trajRH_pruned.push_back(trajRH[iMeas]);
-	}
-      }
-      if(float(measurements_segments.size())/float(badHits.size()) >0.5 &&
-	 measurements_segments.size() - badHits.size() > 6){
-	std::cout<<" this is pruning ; badHits.size() = "<<badHits.size()<<std::endl;
-	refitted = theBWLightFitter->fit(trajectorySeed, trajRH_pruned, firstTsos);  
-      }
-    }
-    std::pair<bool, Trajectory> refitResult = make_pair(true,refitted.front());
-    //return RefitResult(true,refitted.front());
-    return refitResult;
-  }
-  else{
-    //    std::cout<<" refitted.empty() = "<<refitted.empty()<<std::endl;
-    std::pair<bool, Trajectory> refitResult = make_pair(false,trajectory);
-    //return RefitResult(false,trajectory);
-    return refitResult;
-  }
-}
 
 
-
-
-bool SETFilter::transform(Trajectory &trajectorySeg,
-				     Trajectory &trajectoryRH){
+//bool SETFilter::transform(Trajectory &trajectorySeg,
+//			     Trajectory &trajectoryRH){
+bool SETFilter::transform(Trajectory::DataContainer &measurements_segments, 
+			  TransientTrackingRecHit::ConstRecHitContainer & hitContainer, 
+			  TrajectoryStateOnSurface & firstTSOS){
 // transforms "segment trajectory" to "rechit trajectory"
 
   bool success = true;
-  Trajectory::DataContainer measurements_segments = trajectorySeg.measurements();
-  TransientTrackingRecHit::ConstRecHitContainer hitContainer;
+  //Trajectory::DataContainer measurements_segments = trajectorySeg.measurements();
+  //TransientTrackingRecHit::ConstRecHitContainer hitContainer;
   // loop over all segments in the trajectory
   for(int iMeas = measurements_segments.size() - 1; iMeas>-1;--iMeas){
     TransientTrackingRecHit ::ConstRecHitContainer sortedHits;
@@ -292,14 +221,12 @@ bool SETFilter::transform(Trajectory &trajectorySeg,
     hitContainer.insert(hitContainer.end(),sortedHits.begin(),sortedHits.end());    
   }
 
-  int charge =  1;
-  //Hep3Vector p3T(pX,pY,pZ);
   Hep3Vector p3_propagated,r3_propagated;
   AlgebraicSymMatrix66 cov_propagated, covT;//---- how to disable error propagation?
   covT *= 1e-20;
   cov_propagated *= 1e-20;
   // this is the last segment state
-  FreeTrajectoryState ftsStart = *(trajectorySeg.lastMeasurement().forwardPredictedState().freeState());
+  FreeTrajectoryState ftsStart = *(measurements_segments.at(measurements_segments.size()-1).forwardPredictedState().freeState());
 
   // this is the last (from the IP) rechit
   TransientTrackingRecHit::ConstRecHitPointer muonRecHit =  hitContainer[0];
@@ -308,88 +235,17 @@ bool SETFilter::transform(Trajectory &trajectorySeg,
   TrajectoryStateOnSurface tSOSDest;
   // get the last rechit TSOS
   tSOSDest = propagator()->propagate(ftsStart, layer_last->surface());
-
+  //seedBase thePair(tSOSDest, hitContainer);
+  //seedContainer make_pair(tSOSDest, hitContainer);
+  //seedContainer = thePair;
+  firstTSOS = tSOSDest;
   // ftsStart should be at the last rechit surface
-  if (tSOSDest.isValid()){
-     ftsStart = *tSOSDest.freeState();
+  if (!tSOSDest.isValid()){
+    success = false;
+    //     ftsStart = *tSOSDest.freeState();
   }
-  double chi2_loc = 0.;
-  // loop over all the rechits in the container
-  for(unsigned int iMeas = 0; iMeas <hitContainer.size(); ++iMeas){
-    TransientTrackingRecHit::ConstRecHitPointer muonRecHit =  hitContainer[iMeas];
-    DetId detId = muonRecHit->hit()->geographicalId();
-    const DetLayer *detLayer = theService->detLayerGeometry()->idToLayer( detId);
-    const GeomDet* layer = theService->trackingGeometry()->idToDet(detId);
 
-    //---- propagate the muon starting from the last rechit 
-    //---- it is just to construct a new trajectory (from rechits)
-    //---- the new trajectory (trajectoryRH) should have the same momentum (at IP) as 
-    //---- the old one (trajectorySeg)
- 
-    //    bool radX0CorrectionMode_ = false; // we shoudl not need that here
-    //if (radX0CorrectionMode_ ){
-    //} else {
 
-    tSOSDest = propagator()->propagate(ftsStart, layer->surface());
-    if (tSOSDest.isValid()){
-      //---- start next step ("adding" measurement) from the last TSOS
-      ftsStart = *tSOSDest.freeState();
-    } else{
-      //std::cout<<"... not valid TSOS"<<std::endl;
-      chi2_loc = 9999999999.;
-      break;
-    }
-    getFromFTS(ftsStart, p3_propagated, r3_propagated, charge, cov_propagated);
-
-    // this shoudl not be needed here
-    /*
-    GlobalPoint globPos = muonRecHit->globalPosition();
-
-    LocalPoint locHitPos = muonRecHit->localPosition();
-    LocalError locHitErr = muonRecHit->localPositionError();
-    const GlobalPoint globPropPos(r3_propagated.x(), r3_propagated.y(), r3_propagated.z());
-    LocalPoint locPropPos = layer->toLocal(globPropPos);
-
-    //
-    //---- chi2 calculated in local system; correlation taken into accont
-    HepMatrix dist(1,2);//, distT(2,1);
-    double  chi2_intermed = -9;
-    int ierr = 0;
-    dist(1,1) = locPropPos.x() - locHitPos.x();
-    dist(1,2) = locPropPos.y() - locHitPos.y();
-    HepMatrix IC(2,2);
-    IC(1,1) = locHitErr.xx();
-    IC(2,1) = locHitErr.xy();
-    IC(2,2) = locHitErr.yy();
-    IC(1,2) = IC(2,1);
-    
-    //---- Invert covariance matrix
-    //std::cout<<" before convert IC = "<<IC<<std::endl;
-    IC.invert(ierr);
-    //std::cout<<" after convert IC = "<<IC<<std::endl;
-    if (ierr != 0) {
-      //std::cout << "failed to invert covariance matrix (2x2) =\n" << IC << std::endl;;
-    }
-    chi2_intermed = pow(dist(1,1),2.)*IC(1,1) + 2.*dist(1,1)*dist(1,2)*IC(1,2) + pow(dist(1,2),2.)*IC(2,2);
-    //std::cout<<" chi_intermed = "<<chi2_intermed<<" IC(1,1) = "<<IC(1,1)<<" IC(1,2) = "<<IC(1,2)<<" IC(2,2) = "<<IC(2,2)<<std::endl;
-    //std::cout<<" r3_propagated = "<<r3_propagated<<" globPos = "<<globPos<<std::endl;
-    //std::cout<<" p3_propagated = "<<p3_propagated<<std::endl;
-    //std::cout" chi2_intermed = "<<std::endl;
-    if(chi2_intermed<0){// should we check?
-      chi2_intermed = 9999999999.;
-    }
-    chi2_loc += chi2_intermed;
-    */
-    //build the new trajectory 
-    double chi2_intermed = - 1;// not needed here; an actual fit will follow
-    TrajectoryMeasurement thisTrajMeasurement( tSOSDest,
-					       muonRecHit,
-					       chi2_intermed,
-					       detLayer);
-  
-    trajectoryRH.push(thisTrajMeasurement,
-		      chi2_intermed);
-  }
   return success; // check validTSOS?
 }
 

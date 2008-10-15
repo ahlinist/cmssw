@@ -57,12 +57,7 @@ struct sorter{
 using namespace edm;
 using namespace std;
 
-//SETMuonProducer::SETMuonProducer(const ParameterSet& par, 
-//								 const MuonServiceProxy* service):theService(service){
-
 SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
-
-
 
   const string metname = "Muon|RecoMuon|SETMuonSeed";  
   std::cout<<" The SET SEED"<<std::endl;
@@ -100,15 +95,10 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
   // load pT seed parameters
   thePtExtractor = new PtExtractor(trajectoryBuilderParameters);
 
-  useBWLightFit = trajectoryBuilderParameters.getParameter<bool>("UseBWLightFit");
-
   apply_prePruning = trajectoryBuilderParameters.getParameter<bool>("Apply_prePruning");
 
   useRPCs = filterPSet.getParameter<bool>("EnableRPCMeasurement");
 
-  // problem...
-  // std::string BWLightFitterName = par.getParameter<string>("BWLightFitterName");
-  //filterPSet.addParameter<string>("BWLightFitterName", BWLightFitterName);
 
   //----
 
@@ -144,32 +134,32 @@ void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSet
   setEvent(event);
 
   //SETTrajectoryBuilder trajBuilder(trajectoryBuilderParameters,theService);
-  std::vector<Trajectory*> traj = trajectories(event);
+  //std::vector<Trajectory*> traj = trajectories(event);
+  std::vector < std::pair <TrajectoryStateOnSurface , 
+    TransientTrackingRecHit::ConstRecHitContainer > > setMeasurementContainer = trajectories(event);
 
-  for(unsigned int iTraj = 0;iTraj<traj.size();++iTraj){
+  for(unsigned int iTraj = 0;iTraj<setMeasurementContainer.size();++iTraj){
     edm::OwnVector<TrackingRecHit> recHitsContainer;
-    for(uint iHit = 0;iHit <traj.at(iTraj)->recHits().size();++iHit){
+    for(uint iHit = 0;iHit <setMeasurementContainer.at(iTraj).second.size();++iHit){
       //const TrackingRecHit *rh = traj.at(iTraj)->recHits().at(iHit)->hit(); 
-      recHitsContainer.push_back(traj.at(iTraj)->recHits().at(iHit)->hit()->clone());
+      recHitsContainer.push_back(setMeasurementContainer.at(iTraj).second.at(iHit)->hit()->clone());
       //recHitsContainer.push_back(*rh);
     }
-    TrajectoryStateOnSurface firstTSOS = traj.at(iTraj)->firstMeasurement().forwardPredictedState(); 
-     PropagationDirection dir = traj.at(iTraj)->direction();
+    TrajectoryStateOnSurface firstTSOS = setMeasurementContainer.at(iTraj).first; 
+    //PropagationDirection dir = traj.at(iTraj)->direction();
+     PropagationDirection dir = oppositeToMomentum;
      TrajectoryStateTransform tsTransform;
        PTrajectoryStateOnDet *seedTSOS =
-      tsTransform.persistentState( firstTSOS, traj.at(iTraj)->firstMeasurement().recHit()->geographicalId().rawId());
+      tsTransform.persistentState( firstTSOS, setMeasurementContainer.at(iTraj).second.at(0)->geographicalId().rawId());
     TrajectorySeed seed(*seedTSOS,recHitsContainer,dir);    
     //output->push_back(traj.at(iTraj)->seed());
     output->push_back(seed);
     TrajectorySeed::range range = seed.recHits();
     std::cout<<" firstTSOS = "<<debug.dumpTSOS(firstTSOS)<<std::endl;
     std::cout<<" iTraj = "<<iTraj<<" hits = "<<range.second-range.first<<std::endl;
-    std::cout<<" nhits = "<<traj.at(iTraj)->foundHits()<<" nmeas = "<<traj.at(iTraj)->measurements().size()<<" nrh = "<<traj.at(iTraj)->recHits().size()<<std::endl;
-    if(traj.at(iTraj)->foundHits()!=int(traj.at(iTraj)->measurements().size())){
-      std::cout<<" HITS DON'T MATCH!!!"<<std::endl;
-    }
-    for(unsigned int iRH=0;iRH<traj.at(iTraj)->recHits().size();++iRH){
-      std::cout<<" RH = "<<iRH+1<<" globPos = "<<traj.at(iTraj)->recHits().at(iRH)->globalPosition()<<std::endl;
+    std::cout<<" nhits = "<<setMeasurementContainer.at(iTraj).second.size()<<std::endl;
+    for(unsigned int iRH=0;iRH<setMeasurementContainer.at(iTraj).second.size();++iRH){
+      std::cout<<" RH = "<<iRH+1<<" globPos = "<<setMeasurementContainer.at(iTraj).second.at(iRH)->globalPosition()<<std::endl;
     }
     //std::vector<TrajectoryMeasurement>  tm =  traj.at(iTraj)->measurements();
      //TransientTrackingRecHit::ConstRecHitContainer    
@@ -179,18 +169,26 @@ void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSet
   event.put(output);
 }
 //SETMuonProducer::TrajectoryContainer
-TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
+//TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
+std::vector < std::pair <TrajectoryStateOnSurface, 
+			 TransientTrackingRecHit::ConstRecHitContainer > >  
+SETMuonProducer::trajectories(const edm::Event& event){
+
   //void SETMuonProducer::produce(const edm::Event& event, const edm::EventSetup& eSetup){
 
   const std::string metname = "Muon|RecoMuon|SETMuonProducer";
   MuonPatternRecoDumper debug;
 
   // the trajectory container. 
-  TrajectoryContainer trajectoryContainer;
+  //TrajectoryContainer trajectoryContainer;
+  std::vector < std::pair <TrajectoryStateOnSurface , 
+    TransientTrackingRecHit::ConstRecHitContainer > > setMeasurementsContainer;
 
-  TrajectorySeed fakeSeed;
-  PropagationDirection dir = alongMomentum;
-  Trajectory trajectoryFW(fakeSeed, dir);
+  std::vector < TrajectoryMeasurement > trajectoryMeasurementsFW;
+
+  //TrajectorySeed fakeSeed;
+  //PropagationDirection dir = alongMomentum;
+  //Trajectory trajectoryFW(fakeSeed, dir);
 
 
   bool fwFitFailed = true;
@@ -363,14 +361,14 @@ TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
       //fwFitFailed = !(filter()->refit(seedSets_inCluster, trajectoryNew));
 
       //---- this is the forward fitter (segments)
-      fwFitFailed = !(filter()->fwfit_SET(seedSets_inCluster, trajectoryFW));
+      fwFitFailed = !(filter()->fwfit_SET(seedSets_inCluster, trajectoryMeasurementsFW));
       //std::cout<<"after refit : fwFitFailed = "<<fwFitFailed<<std::endl;
       //trajectoryFW = trajectoryNew;
 
     // has the fit failed? continue to the next cluster instead of returning the empty trajectoryContainer and stop the loop IBL 080903
-    if(fwFitFailed || !trajectoryFW.lastMeasurement().forwardPredictedState().isValid()) continue;
+    if(fwFitFailed || !trajectoryMeasurementsFW.at(trajectoryMeasurementsFW.size()-1).forwardPredictedState().isValid()) continue;
 
-    TrajectoryStateOnSurface tsosAfterRefit = trajectoryFW.lastMeasurement().forwardPredictedState();
+    //TrajectoryStateOnSurface tsosAfterRefit = trajectoryMeasurementsFW.at(trajectoryMeasurementsFW.size()-1).forwardPredictedState();
 
       // are there measurements (or detLayers) used at all?
       if( filter()->layers().size() )
@@ -382,55 +380,24 @@ TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
       //---- ask for some "reasonable" conditions to build a STA muon; 
       //---- (totalChambers >= 2, dtChambers + cscChambers >0)
       if (filter()->goodState()) {
-	Trajectory trajectoryBW;
+	TransientTrackingRecHit::ConstRecHitContainer hitContainer;
+	TrajectoryStateOnSurface firstTSOS;
+	//std::pair < TrajectoryStateOnSurface tSOSDest, 
+	//TransientTrackingRecHit::ConstRecHitContainer > & seedContainer);
+	//Trajectory trajectoryBW;
 	// transforms trajectoryFW (segments) to trajectoryBW (rechits)
-	bool conversionPassed = filter()->transform(trajectoryFW, trajectoryBW);
+	//bool conversionPassed = filter()->transform(trajectoryFW, trajectoryBW);
+	bool conversionPassed = filter()->transform(trajectoryMeasurementsFW, hitContainer, firstTSOS);
 	//---- below is a "light" backward fit, i.e. it is a Kalman fit over the rechits
 	//---- contained in the segments used in the forward fit 
-	if ( !trajectoryFW.empty() && !trajectoryBW.empty() ) {
-	  if ( useBWLightFit){
-	    TrajectoryStateTransform tsTransform1;
-	    PTrajectoryStateOnDet *seedTSOS =
-	      tsTransform1.persistentState( trajectoryBW.firstMeasurement().forwardPredictedState(), trajectoryBW.firstMeasurement().recHit()->geographicalId().rawId());	  
-	    edm::OwnVector<TrackingRecHit> recHitsContainer;
-	    PropagationDirection seedDirection = oppositeToMomentum;
-	    TrajectorySeed bwFit(*seedTSOS,recHitsContainer,seedDirection);
-	    
-	    TransientTrackingRecHit::ConstRecHitContainer trajRH1 = trajectoryBW.recHits();
-	    TrajectoryStateOnSurface firstTsos1 = trajectoryBW.firstMeasurement().forwardPredictedState();
-	    //---- this is the backward fitter (rechits)
-	    //pair<bool,Trajectory> refitResult = refitter()->bwfit_SET(bwFit, trajRH1, firstTsos1);
-	    //	  if ( useBWLightFit){
-	    pair<bool,Trajectory> refitResult = filter()->bwfit_SET(bwFit, trajRH1, firstTsos1);
-	    
-	    // has the fitter performed well??
-	    if(refitResult.first){
-	      Trajectory::DataContainer measurements_segments = refitResult.second.measurements();
-	      trajectoryContainer.push_back(new Trajectory(refitResult.second));
-	      //             // Print information about the current traj for comparison
-	      //std::cout<<" number of rechits in the trajectory: "<<refitResult.second.recHits().size()<<std::endl;
-	      //for(uint iHit = 0;iHit <refitResult.second.recHits().size();++iHit){
-	      //const TrackingRecHit *rh = refitResult.second.recHits().at(iHit)->hit(); 
-	      //               recHitsContainer.push_back(refitResult.second.recHits().at(iHit)->hit()->clone());
-	      //               //recHitsContainer.push_back(*rh);
-	      //std::cout<<" iHit = "<<iHit<<" globPos = "<<refitResult.second.recHits().at(iHit)->globalPosition()<<std::endl;
-	      //}
-	      //             std::cout<<" trajectory first measurement direction: eta / phi = "<<
-	      //               refitResult.second.firstMeasurement().forwardPredictedState().globalDirection().eta()<<// updated state?
-	      //               "/"<< refitResult.second.firstMeasurement().forwardPredictedState().globalDirection().phi()<<std::endl; // updated state?
-	      //             std::cout<<" trajectory last measurement direction: eta / phi = "<<
-	      //               refitResult.second.lastMeasurement().forwardPredictedState().globalDirection().eta()<<// updated state?
-	      //               "/"<< refitResult.second.lastMeasurement().forwardPredictedState().globalDirection().phi()<<std::endl; // updated state?
-	      //             std::cout<<" trajectory propagation Direction : "<<refitResult.second.direction()<<std::endl;     
-	    }
-	    else{
-	      std::cout<<" BWLight fit failed... using initial trajectory..."<<std::endl;
-	      trajectoryContainer.push_back(new Trajectory(trajectoryBW));
-	    }
-	  }
-	  else{
-	    trajectoryContainer.push_back(new Trajectory(trajectoryBW));
-	  }
+	if ( trajectoryMeasurementsFW.size() && hitContainer.size()) {
+	  //trajectoryContainer.push_back(new Trajectory(trajectoryBW));
+	  //std::vector < std::pair <TrajectoryStateOnSurface , 
+	  //TransientTrackingRecHit::ConstRecHitContainer > seedPair;//(firstTSOS, hitContainer);
+	  //seedPair = make_pair(firstTSOS, hitContainer);
+	  ////setMeasurementsContainer.push_back(hitContainer);
+	  //setMeasurementsContainer.push_back(seedPair);
+	  setMeasurementsContainer.push_back(make_pair(firstTSOS, hitContainer));
 	}
 	else{
           continue;
@@ -440,7 +407,8 @@ TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
       }
     }
   }
-  return trajectoryContainer;
+  //return trajectoryContainer;
+  return  setMeasurementsContainer;
 }
 
 std::vector< MuonRecHitContainer > 
