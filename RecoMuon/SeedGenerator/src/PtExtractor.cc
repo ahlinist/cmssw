@@ -446,6 +446,7 @@ std::vector<double> PtExtractor::pT_extract(MuonTransientTrackingRecHit::ConstMu
   std::vector<double> pTestimate(2);// 
   if(init_combination!=combination){
     // get the pT havin the chosen hit combination
+    std::cout<<" pt comb = "<<combination<<std::endl;
     pTestimate = getPt(chamberCombination[combination], eta, dPhi); // dPhi has a different meaning 
     //for single segment combination
     if(singleSegment){
