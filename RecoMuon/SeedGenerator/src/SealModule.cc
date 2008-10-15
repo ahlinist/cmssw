@@ -2,8 +2,8 @@
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "RecoMuon/SeedGenerator/src/MuonSeedTester.h"
+#include "RecoMuon/SeedGenerator/src/SETMuonProducer.h"
 
 DEFINE_SEAL_MODULE();
-DEFINE_ANOTHER_FWK_MODULE(MuonSeedTester);
+DEFINE_ANOTHER_FWK_MODULE(SETMuonProducer);
 

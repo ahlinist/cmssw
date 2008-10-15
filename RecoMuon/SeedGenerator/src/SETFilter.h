@@ -72,7 +72,7 @@ class SETFilter {
                                   const TransientTrackingRecHit::ConstRecHitContainer &,
                                   const TrajectoryStateOnSurface &);
 
-  ///  transforms "segment trajectory" to "rechit trajectory" (SET)
+  ///  transforms "segment trajectory" to "rechit trajectory" (SET) 
   bool transform(Trajectory &trajectorySeg, Trajectory &trajectoryRH);
 
   void reset();

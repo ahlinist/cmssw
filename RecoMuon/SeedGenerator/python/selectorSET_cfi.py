@@ -6,7 +6,7 @@ from RecoMuon.TrackingTools.MuonServiceProxy_cff import *
 #from RecoMuon.MuonSeedGenerator.ptSeedParameterization_cfi import *
 from RecoMuon.MuonSeedGenerator.ptSeedParameterization_38T_cfi import *
 #MuonSeedTester  = cms.EDProducer("MuonSeedTester",
-MuonSeedTester  = cms.EDFilter("MuonSeedTester",
+SETMuonSeed  = cms.EDFilter("SETMuonProducer",
 #selectorSET = cms.EDProducer("SETProducer",
     MuonServiceProxy,
     SETTrajBuilderParameters = cms.PSet(
