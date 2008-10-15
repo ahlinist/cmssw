@@ -4,7 +4,6 @@
 /** \class SETMuonProducer 
   */
 
-
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
@@ -52,8 +51,10 @@ class SETMuonProducer : public edm::EDProducer {
   
   
   // Returns a vector of the reconstructed trajectories (SET) 
-  TrajectoryContainer trajectories(const edm::Event&);
-  
+  //TrajectoryContainer trajectories(const edm::Event&);
+  std::vector < std::pair < TrajectoryStateOnSurface, 
+    TransientTrackingRecHit::ConstRecHitContainer > > trajectories(const edm::Event&);
+
   /// pre-filter
   SETFilter* filter() const {return theFilter;}
   

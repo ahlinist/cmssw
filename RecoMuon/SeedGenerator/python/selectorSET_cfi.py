@@ -11,8 +11,6 @@ SETMuonSeed  = cms.EDFilter("SETMuonProducer",
     MuonServiceProxy,
     SETTrajBuilderParameters = cms.PSet(
         ptSeedParameterization, 
-#        UseBWLightFit = cms.bool(True),
-        UseBWLightFit = cms.bool(False),
         Apply_prePruning = cms.bool(True),
         EnableRPCMeasurement = cms.bool(True),
         FilterParameters = cms.PSet(

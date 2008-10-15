@@ -28,6 +28,9 @@
 #include "RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 
+
+//typedef std::pair < TrajectoryStateOnSurface tSOSDest, TransientTrackingRecHit::ConstRecHitContainer > seedBase;
+
 // used in the SET algorithm
 struct seedSet{
   MuonTransientTrackingRecHit::MuonRecHitContainer theSet;
@@ -65,15 +68,15 @@ class SETFilter {
   TrajectoryStateOnSurface lastUpdatedTSOS() const {return theLastUpdatedTSOS;}
 
   /// Perform the SET inner-outward fitting
-  bool fwfit_SET( std::vector < seedSet> & validSegmentsSet, Trajectory &trajectory);
+  //bool fwfit_SET( std::vector < seedSet> & validSegmentsSet, Trajectory &trajectory);
+  bool fwfit_SET( std::vector < seedSet> & validSegmentsSet,
+                  std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet);
 
-  /// Perform the SET outward-inner fitting
-  std::pair<bool,Trajectory> bwfit_SET(const TrajectorySeed &,
-                                  const TransientTrackingRecHit::ConstRecHitContainer &,
-                                  const TrajectoryStateOnSurface &);
 
   ///  transforms "segment trajectory" to "rechit trajectory" (SET) 
-  bool transform(Trajectory &trajectorySeg, Trajectory &trajectoryRH);
+  //bool transform(Trajectory &trajectorySeg, Trajectory &trajectoryRH);
+  bool transform(Trajectory::DataContainer &measurements_segments,
+                 TransientTrackingRecHit::ConstRecHitContainer & hitContainer, TrajectoryStateOnSurface & firstTSOS);
 
   void reset();
 

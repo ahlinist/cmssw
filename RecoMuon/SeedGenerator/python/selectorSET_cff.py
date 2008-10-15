@@ -7,7 +7,7 @@ from RecoMuon.DetLayers.muonDetLayerGeometry_cfi import *
 #import TrackingTools.TrackFitters.KFTrajectoryFitterESProducer_cfi
 #KFTrajectoryFitterForSTA = TrackingTools.TrackFitters.KFTrajectoryFitterESProducer_cfi.KFTrajectoryFitter.clone()
 # Stand Alone Muons Producer
-from RecoMuon.SETSeedGenerator.selectorSET_cfi import *
+from RecoMuon.SeedGenerator.selectorSET_cfi import *
 
 
 
