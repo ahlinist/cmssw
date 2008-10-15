@@ -92,7 +92,9 @@ SETFilter::~SETFilter(){
   
 }
 
-
+void SETFilter::setEvent(const Event& event){
+  //  theMeasurementExtractor->setEvent(event);
+}
 
 void SETFilter::reset(){
   totalChambers = dtChambers = cscChambers = rpcChambers = 0;
@@ -102,9 +104,6 @@ void SETFilter::reset(){
   theDetLayers.clear();
 }
 
-void SETFilter::setEvent(const Event& event){
-  //  theMeasurementExtractor->setEvent(event);
-}
 
 const Propagator* SETFilter::propagator() const {
   return &*theService->propagator(thePropagatorName);

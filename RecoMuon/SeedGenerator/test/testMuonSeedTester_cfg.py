@@ -1,14 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("RecoMuon")
+process = cms.Process("MuonSeedTesterTest")
+
 # Messages
-#process.load("RecoMuon.Configuration.MessageLogger_cfi")
-#process.load("FWCore.MessageService.MessageLogger_cfi")
 
-# Muon Reco
-process.load("RecoLocalMuon.Configuration.RecoLocalMuon_cff")
-
-process.load("RecoMuon.Configuration.RecoMuon_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+ 
+process.load("RecoMuon.Configuration.MessageLogger_cfi")
 
 process.load("Configuration.StandardSequences.Services_cff")
 
@@ -18,24 +16,32 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
-process.load("Configuration.StandardSequences.RawToDigi_cff")
+process.load("RecoMuon.SeedGenerator.selectorSET_cff")
+#process.load("RecoMuon.MuonSeedGenerator.standAloneMuonSeeds_cff")
 
-process.load("Configuration.StandardSequences.Reconstruction_cff")
+#process.load("RecoMuon.TrackingTools.MuonServiceProxy_cff")
 
-process.MuonNumberingInitialization = cms.ESProducer("MuonNumberingInitialization")
-
+#from RecoMuon.TrackingTools.MuonServiceProxy_cff import *
+#from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import *
 
 process.source = cms.Source("PoolSource",
-#                           fileNames = cms.untracked.vstring('/store/relval/CMSSW_2_1_9/RelValSingleMuPt10/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/2A00EECC-A185-DD11-93A9-000423D9517C.root')
-                            fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/s/stoyan/mc/ingo/cmssw2_1_9-mumin_e_60_300_probev2__1.root')
-                            )
+    fileNames = cms.untracked.vstring(
+#    'file:muplus_e_60_300_probev2__24.root'
+    'file:/uscms/home/ibloch/SAMu5_2_1_4/CMSSW_2_1_4/src/RecoMuon/SeedGenerator//test/800D44DB-2A6C-DD11-9BD6-000423D99EEE.root'
+    )
+)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
+
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('RecoMuons.root')
+                               fileName = cms.untracked.string('TESTSeedTester.root')
                                )
+
+#process.MuonSeedTesterLabel = cms.EDProducer("MuonSeedTester",
+#  //  MuonServiceProxy
+#)
 
 process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
     DataType = cms.untracked.string('SimData'),
@@ -45,10 +51,7 @@ process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
 )
 
 
-#process.p = cms.Path(process.MuonSeed*process.standAloneMuons)
 process.p = cms.Path(process.MuonSeedTester*process.standAloneMuons*process.STAMuonAnalyzer)
+#process.p = cms.Path(process.MuonSeedTester)
 #process.this_is_the_end = cms.EndPath(process.out)
-
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
-
-
+process.GlobalTag.globaltag = 'IDEAL_V6::All'
