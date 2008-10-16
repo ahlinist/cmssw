@@ -11,6 +11,7 @@
 #include "ElectroWeakAnalysis/EWKTau/interface/DiscriminationByMassWithElec.h"
 #include "ElectroWeakAnalysis/EWKTau/interface/TauVetoFilter.h"
 #include "ElectroWeakAnalysis/EWKTau/interface/PATLeptonPATMetDelPhiSelector.h"
+#include "ElectroWeakAnalysis/EWKTau/interface/PATLeptonPFParticleIsolationSelector.h"
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(MuonFilter);
@@ -22,5 +23,6 @@ DEFINE_ANOTHER_FWK_MODULE(DiscriminationByLdgTrackProd);
 DEFINE_ANOTHER_FWK_MODULE(DiscriminationByMassWithElec);
 DEFINE_ANOTHER_FWK_MODULE(TauVetoFilter);
 DEFINE_ANOTHER_FWK_MODULE(PATLeptonPATMetDelPhiSelector);
+DEFINE_ANOTHER_FWK_MODULE(PATLeptonPFParticleIsolationSelector);
 //DEFINE_ANOTHER_FWK_MODULE(WToTauNuFilter);
 
