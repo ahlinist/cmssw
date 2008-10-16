@@ -13,7 +13,7 @@
 //
 // Original Author:  Alfredo Gurrola
 //         Created:  Wed Oct 15 21:33:34 CEST 2008
-// $Id$
+// $Id: PATLeptonPATMetDelPhiSelector.cc,v 1.1 2008/10/16 10:11:54 gurrola Exp $
 //
 //
 
@@ -65,7 +65,7 @@ void PATLeptonPATMetDelPhiSelector::produce(edm::Event& iEvent, const edm::Event
 
     iEvent.put(pOut);
 
-  } else {
+  } else if(LeptonType_ == "Electron") {
     Handle<View<pat::Electron> > leptonHandle;
     iEvent.getByLabel(src_,leptonHandle);
     View<pat::Electron> leptons = *leptonHandle;
@@ -89,6 +89,10 @@ void PATLeptonPATMetDelPhiSelector::produce(edm::Event& iEvent, const edm::Event
 
     iEvent.put(pOut);
 
+  } else {
+    std::cerr << "Incorrect Lepton Type!!! " << std::endl;
+    std::cerr << "Please re-run and set the LeptonType to 'Muon' or 'Electron' " << std::endl;
+    return;
   }
  
 }
