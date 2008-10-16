@@ -331,9 +331,20 @@ bool MadGraphSource::produce(Event & e) {
     call_pyevnt();      // generate one event with Pythia
     call_pyhepc( 1 );
     edm::LogWarning("Generator|MadGraph")<<"skipping LHE event "<<lhe_event_counter_;
+    if(hepeup_.nup==0)
+    {
+    edm::LogInfo("Generator|MadGraph")<<
+    "The interface signalled end of Les Houches file. Apparently, firstEvent setting is greater than the number of LHE events. Finishing event processing here.";
+    return false; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
+    }
   }
     
   call_pyevnt();      // generate one event with Pythia
+
+  if(hepeup_.nup==0){
+    edm::LogInfo("Generator|MadGraph")<<"The interface signalled end of Les Houches file. Finishing event processing here.";
+    return false; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
+  }
 
     if ( useTauola_ ) {
       tauola_.processEvent();
@@ -376,11 +387,12 @@ bool MadGraphSource::produce(Event & e) {
     }
   }
 
+/*
   if(hepeup_.nup==0){
     edm::LogInfo("Generator|MadGraph")<<"The interface signalled end of Les Houches file. Finishing event processing here.";
     return false; // finish event processing if variable nup from common block HEPEUP set to 0 in ME2Pythia.f
   }
-
+*/
   if(evt)  bare_product->addHepMCData(evt );
   e.put(bare_product);
   return true;
