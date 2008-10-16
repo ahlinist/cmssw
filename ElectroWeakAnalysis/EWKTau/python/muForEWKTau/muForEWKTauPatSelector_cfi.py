@@ -9,7 +9,7 @@ import FWCore.ParameterSet.Config as cms
 
 selectKinMuForEWKTau = cms.EDFilter("PATMuonSelector",
      src = cms.InputTag("allLayer1MuForEWKTau"),
-     cut = cms.string('pt > 10. & abs(eta) < 2.5 & & abs(dxy)<0.02')
+     cut = cms.string('pt > 10. & abs(eta) < 2.5')
 )
 
 #####################HLT#############################
