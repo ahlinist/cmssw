@@ -42,7 +42,8 @@ class TauVetoFilter : public edm::EDFilter {
   edm::InputTag pfTauTag_;
   edm::InputTag caloTauTag_;
   edm::InputTag patTauTag_;
-  double maxEt_,minEt_;
+  double minEt_;
+  int nMax_;
   std::string type_;
   
 
