@@ -55,6 +55,7 @@ namespace edm {
 
   std::auto_ptr<Event>
   RawInputSource::makeEvent(RunNumber_t run, LuminosityBlockNumber_t lumi, EventNumber_t event, Timestamp const& tstamp) {
+    EventSourceSentry sentry(*this);
     EventAuxiliary eventAux(EventID(run, event),
       processGUID(), tstamp, lumi, true, EventAuxiliary::Data);
     ep_ = std::auto_ptr<EventPrincipal>(
