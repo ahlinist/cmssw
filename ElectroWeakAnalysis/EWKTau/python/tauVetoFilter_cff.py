@@ -5,6 +5,7 @@ PfTauTag = cms.InputTag(""),
 CaloTauTag = cms.InputTag(""),
 PatTauTag = cms.InputTag(""),
 MinEtCut = cms.double(20.),
-MaxEtCut = cms.double(5.)
+MaxNCut = cms.double(1.),
+Type = cms.string("Pf")
 )     
 
