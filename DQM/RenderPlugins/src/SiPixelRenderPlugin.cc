@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.5 $
-  \date $Date: 2008/08/22 11:52:02 $
+  \version $Revision: 1.6 $
+  \date $Date: 2008/09/04 10:41:01 $
 */
 
 #include "TProfile2D.h"
@@ -95,6 +95,8 @@ void SiPixelRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) 
   } else {
    gPad->SetLogy(0);
   }
+  
+  if( o.name.find( "adcCOMB" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogy(1);
 
 }
 
