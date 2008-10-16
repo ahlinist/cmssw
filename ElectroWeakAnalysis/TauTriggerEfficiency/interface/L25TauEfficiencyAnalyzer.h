@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.4 2008/10/15 11:58:39 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.5 2008/10/15 18:25:59 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -39,12 +39,6 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       TFile* l25file;
       TTree* l25tree;
       float tauPt;
-      float tauInvPt;
-      float tauInvPt1;
-      float tauInvPt3;
-      float tauInvPtm;
-      float tauInvPtm1;
-      float tauInvPtm3;
       float tauEt;
       float tauEta;
       float tauPhi;
@@ -55,14 +49,10 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       float l25Phi;
       float l25Eta;
       float l25Pt;
-      float l25PtCut;
-      float l25InvPt;
-      float l25InvPt1;
-      float l25InvPt3;
-      float l25Iso;
       float l25TjDR;
       float l25TrkQPx;
       int   l25Depth;
+      int   leadDepth;
       float minDR;
       float bareEt;
       double matchingCone;
