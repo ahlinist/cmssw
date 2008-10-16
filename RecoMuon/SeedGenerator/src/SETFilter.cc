@@ -53,31 +53,10 @@ using namespace std;
 
 SETFilter::SETFilter(const ParameterSet& par,
 					       const MuonServiceProxy* service)
-:theService(service),
- theOverlappingChambersFlag(true)
+  :theService(service)//,
+ //theOverlappingChambersFlag(true)
 {
-  // Fit direction
-  string fitDirectionName = par.getParameter<string>("FitDirection");
-
-  if (fitDirectionName == "insideOut" ) theFitDirection = insideOut;
-  else if (fitDirectionName == "outsideIn" ) theFitDirection = outsideIn;
-  else 
-    throw cms::Exception("SETFilter constructor") 
-      <<"Wrong fit direction chosen in SETFilter::SETFilter ParameterSet"
-      << "\n"
-      << "Possible choices are:"
-      << "\n"
-      << "FitDirection = insideOut or FitDirection = outsideIn";
-  
-
-  // Measurement Extractor: enable the measure for each muon sub detector
-  bool enableDTMeasurement = par.getParameter<bool>("EnableDTMeasurement");
-  bool enableCSCMeasurement = par.getParameter<bool>("EnableCSCMeasurement");
-  bool enableRPCMeasurement = par.getParameter<bool>("EnableRPCMeasurement");
-  
   thePropagatorName = par.getParameter<string>("Propagator");
-
-  //----
 }
 
 SETFilter::~SETFilter(){
@@ -88,7 +67,6 @@ SETFilter::~SETFilter(){
 }
 
 void SETFilter::setEvent(const Event& event){
-  //  theMeasurementExtractor->setEvent(event);
 }
 
 void SETFilter::reset(){
@@ -119,13 +97,7 @@ void SETFilter::incrementChamberCounters(const DetLayer *layer){
   totalChambers++;
 }
 
-
-//---- SET below
-
-
 //---- the SET FW-fitter
-//bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
-//			     Trajectory &trajectory){ 
 bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
 			   std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet){
   // this is the SET algorithm fit
@@ -136,6 +108,7 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
   //---- so std::vector < seedSet> consists of "valid" combinations (sets) within a "cluster"
   //---- "seed" above has nothing to do with the "Seed" in the STA code
  
+  // a trajectory is not really build but a TSOS is build and is checked (below)
   bool validTrajectory = true;
   std::vector <double> chi2AllCombinations(validSegmentsSet.size());
   std::vector < TrajectoryStateOnSurface > lastUpdatedTSOS_Vect(validSegmentsSet.size());
@@ -163,10 +136,7 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
      theBestCandidate->trajectoryMeasurementsInTheSet.back().forwardPredictedState().isValid()){
     // loop over all measurements in the set
     for(unsigned int iMeas =0; iMeas<theBestCandidate->trajectoryMeasurementsInTheSet.size();++iMeas){
-      // bild a trajectory
-      //trajectory.push(theBestCandidate->trajectoryMeasurementsInTheSet[iMeas],
-      //              theBestCandidate->trajectoryMeasurementsInTheSet[iMeas].estimate());
-
+      // strore the measurements 
       trajectoryMeasurementsInTheSet.push_back(theBestCandidate->trajectoryMeasurementsInTheSet[iMeas]);
       const DetLayer *layer = theBestCandidate->trajectoryMeasurementsInTheSet[iMeas].layer();
 
@@ -186,18 +156,12 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
   return validTrajectory;
 }
 
-
-
-//bool SETFilter::transform(Trajectory &trajectorySeg,
-//			     Trajectory &trajectoryRH){
 bool SETFilter::transform(Trajectory::DataContainer &measurements_segments, 
 			  TransientTrackingRecHit::ConstRecHitContainer & hitContainer, 
 			  TrajectoryStateOnSurface & firstTSOS){
 // transforms "segment trajectory" to "rechit trajectory"
 
   bool success = true;
-  //Trajectory::DataContainer measurements_segments = trajectorySeg.measurements();
-  //TransientTrackingRecHit::ConstRecHitContainer hitContainer;
   // loop over all segments in the trajectory
   for(int iMeas = measurements_segments.size() - 1; iMeas>-1;--iMeas){
     TransientTrackingRecHit ::ConstRecHitContainer sortedHits;
@@ -235,18 +199,13 @@ bool SETFilter::transform(Trajectory::DataContainer &measurements_segments,
   TrajectoryStateOnSurface tSOSDest;
   // get the last rechit TSOS
   tSOSDest = propagator()->propagate(ftsStart, layer_last->surface());
-  //seedBase thePair(tSOSDest, hitContainer);
-  //seedContainer make_pair(tSOSDest, hitContainer);
-  //seedContainer = thePair;
   firstTSOS = tSOSDest;
   // ftsStart should be at the last rechit surface
   if (!tSOSDest.isValid()){
     success = false;
     //     ftsStart = *tSOSDest.freeState();
   }
-
-
-  return success; // check validTSOS?
+  return success; 
 }
 
 void SETFilter::getFromFTS(const FreeTrajectoryState& fts,

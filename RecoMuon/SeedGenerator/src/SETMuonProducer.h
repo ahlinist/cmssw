@@ -50,8 +50,7 @@ class SETMuonProducer : public edm::EDProducer {
  private:
   
   
-  // Returns a vector of the reconstructed trajectories (SET) 
-  //TrajectoryContainer trajectories(const edm::Event&);
+  // Returns a vector of measurements sets (for later trajectory seed building)
   std::vector < std::pair < TrajectoryStateOnSurface, 
     TransientTrackingRecHit::ConstRecHitContainer > > trajectories(const edm::Event&);
 
@@ -85,12 +84,12 @@ class SETMuonProducer : public edm::EDProducer {
  
   //---- SET
   PtExtractor* thePtExtractor;
-  bool useBWLightFit;
   bool apply_prePruning;
   bool useRPCs;
-  std::map <DetId, int> nSegInChamber;
-  //----
-  std::vector<edm::InputTag> theSeedCollectionLabels;
+
+  edm::InputTag DTRecSegmentLabel;
+  edm::InputTag CSCRecSegmentLabel;
+  edm::InputTag RPCRecSegmentLabel;
 
   MuonServiceProxy *theService;
 };
