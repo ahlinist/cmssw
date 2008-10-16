@@ -68,13 +68,11 @@ class SETFilter {
   TrajectoryStateOnSurface lastUpdatedTSOS() const {return theLastUpdatedTSOS;}
 
   /// Perform the SET inner-outward fitting
-  //bool fwfit_SET( std::vector < seedSet> & validSegmentsSet, Trajectory &trajectory);
   bool fwfit_SET( std::vector < seedSet> & validSegmentsSet,
                   std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet);
 
 
   ///  transforms "segment trajectory" to "rechit trajectory" (SET) 
-  //bool transform(Trajectory &trajectorySeg, Trajectory &trajectoryRH);
   bool transform(Trajectory::DataContainer &measurements_segments,
                  TransientTrackingRecHit::ConstRecHitContainer & hitContainer, TrajectoryStateOnSurface & firstTSOS);
 
@@ -189,7 +187,7 @@ private:
   std::string theBWLightFitterName;
 
   const MuonServiceProxy *theService;
-  bool theOverlappingChambersFlag;
+  //bool theOverlappingChambersFlag;
 };
 #endif
 

@@ -5,7 +5,6 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeed.h"
-//#include "DataFormats/TrajectorySeed/interface/TrajectorySeed.h"
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
 #include "DataFormats/TrajectoryState/interface/PTrajectoryStateOnDet.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
@@ -14,7 +13,6 @@
 #include "RecoMuon/SeedGenerator/src/SETFilter.h"
 
 #include "RecoMuon/TrackingTools/interface/MuonPatternRecoDumper.h"
-//#include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "RecoMuon/Navigation/interface/DirectMuonNavigation.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -30,7 +28,6 @@
 #include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"            
 #include "DataFormats/CSCRecHit/interface/CSCSegmentCollection.h"             
 #include "DataFormats/RPCRecHit/interface/RPCRecHitCollection.h"                
-//#include "RecoMuon/CosmicMuonProducer/interface/CosmicMuonUtilities.h"
 
 #include "TMath.h"
 
@@ -61,8 +58,6 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
 
   const string metname = "Muon|RecoMuon|SETMuonSeed";  
   std::cout<<" The SET SEED"<<std::endl;
-  //  theSeedCollectionLabels = parameterSet.getParameter<vector<InputTag> >("SeedCollections");
-  //  useRPCs = filterPSet.getParameter<bool>("EnableRPCMeasurement"); /// yes yes... I am not sure if we really want to create the rechit collection in the producer, or call the stuff later in the actual finder routine.
 
   ParameterSet serviceParameters = parameterSet.getParameter<ParameterSet>("ServiceParameters");
   theService        = new MuonServiceProxy(serviceParameters);
@@ -70,28 +65,12 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
   // Parameter set for the Builder
   ParameterSet trajectoryBuilderParameters = parameterSet.getParameter<ParameterSet>("SETTrajBuilderParameters");
 
-  // instantiate the concrete trajectory builder in the Track Finder
-  //theTrackFinder = new SETTrackFinder(new SETTrajectoryBuilder(trajectoryBuilderParameters,theService));
-  //theTrajBuilder = new SETTrajectoryBuilder(trajectoryBuilderParameters,theService);
-  useRPCs = false;
-
-  LogTrace(metname)<< "SETMuonSeed will Merge the following seed collections:";
-  for(vector<InputTag>::const_iterator label = theSeedCollectionLabels.begin();
-      label != theSeedCollectionLabels.end(); ++label)
-    LogTrace(metname) << *label;
-  
-
-  //const std::string metname = "Muon|RecoMuon|SETMuonProducer";
-  
   LogTrace(metname) << "constructor called" << endl;
-
   
   // The inward-outward fitter (starts from seed state)
   ParameterSet filterPSet = trajectoryBuilderParameters.getParameter<ParameterSet>("FilterParameters");
   theFilter = new SETFilter(filterPSet,theService);
 
-  //---- these are needed for the SET algorithm; the only other object needed is theFilter
- 
   // load pT seed parameters
   thePtExtractor = new PtExtractor(trajectoryBuilderParameters);
 
@@ -99,6 +78,9 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
 
   useRPCs = filterPSet.getParameter<bool>("EnableRPCMeasurement");
 
+  DTRecSegmentLabel  = filterPSet.getParameter<edm::InputTag>("DTRecSegmentLabel");
+  CSCRecSegmentLabel  = filterPSet.getParameter<edm::InputTag>("CSCRecSegmentLabel");
+  RPCRecSegmentLabel  = filterPSet.getParameter<edm::InputTag>("RPCRecSegmentLabel");
 
   //----
 
@@ -115,9 +97,6 @@ SETMuonProducer::~SETMuonProducer(){
   if(theFilter) delete theFilter;
 }
 
-// the SET version
-
-
 void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSetup){
   std::cout<<" start producing..."<<std::endl;  
   const string metname = "Muon|RecoMuon|SETMuonSeed";  
@@ -133,26 +112,20 @@ void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSet
 
   setEvent(event);
 
-  //SETTrajectoryBuilder trajBuilder(trajectoryBuilderParameters,theService);
-  //std::vector<Trajectory*> traj = trajectories(event);
   std::vector < std::pair <TrajectoryStateOnSurface , 
     TransientTrackingRecHit::ConstRecHitContainer > > setMeasurementContainer = trajectories(event);
 
   for(unsigned int iTraj = 0;iTraj<setMeasurementContainer.size();++iTraj){
     edm::OwnVector<TrackingRecHit> recHitsContainer;
     for(uint iHit = 0;iHit <setMeasurementContainer.at(iTraj).second.size();++iHit){
-      //const TrackingRecHit *rh = traj.at(iTraj)->recHits().at(iHit)->hit(); 
       recHitsContainer.push_back(setMeasurementContainer.at(iTraj).second.at(iHit)->hit()->clone());
-      //recHitsContainer.push_back(*rh);
     }
     TrajectoryStateOnSurface firstTSOS = setMeasurementContainer.at(iTraj).first; 
-    //PropagationDirection dir = traj.at(iTraj)->direction();
      PropagationDirection dir = oppositeToMomentum;
      TrajectoryStateTransform tsTransform;
        PTrajectoryStateOnDet *seedTSOS =
       tsTransform.persistentState( firstTSOS, setMeasurementContainer.at(iTraj).second.at(0)->geographicalId().rawId());
     TrajectorySeed seed(*seedTSOS,recHitsContainer,dir);    
-    //output->push_back(traj.at(iTraj)->seed());
     output->push_back(seed);
     TrajectorySeed::range range = seed.recHits();
     std::cout<<" firstTSOS = "<<debug.dumpTSOS(firstTSOS)<<std::endl;
@@ -161,35 +134,21 @@ void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSet
     for(unsigned int iRH=0;iRH<setMeasurementContainer.at(iTraj).second.size();++iRH){
       std::cout<<" RH = "<<iRH+1<<" globPos = "<<setMeasurementContainer.at(iTraj).second.at(iRH)->globalPosition()<<std::endl;
     }
-    //std::vector<TrajectoryMeasurement>  tm =  traj.at(iTraj)->measurements();
-     //TransientTrackingRecHit::ConstRecHitContainer    
-    //std::cout<<" nhits = "<<traj.at(iTraj)->foundHits()<<" nmeas = "<<tm.size()<<std::endl;
   }
-
   event.put(output);
 }
-//SETMuonProducer::TrajectoryContainer
-//TrajectoryContainer SETMuonProducer::trajectories(const edm::Event& event){
 std::vector < std::pair <TrajectoryStateOnSurface, 
 			 TransientTrackingRecHit::ConstRecHitContainer > >  
 SETMuonProducer::trajectories(const edm::Event& event){
 
-  //void SETMuonProducer::produce(const edm::Event& event, const edm::EventSetup& eSetup){
-
   const std::string metname = "Muon|RecoMuon|SETMuonProducer";
   MuonPatternRecoDumper debug;
 
-  // the trajectory container. 
-  //TrajectoryContainer trajectoryContainer;
+  // the measurements container. 
   std::vector < std::pair <TrajectoryStateOnSurface , 
     TransientTrackingRecHit::ConstRecHitContainer > > setMeasurementsContainer;
 
   std::vector < TrajectoryMeasurement > trajectoryMeasurementsFW;
-
-  //TrajectorySeed fakeSeed;
-  //PropagationDirection dir = alongMomentum;
-  //Trajectory trajectoryFW(fakeSeed, dir);
-
 
   bool fwFitFailed = true;
 
@@ -206,8 +165,7 @@ SETMuonProducer::trajectories(const edm::Event& event){
   // ********************************************;
 
   edm::Handle<DTRecSegment4DCollection> dtRecHits;
-  event.getByLabel("dt4DSegments", dtRecHits);
-  //std::cout<<iRun<<" "<<iEvent<<" adding DT 4D segments: ";
+  event.getByLabel(DTRecSegmentLabel, dtRecHits);
   for (DTRecSegment4DCollection::const_iterator rechit = dtRecHits->begin(); rechit!=dtRecHits->end();++rechit) {
     if( (rechit->hasZed() && rechit->hasPhi()) ) {
     muonRecHits.push_back(MuonTransientTrackingRecHit::specificBuild(theService->trackingGeometry()->idToDet((*rechit).geographicalId()),&*rechit));
@@ -221,9 +179,6 @@ SETMuonProducer::trajectories(const edm::Event& event){
     else {
       std::cout<<"Warning in "<<metname<<": DT segment which claims to have neither phi nor Z."<<std::endl;
     }
-    // is it faster to check if the element exists already?
-    DTRecSegment4DCollection::range segmentsInDetId = dtRecHits->get((*rechit).geographicalId());
-    nSegInChamber[(*rechit).geographicalId()] = segmentsInDetId.second - segmentsInDetId.first;
   }
   //std::cout<<"DT done"<<std::endl;
 
@@ -232,12 +187,9 @@ SETMuonProducer::trajectories(const edm::Event& event){
   // ********************************************;
 
   edm::Handle<CSCSegmentCollection> cscSegments;
-  event.getByLabel("cscSegments", cscSegments);
-  //std::cout<<iRun<<" "<<iEvent<<"adding CSC segments: ";
+  event.getByLabel(CSCRecSegmentLabel, cscSegments);
   for(CSCSegmentCollection::const_iterator rechit=cscSegments->begin(); rechit != cscSegments->end(); ++rechit) {
     muonRecHits.push_back(MuonTransientTrackingRecHit::specificBuild(theService->trackingGeometry()->idToDet((*rechit).geographicalId()),&*rechit));
-    CSCSegmentCollection::range segmentsInDetId = cscSegments->get((*rechit).geographicalId());
-    nSegInChamber[(*rechit).geographicalId()] = segmentsInDetId.second - segmentsInDetId.first;
   }
   //std::cout<<"CSC done"<<std::endl;
 
@@ -246,12 +198,10 @@ SETMuonProducer::trajectories(const edm::Event& event){
   // ********************************************;
 
   edm::Handle<RPCRecHitCollection> rpcRecHits;
-  event.getByLabel("rpcRecHits", rpcRecHits);
-  //std::cout<<iRun<<" "<<iEvent<<"adding RPC hits: ";
+  event.getByLabel(RPCRecSegmentLabel, rpcRecHits);
   for(RPCRecHitCollection::const_iterator rechit=rpcRecHits->begin(); rechit != rpcRecHits->end(); ++rechit) {
     if(useRPCs){
       muonRecHits_RPC.push_back(MuonTransientTrackingRecHit::specificBuild(theService->trackingGeometry()->idToDet((*rechit).geographicalId()),&*rechit));
-      //std::cout<<"RPCs not used... skip it"<<std::endl;
     }
   }
   //std::cout<<"RPC done"<<std::endl;
@@ -382,21 +332,11 @@ SETMuonProducer::trajectories(const edm::Event& event){
       if (filter()->goodState()) {
 	TransientTrackingRecHit::ConstRecHitContainer hitContainer;
 	TrajectoryStateOnSurface firstTSOS;
-	//std::pair < TrajectoryStateOnSurface tSOSDest, 
-	//TransientTrackingRecHit::ConstRecHitContainer > & seedContainer);
-	//Trajectory trajectoryBW;
-	// transforms trajectoryFW (segments) to trajectoryBW (rechits)
-	//bool conversionPassed = filter()->transform(trajectoryFW, trajectoryBW);
+	// transforms set of segment measurements to a set of rechit measurements
 	bool conversionPassed = filter()->transform(trajectoryMeasurementsFW, hitContainer, firstTSOS);
 	//---- below is a "light" backward fit, i.e. it is a Kalman fit over the rechits
 	//---- contained in the segments used in the forward fit 
 	if ( trajectoryMeasurementsFW.size() && hitContainer.size()) {
-	  //trajectoryContainer.push_back(new Trajectory(trajectoryBW));
-	  //std::vector < std::pair <TrajectoryStateOnSurface , 
-	  //TransientTrackingRecHit::ConstRecHitContainer > seedPair;//(firstTSOS, hitContainer);
-	  //seedPair = make_pair(firstTSOS, hitContainer);
-	  ////setMeasurementsContainer.push_back(hitContainer);
-	  //setMeasurementsContainer.push_back(seedPair);
 	  setMeasurementsContainer.push_back(make_pair(firstTSOS, hitContainer));
 	}
 	else{
@@ -407,7 +347,6 @@ SETMuonProducer::trajectories(const edm::Event& event){
       }
     }
   }
-  //return trajectoryContainer;
   return  setMeasurementsContainer;
 }
 
