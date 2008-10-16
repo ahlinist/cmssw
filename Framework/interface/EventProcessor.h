@@ -60,7 +60,6 @@ namespace edm {
 	       mAny, mDtor, mException, mInputRewind };
 
     class StateSentry;
-    class PrePostSourceSignal;
   }
 
   class EventProcessor : public IEventProcessor, private boost::noncopyable
@@ -372,9 +371,6 @@ namespace edm {
     void errorState();
     void setupSignal();
 
-    void preSourceSignal();
-    void postSourceSignal();
-
     static void asyncRun(EventProcessor *);
 
     //------------------------------------------------------------------
@@ -421,7 +417,6 @@ namespace edm {
     std::string                                   fileMode_;
     bool                                          handleEmptyRuns_;
     bool                                          handleEmptyLumis_;
-    bool                                          sourceActive_;
     std::string                                   exceptionMessageFiles_;
     std::string                                   exceptionMessageRuns_;
     std::string                                   exceptionMessageLumis_;
@@ -429,7 +424,6 @@ namespace edm {
     bool                                          forceLooperToEnd_;
 
     friend class event_processor::StateSentry;
-    friend class event_processor::PrePostSourceSignal;
   }; // class EventProcessor
 
   //--------------------------------------------------------------------

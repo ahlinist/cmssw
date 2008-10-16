@@ -16,17 +16,11 @@ static const char CVSId[] = "$Id$";
 
 #include <sstream>
 
-using namespace edm;
-
-WorkerRegistry::WorkerRegistry() :
-  m_workerMap(),
-  act_reg_(new ActivityRegistry)
-{
-}
+namespace edm {
 
 WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg) :
   m_workerMap(),
-  act_reg_(areg)
+  actReg_(areg)
 {
 }
 
@@ -46,16 +40,14 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   
-  // if the woker is not there, make it
+  // if the worker is not there, make it
   if (workerIt == m_workerMap.end()){
     
     std::auto_ptr<Worker> workerPtr=
-      Factory::get()->makeWorker(p,act_reg_->preModuleConstructionSignal_,
-                                 act_reg_->postModuleConstructionSignal_);
+      Factory::get()->makeWorker(p,actReg_->preModuleConstructionSignal_,
+                                 actReg_->postModuleConstructionSignal_);
     
-    workerPtr->connect(act_reg_->preModuleSignal_,act_reg_->postModuleSignal_,
-                       act_reg_->preModuleBeginJobSignal_,act_reg_->postModuleBeginJobSignal_,
-                       act_reg_->preModuleEndJobSignal_,act_reg_->postModuleEndJobSignal_);
+    workerPtr->setActivityRegistry(actReg_);
 
     // Transfer ownership of worker to the registry 
     m_workerMap[workerid].reset(workerPtr.release());
@@ -63,7 +55,7 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
     
   } 
   
-  return  (workerIt->second.get());
+  return (workerIt->second.get());
 
 }
 
@@ -80,6 +72,8 @@ std::string WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameter
                     << passID;
 
   return mangled_parameters.str();
+
+}
 
 }
 

@@ -9,19 +9,23 @@ input source that does not come in through the ParameterSet
 $Id$
 ----------------------------------------------------------------------*/
 #include <string>
+#include "boost/shared_ptr.hpp"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 namespace edm {
   class ProductRegistry;
+  class ActivityRegistry;
 
   struct InputSourceDescription {
-    InputSourceDescription() : moduleDescription_(), productRegistry_(0), maxEvents_(-1), maxLumis_(-1) {}
+    InputSourceDescription() : moduleDescription_(), productRegistry_(0), actReg_(), maxEvents_(-1), maxLumis_(-1) {}
     InputSourceDescription(ModuleDescription const& md,
 			   ProductRegistry& preg,
+			   boost::shared_ptr<ActivityRegistry> areg,
 			   int maxEvents,
 			   int maxLumis) :
       moduleDescription_(md),
       productRegistry_(&preg),
+      actReg_(areg),
       maxEvents_(maxEvents),
       maxLumis_(maxLumis)
 	 
@@ -29,6 +33,7 @@ namespace edm {
 
     ModuleDescription moduleDescription_;
     ProductRegistry * productRegistry_;
+    boost::shared_ptr<ActivityRegistry> actReg_;
     int maxEvents_;
     int maxLumis_;
   };

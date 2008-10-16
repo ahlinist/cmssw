@@ -10,10 +10,8 @@ $Id$
 
 namespace edm {
   enum BranchActionType {
-    BranchActionEvent = 0,
-    BranchActionBegin = 1,
-    BranchActionEnd = 2,
-    EndBranchActionType = 3
+    BranchActionBegin = 0,
+    BranchActionEnd = 1
   };
 }
 #endif

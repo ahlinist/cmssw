@@ -26,8 +26,7 @@ namespace edm {
     WorkerInPath(Worker*, FilterAction theAction);
 
     template <typename T>
-    bool runWorker(T&, EventSetup const&,
-		   BranchActionType const&,
+    bool runWorker(typename T::MyPrincipal&, EventSetup const&,
 		   CurrentProcessingContext const* cpc);
 
     std::pair<double,double> timeCpuReal() const {
@@ -59,15 +58,13 @@ namespace edm {
   };
 
   template <typename T>
-  bool WorkerInPath::runWorker(T& ep, EventSetup const & es,
-			       BranchActionType const& bat,
+  bool WorkerInPath::runWorker(typename T::MyPrincipal & ep, EventSetup const & es,
 			       CurrentProcessingContext const* cpc) {
-    bool const isEvent = (bat == BranchActionEvent);
 
     // A RunStopwatch, but only if we are processing an event.
-    std::auto_ptr<RunStopwatch> stopwatch(isEvent ? new RunStopwatch(stopwatch_) : 0);
+    std::auto_ptr<RunStopwatch> stopwatch(T::isEvent_ ? new RunStopwatch(stopwatch_) : 0);
 
-    if (isEvent) {
+    if (T::isEvent_) {
       ++timesVisited_;
     }
     bool rc = true;
@@ -76,19 +73,19 @@ namespace edm {
 	// may want to change the return value from the worker to be 
 	// the Worker::FilterAction so conditions in the path will be easier to 
 	// identify
-	rc = worker_->doWork(ep, es, bat, cpc);
+	rc = worker_->doWork<T>(ep, es, cpc);
 
         // Ignore return code for non-event (e.g. run, lumi) calls
-	if (!isEvent) rc = true;
+	if (!T::isEvent_) rc = true;
 	else if (filterAction_ == Veto) rc = !rc;
         else if (filterAction_ == Ignore) rc = true;
 
-	if (isEvent) {
+	if (T::isEvent_) {
 	  if(rc) ++timesPassed_; else ++timesFailed_;
 	}
     }
     catch(...) {
-	if (isEvent) ++timesExcept_;
+	if (T::isEvent_) ++timesExcept_;
 	throw;
     }
 
