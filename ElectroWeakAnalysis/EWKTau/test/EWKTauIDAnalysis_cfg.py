@@ -1,67 +1,66 @@
-##############################################################
-####### Configuration file for the EWK Tau ID analysis #######
-#######                                                #######
-#######                             September 30, 2008 #######
-#######                                Alfredo Gurrola #######
-##############################################################
-
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("EWKTauIDAnalysis")
+
+####### Load the necessary files (startup conditions, etc) #######
+
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.FakeConditions_cff")
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load("DQMOffline.Trigger.Tau.HLTTauDQMOffline_cff")
 process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff")
+process.load("ElectroWeakAnalysis.EWKTau.metForETauPatConfig_cff")
+process.load("ElectroWeakAnalysis.EWKTau.tauForETauMod.tauForETauPFPatProducer_cff")
+process.ldgTrkDiscrForETauKinEff.TauEtCut = cms.double(10.0)
+process.ldgTrkDiscrForETauKinEff.TauEtaCut = cms.double(2.5)
+process.pfRecoTauTagInfoProducerForETauEff.ChargedHadrCand_tkminPt = 0.5
+process.pfRecoTauTagInfoProducerForETauEff.tkminPt = 0.5
+process.pfRecoTauProducerForETauEff.MatchingConeSizeFormula = "0.2"
+process.pfRecoTauProducerForETauEff.MatchingConeSize_max = 0.2
+process.pfRecoTauProducerForETauEff.LeadTrack_minPt = 6.0
+process.pfRecoTauProducerForETauEff.LeadChargedHadrCand_minPt = 6.0
+process.pfRecoTauProducerForETauEff.ChargedHadrCand_minPt = 0.5
+process.allLayer0TausForETauKinEff.tauDiscriminatorSource = cms.InputTag("ldgTrkDiscrForETauKinEff:passKin")
+process.allLayer0TausForETauLdgTrkEff.tauDiscriminatorSource = cms.InputTag("ldgTrkDiscrForETauLdgTrkEff:foundLdgTrk")
 
 ####### Define the input data sample and the number of events to process #######
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring(
-        'file:testFEVT.root'
-  )
+    fileNames = cms.untracked.vstring(
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/12F2BEA9-F97D-DD11-8262-000423D9890C.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/1A683EA7-F97D-DD11-9A4E-000423D6C8E6.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/3C84A911-FA7D-DD11-BC5E-000423D990CC.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/405E200D-FA7D-DD11-B587-000423D952C0.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/4CD31C08-FA7D-DD11-A305-000423D99AAE.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/5AA51868-FA7D-DD11-A2AB-000423D98FBC.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/7C20F9DB-F97D-DD11-A8E3-000423D8FA38.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/8A7D56DC-F97D-DD11-9591-000423D99AAE.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/90DEE0A4-F97D-DD11-B223-000423D98800.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/A8D09913-FA7D-DD11-B9EE-000423D951D4.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/BC85BA74-FA7D-DD11-934D-000423D952C0.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/CC7D48D0-F97D-DD11-8C7E-000423D98F98.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/E212380D-FA7D-DD11-A5C2-000423D99896.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/F0ADB46E-FA7D-DD11-A599-000423D94524.root',
+        '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/F484E210-FA7D-DD11-A42A-000423D94534.root'
+     )
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
-####### Load the necessary files (startup conditions) #######
+####### Define the selector module that chooses muons based on whether it is a global muon #######
 
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('STARTUP_V4::All')
-process.load("Configuration.StandardSequences.MagneticField_cff")
-
-####### Load the files that are required to run the muon isolation producers #######
-
-process.load("PhysicsTools.PatAlgos.recoLayer0.muonIsolation_cff")
-
-####### Load the files that are required to run the PAT Layer 0 cleaning for muons #######
-
-process.load("PhysicsTools.PatAlgos.cleaningLayer0.muonCleaner_cfi")
-#process.allLayer0Muons.selection.type = cms.string("GlobalMuons")
-
-####### Define the sequence that runs the PAT Layer 0 modules #######
-
-process.patLayer0Cleaners = cms.Sequence( process.allLayer0Muons )
-
-####### Define the sequence that runs the PAT Layer 0 modules (exclude trig matching) #######
-
-process.patLayer0_withoutTrigMatch = cms.Sequence(
-      process.patAODMuonIsolation *
-      process.patLayer0Cleaners *
-      process.patLayer0MuonIsolation
+process.selectedLayer1GlobalMuons = cms.EDProducer("PATMuonSelector",
+     src = cms.InputTag("allLayer1MuForEWKTau"),
+     cut = cms.string('isGlobalMuon()'),
+     filter = cms.bool(False)
 )
-
-####### Define the module that creates the PAT Layer 1 muons #######
-
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-process.load("PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi")
-process.allLayer1Muons.isolation.tracker.deltaR = cms.double(0.8)
-process.allLayer1Muons.addTrigMatch = cms.bool(False)
-process.allLayer1Muons.addGenMatch = cms.bool(False)
 
 ####### Define the selector module that chooses muons based on pt #######
 
 process.selectedLayer1MuonsPt20 = cms.EDProducer("PATMuonSelector",
-  src = cms.InputTag("allLayer1MuForEWKTau"),
-  cut = cms.string('pt > 20')
+  src = cms.InputTag("selectedLayer1GlobalMuons"),
+  cut = cms.string('pt >= 20'),
+  filter = cms.bool(False)
 )
 
 ####### Define the EDFilter that filters events based on a certain number of pat Muons #######
@@ -75,7 +74,8 @@ process.minLayer1MuonsPt20 = cms.EDFilter("PATMuonMinFilter",
 
 process.selectedLayer1MuonsEta21 = cms.EDProducer("PATMuonSelector",
   src = cms.InputTag("selectedLayer1MuonsPt20"),
-  cut = cms.string('abs(eta) < 2.1')
+  cut = cms.string('abs(eta) <= 2.1'),
+  filter = cms.bool(False)
 )
 
 ####### Define the EDFilter that filters events based on a certain number of pat Muons #######
@@ -85,11 +85,22 @@ process.minLayer1MuonsEta21 = cms.EDFilter("PATMuonMinFilter",
   minNumber = cms.uint32(1)
 )
 
+####### Define the selector module that chooses muons based on segment & calo compatibilities #######
+
+process.selectedLayer1MuonsAntiPionCut = cms.EDProducer("PATMuonAntiPionSelection",
+     src = cms.InputTag("selectedLayer1MuonsEta21"),
+     CaloCompCoefficient = cms.double(0.8),
+     SegmCompCoefficient = cms.double(1.2),
+     AntiPionCut = cms.double(1.0),
+     filter = cms.bool(False)
+)
+
 ####### Define the selector module that chooses muons based on impact parameter #######
 
 process.selectedLayer1MuonsIP = cms.EDProducer("PATMuonSelector",
-  src = cms.InputTag("selectedLayer1MuonsEta21"),
-  cut = cms.string('track.d0 < 0.01')
+  src = cms.InputTag("selectedLayer1MuonsAntiPionCut"),
+  cut = cms.string('track.d0 < 0.01'),
+  filter = cms.bool(False)
 )
 
 ####### Define the EDFilter that filters events based on a certain number of pat Muons #######
@@ -101,25 +112,30 @@ process.minLayer1MuonsIP = cms.EDFilter("PATMuonMinFilter",
 
 ####### Define the selector module that chooses muons based on PFGamma isolation #######
 
-process.selectedLayer1MuonsPFGammaIso10 = cms.EDProducer("PATMuonPFParticleIsolationSelection",
+process.selectedLayer1MuonsPFGammaIso10 = cms.EDProducer("PATLeptonPFParticleIsolationSelector",
      src = cms.InputTag("selectedLayer1MuonsIP"),
-     PFParticleCode = cms.double(4.0),
+     LeptonType = cms.string('Muon'),
      PFCandidateProd = cms.string('particleFlow'),
+     PFParticleCode = cms.double(4.0),
      OuterIsolationConeSize = cms.double(0.8),
      InnerIsolationConeSize = cms.double(0.0),
      IsolationMinCut = cms.double(0.0),
-     IsolationMaxCut = cms.double(10.0),
+     IsolationMaxCut = cms.double(1.0),
 )
 
-process.selectTrkIsoMuForEWKTau = cms.EDProducer("PATMuonSelector",       
+####### Define the selector module that chooses muons based on track isolation #######
+
+process.selectTrkIsoMuForEWKTau = cms.EDProducer("PATMuonSelector",
      src = cms.InputTag("selectedLayer1MuonsPFGammaIso10"),   
-     cut = cms.string('trackIso < 10.0')   
+     cut = cms.string('trackIso < 10.0'),
+     filter = cms.bool(False)
 )
 
 ####### Define the b jet rejection module #######
 
-process.selectedLayer1MuonsBJetRejection = cms.EDProducer("PATMuonSVAssociatorSelection",
+process.selectedLayer1MuonsBJetRejection = cms.EDProducer("PATLeptonSVAssociatorSelector",
      src = cms.InputTag("selectTrkIsoMuForEWKTau"),
+     LeptonType = cms.string('Muon'),
      TrackProducer = cms.string('generalTracks'),
      VertexProducer = cms.string('offlinePrimaryVertices'),
      VFParameters = cms.PSet(
@@ -131,52 +147,74 @@ process.selectedLayer1MuonsBJetRejection = cms.EDProducer("PATMuonSVAssociatorSe
        smoothing = cms.bool(False)
      ),
      VertexMathingDistance = cms.double(0.005),
-     VertexMuonMaxDistance = cms.double(1.01),
+     VertexMuonMaxDistance = cms.double(0.00),
      MinAssociatedSVCut = cms.double(0.0),
      MaxAssociatedSVCut = cms.double(0.0),
 )
 
-process.selectedLayer1MuonsSeperatedFromPATTau = cms.EDProducer("PATMuonPATTauSeperationSelection",
+####### Define the muon-met delphi selector module #######
+
+process.selectedLayer1MuonsSatisfyingMetDelPhi = cms.EDProducer("PATLeptonPATMetDelPhiSelector",
+     src = cms.InputTag("selectedLayer1MuonsBJetRejection"),
+     LeptonType = cms.string('Muon'),
+     MetSource = cms.InputTag("allLayer1METs"),
+     DelPhiMaxCut = cms.double(999.0),
+     DelPhiMinCut = cms.double(-999.0),
+)
+
+process.selectedLayer1MuonsSeperatedFromPATTau = cms.EDProducer("PATLeptonPATTauSeperationSelector",
      src = cms.InputTag("allLayer1MuForEWKTau"),
+     LeptonType = cms.string('Muon'),
      TauSource = cms.InputTag("allLayer1Taus"),
-     DeltaRMinCut = cms.double(0.7),
      DeltaRMaxCut = cms.double(999.0),
+     DeltaRMinCut = cms.double(0.7),
 )
 
 process.selectedLayer1MuonsSatisfyingMassCut = cms.EDProducer("PATMuonPATTauMassSelection",
-     src = cms.InputTag("allLayer1MuForEWKTau"),
-     TauSource = cms.InputTag("allLayer1Taus"),
+     src = cms.InputTag("selectedLayer1MuonsSatisfyingMetDelPhi"),
+     TauSource = cms.InputTag("layer1TausForETauLdgTrkEff"),
      MassMinCut = cms.double(40.0),
      MassMaxCut = cms.double(100.0),
+     filter = cms.bool(False)
 )
 
-process.selectedLayer1MuonsSatisfyingMetDelPhi = cms.EDProducer("PATMuonPATMetDelPhiSelection",
-     src = cms.InputTag("allLayer1MuForEWKTau"),
-     MetSource = cms.InputTag("allLayer1Mets"),
-     DelPhiMinCut = cms.double(-999.0),
-     DelPhiMaxCut = cms.double(999.0),
-)
+process.patLayer1TausEWKTauID = cms.Sequence(process.PFTauForETauEff
+                                             *process.ldgTrkDiscrForETauKinEff
+                                             *process.allLayer0TausForETauKinEff 
+                                             *process.layer1TausForETauKinEff
 
-process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPt20 * process.selectedLayer1MuonsEta21 * process.selectedLayer1MuonsIP * process.selectedLayer1MuonsPFGammaIso10 * process.selectTrkIsoMuForEWKTau * process.selectedLayer1MuonsBJetRejection)
-#process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPt20)
-#process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsBJetRejection)
-#process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsSeperatedFromPATTau)
-#process.patLayer1MuonsEWKTauID = cms.Sequence(process.selectedLayer1MuonsPFGammaIso10)
+                                             *process.ldgTrkDiscrForETauLdgTrkEff
+                                             *process.allLayer0TausForETauLdgTrkEff
+                                             *process.layer1TausForETauLdgTrkEff)
 
-#process.TFileService = cms.Service("TFileService", fileName = cms.string('histo.root') )
 
-####### Define the path #######
-
-process.p = cms.Path(process.patLayer1MuonsEWKTauID)
+process.patLayer1MuonsEWKTauID = cms.Sequence(process.layer0MuForEWKTau *
+                                              process.layer1MuForEWKTau *
+                                              process.patMET *
+                                              process.selectedLayer1GlobalMuons *
+                                              process.selectedLayer1MuonsPt20 *
+                                              process.selectedLayer1MuonsEta21 *
+                                              process.selectedLayer1MuonsAntiPionCut *
+                                              process.selectedLayer1MuonsIP *
+                                              process.selectedLayer1MuonsPFGammaIso10 *
+                                              process.selectTrkIsoMuForEWKTau *
+                                              process.selectedLayer1MuonsBJetRejection *
+                                              process.selectedLayer1MuonsSatisfyingMetDelPhi *
+                                              process.selectedLayer1MuonsSatisfyingMassCut)
 
 ####### Output module configuration #######
 
 process.out = cms.OutputModule("PoolOutputModule",
-  fileName = cms.untracked.string('PATLayer1_Output.fromAOD_fast.root'),
+  outputCommands = cms.untracked.vstring('keep *_*_*_*'),
+  fileName = cms.untracked.string('test.root')
 
   ####### save only events passing the full path #######
 
 #  SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-  outputCommands = cms.untracked.vstring('keep *_*_*_*')
 )
+
+####### Define the path #######
+
+process.p = cms.Path(process.patLayer1TausEWKTauID * process.patLayer1MuonsEWKTauID)
+
 process.outpath = cms.EndPath(process.out)
