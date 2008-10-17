@@ -16,7 +16,7 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #	"root://madhatter.csc.fi/pnfs/csc.fi/data/cms/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_8_STARTUP_V7_v1_TauTriggerAnalysis_cmssw219_10kEvents_v2.root"
- 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_8_STARTUP_V7_v1_TauTriggerAnalysis_cmssw219_10kEvents_v2.root"
+ 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
 #	"file:test.root"
     )
 )
