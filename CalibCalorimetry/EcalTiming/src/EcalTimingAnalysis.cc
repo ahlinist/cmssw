@@ -6,7 +6,7 @@
      <Notes on implementation>
 */
 //
-// Original Author:  A. Ghezzi
+// Original Author:  J. Haupt
 //
 // 
 #include "CalibCalorimetry/EcalTiming/interface/EcalTimingAnalysis.h"
@@ -213,6 +213,11 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   chTimingEtaPhiEEM_    = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDs")) : (new TH3F("EEMtimeCHAllFEDs","(ix,iy,time) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.0,101.,125,2.,8.)); 
   chTimingEtaPhiRelEEP_ = fromfile_ ? ((TH3F*) tf->Get("EEPtimeCHAllFEDsREL")) : (new TH3F("EEPtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE+ (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,125,2.,8.)); 
   chTimingEtaPhiRelEEM_ = fromfile_ ? ((TH3F*) tf->Get("EEMtimeCHAllFEDsREL")) : (new TH3F("EEMtimeCHAllFEDsREL","(ix,iy,time corrected) for all FEDs EE- (SM,ch binning);ix;iy;Relative Time (1 clock = 25ns)",100,1.,101.,100,1.,101.,125,2.,8.)); 
+  
+  ttTimingEtaPhiEEP_    = fromfile_ ? ((TH3F*) tf->Get("EEPtimeTTAllFEDs")) : (new TH3F("EEPtimeTTAllFEDs","(ix,iy,time) for all FEDs EE+ (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.0,101.,125,2.,8.)); 
+  ttTimingEtaPhiEEM_    = fromfile_ ? ((TH3F*) tf->Get("EEMtimeTTAllFEDs")) : (new TH3F("EEMtimeTTAllFEDs","(ix,iy,time) for all FEDs EE- (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.0,101.,125,2.,8.)); 
+  ttTimingEtaPhiRelEEP_ = fromfile_ ? ((TH3F*) tf->Get("EEPtimeTTAllFEDsREL")) : (new TH3F("EEPtimeTTAllFEDsREL","(ix,iy,time corrected) for all FEDs EE+ (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.,101.,125,2.,8.)); 
+  ttTimingEtaPhiRelEEM_ = fromfile_ ? ((TH3F*) tf->Get("EEMtimeTTAllFEDsREL")) : (new TH3F("EEMtimeTTAllFEDsREL","(ix,iy,time corrected) for all FEDs EE- (SM,tt binning);ix;iy;Relative Time (1 clock = 25ns)",100/5,1.,101.,100/5,1.,101.,125,2.,8.)); 
  
   //Now the eta profiles
   ttTimingEta_    = fromfile_ ? ((TProfile*) tf->Get("timeTTAllFEDsEta")) : (new TProfile("timeTTAllFEDsEta","(Eta,time) for all FEDs (SM,TT binning);i#eta;Relative Time (1 clock = 25ns)",35,ttEtaBins,2.5,7.5)); 
@@ -228,6 +233,11 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   //Here is some info needed to convert DetId's to FEDIds's (DDCIds)
   //It is basically an electronics mapping service
 
+  
+  fullAmpProfileEB_  = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEB"))  : (new TProfile2D("fullAmpProfileEB", " Average Amplitude EB ;i#phi;i#eta",360,1.,361.,171,-85.,86.,0.0,10000.));
+  fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,10000.));
+  fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,10000.));
+  
    edm::ESHandle< EcalElectronicsMapping > handle;
    eventSetup.get< EcalMappingRcd >().get(handle);
    ecalElectronicsMap_ = handle.product();
@@ -261,9 +271,9 @@ void EcalTimingAnalysis::endJob() {
   TProfile *fullttTime = new TProfile("Inside_TT_timing","Inside TT timing;xtal in TT;relative time from first xtal (1 clock = 25 ns)",26,0.,26.,-1.,1.);
   TProfile *fullttRTime = new TProfile("Inside_TT_Reltiming","Inside TT Rel timing;xtal in TT;relative time from first xtal (1 clock = 25 ns)",26,0.,26.,-1.,1.);
   TProfile *fullLMTime = new TProfile("LM_timing","LM timing;LM Number;relative time (1 clock = 25 ns)",92,1.,93.,-1.,8.);
-  TProfile *fullLMTimeCorr = new TProfile("LM_timingCorrected","LM timing Corrected;LM Number;relative time (1 clock = 25 ns)",92,1.,93.,-1.,8.);
-  TProfile *fullSMTime = new TProfile("SM_timing","SM timing;SM Number;relative time (1 clock = 25 ns)",54,1.,55.,-1.,8.);
-  TProfile *fullSMTimeCorr = new TProfile("SM_timingCorrected","SM timing Corrected;SM Number;relative time (1 clock = 25 ns)",54,1.,55.,-1.,8.);
+  TProfile *fullLMTimeCorr = new TProfile("LM_timingCorrected","LM timing Corrected for Laser Fiber Length;LM Number;relative time (1 clock = 25 ns)",92,1.,93.,-1.,8.);
+  TProfile *fullSMTime = new TProfile("SM_timing","SM timing;FED;relative time (1 clock = 25 ns)",54,601.,655.,-1.,8.);
+  TProfile *fullSMTimeCorr = new TProfile("SM_timingCorrected","SM timing Corrected for Laser Fiber Length;FED;relative time (1 clock = 25 ns)",54,601.,655.,-1.,8.);
   
   for(int dcc = 1; dcc <55; ++dcc){
     int fed = dcc+600;
@@ -348,8 +358,8 @@ void EcalTimingAnalysis::endJob() {
           fullttRTime->Fill((elecId.stripId()-1)*5+elecId.xtalId(),trel - ttRStart[TTi]);
 	      fullLMTime->Fill(ecalElectronicsMap_->getLMNumber(mydet),time);
 	      fullLMTimeCorr->Fill(ecalElectronicsMap_->getLMNumber(mydet),time-sMCorr_[dcc-1]);
-	      fullSMTime->Fill(dcc,time);
-	      fullSMTimeCorr->Fill(dcc,time-sMCorr_[dcc-1]);
+	      fullSMTime->Fill(fed,time);
+	      fullSMTimeCorr->Fill(fed,time-sMCorr_[dcc-1]);
 	      ///time -= absmean;
 		  time -= allave_;
 	      meanr[TTi] += time;
@@ -461,6 +471,27 @@ void EcalTimingAnalysis::endJob() {
   chTimingProfileRelEEM->SetName("EEMtimeCHProfileRel");
   chTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
   chTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
+  TProfile2D* ttTimingProfileEEP = (TProfile2D*) ttTimingEtaPhiEEP_->Project3DProfile("yx");
+  ttTimingProfileEEP->SetTitle("(ix,iy,time) for all EE+ FEDs (SM,tt binning);ix;iy");
+  ttTimingProfileEEP->SetName("EEPtimeTTProfile");
+  ttTimingProfileEEP->GetXaxis()->SetNdivisions(-18);
+  ttTimingProfileEEP->GetYaxis()->SetNdivisions(16);
+  TProfile2D* ttTimingProfileRelEEP = (TProfile2D*) ttTimingEtaPhiRelEEP_->Project3DProfile("yx");
+  ttTimingProfileRelEEP->SetTitle("(ix,iy,time corrected) for all EE+ FEDs (SM,tt binning);ix;iy");
+  ttTimingProfileRelEEP->SetName("EEPtimeTTProfileRel");
+  ttTimingProfileRelEEP->GetXaxis()->SetNdivisions(-18);
+  ttTimingProfileRelEEP->GetYaxis()->SetNdivisions(16);
+  TProfile2D* ttTimingProfileEEM = (TProfile2D*) ttTimingEtaPhiEEM_->Project3DProfile("yx");
+  ttTimingProfileEEM->SetTitle("(ix,iy,time) for all EE- FEDs (SM,tt binning);ix;iy");
+  ttTimingProfileEEM->SetName("EEMtimeTTProfile");
+  ttTimingProfileEEM->GetXaxis()->SetNdivisions(-18);
+  ttTimingProfileEEM->GetYaxis()->SetNdivisions(16);
+  TProfile2D* ttTimingProfileRelEEM = (TProfile2D*) ttTimingEtaPhiRelEEM_->Project3DProfile("yx");
+  ttTimingProfileRelEEM->SetTitle("(ix,iy,time corrected) for all EE- FEDs (SM,tt binning);ix;iy");
+  ttTimingProfileRelEEM->SetName("EEMtimeTTProfileRel");
+  ttTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
+  ttTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
+  
   TFile f(rootfile_.c_str(),"RECREATE");
   
   for (int dcc=1; dcc<55; ++dcc){
@@ -503,12 +534,16 @@ void EcalTimingAnalysis::endJob() {
   chTimingEtaPhi_->Write();
   chTimingEtaPhiEEP_->Write();
   chTimingEtaPhiEEM_->Write();
+  ttTimingEtaPhiEEP_->Write();
+  ttTimingEtaPhiEEM_->Write();
   ttTimingEtaPhiRel_->Write(); //Taken out as not really needed yet
   chTimingEtaPhiRel_->Write(); //Taken out as not really needed yet
   ttTimingProfile->Write();
   chTimingProfile->Write();
   chTimingProfileEEP->Write();
   chTimingProfileEEM->Write();
+  ttTimingProfileEEP->Write();
+  ttTimingProfileEEM->Write();
   ttTimingProfileRel->Write();
   chTimingProfileRel->Write();
   chTimingProfileRelEEP->Write();
@@ -537,6 +572,11 @@ void EcalTimingAnalysis::endJob() {
   aveRelXtalTime_->Write();
   lasershift_->Write();
   aveRelXtalTimeVsAbsTime_->Write();
+  
+  fullAmpProfileEB_->Write();
+  fullAmpProfileEEP_->Write();
+  fullAmpProfileEEM_->Write();
+  
   
   f.Close();
 
@@ -611,7 +651,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
 	  double extrajit = timecorr(geometry_pEB,anid);
 	  double mytime = ithit->jitter() + extrajit+5.0;
-
+      fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),ithit->amplitude());
       lasersPerEvt->Fill(ievt_);
 	  amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
        absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
@@ -682,14 +722,20 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 		   if (anid.zside() == 1) {
 		   chTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
 		   chTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
+		   ttTimingEtaPhiEEP_->Fill(anid.ix(),anid.iy(),mytime);
+		   ttTimingEtaPhiRelEEP_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
 	       ttTimingEtaRelEEP_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);  
+	       fullAmpProfileEEP_->Fill(anid.ix(),anid.iy(),ithit->amplitude());
 		   }
 		   else {
 		   chTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
 		   chTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
+		   ttTimingEtaPhiEEM_->Fill(anid.ix(),anid.iy(),mytime);
+		   ttTimingEtaPhiRelEEM_->Fill(anid.ix(),anid.iy(),mytime-sMAves_[DCCid-1]+5.);
 		   ttTimingEtaEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime);
 	       ttTimingEtaRelEEM_->Fill(pow(anid.ix()*anid.ix()+anid.iy()*anid.iy(),0.5),mytime-sMAves_[DCCid-1]+5.0);
+	       fullAmpProfileEEM_->Fill(anid.ix(),anid.iy(),ithit->amplitude());
 		   }
 	   
 	   
