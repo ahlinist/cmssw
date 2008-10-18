@@ -62,8 +62,8 @@ echo 'Submitting CRAB cosmics analysis jobs for' ${data_file} 'dataset' ${data_s
 
 if [ "X"${nsplit} == "X" ]
     then
-    nsplit=50000
-    echo " using default split of 50000 events per job"
+    nsplit=20000
+    echo " using default split of 20000 events per job"
 else
     echo " splitting into "${nsplit} "events per job"
 fi
