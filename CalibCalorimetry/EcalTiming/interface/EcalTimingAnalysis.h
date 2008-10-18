@@ -27,6 +27,7 @@
 
 #include <string>
 #include "TProfile.h"
+#include "TProfile2D.h"
 
 #include "TGraphErrors.h"
 #include "TGraph.h"
@@ -97,22 +98,27 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       TH3F* ttTimingEtaPhiRel_;
       TH3F* chTimingEtaPhi_;
       TH3F* chTimingEtaPhiRel_;
-	  
-	  TProfile* ttTimingEta_;
+	    
+      TProfile* ttTimingEta_;
       TProfile* ttTimingEtaRel_;
       TProfile* chTimingEta_;
       TProfile* chTimingEtaRel_;
 	  
-	  TProfile* ttTimingEtaEEP_;
+      TProfile* ttTimingEtaEEP_;
       TProfile* ttTimingEtaRelEEP_;
 	  
-	  TProfile* ttTimingEtaEEM_;
+      TProfile* ttTimingEtaEEM_;
       TProfile* ttTimingEtaRelEEM_;
 	  
       TH3F* chTimingEtaPhiEEP_;
       TH3F* chTimingEtaPhiEEM_;
       TH3F* chTimingEtaPhiRelEEP_;
       TH3F* chTimingEtaPhiRelEEM_;
+      
+      TH3F* ttTimingEtaPhiEEP_;
+      TH3F* ttTimingEtaPhiEEM_;
+      TH3F* ttTimingEtaPhiRelEEP_;
+      TH3F* ttTimingEtaPhiRelEEM_;
       
       TH1F* timeCry1[54]; 
       TH1F* timeCry2[54]; 
@@ -122,6 +128,10 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       TH1F* aveRelXtalTime_;
       TH1F* aveRelXtalTimebyDCC_[54];
       TH2F* aveRelXtalTimeVsAbsTime_;
+      
+      TProfile2D* fullAmpProfileEB_;
+      TProfile2D* fullAmpProfileEEP_;
+      TProfile2D* fullAmpProfileEEM_;
       
       double timerunstart_;
       double timerunlength_;
