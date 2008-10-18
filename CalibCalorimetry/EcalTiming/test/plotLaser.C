@@ -54,6 +54,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Timing by FED/SM  
   c[0]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *SM_timing = (TProfile*) f->Get("SM_timing");
   SM_timing->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,SM_timing->GetTitle()); 
   SM_timing->SetTitle(mytitle);
@@ -61,6 +62,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   c[1]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *SM_timingCorrected = (TProfile*) f->Get("SM_timingCorrected");
   SM_timingCorrected->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,SM_timingCorrected->GetTitle()); 
   SM_timingCorrected->SetTitle(mytitle);
@@ -69,6 +71,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Timing by LM
   c[2]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *LM_timing = (TProfile*) f->Get("LM_timing");
   LM_timing->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,LM_timing->GetTitle()); 
   LM_timing->SetTitle(mytitle);
@@ -76,6 +79,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   c[3]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *LM_timingCorrected = (TProfile*) f->Get("LM_timingCorrected");
   LM_timingCorrected->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,LM_timingCorrected->GetTitle()); 
   LM_timingCorrected->SetTitle(mytitle);
@@ -84,6 +88,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Timing within the towers
   c[4]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *Inside_TT_timing = (TProfile*) f->Get("Inside_TT_timing");
   Inside_TT_timing->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,Inside_TT_timing->GetTitle()); 
   Inside_TT_timing->SetTitle(mytitle);
@@ -92,6 +97,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Eta Profiles by TT
   c[5]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *timeTTAllFEDsEta = (TProfile*) f->Get("timeTTAllFEDsEta");
   timeTTAllFEDsEta->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEta->GetTitle()); 
   timeTTAllFEDsEta->SetTitle(mytitle);
@@ -99,6 +105,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[6]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *timeTTAllFEDsEtaEEP = (TProfile*) f->Get("timeTTAllFEDsEtaEEP");
   timeTTAllFEDsEtaEEP->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEtaEEP->GetTitle()); 
   timeTTAllFEDsEtaEEP->SetTitle(mytitle);
@@ -106,6 +113,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
     
   c[7]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *timeTTAllFEDsEtaEEM = (TProfile*) f->Get("timeTTAllFEDsEtaEEM");
   timeTTAllFEDsEtaEEM->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEtaEEM->GetTitle()); 
   timeTTAllFEDsEtaEEM->SetTitle(mytitle);
@@ -114,6 +122,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Eta profile by Ch
   c[8]->cd();
   gStyle->SetOptStat(1111);
+  TProfile *timeCHAllFEDsEta = (TProfile*) f->Get("timeCHAllFEDsEta");
   timeCHAllFEDsEta->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeCHAllFEDsEta->GetTitle()); 
   timeCHAllFEDsEta->SetTitle(mytitle);
@@ -122,6 +131,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 //1-D Histograms
   c[9]->cd();
   gStyle->SetOptStat(111110);
+  TH1F *Rel_TimingSigma = (TH1F*) f->Get("Rel_TimingSigma");
   Rel_TimingSigma->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,Rel_TimingSigma->GetTitle()); 
   Rel_TimingSigma->SetTitle(mytitle);
@@ -130,6 +140,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[10]->cd();
   gStyle->SetOptStat(111110);
+  TH1F *XtalsPerEvt = (TH1F*) f->Get("XtalsPerEvt");
   XtalsPerEvt->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,XtalsPerEvt->GetTitle()); 
   XtalsPerEvt->SetTitle(mytitle);
@@ -138,6 +149,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[11]->cd();
   gStyle->SetOptStat(111110);
+  TH1F *laserShift = (TH1F*) f->Get("laserShift");
   laserShift->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,laserShift->GetTitle()); 
   laserShift->SetTitle(mytitle);
@@ -147,6 +159,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 //2-D Histogram
   c[12]->cd();
   gStyle->SetOptStat(111110);
+  TH2F *RelRMS_vs_AbsTime = (TH2F*) f->Get("RelRMS_vs_AbsTime");
   RelRMS_vs_AbsTime->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,RelRMS_vs_AbsTime->GetTitle()); 
   RelRMS_vs_AbsTime->SetTitle(mytitle);
@@ -156,6 +169,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 //1-D TGraphs  
   c[13]->cd();
   gStyle->SetOptStat(111110);
+  TGraph *TTMeanWithRMS_All_FEDS = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS->GetTitle()); 
   TTMeanWithRMS_All_FEDS->SetTitle(mytitle);
   TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(0.,9.);
@@ -166,7 +180,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[14]->cd();
   gStyle->SetOptStat(111110);
-  char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS->GetTitle()); 
+  TGraph *TTMeanWithRMS_All_FEDS_CHANGED = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS_CHANGED");
+  char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS_CHANGED->GetTitle()); 
   TTMeanWithRMS_All_FEDS_CHANGED->SetTitle(mytitle);
   TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(0.,9.);
   TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->UnZoom();
@@ -174,10 +189,11 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //c[13]->SetLogy(1);
   if (printPics) { sprintf(name,"%s/LaserAnalysis_TTMeanWithRMS_All_FEDS_Corrected_%i.%s",dirName,runNumber,fileType); c[14]->Print(name); }
   
-//2-D TGraphs  
+//2-D TGraphs/Profiles 
   //Ch by Ch timing profile
   c[15]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *timeCHProfile = (TProfile2D*) f->Get("timeCHProfile");
   timeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeCHProfile->GetTitle()); 
   timeCHProfile->SetTitle(mytitle);
@@ -194,6 +210,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //TT by TT timing profile
   c[16]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *timeTTProfile = (TProfile2D*) f->Get("timeTTProfile");
   timeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTProfile->GetTitle()); 
   timeTTProfile->SetTitle(mytitle);
@@ -209,6 +226,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Ch by Ch timing profile EE+
   c[17]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *EEPtimeCHProfile = (TProfile2D*) f->Get("EEPtimeCHProfile");
   EEPtimeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEPtimeCHProfile->GetTitle()); 
   EEPtimeCHProfile->SetTitle(mytitle);
@@ -223,6 +241,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Ch by Ch timing profile EE+
   c[18]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *EEMtimeCHProfile = (TProfile2D*) f->Get("EEMtimeCHProfile");
   EEMtimeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEMtimeCHProfile->GetTitle()); 
   EEMtimeCHProfile->SetTitle(mytitle);
@@ -237,6 +256,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //TT by TT timing profile EE+
   c[19]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *EEPtimeTTProfile = (TProfile2D*) f->Get("EEPtimeTTProfile");
   EEPtimeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEPtimeTTProfile->GetTitle()); 
   EEPtimeTTProfile->SetTitle(mytitle);
@@ -250,6 +270,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //TT by TT timing profile EE-
   c[20]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *EEMtimeTTProfile = (TProfile2D*) f->Get("EEMtimeTTProfile");
   EEMtimeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEMtimeTTProfile->GetTitle()); 
   EEMtimeTTProfile->SetTitle(mytitle);
@@ -264,6 +285,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   //Amplitude Profiles
   c[21]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *fullAmpProfileEB = (TProfile2D*) f->Get("fullAmpProfileEB");
   fullAmpProfileEB->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEB->GetTitle()); 
   fullAmpProfileEB->SetTitle(mytitle);
@@ -276,6 +298,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[22]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *fullAmpProfileEEP = (TProfile2D*) f->Get("fullAmpProfileEEP");
   fullAmpProfileEEP->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEEP->GetTitle()); 
   fullAmpProfileEEP->SetTitle(mytitle);
@@ -289,6 +312,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   
   c[23]->cd();
   gStyle->SetOptStat(10);
+  TProfile2D *fullAmpProfileEEM = (TProfile2D*) f->Get("fullAmpProfileEEM");
   fullAmpProfileEEM->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,fullAmpProfileEEM->GetTitle()); 
   fullAmpProfileEEM->SetTitle(mytitle);

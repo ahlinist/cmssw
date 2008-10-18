@@ -49,11 +49,34 @@ root_file=Laser_${run_num}_1.root
 cp ${work_dir}/Laser_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}
 
 echo
-echo 'To make plots, run in ROOT:'
+echo 'Going to make the plots, by running in ROOT:'
 echo
 echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS/plotLaser.C'
 echo 'DrawLaserPlots("'${plots_dir}'/'${root_file}'",'${run_num}',kTRUE,"png","'${plots_dir}'",kFALSE)'
 echo
+
+#now I need to make a little python script to make my root plots
+
+cat > ${plots_dir}/plot.py <<EOF
+
+from ROOT import gROOT
+
+#load my macro
+gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotLaser.C')
+
+#get my cute class
+from ROOT import DrawLaserPlots
+
+DrawLaserPlots("${plots_dir}/${root_file}",${run_num},True,"png","${plots_dir}",False)
+
+
+EOF
+
+
+python ${plots_dir}/plot.py -b
+
+rm ${plots_dir}/plot.py
+
 
 
 cat > ${plots_dir}/index.html <<EOF
@@ -92,7 +115,8 @@ Jump to:<br>
 <br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeCHAllFEDsEta_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeCHAllFEDsEta_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEta_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEta_${run_num}.png"> </A>
-
+<br>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEB_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEB_${run_num}.png"> </A>
 <br>
 
 <h3><A name="EEM"><FONT color="Blue">ECAL Endcap Minus Side</FONT></A><BR></h3>
@@ -100,13 +124,16 @@ Jump to:<br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEMtimeCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEMtimeCHProfile_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEM_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEM_${run_num}.png"> </A>
-
+ <br>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEM_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEM_${run_num}.png"> </A>
 
 <h3><A name="EEP"><FONT color="Blue">ECAL Endcap Plus Side</FONT></A><BR></h3>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeCHProfile_${run_num}.png"> </A>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEP_${run_num}.png"> </A>
+ <br>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEP_${run_num}.png"> </A>
 
 
 <br>

@@ -49,11 +49,33 @@ root_file=Calib_${run_num}_1.root
 cp ${work_dir}/Calib_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}
 
 echo
-echo 'To make plots, run in ROOT:'
+echo 'Now making plots, by running these command in ROOT:'
 echo
 echo '.L '${my_cmssw_base}'/CalibCalorimetry/EcalTiming/test/SCRIPTS/plotCalib.C'
 echo 'DrawCalibPlots("'${plots_dir}'/'${root_file}'",'${run_num}',kTRUE,"png","'${plots_dir}'",kFALSE)'
 echo
+
+#now I need to make a little python script to make my root plots
+
+cat > ${plots_dir}/plot.py <<EOF
+
+from ROOT import gROOT
+
+#load my macro
+gROOT.LoadMacro(  '${my_cmssw_base}/CalibCalorimetry/EcalTiming/test/plotCalib.C')
+
+#get my cute class
+from ROOT import DrawCalibPlots
+
+DrawCalibPlots("${plots_dir}/${root_file}",${run_num},True,"png","${plots_dir}",False)
+
+
+EOF
+
+
+python ${plots_dir}/plot.py -b
+
+rm ${plots_dir}/plot.py
 
 
 cat > ${plots_dir}/index.html <<EOF
@@ -102,8 +124,37 @@ cat > ${plots_dir}/index.html <<EOF
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_PedFEDCycle_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_PedFEDCycle_${run_num}.png"> </A>
 
 <br>
-<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_RunTypeByCycle_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_RunTypeByCycle_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_TestPulseFEDCycle_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_TestPulseFEDCycle_${run_num}.png"> </A>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_UnknownFEDCycle_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_UnknownFEDCycle_${run_num}.png"> </A>
+
+<br>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_RunTypeByCycle_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_RunTypeByCycle_${run_num}.png"> </A>
+
+<h3><A name="ALL"><FONT color="Blue">RunType Vs. BX all FEDs</FONT></A><BR></h3>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dataRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dataRunTypeVsBX_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdataRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdataRunTypeVsBX_${run_num}.png"> </A>
+
+<br>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_simpledccRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_simpledccRunTypeVsBX_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomsimpledccRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomsimpledccRunTypeVsBX_${run_num}.png"> </A>
+
+<br>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dccRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dccRunTypeVsBX_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdccRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdccRunTypeVsBX_${run_num}.png"> </A>
+
+<h3><A name="ALL"><FONT color="Blue">RunType Vs. BX for DCC in TCC</FONT></A><BR></h3>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_simpledccInTCCRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_simpledccInTCCRunTypeVsBX_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomsimpledccInTCCRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomsimpledccInTCCRunTypeVsBX_${run_num}.png"> </A>
+
+<br>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dccInTCCRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_dccInTCCRunTypeVsBX_${run_num}.png"> </A>
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdccInTCCRunTypeVsBX_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/CalibAnalysis/CRAFT/${run_num}/CalibAnalysis_zoomdccInTCCRunTypeVsBX_${run_num}.png"> </A>
 
 
 <h4> ROOT File (download) </h4>

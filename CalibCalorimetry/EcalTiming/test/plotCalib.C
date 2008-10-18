@@ -257,6 +257,7 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   if (dccHeaderErrors){
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,dccHeaderErrors->GetTitle());
      dccHeaderErrors->SetFillColor(0);
+	 dccHeaderErrors->SetMaximum(1.);
      dccHeaderErrors->SetTitle(mytitle);
      dccHeaderErrors->Draw("");
      dccHeaderErrors->GetXaxis()->SetBinLabel(1,"Data-to-DCC RunType Conflicts");
@@ -273,9 +274,10 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,dataRunTypeVsBX_->GetTitle());
      dataRunTypeVsBX_->SetFillColor(0);
      dataRunTypeVsBX_->SetTitle(mytitle);
-     dataRunTypeVsBX_->Draw("colz");
+     dataRunTypeVsBX_->Draw("colztext");
      dataRunTypeVsBX_->GetZaxis()->SetTickLength(0.03);
      dataRunTypeVsBX_->SetMinimum(1.0);
+	 dataRunTypeVsBX_->GetYaxis()->SetLabelOffset(-0.01);
      c[9]->SetLogz(1);
      if (printPics) { sprintf(name,"%s/CalibAnalysis_dataRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[9]->Print(name); }
      dataRunTypeVsBX_->GetXaxis()->SetRangeUser(3490.,3490.);
@@ -290,9 +292,10 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,dccRunTypeVsBX_->GetTitle());
      dccRunTypeVsBX_->SetFillColor(0);
      dccRunTypeVsBX_->SetTitle(mytitle);
-     dccRunTypeVsBX_->Draw("colz");
+     dccRunTypeVsBX_->Draw("colztext");
      dccRunTypeVsBX_->GetZaxis()->SetTickLength(0.03);
      dccRunTypeVsBX_->SetMinimum(1.0);
+	 dccRunTypeVsBX_->GetYaxis()->SetLabelOffset(-0.045);
      c[10]->SetLogz(1);
      if (printPics) { sprintf(name,"%s/CalibAnalysis_dccRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[10]->Print(name); }
      dccRunTypeVsBX_->GetXaxis()->SetRangeUser(3490.,3490.);
@@ -307,9 +310,10 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,simpledccRunTypeVsBX_->GetTitle());
      simpledccRunTypeVsBX_->SetFillColor(0);
      simpledccRunTypeVsBX_->SetTitle(mytitle);
-     simpledccRunTypeVsBX_->Draw("colz");
+     simpledccRunTypeVsBX_->Draw("colztext");
      simpledccRunTypeVsBX_->GetZaxis()->SetTickLength(0.03);
      simpledccRunTypeVsBX_->SetMinimum(1.0);
+	 simpledccRunTypeVsBX_->GetYaxis()->SetLabelOffset(-0.01);
      c[11]->SetLogz(1);
      if (printPics) { sprintf(name,"%s/CalibAnalysis_simpledccRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[11]->Print(name); }
      simpledccRunTypeVsBX_->GetXaxis()->SetRangeUser(3490.,3490.);
@@ -324,9 +328,10 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,dccInTCCRunTypeVsBX_->GetTitle());
      dccInTCCRunTypeVsBX_->SetFillColor(0);
      dccInTCCRunTypeVsBX_->SetTitle(mytitle);
-     dccInTCCRunTypeVsBX_->Draw("colz");
+     dccInTCCRunTypeVsBX_->Draw("colztext");
      dccInTCCRunTypeVsBX_->GetZaxis()->SetTickLength(0.03);
      dccInTCCRunTypeVsBX_->SetMinimum(1.0);
+	 dccInTCCRunTypeVsBX_->GetYaxis()->SetLabelOffset(-0.045);
      c[12]->SetLogz(1);
      if (printPics) { sprintf(name,"%s/CalibAnalysis_dccInTCCRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[12]->Print(name); }
      dccInTCCRunTypeVsBX_->GetXaxis()->SetRangeUser(3490.,3490.);
@@ -341,14 +346,15 @@ void DrawCalibPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
      char mytitle[100]; sprintf(mytitle,"%s %s",runChar,simpledccInTCCRunTypeVsBX_->GetTitle());
      simpledccInTCCRunTypeVsBX_->SetFillColor(0);
      simpledccInTCCRunTypeVsBX_->SetTitle(mytitle);
-     simpledccInTCCRunTypeVsBX_->Draw("colz");
+     simpledccInTCCRunTypeVsBX_->Draw("colztext");
      simpledccInTCCRunTypeVsBX_->GetZaxis()->SetTickLength(0.03);
      simpledccInTCCRunTypeVsBX_->SetMinimum(1.0);
+	 simpledccInTCCRunTypeVsBX_->GetYaxis()->SetLabelOffset(-0.01);
      c[13]->SetLogz(1);
      if (printPics) { sprintf(name,"%s/CalibAnalysis_simpledccInTCCRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[13]->Print(name); }
      simpledccInTCCRunTypeVsBX_->GetXaxis()->SetRangeUser(3490.,3490.);
      simpledccInTCCRunTypeVsBX_->GetXaxis()->SetNdivisions(1);
-     if (printPics) { sprintf(name,"%s/CalibAnalysis_zoomsimpledccInTCCRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[12]->Print(name); }
+     if (printPics) { sprintf(name,"%s/CalibAnalysis_zoomsimpledccInTCCRunTypeVsBX_%i.%s",dirName,runNumber,fileType); c[13]->Print(name); }
   }
   
   
