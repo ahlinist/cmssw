@@ -17,12 +17,17 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #	"root://madhatter.csc.fi/pnfs/csc.fi/data/cms/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_8_STARTUP_V7_v1_TauTriggerAnalysis_cmssw219_10kEvents_v2.root"
  	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
-#	"file:test.root"
     )
 )
 
+process.PFTausSelected = cms.EDFilter("PFTauSelector",
+   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+   discriminator = cms.InputTag("pfRecoTauDiscriminationHighEfficiency")
+)
+
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
-        PFTauCollection         = cms.InputTag("IdentifiedTaus"),
+        #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
+        PFTauCollection         = cms.InputTag("PFTausSelected"),
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
 	JetMatchingCone		= cms.double(0.5),
@@ -32,5 +37,12 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 )
 
 process.runEDAna = cms.Path(
-	process.TTEffAnalysis
+    process.PFTausSelected*
+    process.TTEffAnalysis
 ) 
+
+#process.o1 = cms.OutputModule("PoolOutputModule",
+#    outputCommands = cms.untracked.vstring("keep *"),
+#    fileName = cms.untracked.string('tree_test.root')
+#)
+#process.outpath = cms.EndPath(process.o1)

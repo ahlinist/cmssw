@@ -18,6 +18,7 @@ L1TauEfficiencyAnalyzer::~L1TauEfficiencyAnalyzer(){
 
 void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trigtree)
 {
+  PFTauCollectionSource = iConfig.getParameter<edm::InputTag>("PFTauCollection");
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1bitInfoSource = iConfig.getParameter<edm::InputTag>("L1bitInfoSource");
   jetMatchingCone = iConfig.getParameter<double>("JetMatchingCone");
@@ -70,7 +71,7 @@ void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 
         Handle<PFTauCollection> pfTauHandle;
         try{
-          iEvent.getByLabel("IdentifiedTaus",pfTauHandle);
+          iEvent.getByLabel(PFTauCollectionSource,pfTauHandle);
         }catch(...) {;}
 
         if(pfTauHandle.isValid()){

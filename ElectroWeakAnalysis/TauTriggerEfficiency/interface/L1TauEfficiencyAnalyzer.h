@@ -50,6 +50,7 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
 
    private:
         // Input parameters
+	InputTag PFTauCollectionSource;  
 	InputTag L1extraTauJetSource;  
         InputTag L1bitInfoSource;
 	double   jetMatchingCone;
