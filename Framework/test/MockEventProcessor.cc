@@ -172,10 +172,6 @@ namespace edm {
     return shouldWeCloseOutput_;
   }
 
-  bool MockEventProcessor::anyOutputModules() const {
-    return true;
-  }
-
   void MockEventProcessor::doErrorStuff() {
     output_ << "\tdoErrorStuff\n";
   }

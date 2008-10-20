@@ -317,7 +317,6 @@ namespace edm {
     virtual void writeLumiCache();
     virtual void writeRunCache();
     virtual bool shouldWeCloseOutput() const;
-    virtual bool anyOutputModules() const;
 
     virtual void doErrorStuff();
 
