@@ -89,8 +89,11 @@ public:
          void preSourceRun();
          void postSourceRun();
 
-         void preSourceFile();
-         void postSourceFile();
+         void preOpenFile();
+         void postOpenFile();
+         
+         void preCloseFile();
+         void postCloseFile();
          
          void prePathBeginRun(std::string const& s);
          void postPathBeginRun(std::string const& s, HLTPathStatus const& hlt);

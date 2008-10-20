@@ -228,9 +228,16 @@ namespace edm {
       SourceSentry sentry_;
     };
 
-    class FileSourceSentry {
+    class FileOpenSentry {
     public:
-      explicit FileSourceSentry(InputSource const& source);
+      explicit FileOpenSentry(InputSource const& source);
+    private:
+      SourceSentry sentry_;
+    };
+
+    class FileCloseSentry {
+    public:
+      explicit FileCloseSentry(InputSource const& source);
     private:
       SourceSentry sentry_;
     };
