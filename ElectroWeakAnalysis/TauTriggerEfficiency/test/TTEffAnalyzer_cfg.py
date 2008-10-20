@@ -1,7 +1,7 @@
 process = cms.Process("TTEffAnalysis")
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(100)
+        input = cms.untracked.int32(-1)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
