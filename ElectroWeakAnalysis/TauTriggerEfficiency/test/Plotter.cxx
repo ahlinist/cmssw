@@ -6,7 +6,7 @@ class Plotter {
 	        gROOT->LoadMacro("./tdrstyle.cxx");
 	        setTDRStyle();
 
-		inFile = new TFile("test.root");
+		inFile = new TFile("tteffAnalysis.root");
 		tree = (TTree *) (inFile->Get("TTEffTree"));
 	}
 	~Plotter(){
