@@ -36,6 +36,6 @@ private:
   float rDistJetsMin_;   ///< Minimum R1 and R2
   unsigned int nJetsMetIso_; ///<  Nr. of jets for MET isolation
 
-  pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
+  pat::MET::UncorrectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif

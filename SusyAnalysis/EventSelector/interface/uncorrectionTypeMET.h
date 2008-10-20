@@ -12,7 +12,7 @@
 
 namespace pat {
   /// pat::MET uncorrection type from string (uncorrMAXN = corrected MET)
-  pat::MET::UncorectionType
+  pat::MET::UncorrectionType
   uncorrectionTypeMET (const std::string& uncorrectionName);
 }
 
