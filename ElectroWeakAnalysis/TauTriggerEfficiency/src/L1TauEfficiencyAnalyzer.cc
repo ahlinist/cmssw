@@ -100,7 +100,13 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
   jetPhi = 0.0;
   hasL1Jet = 0;
   hasTauVeto = 0;
+  hasEmTauVeto = 0;
+  hasHadTauVeto = 0;
   hasIsolationVeto = 0;
+  hasSumEtBelowThres = 0;
+  hasMaxEt = 0;
+  hasSoft = 0;
+  hasHard = 0;
 
   // Get data from event 
   Handle<FastL1BitInfoCollection> bitInfos;
@@ -114,8 +120,9 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
     const L1JetParticleCollection & l1Taus = *(l1TauHandle.product());
     L1JetParticleCollection::const_iterator iTau;
 
+    // Match for PF tauand L1extra tau
     float minDR = 99999999.;
-    for(iTau = l1Taus.begin(); iTau != l1Taus.end(); ++iTau){
+    for(iTau = l1Taus.begin(); iTau != l1Taus.end(); ++iTau) {
       double DR = deltaR(iTau->eta(), iTau->phi(), tau.eta(), tau.phi());
       if(DR < jetMatchingCone && DR < minDR) {
         minDR = DR;
@@ -126,26 +133,22 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
 
       }
     }
-  }
+  
+    // If match found, find the corresponding bit field
+    if(hasL1Jet) {
+      for(FastL1BitInfoCollection::const_iterator bitInfo = bitInfos->begin(); bitInfo != bitInfos->end(); ++bitInfo) {
+        if(fabs(bitInfo->getEta() - jetEta) < 0.1 &&
+           fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
 
-  // Process bit info
-  if(bitInfos.isValid()) {
-    float minDR = 99999999.;
-    for(FastL1BitInfoCollection::const_iterator bitInfo = bitInfos->begin(); bitInfo != bitInfos->end(); ++bitInfo) {
-      double DR = deltaR(bitInfo->getEta(), bitInfo->getPhi(), tau.eta(), tau.phi());
-      if(DR < jetMatchingCone && DR < minDR) {
-        minDR = DR;
-
-        //std::cout << "Foo dr" << DR << std::endl;
-
-        hasTauVeto = bitInfo->getTauVeto() ? 1 : 0;
-        hasEmTauVeto = bitInfo->getEmTauVeto() ? 1 : 0;
-        hasHadTauVeto = bitInfo->getHadTauVeto() ? 1 : 0;
-        hasIsolationVeto = bitInfo->getIsolationVeto() ? 1 : 0;
-        hasSumEtBelowThres = bitInfo->getSumEtBelowThres() ? 1 : 0;
-        hasMaxEt = bitInfo->getMaxEt() ? 1 : 0;
-        hasSoft = bitInfo->getSoft() ? 1 : 0;
-        hasHard = bitInfo->getHard() ? 1 : 0;
+          hasTauVeto = bitInfo->getTauVeto() ? 1 : 0;
+          hasEmTauVeto = bitInfo->getEmTauVeto() ? 1 : 0;
+          hasHadTauVeto = bitInfo->getHadTauVeto() ? 1 : 0;
+          hasIsolationVeto = bitInfo->getIsolationVeto() ? 1 : 0;
+          hasSumEtBelowThres = bitInfo->getSumEtBelowThres() ? 1 : 0;
+          hasMaxEt = bitInfo->getMaxEt() ? 1 : 0;
+          hasSoft = bitInfo->getSoft() ? 1 : 0;
+          hasHard = bitInfo->getHard() ? 1 : 0;
+        }
       }
     }
   }
