@@ -45,6 +45,8 @@ mkdir $plots_dir
 
 crab_dir=`\ls -rt1 ${work_dir}/Laser_${run_num} | grep "crab_" | tail -1 | awk '{print $NF}'`;
 
+echo $crab_dir
+
 root_file=Laser_${run_num}_1.root
 cp ${work_dir}/Laser_${run_num}/${crab_dir}/res/${root_file} ${plots_dir}
 
@@ -127,6 +129,8 @@ Jump to:<br>
  <br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEM_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEM_${run_num}.png"> </A>
 
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEMtimeTTProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEMtimeTTProfile_${run_num}.png"> </A>
+
 <h3><A name="EEP"><FONT color="Blue">ECAL Endcap Plus Side</FONT></A><BR></h3>
 
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeCHProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeCHProfile_${run_num}.png"> </A>
@@ -134,6 +138,8 @@ Jump to:<br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_timeTTAllFEDsEtaEEP_${run_num}.png"> </A>
  <br>
 <A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEP_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_fullAmpProfileEEP_${run_num}.png"> </A>
+
+<A HREF=http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeTTProfile_${run_num}.png> <img height="200" src="http://test-ecal-cosmics.web.cern.ch/test-ecal-cosmics/LaserAnalysis/CRAFT/${run_num}/LaserAnalysis_EEPtimeTTProfile_${run_num}.png"> </A>
 
 
 <br>
