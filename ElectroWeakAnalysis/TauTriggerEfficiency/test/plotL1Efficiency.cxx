@@ -1,54 +1,28 @@
 void plotL1Efficiency() {
 
-	gROOT->LoadMacro("./tdrstyle.C");
-	setTDRStyle();
+	gROOT->LoadMacro("./Plotter.cxx");
+	Plotter* plotter = new Plotter();
 
-	TFile* inFile = new TFile("test.root");
-	TTree* tt1 = (TTree *) (inFile->Get("TTEffTree"));
+    // PFTau Et
 
+	plotter->SetXTitle("Tau jet E_{T} (GeV)");
+	plotter->SetFileName("L1Eff_PFTauEt.C");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1");
 
-  	//_____________________________________________________________
+    // PFTau Eta
+        plotter->SetXTitle("Tau jet #eta");
+        plotter->SetFileName("L1Eff_PFTauEta.C");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1");
 
-	// PFTau Et
-  	tt1->Draw("PFTauEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1","e");
-  	tt1->Draw("PFTauEt>>hden(25.,0.,100.)","","h");
+    // L1Tau Et
+        plotter->SetXTitle("Tau jet E_{T} (GeV)");
+        plotter->SetFileName("L1Eff_L1JetEt.C");
+        plotter->DrawHistogram("L1JetEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1");
 
-        TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
-        TH1F *hden = (TH1F*)gDirectory->Get("hden");
+    // L1Tau Eta
+        plotter->SetXTitle("Tau jet #eta");
+        plotter->SetFileName("L1Eff_L1JetEta.C");
+        plotter->DrawHistogram("L1JetEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1");
 
-  	//hnum->SetAxisRange(0.,1.,"X");
-  	hnum->GetXaxis()->SetTitle("Tau jet E_{T} (GeV)");
-  	hnum->GetYaxis()->SetTitle("Efficiency");
-  	hnum->SetMarkerColor(kBlack);
-  	hnum->SetMarkerSize(1.);
-  	hnum->SetLineWidth(1);
-  	hnum->SetLineColor(kBlack);
-  	hnum->SetMarkerStyle(kFullDotLarge);
-
-  	hnum->Divide(hden);
-  	hnum->Draw("e");
-
-	gPad->SaveAs("Eff_PFTauEt.C");
-
-        // L1Tau Et
-        tt1->Draw("L1JetEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1","e");
-        tt1->Draw("L1JetEt>>hden(25.,0.,100.)","","h");
-
-        TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
-        TH1F *hden = (TH1F*)gDirectory->Get("hden");
-
-        //hnum->SetAxisRange(0.,1.,"X");
-        hnum->GetXaxis()->SetTitle("L1 jet E_{T} (GeV)");
-        hnum->GetYaxis()->SetTitle("Efficiency");
-        hnum->SetMarkerColor(kBlack);
-        hnum->SetMarkerSize(1.);
-        hnum->SetLineWidth(1);
-        hnum->SetLineColor(kBlack);
-        hnum->SetMarkerStyle(kFullDotLarge);
-
-        hnum->Divide(hden);
-        hnum->Draw("e");
-
-        gPad->SaveAs("Eff_L1JetEt.C");
 
 }
