@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.27 2008/09/25 08:52:42 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.28 2008/10/10 10:42:18 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.27 $
-  \date $Date: 2008/09/25 08:52:42 $
+  \version $Revision: 1.28 $
+  \date $Date: 2008/10/10 10:42:18 $
 */
 
 #include "TProfile2D.h"
@@ -209,6 +209,21 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
+  if( o.name.find("SyncNoiseEvents_W") != std::string::npos ) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
+
+//     obj->GetXaxis()->LabelsOption("v");
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.12);
+    c->SetRightMargin(0.12);
+    return;
+  }
 
   
   if( o.name.find("OccupancyAllHits_W") != std::string::npos ) {
@@ -275,6 +290,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetGrid(0,4);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
+
+//     obj->SetStats(kTRUE); // FIXME: remove
+//     gStyle->SetOptStat( 1111111 ); // FIXME: remove
     c->SetLeftMargin(0.15);
     return;
   }
