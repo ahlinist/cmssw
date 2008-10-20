@@ -7,7 +7,7 @@
 ///
 /// \author Frederic Ronga - Fri May 23 14:21:31 CEST 2008
 ///
-/// $Id: MeffSelector.h,v 1.2 2008/07/09 08:45:03 adamwo Exp $
+/// $Id: MeffSelector.h,v 1.4 2008/07/30 14:22:35 fronga Exp $
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -27,6 +27,6 @@ public:
 
   double minMeff_;   ///< Cut on minimum M_eff
 
-  pat::MET::UncorectionType uncorrType_;  ///< uncorrection type for MET
+  pat::MET::UncorrectionType uncorrType_;  ///< uncorrection type for MET
 };
 #endif

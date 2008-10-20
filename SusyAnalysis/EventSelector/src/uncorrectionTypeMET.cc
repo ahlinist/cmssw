@@ -1,7 +1,7 @@
 #include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-pat::MET::UncorectionType
+pat::MET::UncorrectionType
 pat::uncorrectionTypeMET (const std::string& uncorrectionName) 
 {
   //
@@ -9,11 +9,11 @@ pat::uncorrectionTypeMET (const std::string& uncorrectionName)
   //   (+ "none" for corrected MET)
   //
   if (uncorrectionName == "uncorrALL")
-    return pat::MET::UncorectionType(pat::MET::uncorrALL);
+    return pat::MET::UncorrectionType(pat::MET::uncorrALL);
   if (uncorrectionName == "uncorrJES")
-    return pat::MET::UncorectionType(pat::MET::uncorrJES);
+    return pat::MET::UncorrectionType(pat::MET::uncorrJES);
   if (uncorrectionName == "uncorrMUON")
-    return pat::MET::UncorectionType(pat::MET::uncorrMUON);
+    return pat::MET::UncorrectionType(pat::MET::uncorrMUON);
   if (uncorrectionName == "none")
     return pat::MET::uncorrMAXN;
   
