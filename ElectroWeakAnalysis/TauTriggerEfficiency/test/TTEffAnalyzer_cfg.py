@@ -33,7 +33,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	JetMatchingCone		= cms.double(0.5),
         L2AssociationCollection = cms.InputTag("hltL2DoubleTauIsolationProducer","L2TauIsolationInfoAssociator"),
         L2matchingDeltaR        = cms.double(0.3),
-        outputFileName          = cms.string("test.root")
+        outputFileName          = cms.string("tteffAnalysis.root")
 )
 
 process.runEDAna = cms.Path(
