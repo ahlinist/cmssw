@@ -44,6 +44,8 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
         TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
         TH1F *hden = (TH1F*)gDirectory->Get("hden");
 
+	hnum->SetStats(0);
+        hnum->SetTitle("");
         //hnum->SetAxisRange(0.,1.,"X");
         hnum->GetXaxis()->SetTitle(plotXtitle);
         hnum->GetYaxis()->SetTitle("Efficiency");

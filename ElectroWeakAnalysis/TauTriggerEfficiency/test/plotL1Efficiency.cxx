@@ -4,7 +4,6 @@ void plotL1Efficiency() {
 	Plotter* plotter = new Plotter();
 
     // PFTau Et
-
 	plotter->SetXTitle("Tau jet E_{T} (GeV)");
 	plotter->SetFileName("L1Eff_PFTauEt.C");
         plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1");
@@ -15,14 +14,16 @@ void plotL1Efficiency() {
         plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1");
 
     // L1Tau Et
-        plotter->SetXTitle("Tau jet E_{T} (GeV)");
+        plotter->SetXTitle("L1 jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_L1JetEt.C");
-        plotter->DrawHistogram("L1JetEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1");
+        plotter->DrawHistogram("L1JetEt>>hnum(25.,0.,100.)","L1TauVeto==0");
 
     // L1Tau Eta
-        plotter->SetXTitle("Tau jet #eta");
+        plotter->SetXTitle("L1 jet #eta");
         plotter->SetFileName("L1Eff_L1JetEta.C");
-        plotter->DrawHistogram("L1JetEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1");
+        plotter->DrawHistogram("L1JetEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0");
 
 
+
+	delete plotter;
 }
