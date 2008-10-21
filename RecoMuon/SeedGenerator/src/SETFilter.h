@@ -72,9 +72,17 @@ class SETFilter {
                   std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet);
 
 
-  ///  transforms "segment trajectory" to "rechit trajectory" (SET) 
+  ///  transforms "segment trajectory" to "rechit container"  
   bool transform(Trajectory::DataContainer &measurements_segments,
-                 TransientTrackingRecHit::ConstRecHitContainer & hitContainer, TrajectoryStateOnSurface & firstTSOS);
+                 TransientTrackingRecHit::ConstRecHitContainer & hitContainer, 
+		 TrajectoryStateOnSurface & firstTSOS);
+
+  ///  transforms "segment trajectory" to "segment container" 
+  bool transformLight(Trajectory::DataContainer &measurements_segments,
+		      TransientTrackingRecHit::ConstRecHitContainer & hitContainer, 
+		      TrajectoryStateOnSurface & firstTSOS);
+
+
 
   void reset();
 
