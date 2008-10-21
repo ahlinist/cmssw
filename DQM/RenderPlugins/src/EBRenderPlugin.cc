@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.96 2008/08/11 20:24:21 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.97 2008/08/18 17:44:00 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.96 $
-  \date $Date: 2008/08/11 20:24:21 $
+  \version $Revision: 1.97 $
+  \date $Date: 2008/08/18 17:44:00 $
 */
 
 #include "TH1F.h"
@@ -554,6 +554,11 @@ void EBRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "EBRDT" ) != std::string::npos ) {
    gPad->SetBottomMargin(0.2);
+   obj->GetXaxis()->LabelsOption("v");
+  }
+
+  if( name.find( "EBRDT event type" ) != std::string::npos ) {
+   gPad->SetBottomMargin(0.4);
    obj->GetXaxis()->LabelsOption("v");
   }
 
