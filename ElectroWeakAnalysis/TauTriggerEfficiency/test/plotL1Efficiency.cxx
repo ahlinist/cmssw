@@ -2,6 +2,7 @@ void plotL1Efficiency() {
 
 	gROOT->LoadMacro("./Plotter.cxx");
 	Plotter* plotter = new Plotter();
+	plotter->SetYTitle("Level-1 efficiency");
 
     // PFTau Et
 	plotter->SetXTitle("Tau jet E_{T} (GeV)");
