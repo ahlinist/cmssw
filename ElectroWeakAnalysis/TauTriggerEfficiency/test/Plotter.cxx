@@ -16,12 +16,14 @@ class Plotter {
 
 	void DrawHistogram(const char* varexp, const TCut& selection);
 	void SetXTitle(char* title) {plotXtitle   = title;}
+        void SetYTitle(char* title) {plotYtitle   = title;}
 	void SetFileName(char* name){plotFileName = name;}
 
     private:
 	TFile* inFile;
 	TTree* tree;
 	char* plotXtitle;
+        char* plotYtitle;
 	char* plotFileName;
 };
 
@@ -48,7 +50,7 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
         hnum->SetTitle("");
         //hnum->SetAxisRange(0.,1.,"X");
         hnum->GetXaxis()->SetTitle(plotXtitle);
-        hnum->GetYaxis()->SetTitle("Efficiency");
+        hnum->GetYaxis()->SetTitle(plotYtitle);
         hnum->SetMarkerColor(kBlack);
         hnum->SetMarkerSize(1.);
         hnum->SetLineWidth(1);
