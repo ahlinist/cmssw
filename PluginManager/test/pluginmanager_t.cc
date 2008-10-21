@@ -58,6 +58,17 @@ struct Catcher {
 };
 */
 
+namespace testedmplugin {
+  struct DummyThree: public DummyBase {
+    int value() const {
+      return 3;
+    }
+  };
+}
+
+DEFINE_EDM_PLUGIN(testedmplugin::DummyFactory,testedmplugin::DummyThree,"DummyThree");
+
+
 void
 TestPluginManager::test()
 {
@@ -87,7 +98,10 @@ TestPluginManager::test()
 
   std::auto_ptr<DummyBase> ptr(DummyFactory::get()->create("DummyOne"));
   CPPUNIT_ASSERT(1==ptr->value());
-
+  CPPUNIT_ASSERT(db.loadableFor("Test Dummy", "DummyThree") == "static");
+  std::auto_ptr<DummyBase> ptr2(DummyFactory::get()->create("DummyThree"));
+  CPPUNIT_ASSERT(3==ptr2->value());
+ 
   CPPUNIT_ASSERT_THROW(DummyFactory::get()->create("DoesNotExist"), cms::Exception);
   
 }
