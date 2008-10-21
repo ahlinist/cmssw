@@ -159,7 +159,7 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
 bool SETFilter::transform(Trajectory::DataContainer &measurements_segments, 
 			  TransientTrackingRecHit::ConstRecHitContainer & hitContainer, 
 			  TrajectoryStateOnSurface & firstTSOS){
-// transforms "segment trajectory" to "rechit trajectory"
+// transforms "segment trajectory" to "rechit container"
 
   bool success = true;
   // loop over all segments in the trajectory
@@ -207,6 +207,24 @@ bool SETFilter::transform(Trajectory::DataContainer &measurements_segments,
   }
   return success; 
 }
+
+bool SETFilter::transformLight(Trajectory::DataContainer &measurements_segments,
+			       TransientTrackingRecHit::ConstRecHitContainer & hitContainer,
+			       TrajectoryStateOnSurface & firstTSOS){
+  // transforms "segment trajectory" to "segment container"
+
+  bool success = true;
+  // loop over all segments in the trajectory
+  //for(int iMeas = measurements_segments.size() - 1; iMeas>-1;--iMeas){
+  for(uint iMeas = 0; iMeas<measurements_segments.size();++iMeas){
+    hitContainer.push_back(measurements_segments[iMeas].recHit());
+  }
+  // this is the last segment state
+  firstTSOS = measurements_segments.at(0).forwardPredictedState();
+  return success;
+}
+
+
 
 void SETFilter::getFromFTS(const FreeTrajectoryState& fts,
                                       Hep3Vector& p3, Hep3Vector& r3,

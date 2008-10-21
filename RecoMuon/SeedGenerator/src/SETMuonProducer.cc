@@ -76,6 +76,8 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
 
   apply_prePruning = trajectoryBuilderParameters.getParameter<bool>("Apply_prePruning");
 
+  useSegmentsInTrajectory = trajectoryBuilderParameters.getParameter<bool>("UseSegmentsInTrajectory");
+
   useRPCs = filterPSet.getParameter<bool>("EnableRPCMeasurement");
 
   DTRecSegmentLabel  = filterPSet.getParameter<edm::InputTag>("DTRecSegmentLabel");
@@ -332,11 +334,16 @@ SETMuonProducer::trajectories(const edm::Event& event){
       if (filter()->goodState()) {
 	TransientTrackingRecHit::ConstRecHitContainer hitContainer;
 	TrajectoryStateOnSurface firstTSOS;
+	bool conversionPassed = false;
+	if(!useSegmentsInTrajectory){
 	// transforms set of segment measurements to a set of rechit measurements
-	bool conversionPassed = filter()->transform(trajectoryMeasurementsFW, hitContainer, firstTSOS);
-	//---- below is a "light" backward fit, i.e. it is a Kalman fit over the rechits
-	//---- contained in the segments used in the forward fit 
-	if ( trajectoryMeasurementsFW.size() && hitContainer.size()) {
+	  conversionPassed = filter()->transform(trajectoryMeasurementsFW, hitContainer, firstTSOS);
+	}
+	else{
+	// transforms set of segment measurements to a set of segment measurements
+          conversionPassed = filter()->transformLight(trajectoryMeasurementsFW, hitContainer, firstTSOS);
+	}
+	if ( conversionPassed && trajectoryMeasurementsFW.size() && hitContainer.size()) {
 	  setMeasurementsContainer.push_back(make_pair(firstTSOS, hitContainer));
 	}
 	else{

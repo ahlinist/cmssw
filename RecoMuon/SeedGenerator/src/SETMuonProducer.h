@@ -85,6 +85,7 @@ class SETMuonProducer : public edm::EDProducer {
   //---- SET
   PtExtractor* thePtExtractor;
   bool apply_prePruning;
+  bool useSegmentsInTrajectory;
   bool useRPCs;
 
   edm::InputTag DTRecSegmentLabel;

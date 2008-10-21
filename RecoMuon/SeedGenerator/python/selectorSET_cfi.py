@@ -9,6 +9,7 @@ SETMuonSeed  = cms.EDProducer("SETMuonProducer",
     SETTrajBuilderParameters = cms.PSet(
         ptSeedParameterization, 
         Apply_prePruning = cms.bool(True),
+	UseSegmentsInTrajectory = cms.bool(True),
         FilterParameters = cms.PSet(
             DTRecSegmentLabel = cms.InputTag("dt4DSegments"),
             CSCRecSegmentLabel = cms.InputTag("cscSegments"),
