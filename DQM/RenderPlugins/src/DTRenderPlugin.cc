@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.28 2008/10/10 10:42:18 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.29 2008/10/20 10:12:42 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.28 $
-  \date $Date: 2008/10/10 10:42:18 $
+  \version $Revision: 1.29 $
+  \date $Date: 2008/10/20 10:12:42 $
 */
 
 #include "TProfile2D.h"
@@ -108,7 +108,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
 
-  if(o.name.find("NoiseSummary") != std::string::npos) {
+  if(o.name.find("04-Noise/NoiseSummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -208,6 +208,30 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if(o.name.find("SynchNoise/SynchNoiseSummary") != std::string::npos) {
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+//     obj->GetXaxis()->SetLabelSize(0.07);
+//     obj->GetYaxis()->SetLabelSize(0.07);
+//     obj->GetXaxis()->SetTitleOffset(1.15);
+//     obj->GetXaxis()->LabelsOption("v");
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00001);
+    obj->SetMaximum(2.0);
+
+    int colorErrorDI[2];
+    colorErrorDI[0] = 416;// kGreen
+//     colorErrorDI[1] = 594;// kind of blue
+    colorErrorDI[1] = 632;// kRed
+    gStyle->SetPalette(2, colorErrorDI);
+//     obj->SetOption("colz");
+    return;
+  }
 
   if( o.name.find("SyncNoiseEvents_W") != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
