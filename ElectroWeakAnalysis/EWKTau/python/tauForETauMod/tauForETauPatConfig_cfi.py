@@ -11,7 +11,7 @@ allLayer0PfTausForETau = cms.EDFilter("PATPFTauCleaner",
      removeOverlaps = cms.PSet(),
 
      markItems    = cms.bool(True),
-     bitsToIgnore = cms.vstring('Core/Preselection'), # Please Leave empty to preselect
+     bitsToIgnore = cms.vstring(''),
      saveRejected = cms.string(''),
      saveAll      = cms.string(''),
  )
