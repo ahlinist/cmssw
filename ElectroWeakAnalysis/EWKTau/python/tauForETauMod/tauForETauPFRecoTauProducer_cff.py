@@ -36,7 +36,9 @@ pfRecoTauProducerForETau.TrackerIsolConeSizeFormula = "0.5"
 pfRecoTauProducerForETau.TrackerIsolConeSize_max = "1.0"
 pfRecoTauProducerForETau.TrackerIsolConeSize_min = "0.0"
 pfRecoTauProducerForETau.Track_IsolAnnulus_minNhits = 8
+pfRecoTauProducerForETau.ChargedHadrCand_IsolAnnulus_minNhits = 8
 pfRecoTauProducerForETau.ChargedHadrCand_minPt = 1.0
+pfRecoTauProducerForETau.Track_minPt = 1.0
 ### Ecl Sig ###
 pfRecoTauProducerForETau.ECALSignalConeMetric = "DR"
 pfRecoTauProducerForETau.ECALSignalConeSizeFormula = "0.15"
