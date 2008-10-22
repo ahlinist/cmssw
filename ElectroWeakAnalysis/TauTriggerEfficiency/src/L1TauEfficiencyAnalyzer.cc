@@ -135,7 +135,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
     }
   
     // If match found, find the corresponding bit field
-    if(hasL1Jet) {
+    if(hasL1Jet && bitInfos.isValid()) {
       for(FastL1BitInfoCollection::const_iterator bitInfo = bitInfos->begin(); bitInfo != bitInfos->end(); ++bitInfo) {
         if(fabs(bitInfo->getEta() - jetEta) < 0.1 &&
            fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
