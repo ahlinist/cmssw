@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.5 2008/10/15 18:25:59 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.6 2008/10/16 11:56:23 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -10,7 +10,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
-#include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -19,7 +18,6 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "TFile.h"
 #include "TTree.h"
-
 class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    public:
       explicit L25TauEfficiencyAnalyzer(const edm::ParameterSet&);
@@ -43,7 +41,6 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       float tauEta;
       float tauPhi;
       float tauTjDR;
-      float tauTrkC05;
       float tauTrkSig;
       float l25Et;
       float l25Phi;
@@ -52,7 +49,8 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       float l25TjDR;
       float l25TrkQPx;
       int   l25Depth;
-      int   leadDepth;
+      int   leadDepth1;
+      int   leadDepth2;
       float minDR;
       float bareEt;
       double matchingCone;
