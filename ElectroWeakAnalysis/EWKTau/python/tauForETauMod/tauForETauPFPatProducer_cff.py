@@ -5,67 +5,43 @@ from ElectroWeakAnalysis.EWKTau.tauForETauMod.tauForETauPFRecoTauProducer_cff im
 from ElectroWeakAnalysis.EWKTau.tauForETauMod.tauForETauPatConfig_cfi import *
 
 PFTauForETauPat = cms.Sequence(
-                                PFTauForETau
-
-                               *ldgTrkDiscrForETauKin
-                               *allLayer0TausForETauKin
-                               *layer1TausForETauKin
-
-                               *ldgTrkDiscrForETauLdgTrk
-                               *allLayer0TausForETauLdgTrk
-                               *layer1TausForETauLdgTrk
-
-                               *ldgTrkDiscrForETauLdgTrkCut
-                               *allLayer0TausForETauLdgTrkPt
-                               *layer1TausForETauLdgTrkPt
-
-                               *pfRecoTauTrkIsoDiscrForETau
-                               *allLayer0TausForETauTrkIsod
-                               *layer1TausForETauTrkIsod
-
-                               *pfRecoTauEclIsoDiscrForETau
-                               *allLayer0TausForETauEclIsod
-                               *layer1TausForETauEclIsod
-
-                               *pfRecoTauElecRejDiscrForETau
-                               *allLayer0TausForETauElecRej
-                               *layer1TausForETauElecRej
-                              
-                               *select1Or3SigTrackTausForETau
-                               *select1Or3SigChargedHadTausForETau
-
+                                 pfRecoTauIsoDiscrForETau
+                                *allLayer0PfTausForETau
+                                *pfRecoTauLdgTrkFindForETau
+                                *pfRecoTauLdgTrkPtCutForETau
+                                *pfRecoTauTrkIsoDiscrForETau
+                                *pfRecoTauEclIsoDiscrForETau
+                                *pfRecoTauElecRejDiscrForETau
+                                *pfRecoTauMuonRejDiscrForETau
+                                *layer1PfTausForETau
+                                *selectorPfTausForETauKin
+                                *selectorPfTausForETauLdgTrk
+                                *selectorPfTausForETauLdgTrkPt
+                                *selectorPfTausForETauEclIsod
+                                *selectorPfTausForETauTrkIsod
+                                *selectorPfTausForETauElecRej
+                                *selectorPfTausForETauProng
                               )
+
 PFTauForETauEffPat = cms.Sequence(
-
-                                PFTauForETauEff
-
-                               *ldgTrkDiscrForETauKinEff
-                               *allLayer0TausForETauKinEff 
-                               *layer1TausForETauKinEff
-
-                               *ldgTrkDiscrForETauLdgTrkEff
-                               *allLayer0TausForETauLdgTrkEff
-                               *layer1TausForETauLdgTrkEff
-
-                               *ldgTrkDiscrForETauLdgTrkCut
-                               *allLayer0TausForETauLdgTrkPtEff
-                               *layer1TausForETauLdgTrkPtEff
-
-                               *pfRecoTauTrkIsoDiscrForETauEff 
-                               *allLayer0TausForETauTrkIsodEff
-                               *layer1TausForETauTrkIsodEff
-
-                               *pfRecoTauEclIsoDiscrForETauEff 
-                               *allLayer0TausForETauEclIsodEff
-                               *layer1TausForETauEclIsodEff
-
-                               *pfRecoTauElecRejDiscrForETauEff
-                               *allLayer0TausForETauElecRejEff
-                               *layer1TausForETauElecRejEff
-
-                               *select1Or3SigTrackTausForETauEff
-                               *select1Or3SigChargedHadTausForETauEff
-)
+                                   pfRecoTauIsoDiscrForETauEff
+                                  *allLayer0PfTausForETauEff
+                                  *pfRecoTauLdgTrkFindForETauEff
+                                  *pfRecoTauLdgTrkPtCutForETauEff
+                                  *pfRecoTauTrkIsoDiscrForETauEff
+                                  *pfRecoTauEclIsoDiscrForETauEff
+                                  *pfRecoTauElecRejDiscrForETauEff
+                                  *pfRecoTauMuonRejDiscrForETauEff
+                                  *pfRecoTauIsoDiscrForETauEff
+                                  *layer1PfTausForETauEff
+                                  *selectorPfTausForETauKinEff
+                                  *selectorPfTausForETauLdgTrkEff
+                                  *selectorPfTausForETauLdgTrkPtEff
+                                  *selectorPfTausForETauEclIsodEff
+                                  *selectorPfTausForETauTrkIsodEff
+                                  *selectorPfTausForETauElecRejEff
+                                  *selectorPfTausForETauProngEff
+                                 )
 
 
 
