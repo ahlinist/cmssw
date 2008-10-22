@@ -8,10 +8,12 @@ from RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauProducer_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauProducer_cfi import *
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackPtCut_cfi import *
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
 from ElectroWeakAnalysis.EWKTau.tauLdgDiscrimination_cfi import *
-
+from ElectroWeakAnalysis.EWKTau.tauMassWithElecDiscrimination_cfi import *
 
 ### Modules for Standard Tau Id ###
 
@@ -48,16 +50,30 @@ pfRecoTauProducerForETau.ECALIsolConeSize_min = "0.0"
 pfRecoTauProducerForETau.GammaCand_minPt = 1.5
 
 ### Discriminators ###
+pfRecoTauLdgTrkFindForETau = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
+pfRecoTauLdgTrkFindForETau.PFTauProducer = 'allLayer0PfTausForETau' #'allLayer0PfTausForETauEffForETauKin'
+
+pfRecoTauLdgTrkPtCutForETau = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackPtCut)
+pfRecoTauLdgTrkPtCutForETau.PFTauProducer = 'allLayer0PfTausForETau' #'allLayer0PfTausForETauEffForETauLdgTrk'
+pfRecoTauLdgTrkPtCutForETau.MinPtLeadingTrack = 5.0
+
 pfRecoTauTrkIsoDiscrForETau = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
 pfRecoTauTrkIsoDiscrForETau.ApplyDiscriminationByECALIsolation = False
-pfRecoTauTrkIsoDiscrForETau.PFTauProducer = 'allLayer0TausForETauLdgTrkPt' #pfRecoTauProducerForETau'
+pfRecoTauTrkIsoDiscrForETau.PFTauProducer = 'allLayer0PfTausForETau' #'allLayer0PfTausForETauEffForETauMassWithElec'
 
 pfRecoTauEclIsoDiscrForETau = copy.deepcopy(pfRecoTauDiscriminationByIsolation)          
-pfRecoTauTrkIsoDiscrForETau.ApplyDiscriminationByECALIsolation = True
-pfRecoTauEclIsoDiscrForETau.PFTauProducer = 'allLayer0TausForETauTrkIsod'   #'pfRecoTauProducerForETau'
+pfRecoTauEclIsoDiscrForETau.ApplyDiscriminationByTrackerIsolation = False
+pfRecoTauEclIsoDiscrForETau.ApplyDiscriminationByECALIsolation = True
+pfRecoTauEclIsoDiscrForETau.PFTauProducer = 'allLayer0PfTausForETau' #'allLayer0PfTausForETauEffForETauTrkIsod'
 
 pfRecoTauElecRejDiscrForETau = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
-pfRecoTauElecRejDiscrForETau.PFTauProducer = 'allLayer0TausForETauEclIsod' #'pfRecoTauProducerForETau'
+pfRecoTauElecRejDiscrForETau.PFTauProducer = 'allLayer0PfTausForETau' #'allLayer0PfTausForETauEffForETauEclIsod'
+
+pfRecoTauMuonRejDiscrForETau = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
+pfRecoTauMuonRejDiscrForETau.PFTauProducer = 'allLayer0PfTausForETau' 
+
+pfRecoTauIsoDiscrForETau = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
+pfRecoTauIsoDiscrForETau.PFTauProducer = 'pfRecoTauProducerForETau'
 
 
 ### Modules For Tau Id in Efficiency measurement ###
@@ -80,7 +96,7 @@ pfRecoTauProducerForETauEff.LeadTrack_minPt = 5.0
 pfRecoTauProducerForETauEff.LeadChargedHadrCand_minPt = 5.0
 ### Trk Iso ###
 pfRecoTauProducerForETauEff.TrackerIsolConeMetric = "DR"
-pfRecoTauProducerForETauEff.TrackerIsolConeSizeFormula = "0.7"
+pfRecoTauProducerForETauEff.TrackerIsolConeSizeFormula = "0.7" 
 pfRecoTauProducerForETauEff.TrackerIsolConeSize_max = "1.0"
 pfRecoTauProducerForETauEff.TrackerIsolConeSize_min = "0.0"
 pfRecoTauProducerForETauEff.Track_IsolAnnulus_minNhits = 8
@@ -98,16 +114,30 @@ pfRecoTauProducerForETauEff.ECALIsolConeSize_min = "0.0"
 pfRecoTauProducerForETauEff.GammaCand_minPt = 1.5
 
 ### Discriminators ###
+pfRecoTauLdgTrkFindForETauEff = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackFinding)
+pfRecoTauLdgTrkFindForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauKinEff'
+
+pfRecoTauLdgTrkPtCutForETauEff = copy.deepcopy(pfRecoTauDiscriminationByLeadingTrackPtCut)
+pfRecoTauLdgTrkPtCutForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauLdgTrkEff'
+pfRecoTauLdgTrkPtCutForETauEff.MinPtLeadingTrack = 5.0
+
 pfRecoTauTrkIsoDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationByIsolation)          
 pfRecoTauTrkIsoDiscrForETauEff.ApplyDiscriminationByECALIsolation = False
-pfRecoTauTrkIsoDiscrForETauEff.PFTauProducer = 'allLayer0TausForETauLdgTrkPtEff' #'pfRecoTauProducerForETauEff'
+pfRecoTauTrkIsoDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauMassWithElecEff'
 
 pfRecoTauEclIsoDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationByIsolation)          
-pfRecoTauTrkIsoDiscrForETauEff.ApplyDiscriminationByECALIsolation = True 
-pfRecoTauEclIsoDiscrForETauEff.PFTauProducer = 'allLayer0TausForETauTrkIsodEff' #'pfRecoTauProducerForETauEff'
+pfRecoTauEclIsoDiscrForETauEff.ApplyDiscriminationByTrackerIsolation = False
+pfRecoTauEclIsoDiscrForETauEff.ApplyDiscriminationByECALIsolation = True 
+pfRecoTauEclIsoDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauTrkIsodEff'
 
-pfRecoTauElecRejDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)                        
-pfRecoTauElecRejDiscrForETauEff.PFTauProducer = 'allLayer0TausForETauEclIsodEff' #'pfRecoTauProducerForETauEff'
+pfRecoTauElecRejDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
+pfRecoTauElecRejDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauEclIsodEff'
+
+pfRecoTauMuonRejDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
+pfRecoTauMuonRejDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' 
+
+pfRecoTauIsoDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
+pfRecoTauIsoDiscrForETauEff.PFTauProducer = 'pfRecoTauProducerForETauEff'
 
 PFTauForETauPreamble = cms.Sequence(
                                      ic5PFJetTracksAssociatorAtVertex
@@ -122,5 +152,5 @@ PFTauForETauEff = cms.Sequence(
                                pfRecoTauTagInfoProducerForETauEff
                               *pfRecoTauProducerForETauEff
                               )
-
+           
 
