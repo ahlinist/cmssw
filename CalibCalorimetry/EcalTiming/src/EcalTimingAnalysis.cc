@@ -234,9 +234,9 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   //It is basically an electronics mapping service
 
   
-  fullAmpProfileEB_  = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEB"))  : (new TProfile2D("fullAmpProfileEB", " Average Amplitude EB ;i#phi;i#eta",360,1.,361.,171,-85.,86.,0.0,10000.));
-  fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,10000.));
-  fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,10000.));
+  fullAmpProfileEB_  = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEB"))  : (new TProfile2D("fullAmpProfileEB", " Average Amplitude EB ;i#phi;i#eta",360,1.,361.,171,-85.,86.,0.0,50000.));
+  fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
+  fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
   
    edm::ESHandle< EcalElectronicsMapping > handle;
    eventSetup.get< EcalMappingRcd >().get(handle);
@@ -476,21 +476,21 @@ void EcalTimingAnalysis::endJob() {
   ttTimingProfileEEP->SetName("EEPtimeTTProfile");
   ttTimingProfileEEP->GetXaxis()->SetNdivisions(-18);
   ttTimingProfileEEP->GetYaxis()->SetNdivisions(16);
-  TProfile2D* ttTimingProfileRelEEP = (TProfile2D*) ttTimingEtaPhiRelEEP_->Project3DProfile("yx");
-  ttTimingProfileRelEEP->SetTitle("(ix,iy,time corrected) for all EE+ FEDs (SM,tt binning);ix;iy");
-  ttTimingProfileRelEEP->SetName("EEPtimeTTProfileRel");
-  ttTimingProfileRelEEP->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfileRelEEP->GetYaxis()->SetNdivisions(16);
+  //TProfile2D* ttTimingProfileRelEEP = (TProfile2D*) ttTimingEtaPhiRelEEP_->Project3DProfile("yx");
+  //ttTimingProfileRelEEP->SetTitle("(ix,iy,time corrected) for all EE+ FEDs (SM,tt binning);ix;iy");
+  //ttTimingProfileRelEEP->SetName("EEPtimeTTProfileRel");
+  //ttTimingProfileRelEEP->GetXaxis()->SetNdivisions(-18);
+  //ttTimingProfileRelEEP->GetYaxis()->SetNdivisions(16);
   TProfile2D* ttTimingProfileEEM = (TProfile2D*) ttTimingEtaPhiEEM_->Project3DProfile("yx");
   ttTimingProfileEEM->SetTitle("(ix,iy,time) for all EE- FEDs (SM,tt binning);ix;iy");
   ttTimingProfileEEM->SetName("EEMtimeTTProfile");
   ttTimingProfileEEM->GetXaxis()->SetNdivisions(-18);
   ttTimingProfileEEM->GetYaxis()->SetNdivisions(16);
-  TProfile2D* ttTimingProfileRelEEM = (TProfile2D*) ttTimingEtaPhiRelEEM_->Project3DProfile("yx");
-  ttTimingProfileRelEEM->SetTitle("(ix,iy,time corrected) for all EE- FEDs (SM,tt binning);ix;iy");
-  ttTimingProfileRelEEM->SetName("EEMtimeTTProfileRel");
-  ttTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
-  ttTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
+  //TProfile2D* ttTimingProfileRelEEM = (TProfile2D*) ttTimingEtaPhiRelEEM_->Project3DProfile("yx");
+  //ttTimingProfileRelEEM->SetTitle("(ix,iy,time corrected) for all EE- FEDs (SM,tt binning);ix;iy");
+  //ttTimingProfileRelEEM->SetName("EEMtimeTTProfileRel");
+  //ttTimingProfileRelEEM->GetXaxis()->SetNdivisions(-18);
+  //ttTimingProfileRelEEM->GetYaxis()->SetNdivisions(16);
   
   TFile f(rootfile_.c_str(),"RECREATE");
   
