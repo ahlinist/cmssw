@@ -53,16 +53,18 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   //Timing by FED/SM  
   c[0]->cd();
-  gStyle->SetOptStat(1111);
+  gStyle->SetOptStat(10);
   TProfile *SM_timing = (TProfile*) f->Get("SM_timing");
+  customizeTProfile(SM_timing);
   SM_timing->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,SM_timing->GetTitle()); 
   SM_timing->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/LaserAnalysis_SM_timing_%i.%s",dirName,runNumber,fileType); c[0]->Print(name); }
 
   c[1]->cd();
-  gStyle->SetOptStat(1111);
+  gStyle->SetOptStat(10);
   TProfile *SM_timingCorrected = (TProfile*) f->Get("SM_timingCorrected");
+  customizeTProfile(SM_timingCorrected);
   SM_timingCorrected->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,SM_timingCorrected->GetTitle()); 
   SM_timingCorrected->SetTitle(mytitle);
@@ -70,16 +72,18 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   //Timing by LM
   c[2]->cd();
-  gStyle->SetOptStat(1111);
+  gStyle->SetOptStat(10);
   TProfile *LM_timing = (TProfile*) f->Get("LM_timing");
+  customizeTProfile(LM_timing);
   LM_timing->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,LM_timing->GetTitle()); 
   LM_timing->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/LaserAnalysis_LM_timing_%i.%s",dirName,runNumber,fileType); c[2]->Print(name); }
 
   c[3]->cd();
-  gStyle->SetOptStat(1111);
+  gStyle->SetOptStat(10);
   TProfile *LM_timingCorrected = (TProfile*) f->Get("LM_timingCorrected");
+  customizeTProfile(LM_timingCorrected);
   LM_timingCorrected->Draw();
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,LM_timingCorrected->GetTitle()); 
   LM_timingCorrected->SetTitle(mytitle);
@@ -355,6 +359,12 @@ void drawEELines() {
    }
  }
 
+}
+
+void customizeTProfile (TProfile* myTProfile) {
+  myTProfile->SetLineWidth(2);
+  myTProfile->SetMarkerStyle(kFullCircle);
+  myTProfile->SetMarkerSize(0.7);
 }
 
 
