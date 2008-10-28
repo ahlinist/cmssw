@@ -23,7 +23,7 @@
 
 #define N_TICS    100
 
-SummaryMap::SummaryMap() {
+SummaryMap::SummaryMap() : detector(N_TICS, N_TICS) {
 
   h1 = new TH2F("h1", "", 10, -2.5, 2.5, 10, 0.0, 2.0*3.14159);
   h1->GetXaxis()->SetTitle("#eta");
@@ -152,7 +152,7 @@ void SummaryMap::drawDetector(TH2* me){
 
 void SummaryMap::drawStation(TH2* me, const int station){ 
 
-  CSCAddress adr;
+  cscdqm::Address adr;
 
   gStyle->SetPalette(1,0);
 
@@ -167,7 +167,7 @@ void SummaryMap::drawStation(TH2* me, const int station){
   float x_min_chamber = FLT_MAX, x_max_chamber = FLT_MIN;
   float y_min_chamber = FLT_MAX, y_max_chamber = FLT_MIN;
 
-  const CSCAddressBox *box;
+  const cscdqm::AddressBox *box;
   adr.mask.side = adr.mask.ring = adr.mask.chamber  = adr.mask.layer = adr.mask.cfeb = adr.mask.hv = false;
   adr.mask.station = true;
   adr.station = station;
