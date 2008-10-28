@@ -17,17 +17,21 @@ from RecoBTag.Analysis.bTagCommon_cff import *
 bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
     # parameters common to all tagger algorithms
     bTagCommonBlock,
+    
     # output root file
-    rootfile = cms.string('jetTagAnalysis.root'),
-    tagConfig = cms.VPSet(cms.PSet(
-        bTagTrackIPAnalysisBlock,
-        type = cms.string('TrackIP'),
-        label = cms.InputTag("impactParameterTagInfos")
-    ), 
+    rootfile = cms.string('jetTagAnalysis.root'),           
+
+    # TagInfos and JetTags to plot
+    tagConfig = cms.VPSet(
+        cms.PSet(
+            bTagTrackIPAnalysisBlock,
+            type = cms.string('TrackIP'),
+            label = cms.InputTag("impactParameterTagInfos")
+        ), 
         cms.PSet(
             bTagCombinedSVAnalysisBlock,
-            ipTagInfos = cms.InputTag("impactParameterTagInfos"),
             type = cms.string('GenericMVA'),
+            ipTagInfos = cms.InputTag("impactParameterTagInfos"),
             svTagInfos = cms.InputTag("secondaryVertexTagInfos"),
             label = cms.InputTag("combinedSecondaryVertex")
         ), 
@@ -64,6 +68,11 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("combinedSecondaryVertexMVABJetTags")
         ), 
         cms.PSet(
+            parameters = cms.PSet(),
+            type = cms.string('SoftLepton'),
+            label = cms.InputTag("softMuonTagInfos")
+        ),
+        cms.PSet(
             bTagSoftLeptonAnalysisBlock,
             label = cms.InputTag("softMuonBJetTags")
         ), 
@@ -76,23 +85,18 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("softMuonByPtBJetTags")
         ), 
         cms.PSet(
-            parameters = cms.PSet(),
-            type = cms.string('SoftLepton'),
-            label = cms.InputTag("softMuonTagInfos")
-        ),
-        cms.PSet(
-            parameters = cms.PSet(),
-            type = cms.string('SoftLepton'),
-            label = cms.InputTag("softElectronTagInfos")
-        ),cms.PSet(
             bTagSoftLeptonByIPAnalysisBlock,
             label = cms.InputTag("softMuonByIP3dBJetTags")
         ), 
         cms.PSet(
+            parameters = cms.PSet(),
+            type = cms.string('SoftLepton'),
+            label = cms.InputTag("softElectronTagInfos")
+        ),
+        cms.PSet(
             bTagSoftLeptonAnalysisBlock,
             label = cms.InputTag("softElectronBJetTags")
-        ))
+        )
+    )
+
 )
-
-
-
