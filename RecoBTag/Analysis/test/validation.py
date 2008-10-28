@@ -18,9 +18,8 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-# make the validation plots
+# validation plots
 process.load("RecoBTag.Analysis.bTagAnalysis_cfi")
-process.bTagAnalysis.producePs = False
 
-# run the modules
+# run validation
 process.plots = cms.Path(process.bTagAnalysis)
