@@ -81,6 +81,10 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("softMuonTagInfos")
         ),
         cms.PSet(
+            parameters = cms.PSet(),
+            type = cms.string('SoftLepton'),
+            label = cms.InputTag("softElectronTagInfos")
+        ),cms.PSet(
             bTagSoftLeptonByIPAnalysisBlock,
             label = cms.InputTag("softMuonByIP3dBJetTags")
         ), 
