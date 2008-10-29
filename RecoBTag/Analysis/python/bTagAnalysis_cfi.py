@@ -52,10 +52,6 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
             label = cms.InputTag("jetBProbabilityBJetTags")
         ), 
         cms.PSet(
-            bTagGenericAnalysisBlock,
-            label = cms.InputTag("impactParameterMVABJetTags")
-        ), 
-        cms.PSet(
             bTagSimpleSVAnalysisBlock,
             label = cms.InputTag("simpleSecondaryVertexBJetTags")
         ), 
@@ -75,10 +71,6 @@ bTagAnalysis = cms.EDAnalyzer("BTagPerformanceAnalyzer",
         cms.PSet(
             bTagSoftLeptonAnalysisBlock,
             label = cms.InputTag("softMuonBJetTags")
-        ), 
-        cms.PSet(
-            bTagSoftLeptonAnalysisBlock,
-            label = cms.InputTag("softMuonNoIPBJetTags")
         ), 
         cms.PSet(
             bTagSoftLeptonByPtAnalysisBlock,
