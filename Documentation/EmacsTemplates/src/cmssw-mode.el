@@ -77,6 +77,7 @@
 (if cmssw-mode-map ()
   (setq cmssw-mode-map (make-sparse-keymap))
   (define-key cmssw-mode-map "\C-c\C-c" 'cmssw-visit-file)
+  (define-key cmssw-mode-map "\C-c\C-v" 'cmssw-visit-py-file)
   (if (boundp 'running-xemacs)
       (define-key cmssw-mode-map [(meta button1)] 'cmssw-visit-file-mouse)
     (define-key cmssw-mode-map [M-down-mouse-1] 'cmssw-visit-file-mouse)
@@ -259,6 +260,24 @@ absolute filename or nil on failure."
     (if done trial nil)
     ))
 
+(defun cmssw-find-py-file (filename)
+  "Search for the specified file in CMSSW_SEARCH_PATH, returning an
+absolute filename or nil on failure."
+  (let ((search-path (getenv "PYTHONPATH")) (path) (i 0) (done nil) (trial))
+    (if (not search-path) (error "PYTHONPATH is not defined.  Do \"eval `scramv1 runtime -sh`\" (or -csh) before starting Emacs."))
+    (setq path (parse-colon-path search-path))
+    (while (and (< i (length path)) (not done))
+      (setq filename (replace-regexp-in-string "\\." "/" filename))
+      (message "Filename is: ")
+      (message filename)
+      (setq trial (format "%s%s.py" (nth i path) filename))
+      (if (file-exists-p trial) (setq done t))
+      (setq i (1+ i))
+      )
+    (if done trial nil)
+    ))
+
+
 ;; When the user types \C-c\C-c on a filename, Emacs searches CMSSW_SEARCH_PATH and opens that filename
 (defun cmssw-visit-file ()
   "Visit the file under (point)."
@@ -280,6 +299,28 @@ absolute filename or nil on failure."
       (find-file abspath)
       )
     ))
+
+(defun cmssw-visit-py-file ()
+  "Visit the file under (point)."
+  (interactive)
+  (let ((initial (point)) (beg) (end) (filename) (abspath))
+    (skip-chars-backward "A-Za-z0-9\-\+=\./\?_")
+    (setq beg (point))
+    (goto-char initial)
+    (skip-chars-forward "A-Za-z0-9\-\+=\./\?_")
+    (setq end (point))
+    (goto-char initial)
+
+    (setq filename (buffer-substring beg end))
+    (if (string= filename "")
+	nil
+      (setq abspath (cmssw-find-py-file filename))
+      (if (not abspath) (error (format "File \"%s\" not in CMSSW_SEARCH_PATH" filename)))
+      (message abspath)
+      (find-file abspath)
+      )
+    ))
+
 
 ;; When the user meta-clicks on a filename, Emacs searches CMSSW_SEARCH_PATH and opens that filename
 (defun cmssw-visit-file-mouse (event)
