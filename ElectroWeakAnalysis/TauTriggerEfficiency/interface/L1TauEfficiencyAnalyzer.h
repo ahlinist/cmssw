@@ -23,6 +23,7 @@
 
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 
 #include <TTree.h>
 #include <TFile.h>
@@ -37,6 +38,8 @@ using namespace std;
 class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
 
     public:
+	typedef math::XYZTLorentzVector LorentzVector;
+
         L1TauEfficiencyAnalyzer();
         explicit L1TauEfficiencyAnalyzer(const edm::ParameterSet&);
         void Setup(const edm::ParameterSet&,TTree *l1tree);
@@ -47,6 +50,8 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
         virtual void endJob();
 
         virtual void fill(const edm::Event&, const reco::PFTau&);
+        virtual void fill(const edm::Event&, const reco::CaloTau&);
+        virtual void fill(const edm::Event&, const LorentzVector&);
 
    private:
         // Input parameters
