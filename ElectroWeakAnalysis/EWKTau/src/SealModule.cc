@@ -14,6 +14,7 @@
 #include "ElectroWeakAnalysis/EWKTau/interface/PATLeptonPFParticleIsolationSelector.h"
 #include "ElectroWeakAnalysis/EWKTau/interface/PATLeptonSVAssociatorSelector.h"
 #include "ElectroWeakAnalysis/EWKTau/interface/PATLeptonPATTauSeperationSelector.h"
+#include "ElectroWeakAnalysis/EWKTau/interface/EWKTauIDAnalyzer.h"
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(MuonFilter);
@@ -28,4 +29,5 @@ DEFINE_ANOTHER_FWK_MODULE(PATLeptonPATMetDelPhiSelector);
 DEFINE_ANOTHER_FWK_MODULE(PATLeptonPFParticleIsolationSelector);
 DEFINE_ANOTHER_FWK_MODULE(PATLeptonSVAssociatorSelector);
 DEFINE_ANOTHER_FWK_MODULE(PATLeptonPATTauSeperationSelector);
+DEFINE_ANOTHER_FWK_MODULE(EWKTauIDAnalyzer);
 //DEFINE_ANOTHER_FWK_MODULE(WToTauNuFilter);
