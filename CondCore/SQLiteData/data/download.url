@@ -15,3 +15,4 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/SiStripFedCabling_20X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodNonIsolated.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodTkIsolated.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/MVAJetTagsFakeConditions.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/BadChambers.db
