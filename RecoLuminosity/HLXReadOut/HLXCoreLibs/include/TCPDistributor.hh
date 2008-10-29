@@ -64,7 +64,7 @@ namespace HCAL_HLX {
   public:
 
     // Constructor
-    TCPDistributor(const char * serverName = "127.0.0.1",
+    TCPDistributor(const std::string & serverName = "127.0.0.1",
 		   u16 port = 50002);
 
     // Destructor

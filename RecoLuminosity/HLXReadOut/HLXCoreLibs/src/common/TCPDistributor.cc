@@ -23,14 +23,14 @@ namespace HCAL_HLX
   using namespace std;
   
   // Default constructor
-  TCPDistributor::TCPDistributor(const char * serverName, u16 port) {
+  TCPDistributor::TCPDistributor(const std::string & serverName, u16 port) {
     try {
       mThreadId = 0;
 
       // Constructor connects to the TCP/IP loopback
       // Server must be active for this to run
       struct sockaddr_in sa_local;
-      struct hostent * hostInfo = gethostbyname(serverName);
+      struct hostent * hostInfo = gethostbyname(serverName.c_str());
 
       // Create the client socket
       mSocket = socket(AF_INET, SOCK_STREAM, 0);

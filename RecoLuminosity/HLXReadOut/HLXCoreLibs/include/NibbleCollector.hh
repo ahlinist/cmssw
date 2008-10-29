@@ -22,8 +22,6 @@
 // Abstract base class for Lumi Section
 #include "AbstractSectionCollector.hh"
 
-//#define HCAL_HLX_U8_BUFFER
-
 // Namespace for the HCAL HLX
 namespace HCAL_HLX
 {
@@ -45,8 +43,10 @@ namespace HCAL_HLX
 
     // Constructor takes port and local IP as arguments
     NibbleCollector(u32 aNumHLXs,
+		    u16 aNumBunches,
+		    u16 aNumOrbits,
 		    u16 localPort = 0x533A,
-		    char sourceAddress[] = "192.168.1.100");
+		    const std::string & sourceAddress = "192.168.1.100");
     ~NibbleCollector();
     
     // Reset function
@@ -72,13 +72,24 @@ namespace HCAL_HLX
     u16 GetWriteBufferPointer();
     u16 GetReadBufferPointer();
 
-    // Service handler function
-    //void RunServiceHandler();
-
     // Lumi section collector
     void AttachSectionCollector(AbstractSectionCollector *sectionCollector);
 
+    // Yes this is by-value to be thread-safe (invokes copy constructor)
+    const std::string GetLastError();
+
   protected:
+
+    // Helper functions
+    bool CheckDataValidity(const LUMI_RAW_HEADER *lumiHdr,
+			   u32 nBytes);
+    void InitialiseNibble(u8 hlxID,
+			  u32 startOrbit);
+
+    // Error logging
+    pthread_mutex_t mErrorMutex;
+    std::string mErrorMsg;
+    void SetError(const std::string & errorMsg);
 
     // Packet processor
     void ProcessPacket(const LUMI_RAW_HEADER *lumiHdr,
@@ -93,9 +104,11 @@ namespace HCAL_HLX
 
     // Thread worker function
     static void WorkerThread(void *thisPtr);
+    void WorkerThreadInt();
 
-    // Thread service function
+    // Thread service functions
     static void ServiceThread(void *thisPtr);
+    void ServiceThreadInt();
 
     // Checksum calculation helper functions
     bool ValidateChecksum(const u8 *data, u32 numBytes);
@@ -137,15 +150,17 @@ namespace HCAL_HLX
 
     // Number of HLXs in system
     u32 mNumHLXs;
+    // Expected number of orbits in a packet
+    u16 mNumOrbits;
+    // Expected number of bunches in a packet
+    u16 mNumBunches;
+    // Payload data volume
+    u32 m32BitNibbleSize;
+    u32 m16BitNibbleSize;
 
     // Circular buffer pointers
-#ifdef HCAL_HLX_U8_BUFFER
-    u8 mWriteBufferPointer;
-    u8 mReadBufferPointer;
-#else
     u16 mWriteBufferPointer;
     u16 mReadBufferPointer;
-#endif
 
     // Circular buffers
     HLX_CB_TYPE *circularBuffer;
@@ -155,9 +170,6 @@ namespace HCAL_HLX
 
     // Worker thread ID
     pthread_t mWorkerThreadId, mServiceThreadId;
-
-    // Mutex 
-    //pthread_mutex_t mDataMutex;
 
     // Hardware abstraction layer
     //HLX_HAL::HLXVMEILInterface * mHardwareInterface;

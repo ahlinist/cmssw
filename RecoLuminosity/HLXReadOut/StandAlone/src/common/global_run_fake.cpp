@@ -34,11 +34,11 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 1
+#define NUM_HLXS 36
 #define SHORT_LENGTH 4
 #define LONG_LENGTH 256
-#define NUM_BUNCHES 300 //3564
-#define NUM_ORBITS 1 //4096
+#define NUM_BUNCHES 3564
+#define NUM_ORBITS 4096
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
@@ -54,47 +54,48 @@ int main(int argc, char ** argv) {
   GIFDistributor *lGIFDistributor = 0;
   WedgeGIFDistributor *lWedgeGIFDistributor[NUM_HLXS] = {0};
 
-  // Get the run number
-  if ( argc != 2 ) {
-    cerr << "Expected 1 argument but found " << argc-1 << endl;
-    return 1;
-  }
-  u32 runNumber = atol(argv[1]);
+  u32 runNumber = 0 ;//atol(argv[1]);
 
   try {
     // One second
     lSectionCollectorShort = new SectionCollector(NUM_BUNCHES, // Num bunches
 				         	  SHORT_LENGTH,   // Num nibbles per section
 					          NUM_ORBITS,   // Num orbits in lumi nibble
-					          NUM_HLXS);  // Num HLXs
+					          NUM_HLXS,
+						  runNumber);  // Num HLXs
     // Ten seconds
     lSectionCollectorLong = new SectionCollector(NUM_BUNCHES, // Num bunches
 						 LONG_LENGTH,   // Num nibbles per section
 						 NUM_ORBITS,   // Num orbits in lumi nibble
-						 NUM_HLXS);  // Num HLXs
+						 NUM_HLXS,
+						 runNumber);  // Num HLXs
     // Set the run number
-    lSectionCollectorShort->SetRunNumber(runNumber);
-    lSectionCollectorLong->SetRunNumber(runNumber);
+    lSectionCollectorShort->SetNextRunNumber(runNumber);
+    lSectionCollectorLong->SetNextRunNumber(runNumber);
 
-    lOracleDistributor = new OracleDistributor;
-    lSectionCollectorLong->AttachDistributor(lOracleDistributor);
+    //lOracleDistributor = new OracleDistributor;
+    //lSectionCollectorLong->AttachDistributor(lOracleDistributor);
     //lROOTDistributor = new ROOTDistributor;
     //lSectionCollectorLong->AttachDistributor(lROOTDistributor);
     //lDebugCoutDistributor = new DebugCoutDistributor;
     //lSectionCollectorLong->AttachDistributor(lDebugCoutDistributor);
 
-    //lGIFDistributor = new GIFDistributor;
-    //lSectionCollectorLong->AttachDistributor(lGIFDistributor);
+    lGIFDistributor = new GIFDistributor;
+    lSectionCollectorLong->AttachDistributor(lGIFDistributor);
     lDIPDistributor = new DIPDistributor;
     lSectionCollectorShort->AttachDistributor(lDIPDistributor);
-    //lTCPDistributor = new TCPDistributor;
-    //lSectionCollectorShort->AttachDistributor(lTCPDistributor);
+    lTCPDistributor = new TCPDistributor;
+    lSectionCollectorShort->AttachDistributor(lTCPDistributor);
     //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
     //lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);
       //lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
     //}
 
-    lNibbleCollector = new NibbleCollector(NUM_HLXS,0x533C);
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,
+					   NUM_BUNCHES,
+					   NUM_ORBITS,
+					   0x533A,
+					   "BROADCAST");
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorLong);
 
@@ -127,27 +128,35 @@ int main(int argc, char ** argv) {
 	cout << "Lost packet count: " << lNibbleCollector->GetNumLostPackets() << endl;
 	cout << "Total data volume: " << lNibbleCollector->GetTotalDataVolume() << endl;
 	cout << "Average data rate (Mb/s): " << (double)lNibbleCollector->GetTotalDataVolume()*8.0/(1024.0*1024.0*(double)(tempTime-startTime)) << endl;
+	cout << "Nibble last error: " << lNibbleCollector->GetLastError() << endl;
+	cout << "Short section last error: " << lSectionCollectorShort->GetLastError() << endl;
+	cout << "Long section last error: " << lSectionCollectorLong->GetLastError() << endl;
+	cout << "Short section resync count: " << lSectionCollectorShort->GetResyncCount() << endl;
+	cout << "Long section resync count: " << lSectionCollectorLong->GetResyncCount() << endl;
 	interTime = tempTime;
       }
     }
         
   }catch(ICException & aExc){
+	cout << "IC exception caught" << endl;
     cerr << aExc.what() << endl;
   }catch(std::exception & aExc){
+	cout <<"std exception caught" << endl; 
     cerr << aExc.what()<<std::endl;
   }catch(...){
     cerr <<"Unknown exception caught."<<std::endl;
   }
 
+  lNibbleCollector->Stop();
   delete lNibbleCollector;
   delete lSectionCollectorShort;
   delete lSectionCollectorLong;
-  delete lDIPDistributor;
-  delete lDebugCoutDistributor;
-  delete lTCPDistributor;
+  //delete lDIPDistributor;
+  //delete lDebugCoutDistributor;
+  //delete lTCPDistributor;
   //delete lROOTDistributor;
-  delete lOracleDistributor;
-  delete lGIFDistributor;
+  //delete lOracleDistributor;
+  //delete lGIFDistributor;
   //for ( u32 i = 0 ; i != NUM_HLXS ; i++ ) {
   //  delete lWedgeGIFDistributor[i];
  // }

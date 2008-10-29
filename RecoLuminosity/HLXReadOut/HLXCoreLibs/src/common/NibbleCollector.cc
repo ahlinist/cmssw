@@ -31,123 +31,87 @@ namespace HCAL_HLX
   
   // Default constructor
   NibbleCollector::NibbleCollector(u32 aNumHLXs,
+				   u16 aNumBunches,
+				   u16 aNumOrbits,
 				   u16 localPort,
-				   char sourceAddress[]) {
-    try {
-      mUdpSocket=-1;
-      mWorkerThreadId = 0;
-      mServiceThreadId=0;
-      mNumHLXs = aNumHLXs;
-
-      // Initialise the data structures
-      this->Init();
-
-      // Reset the data structures
-      this->Reset();
-
-      // Assign the UDP socket
-      mUdpSocket = socket(PF_INET,SOCK_DGRAM,0);
-      if ( mUdpSocket == -1 ) {
-	HardwareAccessException lExc("Could not open socket");
-	RAISE(lExc);
-      }
-
-      // Bind the socket to the local port / address
-      sockaddr_in sa_local;
-      sa_local.sin_port = ((localPort&0xFF)<<8)|((localPort&0xFF00)>>8); // endian swap...
-      sa_local.sin_addr.s_addr = inet_addr(sourceAddress);
-      sa_local.sin_family = AF_INET;
-
-      // Has to be done before bind!!!
-      unsigned long tempNum = 1000000;
-      socklen_t txa = 4;
-      setsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
-		 &tempNum,txa);
-      getsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
-		 &tempNum,&txa);
-      cout << dec << "SO_RCVBUF set to " << tempNum << endl;
-
-      // Allow socket to be re-bound
-      int val=1;
-      setsockopt(mUdpSocket,SOL_SOCKET,SO_REUSEADDR,&val,sizeof(val));
-
-      // Bind to a local port to receive data
-      int ret = bind(mUdpSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
-      if ( ret == -1 ) {
-	HardwareAccessException lExc("Socket could not be bound to local port");
-	RAISE(lExc);
-      }
-
-      cout << "Setup complete" << endl;
-
-      /*
-      // Initialise the worker thread
-      mWorkerThreadContinue=true;
-      mWriteBufferPointer = 0;
-      mReadBufferPointer = 0;
-      //pthread_mutex_init(&mDataMutex,0);
-
-      // Thread attribute initialisation
-      pthread_attr_t attr;
-      ret = pthread_attr_init(&attr);
-      if ( ret != 0 ) {
-      	MemoryAllocationException lExc("Cannot initialise worker thread attributes");
-      	RAISE(lExc);
-      }
-
-      // Thread priority initialisation
-
-      //schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
-
-      //pthread_attr_setschedpolicy(&attr,SCHED_FIFO);
-      //pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
-      //pthread_attr_setschedparam(&attr,&schedparam);
-
-
-      //ret = pthread_attr_setstacksize(&attr,stacksize);
-
-      // Create the worker thread
-      ret = pthread_create(&mWorkerThreadId,
-			   NULL,
-			   (void*(*)(void*))NibbleCollector::WorkerThread,
-			   reinterpret_cast<void *>(this));
-      if ( ret != 0 ) {
-	MemoryAllocationException lExc("Cannot create worker thread");
-	RAISE(lExc);
-      }
-
-      int policy;
-      sched_param schedparam;
-      policy = SCHED_FIFO;
-      cout << "Thread policy set to SCHED_FIFO" << endl;
-      schedparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
-      cout << "Thread priority set to " << schedparam.sched_priority << endl;
-      pthread_setschedparam(mWorkerThreadId,
-			    policy,
-			    &schedparam);
-      pthread_getschedparam(mWorkerThreadId,
-			    &policy,
-			    &schedparam);
-      cout << "Policy is now: " << policy << endl;
-      cout << "Priority is now: " << schedparam.sched_priority << endl;
-
-      cout << "Starting service thread" << endl;
-      mServiceThreadContinue=true;
-      ret = pthread_create(&mServiceThreadId,
-			   NULL,
-			   (void*(*)(void*))NibbleCollector::ServiceThread,
-			   reinterpret_cast<void *>(this));
-      if ( ret != 0 ) {
-	MemoryAllocationException lExc("Cannot create service thread");
-	RAISE(lExc);
-	}*/
-
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
+				   const std::string & sourceAddress) {
+    mUdpSocket=-1;
+    mWorkerThreadId = 0;
+    mServiceThreadId=0;
+    mNumHLXs = aNumHLXs;
+    mNumBunches = aNumBunches;
+    mNumOrbits = aNumOrbits;
+    m32BitNibbleSize = aNumBunches * sizeof(u32);
+    m16BitNibbleSize = aNumBunches * sizeof(u16);
+    
+    // Initialise the data structures
+    this->Init();
+    
+    // Reset the data structures
+    this->Reset();
+    
+    // Assign the UDP socket
+    mUdpSocket = socket(PF_INET,SOCK_DGRAM,0);
+    if ( mUdpSocket == -1 ) {
+      HardwareAccessException lExc("Could not open socket");
+      RAISE(lExc);
     }
+    
+    // Bind the socket to the local port / address
+    sockaddr_in sa_local;
+    sa_local.sin_port = ((localPort&0xFF)<<8)|((localPort&0xFF00)>>8); // endian swap...
+    if ( sourceAddress == "BROADCAST" ) {
+      sa_local.sin_addr.s_addr = INADDR_BROADCAST;
+    } else {
+      sa_local.sin_addr.s_addr = inet_addr(sourceAddress.c_str());
+    }
+    sa_local.sin_family = AF_INET;
+    
+    // Has to be done before bind!!!
+    unsigned long tempNum = 1000000;
+    socklen_t txa = 4;
+    setsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
+	       &tempNum,txa);
+    getsockopt(mUdpSocket,SOL_SOCKET,SO_RCVBUF,
+	       &tempNum,&txa);
+    //2Acout << dec << "SO_RCVBUF set to " << tempNum << endl;
+    
+    // Allow socket to be re-bound
+    int val=1;
+    setsockopt(mUdpSocket,SOL_SOCKET,SO_REUSEADDR,&val,sizeof(val));
+    
+    // Enable broadcast packet decoding
+    // Should really check if this fails
+    if ( sourceAddress == "BROADCAST" ) {
+      //int reaa = 
+      setsockopt(mUdpSocket,SOL_SOCKET,SO_BROADCAST,&val,sizeof(val));
+      getsockopt(mUdpSocket,SOL_SOCKET,SO_BROADCAST,&val,&txa);
+      //cout << "socket broadcast " << reaa << "\t" <<  val << endl;
+    }
+    
+    // Bind to a local port to receive data
+    int ret = bind(mUdpSocket,(struct sockaddr *)&sa_local,sizeof(sa_local));
+    if ( ret == -1 ) {
+      HardwareAccessException lExc("Socket could not be bound to local port");
+      RAISE(lExc);
+    }
+
+    // Error mutex initialisation
+    pthread_mutex_init(&mErrorMutex,
+		       NULL);
+
+    // Set initialisation flag
+    SetError("System initialised");
+    
   }
 
   void NibbleCollector::Start() {
+    // Don't start if already started
+    // Consider exception? Perhaps not
+    if ( mWorkerThreadId != 0 ) return;
+
+    // Reset the data structures
+    Reset();
 
     // Initialise the worker thread
     mWorkerThreadContinue=true;
@@ -235,6 +199,9 @@ namespace HCAL_HLX
       // Clean the data structures
       CleanUp();
 
+      // Destroy the error mutex
+      pthread_mutex_destroy(&mErrorMutex);
+
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -271,14 +238,14 @@ namespace HCAL_HLX
 	MemoryAllocationException lExc("LHC data counters");
 	RAISE(lExc);
       }
+      mOccupancyNibbles = new OCCUPANCY_NIBBLE[mNumHLXs];
+      if ( mOccupancyNibbles == 0 ) {
+	MemoryAllocationException lExc("Occupancy nibbles");
+      }
       mOccupancyDataCounters = new u32 *[mNumHLXs];
       if ( mOccupancyDataCounters == 0 ) {
 	MemoryAllocationException lExc("Occupancy data counters");
 	RAISE(lExc);
-      }
-      mOccupancyNibbles = new OCCUPANCY_NIBBLE[mNumHLXs];
-      if ( mOccupancyNibbles == 0 ) {
-	MemoryAllocationException lExc("Occupancy nibbles");
       }
       for ( u32 i = 0 ; i != mNumHLXs ; i++ ) {
 	mOccupancyDataCounters[i] = new u32[6];
@@ -288,29 +255,7 @@ namespace HCAL_HLX
 	}
       }
 
-#ifdef HCAL_HLX_U8_BUFFER
       // This has to be dynamically allocated or it won't work
-      circularBuffer = new HLX_CB_TYPE[256];
-      if ( circularBuffer == 0 ) {
-	MemoryAllocationException lExc("Circular buffer");
-	RAISE(lExc);
-      }
-
-      // Initialise the array
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
-	circularBuffer[i].data = 0;
-      }
-
-      // Allocate the circular buffer
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
-	circularBuffer[i].data = new u8[1500];
-	if ( circularBuffer[i].data == 0 ) {
-	  MemoryAllocationException lExc("Circular buffer");
-	  RAISE(lExc);
-	}
-      }
-#else
-     // This has to be dynamically allocated or it won't work
       circularBuffer = new HLX_CB_TYPE[65536];
       if ( circularBuffer == 0 ) {
 	MemoryAllocationException lExc("Circular buffer");
@@ -330,7 +275,6 @@ namespace HCAL_HLX
 	  RAISE(lExc);
 	}
       }
-#endif
 
       // Initialise the CRC table
       this->InitialiseChecksum();
@@ -342,80 +286,68 @@ namespace HCAL_HLX
   
   // Clean up function
   void NibbleCollector::CleanUp() {
-    try {
 
-      // Nibbles
-      for ( u32 i = 0 ; i != mNumHLXs ; i++ ) {
-	delete []mOccupancyDataCounters[i];
-      }
-      delete []mOccupancyNibbles;
-      mOccupancyNibbles = 0;
-      delete []mOccupancyDataCounters;
-      mOccupancyDataCounters = 0;
-      delete []mETSumDataCounters;
-      mETSumDataCounters = 0;
-      delete []mETSumNibbles;
-      mETSumNibbles = 0;
-      delete []mLHCDataCounters;
-      mLHCDataCounters = 0;
-      delete []mLHCNibbles;
-      mLHCNibbles = 0;
-
-#ifdef HCAL_HLX_U8_BUFFER
-      // Circular buffer
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
-	if ( circularBuffer[i].data ) {
-	  delete []circularBuffer[i].data;
-	  circularBuffer[i].data = 0;
-	}
-      }
-      if ( circularBuffer ) {
-	delete []circularBuffer;
-	circularBuffer = 0;
-      }
-#else
-      // Circular buffer
-      for ( u32 i = 0 ; i != 65536 ; i++ ) {
-	if ( circularBuffer[i].data ) {
-	  delete []circularBuffer[i].data;
-	  circularBuffer[i].data = 0;
-	}
-      }
-      if ( circularBuffer ) {
-	delete []circularBuffer;
-	circularBuffer = 0;
-      }
-#endif
-
-      // CRC table
-      for ( u32 i = 0 ; i != 256 ; i++ ) {
-	if ( crcTable[i] ) {
-	  delete []crcTable[i];
-	  crcTable[i] = 0;
-	}
-      }
-      if ( crcTable ) {
-	delete []crcTable;
-	crcTable = 0;
-      }
-
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
+    // Nibbles
+    for ( u32 i = 0 ; i != mNumHLXs ; i++ ) {
+      delete []mOccupancyDataCounters[i];
     }
+    delete []mOccupancyDataCounters;
+    mOccupancyDataCounters = 0;
+
+    delete []mOccupancyNibbles;
+    mOccupancyNibbles = 0;
+
+    delete []mETSumDataCounters;
+    mETSumDataCounters = 0;
+    delete []mETSumNibbles;
+    mETSumNibbles = 0;
+
+    delete []mLHCDataCounters;
+    mLHCDataCounters = 0;
+    delete []mLHCNibbles;
+    mLHCNibbles = 0;
+
+    // Circular buffer
+    for ( u32 i = 0 ; i != 65536 ; i++ ) {
+      if ( circularBuffer[i].data ) {
+	delete []circularBuffer[i].data;
+	circularBuffer[i].data = 0;
+      }
+    }
+    if ( circularBuffer ) {
+      delete []circularBuffer;
+      circularBuffer = 0;
+    }
+
+    // CRC table
+    for ( u32 i = 0 ; i != 256 ; i++ ) {
+      if ( crcTable[i] ) {
+	delete []crcTable[i];
+	crcTable[i] = 0;
+      }
+    }
+    if ( crcTable ) {
+      delete []crcTable;
+      crcTable = 0;
+    }
+    
   }
 
   void NibbleCollector::WorkerThread(void *thisPtr) {
+    // Redirect to class-instance-specific implementation
+    reinterpret_cast<NibbleCollector *>(thisPtr)->WorkerThreadInt();
+  }
+  
+  void NibbleCollector::WorkerThreadInt() {
     // Poll for data here    
     // No exceptions, just plain-vanilla C++
-    NibbleCollector *theClass = reinterpret_cast<NibbleCollector *>(thisPtr);
     fd_set fds;
     struct timeval tv;
     u8 rData[2000];
-    int mUdpSocket=theClass->mUdpSocket;
     int ret;
-
-    while (theClass->mWorkerThreadContinue) {
-  
+    
+    while (mWorkerThreadContinue) {
+      
       // Sock is an intialized socket handle
       tv.tv_sec = 0;
       tv.tv_usec = 1000;
@@ -426,52 +358,61 @@ namespace HCAL_HLX
       
       // See if a packet is available
       select(mUdpSocket+1, &fds, NULL, NULL, &tv);
-
+      
       // Check to see if a packet is ready
       if (FD_ISSET(mUdpSocket, &fds)) {
-	//pthread_mutex_lock(&theClass->mDataMutex);
-
+	
 	// Grab a packet if one is available
-	// Need to hack this as a static u8 otherwise it treats it as a u32...
-#ifdef HCAL_HLX_U8_BUFFER
-	if ( static_cast<u8>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
-#else
-	if ( static_cast<u16>(theClass->mWriteBufferPointer+1) == theClass->mReadBufferPointer ) {
-#endif
+	// Need to define this as a static u8/u16 otherwise it treats it as a u32...
+	if ( static_cast<u16>(mWriteBufferPointer+1) == mReadBufferPointer ) {
+	  
 	  // About to overflow
 	  // Read the packet and dump it and flag the counter
 	  ret = recv(mUdpSocket,rData,2000,0);
 	  if ( ret == -1 ) {
-	    //HardwareAccessException lExc("Unable to get data from UDP socket");
-	    //RAISE(lExc);
-	    cout << "ERROR in " << __PRETTY_FUNCTION__ << endl;
+	    SetError("Unable to get data from UDP socket");
 	  } else {
-	    theClass->mNumLostPackets++;
+	    SetError("Nibble collector input buffer overflow");
+	    mNumLostPackets++;
 	  }
+	  
 	} else {
-	  ret = recv(mUdpSocket,theClass->circularBuffer[theClass->mWriteBufferPointer].data,1500,0);
+	  
+	  // Get a packet from the socket
+	  ret = recv(mUdpSocket,circularBuffer[mWriteBufferPointer].data,1500,0);
+	  
+	  // Check for errors
 	  if ( ret == -1 ) {
-	    //HardwareAccessException lExc("Unable to get data from UDP socket");
-	    //RAISE(lExc);
-	    cout << "ERROR in " << __PRETTY_FUNCTION__ << endl;
+	    SetError("Unable to get data from UDP socket");
 	  } else {
-
+	    
 	    // Update the packet length
-	    theClass->circularBuffer[theClass->mWriteBufferPointer].len = ret;
+	    circularBuffer[mWriteBufferPointer].len = ret;
 	    // Increment the data counter
-	    theClass->mTotalDataVolume+=ret;
+	    mTotalDataVolume+=ret;
 	    // Increment the circular buffer pointer
-	    theClass->mWriteBufferPointer++;
-
+	    mWriteBufferPointer++;
+	    
 	  }
 	}
-
-	//pthread_mutex_unlock(&theClass->mDataMutex);
       }
     }
-
-    //cout << "Worker thread complete" << endl;
   }
+  
+  const std::string NibbleCollector::GetLastError() {
+    // Locked to make it thread safe
+    pthread_mutex_lock(&mErrorMutex);
+    std::string localError = mErrorMsg;
+    pthread_mutex_unlock(&mErrorMutex);
+    return localError;
+  }
+  
+  void NibbleCollector::SetError(const std::string & errorMsg) {
+    // Locked to make it thread safe
+    pthread_mutex_lock(&mErrorMutex);
+    mErrorMsg = errorMsg;
+    pthread_mutex_unlock(&mErrorMutex);
+  } 
 
   // Reset function
   void NibbleCollector::Reset() {
@@ -541,214 +482,291 @@ namespace HCAL_HLX
 
   // LumiSection collector attachment
   void NibbleCollector::AttachSectionCollector(AbstractSectionCollector *sectionCollector) {
-    try {
-      // Add the section collector to the list
-      this->mSectionCollectors.push_back(sectionCollector);
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
-    }
+    // Add the section collector to the list
+    this->mSectionCollectors.push_back(sectionCollector);
   }
 
   // Service handler
-  //  void NibbleCollector::RunServiceHandler() {
   void NibbleCollector::ServiceThread(void *thisPtr) {
-    // Poll for data here    
-    // No exceptions, just plain-vanilla C++
-    NibbleCollector *theClass = reinterpret_cast<NibbleCollector *>(thisPtr);
+    // Redirect to class-instance-specific implementation
+    reinterpret_cast<NibbleCollector *>(thisPtr)->ServiceThreadInt();
+  }
 
-  //    try {
-      //pthread_mutex_lock(&mDataMutex);
-    while ( theClass->mServiceThreadContinue ) {
-      while (theClass->mWriteBufferPointer!=theClass->mReadBufferPointer) {
+  void NibbleCollector::ServiceThreadInt() {
+    while (mServiceThreadContinue) {
+      while (mWriteBufferPointer != mReadBufferPointer) {
 	// Validate the checksum
-	if ( theClass->ValidateChecksum(theClass->circularBuffer[theClass->mReadBufferPointer].data,
-					theClass->circularBuffer[theClass->mReadBufferPointer].len-1) ) {
-	  // Increment the good packet counter
-	  theClass->mNumGoodPackets++;
-	  // Map the lumi header
-	  LUMI_RAW_HEADER *lumiHdr = reinterpret_cast<LUMI_RAW_HEADER *>(theClass->circularBuffer[theClass->mReadBufferPointer].data);
-	  
-	  // If the checksum is valid, process the packet
-	  theClass->ProcessPacket(lumiHdr,
-				  theClass->circularBuffer[theClass->mReadBufferPointer].data+sizeof(LUMI_RAW_HEADER),
-				  theClass->circularBuffer[theClass->mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
-	} else {
-	  // Increment the bad packet counter
-	  //cout << "bad checksum" << endl;
-	  theClass->mNumBadPackets++;
+	//if ( ValidateChecksum(circularBuffer[mReadBufferPointer].data,
+	//circularBuffer[mReadBufferPointer].len-1) ) {
+
+
+	// Map the lumi header
+	LUMI_RAW_HEADER *lumiHdr = reinterpret_cast<LUMI_RAW_HEADER *>(circularBuffer[mReadBufferPointer].data);
+	
+	// If the header data is large enough, process the packet
+	if ( circularBuffer[mReadBufferPointer].len > sizeof(LUMI_RAW_HEADER) + 1 ) {
+	  ProcessPacket(lumiHdr,
+			circularBuffer[mReadBufferPointer].data+sizeof(LUMI_RAW_HEADER),
+			circularBuffer[mReadBufferPointer].len-1-sizeof(LUMI_RAW_HEADER));
 	}
-      	theClass->mReadBufferPointer++;
+
+	//} else {
+	// Increment the bad packet counter
+	//cout << "bad checksum" << endl;
+	//mNumBadPackets++;
+	//}
+      	mReadBufferPointer++;
       }
       Sleep(1);
     }
   }
 
-    //  }
+  bool NibbleCollector::CheckDataValidity(const LUMI_RAW_HEADER *lumiHdr, u32 nBytes) {
+    if ( lumiHdr->hlxID >= mNumHLXs ){
+      SetError("Invalid HLX ID");
+      return false;
+    }
+    if ( lumiHdr->numOrbits+1 != mNumOrbits ) {
+      SetError("Invalid number of orbits"); 
+      return false;
+    }
+    if ( lumiHdr->numBunches+1 != mNumBunches ){
+      SetError("Invalid number of bunches");
+      return false;
+    }
+    // Payload size check
+    switch ( lumiHdr->histogramSet ) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+      // Occ. and LHC
+      // Check data volume against dimensions of nibble
+      if ( (lumiHdr->startBunch << 1) + nBytes > m16BitNibbleSize ) {
+	SetError("Boundary check failure on 16-bit nibble");
+	return false;
+      }
+      break;
+
+    case 7:
+      // Check data volume against dimensions of nibble
+      if ( (lumiHdr->startBunch << 2) + nBytes > m32BitNibbleSize ) {
+	SetError("Boundary check failure on 32-bit nibble");
+	return false;
+      }
+      break;
+
+    default:
+      SetError("Invalid histogram set");
+      return false;
+    }
+    return true;
+  }
 
   void NibbleCollector::ProcessPacket(const LUMI_RAW_HEADER *lumiHdr,
 				      const u8 *data,
 				      u32 nBytes) {
-    try {
-      u8 hlxID = lumiHdr->hlxID;
-
-      if ( hlxID < mNumHLXs ) {
-	if ( lumiHdr->histogramSet == 7 ) {
-	  // ET sum histogram
-
-	  // First check to see if the start orbit matches the
-	  // previous one, otherwise we discard
-	  if ( lumiHdr->startOrbit != mETSumNibbles[hlxID].hdr.startOrbit ) {
-	    // Check for incomplete histogram
-	    if ( mETSumNibbles[hlxID].hdr.startOrbit != 0 ) {
-	      if ( mETSumNibbles[hlxID].bIsComplete == false ) { 
-		cout << "Incomplete ET sum nibble" << endl;
-		cout << "HLX ID: " << static_cast<u16>(hlxID) << endl;
-		mNumBadETSumNibbles++;
-	      } else {
-		// LHC nibble is good, ship it...
-		mNumGoodETSumNibbles++;
-		// Push the nibble into the section collector whether good or bad
-		//cout << "Before process et nibble, HLX " << static_cast<u16>(hlxID) << endl;
-		for ( u32 i = 0 ; i != mSectionCollectors.size() ; i++ ) {
-		  mSectionCollectors[i]->ProcessETSumNibble(mETSumNibbles[hlxID],
-							    hlxID);
-		}
-	      }
-	    }
-	    
-	    // Clear data counter and reset startOrbit marker
-	    mETSumDataCounters[hlxID] = 0;
-	    mETSumNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
-	    mETSumNibbles[hlxID].hdr.numBunches = lumiHdr->numBunches+1;
-	    mETSumNibbles[hlxID].hdr.numOrbits = lumiHdr->numOrbits+1;
-	    mETSumNibbles[hlxID].bIsComplete = false;
-	    // TODO: bcmslive
-	  }
-	  
-	  // Copy the data into the local buffer
-	  // TODO - modify to allow unordered packets (use startBunch)
-	  memcpy(mETSumNibbles[hlxID].data + mETSumDataCounters[hlxID],
-		 data,
-		 nBytes);
-	  
-	  // Update the data counter and check for completion
-	  mETSumDataCounters[hlxID] += nBytes >> 2; // Divide by 4 for longs
-	  if ( mETSumDataCounters[hlxID] == mETSumNibbles[hlxID].hdr.numBunches ) {
-	    mETSumNibbles[hlxID].bIsComplete = true;
-	  }
-	  
-	} else if ( lumiHdr->histogramSet == 6 ) {
-
-	  // Occupancy histograms
-	  // First check to see if the start orbit matches the previous one, otherwise we discard
-	  if ( lumiHdr->startOrbit != mLHCNibbles[hlxID].hdr.startOrbit ) {
-	    
-	    // Check for incomplete histogram
-	    if ( mLHCNibbles[hlxID].hdr.startOrbit != 0 ) {
-	      if ( mLHCNibbles[hlxID].bIsComplete == false ) {
-		cout << "Incomplete LHC nibble" << endl;
-		cout << "HLX ID: " << static_cast<u16>(hlxID) << endl;
-		mNumBadLHCNibbles++;
-	      } else {
-		// LHC nibble is good, ship it...
-		mNumGoodLHCNibbles++;
-		// Push the nibble into the section collector whether good or bad
-		for ( u32 i = 0 ; i != mSectionCollectors.size() ; i++ ) {
-		  mSectionCollectors[i]->ProcessLHCNibble(mLHCNibbles[hlxID],
-							  hlxID);
-		}
-	      }
-	    }
-	    
-	    // Clear data counter and reset startOrbit marker
-	    mLHCDataCounters[hlxID] = 0;
-	    mLHCNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
-	    mLHCNibbles[hlxID].hdr.numBunches = lumiHdr->numBunches+1;
-	    mLHCNibbles[hlxID].hdr.numOrbits = lumiHdr->numOrbits+1;
-	    mLHCNibbles[hlxID].bIsComplete = false;
-	  }
-	  
-	  // Copy the data into the local buffer
-	  memcpy(mLHCNibbles[hlxID].data + mLHCDataCounters[hlxID],
-		 data,
-		 nBytes);
-	  
-	  // Update the data counter and check for completion
-	  mLHCDataCounters[hlxID] += nBytes >> 1; // Divide by 2 for shorts
-	  if ( mLHCDataCounters[hlxID] == mLHCNibbles[hlxID].hdr.numBunches ) {
-	    mLHCNibbles[hlxID].bIsComplete = true;
-	  }
-
-	} else if ( lumiHdr->histogramSet < 6 ) {
-	  // Occupancy histograms
-	  // First check to see if the start orbit matches the previous one, otherwise we discard
-	  if ( lumiHdr->startOrbit != mOccupancyNibbles[hlxID].hdr.startOrbit ) {
-	    
-	    // Check for incomplete histogram
-	    if ( mOccupancyNibbles[hlxID].hdr.startOrbit != 0 ) {
-	      bool bAllComplete = true;
-	      for ( u32 i = 0 ; i != 6 ; i++ ) {
-		if ( !mOccupancyNibbles[hlxID].bIsComplete[i] ) {
-		  cout << "Incomplete occupancy nibble" << endl;
-		  cout << "HLX ID: " << dec << static_cast<u16>(hlxID) << endl;
-		  cout << "Occupancy component: " << i << endl;
-		  bAllComplete = false;
-		  break;
-		}
-	      }
-	      if ( bAllComplete ) {
-		// Push the nibble into the section collector whether good or bad
-		for ( u32 i = 0 ; i != mSectionCollectors.size() ; i++ ) {
-		  mSectionCollectors[i]->ProcessOccupancyNibble(mOccupancyNibbles[hlxID],
-								hlxID);
-		}
-		mNumGoodOccupancyNibbles++;
-	      } else {
-		mNumBadOccupancyNibbles++;
-	      }
-	    }
-	    
-	    mOccupancyNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
-	    mOccupancyNibbles[hlxID].hdr.numBunches = lumiHdr->numBunches+1;
-	    mOccupancyNibbles[hlxID].hdr.numOrbits = lumiHdr->numOrbits+1;	    
-
-	    // Clear data counter and reset startOrbit marker
-	    for ( u32 i = 0 ; i != 6 ; i++ ) {
-	      mOccupancyDataCounters[hlxID][i] = 0;
-	      mOccupancyNibbles[hlxID].bIsComplete[i] = false;
-	    }
-	  }
-	  
-	  // Copy the data into the local buffer
-	  memcpy(mOccupancyNibbles[hlxID].data[lumiHdr->histogramSet] + mOccupancyDataCounters[hlxID][lumiHdr->histogramSet],
-		 data,
-		 nBytes);
-	  
-	  // Update the data counter and check for completion
-	  mOccupancyDataCounters[hlxID][lumiHdr->histogramSet] += nBytes >> 1; // Divide by 2 for shorts
-	  if ( mOccupancyDataCounters[hlxID][lumiHdr->histogramSet] == mOccupancyNibbles[hlxID].hdr.numBunches ) {
-	    mOccupancyNibbles[hlxID].bIsComplete[lumiHdr->histogramSet] = true;
-	  }
-	  
-	} else {
-	  cout << "Bad histogram set" << endl;
-	  mNumBadPackets++;	
-	}
-      } else {
-	cout << "Bad HLX ID" << dec << static_cast<u16>(lumiHdr->hlxID) << "\t" << mNumHLXs << endl;
-	mNumBadPackets++;
-      }
-
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
+    
+    // Data integrity checks
+    if ( !CheckDataValidity(lumiHdr, nBytes) ) {
+      mNumBadPackets++;
+      return;
     }
-  }
+    mNumGoodPackets++;
 
+    // cache the hlx id
+    u8 hlxID = lumiHdr->hlxID;
+    bool bOC0 = (lumiHdr->packetID & 0x1)?true:false;
+    bool bCMSLive = (lumiHdr->packetID & 0x2)?true:false;
+    
+    if ( lumiHdr->histogramSet == 7 ) {
+      // ET sum histogram
+      
+      // First check to see if the start orbit matches the
+      // previous one, in which case we are reconstructing the nibble
+      // Otherwise we commit the nibble if it's complete
+      if ( lumiHdr->startOrbit != mETSumNibbles[hlxID].hdr.startOrbit ) {
+	
+	// Don't commit if the nibble is empty
+	//if ( mETSumNibbles[hlxID].hdr.startOrbit != 0 ) {
+	if ( mETSumDataCounters[hlxID] != 0 ) {
+	  
+	  if ( mETSumDataCounters[hlxID] != m32BitNibbleSize ) { 
+
+	    // Set error
+	    SetError("ET sum nibble was incomplete");
+
+	    // Nibble is incomplete - don't ship and count
+	    mNumBadETSumNibbles++;
+
+	  } else {
+
+	    // LHC nibble is good, ship it...
+	    mNumGoodETSumNibbles++;
+
+	    // Push the nibble into the section collector whether good or bad
+	    std::vector<AbstractSectionCollector *>::const_iterator i = mSectionCollectors.begin();
+	    while ( i != mSectionCollectors.end() ) {
+	      (*i)->ProcessETSumNibble(mETSumNibbles[hlxID],
+				       hlxID);
+	      ++i;
+	    }
+
+	  }
+	  
+	}
+	
+	// Clear data counter and reset startOrbit marker
+	mETSumDataCounters[hlxID] = 0;
+	mETSumNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
+	mETSumNibbles[hlxID].hdr.numBunches = mNumBunches;
+	mETSumNibbles[hlxID].hdr.numOrbits = mNumOrbits;
+	mETSumNibbles[hlxID].hdr.bCMSLive = bCMSLive;
+	mETSumNibbles[hlxID].hdr.bOC0 = bOC0;
+	
+      }
+      
+      // Copy the data into the local buffer
+      // Modified to index using the bunch number (allows out-of-order) packet arrival
+      // Doesn't check for overlapping data however
+      memcpy(mETSumNibbles[hlxID].data + lumiHdr->startBunch, //+ (mETSumDataCounters[hlxID]>>2)
+	     data,
+	     nBytes);
+      
+      // Update the data counter and check for completion
+      mETSumDataCounters[hlxID] += nBytes;
+
+      // Note: complete flag no longer needed - data length monitoring is used
+      
+    } else if ( lumiHdr->histogramSet == 6 ) {
+      
+      // Occupancy histograms
+      // First check to see if the start orbit matches the previous one, otherwise we discard
+      if ( lumiHdr->startOrbit != mLHCNibbles[hlxID].hdr.startOrbit ) {
+	
+	// Check for incomplete histogram
+
+	// Don't commit if the nibble is empty
+	//if ( mLHCNibbles[hlxID].hdr.startOrbit != 0 ) {
+	if ( mLHCDataCounters[hlxID] != 0 ) {
+	  
+	  if ( mLHCDataCounters[hlxID] != m16BitNibbleSize ) { 
+
+	    SetError("LHC nibble was incomplete");
+
+	    mNumBadLHCNibbles++;
+
+	  } else {
+
+	    // LHC nibble is good, ship it...
+	    mNumGoodLHCNibbles++;
+
+	    // Push the nibble into the section collector if good
+ 	    std::vector<AbstractSectionCollector *>::const_iterator i = mSectionCollectors.begin();
+	    while ( i != mSectionCollectors.end() ) {
+	      (*i)->ProcessLHCNibble(mLHCNibbles[hlxID],
+				     hlxID);
+	      ++i;
+	    }
+	  }
+	}
+	
+	// Clear data counter and reset startOrbit marker
+	mLHCDataCounters[hlxID] = 0;
+	mLHCNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
+	mLHCNibbles[hlxID].hdr.numBunches = mNumBunches;
+	mLHCNibbles[hlxID].hdr.numOrbits = mNumOrbits;
+	mLHCNibbles[hlxID].hdr.bCMSLive = bCMSLive;
+	mLHCNibbles[hlxID].hdr.bOC0 = bOC0;
+
+      }
+      
+      // Copy the data into the local buffer
+      memcpy(mLHCNibbles[hlxID].data + lumiHdr->startBunch,
+	     data,
+	     nBytes);
+      
+      // Update the data counter and check for completion
+      mLHCDataCounters[hlxID] += nBytes;
+      
+    } else if ( lumiHdr->histogramSet < 6 ) {
+
+      // Occupancy histograms
+      // First check to see if the start orbit matches the previous one, otherwise we discard
+      if ( lumiHdr->startOrbit != mOccupancyNibbles[hlxID].hdr.startOrbit ) {
+
+	// Check if nibble contains data
+	//if ( mOccupancyNibbles[hlxID].hdr.startOrbit != 0 ) {
+	if ( mOccupancyDataCounters[hlxID][0] +
+	     mOccupancyDataCounters[hlxID][1] + 
+	     mOccupancyDataCounters[hlxID][2] + 
+	     mOccupancyDataCounters[hlxID][3] + 
+	     mOccupancyDataCounters[hlxID][4] + 
+	     mOccupancyDataCounters[hlxID][5] != 0 ) {
+	  
+	  // Generate the completion check
+	  bool bAllComplete = true;
+	  for ( u32 i = 0 ; i != 6 ; i++ ) {
+	    if ( mOccupancyDataCounters[hlxID][i] != m16BitNibbleSize ) {
+	      
+	      SetError("Occupancy nibble was incomplete");
+	      
+	      //cout << "Incomplete occupancy nibble" << endl;
+	      //cout << "HLX ID: " << dec << static_cast<u16>(hlxID) << endl;
+	      //cout << "Occupancy component: " << i << endl;
+	      
+	      bAllComplete = false;
+	      break;
+	    }
+	  }
+	  
+	  if ( bAllComplete ) {
+
+	    mNumGoodOccupancyNibbles++;
+	    
+	    // Push the nibble into the section collector if good
+	    std::vector<AbstractSectionCollector *>::const_iterator i = mSectionCollectors.begin();
+	    while ( i != mSectionCollectors.end() ) {
+	      (*i)->ProcessOccupancyNibble(mOccupancyNibbles[hlxID],
+					hlxID);
+	      ++i;
+	    }
+
+	  } else {
+	    mNumBadOccupancyNibbles++;
+	  }
+	}
+	
+	mOccupancyNibbles[hlxID].hdr.startOrbit = lumiHdr->startOrbit;
+	mOccupancyNibbles[hlxID].hdr.numBunches = mNumBunches;
+	mOccupancyNibbles[hlxID].hdr.numOrbits = mNumOrbits;
+	mOccupancyNibbles[hlxID].hdr.bCMSLive = bCMSLive;
+	mOccupancyNibbles[hlxID].hdr.bOC0 = bOC0;
+	
+	// Clear data counter and reset startOrbit marker
+	for ( u32 i = 0 ; i != 6 ; i++ ) {
+	  mOccupancyDataCounters[hlxID][i] = 0;
+	}
+	
+      }
+      
+      // Copy the data into the local buffer
+      memcpy(mOccupancyNibbles[hlxID].data[lumiHdr->histogramSet] + lumiHdr->startBunch,
+	     data,
+	     nBytes);
+      
+      // Update data counters
+      mOccupancyDataCounters[hlxID][lumiHdr->histogramSet] += nBytes;
+      
+    }	  
+    
+  }
+  
   bool NibbleCollector::ValidateChecksum(const u8 *data, u32 numBytes) {
     u8 computedChecksum = ComputeChecksum(data,numBytes);
-    //cout << static_cast<u16>(computedChecksum) << "\t"
-    //<< static_cast<u16>(data[numBytes]) << "\t"
-    //<< numBytes << endl;
     return (computedChecksum == data[numBytes]);
   }
 

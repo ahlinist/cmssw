@@ -13,6 +13,7 @@
 #include "TestDistributor.hh"
 #include "NibbleCollector.hh"
 #include "SectionCollector.hh"
+#include "TestSectionCollector.hh"
 
 int gContinue=1;
 
@@ -32,16 +33,26 @@ int main(int argc, char ** argv) {
   SectionCollector *lSectionCollector = 0;
   NibbleCollector *lNibbleCollector = 0;
   TestDistributor *lTestDistributor = 0;
+  TestSectionCollector *lTestSectionCollector = 0;
   try {
 
-    lSectionCollector = new SectionCollector(300,       // Num bunches
+    lSectionCollector = new SectionCollector(0,
+					     3564,       // Num bunches
 					     4,         // Num nibbles per section
-					     1,         // Num orbits in lumi nibble
-					     1);//NUM_HLXS);  // Num HLXs
+					     4096,         // Num orbits in lumi nibble
+					     36);  // Num HLXs
 
-    lNibbleCollector = new NibbleCollector(NUM_HLXS,0x533C);
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,
+					   3564,
+					   4096,
+					   0x533C);
     lTestDistributor = new TestDistributor;
+    lTestSectionCollector = new TestSectionCollector(36,
+						     4096);
+
     lNibbleCollector->AttachSectionCollector(lSectionCollector);
+    lNibbleCollector->AttachSectionCollector(lTestSectionCollector);
+
     lSectionCollector->AttachDistributor(lTestDistributor);
 
     int startTime, tempTime, interTime = 0;

@@ -20,6 +20,7 @@
 #include "DebugFileDistributor.hh"
 #include "GIFDistributor.hh"
 #include "WedgeGIFDistributor.hh"
+#include "SectionListDistributor.hh"
 
 #include "NibbleCollector.hh"
 #include "SectionCollector.hh"
@@ -35,11 +36,11 @@ using namespace std;
 using namespace HCAL_HLX;
 using namespace ICCoreUtils;
 
-#define NUM_HLXS 36
+#define NUM_HLXS 1
 #define SHORT_LENGTH 4
 #define LONG_LENGTH 256
-#define NUM_BUNCHES 3564
-#define NUM_ORBITS 4096
+#define NUM_BUNCHES 300
+#define NUM_ORBITS 1
 
 int main(int argc, char ** argv) {
   signal(SIGINT,CtrlC);
@@ -56,13 +57,14 @@ int main(int argc, char ** argv) {
   GIFDistributor *lGIFDistributor = 0;
   DebugFileDistributor *lDebugFileDistributor = 0;
   WedgeGIFDistributor *lWedgeGIFDistributor[NUM_HLXS] = {0};
+  SectionListDistributor *lSectionListDistributor = 0;
 
   // Get the run number
-  if ( argc != 2 ) {
-    cerr << "Expected 1 argument but found " << argc-1 << endl;
-    return 1;
-  }
-  u32 runNumber = atol(argv[1]);
+  //  if ( argc != 2 ) {
+  //    cerr << "Expected 1 argument but found " << argc-1 << endl;
+  //    return 1;
+  //  }
+  //  u32 runNumber = atol(argv[1]);
 
   try {
     // One second
@@ -97,17 +99,20 @@ int main(int argc, char ** argv) {
     //lDIPDistributor = new DIPDistributor;
     //lSectionCollectorShort->AttachDistributor(lDIPDistributor);
 
-    lTCPDistributorShort = new TCPDistributor("vmepcs2f17-19.cms",51001);
-    lSectionCollectorShort->AttachDistributor(lTCPDistributorShort);
-    lTCPDistributorLong = new TCPDistributor("vmepcs2f17-19.cms",51002);
-    lSectionCollectorLong->AttachDistributor(lTCPDistributorLong);    
+    //lTCPDistributorShort = new TCPDistributor("vmepcs2f17-19.cms",51001);
+    //lSectionCollectorShort->AttachDistributor(lTCPDistributorShort);
+    //lTCPDistributorLong = new TCPDistributor("vmepcs2f17-19.cms",51002);
+    //lSectionCollectorLong->AttachDistributor(lTCPDistributorLong);    
+
+    lSectionListDistributor = new SectionListDistributor;
+    lSectionCollectorShort->AttachDistributor(lSectionListDistributor);
 
     //for ( u32 i = 0 ; i != 18 ; i++ ) {
     //  lWedgeGIFDistributor[i] = new WedgeGIFDistributor(i);    
     //  lSectionCollectorLong->AttachDistributor(lWedgeGIFDistributor[i]);
     //}
 
-    lNibbleCollector = new NibbleCollector(NUM_HLXS);
+    lNibbleCollector = new NibbleCollector(NUM_HLXS,21306);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorShort);
     lNibbleCollector->AttachSectionCollector(lSectionCollectorLong);
 

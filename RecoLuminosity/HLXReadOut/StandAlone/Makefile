@@ -31,19 +31,22 @@ UserDynamicLinkFlags =
 UserStaticLinkFlags =
 UserExecutableLinkFlags =
 Libraries = LumiCalc LumiDB CoreUtils HLXCoreLibs pthread dip dl occi clntsh \
-	nnz10 Core Cint Hist Matrix Gpad Graf Tree MathCore RIO Net Thread
+	nnz10 \
+        Hist MathCore Matrix Core Cint Gpad Graf RIO
 
-#	Hist MathCore Matrix Core Cint Gpad Graf
 DynamicLibrary = 
 StaticLibrary =
 Executables = \
 	hlx_fake.cpp \
+	hlx_fake_2.cpp \
 	global_run_fake.cpp \
-	global_run.cpp \
 	test_distribution.cpp \
-        tcp_client_short.cpp \
+	tcp_client_short.cpp \
 	tcp_client_long.cpp \
-	test_DIP_distributor.cpp \
-	test_oracle_distributor.cpp
+	stupid_hack.cpp
+#	global_run.cpp \
+#	test_distribution.cpp \
+#	test_DIP_distributor.cpp \
+#	test_oracle_distributor.cpp
 
 include $(XDAQ_ROOT)/config/Makefile.rules

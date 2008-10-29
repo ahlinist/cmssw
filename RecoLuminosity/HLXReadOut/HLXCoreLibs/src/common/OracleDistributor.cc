@@ -27,17 +27,12 @@ namespace HCAL_HLX
   using namespace std;
   using namespace oracle::occi;
 
-  u32 OracleDistributor::GetErrorCount() {
-    return mErrorCount;
-  }
-
   // Default constructor
-  OracleDistributor::OracleDistributor(const char *username,
-				       const char *password,
-				       const char *location,
-				       const char *schema) {
+  OracleDistributor::OracleDistributor(const std::string & username,
+				       const std::string & password,
+				       const std::string & location,
+				       const std::string & schema) {
     mDBWriter = 0;
-    mErrorCount = 0;
     mLumiDetails.aBX = 0;
     mLumiDetails.aNorEtLumi = 0;
     mLumiDetails.aEtLumi = 0;
@@ -62,40 +57,11 @@ namespace HCAL_HLX
     DoLogEntry(tmpString);
 
     try {
-      // Database is publicly visible to anyone on CERN network,
-      // so information is stored only locally on readout server
-      // inside a private network...
-      string mOracleDBUserName;
-      string mOracleDBPassword;
-      string mOracleDBLocation;
-      string mOracleDBSchema;
-
-      if ( username ) {
-	mOracleDBUserName = username;
-      } else {
-	mOracleDBUserName = getenv("HLX_ORACLE_DB_USER_NAME");
-      }
-      if ( password ) {
-	mOracleDBPassword = password;
-      } else {
-	mOracleDBPassword = getenv("HLX_ORACLE_DB_PASSWORD");
-      }
-      if ( location ) {
-	mOracleDBLocation = location;
-      } else {
-	mOracleDBLocation = getenv("HLX_ORACLE_DB_LOCATION");
-      }
-      if ( schema ) {
-	mOracleDBSchema = schema;
-      } else {
-	mOracleDBSchema = getenv("HLX_ORACLE_DB_SCHEMA");
-      }
-
       // Initialisation of DB connection
-      mDBWriter = new DBWriter(mOracleDBUserName,
-			       mOracleDBPassword,
-			       mOracleDBLocation,
-			       mOracleDBSchema);
+      mDBWriter = new DBWriter(username.c_str(),
+			       password.c_str(),
+			       location.c_str(),
+			       schema.c_str());
       
       // Create the initial data structures
       // TODO - check new creates the object???
@@ -190,7 +156,7 @@ namespace HCAL_HLX
       delete []mLumiDetails.aOccLumiD2Q;
       mLumiDetails.aOccLumiD2Q = 0;
     }
-
+    
     // Close the log file
     std::string tmpString = "Class destructor";
     DoLogEntry(tmpString);
@@ -203,7 +169,7 @@ namespace HCAL_HLX
     // Log the commit (temporary)
     std::stringstream tmpStream;
     tmpStream << "Submitting section: " << lumiSection.hdr.runNumber
-	      << ", " << lumiSection.hdr.sectionNumber + 1
+	      << ", " << lumiSection.hdr.sectionNumber
 	      << endl;
     std::string tmpString = tmpStream.str();
     DoLogEntry(tmpString);
@@ -219,7 +185,8 @@ namespace HCAL_HLX
       lumiSectionID = mDBWriter->getLumiSectionSeq();
     } catch (OracleDBException & aExc) {
       DoLogEntry(aExc.what());
-      mErrorCount++;
+      SetError(aExc.what());
+      //SetError("Error committing OracleDB data - see /tmp/LMS-OracleDistributor.log");
       // TODO: decide whether to return true or false depending on DB exception!
       return true;
     }
@@ -232,10 +199,10 @@ namespace HCAL_HLX
       // Format the luminosity section
       mLumiSectionData.HFringStId = 1; // what is this?
       mLumiSectionData.dataTaking = static_cast<unsigned int>(lumiSection.hdr.bCMSLive);
-      mLumiSectionData.beginObt = static_cast<unsigned int>(lumiSection.hdr.startOrbit);
-      mLumiSectionData.totalObts = static_cast<unsigned int>(lumiSection.hdr.numOrbits);
-      mLumiSectionData.runNum = static_cast<unsigned int>(lumiSection.hdr.runNumber);
-      mLumiSectionData.lsNum = static_cast<unsigned int>(lumiSection.hdr.sectionNumber) + 1;
+      mLumiSectionData.beginObt   = static_cast<unsigned int>(lumiSection.hdr.startOrbit);
+      mLumiSectionData.totalObts  = static_cast<unsigned int>(lumiSection.hdr.numOrbits);
+      mLumiSectionData.runNum     = static_cast<unsigned int>(lumiSection.hdr.runNumber);
+      mLumiSectionData.lsNum      = static_cast<unsigned int>(lumiSection.hdr.sectionNumber);
 
       // Write the lumi section data into the DB      
       mDBWriter->insertBind_LumiSec(lumiSectionID,
@@ -243,7 +210,10 @@ namespace HCAL_HLX
 
     } catch (OracleDBException & aExc) {
       DoLogEntry(aExc.what());
-      mErrorCount++;
+      //SetError("Error committing OracleDB data - see /tmp/LMS-OracleDistributor.log");
+
+      SetError(aExc.what());
+
       // TODO: decide whether to return true or false depending on DB exception!
       return true;
     }
@@ -292,7 +262,10 @@ namespace HCAL_HLX
 					deliveredOccLumiD2Q);*/
     } catch (OracleDBException & aExc) {
       DoLogEntry(aExc.what());
-      mErrorCount++;
+      //SetError("Error committing OracleDB data - see /tmp/LMS-OracleDistributor.log");
+
+      SetError(aExc.what());
+
       return true;
     }
 
@@ -326,7 +299,10 @@ namespace HCAL_HLX
 
     } catch (OracleDBException & aExc) {
       DoLogEntry(aExc.what());
-      mErrorCount++;
+      //SetError("Error committing OracleDB data - see /tmp/LMS-OracleDistributor.log");
+
+      SetError(aExc.what());
+
       return true;
     }
 
@@ -335,7 +311,10 @@ namespace HCAL_HLX
       mDBWriter->save();
     } catch (OracleDBException & aExc) {
       DoLogEntry(aExc.what());
-      mErrorCount++;
+      //SetError("Error committing OracleDB data - see /tmp/LMS-OracleDistributor.log");
+
+      SetError(aExc.what());
+
       // TODO: decide whether to return true or false depending on DB exception!
       return true;
     }

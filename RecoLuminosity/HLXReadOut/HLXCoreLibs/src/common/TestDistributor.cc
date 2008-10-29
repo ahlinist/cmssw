@@ -47,7 +47,7 @@ namespace HCAL_HLX
 	    if ( value > 0xFFFF ) value = 0xFFFF;
 	    value *= lumiSection.occupancy[k].hdr.numNibbles;
 	    if ( lumiSection.occupancy[k].data[j][i] != value ) {
-	      //cout << static_cast<u16>(k) << "\t" << j << "\t" << i << "\t" << lumiSection.occupancy[k].data[j][i] << "\t" << value << endl;
+	      cout << "occ" << static_cast<u16>(k) << "\t" << j << "\t" << i << "\t" << lumiSection.occupancy[k].data[j][i] << "\t" << value << endl;
 	      bExit = true;
 	      break;
 	    }
@@ -68,7 +68,7 @@ namespace HCAL_HLX
 	  if ( value > 0xFFFF ) value = 0xFFFF;
 	  value *= lumiSection.lhc[k].hdr.numNibbles;
 	  if ( lumiSection.lhc[k].data[i] != value ) {
-	    cout << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.lhc[k].data[i] << "\t" << value << endl;
+	    cout << "lhc" << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.lhc[k].data[i] << "\t" << value << endl;
 	    //break;
 	  }
 	}	
@@ -84,7 +84,7 @@ namespace HCAL_HLX
 	  }
 	  value = i * lumiSection.hdr.numOrbits;
 	  if ( lumiSection.etSum[k].data[i] != value ) {
-	    //cout << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.etSum[k].data[i] << "\t" << value << endl;
+	    cout << "et" << static_cast<u16>(k) << "\t" << i << "\t" << lumiSection.etSum[k].data[i] << "\t" << value << endl;
 	    break;
 	  }
 	}
