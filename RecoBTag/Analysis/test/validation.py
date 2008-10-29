@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("validation")
 
-#keep the logging output to a nice level
+# keep the logging output to a nice level
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 # please note: this should not be needed; just a temporary hack
