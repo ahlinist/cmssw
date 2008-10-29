@@ -9,7 +9,8 @@ email: ahunt@princeton.edu
 
 */
 
-#include "RecoLuminosity/ROOTSchema/interface/ROOTFileBase.h"
+#include "RecoLuminosity/ROOTSchema/interface/ROOTFileBase.h" //JW
+//#include "ROOTSchema/interface/ROOTFileBase.h" //JW
 
 // HLXCoreLibs headers
 

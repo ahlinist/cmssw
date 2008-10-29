@@ -36,7 +36,7 @@ namespace HCAL_HLX
   public:
 
     // Constructor
-    SectionListDistributor();
+    SectionListDistributor(const std::string & fileName);
 
     // Destructor
     ~SectionListDistributor();

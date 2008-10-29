@@ -1,5 +1,5 @@
-#include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
-#include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
+#include "/opt/TriDAS/RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
+#include "/opt/TriDAS/RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
 
 #ifdef __CINT__
 #ifndef ROOTSCHEMA_LINKDEF

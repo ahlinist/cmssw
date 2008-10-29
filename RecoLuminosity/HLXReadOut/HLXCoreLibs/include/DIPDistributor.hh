@@ -53,9 +53,6 @@ namespace HCAL_HLX
     // Processing function
     bool ProcessSection(const LUMI_SECTION & lumiSection);
 
-    // Error count (from async. exception handler)
-    u32 GetErrorCount();
-
     // DIP publication error handler
     void handleException(DipPublication * publication, DipException & ex);
 
@@ -70,10 +67,10 @@ namespace HCAL_HLX
 
     // Buffers for insertion into DIP data structure
     DipFloat *mHistogramData;
-    DipInt mNumHLXs;
-    DipInt mRunNumber;
     DipInt mTimestamp;
     DipInt mTimestamp_micros;
+    DipInt mNumHLXs;
+    DipInt mRunNumber;
     DipInt mSectionNumber;
     DipInt mStartOrbit;
     DipInt mNumOrbits;

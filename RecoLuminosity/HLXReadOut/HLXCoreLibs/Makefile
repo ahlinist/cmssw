@@ -13,6 +13,7 @@ IncludeDirs = \
 	$(ROOTSYS)/include \
 
 Sources = \
+	AbstractDistributor.cc \
 	DebugCoutDistributor.cc \
 	NibbleCollector.cc \
 	DebugFileDistributor.cc \
@@ -26,6 +27,7 @@ Sources = \
         TCPDistributor.cc \
 	SectionListDistributor.cc \
 	ROOTMutex.cc \
+	FakeHLX.cc 
 	#ROOTDistributor.cc \
 	#ROOTDistributor_Dict.cc \
         #ROOTMutex.cc \

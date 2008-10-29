@@ -20,8 +20,8 @@ namespace HCAL_HLX
   using namespace std;
   
   // Default constructor
-  SectionListDistributor::SectionListDistributor() {
-    mOutput = new ofstream("/tmp/lumiSectionSummary.txt",ios_base::app);
+  SectionListDistributor::SectionListDistributor(const std::string & fileName) {
+    mOutput = new ofstream(fileName.c_str(),ios_base::app);
     *mOutput << "Time\tRun number\tSection number" << endl;
   }
 

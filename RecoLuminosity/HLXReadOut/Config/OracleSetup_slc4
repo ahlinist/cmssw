@@ -5,5 +5,5 @@
 export ORACLE_ROOT=/opt/oracle/current
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ORACLE_ROOT}
-export TNS_ADMIN=/nfshome0/lmsts/omds_tns
+export TNS_ADMIN=/etc
 export ORACLE_HOME=$ORACLE_ROOT

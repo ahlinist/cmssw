@@ -6,7 +6,7 @@ export XDAQ_PLATFORM=x86_slc4
 
 export ROOTSYS=/opt/root/current
 
-export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib
+export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:$XDAQ_ROOT/lib
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 export PATH=$ROOTSYS/bin:$PATH
 export PATH=/usr/java/jdk1.5.0_09/bin:$PATH

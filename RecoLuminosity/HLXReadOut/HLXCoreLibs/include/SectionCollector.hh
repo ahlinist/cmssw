@@ -45,16 +45,14 @@ namespace HCAL_HLX
     SectionCollector(u32 aNumBunches,
 		     u32 aNumNibblesPerSection,
 		     u32 aNumOrbitsPerNibble,
-		     u32 aNumHLXs);
+		     u32 aNumHLXs,
+		     u32 aInitialRunNumber);
 
     // Destructor
     ~SectionCollector();
 
-    // Counter reset function
-    void Reset();
-
     // Set the run number added to the data before shipping
-    void SetRunNumber(u32 aRunNumber);
+    void SetNextRunNumber(u32 aRunNumber);
 
     // Statistics
     u32 GetNumIncompleteLumiSections();
@@ -76,6 +74,29 @@ namespace HCAL_HLX
     // Attach function for distributors
     void AttachDistributor(AbstractDistributor *aDistributor);
 
+    // Error checking (mutex interlocked)
+    const std::string GetLastError();
+
+    // Resync counter
+    u32 GetResyncCount();
+
+    // Current run number
+    u32 GetCurrentRunNumber();
+
+  private:
+    void SetError(const std::string & errorMsg);
+    std::string mErrorMsg;
+    pthread_mutex_t mErrorMutex;
+
+    // Commit helper function
+    void CommitLumiSection();
+
+    // Initialise the lumi section
+    void InitialiseLumiSection();
+
+    // Resync count
+    u32 mResyncCount;
+
   protected:
 
     struct WorkerPlayground {
@@ -91,9 +112,9 @@ namespace HCAL_HLX
     void Init();
     void CleanUp();
 
-    // Thread worker function
+    // Thread worker functions
     static void WorkerThread(void *ptr);
-    //pthread_t mThreadId;
+    void WorkerThreadInt();
 
     // Lumi calculator stuff
     LumiCalc *mLumiCalculator;
@@ -112,8 +133,9 @@ namespace HCAL_HLX
     // Number of nibbles per lumi section
     u32 mNumNibblesPerSection;
 
-    // Run number
-    u32 mRunNumber;
+    // Run number data (cached to align with HLX)
+    u32 mCurrentRunNumber;
+    u32 mNextRunNumber;
 
     // Section number
     u32 mSectionNumber;
@@ -130,6 +152,8 @@ namespace HCAL_HLX
     u32 mNumCompleteLumiSections;
     u32 mNumIncompleteLumiSections;
     //u32 mNumLostLumiSections;
+
+    u32 mCurNumNibbles;
 
     // Distributor list
     std::vector<WorkerPlayground *> mDistributors;

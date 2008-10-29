@@ -28,7 +28,8 @@ namespace HCAL_HLX
   using namespace std;
 
   // Possibly add as configuration setting in future
-#define HCAL_HLX_CANVAS_OUTPUT_DIR "/cms/mon/data/dqm/lumi/pic/"
+#define HCAL_HLX_CANVAS_OUTPUT_DIR "/opt/gifoutput/"
+//"/cms/mon/data/dqm/lumi/pic/"
   
   // Default constructor
   GIFDistributor::GIFDistributor() : mCanvasOutputDir(HCAL_HLX_CANVAS_OUTPUT_DIR) {
@@ -352,6 +353,8 @@ namespace HCAL_HLX
     }
     if ( lumiSection.hdr.numHLXs > HCAL_HLX_MAX_HLXS ) {
       cerr << "Too many HLXs in " << __PRETTY_FUNCTION__ << endl;
+      cerr << lumiSection.hdr.numHLXs << endl;
+      cerr << HCAL_HLX_MAX_HLXS << endl;
       // Discard
       return true;
     }

@@ -61,7 +61,7 @@ namespace HCAL_HLX
       for ( i = 0 ; i != etSumNibble.hdr.numBunches ; i++ ) {
 	value = i * mNumOrbitsPerNibble;
 	if ( etSumNibble.data[i] != value ) {
-	  //cout << i << "\t" << value << "\t" << etSumNibble.data[i] << endl;
+	  cout << i << "\t" << value << "\t" << etSumNibble.data[i] << endl;
 	  break;
 	}
       }
@@ -83,6 +83,7 @@ namespace HCAL_HLX
 	value = i * mNumOrbitsPerNibble;
 	if ( value > 0xFFFF ) value = 0xFFFF;
 	if ( occupancyNibble.data[j][i] != value ) {
+	  cout << i << "\t" << value << "\t" << occupancyNibble.data[i] << endl;
 	  break;
 	}
       }
@@ -103,6 +104,7 @@ namespace HCAL_HLX
       value = i * mNumOrbitsPerNibble;
       if ( value > 0xFFFF ) value = 0xFFFF;
       if ( lhcNibble.data[i] != value ) {
+	cout << i << "\t" << value << "\t" << lhcNibble.data[i] << endl;
 	break;
       }
     }

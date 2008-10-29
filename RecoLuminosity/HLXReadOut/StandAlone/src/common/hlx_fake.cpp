@@ -13,8 +13,9 @@
 
 #include "LumiStructures.hh"
 #include "ICTypeDefs.hh"
+//#include "FakeHLX.hh"
 
-// networking
+/// networking
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -129,8 +130,8 @@ u8 ChecksumHelper(u8 data, u8 prevCRC) {
 
 const char sourceAddress[] = "192.168.1.100";
 const char targetAddress[] = "192.168.1.100";
-const unsigned short sourcePort = 0x3B53;
-const unsigned short destPort = 0x3C53; //3A53
+//const unsigned short sourcePort = 0x3B53;
+const unsigned short destPort = 21308; //3A53
 
 // Data to be transmitted
 LUMI_RAW_HEADER lumiHeader = {
@@ -215,7 +216,7 @@ int main(int argc, char ** argv)
       }
 
       sockaddr_in sa_target;
-      sa_target.sin_port = destPort;
+      sa_target.sin_port = htons(destPort);
       sa_target.sin_addr.s_addr = inet_addr(targetAddress);
       sa_target.sin_family = AF_INET;
 

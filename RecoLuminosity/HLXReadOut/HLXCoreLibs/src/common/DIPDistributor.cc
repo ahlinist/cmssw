@@ -22,7 +22,7 @@ namespace HCAL_HLX
 
   void DIPDistributor::handleException(DipPublication * publication, DipException & ex) {
     DoLogEntry(ex.what());
-    mErrorCount++;
+    SetError(ex.what());
   }
   
   // Default constructor
@@ -36,7 +36,6 @@ namespace HCAL_HLX
       mDIPPublisherLH = 0;
       mDIPData = 0;
       mDIPDataLH = 0;
-      mErrorCount = 0;
       mTimestamp = 0;
       mTimestamp_micros = 0;
       mNumBunches = 0;
@@ -122,10 +121,6 @@ namespace HCAL_HLX
     std::string tmpString = "Class destructor";
     DoLogEntry(tmpString);
     mLogFile.close();
-  }
-
-  u32 DIPDistributor::GetErrorCount() {
-    return mErrorCount;
   }
 
   void DIPDistributor::Init() {

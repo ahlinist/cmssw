@@ -43,10 +43,10 @@ namespace HCAL_HLX
   public:
 
     // Constructor
-    OracleDistributor(const char *username = 0,
-		      const char *password = 0,
-		      const char *location = 0,
-		      const char *schema = 0);
+    OracleDistributor(const std::string & username,
+		      const std::string & password,
+		      const std::string & location,
+		      const std::string & schema);
 
     // Destructor
     ~OracleDistributor();
@@ -54,15 +54,7 @@ namespace HCAL_HLX
     // Processing function for ET sum histogram
     bool ProcessSection(const LUMI_SECTION & lumiSection);
 
-    // Error count retrieval
-    u32 GetErrorCount();
-
   private:
-
-    // Error count for distributor (DB commit problems)
-    // Traps exceptions and keeps a count as they can't
-    // be rethrown across multithreaded apps...
-    u32 mErrorCount;
 
     // DB writer instance
     DBWriter *mDBWriter;

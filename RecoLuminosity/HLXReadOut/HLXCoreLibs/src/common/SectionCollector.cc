@@ -21,6 +21,10 @@
 #include "MemoryAllocationException.hh"
 //#include "ArgumentOutOfRangeException.hh"
 
+#include <sstream>
+#include <fstream>
+#include <iostream>
+
 //#define HCAL_HLX_SECTION_COLLECTOR_DEBUG
 
 // HCAL HLX namespace
@@ -35,7 +39,8 @@ namespace HCAL_HLX
   SectionCollector::SectionCollector(u32 aNumBunches,
 				     u32 aNumNibblesPerSection,
 				     u32 aNumOrbitsPerNibble,
-				     u32 aNumHLXs) {
+				     u32 aNumHLXs,
+				     u32 aInitialRunNumber) {
     try {
       // Distributor thread
       mNumHLXs = aNumHLXs;
@@ -43,33 +48,25 @@ namespace HCAL_HLX
       mNumOrbitsPerNibble = aNumOrbitsPerNibble;
       mNumOrbits = aNumOrbitsPerNibble * aNumNibblesPerSection;
       mNumBunches = aNumBunches;
-      std::cout<<"init: mNumBunches= "<<mNumBunches<<std::endl;
-      std::cout<<"init: mNumOrbits= "<<mNumOrbits<<std::endl;
-      std::cout<<"init: mNumHLXs= "<<mNumHLXs<<std::endl;
-      mRunNumber = 0;
+      mNextRunNumber = aInitialRunNumber;
+      mCurrentRunNumber = aInitialRunNumber;
+      mResyncCount = 0;
 
       mLumiCalculator = new LumiCalc;
       if ( !mLumiCalculator ) {
-	MemoryAllocationException lExc("Cannot allocate LumiCalc module");
-	RAISE(lExc);
+ 	MemoryAllocationException lExc("Cannot allocate LumiCalc module");
+ 	RAISE(lExc);
       }
 
+      // Initialise data structures
       this->Init();
-      // Initialise the lumi section structures
-      /*for ( u32 i = 0 ; i != mNumHLXs ; i++ ) {
-	memset(mLumiSections+i,0,sizeof(LUMI_SECTION));
-	mLumiSections[i].hdr.numOrbits = mNumOrbits;
-	mLumiSections[i].hdr.numBunches = mNumBunches;
-	}*/
-
-      // Reset the luminosity section collector
-      this->Reset();
 
       // Initialise the worker thread
       mWorkerThreadContinue=true;
-      //mBufferTransmit=false;
-      //mTransmitComplete=false;
 
+      // Initialise the error message mutex
+      pthread_mutex_init(&mErrorMutex,
+			 NULL);
 
     } catch (ICException & aExc) {
       RETHROW(aExc);
@@ -92,10 +89,13 @@ namespace HCAL_HLX
 
       // Delete the lumi calculator
       if ( mLumiCalculator != 0 ) {
-	delete mLumiCalculator;
-	mLumiCalculator = 0;
+ 	delete mLumiCalculator;
+ 	mLumiCalculator = 0;
       }
 
+      // Destory the error message mutex
+      pthread_mutex_destroy(&mErrorMutex);
+      
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -105,26 +105,18 @@ namespace HCAL_HLX
   void SectionCollector::Init() {
     try {
       mLumiSection = new LUMI_SECTION;
-      mLumiSection->hdr.timestamp = 0;
-      mLumiSection->hdr.timestamp_micros = 0;
-      mLumiSection->hdr.runNumber = 0;
-      mLumiSection->hdr.sectionNumber = 0;
-      mLumiSection->hdr.startOrbit = 0;
-      mLumiSection->hdr.numOrbits = 0;
-      mLumiSection->hdr.numBunches = 0;
-      mLumiSection->hdr.numHLXs = 0;
-      mLumiSection->hdr.bCMSLive = false;
-
-
       if ( mLumiSection == 0 ) {
 	MemoryAllocationException lExc("Unable to allocate lumi section memory");
 	RAISE(lExc);
       }
-      mLumiSectionBuffer = new LUMI_SECTION;
-      if ( mLumiSectionBuffer == 0 ) {
-	MemoryAllocationException lExc("Unable to allocate lumi section buffer");
-	RAISE(lExc);
-      }
+
+      mNumCompleteLumiSections = 0;
+      mNumIncompleteLumiSections = 0;
+      mSectionNumber = 1;
+      mCurNumNibbles = 0;
+
+      InitialiseLumiSection();
+
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
@@ -137,33 +129,20 @@ namespace HCAL_HLX
 	delete mDistributors[i];
       }
       mDistributors.clear();
+
       if ( mLumiSection != 0 ) {
 	delete mLumiSection;
 	mLumiSection = 0;
       }
-      if ( mLumiSectionBuffer != 0 ) {
-	delete mLumiSectionBuffer;
-	mLumiSectionBuffer = 0;
-      }
+
     } catch (ICException & aExc) {
       RETHROW(aExc);
     }
   }
 
-  // Counter reset function
-  void SectionCollector::Reset() {
-    try {
-      mNumCompleteLumiSections = 0;
-      mNumIncompleteLumiSections = 0;
-      mSectionNumber = 0;
-    } catch (ICException & aExc) {
-      RETHROW(aExc);
-    }
-  }
-
-  // Set the run number from RCMS
-  void SectionCollector::SetRunNumber(u32 aRunNumber) {
-    mRunNumber = aRunNumber;
+  // Set the next run number from RCMS
+  void SectionCollector::SetNextRunNumber(u32 aRunNumber) {
+    mNextRunNumber = aRunNumber;
   }
 
   // Statistics
@@ -219,11 +198,6 @@ namespace HCAL_HLX
 
     while (theClass->mWorkerThreadContinue) {
 
-      //if ( !theClass->mTransmitComplete ) {
-      //	if ( theClass->mBufferTransmit ) {
-	
-	  //for ( u32 i = 0 ; i != theClass->mDistributors.size() ; i++ ) {
-
       if ( thePlayground->readIndex != thePlayground->writeIndex ) {
 	bRet = theDistributor->ProcessSection(*(thePlayground->sectionBuffer+thePlayground->readIndex));
 	if ( bRet ) {
@@ -240,105 +214,188 @@ namespace HCAL_HLX
 	}
       }
 
-
-
-	    //	  }
-    //theClass->mTransmitComplete = true;
-
-	  //}
-  //} else {
-  //	if ( !theClass->mBufferTransmit ) {
-  //  theClass->mTransmitComplete = false;
-  //	}
-  //  }
-
       Sleep(1);
 
     }
 
-    //cout << "Worker thread complete" << endl;
+  }
+
+  const std::string SectionCollector::GetLastError() {
+    // Locked to make it thread safe
+    pthread_mutex_lock(&mErrorMutex);
+    std::string localError = mErrorMsg;
+    pthread_mutex_unlock(&mErrorMutex);
+    return localError;
+  }
+
+  void SectionCollector::SetError(const std::string & errorMsg) {
+    // Locked to make it thread safe
+    pthread_mutex_lock(&mErrorMutex);
+    mErrorMsg = errorMsg;
+    pthread_mutex_unlock(&mErrorMutex);
+  } 
+
+  void SectionCollector::InitialiseLumiSection() {
+      memset(mLumiSection,0,sizeof(LUMI_SECTION));	
+      timeval now_time;
+      gettimeofday(&now_time, NULL);
+      mLumiSection->hdr.timestamp = now_time.tv_sec;
+      mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
+      mLumiSection->hdr.numHLXs = mNumHLXs;
+      mLumiSection->hdr.sectionNumber = mSectionNumber;
+      mLumiSection->hdr.runNumber = mCurrentRunNumber;
+      mLumiSection->hdr.numOrbits = mNumOrbits;
+      mLumiSection->hdr.numBunches = mNumBunches;
   }
 
   // Processing function for ET sum nibbles
   void SectionCollector::ProcessETSumNibble(const ET_SUM_NIBBLE & etSumNibble,
 					    u8 hlxID) {
-    //cout << mDistributors[0]->writeIndex << endl;
-    //cout << mDistributors[0]->readIndex << endl;
-    //if ( mTransmitComplete ) mBufferTransmit = false;
 
-    // Check for incomplete previous lumi section
-    if ( etSumNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
-      if ( mLumiSection->hdr.startOrbit
-	   + mLumiSection->hdr.numOrbits <= etSumNibble.hdr.startOrbit ) {
-	// Move on to next lumi section as the previous one has to be complete by now...
-	
-	if ( mLumiSection->hdr.startOrbit != 0 ) {
-	  mSectionNumber++;
-	  mNumCompleteLumiSections++;
-	  
-	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
-	    u32 nextIndex = mDistributors[i]->writeIndex;
-	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
-	      nextIndex = 0;
-	    } else {
-	      nextIndex++;
-	    }
-	    if ( nextIndex == mDistributors[i]->readIndex ) {
-	      mDistributors[i]->distributor->mNumLostLumiSections++;
-	    } else {
-	      // Do the luminosity calculation
-	      mLumiCalculator->DoCalc(*mLumiSection);
-	      // Copy the data into the buffer
-	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
-		     mLumiSection,
-		     sizeof(LUMI_SECTION));  
-	      // Set the new write pipeline address
-	      mDistributors[i]->writeIndex = nextIndex;
-	    }
-	  }
-	}
+    // Changed this to detect changes going backwards in time as well 
 
-	// Initialise the lumi section
-	memset(mLumiSection,0,sizeof(LUMI_SECTION));	
-        //time_t now_time = time(NULL);
-	timeval now_time;
-	gettimeofday(&now_time, NULL);
-        mLumiSection->hdr.timestamp = now_time.tv_sec;
-        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
-	mLumiSection->hdr.numHLXs = mNumHLXs;
-	mLumiSection->hdr.sectionNumber = mSectionNumber;
-	mLumiSection->hdr.runNumber = mRunNumber;
-	mLumiSection->hdr.numOrbits = mNumOrbits;
-	mLumiSection->hdr.numBunches = mNumBunches;
-	mLumiSection->hdr.startOrbit = etSumNibble.hdr.startOrbit;
-        mLumiSection->hdr.bCMSLive = etSumNibble.hdr.bCMSLive;
+    // Conditions for synchronisation are either:
+    // 1) TTC OC0 restart:
+    //    a) Orbit start of nibble is less than or equal to previous lumi section (i.e. back in time)
+    //    b) New nibble start orbit is zero
+    //    c) HLX detected OC0
+    //    Condition (a) is needed to prevent re-initialisation after the first OC0 from an HLX
+    // 2) Normal operation:
+    //    a) Orbit start of next nibble is greater than previous lumi section
+    //    b) Orbit start of next nibble is an exact multiple of the lumi section 
 
-	// Load the first nibble
-	mLumiSection->etSum[hlxID].hdr.numNibbles = 1;
-	// As this is the first nibble of the set, copy into array
-	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	  // Accumulate the data
-	  mLumiSection->etSum[hlxID].data[i] = etSumNibble.data[i];
-	}
-	
+    // The only caveat of this is that if an HLX glitches during running and jumps
+    // it can knock out the rest of the DAQ during running, although an OC0 will resynchronise it
+
+    // Transition condition checking
+    // Either section boundary or resync
+    /*
+    bool resyncCondition = ((etSumNibble.hdr.startOrbit == 0) && // resync condition
+			    (hlxID == 0) && // we need to choose a master to stop multiple resyncs
+			    etSumNibble.hdr.bOC0);
+    bool newLSCondition = ((mLumiSection->hdr.startOrbit < etSumNibble.hdr.startOrbit) &&
+			    (etSumNibble.hdr.startOrbit % mNumOrbits == 0));
+    */
+
+    /*
+    // Section commit management
+    if (  newLSCondition ) {
+    
+      // Move on to next lumi section as the previous one has to be complete by now...
+      // But only commit if there is at least one nibble in the section for one HLX
+      if ( mCurNumNibbles != 0 ) CommitLumiSection();
+      
+      // If resync condition, update the run number
+      if ( resyncCondition ) {
+	mCurrentRunNumber = mNextRunNumber;
+	mResyncCount++;
+      }
+
+      // Initialise the lumi section
+      InitialiseLumiSection();
+      mLumiSection->hdr.startOrbit = etSumNibble.hdr.startOrbit;
+      mLumiSection->hdr.bCMSLive = etSumNibble.hdr.bCMSLive;
+      mLumiSection->hdr.bOC0 = false;
+      
+      // Load the first nibble
+      mLumiSection->etSum[hlxID].hdr.numNibbles = 1;
+      mCurNumNibbles = 1;
+      
+      // As this is the first nibble of the set, copy into array
+      for ( u32 i = 0 ; i != mNumBunches ; i++ ) mLumiSection->etSum[hlxID].data[i] = etSumNibble.data[i];
+      
+      // Copy the condition in for the nibble
+      mLumiSection->hdr.bOC0 |= etSumNibble.hdr.bOC0;
+      
+      return;
+
+    }
+    */
+
+    // Check we are on a nibble boundary and not a section boundary
+    bool normalCondition = ((mLumiSection->hdr.startOrbit <= etSumNibble.hdr.startOrbit) &&
+			    (etSumNibble.hdr.startOrbit % mNumOrbitsPerNibble == 0));
+
+    // In normal running (accumulation)
+    if ( normalCondition ) {
+      
+      // Part of recording sequence, accumulate data
+      // Check for missing nibbles - we assume that nibbles cannot arrive out of order
+      // However the packets comprising them can - this is already handled by the nibble collector
+      // This amounts to assuming that all the data is transmitted and received
+      // during a single histogramming period. If not, we'd end up with all sort of problems
+      // such as packet collisions etc. which would break the system anyway...
+      
+      // Add to the nibble count
+      mLumiSection->etSum[hlxID].hdr.numNibbles++;
+      mCurNumNibbles++;
+
+      // Accumulate the data
+      for ( u32 i = 0 ; i != mNumBunches ; i++ ) mLumiSection->etSum[hlxID].data[i] += etSumNibble.data[i];
+
+      // Cache OC0
+      mLumiSection->hdr.bOC0 |= etSumNibble.hdr.bOC0;
+      
+      return;
+      
+    }
+
+    // Report the timing error
+    SetError("HLX data glitch detected for ET nibble - ignoring");
+    cout << mLumiSection->hdr.startOrbit << endl;
+    cout << etSumNibble.hdr.startOrbit << endl;
+    cout << mNumOrbitsPerNibble << endl;
+
+  }
+
+  void SectionCollector::CommitLumiSection() {
+    mSectionNumber++;
+
+    // Do a quick verification on the number of nibbles
+    if ( mCurNumNibbles == mNumNibblesPerSection * mNumHLXs * 3 ) { // x3 because of occ,lhc,et
+      mNumCompleteLumiSections++;
+    } else {
+      mNumIncompleteLumiSections++;
+    }
+    
+    // Do the luminosity calculation
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+    cout << "Running LumiCalc" << endl;
+#endif
+    mLumiCalculator->DoCalc(*mLumiSection);
+    
+    for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
+      u32 nextIndex = mDistributors[i]->writeIndex;
+      if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
+	nextIndex = 0;
       } else {
-	
-	// Part of recording sequence, accumulate data
-	// Check for missing nibbles - we assume that nibbles cannot arrive out of order
-	// However the packets comprising them can - this is already handled by the nibble collector
-	// This amounts to assuming that all the data is transmitted and received
-	// during a single histogramming period. If not, we'd end up with all sort of problems
-	// such as packet collisions etc. which would break the system anyway...
-	
-	// Add to the nibble count
-	mLumiSection->etSum[hlxID].hdr.numNibbles++;
-	
-	// TODO, add etsumdatalow, high
-	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	  // Accumulate the data
-	  mLumiSection->etSum[hlxID].data[i] += etSumNibble.data[i];
-	}
-	
+	nextIndex++;
+      }
+      
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+      cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
+      cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
+      cout << "Next index is: " << dec << nextIndex << endl;
+#endif
+      if ( nextIndex == mDistributors[i]->readIndex ) {
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	cout << "Section dropped" << endl;
+#endif
+	mDistributors[i]->distributor->mNumLostLumiSections++;
+      } else {
+	// Copy the data into the buffer
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	cout << "Copying data into circular buffer" << endl;
+#endif
+
+	memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
+	       mLumiSection,
+	       sizeof(LUMI_SECTION));  
+	// Set the new write pipeline address
+#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
+	cout << "Submit" << endl;
+#endif
+	mDistributors[i]->writeIndex = nextIndex;
       }
     }
     
@@ -346,198 +403,211 @@ namespace HCAL_HLX
 
   void SectionCollector::ProcessLHCNibble(const LHC_NIBBLE & lhcNibble,
 					  u8 hlxID) {
-    //if ( mTransmitComplete ) mBufferTransmit = false;
 
-    // Check for incomplete previous lumi section
-    if ( lhcNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
-      if ( mLumiSection->hdr.startOrbit
-	   + mLumiSection->hdr.numOrbits <= lhcNibble.hdr.startOrbit ) {
+    // Changed this to detect changes going backwards in time as well 
 
-	// Move on to next lumi section as the previous one has to be complete by now...	
-	if ( mLumiSection->hdr.startOrbit != 0 ) {
-	  mSectionNumber++;
-	  mNumCompleteLumiSections++;
+    // Conditions for synchronisation are either:
+    // 1) TTC OC0 restart:
+    //    a) Orbit start of nibble is less than or equal to previous lumi section (i.e. back in time)
+    //    b) New nibble start orbit is zero
+    //    c) HLX detected OC0
+    //    Condition (a) is needed to prevent re-initialisation after the first OC0 from an HLX
+    // 2) Normal operation:
+    //    a) Orbit start of next nibble is greater than previous lumi section
+    //    b) Orbit start of next nibble is an exact multiple of the lumi section 
 
-	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
-	    u32 nextIndex = mDistributors[i]->writeIndex;
-	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
-	      nextIndex = 0;
-	    } else {
-	      nextIndex++;
-	    }
+    // The only caveat of this is that if an HLX glitches during running and jumps
+    // it can knock out the rest of the DAQ during running, although an OC0 will resynchronise it
 
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	    cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
-	    cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
-	    cout << "Next index is: " << dec << nextIndex << endl;
-#endif
-	    if ( nextIndex == mDistributors[i]->readIndex ) {
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Section dropped" << endl;
-#endif
-	      mDistributors[i]->distributor->mNumLostLumiSections++;
-	    } else {
-	      // Do the luminosity calculation
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Running LumiCalc" << endl;
-#endif
-	      mLumiCalculator->DoCalc(*mLumiSection);
-	      // Copy the data into the buffer
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Copying data into circular buffer" << endl;
-#endif
-	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
-		     mLumiSection,
-		     sizeof(LUMI_SECTION));  
-	      // Set the new write pipeline address
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Submit" << endl;
-#endif
-	      mDistributors[i]->writeIndex = nextIndex;
-	    }
-	  }
-	}
+    // Transition condition checking
+    // Glitch condition checking
+    /*
+    bool resyncCondition = ((lhcNibble.hdr.startOrbit == 0) && // resync condition
+			    (mLumiSection->hdr.startOrbit != 0) &&
+			    lhcNibble.hdr.bOC0);
+    bool newLSCondition = ((mLumiSection->hdr.startOrbit < lhcNibble.hdr.startOrbit ) &&
+			    (lhcNibble.hdr.startOrbit % mNumOrbits == 0));
 
-	memset(mLumiSection,0,sizeof(LUMI_SECTION));
-        timeval now_time;
-        gettimeofday(&now_time, NULL);
-        mLumiSection->hdr.timestamp = now_time.tv_sec;
-        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
-	mLumiSection->hdr.numHLXs = mNumHLXs;
-	mLumiSection->hdr.sectionNumber = mSectionNumber;
-	mLumiSection->hdr.runNumber = mRunNumber;
-	mLumiSection->hdr.numOrbits = mNumOrbits;
-	mLumiSection->hdr.numBunches = mNumBunches;
-	mLumiSection->hdr.startOrbit = lhcNibble.hdr.startOrbit;
-	mLumiSection->hdr.bCMSLive = lhcNibble.hdr.bCMSLive;
-	  
-	// Load the first nibble
-	mLumiSection->lhc[hlxID].hdr.numNibbles = 1;
-	// As this is the first nibble of the set, copy into array
-	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	  //cout << lhcNibble.data[i] << "\t";
-	  mLumiSection->lhc[hlxID].data[i] = lhcNibble.data[i];
-	}
-
-      } else {
-	
-	// Part of recording sequence, accumulate data
-	// Check for missing nibbles - we assume that nibbles cannot arrive out of order
-	// However the packets comprising them can - this is already handled by the nibble collector
-	// This amounts to assuming that all the data is transmitted and received
-	// during a single histogramming period. If not, we'd end up with all sort of problems
-	// such as packet collisions etc. which would break the system anyway...
-	
-	// Add to the nibble count
-	mLumiSection->lhc[hlxID].hdr.numNibbles++;
-	
-	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	  //cout << lhcNibble.data[i] << "\t";
-	  // Accumulate the data
-	  mLumiSection->lhc[hlxID].data[i] += lhcNibble.data[i];
-	}
-	
+    if ( resyncCondition || newLSCondition ) {
+    
+      // Move on to next lumi section as the previous one has to be complete by now...
+      // But only commit if there is at least one nibble in the section for one HLX
+      if ( mCurNumNibbles != 0 ) CommitLumiSection();
+      
+      // If resync condition, update the run number
+      if ( resyncCondition ) {
+	mCurrentRunNumber = mNextRunNumber;
+	mResyncCount++;
       }
+      
+      // Initialise the lumi section
+      InitialiseLumiSection();
+      mLumiSection->hdr.startOrbit = lhcNibble.hdr.startOrbit;
+      mLumiSection->hdr.bCMSLive = lhcNibble.hdr.bCMSLive;
+      mLumiSection->hdr.bOC0 = false;
+      
+      // Load the first nibble
+      mLumiSection->lhc[hlxID].hdr.numNibbles = 1;
+      mCurNumNibbles = 1;
+      
+      // As this is the first nibble of the set, copy into array
+      for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	// Accumulate the data
+	mLumiSection->lhc[hlxID].data[i] = lhcNibble.data[i];
+      }
+
+      // Cache OC0
+      mLumiSection->hdr.bOC0 |= lhcNibble.hdr.bOC0;
+      
+      return;
+      
     }
+    */
+
+    bool normalCondition = ((mLumiSection->hdr.startOrbit <= lhcNibble.hdr.startOrbit) &&
+			    (lhcNibble.hdr.startOrbit % mNumOrbitsPerNibble == 0));
+
+    // In normal running (accumulation)
+    if ( normalCondition ) {
+
+      // Part of recording sequence, accumulate data
+      // Check for missing nibbles - we assume that nibbles cannot arrive out of order
+      // However the packets comprising them can - this is already handled by the nibble collector
+      // This amounts to assuming that all the data is transmitted and received
+      // during a single histogramming period. If not, we'd end up with all sort of problems
+      // such as packet collisions etc. which would break the system anyway...
+      
+      // Add to the nibble count
+      mLumiSection->lhc[hlxID].hdr.numNibbles++;
+      mCurNumNibbles++;
+
+      // Accumulate the data
+      for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	// Accumulate the data
+	mLumiSection->lhc[hlxID].data[i] += lhcNibble.data[i];
+      }
+
+      // Cache OC0
+      mLumiSection->hdr.bOC0 |= lhcNibble.hdr.bOC0;
+
+      return;
+
+    }
+      
+    // To get here implies an error in the data pattern
+    SetError("HLX data glitch detected for LHC nibble - ignoring");
+
+  }
+
+  u32 SectionCollector::GetResyncCount() {
+    return mResyncCount;
+  }
+
+  u32 SectionCollector::GetCurrentRunNumber() {
+    return mCurrentRunNumber;
   }
 
   void SectionCollector::ProcessOccupancyNibble(const OCCUPANCY_NIBBLE & occupancyNibble,
 						u8 hlxID) {
-    //if ( mTransmitComplete ) mBufferTransmit = false;
 
-    // Check for incomplete previous lumi section
-    if ( occupancyNibble.hdr.numOrbits == mNumOrbitsPerNibble ) {
-      if ( mLumiSection->hdr.startOrbit
-	   + mLumiSection->hdr.numOrbits <= occupancyNibble.hdr.startOrbit ) {
 
-	// Move on to next lumi section as the previous one has to be complete by now...	
-	if ( mLumiSection->hdr.startOrbit != 0 ) {
-	  mSectionNumber++;
-	  mNumCompleteLumiSections++;
-	  
-	  for ( u32 i = 0 ; i != mDistributors.size() ; i++ ) {
-	    u32 nextIndex = mDistributors[i]->writeIndex;
-	    if ( nextIndex == HCAL_HLX_DISTRIBUTOR_BUFFER_DEPTH-1 ) {
-	      nextIndex = 0;
-	    } else {
-	      nextIndex++;
-	    }
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	    cout << "Write index is: " << dec << mDistributors[i]->writeIndex << endl;
-	    cout << "Read index is: " << dec << mDistributors[i]->readIndex << endl;
-	    cout << "Next index is: " << dec << nextIndex << endl;
-#endif
-	    if ( nextIndex == mDistributors[i]->readIndex ) {
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Section dropped" << endl;
-#endif
-	      mDistributors[i]->distributor->mNumLostLumiSections++;
-	    } else {
-	      // Do the luminosity calculation
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Running LumiCalc" << endl;
-#endif
-	      mLumiCalculator->DoCalc(*mLumiSection);
-	      // Copy the data into the buffer
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Copying data into circular buffer" << endl;
-#endif
-	      memcpy(mDistributors[i]->sectionBuffer+mDistributors[i]->writeIndex,
-		     mLumiSection,
-		     sizeof(LUMI_SECTION));  
-	      // Set the new write pipeline address
-#ifdef HCAL_HLX_SECTION_COLLECTOR_DEBUG
-	      cout << "Submit" << endl;
-#endif
-	      mDistributors[i]->writeIndex = nextIndex;
-	    }
-	  }
-	}
+    // Changed this to detect changes going backwards in time as well 
 
-	memset(mLumiSection,0,sizeof(LUMI_SECTION));
-        timeval now_time;
-        gettimeofday(&now_time, NULL);
-        mLumiSection->hdr.timestamp = now_time.tv_sec;
-        mLumiSection->hdr.timestamp_micros = now_time.tv_usec;
-	mLumiSection->hdr.numHLXs = mNumHLXs;
-	mLumiSection->hdr.sectionNumber = mSectionNumber;
-	mLumiSection->hdr.runNumber = mRunNumber;
-	mLumiSection->hdr.numOrbits = mNumOrbits;
-	mLumiSection->hdr.numBunches = mNumBunches;
-	mLumiSection->hdr.startOrbit = occupancyNibble.hdr.startOrbit;
-	mLumiSection->hdr.bCMSLive = occupancyNibble.hdr.bCMSLive;
+    // Conditions for synchronisation are either:
+    // 1) TTC OC0 restart:
+    //    a) Orbit start of nibble is less than or equal to previous lumi section (i.e. back in time)
+    //    b) New nibble start orbit is zero
+    //    c) HLX detected OC0
+    //    Condition (a) is needed to prevent re-initialisation after the first OC0 from an HLX
+    // 2) Normal operation:
+    //    a) Orbit start of next nibble is greater than previous lumi section
+    //    b) Orbit start of next nibble is an exact multiple of the lumi section 
 
-	// Load the first nibble
-	mLumiSection->occupancy[hlxID].hdr.numNibbles = 1;
+    // The only caveat of this is that if an HLX glitches during running and jumps
+    // it can knock out the rest of the DAQ during running, although an OC0 will resynchronise it
 
-	for ( u32 j = 0 ; j != 6 ; j++ ) {
-	  // As this is the first nibble of the set, copy into array
-	  for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	    mLumiSection->occupancy[hlxID].data[j][i] = occupancyNibble.data[j][i];
-	  }
-	}
+    // Section synchronisation
+    bool resyncCondition = ((occupancyNibble.hdr.startOrbit == 0) && // resync condition
+			    (hlxID == 0));// && // needed to stop multiple resyncs - keyed to 1st HLX 
+    //occupancyNibble.hdr.bOC0);
+    bool newLSCondition = ((mLumiSection->hdr.startOrbit < occupancyNibble.hdr.startOrbit) &&
+			   (occupancyNibble.hdr.startOrbit % mNumOrbits == 0));
 
-      } else {
-	
-	// Part of recording sequence, accumulate data
-	// Check for missing nibbles - we assume that nibbles cannot arrive out of order
-	// However the packets comprising them can - this is already handled by the nibble collector
-	// This amounts to assuming that all the data is transmitted and received
-	// during a single histogramming period. If not, we'd end up with all sort of problems
-	// such as packet collisions etc. which would break the system anyway...
-	
-	// Add to the nibble count
-	mLumiSection->occupancy[hlxID].hdr.numNibbles++;
+    if ( resyncCondition || newLSCondition ) {
 
-	for ( u32 j = 0 ; j != 6 ; j++ ) {
-	  for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
-	    // Accumulate the data
-	    mLumiSection->occupancy[hlxID].data[j][i] += occupancyNibble.data[j][i];
-	  }
-	}
-	
+      // Move on to next lumi section as the previous one has to be complete by now...
+      // But only commit if there is at least one nibble in the section for one HLX
+      if ( mCurNumNibbles != 0 ) {
+	CommitLumiSection();
       }
+
+      // If resync condition, update the run number
+      if ( resyncCondition ) {
+	mCurrentRunNumber = mNextRunNumber;
+	mSectionNumber = 1;
+	mResyncCount++;
+      }
+
+      // Initialise the lumi section
+      InitialiseLumiSection();
+      mLumiSection->hdr.startOrbit = occupancyNibble.hdr.startOrbit;
+      mLumiSection->hdr.bCMSLive = occupancyNibble.hdr.bCMSLive;
+      mLumiSection->hdr.bOC0 = false;
+
+      // Load the first nibble
+      mLumiSection->occupancy[hlxID].hdr.numNibbles = 1;
+      mCurNumNibbles = 1;
+
+      // As this is the first nibble of the set, copy into array
+      for ( u32 j = 0 ; j != 6 ; j++ ) {
+	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	  // Accumulate the data
+	  mLumiSection->occupancy[hlxID].data[j][i] = occupancyNibble.data[j][i];
+	}
+      }
+
+      // Cache OC0
+      mLumiSection->hdr.bOC0 |= occupancyNibble.hdr.bOC0;
+      
+      return;
+
     }
+
+    // Transition condition checking
+    bool normalCondition = ((mLumiSection->hdr.startOrbit <= occupancyNibble.hdr.startOrbit) &&
+			   (occupancyNibble.hdr.startOrbit % mNumOrbitsPerNibble == 0));
+
+    // In normal running (accumulation)
+    if ( normalCondition ) {
+
+      // Part of recording sequence, accumulate data
+      // Check for missing nibbles - we assume that nibbles cannot arrive out of order
+      // However the packets comprising them can - this is already handled by the nibble collector
+      // This amounts to assuming that all the data is transmitted and received
+      // during a single histogramming period. If not, we'd end up with all sort of problems
+      // such as packet collisions etc. which would break the system anyway...
+      
+      // Add to the nibble count
+      mLumiSection->occupancy[hlxID].hdr.numNibbles++;
+      mCurNumNibbles++;
+
+      // Accumulate the data
+      for ( u32 j = 0 ; j != 6 ; j++ ) {
+	for ( u32 i = 0 ; i != mNumBunches ; i++ ) {
+	  // Accumulate the data
+	  mLumiSection->occupancy[hlxID].data[j][i] += occupancyNibble.data[j][i];
+	}
+      }
+
+      // Cache OC0
+      mLumiSection->hdr.bOC0 |= occupancyNibble.hdr.bOC0;
+
+      return;
+    }
+
+    // To get here implies an error in the data pattern
+    SetError("HLX data glitch detected for occupancy nibble - ignoring");
+
   }
 
 

@@ -1,5 +1,5 @@
 /*
-  Debug cout distributor class
+  Debug distributor
   Copyright John Jones 2007
 */
 
@@ -10,7 +10,6 @@
 #include "ICException.hh"
 #include "HardwareAccessException.hh"
 #include "MemoryAllocationException.hh"
-//#include "ArgumentOutOfRangeException.hh"
 
 // HCAL HLX namespace
 namespace HCAL_HLX

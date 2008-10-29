@@ -33,7 +33,7 @@ void CtrlC(int aSigNum) {
 using namespace std;
 using namespace HCAL_HLX; 
 
-const unsigned short port = 0x39C7; // port 50002 (reverse-endian)
+const unsigned short port = 51001; //0x39C7; // port 50002 (reverse-endian)
 
 void InterpretSection(const LUMI_SECTION & lumiSection) {
 
@@ -100,7 +100,7 @@ int main(int argc, char ** argv)
 {
   signal(SIGINT,CtrlC);
   try{
-    const char serverName[] = "vmepcs2f17-19";
+    const char serverName[] = "vmepcs2f17-18";
     unsigned char *rData = new unsigned char[1000000];
     unsigned short port = 51001;
 
