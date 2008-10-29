@@ -94,6 +94,15 @@ void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& tau) {
+	fill(iEvent,tau.p4());
+}
+
+void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
+        fill(iEvent,tau.p4());
+}
+
+void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector& tau) {
+
   // Reset variables
   jetPt = 0.0;
   jetEta = 0.0;
@@ -123,7 +132,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& 
     // Match for PF tauand L1extra tau
     float minDR = 99999999.;
     for(iTau = l1Taus.begin(); iTau != l1Taus.end(); ++iTau) {
-      double DR = deltaR(iTau->eta(), iTau->phi(), tau.eta(), tau.phi());
+      double DR = deltaR(iTau->eta(), iTau->phi(), tau.Eta(), tau.Phi());
       if(DR < jetMatchingCone && DR < minDR) {
         minDR = DR;
         jetPt = iTau->pt();
