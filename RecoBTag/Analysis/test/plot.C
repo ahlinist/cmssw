@@ -1,3 +1,16 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+#include <TFile.h>
+#include <TTree.h>
+#include <TString.h>
+#include <TObjString.h>
+#include <TPRegexp.h>
+#include <TCanvas.h>
+#include <TH1F.h>
+
+using namespace std;
 
 TObject* get(TFile & file, const string & name) {
   TObject* object = file.Get( name.c_str() );
@@ -13,7 +26,7 @@ vector<string> get_list(TFile& file) {
   TPRegexp pcreJetTag("JetTag_(.*)BJetTags_GLOBAL");
 
   vector<string> list;
-  for (unsigned int i = 0; i < file.GetListOfKeys()->GetSize(); ++i) {
+  for (int i = 0; i < file.GetListOfKeys()->GetSize(); ++i) {
     TString name( file.GetListOfKeys()->At(i)->GetName() );
     if (pcreJetTag.MatchB( name ))
       list.push_back( string( ((TObjString *) pcreJetTag.MatchS( name )->At(1))->GetString() ) );
@@ -39,7 +52,7 @@ enum eta_range {
 };
 
 enum energy_range {
-  GLOBAL    = 0,
+  PT_GLOBAL = 0,
   PT_50_80  = 1,
   PT_80_120 = 2
 };
@@ -53,13 +66,13 @@ const char* energy_range_description[] = { "", " (pT 50-80)", " (pT 80-120)" };
 enum flavour_color {
   colorBottom = kRed,
   colorCharm  = kBlue,
-  colorLight  = kGreen + 100,
+  colorLight  = kGreen,
   colorGluon  = kBlack
 };
 
-void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_range energy = GLOBAL, bool keep = false) {
+void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_range energy = PT_GLOBAL, bool keep = false) {
   string tag;
-  if (eta != GLOBAL || energy != GLOBAL) {
+  if (eta != GLOBAL || energy != PT_GLOBAL) {
     tag = "";
     tag += eta_range_tag[eta];
     tag += energy_range_tag[energy];
@@ -78,17 +91,17 @@ void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_rang
   string title_discriminant = name + ": discriminant by flavour"          + title_tag;
   string title_efficiency   = name + ": efficiency vs. discriminator cut" + title_tag;
   string title_mistag       = name + ": mistag vs. b tag efficiency"      + title_tag;
-  string name_b_discr = folder + "/" + "discr_"                     + name + "BJetTags" + tag + "B";
-  string name_c_discr = folder + "/" + "discr_"                     + name + "BJetTags" + tag + "C";
-  string name_x_discr = folder + "/" + "discr_"                     + name + "BJetTags" + tag + "DUS";
-  string name_g_discr = folder + "/" + "discr_"                     + name + "BJetTags" + tag + "G";
-  string name_b_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags" + tag + "B";
-  string name_c_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags" + tag + "C";
-  string name_x_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags" + tag + "DUS";
-  string name_g_eff   = folder + "/" + "effVsDiscrCut_discrFC_"     + name + "BJetTags" + tag + "G";
-  string name_c_vs_b  = folder + "/" + "FlavEffVsBEff_C_discrFC_"   + name + "BJetTags" + tag;
-  string name_x_vs_b  = folder + "/" + "FlavEffVsBEff_DUS_discrFC_" + name + "BJetTags" + tag;
-  string name_g_vs_b  = folder + "/" + "FlavEffVsBEff_G_discrFC_"   + name + "BJetTags" + tag;
+  string name_b_discr = folder + "/" + "discr_"                   + name + "BJetTags" + tag + "B";
+  string name_c_discr = folder + "/" + "discr_"                   + name + "BJetTags" + tag + "C";
+  string name_x_discr = folder + "/" + "discr_"                   + name + "BJetTags" + tag + "DUS";
+  string name_g_discr = folder + "/" + "discr_"                   + name + "BJetTags" + tag + "G";
+  string name_b_eff   = folder + "/" + "effVsDiscrCut_discr_"     + name + "BJetTags" + tag + "B";
+  string name_c_eff   = folder + "/" + "effVsDiscrCut_discr_"     + name + "BJetTags" + tag + "C";
+  string name_x_eff   = folder + "/" + "effVsDiscrCut_discr_"     + name + "BJetTags" + tag + "DUS";
+  string name_g_eff   = folder + "/" + "effVsDiscrCut_discr_"     + name + "BJetTags" + tag + "G";
+  string name_c_vs_b  = folder + "/" + "FlavEffVsBEff_C_discr_"   + name + "BJetTags" + tag;
+  string name_x_vs_b  = folder + "/" + "FlavEffVsBEff_DUS_discr_" + name + "BJetTags" + tag;
+  string name_g_vs_b  = folder + "/" + "FlavEffVsBEff_G_discr_"   + name + "BJetTags" + tag;
   
   // discriminant distribution, by flavour
   TCanvas* discriminant = new TCanvas(name_discriminant.c_str(), title_discriminant.c_str());
@@ -224,26 +237,33 @@ void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_rang
   }
 }
 
-// convenience functions with implicit file 
-
-void list(void) {
-  list( *_file0 );
-}
-
-void plot(const string & name, eta_range eta = GLOBAL, energy_range energy = GLOBAL, bool keep = false) {
-  plot( *_file0, name, eta, energy, keep );
-}
-
-make_all_plots() {
-  TFile & file = *_file0;
+void make_all_plots(TFile & file) {
   vector<string> list = get_list(file);
   
   for (unsigned int i = 0; i < list.size(); i++) {
     // softElectron btag is defined only in the barrel region
     if (list[i] == "softElectron")
-      plot( file, list[i], BARREL, GLOBAL );
+      plot( file, list[i], BARREL, PT_GLOBAL );
     else
-      plot( file, list[i], GLOBAL, GLOBAL );
+      plot( file, list[i], GLOBAL, PT_GLOBAL );
   }
-  
 }
+
+// convenience functions with implicit file 
+//#ifdef __CINT__
+
+TFile * _file0;
+
+void list(void) {
+  list( *_file0 );
+}
+
+void plot(const string & name, eta_range eta = GLOBAL, energy_range energy = PT_GLOBAL, bool keep = false) {
+  plot( *_file0, name, eta, energy, keep );
+}
+
+void make_all_plots() {
+  make_all_plots( *_file0 );
+}
+
+//#endif // __CINT__
