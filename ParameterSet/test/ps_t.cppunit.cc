@@ -189,6 +189,15 @@ void testps::stringTest()
   testbody<std::string>("Hello there");
   testbody<std::string>("123");
   testbody<std::string>("This\nis\tsilly\n");  
+  std::vector<std::string> vs;
+  vs.push_back("");
+  vs.push_back("1");
+  vs.push_back("");
+  vs.push_back("three");
+  edm::ParameterSet p1;
+  p1.addParameter<std::vector<std::string> >("vs",vs);
+  std::vector<std::string> vs2 = p1.getParameter<std::vector<std::string> >("vs");
+  //FIXME doesn't count spaces
 }
 
 
