@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.30 2008/10/22 12:50:22 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.31 2008/10/22 17:18:02 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.30 $
-  \date $Date: 2008/10/22 12:50:22 $
+  \version $Revision: 1.31 $
+  \date $Date: 2008/10/22 17:18:02 $
 */
 
 #include "TProfile2D.h"
@@ -32,6 +32,7 @@ DTRenderPlugin::DTRenderPlugin() {
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
   if((o.name.find( "DT/0" ) != std::string::npos) ||
+     (o.name.find( "DT/1" ) != std::string::npos) ||
      (o.name.find( "DT/9" ) != std::string::npos) ||
      (o.name.find( "DT/E" ) != std::string::npos) ||
      (o.name.find( "DT/F" ) != std::string::npos) ||
@@ -254,7 +255,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   
-  if( o.name.find("OccupancyAllHits_W") != std::string::npos ) {
+  if((o.name.find("OccupancyAllHits_W") != std::string::npos) ||
+     (o.name.find("OccupancyInTimeHits_W") != std::string::npos) ||
+     (o.name.find("OccupancyNoiseHits_W") != std::string::npos)) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
