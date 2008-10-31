@@ -8,7 +8,7 @@
 //
 // Original Author:  
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.10 2008/09/12 01:26:52 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.11 2008/09/12 20:38:51 neadam Exp $
 //
 
 // system include files
@@ -184,13 +184,18 @@ void HLXRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 
    // Average plots for Etsum/Tower Occupancy
    obj->SetStats(kTRUE);
-   
-   obj->SetFillColor(kBlue);
-   obj->SetLineColor(kBlue);
-   obj->SetFillStyle(1001);
    obj->GetYaxis()->SetTitleOffset(1.6);
+   
+   if( o.name.find("Lumi") == std::string::npos )
+   {
+      obj->SetFillColor(kBlue);
+      obj->SetLineColor(kBlue);
+      obj->SetFillStyle(1001);
+   }
 
-   if( o.name.find("EtSum") != std::string::npos || o.name.find("ETSum") != std::string::npos )
+
+   if( (o.name.find("EtSum") != std::string::npos && o.name.find("Lumi") == std::string::npos) || 
+        o.name.find("ETSum") != std::string::npos )
    {
       int maxBin = obj->GetMaximumBin();
       int minBin = obj->GetMinimumBin();
@@ -206,6 +211,36 @@ void HLXRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
       obj->SetMinimum(objMin*0.98);
    }
    
+   if( o.name.find("Lumi") != std::string::npos && 
+       o.name.find("HistInstantLumi") == std::string::npos &&
+       o.name.find("HistIntegratedLumi") == std::string::npos )
+   {
+      obj->SetLineColor(kBlack);
+      obj->SetMarkerStyle(kPlus);
+      obj->SetMarkerColor(kRed);
+   }
+   
+   if( o.name.find("HistInstantLumi") != std::string::npos || o.name.find("HistIntegratedLumi") != std::string::npos  )
+   {
+      obj->SetMarkerStyle(kFullCircle);
+      obj->SetMarkerSize(0.8);
+      obj->SetLineColor(kBlack);
+      // Loop over the bins and find the first empty one
+      int firstEmptyBin = obj->GetNbinsX();
+      for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
+      {
+	 if( obj->GetBinContent(iBin) == 0 )
+	 {
+	    firstEmptyBin = iBin;
+	    break;
+	 }
+      }
+      if( firstEmptyBin < 2 ) firstEmptyBin = 2;
+      // Now set the new range
+      obj->GetXaxis()->SetRange(0,firstEmptyBin-1);
+      obj->SetOption("e0");
+   }
+
    return;
 }
 
@@ -242,6 +277,8 @@ void HLXRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
       int          nb = 100;
       TColor::CreateGradientColorTable(Number,Stops,Blue,Green,Red,nb);
       obj->SetOption("colz");
+
+      c->SetRightMargin(2*c->GetRightMargin());
    }
    else
    {
