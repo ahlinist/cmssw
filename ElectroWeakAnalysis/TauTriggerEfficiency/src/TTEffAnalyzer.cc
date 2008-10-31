@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.3 2008/10/04 00:51:36 bachtis Exp $
+// $Id: TTEffAnalyzer.cc,v 1.4 2008/10/08 07:44:15 mkortela Exp $
 //
 //
 
@@ -86,32 +86,30 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
 
    edm::Handle<PFTauCollection> PFTaus;
+   edm::Handle<CaloTauCollection> caloTaus;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-     //_L1analyzer.beginEvent(iEvent, iSetup);
-     
-     //std::cout << "Collection size " << PFTaus->size() << std::endl; 
-     for(PFTauCollection::const_iterator iTau = PFTaus->begin(); iTau != PFTaus->end(); ++iTau) {
-       // Fill PF Tau variables
-       fillPFTau(*iTau);
-
-       // Call individual analyzers
-       _L1analyzer.fill(iEvent,*iTau);
-       _L2analyzer.fill(iEvent,*iTau);
-
-       // Finally, fill the entry to tree
-       _TTEffTree->Fill();
-     }
+     loop(iEvent, *PFTaus);
    }
+   // This should be commented out as long as analyzers don't have fill(CaloTau)
+   /*else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
+     loop(iEvent, *caloTaus);
+   }
+   */
+   // For electron lorentzvectors, add similar clauses
+}
+
+void TTEffAnalyzer::fill(const LorentzVector& tau) {
+  PFPt = tau.Pt();
+  PFEt = tau.Et();
+  PFEta = tau.Eta();
+  PFPhi = tau.Phi();
 }
 
 void
-TTEffAnalyzer::fillPFTau(const reco::PFTau& tau) {
+TTEffAnalyzer::fill(const reco::PFTau& tau) {
 
   // Standsrd PF variables
-  PFPt = tau.pt();
-  PFEt = tau.et();
-  PFEta = tau.eta();
-  PFPhi = tau.phi();
+  fill(tau.p4());
   PFEGIsolEt = tau.isolationPFGammaCandsEtSum();
   PFHighestClusterEt = tau.maximumHCALPFClusterEt();
   NEGCandsInAnnulus = tau.isolationPFGammaCands().size();
@@ -126,6 +124,10 @@ TTEffAnalyzer::fillPFTau(const reco::PFTau& tau) {
   */
 
 }
+
+void TTEffAnalyzer::fill(const reco::CaloTau& tau) {
+  fill(tau.p4());
+} 
 
 // ------------ method called once each job just before starting event loop  ------------
 void 

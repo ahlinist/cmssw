@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.2 2008/10/03 11:48:40 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.3 2008/10/04 00:51:33 bachtis Exp $
 //
 //
 
@@ -30,9 +30,12 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DataFormats/TauReco/interface/CaloTau.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
-
 
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
@@ -45,11 +48,29 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
 
    private:
+      typedef math::XYZTLorentzVector LorentzVector;
+
       virtual void beginJob(const edm::EventSetup&) ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-      virtual void fillPFTau(const reco::PFTau&); 
+      template <class T> void loop(const edm::Event& iEvent, const T& collection) {
+        for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
+          // Fill common variables
+          fill(*particle);
+
+          // Call individual analyzers
+          _L1analyzer.fill(iEvent, *particle);
+          _L2analyzer.fill(iEvent, *particle);
+
+          // Finally, fill the entry to tree
+          _TTEffTree->Fill();
+        }
+      }
+
+      virtual void fill(const reco::PFTau&); 
+      virtual void fill(const reco::CaloTau&);
+      virtual void fill(const LorentzVector&);
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
