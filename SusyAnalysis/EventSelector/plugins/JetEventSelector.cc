@@ -91,7 +91,7 @@ JetEventSelector::select (const edm::Event& event) const
       LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
       result = false;
     }
-    setVariable(3*i+1,(*jetHandle)[j].et());
+    setVariable(3*i+1,correctedEts[j]);
     setVariable(3*i+2,(*jetHandle)[j].eta());
     setVariable(3*i+3,(*jetHandle)[j].emEnergyFraction());
   }
