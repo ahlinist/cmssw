@@ -35,6 +35,12 @@ if [ "X"${run_num} == "X" ]
     exit 
 fi
 
+if [ ${run_num} -lt 68094 ]
+    then
+    fedcollection="source"
+else
+    fedcollection="hltCalibrationRaw"
+fi
 
 
 if [ "X"${data_set} == "X" ]
@@ -107,11 +113,11 @@ mkdir -p ${analy_type}_${run_num};
 
 # set up Laser.cfg
 
-cat ${analy_type}TEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g" > ${analy_type}_${run_num}/${analy_type}Config_${run_num}.cfg
+cat ${analy_type}TEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g; s@FEDCOLLECTION@${fedcollection}@g" > ${analy_type}_${run_num}/${analy_type}Config_${run_num}.cfg
 
 # set up crab.cfg file
 
-cat CRABTEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g; s@EVENTSPERJOB@${nsplit}@g; s@DATASETPLACE@${data_set}@g; s@ANALYTYPE@${analy_type}@g  " > ${analy_type}_${run_num}/crab.cfg
+cat CRABTEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g; s@EVENTSPERJOB@${nsplit}@g; s@DATASETPLACE@${data_set}@g; s@ANALYTYPE@${analy_type}@g ; s@FEDCOLLECTION@${fedcollection}@g " > ${analy_type}_${run_num}/crab.cfg
 
 
 
