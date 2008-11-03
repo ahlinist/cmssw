@@ -44,7 +44,14 @@ bTagCommonBlock = cms.PSet(
     ptRecJetMax = cms.double(40000.0),
     ptPartonMax = cms.double(99999.0),
     producePs = cms.bool(False),
-    inputfile = cms.string('')
+    inputfile = cms.string(''),
+    jetCorrection = cms.string(''),
+    recJetMatching = cms.PSet(
+        refJetCorrection = cms.string(''),
+        recJetCorrection = cms.string(''),
+        maxChi2 = cms.double(50),
+	# Corrected calo jets
+        sigmaDeltaR = cms.double(0.1),
+        sigmaDeltaE = cms.double(0.15)
+    )
 )
-
-
