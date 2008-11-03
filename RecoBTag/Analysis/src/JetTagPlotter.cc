@@ -170,16 +170,16 @@ void JetTagPlotter::psPlot(const TString & name)
   canvas.Print(name + cName + ".ps]");
 }
 
-void JetTagPlotter::analyzeTag(const reco::JetTag & jetTag,
-	const int & jetFlavour)
+void JetTagPlotter::analyzeTag(const reco::Jet & jet,
+	float discriminator, int jetFlavour)
 {
   dJetFlav->fill(jetFlavour, jetFlavour);
 //  dJetMultiplicity->fill(jetFlavourour, jetTag.tracks().size()); //fixme
-  dDiscriminator->fill(jetFlavour, jetTag.second );
-  dJetRecMomentum->fill(jetFlavour, jetTag.first->p() );
-  dJetRecPt->fill(jetFlavour, jetTag.first->pt() );
-  dJetRecPseudoRapidity->fill(jetFlavour, jetTag.first->eta() );
-  dJetRecPhi->fill(jetFlavour, jetTag.first->phi());
+  dDiscriminator->fill(jetFlavour, discriminator );
+  dJetRecMomentum->fill(jetFlavour, jet.p() );
+  dJetRecPt->fill(jetFlavour, jet.pt() );
+  dJetRecPseudoRapidity->fill(jetFlavour, jet.eta() );
+  dJetRecPhi->fill(jetFlavour, jet.phi());
 
 //   dJetPartonMomentum->fill(jetFlav, jetFlavour.underlyingParton4Vec().P() );
 //   dJetPartonPt->fill(jetFlav, jetFlavour.underlyingParton4Vec().Pt() );

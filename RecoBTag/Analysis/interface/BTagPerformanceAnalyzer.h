@@ -14,6 +14,8 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "RecoBTag/Analysis/interface/BTagDifferentialPlot.h"
 #include "RecoBTag/Analysis/interface/AcceptJet.h"
+#include "RecoBTag/Analysis/interface/CorrectJet.h"
+#include "RecoBTag/Analysis/interface/MatchJet.h"
 #include "RecoBTag/Analysis/interface/JetTagPlotter.h"
 #include "RecoBTag/Analysis/interface/BaseTagInfoPlotter.h"
 #include "RecoBTag/Analysis/interface/Tools.h"
@@ -58,9 +60,11 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   void init(const edm::ParameterSet& iConfig);
   void bookHistos(const edm::ParameterSet& pSet);
   EtaPtBin getEtaPtBin(int iEta, int iPt);
+  typedef std::pair<reco::Jet, BTagMCTools::JetFlavour> JetWithFlavour;
   typedef std::map<edm::RefToBase<reco::Jet>, unsigned int, JetRefCompare> FlavourMap;
-  BTagMCTools::JetFlavour getJetFlavour(
-	edm::RefToBase<reco::Jet> caloRef, bool fastMC, FlavourMap flavours);
+  bool getJetWithFlavour(edm::RefToBase<reco::Jet> caloRef, bool fastMC,
+                         FlavourMap flavours, JetWithFlavour &jetWithFlavour,
+                         const edm::EventSetup & es);
 
   std::string rootFile;
   vector<std::string> tiDataFormatType;
@@ -69,6 +73,8 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   double ptRecJetMin, ptRecJetMax;
   double ptPartonMin, ptPartonMax;
   AcceptJet jetSelector;   // Decides if jet and parton satisfy kinematic cuts.
+  CorrectJet jetCorrector;
+  MatchJet jetMatcher;
   std::vector<double> etaRanges, ptRanges;
   bool produceEps, producePs;
   TString psBaseName, epsBaseName, inputFile;
@@ -86,7 +92,7 @@ class BTagPerformanceAnalyzer : public edm::EDAnalyzer {
   vector<edm::ParameterSet> moduleConfig;
   map<BaseTagInfoPlotter*, size_t> binTagInfoPlottersToModuleConfig;
 
+  bool eventInitialized;
 };
-
 
 #endif

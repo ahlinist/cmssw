@@ -11,6 +11,8 @@ using namespace reco;
 using namespace edm;
 //using namespace BTagMCTools;
 
+std::pair<Jet, BTagMCTools::JetFlavour> JetWithFlavour;
+
 BTagPerformanceAnalyzer::BTagPerformanceAnalyzer(const edm::ParameterSet& pSet)
 {
   init(pSet);
@@ -229,6 +231,10 @@ void BTagPerformanceAnalyzer::init(const edm::ParameterSet& iConfig)
 
   if(!fastMC)
    jfi = JetFlavourIdentifier(iConfig.getParameter<edm::ParameterSet>("jetIdParameters"));
+
+  jetCorrector = CorrectJet(iConfig.getParameter<std::string>("jetCorrection"));
+  jetMatcher = MatchJet(iConfig.getParameter<edm::ParameterSet>("recJetMatching"));
+  jetMatcher.setThreshold(0.25 * ptRecJetMin);
 }
 
 
@@ -255,6 +261,7 @@ BTagPerformanceAnalyzer::~BTagPerformanceAnalyzer()
 
 void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+  eventInitialized = false;
   if (!fastMC)
     jfi.readEvent(iEvent);
 
@@ -282,20 +289,23 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
     for (JetTagCollection::const_iterator tagI = tagColl.begin();
 	 tagI != tagColl.end(); ++tagI) {
       // Identify parton associated to jet.
-      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(tagI->first, fastMC, flavours);
+      JetWithFlavour jetWithFlavour;
+      if (!getJetWithFlavour(tagI->first, fastMC, flavours, jetWithFlavour, iSetup))
+        continue;
+      if (!jetSelector(jetWithFlavour.first, abs(jetWithFlavour.second.flavour())))
+        continue;
 
-      if (!jetSelector(*(tagI->first), abs(jetFlavour.flavour()))) continue;
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics)
           inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(
-		jetFlavour.underlyingParton4Vec().Eta(),
-		jetFlavour.underlyingParton4Vec().Pt());
+		jetWithFlavour.second.underlyingParton4Vec().Eta(),
+		jetWithFlavour.second.underlyingParton4Vec().Pt());
 	else
-          inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*tagI->first);
+          inBin = binJetTagPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(jetWithFlavour.first);
 	// Fill histograms if in desired pt/rapidity bin.
 	if (inBin)
-	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(*tagI, abs(jetFlavour.flavour()));
+	  binJetTagPlotters[iJetLabel][iPlotter]->analyzeTag(jetWithFlavour.first, tagI->second, abs(jetWithFlavour.second.flavour()));
       }
     }
   }
@@ -355,41 +365,73 @@ void BTagPerformanceAnalyzer::analyze(const edm::Event& iEvent, const edm::Event
       }
 
       // Identify parton associated to jet.
-      BTagMCTools::JetFlavour jetFlavour = getJetFlavour(jetRef, fastMC, flavours);
-      if (!jetSelector(*jetRef, abs(jetFlavour.flavour())))
+      JetWithFlavour jetWithFlavour;
+      if (!getJetWithFlavour(jetRef, fastMC, flavours, jetWithFlavour, iSetup))
+        continue;
+      if (!jetSelector(jetWithFlavour.first, abs(jetWithFlavour.second.flavour())))
         continue;
 
       for (int iPlotter = 0; iPlotter != plotterSize; ++iPlotter) {
 	bool inBin = false;
 	if (partonKinematics)
           inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(
-		jetFlavour.underlyingParton4Vec().Eta(),
-		jetFlavour.underlyingParton4Vec().Pt());
+		jetWithFlavour.second.underlyingParton4Vec().Eta(),
+		jetWithFlavour.second.underlyingParton4Vec().Pt());
 	else
           inBin = binTagInfoPlotters[iJetLabel][iPlotter]->etaPtBin().inBin(*jetRef);
 	// Fill histograms if in desired pt/rapidity bin.
 	if (inBin)
-	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, abs(jetFlavour.flavour()));
+	  binTagInfoPlotters[iJetLabel][iPlotter]->analyzeTag(baseTagInfos, abs(jetWithFlavour.second.flavour()));
       }
     }
   }
 }
 
-BTagMCTools::JetFlavour BTagPerformanceAnalyzer::getJetFlavour(
-	edm::RefToBase<Jet> jetRef, bool fastMC, FlavourMap flavours)
+bool BTagPerformanceAnalyzer::getJetWithFlavour(
+	edm::RefToBase<Jet> jetRef, bool fastMC, FlavourMap flavours,
+	JetWithFlavour & jetWithFlavour, const edm::EventSetup & es)
 {
-  BTagMCTools::JetFlavour jetFlavour;
-  if (!fastMC) {
-    jetFlavour = jfi.identifyBasedOnPartons(*jetRef);
-  } else {
-    jetFlavour.underlyingParton4Vec(jetRef->p4());
-    jetFlavour.flavour(flavours[jetRef]);
+  edm::ProductID recProdId = jetRef.id();
+  edm::ProductID refProdId = (flavours.begin() == flavours.end())
+                           	? recProdId
+                           	: flavours.begin()->first.id();
+
+  if (!eventInitialized) {
+    jetCorrector.setEventSetup(es);
+    if (recProdId != refProdId) {
+      edm::RefToBaseVector<Jet> refJets;
+      for(FlavourMap::const_iterator iter = flavours.begin();
+          iter != flavours.end(); ++iter)
+        refJets.push_back(iter->first);
+      const edm::RefToBaseProd<Jet> recJetsProd(jetRef);
+      edm::RefToBaseVector<Jet> recJets;
+      for(unsigned int i = 0; i < recJetsProd->size(); i++)
+        recJets.push_back(edm::RefToBase<Jet>(recJetsProd, i));
+      jetMatcher.matchCollections(refJets, recJets, es);
+    }
+    eventInitialized = true;
   }
 
-  LogTrace("Info") << "Found jet with flavour "<<jetFlavour.flavour()<<endl;
-  LogTrace("Info") << jetRef->p()<<" , "<< jetRef->pt()<<" - "
-   << jetFlavour.underlyingParton4Vec().P()<<" , "<< jetFlavour.underlyingParton4Vec().Pt()<<endl;
-  return jetFlavour;
+  if (recProdId != refProdId) {
+    jetRef = jetMatcher(jetRef);
+    if (jetRef.isNull())
+      return false;
+  }
+
+  jetWithFlavour.first = jetCorrector(*jetRef);
+
+  if (!fastMC) {
+    jetWithFlavour.second = jfi.identifyBasedOnPartons(jetWithFlavour.first);
+  } else {
+    jetWithFlavour.second.underlyingParton4Vec(jetWithFlavour.first.p4());
+    jetWithFlavour.second.flavour(flavours[jetRef]);
+  }
+
+  LogTrace("Info") << "Found jet with flavour "<<jetWithFlavour.second.flavour()<<endl;
+  LogTrace("Info") << jetWithFlavour.first.p()<<" , "<< jetWithFlavour.first.pt()<<" - "
+   << jetWithFlavour.second.underlyingParton4Vec().P()<<" , "<< jetWithFlavour.second.underlyingParton4Vec().Pt()<<endl;
+
+  return true;
 }
 
 void BTagPerformanceAnalyzer::endJob()

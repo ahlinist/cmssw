@@ -350,7 +350,7 @@ BTagDifferentialPlot::getMistag(double fixedBEfficiency, TH1F * effPurHist)
     int fitStatus;
     try {
       fitStatus = effPurHist->Fit("pol4", "q");
-    }catch (...){
+    } catch (...){
       return  pair<double, double>(effForBEff, effForBEffErr);
     }
       if (fitStatus != 0) {
