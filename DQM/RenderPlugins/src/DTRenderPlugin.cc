@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.31 2008/10/22 17:18:02 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.32 2008/10/31 14:57:24 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.31 $
-  \date $Date: 2008/10/22 17:18:02 $
+  \version $Revision: 1.32 $
+  \date $Date: 2008/10/31 14:57:24 $
 */
 
 #include "TProfile2D.h"
@@ -31,7 +31,8 @@ DTRenderPlugin::DTRenderPlugin() {
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
  
-  if((o.name.find( "DT/0" ) != std::string::npos) ||
+  if((o.name.find( "DT/R" ) != std::string::npos) ||
+     (o.name.find( "DT/0" ) != std::string::npos) ||
      (o.name.find( "DT/1" ) != std::string::npos) ||
      (o.name.find( "DT/9" ) != std::string::npos) ||
      (o.name.find( "DT/E" ) != std::string::npos) ||
