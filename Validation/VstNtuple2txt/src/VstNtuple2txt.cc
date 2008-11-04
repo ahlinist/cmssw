@@ -14,7 +14,7 @@
 //
 // Original Author:  Stephen Mrenna
 //         Created:  Wed Oct 10 12:52:50 CDT 2007
-// $Id: VstNtuple2txt.cc,v 1.1 2008/05/01 21:31:30 mrenna Exp $
+// $Id: VstNtuple2txt.cc,v 1.2 2008/07/03 17:17:08 mrenna Exp $
 //
 //
 
@@ -151,8 +151,10 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   numberOfEvents_++;
-  Handle<reco::CandidateCollection> genParticles;
-  iEvent.getByLabel("genParticleCandidates",genParticles);
+  //Handle<reco::CandidateCollection> genParticles;
+  Handle<reco::GenParticleCollection> genParticles;
+  iEvent.getByLabel("genParticles",genParticles);
+
   Handle<reco::CandidateCollection> particles;
   iEvent.getByLabel ("mergerVst",particles);
 
@@ -235,11 +237,13 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::vector<const reco::Candidate *> mcands;
   std::vector<const reco::Candidate *>::const_iterator found = mcands.begin();
 
-  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
+  //  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
+  for( reco::GenParticleCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
     mcands.push_back(&*imc);
   }
 
-  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
+  //  for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
+  for( reco::GenParticleCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc) {
     if(imc->status()==1) {
       rootS += HepLorentzVector(imc->px(),imc->py(),imc->pz(),imc->energy());
       genSumPt += imc->pt();
@@ -283,7 +287,8 @@ Ntuple2txt::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if( process_id == "sig" ) {
     std::cout << "diagnostic " << std::endl;
     int idx=0;
-    for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc, ++idx) {
+    //    for( reco::CandidateCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc, ++idx) {
+    for( reco::GenParticleCollection::const_iterator imc = genParticles->begin(); imc != genParticles->end(); ++imc, ++idx) {
       int nMo = imc->numberOfMothers();
       if(idx< 10 && nMo>0) {
 	std::cout << " * " << idx << " " << imc->pdgId() << " " << imc->status() << " " << imc->mother(0)->status() << " " << imc->mother(0)->pdgId() << std::endl;

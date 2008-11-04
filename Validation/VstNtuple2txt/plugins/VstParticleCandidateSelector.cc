@@ -19,6 +19,10 @@ const char partonShowerCollection[]="partonShowerVst";
 const char otherStableCollection[]="otherStableVst"; 
 }
 
+#include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+
 class VstParticleCandidateSelector : public edm::EDProducer {
  public:
   /// constructor
@@ -56,12 +60,11 @@ class VstParticleCandidateSelector : public edm::EDProducer {
   bool verbose_;
 };
 
-#include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/Candidate/interface/ShallowCloneCandidate.h"
-#include "DataFormats/Common/interface/Handle.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -140,7 +143,9 @@ void VstParticleCandidateSelector::beginJob( const EventSetup & es ) {
 }
 
 void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
-  Handle<CandidateCollection> particles;
+  //  Handle<CandidateCollection> particles;
+  // Change 1.
+  Handle<GenParticleCollection> particles;
   evt.getByLabel( src_, particles );
   //  auto_ptr<CandidateCollection> cands( new CandidateCollection );
   //  cands->reserve( particles->size() );
@@ -154,7 +159,9 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
   auto_ptr<CandidateCollection> otherStableVst( new CandidateCollection );
 
 
-  for( CandidateCollection::const_iterator p = particles->begin(); 
+  //  for( CandidateCollection::const_iterator p = particles->begin();
+  // Change 2.
+  for( GenParticleCollection::const_iterator p = particles->begin(); 
        p != particles->end(); ++ p, ++ idx ) {
     int idabs = abs( p->pdgId() );
     int nMo = p->numberOfMothers();
@@ -164,7 +171,9 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
     //	cands->push_back( new ShallowCloneCandidate( ref ) );
 
     if( p->status()==1 && p->pt()>ptMinParticle_ && fabs(p->eta())<etaMaxParticle_ ) {
-      CandidateBaseRef ref( CandidateRef( particles, idx ) );
+      // Change 3.
+      // CandidateBaseRef ref( CandidateRef( particles, idx ) );
+      CandidateBaseRef ref( GenParticleRef( particles, idx ) );
       if( idabs == 11 || idabs == 13) {
 	if( nMo>0 && ( p->mother(0)->status()==3 || abs(p->mother(0)->pdgId())==idabs || 
 		       abs(p->mother(0)->pdgId())==15 ) ) {
@@ -195,7 +204,8 @@ void VstParticleCandidateSelector::produce( Event& evt, const EventSetup& ) {
       if ( nDa > 0 && ( p->daughter(0)->pdgId() == 91 || p->daughter(0)->pdgId() == 92 ||
 					   p->daughter(0)->pdgId() == 93) ) {
 	if(p->pt() > ptMinShower_ && fabs(p->eta())<etaMaxShower_) {
-          CandidateBaseRef ref( CandidateRef( particles, idx ) );
+	  //          CandidateBaseRef ref( CandidateRef( particles, idx ) );
+          CandidateBaseRef ref( GenParticleRef( particles, idx ) );
           partonShowerVst->push_back( new ShallowCloneCandidate( ref ) );
 	}
       }
