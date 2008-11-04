@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/01/22 20:57:31 $
- *  $Revision: 1.5 $
+ *  $Date: 2008/04/09 14:25:40 $
+ *  $Revision: 1.6 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -21,6 +21,7 @@
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 
 #include <iostream>
+#include <sstream>
 #include "time.h"
 
 using namespace edm; 
