@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.6 2008/10/16 11:56:23 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.7 2008/10/22 11:28:17 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -20,14 +20,15 @@
 #include "TTree.h"
 class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    public:
+      explicit L25TauEfficiencyAnalyzer();
       explicit L25TauEfficiencyAnalyzer(const edm::ParameterSet&);
       ~L25TauEfficiencyAnalyzer();
+      void Setup(const edm::ParameterSet&,TTree*);
+      void fill(const edm::Event&,const reco::PFTau&);   
    private:
       virtual void beginJob(const edm::EventSetup&) ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      void Setup(const edm::ParameterSet&,TTree*);
-      void fill(const edm::Event&,const reco::PFTau&);   
       edm::InputTag   tauSource;
       edm::InputTag l25JetSource;
       edm::InputTag l25PtCutSource;

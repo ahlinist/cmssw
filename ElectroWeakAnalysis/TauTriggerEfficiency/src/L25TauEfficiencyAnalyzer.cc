@@ -1,11 +1,13 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.7 2008/10/16 11:56:12 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.8 2008/10/22 11:28:07 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
 using namespace std;
+L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(){}
+
 L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iConfig){
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
