@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
+import copy
+#from RecoEgamma.EgammaIsolationAlgos.eleIsoDeposits_cff import *
 
-from RecoEgamma.EgammaIsolationAlgos.eleIsoDeposits_cff import *
+from RecoEgamma.EgammaIsolationAlgos.egammaIsoSetup_cff import *
 from RecoEgamma.EgammaIsolationAlgos.egammaSuperClusterMerger_cfi import *
 from RecoEgamma.EgammaIsolationAlgos.egammaBasicClusterMerger_cfi import *
 
@@ -16,56 +18,66 @@ egammaBasicClusterMerger.src = cms.VInputTag(
     cms.InputTag('multi5x5BasicClusters','multi5x5EndcapBasicClusters')
 )
 
+from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositTk_cff import *
+EleIsoTrackExtractorBlock.DR_Max = 1.
 from RecoEgamma.EgammaIsolationAlgos.eleEcalExtractorBlocks_cff import *
+EleIsoEcalFromHitsExtractorBlock.extRadius = 1.
+EleIsoEcalFromClustsExtractorBlock.extRadius = 1.
+EleIsoEcalSCVetoFromClustsExtractorBlock.extRadius = 1.
 from RecoEgamma.EgammaIsolationAlgos.eleHcalExtractorBlocks_cff import *
+EleIsoHcalFromHitsExtractorBlock.extRadius = 1.
+EleIsoHcalFromTowersExtractorBlock.extRadius =1.
 
-eleIsoDepositTk.ExtractorPSet.ComponentName = cms.string('TrackExtractor')
+eleIsoDepositForETauTk = cms.EDProducer("CandIsoDepositProducer",
+    src = cms.InputTag("pixelMatchGsfElectrons"),
+    trackType = cms.string('candidate'),
+    MultipleDepositsFlag = cms.bool(False),
+    ExtractorPSet = cms.PSet(EleIsoTrackExtractorBlock)
+)
 
-
-eleIsoDepositEcalSCVetoFromClusts = cms.EDProducer("CandIsoDepositProducer",
+eleIsoDepositForETauEcalSCVetoFromClusts = cms.EDProducer("CandIsoDepositProducer",
     src = cms.InputTag("pixelMatchGsfElectrons"),
     MultipleDepositsFlag = cms.bool(False),
     trackType = cms.string('candidate'),
     ExtractorPSet = cms.PSet( EleIsoEcalSCVetoFromClustsExtractorBlock )
 )
-eleIsoDepositEcalFromClusts = cms.EDProducer("CandIsoDepositProducer",
+
+eleIsoDepositForETauEcalFromClusts = cms.EDProducer("CandIsoDepositProducer",
     src = cms.InputTag("pixelMatchGsfElectrons"),
     MultipleDepositsFlag = cms.bool(False),
     trackType = cms.string('candidate'),
     ExtractorPSet = cms.PSet( EleIsoEcalFromClustsExtractorBlock )
 )
 
-eleIsoDepositEcalFromHits = cms.EDProducer("CandIsoDepositProducer",
+eleIsoDepositForETauEcalFromHits = cms.EDProducer("CandIsoDepositProducer",
     src = cms.InputTag("pixelMatchGsfElectrons"),
     MultipleDepositsFlag = cms.bool(False),
     trackType = cms.string('candidate'),
     ExtractorPSet = cms.PSet( EleIsoEcalFromHitsExtractorBlock )
 )
 
-eleIsoDepositHcalFromTowers = cms.EDProducer("CandIsoDepositProducer",
+eleIsoDepositForETauHcalFromTowers = cms.EDProducer("CandIsoDepositProducer",
     src = cms.InputTag("pixelMatchGsfElectrons"),
     MultipleDepositsFlag = cms.bool(False),
     trackType = cms.string('candidate'),
     ExtractorPSet = cms.PSet( EleIsoHcalFromTowersExtractorBlock )
 )
 
-eleIsoDepositHcalFromHits = cms.EDProducer("CandIsoDepositProducer",
+eleIsoDepositForETauHcalFromHits = cms.EDProducer("CandIsoDepositProducer",
     src = cms.InputTag("pixelMatchGsfElectrons"),
     MultipleDepositsFlag = cms.bool(False),
     trackType = cms.string('candidate'),
     ExtractorPSet = cms.PSet(EleIsoHcalFromHitsExtractorBlock )
 )
 
-
-
 # define module labels for old (tk-based isodeposit) POG isolation
 patAODElectronIsolationLabels = cms.VInputTag(
-        cms.InputTag("eleIsoDepositTk"),
-        cms.InputTag("eleIsoDepositEcalFromHits"),
-        cms.InputTag("eleIsoDepositHcalFromHits"),
-        cms.InputTag("eleIsoDepositEcalFromClusts"),       # try these two if you want to compute them from AOD
-        cms.InputTag("eleIsoDepositHcalFromTowers"),       # instead of reading the values computed in RECO
-        cms.InputTag("eleIsoDepositEcalSCVetoFromClusts"), # somebody might want this one for ECAL instead
+        cms.InputTag("eleIsoDepositForETauTk"),
+        cms.InputTag("eleIsoDepositForETauEcalFromHits"),
+        cms.InputTag("eleIsoDepositForETauHcalFromHits"),
+        cms.InputTag("eleIsoDepositForETauEcalFromClusts"),       # try these two if you want to compute them from AOD
+        cms.InputTag("eleIsoDepositForETauHcalFromTowers"),       # instead of reading the values computed in RECO
+        cms.InputTag("eleIsoDepositForETauEcalSCVetoFromClusts"), # somebody might want this one for ECAL instead
 )
 
 # read and convert to ValueMap<IsoDeposit> keyed to Candidate
@@ -84,9 +96,9 @@ layer0ElectronIsolations = cms.EDFilter("CandManyValueMapsSkimmerIsoDeposits",
 
 # selecting POG modules that can run on top of AOD
 eleIsoDepositAOD = cms.Sequence(
-    eleIsoDepositTk * eleIsoDepositEcalFromClusts * eleIsoDepositEcalFromHits *
-    eleIsoDepositHcalFromTowers * eleIsoDepositHcalFromHits *
-    eleIsoDepositEcalSCVetoFromClusts
+    eleIsoDepositForETauTk * eleIsoDepositForETauEcalFromClusts * eleIsoDepositForETauEcalFromHits *
+    eleIsoDepositForETauHcalFromTowers * eleIsoDepositForETauHcalFromHits *
+    eleIsoDepositForETauEcalSCVetoFromClusts
     )
 
 # sequence to run on AOD before PAT
@@ -98,50 +110,4 @@ patAODElectronIsolation = cms.Sequence(
 
 # sequence to run after the PAT cleaners
 patLayer0ElectronIsolation = cms.Sequence(layer0ElectronIsolations)
-
-def useElectronAODIsolation(process,layers=(0,1,)):
-    if (layers.__contains__(0)):
-        print "Switching to isolation computed from AOD info for Electrons in PAT Layer 0"
-        patAODElectronIsolationLabels = cms.VInputTag(
-            cms.InputTag("eleIsoDepositTk"),
-            cms.InputTag("eleIsoDepositEcalFromClusts"),
-            cms.InputTag("eleIsoDepositHcalFromTowers"),
-        )
-        process.patAODElectronIsolations.associations = patAODElectronIsolationLabels
-        process.layer0ElectronIsolations.associations = patAODElectronIsolationLabels
-        #This does not work yet :-(
-        # process.patAODElectronIsolation = cms.Sequence(
-        #    egammaSuperClusterMerger * egammaBasicClusterMerger +  
-        #    eleIsoDepositAOD +
-        #    patAODElectronIsolations
-        # )
-        process.allLayer0ElecForETau.isolation.ecal.src = cms.InputTag("patAODElectronIsolations","eleIsoDepositEcalFromClusts")
-        process.allLayer0ElecForETau.isolation.hcal.src = cms.InputTag("patAODElectronIsolations","eleIsoDepositHcalFromTowers")
-    if (layers.__contains__(1)):
-        print "Switching to isolation computed from AOD info for Electrons in PAT Layer 1"
-        process.allLayer1ElecForETau.isolation.ecal.src = cms.InputTag("layer0ElectronIsolations","eleIsoDepositEcalFromClusts")
-        process.allLayer1ElecForETau.isolation.hcal.src = cms.InputTag("layer0ElectronIsolations","eleIsoDepositHcalFromTowers")
-        process.allLayer1ElecForETau.isoDeposits.ecal   = cms.InputTag("layer0ElectronIsolations","eleIsoDepositEcalFromClusts")
-        process.allLayer1ElecForETau.isoDeposits.hcal   = cms.InputTag("layer0ElectronIsolations","eleIsoDepositHcalFromTowers")
-
-def useElectronRecHitIsolation(process,layers=(0,1,)):
-    if (layers.__contains__(0)):
-        print "Switching to RecHit isolation for Electrons in PAT Layer 0"
-        patAODElectronIsolationLabels = cms.VInputTag(
-            cms.InputTag("eleIsoDepositTk"),
-            cms.InputTag("eleIsoDepositEcalFromHits"),
-            cms.InputTag("eleIsoDepositHcalFromHits"),
-        )
-        process.patAODElectronIsolations.associations = patAODElectronIsolationLabels
-        process.layer0ElectronIsolations.associations = patAODElectronIsolationLabels
-        #This does not work yet :-(
-        # process.patAODElectronIsolation = cms.Sequence( patAODElectronIsolations )
-        process.allLayer0ElecForETau.isolation.ecal.src = cms.InputTag("patAODElectronIsolations","eleIsoDepositEcalFromHits")
-        process.allLayer0ElecForETau.isolation.hcal.src = cms.InputTag("patAODElectronIsolations","eleIsoDepositHcalFromHits")
-    if (layers.__contains__(1)):
-        print "Switching to RecHit isolation for Electrons in PAT Layer 1"
-        process.allLayer1ElecForETau.isolation.ecal.src = cms.InputTag("layer0ElectronIsolations","eleIsoDepositEcalFromHits")
-        process.allLayer1ElecForETau.isolation.hcal.src = cms.InputTag("layer0ElectronIsolations","eleIsoDepositHcalFromHits")
-        process.allLayer1ElecForETau.isoDeposits.ecal   = cms.InputTag("layer0ElectronIsolations","eleIsoDepositEcalFromHits")
-        process.allLayer1ElecForETau.isoDeposits.hcal   = cms.InputTag("layer0ElectronIsolations","eleIsoDepositHcalFromHits")
 
