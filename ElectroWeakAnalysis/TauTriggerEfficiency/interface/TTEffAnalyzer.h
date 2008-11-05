@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.3 2008/10/04 00:51:33 bachtis Exp $
+// $Id: TTEffAnalyzer.h,v 1.4 2008/10/31 08:01:12 mkortela Exp $
 //
 //
 
@@ -36,6 +36,7 @@
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
@@ -62,6 +63,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
           // Call individual analyzers
           _L1analyzer.fill(iEvent, *particle);
           _L2analyzer.fill(iEvent, *particle);
+          _L25analyzer.fill(iEvent, *particle);
 
           // Finally, fill the entry to tree
           _TTEffTree->Fill();
@@ -85,6 +87,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
+      L25TauEfficiencyAnalyzer _L25analyzer;
 
 
 
