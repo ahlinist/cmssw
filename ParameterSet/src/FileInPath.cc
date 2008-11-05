@@ -16,7 +16,7 @@
 
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/ParameterSet/interface/parse.h"
+#include "FWCore/Utilities/interface/Parse.h"
 
 namespace bf = boost::filesystem;
 

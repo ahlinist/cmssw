@@ -13,7 +13,7 @@
 
 #include "boost/lexical_cast.hpp"
 #include "FWCore/ParameterSet/interface/split.h"
-#include "FWCore/ParameterSet/interface/parse.h"
+#include "FWCore/Utilities/interface/Parse.h"
 #include <cctype>
 #include <cstdlib>
 #include <limits>
