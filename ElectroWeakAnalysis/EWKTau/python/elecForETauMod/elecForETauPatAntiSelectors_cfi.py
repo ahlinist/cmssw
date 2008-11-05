@@ -16,14 +16,14 @@ selectAntiTrkIsoAfterMchHLTElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectAntiEcalIsoAfterTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectAntiTrkIsoAfterMchHLTElecForETau"),
-     cut = cms.string('ecalIso>3.5')             
+     cut = cms.string('ecalIso>3.8')             
 )
 
 ################### HCAL #################################
 
 selectAntiHcalIsoAfterEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectAntiEcalIsoAfterTrkIsoElecForETau"),
-     cut = cms.string('hcalIso>3.5')             
+     cut = cms.string('hcalIso>1.5')             
 )
 
 #################### ID ##################################
@@ -37,7 +37,7 @@ selectAntiIdAfterIsoElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectAntiIpAfterIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectAntiIdAfterIsoElecForETau"),
-     cut = cms.string('abs(gsfTrack.d0)<1000000.02')  
+     cut = cms.string('abs(gsfTrack.d0)<0.05')  
 )
 
 
