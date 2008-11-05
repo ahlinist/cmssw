@@ -12,7 +12,7 @@ analyzeTauForETau = cms.EDAnalyzer("ETauTauAnalyzer",
                                 "selectorPfTausForETauProngEff"
                               ),
   FinalElecTag = cms.InputTag("selectIpAfterIsoElecForETau"),
-  RefInputTags = cms.VInputTag("TauRefProducer:ElectronsFromZ"),
+  RefInputTags = cms.VInputTag(""),
 
   DoTauIdAfterElecId = cms.bool(True),
   DoMatching = cms.bool(False),
