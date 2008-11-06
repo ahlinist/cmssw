@@ -1,12 +1,14 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.7 2008/08/22 11:52:02 lat Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.5 2008/05/27 19:53:06 elmer Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 1.7 $
-  \date $Date: 2008/08/22 11:52:02 $
+  \version $Revision: 1.5 $
+  \date $Date: 2008/05/27 19:53:06 $
 */
+
+#include <cassert>
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -94,19 +96,19 @@ bool L1TdeRCTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImg
   std::cout << "L1TdeRCTRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/ServiceData/" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm/" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/NisoeEm/ServiceData/" ) != std::string::npos ) {
+  if( o.name.find( "L1TEMU/L1TdeRCT/NisoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
@@ -376,7 +378,7 @@ void L1TdeRCTRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o
   std::string name = o.name.substr(o.name.rfind("/")+1);
 
   if( name.find( "rctIsoEmEff1" ) != std::string::npos &&
-  name.find( "rctIsoEmEff1" ) != name.find( "rctIsoEmEff1Occ" ) ) {
+  name.find( "rctIsoEmEff1" ) != name.find( "rctIsoEmEff1Occ" )) {
     dummybox->Draw("box,same");
     return;
   }
@@ -405,7 +407,7 @@ void L1TdeRCTRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o
     return;
   }
 
-  if( name.find( "rctNisoEmEff2" ) != std::string::npos && 
+  if( name.find( "rctNisoEmEff2" ) != std::string::npos &&
   name.find( "rctNisoEmEff2" ) != name.find( "rctNisoEmEff2Occ" ) ) {
     dummybox->Draw("box,same");
     return;
