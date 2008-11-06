@@ -57,6 +57,7 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
         // Input parameters
 	InputTag PFTauCollectionSource;  
 	InputTag L1extraTauJetSource;  
+        InputTag L1extraCentralJetSource;
         InputTag L1bitInfoSource;
 	double   jetMatchingCone;
 
@@ -67,6 +68,7 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
         TTree *l1tree;
 
         float jetPt, jetEt, jetEta, jetPhi;
-        char hasL1Jet, hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
+        char hasL1Jet, hasL1TauJet, hasL1CenJet;
+        char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
 };
 #endif
