@@ -37,7 +37,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         l25JetSource            = cms.InputTag("hltL25TauPixelTracksConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtSelector"),
         l25IsoSource            = cms.InputTag("hltL25TauPixelTracksIsolationSelector"),
-        l25matchingCone         = cms.double(0.3),
+        l25MatchingCone         = cms.double(0.3),
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
