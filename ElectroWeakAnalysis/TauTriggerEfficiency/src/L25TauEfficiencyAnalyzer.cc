@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.9 2008/11/05 13:15:02 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.11 2008/11/06 18:20:52 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -75,8 +75,10 @@ if(&(*tags)){
 for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
 if(deltaR(tau, *(tags->at(j).jet())) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 1) l25Depth = 1; // L2 match
+if(leadPFTrk.isNonnull()){
 tauPt  = (leadPFTrk->pt() );
 tauTjDR  = ( deltaR( tau, *leadPFTrk) );
+}
 l25TrkQPx  = ( tags->at(j).selectedTracks().size() );
 l25Eta  = (tags->at(j).jet()->eta());
 l25Phi  = (tags->at(j).jet()->phi());
