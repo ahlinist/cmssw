@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.7 2008/10/22 11:28:17 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.8 2008/11/05 13:14:49 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -54,5 +54,5 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
       int   leadDepth2;
       float minDR;
       float bareEt;
-      double matchingCone;
+      double l25MatchingCone;
 };

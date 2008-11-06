@@ -12,12 +12,11 @@ L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iCon
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
   l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-  //tauSource = iConfig.getParameter<InputTag>("tauSource");
-  tauSource = iConfig.getParameter<InputTag>("PFTauCollection");
-  matchingCone = iConfig.getParameter<double>("l25matchingCone");
-  //rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
-  //l25file = new TFile(rootFile_.c_str(),"recreate");
-  //l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
+    tauSource = iConfig.getParameter<InputTag>("tauSource");
+  l25MatchingCone = iConfig.getParameter<double>("l25MatchingCone");
+  rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
+  l25file = new TFile(rootFile_.c_str(),"recreate");
+  l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
   l25tree->Branch("tauEta", &tauEta,"tauEta/F" );
   l25tree->Branch("tauPhi", &tauPhi,"tauPhi/F" );
   l25tree->Branch("tauEt", &tauEt,"tauEt/F" );
@@ -37,27 +36,22 @@ L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iCon
   l25tree->Branch("bareEt", &bareEt,"bareEt/F" );
 }
 
-L25TauEfficiencyAnalyzer::~L25TauEfficiencyAnalyzer(){
-}
+L25TauEfficiencyAnalyzer::~L25TauEfficiencyAnalyzer(){}
 
-void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l25tree){
+void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* tree){
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
   l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-  //tauSource = iConfig.getParameter<InputTag>("tauSource");
-  matchingCone = iConfig.getParameter<double>("l25matchingCone");
-  l25tree->Branch("tauPt", &tauPt,"tauPt/F" );
-  l25tree->Branch("tauTjDR", &tauTjDR, "tauTjDR/F" );
-  l25tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
-  l25tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
-  l25tree->Branch("l25Et", &l25Et,"l25Et/F" );
-  l25tree->Branch("l25Pt", &l25Pt,"l25Pt/F" );
-  l25tree->Branch("l25TjDR", &l25TjDR, "l25TjDR/F" );
-  l25tree->Branch("l25TrkQPx", &l25TrkQPx, "l25TrkQPx/F" );
-  l25tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
-  l25tree->Branch("leadDepth1", &leadDepth1,"leadDepth1/I" );
-  l25tree->Branch("leadDepth2", &leadDepth2,"leadDepth2/I" );
-  l25tree->Branch("minDR", &minDR,"minDR/F" );
+  l25MatchingCone = iConfig.getParameter<double>("l25MatchingCone");
+  tree->Branch("tauPt", &tauPt,"tauPt/F" );
+  tree->Branch("tauTjDR", &tauTjDR, "tauTjDR/F" );
+  tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
+  tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
+  tree->Branch("l25Et", &l25Et,"l25Et/F" );
+  tree->Branch("l25Pt", &l25Pt,"l25Pt/F" );
+  tree->Branch("l25TjDR", &l25TjDR, "l25TjDR/F" );
+  tree->Branch("l25TrkQPx", &l25TrkQPx, "l25TrkQPx/F" );
+  tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
 }
 
 void L25TauEfficiencyAnalyzer::fill(const edm::Event&iEvent,const reco::PFTau& tau){
@@ -76,16 +70,10 @@ l25Pt = 0;
 l25TjDR = 0;
 l25TrkQPx = 0;
 l25Depth = 0;
-leadDepth1 = 0;
-leadDepth2 = 0;
-minDR = -1;
-vector<double> drs;
-drs.clear();
 const TrackRef leadPFTrk = tau.leadPFChargedHadrCand()->trackRef();
 if(&(*tags)){
 for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
-drs.push_back( deltaR(tau, *(tags->at(j).jet() ) ) );
-if(deltaR(tau, *(tags->at(j).jet())) < matchingCone){ // dr < matchingCone
+if(deltaR(tau, *(tags->at(j).jet())) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 1) l25Depth = 1; // L2 match
 tauPt  = (leadPFTrk->pt() );
 tauTjDR  = ( deltaR( tau, *leadPFTrk) );
@@ -93,39 +81,32 @@ l25TrkQPx  = ( tags->at(j).selectedTracks().size() );
 l25Eta  = (tags->at(j).jet()->eta());
 l25Phi  = (tags->at(j).jet()->phi());
 l25Et   = (tags->at(j).jet()->et());
-const TrackRef leadTrk = tags->at(j).leadingSignalTrack(0.1,1.0);// track finding 
-const TrackRef leadTrk21 = tags->at(j).leadingSignalTrack(0.2,1.0);// track finding 
-const TrackRef leadTrk23 = tags->at(j).leadingSignalTrack(0.2,3.0);// track finding 
-if(leadTrk21.isNonnull() && leadDepth2 < 1) leadDepth2 = 1;
-if(leadTrk23.isNonnull() && leadDepth2 < 2) leadDepth2 = 2;
-if(leadTrk.isNonnull() && leadDepth1 < 1){                                                        
-leadDepth1 = 1;
-l25Pt  =  (leadTrk->pt() );
-l25TjDR  = ( deltaR( *(tags->at(j).jet()), *leadTrk) );
-}// good lead cand
-}// pf and l25 tau match dr < matchingCone
+}// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
 
 if(&(*ptJets)){ // Leading Pt Cut > 3 GeV/c applied
 for(unsigned int j = 0; j < ptJets->size(); j++){
-if(deltaR(tau, ptJets->at(j) ) < matchingCone){ // dr < matchingCone
-if(l25Depth < 2) l25Depth = 2; // lead pt cut match
-}// pf and l25 tau match dr < matchingCone
+if(deltaR(tau, ptJets->at(j) ) < l25MatchingCone){ // dr < l25MatchingCone
+if(l25Depth < 2){
+l25Depth = 2; // lead pt cut match
+const TrackRef leadTrk = tags->at(j).leadingSignalTrack(0.1,1.0);// track finding 
+if(leadTrk.isNonnull()){                                                        
+l25Pt  =  (leadTrk->pt() );
+l25TjDR  = ( deltaR( *(tags->at(j).jet()), *leadTrk) );
+}// good lead cand
+}
+}// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
 
 if(&(*isoJets)){
 for(unsigned int j = 0; j < isoJets->size(); j++){
-if(deltaR(tau, isoJets->at(j)) < matchingCone){ // dr < matchingCone
+if(deltaR(tau, isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 3) l25Depth = 3; // iso match
-}// pf and l25 tau match dr < matchingCone
+}// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
-if(drs.size() > 0){
-if(drs.size() > 1) sort(drs.begin(),drs.end());
-minDR = drs.at(0);
-}// sort drs
 }
 
 void L25TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
@@ -162,7 +143,7 @@ const TrackRef leadPFTrk = taus->at(i).leadPFChargedHadrCand()->trackRef();
 if(&(*tags)){
 for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
 drs.push_back(deltaR(taus->at(i), *(tags->at(j).jet())));
-if(deltaR(taus->at(i), *(tags->at(j).jet())) < matchingCone){ // dr < matchingCone
+if(deltaR(taus->at(i), *(tags->at(j).jet())) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 1) l25Depth = 1; // L2 match
 tauTrkSig  = ( taus->at(i).signalPFChargedHadrCands().size() );
 tauEt   = ( taus->at(i).et()  ); 			         
@@ -184,7 +165,7 @@ leadDepth1 = 1;
 l25Pt  =  (leadTrk->pt() );
 l25TjDR  = ( deltaR( *(tags->at(j).jet()), *leadTrk) );
 }// good lead cand
-}// pf and l25 tau match dr < matchingCone
+}// pf and l25 tau match dr < l25MatchingCone
 if(drs.size() > 0){
 if(drs.size() > 1) sort(drs.begin(),drs.end());
 minDR = drs.at(0);
@@ -194,17 +175,17 @@ minDR = drs.at(0);
 
 if(&(*ptJets)){ // Leading Pt Cut > 3 GeV/c applied
 for(unsigned int j = 0; j < ptJets->size(); j++){
-if(deltaR(taus->at(i), ptJets->at(j) ) < matchingCone){ // dr < matchingCone
+if(deltaR(taus->at(i), ptJets->at(j) ) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 2) l25Depth = 2; // lead pt cut match
-}// pf and l25 tau match dr < matchingCone
+}// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
 
 if(&(*isoJets)){
 for(unsigned int j = 0; j < isoJets->size(); j++){
-if(deltaR(taus->at(i), isoJets->at(j)) < matchingCone){ // dr < matchingCone
+if(deltaR(taus->at(i), isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
 if(l25Depth < 3) l25Depth = 3; // iso match
-}// pf and l25 tau match dr < matchingCone
+}// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
 l25tree -> Fill();
