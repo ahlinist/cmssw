@@ -22,7 +22,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
   L1bitInfoSource = iConfig.getParameter<edm::InputTag>("L1bitInfoSource");
-  jetMatchingCone = iConfig.getParameter<double>("JetMatchingCone");
+  jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
   //rootFile_ = iConfig.getParameter<std::string>("outputFileName");
   nEvents = 0; nSelectedEvents = 0;
 

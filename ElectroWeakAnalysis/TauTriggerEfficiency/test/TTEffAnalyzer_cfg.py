@@ -31,9 +31,13 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles:Central"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
-	JetMatchingCone		= cms.double(0.5),
+	L1JetMatchingCone	= cms.double(0.5),
         L2AssociationCollection = cms.InputTag("hltL2DoubleTauIsolationProducer","L2TauIsolationInfoAssociator"),
         L2matchingDeltaR        = cms.double(0.3),
+        l25JetSource            = cms.InputTag("hltL25TauPixelTracksConeIsolation"),
+        l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtSelector"),
+        l25IsoSource            = cms.InputTag("hltL25TauPixelTracksIsolationSelector"),
+        l25matchingCone         = cms.double(0.3),
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
