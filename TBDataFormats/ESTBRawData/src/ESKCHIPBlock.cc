@@ -8,6 +8,8 @@ ESKCHIPBlock::ESKCHIPBlock()
   fiberId_ = -1;
   BC_ = -1;
   EC_ = -1;
+  OptoBC_ = -1;
+  OptoEC_ = -1;
   flag1_ = -1;
   flag2_ = -1;
   CRC_ = -1;
@@ -22,6 +24,8 @@ ESKCHIPBlock::ESKCHIPBlock(const int& kId)
   fiberId_ = -1;
   BC_ = -1;
   EC_ = -1;
+  OptoBC_ = -1;
+  OptoEC_ = -1;
   flag1_ = -1;
   flag2_ = -1;
   CRC_ = -1;

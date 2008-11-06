@@ -1,6 +1,6 @@
 #ifndef ESTBRAWDATA_ESDCCHEADERBLOCK_H
 #define ESTBRAWDATA_ESDCCHEADERBLOCK_H
-
+#include <boost/cstdint.hpp>
 #include <vector>
 
 using namespace std;
@@ -11,17 +11,22 @@ class ESDCCHeaderBlock {
 
   typedef int key_type;
 
-  enum ESDCCRuntype{
-    COSMIC_TEST = 0,
-    TESTBEAM = 1,
-    PEDESTAL = 3,
-    COMSIC_GLOBAL = 10,
-    PHYSICS_GLOBAL = 11,
-    COSMIC_LOCAL = 20,
-    PHYSICS_LOCAL = 21
+  enum ESDCCRunType {
+    PHYSICS_RUN = 0,
+    PEDESTAL_RUN = 1,
+    TESTPULSE_RUN = 2,
+    GLOBAL_PHYSICS_RUN = 5,
+    LOCAL_PHYSICS_RUN = 6
   };
   
-  enum ESTriggerType{
+  enum ESSeqType {
+    STD_SEQ = 0,
+    DELTASCAN_SEQ = 1,
+    DELAYSCAN_SEQ = 2,
+    PULSESHAPE_SEQ = 3
+  };
+
+  enum ESTriggerType {
     PHYSICS_TRIGGER = 1,
     CALIBRATION_TRIGGER = 2,
     TEST_TRIGGER = 3,
@@ -39,10 +44,14 @@ class ESDCCHeaderBlock {
 
   void setLV1(const int& LV1) { LV1_ = LV1; };
   void setBX(const int& BX) { BX_ = BX; }
+  void setGain(const int& gain) { gain_ = gain; }
+  void setPrecision(const int& precision) { precision_ = precision; } 
+  void setDAC(const int& dac) { dac_ = dac; }
   void setEventLength(const int &evtLen) { evtLen_ = evtLen; };
   void setDCCErrors(const int& dccErrs) { dccErrs_ = dccErrs; };
   void setRunNumber(const int& runNum) { runNum_ = runNum; };
   void setRunType(const int& runType) { runType_ = runType; };
+  void setSeqType(const int& seqType) { seqType_ = seqType; };
   void setTriggerType(const int& trgType) { trgType_ = trgType; };
   void setCompressionFlag(const int& compFlag) { compFlag_ = compFlag; };
   void setOrbitNumber(const int& orbit) {orbit_ = orbit; };
@@ -51,6 +60,9 @@ class ESDCCHeaderBlock {
   void setOptoRX0(const int& optoRX0) { optoRX0_ = optoRX0; };
   void setOptoRX1(const int& optoRX1) { optoRX1_ = optoRX1; };
   void setOptoRX2(const int& optoRX2) { optoRX2_ = optoRX2; };
+  void setOptoBC0(const int& optoBC0) { optoBC0_ = optoBC0; };
+  void setOptoBC1(const int& optoBC1) { optoBC1_ = optoBC1; };
+  void setOptoBC2(const int& optoBC2) { optoBC2_ = optoBC2; };
   void setFEChannelStatus(const vector<int>& FEch) { FEch_ = FEch; };
   // crepe thing 
   void setPacketLength(const int & packetLen) { packetLen_ = packetLen; };  
@@ -78,10 +90,14 @@ class ESDCCHeaderBlock {
 
   int getLV1() const { return LV1_; }
   int getBX() const { return BX_; }
+  int getGain() const { return gain_; }
+  int getPrecision() const { return precision_; } 
+  int getDAC() const { return dac_; }
   int getEventLength() const { return evtLen_; }
   int getDCCErrors() const { return dccErrs_; }
   int getRunNumber() const { return runNum_; }
   int getRunType() const { return runType_; }
+  int getSeqType() const { return seqType_; }
   int getTriggerType() const { return trgType_; }
   int getCompressionFlag() const { return compFlag_; }
   int getOrbitNumber() const { return orbit_; }
@@ -90,6 +106,9 @@ class ESDCCHeaderBlock {
   int getOptoRX0() const { return optoRX0_; }
   int getOptoRX1() const { return optoRX1_; }
   int getOptoRX2() const { return optoRX2_; }
+  int getOptoBC0() const { return optoBC0_; }
+  int getOptoBC1() const { return optoBC1_; }
+  int getOptoBC2() const { return optoBC2_; }
   vector<int> getFEChannelStatus() const { return FEch_; }
   int getPacketLength() const { return packetLen_; }
   int getBC() const { return bc_; }
@@ -118,10 +137,14 @@ class ESDCCHeaderBlock {
   int fedId_;
   int LV1_;
   int BX_;
+  int gain_;
+  int precision_;
+  int dac_;
   int evtLen_;
   int dccErrs_;
   int runNum_;
   int runType_;
+  int seqType_;
   int trgType_;
   int compFlag_;
   int orbit_;
@@ -130,6 +153,9 @@ class ESDCCHeaderBlock {
   int optoRX0_;
   int optoRX1_;
   int optoRX2_;
+  int optoBC0_;
+  int optoBC1_;
+  int optoBC2_;
   vector<int> FEch_;
   int packetLen_;
   int bc_;
