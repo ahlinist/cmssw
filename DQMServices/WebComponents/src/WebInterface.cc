@@ -4,10 +4,6 @@
 #include "DQMServices/WebComponents/interface/ContentReader.h"
 #include "DQMServices/Core/interface/DQMOldReceiver.h"
 
-
-
-#include <SealBase/Callback.h>
-
 using namespace std;
 
 std::string WebInterface::get_from_multimap(std::multimap<std::string, std::string> &mymap, std::string key)
@@ -374,9 +370,6 @@ void WebInterface::DrawGif(xgi::Input * in, xgi::Output * out) throw (xgi::excep
   // Print the ME_map into a file
   std::string id = get_from_multimap(view_multimap, "DisplayFrameName");
   std::cout << "will try to print " << id << std::endl;
-  
-  seal::Callback action(seal::CreateCallback(this, &WebInterface::printMap, view_map, id));
-  // (*mui_p)->addCallback(action);
   
   // And return the URL of the file:
   out->getHTTPResponseHeader().addHeader("Content-Type", "text/xml");
