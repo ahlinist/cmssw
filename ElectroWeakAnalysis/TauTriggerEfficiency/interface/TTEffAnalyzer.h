@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.4 2008/10/31 08:01:12 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.5 2008/11/05 13:16:59 smaruyam Exp $
 //
 //
 
@@ -63,7 +63,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
           // Call individual analyzers
           _L1analyzer.fill(iEvent, *particle);
           _L2analyzer.fill(iEvent, *particle);
-          _L25analyzer.fill(iEvent, *particle);
+          //_L25analyzer.fill(iEvent, *particle);
 
           // Finally, fill the entry to tree
           _TTEffTree->Fill();
@@ -88,9 +88,6 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25TauEfficiencyAnalyzer _L25analyzer;
-
-
-
 
 };
 

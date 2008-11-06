@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.8 2008/10/22 11:28:07 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.9 2008/11/05 13:15:02 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -12,11 +12,12 @@ L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iCon
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
   l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-    tauSource = iConfig.getParameter<InputTag>("tauSource");
-  matchingCone = iConfig.getParameter<double>("matchingCone");
-  rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
-  l25file = new TFile(rootFile_.c_str(),"recreate");
-  l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
+  //tauSource = iConfig.getParameter<InputTag>("tauSource");
+  tauSource = iConfig.getParameter<InputTag>("PFTauCollection");
+  matchingCone = iConfig.getParameter<double>("l25matchingCone");
+  //rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
+  //l25file = new TFile(rootFile_.c_str(),"recreate");
+  //l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
   l25tree->Branch("tauEta", &tauEta,"tauEta/F" );
   l25tree->Branch("tauPhi", &tauPhi,"tauPhi/F" );
   l25tree->Branch("tauEt", &tauEt,"tauEt/F" );
@@ -43,8 +44,8 @@ void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l25
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
   l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-    tauSource = iConfig.getParameter<InputTag>("tauSource");
-  matchingCone = iConfig.getParameter<double>("matchingCone");
+  //tauSource = iConfig.getParameter<InputTag>("tauSource");
+  matchingCone = iConfig.getParameter<double>("l25matchingCone");
   l25tree->Branch("tauPt", &tauPt,"tauPt/F" );
   l25tree->Branch("tauTjDR", &tauTjDR, "tauTjDR/F" );
   l25tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
