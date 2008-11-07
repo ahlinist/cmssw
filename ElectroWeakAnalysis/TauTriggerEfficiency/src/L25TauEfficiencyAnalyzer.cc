@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.13 2008/11/07 14:37:04 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.14 2008/11/07 14:43:31 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -9,14 +9,19 @@ using namespace std;
 L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(){}
 
 L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iConfig){
+}
+
+L25TauEfficiencyAnalyzer::~L25TauEfficiencyAnalyzer(){}
+
+void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l25tree){
   l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
   l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
   l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-    tauSource = iConfig.getParameter<InputTag>("tauSource");
+  l25tauSource = iConfig.getParameter<InputTag>("PFTauCollection");
   l25MatchingCone = iConfig.getParameter<double>("l25MatchingCone");
-  rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
-  l25file = new TFile(rootFile_.c_str(),"recreate");
-  l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
+  //rootFile_ = (iConfig.getParameter<std::string>("outputFileName")),
+  //l25file = new TFile(rootFile_.c_str(),"recreate");
+  //l25tree = new TTree("l25tree","Level 2.5 Tau Tree");
   l25tree->Branch("tauEta", &tauEta,"tauEta/F" );
   l25tree->Branch("tauPhi", &tauPhi,"tauPhi/F" );
   l25tree->Branch("tauEt", &tauEt,"tauEt/F" );
@@ -34,24 +39,6 @@ L25TauEfficiencyAnalyzer::L25TauEfficiencyAnalyzer(const edm::ParameterSet& iCon
   l25tree->Branch("leadDepth2", &leadDepth2,"leadDepth2/I" );
   l25tree->Branch("minDR", &minDR,"minDR/F" );
   l25tree->Branch("bareEt", &bareEt,"bareEt/F" );
-}
-
-L25TauEfficiencyAnalyzer::~L25TauEfficiencyAnalyzer(){}
-
-void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* tree){
-  l25JetSource = iConfig.getParameter<InputTag>("l25JetSource");
-  l25PtCutSource = iConfig.getParameter<InputTag>("l25PtCutSource");
-  l25IsoSource = iConfig.getParameter<InputTag>("l25IsoSource");
-  l25MatchingCone = iConfig.getParameter<double>("l25MatchingCone");
-  tree->Branch("tauPt", &tauPt,"tauPt/F" );
-  tree->Branch("tauTjDR", &tauTjDR, "tauTjDR/F" );
-  tree->Branch("l25Eta", &l25Eta,"l25Eta/F" );
-  tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
-  tree->Branch("l25Et", &l25Et,"l25Et/F" );
-  tree->Branch("l25Pt", &l25Pt,"l25Pt/F" );
-  tree->Branch("l25TjDR", &l25TjDR, "l25TjDR/F" );
-  tree->Branch("l25TrkQPx", &l25TrkQPx, "l25TrkQPx/F" );
-  tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
 }
 
 void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
@@ -103,6 +90,7 @@ if(l25Depth < 3) l25Depth = 3; // iso match
 }
 }
 }
+//l25tree -> Fill();
 }// calo tau ends
 
 void L25TauEfficiencyAnalyzer::fill(const edm::Event&iEvent,const reco::PFTau& tau){
@@ -164,7 +152,7 @@ if(l25Depth < 3) l25Depth = 3; // iso match
 
 void L25TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 Handle<PFTauCollection> taus;
-iEvent.getByLabel(tauSource, taus);
+iEvent.getByLabel(l25tauSource, taus);
 Handle<IsolatedTauTagInfoCollection> tags;
 iEvent.getByLabel(l25JetSource, tags);
 Handle<CaloJetCollection> ptJets;
@@ -241,11 +229,11 @@ if(l25Depth < 3) l25Depth = 3; // iso match
 }// pf and l25 tau match dr < l25MatchingCone
 }// for jet loop
 }// non empty collection
-l25tree -> Fill();
+//l25tree -> Fill();
 }// for tau loop
 }// analyzer ends here
 
 void L25TauEfficiencyAnalyzer::beginJob(const edm::EventSetup&) {}
 void L25TauEfficiencyAnalyzer::endJob() {
-l25file->Write();
+  //l25file->Write();
 }
