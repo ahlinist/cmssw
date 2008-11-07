@@ -13,7 +13,7 @@
 //
 // Original Author:  Kenneth Case Rossato
 //         Created:  Fri Oct 17 16:17:21 CEST 2008
-// $Id$
+// $Id: HcalChannelMon.cc,v 1.1 2008/10/30 10:36:52 rossato Exp $
 //
 //
 
@@ -69,6 +69,9 @@ class HcalChannelMon : public edm::EDAnalyzer {
 
   std::vector<TH1D*> hists;
   edm::Service<TFileService> fs;
+
+  bool get_capid_info;
+  bool get_sums;
 };
 
 //
@@ -83,7 +86,10 @@ class HcalChannelMon : public edm::EDAnalyzer {
 // constructors and destructor
 //
 HcalChannelMon::HcalChannelMon(const edm::ParameterSet& iConfig)
-  : ietaiphi_channels(iConfig.getParameter<std::vector<int> >("ChannelList"))
+  : ietaiphi_channels(iConfig.getParameter<std::vector<int> >("ChannelList")),
+    get_capid_info(iConfig.getParameter<bool>("GetCapIdInfo")),
+    get_sums(iConfig.getParameter<bool>("GetSums"))
+  //    get_tp_info(iConfig.getParameter<bool>("GetTPInfo"))
 {
    //now do what ever initialization is needed
 
@@ -112,19 +118,47 @@ HcalChannelMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    Handle<FEDRawDataCollection> rawraw;
    iEvent.getByType(rawraw);
- 
+
+   int sums   = 2;
+   int caps   = sums + (get_sums ? 2 : 0);
+   int nHists = caps + (get_capid_info ? 4 : 0);
+
    // iterate over Electronics Id
    std::vector<TH1D*>::iterator hist = hists.begin();
    for (std::vector<HcalElectronicsId>::const_iterator cit = channels.begin();
-	cit != channels.end(); cit++, hist+=4) {
+	cit != channels.end(); cit++, hist+=nHists) {
 
      // get dcc data
      const FEDRawData &raw = rawraw->FEDData(700 + cit->dccid());
      const HcalDCCHeader *dccHeader = (const HcalDCCHeader *)(raw.data());
 
+     if (!dccHeader->getSpigotPresent(cit->spigot())) continue;
+     
      // get htr data
      HcalHTRData htr;
-     dccHeader->getSpigotData(cit->spigot(), htr, raw.size());
+     int retval=dccHeader->getSpigotData(cit->spigot(), htr, raw.size());
+     if (retval!=0) {
+       if (retval==-1)
+	 //if (!silent)
+	 edm::LogWarning("Invalid Data") << "Invalid HTR data (data beyond payload size) observed";
+       continue;
+     }
+
+     if (dccHeader->getSpigotCRCError(cit->spigot())) {
+       //       if (!silent) 
+       edm::LogWarning("Invalid Data") << "CRC Error on HTR data observed";
+       continue;
+     }  
+     if (!htr.check()) {
+       //       if (!silent) 
+       edm::LogWarning("Invalid Data") << "Invalid HTR data observed";
+       continue;
+     }  
+     if (htr.isHistogramEvent()) {
+       //       if (!silent) 
+       edm::LogWarning("Invalid Data") << "Histogram data passed to non-histogram unpacker";
+       continue;
+     }
 
      // get fiber data
 
@@ -155,17 +189,25 @@ HcalChannelMon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   qie_work->fiberChan() != cit->fiberChanId())
 	 continue;
 
+       //std::cout << "timeslice: " << timeslice << " adc: " << qie_work->adc() << std::endl;
+
        hist[0]->Fill(timeslice++, qie_work->adc());
        hist[1]->Fill(qie_work->adc());
 
-       if ( adc_last != -1 )
-	 hist[2]->Fill(qie_work->adc() + adc_last);
+       if (get_sums) {
+	 if ( adc_last != -1 )
+	   hist[sums]->Fill(qie_work->adc() + adc_last);
+	 total += qie_work->adc();       
+	 adc_last = qie_work->adc();
+       }
 
-       total += qie_work->adc();       
-       adc_last = qie_work->adc();
+       if (get_capid_info)
+	 hist[caps+qie_work->capid()]->Fill(qie_work->adc());
+
      }
 
-     hist[3]->Fill(total);
+     if (get_sums)
+       hist[sums+1]->Fill(total);
 
    }
 
@@ -198,10 +240,32 @@ HcalChannelMon::beginJob(const edm::EventSetup&iSetup)
 				   std::string("Digi Shape for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 10, -0.5, 9.5));
     hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_Spectrum",
 				   std::string("ADC Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 127.5));
-    hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_SumOfAdjacent",
-				   std::string("Sum of adjacent ADC for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 254.5));
-    hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_TotalSpectrum",
-				   std::string("ADC Total Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 1270.5));
+
+    if (get_sums) {
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_SumOfAdjacent",
+				     std::string("Sum of adjacent ADC for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 254.5));
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_TotalSpectrum",
+				     std::string("ADC Total Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 1270.5));
+    }
+
+    /*
+    if (get_tp_info) {
+
+    } */
+
+    if (get_capid_info) {
+
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_Cap0Spectrum",
+				     std::string("CapId 0 ADC Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 127.5));
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_Cap1Spectrum",
+				     std::string("CapId 1 ADC Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 127.5));
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_Cap2Spectrum",
+				     std::string("CapId 2 ADC Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 127.5));
+      hists.push_back(fs->make<TH1D>(std::string("iEta")+(Long_t)ieta+"_iPhi"+(Long_t)iphi+"_depth"+(Long_t)depth+"_Cap3Spectrum",
+				     std::string("CapId 3 ADC Spectrum for iEta ")+(Long_t)ieta+" iPhi "+(Long_t)iphi, 128, -.5, 127.5));
+
+
+    }
   }
 }
 
