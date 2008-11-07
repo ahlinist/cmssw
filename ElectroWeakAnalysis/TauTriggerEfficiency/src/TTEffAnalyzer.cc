@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.6 2008/11/05 13:16:47 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.7 2008/11/06 16:32:27 chinhan Exp $
 //
 //
 
@@ -62,7 +62,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
-  //_L25analyzer.Setup(iConfig,_TTEffTree);
+  _L25analyzer.Setup(iConfig,_TTEffTree);
 
 }
 
