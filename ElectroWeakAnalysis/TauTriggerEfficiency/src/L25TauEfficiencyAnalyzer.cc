@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.11 2008/11/06 18:20:52 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.12 2008/11/06 18:47:35 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -53,6 +53,56 @@ void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* tre
   tree->Branch("l25TrkQPx", &l25TrkQPx, "l25TrkQPx/F" );
   tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
 }
+
+void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::CaloTau& tau) {
+// no offline track related quantity(which is the main interest of L25) is filled here.
+Handle<IsolatedTauTagInfoCollection> tags;
+iEvent.getByLabel(l25JetSource, tags);
+Handle<CaloJetCollection> ptJets;
+iEvent.getByLabel(l25PtCutSource, ptJets);
+Handle<CaloJetCollection> isoJets;
+iEvent.getByLabel(l25IsoSource, isoJets);
+l25Et = 0;
+l25Phi = 0;
+l25Eta = 0;
+l25Pt = 0;
+l25TjDR = 0;
+l25TrkQPx = 0;
+l25Depth = 0;
+if(&(*tags)){
+for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
+if(deltaR(tau, *(tags->at(j).jet())) < l25MatchingCone){ // dr < l25MatchingCone
+if(l25Depth < 1) l25Depth = 1; // L2 match
+l25TrkQPx  = ( tags->at(j).selectedTracks().size() );
+l25Eta  = (tags->at(j).jet()->eta());
+l25Phi  = (tags->at(j).jet()->phi());
+l25Et   = (tags->at(j).jet()->et());
+}// calo and l25 tau match dr < l25MatchingCone
+}// for jet loop
+}// non empty collection
+
+if(&(*ptJets)){ // Leading Pt Cut > 3 GeV/c applied
+for(unsigned int j = 0; j < ptJets->size(); j++){
+if(deltaR(tau, ptJets->at(j) ) < l25MatchingCone){ // dr < l25MatchingCone
+if(l25Depth < 2){
+l25Depth = 2; // lead pt cut match
+const TrackRef leadTrk = tags->at(j).leadingSignalTrack(0.1,1.0);// track finding 
+if(leadTrk.isNonnull()){                                                        
+l25Pt  =  (leadTrk->pt() );
+l25TjDR  = ( deltaR( *(tags->at(j).jet()), *leadTrk) );
+}// good lead cand
+}
+}// pf and l25 tau match dr < l25MatchingCone
+}// for jet loop
+}// non empty collection
+
+if(&(*isoJets)){
+for(unsigned int j = 0; j < isoJets->size(); j++){
+if(deltaR(tau, isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
+}
+}
+}
+}// calo tau ends
 
 void L25TauEfficiencyAnalyzer::fill(const edm::Event&iEvent,const reco::PFTau& tau){
 Handle<IsolatedTauTagInfoCollection> tags;
