@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.12 2008/11/06 18:47:35 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.13 2008/11/07 14:37:04 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -99,6 +99,7 @@ l25TjDR  = ( deltaR( *(tags->at(j).jet()), *leadTrk) );
 if(&(*isoJets)){
 for(unsigned int j = 0; j < isoJets->size(); j++){
 if(deltaR(tau, isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
+if(l25Depth < 3) l25Depth = 3; // iso match
 }
 }
 }
