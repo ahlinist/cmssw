@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.25 2008/08/20 18:59:12 efe Exp $
+// $Id: HcalProm.h,v 1.26 2008/08/21 15:37:05 efe Exp $
 //
 //
 
@@ -76,7 +76,6 @@
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
 
-
 //Ntuple creation
 #include "TTree.h"
 
@@ -123,7 +122,14 @@ class HcalProm : public edm::EDAnalyzer {
       float getEnergyEtaPhiDepth(int ieta, int iphi, int depth, const HFRecHitCollection * HFRecHits);
       //muon extrapolation
 
-      bool Propagate(
+      bool PropagateB(
+           // inputs
+           // double ox, double oy, double oz, double px, double py, double pz, double ra,
+           GlobalPoint pos, GlobalVector mom, int charge,double ra,
+           // outputs
+           double *x_HB, double *y_HB, double *z_HB);
+
+      bool PropagateF(
            // inputs
            // double ox, double oy, double oz, double px, double py, double pz, double ra,
            GlobalPoint pos, GlobalVector mom, int charge,double ra,
@@ -183,6 +189,20 @@ class HcalProm : public edm::EDAnalyzer {
 //     float ImpXYmuon[50], ZImpXYmuon[50],
      float PHIinTowerHB[50];
      float EmuonHB[50];
+     float EmuonHB3[50];
+     float EmuonHB4[50];
+     float EmuonHB5[50];
+     float EmuonHBped[50];
+     float tk_mom[50];
+     float tk_ndof[50];
+     float tk_chi2[50];
+     float tk_lost[50];
+     float tk_dcharge[50];
+     float tk_dZ[50];
+     float tk_dXY[50];
+     int phiEmuonHB[50];
+     int etaMinEmuonHB[50];
+     int etaMaxEmuonHB[50];
 //
      float XinPosMuonDT[50], YinPosMuonDT[50], ZinPosMuonDT[50];
      float XoutPosMuonDT[50], YoutPosMuonDT[50], ZoutPosMuonDT[50];
@@ -541,6 +561,9 @@ class HcalProm : public edm::EDAnalyzer {
       int t5;
       int t6;
       int t7;
-      SteppingHelixPropagator* stepProp;
+      SteppingHelixPropagator* stepPropF;
+      SteppingHelixPropagator* stepPropB;
       MagneticField *theMagField;
+
+
 };
