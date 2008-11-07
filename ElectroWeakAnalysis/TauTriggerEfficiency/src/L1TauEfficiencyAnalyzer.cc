@@ -146,8 +146,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   // Match for PF tau and L1extra tau
   float minDR = 99999999.;
   for(iJet = l1Taus.begin(); iJet != l1Taus.end(); ++iJet) {
-    if(iJet->et() <= 5.)
-      continue;
+    //if(iJet->et() <= 5.)
+    //  continue;
 
     double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
     if(DR < jetMatchingCone && DR < minDR) {
@@ -164,8 +164,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   // If not found, match PF tau and L1extra central jet
   if(!hasL1Jet) {
     for(iJet = l1CentralJetHandle->begin(); iJet != l1CentralJetHandle->end(); ++iJet) {
-      if(iJet->et() <= 5.)
-        continue;
+      //if(iJet->et() <= 5.)
+      //  continue;
 
       double DR = deltaR(iJet->eta(), iJet->phi(), tau.Eta(), tau.Phi());
       if(DR < jetMatchingCone && DR < minDR) {
