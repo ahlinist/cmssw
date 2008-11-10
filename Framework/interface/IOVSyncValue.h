@@ -38,7 +38,7 @@ class IOVSyncValue
       //virtual ~IOVSyncValue();
       explicit IOVSyncValue(const EventID& iID, LuminosityBlockNumber_t iLumi=0);
       explicit IOVSyncValue(const Timestamp& iTime);
-      IOVSyncValue(const EventID& iID, LuminosityBlockNumber_t iLumi, const Timestamp& iID);
+      IOVSyncValue(const EventID& iID, LuminosityBlockNumber_t iLumi, const Timestamp& iTime);
 
       // ---------- const member functions ---------------------
       const EventID& eventID() const { return eventID_;}
