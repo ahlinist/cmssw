@@ -5,7 +5,7 @@
 
 using namespace edm;
 
-STLesHouchesMixerSource::STLesHouchesMixerSource( const ParameterSet & pset, InputSourceDescription const& desc) : ExternalInputSource (pset, desc), inputLHEFile22_ (fileNames()[0]), inputLHEFile23_ (fileNames()[1]){
+STLesHouchesMixerSource::STLesHouchesMixerSource( const ParameterSet & pset, InputSourceDescription const& desc) : ExternalInputSource (pset, desc, false), inputLHEFile22_ (fileNames()[0]), inputLHEFile23_ (fileNames()[1]){
   std::cout<<"Generator|MadGraph "<<" initializing STLesHouchesMixerSource"<<std::endl;
   std::cout<<"Generator|MadGraph "<<" fileNames().size() "<<fileNames().size()<<std::endl;
   // strip the input file name
