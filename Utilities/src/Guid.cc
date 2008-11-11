@@ -12,7 +12,7 @@
 //$Id$
 #include "Guid.h"
 #include <cstdio>
-
+#include <cstring>
 #include "uuid/uuid.h"
 
 namespace edm {

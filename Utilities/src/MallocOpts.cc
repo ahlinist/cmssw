@@ -16,6 +16,8 @@
 #include <malloc.h>
 #include <sstream>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 namespace edm
 {

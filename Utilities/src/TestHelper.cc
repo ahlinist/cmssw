@@ -9,6 +9,7 @@
 
 #include <sys/wait.h>
 #include <unistd.h>
+#include <cstring>
 
 #include "boost/filesystem/convenience.hpp"
 #include "boost/filesystem/path.hpp"
