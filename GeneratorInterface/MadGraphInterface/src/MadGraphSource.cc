@@ -107,7 +107,7 @@ using namespace edm;
 using namespace std;
 
 MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescription const& desc) 
-   : ExternalInputSource (pset, desc), evt(0),
+   : ExternalInputSource (pset, desc, false), evt(0),
      pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
      pythiaHepMCVerbosity_ (pset.getUntrackedParameter<bool>("pythiaHepMCVerbosity",false)),
      maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",0)),
