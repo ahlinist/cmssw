@@ -1,11 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("Comm")
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
-process.load("DQMOffline.Trigger.Tau.HLTTauDQMOffline_cff")
-process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff")
+process = cms.Process('EWKTauMuon')
 
+process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff")
+process.load("ElectroWeakAnalysis.EWKTau.analyzerForMuTau_cfi")
+process.load("ElectroWeakAnalysis.EWKTau.plotterForMuTau_cfi")
+
+process.DQMStore = cms.Service("DQMStore")
+
+process.maxEvents = cms.untracked.PSet(            
+    input = cms.untracked.int32(10000)         
+)
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -41,18 +46,28 @@ process.source = cms.Source("PoolSource",
         '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/E212380D-FA7D-DD11-A5C2-000423D99896.root',
         '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/F0ADB46E-FA7D-DD11-A599-000423D94524.root',
         '/store/relval/CMSSW_2_1_7/RelValZMM/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V7_v1/0001/F484E210-FA7D-DD11-A42A-000423D94534.root'
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/042FF5D8-0786-DD11-AE61-001617E30F58.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/0CB89A5C-0786-DD11-A01E-001617C3B6E8.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/12F41E88-0686-DD11-87E2-00161757BF42.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/2E2DAA16-0686-DD11-A76E-000423D98E54.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/3662BBFF-0586-DD11-AFA5-001617C3B73A.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/5ED03895-0786-DD11-AA1B-0016177CA778.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/789834DA-0786-DD11-A25A-000423D6CA72.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/90B7055A-0786-DD11-B3E4-000423D98868.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/9EB5C2C2-0286-DD11-A63E-001617C3B6FE.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/AE68F833-0786-DD11-B670-000423D98FBC.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/C06AB06D-0686-DD11-8A6B-001617DBD224.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/C85CA2C2-0686-DD11-BD47-001617E30F50.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/DE536F49-0086-DD11-BAFF-000423D98E6C.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/E624937C-0786-DD11-B917-000423D6B444.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/ECF9DB72-0686-DD11-956A-000423D94908.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/FE164CF8-0486-DD11-8ACC-001617C3B73A.root',
+#        '/store/relval/CMSSW_2_1_9/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0001/B218E4EA-0487-DD11-BF50-001617C3B79A.root'
+    
      )
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(25) )
 
-process.FEVT = cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring(                
-        'keep *_*_*_*'
-    ),
-    fileName = cms.untracked.string('testFEVT.root')
-)
-
-
-process.p = cms.Path(process.layer0MuForEWKTau*process.layer1MuForEWKTau)
-process.outpath = cms.EndPath(process.FEVT)
-
+process.p = cms.Path( process.produceMuTau
+                     +process.analyzeMuTau
+#                    +process.plotMuTau )
+                      )
