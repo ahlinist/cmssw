@@ -20,9 +20,6 @@
 
 namespace bf=boost::filesystem;
 
-//man pages for environ say you must declare it as such
-extern char** environ;
-
 int run_script(const std::string& shell, const std::string& script)
 {
   pid_t pid;
@@ -67,7 +64,7 @@ int run_script(const std::string& shell, const std::string& script)
 
 
 
-int do_work(int argc, char* argv[])
+int do_work(int argc, char* argv[], char** env)
 {
   bf::path currentPath(bf::initial_path().string(), bf::no_check);
   
@@ -82,7 +79,7 @@ int do_work(int argc, char* argv[])
       std::cout << "Current directory is: " << currentPath.native_directory_string() << '\n';
       std::cout << "Current environment:\n";
       std::cout << "---------------------\n";
-      for (int i = 0; environ[i] != 0; ++i) std::cout << environ[i] << '\n';
+      for (int i = 0; env[i] != 0; ++i) std::cout << env[i] << '\n';
       std::cout << "---------------------\n";
       std::cout << "Executable name: " << argv[0] << '\n';
       return -1;
@@ -171,12 +168,12 @@ int do_work(int argc, char* argv[])
   return rc == 0 ? 0 : -1;
 }
 
-int ptomaine(int argc, char* argv[])
+int ptomaine(int argc, char* argv[], char** env)
 {
   int rc = 1;
   try
     {
-      rc = do_work(argc, argv);
+      rc = do_work(argc, argv, env);
     }
   catch ( edm::Exception& x )
     {

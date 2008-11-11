@@ -25,8 +25,8 @@
 // $Id$
 //------------------------------------------------------------
 
-int ptomaine(int argc, char* argv[]);
+int ptomaine(int argc, char* argv[], char** env);
 
-#define RUNTEST() int main(int argc, char* argv[]) { return ptomaine(argc, argv); }
+#define RUNTEST() extern "C" char** environ; int main(int argc, char* argv[]) { return ptomaine(argc, argv, environ); }
 
 #endif

@@ -20,6 +20,8 @@ $Id$
 
 static char* gArgV = 0;
 
+extern "C" char** environ;
+
 class testRefInROOT: public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(testRefInROOT);
@@ -43,7 +45,7 @@ public:
       
       char* argv[] = {"testFWCoreFWLite","/bin/bash","FWCore/FWLite/test","RefTest.sh"};
       argv[0] = gArgV;
-      if(0!=ptomaine(sizeof(argv)/sizeof(const char*), argv) ) {
+      if(0!=ptomaine(sizeof(argv)/sizeof(const char*), argv, environ) ) {
         std::cerr <<"could not run script needed to make test files\n";
         ::exit(-1);
       }
