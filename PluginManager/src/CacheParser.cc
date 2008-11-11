@@ -13,6 +13,7 @@
 
 // system include files
 #include <algorithm>
+#include <limits>
 
 // user include files
 #include "FWCore/PluginManager/interface/CacheParser.h"
