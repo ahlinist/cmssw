@@ -6,62 +6,70 @@ void plotL1Efficiency() {
 
     // PFTau Et
 	plotter->SetXTitle("Tau jet E_{T} (GeV)");
-	plotter->SetFileName("L1Eff_PFTauEt.C");
+	plotter->SetFileName("L1Eff_PFTauEt_L1Jet.C"); //
         plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","hasMatchedL1Jet==1");
+
+	plotter->SetXTitle("Tau jet E_{T} (GeV)");
+	plotter->SetFileName("L1Eff_PFTauEt_L1Tau.C"); //
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","hasMatchedL1TauJet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1TauVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1TauVeto==0 && hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1IsolationVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1IsolationVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1IsolationVeto==0 && hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_L1IsolationVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1TauVeto==0&&L1IsolationVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1EmTauVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1EmTauVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1EmTauVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1HadTauVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1HadTauVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1HadTauVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet E_{T} (GeV)");
         plotter->SetFileName("L1Eff_PFTauEt_L1EmTauVeto_L1HadTauVeto.C");
-        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","L1EmTauVeto==0||L1HadTauVeto==0");
+        plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","(L1EmTauVeto==0||L1HadTauVeto==0)&&hasMatchedL1Jet==1");
 
 
     // PFTau Eta
         plotter->SetXTitle("Tau jet #eta");
-        plotter->SetFileName("L1Eff_PFTauEta.C");
+        plotter->SetFileName("L1Eff_PFTauEta_L1Jet.C");
         plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
+        plotter->SetFileName("L1Eff_PFTauEta_L1Tau.C");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1TauJet==1");
+
+        plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1TauVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0 && hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1IsolationVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1IsolationVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1IsolationVeto==0 && hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1TauVeto_L1IsolationVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0&&L1IsolationVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1EmTauVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1EmTauVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1EmTauVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1HadTauVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1HadTauVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1HadTauVeto==0&&hasMatchedL1Jet==1");
 
         plotter->SetXTitle("Tau jet #eta");
         plotter->SetFileName("L1Eff_PFTauEta_L1EmTauVeto_L1HadTauVeto.C");
-        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1EmTauVeto==0||L1HadTauVeto==0");
+        plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","(L1EmTauVeto==0||L1HadTauVeto==0)&&hasMatchedL1Jet==1");
 
     // L1Tau Et
         plotter->SetXTitle("L1 jet E_{T} (GeV)");
