@@ -1,8 +1,8 @@
 #include "GeneratorInterface/Pythia6Interface/interface/TauolaInterface.h"
 
 /*
- *  $Date: 2008/02/19 18:12:30 $
- *  $Revision: 1.5 $
+ *  $Date: 2008/07/09 00:44:07 $
+ *  $Revision: 1.1 $
  *  
  *  Christian Veelken
  *   04/17/07
@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <iostream>
-
+#include <cstdlib>
 #include <math.h>
 
 // #include "CLHEP/HepMC/include/PythiaWrapper6_2.h"
