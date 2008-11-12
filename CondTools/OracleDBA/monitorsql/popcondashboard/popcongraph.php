@@ -49,6 +49,7 @@
           if(++$safecounter == 1000) {
             $tmpa = array(array("r" => 0, "g" => 0, "b" => 0), array("r" => 255, "g" => 255, "b" => 255));
             $safecounter = 0;
+            mail("Pietro.Picca@cern.ch", "PopCon dashboard graph notice", "The safe counter has reached its limit and it has been reset.");
           }
         }
         while(count($tmpa) - 2 < $mrows);
