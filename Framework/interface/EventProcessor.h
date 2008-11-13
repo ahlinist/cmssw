@@ -16,6 +16,7 @@ $Id$
 
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/thread.hpp"
+#include "boost/thread/condition.hpp"
 #include "boost/utility.hpp"
 
 #include "FWCore/Framework/interface/IEventProcessor.h"
