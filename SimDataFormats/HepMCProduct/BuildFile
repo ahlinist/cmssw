@@ -1,10 +1,5 @@
-<use name=DataFormats/Common>
-<use name=hepmc>
-<use name=rootrflx>
-<use name=roothistmatrix>
-<use name=FWCore/MessageLogger>
+<use name=SimDataFormats/GeneratorProducts>
 <export>
-  <use name=DataFormats/Common>
-  <use name=hepmc>
+  <use name=SimDataFormats/GeneratorProducts>
   <lib name=SimDataFormatsHepMCProduct>
 </export>
