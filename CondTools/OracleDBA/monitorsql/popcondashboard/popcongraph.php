@@ -5,6 +5,7 @@
   $svrlog = (in_array(strtolower($_GET['svrlog']), array("int9r", "cms_orcoff_int", ""))? "int9r": "int2r");
   $app = (empty($_GET['app'])? "new": strtolower($_GET['app']));
   $thresholds = array("yts" => empty($_GET['yts'])? 30: $_GET['yts'], "rts" => empty($_GET['rts'])? 100: $_GET['rts']);
+  $apl = "popcon";
   require(($path="../private/")."support.inc");
   if($conn = @ocilogon($usr, $pwd, $tns)) {
     if(empty($_GET['det'])) $sqlstr = "select ".($fld = ($tc == "hourly"? "hour": "day")).", sum(frequency) as frequency from $usr.p_con_hits_$tc"."_$app group by $fld";
@@ -136,6 +137,7 @@
     ocifreestatement($stmt);
     ocilogoff($conn);
     $svr = $svrlog;
+    $apl = "mon";
     require($path."auth.inc");
     $conn = ocilogon($usr, $pwd, $svr);
     require($path."geoip.inc");

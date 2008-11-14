@@ -61,7 +61,9 @@
 <script language="php">
   set_time_limit(0);
   $svr = (empty($_GET['svr'])? "cms_orcoff_prod": strtolower($_GET['svr']));
-  require("../private/support.inc");
+  $svrlog = (in_array(strtolower($_GET['svrlog']), array("int9r", "cms_orcoff_int", ""))? "int9r": "int2r");
+  $apl = "popcon";
+  require(($path = "../private/")."support.inc");
   print("<p class=\"aq\">\n  $title\n</p>\n\n");
   if($conn = @ocilogon($usr, $pwd, $tns)) {
     ociexecute($stmt = ociparse($conn, "select filename, 86400000 * (cast(sys_extract_utc(crontime) as date) - to_date('01-01-1970','DD-MM-YYYY')) as crontime, short_tail, long_tail from $usr.logtails order by crontime desc"));
@@ -87,6 +89,16 @@
     else print("<p class=\"bo\">\n  No PopCon cronjob tails recorded!\n</p>\n");
     ocifreestatement($stmt);
     ocilogoff($conn);
+    $svr = $svrlog;
+    $apl = "mon";
+    require($path."auth.inc");
+    $conn = ocilogon($usr, $pwd, $svr);
+    require($path."geoip.inc");
+    $gi = geoip_open("geoip.dat", GEOIP_STANDARD);  
+      ociexecute(ociparse($conn, "insert into $usr.mon_log (domain, ip, country, browser, kind) values ('".strtolower(gethostbyaddr("$REMOTE_ADDR"))."', '$REMOTE_ADDR', '".geoip_country_name_by_addr($gi, $REMOTE_ADDR)."', '$HTTP_USER_AGENT', 'T')"));
+      ocicommit($conn);
+    geoip_close($gi);
+    ocilogoff($conn);
   }
   else oraconnecterror();
 </script>
@@ -94,7 +106,7 @@
 <p class="bo">
   This page has been dynamically generated on
   <?php print(newdate(time(), "eng")." at ".date("G:i", time()).", Central European time."); ?>
-  Created on September 20<sup>th</sup>, 2008, its source code has been last updated on October 25<sup>th</sup>, 2008.
+  Created on September 20<sup>th</sup>, 2008, its source code has been last updated on November 13<sup>th</sup>, 2008.
   <br>
   For any suggestion or comment, please write to
   <?php print("<a href=\"mailto:Pietro M. Picca <Pietro.Picca@cern.ch>?subject=$title\" class=\"p2k\">Pietro.Picca@cern.ch</a>"); ?>.

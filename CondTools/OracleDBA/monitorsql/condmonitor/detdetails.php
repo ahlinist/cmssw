@@ -19,9 +19,13 @@
 
 <script language="php">
   set_time_limit(0);
+  $sel = (ereg("^[0-9]{2}$|^[0-9]{6}$", $_GET['sel'])? $_GET['sel']: "now");
+  $tc = (strlen($sel) == 6? "daily": "hourly");
+  $svr = (empty($_GET['svr'])? "cmsr": $_GET['svr']);
+  $apl = ($sel == "now"? "mon": "hist");
   require("../private/support.inc");
   $conn = ocilogon($usr, $pwd, $tns);
-  ociexecute($stmt = ociparse($conn, "select object, type, occupancy, status, tablespace, last_modified from $usr.det_details where owner = '$det'"));
+  ociexecute($stmt = ociparse($conn, $sel == "now"? "select object, type, occupancy, status, tablespace, last_modified from $scm.det_details where owner = '$det'": "select object, type, occupancy, status, tablespace, last_modified from $scm.hs_det_details_$tc where id_snapshot = '$sel' and owner = '$det' order by type, object"));
   $nrows = ocifetchstatement($stmt, $results);
   if($nrows > 0) {
     $ptrn = "";

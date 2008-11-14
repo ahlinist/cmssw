@@ -54,6 +54,9 @@ font.p2k {
 
 table.p2k {
   width: 100%;
+}
+
+table.p2k, table.p3k {
   border-width: 4px;
   border-color: blue;
   border-style: outset;
@@ -129,7 +132,7 @@ span.er {
   font-weight: bold;
 }
 
-input, button {
+input, button, select {
   background-color: #cee3f7;
   border-bottom: 1px;
   border-left: 1px;
@@ -139,7 +142,14 @@ input, button {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 12px;
   border: 1px solid;
+}
+
+input, button {
   text-align: center;
+}
+
+select {
+  width: 220px;
 }
 
 input.dte {
