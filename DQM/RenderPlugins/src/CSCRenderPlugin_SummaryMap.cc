@@ -18,7 +18,7 @@
  * =====================================================================================
  */
 
-#include "CSCRenderPlugin.h"
+#include "CSCRenderPlugin_SummaryMap.h"
 #include <TLine.h>
 
 #define N_TICS    100
