@@ -18,7 +18,7 @@
  * =====================================================================================
  */
 
-#include "CSCRenderPlugin.h"
+#include "CSCRenderPlugin_ChamberMap.h"
 
 ChamberMap::ChamberMap() {
   bBlank = new TBox(1.0, 0.0, 37, 18);
