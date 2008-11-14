@@ -19,7 +19,7 @@ namespace {
     PGeometricDet::Item dummypgdItem;
     std::vector<PGeometricDet::Item> dummypgdItemVector;
   }
-
+  
 }
 
 
