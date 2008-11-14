@@ -28,7 +28,6 @@
  <class pattern="*pair*"/> -->
 
 
-
  <class name="PGeometricDet"/>
  <class name="PGeometricDet::Item"/>
  <class name="std::vector<PGeometricDet::Item>"/>
