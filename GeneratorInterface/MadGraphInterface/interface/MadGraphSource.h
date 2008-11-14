@@ -14,6 +14,8 @@
  *                the end of the lhe file (29/01/07)
  * Dorian Kcira : added ME-PS matching (22/05/2007)
  * Carsten Hof  : add saving of flavours and fractional momenta of ingoing partons in pdfinfo (06/02/2008)
+ * Dorian Kcira : add initialization of ExternalInputSource such that the framework knows these are not real data (November 12th 2008)
+ * Dorian Kcira : allow possibility to set highest multiplicity (maxjets) in the CMSSW configuration
  ***************************************/
 #define PYCOMP pycomp_
 #include "FWCore/Sources/interface/ExternalInputSource.h"
@@ -62,6 +64,7 @@ namespace edm
     double MEMAIN_etaclmax;
     double MEMAIN_qcut;
     unsigned int MEMAIN_iexcfile; // 1 = perform exclusive matching
+    int MEMAIN_maxjets;  // allow possibility to set highest multiplicity in the CMSSW configuration
     bool produceEventTreeFile_;
     // Flag to allow reading a simple LHE file using the minimal Les Houches functionality (ignoring reading parameters from the header)
    bool minimalLH_;
