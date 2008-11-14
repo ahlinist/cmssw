@@ -85,6 +85,7 @@
   print("  <tr>\n    <td class=\"ga\">\n      2. grouped by subdetectors\n    </td>\n    <td class=\"gh\">\n      <button onClick=\"javascript:see('popcongraph.php?tc=hourly&svr=$svr&svrlog=$svrlog&app=new&vw=grp', 'hourly');\">show activity</button>\n    </td>\n");
   print("    <td class=\"gh\">\n      <button onClick=\"javascript:see('popcongraph.php?tc=daily&svr=$svr&svrlog=$svrlog&app=new&vw=grp&did=4', 'daily');\">show activity</button>\n    </td>\n  </tr>\n</table>\n\n");
   set_time_limit(0);
+  $apl = "popcon";
   require(($path = "../private/")."support.inc");
   if($conn = @ocilogon($usr, $pwd, $tns)) {
     $fo = (empty($_GET['fo'])? "opt": strtolower($_GET['fo']));
@@ -176,6 +177,7 @@
     ocifreestatement($stmt);
     ocilogoff($conn);
     $svr = $svrlog;
+    $apl = "mon";
     require($path."auth.inc");
     $conn = ocilogon($usr, $pwd, $svr);
     require($path."geoip.inc");
@@ -198,7 +200,7 @@
 <p class="bo">
   This page has been dynamically generated on
   <?php print(newdate(time(), "eng")." at ".date("G:i", time()).", Central European time."); ?>
-  Created on January 29<sup>th</sup>, 2008, its source code has been last updated on October 29<sup>th</sup>, 2008.
+  Created on January 29<sup>th</sup>, 2008, its source code has been last updated on November 13<sup>th</sup>, 2008.
   <br>
   For any suggestion or comment, please write to
   <?php print("<a href=\"mailto:Pietro M. Picca <Pietro.Picca@cern.ch>?subject=$title\" class=\"p2k\">Pietro.Picca@cern.ch</a>"); ?>.

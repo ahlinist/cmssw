@@ -23,6 +23,7 @@
 
 <script language="php">
   set_time_limit(0);
+  $apl = "popcon";
   require("../private/support.inc");
   print("<p class=\"aq\">\n  $title\n</p>\n\n");
   print("<p>\n  <button onClick=\"javascript:see('popcongraph.php?tc=hourly&svr=$svr&app=old&yts=5&rts=10', 'hourly');\">Show activity during the last 24 hours</button>\n");
@@ -64,7 +65,7 @@
 <p class="bo">
   This page has been dynamically generated on
   <?php print(newdate(time(), "eng")." at ".date("G:i", time()).", Central European time."); ?>
-  Created on January 29<sup>th</sup>, 2008, its source code has been last updated on October 24<sup>th</sup>, 2008.
+  Created on January 29<sup>th</sup>, 2008, its source code has been last updated on November 13<sup>th</sup>, 2008.
   <br>
   For any suggestion or comment, please write to
   <?php print("<a href=\"mailto:Pietro M. Picca <Pietro.Picca@cern.ch>?subject=$title\" class=\"p2k\">Pietro.Picca@cern.ch</a>"); ?>.

@@ -1,4 +1,4 @@
 <script language="php">
   $svr = "cmsr";
-  require("mon.php");
+  require("histmon.php");
 </script>

@@ -1,4 +1,4 @@
 <script language="php">
   $svr = "int9r";
-  require("mon.php");
+  require("histmon.php");
 </script>

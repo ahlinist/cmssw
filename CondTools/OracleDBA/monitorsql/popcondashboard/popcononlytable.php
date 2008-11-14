@@ -5,6 +5,7 @@
   $ordway = (empty($_REQUEST['ordway'])? "desc": $_REQUEST['ordway']);
   $fltr = (empty($_REQUEST['fltr'])? $usrtxt: $_REQUEST['fltr']);
   set_time_limit(0);
+  $apl = "popcon";
   require("../private/support.inc");
   if($conn = @ocilogon($usr, $pwd, $tns)) {
     ociexecute(ociparse($conn, "alter session set nls_sort = 'BINARY_AI'"));
