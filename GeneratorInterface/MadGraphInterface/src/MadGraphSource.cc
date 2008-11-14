@@ -118,6 +118,7 @@ MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescriptio
      lhe_event_counter_(0),MEMAIN_etaclmax(pset.getUntrackedParameter<double>("MEMAIN_etaclmax",0.)),
      MEMAIN_qcut(pset.getUntrackedParameter<double>("MEMAIN_qcut",0.)),
      MEMAIN_iexcfile(pset.getUntrackedParameter<unsigned int>("MEMAIN_iexcfile",0)), 
+     MEMAIN_maxjets(pset.getUntrackedParameter<int>("MEMAIN_maxjets",-1)), 
      produceEventTreeFile_ (pset.getUntrackedParameter<bool>("produceEventTreeFile",false)), 
      minimalLH_(pset.getUntrackedParameter<bool>("minimalLH",false)),
   useExternalGenerators_(false),
@@ -236,6 +237,13 @@ MadGraphSource::MadGraphSource( const ParameterSet & pset, InputSourceDescriptio
   call_pygive(sRandomSet.str());
   // Call pythia initialisation with user defined upinit subroutine
   call_pyinit( "USER", "", "", 0.);
+
+  // enforce highest multiplicity if MEMAIN_maxjets is larger than 0 (it is -1 if not set in the CMSSW configuration)
+  if( (MEMAIN_maxjets>0) && (MEMAIN_maxjets > memain_.maxjets)){
+    edm::LogWarning("Generator|MadGraph")<<"Enforcing highest multiplicity through CMSSW configuration to be maxjets="<<MEMAIN_maxjets<<" instead of the one calculated from the ME2pythia which is maxjets="<<memain_.maxjets;
+    memain_.maxjets=MEMAIN_maxjets;
+  }
+
 
   // TAUOLA, etc.
   //
