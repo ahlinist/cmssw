@@ -272,42 +272,44 @@ MC Volume Flange	10.6x18x0.6=398.932cm3
 
 o Cables from Endring Prints to supply tube
 
-MC Volume: cable_endring_to_tube    A x B x C = D cm3 old volume 313.18  //FIXME
+MC Volume: cable_endring_to_tube  Rin = 180, Rout = 182.5, Z=30 
+           V=85.4cm3
 
 (1) power cable copper  (32 x)     1.788g / 8.96 =0.2cm3
 (2) power cable aluminum (32 x)  1g / 2.7 = 0.37cm3
 (3) power cable insulation(silicone rubber Si(CH3)2O) (32 x) 2.68g/ 1.3 = 2.06cm3
 (4) power cable plastic connector (Polyphenylene Oxid) (32 x) 0.733g / 1.06=  0.69 cm3
 (5) Kapton cable: Kapton layers:    0.0125cm x  2.5cm x 33cm
-                                   0.0125cm x 1.5cm x 33cm
-                                   0.0125cm x 1.5cm x 23.5cm
-                                   0.0125cm x 1.5cm x 20.5cm
-     in total: 3.465g / 1.4 = 2.475cm3
+                                  0.0125cm x 1.5cm x 33cm
+                                  0.0125cm x 1.5cm x 23.5cm
+                                  0.0125cm x 1.5cm x 20.5cm
+    in total: 3.465g / 1.4 = 2.475cm3
 (6) Kapton cable: copper layers:    0.0022cm x  2.5cm x 33cm
-    (only 75% of the area)         0.0022cm x 1.5cm x 33cm
-                                   0.0022cm x 1.5cm x 23.5cm
-                                   0.0022cm x 1.5cm x 20.5cm
-     in total: 2.93g / 8.96 = 0.327cm3
+   (only 75% of the area)         0.0022cm x 1.5cm x 33cm
+                                  0.0022cm x 1.5cm x 23.5cm
+                                  0.0022cm x 1.5cm x 20.5cm
+    in total: 2.93g / 8.96 = 0.327cm3
 (7) Kapton cable: Adhesive:            0.005cm x  2.5cm x 33cm
-    using epoxy                       0.005cm x 1.5cm x 33cm
-                                      0.005cm x 1.5cm x 23.5cm
-                                      0.005cm x 1.5cm x 20.5cm
-    in total 1g / 1.3 = 0.769cm3
-(8) "L" cooling bends suppl. tube steel           2.5g / 7.8 = 0.32cm3
+   using epoxy                       0.005cm x 1.5cm x 33cm
+                                     0.005cm x 1.5cm x 23.5cm
+                                     0.005cm x 1.5cm x 20.5cm
+   in total 1g / 1.3 = 0.769cm3
+(8) "L" cooling bends suppl. tube steel           1.8g / 7.8 = 0.231cm3
 (9) endprint clips connecting L12 and L3 boards Aluminum    0.6g / 2.7 = 0.22cm3
+(10) Alu flange on supply tube 176g/2.7 = 65cm3
 .....................................................................
-# "cable endring to tube"     "cable_endring_to_tube"   313.18    -1.
-* 1 "pow. cable copper"             "Copper"            0.2    32    CAB
-* 2 "pow. cable aluminium"       "Aluminium"            0.37   32    CAB
-* 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32    CAB
-* 4 "pow. cable connector"         "FPix_Cylind_Noryl"  0.69   32    CAB
-* 5 "sign. cable Kapton"           "T_Kapton"           2.475   16     CAB
-* 6 "sign. cable copper"           "Copper"             0.327   16    CAB
-* 7 "sign. cable adhesive"         "Epoxy"              0.769   16    CAB
-* 8 "supply tube cooling bends"    "Steel-008"           0.32   20   COL
-* 9 "clips to connect endprints"   "Aluminium"            0.22  16   SUP
-.....................................................................
-
+# "cable endring to tube"     "cable_endring_to_tube"   85.4   -1.
+* 1 "pow. cable copper"             "Copper"            0.2    32 CAB
+* 2 "pow. cable aluminium"       "Aluminium"            0.37   32 CAB
+* 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32 CAB
+* 4 "pow. cable connector"         "FPix_Cylind_Noryl"  0.69   32 CAB
+* 5 "sign. cable Kapton"           "T_Kapton"           2.475  16 CAB
+* 6 "sign. cable copper"           "Copper"             0.327  16 CAB
+* 7 "sign. cable adhesive"         "Epoxy"              0.769  16 CAB
+* 8 "supply tube cooling bends"    "Steel-008"          0.231  20 COL
+* 9 "clips to connect endprints"   "Aluminium"          0.22   16 SUP
+* 10 "Alu flange"                   "Aluminium"       65.     1 SUP
+....................................................................
 
 
 
@@ -369,6 +371,113 @@ MC Volume: silicone_pipes_plus_coolant   967cm3 * 280/360 =  752cm3
 * 1 "silicone pipe"      "BPix_Silicone"            56.23    1    COL
 * 2 "coolant"            "C6F14_F2_-10C"            38       1    COL
 .....................................................................
+
+
+o Sector A
+-------------------------
+
+MC Volume: 1133cm3 1-shell, numbers below are per half shell, so MC = 1133/2 
+
+
+.....................................................................
+# "SectorA"     "SectorA"     566.5   -1.                //FIXME: volume
+* 1 "inner shielding foil alu"    "Aluminium"               6.54    1       SUP
+* 2 "inner shielding foil GFK"     "T_FR4"                 74.05   1       SUP
+* 3 "airex"                     "Nomex"                   2491    1       SUP
+* 4 "GFK Stiffner Ring"         "T_FR4"                   37.117  1       SUP
+* 5 "PCB Covers"  	     "T_FR4"                     8.2     1       SUP
+* 6 "Electronics Cu"    "Copper"                                         1.61            1       ELE
+* 7 "Electronics GFK"           "T_FR4"                                 207.28  1       ELE
+* 8 "Electronics Polyester"       "FPix_Cylind_Polyester"                           5.38         1  ELE
+* 9 "Electronics POM"           "Polyoxymethylene"                      6.42    1       ELE
+* 10 "Electronics Solder"            "FPix_TinLeadSolder"               1.02            1       ELE
+* 11 "Flat Cable Copper"                "Copper"                                  4.10          1       CAB
+* 12 "Flat Cable PVC"           "Polyvinylchloride"                     20.68       1   CAB
+* 13 "Alu Flange"                       "Aluminium"                             103.85  1      SUP
+* 14 "Cooling pipes steel"        "Steel-008"                               45           1     COL
+* 15 "Cooling pipes brass"       "Brass"                                      5.41         1     COL
+* 16 "alu power cables"            "Aluminium"                           94.66       1    CAB
+* 17 "glue"                                "Epoxy"                                     261.70     1   SUP
+* 18 "Heat Sink"                         "Aluminium"                             13.8         1      ELE
+* 19 "OptoAdapter Support"                 "T_FR4"                         19.67        1    SUP
+* 20 "OptoAdapter"                 "FPix_Cylind_Polyester"                               282.86      1    ELE
+* 21 "outer shielding foil alu"         "Aluminium"                       7.11          1    SUP
+* 22 "outer shielding foil gfk"         "T_FR4"                              37.88       1    SUP
+* 23 "coolant"                            "C6F14_F2_-10C"                        182      1     COL
+* 24 "Optofibers"                              "Acrylate"                          222      1         ELE
+.....................................................................
+
+
+
+
+
+o Sector B
+-------------------------
+
+
+MC Volume: 3416.48 1-shell, numbers below are per half shell, so MC = 1708.24
+
+
+
+.....................................................................
+# "SectorB"     "SectorB"     1708.24   -1.
+* 1 "Inner Shielding Foil Alu"          "Aluminium"               13.00      1   SUP
+* 2 "Inner Shielding Foil GFK"          "T_FR4"                   147.05    1   SUP
+* 3 "Alu Power Cables"                  "Aluminium"               248.75    1   CAB
+* 4 "Airex foam"                                "Nomex"                   2152.8    1   SUP
+* 5 "GFK Stiffner Ring"                 "T_FR4"                   87.59       1   SUP
+* 6 "Cooling Pipes"                             "Steel-008"               28.6   1   COL
+* 7 "Flat cable Cu"                             "Copper"                  31.54      1   CAB
+* 8 "Flat cable PVC"                            "Polyvinylchloride"     162.65    1   CAB
+* 9 "Fibercombs"                        "T_FR4"                   27.74      1   SUP
+* 10 "Optofiber support"               "T_FR4"                   1.88        1   SUP
+* 11 "Glue"                                     "Epoxy"                   633.89    1   SUP
+* 12 "Optofibers"                              "Acrylate"                   530         1   ELE
+* 13 "Fibercomb cover"                  "Polyoxymethylene"        15.38      1   SUP
+* 14 "Outer shielding foil alu"         "Aluminium"               14.77      1   SUP
+* 15 "Outer shielding foil GFK" "T_FR4"                   39.95      1   SUP
+* 16 "Coolant"                                  "C6F14_F2_-10C"   455        1   COL
+....................................................................
+
+
+
+o Sector C
+-------------------------
+MC Volume: 1400 1-shell, numbers below are per half shell, so MC = 700
+
+....................................................................
+# "SectorC   "SectorC"   700    -1.
+* 1 "Inner Shielding Foil Alu"          "Aluminium"                     5.67           1    SUP
+* 2 "Inner Shielding Foil GFK"          "T_FR4"                         64.18       1   SUP
+* 3 "Alu Power Cables"                  "Aluminium"                     92.92       1   CAB
+* 4 "Airex foam"                                "Nomex"                          926.88    1   SUP
+* 5 "GFK Stiffner Ring"                 "T_FR4"                         28.64       1   SUP
+* 6 "Cooling pipes"                     "Steel-008"                     12              1   COL
+* 7 "PCB covers"                                "T_FR4"                         8.82            1   SUP
+* 8 "PCB boards Cu"                             "Copper"                                0.54         1   ELE
+* 9 "PCB boards GFK"                    "T_FR4"                            98.8         1   ELE
+* 10 "PCB boards Polyester"             "FPix_Cylind_Polyester"    2.06        1    ELE
+* 11 "PCB boards POM"                   "Polyoxymethylene"         17.41       1   ELE
+* 12 "PCB boards solder"                        "FPix_TinLeadSolder"        0.63         1   ELE
+* 13 "Flat cable Cu"                            "Copper"                        1.05         1   CAB
+* 14 "Flat cable PVC"                           "Polyvinylchloride"           5.42        1   CAB
+* 15 "Central Slot Electr. Cu"            "Copper"                              0.02         1   ELE
+* 16 "Central Slot Electr. GFK"          "T_FR4"                            1.73         1   ELE
+* 17 "Central Slot Electr. Polyester"  "FPix_Cylind_Polyester"                       0.11         1   ELE
+* 18 "Central Slot Electr. solder"      "FPix_TinLeadSolder"        0.01        1   ELE
+* 19 "heat sink"                                "Aluminium"                     69.21       1   ELE
+* 20 "Glue"                                     "Epoxy"                         269.63     1   SUP
+* 21 "AOH/DOH total Cu"                "Copper"                          15.14       1   ELE
+* 22 "AOH/DOH total GFK"              "T_FR4"                            86.97        1   ELE
+* 23 "AOH/DOH total Polyester"      "FPix_Cylind_Polyester"                        32.71       1    ELE
+* 24 "AOH/DOH total POM"             "Polyoxymethylene"           5.89        1    ELE
+* 25 "AOH/DOH total solder"           "FPix_TinLeadSolder"        2.04        1   ELE
+* 26 "Outer shielding foil alu"         "Aluminium"                     6.68         1   SUP
+* 27 "Outer shielding foil GFK" "T_FR4"                         24.09       1   SUP
+* 28 "Coolant"                                  "C6F14_F2_-10C"        190.5        1   COL
+* 29 "Opto-fibers"                              "Acrylate"                        222           1   ELE
+................................................................
+
 
 
 
