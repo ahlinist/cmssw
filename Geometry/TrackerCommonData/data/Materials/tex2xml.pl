@@ -12,12 +12,13 @@ while (<>)
     print "  <CompositeMaterial name=\"$material\" density=\"$density*g/cm3\" symbol=\" \" method=\"mixture by weight\">\n";
     $i=0;
     $tot=0;
-     while($i<$ncomp)
+    while (($compsname, $compsperc) = each(%comps))
+#     while($i<$ncomp)
     {
-     print "    <MaterialFraction fraction=\"".$compsperc[$i]."\">\n";
-     print "      <rMaterial name=\"materials:".$compsname[$i]."\"/>\n";
+     print "    <MaterialFraction fraction=\"".$compsperc."\">\n";
+     print "      <rMaterial name=\"materials:".$compsname."\"/>\n";
      print "    </MaterialFraction>\n";
-     $tot+=$compsperc[$i];
+     $tot+=$compsperc;
      $i++;
    }  
     print "  </CompositeMaterial>\n";
@@ -33,8 +34,8 @@ if(/Material name:\s*([\w\\]+)/) #new mixture
 # OLD:    if(/Material name: ([\w\\]+)/) #new mixture
   {
     $flushed=0;
-    @compsname = ();
-    @compsperc = ();
+   # @compsname = ();
+    %comps = ();
     $ncomp =0;
     $material = $1; 
     $material =~ s/\\//g;
@@ -43,13 +44,14 @@ if(/Material name:\s*([\w\\]+)/) #new mixture
   }
   if(/^(\s*[0-9]+\s*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)&(.*)/)
   {
-    $compsname[$ncomp] = $3;
-    $compsperc[$ncomp] = $7;
-    $compsperc[$ncomp] =~ s/\s*//g;
-    $compsperc[$ncomp] /= 100;
-    $compsname[$ncomp] =~ s/^\s*//;
-    $compsname[$ncomp] =~ s/\s*$//;
-    $compsname[$ncomp] =~ s/\\//g;
+    $compsname = $3;
+    $compsperc = $7;
+    $compsperc =~ s/\s*//g;
+    $compsperc /= 100;
+    $compsname =~ s/^\s*//;
+    $compsname =~ s/\s*$//;
+    $compsname =~ s/\\//g;
+    $comps{$compsname} += $compsperc;
      $ncomp++;
  }
   if(/\\end{tabular}/)
