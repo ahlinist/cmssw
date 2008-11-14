@@ -28,6 +28,8 @@ and query the component for its allowed ParameterSetDescription.
 // forward declarations
 #include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
 
+#include <string>
+
 namespace edm {
 class ParameterSetDescriptionFillerBase
 {
@@ -37,7 +39,7 @@ class ParameterSetDescriptionFillerBase
       virtual ~ParameterSetDescriptionFillerBase();
 
       // ---------- const member functions ---------------------
-      virtual void fill(ParameterSetDescription&) const = 0;
+      virtual void fill(ParameterSetDescription& iDesc, std::string const& moduleLabel) const = 0;
   
       // ---------- static member functions --------------------
 

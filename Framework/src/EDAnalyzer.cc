@@ -98,7 +98,8 @@ namespace edm
   }
 
   void
-  EDAnalyzer::fillDescription(ParameterSetDescription& iDesc) {
+  EDAnalyzer::fillDescription(edm::ParameterSetDescription& iDesc,
+                              std::string const& moduleLabel) {
     iDesc.setUnknown();
   }
   

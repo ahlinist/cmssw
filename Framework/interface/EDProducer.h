@@ -16,6 +16,8 @@ $Id$
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 #include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
 
+#include <string>
+
 namespace edm {
   class EDProducer : public ProducerBase {
   public:
@@ -26,8 +28,9 @@ namespace edm {
     EDProducer ();
     virtual ~EDProducer();
 
-    static void fillDescription(edm::ParameterSetDescription&);
-    
+    static void fillDescription(edm::ParameterSetDescription& iDesc,
+                                std::string const& moduleLabel);
+
   protected:
     // The returned pointer will be null unless the this is currently
     // executing its event loop function ('produce').

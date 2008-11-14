@@ -28,6 +28,8 @@ method of the templated argument.  This allows the ParameterSetDescriptionFiller
 // user include files
 #include "FWCore/ParameterSet/interface/ParameterSetDescriptionFillerBase.h"
 
+#include <string>
+
 // forward declarations
 
 namespace edm {
@@ -40,8 +42,8 @@ template< typename T>
       //virtual ~ParameterSetDescriptionFiller();
 
       // ---------- const member functions ---------------------
-      virtual void fill(ParameterSetDescription& iDesc) const {
-        T::fillDescription(iDesc);
+      virtual void fill(ParameterSetDescription& iDesc, std::string const& moduleLabel) const {
+        T::fillDescription(iDesc, moduleLabel);
       }
       // ---------- static member functions --------------------
 

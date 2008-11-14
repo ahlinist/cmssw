@@ -43,6 +43,7 @@ namespace edm {
     Entry const& retrieve(std::string const&) const;
 
     Entry const* const retrieveUntracked(std::string const&) const;
+    Entry const* const retrieveUnknown(std::string const&) const;
     void insert(bool ok_to_replace, std::string const& , Entry const&);
     void augment(ParameterSet const& from); 
     // encode

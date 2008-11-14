@@ -106,7 +106,8 @@ namespace edm {
   }
 
   void
-  EDProducer::fillDescription(ParameterSetDescription& iDesc) {
+  EDProducer::fillDescription(edm::ParameterSetDescription& iDesc,
+                              std::string const& moduleLabel) {
     iDesc.setUnknown();
   }
 }

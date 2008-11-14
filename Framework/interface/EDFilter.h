@@ -18,6 +18,8 @@ $Id$
 #include "FWCore/ParameterSet/interface/ParameterSetfwd.h"
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 
+#include <string>
+
 namespace edm {
 
   class EDFilter : public ProducerBase {
@@ -28,7 +30,8 @@ namespace edm {
     
     EDFilter() : ProducerBase() , moduleDescription_(), current_context_(0) {}
     virtual ~EDFilter();
-    static void fillDescription(edm::ParameterSetDescription&);
+    static void fillDescription(edm::ParameterSetDescription& iDesc,
+                                std::string const& moduleLabel);
 
   protected:
     // The returned pointer will be null unless the this is currently

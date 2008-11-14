@@ -107,7 +107,8 @@ namespace edm
   }
   
   void
-  EDFilter::fillDescription(ParameterSetDescription& iDesc) {
+  EDFilter::fillDescription(edm::ParameterSetDescription& iDesc,
+                            std::string const& moduleLabel) {
     iDesc.setUnknown();
   }
   

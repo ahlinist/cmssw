@@ -151,6 +151,13 @@ namespace edm {
     return &it->second;
   }  // retrieve()
 
+  Entry const* const
+  ParameterSet::retrieveUnknown(std::string const& name) const {
+    table::const_iterator  it = tbl_.find(name);
+    if (it == tbl_.end()) return 0;
+    return &it->second;
+  }
+
   // ----------------------------------------------------------------------
 
   void
