@@ -2,15 +2,15 @@
 #define CondFormats_PGeometricDet_h
 
 #include <vector>
-#include <map>
 #include <string>
 
 class PGeometricDet{
+
  public:
   PGeometricDet() { };
   ~PGeometricDet() { };
 
-  struct Item {  
+  struct Item{  
     int _level; // goes like 1, 2, 3, 4, 4, 4, 3, 4, 4, 3, 4, 4, 4, 1, 2, 3, etc.
     double _x;
     double _y;
@@ -24,10 +24,10 @@ class PGeometricDet{
     //  DDName _ddname; DO NOT SAVE!
     std::string _name; // save only the name, not the namespace.
     int _type;
-    std::vector<double> _params;
 
+    double _params0,_params1,_params2,_params3,_params4,_params5,_params6,_params7,_params8,_params9,_params10;
+    
     int _geographicalID; // to be converted to DetId
-
     //  std::vector< DDExpandedNode > _parents; DO NOT SAVE!
     double _volume;
     double _density;
@@ -45,6 +45,7 @@ class PGeometricDet{
   };
 
   std::vector<Item> pgeomdets_;
+
 };
 
 #endif
