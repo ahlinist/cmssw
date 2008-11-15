@@ -84,9 +84,9 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   if (fVerbose > 0) cout << "==>HFDumpTracks> nMuons = " << hMuons->size() << endl;
   TH1D *h2 = (TH1D*)gHFFile->Get("h2");
-  h2->Fill(hMuons->size());
+  if (h2) h2->Fill(hMuons->size());
 
-  // -- get the tracking particle collection needed for truth matching. Only on RECO data tier!
+  // -- get the tracking particle collection needed for truth matching. Only on RECO data tier?
   RecoToSimCollection recSimColl;
   const RecoToSimCollection recSimColl2;
   if (1 == fDoTruthMatching) {
@@ -113,7 +113,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if (fVerbose > 0) cout << "===> Tracks " << tracksView->size() << endl;
   TAnaTrack *pTrack; 
   TH1D *h1 = (TH1D*)gHFFile->Get("h1");
-  h1->Fill(tracksView->size());
+  if (h1) h1->Fill(tracksView->size());
   for (unsigned int i = 0; i < tracksView->size(); ++i){    
 
     TrackBaseRef rTrackView(tracksView,i);
@@ -126,7 +126,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.phi()
 			      );
     pTrack->fTip = trackView.d0();
-    pTrack->fLip = trackView.dz();
+    pTrack->fLip = track.dsz()
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
