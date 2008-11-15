@@ -2,7 +2,7 @@
 
 // -- Open file 
 TChain chain("T1");
-chain.Add("test.root");
+chain.Add("hfexample.root");
 
 Int_t nentries(0), nb(0);
 Int_t iEvent(0), it(0);
@@ -17,8 +17,9 @@ TAnaVertex *pVtx;
 chain.SetBranchAddress("TAna00Event", &pEvent);
 nentries = chain.GetEntries();
 
-TH1D *h0 = new TH1D("h0", "generator mass", 100, 0., 10.); 
-TH1D *h1 = new TH1D("h1", "reco mass", 100, 0., 10.); 
+TH1D *h0 = new TH1D("h0", "generator dimuon mass", 100, 0., 10.); 
+TH1D *h1 = new TH1D("h1", "reco dimuon mass", 100, 0., 10.); 
+TH1D *h2 = new TH1D("h2", "cand mass", 40, 4., 6.); 
 
 cout << "Found " << nentries << " entries in the chain" << endl;
 
@@ -32,10 +33,10 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
   // -- generator muons from Bs
   for (int i = 0; i < pEvent->nGenCands(); ++i) {
     g1 = pEvent->getGenCand(i);
-    if (13 == TMath::Abs(g1->fID) && (531 == TMath::Abs(pEvent->getGenCand(g1->fMom1)->fID))) {
+    if (13 == TMath::Abs(g1->fID)) {
       for (int j = i+1; j < pEvent->nGenCands(); ++j) {
 	g2 = pEvent->getGenCand(j);
-	if (13 == TMath::Abs(g2->fID) && (531 == TMath::Abs(pEvent->getGenCand(g2->fMom1)->fID))) {
+	if (13 == TMath::Abs(g2->fID)) {
 	  TLorentzVector gmm = g1->fP + g2->fP;
 	  h0->Fill(gmm.M());
 	  break;
@@ -75,17 +76,30 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
 	       << " phi = " << g2->fP.Phi()
 	       << " eta = " << g2->fP.PseudoRapidity()
 	       << endl;
-	  cout << " MM = " << mm.M() << endl;
-	  h1->Fill(mm.M());
-	  break;
+	  double mmm = mm.M();
+	  cout << " MM = " << mmm << endl;
+	  h1->Fill(mmm);
 	}
       }
     }
   }
 
+  // -- cands
+  for (int i = 0; i < pEvent->nCands(); ++i) {
+    pCand = pEvent->getCand(i); 
+    h2->Fill(pCand->fMass); 
+  }
 }
 
 //h0->Draw();
+TCanvas c1;
+c1.Clear();
+c1.Divide(2,2);
+c1.cd(1);
+h0->Draw();
+c1.cd(2);
 h1->Draw("");
+c1.cd(3);
+h2->Draw("");
 
 }

@@ -126,7 +126,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.phi()
 			      );
     pTrack->fTip = trackView.d0();
-    pTrack->fLip = track.dsz()
+    pTrack->fLip = trackView.dsz()
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
