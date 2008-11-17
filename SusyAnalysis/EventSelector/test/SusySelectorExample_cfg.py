@@ -9,7 +9,7 @@ process.MessageLogger = cms.Service("MessageLogger",
             limit = cms.untracked.int32(-1)
         ),
         default = cms.untracked.PSet(
-            limit = cms.untracked.int32(100000000)
+            limit = cms.untracked.int32(-1)
         )
     ),
     categories = cms.untracked.vstring(
@@ -42,6 +42,10 @@ process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 process.load("PhysicsTools.PatAlgos.patLayer0_cff")
 process.load("PhysicsTools.PatAlgos.patLayer1_cff")
+
+### Necessary fixes to run 2.2.X on 2.1.X data
+#from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
+#run22XonSummer08AODSIM(process)
 
 # Settings for each selector could be moved to individual *_cfi.py files
 # All settings for the "selectors" PSet could be grouped & imported
@@ -77,7 +81,8 @@ process.myAnalyzer = cms.EDFilter("SusySelectorExample",
                 selector = cms.string('JetEventSelector'),
                 maxEMFraction = cms.vdouble(999.0, 999.0),
                 maxEta = cms.vdouble(5.0, 5.0),
-                correction = cms.string('g'),
+                correction = cms.string('HAD'),
+                flavour    = cms.string('GLU'),
                 jetTag = cms.InputTag("selectedLayer1Jets"),
                 minEt = cms.vdouble(100.0, 50.0)
             )
@@ -86,5 +91,3 @@ process.myAnalyzer = cms.EDFilter("SusySelectorExample",
 )
 
 process.p = cms.Path(process.patLayer0*process.patLayer1*process.myAnalyzer)
-
-

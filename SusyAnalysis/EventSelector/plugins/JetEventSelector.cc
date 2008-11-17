@@ -9,11 +9,15 @@
 JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
-  correction_( pat::Jet::correctionType(pset.getParameter<std::string>("correction")) ),
   minEt_(  pset.getParameter< std::vector<double> >("minEt"        ) ),
   maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
   maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") )
 {
+
+  /// Convert the correction configuration into a correction factor
+  
+  correction_ = pat::JetCorrFactors::corrStep(pset.getParameter<std::string>("correction"),
+                                              pset.getParameter<std::string>("flavour"));
 
   /// definition of variables to be cached
   defineVariable("NumberOfJets");
@@ -50,8 +54,7 @@ JetEventSelector::select (const edm::Event& event) const
   }
 
   // get the jets
-//   edm::Handle< edm::View<pat::Jet> > jetHandle;
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle<pat::JetCollection> jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("JetEventSelector") << "No Jet results for InputTag " << jetTag_;
@@ -70,11 +73,8 @@ JetEventSelector::select (const edm::Event& event) const
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
     float et = jet.et();
-    if ( correction_ != pat::Jet::DefaultCorrection ) {
-      et *= jet.correctionFactor(pat::Jet::NoCorrection);
-      if ( correction_ != pat::Jet::NoCorrection )  
-	et *= jet.correctionFactor(correction_);
-    }
+    if ( correction_ != jet.jetCorrStep() )
+      et *= jet.jetCorrFactors().correction(correction_);
     correctedEts.push_back(et);
   }
   std::vector<size_t> etSorted = 

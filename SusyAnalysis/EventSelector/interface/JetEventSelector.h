@@ -6,7 +6,7 @@
 ///
 /// Original author: W. Adam, 10/4/08
 ///
-/// $Id: JetEventSelector.h,v 1.2 2008/05/23 15:48:21 fronga Exp $
+/// $Id: JetEventSelector.h,v 1.3 2008/06/05 14:57:46 fronga Exp $
 
 // system include files
 #include <memory>
@@ -30,7 +30,7 @@ public:
   virtual ~JetEventSelector () {}
 private:
   edm::InputTag jetTag_;       ///< tag for input collection
-  pat::Jet::CorrectionType correction_;  ///< jet correction type (see pat::Jet)
+  pat::JetCorrFactors::CorrStep correction_;  ///< jet correction step (see pat::Jet)
   std::vector<double> minEt_;  ///< lower Et cuts (also defines min. #jets)
   std::vector<double> maxEta_; ///< upper |eta| cuts (also defines min. #jets)
   std::vector<double> maxFem_; ///< upper cut on EM fraction
