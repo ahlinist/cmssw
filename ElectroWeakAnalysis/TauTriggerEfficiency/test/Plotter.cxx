@@ -15,6 +15,7 @@ class Plotter {
 	};
 
 	void DrawHistogram(const char* varexp, const TCut& selection);
+	void DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
 	void SetXTitle(char* title) {plotXtitle   = title;}
         void SetYTitle(char* title) {plotYtitle   = title;}
 	void SetFileName(char* name){plotFileName = name;}
@@ -42,6 +43,43 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
 
         tree->Draw(varexp1,selection,"e");
         tree->Draw(varexp2,"","h");
+
+        TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
+        TH1F *hden = (TH1F*)gDirectory->Get("hden");
+
+	hnum->SetStats(0);
+        hnum->SetTitle("");
+        //hnum->SetAxisRange(0.,1.,"X");
+        hnum->GetXaxis()->SetTitle(plotXtitle);
+        hnum->GetYaxis()->SetTitle(plotYtitle);
+        hnum->SetMarkerColor(kBlack);
+        hnum->SetMarkerSize(1.);
+        hnum->SetLineWidth(1);
+        hnum->SetLineColor(kBlack);
+        hnum->SetMarkerStyle(kFullDotLarge);
+
+        hnum->Divide(hden);
+        hnum->Draw("e");
+
+        gPad->SaveAs(plotFileName);
+}
+
+
+void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2){
+
+	char* varexp1 = varexp;
+
+	string s_varexp = string(varexp);
+
+	size_t posbegin = s_varexp.find(">>");
+	size_t posend   = s_varexp.find("(");
+
+	s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
+
+	char* varexp2 = s_varexp.c_str();
+
+        tree->Draw(varexp1,selection,"e");
+        tree->Draw(varexp2,selection2,"h");
 
         TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
         TH1F *hden = (TH1F*)gDirectory->Get("hden");
