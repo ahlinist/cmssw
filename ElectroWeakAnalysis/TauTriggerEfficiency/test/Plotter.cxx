@@ -49,17 +49,19 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
 
 	hnum->SetStats(0);
         hnum->SetTitle("");
-        //hnum->SetAxisRange(0.,1.,"X");
-        hnum->GetXaxis()->SetTitle(plotXtitle);
-        hnum->GetYaxis()->SetTitle(plotYtitle);
-        hnum->SetMarkerColor(kBlack);
-        hnum->SetMarkerSize(1.);
-        hnum->SetLineWidth(1);
-        hnum->SetLineColor(kBlack);
-        hnum->SetMarkerStyle(kFullDotLarge);
 
-        hnum->Divide(hden);
-        hnum->Draw("e");
+    TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden);
+    heff -> BayesDivide(hnum,hden);
+    heff -> GetXaxis()->SetTitle(plotXtitle);
+    heff -> GetYaxis()->SetTitle(plotYtitle);
+//heff ->SetMinimum(0);
+//heff ->SetMaximum(1.1);
+    heff -> SetMarkerColor(kBlack);
+    heff -> SetMarkerSize(1.);
+    heff -> SetLineWidth(1);
+    heff -> SetLineColor(kBlack);
+    heff -> SetMarkerStyle(kFullDotLarge);
+    heff -> Draw("PAE");
 
         gPad->SaveAs(plotFileName);
 }
@@ -86,17 +88,19 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCu
 
 	hnum->SetStats(0);
         hnum->SetTitle("");
-        //hnum->SetAxisRange(0.,1.,"X");
-        hnum->GetXaxis()->SetTitle(plotXtitle);
-        hnum->GetYaxis()->SetTitle(plotYtitle);
-        hnum->SetMarkerColor(kBlack);
-        hnum->SetMarkerSize(1.);
-        hnum->SetLineWidth(1);
-        hnum->SetLineColor(kBlack);
-        hnum->SetMarkerStyle(kFullDotLarge);
 
-        hnum->Divide(hden);
-        hnum->Draw("e");
+    TGraphAsymmErrors* heff = new TGraphAsymmErrors(hnum,hden);
+    heff -> BayesDivide(hnum,hden);
+    heff -> GetXaxis()->SetTitle(plotXtitle);
+    heff -> GetYaxis()->SetTitle(plotYtitle);
+//heff ->SetMinimum(0);
+//heff ->SetMaximum(1.1);
+    heff -> SetMarkerColor(kBlack);
+    heff -> SetMarkerSize(1.);
+    heff -> SetLineWidth(1);
+    heff -> SetLineColor(kBlack);
+    heff -> SetMarkerStyle(kFullDotLarge);
+    heff -> Draw("PAE");
 
         gPad->SaveAs(plotFileName);
 }
