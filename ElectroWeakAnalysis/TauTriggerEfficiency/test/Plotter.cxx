@@ -78,7 +78,7 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCu
 
 	char* varexp2 = s_varexp.c_str();
 
-        tree->Draw(varexp1,selection,"e");
+        tree->Draw(varexp1,selection&&selection2,"e");
         tree->Draw(varexp2,selection2,"h");
 
         TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
