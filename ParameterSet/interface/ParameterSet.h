@@ -36,6 +36,8 @@ namespace edm {
     // construct from coded string
     explicit ParameterSet(std::string const&);
 
+    ~ParameterSet();
+
     // identification
     ParameterSetID id() const;
 

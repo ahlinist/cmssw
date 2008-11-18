@@ -2,8 +2,6 @@
 #define FWCore_ParameterSet_Entry_h
 
 // ----------------------------------------------------------------------
-// $Id$
-//
 // interface to edm::Entry and related types
 //
 //
@@ -136,6 +134,7 @@ namespace edm {
     Entry(std::string const& name, std::string const& type, 
           std::vector<std::string> const& value, bool is_tracked);
     
+    ~Entry();
     // encode
     std::string  toString() const;
     std::string  toStringOfTracked() const;

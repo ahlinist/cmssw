@@ -56,6 +56,7 @@ namespace edm {
     validate();
   }
 
+  ParameterSet::~ParameterSet() {}
 
   // ----------------------------------------------------------------------
   // identification

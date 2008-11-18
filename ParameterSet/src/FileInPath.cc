@@ -127,6 +127,8 @@ namespace edm
     searchPath_(other.searchPath_)
   {}
 
+  FileInPath::~FileInPath() {}
+
   FileInPath&
   FileInPath::operator=(FileInPath const& other)
   {
