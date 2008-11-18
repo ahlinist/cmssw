@@ -38,6 +38,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "FWCore/Utilities/interface/Algorithms.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 //
 // class declarations
@@ -247,7 +248,7 @@ static void printObject(const edm::Event& iEvent,
 //
 EventContentAnalyzer::EventContentAnalyzer(const edm::ParameterSet& iConfig) :
   indentation_(iConfig.getUntrackedParameter("indentation",std::string("++"))),
-  verboseIndentation_(iConfig.getUntrackedParameter("verboseIndention",std::string("  "))),
+  verboseIndentation_(iConfig.getUntrackedParameter("verboseIndentation",std::string("  "))),
   moduleLabels_(iConfig.getUntrackedParameter("verboseForModuleLabels",std::vector<std::string>())),
   verbose_(iConfig.getUntrackedParameter("verbose",false) || moduleLabels_.size()>0),
   getModuleLabels_(iConfig.getUntrackedParameter("getDataForModuleLabels",std::vector<std::string>())),
@@ -371,4 +372,15 @@ EventContentAnalyzer::endJob()
 // int k = 137;
 // std::string ktext = boost::lexical_cast<std::string>(k);
 // std::cout << "\nInteger " << k << " expressed as a string is |" << ktext << "|" << std::endl;
+}
+
+void
+EventContentAnalyzer::fillDescription(edm::ParameterSetDescription& iDesc,
+                            std::string const& moduleLabel) {
+   iDesc.addOptionalUntracked<std::string>("indentation", std::string("++"));
+   iDesc.addOptionalUntracked<std::string>("verboseIndentation", std::string("  "));
+   iDesc.addOptionalUntracked<std::vector<std::string> >("verboseForModuleLabels", std::vector<std::string>());
+   iDesc.addOptionalUntracked<bool>("verbose", false);
+   iDesc.addOptionalUntracked<std::vector<std::string> >("getDataForModuleLabels", std::vector<std::string>());
+   iDesc.addOptionalUntracked<bool>("getData", false);
 }
