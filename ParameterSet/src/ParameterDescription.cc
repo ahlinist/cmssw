@@ -84,10 +84,12 @@ namespace edm {
 
   ParameterDescription::ParameterDescription(const std::string& iLabel,
                                              bool isTracked,
+                                             bool optional,
                                              ParameterTypes iType)
   :label_(iLabel),
    type_(iType),
    isTracked_(isTracked),
+   optional_(optional),
    parameterSetDescription_(),
    parameterSetDescriptions_()
   {
@@ -103,12 +105,14 @@ namespace edm {
 
   void
   ParameterDescription::validate(const ParameterSet& pset) const {
-    validate_(pset);
 
-    if (type() == k_PSet) {
+    bool exists;
+    validate_(pset, exists);
+
+    if (exists && type() == k_PSet) {
       validateParameterSetDescription(pset);
     }
-    else if (type() == k_VPSet) {
+    else if (exists && type() == k_VPSet) {
       validateParameterSetDescriptions(pset);
     }
   }

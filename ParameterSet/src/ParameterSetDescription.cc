@@ -76,4 +76,30 @@ namespace edm {
       }
     }
   }
+
+  template<>
+  boost::shared_ptr<ParameterDescription>
+  ParameterSetDescription::add<ParameterSetDescription>(const std::string& iLabel,
+                                                        ParameterSetDescription const& value,
+                                                        bool isTracked,
+                                                        bool optional) {
+    boost::shared_ptr<ParameterDescription> ptr(new ParameterDescriptionTemplate<ParameterSet>(iLabel, isTracked, optional, ParameterSet()));
+    boost::shared_ptr<ParameterSetDescription> copyOfSet(new ParameterSetDescription(value));
+    ptr->setParameterSetDescription(copyOfSet);
+    parameters_.push_back(ptr);
+    return ptr;
+  }
+
+  template<>
+  boost::shared_ptr<ParameterDescription>
+  ParameterSetDescription::add<std::vector<ParameterSetDescription> >(const std::string& iLabel,
+                                                                      std::vector<ParameterSetDescription> const& value,
+                                                                      bool isTracked,
+                                                                      bool optional) {
+    boost::shared_ptr<ParameterDescription> ptr(new ParameterDescriptionTemplate<std::vector<ParameterSet> >(iLabel, isTracked, optional, std::vector<ParameterSet>()));
+    boost::shared_ptr<std::vector<ParameterSetDescription> > copyOfSet(new std::vector<ParameterSetDescription>(value));
+    ptr->setParameterSetDescriptions(copyOfSet);
+    parameters_.push_back(ptr);
+    return ptr;
+  }
 }
