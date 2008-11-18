@@ -3,13 +3,13 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process('EWKTauMuon')
 
 process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff")
-process.load("ElectroWeakAnalysis.EWKTau.analyzerForMuTau_cfi")
-process.load("ElectroWeakAnalysis.EWKTau.plotterForMuTau_cfi")
+process.load("ElectroWeakAnalysis.EWKTau.analyzerForMuTau_cff")
+process.load("ElectroWeakAnalysis.EWKTau.plotterForMuTau_cff")
 
 process.DQMStore = cms.Service("DQMStore")
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(10000)         
+    input = cms.untracked.int32(-1)         
 )
 
 process.source = cms.Source("PoolSource",
@@ -68,6 +68,4 @@ process.source = cms.Source("PoolSource",
 )
 
 process.p = cms.Path( process.produceMuTau
-                     +process.analyzeMuTau
-#                    +process.plotMuTau )
-                      )
+                     +process.analyzeMuTau )
