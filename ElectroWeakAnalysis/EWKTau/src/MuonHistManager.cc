@@ -139,16 +139,16 @@ void MuonHistManager::beginJob(const edm::EventSetup& setup)
     hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
 
     for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
-      char iConeSizeString[3];
-      sprintf( iConeSizeString, "%2u", iConeSize);
+      std::ostringstream iConeSizeString;
+      iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
 
-      std::string hMuonTrkIsoPtConeSizeDepName_i = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString);
+      std::string hMuonTrkIsoPtConeSizeDepName_i = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
       hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, hMuonTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
 
-      std::string hMuonEcalIsoPtConeSizeDepName_i = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString);
+      std::string hMuonEcalIsoPtConeSizeDepName_i = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
       hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, hMuonEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
 
-      std::string hMuonHcalIsoPtConeSizeDepName_i = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString);
+      std::string hMuonHcalIsoPtConeSizeDepName_i = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
       hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, hMuonHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
     }
 
