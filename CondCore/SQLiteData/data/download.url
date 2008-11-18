@@ -16,3 +16,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodNonIsolat
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodTkIsolated.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/MVAJetTagsFakeConditions.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/BadChambers.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/CSCL1TPParameters.db
+
