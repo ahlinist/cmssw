@@ -1,8 +1,8 @@
-#include "GeneratorInterface/Pythia6Interface/interface/TauolaInterface.h"
+#include "GeneratorInterface/CommonInterface/interface/TauolaInterface.h"
 
 /*
- *  $Date: 2008/07/09 00:44:07 $
- *  $Revision: 1.1 $
+ *  $Date: 2008/11/11 09:58:00 $
+ *  $Revision: 1.2 $
  *  
  *  Christian Veelken
  *   04/17/07
