@@ -95,7 +95,7 @@ const int defaultCanvasSizeY = 600;
 
 const std::string drawOptionSeparator = "#.#";
 
-const int verbosity = 1;
+const int verbosity = 0;
 
 template <class T>
 void checkCfgDef(const std::string& cfgEntryName, std::map<std::string, T>& def, int& errorFlag,
