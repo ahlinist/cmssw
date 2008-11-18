@@ -23,7 +23,7 @@ const std::string dqmRootDirectory_inTFile = "DQMData";
 
 const double defaultScaleFactor = 1.;
 
-const int verbosity = 1;
+const int verbosity = 0;
 
 void mapSubDirectoryStructure(TDirectory* directory, std::string directoryName, std::set<std::string>& subDirectories)
 {
