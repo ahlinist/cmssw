@@ -1,5 +1,5 @@
-#ifndef GeneratorInterface_Pythia6Interface_TauolaInterface_h
-#define GeneratorInterface_Pythia6Interface_TauolaInterface_h
+#ifndef GeneratorInterface_CommonInterface_TauolaInterface_h
+#define GeneratorInterface_CommonInterface_TauolaInterface_h
 
 /** \class TauolaInterface
  *
