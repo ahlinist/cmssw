@@ -11,12 +11,16 @@ HLTEventSelector::HLTEventSelector (const edm::ParameterSet& pset) :
   triggerResults_ = pset.getParameter<edm::InputTag>("triggerResults");
   // trigger path names
   pathNames_ = pset.getParameter< std::vector<std::string> >("pathNames");
+  pathNamesConv_.reserve( pathNames_.size() );
 
-  // Add all path names as variables
+  // Add all path names as variables (making sure underscores are removed)
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
 	i!=pathNames_.end(); ++i )
     {
-      defineVariable( *i );
+      std::string pathConv;
+      removeUnderscores_( *i, pathConv );
+      pathNamesConv_.push_back(pathConv);
+      defineVariable( pathConv );
     }
 
   edm::LogInfo("HLTEventSelector") << "constructed with \n"
@@ -41,24 +45,22 @@ HLTEventSelector::select (const edm::Event& event) const
   // Get results
   edm::TriggerNames trgNames;
   trgNames.init(*hltHandle);
-  unsigned int trgSize = trgNames.size();
   bool result(false);
 
   // Example for OR of all specified triggers
-  for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
-	i!=pathNames_.end(); ++i ) {
+  for ( unsigned int i=0; i<pathNames_.size(); ++i ) {
     // Get index
-    unsigned int index = trgNames.triggerIndex(*i);
-    if ( index==trgSize ) {
-      edm::LogWarning("HLTEventSelector") << "Unknown trigger name " << *i;
+    unsigned int index = trgNames.triggerIndex(pathNames_[i]);
+    if ( index==trgNames.size() ) {
+      edm::LogWarning("HLTEventSelector") << "Unknown trigger name " << pathNames_[i];
       continue;
     }
     if ( hltHandle->accept(index) ) {
-      LogDebug("HLTEventSelector") << "Event selected by " << *i;
+      LogDebug("HLTEventSelector") << "Event selected by " << pathNames_[i];
       result = true;
-      setVariable( *i, true );
+      setVariable( pathNamesConv_[i], true );
     } else {
-      setVariable( *i, false );
+      setVariable( pathNamesConv_[i], false );
     }
   }
 
@@ -67,6 +69,14 @@ HLTEventSelector::select (const edm::Event& event) const
   return result;
 }
 
+
+//________________________________________________________________________________________
+void
+HLTEventSelector::removeUnderscores_( const std::string& iname, std::string& oname ) const {
+  oname.reserve(iname.size());
+  for ( unsigned int i = 0; i<iname.size(); ++i )
+    if ( iname[i] != '_' ) oname.push_back(iname[i]);
+}
 
 //________________________________________________________________________________________
 #include "FWCore/PluginManager/interface/ModuleDef.h"
