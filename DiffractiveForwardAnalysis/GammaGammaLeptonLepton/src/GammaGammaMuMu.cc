@@ -13,7 +13,7 @@
 //
 // Original Author:  Jonathan Hollar
 //         Created:  Wed Sep 20 10:08:38 BST 2006
-// $Id: GammaGammaMuMu.cc,v 1.25 2008/08/27 07:24:38 jjhollar Exp $
+// $Id: GammaGammaMuMu.cc,v 1.26 2008/09/29 12:16:25 jjhollar Exp $
 //
 //
 
@@ -56,6 +56,8 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"   
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h" 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
 #include "DiffractiveForwardAnalysis/GammaGammaLeptonLepton/interface/GammaGammaMuMu.h"
 
@@ -256,6 +258,9 @@ GammaGammaMuMu::GammaGammaMuMu(const edm::ParameterSet& pset)
   thetree->Branch("MuMu_extratracks5cm",&MuMu_extratracks5cm,"MuMu_extratracks5cm/I"); 
   thetree->Branch("MuMu_extratracks10cm",&MuMu_extratracks10cm,"MuMu_extratracks10cm/I"); 
 
+  thetree->Branch("nPFlowCand",&nPFlowCand,"nPFlowCand/I");
+  thetree->Branch("PFowCandIds",PFlowCandIds,"PFlowCandIds[nPFlowCand]/I");
+
   thetree->Branch("HitInZDC",&HitInZDC,"HitInZDC/I");
   thetree->Branch("HitInCastor",&HitInCastor,"HitInCastor/I");
   
@@ -317,6 +322,8 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   nExtraCaloTowersE3hb=0; 
   nExtraCaloTowersE4hb=0;  
 
+  nPFlowCand=0;
+
   HitInZDC=0;
   HitInCastor=0;
 
@@ -375,7 +382,6 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     }
 
   // Get the muon collection from the event
-
   // PAT
   edm::Handle<edm::View<pat::Muon> > muons; 
   event.getByLabel(theGLBMuonLabel,muons); 
@@ -440,20 +446,23 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	}  
 
       // Calculate invariant mass and delta-phi
-      if(MuonCand_charge[0]*MuonCand_charge[1]<0)
+      if(nMuonCand == 2)
 	{
-	  double mass = pow(MuonCand_p[0]+MuonCand_p[1],2);
-	  mass-=pow(MuonCand_px[0]+MuonCand_px[1],2);
-	  mass-=pow(MuonCand_py[0]+MuonCand_py[1],2);
-	  mass-=pow(MuonCand_pz[0]+MuonCand_pz[1],2);
-	  MuMu_mass = sqrt(mass);
-
-	  double dphi = fabs(MuonCand_phi[0]-MuonCand_phi[1]);
-	  if(dphi < 3.14159)
-	    MuMu_dphi = dphi;
-	  else
-	    MuMu_dphi = (2.0*3.14159)-dphi;
-
+	  if(MuonCand_charge[0]*MuonCand_charge[1]<0)
+	    {
+	      double mass = pow(MuonCand_p[0]+MuonCand_p[1],2);
+	      mass-=pow(MuonCand_px[0]+MuonCand_px[1],2);
+	      mass-=pow(MuonCand_py[0]+MuonCand_py[1],2);
+	      mass-=pow(MuonCand_pz[0]+MuonCand_pz[1],2);
+	      MuMu_mass = sqrt(mass);
+	      
+	      double dphi = fabs(MuonCand_phi[0]-MuonCand_phi[1]);
+	      if(dphi < 3.14159)
+		MuMu_dphi = dphi;
+	      else
+		MuMu_dphi = (2.0*3.14159)-dphi;
+	      
+	    }
 	}
     }
 
@@ -482,6 +491,21 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   //  event.getByLabel(theMetLabel,pMET);
   //  const reco::CaloMETCollection* mets = pMET.product();
   //  reco::CaloMETCollection::const_iterator met;
+
+  // Count PFlow  objects
+  edm::Handle<reco::PFCandidateCollection> pflows;
+  event.getByLabel("particleFlow",pflows);
+  reco::PFCandidateCollection::const_iterator pflow;
+
+  for(pflow = pflows->begin(); pflow != pflows->end(); ++pflow)
+    {
+      int parttype = PFCandidate::ParticleType (pflow->particleId());
+      if(parttype != 2)
+	{
+	  PFlowCandIds[nPFlowCand] = parttype;
+	  nPFlowCand++;
+	}
+    }
 
   // Get the CaloTower collection from the event
   edm::Handle<CaloTowerCollection> caloTowers; 
@@ -654,7 +678,7 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   // Use MC truth for now, replace with real RECO when available
   double MCPar_px,MCPar_py,MCPar_pz,MCPar_e,MCPar_eta,MCPar_mass;
   int MCPar_pdgid;
-
+  
   Handle<GenParticleCollection> genParticles;
   event.getByLabel( "genParticles", genParticles );
   for ( size_t i = 0; i < genParticles->size(); ++ i ) 
@@ -718,7 +742,6 @@ GammaGammaMuMu::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   // Now do vertexing and track counting
   edm::ESHandle<TransientTrackBuilder> theVtx;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theVtx);
-  //  vector < reco::TransientTrack > mutrks;
   vector<TransientTrack> transmutrks; 
   reco::TrackCollection * mutrks = new reco::TrackCollection;
 
