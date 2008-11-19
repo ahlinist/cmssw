@@ -12,17 +12,16 @@ process.load("DQMOffline.Trigger.Tau.HLTTauDQMOffline_cff")
 process.load("ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauPatProducer_cff")
 process.load("ElectroWeakAnalysis.EWKTau.metForETauPatConfig_cff")
 process.load("ElectroWeakAnalysis.EWKTau.tauForETauMod.tauForETauPFPatProducer_cff")
-#process.ldgTrkDiscrForETauKinEff.TauEtCut = cms.double(0.0)
-#process.ldgTrkDiscrForETauKinEff.TauEtaCut = cms.double(2.5)
 process.pfRecoTauTagInfoProducerForETauEff.ChargedHadrCand_tkminPt = 0.5
-process.pfRecoTauTagInfoProducerForETauEff.tkminPt = 0.5
 process.pfRecoTauProducerForETauEff.MatchingConeSizeFormula = "0.2"
 process.pfRecoTauProducerForETauEff.MatchingConeSize_max = 0.2
+process.pfRecoTauProducerForETauEff.TrackerSignalConeSizeFormula = "0.15"
+process.pfRecoTauProducerForETauEff.TrackerSignalConeSize_min = 0.0
+process.pfRecoTauProducerForETauEff.TrackerSignalConeSize_max = 0.15
 process.pfRecoTauProducerForETauEff.LeadTrack_minPt = 6.0
 process.pfRecoTauProducerForETauEff.LeadChargedHadrCand_minPt = 6.0
 process.pfRecoTauProducerForETauEff.ChargedHadrCand_minPt = 0.5
-#process.allLayer0TausForETauKinEff.tauDiscriminatorSource = cms.InputTag("ldgTrkDiscrForETauKinEff:passKin")
-#process.allLayer0TausForETauLdgTrkEff.tauDiscriminatorSource = cms.InputTag("ldgTrkDiscrForETauLdgTrkEff:foundLdgTrk")
+process.pfRecoTauLdgTrkPtCutForETauEff.MinPtLeadingTrack = 6.0
 
 process.selectorPfTausForETauKinEtaEff = cms.EDProducer("PATTauSelector",
     src = cms.InputTag("layer1PfTausForETauEff"),
@@ -71,21 +70,6 @@ process.selectedLayer1GlobalMuons = cms.EDProducer("PATMuonSelector",
      filter = cms.bool(False)
 )
 
-####### Define the selector module that chooses muons based on pt #######
-
-process.selectedLayer1MuonsPt20 = cms.EDProducer("PATMuonSelector",
-  src = cms.InputTag("selectedLayer1MuonsEta21"),
-  cut = cms.string('pt >= 20'),
-  filter = cms.bool(False)
-)
-
-####### Define the EDFilter that filters events based on a certain number of pat Muons #######
-
-process.minLayer1MuonsPt20 = cms.EDFilter("PATMuonMinFilter",
-  src = cms.InputTag("selectedLayer1MuonsPt20"),
-  minNumber = cms.uint32(1)
-)
-
 ####### Define the selector module that chooses muons based on pseudorapidity #######
 
 process.selectedLayer1MuonsEta21 = cms.EDProducer("PATMuonSelector",
@@ -94,17 +78,26 @@ process.selectedLayer1MuonsEta21 = cms.EDProducer("PATMuonSelector",
   filter = cms.bool(False)
 )
 
-####### Define the EDFilter that filters events based on a certain number of pat Muons #######
+####### Define the selector module that chooses muons based on pt #######
 
-process.minLayer1MuonsEta21 = cms.EDFilter("PATMuonMinFilter",
+process.selectedLayer1MuonsPt20 = cms.EDProducer("PATMuonSelector",
   src = cms.InputTag("selectedLayer1MuonsEta21"),
-  minNumber = cms.uint32(1)
+  cut = cms.string('pt >= 20'),
+  filter = cms.bool(False)
+)
+
+process.selectedLayer1MuonsSeperatedFromPATTau = cms.EDProducer("PATLeptonPATTauSeperationSelector",
+     src = cms.InputTag("selectedLayer1MuonsPt20"),
+     LeptonType = cms.string('Muon'),
+     TauSource = cms.InputTag("selectorPfTausForETauKinEtaEtEff"),
+     DeltaRMaxCut = cms.double(999.0),
+     DeltaRMinCut = cms.double(0.7),
 )
 
 ####### Define the selector module that chooses muons based on segment & calo compatibilities #######
 
 process.selectedLayer1MuonsAntiPionCut = cms.EDProducer("PATMuonAntiPionSelection",
-     src = cms.InputTag("selectedLayer1MuonsPt20"),
+     src = cms.InputTag("selectedLayer1MuonsSeperatedFromPATTau"),
      CaloCompCoefficient = cms.double(0.8),
      SegmCompCoefficient = cms.double(1.2),
      AntiPionCut = cms.double(1.0),
@@ -119,13 +112,6 @@ process.selectedLayer1MuonsIP = cms.EDProducer("PATMuonSelector",
   filter = cms.bool(False)
 )
 
-####### Define the EDFilter that filters events based on a certain number of pat Muons #######
-
-process.minLayer1MuonsIP = cms.EDFilter("PATMuonMinFilter",
-  src = cms.InputTag("selectedLayer1MuonsIP"),
-  minNumber = cms.uint32(1)
-)
-
 ####### Define the selector module that chooses muons based on PFGamma isolation #######
 
 process.selectedLayer1MuonsPFGammaIso10 = cms.EDProducer("PATLeptonPFParticleIsolationSelector",
@@ -136,14 +122,14 @@ process.selectedLayer1MuonsPFGammaIso10 = cms.EDProducer("PATLeptonPFParticleIso
      OuterIsolationConeSize = cms.double(0.8),
      InnerIsolationConeSize = cms.double(0.0),
      IsolationMinCut = cms.double(0.0),
-     IsolationMaxCut = cms.double(1.0),
+     IsolationMaxCut = cms.double(1.0)
 )
 
 ####### Define the selector module that chooses muons based on track isolation #######
 
 process.selectTrkIsoMuForEWKTau = cms.EDProducer("PATMuonSelector",
      src = cms.InputTag("selectedLayer1MuonsPFGammaIso10"),   
-     cut = cms.string('trackIso < 10.0'),
+     cut = cms.string('trackIso < 1.0'),
      filter = cms.bool(False)
 )
 
@@ -178,14 +164,6 @@ process.selectedLayer1MuonsSatisfyingMetDelPhi = cms.EDProducer("PATLeptonPATMet
      DelPhiMinCut = cms.double(-999.0),
 )
 
-process.selectedLayer1MuonsSeperatedFromPATTau = cms.EDProducer("PATLeptonPATTauSeperationSelector",
-     src = cms.InputTag("selectedLayer1MuonsPt20"),
-     LeptonType = cms.string('Muon'),
-     TauSource = cms.InputTag("selectorPfTausForETauKinEtaEtEff"),
-     DeltaRMaxCut = cms.double(999.0),
-     DeltaRMinCut = cms.double(0.7),
-)
-
 process.selectedLayer1MuonsSatisfyingMassCut = cms.EDProducer("PATMuonPATTauMassSelection",
      src = cms.InputTag("selectedLayer1MuonsSatisfyingMetDelPhi"),
      TauSource = cms.InputTag("layer1TausForETauLdgTrkEff"),
@@ -194,26 +172,18 @@ process.selectedLayer1MuonsSatisfyingMassCut = cms.EDProducer("PATMuonPATTauMass
      filter = cms.bool(False)
 )
 
-process.load("ElectroWeakAnalysis.EWKTau.analyzerForEWKTauID_cfi")
+#process.load("ElectroWeakAnalysis.EWKTau.analyzerForEWKTauID_cfi")
 
-process.patTausEWKTauID = cms.Sequence(process.pfRecoTauProducerForETauEff
-                                  *process.pfRecoTauIsoDiscrForETauEff
-                                  *process.allLayer0PfTausForETauEff
-                                  *process.pfRecoTauLdgTrkFindForETauEff
-                                  *process.pfRecoTauLdgTrkPtCutForETauEff
-                                  *process.pfRecoTauTrkIsoDiscrForETauEff
-                                  *process.pfRecoTauEclIsoDiscrForETauEff
-                                  *process.pfRecoTauElecRejDiscrForETauEff
-                                  *process.pfRecoTauMuonRejDiscrForETauEff
-                                  *process.pfRecoTauIsoDiscrForETauEff
-                                  *process.layer1PfTausForETauEff
+process.patTausEWKTauID = cms.Sequence(
+                                   process.PFTauForETauEff
+                                  *process.PFTauForETauEffPat
                                   *process.selectorPfTausForETauKinEtaEff
                                   *process.selectorPfTausForETauKinEtaEtEff
                                   *process.selectorPfTausForETauKinEtEff)
 
 process.patLayer1MuonsEWKTauID = cms.Sequence(process.layer0MuForEWKTau *
                                               process.layer1MuForEWKTau *
-                                              process.patMET *
+#                                              process.patMET *
                                               process.selectedLayer1GlobalMuons *
                                               process.selectedLayer1MuonsEta21 *
                                               process.selectedLayer1MuonsPt20 *
@@ -222,9 +192,10 @@ process.patLayer1MuonsEWKTauID = cms.Sequence(process.layer0MuForEWKTau *
                                               process.selectedLayer1MuonsIP *
                                               process.selectedLayer1MuonsPFGammaIso10 *
                                               process.selectTrkIsoMuForEWKTau *
-                                              process.selectedLayer1MuonsBJetRejection *
-                                              process.selectedLayer1MuonsSatisfyingMetDelPhi *
-                                              process.selectedLayer1MuonsSatisfyingMassCut)
+                                              process.selectedLayer1MuonsBJetRejection
+#                                              process.selectedLayer1MuonsSatisfyingMetDelPhi *
+#                                              process.selectedLayer1MuonsSatisfyingMassCut
+)
 
 ####### Output module configuration #######
 
@@ -239,6 +210,8 @@ process.out = cms.OutputModule("PoolOutputModule",
 
 ####### Define the path #######
 
-process.p = cms.Path(process.patTausEWKTauID * process.patLayer1MuonsEWKTauID * process.defaultEWKTauIDAnalyzer)
+#process.p = cms.Path(process.myHltHighLevel * process.patTausEWKTauID * process.patLayer1MuonsEWKTauID)
+process.p = cms.Path(process.patTausEWKTauID * process.patLayer1MuonsEWKTauID)
+#process.p = cms.Path(process.patTausEWKTauID * process.patLayer1MuonsEWKTauID * process.defaultEWKTauIDAnalyzer)
 
 process.outpath = cms.EndPath(process.out)
