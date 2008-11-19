@@ -104,6 +104,9 @@ class GammaGammaMuMu : public edm::EDAnalyzer {
   double HighestJet_phi;
   double SumJet_e;
 
+  int nPFlowCand;
+  int PFlowCandIds[500];
+
   int HitInZDC; 
   int HitInCastor; 
 
