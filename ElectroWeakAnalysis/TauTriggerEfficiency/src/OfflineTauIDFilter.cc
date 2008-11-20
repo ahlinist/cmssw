@@ -13,7 +13,7 @@
 //
 // Original Author:  Matti Kortelainen
 //         Created:  Thu Sep 18 11:07:16 CEST 2008
-// $Id$
+// $Id: OfflineTauIDFilter.cc,v 1.4 2008/09/18 11:19:58 mkortela Exp $
 //
 //
 
@@ -60,9 +60,9 @@ OfflineTauIDFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool passed = false;
   ++_nEvents;
 
-  if(thePFTauHandle->size() >= 1)
+  if(thePFTauHandle.isValid() && thePFTauHandle->size() >= 1)
     passed = true;
-  if(theCaloTauHandle->size() >= 1)
+  if(theCaloTauHandle.isValid() && theCaloTauHandle->size() >= 1)
     passed = true;
   
   if(passed)
