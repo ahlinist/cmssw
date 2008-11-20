@@ -3,6 +3,7 @@
 <use name=FWCore/ParameterSet>
 <use name=SimDataFormats/Track>
 <use name=DataFormats/L1TrackTrigger>
+<use name=DataFormats/SiPixelDetId>
 
 <export>
    <lib name=L1TriggerOfflineTriggerSimulation>
@@ -11,4 +12,5 @@
    <use name=FWCore/ParameterSet>
    <use name=SimDataFormats/Track>
    <use name=DataFormats/L1TrackTrigger>
+   <use name=DataFormats/SiPixelDetId>
 </export>
