@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.3 $
-  \date $Date: 2008/08/15 17:37:28 $
+  \version $Revision: 1.4 $
+  \date $Date: 2008/08/22 11:52:02 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -14,6 +14,17 @@
 
 #include "DQM/RenderPlugins/src/HcalRenderPlugin.h" 
 #include "DQM/RenderPlugins/src/utils.h"
+
+
+//---define parameters for HTR/Channel Plots
+#define MARGIN  1
+#define FEDS_X0 3
+#define SPIG_Y0 4
+#define CHNS_Y0 3
+#define XS 2
+#define YS 4
+////#define _XBINS (24*ERIC_HDP_XS+ERIC_HDP_X0)
+////#define _YBINS (15*ERIC_HDP_YS+ERIC_HDP_Y0)
 
 void
 HcalRenderPlugin::initialise (int argc, char ** argv)
@@ -91,6 +102,26 @@ HcalRenderPlugin::preDraw (TCanvas * c,
   std::cout << "HcalRenderPlugin:preDraw " << o.name << std::endl; 
 #endif 
   c->cd(); 
+
+  gStyle->Reset("Default");
+  
+  gStyle->SetCanvasColor(10);
+  gStyle->SetPadColor(10);
+  gStyle->SetFillColor(10);
+  gStyle->SetStatColor(10);
+  gStyle->SetTitleFillColor(10);
+  
+  TGaxis::SetMaxDigits(4);
+  
+  gStyle->SetOptTitle(kTRUE);
+  gStyle->SetTitleBorderSize(0);
+
+  gStyle->SetOptStat(kFALSE);
+  gStyle->SetStatBorderSize(1);
+
+
+  gROOT->ForceStyle();
+
  
   // object is TH2 histogram
   if( dynamic_cast<TH2*>( o.object ) )
@@ -159,12 +190,21 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
 
   // o.name is a std::string object
   // Add in list of names of histograms for which we want log plotting here.
-  if (  (o.name.find("BCN from DCCs")!=std::string::npos)  )
+  if (  (o.name.find("DataFormatMonitor/DCC Plots/BCN from DCCs")!=std::string::npos)   ||
+	(o.name.find("DataFormatMonitor/DCC Plots/DCC Ev Fragment")!=std::string::npos) ||
+	(o.name.find("DataFormatMonitor/DCC Plots/Spigot Format")!=std::string::npos)   ||
+	(o.name.find("DataFormatMonitor/HTR Plots/BCN from HTRs")!=std::string::npos)   ||
+	(o.name.find("DataFormatMonitor/HTR Plots/EvN Difference")!=std::string::npos)     )
     gPad->SetLogy(1);
 
+  if (  (o.name.find("DataFormatMonitor/HTR Plots/")!=std::string::npos) &&
+	(o.name.find("Data Format Error Word")!=std::string::npos)          )
+    gPad->SetLogy(1);
+  
   if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
     obj->SetMinimum(0);
 
+  
   return;
 
 } // preDrawTH1(...)
@@ -186,24 +226,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   gStyle->SetOptStat( 0 ); 
   obj->SetStats( kFALSE ); 
 
-  // Use same labeling format as SiStripRenderPlugin.cc
-  /* Axes formatting skipped at DQM request
-  TAxis* xa = obj->GetXaxis(); 
-  TAxis* ya = obj->GetYaxis(); 
-  
-  xa->SetTitleOffset(0.7); 
-  xa->SetTitleSize(0.05); 
-  xa->SetLabelSize(0.04); 
-  
-  ya->SetTitleOffset(0.7); 
-  ya->SetTitleSize(0.05); 
-  ya->SetLabelSize(0.04); 
-  */
-  // Now the important stuff -- set 2D hist drawing option to "colz"
-  //gStyle->SetPalette(1);
-
-
-  // Set default color scheme
+   // Set default color scheme
 
   // Always use most up-to-date color scheme for reportSummaryMap,
   // so that it's consistent with other maps.
@@ -241,13 +264,54 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
       obj->SetOption("colz");
     }
 
-  // red when high, green when low
-  else 
+  // Rainbows and Ponies!
+  else if ((o.name.find("DataFormatMonitor/Readout Chain DataIntegrity Check") != std::string::npos )||
+	   (o.name.find("HTR Plots/ Channel Data Integrity/FED 7") != std::string::npos )            ||
+	   (o.name.find("HTR Plots/Channel Integrity Summarized by Spigot") != std::string::npos )   ||
+	   (o.name.find("HTR Plots/Half-HTR DataIntegrity Check") != std::string::npos )               ) {
+      gStyle->SetPalette(1);
+      obj->SetOption("colz");
+      c->SetBottomMargin(0.200);
+      gPad->SetLogz();}
+  else if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Error and Warning") != std::string::npos ) ||
+	    (o.name.find("DataFormatMonitor/DCC Plots/All Evt") != std::string::npos )               ||
+	    (o.name.find("DataFormatMonitor/DCC Plots/DCC Nonzero") != std::string::npos )           
+	    // Certain plots dissappear when we include them in the OR. WTF?
+	    //(o.name.find("DataFormatMonitor/HTR Plots/BCN Inconsistent") != std::string::npos )           ||
+	    //(o.name.find("DataFormatMonitor/HTR Plots/EvN Inconsistent") != std::string::npos )           ||
+	    //(o.name.find("DataFormatMonitor/HTR Plots/HTR Error Word") != std::string::npos )           ||
+	    //(o.name.find("DataFormatMonitor/HTR Plots/Unpacking") != std::string::npos )                 
+	    )  {
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
+    gPad->SetLogz();
+    gPad->SetGridx();
+    gPad->SetGridy();}
+  else   // red when high, green when low
     {
       gStyle->SetPalette(20, errorFracColors);
       obj->SetOption("colz");
     }
 
+  if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Status") != std::string::npos ) ||
+       (o.name.find("DeadCellMonitor/ ProblemDeadCells") != std::string::npos )         ){
+    if (obj->GetEntries() == 0) {
+      obj->SetStats(1111);
+      TText t;
+      t.DrawText(1,1,"No News is Good News."); }
+    else {
+      gPad->SetGridx();
+      gPad->SetGridy(); }}
+  
+  // This time, just rainbows.
+  if (o.name.find("DataFormatMonitor/") != std::string::npos ) {
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");}
+
+
+
+///	    (o.name.find("DataFormatMonitor/HTR Plots/BCN Inconsistent") != std::string::npos )      ||
+///	    (o.name.find("DataFormatMonitor/HTR Plots/EvN Inconsistent") != std::string::npos )        
 
   return;
 } // preDrawTH2(...)
@@ -301,11 +365,119 @@ void HcalRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o )
 
 void HcalRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
 {
-  // nothing to put here just yet
+  
+  TH2* obj = dynamic_cast<TH2*>( o.object ); 
+  assert( obj ); 
+
+  obj->GetYaxis()->SetTickLength(0.0);
+  obj->GetXaxis()->SetTickLength(0.0);
+      
   // in the future, we can add text output based on error status,
   // or set bin range based on filled histograms, etc.  
-  // Maybe add a big "OK" sign to histograms with no entries (i.e., no errors)?
+  if ( (o.name.find("DataFormatMonitor/HTR Plots/BCN Inconsistent") != std::string::npos)     ||
+       (o.name.find("DataFormatMonitor/HTR Plots/EvN Inconsistent") != std::string::npos)     ||
+       (o.name.find("DataFormatMonitor/HTR Plots/HTR Error Word") != std::string::npos  )     ||
+       (o.name.find("DataFormatMonitor/HTR Plots/Unpacking ") != std::string::npos)          ||
+       (o.name.find("DataFormatMonitor/DCC Plots/DCC Error and Warning") != std::string::npos)||
+       (o.name.find("DataFormatMonitor/DCC Plots/DCC Nonzero") != std::string::npos)          ||
+       (o.name.find("DataFormatMonitor/DCC Plots/DCC Status Flags") != std::string::npos)       )  {
+      TText t;
+      t.SetTextSize( 0.1);
+    if (obj->GetEntries() == 0) {
+      t.DrawText(1, 1, "Empty == OK"); }
+    //else {
+    //  char yop[20];
+    //  sprintf(yop,"%d", (double) obj->GetEntries());
+    //  t.DrawText(1, 1, yop); } }
+  }
+  else if ( (o.name.find("HTR Plots/ Channel Data Integrity/FED 7") != std::string::npos )         ) {
+    c->SetBottomMargin(0.200);
+    TLine line;
+    line.SetLineWidth(1);
+    for (int i=0; i<24; i++) {   // x-axis:24 channels
+      for (int j=0; j<15; j++) { // y-axis:15 spigots  
+	line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*CHNS_Y0),
+		      ((i+1) *  FEDS_X0), MARGIN+(j*CHNS_Y0)    );
+	line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*CHNS_Y0)+2,
+		      ((i+1) *  FEDS_X0), MARGIN+(j*CHNS_Y0)+2  );
 
-  return;
+	line.DrawLine(MARGIN+(i*FEDS_X0)  , MARGIN+(j*CHNS_Y0),
+		      MARGIN+(i*FEDS_X0)  , ((j+1) *  CHNS_Y0)    );
+	line.DrawLine(MARGIN+(i*FEDS_X0)+2, MARGIN+(j*CHNS_Y0),
+		      MARGIN+(i*FEDS_X0)+2, ((j+1) *  CHNS_Y0)    );
+      }}
+    // Draw a legend above the plot
+    line.DrawLine((FEDS_X0*20)  , (CHNS_Y0*16)  ,
+		  (FEDS_X0*21)-1, (CHNS_Y0*16)  );
+    line.DrawLine((FEDS_X0*20)  , (CHNS_Y0*17)-1,
+		  (FEDS_X0*21)-1, (CHNS_Y0*17)-1);
+			      	      	    
+    line.DrawLine((FEDS_X0*20)  , (CHNS_Y0*16)  ,
+		  (FEDS_X0*20)  , (CHNS_Y0*17)-1);
+    line.DrawLine((FEDS_X0*21)-1, (CHNS_Y0*16)  ,
+		  (FEDS_X0*21)-1, (CHNS_Y0*17)-1);
+    TText tx;
+    tx.SetTextSize( 0.02);
+    tx.DrawText((FEDS_X0*20)-6, (CHNS_Y0*16)     , "DigiSize");
+    tx.DrawText((FEDS_X0*20)-4, (CHNS_Y0*17)-1.75, "AOK"     );
+			     
+    tx.DrawText((FEDS_X0*21)  , (CHNS_Y0*16)    , "CapRotat" );
+    tx.DrawText((FEDS_X0*21)  , (CHNS_Y0*17)-1.75,"!DV or ER");            
+    return;}
+  if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Error and Warning") != std::string::npos )        ||
+       (o.name.find("DataFormatMonitor/DCC Plots/DCC Nonzero Spigot Conditions") != std::string::npos )||
+       (o.name.find("DataFormatMonitor/DCC Plots/DCC Status") != std::string::npos )                     ) {
+    obj->SetStats(1111);
+    c->SetLeftMargin( 0.200); // in fractions of a TCanvas... ?
+  }
+  else if ( (o.name.find("HTR Plots/Channel Integrity Summarized by Spigot") != std::string::npos ) ||
+       (o.name.find("HTR Plots/Half-HTR DataIntegrity Check") != std::string::npos )          ) {
+      TLine line;
+      line.SetLineWidth(1);
+      for (int i=0; i<32; i++) {    // x-axis:32 DCC's (FEDs 700:731)
+	for (int j=0; j<15; j++) {  // y-axis:15 spigots  
+	  line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*SPIG_Y0),
+			((i+1) *  FEDS_X0), MARGIN+(j*SPIG_Y0)    );
+	  line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*SPIG_Y0)+3,
+			((i+1) *  FEDS_X0), MARGIN+(j*SPIG_Y0)+3    );
 
+	  line.DrawLine(MARGIN+(i*FEDS_X0)  , MARGIN+(j*SPIG_Y0),
+			MARGIN+(i*FEDS_X0)  , ((j+1) *  SPIG_Y0)    );
+	  line.DrawLine(MARGIN+(i*FEDS_X0)+2, MARGIN+(j*SPIG_Y0),
+			MARGIN+(i*FEDS_X0)+2, ((j+1) *  SPIG_Y0)    );
+	}}
+      // Draw a legend above the plot
+      line.DrawLine(FEDS_X0*30, (SPIG_Y0*16)-1,
+		    FEDS_X0*31, (SPIG_Y0*16)-1);
+      line.DrawLine(FEDS_X0*30, (SPIG_Y0*17)-1,
+		    FEDS_X0*31, (SPIG_Y0*17)-1);
+			      	      
+      line.DrawLine(FEDS_X0*30, (SPIG_Y0*16)-1,
+		    FEDS_X0*30, (SPIG_Y0*17)-1);
+      line.DrawLine(FEDS_X0*31, (SPIG_Y0*16)-1,
+		    FEDS_X0*31, (SPIG_Y0*17)-1);
+      TText tx;
+      tx.SetTextSize( 0.02);
+      if (o.name.find("Channel") != std::string::npos ) {
+	tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-2  , "AOK");
+	tx.DrawText((FEDS_X0*30)-8, (SPIG_Y0*17)-3.5, "DigiSize");
+	tx.DrawText((FEDS_X0*30)-9, (SPIG_Y0*17)-5  , "WdCntErr");
+
+	tx.DrawText((FEDS_X0*30)+4 , (SPIG_Y0*17)-2  , "!DV or ER");
+	tx.DrawText((FEDS_X0*30)+4 , (SPIG_Y0*17)-3.5, "CapRotat");
+	tx.DrawText((FEDS_X0*30)+4 , (SPIG_Y0*17)-5  , "SizeDecl");}
+      if (o.name.find("Half-HTR") != std::string::npos ) {
+	tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-2  , "EvN");
+	tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-3.5, "BcN");
+	tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-5  , "OrN");
+												        
+	tx.DrawText((FEDS_X0*30)+4, (SPIG_Y0*17)-2  , "Cerr");
+	tx.DrawText((FEDS_X0*30)+4, (SPIG_Y0*17)-3.5, "Uerr");
+	tx.DrawText((FEDS_X0*30)+4, (SPIG_Y0*17)-5  , "NoData");}
+      return;}
+  else if (o.name.find("DataFormatMonitor/Readout Chain Data Integrity Check") != std::string::npos ) {
+    TText tx;
+    tx.SetTextSize( 0.05);
+    tx.DrawText(36, -4, "Crate / FED ID");}
+    
 } // postDrawTH2(...)
