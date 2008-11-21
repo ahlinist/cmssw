@@ -1,4 +1,146 @@
-void efficiencies(){
+// List of signal bins and their cross sections
+#include <map>
+#include <string>
+map<string, double> signal;
+TFile *signalfile[7];
+TFile *bkgfile[18];
+ 
+TH1D* pt_true = new TH1D("pt_true","pt_true no cut",40,0.,2000.);                            pt_true->Sumw2();         
+TH1D* pt_true_pt = new TH1D("pt_true_pt","pt_true pt cut",40,0.,2000.);		             pt_true_pt->Sumw2();      
+TH1D* pt_true_eta = new TH1D("pt_true_eta","pt_true eta cut",40,0.,2000.);		     pt_true_eta->Sumw2();     
+TH1D* pt_true_ntrk = new TH1D("pt_true_ntrk","pt_true ntrk cut ",40,0.,2000.);		     pt_true_ntrk->Sumw2();    
+TH1D* pt_true_ptiso = new TH1D("pt_true_ptiso","pt_true ptiso cut",40,0.,2000.);	     pt_true_ptiso->Sumw2();   
+TH1D* pt_true_emf = new TH1D("pt_true_emf","pt_true emf cut",40,0.,2000.);		     pt_true_emf->Sumw2();     
+TH1D* pt_true_smaj = new TH1D("pt_true_smaj","pt_true smaj cut",40,0.,2000.);		     pt_true_smaj->Sumw2();    
+TH1D* pt_true_smin = new TH1D("pt_true_smin","pt_true smin cut",40,0.,2000.);		     pt_true_smin->Sumw2();    
+TH1D* pt_true_ecaliso = new TH1D("pt_true_ecaliso","pt_true ecaliso cut",40,0.,2000.);	     pt_true_ecaliso->Sumw2(); 
+TH1D* pt_true_etajet = new TH1D("pt_true_etajet","pt_true eta jet cut",40,0.,2000.);	     pt_true_etajet->Sumw2();  
+TH1D* pt_true_deltaphi = new TH1D("pt_true_deltaphi","pt_true deltaphi cut",40,0.,2000.);    pt_true_deltaphi->Sumw2();
+TH1D* pt_true_2ndjet = new TH1D("pt_true_2ndjet","pt_true 2ndjet cut",40,0.,2000.);	     pt_true_2ndjet->Sumw2();  
+TH1D* pt_true_deltaeta = new TH1D("pt_true_deltaeta","pt_true deltaeta cut",40,0.,2000.);    pt_true_deltaeta->Sumw2();
+
+TH1D* pt_true_eta_int = new TH1D("pt_true_eta_int","pt_true eta cut cascade",40,0.,2000.);                   pt_true_eta_int->Sumw2();     
+TH1D* pt_true_ntrk_int = new TH1D("pt_true_ntrk_int","pt_true ntrk cut cascade ",40,0.,2000.);		     pt_true_ntrk_int->Sumw2();    
+TH1D* pt_true_ptiso_int = new TH1D("pt_true_ptiso_int","pt_true ptiso cut cascade",40,0.,2000.);	     pt_true_ptiso_int->Sumw2();   
+TH1D* pt_true_emf_int = new TH1D("pt_true_emf_int","pt_true emf cut cascade",40,0.,2000.);		     pt_true_emf_int->Sumw2();     
+TH1D* pt_true_smaj_int = new TH1D("pt_true_smaj_int","pt_true smaj cut cascade",40,0.,2000.);		     pt_true_smaj_int->Sumw2();    
+TH1D* pt_true_smin_int = new TH1D("pt_true_smin_int","pt_true smin cut cascade",40,0.,2000.);		     pt_true_smin_int->Sumw2();    
+TH1D* pt_true_ecaliso_int = new TH1D("pt_true_ecaliso_int","pt_true ecaliso cut cascade",40,0.,2000.);	     pt_true_ecaliso_int->Sumw2(); 
+TH1D* pt_true_etajet_int = new TH1D("pt_true_etajet_int","pt_true eta jet cut cascade",40,0.,2000.);	     pt_true_etajet_int->Sumw2();  
+TH1D* pt_true_deltaphi_int = new TH1D("pt_true_deltaphi_int","pt_true deltaphi cut cascade",40,0.,2000.);    pt_true_deltaphi_int->Sumw2();
+TH1D* pt_true_2ndjet_int = new TH1D("pt_true_2ndjet_int","pt_true 2ndjet cut cascade",40,0.,2000.);	     pt_true_2ndjet_int->Sumw2();  
+TH1D* pt_true_deltaeta_int = new TH1D("pt_true_deltaeta_int","pt_true deltaeta cut cascade",40,0.,2000.);    pt_true_deltaeta_int->Sumw2();
+
+TH1D* eff_pt_true = new TH1D("eff_pt_true","eff_pt_true no cut",40,0.,2000.);
+TH1D* eff_pt_true_pt = new TH1D("eff_pt_true_pt","eff_pt_true pt cut",40,0.,2000.);
+TH1D* eff_pt_true_eta = new TH1D("eff_pt_true_eta","eff_pt_true eta cut",40,0.,2000.);
+TH1D* eff_pt_true_ntrk = new TH1D("eff_pt_true_ntrk","eff_pt_true ntrk cut ",40,0.,2000.);
+TH1D* eff_pt_true_ptiso = new TH1D("eff_pt_true_ptiso","eff_pt_true ptiso cut",40,0.,2000.);
+TH1D* eff_pt_true_emf = new TH1D("eff_pt_true_emf","eff_pt_true emf cut",40,0.,2000.);
+TH1D* eff_pt_true_smaj = new TH1D("eff_pt_true_smaj","eff_pt_true smaj cut",40,0.,2000.);
+TH1D* eff_pt_true_smin = new TH1D("eff_pt_true_smin","eff_pt_true smin cut",40,0.,2000.);
+TH1D* eff_pt_true_ecaliso = new TH1D("eff_pt_true_ecaliso","eff_pt_true ecaliso cut",40,0.,2000.);
+TH1D* eff_pt_true_etajet = new TH1D("eff_pt_true_etajet","eff_pt_true eta jet cut",40,0.,2000.);
+TH1D* eff_pt_true_deltaphi = new TH1D("eff_pt_true_deltaphi","eff_pt_true deltaphi cut",40,0.,2000.);
+TH1D* eff_pt_true_2ndjet = new TH1D("eff_pt_true_2ndjet","eff_pt_true 2ndjet cut",40,0.,2000.);
+TH1D* eff_pt_true_deltaeta = new TH1D("eff_pt_true_deltaeta","eff_pt_true deltaeta cut",40,0.,2000.);
+
+TH1D* eff_pt_true_eta_int = new TH1D("eff_pt_true_eta_int","eff_pt_true eta cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_ntrk_int = new TH1D("eff_pt_true_ntrk_int","eff_pt_true ntrk cut cascade ",40,0.,2000.);
+TH1D* eff_pt_true_ptiso_int = new TH1D("eff_pt_true_ptiso_int","eff_pt_true ptiso cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_emf_int = new TH1D("eff_pt_true_emf_int","eff_pt_true emf cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_smaj_int = new TH1D("eff_pt_true_smaj_int","eff_pt_true smaj cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_smin_int = new TH1D("eff_pt_true_smin_int","eff_pt_true smin cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_ecaliso_int = new TH1D("eff_pt_true_ecaliso_int","eff_pt_true ecaliso cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_etajet_int = new TH1D("eff_pt_true_etajet_int","eff_pt_true eta jet cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_deltaphi_int = new TH1D("eff_pt_true_deltaphi_int","eff_pt_true deltaphi cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_2ndjet_int = new TH1D("eff_pt_true_2ndjet_int","eff_pt_true 2ndjet cut cascade",40,0.,2000.);
+TH1D* eff_pt_true_deltaeta_int = new TH1D("eff_pt_true_deltaeta_int","eff_pt_true deltaeta cut cascade",40,0.,2000.);
+
+void sum(char* histo, bool issig = 1){
+
+  int nbins = 7;
+  if(!issig) nbins = 18;
+
+  for (int i=0; i<nbins; i++) {
+    
+    if(issig) signalfile[i]->cd();
+    else bkgfile[i]->cd();
+    for(int j=1; j<pt_true->GetNbinsX()+1; j++){
+      ((TH1D*)gROOT->Get(histo))->SetBinContent(j,((TH1D*)gROOT->Get(histo))->GetBinContent(j)+((TH1D*)gDirectory->Get(histo))->GetBinContent(j));
+      ((TH1D*)gROOT->Get(histo))->SetBinError(j,sqrt(pow(((TH1D*)gROOT->Get(histo))->GetBinError(j),2)+pow(((TH1D*)gDirectory->Get(histo))->GetBinError(j),2)));
+    }    
+  }
+
+}
+
+void eff(char* histo1, char* histo2, bool issig = 1){
+    
+  gROOT->cd();
+  char name[100];
+  double eff1(0), erreff1(0), eff2(0), erreff2(0), eff3(0), erreff3(0), eff4(0), erreff4(0) ;
+  double num1(0), den1(0), errden1(0), num2(0), den2(0), errden2(0), num3(0), den3(0), errden3(0), num4(0), den4(0), errden4(0);
+  sprintf(name,"%s%s","eff_",histo1);
+
+  for(int j=1; j<((TH1D*)gROOT->Get(histo2))->GetNbinsX()+1; j++){
+
+    double eff(0), erreff(0);
+    if(((TH1D*)gROOT->Get(histo2))->GetBinContent(j)>0 && ((TH1D*)gROOT->Get(histo1))->GetBinContent(j)>0){
+      eff = ((TH1D*)gROOT->Get(histo1))->GetBinContent(j) / ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      erreff = sqrt(eff*(1-eff)) * ((TH1D*)gROOT->Get(histo2))->GetBinError(j) / ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      ((TH1D*)gROOT->Get(name))->SetBinContent(j,eff);
+      ((TH1D*)gROOT->Get(name))->SetBinError(j,erreff);    
+    }else{
+      ((TH1D*)gROOT->Get(name))->SetBinContent(j,.001);
+      ((TH1D*)gROOT->Get(name))->SetBinError(j,0.001);          
+    }
+  }
+  
+  for(int j=1; j<((TH1D*)gROOT->Get(histo1))->GetNbinsX()+1; j++){
+    if(j<3) {
+      num1 += ((TH1D*)gROOT->Get(histo1))->GetBinContent(j);
+      den1 += ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      errden1 = sqrt(pow(errden1,2)+pow(((TH1D*)gDirectory->Get(histo2))->GetBinError(j),2));
+    }
+    if(j>2 && j<5) {
+      num2 += ((TH1D*)gROOT->Get(histo1))->GetBinContent(j);
+      den2 += ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      errden2 = sqrt(pow(errden2,2)+pow(((TH1D*)gDirectory->Get(histo2))->GetBinError(j),2));
+    }
+    if(j>4 && j<9) {
+      num3 += ((TH1D*)gROOT->Get(histo1))->GetBinContent(j);
+      den3 += ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      errden3 = sqrt(pow(errden3,2)+pow(((TH1D*)gDirectory->Get(histo2))->GetBinError(j),2));
+    }
+    if(j>8) {
+      num4 += ((TH1D*)gROOT->Get(histo1))->GetBinContent(j);
+      den4 += ((TH1D*)gROOT->Get(histo2))->GetBinContent(j);
+      errden4 = sqrt(pow(errden4,2)+pow(((TH1D*)gDirectory->Get(histo2))->GetBinError(j),2));
+    }
+  }
+  
+  eff1 = num1/den1;
+  erreff1 = sqrt(eff1*(1-eff1)) * errden1/den1 * 100;
+  eff2 = num2/den2;
+  erreff2 = sqrt(eff2*(1-eff2)) * errden2/den2 * 100;
+  eff3 = num3/den3;
+  erreff3 = sqrt(eff3*(1-eff3)) * errden3/den3 * 100;
+  eff4 = num4/den4;
+  erreff4 = sqrt(eff4*(1-eff4)) * errden4/den4 * 100;
+
+  eff1 *= 100; eff2 *= 100; eff3 *= 100; eff4 *= 100;
+  
+  char myline[1000];
+  if(erreff1>0.1)  sprintf(myline, "%s & $%2.1f \pm %2.1f$ & $%2.1f \pm %2.1f$ & $%2.1f \pm %2.1f$ & $%2.1f \pm %2.1f$", histo1, eff1, erreff1, eff2, erreff2, eff3, erreff3, eff4, erreff4);
+  if(erreff1>0.01 &&erreff1<0.1 )   sprintf(myline, "%s & $%2.2f \pm %2.2f$ & $%2.2f \pm %2.2f$ & $%2.2f \pm %2.2f$ & $%2.2f \pm %2.2f$", histo1, eff1, erreff1, eff2, erreff2, eff3, erreff3, eff4, erreff4);  
+  if(erreff1>0.001 &&erreff1<0.01 )   sprintf(myline, "%s & $%2.3f \pm %2.3f$ & $%2.3f \pm %2.3f$ & $%2.3f \pm %2.3f$ & $%2.3f \pm %2.3f$", histo1, eff1, erreff1, eff2, erreff2, eff3, erreff3, eff4, erreff4);  
+  if(erreff1<0.001 &&erreff1<0.001 )   sprintf(myline, "%s & $%2.4f \pm %2.4f$ & $%2.4f \pm %2.4f$ & $%2.4f \pm %2.4f$ & $%2.4f \pm %2.4f$", histo1, eff1, erreff1, eff2, erreff2, eff3, erreff3, eff4, erreff4);  
+  if(erreff1<0.0001 )   sprintf(myline, "%s & $%2.5f \pm %2.5f$ & $%2.5f \pm %2.5f$ & $%2.5f \pm %2.5f$ & $%2.5f \pm %2.5f$", histo1, eff1, erreff1, eff2, erreff2, eff3, erreff3, eff4, erreff4);  
+  cout << myline << endl;
+  
+  }
+
+void efficiencies(bool issig = 1){
 
   gROOT->SetStyle("Plain");
   
@@ -15,289 +157,285 @@ void efficiencies(){
   
   gROOT->ForceStyle();
   TCanvas *c0 = new TCanvas("c0","--c0--",472,0,800,800);
-  c0->SetLogy();
   gStyle->SetOptStat(0);
   gStyle->SetStatY(.9);
   gStyle->SetStatX(.9);
   
-  //background
+
+  using namespace std;
+
+
+  // PROCESS GAMMA+JET
+  // Set pT hat bin cross sections, needed for event weights
+  //signal["0_15"] = 1.6e6; // what's the xsect?
+  //signal["15_20"] = 2.5e5;// what's the xsect?
+  //signal["20_30"] = 
+  signal["30_50"] = 41140.;
+  signal["50_80"] = 7210.;
+  signal["80_120"] = 1307.;
+  signal["120_170"] = 276.;
+  signal["170_300"] = 87.1;
+  signal["300_500"] = 8.29;
+  signal["500_7000"] = 0.878;
   
-  double n_nocut, n_cut1, n_cut2, n_cut3, n_cut4, n_cut5, n_cut6, n_cut7, n_cutall ;
+  // PROCESS QCD
+  // Set pT hat bin cross sections, needed for event weights
+  map<string, double> qcd;
+  qcd["30_50"] = 163000000.;
+  qcd["50_80"]  =  21600000.;
+  qcd["80_120"] =   3080000.;
+  qcd["120_170"]  =    494000.;
+  qcd["170_230"]  =    101000.;
+  qcd["230_300"]  =     24500.;
+  qcd["300_380"]  =      6240.;
+  qcd["380_470"]  =      1780.;
+  qcd["470_600"]  =       683.;
+  qcd["600_800"]  =       204.;
+  qcd["800_1000"] =       35.1;
+  qcd["1000_1400"]=       10.9;
+  qcd["1400_1800"]=       1.06;
+  qcd["1800_2200"]=       0.145;
+  qcd["2200_2600"]=       0.0238;
+  qcd["2600_3000"]=       0.00429;
+  qcd["3000_3500"]=       0.000844;
+  qcd["3500_inf"] =       0.000108;
   
-//   TFile deltapt_nocut("bkg/pt_nocut.root");
-  TFile deltapt_cut1("bkg/pt_cut1.root");
-  temp->SetTitle("");
-  temp->SetXTitle("p_{T}(GeV)");
-  temp->SetYTitle("events/bin/fb^{-1}");
-  temp->SetTitleOffset(1.3,"Y");
-  temp->SetStats(1111);
-  temp->Rebin(4);
-  temp->SetMarkerSize(.8);
-  temp->SetMinimum(.5);
-  temp->SetAxisRange(28.,700.);
-  temp->Draw();
-  n_nocut = temp->Integral(2,25);
-
-//   TFile deltapt_cut1("bkg/pt_cut1.root");
-//   temp->SetMarkerSize(.8);
-//   temp->SetLineColor(kRed);
-//   temp->SetMarkerColor(kRed);
-//   temp->Rebin(4);
-//   temp->Draw("same");
-//   n_cut1 = temp->Integral(2,25);
-
-  //    TFile deltapt_cut2("bkg/pt_cut2.root");
-  //     temp->SetMarkerSize(.8);
-  //     temp->SetLineColor(kGreen);
-  //     temp->SetMarkerColor(kGreen);
-  //     temp->Rebin(4);
-  //     temp->Draw("same");
-  n_cut2 = temp->Integral(2,25);
-
-  TFile deltapt_cut3("bkg/pt_cut3.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kBlue);
-  temp->SetMarkerColor(kBlue);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut3 = temp->Integral(2,25);
-
-  TFile deltapt_cut4("bkg/pt_cut4.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kGreen);
-  temp->SetMarkerColor(kGreen);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut4 = temp->Integral(2,25);
-
-  TFile deltapt_cut5("bkg/pt_cut5.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kRed);
-  temp->SetMarkerColor(kRed);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut5 = temp->Integral(2,25);
-
-  TFile deltapt_cut6("bkg/pt_cut6.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(7);
-  temp->SetMarkerColor(7);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut6 = temp->Integral(2,25);
-
-  TFile deltapt_cut7("bkg/pt_cut7.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(39);
-  temp->SetMarkerColor(39);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut7 = temp->Integral(2,25);
-
-  TFile deltapt("bkg/pt_all.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(6);
-  temp->SetMarkerColor(6);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cutall = temp->Integral(2,25);
-  cout << temp->Integral(2,25) << "  "  << temp->Integral(50,80) << endl; 
-
+  int i=0;
+  for (map<string, double>::iterator it = signal.begin();
+       it != signal.end(); ++it) {
+    signalfile[i] = new TFile(Form("output_PhotonJets_eff/output_PhotonJets_%s.root", it->first));
+    cout << i << "   " << Form("output_PhotonJets_eff/output_PhotonJets_%s.root", it->first) << endl;
+    i++;
+  } // for signal
   
-  int totalnum_fb = 163000000+ 21600000+3080000+494000+101000+24500+6240+683;
-  cout << "Eff no cuts = " << n_nocut/totalnum_fb/1000 << endl;
-  //  cout << "Eff p_{T} cut = " << n_cut1/totalnum_fb/1000 << endl;
-  cout << "Eff +trk isol(p_{T}) = " << n_cut3/totalnum_fb/1000 << endl;
-  cout << "Eff +trk isol(Ntrk) = " << n_cut4/totalnum_fb/1000 << endl;
-  cout << "Eff +hcal iso = " << n_cut5/totalnum_fb/1000 << endl;
-  cout << "Eff +clus shape = " << n_cut6/totalnum_fb/1000 << endl;
-  cout << "Eff +Njet (>20GeV) = " << n_cut7/totalnum_fb/1000 << endl;
-  cout << "Eff +Delta phi " << n_cutall/totalnum_fb/1000 << endl;
+  i=0;
+  for (map<string, double>::iterator it = qcd.begin();
+       it != qcd.end(); ++it) {
+    bkgfile[i] = new TFile(Form("output_QCD_eff/output_QCD_%s.root", it->first));
+    cout << i << "   " << Form("output_QCD_eff/output_QCD_%s.root", it->first) << endl;
+    i++;
+  } // for signal
   
-  TH1D p1; TH1D p2; TH1D p3; TH1D p4; TH1D p5; TH1D p6; TH1D p7; TH1D p8;
-  p1.SetMarkerSize(.8);
-  //  p2.SetMarkerSize(.8); p2.SetMarkerColor(kRed);
-  p3.SetMarkerSize(.8); p3.SetMarkerColor(kBlue);
-  p4.SetMarkerSize(.8); p4.SetMarkerColor(kGreen);
-  p5.SetMarkerSize(.8); p5.SetMarkerColor(kRed);
-  p6.SetMarkerSize(.8); p6.SetMarkerColor(7);
-  p7.SetMarkerSize(.8); p7.SetMarkerColor(39);
-  p8.SetMarkerSize(.8); p8.SetMarkerColor(6);
-  TLegendEntry *legge;
+  gROOT->cd();
+  cout << "criterion (one-by-one efficiency) & $p_T<100GeV$  & $100GeV<p_T<200GeV$ & $200GeV<p_T<400GeV$ & $p_T>400GeV$" << endl;
+  cout << "hline" << endl;
+  sum("pt_true",issig);                
+  sum("pt_true_eta_int",issig);	 eff("pt_true_eta_int","pt_true",issig);     
+  sum("pt_true_ntrk",issig);		 eff("pt_true_ntrk","pt_true",issig);	      
+  sum("pt_true_ptiso",issig);		 eff("pt_true_ptiso","pt_true",issig);	      
+  sum("pt_true_emf",issig);		 eff("pt_true_emf","pt_true",issig);	      
+  sum("pt_true_smaj",issig);		 eff("pt_true_smaj","pt_true",issig);	      
+  sum("pt_true_smin",issig);		 eff("pt_true_smin","pt_true",issig);	      
+  sum("pt_true_ecaliso",issig);	 eff("pt_true_ecaliso","pt_true",issig);     
+  cout << "hline" << endl;
+  cout << "criterion (cascade efficiency) & $p_T<100GeV$  & $100GeV<p_T<200GeV$ & $200GeV<p_T<400GeV$ & $p_T>400GeV$" << endl;
+  cout << "hline" << endl;				                             
+  eff("pt_true_eta_int","pt_true");     
+  sum("pt_true_ntrk_int",issig);	 eff("pt_true_ntrk_int","pt_true",issig);    
+  sum("pt_true_ptiso_int",issig);	 eff("pt_true_ptiso_int","pt_true",issig);   
+  sum("pt_true_emf_int",issig);	 eff("pt_true_emf_int","pt_true",issig);     
+  sum("pt_true_smaj_int",issig);	 eff("pt_true_smaj_int","pt_true",issig);    
+  sum("pt_true_smin_int",issig);	 eff("pt_true_smin_int","pt_true",issig);    
+  sum("pt_true_ecaliso_int",issig);	 eff("pt_true_ecaliso_int","pt_true",issig); 
+  cout << "hline" << endl;
+
+  cout << "hline" << endl;
+  cout << "criterion (one-by-one efficiency) & $p_T<100GeV$  & $100GeV<p_T<200GeV$ & $200GeV<p_T<400GeV$ & $p_T>400GeV$" << endl;
+  cout << "hline" << endl;				                             
+  sum("pt_true_etajet",issig);	 eff("pt_true_etajet","pt_true_ecaliso_int",issig);      
+  sum("pt_true_deltaphi",issig);	 eff("pt_true_deltaphi","pt_true_ecaliso_int",issig);    
+  sum("pt_true_2ndjet",issig);	 eff("pt_true_2ndjet","pt_true_ecaliso_int",issig);      
+  sum("pt_true_deltaeta",issig);	 eff("pt_true_deltaeta","pt_true_ecaliso_int",issig);    
+
+  cout << "hline" << endl;
+  cout << "criterion (cascade efficiency) & $p_T<100GeV$  & $100GeV<p_T<200GeV$ & $200GeV<p_T<400GeV$ & $p_T>400GeV$" << endl;
+  cout << "hline" << endl;				                             
+  sum("pt_true_etajet_int",issig);	 eff("pt_true_etajet_int","pt_true_ecaliso_int",issig);  
+  sum("pt_true_deltaphi_int",issig);	 eff("pt_true_deltaphi_int","pt_true_ecaliso_int",issig);
+  sum("pt_true_2ndjet_int",issig);	 eff("pt_true_2ndjet_int","pt_true_ecaliso_int",issig);  
+  sum("pt_true_deltaeta_int",issig);	 eff("pt_true_deltaeta_int","pt_true_ecaliso_int",issig);
+
+
+
+  gROOT->cd();
+ 
+  double min(0.3), max(1.05);
+  c0->SetLogy(0);
+  char namex[100];
+  sprintf(namex,"true #gamma p_{T} [GeV]");
+  if(!issig){ min = 0.0000001;max = 1.05; c0->SetLogy(1);sprintf(namex,"true parton p_{T} [GeV]");}
+  //  if(!issig){ min = 0.0000001;max = .01; c0->SetLogy(0);sprintf(namex,"true parton p_{T} [GeV]");}
+  eff_pt_true_eta_int->SetAxisRange(0.,700.);
+  eff_pt_true_eta_int->SetMaximum(max);
+  eff_pt_true_eta_int->SetMinimum(min);
+  eff_pt_true_eta_int->SetTitle("");
+  eff_pt_true_eta_int->SetXTitle(namex);
+  eff_pt_true_eta_int->SetYTitle("efficiency");
+  eff_pt_true_eta_int->SetMarkerStyle(29);
+  eff_pt_true_eta_int->SetMarkerColor(kBlack);
+  eff_pt_true_eta_int->SetMarkerSize(1.5);
+  eff_pt_true_eta_int->Draw("pe");
+  eff_pt_true_ntrk_int->SetMarkerColor(kRed);
+  eff_pt_true_ntrk_int->SetMarkerStyle(20);
+  eff_pt_true_ntrk_int->SetMarkerSize(1.5);
+  eff_pt_true_ntrk_int->Draw("pesame");
+  eff_pt_true_ptiso_int->SetMarkerColor(kBlue);
+  eff_pt_true_ptiso_int->SetMarkerStyle(21);
+  eff_pt_true_ptiso_int->SetMarkerSize(1.5);
+  eff_pt_true_ptiso_int->Draw("pesame");
+  eff_pt_true_emf_int->SetMarkerColor(kGreen);
+  eff_pt_true_emf_int->SetMarkerStyle(22);
+  eff_pt_true_emf_int->SetMarkerSize(1.5);
+  eff_pt_true_emf_int->Draw("pesame");
+  eff_pt_true_smaj_int->SetMarkerColor(kMagenta);
+  eff_pt_true_smaj_int->SetMarkerStyle(23);
+  eff_pt_true_smaj_int->SetMarkerSize(1.5);
+  eff_pt_true_smaj_int->Draw("pesame");
+  eff_pt_true_smin_int->SetMarkerColor(kCyan);
+  eff_pt_true_smin_int->SetMarkerStyle(24);
+  eff_pt_true_smin_int->SetMarkerSize(1.5);
+  eff_pt_true_smin_int->Draw("pesame");
+  eff_pt_true_ecaliso_int->SetMarkerColor(kOrange);
+  eff_pt_true_ecaliso_int->SetMarkerStyle(25);
+  eff_pt_true_ecaliso_int->SetMarkerSize(1.5);
+  eff_pt_true_ecaliso_int->Draw("pesame");
   TLegend *leg;
-  leg = new TLegend(0.45,0.55,0.7,0.85);
-  leg->SetFillStyle(0); leg->SetBorderSize(0.); leg->SetTextSize(0.03);
+  leg = new TLegend(0.54,0.12,0.88,0.5);
+  //  leg->SetFillStyle(0); 
+  leg->SetBorderSize(2.); leg->SetTextSize(0.045);
   leg->SetFillColor(0);
-  legge = leg->AddEntry(&p1, "one #gamma in barrel, p_{T}>28GeV", "p");
-  //  legge = leg->AddEntry(&p2, "p_{T} cut", "p");
-  legge = leg->AddEntry(&p3, "+trk isol(p_{T})", "p");
-  legge = leg->AddEntry(&p4, "+trk isol(Ntrk)", "p");
-  legge = leg->AddEntry(&p5, "+hcal iso", "p");
-  legge = leg->AddEntry(&p6, "+clus shape", "p");
-  legge = leg->AddEntry(&p7, "+Njet (>20GeV)", "p");
-  legge = leg->AddEntry(&p8, "+#Delta(#phi)", "p");
-  leg->Draw("same");
+  legge = leg->AddEntry(eff_pt_true_eta_int, "#gamma reco", "p");
+  legge = leg->AddEntry(eff_pt_true_ntrk_int, "N_{trk} iso", "p");
+  legge = leg->AddEntry(eff_pt_true_ptiso_int, "#Sigma_{trk} p_{T} iso", "p");
+  legge = leg->AddEntry(eff_pt_true_emf_int, "HCAL/ECAL", "p");
+  legge = leg->AddEntry(eff_pt_true_smaj_int, "Major Axis", "p");
+  legge = leg->AddEntry(eff_pt_true_smin_int, "Minor Axis", "p");
+  legge = leg->AddEntry(eff_pt_true_ecaliso_int, "#Sigma E_{ECAL} iso", "p");
+  leg->Draw();
+  if(issig) c0->SaveAs("eff_cascade_id_signal.eps");
+  else  c0->SaveAs("eff_cascade_id_bkg.eps");
   
-  c0->SaveAs("bkg_cuts.eps");
-  c0->SaveAs("bkg_cuts.gif");
+  eff_pt_true_eta_int->SetAxisRange(0.,700.);
+  eff_pt_true_eta_int->SetMaximum(max);
+  eff_pt_true_eta_int->SetMinimum(min);
+  eff_pt_true_eta_int->SetTitle("");
+  eff_pt_true_eta_int->SetXTitle(namex);
+  eff_pt_true_eta_int->SetYTitle("efficiency");
+  eff_pt_true_eta_int->SetMarkerStyle(29);
+  eff_pt_true_eta_int->SetMarkerColor(kBlack);
+  eff_pt_true_eta_int->SetMarkerSize(1.5);
+  eff_pt_true_eta_int->Draw("pe");
+  eff_pt_true_ntrk->SetMarkerColor(kRed);
+  eff_pt_true_ntrk->SetMarkerStyle(20);
+  eff_pt_true_ntrk->SetMarkerSize(1.5);
+  eff_pt_true_ntrk->Draw("pesame");
+  eff_pt_true_ptiso->SetMarkerColor(kBlue);
+  eff_pt_true_ptiso->SetMarkerStyle(21);
+  eff_pt_true_ptiso->SetMarkerSize(1.5);
+  eff_pt_true_ptiso->Draw("pesame");
+  eff_pt_true_emf->SetMarkerColor(kGreen);
+  eff_pt_true_emf->SetMarkerStyle(22);
+  eff_pt_true_emf->SetMarkerSize(1.5);
+  eff_pt_true_emf->Draw("pesame");
+  eff_pt_true_smaj->SetMarkerColor(kMagenta);
+  eff_pt_true_smaj->SetMarkerStyle(23);
+  eff_pt_true_smaj->SetMarkerSize(1.5);
+  eff_pt_true_smaj->Draw("pesame");
+  eff_pt_true_smin->SetMarkerColor(kCyan);
+  eff_pt_true_smin->SetMarkerStyle(24);
+  eff_pt_true_smin->SetMarkerSize(1.5);
+  eff_pt_true_smin->Draw("pesame");
+  eff_pt_true_ecaliso->SetMarkerColor(kOrange);
+  eff_pt_true_ecaliso->SetMarkerStyle(25);
+  eff_pt_true_ecaliso->SetMarkerSize(1.5);
+  eff_pt_true_ecaliso->Draw("pesame");
+  leg->Draw();
+  if(issig) c0->SaveAs("eff_sing_id_signal.eps");
+  elsec0->SaveAs("eff_sing_id_bkg.eps");
 
-  //signal
-  
-//   TFile deltapt_sig_nocut("sig/pt_nocut.root");
-  TFile deltapt_sig_cut1("sig/pt_cut1.root");
-  temp->SetTitle("");
-  temp->SetXTitle("p_{T}(GeV)");
-  temp->SetYTitle("events/bin/fb^{-1}");
-  temp->SetTitleOffset(1.3,"Y");
-  temp->SetStats(1111);
-  temp->Rebin(4);
-  temp->SetMarkerSize(.8);
-  temp->SetMinimum(.5);
-  temp->SetAxisRange(28.,700.);
-  temp->Draw();
-  n_nocut = temp->Integral(2,25);
-
-//   TFile deltapt_sig_cut1("sig/pt_cut1.root");
-//   temp->SetMarkerSize(.8);
-//   temp->SetLineColor(kRed);
-//   temp->SetMarkerColor(kRed);
-//   temp->Rebin(4);
-//   temp->Draw("same");
-//   n_cut1 = temp->Integral(2,25);
-
-  //    TFile deltapt_sig_cut2("sig/pt_cut2.root");
-  //     temp->SetMarkerSize(.8);
-  //     temp->SetLineColor(kGreen);
-  //     temp->SetMarkerColor(kGreen);
-  //     temp->Rebin(4);
-  //     temp->Draw("same");
-  n_cut2 = temp->Integral(2,25);
-
-  TFile deltapt_sig_cut3("sig/pt_cut3.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kBlue);
-  temp->SetMarkerColor(kBlue);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut3 = temp->Integral(2,25);
-
-  TFile deltapt_sig_cut4("sig/pt_cut4.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kGreen);
-  temp->SetMarkerColor(kGreen);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut4 = temp->Integral(2,25);
-
-  TFile deltapt_sig_cut5("sig/pt_cut5.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(kRed);
-  temp->SetMarkerColor(kRed);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut5 = temp->Integral(2,25);
-
-  TFile deltapt_sig_cut6("sig/pt_cut6.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(7);
-  temp->SetMarkerColor(7);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut6 = temp->Integral(2,25);
-
-  TFile deltapt_sig_cut7("sig/pt_cut7.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(39);
-  temp->SetMarkerColor(39);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cut7 = temp->Integral(2,25);
-
-  TFile deltapt_sig("sig/pt_all.root");
-  temp->SetMarkerSize(.8);
-  temp->SetLineColor(6);
-  temp->SetMarkerColor(6);
-  temp->Rebin(4);
-  temp->Draw("same");
-  n_cutall = temp->Integral(2,25);
-
-  
-  totalnum_fb = 41140+7210+1307+276+87.1;
-  TFile truept("bestptphotgen_etapt.root");
-  int totalnumcuts_fb = temp->Integral(5,100);
-  cout << "Eff no cuts = " << n_nocut/totalnum_fb/1000 << "  " << n_nocut/totalnumcuts_fb <<  endl;
-  //  cout << "Eff p_{T} cut = " << n_cut1/totalnum_fb/1000 <<  "  " << n_cut1/totalnumcuts_fb << endl;
-  cout << "Eff +trk isol(p_{T}) = " << n_cut3/totalnum_fb/1000 <<  "  " << n_cut3/totalnumcuts_fb << endl;
-  cout << "Eff +trk isol(Ntrk) = " << n_cut4/totalnum_fb/1000 <<  "  " << n_cut4/totalnumcuts_fb << endl;
-  cout << "Eff +hcal iso = " << n_cut5/totalnum_fb/1000 <<  "  " << n_cut5/totalnumcuts_fb << endl;
-  cout << "Eff +clus shape = " << n_cut6/totalnum_fb/1000 <<  "  " << n_cut6/totalnumcuts_fb << endl;
-  cout << "Eff +Njet (>20GeV) = " << n_cut7/totalnum_fb/1000 <<  "  " <<  n_cut7/totalnumcuts_fb << endl;
-  cout << "Eff +Delta phi " << n_cutall/totalnum_fb/1000 <<  "  " <<  n_cutall/totalnumcuts_fb <<endl;
-
-  leg->Draw("same");
-  
-  c0->SaveAs("sig_cuts.eps");
-  c0->SaveAs("sig_cuts.gif");
-
-
-  deltapt_cut1.cd();  
-  temp->SetMarkerSize(1.3);
-  temp->SetAxisRange(28.,700.);
-  temp->Draw();
-
-  deltapt_sig_cut1.cd();  
-  temp->SetMarkerSize(1.3);
-  temp->SetMarkerStyle(24);
-  temp->SetLineColor(kRed);
-  temp->SetMarkerColor(kRed);  
-  temp->Draw("same");
-
-  p1.SetMarkerSize(1.3);
-  p5.SetMarkerStyle(24);
-  p5.SetMarkerSize(1.3);
-  TLegendEntry *legge3;
-  TLegendEntry *legge2;
+  max = .85;
+  if(!issig){c0->SetLogy(1);max = 1.05;}
+  eff_pt_true_etajet_int->SetAxisRange(0.,700.);
+  eff_pt_true_etajet_int->SetMaximum(max);
+  eff_pt_true_etajet_int->SetMinimum(0.00005);
+  eff_pt_true_etajet_int->SetTitle("");
+  eff_pt_true_etajet_int->SetXTitle(namex);
+  eff_pt_true_etajet_int->SetYTitle("efficiency");
+  eff_pt_true_etajet_int->SetMarkerStyle(29);
+  eff_pt_true_etajet_int->SetMarkerColor(kBlack);
+  eff_pt_true_etajet_int->SetMarkerSize(1.5);
+  eff_pt_true_etajet_int->Draw("pe");
+  eff_pt_true_deltaphi_int->SetMarkerColor(kRed);
+  eff_pt_true_deltaphi_int->SetMarkerStyle(20);
+  eff_pt_true_deltaphi_int->SetMarkerSize(1.5);
+  eff_pt_true_deltaphi_int->Draw("pesame");
+  eff_pt_true_2ndjet_int->SetMarkerColor(kBlue);
+  eff_pt_true_2ndjet_int->SetMarkerStyle(21);
+  eff_pt_true_2ndjet_int->SetMarkerSize(1.5);
+  eff_pt_true_2ndjet_int->Draw("pesame");
+  eff_pt_true_deltaeta_int->SetMarkerColor(kGreen);
+  eff_pt_true_deltaeta_int->SetMarkerStyle(22);
+  eff_pt_true_deltaeta_int->SetMarkerSize(1.5);
+  eff_pt_true_deltaeta_int->Draw("pesame");
   TLegend *leg2;
-  leg2 = new TLegend(0.45,0.65,0.7,0.85);
-  leg2->SetFillStyle(0); leg2->SetBorderSize(0.); leg2->SetTextSize(0.05);
+  if(issig) leg2 = new TLegend(0.56,0.14,0.76,0.37);
+//   else  leg2 = new TLegend(0.15,0.9,0.35,0.62);
+  else  leg2 = new TLegend(0.2,0.14,0.4,0.37);
+  //  leg2->SetFillStyle(10); 
+  leg2->SetBorderSize(2); leg2->SetTextSize(0.045);
   leg2->SetFillColor(0);
-  legge2 = leg2->AddEntry(&p1, "QCD background", "p");
-  legge2 = leg2->AddEntry(&p5, "#gamma + jet", "p");
-  leg2->Draw("same");
-  
-  c0->SaveAs("sigandbkg_nocut.eps");
-  c0->SaveAs("sigandbkg_nocut.gif");
+  legge2 = leg2->AddEntry(eff_pt_true_2ndjet_int, "2^{nd} jet", "p");
+  legge2 = leg2->AddEntry(eff_pt_true_deltaphi_int, "#Delta #phi", "p");
+  legge2 = leg2->AddEntry(eff_pt_true_deltaeta_int, "#Delta #eta", "p");
+  legge2 = leg2->AddEntry(eff_pt_true_etajet_int, "#eta jet", "p");
+  leg2->Draw();    
+  if(issig) c0->SaveAs("eff_cascade_event_signal.eps");
+  else c0->SaveAs("eff_cascade_event_bkg.eps");
 
-  deltapt.cd();  
-  temp->SetTitle("");
-  temp->SetXTitle("p_{T}(GeV)");
-  temp->SetYTitle("events/bin/fb^{-1}");
-  temp->SetTitleOffset(1.3,"Y");
-  temp->SetTitle("");
-  temp->SetMarkerSize(1.3);
-  temp->SetAxisRange(28.,700.);
-  temp->SetLineColor(1);
-  temp->SetMarkerColor(1);  
-  temp->Draw();
+  eff_pt_true_etajet->SetAxisRange(0.,700.);
+  eff_pt_true_etajet->SetMaximum(max);
+  eff_pt_true_etajet->SetMinimum(0.0005);
+  eff_pt_true_etajet->SetTitle("");
+  eff_pt_true_etajet->SetXTitle(namex);
+  eff_pt_true_etajet->SetYTitle("efficiency");
+  eff_pt_true_etajet->SetMarkerStyle(29);
+  eff_pt_true_etajet->SetMarkerColor(kBlack);
+  eff_pt_true_etajet->SetMarkerSize(1.5);
+  eff_pt_true_etajet->Draw("pe");
+  eff_pt_true_deltaphi->SetMarkerColor(kRed);
+  eff_pt_true_deltaphi->SetMarkerStyle(20);
+  eff_pt_true_deltaphi->SetMarkerSize(1.5);
+  eff_pt_true_deltaphi->Draw("pesame");
+  eff_pt_true_2ndjet->SetMarkerColor(kBlue);
+  eff_pt_true_2ndjet->SetMarkerStyle(21);
+  eff_pt_true_2ndjet->SetMarkerSize(1.5);
+  eff_pt_true_2ndjet->Draw("pesame");
+  eff_pt_true_deltaeta->SetMarkerColor(kGreen);
+  eff_pt_true_deltaeta->SetMarkerStyle(22);
+  eff_pt_true_deltaeta->SetMarkerSize(1.5);
+  eff_pt_true_deltaeta->Draw("pesame");
+  leg2->Draw();    
+  if(issig) c0->SaveAs("eff_sing_event_signal.eps");
+  else c0->SaveAs("eff_sing_event_bkg.eps"); 
 
-  deltapt_sig.cd();  
-  temp->SetMarkerSize(1.3);
-  temp->SetMarkerStyle(24);
-  temp->SetLineColor(kRed);
-  temp->SetMarkerColor(kRed);  
-  temp->Draw("same");
+  c0->SetLogy();
+  pt_true->SetMinimum(0.0001);
+  pt_true->Draw("");
+  pt_true_pt->Draw("histsame");
+  pt_true_eta_int->Draw("histsame");
+  pt_true_ntrk_int->Draw("histsame");
+  pt_true_ptiso_int->Draw("histsame");
+  pt_true_emf_int->Draw("histsame");
+  pt_true_smaj_int->Draw("histsame");
+  pt_true_smin_int->Draw("histsame");
+  pt_true_ecaliso_int->Draw("histsame");
+  pt_true_etajet_int->Draw("histsame");
+  pt_true_deltaphi_int->Draw("histsame");
+  pt_true_2ndjet_int->Draw("histsame");
+  pt_true_deltaeta_int->Draw("histsame");
 
-  TLegendEntry *legge3;
-  TLegend *leg3;
-  leg3 = new TLegend(0.45,0.65,0.7,0.85);
-  leg3->SetFillStyle(0); leg3->SetBorderSize(0.); leg3->SetTextSize(0.05);
-  leg3->SetFillColor(0);
-  legge3 = leg3->AddEntry(&p1, "QCD background", "p");
-  legge3 = leg3->AddEntry(&p5, "#gamma + jet", "p");
-  leg3->Draw("same");
-  
-  c0->SaveAs("sigandbkg_cut.eps");
-  c0->SaveAs("sigandbkg_cut.gif");
-
+  if(issig) c0->SaveAs("pt_sig_all.eps");
+  else c0->SaveAs("pt_bkg_all.eps");
 
 }
+

@@ -1,6 +1,7 @@
 #define gjettree_cxx
 #include "gjettree.h"
 #include <TF1.h>
+#include <TMath.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <iostream>
