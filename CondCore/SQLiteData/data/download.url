@@ -17,4 +17,13 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihoodTkIsolate
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/MVAJetTagsFakeConditions.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/BadChambers.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/CSCL1TPParameters.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/HCAL_CMSSW_3_0_0_pre3.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/l1config30XV2.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/DB.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels_30X.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels30X_cabling.db
+
+
+
+
 
