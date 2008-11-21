@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.7 2008/11/06 16:32:27 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.8 2008/11/07 15:31:57 chinhan Exp $
 //
 //
 
@@ -38,27 +38,12 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFEt = 0.;
   PFEta = 0.;
   PFPhi = 0.;
-  PFEGIsolEt =0.;
-  PFEGEtaRMS = 0.;
-  PFHighestClusterEt =0.; 
-  PFEGEtaRMS =0.; 
-  PFEGPhiRMS = 0.;
-  PFEGDrRMS = 0.;
-  NEGCandsInAnnulus =0; 
-  NHadCandsInAnnulus =0;
 
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauEt",&PFEt,"PFTauEt/F");
   _TTEffTree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
   _TTEffTree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
-  _TTEffTree->Branch("PFEGIsolEt",&PFEGIsolEt,"PFEGIsolEt/F");
-  _TTEffTree->Branch("PFNEGammaCandsAnnulus",&NEGCandsInAnnulus,"PFNEGammaCandsAnnulus/I");
-  _TTEffTree->Branch("PFNHadCandsAnnulus",&NHadCandsInAnnulus,"PFNHadCandsAnnulus/I");
-  _TTEffTree->Branch("PFHighestClusterEt",&PFHighestClusterEt,"PFHighestClusterEt/F");
-  _TTEffTree->Branch("PFEGammaClusterEtaRMS",&PFEGEtaRMS,"PFEGammaClusterEtaRMS/F");
-  _TTEffTree->Branch("PFEGammaClusterPhiRMS",&PFEGPhiRMS,"PFEGammaClusterPhiRMS/F");
-  _TTEffTree->Branch("PFEGammaClusterDeltaRRMS",&PFEGDrRMS,"PFEGammaClusterDeltaRRMS/F");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
@@ -111,10 +96,6 @@ TTEffAnalyzer::fill(const reco::PFTau& tau) {
 
   // Standsrd PF variables
   fill(tau.p4());
-  PFEGIsolEt = tau.isolationPFGammaCandsEtSum();
-  PFHighestClusterEt = tau.maximumHCALPFClusterEt();
-  NEGCandsInAnnulus = tau.isolationPFGammaCands().size();
-  NHadCandsInAnnulus = tau.isolationPFChargedHadrCands().size() + tau.isolationPFNeutrHadrCands().size();
 
   //get RMS Values of Candidates
   /*

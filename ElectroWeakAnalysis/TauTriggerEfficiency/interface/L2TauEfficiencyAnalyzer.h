@@ -17,6 +17,9 @@
 #include "DataFormats/TauReco/interface/L2TauInfoAssociation.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
+#include "DataFormats/TauReco/interface/CaloTau.h"
+#include "DataFormats/TauReco/interface/CaloTauFwd.h"
+
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include <string>
 #include <TTree.h>
@@ -25,36 +28,23 @@
 typedef math::XYZTLorentzVectorD   LV;
 typedef std::vector<LV>            LVColl;
 
-//Matching struct
-
-
-
-
-class L2TauEfficiencyAnalyzer : public edm::EDAnalyzer {
+class L2TauEfficiencyAnalyzer {
    public:
-      explicit L2TauEfficiencyAnalyzer();
-      explicit L2TauEfficiencyAnalyzer(const edm::ParameterSet&);
+      L2TauEfficiencyAnalyzer();
       ~L2TauEfficiencyAnalyzer();
+
       void Setup(const edm::ParameterSet&,TTree*);
       void fill(const edm::Event&,const reco::PFTau&);
+      void fill(const edm::Event&,const reco::CaloTau&);
+      void fill(const edm::Event&,const LV&);
 
    private:
-      virtual void beginJob(const edm::EventSetup&) ;
-
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      
-      virtual void endJob() ;
-
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
-      void matchAndFillL2(const reco::PFTau& ,const L2TauInfoAssociation&);//See if this Jet Is Matched
-
+      void matchAndFillL2(const LV& ,const L2TauInfoAssociation&);//See if this Jet Is Matched
 
       //Parameters to read
-      edm::InputTag  PFTaus_; //Path to analyze
       edm::InputTag  l2TauInfoAssoc_; //Path to analyze
       std::string rootFile_;          //Output File Name
-
-
       double matchDR_;
 
       //L2 Variables
@@ -63,12 +53,8 @@ class L2TauEfficiencyAnalyzer : public edm::EDAnalyzer {
  
       //PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
-      float PFEt,PFEta,PFPhi,PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
+      float PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
       int hasL2Jet;	
-
-      TFile *l2file;//File to store the histos...
-      TTree *l2tree;
-
 
 };
 
