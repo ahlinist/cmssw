@@ -68,7 +68,7 @@ edm::Event::getByLabel<GenericObject>(std::string const& label,
                                       const std::string& productInstanceName,
                                       Handle<GenericObject>& result) const
 {
-  BasicHandle bh = this->getByLabel_(TypeID(result.type().TypeInfo()), label, productInstanceName);
+  BasicHandle bh = this->getByLabel_(TypeID(result.type().TypeInfo()), label, productInstanceName, std::string());
   convert_handle(bh, result);  // throws on conversion error
   if(!bh.failedToGet()) {
     addToGotBranchIDs(*bh.provenance());
