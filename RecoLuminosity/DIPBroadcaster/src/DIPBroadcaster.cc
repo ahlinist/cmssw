@@ -4,22 +4,28 @@
     Date: June, 2008
 */
 #include "RecoLuminosity/DIPBroadcaster/interface/DIPBroadcaster.h"
+#include <iostream>
+#include <time.h>
+#include <sstream>
+
 
 using std::cout;
 using std::endl;
 
-DIPBroadcaster::DIPBroadcaster(const edm::ParameterSet& iConfig){
+DIPBroadcaster::DIPBroadcaster(int port, std::string ip, int reconnect, int aqMode){
   
-  //std::cout<<"In DIPBroadcaster constructor"<<std::endl;
 
-  listenPort  = iConfig.getUntrackedParameter<unsigned int>("SourcePort", 51001);
-  DistribIP   = iConfig.getUntrackedParameter<std::string>("HLXIP","localhost");
-  reconnTime  = iConfig.getUntrackedParameter<unsigned int>("ReconnectionTime",5);
-  AquireMode  = iConfig.getUntrackedParameter<unsigned int>("AquireMode",0);
+  listenPort= port;
+  DistribIP= ip;
+  reconnTime= reconnect;
+  AquireMode= aqMode;
+
+  //std::cout<<"In DIPBroadcaster constructor"<<std::endl;
 
   try {
     mProcessCounter = 0;
     mDIP = 0;
+    mBrowser = 0;
     mDIPPublisher = 0;
     mDIPPublisherLH = 0;
     mDIPData = 0;
@@ -28,31 +34,21 @@ DIPBroadcaster::DIPBroadcaster(const edm::ParameterSet& iConfig){
     mHistogramData = 0;
     mInstantLumi = 0;
     mInstantLumiError = 0;
+    mTimestamp = 0;
 
-    // Open the DIP interface
-    //std::cout<<"Creating DIP"<<std::endl;
+    time_t start_time = time(NULL);
+    struct tm * timeinfo = localtime(&start_time);
+    std::ostringstream tmp;
+    tmp<<asctime(timeinfo);
+    std::string dipFactoryName = "CMS/HF/Lumi/LumiPublisher_";
+    dipFactoryName += tmp.str();
 
-    mDIP = Dip::create("CMS/HF/Lumi/LumiPublisher");
+    mDIP = Dip::create(dipFactoryName.c_str());
+    
     if ( !mDIP ) {
       std::string tempString = "Unable to allocate DIP interface";
       std::cout<<tempString.c_str()<<std::endl;
     }
-
-    char itemName[]={"dip/CMS/HF/LumiData_JW"};
-    char itemNameLH[]={"dip/CMS/HF/LumiDataLH_JW"};
-
-    // Create the DIP publication interface
-    //cout << "Creating DIP publication " << itemName << endl;
-    
-    mDIPPublisher = mDIP->createDipPublication(itemName, &mDIPErrorHandler);
-    mDIPPublisherLH = mDIP->createDipPublication(itemNameLH, &mDIPErrorHandler);
-
-    if ( !mDIPPublisher || !mDIPPublisherLH ) {
-      std::string tempString = "Unable to create DIP publications";
-      std::cout<<tempString.c_str()<<std::endl;
-    }
-
-    //cout << "Created DIP publication " << itemName << endl;
 
     // Create the publication data structure                                                                                    
     mDIPData = mDIP->createDipData();
@@ -88,6 +84,7 @@ DIPBroadcaster::~DIPBroadcaster(){
   Dip::shutdown();
 
   mDIP = 0;
+  mBrowser = 0;
   mDIPData = 0;
   mDIPDataLH = 0;
   mDIPPublisher = 0;
@@ -96,38 +93,52 @@ DIPBroadcaster::~DIPBroadcaster(){
 }
 
 
-void DIPBroadcaster::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+void DIPBroadcaster::analyze(){
   //std::cout<<"entered analyze"<<std::endl;
-  using namespace edm;
+
+  try {
+
   int errorCode;
 
   do{
-    //std::cout<<"grabbing lumi section"<<std::endl;
-    errorCode = HT.ReceiveLumiSection(lumiSection);
-    //cout << "ReceiveLumiSection: " << errorCode << endl;
+    std::cout<<"grabbing lumi section"<<std::endl;
+
+    std::cout<<"Is connected= "<<HT.IsConnected()<<std::endl;
+
+    //try{
+      errorCode = HT.ReceiveLumiSection(lumiSection);
+      //}catch(...){std::cout<<"something bad"<<std::endl; errorCode= 0;}
+      cout << "ReceiveLumiSection: " << errorCode << endl;
     while(errorCode !=1){
       HT.Disconnect();
       cout << "Connecting to TCPDistributor" << endl;
       errorCode = HT.Connect();
       if(errorCode != 1){
 	cout << "*** Connection Failed: " << errorCode << " Attempting reconnect in " << reconnTime << " seconds." << endl;
-	sleep(reconnTime);
+	sleep(1);
       }
     }    
   }while(errorCode != 1);
 
   //std::cout<<"... in DIPDistributor::ProcessSection"<<std::endl;
+
   // Load the DIP header information                                                                                            
+  mCounter++;
   mRunNumber = lumiSection.hdr.runNumber;
   mSectionNumber = lumiSection.hdr.sectionNumber;
   mNumHLXs = lumiSection.hdr.numHLXs;
+  mTimestamp = lumiSection.hdr.timestamp;
+  mTimestamp_micros = lumiSection.hdr.timestamp_micros;
   mStartOrbit = lumiSection.hdr.startOrbit;
   mNumOrbits = lumiSection.hdr.numOrbits;
   mNumBunches = lumiSection.hdr.numBunches;
   mInstantLumi = lumiSection.lumiSummary.InstantLumi;
+  //TRandom* random = new TRandom(); 
+  //random->SetSeed(mCounter);
+  //mInstantLumi = random->PoissonD(100.0);
   mInstantLumiError = lumiSection.lumiSummary.InstantLumiErr;
+  //mInstantLumiError = random->PoissonD(10.0);
 
-  //std::cout<<"bout to insert data"<<std::endl;
   mDIPData->insert(mNumHLXs, "Number of HLXs");
   mDIPData->insert(mRunNumber, "Run number");
   mDIPData->insert(mSectionNumber, "Section number");
@@ -138,80 +149,109 @@ void DIPBroadcaster::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   mDIPData->insert(mInstantLumiError, "Inst Lumi Error");
 
   DipTimestamp time;
+
+  long long time_64 =  mTimestamp;
+  time_64 = time_64*1000 + mTimestamp_micros/1000; 
+  time = time_64; 
   mDIPPublisher->send(*mDIPData,time);
-  //std::cout<<"published data"<<std::endl;
 
-  //handle the Lumi vs BX Histo
-  //std::cout<<"mProcessCounter= "<<mProcessCounter<<std::endl;
-
-  if(mProcessCounter%10 == 0){
-    //std::cout<<"mProcessCounter divisible by 10... Lumi Histo Go!"<<std::endl;
-
+  //this next line controls the frequency of the lumi histo
+  if(mProcessCounter%1 == 0){
     for(int i=0; i< 3564; i++){
       mHistogramData[i]= 0;
     }
 
     for ( u32 i = 0 ; i != lumiSection.hdr.numBunches ; i++ ) {
       mHistogramData[i] = lumiSection.lumiDetail.LHCLumi[i];
+      //mHistogramData[i] = random->PoissonD(10.0);
       //handle spurious data in final BXs
-      if(i >=3528){ mHistogramData[i]= mHistogramData[3527];}
+      //if(i >=3528){ mHistogramData[i]= mHistogramData[3527];}
     }
     
-    //for( u32 i= 3500;i<3564; i++){
-      //std::cout<<"mHistogramData["<<i<<"]= "<<mHistogramData[i]<<std::endl;
-    //}
-
     mDIPDataLH->insert(mHistogramData, 3564, "Luminosity Histogram");
     // Publish the data
     mDIPPublisherLH->send(*mDIPDataLH,time);
-  }//done if counter divisible by 10
+  }
 
   mProcessCounter++;
   //std::cout<<"exiting analyze"<<std::endl;
 
+
+  }catch(...){std::cout<<"Exception thrown in DIPBroadcaster::analyze"<<std::endl;}
+
+  //sleep(1);
 }  //analyze done 
 
-void DIPBroadcaster::beginJob(const edm::EventSetup&){
+void DIPBroadcaster::beginJob(std::string pubName, std::string lhPubName){
  
-  //std::cout<<"In DIPBroadcaster::beginJob"<<std::endl;
+  try{
 
-  int errorCode;
+    //std::cout<<"In DIPBroadcaster::beginJob"<<std::endl;
+    
+    mDIPPublisher = mDIP->createDipPublication(pubName.c_str(), &mDIPErrorHandler);
+    mDIPPublisherLH = mDIP->createDipPublication(lhPubName.c_str(), &mDIPErrorHandler);
 
-  HT.SetIP(DistribIP);
-
-  errorCode = HT.SetPort(listenPort);
-  cout << "SetPort: " << errorCode << endl;
-  errorCode = HT.SetMode(AquireMode);
-  cout << "AquireMode: " << errorCode << endl;
-  
-   do{
-     // cout << "Connecting to TCPDistributor" << endl;
-    errorCode = HT.Connect();
-    if(errorCode != 1){
-      cout << "Error code= "<<errorCode<<" Attempting to reconnect in " << reconnTime << " seconds." << endl;
-      sleep(reconnTime);
+    if ( !mDIPPublisher || !mDIPPublisherLH ) {
+      std::string tempString = "Unable to create DIP publications";
+      std::cout<<tempString.c_str()<<std::endl;
     }
-   }while(errorCode != 1);
 
-   //std::cout<<"exiting beginjob"<<std::endl;
+    int errorCode;
+
+    HT.SetIP(DistribIP);
+
+    errorCode = HT.SetPort(listenPort);
+    cout << "SetPort: " << errorCode << endl;
+    errorCode = HT.SetMode(AquireMode);
+    cout << "AquireMode: " << errorCode << endl;
+  
+    do{
+      // cout << "Connecting to TCPDistributor" << endl;
+      errorCode = HT.Connect();
+      if(errorCode != 1){
+	cout << "Error code= "<<errorCode<<" Attempting to reconnect in " << reconnTime << " seconds." << endl;
+	sleep(reconnTime);
+      }
+    }while(errorCode != 1);
+
+    //std::cout<<"exiting beginjob"<<std::endl;
+
+  }catch(...){std::cout<<"Exception thrown in DIPBroadcaster::beginJob"<<std::endl;}
+}
+
+bool DIPBroadcaster::doesPublicationAlreadyExist(std::string pubName){
+
+  bool exists= true;  
+  
+  try{
+    mBrowser = mDIP->createDipBrowser();
+    const char** pubNames;
+    unsigned int numMatchingPubs= 0;
+    pubNames=  mBrowser->getPublications(pubName.c_str(), numMatchingPubs);
+    if(numMatchingPubs == 0){exists= false;}
+  }catch(...){std::cout<<"Exception thrown in DIPBroadcaster::doesPublicationAlreadyExist"<<std::endl;} 
+  return exists;
 }
 
 void DIPBroadcaster::endJob() {
-  //std::cout<<"In DIPBroadcaster::endJob"<<std::endl;
-  HT.Disconnect();
-  // Destroy all the interfaces
-  mDIP->destroyDipPublication(mDIPPublisher);
-  mDIP->destroyDipPublication(mDIPPublisherLH);
+  try{
+    //std::cout<<"In DIPBroadcaster::endJob"<<std::endl;
+    HT.Disconnect();
+    // Destroy all the interfaces
+    mDIP->destroyDipPublication(mDIPPublisher);
+    mDIP->destroyDipPublication(mDIPPublisherLH);
 
-// Shut down DIP                                                                                                        
-Dip::shutdown();
+    // Shut down DIP                                                                                                        
+    Dip::shutdown();
 
- mDIP = 0;
- mDIPData = 0;
- mDIPDataLH = 0;
- mDIPPublisher = 0;
- mDIPPublisherLH = 0;
- //std::cout<<"exiting DIPBroadcaster::endJob"<<std::endl;
+    mDIP = 0;
+    mBrowser = 0;
+    mDIPData = 0;
+    mDIPDataLH = 0;
+    mDIPPublisher = 0;
+    mDIPPublisherLH = 0;
+    //std::cout<<"exiting DIPBroadcaster::endJob"<<std::endl;
+  }catch(...){std::cout<<"Exception thrown in DIPBroadcaster::endJob"<<std::endl;} 
 }
 
-DEFINE_FWK_MODULE(DIPBroadcaster);
+

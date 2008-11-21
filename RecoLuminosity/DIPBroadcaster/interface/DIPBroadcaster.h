@@ -9,21 +9,12 @@
 #include <cstdlib>
 
 // user include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "FWCore/ServiceRegistry/interface/Service.h"
-
 #include "RecoLuminosity/HLXReadOut/CoreUtils/include/ICTypeDefs.hh"
-#include "RecoLuminosity/HLXReadOut/HLXCoreLibs/include/LumiStructures.hh"
+#include "RecoLuminosity/TCPReceiver/interface/LumiStructures.hh"
 #include "RecoLuminosity/TCPReceiver/interface/TCPReceiver.h"
 
 #include "RecoLuminosity/HLXReadOut/DIP/include/Dip.h"
+#include "RecoLuminosity/HLXReadOut/DIP/include/DipBrowser.h"
 #include "RecoLuminosity/HLXReadOut/DIP/include/DipPublicationErrorHandler.h"
 
 using namespace HCAL_HLX;
@@ -37,18 +28,20 @@ class ErrHandler:public DipPublicationErrorHandler{
 
 
 
-class DIPBroadcaster : public edm::EDAnalyzer {
+class DIPBroadcaster {
 
 public:
-  explicit DIPBroadcaster(const edm::ParameterSet&);
+  explicit DIPBroadcaster(int port, std::string ip, int reconnect, int aqMode);
   ~DIPBroadcaster();
 
-private:
-  virtual void beginJob(const edm::EventSetup&) ;
-  virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  virtual void endJob();
-  void resetHistos();
 
+   void beginJob(std::string pubName, std::string lhPubName);
+   void analyze();
+   void endJob();
+   void resetHistos();
+   bool doesPublicationAlreadyExist(std::string pubName); //true if already exists, flase otherwise
+
+private:
   TCPReceiver HT;      
   unsigned int mProcessCounter;
   unsigned int mErrorCount;
@@ -56,6 +49,8 @@ private:
   //DIP data
   DipFloat *mHistogramData;
   DipInt mNumHLXs;
+  int mTimestamp;
+  int mTimestamp_micros;
   DipInt mRunNumber;
   DipInt mSectionNumber;
   DipInt mStartOrbit;
@@ -76,13 +71,18 @@ private:
   ErrHandler  mDIPErrorHandler;
 
   // DIP interface                                                                                                    
-  DipFactory * mDIP;
+  DipFactory *mDIP;
+
+  DipBrowser *mBrowser;
+
 
   //connection params
   unsigned int AquireMode;
   unsigned int reconnTime;
   std::string DistribIP;
   int listenPort;
+
+  int mCounter;
 
   HCAL_HLX::LUMI_SECTION lumiSection;
 };
