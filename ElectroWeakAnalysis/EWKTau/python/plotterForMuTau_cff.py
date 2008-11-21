@@ -357,32 +357,32 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
       drawOptionSet = cms.string('eff_processes')
     ),  
     muonSelEff = cms.PSet(
-      plots = cms.PSet(
-        muonHLTmatchEff = cms.PSet(
+      plots = cms.VPSet(
+        cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonHLTmatchEff#PAR#'),
           process = cms.string('zMuMu10kEv'),
           drawOptionEntry = cms.string('eff_overlay01'),
           legendEntry = cms.string('HLT Matching')
         ),
-        muonTrkIsoEff = cms.PSet(
+        cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonTrkIsoEff#PAR#'),
           process = cms.string('zMuMu10kEv'),
           drawOptionEntry = cms.string('eff_overlay02'),
           legendEntry = cms.string('Track Iso.')
         ),
-        muonEcalIsoEff = cms.PSet(
+        cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonEcalIsoEff#PAR#'),
           process = cms.string('zMuMu10kEv'),
           drawOptionEntry = cms.string('eff_overlay03'),
           legendEntry = cms.string('ECAL Iso.')
         ),
-        muonHcalIsoEff = cms.PSet(
+        cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonHcalIsoEff#PAR#'),
           process = cms.string('zMuMu10kEv'),
           drawOptionEntry = cms.string('eff_overlay04'),
           legendEntry = cms.string('HCAL Iso.')
         ),
-        muonIdEff = cms.PSet(
+        cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonIdEff#PAR#'),
           process = cms.string('zMuMu10kEv'),
           drawOptionEntry = cms.string('eff_overlay05'),
@@ -390,6 +390,7 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
         )
       ),
       parameter = cms.vstring('Pt', 'Eta', 'Phi'),
+      title = cms.string('muonSelectionEfficiencies#PAR#'),
       xAxis = cms.string('muon#PAR#'),
       yAxis = cms.string('efficiency'),
       legend = cms.string('regular'),
