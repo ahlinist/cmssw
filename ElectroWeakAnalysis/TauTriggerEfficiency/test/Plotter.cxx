@@ -29,6 +29,8 @@ class Plotter {
 };
 
 void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
+  //  TCanvas *c = new TCanvas();
+  // c->cd();
 
 	char* varexp1 = varexp;
 
@@ -103,4 +105,20 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCu
     heff -> Draw("PAE");
 
         gPad->SaveAs(plotFileName);
+}
+
+void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
+
+	char* varexp1 = varexp;
+        tree->Draw(varexp1,selection);
+        TH1F *hnum = (TH1F*)gDirectory->Get("hnum");
+
+	hnum->SetStats(0);
+        hnum->SetTitle("");
+	hnum->Sumw2();
+
+	hnum -> GetXaxis()->SetTitle(plotXtitle);
+	hnum -> GetYaxis()->SetTitle(plotYtitle);
+	hnum -> Draw("HIST");
+	gPad->SaveAs(plotFileName);
 }
