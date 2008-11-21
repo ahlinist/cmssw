@@ -36,7 +36,7 @@ int main(){
   while(shouldContinue == true){
     try{
       dipBroad.analyze();
-      }catch(...){ std::cout<<"Exception: Analyze failed"<<std::endl;}
+      }catch(...){ std::cout<<"Exception: analyze failed"<<std::endl;}
   }
 
   dipBroad.endJob();

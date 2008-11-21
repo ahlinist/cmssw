@@ -101,14 +101,12 @@ void DIPBroadcaster::analyze(){
   int errorCode;
 
   do{
-    std::cout<<"grabbing lumi section"<<std::endl;
+    //std::cout<<"grabbing lumi section"<<std::endl;
 
-    std::cout<<"Is connected= "<<HT.IsConnected()<<std::endl;
+    //std::cout<<"Is connected= "<<HT.IsConnected()<<std::endl;
 
-    //try{
-      errorCode = HT.ReceiveLumiSection(lumiSection);
-      //}catch(...){std::cout<<"something bad"<<std::endl; errorCode= 0;}
-      cout << "ReceiveLumiSection: " << errorCode << endl;
+    errorCode = HT.ReceiveLumiSection(lumiSection);
+    //cout << "ReceiveLumiSection: " << errorCode << endl;
     while(errorCode !=1){
       HT.Disconnect();
       cout << "Connecting to TCPDistributor" << endl;
