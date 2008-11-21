@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.7 2008/11/11 11:58:17 chinhan Exp $
+// $Id: TTEffAnalyzer.h,v 1.8 2008/11/21 13:29:16 slehti Exp $
 //
 //
 
@@ -83,8 +83,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
-      float PFPt, PFEt,PFEta,PFPhi,PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
-      
+      float PFPt, PFEt,PFEta,PFPhi;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25TauEfficiencyAnalyzer _L25analyzer;
