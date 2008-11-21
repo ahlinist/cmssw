@@ -13,19 +13,19 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
-#from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Trigger_RECO_fromMike_sampleProducer import *
-from ElectroWeakAnalysis.TauTriggerEfficiency.RelValQCD_Pt_80_120_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO_IDEAL_V9_v2 import *
+from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Trigger_RECO_fromMike_HLT_sampleProducer import *
 process.source = source
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
-# 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
+## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
+#	"file:test.root"
 #    )
 #)
 
-process.PFTausSelected = cms.EDFilter("PFTauSelector",
-   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
-   discriminator = cms.InputTag("pfRecoTauDiscriminationHighEfficiency")
-)
+#process.PFTausSelected = cms.EDFilter("PFTauSelector",
+#   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+#   discriminator = cms.InputTag("pfRecoTauDiscriminationHighEfficiency")
+#)
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
@@ -44,7 +44,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 )
 
 process.runEDAna = cms.Path(
-    process.PFTausSelected*
+#    process.PFTausSelected*
     process.TTEffAnalysis
 ) 
 
