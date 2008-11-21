@@ -44,8 +44,8 @@ const std::string yScale_log = "log";
 const std::string defaultYscale = yScale_linear;
 const double defaultYaxisTitleOffset = 1.2;
 const double defaultYaxisTitleSize = 0.05;
-const double defaultYaxisMaximumScaleFactor_linear = 1.5;
-const double defaultYaxisMaximumScaleFactor_log = 1.e+2;
+const double defaultYaxisMaximumScaleFactor_linear = 1.6;
+const double defaultYaxisMaximumScaleFactor_log = 5.e+2;
 
 double DQMHistPlotter::cfgEntryAxisY::yAxisNorm_ = 0.;
 
@@ -516,6 +516,7 @@ void DQMHistPlotter::plotDefEntry::print() const
 
 DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name, 
 						 const plotDefList& plotDefList, 
+						 const std::string& title,
 						 const std::string& xAxis, const std::string& yAxis, 
 						 const std::string& legend, 
 						 const vstring& labels)
@@ -527,6 +528,8 @@ DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name,
     plots_.push_back(plotDefEntry(*it));
   }
   
+  title_ = title;
+
   xAxis_ = xAxis;
   yAxis_ = yAxis;
   
@@ -550,6 +553,7 @@ void DQMHistPlotter::cfgEntryDrawJob::print() const
     plot->print();
   }
   std::cout << "}" << std::endl;
+  std::cout << " title = " << title_ << std::endl;
   std::cout << " xAxis = " << xAxis_ << std::endl;
   std::cout << " yAxis = " << yAxis_ << std::endl;
   std::cout << " legend = " << legend_ << std::endl;
@@ -653,9 +657,9 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 
     std::map<int, plotDefList> plotDefMap;
 
-    edm::ParameterSet plots = drawJob.getParameter<edm::ParameterSet>("plots");
-    if ( plots.existsAs<vstring>("dqmMonitorElements") &&
-	 plots.existsAs<vstring>("processes") ) { // display same monitor element for different processes
+    if ( drawJob.existsAs<edm::ParameterSet>("plots") ) { // display same monitor element for different processes
+      edm::ParameterSet plots = drawJob.getParameter<edm::ParameterSet>("plots");
+
       vstring dqmMonitorElements = plots.getParameter<vstring>("dqmMonitorElements");
       vstring processes = plots.getParameter<vstring>("processes");
 
@@ -676,32 +680,33 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	}
       }
     } else { // display different monitor elements for same process
-      std::string process = ( plots.exists("process") ) ? plots.getParameter<std::string>("process") : "";
+      typedef std::vector<edm::ParameterSet> vParameterSet;
+      vParameterSet plots = drawJob.getParameter<vParameterSet>("plots");
+
+      std::string process = ( drawJob.exists("process") ) ? drawJob.getParameter<std::string>("process") : "";
       //std::cout << "process (globally set) = " << process << std::endl;
 
-      vstring plotEntryNames = plots.getParameterNamesForType<edm::ParameterSet>();
-      for ( vstring::const_iterator plotEntryName = plotEntryNames.begin(); 
-	    plotEntryName != plotEntryNames.end(); ++plotEntryName ) {
-	edm::ParameterSet plot = plots.getParameter<edm::ParameterSet>(*plotEntryName);
-	
+      for ( vParameterSet::const_iterator plot = plots.begin(); 
+	    plot != plots.end(); ++plot ) {
+
 	if ( process == "" ) {
-	  process = plot.getParameter<std::string>("process");
+	  process = plot->getParameter<std::string>("process");
 	  //std::cout << "process (locally set) = " << process << std::endl;
 	}
 
-	std::string drawOptionEntry = plot.getParameter<std::string>("drawOptionEntry");
+	std::string drawOptionEntry = plot->getParameter<std::string>("drawOptionEntry");
 	//std::cout << "drawOptionEntry = " << drawOptionEntry << std::endl;
 
 	std::string legendEntry = "", legendEntryErrorBand = "";
-	if ( plot.exists("legendEntry") ) {
-	  legendEntry = plot.getParameter<std::string>("legendEntry");
-	  legendEntryErrorBand = ( plot.exists("legendEntryErrorBand") ) ? 
-	    plot.getParameter<std::string>("legendEntryErrorBand") : std::string(legendEntry).append(" Uncertainty"); 
+	if ( plot->exists("legendEntry") ) {
+	  legendEntry = plot->getParameter<std::string>("legendEntry");
+	  legendEntryErrorBand = ( plot->exists("legendEntryErrorBand") ) ? 
+	    plot->getParameter<std::string>("legendEntryErrorBand") : std::string(legendEntry).append(" Uncertainty"); 
 	}
 	//std::cout << "legendEntry = " << legendEntry << std::endl;
 	//std::cout << "legendEntryErrorBand = " << legendEntryErrorBand << std::endl;
 
-	vstring dqmMonitorElements = plot.getParameter<vstring>("dqmMonitorElements");
+	vstring dqmMonitorElements = plot->getParameter<vstring>("dqmMonitorElements");
 	int index = 0;
 	for ( vstring::const_iterator dqmMonitorElement = dqmMonitorElements.begin();
 	      dqmMonitorElement != dqmMonitorElements.end(); ++dqmMonitorElement ) {
@@ -749,14 +754,16 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	  if ( !errorFlag ) {
 	    entry->dqmMonitorElement_ = dqmMonitorElement_expanded;
 	  } else {
-	    cfgError_ = true;
+	    cfgError_ = 1;
 	  }
 	} else {
 	  edm::LogError ("DQMHistPlotter::DQMHistPlotter") << " Undefined process = " << process << " !!";
-	  cfgError_ = true;
+	  cfgError_ = 1;
 	}
       }
     }
+
+    std::string title = ( drawJob.exists("title") ) ? drawJob.getParameter<std::string>("title") : ""; 
 
     std::string xAxis = drawJob.getParameter<std::string>("xAxis"); 
     std::string yAxis = drawJob.getParameter<std::string>("yAxis");
@@ -789,23 +796,25 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	      plot_expanded.push_back(plotDefEntry(dqmMonitorElement_expanded, entry->drawOptionEntry_, 
 						   entry->legendEntry_, entry->legendEntryErrorBand_, entry->process_, entry->doStack_));
 	    } else {
-	      cfgError_ = true;
+	      cfgError_ = 1;
 	    }
 	  }
 
           int errorFlag = 0;
+	  std::string title_expanded = replace_string(title, parKeyword, *parameter, 0, 1, errorFlag);
+	  //std::cout << " title_expanded = " << title_expanded << std::endl;
 	  std::string xAxis_expanded = replace_string(xAxis, parKeyword, *parameter, 0, 1, errorFlag);
 	  //std::cout << " xAxis_expanded = " << xAxis_expanded << std::endl;
 	  std::string yAxis_expanded = replace_string(yAxis, parKeyword, *parameter, 0, 1, errorFlag);
 	  //std::cout << " yAxis_expanded = " << yAxis_expanded << std::endl;
-	  if ( errorFlag ) cfgError_ = true;
+	  if ( errorFlag ) cfgError_ = 1;
 
 	  drawJobs_.push_back(cfgEntryDrawJob(std::string(*drawJobName).append(*parameter),
-					      plot_expanded, xAxis_expanded, yAxis_expanded, legend, labels));
+					      plot_expanded, title_expanded, xAxis_expanded, yAxis_expanded, legend, labels));
 	}
       } else {
 	drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, 
-					    plot->second, xAxis, yAxis, legend, labels));
+					    plot->second, title, xAxis, yAxis, legend, labels));
       }
     }
   }
@@ -944,7 +953,8 @@ void DQMHistPlotter::endJob()
       //std::cout << " dqmMonitorElementName_full = " << dqmMonitorElementName_full << std::endl;
       MonitorElement* dqmMonitorElement = dqmStore.get(dqmMonitorElementName_full);
 
-      TH1* histogram = ( dqmMonitorElement ) ? dqmMonitorElement->getTH1() : NULL;
+      TH1* histogram = ( dqmMonitorElement ) ? dynamic_cast<TH1*>(dqmMonitorElement->getTH1()->Clone()) : NULL;
+      histogramsToDelete.push_back(histogram);
 
       if ( histogram == NULL ) {
 	edm::LogError ("endJob") << " Failed to access dqmMonitorElement = " << dqmMonitorElementName_full <<","
@@ -963,6 +973,26 @@ void DQMHistPlotter::endJob()
       }
       
       if ( drawOptionConfig->drawOption_ == drawOption_eBand ) {
+//--- add histogram displaying central value as solid line
+	TH1* histogram_centralValue = dynamic_cast<TH1*>(histogram->Clone());
+	histogram_centralValue->SetName(std::string(histogram->GetName()).append("_centralValue").data());
+	cfgEntryDrawOption drawOptionConfig_centralValue(*drawOptionConfig);
+	drawOptionConfig_centralValue.fillColor_ = 0;
+	drawOptionConfig_centralValue.fillStyle_ = 0;
+	drawOptionConfig_centralValue.drawOption_ = "hist";
+	drawOptionConfig_centralValue.drawOptionLegend_ = "l";
+	std::string drawOptionName_centralValue = std::string(plot->drawOptionEntry_).append("_centralValue");
+//--- entries in std::map need to be unique,
+//    so need to check whether drawOptionEntry already exists...
+	if ( drawOptionEntries_.find(drawOptionName_centralValue) == drawOptionEntries_.end() ) 
+	  drawOptionEntries_.insert(std::pair<std::string, cfgEntryDrawOption>
+				    (drawOptionName_centralValue, cfgEntryDrawOption(drawOptionName_centralValue, drawOptionConfig_centralValue)));
+	plotDefEntry* plot_centralValue = new plotDefEntry(*plot);
+	plot_centralValue->drawOptionEntry_ = drawOptionName_centralValue;
+        allHistograms.push_back(histogram_drawOption_pair(histogram_centralValue, plot_centralValue));
+	histogramsToDelete.push_back(histogram_centralValue);
+	drawOptionsToDelete.push_back(plot_centralValue);
+
 //--- add histogram displaying uncertainty as shaded error band
 	TH1* histogram_ErrorBand = dynamic_cast<TH1*>(histogram->Clone());
 	histogram_ErrorBand->SetName(std::string(histogram->GetName()).append("_ErrorBand").data());
@@ -985,33 +1015,13 @@ void DQMHistPlotter::endJob()
         allHistograms.push_back(histogram_drawOption_pair(histogram_ErrorBand, plot_ErrorBand));
 	histogramsToDelete.push_back(histogram_ErrorBand);
 	drawOptionsToDelete.push_back(plot_ErrorBand);
-
-//--- add histogram displaying central value as solid line
-	TH1* histogram_centralValue = dynamic_cast<TH1*>(histogram->Clone());
-	histogram_centralValue->SetName(std::string(histogram->GetName()).append("_centralValue").data());
-	cfgEntryDrawOption drawOptionConfig_centralValue(*drawOptionConfig);
-	drawOptionConfig_centralValue.fillColor_ = 0;
-	drawOptionConfig_centralValue.fillStyle_ = 0;
-	drawOptionConfig_centralValue.drawOption_ = "hist";
-	drawOptionConfig_centralValue.drawOptionLegend_ = "l";
-	std::string drawOptionName_centralValue = std::string(plot->drawOptionEntry_).append("_centralValue");
-//--- entries in std::map need to be unique,
-//    so need to check whether drawOptionEntry already exists...
-	if ( drawOptionEntries_.find(drawOptionName_centralValue) == drawOptionEntries_.end() ) 
-	  drawOptionEntries_.insert(std::pair<std::string, cfgEntryDrawOption>
-				    (drawOptionName_centralValue, cfgEntryDrawOption(drawOptionName_centralValue, drawOptionConfig_centralValue)));
-	plotDefEntry* plot_centralValue = new plotDefEntry(*plot);
-	plot_centralValue->drawOptionEntry_ = drawOptionName_centralValue;
-        allHistograms.push_back(histogram_drawOption_pair(histogram_centralValue, plot_centralValue));
-	histogramsToDelete.push_back(histogram_centralValue);
-	drawOptionsToDelete.push_back(plot_centralValue);
       } else if ( plot->doStack_ ) {
 	TH1* stackedHistogram = dynamic_cast<TH1*>(histogram->Clone());
 	if ( stackedHistogram_sum ) stackedHistogram->Add(stackedHistogram_sum);
 	stackedHistogram_sum = stackedHistogram;
 	histogramsToDelete.push_back(stackedHistogram);
 	allHistograms.push_back(histogram_drawOption_pair(stackedHistogram, &(*plot)));
-      } else {
+      } else {	
 	allHistograms.push_back(histogram_drawOption_pair(histogram, &(*plot)));
       }
     }
@@ -1062,6 +1072,8 @@ void DQMHistPlotter::endJob()
 	return;
       }
       
+      if ( drawJob->title_ != "" ) histogram->SetTitle(drawJob->title_.data());
+
       xAxisConfig->applyTo(histogram);
       yAxisConfig->applyTo(histogram);
 
@@ -1172,6 +1184,7 @@ void DQMHistPlotter::endJob()
   }
 
 //--- close postscript file
+  canvas.Clear();
   std::cout << "done." << std::endl;
   if ( ps ) ps->Close();
   delete ps;
