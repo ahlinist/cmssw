@@ -14,8 +14,8 @@ class Plotter {
 		delete inFile;
 	};
 
-	void DrawHistogram(const char* varexp, const TCut& selection);
-	void DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
+	TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection);
+	TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
 	void SetXTitle(char* title) {plotXtitle   = title;}
         void SetYTitle(char* title) {plotYtitle   = title;}
 	void SetFileName(char* name){plotFileName = name;}
@@ -28,7 +28,7 @@ class Plotter {
 	char* plotFileName;
 };
 
-void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
+TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection){
   //  TCanvas *c = new TCanvas();
   // c->cd();
 
@@ -66,10 +66,11 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection){
     heff -> Draw("PAE");
 
         gPad->SaveAs(plotFileName);
+        return heff;
 }
 
 
-void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2){
+TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2){
 
 	char* varexp1 = varexp;
 
@@ -105,6 +106,7 @@ void Plotter::DrawHistogram(const char* varexp, const TCut& selection, const TCu
     heff -> Draw("PAE");
 
         gPad->SaveAs(plotFileName);
+        return heff;
 }
 
 void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
