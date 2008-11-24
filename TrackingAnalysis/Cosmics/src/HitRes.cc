@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.6 2008/08/07 19:57:22 kaulmer Exp $
+// $Id: HitRes.cc,v 1.7 2008/08/08 15:14:17 speer Exp $
 //
 //
 
@@ -47,6 +47,10 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include "DataFormats/DetId/interface/DetId.h" 
 #include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
+#include "DataFormats/SiStripDetId/interface/TIDDetId.h"
+#include "DataFormats/SiStripDetId/interface/TECDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
 #include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 #include "TrackingTools/PatternTools/interface/Trajectory.h"
@@ -70,6 +74,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include <vector>
 #include <utility>
 
+using namespace std;
 //
 // class decleration
 //
@@ -113,7 +118,10 @@ private:
   float hitPositions_[2];
   float hitErrors_[2];
   float simHitPositions_[2];
-  
+  vector<bool> acceptLayer;
+  int run,event;
+  string fileName;
+
 };
 
 //
@@ -136,10 +144,18 @@ HitRes::HitRes(const edm::ParameterSet& iConfig) :
     trajectoryTag_ = iConfig.getParameter<edm::InputTag>("trajectories");
     doSimHit_ = iConfig.getParameter<bool>("associateStrip");
 
-    overlapCounts_[0] = 0;  // #trajectories
-    overlapCounts_[1] = 0;  // #hits
-    overlapCounts_[2] = 0;  // #overlap hits
-  }
+  overlapCounts_[0] = 0;  // #trajectories
+  overlapCounts_[1] = 0;  // #hits
+  overlapCounts_[2] = 0;  // #overlap hits
+  acceptLayer.resize(7,false);
+  acceptLayer[PixelSubdetector::PixelBarrel] = iConfig.getParameter<bool>("usePXB") ;
+  acceptLayer[PixelSubdetector::PixelEndcap] = iConfig.getParameter<bool>("usePXF") ;
+  acceptLayer[StripSubdetector::TIB] = iConfig.getParameter<bool>("useTIB") ;
+  acceptLayer[StripSubdetector::TOB] = iConfig.getParameter<bool>("useTOB") ;
+  acceptLayer[StripSubdetector::TID] = iConfig.getParameter<bool>("useTID") ;
+  acceptLayer[StripSubdetector::TEC] = iConfig.getParameter<bool>("useTEC") ;
+  fileName = iConfig.getParameter<string>("fileName");
+}
 
 
 HitRes::~HitRes()
@@ -149,8 +165,9 @@ HitRes::~HitRes()
   // (e.g. close files, deallocate resources etc.)
   
   cout << "Counters =" ;
-  for ( int i=0; i<3; ++i )  cout << " " << overlapCounts_[i];
-  cout << endl;
+  cout << " Number of tracks: " << overlapCounts_[0]<<endl;
+  cout << " Number of valid hits: " << overlapCounts_[1]<<endl;
+  cout << " Number of overlaps: " << overlapCounts_[2]<<endl;
 }
 
 
@@ -200,7 +217,13 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //
   // loop over trajectories from refit
   //
-  if ( trajectoryCollection->size()!=1 )  return;
+//   if ( trajectoryCollection->size()!=1 )  {
+//     cout << "more than 1 track: "<<iEvent.run()<< "\t"<<iEvent.id()<<endl;
+//     return;
+//   }
+  run = iEvent.run();
+  event = iEvent.id().event();
+
   for ( TrajectoryCollection::const_iterator it=trajectoryCollection->begin();
 	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,*associator);
 
@@ -216,23 +239,14 @@ HitRes::analyze (const Trajectory& trajectory,
   typedef vector<Overlap> OverlapContainer;
   ++overlapCounts_[0];
 
-  const TrajectoryMeasurement* previousTM(0);
-  DetId previousId(0);
-  int previousLayer(-1);
   OverlapContainer overlapHits;
   //
   // quality cuts on trajectory
   // min. # hits / matched hits, barrel only
   //
+//   cout << "Testing "<<run<< "\t"<<event<<"\t"<<trajectory.foundHits()<< endl;
   vector<TrajectoryMeasurement> measurements(trajectory.measurements());
-  for ( vector<TrajectoryMeasurement>::const_iterator itm=measurements.begin();
-	itm!=measurements.end(); ++itm ) {
-    if ( !itm->recHit()->isValid() ) continue;
-    if ( itm->recHit()->geographicalId().subdetId()!=StripSubdetector::TIB &&
-	 itm->recHit()->geographicalId().subdetId()!=StripSubdetector::TOB )  return;
-  }
   if ( trajectory.foundHits()<6 )  return;
-  
   //
   // loop over measurements in the trajectory and calculate residuals
   //
@@ -242,9 +256,13 @@ HitRes::analyze (const Trajectory& trajectory,
     // skip "invalid" (i.e. missing) hits
     //
     ConstRecHitPointer hit = itm->recHit();
+    DetId id = hit->geographicalId();
+    int layer(layerFromId(id));
+    int subDet = id.subdetId();
+    edm::LogVerbatim("HitRes")  << "Check " <<subDet << ", layer = " << layer<<" stereo: "<< ((subDet > 2)?(SiStripDetId(id).stereo()):2);
+
     if ( !hit->isValid() ) {
-      previousTM = 0;
-      previousLayer = -1;
+      edm::LogVerbatim("HitRes")  << "Invalid";
       continue;
     }
     
@@ -253,38 +271,30 @@ HitRes::analyze (const Trajectory& trajectory,
     // two consecutive hits
     //
     ++overlapCounts_[1];
-    DetId id = hit->geographicalId();
-    int layer(layerFromId(id));
-    if ( previousTM!=0 ) {
-      if ( id.det()==previousId.det() &&
-	   id.subdetId()==previousId.subdetId() ) {
-	if ( layer!=-1 && layer==previousLayer ) {
-	  if ( layer !=1 && layer !=2 && layer!=5 && layer!=6 ) {
-	    overlapHits.push_back(std::make_pair(previousTM,&(*itm)));
- 	    edm::LogVerbatim("HitRes") << "adding overlap pair from layer = " << layer;
-	  } else {
-	    for (vector<TrajectoryMeasurement>::const_iterator itmCompare = itm-1; 
-		  itmCompare >= measurements.begin() &&  itmCompare > itm - 4; 
-		  --itmCompare){
-	      if (layer != layerFromId(itmCompare->recHit()->geographicalId())) break;
-	      if ( (id.rawId() & 0x3) == (itmCompare->recHit()->geographicalId().rawId() & 0x3) ) {
-		overlapHits.push_back(std::make_pair(&(*itmCompare),&(*itm)));
-		edm::LogVerbatim("HitRes") << "adding overlap pair from glued layer = " << layer;
-		break;
-	      }
-	    }
-	  }
+     if ( (layer!=-1 )&&(acceptLayer[subDet])) {
+     for (vector<TrajectoryMeasurement>::const_iterator itmCompare = itm-1; 
+	   itmCompare >= measurements.begin() &&  itmCompare > itm - 4; 
+	   --itmCompare){
+
+	DetId compareId = itmCompare->recHit()->geographicalId();
+
+	if ( subDet != compareId.subdetId() ||
+	    layer != layerFromId(compareId)) break;
+        if (!itmCompare->recHit()->isValid()) continue;
+	if ( (subDet<=2) || 
+	      (subDet > 2 && 
+	       SiStripDetId(id).stereo()==SiStripDetId(compareId).stereo() ))
+	{
+	  overlapHits.push_back(std::make_pair(&(*itmCompare),&(*itm)));
+	  edm::LogVerbatim("HitRes") << "adding pair "<< ((subDet > 2)?(SiStripDetId(id).stereo()) : 2)
+		  << " from layer = " << layer;
+// 	  cout << " \t"<<run<< "\t"<<event<<"\t";
+// cout << min(id.rawId(),compareId.rawId())<<"\t"<<max(id.rawId(),compareId.rawId())<<endl;
+	  break;
 	}
       }
+
     }
-    //cout << "End of add overlap loop: previousId2 module = " << (previousId2.rawId() & 0x3) 
-    //     << "  previousId2 = " << previousId2.rawId() << "  previousLayer2 = " << previousLayer2 
-    //     << "  previousId module = " << (previousId.rawId() & 0x3) << "  previousId = " << previousId.rawId() 
-    //     << "  previousLayer = " << previousLayer << "  currentId module = " << (id.rawId() & 0x3) 
-    //     << "  currentId = " << id.rawId() << "  currentLayer = " << layer << endl; 
-    previousTM = &(*itm);
-    previousId = id;
-    previousLayer = layer;
   }
   //
   // Loop over all overlap pairs. 
@@ -423,8 +433,9 @@ HitRes::analyze (const Trajectory& trajectory,
       DetId id = (*iol).first->recHit()->geographicalId();
       int layer(-1);
       layer = layerFromId(id);
-      edm::LogVerbatim("HitRes") << "layer = " << layer;
-      
+     int subDet = id.subdetId();
+      edm::LogVerbatim("HitRes") << "Subdet = " << subDet << " ; layer = " << layer;
+       
       if ( firstMatchedhit ) {
 	edm::LogVerbatim("HitRes") << "rechit2D";//if matchedHit take the rphi hit only
 	psimHits1 = associator.associateHit( *firstMatchedhit->monoHit() );
@@ -450,7 +461,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	}
 	//if glued layer, convert sim hit position to matchedhit surface
 	//layer index from 1-4 for TIB, 1-6 for TOB
-	if ( layer==1||layer==2 ) {
+	if ( subDet > 2 && !SiStripDetId(id).glued() ) {
 	  const GluedGeomDet* gluedDet = (const GluedGeomDet*)(*trackerGeometry_).idToDet((*firstRecHit).hit()->geographicalId());
 	  const StripGeomDetUnit* stripDet =(StripGeomDetUnit*) gluedDet->monoDet();
 	  GlobalPoint gp = stripDet->surface().toGlobal( (*closest_simhit).localPosition() );
@@ -490,7 +501,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	  }
 	}
 	//if glued layer, convert sim hit position to matchedhit surface
-	if ( layer==1||layer==2 ) {
+	if ( subDet > 2 && !SiStripDetId(id).glued() ) {
 	  const GluedGeomDet* gluedDet = (const GluedGeomDet*)(*trackerGeometry_).idToDet((*secondRecHit).hit()->geographicalId());
 	  const StripGeomDetUnit* stripDet =(StripGeomDetUnit*) gluedDet->monoDet();
 	  GlobalPoint gp = stripDet->surface().toGlobal( (*closest_simhit).localPosition() );
@@ -522,13 +533,29 @@ HitRes::analyze (const Trajectory& trajectory,
 int
 HitRes::layerFromId (const DetId& id) const
 {
-  if ( id.subdetId()==StripSubdetector::TIB ) {
+  if ( id.subdetId()==PixelSubdetector::PixelBarrel ) {
+    PXBDetId tobId(id);
+    return tobId.layer();
+  }
+  else if ( id.subdetId()==PixelSubdetector::PixelEndcap ) {
+    PXFDetId tobId(id);
+    return tobId.disk() + (3*(tobId.side()-1));
+  }
+  else if ( id.subdetId()==StripSubdetector::TIB ) {
     TIBDetId tibId(id);
     return tibId.layer();
   }
   else if ( id.subdetId()==StripSubdetector::TOB ) {
     TOBDetId tobId(id);
-    return 4 + tobId.layer();
+    return tobId.layer();
+  }
+  else if ( id.subdetId()==StripSubdetector::TEC ) {
+    TECDetId tobId(id);
+    return tobId.wheel() + (9*(tobId.side()-1));
+  }
+  else if ( id.subdetId()==StripSubdetector::TID ) {
+    TIDDetId tobId(id);
+    return tobId.wheel() + (3*(tobId.side()-1));
   }
   return -1;
 }
@@ -540,7 +567,7 @@ HitRes::beginJob(const edm::EventSetup&)
   //
   // root output
   //
-  rootFile_ = new TFile("HitRes.root","recreate");
+  rootFile_ = new TFile(TString (fileName),"recreate");
   rootTree_ = new TTree("Overlaps","Overlaps");
   rootTree_->Branch("hitCounts",hitCounts_,"found/s:lost/s:matched/s");
   rootTree_->Branch("chi2",chi2_,"chi2/F:ndf/F");
