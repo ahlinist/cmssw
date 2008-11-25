@@ -16,8 +16,25 @@
 
 #include <map>
 #include <vector>
+#include <exception>
 
 #define HISTOS2D
+
+const bool defaultDet[7] = {false,
+	false, // PXB
+	false, // PXF
+	true,	// TIB
+	false,	//TID
+	false,	// TOB
+	false	// TEC
+};
+ 
+const bool defaultStereo[2] = {
+	true, // rPhi
+	false // stereo
+};
+
+const bool allPlots = true;
 
 class OverlapHistos {
 public:
@@ -27,6 +44,15 @@ public:
 
   void setThreshold(unsigned int i)
 	{threshold = i;}
+
+  void setLayer(unsigned int l = 0)
+	{acceptLayer = l;}
+  void setDet(unsigned int det = 0)
+	{ for (int i=0;i<7;++i) acceptDet[i] = false;
+          acceptDet[det] = true;
+	};
+  void setType(bool rPhi = true, bool stereo = false) 
+    {acceptStereo[0] = rPhi; acceptStereo[1] = stereo;}
 
   bool cut() const;
 
@@ -75,59 +101,63 @@ private:
    TBranch        *b_hitEX;   //!
    TBranch        *b_simX;   //!
   //
-  typedef std::pair<unsigned int, unsigned int> DetIdPair;
+  typedef std::pair<unsigned int, unsigned int> iiPair;
+  typedef iiPair DetIdPair;
   //
   // id pairs and histograms after "cleaning"
   //
   std::vector<DetIdPair> detIdPairs_;
-  std::vector<TH1*> residualHistos_[2];
-  std::vector<TH1*> residualHistosPlusX_[2];
-  std::vector<TH1*> residualHistosMinusX_[2];
-  std::vector<TH1*> residualHistosPlusY_[2];
-  std::vector<TH1*> residualHistosMinusY_[2];
-  std::vector<TH1*> predErrHistos_[2];
-  std::vector<TH1*> predErrHistosFirst_[2];
-  std::vector<TH1*> predErrHistosSecond_[2];
-  std::vector<TH1*> hitErrHistos_[2];
-  std::vector<TH1*> hitErrHistosFirst_[2];
-  std::vector<TH1*> hitErrHistosSecond_[2];
-  std::vector<TH1*> simRecHistos_[2];
-  std::vector<TH1*> simTrkHistos_[2];
-  std::vector<TH1*> dxdzHistos_[2];
-  std::vector<TH1*> radHistos_[2];
-  std::vector<TH1*> phiHistos_[2];
-  std::vector<TH1*> zHistos_[2];
-  std::vector<TH1*> xHistos_[2];
-  std::vector<TH1*> yHistos_[2];
-  std::vector<TH1*> statHistos_[2];
-  std::vector<TH1*> doublePullHistos_[2];
-  std::vector<TH1*> hitPullHistos_[2];
-  std::vector<TH1*> predPullHistos_[2];
+  std::vector<TH1*> residualHistos_;
+  std::vector<TH1*> residualHistosPlusX_;
+  std::vector<TH1*> residualHistosMinusX_;
+  std::vector<TH1*> residualHistosPlusY_;
+  std::vector<TH1*> residualHistosMinusY_;
+  std::vector<TH1*> predErrHistos_;
+  std::vector<TH1*> predErrHistosFirst_;
+  std::vector<TH1*> predErrHistosSecond_;
+  std::vector<TH1*> hitErrHistos_;
+  std::vector<TH1*> hitErrHistosFirst_;
+  std::vector<TH1*> hitErrHistosSecond_;
+  std::vector<TH1*> simRecHistos_;
+  std::vector<TH1*> simTrkHistos_;
+  std::vector<TH1*> dxdzHistos_;
+  std::vector<TH1*> radHistos_;
+  std::vector<TH1*> phiHistos_;
+  std::vector<TH1*> zHistos_;
+  std::vector<TH1*> xHistos_;
+  std::vector<TH1*> yHistos_;
+  std::vector<TH1*> statHistos_;
+  std::vector<TH1*> doublePullHistos_;
+  std::vector<TH1*> hitPullHistos_;
+  std::vector<TH1*> predPullHistos_;
 #ifdef HISTOS2D
-  std::vector<TH2*> resVsAngleHistos_[2];
-  std::vector<TH2*> ddVsLocalXHistos_[2];
-  std::vector<TH2*> ddVsLocalYHistos_[2];
-  std::vector<TH2*> ddVsDxdzHistos_[2];
-  std::vector<TH2*> ddVsDydzHistos_[2];
-  std::vector<TH2*> localXVsLocalYHistos_[2];
-  std::vector<TH2*> dxdzVsDydzHistos_[2];
-  std::vector<TH2*> localXVsDxdzHistos_[2];
-  std::vector<TH2*> localYVsDxdzHistos_[2];
-  std::vector<TH2*> localXVsDydzHistos_[2];
-  std::vector<TH2*> localYVsDydzHistos_[2];
-  std::vector<TH2*> dPreddSimVsdHitdSimHistos_[2];
+  std::vector<TH2*> resVsAngleHistos_;
+  std::vector<TH2*> ddVsLocalXHistos_;
+  std::vector<TH2*> ddVsLocalYHistos_;
+  std::vector<TH2*> ddVsDxdzHistos_;
+  std::vector<TH2*> ddVsDydzHistos_;
+  std::vector<TH2*> localXVsLocalYHistos_;
+  std::vector<TH2*> dxdzVsDydzHistos_;
+  std::vector<TH2*> localXVsDxdzHistos_;
+  std::vector<TH2*> localYVsDxdzHistos_;
+  std::vector<TH2*> localXVsDydzHistos_;
+  std::vector<TH2*> localYVsDydzHistos_;
+  std::vector<TH2*> dPreddSimVsdHitdSimHistos_;
 
-  std::vector< vector<double> > localY_[2];
-  std::vector< vector<double> > localYE_[2];
-  std::vector< vector<double> > dxdz_[2];
-  std::vector< vector<double> > dxdzE_[2];
-  std::vector< vector<double> > dd_[2];
-  std::vector< vector<double> > ddE_[2];
+  std::vector< vector<double> > localY_;
+  std::vector< vector<double> > localYE_;
+  std::vector< vector<double> > dxdz_;
+  std::vector< vector<double> > dxdzE_;
+  std::vector< vector<double> > dd_;
+  std::vector< vector<double> > ddE_;
 
 #endif
 
   TString outputFile;
-  int threshold;
+  unsigned int threshold;
+  unsigned int acceptLayer;
+  bool acceptDet[7];
+  bool acceptStereo[2];
 
 
 
@@ -147,7 +177,7 @@ public:
   void showPair (unsigned int i) const;
   /** access to the histogram for the double-difference 
       (in the order / reverse order of the id pair) */
-  TH1* residualHistogram (unsigned int i, bool first = true) const;
+//   TH1* residualHistogram (unsigned int i, bool first = true) const;
 
   /// fill histogram bin with mean and rms
   void fillMean (int ibin, TH1* resultHisto, TH1* inputHisto,
@@ -182,6 +212,14 @@ OverlapHistos::OverlapHistos(TTree *tree)
    Init(tree);
    outputFile = "output_test.root";
    threshold = 20;
+
+// Some default values:
+   acceptLayer = 0;
+   for (int i=0;i<7;++i) acceptDet[i] = defaultDet[i];
+//   acceptDet[3] = true;	// TIB
+   acceptStereo[0] = defaultStereo[0]; // rPhi
+   acceptStereo[1] = defaultStereo[1]; // stereo
+  
 }
 
 OverlapHistos::~OverlapHistos()
