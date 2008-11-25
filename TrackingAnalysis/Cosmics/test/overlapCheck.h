@@ -20,6 +20,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include "overlapHelper.C"
 
 #define HISTOS2D
 
@@ -59,7 +60,7 @@ public :
   /**
    * Display all the distributions for an overlap
    */
-  void displayPair(int pairNbr, TString tag = "");
+  void displayPair(int pairNbr, AdjacentType type, TString tag = "");
   void drawFunc(int pairNbr, TH1* resultSlopeHisto, TH1* resultOffsetHisto);
   /**
    * Print the full module info for the pair
@@ -82,7 +83,7 @@ public :
   /**
    * Print the summary info for a specific overlap
    */
-  void printSummaryPair(int pairNbr);
+  void printSummaryPair(int pairNbr, AdjacentType type);
 
   /**
    * Print all the summary plots to a ps file
@@ -101,6 +102,8 @@ public :
    * from the different distributions
    */
   void computeSummaryPair(int pairNbr);
+
+  void overlapCheck::spotProblems();
 
   /**
    * Plot the positions of the overlap modules

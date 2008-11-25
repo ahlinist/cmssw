@@ -1,6 +1,5 @@
 #define overlapCheck_cxx
 #include "overlapCheck.h"
-#include "overlapHelper.C"
 #include <TH2.h>
 #include <TArrow.h>
 #include <TLatex.h>
@@ -72,15 +71,16 @@ void overlapCheck::getPairInfo(int pairNbr)
     cout << "No summary plots available\n";
     return;
   }
-  printSummaryPair(pairNbr);
-  displayPair(pairNbr);
+  AdjacentType type = checkAdjacentType(idPair.first, idPair.second);
+  printSummaryPair(pairNbr, type);
+  displayPair(pairNbr, type);
 
 }
 
   /**
    * Print the summary info for a specific overlap
    */
-void overlapCheck::printSummaryPair(int pairNbr)
+void overlapCheck::printSummaryPair(int pairNbr, AdjacentType type)
 {
   cout << "Statistics 	      : "<< statHisto->GetBinContent(pairNbr+1) << endl;
   cout << "Average R / Phi / z :"<< radHisto->GetBinContent(pairNbr+1)
@@ -109,11 +109,13 @@ void overlapCheck::printSummaryPair(int pairNbr)
   cout << "predPulls 	      : "<< predPulls->GetBinContent(pairNbr+1) << endl;
 
 #ifdef HISTOS2D
-  cout << "DD vs. Local-Y slope 	      : "<< ddVsLocalYSlope->GetBinContent(pairNbr+1) << endl;
-  if (ddVsDxdzSlope!=0) {
   cout << "DD vs. Local-X slope 	      : "<< ddVsLocalXSlope->GetBinContent(pairNbr+1) << endl;
-    cout << "DD vs. Local-dX/dZ slope 	      : "<< ddVsDxdzSlope->GetBinContent(pairNbr+1) << endl;
-    cout << "DD vs. Local-dY/dZ slope 	      : "<< ddVsDydzSlope->GetBinContent(pairNbr+1) << endl;
+  cout << "DD vs. Local-dY/dZ slope 	      : "<< ddVsDydzSlope->GetBinContent(pairNbr+1) << endl;
+
+  if (type == parallelToStrips) {
+    cout << "Overlap parallel to strips: DD vs. Local-Y slope : "<< ddVsLocalYSlope->GetBinContent(pairNbr+1) << endl;
+  } else {
+    cout << "Overlap perpendicular to strips: DD vs. Local-dX/dZ slope 	      : "<< ddVsDxdzSlope->GetBinContent(pairNbr+1) << endl;
   }
 #endif
 }
@@ -138,16 +140,16 @@ void overlapCheck::displaySummary()
     s3 = new TCanvas("ps","Summary Pulls", 900, 600);
     s4 = new TCanvas("gps","Summary Global Positions", 900, 600);
     s5 = new TCanvas("lps","Summary Local positions", 900, 600);
-  s1->Divide(2,2);
+  s1->Divide(1,2);
   s2->Divide(2,2);
   s3->Divide(2,2);
   s4->Divide(2,2);
   s5->Divide(2,2);
   } 
   s1->cd(1); meanDiffs->Draw("hist p");meanDiffs->Draw("same");
-  s1->cd(2); meanDiffsPlus->Draw();
-  s1->cd(3); meanDiffsMinus->Draw();
-  s1->cd(4); sigmaDiffs->Draw();("hist p");//sigmaDiffs->Draw("same");
+//   s1->cd(2); meanDiffsPlus->Draw();
+//   s1->cd(3); meanDiffsMinus->Draw();
+  s1->cd(2); sigmaDiffs->Draw("hist p");//sigmaDiffs->Draw("same");
 
   s2->cd(1); predErrMeans->Draw();
   s2->cd(2); predErrMeansFirst->Draw();
@@ -159,7 +161,15 @@ void overlapCheck::displaySummary()
   s3->cd(3); hitPulls->Draw();
   s3->cd(4); predPulls->Draw();
 
-  s4->cd(1); layerHisto->Draw();
+  s4->cd(1); layerHisto->Draw("p");
+  s4->Update();
+   //scale hint1 to the pad coordinates
+   Float_t rightmax = 1.1*stereoHisto->GetMaximum();
+   Float_t scale = s4->cd(1)->GetUymax()/rightmax;
+   cout << s4->cd(1)->GetUymax()<<endl;
+   stereoHisto->Scale(scale);
+  stereoHisto->SetMarkerColor(2);
+  stereoHisto->Draw("same p");
   s4->cd(2); radHisto->Draw();
   s4->cd(3); phiHisto->Draw();
   s4->cd(4); zHisto->Draw();
@@ -205,10 +215,45 @@ void overlapCheck::printSummaryToFile(TString name)
   s5->Print(name+".ps]");
 }
 
+void overlapCheck::spotProblems()
+{
+  if (! summaryOK) {
+    cout << "No summary plots available\n";
+    return;
+  }
+
+  Long64_t nbytes = 0, nb = 0;
+  int totEntries = fChain->GetEntriesFast();
+  bool prb;
+
+  for (Long64_t jentry=0; jentry<totEntries;jentry++) {
+    Long64_t ientry = LoadTree(jentry);
+    if (ientry < 0) break;
+    nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+    DetIdPair idPair = getPair(jentry);
+    if (idPair.first==0) return;
+    prb=false;
+    
+    prb=false;
+    if ((meanDiffs->GetBinError(jentry+1)==0.)&&((meanDiffs->GetBinError(jentry+1)==0.))){
+      cout << "DD info not filled, maybe an under/overflow problem\n";
+      prb=true;
+    }
+
+    if (prb) {
+      cout << "Pair number: "<< jentry<<" ( "<<jentry<<" ) ";
+      idPrint(idPair); cout<<endl<<endl;
+    }
+
+  }
+  
+}
+
   /**
    * Display all the distributions for an overlap
    */
-void overlapCheck::displayPair(int pairNbr, TString tag)
+void overlapCheck::displayPair(int pairNbr, AdjacentType type, TString tag)
 {
   if (canvasUpdated) {
 //     delete c1; delete c2; //delete c3; 
@@ -217,8 +262,8 @@ void overlapCheck::displayPair(int pairNbr, TString tag)
 //     delete c5; delete c6;
 // #endif
   } else {
-  c1 = new TCanvas("DD"+tag,"Double differences"+tag, 900, 600);
-  c1->Divide(3,2);
+  c1 = new TCanvas("DD"+tag,"Double differences"+tag, 600, 600);
+  c1->Divide(1,1);
   c2 = new TCanvas("Err"+tag,"Uncertainties"+tag, 900, 600);
   c2->Divide(3,2);
 //   c3 = new TCanvas("Pulls"+tag,"Pulls and Local Positions"+tag, 900, 600);
@@ -228,16 +273,19 @@ void overlapCheck::displayPair(int pairNbr, TString tag)
 #ifdef HISTOS2D
   c5 = new TCanvas("DD2D"+tag,"2D Double differences"+tag, 600, 600);
   c5->Divide(2,2);
-  c6 = new TCanvas("LPos2D"+tag,"2D Local Positions"+tag, 900, 600);
-  c6->Divide(3,2);
+  if (localXVsLocalYHistos!=0) {
+    c6 = new TCanvas("LPos2D"+tag,"2D Local Positions"+tag, 900, 600);
+    c6->Divide(3,2);
+  }
 #endif
   }
 
   c1->cd(1); resHistos->Draw();
-  c1->cd(2); resHistosPlusY->Draw();
-  c1->cd(3); resHistosMinusY->Draw();
-  c1->cd(4); resHistosPlusX->Draw();
-  c1->cd(5); resHistosMinusX->Draw();
+
+//   c1->cd(2); resHistosPlusY->Draw();
+//   c1->cd(3); resHistosMinusY->Draw();
+//   c1->cd(4); resHistosPlusX->Draw();
+//   c1->cd(5); resHistosMinusX->Draw();
 
   c2->cd(1); predErrHistos->Draw();
   c2->cd(2); predErrHistosFirst->Draw();
@@ -260,20 +308,23 @@ void overlapCheck::displayPair(int pairNbr, TString tag)
 #ifdef HISTOS2D
   c5->cd(1); ddVsLocalXHistos->Draw();
   drawFunc(pairNbr, ddVsLocalXSlope, ddVsLocalXOffset);
+
   c5->cd(2); ddVsLocalYHistos->Draw();
-  drawFunc(pairNbr, ddVsLocalYSlope, ddVsLocalYOffset);
+  if (type == parallelToStrips) drawFunc(pairNbr, ddVsLocalYSlope, ddVsLocalYOffset);
   c5->cd(3); ddVsDxdzHistos->Draw();
-  drawFunc(pairNbr, ddVsDxdzSlope, ddVsDxdzOffset);
+  if (type == perpendicularToStrips) drawFunc(pairNbr, ddVsDxdzSlope, ddVsDxdzOffset);
 
   c5->cd(4); ddVsDydzHistos->Draw();
   drawFunc(pairNbr, ddVsDydzSlope, ddVsDydzOffset);
 
-  c6->cd(1); localXVsLocalYHistos->Draw();
-  c6->cd(2); dxdzVsDydzHistos->Draw();
-  c6->cd(3); localXVsDxdzHistos->Draw();
-  c6->cd(4); localYVsDxdzHistos->Draw();
-  c6->cd(5); localXVsDydzHistos->Draw();
-  c6->cd(6); localYVsDydzHistos->Draw();
+  if (localXVsLocalYHistos!=0) {
+    c6->cd(1); localXVsLocalYHistos->Draw();
+    c6->cd(2); dxdzVsDydzHistos->Draw();
+    c6->cd(3); localXVsDxdzHistos->Draw();
+    c6->cd(4); localYVsDxdzHistos->Draw();
+    c6->cd(5); localXVsDydzHistos->Draw();
+    c6->cd(6); localYVsDydzHistos->Draw();
+  }
 #endif
   canvasUpdated = true;
 }
@@ -284,7 +335,7 @@ void overlapCheck::drawFunc(int pairNbr, TH1* resultSlopeHisto, TH1* resultOffse
   f1->SetParameter(1, resultSlopeHisto->GetBinContent(pairNbr+1));
   f1->SetParameter(0, resultOffsetHisto->GetBinContent(pairNbr+1));
   f1->Draw("same");
-  cout <<resultSlopeHisto->GetBinContent(pairNbr+1) <<" "<<resultOffsetHisto->GetBinContent(pairNbr+1)<<endl;
+//   cout <<resultSlopeHisto->GetBinContent(pairNbr+1) <<" "<<resultOffsetHisto->GetBinContent(pairNbr+1)<<endl;
 }
 
   /**
@@ -305,8 +356,8 @@ void overlapCheck::computeSummaryPair(int i)
     TH1* predErrHisto = predErrHistos;
     TH1* predErrHistoFirst = predErrHistosFirst;
     TH1* predErrHistoSecond = predErrHistosSecond;
-    TH1* simRecHisto = simRecHistos;
-    TH1* simTrkHisto = simTrkHistos;
+//     TH1* simRecHisto = simRecHistos;
+//     TH1* simTrkHisto = simTrkHistos;
     TH1* hitErrHisto = hitErrHistos;
     TH1* dxdzHisto = dxdzHistos;
   TH1* posHisto[3];
@@ -406,8 +457,8 @@ void overlapCheck::computeSummaryPair(int i)
       //predicted error for each overlap module individually
       fillMean(i+1,predErrMeansFirst,predErrHistoFirst,10000.);
       fillMean(i+1,predErrMeansSecond,predErrHistoSecond,10000.);
-      fillWidth(i+1,simRec,simRecHisto,10000);
-      fillWidth(i+1,simTrk,simTrkHisto,10000);
+//       fillWidth(i+1,simRec,simRecHisto,10000);
+//       fillWidth(i+1,simTrk,simTrkHisto,10000);
       // hit error
       fillMean(i+1,hitErrMeans,hitErrHisto,10000.);
       // local dxdz
@@ -600,7 +651,7 @@ void overlapCheck::scan()
     cout << "No summary plots available\n";
     return;
   }
-  rzScan = new TH2F("rzScan", "rzScan", 400, -200, 200., 200, 0., 120.);
+  rzScan = new TH2F("rzScan", "rzScan", 400, -100, 100., 200, 0., 120.);
   xyScan = new TH2F("xyScan", "xyScan", 200, -120., 120., 200, -120., 120.);
   rzScan->GetXaxis()->SetTitle("z [cm]"); rzScan->GetYaxis()->SetTitle("r [cm]");
   xyScan->GetXaxis()->SetTitle("x [cm]"); xyScan->GetYaxis()->SetTitle("y [cm]");
@@ -625,87 +676,87 @@ void overlapCheck::loadHistosPair(int pairNbr)
 {
  // Load distributions:
   char hn[32];
-  const char charAB[2] = { 'A', 'B' };
 
 //   TDirectory* curDir = gDirectory;
 
   baseDir->cd();
   TH1* resHistosV[2];
   gFile->cd("ResHistos");
-  for ( int j=0; j<2; ++j ) {
-    sprintf(hn,"rh%c%3.3d",charAB[j],pairNbr);
-    resHistosV[j] = (TH1*) gDirectory->Get(hn);
-  }
-
-  int j = resHistosV[0]->GetEntries()>resHistosV[1]->GetEntries() ? 0 : 1;
-  const char cc = charAB[j];
-
-    sprintf(hn,"rh%c%3.3d",cc,pairNbr);
+  cout <<"a\n";
+    sprintf(hn,"rh%4.4d",pairNbr);
     resHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"rplusXh%c%3.3d",cc,pairNbr);
+    sprintf(hn,"rplusXh%4.4d",pairNbr);
     resHistosPlusX = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"rminusXh%c%3.3d",cc,pairNbr);
+    sprintf(hn,"rminusXh%4.4d",pairNbr);
     resHistosMinusX = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"rplusYh%c%3.3d",cc,pairNbr);
+    cout << hn<<" "<<resHistosMinusX<<endl;
+    sprintf(hn,"rplusYh%4.4d",pairNbr);
     resHistosPlusY = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"rminusYh%c%3.3d",cc,pairNbr);
+    sprintf(hn,"rminusYh%4.4d",pairNbr);
     resHistosMinusY = (TH1*) gDirectory->Get(hn);
+    cout << hn<<" "<<resHistosMinusY<<endl;
 
     gFile->cd();
     gFile->cd("PredHistos");
-    sprintf(hn,"pSig2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"pSig%4.4d",pairNbr);
     predErrHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"pSigFirst2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"pSigFirst%4.4d",pairNbr);
     predErrHistosFirst = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"pSigSecond2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"pSigSecond%4.4d",pairNbr);
     predErrHistosSecond = (TH1*) gDirectory->Get(hn);
 
     gFile->cd();
     gFile->cd("HitHistos");
-    sprintf(hn,"hSig2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"hSig%4.4d",pairNbr);
     hitErrHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"hSigFirst2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"hSigFirst%4.4d",pairNbr);
     hitErrHistosFirst = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"hSigSecond2%c%3.3d",cc,pairNbr);
+    sprintf(hn,"hSigSecond%4.4d",pairNbr);
     hitErrHistosSecond = (TH1*) gDirectory->Get(hn);
 
     gFile->cd();
     gFile->cd("PosHistos");
-    sprintf(hn,"rad%c%3.3d",cc,pairNbr);
+    sprintf(hn,"rad%4.4d",pairNbr);
     posHistos[0] = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"phi%c%3.3d",cc,pairNbr);
+    sprintf(hn,"phi%4.4d",pairNbr);
     posHistos[1] = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"z%c%3.3d",cc,pairNbr);
+    sprintf(hn,"z%4.4d",pairNbr);
     posHistos[2] = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"x%c%3.3d",cc,pairNbr);
+    sprintf(hn,"x%4.4d",pairNbr);
     posHistosLocal[0] = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"y%c%3.3d",cc,pairNbr);
+    sprintf(hn,"y%4.4d",pairNbr);
     posHistosLocal[1] = (TH1*) gDirectory->Get(hn);
 
-    gFile->cd();
+   gFile->cd();
     gFile->cd("PullHistos");
-    sprintf(hn,"doublePull%c%3.3d",cc,pairNbr);
+    sprintf(hn,"doublePull%4.4d",pairNbr);
     doublePullHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"hitPull%c%3.3d",cc,pairNbr);
+    sprintf(hn,"hitPull%4.4d",pairNbr);
     hitPullHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"predPull%c%3.3d",cc,pairNbr);
+    sprintf(hn,"predPull%4.4d",pairNbr);
     predPullHistos = (TH1*) gDirectory->Get(hn);
 
 
-    gFile->cd();
+   gFile->cd();
     gFile->cd("ResidualHistograms");
-    sprintf(hn,"hSimRec2%c%3.3d",cc,pairNbr);
-    simRecHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"hSimTrk2%c%3.3d",cc,pairNbr);
-    simTrkHistos = (TH1*) gDirectory->Get(hn);
-    sprintf(hn,"hDxdz%c%3.3d",cc,pairNbr);
+//     sprintf(hn,"hSimRec2%4.4d",pairNbr);
+//     simRecHistos = (TH1*) gDirectory->Get(hn);
+//     sprintf(hn,"hSimTrk2%4.4d",pairNbr);
+//     simTrkHistos = (TH1*) gDirectory->Get(hn);
+    sprintf(hn,"hDxdz%4.4d",pairNbr);
     dxdzHistos = (TH1*) gDirectory->Get(hn);
+  cout <<"a\n";
 
     resHistos->GetXaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
+  cout <<"a2\n";
     resHistosPlusY->GetXaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm] (y>0)");
+  cout <<"a3\n";
     resHistosMinusY->GetXaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm] (y<0)");
+  cout <<"a4\n";
     resHistosPlusX->GetXaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm] (x>0)");
+  cout <<"a5\n";
     resHistosMinusX->GetXaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm] (x<0)");
+  cout <<"a\n";
 
     predErrHistos->GetXaxis()->SetTitle("#sigma(#Deltax_{pred}) [#mum]");
     predErrHistosFirst->GetXaxis()->SetTitle("#sigma(x_{pred1}) [#mum]");
@@ -713,6 +764,7 @@ void overlapCheck::loadHistosPair(int pairNbr)
     hitErrHistos->GetXaxis()->SetTitle("#sigma(#Deltax_{hit}) [#mum]");
     hitErrHistosFirst->GetXaxis()->SetTitle("#sigma(#Deltax_{hit1}) [#mum]");
     hitErrHistosSecond->GetXaxis()->SetTitle("#sigma(#Deltax_{hit2}) [#mum]");
+  cout <<"a\n";
 //     simRecHistos
 //     simTrkHistos;
     dxdzHistos->GetXaxis()->SetTitle("Local dx/dz");
@@ -727,43 +779,46 @@ void overlapCheck::loadHistosPair(int pairNbr)
 
 #ifdef HISTOS2D
     gFile->cd("CorrelationHistos");
-    sprintf(hn,"resVsAngle%c%3.3d",cc,pairNbr);
+    sprintf(hn,"resVsAngle%4.4d",pairNbr);
     resVsAngleHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"ddVsLocalX%c%3.3d",cc,pairNbr);
+    sprintf(hn,"ddVsLocalX%4.4d",pairNbr);
     ddVsLocalXHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"ddVsLocalY%c%3.3d",cc,pairNbr);
+    sprintf(hn,"ddVsLocalY%4.4d",pairNbr);
     ddVsLocalYHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"ddVsDxdz%c%3.3d",cc,pairNbr);
+    sprintf(hn,"ddVsDxdz%4.4d",pairNbr);
     ddVsDxdzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"ddVsDydz%c%3.3d",cc,pairNbr);
+    sprintf(hn,"ddVsDydz%4.4d",pairNbr);
     ddVsDydzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"localXVsLocalY%c%3.3d",cc,pairNbr);
-    localXVsLocalYHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"dxdzVsDydz%c%3.3d",cc,pairNbr);
-    dxdzVsDydzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"localXVsDxdz%c%3.3d",cc,pairNbr);
-    localXVsDxdzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"localYVsDxdz%c%3.3d",cc,pairNbr);
-    localYVsDxdzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"localXVsDydz%c%3.3d",cc,pairNbr);
-    localXVsDydzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"localYVsDydz%c%3.3d",cc,pairNbr);
-    localYVsDydzHistos = (TH2*) gDirectory->Get(hn);
-    sprintf(hn,"dPreddSimVsdHitdSim%c%3.3d",cc,pairNbr);
-    dPreddSimVsdHitdSimHistos = (TH2*) gDirectory->Get(hn);
 
     resVsAngleHistos->GetXaxis()->SetTitle("dx/dz");		resVsAngleHistos->GetYaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
     ddVsLocalXHistos->GetXaxis()->SetTitle("Local x [cm]");	ddVsLocalXHistos->GetYaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
     ddVsLocalYHistos->GetXaxis()->SetTitle("Local y [cm]");	ddVsLocalYHistos->GetYaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
     ddVsDxdzHistos->GetXaxis()->SetTitle("dx/dz");		ddVsDxdzHistos->GetYaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
     ddVsDydzHistos->GetXaxis()->SetTitle("dy/dz");		ddVsDydzHistos->GetYaxis()->SetTitle("(#Deltax_{hit}-#Deltax_{pred}) [cm]");
-    localXVsLocalYHistos->GetXaxis()->SetTitle("Local x [cm]");  localXVsLocalYHistos->GetYaxis()->SetTitle("Local y [cm]");
-    dxdzVsDydzHistos->GetXaxis()->SetTitle("dy/dz");		dxdzVsDydzHistos->GetYaxis()->SetTitle("dx/dz");
-    localXVsDxdzHistos->GetXaxis()->SetTitle("dx/dz");	localXVsDxdzHistos->GetYaxis()->SetTitle("Local x [cm]");
-    localYVsDxdzHistos->GetXaxis()->SetTitle("dx/dz");	localYVsDxdzHistos->GetYaxis()->SetTitle("Local y [cm]");
-    localXVsDydzHistos->GetXaxis()->SetTitle("dy/dz");	localXVsDydzHistos->GetYaxis()->SetTitle("Local x [cm]");
-    localYVsDydzHistos->GetXaxis()->SetTitle("dy/dz");	localYVsDydzHistos->GetYaxis()->SetTitle("Local y [cm]");
-    dPreddSimVsdHitdSimHistos->GetXaxis()->SetTitle("");	dPreddSimVsdHitdSimHistos->GetYaxis()->SetTitle("");
+
+    sprintf(hn,"localXVsLocalY%4.4d",pairNbr);
+    localXVsLocalYHistos = (TH2*) gDirectory->Get(hn);
+    if (localXVsLocalYHistos!=0) {
+      sprintf(hn,"dxdzVsDydz%4.4d",pairNbr);
+      dxdzVsDydzHistos = (TH2*) gDirectory->Get(hn);
+      sprintf(hn,"localXVsDxdz%4.4d",pairNbr);
+      localXVsDxdzHistos = (TH2*) gDirectory->Get(hn);
+      sprintf(hn,"localYVsDxdz%4.4d",pairNbr);
+      localYVsDxdzHistos = (TH2*) gDirectory->Get(hn);
+      sprintf(hn,"localXVsDydz%4.4d",pairNbr);
+      localXVsDydzHistos = (TH2*) gDirectory->Get(hn);
+      sprintf(hn,"localYVsDydz%4.4d",pairNbr);
+      localYVsDydzHistos = (TH2*) gDirectory->Get(hn);
+      sprintf(hn,"dPreddSimVsdHitdSim%4.4d",pairNbr);
+      dPreddSimVsdHitdSimHistos = (TH2*) gDirectory->Get(hn);
+      localXVsLocalYHistos->GetXaxis()->SetTitle("Local x [cm]");  localXVsLocalYHistos->GetYaxis()->SetTitle("Local y [cm]");
+      dxdzVsDydzHistos->GetXaxis()->SetTitle("dy/dz");		dxdzVsDydzHistos->GetYaxis()->SetTitle("dx/dz");
+      localXVsDxdzHistos->GetXaxis()->SetTitle("dx/dz");	localXVsDxdzHistos->GetYaxis()->SetTitle("Local x [cm]");
+      localYVsDxdzHistos->GetXaxis()->SetTitle("dx/dz");	localYVsDxdzHistos->GetYaxis()->SetTitle("Local y [cm]");
+      localXVsDydzHistos->GetXaxis()->SetTitle("dy/dz");	localXVsDydzHistos->GetYaxis()->SetTitle("Local x [cm]");
+      localYVsDydzHistos->GetXaxis()->SetTitle("dy/dz");	localYVsDydzHistos->GetYaxis()->SetTitle("Local y [cm]");
+      dPreddSimVsdHitdSimHistos->GetXaxis()->SetTitle("");	dPreddSimVsdHitdSimHistos->GetYaxis()->SetTitle("");
+    }
 
 #endif
 
@@ -840,7 +895,7 @@ void overlapCheck::sigmas ()
   //sigmaDiffs->Draw("same");
   
   sigmaDiffs->SetMinimum(0);
-  sigmaDiffs->SetMaximum(350);
+  sigmaDiffs->SetMaximum(200);
   predErrMeans->SetMarkerStyle(24);    //20
   predErrMeans->SetMarkerColor(2);
   sigmaDiffs->SetMarkerStyle(26);  //22
