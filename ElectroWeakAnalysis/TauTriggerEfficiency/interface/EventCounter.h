@@ -30,6 +30,7 @@ class EventCounter : public edm::EDAnalyzer {
 
    private:
 	string name;
+	string fileName;
         int counter;
 };
 #endif

@@ -4,14 +4,15 @@
 #include "TH1F.h"
 
 EventCounter::EventCounter(const edm::ParameterSet& iConfig){
-	name = iConfig.getParameter<string>("name");
-	counter = 0;
+	name     = iConfig.getParameter<string>("name");
+	fileName = iConfig.getUntrackedParameter<string>("fileName");
+	counter  = 0;
 }
 
 EventCounter::~EventCounter(){
         cout << "counter " << name << " = " << counter << endl;
 
-        TFile* file = TFile::Open("test.root","UPDATE");
+        TFile* file = TFile::Open(fileName.c_str(),"UPDATE");
         file->cd();
 
         TH1F* eventCounter = NULL;
