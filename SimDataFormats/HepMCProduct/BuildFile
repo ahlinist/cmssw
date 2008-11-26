@@ -1,5 +1,4 @@
 <use name=SimDataFormats/GeneratorProducts>
 <export>
   <use name=SimDataFormats/GeneratorProducts>
-  <lib name=SimDataFormatsHepMCProduct>
 </export>
