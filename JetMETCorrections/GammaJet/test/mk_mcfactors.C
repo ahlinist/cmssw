@@ -49,6 +49,7 @@ gROOT->ProcessLine(".x cms_jes_style.C");
 gSystem->Setenv("CAFE_CONFIG", "gjettree.config");
 gROOT->ProcessLine(".! mkdir eps");
 
+/*
 mcfactors(files1, files2, "loose");
 gROOT->ProcessLine(".! mkdir eps/mcfactors_loose");
 gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_loose");
@@ -64,5 +65,10 @@ gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_tight");
 mcfactors(files1, files2, "NN");
 gROOT->ProcessLine(".! mkdir eps/mcfactors_nn");
 gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_nn");
+*/
+
+mcfactors(files1, files2, "medium");
+gROOT->ProcessLine(".! mkdir eps/mcfactors_medium");
+gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_medium");
 
 }

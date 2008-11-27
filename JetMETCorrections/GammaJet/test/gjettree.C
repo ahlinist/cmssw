@@ -1250,36 +1250,36 @@ TChain * getchain(char *thechain) {
 gjettree_histos::gjettree_histos() {
 
   double pi = TMath::Pi();
-  lrp_pt = new TH1D("lrp_pt","lrp_pt",800,0.,2000.);
+  lrp_pt = new TH1D("lrp_pt","lrp_pt",2000,0.,5000.);
   lrp_eta = new TH1D("lrp_eta","lrp_eta",200,-3.5,3.5);
   lrp_phi = new TH1D("lrp_phi","lrp_phi",180,-pi,pi);
 
-  lrj_pt = new TH1D("lrj_pt","lrj_pt",800,0.,2000.);
+  lrj_pt = new TH1D("lrj_pt","lrj_pt",2000,0.,5000.);
   lrj_eta = new TH1D("lrj_eta","lrj_eta",150,-5.25,5.25);
   lrj_phi = new TH1D("lrj_phi","lrj_phi",180,-pi,pi);
 
-  lgj_pt = new TH1D("lgj_pt","lgj_pt",800,0.,2000.);
+  lgj_pt = new TH1D("lgj_pt","lgj_pt",2000,0.,5000.);
   lgj_eta = new TH1D("lgj_eta","lgj_eta",150,-5.25,5.25);
   lgj_phi = new TH1D("lgj_phi","lgj_phi",180,-pi,pi);
 
-  srp_pt = new TH1D("srp_pt","srp_pt",800,0.,2000.);
+  srp_pt = new TH1D("srp_pt","srp_pt",2000,0.,5000.);
   srp_eta = new TH1D("srp_eta","srp_eta",200,-3.5,3.5);
   srp_phi = new TH1D("srp_phi","srp_phi",180,-pi,pi);
 
-  srj_pt = new TH1D("srj_pt","srj_pt",800,0.,2000.);
+  srj_pt = new TH1D("srj_pt","srj_pt",2000,0.,5000.);
   srj_eta = new TH1D("srj_eta","srj_eta",150,-5.25,5.25);
   srj_phi = new TH1D("srj_phi","srj_phi",180,-pi,pi);
   
   // Studies on additional radiation
-  srj_ptsum = new TH1D("srj_ptsum","srj_ptsum",800,0.,2000.);
-  srj_ptvecsum = new TH1D("srj_ptvecsum","srj_ptvecsum",800,0.,2000.);
+  srj_ptsum = new TH1D("srj_ptsum","srj_ptsum",2000,0.,5000.);
+  srj_ptvecsum = new TH1D("srj_ptvecsum","srj_ptvecsum",2000,0.,5000.);
   srj_ptsumop = new TH1D("srj_ptsumop","srj_ptsumop",150,0.,3.);
   srj_ptvecsumop = new TH1D("srj_ptvecsumop","srj_ptvecsumop",300,-3.,3.);
 
   // ptop=PtOverPtPhoton
   lrj_ptop = new TH1D("lrj_ptop","lrj_ptop",150,0.,3.);
   lgj_ptop = new TH1D("lgj_ptop","lgj_ptop",150,0.,3.);
-  lgq_ptop = new TH1D("lgq_ptop","lgq_ptop",150,0.,3.);
+  lgq_ptop = new TH1D("lgq_ptop","lgq_ptop",600,0.,3.);//150,0.,3.);
   srp_ptop = new TH1D("srp_ptop","srp_ptop",150,0.,3.);
   srj_ptop = new TH1D("srj_ptop","srj_ptop",150,0.,3.);
   // ptop=PtOverPtGenGamma
