@@ -8,7 +8,7 @@ ALPGENParticleId::ALPGENParticleId()
 
 int ALPGENParticleId::SimBug(const edm::Event& iEvent, edm::InputTag genTag)
 {
-
+  /*
   int flg_gen = 0;
   edm::Handle<reco::GenParticleCollection> gen;
   iEvent.getByLabel (genTag,gen);
@@ -51,6 +51,8 @@ int ALPGENParticleId::SimBug(const edm::Event& iEvent, edm::InputTag genTag)
    
   }
   return flg_gen;
+  */
+  return 0.;
 }
        
        
