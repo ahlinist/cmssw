@@ -91,3 +91,7 @@ process.myAnalyzer = cms.EDFilter("SusySelectorExample",
 )
 
 process.p = cms.Path(process.patLayer0*process.patLayer1*process.myAnalyzer)
+
+## Necessary fixes to run 2.2.X on 2.1.X data
+from PhysicsTools.PatAlgos.tools.cmsswVersionTools import run22XonSummer08AODSIM
+run22XonSummer08AODSIM(process)
