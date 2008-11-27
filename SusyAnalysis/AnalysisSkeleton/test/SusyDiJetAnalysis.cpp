@@ -13,7 +13,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.8 2008/06/09 12:19:02 fronga Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.1 2008/10/13 16:59:35 trommers Exp $
 //
 //
 
@@ -325,10 +325,10 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
 
 {
   // Translate plotSelection strings to indices
-  plotSelectionIndices_.reserve(plotSelection_.size());
+   plotSelectionIndices_.reserve(plotSelection_.size());
   for ( size_t i=0; i<plotSelection_.size(); ++i )
     plotSelectionIndices_.push_back(sequence_.selectorIndex(plotSelection_[i]));
-    
+   
   // List all selectors and selection variables
   edm::LogVerbatim("SusyDiJet") << "Selectors are:" << std::endl;
   for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
@@ -365,7 +365,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   // trigger path names
   pathNames_ = iConfig.getParameter< std::vector<std::string> >("pathNames");
 
-
+  
   // Initialise counters
   nrEventSelected_.resize( sequence_.size(), 0.0 );
   nrEventAllButOne_.resize( sequence_.size(), 0.0 );
@@ -374,7 +374,9 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   localPi = acos(-1.0);
 
   // Initialise plots [should improve in the future]
-  initPlots();
+    initPlots();
+  
+ 
 
 }
 
@@ -389,6 +391,10 @@ void
 SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
+
+  
+
+   edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
 
   std::ostringstream dbg;
 
@@ -410,6 +416,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   } else {
     weight_ = eventWeight_; // default: from config
   }
+
+
   
   // Retrieve the decision of each selector module
   SelectorDecisions decisions = sequence_.decisions(iEvent);
@@ -422,12 +430,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   bool dec(true);
   for ( size_t i=0; i<sequence_.size(); ++i ) {
     dec = dec && decisions.decision(i);
-    //   edm::LogVerbatim("SusyDiJetEvent")
-    //      << " " << sequence_.selectorName(i)
-    //     << " " << decisions.decision(i)
-    //     << " " << decisions.complementaryDecision(i)
-    //     << " " << decisions.cumulativeDecision(i)
-    //    << " " << dec << std::endl;
+    // edm::LogVerbatim("SusyDiJetEvent")
+    //    << " " << sequence_.selectorName(i)
+    //   << " " << decisions.decision(i)
+    //   << " " << decisions.complementaryDecision(i)
+    //   << " " << decisions.cumulativeDecision(i)
+    //  << " " << dec << std::endl;
     
     // Add the decision to the tree
     mSelectorResults[i] = (decisions.decision(i)?1:0);
@@ -438,6 +446,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += weight_;
     
   }
+ 
+  edm::LogVerbatim("SusyDiJetEvent") << " Fill some Plots  " << std::endl;
 
   // Fill some plots (only if some selections passed, as configured)
   dec = true;
@@ -454,18 +464,22 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // markus
   ///
+
+ 
   if ( !sequence_.decisions(iEvent).globalDecision() ) {
     // Just fill the failure
     mGlobalDecision = 0;
     mSelectorData->Fill();
     return;
   }
-  ///
+  
 
   // Just fill the success
   mGlobalDecision = 1;
   mSelectorData->Fill();
   
+ edm::LogVerbatim("SusyDiJetEvent") << " Trigger decision  " << std::endl;
+
 
   //get the trigger decision
   mTempTreeHLT1JET=false;
@@ -482,7 +496,11 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   edm::TriggerNames trgNames;
   trgNames.init(*hltHandle);
   unsigned int trgSize = trgNames.size();
+
+  
   // Example for OR of all specified triggers
+
+  edm::LogWarning("HLTEventSelector") << " triggers " << trgNames.size() << std::endl;
 
   //looping over list of trig path names
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
@@ -504,6 +522,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     } 
   }
 
+
   //get the event weight
   mTempTreeEventWeight =1.;
   if (theSoup==true) {
@@ -517,7 +536,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeRun = run_;
   mTempTreeEvent = event_;
 
-  
+ 
   //get truth info
   mTempTreeProcID = -999;
   if (theSoup==true) {
@@ -543,19 +562,20 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   
 
+
 // Get the hemispheres
   Handle< edm::View<pat::Hemisphere> > hemisphereHandle;
-  iEvent.getByLabel("selectedLayer2Hemispheres", hemisphereHandle);
+  iEvent.getByLabel("selectedLayer1Hemispheres", hemisphereHandle);
   if ( !hemisphereHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No Hemisphere results for InputTag ";
     return;
   }
   const edm::View<pat::Hemisphere>& hemispheres = (*hemisphereHandle); // For simplicity...
   
-
   mTempTreeNhemispheres = 2;
-  for (int i=0;i < 2 ;i++){
+  for (int i=0;i <  hemispheres.size() ;i++){
     mTempTreeHemispheresPt[i] = hemispheres[i].pt();
+    
     mTempTreeHemispheresE[i] = hemispheres[i].energy();
     mTempTreeHemispheresEt[i] = hemispheres[i].et();
     mTempTreeHemispheresPx[i] = hemispheres[i].momentum().X();
@@ -565,7 +585,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeHemispheresPhi[i] = hemispheres[i].phi();
   }   
 
-  mDeltaPhiHemi = fabs(deltaPhi(hemispheres[0].phi(),hemispheres[1].phi()));
+  mDeltaPhiHemi = fabs(reco::deltaPhi(hemispheres[0].phi(),hemispheres[1].phi()));
 
   double alphaHemi;
   // Get the one with lower et()
@@ -594,7 +614,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   alphaHemi /= minvtHemi;
   mAlphaTHemi = alphaHemi;
   //  if(alphaHemi > 0.55) cout << " alphaHemi " << alphaHemi << endl;
-
+ 
   
   // get the photons
   edm::Handle< std::vector<pat::Photon> > photHandle;
@@ -603,6 +623,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::LogWarning("SusySelectorExample") << "No Photon results for InputTag " << photTag_;
     return;
   }
+
+
   
   // Add the photons
   mTempTreeNphot = photHandle->size();
@@ -621,6 +643,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreePhotHCalIso[i] = (*photHandle)[i].hcalIso();
     mTempTreePhotAllIso[i] = (*photHandle)[i].caloIso();
   }
+
   
   
   // get the electrons
@@ -654,7 +677,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     //    else  mTempTreeElecTrkChiNorm[i] = 999;
     mTempTreeElecCharge[i] = (*elecHandle)[i].charge();
   }
-  
+      
   
   // get the muons
   edm::Handle< std::vector<pat::Muon> > muonHandle;
@@ -717,15 +740,17 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    }
 	}
     }
-    
+     
+
   // get the taus
   edm::Handle< std::vector<pat::Tau> > tauHandle;
   iEvent.getByLabel(tauTag_, tauHandle);
   if ( !tauHandle.isValid() ) {
-    edm::LogWarning("SusySelectorExample") << "No Electron results for InputTag " << tauTag_;
+    edm::LogWarning("SusySelectorExample") << "No Tau results for InputTag " << tauTag_;
     return;
   }
-  
+ 
+
   // Add the taus
   mTempTreeNtau= tauHandle->size();
   if ( mTempTreeNtau > 50 ) mTempTreeNtau = 50;
@@ -739,12 +764,13 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeTauEta[i] = (*tauHandle)[i].eta();
     mTempTreeTauPhi[i] = (*tauHandle)[i].phi();
     mTempTreeTauTrkIso[i] = ( (*tauHandle)[i].trackIso()+(*tauHandle)[i].et() )/(*tauHandle)[i].et();
-    mTempTreeTauECalIso[i] = (*elecHandle)[i].ecalIso();
-    mTempTreeTauHCalIso[i] = (*elecHandle)[i].hcalIso() ;
-    mTempTreeTauAllIso[i] = (*elecHandle)[i].caloIso() ;
+
+ edm::LogVerbatim("SusyDiJetEvent") << "Taus " << i << " iso " <<mTempTreeTauTrkIso[i]  << std::endl;
+    mTempTreeTauECalIso[i] = (*tauHandle)[i].ecalIso();
+    mTempTreeTauHCalIso[i] = (*tauHandle)[i].hcalIso() ;
+    mTempTreeTauAllIso[i] = (*tauHandle)[i].caloIso() ;
   }
-  
-  
+   
   // get the jets
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByLabel(jetTag_, jetHandle);
@@ -828,7 +854,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeJetsEta[i] = (*jetHandle)[i].eta();
       mTempTreeJetsPhi[i] = (*jetHandle)[i].phi();
       mTempTreeJetsFem[i] = (*jetHandle)[i].emEnergyFraction();
-
+    
       if((*jetHandle)[i].genJet()!= 0) {
 	mTempTreeGenJetsPt[i]=(*jetHandle)[i].genJet()->pt();
 	mTempTreeGenJetsE[i]=(*jetHandle)[i].genJet()->energy();
@@ -849,7 +875,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	mTempTreeGenJetsEta[i] =-999;
 	mTempTreeGenJetsPhi[i] =-999;
       }
-
+     
       //  const reco::TrackRefVector & associatedTracks();      
       mTempTreeNJetsT[i] = ((*jetHandle)[i].associatedTracks()).size();
       if(((*jetHandle)[i].associatedTracks()).isAvailable()) { // edm::LogWarning("SusySelectorExample") << "Jet Tracks"<< " i "<< i<<" "<< mTempTreeNJetsT[i]<< " "<< ((*jetHandle)[i].associatedTracks())[0]->pt();
@@ -1080,10 +1106,10 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeMETphi = metHandle->front().phi();
   mTempTreeSumETSignif = metHandle->front().mEtSig();
   
-  mTempTreeMETuncor = metHandle->front().uncorrectedPt(pat::MET::UncorectionType(2));
-  mTempTreeMETphiuncor = metHandle->front().uncorrectedPhi(pat::MET::UncorectionType(2));
+  mTempTreeMETuncor = metHandle->front().uncorrectedPt(pat::MET::UncorrectionType(2));
+  mTempTreeMETphiuncor = metHandle->front().uncorrectedPhi(pat::MET::UncorrectionType(2));
   
-  
+ 
   
   //calculate R1 and R2
   //  double dphi1 = mTempTreeJetsPhi[0] - mTempTreeMETphi;
@@ -1100,6 +1126,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeR1 = sqrt(dphi2*dphi2 + (localPi - dphi1)*(localPi - dphi1));
   mTempTreeR2 = sqrt(dphi1*dphi1 + (localPi - dphi2)*(localPi - dphi2));
   
+ 
 
   mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
   mTempAlpPtScale = myALPGENParticleId.getPt();
@@ -1113,7 +1140,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   length = 1000;
   length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genPt ,genPhi ,genEta ,genStatus, length);
 
-  mTempSimuCheck = myALPGENParticleId.SimBug(iEvent,genTag_);
+  mTempSimuCheck = -1 ;//myALPGENParticleId.SimBug(iEvent,genTag_);
+
 
   float min_dR;
   int matched_jet = 0;
@@ -1150,7 +1178,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   // Fill the tree
   mAllData->Fill();
-  
+
+ 
 }
 
 
@@ -1250,7 +1279,7 @@ SusyDiJetAnalysis::initPlots() {
     mSelectorData->Branch(names[i].c_str(),&mSelectorResults[i],tempName.c_str());
   }
   mSelectorData->Branch("globalDecision",&mGlobalDecision,"globalDecision/i");
-
+  
 
   // Add the branches
   mAllData->Branch("run",&mTempTreeRun,"run/int");
@@ -1435,7 +1464,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("MuonPairIndex" ,&mTempMuonPairIndex,"MuonPairIndex[2]/int");
  
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
-
+  
 }
 
 
@@ -1472,3 +1501,5 @@ SusyDiJetAnalysis::fillPlots( const edm::Event& iEvent,
 // Define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(SusyDiJetAnalysis);
+
+
