@@ -21,6 +21,9 @@
 #include "Config.hpp"
 
 #include <string>
+#include <vector>
+
+#include "deltac.C"
 
 class gjet_response {
 public :
@@ -86,6 +89,8 @@ public :
    TH1D *purity;
    TH1D *sovb;
    TH1D *efficiency;
+   TH1D *effid1;
+   TH1D *effid2;
    TH1D *rejection;
 
    TH1D* ptphot_nocut;
@@ -123,6 +128,11 @@ public :
    TH1D* response_bkg_reg3;
    TH1D* response_bkg_reg4;
 
+   TH1D* ptphot_topocut_sig;
+   TH1D* ptphot_topocut_bkg;
+   TH1D* ptphot_idcut_sig;
+   TH1D* ptphot_idcut_bkg;
+
    TH2D* sob_vs_eff_1;
    TH2D* sob_vs_eff_2;
    TH2D* sob_vs_eff_3;
@@ -142,7 +152,7 @@ public :
    TDirectory* hFitDir;
    TDirectory* curdir;
 
-   gjet_response(TTree *tree=0, char * outputname = "test.root", int xbin = 100, int ybin = 100);
+   gjet_response(TTree *tree=0, char * outputname = "test.root", int xbin = 100, int ybin = 100, const char* cfg = "final");
    virtual ~gjet_response();
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
@@ -180,12 +190,15 @@ public :
    std::string _mctruthfunc;
 
    float _xmin, _xmax;
+   int _rebin;
+
 };
 
 #endif
 
 #ifdef gjet_response_cxx
-gjet_response::gjet_response(TTree *tree, char * outputname, int xbin, int ybin)
+gjet_response::gjet_response(TTree *tree, char *outputname, int xbin, int ybin,
+			     const char *cfg)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -205,7 +218,7 @@ gjet_response::gjet_response(TTree *tree, char * outputname, int xbin, int ybin)
    hFitDir = hOutputFile->mkdir("Fits");
    curdir->cd();
 
-   Configure();
+   Configure(cfg);
    DumpConfig();
 }
 

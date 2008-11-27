@@ -7,6 +7,9 @@
 #include <TLegend.h>
 #include <TPaveStats.h>
 #include <TStyle.h>
+#include <TVectorD.h>
+#include <TMatrixD.h>
+#include <TMinuit.h>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -14,6 +17,8 @@
 
 //using std::string;
 using namespace std;
+
+bool drawStats = true;//false;
 
 inline float gjet_response::delta_phi(float phi1, float phi2) {
 
@@ -37,6 +42,18 @@ bool gjet_response::NNID(float nnval) {
   return nnphotcut;
 }
 
+// Return signal response multiplied by DeltaC
+// Can be directly used with TF1
+bkgbias *bkgobj;
+Double_t bkgresp(const Double_t *ptgamma, const Double_t *p) {
+
+  double x = *ptgamma;
+  double r = p[2] - p[0]*pow(0.01*x, p[1]-1);
+  double dc = bkgobj->deltac(ptgamma); 
+  
+  return (r*dc);
+}
+
 void gjet_response::Configure(const char *cfg) {
 
   cafe::Config config(cfg);
@@ -57,6 +74,7 @@ void gjet_response::Configure(const char *cfg) {
 
   // Algorithm name
   _algoname = config.get("AlgoName", "");
+  drawStats = config.get("DrawStats", drawStats);
 
   // Topological cuts
 
@@ -81,6 +99,8 @@ void gjet_response::Configure(const char *cfg) {
   // Graph x-axis limits
   _xmin = config.get("Xmin", 25.);
   _xmax = config.get("Xmax", 700.);
+  // Rebin purity, efficiency etc. plots
+  _rebin = config.get("Rebin", 3);
 
   return;
 } // Configure
@@ -104,10 +124,12 @@ void gjet_response::DumpConfig() {
        << "--------------------" << endl
        << "MCTruthFunc:  " << _mctruthfunc << endl
        << endl
-       << "Graph X-axis limits" << endl
+       << "Graph X-axis limits and other settings" << endl
        << "--------------------" << endl
        << "Xmin:         " << _xmin << endl
        << "Xmax:         " << _xmax << endl
+       << "Rebin:         " << _rebin << endl
+       << "***** Remember to add a switch for fit vs. mean! ****" << endl
        << endl;
 
 } // DumpConfig
@@ -138,6 +160,9 @@ void gjet_response::Loop(const string idtype)
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
+
+   bkgobj = new bkgbias(idtype);
+
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntriesFast();
@@ -211,6 +236,20 @@ void gjet_response::Loop(const string idtype)
 	  if (ptphot>=200)               nn_reg4_bkg->Fill(nniso,weight);
 	}
       }
+
+      if (topocuts) {
+	if (isgamma)
+	  ptphot_topocut_sig->Fill(ptphot,weight);
+	else if (!isgamma)
+	  ptphot_topocut_bkg->Fill(ptphot,weight);
+      }
+
+      if (idcuts) {
+	if (isgamma)
+	  ptphot_idcut_sig->Fill(ptphot,weight);
+	else if (!isgamma)
+	  ptphot_idcut_bkg->Fill(ptphot,weight);
+      }
       
       if (allcuts){
 
@@ -273,13 +312,15 @@ void gjet_response::BookHistos()
   double xmin = _xmin;//25.;
   double xmax = _xmax;//700.;
 
+  int rb = _rebin; // Rebin some plots to have wider bins
+
   ptmean_mix = new TProfile("ptmean_mix","ptmean_mix",XBINS,xmin,xmax);
   ptmean_sig = new TProfile("ptmean_sig","ptmean_sig",XBINS,xmin,xmax);
   ptmean_bkg = new TProfile("ptmean_bkg","ptmean_bkg",XBINS,xmin,xmax);
 
-  ptphot_nocut = new TH1D("ptphot_nocut","ptphot_nocut",XBINS,xmin,xmax);
+  ptphot_nocut = new TH1D("ptphot_nocut","ptphot_nocut",XBINS/rb,xmin,xmax);
   ptphot_nocut->Sumw2();
-  ptphot_mix = new TH1D("ptphot_mix","ptphot",XBINS,xmin,xmax);
+  ptphot_mix = new TH1D("ptphot_mix","ptphot",XBINS/rb,xmin,xmax);
   ptphot_mix->Sumw2();
   response_nocut = new TH1D("response_nocut","response_nocut",XBINS,0.,2.);
   response_nocut->Sumw2();
@@ -301,9 +342,9 @@ void gjet_response::BookHistos()
   response_mix_reg4->Sumw2();
   
   ptphot_nocut_sig = new TH1D("ptphot_nocut_sig","ptphot_nocut_sig",
-			      XBINS,xmin,xmax);
+			      XBINS/rb,xmin,xmax);
   ptphot_nocut_sig->Sumw2();
-  ptphot_sig = new TH1D("ptphot_sig","ptphot_sig",XBINS,xmin,xmax);
+  ptphot_sig = new TH1D("ptphot_sig","ptphot_sig",XBINS/rb,xmin,xmax);
   ptphot_sig->Sumw2();
   response_nocut_sig = new TH1D("response_nocut_sig","response_nocut_sig",
 				XBINS,0.,2.);
@@ -344,10 +385,10 @@ void gjet_response::BookHistos()
   response_sig_reg4->Sumw2();
   
   ptphot_nocut_bkg = new TH1D("ptphot_nocut_bkg","ptphot_nocut_bkg",
-			      XBINS,xmin,xmax);
+			      XBINS/rb,xmin,xmax);
   ptphot_nocut_bkg->Sumw2();
   ptphot_bkg = new TH1D("ptphot_bkg","ptphot_bkg",
-			XBINS,xmin,xmax);
+			XBINS/rb,xmin,xmax);
   ptphot_bkg->Sumw2();
   response_nocut_bkg = new TH1D("response_nocut_bkg","response_nocut_bkg",
 				XBINS,0.,2.);
@@ -376,6 +417,21 @@ void gjet_response::BookHistos()
 			       "response",XBINS,0.,2.);
   response_bkg_reg4->Sumw2();
   
+
+  // For photon id efficiencies
+  ptphot_topocut_sig = new TH1D("ptphot_topocut_sig","ptphot_topocut_sig",
+				XBINS/rb,xmin,xmax);
+  ptphot_topocut_sig->Sumw2();
+  ptphot_topocut_bkg = new TH1D("ptphot_topocut_bkg","ptphot_topocut_bkg",
+				XBINS/rb,xmin,xmax);
+  ptphot_topocut_bkg->Sumw2();
+  ptphot_idcut_sig = new TH1D("ptphot_idcut_sig","ptphot_idcut_sig",
+				XBINS/rb,xmin,xmax);
+  ptphot_idcut_sig->Sumw2();
+  ptphot_idcut_bkg = new TH1D("ptphot_idcut_bkg","ptphot_idcut_bkg",
+				XBINS/rb,xmin,xmax);
+  ptphot_idcut_bkg->Sumw2();
+
   sob_vs_eff_1 = new TH2D("sob_vs_eff_1","sob_vs_eff_1",100,0,1.,100,0.,5.);
   sob_vs_eff_2 = new TH2D("sob_vs_eff_2","sob_vs_eff_2",100,0,1.,100,0.,5.);
   sob_vs_eff_3 = new TH2D("sob_vs_eff_3","sob_vs_eff_3",100,0,1.,100,0.,5.);
@@ -435,6 +491,11 @@ void gjet_response::ResetHistos()
   response_bkg_reg2->Reset();
   response_bkg_reg3->Reset();
   response_bkg_reg4->Reset();
+
+  ptphot_topocut_sig->Reset();
+  ptphot_topocut_bkg->Reset();
+  ptphot_idcut_sig->Reset();
+  ptphot_idcut_bkg->Reset();
 }
 
 void gjet_response::Optimum()
@@ -482,9 +543,15 @@ void gjet_response::Fit(bool arithmetic)
   gROOT->SetStyle("Plain");
   
   gStyle->SetPalette(1);
-  gStyle->SetOptStat(1111111);  // Show overflow, underflow + SumOfWeights 
+  if (drawStats) {
+    gStyle->SetOptStat(1111111);  // Show overflow, underflow + SumOfWeights 
+    gStyle->SetOptFit(111110); 
+  } else {
+    gStyle->SetOptStat(0);
+    gStyle->SetOptFit(0);
+  }
   //  gStyle->SetStatStyle(0); // for a completely transparent stat box
-  gStyle->SetOptFit(111110); 
+
   gStyle->SetOptFile(1); 
   
   gStyle->SetMarkerStyle(20);
@@ -502,8 +569,10 @@ void gjet_response::Fit(bool arithmetic)
   TCanvas *c1 = new TCanvas("c1","--sig+mix--",472,0,800,800);
   TCanvas *c2 = new TCanvas("c2","--sig+bkg--",472,0,800,800);
   TCanvas *c3 = new TCanvas("c3","--purity--",472,0,800,800);
+  TCanvas *c3s = new TCanvas("c3s","--purityStat--",472,0,800,800);
   TCanvas *c3b = new TCanvas("c3b","--S/B--",472,0,800,800);
   TCanvas *c4 = new TCanvas("c4","--efficiency--",472,0,800,800);
+  TCanvas *c4b = new TCanvas("c4b","--effid--",472,0,800,800);
   TCanvas *c5 = new TCanvas("c5","--rejection--",472,0,800,800);
   TAxis *xaxis =  responsevspt_sig->GetXaxis();
   TAxis *yaxis =  responsevspt_sig->GetYaxis();
@@ -805,6 +874,16 @@ void gjet_response::Fit(bool arithmetic)
 
 
   c0->SetLogy(1);
+
+  TF1 *fx = new TF1("fx","[0]*pow(x,-[1])*exp(-[2]*x)",
+		    30.,700.);
+  fx->SetParameters(7e10,3.,4e-3);
+  //distrsum_sig->Fit(fx, "QRN");
+  ptphot_sig->Fit(fx, "QRN");
+  
+  cout << Form("%1.4g*pow(x,-%1.4g)*exp(-%1.4g*x)", fx->GetParameter(0),
+	       fx->GetParameter(1), fx->GetParameter(2)) << endl;
+
   distrsum_sig->SetTitle("");
   distrsum_sig->SetXTitle("p_{T} [GeV/c]");
   distrsum_sig->GetXaxis()->SetNoExponent();
@@ -812,6 +891,7 @@ void gjet_response::Fit(bool arithmetic)
   distrsum_sig->SetYTitle("Nev/fb^{-1}");
   distrsum_sig->SetTitleOffset(1.3,"Y");
   distrsum_sig->Draw("pe");
+  fx->Draw("same");
 
   c0->SaveAs("xsecvspt_sig.eps");
   
@@ -845,6 +925,7 @@ void gjet_response::Fit(bool arithmetic)
   TF1 *mctruth = new TF1("mctruth", _mctruthfunc.c_str(),50.,1000.);
   mctruth->SetLineWidth(1);//2);
   mctruth->SetLineColor(14);
+  mctruth->SetLineStyle(kDashed);
 
   TLegendEntry *legge;
   TLegend *leg;
@@ -863,6 +944,11 @@ void gjet_response::Fit(bool arithmetic)
   fsig->SetParameters(0.62, 0.8, 1.);
   //gmean_sig->Fit(fsig, "QR");
   gr_sig->Fit(fsig, "QR");//"QRN");
+
+  const int npar = 3;
+  TMatrixD emats(npar, npar);
+  gMinuit->mnemat(&emats[0][0], npar);
+
   //gmean_sig->GetListOfFunctions()->Add(fsig);
   TF1 *fmix = new TF1("fmix","[2]-[0]*pow(0.01*x,[1]-1)",50.,1000.);
   fmix->SetLineColor(kBlack);
@@ -874,25 +960,82 @@ void gjet_response::Fit(bool arithmetic)
   //gmean_mix->GetListOfFunctions()->Add(fmix);
   //
 
-  gStyle->SetOptFit();
+  // Retrieve and factorize correlation matrix for L3Corr.cpp
+  TMatrixD emat(npar, npar);
+  gMinuit->mnemat(&emat[0][0], npar);
+
+  TVectorD eigvs(npar);
+  TMatrixD eigs(emats.EigenVectors(eigvs));
+
+  // Print out the signal fit parameters to be used in L3Corr.cpp
+  cout << "Signal sample:" << endl;
+  cout << Form("_pstat[0] = %1.4g; _pstat[1] = %1.4g; _pstat[2] = %1.4g;",
+	       fsig->GetParameter(0), fsig->GetParameter(1),
+	       fsig->GetParameter(2)) << endl;
+
+  cout << Form("_chi2 = %1.4g;", fsig->GetChisquare()/fsig->GetNDF()) << endl;
+
+  double vs = sqrt(fabs(eigvs[0]));
+  cout << Form( "_eig[0][0] = %1.4g; _eig[1][0] = %1.4g; _eig[2][0]  = %1.4g;",
+		vs*eigs[0][0], vs*eigs[1][0], vs*eigs[2][0]) << endl;
+  vs = sqrt(fabs(eigvs[1]));
+  cout << Form( "_eig[0][1] = %1.4g; _eig[1][1] = %1.4g; _eig[2][1]  = %1.4g;",
+		vs*eigs[0][1], vs*eigs[1][1], vs*eigs[2][1]) << endl;
+  vs = sqrt(fabs(eigvs[2]));
+  cout << Form( "_eig[0][2] = %1.4g; _eig[1][2] = %1.4g; _eig[2][2]  = %1.4g;",
+		vs*eigs[0][2], vs*eigs[1][2], vs*eigs[2][2]) << endl;
+  cout << endl;
+
+  TVectorD eigv(npar);
+  TMatrixD eig(emat.EigenVectors(eigv));
+  //cout << "Eigenvectors" << endl;
+  //eig.Print();
+  //cout << "Eigenvalues" << endl;
+  //eigv.Print();
+  //cout << "Is eigenmatrix symmetric? " << eig.IsSymmetric() << endl;
+
+  // Print out the mixed fit parameters to be used in L3Corr.cpp
+  cout << "Mixed sample:" << endl;
+  cout << Form("_pstat[0] = %1.4g; _pstat[1] = %1.4g; _pstat[2] = %1.4g;",
+	       fmix->GetParameter(0), fmix->GetParameter(1),
+	       fmix->GetParameter(2)) << endl;
+
+  cout << Form("_chi2 = %1.4g;", fmix->GetChisquare()/fmix->GetNDF()) << endl;
+
+  double v = sqrt(fabs(eigv[0]));
+  cout << Form( "_eig[0][0] = %1.4g; _eig[1][0] = %1.4g; _eig[2][0]  = %1.4g;",
+		v*eig[0][0], v*eig[1][0], v*eig[2][0]) << endl;
+  v = sqrt(fabs(eigv[1]));
+  cout << Form( "_eig[0][1] = %1.4g; _eig[1][1] = %1.4g; _eig[2][1]  = %1.4g;",
+		v*eig[0][1], v*eig[1][1], v*eig[2][1]) << endl;
+  v = sqrt(fabs(eigv[2]));
+  cout << Form( "_eig[0][2] = %1.4g; _eig[1][2] = %1.4g; _eig[2][2]  = %1.4g;",
+		v*eig[0][2], v*eig[1][2], v*eig[2][2]) << endl;
+  cout << endl;
+
+  if (drawStats) gStyle->SetOptFit();
   gmean_mix->Draw("axis");//"pe");
   mctruth->Draw("same");
   gr_mix->Draw("pesames");
   c1->Update(); // to get the new stats box
   TPaveStats *stats;
-  stats = (TPaveStats*)gPad->GetPrimitive("stats");
-  assert(stats);
-  stats->SetName("stats_mix");
+  if (drawStats) {
+    stats = (TPaveStats*)gPad->GetPrimitive("stats");
+    assert(stats);
+    stats->SetName("stats_mix");
+  }
   //gmean_sig->Draw("pesames");
   gr_sig->Draw("pesames");
-  c1->Update(); // to get the new stats box
-  stats = (TPaveStats*)gPad->GetPrimitive("stats");
-  assert(stats);
-  stats->SetLineColor(kRed);
-  stats->SetTextColor(kRed);
-  stats->SetX1NDC(stats->GetX1NDC()-0.4);
-  stats->SetX2NDC(stats->GetX2NDC()-0.4);
-  stats->SetName("stats_sig");
+  if (drawStats) {
+    c1->Update(); // to get the new stats box
+    stats = (TPaveStats*)gPad->GetPrimitive("stats");
+    assert(stats);
+    stats->SetLineColor(kRed);
+    stats->SetTextColor(kRed);
+    stats->SetX1NDC(stats->GetX1NDC()-0.4);
+    stats->SetX2NDC(stats->GetX2NDC()-0.4);
+    stats->SetName("stats_sig");
+  }
   leg->Draw();
 
   c1->SaveAs(arithmetic ? "ameanvspt_sig+mix.eps" : "gmeanvspt_sig+mix.eps");
@@ -917,17 +1060,30 @@ void gjet_response::Fit(bool arithmetic)
   fbkg->SetParNames("a","m","c");
   fbkg->SetParameters(0.62, 0.8, 1.);
   fbkg->SetParLimits(1,0,10);
-  gr_bkg->Fit(fbkg, "QR");
+  gr_bkg->Fit(fbkg, (drawStats ? "QR" : "QRN"));
+  // 
+  // Background bias defined in deltac.C
+  // I wish this would have worked directly... only available since ROOT 5.XX
+  //TF1 *rbkg = new TF1("rbkg", bkgobj, &bkgbias::bkgresp,
+  //	      50., 1000., 3,"bkgbias","bkgresp");
+  // Now need to make both bkgresp and bkgobj globally visible, ugh.
+  TF1 *rbkg = new TF1("rbkg", bkgresp, 50., 1000., 3);
+  rbkg->SetParameters(fsig->GetParameter(0),fsig->GetParameter(1),
+		      fsig->GetParameter(2));
+  rbkg->SetLineColor(kBlue);
   //
-  gStyle->SetOptFit();
+  if (drawStats) gStyle->SetOptFit();
   gmean_mix->Draw("axis");
   mctruth->Draw("same");
-  gr_bkg->Draw("pesames");
-  c2->Update(); // to get the new stats box
-  stats = (TPaveStats*)gPad->GetPrimitive("stats"); assert(stats);
-  stats->SetLineColor(kBlue);
-  stats->SetTextColor(kBlue);
-  stats->SetName("stats_bkg");
+  gr_bkg->Draw(drawStats ? "pesames" : "pesame");
+  rbkg->Draw("same");
+  if (drawStats) {
+    c2->Update(); // to get the new stats box
+    stats = (TPaveStats*)gPad->GetPrimitive("stats"); assert(stats);
+    stats->SetLineColor(kBlue);
+    stats->SetTextColor(kBlue);
+    stats->SetName("stats_bkg");
+  }
   gr_sig->Draw("pesames");
   // NB: stats_sig was already moved to the left earlier, no need to repeat
   legsb->Draw();
@@ -950,7 +1106,7 @@ void gjet_response::Fit(bool arithmetic)
   c3->SetLeftMargin(0.15);
   c3->SetRightMargin(0.05);
   purity = (TH1D*)ptphot_mix->Clone("purity");
-  purity->Divide(ptphot_sig, ptphot_mix, 1., 1., "B");
+  purity->Divide(ptphot_sig, ptphot_mix, 1., 1., "");//"B");
   purity->SetMinimum(0.);
   purity->SetMaximum(1.);
   purity->SetTitle("");
@@ -965,9 +1121,59 @@ void gjet_response::Fit(bool arithmetic)
   purity->Fit(fpurity,"QRN");
 
   purity->Draw();
-  fpurity->Draw("same");
+  if (drawStats) fpurity->Draw("same");
+  else {
+    purity->SetLineWidth(2);
+    purity->SetLineColor(kBlack);
+  }
+
+  TMatrixD pemat(3,3);
+  gMinuit->mnemat(&pemat[0][0],3);
+  cout << "Purity:" << endl;
+  cout << Form("P = %1.4g + x*(%1.4g + x*%1.4g);",
+	       fpurity->GetParameter(0), fpurity->GetParameter(1),
+	       fpurity->GetParameter(2)) << endl;
+  cout << Form("stat = sqrt(%1.4g + 2*%1.4g*x + 2*%1.4g*x*x\n"
+		"+ %1.4g*x*x + 2*%1.4g*x*x*x\n"
+	       "+ %1.4g*x*x*x*x);\n",
+	       pemat[0][0],pemat[0][1],pemat[0][2],
+	       pemat[1][1],pemat[1][2],pemat[2][2]) << endl;
 
   c3->SaveAs("purity.eps");
+  c0->cd();
+
+  // Purity statistical uncertainty from the top of the error bars
+  c3s->cd();
+  TGraphErrors *puritystat = new TGraphErrors();
+  for (int i = 1; i != purity->GetNbinsX()+1; ++i) {
+    puritystat->SetPoint(i-1, purity->GetBinCenter(i),
+			 purity->GetBinError(i));
+    double err = ptphot_bkg->GetBinError(i) / ptphot_bkg->GetBinContent(i);
+    //double neff = 1. / (err * err);
+    //err = fabs(neff / (neff + 1.) - 1.);
+    puritystat->SetPointError(i-1, 0.5*purity->GetBinWidth(i), err);
+  }
+  //TF1 *fps = new TF1("fpuritystat","sqrt([0]+log(0.01*x)*([1]"
+  //	     "+log(0.01*x)*([2]+log(0.01*x)*([3]"
+  //	     "+log(0.01*x)*[4]))))",0.,670.);
+  //fps->SetParameters(pemat[0][0], 2*pemat[0][1], 2*pemat[0][2]+pemat[1][1],
+  //		     2*pemat[1][2], pemat[2][2]);
+//fps->FixParameter(4,0.);
+//fps->FixParameter(3,0.);
+  TF1 *fps = new TF1("fpuritystat", "[0]", 0., 670.);
+  puritystat->Fit(fps, "QRNW");
+  //cout << Form("stat = sqrt(%1.4g + %1.4g*x + %1.4g*x*x\n"
+  //       "+ %1.4g*x*x*x + %1.4g*x*x*x*x); // top of err.bars\n",
+  //       fps->GetParameter(0),fps->GetParameter(1),fps->GetParameter(2),
+  //       fps->GetParameter(3),fps->GetParameter(4));
+  cout <<  Form("stat = %1.4g; // top of err.bars\n",
+		fps->GetParameter(0)) << endl;
+
+  puritystat->Draw("axis p");
+  puritystat->GetYaxis()->SetRangeUser(0., 0.30);
+  fps->Draw("same");
+  c3s->Update();
+  c3s->SaveAs("puritystat.eps");
   c0->cd();
 
   // S/B
@@ -977,8 +1183,8 @@ void gjet_response::Fit(bool arithmetic)
   c3b->SetLogy();
   sovb = (TH1D*)ptphot_bkg->Clone("sovb");
   sovb->Divide(ptphot_sig, ptphot_bkg, 1., 1., "");
-  sovb->SetMinimum(0.01);
-  sovb->SetMaximum(10000.);
+  sovb->SetMinimum(1e-1);//0.01);
+  sovb->SetMaximum(1e2);//10000.);
   sovb->SetTitle("");
   sovb->SetXTitle("p_{T} [GeV/c]");
   //sovb->GetYaxis()->SetMoreLogLabels();
@@ -992,7 +1198,11 @@ void gjet_response::Fit(bool arithmetic)
   sovb->Fit(fsovb,"QRN");
 
   sovb->Draw();
-  fsovb->Draw("same");
+  if (drawStats) fsovb->Draw("same");
+  else {
+    sovb->SetLineWidth(2);
+    sovb->SetLineColor(kBlack);
+  }
 
   c3b->SaveAs("sovb.eps");
   c0->cd();
@@ -1004,7 +1214,7 @@ void gjet_response::Fit(bool arithmetic)
   efficiency = (TH1D*)ptphot_sig->Clone("efficiency");
   efficiency->Divide(ptphot_sig, ptphot_nocut_sig, 1., 1., "B");
   efficiency->SetMinimum(0.);
-  efficiency->SetMaximum(1.);
+  efficiency->SetMaximum(0.5);//1.);
   efficiency->SetTitle("");
   efficiency->SetXTitle("p_{T} [GeV/c]");
   efficiency->SetYTitle("#gamma jet efficiency");
@@ -1017,10 +1227,54 @@ void gjet_response::Fit(bool arithmetic)
   efficiency->Fit(feff,"QRN");
 
   efficiency->Draw();
-  feff->Draw("same");
+  if (drawStats) feff->Draw("same");
+  else {
+    efficiency->SetLineColor(kRed);
+    efficiency->SetLineWidth(2);
+  }
 
   c4->SaveAs("efficiency.eps");
   c0->cd();
+
+  // EFFICIENCY (PHOTON ID ONLY)
+  c4b->cd();
+  c4b->SetLeftMargin(0.15);
+  c4b->SetRightMargin(0.05);
+  effid1 = (TH1D*)ptphot_sig->Clone("effid1");
+  effid1->Divide(ptphot_idcut_sig, ptphot_nocut_sig, 1., 1., "B");
+  effid1->SetMinimum(0.);
+  effid1->SetMaximum(1.);
+  effid1->SetTitle("");
+  effid1->SetXTitle("p_{T} [GeV/c]");
+  string effid_title = _idtype + " photon ID efficiency w.r.t. loose|NN";
+  effid1->SetYTitle(effid_title.c_str());
+  effid1->GetYaxis()->SetTitleOffset(1.5);
+  effid2 = (TH1D*)ptphot_sig->Clone("effid2");
+  effid2->Divide(ptphot_sig, ptphot_topocut_sig, 1., 1., "B");
+
+  TF1 *feffid = new TF1("feffid","[0] + log(0.01*x)*([1]+log(0.01*x)*[2])",
+		      0., 1000.);
+  feffid->SetParameters(0.2,0.1,-0.01);
+  effid1->Fit(feffid,"QRN");
+
+  TLegend *legid = new TLegend(0.5,0.3,0.9,0.5,"","brNDC");
+  legid->SetBorderSize(0);
+  legid->SetFillStyle(kNone);
+  legid->AddEntry(effid1,"before topo cuts", "L");
+  legid->AddEntry(effid2,"after topo cuts", "L");
+
+  effid1->Draw();
+  effid2->Draw("same");
+  if (drawStats) feffid->Draw("same");
+  else {
+    effid1->SetLineColor(kRed);
+    effid1->SetLineWidth(2);
+  }
+  legid->Draw("same");
+
+  c4b->SaveAs("effid.eps");
+  c0->cd();
+
 
   // REJECTION
   c5->cd();
@@ -1028,15 +1282,19 @@ void gjet_response::Fit(bool arithmetic)
   c5->SetRightMargin(0.05);
   c5->SetLogy();
   rejection = (TH1D*)ptphot_bkg->Clone("rejection");
-  rejection->Divide(ptphot_nocut_bkg, ptphot_bkg, 1., 1., "B");
-  //rejection->SetMinimum(1.);
-  //rejection->SetMaximum(1e6);
+  rejection->Divide(ptphot_nocut_bkg, ptphot_bkg, 1., 1., "");//"B");
+  rejection->SetMinimum(1e2);
+  rejection->SetMaximum(1e7);
   rejection->SetTitle("");
   rejection->SetXTitle("p_{T} [GeV/c]");
   rejection->SetYTitle("QCD rejection");
   rejection->GetYaxis()->SetTitleOffset(1.5);
   //rejection->GetYaxis()->SetMoreLogLabels();
   rejection->Draw();
+  if (!drawStats) {
+    rejection->SetLineColor(kBlue);
+    rejection->SetLineWidth(2);
+  }
 
   c5->SaveAs("rejection.eps");
   c0->cd();
@@ -1105,7 +1363,16 @@ void gjet_response::Fit(bool arithmetic)
   response_bkg_reg3->Write();
   response_bkg_reg4->Write();
 
+  ptphot_topocut_sig->Write();
+  ptphot_topocut_bkg->Write();
+  ptphot_idcut_sig->Write();
+  ptphot_idcut_bkg->Write();
+
   curdir->cd();
+
+  if (gROOT->IsBatch()) {
+    gROOT->Clear();
+  }
 }
 
 TChain * getchain(char *thechain) {
