@@ -53,6 +53,7 @@ OutputCommands = cms.untracked.vstring(
     "keep recoCaloTaus_*_*_Reconstruction",
     "keep recoCaloTauTagInfos_*_*_Reconstruction",
     "keep recoCaloTauDiscriminatorByIsolation_*_*_Reconstruction",
+    "keep recoJetedmRefToBaseProdrecoTracksrecoTrackrecoTracksTorecoTrackedmrefhelperFindUsingAdvanceedmRefVectorsAssociationVector_*_*_*",
     "keep recoPFTaus_*_*_Reconstruction",
     "keep recoPFTauTagInfos_*_*_Reconstruction",
     "keep recoPFTauDiscriminatorByIsolation_*_*_Reconstruction",
