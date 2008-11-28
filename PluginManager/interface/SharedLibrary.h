@@ -23,13 +23,10 @@
 #include <boost/filesystem/path.hpp>
 
 // user include files
+#include "FWCore/Utilities/interface/UseReflex.h"
 
 // forward declarations
-namespace ROOT {
-  namespace Reflex {
-    class SharedLibrary;
-  }
-}
+
 namespace edmplugin {
 class SharedLibrary
 {
@@ -52,7 +49,7 @@ class SharedLibrary
       const SharedLibrary& operator=(const SharedLibrary&); // stop default
 
       // ---------- member data --------------------------------
-      mutable ROOT::Reflex::SharedLibrary* library_;
+      mutable Reflex::SharedLibrary* library_;
       boost::filesystem::path path_;
 };
 

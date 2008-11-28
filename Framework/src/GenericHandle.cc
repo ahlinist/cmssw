@@ -20,7 +20,7 @@ namespace edm {
 void convert_handle(BasicHandle const& orig,
                     Handle<GenericObject>& result)
 {
-  using namespace ROOT::Reflex;
+  using namespace Reflex;
   if(orig.failedToGet()) {
     result.setWhyFailed(orig.whyFailed());
     return;

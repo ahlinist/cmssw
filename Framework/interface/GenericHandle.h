@@ -10,7 +10,7 @@
  Description: Allows interaction with data in the Event without actually using the C++ class
 
  Usage:
-    The GenericHandle allows one to get data back from the edm::Event as a ROOT::Reflex::Object instead
+    The GenericHandle allows one to get data back from the edm::Event as a Reflex::Object instead
   of as the actual C++ class type.
 
   //make a handle to hold an instance of 'MyClass'
@@ -47,8 +47,8 @@ class Handle<GenericObject> {
 public:
       ///Throws exception if iName is not a known C++ class type
       Handle(const std::string& iName) : 
-        type_(ROOT::Reflex::Type::ByName(iName)), prod_(), prov_(0), id_(0) {
-           if(type_ == ROOT::Reflex::Type()) {
+        type_(Reflex::Type::ByName(iName)), prod_(), prov_(0), id_(0) {
+           if(type_ == Reflex::Type()) {
               throw edm::Exception(edm::errors::NotFound)<<"Handle<GenericObject> told to use uknown type '"<<iName<<"'.\n Please check spelling or that a module uses this type in the job.";
            }
            if(type_.IsTypedef()){
@@ -60,10 +60,10 @@ public:
         }
    
    ///Throws exception if iType is invalid
-   Handle(const ROOT::Reflex::Type& iType):
+   Handle(const Reflex::Type& iType):
       type_(iType), prod_(), prov_(0), id_(0) {
-         if(iType == ROOT::Reflex::Type()) {
-            throw edm::Exception(edm::errors::NotFound)<<"Handle<GenericObject> given an invalid ROOT::Reflex::Type";
+         if(iType == Reflex::Type()) {
+            throw edm::Exception(edm::errors::NotFound)<<"Handle<GenericObject> given an invalid Reflex::Type";
          }
          if(type_.IsTypedef()){
             //For a 'Reflex::Typedef' the 'toType' method returns the actual type
@@ -81,7 +81,7 @@ public:
    whyFailed_(h.whyFailed_)
    { }
    
-   Handle(ROOT::Reflex::Object const& prod, Provenance const* prov):
+   Handle(Reflex::Object const& prod, Provenance const* prov):
    type_(prod.TypeOf()),
    prod_(prod),
    prov_(prov),
@@ -119,16 +119,16 @@ public:
    bool failedToGet() const {
      return 0 != whyFailed_.get();
    }
-   ROOT::Reflex::Object const* product() const { 
+   Reflex::Object const* product() const { 
      if(this->failedToGet()) { 
        throw *whyFailed_;
      } 
      return &prod_;
    }
-   ROOT::Reflex::Object const* operator->() const {return this->product();}
-   ROOT::Reflex::Object const& operator*() const {return *(this->product());}
+   Reflex::Object const* operator->() const {return this->product();}
+   Reflex::Object const& operator*() const {return *(this->product());}
    
-   ROOT::Reflex::Type const& type() const {return type_;}
+   Reflex::Type const& type() const {return type_;}
    Provenance const* provenance() const {return prov_;}
    
    ProductID id() const {return id_;}
@@ -140,8 +140,8 @@ public:
     whyFailed_=iWhyFailed;
   }
 private:
-   ROOT::Reflex::Type type_;
-   ROOT::Reflex::Object prod_;
+   Reflex::Type type_;
+   Reflex::Object prod_;
    Provenance const* prov_;    
    ProductID id_;
    boost::shared_ptr<cms::Exception> whyFailed_;

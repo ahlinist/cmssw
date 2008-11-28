@@ -119,8 +119,8 @@ bool loadLibraryForClass(const char* classname)
     //give ROOT a name for the file we are loading
     RootLoadFileSentry sentry;
     if(edmplugin::PluginCapabilities::get()->tryToLoad(cPrefix+classname)) {
-      ROOT::Reflex::Type t = ROOT::Reflex::Type::ByName(classname);
-      if (ROOT::Reflex::Type() == t) {
+      Reflex::Type t = Reflex::Type::ByName(classname);
+      if (Reflex::Type() == t) {
         //would be nice to issue a warning here
 	return false;
       }
@@ -138,10 +138,10 @@ bool loadLibraryForClass(const char* classname)
         // Too many false positives on built-in types here.
         return false;
       }
-      ROOT::Reflex::Type t = ROOT::Reflex::Type::ByName(name);
-      if (ROOT::Reflex::Type() == t) {
-        t = ROOT::Reflex::Type::ByName(classname);
-        if (ROOT::Reflex::Type() == t) {
+      Reflex::Type t = Reflex::Type::ByName(name);
+      if (Reflex::Type() == t) {
+        t = Reflex::Type::ByName(classname);
+        if (Reflex::Type() == t) {
           //would be nice to issue a warning here
           return false;
         }
@@ -289,8 +289,8 @@ void registerTypes() {
         continue;
       } else {
         //need to construct the Class ourselves
-        ROOT::Reflex::Type t = ROOT::Reflex::Type::ByName(name);
-        if(ROOT::Reflex::Type() == t) {
+        Reflex::Type t = Reflex::Type::ByName(name);
+        if(Reflex::Type() == t) {
           std::cout <<"reflex did not build "<<name<<std::endl;
           continue;
         }
