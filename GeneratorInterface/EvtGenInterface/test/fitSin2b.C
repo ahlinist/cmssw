@@ -1,6 +1,6 @@
 {
 
-  TFile f("TestJpsiKs.root");
+  TFile f("Test.root");
   htbJpsiKs->Sumw2();
   htbbarJpsiKs->Sumw2();
 

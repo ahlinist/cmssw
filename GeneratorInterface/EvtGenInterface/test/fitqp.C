@@ -1,6 +1,6 @@
 {
 
-  TFile f("TestQsup.root");
+  TFile f("Test.root");
   htbMixPlus->Sumw2();
   htbMixMinus->Sumw2();
   TH1F *hpiu = (TH1F*)htbMixMinus->Clone();

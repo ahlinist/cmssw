@@ -1,6 +1,6 @@
 {
 
-  TFile f("TestKstarmumu.root");
+  TFile f("Test.root");
   hmumuMassSqrPlus->Sumw2();
   hmumuMassSqrMinus->Sumw2();
   TH1F *hpiu = (TH1F*)hmumuMassSqrMinus->Clone();
