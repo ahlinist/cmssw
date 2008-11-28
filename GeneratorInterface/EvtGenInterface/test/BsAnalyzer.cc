@@ -12,7 +12,7 @@
 //
 
 #include <iostream>
-#include "fstream.h"
+#include <fstream>
  
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
  
@@ -60,6 +60,7 @@ void BsAnalyzer::beginJob( const EventSetup& )
    hPbs  = new TH1D( "hPbs",  "P Bs",  100,  0., 200. ) ;
    hPhibs = new TH1D( "hPhibs","Phi Bs",  100,  -3.14, 3.14) ;
    hEtabs = new TH1D( "hEtabs","Eta Bs",  100,  -7.0, 7.0) ;
+   hCosPsiBs = new TH1D( "hCosPsiBs","cos#psi in Bs -> J/#psi #phi",  50,  -1.0, 1.0) ;
    hPtmu = new TH1D( "hPtmu", "Pt Mu", 100,  0., 50. ) ;
    hPmu  = new TH1D( "hPmu",  "P Mu",  100,  0., 200. ) ;
    hPhimu = new TH1D( "hPhimu","Phi Mu",  100,  -3.14, 3.14) ;
@@ -108,14 +109,14 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    const float mmcToPs = 3.3355; 
    int nB = 0;
    int nJpsi = 0;
-   int nBp = 0;
+   // int nBp = 0;
    int nBz = 0;
    int nBzb = 0;
    int nBzmix = 0;
    int nBzunmix = 0;
    int nBzKmumu = 0;
    int nBJpsiKs = 0;
-   int nBJpsiKstar = 0;
+   // int nBJpsiKstar = 0;
 
    for ( GenEvent::particle_const_iterator p = Evt->particles_begin(); p != Evt->particles_end(); ++p ) {
 
@@ -148,22 +149,23 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
      hGeneralId->Fill((*p)->pdg_id()); 
 
      // --------------------------------------------------------------
-     if ( abs((*p)->pdg_id()) == 521 ) 
+     if ( abs((*p)->pdg_id()) == 521 ) // B^+-
        // || abs((*p)->pdg_id()/100) == 4 || abs((*p)->pdg_id()/100) == 3) 
      {
-       if (!endvert) {
-	 *undecayed << (*p)->pdg_id() << endl;
-       } else {
-	 *decayed << (*p)->pdg_id() << " --> " ;
-         for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
-	   *decayed << (*bp)->pdg_id() << " " ;
-         }
-         *decayed << endl;
+       if (endvert) {
+         htbPlus->Fill( dectime );
+	 // *undecayed << (*p)->pdg_id() << endl;
+	 //  } else {
+	 // *decayed << (*p)->pdg_id() << " --> " ;
+         // for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
+	 //  *decayed << (*bp)->pdg_id() << " " ;
+         //}
+         // *decayed << endl;
        }       
-     }
-     // if ((*p)->pdg_id() == 443) *undecayed << (*p)->pdg_id() << endl;
+       }
+     if ((*p)->pdg_id() == 443) *undecayed << (*p)->pdg_id() << endl;
      // --------------------------------------------------------------
-     if ( (*p)->pdg_id() == 531 /* && endvert */ ) {  // B_s 
+     if ( abs((*p)->pdg_id()) == 531 /* && endvert */ ) {  // B_s 
        nbs++;
        hPtbs->Fill((*p)->momentum().perp());
        hPbs->Fill( sqrt ( pow((*p)->momentum().px(),2)+pow((*p)->momentum().py(),2)+
@@ -171,16 +173,48 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        hPhibs->Fill((*p)->momentum().phi());
        hEtabs->Fill((*p)->momentum().pseudoRapidity());
        
+       int isSemilept = 0;
+       int isJpsiPhi = 0;
+       TLorentzVector pKp(0.,0.,0.,0.);
+       TLorentzVector pPhi(0.,0.,0.,0.);
+       TLorentzVector pJpsi(0.,0.,0.,0.);
+
        for ( GenVertex::particles_out_const_iterator ap = endvert->particles_out_const_begin(); ap != endvert->particles_out_const_end(); ++ap ) {
 	 hIdBsDaugs->Fill((*ap)->pdg_id());
+         if ( abs((*ap)->pdg_id()) == 12 || abs((*ap)->pdg_id()) == 14 || abs((*ap)->pdg_id()) == 16 ) isSemilept++ ;
+         if ( (*ap)->pdg_id() == 333 || (*ap)->pdg_id() == 443 ) {
+	   isJpsiPhi++ ;
+	   if ( (*ap)->pdg_id() == 333 ) {
+             pPhi.SetPxPyPzE((*ap)->momentum().px(), (*ap)->momentum().py(),
+			     (*ap)->momentum().pz(), (*ap)->momentum().e());
+             GenVertex* phivert = (*ap)->end_vertex();
+             for ( GenVertex::particles_out_const_iterator dp = phivert->particles_out_const_begin(); dp != phivert->particles_out_const_end(); ++dp ) {
+	       if ( (*dp)->pdg_id() == 321 ) 
+		 pKp.SetPxPyPzE((*dp)->momentum().px(), (*dp)->momentum().py(),
+				(*dp)->momentum().pz(), (*dp)->momentum().e());
+	     }
+	   }
+	   else if ( (*ap)->pdg_id() == 443 ) {
+	       pJpsi.SetPxPyPzE((*ap)->momentum().px(), (*ap)->momentum().py(),
+				(*ap)->momentum().pz(), (*ap)->momentum().e());
+	   }
+	 }
        }
        
-       if (mixed == 1) {
-	 htbsMix->Fill( dectime );
-       } else if (mixed == -1) {
-         htbsUnmix->Fill( dectime );
+       if (isSemilept) {
+	 if (mixed == 1) {
+	   htbsMix->Fill( dectime );
+	 } else if (mixed == -1) {
+	   htbsUnmix->Fill( dectime );
+	 }
        }
-       
+
+       if (isJpsiPhi == 2) {
+	 TVector3 booster = pPhi.BoostVector();
+	 pKp.Boost( -booster );
+	 pJpsi.Boost( -booster );
+	 hCosPsiBs->Fill( cos( pKp.Vect().Angle(pJpsi.Vect())) );
+       }
      }
      // --------------------------------------------------------------
      if ( abs((*p)->pdg_id()) == 511 /* && endvert */ ) {  // B0 
@@ -207,18 +241,11 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
 	   hEtaRadPho->Fill((*bp)->momentum().pseudoRapidity());
 	 }
          if ( (*p)->pdg_id() > 0 && ( abs((*bp)->pdg_id()) == 313 || abs((*bp)->pdg_id()) == 13 )) isKmumu++ ; 
-         if ( abs((*bp)->pdg_id()) == 11 || abs((*bp)->pdg_id()) == 13 || abs((*bp)->pdg_id()) == 15 ) isSemilept++ ;
+         if ( abs((*bp)->pdg_id()) == 12 || abs((*bp)->pdg_id()) == 14 || abs((*bp)->pdg_id()) == 16 ) isSemilept++ ;
        }
 
        hMinvb->Fill(sqrt(thePart4m.M2()));
-       /* if (fabs(sqrt(thePart4m.M2())-5.28) > 0.05) {
-	 *undecayed << sqrt(thePart4m.M2()) << "  " << (*p)->pdg_id() << " --> " ;
-         for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
-	   *undecayed << (*bp)->pdg_id() << " " ;
-         }
-         *undecayed << endl;
-       } */
-
+      
        if (isSemilept) {
 	 if (mixed == 1) {
 	   htbMix->Fill( dectime );
@@ -244,32 +271,14 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
        if (isKmumu == 3) nBzKmumu++; 
      }
      // --------------------------------------------------------------
-     if ( (*p)->pdg_id() == 443 ) {
+     if ( (*p)->pdg_id() == 443 ) { // Jpsi
        nJpsi++;
        for ( GenVertex::particles_in_const_iterator ap = prodvert->particles_in_const_begin(); ap != prodvert->particles_in_const_end(); ++ap ) {
 	 hIdJpsiMot->Fill((*ap)->pdg_id());
        }
      }
      // --------------------------------------------------------------
-     if ( abs((*p)->pdg_id()) == 521 /* && endvert */ ) {  // B+
-       nBp++;
-       htbPlus->Fill( dectime );
-       int isJpsiKstar = 0;
-       for ( GenVertex::particles_out_const_iterator bp = endvert->particles_out_const_begin(); bp != endvert->particles_out_const_end(); ++bp ) {
-         if ( (*bp)->pdg_id() == 443 || abs( (*bp)->pdg_id() ) == 323 ) isJpsiKstar++ ;          
-       }
-       if (isJpsiKstar == 2) nBJpsiKstar++;
-     }
-     // --------------------------------------------------------------
-     if ( (*p)->pdg_id() == 333 ) {  // phi 
-       if (endvert) {
-         for ( GenVertex::particles_out_const_iterator cp = endvert->particles_out_const_begin(); cp != endvert->particles_out_const_end(); ++cp ) {
-	   hIdPhiDaugs->Fill((*cp)->pdg_id());
-	 }
-       }
-     }
-     // --------------------------------------------------------------
-     if ( (*p)->pdg_id() == 13 ) { // mu+
+     if ( (*p)->pdg_id() == 13 ) { // mu+ in B0 -> K* mu mu 
        for ( GenVertex::particles_in_const_iterator p2 = prodvert->particles_in_const_begin(); p2 != prodvert->particles_in_const_end(); ++p2 ) {
 	 if ( abs((*p2)->pdg_id()) == 511 ) { // B0
 	   hPtmu->Fill((*p)->momentum().perp());
@@ -337,15 +346,7 @@ void BsAnalyzer::analyze( const Event& e, const EventSetup& )
    hnJpsi->Fill(nJpsi);
    hnBz->Fill(nBz);
    hnBzb->Fill(nBzb);
-   // *undecayed << "-------------------------------" << endl;
-   // *decayed << "-------------------------------" << endl;
-
-   // if (nBz > 0) std::cout << "nBz = " << nBz << " nBz (K*mu+mu-) = " << nBzKmumu << " nMix = " << nBzmix << std::endl;
-   // if (nBz > 0 && nBzKmumu == 0) Evt->print();
-   // if (nB > 0) std::cout << "nB = " << nB << " nBz (JPsi Ks) = " << nBJpsiKs << std::endl;
-   // if (nBp > 0) std::cout << "nB = " << nBp << " nBz (JPsi Kstar) = " << nBJpsiKstar << std::endl;
-   // if (nBp > 0 && nBJpsiKstar == 0) Evt->print();
-
+  
    return ;   
 }
 
@@ -353,17 +354,17 @@ void BsAnalyzer::endJob()
 {
   TObjArray Hlist(0);
   Hlist.Add(hGeneralId);	   
-  Hlist.Add(hIdPhiDaugs) ;
+  // Hlist.Add(hIdPhiDaugs) ;
   Hlist.Add(hIdJpsiMot) ;
   Hlist.Add(hnB);		   
   Hlist.Add(hnBz) ;		   
   Hlist.Add(hnBzb) ;
   Hlist.Add(hnJpsi) ;
-  Hlist.Add(hMinvb) ;
   Hlist.Add(hPtbs) ;	   
   Hlist.Add(hPbs) ;		   
   Hlist.Add(hPhibs) ;	   
-  Hlist.Add(hEtabs) ;	   
+  Hlist.Add(hEtabs) ;
+  Hlist.Add(hCosPsiBs) ;   
   Hlist.Add(hPtmu) ;	   
   Hlist.Add(hPmu) ;		   
   Hlist.Add(hPhimu) ;	   

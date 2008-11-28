@@ -41,7 +41,8 @@ class BsAnalyzer : public edm::EDAnalyzer
      TH1D*       hPtbs ;	   
      TH1D*       hPbs ;		   
      TH1D*       hPhibs ;	   
-     TH1D*       hEtabs ;	   
+     TH1D*       hEtabs ;
+     TH1D*       hCosPsiBs ; 	   
      TH1D*       hPtmu ;	   
      TH1D*       hPmu ;		   
      TH1D*       hPhimu ;	   

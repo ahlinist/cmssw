@@ -22,7 +22,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5000)
+    input = cms.untracked.int32(300000)
 )
 process.source = cms.Source("PythiaSource",
     pythiaHepMCVerbosity = cms.untracked.bool(True),
@@ -180,17 +180,15 @@ process.source = cms.Source("PythiaSource",
 
 process.evtgenproducer = cms.EDProducer("EvtGenProducer",
     use_default_decay = cms.untracked.bool(False),
-    decay_table = cms.FileInPath('GeneratorInterface/EvtGenInterface//data/DECAY.DEC'),
+    decay_table = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/DECAY.DEC'),
     particle_property_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/evt.pdl'),
-    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/incl_BtoJpsi_mumu.dec'),
+    user_decay_file = cms.FileInPath('GeneratorInterface/EvtGenInterface/data/Validation.dec'),
     list_forced_decays = cms.vstring('MyB0', 
-        'Myanti-B0', 
-        'MyB+', 
-        'MyB-', 
+        'Myanti-B0',  
         'MyB_s0', 
         'Myanti-B_s0', 
-        'MyLambda_b0', 
-        'Myanti-Lambda_b0'),                                    
+        'MyD_s+', 
+        'MyD_s-'),                                    
     processParameters = cms.vstring('MDCY(134,1) = 0', 
         'MDCY(137,1) = 0', 
         'MDCY(138,1) = 0', 
@@ -337,7 +335,7 @@ process.evtgenproducer = cms.EDProducer("EvtGenProducer",
 )
 
 process.myout = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('/tmp/testMCpool.root'),
+    fileName = cms.untracked.string('/data/covarell/evtgen-validation/testMCpool.root'),
     outputCommands = cms.untracked.vstring('keep *', 
         'drop *_source_*_*')
 )
