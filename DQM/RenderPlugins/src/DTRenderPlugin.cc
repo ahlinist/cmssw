@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.32 2008/10/31 14:57:24 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.33 2008/11/03 16:49:44 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.32 $
-  \date $Date: 2008/10/31 14:57:24 $
+  \version $Revision: 1.33 $
+  \date $Date: 2008/11/03 16:49:44 $
 */
 
 #include "TProfile2D.h"
@@ -655,6 +655,30 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetGrid(1,0);
     return;
   }
+
+  
+  if(o.name.find("NSegmPerEvent_W" ) < o.name.size()) {
+//     obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    c->SetGrid(0,1);
+    c->SetBottomMargin(0.1);
+    obj->GetXaxis()->LabelsOption("u");
+    obj->GetXaxis()->SetLabelSize(0.03);
+
+    return;
+  }
+
+  if(o.name.find("NevtPerLS" ) < o.name.size()) {
+//     obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    c->SetGrid(0,1);
+    c->SetBottomMargin(0.1);
+    obj->GetXaxis()->LabelsOption("u");
+    obj->GetXaxis()->SetLabelSize(0.03);
+
+    return;
+  }
+
 
   return;
 
