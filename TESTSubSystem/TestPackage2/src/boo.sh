@@ -1,3 +1,3 @@
-#!/usr/bin/env perl
+#!/bin/bash
 sdfdsf
 
