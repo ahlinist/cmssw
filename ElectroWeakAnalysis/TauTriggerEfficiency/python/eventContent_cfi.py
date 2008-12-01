@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 #OutputCommands = cms.untracked.vstring(
 #    "drop *",
+#    "keep *_*_*_HLTextra",
 #    "keep *_*_*_sampleProducer",
 #    "keep *_TriggerResults_*_HLT",
 #    "keep *_*_Tau_HLT",
@@ -42,6 +43,7 @@ import FWCore.ParameterSet.Config as cms
 # For Mike's QCD, there is no RECO, but Reconstruction
 OutputCommands = cms.untracked.vstring(
     "drop *",
+    "keep *_*_*_HLTextra",
     "keep *_*_*_sampleProducer",
     "keep *_TriggerResults_*_HLT",
     "keep *_*_Tau_HLT",
@@ -62,6 +64,12 @@ OutputCommands = cms.untracked.vstring(
     "keep recoPFCandidates_*_*_*",
     "keep recoPFClusters_*_*_*",
     "keep recoPFJets_iterativeCone5PFJets_*_*",
+    "keep recoTrackExtras_*_*_HLT",
+    "keep recoTrackExtras_hltPixelTracks_*_*",
+    "keep recoTrackExtras_pixelTracks_*_*",
+    "keep recoTrackIPTagInfos_*_*_*",
+    "keep recoTracks_generalTracks_*_*",
+    "keep recoTracks_hltPixelTracks_*_*",
     "keep recoTracks_pixelTracks_*_Reconstruction",
     "keep recoVertexs_*_*_*",
     "drop *_TriggerResults_*_sampleProducer",
