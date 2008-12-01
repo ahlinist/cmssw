@@ -25,3 +25,4 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels30X_cabling.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelCPEGenericErrorParm.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelTemplates.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStrip_NewCabling.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcabling_craft.db
