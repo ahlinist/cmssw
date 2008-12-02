@@ -4,7 +4,6 @@
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //DQM services
@@ -101,8 +100,9 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
 
   scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
 
-  dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : name_;
-  
+  //dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : name_;
+  dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : "";
+
   if ( verbosity ) print();
 }
 
@@ -129,6 +129,19 @@ DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
   //std::cout << "--> configuring fileSets..." << std::endl;
   readCfgParameter<cfgEntryFileSet>(cfg, fileSets_);
   
+//--- check that dqmDirectory_store configuration parameters are specified for all fileSets,
+//    unless there is only one fileSet to be loaded
+//    (otherwise histograms of different fileSets get overwritten,
+//     once histograms of the next fileSet are loaded)
+  for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
+	fileSet != fileSets_.end(); ++fileSet ) {
+    if ( fileSet->second.dqmDirectory_store_ == "" && fileSets_.size() > 1 ) {
+      edm::LogError ("DQMFileLoader") << " dqmDirectory_store undefined for fileSet = " << fileSet->second.name_ << " !!";
+      cfgError_ = 1;
+      break;
+    }
+  }
+
   std::cout << "done." << std::endl;
 }
 
@@ -192,7 +205,6 @@ void DQMFileLoader::endJob()
       inputFile.Close();
     }
   }
-
   
   //for ( std::map<std::string, sstring>::const_iterator inputFile = subDirectoryMap_.begin();
   //  	  inputFile != subDirectoryMap_.end(); ++inputFile ) {
@@ -215,32 +227,38 @@ void DQMFileLoader::endJob()
 
       //if ( verbosity ) dqmStore.showDirStructure();
       
-      std::string inputDirectory = dqmRootDirectory;
-      //std::cout << "inputDirectory = " << inputDirectory << std::endl;
-      std::string outputDirectory = dqmDirectoryName(std::string(inputDirectory)).append(fileSet->second.dqmDirectory_store_);
-      //std::cout << "outputDirectory = " << outputDirectory << std::endl;
+//--- if dqmDirectory_store specified in configuration parameters,
+//    move histograms from dqmRootDirectory to dqmDirectory_store
+//    (if the histograms are not moved, the histograms get overwritten,
+//     the next time DQMStore::open is called)
+      if ( fileSet->second.dqmDirectory_store_ != "" ) {
+	std::string inputDirectory = dqmRootDirectory;
+	//std::cout << "inputDirectory = " << inputDirectory << std::endl;
+	std::string outputDirectory = dqmDirectoryName(std::string(inputDirectory)).append(fileSet->second.dqmDirectory_store_);
+	//std::cout << "outputDirectory = " << outputDirectory << std::endl;
 
-      dqmStore.setCurrentFolder(inputDirectory);
-      std::vector<std::string> dirNames = dqmStore.getSubdirs();
-      for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
-	    dirName != dirNames.end(); ++dirName ) {
-	std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
-	//std::cout << " subDirName = " << subDirName << std::endl;
-
-	const sstring& subDirectories = subDirectoryMap_[*inputFileName];
-	if ( subDirectories.find(subDirName) != subDirectories.end() ) {
-	  std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
-	  //std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
+	dqmStore.setCurrentFolder(inputDirectory);
+	std::vector<std::string> dirNames = dqmStore.getSubdirs();
+	for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
+	      dirName != dirNames.end(); ++dirName ) {
+	  std::string subDirName = dqmSubDirectoryName_merged(inputDirectory, *dirName);
+	  //std::cout << " subDirName = " << subDirName << std::endl;
 	  
-	  std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
-	  //std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
+	  const sstring& subDirectories = subDirectoryMap_[*inputFileName];
+	  if ( subDirectories.find(subDirName) != subDirectories.end() ) {
+	    std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
+	    //std::cout << " inputDirName_full = " << inputDirName_full << std::endl;
+	    
+	    std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
+	    //std::cout << " outputDirName_full = " << outputDirName_full << std::endl;
 
 //--- load histograms contained in inputFile into inputDirectory;
 //    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
 //    add histograms in inputFile to those in outputDirectory afterwards;
 //    clear inputDirectory once finished processing all inputFiles.
-	  int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 3;
-	  dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, mode, true);
+	    int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 3;
+	    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, mode, true);
+	  }
 	}
       }
     }
