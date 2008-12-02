@@ -13,314 +13,17 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.1 2008/10/13 16:59:35 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.3 2008/11/27 17:55:25 trommers Exp $
 //
 //
 
-// System include files
-#include <memory>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-
-// ROOT includes
-#include <TNtuple.h>
-
-// Framework include files
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/InputTag.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
-
-// SUSY include files
-#include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
-#include "SusyAnalysis/EventSelector/interface/SelectorSequence.h"
-
-#include "DataFormats/PatCandidates/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Photon.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
-
-#include "SusyAnalysis/AnalysisSkeleton/test/ALPGENParticleId.cc"
-
-#include "PhysicsTools/Utilities/interface/deltaPhi.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
-#include "DataFormats/PatCandidates/interface/Hemisphere.h"
-
-
-//
-// Class declaration
-//
-class SusyDiJetAnalysis : public edm::EDAnalyzer {
-public:
-  explicit SusyDiJetAnalysis(const edm::ParameterSet&);
-  ~SusyDiJetAnalysis();
-  
-private:
-  //*** CMSSW interface
-  /// Called once per job, at start
-  virtual void beginJob(const edm::EventSetup&) ;
-  /// Called for each event
-  virtual void analyze(const edm::Event&, const edm::EventSetup&);
-  /// Called once per job, at end
-  virtual void endJob();
-
-  /// Print a summary of counts for all selectors
-  virtual void printSummary(void);
-
-  //*** Plotting
-  /// Define all plots
-  virtual void initPlots();
-  /// Fill all plots for an event
-  virtual void fillPlots( const edm::Event&, const SelectorDecisions& );
-
-private:
-
-  // Selection
-  SelectorSequence sequence_;              ///< Interface to selectors
-  std::vector<std::string> plotSelection_; ///< Container for plotting selection
-  std::vector<size_t> plotSelectionIndices_; ///< Selector indices for plotting selection
-
-  // Event information
-  double eventWeight_;  ///< Event weight from config. file (if <0, get it from event)
-  edm::InputTag weightSource_; ///< Source for CSA07 event weight producer
-  double weight_;       ///< Actual event weight (either config. or event)
-  int    processId_;    ///< CSA07 generator process ID
-  int run_, event_;
-
-
-  // Counters
-  unsigned int nrEventTotalRaw_;          ///< Raw number of events (+1 at each event)
-  double nrEventTotalWeighted_;           ///< Weighted #(events)
-  std::vector<float> nrEventSelected_;    ///< Selected #(events) for each module
-  std::vector<float> nrEventAllButOne_;   ///< All-but-one selected #(events) for each module
-  std::vector<float> nrEventCumulative_;  ///< Cumulative selected #(events) for each module
-
-  // Plots
-  TNtuple* ntuple_; // Will contain all the selector information we want to keep
-  TTree * mAllData; // Will contain the additional di-jet specific data
-  TTree * mSelectorData; // Will contain the information on the selector decisions
-
-  int mTempTreeRun;
-  int mTempTreeEvent;
-
-
-  bool mTempTreeHLT1JET;
-  bool mTempTreeHLT2JET;
-  bool mTempTreeHLT1MET1HT;
-
-
-  double mTempTreeHT2J;
-  double mTempTreeHT3J;
-  double mTempTreeHT4J;
-  double mTempTreeMHT2J;
-  double mTempTreeMHT2Jphi;
-  double mTempTreeMHT3J;
-  double mTempTreeMHT3Jphi;
-  double mTempTreeMHT4J;
-  double mTempTreeMHT4Jphi;
-
-  double mTempTreeMET;
-  double mTempTreeMEX;
-  double mTempTreeMEY;
-  double mTempTreeMETphi;
-  double mTempTreeMETeta;
-  double mTempTreeSumET;
-  double mTempTreeSumETSignif;
-  double mTempTreeMETuncor;
-  double mTempTreeMETphiuncor;
-
-  double mTempTreeR1;
-  double mTempTreeR2;
-
-  double mTempTreeAlpha;
-  double mTempTreeAlphaT;
-  double mTempTreeAlpha3j;
-  double mTempTreeAlphaT3j;
-  double mTempTreeAlpha4j;
-  double mTempTreeAlphaT4j;
-
-  double mTempTreeAlphaV3j;
-  double mTempTreeAlphaVT3j;
-  double mTempTreeAlphaV3j12;
-  double mTempTreeAlphaVT3j12;
-  double mTempTreeAlphaV3j13;
-  double mTempTreeAlphaVT3j13;
-  double mTempTreeAlphaV4j;
-  double mTempTreeAlphaVT4j;
-
-  double mTempTreeJJPhi;
-  double mTempTreeJJPhi3j;
-  double mTempTreeJJPhi4j;
-
-  int    mTempTreeNjets;
- 
-  int   mTempTreeNJetsT[50];
-  float mTempTreeJetsTPt[50];
-  float mTempTreeJetsTEta[50];
-  float mTempTreeJetsTPhi[50];
- 
-  double mTempTreeJetsEt[50];
-  double mTempTreeJetsPt[50];
-  double mTempTreeJetsPx[50];
-  double mTempTreeJetsPy[50];
-  double mTempTreeJetsPz[50];
-  double mTempTreeJetsE[50];
-  double mTempTreeJetsEta[50];
-  double mTempTreeJetsPhi[50];
-  double mTempTreeJetsFem[50];
-
-  double mTempTreeGenJetsEt[50];
-  double mTempTreeGenJetsPt[50];
-  double mTempTreeGenJetsE[50];
-  double mTempTreeGenJetsPx[50];
-  double mTempTreeGenJetsPy[50];
-  double mTempTreeGenJetsPz[50];
-  double mTempTreeGenJetsEta[50];
-  double mTempTreeGenJetsPhi[50];
- 
-
-  int    mTempTreeNphot;
-  double mTempTreePhotEt[50];
-  double mTempTreePhotPt[50];
-  double mTempTreePhotPx[50];
-  double mTempTreePhotPy[50];
-  double mTempTreePhotPz[50];
-  double mTempTreePhotE[50];
-  double mTempTreePhotEta[50];
-  double mTempTreePhotPhi[50];
-  double mTempTreePhotTrkIso[50];
-  double mTempTreePhotECalIso[50];
-  double mTempTreePhotHCalIso[50];
-  double mTempTreePhotAllIso[50];
-
-  int    mTempTreeNelec;
-  double mTempTreeElecEt[50];
-  double mTempTreeElecPt[50];
-  double mTempTreeElecPx[50];
-  double mTempTreeElecPy[50];
-  double mTempTreeElecPz[50];
-  double mTempTreeElecE[50];
-  double mTempTreeElecEta[50];
-  double mTempTreeElecPhi[50];
-  double mTempTreeElecTrkIso[50];
-  double mTempTreeElecECalIso[50];
-  double mTempTreeElecHCalIso[50];
-  double mTempTreeElecAllIso[50];
-  double mTempTreeElecTrkChiNorm[50];
-
-
-  double mTempTreeElecCharge[50];
-
-  int    mTempTreeNmuon;
-  double mTempTreeMuonEt[50];
-  double mTempTreeMuonPt[50];
-  double mTempTreeMuonPx[50];
-  double mTempTreeMuonPy[50];
-  double mTempTreeMuonPz[50];
-  double mTempTreeMuonE[50];
-  double mTempTreeMuonEta[50];
-  double mTempTreeMuonPhi[50];
-  double mTempTreeMuonTrkIso[50];
-  double mTempTreeMuonECalIso[50];
-  double mTempTreeMuonHCalIso[50];
-  double mTempTreeMuonAllIso[50];
-  double mTempTreeMuonTrkChiNorm[50];
-
-  double mTempTreeMuonCharge[50];
-
-  // markus 
-  int mTempAlpIdTest;
-  double mTempAlpPtScale;
-
-  double mTempMuonPairMass;
-  int mTempMuonPairIndex[2];
-
-  int    mTempTreeNtau;
-  double mTempTreeTauEt[50];
-  double mTempTreeTauPt[50];
-  double mTempTreeTauPx[50];
-  double mTempTreeTauPy[50];
-  double mTempTreeTauPz[50];
-  double mTempTreeTauE[50];
-  double mTempTreeTauEta[50];
-  double mTempTreeTauPhi[50];
-  double mTempTreeTauTrkIso[50];
-  double mTempTreeTauECalIso[50];
-  double mTempTreeTauHCalIso[50];
-  double mTempTreeTauAllIso[50];
-
-
-  int mTempTreeNhemispheres;
-  double mTempTreeHemispheresEt[2];
-  double mTempTreeHemispheresPt[2];
-  double mTempTreeHemispheresPx[2];
-  double mTempTreeHemispheresPy[2];
-  double mTempTreeHemispheresPz[2];
-  double mTempTreeHemispheresE[2];
-  double mTempTreeHemispheresEta[2];
-  double mTempTreeHemispheresPhi[2]; 
-
-  double mDeltaPhiHemi;
-  double mAlphaTHemi;
-
-  bool is_ok;
-  int mTempSimuCheck;
-
-  int length;
-  int ids[1000];
-  int refs[1000];
-  float genPt[1000];
-  float genPhi[1000];
-  float genEta[1000];
-  int genStatus[1000];
-
-
-  double mTempTreeEventWeight;
-  int    mTempTreeProcID;
-  double mTempTreePthat;
-  int mGlobalDecision;
-
-  // Data tags
-  edm::InputTag triggerResults_; 
-  std::vector<std::string> pathNames_;
-
-
-  edm::InputTag jetTag_;
-  edm::InputTag metTag_;
-  edm::InputTag photTag_;
-  edm::InputTag elecTag_;
-  edm::InputTag muonTag_;
-  edm::InputTag tauTag_;
-  edm::InputTag genTag_;
-  std::string outputFileName_;
-
-  //input from .cfg
-  bool theSoup;
-  double fileWeight;
-
-  double localPi;
-  unsigned int *mSelectorResults;
-
-};
+#include "SusyAnalysis/AnalysisSkeleton/test/SusyDiJetAnalysis.h"
 
 //________________________________________________________________________________________
 SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
   plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
   eventWeight_( iConfig.getParameter<double>("eventWeight") ),
-  //  weightSource_(iConfig.getParameter<edm::InputTag>("weightSource") ),genTag_(iConfig.getParameter<edm::InputTag>("genTag")), weight_(0.0), nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0)
   weightSource_(iConfig.getParameter<edm::InputTag>("weightSource") ), weight_(0.0), nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
 
 {
@@ -430,13 +133,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   bool dec(true);
   for ( size_t i=0; i<sequence_.size(); ++i ) {
     dec = dec && decisions.decision(i);
-    // edm::LogVerbatim("SusyDiJetEvent")
-    //    << " " << sequence_.selectorName(i)
-    //   << " " << decisions.decision(i)
-    //   << " " << decisions.complementaryDecision(i)
-    //   << " " << decisions.cumulativeDecision(i)
-    //  << " " << dec << std::endl;
-    
+ 
     // Add the decision to the tree
     mSelectorResults[i] = (decisions.decision(i)?1:0);
     
@@ -517,8 +214,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       if (trigName == "HLT1jet") mTempTreeHLT1JET=true;
       if (trigName == "HLT2jet") mTempTreeHLT2JET=true;
       if (trigName == "HLT1MET1HT") mTempTreeHLT1MET1HT=true;
-      //      edm::LogWarning("HLTEventSelector") << "Henning Trigger Name: "<< trigName << 
-      //	           " Decision: " << mTempTreeHLT2JET << " " << mTempTreeHLT1MET1HT ;
+     
     } 
   }
 
@@ -585,35 +281,6 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeHemispheresPhi[i] = hemispheres[i].phi();
   }   
 
-  mDeltaPhiHemi = fabs(reco::deltaPhi(hemispheres[0].phi(),hemispheres[1].phi()));
-
-  double alphaHemi;
-  // Get the one with lower et()
-  if ( hemispheres[0].et() > hemispheres[1].et() ) {
-    alphaHemi =  hemispheres[1].et();
-  } else {
-    alphaHemi = hemispheres[0].et();
-  }
-    
-  // Now divide by the invariant mass of the dijet
-  double energy_sumHemi = hemispheres[0].energy() + hemispheres[1].energy();
-  double et_sumHemi = hemispheres[0].et() + hemispheres[1].et();
-  // TODO - there must be a better function call for this:
-  double momentum_sum_xHemi =
-    (hemispheres[0].momentum().X()+hemispheres[1].momentum().X());
-  double momentum_sum_yHemi =
-    (hemispheres[0].momentum().Y()+hemispheres[1].momentum().Y());
-  double momentum_sum_zHemi =
-    (hemispheres[0].momentum().Z()+hemispheres[1].momentum().Z());
-  
-  // Note, sqrt is inefficient, could be adapted to use squared threshold
- 
-  double minvtHemi = sqrt(et_sumHemi*et_sumHemi - momentum_sum_xHemi*momentum_sum_xHemi - momentum_sum_yHemi*momentum_sum_yHemi);
-  
-// Calculate alpha
-  alphaHemi /= minvtHemi;
-  mAlphaTHemi = alphaHemi;
-  //  if(alphaHemi > 0.55) cout << " alphaHemi " << alphaHemi << endl;
  
   
   // get the photons
@@ -672,9 +339,6 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecECalIso[i] = (*elecHandle)[i].ecalIso();
     mTempTreeElecHCalIso[i] = (*elecHandle)[i].hcalIso() ;
     mTempTreeElecAllIso[i] = (*elecHandle)[i].caloIso() ;
-    //   if( (*elecHandle)[i].gsfTrack().isNonnull())
-    //      mTempTreeElecTrkChiNorm[i] = (*elecHandle)[i].gsfTrack().get () ->chi2()/ (*elecHandle)[i].gsfTrack().get()->ndof();
-    //    else  mTempTreeElecTrkChiNorm[i] = 999;
     mTempTreeElecCharge[i] = (*elecHandle)[i].charge();
   }
       
@@ -710,37 +374,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     else  mTempTreeMuonTrkChiNorm[i] = 999;
   }
   
-  double aMass = -1.;
-  double diffZMass = 100.;
-  mTempMuonPairMass = -1.;
-  mTempMuonPairIndex[0]=-1;
-  mTempMuonPairIndex[1]=-1;
-  //  edm::LogInfo("SusyDiJetEvent") <<mTempTreeNmuon;
-  if( mTempTreeNmuon > 1 )
-    {
-      //  edm::LogInfo("SusyDiJetEvent") << "2 or more muons";
-      for(int i=0;i<mTempTreeNmuon;i++)
-	{
-	  //  edm::LogInfo("SusyDiJetEvent") << "loopi : "<< i;
 
-	  for(int j=0;j<mTempTreeNmuon;j++)
-	    {
-	      //  edm::LogInfo("SusyDiJetEvent") << "loop j : "<< j;
-	      if((i==j)||(i>j)||((*muonHandle)[i].charge()==(*muonHandle)[j].charge())) 
-		{  continue;}
-	      // edm::LogInfo("SusyDiJetEvent") << "Calculate Z mass";
-	      aMass = ((*muonHandle)[i].p4()+(*muonHandle)[j].p4() ).mass();
-	      if(diffZMass>fabs(aMass-91.0))
-		{
-		  diffZMass = fabs(aMass-91.0);
-		  mTempMuonPairMass = aMass;
-		  mTempMuonPairIndex[0]=i;
-		  mTempMuonPairIndex[1]=j;
-		}     
-	    }
-	}
-    }
-     
 
   // get the taus
   edm::Handle< std::vector<pat::Tau> > tauHandle;
@@ -779,66 +413,10 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     return;
   }
 
-  // check the number of jets
-  if ( jetHandle->size() < 2 ) {
-    edm::LogInfo("SusySelectorExample") << "Insufficient number of jets in event";
-    return;
-  }
-  
+
   //get number of jets
   mTempTreeNjets = jetHandle->size();
   
-  //calculate HT from the 2 jets:
-  mTempTreeHT2J = (*jetHandle)[0].pt() + (*jetHandle)[1].pt();
-  
-  // do the azimuthal angle cut
-  double delta_phi = (*jetHandle)[0].phi() - (*jetHandle)[1].phi();
-  // Correct for negatives
-  if ( delta_phi < 0.0 ) {
-    delta_phi = -delta_phi;
-  }  
-  // Correct for smaller angle
-  if ( delta_phi > localPi ) {
-    delta_phi = 2.0*localPi - delta_phi;
-  }  
-  // 1D jjphi histogram
-  //mJJPhi1DHistogram->Fill(delta_phi);
-  mTempTreeJJPhi = delta_phi;
-  
-
-  //chf
-  if (mTempTreeNjets > 2){
-    double tmp_phi2j = atan2((*jetHandle)[1].momentum().Y()+(*jetHandle)[2].momentum().Y()
-			     ,(*jetHandle)[1].momentum().X()+(*jetHandle)[2].momentum().X());
-    delta_phi = (*jetHandle)[0].phi() -tmp_phi2j;
-    if ( delta_phi < 0.0 ) {
-      delta_phi = -delta_phi;
-    }  
-    if ( delta_phi > localPi ) {
-      delta_phi = 2.0*localPi - delta_phi;
-    }  
-    mTempTreeJJPhi3j = delta_phi;
-  } else {
-    mTempTreeJJPhi3j = -999;
-  }
-
-  if (mTempTreeNjets > 3){
-    double tmp_phi2j_1 = atan2((*jetHandle)[0].momentum().Y()+(*jetHandle)[3].momentum().Y()
-			     ,(*jetHandle)[0].momentum().X()+(*jetHandle)[3].momentum().X());
-    double tmp_phi2j_2 = atan2((*jetHandle)[1].momentum().Y()+(*jetHandle)[2].momentum().Y()
-			     ,(*jetHandle)[1].momentum().X()+(*jetHandle)[2].momentum().X());
-    delta_phi = tmp_phi2j_1-tmp_phi2j_2;
-    if ( delta_phi < 0.0 ) {
-      delta_phi = -delta_phi;
-    }  
-    if ( delta_phi > localPi ) {
-      delta_phi = 2.0*localPi - delta_phi;
-    }  
-    mTempTreeJJPhi4j = delta_phi;
-  } else {
-    mTempTreeJJPhi4j = -999;
-  }
-
 
   // Add the jets
   int i=0;
@@ -878,7 +456,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      
       //  const reco::TrackRefVector & associatedTracks();      
       mTempTreeNJetsT[i] = ((*jetHandle)[i].associatedTracks()).size();
-      if(((*jetHandle)[i].associatedTracks()).isAvailable()) { // edm::LogWarning("SusySelectorExample") << "Jet Tracks"<< " i "<< i<<" "<< mTempTreeNJetsT[i]<< " "<< ((*jetHandle)[i].associatedTracks())[0]->pt();
+      if(((*jetHandle)[i].associatedTracks()).isAvailable()) { 
 	
 	float maxPt = 0;
 	int maxPtIndex = 0;
@@ -888,15 +466,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	    maxPtIndex = pttest;
 	  }
 	  
-	  //	edm::LogWarning("SusySelectorExample") << "Jet Tracks pt"<<  float(((*jetHandle)[i].associatedTracks())[pttest]->pt());
 	}
-	//  edm::LogWarning("SusySelectorExample") << "Jet Tracks tst: "<<float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->pt());
 	mTempTreeJetsTPt[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->pt());
 	mTempTreeJetsTEta[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->eta());
 	mTempTreeJetsTPhi[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->phi());
       }
       else {
-	//edm::LogWarning("SusySelectorExample") << "No Jet Tracks"<< " i "<< i<<" "<< mTempTreeNJetsT[i]   ;
 	mTempTreeJetsTPt[i] = -1 ;
 	mTempTreeJetsTEta[i] = -10 ;
 	mTempTreeJetsTPhi[i] = -10 ;
@@ -904,179 +479,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       i++;
     }
   }
+  
   mTempTreeNjets = i;
-  // Calculate alpha
-  // = pt of 2nd hardest jet / dijet invariant mass
-  double alpha;
-  // Get the one with lower et()
-  if ( (*jetHandle)[0].et() > (*jetHandle)[1].et() ) {
-    alpha = (*jetHandle)[1].et();
-  } else {
-    alpha = (*jetHandle)[0].et();
-  }
-    
-  // Now divide by the invariant mass of the dijet
-  double energy_sum = (*jetHandle)[0].energy() + (*jetHandle)[1].energy();
-  double et_sum = (*jetHandle)[0].et() + (*jetHandle)[1].et();
-  // TODO - there must be a better function call for this:
-  double momentum_sum_x =
-    ((*jetHandle)[0].momentum().X()+(*jetHandle)[1].momentum().X());
-  double momentum_sum_y =
-    ((*jetHandle)[0].momentum().Y()+(*jetHandle)[1].momentum().Y());
-  double momentum_sum_z =
-    ((*jetHandle)[0].momentum().Z()+(*jetHandle)[1].momentum().Z());
-  
-  // Note, sqrt is inefficient, could be adapted to use squared threshold
-  double invariant_mass = sqrt(energy_sum*energy_sum - momentum_sum_x*momentum_sum_x 
-			       - momentum_sum_y*momentum_sum_y - momentum_sum_z*momentum_sum_z);
-  double minvt = sqrt(et_sum*et_sum - momentum_sum_x*momentum_sum_x - momentum_sum_y*momentum_sum_y);
-  
-// Calculate alpha
-  alpha /= invariant_mass;
-  
-  // Fill the histogram
-  //mAlpha1DHistogram->Fill(alpha);
-  mTempTreeAlpha = alpha;
-  mTempTreeAlphaT = (*jetHandle)[1].et()/minvt;
 
-  // Do the MHT save
-  // Just vector sum of di-jet momenta scaled
-  mTempTreeMHT2J = sqrt(momentum_sum_x*momentum_sum_x + momentum_sum_y*momentum_sum_y);
-  mTempTreeMHT2Jphi = atan2(-momentum_sum_y,-momentum_sum_x);
-
-  if ( mTempTreeNjets > 2 ) {
-    energy_sum += (*jetHandle)[2].energy();
-    et_sum += (*jetHandle)[2].et();
-    momentum_sum_x +=(*jetHandle)[2].momentum().X();
-    momentum_sum_y +=(*jetHandle)[2].momentum().Y();
-    momentum_sum_z +=(*jetHandle)[2].momentum().Z();
-    invariant_mass = sqrt(energy_sum*energy_sum - momentum_sum_x*momentum_sum_x 
-			  - momentum_sum_y*momentum_sum_y - momentum_sum_z*momentum_sum_z);
-    minvt = sqrt(et_sum*et_sum - momentum_sum_x*momentum_sum_x - momentum_sum_y*momentum_sum_y);
-
-    double pt23 = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[2],2) 
-                     + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[2],2));
-    double p23  = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[2],2) 
-                     + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[2],2)
-                     + pow(mTempTreeJetsPz[1]+mTempTreeJetsPz[2],2) );
-    double etvec23 = (mTempTreeJetsE[1]+mTempTreeJetsE[2])* pt23/p23;
-
-    double pt13 = sqrt(pow(mTempTreeJetsPx[0]+mTempTreeJetsPx[2],2) 
-                     + pow(mTempTreeJetsPy[0]+mTempTreeJetsPy[2],2));
-    double p13  = sqrt(pow(mTempTreeJetsPx[0]+mTempTreeJetsPx[2],2) 
-                     + pow(mTempTreeJetsPy[0]+mTempTreeJetsPy[2],2)
-                     + pow(mTempTreeJetsPz[0]+mTempTreeJetsPz[2],2) );
-    double etvec13 = (mTempTreeJetsE[0]+mTempTreeJetsE[2])* pt13/p13;
-
-    double pt12 = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[0],2) 
-                     + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[0],2));
-    double p12  = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[0],2) 
-                     + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[0],2)
-                     + pow(mTempTreeJetsPz[1]+mTempTreeJetsPz[0],2) );
-    double etvec12 = (mTempTreeJetsE[1]+mTempTreeJetsE[0])* pt12/p12;
-
-    if ( (*jetHandle)[0].et() > etvec23){
-      mTempTreeAlphaV3j  = etvec23/invariant_mass;
-      mTempTreeAlphaVT3j = etvec23/minvt;
-    } else {
-      mTempTreeAlphaV3j  = (*jetHandle)[0].et()/invariant_mass;
-      mTempTreeAlphaVT3j = (*jetHandle)[0].et()/minvt;
-    }
-    if ( (*jetHandle)[1].et() > etvec13){
-      mTempTreeAlphaV3j13  = etvec13/invariant_mass;
-      mTempTreeAlphaVT3j13 = etvec13/minvt;
-    } else {
-      mTempTreeAlphaV3j13  = (*jetHandle)[1].et()/invariant_mass;
-      mTempTreeAlphaVT3j13 = (*jetHandle)[1].et()/minvt;
-    }
-    if ( (*jetHandle)[2].et() > etvec12){
-      mTempTreeAlphaV3j12  = etvec12/invariant_mass;
-      mTempTreeAlphaVT3j12 = etvec12/minvt;
-    } else {
-      mTempTreeAlphaV3j12  = (*jetHandle)[2].et()/invariant_mass;
-      mTempTreeAlphaVT3j12 = (*jetHandle)[2].et()/minvt;
-    }
-
-    if ( (*jetHandle)[0].et() > (*jetHandle)[1].et()+(*jetHandle)[2].et()){
-      mTempTreeAlpha3j = ((*jetHandle)[1].et()+(*jetHandle)[2].et())/invariant_mass;
-      mTempTreeAlphaT3j = ((*jetHandle)[1].et()+(*jetHandle)[2].et())/minvt;
-    } else {
-      mTempTreeAlpha3j = (*jetHandle)[0].et()/invariant_mass;
-      mTempTreeAlphaT3j = (*jetHandle)[0].et()/minvt;
-    }
-
-    mTempTreeHT3J = mTempTreeHT2J + (*jetHandle)[2].pt();
-    mTempTreeMHT3J = sqrt(momentum_sum_x*momentum_sum_x + momentum_sum_y*momentum_sum_y);
-    mTempTreeMHT3Jphi = atan2(-momentum_sum_y,-momentum_sum_x);
-
-  } else {
-    mTempTreeAlpha3j  = -999;
-    mTempTreeAlphaT3j = -999;
-
-    mTempTreeAlphaV3j    = -999;
-    mTempTreeAlphaVT3j   = -999;
-    mTempTreeAlphaV3j13  = -999;
-    mTempTreeAlphaVT3j13 = -999;
-    mTempTreeAlphaV3j12  = -999;
-    mTempTreeAlphaVT3j12 = -999;
-
-    mTempTreeHT3J     = -999;
-    mTempTreeMHT3J    = -999;
-    mTempTreeMHT3Jphi = -999;
-  }
-
-  if ( mTempTreeNjets > 3 ) {
-    energy_sum += (*jetHandle)[3].energy();
-    et_sum += (*jetHandle)[3].et();
-    momentum_sum_x +=(*jetHandle)[3].momentum().X();
-    momentum_sum_y +=(*jetHandle)[3].momentum().Y();
-    momentum_sum_z +=(*jetHandle)[3].momentum().Z();
-    invariant_mass = sqrt(energy_sum*energy_sum - momentum_sum_x*momentum_sum_x 
-			  - momentum_sum_y*momentum_sum_y - momentum_sum_z*momentum_sum_z);
-    minvt = sqrt(et_sum*et_sum - momentum_sum_x*momentum_sum_x - momentum_sum_y*momentum_sum_y);
-
-
-
-    double pt23 = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[2],2) + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[2],2));
-    double p23  = sqrt(pow(mTempTreeJetsPx[1]+mTempTreeJetsPx[2],2) + pow(mTempTreeJetsPy[1]+mTempTreeJetsPy[2],2)
-                     + pow(mTempTreeJetsPz[1]+mTempTreeJetsPz[2],2) );
-
-    double pt14 = sqrt(pow(mTempTreeJetsPx[0]+mTempTreeJetsPx[3],2) + pow(mTempTreeJetsPy[0]+mTempTreeJetsPy[3],2));
-    double p14  = sqrt(pow(mTempTreeJetsPx[0]+mTempTreeJetsPx[3],2) + pow(mTempTreeJetsPy[0]+mTempTreeJetsPy[3],2)
-                     + pow(mTempTreeJetsPz[0]+mTempTreeJetsPz[3],2) );
-
-    double etvec23 = (mTempTreeJetsE[1]+mTempTreeJetsE[2])* pt23/p23;
-    double etvec14 = (mTempTreeJetsE[0]+mTempTreeJetsE[3])* pt14/p14;
-
-    if ( etvec14 > etvec23 ){
-      mTempTreeAlphaV4j  = etvec23/invariant_mass;
-      mTempTreeAlphaVT4j = etvec23/minvt;
-    } else {
-      mTempTreeAlphaV4j  = etvec14/invariant_mass;
-      mTempTreeAlphaVT4j = etvec14/minvt;
-    }
-
-    if ( (*jetHandle)[0].et()+ (*jetHandle)[3].et() > (*jetHandle)[1].et()+(*jetHandle)[2].et()){
-      mTempTreeAlpha4j  = ((*jetHandle)[1].et()+(*jetHandle)[2].et())/invariant_mass;
-      mTempTreeAlphaT4j = ((*jetHandle)[1].et()+(*jetHandle)[2].et())/minvt;
-    } else {
-      mTempTreeAlpha4j  = ((*jetHandle)[0].et()+(*jetHandle)[3].et())/invariant_mass;
-      mTempTreeAlphaT4j = ((*jetHandle)[0].et()+(*jetHandle)[3].et())/minvt;
-    }
-
-    mTempTreeHT4J = mTempTreeHT3J+(*jetHandle)[3].pt();
-    mTempTreeMHT4J = sqrt(momentum_sum_x*momentum_sum_x + momentum_sum_y*momentum_sum_y);
-    mTempTreeMHT4Jphi = atan2(-momentum_sum_y,-momentum_sum_x);
-
-  } else {
-    mTempTreeAlpha4j   = -999;
-    mTempTreeAlphaT4j  = -999;
-    mTempTreeAlphaV4j  = -999;
-    mTempTreeAlphaVT4j = -999;
-    mTempTreeHT4J      = -999;
-    mTempTreeMHT4J     = -999;
-    mTempTreeMHT4Jphi  = -999;
-  }
 
   //
   // get the MET result
@@ -1111,29 +516,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
  
   
-  //calculate R1 and R2
-  //  double dphi1 = mTempTreeJetsPhi[0] - mTempTreeMETphi;
-  //  double dphi2 = mTempTreeJetsPhi[1] - mTempTreeMETphi;
-  //calculate R1 and R2 with MHT instead of MET
-  double dphi1 = mTempTreeJetsPhi[0] - mTempTreeMHT2Jphi;
-  double dphi2 = mTempTreeJetsPhi[1] - mTempTreeMHT2Jphi;
-  
-  if (dphi1 < 0) dphi1 *=-1;
-  if (dphi1 > localPi) dphi1 = 2.*localPi - dphi1;
-  if (dphi2 < 0) dphi2 *=-1;
-  if (dphi2 > localPi) dphi2 = 2.*localPi - dphi2;
-  
-  mTempTreeR1 = sqrt(dphi2*dphi2 + (localPi - dphi1)*(localPi - dphi1));
-  mTempTreeR2 = sqrt(dphi1*dphi1 + (localPi - dphi2)*(localPi - dphi2));
-  
+ 
  
 
   mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
   mTempAlpPtScale = myALPGENParticleId.getPt();
-  // std::vector<int>* ids;
-  // std::vector<int>* refs;
-  // std::vector<int>* ids_test;
-  // std::vector<int>* refs_test;
+ 
  
   //set information of event is affected by b-bug
   is_ok = true;
@@ -1168,12 +556,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
 
   
-  //   for(int i=0 ; i<length;i++)
-  //     {
-  //      edm::LogInfo("SusyDiJetEvent")  <<  "id: "<< ids[i] << " Pt "<<genPt[i] <<" Eta "<<genEta[i] <<  "Phi" <<genPhi[i]  <<" mother "<< refs[i];
-  
-  //         if    (ids[i]==2000002) edm::LogInfo("SusyDiJetEvent")  <<"jaja = 2000002";
-  //   }
+ 
    
   
   // Fill the tree
@@ -1298,47 +681,15 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("metphiuncor",&mTempTreeMETphiuncor,"metphiuncor/double");
 
 
-  mAllData->Branch("sumEt",&mTempTreeSumET,"sumEt/double");
-  mAllData->Branch("sumEtsignif",&mTempTreeSumETSignif,"sumEtsignif/double");
 
-  mAllData->Branch("ht2j",&mTempTreeHT2J,"ht2j/double");
-  mAllData->Branch("ht3j",&mTempTreeHT3J,"ht3j/double");
-  mAllData->Branch("ht4j",&mTempTreeHT4J,"ht4j/double");
-  mAllData->Branch("mht2j",&mTempTreeMHT2J,"mht2j/double");
-  mAllData->Branch("mht2jphi",&mTempTreeMHT2Jphi,"mht2jphi/double");
-  mAllData->Branch("mht3j",&mTempTreeMHT3J,"mht3j/double");
-  mAllData->Branch("mht3jphi",&mTempTreeMHT3Jphi,"mht3jphi/double");
-  mAllData->Branch("mht4j",&mTempTreeMHT4J,"mht4j/double");
-  mAllData->Branch("mht4jphi",&mTempTreeMHT4Jphi,"mht4jphi/double");
-
+ 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
   mAllData->Branch("procID",&mTempTreeProcID,"procID/int");
   mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
 
-  mAllData->Branch("alpha",&mTempTreeAlpha,"alpha/double");
-  mAllData->Branch("alpha3j",&mTempTreeAlpha3j,"alpha3j/double");
-  mAllData->Branch("alpha4j",&mTempTreeAlpha4j,"alpha4j/double");
-  mAllData->Branch("alphav3j",&mTempTreeAlphaV3j,"alphav3j/double");
-  mAllData->Branch("alphav3j12",&mTempTreeAlphaV3j12,"alphav3j12/double");
-  mAllData->Branch("alphav3j13",&mTempTreeAlphaV3j13,"alphav3j13/double");
-  mAllData->Branch("alphav4j",&mTempTreeAlphaV4j,"alphav4j/double");
-  mAllData->Branch("alphat",&mTempTreeAlphaT,"alphat/double");
-  mAllData->Branch("alphat3j",&mTempTreeAlphaT3j,"alphat3j/double");
-  mAllData->Branch("alphat4j",&mTempTreeAlphaT4j,"alphat4j/double");
-  mAllData->Branch("alphavt3j",&mTempTreeAlphaVT3j,"alphavt3j/double");
-  mAllData->Branch("alphavt3j12",&mTempTreeAlphaVT3j12,"alphavt3j12/double");
-  mAllData->Branch("alphavt3j13",&mTempTreeAlphaVT3j13,"alphavt3j13/double");
-  mAllData->Branch("alphavt4j",&mTempTreeAlphaVT4j,"alphavt4j/double");
-  mAllData->Branch("jjphi",&mTempTreeJJPhi,"jjphi/double");		   
-  mAllData->Branch("jjphi3j",&mTempTreeJJPhi3j,"jjphi3j/double");		   
-  mAllData->Branch("jjphi4j",&mTempTreeJJPhi4j,"jjphi4j/double");		   
+ 
 
-  mAllData->Branch("R1",&mTempTreeR1,"R1/double");
-  mAllData->Branch("R2",&mTempTreeR2,"R2/double");		   
-
-  mAllData->Branch("DeltaPhiHemi",&mDeltaPhiHemi,"DeltaPhiHemi/double");
-  mAllData->Branch("AlphaTHemi",&mAlphaTHemi,"AlphaTHemi/double");
-
+ 
  //add hemispheres
   mAllData->Branch("Nhemispheres" ,&mTempTreeNhemispheres ,"Nhemispheres/int");  
   mAllData->Branch("HemisphereE" ,mTempTreeHemispheresE ,"HemisphereE[Nhemispheres]/double");
@@ -1460,8 +811,7 @@ SusyDiJetAnalysis::initPlots() {
  
   mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
   mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");  
-  mAllData->Branch("MuonPairMass" ,&mTempMuonPairMass,"MuonPairMass/double");
-  mAllData->Branch("MuonPairIndex" ,&mTempMuonPairIndex,"MuonPairIndex[2]/int");
+
  
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
   
