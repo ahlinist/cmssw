@@ -4,7 +4,6 @@
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //DQM services
@@ -31,8 +30,8 @@ const std::string type_Data = "Data";
 //defaults for cfgEntryAxisX
 const double defaultMinX = -1.;
 const double defaultMaxX = -1.;
-const double defaultXaxisTitleOffset = 1.2;
-const double defaultXaxisTitleSize = 1.2;
+const double defaultXaxisTitleOffset = 1.0;
+const double defaultXaxisTitleSize = 0.05;
 
 //defaults for cfgEntryAxisY
 const double defaultMinY_linear = 0.;
@@ -42,7 +41,7 @@ const double defaultMaxY_log = -1.;
 const std::string yScale_linear = "linear";
 const std::string yScale_log = "log";
 const std::string defaultYscale = yScale_linear;
-const double defaultYaxisTitleOffset = 1.2;
+const double defaultYaxisTitleOffset = 1.0;
 const double defaultYaxisTitleSize = 0.05;
 const double defaultYaxisMaximumScaleFactor_linear = 1.6;
 const double defaultYaxisMaximumScaleFactor_log = 5.e+2;
