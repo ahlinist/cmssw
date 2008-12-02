@@ -13,10 +13,10 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.3 2008/11/27 17:55:25 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.4 2008/12/02 10:25:17 trommers Exp $
 //
 //
-
+//#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
 #include "SusyAnalysis/AnalysisSkeleton/test/SusyDiJetAnalysis.h"
 
 //________________________________________________________________________________________
@@ -203,6 +203,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
 	i!=pathNames_.end(); ++i ) {
     // Get index
+    //cout <<  " trigger " << *i << " accept? " << hltHandle->accept(trgNames.triggerIndex(*i)) <<  endl;
     unsigned int index = trgNames.triggerIndex(*i);
     if ( index==trgSize ) {
       edm::LogWarning("HLTEventSelector") << "Unknown trigger name " << *i;
@@ -211,8 +212,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if ( hltHandle->accept(index) ) {
       LogDebug("HLTEventSelector") << "Event selected by " << *i;
       std::string trigName = *i;
-      if (trigName == "HLT1jet") mTempTreeHLT1JET=true;
-      if (trigName == "HLT2jet") mTempTreeHLT2JET=true;
+      if (trigName == "HLT_Jet250") mTempTreeHLT1JET=true;
+      if (trigName == "HLT_DiJetAve220") mTempTreeHLT2JET=true;
       if (trigName == "HLT1MET1HT") mTempTreeHLT1MET1HT=true;
      
     } 
@@ -416,7 +417,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   //get number of jets
   mTempTreeNjets = jetHandle->size();
-  
+
+
 
   // Add the jets
   int i=0;
@@ -432,6 +434,10 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeJetsEta[i] = (*jetHandle)[i].eta();
       mTempTreeJetsPhi[i] = (*jetHandle)[i].phi();
       mTempTreeJetsFem[i] = (*jetHandle)[i].emEnergyFraction();
+
+       mTempTreeJetsBTag_TkCountHighEff[i] = (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags");
+      mTempTreeJetsBTag_SimpleSecVtx[i] = (*jetHandle)[i].bDiscriminator("simpleSecondaryVertexBJetTags");
+      mTempTreeJetsBTag_CombSecVtx[i] = (*jetHandle)[i].bDiscriminator("combinedSecondaryVertexBJetTags");
     
       if((*jetHandle)[i].genJet()!= 0) {
 	mTempTreeGenJetsPt[i]=(*jetHandle)[i].genJet()->pt();
@@ -516,9 +522,6 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
  
   
- 
- 
-
   mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
   mTempAlpPtScale = myALPGENParticleId.getPt();
  
@@ -720,6 +723,10 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("JetsTPt",mTempTreeJetsTPt,"JetsTPt[Njets]/float");
   mAllData->Branch("JetsTEta",mTempTreeJetsTEta,"JetsTEta[Njets]/float");
   mAllData->Branch("JetsTPhi",mTempTreeJetsTPhi,"JetsTPhi[Njets]/float");
+
+  mAllData->Branch("JetBTag_TkCountHighEff",mTempTreeJetsBTag_TkCountHighEff,"JetBTag_TkCountHighEff[Njets]/float");
+  mAllData->Branch("JetBTag_SimpleSecVtx",mTempTreeJetsBTag_SimpleSecVtx,"JetBTag_SimpleSecVtx[Njets]/float");
+  mAllData->Branch("JetBTag_CombSecVtx",mTempTreeJetsBTag_CombSecVtx,"JetBTag_CombSecVtx[Njets]/float");
 
   mAllData->Branch("GenJetE" ,mTempTreeGenJetsE ,"GenJetE[Njets]/double");
   mAllData->Branch("GenJetEt",mTempTreeGenJetsEt,"GenJetEt[Njets]/double");
