@@ -1,7 +1,7 @@
 process = cms.Process("TTEffAnalysis")
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
+        input = cms.untracked.int32(1000)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -13,14 +13,14 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
-from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Trigger_RECO_fromMike_HLT_sampleProducer import *
-process.source = source
-#process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring(
+#from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Trigger_RECO_fromMike_HLT_sampleProducer import *
+#process.source = source
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
 ## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
-#	"file:test.root"
-#    )
-#)
+	"file:test.root"
+    )
+)
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
 #   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
