@@ -25,6 +25,15 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 
+// ----------------------------------------------------------------------
+// WARNING: This is just to get you started! Not how it should be done! 
+//
+// VERY simple routine to reconstruct the decay B+/- -> J/psi(-> mu+ mu-) K+/-
+//   it naively requires exactly two muons
+//   does not check their charges
+//   and takes one RANDOM track for the K+/-
+// ----------------------------------------------------------------------
+
 
 // -- Yikes!
 extern TAna00Event *gHFEvent;
@@ -88,7 +97,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   std::vector<const reco::Track*> recTracks; 
   TAnaTrack *pTrack;
 
-  // -- Look at muons
+  // -- Fill muons into recTracks
   if (fVerbose > 0) cout << "==>HFDumpSignal> nMuons = " << hMuons->size() << endl;
   if (fVerbose > 0) cout << "==>HFDumpSignal> fMuonsLabel = " << fMuonsLabel << endl;
   vector<int> muonIndices;
