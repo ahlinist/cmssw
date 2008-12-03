@@ -1,60 +1,12 @@
 #include "ALPGENParticleId.h"
-#include <DataFormats/HepMCCandidate/interface/GenParticleCandidate.h>
+//#include <DataFormats/HepMCCandidate/interface/GenParticleCandidate.h>
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include <vector.h>
+#include <vector>
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 ALPGENParticleId::ALPGENParticleId()
 { pT = -1.;}
 
-int ALPGENParticleId::SimBug(const edm::Event& iEvent, edm::InputTag genTag)
-{
-  /*
-  int flg_gen = 0;
-  edm::Handle<reco::GenParticleCollection> gen;
-  iEvent.getByLabel (genTag,gen);
-  
-  int ndgt;
-  double mom_vx, mom_vy, mom_vz;
-  double dgt_vx, dgt_vy, dgt_vz;
-  double delta_pos = -10;
-  float delta_pos_max;
- 
-  for(size_t i = 0; i<gen->size(); ++i) {
-    const Candidate & ip = (*gen)[i];
-    if (ip.status()==2 && abs(ip.pdgId())<2000) {
-      if (ip.pdgId() >=81 && ip.pdgId()<=100) continue;
-      ndgt = ip.numberOfDaughters();
-      if (ndgt>0) {
-	mom_vx = ip.vx();
-	mom_vy = ip.vy();
-	mom_vz = ip.vz();
 
-	delta_pos_max = 0;
-	for (int j=0;j<ndgt;j++) {
-	  const Candidate * dgt = ip.daughter(j);
-	  if (dgt->pdgId() >=81 && dgt->pdgId()<=100) continue;
-	  dgt_vx = dgt->vx();
-	  dgt_vy = dgt->vy();
-	  dgt_vz = dgt->vz();
-	  delta_pos =
-	    sqrt((mom_vx-dgt_vx)*(mom_vx-dgt_vx)+(mom_vy-dgt_vy)*(mom_vy-dgt_vy)+(mom_vz-dgt_vz)*(mom_vz-dgt_vz));
-	  if (delta_pos > delta_pos_max) delta_pos_max = delta_pos;
-	  if (delta_pos_max > 10) {
-	    flg_gen = 1;
-	    break;
-	  }
-	}
-      }
-    }
-    if (flg_gen == 1) break;
-
-   
-  }
-  return flg_gen;
-  */
-  return 0.;
-}
-       
        
        
        
@@ -131,7 +83,7 @@ int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag,
 	//	edm::LogInfo("SusyDiJetEvent") <<"proton !! ";
 	int nd =  p.numberOfDaughters();
 	//	edm::LogInfo("SusyDiJetEvent") <<"daughters no: "<< nd ;
-	for(  size_t idau = 0 ; idau < nd;idau++)
+	for(  Int_t idau = 0 ; idau < nd;idau++)
 	  {
 	    if( p.daughter(idau)->status()!=3) continue;
 	    two++;
@@ -173,7 +125,7 @@ int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* r
     
     int nd =  p->numberOfDaughters();
     // edm::LogInfo("SusyDiJetEvent") <<"daughters 4 ";
-    for(  size_t idau = 0 ; idau < nd;idau++)
+    for(  Int_t idau = 0 ; idau < nd;idau++)
       {	
 	//  if( p->daughter(idau)->status()!=3) continue;
 

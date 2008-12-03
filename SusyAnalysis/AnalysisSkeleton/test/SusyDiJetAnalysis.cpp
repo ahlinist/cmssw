@@ -13,7 +13,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.4 2008/12/02 10:25:17 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.5 2008/12/02 14:15:04 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -48,9 +48,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   mSelectorResults = new unsigned int[sequence_.size()];
 
   // Say something about event weights
-  if ( eventWeight_< 0. ) 
-    edm::LogInfo("SusyDiJet") << "Will get event weights from event content";
-  else
+ 
     edm::LogInfo("SusyDiJet") << "Global event weight set to " << eventWeight_;
 
   // get the data tags
@@ -88,48 +86,22 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
 SusyDiJetAnalysis::~SusyDiJetAnalysis() {}
 
 
-//________________________________________________________________________________________
-// Method called to for each event
-void
-SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
-{
-  using namespace edm;
-
-  
-
-   edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
-
-  std::ostringstream dbg;
-
-  ALPGENParticleId myALPGENParticleId;
-  //  edm::LogInfo("SusyDiJetEvent") << "id: "<< myALPGENParticleId.AplGenParID(iEvent);
- 
+//filter---------------------------------------------------------
+bool
+SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup ){
 
   run_   = iEvent.id().run();
   event_ = iEvent.id().event();
-  // Get some event information (process ID, weight)
   processId_   = 0;
-  if ( eventWeight_<0. ) {     // <0 => get weight from event
-    edm::Handle<double> weightHandle;
-    edm::Handle<int>    processHandle;
-    iEvent.getByLabel(weightSource_.label(),"weight", weightHandle);
-    weight_ = (*weightHandle);
-    iEvent.getByLabel(weightSource_.label(),"AlpgenProcessID", processHandle);
-    processId_ = (*processHandle);
-  } else {
-    weight_ = eventWeight_; // default: from config
-  }
 
-
-  
-  // Retrieve the decision of each selector module
+ // Retrieve the decision of each selector module
   SelectorDecisions decisions = sequence_.decisions(iEvent);
-  
-  // Count all events
+
+ // Count all events
   nrEventTotalRaw_++;
   nrEventTotalWeighted_ += weight_;
-  
-  // Fill plots with all variables
+
+   // Fill plots with all variables
   bool dec(true);
   for ( size_t i=0; i<sequence_.size(); ++i ) {
     dec = dec && decisions.decision(i);
@@ -143,27 +115,40 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += weight_;
     
   }
- 
-  edm::LogVerbatim("SusyDiJetEvent") << " Fill some Plots  " << std::endl;
 
-  // Fill some plots (only if some selections passed, as configured)
-  dec = true;
-  for ( size_t i=0; i<plotSelectionIndices_.size(); ++i )
-    dec = dec&&decisions.decision(plotSelectionIndices_[i]);
-  //  fillPlots( iEvent, decisions );
-  if ( dec ) fillPlots( iEvent, decisions );       //write only evts surviving preselection to ntuple
-  //  if ( true ) fillPlots( iEvent, decisions );  //write all events to ntuple
+  // Fill event with variables we computed
+  if(dec)fillPlots( iEvent, decisions );
 
   // Print summary so far (every 10 till 100, every 100 till 1000, etc.)
   for ( unsigned int i=10; i<nrEventTotalRaw_; i*=10 )
     if ( nrEventTotalRaw_<=10*i && (nrEventTotalRaw_%i)==0 )
       printSummary();
 
+  return dec;
+}
+
+
+
+//________________________________________________________________________________________
+// Method called to for each event
+void
+SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+  using namespace edm;
+
+  
+  
+
+   edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
+
+  std::ostringstream dbg;
+
+  ALPGENParticleId myALPGENParticleId;
+ 
+
   // markus
   ///
-
- 
-  if ( !sequence_.decisions(iEvent).globalDecision() ) {
+  if ( !filter(iEvent,iSetup)) {
     // Just fill the failure
     mGlobalDecision = 0;
     mSelectorData->Fill();
@@ -176,12 +161,13 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mSelectorData->Fill();
   
  edm::LogVerbatim("SusyDiJetEvent") << " Trigger decision  " << std::endl;
-
+ // std::cout << " trigger decision " << std::endl;
 
   //get the trigger decision
   mTempTreeHLT1JET=false;
   mTempTreeHLT2JET=false;
   mTempTreeHLT1MET1HT=false;
+
   // Get the trigger results and check validity
   edm::Handle<edm::TriggerResults> hltHandle;
   iEvent.getByLabel(triggerResults_, hltHandle);
@@ -189,6 +175,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::LogWarning("HLTEventSelector") << "No trigger results for InputTag " << triggerResults_;
     return;
   }
+
+  //  std::cout << " get results " << std::endl;
+
   // Get results
   edm::TriggerNames trgNames;
   trgNames.init(*hltHandle);
@@ -199,11 +188,19 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   edm::LogWarning("HLTEventSelector") << " triggers " << trgNames.size() << std::endl;
 
+  /*  for (int itrig = 0; itrig != trgSize; ++itrig) {
+        TString trigName = trgNames.triggerName(itrig);
+	std::cout << " trigName " << trigName << std::endl;
+      }
+  */
+  
   //looping over list of trig path names
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
 	i!=pathNames_.end(); ++i ) {
     // Get index
-    //cout <<  " trigger " << *i << " accept? " << hltHandle->accept(trgNames.triggerIndex(*i)) <<  endl;
+ 
+    //  std::cout << " accept " << hltHandle->accept(trgNames.triggerIndex(*i)) <<  std::endl;
+
     unsigned int index = trgNames.triggerIndex(*i);
     if ( index==trgSize ) {
       edm::LogWarning("HLTEventSelector") << "Unknown trigger name " << *i;
@@ -212,52 +209,23 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if ( hltHandle->accept(index) ) {
       LogDebug("HLTEventSelector") << "Event selected by " << *i;
       std::string trigName = *i;
-      if (trigName == "HLT_Jet250") mTempTreeHLT1JET=true;
-      if (trigName == "HLT_DiJetAve220") mTempTreeHLT2JET=true;
-      if (trigName == "HLT1MET1HT") mTempTreeHLT1MET1HT=true;
+      if (trigName == "HLT_Jet180") mTempTreeHLT1JET=true;
+      if (trigName == "HLT_DiJetAve130") mTempTreeHLT2JET=true;
+      if (trigName == "HLT_MET50") mTempTreeHLT1MET1HT=true;
+      if (trigName == "HLT_Mu9") mTempTreeHLT1Muon=true; 
      
     } 
   }
 
 
-  //get the event weight
-  mTempTreeEventWeight =1.;
-  if (theSoup==true) {
-    Handle<double> weightHandle;
-    iEvent.getByLabel ("csaweightproducer","weight", weightHandle);
-    mTempTreeEventWeight = * weightHandle;
-  } else {
-    mTempTreeEventWeight = fileWeight;
-  }
+ 
+  mTempTreeEventWeight =eventWeight_;
+ 
 
   mTempTreeRun = run_;
   mTempTreeEvent = event_;
 
  
-  //get truth info
-  mTempTreeProcID = -999;
-  if (theSoup==true) {
-    Handle< int >  myProcess;
-    iEvent.getByLabel("genEventProcID",myProcess);
-    mTempTreeProcID = (*myProcess);
-    if (mTempTreeProcID==4) {
-      // ALPGEN has genEventProcID==4, but includes (W=0,Z=1,tt=2) + jets
-      //      ALPGENParticleId myALPGENParticleId;
-      //     mTempTreeProcID = myALPGENParticleId.AplGenParID(iEvent);
-      Handle < int > myAlpProcess;
-      iEvent.getByLabel("csaweightproducer","AlpgenProcessID",myAlpProcess);
-      mTempTreeProcID = (*myAlpProcess);
-    }
-  }
-  
-  //get pthat of process
-  mTempTreePthat = -999.;
-  if (theSoup==true) {
-    Handle<double> genEventScale;
-    iEvent.getByLabel( "genEventScale", genEventScale );
-    mTempTreePthat = *genEventScale;
-  }
-  
 
 
 // Get the hemispheres
@@ -270,7 +238,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   const edm::View<pat::Hemisphere>& hemispheres = (*hemisphereHandle); // For simplicity...
   
   mTempTreeNhemispheres = 2;
-  for (int i=0;i <  hemispheres.size() ;i++){
+  for (unsigned int i=0;i <  hemispheres.size() ;i++){
     mTempTreeHemispheresPt[i] = hemispheres[i].pt();
     
     mTempTreeHemispheresE[i] = hemispheres[i].energy();
@@ -531,7 +499,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   length = 1000;
   length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genPt ,genPhi ,genEta ,genStatus, length);
 
-  mTempSimuCheck = -1 ;//myALPGENParticleId.SimBug(iEvent,genTag_);
+  mTempSimuCheck = -1 ;
 
 
   float min_dR;
@@ -674,6 +642,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("HLT1JET",&mTempTreeHLT1JET,"HLT1JET/bool");
   mAllData->Branch("HLT2JET",&mTempTreeHLT2JET,"HLT2JET/bool");
   mAllData->Branch("HLT1MET1HT",&mTempTreeHLT1MET1HT,"HLT1MET1HT/bool");
+  mAllData->Branch("HLT1MUON",&mTempTreeHLT1Muon,"HLT1MUON/bool");
 
   mAllData->Branch("met",&mTempTreeMET,"met/double");
   mAllData->Branch("mex",&mTempTreeMEY,"mex/double");
