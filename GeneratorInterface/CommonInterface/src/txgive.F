@@ -12,9 +12,9 @@ C...Sets values of commonblock variables.
 ***
       integer CSAMODE
       double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
-     &  SUSYRW, WWRW
+     &  SUSYRW, WWRW, PTPOWER
       common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
-     &  HLTRW, SUSYRW, WWRW
+     &  HLTRW, SUSYRW, WWRW, PTPOWER
 
       save   /EXPAR/
 **********
@@ -146,6 +146,14 @@ C	print*,'IER', ier
          if(ier.ne.1) then
            iread = 0
            read(strin(1:512),*) WWRW 
+         endif
+
+      rnam = 'PTPOWER ='
+        call TXRSTR2(rnam, chin, strin, ier) 
+C	print*,'IER', ier
+         if(ier.ne.1) then
+           iread = 0
+           read(strin(1:512),*) PTPOWER
          endif
 	 
 ***
@@ -533,17 +541,25 @@ C..TXGIVE V:1.03,   01/09/2006 by Filip Moortgat
       SUBROUTINE TXGIVE_INIT
            
       implicit none
-     
+
       integer CSAMODE
-      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW
-      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW
-      save   /EXPAR/ 
+      double precision  MUONRW, GAMMAJRW, ZJRW, ZPRW, HLTRW, 
+     &  SUSYRW, WWRW, PTPOWER
+      common /EXPAR/CSAMODE, MUONRW, GAMMAJRW, ZJRW, ZPRW, 
+     &  HLTRW, SUSYRW, WWRW, PTPOWER
+      save   /EXPAR/
+
 
       CSAMODE = 0
       MUONRW = -1        
       GAMMAJRW = -1
       ZJRW = -1
       ZPRW = -1
+      HLTRW = -1
+      SUSYRW = -1
+      WWRW = -1
+      PTPOWER = 0
+      
  
       END
 *----------------------------------------------------------------------------c
