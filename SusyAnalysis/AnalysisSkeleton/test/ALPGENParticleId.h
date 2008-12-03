@@ -16,7 +16,7 @@ class ALPGENParticleId
   // int AplGenParID(const edm::Event& iEvent,edm::InputTag genTag, std::vector<int>* ids, std::vector<int>* refs, std::vector<int>* ids_test, std::vector<int>* refs_test);
   int AplGenParID(const edm::Event& iEvent,edm::InputTag genTag, int* ids , int* refs, float* genPt, float* genPhi, float* genEta,int* status,int length);
   
-  int SimBug(const edm::Event& iEvent, edm::InputTag genTag);
+ 
   
   int addHardParticle(const reco::Candidate* p,int* ids , int* refs, float* genPt, float* genPhi, float* genEta,int* status, int length ,int mother);
  private:

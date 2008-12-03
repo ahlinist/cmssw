@@ -72,7 +72,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
     
     #'/store/relval/CMSSW_2_1_0/RelValQCD_Pt_80_120/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V5_v1/0001/00FEB790-A160-DD11-BF61-000423D998BA.root')
-    'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_1_X_2008-07-08_STARTUP_V4-AODSIM.100.root'
+   '/store/relval/CMSSW_2_1_9/RelValTTbar/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_Tauola_v1/0002/008F0E5C-5C8E-DD11-A113-001617C3B6DC.root'
+#    'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_1_X_2008-07-08_STARTUP_V4-AODSIM.100.root'
                     #  'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_1_X_2008-07-08_STARTUP_V4-AODSIM.100.root'
     )
 #"file:./PATLayer1_Output.fromAOD_full.root")
@@ -177,7 +178,7 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     #),
                         
     #pathNames = cms.vstring('HLT1jet',  'HLT2jet',  'HLT1MET1HT'),
-    pathNames = cms.vstring('HLT_Jet250','HLT_DiJetAve220')          ,    
+    pathNames = cms.vstring('HLT_Jet180','HLT_DiJetAve130','HLT_MET50','HLT_Mu9')          ,    
                    
     soup = cms.untracked.bool(False),
     eventWeight = cms.double(1.0),

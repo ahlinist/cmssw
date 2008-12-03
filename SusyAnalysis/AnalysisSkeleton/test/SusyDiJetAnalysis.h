@@ -71,6 +71,9 @@ private:
   /// Fill all plots for an event
   virtual void fillPlots( const edm::Event&, const SelectorDecisions& );
 
+  virtual bool filter(const edm::Event& evt,const edm::EventSetup& iSetup );
+
+
 private:
 
   // Selection
@@ -105,7 +108,7 @@ private:
   bool mTempTreeHLT1JET;
   bool mTempTreeHLT2JET;
   bool mTempTreeHLT1MET1HT;
-
+  bool mTempTreeHLT1Muon;
 
  
 
@@ -125,6 +128,10 @@ private:
   double mTempTreeJetsEta[50];
   double mTempTreeJetsPhi[50];
   double mTempTreeJetsFem[50];
+
+  double mTempTreeJetsBTag_TkCountHighEff[50];
+  double mTempTreeJetsBTag_SimpleSecVtx[50];
+  double mTempTreeJetsBTag_CombSecVtx[50];
 
   double mTempTreeGenJetsEt[50];
   double mTempTreeGenJetsPt[50];
