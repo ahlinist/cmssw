@@ -37,7 +37,7 @@ namespace edm
   : pset_(new ParameterSet),
     services_(new std::vector<ParameterSet>())
   {
-    edm::Exception(errors::Configuration,"Old config strings no longer accepted");
+    throw edm::Exception(errors::Configuration,"Old config strings no longer accepted");
   }
 
   void ProcessDesc::setRegistry() const
