@@ -184,7 +184,10 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
 #   which inherits from TBox (via TPave), TAttLine and TAttFill (via TBox), TAttText )
 #                           
 # ( NOTE: legend entries get added automatically by the drawing tool,
-#         according to which processes are drawn )
+#         according to which processes are drawn 
+#
+#         the configuration parameters posX, posY, sizeX and sizeY are defined in a coordinate system
+#         in which (0.,0.) refers to the lower left corner and (1.,1.) to the upper right corner of the plot area )                            
 #
   legends = cms.PSet(
     regular = cms.PSet(
@@ -229,6 +232,9 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
 # define position and drawing options for labels
 # ( the drawing options for the labels are based on http://root.cern.ch/root/html/TPaveText.html ,
 #   which inherits from TBox (via TPave), TAttLine and TAttFill (via TBox), TAttText )
+#
+# ( NOTE: the configuration parameters posX, posY, sizeX and sizeY are defined in a coordinate system
+#         in which (0.,0.) refers to the lower left corner and (1.,1.) to the upper right corner of the plot area )                           
 #
   labels = cms.PSet(
     pt = cms.PSet(
@@ -461,7 +467,8 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
 #    
     muonKine_sep = cms.PSet(
       plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#'),
+        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
+                                         '#PROCESSDIR#/MuonQuantities/MuonIdSel#PAR#'),
         processes = cms.vstring('zMuMu1kEv', 'zMuMu9kEv', 'zMuMu10kEv', 'smSum')
       ),
       parameter = cms.vstring('Pt', 'Eta', 'Phi'),
@@ -477,7 +484,8 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
 # (the dummy "signal" and dummy "background" processes are drawn as **stacked** filled areas)
 #    
       plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#'),
+        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
+                                         '#PROCESSDIR#/MuonQuantities/MuonIdSel#PAR#'),
         processes = cms.vstring('zMuMu1kEv', 'zMuMu9kEv', 'zMuMu10kEv')
       ),
       parameter = cms.vstring('Pt', 'Eta', 'Phi'),
@@ -567,9 +575,24 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ), 
 
+#
+# define dimension of the plots;
+# set canvasSizeX = 800 and canvasSizeY = 640 (canvasSizeX = canvasSizeY = 600)
+# in case you want the plots to be drawn in landscape format ( to be quadratic)
+#
   canvasSizeX = cms.int32(800),
   canvasSizeY = cms.int32(640),                         
 
+#
+# define path and names of output files
+#
+# if outputFileName has been specified, a postscript file containing all plots is created with that name;
+# if indOutputFileName has been specified, individual graphics files are created
+# ( #PLOT# gets replaced with the name of the MonitorElement (e.g. "MuonIdEffPhi");
+#   the type of the graphics file is determined automatically from the suffix (e.g. ".png") of the file name )
+#
+# ( NOTE: you must specify either outputFileName or indOutputFileName - not both )                        
+#
   outputFilePath = cms.string('/uscms/home/veelken/work/CMSSW_2_1_9dev/src/ElectroWeakAnalysis/EWKTau/test/plots/'),
   #outputFileName = cms.string('ewkTauMuAnalyzer_zMuMu.ps')
   indOutputFileName = cms.string('#PLOT#_zMuMu.png')
