@@ -162,6 +162,20 @@ bool find_vstring(const std::vector<std::string>& vs, const std::string& s)
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+std::string getDrawJobName_full(const std::string& drawJobName, const std::string& dqmMonitorElementName_full)
+{
+  std::string drawJobName_full = drawJobName;
+  size_t posLastSeparator = std::string(dqmMonitorElementName_full).find_last_of("/");
+  std::string dqmMonitorElementName = ( posLastSeparator != std::string::npos ) ?
+    std::string(dqmMonitorElementName_full, posLastSeparator + 1) : dqmMonitorElementName_full;
+  drawJobName_full.append("_").append(dqmMonitorElementName);
+  return drawJobName_full;
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 DQMHistPlotter::cfgEntryProcess::cfgEntryProcess(const std::string& name, const edm::ParameterSet& cfg)
 {
   name_ = name;
@@ -514,6 +528,7 @@ void DQMHistPlotter::plotDefEntry::print() const
 //
 
 DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name, 
+						 const std::string& name_full,
 						 const plotDefList& plotDefList, 
 						 const std::string& title,
 						 const std::string& xAxis, const std::string& yAxis, 
@@ -521,6 +536,7 @@ DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name,
 						 const vstring& labels)
 {
   name_ = name;
+  name_full_ = name_full;
 
   for ( plotDefList::const_iterator it = plotDefList.begin();
 	it != plotDefList.end(); ++it ) {
@@ -546,6 +562,7 @@ void DQMHistPlotter::cfgEntryDrawJob::print() const
 {
   std::cout << "<DQMHistPlotter::cfgSetDrawJob::print>:" << std::endl;
   std::cout << " name = " << name_ << std::endl;
+  std::cout << " name_full = " << name_full_ << std::endl;
   std::cout << "plots = {" << std::endl;
   for ( plotDefList::const_iterator plot = plots_.begin();
 	plot != plots_.end(); ++plot ) {
@@ -799,6 +816,9 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	    }
 	  }
 
+	  std::string drawJobName_full = ( plotDefMap.size() > 1 ) ?
+	    getDrawJobName_full(*drawJobName, plot_expanded.begin()->dqmMonitorElement_) : std::string(*drawJobName).append("_").append(*parameter);
+
           int errorFlag = 0;
 	  std::string title_expanded = replace_string(title, parKeyword, *parameter, 0, 1, errorFlag);
 	  //std::cout << " title_expanded = " << title_expanded << std::endl;
@@ -808,11 +828,13 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	  //std::cout << " yAxis_expanded = " << yAxis_expanded << std::endl;
 	  if ( errorFlag ) cfgError_ = 1;
 
-	  drawJobs_.push_back(cfgEntryDrawJob(std::string(*drawJobName).append(*parameter),
+	  drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, drawJobName_full, 
 					      plot_expanded, title_expanded, xAxis_expanded, yAxis_expanded, legend, labels));
 	}
       } else {
-	drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, 
+	std::string drawJobName_full = ( plotDefMap.size() > 1 ) ?
+	  getDrawJobName_full(*drawJobName, plot->second.begin()->dqmMonitorElement_) : (*drawJobName);
+	drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, drawJobName_full, 
 					    plot->second, title, xAxis, yAxis, legend, labels));
       }
     }
@@ -1157,11 +1179,13 @@ void DQMHistPlotter::endJob()
     //pad.Update();
 
     if ( indOutputFileName_ != "" ) {
+      const std::string& drawJobName_full = drawJob->name_full_;
       int errorFlag = 0;
-      std::string modIndOutputFileName = replace_string(indOutputFileName_, plotKeyword, drawJobName, 1, 1, errorFlag);
+      std::string modIndOutputFileName = replace_string(indOutputFileName_, plotKeyword, drawJobName_full, 1, 1, errorFlag);
       if ( !errorFlag ) {
 	std::string fullFileName = ( outputFilePath_ != "" ) ? 
 	  std::string(outputFilePath_).append("/").append(modIndOutputFileName) : modIndOutputFileName;
+	//std::cout << " fullFileName = " << fullFileName << std::endl;
 	canvas.Print(fullFileName.data());
       } else {
 	edm::LogError("endJob") << " Failed to decode indOutputFileName = " << indOutputFileName_ << " --> skipping !!";
