@@ -3,6 +3,18 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("ANA")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
+
+
+
+
+
+
+# Include PAT Layer 0 & 1 if not running on pattified data
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = cms.string('STARTUP_V4::All')
+process.load("Configuration.StandardSequences.MagneticField_cff")
+
 # CaloTowerConstituentsMap needed for Electron/Photon-Jet cleaning
 process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
 process.CaloTowerConstituentsMapBuilder = cms.ESProducer("CaloTowerConstituentsMapBuilder",
@@ -47,14 +59,6 @@ process.patcrosscleaner.MuonJetCrossCleaning.deltaR_min   = 0.2
 process.patcrosscleaner.MuonJetCrossCleaning.caloIso_max  = 10.0
 process.patcrosscleaner.MuonJetCrossCleaning.trackIso_max = 10.0
 
-# Include PAT Layer 0 & 1 if not running on pattified data
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('STARTUP_V4::All')
-process.load("Configuration.StandardSequences.MagneticField_cff")
-
-
-
 
 
 
@@ -65,18 +69,17 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('VAR01_VAR06_ISN.root')
+    fileName = cms.string('QCD250to500-madgraph.root')
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
     
-    #'/store/relval/CMSSW_2_1_0/RelValQCD_Pt_80_120/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V5_v1/0001/00FEB790-A160-DD11-BF61-000423D998BA.root')
+
    '/store/relval/CMSSW_2_1_9/RelValTTbar/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_Tauola_v1/0002/008F0E5C-5C8E-DD11-A113-001617C3B6DC.root'
-#    'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_1_X_2008-07-08_STARTUP_V4-AODSIM.100.root'
-                    #  'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_1_X_2008-07-08_STARTUP_V4-AODSIM.100.root'
+
     )
-#"file:./PATLayer1_Output.fromAOD_full.root")
+
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -86,14 +89,14 @@ process.maxEvents = cms.untracked.PSet(
 process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     genTag = cms.InputTag("genParticles"),
     tauTag = cms.InputTag("selectedLayer1Taus"),
-   elecTag = cms.InputTag("selectedLayer1Electrons"),                  
+   elecTag = cms.InputTag("patcrosscleaner:ccElectrons"),                  
     photTag = cms.InputTag("selectedLayer1Photons"),
-    jetTag = cms.InputTag("selectedLayer1Jets") ,
-   # jetTag = cms.InputTag("patcrosscleaner","ccJets")             
-   muonTag = cms.InputTag("selectedLayer1Muons"),
-    # muonTag = cms.InputTag("patcrosscleaner","ccMuons"),                  
-    metTag = cms.InputTag("selectedLayer1METs"),                          
-   #metTag = cms.InputTag("patcrosscleaner","ccMETs"),
+   # jetTag = cms.InputTag("selectedLayer1Jets") ,
+    jetTag = cms.InputTag("patcrosscleaner:ccJets"),             
+   #muonTag = cms.InputTag("selectedLayer1Muons"),
+     muonTag = cms.InputTag("patcrosscleaner:ccMuons"),                  
+    #metTag = cms.InputTag("selectedLayer1METs"),                          
+   metTag = cms.InputTag("patcrosscleaner:ccMETs"),
 
  selections = cms.PSet(
         selectionSequence = cms.vstring('Preselection', 
@@ -106,32 +109,32 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
         selectors = cms.PSet(
             FinalMaxNumJetsSelector = cms.PSet(
                 maxEt = cms.double(30.0),
-                 jetTag = cms.InputTag("selectedLayer1Jets"),
-              #  jetTag = cms.InputTag("patcrosscleaner","ccJets"),
+              #   jetTag = cms.InputTag("selectedLayer1Jets"),
+                jetTag = cms.InputTag("patcrosscleaner:ccJets"),
                 maxNumJets = cms.uint32(100),
                 selector = cms.string('MaxNumJetsEventSelector')
             ),
             DPhi = cms.PSet(
                 maxDPhi = cms.double(3.15),
-                 jetTag = cms.InputTag("selectedLayer1Jets"),
-                #jetTag = cms.InputTag("patcrosscleaner","ccJets"),
+               #  jetTag = cms.InputTag("selectedLayer1Jets"),
+               jetTag = cms.InputTag("patcrosscleaner:ccJets"),
                 selector = cms.string('DPhiEventSelector')
             ),
             Hemisphere = cms.PSet(
                 dPhiHemispheresMin = cms.double(0.0),
                 dPhiHemispheresMax = cms.double(3.2),
-                hemisphereTag = cms.InputTag("selectedLayer1Hemispheres"),
+                hemisphereTag = cms.InputTag("selectedLayer2Hemispheres"),
                 selector = cms.string('HemisphereSelector')
             ),
             FinalDirectLeptonVeto = cms.PSet(
-                electronTag = cms.InputTag("selectedLayer1Electrons"),
-                #electronTag = cms.InputTag("patcrosscleaner","ccElectrons"),
+                #electronTag = cms.InputTag("selectedLayer1Electrons"),
+                electronTag = cms.InputTag("patcrosscleaner:ccElectrons"),
                 tauTag = cms.InputTag("selectedLayer1Taus"),
                 minMuonEt = cms.double(30000.0),
                 tauIsolation = cms.double(0.5),
                 selector = cms.string('DirectLeptonVetoSelector'),
-               # muonTag = cms.InputTag("patcrosscleaner","ccMuons"),
-                muonTag = cms.InputTag("selectedLayer1Muons"),
+               muonTag = cms.InputTag("patcrosscleaner:ccMuons"),
+               # muonTag = cms.InputTag("selectedLayer1Muons"),
                 minTauEt = cms.double(30000.0),
                 minElectronEt = cms.double(30000.0),
                 muonIsolation = cms.double(0.5),
@@ -143,8 +146,8 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
                 correction = cms.string('HAD'),
                 flavour = cms.string('GLU'),
                 selector = cms.string('JetEventSelector'),
-                 jetTag = cms.InputTag("selectedLayer1Jets"),
-                #jetTag = cms.InputTag("patcrosscleaner","ccJets"),
+                # jetTag = cms.InputTag("selectedLayer1Jets"),
+                jetTag = cms.InputTag("patcrosscleaner:ccJets"),
                 minEt = cms.vdouble(50.0, 50.0)
             ),
             PreJet = cms.PSet(
@@ -153,8 +156,8 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
                 correction = cms.string('HAD'),
                  flavour = cms.string('GLU'),
                 selector = cms.string('JetEventSelector'),
-                 jetTag = cms.InputTag("selectedLayer1Jets"),
-                #jetTag = cms.InputTag("patcrosscleaner","ccJets"),
+                # jetTag = cms.InputTag("selectedLayer1Jets"),
+                jetTag = cms.InputTag("patcrosscleaner:ccJets"),
                 minEt = cms.vdouble(50.0, 50.0)
             ),
             Preselection = cms.PSet(
@@ -163,33 +166,28 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
             ),
             Alpha = cms.PSet(
                 minAlpha = cms.double(0.0),
-               # jetTag = cms.InputTag("patcrosscleaner","ccJets"),
-                jetTag = cms.InputTag("selectedLayer1Jets"),
+                jetTag = cms.InputTag("patcrosscleaner:ccJets"),
+               # jetTag = cms.InputTag("selectedLayer1Jets"),
                 selector = cms.string('AlphaSelector')
             )
         )
     ),
                              
                   
-    #elecTag = cms.InputTag("patcrosscleaner","ccElectrons"),
-   # selections = cms.PSet(
-    #    selectionSequence = cms.vstring(''),
-     #   selectors = cms.PSet()
-    #),
-                        
-    #pathNames = cms.vstring('HLT1jet',  'HLT2jet',  'HLT1MET1HT'),
+
     pathNames = cms.vstring('HLT_Jet180','HLT_DiJetAve130','HLT_MET50','HLT_Mu9')          ,    
                    
-    soup = cms.untracked.bool(False),
-    eventWeight = cms.double(1.0),
+    eventWeight = cms.double(0.298),
   
     triggerResults = cms.InputTag("TriggerResults","","HLT"),
     plotSelection = cms.vstring('Preselection'),
                              
-    weight = cms.untracked.double(1.0),             
-    weightSource = cms.InputTag("csaweightproducer")
+         
+    
   
 )
+
+#process.genParticles.abortOnUnknownPDGCode = False
 
 process.selectedLayer2Hemispheres = cms.EDProducer("PATHemisphereProducer",
     patJets = cms.InputTag("patcrosscleaner","ccJets"),
@@ -223,7 +221,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 #process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
 #process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
-process.p = cms.Path(process.patLayer0*process.patLayer1*process.dijet)
+process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
 
 
 ## Necessary fixes to run 2.2.X on 2.1.X data
