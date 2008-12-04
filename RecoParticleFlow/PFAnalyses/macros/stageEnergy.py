@@ -6,11 +6,16 @@ print 'Staging energy script with args: '
 print sys.argv
 from optparse import OptionParser
 
+#Edit this to write output files anywhere other then the current directory
+dest = '/castor/cern.ch/user/b/ballin/tbv2/'
+home = '/afs/cern.ch/user/b/ballin/scratch0/cmssw/src'
+
 parser = OptionParser()
 parser.add_option("-e", "--energy", type="int", dest="energy", help="Energy to consider")
 parser.add_option("-s", action="store_true", dest="nostage", help="Don't stage files")
 parser.add_option("-c", "--cuts", dest="cuts", metavar="FILE", help="Write testbeam cut macro to FILE")
 parser.add_option("-p", "--python", dest="python", metavar="FILE", help="Write CMSSW python config to FILE")
+parser.add_option("-b", "--batch", dest="batchCmd", metavar="FILE", help="Write batchfile too!")
 (options, args) = parser.parse_args()
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
@@ -59,11 +64,12 @@ if options.python:
                 output.write('\"rfio://' + file + '\", \n')
             output.write(')\n')
         elif str(line) == '<OUTPUTTREE>\n':
-            output.write('process.TFileService.fileName = cms.string(\"outputtree_' + str(options.energy) + 'GeV.root\")\n')
+            output.write('process.TFileService.fileName = cms.string(\"' + dest + 'outputtree_' + str(options.energy) + 'GeV.root\")\n')
         elif str(line) == '<EVENT>\n':
-            output.write('process.finishup.fileName = cms.untracked.string(\"reprocessed_' + str(options.energy) + 'GeV.root\")\n')
+            output.write('process.finishup.fileName = cms.untracked.string(\"' + dest + 'reprocessed_' + str(options.energy) + 'GeV.root\")\n')
         else:
             output.write(line)
+            
     
 print 'Done.'
     
