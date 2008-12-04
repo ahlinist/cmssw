@@ -167,12 +167,12 @@ void TestbeamPreprocessor::finish(std::string filename) {
 
 void TestbeamPreprocessor::processPositioning(TTree* events, RunInfo& ri) {
 	//These positions are approximate
-	ri.ecalEta_ = 0.2;
-	ri.ecalPhi_ = 0.0;
-	ri.hcalEta_ = 0.2;
-	ri.hcalPhi_ = 1.1;
-	ri.tableEta_ = 3.1;
-	ri.tablePhi_ = 13.0;
+	ri.ecalEta_ = 0.22;
+	ri.ecalPhi_ = 0.02;
+	ri.hcalEta_ = 0.22;
+	ri.hcalPhi_ = 0.02;
+	ri.tableEta_ = 0.22;
+	ri.tablePhi_ = 0.02;
 }
 
 void TestbeamPreprocessor::processScintillatorCounters(TTree* events,
