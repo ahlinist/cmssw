@@ -111,7 +111,7 @@ int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag,
   return position;
 }
 
-//int ALPGENParticleId::addHardParticle(const reco::Candidate* p,std::vector<int>* ids, std::vector<int>* refs )
+
 int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* refs,float* genPt, float* genPhi, float* genEta,int* status, int length,int mother )
 {
 
@@ -124,19 +124,16 @@ int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* r
    position++;
     
     int nd =  p->numberOfDaughters();
-    // edm::LogInfo("SusyDiJetEvent") <<"daughters 4 ";
+    
     for(  Int_t idau = 0 ; idau < nd;idau++)
       {	
-	//  if( p->daughter(idau)->status()!=3) continue;
 
- if( p->daughter(idau)->pdgId()==92) continue;
-      refs[position] = mother;
-      //  edm::LogInfo("SusyDiJetEvent") <<"daughters 6 ";
+	if( p->daughter(idau)->pdgId()==92) continue;
+	refs[position] = mother;
      
-      addHardParticle( p->daughter(idau),ids,refs,genPt,genPhi,genEta,status,length,position); 
      
-      //    edm::LogInfo("SusyDiJetEvent") <<"daughters id "<<  p->daughter(idau)->pdgId()<< " "<< p->pdgId() <<" position "<<position ;
-      
+	addHardParticle( p->daughter(idau),ids,refs,genPt,genPhi,genEta,status,length,position); 
+     
       }
 
 

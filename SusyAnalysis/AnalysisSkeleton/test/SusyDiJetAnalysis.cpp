@@ -13,7 +13,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.5 2008/12/02 14:15:04 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.6 2008/12/03 13:04:47 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -24,7 +24,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
   plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
   eventWeight_( iConfig.getParameter<double>("eventWeight") ),
-  weightSource_(iConfig.getParameter<edm::InputTag>("weightSource") ), weight_(0.0), nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
+  nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
 
 {
   // Translate plotSelection strings to indices
@@ -58,8 +58,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   elecTag_ = iConfig.getParameter<edm::InputTag>("elecTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("muonTag");
   tauTag_ = iConfig.getParameter<edm::InputTag>("tauTag");
-  theSoup = iConfig.getUntrackedParameter<bool>("soup");
-  fileWeight = iConfig.getUntrackedParameter<double>("weight");
+  
 
   // trigger stuff
   triggerResults_ = iConfig.getParameter<edm::InputTag>("triggerResults");
@@ -99,7 +98,7 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
 
  // Count all events
   nrEventTotalRaw_++;
-  nrEventTotalWeighted_ += weight_;
+  nrEventTotalWeighted_ += eventWeight_;
 
    // Fill plots with all variables
   bool dec(true);
@@ -110,9 +109,9 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
     mSelectorResults[i] = (decisions.decision(i)?1:0);
     
     // Update counters
-    if ( decisions.decision(i) ) nrEventSelected_[i] += weight_;
-    if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i] += weight_;
-    if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += weight_;
+    if ( decisions.decision(i) ) nrEventSelected_[i] += eventWeight_;
+    if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i] += eventWeight_;
+    if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += eventWeight_;
     
   }
 
@@ -406,6 +405,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
        mTempTreeJetsBTag_TkCountHighEff[i] = (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags");
       mTempTreeJetsBTag_SimpleSecVtx[i] = (*jetHandle)[i].bDiscriminator("simpleSecondaryVertexBJetTags");
       mTempTreeJetsBTag_CombSecVtx[i] = (*jetHandle)[i].bDiscriminator("combinedSecondaryVertexBJetTags");
+      mTempTreeJetPartonFlavour[i] = (*jetHandle)[i].partonFlavour();
     
       if((*jetHandle)[i].genJet()!= 0) {
 	mTempTreeGenJetsPt[i]=(*jetHandle)[i].genJet()->pt();
@@ -692,6 +692,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("JetsTPt",mTempTreeJetsTPt,"JetsTPt[Njets]/float");
   mAllData->Branch("JetsTEta",mTempTreeJetsTEta,"JetsTEta[Njets]/float");
   mAllData->Branch("JetsTPhi",mTempTreeJetsTPhi,"JetsTPhi[Njets]/float");
+  mAllData->Branch("JetPartonFlavour",mTempTreeJetPartonFlavour,"JetPartonFlavour[Njets]/int");
 
   mAllData->Branch("JetBTag_TkCountHighEff",mTempTreeJetsBTag_TkCountHighEff,"JetBTag_TkCountHighEff[Njets]/float");
   mAllData->Branch("JetBTag_SimpleSecVtx",mTempTreeJetsBTag_SimpleSecVtx,"JetBTag_SimpleSecVtx[Njets]/float");
@@ -804,7 +805,7 @@ SusyDiJetAnalysis::fillPlots( const edm::Event& iEvent,
   int ivar = 0; 
 
   // 1. Event variables
-  x[ivar++] = weight_;
+  x[ivar++] = eventWeight_;
   x[ivar++] = processId_;
 
   // 2. Decision from all selectors

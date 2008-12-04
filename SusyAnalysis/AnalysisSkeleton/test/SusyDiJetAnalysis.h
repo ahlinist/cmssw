@@ -128,6 +128,7 @@ private:
   double mTempTreeJetsEta[50];
   double mTempTreeJetsPhi[50];
   double mTempTreeJetsFem[50];
+  int mTempTreeJetPartonFlavour[50];
 
   double mTempTreeJetsBTag_TkCountHighEff[50];
   double mTempTreeJetsBTag_SimpleSecVtx[50];
