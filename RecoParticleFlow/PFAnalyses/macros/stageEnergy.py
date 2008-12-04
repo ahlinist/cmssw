@@ -38,7 +38,7 @@ for line in result:
     else:
         files.append(filename[0])
     
-print 'Available files...'
+print 'Currently staged files...'
 for file in files:
     print file
 
@@ -49,11 +49,22 @@ if options.cuts:
         print 'process.processEvents(\"rfio://' + file + '\", ' + str(int(tokens[2])) + ");" 
     
 if options.python:
-    print 'Config file...'
-
-    for file in files:
-        print '\"rfio://' + file + '\", '
+    print 'Writing python config file...'
+    output = open(options.python, 'w')
+    template = open('cmsRunTemplate.txt')
+    for line in template:
+        if str(line) == '<FILENAMES>\n':
+            output.write('runs = cms.untracked.vstring(')
+            for file in files:
+                output.write('\"rfio://' + file + '\", \n')
+            output.write(')\n')
+        elif str(line) == '<OUTPUTTREE>\n':
+            output.write('process.TFileService.fileName = cms.string(\"outputtree_' + str(options.energy) + 'GeV.root\")\n')
+        elif str(line) == '<EVENT>\n':
+            output.write('process.finishup.fileName = cms.untracked.string(\"reprocessed_' + str(options.energy) + 'GeV.root\")\n')
+        else:
+            output.write(line)
     
-    
+print 'Done.'
     
     
