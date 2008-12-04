@@ -73,7 +73,7 @@ JetEventSelector::select (const edm::Event& event) const
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
     float et = jet.et();
-    if ( correction_ != jet.jetCorrStep() )
+    if (jet.hasJetCorrFactors()&& correction_ != jet.jetCorrStep() )
       et *= jet.jetCorrFactors().correction(correction_);
     correctedEts.push_back(et);
   }
@@ -85,18 +85,22 @@ JetEventSelector::select (const edm::Event& event) const
   bool result(true);
   for ( unsigned int i=0; i<minEt_.size(); ++i ) {
     unsigned int j = etSorted[i];
+    float EMFRAC=0;
+    if ((*jetHandle)[j].isCaloJet()) EMFRAC=(*jetHandle)[j].emEnergyFraction();
+    if ((*jetHandle)[j].isPFJet()) EMFRAC=(*jetHandle)[j].neutralEmEnergyFraction()+
+      (*jetHandle)[j].chargedEmEnergyFraction();
     if ( correctedEts[j]<minEt_[i] ||
-	 fabs((*jetHandle)[j].eta())>maxEta_[i] ||
-	 (*jetHandle)[j].emEnergyFraction()>maxFem_[i] ) {
+	 fabs((*jetHandle)[j].eta())>maxEta_[i]||
+	 EMFRAC>maxFem_[i] ) {
       LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
       result = false;
-    }
+     }
     setVariable(3*i+1,correctedEts[j]);
     setVariable(3*i+2,(*jetHandle)[j].eta());
-    setVariable(3*i+3,(*jetHandle)[j].emEnergyFraction());
-  }
-  LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
-  return result;
+    setVariable(3*i+3,EMFRAC);
+   }
+   LogTrace("JetEventSelector") << "JetEventSelector: all jets passed";
+   return result;
 }
 
 //________________________________________________________________________________________
