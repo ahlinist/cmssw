@@ -29,7 +29,8 @@ gev300 = [30389, 30390 ]
 
 # All runs > 10 GeV
 gev1000 = [30379, 30553, 30384, 30386, 30387, 30388, 30389, 30390]
+gev0 = gev2 + gev3 + gev4 + gev5 + gev6 + gev7 + gev8 + gev9 + gev1000
 
-energies = {2:gev2, 3:gev3, 4:gev4, 5:gev5, 6:gev6, 7:gev7, 8:gev8, 
+energies = {0:gev0, 2:gev2, 3:gev3, 4:gev4, 5:gev5, 6:gev6, 7:gev7, 8:gev8, 
             9:gev9, 20:gev20, 30:gev30, 50:gev50, 100:gev100, 150:gev150, 
             200:gev200, 300:gev300, 1000:gev1000}
