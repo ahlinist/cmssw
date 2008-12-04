@@ -1,0 +1,63 @@
+#ifndef ENERGYPROCESSING_H_
+#define ENERGYPROCESSING_H_
+#include <vector>
+#include <TTree.h>
+#include <TObject.h>
+#include <string>
+#include <TColor.h>
+#include <TH1.h>
+#include <TStyle.h>
+#include <utility>
+#include <THStack.h>
+#include <TLegend.h>
+
+#include "RecoParticleFlow/PFAnalyses/interface/PlotUtil.h"
+
+class EnergyProcessing {
+public:
+
+	EnergyProcessing(TTree* t, std::string graphicsFile, std::string macroFile);
+
+	void reset(TTree* t, std::string graphicsFile, std::string macroFile);
+
+	void evaluatePlots(bool lowEnergy = true);
+
+	void doParticleIdPlots();
+
+	//Plots E_HB against E_EB
+	void doBananaPlots();
+
+	//Plots total E, E_EB, E_HB
+	void doSpectrumPlots();
+
+	//2D scatters of rechits vs. clusters etc.
+	void doCorrelationPlots();
+
+	//Histograms of E_emag/E_total
+	void doEEmagOnETotPlots();
+
+	void doElectronDiscriminationPlots();
+
+	void doBeamCompositionPlots();
+	
+	void doBeamSpotPlots();
+
+	void closeFiles();
+
+	virtual ~EnergyProcessing();
+
+private:
+
+	TTree* tree_;
+	TStyle* defaultStyle_;
+	PlotUtil util_;
+
+	std::string graphicsFile_;
+	std::string macroFile_;
+
+	void adcPerBin(TH1* histo, unsigned adcPerBin);
+
+};
+
+#endif /*ENERGYPROCESSING_H_*/
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+#Gets a run by number from castor
+stager_get -M `echo $1 | awk '{print "/castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000"$1".combined.OutServ_0.0-cmsswreco.root"}'`
