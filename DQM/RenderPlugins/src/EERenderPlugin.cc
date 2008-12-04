@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.105 2008/09/11 05:53:22 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.106 2008/10/21 15:07:31 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.105 $
-  \date $Date: 2008/09/11 05:53:22 $
+  \version $Revision: 1.106 $
+  \date $Date: 2008/10/21 15:07:31 $
 */
 
 #include "TH1F.h"
@@ -63,6 +63,10 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   for( short i=0; i<7; i++ ) pCol3[i]  = i+301;
   for( short i=0; i<10; i++ ) pCol4[i] = i+401;
   for( short i=0; i<10; i++ ) pCol5[i] = i+501;
+  pCol6[0]=2;
+  pCol6[1]=10;
+  for( short i=2; i<9; i++ ) pCol6[i] = i+1;
+  pCol6[9]=1;
 
   text1 = new TH2S( "ee_text1", "text1", 100, -2., 98., 100, -2., 98.);
   text3 = new TH2C( "ee_text3", "text3", 10, 0,  10,  5,   0,  5 );
@@ -506,9 +510,18 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( name.find( "EETTT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
-    obj->SetMinimum(0.0);
+    if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos ) {
+      obj->SetMinimum(-1.0);
+      obj->SetMaximum(6.0);
+    } else {
+      obj->SetMinimum(0.0);
+    }
     if( name.find( "Error" ) ==std::string::npos ) {
-      gStyle->SetPalette(10, pCol4);
+      if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos ) {
+        gStyle->SetPalette(7, pCol6);
+      } else {
+        gStyle->SetPalette(10, pCol4);
+      }
     } else {
       gStyle->SetPalette(10, pCol5);
     }
@@ -550,7 +563,8 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "summary" ) != std::string::npos ) {
+  if( name.find( "summary" ) != std::string::npos && 
+      name.find( "Trigger Primitives Timing" ) == std::string::npos ) {
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(7.0);
     gStyle->SetPalette(7, pCol3);
