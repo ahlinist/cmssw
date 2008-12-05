@@ -53,20 +53,20 @@ o TEC petal
    (12) Cooling Bridges   -> Petal Composition
    (13)	PEEK inserts holding the ICBs
 .......................................................................
-# "TEC petals"                  "TEC_petal"      2861.700     286.17     
-* 1 "Nomex core"                "TEC_Nomex"            2293.19 	1    SUP
-* 2 "Carbon fiber skins"        "Carbon fibre str."    85.9467 	4    SUP
-* 3 "Cooling pipes"             "Titanium"     	       24.0993  1    COL
-* 4 "Coolant"                   "C6F14_F2_-30C"        76.3256  1    COL
-* 5 "fibre holder small"        "T_Kapton"    	       0.0278 	10   SUP
-* 6 "fibre holder medium"       "T_Kapton"    	       0.0285 	30   SUP
-* 7 "fibre holder large"        "T_Kapton"             0.0820	5    SUP
-* 8 "Protection Caps"           "Carbon fibre str."    12.6049 	1    SUP
-* 9 "Fibre Protector"           "Carbon fibre str."    3.1188 	1    SUP
-* 10 "Fibre Protector Glue"	"Epoxy"	      	       3.0769	1    SUP
-* 11 "optical fibre pigtails"	"Optical_Fiber"	       16.0341	1    CAB
-* 12 "Cooling bridges"		"Carbon fibre str."    0.00190	1    COL
-* 13 "PEEK inserts"		"Peek"	      	       2.2424	1    SUP
+# "TEC petals"                  "TEC_petal"      2775.688     -1     
+* 1 "Nomex core"                "TEC_Nomex"            2078.2039 	1    SUP
+* 2 "Carbon fiber skins"        "Carbon fibre str."     343.7870 	1    SUP
+* 3 "Cooling pipes"             "Titanium"     	         17.6906	1    COL
+* 4 "Coolant"                   "C6F14_F2_-30C"          56.0283  	1    COL
+* 5 "fibre holder small"        "T_Kapton"    	          0.5444	1    SUP
+* 6 "fibre holder medium"       "T_Kapton"    	          1.6786 	1    SUP
+* 7 "fibre holder large"        "T_Kapton"                0.8036	1    SUP
+* 8 "Protection Caps"           "Carbon fibre str."      14.6402 	1    SUP
+* 9 "Fibre Protector"           "Carbon fibre str."       3.1188 	1    SUP
+* 10 "Fibre Protector Glue"	"Epoxy"	      	          3.0769	1    SUP
+* 11 "optical fibre pigtails"	"Optical_Fiber"	         28.0136	1    CAB
+* 12 "Cooling bridges"		"Carbon fibre str."       1.9045	1    COL
+* 13 "PEEK inserts"		"Peek"	      	       	  2.2384	1    SUP
 .......................................................................
 ======================================================================= 
 
