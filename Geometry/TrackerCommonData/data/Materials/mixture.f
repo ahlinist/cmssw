@@ -684,7 +684,7 @@ C      enddo
          write(LUNTZ,1011) tzstring, -100.*TZVol(j)
       enddo
 
- 1010 Format(7X,A20,I3,4X,F8.3)
+ 1010 Format(7X,A20,I3,4X,F12.6)
  1011 Format(10X,A22,F8.3)
 
 C--> and x0 contributions into a separate file
