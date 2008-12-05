@@ -26,7 +26,7 @@ o  Hybrid for TEC rings 3,4,6,7
 Hybrids have 4 APVs
 Dimensions 65.2 x 30 mm^2 = 19.56 cm^2
 
-MCVolume: 6.52 x 3.0 x 0.068 = 1.33008 cm^3
+MCVolume: 65.2 x 25.26 x 0.68 = 1119.93 mm^3
 
  Composition of the Hybrids taken from TOB layers 1-2
 
@@ -72,8 +72,10 @@ In the TEC we mix the ceramic support into the hybrid.
 (4) Ceramic support
 	Area from the technical drawings: 19.55 cm^2
 	Volume: 19.55 x 0.0387 = 0.7566 cm^3
+
+MC volume has been rescaled to give proper density: rho = 4.853 g/cm^3
 ......................................................................
-# "TEC Hybrid Rings 3/4/5/7"        "TEC_Hybrid4APV"  1.33008     19.56
+# "TEC Hybrid Rings 3/4/5/7"        "TEC_Hybrid4APV"  0.9767     19.56
 Central Hybrid (no tail)
 * 1  "Central Hybrid Kapton"      "T_Kapton"        0.075       1 ELE
 * 2  "Central Hybrid Copper"      "Copper"          0.144       1 ELE
@@ -95,7 +97,7 @@ Wire bonds
 * 15 "Wire bonds"                 "Aluminium"       1.98E-6  1029 ELE
 * 16 "Wire bonds"                 "Silicon"         0.02E-6  1029 ELE
 Support
-* 17 "Ceramic Support"			  "Ceramic"         0.7566 		1 SUP
+* 17 "Ceramic Support"			  "Ceramic"         0.7033 		1 SUP
 ..................................................................
 ==================================================================
 
@@ -113,8 +115,10 @@ as above, except:
 (3) Wire bonds
 	see above for details
 	TOTAL: 2x128xnAPV+5 bonds = 1541 bonds
+
+MC volume has been rescaled to give proper density: rho = 4.853 g/cm^3
 ......................................................................
-# "TEC Hybrid Rings 1/2/5"        "TEC_Hybrid6APV"  1.33008     19.56
+# "TEC Hybrid Rings 1/2/5"        "TEC_Hybrid6APV"  0.9961     19.56
 Central Hybrid (no tail)
 * 1  "Central Hybrid Kapton"      "T_Kapton"        0.075       1 ELE
 * 2  "Central Hybrid Copper"      "Copper"          0.144       1 ELE
@@ -136,7 +140,7 @@ Wire bonds
 * 15 "Wire bonds"                 "Aluminium"       1.98E-6  1541 ELE
 * 16 "Wire bonds"                 "Silicon"         0.02E-6  1541 ELE
 Support
-* 17 "Ceramic Support"			  "Ceramic"         0.7566 		1 SUP
+* 17 "Ceramic Support"			  "Ceramic"         0.7033 		1 SUP
 
 ......................................................................
 ==================================================================
@@ -147,25 +151,25 @@ Support
 
 (1) PA:
   Material Description from SCHOTT
-  MC Area 16.01 cm^2 (from hetechnical drawings)
-  MC Volume 16.01 x 0.0665 = 1.06 cm^3
+  MC Area 16.01 cm^2 (from technical drawings)
+  MC Volume 16.01 x 0.0665 = 1.0647 cm^3
 (2)Spacer:
-  Mixted into the PA
+  Mixed into the PA
   correct Volume: 3.63 cm^2 x 0.0209 cm = 0.07588 cm^3
+
 ...................................................................
-# "TEC pitch adapter"    "TEC_PitchAdapter"       1.06      16.01
-* 1 "Silicon"			 "Silicon"                0.3218    1  ELE
-* 2 "Sodium" 			 "Sodium"	              0.04780   1  ELE
-* 3 "Potassium" 		 "Potassium"	          0.05896   1  ELE
-* 4 "Zinc" 		 		 "Zinc"			          0.04769   1  ELE
-* 5 "Aluminium" 		 "Aluminium"		      0.02356   1  ELE
-* 6 "Titanium" 			 "Titanium"		          0.02542   1  ELE
-* 7 "Antimony" 			 "Antimony"		          0.00486   1  ELE
-* 8 "Chromium" 			 "Chromium"		          0.00001   1  ELE
-* 9 "Oxygen" 			 "Oxygen"		          0.50371   1  ELE
-* 10 "Spacer" 			 "Ceramic" 				  0.07588   1  SUP
-Not in the material right now!
- 11 "Boron" 			 "Boron"		          0.02601   1  ELE
+# "TEC pitch adapter"    "TEC_PitchAdapter"       1.0647      16.01
+* 1 "Silicon"			 "Silicon"        2.802E-1    1  ELE
+* 2 "Sodium" 			 "Sodium"	  1.001E-1    1  ELE
+* 3 "Potassium" 		 "Potassium"	  1.391E-1    1  ELE
+* 4 "Zinc" 		 	 "Zinc"	          1.360E-2    1  ELE
+* 5 "Aluminium" 		 "Aluminium"	  1.770E-2    1  ELE
+* 6 "Titanium" 			 "Titanium"	  1.138E-2    1  ELE
+* 7 "Antimony" 			 "Antimony"	  1.476E-3    1  ELE
+* 8 "Chromium" 			 "Chromium"	  2.826E-6    1  ELE
+* 9 "Oxygen" 			 "Oxygen"         7.147E+2    1  ELE
+* 10 "Boron" 			 "Bor 11"         2.255E-2    1  ELE
+* 11 "Spacer" 			 "Ceramic"        0.0714      1  SUP
 
 ....................................................................
 ====================================================================
@@ -178,10 +182,10 @@ o Module frame legs Rings 1 to 4
   The Side Frames are constructed after the iso-side. Additional material on the bias side isa
   added via the supportboxes and the tail (in petals)
   
-  MC Area: 18.22 cm^2
-  MC Volume: 18.22 x 0.1022 = 1.862 cm^3
+  MC Area: 18.22*0.96 cm^2
+  MC Volume: 1.3056 cm^3
   	
-  (1) Carbon  frame 
+  (1) Carbon frame (graphite)
 	  Volume 18.22 x 0.0764 = 1.392 cm^3
    
   ISO-Kapton
@@ -195,11 +199,11 @@ o Module frame legs Rings 1 to 4
   silver glue and components are neglected due to missing measurements
 
 ...................................................................
-# "TEC frame legs 1 to 4" "TEC_frame_side_1_4"    1.862    18.22
-* 1 "Carbon frame"		  "Carbon"     			  1.392    1    SUP
+# "TEC frame legs 1 to 4" "TEC_frame_side_1_4"    1.3056    18.22
+* 1 "Carbon frame"	  "Carbon"     		  1.402    1    SUP
 * 2 "Copper traces"       "Copper"                0.0084   1    ELE
-* 3 "Gold"				  "Gold"				  0.00002  1    ELE
-* 4 "Nickel"			  "Nickel"				  0.0008   1    ELE
+* 3 "Gold"		  "Gold"		  0.00002  1    ELE
+* 4 "Nickel"		  "Nickel"		  0.0008   1    ELE
 * 5 "LV Kapton"           "T_Kapton"              0.4608   1    ELE
 
 ...................................................................
@@ -209,14 +213,16 @@ o Module frame legs Rings 5 to 7
   Using Data from R7N
 
   Note:
-  The Side Frames are constructed after the iso-side. Additional material on the bias side isa
+  The Side Frames are constructed after the iso-side. Additional material on the bias side is
   added via the supportboxes and the tail (in petals)
   
-  MC Area: 32.25 cm^2
-  MC Volume: 32.25 x 0.1022 = 3.296 cm^3
+  MC Area: 32.25*0.96 cm^2
+  MC Volume: 2.3688 cm^3
   	
-  (1) Carbon  frame 
+  (1) Carbon fibre frame 
 	  Volume (32.25+5.33) x 0.0764 = 2.871 cm^3
+    -> but adjusted carbon fibre volume to reproduce measured mass of 3.095 g
+	  per leg
    
   ISO-Kapton
   Volume 32.25 x 0.0258 = 0.832 cm^3
@@ -229,11 +235,11 @@ o Module frame legs Rings 5 to 7
   silver glue and components are neglected due to missing measurements
 
 ...................................................................
-# "TEC frame legs 5 to 7" "TEC_frame_side_5_7"    3.296     32.25
-* 1 "Carbon fiber frame"  "Carbon fibre str."     2.871    1    SUP
+# "TEC frame legs 5 to 7" "TEC_frame_side_5_7"    2.3688     32.25
+* 1 "Carbon fiber frame"  "Carbon fibre str."     1.8314   1    SUP
 * 2 "Copper traces"       "Copper"                0.01062  1    ELE
-* 3 "Gold"				  "Gold"				  0.00002  1    ELE
-* 4 "Nickel"			  "Nickel"				  0.00068  1    ELE
+* 3 "Gold"		  "Gold"		  0.00002  1    ELE
+* 4 "Nickel"		  "Nickel"		  0.00068  1    ELE
 * 5 "LV Kapton"           "T_Kapton"              0.82068  1    ELE
 
 ...................................................................
@@ -249,13 +255,15 @@ o Supplies Boxes
   (1 to 3) from kaptonaufteilung.ods  by minimizing the standarad diviation which is still 18.8%
   (4) rest 
   (5) from silver glue 12.5 mg / 1049 mg/cm^3 = 0.01191
+
+MC volume has been rescaled to give proper density: rho = 1.42g/cm^3
 ...................................................................
-# "TEC Sideframe Supplies Box"	"TEC_SideFrSupBox"	0.123	4.78
+# "TEC Sideframe Supplies Box"	"TEC_SideFrSupBox"	0.2467	4.78
 * 1 "Copper traces"       "Copper"                0.00639  1    ELE
-* 2 "Gold"				  "Gold"				  0.00002  1    ELE
-* 3 "Nickel"			  "Nickel"				  0.00061  1    ELE
+* 2 "Gold"		  "Gold"		  0.00002  1    ELE
+* 3 "Nickel"		  "Nickel"		  0.00061  1    ELE
 * 4 "LV Kapton"           "T_Kapton"              0.11598  1    ELE
-* 5 "Silver"			  "Silver"				  0.01192  1    ELE
+* 5 "Silver"		  "Silver"		  0.01192  1    ELE
 ...................................................................
 ===================================================================  
 
@@ -266,9 +274,11 @@ o Si-Reinforcement
   MC Volume: 3.35 x 0.387 = 1.296 cm^3
 
   Is made out of ceramic
+
+MC volume has been rescaled to give proper density: rho = 3.731 g/cm^3
 ...................................................................
-# "SiReenforcment"		"TEC_SiReenforcment"	1.296	3.35
-* 1 "Ceramic"			"Ceramic"				1.296 1 SUP
+# "SiReenforcment"		"TEC_SiReenforcment"	1.3773	3.35
+* 1 "Ceramic"			"Ceramic"		1.296 	1 SUP
 
 ...................................................................
  ===================================================================  
@@ -277,16 +287,15 @@ o Si-Reinforcement
 o TEC frame at the module top
   ---------------------------
 
-  Note: This was changed directly in tecmaterials.xml specifics are coming soon.
   MC Volume: Width of the module x 3.72 x 0.1 cm
-  
   Actual volume is about that minus 10 %
 
   (1)  Carbon
+   Top frame always consists of graphite.
 
-   Numbers for unit width of module !
+MC volume has been rescaled to give proper density: rho = 1.931 g/cm^3
 ....................................................................
-# "TEC module frame top"        "TEC_frame_top"    0.372      3.72
+# "TEC module frame top"        "TEC_frame_top"    0.3928      3.72
 * 1 "TEC frame top"             "Carbon"           0.3348   1  SUP
 ....................................................................
 =====================================================================  
