@@ -136,7 +136,7 @@ def getMaterialSection(rootNode):
 #creates a CompositeMaterial with [name] [method] [density] and [symbol] beneeth [rootNode]. 
 #fractions is a map of material Names containing the fractions
 #NOTE: if an material of that name allready exists it will be overridden. 
-def createCompositeMaterial(doc,rootNode,name, density,fractions,method="mixture by weight", symbol=""):
+def createCompositeMaterial(doc,rootNode,name, density,fractions,method="mixture by weight", symbol=" "):
     newMaterial = doc.createElement("CompositeMaterial")
     newMaterial.setAttribute("name",name)
     newMaterial.setAttribute("density",density)
