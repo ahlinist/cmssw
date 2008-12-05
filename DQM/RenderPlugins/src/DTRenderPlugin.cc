@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.34 2008/12/01 14:13:17 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.35 2008/12/04 09:00:22 giorgia Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.34 $
-  \date $Date: 2008/12/01 14:13:17 $
+  \version $Revision: 1.35 $
+  \date $Date: 2008/12/04 09:00:22 $
 */
 
 #include "TProfile2D.h"
@@ -518,23 +518,23 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
 //     obj->GetXaxis()->SetLabelSize(0.07);
 //     obj->GetYaxis()->SetLabelSize(0.07);
 //     obj->GetXaxis()->LabelsOption("v");
+    return;
   }
 
   // --------------------------------------------------------------
   // Residuals plots
   if(o.name.find("MeanSummaryRes_testFailed_W") != std::string::npos) {
-    labelMB4Sect4and13_wheel->Draw("same");
-    labelMB4Sect10and14_wheel->Draw("same");
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(12,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     c->SetGrid(1,1);
     c->SetBottomMargin(0.1);
-    c->SetLeftMargin(0.12);
+    c->SetLeftMargin(0.15);
     c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(3.0);
@@ -550,6 +550,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
   return;
   } else if(o.name.find("SigmaSummaryRes_testFailed_W") != std::string::npos) {
     labelMB4Sect4and13_wheel->Draw("same");
@@ -560,7 +561,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->CenterLabels();
     c->SetGrid(1,1);
     c->SetBottomMargin(0.1);
-    c->SetLeftMargin(0.12);
+    c->SetLeftMargin(0.15);
     c->SetRightMargin(0.12);
     obj->SetMinimum(-0.00000001);
     obj->SetMaximum(3.0);
@@ -576,6 +577,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
   return;
   }
 }
@@ -613,6 +615,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( o.name.find("hResDist") != std::string::npos ) {
     gStyle->SetOptStat("rme" );
+    gStyle->SetOptFit(1);
     obj->SetStats( kTRUE );
   }
 
@@ -636,7 +639,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
    if( o.name.find( "SigmaTest" ) != std::string::npos ) {
-    obj->GetYaxis()->SetRangeUser(-0.2,0.2);
+    obj->GetYaxis()->SetRangeUser(0.,0.2);
   }
   
 
@@ -873,7 +876,26 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     }
     return;
   }
-  
+
+  if(o.name.find("MeanSummaryRes_testFailed_W") != std::string::npos
+     || o.name.find("SigmaSummaryRes_testFailed_W") != std::string::npos) {
+    static TLatex * lblMB4Sect4and13_res = new TLatex(4,10.75,"4/13");
+    static TLatex * lblMB4Sect10and14_res = new TLatex(9.75,10.75,"10/14");
+
+    lblMB4Sect4and13_res->Draw("same");
+    lblMB4Sect10and14_res->Draw("same");
+    static TLine *lineMB1_res = new TLine(1,4,13,4); 
+    lineMB1_res->Draw("same");
+    static TLine *lineMB2_res = new TLine(1,7,13,7); 
+    lineMB2_res->Draw("same");
+    static TLine *lineMB3_res = new TLine(1,10,13,10); 
+    lineMB3_res->Draw("same");
+
+
+
+    return;
+  }
+
   return;
 
 }
