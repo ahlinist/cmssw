@@ -83,7 +83,7 @@
   <String name="BridgeMaterial"      value="materials:Aluminium"/>
   <Numeric name="WaferPosition"      value="[tecmodpar:TopFrameHeight]"/>
   <Vector name="SiReenforcementHeight" type="numeric" nEntries = "2">
-   3.8*mm, 8.1*mm  </Vector>
+   4.51*mm, 8.1*mm  </Vector>
   <Vector name="SiReenforcementWidth"  type="numeric" nEntries = "2">
    102.0*mm, 98.0*mm  </Vector>
   <Vector name="SiReenforcementPosY"   type="numeric" nEntries = "2">
