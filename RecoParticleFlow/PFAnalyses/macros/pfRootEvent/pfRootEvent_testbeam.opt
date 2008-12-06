@@ -5,7 +5,7 @@ root outtree 1
 //colin	mode 1
 
 root file ../../test/demo_reprocessed_7GeV.root
-//root file rfio:///castor/cern.ch/user/p/pjanot/CMSSW219/display_DiJetMat.root
+
 // filter ------------------------------------------------------------
 
 // filter   nparticles  10
@@ -354,7 +354,7 @@ tau_benchmark cone_merge 100
 
 //PFJet benchmark options ---------------------------------------------------
 
-pfjet_benchmark	on/off	1
+pfjet_benchmark	on/off	0
 
 //debug yes/no
 pfjet_benchmark debug 0

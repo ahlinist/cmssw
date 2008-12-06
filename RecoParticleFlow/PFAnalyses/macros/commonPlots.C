@@ -13,15 +13,15 @@
 	//TFile file(run.c_str());
 	//TTree* tree_ = (TTree*) gDirectory->FindObjectAny("Extraction");
 	TChain* chain = new TChain("extraction/Extraction");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_2GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_3GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_4GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_5GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_6GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_7GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_8GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_9GeV.root");
-	chain->Add("rfio:///castor/cern.ch/user/b/ballin/outputtree_HighE_test.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_2GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_3GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_4GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_5GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_6GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_7GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_8GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_9GeV.root");
+	chain->Add("rfio:///castor/cern.ch/user/b/ballin/tbv2/outputtree_1000GeV.root");
 	
 	std::vector<int> energies;
 	energies.push_back(2);
