@@ -22,7 +22,7 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/l1config30XV2.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/ECAL_30X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels_30X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels30X_cabling.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelCPEGenericErrorParm.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelCPEGenericErrorParm_v2.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelTemplates.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStrip_NewCabling.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStrip_NewCabling_v2.db
