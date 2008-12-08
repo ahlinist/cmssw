@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.35 2008/12/04 09:00:22 giorgia Exp $
+// $Id: DTRenderPlugin.cc,v 1.36 2008/12/05 12:04:43 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.35 $
-  \date $Date: 2008/12/04 09:00:22 $
+  \version $Revision: 1.36 $
+  \date $Date: 2008/12/05 12:04:43 $
 */
 
 #include "TProfile2D.h"
@@ -527,7 +527,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   // --------------------------------------------------------------
   // Residuals plots
-  if(o.name.find("MeanSummaryRes_testFailed_W") != std::string::npos) {
+  if(o.name.find("MeanSummaryRes_W") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(12,true);
     obj->GetXaxis()->CenterLabels();
@@ -545,14 +545,14 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  }  else if(o.name.find("MeanSummaryRes_testFailed") != std::string::npos) {
+  }  else if(o.name.find("MeanSummaryRes") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     c->SetGrid(1,1);
   return;
-  } else if(o.name.find("SigmaSummaryRes_testFailed_W") != std::string::npos) {
+  } else if(o.name.find("SigmaSummaryRes_W") != std::string::npos) {
     labelMB4Sect4and13_wheel->Draw("same");
     labelMB4Sect10and14_wheel->Draw("same");
     obj->GetXaxis()->SetNdivisions(13,true);
@@ -572,7 +572,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  }  else if(o.name.find("SigmaSummaryRes_testFailed") != std::string::npos) {
+  }  else if(o.name.find("SigmaSummaryRes") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
