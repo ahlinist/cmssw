@@ -44,7 +44,6 @@ namespace edm {
     k_double = 'D',
     k_vdouble = 'd',
     k_bool = 'B',
-    k_vbool = 'b',
     k_string = 'S',
     k_vstring = 's',
     k_EventID = 'E',

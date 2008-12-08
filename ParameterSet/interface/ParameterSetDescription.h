@@ -103,6 +103,12 @@ namespace edm {
       return parameters_.end();
     }
 
+    // Better performance if space is reserved for the number of
+    // top level parameters before any are added.
+    void reserve(Parameters::size_type n) {
+      parameters_.reserve(n);
+    }
+
   private:
 
     template<class T>
