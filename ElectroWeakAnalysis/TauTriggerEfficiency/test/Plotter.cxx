@@ -6,8 +6,7 @@ public:
     gROOT->LoadMacro("./tdrstyle.cxx");
     setTDRStyle();
 
-    //inFile = new TFile("tteffAnalysis.root");
-    inFile = new TFile("tteffAnalysis_bak.root");
+    inFile = new TFile("tteffAnalysis.root");
     tree = (TTree *) (inFile->Get("TTEffTree"));
   }
   ~Plotter(){
