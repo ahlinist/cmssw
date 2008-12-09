@@ -33,14 +33,10 @@ Summary:  Library to calculate relative luminosity from HLX data
 #define NUM_CAP_BANKS 4
 #define ET_SUM_STORE_SIZE 20
 
-using namespace ICCoreUtils;
-
 namespace HCAL_HLX {
 
    class LumiCalc {
       public:
-
-	 typedef unsigned long  u32; // Unsigned 32-bit integer.
 
 	 //LumiCalc();
 	 LumiCalc( );
@@ -50,8 +46,8 @@ namespace HCAL_HLX {
 	 void DoCalc(HCAL_HLX::LUMI_SECTION & localSection);
 
 	 // configuration
-	 u32 SetBXMask( u32 BXMask[], u32 maskSize = HCAL_HLX_NUM_BUNCHES );
-	 u32 SetHLXMask( u32 HLXMask[], u32 maskSize = HCAL_HLX_NUM_HLXS );
+	 uint32_t SetBXMask( uint32_t BXMask[], uint32_t maskSize = HCAL_HLX_NUM_BUNCHES );
+	 uint32_t SetHLXMask( uint32_t HLXMask[], uint32_t maskSize = HCAL_HLX_NUM_HLXS );
     
       private:
 
@@ -62,51 +58,51 @@ namespace HCAL_HLX {
 	 float CalcETSumNoiseError( HCAL_HLX::LUMI_SECTION &localSection );
 	 void CalcLHCLumi(HCAL_HLX::LUMI_SECTION& localSection);
 	 void CalcOccLumi(HCAL_HLX::LUMI_SECTION& localSection);
-	 float CalcOccNoiseError( HCAL_HLX::LUMI_SECTION &localSection, u32 set ); 
-	 float CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, u32 set ); 
-	 float CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, u32 set, u32 iBX ); 
+	 float CalcOccNoiseError( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set ); 
+	 float CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set ); 
+	 float CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set, uint32_t iBX ); 
 
 	 void CalcLumi( HCAL_HLX::LUMI_SECTION& localSection );
-	 float CalcLumiError( u32 numNibbles, u32 numTowers, u32 numBunches = 1, float intPerBX = 0.01 );
+	 float CalcLumiError( uint32_t numNibbles, uint32_t numTowers, uint32_t numBunches = 1, float intPerBX = 0.01 );
 
 	 // Configuration
-	 //u32 startAG_, endAG_, sizeAG_; // AG = Abort Gap.
-	 u32 sizeNoise_[NUM_CAP_BANKS];
+	 //uint32_t startAG_, endAG_, sizeAG_; // AG = Abort Gap.
+	 uint32_t sizeNoise_[NUM_CAP_BANKS];
 	 float        invSizeNoise_[NUM_CAP_BANKS];
 	 float totalEtSumNoise_[NUM_CAP_BANKS];
-	 u32 etSumNoiseNorm_[NUM_CAP_BANKS];
+	 uint32_t etSumNoiseNorm_[NUM_CAP_BANKS];
 	 float totalOccNoise_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
-	 u32 occNoiseNorm_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
-	 u32 numBX_, numHLX_; 
+	 uint32_t occNoiseNorm_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
+	 uint32_t numBX_, numHLX_; 
 	 float normNumBX_, normNumHLX_;
 
 	 // Should only be called once per run
-	 u32 numActiveTowers_[HCAL_HLX_NUM_HLXS][2];
-	 u32 numActiveTowersBX_[2];
-	 u32 TotalActiveTowers_;
+	 uint32_t numActiveTowers_[HCAL_HLX_NUM_HLXS][2];
+	 uint32_t numActiveTowersBX_[2];
+	 uint32_t TotalActiveTowers_;
 
 	 bool         noMasks_;
-	 u32 numOrbitsPerNB_;
-	 u32 numActiveTowersEt_[HCAL_HLX_NUM_HLXS];
-	 u32 numActiveTowersBXEt_;
-	 u32 TotalActiveTowersEt_;
+	 uint32_t numOrbitsPerNB_;
+	 uint32_t numActiveTowersEt_[HCAL_HLX_NUM_HLXS];
+	 uint32_t numActiveTowersBXEt_;
+	 uint32_t TotalActiveTowersEt_;
 
 
 	 bool Block( unsigned short int iBX, unsigned short int numBlock);
 	 bool isBunch( unsigned short int iBX, unsigned short int scheme = 1 );  
 
-	 u32 BXCapId_[HCAL_HLX_NUM_BUNCHES];
-	 u32 BXMask_[HCAL_HLX_NUM_BUNCHES];
-	 u32 BXMaskBool_[HCAL_HLX_NUM_BUNCHES];
-	 u32 HLXMask_[HCAL_HLX_NUM_HLXS];
+	 uint32_t BXCapId_[HCAL_HLX_NUM_BUNCHES];
+	 uint32_t BXMask_[HCAL_HLX_NUM_BUNCHES];
+	 uint32_t BXMaskBool_[HCAL_HLX_NUM_BUNCHES];
+	 uint32_t HLXMask_[HCAL_HLX_NUM_HLXS];
 
 	 // Make an array to store the previous averages, this way we can calculate 
 	 // an estimate of the error as we go. We store an average for each four lumi
 	 // nibbles (a lumi "bite")
 	 float etSumAvgPerLB_[ET_SUM_STORE_SIZE][HCAL_HLX_NUM_BUNCHES];
 	 float etSumNoiseAvgPerLB_[ET_SUM_STORE_SIZE][HCAL_HLX_NUM_BUNCHES];
-	 u32 etStoreSize_;
-	 u32 etNoiseStoreSize_;
+	 uint32_t etStoreSize_;
+	 uint32_t etNoiseStoreSize_;
 	 float sigmaEt_;
 	 float sigmaEtWeight_;
 	 float sigmaEtNoise_;
