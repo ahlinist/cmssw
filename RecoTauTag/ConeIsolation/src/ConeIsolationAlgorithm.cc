@@ -46,7 +46,7 @@ pair<float,IsolatedTauTagInfo> ConeIsolationAlgorithm::tag(const JetTracksAssoci
          (*it)->hitPattern().numberOfValidPixelHits() >= m_cutPixelHits ) 
     {
       if (useVertexConstrain_ && z_pv > -500.) {
-        if (fabs((*it)->dz() - z_pv) < dZ_vertex)
+        if (fabs((*it)->dz(pv.position())) < dZ_vertex)
           myTracks.push_back(*it);
       } else
         myTracks.push_back(*it);
