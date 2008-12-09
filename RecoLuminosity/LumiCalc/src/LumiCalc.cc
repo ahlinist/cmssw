@@ -7,7 +7,6 @@ Summary:  Library to calculate relative luminosity from HLX data
 
 *****************************************************************************/
 
-#include "RecoLuminosity/TCPReceiver/interface/ICTypeDefs.hh"
 #include "RecoLuminosity/TCPReceiver/interface/LumiStructures.hh"
 #include "RecoLuminosity/LumiCalc/interface/LumiCalc.hh"
 
@@ -37,19 +36,19 @@ namespace HCAL_HLX {
   
    LumiCalc::LumiCalc(){
     
-      u32 BXMask[HCAL_HLX_NUM_BUNCHES];
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ) BXMask[iBX] = 0;
-      u32 HLXMask[HCAL_HLX_NUM_HLXS];
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ) HLXMask[iHLX] = 1;
+      uint32_t BXMask[HCAL_HLX_NUM_BUNCHES];
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ) BXMask[iBX] = 0;
+      uint32_t HLXMask[HCAL_HLX_NUM_HLXS];
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ) HLXMask[iHLX] = 1;
       // Should these be combined to form a matrix so that different BXs are masked for different HLXs?
 
       //std::cout << "In ctor set arrays" << std::endl;
 
       // Masking convension: Masked 0, Data 1, Noise 2.  Anything marked as 2 will be used to calculate noise.
-      for( u32 iBX = 0;  iBX < 120; ++iBX )                    BXMask[iBX] = 0; // Mask
-      for( u32 iBX = 120;  iBX < 3400; ++iBX )                 BXMask[iBX] = 1; // UnMask
-      for( u32 iBX = 3400; iBX < 3524; ++iBX )                 BXMask[iBX] = 2; // Noise
-      for( u32 iBX = 3524; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ) BXMask[iBX] = 0; // Mask
+      for( uint32_t iBX = 0;  iBX < 120; ++iBX )                    BXMask[iBX] = 0; // Mask
+      for( uint32_t iBX = 120;  iBX < 3400; ++iBX )                 BXMask[iBX] = 1; // UnMask
+      for( uint32_t iBX = 3400; iBX < 3524; ++iBX )                 BXMask[iBX] = 2; // Noise
+      for( uint32_t iBX = 3524; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ) BXMask[iBX] = 0; // Mask
 
       SetBXMask( BXMask, HCAL_HLX_NUM_BUNCHES );
       SetHLXMask( HLXMask, HCAL_HLX_NUM_HLXS );
@@ -63,8 +62,8 @@ namespace HCAL_HLX {
       etNoiseStoreSize_ = 0;
 
       // Initialize error arrays
-      for( u32 iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
-	 for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
+	 for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	    etSumAvgPerLB_[iLB][iBX] = 0.0;
 	    etSumNoiseAvgPerLB_[iLB][iBX] = 0.0;
 	 }
@@ -79,13 +78,13 @@ namespace HCAL_HLX {
   
    //****************** Initialization and Configuration Functions ***************
     
-   u32 LumiCalc::SetBXMask( u32 BXMask[], u32 maskSize ){
+   uint32_t LumiCalc::SetBXMask( uint32_t BXMask[], uint32_t maskSize ){
       // Copy given mask into member variable and count number of active bunches
 
       numBX_ = 0;
       for( int iCap =0; iCap < NUM_CAP_BANKS; ++iCap ) sizeNoise_[iCap] = 0;
     
-      for( u32 iBX = 0; iBX < maskSize ; ++iBX ){
+      for( uint32_t iBX = 0; iBX < maskSize ; ++iBX ){
 	 if( BXMask[iBX] < 3 ) {
 	    BXMask_[iBX] = BXMask[iBX];
 	 } else {
@@ -104,7 +103,7 @@ namespace HCAL_HLX {
 	 BXCapId_[iBX] = iBX % NUM_CAP_BANKS;
       }
 
-      for( u32 iBX = maskSize; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = maskSize; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 BXMask_[iBX] = 0;
 	 BXMaskBool_[iBX] = 0;
 	 BXCapId_[iBX] = iBX % NUM_CAP_BANKS;
@@ -117,17 +116,17 @@ namespace HCAL_HLX {
       return numBX_;
    }
 
-   u32 LumiCalc::SetHLXMask( u32 HLXMask[], u32 maskSize ){
+   uint32_t LumiCalc::SetHLXMask( uint32_t HLXMask[], uint32_t maskSize ){
       // Copy given mask into member variable and count number of active HLXs
 
       numHLX_ = 0;
 
-      for( u32 iHLX = 0; iHLX < maskSize ; ++iHLX ){
+      for( uint32_t iHLX = 0; iHLX < maskSize ; ++iHLX ){
 	 HLXMask_[iHLX] = ( HLXMask[iHLX] == 0 )? 0:1;
 	 numHLX_ += HLXMask_[iHLX];
       }      
 
-      for( u32 iHLX = maskSize; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX )
+      for( uint32_t iHLX = maskSize; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX )
 	 HLXMask_[iHLX] = 0;
 
       normNumHLX_ = 1.0;
@@ -144,14 +143,14 @@ namespace HCAL_HLX {
       TotalActiveTowers_ = 0;
 
       //find first unmasked BX
-      u32 iBX;
+      uint32_t iBX;
       for( iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 if( BXMask_[iBX] == 1 ) break;
       }
 
       if( iBX >= HCAL_HLX_NUM_BUNCHES ) return;
  
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 numActiveTowers_[iHLX][0] =  ( localSection.occupancy[iHLX].data[set1AboveIndex][iBX] +
 	 localSection.occupancy[iHLX].data[set1BetweenIndex][iBX] +
 	 localSection.occupancy[iHLX].data[set1BelowIndex][iBX] )*HLXMask_[iHLX] ;
@@ -169,7 +168,7 @@ namespace HCAL_HLX {
       numActiveTowersBX_[0] = 0;
       numActiveTowersBX_[1] = 0;
 
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 if( HLXMask_[iHLX] == 0 ) continue;
 
 	 numActiveTowersBX_[0] += ( localSection.occupancy[iHLX].data[set1AboveIndex][iBX] +
@@ -185,9 +184,9 @@ namespace HCAL_HLX {
    void LumiCalc::CountActiveTowersEt( HCAL_HLX::LUMI_SECTION &localSection ){
     
       // Renormalize to the number of nibbles in the Et sum hdr
-      u32 toccNibbles = 0;
-      u32 etNibbles = 0;
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      uint32_t toccNibbles = 0;
+      uint32_t etNibbles = 0;
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 toccNibbles += localSection.occupancy[iHLX].hdr.numNibbles;
 	 etNibbles += localSection.etSum[iHLX].hdr.numNibbles;
       }
@@ -197,12 +196,12 @@ namespace HCAL_HLX {
       float totalBX = float(toccNibbles*numOrbitsPerNB_*numBX_);
       float totalBXEt = float(etNibbles*numOrbitsPerNB_*numBX_);
 
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 if( HLXMask_[iHLX] ){
 	    float twrSum = float(numActiveTowers_[iHLX][0] + numActiveTowers_[iHLX][1]);
-	    numActiveTowersEt_[iHLX] = (u32)(twrSum*reNorm);
+	    numActiveTowersEt_[iHLX] = (uint32_t)(twrSum*reNorm);
 	    // If there are no masks ...
-	    if( twrSum > 8*totalBX ){ numActiveTowersEt_[iHLX] = (u32)(48*totalBXEt); }
+	    if( twrSum > 8*totalBX ){ numActiveTowersEt_[iHLX] = (uint32_t)(48*totalBXEt); }
 	 } else {
 	    numActiveTowersEt_[iHLX] = 0;
 	 }
@@ -213,16 +212,16 @@ namespace HCAL_HLX {
       float totalHLX = float(toccNibbles*numOrbitsPerNB_*numHLX_);
       float totalHLXEt = float(etNibbles*numOrbitsPerNB_*numHLX_);
       float twrSum = float(numActiveTowersBX_[0] + numActiveTowersBX_[1]);
-      numActiveTowersBXEt_ = (u32)(twrSum*reNorm);
-      if( twrSum > 8*totalHLX ){ numActiveTowersBXEt_ = (u32)(48*totalHLXEt); }
+      numActiveTowersBXEt_ = (uint32_t)(twrSum*reNorm);
+      if( twrSum > 8*totalHLX ){ numActiveTowersBXEt_ = (uint32_t)(48*totalHLXEt); }
    }
   
    void LumiCalc::CalcLHCLumi( HCAL_HLX::LUMI_SECTION &localSection ){
       // masking does not apply to LHC Lumi
 
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 localSection.lumiDetail.LHCLumi[iBX] = 0;
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    localSection.lumiDetail.LHCLumi[iBX] += localSection.lhc[iHLX].data[iBX];
 	 }
       }
@@ -235,8 +234,8 @@ namespace HCAL_HLX {
       localSection.lumiSummary.ETNormalization = 1.0;
 
       // count nibbles.
-      u32 TotalNibbles = 0;
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      uint32_t TotalNibbles = 0;
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 TotalNibbles += localSection.etSum[iHLX].hdr.numNibbles;
       }
       if( TotalNibbles == 0 ) localSection.lumiSummary.InstantETLumiQlty -= 51; 
@@ -245,12 +244,12 @@ namespace HCAL_HLX {
       float TotalEtSum[HCAL_HLX_NUM_BUNCHES];
       float TotalEtSumNoise[NUM_CAP_BANKS]; 
 
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 localSection.lumiDetail.ETLumi[iBX]                = 0.0;
 	 localSection.lumiDetail.ETLumiQlty[iBX]            = 1;
 	 localSection.lumiDetail.ETBXNormalization[iBX]     = 1.0;      
 	 TotalEtSum[iBX] = 0.0;
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    TotalEtSum[iBX] += localSection.etSum[iHLX].data[iBX];
 	 }
       }
@@ -259,10 +258,10 @@ namespace HCAL_HLX {
       if( TotalNibbles > 0 ) ETSumError = CalcETSumError( localSection ); 
 
       // Calculate noise per cap bank
-      for( u32 iCap = 0; iCap < NUM_CAP_BANKS; ++iCap ){
+      for( uint32_t iCap = 0; iCap < NUM_CAP_BANKS; ++iCap ){
 	 TotalEtSumNoise[iCap] = 0.0;
 	 if( sizeNoise_[iCap] == 0 ) continue;
-	 for( u32 iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
+	 for( uint32_t iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
 	    if( BXMask_[iBX] == 2 )
 	       TotalEtSumNoise[iCap] += TotalEtSum[iBX];
 	 }
@@ -271,12 +270,12 @@ namespace HCAL_HLX {
       float ETSumNoiseError = 0;
       if( TotalNibbles > 0 ) ETSumNoiseError = CalcETSumNoiseError( localSection );
 
-      u32 numGoodBX = numBX_;
+      uint32_t numGoodBX = numBX_;
 
       //std::cout << "Active towers " << TotalActiveTowers_ << std::endl;
       //std::cout << "Active towers Et " << TotalActiveTowersEt_ << std::endl;
       if( TotalActiveTowersEt_ > 0 ){
-	 for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	 for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	    if( BXMask_[iBX] != 1 ) continue;
 
 	    localSection.lumiDetail.ETLumi[iBX]
@@ -374,8 +373,8 @@ namespace HCAL_HLX {
       if( etStoreSize_ > ET_SUM_STORE_SIZE ){
 	 --etStoreSize_;
 	 //std::cout << "Here in pop back errors! " << etStoreSize_ << std::endl;
-	 for( u32 iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
-	    for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	 for( uint32_t iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
+	    for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	       if( iLB < (ET_SUM_STORE_SIZE-1) ) etSumAvgPerLB_[iLB][iBX] = etSumAvgPerLB_[iLB+1][iBX];
 	       else                              etSumAvgPerLB_[iLB][iBX] = 0.0;
 	    }
@@ -383,10 +382,10 @@ namespace HCAL_HLX {
       }
       
       float nTowerBX = (float)(numActiveTowersBXEt_);
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 if( BXMask_[iBX] != 1 ) continue;
 	 if( BXCapId_[iBX] != 0 ) continue; 
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    if( !HLXMask_[iHLX] ) continue;
 	    etSumAvgPerLB_[etStoreSize_-1][iBX] += localSection.etSum[iHLX].data[iBX];
 	 }
@@ -400,16 +399,16 @@ namespace HCAL_HLX {
       float sigma = 0.0;
       if( etStoreSize_ <= 1 && (numBX_ < numHLX_) ){
 	 // Calculate total mean
-	 for( u32 iCap = 0; iCap<NUM_CAP_BANKS; ++iCap )
+	 for( uint32_t iCap = 0; iCap<NUM_CAP_BANKS; ++iCap )
 	 {
 	    int tmpTotal = 0;
 	    float mean = 0;
-	    for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	    for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	       if( !HLXMask_[iHLX] ) continue;
 	       float nTower = (float)(numActiveTowersEt_[iHLX]);
 	       if( nTower == 0 ) continue;
 	       float tmpMean = 0.0;
-	       for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 		  if( BXMask_[iBX] != 1 ) continue;
 		  if( BXCapId_[iBX] != iCap ) continue; 
 		  tmpMean += localSection.etSum[iHLX].data[iBX];
@@ -420,7 +419,7 @@ namespace HCAL_HLX {
 	    mean = mean*normNumHLX_;
 
 	    // Calculate deviation ...
-	    for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	    for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	       if( !HLXMask_[iHLX] ) continue; 
 	       float totalBX = 0.0;
 	       float nTower = (float)(numActiveTowersEt_[iHLX]);
@@ -441,13 +440,13 @@ namespace HCAL_HLX {
       }
       // Otherwise use the stored values from previous LB's to get a spread.
       else{
-	 for( u32 iCap = 0; iCap<NUM_CAP_BANKS; ++iCap )
+	 for( uint32_t iCap = 0; iCap<NUM_CAP_BANKS; ++iCap )
 	 {
 	    float totalMean = 0.0;
 	    float norm = 0;
-	    for( u32 iLB = 0; iLB < etStoreSize_; ++iLB ){
+	    for( uint32_t iLB = 0; iLB < etStoreSize_; ++iLB ){
 	       ++norm;
-	       for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 		  if( BXMask_[iBX] != 1 ) continue;
 		  if( BXCapId_[iBX] != 0 ) continue; 
 		  totalMean += etSumAvgPerLB_[iLB][iBX];
@@ -460,8 +459,8 @@ namespace HCAL_HLX {
 	    }
 	    //std::cout << "Total mean " << totalMean << " norm " << norm << std::endl;
 
-	    for( u32 iLB = 0; iLB < etStoreSize_; ++iLB ){
-	       for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	    for( uint32_t iLB = 0; iLB < etStoreSize_; ++iLB ){
+	       for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 		  if( BXMask_[iBX] != 1 ) continue;
 		  if( BXCapId_[iBX] != 0 ) continue; 
 		  float diff = totalMean - etSumAvgPerLB_[iLB][iBX];
@@ -504,8 +503,8 @@ namespace HCAL_HLX {
       if( etNoiseStoreSize_ <= ET_SUM_STORE_SIZE ) ++etNoiseStoreSize_;
       if( etNoiseStoreSize_ > ET_SUM_STORE_SIZE ){
 	 --etNoiseStoreSize_;
-	 for( u32 iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
-	    for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	 for( uint32_t iLB = 0; iLB < ET_SUM_STORE_SIZE; ++iLB ){
+	    for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	       if( iLB < (ET_SUM_STORE_SIZE-1) ) etSumNoiseAvgPerLB_[iLB][iBX] = etSumNoiseAvgPerLB_[iLB+1][iBX];
 	       else                              etSumNoiseAvgPerLB_[iLB][iBX] = 0.0;
 	    }
@@ -513,10 +512,10 @@ namespace HCAL_HLX {
       }
 
       float nTowerBX = (float)(numActiveTowersBXEt_);
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 if( BXMask_[iBX] != 2 ) continue;
 	 if( sizeNoise_[BXCapId_[iBX]] == 0 ) continue;
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    if( !HLXMask_[iHLX] ) continue;
 	    etSumNoiseAvgPerLB_[etNoiseStoreSize_-1][iBX] += localSection.etSum[iHLX].data[iBX];
 	 }
@@ -527,18 +526,18 @@ namespace HCAL_HLX {
       // 2. Calculate the final error ... for the special case of the first
       // LB take this from the HLX spread, if there are less BX's than HLX's.
       float sigma = 0.0;
-      for( u32 iCap=0; iCap<NUM_CAP_BANKS; ++iCap ){
+      for( uint32_t iCap=0; iCap<NUM_CAP_BANKS; ++iCap ){
 	 if( sizeNoise_[iCap] == 0 ) continue;
 	 if( (sizeNoise_[iCap] < numHLX_) && etNoiseStoreSize_ <= 1 ){
 
 	    // Get the overall mean ...
 	    float mean[4] = {0,0,0,0};
-	    for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	    for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	       if( !HLXMask_[iHLX] ) continue;
 	       float nTower = (float)(numActiveTowersEt_[iHLX]);
 	       if( nTower == 0 ) continue;
 	       float tmpMean = 0.0;
-	       for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 		  if( BXMask_[iBX] != 2 ) continue;
 		  if( sizeNoise_[BXCapId_[iBX]] == 0 ) continue;
 		  tmpMean += localSection.etSum[iHLX].data[iBX];
@@ -549,13 +548,13 @@ namespace HCAL_HLX {
 
 	    // Deviations from the mean
 	    float deviation = 0.0;
-	    for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	    for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	       if( !HLXMask_[iHLX] ) continue; 
 	       float totalBX = 0.0;
 	       float nTower = (float)(numActiveTowersEt_[iHLX]);
 	       if( nTower == 0 ) continue;
-	       //for( u32 iBX=0; iBX<HCAL_HLX_NUM_BUNCHES; ++iBX ){
-	       for( u32 iBX=iCap; iBX<HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
+	       //for( uint32_t iBX=0; iBX<HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX=iCap; iBX<HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
 		  if( BXMask_[iBX] != 2 ) continue;
 		  //if( (BXCapId_[iBX]) != iCap ) continue;
 		  totalBX += localSection.etSum[iHLX].data[iBX];
@@ -573,9 +572,9 @@ namespace HCAL_HLX {
 	 else{
 	    float totalMean = 0.0;
 	    float norm = 0;
-	    for( u32 iLB = 0; iLB < etNoiseStoreSize_; ++iLB ){
-	       //for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
-	       for( u32 iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
+	    for( uint32_t iLB = 0; iLB < etNoiseStoreSize_; ++iLB ){
+	       //for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
 		  if( BXMask_[iBX] != 2 ) continue;
 		  //if( (BXCapId_[iBX]) != iCap ) continue;
 		  totalMean += etSumNoiseAvgPerLB_[iLB][iBX];
@@ -586,9 +585,9 @@ namespace HCAL_HLX {
 	    //std::cout << "Total mean " << totalMean << " norm " << norm << std::endl;
 
 	    float deviation = 0.0;
-	    for( u32 iLB = 0; iLB < etNoiseStoreSize_; ++iLB ){
-	       //for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
-	       for( u32 iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
+	    for( uint32_t iLB = 0; iLB < etNoiseStoreSize_; ++iLB ){
+	       //for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	       for( uint32_t iBX = iCap; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
 		  if( BXMask_[iBX] != 2 ) continue;
 		  //if( (BXCapId_[iBX]) != iCap ) continue;
 		  float diff = totalMean - etSumNoiseAvgPerLB_[iLB][iBX];
@@ -625,14 +624,14 @@ namespace HCAL_HLX {
       double occNoise[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
     
       // Calculate noise per cap bank
-      for( u32 iCap = 0; iCap < NUM_CAP_BANKS; ++iCap ){
+      for( uint32_t iCap = 0; iCap < NUM_CAP_BANKS; ++iCap ){
 	 if( sizeNoise_[iCap] == 0 ) continue;
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    occNoise[iHLX][0][iCap] = 0;
 	    occNoise[iHLX][1][iCap] = 0;
 	    if( HLXMask_[iHLX] == 0 ) continue;
-	    u32 tmpSum[2] = {0,0};
-	    for(u32 iBX = iCap ; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
+	    uint32_t tmpSum[2] = {0,0};
+	    for(uint32_t iBX = iCap ; iBX < HCAL_HLX_NUM_BUNCHES; iBX += NUM_CAP_BANKS ){
 	       if( BXMask_[iBX] != 2 ) continue;
 	       tmpSum[0] += localSection.occupancy[iHLX].data[set1BelowIndex][iBX];
 	       tmpSum[1] += localSection.occupancy[iHLX].data[set2BelowIndex][iBX];
@@ -649,12 +648,12 @@ namespace HCAL_HLX {
       noiseError[1] = CalcOccNoiseError( localSection, 1 );
 
       // Only use good BX's
-      u32 numGoodBX[2] = {numBX_,numBX_};
+      uint32_t numGoodBX[2] = {numBX_,numBX_};
 
       localSection.lumiSummary.InstantOccLumi[0] = 0.0;
       localSection.lumiSummary.InstantOccLumi[1] = 0.0;
 
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 localSection.lumiDetail.OccLumi[0][iBX] = 0.0;
 	 localSection.lumiDetail.OccLumi[1][iBX] = 0.0;
 	 localSection.lumiDetail.OccLumiQlty[0][iBX] = 0;
@@ -666,9 +665,9 @@ namespace HCAL_HLX {
 	 localSection.lumiDetail.OccLumiQlty[0][iBX] = 1;
 	 localSection.lumiDetail.OccLumiQlty[1][iBX] = 1;
 
-	 u32 sumHLX[2] = {0,0};
+	 uint32_t sumHLX[2] = {0,0};
 	 double sumNoiseHLX[2] = {0,0};
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    if( !HLXMask_[iHLX] ) continue;
 	    
 	    // Ring Set 1
@@ -926,18 +925,18 @@ namespace HCAL_HLX {
 
    }
 
-   float LumiCalc::CalcOccNoiseError( HCAL_HLX::LUMI_SECTION &localSection, u32 set ){
+   float LumiCalc::CalcOccNoiseError( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set ){
 
-      u32 index = set1BelowIndex;
+      uint32_t index = set1BelowIndex;
       if( set == 1 ) index = set2BelowIndex;
 
       // But we also need the noise error
-      u64 nBelowN[NUM_CAP_BANKS] = {0,0,0,0};
-      u64 nTotalN = 0;
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      uint64_t nBelowN[NUM_CAP_BANKS] = {0,0,0,0};
+      uint64_t nTotalN = 0;
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 if( !HLXMask_[iHLX] ) continue;
 	 nTotalN += numActiveTowers_[iHLX][set];
-	 for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+	 for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	    if( BXMask_[iBX] != 2 ) continue;
 	    nBelowN[BXCapId_[iBX]] += localSection.occupancy[iHLX].data[index][iBX];
 	 }
@@ -946,12 +945,12 @@ namespace HCAL_HLX {
 
       float avg = 0.0;
       if( nTotalN > 0 ){
-	 for( u32 iCap=0; iCap < NUM_CAP_BANKS; ++iCap ){
+	 for( uint32_t iCap=0; iCap < NUM_CAP_BANKS; ++iCap ){
 	    //std::cout << "Size noise " << sizeNoise_[iCap] << std::endl;
 	    //std::cout << "NBelow " << nBelowN[iCap] << " " << nTotalN*sizeNoise_[iCap] << std::endl;
 	    if( sizeNoise_[iCap] == 0 ) continue;
 	    if( nBelowN[iCap] <= 0 ) continue;
-	    u64 total = nTotalN*sizeNoise_[iCap];
+	    uint64_t total = nTotalN*sizeNoise_[iCap];
 	    if( nBelowN[iCap] >= total ) continue;
 	    //cout << iCap << " ** NBelow " << nBelowN[iCap] << " nTotalN " << total << endl; 
 	    //avg += sqrt((1/nBelowN[iCap])*(1-nBelowN[iCap]/(nTotalN*(float)sizeNoise_[iCap])));
@@ -963,23 +962,23 @@ namespace HCAL_HLX {
       return avg;
    }
   
-   float LumiCalc::CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, u32 set ){
+   float LumiCalc::CalcOccErrorTotal( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set ){
     
       // Check for the case where we have no data ...
       //if( numBX_ ==0 || numHLX_ ==0 ) return -995;
       //return -996;
 
       // Index
-      u32 index = set1BelowIndex;
+      uint32_t index = set1BelowIndex;
       if( set == 1 ) index = set2BelowIndex;
       
       // For occupancy we can just calculate the accumulated binomial error
-      u64 nBelow = 0;
-      u64 nTotal = (u64)numActiveTowersBX_[set]*(u64)numBX_;
+      uint64_t nBelow = 0;
+      uint64_t nTotal = (uint64_t)numActiveTowersBX_[set]*(uint64_t)numBX_;
       //std::cout << set << " NTower " << numActiveTowersBX_[set] << " " << numBX_ << std::endl;
-      for( u32 iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
+      for( uint32_t iBX = 0; iBX < HCAL_HLX_NUM_BUNCHES; ++iBX ){
 	 if( BXMask_[iBX] != 1 ) continue;
-	 for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+	 for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	    if( HLXMask_[iHLX] == 0 ) continue;
 	    nBelow += localSection.occupancy[iHLX].data[index][iBX];
 	 }
@@ -997,7 +996,7 @@ namespace HCAL_HLX {
       //return sqrt(sigma); // error
    }
 
-   float LumiCalc::CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, u32 set, u32 iBX ){
+   float LumiCalc::CalcOccErrorBX( HCAL_HLX::LUMI_SECTION &localSection, uint32_t set, uint32_t iBX ){
     
       // Check for the case where we have no data ...
       //if( numBX_ ==0 || numHLX_ ==0 ) return -995;
@@ -1008,9 +1007,9 @@ namespace HCAL_HLX {
       if( set == 1 ) index = set2BelowIndex;
 
       // For occupancy we can just calculate the accumulated binomial error
-      u32 nBelow = 0;
-      u32 nTotal = numActiveTowersBX_[set];
-      for( u32 iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
+      uint32_t nBelow = 0;
+      uint32_t nTotal = numActiveTowersBX_[set];
+      for( uint32_t iHLX = 0; iHLX < HCAL_HLX_NUM_HLXS; ++iHLX ){
 	 if( !HLXMask_[iHLX] ) continue;
 	 nBelow += localSection.occupancy[iHLX].data[index][iBX];
       }
@@ -1033,7 +1032,7 @@ namespace HCAL_HLX {
       localSection.lumiSummary.InstantLumiQlty = 1;
    }
 
-   float LumiCalc::CalcLumiError( u32 numNibbles, u32 numTowers, u32 numBunches, float intPerBX )
+   float LumiCalc::CalcLumiError( uint32_t numNibbles, uint32_t numTowers, uint32_t numBunches, float intPerBX )
    {
     
       // Write method for total error
@@ -1063,10 +1062,10 @@ namespace HCAL_HLX {
 
   
    bool LumiCalc::Block(unsigned short int BX, unsigned short int numBlock){
-      const u8 gap = 0;
-      const u8 bunch = 1;
+      const uint8_t gap = 0;
+      const uint8_t bunch = 1;
     
-      if(BX > (u32)numBlock*80){
+      if(BX > (uint32_t)numBlock*80){
 	 return gap;
       }else if(BX%80 > 72){
 	 return gap;
@@ -1077,8 +1076,8 @@ namespace HCAL_HLX {
   
    bool LumiCalc::isBunch(unsigned short int BX, unsigned short int scheme ){
       // determine where you are in the bunch structure
-      const u8 abortGap = 0;
-      u16 BXrel; // relative bunch crossing
+      const uint8_t abortGap = 0;
+      uint16_t BXrel; // relative bunch crossing
     
       if(scheme == 1){
 	 BXrel = BX % HCAL_HLX_NUM_BUNCHES;

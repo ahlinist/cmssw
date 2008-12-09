@@ -3,7 +3,7 @@
 <use name=FWCore/ParameterSet>
 <use name=RecoLuminosity/TCPReceiver>
 <use name=rootcore>
-<use name=root>
+<use name=rootgraphics>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoLuminosityCCCWBM>
@@ -12,5 +12,5 @@
    <use name=FWCore/ParameterSet>
    <use name=RecoLuminosity/TCPReceiver>
    <use name=rootcore>
-   <use name=root>
+   <use name=rootgraphics>
 </export>
