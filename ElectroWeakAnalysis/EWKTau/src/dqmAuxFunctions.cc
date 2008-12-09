@@ -61,7 +61,7 @@ std::string dqmDirectoryName(const std::string& directory)
   return dirName;
 }
 
-std::string dqmSubDirectoryName(const std::string& directory, const std::string& subdirectory)
+std::string dqmSubDirectoryName_merged(const std::string& directory, const std::string& subdirectory)
 { 
   std::string subDirName = subdirectory;
 //--- remove characters specifying directory part from name of subdirectory
@@ -170,7 +170,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
-    std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
+    std::string subDirName = dqmSubDirectoryName_merged(inputDirectory, *dirName);
     //std::cout << " subDirName = " << subDirName << std::endl;
 
     std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);
