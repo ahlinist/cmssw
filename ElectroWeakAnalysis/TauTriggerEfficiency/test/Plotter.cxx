@@ -7,6 +7,7 @@ public:
     setTDRStyle();
 
     inFile = new TFile("tteffAnalysis.root");
+    //inFile = new TFile("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get("TTEffTree"));
   }
   ~Plotter(){
