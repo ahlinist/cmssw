@@ -112,13 +112,12 @@ private:
 
  
 
+
+  //int   mTempTreeNJetsT[50];
+  //float mTempTreeJetsTPt[50];
+  //float mTempTreeJetsTEta[50];
+  //float mTempTreeJetsTPhi[50];
   int    mTempTreeNjets;
- 
-  int   mTempTreeNJetsT[50];
-  float mTempTreeJetsTPt[50];
-  float mTempTreeJetsTEta[50];
-  float mTempTreeJetsTPhi[50];
- 
   double mTempTreeJetsEt[50];
   double mTempTreeJetsPt[50];
   double mTempTreeJetsPx[50];
@@ -129,6 +128,28 @@ private:
   double mTempTreeJetsPhi[50];
   double mTempTreeJetsFem[50];
   int mTempTreeJetPartonFlavour[50];
+
+  int    mTempTreeNccjets;
+   double mTempTreeccJetsEt[50];
+  double mTempTreeccJetsPt[50];
+  double mTempTreeccJetsPx[50];
+  double mTempTreeccJetsPy[50];
+  double mTempTreeccJetsPz[50];
+  double mTempTreeccJetsE[50];
+  double mTempTreeccJetsEta[50];
+  double mTempTreeccJetsPhi[50];
+
+  int mTempTreeJetPartonId[50];
+  int mTempTreeJetPartonMother[50];
+  double mTempTreeJetPartonPx[50];
+  double mTempTreeJetPartonPy[50];
+  double mTempTreeJetPartonPz[50];
+  double mTempTreeJetPartonEt[50];
+  double mTempTreeJetPartonEnergy[50];
+  double mTempTreeJetPartonPhi[50];
+  double mTempTreeJetPartonEta[50];
+
+ 
 
   double mTempTreeJetsBTag_TkCountHighEff[50];
   double mTempTreeJetsBTag_SimpleSecVtx[50];
@@ -143,15 +164,21 @@ private:
   double mTempTreeGenJetsEta[50];
   double mTempTreeGenJetsPhi[50];
 
-double mTempTreeMET;
+  double mTempTreeMET;
   double mTempTreeMEX;
   double mTempTreeMEY;
   double mTempTreeMETphi;
-  double mTempTreeMETeta;
   double mTempTreeSumET;
   double mTempTreeSumETSignif;
   double mTempTreeMETuncor;
   double mTempTreeMETphiuncor;
+
+  double mTempTreeccMET;
+  double mTempTreeccMEX;
+  double mTempTreeccMEY;
+  double mTempTreeccMETphi;
+  double mTempTreeccSumET;
+  double mTempTreeccSumETSignif;
  
 
   int    mTempTreeNphot;
@@ -182,9 +209,17 @@ double mTempTreeMET;
   double mTempTreeElecHCalIso[50];
   double mTempTreeElecAllIso[50];
   double mTempTreeElecTrkChiNorm[50];
-
-
   double mTempTreeElecCharge[50];
+
+ int    mTempTreeNccelec;
+  double mTempTreeccElecEt[50];
+  double mTempTreeccElecPt[50];
+  double mTempTreeccElecPx[50];
+  double mTempTreeccElecPy[50];
+  double mTempTreeccElecPz[50];
+  double mTempTreeccElecE[50];
+  double mTempTreeccElecEta[50];
+  double mTempTreeccElecPhi[50];
 
   int    mTempTreeNmuon;
   double mTempTreeMuonEt[50];
@@ -202,6 +237,16 @@ double mTempTreeMET;
   double mTempTreeMuonTrkChiNorm[50];
 
   double mTempTreeMuonCharge[50];
+
+  int    mTempTreeNccmuon;
+  double mTempTreeccMuonEt[50];
+  double mTempTreeccMuonPt[50];
+  double mTempTreeccMuonPx[50];
+  double mTempTreeccMuonPy[50];
+  double mTempTreeccMuonPz[50];
+  double mTempTreeccMuonE[50];
+  double mTempTreeccMuonEta[50];
+  double mTempTreeccMuonPhi[50];
 
   // markus 
   int mTempAlpIdTest;
@@ -236,8 +281,8 @@ double mTempTreeMET;
   double mTempTreeHemispheresPhi[2]; 
 
 
-  bool is_ok;
-  int mTempSimuCheck;
+  //  bool is_ok;
+  // int mTempSimuCheck;
 
   int length;
   int ids[1000];
@@ -265,6 +310,13 @@ double mTempTreeMET;
   edm::InputTag muonTag_;
   edm::InputTag tauTag_;
   edm::InputTag genTag_;
+
+  edm::InputTag ccjetTag_;
+  edm::InputTag ccmetTag_;
+  edm::InputTag ccelecTag_;
+  edm::InputTag ccmuonTag_;
+
+
   std::string outputFileName_;
 
   //input from .cfg

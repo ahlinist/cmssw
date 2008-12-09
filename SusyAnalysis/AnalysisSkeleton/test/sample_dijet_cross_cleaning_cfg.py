@@ -69,7 +69,7 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('QCD250to500-madgraph.root')
+    fileName = cms.string('QCD500to1000-madgraph_test.root')
 )
 
 process.source = cms.Source("PoolSource",
@@ -88,17 +88,20 @@ process.maxEvents = cms.untracked.PSet(
 
 process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     genTag = cms.InputTag("genParticles"),
+                             
     tauTag = cms.InputTag("selectedLayer1Taus"),
-   elecTag = cms.InputTag("patcrosscleaner:ccElectrons"),                  
+    elecTag = cms.InputTag("selectedLayer1Electrons"),
     photTag = cms.InputTag("selectedLayer1Photons"),
-   # jetTag = cms.InputTag("selectedLayer1Jets") ,
-    jetTag = cms.InputTag("patcrosscleaner:ccJets"),             
-   #muonTag = cms.InputTag("selectedLayer1Muons"),
-     muonTag = cms.InputTag("patcrosscleaner:ccMuons"),                  
-    #metTag = cms.InputTag("selectedLayer1METs"),                          
-   metTag = cms.InputTag("patcrosscleaner:ccMETs"),
+    muonTag = cms.InputTag("selectedLayer1Muons"),
+    jetTag = cms.InputTag("selectedLayer1Jets") ,
+    metTag = cms.InputTag("selectedLayer1METs"),                             
 
- selections = cms.PSet(
+    ccelecTag = cms.InputTag("patcrosscleaner:ccElectrons"),                  
+    ccjetTag = cms.InputTag("patcrosscleaner:ccJets"),             
+    ccmuonTag = cms.InputTag("patcrosscleaner:ccMuons"),                  
+    ccmetTag = cms.InputTag("patcrosscleaner:ccMETs"),
+
+     selections = cms.PSet(
         selectionSequence = cms.vstring('Preselection', 
             'FinalJet', 
             'FinalDirectLeptonVeto', 
@@ -161,7 +164,8 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
                 minEt = cms.vdouble(50.0, 50.0)
             ),
             Preselection = cms.PSet(
-                components = cms.vstring('PreJet'),
+                #components = cms.vstring('PreJet'),
+                components = cms.vstring(),
                 selector = cms.string('EventSelectorAND')
             ),
             Alpha = cms.PSet(
@@ -190,17 +194,17 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
 #process.genParticles.abortOnUnknownPDGCode = False
 
 process.selectedLayer2Hemispheres = cms.EDProducer("PATHemisphereProducer",
-    patJets = cms.InputTag("patcrosscleaner","ccJets"),
+    patJets = cms.InputTag("patcrosscleaner:ccJets"),
     maxTauEta = cms.double(-1.0),
     maxPhotonEta = cms.double(5.0),
     minMuonEt = cms.double(10.0),
-    patMuons = cms.InputTag("patcrosscleaner","ccMuons"),
+    patMuons = cms.InputTag("patcrosscleaner:ccMuons"),
     maxElectronEta = cms.double(5.0),
-    patElectrons = cms.InputTag("patcrosscleaner","ccElectrons"),
-    patMets = cms.InputTag("patcrosscleaner","ccMETs"),
+    patElectrons = cms.InputTag("patcrosscleaner:ccElectrons"),
+    patMets = cms.InputTag(""),
     maxMuonEta = cms.double(5.0),
-    minTauEt = cms.double(1000000.0),
-    minPhotonEt = cms.double(200000.0),
+    minTauEt = cms.double(1000000.0),#comment out taus
+    minPhotonEt = cms.double(200000.0),#comment out photons
     minElectronEt = cms.double(10.0),
     minJetEt = cms.double(50.0),
     combinationMethod = cms.int32(3),
@@ -211,7 +215,7 @@ process.selectedLayer2Hemispheres = cms.EDProducer("PATHemisphereProducer",
 )
 
 
-process.MessageLogger.categories.extend(['SelectorSequence', 'EventSelectorAND', 'EventSelectorOR', 'JetEventSelector', 'BJetEventSelector', 
+process.MessageLogger.categories.extend(['SelectorSequence', 'EventSelectorAND', 'EventSelectorOR', 'JetEventSelector', 'BJetEventSelector','HLTEventSelector','SusySelectorExample',
     'MetEventSelector', 'AlphaSelector', 'DPhiEventSelector', 'SusyDiJetEvent'])
 process.MessageLogger.cerr.threshold = 'Verbatim'
 process.MessageLogger.cerr.default.limit = -1
