@@ -96,25 +96,25 @@ void plotL1Efficiency(  bool print=false) {
   plotter->SetFileName("L1Eff_PFTauEta_L1Jet.C");
   //plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&hasMatchedL1Jet==1");
   TGraphAsymmErrors *h_PFTauEta_L1Jet = 
-    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&hasMatchedL1Jet==1");
+    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1Jet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1Tau.C");
   TGraphAsymmErrors *h_PFTauEta_L1TauVeto_Emu = 
-    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&hasMatchedL1TauJet==1",DenEtCut);
+    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","hasMatchedL1TauJet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1TauVeto.C");
-  TGraphAsymmErrors *h_PFTauEta_L1TauVeto_Sim = plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&L1TauVeto==0 && hasMatchedL1Jet==1",DenEtCut);
+  TGraphAsymmErrors *h_PFTauEta_L1TauVeto_Sim = plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0 && hasMatchedL1Jet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1IsolationVeto.C");
-  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&L1IsolationVeto==0 && hasMatchedL1Jet==1",DenEtCut);
+  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1IsolationVeto==0 && hasMatchedL1Jet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1TauVeto_L1IsolationVeto.C");
   TGraphAsymmErrors *h_PFTauEta_L1TauIsoVeto_Sim = 
-    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1",DenEtCut);
+    plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1EmTauVeto.C");
@@ -122,11 +122,11 @@ void plotL1Efficiency(  bool print=false) {
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1HadTauVeto.C");
-  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&L1HadTauVeto==0&&hasMatchedL1Jet==1",DenEtCut);
+  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","L1HadTauVeto==0&&hasMatchedL1Jet==1",DenEtCut);
   
   plotter->SetXTitle("Tau jet #eta");
   plotter->SetFileName("L1Eff_PFTauEta_L1EmTauVeto_L1HadTauVeto.C");
-  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","PFTauEt>10.&&(L1EmTauVeto==0||L1HadTauVeto==0)&&hasMatchedL1Jet==1",DenEtCut);
+  plotter->DrawHistogram("PFTauEta>>hnum(25.,-2.5,2.5)","(L1EmTauVeto==0||L1HadTauVeto==0)&&hasMatchedL1Jet==1",DenEtCut);
   
   
   // Draw
