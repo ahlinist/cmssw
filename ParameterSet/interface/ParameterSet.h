@@ -183,6 +183,9 @@ namespace edm {
 
     friend std::ostream & operator<<(std::ostream & os, ParameterSet const& pset);
 
+    /// needs to be called before saving or serializing
+    void fillID() const;
+
 private:
     typedef std::map<std::string, Entry> table;
     table tbl_;

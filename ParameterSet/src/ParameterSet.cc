@@ -58,6 +58,10 @@ namespace edm {
 
   ParameterSet::~ParameterSet() {}
 
+  void ParameterSet::fillID() const
+  {
+  }
+
   // ----------------------------------------------------------------------
   // identification
   ParameterSetID
