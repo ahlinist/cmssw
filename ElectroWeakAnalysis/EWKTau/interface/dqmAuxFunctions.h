@@ -31,7 +31,7 @@ void readCfgParameter(const edm::ParameterSet& cfgParSet, std::map<std::string, 
 }
 
 std::string dqmDirectoryName(const std::string&);
-std::string dqmSubDirectoryName(const std::string&, const std::string&);
+std::string dqmSubDirectoryName_merged(const std::string&, const std::string&);
 void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool);
 
 const std::string dqmSeparator = "/";
