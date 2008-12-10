@@ -72,11 +72,18 @@
  <Constant name="TECRailsRout"     value="[TSTCabAxialR]-[TSTCabAxialT]/2"/> <!-- directly under AxialCables-->
  <Constant name="TECRailsPhi"        value="-0.664*deg"/>
  <Constant name="TECRailsDeltaPhi"   value="7.409*deg"/>
-
  <Constant name="TECRailsADz"     value="15.30*cm"/>
  <Constant name="TECRailsAZ"      value="160.25*cm"/>
  <Constant name="TECRailsBDz"     value="26.65*cm"/>
  <Constant name="TECRailsBZ"      value="250.10*cm"/>
+ <Constant name="TECRailsConnectorDz" value="1.25*cm"/>
+ <Constant name="TECRailsConnectorZDist" value="14.0*cm"/>
+ <Constant name="TECRailsConnectorZDistB1" value="20.5*cm"/>
+ <Constant name="TECRailsConnectorZDistB2" value="21.5*cm"/>
+ <Constant name="TECRailsConnectorZDistB3" value="8.74*cm"/>
+ <Constant name="TECRailsSupportDz" value="2.85*cm"/>
+ <Constant name="TECRailsSupportZDist" value="8.0*cm"/>
+ <Constant name="TECRailsSupportDphi" value="2.877*deg"/>
 </ConstantsSection>
 
 <SolidSection label="tibtidservices.xml">
@@ -198,7 +205,12 @@
  <Tubs name="TECRailsB"           rMin="[TECRailsRin]" 
        rMax="[TECRailsRout]"       dz="[TECRailsBDz]"
        startPhi="[TECRailsDeltaPhi]/2" deltaPhi="[TECRailsDeltaPhi]"/>
-
+ <Tubs name="TECRailsConnector"   rMin="[TECRailsRin]" 
+       rMax="[TECRailsRout]"       dz="[TECRailsConnectorDz]"
+       startPhi="[TECRailsDeltaPhi]/2" deltaPhi="[TECRailsDeltaPhi]"/>
+ <Tubs name="TECRailsSupport"     rMin="[TECRailsRin]" 
+       rMax="[TECRailsRout]"       dz="[TECRailsSupportDz]"
+       startPhi="[TECRailsDeltaPhi]/2+[TECRailsSupportDphi]/4" deltaPhi="[TECRailsSupportDphi]"/>
 </SolidSection>
 
 
@@ -279,7 +291,14 @@
   <rSolid name="tibtidservices:TECRailsB"/>
   <rMaterial name="tecmaterial:TEC_Rails"/>
  </LogicalPart>
-
+ <LogicalPart name="TECRailsConnector" category="unspecified">
+  <rSolid name="tibtidservices:TECRailsConnector"/>
+  <rMaterial name="tecmaterial:TEC_RailsConnector"/>
+ </LogicalPart>
+ <LogicalPart name="TECRailsSupport" category="unspecified">
+  <rSolid name="tibtidservices:TECRailsSupport"/>
+  <rMaterial name="tecmaterial:TEC_RailsSupport"/>
+ </LogicalPart>
 </LogicalPartSection>
 
 
@@ -318,6 +337,53 @@
  <PosPart copyNumber="1">
    <rParent name="tibtidservices:TIBTIDTSTCabCont"/>
    <rChild name="tibtidservices:TIBTIDTSTCabRadial"/>
+ </PosPart>
+<!-- TEC Rails: Connectors -->
+ <PosPart copyNumber="1">
+   <rParent name="tibtidservices:TECRailsA"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="-[TECRailsConnectorZDist]"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tibtidservices:TECRailsA"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="[zero]"/>
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tibtidservices:TECRailsA"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="+[TECRailsConnectorZDist]"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tibtidservices:TECRailsB"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="(-[TECRailsConnectorZDistB3]-[TECRailsConnectorZDistB2]-[TECRailsConnectorZDistB1])/2"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tibtidservices:TECRailsB"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="(-[TECRailsConnectorZDistB3]-[TECRailsConnectorZDistB2]+[TECRailsConnectorZDistB1])/2"/>
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tibtidservices:TECRailsB"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="(-[TECRailsConnectorZDistB3]+[TECRailsConnectorZDistB2]+[TECRailsConnectorZDistB1])/2"/>
+ </PosPart>
+ <PosPart copyNumber="4">
+   <rParent name="tibtidservices:TECRailsB"/>
+   <rChild name="tibtidservices:TECRailsConnector"/>
+   <Translation x="[zero]" y="[zero]" z="(+[TECRailsConnectorZDistB3]+[TECRailsConnectorZDistB2]+[TECRailsConnectorZDistB1])/2"/>
+ </PosPart>
+<!-- TEC Rails: Support -->
+ <PosPart copyNumber="1">
+   <rParent name="tibtidservices:TECRailsA"/>
+   <rChild name="tibtidservices:TECRailsSupport"/>
+   <Translation x="[zero]" y="[zero]" z="[TECRailsSupportZDist]"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="tibtidservices:TECRailsB"/>
+   <rChild name="tibtidservices:TECRailsSupport"/>
+   <Translation x="[zero]" y="[zero]" z="[TECRailsSupportZDist]"/>
  </PosPart>
 </PosPartSection>
 
