@@ -40,6 +40,7 @@ namespace edm {
 
     // identification
     ParameterSetID id() const;
+    void setID(const ParameterSetID & id);
 
     // Entry-handling
     Entry const& retrieve(std::string const&) const;

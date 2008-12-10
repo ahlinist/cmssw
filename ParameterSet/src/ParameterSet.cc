@@ -71,6 +71,10 @@ namespace edm {
     return id_;
   }
 
+  void ParameterSet::setID(const ParameterSetID & id)
+  {
+  }
+
   // ----------------------------------------------------------------------
   // coded string
 
