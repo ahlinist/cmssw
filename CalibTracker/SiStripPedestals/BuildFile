@@ -16,7 +16,6 @@
 <use name=CondFormats/SiStripObjects>
 <use name=DQM/SiStripCommon>  
 <use name=oracle>
-#<use name=xdaq>
 <use name=CalibFormats/SiStripObjects>
 <use name=CalibTracker/Records>
 <use name=CalibTracker/SiStripCommon>
@@ -45,7 +44,6 @@
    <use name=CondCore/DBOutputService>
    <use name=oracle>
    <use name=clhep>
-#   <use name=xdaq>
 
 
 </export>
