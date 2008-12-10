@@ -11,6 +11,7 @@
 #include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TIDDetId.h"
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
+#include "DataFormats/SiStripDetId/interface/TECDetId.h"
 #include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 
 
@@ -23,61 +24,76 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, con
 
   theHit = tm.recHit();  
   
-  uint iidd = theHit->geographicalId().rawId();
-  
-  
+  iidd = theHit->geographicalId().rawId();
+  TrajectoryStateTransform tsostransform;
+  PTrajectoryStateOnDet* combinedptsod=tsostransform.persistentState( theCombinedPredictedState,iidd);
+
   StripSubdetector strip=StripSubdetector(iidd);
   unsigned int subid=strip.subdetId();
-  uint laytib = 1000;
-  uint laytob = 1000;
-  float xB = 0.; 
-  float yB = 0.;
+  // xB and yB are for absolute borders on the trajectories included in the study, sigmaX sigmaY are 
+  // significance cuts on the distance from the detector surface
+  float xB = 0.; float sigmaX = 5.0;
+  float yB = 0.; float sigmaY = 5.0;
+  float sigmaYBond = 0.;
   //set bounds for point to be within to be counted in the study
-  if (subid ==  StripSubdetector::TIB) { 
-    TIBDetId tibid(iidd);
-    laytib =tibid.layer();
-    xB = 0.3;
-    yB = 0.5;
-  }
   if (subid ==  StripSubdetector::TOB) { 
-    TOBDetId tobid(iidd);
-    laytob =tobid.layer();
-    xB = 0.3;
-    yB = 1.0;
+    sigmaYBond = 5.0;
   }
-  
-  
-  LocalVector monoco, stereoco;
-  LocalPoint pmonoco, pstereoco;
+
+  LocalVector monoco;
+  LocalPoint pmonoco;
 
   const GeomDetUnit * monodet;
-  const GeomDetUnit * stereodet;
  
-  locX_temp = theCombinedPredictedState.localPosition().x();
-  locY_temp = theCombinedPredictedState.localPosition().y();
-  monodet = (GeomDetUnit*)theHit->det();
-  stereodet = (GeomDetUnit*)theHit->det();
-  
+  //if module is stereo and from a matched layer then it is from an invalid hit from a matched layer
+  if ( ((iidd & 0x3)==0) && isDoubleSided(iidd) ) {
+    GluedGeomDet * gdet=(GluedGeomDet *)tracker->idToDet(theHit->geographicalId());    
+    GlobalVector gtrkdirco=gdet->toGlobal(combinedptsod->parameters().momentum());
+    
+    monodet=gdet->monoDet();
+    monoco=monodet->toLocal(gtrkdirco);
+    pmonoco=project(gdet,monodet,combinedptsod->parameters().position(),monoco);
+    
+    locX_temp = pmonoco.x(); 
+    locY_temp = pmonoco.y(); 
+    // just take errors from glued surface // is this OK?
+    locXError = sqrt(theCombinedPredictedState.localError().positionError().xx());
+    locYError = sqrt(theCombinedPredictedState.localError().positionError().yy());
 
+    //set module id to be mono det
+    iidd = monodet->geographicalId().rawId();
+  }
+  else {
+    locX_temp = theCombinedPredictedState.localPosition().x();
+    locY_temp = theCombinedPredictedState.localPosition().y();
+    locXError = sqrt(theCombinedPredictedState.localError().positionError().xx());
+    locYError = sqrt(theCombinedPredictedState.localError().positionError().yy());
+    
+    //monodet = theHit->detUnit();
+    monodet = (GeomDetUnit*)theHit->det(); //this cast does something different from detUnit()    
+    
+  }
+  
+  // this should never be a glued det, only rphi or stero
+  //cout << "From TrajAtValidHit module " << iidd << "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
+    
   // Restrict the bound regions for better understanding of the modul assignment. 
 
   LocalPoint BoundedPoint;
   float xx, yy ,zz;
 
   // Insert the bounded values 
+  if (locX_temp < 0. ) xx = min(locX_temp - xB,locX_temp - sigmaX*locXError);
+  else  xx = std::max(locX_temp + xB, locX_temp + sigmaX*locXError);
 
-  if (locX_temp < 0. ) xx  = locX_temp - xB;
-  else  xx = locX_temp + xB;
-  if (locY_temp < 0. ) yy = locY_temp - yB;
-  else  yy = locY_temp + yB;
-    
+  if (locY_temp < 0. ) yy = min(locY_temp - yB,locY_temp - sigmaY*locYError);
+  else  yy = max(locY_temp + yB, locY_temp + sigmaY*locYError);
+
   zz = theCombinedPredictedState.localPosition().z();
-  
-  
+
   BoundedPoint = LocalPoint(xx,yy,zz);
   
-  if ( monodet->surface().bounds().inside(BoundedPoint)) {
-    
+  if ( monodet->surface().bounds().inside(BoundedPoint) && abs(locY_temp) > sigmaYBond*locYError ){
     locX = locX_temp;
     locY = locY_temp;
   }
@@ -122,7 +138,56 @@ double TrajectoryAtValidHit::globalZ() const
   return theCombinedPredictedState.globalPosition().z();
 }
 
-bool TrajectoryAtValidHit::InValid() const
+uint TrajectoryAtValidHit::monodet_id() const
 {
-  return IsInvHit;
+  return iidd;
+}
+
+LocalPoint TrajectoryAtValidHit::project(const GeomDet *det,const GeomDet* projdet,LocalPoint position,LocalVector trackdirection)const
+{
+  
+  GlobalPoint globalpoint=(det->surface()).toGlobal(position);
+  
+  // position of the initial and final point of the strip in glued local coordinates
+  LocalPoint projposition=(projdet->surface()).toLocal(globalpoint);
+  
+  //correct the position with the track direction
+  
+  float scale=-projposition.z()/trackdirection.z();
+  
+  projposition+= scale*trackdirection;
+  
+  return projposition;
+}
+
+bool TrajectoryAtValidHit::isDoubleSided(uint iidd) const {
+  StripSubdetector strip=StripSubdetector(iidd);
+  unsigned int subid=strip.subdetId();
+  uint layer = 0;
+  if (subid ==  StripSubdetector::TIB) { 
+    TIBDetId tibid(iidd);
+    layer = tibid.layer();
+    if (layer == 1 || layer == 2) return true;
+    else return false;
+  }
+  else if (subid ==  StripSubdetector::TOB) { 
+    TOBDetId tobid(iidd);
+    layer = tobid.layer() + 4 ; 
+    if (layer == 5 || layer == 6) return true;
+    else return false;
+  }
+  else if (subid ==  StripSubdetector::TID) { 
+    TIDDetId tidid(iidd);
+    layer = tidid.ring() + 10;
+    if (layer == 11 || layer == 12) return true;
+    else return false;
+  }
+  else if (subid ==  StripSubdetector::TEC) { 
+    TECDetId tecid(iidd);
+    layer = tecid.ring() + 13 ; 
+    if (layer == 14 || layer == 15 || layer == 18) return true;
+    else return false;
+  }
+  else
+    return false;
 }

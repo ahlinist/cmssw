@@ -21,6 +21,7 @@
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "TrackingTools/TrackFitters/interface/KFTrajectoryFitter.h"
 #include "TrackingTools/TrackFitters/interface/KFTrajectorySmoother.h"
+#include "DataFormats/SiStripCluster/interface/SiStripCluster.h" 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -45,6 +46,7 @@
 class HitEff : public edm::EDAnalyzer {
  public:  
   explicit HitEff(const edm::ParameterSet& conf);
+  double checkConsistency(StripClusterParameterEstimator::LocalValues parameters, double xx, double xerr);
   double checkConsistency(const SiStripRecHit2D* rechit, double xx, double xerr);
 
   virtual ~HitEff();
@@ -57,44 +59,41 @@ class HitEff : public edm::EDAnalyzer {
         // ----------member data ---------------------------
 
   edm::ParameterSet conf_;
-  edm::ESHandle<SiStripDetCabling> SiStripDetCabling_;
-  edm::ESHandle<SiStripQuality> SiStripQuality_;
 
   TTree* rechits;
   TTree* traj;
-  int events,EventSeedCKF,EventTrackCKF,EventTriggCKF;
+  int events,EventTrackCKF;
 
   TrackLocalAngle* theAngleFinder;
   uint layers;
   bool DEBUG;
-  vector<uint> ActiveLay;
-  std::vector<const SiStripRecHit2D*> vSiStripRecHit2D;
   TRandom2 RanGen2;
 
   // Tree declarations
-  // All RecHit
+  // All RecHits (from clusters)
   int RHNum;
-  float	RHgpx[200];
-  float	RHgpy[200];
-  float	RHgpz[200];
-  int RHMod[200];
-  int RphiSte[200];
+  float	RHgpx[500];
+  float	RHgpy[500];
+  float	RHgpz[500];
+  int RHMod[500];
+  uint RHLay[500];
 
-  // Track RecHit
-  int TRHNum;
-  float	TRHgpx[200];
-  float	TRHgpy[200];
-  float	TRHgpz[200];
-  int TRHLay[200];
-  uint TRHMod[200];
+  // All trajectory positions
+  int TrajNum;
+  float	Trajgpx[500];
+  float	Trajgpy[500];
+  float	Trajgpz[500];
+  uint TrajLay[500];
+  uint TrajMod[500];
 
-  // Modules
-  float ModGlbX, ModGlbY, ModGlbZ, trackAngle;
-  float ModLocX, ModLocY, ModLocErrX, ModLocErrY;
-  float Moddiscr1, Moddiscr2, Modres, ResSig;
-  uint ModIsBad; uint Id; uint SiStripQualBad; uint rod;
+  // Trajectory positions for modules included in the study
+  float TrajGlbX, TrajGlbY, TrajGlbZ, trackAngle;
+  float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY;
+  float ClusterLocX, ClusterLocY, ClusterLocErrX, ClusterLocErrY;
+  float ResX, ResXSig;
+  uint ModIsBad; uint Id; uint SiStripQualBad;
   uint run; uint event;
-
+  float RHX[500]; float RHY[500]; float RHZ[500]; int RHID[500];
 };
 
 
