@@ -703,20 +703,50 @@ o TEC Optoconnectors
   5 "Alu Holder"	   "Aluminium"		XXXX	   1   SUP
 ........................................................................
 ========================================================================
+
+
 o TEC_Rails
   -----------------------------
 
-MCVolume: 4598.88 cm3 (for all TEC)
-(1) is partially on the disks would create overlaps
+MCVolume: 2267.7 cm3 (for all TEC)
+
+After separating the non-CF parts into TEC_RailsConnector and
+TEC_RailsSupport, there is only 5.015 kg of CF left for the full TEC
 ....................................................................................
-#   "TEC_Rails"         "TEC_Rails"             4598.88         4598.88
-* 1 "Brackets"              "Aluminium"           783.44   1 SUP
-* 2 "Rails and inserts"	    "Aluminium"		  1681.03  1 SUP
-* 3 "screws and pins"	    "Steel-008"		  97.34	   1 SUP
-* 4 "Bellows"		    "Carbon fibre str."	  636.69   1 SUP
-* 5 "skinholder and screws"	    "Aluminium"	  	  296.02   1 SUP
+#   "TEC_Rails"         "TEC_Rails"             2267.7         2267.7
+* 1 "Carbon fibre"      "Carbon fibre str."     2967.34    1 SUP
 ....................................................................................
 ====================================================================================
+
+o TEC_RailsConnector
+  -----------------------------
+
+MCVolume: 45.75 cm3 (for one piece)
+(1) is partially on the disks would create overlaps
+....................................................................................
+#   "TEC_RailsConnector"    "TEC_RailsConnector"    45.75         45.75
+* 1 "Brackets"              "Aluminium"         65.29	      1 SUP
+* 2 "Rail inserts"	    "Aluminium"		8.93	      1 SUP
+* 3 "screws and pins"	    "Steel-008"		3.97	      1 SUP
+* 4 "Skin holder, screws"   "Aluminium"	  	21.14	      1 SUP
+....................................................................................
+====================================================================================
+
+
+o TEC_RailsSupport
+  -----------------------------
+
+MCVolume: 40.65 cm3 (for one piece)
+....................................................................................
+#   "TEC_RailsSupport"         "TEC_RailsSupport"     40.65         40.65
+* 1 "Inserts, plates etc."  "Aluminium"         39.00	      1 SUP
+* 2 "Screw"	     	    "Steel-008"		1.19	      1 SUP
+* 3 "Bronze"	    	    "Brass"		0.03	      1 SUP
+* 4 "Polycarbonate" 	    "Polyethylene"	0.78	      1 SUP
+....................................................................................
+====================================================================================
+
+
 
                     ------------------------------
                     --       TEC Backplate      --
