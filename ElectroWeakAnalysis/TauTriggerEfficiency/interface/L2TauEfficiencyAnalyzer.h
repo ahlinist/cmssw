@@ -28,6 +28,8 @@
 typedef math::XYZTLorentzVectorD   LV;
 typedef std::vector<LV>            LVColl;
 
+using namespace reco; // 10122008/S.Lehti, added this to have the code compiling with both CMSSW_2_1_X and CMSSW_2_2_X. In CMSSW_2_2_X L2TauInfoAssociation is moved inside namespace reco
+
 class L2TauEfficiencyAnalyzer {
    public:
       L2TauEfficiencyAnalyzer();
