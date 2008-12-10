@@ -1,0 +1,4 @@
+module TrackTriggerHitsFromPixelDigis = TrackTriggerHitProducer {
+    InputTag input = siPixelDigis
+    uint32   threshold = 0
+} 
