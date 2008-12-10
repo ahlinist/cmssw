@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.36 2008/12/05 12:04:43 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.37 2008/12/08 14:52:39 giorgia Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.36 $
-  \date $Date: 2008/12/05 12:04:43 $
+  \version $Revision: 1.37 $
+  \date $Date: 2008/12/08 14:52:39 $
 */
 
 #include "TProfile2D.h"
@@ -877,8 +877,8 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if(o.name.find("MeanSummaryRes_testFailed_W") != std::string::npos
-     || o.name.find("SigmaSummaryRes_testFailed_W") != std::string::npos) {
+  if(o.name.find("MeanSummaryRes_W") != std::string::npos
+     || o.name.find("SigmaSummaryRes_W") != std::string::npos) {
     static TLatex * lblMB4Sect4and13_res = new TLatex(4,10.75,"4/13");
     static TLatex * lblMB4Sect10and14_res = new TLatex(9.75,10.75,"10/14");
 
