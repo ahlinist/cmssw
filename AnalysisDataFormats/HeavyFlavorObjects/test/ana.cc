@@ -379,9 +379,16 @@ void ana::loadSg(const char *name, double lumi, const char *sign, const char *ty
   //cout << "Loaded " << fS[nSg]->GetName() << " with vis x-section " << lumi << " and signature " << sign << endl;
   TH1 *h      = (TH1D*)fS[nSg]->Get("AR1");
   fvXsS[nSg]  = lumi;
-  fNevtS[nSg] = h->GetBinContent(h->FindBin(0.1));
-  fNevtS[nSg] = h->GetBinContent(h->FindBin(1.1));
-  fLumiS[nSg] = fNevtS[nSg]/fvXsS[nSg] ;
+  if (h) {
+    fNevtS[nSg] = h->GetBinContent(h->FindBin(0.1));
+    fNevtS[nSg] = h->GetBinContent(h->FindBin(1.1));
+    fLumiS[nSg] = fNevtS[nSg]/fvXsS[nSg] ;
+  } else {
+    fNevtS[nSg] = 1.;
+    fLumiS[nSg] = 1.;
+
+  }
+
   fSignS[nSg] = TString(sign);
   fTypeS[nSg] = TString(type);
 
