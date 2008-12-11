@@ -8,6 +8,7 @@ void plotL1Efficiency(  bool print=false) {
   
   // PFTau Et
   TCut DenEtaCut = "PFTauEta<2.5&&PFTauEta>-2.5";
+  //TCut DenEtaCut = "PFTauEta<2.5&&PFTauEta>-2.";
   
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
   plotter->SetFileName("L1Eff_PFTauEt_L1Jet.C"); //
