@@ -14,10 +14,17 @@ Color_t PlotUtil::tb_rechits = kGreen;
 Color_t PlotUtil::pf_rechits = kRed;
 Color_t PlotUtil::pf_cluster = kViolet + 7;
 
-PlotUtil::PlotUtil() {
+PlotUtil::PlotUtil() :
+	rootFile_(0) {
+	rootFile_ = new TFile("EnergyProcessing.root", "recreate");
 }
 
 PlotUtil::~PlotUtil() {
+	//rootFile_->Write();
+	//	if(rootFile_ != 0) {
+	//		rootFile_->Close();
+	//		delete rootFile_;
+	//	}
 }
 
 void PlotUtil::setGraphicsFile(std::string graphicsFile) {
@@ -61,8 +68,7 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 		dimX = optimalsX[accumulatedObjects_.size() -1];
 		dimY = optimalsY[accumulatedObjects_.size() -1];
 	} else {
-		dimX = dimY
-				= static_cast<int>(ceil(sqrt(accumulatedObjects_.size())));
+		dimX = dimY = static_cast<int>(ceil(sqrt(accumulatedObjects_.size())));
 	}
 
 	TCanvas canv("Accumulated", "Accumulated");
@@ -82,23 +88,58 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 		} else {
 			o->Draw(options.c_str());
 		}
+
 		canv.Update();
 		canv.Modified();
+		o->Write();
 		++count;
 	}
-	
+
 	canv.cd();
 	canv.Update();
 	canv.Print(filename.c_str());
 }
 
-TH1* PlotUtil::printHisto(const std::string& name,
-		const std::string& title, const std::string& xtitle,
-		Color_t line = kBlack, Color_t fill = kWhite, int thickness) {
+TH1* PlotUtil::printHisto(const std::string& name, const std::string& title,
+		const std::string& xtitle, Color_t line = kBlack,
+		Color_t fill = kWhite, int thickness) {
 	TH1* histo = formatHisto(name, title, xtitle, line, fill, thickness);
 	histo->Draw();
 	gPad->Print(graphicsFile_.c_str());
 	return histo;
+}
+
+void PlotUtil::accumulateSpecial(TObject* o, TStyle* s,
+		std::string drawOptions, std::string preferredName) {
+	PlotSpecial ps(o, s, drawOptions, preferredName);
+	accumulatedSpecials_.push_back(ps);
+}
+
+void PlotUtil::flushSpecials(std::string directory) {
+	for (std::vector<PlotSpecial>::iterator i = accumulatedSpecials_.begin(); i
+			!= accumulatedSpecials_.end(); ++i) {
+		PlotSpecial ps = *i;
+		ps.style_->cd();
+		TCanvas temp("temp", "temp");
+		if (ps.obj_->InheritsFrom("THStack")) {
+			TLegend* l = legendForStack((THStack*) ps.obj_);
+			ps.obj_->Draw(ps.options_.c_str());
+			l->Draw();
+		} else {
+			ps.obj_->Draw(ps.options_.c_str());
+		}
+		std::string destination(directory);
+		destination.append("/");
+		destination.append(ps.preferredName_);
+		std::string macro(destination);
+		macro.append(".C");
+		std::string postscript(destination);
+		postscript.append(".eps");
+		temp.Update();
+		temp.Modified();
+		temp.Print(macro.c_str());
+		temp.Print(postscript.c_str());
+	}
 }
 
 TLegend* PlotUtil::legendForStack(THStack* stack) {
@@ -113,9 +154,9 @@ TLegend* PlotUtil::legendForStack(THStack* stack) {
 
 }
 
-TH1* PlotUtil::formatHisto(const std::string& name,
-		const std::string& title, const std::string& xtitle,
-		Color_t line = kBlack, Color_t fill = kWhite, int thickness) {
+TH1* PlotUtil::formatHisto(const std::string& name, const std::string& title,
+		const std::string& xtitle, Color_t line = kBlack,
+		Color_t fill = kWhite, int thickness) {
 	//do things
 	TH1* histo = getHisto(name);
 	if (histo) {
@@ -124,11 +165,11 @@ TH1* PlotUtil::formatHisto(const std::string& name,
 		histo->SetLineColor(line);
 		histo->SetFillColor(fill);
 		histo->SetLineWidth(thickness);
-		
-//		TPaveText t(0.7, 0.8, 0.9, 0.9);
-//		t.AddText(graphicsFile_.c_str());
-//		t.Draw();
-		
+
+		//		TPaveText t(0.7, 0.8, 0.9, 0.9);
+		//		t.AddText(graphicsFile_.c_str());
+		//		t.Draw();
+
 	} else {
 		std::cout << "Can't format histogram, returning null pointer!"
 				<< std::endl;
@@ -146,7 +187,6 @@ void PlotUtil::formatGraph(TGraph* graph, const std::string& title,
 	graph->SetMarkerColor(marker);
 	graph->SetLineWidth(thickness);
 }
-
 
 TStyle* PlotUtil::makeStyle(const std::string& name) {
 	TStyle* style = new TStyle(name.c_str(), name.c_str());

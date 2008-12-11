@@ -12,6 +12,9 @@
 #include <THStack.h>
 #include <TLegend.h>
 #include <TGraphErrors.h>
+#include <TFile.h>
+
+#include "RecoParticleFlow/PFAnalyses/interface/PlotSpecial.h"
 
 class PlotUtil {
 public:
@@ -44,6 +47,11 @@ public:
 	void newPage();
 	void accumulateObjects(TObject* o, std::string options = "");
 	void flushAccumulatedObjects(std::string filename);
+	
+	void accumulateSpecial(TObject* o, TStyle* s,
+			std::string drawOptions, std::string preferredName);
+	
+	void flushSpecials(std::string directory = "");
 
 	TLegend* legendForStack(THStack* theStack);
 
@@ -51,8 +59,10 @@ public:
 private:
 	std::string graphicsFile_;
 	std::string macroFile_;
+	TFile* rootFile_;
 
 	std::vector<std::pair<TObject*, std::string> > accumulatedObjects_;
+	std::vector<PlotSpecial> accumulatedSpecials_;
 
 };
 

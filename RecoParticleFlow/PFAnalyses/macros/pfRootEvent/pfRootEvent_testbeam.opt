@@ -4,7 +4,9 @@ root outtree 1
 
 //colin	mode 1
 
-root file ../../test/demo_reprocessed_7GeV.root
+root file reprocessed_7GeV.root
+
+//root file ../../test/demo_reprocessed_7GeV.root
 
 // filter ------------------------------------------------------------
 

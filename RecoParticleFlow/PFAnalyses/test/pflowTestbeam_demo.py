@@ -10,8 +10,8 @@ process.TFileService.fileName = cms.string("demo_outputtree_7GeV.root")
 process.finishup.fileName = cms.untracked.string("demo_reprocessed_7GeV.root")
 
 # This should be updated as necessary
-process.extraction.runinfo_cuts = cms.string("/castor/cern.ch/user/b/ballin/tbv2/testbeam_cuts.root")
-process.faketracks.runinfo_cuts = cms.string("/castor/cern.ch/user/b/ballin/tbv2/testbeam_cuts.root")
+process.extraction.runinfo_cuts = cms.string("/castor/cern.ch/user/b/ballin/tbv3/testbeam_cuts.root")
+process.faketracks.runinfo_cuts = cms.string("/castor/cern.ch/user/b/ballin/tbv3/testbeam_cuts.root")
 
 process.maxEvents = cms.untracked.PSet(
     input=cms.untracked.int32(2000)

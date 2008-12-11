@@ -340,10 +340,10 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			}
 		}
 	}
-	
+
 	//Extract PFCandidates
 	PFCandidateCollection cands = **pfCandidates_;
-	for(PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
+	for (PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
 		extractCandidate(*it);
 	}
 
@@ -555,7 +555,13 @@ void TestbeamDelegate::endParticleCore() {
 			//print a summary
 			std::cout << *calib_;
 		}
-		tree_->Fill();
+		if (thisEventCalibs_ != 0) {
+			//fill vector rather than tree
+			Calibratable c(*calib_);
+			thisEventCalibs_->push_back(c);
+		}
+		if (tree_ != 0)
+			tree_->Fill();
 	} else {
 		++nParticleFails_;
 	}

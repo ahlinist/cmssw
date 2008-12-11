@@ -24,11 +24,11 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include <iostream>
 
 #include <TTree.h>
 #include <TH2F.h>
-
 
 class EventDelegate {
 public:
@@ -38,7 +38,10 @@ public:
 	//Call this straight after construction
 	virtual void init(TTree* tree, const edm::ParameterSet& parameters);
 
-	void startEvent(const edm::Event& event, const edm::EventSetup& setup);
+	virtual void init(const edm::ParameterSet& parameters);
+
+	void startEvent(const edm::Event& event, const edm::EventSetup& setup,
+			std::vector<pftools::Calibratable>* eventCalibs = 0);
 
 	/*
 	 * Subclasses may generally record several particles from one event.
@@ -47,7 +50,7 @@ public:
 	void startParticle() {
 		startParticleCore();
 	}
-	
+
 	/*
 	 * Subclasses should of course override this.
 	 * Returns true if the event was 'valid' according to whatever vetos have been set.
@@ -64,7 +67,8 @@ public:
 	 */
 	bool getVeto(const std::string param) const {
 		//return vetos_(param);
-		std::cout << __PRETTY_FUNCTION__ << ": Not yet implemented! Returning true." << std::endl;
+		std::cout << __PRETTY_FUNCTION__
+				<< ": Not yet implemented! Returning true." << std::endl;
 		return true;
 	}
 
@@ -80,7 +84,6 @@ public:
 	virtual bool finish() {
 		return true;
 	}
-	
 
 	void getTags(const edm::ParameterSet& parameters);
 
@@ -93,7 +96,7 @@ public:
 protected:
 	//Subclasses should override these methods to request their own tags
 	virtual void getTagsCore(const edm::ParameterSet& parameters) {
-		
+
 	}
 
 	//Subclasses should override these methods.
@@ -106,27 +109,24 @@ protected:
 	virtual void startParticleCore() {
 	}
 
-
 	virtual void endParticleCore() {
 	}
-	
+
 	virtual void initCore(const edm::ParameterSet& parameters) {
-		
+
 	}
-	
+
 	EventDelegate();
-	
 
 	/*
 	 * Returns true if:
 	 * 		origin - bound <= test < origin + bound
 	 */
 	bool within(double origin, double bound, double test);
-	
 
 	double deltaR(const double& eta1, const double& eta2, const double& phi1,
 			const double& phi2);
-	
+
 	//Debug?
 	int debug_;
 	//True if this event was generally successful
@@ -136,12 +136,13 @@ protected:
 	std::map<std::string, bool> vetos_;
 	//The Calibratable tree
 	TTree* tree_;
+
+	std::vector<pftools::Calibratable>* thisEventCalibs_;
 	//Some diagnostic histograms;
 	TH2F* hClusterCount_;
-	
+
 	edm::Service<TFileService> fileservice_;
-	
-	
+
 	//The Calibratable object
 	pftools::Calibratable* calib_;
 	//Increment nWrites_ for every record written to the tree
@@ -149,15 +150,13 @@ protected:
 	unsigned nWrites_, nFails_;
 	unsigned nParticleWrites_, nParticleFails_;
 
-
 };
-
 
 template<class T> void EventDelegate::getCollection(edm::Handle<T>& c,
 		const edm::InputTag& tag, const edm::Event& event) const {
 
 	try {
-			event.getByLabel(tag, c);
+		event.getByLabel(tag, c);
 		if(!c.isValid()) {
 			std::cout << "Warning! Collection for label " << tag << " is not valid!" << std::endl;
 		}
@@ -168,7 +167,5 @@ template<class T> void EventDelegate::getCollection(edm::Handle<T>& c,
 		//LogError("Error getting collection!") << err;
 	}
 }
-
-
 
 #endif /*EVENTDELEGATE_H_*/
