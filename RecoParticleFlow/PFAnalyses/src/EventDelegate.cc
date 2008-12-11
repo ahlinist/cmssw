@@ -7,13 +7,14 @@ using namespace edm;
 using namespace reco;
 
 EventDelegate::EventDelegate() :
-	thisEventPasses_(false), nWrites_(0), nFails_(0), nParticleWrites_(0), nParticleFails_(0) {
-	if(debug_)
+	thisEventPasses_(false), nWrites_(0), nFails_(0), nParticleWrites_(0),
+			nParticleFails_(0), tree_(0), thisEventCalibs_(0) {
+	if (debug_)
 		std::cout << "Leaving "<< __PRETTY_FUNCTION__ << std::endl;
 }
 
 EventDelegate::~EventDelegate() {
-	if(debug_)
+	if (debug_)
 		std::cout << "Leaving "<< __PRETTY_FUNCTION__ << std::endl;
 }
 
@@ -28,26 +29,36 @@ void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
 
 }
 
+void EventDelegate::init(const edm::ParameterSet& parameters) {
+	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	calib_ = new Calibratable();
+	getTags(parameters);
+	std::cout << "\tEventDelegate initialiation complete.\n";
+	initCore(parameters);
+
+}
+
 void EventDelegate::getTags(const edm::ParameterSet& parameters) {
 	std::cout << __PRETTY_FUNCTION__ << std::endl;
 
 	debug_ = parameters.getParameter<int>("debug");
-	
+
 	getTagsCore(parameters);
 
 }
 
 void EventDelegate::startEvent(const edm::Event& event,
-		const edm::EventSetup& setup) {
-	if(debug_ > 3)
+		const edm::EventSetup& setup,
+		std::vector<pftools::Calibratable>* eventCalibs) {
+	if (debug_ > 3)
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
 	thisEventPasses_ = true;
 	thisParticlePasses_ = true;
 	calib_->reset();
+	thisEventCalibs_ = eventCalibs;
 
 	startEventCore(event, setup);
 }
-
 
 bool EventDelegate::endEventCore() {
 	return false;
@@ -59,12 +70,10 @@ void EventDelegate::endParticle() {
 }
 
 bool EventDelegate::endEvent() {
-	if(debug_ > 3)
+	if (debug_ > 3)
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
 	bool ans = endEventCore();
-
-
-	
+	thisEventCalibs_ = 0;
 	return ans;
 }
 
@@ -86,5 +95,4 @@ double EventDelegate::deltaR(const double& eta1, const double& eta2,
 	}
 	return sqrt(pow(deltaEta, 2) + pow(deltaPhi, 2));
 }
-
 

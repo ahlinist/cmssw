@@ -11,29 +11,34 @@
 #include <cmath>
 
 EnergyProcessing::EnergyProcessing(TTree* t, std::string graphicsFile,
-		std::string macroFile) {
-	reset(t, graphicsFile, macroFile);
+		std::string macroFile, std::string directory, long nEntries) :
+	zero_(0), directory_(directory) {
+	reset(t, graphicsFile, macroFile, directory, nEntries);
 }
 
 void EnergyProcessing::reset(TTree* t, std::string graphicsFile,
-		std::string macroFile) {
+		std::string macroFile, std::string directory, long nEntries) {
 	tree_ = t;
-	graphicsFile_ = graphicsFile;
-	macroFile_ = macroFile;
+	directory_ = directory;
+	nEntries_ = nEntries;
 	defaultStyle_ = (TStyle*) gStyle->Clone();
 
 	TCanvas* c = new TCanvas("Global", "Global canvas");
-	std::string namecpy(graphicsFile_);
+	std::string namecpy(directory_);
+	namecpy.append("/");
+	namecpy.append(graphicsFile);
+	graphicsFile_ = namecpy;
+	util_.setGraphicsFile(namecpy);
 	namecpy.append("[");
 	c->Print(namecpy.c_str());
 
-	std::string macrocpy(macroFile_);
+	std::string macrocpy(directory_);
+	macrocpy.append("/");
+	macrocpy.append(macroFile);
+	macroFile_ = macrocpy;
+	util_.setMacroFile(macrocpy);
 	macrocpy.append("[");
 	c->Print(macrocpy.c_str());
-
-	util_.setGraphicsFile(graphicsFile);
-	util_.setMacroFile(macroFile);
-
 }
 
 EnergyProcessing::~EnergyProcessing() {
@@ -49,6 +54,8 @@ void EnergyProcessing::closeFiles() {
 	std::string macrocpy2(macroFile_);
 	macrocpy2.append("]");
 	gPad->Print(macrocpy2.c_str());
+	
+	util_.flushSpecials(directory_);
 }
 
 void EnergyProcessing::evaluatePlots(bool lowEnergy) {
@@ -72,11 +79,12 @@ void EnergyProcessing::doElectronDiscriminationPlots() {
 	logStyle->cd();
 	util_.newPage();
 	//TB rechits
-	tree_->Draw("tb_energyEvent_>>tbEnergy_pionsVeto", "tb_vetosPassed_==31");
+	tree_->Draw("tb_energyEvent_>>tbEnergy_pionsVeto", "tb_vetosPassed_==31",
+			"", nEntries_, 0);
 	tree_->Draw("tb_energyEvent_>>tbEnergy_electronsVeto",
-			"tb_vetosPassed_== 15");
+			"tb_vetosPassed_== 15", "", nEntries_, 0);
 	tree_->Draw("tb_energyEvent_>>tbEnergy_sumVeto",
-			"tb_vetosPassed_== 15 || tb_vetosPassed_==31");
+			"tb_vetosPassed_== 15 || tb_vetosPassed_==31", "", nEntries_, 0);
 
 	TH1* pions = util_.formatHisto("tbEnergy_pionsVeto", "Pions",
 			"TB Rechit Energy (GeV)", kViolet+7, kViolet+7, 2);
@@ -98,6 +106,8 @@ void EnergyProcessing::doElectronDiscriminationPlots() {
 
 	util_.flushPage();
 
+	util_.accumulateSpecial(stack, logStyle, "nostack", "tbRechits_stack");
+
 }
 
 void EnergyProcessing::doBeamCompositionPlots() {
@@ -108,7 +118,7 @@ void EnergyProcessing::doBeamCompositionPlots() {
 	xStyle->cd();
 	util_.newPage();
 
-	tree_->Draw("tb_vetosPassed_>>vetos");
+	tree_->Draw("tb_vetosPassed_>>vetos", "", "", nEntries_, 0);
 	TH1* vetos = util_.formatHisto("vetos", "Vetos", "Veto bits", kViolet + 7,
 			kWhite, 2);
 
@@ -124,14 +134,16 @@ void EnergyProcessing::doParticleIdPlots() {
 	logStyle->cd();
 	util_.newPage();
 
-	tree_->Draw("tb_tof_>>tof_pions(110,-620,-400)", "tb_vetosPassed_==31");
+	tree_->Draw("tb_tof_>>tof_pions(110,-620,-400)", "tb_vetosPassed_==31", "",
+			nEntries_, 0);
 	tree_->Draw(
 			"tb_tof_>>tof_all(110,-620,-400)",
-			"tb_vetosPassed_==31 || tb_vetosPassed_ == 15 || tb_vetosPassed_ == 23 || tb_vetosPassed_ == 7");
+			"tb_vetosPassed_==31 || tb_vetosPassed_ == 15 || tb_vetosPassed_ == 23 || tb_vetosPassed_ == 7",
+			"", nEntries_, 0);
 	tree_->Draw("tb_tof_>>tof_cerenkov_passes(110,-620,-400)",
-			"tb_vetosPassed_ == 31  || tb_vetosPassed_ == 23");
+			"tb_vetosPassed_ == 31  || tb_vetosPassed_ == 23", "", nEntries_, 0);
 	tree_->Draw("tb_tof_>>tof_cerenkov_fails(110,-620,-400)",
-			"tb_vetosPassed_ == 15 || tb_vetosPassed_ == 7");
+			"tb_vetosPassed_ == 15 || tb_vetosPassed_ == 7", "", nEntries_, 0);
 
 	TH1* pions = util_.formatHisto("tof_pions", "Pions", "TOF (adc)", kViolet
 			+ 7, kViolet + 7, 2);
@@ -158,6 +170,8 @@ void EnergyProcessing::doParticleIdPlots() {
 
 	util_.accumulateObjects(stack, "nostack");
 	util_.flushPage();
+	
+	util_.accumulateSpecial(stack, logStyle, "nostack", "tof_stack");
 
 }
 
@@ -171,27 +185,27 @@ void EnergyProcessing::doBananaPlots() {
 
 	util_.newPage();
 	tree_->Draw("tb_energyHcal_:tb_energyEcal_>>tbEnergy_all_2D",
-			"tb_vetosPassed_==31 || tb_vetosPassed_==15", "col");
+			"tb_vetosPassed_==31 || tb_vetosPassed_==15", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tbEnergy_all_2D"), "colz");
 	tree_->Draw("tb_energyHcal_:tb_energyEcal_>>tbEnergy_pions_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tbEnergy_pions_2D"), "colz");
 	tree_->Draw("tb_energyHcal_:tb_energyEcal_>>tbEnergy_nonpions_2D",
-			"tb_vetosPassed_==15", "col");
+			"tb_vetosPassed_==15", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tbEnergy_nonpions_2D"), "colz");
 	util_.flushPage();
 
 	util_.newPage();
 	tree_->Draw("tb_energyHcal_:tb_energyEcal_>>tbrechitsEnergy_pions_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tbrechitsEnergy_pions_2D"), "colz");
 	tree_->Draw(
 			"rechits_energyHcal_:rechits_energyEcal_>>rechitsEnergy_pions_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("rechitsEnergy_pions_2D"), "colz");
 	tree_->Draw(
 			"cluster_energyHcal_:cluster_energyEcal_>>clustersEnergy_pions_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("clustersEnergy_pions_2D"), "colz");
 	util_.flushPage();
 
@@ -205,11 +219,12 @@ void EnergyProcessing::doSpectrumPlots() {
 	spectrumStyle->cd();
 	gPad->UseCurrentStyle();
 	util_.newPage();
-	tree_->Draw("tb_energyEvent_>>tbEnergy_pions", "tb_vetosPassed_==31");
+	tree_->Draw("tb_energyEvent_>>tbEnergy_pions", "tb_vetosPassed_==31", "",
+			nEntries_, 0);
 	tree_->Draw("rechits_energyEvent_>>rechitsEnergy_pions",
-			"tb_vetosPassed_==31");
+			"tb_vetosPassed_==31", "", nEntries_, 0);
 	tree_->Draw("cluster_energyEvent_>>clustersEnergy_pions",
-			"tb_vetosPassed_==31");
+			"tb_vetosPassed_==31", "", nEntries_, 0);
 
 	TH1* tbPions = util_.formatHisto("tbEnergy_pions", "TB Pions",
 			"TB rechits event energy", kGreen, kWhite, 2);
@@ -232,6 +247,8 @@ void EnergyProcessing::doSpectrumPlots() {
 	util_.accumulateObjects(stack, "nostack");
 
 	util_.flushPage();
+	
+	util_.accumulateSpecial(stack, spectrumStyle, "nostack", "energy_stack");
 
 }
 
@@ -246,17 +263,17 @@ void EnergyProcessing::doCorrelationPlots() {
 
 	tree_->Draw(
 			"rechits_energyEvent_:tb_energyEvent_>>rechitsEnergy_tbEnergy_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("rechitsEnergy_tbEnergy_2D"), "colz");
 
 	tree_->Draw(
 			"cluster_energyEvent_:tb_energyEvent_>>clusterEnergy_tbEnergy_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("clusterEnergy_tbEnergy_2D"), "colz");
 
 	tree_->Draw(
 			"cluster_energyEvent_:rechits_energyEvent_>>clusterEnergy_rechitsEnergy_2D",
-			"tb_vetosPassed_==31", "col");
+			"tb_vetosPassed_==31", "col", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("clusterEnergy_rechitsEnergy_2D"),
 			"colz");
 
@@ -276,25 +293,23 @@ void EnergyProcessing::doBeamSpotPlots() {
 	beamSpotStyle->cd();
 
 	util_.newPage();
-	
-	tree_->Draw(
-			"tb_hcal_.eta_:tb_hcal_.phi_>>tb_hcal_beamspot_2D",
-			"tb_vetosPassed_==31", "colz");
+
+	tree_->Draw("tb_hcal_.eta_:tb_hcal_.phi_>>tb_hcal_beamspot_2D",
+			"tb_vetosPassed_==31", "colz", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tb_hcal_beamspot_2D"), "colz");
-	
-	tree_->Draw(
-			"tb_ecal_.eta_:tb_ecal_.phi_>>tb_ecal_beamspot_2D",
-			"tb_vetosPassed_==31", "colz");
+
+	tree_->Draw("tb_ecal_.eta_:tb_ecal_.phi_>>tb_ecal_beamspot_2D",
+			"tb_vetosPassed_==31", "colz", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("tb_ecal_beamspot_2D"), "colz");
 
 	tree_->Draw(
 			"rechits_hcal_.eta_:rechits_hcal_.phi_>>rechits_hcal_beamspot_2D",
-			"tb_vetosPassed_==31", "colz");
+			"tb_vetosPassed_==31", "colz", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("rechits_hcal_beamspot_2D"), "colz");
 
 	tree_->Draw(
 			"rechits_ecal_.eta_:rechits_ecal_.phi_>>rechits_ecal_beamspot_2D",
-			"tb_vetosPassed_==31", "colz");
+			"tb_vetosPassed_==31", "colz", nEntries_, 0);
 	util_.accumulateObjects(util_.getHisto("rechits_ecal_beamspot_2D"), "colz");
 
 	util_.flushPage();
