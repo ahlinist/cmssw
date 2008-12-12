@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.10 2008/11/07 14:38:29 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.11 2008/11/07 15:31:56 chinhan Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -19,6 +19,9 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "TFile.h"
 #include "TTree.h"
+
+typedef math::XYZTLorentzVector LorentzVector;
+
 class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
    public:
       explicit L25TauEfficiencyAnalyzer();
@@ -27,6 +30,7 @@ class L25TauEfficiencyAnalyzer : public edm::EDAnalyzer {
 void Setup(const edm::ParameterSet&,TTree*);
 virtual void fill(const edm::Event&, const reco::PFTau&);   
 virtual void fill(const edm::Event&, const reco::CaloTau&);
+ virtual void fill(const edm::Event&, const LorentzVector&);
 //virtual void fill(const edm::Event&, const math::XYZTLorentzVector&);
 
    private:
