@@ -11,6 +11,6 @@ bTagSoftLeptonByIPAnalysisBlock = cms.PSet(
         endEffPur   = cms.double(0.205),
 
         # the constant b-efficiency for the differential plots versus pt and eta
-        effBConst = cms.double(0.05)
+        effBConst   = cms.double(0.05)
     )
 )
