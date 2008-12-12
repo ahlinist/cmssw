@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.106 2008/10/21 15:07:31 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.107 2008/12/04 13:55:56 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.106 $
-  \date $Date: 2008/10/21 15:07:31 $
+  \version $Revision: 1.107 $
+  \date $Date: 2008/12/04 13:55:56 $
 */
 
 #include "TH1F.h"
@@ -499,6 +499,13 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "DAQSummaryMap" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalEndcap DAQ Summary Map");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EEIT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
@@ -787,7 +794,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (Numbers::ixSectorsEE[i]!=0 || Numbers::iySectorsEE[i]!=0) && (Numbers::ixSectorsEE[i+1]!=0 || Numbers::iySectorsEE[i+1]!=0) ) {
-      if ( name.find( "reportSummaryMap") != std::string::npos ) {
+      if ( name.find( "reportSummaryMap") != std::string::npos || 
+           name.find( "DAQSummaryMap") != std::string::npos ) {
         l.DrawLine(0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
         l.DrawLine(20+0.2*Numbers::ixSectorsEE[i], 0.2*Numbers::iySectorsEE[i], 20+0.2*Numbers::ixSectorsEE[i+1], 0.2*Numbers::iySectorsEE[i+1]);
       } else if( name.find( "EECLT" ) != std::string::npos ) {
@@ -1017,7 +1025,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "reportSummaryMap" ) != std::string::npos ) {
+  if( name.find( "reportSummaryMap" ) != std::string::npos || 
+      name.find( "DAQSummaryMap" ) != std::string::npos ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
