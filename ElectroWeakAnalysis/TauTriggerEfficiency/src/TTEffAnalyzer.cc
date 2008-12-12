@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.8 2008/11/07 15:31:57 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.9 2008/11/21 21:31:16 bachtis Exp $
 //
 //
 
@@ -73,14 +73,18 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
+   edm::Handle<std::vector<LorentzVector> > electronTaus;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
      loop(iEvent, *PFTaus);
    }
-   // This should be commented out as long as analyzers don't have fill(CaloTau)
-   /*else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
+   else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
    }
-   */
+
+   else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
+     loop(iEvent, *electronTaus);
+   }
+   
    // For electron lorentzvectors, add similar clauses
 }
 
