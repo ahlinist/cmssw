@@ -1,0 +1,34 @@
+
+<use name=Alignment/CommonAlignment>
+<use name=Alignment/CommonAlignmentAlgorithm>
+<use name=Alignment/TrackerAlignment>
+<use name=FWCore/MessageLogger>
+<use name=FWCore/PluginManager>
+<use name=FWCore/Utilities>
+<use name=FWCore/ParameterSet>
+<use name=TrackingTools/PatternTools>
+<use name=TrackingTools/TrackFitters>
+<use name=TrackingTools/TransientTrack>
+<use name=RecoMuon/TransientTrackingRecHit>
+<use name=rootcore>
+<use name=root>
+<use name=PhysicsTools/UtilAlgos>
+<use name=FWCore/ServiceRegistry>
+<export>
+<<<<<<< BuildFile
+  <use name=Alignment/CommonAlignment>
+  <use name=Alignment/CommonAlignmentAlgorithm>
+  <lib name=AlignmentMuonStandaloneAlgorithm>
+=======
+   <lib name=AlignmentMuonStandaloneAlgorithm>
+   <use name=root>
+   <use name=FWCore/ParameterSet>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/Framework>
+
+
+>>>>>>> 1.4
+</export>
+
+
+
