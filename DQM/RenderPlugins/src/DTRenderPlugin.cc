@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.37 2008/12/08 14:52:39 giorgia Exp $
+// $Id: DTRenderPlugin.cc,v 1.38 2008/12/10 10:30:57 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.37 $
-  \date $Date: 2008/12/08 14:52:39 $
+  \version $Revision: 1.38 $
+  \date $Date: 2008/12/10 10:30:57 $
 */
 
 #include "TProfile2D.h"
@@ -580,6 +580,19 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetGrid(1,1);
   return;
   }
+
+  if(o.name.find("EfficiencyMap") != std::string::npos) {
+    obj->GetXaxis()->SetNdivisions(15,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    obj->SetMinimum(0.0);
+    obj->SetMaximum(1.0);
+    c->SetGrid(1,1);
+    return;
+  }
+
+
 }
 
 void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
