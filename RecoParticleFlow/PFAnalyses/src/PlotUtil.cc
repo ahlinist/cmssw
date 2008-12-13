@@ -119,6 +119,8 @@ void PlotUtil::flushSpecials(std::string directory) {
 	for (std::vector<PlotSpecial>::iterator i = accumulatedSpecials_.begin(); i
 			!= accumulatedSpecials_.end(); ++i) {
 		PlotSpecial ps = *i;
+		//TODO: this should be an option really
+		ps.style_->SetOptTitle(false);
 		ps.style_->cd();
 		TCanvas temp("temp", "temp");
 		if (ps.obj_->InheritsFrom("THStack")) {
@@ -143,7 +145,7 @@ void PlotUtil::flushSpecials(std::string directory) {
 }
 
 TLegend* PlotUtil::legendForStack(THStack* stack) {
-	TLegend* legend = new TLegend(0.7, 0.7, 0.95, 0.95);
+	TLegend* legend = new TLegend(0.55, 0.7, 0.95, 0.95);
 	TList* list = stack->GetHists();
 	TIter next(list);
 	TH1* hist;

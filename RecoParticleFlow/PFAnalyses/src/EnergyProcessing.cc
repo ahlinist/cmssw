@@ -54,7 +54,7 @@ void EnergyProcessing::closeFiles() {
 	std::string macrocpy2(macroFile_);
 	macrocpy2.append("]");
 	gPad->Print(macrocpy2.c_str());
-	
+
 	util_.flushSpecials(directory_);
 }
 
@@ -70,6 +70,7 @@ void EnergyProcessing::evaluatePlots(bool lowEnergy) {
 	doEEmagOnETotPlots();
 	doBeamSpotPlots();
 	doBeamCompositionPlots();
+	doPFCandidatePlots();
 }
 
 void EnergyProcessing::doElectronDiscriminationPlots() {
@@ -127,6 +128,158 @@ void EnergyProcessing::doBeamCompositionPlots() {
 	util_.flushPage();
 }
 
+void EnergyProcessing::doPFCandidatePlots() {
+	TStyle* xStyle = util_.makeStyle("pfCandidateStyle");
+	xStyle->SetName("pfCandidateStyle");
+	xStyle->SetOptLogy(false);
+	xStyle->SetOptLogz(true);
+	xStyle->SetOptStat(0);
+	xStyle->cd();
+
+	util_.newPage();
+
+	tree_->Draw("cands_.type_>>types", "", "", nEntries_, 0);
+	TH1* types = util_.formatHisto("types", "PFCand Types", "Type", kBlue,
+			kBlue, 2);
+	util_.accumulateObjects(types);
+	util_.accumulateSpecial(types, xStyle, "", "cand_types");
+
+	tree_->Draw(
+			"cluster_numHcal_:cand_energyEvent_;Total PFCand energy (GeV);Num HCAL clusters>>candHcalEvent_2D",
+			"cands_num_>1", "colz", nEntries_, 0);
+	util_.accumulateObjects(util_.getHisto("candHcalEvent_2D"), "colz");
+	util_.accumulateSpecial(util_.getHisto("candHcalEvent_2D"), xStyle, "colz",
+			"PF_cand_hcal_energy");
+
+	util_.flushPage();
+
+	TStyle* sStyle = util_.makeStyle("pfCandidateStyleStat");
+	sStyle->SetName("pfCandidateStyleStat");
+	sStyle->SetOptLogy(false);
+	sStyle->SetOptLogz(true);
+	sStyle->SetOptStat(11111);
+	sStyle->cd();
+
+	util_.newPage();
+
+	tree_->Draw("cands_.energy_>>photonE", "cands_.type_==4", "", nEntries_, 0);
+	TH1* photonE = util_.formatHisto("photonE", "Photon energy",
+			"Photon energy (GeV)", kRed, kWhite, 2);
+	util_.accumulateObjects(photonE);
+	util_.accumulateSpecial(photonE, sStyle, "", "PF_cand_photons");
+
+	tree_->Draw("cands_.energy_>>neutralE", "cands_.type_==5", "", nEntries_, 0);
+	TH1* neutralE = util_.formatHisto("neutralE", "Neutral energy",
+			"Neutral energy (GeV)", kViolet, kWhite, 2);
+	util_.accumulateObjects(neutralE);
+	util_.accumulateSpecial(neutralE, sStyle, "", "PF_cand_neutrals");
+
+	util_.flushPage();
+
+	TStyle* yStyle = util_.makeStyle("pfCandidateLogStyle");
+	yStyle->SetName("pfCandidateLogStyle");
+	yStyle->SetOptLogy(true);
+	yStyle->SetOptStat(0);
+	yStyle->cd();
+
+	util_.newPage();
+
+	tree_->Draw("cands_.energy_>>photonELog", "cands_.type_==4", "", nEntries_,
+			0);
+	TH1* photonELog = util_.formatHisto("photonELog", "Photon energy",
+			"Photon energy (GeV)", kRed, kWhite, 2);
+	util_.accumulateObjects(photonELog);
+	util_.accumulateSpecial(photonELog, yStyle, "", "PF_cand_photons_log");
+
+	tree_->Draw("cands_.energy_>>neutralELog", "cands_.type_==5", "",
+			nEntries_, 0);
+	TH1* neutralELog = util_.formatHisto("neutralELog", "Neutral energy",
+			"Neutral energy (GeV)", kViolet, kWhite, 2);
+	util_.accumulateObjects(neutralELog);
+	util_.accumulateSpecial(neutralELog, yStyle, "", "PF_cand_neutrals_log");
+
+	tree_->Draw("cand_energyEvent_>>candEventE", "cands_num_>1", "", nEntries_,
+			0);
+	TH1* candEventE = util_.formatHisto("candEventE",
+			"PFCandidate Event Energy", "Event energy (GeV)", kViolet+7,
+			kViolet + 7, 2);
+	util_.accumulateObjects(candEventE);
+	util_.accumulateSpecial(candEventE, yStyle, "", "PF_cand_eventEnergy");
+
+	tree_->Draw("cand_energyEcal_>>candEcalE",
+			"cands_num_>1 && cluster_numHcal_ == 0", "", nEntries_, 0);
+	TH1* candEcalE = util_.formatHisto("candEcalE",
+			"E_{ECAL} where E_{HCAL} = 0", "E_{ECAL} (GeV)", kBlue, kBlue, 2);
+	util_.accumulateObjects(candEcalE);
+	util_.accumulateSpecial(candEcalE, yStyle, "", "PF_cand_ecalEnergy");
+
+	tree_->Draw("cand_energyHcal_>>candHcalE",
+			"cands_num_>1 && cluster_numHcal_ != 0", "", nEntries_, 0);
+	TH1* candHcalE = util_.formatHisto("candHcalE",
+			"E_{HCAL} where num(HCAL) != 0", "E_{HCAL} (GeV)", kBlack, kWhite,
+			2);
+	util_.accumulateObjects(candHcalE);
+	util_.accumulateSpecial(candHcalE, yStyle, "", "PF_cand_hcalEnergy");
+
+	util_.flushPage();
+
+	util_.newPage();
+	THStack* stack = new THStack("EMEnergy", "EM energy spectra;E_{ECAL} (GeV)");
+	stack->Add(candEcalE);
+	stack->Add(photonE);
+	util_.accumulateObjects(stack, "nostack");
+	util_.accumulateSpecial(stack, yStyle, "nostack", "PF_ECAL_Energy_stack");
+	util_.flushPage();
+
+	util_.newPage();
+	THStack* stackB = new THStack("HadEnergy", "Hadronic energy spectra;E_{HCAL} (GeV)");
+	stackB->Add(candHcalE);
+	stackB->Add(neutralE);
+	util_.accumulateObjects(stackB, "nostack");
+	util_.accumulateSpecial(stackB, yStyle, "nostack", "PF_HCAL_Energy_stack");
+	util_.flushPage();
+
+	//	tree_->Draw("cluster_energyEcal_ + cluster_energyHcal_>>clusterOneCand",
+	//			"cands_num_ == 1", "", nEntries_, 0) ;
+	//	tree_->Draw(
+	//			"cluster_energyEcal_ + cluster_energyHcal_>>clusterTwoPlusCand",
+	//			"cands_num_ > 1", "", nEntries_, 0) ;
+	//	tree_->Draw("cluster_energyEcal_ + cluster_energyHcal_>>clusterAllCand",
+	//			"", "", nEntries_, 0) ;
+
+	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterOneCand",
+			"cands_num_ == 1", "", nEntries_, 0) ;
+	tree_->Draw(
+			"cand_energyEcal_ + cand_energyHcal_>>clusterTwoPlusCand",
+			"cands_num_ > 1", "", nEntries_, 0) ;
+	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterAllCand",
+			"", "", nEntries_, 0) ;
+	
+	util_.newPage();
+	TH1* clusterOneCand = util_.formatHisto("clusterOneCand",
+			"Single charged hadrons", "Energy (GeV)", kBlack, kWhite, 2);
+	util_.accumulateObjects(clusterOneCand);
+	TH1* clusterTwoPlusCand = util_.formatHisto("clusterTwoPlusCand",
+			"Evts w/ neutrons/photons", "Energy (GeV)", kRed, kWhite, 2);
+	util_.accumulateObjects(clusterTwoPlusCand);
+	TH1* clusterAllCand = util_.formatHisto("clusterAllCand", "All together",
+			"Energy (GeV)", kViolet + 7, kViolet + 7, 2);
+	util_.accumulateObjects(clusterAllCand);
+
+	THStack
+			* clusterStack =
+					new THStack("clusterStack", "Cluster energies on candidates;Sum cand calo energy (GeV)");
+	clusterStack->Add(clusterAllCand);
+	clusterStack->Add(clusterOneCand);
+	clusterStack->Add(clusterTwoPlusCand);
+	util_.accumulateObjects(clusterStack, "nostack");
+	util_.accumulateSpecial(clusterStack, yStyle, "nostack",
+			"PF_cand_clusterEnergies_stack");
+
+	util_.flushPage();
+
+}
+
 void EnergyProcessing::doParticleIdPlots() {
 
 	TStyle* logStyle = util_.makeStyle("logStyle");
@@ -170,7 +323,7 @@ void EnergyProcessing::doParticleIdPlots() {
 
 	util_.accumulateObjects(stack, "nostack");
 	util_.flushPage();
-	
+
 	util_.accumulateSpecial(stack, logStyle, "nostack", "tof_stack");
 
 }
@@ -198,11 +351,24 @@ void EnergyProcessing::doBananaPlots() {
 	util_.newPage();
 	tree_->Draw("tb_energyHcal_:tb_energyEcal_>>tbrechitsEnergy_pions_2D",
 			"tb_vetosPassed_==31", "col", nEntries_, 0);
-	util_.accumulateObjects(util_.getHisto("tbrechitsEnergy_pions_2D"), "colz");
+	TH1* tbrechitsPions = util_.getHisto("tbrechitsEnergy_pions_2D");
+	tbrechitsPions->SetXTitle("ECAL (GeV)");
+	tbrechitsPions->SetYTitle("HCAL (GeV)");
+	util_.accumulateObjects(tbrechitsPions, "colz");
+
+	util_.accumulateSpecial(tbrechitsPions, bananaStyle, "colz",
+			"tbRechitsEnergy_pions");
+
 	tree_->Draw(
 			"rechits_energyHcal_:rechits_energyEcal_>>rechitsEnergy_pions_2D",
 			"tb_vetosPassed_==31", "col", nEntries_, 0);
-	util_.accumulateObjects(util_.getHisto("rechitsEnergy_pions_2D"), "colz");
+	TH1* rechitsPions = util_.getHisto("rechitsEnergy_pions_2D");
+	rechitsPions->SetXTitle("ECAL (GeV)");
+	rechitsPions->SetYTitle("HCAL (GeV)");
+	util_.accumulateObjects(rechitsPions, "colz");
+	util_.accumulateSpecial(rechitsPions, bananaStyle, "colz",
+			"rechitsEnergy_pions");
+
 	tree_->Draw(
 			"cluster_energyHcal_:cluster_energyEcal_>>clustersEnergy_pions_2D",
 			"tb_vetosPassed_==31", "col", nEntries_, 0);
@@ -224,7 +390,9 @@ void EnergyProcessing::doSpectrumPlots() {
 	tree_->Draw("rechits_energyEvent_>>rechitsEnergy_pions",
 			"tb_vetosPassed_==31", "", nEntries_, 0);
 	tree_->Draw("cluster_energyEvent_>>clustersEnergy_pions",
-			"tb_vetosPassed_==31", "", nEntries_, 0);
+			"tb_vetosPassed_==31 && cands_num_ == 1", "", nEntries_, 0);
+	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>candEnergy_pions",
+				"tb_vetosPassed_==31", "", nEntries_, 0);
 
 	TH1* tbPions = util_.formatHisto("tbEnergy_pions", "TB Pions",
 			"TB rechits event energy", kGreen, kWhite, 2);
@@ -233,21 +401,26 @@ void EnergyProcessing::doSpectrumPlots() {
 			"PF rechits event energy", "Rechits energy (GeV)", kRed, kWhite, 2);
 
 	TH1* clustersPions = util_.formatHisto("clustersEnergy_pions",
-			"PF clusters event energy", "Clusters energy (GeV)", kViolet + 7,
+			"PF clusters event energy(*)", "Clusters energy (GeV)", kViolet + 7,
 			kWhite, 2);
+	TH1* candPions = util_.formatHisto("candEnergy_pions",
+				"PF cand calo event energy", "Cand calo energy (GeV)", kBlack,
+				kWhite, 2);
 
 	util_.accumulateObjects(tbPions);
 	util_.accumulateObjects(rechitsPions);
 	util_.accumulateObjects(clustersPions);
+	util_.accumulateObjects(candPions);
 	spectrumStyle->SetOptStat(0);
 	THStack* stack = new THStack("spectrum", "Energy spectra;Event energy (GeV)");
 	stack->Add(tbPions);
 	stack->Add(rechitsPions);
 	stack->Add(clustersPions);
+	stack->Add(candPions);
 	util_.accumulateObjects(stack, "nostack");
 
 	util_.flushPage();
-	
+
 	util_.accumulateSpecial(stack, spectrumStyle, "nostack", "energy_stack");
 
 }
