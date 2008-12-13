@@ -357,6 +357,8 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	if (debug_ > 3)
 		std::cout << "\tCandidate: "<< cand << "\n";
 
+	PFClusterCollection ecalClusters = **clustersEcal_;
+	PFClusterCollection hcalClusters = **clustersHcal_;
 	CandidateWrapper cw;
 	cw.energy_ = cand.energy();
 	cw.eta_ = cand.eta();
@@ -367,6 +369,7 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	if (debug_ > 4)
 		std::cout << "\t\tECAL energy = " << cand.ecalEnergy()
 				<< ", HCAL energy = " << cand.hcalEnergy() << "\n";
+
 
 	//Now, extract block elements from the pfCandidate:
 	if (clustersFromCandidates_) {
@@ -423,6 +426,7 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 
 		}
 	}
+	
 	calib_->cands_.push_back(cw);
 
 }

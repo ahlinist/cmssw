@@ -38,6 +38,8 @@ public:
 	void doEEmagOnETotPlots();
 
 	void doElectronDiscriminationPlots();
+	
+	void doPFCandidatePlots();
 
 	void doBeamCompositionPlots();
 	
