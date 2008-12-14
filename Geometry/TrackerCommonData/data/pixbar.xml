@@ -99,20 +99,16 @@
 
 <SolidSection label="pixbar.xml">
  <Polycone name="PixelBarrel" startPhi="0*deg" deltaPhi="360*deg">
-  <ZSection z="-[Zv4]"     rMin="[Rin3]"       rMax="[Rout2]" />
-  <ZSection z="-[Zv3]"     rMin="[Rin3]"       rMax="[Rout2]" />
-  <ZSection z="-[Zv3]"     rMin="[Rin3]"       rMax="[Rout1]" />
-  <ZSection z="-[Zv2]"     rMin="[Rin3]"       rMax="[Rout1]" />
-  <ZSection z="-[Zv2]"     rMin="[Rin2]"       rMax="[Rout1]" />
+  <ZSection z="-[Zv4]"     rMin="[Rin2]"       rMax="[Rout2]" />
+  <ZSection z="-[Zv3]"     rMin="[Rin2]"       rMax="[Rout2]" />
+  <ZSection z="-[Zv3]"     rMin="[Rin2]"       rMax="[Rout1]" />
   <ZSection z="-[Zv1]"     rMin="[Rin2]"       rMax="[Rout1]" />
   <ZSection z="-[Zv1]"     rMin="[Rin1]"       rMax="[Rout1]" />
   <ZSection z="[Zv1]"      rMin="[Rin1]"       rMax="[Rout1]" />
   <ZSection z="[Zv1]"      rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="[Zv2]"      rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="[Zv2]"      rMin="[Rin3]"       rMax="[Rout1]" />
-  <ZSection z="[Zv3]"      rMin="[Rin3]"       rMax="[Rout1]" />
-  <ZSection z="[Zv3]"      rMin="[Rin3]"       rMax="[Rout2]" />
-  <ZSection z="[Zv4]"      rMin="[Rin3]"       rMax="[Rout2]" />
+  <ZSection z="[Zv3]"      rMin="[Rin2]"       rMax="[Rout1]" />
+  <ZSection z="[Zv3]"      rMin="[Rin2]"       rMax="[Rout2]" />
+  <ZSection z="[Zv4]"      rMin="[Rin2]"       rMax="[Rout2]" />
  </Polycone> 
  <Tubs name="PixelBarrelSuppTub" rMin="[SupportRin]"     rMax="[Rout1]"
        dz="[SupportL]/2"         startPhi="0*deg"        deltaPhi="360*deg"/>
