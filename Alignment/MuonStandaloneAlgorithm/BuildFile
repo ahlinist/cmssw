@@ -15,19 +15,11 @@
 <use name=PhysicsTools/UtilAlgos>
 <use name=FWCore/ServiceRegistry>
 <export>
-<<<<<<< BuildFile
   <use name=Alignment/CommonAlignment>
   <use name=Alignment/CommonAlignmentAlgorithm>
-  <lib name=AlignmentMuonStandaloneAlgorithm>
-=======
-   <lib name=AlignmentMuonStandaloneAlgorithm>
-   <use name=root>
-   <use name=FWCore/ParameterSet>
-   <use name=FWCore/PluginManager>
-   <use name=FWCore/Framework>
-
-
->>>>>>> 1.4
+  <use name=FWCore/ParameterSet>
+  <use name=FWCore/PluginManager>
+  <use name=FWCore/Framework>
 </export>
 
 
