@@ -412,6 +412,45 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="SectorC" density="3.35211*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.14778">
+      <rMaterial name="materials:C6F14_F2_-10C"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.0139">
+      <rMaterial name="pixbarmaterial:Polyoxymethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.22693">
+      <rMaterial name="materials:T_FR4"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.11069">
+      <rMaterial name="materials:Acrylate"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.03989">
+      <rMaterial name="materials:Steel-008"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.14938">
+      <rMaterial name="materials:Epoxy"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01005">
+      <rMaterial name="pixfwdMaterials:FPix_TinLeadSolder"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.06396">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.20077">
+      <rMaterial name="materials:Aluminium"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.02082">
+      <rMaterial name="pixfwdMaterials:FPix_Cylind_Polyes"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00319">
+      <rMaterial name="materials:Polyvinylchloride"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01264">
+      <rMaterial name="materials:Nomex"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
 </MaterialSection>
 
 </DDDefinition>
