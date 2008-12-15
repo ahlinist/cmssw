@@ -27,3 +27,8 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelTemplates.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStrip_NewCabling.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStrip_NewCabling_v2.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/sistripfedcabling_craft.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/dbfile_SiStrip_IDEAL_Ped_BadComp.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrig0pbNoToF_20X_Mar12_k00_mc.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrig_CRAFT_V01_k-07_offline.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrigFake_20X_July17_k00_mc.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/siStripDeDx_dummy.db
