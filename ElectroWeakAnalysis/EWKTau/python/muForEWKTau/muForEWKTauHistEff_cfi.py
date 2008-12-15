@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-compEffMuon = cms.EDAnalyzer("EWKTauEffHistogramProducer",
+compEffMuon = cms.EDAnalyzer("DQMHistEffProducer",
   plots = cms.PSet(
     muonHLTmatchEff = cms.PSet(
       numerator = cms.string('/DQMData/MuonQuantities/MuonHLTmatchSel#PAR#'),
