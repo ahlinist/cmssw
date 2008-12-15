@@ -441,7 +441,7 @@
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.02082">
-      <rMaterial name="pixfwdMaterials:FPix_Cylind_Polyes"/>
+      <rMaterial name="pixfwdMaterials:FPix_Cylind_Polyester"/>
     </MaterialFraction>
     <MaterialFraction fraction="0.00319">
       <rMaterial name="materials:Polyvinylchloride"/>
