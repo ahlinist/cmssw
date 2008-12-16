@@ -39,7 +39,7 @@ cp -r $TOPD/$CMS_SW_VERSION/module $TOPD/opt/cmssw/$PRO_DEV/patches/slc4onl_ia32
 echo "Generating and populating summary directories";
 cd /opt/cmssw/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION/src/; 
 echo "now in $PWD";
-install_env.pl $TOPD/opt/cmssw/$PRO_DEV/lib/ $TOPD/opt/cmssw/$PRO_DEV/module/ $TOPD/opt/cmssw/$PRO_DEV/env.txt; 
+install_env.pl $TOPD/opt/cmssw/$PRO_DEV/lib/ $TOPD/opt/cmssw/$PRO_DEV/module/ $TOPD/opt/cmssw/$PRO_DEV/env.txt $TOPD/opt/cmssw/$PRO_DEV/python; 
 cd -;
 echo "now in $PWD";
 for x in opt/cmssw/$PRO_DEV/patches/slc4onl_ia32_gcc346/cms/online/$CMS_SW_VERSION/lib/slc4onl_ia32_gcc346/*.so 
@@ -104,6 +104,7 @@ BuildRoot: %{_tmppath}/patch-cmssw
 BuildArch: i386
 Provides:/opt/cmssw/$PRO_DEV/lib
 Provides:/opt/cmssw/$PRO_DEV/module
+Provides:/opt/cmssw/$PRO_DEV/python
 Provides:/opt/cmssw/$PRO_DEV/base
 Provides:/opt/cmssw/$PRO_DEV/root
 Provides:/opt/cmssw/$PRO_DEV/seal
@@ -124,6 +125,7 @@ tar -C $TOPD -c opt/cmssw |tar -xC \$RPM_BUILD_ROOT
 %files
 /opt/cmssw/$PRO_DEV/lib
 /opt/cmssw/$PRO_DEV/module
+/opt/cmssw/$PRO_DEV/python
 /opt/cmssw/$PRO_DEV/env.txt
 /opt/cmssw/$PRO_DEV/base
 /opt/cmssw/$PRO_DEV/patch
