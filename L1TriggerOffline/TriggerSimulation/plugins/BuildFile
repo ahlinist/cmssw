@@ -1,4 +1,5 @@
 <use name=L1TriggerOffline/TriggerSimulation>
+<use name=SLHCUpgradeSimulations/Utilities>
 <use name=DataFormats/L1TrackTrigger>
 <use name=SimGeneral/HepPDTRecord>
 <use name=SimDataFormats/HepMCProduct>
