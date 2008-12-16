@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 use DirHandle;
 $oldfile = @ARGV[0];
 $destination = @ARGV[1];

@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 use Env;
 ($#ARGV >= 2) || die "Usage::reset_seal_cache.pl libdir moddir";
 $libdir = @ARGV[0];

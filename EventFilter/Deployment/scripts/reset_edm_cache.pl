@@ -1,10 +1,13 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 use Env;
 ($#ARGV >= 2) || die "Usage::reset_seal_cache.pl libdir moddir";
 $libdir = @ARGV[0];
 $moddir = @ARGV[1];
 $envfile = @ARGV[2];
 my $sourceme = `scramv1 runtime -sh`;
+print "---------------------------------------------\n";
+print "$sourceme\n";
+print "---------------------------------------------\n";
 @tok1 = split(/\n/,$sourceme);
 while($#tok1 != -1)
 {
