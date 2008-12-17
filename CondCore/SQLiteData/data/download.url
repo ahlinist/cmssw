@@ -18,7 +18,7 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/MVAJetTagsFakeConditions.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/BadChambers.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data210/CSCL1TPParameters.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/HCAL_CMSSW_3_0_0_pre3.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/l1config30XV2.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/l1config30XV4.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/ECAL_30X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels_30X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/Pixels30X_cabling.db
@@ -32,3 +32,4 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrig0pbNoToF_20X_Mar12_k00_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrig_CRAFT_V01_k-07_offline.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrigFake_20X_July17_k00_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStripDeDx_dummy.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/BadChambers_empty_mc.db
