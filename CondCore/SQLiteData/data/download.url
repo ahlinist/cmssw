@@ -33,3 +33,4 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrig_CRAFT_V01_k-07_offline.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/DT_tTrigFake_20X_July17_k00_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/siStripDeDx_dummy.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/BadChambers_empty_mc.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/siPixelTemplates_v1.db
