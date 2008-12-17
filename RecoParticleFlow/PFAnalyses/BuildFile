@@ -6,6 +6,7 @@
 <use name=RecoParticleFlow/PFClusterTools>
 <use name=RecoParticleFlow/PFTracking>
 <use name=PhysicsTools/UtilAlgos>
+<use name=TBDataFormats/HcalTBObjects>
 <use name=root>
 <use name=rootcore>
 <use name=rootrflx>

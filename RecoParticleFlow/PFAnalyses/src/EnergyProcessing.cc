@@ -1,4 +1,5 @@
 #include "RecoParticleFlow/PFAnalyses/interface/EnergyProcessing.h"
+#include "DataFormats/ParticleFlowReco/interface/Calibratable.h"
 
 #include <iostream>
 #include <TROOT.h>
@@ -9,6 +10,8 @@
 #include <TList.h>
 #include <TPaveText.h>
 #include <cmath>
+#include <TH2F.h>
+using namespace pftools;
 
 EnergyProcessing::EnergyProcessing(TTree* t, std::string graphicsFile,
 		std::string macroFile, std::string directory, long nEntries) :
@@ -71,6 +74,115 @@ void EnergyProcessing::evaluatePlots(bool lowEnergy) {
 	doBeamSpotPlots();
 	doBeamCompositionPlots();
 	doPFCandidatePlots();
+	doLoopedPlots();
+}
+
+void EnergyProcessing::doLoopedPlots() {
+	TStyle* lStyle = util_.makeStyle("loopedStyle");
+	lStyle->SetName("loopedStyle");
+	lStyle->SetOptLogy(false);
+	lStyle->cd();
+	util_.newPage();
+
+	Calibratable* calib = new Calibratable();
+	tree_->SetBranchAddress("Calibratable", &calib);
+
+	unsigned bins(100);
+	double highEdge(20);
+
+	TH1F* singleExtraPhoton = new TH1F("singleExtraPhoton", "Sole extra photon", bins, 0, highEdge);
+	TH1F* allPhotons = new TH1F("allPhotons", "All photons", bins, 0, highEdge);
+	TH1F* singleExtraNeutral = new TH1F("singleExtraNeutral", "Sole extra neutral", bins, 0, highEdge);
+	TH1F* allNeutrals = new TH1F("allNeutrals", "All neutrals", bins, 0, highEdge);
+	
+	TH2F* photonPositioning = new TH2F("photonPosition", "Photon pos. energy weighted", bins, 0, 0.8, bins, -0.2, 0.6);;
+	TH2F* neutralPositioning = new TH2F("neutralPosition", "Neutral pos. energy weighted", bins, 0, 0.8, bins, -0.2, 0.6);
+
+	TH1F
+			* onePhotonNoNeutrals =
+					new TH1F("onePhotonsNoNeutrals", "Single photon, no neutrals", bins, 0, highEdge);
+	TH1F
+			* oneNeutralNoPhotons =
+					new TH1F("oneNeutralsNoPhotons", "Single neutrals, no photons", bins, 0, highEdge);
+	TH1F* photonsNoNeutrals = new TH1F("photonsNoNeutrals", "Photons, no neutrals", bins, 0, highEdge);
+	TH1F* neutralsNoPhotons = new TH1F("neutralsNoPhotons", "Neutrals, no photons", bins, 0, highEdge);
+
+	unsigned nPhotons(0), nNeutrals(0);
+	double ePhotons(0), eNeutrals(0);
+
+	//loop over calibratables
+	for (unsigned j(0); j < tree_->GetEntries(); ++j) {
+		tree_->GetEntry(j);
+
+		//loop over candidates
+		for (std::vector<CandidateWrapper>::const_iterator c =
+				calib->cands_.begin(); c != calib->cands_.end(); ++c) {
+
+			CandidateWrapper cw = *c;
+			//Photons
+			if (cw.type_ == 4) {
+				++nPhotons;
+				ePhotons += cw.energy_;
+				photonPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
+			}
+			//Neutrals
+			if (cw.type_ == 5) {
+				++nNeutrals;
+				eNeutrals += cw.energy_;
+				neutralPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
+			}
+		}
+
+		if (nPhotons == 1) 
+			singleExtraPhoton->Fill(ePhotons);
+		if (nPhotons > 0) 
+			allPhotons->Fill(ePhotons);
+		
+
+		//Photon spectrum for no neutral activity		
+		if (nPhotons > 0 && nNeutrals == 0) {
+			if (nPhotons == 1)
+				onePhotonNoNeutrals->Fill(ePhotons);
+			photonsNoNeutrals->Fill(ePhotons);
+		}
+
+		if (nNeutrals == 1)
+			singleExtraNeutral->Fill(eNeutrals);
+		if (nNeutrals > 0)
+			allNeutrals->Fill(eNeutrals);
+
+		//Neutral spectrum for no photon activity
+		if (nNeutrals > 0 && nPhotons == 0) {
+			if (nNeutrals == 0)
+				oneNeutralNoPhotons->Fill(eNeutrals);
+			neutralsNoPhotons->Fill(eNeutrals);
+		}
+
+		//reset counters
+		nPhotons = nNeutrals = 0;
+		ePhotons = eNeutrals = 0;
+	}
+	delete calib;
+
+	util_.accumulateObjects(singleExtraPhoton);
+	util_.accumulateObjects(allPhotons);
+	util_.accumulateObjects(singleExtraNeutral);
+	util_.accumulateObjects(allNeutrals);
+	util_.flushPage();
+
+	util_.newPage();
+	util_.accumulateObjects(photonPositioning, "box");
+	util_.accumulateObjects(neutralPositioning, "box");
+	util_.flushPage();
+	
+	util_.newPage();
+	
+	util_.accumulateObjects(onePhotonNoNeutrals);
+	util_.accumulateObjects(oneNeutralNoPhotons);
+	util_.accumulateObjects(photonsNoNeutrals);
+	util_.accumulateObjects(neutralsNoPhotons);
+	util_.flushPage();
+
 }
 
 void EnergyProcessing::doElectronDiscriminationPlots() {
@@ -249,12 +361,11 @@ void EnergyProcessing::doPFCandidatePlots() {
 
 	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterOneCand",
 			"cands_num_ == 1", "", nEntries_, 0) ;
-	tree_->Draw(
-			"cand_energyEcal_ + cand_energyHcal_>>clusterTwoPlusCand",
+	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterTwoPlusCand",
 			"cands_num_ > 1", "", nEntries_, 0) ;
-	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterAllCand",
-			"", "", nEntries_, 0) ;
-	
+	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>clusterAllCand", "", "",
+			nEntries_, 0) ;
+
 	util_.newPage();
 	TH1* clusterOneCand = util_.formatHisto("clusterOneCand",
 			"Single charged hadrons", "Energy (GeV)", kBlack, kWhite, 2);
@@ -273,6 +384,8 @@ void EnergyProcessing::doPFCandidatePlots() {
 	clusterStack->Add(clusterOneCand);
 	clusterStack->Add(clusterTwoPlusCand);
 	util_.accumulateObjects(clusterStack, "nostack");
+	util_.accumulateSpecial(clusterOneCand, xStyle, "",
+			"PF_cand_singleHadron_nolog");
 	util_.accumulateSpecial(clusterStack, yStyle, "nostack",
 			"PF_cand_clusterEnergies_stack");
 
@@ -392,7 +505,7 @@ void EnergyProcessing::doSpectrumPlots() {
 	tree_->Draw("cluster_energyEvent_>>clustersEnergy_pions",
 			"tb_vetosPassed_==31 && cands_num_ == 1", "", nEntries_, 0);
 	tree_->Draw("cand_energyEcal_ + cand_energyHcal_>>candEnergy_pions",
-				"tb_vetosPassed_==31", "", nEntries_, 0);
+			"tb_vetosPassed_==31", "", nEntries_, 0);
 
 	TH1* tbPions = util_.formatHisto("tbEnergy_pions", "TB Pions",
 			"TB rechits event energy", kGreen, kWhite, 2);
@@ -401,11 +514,11 @@ void EnergyProcessing::doSpectrumPlots() {
 			"PF rechits event energy", "Rechits energy (GeV)", kRed, kWhite, 2);
 
 	TH1* clustersPions = util_.formatHisto("clustersEnergy_pions",
-			"PF clusters event energy(*)", "Clusters energy (GeV)", kViolet + 7,
-			kWhite, 2);
+			"PF clusters event energy(*)", "Clusters energy (GeV)",
+			kViolet + 7, kWhite, 2);
 	TH1* candPions = util_.formatHisto("candEnergy_pions",
-				"PF cand calo event energy", "Cand calo energy (GeV)", kBlack,
-				kWhite, 2);
+			"PF cand calo event energy", "Cand calo energy (GeV)", kBlack,
+			kWhite, 2);
 
 	util_.accumulateObjects(tbPions);
 	util_.accumulateObjects(rechitsPions);

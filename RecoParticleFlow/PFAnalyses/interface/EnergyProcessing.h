@@ -43,6 +43,8 @@ public:
 
 	void doBeamCompositionPlots();
 	
+	void doLoopedPlots();
+	
 	void doBeamSpotPlots();
 
 	void closeFiles();

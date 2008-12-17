@@ -7,6 +7,7 @@
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBEventPosition.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBRunData.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBTiming.h"
+#include "TBDataFormats/HcalTBObjects/interface/HcalTBTriggerData.h"
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 #include "DataFormats/ParticleFlowReco/interface/PFRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
@@ -101,6 +102,8 @@ private:
 	unsigned goodPionsFound_;
 	
 	double deltaRRecHitsToCenter_;
+	double deltaRPhotonsToTrack_;
+	double deltaRNeutralsToTrack_;
 	
 	std::map<unsigned, RunInfo*> runInfos_;
 
@@ -114,6 +117,7 @@ private:
 	edm::InputTag inputTagTiming_;
 	edm::InputTag inputTagRunData_;
 	edm::InputTag inputTagEventPosition_;
+	edm::InputTag inputTagTriggerData_;
 	
 	edm::InputTag inputTagClustersEcal_;
 	edm::InputTag inputTagClustersHcal_;
@@ -125,6 +129,7 @@ private:
 	edm::Handle<HcalTBTiming>* timing_;
 	edm::Handle<HcalTBRunData>* runData_;
 	edm::Handle<HcalTBEventPosition> * eventPosition_;
+	edm::Handle<HcalTBTriggerData> * triggerData_;
 	
 	edm::Handle<EcalRecHitCollection>* rawRecHitsEcal_;
 	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
