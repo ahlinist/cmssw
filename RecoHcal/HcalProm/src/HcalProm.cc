@@ -21,7 +21,7 @@ Implementation:
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.57 2008/08/27 13:18:03 efe Exp $
+// $Id: HcalProm.cc,v 1.58 2008/11/07 10:17:08 efe Exp $
 //
 //
 
@@ -983,18 +983,22 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
     int charge = cmTrack->charge();
     int isValid= 0;
 	tk_mom[NumMuonHBphiPlane] = 0;
+	tk_pt[NumMuonHBphiPlane] = 0;
 	tk_ndof[NumMuonHBphiPlane] = 0;
 	tk_chi2[NumMuonHBphiPlane] = 0;
 	tk_lost[NumMuonHBphiPlane] = 0;
 	tk_dcharge[NumMuonHBphiPlane] = 0;
+	tk_charge[NumMuonHBphiPlane] = 0;
 	tk_dZ[NumMuonHBphiPlane] = -1000;
 	tk_dXY[NumMuonHBphiPlane] = -1000;
   for (reco::TrackCollection::const_iterator ctftrk =ctfTrackCollectionHandle->begin(); ctftrk != ctfTrackCollectionHandle->end();++ctftrk){
       tk_mom[NumMuonHBphiPlane] = ctftrk->p();
+      tk_pt[NumMuonHBphiPlane] = ctftrk->pt();
       tk_ndof[NumMuonHBphiPlane] = ctftrk->ndof();
       tk_chi2[NumMuonHBphiPlane] = ctftrk->chi2();
       tk_lost[NumMuonHBphiPlane] = ctftrk->lost();
       tk_dcharge[NumMuonHBphiPlane] = ctftrk->charge()-cmTrack->charge();
+      tk_charge[NumMuonHBphiPlane] = ctftrk->charge();
 
     if(cmTrack->innerPosition().Y()<0) {
       charge =ctftrk->charge();
@@ -1847,12 +1851,14 @@ void HcalProm::bookHistograms() {
   myTree->Branch("EmuonHB5", EmuonHB5, "EmuonHB5[NumMuonHBphiPlane]/F"); 
   myTree->Branch("EmuonHBped", EmuonHBped, "EmuonHBped[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_mom", tk_mom, "tk_mom[NumMuonHBphiPlane]/F"); 
+  myTree->Branch("tk_pt", tk_pt, "tk_pt[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_ndof", tk_ndof, "tk_ndof[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_chi2", tk_chi2, "tk_chi2[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_lost", tk_lost, "tk_lost[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_dcharge", tk_dcharge, "tk_dcharge[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_dZ", tk_dZ, "tk_dZ[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_dXY", tk_dXY, "tk_dXY[NumMuonHBphiPlane]/F"); 
+  myTree->Branch("tk_charge", tk_charge, "tk_charge[NumMuonHBphiPlane]/F");
   myTree->Branch("PHIinTowerHB", PHIinTowerHB, "PHIinTowerHB[NumMuonHBphiPlane]/F"); 
   // information of Muon in second part of HB
   //myTree->Branch("NumHBTowersMuon2",  NumHBTowersMuon2, "NumHBTowersMuon2[NumMuonHBphiPlane]/I"); 
