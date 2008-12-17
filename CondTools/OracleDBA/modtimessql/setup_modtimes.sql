@@ -14,7 +14,7 @@
 /* The Oracle privileges needed in order to run this script are: CREATE JOB, */
 /*  CREATE TRIGGER, CHANGE NOTIFICATION, EXECUTE ON DBMS_CHANGE_NOTIFICATION */
 /* Written by Dave Dykstra, July 2008.                                       */
-/* $Id: setup_modtimes.sql,v 1.2 2008/11/06 16:45:36 dwd Exp $
+/* $Id: setup_modtimes.sql,v 1.3 2008/12/17 15:51:47 dwd Exp $
  */
 
 
@@ -97,7 +97,7 @@ BEGIN
   /* register a callback for updating the entry when the table is modified */
   regds := SYS.CHNF$_REG_INFO ('chtable_callback', 0, 0, 0, 0);
   regid := DBMS_CHANGE_NOTIFICATION.NEW_REG_START (regds);
-  EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM ' || tname;
+  EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM "'||tname||'"';
   DBMS_CHANGE_NOTIFICATION.REG_END;
 
 END;
