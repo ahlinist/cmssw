@@ -31,7 +31,8 @@ TestbeamDelegate::TestbeamDelegate(bool isMC) :
 			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
 			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
 			electronCandidates_(0), protonKaonCandidates_(0),
-			goodPionsFound_(0), deltaRRecHitsToCenter_(0.4) {
+			goodPionsFound_(0), deltaRRecHitsToCenter_(0.4),
+			deltaRPhotonsToTrack_(0.1), deltaRNeutralsToTrack_(0.3) {
 
 }
 
@@ -47,6 +48,10 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			= parameters.getParameter<bool>("applyThresholdsToRawRecHits");
 	deltaRRecHitsToCenter_
 			= parameters.getParameter<double>("deltaRRecHitsToCenter");
+	deltaRPhotonsToTrack_
+			= parameters.getParameter<double>("deltaRPhotonsToTrack");
+	deltaRNeutralsToTrack_
+			= parameters.getParameter<double>("deltaRPhotonsToTrack");
 	identifyCleanParticles_
 			= parameters.getParameter<bool>("identifyCleanParticles");
 	saveAllCleanParticles_
@@ -370,7 +375,6 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 		std::cout << "\t\tECAL energy = " << cand.ecalEnergy()
 				<< ", HCAL energy = " << cand.hcalEnergy() << "\n";
 
-
 	//Now, extract block elements from the pfCandidate:
 	if (clustersFromCandidates_) {
 		PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
@@ -426,8 +430,20 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 
 		}
 	}
-	
-	calib_->cands_.push_back(cw);
+	bool noiseCandidate(false);
+	//Photon from noise
+	if (cw.type_ == 4 && deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
+			thisRun_->ecalPhi_) > deltaRPhotonsToTrack_)
+		noiseCandidate = true;
+	//eta and phi defined at ECAL front surface so deltaR drawn relative to that
+	if (cw.type_ == 5 && deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
+			thisRun_->ecalPhi_) > deltaRNeutralsToTrack_)
+		noiseCandidate = true;
+
+	if (debug_ > 2 && noiseCandidate)
+		std::cout << "\tExcluding candidate for noise: " << cand << "\n";
+	if (!noiseCandidate)
+		calib_->cands_.push_back(cw);
 
 }
 
@@ -490,6 +506,7 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	timing_ = new Handle<HcalTBTiming>;
 	eventPosition_ = new Handle<HcalTBEventPosition>;
 	beamCounters_ = new Handle<HcalTBBeamCounters>;
+	triggerData_ = new Handle<HcalTBTriggerData>;
 
 	clustersEcal_ = new Handle<PFClusterCollection>;
 	clustersHcal_ = new Handle<PFClusterCollection>;
@@ -513,6 +530,7 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	getCollection(*timing_, inputTagTiming_, event);
 	getCollection(*eventPosition_, inputTagEventPosition_, event);
 	getCollection(*beamCounters_, inputTagBeamCounters_, event);
+	getCollection(*triggerData_, inputTagTriggerData_, event);
 
 }
 
@@ -580,6 +598,7 @@ void TestbeamDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 		inputTagTiming_ = parameters.getParameter<InputTag>("Timing");
 		inputTagEventPosition_ = parameters.getParameter<InputTag>("EventPosition");
 		inputTagRunData_ = parameters.getParameter<InputTag>("RunData");
+		inputTagTriggerData_ = parameters.getParameter<InputTag>("TriggerData");
 		inputTagClustersEcal_= parameters.getParameter<InputTag>("PFClustersEcal");
 		inputTagClustersHcal_= parameters.getParameter<InputTag>("PFClustersHcal");
 		inputTagRecHitsEcal_= parameters.getParameter<InputTag>("PFRecHitsEcal");
@@ -715,6 +734,9 @@ Quality TestbeamDelegate::isTOFPion() {
 Quality TestbeamDelegate::isSingleMIP() {
 
 	HcalTBBeamCounters counters = **beamCounters_;
+	HcalTBTriggerData triggers = **triggerData_;
+	HcalTBTiming timing = **timing_;
+
 	Quality singleMipQuality(DEFINITEYES);
 	if (debug_> 5)
 		std::cout << "\tS124adcs = " << counters.S1adc() << ", "
@@ -733,6 +755,13 @@ Quality TestbeamDelegate::isSingleMIP() {
 			singleMipQuality = PROBABLY;
 	} else
 		singleMipQuality = PROBABLY;
+
+	//Test beam peculiarities!
+	if (!triggers.wasBeamTrigger())
+		singleMipQuality = UNLIKELY;
+
+	if (timing.ttcL1Atime() == 0)
+		singleMipQuality = UNLIKELY;
 
 	//	if (counters.S1adc() < thisRun_->s1Max_ && counters.S2adc()
 	//			< thisRun_->s2Max_ && counters.S4adc() < thisRun_->s4Max_)
