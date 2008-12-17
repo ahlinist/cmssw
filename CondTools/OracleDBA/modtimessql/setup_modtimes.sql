@@ -11,8 +11,10 @@
 /*  "last_modified_times" and keep it up to date so this script should only  */
 /*  have to be run once for each account.  An additional 'ALL_TABLES' entry  */
 /*  timestamp is updated whenever any new table is created or dropped.       */
+/* The Oracle privileges needed in order to run this script are: CREATE JOB, */
+/*  CREATE TRIGGER, CHANGE NOTIFICATION, EXECUTE ON DBMS_CHANGE_NOTIFICATION */
 /* Written by Dave Dykstra, July 2008.                                       */
-/* $Id$
+/* $Id: setup_modtimes.sql,v 1.2 2008/11/06 16:45:36 dwd Exp $
  */
 
 
