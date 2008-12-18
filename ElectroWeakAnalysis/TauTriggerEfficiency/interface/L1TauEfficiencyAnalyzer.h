@@ -35,23 +35,18 @@ using namespace l1extra;
 using namespace reco;
 using namespace std;
 
-class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
+class L1TauEfficiencyAnalyzer {
 
     public:
 	typedef math::XYZTLorentzVector LorentzVector;
 
         L1TauEfficiencyAnalyzer();
-        explicit L1TauEfficiencyAnalyzer(const edm::ParameterSet&);
-        void Setup(const edm::ParameterSet&,TTree *l1tree);
         ~L1TauEfficiencyAnalyzer();
 
-        virtual void analyze(const edm::Event&, const edm::EventSetup&);
-        virtual void beginJob(const edm::EventSetup&);
-        virtual void endJob();
-
-        virtual void fill(const edm::Event&, const reco::PFTau&);
-        virtual void fill(const edm::Event&, const reco::CaloTau&);
-        virtual void fill(const edm::Event&, const LorentzVector&);
+        void Setup(const edm::ParameterSet&,TTree *l1tree);
+        void fill(const edm::Event&, const reco::PFTau&);
+        void fill(const edm::Event&, const reco::CaloTau&);
+        void fill(const edm::Event&, const LorentzVector&);
 
    private:
         // Input parameters
@@ -61,10 +56,7 @@ class L1TauEfficiencyAnalyzer : public edm::EDAnalyzer {
         InputTag L1bitInfoSource;
 	double   jetMatchingCone;
 
-        int nEvents,
-            nSelectedEvents;
-
-        // Output file, tree and related variables
+        // Output tree and related variables
         TTree *l1tree;
 
         float jetPt, jetEt, jetEta, jetPhi;

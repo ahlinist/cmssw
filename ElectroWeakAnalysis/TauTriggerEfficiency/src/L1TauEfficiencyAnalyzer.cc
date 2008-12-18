@@ -23,8 +23,6 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
   L1bitInfoSource = iConfig.getParameter<edm::InputTag>("L1bitInfoSource");
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
-  //rootFile_ = iConfig.getParameter<std::string>("outputFileName");
-  nEvents = 0; nSelectedEvents = 0;
 
   l1tree = trigtree;
 
@@ -44,56 +42,6 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet, "hasMatchedL1Jet/B");
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet, "hasMatchedL1TauJet/B");
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
-}
-
-void L1TauEfficiencyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup ){
-        Handle<L1JetParticleCollection> l1TauHandle;
-	nEvents++;
-
-	try{
-          iEvent.getByLabel(L1extraTauJetSource,l1TauHandle);
-	}catch(...) {;}
-
-
-	Handle<CaloTauCollection> caloTauHandle;
-	try{
-          iEvent.getByLabel("IdentifiedTaus",caloTauHandle);
-        }catch(...) {;}
-
-	if(caloTauHandle.isValid()){
-	  const CaloTauCollection & caloTaus = *(caloTauHandle.product());
-
-	  LogDebug("L1TauEfficiency") << "calotau collection size " << caloTaus.size() << endl;
-
-	  CaloTauCollection::const_iterator iTau;
-          for(iTau = caloTaus.begin(); iTau != caloTaus.end(); ++iTau){
-            //if(L1TauFound(iTau->p4())){
-            //}
-	  }
-	}
-
-        Handle<PFTauCollection> pfTauHandle;
-        try{
-          iEvent.getByLabel(PFTauCollectionSource,pfTauHandle);
-        }catch(...) {;}
-
-        if(pfTauHandle.isValid()){
-          const PFTauCollection & pfTaus = *(pfTauHandle.product());
-
-          LogDebug("L1TauEfficiency") << "pftau collection size " << pfTaus.size() << endl;
-
-          PFTauCollection::const_iterator iTau;
-          for(iTau = pfTaus.begin(); iTau != pfTaus.end(); ++iTau){
-            jetPt = 0;
-            jetEta = 0;
-            jetPhi = 0;
-            hasL1Jet = 0;
-
-            //if(L1TauFound(iTau->p4())){
-            //}
-            //l1tree->Fill();
-          }
-        }
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& tau) {
@@ -199,14 +147,5 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   }
 } 
 
-void L1TauEfficiencyAnalyzer::beginJob(const edm::EventSetup& iSetup){}
-
-void L1TauEfficiencyAnalyzer::endJob(){
-        LogInfo("L1TauEfficiency") << "Events analyzed: " << nEvents << endl;
-        //l1file->Write();
-}
-
-#include "FWCore/Framework/interface/MakerMacros.h"
-//DEFINE_FWK_MODULE(L1TauEfficiencyAnalyzer);
 
 
