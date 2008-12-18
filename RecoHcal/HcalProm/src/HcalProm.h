@@ -17,7 +17,7 @@
 // Original Author:  Efe Yazgan
 // Updated        :  Taylan Yetkin (2008/05/08)
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.27 2008/11/07 10:17:13 efe Exp $
+// $Id: HcalProm.h,v 1.28 2008/12/17 15:34:38 efe Exp $
 //
 //
 
@@ -202,6 +202,8 @@ class HcalProm : public edm::EDAnalyzer {
      float tk_charge[50];
      float tk_dZ[50];
      float tk_dXY[50];
+     float dt_mom[50];
+     float dt_pt[50];    
      int phiEmuonHB[50];
      int etaMinEmuonHB[50];
      int etaMaxEmuonHB[50];
