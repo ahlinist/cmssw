@@ -32,6 +32,8 @@ namespace edm {
   // The values of this enumeration match the values
   // defined in the ParameterSet Entry class, to make
   // comparisons easier.
+  // Exceptions are k_PSet and k_VPSet, which no longer
+  // use the Entry class.
   enum ParameterTypes {
     k_int32 = 'I',
     k_vint32 = 'i',
@@ -53,8 +55,8 @@ namespace edm {
     k_InputTag = 't',
     k_VInputTag = 'v',
     k_FileInPath = 'F',
-    k_PSet = 'P',
-    k_VPSet = 'p'
+    k_PSet = 'Q',
+    k_VPSet = 'q'
   };
 
   std::string parameterTypeEnumToString(ParameterTypes iType);

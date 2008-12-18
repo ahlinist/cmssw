@@ -85,10 +85,23 @@ namespace edm {
         bool & foundMatch) {
 
     if (parameterName == description->label()) {
-      Entry const* entry = pset.retrieveUnknown(parameterName);
-      if (entry->typeCode() == description->type() &&
-          entry->isTracked() == description->isTracked()) {
-         foundMatch = true;
+      if ('Q' == description->type()) {
+        ParameterSetEntry const* entry = pset.retrieveUnknownParameterSet(parameterName);
+        if (entry && entry->isTracked() == description->isTracked()) {
+          foundMatch = true;
+        }
+      } else if ('q' == description->type()) {
+        VParameterSetEntry const* entry = pset.retrieveUnknownVParameterSet(parameterName);
+        if (entry && entry->isTracked() == description->isTracked()) {
+          foundMatch = true;
+        }
+      } else {
+        Entry const* entry = pset.retrieveUnknown(parameterName);
+        if (entry &&
+            entry->typeCode() == description->type() &&
+            entry->isTracked() == description->isTracked()) {
+          foundMatch = true;
+        }
       }
     }
   }
@@ -100,8 +113,13 @@ namespace edm {
     Entry const* entry = pset.retrieveUnknown(parameterName);
 
     std::string tr;
-    if (entry->isTracked()) tr = std::string("as a tracked");
-    else tr = std::string("as an untracked");
+    if (!entry) {
+      tr = std::string("as an unknown");
+    } else if (entry->isTracked()) {
+      tr = std::string("as a tracked");
+    } else {
+      tr = std::string("as an untracked");
+    }
 
     ParameterTypes type = static_cast<ParameterTypes>(entry->typeCode());
 
