@@ -8,7 +8,6 @@
 //
 // Author:      Chris Jones
 // Created:     Thu Mar 31 14:31:13 EST 2005
-// $Id$
 //
 
 // system include files

@@ -8,7 +8,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Thu Mar 30 15:48:37 EST 2006
-// $Id$
 //
 
 // system include files
@@ -56,7 +55,7 @@ void convert_handle(BasicHandle const& orig,
     <<" but was given a "<<product.TypeOf().Name();
   }
   
-  Handle<GenericObject> h(product, orig.provenance());
+  Handle<GenericObject> h(product, orig.provenance(), orig.id());
   h.swap(result);
 }
 

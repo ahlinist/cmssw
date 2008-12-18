@@ -6,8 +6,6 @@
 EventProcessor: This defines the 'framework application' object. It is
 configured in the user's main() function, and is set running.
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include <string>

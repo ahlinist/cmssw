@@ -26,21 +26,17 @@ namespace edm {
   class RunPrincipal : public Principal {
   public:
     typedef RunAuxiliary Auxiliary;
-    typedef std::vector<RunEntryInfo> EntryInfoVector;
+    typedef std::vector<ProductProvenance> EntryInfoVector;
     typedef Principal Base;
 
     RunPrincipal(RunAuxiliary const& aux,
 	boost::shared_ptr<ProductRegistry const> reg,
 	ProcessConfiguration const& pc,
-	ProcessHistoryID const& hist = ProcessHistoryID(),
 	boost::shared_ptr<BranchMapper> mapper = boost::shared_ptr<BranchMapper>(new BranchMapper),
-	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader)) :
-	  Base(reg, pc, hist, mapper, rtrv),
-	  aux_(aux) {}
+	boost::shared_ptr<DelayedReader> rtrv = boost::shared_ptr<DelayedReader>(new NoDelayedReader));
     ~RunPrincipal() {}
 
     RunAuxiliary const& aux() const {
-      aux_.processHistoryID_ = processHistoryID();
       return aux_;
     }
 
@@ -68,26 +64,22 @@ namespace edm {
 
     void mergeRun(boost::shared_ptr<RunPrincipal> rp);
 
-    Provenance
-    getProvenance(BranchID const& bid) const;
-
-    void
-    getAllProvenance(std::vector<Provenance const *> & provenances) const;
-
     void put(std::auto_ptr<EDProduct> edp,
-	     ConstBranchDescription const& bd, std::auto_ptr<EventEntryInfo> entryInfo);
+	     ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
     void addGroup(ConstBranchDescription const& bd);
 
-    void addGroup(std::auto_ptr<EDProduct> prod, ConstBranchDescription const& bd, std::auto_ptr<EventEntryInfo> entryInfo);
+    void addGroup(std::auto_ptr<EDProduct> prod, ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
-    void addGroup(ConstBranchDescription const& bd, std::auto_ptr<EventEntryInfo> entryInfo);
+    void addGroup(ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
   private:
 
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
 
-    virtual void resolveProvenance(Group const& g) const;
+    virtual ProcessHistoryID const& processHistoryID() const {return aux().processHistoryID_;}
+
+    virtual void setProcessHistoryID(ProcessHistoryID const& phid) const {return aux().setProcessHistoryID(phid);}
 
     virtual bool unscheduledFill(std::string const&) const {return false;}
 

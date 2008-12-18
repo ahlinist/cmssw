@@ -28,7 +28,6 @@ if(outOfBoundsValue) {
 //
 // Author:      Chris Jones
 // Created:     Fri Apr  1 13:18:53 EST 2005
-// $Id$
 //
 
 // system include files

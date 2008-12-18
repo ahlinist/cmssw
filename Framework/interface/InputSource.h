@@ -38,8 +38,6 @@ Some examples of InputSource subclasses may be:
  3) DAQInputSource: creats EventPrincipals which contain raw data, as
     delivered by the L1 trigger and event builder. 
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include <memory>
