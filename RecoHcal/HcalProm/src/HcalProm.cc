@@ -21,7 +21,7 @@ Implementation:
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.cc,v 1.58 2008/11/07 10:17:08 efe Exp $
+// $Id: HcalProm.cc,v 1.59 2008/12/17 15:34:35 efe Exp $
 //
 //
 
@@ -824,6 +824,8 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   int NumbermuonDT = 0;
   NumMuonHBphiPlane = 0;
   NumMuonHBnoPhiPlane = 0;//more than 1 phi plane
+  dt_mom[NumMuonHBphiPlane] = 0;
+  dt_pt[NumMuonHBphiPlane] = 0;
   for (reco::TrackCollection::const_iterator cmTrack = cosmicmuon->begin(); cmTrack != cosmicmuon->end(); ++cmTrack) {
     double XinPosMuon;
     double YinPosMuon;
@@ -980,6 +982,10 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
 //    double XInMuonHBp;
 //    double YInMuonHBp;
 //    double ZInMuonHBp;
+//@@@@@@DT momentum and pt
+    dt_mom[NumMuonHBphiPlane] = cmTrack->p();
+    dt_pt[NumMuonHBphiPlane] = cmTrack->pt();
+//@@@@@@
     int charge = cmTrack->charge();
     int isValid= 0;
 	tk_mom[NumMuonHBphiPlane] = 0;
@@ -1860,6 +1866,8 @@ void HcalProm::bookHistograms() {
   myTree->Branch("tk_dXY", tk_dXY, "tk_dXY[NumMuonHBphiPlane]/F"); 
   myTree->Branch("tk_charge", tk_charge, "tk_charge[NumMuonHBphiPlane]/F");
   myTree->Branch("PHIinTowerHB", PHIinTowerHB, "PHIinTowerHB[NumMuonHBphiPlane]/F"); 
+  myTree->Branch("dt_mom",dt_mom, "dt_mom[NumMuonHBphiPlane]/F");
+  myTree->Branch("dt_pt",dt_pt, "dt_pt[NumMuonHBphiPlane]/F");
   // information of Muon in second part of HB
   //myTree->Branch("NumHBTowersMuon2",  NumHBTowersMuon2, "NumHBTowersMuon2[NumMuonHBphiPlane]/I"); 
   myTree->Branch("IdTowerPhiMuonIn2",  IdTowerPhiMuonIn2, "IdTowerPhiMuonIn2[NumMuonHBphiPlane]/I"); 
