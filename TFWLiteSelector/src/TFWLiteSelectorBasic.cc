@@ -27,6 +27,7 @@
 #include "DataFormats/Provenance/interface/ProductRegistry.h"
 #include "DataFormats/Provenance/interface/ConstBranchDescription.h"
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "DataFormats/Provenance/interface/EventEntryDescription.h" // kludge to allow compilation
 #include "DataFormats/Provenance/interface/LuminosityBlockAuxiliary.h"
 #include "DataFormats/Provenance/interface/RunAuxiliary.h"
 #include "DataFormats/Provenance/interface/FileFormatVersion.h"
@@ -285,6 +286,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
          m_->eventHistoryTree_->GetEntry(iEntry);
          aux.processHistoryID_ = history.processHistoryID();
       }
+/*
       try {
 	 m_->reader_->setEntry(iEntry);
 	 edm::ProcessConfiguration pc;
@@ -322,6 +324,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
       } catch(...) {
 	 std::cout <<"While processing entry "<<iEntry<<" an unknown exception was caught" << std::endl;
       }
+*/
    }
    //std::cout <<"Process end"<<std::endl;
   return kFALSE; 
@@ -356,8 +359,8 @@ TFWLiteSelectorBasic::setupNewFile(TFile& iFile) {
     metaDataTree->SetBranchAddress(edm::poolNames::productDescriptionBranchName().c_str(), &(pReg) );
     metaDataTree->SetBranchAddress(edm::poolNames::parameterSetMapBranchName().c_str(), &psetMapPtr);
     metaDataTree->SetBranchAddress(edm::poolNames::processHistoryMapBranchName().c_str(), &pHistMapPtr);
-    metaDataTree->SetBranchAddress(edm::poolNames::moduleDescriptionMapBranchName().c_str(), &mdMapPtr);
-     metaDataTree->SetBranchAddress(edm::poolNames::fileFormatVersionBranchName().c_str(), &fftPtr);
+    // metaDataTree->SetBranchAddress(edm::poolNames::moduleDescriptionMapBranchName().c_str(), &mdMapPtr); // kludge to allow compilation
+    metaDataTree->SetBranchAddress(edm::poolNames::fileFormatVersionBranchName().c_str(), &fftPtr);
     metaDataTree->GetEntry(0);
     m_->reg_->setFrozen();
   } else {

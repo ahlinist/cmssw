@@ -73,7 +73,8 @@ namespace fwlite {
     bool updateEvent(Long_t eventEntry);
     const edm::BranchDescription productToBranch(const edm::ProductID& pid) const {
       strategy_->updateMap();
-      edm::BranchID bid = eventInfoMap_.productToBranch(pid);
+      //edm::BranchID bid = eventInfoMap_.productToBranch(pid); // Kludge to allow compilation
+      edm::BranchID bid; // Kludge to allow compilation
       bidToDesc::const_iterator bdi = branchDescriptionMap_.find(bid);
       if (branchDescriptionMap_.end() == bdi) {
         return edm::BranchDescription();
