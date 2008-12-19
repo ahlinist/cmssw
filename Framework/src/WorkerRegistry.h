@@ -55,10 +55,11 @@ namespace edm {
   private:
     /// Get a unique name for the worker
     /** Form a string to be used as a key in the map of workers */
-    std::string mangleWorkerParameters(ParameterSet const& parameterSet,
-				       std::string const& processName,
-				       ReleaseVersion const& releaseVersion,
-				       PassID const& passID);
+    void mangleWorkerParameters(ParameterSet const& parameterSet,
+				std::string const& processName,
+				ReleaseVersion const& releaseVersion,
+				PassID const& passID,
+				std::string& result);
 
     /// the container of workers
     typedef std::map<std::string, boost::shared_ptr<Worker> > WorkerMap;

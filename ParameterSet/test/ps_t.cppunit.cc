@@ -380,7 +380,7 @@ void testps::testEmbeddedPSet()
 
   std::string rep = ps.toString();
   edm::ParameterSet defrosted(rep);
-  edm::ParameterSet trackedPart(ps.toStringOfTracked());
+  edm::ParameterSet trackedPart(ps.trackedPart().toString());
 
   CPPUNIT_ASSERT(defrosted == ps);
   CPPUNIT_ASSERT(trackedPart.exists("psEmbedded"));

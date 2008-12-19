@@ -169,7 +169,7 @@ bool testeventprocessor::asyncRunAsync(edm::EventProcessor& ep)
       ep.runAsync();
       if(sleep_secs_>0) sleep(sleep_secs_);
 
-      edm::EventProcessor::StatusCode rc;
+      edm::EventProcessor::StatusCode rc = edm::EventProcessor::StatusCode();
       if (i < 2) {
         rc = ep.waitTillDoneAsync(1000);
       }

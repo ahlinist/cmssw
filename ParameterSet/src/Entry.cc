@@ -523,16 +523,14 @@ namespace edm {
 // coding
 // ----------------------------------------------------------------------
 
-  std::string
-  Entry::toString() const {
-    std::string result;
-    result.reserve(sizeOfString());
+  void
+  Entry::toString(std::string& result) const {
+    result.reserve(result.size() + sizeOfString());
     result += tracked;
     result += type;
     result += '(';
     result += rep;
     result += ')';
-    return result;
   }
 
 // ----------------------------------------------------------------------

@@ -14,8 +14,6 @@ static const char CVSId[] = "$Id$";
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/Factory.h"
 
-#include <sstream>
-
 namespace edm {
 
 WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg) :
@@ -34,9 +32,9 @@ void WorkerRegistry::clear() {
 
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
-  std::string workerid =
-    mangleWorkerParameters(*p.pset_, p.processName_,
-			   p.releaseVersion_,p.passID_);
+  std::string workerid;
+  mangleWorkerParameters(*p.pset_, p.processName_,
+			  p.releaseVersion_, p.passID_, workerid);
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   
@@ -60,18 +58,16 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 }
 
 
-std::string WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
+void WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
 					      std::string const& processName,
 					      ReleaseVersion const& releaseVersion,
-					      PassID const& passID) {
+					      PassID const& passID,
+					      std::string& result) {
 
-  std::stringstream mangled_parameters;
-  mangled_parameters<< parameterSet.toString()
-                    << processName
-                    << releaseVersion
-                    << passID;
-
-  return mangled_parameters.str();
+  parameterSet.toString(result); 
+  result += processName;
+  result += releaseVersion;
+  result += passID;
 
 }
 

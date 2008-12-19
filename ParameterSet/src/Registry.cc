@@ -17,8 +17,21 @@ namespace edm {
     void fillMap(Registry* reg, regmap_type& fillme) {
       typedef Registry::const_iterator iter;
       fillme.clear();
-      for (iter i=reg->begin(), e=reg->end(); i != e; ++i) {
-	fillme[i->first].pset_ = i->second.toStringOfTracked();
+      // Note: The tracked part is in the registry.
+      // The full parameter set including the untracked parts may also be there.
+      for (iter i = reg->begin(), e = reg->end(); i != e; ++i) {
+        // Note: The tracked part of the parameter set is in the registry.
+        // The full parameter set including the untracked parts may also be there.
+	// Persist only the former.
+	std::string stringOfAll;
+	i->second.toString(stringOfAll);
+	std::string stringOfTracked;
+	i->second.trackedPart().toString(stringOfTracked);
+	if (stringOfTracked == stringOfAll) {
+	  // This parameter set contains no untracked parts.
+	  // Persist it.
+	  fillme[i->first].pset_ = stringOfTracked;
+	}
       }
     }
   } // namespace pset

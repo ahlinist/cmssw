@@ -1034,7 +1034,8 @@ bool
 bool
   edm::encode(std::string & to, ParameterSet const& from)
 {
-  to = from.toString();
+  to.clear(); // just a precaution
+  from.toString(to);
   return true;
 }  // encode from ParameterSet
 
