@@ -9,7 +9,10 @@ gROOT->ProcessLine(".L L3Corr.cpp+");
 gROOT->ProcessLine(".L L3Uncertainty.C+");
 
 L3Uncertainty();
-PurityUncertainty();
-DeltaCUncertainty();
+//PurityUncertainty();
+//DeltaCUncertainty();
+//PartonUncertainty();
+//FlavorUncertainty();
+//BackgroundUncertainty();
 
 }

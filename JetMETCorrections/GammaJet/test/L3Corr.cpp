@@ -6,13 +6,14 @@
 using namespace std;
 
 L3Corr::L3Corr(const JetAlg& jetalg, 
-	       const jec::ErrorTypes& errType) :
-  _jetalg(jetalg), _errType(errType)
+	       const jec::ErrorTypes& errType,
+	       const PhotonID& id) :
+  _jetalg(jetalg), _errType(errType), _phoID(id)
 {
 
   _E0 = 100;
 
-  this->SetJetAlg(jetalg);
+  this->SetJetAlg(jetalg); // initialize tables for jetalg
 }
 
 // Uncertainty is returned as _absolute_ uncertainty
@@ -22,7 +23,7 @@ double L3Corr::Rjet(const double pTprime, double& err)  {
 
   double err2 = 0;
 
-  if (_errType & jec::kL3Sys) {
+  if (_errType & jec::kL3Sys || _errType & jec::kL3Extra) {
     // Systematics are a relative uncertainty so need to multiply by rjet
     double errSyst = this->_SystErr(pTprime);
     err2 += rjet * rjet * errSyst * errSyst;
@@ -33,7 +34,7 @@ double L3Corr::Rjet(const double pTprime, double& err)  {
     double errStat = this->_StatErr(pTprime);
     err2 += rjet * rjet * errStat * errStat;
   }
-  
+
   err = sqrt(err2);
 
   return rjet;
@@ -127,6 +128,10 @@ void L3Corr::SetErrType(const jec::ErrorTypes& errType) {
   _errType = errType;
 }
 
+void L3Corr::SetPhoID(const PhotonID& id) {
+  _phoID = id;
+}
+
 jec::ErrorTypes L3Corr::GetErrType() {
   return _errType;
 }
@@ -163,11 +168,12 @@ double L3Corr::_SystErr(const double pTprime) const {
     //   photon ID systematic for P and dC
     // - Assign 10% uncertainty on QCD and photon+jet relative
     //   NLO cross sections (better estimate from Tevatron papers) for P
-    double P = _purity(pTprime, kMedium);//0.9;
-    double errP = _SystPurity(pTprime, kMedium);//0.1
+    double P = _purity(pTprime, _phoID);//kMedium);//0.9;
+    double errP = _SystPurity(pTprime, _phoID);//kMedium);//0.1
     double errdC; // 0.1
-    double dC = _deltaC(pTprime, errdC, kMedium); // 0.1
-    errdC *= (1+dC) * errdC; // turn into absolute uncertainty
+    double dC = _deltaC(pTprime, errdC, _phoID);//kMedium); // 0.1
+    //errdC *= (1+dC) * errdC; // BUG, multiplied by errdC (fixed 12-19-2008)
+    errdC *= (1+dC); // turn into absolute uncertainty
 
     double errQCD_P = errP * fabs(dC);
     double errQCD_dC = (1-P) * errdC;
@@ -202,16 +208,17 @@ double L3Corr::_SystErr(const double pTprime) const {
     // NB: UE apparently only affects the mean, not the peak!!
     if (_errType & jec::kL3PartonFrag) {
 
-      double kjets = -4.123 + 5.135 * pow(pTprime, -0.0006598);
-      double dkjet = 1.00 * (kjets - 1.);
+      //double kjets = -4.123 + 5.135 * pow(pTprime, -0.0006598);
+      //double dkjet = 1.00 * (kjets - 1.);
+      double dkjet = 0.50 * (_partonFrag(pTprime) - 1.);
 
       err2 += dkjet * dkjet;
     }
     if (_errType & jec::kL3PartonUE) {
 
-      //double due = 0.5 * (0.5/0.7)*(0.5/0.7) / pTprime;
       // 50% * [(charged+neutral)/charged=1.5] * [dpT/dphideta=1.5] * pi * R2
-      double due = 0.50 * 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime;
+      //double due = 0.50 * 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime;
+      double due = 0.50 * (_partonUE(pTprime) - 1.);
 
       err2 += due * due;
     }
@@ -233,12 +240,27 @@ double L3Corr::_SystErr(const double pTprime) const {
   //double rjet2 = 0.9868 - 0.3509*pow(pTprime, 0.6204-1.); //pT2<0.20*pT,20GeV
   //double rjet3 = 0.9459 - 0.2859*pow(pTprime, 0.4928-1.); //pT2<0.05*pT,5GeV
     // These are for pure signal with deltaeta cut
-    double rjet05 = 0.9391 - 0.2758*pow(pTprime,0.4703-1.); //pT2<0.05*pT,5GeV
-    double rjet10 = 0.9269 - 0.2750*pow(pTprime,0.4576-1.); //pT2<0.10*pT,10GeV
-    double rjet20 = 0.9853 - 0.3465*pow(pTprime,0.6151-1.); //pT2<0.20*pT,20GeV
-    double eg = 0.5 * (fabs(rjet05/rjet10 - 1.) + fabs(rjet20/rjet10 - 1.));
+    double x = 0.01*pTprime; // BUG, forgot 0.01 before (fixed 12-19-2008)
+    double rjet05 = 0.9391 - 0.2758*pow(x,0.4703-1.); //pT2<0.05*pT,5GeV
+    double rjet10 = 0.9269 - 0.2750*pow(x,0.4576-1.); //pT2<0.10*pT,10GeV
+    //double rjet20 = 0.9853 - 0.3465*pow(x,0.6151-1.); //pT2<0.20*pT,20GeV
+    //double eg = 0.5 * (fabs(rjet05/rjet10 - 1.) + fabs(rjet20/rjet10 - 1.));
+    double eg = fabs(rjet05/rjet10 - 1.);
 
     err2 += eg * eg;
+  }
+
+  if (_errType & jec::kL3Flavor) {
+    
+    // This uncertainty covers the flavor mapping uncertainty
+    // when transferring the photon+jet response (quark dominated)
+    // to the default QCD response (gluon dominated)
+    // Take 50% as uncertainty; at D0 the default MC was off by 100%
+    // in this regard, but CMS should do better
+
+    double drjet = 0.5 * (_flavorMap(pTprime) - 1.);
+    
+    err2 += drjet * drjet;
   }
 
   double err = sqrt(err2);
@@ -330,9 +352,8 @@ double L3Corr::_SystPurity(const double pTprime, const PhotonID& id) const {
 
   double err2 = 0;
   
-  double errstat = _StatPurity(pTprime, id);
   if (_errType & jec::kL3PurityStat)
-    err2 += errstat * errstat;
+    err2 += pow(_StatPurity(pTprime, id),2);
 
   if (!_isMC && (_errType & jec::kL3PurityID))
     err2 += pow(_SystPurityID(pTprime, id),2);
@@ -340,9 +361,11 @@ double L3Corr::_SystPurity(const double pTprime, const PhotonID& id) const {
   if (!_isMC && (_errType & jec::kL3PurityXsec))
     err2 += pow(_SystPurityXsec(pTprime, id), 2);
 
+  /*
   if (!_isMC && (_errType & jec::kL3Purity2ndJet)) {
     err2 += pow(_SystPurity2ndJet(pTprime, id), 2);
   }
+  */
 
   double err = sqrt(err2);
 		    
@@ -380,6 +403,7 @@ double L3Corr::_SystPurityXsec(const double pTprime, const PhotonID& id) const{
   return (dxsec * (1-P) * P);
 }
 
+/*
 double L3Corr::_SystPurity2ndJet(const double pTprime,
 				 const PhotonID& id) const {
 
@@ -391,49 +415,39 @@ double L3Corr::_SystPurity2ndJet(const double pTprime,
 
   return err;
 }
+*/
 
 // Statistical uncertainty from MC fit correlation matrix
 // (quadratic logarithmic fit)
 double L3Corr::_StatPurity(const double pTprime, const PhotonID& id) const {
 
-  double x = log(0.01*pTprime);
+  double x = log(0.01*pTprime); if (x);
   double stat = 0;
   if (id == kLoose)
-    stat = sqrt(0.0009192 + 2*-0.0002421*x + 2*-0.0002416*x*x
-		+ 0.002093*x*x + 2*-0.001193*x*x*x
-		+ 0.0009278*x*x*x*x);
-  //stat = sqrt(0.000866 + 2*-0.0003189*x + 2*-0.0001334*x*x
-  //	+ 0.001982*x*x + 2*-0.001037*x*x*x
-  //	+ 0.0007077*x*x*x*x);
+    stat = 0.08077; // top of medium err.bars
+//     stat = sqrt(0.0009192 + 2*-0.0002421*x + 2*-0.0002416*x*x
+// 		+ 0.002093*x*x + 2*-0.001193*x*x*x
+// 		+ 0.0009278*x*x*x*x);
   if (id == kMedium)
     stat = 0.08077; // top of err.bars
   //stat = sqrt(0.0003825 + 2*2.183e-05*x + 2*-0.0001547*x*x
   //	+ 0.0005671*x*x + 2*-0.0003245*x*x*x
   //	+ 0.0002734*x*x*x*x); // deltaeta, no rebin
-    //stat = sqrt(0.0003744 + 2*1.692e-05*x + 2*-0.000142*x*x
-    //	+ 0.0005641*x*x + 2*-0.0003168*x*x*x
-    //	+ 0.0002534*x*x*x*x);
   if (id == kTight)
-    stat = sqrt(0.0004265 + 2*-1.484e-05*x + 2*-0.0001517*x*x
-		+ 0.0008268*x*x + 2*-0.0004603*x*x*x
-		+ 0.0003639*x*x*x*x); // deltaeta, no rebin
-    //stat = sqrt(0.0004191 + 2*-2.073e-05*x + 2*-0.0001376*x*x
-    //	+ 0.0008222*x*x + 2*-0.0004491*x*x*x
-    //	+ 0.0003374*x*x*x*x);
+    stat = 0.08077; // top of medium err.bars
+//     stat = sqrt(0.0004265 + 2*-1.484e-05*x + 2*-0.0001517*x*x
+// 		+ 0.0008268*x*x + 2*-0.0004603*x*x*x
+// 		+ 0.0003639*x*x*x*x); // deltaeta, no rebin
   if (id == kMedium005)
-    stat = sqrt(0.0005035 + 2*-2.595e-05*x + 2*-0.0001639*x*x
-		+ 0.001006*x*x + 2*-0.0005597*x*x*x
-		+ 0.0004097*x*x*x*x); // deltaeta, no rebin
-    //stat = sqrt(0.000621 + 2*-0.0001296*x + 2*-0.000138*x*x
-    //	+ 0.002332*x*x + 2*-0.001283*x*x*x
-    //	+ 0.0008167*x*x*x*x);
+    stat = 0.08077; // top of medium err.bars
+//     stat = sqrt(0.0005035 + 2*-2.595e-05*x + 2*-0.0001639*x*x
+// 		+ 0.001006*x*x + 2*-0.0005597*x*x*x
+// 		+ 0.0004097*x*x*x*x); // deltaeta, no rebin
   if (id == kMedium020)
-    stat = sqrt(0.0003208 + 2*2.855e-05*x + 2*-0.0001461*x*x
-		+ 0.000454*x*x + 2*-0.0002643*x*x*x
-		+ 0.0002498*x*x*x*x); // deltaeta, no rebin
-    //stat = sqrt(0.004524 + 2*-0.006549*x + 2*0.002254*x*x
-    //	+ 0.01395*x*x + 2*-0.00594*x*x*x
-    //	+ 0.002773*x*x*x*x);
+    stat = 0.08077; // top of medium err.bars
+//     stat = sqrt(0.0003208 + 2*2.855e-05*x + 2*-0.0001461*x*x
+// 		+ 0.000454*x*x + 2*-0.0002643*x*x*x
+// 		+ 0.0002498*x*x*x*x); // deltaeta, no rebin
 
   return stat;
 }
@@ -564,6 +578,41 @@ double L3Corr::_deltaC(const double pTprime, double& syserr,
   syserr = sqrt(err2);
 
   return dC;
+}
+
+double L3Corr::_deltaRjet(const double pTprime, const PhotonID& id) const {
+
+  double P = _purity(pTprime, id);
+  double errdC = 0;
+  double dC = _deltaC(pTprime, errdC, id);
+  double deltaRjet = (1-P)*dC;
+
+  return deltaRjet;
+}
+
+double L3Corr::_partonFrag(const double pTprime) const {
+
+  // kjets = hadronization * underlying event
+  double kjets = -4.123 + 5.135 * pow(pTprime, -0.0006598);
+  
+  return kjets / _partonUE(pTprime);
+}
+
+double L3Corr::_partonUE(const double pTprime) const {
+
+  // [(charged+neutral)/charged=1.5] * [dpT/dphideta=1.5] * pi * R2
+  double due = 0.50 * 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime;
+
+  return (1. + due);
+}
+
+double L3Corr::_flavorMap(const double pTprime) const {
+
+  // These should be the same as inside DeltaC
+  double rjets = 1. - 1.881 * pow(pTprime, -0.3802);
+  double rjetb = 1. - 2.332 * pow(pTprime, -0.4005);  
+
+  return (rjetb / rjets);
 }
 
 double L3Corr::_powerlaw(const double& pTprime, const double* par) const {  

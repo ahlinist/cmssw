@@ -3,7 +3,7 @@
 #ifndef INC_JETDEFS
 #define INC_JETDEFS
 ///////////////////////////////////////////////////////////////////////////////
-// $Id: JetDefs.hpp,v 1.42 2007/11/25 23:59:29 mavoutil Exp $
+// $Id: JetDefs.hpp,v 1.1 2008/11/27 10:31:52 voutila Exp $
 // 
 // File: JetDefs.hpp
 //
@@ -31,18 +31,22 @@ namespace jec {
   const ErrorTypes kL3PurityStat        = ErrorTypes(0L, 1L << 8);
   const ErrorTypes kL3PurityID          = ErrorTypes(0L, 1L << 9);
   const ErrorTypes kL3PurityXsec        = ErrorTypes(0L, 1L << 10);
-  const ErrorTypes kL3Purity2ndJet      = ErrorTypes(0L, 1L << 11);
+  //const ErrorTypes kL3Purity2ndJet      = ErrorTypes(0L, 1L << 11);
   const ErrorTypes kL3PartonFrag        = ErrorTypes(0L, 1L << 12);
   const ErrorTypes kL3PartonUE          = ErrorTypes(0L, 1L << 13);
   const ErrorTypes kL3HardGluon         = ErrorTypes(0L, 1L << 14);
+  const ErrorTypes kL3Flavor            = ErrorTypes(0L, 1L << 15);
+
+  // These extras are not included in the default kAll uncertainty
+  const ErrorTypes kL3Extra             = kNone;
 
   //const ErrorTypes kL3DeltaC = kL3DeltaCStat | kL3DeltaCRphot | kL3DeltaCKphotBkg | kL3DeltaCKphotSig | kL3DeltaCRjet | kL3DeltaCKjet;
   const ErrorTypes kL3DeltaC = kL3DeltaCStat | kL3DeltaCRphot | kL3DeltaCKphot | kL3DeltaCRjet | kL3DeltaCKjet | kL3DeltaCKjetPeak;
-  const ErrorTypes kL3Purity = kL3PurityStat | kL3PurityID | kL3PurityXsec | kL3Purity2ndJet;
+  const ErrorTypes kL3Purity = kL3PurityStat | kL3PurityID | kL3PurityXsec;// | kL3Purity2ndJet;
   const ErrorTypes kL3QCDBackground = kL3DeltaC | kL3Purity;
   const ErrorTypes kL3Parton = kL3PartonFrag | kL3PartonUE;
 
-  const ErrorTypes kL3Sys     = kL3PhotonES | kL3QCDBackground | kL3Parton | kL3HardGluon;
+  const ErrorTypes kL3Sys     = kL3PhotonES | kL3QCDBackground | kL3Parton | kL3HardGluon | kL3Flavor;
 
   const ErrorTypes kStat      = kL3Stat;
   const ErrorTypes kSys       = kL3Sys;

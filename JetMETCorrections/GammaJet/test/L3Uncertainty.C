@@ -7,6 +7,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TLine.h"
+#include "TPave.h"
 #include "TLatex.h"
 #include "TStyle.h"
 #include "TROOT.h"
@@ -20,6 +21,11 @@
 using namespace std;
 
 const double maxpt = 900.;//3000.;
+
+const int kBeige = 41;
+const int kRightHatch = 3654;
+const int kLeftHatch = 3645;
+const int kCrossHatch = 3644;
 
 // Helper routine to do much the same as TLegend
 void DrawLine(TGraph *g, double xmin, double ymin, const char *str) {
@@ -41,22 +47,38 @@ void DrawLine(TH1 *h, double xmin, double ymin, const char *str) {
   l1->SetLineColor(h->GetLineColor());
   l1->SetLineWidth(h->GetLineWidth());
   l1->DrawLineNDC(xmin, ymin+0.01, xmin+0.07, ymin+0.01);
-  TLatex* tStat = new TLatex(xmin+0.09, ymin, str);
-  tStat->SetNDC();
-  tStat->SetTextSize(0.045);
-  tStat->Draw();
+  
+  if (str!="") {
+    TLatex* tStat = new TLatex(xmin+0.09, ymin, str);
+    tStat->SetNDC();
+    tStat->SetTextSize(0.045);
+    tStat->Draw();
+  }
 }
 void DrawFill(TH1 *h, double xmin, double ymin, const char *str) {
 
+  /*
     TLine *l1 = new TLine();
     l1->SetLineStyle(1);
     l1->SetLineWidth(25);
     l1->SetLineColor(h->GetFillColor());
     l1->DrawLineNDC(xmin, ymin+0.01, xmin+0.07, ymin+0.01);
+  */
+  
+  TPave *b1 = new TPave(xmin, ymin+0.01-0.025, xmin+0.07, ymin+0.01+0.025,
+			1, "NDC");
+  b1->SetFillStyle(h->GetFillStyle());
+  b1->SetFillColor(h->GetFillColor());
+  b1->SetLineStyle(1);
+  b1->SetLineColor(h->GetLineColor());
+  b1->Draw("L");
+  
+  if (str!="") {
     TLatex* tTot = new TLatex(xmin+0.09, ymin, str);
     tTot->SetNDC();
     tTot->SetTextSize(0.045);
     tTot->Draw();
+  }
 }
 
 void L3Uncertainty() {
@@ -78,6 +100,7 @@ void L3Uncertainty() {
   L3Corr rjetQCD(jetAlg, jec::kL3QCDBackground);
   L3Corr rjetParton(jetAlg, jec::kL3Parton);
   L3Corr rjetGluon(jetAlg, jec::kL3HardGluon);
+  L3Corr rjetFlavor(jetAlg, jec::kL3Flavor);
 
   double erangemin = (plotLog) ? 15 : 0.01;
   double erangemax = (plotLog) ? maxpt : maxpt;
@@ -94,6 +117,8 @@ void L3Uncertainty() {
   TGraph* partDown = 0;
   TGraph* gluUp = 0;
   TGraph* gluDown = 0;
+  TGraph* flavorUp = 0;
+  TGraph* flavorDown = 0;
   TH1D* hErr = 0;
   {
     const int ndiv = 100;
@@ -108,6 +133,8 @@ void L3Uncertainty() {
     double partdown[ndiv];
     double gluup[ndiv];
     double gludown[ndiv];
+    double flavorup[ndiv];
+    double flavordown[ndiv];
 
     double xbins[ndiv+1];
     const double dx = (plotLog ?
@@ -149,6 +176,10 @@ void L3Uncertainty() {
       r = rjetGluon.Rjet(x[i], err);
       gluup[i] = 100 * err / r;
       gludown[i] = -100 * err / r;
+
+      r = rjetFlavor.Rjet(x[i], err);
+      flavorup[i] = 100 * err / r;
+      flavordown[i] = -100 * err / r;
     }
 
     for (int ibin = 1; ibin != hErr->GetNbinsX()+1; ++ibin) {
@@ -170,6 +201,8 @@ void L3Uncertainty() {
     partDown = new TGraph(ndiv, x, partdown);
     gluUp = new TGraph(ndiv, x, gluup);
     gluDown = new TGraph(ndiv, x, gludown);
+    flavorUp = new TGraph(ndiv, x, flavorup);
+    flavorDown = new TGraph(ndiv, x, flavordown);
   }
   hErr->SetFillStyle(1001);
   hErr->SetFillColor(5);
@@ -181,24 +214,35 @@ void L3Uncertainty() {
   statUp->SetLineWidth(1);
   statDown->SetLineStyle(kDashed);
   statDown->SetLineWidth(1);
+
   phUp->SetLineStyle(kSolid);
   phUp->SetLineWidth(1);
   phDown->SetLineStyle(kSolid);
   phDown->SetLineWidth(1);
+
   qcdUp->SetLineStyle(kDotted);
   qcdUp->SetLineWidth(1);
   qcdDown->SetLineStyle(kDotted);
   qcdDown->SetLineWidth(1);
+
   partUp->SetLineStyle(kDashDotted);
   partUp->SetLineWidth(1);
   partDown->SetLineStyle(kDashDotted);
   partDown->SetLineWidth(1);
+
   gluUp->SetLineStyle(kDashed);
-  gluUp->SetLineWidth(1);
+  gluUp->SetLineWidth(2);
   gluUp->SetLineColor(kBlue);
   gluDown->SetLineStyle(kDashed);
-  gluDown->SetLineWidth(1);
+  gluDown->SetLineWidth(2);
   gluDown->SetLineColor(kBlue);
+
+  flavorUp->SetLineStyle(kSolid);
+  flavorUp->SetLineWidth(2);
+  flavorUp->SetLineColor(kBlue);
+  flavorDown->SetLineStyle(kSolid);
+  flavorDown->SetLineWidth(2);
+  flavorDown->SetLineColor(kBlue);
 
   {
     string cName = "L3Uncert_";
@@ -218,8 +262,8 @@ void L3Uncertainty() {
 
     TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
 			 erangemin, erangemax);
-    HE2->SetMinimum(-15.99);//-3.99);
-    HE2->SetMaximum(15.99);//3.99);
+    HE2->SetMinimum(-19.99);//-15.99);//-3.99);
+    HE2->SetMaximum(19.99);//15.99);//3.99);
     HE2->SetStats(kFALSE);
     HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE2->GetXaxis()->SetTitleOffset(1.1);//0.8);
@@ -242,11 +286,16 @@ void L3Uncertainty() {
     partDown->Draw("L");
     gluUp->Draw("L");
     gluDown->Draw("L");
+    flavorUp->Draw("L");
+    flavorDown->Draw("L");
 
     DrawLine(statUp, 0.18, 0.31, "stat. 10 pb^{-1}");
     DrawLine(phUp, 0.18, 0.25, "photon scale");
-    DrawLine(gluUp, 0.18, 0.19, "second jet");
-    DrawLine(partUp, 0.54, 0.31, "parton corr.");
+    //DrawLine(gluUp, 0.18, 0.19, "second jet");
+    DrawLine(partUp, 0.18, 0.19, "parton corr");
+    DrawLine(flavorUp, 0.54, 0.37, "flavor mapping");
+    //DrawLine(partUp, 0.54, 0.31, "parton corr.");
+    DrawLine(gluUp, 0.54, 0.31, "second jet");
     DrawLine(qcdUp, 0.54, 0.25, "QCD background");
     DrawFill(hErr, 0.54, 0.19, "total err.");
 
@@ -287,8 +336,8 @@ void PurityUncertainty() {
   TGraph* idDown = 0;
   TGraph* xsecUp = 0;
   TGraph* xsecDown = 0;
-  TGraph* jetUp = 0;
-  TGraph* jetDown = 0;
+  //TGraph* jetUp = 0;
+  //TGraph* jetDown = 0;
   TH1D* hErr = 0, *hErr1, *hErr2, *hErr3;
   {
     const int ndiv = 100;
@@ -299,8 +348,8 @@ void PurityUncertainty() {
     double iddown[ndiv];
     double xsecup[ndiv];
     double xsecdown[ndiv];
-    double jetup[ndiv];
-    double jetdown[ndiv];
+    //double jetup[ndiv];
+    //double jetdown[ndiv];
 
     double xbins[ndiv+1];
     const double dx = (plotLog ?
@@ -336,9 +385,9 @@ void PurityUncertainty() {
       xsecup[i] = 100 * err / P;
       xsecdown[i] = -100 * err / P;
 
-      err = rjet._SystPurity2ndJet(x[i], phoID);
-      jetup[i] = 100 * err / P;
-      jetdown[i] = -100 * err / P;
+      //err = rjet._SystPurity2ndJet(x[i], phoID);
+      //jetup[i] = 100 * err / P;
+      //jetdown[i] = -100 * err / P;
     }
 
     for (int ibin = 1; ibin != hErr->GetNbinsX()+1; ++ibin) {
@@ -369,8 +418,8 @@ void PurityUncertainty() {
     idDown = new TGraph(ndiv, x, iddown);
     xsecUp = new TGraph(ndiv, x, xsecup);
     xsecDown = new TGraph(ndiv, x, xsecdown);
-    jetUp = new TGraph(ndiv, x, jetup);
-    jetDown = new TGraph(ndiv, x, jetdown);
+    //jetUp = new TGraph(ndiv, x, jetup);
+    //jetDown = new TGraph(ndiv, x, jetdown);
   }
 
   hErr->SetFillStyle(1001);
@@ -403,10 +452,10 @@ void PurityUncertainty() {
   xsecUp->SetLineWidth(1);
   xsecDown->SetLineStyle(kDotted);
   xsecDown->SetLineWidth(1);
-  jetUp->SetLineStyle(kDashDotted);
-  jetUp->SetLineWidth(1);
-  jetDown->SetLineStyle(kDashDotted);
-  jetDown->SetLineWidth(1);
+  //jetUp->SetLineStyle(kDashDotted);
+  //jetUp->SetLineWidth(1);
+  //jetDown->SetLineStyle(kDashDotted);
+  //jetDown->SetLineWidth(1);
 
   {
     string cName = "L3PurityUncert_";
@@ -446,12 +495,12 @@ void PurityUncertainty() {
     idDown->Draw("L");
     xsecUp->Draw("L");
     xsecDown->Draw("L");
-    jetUp->Draw("L");
-    jetDown->Draw("L");
+    //jetUp->Draw("L");
+    //jetDown->Draw("L");
 
     DrawLine(statUp, 0.18, 0.25, "stat.");
     DrawLine(idUp, 0.18, 0.19, "photon ID");
-    DrawLine(jetUp, 0.54, 0.31, "second jet");
+    //DrawLine(jetUp, 0.54, 0.31, "second jet");
     DrawLine(xsecUp, 0.54, 0.25, "cross sections");
     DrawFill(hErr, 0.54, 0.19, "total err.");
 
@@ -752,4 +801,740 @@ void DeltaCUncertainty() {
     C2->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
   }
   
+}
+
+
+void BackgroundUncertainty() {
+
+  // Improve some settings for this
+  gStyle->SetPadLeftMargin(0.12);
+
+  const bool plotLog = true;
+  L3Corr::JetAlg jetAlg = L3Corr::IC5_DATA;
+  //L3Corr::JetAlg jetAlg = L3Corr::IC5_MC;
+
+  jec::ErrorTypes all = jec::kAll;
+
+  L3Corr rjet(jetAlg, all);
+  L3Corr rjetLoose(jetAlg, jec::kL3QCDBackground, L3Corr::kLoose);
+  L3Corr rjetMedium(jetAlg, jec::kL3QCDBackground, L3Corr::kMedium);
+  L3Corr rjetTight(jetAlg, jec::kL3QCDBackground, L3Corr::kTight);
+
+  double erangemin = (plotLog) ? 15 : 0.01;
+  double erangemax = (plotLog) ? maxpt : maxpt;
+  double emin = (plotLog) ? 20 : 20;
+  double emax = (plotLog) ? maxpt*0.8 : maxpt*0.95;
+
+  TGraph* looseUp = 0;
+  TGraph* looseDown = 0;
+  TGraph* mediumUp = 0;
+  TGraph* mediumDown = 0;
+  TGraph* tightUp = 0;
+  TGraph* tightDown = 0;
+  TH1D* hErr = 0, *hErr1, *hErr2, *hErr3;
+  {
+    const int ndiv = 100;
+    double x[ndiv];
+    double looseup[ndiv];
+    double loosedown[ndiv];
+    double mediumup[ndiv];
+    double mediumdown[ndiv];
+    double tightup[ndiv];
+    double tightdown[ndiv];
+
+    double xbins[ndiv+1];
+    const double dx = (plotLog ?
+		       pow(emax / emin, 1. / (ndiv - 1)) : 
+		       (emax - emin) / (double) (ndiv - 1));
+    xbins[0] = emin;
+    for (int i = 1; i != ndiv+1; ++i) {
+
+      if (plotLog) xbins[i] = xbins[i-1] * dx;
+      else         xbins[i] = xbins[i-1] + dx;
+    }
+
+    hErr = new TH1D("hErr", "hErr", ndiv, xbins);
+    hErr1 = new TH1D("hErr1", "hErr1", ndiv, xbins);
+    hErr2 = new TH1D("hErr2", "hErr2", ndiv, xbins);
+    hErr3 = new TH1D("hErr3", "hErr3", ndiv, xbins);
+
+    for(int i = 0; i != ndiv; ++i) {
+
+      x[i] = 0.5 * (xbins[i] + xbins[i+1]);
+      double err = 0.;
+
+      double r = rjetLoose.Rjet(x[i], err);
+      looseup[i] = 100 * err / r;
+      loosedown[i] = -100 * err / r;
+
+      r = rjetMedium.Rjet(x[i], err);
+      mediumup[i] = 100 * err / r;
+      mediumdown[i] = -100 * err / r;
+
+      r = rjetTight.Rjet(x[i], err);
+      tightup[i] = 100 * err / r;
+      tightdown[i] = -100 * err / r;
+
+    }
+
+    for (int ibin = 1; ibin != hErr->GetNbinsX()+1; ++ibin) {
+
+      double x = hErr->GetBinCenter(ibin);
+      double err = 0.;
+      double r = rjet.Rjet(x, err);
+      hErr->SetBinContent(ibin, 0);
+      hErr->SetBinError(ibin, 100. * err / r);
+
+      r = rjetLoose.Rjet(x, err);
+      double dr = rjetLoose._deltaRjet(x, L3Corr::kLoose);
+      hErr1->SetBinContent(ibin, dr);
+      hErr1->SetBinError(ibin, err / r * (1 + dr));
+
+      r = rjetMedium.Rjet(x, err);
+      dr = rjetMedium._deltaRjet(x, L3Corr::kMedium);
+      hErr2->SetBinContent(ibin, dr);
+      hErr2->SetBinError(ibin, err / r * (1 + dr));
+
+      r = rjetTight.Rjet(x, err);
+      dr = rjetTight._deltaRjet(x, L3Corr::kTight);
+      hErr3->SetBinContent(ibin, dr);
+      hErr3->SetBinError(ibin, err / r * (1 + dr));
+    }
+
+    looseUp = new TGraph(ndiv, x, looseup);
+    looseDown = new TGraph(ndiv, x, loosedown);
+    mediumUp = new TGraph(ndiv, x, mediumup);
+    mediumDown = new TGraph(ndiv, x, mediumdown);
+    tightUp = new TGraph(ndiv, x, tightup);
+    tightDown = new TGraph(ndiv, x, tightdown);
+  }
+
+  hErr->SetFillStyle(1001);
+  hErr->SetFillColor(5);
+  hErr->SetLineColor(hErr->GetFillColor());
+  hErr->SetMarkerColor(hErr->GetFillColor());
+  hErr->SetMarkerSize(0);
+
+  hErr1->SetLineStyle(kDashed);
+  hErr1->SetLineWidth(2);
+  hErr1->SetFillStyle(kLeftHatch);
+  hErr1->SetFillColor(kBlue);
+  hErr1->SetLineColor(kBlue);
+  hErr1->SetMarkerColor(hErr1->GetFillColor());
+  hErr1->SetMarkerSize(0);
+
+  hErr2->SetLineStyle(kSolid);
+  hErr2->SetLineWidth(2);
+  hErr2->SetFillStyle(1001);
+  hErr2->SetFillColor(kYellow);
+  hErr2->SetLineColor(kBlack);
+  hErr2->SetMarkerColor(hErr2->GetFillColor());
+  hErr2->SetMarkerSize(0);
+
+  hErr3->SetLineStyle(kDashDotted);
+  hErr3->SetLineWidth(2);
+  hErr3->SetFillStyle(kRightHatch);
+  hErr3->SetFillColor(kRed);
+  hErr3->SetLineColor(kRed);
+  hErr3->SetMarkerColor(hErr3->GetFillColor());
+  hErr3->SetMarkerSize(0);
+
+  looseUp->SetLineStyle(kDashed);
+  looseUp->SetLineWidth(2);
+  looseDown->SetLineStyle(kDashed);
+  looseDown->SetLineWidth(2);
+  mediumUp->SetLineStyle(kSolid);
+  mediumUp->SetLineWidth(2);
+  mediumDown->SetLineStyle(kSolid);
+  mediumDown->SetLineWidth(2);
+  tightUp->SetLineStyle(kDotted);
+  tightUp->SetLineWidth(2);
+  tightDown->SetLineStyle(kDotted);
+  tightDown->SetLineWidth(2);
+
+  {
+    string cName = "L3BackgroundUncert_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C->SetLogx();
+
+    TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE2->SetMinimum(-15.99);
+    HE2->SetMaximum(15.99);
+    HE2->SetStats(kFALSE);
+    HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE2->GetXaxis()->SetTitleOffset(1.1);
+    HE2->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE2->GetXaxis()->SetNoExponent(kTRUE);
+    HE2->GetYaxis()->SetTitle("rel. error #DeltaR_{jet} [%]");
+    HE2->GetYaxis()->SetTitleOffset(0.9);
+    HE2->Draw("AXIS");
+
+    hErr->Draw("SAME E3");
+    HE2->Draw("SAME AXIS");
+
+    looseUp->Draw("L");
+    looseDown->Draw("L");
+    mediumUp->Draw("L");
+    mediumDown->Draw("L");
+    tightUp->Draw("L");
+    tightDown->Draw("L");
+
+    DrawLine(looseUp, 0.54, 0.37, "loose ID");
+    DrawLine(mediumUp, 0.54, 0.31, "medium ID");
+    DrawLine(tightUp, 0.54, 0.25, "tight ID");
+    DrawFill(hErr, 0.54, 0.19, "total L3 err.");
+
+    C->Update();
+
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
+  // Draw plots of the different background corrections
+  {
+    string cName = "L3Background_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C2 = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C2->SetLogx();
+
+    // Improve some settings for this
+    C2->SetLeftMargin(0.15);
+    
+    TH1F* HE3 = new TH1F((cName + "_E3").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE3->SetMinimum(-0.15999);
+    HE3->SetMaximum(0.15999);
+    HE3->SetStats(kFALSE);
+    HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE3->GetXaxis()->SetTitleOffset(1.1);
+    HE3->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE3->GetXaxis()->SetNoExponent(kTRUE);
+    HE3->GetYaxis()->SetTitle("Background #DeltaR_{jet}");
+    HE3->GetYaxis()->SetTitleOffset(1.2);
+
+    TH1D *hErr1b = (TH1D*)hErr1->Clone("HErr1b");
+    hErr1b->SetFillStyle(kNone);
+    hErr1b->SetFillColor(0);
+
+    TH1D *hErr2b = (TH1D*)hErr2->Clone("HErr2b");
+    hErr2b->SetFillStyle(kNone);
+    hErr2b->SetFillColor(0);
+
+    TH1D *hErr3b = (TH1D*)hErr3->Clone("HErr3b");
+    hErr3b->SetFillStyle(kNone);
+    hErr3b->SetFillColor(0);
+    
+    HE3->Draw("AXIS");
+    hErr2->Draw("SAME E4");
+    hErr2b->Draw("SAME HIST L");
+    hErr1->Draw("SAME E4");
+    hErr1b->Draw("SAME HIST L");
+    hErr3->Draw("SAME E4");
+    hErr3b->Draw("SAME HIST L");
+    
+    DrawFill(hErr1, 0.54, 0.31, "loose ID");
+    DrawLine(hErr1b, 0.54, 0.31, "");
+    DrawFill(hErr2, 0.54, 0.25, "medium ID");
+    DrawLine(hErr2b, 0.54, 0.25, "");
+    DrawFill(hErr3, 0.54, 0.19, "tight ID");
+    DrawLine(hErr3b, 0.54, 0.19, "");
+
+    C2->Update();
+    
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C2->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
+}
+
+
+void PartonUncertainty() {
+
+  // Improve some settings for this
+  gStyle->SetPadLeftMargin(0.12);
+
+  const bool plotLog = true;
+  L3Corr::JetAlg jetAlg = L3Corr::IC5_DATA;
+  //L3Corr::JetAlg jetAlg = L3Corr::IC5_MC;
+
+  L3Corr kjetParton(jetAlg, jec::kL3Parton);
+  L3Corr kjetFrag(jetAlg, jec::kL3PartonFrag);
+  L3Corr kjetUE(jetAlg, jec::kL3PartonUE);
+
+  double erangemin = (plotLog) ? 15 : 0.01;
+  double erangemax = (plotLog) ? maxpt : maxpt;
+  double emin = (plotLog) ? 20 : 20;
+  double emax = (plotLog) ? maxpt*0.8 : maxpt*0.95;
+
+  TGraph* fragUp = 0;
+  TGraph* fragDown = 0;
+  TGraph* ueUp = 0;
+  TGraph* ueDown = 0;
+  TH1D* hErr = 0, *hErr1, *hErr2, *hErr3;
+  {
+    const int ndiv = 100;
+    double x[ndiv];
+    double fragup[ndiv];
+    double fragdown[ndiv];
+    double ueup[ndiv];
+    double uedown[ndiv];
+
+    double xbins[ndiv+1];
+    const double dx = (plotLog ?
+		       pow(emax / emin, 1. / (ndiv - 1)) : 
+		       (emax - emin) / (double) (ndiv - 1));
+    xbins[0] = emin;
+    for (int i = 1; i != ndiv+1; ++i) {
+
+      if (plotLog) xbins[i] = xbins[i-1] * dx;
+      else         xbins[i] = xbins[i-1] + dx;
+    }
+
+    hErr = new TH1D("hErr", "hErr", ndiv, xbins);
+    hErr1 = new TH1D("hErr1", "hErr1", ndiv, xbins);
+    hErr2 = new TH1D("hErr2", "hErr2", ndiv, xbins);
+    hErr3 = new TH1D("hErr3", "hErr3", ndiv, xbins);
+
+    for(int i = 0; i != ndiv; ++i) {
+
+      x[i] = 0.5 * (xbins[i] + xbins[i+1]);
+      double err = 0;
+      //double k = kjet._partonFrag(x[i]) * kjet._partonUE(x[i]);
+
+      double r = kjetFrag.Rjet(x[i], err);
+      fragup[i] = 100 * err / r;
+      fragdown[i] = -100 * err / r;
+
+      r = kjetUE.Rjet(x[i], err);
+      ueup[i] = 100 * err / r;
+      uedown[i] = -100 * err / r;
+    }
+
+    for (int ibin = 1; ibin != hErr->GetNbinsX()+1; ++ibin) {
+
+      double x = hErr->GetBinCenter(ibin);
+      double err = 0;
+      double r = kjetParton.Rjet(x, err);
+      hErr->SetBinContent(ibin, 0);
+      hErr->SetBinError(ibin, 100 * err / r);
+
+      double k = kjetParton._partonFrag(x) * kjetParton._partonUE(x);
+      r = kjetParton.Rjet(x, err);
+      hErr1->SetBinContent(ibin, k);
+      hErr1->SetBinError(ibin, err / r * k);
+ 
+      k = kjetFrag._partonFrag(x);
+      r = kjetFrag.Rjet(x, err);
+      hErr2->SetBinContent(ibin, k);
+      hErr2->SetBinError(ibin, err / r * k);
+
+      k = kjetUE._partonUE(x);
+      r = kjetUE.Rjet(x, err);
+      hErr3->SetBinContent(ibin, k);
+      hErr3->SetBinError(ibin, err / r * k);
+    }
+
+    fragUp = new TGraph(ndiv, x, fragup);
+    fragDown = new TGraph(ndiv, x, fragdown);
+    ueUp = new TGraph(ndiv, x, ueup);
+    ueDown = new TGraph(ndiv, x, uedown);
+  }
+
+  hErr->SetFillStyle(1001);
+  hErr->SetFillColor(kYellow);//5);
+  hErr->SetLineColor(hErr->GetFillColor());
+  hErr->SetMarkerColor(hErr->GetFillColor());
+  hErr->SetMarkerSize(0);
+
+  hErr1->SetLineStyle(kDashed);
+  hErr1->SetLineWidth(2);
+  hErr1->SetFillStyle(kCrossHatch);//3013);//3004);
+  hErr1->SetFillColor(kRed);//Black);
+  hErr1->SetLineColor(kBlack);//kRed);
+  hErr1->SetMarkerColor(hErr1->GetFillColor());
+  hErr1->SetMarkerSize(0);
+
+  hErr2->SetLineStyle(kSolid);
+  hErr2->SetLineWidth(2);
+  hErr2->SetFillStyle(1001);
+  hErr2->SetFillColor(kYellow);
+  hErr2->SetLineColor(kBlack);//kYellow);
+  hErr2->SetMarkerColor(hErr2->GetFillColor());
+  hErr2->SetMarkerSize(0);
+
+  hErr3->SetLineStyle(kDotted);
+  hErr3->SetLineWidth(2);
+  hErr3->SetFillStyle(1001);
+  hErr3->SetFillColor(kBeige);// kYellow);
+  hErr3->SetLineColor(kBlack);//kBeige);
+  hErr3->SetMarkerColor(hErr3->GetFillColor());
+  hErr3->SetMarkerSize(0);
+
+  fragUp->SetLineStyle(kDashed);
+  fragUp->SetLineWidth(1);
+  fragDown->SetLineStyle(kDashed);
+  fragDown->SetLineWidth(1);
+  ueUp->SetLineStyle(kSolid);
+  ueUp->SetLineWidth(1);
+  ueDown->SetLineStyle(kSolid);
+  ueDown->SetLineWidth(1);
+
+  {
+    string cName = "L3PartonUncert_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C->SetLogx();
+
+    TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE2->SetMinimum(-5.99);
+    HE2->SetMaximum(5.99);
+    HE2->SetStats(kFALSE);
+    HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE2->GetXaxis()->SetTitleOffset(1.1);
+    HE2->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE2->GetXaxis()->SetNoExponent(kTRUE);
+    HE2->GetYaxis()->SetTitle("rel. error on parton corr. [%]");
+    HE2->GetYaxis()->SetTitleOffset(0.9);
+    HE2->Draw("AXIS");
+
+    hErr->Draw("SAME E3");
+    HE2->Draw("SAME AXIS");
+
+    fragUp->Draw("L");
+    fragDown->Draw("L");
+    ueUp->Draw("L");
+    ueDown->Draw("L");
+
+    DrawLine(fragUp, 0.45, 0.31, "hadronization");
+    DrawLine(ueUp, 0.45, 0.25, "underlying event");
+    DrawFill(hErr, 0.45, 0.19, "total error");
+
+    C->Update();
+
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
+  // Draw plot of the parton correction with error bands
+  {
+    string cName = "L3Parton_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C2 = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C2->SetLogx();
+
+    // Improve some settings for this
+    C2->SetLeftMargin(0.15);
+    
+    TH1F* HE3 = new TH1F((cName + "_E3").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE3->SetMinimum(0.94001);
+    HE3->SetMaximum(1.05999);
+    HE3->SetStats(kFALSE);
+    HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE3->GetXaxis()->SetTitleOffset(1.1);
+    HE3->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE3->GetXaxis()->SetNoExponent(kTRUE);
+    HE3->GetYaxis()->SetTitle("Parton response");
+    HE3->GetYaxis()->SetTitleOffset(1.2);
+
+    TH1D *hErr1b = (TH1D*)hErr1->Clone("HErr1b");
+    hErr1b->SetFillStyle(kNone);
+    hErr1b->SetFillColor(0);
+
+    TH1D *hErr2b = (TH1D*)hErr2->Clone("HErr2b");
+    hErr2b->SetFillStyle(kNone);
+    hErr2b->SetFillColor(0);
+
+    TH1D *hErr3b = (TH1D*)hErr3->Clone("HErr3b");
+    hErr3b->SetFillStyle(kNone);
+    hErr3b->SetFillColor(0);
+    
+    HE3->Draw("AXIS");
+    hErr2->Draw("SAME E4");
+    hErr2b->SetLineStyle(kDashed);
+    hErr2b->SetLineColor(kBlack);
+    hErr2b->Draw("SAME HIST L");
+
+    hErr3->Draw("SAME E4");
+    hErr3b->SetLineStyle(kDashDotted);
+    hErr3b->SetLineColor(kBlack);
+    hErr3b->Draw("SAME HIST L");
+
+    hErr1->Draw("SAME E4");
+    hErr1b->SetLineStyle(kSolid);
+    hErr1b->SetLineColor(kRed);//kBlack);
+    hErr1b->Draw("SAME HIST L");
+    
+    DrawFill(hErr2, 0.45, 0.31, "");
+    DrawLine(hErr2b, 0.45, 0.31, "hadronization");
+    DrawFill(hErr3, 0.45, 0.25, "");
+    DrawLine(hErr3b, 0.45, 0.25, "underlying event");
+    DrawFill(hErr1, 0.45, 0.19, "");
+    DrawLine(hErr1b, 0.45, 0.19, "total parton corr.");
+
+    C2->Update();
+    
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C2->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
+}
+
+
+void FlavorUncertainty() {
+
+  // Improve some settings for this
+  gStyle->SetPadLeftMargin(0.12);
+
+  const bool plotLog = true;
+  L3Corr::JetAlg jetAlg = L3Corr::IC5_DATA;
+  //L3Corr::JetAlg jetAlg = L3Corr::IC5_MC;
+
+  jec::ErrorTypes other = jec::kAll & ~jec::kL3Flavor;
+  jec::ErrorTypes any = jec::kAll | jec::kL3Flavor;
+
+  //L3Corr rjet(jetAlg, jec::kAll);
+  L3Corr rjet(jetAlg, other);
+  L3Corr rjetFlavor(jetAlg, jec::kL3Flavor);
+  L3Corr rjetAny(jetAlg, any);
+
+  double erangemin = (plotLog) ? 15 : 0.01;
+  double erangemax = (plotLog) ? maxpt : maxpt;
+  double emin = (plotLog) ? 20 : 20;
+  double emax = (plotLog) ? maxpt*0.8 : maxpt*0.95;
+
+  TGraph* flavorUp = 0;
+  TGraph* flavorDown = 0;
+  TGraph* allUp = 0;
+  TGraph* allDown = 0;
+  TH1D* hErr = 0, *hErr1;
+  {
+    const int ndiv = 100;
+    double x[ndiv];
+    double flavorup[ndiv];
+    double flavordown[ndiv];
+    double allup[ndiv];
+    double alldown[ndiv];
+
+    double xbins[ndiv+1];
+    const double dx = (plotLog ?
+		       pow(emax / emin, 1. / (ndiv - 1)) : 
+		       (emax - emin) / (double) (ndiv - 1));
+    xbins[0] = emin;
+    for (int i = 1; i != ndiv+1; ++i) {
+
+      if (plotLog) xbins[i] = xbins[i-1] * dx;
+      else         xbins[i] = xbins[i-1] + dx;
+    }
+
+    hErr = new TH1D("hErr", "hErr", ndiv, xbins);
+    hErr1 = new TH1D("hErr1", "hErr1", ndiv, xbins);
+
+    for(int i = 0; i != ndiv; ++i) {
+
+      x[i] = 0.5 * (xbins[i] + xbins[i+1]);
+      double err = 0;
+
+      double r = rjetFlavor.Rjet(x[i], err);
+      flavorup[i] = 100 * err / r;
+      flavordown[i] = -100 * err / r;
+
+      r = rjet.Rjet(x[i], err);
+      allup[i] = 100 * err / r;
+      alldown[i] = -100 * err / r;
+    }
+
+    for (int ibin = 1; ibin != hErr->GetNbinsX()+1; ++ibin) {
+
+      double x = hErr->GetBinCenter(ibin);
+      double err = 0;
+      double r = rjetAny.Rjet(x, err);
+      hErr->SetBinContent(ibin, 0);
+      hErr->SetBinError(ibin, 100 * err / r);
+
+      double f = rjetFlavor._flavorMap(x);
+      r = rjetFlavor.Rjet(x, err);
+      hErr1->SetBinContent(ibin, f);
+      hErr1->SetBinError(ibin, err / r * f);
+    }
+
+    flavorUp = new TGraph(ndiv, x, flavorup);
+    flavorDown = new TGraph(ndiv, x, flavordown);
+    allUp = new TGraph(ndiv, x, allup);
+    allDown = new TGraph(ndiv, x, alldown);
+  }
+
+  hErr->SetFillStyle(1001);
+  hErr->SetFillColor(kYellow);//5);
+  hErr->SetLineColor(hErr->GetFillColor());
+  hErr->SetMarkerColor(hErr->GetFillColor());
+  hErr->SetMarkerSize(0);
+
+  hErr1->SetLineStyle(kDashed);
+  hErr1->SetLineWidth(2);
+  hErr1->SetFillStyle(1001);
+  hErr1->SetFillColor(kYellow);
+  hErr1->SetLineColor(kBlack);
+  hErr1->SetMarkerColor(hErr1->GetFillColor());
+  hErr1->SetMarkerSize(0);
+
+  flavorUp->SetLineStyle(kSolid);
+  flavorUp->SetLineWidth(2);
+  flavorDown->SetLineStyle(kSolid);
+  flavorDown->SetLineWidth(2);
+
+  allUp->SetLineStyle(kDashed);
+  allUp->SetLineWidth(2);
+  allDown->SetLineStyle(kDashed);
+  allDown->SetLineWidth(2);
+
+  {
+    string cName = "L3FlavorUncert_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C->SetLogx();
+
+    TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE2->SetMinimum(-15.99);
+    HE2->SetMaximum(15.99);
+    HE2->SetStats(kFALSE);
+    HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE2->GetXaxis()->SetTitleOffset(1.1);
+    HE2->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE2->GetXaxis()->SetNoExponent(kTRUE);
+    HE2->GetYaxis()->SetTitle("relative error [%]");
+    HE2->GetYaxis()->SetTitleOffset(0.9);
+    HE2->Draw("AXIS");
+
+    hErr->Draw("SAME E3");
+    HE2->Draw("SAME AXIS");
+
+    flavorUp->Draw("L");
+    flavorDown->Draw("L");
+    allUp->Draw("L");
+    allDown->Draw("L");
+
+    DrawLine(flavorUp, 0.45, 0.34, "flavor correction");
+    //DrawLine(allUp, 0.45, 0.28, "L3 corr.");
+    DrawLine(allUp, 0.45, 0.28, "other sources");
+    //DrawFill(hErr, 0.45, 0.22, "total L3+flavor err.");
+    DrawFill(hErr, 0.45, 0.22, "total error");
+
+    C->Update();
+
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
+  // Draw plot of the flavor correction with error band
+  {
+    string cName = "L3Flavor_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C2 = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C2->SetLogx();
+
+    // Improve some settings for this
+    C2->SetLeftMargin(0.15);
+    
+    TH1F* HE3 = new TH1F((cName + "_E3").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE3->SetMinimum(0.60001);
+    HE3->SetMaximum(1.05999);
+    HE3->SetStats(kFALSE);
+    HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE3->GetXaxis()->SetTitleOffset(1.1);
+    HE3->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE3->GetXaxis()->SetNoExponent(kTRUE);
+    HE3->GetYaxis()->SetTitle("Flavor correction");
+    HE3->GetYaxis()->SetTitleOffset(1.2);
+
+    TH1D *hErr1b = (TH1D*)hErr1->Clone("HErr1b");
+    hErr1b->SetFillStyle(kNone);
+    hErr1b->SetFillColor(0);
+
+    HE3->Draw("AXIS");
+    hErr1->Draw("SAME E4");
+    hErr1b->SetLineStyle(kSolid);
+    hErr1b->SetLineColor(kBlack);
+    hErr1b->Draw("SAME HIST L");
+    
+    DrawFill(hErr1, 0.45, 0.22, "");
+    DrawLine(hErr1b, 0.45, 0.22, "flavor correction");
+
+    C2->Update();
+    
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C2->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+  }
+
 }

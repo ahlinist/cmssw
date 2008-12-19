@@ -807,9 +807,33 @@ void gjettree::Loop(double cross, bool isgammajet, int NEVT)
     if (hasjet)
       ana_tree->Fill();
 
-    
-    // Fill histos after jet kinematic cuts
+    // Evaluate all cuts first to enable permutations later
     bool jetetacut = fabs(jet.eta) < _jetetacut;
+    bool pt2ndjetcut = pt2jet < _jet2_maxfrac*ptph || pt2jet < _jet2_minpt;
+    bool dphicut = delta_phi(jet.phi, phot.phi) > _deltaphi;
+    bool detacut = fabs(delta_eta(jet.eta, phot.eta)) < _deltaeta;
+
+    // Vary 2nd jet cut to study systematics
+    bool cuts = jetetacut && dphicut && detacut;
+    bool pt2_05 = pt2jet < 0.05*ptph || pt2jet < 5.;
+    bool pt2_20 = pt2jet < 0.20*ptph || pt2jet < 20.;
+    if (cuts && pt2_05) FillHistos("Ekin05");
+    if (cuts && pt2_05 && hassub) FillHistos("Ekin05SB");
+    if (cuts && pt2_05 && passem) FillHistos("Ekin05EM");
+    if (cuts && pt2_05 && passid) FillHistos("Ekin05ID");
+    if (cuts && pt2_05 && passtc) FillHistos("Ekin05TC");
+    if (cuts && pt2_05 && passnn) FillHistos("Ekin05NN");
+    //
+    if (cuts && pt2_20) FillHistos("Ekin20");
+    if (cuts && pt2_20 && hassub) FillHistos("Ekin20SB");
+    if (cuts && pt2_20 && passem) FillHistos("Ekin20EM");
+    if (cuts && pt2_20 && passid) FillHistos("Ekin20ID");
+    if (cuts && pt2_20 && passtc) FillHistos("Ekin20TC");
+    if (cuts && pt2_20 && passnn) FillHistos("Ekin20NN");
+    
+
+    // Fill histos after jet kinematic cuts
+    //bool jetetacut = fabs(jet.eta) < _jetetacut;
 
     if (!jetetacut) continue;
 
@@ -824,7 +848,7 @@ void gjettree::Loop(double cross, bool isgammajet, int NEVT)
 
 
     // Fill histos after second jet kinematic cuts
-    bool pt2ndjetcut = pt2jet < _jet2_maxfrac*ptph || pt2jet < _jet2_minpt;
+    //bool pt2ndjetcut = pt2jet < _jet2_maxfrac*ptph || pt2jet < _jet2_minpt;
 
     if (!pt2ndjetcut) continue;
 
@@ -839,7 +863,7 @@ void gjettree::Loop(double cross, bool isgammajet, int NEVT)
 
 
     // Fill histos after deltaphi kinematic cuts
-    bool dphicut = delta_phi(jet.phi, phot.phi) > _deltaphi;
+    //bool dphicut = delta_phi(jet.phi, phot.phi) > _deltaphi;
 
     if (!dphicut) continue;
 
@@ -854,7 +878,7 @@ void gjettree::Loop(double cross, bool isgammajet, int NEVT)
 
 
     // Fill histos after deltaeta kinematic cuts
-    bool detacut = fabs(delta_eta(jet.eta, phot.eta)) < _deltaeta;
+    //bool detacut = fabs(delta_eta(jet.eta, phot.eta)) < _deltaeta;
 
     if (!detacut) continue;
     
