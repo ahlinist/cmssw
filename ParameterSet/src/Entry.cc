@@ -533,6 +533,13 @@ namespace edm {
     result += ')';
   }
 
+  std::string
+  Entry::toString() const {
+    std::string result;
+    toString(result);
+    return result;
+  }
+
 // ----------------------------------------------------------------------
 
   bool
