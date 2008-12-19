@@ -150,12 +150,14 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       std::string fromfilename_;   
 	  
 	  //Correct for Timing 
-	  bool corrtimeEcal;
-	  bool corrtimeBH;
-	  bool bhplus_;
-	  double EBradius_;
+      bool corrtimeEcal;
+      bool corrtimeBH;
+      bool bhplus_;
+      double EBradius_;
 	  
-	  double allave_;
+      double allave_;
+	  
+      bool writetxtfiles_;
 
 };
 
