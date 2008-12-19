@@ -21,13 +21,15 @@ public:
   enum PhotonID {kLoose, kMedium, kTight, kNN, kMedium005, kMedium020};
 
   L3Corr(const JetAlg& jetalg = L3Corr::IC5_DATA, 
-	 const jec::ErrorTypes& errType = jec::kAll);
+	 const jec::ErrorTypes& errType = jec::kAll,
+	 const PhotonID& id = L3Corr::kMedium);
   ~L3Corr(){};
   
   double Rjet(const double pTprime, double& err);
 
   void SetJetAlg(const JetAlg& jetalg = L3Corr::IC5_DATA);
-  void SetErrType(const jec::ErrorTypes& errType);
+  void SetErrType(const jec::ErrorTypes& errType = jec::kAll);
+  void SetPhoID(const PhotonID& id = L3Corr::kMedium);
 
   jec::ErrorTypes GetErrType();
 
@@ -38,18 +40,25 @@ public:
   double _SystErr(const double pTprime) const;
   double _StatErr(const double pTprime) const;
 
-  double _purity(const double pTprime,
-		 const PhotonID& id = L3Corr::kMedium) const;
+  double _purity(const double pTprime, const PhotonID& id) const;
+  //const PhotonID& id = L3Corr::kMedium) const;
   double _SystPurity(const double pTprime, const PhotonID& id) const;
   double _SystPurityID(const double pTprime, const PhotonID& id) const;
   double _SystPurityXsec(const double pTprime, const PhotonID& id) const;
-  double _SystPurity2ndJet(const double pTprime, const PhotonID& id) const;
+  //double _SystPurity2ndJet(const double pTprime, const PhotonID& id) const;
   double _StatPurity(const double pTprime, const PhotonID& id) const;
+
+  double _partonFrag(const double pTprime) const;
+  double _partonUE(const double pTprime) const;
+
+  double _flavorMap(const double pTprime) const;
 
   double _deltaC(const double pTprime,
 		 double& syserr,
-		 const PhotonID& id = L3Corr::kMedium,
+		 const PhotonID& id, // = L3Corr::kMedium,
 		 double (*syserrs)[6] = 0) const;
+
+  double _deltaRjet(const double pTprime, const PhotonID& id) const;
 
   //double _SystParton(const double pTprime) const;
 
@@ -57,6 +66,7 @@ public:
 private:
   JetAlg _jetalg;
   jec::ErrorTypes _errType;
+  PhotonID _phoID;
   bool _isMC;
 
   static const int npar = 3;

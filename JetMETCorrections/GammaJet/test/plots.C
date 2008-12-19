@@ -1,160 +1,427 @@
-#define plots_cxx
-#include "plots.h"
-#include <TH2.h>
-#include <TStyle.h>
-#include <TCanvas.h>
+#include "TFile.h"
+#include "TH1D.h"
+#include "TCanvas.h"
+#include "TPaveStats.h"
+#include "TLegend.h"
+#include "TStyle.h"
+
+#include <string>
 #include <iostream>
-#include <fstream>
 
-void plots::Loop()
-{
-//   In a ROOT session, you can do:
-//      Root > .L plots.C
-//      Root > plots t
-//      Root > t.GetEntry(12); // Fill t data members with entry number 12
-//      Root > t.Show();       // Show values of entry 12
-//      Root > t.Show(16);     // Read and show values of entry 16
-//      Root > t.Loop();       // Loop on all entries
-//
+using namespace std;
 
-//     This is the loop skeleton where:
-//    jentry is the global entry number in the chain
-//    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
-//    jentry for TChain::GetEntry
-//    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
-   if (fChain == 0) return;
+const bool drawStats = false;
+const int kRedHatch = 3654;
+const int kBlueHatch = 3645;
 
-   Long64_t nentries = fChain->GetEntriesFast();
+int plots(string file1, string file2, string dirs = "/", string dirb = "/",
+	  string outdir = "eps", bool rebin = false) {
 
-   Long64_t nbytes = 0, nb = 0;
-   TFile *hOutputFile;
-   hOutputFile = new TFile("plots.root" , "RECREATE" ) ;
+  if (dirs=="") dirs ="/";
+  if (dirb=="") dirb ="/";
+  TDirectory *curdir = gDirectory;
 
-   TH1D* sMajMajphot;
-   TH1D* sMinMinphot;
-   TH1D* ecalisophot;
-   TH1D* ptisophot;
-   TH1D* ntrkisophot;
-   TH1D* hcalovecalphot;
-   TH1D* sMajMajbkg;
-   TH1D* sMinMinbkg;
-   TH1D* ecalisobkg;
-   TH1D* ptisobkg;
-   TH1D* ntrkisobkg;
-   TH1D* hcalovecalbkg;
-   TH1D* sMajMajcutphot;
-   TH1D* sMinMincutphot;
-   TH1D* ecalisocutphot;
-   TH1D* ptisocutphot;
-   TH1D* ntrkisocutphot;
-   TH1D* hcalovecalcutphot;
-   TH1D* sMajMajcutbkg;
-   TH1D* sMinMincutbkg;
-   TH1D* ecalisocutbkg;
-   TH1D* ptisocutbkg;
-   TH1D* ntrkisocutbkg;
-   TH1D* hcalovecalcutbkg;
+  TFile *f1 = new TFile(file1.c_str());
+  assert(!f1->IsZombie());
+  TFile *f2 = new TFile(file2.c_str());
+  assert(!f2->IsZombie());
 
-   sMajMajphot = new TH1D("sMajMajphot","2^{nd} Maj Moment for #gamma",1000,0.,2.);
-   sMinMinphot = new TH1D("sMinMinphot","2^{nd} Min Moment for #gamma",1000,0.,1.4);
-   ecalisophot = new TH1D("ecalisophot","ECAL isol R=0.4 for #gamma", 200, -0.15, 1.5 );
-   ptisophot = new TH1D("ptisophot","trk isolation R=0.3 for #gamma", 200, 0., 5. );
-   ntrkisophot = new TH1D("ntrkisophot","# trk isolation R=0.3 for #gamma", 25, 0., 25. );
-   hcalovecalphot = new TH1D("hcalovecalphot","HCAL/ECAL isolation R=0.4 for #gamma", 1000, -0.15, 1.5 );
+  curdir->cd();
 
-   sMajMajbkg = new TH1D("sMajMajbkg","2^{nd} Maj Moment for QCD bkg",1000,0.,2.);
-   sMinMinbkg = new TH1D("sMinMinbkg","2^{nd} Min Moment for QCD bkg",1000,0.,1.4);
-   ecalisobkg = new TH1D("ecalisobkg","ECAL isol R=0.4 for QCD bkg", 200, -0.15, 1.5 );
-   ptisobkg = new TH1D("ptisobkg","trk isolation R=0.3 for QCD bkg", 200, 0., 5. );
-   ntrkisobkg = new TH1D("ntrkisobkg","# trk isolation R=0.3 for QCD bkg", 25, 0., 25. );
-   hcalovecalbkg = new TH1D("hcalovecalbkg","HCAL/ECAL isolation R=0.4 for QCD bkg", 1000, -0.15, 1.5 );
+  gROOT->ProcessLine(".x cms_jes_style.C");
+  if (drawStats) gStyle->SetOptStat(111111);
+  else gStyle->SetOptStat(0);
 
-   sMajMajcutphot = new TH1D("sMajMajcutphot","2^{nd} Maj Moment for #gamma",1000,0.,2.);
-   sMinMincutphot = new TH1D("sMinMincutphot","2^{nd} Min Moment for #gamma",1000,0.,1.4);
-   ecalisocutphot = new TH1D("ecalisocutphot","ECAL isol R=0.4 for #gamma", 200, -0.15, 1.5 );
-   ptisocutphot = new TH1D("ptisocutphot","trk isolation R=0.3 for #gamma", 200, 0., 5. );
-   ntrkisocutphot = new TH1D("ntrkisocutphot","# trk isolation R=0.3 for #gamma", 25, 0., 25. );
-   hcalovecalcutphot = new TH1D("hcalovecalcutphot","HCAL/ECAL isolation R=0.4 for #gamma", 1000, -0.15, 1.5 );
+  TCanvas *c = new TCanvas("c","c",600,600);
 
-   sMajMajcutbkg = new TH1D("sMajMajcutbkg","2^{nd} Maj Moment for QCD bkg",1000,0.,2.);
-   sMinMincutbkg = new TH1D("sMinMincutbkg","2^{nd} Min Moment for QCD bkg",1000,0.,1.4);
-   ecalisocutbkg = new TH1D("ecalisocutbkg","ECAL isol R=0.4 for QCD bkg", 200, -0.15, 1.5 );
-   ptisocutbkg = new TH1D("ptisocutbkg","trk isolation R=0.3 for QCD bkg", 200, 0., 5. );
-   ntrkisocutbkg = new TH1D("ntrkisocutbkg","# trk isolation R=0.3 for QCD bkg", 25, 0., 25. );
-   hcalovecalcutbkg = new TH1D("hcalovecalcutbkg","HCAL/ECAL isolation R=0.4 for QCD bkg", 1000, -0.15, 1.5 );
+  for (int i = 0; i != 4; ++i) {
+    for (int j = 0; j != 6; ++j) {
+      
+      string hname, fname;
+      if (i==0) { hname="lrp_"; fname="LeadRecoPhot"; }
+      if (i==1) { hname="lrj_"; fname="LeadRecoJet"; }
+      if (i==2) { hname="srp_"; fname="SecRecoPhot"; }
+      if (i==3) { hname="srj_"; fname="SecRecoJet"; }
 
-   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      if (jentry%10000 == 0) std::cout << "Event " << jentry << std::endl;      
-      nb = fChain->GetEntry(jentry);   nbytes += nb;
-      bool ntrk = ntrkiso < 5;
-      bool pti = ptiso / pt < 0.20;
-      bool emf = hcalovecal < 0.1111;
-      bool smaj = sMajMaj < 0.60;
-      bool smin = sMinMin < 0.50;
-      bool ecali = ecaliso < 0.10;
-      if(isgamma){
-	sMajMajphot->Fill(sMajMaj);
-	sMinMinphot->Fill(sMinMin);
-	ecalisophot->Fill(ecaliso);
-	ptisophot->Fill(ptiso);
-	ntrkisophot->Fill(ntrkiso);
-	hcalovecalphot->Fill(hcalovecal);       
-	if(ntrk && pti && emf && smin && ecali)  sMajMajcutphot->Fill(sMajMaj);	  
-	if(ntrk && pti && emf && smaj && ecali)  sMinMincutphot->Fill(sMinMin);	  
-	if(ntrk && pti && emf && smaj && smin) 	  ecalisocutphot->Fill(ecaliso);	  
-	if(emf && smaj && smin && ecali) 	  ptisocutphot->Fill(ptiso);		  
-	if(emf && smaj && smin && ecali) 	  ntrkisocutphot->Fill(ntrkiso);	  
-	if(ntrk && pti && smaj && smin && ecali) hcalovecalcutphot->Fill(hcalovecal); 
-      } else {
-	sMajMajbkg->Fill(sMajMaj);
-	sMinMinbkg->Fill(sMinMin);
-	ecalisobkg->Fill(ecaliso);
-	ptisobkg->Fill(ptiso);
-	ntrkisobkg->Fill(ntrkiso);
-	hcalovecalbkg->Fill(hcalovecal);	
-	if(ntrk && pti && emf && smin && ecali)  sMajMajcutbkg->Fill(sMajMaj);	  
-	if(ntrk && pti && emf && smaj && ecali)  sMinMincutbkg->Fill(sMinMin);	  
-	if(ntrk && pti && emf && smaj && smin) 	  ecalisocutbkg->Fill(ecaliso);	  
-	if(emf && smaj && smin && ecali) 	  ptisocutbkg->Fill(ptiso);		  
-	if(emf && smaj && smin && ecali) 	  ntrkisocutbkg->Fill(ntrkiso);	  
-	if(ntrk && pti && smaj && smin && ecali) hcalovecalcutbkg->Fill(hcalovecal); 
-       }
-      // if (Cut(ientry) < 0) continue;
-   }
-   hOutputFile->Write() ;
-   hOutputFile->Close() ;
-   hOutputFile->Delete();
-}
+      if (j==0) { hname+="pt"; fname+="Pt"; }
+      if (j==1) { hname+="ptop"; fname+="PtoGam"; }
+      if (j==2) { hname+="eta"; fname+="Eta"; }
+      if (j==3) { hname+="phi"; fname+="Phi"; }
+      if (j==4) { hname+="dphivp"; fname+="DeltaPhi"; }
+      if (j==5) { hname+="detavp"; fname+="DeltaEta"; }
+
+      if (i==0 && (j==1 || j==4 || j==5)) continue;
+
+      string title;
+      if (j==0) { title = "p_{T}(%s) [GeV/c]"; }
+      if (j==1) { title = "p_{T}(%s) / p_{T}(calo-#gamma)"; }
+      if (j==2) { title = "#eta(%s)"; }
+      if (j==3) { title = "#phi(%s)"; }
+      if (j==4) { title = "#Delta#phi(%s, calo-#gamma)"; }
+      if (j==5) { title = "#Delta#eta(%s, calo-#gamma)"; }
+
+      if (i==0) title = Form(title.c_str(),"calo-#gamma");
+      if (i==1) title = Form(title.c_str(),"calojet");
+      if (i==2) title = Form(title.c_str(),"2nd calo-#gamma");
+      if (i==3) title = Form(title.c_str(),"2nd calojet");
+
+      TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str());
+      TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str());
+      if (!h1) {
+	cout << (file1+":"+dirs+"/"+hname) << " not found!" << endl;
+	assert(h1);
+      }
+      if (!h2) {
+	cout << (file2+":"+dirb+"/"+hname) << " not found!" << endl;
+	//assert(h2);
+	continue;
+      }
+      curdir->cd();
+
+      double sum1 = h1->Integral();
+      double sum2 = h2->Integral();
+      if (sum1 && sum2) h2->Scale(sum1/sum2);
+      if (rebin) { // && j!=0) {
+	//h1->Rebin(8); h1->Scale(1./8.);
+	//h2->Rebin(8); h2->Scale(1./8.);
+	h1->Rebin(4); h1->Scale(1./4.);
+	h2->Rebin(4); h2->Scale(1./4.);
+      }
+
+      c->Clear();
+      c->SetLogx(kFALSE);
+      if (j==0) c->SetLogx(kTRUE);
+      c->SetLogy(kTRUE);
+      if (j==4 || j==5) c->SetLogy(kFALSE);
+
+      TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
+      leg->SetBorderSize(0);
+      leg->SetFillStyle(kNone);
+      leg->AddEntry(h1, "#gamma jet","F");
+      leg->AddEntry(h2, "QCD","F");
+      if (j==4) { leg->SetX1(0.45); leg->SetX2(0.70); }
+
+      if (j==0)	h1->GetXaxis()->SetRangeUser(10,1000.);
+      //if (j==0) h1->GetXaxis()->SetTitle("p_{T} [GeV/c]");
+      if (j==1) h1->GetXaxis()->SetRangeUser(0,3.);
+      //if (j==1) h1->GetXaxis()->SetTitle("p_{T} / p_{T}^{#gamma}");
+      if (j==2) h1->GetXaxis()->SetRangeUser(-5.,5.);
+      //if (j==2) h1->GetXaxis()->SetTitle("#eta");
+      if (j==3) h1->GetXaxis()->SetRangeUser(0.,TMath::TwoPi()+0.0001);
+      //if (j==3) h1->GetXaxis()->SetTitle("#phi");
+      if (j==4) h1->GetXaxis()->SetRangeUser(0.,TMath::Pi()+0.0001);
+      //if (j==4) h1->GetXaxis()->SetTitle("#Delta#phi(jet,#gamma)");
+      if (j==5) h1->GetXaxis()->SetRangeUser(-3.,2.);
+      //if (j==5) h1->GetXaxis()->SetTitle("#Delta#eta(jet,#gamma)");
+
+      h1->GetXaxis()->SetTitle(title.c_str());
+      h2->GetXaxis()->SetTitle(title.c_str());
+
+      // Histogram drawn first determines the y-axis range
+      if (j!=4) h1->Draw("HF");
+      else h2->Draw("HF");
+
+      h1->SetLineColor(kRed);
+      h1->SetFillColor(kRed);
+      h1->SetFillStyle(kRedHatch);
+      h1->GetXaxis()->SetNoExponent();
+      h1->GetXaxis()->SetMoreLogLabels();
+      h1->Draw("HFsame");
+      c->Update(); // to get the new stats box
+      TPaveStats *stats = (TPaveStats*)gPad->GetPrimitive("stats");
+      //assert(stats);
+      if (stats && drawStats) {
+	stats->SetName("stats_sig");
+	stats->SetFillStyle(kNone);
+	stats->SetLineColor(kRed);
+	stats->SetTextColor(kRed);
+	stats->SetX1NDC(max(stats->GetX1NDC(),stats->GetX2NDC()-0.36));
+      }
+
+      h2->SetLineColor(kBlue);
+      h2->SetFillColor(kBlue);
+      h2->SetFillStyle(kBlueHatch);
+      h2->Draw("HFsames");
+      c->Update(); // to get the new stats box
+      TPaveStats *statb = (TPaveStats*)gPad->GetPrimitive("stats");
+      //assert(statb);
+      if (statb && drawStats && false) {
+ 	statb->SetName("stats_bkg");
+ 	statb->SetFillStyle(kNone);
+ 	statb->SetLineColor(kBlue);
+ 	statb->SetTextColor(kBlue);
+ 	statb->SetX1NDC(max(stats->GetX1NDC()-0.39, 0.20));
+ 	statb->SetX2NDC(min(stats->GetX2NDC()-0.39, stats->GetX1NDC()));
+      }
+
+      if (!drawStats) leg->Draw();
+
+      c->SaveAs((outdir+"/"+fname+".eps").c_str());
+
+    } // for j
+  } // for i
 
 
-TChain * getchain(char *thechain) {
+  for (int i = 0; i != 2; ++i) { // PHOTON ID
+    for (int j = 0; j != 6; ++j) {
 
-  TChain *chain = new TChain("TreeS");
-  std::cout << "Chaining ... " << thechain << std::endl;
-  char pName[2000];
-  char buffer[200];
-  sprintf(buffer, "%s", thechain);
-  ifstream is(buffer);
-  cout << "files " << buffer <<  endl;
-  while(is.getline(buffer, 200, '\n')){
-    //    if (buffer[0] == '#') continue;
-    sscanf(buffer, "%s", pName);
-    std::cout << "   Add: " << buffer << std::endl;
-    chain->Add(pName);
+      string hname, fname, epsname;
+      if (i==0) { hname="lrp_"; fname="LeadRecoPhot"; }
+      if (i==1) { hname="srp_"; fname="SecRecoPhot"; }
+      
+      if (j==0) { hname += "ntrkiso"; epsname = "NtrkIso"; }
+      if (j==1) { hname += "ptiso"; epsname = "PtIso"; }
+      if (j==2) { hname += "emf"; epsname = "EMF"; }
+      if (j==3) { hname += "sMajMaj"; epsname = "ClusMajMaj";}
+      if (j==4) { hname += "sMinMin"; epsname = "ClusMinMin"; }
+      if (j==5) { hname += "ecaliso_new"; epsname = "EcalIso"; }
+      
+      TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
+      TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
+      if (!h1) {
+	cout << (file1+":"+dirs+"/"+hname)<< " not found!" << endl;
+	assert(h1);
+      }
+      if (!h2) {
+	cout << (file2+":"+dirb+"/"+hname)<< " not found!" << endl;
+	//assert(h2);
+	continue;
+      }
+      curdir->cd();
+      
+      double sum1 = h1->Integral();
+      double sum2 = h2->Integral();
+      if (sum1 && sum2) h2->Scale(sum1/sum2);
+      //if (i==1 || i==3) { h2->Rebin(8); h2->Scale(1./8.); }
+      
+      if (j==0) h1->GetXaxis()->SetRangeUser(-0.5,4.5);
+      if (j==0) h1->GetXaxis()->SetTitle("N_{tracks}");
+      if (j==1) h1->GetXaxis()->SetRangeUser(0.,0.2);
+      if (j==1) h1->GetXaxis()->SetTitle("#sum_{tracks} p_{T} / p_{T,#gamma}");
+      if (j==2) h1->GetXaxis()->SetRangeUser(-0.3,0.3);
+      if (j==2) h1->GetXaxis()->SetTitle("HCAL isolation / p_{T,#gamma}");
+      if (j==3) h1->GetXaxis()->SetRangeUser(0.,2.0);
+      if (j==3) h1->GetXaxis()->SetTitle("Cluster major axis #sigma^{2}");
+      if (j==4) h1->GetXaxis()->SetRangeUser(0.,1.0);
+      if (j==4) h1->GetXaxis()->SetTitle("Cluster minor axis #sigma^{2}");
+      if (j==5) h1->GetXaxis()->SetRangeUser(0.,0.2);
+      if (j==5) h1->GetXaxis()->SetTitle("ECAL isolation / p_{T,#gamma}");
+
+      c->Clear();
+      c->SetLogx(kFALSE);
+      c->SetLogy(kTRUE);
+
+      TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
+      leg->SetBorderSize(0);
+      leg->SetFillStyle(kNone);
+      leg->AddEntry(h1, "#gamma jet","F");
+      leg->AddEntry(h2, "QCD","F");
+      
+      h1->SetLineColor(kRed);
+      h1->SetFillColor(kRed);
+      h1->SetFillStyle(kRedHatch);
+      h1->Draw("HF");
+      
+      h2->SetLineColor(kBlue);
+      h2->SetFillColor(kBlue);
+      h2->SetFillStyle(kBlueHatch);
+      h2->Draw("HFsame");
+      
+      leg->Draw();
+      
+      c->SaveAs((outdir+"/"+fname+epsname+".eps").c_str());
+    } // for j
+  } // for i
+
+
+  for (int i = 0; i != 6; ++i) { // MC MATCH VS PARTON
+    for (int j = 0; j != 4; ++j) {
+
+      string hname, fname, epsname;
+      if (i==0 || i==1) { hname="lrp_"; fname="LeadRecoPhot"; }
+      if (i==2 || i==3) { hname="lrj_"; fname="LeadRecoJet"; }
+      if (i==4) { hname="lgg_"; fname="LeadGenPhot"; }
+      if (i==5) { hname="lgj_"; fname="LeadGenJet"; }
+      
+      string title;
+      if (j==0) title = "#Deltap_{T} / p_{T}";
+      if (j==1) title = "#Delta#eta";
+      if (j==2) title = "#Delta#phi";
+      if (j==3) title = "#DeltaR";
+
+      if (i==0) { 
+	title += "(calo-#gamma, gen-#gamma)";
+	if (j==0) { hname += "dptvgg"; epsname = "DPtvGenPhot"; }
+	if (j==1) { hname += "detavgg"; epsname = "DEtavGenPhot"; }
+	if (j==2) { hname += "dphivgg"; epsname = "DPhivGenPhot"; }
+	if (j==3) { hname += "drvgg"; epsname = "DRvGenPhot";}
+      }
+      if (i==1) { 
+	title += "(calo-#gamma, parton-#gamma)";
+	if (j==0) { hname += "dptvg"; epsname = "DPtvParton"; }
+	if (j==1) { hname += "detavg"; epsname = "DEtavParton"; }
+	if (j==2) { hname += "dphivg"; epsname = "DPhivParton"; }
+	if (j==3) { hname += "drvg"; epsname = "DRvParton";}
+      }
+      if (i==2) {
+	title += "(calojet,genjet)";
+	if (j==0) { hname += "dptvg"; epsname = "DPtvGenJet"; }
+	if (j==1) { hname += "detavg"; epsname = "DEtavGenJet"; }
+	if (j==2) { hname += "dphivg"; epsname = "DPhivGenJet"; }
+	if (j==3) { hname += "drvg"; epsname = "DRvGenJet";}
+      }
+      if (i==3) {
+	title += "(calojet, parton-jet)";
+	if (j==0) { hname += "dptvq"; epsname = "DPtvParton"; }
+	if (j==1) { hname += "detavq"; epsname = "DEtavParton"; }
+	if (j==2) { hname += "dphivq"; epsname = "DPhivParton"; }
+	if (j==3) { hname += "drvq"; epsname = "DRvParton";}
+      }
+      if (i==4) { 
+	title += "(gen-#gamma, parton-#gamma)";
+	if (j==0) { hname += "dptvg"; epsname = "DPtvParton"; }
+	if (j==1) { hname += "detavg"; epsname = "DEtavParton"; }
+	if (j==2) { hname += "dphivg"; epsname = "DPhivParton"; }
+	if (j==3) { hname += "drvg"; epsname = "DRvParton";}
+      }      
+      if (i==5) {
+	title += "(genjet, parton-jet)";
+	if (j==0) { hname += "dptvq"; epsname = "DPtvParton"; }
+	if (j==1) { hname += "detavq"; epsname = "DEtavParton"; }
+	if (j==2) { hname += "dphivq"; epsname = "DPhivParton"; }
+	if (j==3) { hname += "drvq"; epsname = "DRvParton";}
+      }      
+
+      TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
+      TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
+      // NB: replace GenPhot with Parton for signal
+      if (hname=="lrp_dptvgg") {
+	h1 = (TH1D*)f1->Get((dirs+"/lrp_dptvg").c_str());
+	
+      }
+      if (hname=="lgg_dptvg") {
+	h1 = (TH1D*)f1->Get((dirs+"/lrp_dptvg").c_str());
+      }
+      if (!h1) {
+	cout << (file1+":"+dirs+"/"+hname)<< " not found!" << endl;
+	assert(h1);
+      }
+      if (!h2) {
+	cout << (file2+":"+dirb+"/"+hname)<< " not found!" << endl;
+	//assert(h2);
+	continue;
+      }
+      curdir->cd();
+      
+      double sum1 = h1->Integral();
+      double sum2 = h2->Integral();
+      if (sum1 && sum2) h2->Scale(sum1/sum2);
+      //if (i==1 || i==3) 
+      //if (rebin && (i!=0 || j==0)) { h2->Rebin(8); h2->Scale(1./8.); }
+      if (rebin) {
+	h2->Rebin(4); h2->Scale(1./4.);
+	// Watch out for multiple rebins
+	if (h1->GetNbinsX() > h2->GetNbinsX())
+	  h1->Rebin(4); h1->Scale(1./4.);
+      }
+      
+      //if (j==0) h1->GetXaxis()->SetRangeUser(-0.5,4.5);
+
+      c->Clear();
+      c->SetLogx(kFALSE);
+      c->SetLogy(kTRUE);
+      
+      TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
+      leg->SetBorderSize(0);
+      leg->SetFillStyle(kNone);
+      leg->AddEntry(h1, "#gamma jet","F");
+      leg->AddEntry(h2, "QCD","F");
+
+      h1->GetXaxis()->SetTitle(title.c_str());
+      h2->GetXaxis()->SetTitle(title.c_str());
+
+      h1->SetLineColor(kRed);
+      h1->SetFillColor(kRed);
+      h1->SetFillStyle(kRedHatch);
+      h1->Draw("HF");
+      
+      h2->SetLineColor(kBlue);
+      h2->SetFillColor(kBlue);
+      h2->SetFillStyle(kBlueHatch);
+      h2->Draw("HFsame");
+
+      leg->Draw();
+      
+      c->SaveAs((outdir+"/"+fname+epsname+".eps").c_str());
+    } // for j
+  } // for i
+
+
+  for (int i = 0; i != 3; ++i) { // EVENT TOPOLOGY
+
+    string hname, fname;
+    if (i==0) { hname="lrj_ptop"; fname="LeadRecoJet"; }
+    if (i==1) { hname="lgj_ptop"; fname="LeadGenJet"; }
+    if (i==2) { hname="lgq_ptop"; fname="LeadQuark"; }
+
+    TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
+    TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
+    if (!h1) {
+      cout << (file1+":"+dirs+"/"+hname) << " not found!" << endl;
+      assert(h1);
+    }
+    if (!h2) {
+      cout << (file2+":"+dirb+"/"+hname) << " not found!" << endl;
+      //assert(h2);
+      continue;
+    }
+    curdir->cd();
+
+    double sum1 = h1->Integral();
+    double sum2 = h2->Integral();
+    if (sum1 && sum2) h2->Scale(sum1/sum2);
+    //if (i==1 || i==3) 
+    //if (rebin) { h2->Rebin(8); h2->Scale(1./8.); }
+    if (rebin) {
+      h1->Rebin(4); h1->Scale(1./4.); 
+      h2->Rebin(4); h2->Scale(1./4.);
+    }
+
+    c->Clear();
+    c->SetLogx(kFALSE);
+    c->SetLogy(kTRUE);
+
+    TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
+    leg->SetBorderSize(0);
+    leg->SetFillStyle(kNone);
+    leg->AddEntry(h1, "#gamma jet","F");
+    leg->AddEntry(h2, "QCD","F");
+
+    if (i==0) h1->GetXaxis()->SetTitle("p_{T}(calojet) / p_{T}(calo-#gamma)");
+    if (i==1) h1->GetXaxis()->SetTitle("p_{T}(genjet) / p_{T}(calo-#gamma)");
+    if (i==2) h1->GetXaxis()->SetTitle("p_{T}(parton-jet) / p_{T}(calo-#gamma)");
+
+    h1->SetLineColor(kRed);
+    h1->SetFillColor(kRed);
+    h1->SetFillStyle(kRedHatch);
+    h1->Draw("HF");
+
+    h2->SetLineColor(kBlue);
+    h2->SetFillColor(kBlue);
+    h2->SetFillStyle(kBlueHatch);
+    h2->Draw("HFsame");
+
+    leg->Draw();
+
+    c->SaveAs((outdir+"/"+fname+"PtoGam.eps").c_str());
   }
-  is.close();
-  return chain;
 
+  f1->Close();
+  f2->Close();
+  curdir->cd();
+
+  //gROOT->Reset(); // loses also variables in mk_plots.C
+  gROOT->Clear(); // important, otherwise mk_plots.C crashes in third loop
+
+  return 0;
 }
-
