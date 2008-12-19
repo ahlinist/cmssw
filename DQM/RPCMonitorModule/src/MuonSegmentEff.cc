@@ -27,6 +27,23 @@ camilo.carrilloATcern.ch
 #include "TAxis.h"
 #include "TString.h"
 
+double straighter(RPCDetId rpcId){
+  
+  bool ok = true;
+  RPCGeomServ rpcsrv(rpcId);
+
+  if(rpcId.station()==2||rpcId.station()==1&&rpcId.ring()==2&&rpcsrv.segment()%2==0){
+    ok=false;
+  }
+  
+  if(ok == false){
+    // std::cout<<"CSC \t \t \t \t Correcting orientation in "<<rpcsrv.name()<<std::endl;
+    return -1.;
+  }else{
+    return 1.;
+  }
+}
+
 int mySegment(RPCDetId rpcId){
   int seg=0;
   int nsec=36;
@@ -396,22 +413,36 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	RPCDetId rpcId = (*r)->id();
 	RPCGeomServ rpcsrv(rpcId);
 	std::string nameRoll = rpcsrv.name();
-	std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 	sprintf(detUnitLabel ,"%s",nameRoll.c_str());
-
+	
+	//std::cout<<nameRoll<<std::endl;
+	
 	sprintf(layerLabel ,"%s",nameRoll.c_str());
 	RPCDigiCollection::Range rpcRangeDigi=rpcDigis->get(rpcId);
+	
 	for (RPCDigiCollection::const_iterator digiIt = rpcRangeDigi.first;digiIt!=rpcRangeDigi.second;++digiIt){
 	  int stripDetected=digiIt->strip();
 	  sprintf(meIdRPC,"BXDistribution_%s",detUnitLabel);
-	  meMap[meIdRPC]->Fill(digiIt->bx());
-	  if(rpcId.region()==0){
-	    sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
-	  }else {
-	    sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
-	  }
-	  meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
 	  
+	  //std::cout<<"Before The If"<<std::endl;
+	  if(incldt == true && incldtMB4 == true){
+	    if(rpcId.region()==0){
+	      //std::cout<<"In the Barrel "<<std::endl;
+	      std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
+	      meMap[meIdRPC]->Fill(digiIt->bx());
+	      sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
+	      meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
+	    }
+	  }
+	  if(inclcsc){
+	    if(rpcId.region()!=0){ 
+	      //std::cout<<"In the End Cap "<<std::endl;
+	      std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
+	      meMap[meIdRPC]->Fill(digiIt->bx());
+	      sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
+	      meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
+	    }
+	  }
 	}
       }
     }
@@ -1209,7 +1240,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
 		      countRecHits++;
 		      LocalPoint recHitPos=recHit->localPosition();
-		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();
+		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x()*straighter(rollasociated->id());//Corrections to the wrong orientations
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		      if(fabs(res)<fabs(minres)){
 			minres=res;
