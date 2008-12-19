@@ -84,6 +84,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    sMAves_ = iConfig.getUntrackedParameter<std::vector<double> >("SMAverages", listDefaults);
    sMCorr_ = iConfig.getUntrackedParameter<std::vector<double> >("SMCorrections", listDefaults);
 
+   writetxtfiles_      = iConfig.getUntrackedParameter<bool>("WriteTxtFiles",false);
 }
 
 
@@ -264,9 +265,11 @@ void EcalTimingAnalysis::endJob() {
   TProfile* ttRTime[54];
 
   ofstream smave_outfile;
-    smave_outfile.open(Form("SMAverages_%s",txtFileName_.c_str()),std::ios::out);
-    smave_outfile<< "# Average time of the peak for each SM, (sample units)"<<std::endl;
-    smave_outfile<<"#   SM \t  time of the peak "<<std::endl;
+  if (writetxtfiles_) {
+     smave_outfile.open(Form("SMAverages_%s",txtFileName_.c_str()),std::ios::out);
+     smave_outfile<< "# Average time of the peak for each SM, (sample units)"<<std::endl;
+     smave_outfile<<"#   SM \t  time of the peak "<<std::endl;
+  }
   
   TProfile *fullttTime = new TProfile("Inside_TT_timing","Inside TT timing;xtal in TT;relative time from first xtal (1 clock = 25 ns)",26,0.,26.,-1.,1.);
   TProfile *fullttRTime = new TProfile("Inside_TT_Reltiming","Inside TT Rel timing;xtal in TT;relative time from first xtal (1 clock = 25 ns)",26,0.,26.,-1.,1.);
@@ -336,7 +339,7 @@ void EcalTimingAnalysis::endJob() {
     }
     if (absnum > 0.) absmean /= absnum; //this puts the mean in a manageable form. 
     std::cout << " absmean " << absmean << " absnum " << absnum << std::endl;
-	smave_outfile << std::setw(4)<<dcc << " " << std::setw(6)<<std::setprecision(5)<< absmean <<std::endl;
+    if (writetxtfiles_) smave_outfile << std::setw(4)<<dcc << " " << std::setw(6)<<std::setprecision(5)<< absmean <<std::endl;
 	
     TT = 0;
     for(int cry=1; cry < numXtals; cry++){
@@ -386,16 +389,18 @@ void EcalTimingAnalysis::endJob() {
       edm::LogInfo("EcalTimingAnalysis")<<"SM " << (dcc+600) << "  " << u+1<<"  "<< mean[u] << "  "<< RMS[u]<<"  " <<meanr[u] << "  "<< RMSr[u];
     }
     
-
-
     ofstream txt_outfile;
-    txt_outfile.open(Form("SM_%d_%s",fed,txtFileName_.c_str()),std::ios::out);
-    txt_outfile<< "# Average time of the peak for each TT, (sample units)"<<std::endl;
-    txt_outfile<<"#   TT   time of the peak  \t  TT RMS \t rel timing \t TT RMS"<<std::endl;
+    if (writetxtfiles_) {
+       txt_outfile.open(Form("SM_%d_%s",fed,txtFileName_.c_str()),std::ios::out);
+       txt_outfile<< "# Average time of the peak for each TT, (sample units)"<<std::endl;
+       txt_outfile<<"#   TT   time of the peak  \t  TT RMS \t rel timing \t TT RMS"<<std::endl;
+    }
     for(int i=0;i<68;i++){
-      txt_outfile <<"   "<<std::setw(4)<<i+1<<" \t "<<std::setw(6)<<std::setprecision(5)<< mean[i] <<" \t "
-      <<std::setw(6)<<std::setprecision(5)<<RMS[i]<<" \t "<<std::setw(6)<<std::setprecision(5)<< meanr[i] <<" \t "
-      <<std::setw(6)<<std::setprecision(5)<<RMSr[i]<< std::endl;
+      if (writetxtfiles_) {
+         txt_outfile <<"   "<<std::setw(4)<<i+1<<" \t "<<std::setw(6)<<std::setprecision(5)<< mean[i] <<" \t "
+         <<std::setw(6)<<std::setprecision(5)<<RMS[i]<<" \t "<<std::setw(6)<<std::setprecision(5)<< meanr[i] <<" \t "
+         <<std::setw(6)<<std::setprecision(5)<<RMSr[i]<< std::endl;
+      }
       ttTiming_[dcc-1]->SetPoint(i,i+1,mean[i]);
       ttTiming_[dcc-1]->SetPointError(i,0.5,RMS[i]);
       ttTimingAll_  ->SetPoint((dcc-1)*68+i,double(fed)+double(i+1)/100.,mean[i]);
@@ -407,15 +412,17 @@ void EcalTimingAnalysis::endJob() {
       ttTimingAllSMChng_  ->SetPoint((dcc-1)*68+i,double(fed)+double(i+1)/100.,mean[i]-sMCorr_[dcc-1]);
       ttTimingAllSMChng_  ->SetPointError((dcc-1)*68+i,1./200.,RMS[i]);
     }
-    txt_outfile.close();
+   if (writetxtfiles_) txt_outfile.close();
     
     ofstream txt_channels;
-    txt_channels.open(Form("SM_%d_%s",fed,txtFileForChGroups_.c_str()),std::ios::out);
-    for(int i=1;i<numXtals;i++){
-      txt_channels <<fed<<"   "<<std::setw(4)<<i<<" \t "<<std::setw(6)<<std::setprecision(5)
-                    <<relativeTimingBlueConv_[dcc-1]->GetBinContent(i)<< std::endl;
+    if (writetxtfiles_) {
+       txt_channels.open(Form("SM_%d_%s",fed,txtFileForChGroups_.c_str()),std::ios::out);
+       for(int i=1;i<numXtals;i++){
+         txt_channels <<fed<<"   "<<std::setw(4)<<i<<" \t "<<std::setw(6)<<std::setprecision(5)
+                       <<relativeTimingBlueConv_[dcc-1]->GetBinContent(i)<< std::endl;
+       }
+       txt_channels.close();
     }
-    txt_channels.close();
     
     //Now I add in a section that looks at the relative timing of the xtals
     for(int cry=1; cry < numXtals; cry++){
@@ -429,7 +436,7 @@ void EcalTimingAnalysis::endJob() {
     //End section of special area of making relative plots
    
   }
-  smave_outfile.close();
+  if(writetxtfiles_) smave_outfile.close();
   TProfile2D* ttTimingProfile = (TProfile2D*) ttTimingEtaPhi_->Project3DProfile("yx");
   ttTimingProfile->SetTitle("(Phi,Eta,time) for all FEDs (SM,TT binning);i#phi;i#eta");
   ttTimingProfile->SetName("timeTTProfile");
