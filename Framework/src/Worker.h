@@ -140,7 +140,7 @@ namespace edm {
     cms::Exception& exceptionContext(ModuleDescription const& iMD,
 				     T const& ip,
 				     cms::Exception& iEx) {
-      iEx << iMD.moduleName_ << "/" << iMD.moduleLabel_ 
+      iEx << iMD.moduleName() << "/" << iMD.moduleLabel()
         << " " << ip.id() << "\n";
       return iEx;
     }

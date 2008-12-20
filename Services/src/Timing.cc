@@ -142,8 +142,8 @@ namespace edm {
         edm::LogAbsolute("TimeModule") << "TimeModule> "
 	   << curr_event_.event() << " "
 	   << curr_event_.run() << " "
-	   << desc.moduleLabel_ << " "
-	   << desc.moduleName_ << " "
+	   << desc.moduleLabel() << " "
+	   << desc.moduleName() << " "
 	   << t;
       }
    
