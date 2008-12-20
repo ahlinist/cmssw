@@ -31,9 +31,7 @@ namespace edm {
 
   EDLooper::Status
   EDLooper::doDuringLoop(edm::EventPrincipal& eventPrincipal, const edm::EventSetup& es) {
-    edm::ModuleDescription modDesc;
-    modDesc.moduleName_="EDLooper";
-    modDesc.moduleLabel_="";
+    edm::ModuleDescription modDesc("EDLooper", "");
     Event event(eventPrincipal, modDesc);
 
     Status status = kContinue;
