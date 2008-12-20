@@ -57,7 +57,7 @@ using namespace std;
 SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
 
   const string metname = "Muon|RecoMuon|SETMuonSeed";  
-  std::cout<<" The SET SEED"<<std::endl;
+  //std::cout<<" The SET SEED"<<std::endl;
 
   ParameterSet serviceParameters = parameterSet.getParameter<ParameterSet>("ServiceParameters");
   theService        = new MuonServiceProxy(serviceParameters);
@@ -67,16 +67,17 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
 
   LogTrace(metname) << "constructor called" << endl;
   
-  // The inward-outward fitter (starts from seed state)
-  ParameterSet filterPSet = trajectoryBuilderParameters.getParameter<ParameterSet>("FilterParameters");
-  theFilter = new SETFilter(filterPSet,theService);
-
   // load pT seed parameters
   thePtExtractor = new PtExtractor(trajectoryBuilderParameters);
 
   apply_prePruning = trajectoryBuilderParameters.getParameter<bool>("Apply_prePruning");
 
   useSegmentsInTrajectory = trajectoryBuilderParameters.getParameter<bool>("UseSegmentsInTrajectory");
+
+  // The inward-outward fitter (starts from seed state)
+  ParameterSet filterPSet = trajectoryBuilderParameters.getParameter<ParameterSet>("FilterParameters");
+  filterPSet.addUntrackedParameter("UseSegmentsInTrajectory", useSegmentsInTrajectory);
+  theFilter = new SETFilter(filterPSet,theService);
 
   useRPCs = filterPSet.getParameter<bool>("EnableRPCMeasurement");
 
@@ -100,7 +101,7 @@ SETMuonProducer::~SETMuonProducer(){
 }
 
 void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSetup){
-  std::cout<<" start producing..."<<std::endl;  
+  //std::cout<<" start producing..."<<std::endl;  
   const string metname = "Muon|RecoMuon|SETMuonSeed";  
 
   MuonPatternRecoDumper debug;
@@ -124,17 +125,20 @@ void SETMuonProducer::produce(edm::Event& event, const edm::EventSetup& eventSet
     }
     TrajectoryStateOnSurface firstTSOS = setMeasurementContainer.at(iTraj).first; 
      PropagationDirection dir = oppositeToMomentum;
+     if(useSegmentsInTrajectory){
+       dir = alongMomentum;// why forward (for rechits) later?
+     }
      TrajectoryStateTransform tsTransform;
        PTrajectoryStateOnDet *seedTSOS =
       tsTransform.persistentState( firstTSOS, setMeasurementContainer.at(iTraj).second.at(0)->geographicalId().rawId());
     TrajectorySeed seed(*seedTSOS,recHitsContainer,dir);    
     output->push_back(seed);
     TrajectorySeed::range range = seed.recHits();
-    std::cout<<" firstTSOS = "<<debug.dumpTSOS(firstTSOS)<<std::endl;
-    std::cout<<" iTraj = "<<iTraj<<" hits = "<<range.second-range.first<<std::endl;
-    std::cout<<" nhits = "<<setMeasurementContainer.at(iTraj).second.size()<<std::endl;
+    //std::cout<<" firstTSOS = "<<debug.dumpTSOS(firstTSOS)<<std::endl;
+    //std::cout<<" iTraj = "<<iTraj<<" hits = "<<range.second-range.first<<std::endl;
+    //std::cout<<" nhits = "<<setMeasurementContainer.at(iTraj).second.size()<<std::endl;
     for(unsigned int iRH=0;iRH<setMeasurementContainer.at(iTraj).second.size();++iRH){
-      std::cout<<" RH = "<<iRH+1<<" globPos = "<<setMeasurementContainer.at(iTraj).second.at(iRH)->globalPosition()<<std::endl;
+      //std::cout<<" RH = "<<iRH+1<<" globPos = "<<setMeasurementContainer.at(iTraj).second.at(iRH)->globalPosition()<<std::endl;
     }
   }
   event.put(output);
@@ -215,10 +219,10 @@ SETMuonProducer::trajectories(const edm::Event& event){
                                               muonRecHits_DT2D_hasPhi,
                                               muonRecHits_DT2D_hasZed,
                                               muonRecHits_RPC);
-  std::cout<<"We have formed "<<MuonRecHitContainer_clusters.size()<<" clusters"<<std::endl;
+  //std::cout<<"We have formed "<<MuonRecHitContainer_clusters.size()<<" clusters"<<std::endl;
   // for each cluster,
   for(unsigned int cluster = 0; cluster < MuonRecHitContainer_clusters.size(); ++cluster) {
-    std::cout<<" This is cluster number : "<<cluster<<std::endl;
+    //std::cout<<" This is cluster number : "<<cluster<<std::endl;
      std::vector <seedSet> seedSets_inCluster; 
 
    //--- Sort segments (first will be ones with smaller distance to IP)
@@ -305,7 +309,7 @@ SETMuonProducer::trajectories(const edm::Event& event){
       seedSets_inCluster = fillSeedSets(allValidSets);
     }
     //// find the best valid combinations using simple (no material effects) chi2-fit 
-    std::cout<<"Found "<<seedSets_inCluster.size()<<" valid sets in the current cluster."<<std::endl;
+    //std::cout<<"Found "<<seedSets_inCluster.size()<<" valid sets in the current cluster."<<std::endl;
     if(seedSets_inCluster.size()){
       //TrajectorySeed seed;
       //PropagationDirection dir = alongMomentum;
@@ -1038,7 +1042,7 @@ fillSeedSets(std::vector <MuonRecHitContainer> & allValidSets){
 	pT= -3000;
       }
     }
-    std::cout<<" THE pT from the parametrization: "<<momentum_estimate[0]<<std::endl;
+    //std::cout<<" THE pT from the parametrization: "<<momentum_estimate[0]<<std::endl;
     // estimate the charge of the track candidate from the delta phi of two segments:
     //int charge      = dPhi > 0 ? 1 : -1; // what we want is: dphi < 0 => charge = -1
     int charge =  momentum_estimate[0]> 0 ? 1 : -1;
@@ -1087,9 +1091,9 @@ fillSeedSets(std::vector <MuonRecHitContainer> & allValidSets){
       }
     }
     int chargeEstimate = charge;
-    std::cout<<"Final estimated p  "<<momEstimate.mag() <<std::endl;
-    std::cout<<"Final estimated pT "<<momEstimate.perp()<<std::endl;
-    std::cout<<"Final estimated q  "<<chargeEstimate<<std::endl;
+    //std::cout<<"Final estimated p  "<<momEstimate.mag() <<std::endl;
+    //std::cout<<"Final estimated pT "<<momEstimate.perp()<<std::endl;
+    //std::cout<<"Final estimated q  "<<chargeEstimate<<std::endl;
 
     // push back info to vector of structs:
 
