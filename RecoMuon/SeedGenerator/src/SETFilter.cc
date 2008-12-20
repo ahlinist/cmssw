@@ -57,6 +57,7 @@ SETFilter::SETFilter(const ParameterSet& par,
  //theOverlappingChambersFlag(true)
 {
   thePropagatorName = par.getParameter<string>("Propagator");
+  useSegmentsInTrajectory = par.getUntrackedParameter<bool>("UseSegmentsInTrajectory");
 }
 
 SETFilter::~SETFilter(){
@@ -114,7 +115,7 @@ bool SETFilter::fwfit_SET(std::vector < seedSet> & validSegmentsSet,
   std::vector < TrajectoryStateOnSurface > lastUpdatedTSOS_Vect(validSegmentsSet.size());
   // loop over all valid sets
   for(unsigned int iSet = 0; iSet<validSegmentsSet.size(); ++iSet){
-    std::cout<<" iSet = "<<iSet<<std::endl;
+    //std::cout<<" iSet = "<<iSet<<std::endl;
     //---- start fit from the origin
     Hep3Vector origin (0.,0.,0.);
     std::vector < TrajectoryMeasurement > trajectoryMeasurementsInTheSet_tmp;
@@ -215,9 +216,17 @@ bool SETFilter::transformLight(Trajectory::DataContainer &measurements_segments,
 
   bool success = true;
   // loop over all segments in the trajectory
-  //for(int iMeas = measurements_segments.size() - 1; iMeas>-1;--iMeas){
-  for(uint iMeas = 0; iMeas<measurements_segments.size();++iMeas){
-    hitContainer.push_back(measurements_segments[iMeas].recHit());
+  if(useSegmentsInTrajectory){// if segments the "backword fit" (rechits)
+                              // performed later is actually a forward one (?!) 
+    for(uint iMeas = 0; iMeas<measurements_segments.size();++iMeas){
+      hitContainer.push_back(measurements_segments[iMeas].recHit());
+    }
+  }
+  else{
+    for(int iMeas = measurements_segments.size() - 1; iMeas>-1;--iMeas){
+      hitContainer.push_back(measurements_segments[iMeas].recHit());
+    }
+
   }
   // this is the last segment state
   firstTSOS = measurements_segments.at(0).forwardPredictedState();
@@ -385,7 +394,7 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
     pMag = 10.;// GeV
   }
   double invP = 1./pMag;
-  std::cout<<"INIT pMag = "<<pMag<<" invP = "<<invP<<" theta = "<<theta<<" phi = "<<phi<<std::endl;
+  //std::cout<<"INIT pMag = "<<pMag<<" invP = "<<invP<<" theta = "<<theta<<" phi = "<<phi<<std::endl;
 
   //---- apply downhill SIMPLEX minimization (also "amoeba" method; thus the "feet" below are  amoeba's feet)
 
@@ -487,8 +496,8 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
   // do we need that?
   lastUpdatedTSOS_Vect[iSet]= *(lastUpdatedTSOS_pointer[bestFitElement]);
 
-  std::cout<<"FINAL:  P = "<<muonCandidate.momentum.mag()<<" theta = "<<muonCandidate.momentum.theta()<<" phi = "<<muonCandidate.momentum.phi()<<std::endl;
-  std::cout<<"    chi = "<<chi2Feet[bestFitElement]<<std::endl;
+  //std::cout<<"FINAL:  P = "<<muonCandidate.momentum.mag()<<" theta = "<<muonCandidate.momentum.theta()<<" phi = "<<muonCandidate.momentum.phi()<<std::endl;
+  //std::cout<<"    chi = "<<chi2Feet[bestFitElement]<<std::endl;
   return minChi2;
 }
 

@@ -190,6 +190,8 @@ private:
   int cscChambers;
   int rpcChambers;
 
+  bool useSegmentsInTrajectory;
+
   /// used in the SET BW fit
   edm::ESHandle<TrajectoryFitter> theBWLightFitter;
   std::string theBWLightFitterName;

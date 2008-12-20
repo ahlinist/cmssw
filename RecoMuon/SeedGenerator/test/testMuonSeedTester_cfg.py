@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RecoMuon")
+
+#from RecoMuon.StandAloneMuonProducer.mumin_e_60_300_cff import *
+
 # Messages
 #process.load("RecoMuon.Configuration.MessageLogger_cfi")
 #process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -24,15 +27,18 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 process.MuonNumberingInitialization = cms.ESProducer("MuonNumberingInitialization")
 
-
-process.source = cms.Source("PoolSource",
-#                           fileNames = cms.untracked.vstring('/store/relval/CMSSW_2_1_9/RelValSingleMuPt10/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/IDEAL_V9_v2/0000/2A00EECC-A185-DD11-93A9-000423D9517C.root')
-                            fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/s/stoyan/mc/ingo/cmssw2_1_9-mumin_e_60_300_probev2__1.root')
-                            )
-
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(100)
+    )
+process.source = cms.Source("PoolSource",
+        fileNames = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/s/stoyan/mc/ingo/cmssw2_1_9-mumin_e_60_300_probev2__1.root'
+	),
+        skipEvents = cms.untracked.uint32(0)
 )
+	  
+
+
 process.out = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string('RecoMuons.root')
                                )
