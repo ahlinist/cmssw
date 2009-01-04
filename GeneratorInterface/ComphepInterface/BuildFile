@@ -1,6 +1,6 @@
 <use name=boost>
 <use name=FWCore/Framework>
-<use name=SimDataFormats/HepMCProduct>
+<use name=SimDataFormats/GeneratorProducts>
 <use name=clhep> 
 <use name=hepmc> 
 <use name=pythia6>
@@ -14,15 +14,6 @@
 
 <export>
  <lib name=GeneratorInterfaceComphepInterface>
- <use name=boost>
- <use name=FWCore/Framework>
- <use name=SimDataFormats/HepMCProduct>
- <use name=clhep> 
- <use name=hepmc> 
- <use name=pythia6>
- <use name=root>
- <use name=Utilities/StorageFactory>
- <use name=GeneratorInterface/CommonInterface>
 </export>
 
 
