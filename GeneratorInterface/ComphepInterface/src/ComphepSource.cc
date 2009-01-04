@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/04/09 14:25:40 $
- *  $Revision: 1.6 $
+ *  $Date: 2008/11/04 20:40:32 $
+ *  $Revision: 1.7 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -15,7 +15,7 @@
 
 #include "GeneratorInterface/ComphepInterface/interface/ComphepSource.h"
 #include "GeneratorInterface/ComphepInterface/interface/ComphepWrapper.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
