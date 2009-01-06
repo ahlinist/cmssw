@@ -50,15 +50,17 @@ process.patcrosscleaner.ElectronJetCrossCleaning.SharedEtoJetE     = 0.7
 process.patcrosscleaner.ElectronJetCrossCleaning.SharedEForNIsoEle = -1.
 process.patcrosscleaner.ElectronJetCrossCleaning.IsolationKey  = 'TrackerIso'
 process.patcrosscleaner.ElectronJetCrossCleaning.IsoValueCut   = 1.
+process.patcrosscleaner.ElectronJetCrossCleaning.ElectronID   = 'eidRobustLoose'
 # Parameters for photon-jet cross-cleaning
 process.patcrosscleaner.PhotonJetCrossCleaning.deltaR_min   = 0.5
 process.patcrosscleaner.PhotonJetCrossCleaning.IsoValueCut  = 0.3
 process.patcrosscleaner.PhotonJetCrossCleaning.IsolationKey = 'CaloIso'
+process.patcrosscleaner.PhotonJetCrossCleaning.PhotonID = 'TightPhoton'
 # Parameters for muon-jet cross-cleaning
 process.patcrosscleaner.MuonJetCrossCleaning.deltaR_min   = 0.2
 process.patcrosscleaner.MuonJetCrossCleaning.caloIso_max  = 10.0
 process.patcrosscleaner.MuonJetCrossCleaning.trackIso_max = 10.0
-
+process.patcrosscleaner.MuonJetCrossCleaning.MuonID = 'TM2DCompatibilityTight'
 
 
 
@@ -69,7 +71,7 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('QCD500to1000-madgraph_test.root')
+    fileName = cms.string('QCDDiJetPt230to300_test.root')
 )
 
 process.source = cms.Source("PoolSource",
@@ -161,11 +163,11 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
                 selector = cms.string('JetEventSelector'),
                 # jetTag = cms.InputTag("selectedLayer1Jets"),
                 jetTag = cms.InputTag("patcrosscleaner:ccJets"),
-                minEt = cms.vdouble(50.0, 50.0)
+                minEt = cms.vdouble(20.0, 20.0)
             ),
             Preselection = cms.PSet(
-                #components = cms.vstring('PreJet'),
-                components = cms.vstring(),
+                components = cms.vstring('PreJet'),
+                #components = cms.vstring(),
                 selector = cms.string('EventSelectorAND')
             ),
             Alpha = cms.PSet(
@@ -179,9 +181,9 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
                              
                   
 
-    pathNames = cms.vstring('HLT_Jet180','HLT_DiJetAve130','HLT_MET50','HLT_Mu9')          ,    
+    pathNames = cms.vstring('HLT_Jet180','HLT_DiJetAve130','HLT_MET50','HLT_Mu9') ,    
                    
-    eventWeight = cms.double(0.298),
+    eventWeight = cms.double(19.67249),
   
     triggerResults = cms.InputTag("TriggerResults","","HLT"),
     plotSelection = cms.vstring('Preselection'),
@@ -194,24 +196,28 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
 #process.genParticles.abortOnUnknownPDGCode = False
 
 process.selectedLayer2Hemispheres = cms.EDProducer("PATHemisphereProducer",
-    patJets = cms.InputTag("patcrosscleaner:ccJets"),
-    maxTauEta = cms.double(-1.0),
-    maxPhotonEta = cms.double(5.0),
-    minMuonEt = cms.double(10.0),
-    patMuons = cms.InputTag("patcrosscleaner:ccMuons"),
-    maxElectronEta = cms.double(5.0),
-    patElectrons = cms.InputTag("patcrosscleaner:ccElectrons"),
-    patMets = cms.InputTag(""),
-    maxMuonEta = cms.double(5.0),
-    minTauEt = cms.double(1000000.0),#comment out taus
-    minPhotonEt = cms.double(200000.0),#comment out photons
-    minElectronEt = cms.double(10.0),
-    minJetEt = cms.double(50.0),
-    combinationMethod = cms.int32(3),
-    maxJetEta = cms.double(5.0),
-    seedMethod = cms.int32(3),
+    patJets = cms.InputTag("selectedLayer1Jets"),
+    patMuons = cms.InputTag("selectedLayer1Muons"),
+    patElectrons = cms.InputTag("selectedLayer1Electrons"),
     patPhotons = cms.InputTag("selectedLayer1Photons"),
-    patTaus = cms.InputTag("selectedLayer1Taus")
+    patTaus = cms.InputTag("selectedLayer1Taus") ,                                  
+    patMets = cms.InputTag(""),
+                                                   
+    maxElectronEta = cms.double(5.0),
+    maxTauEta = cms.double(-1.0),
+    maxPhotonEta = cms.double(5.0), 
+    maxMuonEta = cms.double(5.0),
+    maxJetEta = cms.double(5.0),
+                                                   
+    minMuonEt = cms.double(1000000.0),#comment out muons                                        
+    minTauEt = cms.double(1000000.0),#comment out taus
+    minPhotonEt = cms.double(100000.0),#comment out photons
+    minElectronEt = cms.double(1000000.0),#comment out electrons
+    minJetEt = cms.double(50.0),
+                                                   
+    combinationMethod = cms.int32(3),
+    seedMethod = cms.int32(3)
+  
 )
 
 
@@ -223,9 +229,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 
-#process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
-#process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
 process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
+#process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
+#process.p = cms.Path(process.patLayer0*process.patLayer1*process.patcrosscleaner*process.selectedLayer2Hemispheres*process.dijet)
 
 
 ## Necessary fixes to run 2.2.X on 2.1.X data

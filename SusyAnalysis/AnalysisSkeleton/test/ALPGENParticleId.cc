@@ -60,7 +60,7 @@ ALPGENParticleId::ALPGENParticleId()
 }
 
 
-int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag, int* ids , int* refs,float* genPt, float* genPhi, float* genEta,int* status, int length)
+int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag, int* ids , int* refs,float* genE,float* genPx,float* genPy,float* genPz, float* genPhi, float* genEta,int* status, int length)
 {
   using namespace edm;
   pT = 0;
@@ -94,7 +94,7 @@ int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag,
 		refs[position]=-1;
 		//	(*refs).push_back(0);
 		//	edm::LogInfo("SusyDiJetEvent") <<"daughters 2 ";
-		addHardParticle(p.daughter(idau)->daughter(0),ids,refs,genPt,genPhi,genEta,status,length,0); 
+		addHardParticle(p.daughter(idau)->daughter(0),ids,refs,genE,genPx,genPy,genPz,genPhi,genEta,status,length,0); 
 		//	edm::LogInfo("SusyDiJetEvent") <<"daughters 3 ";
 
 	      }
@@ -112,16 +112,21 @@ int ALPGENParticleId::AplGenParID(const edm::Event& iEvent,edm::InputTag genTag,
 }
 
 
-int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* refs,float* genPt, float* genPhi, float* genEta,int* status, int length,int mother )
+int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* refs,float* genE,float* genPx, float* genPy,float* genPz, float* genPhi, float* genEta,int* status, int length,int mother )
 {
 
   if(position<length-1){
     ids[position] = p->pdgId();
-    genPt[position] = p->pt();
+    genE[position] = p->energy();
+    genPx[position] = p->px();
+    genPy[position] = p->py();
+    genPz[position] = p->pz();
     genPhi[position] =p->phi();
     genEta[position] =p->eta();
     status[position] =p->status();
    position++;
+
+  
     
     int nd =  p->numberOfDaughters();
     
@@ -132,7 +137,7 @@ int ALPGENParticleId::addHardParticle(const reco::Candidate* p,int* ids , int* r
 	refs[position] = mother;
      
      
-	addHardParticle( p->daughter(idau),ids,refs,genPt,genPhi,genEta,status,length,position); 
+	addHardParticle( p->daughter(idau),ids,refs,genE,genPx,genPy,genPz,genPhi,genEta,status,length,position); 
      
       }
 

@@ -128,6 +128,7 @@ private:
   double mTempTreeJetsPhi[50];
   double mTempTreeJetsFem[50];
   int mTempTreeJetPartonFlavour[50];
+  int mTempTreeJetsHemi[50];
 
   int    mTempTreeNccjets;
    double mTempTreeccJetsEt[50];
@@ -151,9 +152,9 @@ private:
 
  
 
-  double mTempTreeJetsBTag_TkCountHighEff[50];
-  double mTempTreeJetsBTag_SimpleSecVtx[50];
-  double mTempTreeJetsBTag_CombSecVtx[50];
+  float mTempTreeJetsBTag_TkCountHighEff[50];
+  float mTempTreeJetsBTag_SimpleSecVtx[50];
+  float mTempTreeJetsBTag_CombSecVtx[50];
 
   double mTempTreeGenJetsEt[50];
   double mTempTreeGenJetsPt[50];
@@ -235,8 +236,13 @@ private:
   double mTempTreeMuonHCalIso[50];
   double mTempTreeMuonAllIso[50];
   double mTempTreeMuonTrkChiNorm[50];
-
   double mTempTreeMuonCharge[50];
+  bool mTempTreeMuonIsGlobal[50];
+  bool mTempTreeMuonIsStandAlone[50];
+  bool mTempTreeMuonIsTracker[50]; 
+  bool mTempTreeMuonIsGlobalTight[50];
+  bool mTempTreeMuonIsTMLastStationLoose[50];
+ 
 
   int    mTempTreeNccmuon;
   double mTempTreeccMuonEt[50];
@@ -287,7 +293,10 @@ private:
   int length;
   int ids[1000];
   int refs[1000];
-  float genPt[1000];
+  float genE[1000];
+  float genPx[1000];
+  float genPy[1000];
+  float genPz[1000];
   float genPhi[1000];
   float genEta[1000];
   int genStatus[1000];
