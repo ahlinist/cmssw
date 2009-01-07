@@ -72,6 +72,9 @@
 #include <TMatrixD.h>
 #include <TClonesArray.h>
 
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/Common/interface/View.h"
+
 using namespace reco;
 using namespace edm;
 using namespace std;
@@ -89,9 +92,12 @@ class Onia2MuMu : public edm::EDAnalyzer {
       virtual void fillGeneratorBlock(const edm::Event &iEvent);
       virtual void fillRecTracks(const edm::Event &iEvent);
       virtual void fillMuons(const edm::Event &iEvent);
+      virtual void fillPATMuons(const edm::Event &iEvent);
+      virtual void PAT_l1Report(const edm::Event &iEvent); 
+      virtual void PAT_hltReport(const edm::Event &iEvent);
       virtual void fillBeamSpot(const edm::Event &iEvent);
       virtual void fillPrimaryVertex(const edm::Event &iEvent);
-      virtual void fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSetup&,edm::InputTag OniaMuonType);
+      virtual void fillOniaMuMuTracks(const edm::Event &iEvent, const edm::EventSetup&);
 
       double PhiInRange(const double& phi) const;
       template <class T, class U> double deltaR(const T & t, const U & u) const;
@@ -99,6 +105,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double GetTheta( TLorentzVector & a,  TLorentzVector & b) const;
       void printTrack(const reco::Track& muon) const;
       TLorentzVector lorentzMomentum(const reco::Track& muon) const;
+      TLorentzVector lorentzMomentum(const pat::Muon& muon) const;
       TLorentzVector lorentzTriObj(const trigger::TriggerObject& muon) const;
       double invMass(const reco::Track& lhs, const reco::Track& rhs) const;
 
@@ -107,12 +114,10 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
       edm::InputTag thegenParticlesLabel;
       edm::InputTag theStandAloneMuonsLabel;      // Muon information from standalone muons
-      edm::InputTag theTrackerMuonsLabel;         // Muon information from tracker muons // does not work
       edm::InputTag theGlobalMuonsLabel;          // Muon information from global muons
       edm::InputTag theMuonsLabel;                // From this one can get both global and track info
       edm::InputTag theCaloMuonsLabel;             
       edm::InputTag theTrackLabel;                // Track information
-      edm::InputTag theOniaMuonsLabel;            // From this one we reconstruct dimuons
       edm::InputTag theBeamSpotLabel;            // Beam Spot
       edm::InputTag thePrimaryVertexLabel;        // Primary Vertex
       edm::InputTag thetriggerEventLabel;
@@ -121,6 +126,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       edm::InputTag theL1MuonLabel;
       edm::InputTag theL2MuonLabel;
       edm::InputTag theL3MuonLabel;
+      edm::InputTag thePATMuonsLabel;      
 
       bool theStoreGenFlag;                // Yes or No to store generator information
       bool theStoreHLTFlag;                // Yes or No to store HLT information
@@ -128,9 +134,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       bool theStoreTrkFlag;                // Yes or No to store track information (e.g. for hadr. act.)
       bool theStoreSTAMuonFlag;
       bool theStoreGLBMuonFlag;
-      bool theStoreMuonLinkFlag;
-      bool theStoreCaloMuonFlag;
-      bool theStoreTrackerMuonFlag;
+      bool theStoreAllMuonFlag;
       bool theStoreBeamSpotFlag; 
       bool theStorePriVtxFlag;             // Yes or No to store primary vertex
       bool theStoreOniaFlag;               // Yes or No to store Onium info 
@@ -138,6 +142,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       bool theBeamSpotFlag;
       bool theminimumFlag;
       bool theAODFlag;
+      bool theStorePATFlag;
 
       TFile* outFile;
       TTree *fTree;
@@ -188,94 +193,137 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_track_ndof[3000];   // Vector of ndof of tracks
       int Reco_track_nhits[3000];  // Vector of nhits of tracks
 
-      int Reco_mu_links_size;
-      int Reco_mu_links_glb[20];
-      int Reco_mu_links_sta[20];
-      int Reco_mu_links_trk[20];
+      int Reco_mu_size;
+      int Reco_mu_Normsize;
+      int Reco_mu_Calmsize;
+      int Reco_mu_links_glb[200];
+      int Reco_mu_links_sta[200];
+      int Reco_mu_links_trk[200];
+      bool Reco_mu_is_sta[200];
+      bool Reco_mu_is_glb[200];
+      bool Reco_mu_is_trk[200];
+      bool Reco_mu_is_cal[200];
+      double Reco_mu_caloComp[200];
 
       int Reco_mu_glb_size;           // Number of reconstructed global muons
       TClonesArray* Reco_mu_glb_4mom; // Array of 4-momentum of Reconstructed global muons
       TClonesArray* Reco_mu_glb_3vec; // Array of 3-d creation vertex of Reconstructed global muons
       TClonesArray* Reco_mu_glb_CovM;
-      double Reco_mu_glb_ptErr[20];   // Vector of err on pt of global muons
-      double Reco_mu_glb_phiErr[20];  // Vector of err on phi of global muons
-      double Reco_mu_glb_etaErr[20];  // Vector of err on eta of global muons
-      double Reco_mu_glb_d0[20];      // Vector of d0 of global muons
-      double Reco_mu_glb_d0err[20];   // Vector of d0err of global muons
-      double Reco_mu_glb_dz[20];      // Vector of dz of global muons
-      double Reco_mu_glb_dzerr[20];   // Vector of dzerr of global muons
-      int Reco_mu_glb_charge[20];  // Vector of charge of global muons
-      double Reco_mu_glb_chi2[20];   // Vector of chi2 of global muons
-      double Reco_mu_glb_ndof[20];   // Vector of ndof of global muons
-      int Reco_mu_glb_nhits[20];  // Vector of number of valid hits of global muons
+      double Reco_mu_glb_ptErr[200];   // Vector of err on pt of global muons
+      double Reco_mu_glb_phiErr[200];  // Vector of err on phi of global muons
+      double Reco_mu_glb_etaErr[200];  // Vector of err on eta of global muons
+      double Reco_mu_glb_d0[200];      // Vector of d0 of global muons
+      double Reco_mu_glb_d0err[200];   // Vector of d0err of global muons
+      double Reco_mu_glb_dz[200];      // Vector of dz of global muons
+      double Reco_mu_glb_dzerr[200];   // Vector of dzerr of global muons
+      int Reco_mu_glb_charge[200];  // Vector of charge of global muons
+      double Reco_mu_glb_chi2[200];   // Vector of chi2 of global muons
+      double Reco_mu_glb_ndof[200];   // Vector of ndof of global muons
+      int Reco_mu_glb_nhits[200];  // Vector of number of valid hits of global muons
+
+
+/////////////////// PAT muons
       
+      int Pat_mu_glb_size;           // Number of reconstructed global muons
+      TClonesArray* Pat_mu_glb_4mom; // Array of 4-momentum of Reconstructed global muons
+      TClonesArray* Pat_mu_glb_3vec; // Array of 3-d creation vertex of Reconstructed global muons
+      TClonesArray* Pat_mu_glb_CovM;
+      double Pat_mu_glb_ptErr[200];   // Vector of err on pt of global muons
+      double Pat_mu_glb_phiErr[200];  // Vector of err on phi of global muons
+      double Pat_mu_glb_etaErr[200];  // Vector of err on eta of global muons
+      double Pat_mu_glb_d0[200];      // Vector of d0 of global muons
+      double Pat_mu_glb_d0err[200];   // Vector of d0err of global muons
+      double Pat_mu_glb_dz[200];      // Vector of dz of global muons
+      double Pat_mu_glb_dzerr[200];   // Vector of dzerr of global muons
+      int Pat_mu_glb_charge[200];  // Vector of charge of global muons
+      double Pat_mu_glb_chi2[200];   // Vector of chi2 of global muons
+      double Pat_mu_glb_ndof[200];   // Vector of ndof of global muons
+      int Pat_mu_glb_nhits[200];  // Vector of number of valid hits of global muons
+      
+      int Pat_mu_sta_size;           // Number of reconstructed stand alone muons
+      TClonesArray* Pat_mu_sta_4mom; // Array of 4-momentum of Reconstructed stand alone muons
+      TClonesArray* Pat_mu_sta_3vec; // Array of 3-d creation vertex of Reconstructed stand alone muons
+      TClonesArray* Pat_mu_sta_CovM;
+      double Pat_mu_sta_ptErr[200];   // Vector of err on pt of stand alone muons
+      double Pat_mu_sta_phiErr[200];  // Vector of err on phi of stand alone muons
+      double Pat_mu_sta_etaErr[200];  // Vector of err on eta of stand alone muons
+      double Pat_mu_sta_d0[200];      // Vector of d0 of stand alone muons
+      double Pat_mu_sta_d0err[200];   // Vector of d0err of stand alone muons
+      double Pat_mu_sta_dz[200];      // Vector of dz of stand alone muons
+      double Pat_mu_sta_dzerr[200];   // Vector of dzerr of stand alone muons
+      int Pat_mu_sta_charge[200];  // Vector of charge of stand alone muons
+      double Pat_mu_sta_chi2[200];   // Vector of chi2 of stand alone muons
+      double Pat_mu_sta_ndof[200];   // Vector of ndof of stand alone muons
+      int Pat_mu_sta_nhits[200];  // Vector of number of valid hits of stand alone muons
+      
+      int Pat_mu_trk_size;           // Number of reconstructed tracker muons
+      TClonesArray* Pat_mu_trk_4mom; // Array of 4-momentum of Reconstructed tracker muons
+      TClonesArray* Pat_mu_trk_3vec; // Array of 3-d creation vertex of Reconstructed tracker muons
+      TClonesArray* Pat_mu_trk_CovM;
+      double Pat_mu_trk_ptErr[200];   // Vector of err on pt of tracker muons
+      double Pat_mu_trk_phiErr[200];  // Vector of err on phi of tracker muons
+      double Pat_mu_trk_etaErr[200];  // Vector of err on eta of tracker muons
+      double Pat_mu_trk_d0[200];      // Vector of d0 of tracker muons
+      double Pat_mu_trk_d0err[200];   // Vector of d0err of tracker muons
+      double Pat_mu_trk_dz[200];      // Vector of dz of tracker muons
+      double Pat_mu_trk_dzerr[200];   // Vector of dzerr of tracker muons
+      int Pat_mu_trk_charge[200];  // Vector of charge of tracker muons
+      double Pat_mu_trk_chi2[200];   // Vector of chi2 of tracker muons
+      double Pat_mu_trk_ndof[200];   // Vector of ndof of tracker muons
+      int Pat_mu_trk_nhits[200];  // Vector of number of valid hits of tracker muons
+      
+      int Pat_mu_cal_size;           // Number of reconstructed calorimeter muons
+      TClonesArray* Pat_mu_cal_4mom; // Array of 4-momentum of Reconstructed calorimeter muons
+      TClonesArray* Pat_mu_cal_3vec; // Array of 3-d creation vertex of Reconstructed calorimeter muons
+      TClonesArray* Pat_mu_cal_CovM;
+      double Pat_mu_cal_ptErr[200];   // Vector of err on pt of calorimeter muons
+      double Pat_mu_cal_phiErr[200];  // Vector of err on phi of calorimeter muons
+      double Pat_mu_cal_etaErr[200];  // Vector of err on eta of calorimeter muons
+      double Pat_mu_cal_d0[200];      // Vector of d0 of calorimeter muons
+      double Pat_mu_cal_d0err[200];   // Vector of d0err of calorimeter muons
+      double Pat_mu_cal_dz[200];      // Vector of dz of calorimeter muons
+      double Pat_mu_cal_dzerr[200];   // Vector of dzerr of calorimeter muons
+      int Pat_mu_cal_charge[200];  // Vector of charge of calorimeter muons
+      double Pat_mu_cal_chi2[200];   // Vector of chi2 of calorimeter muons
+      double Pat_mu_cal_ndof[200];   // Vector of ndof of calorimeter muons
+      int Pat_mu_cal_nhits[200];  // Vector of number of valid hits of calorimeter muons             
+                  
+//////////////////////////////////////////      
+
       int Reco_mu_sta_size;           // Number of reconstructed standalone muons
       TClonesArray* Reco_mu_sta_4mom; // Array of 4-momentum of Reconstructed standalone muons
       TClonesArray* Reco_mu_sta_3vec; // Array of 3-d creation vertex of Reconstructed standalone muons
       TClonesArray* Reco_mu_sta_CovM;
-      double Reco_mu_sta_ptErr[20];   // Vector of err on pt of standalone muons
-      double Reco_mu_sta_phiErr[20];  // Vector of err on phi of standalone muons
-      double Reco_mu_sta_etaErr[20];  // Vector of err on eta of standalone muons
-      double Reco_mu_sta_d0[20];      // Vector of d0 of standalone muons
-      double Reco_mu_sta_d0err[20];   // Vector of d0err of standalone muons
-      double Reco_mu_sta_dz[20];      // Vector of dz of standalone muons
-      double Reco_mu_sta_dzerr[20];   // Vector of dzerr of standalone muons
-      int Reco_mu_sta_charge[20];   // Vector of charge of standalone muons
-      double Reco_mu_sta_chi2[20];   // Vector of chi2 of standalone muons
-      double Reco_mu_sta_ndof[20];   // Vector of ndof of standalone muons
-      int Reco_mu_sta_nhits[20];  // Vector of number of valid hits of standalone muons
+      double Reco_mu_sta_ptErr[200];   // Vector of err on pt of standalone muons
+      double Reco_mu_sta_phiErr[200];  // Vector of err on phi of standalone muons
+      double Reco_mu_sta_etaErr[200];  // Vector of err on eta of standalone muons
+      double Reco_mu_sta_d0[200];      // Vector of d0 of standalone muons
+      double Reco_mu_sta_d0err[200];   // Vector of d0err of standalone muons
+      double Reco_mu_sta_dz[200];      // Vector of dz of standalone muons
+      double Reco_mu_sta_dzerr[200];   // Vector of dzerr of standalone muons
+      int Reco_mu_sta_charge[200];   // Vector of charge of standalone muons
+      double Reco_mu_sta_chi2[200];   // Vector of chi2 of standalone muons
+      double Reco_mu_sta_ndof[200];   // Vector of ndof of standalone muons
+      int Reco_mu_sta_nhits[200];  // Vector of number of valid hits of standalone muons
 
-      int Reco_mu_cal_size;           // Number of reconstructed calo muons
-      TClonesArray* Reco_mu_cal_4mom; // Array of 4-momentum of Reconstructed calo muons
-      TClonesArray* Reco_mu_cal_3vec; // Array of 3-d creation vertex of Reconstructed calo muons
-      TClonesArray* Reco_mu_cal_CovM;
-      double Reco_mu_cal_ptErr[20];   // Vector of err on pt of calo muons
-      double Reco_mu_cal_phiErr[20];  // Vector of err on phi of calo muons
-      double Reco_mu_cal_etaErr[20];  // Vector of err on eta of calo muons
-      double Reco_mu_cal_d0[20];      // Vector of d0 of calo muons
-      double Reco_mu_cal_d0err[20];   // Vector of d0err of calo muons
-      double Reco_mu_cal_dz[20];      // Vector of dz of calo muons
-      double Reco_mu_cal_dzerr[20];   // Vector of dzerr of calo muons
-      int Reco_mu_cal_charge[20];   // Vector of charge of calo muons
-      double Reco_mu_cal_chi2[20];   // Vector of chi2 of calo muons
-      double Reco_mu_cal_ndof[20];   // Vector of ndof of calo muons
-      int Reco_mu_cal_nhits[20];  // Vector of number of valid hits of calo muons
-      int Reco_mu_cal_index[20];
-     
-      int Reco_mu_trk_size;           // Number of reconstructed tracker muons
-      TClonesArray* Reco_mu_trk_4mom; // Array of 4-momentum of Reconstructed tracker muons
-      TClonesArray* Reco_mu_trk_3vec; // Array of 3-d creation vertex of Reconstructed tracker muons
-      TClonesArray* Reco_mu_trk_CovM;
-      double Reco_mu_trk_ptErr[20];   // Vector of err on pt of tracker muons
-      double Reco_mu_trk_phiErr[20];  // Vector of err on phi of tracker muons
-      double Reco_mu_trk_etaErr[20];  // Vector of err on eta of tracker muons
-      double Reco_mu_trk_d0[20];      // Vector of d0 of tracker muons
-      double Reco_mu_trk_d0err[20];   // Vector of d0err of tracker muons
-      double Reco_mu_trk_dz[20];      // Vector of dz of tracker muons
-      double Reco_mu_trk_dzerr[20];   // Vector of dzerr of tracker muons
-      int Reco_mu_trk_charge[20];   // Vector of charge of tracker muons
-      double Reco_mu_trk_chi2[20];   // Vector of chi2 of tracker muons
-      double Reco_mu_trk_ndof[20];   // Vector of ndof of tracker muons
-      int Reco_mu_trk_nhits[20];  // Vector of number of valid hits of tracker muons
-      int Reco_mu_trk_index[20];
-
-      int Reco_QQ_glb_size;           // Number of reconstructed Onia from global muons
-      TClonesArray* Reco_QQ_glb_4mom; // Array of 4-momentum of Reconstructed onia
-      int Reco_QQ_glb_mupl[20];       // Index of muon plus in onia 
-      int Reco_QQ_glb_mumi[20];       // Index of muon minus in onia
-      double Reco_QQ_glb_DeltaR[20];  // DeltaR of the two muons
-      double Reco_QQ_glb_cosTheta[20];// Polarization angle 
-      double Reco_QQ_glb_s[20];       // S : the sum of the to muons impact parameter significance 
-      bool Reco_QQ_glb_VtxIsVal[20];  // Vertex is valid or not  
-      TClonesArray* Reco_QQ_glb_Vtx;  // 3-d Vertex 
-      double Reco_QQ_glb_VxE[20];     // errors of x
-      double Reco_QQ_glb_VyE[20];     // errors of y
-      double Reco_QQ_glb_VzE[20];     // errors of z
-      double Reco_QQ_glb_lxy[20];     // Decay length
-      double Reco_QQ_glb_lxyErr[20];  // Decay length errors
-      double Reco_QQ_glb_normChi2[20];// Normalized chi2 of vertex fitting 
-      double Reco_QQ_glb_cosAlpha[20];// Alpha: the angle of lxy and onia moemtum
-      double Reco_QQ_glb_ctau[20];    // ctau: flying time
+      int Reco_QQ_size;           // Number of reconstructed Onia from global muons
+      int Reco_QQ_type[3000];
+      TClonesArray* Reco_QQ_4mom; // Array of 4-momentum of Reconstructed onia
+      int Reco_QQ_mupl[3000];       // Index of muon plus in onia 
+      int Reco_QQ_mumi[3000];       // Index of muon minus in onia
+      double Reco_QQ_DeltaR[3000];  // DeltaR of the two muons
+      double Reco_QQ_cosTheta[3000];// Polarization angle 
+      double Reco_QQ_s[3000];       // S : the sum of the to muons impact parameter significance 
+      bool Reco_QQ_VtxIsVal[3000];  // Vertex is valid or not  
+      TClonesArray* Reco_QQ_Vtx;  // 3-d Vertex 
+      double Reco_QQ_VxE[3000];     // errors of x
+      double Reco_QQ_VyE[3000];     // errors of y
+      double Reco_QQ_VzE[3000];     // errors of z
+      double Reco_QQ_lxy[3000];     // Decay length
+      double Reco_QQ_lxyErr[3000];  // Decay length errors
+      double Reco_QQ_normChi2[3000];// Normalized chi2 of vertex fitting 
+      double Reco_QQ_cosAlpha[3000];// Alpha: the angle of lxy and onia moemtum
+      double Reco_QQ_ctau[3000];    // ctau: flying time
 
       double Reco_BeamSpot_x;
       double Reco_BeamSpot_y;
@@ -286,28 +334,28 @@ class Onia2MuMu : public edm::EDAnalyzer {
 
       int Reco_PriVtx_size;                // Number of reconstructed primary vertex
       TClonesArray* Reco_PriVtx_3vec;      // 3-d vector of primary vertex
-      double Reco_PriVtx_xE[20];           // X error
-      double Reco_PriVtx_yE[20];           // Y error
-      double Reco_PriVtx_zE[20];           // Z error
-      int Reco_PriVtx_trkSize[20];      // Number of tracks in this primary vertex
-      double Reco_PriVtx_chi2[20];         // chi2 of primary vertex 
-      double Reco_PriVtx_ndof[20];         // number of freedom degree 
+      double Reco_PriVtx_xE[100];           // X error
+      double Reco_PriVtx_yE[100];           // Y error
+      double Reco_PriVtx_zE[100];           // Z error
+      int Reco_PriVtx_trkSize[100];      // Number of tracks in this primary vertex
+      double Reco_PriVtx_chi2[100];         // chi2 of primary vertex 
+      double Reco_PriVtx_ndof[100];         // number of freedom degree 
 
       int Reco_PriVtx_1st_trkSize;        // Number of tracks in the first primary vertex
       int Reco_PriVtx_1st_trkindex[3000]; //index for the tracks in the first primary vertex
 
       int L1TBits_size;               // Number of L1 trigger bits
-      bool L1TBits_accept[200];       // L1 trigger bits
+      bool L1TBits_accept[3000];       // L1 trigger bits
       bool L1TGlobal_Decision;        // L1 trigger global decision
     
       int L1_mu_size;
       TClonesArray* L1_mu_4mom;
-      int L1_mu_charge[20];
+      int L1_mu_charge[200];
 
       int HLTBits_size;               // Number of HLT trigger bits 
-      bool HLTBits_wasrun[200];       // Each HLT bits was run or not
-      bool HLTBits_accept[200];       // Each HLT bits fired or not
-      bool HLTBits_error[200];        // Each HLT bits run successfully or not 
+      bool HLTBits_wasrun[1000];       // Each HLT bits was run or not
+      bool HLTBits_accept[1000];       // Each HLT bits fired or not
+      bool HLTBits_error[1000];        // Each HLT bits run successfully or not 
       bool HLTGlobal_wasrun;          // The HLT was run or not
       bool HLTGlobal_Decision;        // Global HLT decision
       bool HLTGlobal_error;           // HLT path error or not
