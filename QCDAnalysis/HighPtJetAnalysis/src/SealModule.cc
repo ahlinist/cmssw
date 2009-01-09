@@ -7,6 +7,7 @@
 #include "QCDAnalysis/HighPtJetAnalysis/interface/MultiJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/DijetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/METFilter.h"
+#include "QCDAnalysis/HighPtJetAnalysis/interface/JetTriggerFilter.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/MultiJetFilter.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
@@ -16,6 +17,7 @@ using namespace reco;
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(InclusiveJetAnalyzer);
 DEFINE_ANOTHER_FWK_MODULE(DijetAnalyzer);
+DEFINE_ANOTHER_FWK_MODULE(JetTriggerFilter);
 
 typedef SimpleInclusiveJetAnalyzer<CaloJet> SimpleInclusiveCaloJetAnalyzer;
 DEFINE_ANOTHER_FWK_MODULE(SimpleInclusiveCaloJetAnalyzer);
