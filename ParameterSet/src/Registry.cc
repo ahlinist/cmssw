@@ -18,12 +18,8 @@ namespace edm {
       typedef Registry::const_iterator iter;
       fillme.clear();
       // Note: The tracked part is in the registry.
-      // The full parameter set including the untracked parts may also be there.
       for (iter i = reg->begin(), e = reg->end(); i != e; ++i) {
-	// Persist only fully tracked parameter sets.
-	if (i->second.isFullyTracked()) {
-	  fillme[i->first].pset_ = i->second.toString();
-	}
+	fillme[i->first].pset_ = i->second.toString();
       }
     }
   } // namespace pset
