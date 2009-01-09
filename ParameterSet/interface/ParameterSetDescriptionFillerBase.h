@@ -39,7 +39,8 @@ class ParameterSetDescriptionFillerBase
       virtual ~ParameterSetDescriptionFillerBase();
 
       // ---------- const member functions ---------------------
-      virtual void fill(ParameterSetDescription& iDesc, std::string const& moduleLabel) const = 0;
+      virtual void fill(ConfigurationDescriptions & descriptions) const = 0;
+      virtual std::string baseType() const = 0;
   
       // ---------- static member functions --------------------
 

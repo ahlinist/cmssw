@@ -42,9 +42,14 @@ template< typename T>
       //virtual ~ParameterSetDescriptionFiller();
 
       // ---------- const member functions ---------------------
-      virtual void fill(ParameterSetDescription& iDesc, std::string const& moduleLabel) const {
-        T::fillDescription(iDesc, moduleLabel);
+      virtual void fill(ConfigurationDescriptions & descriptions) const {
+        T::fillDescriptions(descriptions);
       }
+
+      virtual std::string baseType() const {
+        return T::baseType();
+      }
+
       // ---------- static member functions --------------------
 
       // ---------- member functions ---------------------------
