@@ -8,7 +8,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Tue Jul 31 15:30:35 EDT 2007
-// $Id$
 //
 
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"

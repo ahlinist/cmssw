@@ -3,7 +3,6 @@
    Implementation of calss ProcessDesc
 
    \author Stefano ARGIRO
-   \version $Id$
    \date 17 Jun 2005
 */
 
