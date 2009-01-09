@@ -1,5 +1,5 @@
 <use name=FWCore/Framework>
-<use name=SimDataFormats/HepMCProduct>
+<use name=SimDataFormats/GeneratorProducts>
 <use name=GeneratorInterface/Pythia6Interface>
 <use name=clhep> 
 <use name=hepmc>
@@ -10,7 +10,7 @@
 
 <export>
  <use name=FWCore/Framework>
- <use name=SimDataFormats/HepMCProduct>
+ <use name=SimDataFormats/GeneratorProducts>
  <use name=clhep> 
  <use name=hepmc>
  <use name=pythia6>

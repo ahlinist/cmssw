@@ -11,5 +11,5 @@
 <library file=BsAnalyzer.cc name=BsAnalyzer>
   <use name=root>
   <use name=FWCore/Framework>
-  <use name=SimDataFormats/HepMCProduct>
+  <use name=SimDataFormats/GeneratorProducts>
 </library>

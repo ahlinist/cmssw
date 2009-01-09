@@ -1,6 +1,6 @@
 <use name=boost>
 <use name=FWCore/Framework>
-<use name=SimDataFormats/HepMCProduct>
+<use name=SimDataFormats/GeneratorProducts>
 <use name=hepmc> 
 <use name=pythia6>
 <use name=f77compiler>
@@ -10,7 +10,7 @@
  <lib name=GeneratorInterfaceMuEnrichInterface> 
  <use name=boost>
  <use name=FWCore/Framework>
- <use name=SimDataFormats/HepMCProduct>
+ <use name=SimDataFormats/GeneratorProducts>
  <use name=hepmc> 
  <use name=pythia6>
 </export>
