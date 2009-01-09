@@ -918,7 +918,11 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
     int Mc_particleID=p.pdgId();
+<<<<<<< Onia2MuMu.cc
+    //cout << "Mc_pdg_id " << Mc_particleID << "status " << p.status() << endl;
+=======
     cout << "Mc_pdg_id " << Mc_particleID << "status " << p.status() << endl;
+>>>>>>> 1.9
     ////// Store muon information (all muons)
     if (abs(Mc_particleID) == 13 && p.status()==1&&Mc_mu_size<Max_mu_size){
       TLorentzVector a(0.0,0.0,0.0,0.0);
