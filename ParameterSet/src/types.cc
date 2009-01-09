@@ -986,14 +986,14 @@ bool
   {
     std::string  val;
     // treat blank string specially
-    if(*b == "XXX")
-    {
+    if(*b == "XXX") {
        val = "";
-    }
-    else if(! decode(val, *b))
+    } else if(! decode(val, *b)) {
       return false;
+    }
     to.push_back(val);
   }
+
   return true;
 }  // decode to vector<string>
 
@@ -1010,13 +1010,13 @@ bool
      ; b != e ; ++b)
   {
     // treat blank string specially
-    if(*b == "")
-    {
+    if(*b == "") {
        converted = "XXX";
+    } else if(! encode(converted, *b)) {
+      return false; 
     }
-    else if(! encode(converted, *b))
-      return false;
-    if(b != from.begin()) 
+
+    if(b != from.begin())
       to += ",";
     to += converted;
   }
@@ -1042,8 +1042,7 @@ bool
 bool
   edm::encode(std::string & to, ParameterSet const& from)
 {
-  to.clear(); // just a precaution
-  from.toString(to);
+  to = from.toString();
   return true;
 }  // encode from ParameterSet
 
