@@ -16,7 +16,7 @@
  ***************************************/
 #include "GeneratorInterface/MadGraphInterface/interface/MadGraphSource.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHECommonBlocks.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "GeneratorInterface/MadGraphInterface/interface/PYR.h"

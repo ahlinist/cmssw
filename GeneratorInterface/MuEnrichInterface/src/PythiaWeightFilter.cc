@@ -1,6 +1,6 @@
 
 #include "GeneratorInterface/MuEnrichInterface/interface/PythiaWeightFilter.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 
