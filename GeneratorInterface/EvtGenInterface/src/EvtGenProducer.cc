@@ -14,7 +14,7 @@
 //
 // Original Author:  Nello Nappi
 //         Created:  Fri May 11 15:19:32 CEST 2007
-// $Id: EvtGenProducer.cc,v 1.5 2008/03/12 16:28:36 covarell Exp $
+// $Id: EvtGenProducer.cc,v 1.6 2008/07/10 08:45:44 covarell Exp $
 //
 //
 #include "FWCore/PluginManager/interface/PluginManager.h"
@@ -22,7 +22,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 
 // #include "HepMC/IO_HEPEVT.h"
 

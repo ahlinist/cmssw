@@ -1,6 +1,6 @@
 /*
- *  $Date: 2007/03/28 07:30:43 $
- *  $Revision: 1.3 $
+ *  $Date: 2008/04/10 13:00:08 $
+ *  $Revision: 1.1 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -14,7 +14,7 @@
 #include "GeneratorInterface/TopRexInterface/interface/ToprexProducer.h"
 #include "GeneratorInterface/TopRexInterface/interface/PYR.h"
 #include "GeneratorInterface/TopRexInterface/interface/FindJets.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"

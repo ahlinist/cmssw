@@ -12,7 +12,7 @@
 #include "DataFormats/JetReco/interface/GenJetfwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

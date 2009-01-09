@@ -8,14 +8,14 @@
 */
 // Original Author: Carsten Hof
 //         Created:  Wed Jan 23 12:56:49 CET 2008
-// $Id: PdfAnalyzer.h,v 1.1 2008/02/06 17:19:13 dkcira Exp $
+// $Id: PdfAnalyzer.h,v 1.2 2008/02/07 13:29:11 dkcira Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 
 class PdfAnalyzer : public edm::EDAnalyzer {
    public:
