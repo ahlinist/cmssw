@@ -3,7 +3,6 @@
 // Implementation:
 //
 // Original Author:  Jim Kowalkowski
-// $Id$
 //
 
 #include "FWCore/Framework/interface/TriggerNamesService.h"
