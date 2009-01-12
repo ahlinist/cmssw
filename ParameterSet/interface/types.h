@@ -111,6 +111,22 @@ namespace edm
   bool  decode(std::vector<edm::LuminosityBlockID>&, std::string const&);
   bool  encode(std::string &, std::vector<edm::LuminosityBlockID> const&);
 
+  // LuminosityBlockRange
+  bool  decode(edm::LuminosityBlockRange&, std::string const&);
+  bool  encode(std::string &, edm::LuminosityBlockRange const&);
+
+  // VLuminosityBlockRange
+  bool  decode(std::vector<edm::LuminosityBlockRange>&, std::string const&);
+  bool  encode(std::string &, std::vector<edm::LuminosityBlockRange> const&);
+
+  // EventRange
+  bool  decode(edm::EventRange&, std::string const&);
+  bool  encode(std::string &, edm::EventRange const&);
+
+  // VEventRange
+  bool  decode(std::vector<edm::EventRange>&, std::string const&);
+  bool  encode(std::string &, std::vector<edm::EventRange> const&);
+
   // ParameterSet
   bool  decode(ParameterSet &, std::string  const&);
   bool  encode(std::string  &, ParameterSet const&);
