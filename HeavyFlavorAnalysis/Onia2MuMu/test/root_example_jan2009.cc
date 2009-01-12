@@ -102,7 +102,7 @@ void makeplots(){
   h3->SetLineStyle(1);
   h3->SetLineWidth(3);
   h3->Draw("");
-  c3->Print("plot1.eps");
+  c3->Print("plot3.eps");
  
   TCanvas *c4 = new TCanvas("c4","title",800,600);
   c4->cd();
@@ -116,7 +116,7 @@ void makeplots(){
   h4->SetLineStyle(1);
   h4->SetLineWidth(3);
   h4->Draw("same");
-  c4->Print("plot2.eps");
+  c4->Print("plot4.eps");
 
   
 
