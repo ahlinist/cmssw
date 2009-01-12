@@ -22,12 +22,12 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-        version = cms.untracked.string('$Revision: 1.57 $'),
+        version = cms.untracked.string('$Revision: 1.1 $'),
             annotation = cms.untracked.string('GamGamMM.cfi nevts:10'),
             name = cms.untracked.string('PyReleaseValidation')
         )
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(-1)
+        input = cms.untracked.int32(5000)
         )
 process.options = cms.untracked.PSet(
         Rethrow = cms.untracked.vstring('ProductNotFound')
@@ -102,6 +102,6 @@ process.generation_step = cms.Path(process.pgen*process.MuonAnalysis)
 process.out_step = cms.EndPath(process.output)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.generation_step,process.out_step)
-
+#process.schedule = cms.Schedule(process.generation_step,process.out_step)
+process.schedule = cms.Schedule(process.generation_step)
 print process.dumpPython()
