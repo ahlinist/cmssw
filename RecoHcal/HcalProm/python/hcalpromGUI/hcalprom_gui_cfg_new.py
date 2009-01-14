@@ -6,7 +6,8 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
 
-process.load("MagneticField.Engine.uniformMagneticField_cfi")
+#process.load("MagneticField.Engine.uniformMagneticField_cfi")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 
@@ -22,7 +23,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RECO/CRUZET4_v1/000/057/620/72E5FFD3-D76D-DD11-8049-000423D6B358.root')
+    fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RECO/CRAFT_ALL_V4_ReReco-v1/0000/0C453DD0-55C1-DD11-AA47-001D0967D99A.root')
 )
 ###>>>>>>>>>>>  Don't remove this line!
 
@@ -61,4 +62,3 @@ process.prom = cms.EDFilter("HcalProm",
 )
 
 process.p = cms.Path(process.prom)
-process.UniformMagneticFieldESProducer.ZFieldInTesla = 0.001
