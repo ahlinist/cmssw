@@ -9,7 +9,7 @@ from ElectroWeakAnalysis.EWKTau.muForEWKTau.muForEWKTauHistEff_cfi import *
 # import config for tau analyzer
 #from ElectroWeakAnalysis.EWKTau.tauForEWKTau.tauForEWKTauAnalyzer_cfi import *
 
-saveMuTau = cms.EDAnalyzer("DQMFileAdder",
+saveMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('ewkTauMuAnalyzer_zMuMu.root')
 )
 
