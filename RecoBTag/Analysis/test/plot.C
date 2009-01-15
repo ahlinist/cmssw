@@ -73,7 +73,6 @@ enum flavour_color {
 void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_range energy = PT_GLOBAL, bool keep = false) {
   string tag;
   if (eta != GLOBAL || energy != PT_GLOBAL) {
-    tag = "";
     tag += eta_range_tag[eta];
     tag += energy_range_tag[energy];
   } else {
@@ -108,21 +107,29 @@ void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_rang
   float max = 0;
 
   TH1F* plot_b_discr = (TH1F*) get( file, name_b_discr );
+  if (plot_b_discr->Integral() > 0.0)
+    plot_b_discr->Scale( 1.0 / plot_b_discr->Integral() );
   plot_b_discr->SetLineColor(colorBottom);
   plot_b_discr->SetLineWidth(2);
   if (plot_b_discr->GetMaximum() > max) max = plot_b_discr->GetMaximum();
 
   TH1F* plot_c_discr = (TH1F*) get( file, name_c_discr );
+  if (plot_c_discr->Integral() > 0.0)
+    plot_c_discr->Scale( 1.0 / plot_c_discr->Integral() );
   plot_c_discr->SetLineColor(colorCharm);
   plot_c_discr->SetLineWidth(2);
   if (plot_c_discr->GetMaximum() > max) max = plot_c_discr->GetMaximum();
 
   TH1F* plot_x_discr = (TH1F*) get( file, name_x_discr );
+  if (plot_x_discr->Integral() > 0.0)
+    plot_x_discr->Scale( 1.0 / plot_x_discr->Integral() );
   plot_x_discr->SetLineColor(colorLight);
   plot_x_discr->SetLineWidth(2);
   if (plot_x_discr->GetMaximum() > max) max = plot_x_discr->GetMaximum();
 
   TH1F* plot_g_discr = (TH1F*) get( file, name_g_discr );
+  if (plot_g_discr->Integral() > 0.0)
+    plot_g_discr->Scale( 1.0 / plot_g_discr->Integral() );
   plot_g_discr->SetLineColor(colorGluon);
   plot_g_discr->SetLineWidth(2);
   if (plot_g_discr->GetMaximum() > max) max = plot_g_discr->GetMaximum();
@@ -173,7 +180,7 @@ void plot(TFile & file, const string & name, eta_range eta = GLOBAL, energy_rang
 
   plot_b_eff->SetMinimum(0.);
   if (plot_b_eff->GetMaximum() < 0.2) {
-    // soft lepton
+    // soft lepton algorithms
     plot_b_eff->SetMaximum(0.2);
   } else {
     // other algorithms
