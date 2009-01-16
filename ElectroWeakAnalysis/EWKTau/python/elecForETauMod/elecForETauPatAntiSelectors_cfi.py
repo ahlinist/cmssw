@@ -9,21 +9,21 @@ import FWCore.ParameterSet.Config as cms
 
 selectAntiTrkIsoAfterMchHLTElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectMchHLTElecForETau"),
-     cut = cms.string('trackIso>0')
+     cut = cms.string('trackIso>0.6')
 )
 
 ####################### ECAL #############################
 
 selectAntiEcalIsoAfterTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectAntiTrkIsoAfterMchHLTElecForETau"),
-     cut = cms.string('ecalIso>3.8')             
+     cut = cms.string('(abs(superCluster.eta)<1.479&ecalIso<12.5) | (abs(superCluster.eta)>1.479&ecalIso<13.5)')             
 )
 
 ################### HCAL #################################
 
 selectAntiHcalIsoAfterEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectAntiEcalIsoAfterTrkIsoElecForETau"),
-     cut = cms.string('hcalIso>1.5')             
+     cut = cms.string('hcalIso>-1.')             
 )
 
 #################### ID ##################################
