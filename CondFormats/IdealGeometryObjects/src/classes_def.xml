@@ -18,15 +18,6 @@
  <class name="std::vector<PValueOffset>"/>
  <class name="std::vector<PSpecPar>"/>
  <class name="std::basic_string<char>"/>
- <!--class name="std::vector<int>"/>
- <class name="std::vector<double>"/-->
-<!-- <class name="std::pair<std::basic_string<char>, double>"/> -->
-<!-- <class name="std::vector<std::pair<int, double> >"/> -->
- <!--   <class pattern="*iterator*"/>
- <class pattern="*vector*"/>
- <class pattern="*map*"/>
- <class pattern="*pair*"/> -->
-
 
  <class name="PGeometricDet"/>
  <class name="PGeometricDet::Item"/>
