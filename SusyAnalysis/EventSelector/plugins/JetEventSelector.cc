@@ -9,15 +9,12 @@
 JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
+  corrStep_(    pset.getParameter<std::string>("correction") ),
+  corrFlavour_( pset.getParameter<std::string>("flavour")    ),
   minEt_(  pset.getParameter< std::vector<double> >("minEt"        ) ),
   maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
   maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") )
 {
-
-  /// Convert the correction configuration into a correction factor
-  
-  correction_ = pat::JetCorrFactors::corrStep(pset.getParameter<std::string>("correction"),
-                                              pset.getParameter<std::string>("flavour"));
 
   /// definition of variables to be cached
   defineVariable("NumberOfJets");
@@ -73,8 +70,8 @@ JetEventSelector::select (const edm::Event& event) const
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
     float et = jet.et();
-    if (jet.hasJetCorrFactors()&& correction_ != jet.jetCorrStep() )
-      et *= jet.jetCorrFactors().correction(correction_);
+    if ( corrStep_ != jet.corrStep() || corrFlavour_ != jet.corrFlavour() )
+      et *= jet.corrFactor( corrStep_, corrFlavour_ );
     correctedEts.push_back(et);
   }
   std::vector<size_t> etSorted = 
