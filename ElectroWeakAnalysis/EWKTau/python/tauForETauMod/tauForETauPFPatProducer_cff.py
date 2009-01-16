@@ -15,12 +15,15 @@ PFTauForETauPat = cms.Sequence(
                                 *pfRecoTauMuonRejDiscrForETau
                                 *layer1PfTausForETau
                                 *selectorPfTausForETauKin
+                                *selectorPfTausForETauElecSep
                                 *selectorPfTausForETauLdgTrk
                                 *selectorPfTausForETauLdgTrkPt
                                 *selectorPfTausForETauEclIsod
                                 *selectorPfTausForETauTrkIsod
                                 *selectorPfTausForETauElecRej
                                 *selectorPfTausForETauProng
+                                *selectorPfTausForOSSSChargeSep
+                                *selectorPfTausForOSSSChargeSepAnti
                               )
 
 PFTauForETauEffPat = cms.Sequence(
@@ -35,12 +38,15 @@ PFTauForETauEffPat = cms.Sequence(
                                   *pfRecoTauIsoDiscrForETauEff
                                   *layer1PfTausForETauEff
                                   *selectorPfTausForETauKinEff
+                                  *selectorPfTausForETauElecSepEff
                                   *selectorPfTausForETauLdgTrkEff
                                   *selectorPfTausForETauLdgTrkPtEff
                                   *selectorPfTausForETauEclIsodEff
                                   *selectorPfTausForETauTrkIsodEff
                                   *selectorPfTausForETauElecRejEff
                                   *selectorPfTausForETauProngEff
+                                  *selectorPfTausForOSSSChargeSepEff
+                                  *selectorPfTausForOSSSChargeSepAntiEff
                                  )
 
 

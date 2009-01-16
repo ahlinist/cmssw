@@ -15,7 +15,7 @@ selectEtaElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectKinElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectEtaElecForETau"),
-     cut = cms.string(' pt > 16.')
+     cut = cms.string(' pt > 18. & abs(eta)<2.1')
 )
 
 
@@ -29,24 +29,24 @@ selectMchHLTElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",       
      src = cms.InputTag("selectKinElecForETau"),   
-     cut = cms.string('trackIso=0')   
+     cut = cms.string('trackIso<0.9')   
 )
 
 selectTrkIsoAfterMchHLTElecForETau = cms.EDFilter("PATElectronSelector",       
      src = cms.InputTag("selectMchHLTElecForETau"),   
-     cut = cms.string('trackIso=0')   
+     cut = cms.string('trackIso<0.9')   
 )
 
 ####################### ECAL #############################
 
 selectEcalIsoAfterTrkIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectTrkIsoAfterMchHLTElecForETau"),
-     cut = cms.string('ecalIso<3.8')             
+     cut = cms.string('(abs(superCluster.eta)<1.479&ecalIso<1.0) | (abs(superCluster.eta)>1.479&ecalIso<2.5)')             
 )
 
 selectEcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectKinElecForETau"),
-     cut = cms.string('ecalIso<3.8')             
+     cut = cms.string('(abs(superCluster.eta)<1.479&ecalIso<1.0) | (abs(superCluster.eta)>1.479&ecalIso<2.5)')             
 )
 
 ################### HCAL #################################
@@ -65,12 +65,13 @@ selectHcalIsoElecForETau = cms.EDFilter("PATElectronSelector",
 
 selectIdAfterIsoElecForETau = cms.EDFilter("PATElectronSelector",       
      src = cms.InputTag("selectHcalIsoAfterEcalIsoElecForETau"),   
-     cut = cms.string('electronID("tight")>0.')  
+     cut = cms.string('(abs(superCluster.eta)<1.479 & electronID("robust")>0 & eSuperClusterOverP<1.05 & eSuperClusterOverP>0.95) | (abs(superCluster.eta)>1.479 & electronID("robust")>0 & eSuperClusterOverP<1.12 & eSuperClusterOverP>0.95)')
+#    cut = cms.string('electronID("robust")>0&eSuperClusterOverP>0.95&( (abs(superCluster.eta)<1.479&eSuperClusterOverP<1.05) | (abs(superCluster.eta)>1.479&eSuperClusterOverP<1.12) )')
 )
  
 selectIdElecForETau = cms.EDFilter("PATElectronSelector",
      src = cms.InputTag("selectKinElecForETau"),
-     cut = cms.string('electronID("tight")>0.')
+     cut = cms.string('(abs(superCluster.eta)<1.479 & electronID("robust")>0 & eSuperClusterOverP<1.05 & eSuperClusterOverP>0.95) | (abs(superCluster.eta)>1.479 & electronID("robust")>0 & eSuperClusterOverP<1.12 & eSuperClusterOverP>0.95)')
 )
 
 #################### IP ############################

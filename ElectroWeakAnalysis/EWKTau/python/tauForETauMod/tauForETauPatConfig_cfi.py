@@ -67,8 +67,17 @@ selectorPfTausForETauKin = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("layer1PfTausForETau"),
     cut = cms.string("et>15. & abs(eta)<2.5"),
 )
+
+selectorPfTausForETauElecSep = cms.EDProducer("PlllATTauPATLeptonSeperationSelector",
+    LeptonSource = cms.InputTag("selectMchHLTElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauKin"),
+    DeltaRMaxCut = cms.double(99999.),
+    DeltaRMinCut = cms.double(0.3)
+)
+
 selectorPfTausForETauLdgTrk = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag("selectorPfTausForETauKin"),
+    src = cms.InputTag("selectorPfTausForETauElecSep"),
     cut = cms.string('tauID("leadingTrackFinding")>0.'),
 )
 selectorPfTausForETauLdgTrkPt = cms.EDFilter("PATTauSelector",
@@ -91,11 +100,27 @@ selectorPfTausForETauMuonRej = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("selectorPfTausForETauElecRej"),
     cut = cms.string('tauID("againstMuon")>0.'),
 )
+
 selectorPfTausForETauProng = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("selectorPfTausForETauElecRej"),
-    cut = cms.string("signalTracks.size()=1|signalTracks.size()=3")
+    cut = cms.string("signalPFChargedHadrCands.size()=1|signalPFChargedHadrCands.size()=3")
 )
 
+selectorPfTausForOSSSChargeSep = cms.EDProducer("PATLeptonPATTauOSSSChargeSelector",
+    LeptonSource = cms.InputTag("selectIpAfterIsoElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauProng"),
+    DoOSSS = cms.bool(True),
+    EventWeight = cms.double(1.)
+)
+
+selectorPfTausForOSSSChargeSepAnti = cms.EDProducer("PATLeptonPATTauOSSSChargeSelector",
+    LeptonSource = cms.InputTag("selectAntiIpAfterIsoElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauProng"),
+    DoOSSS = cms.bool(True),
+    EventWeight = cms.double(1.)
+)
 
 #################### PAT SELECTORS FOR TAU ID EFF MEASUREMENT ###########
 
@@ -103,8 +128,17 @@ selectorPfTausForETauKinEff = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("layer1PfTausForETauEff"),
     cut = cms.string("et>15. & abs(eta)<2.5"),
 )
+
+selectorPfTausForETauElecSepEff = cms.EDProducer("PATTauPATLeptonSeperationSelector",
+    LeptonSource = cms.InputTag("selectMchHLTElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauKinEff"),
+    DeltaRMaxCut = cms.double(99999.),
+    DeltaRMinCut = cms.double(0.3)
+)
+
 selectorPfTausForETauLdgTrkEff = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag("selectorPfTausForETauKinEff"),
+    src = cms.InputTag("selectorPfTausForETauElecSepEff"),
     cut = cms.string('tauID("leadingTrackFinding")>0.'),
 )
 selectorPfTausForETauLdgTrkPtEff = cms.EDFilter("PATTauSelector",
@@ -130,32 +164,22 @@ selectorPfTausForETauMuonRejEff = cms.EDFilter("PATTauSelector",
 
 selectorPfTausForETauProngEff = cms.EDFilter("PATTauSelector",
     src = cms.InputTag("selectorPfTausForETauElecRejEff"),
-    cut = cms.string("signalTracks.size()=1|signalTracks.size()=3")
+    cut = cms.string("signalPFChargedHadrCands.size()>-1")
+    #"signalPFChargedHadrCands.size()=1|signalPFChargedHadrCands.size()=3")
 )
 
+selectorPfTausForOSSSChargeSepEff = cms.EDProducer("PATLeptonPATTauOSSSChargeSelector",
+    LeptonSource = cms.InputTag("selectIpAfterIsoElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauProngEff"),
+    DoOSSS = cms.bool(True),          
+    EventWeight = cms.double(1.)
+) 
 
-
-
-#allLayer0PfTausForETauEff = cms.EDFilter("PATPFTauCleaner",
-#     tauSource              = cms.InputTag("pfRecoTauProducerForETauEff"),
-#     tauDiscriminatorSource = cms.InputTag("pfRecoTauIsoDiscrForETauEff"),
-#     removeOverlaps = cms.PSet(),
-#     markItems    = cms.bool(True),
-#     bitsToIgnore = cms.vstring('Core/Preselectio'),
-#     saveRejected = cms.string(''),
-#     saveAll      = cms.string(''),
-# )
-
-#allLayer0PfTausForETau = cms.EDFilter("PATPFTauCleaner",
-#     tauSource              = cms.InputTag("pfRecoTauProducerForETau"),
-#     tauDiscriminatorSource = cms.InputTag("pfRecoTauIsoDiscrForETau"),
-# 
-#     removeOverlaps = cms.PSet(),
-#
-#     markItems    = cms.bool(True),
-#     bitsToIgnore = cms.vstring('Core/Preselection'), 
-#     saveRejected = cms.string(''),
-#     saveAll      = cms.string(''),
-# )
-
-
+selectorPfTausForOSSSChargeSepAntiEff = cms.EDProducer("PATLeptonPATTauOSSSChargeSelector",
+    LeptonSource = cms.InputTag("selectAntiIpAfterIsoElecForETau"),
+    LeptonType = cms.string('Electron'),
+    TauSource = cms.InputTag("selectorPfTausForETauProngEff"),
+    DoOSSS = cms.bool(True),
+    EventWeight = cms.double(1.)
+)

@@ -12,8 +12,6 @@ from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackPtCut_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByLeadingTrackFinding_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstElectron_cfi import *
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
-from ElectroWeakAnalysis.EWKTau.tauLdgDiscrimination_cfi import *
-from ElectroWeakAnalysis.EWKTau.tauMassWithElecDiscrimination_cfi import *
 
 ### Modules for Standard Tau Id ###
 
@@ -42,13 +40,13 @@ pfRecoTauProducerForETau.Track_minPt = 1.0
 ### Ecl Sig ###
 pfRecoTauProducerForETau.ECALSignalConeMetric = "DR"
 pfRecoTauProducerForETau.ECALSignalConeSizeFormula = "0.15"
-pfRecoTauProducerForETau.ECALSignalConeSize_max = "0.15"
-pfRecoTauProducerForETau.ECALSignalConeSize_min = "0.0"
+pfRecoTauProducerForETau.ECALSignalConeSize_max = 0.15
+pfRecoTauProducerForETau.ECALSignalConeSize_min = 0.0
 ### Ecl Iso ###
 pfRecoTauProducerForETau.ECALIsolConeMetric = "DR"   
 pfRecoTauProducerForETau.ECALIsolConeSizeFormula = "0.50"
-pfRecoTauProducerForETau.ECALIsolConeSize_max = "1.0"
-pfRecoTauProducerForETau.ECALIsolConeSize_min = "0.0"
+pfRecoTauProducerForETau.ECALIsolConeSize_max = 1.0
+pfRecoTauProducerForETau.ECALIsolConeSize_min = 0.0
 pfRecoTauProducerForETau.GammaCand_minPt = 1.5
 
 ### Discriminators ###
@@ -99,20 +97,20 @@ pfRecoTauProducerForETauEff.LeadChargedHadrCand_minPt = 5.0
 ### Trk Iso ###
 pfRecoTauProducerForETauEff.TrackerIsolConeMetric = "DR"
 pfRecoTauProducerForETauEff.TrackerIsolConeSizeFormula = "0.7" 
-pfRecoTauProducerForETauEff.TrackerIsolConeSize_max = "1.0"
-pfRecoTauProducerForETauEff.TrackerIsolConeSize_min = "0.0"
+pfRecoTauProducerForETauEff.TrackerIsolConeSize_max = 1.0
+pfRecoTauProducerForETauEff.TrackerIsolConeSize_min = 0.0
 pfRecoTauProducerForETauEff.Track_IsolAnnulus_minNhits = 8
 pfRecoTauProducerForETauEff.ChargedHadrCand_minPt = 0.3
 ### Ecl Sig ###
 pfRecoTauProducerForETauEff.ECALSignalConeMetric = "DR"   
 pfRecoTauProducerForETauEff.ECALSignalConeSizeFormula = "0.15"
-pfRecoTauProducerForETauEff.ECALSignalConeSize_max = "0.15"
-pfRecoTauProducerForETauEff.ECALSignalConeSize_min = "0.0"
+pfRecoTauProducerForETauEff.ECALSignalConeSize_max =  0.15
+pfRecoTauProducerForETauEff.ECALSignalConeSize_min =  0.0
 ### Ecl Iso ###
 pfRecoTauProducerForETauEff.ECALIsolConeMetric = "DR"     
 pfRecoTauProducerForETauEff.ECALIsolConeSizeFormula = "0.7"
-pfRecoTauProducerForETauEff.ECALIsolConeSize_max = "1.0"
-pfRecoTauProducerForETauEff.ECALIsolConeSize_min = "0.0"
+pfRecoTauProducerForETauEff.ECALIsolConeSize_max =  1.0
+pfRecoTauProducerForETauEff.ECALIsolConeSize_min =  0.0
 pfRecoTauProducerForETauEff.GammaCand_minPt = 1.5
 
 ### Discriminators ###
@@ -134,6 +132,7 @@ pfRecoTauEclIsoDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'all
 
 pfRecoTauElecRejDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
 pfRecoTauElecRejDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' #'allLayer0PfTausForETauEffForETauEclIsodEff'
+pfRecoTauElecRejDiscrForETauEff.ApplyCut_EcalCrackCut = False
 
 pfRecoTauMuonRejDiscrForETauEff = copy.deepcopy(pfRecoTauDiscriminationAgainstElectron)
 pfRecoTauMuonRejDiscrForETauEff.PFTauProducer = 'allLayer0PfTausForETauEff' 
