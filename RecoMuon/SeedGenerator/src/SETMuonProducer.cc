@@ -317,6 +317,7 @@ SETMuonProducer::trajectories(const edm::Event& event){
       //fwFitFailed = !(filter()->refit(seedSets_inCluster, trajectoryNew));
 
       //---- this is the forward fitter (segments)
+      trajectoryMeasurementsFW.clear();
       fwFitFailed = !(filter()->fwfit_SET(seedSets_inCluster, trajectoryMeasurementsFW));
       //std::cout<<"after refit : fwFitFailed = "<<fwFitFailed<<std::endl;
       //trajectoryFW = trajectoryNew;
