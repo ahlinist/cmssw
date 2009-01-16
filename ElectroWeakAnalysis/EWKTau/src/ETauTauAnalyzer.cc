@@ -3,7 +3,7 @@
 ETauTauAnalyzer::ETauTauAnalyzer(const edm::ParameterSet& cfg):
   taus_(cfg.getParameter<VInputTag>("TauInputTags")),
   elec_(cfg.getParameter<edm::InputTag>("FinalElecTag")),
-  refObjects_(cfg.getParameter<VInputTag>("RefInputTags")),
+  refObjects_(cfg.getParameter<edm::InputTag>("RefInputTags")),
   doTauAfterElec_(cfg.getParameter<bool>("DoTauIdAfterElecId")), 
   doTuning_(cfg.getParameter<bool>("DoTuning")),
   doMatching_(cfg.getParameter<bool>("DoMatching")),
@@ -25,12 +25,14 @@ ETauTauAnalyzer::ETauTauAnalyzer(const edm::ParameterSet& cfg):
 
   std::vector<TString> tauHistoNames;
   tauHistoNames.push_back("SelKinTau");
+  tauHistoNames.push_back("SelElecSet");
   tauHistoNames.push_back("SelTrkTau");
   tauHistoNames.push_back("SelLdgTrkTau");
-  tauHistoNames.push_back("SelTrkIsoTau");
   tauHistoNames.push_back("SelEclIsoTau");
+  tauHistoNames.push_back("SelTrkIsoTau");
   tauHistoNames.push_back("SelElecRejTau");
   tauHistoNames.push_back("SelProngTau");
+  tauHistoNames.push_back("SelOSSSElecTau");
   m_tauEtHistoVec.reserve(tauHistoNames.size());
   m_tauEtaHistoVec.reserve(tauHistoNames.size());
   m_tauPhiHistoVec.reserve(tauHistoNames.size());
@@ -60,19 +62,21 @@ void ETauTauAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& setu
   m_count_sel++; // Create separation between all evts and tau selections
   
   //Get the matching objs
-  if(doMatching_)evt.getByLabel(refObjects_[0],m_tRefs);
+  if(doMatching_)evt.getByLabel(refObjects_,m_tRefs);
   
   // Get Final Electron Collection
   edm::Handle<std::vector<pat::Electron> > final_elecs;
   //Fill Selections after Elec pass Or Not
-  if(doTauAfterElec_&&evt.getByLabel(elec_,final_elecs)&&final_elecs->size()
+  if(doTauAfterElec_&&evt.getByLabel(elec_,final_elecs)&&final_elecs->size()==1
      ||!doTauAfterElec_){
+    hSelHisto->Fill(m_count_sel+0.5,eventWeight_);
+    m_count_sel++; // Create separation between elec veto and tau selections 
     //Fill Elec Kin Histos
     for(size_t i=0;i<taus_.size();i++)
       FillTauHists(evt,taus_[i],m_tauEtHistoVec[i],
 		   m_tauEtaHistoVec[i],m_tauPhiHistoVec[i]);
   
-    MakeElecRejPlots(evt,taus_[4]);
+    MakeElecRejPlots(evt,taus_[5]);
   
   }
   
@@ -100,12 +104,12 @@ void ETauTauAnalyzer::FillTauHists(const edm::Event& evt,edm::InputTag tag,
 	LorentzVector tLV(tau->px(),tau->py(),tau->pz(),tau->energy());
 	for(size_t i=0;i<m_tRefs->size();i++)
 	  if(tau->isPFTau()&&ROOT::Math::VectorUtil::DeltaR(tLV,m_tRefs->at(i))<0.1||
-	     tau->isPFTau()&&ROOT::Math::VectorUtil::DeltaR(tLV,m_tRefs->at(i))<0.3)
+	     tau->isCaloTau()&&ROOT::Math::VectorUtil::DeltaR(tLV,m_tRefs->at(i))<0.3)
 	    tau_matched = true;
       }
       else tau_matched = true;
   
-      if(tau_matched ==true){
+      if(tau_matched == true){
 	het->Fill(tau->et(),eventWeight_);
 	heta->Fill(tau->eta(),eventWeight_);
 	hphi->Fill(tau->phi(),eventWeight_);
@@ -118,7 +122,34 @@ void ETauTauAnalyzer::FillTauHists(const edm::Event& evt,edm::InputTag tag,
 }
 
 
-void ETauTauAnalyzer::MakeElecRejPlots(const edm::Event& evt,edm::InputTag ttag)
+void ETauTauAnalyzer::MakeTauIsoPlots(const edm::Event& evt,VInputTag ttag)
+{
+  edm::Handle<reco::PFTauCollection> taus;
+  if(evt.getByLabel(ttag[0], taus)){
+    
+    double isoConeSize=0.4, sigConeSize=0.15;
+    double Rm,Rsig,Riso,ldgPtChg,minPtChg,minPtGam;
+    for(reco::PFTauCollection::size_type iPFTau=0;
+	iPFTau<taus->size();iPFTau++)
+      {
+	reco::PFTauRef thePFTauRef(taus,iPFTau);
+	reco::PFTau thePFTau(*thePFTauRef);
+	const reco::PFCandidateRef ldgPFChg=thePFTau.leadPFChargedHadrCand();
+	if(!ldgPFChg)continue;
+	  math::XYZVector jetVec(thePFTau.px(),thePFTau.py(),thePFTau.pz());
+	  math::XYZVector ldgVec(ldgPFChg->px(),ldgPFChg->py(),ldgPFChg->pz());
+	  PFTauElementsOperators myPFTauElementsOperators(thePFTau);
+	  PFCandidateRefVector myChgPFIsoCands =  
+	    myPFTauElementsOperators.PFChargedHadrCandsInCone(jetVec,"DR",isoConeSize, minPtChg);
+	  
+	  myPFTauElementsOperators.discriminatorByIsolPFChargedHadrCandsN("DR",Rm,"DR",Rsig,"DR",Riso,true,ldgPtChg,minPtChg,0);
+	  
+	
+      }
+  }
+}
+
+  void ETauTauAnalyzer::MakeElecRejPlots(const edm::Event& evt,edm::InputTag ttag)
 {
   edm::Handle<std::vector<pat::Tau> > taus;
   if(evt.getByLabel(ttag, taus)){
