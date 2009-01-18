@@ -74,8 +74,8 @@ namespace edm {
     k_VLuminosityBlockRange = 'a',
     k_EventRange = 'R',
     k_VEventRange = 'r',
-    k_PSet = 'P',
-    k_VPSet = 'p'
+    k_PSet = 'Q',
+    k_VPSet = 'q'
   };
 
   std::string parameterTypeEnumToString(ParameterTypes iType);
