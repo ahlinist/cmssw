@@ -183,11 +183,13 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 
   // get the SiStripQuality records
   edm::ESHandle<SiStripQuality> SiStripQuality_;
-  es.get<SiStripQualityRcd>().get(SiStripQuality_);
-
-  edm::ESHandle<SiStripQuality> SiStripQualityForCluster_;
-  es.get<SiStripQualityRcd>().get("forCluster",SiStripQualityForCluster_);
-
+  try {
+    es.get<SiStripQualityRcd>().get("forCluster",SiStripQuality_);
+  }
+  catch (...) {
+    es.get<SiStripQualityRcd>().get(SiStripQuality_);
+  }
+  
   // take from eventSetup the SiStripDetCabling object
   edm::ESHandle<SiStripDetCabling> SiStripDetCabling_;
   es.get<SiStripDetCablingRcd>().get(SiStripDetCabling_);  
