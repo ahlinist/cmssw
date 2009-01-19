@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 //
 // Package:    SusyDiJetAnalysis
@@ -13,18 +14,24 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.8 2008/12/09 16:52:47 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.9 2009/01/06 09:51:35 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
 #include "SusyAnalysis/AnalysisSkeleton/test/SusyDiJetAnalysis.h"
+
+using namespace std;
+using namespace reco;
+using namespace edm;
 
 //________________________________________________________________________________________
 SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
   plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
   eventWeight_( iConfig.getParameter<double>("eventWeight") ),
-  nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
+  nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),
+  pathNames_(0), nEvents_(0), nWasRun_(0), nAccept_(0), nErrors_(0), hlWasRun_(0), hlAccept_(0), hlErrors_(0), init_(false), //georgia
+  genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
 { 
   // Translate plotSelection strings to indices
    plotSelectionIndices_.reserve(plotSelection_.size());
@@ -58,7 +65,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   elecTag_ = iConfig.getParameter<edm::InputTag>("elecTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("muonTag");
   tauTag_ = iConfig.getParameter<edm::InputTag>("tauTag");
-
+  vtxTag_ = iConfig.getParameter<edm::InputTag>("vtxTag"); 
   ccjetTag_ = iConfig.getParameter<edm::InputTag>("ccjetTag");
   ccmetTag_ = iConfig.getParameter<edm::InputTag>("ccmetTag");
   ccelecTag_ = iConfig.getParameter<edm::InputTag>("ccelecTag"); 
@@ -80,8 +87,6 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
 
   // Initialise plots [should improve in the future]
     initPlots();
-   
- 
 
 }
 
@@ -198,7 +203,51 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	edm::LogWarning("HLTEventSelector") << " trigName " << trigName << " accept " << hltHandle->accept(trgNames.triggerIndex(trgNames.triggerName(itrig))) << std::endl;
 	}*/
   
+  //  std::cout << " accept " << hltHandle->size()<<std::endl;
   
+  
+    // GEORGIA
+  if (!hltHandle.isValid()) {
+    // triggerExists = false;
+    std::cout << "HLTriggerResult Not Valid!" << endl;
+  }
+  else {  
+    if (hltHandle->wasrun()) nWasRun_++;
+    const bool accept(hltHandle->accept());
+    LogDebug("") << "HL TriggerResults decision: " << accept;
+    if (accept) ++nAccept_;
+    if (hltHandle->error() ) nErrors_++;
+  }
+  if (!init_) {
+    init_=true;
+    triggerNames_.init(*hltHandle);
+    pathNames_=triggerNames_.triggerNames();
+    const unsigned int n(pathNames_.size());
+    hlWasRun_.resize(n);
+    hlAccept_.resize(n);
+    hlErrors_.resize(n);
+    for (unsigned int i=0; i!=n; ++i) {
+      hlWasRun_[i]=0;
+      hlAccept_[i]=0;
+      hlErrors_[i]=0;
+    }
+  }
+
+  // decision for each HL algorithm
+  const unsigned int n(pathNames_.size());
+  for (unsigned int i=0; i!=n; ++i) {
+    if (hltHandle->wasrun(i)) hlWasRun_[i]++;
+    if (hltHandle->accept(i)) hlAccept_[i]++;
+    if (hltHandle->error(i) ) hlErrors_[i]++;
+  }
+  
+  nHLT=static_cast<int>(n);
+  for(unsigned int i=0; i!=n; ++i) {
+    HLTArray[i]=hltHandle->accept(i);
+  }
+
+
+
   //looping over list of trig path names
   for ( std::vector<std::string>::const_iterator i=pathNames_.begin();
 	i!=pathNames_.end(); ++i ) {
@@ -218,7 +267,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       if (trigName == "HLT_DiJetAve130") mTempTreeHLT2JET=true;
       if (trigName == "HLT_MET50") mTempTreeHLT1MET1HT=true;
       if (trigName == "HLT_Mu9") mTempTreeHLT1Muon=true; 
-     
+      
     } 
   }
 
@@ -232,7 +281,33 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
  
 
+  // GEORGIA 
+  // get the Vertex collection
+  edm::Handle<reco::VertexCollection> vertices;
+  iEvent.getByLabel(vtxTag_, vertices);
+  if ( !vertices.isValid() ) {
+    LogDebug("") << "No Vertex results for InputTag" << vtxTag_;
+    return;
+  } 
 
+  // Should assume that 1st index in VertexCollection corresponds to the primary vertex ?? ( verices are ordered?)
+
+  mTempTreenVtx = (*vertices).size();
+
+  for (int i=0; i< (int) (*vertices).size(); i++){  
+    //    int indPrim=0;
+    const reco::Vertex* pVertex = &(*vertices)[i];
+    mTempTreeVtxChi2[i] = pVertex->chi2();
+    mTempTreeVtxNdof[i] = pVertex->ndof();
+    mTempTreeVtxNormalizedChi2[i] = pVertex->normalizedChi2();
+    mTempTreeVtxX[i] = pVertex->x();
+    mTempTreeVtxY[i] = pVertex->y();
+    mTempTreeVtxZ[i] = pVertex->z();
+    mTempTreeVtxdX[i] = pVertex->xError();
+    mTempTreeVtxdY[i] = pVertex->yError();
+    mTempTreeVtxdZ[i] = pVertex->zError();
+  } 
+  // end GEORGIA
 
   
   // get the photons
@@ -292,6 +367,55 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecHCalIso[i] = (*elecHandle)[i].hcalIso() ;
     mTempTreeElecAllIso[i] = (*elecHandle)[i].caloIso() ;
     mTempTreeElecCharge[i] = (*elecHandle)[i].charge();
+
+    //MICHELE
+    mTempTreeElecIdLoose[i] = (*elecHandle)[i].electronID("eidLoose");
+    mTempTreeElecIdTight[i] = (*elecHandle)[i].electronID("eidTight");
+    mTempTreeElecIdRobLoose[i] = (*elecHandle)[i].electronID("eidRobustLoose");
+    mTempTreeElecIdRobTight[i] = (*elecHandle)[i].electronID("eidRobustTight"); 
+
+
+
+    mTempTreeElecCaloEnergy[i] = (*elecHandle)[i].caloEnergy();
+    mTempTreeElecHOverE[i] = (*elecHandle)[i].hadronicOverEm();
+    mTempTreeElecVx[i] = (*elecHandle)[i].vx();
+    mTempTreeElecVy[i] = (*elecHandle)[i].vy();
+    mTempTreeElecVz[i] = (*elecHandle)[i].vz();
+    mTempTreeElecD0[i] = (*elecHandle)[i].gsfTrack()->d0();
+    mTempTreeElecDz[i] = (*elecHandle)[i].gsfTrack()->dz();
+    mTempTreeElecChargeMode[i] = (*elecHandle)[i].gsfTrack()->chargeMode();	
+    mTempTreeElecPtTrkMode[i] = (*elecHandle)[i].gsfTrack()->ptMode();
+    mTempTreeElecQOverPErrTrkMode[i] = (*elecHandle)[i].gsfTrack()->qoverpModeError();
+    mTempTreeElecCharge[i] = (*elecHandle)[i].gsfTrack()->charge();
+    mTempTreeElecPtTrk[i] = (*elecHandle)[i].gsfTrack()->pt();
+    mTempTreeElecQOverPErrTrk[i] = (*elecHandle)[i].gsfTrack()->qoverpError();
+    mTempTreeElecLostHits[i] = (*elecHandle)[i].gsfTrack()->lost();
+    mTempTreeElecValidHits[i] = (*elecHandle)[i].gsfTrack()->found();
+    mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
+    mTempTreeElecEtaTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Eta();
+    mTempTreeElecPhiTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Phi();
+    mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
+    mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
+    mTempTreeElecPinTrk[i] = sqrt((*elecHandle)[i].trackMomentumAtVtx().Mag2());
+    mTempTreeElecPoutTrk[i] = sqrt((*elecHandle)[i].trackMomentumOut().Mag2());
+
+    if (&(*(*elecHandle)[i].genLepton())!=0){
+      mTempTreeGenElecPdgId[i] = (*elecHandle)[i].genLepton()->pdgId();
+      mTempTreeGenElecPx[i] = (*elecHandle)[i].genLepton()->px();
+      mTempTreeGenElecPy[i] = (*elecHandle)[i].genLepton()->py();
+      mTempTreeGenElecPz[i] = (*elecHandle)[i].genLepton()->pz();
+      if(&(*(*elecHandle)[i].genLepton()->mother())!=0){
+	mTempTreeGenElecMother[i]= (*elecHandle)[i].genLepton()->mother()->pdgId();
+      }
+    }
+    else {
+      mTempTreeGenElecPdgId[i] = 999.;
+      mTempTreeGenElecPx[i]=999.;
+      mTempTreeGenElecPy[i]=999.;
+      mTempTreeGenElecPz[i]=999.;
+      mTempTreeGenElecMother[i] = 999.;
+    }
+    //PIOPPI
   }
 
 
@@ -316,6 +440,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeccElecPz[i] = (*ccelecHandle)[i].momentum().Z();
     mTempTreeccElecEta[i] = (*ccelecHandle)[i].eta();
     mTempTreeccElecPhi[i] = (*ccelecHandle)[i].phi();
+
   }
   
   // get the muons
@@ -345,19 +470,91 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeMuonECalIso[i] = (*muonHandle)[i].ecalIso();
     mTempTreeMuonHCalIso[i] = (*muonHandle)[i].hcalIso() ;
     mTempTreeMuonAllIso[i] = (*muonHandle)[i].caloIso() ;
-    if( (*muonHandle)[i].track().isNonnull())
-      mTempTreeMuonTrkChiNorm[i] = (*muonHandle)[i].track().get () ->chi2()/ (*muonHandle)[i].track().get()->ndof();
-    else  mTempTreeMuonTrkChiNorm[i] = 999;
-    mTempTreeMuonIsGlobal[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(1));
-    mTempTreeMuonIsStandAlone[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(2));
-    mTempTreeMuonIsTracker[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(3));
+    mTempTreeMuonIsGlobal[i] = (*muonHandle)[i].isGlobalMuon();
+    mTempTreeMuonIsStandAlone[i] = (*muonHandle)[i].isStandAloneMuon();
+    mTempTreeMuonIsTracker[i] = (*muonHandle)[i].isTrackerMuon();
     mTempTreeMuonIsGlobalTight[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(6));
     mTempTreeMuonIsTMLastStationLoose[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(7));
-    // if((*muonHandle)[i].pt() > 1000)
-    // std::cout << " is it good muon TMLastStationLoose " << (*muonHandle)[i].isGood(pat::Muon::SelectionType(7)) << " pt " << (*muonHandle)[i].pt() << " is global Muon " << (*muonHandle)[i].isGood(pat::Muon::SelectionType(1)) <<  std::endl;
 
-      //std::cout << " true " << true << std::endl;
- }
+    
+    //MICHELE    
+    //    mTempTreeMuonId[i]=2.; //FIX NEEDED
+
+    mTempTreeMuonCombVx[i]=(*muonHandle)[i].globalTrack()->vx();
+    mTempTreeMuonCombVy[i]=(*muonHandle)[i].globalTrack()->vy();
+    mTempTreeMuonCombVz[i]=(*muonHandle)[i].globalTrack()->vz();
+    mTempTreeMuonCombD0[i]=(*muonHandle)[i].globalTrack()->d0();
+    mTempTreeMuonCombDz[i]=(*muonHandle)[i].globalTrack()->dz();
+    if((*muonHandle)[i].isStandAloneMuon() && (*muonHandle)[i].standAloneMuon().isNonnull()){
+      mTempTreeMuonStandValidHits[i]=(*muonHandle)[i].standAloneMuon()->found();
+      mTempTreeMuonStandLostHits[i]=(*muonHandle)[i].standAloneMuon()->lost();
+      mTempTreeMuonStandPt[i]=(*muonHandle)[i].standAloneMuon()->pt();
+      mTempTreeMuonStandPz[i]=(*muonHandle)[i].standAloneMuon()->pz();
+      mTempTreeMuonStandP[i]=(*muonHandle)[i].standAloneMuon()->p();
+      mTempTreeMuonStandEta[i]=(*muonHandle)[i].standAloneMuon()->eta();
+      mTempTreeMuonStandPhi[i]=(*muonHandle)[i].standAloneMuon()->phi();
+      mTempTreeMuonStandChi[i]=(*muonHandle)[i].standAloneMuon()->chi2();
+      mTempTreeMuonStandCharge[i]=(*muonHandle)[i].standAloneMuon()->charge();
+      mTempTreeMuonStandQOverPError[i]=(*muonHandle)[i].standAloneMuon()->qoverpError();
+    } 
+    else{
+      mTempTreeMuonStandValidHits[i]=999.;
+      mTempTreeMuonStandLostHits[i]=999.;
+      mTempTreeMuonStandPt[i]=999.;
+      mTempTreeMuonStandPz[i]=999.;
+      mTempTreeMuonStandP[i]=999.;
+      mTempTreeMuonStandEta[i]=999.;
+      mTempTreeMuonStandPhi[i]=999.;
+      mTempTreeMuonStandChi[i]=999.;
+      mTempTreeMuonStandCharge[i]=999.;
+      mTempTreeMuonStandQOverPError[i]=999.;
+    }
+    if((*muonHandle)[i].isTrackerMuon() && (*muonHandle)[i].track().isNonnull()){
+      mTempTreeMuonTrkChiNorm[i] = (*muonHandle)[i].track()->normalizedChi2();
+      mTempTreeMuonTrkValidHits[i]=(*muonHandle)[i].track()->found();
+      mTempTreeMuonTrkLostHits[i]=(*muonHandle)[i].track()->lost();
+      mTempTreeMuonTrkPt[i]=(*muonHandle)[i].track()->pt();
+      mTempTreeMuonTrkPz[i]=(*muonHandle)[i].track()->pz();
+      mTempTreeMuonTrkP[i]=(*muonHandle)[i].track()->p();
+      mTempTreeMuonTrkEta[i]=(*muonHandle)[i].track()->eta();
+      mTempTreeMuonTrkPhi[i]=(*muonHandle)[i].track()->phi();
+      mTempTreeMuonTrkChi[i]=(*muonHandle)[i].track()->chi2();
+      mTempTreeMuonTrkCharge[i]=(*muonHandle)[i].track()->charge();
+      mTempTreeMuonTrkQOverPError[i]=(*muonHandle)[i].track()->qoverpError();
+
+    }
+    else{
+      mTempTreeMuonTrkChiNorm[i] = 999.;
+      mTempTreeMuonTrkValidHits[i]=999.;
+      mTempTreeMuonTrkLostHits[i]=999.;
+      mTempTreeMuonTrkPt[i]=999.;
+      mTempTreeMuonTrkPz[i]=999.;
+      mTempTreeMuonTrkP[i]=999.;
+      mTempTreeMuonTrkEta[i]=999.;
+      mTempTreeMuonTrkPhi[i]=999.;
+      mTempTreeMuonTrkChi[i]=999.;
+      mTempTreeMuonTrkCharge[i]=999.;
+      mTempTreeMuonTrkQOverPError[i]=999.;
+    }
+    //PIOPPI
+    if (&(*(*muonHandle)[i].genLepton())!=0){
+      mTempTreeGenMuonPdgId[i]=(*muonHandle)[i].genLepton()->pdgId();
+      mTempTreeGenMuonPx[i]=(*muonHandle)[i].genLepton()->px();
+      mTempTreeGenMuonPy[i]=(*muonHandle)[i].genLepton()->py();
+      mTempTreeGenMuonPz[i]=(*muonHandle)[i].genLepton()->pz();
+      if (&(*(*muonHandle)[i].genLepton()->mother())!=0)
+	mTempTreeGenMuonMother[i]=(*muonHandle)[i].genLepton()->mother()->pdgId();
+      else mTempTreeGenMuonMother[i]=999.;
+    }
+    else{
+      mTempTreeGenMuonPdgId[i]=999.;
+      mTempTreeGenMuonMother[i]=999.;
+      mTempTreeGenMuonPx[i]=999.;
+      mTempTreeGenMuonPy[i]=999.;
+      mTempTreeGenMuonPz[i]=999.;
+    }
+
+  }
   //std::cout << " add the ccmuons " << std::endl;
   
 
@@ -382,6 +579,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeccMuonPz[i] = (*ccmuonHandle)[i].momentum().Z();
     mTempTreeccMuonEta[i] = (*ccmuonHandle)[i].eta();
     mTempTreeccMuonPhi[i] = (*ccmuonHandle)[i].phi();
+ 
   }
 
   // get the taus
@@ -411,7 +609,162 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeTauECalIso[i] = (*tauHandle)[i].ecalIso();
     mTempTreeTauHCalIso[i] = (*tauHandle)[i].hcalIso() ;
     mTempTreeTauAllIso[i] = (*tauHandle)[i].caloIso() ;
+
+//     //MICHELE
+    mTempTreeTauVx[i] =(*tauHandle)[i].vx();
+    mTempTreeTauVy[i] =(*tauHandle)[i].vy();
+    mTempTreeTauVz[i] =(*tauHandle)[i].vz();
+    mTempTreeTauNTks[i] =(*tauHandle)[i].isolationTracks().size();
+    //NEUTRAL
+    if ((*tauHandle)[i].isPFTau()){
+      int ntnsize=(*tauHandle)[i].signalPFNeutrHadrCands().size();
+      mTempTreeTauNNeutrals[i] =ntnsize;
+      float hentau=0.;
+      float eentau=0.;
+      for (int itneu=0;itneu<ntnsize;itneu++){
+         eentau+=(*(*tauHandle)[i].signalPFNeutrHadrCands()[itneu]).ecalEnergy();
+         hentau+=(*(*tauHandle)[i].signalPFNeutrHadrCands()[itneu]).hcalEnergy();
+      }
+      mTempTreeTauNeutralE[i]=hentau+eentau;
+      mTempTreeTauNeutralHOverHPlusE[i] = (hentau+eentau>0.) ? hentau/(hentau+eentau) : 999.;
+   }
+    else {
+      mTempTreeTauNeutralE[i]=999.;
+      mTempTreeTauNeutralHOverHPlusE[i]=999.;
+      mTempTreeTauNNeutrals[i] =999.;
+    }
+    if ((*tauHandle)[i].isolationTracks().size()>0){
+      //TK1
+      mTempTreeTauTk1Vx[i]=(*tauHandle)[i].isolationTracks()[0]->vx();
+      mTempTreeTauTk1Vy[i]=(*tauHandle)[i].isolationTracks()[0]->vy();
+      mTempTreeTauTk1Vz[i]=(*tauHandle)[i].isolationTracks()[0]->vz();
+      mTempTreeTauTk1D0[i]=(*tauHandle)[i].isolationTracks()[0]->d0();
+      mTempTreeTauTk1Dz[i]=(*tauHandle)[i].isolationTracks()[0]->dz();
+      mTempTreeTauTk1Pt[i]=(*tauHandle)[i].isolationTracks()[0]->pt(); 
+      mTempTreeTauTk1Pz[i]=(*tauHandle)[i].isolationTracks()[0]->pz();
+      mTempTreeTauTk1Eta[i]=(*tauHandle)[i].isolationTracks()[0]->eta();
+      mTempTreeTauTk1Phi[i]=(*tauHandle)[i].isolationTracks()[0]->phi();
+      mTempTreeTauTk1Chi[i]=(*tauHandle)[i].isolationTracks()[0]->chi2();
+      mTempTreeTauTk1Charge[i]=(*tauHandle)[i].isolationTracks()[0]->charge();
+      mTempTreeTauTk1QOverPError[i]=(*tauHandle)[i].isolationTracks()[0]->qoverpError();
+      mTempTreeTauTk1ValidHits[i]=(*tauHandle)[i].isolationTracks()[0]->found();
+      mTempTreeTauTk1LostHits[i]=(*tauHandle)[i].isolationTracks()[0]->lost();
+      mTempTreeTauTk1CaloE[i]=2.;
+    }
+    else {
+      //TK1
+      mTempTreeTauTk1Vx[i]=999.;
+      mTempTreeTauTk1Vy[i]=999.;
+      mTempTreeTauTk1Vz[i]=999.;
+      mTempTreeTauTk1D0[i]=999.;
+      mTempTreeTauTk1Dz[i]=999.;
+      mTempTreeTauTk1Pt[i]=999.; 
+      mTempTreeTauTk1Pz[i]=999.;
+      mTempTreeTauTk1Eta[i]=999.;
+      mTempTreeTauTk1Phi[i]=999.;
+      mTempTreeTauTk1Chi[i]=999.;
+      mTempTreeTauTk1Charge[i]=999.;
+      mTempTreeTauTk1QOverPError[i]=999.;
+      mTempTreeTauTk1ValidHits[i]=999.;
+      mTempTreeTauTk1LostHits[i]=999.;
+      mTempTreeTauTk1CaloE[i]=999.;
+    }
+    //TK2
+    if ((*tauHandle)[i].isolationTracks().size()>1){
+      //TK2
+      mTempTreeTauTk2Vx[i]=(*tauHandle)[i].isolationTracks()[1]->vx();
+      mTempTreeTauTk2Vy[i]=(*tauHandle)[i].isolationTracks()[1]->vy();
+      mTempTreeTauTk2Vz[i]=(*tauHandle)[i].isolationTracks()[1]->vz();
+      mTempTreeTauTk2D0[i]=(*tauHandle)[i].isolationTracks()[1]->d0();
+      mTempTreeTauTk2Dz[i]=(*tauHandle)[i].isolationTracks()[1]->dz();
+      mTempTreeTauTk2Pt[i]=(*tauHandle)[i].isolationTracks()[1]->pt(); 
+      mTempTreeTauTk2Pz[i]=(*tauHandle)[i].isolationTracks()[1]->pz();
+      mTempTreeTauTk2Eta[i]=(*tauHandle)[i].isolationTracks()[1]->eta();
+      mTempTreeTauTk2Phi[i]=(*tauHandle)[i].isolationTracks()[1]->phi();
+      mTempTreeTauTk2Chi[i]=(*tauHandle)[i].isolationTracks()[1]->chi2();
+      mTempTreeTauTk2Charge[i]=(*tauHandle)[i].isolationTracks()[1]->charge();
+      mTempTreeTauTk2QOverPError[i]=(*tauHandle)[i].isolationTracks()[1]->qoverpError();
+      mTempTreeTauTk2ValidHits[i]=(*tauHandle)[i].isolationTracks()[1]->found();
+      mTempTreeTauTk2LostHits[i]=(*tauHandle)[i].isolationTracks()[1]->lost();
+      mTempTreeTauTk2CaloE[i]=2.;
+    }
+    else {
+      //TK2
+      mTempTreeTauTk2Vx[i]=999.;
+      mTempTreeTauTk2Vy[i]=999.;
+      mTempTreeTauTk2Vz[i]=999.;
+      mTempTreeTauTk2D0[i]=999.;
+      mTempTreeTauTk2Dz[i]=999.;
+      mTempTreeTauTk2Pt[i]=999.; 
+      mTempTreeTauTk2Pz[i]=999.;
+      mTempTreeTauTk2Eta[i]=999.;
+      mTempTreeTauTk2Phi[i]=999.;
+      mTempTreeTauTk2Chi[i]=999.;
+      mTempTreeTauTk2Charge[i]=999.;
+      mTempTreeTauTk2QOverPError[i]=999.;
+      mTempTreeTauTk2ValidHits[i]=999.;
+      mTempTreeTauTk2LostHits[i]=999.;
+      mTempTreeTauTk2CaloE[i]=999.;
+    }
+    //TK3
+    if ((*tauHandle)[i].isolationTracks().size()>2){
+      //TK2
+      mTempTreeTauTk3Vx[i]=(*tauHandle)[i].isolationTracks()[2]->vx();
+      mTempTreeTauTk3Vy[i]=(*tauHandle)[i].isolationTracks()[2]->vy();
+      mTempTreeTauTk3Vz[i]=(*tauHandle)[i].isolationTracks()[2]->vz();
+      mTempTreeTauTk3D0[i]=(*tauHandle)[i].isolationTracks()[2]->d0();
+      mTempTreeTauTk3Dz[i]=(*tauHandle)[i].isolationTracks()[2]->dz();
+      mTempTreeTauTk3Pt[i]=(*tauHandle)[i].isolationTracks()[2]->pt(); 
+      mTempTreeTauTk3Pz[i]=(*tauHandle)[i].isolationTracks()[2]->pz();
+      mTempTreeTauTk3Eta[i]=(*tauHandle)[i].isolationTracks()[2]->eta();
+      mTempTreeTauTk3Phi[i]=(*tauHandle)[i].isolationTracks()[2]->phi();
+      mTempTreeTauTk3Chi[i]=(*tauHandle)[i].isolationTracks()[2]->chi2();
+      mTempTreeTauTk3Charge[i]=(*tauHandle)[i].isolationTracks()[2]->charge();
+      mTempTreeTauTk3QOverPError[i]=(*tauHandle)[i].isolationTracks()[2]->qoverpError();
+      mTempTreeTauTk3ValidHits[i]=(*tauHandle)[i].isolationTracks()[2]->found();
+      mTempTreeTauTk3LostHits[i]=(*tauHandle)[i].isolationTracks()[2]->lost();
+      mTempTreeTauTk3CaloE[i]=2.;
+    }
+    else {
+      //TK2
+      mTempTreeTauTk3Vx[i]=999.;
+      mTempTreeTauTk3Vy[i]=999.;
+      mTempTreeTauTk3Vz[i]=999.;
+      mTempTreeTauTk3D0[i]=999.;
+      mTempTreeTauTk3Dz[i]=999.;
+      mTempTreeTauTk3Pt[i]=999.; 
+      mTempTreeTauTk3Pz[i]=999.;
+      mTempTreeTauTk3Eta[i]=999.;
+      mTempTreeTauTk3Phi[i]=999.;
+      mTempTreeTauTk3Chi[i]=999.;
+      mTempTreeTauTk3Charge[i]=999.;
+      mTempTreeTauTk3QOverPError[i]=999.;
+      mTempTreeTauTk3ValidHits[i]=999.;
+      mTempTreeTauTk3LostHits[i]=999.;
+      mTempTreeTauTk3CaloE[i]=999.;
+    }
+
+    if (&(*(*tauHandle)[i].genLepton())!=0){
+      mTempTreeGenTauPdgId[i]=(*tauHandle)[i].genLepton()->pdgId();
+      mTempTreeGenTauPx[i]=(*tauHandle)[i].genLepton()->px();
+      mTempTreeGenTauPy[i]=(*tauHandle)[i].genLepton()->py();
+      mTempTreeGenTauPz[i]=(*tauHandle)[i].genLepton()->pz();
+      if (&(*(*tauHandle)[i].genLepton()->mother())!=0)
+	mTempTreeGenTauMother[i]=(*tauHandle)[i].genLepton()->mother()->pdgId();
+      else mTempTreeGenTauMother[i]=999.;
+    }
+    else{
+      mTempTreeGenTauPdgId[i]=999.;
+      mTempTreeGenTauMother[i]=999.;
+      mTempTreeGenTauPx[i]=999.;
+      mTempTreeGenTauPy[i]=999.;
+      mTempTreeGenTauPz[i]=999.;
+    }
+    
+    //PIOPPI
+    
   }
+
    
   // get the jets
   edm::Handle< std::vector<pat::Jet> > jetHandle;
@@ -440,8 +793,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeJetsPz[i] = (*jetHandle)[i].momentum().Z();
       mTempTreeJetsEta[i] = (*jetHandle)[i].eta();
       mTempTreeJetsPhi[i] = (*jetHandle)[i].phi();
-      
-      mTempTreeJetsFem[i] = (*jetHandle)[i].emEnergyFraction();
+      if ((*jetHandle)[i].isCaloJet())
+	mTempTreeJetsFem[i] = (*jetHandle)[i].emEnergyFraction();
+      if ((*jetHandle)[i].isPFJet())
+	mTempTreeJetsFem[i] = (*jetHandle)[i].neutralEmEnergyFraction()+
+	  (*jetHandle)[i].chargedEmEnergyFraction();  
+
 
        mTempTreeJetsBTag_TkCountHighEff[i] = (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags");
        // std::cout << " discri " << (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags") << std::endl;
@@ -723,6 +1080,7 @@ void
 SusyDiJetAnalysis::endJob() {
 
   printSummary();
+  printHLTreport();
 
 }
 
@@ -760,6 +1118,51 @@ SusyDiJetAnalysis::printSummary( void ) {
   edm::LogWarning("SusyDiJet|SummaryCount") << summary.str();
 
 }
+
+
+// GEORGIA
+void
+SusyDiJetAnalysis::printHLTreport( void ) {
+
+  // georgia :  prints an HLT report -- associates trigger bits with trigger names (prints #events fired the trigger etc)
+ const unsigned int n(pathNames_.size());
+  std::cout << "\n";
+  std::cout << "HLT-Report " << "---------- Event  Summary ------------\n";
+  std::cout << "HLT-Report"
+	    << " Events total = " << nEvents_
+	    << " wasrun = " << nWasRun_
+	    << " passed = " << nAccept_
+	    << " errors = " << nErrors_
+	    << "\n";
+
+  std::cout << endl;
+  std::cout << "HLT-Report " << "---------- HLTrig Summary ------------\n";
+  std::cout << "HLT-Report "
+	    << right << setw(10) << "HLT  Bit#" << " "
+	    << right << setw(10) << "WasRun" << " "
+	    << right << setw(10) << "Passed" << " "
+	    << right << setw(10) << "Errors" << " "
+	    << "Name" << "\n";
+
+  if (init_) {
+    for (unsigned int i=0; i!=n; ++i) {
+      std::cout << "HLT-Report "
+		<< right << setw(10) << i << " "
+		<< right << setw(10) << hlWasRun_[i] << " "
+		<< right << setw(10) << hlAccept_[i] << " "
+		<< right << setw(10) << hlErrors_[i] << " "
+		<< pathNames_[i] << "\n";
+    }
+  } else {
+    std::cout << "HLT-Report - No HL TriggerResults found!" << endl;
+  }
+  
+  std::cout << endl;
+  std::cout << "HLT-Report end!" << endl;
+  std::cout << endl;
+
+}
+// end GEORGIA
 
 
 //________________________________________________________________________________________
@@ -817,12 +1220,16 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("run",&mTempTreeRun,"run/int");
   mAllData->Branch("event",&mTempTreeEvent,"event/int");
 
- 
+  // GEORGIA
+  mAllData->Branch("nHLT",&nHLT,"nHLT/I");
+  mAllData->Branch("HLTArray",HLTArray,"HLTArray[nHLT]/I");
+  // end GEORGIA 
+
   mAllData->Branch("HLT1JET",&mTempTreeHLT1JET,"HLT1JET/bool");
   mAllData->Branch("HLT2JET",&mTempTreeHLT2JET,"HLT2JET/bool");
   mAllData->Branch("HLT1MET1HT",&mTempTreeHLT1MET1HT,"HLT1MET1HT/bool");
   mAllData->Branch("HLT1MUON",&mTempTreeHLT1Muon,"HLT1MUON/bool");
- 
+  
 
   mAllData->Branch("met",&mTempTreeMET,"met/double");
   mAllData->Branch("mex",&mTempTreeMEY,"mex/double");
@@ -832,13 +1239,23 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("metphiuncor",&mTempTreeMETphiuncor,"metphiuncor/double");
 
 
-
- 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
   mAllData->Branch("procID",&mTempTreeProcID,"procID/int");
   mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
 
- 
+
+  // GEORGIA
+  mAllData->Branch("nVtx",&mTempTreenVtx,"nVtx/int");
+  mAllData->Branch("VertexChi2",mTempTreeVtxChi2,"VertexChi2[nVtx]/double");
+  mAllData->Branch("VertexNdof",mTempTreeVtxNdof,"VertexNdof[nVtx]/double");
+  mAllData->Branch("VertexNormalizedChi2",mTempTreeVtxNormalizedChi2,"VertexNormalizedChi2[nVtx]/double");
+  mAllData->Branch("VertexX",mTempTreeVtxX,"VertexX[nVtx]/double");
+  mAllData->Branch("VertexY",mTempTreeVtxY,"VertexY[nVtx]/double");
+  mAllData->Branch("VertexZ",mTempTreeVtxZ,"VertexZ[nVtx]/double");
+  mAllData->Branch("VertexdX",mTempTreeVtxdX,"VertexdX[nVtx]/double");
+  mAllData->Branch("VertexdY",mTempTreeVtxdY,"VertexdY[nVtx]/double");
+  mAllData->Branch("VertexdZ",mTempTreeVtxdZ,"VertexdZ[nVtx]/double");
+  // end GEORGIA
 
  
  //add hemispheres
@@ -948,6 +1365,40 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("ElecHCalIso", mTempTreeElecHCalIso ,"ElecHCalIso[Nelec]/double");
   mAllData->Branch("ElecAllIso",  mTempTreeElecAllIso ,"ElecAllIso[Nelec]/double");
   mAllData->Branch("ElecTrkChiNorm",mTempTreeElecTrkChiNorm  ,"ElecTrkChiNorm[Nelec]/double");
+  //MICHELE
+  mAllData->Branch("ElecIdLoose",mTempTreeElecIdLoose,"ElecIdLoose [Nelec]/double");
+  mAllData->Branch("ElecIdTight",mTempTreeElecIdTight,"ElecIdTight [Nelec]/double");
+  mAllData->Branch("ElecIdRobLoose",mTempTreeElecIdRobLoose,"ElecIdRobLoose [Nelec]/double");
+  mAllData->Branch("ElecIdRobTight",mTempTreeElecIdRobTight,"ElecIdRobTight [Nelec]/double");
+
+  mAllData->Branch("ElecChargeMode",mTempTreeElecChargeMode,"ElecChargeMode [Nelec]/double");
+  mAllData->Branch("ElecPtMode",mTempTreeElecPtTrkMode,"ElecPtMode [Nelec]/double");
+  mAllData->Branch("ElecQOverPErrTrkMode",mTempTreeElecQOverPErrTrkMode,"ElecQOverPErrTrkMode [Nelec]/double");
+  mAllData->Branch("ElecCaloEnergy",mTempTreeElecCaloEnergy,"ElecCaloEnergy[Nelec]/double");
+  mAllData->Branch("ElecHOverE", mTempTreeElecHOverE,"ElecHOverE[Nelec]/double");
+  mAllData->Branch("ElecVx",  mTempTreeElecVx,"ElecVx[Nelec]/double");
+  mAllData->Branch("ElecVy",mTempTreeElecVy  ,"ElecVy[Nelec]/double");
+  mAllData->Branch("ElecVz",mTempTreeElecVz,"ElecVz[Nelec]/double");
+  mAllData->Branch("ElecD0",mTempTreeElecD0,"ElecD0[Nelec]/double");
+  mAllData->Branch("ElecDz", mTempTreeElecDz,"ElecDz[Nelec]/double");
+  mAllData->Branch("ElecPtTrk", mTempTreeElecPtTrk ,"ElecPtTrk[Nelec]/double");
+  mAllData->Branch("ElecQOverPErrTrk",  mTempTreeElecQOverPErrTrk ,"ElecQOverPErrTrk[Nelec]/double");
+  mAllData->Branch("ElecPinTrk",mTempTreeElecPinTrk  ,"ElecPinTrk[Nelec]/double");
+  mAllData->Branch("ElecPoutTrk",mTempTreeElecPoutTrk  ,"ElecPoutTrk[Nelec]/double"); 
+  mAllData->Branch("ElecLostHits",mTempTreeElecLostHits  ,"ElecLostHits[Nelec]/double"); 
+  mAllData->Branch("ElecValidHits",mTempTreeElecValidHits  ,"ElecValidHits[Nelec]/double"); 
+  mAllData->Branch("ElecNCluster",mTempTreeElecNCluster  ,"ElecNCluster[Nelec]/double"); 
+  mAllData->Branch("ElecEtaTrk",mTempTreeElecEtaTrk,"ElecEtaTrk[Nelec]/double"); 
+  mAllData->Branch("ElecPhiTrk",mTempTreeElecPhiTrk ,"ElecPhiTrk[Nelec]/double"); 
+  mAllData->Branch("ElecWidthClusterEta",mTempTreeElecWidthClusterEta ,"ElecWidthClusterEta[Nelec]/double"); 
+  mAllData->Branch("ElecWidthClusterPhi",mTempTreeElecWidthClusterPhi ,"ElecWidthClusterPhi[Nelec]/double"); 
+  mAllData->Branch("ElecGenPdgId",mTempTreeGenElecPdgId,"ElecGenPdgId[Nelec]/double");
+  mAllData->Branch("ElecGenMother",mTempTreeGenElecMother,"ElecGenMother[Nelec]/double");
+  mAllData->Branch("ElecGenPx",mTempTreeGenElecPx,"ElecGenPx[Nelec]/double");
+  mAllData->Branch("ElecGenPy",mTempTreeGenElecPy,"ElecGenPy[Nelec]/double");
+  mAllData->Branch("ElecGenPz",mTempTreeGenElecPz,"ElecGenPz[Nelec]/double");
+  //PIOPPI
+
 
   mAllData->Branch("Nccelec" ,&mTempTreeNccelec ,"Nccelec/int");  
   mAllData->Branch("ccElecE" ,mTempTreeccElecE ,"ccElecE[Nelec]/double");
@@ -958,6 +1409,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("ccElecpz",mTempTreeccElecPz,"ccElecpz[Nelec]/double");
   mAllData->Branch("ccEleceta",mTempTreeccElecEta,"ccEleceta[Nelec]/double");
   mAllData->Branch("ccElecphi",mTempTreeccElecPhi,"ccElecphi[Nelec]/double");
+
 
 
 
@@ -983,6 +1435,42 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("MuonIsGlobalTight",mTempTreeMuonIsGlobalTight,"mTempTreeMuonIsGlobalTight[Nmuon]/bool");
   mAllData->Branch("MuonIsTMLastStationLoose",mTempTreeMuonIsTMLastStationLoose,"mTempTreeMuonIsTMLastStationLoose[Nmuon]/bool");
   mAllData->Branch("MuonIsTracker",mTempTreeMuonIsTracker,"mTempTreeMuonIsTracker[Nmuon]/bool");
+  //MICHELE
+  //  mAllData->Branch("MuonId",mTempTreeMuonId,"mTempTreeMuonId[Nmuon]/double");
+  mAllData->Branch("MuonCombVx",mTempTreeMuonCombVx,"mTempTreeMuonCombVx[Nmuon]/double");
+  mAllData->Branch("MuonCombVy",mTempTreeMuonCombVy,"mTempTreeMuonCombVy[Nmuon]/double");
+  mAllData->Branch("MuonCombVz",mTempTreeMuonCombVz,"mTempTreeMuonCombVz[Nmuon]/double");
+  mAllData->Branch("MuonCombD0",mTempTreeMuonCombD0,"mTempTreeMuonCombD0[Nmuon]/double");
+  mAllData->Branch("MuonCombDz",mTempTreeMuonCombDz,"mTempTreeMuonCombDz[Nmuon]/double");
+
+  mAllData->Branch("MuonStandValidHits",mTempTreeMuonStandValidHits,"mTempTreeMuonStandValidHits[Nmuon]/double");
+  mAllData->Branch("MuonStandLostHits",mTempTreeMuonStandLostHits,"mTempTreeMuonStandLostHits[Nmuon]/double");
+  mAllData->Branch("MuonStandPt",mTempTreeMuonStandPt,"mTempTreeMuonStandPt[Nmuon]/double");
+  mAllData->Branch("MuonStandPz",mTempTreeMuonStandPz,"mTempTreeMuonStandPz[Nmuon]/double");
+  mAllData->Branch("MuonStandP",mTempTreeMuonStandP,"mTempTreeMuonStandP[Nmuon]/double");
+  mAllData->Branch("MuonStandEta",mTempTreeMuonStandEta,"mTempTreeMuonStandEta[Nmuon]/double");
+  mAllData->Branch("MuonStandPhi",mTempTreeMuonStandPhi,"mTempTreeMuonStandPhi[Nmuon]/double");
+  mAllData->Branch("MuonStandCharge",mTempTreeMuonStandCharge,"mTempTreeMuonStandCharge[Nmuon]/double");
+  mAllData->Branch("MuonStandChi",mTempTreeMuonStandChi,"mTempTreeMuonStandChi[Nmuon]/double");
+  mAllData->Branch("MuonStandQOverPError",mTempTreeMuonStandQOverPError,"mTempTreeMuonStandQOverPError[Nmuon]/double");
+
+  mAllData->Branch("MuonTrkValidHits",mTempTreeMuonTrkValidHits,"mTempTreeMuonTrkValidHits[Nmuon]/double");
+  mAllData->Branch("MuonTrkLostHits",mTempTreeMuonTrkLostHits,"mTempTreeMuonTrkLostHits[Nmuon]/double");
+  mAllData->Branch("MuonTrkPt",mTempTreeMuonTrkPt,"mTempTreeMuonTrkPt[Nmuon]/double");
+  mAllData->Branch("MuonTrkPz",mTempTreeMuonTrkPz,"mTempTreeMuonTrkPz[Nmuon]/double");
+  mAllData->Branch("MuonTrkP",mTempTreeMuonTrkP,"mTempTreeMuonTrkP[Nmuon]/double");
+  mAllData->Branch("MuonTrkEta",mTempTreeMuonTrkEta,"mTempTreeMuonTrkEta[Nmuon]/double");
+  mAllData->Branch("MuonTrkPhi",mTempTreeMuonTrkPhi,"mTempTreeMuonTrkPhi[Nmuon]/double");
+  mAllData->Branch("MuonTrkCharge",mTempTreeMuonTrkCharge,"mTempTreeMuonTrkCharge[Nmuon]/double");
+  mAllData->Branch("MuonTrkChi",mTempTreeMuonTrkChi,"mTempTreeMuonTrkChi[Nmuon]/double");
+  mAllData->Branch("MuonTrkQOverPError",mTempTreeMuonTrkQOverPError,"mTempTreeMuonTrkQOverPError[Nmuon]/double"); 
+  mAllData->Branch("MuonGenMother",mTempTreeGenMuonMother,"MuonGenMother[Nmuon]/double");
+  mAllData->Branch("MuonGenPx",mTempTreeGenMuonPx,"MuonGenPx[Nmuon]/double");
+  mAllData->Branch("MuonGenPy",mTempTreeGenMuonPy,"MuonGenPy[Nmuon]/double");
+  mAllData->Branch("MuonGenPz",mTempTreeGenMuonPz,"MuonGenPz[Nmuon]/double");
+
+  //PIOPPI
+
 
   mAllData->Branch("Nccmuon" ,&mTempTreeNccmuon ,"Nccmuon/int");  
   mAllData->Branch("ccMuonE" ,mTempTreeccMuonE ,"ccMuonE[Nmuon]/double");
@@ -1009,7 +1497,70 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("TauECalIso", mTempTreeTauECalIso,"TauECalIso[Ntau]/double");
   mAllData->Branch("TauHCalIso", mTempTreeTauHCalIso ,"TauHCalIso[Ntau]/double");
   mAllData->Branch("TauAllIso",  mTempTreeTauAllIso ,"TauAllIso[Ntau]/double");
+  //MICHELE
+  mAllData->Branch("TauVx",mTempTreeTauVx,"TauVx[Ntau]/double");
+  mAllData->Branch("TauVy",mTempTreeTauVy,"TauVy[Ntau]/double");
+  mAllData->Branch("TauVz",mTempTreeTauVz,"TauVz[Ntau]/double");
+  mAllData->Branch("TauNTks",mTempTreeTauNTks,"TauNTks[Ntau]/double");
+  mAllData->Branch("TauNNeutrals",mTempTreeTauNNeutrals,"TauNNeutrals[Ntau]/double");
+  mAllData->Branch("TauNeutralE",mTempTreeTauNeutralE,"TauNeutralE[Ntau]/double");
+  mAllData->Branch("TauNeutralHOverHPlusE",mTempTreeTauNeutralHOverHPlusE,"TauNeutralHOverHPlusE[Ntau]/double");
 
+  //TK1
+  mAllData->Branch("TauTk1Vx",mTempTreeTauTk1Vx,"TauTk1Vx[Ntau]/double");
+  mAllData->Branch("TauTk1Vy",mTempTreeTauTk1Vy,"TauTk1Vy[Ntau]/double");
+  mAllData->Branch("TauTk1Vz",mTempTreeTauTk1Vz,"TauTk1Vz[Ntau]/double");
+  mAllData->Branch("TauTk1D0",mTempTreeTauTk1D0,"TauTk1D0[Ntau]/double");
+  mAllData->Branch("TauTk1Dz",mTempTreeTauTk1Dz,"TauTk1Dz[Ntau]/double");
+  mAllData->Branch("TauTk1Pt",mTempTreeTauTk1Pt,"TauTk1Pt[Ntau]/double");
+  mAllData->Branch("TauTk1Pz",mTempTreeTauTk1Pz,"TauTk1Pz[Ntau]/double");
+  mAllData->Branch("TauTk1Eta",mTempTreeTauTk1Eta,"TauTk1Eta[Ntau]/double");
+  mAllData->Branch("TauTk1Phi",mTempTreeTauTk1Phi,"TauTk1Phi[Ntau]/double");
+  mAllData->Branch("TauTk1Chi",mTempTreeTauTk1Chi,"TauTk1Chi[Ntau]/double");
+  mAllData->Branch("TauTk1Charge",mTempTreeTauTk1Charge,"TauTk1Charge[Ntau]/double");
+  mAllData->Branch("TauTk1QOverPError",mTempTreeTauTk1QOverPError,"TauTk1QOverPError[Ntau]/double");
+  mAllData->Branch("TauTk1ValidHits",mTempTreeTauTk1ValidHits,"TauTk1ValidHits[Ntau]/double");
+  mAllData->Branch("TauTk1LostHits",mTempTreeTauTk1LostHits,"TauTk1LostHits[Ntau]/double");
+  mAllData->Branch("TauTk1CaloE",mTempTreeTauTk1CaloE,"TauTk1CaloE[Ntau]/double");
+  //TK2
+  mAllData->Branch("TauTk2Vx",mTempTreeTauTk2Vx,"TauTk2Vx[Ntau]/double");
+  mAllData->Branch("TauTk2Vy",mTempTreeTauTk2Vy,"TauTk2Vy[Ntau]/double");
+  mAllData->Branch("TauTk2Vz",mTempTreeTauTk2Vz,"TauTk2Vz[Ntau]/double");
+  mAllData->Branch("TauTk2D0",mTempTreeTauTk2D0,"TauTk2D0[Ntau]/double");
+  mAllData->Branch("TauTk2Dz",mTempTreeTauTk2Dz,"TauTk2Dz[Ntau]/double");
+  mAllData->Branch("TauTk2Pt",mTempTreeTauTk2Pt,"TauTk2Pt[Ntau]/double");
+  mAllData->Branch("TauTk2Pz",mTempTreeTauTk2Pz,"TauTk2Pz[Ntau]/double");
+  mAllData->Branch("TauTk2Eta",mTempTreeTauTk2Eta,"TauTk2Eta[Ntau]/double");
+  mAllData->Branch("TauTk2Phi",mTempTreeTauTk2Phi,"TauTk2Phi[Ntau]/double");
+  mAllData->Branch("TauTk2Chi",mTempTreeTauTk2Chi,"TauTk2Chi[Ntau]/double");
+  mAllData->Branch("TauTk2Charge",mTempTreeTauTk2Charge,"TauTk2Charge[Ntau]/double");
+  mAllData->Branch("TauTk2QOverPError",mTempTreeTauTk2QOverPError,"TauTk2QOverPError[Ntau]/double");
+  mAllData->Branch("TauTk2ValidHits",mTempTreeTauTk2ValidHits,"TauTk2ValidHits[Ntau]/double");
+  mAllData->Branch("TauTk2LostHits",mTempTreeTauTk2LostHits,"TauTk2LostHits[Ntau]/double");
+  mAllData->Branch("TauTk2CaloE",mTempTreeTauTk2CaloE,"TauTk2CaloE[Ntau]/double");
+  //TK3
+  mAllData->Branch("TauTk3Vx",mTempTreeTauTk3Vx,"TauTk3Vx[Ntau]/double");
+  mAllData->Branch("TauTk3Vy",mTempTreeTauTk3Vy,"TauTk3Vy[Ntau]/double");
+  mAllData->Branch("TauTk3Vz",mTempTreeTauTk3Vz,"TauTk3Vz[Ntau]/double");
+  mAllData->Branch("TauTk3D0",mTempTreeTauTk3D0,"TauTk3D0[Ntau]/double");
+  mAllData->Branch("TauTk3Dz",mTempTreeTauTk3Dz,"TauTk3Dz[Ntau]/double");
+  mAllData->Branch("TauTk3Pt",mTempTreeTauTk3Pt,"TauTk3Pt[Ntau]/double");
+  mAllData->Branch("TauTk3Pz",mTempTreeTauTk3Pz,"TauTk3Pz[Ntau]/double");
+  mAllData->Branch("TauTk3Eta",mTempTreeTauTk3Eta,"TauTk3Eta[Ntau]/double");
+  mAllData->Branch("TauTk3Phi",mTempTreeTauTk3Phi,"TauTk3Phi[Ntau]/double");
+  mAllData->Branch("TauTk3Chi",mTempTreeTauTk3Chi,"TauTk3Chi[Ntau]/double");
+  mAllData->Branch("TauTk3Charge",mTempTreeTauTk3Charge,"TauTk3Charge[Ntau]/double");
+  mAllData->Branch("TauTk3QOverPError",mTempTreeTauTk3QOverPError,"TauTk3QOverPError[Ntau]/double");
+  mAllData->Branch("TauTk3ValidHits",mTempTreeTauTk3ValidHits,"TauTk3ValidHits[Ntau]/double");
+  mAllData->Branch("TauTk3LostHits",mTempTreeTauTk3LostHits,"TauTk3LostHits[Ntau]/double");
+  mAllData->Branch("TauTk3CaloE",mTempTreeTauTk3CaloE,"TauTk3CaloE[Ntau]/double");
+
+  mAllData->Branch("TauGenPdgId",mTempTreeGenTauPdgId,"TauGenPdgId[Ntau]/double");
+  mAllData->Branch("TauGenMother",mTempTreeGenTauMother,"TauGenMother[Ntau]/double");
+  mAllData->Branch("TauGenPx",mTempTreeGenTauPx,"TauGenPx[Ntau]/double");
+  mAllData->Branch("TauGenPy",mTempTreeGenTauPy,"TauGenPy[Ntau]/double");
+  mAllData->Branch("TauGenPz",mTempTreeGenTauPz,"TauGenPz[Ntau]/double");
+  //PIOPPI
  
     mAllData->Branch("genN",&length,"genN/int");
     mAllData->Branch("genid",ids,"ids[genN]/int");
@@ -1021,7 +1572,7 @@ SusyDiJetAnalysis::initPlots() {
     mAllData->Branch("genPz",genPz,"genPz[genN]/float");
     mAllData->Branch("genEta",genEta,"genEta[genN]/float");
     mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
-
+    
 
   // add test stuff
  

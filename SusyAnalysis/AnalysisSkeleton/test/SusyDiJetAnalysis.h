@@ -1,8 +1,6 @@
 #ifndef SUSYDIJETANALYSIS
 #define SUSYDIJETANALYSIS
 
-
-
 // System include files
 #include <memory>
 #include <vector>
@@ -28,6 +26,7 @@
 #include "SusyAnalysis/EventSelector/interface/SusyEventSelector.h"
 #include "SusyAnalysis/EventSelector/interface/SelectorSequence.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -35,6 +34,7 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+//#include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 
@@ -64,7 +64,9 @@ private:
 
   /// Print a summary of counts for all selectors
   virtual void printSummary(void);
-
+  // Print an HLT trigger report
+  virtual void printHLTreport(void); // georgia
+ 
   //*** Plotting
   /// Define all plots
   virtual void initPlots();
@@ -95,7 +97,7 @@ private:
   std::vector<float> nrEventSelected_;    ///< Selected #(events) for each module
   std::vector<float> nrEventAllButOne_;   ///< All-but-one selected #(events) for each module
   std::vector<float> nrEventCumulative_;  ///< Cumulative selected #(events) for each module
-
+    
   // Plots
   TNtuple* ntuple_; // Will contain all the selector information we want to keep
   TTree * mAllData; // Will contain the additional di-jet specific data
@@ -110,7 +112,16 @@ private:
   bool mTempTreeHLT1MET1HT;
   bool mTempTreeHLT1Muon;
 
- 
+  // GEORGIA
+  int nHLT; int HLTArray[200];
+
+  int mTempTreenVtx;
+  double mTempTreeVtxChi2[5];
+  double mTempTreeVtxNdof[5];
+  double mTempTreeVtxNormalizedChi2[5];
+  double mTempTreeVtxX[5]; double mTempTreeVtxY[5]; double mTempTreeVtxZ[5];
+  double mTempTreeVtxdX[5]; double mTempTreeVtxdY[5]; double mTempTreeVtxdZ[5];
+  // end GEORGIA
 
 
   //int   mTempTreeNJetsT[50];
@@ -211,8 +222,40 @@ private:
   double mTempTreeElecAllIso[50];
   double mTempTreeElecTrkChiNorm[50];
   double mTempTreeElecCharge[50];
+  //MICHELE
+  double mTempTreeElecIdLoose[50];
+  double mTempTreeElecIdTight[50];
+  double mTempTreeElecIdRobLoose[50];
+  double mTempTreeElecIdRobTight[50];
+  double mTempTreeElecChargeMode[50];
+  double mTempTreeElecPtTrkMode[50];
+  double mTempTreeElecQOverPErrTrkMode[50];
+  double mTempTreeGenElecPdgId[50];
+  double mTempTreeGenElecMother[50];
+  double mTempTreeGenElecPx[50];
+  double mTempTreeGenElecPy[50];
+  double mTempTreeGenElecPz[50];
+  double mTempTreeElecCaloEnergy[50];
+  double mTempTreeElecHOverE[50];
+  double mTempTreeElecVx[50];
+  double mTempTreeElecVy[50];
+  double mTempTreeElecVz[50];
+  double mTempTreeElecD0[50];
+  double mTempTreeElecDz[50];
+  double mTempTreeElecPtTrk[50];
+  double mTempTreeElecQOverPErrTrk[50];
+  double mTempTreeElecLostHits[50];
+  double mTempTreeElecValidHits[50];
+  double mTempTreeElecNCluster[50];
+  double mTempTreeElecEtaTrk[50];
+  double mTempTreeElecPhiTrk[50];
+  double mTempTreeElecWidthClusterEta[50];
+  double mTempTreeElecWidthClusterPhi[50];
+  double mTempTreeElecPinTrk[50];
+  double mTempTreeElecPoutTrk[50];
 
- int    mTempTreeNccelec;
+
+  int    mTempTreeNccelec;
   double mTempTreeccElecEt[50];
   double mTempTreeccElecPt[50];
   double mTempTreeccElecPx[50];
@@ -244,6 +287,8 @@ private:
   bool mTempTreeMuonIsTMLastStationLoose[50];
  
 
+
+
   int    mTempTreeNccmuon;
   double mTempTreeccMuonEt[50];
   double mTempTreeccMuonPt[50];
@@ -253,6 +298,44 @@ private:
   double mTempTreeccMuonE[50];
   double mTempTreeccMuonEta[50];
   double mTempTreeccMuonPhi[50];
+  //MICHELE
+  double  mTempTreeMuonId[50];
+  double mTempTreeMuonCombVx[50];
+  double mTempTreeMuonCombVy[50];
+  double mTempTreeMuonCombVz[50];
+  double mTempTreeMuonCombD0[50];
+  double mTempTreeMuonCombDz[50];
+
+  double mTempTreeMuonStandValidHits[50];
+  double mTempTreeMuonStandLostHits[50];
+  double mTempTreeMuonStandPt[50];
+  double mTempTreeMuonStandPz[50];
+  double mTempTreeMuonStandP[50];
+  double mTempTreeMuonStandEta[50];
+  double mTempTreeMuonStandPhi[50];
+  double mTempTreeMuonStandChi[50];
+  double mTempTreeMuonStandCharge[50];
+  double mTempTreeMuonStandQOverPError[50];
+
+  double mTempTreeMuonTrkValidHits[50];
+  double mTempTreeMuonTrkLostHits[50];
+  double mTempTreeMuonTrkPt[50];
+  double mTempTreeMuonTrkPz[50];
+  double mTempTreeMuonTrkP[50];
+  double mTempTreeMuonTrkEta[50];
+  double mTempTreeMuonTrkPhi[50];
+  double mTempTreeMuonTrkChi[50];
+  double mTempTreeMuonTrkCharge[50];
+  double mTempTreeMuonTrkQOverPError[50];
+  double mTempTreeGenMuonPdgId[50];
+  double mTempTreeGenMuonMother[50];
+  double mTempTreeGenMuonPx[50];
+  double mTempTreeGenMuonPy[50];
+  double mTempTreeGenMuonPz[50];
+  //cc  
+  //PIOPPI
+
+
 
   // markus 
   int mTempAlpIdTest;
@@ -274,6 +357,69 @@ private:
   double mTempTreeTauECalIso[50];
   double mTempTreeTauHCalIso[50];
   double mTempTreeTauAllIso[50];
+  //MICHELE
+  double mTempTreeTauVx[50];
+  double mTempTreeTauVy[50];
+  double mTempTreeTauVz[50];
+  double mTempTreeTauNTks[50];
+  double mTempTreeTauNNeutrals[50];
+  double mTempTreeTauTk1Vx[50];
+  double mTempTreeTauTk1Vy[50];
+  double mTempTreeTauTk1Vz[50];
+  double mTempTreeTauTk1D0[50];
+  double mTempTreeTauTk1Dz[50];
+  double mTempTreeTauTk1Pt[50]; 
+  double mTempTreeTauTk1Pz[50];
+  double mTempTreeTauTk1Eta[50];
+  double mTempTreeTauTk1Phi[50];
+  double mTempTreeTauTk1Chi[50];
+  double mTempTreeTauTk1Charge[50];
+  double mTempTreeTauTk1QOverPError[50];
+  double mTempTreeTauTk1ValidHits[50];
+  double mTempTreeTauTk1LostHits[50];
+  double mTempTreeTauTk1CaloE[50];
+  //TK2
+  double mTempTreeTauTk2Vx[50];
+  double mTempTreeTauTk2Vy[50];
+  double mTempTreeTauTk2Vz[50];
+  double mTempTreeTauTk2D0[50];
+  double mTempTreeTauTk2Dz[50];
+  double mTempTreeTauTk2Pt[50]; 
+  double mTempTreeTauTk2Pz[50];
+  double mTempTreeTauTk2Eta[50];
+  double mTempTreeTauTk2Phi[50];
+  double mTempTreeTauTk2Chi[50];
+  double mTempTreeTauTk2Charge[50];
+  double mTempTreeTauTk2QOverPError[50];
+  double mTempTreeTauTk2ValidHits[50];
+  double mTempTreeTauTk2LostHits[50];
+  double mTempTreeTauTk2CaloE[50];
+  //TK3
+  double mTempTreeTauTk3Vx[50];
+  double mTempTreeTauTk3Vy[50];
+  double mTempTreeTauTk3Vz[50];
+  double mTempTreeTauTk3D0[50];
+  double mTempTreeTauTk3Dz[50];
+  double mTempTreeTauTk3Pt[50]; 
+  double mTempTreeTauTk3Pz[50];
+  double mTempTreeTauTk3Eta[50];
+  double mTempTreeTauTk3Phi[50];
+  double mTempTreeTauTk3Chi[50];
+  double mTempTreeTauTk3Charge[50];
+  double mTempTreeTauTk3QOverPError[50];
+  double mTempTreeTauTk3ValidHits[50];
+  double mTempTreeTauTk3LostHits[50];
+  double mTempTreeTauTk3CaloE[50];
+  //NEUTRAL
+  double mTempTreeTauNeutralE[50];
+  double mTempTreeTauNeutralHOverHPlusE[50];
+  double mTempTreeGenTauPdgId[50];
+  double mTempTreeGenTauMother[50];
+  double mTempTreeGenTauPx[50];
+  double mTempTreeGenTauPy[50];
+  double mTempTreeGenTauPz[50];
+  //PIOPPI
+  
 
 
   int mTempTreeNhemispheres;
@@ -311,6 +457,21 @@ private:
   edm::InputTag triggerResults_; 
   std::vector<std::string> pathNames_;
 
+  edm::TriggerNames triggerNames_;  // TriggerNames class
+
+  // GEORGIA (15.01)
+  unsigned int  nEvents_;           // number of events processed
+
+  unsigned int  nWasRun_;           // # where at least one HLT was run
+  unsigned int  nAccept_;           // # of accepted events
+  unsigned int  nErrors_;           // # where at least one HLT had error
+  std::vector<unsigned int> hlWasRun_; // # where HLT[i] was run
+  std::vector<unsigned int> hlAccept_; // # of events accepted by HLT[i]
+  std::vector<unsigned int> hlErrors_; // # of events with error in HLT[i]
+  bool init_;                          // vectors initialised or not
+
+  edm::InputTag vtxTag_;
+  // end GEORGIA
 
   edm::InputTag jetTag_;
   edm::InputTag metTag_;
