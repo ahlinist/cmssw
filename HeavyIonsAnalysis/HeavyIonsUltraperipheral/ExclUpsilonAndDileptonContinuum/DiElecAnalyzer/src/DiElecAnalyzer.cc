@@ -4,28 +4,23 @@
 // Class:      DiElecAnalyzer
 // 
 /**\class DiElecAnalyzer DiElecAnalyzer.cc UPC/ElecAnalyzer/src/ElecAnalyzer.cc
-
  Description: <one line class summary>
-
  Implementation:
-     <Notes on implementation>
+<Notes on implementation>
 */
 //
 // Original Author:  Vineet Kumar
 //         Created:  Thu May 29 15:02:18 CEST 2008
 // $Id: DiElecAnalyzer.cc,v 1.1 2008/06/23 12:50:58 kumarv Exp $
 //
-
 //*******************************************************************************************
 // include files
-
 // system
 #include <memory>
 #include <iostream>
 #include <string>
 #include <map>
 #include <set>
-
 // ROOT
 #include <TROOT.h>
 #include <TSystem.h>
@@ -36,20 +31,18 @@
 #include <TTree.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
-
 //*****************************************************************************************
 // CMSSW
-
 //#include "RecoEgamma/Examples/plugins/PixelMatchGsfElectronAnalyzer.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDMException.h"
-
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
@@ -59,6 +52,10 @@
 #include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "SimDataFormats/EncodedEventId/interface/EncodedEventId.h"
@@ -72,47 +69,46 @@
 #include "SimTracker/TrackAssociation/interface/TrackAssociatorByChi2.h"
 
 //*****************************************************************************************
-
 using namespace reco;
-
 using namespace std;
 using namespace edm;
 using namespace HepMC;
-
-//
 // class declaration
-//
-
 class TFile;
 class TH1D;
 class DiElecAnalyzer : public edm::EDAnalyzer {
-   public:
-      explicit DiElecAnalyzer(const edm::ParameterSet&);
-      ~DiElecAnalyzer();
+public:
+  explicit DiElecAnalyzer(const edm::ParameterSet&);
+  ~DiElecAnalyzer();
   std::string fSourceLabel;  
   std::string fOutputFileName ;
-
 private:
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup);
   virtual void Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup);
-
+  virtual void FlowAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup);
   virtual void SimAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup);    
 
-
-// ----------member data ---------------------------
-
+  // ----------member data ---------------------------
   TFile*      fOutputFile ;
-
   TH1D*       fHistGenElecPt;
   TH1D*       fHistGenElecEta ;
   TH1D*       fHistGenElecPhi ;
-
   TH1D*       fHistSimElecPt;
   TH1D*       fHistSimElecEta;
   TH1D*       fHistSimElecPhi;
+  
+  
+  TH1D*       fHistFlowCandSize;
+  TH1D*       fHistFlowElecPt;
+  TH1D*       fHistFlowElecEta ;
+  TH1D*       fHistFlowElecPhi ;
+  
+
+
+
 
   TH1D*       fHistRecElecPt;
   TH1D*       fHistRecElecEta ;
@@ -121,23 +117,23 @@ private:
   TH2D*       fHistRecElecPtDiff;
   TH2D*       fHistRecElecEtaDiff;
   TH1D*       fHistRecElecPhiDiff;
-  
+ 
   TH1D*       fHistGenDiElecY;
   TH1D*       fHistGenDiElecPt;
   TH1D*       fHistGenDiElecInvM;
   
+  TH1D*       fHistFlowDiElecY;
+  TH1D*       fHistFlowDiElecPt;
+  TH1D*       fHistFlowDiElecInvM;
   TH1D*       fHistRecDiElecY;
   TH1D*       fHistRecDiElecPt;  
   TH1D*       fHistRecDiElecInvM;
+  
 
   unsigned int  Nevt;
-
 };
-
-//
 // constants, enums and typedefs
 //
-
 //
 // static data member definitions
 //
@@ -149,9 +145,9 @@ private:
 //*******************************************************************************************
 
 DiElecAnalyzer::DiElecAnalyzer(const edm::ParameterSet& iConfig):
- 
+  
   fOutputFileName(iConfig.getUntrackedParameter<string>("HistOutFile",std::string("ElecAnalysis.root")) ),
-  fOutputFile(0),fHistGenElecPt(0),fHistGenElecEta(0),fHistGenElecPhi(0), fHistSimElecPt(0), fHistSimElecEta(0),fHistSimElecPhi(0), fHistRecElecPt(0),fHistRecElecEta(0),fHistRecElecPhi(0),fHistRecElecDPt(0), fHistRecElecPtDiff(0), fHistRecElecEtaDiff(0),fHistRecElecPhiDiff(0),fHistGenDiElecY(0),fHistGenDiElecPt(0),fHistGenDiElecInvM(0),fHistRecDiElecY(0),fHistRecDiElecPt(0),fHistRecDiElecInvM(0),Nevt(0)
+  fOutputFile(0),fHistGenElecPt(0),fHistGenElecEta(0),fHistGenElecPhi(0), fHistSimElecPt(0), fHistSimElecEta(0),fHistSimElecPhi(0),fHistFlowCandSize(0),fHistFlowElecPt(0),fHistFlowElecEta(0),fHistFlowElecPhi(0),fHistRecElecPt(0),fHistRecElecEta(0),fHistRecElecPhi(0),fHistRecElecDPt(0), fHistRecElecPtDiff(0), fHistRecElecEtaDiff(0),fHistRecElecPhiDiff(0),fHistGenDiElecY(0),fHistGenDiElecPt(0),fHistGenDiElecInvM(0),fHistFlowDiElecY(0),fHistFlowDiElecPt(0),fHistFlowDiElecInvM(0),fHistRecDiElecY(0),fHistRecDiElecPt(0),fHistRecDiElecInvM(0),Nevt(0)
 {
    //now do what ever initialization is needed
 }
@@ -159,9 +155,9 @@ DiElecAnalyzer::DiElecAnalyzer(const edm::ParameterSet& iConfig):
 DiElecAnalyzer::~DiElecAnalyzer()
 {
  
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
+  
 }
 
 //*******************************************************************************************
@@ -174,22 +170,50 @@ DiElecAnalyzer::~DiElecAnalyzer()
 void
 DiElecAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
-   
-   //using reco::VertexCollection;
-   //using reco::TrackCollection;
-   //using reco::MuonCollection;
+  using namespace edm;
+  using namespace reco;
+  int eventnumber = iEvent.id().event();
+  int runnumber   = iEvent.id().run(); 
+  //cout << "--------------------------------------------------------------------------------"<<endl;
+  // cout << "EVENT NUMBER = " << eventnumber <<"   "<<"RUN NUMBER = "<<runnumber<<endl;
+  // cout <<"----------------Generation-Ana----------------------------" << endl;
+  //cout << "Generation Event No.= " << Nevt +1 << endl;
+  
+  /*
+  Handle<GenParticleCollection> genParticles;
+  iEvent.getByLabel("genParticles", genParticles);
+  int gcnt=genParticles->size();
+  
 
-   int eventnumber = iEvent.id().event();
-   int runnumber   = iEvent.id().run(); 
-   //cout << "--------------------------------------------------------------------------------"<<endl;
-   // cout << "EVENT NUMBER = " << eventnumber <<"   "<<"RUN NUMBER = "<<runnumber<<endl;
-   // cout <<"----------------Generation-Ana----------------------------" << endl;
-   //cout << "Generation Event No.= " << Nevt +1 << endl;
+    
+  for ( int i=0 ; i < gcnt-1 ; ++i ){
+    //  const l1extra::L1MuonParticle & l1mu1 = (*l1muons)[i];
+    const reco::GenParticle & elec1 = (*genParticles)[i];
+    for ( int j=i+1; j < gcnt; ++j ){
+      const reco::GenParticle & elec2 = (*genParticles)[j];
+      double elcharge1 = elec1.charge(), elpt1 = elec1.pt(), eleta1 = elec1.eta(), elphi1 = elec1.phi(), elE1 = elec1.energy(), elp1 = elec1.p(),pdgId1=elec1.pdgId();
+    double elcharge2 = elec2.charge(), elpt2 = elec2.pt(), eleta2 = elec2.eta(), elphi2 = elec2.phi(), elE2 = elec2.energy(),elp2 = elec2.p(),pdgId2=elec2.pdgId();
+  // cout<<"pdgId1 :"<<pdgId1<<" pdgId2 "<<pdgId2<<endl;
+  if ( ( i != j) && (pdgId1*pdgId2==-121)){
+    cout<<"genpdgId1 :"<<pdgId1<<" pdgId2 "<<pdgId2<<endl;
 
+    TLorentzVector  vector1,vector2,vector3;
+    vector1.SetPxPyPzE(elec1.px(), elec1.py(), elec1.pz(), elec1.energy());
+    vector2.SetPxPyPzE(elec2.px(), elec2.py(), elec2.pz(), elec2.energy());
+    vector3=vector1+vector2;
+    float UpsInvMassGen=(vector3.M());
+    float UpsYFlow=(vector3.Rapidity());
+    cout<<" Gen Level Inv Mass :"<<UpsInvMassGen<<endl<<endl;
+
+
+
+  }
+}
+  */
+  
   float pt1[100], eta1[100], phi1[100], ppx1[100], ppy1[100], ppz1[100],ener1[100];
   float pt2[100], eta2[100], phi2[100],ppx2[100], ppy2[100], ppz2[100],ener2[100];
- 
+  
   int ipositron=0, ielectron=0;
   int nmp=0;
   int nmn=0; 
@@ -217,12 +241,13 @@ DiElecAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       //  if(eta < -2.4 || eta > 2.4) continue;
       // cout<<"  "<<ID<<"  "<<px<<"  "<<py<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<endl; 
-      //cout <<"genrated electron Pt "<< pt<< " eta: " << eta <<" ID: "<<ID<<endl; 
+      // cout <<"genrated electron Pt "<< pt<< " eta: " << eta <<" ID: "<<ID<<endl; 
       
       if(abs(ID)==11){
-	fHistGenElecPt->Fill(pt);
-	fHistGenElecEta->Fill(eta);
-	fHistGenElecPhi->Fill(phi);
+	
+	  fHistGenElecPt->Fill(pt);
+	  fHistGenElecEta->Fill(eta);
+	  fHistGenElecPhi->Fill(phi);
 	
 	if(ID==-11) {
 	  pt1[ipositron] = pt;
@@ -251,7 +276,7 @@ DiElecAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }//if abs ID: electron or positron
       
       // Invariant mass analysis of e+/- pairs
-
+      
       if(nmp>0 && nmn>0){
 	
 	for (  unsigned int i=0; i< ipositron; i++ ) {
@@ -271,7 +296,7 @@ DiElecAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    double minv = sqrt(2.0*pt1[i]*pt2[j]*(TMath::CosH(eta1[i]-eta2[j])-TMath::Cos(phi1[i]-phi2[j])));
 	    double mpz=sqrt((eptot+pptot)*(eptot-pptot));
 	    //cout<<" DiElectron Gen pt  "<<genupt<<" eta "<<genueta<<" invmass" <<minv<<endl;
-	    // fHistGenDiElecInvM->Fill(minv);
+	    fHistGenDiElecInvM->Fill(minv);
 	    fHistGenDiElecY->Fill(genuy);
 	    fHistGenDiElecPt->Fill(genupt);
 	    fHistRecElecPhiDiff->Fill(delphai);
@@ -281,11 +306,11 @@ DiElecAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     } // end of loop over Event.
 
   //  SimAnalyze(iEvent, iSetup);
+  FlowAnalyze(iEvent, iSetup);
   RecAnalyze(iEvent, iSetup); 
   Compare(iEvent, iSetup);
-  
   Nevt++;
-}
+} 
 
 //*******************************************************************************************
 
@@ -323,13 +348,63 @@ void DiElecAnalyzer::SimAnalyze(const edm::Event &iEvent, const edm::EventSetup 
 
 //*******************************************************************************************
 
-void 
-DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) 
+void DiElecAnalyzer::FlowAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 {
-   
+  
   using reco::TrackCollection;
+//--------------------------------------PFlow Electron reco Test-------------------------------------------------------
+  const PFCandidateCollection *pflow_candidates;
+  // Get Particle Flow Candidates
+  Handle<PFCandidateCollection> pflow_hnd;
+  iEvent.getByLabel("particleFlow", pflow_hnd);
+  pflow_candidates = pflow_hnd.product();
+  // Loop Over Particle Flow Candidates
+  int flow_size=pflow_candidates->size();
+  fHistFlowCandSize->Fill(flow_size);
 
-  // using reco::MuonCollection;
+  // cout<<" size : "<< flow_size<<endl;
+  //--------------------------Lorentz Vector Inv Mass Test---------------------------------------------------------------
+  for ( int i=0 ; i < flow_size-1 ; ++i ){
+    //  const l1extra::L1MuonParticle & l1mu1 = (*l1muons)[i];
+    const PFCandidate & elec1 = (*pflow_hnd)[i];
+    for ( int j=i+1; j < flow_size; ++j ){
+      const reco::PFCandidate & elec2 = (*pflow_hnd)[j];
+      double elcharge1 = elec1.charge(), elpt1 = elec1.pt(), eleta1 = elec1.eta(), elphi1 = elec1.phi(), elE1 = elec1.energy(), elp1 = elec1.p(),pdgId1=elec1.pdgId();
+      double elcharge2 = elec2.charge(), elpt2 = elec2.pt(), eleta2 = elec2.eta(), elphi2 = elec2.phi(), elE2 = elec2.energy(), elp2 = elec2.p(),pdgId2=elec2.pdgId();
+      // cout<<"pdgId1 :"<<pdgId1<<" pdgId2 "<<pdgId2<<endl;
+      if ( ( i != j) && (pdgId1*pdgId2==-121)){
+	cout<<"pdgId1 :"<<pdgId1<<" pdgId2 "<<pdgId2<<endl;
+	fHistFlowElecPt->Fill(elpt1); 
+	fHistFlowElecPt->Fill(elpt2);
+	fHistFlowElecEta->Fill(eleta1);
+	fHistFlowElecEta->Fill(eleta2);
+	fHistFlowElecPhi->Fill(elphi1);
+	fHistFlowElecPhi->Fill(elphi2);
+
+	TLorentzVector  vector1,vector2,vector3;
+	vector1.SetPxPyPzE(elec1.px(), elec1.py(), elec1.pz(), elec1.energy());
+	vector2.SetPxPyPzE(elec2.px(), elec2.py(), elec2.pz(), elec2.energy());
+	vector3=vector1+vector2;
+	float UpsInvMassFlow=(vector3.M());
+	float UpsYFlow=(vector3.Rapidity());
+	float UpsPtFlow=(vector3.Pt());
+        
+
+	fHistFlowDiElecY->Fill(UpsYFlow);
+	fHistFlowDiElecPt->Fill(UpsPtFlow);
+        fHistFlowDiElecInvM->Fill(UpsInvMassFlow);
+	cout<<"flowInvmass1 "<<UpsInvMassFlow<<" Y "<< UpsYFlow<<endl;
+      }
+
+    }
+  }
+
+}
+
+void DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) 
+{  
+  using reco::TrackCollection;
+  
   //  cout <<"--------------Reco-Ana------------------------------------" << endl;
   /*
   edm::Handle<reco::TrackCollection> ctftracks;
@@ -338,78 +413,72 @@ DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSet
 
   const  reco::TrackCollection  recTC = *(ctftracks.product());
   int nctf = ctftracks->size();
- 
+  
   // cout << "No. of reconstructed ctftracks = " << nctf  <<endl;  
   */
- 
+  
   float pt1[100], eta1[100], phi1[100],ppx1[100], ppy1[100], ppz1[100],ener1[100];
   float pt2[100], eta2[100], phi2[100],ppx2[100], ppy2[100], ppz2[100],ener2[100];
   int ipositron=0, ielectron=0;
   int nmp=0;
   int nmn=0; 
-
-  /*  
-      for(TrackCollection::size_type i=0; i<recTC.size(); ++i) {
-      TrackRef track(ctftracks, i);
-      reco::Track gsfIter(*track);
+     
+  /*
+  PFCandidateCollection::const_iterator pf;
+  for (pf = pflow_candidates->begin(); pf != pflow_candidates->end(); pf++) {
+    const PFCandidate *particle = &(*pf);
+    float CandidateEt=particle->et();
+    float CandidateEta=(particle->eta());
+    float CandidatePx=(particle->px());
+    float CandidatePy=(particle->py());
+    float CandidatePz=(particle->pz());
+    float CandidateE=(particle->energy());
+    float CandidatePt=(particle->pt());
+    float CandidatePhi=(particle->phi());
+    int CandidateCharge=(particle->charge());
+    int CandidatePdgId=(particle->pdgId());
+    int CandidateType=(particle->particleId());
+    string CandidateName=(particle->name());
   */
-   
+    //_________________________________________________________________________________________________________________   
+    
+ 
   edm::Handle<GsfElectronCollection> gsfElectrons;
   iEvent.getByLabel("pixelMatchGsfElectrons",gsfElectrons); 
   int recelec=gsfElectrons->size();
   for (reco::GsfElectronCollection::const_iterator gsfIter=gsfElectrons->begin(); gsfIter!=gsfElectrons->end(); gsfIter++)
     {
-     
-      if(recelec!=2)continue;
+      
       // edm::Handle<reco::TrackCollection> tracks;
-      //iEvent.getByLabel(fTracksLabel1, tracks );
+     //iEvent.getByLabel(fTracksLabel1, tracks );
       //const  reco::TrackCollection  recTC = *(tracks.product());
       //for(TrackCollection::size_type i=0; i<recTC.size(); ++i) {
       //TrackRef track(tracks, i);
       //reco::Track tt(*track);
-
       //   const Track * RecoCandidate::bestTrack()const
-      
       // Track Iter =gsfIter->bestTrack();
       // GsfTrackRef Iter =gsfIter->gsfTrack();
-      
       // double tpt=Iter->pt();
-      
       // float tpx =tt->px();
       // cout<<" tpx :"<<tpx<<" px :"<<px<<endl;
       
-      
+     
       float eta =gsfIter->eta();
-      float dpt =gsfIter->pt();
-      // float recID=gsfIter->id();
       float phi =gsfIter->phi();
       float px =gsfIter->px();
       float py =gsfIter->py();
       float pt =sqrt((px*px+py*py));
       float pz =gsfIter->pz();
+      float energy=gsfIter->energy();
       float ener=sqrt((px*px+py*py+pz*pz)); 
       float charge =gsfIter->charge();
-      //  if(eta < -1.5 || eta > 1.5) continue;
-      // if(eta < -1.5 || eta > 1.5) continue;
-
-      
-      //***cout<<"  "<<charge<<"  "<<px<<"  "<<py<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<endl;
-
-
-
-
-
-      //  cout<<" Test : px "<<px<<" py: "<<py<< " pz: "<<pz<<" pt "<<pt <<" dpt "<<dpt<<endl; 
-      //cout<<" reco electron pt : "<<pt<< " eta : " <<eta<<" charge "<<charge<<endl;
-    
       fHistRecElecPt->Fill(pt);
       fHistRecElecEta->Fill(eta);
       fHistRecElecPhi->Fill(phi);
-      
-      if(gsfIter->charge() > 0) {
-	pt1[ipositron] = gsfIter->pt();
-	eta1[ipositron] = gsfIter->eta();
-	phi1[ipositron] = gsfIter->phi();
+      if(charge > 0) {
+	pt1[ipositron] = pt;
+	eta1[ipositron] =eta;
+	phi1[ipositron] = phi;
 	ppx1[ipositron]=px;
 	ppy1[ipositron]=py;
 	ppz1[ipositron]=pz;
@@ -417,10 +486,10 @@ DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSet
 	ipositron++;
 	nmp++;
       }
-      if(gsfIter->charge() < 0) {
-	pt2[ielectron] =gsfIter->pt();
-	eta2[ielectron] =gsfIter->eta();
-	phi2[ielectron] =gsfIter->phi();
+      if(charge < 0) {
+	pt2[ielectron] =pt;
+	eta2[ielectron] =eta;
+	phi2[ielectron] =phi;
 	ppx2[ielectron]=px;
 	ppy2[ielectron]=py;
 	ppz2[ielectron]=pz;
@@ -428,12 +497,10 @@ DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSet
 	ielectron++;
 	nmn++;
       }
-      
-    }
+    }//for gsfIter 
   
   if(nmp>0 && nmn>0)
     {
-      
       for ( unsigned int i=0; i< ipositron; i++ ) {
 	for ( unsigned int j=0; j< ielectron; j++ ){
 	  double eptot=ener1[i]+ener2[j];
@@ -451,9 +518,9 @@ DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSet
 	  fHistRecDiElecPt->Fill(recupt);
 	  fHistRecDiElecY->Fill(recuy);
 	  fHistRecDiElecInvM->Fill(minv);
-	  cout<<minv;
+	  cout<<" reco Minv :"<<minv<<" Y: "<<recuy<<endl;
 	  //cout <<"rec up Pt : "<<recupt <<"eta :"<<recueta<<"Invmass :"<<minv<<endl;
-
+	  
 	}
       }
       
@@ -465,9 +532,9 @@ DiElecAnalyzer::RecAnalyze(const edm::Event &iEvent, const edm::EventSetup &iSet
 void 
 DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup) 
 {
-
+  
   // cout<<"------------------------------start compare--------------------------------"<<endl;
-
+  
   using namespace edm;
   edm::Handle<HepMCProduct> evt;
   iEvent.getByLabel("source", evt);
@@ -481,7 +548,7 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   int ipositron=0, ielectron=0;
   int nmp=0;
   int nmn=0;
-
+  
   for (HepMC::GenEvent::particle_const_iterator p = genEvent->particles_begin(); p != genEvent->particles_end(); ++p) 
     {
       float ID     = (*p)->pdg_id();
@@ -495,8 +562,8 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
       //  cout <<"genrated electron Pt "<< gpt<< " eta: " << geta <<" ID: "<<ID<<endl; 
       
       //-------------------------TestInvMass Ana---------------------------------------
-     //-------------------------------------------------------------------------------      
-
+      //-------------------------------------------------------------------------------      
+      
       edm::Handle<GsfElectronCollection> gsfElectrons;
       iEvent.getByLabel("pixelMatchGsfElectrons",gsfElectrons); 
       int relec=gsfElectrons->size();
@@ -505,7 +572,6 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
       //cout<<"found dielec event"<<endl;   
       for (reco::GsfElectronCollection::const_iterator gsfIter=gsfElectrons->begin();
 	   gsfIter!=gsfElectrons->end(); gsfIter++){
-	
 	float eta =gsfIter->eta();
 	//float pt =gsfIter.pt();
 	// float recID=gsfIter->id();
@@ -525,39 +591,28 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 	    //cout<<"  "<<ID<<"  "<<gpt<<"  "<<gpz<<"  "<<gener<<"  "<<geta<<"  "<<gphi<<endl;
 	    //cout<<ID<<"  "<<pt<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<"  "<<gphi<<endl;
 	    //cout<<" pt diff :"<<ptdiff<<" etadiff "<<etadiff<<endl;
-	    
-	    
-	    
 	    //cout<<"  "<<ID<<"  "<<gpx<<"  "<<gpy<<"  "<<gpz<<"  "<<gener<<"  "<<geta<<"  "<<gphi<<endl;
             fHistRecElecPtDiff->Fill(gpz,pz);
 	    fHistRecElecEtaDiff->Fill(geta,eta);
 	    fHistRecElecPhiDiff->Fill(gphi,phi);
 	    fHistRecElecDPt->Fill(ptdiff);
 	  }    
-	
 	if (ID ==-11 && charge ==1)
 	  {
 	    float etadiff =(geta-eta);
 	    float ptdiff=(gpt-pt);
 	    //cout<<ID<<"  "<<pt<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<"  "<<gphi<<endl;
-
 	    //*****cout<<"  "<<ID<<"  "<<gpx<<"  "<<gpy<<"  "<<gpz<<"  "<<gener<<"  "<<geta<<"  "<<gphi<<endl;
-            
-           //cout<<"  "<<charge<<"  "<<px<<"  "<<py<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<endl;
+	    //cout<<"  "<<charge<<"  "<<px<<"  "<<py<<"  "<<pz<<"  "<<ener<<"  "<<eta<<"  "<<phi<<endl;
 	    //cout<<" pt diff :"<<ptdiff<<" etadiff "<<etadiff<<endl;
-	    
 	    fHistRecElecPtDiff->Fill(gpz,pz);
 	    fHistRecElecEtaDiff->Fill(geta,eta);
 	    // fHistRecElecPhiDiff->Fill(gphi,phi);
             fHistRecElecDPt->Fill(ptdiff);
-	    
 	  } 
-      }
+      }      
       
-
       //-------------------------TestInvMass Ana---------------------------------------
-      
-      
       if(ID==-11) {
         pt1[ipositron] = gpt;
         eta1[ipositron] = geta;
@@ -569,7 +624,7 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
         ipositron++;
         nmp++;
       }
-
+      
       if(ID==11) {
         pt2[ielectron] = gpt;
         eta2[ielectron] = geta;
@@ -581,13 +636,10 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
         ielectron++;
         nmn++;
       }
-      
-      
       //-------------------------------------------------------------------------------
       
     }
   if(nmp>0 && nmn>0){
-    
     for (  unsigned int i=0; i< ipositron; i++ ) {
       for ( unsigned int j=0; j< ielectron; j++ ){
 	double eptot=ener1[i]+ener2[j];
@@ -603,11 +655,9 @@ DiElecAnalyzer::Compare(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 	double genupz=sqrt(ppztot*ppztot);
 	double minv = sqrt(2.0*pt1[i]*pt2[j]*(TMath::CosH(eta1[i]-eta2[j])-TMath::Cos(phi1[i]-phi2[j])));
 	double mpz=sqrt((eptot+pptot)*(eptot-pptot));
-	cout<<"  "<<minv<<endl;
-	fHistGenDiElecInvM->Fill(minv);
-	
+	//	cout<<"  "<<minv<<endl;
+	//fHistGenDiElecInvM->Fill(minv);
 	//cout<<" DiElectron Gen pt  "<<genupt<<" eta "<<genueta<<" invmass" <<minv<<endl;
-	
       }
     }
   }
@@ -619,21 +669,30 @@ void DiElecAnalyzer::beginJob(const edm::EventSetup&)
 {
   fOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
   
-  fHistGenElecPt= new TH1D( "fHistGenElecPt", "Elec Pt spectrum", 100,  0., 5.)  ;
+  fHistGenElecPt= new TH1D( "fHistGenElecPt", "Elec Pt spectrum", 100,  0., 10.)  ;
   fHistGenElecEta= new TH1D( "fHistGenElecEta", "Elec eta spectrum", 100,  -10., 10.) ;
   fHistGenElecPhi= new TH1D( "fHistGenElecPhi", "Elec phi spectrum", 20,  -3.2, 3.2)  ;
 
   fHistSimElecPt =new TH1D( "fHistSimElecPt", "Sim Elec Pt spectrum", 100,  0., 10.)  ;
   fHistSimElecEta=new TH1D( "fHistSimElecEta", "Sim  Elec eta spectrum", 100,  -5., 5.)  ;  
   
+  fHistFlowCandSize=new TH1D( "fHistFlowCandSize","FlowCandidateSize",100,0.,10);
+  fHistFlowElecPt  =new TH1D( "fHistFlowElecPt","FlowElecPt",100,0.,10.);
+  fHistFlowElecEta =new TH1D( "fHistFlowElecEta","FlowElecEta",100,-10.,10.); 
+  fHistFlowElecPhi =new TH1D( "fHistFlowElecPhi","FlowElecPhi",100,-5.,5.);
+
   fHistRecElecPt =new TH1D( "fHistRecElecPt", "Rec Elec Pt spectrum", 100,  0., 10.0)  ;
   fHistRecElecEta=new TH1D( "fHistRecElecEta", "Rec Elec eta spectrum", 100,  -10., 10.)  ;
   fHistRecElecPhi=new TH1D( "fHistRecElecPhi", "Rec Elec phi spectrum", 20,  -3.2, 3.2)  ;
-
+  
   fHistGenDiElecInvM =new TH1D( "fHistGenDiElecMinv", "Inv mass", 200,  0.0, 20.0)  ;
   fHistGenDiElecY    =new TH1D( "fHistGenDiElecY", "DiElecY", 100,  -5.0,5.0)  ;
   fHistGenDiElecPt   =new TH1D( "fHistGenDiElecPt", "DiElecPt", 200,  0.0,2.0)  ;
   
+  fHistFlowDiElecY    =new TH1D( "fHistFlowDiElecY", "FlowDiElecY", 100,  -5.0,5.0)  ;
+  fHistFlowDiElecPt   =new TH1D( "fHistFlowDiElecPt", "FlowDiElecPt", 200,  0.0,2.0)  ;
+  fHistFlowDiElecInvM =new TH1D( "fHistFlowDiElecMinv", "FlowInvmass", 200,  0.0, 20.0);
+ 
   fHistRecDiElecInvM =new TH1D( "fHistRecDiElecMinv", "Rec Inv mass", 200,  0.0, 20.0)  ;
   fHistRecDiElecY    =new TH1D( "fHistRecDiElecY", "Rec DiElecY", 100,  -5.0,5.0)  ;
   fHistRecDiElecPt   =new TH1D( "fHistRecDiElecPt", "Rec DiElecPt", 200,  0.0,2.0)  ;
@@ -645,13 +704,12 @@ void DiElecAnalyzer::beginJob(const edm::EventSetup&)
   fHistRecElecEtaDiff=new TH2D("fHistRecElecEtaDiff","Del Eta",100,-5.,5.,100,-5.,5.); 
   fHistRecElecEtaDiff->SetXTitle("gen #eta");
   fHistRecElecEtaDiff->SetYTitle("reco #eta");
-  
   // fHistRecElecPhiDiff=new TH2D("fHistRecElecPhiDiff","Del Phi",100,-4.,4.,100,-4.,4.);
   //fHistRecElecPhiDiff->SetXTitle("gen #phi");
   //fHistRecElecPhiDiff->SetYTitle("reco #phi");
   fHistRecElecPhiDiff=new TH1D( "fHistRecElecPhiDiff", "Delta #phi", 100,  -4.0, 4.0)  ;
   fHistRecElecPhiDiff->SetXTitle("delta #phi");
-
+  
   fHistRecElecDPt=new TH1D( "fHistRecElecDPt", "delta Pt", 100, -3, 3.)  ;
   fHistRecElecDPt->SetXTitle("gen p_{T} - reco p_{T}");
   fHistRecElecDPt->SetYTitle("entries");
@@ -664,15 +722,24 @@ void DiElecAnalyzer::beginJob(const edm::EventSetup&)
 
 void 
 DiElecAnalyzer::endJob() {
-
+  
   fOutputFile->cd();  
   fHistGenElecPt->Write();
   fHistGenElecEta->Write();
   fHistGenElecPhi->Write();
   
+  fHistFlowCandSize->Write();
+  fHistFlowElecPt->Write();
+  fHistFlowElecEta->Write();
+  fHistFlowElecPhi->Write();
+  
+
   fHistRecElecPt->Write();
   fHistRecElecEta->Write();
   fHistRecElecPhi->Write();
+  
+ 
+ 
   
   fHistSimElecPt->Write();
   fHistSimElecEta->Write();
@@ -681,6 +748,13 @@ DiElecAnalyzer::endJob() {
   fHistGenDiElecY->Write();
   fHistGenDiElecPt->Write();
   
+  fHistFlowDiElecInvM->Write();
+  fHistFlowDiElecY->Write();
+  fHistFlowDiElecPt->Write();
+
+  
+
+
   fHistRecDiElecInvM->Write();
   fHistRecDiElecY->Write();
   fHistRecDiElecPt->Write();
