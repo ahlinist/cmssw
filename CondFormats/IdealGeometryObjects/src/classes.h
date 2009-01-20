@@ -3,8 +3,7 @@
 
 
 namespace {
-
-  namespace {
+  struct dictionary {
     std::vector<PSolid> dummys;
     std::vector<PMaterial> dummym;
     std::vector<PRotation> dummyr;
@@ -18,8 +17,7 @@ namespace {
     PGeometricDet dummypgd;
     PGeometricDet::Item dummypgdItem;
     std::vector<PGeometricDet::Item> dummypgdItemVector;
-  }
-  
+  };
 }
 
 
