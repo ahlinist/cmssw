@@ -1,0 +1,6 @@
+<lcgdict>
+  <class name="DiTauCandidate" />
+  <class name="std::vector<DiTauCandidate>" />
+  <class name="edm::Wrapper<DiTauCandidate>"/>
+  <class name="edm::Wrapper<std::vector<DiTauCandidate> >" />
+</lcgdict>
