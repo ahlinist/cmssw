@@ -141,15 +141,16 @@ private:
   int mTempTreeJetPartonFlavour[50];
   int mTempTreeJetsHemi[50];
 
-  int    mTempTreeNccjets;
-   double mTempTreeccJetsEt[50];
-  double mTempTreeccJetsPt[50];
-  double mTempTreeccJetsPx[50];
-  double mTempTreeccJetsPy[50];
-  double mTempTreeccJetsPz[50];
-  double mTempTreeccJetsE[50];
-  double mTempTreeccJetsEta[50];
-  double mTempTreeccJetsPhi[50];
+  int    mTempTreeNNonccjets;
+   double mTempTreeNonccJetsEt[50];
+  double mTempTreeNonccJetsPt[50];
+  double mTempTreeNonccJetsPx[50];
+  double mTempTreeNonccJetsPy[50];
+  double mTempTreeNonccJetsPz[50];
+  double mTempTreeNonccJetsE[50];
+  double mTempTreeNonccJetsEta[50];
+  double mTempTreeNonccJetsPhi[50];
+  int mTempTreeNonccJets_ccJetid[50];
 
   int mTempTreeJetPartonId[50];
   int mTempTreeJetPartonMother[50];
@@ -207,6 +208,20 @@ private:
   double mTempTreePhotHCalIso[50];
   double mTempTreePhotAllIso[50];
 
+  int    mTempTreeNnonccPhot;
+  double mTempTreeNonccPhotEt[50];
+  double mTempTreeNonccPhotPt[50];
+  double mTempTreeNonccPhotPx[50];
+  double mTempTreeNonccPhotPy[50];
+  double mTempTreeNonccPhotPz[50];
+  double mTempTreeNonccPhotE[50];
+  double mTempTreeNonccPhotEta[50];
+  double mTempTreeNonccPhotPhi[50];
+  double mTempTreeNonccPhotTrkIso[50];
+  double mTempTreeNonccPhotECalIso[50];
+  double mTempTreeNonccPhotHCalIso[50];
+  double mTempTreeNonccPhotAllIso[50];
+
   int    mTempTreeNelec;
   double mTempTreeElecEt[50];
   double mTempTreeElecPt[50];
@@ -255,15 +270,15 @@ private:
   double mTempTreeElecPoutTrk[50];
 
 
-  int    mTempTreeNccelec;
-  double mTempTreeccElecEt[50];
-  double mTempTreeccElecPt[50];
-  double mTempTreeccElecPx[50];
-  double mTempTreeccElecPy[50];
-  double mTempTreeccElecPz[50];
-  double mTempTreeccElecE[50];
-  double mTempTreeccElecEta[50];
-  double mTempTreeccElecPhi[50];
+  int    mTempTreeNNonccElec;
+  double mTempTreeNonccElecEt[50];
+  double mTempTreeNonccElecPt[50];
+  double mTempTreeNonccElecPx[50];
+  double mTempTreeNonccElecPy[50];
+  double mTempTreeNonccElecPz[50];
+  double mTempTreeNonccElecE[50];
+  double mTempTreeNonccElecEta[50];
+  double mTempTreeNonccElecPhi[50];
 
   int    mTempTreeNmuon;
   double mTempTreeMuonEt[50];
@@ -289,15 +304,15 @@ private:
 
 
 
-  int    mTempTreeNccmuon;
-  double mTempTreeccMuonEt[50];
-  double mTempTreeccMuonPt[50];
-  double mTempTreeccMuonPx[50];
-  double mTempTreeccMuonPy[50];
-  double mTempTreeccMuonPz[50];
-  double mTempTreeccMuonE[50];
-  double mTempTreeccMuonEta[50];
-  double mTempTreeccMuonPhi[50];
+  int    mTempTreeNNonccMuon;
+  double mTempTreeNonccMuonEt[50];
+  double mTempTreeNonccMuonPt[50];
+  double mTempTreeNonccMuonPx[50];
+  double mTempTreeNonccMuonPy[50];
+  double mTempTreeNonccMuonPz[50];
+  double mTempTreeNonccMuonE[50];
+  double mTempTreeNonccMuonEta[50];
+  double mTempTreeNonccMuonPhi[50];
   //MICHELE
   double  mTempTreeMuonId[50];
   double mTempTreeMuonCombVx[50];
@@ -485,6 +500,7 @@ private:
   edm::InputTag ccmetTag_;
   edm::InputTag ccelecTag_;
   edm::InputTag ccmuonTag_;
+  edm::InputTag ccphotTag_;
 
 
   std::string outputFileName_;
