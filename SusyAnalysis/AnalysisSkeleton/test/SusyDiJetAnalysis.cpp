@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.9 2009/01/06 09:51:35 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.10 2009/01/19 21:14:47 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -66,10 +66,12 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   muonTag_ = iConfig.getParameter<edm::InputTag>("muonTag");
   tauTag_ = iConfig.getParameter<edm::InputTag>("tauTag");
   vtxTag_ = iConfig.getParameter<edm::InputTag>("vtxTag"); 
+
   ccjetTag_ = iConfig.getParameter<edm::InputTag>("ccjetTag");
   ccmetTag_ = iConfig.getParameter<edm::InputTag>("ccmetTag");
   ccelecTag_ = iConfig.getParameter<edm::InputTag>("ccelecTag"); 
   ccmuonTag_ = iConfig.getParameter<edm::InputTag>("ccmuonTag");
+  ccphotTag_ = iConfig.getParameter<edm::InputTag>("ccphotonTag");
 
   // trigger stuff
   triggerResults_ = iConfig.getParameter<edm::InputTag>("triggerResults");
@@ -116,7 +118,7 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
     dec = dec && decisions.decision(i);
  
     // Add the decision to the tree
-    mSelectorResults[i] = (decisions.decision(i)?1:0);
+    //   mSelectorResults[i] = (decisions.decision(i)?1:0);
     
     // Update counters
     if ( decisions.decision(i) ) nrEventSelected_[i] += eventWeight_;
@@ -126,7 +128,7 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
   }
 
   // Fill event with variables we computed
-  if(dec)fillPlots( iEvent, decisions );
+  //  if(dec)fillPlots( iEvent, decisions );
 
   // Print summary so far (every 10 till 100, every 100 till 1000, etc.)
   for ( unsigned int i=10; i<nrEventTotalRaw_; i*=10 )
@@ -149,7 +151,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //std::cout<< " in analyze " << std::endl;
 
    edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
-
+ 
   std::ostringstream dbg;
 
   ALPGENParticleId myALPGENParticleId;
@@ -197,14 +199,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   edm::LogWarning("HLTEventSelector") << " triggers " << trgNames.size() << std::endl;
 
-  /*   for (unsigned int itrig = 0; itrig != trgSize; ++itrig) {
-        TString trigName = trgNames.triggerName(itrig);
-	  	std::cout << " trigName " << trigName <<  " accept " << hltHandle->accept(trgNames.triggerIndex(trgNames.triggerName(itrig))) <<std::endl;
-	edm::LogWarning("HLTEventSelector") << " trigName " << trigName << " accept " << hltHandle->accept(trgNames.triggerIndex(trgNames.triggerName(itrig))) << std::endl;
-	}*/
+ 
   
-  //  std::cout << " accept " << hltHandle->size()<<std::endl;
-  
+ 
   
     // GEORGIA
   if (!hltHandle.isValid()) {
@@ -271,7 +268,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     } 
   }
 
-  //std::cout << " after
+ 
  
   mTempTreeEventWeight =eventWeight_;
  
@@ -287,11 +284,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(vtxTag_, vertices);
   if ( !vertices.isValid() ) {
     LogDebug("") << "No Vertex results for InputTag" << vtxTag_;
+    std::cout << "No Vertex results for InputTag" << std::endl;
     return;
   } 
 
   // Should assume that 1st index in VertexCollection corresponds to the primary vertex ?? ( verices are ordered?)
-
+  
   mTempTreenVtx = (*vertices).size();
 
   for (int i=0; i< (int) (*vertices).size(); i++){  
@@ -308,18 +306,19 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeVtxdZ[i] = pVertex->zError();
   } 
   // end GEORGIA
-
+ 
   
   // get the photons
   edm::Handle< std::vector<pat::Photon> > photHandle;
-  iEvent.getByLabel(photTag_, photHandle);
+  iEvent.getByLabel(ccphotTag_, photHandle);
   if ( !photHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No Photon results for InputTag " << photTag_;
     return;
   }
 
+ 
 
-  
+
   // Add the photons
   mTempTreeNphot = photHandle->size();
   if ( mTempTreeNphot > 50 ) mTempTreeNphot = 50;
@@ -339,10 +338,36 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
 
   
+   // get the photons
+   edm::Handle< std::vector<pat::Photon> > nonccPhotHandle;
+  iEvent.getByLabel(photTag_, nonccPhotHandle);
+  if ( !nonccPhotHandle.isValid() ) {
+    edm::LogWarning("SusySelectorExample") << "No Photon results for InputTag " << photTag_;
+    return;
+  }
+  
+
+  // Add the photons
+  mTempTreeNnonccPhot = nonccPhotHandle->size();
+  if ( mTempTreeNnonccPhot > 50 ) mTempTreeNnonccPhot = 50;
+  for (int i=0;i<mTempTreeNnonccPhot;i++){
+    mTempTreeNonccPhotPt[i]  = (*nonccPhotHandle)[i].pt();
+    mTempTreeNonccPhotE[i]   = (*nonccPhotHandle)[i].energy();
+    mTempTreeNonccPhotEt[i]  = (*nonccPhotHandle)[i].et();
+    mTempTreeNonccPhotPx[i]  = (*nonccPhotHandle)[i].momentum().X();
+    mTempTreeNonccPhotPy[i]  = (*nonccPhotHandle)[i].momentum().Y();
+    mTempTreeNonccPhotPz[i]  = (*nonccPhotHandle)[i].momentum().Z();
+    mTempTreeNonccPhotEta[i] = (*nonccPhotHandle)[i].eta();
+    mTempTreeNonccPhotPhi[i] = (*nonccPhotHandle)[i].phi();
+  
+  }
+
+  
+  
   
   // get the electrons
   edm::Handle< std::vector<pat::Electron> > elecHandle;
-  iEvent.getByLabel(elecTag_, elecHandle);
+  iEvent.getByLabel(ccelecTag_, elecHandle);
   if ( !elecHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No Electron results for InputTag " << elecTag_;
     return;
@@ -420,32 +445,32 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
    // get the ccelectrons
-  edm::Handle< std::vector<pat::Electron> > ccelecHandle;
-  iEvent.getByLabel(ccelecTag_, ccelecHandle);
-  if ( !ccelecHandle.isValid() ) {
+  edm::Handle< std::vector<pat::Electron> > nonccelecHandle;
+  iEvent.getByLabel(elecTag_, nonccelecHandle);
+  if ( !nonccelecHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No ccElectron results for InputTag " << ccelecTag_;
     return;
   }
   //std::cout << " add the ccelectrons " << std::endl;
   
   // Add the electrons
-  mTempTreeNccelec= ccelecHandle->size();
-  if ( mTempTreeNccelec > 50 ) mTempTreeNccelec = 50;
-  for (int i=0;i<mTempTreeNccelec;i++){
-    mTempTreeccElecPt[i] = (*ccelecHandle)[i].pt();
-    mTempTreeccElecE[i] = (*ccelecHandle)[i].energy();
-    mTempTreeccElecEt[i] = (*ccelecHandle)[i].et();
-    mTempTreeccElecPx[i] = (*ccelecHandle)[i].momentum().X();
-    mTempTreeccElecPy[i] = (*ccelecHandle)[i].momentum().Y();
-    mTempTreeccElecPz[i] = (*ccelecHandle)[i].momentum().Z();
-    mTempTreeccElecEta[i] = (*ccelecHandle)[i].eta();
-    mTempTreeccElecPhi[i] = (*ccelecHandle)[i].phi();
+  mTempTreeNNonccElec= nonccelecHandle->size();
+  if ( mTempTreeNNonccElec > 50 ) mTempTreeNNonccElec = 50;
+  for (int i=0;i<mTempTreeNNonccElec;i++){
+    mTempTreeNonccElecPt[i] = (*nonccelecHandle)[i].pt();
+    mTempTreeNonccElecE[i] = (*nonccelecHandle)[i].energy();
+    mTempTreeNonccElecEt[i] = (*nonccelecHandle)[i].et();
+    mTempTreeNonccElecPx[i] = (*nonccelecHandle)[i].momentum().X();
+    mTempTreeNonccElecPy[i] = (*nonccelecHandle)[i].momentum().Y();
+    mTempTreeNonccElecPz[i] = (*nonccelecHandle)[i].momentum().Z();
+    mTempTreeNonccElecEta[i] = (*nonccelecHandle)[i].eta();
+    mTempTreeNonccElecPhi[i] = (*nonccelecHandle)[i].phi();
 
   }
   
   // get the muons
   edm::Handle< std::vector<pat::Muon> > muonHandle;
-  iEvent.getByLabel(muonTag_, muonHandle);
+  iEvent.getByLabel(ccmuonTag_, muonHandle);
   if ( !muonHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No Muon results for InputTag " << muonTag_;
     return;
@@ -559,26 +584,26 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
 
   // get the ccmuons
-  edm::Handle< std::vector<pat::Muon> > ccmuonHandle;
-  iEvent.getByLabel(ccmuonTag_, ccmuonHandle);
-  if ( !ccmuonHandle.isValid() ) {
+  edm::Handle< std::vector<pat::Muon> > nonccMuonHandle;
+  iEvent.getByLabel(muonTag_, nonccMuonHandle);
+  if ( !nonccMuonHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No ccMuon results for InputTag " << ccmuonTag_;
     return;
   }
   
 
   // Add the ccmuons
-  mTempTreeNccmuon= ccmuonHandle->size();
-  if ( mTempTreeNccmuon > 50 ) mTempTreeNccmuon = 50;
-  for (int i=0;i<mTempTreeNccmuon;i++){
-    mTempTreeccMuonPt[i] = (*ccmuonHandle)[i].pt();
-    mTempTreeccMuonE[i] = (*ccmuonHandle)[i].energy();
-    mTempTreeccMuonEt[i] = (*ccmuonHandle)[i].et();
-    mTempTreeccMuonPx[i] = (*ccmuonHandle)[i].momentum().X();
-    mTempTreeccMuonPy[i] = (*ccmuonHandle)[i].momentum().Y();
-    mTempTreeccMuonPz[i] = (*ccmuonHandle)[i].momentum().Z();
-    mTempTreeccMuonEta[i] = (*ccmuonHandle)[i].eta();
-    mTempTreeccMuonPhi[i] = (*ccmuonHandle)[i].phi();
+  mTempTreeNNonccMuon= nonccMuonHandle->size();
+  if ( mTempTreeNNonccMuon > 50 ) mTempTreeNNonccMuon = 50;
+  for (int i=0;i<mTempTreeNNonccMuon;i++){
+    mTempTreeNonccMuonPt[i] = (*nonccMuonHandle)[i].pt();
+    mTempTreeNonccMuonE[i] = (*nonccMuonHandle)[i].energy();
+    mTempTreeNonccMuonEt[i] = (*nonccMuonHandle)[i].et();
+    mTempTreeNonccMuonPx[i] = (*nonccMuonHandle)[i].momentum().X();
+    mTempTreeNonccMuonPy[i] = (*nonccMuonHandle)[i].momentum().Y();
+    mTempTreeNonccMuonPz[i] = (*nonccMuonHandle)[i].momentum().Z();
+    mTempTreeNonccMuonEta[i] = (*nonccMuonHandle)[i].eta();
+    mTempTreeNonccMuonPhi[i] = (*nonccMuonHandle)[i].phi();
  
   }
 
@@ -768,7 +793,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
   // get the jets
   edm::Handle< std::vector<pat::Jet> > jetHandle;
-  iEvent.getByLabel(jetTag_, jetHandle);
+  iEvent.getByLabel(ccjetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No Jet results for InputTag " << jetTag_;
     return;
@@ -785,36 +810,36 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if ( mTempTreeNjets >50 ) mTempTreeNjets = 50;
   for (int k=0;k<mTempTreeNjets;k++){
     if ( (*jetHandle)[k].et() > 20. ){
-      mTempTreeJetsPt[i] = (*jetHandle)[i].pt();
-      mTempTreeJetsE[i] = (*jetHandle)[i].energy();
-      mTempTreeJetsEt[i] = (*jetHandle)[i].et();
-      mTempTreeJetsPx[i] = (*jetHandle)[i].momentum().X();
-      mTempTreeJetsPy[i] = (*jetHandle)[i].momentum().Y();
-      mTempTreeJetsPz[i] = (*jetHandle)[i].momentum().Z();
-      mTempTreeJetsEta[i] = (*jetHandle)[i].eta();
-      mTempTreeJetsPhi[i] = (*jetHandle)[i].phi();
-      if ((*jetHandle)[i].isCaloJet())
-	mTempTreeJetsFem[i] = (*jetHandle)[i].emEnergyFraction();
-      if ((*jetHandle)[i].isPFJet())
-	mTempTreeJetsFem[i] = (*jetHandle)[i].neutralEmEnergyFraction()+
-	  (*jetHandle)[i].chargedEmEnergyFraction();  
+      mTempTreeJetsPt[i] = (*jetHandle)[k].pt();
+      mTempTreeJetsE[i] = (*jetHandle)[k].energy();
+      mTempTreeJetsEt[i] = (*jetHandle)[k].et();
+      mTempTreeJetsPx[i] = (*jetHandle)[k].momentum().X();
+      mTempTreeJetsPy[i] = (*jetHandle)[k].momentum().Y();
+      mTempTreeJetsPz[i] = (*jetHandle)[k].momentum().Z();
+      mTempTreeJetsEta[i] = (*jetHandle)[k].eta();
+      mTempTreeJetsPhi[i] = (*jetHandle)[k].phi();
+      if ((*jetHandle)[k].isCaloJet())
+	mTempTreeJetsFem[i] = (*jetHandle)[k].emEnergyFraction();
+      if ((*jetHandle)[k].isPFJet())
+	mTempTreeJetsFem[i] = (*jetHandle)[k].neutralEmEnergyFraction()+
+	  (*jetHandle)[k].chargedEmEnergyFraction();  
 
 
-       mTempTreeJetsBTag_TkCountHighEff[i] = (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags");
+       mTempTreeJetsBTag_TkCountHighEff[i] = (*jetHandle)[k].bDiscriminator("trackCountingHighEffBJetTags");
        // std::cout << " discri " << (*jetHandle)[i].bDiscriminator("trackCountingHighEffBJetTags") << std::endl;
-      mTempTreeJetsBTag_SimpleSecVtx[i] = (*jetHandle)[i].bDiscriminator("simpleSecondaryVertexBJetTags");
-      mTempTreeJetsBTag_CombSecVtx[i] = (*jetHandle)[i].bDiscriminator("combinedSecondaryVertexBJetTags");
-      mTempTreeJetPartonFlavour[i] = (*jetHandle)[i].partonFlavour();
+      mTempTreeJetsBTag_SimpleSecVtx[i] = (*jetHandle)[k].bDiscriminator("simpleSecondaryVertexBJetTags");
+      mTempTreeJetsBTag_CombSecVtx[i] = (*jetHandle)[k].bDiscriminator("combinedSecondaryVertexBJetTags");
+      mTempTreeJetPartonFlavour[i] = (*jetHandle)[k].partonFlavour();
     
-      if((*jetHandle)[i].genJet()!= 0) {
-	mTempTreeGenJetsPt[i]=(*jetHandle)[i].genJet()->pt();
-	mTempTreeGenJetsE[i]=(*jetHandle)[i].genJet()->energy();
-	mTempTreeGenJetsEt[i]=(*jetHandle)[i].genJet()->et();
-	mTempTreeGenJetsPx[i]=(*jetHandle)[i].genJet()->momentum().X();
-	mTempTreeGenJetsPy[i]=(*jetHandle)[i].genJet()->momentum().Y();
-	mTempTreeGenJetsPz[i]=(*jetHandle)[i].genJet()->momentum().z();
-	mTempTreeGenJetsEta[i]=(*jetHandle)[i].genJet()->eta();
-	mTempTreeGenJetsPhi[i]=(*jetHandle)[i].genJet()->phi();
+      if((*jetHandle)[k].genJet()!= 0) {
+	mTempTreeGenJetsPt[i]=(*jetHandle)[k].genJet()->pt();
+	mTempTreeGenJetsE[i]=(*jetHandle)[k].genJet()->energy();
+	mTempTreeGenJetsEt[i]=(*jetHandle)[k].genJet()->et();
+	mTempTreeGenJetsPx[i]=(*jetHandle)[k].genJet()->momentum().X();
+	mTempTreeGenJetsPy[i]=(*jetHandle)[k].genJet()->momentum().Y();
+	mTempTreeGenJetsPz[i]=(*jetHandle)[k].genJet()->momentum().z();
+	mTempTreeGenJetsEta[i]=(*jetHandle)[k].genJet()->eta();
+	mTempTreeGenJetsPhi[i]=(*jetHandle)[k].genJet()->phi();
       }
       else {
 	mTempTreeGenJetsPt[i]  =-999;
@@ -822,21 +847,21 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	mTempTreeGenJetsEt[i]  =-999;
 	mTempTreeGenJetsPx[i]  =-999;
 	mTempTreeGenJetsPy[i]  =-999;
-	mTempTreeGenJetsPz[i]  =-999;
+	mTempTreeGenJetsPz[i]  =-9999;
 	mTempTreeGenJetsEta[i] =-999;
 	mTempTreeGenJetsPhi[i] =-999;
       }
 
       if((*jetHandle)[i].genParton() != 0){
-	mTempTreeJetPartonId[i] = (*jetHandle)[i].genParton()->pdgId();
-	mTempTreeJetPartonMother[i] = (*jetHandle)[i].genParton()->mother()->pdgId();
-	mTempTreeJetPartonPx[i] = (*jetHandle)[i].genParton()->px();
-	mTempTreeJetPartonPy[i] = (*jetHandle)[i].genParton()->py();
-	mTempTreeJetPartonPz[i] = (*jetHandle)[i].genParton()->pz();
-	mTempTreeJetPartonEt[i] = (*jetHandle)[i].genParton()->et();
-	mTempTreeJetPartonEnergy[i] = (*jetHandle)[i].genParton()->energy();
-	mTempTreeJetPartonPhi[i] = (*jetHandle)[i].genParton()->phi();
-	mTempTreeJetPartonEta[i] = (*jetHandle)[i].genParton()->eta();
+	mTempTreeJetPartonId[i] = (*jetHandle)[k].genParton()->pdgId();
+	mTempTreeJetPartonMother[i] = (*jetHandle)[k].genParton()->mother()->pdgId();
+	mTempTreeJetPartonPx[i] = (*jetHandle)[k].genParton()->px();
+	mTempTreeJetPartonPy[i] = (*jetHandle)[k].genParton()->py();
+	mTempTreeJetPartonPz[i] = (*jetHandle)[k].genParton()->pz();
+	mTempTreeJetPartonEt[i] = (*jetHandle)[k].genParton()->et();
+	mTempTreeJetPartonEnergy[i] = (*jetHandle)[k].genParton()->energy();
+	mTempTreeJetPartonPhi[i] = (*jetHandle)[k].genParton()->phi();
+	mTempTreeJetPartonEta[i] = (*jetHandle)[k].genParton()->eta();
       }
       else{
 	mTempTreeJetPartonId[i] = -999;
@@ -850,28 +875,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	mTempTreeJetPartonEta[i] = -999;
       }
      
-      //  const reco::TrackRefVector & associatedTracks();      
-      /*   mTempTreeNJetsT[i] = ((*jetHandle)[i].associatedTracks()).size();
-      if(((*jetHandle)[i].associatedTracks()).isAvailable()) { 
-	
-	float maxPt = 0;
-	int maxPtIndex = 0;
-	for(int pttest=0; pttest<mTempTreeNJetsT[i];pttest++) { 
-	  if(maxPt<float(((*jetHandle)[i].associatedTracks())[pttest]->pt())) {
-	    maxPt = float(((*jetHandle)[i].associatedTracks())[pttest]->pt());
-	    maxPtIndex = pttest;
-	  }
-	  
-	}
-	mTempTreeJetsTPt[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->pt());
-	mTempTreeJetsTEta[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->eta());
-	mTempTreeJetsTPhi[i] = float(((*jetHandle)[i].associatedTracks())[maxPtIndex]->phi());
-      }
-      else {
-	mTempTreeJetsTPt[i] = -1 ;
-	mTempTreeJetsTEta[i] = -10 ;
-	mTempTreeJetsTPhi[i] = -10 ;
-	}   */
+     
+   
       i++;
     }
   }
@@ -881,35 +886,45 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //std::cout << " add the ccjets " << std::endl;
   
   //Get the cross-cleaned Jets
-  edm::Handle< std::vector<pat::Jet> > ccjetHandle;
-  iEvent.getByLabel(ccjetTag_, ccjetHandle);
-  if ( !ccjetHandle.isValid() ) {
+  edm::Handle< std::vector<pat::Jet> > nonccJetHandle;
+  iEvent.getByLabel(jetTag_, nonccJetHandle);
+  if ( !nonccJetHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No ccJet results for InputTag " << ccjetTag_;
     return;
   }
 
   //get number of cc-jets
-  mTempTreeNccjets = ccjetHandle->size();
+  mTempTreeNNonccjets = nonccJetHandle->size();
 
   // Add the cc jets
   i=0;
-  if ( mTempTreeNccjets >50 ) mTempTreeNccjets = 50;
-  for (int k=0;k<mTempTreeNccjets;k++){
-    if ( (*ccjetHandle)[k].et() > 20. ){
-      mTempTreeccJetsPt[i] = (*ccjetHandle)[i].pt();
-      mTempTreeccJetsE[i] = (*ccjetHandle)[i].energy();
-      mTempTreeccJetsEt[i] = (*ccjetHandle)[i].et();
-      mTempTreeccJetsPx[i] = (*ccjetHandle)[i].momentum().X();
-      mTempTreeccJetsPy[i] = (*ccjetHandle)[i].momentum().Y();
-      mTempTreeccJetsPz[i] = (*ccjetHandle)[i].momentum().Z();
-      mTempTreeccJetsEta[i] = (*ccjetHandle)[i].eta();
-      mTempTreeccJetsPhi[i] = (*ccjetHandle)[i].phi();
-      // std::cout << " cc jet " << (*ccjetHandle)[i].pt() << std::endl;
+  int i_noncc = 0;
+  if ( mTempTreeNNonccjets >50 ) mTempTreeNNonccjets = 50;
+  for (int k=0;k<mTempTreeNNonccjets;k++){
+    if ( (*nonccJetHandle)[k].et() > 20. ){
+      mTempTreeNonccJetsPt[i] = (*nonccJetHandle)[k].pt();
+      mTempTreeNonccJetsE[i] = (*nonccJetHandle)[k].energy();
+      mTempTreeNonccJetsEt[i] = (*nonccJetHandle)[k].et();
+      mTempTreeNonccJetsPx[i] = (*nonccJetHandle)[k].momentum().X();
+      mTempTreeNonccJetsPy[i] = (*nonccJetHandle)[k].momentum().Y();
+      mTempTreeNonccJetsPz[i] = (*nonccJetHandle)[k].momentum().Z();
+      mTempTreeNonccJetsEta[i] = (*nonccJetHandle)[k].eta();
+      mTempTreeNonccJetsPhi[i] = (*nonccJetHandle)[k].phi();
+       
       i++;
-    }
-  }
+      i_noncc = 0;
+
+      for (int n=0;n<mTempTreeNjets;n++){
+	if ( (*jetHandle)[n].et() > 20. ){	
+	  if((*jetHandle)[n].originalObjectRef() == (*nonccJetHandle)[i].originalObjectRef())mTempTreeNonccJets_ccJetid[i] = i_noncc;
+	  i_noncc++;
+	}//end if cc jet et > 20 GeV
+      }//end loop over cc Jets
+
+    }//end if non-cc jet et > 20 GeV
+  }//end loop over non-cc jet
   
-  mTempTreeNccjets = i;
+  mTempTreeNNonccjets = i;
 
 // Get the hemispheres
   Handle< edm::View<pat::Hemisphere> > hemisphereHandle;
@@ -934,9 +949,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     for(unsigned int dau = 0; dau < hemispheres[i].numberOfDaughters();dau++){
       for (int k=0;k<mTempTreeNjets;k++){
-	//	mTempTreeJetsHemi[k]= -1;
+	
 	if(  hemispheres[i].daughter(dau)->phi() >= mTempTreeJetsPhi[k]-0.0001 &  hemispheres[i].daughter(dau)->phi() <= mTempTreeJetsPhi[k]+0.0001 )  mTempTreeJetsHemi[k] = i; 
-	//	std::cout << " k " << k << " hemiphi " << hemispheres[i].daughter(dau)->phi() << " jetphi " << mTempTreeJetsPhi[k] << " hemi " << mTempTreeJetsHemi[k] << std::endl;
+
 	}
      
     }
@@ -945,7 +960,6 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }   
 
  
-  // for (int k=0;k<mTempTreeNjets;k++)  std::cout << " after " << " k " << k << " hemiphi " <<  " jetphi " << mTempTreeJetsPhi[k] <<" hemi " << mTempTreeJetsHemi[k] << std::endl;
 
 
   //
@@ -982,7 +996,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // get the cc MET result
   //
 
-  //std::cout << " add the ccmet " << std::endl;
+
   
   edm::Handle< std::vector<pat::MET> > ccmetHandle;
   iEvent.getByLabel(ccmetTag_, ccmetHandle);
@@ -1008,60 +1022,13 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeccMETphi = ccmetHandle->front().phi();
 
   
-  mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
-  mTempAlpPtScale = myALPGENParticleId.getPt();
- 
+
  
   //set information of event is affected by b-bug
   // is_ok = true;
    length = 1000;
   length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genE, genPx, genPy, genPz ,genPhi ,genEta ,genStatus, length);
-  /*
-bool BadFlag = false;
- 
-   for (int i=0;i<jetHandle->size();i++) 
-   {
-    
-    if( (*jetHandle)[i].genParton() != 0) //<---Check if jet is matched
-      {  
-	if(fabs((*jetHandle)[i].genParton()->pdgId()) == 5 && (*jetHandle)[i].genParton()->pt() > 100 ) {
-	  if(fabs((*jetHandle)[i].genParton()->pt()-(*jetHandle)[i].pt( ))/(*jetHandle)[i].pt() > 5 ) BadFlag == true;
-	}
 
-      }
-   }//<---End of i loop
-  */
-   // std::cout << " bad flag " << BadFlag << std::endl;
-  
-  /*  mTempSimuCheck = -1 ;
-
-
-  float min_dR;
-  int matched_jet = 0;
-  int matched_b = 0;
-  for(int i=0 ; i < length;i++) {
-    min_dR = 100;
-    matched_jet = -1;
-    matched_b = -1;
-    if(fabs(ids[i]) == 5 && genPt[i] > 100){
-      for (int jeti=0;jeti < mTempTreeNjets;jeti++){
-	
-	if(sqrt(reco::deltaPhi((*jetHandle)[jeti].phi(),genPhi[i])
-		*reco::deltaPhi((*jetHandle)[jeti].phi(),genPhi[i])
-		+((*jetHandle)[jeti].eta()-genEta[i])*((*jetHandle)[jeti].eta()-genEta[i])) < min_dR) {
-	  min_dR = sqrt(reco::deltaPhi((*jetHandle)[jeti].phi(),genPhi[i]) 
-			* reco::deltaPhi((*jetHandle)[jeti].phi(),genPhi[i])
-			+((*jetHandle)[jeti].eta()-genEta[i]) * ((*jetHandle)[jeti].eta()-genEta[i]));
-	  matched_jet = jeti;
-	  matched_b = i; 
-	}
-      }
-      if(fabs((*jetHandle)[matched_jet].pt()- genPt[matched_b])/(*jetHandle)[matched_jet].pt() > 5 && min_dR < 0.5)  is_ok = false;
-    }
-  }
-
-  */
- 
    
   
   // Fill the tree
@@ -1198,8 +1165,8 @@ SusyDiJetAnalysis::initPlots() {
 
   // Register this ntuple
   edm::Service<TFileService> fs;
-  ntuple_ = fs->make<TNtuple>( "ntuple","SusyDiJetAnalysis variables",
-                               variables.str().c_str() );
+  // ntuple_ = fs->make<TNtuple>( "ntuple","SusyDiJetAnalysis variables",
+  //   variables.str().c_str() );
 
   // Now we add some additional ones for the dijet analysis
   mAllData = fs->make<TTree>( "allData", "data after cuts" );
@@ -1324,16 +1291,18 @@ SusyDiJetAnalysis::initPlots() {
   
 
   //ccJets
-  mAllData->Branch("Nccjets" ,&mTempTreeNccjets ,"Nccjets/int");  
-  mAllData->Branch("ccJetE" ,mTempTreeccJetsE ,"ccJetE[Njets]/double");
-  mAllData->Branch("ccJetEt",mTempTreeccJetsEt,"ccJetEt[Njets]/double");
-  mAllData->Branch("ccJetpt",mTempTreeccJetsPt,"ccJetpt[Njets]/double");
-  mAllData->Branch("ccJetpx",mTempTreeccJetsPx,"ccJetpx[Njets]/double");
-  mAllData->Branch("ccJetpy",mTempTreeccJetsPy,"ccJetpy[Njets]/double");
-  mAllData->Branch("ccJetpz",mTempTreeccJetsPz,"ccJetpz[Njets]/double");
-  mAllData->Branch("ccJeteta",mTempTreeccJetsEta,"ccJeteta[Njets]/double");
-  mAllData->Branch("ccJetphi",mTempTreeccJetsPhi,"ccJetphi[Njets]/double");
- 
+  mAllData->Branch("NNonccjets" ,&mTempTreeNNonccjets ,"NNonccjets/int");  
+  mAllData->Branch("NonccJetE" ,mTempTreeNonccJetsE ,"NonccJetE[Njets]/double");
+  mAllData->Branch("NonccJetEt",mTempTreeNonccJetsEt,"NonccJetEt[Njets]/double");
+  mAllData->Branch("NonccJetpt",mTempTreeNonccJetsPt,"NonccJetpt[Njets]/double");
+  mAllData->Branch("NonccJetpx",mTempTreeNonccJetsPx,"NonccJetpx[Njets]/double");
+  mAllData->Branch("NonccJetpy",mTempTreeNonccJetsPy,"NonccJetpy[Njets]/double");
+  mAllData->Branch("NonccJetpz",mTempTreeNonccJetsPz,"NonccJetpz[Njets]/double");
+  mAllData->Branch("NonccJeteta",mTempTreeNonccJetsEta,"NonccJeteta[Njets]/double");
+  mAllData->Branch("NonccJetphi",mTempTreeNonccJetsPhi,"NonccJetphi[Njets]/double");
+  mAllData->Branch("ccJetId_NonccJet",mTempTreeNonccJets_ccJetid,"ccJetId_NonccJet[Njets]/int");
+
+
   //add photons
   mAllData->Branch("Nphot" ,&mTempTreeNphot ,"Nphot/int");  
   mAllData->Branch("PhotE" ,mTempTreePhotE ,"PhotE[Nphot]/double");
@@ -1348,6 +1317,20 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("PhotECalIso",mTempTreePhotECalIso,"mTempTreePhotECalIso[Nphot]/double");
   mAllData->Branch("PhotHCalIso",mTempTreePhotHCalIso,"mTempTreePhotHCalIso[Nphot]/double");
   mAllData->Branch("PhotAllIso",mTempTreePhotAllIso,"mTempTreePhotAllIso[Nphot]/double");
+
+
+   //add non ccnonccPhotons
+  mAllData->Branch("NnonccPhot" ,&mTempTreeNnonccPhot ,"NnonccPhot/int");  
+  mAllData->Branch("NonccPhotE" ,mTempTreeNonccPhotE ,"NonccPhotE[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotEt",mTempTreeNonccPhotEt,"NonccPhotEt[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotpt",mTempTreeNonccPhotPt,"NonccPhotpt[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotpx",mTempTreeNonccPhotPx,"NonccPhotpx[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotpy",mTempTreeNonccPhotPy,"NonccPhotpy[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotpz",mTempTreeNonccPhotPz,"NonccPhotpz[NnonccPhot]/double");
+  mAllData->Branch("NonccPhoteta",mTempTreeNonccPhotEta,"NonccPhoteta[NnonccPhot]/double");
+  mAllData->Branch("NonccPhotphi",mTempTreeNonccPhotPhi,"NonccPhotphi[NnonccPhot]/double");
+
+ 
 
   //add electrons
   mAllData->Branch("Nelec" ,&mTempTreeNelec ,"Nelec/int");  
@@ -1400,15 +1383,15 @@ SusyDiJetAnalysis::initPlots() {
   //PIOPPI
 
 
-  mAllData->Branch("Nccelec" ,&mTempTreeNccelec ,"Nccelec/int");  
-  mAllData->Branch("ccElecE" ,mTempTreeccElecE ,"ccElecE[Nelec]/double");
-  mAllData->Branch("ccElecEt",mTempTreeccElecEt,"ccElecEt[Nelec]/double");
-  mAllData->Branch("ccElecpt",mTempTreeccElecPt,"ccElecpt[Nelec]/double");
-  mAllData->Branch("ccElecpx",mTempTreeccElecPx,"ccElecpx[Nelec]/double");
-  mAllData->Branch("ccElecpy",mTempTreeccElecPy,"ccElecpy[Nelec]/double");
-  mAllData->Branch("ccElecpz",mTempTreeccElecPz,"ccElecpz[Nelec]/double");
-  mAllData->Branch("ccEleceta",mTempTreeccElecEta,"ccEleceta[Nelec]/double");
-  mAllData->Branch("ccElecphi",mTempTreeccElecPhi,"ccElecphi[Nelec]/double");
+  mAllData->Branch("NNonccelec" ,&mTempTreeNNonccElec ,"NNonccelec/int");  
+  mAllData->Branch("NonccElecE" ,mTempTreeNonccElecE ,"NonccElecE[Nelec]/double");
+  mAllData->Branch("NonccElecEt",mTempTreeNonccElecEt,"NonccElecEt[Nelec]/double");
+  mAllData->Branch("NonccElecpt",mTempTreeNonccElecPt,"NonccElecpt[Nelec]/double");
+  mAllData->Branch("NonccElecpx",mTempTreeNonccElecPx,"NonccElecpx[Nelec]/double");
+  mAllData->Branch("NonccElecpy",mTempTreeNonccElecPy,"NonccElecpy[Nelec]/double");
+  mAllData->Branch("NonccElecpz",mTempTreeNonccElecPz,"NonccElecpz[Nelec]/double");
+  mAllData->Branch("NonccEleceta",mTempTreeNonccElecEta,"NonccEleceta[Nelec]/double");
+  mAllData->Branch("NonccElecphi",mTempTreeNonccElecPhi,"NonccElecphi[Nelec]/double");
 
 
 
@@ -1472,15 +1455,15 @@ SusyDiJetAnalysis::initPlots() {
   //PIOPPI
 
 
-  mAllData->Branch("Nccmuon" ,&mTempTreeNccmuon ,"Nccmuon/int");  
-  mAllData->Branch("ccMuonE" ,mTempTreeccMuonE ,"ccMuonE[Nmuon]/double");
-  mAllData->Branch("ccMuonEt",mTempTreeccMuonEt,"ccMuonEt[Nmuon]/double");
-  mAllData->Branch("ccMuonpt",mTempTreeccMuonPt,"ccMuonpt[Nmuon]/double");
-  mAllData->Branch("ccMuonpx",mTempTreeccMuonPx,"ccMuonpx[Nmuon]/double");
-  mAllData->Branch("ccMuonpy",mTempTreeccMuonPy,"ccMuonpy[Nmuon]/double");
-  mAllData->Branch("ccMuonpz",mTempTreeccMuonPz,"ccMuonpz[Nmuon]/double");
-  mAllData->Branch("ccMuoneta",mTempTreeccMuonEta,"ccMuoneta[Nmuon]/double");
-  mAllData->Branch("ccMuonphi",mTempTreeccMuonPhi,"ccMuonphi[Nmuon]/double");
+  mAllData->Branch("NNonccmuon" ,&mTempTreeNNonccMuon ,"NNonccmuon/int");  
+  mAllData->Branch("NonccMuonE" ,mTempTreeNonccMuonE ,"NonccMuonE[Nmuon]/double");
+  mAllData->Branch("NonccMuonEt",mTempTreeNonccMuonEt,"NonccMuonEt[Nmuon]/double");
+  mAllData->Branch("NonccMuonpt",mTempTreeNonccMuonPt,"NonccMuonpt[Nmuon]/double");
+  mAllData->Branch("NonccMuonpx",mTempTreeNonccMuonPx,"NonccMuonpx[Nmuon]/double");
+  mAllData->Branch("NonccMuonpy",mTempTreeNonccMuonPy,"NonccMuonpy[Nmuon]/double");
+  mAllData->Branch("NonccMuonpz",mTempTreeNonccMuonPz,"NonccMuonpz[Nmuon]/double");
+  mAllData->Branch("NonccMuoneta",mTempTreeNonccMuonEta,"NonccMuoneta[Nmuon]/double");
+  mAllData->Branch("NonccMuonphi",mTempTreeNonccMuonPhi,"NonccMuonphi[Nmuon]/double");
 
 
   //add taus
@@ -1574,11 +1557,7 @@ SusyDiJetAnalysis::initPlots() {
     mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
     
 
-  // add test stuff
  
-  mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
-  mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");  
-
  
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
   
