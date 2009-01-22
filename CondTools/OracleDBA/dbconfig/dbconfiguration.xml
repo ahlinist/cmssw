@@ -15,7 +15,7 @@
   </detector>
 
   <detector name='STRIP' offline_connect='oracle://orcon/CMS_COND_STRIP'>
-     <poolsetup mapping='src/CondFormats/SiStripObjects/xml' mappingfile='*.xml' library='CondFormatsSiStripObjects' />
+     <poolsetup mappingdir='src/CondFormats/SiStripObjects/xml' mappingfile='*.xml' library='CondFormatsSiStripObjects' />
   </detector>
 
   <detector name='ALIGNMENT' offline_connect='oracle://orcon/CMS_COND_ALIGNMENT'>
