@@ -29,10 +29,10 @@ process.RandomNumberGeneratorService.famosPileUp.initialSeed = 132
 # simMuonDTDigis
 
 # Process to be generated
-#process.load("TauAnalysis.GenSim.Sources.gensource_VBFHtautau_cfi")
-#process.load("TauAnalysis.GenSim.Sources.gensource_VBFHtoWW_cfi")
-process.load("TauAnalysis.GenSim.Sources.gensource_ZtoTaus_PYTHIA_cfi")
-#process.load("TauAnalysis.GenSim.Sources.gensource_ZtoMus_PYTHIA_cfi")
+#process.load("TauAnalysis.GenSimTools.Sources.gensource_VBFHtautau_cfi")
+#process.load("TauAnalysis.GenSimTools.Sources.gensource_VBFHtoWW_cfi")
+process.load("TauAnalysis.GenSimTools.Sources.gensource_ZtoTaus_PYTHIA_cfi")
+#process.load("TauAnalysis.GenSimTools.Sources.gensource_ZtoMus_PYTHIA_cfi")
 
 process.source.maxEventsToPrint = cms.untracked.int32(10)
 process.source.pythiaPylistVerbosity = cms.untracked.int32(1)
