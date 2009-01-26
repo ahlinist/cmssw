@@ -51,9 +51,9 @@ public:
       if(((CaloCompCoefficient_ * muon::caloCompatibility(*trk))+
           (SegmCompCoefficient_ * muon::segmentCompatibility(*trk)))<=AntiPionCut_) {goodMuon = false;}
       if (goodMuon) {selected_.push_back( & * trk );}
-      std::cout << "caloCompatibility :  " << muon::caloCompatibility(*trk) << std::endl;
-      std::cout << "segmentCompatibility :  " << muon::segmentCompatibility(*trk) << std::endl;
-      std::cout << "Good Muon ? :  " << goodMuon << std::endl;
+      //std::cout << "caloCompatibility :  " << muon::caloCompatibility(*trk) << std::endl;
+      //std::cout << "segmentCompatibility :  " << muon::segmentCompatibility(*trk) << std::endl;
+      //std::cout << "Good Muon ? :  " << goodMuon << std::endl;
     }
   }
 
