@@ -26,8 +26,8 @@ process.load("SusyAnalysis.PatCrossCleaner.patCrossCleaner_cfi")
 # Switch on/off some components
 process.patcrosscleaner.doMuonJetCC        = True
 process.patcrosscleaner.doElectronJetCC    = True
-process.patcrosscleaner.doPhotonJetCC      = False
-process.patcrosscleaner.doElectronPhotonCC = False
+process.patcrosscleaner.doPhotonJetCC      = True
+process.patcrosscleaner.doElectronPhotonCC = True
 # Change the jet energy corrections
 process.patcrosscleaner.L1JetCorrector      = 'none'
 process.patcrosscleaner.L2JetCorrector      = 'L2RelativeJetCorrectorIC5Calo'
@@ -60,7 +60,7 @@ process.patcrosscleaner.PhotonJetCrossCleaning.PhotonID = 'TightPhoton'
 process.patcrosscleaner.MuonJetCrossCleaning.deltaR_min   = 0.2
 process.patcrosscleaner.MuonJetCrossCleaning.caloIso_max  = 10.0
 process.patcrosscleaner.MuonJetCrossCleaning.trackIso_max = 10.0
-process.patcrosscleaner.MuonJetCrossCleaning.MuonID = 'TM2DCompatibilityTight'
+process.patcrosscleaner.MuonJetCrossCleaning.MuonID = 'TMLastStationTight'
 
 
 
@@ -91,6 +91,7 @@ process.maxEvents = cms.untracked.PSet(
 process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     genTag = cms.InputTag("genParticles"),
                              
+    vtxTag = cms.InputTag("offlinePrimaryVertices"),                            
     tauTag = cms.InputTag("selectedLayer1Taus"),
     elecTag = cms.InputTag("selectedLayer1Electrons"),
     photTag = cms.InputTag("selectedLayer1Photons"),
@@ -102,6 +103,9 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     ccjetTag = cms.InputTag("patcrosscleaner:ccJets"),             
     ccmuonTag = cms.InputTag("patcrosscleaner:ccMuons"),                  
     ccmetTag = cms.InputTag("patcrosscleaner:ccMETs"),
+   ccphotonTag = cms.InputTag("patcrosscleaner:ccPhotons"),
+
+          
 
      selections = cms.PSet(
         selectionSequence = cms.vstring('Preselection', 
@@ -196,9 +200,9 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
 #process.genParticles.abortOnUnknownPDGCode = False
 
 process.selectedLayer2Hemispheres = cms.EDProducer("PATHemisphereProducer",
-    patJets = cms.InputTag("selectedLayer1Jets"),
-    patMuons = cms.InputTag("selectedLayer1Muons"),
-    patElectrons = cms.InputTag("selectedLayer1Electrons"),
+    patJets = cms.InputTag("patcrosscleaner:ccJets"),
+    patMuons = cms.InputTag("patcrosscleaner:ccMuons"),
+    patElectrons = cms.InputTag("patcrosscleaner:ccElectrons"),                         
     patPhotons = cms.InputTag("selectedLayer1Photons"),
     patTaus = cms.InputTag("selectedLayer1Taus") ,                                  
     patMets = cms.InputTag(""),
