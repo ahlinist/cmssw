@@ -21,7 +21,7 @@ Implementation:
 //                   Anna Kropivnitskaya
 // Contacts: Efe Yazgan, Taylan Yetkin
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalPromBremss.cc,v 1.60 2008/12/18 08:55:50 efe Exp $
+// $Id: HcalPromBremss.cc,v 1.1 2009/01/13 08:41:13 efe Exp $
 //
 //
 
@@ -235,15 +235,15 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   cout << " Luminosity Block: " << lumibegin << " Time : " << startTime << endl;
 
 
-  // hcal rechits
+  //============ Define Collections ==============
+
+  // HCAL rechits
   Handle < HBHERecHitCollection > hbhe;
   iEvent.getByLabel("hbhereco", hbhe);
   const HBHERecHitCollection Hithbhe = *(hbhe.product());
   const HBHERecHitCollection *HBHERecHits = 0;
-
   iEvent.getByLabel("hbhereco", hbhe);
   HBHERecHits = hbhe.product();   // get a ptr to the product
-
 
   Handle < HFRecHitCollection > hfrh;
   iEvent.getByLabel("hfreco", hfrh);
@@ -257,14 +257,12 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
 
   // Missing Et
   const CaloMET *calomet;
-
   Handle < CaloMETCollection > recmet;
   iEvent.getByLabel("met", recmet);
   const CaloMETCollection *metCol = recmet.product();
-
   calomet = &(metCol->front());
 
-  // hcal digis
+  // HCAL digis
   Handle < HBHEDigiCollection > hbhe_digi;
   // iEvent.getByLabel("hcalZeroSuppressedDigis",hbhe_digi);
   iEvent.getByLabel("hcalDigis", hbhe_digi);
@@ -272,26 +270,22 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   Handle < HFDigiCollection > hf_digi;
   iEvent.getByLabel("hcalDigis", hf_digi);
 
-  // calo towers
+  // Calo towers
   Handle < CaloTowerCollection > calo;
   iEvent.getByLabel("towerMaker", calo);
   const CaloTowerCollection calohbhe = *(calo.product());
 
-  // ecal rechits
+  // Ecal rechits
   Handle < EcalRecHitCollection > ebrechit;
   iEvent.getByLabel("ecalRecHit", "EcalRecHitsEB", ebrechit);
   const EcalRecHitCollection Hiteb = *(ebrechit.product());
 
-  // ecal clusters
+  // Ecal clusters
   /* Handle<reco::BasicClusterCollection> pIslandBarrelBasicClusters;
      iEvent.getByLabel("islandBasicClusters","islandBarrelBasicClusters",pIslandBarrelBasicClusters); const
      BasicClusterCollection islandBarrelBasicClusters = *(pIslandBarrelBasicClusters.product()); */
 
-  // mag. field 
-  edm::ESHandle<MagneticField> theMagField;
-  iSetup.get<IdealMagneticFieldRecord>().get(theMagField );
-
-
+  // CosmicBasicClusters
   Handle < reco::BasicClusterCollection > bccHandle;
   iEvent.getByLabel("cosmicBasicClusters", "CosmicBarrelBasicClusters", bccHandle);
   const reco::BasicClusterCollection * clusterCollection_p = 0;
@@ -299,23 +293,21 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   if (!bccHandle.failedToGet())
     clusterCollection_p = bccHandle.product();
 
-  // reco jets
+  // Mag. field 
+  edm::ESHandle<MagneticField> theMagField;
+  iSetup.get<IdealMagneticFieldRecord>().get(theMagField );
+
+  // Reco jets
   Handle < CaloJetCollection > caloJet;
   iEvent.getByLabel("iterativeCone15CaloJets", caloJet);
   const CaloJetCollection cjet = *(caloJet.product());
 
-  //Cosmic Muons
-  Handle<TrackCollection> cosmicmuon;
-  iEvent.getByLabel("cosmicMuons",cosmicmuon);
-
-  //tracker
+  // Tracker
   edm::Handle<reco::TrackCollection> ctfTrackCollectionHandle;
   iEvent.getByLabel("ctfWithMaterialTracksP5", ctfTrackCollectionHandle);
   const TrackCollection ctftC = *(ctfTrackCollectionHandle.product());
 
-
-
-  // geometry
+  // Geometry
   const CaloGeometry *geo;
   //    const CaloSubdetectorGeometry *geometry_hb;
 
@@ -325,22 +317,23 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   geo = pG.product();
   //    geometry_hb = geo->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
 
-
   cout << "\nEvent ID = " << iEvent.id() << std::endl;
   ++NTotal;
+
+  //%%%%%%%%%%%%%% WHY TWO COSMIC MUON COLLECTIONS ????
+  // Cosmic Muons
+  Handle<TrackCollection> cosmicmuon;
+  iEvent.getByLabel("cosmicMuons",cosmicmuon);
 
   // Cosmic Muons
   Handle < TrackCollection > muons;
   iEvent.getByLabel("cosmicMuons", muons);
 
   const TrackCollection tC = *(muons.product());
-
-    
-
   cout << "Number of cosmic muon tracks in this event: " << tC.size() << endl;
+  //%%%%%%%%%%%%%%%
 
-  //COMM
-  // trigger
+  // Trigger
   Handle < L1MuGMTReadoutCollection > gmtrc_handle;
   iEvent.getByLabel("gtDigis", gmtrc_handle);
   L1MuGMTReadoutCollection const *gmtrc = gmtrc_handle.product();
@@ -349,6 +342,8 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   iEvent.getByLabel("gtDigis", gtrr_handle);
   L1GlobalTriggerReadoutRecord const *gtrr = gtrr_handle.product();
 
+  // Actions
+  // %%%%%%% WHY PUT THE TRY AN CATCH HERE AND NOT BEFORE??????
   string errMsg("");
 
   try {
@@ -362,109 +357,117 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
     std::cout << "% Warning" << errMsg << std::endl;
   }
 
-  if(ctftC.size()!=1)return;
+  // %%%%%%% KEEPING ONLY EVENTS WITH ONE TRACKER TRACK... IS IT OK???
+  // it's a ctfWithMaterialTracksP5 
+  if(ctftC.size()!=1) return;
 
-  //COMM
+    // %%%%%%% KEEPING ONLY EVENTS WITH ONE COSMIC MUON TRACK... IS IT OK???
+  h_AllTracks->Fill(tC.size());
+  if (tC.size() != 1) return;//FOR_BREMSS (??????????????)
+
+  // Assign trigger bits
   bool dt_l1a = false;
   bool rpc_l1a = false;
   bool csc_l1a = false;
   bool hcal_l1a = false;
-
+  
   vector < L1MuGMTReadoutRecord > gmt_records = gmtrc->getRecords();
   vector < L1MuGMTReadoutRecord >::const_iterator igmtrr;
 
   for (igmtrr = gmt_records.begin(); igmtrr != gmt_records.end(); igmtrr++) {
-  vector < L1MuRegionalCand >::const_iterator iter1;
-  vector < L1MuRegionalCand > rmc;
-
-  // DT Trigger
-  int idt = 0;
-
-  rmc = igmtrr->getDTBXCands();
-  for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
-  if (!(*iter1).empty())
-  ++idt;
-  }
-
-  if (idt > 0)
-  cout << "Found " << idt << " valid DT candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
-  if (igmtrr->getBxInEvent() == 0 && idt > 0)
-  dt_l1a = true;
-
-  // RPCb Trigger
-  int irpcb = 0;
-
-  rmc = igmtrr->getBrlRPCCands();
-  for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
-  if (!(*iter1).empty())
-  ++irpcb;
-  }
-
-  if (irpcb > 0)
-  cout << "Found " << irpcb << " valid RPC candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
-  if (igmtrr->getBxInEvent() == 0 && irpcb > 0)
-  rpc_l1a = true;
-
-  // CSC Trigger
-  int icsc = 0;
-
-  rmc = igmtrr->getCSCCands();
-  for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
-  if (!(*iter1).empty())
-  ++icsc;
-  }
-  if (icsc > 0){
-  cout << "Found " << icsc << " valid CSC candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
-  cout << "BX Number   " << igmtrr->getBxNr() << endl;
-  }
-  if (igmtrr->getBxInEvent() == 0 && icsc > 0)
-  csc_l1a = true;
-
-  }
+    vector < L1MuRegionalCand >::const_iterator iter1;
+    vector < L1MuRegionalCand > rmc;
     
+    // DT Trigger
+    int idt = 0;
+    
+    rmc = igmtrr->getDTBXCands();
+    for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
+      if (!(*iter1).empty())
+	++idt;
+    }
+    
+    if (idt > 0)
+      cout << "Found " << idt << " valid DT candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
+    if (igmtrr->getBxInEvent() == 0 && idt > 0)
+      dt_l1a = true;
+    
+    // RPCb Trigger
+    int irpcb = 0;
+    
+    rmc = igmtrr->getBrlRPCCands();
+    for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
+      if (!(*iter1).empty())
+	++irpcb;
+    }
+    
+    if (irpcb > 0)
+      cout << "Found " << irpcb << " valid RPC candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
+    if (igmtrr->getBxInEvent() == 0 && irpcb > 0)
+      rpc_l1a = true;
+    
+    // CSC Trigger
+    int icsc = 0;
+    
+    rmc = igmtrr->getCSCCands();
+    for (iter1 = rmc.begin(); iter1 != rmc.end(); iter1++) {
+      if (!(*iter1).empty())
+	++icsc;
+    }
+    if (icsc > 0){
+      cout << "Found " << icsc << " valid CSC candidates in bx wrt. L1A = " << igmtrr->getBxInEvent() << endl;
+      cout << "BX Number   " << igmtrr->getBxNr() << endl;
+    }
+    if (igmtrr->getBxInEvent() == 0 && icsc > 0)
+      csc_l1a = true;
+    
+  }
 
 
   // trigger summary
   DecisionWord gtDecisionWord = gtrr->decisionWord();
 
   for (size_t iBit = 0; iBit < gtDecisionWord.size(); ++iBit) {
-  if (gtDecisionWord[iBit]) {
-  h_global_trigger_bit->Fill(iBit);
-  // std::string triggerName = iBit < l1TableSize ? l1TriggerNames [iBit] : "Undefined";
-  // std::cout << "L1 Accepted: L1 bit " << iBit <<", trigger " << triggerName << std::endl;
+    if (gtDecisionWord[iBit]) {
+      h_global_trigger_bit->Fill(iBit);
+      // std::string triggerName = iBit < l1TableSize ? l1TriggerNames [iBit] : "Undefined";
+      // std::cout << "L1 Accepted: L1 bit " << iBit <<", trigger " << triggerName << std::endl;
+    }
   }
-  }
-
+  
   for (int ibx = -1; ibx <= 1; ibx++) {
-  bool hcal_top = false;
-  bool hcal_bot = false;
-  const L1GtPsbWord psb = gtrr->gtPsbWord(0xbb0d, ibx);
-  std::vector < int >valid_phi;
+    bool hcal_top = false;
+    bool hcal_bot = false;
+    const L1GtPsbWord psb = gtrr->gtPsbWord(0xbb0d, ibx);
+    std::vector < int >valid_phi;
 
-  if ((psb.aData(4) & 0x3f) > 1) {
-  valid_phi.push_back((psb.aData(4) >> 10) & 0x1f);
-  }
-  if ((psb.bData(4) & 0x3f) > 1) {
-  valid_phi.push_back((psb.bData(4) >> 10) & 0x1f);
-  }
-  if ((psb.aData(5) & 0x3f) > 1) {
-  valid_phi.push_back((psb.aData(5) >> 10) & 0x1f);
-  }
-  if ((psb.bData(5) & 0x3f) > 1) {
-  valid_phi.push_back((psb.bData(5) >> 10) & 0x1f);
-  }
-  std::vector < int >::const_iterator iphi;
+    if ((psb.aData(4) & 0x3f) > 1) {
+      valid_phi.push_back((psb.aData(4) >> 10) & 0x1f);
+    }
+    if ((psb.bData(4) & 0x3f) > 1) {
+      valid_phi.push_back((psb.bData(4) >> 10) & 0x1f);
+    }
+    if ((psb.aData(5) & 0x3f) > 1) {
+      valid_phi.push_back((psb.aData(5) >> 10) & 0x1f);
+    }
+    if ((psb.bData(5) & 0x3f) > 1) {
+      valid_phi.push_back((psb.bData(5) >> 10) & 0x1f);
+    }
+    std::vector < int >::const_iterator iphi;
 
-  for (iphi = valid_phi.begin(); iphi != valid_phi.end(); iphi++) {
-  std::cout << "Found HCAL mip with phi=" << *iphi << " in bx wrt. L1A = " << ibx << std::endl;
-  if (*iphi < 9)
-  hcal_top = true;
-  if (*iphi > 8)
-  hcal_bot = true;
+    for (iphi = valid_phi.begin(); iphi != valid_phi.end(); iphi++) {
+      std::cout << "Found HCAL mip with phi=" << *iphi << " in bx wrt. L1A = " << ibx << std::endl;
+      if (*iphi < 9)
+	hcal_top = true;
+      if (*iphi > 8)
+	hcal_bot = true;
+    }
+    if (ibx == 0 && hcal_top && hcal_bot)
+      hcal_l1a = true;
   }
-  if (ibx == 0 && hcal_top && hcal_bot)
-  hcal_l1a = true;
-  }
+
+  // Fill trigger info in the rootple and produce h_Trigger plot
+
   int triggerBit[4] = { 0, 0, 0, 0 };
 
   TriggerBit[0] = 0;
@@ -481,46 +484,49 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
   char *nameTrig[nt] = {"DT","RPC","CSC","HCAL", "DT_AND_HCAL", "RPC_AND_HCAL", "CSC_AND_HCAL" };
   for(int b=0;b<nt;++b)h_Trigger->GetXaxis()->SetBinLabel(b+1,nameTrig[b]);	
   if (dt_l1a) {
-  triggerBit[0] = 1;
-  TriggerBit[0] = 1;
-  ++t1;
-  h_Trigger->SetBinContent(1,t1);
+    triggerBit[0] = 1;
+    TriggerBit[0] = 1;
+    ++t1;
+    h_Trigger->SetBinContent(1,t1);
   }
   if (rpc_l1a) {
-  triggerBit[1] = 1;
-  TriggerBit[1] = 1;
-  ++t2;
-  std::cout << "RPC" << std::endl;
-  h_Trigger->SetBinContent(2,t2);
+    triggerBit[1] = 1;
+    TriggerBit[1] = 1;
+    ++t2;
+    std::cout << "RPC" << std::endl;
+    h_Trigger->SetBinContent(2,t2);
   }
   if (csc_l1a) {
-  triggerBit[2] = 1;
-  TriggerBit[2] = 1;
-  ++t3;
-  std::cout << "CSC" << std::endl;
-  h_Trigger->SetBinContent(3,t3);
+    triggerBit[2] = 1;
+    TriggerBit[2] = 1;
+    ++t3;
+    std::cout << "CSC" << std::endl;
+    h_Trigger->SetBinContent(3,t3);
   }
   if (hcal_l1a) {
-  triggerBit[3] = 1;
-  TriggerBit[3] = 1;
-  ++t4;
-  std::cout << "HCAL" << std::endl;
-  h_Trigger->SetBinContent(4,t4);
+    triggerBit[3] = 1;
+    TriggerBit[3] = 1;
+    ++t4;
+    std::cout << "HCAL" << std::endl;
+    h_Trigger->SetBinContent(4,t4);
   }
   if (dt_l1a && hcal_l1a) {
-  ++t5;
-  h_Trigger->SetBinContent(5,t5);
+    ++t5;
+    h_Trigger->SetBinContent(5,t5);
   }
   if (rpc_l1a && hcal_l1a) {
-  ++t6;
-  h_Trigger->SetBinContent(6,t6);
+    ++t6;
+    h_Trigger->SetBinContent(6,t6);
   }
   if (csc_l1a && hcal_l1a) {
-  ++t7;
-  h_Trigger->SetBinContent(7,t7);
+    ++t7;
+    h_Trigger->SetBinContent(7,t7);
   }
   std::cout << "************************" << std::endl;
 
+
+  // %%%%%%%%%%%%%%%%% maybe can be removed
+  // HB timing : fill h_hbplustiming and h_hbminustiming
 
   // DIGIS ARE TAKEN OUT FROM T0 RECONSTRUCTION, but not at FNAL
   //if (triggerBit[0] == 1){
@@ -550,6 +556,9 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
     }
   }
 
+
+  // %%%%%%%%%%%%%%%%% maybe can be removed
+  // HE timing : fill h_heplustiming and h_heminustiming
     
   //if (triggerBit[2] == 1){
   if (!hbhe_digi.failedToGet()) {
@@ -576,26 +585,27 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
       }
     }
   }
-
-  h_AllTracks->Fill(tC.size());
-  if (tC.size() != 1) return;//FOR_BREMSS
-
-  vector < Track > myGoodTracks;
-  vector < double >innerEtaP;
-  vector < double >innerPhiP;
-  vector < double >outerEtaP;
-  vector < double >outerPhiP;
-  vector < double >innerEtaM;
-  vector < double >innerPhiM;
-  vector < double >outerEtaM;
-  vector < double >outerPhiM;
-  vector < double >midXp;
-  vector < double >midYp;
-  vector < double >midZp;
-  HcalDetId fhcalDetId;
+  // %%%%%%%%%%%%%%%%%
 
 
+  // %%%%%%%%%% NO IDEA OF WHAT IT IS??????
+  //   vector < Track > myGoodTracks;
+  //   vector < double >innerEtaP;
+  //   vector < double >innerPhiP;
+  //   vector < double >outerEtaP;
+  //   vector < double >outerPhiP;
+  //   vector < double >innerEtaM;
+  //   vector < double >innerPhiM;
+  //   vector < double >outerEtaM;
+  //   vector < double >outerPhiM;
+  //   vector < double >midXp;
+  //   vector < double >midYp;
+  //   vector < double >midZp;
+  //   HcalDetId fhcalDetId;
+  // %%%%%%%%%%%%
 
+
+  // Define some variables
   float maxhbherec = 0;
   float next_to_maxhbherec = 0;
   float maxhbherec_ETA = 0;
@@ -625,27 +635,40 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
 
   cout<<"HBHERecHits Size:   "<<Hithbhe.size()<<endl;
 
+
+  // %%%%%%%%%%%%%%%% maybe can be removed  
+  // Timing plots for different triggers
   for (HBHERecHitCollection::const_iterator hhit = Hithbhe.begin(); hhit != Hithbhe.end(); hhit++) {
-    if(hhit->id().subdet()!=HcalBarrel)continue;
-    if (hhit->energy() < fHBThreshold)continue;
-    for (int bit = 0; bit < 4; ++bit) {
-      //if (triggerBit[bit] == 1){
-      if(hhit->id().ieta()<0){//HB-
-	if(hhit->id().iphi()>=1 && hhit->id().iphi()<=36){//top
-	  h_HBTopMin_timing[bit]->Fill(hhit->time());
-	}else{//bottom
-	  h_HBBottomMin_timing[bit]->Fill(hhit->time());
-	}
-      }else{//HB+
-	if(hhit->id().iphi()>=37 && hhit->id().iphi()<=72){//top
-	  h_HBTopPlu_timing[bit]->Fill(hhit->time());
-	}else{//bottom
-	  h_HBBottomPlu_timing[bit]->Fill(hhit->time());
-	}
+
+    if(hhit->id().subdet()!=HcalBarrel)continue; // %%%%%%%%% ONLY BARREL
+
+    if (hhit->energy() < fHBThreshold)continue; // %%%%%%%%% THRESHOLD ON RECHIT ENERGY SET BY DEFAULT AT 1
+
+    for (int bit = 0; bit < 4; ++bit) 
+      {
+	//if (triggerBit[bit] == 1){
+	if(hhit->id().ieta()<0)
+	  {//HB-
+	    if(hhit->id().iphi()>=1 && hhit->id().iphi()<=36){//top
+	      h_HBTopMin_timing[bit]->Fill(hhit->time());
+	    }else{//bottom
+	      h_HBBottomMin_timing[bit]->Fill(hhit->time());
+	    }
+	  }
+	else
+	  {//HB+
+	    if(hhit->id().iphi()>=37 && hhit->id().iphi()<=72){//top
+	      h_HBTopPlu_timing[bit]->Fill(hhit->time());
+	    }else{//bottom
+	      h_HBBottomPlu_timing[bit]->Fill(hhit->time());
+	    }
+	  }
       }
-      //}
-    }
   }
+  //%%%%%%%%%%%
+
+  // %%%%%%%%%%%%%%%% maybe can be removed  
+  //Generic plots on RecHits
   for (HBHERecHitCollection::const_iterator hhit = Hithbhe.begin(); hhit != Hithbhe.end(); hhit++) {
     if (hhit->energy() > 0.6) {
       //-> kropiv
@@ -702,8 +725,9 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
       }
     }
   }
-
+  //%%%%%%%%%%%
 	
+
   // Make matching between Muon Track and HBCal 
   //-> kropiv
   int NumbermuonDT = 0;
@@ -864,25 +888,25 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
     XoutPosMuon = XOutMuonHB;
     YoutPosMuon = YOutMuonHB;
     ZoutPosMuon = ZOutMuonHB;
-//    double XInMuonHBp;
-//    double YInMuonHBp;
-//    double ZInMuonHBp;
-//@@@@@@DT momentum and pt
+    //    double XInMuonHBp;
+    //    double YInMuonHBp;
+    //    double ZInMuonHBp;
+    //@@@@@@DT momentum and pt
     dt_mom[NumMuonHBphiPlane] = cmTrack->p();
     dt_pt[NumMuonHBphiPlane] = cmTrack->pt();
-//@@@@@@
+    //@@@@@@
     int charge = cmTrack->charge();
     int isValid= 0;
-	tk_mom[NumMuonHBphiPlane] = 0;
-	tk_pt[NumMuonHBphiPlane] = 0;
-	tk_ndof[NumMuonHBphiPlane] = 0;
-	tk_chi2[NumMuonHBphiPlane] = 0;
-	tk_lost[NumMuonHBphiPlane] = 0;
-	tk_dcharge[NumMuonHBphiPlane] = 0;
-	tk_charge[NumMuonHBphiPlane] = 0;
-	tk_dZ[NumMuonHBphiPlane] = -1000;
-	tk_dXY[NumMuonHBphiPlane] = -1000;
-  for (reco::TrackCollection::const_iterator ctftrk =ctfTrackCollectionHandle->begin(); ctftrk != ctfTrackCollectionHandle->end();++ctftrk){
+    tk_mom[NumMuonHBphiPlane] = 0;
+    tk_pt[NumMuonHBphiPlane] = 0;
+    tk_ndof[NumMuonHBphiPlane] = 0;
+    tk_chi2[NumMuonHBphiPlane] = 0;
+    tk_lost[NumMuonHBphiPlane] = 0;
+    tk_dcharge[NumMuonHBphiPlane] = 0;
+    tk_charge[NumMuonHBphiPlane] = 0;
+    tk_dZ[NumMuonHBphiPlane] = -1000;
+    tk_dXY[NumMuonHBphiPlane] = -1000;
+    for (reco::TrackCollection::const_iterator ctftrk =ctfTrackCollectionHandle->begin(); ctftrk != ctfTrackCollectionHandle->end();++ctftrk){
       tk_mom[NumMuonHBphiPlane] = ctftrk->p();
       tk_pt[NumMuonHBphiPlane] = ctftrk->pt();
       tk_ndof[NumMuonHBphiPlane] = ctftrk->ndof();
@@ -891,36 +915,36 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
       tk_dcharge[NumMuonHBphiPlane] = ctftrk->charge()-cmTrack->charge();
       tk_charge[NumMuonHBphiPlane] = ctftrk->charge();
 
-    if(cmTrack->innerPosition().Y()<0) {
-      charge =ctftrk->charge();
-      GlobalPoint gpos( ctftrk->outerPosition().X(), ctftrk->outerPosition().Y(), ctftrk->outerPosition().Z());
-      GlobalVector gmom( ctftrk->outerMomentum().X(), ctftrk->outerMomentum().Y(), ctftrk->outerMomentum().Z());
-      isValid=PropagateF( gpos, gmom ,charge,InRadiusHB,
-			 &XInMuonHB,&YInMuonHB,&ZInMuonHB);	
-      isValid=PropagateF( gpos, gmom ,charge,OutRadiusHB,
-			 &XOutMuonHB,&YOutMuonHB,&ZOutMuonHB);	
-      GlobalPoint  gmpos( cmTrack->innerPosition().X(), cmTrack->innerPosition().Y(), cmTrack->innerPosition().Z());
-      GlobalVector gmmom( cmTrack->innerMomentum().X(), cmTrack->innerMomentum().Y(), cmTrack->innerMomentum().Z());
-      charge =cmTrack->charge();
-      isValid=PropagateB( gmpos, gmmom ,charge,OutRadiusHB,
-			 &XOutMuonHBm,&YOutMuonHBm,&ZOutMuonHBm);	
-    }else{
-      charge =ctftrk->charge();
-      GlobalPoint  gpos( ctftrk->innerPosition().X(), ctftrk->innerPosition().Y(), ctftrk->innerPosition().Z());
-      GlobalVector gmom( ctftrk->innerMomentum().X(), ctftrk->innerMomentum().Y(), ctftrk->innerMomentum().Z());
-      isValid=PropagateB( gpos, gmom ,charge,InRadiusHB,
-			 &XInMuonHB,&YInMuonHB,&ZInMuonHB);	
-      isValid=PropagateB( gpos, gmom ,charge,OutRadiusHB,
-			 &XOutMuonHB,&YOutMuonHB,&ZOutMuonHB);	
-      GlobalPoint gmpos( cmTrack->outerPosition().X(), cmTrack->outerPosition().Y(), cmTrack->outerPosition().Z());
-      GlobalVector gmmom( cmTrack->outerMomentum().X(), cmTrack->outerMomentum().Y(), cmTrack->outerMomentum().Z());
-      charge =cmTrack->charge();
-      isValid=PropagateF( gmpos, gmmom ,charge,OutRadiusHB,
-			 &XOutMuonHBm,&YOutMuonHBm,&ZOutMuonHBm);	
+      if(cmTrack->innerPosition().Y()<0) {
+	charge =ctftrk->charge();
+	GlobalPoint gpos( ctftrk->outerPosition().X(), ctftrk->outerPosition().Y(), ctftrk->outerPosition().Z());
+	GlobalVector gmom( ctftrk->outerMomentum().X(), ctftrk->outerMomentum().Y(), ctftrk->outerMomentum().Z());
+	isValid=PropagateF( gpos, gmom ,charge,InRadiusHB,
+			    &XInMuonHB,&YInMuonHB,&ZInMuonHB);	
+	isValid=PropagateF( gpos, gmom ,charge,OutRadiusHB,
+			    &XOutMuonHB,&YOutMuonHB,&ZOutMuonHB);	
+	GlobalPoint  gmpos( cmTrack->innerPosition().X(), cmTrack->innerPosition().Y(), cmTrack->innerPosition().Z());
+	GlobalVector gmmom( cmTrack->innerMomentum().X(), cmTrack->innerMomentum().Y(), cmTrack->innerMomentum().Z());
+	charge =cmTrack->charge();
+	isValid=PropagateB( gmpos, gmmom ,charge,OutRadiusHB,
+			    &XOutMuonHBm,&YOutMuonHBm,&ZOutMuonHBm);	
+      }else{
+	charge =ctftrk->charge();
+	GlobalPoint  gpos( ctftrk->innerPosition().X(), ctftrk->innerPosition().Y(), ctftrk->innerPosition().Z());
+	GlobalVector gmom( ctftrk->innerMomentum().X(), ctftrk->innerMomentum().Y(), ctftrk->innerMomentum().Z());
+	isValid=PropagateB( gpos, gmom ,charge,InRadiusHB,
+			    &XInMuonHB,&YInMuonHB,&ZInMuonHB);	
+	isValid=PropagateB( gpos, gmom ,charge,OutRadiusHB,
+			    &XOutMuonHB,&YOutMuonHB,&ZOutMuonHB);	
+	GlobalPoint gmpos( cmTrack->outerPosition().X(), cmTrack->outerPosition().Y(), cmTrack->outerPosition().Z());
+	GlobalVector gmmom( cmTrack->outerMomentum().X(), cmTrack->outerMomentum().Y(), cmTrack->outerMomentum().Z());
+	charge =cmTrack->charge();
+	isValid=PropagateF( gmpos, gmmom ,charge,OutRadiusHB,
+			    &XOutMuonHBm,&YOutMuonHBm,&ZOutMuonHBm);	
+      }
+      tk_dZ[NumMuonHBphiPlane]=fabs(ZOutMuonHBm-ZOutMuonHB);
+      tk_dXY[NumMuonHBphiPlane]=sqrt(pow(XOutMuonHBm-XOutMuonHB,2)+pow(YOutMuonHBm-YOutMuonHB,2));
     }
-    tk_dZ[NumMuonHBphiPlane]=fabs(ZOutMuonHBm-ZOutMuonHB);
-    tk_dXY[NumMuonHBphiPlane]=sqrt(pow(XOutMuonHBm-XOutMuonHB,2)+pow(YOutMuonHBm-YOutMuonHB,2));
-  }
     // calculating Length of muon in HB
     LengthMuonHB[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB-XOutMuonHB),2)+pow((YInMuonHB-YOutMuonHB),2)+pow((ZInMuonHB-ZOutMuonHB),2));  
     LengthMuonHB2[NumMuonHBphiPlane] = sqrt(pow((XInMuonHB_2-XOutMuonHB_2),2)+pow((YInMuonHB_2-YOutMuonHB_2),2)+pow((ZInMuonHB_2-ZOutMuonHB_2),2));  
@@ -1036,20 +1060,20 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
 	TimeAvMuonHBcut2[NumMuonHBphiPlane] = 0;
 	EmuonHBcutwide2[NumMuonHBphiPlane] = 0;
 	TimeAvMuonHBcutwide2[NumMuonHBphiPlane] = 0;
-	  //select max i min idTower
-	  int idEtaMax;
-	  int idEtaMin;
-	  idEtaMin = min(idTowerEtaMuonOut,idTowerEtaMuonIn);
-	  idEtaMax = max(idTowerEtaMuonOut,idTowerEtaMuonIn);
-	  int idPhiMax2;
-	  int idPhiMin2;
-	  int idEtaMax2;
-	  int idEtaMin2;
-	  idPhiMin2 = min(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
-	  idPhiMax2 = max(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
-	  idEtaMin2 = min(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
-	  idEtaMax2 = max(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
-          int Nped=0;
+	//select max i min idTower
+	int idEtaMax;
+	int idEtaMin;
+	idEtaMin = min(idTowerEtaMuonOut,idTowerEtaMuonIn);
+	idEtaMax = max(idTowerEtaMuonOut,idTowerEtaMuonIn);
+	int idPhiMax2;
+	int idPhiMin2;
+	int idEtaMax2;
+	int idEtaMin2;
+	idPhiMin2 = min(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
+	idPhiMax2 = max(IdTowerPhiMuonOut2[NumMuonHBphiPlane],IdTowerPhiMuonIn2[NumMuonHBphiPlane]);
+	idEtaMin2 = min(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
+	idEtaMax2 = max(IdTowerEtaMuonOut2[NumMuonHBphiPlane],IdTowerEtaMuonIn2[NumMuonHBphiPlane]);
+	int Nped=0;
 	for (HBHERecHitCollection::const_iterator hhit=Hithbhe.begin(); hhit!=Hithbhe.end(); hhit++) {
 	  //  
 	  //select towers wich muon passes in phi idTowerPhiMuonIn=idTowerPhiMuonOut - it is selected upper
@@ -1083,8 +1107,8 @@ void HcalPromBremss::analyze(const edm::Event & iEvent, const edm::EventSetup & 
 	  if(abs(idTowerPhiMuonIn-phiEmuonHB[NumMuonHBphiPlane])>=4){  // fix me later... if>72
 
 	    if((hhit->id().ieta())>=etaMinEmuonHB[NumMuonHBphiPlane]
-                &&(hhit->id().ieta())<=etaMaxEmuonHB[NumMuonHBphiPlane]
-                &&phiEmuonHB[NumMuonHBphiPlane]==(hhit->id().iphi())){
+	       &&(hhit->id().ieta())<=etaMaxEmuonHB[NumMuonHBphiPlane]
+	       &&phiEmuonHB[NumMuonHBphiPlane]==(hhit->id().iphi())){
 	      EmuonHBped[NumMuonHBphiPlane] += hhit->energy(); 
               Nped++;
 	    }
