@@ -587,7 +587,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 
 ....................................................................
-# "SectorC   "SectorC"   700    -1.
+# "SectorC"   "SectorC"   700    -1.
 * 1 "Inner Shielding Foil Alu"           "Aluminium"                    5.67     1   SUP
 * 2 "Inner Shielding Foil GFK"           "T_FR4"                       64.18     1   SUP
 * 3 "Alu Power Cables"                   "Aluminium"                   92.92     1   CAB
@@ -619,6 +619,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 * 29 "Opto-fibers"                       "Acrylate"                   222        1   ELE
 ................................................................
 
-
+# "END"  "END"  0.  0.   
+this has to be the last line !
 
 
