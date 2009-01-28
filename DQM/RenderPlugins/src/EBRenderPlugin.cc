@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.100 2008/12/12 20:49:48 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.101 2009/01/28 09:54:21 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.100 $
-  \date $Date: 2008/12/12 20:49:48 $
+  \version $Revision: 1.101 $
+  \date $Date: 2009/01/28 09:54:21 $
 */
 
 #include "TH1F.h"
@@ -935,3 +935,4 @@ int EBRenderPlugin::iEB( const int ism ) throw( std::runtime_error ) {
   throw( std::runtime_error( s.str() ) );
 
 }
+
