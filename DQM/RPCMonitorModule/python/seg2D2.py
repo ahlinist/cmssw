@@ -15,14 +15,17 @@ process.source = cms.Source("EmptySource")
 process.MessageLogger = cms.Service("MessageLogger")
 
 process.demo = cms.EDFilter("RPCMonitorEfficiency",
-    fileOut = cms.untracked.string('/tmp/carrillo/second.root'),
-    cosmics = cms.untracked.bool(False),
-    dosD = cms.untracked.bool(True),
     fileName = cms.untracked.string('/tmp/carrillo/first.root'),
+    fileOut = cms.untracked.string('/tmp/carrillo/second.root'),
+
+    dosD = cms.untracked.bool(True),
+
+    cosmics = cms.untracked.bool(False),
     makehtml = cms.untracked.bool(False),
-    threshold = cms.untracked.double(50.0),
-    barrel = cms.untracked.bool(True),
     prodimages = cms.untracked.bool(False),
+    threshold = cms.untracked.double(50.0),
+
+    barrel = cms.untracked.bool(True),
     endcap = cms.untracked.bool(True)
 )
 
