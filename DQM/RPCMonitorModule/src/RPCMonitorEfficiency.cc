@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.14 2008/12/04 10:31:49 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.1 2008/12/04 12:00:45 carrillo Exp $
 //
 //
 
@@ -598,6 +598,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   MaskedGlobDm3far = new TH1F ("GlobMaskedDisk_m3far","Masked Far Side Disk -3",109,0.5,109.5);
   AverageEffDm3=new TH1F ("AverageEfficiencyDisk_m3near","Average Efficiency Near Side Disk -3 ",109,0.5,109.5);
   AverageEffDm3far=new TH1F ("AverageEfficiencyDisk_m3far","Average Efficiency Far Side Disk -3 ",109,0.5,109.5);
+  std::cout<<"Creating Problematic Histogram"<<std::endl;
   NoPredictionDm3=new TH1F ("NoPredictionDisk_m3near","No Predictions Near Side Disk -3 ",109,0.5,109.5);
   NoPredictionDm3far=new TH1F ("NoPredictionDisk_m3far","No Predictions Efficiency Far Side Disk -3 ",109,0.5,109.5);
 
@@ -1799,6 +1800,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 
 	  int Disk = rpcId.station()*rpcId.region();
+
+	  std::cout<<"Disk="<<Disk<<std::endl;
 	  
 	  if(p!=0){
 	    ef = float(o)/float(p); 
@@ -1849,6 +1852,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      AverageEffDm3->SetBinError(indexDisk[0],averageerr);  
 	      AverageEffDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
 	      
+	      std::cout<<"Filling Problematic Histogram with"<<nopredictionsratio<<std::endl;
 	      NoPredictionDm3->SetBinContent(indexDisk[0],nopredictionsratio);
               NoPredictionDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
 	    }else if(Disk==-2){
@@ -2214,14 +2218,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     NoPredictionW1far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W1far  "<<std::endl;
     NoPredictionW2far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W2far  "<<std::endl;
     
-  }if(endcap){
-    
-    std::cout<<"Label Options"<<std::endl;
+  }if(endcap){  
+    std::cout<<"Label Options Near"<<std::endl;
     NoPredictionDm3->GetXaxis()->LabelsOption("v");
+    std::cout<<"Label Options AverageEffDm3"<<std::endl;
     AverageEffDm3->GetXaxis()->LabelsOption("v");
+    std::cout<<"Label Options EffGlobDm3"<<std::endl;
     EffGlobDm3->GetXaxis()->LabelsOption("v");
     BXGlobDm3->GetXaxis()->LabelsOption("v");
     MaskedGlobDm3->GetXaxis()->LabelsOption("v");
+    
+        
+    std::cout<<"Label Options Far"<<std::endl;
     NoPredictionDm3far->GetXaxis()->LabelsOption("v");
     AverageEffDm3far->GetXaxis()->LabelsOption("v");
     EffGlobDm3far->GetXaxis()->LabelsOption("v");
