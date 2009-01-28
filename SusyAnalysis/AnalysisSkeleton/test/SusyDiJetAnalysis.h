@@ -263,7 +263,7 @@ private:
   double mTempTreeElecWidthClusterPhi[50];
   double mTempTreeElecPinTrk[50];
   double mTempTreeElecPoutTrk[50];
-
+  double mTempTreeElecNormChi2[50];
 
   int    mTempTreeNccelec;
   double mTempTreeccElecEt[50];
@@ -296,7 +296,9 @@ private:
   bool mTempTreeMuonIsTracker[50]; 
   bool mTempTreeMuonIsGlobalTight[50];
   bool mTempTreeMuonIsTMLastStationLoose[50];
- 
+  bool mTempTreeMuonTMLastStationTight[50];
+  bool mTempTreeMuonTM2DCompatibilityLoose[50];
+  bool mTempTreeMuonTM2DCompatibilityTight[50];
 
 
 
@@ -367,6 +369,7 @@ private:
   double mTempTreeTauE[50];
   double mTempTreeTauEta[50];
   double mTempTreeTauPhi[50];
+  double mTempTreeTauChrg[50];
   double mTempTreeTauTrkIso[50];
   double mTempTreeTauECalIso[50];
   double mTempTreeTauHCalIso[50];
