@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.99 2008/12/04 13:55:55 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.100 2008/12/12 20:49:48 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.99 $
-  \date $Date: 2008/12/04 13:55:55 $
+  \version $Revision: 1.100 $
+  \date $Date: 2008/12/12 20:49:48 $
 */
 
 #include "TH1F.h"
@@ -22,10 +22,9 @@
 #include "TROOT.h"
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <math.h>
-
-#include "DQM/EcalCommon/interface/ColorPalette.h"
-#include "DQM/EcalCommon/interface/Numbers.h"
 
 #include "DQM/RenderPlugins/src/utils.h"
 
@@ -39,22 +38,34 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 
   first = false;
 
+  // taken from DQM/EcalCommon/src/ColorPalette.cc
+  float rgb[7][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
+                     {1.00, 0.96, 0.00}, {0.50, 0.00, 0.00},
+                     {0.00, 0.40, 0.00}, {0.94, 0.78, 0.00},
+                     {1.00, 1.00, 1.00}};
+  
+  float rgb2[10][3] = {{ 0.0000, 0.6510, 1.0000}, { 0.0000, 0.6135, 0.9455}, 
+                       { 0.0000, 0.5760, 0.8911}, { 0.0000, 0.5386, 0.8366}, 
+                       { 0.0000, 0.5011, 0.7821}, { 0.0000, 0.4636, 0.7277}, 
+                       { 0.0000, 0.4261, 0.6732}, { 0.0000, 0.3887, 0.6187}, 
+                       { 0.0000, 0.3512, 0.5643}, { 0.0000, 0.3137, 0.5098}};
+  
   for( int i=0; i<6; i++ ) {
     TColor* color = gROOT->GetColor( 301+i );
     if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb[i][0], ecdqm::rgb[i][1], ecdqm::rgb[i][2] );
+    color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
   }
 
   for( int i=0; i<10; i++ ) {
     TColor* color = gROOT->GetColor( 401+i );
     if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][0], ecdqm::rgb2[i][1], ecdqm::rgb2[i][2] );
+    color->SetRGB( rgb2[i][0], rgb2[i][1], rgb2[i][2] );
   }
   
   for( int i=0; i<10; i++ ) {
     TColor* color = gROOT->GetColor( 501+i );
     if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
-    color->SetRGB( ecdqm::rgb2[i][1], 0, 0 );
+    color->SetRGB( rgb2[i][1], 0, 0 );
   }
 
   for( short i=0; i<7; i++ ) pCol3[i]  = i+301;
@@ -94,7 +105,7 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   for ( short i=0; i<36; i++ ) {
     int x = 1 + i%18;
     int y = 1 + i/18;
-    text6->SetBinContent(x, y, Numbers::iEB(i+1));
+    text6->SetBinContent(x, y, iEB(i+1));
   }
   for ( short i=0; i<36; i++ ) {
     int x = 1 + i%18;
@@ -110,8 +121,8 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
   for ( short i=0; i<36; i++ ) {
     int x = 1 + i%18;
     int y = 1 + i/18;
-    text8->SetBinContent(x, y, Numbers::iEB(i+1));
-    text9->SetBinContent(x, y, Numbers::iEB(i+1));
+    text8->SetBinContent(x, y, iEB(i+1));
+    text9->SetBinContent(x, y, iEB(i+1));
   }
 
   text1->SetMarkerSize( 2 );
@@ -910,3 +921,17 @@ void EBRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 }
 
+// taken from DQM/EcalCommon/src/Numbers.cc
+int EBRenderPlugin::iEB( const int ism ) throw( std::runtime_error ) {
+
+  // EB-
+  if( ism >=  1 && ism <= 18 ) return( -ism );
+
+  // EB+
+  if( ism >= 19 && ism <= 36 ) return( +ism - 18 );
+
+  std::ostringstream s;
+  s << "Wrong SM id determination: iSM = " << ism;
+  throw( std::runtime_error( s.str() ) );
+
+}
