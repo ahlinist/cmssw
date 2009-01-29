@@ -22,6 +22,7 @@
 // system include files
 #include "boost/mpl/begin_end.hpp"
 #include "boost/mpl/find.hpp"
+#include "boost/static_assert.hpp"
 
 // user include files
 #include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
