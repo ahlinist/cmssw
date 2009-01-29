@@ -17,6 +17,7 @@
 <use name="RecoMuon/Navigation">
 <use name="RecoMuon/TrackingTools">
 <use name="RecoMuon/TransientTrackingRecHit">
+<use name="RecoMuon/MuonSeedGenerator">
 <use name="TrackingTools/DetLayers">
 <use name="TrackingTools/GeomPropagators">
 <use name="TrackingTools/KalmanUpdators">

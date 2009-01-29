@@ -2,8 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RecoMuon")
 
-#from RecoMuon.StandAloneMuonProducer.mumin_e_60_300_cff import *
-
 # Messages
 #process.load("RecoMuon.Configuration.MessageLogger_cfi")
 #process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -25,38 +23,43 @@ process.load("Configuration.StandardSequences.RawToDigi_cff")
 
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 
-process.MuonNumberingInitialization = cms.ESProducer("MuonNumberingInitialization")
-
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
-    )
+        input = cms.untracked.int32(1000)
+            )
 process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/s/stoyan/mc/ingo/cmssw2_1_9-mumin_e_60_300_probev2__1.root'
-	),
-        skipEvents = cms.untracked.uint32(0)
-)
-	  
+                                    fileNames = cms.untracked.vstring(
+
+    #'/store/relval/CMSSW_3_0_0_pre7/RelValSingleMuPt100/GEN-SIM-DIGI-RECO/IDEAL_30X_FastSim_v1/0006/50187155-5EE8-DD11-BF56-000423D9517C.root'
+    '/store/relval/CMSSW_3_0_0_pre7/RelValSingleMuPt100/GEN-SIM-RECO/IDEAL_30X_v1/0006/4C2DF180-6AE8-DD11-B789-000423D99AA2.root'
+    #"dcache:/pnfs/cms/WAX/resilient/ibloch/CRAB_output/MuID_samples_3_0/3_0_0_pre3/mumin_e_60_300_probev2__1.root"
+    ),
+                                    skipEvents = cms.untracked.uint32(0)
+                            )
 
 
-process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('RecoMuons.root')
-                               )
 
-process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
-    DataType = cms.untracked.string('SimData'),
-    StandAloneTrackCollectionLabel = cms.untracked.string('standAloneMuons'),
-#    MuonSeedCollectionLabel = cms.untracked.string('MuonSeedTester'),
-    MuonSeedCollectionLabel = cms.untracked.string('SETMuonSeed'),
-    rootFileName = cms.untracked.string('STAMuonAnalyzer.root'),
-)
+  process.out = cms.OutputModule("PoolOutputModule",
+                                                                fileName = cms.untracked.string('RecoMuons.root')
+                                                                )
 
+  ## SET algorithm of STA muon
+  #from RecoMuon.SeedGenerator.selectorSET_cff import *
+  process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
+                                         #    DataType = cms.untracked.string('SimData'),
+                                             DataType = cms.untracked.string('RealData'),
+                                             StandAloneTrackCollectionLabel = cms.untracked.string('standAloneSETMuons'),
+                                         #    MuonSeedCollectionLabel = cms.untracked.string('MuonSeedTester'),
+                                             MuonSeedCollectionLabel = cms.untracked.string('SETMuonSeed'),
 
-#process.p = cms.Path(process.MuonSeed*process.standAloneMuons)
-#process.p = cms.Path(process.MuonSeedTester*process.standAloneMuons*process.STAMuonAnalyzer)
-process.p = cms.Path(process.SETMuonSeed*process.standAloneMuons*process.STAMuonAnalyzer)
-#process.this_is_the_end = cms.EndPath(process.out)
-
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+                                             rootFileName = cms.untracked.string('STAMuonAnalyzer.root'),
+                                         )
 
 
+  process.p = cms.Path(process.SETMuonSeed*process.standAloneSETMuons*process.STAMuonAnalyzer)
+  #process.this_is_the_end = cms.EndPath(process.out)
+
+  process.GlobalTag.globaltag = 'IDEAL_30X::All'
+  #process.GlobalTag.globaltag = 'STARTUP_30X::All'
+  
+
+  
