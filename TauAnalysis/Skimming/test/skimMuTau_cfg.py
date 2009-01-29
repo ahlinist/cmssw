@@ -55,7 +55,7 @@ process.selectedTaus = cms.EDFilter("PFTauSelector",
 process.muTauPairs = cms.EDProducer("DiTauProducer",
   hadronicTaus = cms.InputTag('selectedTaus'),
   leptonicTaus = cms.InputTag('selectedMuons'),
-  METs = cms.InputTag(''),
+  METs = cms.InputTag(''),                                  
   metMode = cms.int32(1),
   useLeadingTaus = cms.bool(False),
   verbose =  cms.untracked.bool(False)
@@ -81,27 +81,10 @@ muTauEventSelection = cms.untracked.PSet(
   )
 )
 process.muTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
-#  AODSIMEventContent,
   tauAnalysisEventContent,                                               
   muTauEventSelection,
   fileName = cms.untracked.string('muTauSkim.root')
 )
-#process.muTauSkimOutputModule.outputCommands.extend(RecoEcalRECO.outputCommands)
-#process.muTauSkimOutputModule.outputCommands.extend(RecoParticleFlowRECO.outputCommands)
-#
-# keep all ECAL + HCAL recHits for computation of IsoDeposits
-#
-#allEcalRecHits = cms.PSet(
-#  outputCommands = cms.untracked.vstring('keep *EcalRecHit_*_*_*',
-#                                         'keep *EcalRecHit_*_*_*')
-#)
-#process.muTauSkimOutputModule.outputCommands.extend(allEcalRecHits.outputCommands)
-#allHcalRecHits = cms.PSet(
-#  outputCommands = cms.untracked.vstring('keep *HBHERecHit_*_*_*',
-#                                         'keep *HFRecHit_*_*_*',
-#                                         'keep *HORecHit_*_*_*')
-#)
-#process.muTauSkimOutputModule.outputCommands.extend(allHcalRecHits.outputCommands)
 
 process.options = cms.untracked.PSet(
   wantSummary = cms.untracked.bool(True)
