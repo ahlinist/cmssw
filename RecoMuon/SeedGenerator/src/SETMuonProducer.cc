@@ -68,7 +68,7 @@ SETMuonProducer::SETMuonProducer(const ParameterSet& parameterSet){
   LogTrace(metname) << "constructor called" << endl;
   
   // load pT seed parameters
-  thePtExtractor = new PtExtractor(trajectoryBuilderParameters);
+  thePtExtractor = new MuonSeedPtExtractor::MuonSeedPtExtractor(trajectoryBuilderParameters);
 
   apply_prePruning = trajectoryBuilderParameters.getParameter<bool>("Apply_prePruning");
 

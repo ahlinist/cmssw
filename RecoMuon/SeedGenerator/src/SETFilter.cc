@@ -393,6 +393,8 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
   if(pMag<10.){// hardcoded - remove it! 
     pMag = 10.;// GeV
   }
+  // This offset helps the minimization to go faster (in the specific case)
+  pMag *=1.2;
   double invP = 1./pMag;
   //std::cout<<"INIT pMag = "<<pMag<<" invP = "<<invP<<" theta = "<<theta<<" phi = "<<phi<<std::endl;
 
@@ -714,11 +716,10 @@ void SETFilter::pickElemets(std::vector <double> &chi2Feet,
   std::vector <double> chi2Feet_tmp = chi2Feet;
   std::vector <double>::iterator minEl = min_element(chi2Feet.begin(), chi2Feet.end());
   std::vector <double>::iterator maxEl = max_element(chi2Feet.begin(), chi2Feet.end());
-  *maxEl = *minEl;
-  std::vector <double>::iterator second_maxEl = max_element(chi2Feet_tmp.begin(), chi2Feet_tmp.end());
   high = maxEl - chi2Feet.begin();
-  second_high = second_maxEl - chi2Feet.begin();
   low = minEl - chi2Feet.begin();
+  std::vector <double>::iterator second_maxEl = max_element(chi2Feet_tmp.begin(), chi2Feet_tmp.end());
+  second_high = second_maxEl - chi2Feet_tmp.begin();
 
   return;
 }

@@ -17,7 +17,7 @@
 
 #include "RecoMuon/SeedGenerator/src/SETFilter.h"
 #include "RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h" 
-#include "RecoMuon/SeedGenerator/src/PtExtractor.h"
+#include "RecoMuon/MuonSeedGenerator/src/MuonSeedPtExtractor.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "RecoMuon/TrackingTools/interface/MuonCandidate.h"
@@ -58,7 +58,7 @@ class SETMuonProducer : public edm::EDProducer {
   SETFilter* filter() const {return theFilter;}
   
   /// pT extractor (given two hits)
-  PtExtractor * pt_extractor() const {return thePtExtractor;}
+  MuonSeedPtExtractor::MuonSeedPtExtractor* pt_extractor() const {return thePtExtractor;}
 
   //---- SET 
   /// Build local clusters of segments that are clearly separated from each other in the eta-phi plane 
@@ -83,7 +83,7 @@ class SETMuonProducer : public edm::EDProducer {
   void setEvent(const edm::Event&);
  
   //---- SET
-  PtExtractor* thePtExtractor;
+  MuonSeedPtExtractor::MuonSeedPtExtractor* thePtExtractor;
   bool apply_prePruning;
   bool useSegmentsInTrajectory;
   bool useRPCs;
