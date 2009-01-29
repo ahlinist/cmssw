@@ -26,7 +26,6 @@ void PATObjectAntiOverlapSelector<T>::select(const edm::Handle<collection>& part
   
   edm::Handle<reco::CandidateView> particlesNotToBeFiltered;
   evt.getByLabel(srcNotToBeFiltered_, particlesNotToBeFiltered);
-  std::cout << "srcNotToBeFiltered_ = " << srcNotToBeFiltered_ << std::endl;
 
   for ( typename collection::const_iterator particleToBeFiltered = particlesToBeFiltered->begin();
 	particleToBeFiltered != particlesToBeFiltered->end(); ++particleToBeFiltered ) {
