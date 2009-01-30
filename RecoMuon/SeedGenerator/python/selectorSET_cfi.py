@@ -9,7 +9,9 @@ SETMuonSeed  = cms.EDProducer("SETMuonProducer",
     SETTrajBuilderParameters = cms.PSet(
         ptSeedParameterization, 
         Apply_prePruning = cms.bool(True),
-	UseSegmentsInTrajectory = cms.bool(True),
+# Careful - next is used together with useSubRecHits in standAloneMuons_cfi.py (for now)
+#	UseSegmentsInTrajectory = cms.bool(True),
+	UseSegmentsInTrajectory = cms.bool(False),
         FilterParameters = cms.PSet(
             DTRecSegmentLabel = cms.InputTag("dt4DSegments"),
             CSCRecSegmentLabel = cms.InputTag("cscSegments"),
