@@ -13,7 +13,7 @@
 //
 // Original Author:  Haiyun Teng
 //         Created:  Wed Oct 29 17:24:36 CET 2008
-// $Id$
+// $Id: RPCSeedGenerator.cc,v 1.1 2009/01/30 13:47:30 hyteng Exp $
 //
 //
 
@@ -874,7 +874,4 @@ bool RPCSeedGenerator::isShareHit(const edm::OwnVector<TrackingRecHit> RecHits, 
     }
     return istheSame;
 }
-
-//define this as a plug-in
-DEFINE_FWK_MODULE(RPCSeedGenerator);
 
