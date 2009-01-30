@@ -38,13 +38,13 @@ process.source = cms.Source("PoolSource",
 
 
 
-  process.out = cms.OutputModule("PoolOutputModule",
+process.out = cms.OutputModule("PoolOutputModule",
                                                                 fileName = cms.untracked.string('RecoMuons.root')
                                                                 )
 
   ## SET algorithm of STA muon
   #from RecoMuon.SeedGenerator.selectorSET_cff import *
-  process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
+process.STAMuonAnalyzer = cms.EDFilter("STAMuonAnalyzer",
                                          #    DataType = cms.untracked.string('SimData'),
                                              DataType = cms.untracked.string('RealData'),
                                              StandAloneTrackCollectionLabel = cms.untracked.string('standAloneSETMuons'),
@@ -55,10 +55,10 @@ process.source = cms.Source("PoolSource",
                                          )
 
 
-  process.p = cms.Path(process.SETMuonSeed*process.standAloneSETMuons*process.STAMuonAnalyzer)
+process.p = cms.Path(process.SETMuonSeed*process.standAloneSETMuons*process.STAMuonAnalyzer)
   #process.this_is_the_end = cms.EndPath(process.out)
 
-  process.GlobalTag.globaltag = 'IDEAL_30X::All'
+process.GlobalTag.globaltag = 'IDEAL_30X::All'
   #process.GlobalTag.globaltag = 'STARTUP_30X::All'
   
 
