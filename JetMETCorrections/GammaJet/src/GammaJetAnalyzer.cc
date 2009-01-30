@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.4 2008/09/07 17:07:55 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.5 2008/09/08 16:57:09 delre Exp $
 //
 //
 
@@ -50,6 +50,7 @@
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
@@ -59,12 +60,16 @@
 #include "DataFormats/EgammaReco/interface/ClusterShape.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h" 
 #include "RecoCaloTools/Selectors/interface/CaloConeSelector.h"
 #include "RecoCaloTools/MetaCollections/interface/CaloRecHitMetaCollections.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/ClusterShapeAlgo.h"
+
+#include "MyAnalysis/IsolationTools/interface/SuperClusterHitsEcalIsolation.h"
 
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -95,12 +100,16 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
   Photonsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "Photonsrc" );
   Jetsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsite" );
-  Jetsrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetskt" );
-  Jetsrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetssis" );
+  Jetsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetskt4" );
+  Jetsrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetskt6" );
+  Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetssis5" );
+  Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetssis7" );
   Pfjetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "pfjets" );
   JetGensrcite_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenite" );
-  JetGensrckt_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenkt" );
-  JetGensrcsis_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgensis" );
+  JetGensrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenkt4" );
+  JetGensrckt6_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgenkt6" );
+  JetGensrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgensis5" );
+  JetGensrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>( "jetsgensis7" );
   METsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "met" );
   METGensrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "genMet" );
   HBhitsrc_ = iConfig.getUntrackedParameter<edm::InputTag>( "hbhits" );
@@ -135,11 +144,15 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   nMC = nPhot = nJet_ite = nJet_kt = nJet_sis = nJet_pfite = nJetGen_ite = nJetGen_kt = nJetGen_sis = 0;
+   nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_pfite = nJetGen_ite = nJetGen_kt4 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
 
    using reco::TrackCollection;
   
    double maxptphoton1(0), maxptphoton2(0), maxptphoton3(0);
+
+   // get generated pt hat
+   Handle<double> genEventScale; 
+   iEvent.getByLabel( "genEventScale", genEventScale ); 
 
    // get MC info from GenParticleCandidates 
    Handle<GenParticleCollection> genParticles;
@@ -153,13 +166,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    Handle<PhotonCollection>  PhotonHandle;
    iEvent.getByLabel( Photonsrc_, PhotonHandle );
 
+   // get converted photons
+   Handle<ConversionCollection> convertedPhotonHandle; // get the Converted Photon info
+   iEvent.getByLabel("conversions", "", convertedPhotonHandle);
+   const reco::ConversionCollection convphoCollection = *(convertedPhotonHandle.product());
+
    // get calo jet collection
    Handle<CaloJetCollection> jetsite;
    iEvent.getByLabel(Jetsrcite_, jetsite);
-   Handle<CaloJetCollection> jetskt;
-   iEvent.getByLabel(Jetsrckt_, jetskt);
-   Handle<CaloJetCollection> jetssis;
-   iEvent.getByLabel(Jetsrcsis_, jetssis);
+   Handle<CaloJetCollection> jetskt4;
+   iEvent.getByLabel(Jetsrckt4_, jetskt4);
+   Handle<CaloJetCollection> jetskt6;
+   iEvent.getByLabel(Jetsrckt6_, jetskt6);
+   Handle<CaloJetCollection> jetssis5;
+   iEvent.getByLabel(Jetsrcsis5_, jetssis5);
+   Handle<CaloJetCollection> jetssis7;
+   iEvent.getByLabel(Jetsrcsis7_, jetssis7);
 
    // get PF jets collection
    Handle<PFJetCollection> pfjetsite;
@@ -168,10 +190,14 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
    iEvent.getByLabel(JetGensrcite_, jetsgenite);
-   Handle<GenJetCollection> jetsgenkt;
-   iEvent.getByLabel(JetGensrckt_, jetsgenkt);
-   Handle<GenJetCollection> jetsgensis;
-   iEvent.getByLabel(JetGensrcsis_, jetsgensis);
+   Handle<GenJetCollection> jetsgenkt4;
+   iEvent.getByLabel(JetGensrckt4_, jetsgenkt4);
+   Handle<GenJetCollection> jetsgenkt6;
+   iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
+   Handle<GenJetCollection> jetsgensis5;
+   iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
+   Handle<GenJetCollection> jetsgensis7;
+   iEvent.getByLabel(JetGensrcsis7_, jetsgensis7);
 
    // get MET
    Handle<CaloMETCollection> calomethandle;
@@ -193,6 +219,11 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    const EcalRecHitMetaCollection mecalhits(*ecalhits);    
    rhits = ecalhits.product(); // get a ptr to the product
 
+   Handle<EERecHitCollection> ecalhitsee;
+   const EERecHitCollection* rhitsee=0;
+   iEvent.getByLabel( recoProducer_, "EcalRecHitsEE", ecalhitsee);
+   rhitsee = ecalhits.product(); // get a ptr to the product
+
    // get geometry
    edm::ESHandle<CaloGeometry> geoHandle;
    //   iSetup.get<IdealGeometryRecord>().get(geoHandle);
@@ -210,8 +241,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    edm::ESHandle<MagneticField> theMagField;
    iSetup.get<IdealMagneticFieldRecord>().get(theMagField);
    //   iSetup.get<TrackerDigiGeometryRecord>().get(trackerHandle_);
-   const GsfPropagatorAdapter* geomPropFw_ = new GsfPropagatorAdapter(AnalyticalPropagator(theMagField.product(), alongMomentum));
-   const TrajectoryStateTransform* theTransform_ = 0;
   
    ClusterShapeAlgo algo;
 
@@ -257,6 +286,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // Loop over MC truth
    
+   genpt = *genEventScale;   
+
    for ( GenParticleCollection::const_iterator p = genParticles->begin();
 	p != genParticles->end(); ++p ) {
      
@@ -275,9 +306,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      
      if(p->pdgId()==22 && p->status()==1){
        
-       double phiTrue = p->phi();
        double etaTrue = p->eta();
-       double eTrue  = p->energy();
        double etTrue  = p->energy()/cosh(etaTrue);  
        
        if (etTrue>maxptphoton1) {
@@ -324,20 +353,21 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      pyPhot[nPhot] = it->py();	 
      pzPhot[nPhot] = it->pz();	 
      ePhot[nPhot] = it->energy();	 
+     escPhot[nPhot] = it->superCluster()->energy();	 
      etaPhot[nPhot] = it->eta();	 
      phiPhot[nPhot] = it->phi();	      
      
-     double ptphoton = it->pt();
+     double ptphoton = it->pt(); 
      if (ptphoton>maxptphoton1) {
        maxptphoton1 = ptphoton;
      }
      if (ptphoton>maxptphoton2 && ptphoton<maxptphoton1) maxptphoton2 = ptphoton;
      if (ptphoton>maxptphoton3 && ptphoton<maxptphoton2) maxptphoton3 = ptphoton;     
      
-     double ptiso02(0.), ptiso025(0.), ptiso03(0.), ptiso035(0.), ptiso04(0.);
-     int ntrkiso02(0), ntrkiso025(0), ntrkiso03(0), ntrkiso035(0), ntrkiso04(0);
-     double ptisoatecal02(0.), ptisoatecal025(0.), ptisoatecal03(0.), ptisoatecal035(0.), ptisoatecal04(0.);
-     int ntrkisoatecal02(0), ntrkisoatecal025(0), ntrkisoatecal03(0), ntrkisoatecal035(0), ntrkisoatecal04(0);
+     double ptiso0015(0.),  ptiso035(0.), ptiso05(0.), ptiso07(0.), ptiso1(0.);
+     int ntrkiso0015(0), ntrkiso035(0), ntrkiso05(0), ntrkiso07(0), ntrkiso1(0);
+//      double ptisoatecal02(0.), ptisoatecal025(0.), ptisoatecal03(0.), ptisoatecal035(0.), ptisoatecal04(0.);
+//      int ntrkisoatecal02(0), ntrkisoatecal025(0), ntrkisoatecal03(0), ntrkisoatecal035(0), ntrkisoatecal04(0);
      
      // calculate track isolation for different cone values
 
@@ -352,138 +382,163 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        if(deltaPhi < -Geom::pi()) deltaPhi += 2.*Geom::pi();
        double deltaR = std::sqrt(deltaEta*deltaEta+deltaPhi*deltaPhi);
        
-       if(deltaR < .2)  {ptiso02  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso02++; }
-       if(deltaR < .25) {ptiso025 += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso025++;}
-       if(deltaR < .3)  {ptiso03  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso03++; }
-       if(deltaR < .35) {ptiso035 += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso035++;}
-       if(deltaR < .4)  {ptiso04  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso04++; }
+       if(deltaR < .015)  {ptiso0015  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso0015++; }
+       if(deltaR < .35)   {ptiso035 += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso035++;}
+       if(deltaR < .5)    {ptiso05  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso05++; }
+       if(deltaR < .7)    {ptiso07 += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso07++;}
+       if(deltaR < 1.)    {ptiso1  += sqrt(itTrack->innerMomentum().Mag2()); ntrkiso1++; }
        
-       const math::XYZVector tempvec = itTrack->innerMomentum();
-       const math::XYZPoint temppos = itTrack->innerPosition();
-       int tempcharge = itTrack->charge();
+
+       // Trk isolation at ECAL commented for now
+
+//        const math::XYZVector tempvec = itTrack->innerMomentum();
+//        const math::XYZPoint temppos = itTrack->innerPosition();
+//        int tempcharge = itTrack->charge();
        
-       ECALPositionCalculator tempcalculator;      
+//        ECALPositionCalculator tempcalculator;      
        
-       double phitrk = tempcalculator.ecalPhi(tempvec,temppos,tempcharge);
-       double etatrk = tempcalculator.ecalEta(tempvec,temppos);
+//        double phitrk = tempcalculator.ecalPhi(tempvec,temppos,tempcharge);
+//        double etatrk = tempcalculator.ecalEta(tempvec,temppos);
        
-       deltaPhi = phitrk-it->phi();
-       deltaEta = etatrk-it->eta();      
+//        deltaPhi = phitrk-it->phi();
+//        deltaEta = etatrk-it->eta();      
        
-       deltaR = std::sqrt(deltaEta*deltaEta+deltaPhi*deltaPhi);
+//        deltaR = std::sqrt(deltaEta*deltaEta+deltaPhi*deltaPhi);
        
-       if(deltaPhi > Geom::pi()) deltaPhi -= 2.*Geom::pi();
-       if(deltaPhi < -Geom::pi()) deltaPhi += 2.*Geom::pi();
+//        if(deltaPhi > Geom::pi()) deltaPhi -= 2.*Geom::pi();
+//        if(deltaPhi < -Geom::pi()) deltaPhi += 2.*Geom::pi();
        
-       if(deltaR < .2)  {ptisoatecal02  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal02++; }
-       if(deltaR < .25) {ptisoatecal025 += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal025++;}
-       if(deltaR < .3)  {ptisoatecal03  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal03++; }
-       if(deltaR < .35) {ptisoatecal035 += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal035++;}
-       if(deltaR < .4)  {ptisoatecal04  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal04++; }
+//        if(deltaR < .2)  {ptisoatecal02  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal02++; }
+//        if(deltaR < .25) {ptisoatecal025 += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal025++;}
+//        if(deltaR < .3)  {ptisoatecal03  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal03++; }
+//        if(deltaR < .35) {ptisoatecal035 += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal035++;}
+//        if(deltaR < .4)  {ptisoatecal04  += sqrt(itTrack->innerMomentum().Mag2()); ntrkisoatecal04++; }
        
      }
      
-     ptiso02Phot[nPhot] = ptiso02;
-     ntrkiso02Phot[nPhot] = ntrkiso02;
-     ptiso025Phot[nPhot] = ptiso025;
-     ntrkiso025Phot[nPhot] = ntrkiso025;
-     ptiso03Phot[nPhot] = ptiso03;
-     ntrkiso03Phot[nPhot] = ntrkiso03;
+     ptiso0015Phot[nPhot] = ptiso0015;
+     ntrkiso0015Phot[nPhot] = ntrkiso0015;
      ptiso035Phot[nPhot] = ptiso035;
      ntrkiso035Phot[nPhot] = ntrkiso035;
-     ptiso04Phot[nPhot] = ptiso04;
-     ntrkiso04Phot[nPhot] = ntrkiso04;
+     ptiso05Phot[nPhot] = ptiso05;
+     ntrkiso05Phot[nPhot] = ntrkiso05;
+     ptiso07Phot[nPhot] = ptiso07;
+     ntrkiso07Phot[nPhot] = ntrkiso07;
+     ptiso1Phot[nPhot] = ptiso1;
+     ntrkiso1Phot[nPhot] = ntrkiso1;
 
-     ptisoatecal02Phot[nPhot] = ptisoatecal02;
-     ntrkisoatecal02Phot[nPhot] = ntrkisoatecal02;
-     ptisoatecal025Phot[nPhot] = ptisoatecal025;
-     ntrkisoatecal025Phot[nPhot] = ntrkisoatecal025;
-     ptisoatecal03Phot[nPhot] = ptisoatecal03;
-     ntrkisoatecal03Phot[nPhot] = ntrkisoatecal03;
-     ptisoatecal035Phot[nPhot] = ptisoatecal035;
-     ntrkisoatecal035Phot[nPhot] = ntrkisoatecal035;
-     ptisoatecal04Phot[nPhot] = ptisoatecal04;
-     ntrkisoatecal04Phot[nPhot] = ntrkisoatecal04;
+//      ptisoatecal02Phot[nPhot] = ptisoatecal02;
+//      ntrkisoatecal02Phot[nPhot] = ntrkisoatecal02;
+//      ptisoatecal025Phot[nPhot] = ptisoatecal025;
+//      ntrkisoatecal025Phot[nPhot] = ntrkisoatecal025;
+//      ptisoatecal03Phot[nPhot] = ptisoatecal03;
+//      ntrkisoatecal03Phot[nPhot] = ntrkisoatecal03;
+//      ptisoatecal035Phot[nPhot] = ptisoatecal035;
+//      ntrkisoatecal035Phot[nPhot] = ntrkisoatecal035;
+//      ptisoatecal04Phot[nPhot] = ptisoatecal04;
+//      ntrkisoatecal04Phot[nPhot] = ntrkisoatecal04;
 
      // calculate HCAL isolation
   
      double hcalEnergy = 0;
+     reco::SuperClusterRef sc = it->get<reco::SuperClusterRef>();
      CaloConeSelector selector1(0.1, geometry, DetId::Hcal);
-     std::auto_ptr<CaloRecHitMetaCollectionV> selected=selector1.select(it->eta(),it->phi(),mhbhe);
+     std::auto_ptr<CaloRecHitMetaCollectionV> selected=selector1.select(sc->eta(),sc->phi(),mhbhe);
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy();
      hcalovecal01Phot[nPhot] = hcalEnergy/it->energy();
      hcalEnergy = 0;
-     CaloConeSelector selector2(0.2, geometry, DetId::Hcal);
-     selected = selector2.select(it->eta(),it->phi(),mhbhe);
+     CaloConeSelector selector15(0.15, geometry, DetId::Hcal);
+     selected = selector15.select(sc->eta(),sc->phi(),mhbhe);
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy();
-     hcalovecal02Phot[nPhot] = hcalEnergy/it->energy();
+     hcalovecal015Phot[nPhot] = hcalEnergy/it->energy();
      hcalEnergy = 0;
-     CaloConeSelector selector25(0.25, geometry, DetId::Hcal);
-     selected = selector25.select(it->eta(),it->phi(),mhbhe);
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy();
-     hcalovecal025Phot[nPhot] = hcalEnergy/it->energy();
-     hcalEnergy = 0;  
-     CaloConeSelector selector3(0.3, geometry, DetId::Hcal); 
-     selected = selector3.select(it->eta(),it->phi(),mhbhe); 
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy(); 
-     hcalovecal03Phot[nPhot] = hcalEnergy/it->energy(); 
-     hcalEnergy = 0; 
      CaloConeSelector selector4(0.4, geometry, DetId::Hcal); 
-     selected = selector4.select(it->eta(),it->phi(),mhbhe); 
+     selected = selector4.select(sc->eta(),sc->phi(),mhbhe); 
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy(); 
      hcalovecal04Phot[nPhot] = hcalEnergy/it->energy(); 
      hcalEnergy = 0;  
      CaloConeSelector selector5(0.5, geometry, DetId::Hcal);  
-     selected = selector5.select(it->eta(),it->phi(),mhbhe);  
+     selected = selector5.select(sc->eta(),sc->phi(),mhbhe);  
      for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy();  
      hcalovecal05Phot[nPhot] = hcalEnergy/it->energy();  
+     CaloConeSelector selector7(0.7, geometry, DetId::Hcal);
+     selected = selector7.select(sc->eta(),sc->phi(),mhbhe);
+     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy();
+     hcalovecal07Phot[nPhot] = hcalEnergy/it->energy();
+     hcalEnergy = 0;  
+     CaloConeSelector selector10(1., geometry, DetId::Hcal); 
+     selected = selector10.select(sc->eta(),sc->phi(),mhbhe); 
+     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) hcalEnergy += hit->energy(); 
+     hcalovecal1Phot[nPhot] = hcalEnergy/it->energy(); 
+     hcalEnergy = 0; 
  
-    // calculate ECAL isolation 
+     // calculate ECAL isolation 
 
-     double ecalEnergy = 0; 
-     CaloConeSelector selectorecal2(0.2, geometry, DetId::Ecal); 
-     selected=selectorecal2.select(it->eta(),it->phi(),mecalhits); 
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy(); 
-     ecaliso02Phot[nPhot] = ecalEnergy; 
-     ecalEnergy = 0;  
-     CaloConeSelector selectorecal3(0.3, geometry, DetId::Ecal);  
-     selected=selectorecal3.select(it->eta(),it->phi(),mecalhits);  
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy();  
-     ecaliso03Phot[nPhot] = ecalEnergy;  
-     ecalEnergy = 0;   
-     CaloConeSelector selectorecal35(0.35, geometry, DetId::Ecal);   
-     selected=selectorecal35.select(it->eta(),it->phi(),mecalhits);   
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy();   
-     ecaliso035Phot[nPhot] = ecalEnergy;   
-     ecalEnergy = 0;    
-     CaloConeSelector selectorecal4(0.4, geometry, DetId::Ecal);    
-     selected=selectorecal4.select(it->eta(),it->phi(),mecalhits);    
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy();    
-     ecaliso04Phot[nPhot] = ecalEnergy;    
-     ecalEnergy = 0;     
-     CaloConeSelector selectorecal5(0.5, geometry, DetId::Ecal);     
-     selected=selectorecal5.select(it->eta(),it->phi(),mecalhits);     
-     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy();     
-     ecaliso05Phot[nPhot] = ecalEnergy;     
-     
+     // ecal isolation with SC rechits removal
+     SuperClusterHitsEcalIsolation scBasedIsolation(rhits,rhitsee);
+     scBasedIsolation.setExtRadius(0.1);
+     scBasedIsolation.excludeHalo(false);
+     ecaliso01Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     scBasedIsolation.setExtRadius(0.15);
+     ecaliso015Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     scBasedIsolation.setExtRadius(0.4);
+     ecaliso04Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     scBasedIsolation.setExtRadius(0.5);
+     ecaliso05Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     scBasedIsolation.setExtRadius(0.7);
+     ecaliso07Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     scBasedIsolation.setExtRadius(1.);
+     ecaliso1Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+
      // cluster shape variables
      
      BasicClusterRef tempCluster = it->superCluster()->seed();
      
      if(TMath::Abs(tempCluster->eta())<1.47){
-       reco::ClusterShape tempShape=algo.Calculate(*tempCluster, rhits, &(*geometry_p), &(*topology_p),4.2);
+       reco::ClusterShape tempShape=algo.Calculate(*tempCluster, rhits, &(*geometry_p), &(*topology_p),4.7);
        sMajMajPhot[nPhot]=tempShape.sMajMaj();
        sMinMinPhot[nPhot]=tempShape.sMinMin();
        FisherPhot[nPhot]=tempShape.fisher();
+       alphaPhot[nPhot]=tempShape.s_alpha();
+       sEtaEtaPhot[nPhot]=tempShape.sEtaEta();
+       sPhiPhiPhot[nPhot]=tempShape.sPhiPhi();
+       E1Phot[nPhot]=tempShape.eMax();
+       E9Phot[nPhot]=tempShape.e3x3();
+       E25Phot[nPhot]=tempShape.e5x5();
      }else{
        sMajMajPhot[nPhot]=-100.;
        sMinMinPhot[nPhot]=-100.;
        FisherPhot[nPhot]=-100.;
+       alphaPhot[nPhot]=-100.;
+       sEtaEtaPhot[nPhot]=-100.;
+       sPhiPhiPhot[nPhot]=-100.;
+       E1Phot[nPhot]=-100.;
+       E9Phot[nPhot]=-100.;
+       E25Phot[nPhot]=-100.;
      }
 
      nPhot++;
     
    }
+
+   // loop on converted photons
+   for( reco::ConversionCollection::const_iterator iCPho = convphoCollection.begin();
+	iCPho != convphoCollection.end(); iCPho++) {
+     if ((*iCPho).isConverted()){
+       chi2convPhot[nconvPhot] = (*iCPho).conversionVertex().chi2();
+       ndofconvPhot[nconvPhot] = (*iCPho).conversionVertex().ndof();
+       xconvPhot[nconvPhot] = (*iCPho).conversionVertex().position().x();
+       yconvPhot[nconvPhot] = (*iCPho).conversionVertex().position().y();
+       zconvPhot[nconvPhot] = (*iCPho).conversionVertex().position().z();
+       ntrkconvPhot[nconvPhot] = (*iCPho).tracks().size();
+       eovpconvPhot[nconvPhot] = (*iCPho).EoverP();
+       etaecalconvPhot[nconvPhot] = (*iCPho).caloCluster()[0]->eta(); 
+       phiecalconvPhot[nconvPhot] = (*iCPho).caloCluster()[0]->phi(); 
+       energyecalconvPhot[nconvPhot] =(*iCPho).caloCluster()[0]->energy();
+       nconvPhot++;
+     }
+   } 
+
    if(maxptphoton1>-900.) PtPhoton1st->Fill(maxptphoton1);
    if(maxptphoton2>-900.) PtPhoton2st->Fill(maxptphoton2);
    if(maxptphoton3>-900.) PtPhoton3st->Fill(maxptphoton3);
@@ -504,32 +559,60 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nJet_ite++;
    }
    
-   for ( CaloJetCollection::const_iterator it = jetskt->begin(); 
-	 it != jetskt->end(); it++ ) {
+   for ( CaloJetCollection::const_iterator it = jetskt4->begin(); 
+	 it != jetskt4->end(); it++ ) {
      
-     if(nJet_kt>=100) {cout << "number of reco jets kt is larger than 100. Skipping" << endl; continue;}
-     pxJet_kt[nJet_kt] = it->px();	 
-     pyJet_kt[nJet_kt] = it->py();	 
-     pzJet_kt[nJet_kt] = it->pz();	 
-     eJet_kt[nJet_kt] = it->energy();	 
-     etaJet_kt[nJet_kt] = it->eta();	 
-     phiJet_kt[nJet_kt] = it->phi();	      
+     if(nJet_kt4>=100) {cout << "number of reco jets kt 04 is larger than 100. Skipping" << endl; continue;}
+     pxJet_kt4[nJet_kt4] = it->px();	 
+     pyJet_kt4[nJet_kt4] = it->py();	 
+     pzJet_kt4[nJet_kt4] = it->pz();	 
+     eJet_kt4[nJet_kt4] = it->energy();	 
+     etaJet_kt4[nJet_kt4] = it->eta();	 
+     phiJet_kt4[nJet_kt4] = it->phi();	      
      
-     nJet_kt++;
+     nJet_kt4++;
    }
    
-   for ( CaloJetCollection::const_iterator it = jetssis->begin(); 
-	 it != jetssis->end(); it++ ) {
+   for ( CaloJetCollection::const_iterator it = jetskt6->begin(); 
+	 it != jetskt6->end(); it++ ) {
      
-     if(nJet_sis>=100) {cout << "number of reco jets sis is larger than 100. Skipping" << endl; continue;}
-     pxJet_sis[nJet_sis] = it->px();	 
-     pyJet_sis[nJet_sis] = it->py();	 
-     pzJet_sis[nJet_sis] = it->pz();	 
-     eJet_sis[nJet_sis] = it->energy();	 
-     etaJet_sis[nJet_sis] = it->eta();	 
-     phiJet_sis[nJet_sis] = it->phi();	      
+     if(nJet_kt6>=100) {cout << "number of reco jets kt 06 is larger than 100. Skipping" << endl; continue;}
+     pxJet_kt6[nJet_kt6] = it->px();	 
+     pyJet_kt6[nJet_kt6] = it->py();	 
+     pzJet_kt6[nJet_kt6] = it->pz();	 
+     eJet_kt6[nJet_kt6] = it->energy();	 
+     etaJet_kt6[nJet_kt6] = it->eta();	 
+     phiJet_kt6[nJet_kt6] = it->phi();	      
      
-     nJet_sis++;
+     nJet_kt6++;
+   }
+   
+   for ( CaloJetCollection::const_iterator it = jetssis5->begin(); 
+	 it != jetssis5->end(); it++ ) {
+     
+     if(nJet_sis5>=100) {cout << "number of reco jets sis 05 is larger than 100. Skipping" << endl; continue;}
+     pxJet_sis5[nJet_sis5] = it->px();	 
+     pyJet_sis5[nJet_sis5] = it->py();	 
+     pzJet_sis5[nJet_sis5] = it->pz();	 
+     eJet_sis5[nJet_sis5] = it->energy();	 
+     etaJet_sis5[nJet_sis5] = it->eta();	 
+     phiJet_sis5[nJet_sis5] = it->phi();	      
+     
+     nJet_sis5++;
+   }
+
+   for ( CaloJetCollection::const_iterator it = jetssis7->begin(); 
+	 it != jetssis7->end(); it++ ) {
+     
+     if(nJet_sis7>=100) {cout << "number of reco jets sis 07 is larger than 100. Skipping" << endl; continue;}
+     pxJet_sis7[nJet_sis7] = it->px();	 
+     pyJet_sis7[nJet_sis7] = it->py();	 
+     pzJet_sis7[nJet_sis7] = it->pz();	 
+     eJet_sis7[nJet_sis7] = it->energy();	 
+     etaJet_sis7[nJet_sis7] = it->eta();	 
+     phiJet_sis7[nJet_sis7] = it->phi();	      
+     
+     nJet_sis7++;
    }
    
    for ( PFJetCollection::const_iterator it = pfjetsite->begin(); 
@@ -562,43 +645,71 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      nJetGen_ite++;
    }
 
-   for ( GenJetCollection::const_iterator it = jetsgenkt->begin(); 
-	it != jetsgenkt->end(); it++ ) {
+   for ( GenJetCollection::const_iterator it = jetsgenkt4->begin(); 
+	it != jetsgenkt4->end(); it++ ) {
 
-     if(nJetGen_kt>=100) {cout << "number of gen jets kt is larger than 100. Skipping" << endl; continue;}
-     pxJetGen_kt[nJetGen_kt] = it->px();	 
-     pyJetGen_kt[nJetGen_kt] = it->py();	 
-     pzJetGen_kt[nJetGen_kt] = it->pz();	 
-     eJetGen_kt[nJetGen_kt] = it->energy();	 
-     etaJetGen_kt[nJetGen_kt] = it->eta();	 
-     phiJetGen_kt[nJetGen_kt] = it->phi();	      
+     if(nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_kt4[nJetGen_kt4] = it->px();	 
+     pyJetGen_kt4[nJetGen_kt4] = it->py();	 
+     pzJetGen_kt4[nJetGen_kt4] = it->pz();	 
+     eJetGen_kt4[nJetGen_kt4] = it->energy();	 
+     etaJetGen_kt4[nJetGen_kt4] = it->eta();	 
+     phiJetGen_kt4[nJetGen_kt4] = it->phi();	      
      
-     nJetGen_kt++;
+     nJetGen_kt4++;
    }
 
-   for ( GenJetCollection::const_iterator it = jetsgensis->begin(); 
-	it != jetsgensis->end(); it++ ) {
+   for ( GenJetCollection::const_iterator it = jetsgenkt6->begin(); 
+	it != jetsgenkt6->end(); it++ ) {
 
-     if(nJetGen_sis>=100) {cout << "number of gen jets sis is larger than 100. Skipping" << endl; continue;}
-     pxJetGen_sis[nJetGen_sis] = it->px();	 
-     pyJetGen_sis[nJetGen_sis] = it->py();	 
-     pzJetGen_sis[nJetGen_sis] = it->pz();	 
-     eJetGen_sis[nJetGen_sis] = it->energy();	 
-     etaJetGen_sis[nJetGen_sis] = it->eta();	 
-     phiJetGen_sis[nJetGen_sis] = it->phi();	      
+     if(nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_kt6[nJetGen_kt6] = it->px();	 
+     pyJetGen_kt6[nJetGen_kt6] = it->py();	 
+     pzJetGen_kt6[nJetGen_kt6] = it->pz();	 
+     eJetGen_kt6[nJetGen_kt6] = it->energy();	 
+     etaJetGen_kt6[nJetGen_kt6] = it->eta();	 
+     phiJetGen_kt6[nJetGen_kt6] = it->phi();	      
      
-     nJetGen_sis++;
+     nJetGen_kt6++;
    }
 
-   // Fill reco MET
+   for ( GenJetCollection::const_iterator it = jetsgensis5->begin(); 
+	it != jetsgensis5->end(); it++ ) {
 
-//    const CaloMETCollection *calometcol = calomethandle.product();
-//    const CaloMET calomet = calometcol->front();
+     if(nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_sis5[nJetGen_sis5] = it->px();	 
+     pyJetGen_sis5[nJetGen_sis5] = it->py();	 
+     pzJetGen_sis5[nJetGen_sis5] = it->pz();	 
+     eJetGen_sis5[nJetGen_sis5] = it->energy();	 
+     etaJetGen_sis5[nJetGen_sis5] = it->eta();	 
+     phiJetGen_sis5[nJetGen_sis5] = it->phi();	      
+     
+     nJetGen_sis5++;
+   }
 
-//    pxMet = calomet.px();	 
-//    pyMet = calomet.py();	 
-//    eMet = calomet.energy();	 
-//    phiMet = calomet.phi();	      
+   for ( GenJetCollection::const_iterator it = jetsgensis7->begin(); 
+	it != jetsgensis7->end(); it++ ) {
+
+     if(nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
+     pxJetGen_sis7[nJetGen_sis7] = it->px();	 
+     pyJetGen_sis7[nJetGen_sis7] = it->py();	 
+     pzJetGen_sis7[nJetGen_sis7] = it->pz();	 
+     eJetGen_sis7[nJetGen_sis7] = it->energy();	 
+     etaJetGen_sis7[nJetGen_sis7] = it->eta();	 
+     phiJetGen_sis7[nJetGen_sis7] = it->phi();	      
+     
+     nJetGen_sis7++;
+   }
+
+// Fill reco MET
+
+   const CaloMETCollection *calometcol = calomethandle.product();
+   const CaloMET calomet = calometcol->front();
+   
+   pxMet = calomet.px();	 
+   pyMet = calomet.py();	 
+   eMet = calomet.energy();	 
+   phiMet = calomet.phi();	      
      
    // Fill gen MET
 
@@ -623,6 +734,7 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree = new TTree ("pippo","Analysis tree") ;
   //  m_tree->SetAutoSave (10000000) ;
   m_tree->Branch("event",&event,"event/I");
+  m_tree->Branch("genpt",&genpt,"genpt/F");
   m_tree->Branch("nMC",&nMC,"nMC/I");
   m_tree->Branch("pdgIdMC",&pdgIdMC,"pdgIdMC[nMC]/I");
 //   m_tree->Branch("massMC ",&massMC ,"massMC[nMC]/F");
@@ -640,41 +752,62 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("pyPhot ",&pyPhot ,"pyPhot[nPhot]/F");
   m_tree->Branch("pzPhot ",&pzPhot ,"pzPhot[nPhot]/F");
   m_tree->Branch("ePhot  ",&ePhot  ,"ePhot[nPhot]/F");
+  m_tree->Branch("escPhot  ",&escPhot  ,"escPhot[nPhot]/F");
   m_tree->Branch("etaPhot",&etaPhot,"etaPhot[nPhot]/F");
   m_tree->Branch("phiPhot",&phiPhot,"phiPhot[nPhot]/F");
-  m_tree->Branch("ptiso02Phot",&ptiso02Phot,"ptiso02Phot[nPhot]/F");
-  m_tree->Branch("ntrkiso02Phot",&ntrkiso02Phot,"ntrkiso02Phot[nPhot]/I");
-  m_tree->Branch("ptiso025Phot",&ptiso02Phot,"ptiso025Phot[nPhot]/F");
-  m_tree->Branch("ntrkiso025Phot",&ntrkiso02Phot,"ntrkiso025Phot[nPhot]/I");
-  m_tree->Branch("ptiso03Phot",&ptiso02Phot,"ptiso03Phot[nPhot]/F");
-  m_tree->Branch("ntrkiso03Phot",&ntrkiso03Phot,"ntrkiso03Phot[nPhot]/I");
+
+  m_tree->Branch("nconvPhot",&nconvPhot,"nconvPhot/I");
+  m_tree->Branch("chi2convPhot",&chi2convPhot,"chi2convPhot[nconvPhot]/F");
+  m_tree->Branch("ndofconvPhot",&ndofconvPhot,"ndofconvPhot[nconvPhot]/F");
+  m_tree->Branch("xconvPhot",&xconvPhot,"xconvPhot[nconvPhot]/F");
+  m_tree->Branch("yconvPhot",&yconvPhot,"yconvPhot[nconvPhot]/F");
+  m_tree->Branch("zconvPhot",&zconvPhot,"zconvPhot[nconvPhot]/F");
+  m_tree->Branch("ntrkconvPhot",&ntrkconvPhot,"ntrkconvPhot[nconvPhot]/I");
+  m_tree->Branch("eovpconvPhot",&eovpconvPhot,"eovpconvPhot[nconvPhot]/F");
+  m_tree->Branch("etaecalconvPhot",&etaecalconvPhot,"etaecalconvPhot[nconvPhot]/F");
+  m_tree->Branch("phiecalconvPhot",&phiecalconvPhot,"phiecalconvPhot[nconvPhot]/F");
+  m_tree->Branch("eecalconvPhot",&energyecalconvPhot,"energyecalconvPhot[nconvPhot]/F");
+
+  m_tree->Branch("ptiso0015Phot",&ptiso0015Phot,"ptiso0015Phot[nPhot]/F");
+  m_tree->Branch("ntrkiso0015Phot",&ntrkiso0015Phot,"ntrkiso0015Phot[nPhot]/I");
   m_tree->Branch("ptiso035Phot",&ptiso035Phot,"ptiso035Phot[nPhot]/F");
   m_tree->Branch("ntrkiso035Phot",&ntrkiso035Phot,"ntrkiso035Phot[nPhot]/I");
-  m_tree->Branch("ptiso04Phot",&ptiso04Phot,"ptiso04Phot[nPhot]/F");
-  m_tree->Branch("ptisoatecal02Phot",&ptisoatecal02Phot,"ptisoatecal02Phot[nPhot]/F");
-  m_tree->Branch("ntrkisoatecal02Phot",&ntrkisoatecal02Phot,"ntrkisoatecal02Phot[nPhot]/I");
-  m_tree->Branch("ptisoatecal025Phot",&ptisoatecal02Phot,"ptisoatecal025Phot[nPhot]/F");
-  m_tree->Branch("ntrkisoatecal025Phot",&ntrkisoatecal02Phot,"ntrkisoatecal025Phot[nPhot]/I");
-  m_tree->Branch("ptisoatecal03Phot",&ptisoatecal02Phot,"ptisoatecal03Phot[nPhot]/F");
-  m_tree->Branch("ntrkisoatecal03Phot",&ntrkisoatecal03Phot,"ntrkisoatecal03Phot[nPhot]/I");
-  m_tree->Branch("ptisoatecal035Phot",&ptisoatecal035Phot,"ptisoatecal035Phot[nPhot]/F");
-  m_tree->Branch("ntrkisoatecal035Phot",&ntrkisoatecal035Phot,"ntrkisoatecal035Phot[nPhot]/I");
-  m_tree->Branch("ptisoatecal04Phot",&ptisoatecal04Phot,"ptisoatecal04Phot[nPhot]/F");
-  m_tree->Branch("ntrkiso04Phot",&ntrkiso04Phot,"ntrkiso04Phot[nPhot]/I");
+  m_tree->Branch("ptiso05Phot",&ptiso05Phot,"ptiso05Phot[nPhot]/F");
+  m_tree->Branch("ntrkiso05Phot",&ntrkiso05Phot,"ntrkiso05Phot[nPhot]/I");
+  m_tree->Branch("ptiso07Phot",&ptiso07Phot,"ptiso07Phot[nPhot]/F");
+  m_tree->Branch("ntrkiso07Phot",&ntrkiso07Phot,"ntrkiso07Phot[nPhot]/I");
+  m_tree->Branch("ptiso1Phot",&ptiso1Phot,"ptiso1Phot[nPhot]/F");
+  m_tree->Branch("ntrkiso1Phot",&ntrkiso1Phot,"ntrkiso1Phot[nPhot]/I");
+//   m_tree->Branch("ptisoatecal02Phot",&ptisoatecal02Phot,"ptisoatecal02Phot[nPhot]/F");
+//   m_tree->Branch("ntrkisoatecal02Phot",&ntrkisoatecal02Phot,"ntrkisoatecal02Phot[nPhot]/I");
+//   m_tree->Branch("ptisoatecal025Phot",&ptisoatecal02Phot,"ptisoatecal025Phot[nPhot]/F");
+//   m_tree->Branch("ntrkisoatecal025Phot",&ntrkisoatecal02Phot,"ntrkisoatecal025Phot[nPhot]/I");
+//   m_tree->Branch("ptisoatecal03Phot",&ptisoatecal02Phot,"ptisoatecal03Phot[nPhot]/F");
+//   m_tree->Branch("ntrkisoatecal03Phot",&ntrkisoatecal03Phot,"ntrkisoatecal03Phot[nPhot]/I");
+//   m_tree->Branch("ptisoatecal035Phot",&ptisoatecal035Phot,"ptisoatecal035Phot[nPhot]/F");
+//   m_tree->Branch("ntrkisoatecal035Phot",&ntrkisoatecal035Phot,"ntrkisoatecal035Phot[nPhot]/I");
+//   m_tree->Branch("ptisoatecal04Phot",&ptisoatecal04Phot,"ptisoatecal04Phot[nPhot]/F");
   m_tree->Branch("hcalovecal01Phot",&hcalovecal01Phot,"hcalovecal01Phot[nPhot]/F");
-  m_tree->Branch("hcalovecal02Phot",&hcalovecal02Phot,"hcalovecal02Phot[nPhot]/F");
-  m_tree->Branch("hcalovecal025Phot",&hcalovecal025Phot,"hcalovecal025Phot[nPhot]/F");
-  m_tree->Branch("hcalovecal03Phot",&hcalovecal03Phot,"hcalovecal03Phot[nPhot]/F"); 
+  m_tree->Branch("hcalovecal015Phot",&hcalovecal015Phot,"hcalovecal015Phot[nPhot]/F");
   m_tree->Branch("hcalovecal04Phot",&hcalovecal04Phot,"hcalovecal04Phot[nPhot]/F"); 
   m_tree->Branch("hcalovecal05Phot",&hcalovecal05Phot,"hcalovecal05Phot[nPhot]/F"); 
-  m_tree->Branch("ecaliso02Phot",&ecaliso02Phot,"ecaliso02Phot[nPhot]/F"); 
-  m_tree->Branch("ecaliso03Phot",&ecaliso03Phot,"ecaliso03Phot[nPhot]/F");  
-  m_tree->Branch("ecaliso035Phot",&ecaliso035Phot,"ecaliso035Phot[nPhot]/F");  
+  m_tree->Branch("hcalovecal07Phot",&hcalovecal07Phot,"hcalovecal07Phot[nPhot]/F");
+  m_tree->Branch("hcalovecal1Phot",&hcalovecal1Phot,"hcalovecal1Phot[nPhot]/F"); 
+  m_tree->Branch("ecaliso01Phot",&ecaliso01Phot,"ecaliso01Phot[nPhot]/F"); 
+  m_tree->Branch("ecaliso015Phot",&ecaliso015Phot,"ecaliso015Phot[nPhot]/F");  
   m_tree->Branch("ecaliso04Phot",&ecaliso04Phot,"ecaliso04Phot[nPhot]/F");  
   m_tree->Branch("ecaliso05Phot",&ecaliso05Phot,"ecaliso05Phot[nPhot]/F");  
+  m_tree->Branch("ecaliso07Phot",&ecaliso07Phot,"ecaliso07Phot[nPhot]/F"); 
+  m_tree->Branch("ecaliso1Phot",&ecaliso1Phot,"ecaliso1Phot[nPhot]/F");  
   m_tree->Branch("LATPhot",&LATPhot,"LATPhot[nPhot]/F");
   m_tree->Branch("sMajMajPhot",&sMajMajPhot,"sMajMaj2Phot[nPhot]/F");
   m_tree->Branch("sMinMinPhot",&sMinMinPhot,"sMinMin2Phot[nPhot]/F");
+  m_tree->Branch("alphaPhot",&alphaPhot,"alphaPhot[nPhot]/F");
+  m_tree->Branch("sEtaEtaPhot",&sEtaEtaPhot,"sEtaEtaPhot[nPhot]/F");
+  m_tree->Branch("sPhiPhiPhot",&sPhiPhiPhot,"sPhiPhiPhot[nPhot]/F");
+  m_tree->Branch("E1Phot",&E1Phot,"E1Phot[nPhot]/F");
+  m_tree->Branch("E9Phot",&E9Phot,"E9Phot[nPhot]/F");
+  m_tree->Branch("E25Phot",&E25Phot,"E25Phot[nPhot]/F");
   m_tree->Branch("FisherPhot",&FisherPhot,"FisherPhot[nPhot]/F");
 
   m_tree->Branch("nJet_ite",&nJet_ite,"nJet_ite/I");
@@ -685,21 +818,37 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("etaJet_ite",&etaJet_ite,"etaJet_ite[nJet_ite]/F");
   m_tree->Branch("phiJet_ite",&phiJet_ite,"phiJet_ite[nJet_ite]/F");
 
-  m_tree->Branch("nJet_kt",&nJet_kt,"nJet_kt/I");
-  m_tree->Branch("pxJet_kt ",&pxJet_kt ,"pxJet_kt[nJet_kt]/F");
-  m_tree->Branch("pyJet_kt ",&pyJet_kt ,"pyJet_kt[nJet_kt]/F");
-  m_tree->Branch("pzJet_kt ",&pzJet_kt ,"pzJet_kt[nJet_kt]/F");
-  m_tree->Branch("eJet_kt  ",&eJet_kt  ,"eJet_kt[nJet_kt]/F");
-  m_tree->Branch("etaJet_kt",&etaJet_kt,"etaJet_kt[nJet_kt]/F");
-  m_tree->Branch("phiJet_kt",&phiJet_kt,"phiJet_kt[nJet_kt]/F");
+  m_tree->Branch("nJet_kt4",&nJet_kt4,"nJet_kt4/I");
+  m_tree->Branch("pxJet_kt4 ",&pxJet_kt4 ,"pxJet_kt4[nJet_kt4]/F");
+  m_tree->Branch("pyJet_kt4 ",&pyJet_kt4 ,"pyJet_kt4[nJet_kt4]/F");
+  m_tree->Branch("pzJet_kt4 ",&pzJet_kt4 ,"pzJet_kt4[nJet_kt4]/F");
+  m_tree->Branch("eJet_kt4  ",&eJet_kt4  ,"eJet_kt4[nJet_kt4]/F");
+  m_tree->Branch("etaJet_kt4",&etaJet_kt4,"etaJet_kt4[nJet_kt4]/F");
+  m_tree->Branch("phiJet_kt4",&phiJet_kt4,"phiJet_kt4[nJet_kt4]/F");
 
-  m_tree->Branch("nJet_sis",&nJet_sis,"nJet_sis/I");
-  m_tree->Branch("pxJet_sis ",&pxJet_sis ,"pxJet_sis[nJet_sis]/F");
-  m_tree->Branch("pyJet_sis ",&pyJet_sis ,"pyJet_sis[nJet_sis]/F");
-  m_tree->Branch("pzJet_sis ",&pzJet_sis ,"pzJet_sis[nJet_sis]/F");
-  m_tree->Branch("eJet_sis  ",&eJet_sis  ,"eJet_sis[nJet_sis]/F");
-  m_tree->Branch("etaJet_sis",&etaJet_sis,"etaJet_sis[nJet_sis]/F");
-  m_tree->Branch("phiJet_sis",&phiJet_sis,"phiJet_sis[nJet_sis]/F");
+  m_tree->Branch("nJet_kt6",&nJet_kt6,"nJet_kt6/I");
+  m_tree->Branch("pxJet_kt6 ",&pxJet_kt6 ,"pxJet_kt6[nJet_kt6]/F");
+  m_tree->Branch("pyJet_kt6 ",&pyJet_kt6 ,"pyJet_kt6[nJet_kt6]/F");
+  m_tree->Branch("pzJet_kt6 ",&pzJet_kt6 ,"pzJet_kt6[nJet_kt6]/F");
+  m_tree->Branch("eJet_kt6  ",&eJet_kt6  ,"eJet_kt6[nJet_kt6]/F");
+  m_tree->Branch("etaJet_kt6",&etaJet_kt6,"etaJet_kt6[nJet_kt6]/F");
+  m_tree->Branch("phiJet_kt6",&phiJet_kt6,"phiJet_kt6[nJet_kt6]/F");
+
+  m_tree->Branch("nJet_sis5",&nJet_sis5,"nJet_sis5/I");
+  m_tree->Branch("pxJet_sis5 ",&pxJet_sis5 ,"pxJet_sis5[nJet_sis5]/F");
+  m_tree->Branch("pyJet_sis5 ",&pyJet_sis5 ,"pyJet_sis5[nJet_sis5]/F");
+  m_tree->Branch("pzJet_sis5 ",&pzJet_sis5 ,"pzJet_sis5[nJet_sis5]/F");
+  m_tree->Branch("eJet_sis5  ",&eJet_sis5  ,"eJet_sis5[nJet_sis5]/F");
+  m_tree->Branch("etaJet_sis5",&etaJet_sis5,"etaJet_sis5[nJet_sis5]/F");
+  m_tree->Branch("phiJet_sis5",&phiJet_sis5,"phiJet_sis5[nJet_sis5]/F");
+
+  m_tree->Branch("nJet_sis7",&nJet_sis7,"nJet_sis7/I");
+  m_tree->Branch("pxJet_sis7 ",&pxJet_sis7 ,"pxJet_sis7[nJet_sis7]/F");
+  m_tree->Branch("pyJet_sis7 ",&pyJet_sis7 ,"pyJet_sis7[nJet_sis7]/F");
+  m_tree->Branch("pzJet_sis7 ",&pzJet_sis7 ,"pzJet_sis7[nJet_sis7]/F");
+  m_tree->Branch("eJet_sis7  ",&eJet_sis7  ,"eJet_sis7[nJet_sis7]/F");
+  m_tree->Branch("etaJet_sis7",&etaJet_sis7,"etaJet_sis7[nJet_sis7]/F");
+  m_tree->Branch("phiJet_sis7",&phiJet_sis7,"phiJet_sis7[nJet_sis7]/F");
 
   m_tree->Branch("nJet_pfite",&nJet_pfite,"nJet_pfite/I");
   m_tree->Branch("pxJet_pfite ",&pxJet_pfite ,"pxJet_pfite[nJet_pfite]/F");
@@ -717,21 +866,37 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("etaJetGen_ite",&etaJetGen_ite,"etaJetGen_ite[nJetGen_ite]/F");
   m_tree->Branch("phiJetGen_ite",&phiJetGen_ite,"phiJetGen_ite[nJetGen_ite]/F");
 
-  m_tree->Branch("nJetGen_kt",&nJetGen_kt,"nJetGen_kt/I");
-  m_tree->Branch("pxJetGen_kt ",&pxJetGen_kt ,"pxJetGen_kt[nJetGen_kt]/F");
-  m_tree->Branch("pyJetGen_kt ",&pyJetGen_kt ,"pyJetGen_kt[nJetGen_kt]/F");
-  m_tree->Branch("pzJetGen_kt ",&pzJetGen_kt ,"pzJetGen_kt[nJetGen_kt]/F");
-  m_tree->Branch("eJetGen_kt  ",&eJetGen_kt  ,"eJetGen_kt[nJetGen_kt]/F");
-  m_tree->Branch("etaJetGen_kt",&etaJetGen_kt,"etaJetGen_kt[nJetGen_kt]/F");
-  m_tree->Branch("phiJetGen_kt",&phiJetGen_kt,"phiJetGen_kt[nJetGen_kt]/F");
+  m_tree->Branch("nJetGen_kt4",&nJetGen_kt4,"nJetGen_kt4/I");
+  m_tree->Branch("pxJetGen_kt4 ",&pxJetGen_kt4 ,"pxJetGen_kt4[nJetGen_kt4]/F");
+  m_tree->Branch("pyJetGen_kt4 ",&pyJetGen_kt4 ,"pyJetGen_kt4[nJetGen_kt4]/F");
+  m_tree->Branch("pzJetGen_kt4 ",&pzJetGen_kt4 ,"pzJetGen_kt4[nJetGen_kt4]/F");
+  m_tree->Branch("eJetGen_kt4  ",&eJetGen_kt4  ,"eJetGen_kt4[nJetGen_kt4]/F");
+  m_tree->Branch("etaJetGen_kt4",&etaJetGen_kt4,"etaJetGen_kt4[nJetGen_kt4]/F");
+  m_tree->Branch("phiJetGen_kt4",&phiJetGen_kt4,"phiJetGen_kt4[nJetGen_kt4]/F");
 
-  m_tree->Branch("nJetGen_sis",&nJetGen_sis,"nJetGen_sis/I");
-  m_tree->Branch("pxJetGen_sis ",&pxJetGen_sis ,"pxJetGen_sis[nJetGen_sis]/F");
-  m_tree->Branch("pyJetGen_sis ",&pyJetGen_sis ,"pyJetGen_sis[nJetGen_sis]/F");
-  m_tree->Branch("pzJetGen_sis ",&pzJetGen_sis ,"pzJetGen_sis[nJetGen_sis]/F");
-  m_tree->Branch("eJetGen_sis  ",&eJetGen_sis  ,"eJetGen_sis[nJetGen_sis]/F");
-  m_tree->Branch("etaJetGen_sis",&etaJetGen_sis,"etaJetGen_sis[nJetGen_sis]/F");
-  m_tree->Branch("phiJetGen_sis",&phiJetGen_sis,"phiJetGen_sis[nJetGen_sis]/F");
+  m_tree->Branch("nJetGen_kt6",&nJetGen_kt6,"nJetGen_kt6/I");
+  m_tree->Branch("pxJetGen_kt6 ",&pxJetGen_kt6 ,"pxJetGen_kt6[nJetGen_kt6]/F");
+  m_tree->Branch("pyJetGen_kt6 ",&pyJetGen_kt6 ,"pyJetGen_kt6[nJetGen_kt6]/F");
+  m_tree->Branch("pzJetGen_kt6 ",&pzJetGen_kt6 ,"pzJetGen_kt6[nJetGen_kt6]/F");
+  m_tree->Branch("eJetGen_kt6  ",&eJetGen_kt6  ,"eJetGen_kt6[nJetGen_kt6]/F");
+  m_tree->Branch("etaJetGen_kt6",&etaJetGen_kt6,"etaJetGen_kt6[nJetGen_kt6]/F");
+  m_tree->Branch("phiJetGen_kt6",&phiJetGen_kt6,"phiJetGen_kt6[nJetGen_kt6]/F");
+
+  m_tree->Branch("nJetGen_sis5",&nJetGen_sis5,"nJetGen_sis5/I");
+  m_tree->Branch("pxJetGen_sis5 ",&pxJetGen_sis5 ,"pxJetGen_sis5[nJetGen_sis5]/F");
+  m_tree->Branch("pyJetGen_sis5 ",&pyJetGen_sis5 ,"pyJetGen_sis5[nJetGen_sis5]/F");
+  m_tree->Branch("pzJetGen_sis5 ",&pzJetGen_sis5 ,"pzJetGen_sis5[nJetGen_sis5]/F");
+  m_tree->Branch("eJetGen_sis5  ",&eJetGen_sis5  ,"eJetGen_sis5[nJetGen_sis5]/F");
+  m_tree->Branch("etaJetGen_sis5",&etaJetGen_sis5,"etaJetGen_sis5[nJetGen_sis5]/F");
+  m_tree->Branch("phiJetGen_sis5",&phiJetGen_sis5,"phiJetGen_sis5[nJetGen_sis5]/F");
+
+  m_tree->Branch("nJetGen_sis7",&nJetGen_sis7,"nJetGen_sis7/I");
+  m_tree->Branch("pxJetGen_sis7 ",&pxJetGen_sis7 ,"pxJetGen_sis7[nJetGen_sis7]/F");
+  m_tree->Branch("pyJetGen_sis7 ",&pyJetGen_sis7 ,"pyJetGen_sis7[nJetGen_sis7]/F");
+  m_tree->Branch("pzJetGen_sis7 ",&pzJetGen_sis7 ,"pzJetGen_sis7[nJetGen_sis7]/F");
+  m_tree->Branch("eJetGen_sis7  ",&eJetGen_sis7  ,"eJetGen_sis7[nJetGen_sis7]/F");
+  m_tree->Branch("etaJetGen_sis7",&etaJetGen_sis7,"etaJetGen_sis7[nJetGen_sis7]/F");
+  m_tree->Branch("phiJetGen_sis7",&phiJetGen_sis7,"phiJetGen_sis7[nJetGen_sis7]/F");
 
   m_tree->Branch("pxMet ",&pxMet ,"pxMet/F");
   m_tree->Branch("pyMet ",&pyMet ,"pyMet/F");
