@@ -435,16 +435,20 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
   }
 
   unsigned int high, second_high, low;  
-  const unsigned int iterations = 1;//---- to be replaced by something better
-  for(unsigned int iIt = 0;iIt<iterations;++iIt){
+  //const unsigned int iterations = 1;//---- to be replaced by something better
+  int iCalls = 0;
+  //for(unsigned int iIt = 0;iIt<iterations;++iIt){
+  while(iCalls<3.){
     //---- SIMPLEX step 1
     pickElemets(chi2Feet, high, second_high, low);
+    ++iCalls;
     feet[high] = reflectFoot(feet, high, reflect );
     chi2Feet[high] = chi2AtSpecificStep(feet[high], r3T, muonCandidate, lastUpdatedTSOS,
                                         trajectoryMeasurementsInTheSet, detailedOutput);
     lastUpdatedTSOS_pointer[high] = &lastUpdatedTSOS;
     //---- SIMPLEX step 2.1
     if(chi2Feet[high] <chi2Feet[low]){
+      ++iCalls; 
       feet[high] = reflectFoot(feet, high, expand);
       chi2Feet[high] = chi2AtSpecificStep(feet[high], r3T, muonCandidate, lastUpdatedTSOS,
                                           trajectoryMeasurementsInTheSet, detailedOutput);
@@ -453,6 +457,7 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
     //---- SIMPLEX step 2.2
     else if( chi2Feet[high] > chi2Feet[second_high]){
       double worstChi2 = chi2Feet[high];
+      ++iCalls;
       feet[high] =  reflectFoot(feet, high, contract);
       chi2Feet[high] = chi2AtSpecificStep(feet[high], r3T, muonCandidate, lastUpdatedTSOS,
                                           trajectoryMeasurementsInTheSet, detailedOutput);
@@ -461,10 +466,12 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
       if(chi2Feet[high] <worstChi2){
         nDimContract(feet, low);
         for(unsigned int iFoot = 0; iFoot<feet.size();++iFoot){
+	  ++iCalls; 
           chi2Feet[iFoot] = chi2AtSpecificStep(feet[iFoot], r3T, muonCandidate, lastUpdatedTSOS,
                                                trajectoryMeasurementsInTheSet, detailedOutput);
           lastUpdatedTSOS_pointer[iFoot] = &lastUpdatedTSOS;
         }
+	--iCalls;// one of the above is not changed
       }
     }
   }
