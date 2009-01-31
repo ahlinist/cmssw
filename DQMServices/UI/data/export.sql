@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - Tuesday-September-30-2008   
+--  File created - Saturday-January-31-2009   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Table RR_L1SOURCES
@@ -29,7 +29,8 @@
 	"PIX" VARCHAR2(4), 
 	"RPC" VARCHAR2(4), 
 	"SIST" VARCHAR2(4), 
-	"SCAL" VARCHAR2(4)
+	"SCAL" VARCHAR2(4), 
+	"LAST_UPDATE" DATE
    ) ;
 --------------------------------------------------------
 --  DDL for Table RR_RUNS
@@ -43,15 +44,19 @@
 	"RUN_START_TIME" DATE, 
 	"RUN_END_TIME" DATE, 
 	"RUN_STOP_REASON" VARCHAR2(1000), 
-	"RUN_L1KEY" VARCHAR2(100), 
-	"RUN_HLTKEY" VARCHAR2(100), 
+	"RUN_L1KEY" VARCHAR2(200), 
+	"RUN_HLTKEY" VARCHAR2(200), 
 	"RUN_INDBS" VARCHAR2(1) DEFAULT 'N', 
 	"RUN_CREATE_TIME" DATE, 
 	"RUN_CREATE_USER" VARCHAR2(30), 
 	"RUN_COMMENT" VARCHAR2(1000), 
 	"RUN_GLOBALNAME" VARCHAR2(20), 
 	"RUN_OFFLINE_COMMENT" VARCHAR2(1000), 
-	"RUN_STATUS" VARCHAR2(10) DEFAULT 'ONLINE'
+	"RUN_STATUS" VARCHAR2(10) DEFAULT 'ONLINE', 
+	"RUN_LAST_USER" VARCHAR2(100), 
+	"RUN_LAST_CERT" CLOB, 
+	"RUN_BFIELD" NUMBER(6,5), 
+	"RUN_BFIELD_COMMENT" VARCHAR2(100)
    ) ;
 --------------------------------------------------------
 --  DDL for Table RR_RUNS$A
@@ -65,8 +70,8 @@
 	"RUN_START_TIME" DATE, 
 	"RUN_END_TIME" DATE, 
 	"RUN_STOP_REASON" VARCHAR2(200), 
-	"RUN_L1KEY" VARCHAR2(100), 
-	"RUN_HLTKEY" VARCHAR2(100), 
+	"RUN_L1KEY" VARCHAR2(200), 
+	"RUN_HLTKEY" VARCHAR2(200), 
 	"RUN_INDBS" VARCHAR2(1) DEFAULT 'N', 
 	"RUN_CREATE_TIME" DATE, 
 	"RUN_CREATE_USER" VARCHAR2(30), 
@@ -75,7 +80,38 @@
 	"RUN_OFFLINE_COMMENT" VARCHAR2(1000), 
 	"RUN_STATUS" VARCHAR2(10), 
 	"RUN_ACTION_DATE" DATE, 
-	"RUN_ACTION_TYPE" VARCHAR2(1)
+	"RUN_ACTION_TYPE" VARCHAR2(1), 
+	"RUN_LAST_USER" VARCHAR2(100), 
+	"RUN_LAST_CERT" CLOB, 
+	"RUN_BFIELD" NUMBER(6,5), 
+	"RUN_BFIELD_COMMENT" VARCHAR2(100)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table RR_RUNS_VERSIONS
+--------------------------------------------------------
+
+  CREATE TABLE "RR_RUNS_VERSIONS" 
+   (	"RUV_NUMBER" NUMBER(10,0), 
+	"RUV_SHIFTER" VARCHAR2(100), 
+	"RUV_EVENTS" NUMBER(10,0), 
+	"RUV_RATE" NUMBER(10,2), 
+	"RUV_START_TIME" DATE, 
+	"RUV_END_TIME" DATE, 
+	"RUV_STOP_REASON" VARCHAR2(1000), 
+	"RUV_L1KEY" VARCHAR2(200), 
+	"RUV_HLTKEY" VARCHAR2(200), 
+	"RUV_INDBS" VARCHAR2(1), 
+	"RUV_CREATE_TIME" DATE, 
+	"RUV_CREATE_USER" VARCHAR2(30), 
+	"RUV_COMMENT" VARCHAR2(1000), 
+	"RUV_GLOBALNAME" VARCHAR2(20), 
+	"RUV_OFFLINE_COMMENT" VARCHAR2(1000), 
+	"RUV_STATUS" VARCHAR2(10), 
+	"RUV_LAST_USER" VARCHAR2(100), 
+	"RUV_LAST_CERT" CLOB, 
+	"RUV_BFIELD" NUMBER(6,5), 
+	"RUV_BFIELD_COMMENT" VARCHAR2(100), 
+	"RUV_ID" NUMBER(10,0)
    ) ;
 --------------------------------------------------------
 --  DDL for Table RR_RUN_L1SOURCES
@@ -96,6 +132,15 @@
 	"RL1_COMMENT" VARCHAR2(100), 
 	"RL1_ACTION_DATE" DATE, 
 	"RL1_ACTION_TYPE" VARCHAR2(1)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table RR_RUN_L1SOURCES_VERSIONS
+--------------------------------------------------------
+
+  CREATE TABLE "RR_RUN_L1SOURCES_VERSIONS" 
+   (	"RL1_RUN_NUMBER" NUMBER(10,0), 
+	"RL1_L1S_ABBR" VARCHAR2(10), 
+	"RL1_COMMENT" VARCHAR2(100)
    ) ;
 --------------------------------------------------------
 --  DDL for Table RR_RUN_SUBSYSTEMS
@@ -157,6 +202,59 @@ SUB_TYPE IN ('ONLINE', 'OFFLINE')
  
   ALTER TABLE "RR_RUNINFO_CACHE" MODIFY ("RUN_NUMBER" NOT NULL ENABLE);
 --------------------------------------------------------
+--  Constraints for Table RR_RUN_L1SOURCES_VERSIONS
+--------------------------------------------------------
+
+  ALTER TABLE "RR_RUN_L1SOURCES_VERSIONS" MODIFY ("RL1_RUN_NUMBER" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUN_L1SOURCES_VERSIONS" MODIFY ("RL1_L1S_ABBR" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table RR_RUNS_VERSIONS
+--------------------------------------------------------
+
+  ALTER TABLE "RR_RUNS_VERSIONS" ADD CONSTRAINT "RR_RUNS_VERSIONS_PK" PRIMARY KEY ("RUV_ID") ENABLE;
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_NUMBER" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_SHIFTER" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_EVENTS" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_RATE" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_START_TIME" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_L1KEY" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_HLTKEY" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_INDBS" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_CREATE_TIME" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_CREATE_USER" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_GLOBALNAME" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_STATUS" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUNS_VERSIONS" MODIFY ("RUV_ID" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table RR_RUN_SUBSYSTEMS
+--------------------------------------------------------
+
+  ALTER TABLE "RR_RUN_SUBSYSTEMS" ADD CONSTRAINT "RR_RUN_SUBSYSTEMS_CHK1" CHECK (
+RSU_VALUE IN ('GOOD', 'BAD', 'NOTSET', 'EXCL')
+) ENABLE;
+ 
+  ALTER TABLE "RR_RUN_SUBSYSTEMS" ADD CONSTRAINT "RR_RUN_SUBSYSTEMS_PK" PRIMARY KEY ("RSU_RUN_NUMBER", "RSU_SUB_ABBR") ENABLE;
+ 
+  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_RUN_NUMBER" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_SUB_ABBR" NOT NULL ENABLE);
+ 
+  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_VALUE" NOT NULL ENABLE);
+--------------------------------------------------------
 --  Constraints for Table RR_RUN_L1SOURCES
 --------------------------------------------------------
 
@@ -177,7 +275,7 @@ SUB_TYPE IN ('ONLINE', 'OFFLINE')
 --------------------------------------------------------
 
   ALTER TABLE "RR_RUNS" ADD CONSTRAINT "RR_RUNS_CHK1" CHECK (
-RUN_STATUS IN ('ONLINE', 'OFFLINE', 'EXPERT', 'COMPLETED')
+RUN_STATUS IN ('ONLINE', 'OFFLINE', 'SIGNOFF', 'COMPLETED')
 ) ENABLE;
  
   ALTER TABLE "RR_RUNS" ADD CONSTRAINT "RR_RUNS_INDBS_CHK" CHECK (
@@ -209,21 +307,6 @@ RUN_INDBS IN ('Y','N')
   ALTER TABLE "RR_RUNS" MODIFY ("RUN_GLOBALNAME" NOT NULL ENABLE);
  
   ALTER TABLE "RR_RUNS" MODIFY ("RUN_STATUS" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table RR_RUN_SUBSYSTEMS
---------------------------------------------------------
-
-  ALTER TABLE "RR_RUN_SUBSYSTEMS" ADD CONSTRAINT "RR_RUN_SUBSYSTEMS_CHK1" CHECK (
-RSU_VALUE IN ('GOOD', 'BAD', 'UNKNOWN','NOTSET')
-) ENABLE;
- 
-  ALTER TABLE "RR_RUN_SUBSYSTEMS" ADD CONSTRAINT "RR_RUN_SUBSYSTEMS_PK" PRIMARY KEY ("RSU_RUN_NUMBER", "RSU_SUB_ABBR") ENABLE;
- 
-  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_RUN_NUMBER" NOT NULL ENABLE);
- 
-  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_SUB_ABBR" NOT NULL ENABLE);
- 
-  ALTER TABLE "RR_RUN_SUBSYSTEMS" MODIFY ("RSU_VALUE" NOT NULL ENABLE);
 --------------------------------------------------------
 --  DDL for Index RR_SUBSYSTEMS_PK
 --------------------------------------------------------
@@ -267,6 +350,12 @@ RSU_VALUE IN ('GOOD', 'BAD', 'UNKNOWN','NOTSET')
   CREATE UNIQUE INDEX "RR_RUN_L1SOURCES_PK" ON "RR_RUN_L1SOURCES" ("RL1_RUN_NUMBER", "RL1_L1S_ABBR") 
   ;
 --------------------------------------------------------
+--  DDL for Index RR_RUNS_VERSIONS_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "RR_RUNS_VERSIONS_PK" ON "RR_RUNS_VERSIONS" ("RUV_ID") 
+  ;
+--------------------------------------------------------
 --  DDL for Index RR_RUNS_PK
 --------------------------------------------------------
 
@@ -297,6 +386,20 @@ RSU_VALUE IN ('GOOD', 'BAD', 'UNKNOWN','NOTSET')
   ALTER TABLE "RR_RUN_SUBSYSTEMS" ADD CONSTRAINT "RR_RUN_SUBSYSTEMS_RR_SUBS_FK1" FOREIGN KEY ("RSU_SUB_ABBR")
 	  REFERENCES "RR_SUBSYSTEMS" ("SUB_ABBR") ENABLE;
 --------------------------------------------------------
+--  DDL for Trigger RR_TRG_RUNINFO_CACHE_DATE
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "RR_TRG_RUNINFO_CACHE_DATE" 
+BEFORE INSERT OR UPDATE ON RR_RUNINFO_CACHE
+FOR EACH ROW 
+BEGIN
+  select sysdate into :new.last_update from dual;
+END;
+
+
+/
+ALTER TRIGGER "RR_TRG_RUNINFO_CACHE_DATE" ENABLE;
+--------------------------------------------------------
 --  DDL for Trigger RR_TRG_RUNS$A
 --------------------------------------------------------
 
@@ -305,7 +408,7 @@ AFTER INSERT OR DELETE OR UPDATE ON RR_RUNS
 REFERENCING OLD AS old NEW AS new 
 FOR EACH ROW 
 DECLARE
-  l_sql varchar2(2000) := 'INSERT INTO RR_RUNS$A VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, sysdate, :17)';
+  l_sql varchar2(2000) := 'INSERT INTO RR_RUNS$A VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, sysdate, :17, :18, :19, :20, :21)';
   l_action varchar2(1);
 BEGIN
 
@@ -336,7 +439,11 @@ BEGIN
       :old.RUN_GLOBALNAME, 
       :old.RUN_OFFLINE_COMMENT, 
       :old.RUN_STATUS, 
-      l_action;
+      l_action,
+      :old.RUN_LAST_USER,
+      :old.RUN_LAST_CERT,
+      :old.RUN_BFIELD,
+      :old.RUN_BFIELD_COMMENT;
   else
     execute immediate l_sql using 
       :new.RUN_NUMBER, 
@@ -355,7 +462,11 @@ BEGIN
       :new.RUN_GLOBALNAME, 
       :new.RUN_OFFLINE_COMMENT, 
       :new.RUN_STATUS, 
-      l_action;
+      l_action,
+      :new.RUN_LAST_USER,
+      :new.RUN_LAST_CERT,
+      :new.RUN_BFIELD,
+      :new.RUN_BFIELD_COMMENT;
   end if;
   
 END;
@@ -363,6 +474,25 @@ END;
 
 /
 ALTER TRIGGER "RR_TRG_RUNS$A" ENABLE;
+--------------------------------------------------------
+--  DDL for Trigger RR_TRG_RUNS_IN_DBS
+--------------------------------------------------------
+
+  CREATE OR REPLACE TRIGGER "RR_TRG_RUNS_IN_DBS" 
+BEFORE INSERT OR UPDATE OF RUN_STATUS ON RR_RUNS
+REFERENCING OLD AS old NEW AS new 
+FOR EACH ROW 
+BEGIN
+  if :new.run_status = 'COMPLETED' then
+    :new.run_indbs := 'Y';
+  else
+    :new.run_indbs := 'N';
+  end if;
+END;
+
+
+/
+ALTER TRIGGER "RR_TRG_RUNS_IN_DBS" ENABLE;
 --------------------------------------------------------
 --  DDL for Trigger RR_TRG_RUN_L1SOURCES$A
 --------------------------------------------------------
@@ -449,12 +579,14 @@ ALTER TRIGGER "RR_TRG_RUN_SUBSYSTEMS$A" ENABLE;
 --  DDL for View RI_RUN_DATA
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RI_RUN_DATA" ("RUN_NUMBER", "RUN_GLOBALNAME", "RUN_INDBS", "RUN_STATUS", "RUN_STOP_REASON", "RUN_COMMENT", "RUN_OFFLINE_COMMENT", "RUN_CREATE_TIME", "RUN_CREATE_USER", "RUN_SHIFTER", "RUN_L1SOURCES", "RSU_RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL", "JMET", "EGAM", "MUON", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
+  CREATE OR REPLACE FORCE VIEW "RI_RUN_DATA" ("RUN_NUMBER", "RUN_GLOBALNAME", "RUN_INDBS", "RUN_STATUS", "RUN_BFIELD", "RUN_BFIELD_COMMENT", "RUN_STOP_REASON", "RUN_COMMENT", "RUN_OFFLINE_COMMENT", "RUN_CREATE_TIME", "RUN_CREATE_USER", "RUN_SHIFTER", "RUN_L1SOURCES", "RSU_RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL", "JMET", "EGAM", "MUON", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
   select 
   a.RUN_NUMBER,
   b.RUN_GLOBALNAME,
   b.RUN_INDBS,
   b.RUN_STATUS,
+  b.RUN_BFIELD,
+  b.run_bfield_comment,
   b.RUN_STOP_REASON,
   b.RUN_COMMENT,
   b.RUN_OFFLINE_COMMENT,
@@ -463,21 +595,21 @@ ALTER TRIGGER "RR_TRG_RUN_SUBSYSTEMS$A" ENABLE;
   b.RUN_SHIFTER,
   b.RUN_L1SOURCES,
   b.RSU_RUN_NUMBER,
-  a.RUN_EVENTS,
-	TO_CHAR(a.RUN_START_TIME, 'YYYY.MM.DD HH:MI:SS') as RUN_START_TIME, 
-  TO_CHAR(a.RUN_END_TIME, 'YYYY.MM.DD HH:MI:SS') as RUN_END_TIME, 
-  a.RUN_RATE,
-  a.RUN_L1KEY,
-  a.RUN_HLTKEY,
-  a.CSC,
-  a.DT,
-  a.ECAL,
-  a.HCAL,
-  a.TRG,
-  a.PIX,
-  a.RPC,
-  a.SIST,
-  a.SCAL,
+  DECODE(b.RUN_NUMBER, null, a.RUN_EVENTS, a.RUN_EVENTS) as RUN_EVENTS,
+	TO_CHAR(a.RUN_START_TIME, 'YYYY.MM.DD HH24:MI:SS') as RUN_START_TIME, 
+  TO_CHAR(a.RUN_END_TIME, 'YYYY.MM.DD HH24:MI:SS') as RUN_END_TIME, 
+  DECODE(b.RUN_NUMBER, null, a.RUN_RATE, b.RUN_RATE) as RUN_RATE,
+  DECODE(b.RUN_NUMBER, null, a.RUN_L1KEY, b.RUN_L1KEY) as RUN_L1KEY,
+  DECODE(b.RUN_NUMBER, null, a.RUN_HLTKEY, b.RUN_HLTKEY) as RUN_HLTKEY,
+  DECODE(b.RUN_NUMBER, null, a.CSC, b.CSC) as CSC,
+  DECODE(b.RUN_NUMBER, null, a.DT, b.DT) as DT,
+  DECODE(b.RUN_NUMBER, null, a.ECAL, b.ECAL) as ECAL,
+  DECODE(b.RUN_NUMBER, null, a.HCAL, b.HCAL) as HCAL,
+  DECODE(b.RUN_NUMBER, null, a.TRG, b.TRG) as TRG,
+  DECODE(b.RUN_NUMBER, null, a.PIX, b.PIX) as PIX,
+  DECODE(b.RUN_NUMBER, null, a.RPC, b.RPC) as RPC,
+  DECODE(b.RUN_NUMBER, null, a.SIST, b.SIST) as SIST,
+  DECODE(b.RUN_NUMBER, null, a.SCAL, b.SCAL) as SCAL,
   b.JMET,
   b.EGAM,
   b.MUON,
@@ -514,7 +646,7 @@ from
 --  DDL for View RR_DBSFLAGS
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_DBSFLAGS" ("run", "tag", "value") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_DBSFLAGS" ("run", "tag", "value") AS 
   select 
   run_number "run", 
   sub_dbs_flag "tag", 
@@ -525,13 +657,12 @@ from
   join rr_subsystems on (sub_abbr = rsu_sub_abbr) 
 where 
   sub_dbs_flag is not null and
-  rsu_value not in ('NOTSET')
- ;
+  rsu_value in ('GOOD', 'BAD');
 --------------------------------------------------------
 --  DDL for View RR_L1S_DATA
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_L1S_DATA" ("RL1_RUN_NUMBER", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_L1S_DATA" ("RL1_RUN_NUMBER", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
   select 
   rl1_run_number, 
 
@@ -559,7 +690,7 @@ group by
 --  DDL for View RR_L1S_XML
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_L1S_XML" ("RL1_RUN_NUMBER", "RL1_XML") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_L1S_XML" ("RL1_RUN_NUMBER", "RL1_XML") AS 
   select 
   rl1_run_number,
   XMLElement("l1sources",
@@ -582,24 +713,25 @@ group by
 --  DDL for View RR_RUNINFO_CACHE_TO_INSERT
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNINFO_CACHE_TO_INSERT" ("RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUNINFO_CACHE_TO_INSERT" ("RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL", "currdate") AS 
   select 
   RUNNUMBER as RUN_NUMBER,
   MAX(DECODE(name, 'CMS.TRG:EVNR', to_number(string_value), null)) as RUN_EVENTS,
   MAX(DECODE(name, 'CMS.LVL0:START_TIME_T', time, null)) as RUN_START_TIME,
   MAX(DECODE(name, 'CMS.LVL0:STOP_TIME_T', time, null)) as RUN_END_TIME,
-  ROUND(AVG(DECODE(name, 'CMS.TRG:Rate', to_number(string_value), null)), 0) as RUN_RATE,
-  MAX(DECODE(name, 'CMS.TRG:TSC_KEY', string_value, null)) as RUN_L1KEY,
-  MAX(DECODE(name, 'CMS.LVL0:HLT_KEY_DESCRIPTION', string_value, null)) as RUN_HLTKEY,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC', string_value, null)), 'In', 'GOOD', null) as CSC,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:DT', string_value, null)), 'In', 'GOOD', null) as DT,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL', string_value, null)), 'In', 'GOOD', null) as ECAL,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL', string_value, null)), 'In', 'GOOD', null) as HCAL,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG', string_value, null)), 'In', 'GOOD', null) as TRG,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL', string_value, null)), 'In', 'GOOD', null) as PIX,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC', string_value, null)), 'In', 'GOOD', null) as RPC,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER', string_value, null)), 'In', 'GOOD', null) as SIST,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL', string_value, null)), 'In', 'GOOD', null) as SCAL
+  nvl(ROUND(AVG(DECODE(name, 'CMS.TRG:Rate', to_number(string_value), null)), 0), 0) as RUN_RATE,
+  nvl(MAX(DECODE(name, 'CMS.TRG:TSC_KEY', string_value, null)), 'n/a') as RUN_L1KEY,
+  nvl(MAX(DECODE(name, 'CMS.LVL0:HLT_KEY_DESCRIPTION', string_value, null)), 'n/a') as RUN_HLTKEY,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC_STATE', string_value, null)), null, null, 'GOOD')) as CSC,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:DT', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:DT_STATE', string_value, null)), null, null, 'GOOD')) as DT,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL_STATE', string_value, null)), null, null, 'GOOD')) as ECAL,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL_STATE', string_value, null)), null, null, 'GOOD')) as HCAL,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG_STATE', string_value, null)), null, null, 'GOOD')) as TRG,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL_STATE', string_value, null)), null, null, 'GOOD')) as PIX,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC_STATE', string_value, null)), null, null, 'GOOD')) as RPC,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER_STATE', string_value, null)), null, null, 'GOOD')) as SIST,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL_STATE', string_value, null)), null, null, 'GOOD')) as SCAL,
+  sysdate
 from
   RUNSESSION_PARAMETER
 where
@@ -610,35 +742,37 @@ group by
 --  DDL for View RR_RUNINFO_CACHE_TO_UPDATE
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNINFO_CACHE_TO_UPDATE" ("RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL") AS 
-  select 
-  RUNNUMBER as RUN_NUMBER,
+  CREATE OR REPLACE FORCE VIEW "RR_RUNINFO_CACHE_TO_UPDATE" ("RUN_NUMBER", "RUN_EVENTS", "RUN_START_TIME", "RUN_END_TIME", "RUN_RATE", "RUN_L1KEY", "RUN_HLTKEY", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "SCAL") AS 
+  select /*+ USE_NL(b, a)*/
+  a.RUNNUMBER as RUN_NUMBER,
   MAX(DECODE(name, 'CMS.TRG:EVNR', to_number(string_value), null)) as RUN_EVENTS,
   MAX(DECODE(name, 'CMS.LVL0:START_TIME_T', time, null)) as RUN_START_TIME,
   MAX(DECODE(name, 'CMS.LVL0:STOP_TIME_T', time, null)) as RUN_END_TIME,
-  ROUND(AVG(DECODE(name, 'CMS.TRG:Rate', to_number(string_value), null)), 0) as RUN_RATE,
-  MAX(DECODE(name, 'CMS.TRG:TSC_KEY', string_value, null)) as RUN_L1KEY,
-  MAX(DECODE(name, 'CMS.LVL0:HLT_KEY_DESCRIPTION', string_value, null)) as RUN_HLTKEY,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC', string_value, null)), 'In', 'GOOD', null) as CSC,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:DT', string_value, null)), 'In', 'GOOD', null) as DT,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL', string_value, null)), 'In', 'GOOD', null) as ECAL,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL', string_value, null)), 'In', 'GOOD', null) as HCAL,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG', string_value, null)), 'In', 'GOOD', null) as TRG,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL', string_value, null)), 'In', 'GOOD', null) as PIX,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC', string_value, null)), 'In', 'GOOD', null) as RPC,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER', string_value, null)), 'In', 'GOOD', null) as SIST,
-  DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL', string_value, null)), 'In', 'GOOD', null) as SCAL
+  nvl(ROUND(AVG(DECODE(name, 'CMS.TRG:Rate', to_number(string_value), null)), 0), 0) as RUN_RATE,
+  nvl(MAX(DECODE(name, 'CMS.TRG:TSC_KEY', string_value, null)), 'n/a') as RUN_L1KEY,
+  nvl(MAX(DECODE(name, 'CMS.LVL0:HLT_KEY_DESCRIPTION', string_value, null)), 'n/a') as RUN_HLTKEY,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:CSC_STATE', string_value, null)), null, null, 'GOOD')) as CSC,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:DT', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:DT_STATE', string_value, null)), null, null, 'GOOD')) as DT,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:ECAL_STATE', string_value, null)), null, null, 'GOOD')) as ECAL,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:HCAL_STATE', string_value, null)), null, null, 'GOOD')) as HCAL,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:TRG_STATE', string_value, null)), null, null, 'GOOD')) as TRG,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:PIXEL_STATE', string_value, null)), null, null, 'GOOD')) as PIX,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:RPC_STATE', string_value, null)), null, null, 'GOOD')) as RPC,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:TRACKER_STATE', string_value, null)), null, null, 'GOOD')) as SIST,
+  DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL', string_value, null)), 'In', 'GOOD', DECODE(MAX(DECODE(name, 'CMS.LVL0:SCAL_STATE', string_value, null)), null, null, 'GOOD')) as SCAL
+
 from
-  RUNSESSION_PARAMETER
+  RUNSESSION_PARAMETER a,
+  (select RUN_NUMBER from (select RUN_NUMBER, ROW_NUMBER() OVER (ORDER BY RUN_NUMBER desc) as n from rr_runinfo_cache) where N < 20 union select RUN_NUMBER from rr_runs where run_end_time is null) b
 where
-  RUNNUMBER = nvl((select max(RUN_NUMBER) from rr_runinfo_cache), 0)
+  a.RUNNUMBER = b.run_number 
 group by
   RUNNUMBER;
 --------------------------------------------------------
 --  DDL for View RR_RUNINFO_SUBS_TO_DELETE
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNINFO_SUBS_TO_DELETE" ("RSU_RUN_NUMBER", "RSU_SUB_ABBR", "RSU_COMMENT", "RSU_VALUE") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUNINFO_SUBS_TO_DELETE" ("RSU_RUN_NUMBER", "RSU_SUB_ABBR", "RSU_COMMENT", "RSU_VALUE") AS 
   select 
   a."RSU_RUN_NUMBER",a."RSU_SUB_ABBR",a."RSU_COMMENT",a."RSU_VALUE" 
 from 
@@ -653,7 +787,7 @@ where
 --  DDL for View RR_RUNINFO_SUBS_TO_INSERT
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNINFO_SUBS_TO_INSERT" ("number", "sub", "value") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUNINFO_SUBS_TO_INSERT" ("number", "sub", "value") AS 
   select distinct 
   a.runnumber "number",
   b.sub_abbr "sub",
@@ -673,7 +807,7 @@ where
 --  DDL for View RR_RUNINFO_SUBS_TO_UPDATE
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNINFO_SUBS_TO_UPDATE" ("number", "sub", "value") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUNINFO_SUBS_TO_UPDATE" ("number", "sub", "value") AS 
   select distinct 
   a.runnumber "number",
   b.sub_abbr "sub",
@@ -695,7 +829,7 @@ where
 --  DDL for View RR_RUNS_TO_OFFLINE
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUNS_TO_OFFLINE" ("run_number") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUNS_TO_OFFLINE" ("run_number") AS 
   select 
   r.run_number
 from 
@@ -709,7 +843,7 @@ where
 --  DDL for View RR_RUN_DATA
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUN_DATA" ("RUN_GLOBALNAME", "RUN_NUMBER", "RUN_EVENTS", "RUN_RATE", "RUN_INDBS", "RUN_STATUS", "RUN_START_TIME", "RUN_END_TIME", "RUN_STOP_REASON", "RUN_L1KEY", "RUN_HLTKEY", "RUN_COMMENT", "RUN_OFFLINE_COMMENT", "RUN_CREATE_TIME", "RUN_CREATE_USER", "RUN_SHIFTER", "RUN_L1SOURCES", "RSU_RUN_NUMBER", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "JMET", "EGAM", "MUON", "SCAL", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment", "RL1_RUN_NUMBER", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUN_DATA" ("RUN_GLOBALNAME", "RUN_NUMBER", "RUN_EVENTS", "RUN_RATE", "RUN_INDBS", "RUN_STATUS", "RUN_BFIELD", "RUN_BFIELD_COMMENT", "RUN_START_TIME", "RUN_END_TIME", "RUN_STOP_REASON", "RUN_L1KEY", "RUN_HLTKEY", "RUN_COMMENT", "RUN_OFFLINE_COMMENT", "RUN_CREATE_TIME", "RUN_CREATE_USER", "RUN_SHIFTER", "RUN_L1SOURCES", "RSU_RUN_NUMBER", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "JMET", "EGAM", "MUON", "SCAL", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment", "RL1_RUN_NUMBER", "l1s_CSC", "l1s_DT", "l1s_ECAL", "l1s_HCAL", "l1s_Random", "l1s_RPC", "l1s_Other", "l1s_CSC_comment", "l1s_DT_comment", "l1s_ECAL_comment", "l1s_HCAL_comment", "l1s_Random_comment", "l1s_RPC_comment", "l1s_Other_comment") AS 
   SELECT
    RUN_GLOBALNAME,
    RUN_NUMBER, 
@@ -717,14 +851,16 @@ where
 	 RUN_RATE, 
    RUN_INDBS,
    RUN_STATUS,
-   TO_CHAR(RUN_START_TIME, 'YYYY.MM.DD HH:MI:SS') as RUN_START_TIME, 
-   TO_CHAR(RUN_END_TIME, 'YYYY.MM.DD HH:MI:SS') as RUN_END_TIME,
+   RUN_BFIELD,
+   run_bfield_comment,
+   TO_CHAR(RUN_START_TIME, 'YYYY.MM.DD HH24:MI:SS') as RUN_START_TIME, 
+   TO_CHAR(RUN_END_TIME, 'YYYY.MM.DD HH24:MI:SS') as RUN_END_TIME,
 	 RUN_STOP_REASON, 
 	 RUN_L1KEY, 
    RUN_HLTKEY, 
    RUN_COMMENT,
    RUN_OFFLINE_COMMENT,
-   TO_CHAR(RUN_CREATE_TIME, 'YYYY.MM.DD HH:MI:SS') as RUN_CREATE_TIME,  
+   TO_CHAR(RUN_CREATE_TIME, 'YYYY.MM.DD HH24:MI:SS') as RUN_CREATE_TIME,  
    RUN_CREATE_USER,
    RUN_SHIFTER,
    RR_UTILS.get_l1sources(RUN_NUMBER) as RUN_L1SOURCES,
@@ -738,7 +874,7 @@ from
 --  DDL for View RR_RUN_DATA_XML
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUN_DATA_XML" ("XML", "RUN_NUMBER") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUN_DATA_XML" ("XML", "RUN_NUMBER") AS 
   select 
   XMLElement("RUN",
     XMLElement("RUN_NUMBER","RUN_NUMBER"),
@@ -759,6 +895,8 @@ from
     XMLElement("RUN_RATE","RUN_RATE"),
     XMLElement("RUN_L1KEY","RUN_L1KEY"),
     XMLElement("RUN_HLTKEY","RUN_HLTKEY"),
+    XMLElement("RUN_BFIELD","RUN_BFIELD"),
+    XMLElement("RUN_BFIELD_COMMENT","RUN_BFIELD_COMMENT"),
     XMLElement("CSC","CSC"),
     XMLElement("DT","DT"),
     XMLElement("ECAL","ECAL"),
@@ -820,6 +958,8 @@ select
     RUN_RATE,
     RUN_L1KEY,
     RUN_HLTKEY,
+    RUN_BFIELD,
+    RUN_BFIELD_COMMENT,
     CSC,
     DT,
     ECAL,
@@ -874,11 +1014,13 @@ select
   null as RUN_L1SOURCES,
   null as RSU_RUN_NUMBER,
   a.RUN_EVENTS,
-	to_char(a.RUN_START_TIME, 'YYYY-MM-DD HH:MI:SS') as RUN_START_TIME, 
-  to_char(a.RUN_END_TIME, 'YYYY-MM-DD HH:MI:SS') as RUN_END_TIME, 
+	to_char(a.RUN_START_TIME, 'YYYY-MM-DD HH24:MI:SS') as RUN_START_TIME, 
+  to_char(a.RUN_END_TIME, 'YYYY-MM-DD HH24:MI:SS') as RUN_END_TIME, 
   a.RUN_RATE,
   a.RUN_L1KEY,
   a.RUN_HLTKEY,
+  null as RUN_BFIELD,
+  null as RUN_BFIELD_COMMENT,
   a.CSC,
   a.DT,
   a.ECAL,
@@ -926,7 +1068,7 @@ where
 --  DDL for View RR_RUN_MTIME
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_RUN_MTIME" ("run_number", "mtime") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_RUN_MTIME" ("run_number", "mtime") AS 
   select
  a.n "run_number",
  greatest(a.t, b.t, c.t) "mtime"
@@ -940,7 +1082,7 @@ where
 --  DDL for View RR_SUB_DATA
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_SUB_DATA" ("RSU_RUN_NUMBER", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "JMET", "EGAM", "MUON", "SCAL", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_SUB_DATA" ("RSU_RUN_NUMBER", "CSC", "DT", "ECAL", "HCAL", "TRG", "PIX", "RPC", "SIST", "JMET", "EGAM", "MUON", "SCAL", "CSC_comment", "DT_comment", "ECAL_comment", "HCAL_comment", "TRG_comment", "PIX_comment", "RPC_comment", "SIST_comment", "JMET_comment", "EGAM_comment", "MUON_comment", "SCAL_comment") AS 
   select 
   rsu_run_number, 
 
@@ -978,7 +1120,7 @@ group by
 --  DDL for View RR_SUB_XML
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_SUB_XML" ("RSU_RUN_NUMBER", "RSU_XML") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_SUB_XML" ("RSU_RUN_NUMBER", "RSU_XML") AS 
   select 
   rsu_run_number,
   XMLElement("subsystems",
@@ -1001,7 +1143,7 @@ group by
 --  DDL for View RR_XMLDATA
 --------------------------------------------------------
 
-  CREATE OR REPLACE VIEW "RR_XMLDATA" ("XML", "RUN_NUMBER", "RUN_SHIFTER", "RUN_GLOBALNAME", "RUN_STATUS", "RUN_SUBSYSTEMS") AS 
+  CREATE OR REPLACE FORCE VIEW "RR_XMLDATA" ("XML", "RUN_NUMBER", "RUN_SHIFTER", "RUN_GLOBALNAME", "RUN_STATUS", "RUN_SUBSYSTEMS") AS 
   select XMLElement("run", 
 	 XMLAttributes(
      RUN_NUMBER as "id"
@@ -1041,12 +1183,25 @@ rr_utils.get_subsystems(RUN_NUMBER) as "RUN_SUBSYSTEMS"
 from 
   rr_runs r;
 --------------------------------------------------------
+--  DDL for Function GET_MAGNETIC_FIELD
+--------------------------------------------------------
+
+  CREATE OR REPLACE FUNCTION "GET_MAGNETIC_FIELD" 
+( run_number IN NUMBER
+) RETURN NUMBER AS
+BEGIN
+  return cms_wbm.rundb.get_magnetic_field(run_number);
+END GET_MAGNETIC_FIELD;
+
+/
+
+--------------------------------------------------------
 --  DDL for Package RR_RUNINFO
 --------------------------------------------------------
 
   CREATE OR REPLACE PACKAGE "RR_RUNINFO" AS
 
-  function create_run(p_runnumber in number, p_username in VARCHAR2, p_globalname in VARCHAR2) RETURN number;
+  function create_run(p_runnumber in number, p_username in VARCHAR2, p_globalname in VARCHAR2, p_cert in VARCHAR2) RETURN number;
   procedure update_runs;
   procedure start_jobs;
   procedure stop_jobs;
@@ -1092,25 +1247,20 @@ END RR_UTILS;
 
   CREATE OR REPLACE PACKAGE BODY "RR_RUNINFO" AS
 
-  function create_run(p_runnumber in number, p_username in VARCHAR2, p_globalname in VARCHAR2) RETURN number AS
-
+  function create_run(p_runnumber in number, p_username in VARCHAR2, p_globalname in VARCHAR2, p_cert in VARCHAR2) RETURN number AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-
-    l_RUN_NUMBER RR_RUNS.RUN_NUMBER%type := p_runnumber;
-    l_RUN_SHIFTER RR_RUNS.RUN_SHIFTER%type := p_username;
-    l_RUN_EVENTS RR_RUNS.RUN_EVENTS%type;
-    l_RUN_RATE RR_RUNS.RUN_RATE%type;
-    l_RUN_START_TIME RR_RUNS.RUN_START_TIME%type;
-    l_RUN_END_TIME RR_RUNS.RUN_END_TIME%type;
-    l_RUN_L1KEY RR_RUNS.RUN_L1KEY%type;
-    l_RUN_HLTKEY RR_RUNS.RUN_HLTKEY%type;
-    l_RUN_CREATE_TIME RR_RUNS.RUN_CREATE_TIME%type := sysdate;
-    l_RUN_CREATE_USER RR_RUNS.RUN_CREATE_USER%type := p_username;
-    l_RUN_GLOBALNAME RR_RUNS.RUN_GLOBALNAME%type := p_globalname;
-    
     l_number NUMBER := 0; 
+  BEGIN
+
+    set transaction name 'new run';
+
+    select count(*) into l_number from rr_runs where run_number = p_runnumber;
+    if l_number > 0 then
+      rollback;
+      return 2;
+    end if;
     
-    l_sql varchar2(2000) := 'INSERT INTO
+    INSERT INTO
       RR_RUNS (
         RUN_NUMBER,
         RUN_SHIFTER,
@@ -1122,75 +1272,30 @@ END RR_UTILS;
         RUN_HLTKEY,
         RUN_CREATE_TIME,
         RUN_CREATE_USER,
-        RUN_GLOBALNAME
-      ) values (
-        :1,
-        :2,
-        :3,
-        :4,
-        :5,
-        :6,
-        :7,
-        :8,
-        :9,
-        :10,
-        :11
-      )';
-
-  BEGIN
-
-    set transaction name 'new run';
-
-    select count(*) into l_number from rr_runs where run_number = l_RUN_NUMBER;
-    if l_number > 0 then
-      rollback;
-      return 2;
-    end if;
-
-    begin
+        RUN_GLOBALNAME,
+        RUN_LAST_USER,
+        RUN_LAST_CERT,
+        RUN_BFIELD
+      ) select
+        a.run_number,
+        p_username,
+        a.run_events,
+        a.run_rate,
+        a.run_start_time,
+        a.run_end_time,
+        a.run_l1key,
+        a.run_hltkey,
+        sysdate,
+        p_username,
+        p_globalname,
+        p_username,
+        p_cert,
+        get_magnetic_field(p_runnumber)
+      from 
+        rr_runinfo_cache a
+      where
+        run_number = p_runnumber;
     
-      l_RUN_EVENTS := ri_events(l_RUN_NUMBER);
-      l_RUN_START_TIME := ri_start_time(l_RUN_NUMBER);
-      l_RUN_RATE := round(ri_rate(l_RUN_NUMBER), 0);
-      l_RUN_L1KEY := ri_l1key(l_RUN_NUMBER);
-      l_RUN_HLTKEY := ri_hltkey(l_RUN_NUMBER);
-      -- ri_lastentries(l_RUN_SHIFTER, l_RUN_GLOBALNAME);
-      l_RUN_END_TIME := ri_end_time(l_RUN_NUMBER);
-      
-    exception when NO_DATA_FOUND then
-      rollback;
-      RETURN 1;
-    end;
-    
-    execute immediate l_sql using
-        l_RUN_NUMBER,
-        l_RUN_SHIFTER,
-        l_RUN_EVENTS,
-        l_RUN_RATE,
-        l_RUN_START_TIME,
-        l_RUN_END_TIME,
-        l_RUN_L1KEY,
-        l_RUN_HLTKEY,
-        l_RUN_CREATE_TIME,
-        l_RUN_CREATE_USER,
-        l_RUN_GLOBALNAME;
-    
-        -- Insert existing subsystems
-/*
-    insert into 
-      RR_RUN_SUBSYSTEMS 
-      (RSU_RUN_NUMBER, RSU_SUB_ABBR, RSU_VALUE)
-    select 
-      runsession_parameter.runnumber,
-      rr_subsystems.sub_abbr,
-      'GOOD'
-    from 
-      runsession_parameter join rr_subsystems on (runsession_parameter.name = rr_subsystems.sub_runsession_parameter_name) 
-    where 
-      runsession_parameter.string_value = 'In' and
-      runsession_parameter.runnumber = l_RUN_NUMBER;
-*/
-
     commit;
     RETURN 0;
     
@@ -1223,7 +1328,8 @@ END RR_UTILS;
 
       -- Update run data from run info
       update RR_RUNS a set (RUN_EVENTS, RUN_RATE, RUN_END_TIME) = 
-        (select RUN_EVENTS, RUN_RATE, RUN_END_TIME from RR_RUNINFO_CACHE b where a.run_number = b.run_number) where a.run_end_time is null;
+        (select RUN_EVENTS, RUN_RATE, RUN_END_TIME from RR_RUNINFO_CACHE b 
+          where a.run_number = b.run_number) where a.run_end_time is null;
         
       commit;
 
@@ -1370,6 +1476,123 @@ END RR_UTILS;
     where 
       run_number = (select max(run_number) from rr_runs);
   end;
+  
+/*
+  function create_run(p_runnumber in number, p_username in VARCHAR2, p_globalname in VARCHAR2, p_cert in VARCHAR2) RETURN number AS
+
+    PRAGMA AUTONOMOUS_TRANSACTION;
+
+    l_RUN_NUMBER RR_RUNS.RUN_NUMBER%type := p_runnumber;
+    l_RUN_SHIFTER RR_RUNS.RUN_SHIFTER%type := p_username;
+    l_RUN_EVENTS RR_RUNS.RUN_EVENTS%type;
+    l_RUN_RATE RR_RUNS.RUN_RATE%type;
+    l_RUN_START_TIME RR_RUNS.RUN_START_TIME%type;
+    l_RUN_END_TIME RR_RUNS.RUN_END_TIME%type;
+    l_RUN_L1KEY RR_RUNS.RUN_L1KEY%type;
+    l_RUN_HLTKEY RR_RUNS.RUN_HLTKEY%type;
+    l_RUN_CREATE_TIME RR_RUNS.RUN_CREATE_TIME%type := sysdate;
+    l_RUN_CREATE_USER RR_RUNS.RUN_CREATE_USER%type := p_username;
+    l_RUN_GLOBALNAME RR_RUNS.RUN_GLOBALNAME%type := p_globalname;
+    l_RUN_LAST_USER RR_RUNS.RUN_LAST_USER%type := p_username;
+    l_RUN_LAST_CERT RR_RUNS.RUN_LAST_CERT%type := p_cert;
+    
+    l_number NUMBER := 0; 
+    
+    l_sql varchar2(2000) := 'INSERT INTO
+      RR_RUNS (
+        RUN_NUMBER,
+        RUN_SHIFTER,
+        RUN_EVENTS,
+        RUN_RATE,
+        RUN_START_TIME,
+        RUN_END_TIME,
+        RUN_L1KEY,
+        RUN_HLTKEY,
+        RUN_CREATE_TIME,
+        RUN_CREATE_USER,
+        RUN_GLOBALNAME,
+        RUN_LAST_USER,
+        RUN_LAST_CERT
+      ) values (
+        :1,
+        :2,
+        :3,
+        :4,
+        :5,
+        :6,
+        :7,
+        :8,
+        :9,
+        :10,
+        :11,
+        :12,
+        :13
+      )';
+
+  BEGIN
+
+    set transaction name 'new run';
+
+    select count(*) into l_number from rr_runs where run_number = l_RUN_NUMBER;
+    if l_number > 0 then
+      rollback;
+      return 2;
+    end if;
+
+    begin
+    
+      l_RUN_EVENTS := ri_events(l_RUN_NUMBER);
+      l_RUN_START_TIME := ri_start_time(l_RUN_NUMBER);
+      l_RUN_RATE := round(ri_rate(l_RUN_NUMBER), 0);
+      l_RUN_L1KEY := ri_l1key(l_RUN_NUMBER);
+      l_RUN_HLTKEY := ri_hltkey(l_RUN_NUMBER);
+      -- ri_lastentries(l_RUN_SHIFTER, l_RUN_GLOBALNAME);
+      l_RUN_END_TIME := ri_end_time(l_RUN_NUMBER);
+      
+    exception when NO_DATA_FOUND then
+      rollback;
+      RETURN 1;
+    end;
+    
+    execute immediate l_sql using
+        l_RUN_NUMBER,
+        l_RUN_SHIFTER,
+        l_RUN_EVENTS,
+        l_RUN_RATE,
+        l_RUN_START_TIME,
+        l_RUN_END_TIME,
+        l_RUN_L1KEY,
+        l_RUN_HLTKEY,
+        l_RUN_CREATE_TIME,
+        l_RUN_CREATE_USER,
+        l_RUN_GLOBALNAME,
+        l_RUN_LAST_USER,
+        l_RUN_LAST_CERT;
+    
+        -- Insert existing subsystems
+/ *
+    insert into 
+      RR_RUN_SUBSYSTEMS 
+      (RSU_RUN_NUMBER, RSU_SUB_ABBR, RSU_VALUE)
+    select 
+      runsession_parameter.runnumber,
+      rr_subsystems.sub_abbr,
+      'GOOD'
+    from 
+      runsession_parameter join rr_subsystems on (runsession_parameter.name = rr_subsystems.sub_runsession_parameter_name) 
+    where 
+      runsession_parameter.string_value = 'In' and
+      runsession_parameter.runnumber = l_RUN_NUMBER;
+* /
+
+    commit;
+    RETURN 0;
+    
+  exception when NO_DATA_FOUND then
+    rollback;
+    RETURN 1;
+  END create_run;
+*/
 
 END RR_RUNINFO;
 
@@ -1449,6 +1672,7 @@ END RR_RUNINFO;
 
   PROCEDURE audit_preload AS
   begin
+/*
     DELETE FROM RR_RUN_L1SOURCES$A;
     DELETE FROM rr_run_subsystems$a;
     DELETE FROM rr_runs$a;
@@ -1456,7 +1680,10 @@ END RR_RUNINFO;
     INSERT INTO rr_run_subsystems$a select rr_run_subsystems.*, sysdate, 'A' from rr_run_subsystems;
     INSERT INTO rr_runs$a a select  b.*, sysdate, 'A' from rr_runs b;
     commit;
+*/
+    null;
   end;
+
 
   FUNCTION date2unix(d in date) return number as
     n NUMBER := (d - to_date('01-JAN-1970','DD-MON-YYYY')) * (86400);
