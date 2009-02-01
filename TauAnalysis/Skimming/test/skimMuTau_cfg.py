@@ -100,13 +100,13 @@ process.selectedMuCaloTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
 )
 
 process.muPFTauSkimPath = cms.Path(
-    (process.selectedMuons + process.selectedPFTaus) *
+    (process.selectedPFTaus + process.selectedMuons) *
     process.muPFTauPairs *
     process.selectedMuPFTauPairs
     )
 
 process.muCaloTauSkimPath = cms.Path(
-    (process.selectedMuons + process.selectedCaloTaus) *
+    (process.selectedCaloTaus + process.selectedMuons) *
     process.muCaloTauPairs *
     process.selectedMuCaloTauPairs
     )
