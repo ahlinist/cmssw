@@ -6,7 +6,7 @@ from Configuration.EventContent.EventContent_cff import *
 tauAnalysisEventContent = copy.deepcopy(AODSIMEventContent)
 
 #tauAnalysisEventContent.outputCommands.extend(RecoEcalRECO.outputCommands)
-tauAnalysisEventContent.outputCommands.extend(RecoParticleFlowRECO.outputCommands)
+#tauAnalysisEventContent.outputCommands.extend(RecoParticleFlowRECO.outputCommands)
 
 #--------------------------------------------------------------------------------
 # keep all ECAL + HCAL recHits for computation of IsoDeposits
