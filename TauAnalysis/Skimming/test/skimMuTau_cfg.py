@@ -33,11 +33,11 @@ process.source = cms.Source("PoolSource",
 
 process.selectedMuons = cms.EDFilter("MuonSelector",
   src = cms.InputTag('muons'),
-  cut = cms.string("pt > 10 & abs(eta) < 2.5"),
+  cut = cms.string("pt > 8 & abs(eta) < 2.5"),
   filter = cms.bool(True)
 )
 
-process.selectedTaus = cms.EDFilter("PFTauSelector",
+process.selectedPFTaus = cms.EDFilter("PFTauSelector",
   src = cms.InputTag('pfRecoTauProducer'),
   discriminators = cms.VPSet(
     cms.PSet(
@@ -48,14 +48,34 @@ process.selectedTaus = cms.EDFilter("PFTauSelector",
   filter = cms.bool(True)
 )
 
+process.selectedCaloTaus = cms.EDFilter("CaloTauSelector",
+  src = cms.InputTag('caloRecoTauProducer'),
+  discriminators = cms.VPSet(
+    cms.PSet(
+      discriminator = cms.InputTag("caloRecoTauDiscriminationByLeadingTrackPtCut"),
+      selectionCut = cms.double(0.5)
+    )
+  ),
+  filter = cms.bool(True)
+)
+
 #--------------------------------------------------------------------------------
 # combine selected muons and tau-jets into pairs
 #--------------------------------------------------------------------------------
 
-process.muTauPairs = cms.EDProducer("DiTauProducer",
-  hadronicTaus = cms.InputTag('selectedTaus'),
+process.muCaloTauPairs = cms.EDProducer("DiTauProducer",
+  hadronicTaus = cms.InputTag('selectedCaloTaus'),
   leptonicTaus = cms.InputTag('selectedMuons'),
-  METs = cms.InputTag(''),                                  
+  METs = cms.InputTag(''),
+  metMode = cms.int32(1),
+  useLeadingTaus = cms.bool(False),
+  verbose =  cms.untracked.bool(False)
+)
+
+process.muPFTauPairs = cms.EDProducer("DiTauProducer",
+  hadronicTaus = cms.InputTag('selectedPFTaus'),
+  leptonicTaus = cms.InputTag('selectedMuons'),
+  METs = cms.InputTag(''),
   metMode = cms.int32(1),
   useLeadingTaus = cms.bool(False),
   verbose =  cms.untracked.bool(False)
@@ -67,17 +87,33 @@ process.muTauPairs = cms.EDProducer("DiTauProducer",
 #  note that almost all muons get selected as tau-jets !!)
 #--------------------------------------------------------------------------------
 
-process.selectedMuTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
-  src = cms.InputTag('muTauPairs'),
+process.selectedMuPFTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
+  src = cms.InputTag('muPFTauPairs'),
   dRmin = cms.double(0.7),
   filter = cms.bool(True)                                     
 )
 
-process.muTauSkimPath = cms.Path( (process.selectedTaus + process.selectedMuons) * process.muTauPairs * process.selectedMuTauPairs )
+process.selectedMuCaloTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
+  src = cms.InputTag('muCaloTauPairs'),
+  dRmin = cms.double(0.7),
+  filter = cms.bool(True)                                     
+)
+
+process.muPFTauSkimPath = cms.Path(
+    (process.selectedMuons + process.selectedPFTaus) *
+    process.muPFTauPairs *
+    process.selectedMuPFTauPairs
+    )
+
+process.muCaloTauSkimPath = cms.Path(
+    (process.selectedMuons + process.selectedCaloTaus) *
+    process.muCaloTauPairs *
+    process.selectedMuCaloTauPairs
+    )
 
 muTauEventSelection = cms.untracked.PSet(
   SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring('muTauSkimPath')
+    SelectEvents = cms.vstring('muPFTauSkimPath','muCaloTauSkimPath')
   )
 )
 process.muTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
