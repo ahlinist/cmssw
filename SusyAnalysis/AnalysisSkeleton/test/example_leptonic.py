@@ -206,7 +206,7 @@ process.dijet = cms.EDFilter("SusyDiJetAnalysis",
     eventWeight = cms.double(19.67249),
   
     triggerResults = cms.InputTag("TriggerResults","","HLT"),
-    plotSelection = cms.vstring('Preselection'),
+    plotSelection = cms.vstring(''),
                              
          
     

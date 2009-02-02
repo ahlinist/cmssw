@@ -138,16 +138,14 @@ private:
   int mTempTreeJetPartonFlavour[50];
   int mTempTreeJetsHemi[50];
 
-  int    mTempTreeNccjets;
-   double mTempTreeccJetsEt[50];
-  double mTempTreeccJetsPt[50];
-  double mTempTreeccJetsPx[50];
-  double mTempTreeccJetsPy[50];
-  double mTempTreeccJetsPz[50];
-  double mTempTreeccJetsE[50];
-  double mTempTreeccJetsEta[50];
-  double mTempTreeccJetsPhi[50];
-  int mTempTreeccJets_nonccJetid[50];
+  double mTempTreeJetMCCorrFactor[50];
+  double mTempTreeJetJPTCorrFactor[50];
+
+  bool mTempTreeccJetAssoc[50];
+  double  mTempTreeccJetAssoc_E[50];
+  double  mTempTreeccJetAssoc_px[50];
+  double  mTempTreeccJetAssoc_py[50];
+  double  mTempTreeccJetAssoc_pz[50];
 
 
   int mTempTreeJetPartonId[50];
@@ -175,22 +173,7 @@ private:
   double mTempTreeGenJetsEta[50];
   double mTempTreeGenJetsPhi[50];
 
-  double mTempTreeMET;
-  double mTempTreeMEX;
-  double mTempTreeMEY;
-  double mTempTreeMETphi;
-  double mTempTreeSumET;
-  double mTempTreeSumETSignif;
-  double mTempTreeMETuncor;
-  double mTempTreeMETphiuncor;
-
-  double mTempTreeccMET;
-  double mTempTreeccMEX;
-  double mTempTreeccMEY;
-  double mTempTreeccMETphi;
-  double mTempTreeccSumET;
-  double mTempTreeccSumETSignif;
- 
+  
 
   int    mTempTreeNphot;
   double mTempTreePhotEt[50];
@@ -205,17 +188,8 @@ private:
   double mTempTreePhotECalIso[50];
   double mTempTreePhotHCalIso[50];
   double mTempTreePhotAllIso[50];
+  bool mTempTreeccPhotAssoc[50];
 
-  int    mTempTreeNccPhot;
-  double mTempTreeccPhotEt[50];
-  double mTempTreeccPhotPt[50];
-  double mTempTreeccPhotPx[50];
-  double mTempTreeccPhotPy[50];
-  double mTempTreeccPhotPz[50];
-  double mTempTreeccPhotE[50];
-  double mTempTreeccPhotEta[50];
-  double mTempTreeccPhotPhi[50];
-  int mTempTreeccPhot_nonccPhotid[50];
 
   int    mTempTreeNelec;
   double mTempTreeElecEt[50];
@@ -264,17 +238,9 @@ private:
   double mTempTreeElecPinTrk[50];
   double mTempTreeElecPoutTrk[50];
   double mTempTreeElecNormChi2[50];
+  bool mTempTreeccElecAssoc[50];
 
-  int    mTempTreeNccelec;
-  double mTempTreeccElecEt[50];
-  double mTempTreeccElecPt[50];
-  double mTempTreeccElecPx[50];
-  double mTempTreeccElecPy[50];
-  double mTempTreeccElecPz[50];
-  double mTempTreeccElecE[50];
-  double mTempTreeccElecEta[50];
-  double mTempTreeccElecPhi[50];
-  int mTempTreeccElec_nonccElecid[50];
+ 
 
   int    mTempTreeNmuon;
   double mTempTreeMuonEt[50];
@@ -299,19 +265,10 @@ private:
   bool mTempTreeMuonTMLastStationTight[50];
   bool mTempTreeMuonTM2DCompatibilityLoose[50];
   bool mTempTreeMuonTM2DCompatibilityTight[50];
+  bool mTempTreeccMuonAssoc[50];
 
 
-
-  int    mTempTreeNccmuon;
-  double mTempTreeccMuonEt[50];
-  double mTempTreeccMuonPt[50];
-  double mTempTreeccMuonPx[50];
-  double mTempTreeccMuonPy[50];
-  double mTempTreeccMuonPz[50];
-  double mTempTreeccMuonE[50];
-  double mTempTreeccMuonEta[50];
-  double mTempTreeccMuonPhi[50];
-  int mTempTreeccMuon_nonccMuonid[50];
+ 
 
 
   //MICHELE
@@ -437,6 +394,21 @@ private:
   double mTempTreeGenTauPz[50];
   //PIOPPI
   
+
+  // Do the MET save for non cc MET
+  int nFullMET;
+  double mTempTreeMET_Fullcorr_nocc[3];
+  double mTempTreeMET_Nocorr_nocc[2];
+  double mTempTreeMET_Muoncorr_nocc[2];
+  double mTempTreeMET_JECcorr_nocc[2];
+
+  // Do the MET save for cc MET
+  int nUncorrMET;
+  double mTempTreeMET_Fullcorr_cc[3];
+  double mTempTreeMET_Nocorr_cc[2];
+  double mTempTreeMET_Muoncorr_cc[2];
+  double mTempTreeMET_JECcorr_cc[2];
+
 
 
   int mTempTreeNhemispheres;
