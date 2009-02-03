@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.15 2009/02/03 10:27:08 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.16 2009/02/03 12:45:07 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -813,7 +813,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   int i=0;
   if ( mTempTreeNjets >50 ) mTempTreeNjets = 50;
   for (int k=0;k<mTempTreeNjets;k++){
-     const pat::Jet& uncorrJet = (*jetHandle)[k].correctedJet("RAW");
+     const pat::Jet& uncorrJet =((*jetHandle)[k].isCaloJet())? (*jetHandle)[k].correctedJet("RAW"): (*jetHandle)[k];
     if ( uncorrJet.et() > 20. ){
       // std::cout << " et " <<  uncorrJet.et() << std::endl;
       mTempTreeJetsPt[i] = uncorrJet.pt();
@@ -832,7 +832,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
       std::string CorrStep = "ABS";//corrected up to L3 like pat::Jet default
       const std::string Flavour = "NONE";//L3 is before flavour correction
-       mTempTreeJetMCCorrFactor[i] = uncorrJet.jetCorrFactor(CorrStep,Flavour) ;//full MC correction
+      mTempTreeJetMCCorrFactor[i] = (uncorrJet.isCaloJet())? uncorrJet.jetCorrFactor(CorrStep,Flavour):999 ;//full MC correction
        // std::cout << " corr name " << (*jetHandle)[k].jetCorrName() << " flavour " << (*jetHandle)[k].jetCorrFlavour() << std::endl;
       mTempTreeJetJPTCorrFactor[i] = -9999; 
 
