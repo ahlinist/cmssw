@@ -497,9 +497,9 @@ double SETFilter::findMinChi2(unsigned int iSet, const Hep3Vector& r3T,
   double best_pZ = pMag_updated*cos_theta;
   Hep3Vector bestP(best_pX, best_pY, best_pZ);
   //---- update the best momentum estimate  
-  if(minChi2<999999. && pMag_updated>0.){//fit failed?! check
-    muonCandidate.momentum = bestP;
-  }
+  //if(minChi2<999999. && pMag_updated>0.){//fit failed?! check
+  muonCandidate.momentum = bestP;
+  //}
   //---- update the trajectory
   muonCandidate.trajectoryMeasurementsInTheSet = trajectoryMeasurementsInTheSet;
   // do we need that?
@@ -518,18 +518,21 @@ chi2AtSpecificStep(Hep3Vector &foot,
                    std::vector < TrajectoryMeasurement > & trajectoryMeasurementsInTheSet,
                    bool detailedOutput){
   // specific input parameters - find chi2
-  double pMag_updated = 1./foot.x();
-  double sin_theta = sin(foot.y());
-  double cos_theta = cos(foot.y());
-  double sin_phi = sin(foot.z());
-  double cos_phi = cos(foot.z());
+  double chi2 = 999999999999.;
+  if(foot.x()>0){ // this is |P|; maybe return a flag too?
+    double pMag_updated = 1./foot.x();
+    double sin_theta = sin(foot.y());
+    double cos_theta = cos(foot.y());
+    double sin_phi = sin(foot.z());
+    double cos_phi = cos(foot.z());
       
-  double pX = pMag_updated*sin_theta*cos_phi;
-  double pY = pMag_updated*sin_theta*sin_phi;
-  double pZ = pMag_updated*cos_theta;
-  double chi2 = findChi2(pX, pY, pZ, r3T, 
-                         muonCandidate, lastUpdatedTSOS,
-                         trajectoryMeasurementsInTheSet, detailedOutput);
+    double pX = pMag_updated*sin_theta*cos_phi;
+    double pY = pMag_updated*sin_theta*sin_phi;
+    double pZ = pMag_updated*cos_theta;
+    chi2 = findChi2(pX, pY, pZ, r3T, 
+                    muonCandidate, lastUpdatedTSOS,
+                    trajectoryMeasurementsInTheSet, detailedOutput);
+  }
   return chi2;
 }   
 
