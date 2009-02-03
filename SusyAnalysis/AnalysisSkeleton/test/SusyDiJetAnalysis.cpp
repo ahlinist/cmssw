@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.13 2009/01/28 13:10:01 georgia Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.14 2009/02/02 17:35:41 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -1017,14 +1017,14 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeMET_Fullcorr_cc[1] = ccmetHandle->front().momentum().Y();
   mTempTreeMET_Fullcorr_cc[2] = ccmetHandle->front().momentum().z();
   // Do the MET save for no corr cc MET
-  mTempTreeMET_Nocorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(0));//uncorr to bare bones
-  mTempTreeMET_Nocorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(0));//uncorr to bare bones
+  //  mTempTreeMET_Nocorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(0));//uncorr to bare bones
+  // mTempTreeMET_Nocorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(0));//uncorr to bare bones
   // Do the MET save for muon corr  cc MET
-  mTempTreeMET_Muoncorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(1));//uncorr for JEC
-  mTempTreeMET_Muoncorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(1));//uncorr for JEC
+  // mTempTreeMET_Muoncorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(1));//uncorr for JEC
+  //  mTempTreeMET_Muoncorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(1));//uncorr for JEC
   // Do the MET save for JEC corr  cc MET
-  mTempTreeMET_JECcorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(2));//uncorr for JEC
-  mTempTreeMET_JECcorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(2));//uncorr for JEC
+  // mTempTreeMET_JECcorr_cc[0] = ccmetHandle->front().corEx(pat::MET::UncorrectionType(2));//uncorr for JEC
+  //  mTempTreeMET_JECcorr_cc[1] = ccmetHandle->front().corEy(pat::MET::UncorrectionType(2));//uncorr for JEC
 
 
   //  mTempTreeSumET = metHandle->front().sumEt();
@@ -1213,11 +1213,11 @@ SusyDiJetAnalysis::initPlots() {
   
   mAllData->Branch("nUncorrMET",&nUncorrMET,"nUncorrMET/int");
   mAllData->Branch("MET_nocorr_nocc",mTempTreeMET_Nocorr_nocc,"mTempTreeMET_Nocorr_nocc[nUncorrMET]/double");
-  mAllData->Branch("MET_nocorr_cc",mTempTreeMET_Nocorr_cc,"mTempTreeMET_Nocorr_cc[nUncorrMET]/double");
+  //  mAllData->Branch("MET_nocorr_cc",mTempTreeMET_Nocorr_cc,"mTempTreeMET_Nocorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_muoncorr_nocc",mTempTreeMET_Muoncorr_nocc,"mTempTreeMET_Muoncorr_nocc[nUncorrMET]/double");
-  mAllData->Branch("MET_muoncorr_cc",mTempTreeMET_Muoncorr_cc,"mTempTreeMET_Muoncorr_cc[nUncorrMET]/double");
+  //  mAllData->Branch("MET_muoncorr_cc",mTempTreeMET_Muoncorr_cc,"mTempTreeMET_Muoncorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_jeccorr_nocc",mTempTreeMET_JECcorr_nocc,"mTempTreeMET_JECcorr_nocc[nUncorrMET]/double");
-  mAllData->Branch("MET_jeccorr_cc",mTempTreeMET_JECcorr_cc,"mTempTreeMET_JECcorr_cc[nUncorrMET]/double");
+  //  mAllData->Branch("MET_jeccorr_cc",mTempTreeMET_JECcorr_cc,"mTempTreeMET_JECcorr_cc[nUncorrMET]/double");
  
   
 
