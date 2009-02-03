@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.14 2009/02/02 17:35:41 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.15 2009/02/03 10:27:08 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -993,6 +993,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeMET_JECcorr_nocc[0] = metHandle->front().corEx(pat::MET::UncorrectionType(2));//uncorr for muons
   mTempTreeMET_JECcorr_nocc[1] = metHandle->front().corEy(pat::MET::UncorrectionType(2));//uncorr for muons
 
+  mTempTreeMET_Fullcorr_nocc_significance = metHandle->front().mEtSig();
+  // std::cout << "significance " << metHandle->front().mEtSig() << std::endl;
+
  
   // get cc MET
   edm::Handle< std::vector<pat::MET> > ccmetHandle;
@@ -1219,7 +1222,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("MET_jeccorr_nocc",mTempTreeMET_JECcorr_nocc,"mTempTreeMET_JECcorr_nocc[nUncorrMET]/double");
   //  mAllData->Branch("MET_jeccorr_cc",mTempTreeMET_JECcorr_cc,"mTempTreeMET_JECcorr_cc[nUncorrMET]/double");
  
-  
+  mAllData->Branch("MET_Fullcorr_nocc_significance",&mTempTreeMET_Fullcorr_nocc_significance,"mTempTreeMET_Fullcorr_nocc_significance/double");
 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
   mAllData->Branch("procID",&mTempTreeProcID,"procID/int");
