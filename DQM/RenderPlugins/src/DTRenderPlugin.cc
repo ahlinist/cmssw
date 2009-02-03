@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.38 2008/12/10 10:30:57 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.39 2008/12/12 17:58:43 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.38 $
-  \date $Date: 2008/12/10 10:30:57 $
+  \version $Revision: 1.39 $
+  \date $Date: 2008/12/12 17:58:43 $
 */
 
 #include "TProfile2D.h"
@@ -593,6 +593,64 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
 
+  //----------------- calib validation plots ---------------------
+
+  if(o.name.find("SetRange_2D") != std::string::npos) {
+      obj->GetXaxis()->SetBinLabel(1,"MB1_SL1");
+      obj->GetXaxis()->SetBinLabel(2,"MB1_SL2");
+      obj->GetXaxis()->SetBinLabel(3,"MB1_SL3");
+      obj->GetXaxis()->SetBinLabel(4,"MB2_SL1");
+      obj->GetXaxis()->SetBinLabel(5,"MB2_SL2");
+      obj->GetXaxis()->SetBinLabel(6,"MB2_SL3");
+      obj->GetXaxis()->SetBinLabel(7,"MB3_SL1");
+      obj->GetXaxis()->SetBinLabel(8,"MB3_SL2");
+      obj->GetXaxis()->SetBinLabel(9,"MB3_SL3");
+      obj->GetXaxis()->SetBinLabel(10,"MB4_SL1");
+      obj->GetXaxis()->SetBinLabel(11,"MB4_SL3");
+      obj->GetXaxis()->SetLabelSize(0.04);
+      obj->GetYaxis()->SetLabelSize(0.04);
+    }
+
+  if((o.name.find("MeanWrong_") != std::string::npos) && (o.name.find("SetRange_2D") != std::string::npos)) {
+    obj->GetXaxis()->SetNdivisions(11,true);
+    obj->GetYaxis()->SetTitle("Mean(cm)");
+    //obj->GetYaxis()->SetTitleOffset(2.0);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.1);
+    c->SetRightMargin(0.12);
+    c->SetGrid(1,0);
+    
+    return;
+  }
+  if((o.name.find("SigmaWrong_") != std::string::npos) && (o.name.find("SetRange_2D") != std::string::npos)) {
+    obj->GetXaxis()->SetNdivisions(11,true);
+    obj->GetYaxis()->SetTitle("Sigma(cm)");
+    c->SetGrid(1,0);
+    //obj->GetYaxis()->SetTitleOffset(2.0);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.1);
+    c->SetRightMargin(0.12);
+    return;
+  }
+  if((o.name.find("SlopeWrong_") != std::string::npos) && (o.name.find("SetRange_2D") != std::string::npos)) {
+    obj->GetXaxis()->SetNdivisions(11,true);
+    obj->GetYaxis()->SetTitle("Slope(cm)");
+    c->SetGrid(1,0);
+    //obj->GetYaxis()->SetTitleOffset(2.0);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.1);
+    c->SetRightMargin(0.12);
+    return;
+  }
+  if(o.name.find("hResDistVsDist_") != std::string::npos) {
+    obj->GetXaxis()->SetLabelSize(0.04);
+    obj->GetYaxis()->SetLabelSize(0.04);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.1);
+    c->SetRightMargin(0.12);
+    return;
+  }
+
 }
 
 void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
@@ -655,10 +713,15 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetRangeUser(0.,0.2);
   }
   
+   if( o.name.find( "SlopeTest" ) != std::string::npos ) {
+    obj->GetYaxis()->SetRangeUser(-0.05,0.05);
+  }
+
 
   if( o.name.find( "hResDist" )        != std::string::npos ||
       o.name.find( "MeanTest" )        != std::string::npos ||
       o.name.find( "SigmaTest" )       != std::string::npos ||
+      o.name.find( "SlopeTest" )       != std::string::npos ||
       o.name.find( "xEfficiency" )     != std::string::npos ||
       o.name.find( "yEfficiency" )     != std::string::npos ||
       o.name.find( "Efficiency_" )     != std::string::npos ||
@@ -693,6 +756,26 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
       obj->GetXaxis()->SetBinLabel(3,"SL3");
       return;
     }
+
+
+    // ----------------- Calib validation plots -------------------
+    if(o.name.find("SetRange") != std::string::npos) {
+      obj->GetXaxis()->SetBinLabel(1,"MB1_SL1");
+      obj->GetXaxis()->SetBinLabel(2,"MB1_SL2");
+      obj->GetXaxis()->SetBinLabel(3,"MB1_SL3");
+      obj->GetXaxis()->SetBinLabel(4,"MB2_SL1");
+      obj->GetXaxis()->SetBinLabel(5,"MB2_SL2");
+      obj->GetXaxis()->SetBinLabel(6,"MB2_SL3");
+      obj->GetXaxis()->SetBinLabel(7,"MB3_SL1");
+      obj->GetXaxis()->SetBinLabel(8,"MB3_SL2");
+      obj->GetXaxis()->SetBinLabel(9,"MB3_SL3");
+      obj->GetXaxis()->SetBinLabel(10,"MB4_SL1");
+      obj->GetXaxis()->SetBinLabel(11,"MB4_SL3");
+      obj->GetXaxis()->SetLabelSize(0.04);
+      obj->GetYaxis()->SetLabelSize(0.04);
+      return;
+    }
+    
 
     
   // --------------------------------------------------------------
