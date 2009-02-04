@@ -41,14 +41,17 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
 
     # require common event vertex for electron and tau-jet candidate
     #elecTauEventVertex,
-        
-    # acoplanarity cut between electron and tau-jet candidate
-    # ( dPhi(elec,tau) < 2.4 rad; not implemented yet)
+
+    # di-tau candidate selection
+    diTauCandidateForElecTauAntiOverlapVeto,
+    diTauCandidateForElecTauAcoplanarityCut,
+    diTauCandidateForElecTauZeroChargeCut
   ),
   
   histManagers = cms.VPSet(
     electronHistManager,
-    tauHistManager
+    tauHistManager,
+    diTauCandidateHistManagerForElecTau
   ),
 
   eventDumps = cms.VPSet(

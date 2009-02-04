@@ -37,18 +37,21 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     tauTrkIsoCut,
     tauEcalIsoCut,
     tauProngCut,
-    tauMuonVeto
+    tauMuonVeto,
 
     # require common event vertex for muon and tau-jet candidate
     #muTauEventVertex,
-            
-    # acoplanarity cut between muon and tau-jet candidate
-    # ( dPhi(mu,tau) < 2.4 rad; not implemented yet)
+
+    # di-tau candidate selection
+    diTauCandidateForMuTauAntiOverlapVeto,
+    diTauCandidateForMuTauAcoplanarityCut,
+    diTauCandidateForMuTauZeroChargeCut
   ),
   
   histManagers = cms.VPSet(
     muonHistManager,
-    tauHistManager
+    tauHistManager,
+    diTauCandidateHistManagerForMuTau
   ),
 
   eventDumps = cms.VPSet(

@@ -13,6 +13,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 process.load("TauAnalysis.Configuration.producePatLayer1_cff")
+process.load("TauAnalysis.CandidateTools.elecTauPairProducer_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 
@@ -43,5 +44,6 @@ process.source = cms.Source("PoolSource",
 )
 
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
+                     +process.produceElecTauPairs
                      +process.analyzeZtoElecTau
                      +process.saveZtoElecTau )

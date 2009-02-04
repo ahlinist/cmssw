@@ -1,12 +1,20 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 # import config for electron histogram manager
-from TauAnalysis.DQMTools.electronHistManager_cfi import *
+from TauAnalysis.Core.electronHistManager_cfi import *
 
 # import config for tau histogram manager
-from TauAnalysis.DQMTools.pftauHistManager_cfi import *
+from TauAnalysis.Core.pftauHistManager_cfi import *
 
-elecTauHistManagers = cms.vstring('electronHistManager', 'tauHistManager')
+# import config for di-tau histogram manager
+from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
+diTauCandidateHistManagerForElecTau = copy.deepcopy(diTauCandidateHistManager)
+diTauCandidateHistManagerForElecTau.name = cms.string('diTauCandidateHistManagerForElecTau')
+diTauCandidateHistManagerForElecTau.type = cms.string('PATElecTauPairHistManager')
+diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
+
+elecTauHistManagers = cms.vstring('electronHistManager', 'tauHistManager', 'diTauCandidateHistManagerForElecTau')
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -178,8 +186,27 @@ tauElectronVeto = cms.PSet(
 #  zMax2 = cms.double(50.)
 #)
 
-# acoplanarity cut between electron and tau-jet candidate
-# ( dPhi(elec,tau) < 2.4 rad; not implemented yet)
+# di-tau candidate selection
+diTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
+  name = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
+  type = cms.string('PATElecTauPairMinEventSelector'),
+  src = cms.InputTag('selectedElecTauPairsAntiOverlapVeto'),
+  minNumber = cms.uint32(1)
+)
+diTauCandidateForElecTauAcoplanarityCut = cms.PSet(
+  name = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
+  type = cms.string('PATElecTauPairMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedElecTauPairsAcoplanarityCumulative'),
+  src_individual = cms.InputTag('selectedElecTauPairsAcoplanarityIndividual'),
+  minNumber = cms.uint32(1)
+)
+diTauCandidateForElecTauZeroChargeCut = cms.PSet(
+  name = cms.string('diTauCandidateForElecTauZeroChargeCut'),
+  type = cms.string('PATElecTauPairMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedElecTauPairsZeroChargeCumulative'),
+  src_individual = cms.InputTag('selectedElecTauPairsZeroChargeIndividual'),
+  minNumber = cms.uint32(1)
+)
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -414,7 +441,33 @@ elecTauAnalysisSequence = cms.VPSet(
   #  title = cms.string('Vertex'),
   #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   #)
-  
-  # acoplanarity cut between electron and tau-jet candidate
-  # (not implemented yet)
+
+  #selection of electron + tau-jet combinations
+  cms.PSet(
+    filter = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
+    title = cms.string('dR(Electron-Tau) > 0.7'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVeto')
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
+    title = cms.string('dPhi(Electron-Tau) < 2.4'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAcoplanarityCumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForElecTauZeroChargeCut'),
+    title = cms.string('Charge(Electron+Tau) = 0'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
+  )
 )
