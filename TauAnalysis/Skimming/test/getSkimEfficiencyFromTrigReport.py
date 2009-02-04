@@ -21,13 +21,46 @@ def main(argv) :
                 
     ### Define list of filter modules here!!! ###
     PathName = 'muPFTauSkimPath'
-    Filters = ['selectedPFTaus','selectedMuons','muPFTauPairs','selectedMuPFTauPairs']
-    ##Filters =  ['selectedMuons','selectedPFTaus','muPFTauPairs','selectedMuPFTauPairs']
+    Filters =  ['selectedPFTaus','selectedMuons','muPFTauPairs','selectedMuPFTauPairs']
     PathName2 = 'muCaloTauSkimPath'
-    ##Filters2 =  ['selectedMuons','selectedCaloTaus','muCaloTauPairs','selectedMuCaloTauPairs']
-    Filters2 = ['selectedCaloTaus','selectedMuons','muCaloTauPairs','selectedMuCaloTauPairs']
+    Filters2 =  ['selectedCaloTaus','selectedMuons','muCaloTauPairs','selectedMuCaloTauPairs']
+
     ### Init counters ###
     NEvents = 0
+    NPassedAll = 0
+
+
+### Loop to get  total skim efficiency
+
+    # Reg. Expr. patterns to find right lines
+    fullEntryPattern = re.compile('TrigReport ---------- Event  Summary ------------[\t\n\r\f\v\W\w]+TrigReport ---------- Path   Summary')
+    ppat = 'TrigReport Events total[\W\w]+'
+    p = []
+    for i in range(0,len(Filters2)):
+        p.append(re.compile(ppat))
+
+    # Loop over all files
+    for filen in FLIST:
+        input = file(filen)
+        fullTxt = input.read() # read full txt
+        m0 = fullEntryPattern.search(fullTxt) # extract region
+        if (m0):
+            lines = re.split('\n',m0.group())
+            for line in lines:
+                for i in range(0,len(p)):
+                    m = p[i].search(line)
+                    if (m):
+                        tabs = re.split('[\s]+',m.group())
+                        if (i==0):
+                            NEvents = NEvents + int(tabs[4])
+                            NPassedAll = NPassedAll + int(tabs[7])
+        input.close()
+
+    exit
+
+### Second loop on muPFTauFilter
+
+    ### Init counters ###
     NPassed = [0] * len(Filters)
 
     # Reg. Expr. patterns to find right lines
@@ -49,8 +82,8 @@ def main(argv) :
                     m = p[i].search(line)
                     if (m):
                         tabs = re.split('[\s]+',m.group())
-                        if (i==0):
-                            NEvents = NEvents + int(tabs[3])
+                        #if (i==0):
+                        #    NEvents = NEvents + int(tabs[3])
                         NPassed[i] = NPassed[i] + int(tabs[4])            
         input.close()
 
@@ -78,10 +111,9 @@ def main(argv) :
 
 
 
-### Second loop on muCaloTauFulter
+### Second loop on muCaloTauFilter
 
     ### Init counters ###
-    NEvents = 0
     NPassed = [0] * len(Filters2)
 
     # Reg. Expr. patterns to find right lines
@@ -103,8 +135,8 @@ def main(argv) :
                     m = p[i].search(line)
                     if (m):
                         tabs = re.split('[\s]+',m.group())
-                        if (i==0):
-                            NEvents = NEvents + int(tabs[3])
+                        #if (i==0):
+                        #    NEvents = NEvents + int(tabs[3])
                         NPassed[i] = NPassed[i] + int(tabs[4])            
         input.close()
 
@@ -128,7 +160,14 @@ def main(argv) :
     print '---------------------------------------------------------------'
     last = len(Filters2)-1
     print '%24s: %8d                 %5.3f'%('Total',NPassed[last],float(NPassed[last])/float(NEvents))
+
+
+    print '\n*** Total events processed/passed: %8d %8d'%(NEvents,NPassedAll)
+
+
+
     
     
 if __name__ == '__main__' :
     main(sys.argv[1:])
+
