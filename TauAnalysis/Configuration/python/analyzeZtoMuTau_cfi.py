@@ -1,12 +1,20 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 # import config for muon histogram manager
-from TauAnalysis.DQMTools.muonHistManager_cfi import *
+from TauAnalysis.Core.muonHistManager_cfi import *
 
-# import config for tau histogram manager
-from TauAnalysis.DQMTools.pftauHistManager_cfi import *
+# import config for tau-jet histogram manager
+from TauAnalysis.Core.pftauHistManager_cfi import *
 
-muTauHistManagers = cms.vstring('muonHistManager', 'tauHistManager')
+# import config for di-tau histogram manager
+from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
+diTauCandidateHistManagerForMuTau = copy.deepcopy(diTauCandidateHistManager)
+diTauCandidateHistManagerForMuTau.name = cms.string('diTauCandidateHistManagerForMuTau')
+diTauCandidateHistManagerForMuTau.type = cms.string('PATMuTauPairHistManager')
+diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
+
+muTauHistManagers = cms.vstring('muonHistManager', 'tauHistManager', 'diTauCandidateHistManagerForMuTau')
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -178,8 +186,27 @@ tauMuonVeto = cms.PSet(
 #  zMax2 = cms.double(50.)
 #)
 
-# acoplanarity cut between muon and tau-jet candidate
-# ( dPhi(mu,tau) < 2.4 rad; not implemented yet)
+# di-tau candidate selection
+diTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
+  name = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
+  type = cms.string('PATMuTauPairMinEventSelector'),
+  src = cms.InputTag('selectedMuTauPairsAntiOverlapVeto'),
+  minNumber = cms.uint32(1)
+)
+diTauCandidateForMuTauAcoplanarityCut = cms.PSet(
+  name = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
+  type = cms.string('PATMuTauPairMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarityCumulative'),
+  src_individual = cms.InputTag('selectedMuTauPairsAcoplanarityIndividual'),
+  minNumber = cms.uint32(1)
+)
+diTauCandidateForMuTauZeroChargeCut = cms.PSet(
+  name = cms.string('diTauCandidateForMuTauZeroChargeCut'),
+  type = cms.string('PATMuTauPairMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulative'),
+  src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
+  minNumber = cms.uint32(1)
+)
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -437,7 +464,33 @@ muTauAnalysisSequence = cms.VPSet(
   #  title = cms.string('Vertex'),
   #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   #)
-    
-  # acoplanarity cut between muon and tau-jet candidate
-  # (not implemented yet)
+
+  #selection of muon + tau-jet combinations
+  cms.PSet(
+    filter = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
+    title = cms.string('dR(Muon-Tau) > 0.7'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVeto')
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
+    title = cms.string('dPhi(Muon-Tau) < 2.4'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarityCumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
+    title = cms.string('Charge(Muon+Tau) = 0'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative')
+  )
 )
