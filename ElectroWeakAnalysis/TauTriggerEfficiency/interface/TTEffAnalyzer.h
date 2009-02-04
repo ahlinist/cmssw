@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.11 2008/11/27 08:48:42 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.12 2008/12/01 10:04:29 slehti Exp $
 //
 //
 
@@ -33,6 +33,7 @@
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
@@ -77,13 +78,15 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
 
+      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
+
       // ----------member data ---------------------------
-      edm::InputTag  PFTaus_; //Path to analyze
+      edm::InputTag  PFTaus_,PFTauIso_; //Path to analyze
       std::string rootFile_;
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
-      float PFPt, PFEt,PFEta,PFPhi;
+      float PFPt, PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25TauEfficiencyAnalyzer _L25analyzer;
