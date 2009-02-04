@@ -8,8 +8,7 @@
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Common/interface/Handle.h"
-#include "Math/GenVector/VectorUtil.h"
-//#include "RecoMuon/MuonIdentification/interface/IdGlobalFunctions.h"
+//#include "Math/GenVector/VectorUtil.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
