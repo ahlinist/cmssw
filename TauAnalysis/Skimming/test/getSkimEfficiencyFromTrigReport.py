@@ -21,10 +21,11 @@ def main(argv) :
                 
     ### Define list of filter modules here!!! ###
     PathName = 'muPFTauSkimPath'
-    Filters =  ['selectedMuons','selectedPFTaus','muPFTauPairs','selectedMuPFTauPairs']
+    Filters = ['selectedPFTaus','selectedMuons','muPFTauPairs','selectedMuPFTauPairs']
+    ##Filters =  ['selectedMuons','selectedPFTaus','muPFTauPairs','selectedMuPFTauPairs']
     PathName2 = 'muCaloTauSkimPath'
-    Filters2 =  ['selectedMuons','selectedCaloTaus','muCaloTauPairs','selectedMuCaloTauPairs']
-
+    ##Filters2 =  ['selectedMuons','selectedCaloTaus','muCaloTauPairs','selectedMuCaloTauPairs']
+    Filters2 = ['selectedCaloTaus','selectedMuons','muCaloTauPairs','selectedMuCaloTauPairs']
     ### Init counters ###
     NEvents = 0
     NPassed = [0] * len(Filters)
