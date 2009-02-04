@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.9 2008/11/21 21:31:16 bachtis Exp $
+// $Id: TTEffAnalyzer.cc,v 1.10 2008/12/12 15:42:56 gfball Exp $
 //
 //
 
@@ -24,6 +24,7 @@
 //
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
+  PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName"))
 {
 
@@ -38,12 +39,17 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFEt = 0.;
   PFEta = 0.;
   PFPhi = 0.;
-
+  PFProng = 0.;
+  PFIso = 0;
+  PFIsoSum = 0;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauEt",&PFEt,"PFTauEt/F");
   _TTEffTree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
   _TTEffTree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
+  _TTEffTree->Branch("PFTauProng", &PFProng, "PFTauProng/F");
+  _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
+  _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
@@ -74,9 +80,12 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<std::vector<LorentzVector> > electronTaus;
+   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-     loop(iEvent, *PFTaus);
-   }
+      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
+     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
+      else loop(iEvent, *PFTaus);
+    }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
    }
@@ -109,6 +118,9 @@ TTEffAnalyzer::fill(const reco::PFTau& tau) {
   PFEGDrRMS = rms[2];
   */
 
+  // Fill #signal tracks, and PtSum in isolation annulus 
+  PFProng = tau.signalPFChargedHadrCands().size(); // check config file
+  PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
 }
 
 void TTEffAnalyzer::fill(const reco::CaloTau& tau) {
@@ -180,4 +192,21 @@ TTEffAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,co
   out.push_back(drrms/sumet);
 
   return out;
+}
+
+void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos){
+   for(unsigned int iTau = 0; iTau < taus->size(); iTau++) {
+   PFTauRef thisTauRef(taus,iTau);
+   PFIso = isos[thisTauRef];
+          // Fill common variables
+          fill(taus->at(iTau));
+
+          // Call individual analyzers
+          _L1analyzer.fill(iEvent, taus->at(iTau));
+          _L2analyzer.fill(iEvent, taus->at(iTau));
+          _L25analyzer.fill(iEvent, taus->at(iTau));
+
+          // Finally, fill the entry to tree
+          _TTEffTree->Fill();
+    }
 }
