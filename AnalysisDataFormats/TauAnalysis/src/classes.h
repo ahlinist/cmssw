@@ -1,8 +1,12 @@
 
-#include "AnalysisDataFormats/TauAnalysis/interface/CompositeRefCandidateT1T2MEt.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/CompositeRefCandidateT1T2MEtFwd.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
 #include "DataFormats/Common/interface/Wrapper.h"
+
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
 
 namespace {
   struct AnalysisDataFormats_TauAnalysis_dictionary {
@@ -11,6 +15,12 @@ namespace {
     edm::Wrapper<DiCandidatePair> dummyDiCandidatePairWrapper;
     DiCandidatePairCollection dummyDiCandidatePairCollection;
     edm::Wrapper<DiCandidatePairCollection> dummyDiCandidatePairCollectionWrapper;
+
+    /// create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon> and edm::Ptr<pat::Tau>,
+    /// as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h
+    edm::Ptr<pat::Electron> dummyPATElectronPtr;
+    edm::Ptr<pat::Muon> dummyPATMuonPtr;
+    edm::Ptr<pat::Tau> dummyPATTauPtr;
 
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
@@ -31,8 +41,7 @@ namespace {
     edm::Wrapper<PATDiTauPairCollection> dummyPATDiTauPairCollectionWrapper;
     
     /// create dictionaries for PATElecMuPair objects
-    //PATElecMuPair dummyPATElecMuPair;
-    CompositeRefCandidateT1T2MEt<pat::Electron, pat::Muon> dummyPATElecMuPair;
+    PATElecMuPair dummyPATElecMuPair;
     edm::Wrapper<PATElecMuPair> dummyPATElecMuPairWrapper;
     PATElecMuPairCollection dummyPATElecMuPairCollection;
     edm::Wrapper<PATElecMuPairCollection> dummyPATElecMuPairCollectionWrapper;

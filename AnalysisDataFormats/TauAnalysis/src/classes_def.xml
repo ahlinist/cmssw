@@ -1,31 +1,37 @@
 <lcgdict>
   <!-- create dictionaries for CandidatePair objects -->
-  <class name="CompositeRefCandidateT1T2MEt<reco::Candidate, reco::Candidate>"/>
-  <class name="std::vector<CompositeRefCandidateT1T2MEt<reco::Candidate, reco::Candidate> >"/>
-  <class name="edm::Wrapper<CompositeRefCandidateT1T2MEt<reco::Candidate, reco::Candidate>>"/>
-  <class name="edm::Wrapper<std::vector<CompositeRefCandidateT1T2MEt<reco::Candidate, reco::Candidate> > >"/>
+  <class name="CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate>>"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> > >"/>
+
+  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon> and edm::Ptr<pat::Tau
+       as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h -->
+  <class name="edm::Ptr<pat::Electron>"/>
+  <class name="edm::Ptr<pat::Muon>"/>
+  <class name="edm::Ptr<pat::Tau>"/>
 
   <!-- create dictionaries for PATElecTauPair objects -->
-  <class name="CompositeRefCandidateT1T2MEt<pat::Electron, pat::Tau>"/>
-  <class name="std::vector<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
-  <class name="edm::Wrapper<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
-  <class name="edm::Wrapper<std::vector<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Tau> > >"/>
+  <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> > >"/>
 
   <!-- create dictionaries for PATMuTauPair objects -->
-  <class name="CompositeRefCandidateT1T2MEt<pat::Muon, pat::Tau>"/>
-  <class name="std::vector<CompositeRefCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
-  <class name="edm::Wrapper<CompositeRefCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
-  <class name="edm::Wrapper<std::vector<CompositeRefCandidateT1T2MEt<pat::Muon, pat::Tau> > >"/>
+  <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> > >"/>
 
   <!-- create dictionaries for PATDiTauPair objects -->
-  <class name="CompositeRefCandidateT1T2MEt<pat::Tau, pat::Tau>"/>
-  <class name="std::vector<CompositeRefCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
-  <class name="edm::Wrapper<CompositeRefCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
-  <class name="edm::Wrapper<std::vector<CompositeRefCandidateT1T2MEt<pat::Tau, pat::Tau> > >"/>
+  <class name="CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> > >"/>
 
   <!-- create dictionaries for PATElecMuPair objects -->
-  <class name="CompositeRefCandidateT1T2MEt<pat::Electron, pat::Muon>"/>
-  <class name="std::vector<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
-  <class name="edm::Wrapper<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
-  <class name="edm::Wrapper<std::vector<CompositeRefCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
+  <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
 </lcgdict>
