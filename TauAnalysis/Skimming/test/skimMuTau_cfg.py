@@ -60,56 +60,59 @@ process.selectedCaloTaus = cms.EDFilter("CaloTauSelector",
 )
 
 #--------------------------------------------------------------------------------
-# combine selected muons and tau-jets into pairs
+# combine selected muons and tau-jets into pairs;
+# require muons and tau-jets to be separated by dR > 0.7 in eta-phi,
+# in order to reject events in which the tau-jet refers to the same physical
+# particle as the muon (note that almost all muons get selected as tau-jets !!)
 #--------------------------------------------------------------------------------
 
-process.muCaloTauPairs = cms.EDProducer("DiTauProducer",
-  hadronicTaus = cms.InputTag('selectedCaloTaus'),
-  leptonicTaus = cms.InputTag('selectedMuons'),
-  METs = cms.InputTag(''),
-  metMode = cms.int32(1),
-  useLeadingTaus = cms.bool(False),
-  verbose =  cms.untracked.bool(False)
+process.muCaloTauPairs = cms.EDProducer("DiCandidatePairProducer",
+  useLeadingTausOnly = cms.bool(False),
+  srcLeg1 = cms.InputTag('selectedCaloTaus'),
+  srcLeg2 = cms.InputTag('selectedMuons'),
+  dRmin12 = cms.double(0.3),
+  srcMET = cms.InputTag(''),
+  recoMode = cms.string(""),
+  verbosity = cms.untracked.int32(0)                                       
 )
 
-process.muPFTauPairs = cms.EDProducer("DiTauProducer",
-  hadronicTaus = cms.InputTag('selectedPFTaus'),
-  leptonicTaus = cms.InputTag('selectedMuons'),
-  METs = cms.InputTag(''),
-  metMode = cms.int32(1),
-  useLeadingTaus = cms.bool(False),
-  verbose =  cms.untracked.bool(False)
-)
-
-#--------------------------------------------------------------------------------
-# discard tau-jets that pass muon identification criteria
-# (in order to reject events in which there is only one muon and no tau-jet;
-#  note that almost all muons get selected as tau-jets !!)
-#--------------------------------------------------------------------------------
-
-process.selectedMuPFTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
-  src = cms.InputTag('muPFTauPairs'),
-  dRmin = cms.double(0.7),
-  filter = cms.bool(True)                                     
-)
-
-process.selectedMuCaloTauPairs = cms.EDFilter("DiTauAntiOverlapSelector",
+process.selectedMuCaloTauPairs = cms.EDFilter("DiCandidatePairSelector",
   src = cms.InputTag('muCaloTauPairs'),
-  dRmin = cms.double(0.7),
+  cut = cms.string("dR12 > 0.7"),
   filter = cms.bool(True)                                     
 )
+
+process.muPFTauPairs = cms.EDProducer("DiCandidatePairProducer",
+  useLeadingTausOnly = cms.bool(False),
+  srcLeg1 = cms.InputTag('selectedPFTaus'),
+  srcLeg2 = cms.InputTag('selectedMuons'),
+  dRmin12 = cms.double(0.3),
+  srcMET = cms.InputTag(''),
+  recoMode = cms.string(""),
+  verbosity = cms.untracked.int32(0)
+)
+
+process.selectedMuPFTauPairs = cms.EDFilter("DiCandidatePairSelector",
+  src = cms.InputTag('muPFTauPairs'),
+  cut = cms.string("dR12 > 0.7"),
+  filter = cms.bool(True)                                     
+)
+
+#--------------------------------------------------------------------------------
+# keep event in case it passed either the muon + pfTau or muon + caloTau selection
+#--------------------------------------------------------------------------------
 
 process.muPFTauSkimPath = cms.Path(
-    (process.selectedPFTaus + process.selectedMuons) *
-    process.muPFTauPairs *
-    process.selectedMuPFTauPairs
-    )
+  (process.selectedPFTaus + process.selectedMuons)
+ * process.muPFTauPairs
+ * process.selectedMuPFTauPairs
+)
 
 process.muCaloTauSkimPath = cms.Path(
-    (process.selectedCaloTaus + process.selectedMuons) *
-    process.muCaloTauPairs *
-    process.selectedMuCaloTauPairs
-    )
+  (process.selectedCaloTaus + process.selectedMuons)
+ * process.muCaloTauPairs
+ * process.selectedMuCaloTauPairs
+)
 
 muTauEventSelection = cms.untracked.PSet(
   SelectEvents = cms.untracked.PSet(
