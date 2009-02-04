@@ -1,7 +1,7 @@
 process = cms.Process("TTEffAnalysis")
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(10)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -30,6 +30,8 @@ process.source = source
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
+        #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+        PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"), # choose one which matched to pf tau collection you are using above
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles:Central"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
