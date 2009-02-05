@@ -6,7 +6,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 
 
-process.maxEvents = cms.untracked.PSet(  input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet(  input = cms.untracked.int32(1000) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -52,7 +52,7 @@ process.siStripQualityConfigurableFakeESSource.appendToDataLabel=""
 process.siStripQualityConfigurableFakeESSource.BadComponentList = cms.untracked.VPSet(
     cms.PSet(
         #SubDet = cms.string('TIB'),  
-        #layer = cms.uint32(4),        ## SELECTION: layer = 1..4, 0(ALL)          
+        #layer = cms.uint32(1),        ## SELECTION: layer = 1..4, 0(ALL)          
         #bkw_frw = cms.uint32(0),      ## bkw_frw = 1(TIB-), 2(TIB+) 0(ALL)        
         #detid = cms.uint32(0),        ## int_ext = 1 (internal), 2(external), 0(ALL)  
         #ster = cms.uint32(0),         ## ster = 1(stereo), 2 (nonstereo), 0(ALL)      
@@ -60,21 +60,21 @@ process.siStripQualityConfigurableFakeESSource.BadComponentList = cms.untracked.
         #int_ext = cms.uint32(0)       ## detid number = 0 (ALL),  specific number     
 
         #SubDet = cms.string('TID'),
-        #wheel = cms.uint32(0),      ## SELECTION: side = 1(back, Z-), 2(front, Z+), 0(ALL)
+        #wheel = cms.uint32(3),      ## SELECTION: side = 1(back, Z-), 2(front, Z+), 0(ALL)
         #detid = cms.uint32(0),      ## wheel = 1..3, 0(ALL)
         #ster = cms.uint32(0),       ## ring  = 1..3, 0(ALL)
         #ring = cms.uint32(0),       ## ster = 1(stereo), 2 (nonstereo), 0(ALL)
         #side = cms.uint32(0)            ## detid number = 0 (ALL),  specific number
 
         SubDet = cms.string('TOB'),
-        layer = cms.uint32(4),    ## SELECTION: layer = 1..6, 0(ALL)
+        layer = cms.uint32(1),    ## SELECTION: layer = 1..6, 0(ALL)
         bkw_frw = cms.uint32(0),  ## bkw_frw = 1(TOB-) 2(TOB+) 0(everything)
         rod = cms.uint32(0),      ## rod = 1..N, 0(ALL)
         detid = cms.uint32(0),       ## ster = 1(stereo), 2 (nonstereo), 0(ALL)
         ster = cms.uint32(0)         ## detid number = 0 (ALL),  specific number
 
         #SubDet = cms.string('TEC'),
-        #wheel = cms.uint32(0),             ## SELECTION: side = 1(TEC-), 2(TEC+),  0(ALL)
+        #wheel = cms.uint32(9),             ## SELECTION: side = 1(TEC-), 2(TEC+),  0(ALL)
         #petal = cms.uint32(0),             ## wheel = 1..9, 0(ALL)
         #detid = cms.uint32(0),             ## petal_bkw_frw = 1(backward) 2(forward) 0(all)
         #ster = cms.uint32(0),              ## petal = 1..8, 0(ALL)
@@ -84,10 +84,8 @@ process.siStripQualityConfigurableFakeESSource.BadComponentList = cms.untracked.
         )
     )
 
-#DoM
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
 
-#DOM Instruct the quality for the tracking to use the configrable information
 process.siStripQualityESProducer.ListOfRecordToMerge = cms.VPSet(
    cms.PSet( record = cms.string("SiStripDetCablingRcd"), tag    = cms.string("") ),
    cms.PSet( record = cms.string("SiStripBadChannelRcd"), tag    = cms.string("") ),
@@ -95,7 +93,6 @@ process.siStripQualityESProducer.ListOfRecordToMerge = cms.VPSet(
    cms.PSet( record = cms.string("SiStripBadModuleRcd"),   tag    = cms.string("") )
    )
 
-#DOM instruct the clusterizer to not use the information of configurable bad components, but all other
 process.siStripQualityESProducerForClusterizer = process.siStripQualityESProducer.clone()
 process.siStripQualityESProducerForClusterizer.ListOfRecordToMerge = cms.VPSet(
    cms.PSet( record = cms.string("SiStripDetCablingRcd"), tag    = cms.string("") ),
@@ -113,8 +110,6 @@ process.siStripMatchedRecHits.siStripQualityLabel = cms.string('')
 
 process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 
-
-#DOM END 
 
 process.FEVT = cms.OutputModule("PoolOutputModule",
     process.FEVTEventContent,
@@ -153,7 +148,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) #
 # Conditions (Global Tag is used here):
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff")
 process.GlobalTag.connect = "frontier://PromptProd/CMS_COND_21X_GLOBALTAG"
-process.GlobalTag.globaltag = "CRAFT_ALL_V4::All"
+process.GlobalTag.globaltag = "CRAFT_ALL_V8::All"
 process.prefer("GlobalTag")
 
 # Magnetic field: force mag field to be 0 tesla
@@ -189,8 +184,8 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.anEff = cms.EDAnalyzer("HitEff",
-                               Debug = cms.bool(True),
-                               Layer = cms.int32(8),
+                               Debug = cms.bool(False),
+                               Layer = cms.int32(5),
                                rphirecHits = cms.InputTag("siStripMatchedRecHits:rphiRecHit"),
                                stereorecHits    = cms.InputTag("siStripMatchedRecHits:stereoRecHit"),
                                combinatorialTracks = cms.InputTag("ctfWithMaterialTracksP5"),

@@ -13,10 +13,15 @@
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TECDetId.h"
 #include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
+#include "RecoTracker/MeasurementDet/interface/RecHitPropagator.h"
+#include "TrackingTools/TransientTrackingRecHit/interface/TrackingRecHitProjector.h"
+#include "RecoTracker/TransientTrackingRecHit/interface/ProjectedRecHit2D.h"
 
 
 using namespace std;
-TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, const TrackerGeometry* tracker)
+TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, 
+					    const TrackerGeometry* tracker,
+					    const uint mono)
 {
 
   theCombinedPredictedState = TrajectoryStateCombiner().combine( tm.forwardPredictedState(),
@@ -42,26 +47,38 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, con
 
   LocalVector monoco;
   LocalPoint pmonoco;
-
+  
   const GeomDetUnit * monodet;
- 
+  
   //if module is stereo and from a matched layer then it is from an invalid hit from a matched layer
-  if ( ((iidd & 0x3)==0) && isDoubleSided(iidd) ) {
-    GluedGeomDet * gdet=(GluedGeomDet *)tracker->idToDet(theHit->geographicalId());    
-    GlobalVector gtrkdirco=gdet->toGlobal(combinedptsod->parameters().momentum());
+  // if module is from a double sided layer, check mono value and write out info for either the
+  // rphi surface (mono = 1) or the stereo surface (mono = 2)--not the matched hit surface
+  //if ( ((iidd & 0x3)==0) && isDoubleSided(iidd) ) {
+  if (( mono > 0 ) && isDoubleSided(iidd) ) {
+    // find matched hit id, that is the matched hit surface between the two sensors
+    uint matched_iidd = iidd-(iidd & 0x3);
+    DetId matched_id(matched_iidd);
     
-    monodet=gdet->monoDet();
+    GluedGeomDet * gdet=(GluedGeomDet *)tracker->idToDet(matched_id);
+    const GeomDet * det = tracker->idToDet(iidd);
+    GlobalVector gtrkdirco=det->toGlobal(combinedptsod->parameters().momentum());
+    
+    // get the sensor det indicated by mono
+    if (mono == 1) monodet=gdet->stereoDet();
+    if (mono == 2) monodet=gdet->monoDet();
+    
     monoco=monodet->toLocal(gtrkdirco);
-    pmonoco=project(gdet,monodet,combinedptsod->parameters().position(),monoco);
+    pmonoco=project(det,monodet,combinedptsod->parameters().position(),monoco);
     
     locX_temp = pmonoco.x(); 
     locY_temp = pmonoco.y(); 
-    // just take errors from glued surface // is this OK?
+    // just take errors from the traj surface glued or single surface
     locXError = sqrt(theCombinedPredictedState.localError().positionError().xx());
     locYError = sqrt(theCombinedPredictedState.localError().positionError().yy());
-
+    
     //set module id to be mono det
     iidd = monodet->geographicalId().rawId();
+    cout << "from trajatvalidhit setting id = " << iidd << endl;
   }
   else {
     locX_temp = theCombinedPredictedState.localPosition().x();
@@ -75,7 +92,7 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, con
   }
   
   // this should never be a glued det, only rphi or stero
-  //cout << "From TrajAtValidHit module " << iidd << "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
+  cout << "From TrajAtValidHit module " << iidd << "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
     
   // Restrict the bound regions for better understanding of the modul assignment. 
 
@@ -84,7 +101,7 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, con
 
   // Insert the bounded values 
   if (locX_temp < 0. ) xx = min(locX_temp - xB,locX_temp - sigmaX*locXError);
-  else  xx = std::max(locX_temp + xB, locX_temp + sigmaX*locXError);
+  else  xx = max(locX_temp + xB, locX_temp + sigmaX*locXError);
 
   if (locY_temp < 0. ) yy = min(locY_temp - yB,locY_temp - sigmaY*locYError);
   else  yy = max(locY_temp + yB, locY_temp + sigmaY*locYError);

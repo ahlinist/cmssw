@@ -48,7 +48,8 @@ class HitEff : public edm::EDAnalyzer {
   explicit HitEff(const edm::ParameterSet& conf);
   double checkConsistency(StripClusterParameterEstimator::LocalValues parameters, double xx, double xerr);
   double checkConsistency(const SiStripRecHit2D* rechit, double xx, double xerr);
-
+  bool isDoubleSided(uint iidd) const;
+  bool check2DPartner(uint iidd, std::vector<TrajectoryMeasurement> traj);
   virtual ~HitEff();
 
  private:
@@ -60,7 +61,6 @@ class HitEff : public edm::EDAnalyzer {
 
   edm::ParameterSet conf_;
 
-  TTree* rechits;
   TTree* traj;
   int events,EventTrackCKF;
 
@@ -69,27 +69,17 @@ class HitEff : public edm::EDAnalyzer {
   bool DEBUG;
   TRandom2 RanGen2;
 
-  // Tree declarations
   // All RecHits (from clusters)
-  int RHNum;
   float	RHgpx[500];
   float	RHgpy[500];
   float	RHgpz[500];
   int RHMod[500];
-  uint RHLay[500];
 
-  // All trajectory positions
-  int TrajNum;
-  float	Trajgpx[500];
-  float	Trajgpy[500];
-  float	Trajgpz[500];
-  uint TrajLay[500];
-  uint TrajMod[500];
-
+  // Tree declarations
   // Trajectory positions for modules included in the study
   float TrajGlbX, TrajGlbY, TrajGlbZ, trackAngle;
   float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY;
-  float ClusterLocX, ClusterLocY, ClusterLocErrX, ClusterLocErrY;
+  float ClusterLocX, ClusterLocY, ClusterLocErrX, ClusterLocErrY, ClusterStoN;
   float ResX, ResXSig;
   uint ModIsBad; uint Id; uint SiStripQualBad;
   uint run; uint event;
