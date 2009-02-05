@@ -133,19 +133,32 @@ We also have Bias and Ground Wires: Copper V = 0.0362 cm3
 * 11 "Solders Indium" "Indium" 0.006 1 ELE
 
 
-6) Aluminium for outer ring (NO EDGES)
+6) Aluminium for inner ring (NO EDGES)
+   ===================================
+   We want a new aluminium density that is used for the inner Ring in order to take
+   into account the holes that are not implemented in the simulation.
+   18.78 cm3 is the volume of an inner-ring without holes as it is in the simulation.
+   G. Derylo calulated the inner-ring REAL volume (there are many holes in the ring):
+   13.944 cm3 - 0.624 cm3 (2 x 0.312cm3 = 2 x one inner edge volume)
+   G. Derylo used docDB 506 to get inner and outer ring drawing numbers and then pulled 
+   the 3D part models out of the library and used the CAD software to calculate the 
+   volumes.
+
+# "Aluminium for inner ring" "Aluminium_InnerRing"  18.78  1
+* 1 "Aluminium" "Aluminium"  13.32 1 SUP
+
+
+7) Aluminium for outer ring (NO EDGES)
    ===================================
    We want a new aluminium density that is used for the outer Ring in order to take
    into account the holes in the outer ring that are not implemented in the
    simulation.
    58.572 cm3 is the volume of an outer-ring without holes as it is in the simulation.
    G. Derylo calulated the outer-ring REAL volume (there are many holes in the ring):
-   Doc-DB #500 v5 
-   The real outer ring has a volume of aluminium of 42.576 cm3 and we remove 2 cm3 for the 2 edges = 40.576 cm3
+   41.446 cm3 - 2 cm3 (2 x 1cm3 = 2 x one outer edge volume )
 
 # "Aluminium for outer ring" "Aluminium_OuterRing"  58.572  1
-* 1 "Aluminium" "Aluminium"  40.576 1 SUP
-
+* 1 "Aluminium" "Aluminium"  39.446 1 SUP
 
 
 SERVICE CYLINDER MATERIAL (V. Cuplov)
