@@ -276,13 +276,13 @@
   </CompositeMaterial>
 
 
-  <CompositeMaterial name="Aluminium_OuterRing" density="1.87*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="Aluminium_OuterRing" density="1.82*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.0">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="Aluminium_InnerRing" density="1.93*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="Aluminium_InnerRing" density="1.92*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="1.0">
       <rMaterial name="materials:Aluminium"/>
     </MaterialFraction>
