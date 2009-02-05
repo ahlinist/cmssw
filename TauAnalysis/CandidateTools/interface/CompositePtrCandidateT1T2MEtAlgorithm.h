@@ -44,7 +44,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     compositePtrCandidate.setCharge(leg1->charge() + leg2->charge());
     compositePtrCandidate.setP4Vis(leg1->p4() + leg2->p4());
     compositePtrCandidate.setDR12(reco::deltaR(leg1->p4(), leg2->p4()));
-    compositePtrCandidate.setDPhi12(normalizedPhi(leg1->phi() - leg2->phi()));
+    compositePtrCandidate.setDPhi12(TMath::Abs(normalizedPhi(leg1->phi() - leg2->phi())));
     compositePtrCandidate.setVisEtaMin(TMath::Min(leg1->eta(), leg2->eta()));
     compositePtrCandidate.setVisEtaMax(TMath::Max(leg1->eta(), leg2->eta()));
 
@@ -56,8 +56,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setMt12MET(compMt(leg1->p4(), leg2->p4(), met->px(), met->py()));    
       compositePtrCandidate.setMt1MET(compMt(leg1->p4(), met->px(), met->py()));
       compositePtrCandidate.setMt2MET(compMt(leg2->p4(), met->px(), met->py()));
-      compositePtrCandidate.setDPhi1MET(normalizedPhi(leg1->phi() - met->phi()));
-      compositePtrCandidate.setDPhi2MET(normalizedPhi(leg2->phi() - met->phi()));
+      compositePtrCandidate.setDPhi1MET(TMath::Abs(normalizedPhi(leg1->phi() - met->phi())));
+      compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false);
     }
