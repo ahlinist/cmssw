@@ -3,9 +3,11 @@ void plotHitRes(){
   gROOT->SetStyle("tdrStyle");
 
   // load the code before executing the macro:
-  gROOT->LoadMacro("TrackingAnalysis/Cosmics/test/OverlapHistos.C+");
-  ol = new OverlapHistos();
-  ol->Loop(); 
+  //gROOT->LoadMacro("TrackingAnalysis/Cosmics/test/OverlapHistos.C+");
+  //ol = new OverlapHistos();
+  //ol->Loop(); 
+
+  TFile f("output_test.root");
 
   //summary histos written out to main file, histos/detid pair in root->ROOT Memory
   //new TBrowser()

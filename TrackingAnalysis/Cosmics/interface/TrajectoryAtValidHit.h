@@ -13,7 +13,7 @@ class PixelTopology;
 class TrajectoryAtValidHit {
 public:
 
-  TrajectoryAtValidHit( const TrajectoryMeasurement&, const TrackerGeometry * tracker);
+  TrajectoryAtValidHit( const TrajectoryMeasurement&, const TrackerGeometry * tracker, const uint mono = 0);
 
   double localX() const;
   double localY() const;

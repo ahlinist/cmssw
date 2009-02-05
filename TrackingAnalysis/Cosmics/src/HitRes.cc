@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.7 2008/08/08 15:14:17 speer Exp $
+// $Id: HitRes.cc,v 1.8 2008/11/24 13:32:42 speer Exp $
 //
 //
 
@@ -121,7 +121,7 @@ private:
   vector<bool> acceptLayer;
   int run,event;
   string fileName;
-
+  float momentum_;
 };
 
 //
@@ -247,6 +247,7 @@ HitRes::analyze (const Trajectory& trajectory,
 //   cout << "Testing "<<run<< "\t"<<event<<"\t"<<trajectory.foundHits()<< endl;
   vector<TrajectoryMeasurement> measurements(trajectory.measurements());
   if ( trajectory.foundHits()<6 )  return;
+
   //
   // loop over measurements in the trajectory and calculate residuals
   //
@@ -425,6 +426,9 @@ HitRes::analyze (const Trajectory& trajectory,
     hitPositions_[1] = (*iol).second->recHit()->localPosition().x();
     hitErrors_[1] = sqrt((*iol).second->recHit()->localPositionError().xx());
 
+    // get track momentum
+    momentum_ = comb1.globalMomentum().mag();
+
     //try writing out the SimHit info (for MC only)
     if(doSimHit_){
       std::vector<PSimHit> psimHits1;
@@ -583,6 +587,7 @@ HitRes::beginJob(const edm::EventSetup&)
   rootTree_->Branch("hitX",hitPositions_,"hitX[2]/F");
   rootTree_->Branch("hitEX",hitErrors_,"hitEX[2]/F");
   rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
+  rootTree_->Branch("momentum",&momentum_,"momentum/F");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
