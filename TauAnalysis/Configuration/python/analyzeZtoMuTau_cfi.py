@@ -496,7 +496,7 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
-    title = cms.string('dPhi(Muon-Tau) < 2.4'),
+    title = cms.string('dPhi(Muon-MET) < 2.4'),
     saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   ),
   cms.PSet(

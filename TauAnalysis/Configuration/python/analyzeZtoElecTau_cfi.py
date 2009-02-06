@@ -473,7 +473,7 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
-    title = cms.string('dPhi(Electron-Tau) < 2.4'),
+    title = cms.string('dPhi(Electron-MET) < 2.4'),
     saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   ),
   cms.PSet(
