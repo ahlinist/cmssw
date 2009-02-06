@@ -44,6 +44,26 @@ Trigger = cms.PSet(
   triggerPaths = cms.vstring('HLT_Mu15', 'HLT_IsoMu11')
 )
 
+# primary event vertex selection
+primaryEventVertex = cms.PSet(
+  name = cms.string('primaryEventVertex'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
+  minNumber = cms.uint32(1)
+)
+primaryEventVertexQuality = cms.PSet(
+  name = cms.string('primaryEventVertexQuality'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexQuality'),
+  minNumber = cms.uint32(1)
+)
+primaryEventVertexPosition = cms.PSet(
+  name = cms.string('primaryEventVertexPosition'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexPosition'),
+  minNumber = cms.uint32(1)
+)
+
 # muon candidate selection
 globalMuonCut = cms.PSet(
   name = cms.string('globalMuonCut'),
@@ -172,20 +192,6 @@ tauMuonVeto = cms.PSet(
   minNumber = cms.uint32(1)
 )
 
-# require common event vertex for muon and tau-jet candidate
-#muTauEventVertex = cms.PSet(
-#  name = cms.string('muTauEventVertex'),
-#  type = cms.string('VertexEventSelector'),
-#  src1 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-#  src2 = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
-#  dXYmax = cms.double(0.5),
-#  dZmax = cms.double(5.),
-#  zMin1 = cms.double(-50.),
-#  zMax1 = cms.double(50.),
-#  zMin2 = cms.double(-50.),
-#  zMax2 = cms.double(50.)
-#)
-
 # di-tau candidate selection
 diTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
@@ -284,6 +290,26 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('Trigger'),
     title = cms.string('mu15 || isoMu11 Trigger'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers
+  ),
+
+  # primary event vertex selection
+  cms.PSet(
+    filter = cms.string('primaryEventVertex'),
+    title = cms.string('Vertex'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('primaryEventVertexQuality'),
+    title = cms.string('p(chi2Vertex) > 0.01'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('primaryEventVertexPosition'),
+    title = cms.string('-50 < zVertex < +50 cm'),
     saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   ),
   cms.PSet(
@@ -457,13 +483,6 @@ muTauAnalysisSequence = cms.VPSet(
     histManagers = muTauHistManagers,
     replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
   ),
-
-  # require common event vertex for muon and tau-jet candidate
-  #cms.PSet(
-  #  filter = cms.string('muTauEventVertex'),
-  #  title = cms.string('Vertex'),
-  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-  #)
 
   #selection of muon + tau-jet combinations
   cms.PSet(

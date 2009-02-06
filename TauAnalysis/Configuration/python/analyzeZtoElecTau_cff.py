@@ -16,6 +16,11 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
     
     # trigger selection
     Trigger,
+
+    # primary event vertex selection
+    primaryEventVertex,
+    primaryEventVertexQuality,
+    primaryEventVertexPosition,
             
     # electron candidate selection
     tightElectronIdCut,
@@ -38,9 +43,6 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
     tauEcalIsoCut,
     tauProngCut,
     tauElectronVeto,
-
-    # require common event vertex for electron and tau-jet candidate
-    #elecTauEventVertex,
 
     # di-tau candidate selection
     diTauCandidateForElecTauAntiOverlapVeto,
