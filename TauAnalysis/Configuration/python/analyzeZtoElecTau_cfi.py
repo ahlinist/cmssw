@@ -44,6 +44,26 @@ Trigger = cms.PSet(
   triggerPaths = cms.vstring('HLT_IsoEle15_L1I')
 )
 
+# primary event vertex selection
+primaryEventVertex = cms.PSet(
+  name = cms.string('primaryEventVertex'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
+  minNumber = cms.uint32(1)
+)
+primaryEventVertexQuality = cms.PSet(
+  name = cms.string('primaryEventVertexQuality'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexQuality'),
+  minNumber = cms.uint32(1)
+)
+primaryEventVertexPosition = cms.PSet(
+  name = cms.string('primaryEventVertexPosition'),
+  type = cms.string('VertexMinEventSelector'),
+  src = cms.InputTag('selectedPrimaryVertexPosition'),
+  minNumber = cms.uint32(1)
+)
+
 # electron candidate selection
 tightElectronIdCut = cms.PSet(
   name = cms.string('tightElectronIdCut'),
@@ -172,20 +192,6 @@ tauElectronVeto = cms.PSet(
   minNumber = cms.uint32(1)
 )
 
-# require common event vertex for electron and tau-jet candidate
-#elecTauEventVertex = cms.PSet(
-#  name = cms.string('elecTauEventVertex'),
-#  type = cms.string('VertexEventSelector'),
-#  src1 = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-#  src2 = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
-#  dXYmax = cms.double(0.5),
-#  dZmax = cms.double(5.),
-#  zMin1 = cms.double(-50.),
-#  zMax1 = cms.double(50.),
-#  zMin2 = cms.double(-50.),
-#  zMax2 = cms.double(50.)
-#)
-
 # di-tau candidate selection
 diTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
@@ -261,6 +267,26 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('Trigger'),
     title = cms.string('isoEle15 Trigger'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers
+  ),
+
+  # primary event vertex selection
+  cms.PSet(
+    filter = cms.string('primaryEventVertex'),
+    title = cms.string('Vertex'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('primaryEventVertexQuality'),
+    title = cms.string('p(chi2Vertex) > 0.01'),
+    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('primaryEventVertexPosition'),
+    title = cms.string('-50 < zVertex < +50 cm'),
     saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
   ),
   cms.PSet(
@@ -434,13 +460,6 @@ elecTauAnalysisSequence = cms.VPSet(
     histManagers = elecTauHistManagers,
     replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative')
   ),
-
-  # require common event vertex for electron and tau-jet candidate
-  #cms.PSet(
-  #  filter = cms.string('elecTauEventVertex'),
-  #  title = cms.string('Vertex'),
-  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-  #)
 
   #selection of electron + tau-jet combinations
   cms.PSet(

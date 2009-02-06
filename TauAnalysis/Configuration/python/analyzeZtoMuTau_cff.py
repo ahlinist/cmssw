@@ -16,6 +16,11 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     
     # trigger selection
     Trigger,
+
+    # primary event vertex selection
+    primaryEventVertex,
+    primaryEventVertexQuality,
+    primaryEventVertexPosition,
     
     # muon candidate selection
     globalMuonCut,
@@ -38,9 +43,6 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     tauEcalIsoCut,
     tauProngCut,
     tauMuonVeto,
-
-    # require common event vertex for muon and tau-jet candidate
-    #muTauEventVertex,
 
     # di-tau candidate selection
     diTauCandidateForMuTauAntiOverlapVeto,
