@@ -1,68 +1,51 @@
-// ********************************************************************************************
-// *** The selector chooses only the PAT muons that satisfy a invariant mass requirement    ***
-// *** when combined with a PAT tau.                                                        ***
-// ***                                                                                      ***
-// ***                                                                  October 8, 2008     ***
-// ***                                                                  Alfredo Gurrola     ***
-// ********************************************************************************************
+#ifndef TauAnalysis_RecoTools_PATMuonAntiPionSelector_h
+#define TauAnalysis_RecoTools_PATMuonAntiPionSelector_h
 
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/Common/interface/Handle.h"
-//#include "Math/GenVector/VectorUtil.h"
-#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+/** \class PATMuonAntiPionSelector
+ *
+ * Select muon that pass linear discriminant based on combination of
+ * calorimeter and track segment compatibility,
+ * in order to veto pions misidentified as muons
+ * 
+ * \author Alfredo Gurrola, Texas A&M;
+ *  modified by Christian Veelken
+ *
+ * \version $Revision: 1.1 $
+ *
+ * $Id: PATMuonAntiPionSelector.h,v 1.1 2009/01/29 13:22:18 veelken Exp $
+ *
+ */
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Common/interface/Handle.h"
 
-struct PATMuonAntiPionSelector {
+#include "DataFormats/PatCandidates/interface/Muon.h"
 
-public:
+class PATMuonAntiPionSelectorImp
+{
+ public:
 
-  typedef std::vector< pat::Muon > collection;
-  typedef edm::Handle< collection > HandleToCollection;
-  typedef std::vector < const pat::Muon *> container;
-  typedef container::const_iterator const_iterator;
+  typedef std::vector<pat::Muon> collection;
 
-  PATMuonAntiPionSelector ( const edm::ParameterSet & cfg ) :
-  MuonSource_( cfg.getParameter< edm::InputTag >( "src" ) ),
-  CaloCompCoefficient_( cfg.getParameter< double >( "CaloCompCoefficient" ) ),
-  SegmCompCoefficient_( cfg.getParameter< double >( "SegmCompCoefficient" ) ),
-  AntiPionCut_( cfg.getParameter< double >( "AntiPionCut" ) ) { }
+  PATMuonAntiPionSelectorImp(const edm::ParameterSet&);
 
-  const_iterator begin() const { return selected_.begin(); }
-  const_iterator end() const { return selected_.end(); }
+  std::vector<const pat::Muon*>::const_iterator begin() const { return selected_.begin(); }
+  std::vector<const pat::Muon*>::const_iterator end() const { return selected_.end(); }
 
-  void select( const HandleToCollection & hc, 
-               const edm::Event & e,
-               const edm::EventSetup& s) {
-    selected_.clear();
-
-    edm::Handle<edm::View<pat::Muon> > muonHandle;
-    e.getByLabel(MuonSource_,muonHandle);
-    edm::View<pat::Muon> muons = *muonHandle;
-
-    collection col = *hc;
-    for(edm::View<pat::Muon>::const_iterator trk = muons.begin();trk != muons.end(); ++trk) {
-      bool goodMuon = true;
-      if(((CaloCompCoefficient_ * muon::caloCompatibility(*trk))+
-          (SegmCompCoefficient_ * muon::segmentCompatibility(*trk)))<=AntiPionCut_) {goodMuon = false;}
-      if (goodMuon) {selected_.push_back( & * trk );}
-      //std::cout << "caloCompatibility :  " << muon::caloCompatibility(*trk) << std::endl;
-      //std::cout << "segmentCompatibility :  " << muon::segmentCompatibility(*trk) << std::endl;
-      //std::cout << "Good Muon ? :  " << goodMuon << std::endl;
-    }
-  }
+  void select(const edm::Handle<collection>&, edm::Event&, const edm::EventSetup&);
 
   size_t size() const { return selected_.size(); }
 
-private:
+ private:
 
-  container selected_;
-  edm::InputTag MuonSource_;
-  double CaloCompCoefficient_;
-  double SegmCompCoefficient_;
-  double AntiPionCut_;
+  std::vector<const pat::Muon*> selected_;
+
+  double coeffCaloComp_;
+  double coeffSegmComp_;
+  double cut_;
 };
+
+#endif
