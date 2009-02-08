@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.cc,v 1.2 2008/07/24 10:20:31 chinhan Exp $
+// $Id: L1Region.cc,v 1.3 2008/09/24 21:44:43 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -530,6 +530,10 @@ L1Region::SetTauBit(edm::Event const& iEvent, bool bitinfo)
   float emThres = Config.EMActiveLevel;
   float hadThres = Config.HadActiveLevel;
 
+  if (bitinfo) BitInfo.setTauVeto(false);	
+  if (bitinfo) BitInfo.setEmTauVeto(false);	
+  if (bitinfo) BitInfo.setHadTauVeto(false);	
+
   // init pattern containers
   unsigned emEtaPat = 0;
   unsigned emPhiPat = 0;
@@ -574,33 +578,75 @@ L1Region::SetTauBit(edm::Event const& iEvent, bool bitinfo)
     unsigned etaPattern = emEtaPat | hadEtaPat;
     unsigned phiPattern = emPhiPat | hadPhiPat;
 
-    /*
     //  em pattern
     if(emEtaPat == *i || emPhiPat == *i) {
-      BitInfo.EmTauVeto = true;
+      if (bitinfo) BitInfo.setEmTauVeto( true);
     }
     //  had pattern
     if(hadEtaPat == *i || hadPhiPat == *i) {
-      BitInfo.HadTauVeto = true;
+      if (bitinfo) BitInfo.setHadTauVeto( true);
     }
-    */
 
     if(etaPattern == *i || phiPattern == *i) // combined pattern
       //if(emEtaPat == *i || emPhiPat == *i || hadEtaPat == *i || hadPhiPat == *i)
       {
 	tauBit = true;
-if (bitinfo) BitInfo.setTauVeto( true);
-	
-	return;
+	if (bitinfo) BitInfo.setTauVeto(true);	
+	//return;
       }  
     
   }
-
+  
   tauBit = false;
   
 }
 
 
+
+int 
+L1Region::HighestEtTowerID()
+{
+  int hid = -1;
+  double tmpet=0.;
+  for (int i=0; i<16; i++) {
+    if ( (Towers[i].emEt()+Towers[i].hadEt()) > tmpet) {
+      tmpet = (Towers[i].emEt()+Towers[i].hadEt());
+      hid = i;
+    }
+  }
+
+  return hid;
+}
+
+int 
+L1Region::HighestEmEtTowerID()
+{
+  int hid = -1;
+  double tmpet=0.;
+  for (int i=0; i<16; i++) {
+    if ( (Towers[i].emEt()) > tmpet) {
+      tmpet = (Towers[i].emEt());
+      hid = i;
+    }
+  }
+
+  return hid;
+}
+
+int 
+L1Region::HighestHadEtTowerID()
+{
+  int hid = -1;
+  double tmpet=0.;
+  for (int i=0; i<16; i++) {
+    if ( (Towers[i].hadEt()) > tmpet) {
+      tmpet = (Towers[i].hadEt());
+      hid = i;
+    }
+  }
+
+  return hid;
+}
 
 
 double 
@@ -616,6 +662,28 @@ L1Region::CalcSumEt()
 }
 
 double 
+L1Region::CalcSumEmEt()
+{
+  double sumet=0;
+  for (int i=0; i<16; i++) {
+    sumet += Towers[i].emEt();
+  }
+
+  return sumet;
+}
+
+double 
+L1Region::CalcSumHadEt()
+{
+  double sumet=0;
+  for (int i=0; i<16; i++) {
+    sumet += Towers[i].hadEt();
+  }
+
+  return sumet;
+}
+
+double 
 L1Region::CalcSumE()
 {
   double sume=0;
@@ -623,6 +691,26 @@ L1Region::CalcSumE()
     sume += Towers[i].emEnergy();
     sume += Towers[i].hadEnergy();
 
+  }
+  return sume;
+}
+
+double 
+L1Region::CalcSumEmE()
+{
+  double sume=0;
+  for (int i=0; i<16; i++) {
+    sume += Towers[i].emEnergy();
+  }
+  return sume;
+}
+
+double 
+L1Region::CalcSumHadE()
+{
+  double sume=0;
+  for (int i=0; i<16; i++) {
+    sume += Towers[i].hadEnergy();
   }
   return sume;
 }

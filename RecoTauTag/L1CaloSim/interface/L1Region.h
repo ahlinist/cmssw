@@ -15,7 +15,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.h,v 1.2 2008/07/24 10:20:30 chinhan Exp $
+// $Id: L1Region.h,v 1.3 2008/09/24 21:44:42 chinhan Exp $
 //
 
 // user include files
@@ -159,12 +159,24 @@ class L1Region {
 
   double SumE() { return CalcSumE(); };
   double SumEt() { return CalcSumEt(); };
+  double SumEmE() { return CalcSumEmE(); };
+  double SumEmEt() { return CalcSumEmEt(); };
+  double SumHadE() { return CalcSumHadE(); };
+  double SumHadEt() { return CalcSumHadEt(); };
   double CalcSumE();
   double CalcSumEt();
+  double CalcSumEmE();
+  double CalcSumEmEt();
+  double CalcSumHadE();
+  double CalcSumHadEt();
   double GetJetE() { return jetE; };
   double GetJetEt() { return jetEt; };
   void SetJetE(double jE) { jetE = jE; };
   void SetJetEt(double jEt) { jetEt = jEt; };
+
+  int HighestEtTowerID();
+  int HighestEmEtTowerID();
+  int HighestHadEtTowerID();
 
   double GetJetE3x3() { return jetE3x3; };
   double GetJetEt3x3() { return jetEt3x3; };
