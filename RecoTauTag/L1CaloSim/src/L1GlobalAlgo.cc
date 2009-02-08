@@ -514,12 +514,7 @@ L1GlobalAlgo::InitL1Regions()
   // init regions
   for (int i=0; i<396; i++) {
     m_Regions[i].SetParameters(m_L1Config);
-    /*/ sm
-      for (unsigned int j = 0; j < 16; ++j){
-      m_Regions[i].BitInfo.ecal[j];
-      m_Regions[i].BitInfo.hcal[j];
-      }
-      //ms */     
+    m_Regions[i].SetDoBitInfo(m_DoBitInfo);
     std::pair<int, int> p = m_RMap->getRegionEtaPhiIndex(i);
     m_Regions[i].SetEtaPhiIndex(p.first,p.second,i);
     CaloTower c;
@@ -670,12 +665,6 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
   
   for (int i=0; i<396; i++) {
     for (int j=0; j<16; j++) {
-      /* sm
-	 if  (emEtV[i][j] == 0 && hEtV[i][j] == 0){
-	 m_Regions[i].BitInfo.ecal.push_back(0);
-	 m_Regions[i].BitInfo.hcal.push_back(0);
-	 }
-      *///ms
       if (emEtV[i][j]>0 || hEtV[i][j]>0) {
 	
 
@@ -749,7 +738,7 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
 	  else
 	    m_Regions[i].SetHOEBit(j,false);
 
-	  m_Regions[i].SetRegionBits(e, m_DoBitInfo);
+	  m_Regions[i].SetRegionBits(e);
       }
       
 
@@ -829,7 +818,7 @@ L1GlobalAlgo::FillL1Regions(edm::Event const& e, const edm::EventSetup& c)
 
     if (rgnid<396 && twrid<16) {
       m_Regions[rgnid].FillTower_Scaled(*cnd,twrid,true,cGeom);
-      m_Regions[rgnid].SetRegionBits(e, m_DoBitInfo);
+      m_Regions[rgnid].SetRegionBits(e);
     } else {
       //std::cerr << "L1GlobalAlgo::FillL1Regions(): ERROR - invalid region or tower ID: " << rgnid << " | " << twrid  << std::endl;
     }

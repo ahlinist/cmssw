@@ -16,7 +16,6 @@
 // $Id: L1Region.cc,v 1.3 2008/09/24 21:44:43 chinhan Exp $
 //
 
-// No BitInfos for release versions
 
 #include "RecoTauTag/L1CaloSim/interface/L1Region.h"
 
@@ -101,9 +100,9 @@ L1Region::SetRegionEnergy()
 }
 
 void 
-L1Region::SetRegionBits(edm::Event const& e,bool bitinfo)
+L1Region::SetRegionBits(edm::Event const& e)
 {
-  SetTauBit(e,bitinfo);
+  SetTauBit(e);
   SetQuietBit();
   SetMIPBit();
 }
@@ -525,14 +524,14 @@ L1Region::SetFGBit()
 
 
 void 
-L1Region::SetTauBit(edm::Event const& iEvent, bool bitinfo)
+L1Region::SetTauBit(edm::Event const& iEvent)
 {
   float emThres = Config.EMActiveLevel;
   float hadThres = Config.HadActiveLevel;
 
-  if (bitinfo) BitInfo.setTauVeto(false);	
-  if (bitinfo) BitInfo.setEmTauVeto(false);	
-  if (bitinfo) BitInfo.setHadTauVeto(false);	
+  if (doBitInfo) BitInfo.setTauVeto(false);	
+  if (doBitInfo) BitInfo.setEmTauVeto(false);	
+  if (doBitInfo) BitInfo.setHadTauVeto(false);	
 
   // init pattern containers
   unsigned emEtaPat = 0;
@@ -580,18 +579,18 @@ L1Region::SetTauBit(edm::Event const& iEvent, bool bitinfo)
 
     //  em pattern
     if(emEtaPat == *i || emPhiPat == *i) {
-      if (bitinfo) BitInfo.setEmTauVeto( true);
+      if (doBitInfo) BitInfo.setEmTauVeto( true);
     }
     //  had pattern
     if(hadEtaPat == *i || hadPhiPat == *i) {
-      if (bitinfo) BitInfo.setHadTauVeto( true);
+      if (doBitInfo) BitInfo.setHadTauVeto( true);
     }
 
     if(etaPattern == *i || phiPattern == *i) // combined pattern
       //if(emEtaPat == *i || emPhiPat == *i || hadEtaPat == *i || hadPhiPat == *i)
       {
 	tauBit = true;
-	if (bitinfo) BitInfo.setTauVeto(true);	
+	if (doBitInfo) BitInfo.setTauVeto(true);	
 	//return;
       }  
     
@@ -615,6 +614,8 @@ L1Region::HighestEtTowerID()
     }
   }
 
+  if (doBitInfo) BitInfo.setHighestEtTowerID (hid); 	 
+
   return hid;
 }
 
@@ -630,6 +631,7 @@ L1Region::HighestEmEtTowerID()
     }
   }
 
+  if (doBitInfo) BitInfo.setHighestEmEtTowerID (hid); 	 
   return hid;
 }
 
@@ -645,6 +647,7 @@ L1Region::HighestHadEtTowerID()
     }
   }
 
+  if (doBitInfo) BitInfo.setHighestHadEtTowerID (hid); 	 
   return hid;
 }
 
