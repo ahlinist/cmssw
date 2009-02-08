@@ -142,7 +142,7 @@ class L1Region {
   int GetNEId(); 
   int GetSEId(); 
 
-  void SetRegionBits(edm::Event const& e,bool bitinfo);
+  void SetRegionBits(edm::Event const& e);
   void SetTowerBits();
   void SetRegionEnergy();
 
@@ -174,6 +174,8 @@ class L1Region {
   void SetJetE(double jE) { jetE = jE; };
   void SetJetEt(double jEt) { jetEt = jEt; };
 
+  void SetDoBitInfo(bool doIt) {doBitInfo = doIt;}
+
   int HighestEtTowerID();
   int HighestEmEtTowerID();
   int HighestHadEtTowerID();
@@ -190,6 +192,7 @@ class L1Region {
   FastL1BitInfo getBitInfo() { return BitInfo; }
 
   // public - has to bechanged!!!
+  bool doBitInfo;
   FastL1BitInfo BitInfo;
 
   void SetFGBit(int twrid,bool FGBIT);
@@ -197,7 +200,7 @@ class L1Region {
   void SetHOEBit(int twrid,bool FGBIT);
 
  private:
-  void SetTauBit(edm::Event const& e, bool bitinfo);
+  void SetTauBit(edm::Event const& e);
   void SetFGBit();
   void SetHOEBit();
   void SetQuietBit();
