@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.cc,v 1.5 2009/02/08 18:14:37 chinhan Exp $
+// $Id: L1Region.cc,v 1.6 2009/02/09 00:26:53 chinhan Exp $
 //
 
 
@@ -400,6 +400,8 @@ L1Region::FillTower_Scaled(const CaloTower& t, int& tid, bool doRCTTrunc,edm::ES
   //Towers[tid] = CaloTower(t.id(),t.momentum(),emet,hadet,t.outerEt(),0,0);
   Towers[tid] = CaloTower(t.id(),emet,hadet,t.outerEt(),0,0,lvec,gP,gP);
   
+  //std::cout<<tid<<"  "<<Towers[tid].emEt()<< " " <<Towers[tid].hadEt()<< std::endl;
+
 }
 
 void 
@@ -529,7 +531,7 @@ L1Region::SetTauBit(edm::Event const& iEvent)
   float emThres = Config.EMActiveLevel;
   float hadThres = Config.HadActiveLevel;
 
-  //if (doBitInfo) BitInfo.setIsolationVeto(false);	
+  if (doBitInfo) BitInfo.setIsolationVeto(false);	
   if (doBitInfo) BitInfo.setTauVeto(false);	
   if (doBitInfo) BitInfo.setEmTauVeto(false);	
   if (doBitInfo) BitInfo.setHadTauVeto(false);	
