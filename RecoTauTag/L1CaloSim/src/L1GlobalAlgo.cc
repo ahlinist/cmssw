@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.3 2008/09/24 21:44:43 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.5 2009/02/08 18:14:37 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -868,10 +868,10 @@ L1GlobalAlgo::isTauJet(int cRgn) {
 
   if (m_Regions[cRgn].GetTauBit()) {
     shower_shape = 1;
-    if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
+    //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
   } else {
     shower_shape = 0;
-    if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(false); 	 
+    //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(false); 	 
   }
 
   int nwid = m_Regions[cRgn].GetNWId();
@@ -883,72 +883,62 @@ L1GlobalAlgo::isTauJet(int cRgn) {
   int sid = m_Regions[cRgn].GetSouthId();
   int seid = m_Regions[cRgn].GetSEId();
 
-  if (m_Regions[cRgn].GetTauBit()) shower_shape = 1; // check center
-
   //Use 3x2 window at eta borders!
-  if((cRgn%22)==4  || (cRgn%22)==17 ) {
-    // west border:
-    if ((cRgn%22)==4) { 
-      if (
-	  m_Regions[nid].GetTauBit()  ||
-	  m_Regions[neid].GetTauBit() ||
-	  m_Regions[eid].GetTauBit()  ||
-	  m_Regions[seid].GetTauBit() ||
-	  m_Regions[sid].GetTauBit() ) 
-	{
-	  et_isolation = 1;
-	  if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(true); 	 
-	} 
-      else { 
-	et_isolation = 0;
-	if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(false); 	 
-      } 	 
-    }
-
-    // east border:
-    if ((cRgn%22)==17) { 
-      if (
-	  m_Regions[nid].GetTauBit()  ||
-	  m_Regions[nwid].GetTauBit() ||
-	  m_Regions[wid].GetTauBit()  ||
-	  m_Regions[swid].GetTauBit() ||
-	  m_Regions[sid].GetTauBit() ) 
-	{
-	  et_isolation = 1;
-	  if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(true); 	 
-	} 
-      else { 
-	et_isolation = 0;
-	  if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(false); 	 
-      } 	 
-    }
+  // west border:
+  if ((cRgn%22)==4) { 
+    if (m_Regions[nid].GetTauBit()  ||
+	m_Regions[neid].GetTauBit() ||
+	m_Regions[eid].GetTauBit()  ||
+	m_Regions[seid].GetTauBit() ||
+	m_Regions[sid].GetTauBit() ) {
+      et_isolation = 1;
+    } else { 
+      et_isolation = 0;
+    } 	 
+  }
+  
+  // east border:
+  if ((cRgn%22)==17) { 
+    if (m_Regions[nid].GetTauBit()  ||
+	m_Regions[nwid].GetTauBit() ||
+	m_Regions[wid].GetTauBit()  ||
+	m_Regions[swid].GetTauBit() ||
+	m_Regions[sid].GetTauBit() ) {
+      et_isolation = 1;
+    } else { 
+      et_isolation = 0;
+    } 	 
   }
 
-  if ( (cRgn%22)>4 && (cRgn%22)<17){ // non-boarder
+  if ( (cRgn%22)>4 && (cRgn%22)<17){ // non-border
     if (nwid==999 || neid==999 || nid==999 || swid==999 || seid==999 || sid==999 || wid==999 || 
 	eid==999 ) { 
       return false;
     }
     
-    if (
-	m_Regions[nwid].GetTauBit() ||
+    if (m_Regions[nwid].GetTauBit() ||
 	m_Regions[nid].GetTauBit()  ||
 	m_Regions[neid].GetTauBit() ||
 	m_Regions[wid].GetTauBit()  ||
 	m_Regions[eid].GetTauBit()  ||
 	m_Regions[swid].GetTauBit() ||
 	m_Regions[seid].GetTauBit() ||
-	m_Regions[sid].GetTauBit()  ) 
-      {
-	et_isolation = 1; 
-	if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(true); 	 
-      } 
-    else {
+	m_Regions[sid].GetTauBit()  ) {
+      et_isolation = 1; 
+    } else {
       et_isolation = 0;
-      if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setIsolationVeto(false);	
     }    
   } // non-boarder
 
+  if (m_DoBitInfo) {
+    if (et_isolation == 1) {
+      //std::cout<<"Rgn iso veto: "<<et_isolation<<std::endl;
+      m_Regions[cRgn].BitInfo.setIsolationVeto(true);	
+    } else {
+      m_Regions[cRgn].BitInfo.setIsolationVeto(false);	
+    }
+  }
+  
   if (et_isolation == 1 || shower_shape == 1) return false;
   else return true;
 
@@ -1418,10 +1408,10 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
 	  	 
   if (m_Regions[cRgn].GetTauBit()) {  // check center 
     shower_shape = 1;	 
-    if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
+    //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
   } else {
     shower_shape = 0;	 
-    if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(false); 	 
+    //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(false); 	 
   }
 
   if((cRgn%22)==4  || (cRgn%22)==17 ) { 	 
@@ -1449,15 +1439,9 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       } 	 
 	  	 
       if (iso_count >= 2 ){ 	 
-	if (m_DoBitInfo){ 	 
-	  m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
-	} 	 
 	et_isolation = 1; 	 
       } 	 
       else {
-	if (m_DoBitInfo){ 	 
-	  m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
-	} 	 
 	et_isolation = 0;
       } 	 
     } // west bd 	 
@@ -1486,15 +1470,9 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       } 	 
 	  	 
       if (iso_count >= 2 ){ 	 
-	if (m_DoBitInfo){ 	 
-	  m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
-	} 	 
 	et_isolation = 1; 	 
       } 	 
       else{ 
-	if (m_DoBitInfo){ 	 
-	  m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
-	} 	 
 	et_isolation = 0;} 	 
     } // east bd 	 
  	  	 
@@ -1540,20 +1518,21 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
     } 	 
 	  	 
     if (iso_count >= 2 ){ 	 
-      if (m_DoBitInfo){ 	 
-	m_Regions[cRgn].BitInfo.setIsolationVeto ( true); 	 
-      } 	 
       et_isolation = 1; 	 
     } 	 
     else {
-      if (m_DoBitInfo){ 	 
-	m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
-      } 	 
       et_isolation = 0;
     } 	 
 	  	 
   }// non-boarder 	 
 	  	 
+  if (m_DoBitInfo){ 	 
+    if (et_isolation == 1) 
+      m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
+    else
+      m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
+  } 	 
+
   if (et_isolation == 1 || shower_shape == 1) return false; 
   else return true;
   

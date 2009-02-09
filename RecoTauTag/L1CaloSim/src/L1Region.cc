@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.cc,v 1.3 2008/09/24 21:44:43 chinhan Exp $
+// $Id: L1Region.cc,v 1.5 2009/02/08 18:14:37 chinhan Exp $
 //
 
 
@@ -529,6 +529,7 @@ L1Region::SetTauBit(edm::Event const& iEvent)
   float emThres = Config.EMActiveLevel;
   float hadThres = Config.HadActiveLevel;
 
+  //if (doBitInfo) BitInfo.setIsolationVeto(false);	
   if (doBitInfo) BitInfo.setTauVeto(false);	
   if (doBitInfo) BitInfo.setEmTauVeto(false);	
   if (doBitInfo) BitInfo.setHadTauVeto(false);	
@@ -579,11 +580,11 @@ L1Region::SetTauBit(edm::Event const& iEvent)
 
     //  em pattern
     if(emEtaPat == *i || emPhiPat == *i) {
-      if (doBitInfo) BitInfo.setEmTauVeto( true);
+      if (doBitInfo) BitInfo.setEmTauVeto(true);
     }
     //  had pattern
     if(hadEtaPat == *i || hadPhiPat == *i) {
-      if (doBitInfo) BitInfo.setHadTauVeto( true);
+      if (doBitInfo) BitInfo.setHadTauVeto(true);
     }
 
     if(etaPattern == *i || phiPattern == *i) // combined pattern
@@ -591,9 +592,8 @@ L1Region::SetTauBit(edm::Event const& iEvent)
       {
 	tauBit = true;
 	if (doBitInfo) BitInfo.setTauVeto(true);	
-	//return;
+	return;
       }  
-    
   }
   
   tauBit = false;
