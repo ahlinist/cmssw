@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.12 2008/12/01 10:04:29 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.13 2009/02/04 18:49:02 smaruyam Exp $
 //
 //
 
@@ -33,7 +33,8 @@
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+//#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminatorByIsolation.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
@@ -78,7 +79,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
 
-      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
+//      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
+      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminatorByIsolation isos);
 
       // ----------member data ---------------------------
       edm::InputTag  PFTaus_,PFTauIso_; //Path to analyze
