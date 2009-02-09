@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.5 2009/02/08 18:14:37 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.6 2009/02/09 00:26:53 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -89,11 +89,14 @@ L1GlobalAlgo::L1GlobalAlgo(const edm::ParameterSet& iConfig)
   for (int i=0; i<tpgmax; i++) { 
     for(int j = 1; j <=etabound; j++) {
       userfile >> m_hcaluncomp[j][i];
-      //std::cout<<"+++ "<<m_hcaluncomp[j][i]<<std::endl;
     }
   }
   userfile.close();  
   
+
+  L1Region tr;
+  for (int i=0;i<396;i++)
+    m_Regions.push_back(tr);
 
 }
 
@@ -160,6 +163,9 @@ L1GlobalAlgo::findJets() {
     //if ((i%22)>3 && (i%22)<18) {
     std::pair<double, double> p = m_RMap->getRegionCenterEtaPhi(i);
     
+    //if (m_Regions.at(i).SumEt()>0.)
+    //  std::cout<<"******** TEST "<<i<<": "<<m_Regions.at(i).SumEt()<<std::endl;
+
     double eta   = p.first;
     double phi   = p.second;
     if (m_DoBitInfo){
@@ -169,7 +175,6 @@ L1GlobalAlgo::findJets() {
 
     if (m_Regions.at(i).SumEt()>m_L1Config.JetSeedEtThreshold) {
       if (isMaxEtRgn_Window33(i)) {
-
 	if (m_GctIso == true) { 
 	  if (TauIsolation(i) && (i%22)>3 && (i%22)<18 ) {
 	    addJet(i,true);    
@@ -276,11 +281,8 @@ L1GlobalAlgo::FillEgammasTP(edm::Event const& e) {
       *ph = l1extra::L1EmParticle(rp4);
 
       CaloTowerDetId cid   = cnd->id();
-      //std::cout<<"+++ "<<cid<<std::endl;
       
       int emTag = isEMCand(cid,ph,e);
-      //std::cout<<"+++ "<<ph<<std::endl;
-      //std::cout<<"+++ "<<emTag<<" | "<<ph->et()<<std::endl;
       
       // 1 = non-iso EM, 2 = iso EM
       if (emTag==1) {
@@ -518,7 +520,6 @@ L1GlobalAlgo::InitL1Regions()
     std::pair<int, int> p = m_RMap->getRegionEtaPhiIndex(i);
     m_Regions[i].SetEtaPhiIndex(p.first,p.second,i);
     CaloTower c;
-    //std::cout<<"+++ "<<c.emEt()<<" "<<c.hadEt()<<std::endl;
     for (int twrid=0; twrid<16; twrid++) {
       m_Regions[i].FillTowerZero(c,twrid);
     }
@@ -553,13 +554,6 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
   for (HcalTrigPrimDigiCollection::const_iterator hTP=HTPinput->begin(); 
        hTP!=HTPinput->end(); hTP++) {
     
-    //if (hTP!=HTPinput->end()) {
-    //HcalTrigTowerDetId htwrid   = hTP->id();
-    //DetId htwrid   = (DetId)hTP->id();
-    //std::cout<<"******* AAAAAAAAAAA"<<std::endl;
-    //CaloTowerDetId hTPtowerDetId = theTowerConstituentsMap->towerOf((DetId)htwrid);
-    //std::cout<<"******* BBBBBBBBB"<<std::endl;
-    
     int rgnid = 999;
     int twrid = 999;
 
@@ -578,7 +572,6 @@ L1GlobalAlgo::FillL1RegionsTP(edm::Event const& e, const edm::EventSetup& s)
     rgnid  = m_RMap->getRegionIndex(hieta,hiphi);
     twrid = m_RMap->getRegionTowerIndex(hieta,hiphi);
 
-    //std::cout<<hieta<<" "<<hiphi<<" "<<rgnid<<" "<<twrid<<" "<<std::endl;
     /*
       if (std::abs(htwrid.ieta())>28) {
       std::cout<<htwrid.ieta()<<" "<<htwrid.iphi()<<" "<<rgnid<<" "<<twrid<<" "<<std::endl;
@@ -797,30 +790,20 @@ L1GlobalAlgo::FillL1Regions(edm::Event const& e, const edm::EventSetup& c)
 
     CaloTowerDetId cid   = cnd->id();
     std::pair<int, int> pep = m_RMap->getRegionEtaPhiIndex(cid);
-
-    //if (abs(cid.ieta())>=0) {
-    //std::cout << cid.ieta() << " " << cid.iphi() << std::endl;
-    //std::cout << cnd->eta() << " " << cnd->phi() << std::endl;
-    //std::cout << pep.first << " " << pep.second << std::endl;
-    //std::cout << "**************************************************" << std::endl;
-    //}
  
     int rgnid = 999;
     int twrid = 999;
-      
-    //std::cout << "L1GlobalAlgo::FillL1Regions calotowers dump: " << *cnd << std::endl;
       
     if (std::abs(pep.first)<=22) {
       rgnid = pep.second*22 + pep.first;
       twrid = m_RMap->getRegionTowerIndex(cid);
       //std::cout << rgnid << " " << twrid << std::endl;
+      //std::cout << cnd->emEt() << " " << cnd->hadEt() << std::endl;
     } 
 
     if (rgnid<396 && twrid<16) {
       m_Regions[rgnid].FillTower_Scaled(*cnd,twrid,true,cGeom);
       m_Regions[rgnid].SetRegionBits(e);
-    } else {
-      //std::cerr << "L1GlobalAlgo::FillL1Regions(): ERROR - invalid region or tower ID: " << rgnid << " | " << twrid  << std::endl;
     }
 
   }
@@ -892,8 +875,6 @@ L1GlobalAlgo::isTauJet(int cRgn) {
 	m_Regions[seid].GetTauBit() ||
 	m_Regions[sid].GetTauBit() ) {
       et_isolation = 1;
-    } else { 
-      et_isolation = 0;
     } 	 
   }
   
@@ -905,8 +886,6 @@ L1GlobalAlgo::isTauJet(int cRgn) {
 	m_Regions[swid].GetTauBit() ||
 	m_Regions[sid].GetTauBit() ) {
       et_isolation = 1;
-    } else { 
-      et_isolation = 0;
     } 	 
   }
 
@@ -925,24 +904,26 @@ L1GlobalAlgo::isTauJet(int cRgn) {
 	m_Regions[seid].GetTauBit() ||
 	m_Regions[sid].GetTauBit()  ) {
       et_isolation = 1; 
-    } else {
-      et_isolation = 0;
     }    
-  } // non-boarder
+  } // non-border
 
   if (m_DoBitInfo) {
     if (et_isolation == 1) {
+      //std::cout<<"*********************************"<<std::endl;
       //std::cout<<"Rgn iso veto: "<<et_isolation<<std::endl;
       m_Regions[cRgn].BitInfo.setIsolationVeto(true);	
     } else {
       m_Regions[cRgn].BitInfo.setIsolationVeto(false);	
     }
+    //    if (shower_shape == 1) {
+    //std::cout<<"###############################"<<std::endl;
+    //std::cout<<"Rgn shower veto: "<<shower_shape<<std::endl;
+    //}
   }
   
   if (et_isolation == 1 || shower_shape == 1) return false;
   else return true;
 
-  return true; // shouldn't reach here
 }
 
 // ------------ Check if tower is emcand ------------
@@ -1311,6 +1292,7 @@ L1GlobalAlgo::isMaxEtRgn_Window33(int crgn) {
     return false;
   }
 
+
   double cenet = m_Regions.at(crgn).SumEt();
   double nwet =  m_Regions[nwid].SumEt();
   double noet = m_Regions[nid].SumEt();
@@ -1409,10 +1391,7 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
   if (m_Regions[cRgn].GetTauBit()) {  // check center 
     shower_shape = 1;	 
     //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
-  } else {
-    shower_shape = 0;	 
-    //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(false); 	 
-  }
+  } 
 
   if((cRgn%22)==4  || (cRgn%22)==17 ) { 	 
     // west border 	 
@@ -1436,13 +1415,6 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       if( m_Regions[sid].SumEt() > iso_threshold){ 	 
 	iso_count ++; 	 
 	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
-      } 	 
-	  	 
-      if (iso_count >= 2 ){ 	 
-	et_isolation = 1; 	 
-      } 	 
-      else {
-	et_isolation = 0;
       } 	 
     } // west bd 	 
 	  	 
@@ -1468,17 +1440,11 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
 	iso_count ++; 	 
 	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
       } 	 
-	  	 
-      if (iso_count >= 2 ){ 	 
-	et_isolation = 1; 	 
-      } 	 
-      else{ 
-	et_isolation = 0;} 	 
     } // east bd 	 
  	  	 
   } 	 
 	  	 
-  if ( (cRgn%22)>4 && (cRgn%22)<17){ // non-boarder 	 
+  if ( (cRgn%22)>4 && (cRgn%22)<17){ // non-border 	 
     if (nwid==999 || neid==999 || nid==999 || swid==999 || seid==999 || sid==999 || wid==999 || 	 
 	eid==999 ) { 	 
       return false; 	 
@@ -1516,15 +1482,15 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       iso_count ++; 	 
       if (m_Regions[swid].GetTauBit()) iso_count++; 	 
     } 	 
+  }// non-border 	 
 	  	 
-    if (iso_count >= 2 ){ 	 
-      et_isolation = 1; 	 
-    } 	 
-    else {
-      et_isolation = 0;
-    } 	 
 	  	 
-  }// non-boarder 	 
+  if (iso_count >= 2 ){ 	 
+    et_isolation = 1; 	 
+  } 	 
+  else {
+    et_isolation = 0;
+  } 	 
 	  	 
   if (m_DoBitInfo){ 	 
     if (et_isolation == 1) 
@@ -1536,6 +1502,5 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
   if (et_isolation == 1 || shower_shape == 1) return false; 
   else return true;
   
-  return true; // shouldn't reach here 	 
 }//
 
