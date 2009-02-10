@@ -4,7 +4,10 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+
+#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -35,14 +38,23 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   muonSrc_ = cfg.getParameter<edm::InputTag>("muonSource");
   //std::cout << " muonSrc = " << muonSrc_ << std::endl;
 
+  vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
+  if ( vertexSrc_.label() == "" ) {
+    edm::LogWarning("MuonHistManager") << " Configuration parameter 'vertexSource' not specified" 
+				       << " --> Impact Parameter histograms will NOT be plotted !!";
+  }
+  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
   //std::cout << " requireGenMuonMatch = " << requireGenMuonMatch_ << std::endl;
 
-  numMuonIsoConeSizes_ = 10;
+  numMuonIsoConeSizes_ = 15;
   muonIsoConeSizeIncr_ = 0.1;
+  numMuonIsoPtThresholds_ = 4;
+  muonIsoPtThresholdIncr_ = 0.5;
 }
 
 MuonHistManager::~MuonHistManager()
@@ -64,7 +76,8 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
     bookMuonHistograms(dqmStore, hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
     hMuonPtVsEta_ = dqmStore.book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
 
-    hMuonTrackIP_ = dqmStore.book1D("MuonTrackIP", "MuonTrackIP", 100, -0.100, 0.100);
+    hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.500, 0.500);
+    hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -10.0, 10.0);
 
     hMuonEcalDeposits_ = dqmStore.book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 20.);
     hMuonHcalDeposits_ = dqmStore.book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 20.);
@@ -77,19 +90,33 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
     hMuonTrkIsoPt_ = dqmStore.book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 20.);    
     hMuonEcalIsoPt_ = dqmStore.book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
     hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
+    hMuonIsoSumPt_ = dqmStore.book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
 
+    hMuonTrkIsoValProfile_ = dqmStore.book1D("MuonTrkIsoValProfile", "MuonTrkIsoValProfile", 100, 0., 10.);
+    hMuonTrkIsoEtaDistProfile_ = dqmStore.book1D("MuonTrkIsoEtaDistProfile", "MuonTrkIsoEtaDistProfile", 15, 0., 1.5);
+    hMuonTrkIsoPhiDistProfile_ = dqmStore.book1D("MuonTrkIsoPhiDistProfile", "MuonTrkIsoPhiDistProfile", 15, 0., 1.5);
+    
+    hMuonEcalIsoValProfile_ = dqmStore.book1D("MuonEcalIsoValProfile", "MuonEcalIsoValProfile", 100, 0., 10.);
+    hMuonEcalIsoEtaDistProfile_ = dqmStore.book1D("MuonEcalIsoEtaDistProfile", "MuonEcalIsoEtaDistProfile", 15, 0., 1.5);
+    hMuonEcalIsoPhiDistProfile_ = dqmStore.book1D("MuonEcalIsoPhiDistProfile", "MuonEcalIsoPhiDistProfile", 15, 0., 1.5);
+    
+    hMuonHcalIsoValProfile_ = dqmStore.book1D("MuonHcalIsoValProfile", "MuonHcalIsoValProfile", 100, 0., 10.);
+    hMuonHcalIsoEtaDistProfile_ = dqmStore.book1D("MuonHcalIsoEtaDistProfile", "MuonHcalIsoEtaDistProfile", 15, 0., 1.5);
+    hMuonHcalIsoPhiDistProfile_  = dqmStore.book1D("MuonHcalIsoPhiDistProfile", "MuonHcalIsoPhiDistProfile", 15, 0., 1.5);
+    
     for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
       std::ostringstream iConeSizeString;
       iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
 
       std::string hMuonTrkIsoPtConeSizeDepName_i = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, hMuonTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, hMuonTrkIsoPtConeSizeDepName_i, 
+							  100, 0., 20.));
       std::string hMuonEcalIsoPtConeSizeDepName_i = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, hMuonEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, hMuonEcalIsoPtConeSizeDepName_i, 
+							   100, 0., 20.));
       std::string hMuonHcalIsoPtConeSizeDepName_i = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, hMuonHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+      hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, hMuonHcalIsoPtConeSizeDepName_i, 
+							   100, 0., 20.));
     }
   }
 }
@@ -116,8 +143,14 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
 
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt());
 
-    if ( patMuon->innerTrack().isAvailable() && !patMuon->innerTrack().isNull() ) {
-      hMuonTrackIP_->Fill(patMuon->innerTrack()->d0());
+    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() && !patMuon->track().isNull() ) {
+      edm::Handle<std::vector<reco::Vertex> > recoVertices;
+      iEvent.getByLabel(vertexSrc_, recoVertices);
+      if ( recoVertices->size() >= 1 ) {
+	const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
+	hMuonTrackIPxy_->Fill(patMuon->track()->dxy(thePrimaryEventVertex.position()));
+	hMuonTrackIPz_->Fill(patMuon->track()->dz(thePrimaryEventVertex.position()));
+      }
     }
   }
 
@@ -136,7 +169,7 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
       if ( recoMuon->isCaloCompatibilityValid() ) hMuonCaloCompatibility_->Fill(recoMuon->caloCompatibility());
       
       hMuonNumberOfChambers_->Fill(recoMuon->numberOfChambers());
-      float segmentCompatibility = muon::segmentCompatibility(*recoMuon);
+      double segmentCompatibility = muon::segmentCompatibility(*recoMuon);
       hMuonSegmentCompatibility_->Fill(segmentCompatibility);
     } else {
       edm::LogError("analyze") << " Failed to access reco::Muon linked to pat::Muon object --> some histograms will NOT be filled !!";
@@ -192,12 +225,16 @@ void MuonHistManager::fillMuonIsoHistograms(const std::vector<pat::Muon>& patMuo
     if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
 
     hMuonTrkIsoPt_->Fill(patMuon->trackIso());
-    if ( patMuon->trackIso() == 0. ) {
-      hMuonEcalIsoPt_->Fill(patMuon->ecalIso());
-      if ( patMuon->ecalIso() < 1. ) {
-        hMuonHcalIsoPt_->Fill(patMuon->hcalIso());
-      }
-    }
+    hMuonEcalIsoPt_->Fill(patMuon->ecalIso());
+    hMuonHcalIsoPt_->Fill(patMuon->hcalIso());
+    hMuonIsoSumPt_->Fill(patMuon->trackIso() + patMuon->ecalIso() + patMuon->hcalIso());
+
+    fillLeptonIsoDepositHistograms(patMuon->trackerIsoDeposit(), 
+				   hMuonTrkIsoValProfile_, hMuonTrkIsoEtaDistProfile_, hMuonTrkIsoPhiDistProfile_);
+    fillLeptonIsoDepositHistograms(patMuon->ecalIsoDeposit(), 
+				   hMuonEcalIsoValProfile_, hMuonEcalIsoEtaDistProfile_, hMuonEcalIsoPhiDistProfile_);
+    fillLeptonIsoDepositHistograms(patMuon->hcalIsoDeposit(), 
+				   hMuonHcalIsoValProfile_, hMuonHcalIsoEtaDistProfile_, hMuonHcalIsoPhiDistProfile_);
   }
 }
 
@@ -211,24 +248,24 @@ void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const std::vector<pat::Mu
     if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
 
     for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
-      float isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
+      double isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
 
       reco::isodeposit::AbsVetos muonTrkIsoParam;
       muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
       muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-      float muonTrkIsoDeposit_i = patMuon->trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam, false);
+      double muonTrkIsoDeposit_i = patMuon->trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam, false);
       hMuonTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonTrkIsoDeposit_i);
       
       reco::isodeposit::AbsVetos muonEcalIsoParam;
       muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
       muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      float muonEcalIsoDeposit_i = patMuon->ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam, false);
+      double muonEcalIsoDeposit_i = patMuon->ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam, false);
       hMuonEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonEcalIsoDeposit_i);
       
       reco::isodeposit::AbsVetos muonHcalIsoParam;
       muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
       muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      float muonHcalIsoDeposit_i = patMuon->hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam, false);
+      double muonHcalIsoDeposit_i = patMuon->hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam, false);
       hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i);
     }
   }

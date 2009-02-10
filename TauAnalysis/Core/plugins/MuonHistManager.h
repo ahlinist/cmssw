@@ -34,13 +34,16 @@ class MuonHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag muonSrc_;
+  edm::InputTag vertexSrc_;
 
   std::string dqmDirectory_store_;
 
   bool requireGenMuonMatch_;
 
   unsigned numMuonIsoConeSizes_;
-  float muonIsoConeSizeIncr_;
+  double muonIsoConeSizeIncr_;
+  unsigned numMuonIsoPtThresholds_;
+  double muonIsoPtThresholdIncr_;
 
 //--- histograms
   MonitorElement* hMuonPt_;
@@ -48,7 +51,8 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPtVsEta_;
   MonitorElement* hMuonPhi_;
 
-  MonitorElement* hMuonTrackIP_;
+  MonitorElement* hMuonTrackIPxy_;
+  MonitorElement* hMuonTrackIPz_;
 
   MonitorElement* hMuonEcalDeposits_;
   MonitorElement* hMuonHcalDeposits_;
@@ -61,6 +65,19 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonTrkIsoPt_;
   MonitorElement* hMuonEcalIsoPt_;
   MonitorElement* hMuonHcalIsoPt_;
+  MonitorElement* hMuonIsoSumPt_;
+
+  MonitorElement* hMuonTrkIsoValProfile_;
+  MonitorElement* hMuonTrkIsoEtaDistProfile_;
+  MonitorElement* hMuonTrkIsoPhiDistProfile_;
+
+  MonitorElement* hMuonEcalIsoValProfile_;
+  MonitorElement* hMuonEcalIsoEtaDistProfile_;
+  MonitorElement* hMuonEcalIsoPhiDistProfile_;
+
+  MonitorElement* hMuonHcalIsoValProfile_;
+  MonitorElement* hMuonHcalIsoEtaDistProfile_;
+  MonitorElement* hMuonHcalIsoPhiDistProfile_;
 
   std::vector<MonitorElement*> hMuonTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hMuonEcalIsoPtConeSizeDep_;

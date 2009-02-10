@@ -36,6 +36,7 @@ class ElectronHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag electronSrc_;
+  edm::InputTag vertexSrc_;
 
   std::string dqmDirectory_store_;
 
@@ -43,6 +44,8 @@ class ElectronHistManager : public HistManagerBase
 
   unsigned numElectronIsoConeSizes_;
   float electronIsoConeSizeIncr_;
+  unsigned numElectronIsoPtThresholds_;
+  double electronIsoPtThresholdIncr_;
 
 //--- histograms
   MonitorElement* hElectronPt_; 
@@ -51,13 +54,25 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPhi_;
 
   MonitorElement* hElectronTrackPt_;
-  MonitorElement* hElectronTrackIP_;
-  MonitorElement* hElectronGsfTrackPt_;
-  MonitorElement* hElectronGsfTrackIP_;
+  MonitorElement* hElectronTrackIPxy_;
+  MonitorElement* hElectronTrackIPz_;
 
   MonitorElement* hElectronTrkIsoPt_;
   MonitorElement* hElectronEcalIsoPt_;
   MonitorElement* hElectronHcalIsoPt_;
+  MonitorElement* hElectronIsoSumPt_;
+  
+  MonitorElement* hElectronTrkIsoValProfile_;
+  MonitorElement* hElectronTrkIsoEtaDistProfile_;
+  MonitorElement* hElectronTrkIsoPhiDistProfile_;
+
+  MonitorElement* hElectronEcalIsoValProfile_;
+  MonitorElement* hElectronEcalIsoEtaDistProfile_;
+  MonitorElement* hElectronEcalIsoPhiDistProfile_;
+
+  MonitorElement* hElectronHcalIsoValProfile_;
+  MonitorElement* hElectronHcalIsoEtaDistProfile_;
+  MonitorElement* hElectronHcalIsoPhiDistProfile_;
 
   std::vector<MonitorElement*> hElectronTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronEcalIsoPtConeSizeDep_;

@@ -3,7 +3,10 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+
+#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -34,14 +37,23 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   electronSrc_ = cfg.getParameter<edm::InputTag>("electronSource");
   //std::cout << " electronSrc = " << electronSrc_ << std::endl;
 
+  vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
+  if ( vertexSrc_.label() == "" ) {
+    edm::LogWarning("ElectronHistManager") << " Configuration parameter 'vertexSource' not specified" 
+					   << " --> Impact Parameter histograms will NOT be plotted !!";
+  }
+  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenElectronMatch_ = cfg.getParameter<bool>("requireGenElectronMatch");
   //std::cout << " requireGenElectronMatch = " << requireGenElectronMatch_ << std::endl;
 
-  numElectronIsoConeSizes_ = 10;
+  numElectronIsoConeSizes_ = 15;
   electronIsoConeSizeIncr_ = 0.1;
+  numElectronIsoPtThresholds_ = 4;
+  electronIsoPtThresholdIncr_ = 0.5;
 }
 
 ElectronHistManager::~ElectronHistManager()
@@ -64,29 +76,44 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
     hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "ElectronPtVsEta", 24, -3., +3., 30, 0., 150.);
 
     hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "ElectronTrackPt", 75, 0., 150.);
-    hElectronTrackIP_ = dqmStore.book1D("ElectronTrackIP", "ElectronTrackIP", 100, -0.100, 0.100);
-    hElectronGsfTrackPt_ = dqmStore.book1D("ElectronGsfTrackPt", "ElectronGsfTrackPt", 75, 0., 150.);
-    hElectronGsfTrackIP_ = dqmStore.book1D("ElectronGsfTrackIP", "ElectronGsfTrackIP", 100, -0.100, 0.100);
+    hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.500, 0.500);
+    hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -10.0, 10.0);
 
     hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "ElectronTrkIsoPt", 100, 0., 20.);    
     hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "ElectronEcalIsoPt", 100, 0., 20.);
     hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
+    hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
 
+    hElectronTrkIsoValProfile_ = dqmStore.book1D("ElectronTrkIsoValProfile", "ElectronTrkIsoValProfile", 100, 0., 10.);
+    hElectronTrkIsoEtaDistProfile_ = dqmStore.book1D("ElectronTrkIsoEtaDistProfile", "ElectronTrkIsoEtaDistProfile", 15, 0., 1.5);
+    hElectronTrkIsoPhiDistProfile_ = dqmStore.book1D("ElectronTrkIsoPhiDistProfile", "ElectronTrkIsoPhiDistProfile", 15, 0., 1.5);
+    
+    hElectronEcalIsoValProfile_ = dqmStore.book1D("ElectronEcalIsoValProfile", "ElectronEcalIsoValProfile", 100, 0., 10.);
+    hElectronEcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronEcalIsoEtaDistProfile", "ElectronEcalIsoEtaDistProfile", 15, 0., 1.5);
+    hElectronEcalIsoPhiDistProfile_ = dqmStore.book1D("ElectronEcalIsoPhiDistProfile", "ElectronEcalIsoPhiDistProfile", 15, 0., 1.5);
+    
+    hElectronHcalIsoValProfile_ = dqmStore.book1D("ElectronHcalIsoValProfile", "ElectronHcalIsoValProfile", 100, 0., 10.);
+    hElectronHcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronHcalIsoEtaDistProfile", "ElectronHcalIsoEtaDistProfile", 15, 0., 1.5);
+    hElectronHcalIsoPhiDistProfile_  = dqmStore.book1D("ElectronHcalIsoPhiDistProfile", "ElectronHcalIsoPhiDistProfile", 15, 0., 1.5);
+    
     for ( unsigned iConeSize = 1; iConeSize <= numElectronIsoConeSizes_; ++iConeSize ) {
       std::ostringstream iConeSizeString;
       iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
 
       std::string hElectronTrkIsoPtConeSizeDepName_i = std::string("ElectronTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronTrkIsoPtConeSizeDepName_i, hElectronTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hElectronTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronTrkIsoPtConeSizeDepName_i, hElectronTrkIsoPtConeSizeDepName_i, 
+							      100, 0., 20.));
       std::string hElectronEcalIsoPtConeSizeDepName_i = std::string("ElectronEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronEcalIsoPtConeSizeDepName_i, hElectronEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hElectronEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronEcalIsoPtConeSizeDepName_i, hElectronEcalIsoPtConeSizeDepName_i, 
+							       100, 0., 20.));
       std::string hElectronHcalIsoPtConeSizeDepName_i = std::string("ElectronHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronHcalIsoPtConeSizeDepName_i, hElectronHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+      hElectronHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronHcalIsoPtConeSizeDepName_i, hElectronHcalIsoPtConeSizeDepName_i, 
+							       100, 0., 20.));
     }
   }
 }
+
+
 
 void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {  
@@ -109,15 +136,18 @@ void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::Ev
     if ( requireGenElectronMatch_ && !matchesGenElectron(*patElectron) ) continue;
 
     hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt());
-
-    if ( patElectron->track().isAvailable() && !patElectron->track().isNull() ) {
-      hElectronTrackPt_->Fill(patElectron->track()->pt());
-      hElectronTrackIP_->Fill(patElectron->track()->d0());
-    }
     
     if ( patElectron->gsfTrack().isAvailable() && !patElectron->gsfTrack().isNull() ) {
       hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt());
-      hElectronTrackIP_->Fill(patElectron->gsfTrack()->d0());
+      if ( vertexSrc_.label() != "" ) {
+	edm::Handle<std::vector<reco::Vertex> > recoVertices;
+	iEvent.getByLabel(vertexSrc_, recoVertices);
+	if ( recoVertices->size() >= 1 ) {
+	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
+	  hElectronTrackIPxy_->Fill(patElectron->gsfTrack()->dxy(thePrimaryEventVertex.position()));
+	  hElectronTrackIPz_->Fill(patElectron->gsfTrack()->dz(thePrimaryEventVertex.position()));
+	}
+      }
     }
   }
 
@@ -170,12 +200,16 @@ void ElectronHistManager::fillElectronIsoHistograms(const std::vector<pat::Elect
     if ( requireGenElectronMatch_ && (!matchesGenElectron(*patElectron)) ) continue;
 
     hElectronTrkIsoPt_->Fill(patElectron->trackIso());
-    if ( patElectron->trackIso() == 0. ) {
-      hElectronEcalIsoPt_->Fill(patElectron->ecalIso());
-      if ( patElectron->ecalIso() < 1. ) {
-        hElectronHcalIsoPt_->Fill(patElectron->hcalIso());
-      }
-    }
+    hElectronEcalIsoPt_->Fill(patElectron->ecalIso());
+    hElectronHcalIsoPt_->Fill(patElectron->hcalIso());
+    hElectronIsoSumPt_->Fill(patElectron->trackIso() + patElectron->ecalIso() + patElectron->hcalIso());
+
+    fillLeptonIsoDepositHistograms(patElectron->trackerIsoDeposit(), 
+				   hElectronTrkIsoValProfile_, hElectronTrkIsoEtaDistProfile_, hElectronTrkIsoPhiDistProfile_);
+    fillLeptonIsoDepositHistograms(patElectron->ecalIsoDeposit(), 
+				   hElectronEcalIsoValProfile_, hElectronEcalIsoEtaDistProfile_, hElectronEcalIsoPhiDistProfile_);
+    fillLeptonIsoDepositHistograms(patElectron->hcalIsoDeposit(), 
+				   hElectronHcalIsoValProfile_, hElectronHcalIsoEtaDistProfile_, hElectronHcalIsoPhiDistProfile_);
   }
 }
 

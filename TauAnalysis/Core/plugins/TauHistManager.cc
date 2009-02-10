@@ -3,7 +3,10 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+
+#include "PhysicsTools/Utilities/interface/deltaR.h"
 
 #include <TMath.h>
 
@@ -28,14 +31,23 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   tauSrc_ = cfg.getParameter<edm::InputTag>("tauSource");
   //std::cout << " tauSrc = " << tauSrc_ << std::endl;
 
+  vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
+  if ( vertexSrc_.label() == "" ) {
+    edm::LogWarning("TauHistManager") << " Configuration parameter 'vertexSource' not specified" 
+				      << " --> Impact Parameter histograms will NOT be plotted !!";
+  }
+  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenTauMatch_ = cfg.getParameter<bool>("requireGenTauMatch");
   //std::cout << " requireGenTauMatch = " << requireGenTauMatch_ << std::endl;
 
-  numTauIsoConeSizes_ = 10;
+  numTauIsoConeSizes_ = 15;
   tauIsoConeSizeIncr_ = 0.1;
+  numTauIsoPtThresholds_ = 4;
+  tauIsoPtThresholdIncr_ = 0.5;
 }
 
 TauHistManager::~TauHistManager()
@@ -57,24 +69,34 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
     bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
     hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
 
-    bookTauHistograms(dqmStore, hTauLdgTrkPt_, hTauLdgTrkEta_, hTauLdgTrkPhi_, "Tau");
+    bookTauHistograms(dqmStore, hTauLeadTrkPt_, hTauLeadTrkEta_, hTauLeadTrkPhi_, "TauLeadTrk");
+    hTauLeadTrkMatch_ = dqmStore.book1D("TauLeadTrkDist", "TauLeadTrkDist", 100, -0.500, 0.500);
+    hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.500, 0.500);
+    hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -10.0, 10.0);
 
     hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
     hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
     hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
+    hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "TauIsoSumPt", 100, 0., 20.);
+
+    hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "TauTrkIsoEnProfile", 100, 0., 10.);
+    hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "TauTrkIsoPtProfile", 100, 0., 10.);
+    hTauTrkIsoEtaDistProfile_ = dqmStore.book1D("TauTrkIsoEtaDistProfile", "TauTrkIsoEtaDistProfile", 15, 0., 1.5);
+    hTauTrkIsoPhiDistProfile_ = dqmStore.book1D("TauTrkIsoPhiDistProfile", "TauTrkIsoPhiDistProfile", 15, 0., 1.5);
 
     for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
       std::ostringstream iConeSizeString;
       iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
 
       std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, hTauTrkIsoPtConeSizeDepName_i, 
+							 100, 0., 20.));
       std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-
+      hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, hTauEcalIsoPtConeSizeDepName_i, 
+							  100, 0., 20.));
       std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+      hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, hTauHcalIsoPtConeSizeDepName_i, 
+							  100, 0., 20.));
     }
   }
 }
@@ -99,6 +121,24 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt());
+
+    if ( patTau->leadTrack().isAvailable() && !patTau->leadTrack().isNull() ) {
+      hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt());
+      hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta());
+      hTauLeadTrkPhi_->Fill(patTau->leadTrack()->phi());
+      
+      hTauLeadTrkMatch_->Fill(reco::deltaR(patTau->leadTrack()->momentum(), patTau->p4()));
+
+      if ( vertexSrc_.label() != "" ) {
+	edm::Handle<std::vector<reco::Vertex> > recoVertices;
+	iEvent.getByLabel(vertexSrc_, recoVertices);
+	if ( recoVertices->size() >= 1 ) {
+	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
+	  hTauLeadTrkIPxy_->Fill(patTau->leadTrack()->dxy(thePrimaryEventVertex.position()));
+	  hTauLeadTrkIPz_->Fill(patTau->leadTrack()->dz(thePrimaryEventVertex.position()));
+	}
+      }
+    }
   }
 
   fillTauIsoHistograms(*patTaus);
@@ -128,7 +168,6 @@ void TauHistManager::bookTauHistograms(DQMStore& dqmStore, MonitorElement*& hTau
 void TauHistManager::fillTauHistograms(const std::vector<pat::Tau>& patTaus, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi)
 {
   //std::cout << "<TauHistManager::fillTauHistograms>:" << std::endl;
-  //if ( selVar != "" ) std::cout << " selVar = " << selVar << std::endl;
 
   for ( std::vector<pat::Tau>::const_iterator patTau = patTaus.begin(); 
 	patTau != patTaus.end(); ++patTau ) {
@@ -149,10 +188,20 @@ void TauHistManager::fillTauIsoHistograms(const std::vector<pat::Tau>& patTaus)
 	patTau != patTaus.end(); ++patTau ) {
 
     if ( requireGenTauMatch_ && (!matchesGenTau(*patTau)) ) continue;
-
+    
     hTauTrkIsoPt_->Fill(patTau->trackIso());
     hTauEcalIsoPt_->Fill(patTau->ecalIso());
     hTauHcalIsoPt_->Fill(patTau->hcalIso());
+    hTauIsoSumPt_->Fill(patTau->trackIso() + patTau->ecalIso() + patTau->hcalIso());
+    
+    reco::TrackRefVector isolationTracks = patTau->isolationTracks();
+    for ( reco::TrackRefVector::const_iterator isolationTrack = isolationTracks.begin();
+	  isolationTrack != isolationTracks.end(); ++isolationTrack ) {	  
+      hTauTrkIsoEnProfile_->Fill((*isolationTrack)->p());
+      hTauTrkIsoPtProfile_->Fill((*isolationTrack)->pt());
+      hTauTrkIsoEtaDistProfile_->Fill(TMath::Abs(patTau->eta() - (*isolationTrack)->eta()));
+      hTauTrkIsoPhiDistProfile_->Fill(TMath::Abs(patTau->phi() - (*isolationTrack)->phi()));
+    }
   }
 }
 
