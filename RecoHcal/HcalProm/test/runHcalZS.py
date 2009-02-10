@@ -48,7 +48,7 @@ process.hcalZS = cms.EDAnalyzer ("HcalZS",
                                  thresholdHB = cms.untracked.int32(8),
                                  thresholdHE = cms.untracked.int32(8),
                                  thresholdHO = cms.untracked.int32(8),
-                                 thresholdHF = cms.untracked.int32(8)
+                                 thresholdHF = cms.untracked.int32(9)
                                  )
 
 process.TFileService = cms.Service("TFileService",
