@@ -1,13 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
 # generic
-from TauAnalysis.CandidateTools.diTauProducer_cfi import diTauProducer
+from TauAnalysis.CandidateTools.diCandidatePairProducer_cfi import diTauProducer
 recoZll = diTauProducer.clone()
-recoZll.hadronicTaus = 'selectedLayer1Muons'
-recoZll.leptonicTaus = 'selectedLayer1Muons'
-recoZll.METs = ''
-recoZll.metMode = 1
-recoZll.useLeadingTaus = False
+recoZll.srcLeg1 = 'selectedLayer1Muons'
+recoZll.srcLeg2 = 'selectedLayer1Muons'
+recoZll.srcMET = ''
+recoZll.recoMode = ''
+recoZll.useLeadingTausOnly = False
 
 # PAT filters
 from PhysicsTools.PatAlgos.selectionLayer1.muonMinFilter_cfi import minLayer1Muons
