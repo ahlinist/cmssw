@@ -6,9 +6,9 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
-#include "TauAnalysis/Core/interface/EventDumpBase.h"
+#include "TauAnalysis/Core/interface/GenericEventDump.h"
 
-class ElecTauEventDump : public EventDumpBase 
+class ElecTauEventDump : public GenericEventDump 
 {
  public:  
   explicit ElecTauEventDump(const edm::ParameterSet&);
@@ -17,20 +17,6 @@ class ElecTauEventDump : public EventDumpBase
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
-
- private:
-
-//--- configuration parameters
-  edm::InputTag triggerResultsSrc_;
-  
-  typedef std::vector<std::string> vstring;
-  vstring triggerPathsToPrint_;
-
-  edm::InputTag genParticleSrc_;
-  edm::InputTag genTauJetSrc_;
-  edm::InputTag electronSrc_;
-  edm::InputTag tauSrc_;
-  edm::InputTag metSrc_;
 };
 
 #endif  
