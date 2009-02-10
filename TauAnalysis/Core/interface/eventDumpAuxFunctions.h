@@ -6,25 +6,22 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 #include <vector>
 #include <string>
 
 #include <iostream>
 
-void printEventHeaderInfo(const edm::Event&, double, std::ostream*);
-void printEventTriggerInfo(edm::Handle<edm::TriggerResults>&, std::vector<std::string>, std::ostream*);
 void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, const std::vector<std::pair<std::string, bool> >&, std::ostream*);
 
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Handle<edm::View<reco::GenJet> >&, std::ostream*);
 
-void printElectronInfo(edm::Handle<pat::ElectronCollection>&, std::ostream*);
-void printMuonInfo(edm::Handle<pat::MuonCollection>&, std::ostream*);
-void printTauInfo(edm::Handle<pat::TauCollection>&, std::ostream*);
-void printMissingEtInfo(edm::Handle<pat::METCollection>&, std::ostream*);
+void printTrackInfo(const edm::RefToBase<reco::Track>&, std::ostream*);
+void printVertexInfo(const reco::Candidate::Point&, std::ostream*);
+
+void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, std::ostream*);
 
 #endif
