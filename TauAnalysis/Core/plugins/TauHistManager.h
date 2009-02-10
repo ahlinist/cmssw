@@ -34,6 +34,7 @@ class TauHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag tauSrc_;
+  edm::InputTag vertexSrc_;
 
   std::string dqmDirectory_store_;
 
@@ -41,6 +42,8 @@ class TauHistManager : public HistManagerBase
 
   unsigned numTauIsoConeSizes_;
   float tauIsoConeSizeIncr_;
+  unsigned numTauIsoPtThresholds_;
+  double tauIsoPtThresholdIncr_;
 
 //--- histograms
   MonitorElement* hTauPt_;
@@ -48,13 +51,22 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPtVsEta_;
   MonitorElement* hTauPhi_;
 
-  MonitorElement* hTauLdgTrkPt_;
-  MonitorElement* hTauLdgTrkEta_;
-  MonitorElement* hTauLdgTrkPhi_;
+  MonitorElement* hTauLeadTrkPt_;
+  MonitorElement* hTauLeadTrkEta_;
+  MonitorElement* hTauLeadTrkPhi_;
+  MonitorElement* hTauLeadTrkMatch_;
+  MonitorElement* hTauLeadTrkIPxy_;
+  MonitorElement* hTauLeadTrkIPz_;
+
+  MonitorElement* hTauTrkIsoEnProfile_;
+  MonitorElement* hTauTrkIsoPtProfile_;
+  MonitorElement* hTauTrkIsoEtaDistProfile_;
+  MonitorElement* hTauTrkIsoPhiDistProfile_;
 
   MonitorElement* hTauTrkIsoPt_;
   MonitorElement* hTauEcalIsoPt_;
   MonitorElement* hTauHcalIsoPt_;
+  MonitorElement* hTauIsoSumPt_;
 
   std::vector<MonitorElement*> hTauTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauEcalIsoPtConeSizeDep_;
