@@ -28,7 +28,7 @@ process.particleListDrawer.printOnlyHardInteraction = True
 process.load("TauAnalysis.RecoTools.recoZllReconstruction_cff")
 
 
-process.recoZll.verbose = False
+process.recoZll.verbosity = 0
 
 process.p1 = cms.Path(
     process.genParticlesPrint +
@@ -63,6 +63,3 @@ process.MessageLogger.cerr.INFO = cms.untracked.PSet(
     PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(10) )
 )
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
-
-
-
