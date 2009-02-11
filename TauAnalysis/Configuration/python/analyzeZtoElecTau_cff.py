@@ -54,6 +54,7 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
     electronHistManager,
     tauHistManager,
     diTauCandidateHistManagerForElecTau,
+    metHistManager,
     vertexHistManager,
     triggerHistManager
   ),
