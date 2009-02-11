@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.1 2008/12/04 12:00:45 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.2 2009/01/28 13:08:21 carrillo Exp $
 //
 //
 
@@ -363,7 +363,7 @@ int rollY(std::string shortname,std::map<int,std::string> rollNames){
     }
   }
   if(myy==0){
-    //std::cout<<"Check your map or your DetId for "<<shortname<<std::endl;
+    std::cout<<"Check your map or your DetId for "<<shortname<<std::endl;
   }
   return myy;
 }
@@ -634,7 +634,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   Ca3 = new TCanvas("Ca3","Profile",1200,600);
   
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
   
   std::string meIdRES,folder,labeltoSave,command;
   
@@ -735,27 +735,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   std::map<int,std::string> rollNamesInter;
   
-  rollNamesInter[1]="RB1in_B";
-  rollNamesInter[2]="RB1in_F";
-  rollNamesInter[3]="RB1out_B";
-  rollNamesInter[4]="RB1out_F";
-  rollNamesInter[5]="RB2in_B";
-  rollNamesInter[6]="RB2in_M";
-  rollNamesInter[7]="RB2in_F";
-  rollNamesInter[8]="RB2out_B";
-  rollNamesInter[9]="RB2out_F";
-  rollNamesInter[10]="RB3-_B";
-  rollNamesInter[11]="RB3-_F";
-  rollNamesInter[12]="RB3+_B";
-  rollNamesInter[13]="RB3+_F";
-  rollNamesInter[14]="RB4,-,--_B";
-  rollNamesInter[15]="RB4,-,--_F";
-  rollNamesInter[16]="RB4,+,++_B";
-  rollNamesInter[17]="RB4,+,++_F";
-  rollNamesInter[18]="RB4-+_B";
-  rollNamesInter[19]="RB4-+_F";
-  rollNamesInter[20]="RB4+-_B";
-  rollNamesInter[21]="RB4+-_F";
+  rollNamesInter[1]="RB1in B";
+  rollNamesInter[2]="RB1in F";
+  rollNamesInter[3]="RB1out B";
+  rollNamesInter[4]="RB1out F";
+  rollNamesInter[5]="RB2in B";
+  rollNamesInter[6]="RB2in M";
+  rollNamesInter[7]="RB2in F";
+  rollNamesInter[8]="RB2out B";
+  rollNamesInter[9]="RB2out F";
+  rollNamesInter[10]="RB3- B";
+  rollNamesInter[11]="RB3- F";
+  rollNamesInter[12]="RB3+ B";
+  rollNamesInter[13]="RB3+ F";
+  rollNamesInter[14]="RB4,-,-- B";
+  rollNamesInter[15]="RB4,-,-- F";
+  rollNamesInter[16]="RB4+,++ B";
+  rollNamesInter[17]="RB4+,++ F";
+  rollNamesInter[18]="RB4-+ B";
+  rollNamesInter[19]="RB4-+ F";
+  rollNamesInter[20]="RB4+- B";
+  rollNamesInter[21]="RB4+- F";
 
   std::map<int,std::string> rollNamesExter;
   
@@ -764,9 +764,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     //std::cout<<rollNamesInter[i]<<std::endl;
   }
   
-  rollNamesExter[6]="RB2in_F";
-  rollNamesExter[7]="RB2out_B";
-  rollNamesExter[8]="RB2out_M";
+  rollNamesExter[6]="RB2in F";
+  rollNamesExter[7]="RB2out B";
+  rollNamesExter[8]="RB2out M";
   
   for(int i=1;i<22;i++){
     Wheelm1Summary->GetYaxis()->SetBinLabel(i,rollNamesInter[i].c_str());
@@ -796,7 +796,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   for(int ri=2;ri<=3;ri++){
     for(int su=1;su<=6;su++){
       binLabel.str("");
-      binLabel<<"Ri"<<ri<<"_Su"<<su;
+      binLabel<<"Ri"<<ri<<" Su"<<su;
       //std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
       Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
       Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
@@ -1251,23 +1251,23 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float((*r)->nstrips()))*100.;
 	  
 	  //Pigi Histos
-	  
-	  //std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<std::endl;
+
+	  std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<averageeff<<" "<<std::endl;
 	  
 	  if(abs((*r)->id().ring())==2){
-	    //std::cout<<rollY(rpcsrv.shortname(),rollNamesExter)<<"--"<<rpcsrv.shortname()<<std::endl;
+	    std::cout<<rollY(rpcsrv.shortname(),rollNamesExter)<<"--"<<rpcsrv.shortname()<<std::endl;
 	    if((*r)->id().ring()==2) Wheel2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
 	    else Wheelm2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
 					  
 	  }else{
-	    //std::cout<<rollY(rpcsrv.shortname(),rollNamesInter)<<"--"<<rpcsrv.shortname()<<std::endl; 
+	    std::cout<<rollY(rpcsrv.shortname(),rollNamesInter)<<"--"<<rpcsrv.shortname()<<std::endl; 
 	    if((*r)->id().ring()==-1) Wheelm1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	    else if((*r)->id().ring()==0) Wheel0Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	  }
 	  
 	  
-	  //std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
+	  std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
 	  
 	  //Near Side
 
@@ -1824,7 +1824,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 
 	  //Pigis Histogram
-	  int Y=((*r)->id().ring()-2)+(*r)->id().subsector();
+
+
+	  int Y=((*r)->id().ring()-2)*6+(*r)->id().subsector();
+
+	  std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
+
 	  if(Disk==-3) Diskm3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
 	  else if(Disk==-2) Diskm2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
 	  else if(Disk==-1) Diskm1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
@@ -2474,7 +2479,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxAxisEndCap->SetTitleColor(9);
   bxAxisEndCap->CenterTitle();
   
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
   
   //Negative EndCap
   
