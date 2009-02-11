@@ -5,6 +5,7 @@ tauHistManager = cms.PSet(
   type = cms.string('TauHistManager'),
       
   tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
 
   dqmDirectory_store = cms.string('TauQuantities'),
 

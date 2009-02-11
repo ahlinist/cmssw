@@ -51,6 +51,10 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPtVsEta_;
   MonitorElement* hMuonPhi_;
 
+  MonitorElement* hMuonPtCompToGen_;
+  MonitorElement* hMuonThetaCompToGen_;
+  MonitorElement* hMuonPhiCompToGen_;
+
   MonitorElement* hMuonTrackIPxy_;
   MonitorElement* hMuonTrackIPz_;
 

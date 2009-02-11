@@ -13,7 +13,8 @@
 bool matchesGenTau(const pat::Tau& patTau)
 {
   bool isGenTauMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patTau.genParticleRefs().begin(); it != patTau.genParticleRefs().end(); ++it ) {
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = patTau.genParticleRefs().begin(); 
+	it != patTau.genParticleRefs().end(); ++it ) {
     const reco::GenParticleRef& genParticle = (*it);
     if ( genParticle->pdgId() == -15 || genParticle->pdgId() == +15 ) isGenTauMatched = true;
   }
@@ -69,10 +70,14 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
     bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
     hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
 
+    hTauEnCompToGen_ = dqmStore.book1D("TauEnCompToGen", "TauEnCompToGen", 100, -2.50, +2.50);
+    hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "TauThetaCompToGen", 200, -0.050, +0.050);
+    hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "TauPhiCompToGen", 200, -0.050, +0.050);
+
     bookTauHistograms(dqmStore, hTauLeadTrkPt_, hTauLeadTrkEta_, hTauLeadTrkPhi_, "TauLeadTrk");
-    hTauLeadTrkMatch_ = dqmStore.book1D("TauLeadTrkDist", "TauLeadTrkDist", 100, -0.500, 0.500);
-    hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.500, 0.500);
-    hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -10.0, 10.0);
+    hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
+    hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.100, 0.100);
+    hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
 
     hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
     hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
@@ -122,12 +127,22 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt());
 
-    if ( patTau->leadTrack().isAvailable() && !patTau->leadTrack().isNull() ) {
+//--- compare reconstructed tau-jet 
+//    to visible decay products on generator level;
+//    normalize difference between reconstructed and generated energy
+//    to expected energy dependence of resolution
+    if ( patTau->genJet() ) {
+      hTauEnCompToGen_->Fill((patTau->energy() - patTau->genJet()->energy())/patTau->genJet()->energy());
+      hTauThetaCompToGen_->Fill(patTau->theta() - patTau->genJet()->theta());
+      hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi());
+    }
+
+    if ( patTau->leadTrack().isAvailable() && patTau->leadTrack().isNonnull() ) {
       hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt());
       hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta());
       hTauLeadTrkPhi_->Fill(patTau->leadTrack()->phi());
       
-      hTauLeadTrkMatch_->Fill(reco::deltaR(patTau->leadTrack()->momentum(), patTau->p4()));
+      hTauLeadTrkMatchDist_->Fill(reco::deltaR(patTau->leadTrack()->momentum(), patTau->p4()));
 
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
@@ -194,9 +209,8 @@ void TauHistManager::fillTauIsoHistograms(const std::vector<pat::Tau>& patTaus)
     hTauHcalIsoPt_->Fill(patTau->hcalIso());
     hTauIsoSumPt_->Fill(patTau->trackIso() + patTau->ecalIso() + patTau->hcalIso());
     
-    reco::TrackRefVector isolationTracks = patTau->isolationTracks();
-    for ( reco::TrackRefVector::const_iterator isolationTrack = isolationTracks.begin();
-	  isolationTrack != isolationTracks.end(); ++isolationTrack ) {	  
+    for ( reco::TrackRefVector::const_iterator isolationTrack = patTau->isolationTracks().begin();
+	  isolationTrack != patTau->isolationTracks().end(); ++isolationTrack ) {	  
       hTauTrkIsoEnProfile_->Fill((*isolationTrack)->p());
       hTauTrkIsoPtProfile_->Fill((*isolationTrack)->pt());
       hTauTrkIsoEtaDistProfile_->Fill(TMath::Abs(patTau->eta() - (*isolationTrack)->eta()));

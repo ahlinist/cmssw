@@ -15,7 +15,8 @@ bool matchesGenElectron(const pat::Electron& patElectron)
   //std::cout << "<matchesGenElectron>:" << std::endl;
 
   bool isGenElectronMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patElectron.genParticleRefs().begin(); it != patElectron.genParticleRefs().end(); ++it ) {
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = patElectron.genParticleRefs().begin(); 
+	it != patElectron.genParticleRefs().end(); ++it ) {
     if ( it->ref().isNonnull() && it->ref().isValid() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -11 || genParticle->pdgId() == +11 ) isGenElectronMatched = true;
@@ -54,6 +55,14 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   electronIsoConeSizeIncr_ = 0.1;
   numElectronIsoPtThresholds_ = 4;
   electronIsoPtThresholdIncr_ = 0.5;
+
+  // electrons in crack region included in histograms
+  //electronEtaMaxBarrel = 1.479;
+  //electronEtaMinEndcap = electronEtaMaxBarrel;
+
+  // electrons in crack region excluded from histograms
+  electronEtaMaxBarrel_ = 1.442;
+  electronEtaMinEndcap_ = 1.560;
 }
 
 ElectronHistManager::~ElectronHistManager()
@@ -75,12 +84,23 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
     bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
     hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "ElectronPtVsEta", 24, -3., +3., 30, 0., 150.);
 
+    hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "ElectronEnCompToGen", 100, -0.50, +0.50);
+    hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "ElectronThetaCompToGen", 200, -0.010, +0.010);
+    hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "ElectronPhiCompToGen", 200, -0.010, +0.010);
+
     hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "ElectronTrackPt", 75, 0., 150.);
-    hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.500, 0.500);
-    hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -10.0, 10.0);
+    hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.100, 0.100);
+    hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -1.0, 1.0);
+
+    hElectronSuperclEnOverTrackMomBarrel_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomBarrel", "ElectronSuperclEnOverTrackMomBarrel", 50, 0., 5.);
+    hElectronSuperclEnOverTrackMomEndcap_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomEndcap", "ElectronSuperclEnOverTrackMomEndcap", 50, 0., 5.);
+
+    hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "ElectronIdRobust", 2, -0.5, 1.5);
 
     hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "ElectronTrkIsoPt", 100, 0., 20.);    
     hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "ElectronEcalIsoPt", 100, 0., 20.);
+    hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "ElectronEcalIsoPtBarrel", 100, 0., 20.);
+    hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "ElectronEcalIsoPtEndcap", 100, 0., 20.);
     hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
     hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
 
@@ -136,6 +156,16 @@ void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::Ev
     if ( requireGenElectronMatch_ && !matchesGenElectron(*patElectron) ) continue;
 
     hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt());
+
+//--- compare reconstructed electron to generator level one;
+//    normalize difference between reconstructed and generated energy
+//    to expected energy dependence of resolution
+     if ( patElectron->genLepton() ) {
+       hElectronEnCompToGen_->Fill((patElectron->energy() - patElectron->genLepton()->energy())
+				   /TMath::Sqrt(patElectron->genLepton()->energy()));
+       hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta());
+       hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi());
+    }
     
     if ( patElectron->gsfTrack().isAvailable() && !patElectron->gsfTrack().isNull() ) {
       hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt());
@@ -149,6 +179,15 @@ void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::Ev
 	}
       }
     }
+
+    if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
+      if ( TMath::Abs(patElectron->superCluster()->eta()) < electronEtaMaxBarrel_ ) 
+	hElectronSuperclEnOverTrackMomBarrel_->Fill(patElectron->eSuperClusterOverP());
+      if ( TMath::Abs(patElectron->superCluster()->eta()) > electronEtaMinEndcap_ ) 
+      hElectronSuperclEnOverTrackMomEndcap_->Fill(patElectron->eSuperClusterOverP());
+    }
+
+    hElectronIdRobust_->Fill(patElectron->electronID("robust"));
   }
 
   fillElectronIsoHistograms(*patElectrons);
@@ -201,6 +240,12 @@ void ElectronHistManager::fillElectronIsoHistograms(const std::vector<pat::Elect
 
     hElectronTrkIsoPt_->Fill(patElectron->trackIso());
     hElectronEcalIsoPt_->Fill(patElectron->ecalIso());
+    if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
+      if ( TMath::Abs(patElectron->superCluster()->eta()) < electronEtaMaxBarrel_ ) 
+	hElectronEcalIsoPtBarrel_->Fill(patElectron->ecalIso());
+      if ( TMath::Abs(patElectron->superCluster()->eta()) > electronEtaMinEndcap_ ) 
+	hElectronEcalIsoPtEndcap_->Fill(patElectron->ecalIso());
+    }
     hElectronHcalIsoPt_->Fill(patElectron->hcalIso());
     hElectronIsoSumPt_->Fill(patElectron->trackIso() + patElectron->ecalIso() + patElectron->hcalIso());
 
