@@ -15,7 +15,7 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
     #genTauCut,
     
     # trigger selection
-    Trigger,
+    #Trigger,
 
     # primary event vertex selection
     primaryEventVertex,
@@ -53,7 +53,9 @@ analyzeZtoElecTau = cms.EDAnalyzer("GenericAnalyzer",
   histManagers = cms.VPSet(
     electronHistManager,
     tauHistManager,
-    diTauCandidateHistManagerForElecTau
+    diTauCandidateHistManagerForElecTau,
+    vertexHistManager,
+    triggerHistManager
   ),
 
   eventDumps = cms.VPSet(

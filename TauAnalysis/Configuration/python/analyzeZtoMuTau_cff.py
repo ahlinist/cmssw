@@ -53,7 +53,9 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
   histManagers = cms.VPSet(
     muonHistManager,
     tauHistManager,
-    diTauCandidateHistManagerForMuTau
+    diTauCandidateHistManagerForMuTau,
+    vertexHistManager,
+    triggerHistManager
   ),
 
   eventDumps = cms.VPSet(

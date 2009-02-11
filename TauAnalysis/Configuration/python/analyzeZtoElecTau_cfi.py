@@ -14,7 +14,17 @@ diTauCandidateHistManagerForElecTau.name = cms.string('diTauCandidateHistManager
 diTauCandidateHistManagerForElecTau.type = cms.string('PATElecTauPairHistManager')
 diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
 
-elecTauHistManagers = cms.vstring('electronHistManager', 'tauHistManager', 'diTauCandidateHistManagerForElecTau')
+# import config for primary event vertex histogram manager
+from TauAnalysis.Core.vertexHistManager_cfi import *
+
+# import config for L1 & HLT histogram manager
+from TauAnalysis.Core.triggerHistManager_cfi import *
+
+elecTauHistManagers = cms.vstring( 'electronHistManager',
+                                   'tauHistManager',
+                                   'diTauCandidateHistManagerForElecTau',
+                                   'vertexHistManager',
+                                   'triggerHistManager' )
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -37,12 +47,12 @@ elecTauHistManagers = cms.vstring('electronHistManager', 'tauHistManager', 'diTa
 #)
 
 # trigger selection
-Trigger = cms.PSet(
-  name = cms.string('Trigger'),
-  type = cms.string('TriggerResultEventSelector'),
-  src = cms.InputTag('TriggerResults', '', 'HLT'),
-  triggerPaths = cms.vstring('HLT_IsoEle15_L1I')
-)
+#Trigger = cms.PSet(
+#  name = cms.string('Trigger'),
+#  type = cms.string('TriggerResultEventSelector'),
+#  src = cms.InputTag('TriggerResults', '', 'HLT'),
+#  triggerPaths = cms.vstring('HLT_IsoEle15_L1I')
+#)
 
 # primary event vertex selection
 primaryEventVertex = cms.PSet(
@@ -222,8 +232,13 @@ elecTauEventDump = cms.PSet(
   name = cms.string('elecTauEventDump'),
   type = cms.string('ElecTauEventDump'),
 
-  triggerResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
-  triggerPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
+  l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+  l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+  l1BitsToPrint = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
+                              'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
+    
+  hltResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
+  hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
 
   genParticleSource = cms.InputTag('genParticles'),
   genTauJetSource = cms.InputTag('tauGenJets'),
@@ -234,7 +249,8 @@ elecTauEventDump = cms.PSet(
   #output = cms.string("elecTauEventDump.txt"),
   output = cms.string("std::cout"),
 
-  triggerConditions = cms.vstring("tauElectronVeto: passed_cumulative")
+  #triggerConditions = cms.vstring("tauElectronVeto: passed_cumulative")
+  triggerConditions = cms.vstring("tightElectronIdCut: rejected_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -264,14 +280,14 @@ elecTauAnalysisSequence = cms.VPSet(
   #),
   
   # trigger selection
-  cms.PSet(
-    filter = cms.string('Trigger'),
-    title = cms.string('isoEle15 Trigger'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-  ),
-  cms.PSet(
-    histManagers = elecTauHistManagers
-  ),
+  #cms.PSet(
+  #  filter = cms.string('Trigger'),
+  #  title = cms.string('isoEle15 Trigger'),
+  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #),
+  #cms.PSet(
+  #  histManagers = elecTauHistManagers
+  #),
 
   # primary event vertex selection
   cms.PSet(
