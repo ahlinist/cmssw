@@ -184,7 +184,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	calib_->sim_energyEvent_ = thisRun_->beamEnergy_;
 
 	/* Deal with tb setup */
-	calib_->tb_isTB_ = true;
+	
 	calib_->tb_pdg_ = thisRun_->particlePDG_;
 
 	if (identifyCleanParticles_ && electron == DEFINITEYES)

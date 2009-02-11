@@ -14,10 +14,5 @@
 	EnergyProcessing ep(chain, graphicsFile.c_str(), macroFile.c_str(), "7GeV_plots");
 	ep.evaluatePlots(true);
 	ep.closeFiles();
-	std::string process(".!find 7GeV_plots/ -name *.eps -exec epstopdf {} \;");
-	std::string process(".!find 7GeV_plots/ -name *.ps -exec ps2pdf {} \;");
-//	process.append(graphicsFile.c_str());
-//	
-	//gROOT->ProcessLine(process.c_str());
 	
 }

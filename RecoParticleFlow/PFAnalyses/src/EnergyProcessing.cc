@@ -1,5 +1,6 @@
 #include "RecoParticleFlow/PFAnalyses/interface/EnergyProcessing.h"
 #include "DataFormats/ParticleFlowReco/interface/Calibratable.h"
+#include "RecoParticleFlow/PFAnalyses/interface/operations.h"
 
 #include <iostream>
 #include <TROOT.h>
@@ -11,6 +12,7 @@
 #include <TPaveText.h>
 #include <cmath>
 #include <TH2F.h>
+
 using namespace pftools;
 
 EnergyProcessing::EnergyProcessing(TTree* t, std::string graphicsFile,
@@ -94,9 +96,20 @@ void EnergyProcessing::doLoopedPlots() {
 	TH1F* allPhotons = new TH1F("allPhotons", "All photons", bins, 0, highEdge);
 	TH1F* singleExtraNeutral = new TH1F("singleExtraNeutral", "Sole extra neutral", bins, 0, highEdge);
 	TH1F* allNeutrals = new TH1F("allNeutrals", "All neutrals", bins, 0, highEdge);
-	
-	TH2F* photonPositioning = new TH2F("photonPosition", "Photon pos. energy weighted", bins, 0, 0.8, bins, -0.2, 0.6);;
-	TH2F* neutralPositioning = new TH2F("neutralPosition", "Neutral pos. energy weighted", bins, 0, 0.8, bins, -0.2, 0.6);
+
+	TH2F
+			* photonPositioning =
+					new TH2F("photonPosition", "Photon pos. energy weighted", bins/2, 0, 0.4, bins/2, -0.2, 0.2);
+
+	TH2F
+			* neutralPositioning =
+					new TH2F("neutralPosition", "Neutral pos. energy weighted", bins/2, 0, 0.4, bins/2, -0.2, 0.2);
+	TH2F
+			* photonDeltaR =
+					new TH2F("photonDeltaR", "Photon delta R from track", bins/2, 0, highEdge, bins/2, 0, 0.1);
+	TH2F
+			* neutralDeltaR =
+					new TH2F("neutralDeltaR", "Neutral delta R from track", bins/2, 0, highEdge, bins/2, 0, 0.1);
 
 	TH1F
 			* onePhotonNoNeutrals =
@@ -115,8 +128,21 @@ void EnergyProcessing::doLoopedPlots() {
 		tree_->GetEntry(j);
 
 		//loop over candidates
-		for (std::vector<CandidateWrapper>::const_iterator c =
-				calib->cands_.begin(); c != calib->cands_.end(); ++c) {
+		double pionEta = calib->tb_eta_;
+		double pionPhi = calib->tb_phi_;
+
+		//find type 1 first,
+		std::vector<CandidateWrapper>::const_iterator c = calib->cands_.begin();
+		for (; c != calib->cands_.end(); ++c) {
+			CandidateWrapper cw = *c;
+			if (cw.type_ == 1) {
+				pionEta = cw.eta_;
+				pionPhi = cw.phi_;
+				break;
+			}
+		}
+
+		for (c = calib->cands_.begin(); c != calib->cands_.end(); ++c) {
 
 			CandidateWrapper cw = *c;
 			//Photons
@@ -124,20 +150,23 @@ void EnergyProcessing::doLoopedPlots() {
 				++nPhotons;
 				ePhotons += cw.energy_;
 				photonPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
+				photonDeltaR->Fill(cw.energy_, detaR(cw.eta_, pionEta, cw.phi_,
+						pionPhi));
 			}
 			//Neutrals
 			if (cw.type_ == 5) {
 				++nNeutrals;
 				eNeutrals += cw.energy_;
 				neutralPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
+				neutralDeltaR->Fill(cw.energy_, detaR(cw.eta_, pionEta,
+						cw.phi_, pionPhi));
 			}
 		}
 
-		if (nPhotons == 1) 
+		if (nPhotons == 1)
 			singleExtraPhoton->Fill(ePhotons);
-		if (nPhotons > 0) 
+		if (nPhotons > 0)
 			allPhotons->Fill(ePhotons);
-		
 
 		//Photon spectrum for no neutral activity		
 		if (nPhotons > 0 && nNeutrals == 0) {
@@ -171,12 +200,14 @@ void EnergyProcessing::doLoopedPlots() {
 	util_.flushPage();
 
 	util_.newPage();
-	util_.accumulateObjects(photonPositioning, "box");
-	util_.accumulateObjects(neutralPositioning, "box");
+	util_.accumulateObjects(photonPositioning, "colz");
+	util_.accumulateObjects(neutralPositioning, "colz");
+	util_.accumulateObjects(photonDeltaR, "colz");
+	util_.accumulateObjects(neutralDeltaR, "colz");
 	util_.flushPage();
-	
+
 	util_.newPage();
-	
+
 	util_.accumulateObjects(onePhotonNoNeutrals);
 	util_.accumulateObjects(oneNeutralNoPhotons);
 	util_.accumulateObjects(photonsNoNeutrals);
