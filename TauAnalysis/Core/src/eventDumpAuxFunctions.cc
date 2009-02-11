@@ -134,11 +134,12 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void printTrackInfo(const edm::RefToBase<reco::Track>& track, std::ostream* stream)
+void printTrackInfo(const edm::RefToBase<reco::Track>& track, const reco::Candidate::Point& vertex, std::ostream* stream)
 {
-  if ( track.isAvailable() && !track.isNull() ) {
+  if ( track.isAvailable() && track.isNonnull() ) {
     *stream << "  Pt = " << track->pt() << std::endl;
-    *stream << "  d0 = " << track->d0() << std::endl;
+    *stream << "  dXY = " << track->dxy(vertex) << std::endl;
+    //*stream << "  dZ = " << track->dz(vertex) << std::endl;
   } else {
     *stream << "  none." << std::endl;
   }
