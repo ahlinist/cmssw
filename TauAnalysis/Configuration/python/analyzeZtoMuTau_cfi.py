@@ -14,7 +14,17 @@ diTauCandidateHistManagerForMuTau.name = cms.string('diTauCandidateHistManagerFo
 diTauCandidateHistManagerForMuTau.type = cms.string('PATMuTauPairHistManager')
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
 
-muTauHistManagers = cms.vstring('muonHistManager', 'tauHistManager', 'diTauCandidateHistManagerForMuTau')
+# import config for primary event vertex histogram manager
+from TauAnalysis.Core.vertexHistManager_cfi import *
+
+# import config for L1 & HLT histogram manager
+from TauAnalysis.Core.triggerHistManager_cfi import *
+
+muTauHistManagers = cms.vstring( 'muonHistManager',
+                                 'tauHistManager',
+                                 'diTauCandidateHistManagerForMuTau',
+                                 'vertexHistManager',
+                                 'triggerHistManager' )
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -222,8 +232,12 @@ muTauEventDump = cms.PSet(
   name = cms.string('muTauEventDump'),
   type = cms.string('MuTauEventDump'),
 
-  triggerResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
-  triggerPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
+  l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+  l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+  l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
+
+  hltResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
+  hltPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
       
   genParticleSource = cms.InputTag('genParticles'),
   genTauJetSource = cms.InputTag('tauGenJets'),
@@ -236,28 +250,28 @@ muTauEventDump = cms.PSet(
   output = cms.string("std::cout"),
 
   triggerConditions = cms.vstring("tauMuonVeto: passed_cumulative")
-  #triggerConditions = cms.vstring("muonTrkIsoCut:rejected_cumulative")
-  #triggerConditions = cms.vstring("muonTrkIPcut:rejected_cumulative")
-  #triggerConditions = cms.vstring("muTauEventVertex:rejected_cumulative")
-  #triggerConditions = cms.vstring("Trigger:rejected_cumulative",
-  #                                "globalMuonCut:rejected_cumulative",
-  #                                "muonEtaCut:rejected_cumulative",
-  #                                "muonPtCut:rejected_cumulative",
-  #                                "muonHLTmatchCut:rejected_cumulative",
-  #                                "muonTrkIsoCut:rejected_cumulative",
-  #                                "muonEcalIsoCut:rejected_cumulative",
-  #                                "muonHcalIsoCut:rejected_cumulative",
-  #                                "muonAntiPionCut:rejected_cumulative",
-  #                                "muonTrkIPcut:rejected_cumulative",
-  #                                "tauEtaCut:rejected_cumulative",
-  #                                "tauPtCut:rejected_cumulative",
-  #                                "tauLeadTrkCut:rejected_cumulative",
-  #                                "tauLeadTrkPtCut:rejected_cumulative",
-  #                                "tauTrkIsoCut:rejected_cumulative",
-  #                                "tauEcalIsoCut:rejected_cumulative",
-  #                                "tauProngCut:rejected_cumulative",
-  #                                "tauMuonVeto:rejected_cumulative")
-  #triggerConditions = cms.vstring("tauEtaCut:passed_cumulative")
+  #triggerConditions = cms.vstring("muonTrkIsoCut: rejected_cumulative")
+  #triggerConditions = cms.vstring("muonTrkIPcut: rejected_cumulative")
+  #triggerConditions = cms.vstring("muTauEventVertex: rejected_cumulative")
+  #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
+  #                                "globalMuonCut: rejected_cumulative",
+  #                                "muonEtaCut: rejected_cumulative",
+  #                                "muonPtCut: rejected_cumulative",
+  #                                "muonHLTmatchCut: rejected_cumulative",
+  #                                "muonTrkIsoCut: rejected_cumulative",
+  #                                "muonEcalIsoCut: rejected_cumulative",
+  #                                "muonHcalIsoCut: rejected_cumulative",
+  #                                "muonAntiPionCut: rejected_cumulative",
+  #                                "muonTrkIPcut: rejected_cumulative",
+  #                                "tauEtaCut: rejected_cumulative",
+  #                                "tauPtCut: rejected_cumulative",
+  #                                "tauLeadTrkCut: rejected_cumulative",
+  #                                "tauLeadTrkPtCut: rejected_cumulative",
+  #                                "tauTrkIsoCut: rejected_cumulative",
+  #                                "tauEcalIsoCut: rejected_cumulative",
+  #                                "tauProngCut: rejected_cumulative",
+  #                                "tauMuonVeto: rejected_cumulative")
+  #triggerConditions = cms.vstring("tauEtaCut: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
