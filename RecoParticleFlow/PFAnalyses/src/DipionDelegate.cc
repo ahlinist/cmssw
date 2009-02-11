@@ -37,26 +37,35 @@ DipionDelegate::DipionDelegate(bool isMC) :
 
 void DipionDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 
-	isMC_ = parameters.getParameter<bool>("isMC");
-	useSimAsTrack_ = parameters.getParameter<bool>("useSimAsTrack");
-	deltaEta_ = parameters.getParameter<double>("deltaEta");
-	deltaPhi_ = parameters.getParameter<double>("deltaPhi");
-	pionPdg_ = parameters.getParameter<int>("particlePDG");
-	deltaRCandToTrack_ = parameters.getParameter<double>("deltaRCandToTrack");
-	deltaRRechitsToTrack_
-			= parameters.getParameter<double>("deltaRRechitsToTrack");
-	clustersFromCandidates_
-			= parameters.getParameter<bool>("clustersFromCandidates");
-	deltaRClustersToTrack_
-			= parameters.getParameter<double>("deltaRClustersToTrack");
+	isMC_ = parameters.getParameter<bool> ("isMC");
+	useSimAsTrack_ = parameters.getParameter<bool> ("useSimAsTrack");
+	deltaEta_ = parameters.getParameter<double> ("deltaEta");
+	deltaPhi_ = parameters.getParameter<double> ("deltaPhi");
+	pionPdg_ = parameters.getParameter<int> ("particlePDG");
+	deltaRCandToTrack_ = parameters.getParameter<double> ("deltaRCandToTrack");
+	deltaRRechitsToTrack_ = parameters.getParameter<double> (
+			"deltaRRechitsToTrack");
+	clustersFromCandidates_ = parameters.getParameter<bool> (
+			"clustersFromCandidates");
+	deltaRClustersToTrack_ = parameters.getParameter<double> (
+			"deltaRClustersToTrack");
 
-	inputTagCandidates_= parameters.getParameter<InputTag>("PFCandidates");
-	inputTagRecTracks_ = parameters.getParameter<InputTag>("PFRecTracks");
-	inputTagSimParticles_= parameters.getParameter<InputTag>("PFSimParticles");
-	inputTagClustersEcal_= parameters.getParameter<InputTag>("PFClustersEcal");
-	inputTagClustersHcal_= parameters.getParameter<InputTag>("PFClustersHcal");
-	inputTagRecHitsEcal_= parameters.getParameter<InputTag>("PFRecHitsEcal");
-	inputTagRecHitsHcal_= parameters.getParameter<InputTag>("PFRecHitsHcal");
+	inputTagCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
+	inputTagRecTracks_ = parameters.getParameter<InputTag> ("PFRecTracks");
+	inputTagSimParticles_
+			= parameters.getParameter<InputTag> ("PFSimParticles");
+	inputTagClustersEcal_
+			= parameters.getParameter<InputTag> ("PFClustersEcal");
+	inputTagClustersHcal_
+			= parameters.getParameter<InputTag> ("PFClustersHcal");
+	inputTagRecHitsEcal_ = parameters.getParameter<InputTag> ("PFRecHitsEcal");
+	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
+	inputTagCaloHitsEcalEB_ = parameters.getParameter<InputTag> (
+			"SimCaloRecHitsEcalEB");
+	inputTagCaloHitsEcalEE_ = parameters.getParameter<InputTag> (
+			"SimCaloRecHitsEcalEE");
+	inputTagCaloHitsHcal_ = parameters.getParameter<InputTag> (
+			"SimCaloRecHitsHcal");
 
 }
 
@@ -66,7 +75,7 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 	//start with connecting sim particles with pf candidates, if simulation
 	if (isMC_) {
 		if (debug_ > 1)
-			std::cout << "\tProceeding in MC mode..."<< std::endl;
+			std::cout << "\tProceeding in MC mode..." << std::endl;
 
 		PFSimParticleCollection sims = **simParticles_;
 		PFCandidateCollection candidates = **pfCandidates_;
@@ -85,23 +94,25 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 		} else {
 			std::vector<unsigned> primarySims = findPrimarySimParticles(sims);
 			if (debug_) {
-				std::cout << "\tFound "<< primarySims.size()
-						<< " primary sim particles, "<< (**pfCandidates_).size() << " pfCandidates, and "
-						<< tracks.size() << " recTracks.\n";
+				std::cout << "\tFound " << primarySims.size()
+						<< " primary sim particles out of " << sims.size()
+						<< " available and " << (**pfCandidates_).size()
+						<< " pfCandidates, and " << tracks.size()
+						<< " recTracks.\n";
 			}
-			for (std::vector<unsigned>::const_iterator cit = primarySims.begin(); cit
-					!= primarySims.end(); ++cit) {
+			for (std::vector<unsigned>::const_iterator cit =
+					primarySims.begin(); cit != primarySims.end(); ++cit) {
 				startParticle();
 				if (debug_)
 					std::cout << "\t**Starting particle...**\n";
 				const PFSimParticle& sim = sims[*cit];
-				extractSimParticle(sim);
+				extractSimParticle(sim, *cit);
 
 				const PFTrack* rootTrack = &sim;
 
 				//get leading track
 				if (debug_ > 1)
-					std::cout << "\tExtracting track..."<< std::endl;
+					std::cout << "\tExtracting track..." << std::endl;
 				unsigned trackIndex = findClosestRecTrack(sim, tracks);
 				if (trackIndex == tracks.size()) {
 					//oh?
@@ -122,31 +133,35 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 
 				//now find rec hits
 				if (debug_ > 1)
-					std::cout << "\tGetting rechits..."<< std::endl;
+					std::cout << "\tGetting rechits..." << std::endl;
 
-				std::vector<unsigned> matchingEcalRechits = findObjectsInDeltaR(
-						*rootTrack, **recHitsEcal_, deltaRRechitsToTrack_);
+				std::vector<unsigned> matchingEcalRechits =
+						findObjectsInDeltaR(*rootTrack, **recHitsEcal_,
+								deltaRRechitsToTrack_);
 				for (std::vector<unsigned>::const_iterator rhIt =
 						matchingEcalRechits.begin(); rhIt
 						!= matchingEcalRechits.end(); ++rhIt) {
 					const PFRecHit& rh = (**recHitsEcal_)[*rhIt];
-					CalibratableElement ce(rh.energy(), rh.positionREP().eta(), rh.positionREP().phi(), rh.layer() );
+					CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
+							rh.positionREP().phi(), rh.layer());
 					calib_->rechits_ecal_.push_back(ce);
 				}
 
-				std::vector<unsigned> matchingHcalRechits = findObjectsInDeltaR(
-						*rootTrack, **recHitsHcal_, deltaRRechitsToTrack_);
+				std::vector<unsigned> matchingHcalRechits =
+						findObjectsInDeltaR(*rootTrack, **recHitsHcal_,
+								deltaRRechitsToTrack_);
 				for (std::vector<unsigned>::const_iterator rhIt =
 						matchingHcalRechits.begin(); rhIt
 						!= matchingHcalRechits.end(); ++rhIt) {
 					const PFRecHit& rh = (**recHitsHcal_)[*rhIt];
-					CalibratableElement ce(rh.energy(), rh.positionREP().eta(), rh.positionREP().phi(), rh.layer() );
+					CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
+							rh.positionREP().phi(), rh.layer());
 					calib_->rechits_hcal_.push_back(ce);
 				}
 				if (debug_ > 1) {
 					std::cout << "\t\tECAL/HCAL matching rechits: ("
 							<< calib_->rechits_ecal_.size() << ", "
-							<< calib_->rechits_hcal_.size()<< ")\n";
+							<< calib_->rechits_hcal_.size() << ")\n";
 				}
 				//Process clusters
 				if (!clustersFromCandidates_) {
@@ -159,7 +174,7 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 					std::vector<unsigned> hcalIndices = findObjectsInDeltaR(
 							*rootTrack, clustersHcal, deltaRClustersToTrack_);
 					if (debug_ > 3) {
-						std::cout << "\t\tThere are ("<< clustersEcal.size()
+						std::cout << "\t\tThere are (" << clustersEcal.size()
 								<< ", " << clustersHcal.size()
 								<< ") ecal and hcal clusters.\n";
 						std::cout << "\t\tMatching ecal and hcal clusters: ("
@@ -171,7 +186,9 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 							ecalIndices.begin(); eit != ecalIndices.end(); ++eit) {
 						const PFCluster theCluster = clustersEcal[*eit];
 						CalibratableElement d(theCluster.energy(),
-								theCluster.positionREP().eta(), theCluster.positionREP().phi(), theCluster.layer() );
+								theCluster.positionREP().eta(),
+								theCluster.positionREP().phi(),
+								theCluster.layer());
 						calib_->cluster_ecal_.push_back(d);
 						if (debug_ > 4)
 							std::cout << "\t" << theCluster << "\n";
@@ -182,7 +199,9 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 							hcalIndices.begin(); hit != hcalIndices.end(); ++hit) {
 						const PFCluster theCluster = clustersHcal[*hit];
 						CalibratableElement d(theCluster.energy(),
-								theCluster.positionREP().eta(), theCluster.positionREP().phi(), theCluster.layer() );
+								theCluster.positionREP().eta(),
+								theCluster.positionREP().phi(),
+								theCluster.layer());
 						calib_->cluster_hcal_.push_back(d);
 						if (debug_ > 4)
 							std::cout << "\t" << theCluster << "\n";
@@ -196,7 +215,7 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 						*rootTrack, candidates, deltaRCandToTrack_);
 				if (debug_ > 1)
 					std::cout << "\t\tMatching candidates, found "
-							<< matchingCands.size()<< " of them.\n";
+							<< matchingCands.size() << " of them.\n";
 				for (std::vector<unsigned>::const_iterator mcIt =
 						matchingCands.begin(); mcIt != matchingCands.end(); ++mcIt) {
 					const PFCandidate& theCand = candidates[*mcIt];
@@ -215,7 +234,7 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 		return false;
 	}
 	if (debug_)
-		std::cout << "\tDone processing event."<< std::endl;
+		std::cout << "\tDone processing event." << std::endl;
 	return true;
 }
 
@@ -224,33 +243,83 @@ void DipionDelegate::extractTrack(const PFTrack& track) {
 	calib_->recotrk_charge_ = track.charge();
 	calib_->recotrk_numHits_ = track.nTrajectoryPoints();
 	if (track.nTrajectoryPoints() > PFTrajectoryPoint::ECALEntrance) {
-		calib_->recotrk_etaEcal_ = track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-		calib_->recotrk_phiEcal_ = track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+		calib_->recotrk_etaEcal_ = track.trajectoryPoint(
+				PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+		calib_->recotrk_phiEcal_ = track.trajectoryPoint(
+				PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 	}
-	const math::XYZTLorentzVector momentum = track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).momentum();
+	const math::XYZTLorentzVector momentum = track.trajectoryPoint(
+			PFTrajectoryPoint::ECALEntrance).momentum();
 	calib_->recotrk_momentum_ = momentum;
 }
 
-void DipionDelegate::extractSimParticle(const PFSimParticle& sim) {
+void DipionDelegate::extractSimParticle(const PFSimParticle& sim,
+		unsigned index) {
 	calib_->sim_numEvent_ = 1;
 	calib_->sim_isMC_ = true;
-	calib_->sim_energyEvent_ = sim.trajectoryPoint(PFTrajectoryPoint::ClosestApproach).momentum().E();
-	calib_->sim_phi_ = sim.trajectoryPoint(PFTrajectoryPoint::ClosestApproach).momentum().Phi();
-	calib_->sim_eta_ = sim.trajectoryPoint(PFTrajectoryPoint::ClosestApproach).momentum().Eta();
+	calib_->sim_energyEvent_ = sim.trajectoryPoint(
+			PFTrajectoryPoint::ClosestApproach).momentum().E();
+
+	std::vector<unsigned> rechitsToSimIds = sim.recHitContrib();
+	std::vector<double> rechitsToSimFrac = sim.recHitContribFrac();
+
+	if (debug_ > 4) {
+		std::cout << "\trechitsToSimIds size is " << rechitsToSimIds.size()
+				<< "\n";
+		for (std::vector<unsigned>::const_iterator c = rechitsToSimIds.begin(); c
+				!= rechitsToSimIds.end(); ++c)
+			std::cout << "\t\t rechitToSimIds " << *c << "\n";
+	}
+
+	PFRecHitCollection::const_iterator rhEcalIt = (*recHitsEcal_)->begin();
+	for (; rhEcalIt != (*recHitsEcal_)->end(); ++rhEcalIt) {
+		for (unsigned count(0); count < rechitsToSimIds.size(); ++count) {
+			if (rechitsToSimIds[count] == (*rhEcalIt).detId())
+				calib_->sim_energyEcal_ += (*rhEcalIt).energy()
+						* rechitsToSimFrac[count] / 100;
+		}
+	}
+
+//	PFRecHitCollection::const_iterator rhHcalIt = (*recHitsHcal_)->begin();
+//	for (; rhHcalIt != (*recHitsHcal_)->end(); ++rhHcalIt) {
+//		for (unsigned count(0); count < rechitsToSimIds.size(); ++count) {
+//			if (rechitsToSimIds[count] == (*rhHcalIt).detId())
+//				calib_->sim_energyHcal_ += (*rhHcalIt).energy()
+//						* recHitContribFrac[count] / 100;
+//		}
+//	}
+
+	double impliedHcal = calib_->sim_energyEvent_ - calib_->sim_energyEcal_;
+	calib_->sim_energyHcal_ = impliedHcal;
+
+
+	if (debug_ > 3)
+		std::cout << "Sim energy " << calib_->sim_energyEvent_
+				<< ", ecal energy = " << calib_->sim_energyEcal_
+				<< ", hcal energy = " << calib_->sim_energyHcal_ << "\n";
+
+	calib_->sim_phi_
+			= sim.trajectoryPoint(PFTrajectoryPoint::ClosestApproach).momentum().Phi();
+	calib_->sim_eta_
+			= sim.trajectoryPoint(PFTrajectoryPoint::ClosestApproach).momentum().Eta();
 
 	if (sim.nTrajectoryPoints() > PFTrajectoryPoint::ECALEntrance) {
-		calib_->sim_etaEcal_ = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-		calib_->sim_phiEcal_ = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+		calib_->sim_etaEcal_ = sim.trajectoryPoint(
+				PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+		calib_->sim_phiEcal_ = sim.trajectoryPoint(
+				PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 	}
 	if (sim.nTrajectoryPoints() > PFTrajectoryPoint::HCALEntrance) {
-		calib_->sim_etaHcal_ = sim.trajectoryPoint(PFTrajectoryPoint::HCALEntrance).positionREP().Eta();
-		calib_->sim_phiHcal_ = sim.trajectoryPoint(PFTrajectoryPoint::HCALEntrance).positionREP().Phi();
+		calib_->sim_etaHcal_ = sim.trajectoryPoint(
+				PFTrajectoryPoint::HCALEntrance).positionREP().Eta();
+		calib_->sim_phiHcal_ = sim.trajectoryPoint(
+				PFTrajectoryPoint::HCALEntrance).positionREP().Phi();
 	}
 }
 
 void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 	if (debug_ > 3)
-		std::cout << "\tCandidate: "<< cand << "\n";
+		std::cout << "\tCandidate: " << cand << "\n";
 
 	CandidateWrapper cw;
 	cw.energy_ = cand.energy();
@@ -268,7 +337,7 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 		PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
 		if (debug_ > 2)
 			std::cout << "\tLooping over elements in blocks, "
-					<< eleInBlocks.size() << " of them."<< std::endl;
+					<< eleInBlocks.size() << " of them." << std::endl;
 		for (PFCandidate::ElementsInBlocks::iterator bit = eleInBlocks.begin(); bit
 				!= eleInBlocks.end(); ++bit) {
 
@@ -288,10 +357,12 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 						elements[indexInBlock].clusterRef();
 				const PFCluster theRealCluster = *clusterRef;
 				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(), theRealCluster.positionREP().phi(), theRealCluster.layer() );
+						theRealCluster.positionREP().eta(),
+						theRealCluster.positionREP().phi(),
+						theRealCluster.layer());
 				calib_->cluster_ecal_.push_back(d);
 				if (debug_ > 3)
-					std::cout << "\t\tECAL cluster: "<< theRealCluster << "\n";
+					std::cout << "\t\tECAL cluster: " << theRealCluster << "\n";
 
 				break;
 			}
@@ -301,10 +372,12 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 						elements[indexInBlock].clusterRef();
 				const PFCluster theRealCluster = *clusterRef;
 				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(), theRealCluster.positionREP().phi(), theRealCluster.layer() );
+						theRealCluster.positionREP().eta(),
+						theRealCluster.positionREP().phi(),
+						theRealCluster.layer());
 				calib_->cluster_hcal_.push_back(d);
 				if (debug_ > 3)
-					std::cout << "\t\tHCAL cluster: "<< theRealCluster << "\n";
+					std::cout << "\t\tHCAL cluster: " << theRealCluster << "\n";
 
 				break;
 			}
@@ -356,8 +429,12 @@ template<typename T> std::vector<unsigned> DipionDelegate::findObjectsInDeltaR(
 		double rhEta = obj.positionREP().eta();
 		double rhPhi = obj.positionREP().phi();
 		//TODO: add trajectory point as method argument
-		double trEta = pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-		double trPhi = pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+		double
+				trEta =
+						pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+		double
+				trPhi =
+						pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 
 		if (deltaR(rhEta, trEta, rhPhi, trPhi) < deltaRCut) {
 			//accept
@@ -368,14 +445,19 @@ template<typename T> std::vector<unsigned> DipionDelegate::findObjectsInDeltaR(
 	return answers;
 }
 
-std::vector<unsigned> DipionDelegate::findCandidatesInDeltaR(const PFTrack& pft,
-		const std::vector<PFCandidate>& cands, const double& deltaRCut) {
+std::vector<unsigned> DipionDelegate::findCandidatesInDeltaR(
+		const PFTrack& pft, const std::vector<PFCandidate>& cands,
+		const double& deltaRCut) {
 
 	unsigned index(0);
 	std::vector<unsigned> answers;
 
-	double trEta = pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-	double trPhi = pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+	double
+			trEta =
+					pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+	double
+			trPhi =
+					pft.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 
 	for (std::vector<PFCandidate>::const_iterator cit = cands.begin(); cit
 			!= cands.end(); ++cit) {
@@ -393,7 +475,6 @@ std::vector<unsigned> DipionDelegate::findCandidatesInDeltaR(const PFTrack& pft,
 	}
 	return answers;
 }
-
 
 unsigned DipionDelegate::findClosestRecTrack(const reco::PFSimParticle& sim,
 		const std::vector<PFRecTrack>& tracks) {
@@ -423,11 +504,19 @@ unsigned DipionDelegate::findClosestRecTrack(const reco::PFSimParticle& sim,
 double DipionDelegate::findSimToTrackDeltaR(const reco::PFSimParticle& sim,
 		const reco::PFTrack& track) {
 
-	double trEta = track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-	double trPhi = track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+	double
+			trEta =
+					track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+	double
+			trPhi =
+					track.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 
-	double simEta = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-	double simPhi = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+	double
+			simEta =
+					sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+	double
+			simPhi =
+					sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 
 	return deltaR(trEta, simEta, trPhi, simPhi);
 }
@@ -456,8 +545,12 @@ std::vector<std::pair<unsigned, unsigned> > DipionDelegate::associate(
 			!= sims.end(); ++simit) {
 		const PFSimParticle sim = *simit;
 		//TODO: error and bounds checking!
-		double simEta = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
-		double simPhi = sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
+		double
+				simEta =
+						sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Eta();
+		double
+				simPhi =
+						sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().Phi();
 		//current candidate index
 		unsigned c(0);
 		for (std::vector<PFCandidate>::const_iterator canit = cands.begin(); canit
@@ -495,26 +588,28 @@ std::vector<std::pair<unsigned, unsigned> > DipionDelegate::associate(
 	return answers;
 }
 
-
 bool DipionDelegate::finish() {
-	std::cout << "\tnEventWrites: "<< nWrites_ << ", nEventFails: "<< nFails_
+	std::cout << "\tnEventWrites: " << nWrites_ << ", nEventFails: " << nFails_
 			<< "\n";
-	std::cout << "\tnParticleWrites: "<< nParticleWrites_
-			<< ", nParticleFails: "<< nParticleFails_ << "\n";
-	std::cout << "Leaving "<< __PRETTY_FUNCTION__ << "\n";
+	std::cout << "\tnParticleWrites: " << nParticleWrites_
+			<< ", nParticleFails: " << nParticleFails_ << "\n";
+	std::cout << "Leaving " << __PRETTY_FUNCTION__ << "\n";
 	return true;
 }
 
 void DipionDelegate::startEventCore(const edm::Event& event,
 		const edm::EventSetup& setup) {
 
-	pfCandidates_ = new Handle<PFCandidateCollection>;
-	simParticles_ = new Handle<PFSimParticleCollection>;
-	clustersEcal_ = new Handle<PFClusterCollection>;
-	clustersHcal_ = new Handle<PFClusterCollection>;
-	recHitsEcal_ = new Handle<PFRecHitCollection>;
-	recHitsHcal_ = new Handle<PFRecHitCollection>;
-	recTracks_ = new Handle<PFRecTrackCollection>;
+	pfCandidates_ = new Handle<PFCandidateCollection> ;
+	simParticles_ = new Handle<PFSimParticleCollection> ;
+	clustersEcal_ = new Handle<PFClusterCollection> ;
+	clustersHcal_ = new Handle<PFClusterCollection> ;
+	recHitsEcal_ = new Handle<PFRecHitCollection> ;
+	recHitsHcal_ = new Handle<PFRecHitCollection> ;
+	recTracks_ = new Handle<PFRecTrackCollection> ;
+	simCaloHitsEcalEB_ = new Handle<std::vector<PCaloHit> > ;
+	simCaloHitsEcalEE_ = new Handle<std::vector<PCaloHit> > ;
+	simCaloHitsHcal_ = new Handle<std::vector<PCaloHit> > ;
 
 	getCollection(*pfCandidates_, inputTagCandidates_, event);
 	getCollection(*simParticles_, inputTagSimParticles_, event);
@@ -523,6 +618,10 @@ void DipionDelegate::startEventCore(const edm::Event& event,
 	getCollection(*recHitsEcal_, inputTagRecHitsEcal_, event);
 	getCollection(*recHitsHcal_, inputTagRecHitsHcal_, event);
 	getCollection(*recTracks_, inputTagRecTracks_, event);
+
+	getCollection(*simCaloHitsEcalEB_, inputTagCaloHitsEcalEB_, event);
+	getCollection(*simCaloHitsEcalEE_, inputTagCaloHitsEcalEE_, event);
+	getCollection(*simCaloHitsHcal_, inputTagCaloHitsHcal_, event);
 }
 
 void DipionDelegate::startParticleCore() {
@@ -559,6 +658,10 @@ bool DipionDelegate::endEventCore() {
 	delete recHitsEcal_;
 	delete recHitsHcal_;
 	delete recTracks_;
+	delete simCaloHitsEcalEB_;
+	delete simCaloHitsEcalEE_;
+	delete simCaloHitsHcal_;
+
 	return thisEventPasses_;
 }
 

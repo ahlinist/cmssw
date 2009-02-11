@@ -11,6 +11,8 @@
 #include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFTrack.h"
 
+#include "SimDataFormats/CaloHit/interface/PCaloHit.h"
+
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 
 #include <iostream>
@@ -37,9 +39,9 @@ public:
 protected:
 
 	/*
-	 * Matches PFCandidates to Sim Particles in dipion events, but making sure 
+	 * Matches PFCandidates to Sim Particles in dipion events, but making sure
 	 * they are within deltaEta_, deltaPhi_ of each other at the ECAL surface.
-	 * 
+	 *
 	 * Returns a vector of pairs of unsigneds - the indices in the input vector.
 	 */
 	std::vector<std::pair<unsigned, unsigned > > associate(
@@ -49,7 +51,7 @@ protected:
 	//Checks vetos
 	//Return true if you want the particle written to the tree
 	virtual bool endEventCore();
-	
+
 	virtual void startEventCore(const edm::Event& event,
 			const edm::EventSetup& setup);
 
@@ -63,7 +65,7 @@ protected:
 	virtual void getTagsCore(const edm::ParameterSet& parameters);
 
 private:
-	
+
 
 	//Collection input tags
 	edm::InputTag inputTagCandidates_;
@@ -73,7 +75,10 @@ private:
 	edm::InputTag inputTagRecHitsEcal_;
 	edm::InputTag inputTagRecHitsHcal_;
 	edm::InputTag inputTagRecTracks_;
-	
+	edm::InputTag inputTagCaloHitsEcalEB_;
+	edm::InputTag inputTagCaloHitsEcalEE_;
+	edm::InputTag inputTagCaloHitsHcal_;
+
 
 	//collections
 	edm::Handle<reco::PFCandidateCollection>* pfCandidates_;
@@ -83,6 +88,10 @@ private:
 	edm::Handle<reco::PFRecHitCollection>* recHitsEcal_;
 	edm::Handle<reco::PFRecHitCollection>* recHitsHcal_;
 	edm::Handle<reco::PFRecTrackCollection>* recTracks_;
+
+	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEB_;
+	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEE_;
+	edm::Handle<std::vector<PCaloHit> >* simCaloHitsHcal_;
 
 	//Extra tags
 	bool isMC_;
@@ -99,7 +108,7 @@ private:
 	/*
 	 * Worker method to fill the Calibratable with sim information.
 	 */
-	void extractSimParticle(const reco::PFSimParticle& sim);
+	void extractSimParticle(const reco::PFSimParticle& sim, unsigned index);
 
 	/*
 	 * Selects primary sim particles from the event, vetoing any that don't meet certain criteria.

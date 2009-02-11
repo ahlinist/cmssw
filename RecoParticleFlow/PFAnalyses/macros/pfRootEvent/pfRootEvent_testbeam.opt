@@ -4,9 +4,9 @@ root outtree 1
 
 //colin	mode 1
 
-root file reprocessed_100GeV.root
-
-//root file ../../test/demo_reprocessed_7GeV.root
+//root file reprocessed_7GeV.root
+print mctruthmatching 1 
+root file ../../test/display.root
 
 // filter ------------------------------------------------------------
 
@@ -133,10 +133,10 @@ display drawPFBlock 0
 // clustering parameters ---------------------------------------------------
 
 // perform clustering yes/no. If no, clusters are read from the TTree
-clustering on/off 1 
+clustering on/off 1
 
 // print debug printouts from the clustering algorithm
-clustering debug 0
+clustering debug 1
 rootevent debug 0
 
 //Find RecHits neighbours: Need to be set to false if using 
@@ -222,19 +222,19 @@ particle_flow resolution_map_HCAL_eta ${CMSSW_DATA_PATH}/data-RecoParticleFlow-P
 particle_flow resolution_map_HCAL_phi ${CMSSW_DATA_PATH}/data-RecoParticleFlow-PFBlockProducer/2/RecoParticleFlow/PFBlockProducer/data/resmap_HCAL_phi.dat
 
 // Debug blockAlgo
-blockAlgo debug 0
+blockAlgo debug 1
 // Debug PFAlgo
-PFAlgo debug 0
+PFAlgo debug 1
 
 // Track Quality Cut: Tracks are kept if DPt/Pt < Cut
 particle_flow DPtoverPt_Cut   999.9
 
 // chi2 maximum limit for ECAL/Track association
-particle_flow chi2_ECAL_Track  100
+particle_flow chi2_ECAL_Track  500
 // chi2 maximum limit for HCAL/Track association
-particle_flow chi2_HCAL_Track  100
+particle_flow chi2_HCAL_Track  500
 // chi2 maximum limit for ECAL/HCAL assoiation
-particle_flow chi2_ECAL_HCAL	10
+particle_flow chi2_ECAL_HCAL	50
 
 // chi2 maximum limit for PS/ECAL association
 particle_flow chi2_PS_ECAL	100
@@ -248,12 +248,12 @@ particle_flow chi2_PSH_PSV	5
 particle_flow multilink 1
 
 // number of sigmas for neutral energy detection
-particle_flow   nsigma_ECAL    3
+particle_flow   nsigma_ECAL    30
 particle_flow   nsigma_HCAL    1.0
 
 //Alogrithm to recover the clusters 
 //that belong to charged hadrons
-particle_flow   clusterRecovery 0
+particle_flow   clusterRecovery 1
 
 particle_flow   mergedPhotons_mvaCut 		0.5
 particle_flow	mergedPhotons_mvaWeightFile	${CMSSW_RELEASE_BASE}/src/RecoParticleFlow/PFProducer/data/MVAnalysis_MLP.weights.txt
@@ -288,8 +288,8 @@ particle_flow  newCalib 1
 
 // Brand-new calibration parameters
 //Apply corrections?
-correction	doCorrection		1
-correction	doEtaCorrection		1
+correction	doCorrection		0
+correction	doEtaCorrection		0
 //Bulk correction parameters
 correction	globalP0 		-2.314808
 correction	globalP1 		1.01
@@ -307,7 +307,7 @@ evolution	hcalECut		0.0
 evolution	barrelEndcapEtaDiv	1.4
 
 //Use hand fitted parameters specified below
-evolution	ecalHcalEcalBarrel	0.67	3.0	1.15	0.90    -0.060	1.4
+evolution	ecalHcalEcalBarrel	0.67 	3.0	1.15	0.90    -0.060	1.4
 evolution 	ecalHcalEcalEndcap	0.46	3.0	1.10	0.40	-0.020	1.4
 evolution 	ecalHcalHcalBarrel	0.46	3.0	1.15	0.30	-0.020	1.4
 evolution	ecalHcalHcalEndcap	0.460	3.0	1.10	0.30	-0.02	1.4
@@ -321,11 +321,11 @@ evolution	etaCorrection		1.01   -1.02e-02 5.17e-02 0.563 -0.425 	0.110
 // print rechits yes/no
 print rechits  0
 // print clusters yes/no
-print clusters 0
+print clusters 1
 // print particle flow blocks yes/no
-print PFBlocks     0
+print PFBlocks     1
 // print reconstructed particles (PFCandidates) yes/no
-print PFCandidates  0
+print PFCandidates  1
 // print jets yes/no
 print jets 0
 //print Sim Particles yes/no

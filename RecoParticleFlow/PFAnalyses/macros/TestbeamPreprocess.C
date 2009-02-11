@@ -97,7 +97,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030388.combined.OutServ_0.0-cmsswreco.root", 30388);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030389.combined.OutServ_0.0-cmsswreco.root", 30389);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030390.combined.OutServ_0.0-cmsswreco.root", 30390);
-	*/
+	
 
 	process.finish("testbeam_cuts.root");
 

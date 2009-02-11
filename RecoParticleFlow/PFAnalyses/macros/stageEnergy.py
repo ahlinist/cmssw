@@ -7,7 +7,7 @@ print sys.argv
 from optparse import OptionParser
 
 #Edit this to write output files anywhere other then the current directory
-dest = '/castor/cern.ch/user/b/ballin/tbv2/'
+dest = '/castor/cern.ch/user/b/ballin/tbv5/'
 home = '/afs/cern.ch/user/b/ballin/scratch0/cmssw/src'
 
 parser = OptionParser()

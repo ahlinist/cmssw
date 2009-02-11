@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 template<typename T> std::string obj2str(T n) {
 	std::ostringstream oss;
@@ -24,5 +25,8 @@ template<typename u> std::vector<u> arrToVec(u a[], int size) {
 	std::vector<u> ans(a, a+size);
 	return ans;
 }
+
+double detaR(const double& eta1, const double& eta2,
+		const double& phi1, const double& phi2);
 
 #endif
