@@ -5,6 +5,10 @@
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -30,9 +34,14 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
 {
   //std::cout << "<GenericEventDump::GenericEventDump>:" << std::endl;
 
-  triggerResultsSource_ = getInputTag(cfg, "triggerResultsSource");
-  triggerPathsToPrint_ = ( cfg.exists("triggerPathsToPrint") ) ? 
-    cfg.getParameter<vstring>("triggerPathsToPrint") : vstring();
+  l1GtReadoutRecordSource_ = getInputTag(cfg, "l1GtReadoutRecordSource");
+  l1GtObjectMapRecordSource_ = getInputTag(cfg, "l1GtObjectMapRecordSource");
+  l1BitsToPrint_ = ( cfg.exists("l1BitsToPrint") ) ? 
+    cfg.getParameter<vstring>("l1BitsToPrint") : vstring();
+
+  hltResultsSource_ = getInputTag(cfg, "hltResultsSource");
+  hltPathsToPrint_ = ( cfg.exists("hltPathsToPrint") ) ? 
+    cfg.getParameter<vstring>("hltPathsToPrint") : vstring();
 
   genParticleSource_ = getInputTag(cfg, "genParticleSource");
   genTauJetSource_ = getInputTag(cfg, "genTauJetSource");
@@ -79,34 +88,71 @@ void GenericEventDump::printEventTriggerInfo(const edm::Event& evt) const
     return;
   }
 
-  if ( triggerResultsSource_.label() != "" ) {
-    edm::Handle<edm::TriggerResults> triggerResults;
-    evt.getByLabel(triggerResultsSource_, triggerResults);
+  if ( l1GtReadoutRecordSource_.label() != "" && l1GtObjectMapRecordSource_.label() != "" ) {
+    edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
+    evt.getByLabel(l1GtReadoutRecordSource_, l1GtReadoutRecord);
+    edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtObjectMapRecord;
+    evt.getByLabel(l1GtObjectMapRecordSource_, l1GtObjectMapRecord);
+    
+    DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
+    const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
+
+    //for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
+    //	    l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+    //  std::string l1Bit_i = (*l1GtObjectMap).algoName();
+    //  std::cout << " l1Bit_i = " << l1Bit_i << std::endl;
+    //}
+
+    *outputStream_ << "L1 Trigger Decisions:" << std::endl;
+
+    for ( vstring::const_iterator l1Bit = l1BitsToPrint_.begin();
+	  l1Bit != l1BitsToPrint_.end(); ++l1Bit ) {
+      bool isMatch = false;
+      for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
+	    l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+	std::string l1Bit_i = (*l1GtObjectMap).algoName();
+	if ( l1Bit_i == (*l1Bit) ) {
+	  int index = (*l1GtObjectMap).algoBitNumber();
+	  std::string l1TriggerDecision = ( l1GtDecision[index] ) ? "passed" : "failed";
+	  *outputStream_ << " " << (*l1Bit) << " " << l1TriggerDecision << std::endl;
+	  isMatch = true;
+	}
+      }
+
+      if ( !isMatch ) {
+	edm::LogError ("printEventTriggerInfo") << " Undefined L1 bit = " << (*l1Bit) << " --> skipping !!";
+	continue;
+      }
+    }
+  }
+  
+  if ( hltResultsSource_.label() != "" ) {
+    edm::Handle<edm::TriggerResults> hltResults;
+    evt.getByLabel(hltResultsSource_, hltResults);
 
     edm::TriggerNames triggerNames;
-    triggerNames.init(*triggerResults);
+    triggerNames.init(*hltResults);
 
     //for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
-    //	  triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
+    //	    triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
     //  unsigned int index = triggerNames.triggerIndex(*triggerName);
     //  if ( index < triggerNames.size() ) {
-    //    std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
+    //    std::string triggerDecision = ( hltResults->accept(index) ) ? "passed" : "failed";
     //    
     //    std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
     //  }
     //}
     
-    *outputStream_ << "triggerDecisions:" << std::endl;
+    *outputStream_ << "HLT Decisions:" << std::endl;
     
-    for ( std::vector<std::string>::const_iterator triggerPath = triggerPathsToPrint_.begin();
-	  triggerPath != triggerPathsToPrint_.end(); ++triggerPath ) {
-      unsigned int index = triggerNames.triggerIndex(*triggerPath);
+    for ( std::vector<std::string>::const_iterator hltPath = hltPathsToPrint_.begin();
+	  hltPath != hltPathsToPrint_.end(); ++hltPath ) {
+      unsigned int index = triggerNames.triggerIndex(*hltPath);
       if ( index < triggerNames.size() ) {
-	std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
-	
-	*outputStream_ << " " << (*triggerPath) << " " << triggerDecision << std::endl;
+	std::string hltDecision = ( hltResults->accept(index) ) ? "passed" : "failed";	
+	*outputStream_ << " " << (*hltPath) << " " << hltDecision << std::endl;
       } else {
-	edm::LogError ("printEventTriggerInfo") << " Undefined trigger Path = " << (*triggerPath) << " --> skipping !!";
+	edm::LogError ("printEventTriggerInfo") << " Undefined trigger Path = " << (*hltPath) << " --> skipping !!";
 	continue;
       }
     }
@@ -137,10 +183,22 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
       *outputStream_ << " Pt = " << patElectron->pt() << std::endl;
       *outputStream_ << " theta = " << patElectron->theta()*180./TMath::Pi() << " (eta = " << patElectron->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patElectron->phi()*180./TMath::Pi() << std::endl;
+      *outputStream_ << " Supercluster" << std::endl;
+      if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
+	double et = patElectron->superCluster()->energy()*TMath::Sin(patElectron->superCluster()->position().theta());
+	*outputStream_ << "  Et = " << et << std::endl;
+      } else {
+	*outputStream_ << "  none." << std::endl;
+      }
       *outputStream_ << " Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->track()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->track()), patElectron->vertex(), outputStream_);
       *outputStream_ << " gsf Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), patElectron->vertex(), outputStream_);
+      *outputStream_ << " Supercluster Energy/Track Momentum = " << patElectron->eSuperClusterOverP() << std::endl;
+      *outputStream_ << " electronID('robust') = " << patElectron->electronID("robust") << std::endl;
+      *outputStream_ << " trackIso = " << patElectron->trackIso() << std::endl;
+      *outputStream_ << " ecalIso = " << patElectron->ecalIso() << std::endl;
+      *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patElectron->vertex(), outputStream_);
       ++iElectron;
@@ -169,11 +227,11 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
       *outputStream_ << " theta = " << patMuon->theta()*180./TMath::Pi() << " (eta = " << patMuon->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patMuon->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " inner Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), patMuon->vertex(), outputStream_);
       *outputStream_ << " outer Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->outerTrack()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->outerTrack()), patMuon->vertex(), outputStream_);
       *outputStream_ << " global Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), patMuon->vertex(), outputStream_);
       *outputStream_ << " trackIso = " << patMuon->trackIso() << std::endl;
       if ( recoTrackSource_.label() != "" ) {
 	edm::Handle<reco::TrackCollection> recoTracks;
@@ -211,7 +269,7 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi() << " (eta = " << patTau->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " leading Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), outputStream_);
       *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
       *outputStream_ << " tauId" << std::endl;
       *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
