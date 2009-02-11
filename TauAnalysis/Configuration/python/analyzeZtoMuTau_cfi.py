@@ -14,6 +14,9 @@ diTauCandidateHistManagerForMuTau.name = cms.string('diTauCandidateHistManagerFo
 diTauCandidateHistManagerForMuTau.type = cms.string('PATMuTauPairHistManager')
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
 
+# import config for missing-Et histogram manager
+from TauAnalysis.Core.metHistManager_cfi import *
+
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
 
@@ -23,6 +26,7 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 muTauHistManagers = cms.vstring( 'muonHistManager',
                                  'tauHistManager',
                                  'diTauCandidateHistManagerForMuTau',
+                                 'metHistManager',
                                  'vertexHistManager',
                                  'triggerHistManager' )
 

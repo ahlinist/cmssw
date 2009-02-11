@@ -14,6 +14,9 @@ diTauCandidateHistManagerForElecTau.name = cms.string('diTauCandidateHistManager
 diTauCandidateHistManagerForElecTau.type = cms.string('PATElecTauPairHistManager')
 diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
 
+# import config for missing-Et histogram manager
+from TauAnalysis.Core.metHistManager_cfi import *
+
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
 
@@ -23,6 +26,7 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 elecTauHistManagers = cms.vstring( 'electronHistManager',
                                    'tauHistManager',
                                    'diTauCandidateHistManagerForElecTau',
+                                   'metHistManager',
                                    'vertexHistManager',
                                    'triggerHistManager' )
 
