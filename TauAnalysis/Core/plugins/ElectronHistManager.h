@@ -43,9 +43,11 @@ class ElectronHistManager : public HistManagerBase
   bool requireGenElectronMatch_;
 
   unsigned numElectronIsoConeSizes_;
-  float electronIsoConeSizeIncr_;
+  double electronIsoConeSizeIncr_;
   unsigned numElectronIsoPtThresholds_;
   double electronIsoPtThresholdIncr_;
+  double electronEtaMaxBarrel_;
+  double electronEtaMinEndcap_;
 
 //--- histograms
   MonitorElement* hElectronPt_; 
@@ -53,12 +55,23 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPtVsEta_;
   MonitorElement* hElectronPhi_;
 
+  MonitorElement* hElectronEnCompToGen_;
+  MonitorElement* hElectronThetaCompToGen_;
+  MonitorElement* hElectronPhiCompToGen_;
+
   MonitorElement* hElectronTrackPt_;
   MonitorElement* hElectronTrackIPxy_;
   MonitorElement* hElectronTrackIPz_;
 
+  MonitorElement* hElectronSuperclEnOverTrackMomBarrel_;
+  MonitorElement* hElectronSuperclEnOverTrackMomEndcap_;
+
+  MonitorElement* hElectronIdRobust_;
+  
   MonitorElement* hElectronTrkIsoPt_;
   MonitorElement* hElectronEcalIsoPt_;
+  MonitorElement* hElectronEcalIsoPtBarrel_;
+  MonitorElement* hElectronEcalIsoPtEndcap_;
   MonitorElement* hElectronHcalIsoPt_;
   MonitorElement* hElectronIsoSumPt_;
   

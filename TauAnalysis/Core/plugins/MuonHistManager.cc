@@ -16,7 +16,8 @@ bool matchesGenMuon(const pat::Muon& patMuon)
   //std::cout << "<matchesGenMuon>:" << std::endl;
 
   bool isGenMuonMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patMuon.genParticleRefs().begin(); it != patMuon.genParticleRefs().end(); ++it ) {
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = patMuon.genParticleRefs().begin(); 
+	it != patMuon.genParticleRefs().end(); ++it ) {
     if ( it->ref().isNonnull() && it->ref().isValid() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -13 || genParticle->pdgId() == +13 ) isGenMuonMatched = true;
@@ -76,8 +77,12 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
     bookMuonHistograms(dqmStore, hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
     hMuonPtVsEta_ = dqmStore.book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
 
-    hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.500, 0.500);
-    hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -10.0, 10.0);
+    hMuonPtCompToGen_ = dqmStore.book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
+    hMuonThetaCompToGen_ = dqmStore.book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
+    hMuonPhiCompToGen_ = dqmStore.book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
+
+    hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
+    hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
 
     hMuonEcalDeposits_ = dqmStore.book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 20.);
     hMuonHcalDeposits_ = dqmStore.book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 20.);
@@ -143,7 +148,16 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
 
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt());
 
-    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() && !patMuon->track().isNull() ) {
+//--- compare reconstructed muon to generator level one;
+//    normalize difference between reconstructed and generated Pt
+//    to expected Pt dependence of resolution
+    if ( patMuon->genLepton() ) {
+      hMuonPtCompToGen_->Fill((patMuon->pt() - patMuon->genLepton()->pt())/patMuon->genLepton()->pt());
+      hMuonThetaCompToGen_->Fill(patMuon->theta() - patMuon->genLepton()->theta());
+      hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi());
+    }
+
+    if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() && patMuon->track().isNonnull() ) {
       edm::Handle<std::vector<reco::Vertex> > recoVertices;
       iEvent.getByLabel(vertexSrc_, recoVertices);
       if ( recoVertices->size() >= 1 ) {

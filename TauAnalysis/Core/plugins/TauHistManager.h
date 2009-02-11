@@ -51,10 +51,14 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPtVsEta_;
   MonitorElement* hTauPhi_;
 
+  MonitorElement* hTauEnCompToGen_;
+  MonitorElement* hTauThetaCompToGen_;
+  MonitorElement* hTauPhiCompToGen_;
+
   MonitorElement* hTauLeadTrkPt_;
   MonitorElement* hTauLeadTrkEta_;
   MonitorElement* hTauLeadTrkPhi_;
-  MonitorElement* hTauLeadTrkMatch_;
+  MonitorElement* hTauLeadTrkMatchDist_;
   MonitorElement* hTauLeadTrkIPxy_;
   MonitorElement* hTauLeadTrkIPz_;
 
