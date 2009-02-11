@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: GenericEventDump.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.1 2009/02/10 10:27:19 veelken Exp $
  *
  */
 
@@ -43,10 +43,13 @@ class GenericEventDump : public EventDumpBase
   virtual void printMissingEtInfo(const edm::Event&) const;
 
 //--- configuration parameters
-  edm::InputTag triggerResultsSource_;
+  edm::InputTag l1GtReadoutRecordSource_;
+  edm::InputTag l1GtObjectMapRecordSource_;
+  edm::InputTag hltResultsSource_;
 
   typedef std::vector<std::string> vstring;
-  vstring triggerPathsToPrint_;
+  vstring l1BitsToPrint_;
+  vstring hltPathsToPrint_;
 
   edm::InputTag genParticleSource_;
   edm::InputTag genTauJetSource_;
