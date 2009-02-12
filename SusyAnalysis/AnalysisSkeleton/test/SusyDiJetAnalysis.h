@@ -189,7 +189,9 @@ private:
   double mTempTreePhotHCalIso[50];
   double mTempTreePhotAllIso[50];
   bool mTempTreeccPhotAssoc[50];
-
+  bool mTempTreePhotLooseEM[50];
+  bool mTempTreePhotLoosePhoton[50];
+  bool mTempTreePhotTightPhoton[50];
 
   int    mTempTreeNelec;
   double mTempTreeElecEt[50];

@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.16 2009/02/03 12:45:07 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.17 2009/02/03 13:42:22 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -338,6 +338,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreePhotECalIso[i] = (*photHandle)[i].ecalIso();
     mTempTreePhotHCalIso[i] = (*photHandle)[i].hcalIso();
     mTempTreePhotAllIso[i] = (*photHandle)[i].caloIso();
+    mTempTreePhotLooseEM[i] = (*photHandle)[i].photonID()->isLooseEM();
+    mTempTreePhotLoosePhoton[i] = (*photHandle)[i].photonID()->isLoosePhoton();
+    mTempTreePhotTightPhoton[i] = (*photHandle)[i].photonID()->isTightPhoton();
 
     mTempTreeccPhotAssoc[i] = false;
     for (unsigned int n=0;n < ccPhotHandle->size();n++){	
@@ -383,7 +386,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecPz[i] = (*elecHandle)[i].momentum().Z();
     mTempTreeElecEta[i] = (*elecHandle)[i].eta();
     mTempTreeElecPhi[i] = (*elecHandle)[i].phi();
-    mTempTreeElecTrkIso[i] = ( (*elecHandle)[i].trackIso()+(*elecHandle)[i].et() )/(*elecHandle)[i].et();
+    mTempTreeElecTrkIso[i] = (*elecHandle)[i].trackIso();
 
     mTempTreeElecECalIso[i] = (*elecHandle)[i].ecalIso();
     mTempTreeElecHCalIso[i] = (*elecHandle)[i].hcalIso() ;
@@ -481,7 +484,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeMuonPz[i] = (*muonHandle)[i].momentum().Z();
     mTempTreeMuonEta[i] = (*muonHandle)[i].eta();
     mTempTreeMuonPhi[i] = (*muonHandle)[i].phi();
-    mTempTreeMuonTrkIso[i] = ( (*muonHandle)[i].trackIso()+(*muonHandle)[i].et() )/(*muonHandle)[i].et();
+    mTempTreeMuonTrkIso[i] =  (*muonHandle)[i].trackIso();
     mTempTreeMuonCharge[i] = (*muonHandle)[i].charge();
     mTempTreeMuonECalIso[i] = (*muonHandle)[i].ecalIso();
     mTempTreeMuonHCalIso[i] = (*muonHandle)[i].hcalIso() ;
@@ -624,7 +627,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeTauChrg[i] = (*tauHandle)[i].charge();
     mTempTreeTauEta[i] = (*tauHandle)[i].eta();
     mTempTreeTauPhi[i] = (*tauHandle)[i].phi();
-    mTempTreeTauTrkIso[i] = ( (*tauHandle)[i].trackIso()+(*tauHandle)[i].et() )/(*tauHandle)[i].et();
+    mTempTreeTauTrkIso[i] = (*tauHandle)[i].trackIso();
 
  edm::LogVerbatim("SusyDiJetEvent") << "Taus " << i << " iso " <<mTempTreeTauTrkIso[i]  << std::endl;
     mTempTreeTauECalIso[i] = (*tauHandle)[i].ecalIso();
@@ -1318,10 +1321,12 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("PhotHCalIso",mTempTreePhotHCalIso,"mTempTreePhotHCalIso[Nphot]/double");
   mAllData->Branch("PhotAllIso",mTempTreePhotAllIso,"mTempTreePhotAllIso[Nphot]/double");
   mAllData->Branch("Phot_isccPhotAssoc",mTempTreeccPhotAssoc,"mTempTreeccPhotAssoc[Nphot]/bool");
+  mAllData->Branch("PhotLooseEM",mTempTreePhotLooseEM,"mTempTreePhotLooseEM[Nphot]/bool");
+  mAllData->Branch("PhotLoosePhoton",mTempTreePhotLoosePhoton,"mTempTreePhotLoosePhoton[Nphot]/bool");
+  mAllData->Branch("PhotTightPhoton",mTempTreePhotTightPhoton,"mTempTreePhotTightPhoton[Nphot]/bool");
+
 
  
-
-
   //add electrons
   mAllData->Branch("Nelec" ,&mTempTreeNelec ,"Nelec/int");  
   mAllData->Branch("ElecE" ,mTempTreeElecE ,"ElecE[Nelec]/double");
