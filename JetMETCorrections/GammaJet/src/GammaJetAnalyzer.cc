@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.5 2008/09/08 16:57:09 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.6 2009/01/30 10:03:39 delre Exp $
 //
 //
 
@@ -489,6 +489,13 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      ecaliso07Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
      scBasedIsolation.setExtRadius(1.);
      ecaliso1Phot[nPhot]  = scBasedIsolation.getSum(iEvent,iSetup,&(*sc));
+     // leave also old implementation
+     double ecalEnergy = 0;
+     CaloConeSelector selectorecal2(0.4, geometry, DetId::Ecal);
+     selected=selectorecal2.select(it->eta(),it->phi(),mecalhits);
+     for (CaloRecHitMetaCollectionV::const_iterator hit=selected->begin(); hit != selected->end(); ++hit) ecalEnergy += hit->energy();
+     ecaliso04oldPhot[nPhot] = ecalEnergy;
+     
 
      // cluster shape variables
      
@@ -505,6 +512,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        E1Phot[nPhot]=tempShape.eMax();
        E9Phot[nPhot]=tempShape.e3x3();
        E25Phot[nPhot]=tempShape.e5x5();
+       // leave also old implementation
+       tempShape=algo.Calculate(*tempCluster, rhits, &(*geometry_p), &(*topology_p),4.2);
+       sMajMajoldPhot[nPhot]=tempShape.sMajMaj();
+       sMinMinoldPhot[nPhot]=tempShape.sMinMin();
      }else{
        sMajMajPhot[nPhot]=-100.;
        sMinMinPhot[nPhot]=-100.;
@@ -515,6 +526,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        E1Phot[nPhot]=-100.;
        E9Phot[nPhot]=-100.;
        E25Phot[nPhot]=-100.;
+       sMajMajoldPhot[nPhot]=-100.;
+       sMinMinoldPhot[nPhot]=-100.;
      }
 
      nPhot++;
@@ -799,6 +812,7 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("ecaliso05Phot",&ecaliso05Phot,"ecaliso05Phot[nPhot]/F");  
   m_tree->Branch("ecaliso07Phot",&ecaliso07Phot,"ecaliso07Phot[nPhot]/F"); 
   m_tree->Branch("ecaliso1Phot",&ecaliso1Phot,"ecaliso1Phot[nPhot]/F");  
+  m_tree->Branch("ecaliso04oldPhot",&ecaliso04oldPhot,"ecaliso04oldPhot[nPhot]/F");  
   m_tree->Branch("LATPhot",&LATPhot,"LATPhot[nPhot]/F");
   m_tree->Branch("sMajMajPhot",&sMajMajPhot,"sMajMaj2Phot[nPhot]/F");
   m_tree->Branch("sMinMinPhot",&sMinMinPhot,"sMinMin2Phot[nPhot]/F");
@@ -809,6 +823,8 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("E9Phot",&E9Phot,"E9Phot[nPhot]/F");
   m_tree->Branch("E25Phot",&E25Phot,"E25Phot[nPhot]/F");
   m_tree->Branch("FisherPhot",&FisherPhot,"FisherPhot[nPhot]/F");
+  m_tree->Branch("sMajMajoldPhot",&sMajMajoldPhot,"sMajMaj2oldPhot[nPhot]/F");
+  m_tree->Branch("sMinMinoldPhot",&sMinMinoldPhot,"sMinMin2oldPhot[nPhot]/F");
 
   m_tree->Branch("nJet_ite",&nJet_ite,"nJet_ite/I");
   m_tree->Branch("pxJet_ite ",&pxJet_ite ,"pxJet_ite[nJet_ite]/F");
