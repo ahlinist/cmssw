@@ -947,7 +947,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float bufdoublegaperr = 0;
 	  
 	  int NumberStripsPointed = 0;
-	  double deadStripsContribution=0;
 	  
 	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual){
 	    //std::cout<<"Leidos los histogramas 2D!"<<std::endl;
@@ -1031,7 +1030,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
-		deadStripsContribution=deadStripsContribution+histoDT->GetBinContent(i);
 	      }
 	      if(histoDT->GetBinContent(i)!=0){
 		buffef = float(histoRPC->GetBinContent(i))/float(histoDT->GetBinContent(i));
@@ -1245,9 +1243,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    exit(1);
 	  }
 	  	  
-	  p=histoDT->Integral()-deadStripsContribution;
+	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
 	  
+	  std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
+
 	  if(p!=0){
 	    ef = float(o)/float(p); 
 	    er = sqrt(ef*(1.-ef)/float(p));
@@ -1259,7 +1259,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef;
 
-	  if(averageeff > ef) std::cout<<" Warning!!!"<<std::endl;
+	  if(doublegapeff < averageeff) std::cout<<" Warning!!!"<<std::endl;
 	  else std::cout<<""<<std::endl;
 	  
 	  std::string camera = rpcsrv.name().c_str();  
@@ -1588,7 +1588,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float averageerr = 0;
 	  
 	  int NumberStripsPointed = 0;
-	  double deadStripsContribution = 0;
 	  
 	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
 	    for(int i=1;i<=nstrips;++i){
@@ -1617,7 +1616,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
-		deadStripsContribution=deadStripsContribution+histoCSC->GetBinContent(i);
 	      }
 	      if(histoCSC->GetBinContent(i)!=0){
 		buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
@@ -1811,7 +1809,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    exit(1);
 	  }
 	  
-	  p=histoCSC->Integral()-deadStripsContribution;
+	  p=histoCSC->Integral();
 	  o=histoRPC->Integral();
 
 
