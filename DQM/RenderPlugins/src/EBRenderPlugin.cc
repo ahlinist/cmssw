@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.101 2009/01/28 09:54:21 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.102 2009/01/28 10:08:51 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.101 $
-  \date $Date: 2009/01/28 09:54:21 $
+  \version $Revision: 1.102 $
+  \date $Date: 2009/01/28 10:08:51 $
 */
 
 #include "TH1F.h"
@@ -371,6 +371,15 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
+
+  if( name.find( "G12 RMS map" ) != std::string::npos ) {
+    obj->SetMinimum(0.5);
+    obj->SetMaximum(3.0);
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
 
   if( name.find( "EBCLT" ) != std::string::npos ) {
     gPad->SetGridx();
