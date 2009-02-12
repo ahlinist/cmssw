@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.111 2009/01/28 10:08:51 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.112 2009/01/30 10:13:02 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.111 $
-  \date $Date: 2009/01/28 10:08:51 $
+  \version $Revision: 1.112 $
+  \date $Date: 2009/01/30 10:13:02 $
 */
 
 #include "TH1F.h"
@@ -431,6 +431,15 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetOptStat(kFALSE);
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
+
+  if( name.find( "G12 RMS map" ) != std::string::npos ) {
+    obj->SetMinimum(1.0);
+    obj->SetMaximum(4.0);
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
 
   if( name.find( "EECLT" ) != std::string::npos ) {
     gPad->SetGridx();
