@@ -345,6 +345,7 @@ private:
   std::ofstream rollsPointedForASegment;
   std::ofstream rollsNotPointedForASegment;
   std::ofstream bxMeanList;
+  std::ofstream efftxt;
   bool prodimages;
   bool makehtml;
   bool cosmics;
@@ -379,13 +380,13 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   threshold=iConfig.getUntrackedParameter<double>("threshold");
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
+  efftxt.open("RPCDetId_Eff.dat");
 }
 
 
 RPCMonitorEfficiency::~RPCMonitorEfficiency(){}
 
-void 
-RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
+void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
   std::cout <<"Begin Job"<<std::endl;
   theFile = new TFile(file.c_str());
   if(!theFile)std::cout<<"The File Doesn't exist"<<std::endl;
@@ -880,7 +881,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	int nstrips = int((*r)->nstrips());
 
-	if(rpcId.region()==0 && barrel && (!cosmics||((sector!=1||sector!=7) && station!=4))){  
+	if(rpcId.region()==0 && barrel && (!cosmics||(station!=4))){  
 	  
 	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
@@ -1024,7 +1025,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 
 	    std::cout<<std::endl;
-	    
+
+	    efftxt<<rpcsrv.name()<<"  "<<rpcId.rawId();
+
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
@@ -1035,10 +1038,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		buffer = sqrt(buffef*(1.-buffef)/float(histoDT->GetBinContent(i)));
 		
 		std::cout<<" "<<buffef*100;
+
+		efftxt<<"  "<<buffef;
 		
 		sumbuffef = sumbuffef + buffef;
 		sumbuffer = sumbuffer + buffer*buffer;
 		NumberStripsPointed++;
+
 		if(maskeffect[i]==false){
 		  bufdoublegapeff=bufdoublegapeff+buffef;
 		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
@@ -1046,10 +1052,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }else{
 		std::cout<<" NP";
 		NumberWithOutPrediction++;
+		efftxt<<"  "<<0.95;
 	      }
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
 	    }
+
+	    for(int i=(*r)->nstrips()+1;i<=95;i++) efftxt<<"  "<<0.95;
+
+	    efftxt<<std::endl;
 
 	    assert(NumberWithOutPrediction+NumberStripsPointed == (*r)->nstrips());
 	    
@@ -1065,8 +1076,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
 		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
 	      }
-	      
-	      std::cout<<" Eff="<<averageeff<<" DoubleGapEff"<<doublegapeff<<std::endl;
 	      
 	      DoubleGapBarrel->Fill(doublegapeff);
 	      
@@ -1153,6 +1162,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 		histoPRO_2D->GetXaxis()->SetTitle("cm");
 		histoPRO_2D->GetYaxis()->SetTitle("cm");
+		histoPRO_2D->SetDrawOption("color");
 		histoPRO_2D->Draw();
 		labeltoSave = rpcsrv.name() + "/Profile_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
@@ -1245,7 +1255,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  ef=ef*100;
 	  er=er*100;
-	    
+
+
+	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef;
+
+	  if(averageeff > ef) std::cout<<" Warning!!!"<<std::endl;
+	  else std::cout<<""<<std::endl;
+	  
 	  std::string camera = rpcsrv.name().c_str();  
 	  float stripsratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float((*r)->nstrips()))*100.;
@@ -1265,8 +1281,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    else if((*r)->id().ring()==0) Wheel0Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	  }
-	  
-	  
+	  	  
 	  std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
 	  
 	  //Near Side
@@ -1590,36 +1605,36 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
 
-	  
+	  efftxt<<rpcsrv.name()<<"  "<<rpcId.rawId();
+
+	  for(int i=1;i<=95;i++) efftxt<<"  "<<0.95;
+
+	  efftxt<<std::endl;
+
 	  if(histoRPC && histoCSC && BXDistribution && histoRealRPC){
 	    //std::cout<<"All Histograms Exists"<<std::endl;
+
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
 		deadStripsContribution=deadStripsContribution+histoCSC->GetBinContent(i);
 	      }
 	      if(histoCSC->GetBinContent(i)!=0){
-		if(histoRPC->GetBinContent(i)==0){ 
-		  //std::cout<<"The RPC Data was CERO!!!!! Then Efficiency 0";
-		  buffer=0.;
-		  buffef=0.;
-		}else{
-		  buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
-		  buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
-		}
+		buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
+		buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
+
 		sumbuffef=sumbuffef+buffef;
 		sumbuffer = sumbuffer + buffer*buffer;
 		NumberStripsPointed++;
+
 	      }else{
+		std::cout<<" NP";
 		NumberWithOutPrediction++;
 	      }
-	      
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
-
-	      //std::cout<<"\t \t Write in Histo PRO"<<histoPRO->GetBinContent(i)<<std::endl;
-	      //std::cout<<"\t \t Strip="<<i<<" RealRPC="<<histoRealRPC->GetBinContent(i)<<" RPC="<<histoRPC->GetBinContent(i)<<" CSC="<<histoCSC->GetBinContent(i)<<" buffef="<<buffef<<" buffer="<<buffer<<" sumbuffef="<<sumbuffef<<" sumbuffer="<<sumbuffer<<" NumberStripsPointed="<<NumberStripsPointed<<" NumberWithOutPrediction"<<NumberWithOutPrediction<<" Number Masked="<<NumberMasked<<std::endl;
 	    }
+
 	    
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
@@ -1706,6 +1721,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  
 		  histoPRO_2D->GetXaxis()->SetTitle("cm");
 		  histoPRO_2D->GetYaxis()->SetTitle("cm");
+		  histoPRO_2D->SetDrawOption("color");
 		  histoPRO_2D->Draw();
 		  labeltoSave = rpcsrv.name() + "/Profile_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
@@ -2223,7 +2239,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     NoPredictionW1far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W1far  "<<std::endl;
     NoPredictionW2far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W2far  "<<std::endl;
     
-  }if(endcap){  
+  }if(endcap&&!cosmics){  
     std::cout<<"Label Options Near"<<std::endl;
     NoPredictionDm3->GetXaxis()->LabelsOption("v");
     std::cout<<"Label Options AverageEffDm3"<<std::endl;
@@ -3529,6 +3545,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
  theFileOut->Close();
  theFile->Close();
+
+ efftxt.close();
 
 } 
 
