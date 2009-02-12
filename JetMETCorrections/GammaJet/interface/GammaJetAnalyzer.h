@@ -137,9 +137,12 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t ecaliso05Phot[40];  
       Float_t ecaliso07Phot[40];  
       Float_t ecaliso1Phot[40];  
+      Float_t ecaliso04oldPhot[40];  
       Float_t LATPhot[40];
       Float_t sMinMinPhot[40];
       Float_t sMajMajPhot[40];
+      Float_t sMinMinoldPhot[40];
+      Float_t sMajMajoldPhot[40];
       Float_t FisherPhot[40];
       Float_t alphaPhot[40];
       Float_t sEtaEtaPhot[40];
