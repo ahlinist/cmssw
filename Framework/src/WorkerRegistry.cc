@@ -33,8 +33,7 @@ void WorkerRegistry::clear() {
 Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
   std::string workerid;
-  mangleWorkerParameters(*p.pset_, p.processName_,
-			  p.releaseVersion_, p.passID_, workerid);
+  mangleWorkerParameters(*p.pset_, *p.processConfiguration_, workerid);
 
   WorkerMap::iterator workerIt = m_workerMap.find(workerid);
   
@@ -59,15 +58,13 @@ Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
 
 
 void WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
-					      std::string const& processName,
-					      ReleaseVersion const& releaseVersion,
-					      PassID const& passID,
+					      ProcessConfiguration const& processConfiguration,
 					      std::string& result) {
 
   parameterSet.toString(result); 
-  result += processName;
-  result += releaseVersion;
-  result += passID;
+  result += processConfiguration.processName();
+  result += processConfiguration.releaseVersion();
+  result += processConfiguration.passID();
 
 }
 

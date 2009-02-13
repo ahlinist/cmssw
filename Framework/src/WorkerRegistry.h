@@ -56,9 +56,7 @@ namespace edm {
     /// Get a unique name for the worker
     /** Form a string to be used as a key in the map of workers */
     void mangleWorkerParameters(ParameterSet const& parameterSet,
-				std::string const& processName,
-				ReleaseVersion const& releaseVersion,
-				PassID const& passID,
+				ProcessConfiguration const& processConfiguration,
 				std::string& result);
 
     /// the container of workers
