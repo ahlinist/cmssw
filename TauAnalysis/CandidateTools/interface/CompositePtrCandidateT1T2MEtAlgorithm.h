@@ -131,8 +131,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     double et = leg1.Et() + leg2.Et() + TMath::Sqrt(metPx*metPx + metPy*metPy);
     double mt2 = et*et - (px*px + py*py);
     if ( mt2 < 0 ) {
-      edm::LogError ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
-      return -1.;
+      edm::LogWarning ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
+      return 0.;
     }
     return TMath::Sqrt(mt2);
   }
@@ -144,8 +144,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     double et = visParticle.Et() + TMath::Sqrt(metPx*metPx + metPy*metPy);
     double mt2 = et*et - (px*px + py*py);
     if ( mt2 < 0 ) {
-      edm::LogError ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
-      return -1.;
+      edm::LogWarning ("compMt") << " mt2 = " << mt2 << " must not be negative !!";
+      return 0.;
     }
     return TMath::Sqrt(mt2);
   }
