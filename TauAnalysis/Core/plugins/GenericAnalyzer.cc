@@ -203,11 +203,13 @@ void GenericAnalyzer::addHistManagers(const vstring& histManagerNames,
 	//std::cout << " keyword = " << keyword << std::endl;
 	if ( replaceCommand_noWhiteSpace.find(keyword) != std::string::npos ) {
 	  std::string replaceCommand_noKeyword = replace_string(replaceCommand_noWhiteSpace, keyword, "", 0, UINT_MAX, errorFlag);
-	  //std::cout << " replaceCommand_noKeyword = " << replaceCommand_noKeyword << std::endl;
+	  //std::cout << " replaceCommand_noKeyword = " << replaceCommand_noKeyword << std::endl; 
+	  //std::cout << " (replaceCommand_noKeyword.length() - 1) = " << (replaceCommand_noKeyword.length() - 1) << std::endl;
 
 	  size_t posAssignmentOperator = replaceCommand_noKeyword.find("=");
+	  //std::cout << " posAssignmentOperator = " << posAssignmentOperator << std::endl;
 	  if ( posAssignmentOperator == std::string::npos ||
-	       !(posAssignmentOperator >= 1 && posAssignmentOperator < (replaceCommand_noKeyword.length() - 2)) ) {
+	       !(posAssignmentOperator >= 1 && posAssignmentOperator < (replaceCommand_noKeyword.length() - 1)) ) {
 	    edm::LogError ("GenericAnalyzer::addHistManagers") << " Failed to parse replaceCommand = " << (*replaceCommand)
 							      << " --> skipping !!";
 	    cfgError_ = 1;
@@ -231,8 +233,8 @@ void GenericAnalyzer::addHistManagers(const vstring& histManagerNames,
 	    cfgHistManager.addParameter<edm::InputTag>(leftHandSide, rightHandSide_inputTag);
 	  } else {
 	    edm::LogError ("GenericAnalyzer::addHistManagers") << " Configuration parameter to be replaced = " << leftHandSide 
-							      << " does either not exist or is not of a supported type"
-							      << " --> skipping !!";
+							       << " does either not exist or is not of a supported type"
+							       << " --> skipping !!";
 	    cfgError_ = 1;
 	    continue;
 	  }
