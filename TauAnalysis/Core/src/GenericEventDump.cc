@@ -96,13 +96,13 @@ void GenericEventDump::printEventTriggerInfo(const edm::Event& evt) const
     
     DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
     const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
-
-    //for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
-    //	    l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
-    //  std::string l1Bit_i = (*l1GtObjectMap).algoName();
-    //  std::cout << " l1Bit_i = " << l1Bit_i << std::endl;
-    //}
-
+/*
+    for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
+	  l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+      std::string l1Bit_i = (*l1GtObjectMap).algoName();
+      std::cout << " l1Bit_i = " << l1Bit_i << std::endl;
+    }
+ */
     *outputStream_ << "L1 Trigger Decisions:" << std::endl;
 
     for ( vstring::const_iterator l1Bit = l1BitsToPrint_.begin();
@@ -132,17 +132,17 @@ void GenericEventDump::printEventTriggerInfo(const edm::Event& evt) const
 
     edm::TriggerNames triggerNames;
     triggerNames.init(*hltResults);
-
-    //for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
-    //	    triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
-    //  unsigned int index = triggerNames.triggerIndex(*triggerName);
-    //  if ( index < triggerNames.size() ) {
-    //    std::string triggerDecision = ( hltResults->accept(index) ) ? "passed" : "failed";
-    //    
-    //    std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
-    //  }
-    //}
-    
+/*
+    for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
+	  triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
+      unsigned int index = triggerNames.triggerIndex(*triggerName);
+      if ( index < triggerNames.size() ) {
+        std::string triggerDecision = ( hltResults->accept(index) ) ? "passed" : "failed";
+        
+        std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
+      }
+    }
+ */    
     *outputStream_ << "HLT Decisions:" << std::endl;
     
     for ( std::vector<std::string>::const_iterator hltPath = hltPathsToPrint_.begin();
