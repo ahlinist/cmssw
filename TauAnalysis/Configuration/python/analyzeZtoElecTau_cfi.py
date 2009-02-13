@@ -22,6 +22,9 @@ from TauAnalysis.Core.vertexHistManager_cfi import *
 
 # import config for L1 & HLT histogram manager
 from TauAnalysis.Core.triggerHistManager_cfi import *
+triggerHistManager.l1Bits = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
+                                        'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15')
+triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I')
 
 elecTauHistManagers = cms.vstring( 'electronHistManager',
                                    'tauHistManager',
@@ -54,7 +57,7 @@ elecTauHistManagers = cms.vstring( 'electronHistManager',
 #Trigger = cms.PSet(
 #  name = cms.string('Trigger'),
 #  type = cms.string('TriggerResultEventSelector'),
-#  src = cms.InputTag('TriggerResults', '', 'HLT'),
+#  src = cms.InputTag('TriggerResults::HLT'),
 #  triggerPaths = cms.vstring('HLT_IsoEle15_L1I')
 #)
 
@@ -241,7 +244,7 @@ elecTauEventDump = cms.PSet(
   l1BitsToPrint = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
                               'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
     
-  hltResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
+  hltResultsSource = cms.InputTag('TriggerResults::HLT'),
   hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
 
   genParticleSource = cms.InputTag('genParticles'),
