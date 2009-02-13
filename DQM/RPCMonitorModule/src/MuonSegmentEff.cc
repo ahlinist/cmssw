@@ -561,7 +561,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 				   <<fabs(PointExtrapolatedRPCFrame.y())<<","<<fabs(PointExtrapolatedRPCFrame.z())<<")"<<std::endl;
 		if(debug) std::cout<<"DT  \t \t \t Does the extrapolation go inside this roll?"<<std::endl;
 
-		if(fabs(PointExtrapolatedRPCFrame.z()) < 10. && 
+		if(fabs(PointExtrapolatedRPCFrame.z()) < 1. && 
 		   fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 && 
 		   fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
 		  
@@ -837,7 +837,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	
 		      if(debug) std::cout<<"MB4 \t \t \t Does the extrapolation go inside this roll?"<<std::endl;
 		
-		      if(fabs(PointExtrapolatedRPCFrame.z()) < 10.  &&
+		      if(fabs(PointExtrapolatedRPCFrame.z()) < 5.  &&
 			 fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&
 			 fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
 
@@ -1176,7 +1176,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  
 		  if(debug) std::cout<<"CSC \t \t \t Does the extrapolation go inside this roll????"<<std::endl;
 
-		  if(fabs(PointExtrapolatedRPCFrame.z()) < 10. && 
+		  if(fabs(PointExtrapolatedRPCFrame.z()) < 1. && 
 		     fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 && 
 		     fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){ 
 		    
