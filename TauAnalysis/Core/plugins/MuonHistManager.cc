@@ -135,8 +135,6 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
 
   //std::cout << " patMuons.size = " << patMuons->size() << std::endl;
 
-  fillMuonHistograms(*patMuons, hMuonPt_, hMuonEta_, hMuonPhi_);
-
   for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons->begin(); 
 	patMuon != patMuons->end(); ++patMuon ) {
   
@@ -146,6 +144,7 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
 
     if ( requireGenMuonMatch_ && !matchesGenMuon(*patMuon) ) continue;
 
+    fillMuonHistograms(*patMuon, hMuonPt_, hMuonEta_, hMuonPhi_);
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt());
 
 //--- compare reconstructed muon to generator level one;
@@ -166,14 +165,8 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
 	hMuonTrackIPz_->Fill(patMuon->track()->dz(thePrimaryEventVertex.position()));
       }
     }
-  }
 
-  for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons->begin(); 
-	patMuon != patMuons->end(); ++patMuon ) {
     const reco::Muon* recoMuon = dynamic_cast<const reco::Muon*>(patMuon->originalObject());
-
-    if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
-
     if ( recoMuon != NULL ) {
       if ( recoMuon->isEnergyValid() ) {
 	hMuonEcalDeposits_->Fill(recoMuon->calEnergy().em);
@@ -188,10 +181,10 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
     } else {
       edm::LogError("analyze") << " Failed to access reco::Muon linked to pat::Muon object --> some histograms will NOT be filled !!";
     }
-  }
 
-  fillMuonIsoHistograms(*patMuons);
-  fillMuonIsoConeSizeDepHistograms(*patMuons);
+    fillMuonIsoHistograms(*patMuon);
+    fillMuonIsoConeSizeDepHistograms(*patMuon);
+  }
 }
 
 //
@@ -214,74 +207,56 @@ void MuonHistManager::bookMuonHistograms(DQMStore& dqmStore, MonitorElement*& hM
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void MuonHistManager::fillMuonHistograms(const std::vector<pat::Muon>& patMuons, MonitorElement* hMuonPt, MonitorElement* hMuonEta, MonitorElement* hMuonPhi)
+void MuonHistManager::fillMuonHistograms(const pat::Muon& patMuon, MonitorElement* hMuonPt, MonitorElement* hMuonEta, MonitorElement* hMuonPhi)
 {
   //std::cout << "<MuonHistManager::fillMuonHistograms>:" << std::endl;
 
-  for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons.begin(); 
-	patMuon != patMuons.end(); ++patMuon ) {
-
-    if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
-
-    hMuonPt->Fill(patMuon->pt());
-    hMuonEta->Fill(patMuon->eta());
-    hMuonPhi->Fill(patMuon->phi());
-  }
+  hMuonPt->Fill(patMuon.pt());
+  hMuonEta->Fill(patMuon.eta());
+  hMuonPhi->Fill(patMuon.phi());
 }
 
-void MuonHistManager::fillMuonIsoHistograms(const std::vector<pat::Muon>& patMuons)
+void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon)
 {
   //std::cout << "<MuonHistManager::fillMuonIsoHistograms>:" << std::endl;
 
-  for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons.begin(); 
-	patMuon != patMuons.end(); ++patMuon ) {
-
-    if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
-
-    hMuonTrkIsoPt_->Fill(patMuon->trackIso());
-    hMuonEcalIsoPt_->Fill(patMuon->ecalIso());
-    hMuonHcalIsoPt_->Fill(patMuon->hcalIso());
-    hMuonIsoSumPt_->Fill(patMuon->trackIso() + patMuon->ecalIso() + patMuon->hcalIso());
-
-    fillLeptonIsoDepositHistograms(patMuon->trackerIsoDeposit(), 
-				   hMuonTrkIsoValProfile_, hMuonTrkIsoEtaDistProfile_, hMuonTrkIsoPhiDistProfile_);
-    fillLeptonIsoDepositHistograms(patMuon->ecalIsoDeposit(), 
-				   hMuonEcalIsoValProfile_, hMuonEcalIsoEtaDistProfile_, hMuonEcalIsoPhiDistProfile_);
-    fillLeptonIsoDepositHistograms(patMuon->hcalIsoDeposit(), 
-				   hMuonHcalIsoValProfile_, hMuonHcalIsoEtaDistProfile_, hMuonHcalIsoPhiDistProfile_);
-  }
+  hMuonTrkIsoPt_->Fill(patMuon.trackIso());
+  hMuonEcalIsoPt_->Fill(patMuon.ecalIso());
+  hMuonHcalIsoPt_->Fill(patMuon.hcalIso());
+  hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso());
+  
+  fillLeptonIsoDepositHistograms(patMuon.trackerIsoDeposit(), 
+				 hMuonTrkIsoValProfile_, hMuonTrkIsoEtaDistProfile_, hMuonTrkIsoPhiDistProfile_);
+  fillLeptonIsoDepositHistograms(patMuon.ecalIsoDeposit(), 
+				 hMuonEcalIsoValProfile_, hMuonEcalIsoEtaDistProfile_, hMuonEcalIsoPhiDistProfile_);
+  fillLeptonIsoDepositHistograms(patMuon.hcalIsoDeposit(), 
+				 hMuonHcalIsoValProfile_, hMuonHcalIsoEtaDistProfile_, hMuonHcalIsoPhiDistProfile_);
 }
 
-void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const std::vector<pat::Muon>& patMuons)
+void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon)
 {
   //std::cout << "<MuonHistManager::fillMuonIsoConeSizeDepHistograms>:" << std::endl;
 
-  for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons.begin(); 
-	patMuon != patMuons.end(); ++patMuon ) {
+  for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
+    double isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
     
-    if ( requireGenMuonMatch_ && (!matchesGenMuon(*patMuon)) ) continue;
-
-    for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
-      double isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
-
-      reco::isodeposit::AbsVetos muonTrkIsoParam;
-      muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
-      muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-      double muonTrkIsoDeposit_i = patMuon->trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam, false);
-      hMuonTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonTrkIsoDeposit_i);
-      
-      reco::isodeposit::AbsVetos muonEcalIsoParam;
-      muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      double muonEcalIsoDeposit_i = patMuon->ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam, false);
-      hMuonEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonEcalIsoDeposit_i);
-      
-      reco::isodeposit::AbsVetos muonHcalIsoParam;
-      muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      double muonHcalIsoDeposit_i = patMuon->hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam, false);
-      hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i);
-    }
+    reco::isodeposit::AbsVetos muonTrkIsoParam;
+    muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
+    muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
+    double muonTrkIsoDeposit_i = patMuon.trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam, false);
+    hMuonTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonTrkIsoDeposit_i);
+    
+    reco::isodeposit::AbsVetos muonEcalIsoParam;
+    muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    double muonEcalIsoDeposit_i = patMuon.ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam, false);
+    hMuonEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonEcalIsoDeposit_i);
+    
+    reco::isodeposit::AbsVetos muonHcalIsoParam;
+    muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    double muonHcalIsoDeposit_i = patMuon.hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam, false);
+    hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i);
   }
 }
 
