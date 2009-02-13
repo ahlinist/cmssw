@@ -10,6 +10,8 @@
 
 #include <TMath.h>
 
+#include <stdlib.h>
+
 bool matchesGenTau(const pat::Tau& patTau)
 {
   bool isGenTauMatched = false;
@@ -38,6 +40,25 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 				      << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  if ( cfg.exists("tauIndicesToPlot") ) {
+    std::string tauIndicesToPlot_string = cfg.getParameter<std::string>("tauIndicesToPlot");
+    if ( tauIndicesToPlot_string != "all" ) {
+      size_t posTauIndexBegin = 0;
+      size_t posTauIndexEnd = posTauIndexBegin;
+      do {
+	size_t posNextSeparator = tauIndicesToPlot_string.find(",", posTauIndexBegin);
+	posTauIndexEnd = ( posNextSeparator < std::string::npos ) ? posNextSeparator : tauIndicesToPlot_string.length();
+	
+	std::string tauIndex_string(tauIndicesToPlot_string, posTauIndexBegin, posTauIndexEnd - posTauIndexBegin);
+	int tauIndex_int = atoi(tauIndex_string.data());
+	//std::cout << "--> adding tauIndex_int = " << tauIndex_int << std::endl;
+	tauIndicesToPlot_.push_back(tauIndex_int);
+	
+	posTauIndexBegin = posTauIndexEnd + 1;
+      } while ( posTauIndexEnd < tauIndicesToPlot_string.length() );
+    }
+  }
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -115,9 +136,18 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
 
-  fillTauHistograms(*patTaus, hTauPt_, hTauEta_, hTauPhi_);
+  int patTauIndex = 0;
   for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 
-	patTau != patTaus->end(); ++patTau ) {
+	patTau != patTaus->end(); ++patTau, ++patTauIndex ) {
+
+    if ( tauIndicesToPlot_.size() > 0 ) {
+      bool isIndexed = false;
+      for ( vint::const_iterator it = tauIndicesToPlot_.begin();
+	    it != tauIndicesToPlot_.end(); ++it ) {
+	if ( (*it) == patTauIndex ) isIndexed = true;
+      }
+      if ( !isIndexed ) continue;
+    }
 
     //bool isGenTauMatched = matchesGenTau(*patTau);
     //std::cout << " Pt = " << patTau->pt() << ", eta = " << patTau->eta() << ", phi = " << patTau->phi() << std::endl;
@@ -125,6 +155,7 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
+    fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt());
 
 //--- compare reconstructed tau-jet 
@@ -154,10 +185,10 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 	}
       }
     }
-  }
 
-  fillTauIsoHistograms(*patTaus);
-  fillTauIsoConeSizeDepHistograms(*patTaus);
+    fillTauIsoHistograms(*patTau);
+    fillTauIsoConeSizeDepHistograms(*patTau);
+  }
 }
 
 //
@@ -180,90 +211,72 @@ void TauHistManager::bookTauHistograms(DQMStore& dqmStore, MonitorElement*& hTau
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void TauHistManager::fillTauHistograms(const std::vector<pat::Tau>& patTaus, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi)
+void TauHistManager::fillTauHistograms(const pat::Tau& patTau, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi)
 {
   //std::cout << "<TauHistManager::fillTauHistograms>:" << std::endl;
 
-  for ( std::vector<pat::Tau>::const_iterator patTau = patTaus.begin(); 
-	patTau != patTaus.end(); ++patTau ) {
-
-    if ( requireGenTauMatch_ && (!matchesGenTau(*patTau)) ) continue;
-
-    hTauPt->Fill(patTau->pt());
-    hTauEta->Fill(patTau->eta());
-    hTauPhi->Fill(patTau->phi());
-  }
+  hTauPt->Fill(patTau.pt());
+  hTauEta->Fill(patTau.eta());
+  hTauPhi->Fill(patTau.phi());
 }
 
-void TauHistManager::fillTauIsoHistograms(const std::vector<pat::Tau>& patTaus)
+void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau)
 {
   //std::cout << "<TauHistManager::fillTauIsoHistograms>:" << std::endl;
-
-  for ( std::vector<pat::Tau>::const_iterator patTau = patTaus.begin(); 
-	patTau != patTaus.end(); ++patTau ) {
-
-    if ( requireGenTauMatch_ && (!matchesGenTau(*patTau)) ) continue;
     
-    hTauTrkIsoPt_->Fill(patTau->trackIso());
-    hTauEcalIsoPt_->Fill(patTau->ecalIso());
-    hTauHcalIsoPt_->Fill(patTau->hcalIso());
-    hTauIsoSumPt_->Fill(patTau->trackIso() + patTau->ecalIso() + patTau->hcalIso());
-    
-    for ( reco::TrackRefVector::const_iterator isolationTrack = patTau->isolationTracks().begin();
-	  isolationTrack != patTau->isolationTracks().end(); ++isolationTrack ) {	  
-      hTauTrkIsoEnProfile_->Fill((*isolationTrack)->p());
-      hTauTrkIsoPtProfile_->Fill((*isolationTrack)->pt());
-      hTauTrkIsoEtaDistProfile_->Fill(TMath::Abs(patTau->eta() - (*isolationTrack)->eta()));
-      hTauTrkIsoPhiDistProfile_->Fill(TMath::Abs(patTau->phi() - (*isolationTrack)->phi()));
-    }
+  hTauTrkIsoPt_->Fill(patTau.trackIso());
+  hTauEcalIsoPt_->Fill(patTau.ecalIso());
+  hTauHcalIsoPt_->Fill(patTau.hcalIso());
+  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso());
+  
+  for ( reco::TrackRefVector::const_iterator isolationTrack = patTau.isolationTracks().begin();
+	isolationTrack != patTau.isolationTracks().end(); ++isolationTrack ) {	  
+    hTauTrkIsoEnProfile_->Fill((*isolationTrack)->p());
+    hTauTrkIsoPtProfile_->Fill((*isolationTrack)->pt());
+    hTauTrkIsoEtaDistProfile_->Fill(TMath::Abs(patTau.eta() - (*isolationTrack)->eta()));
+    hTauTrkIsoPhiDistProfile_->Fill(TMath::Abs(patTau.phi() - (*isolationTrack)->phi()));
   }
 }
 
-void TauHistManager::fillTauIsoConeSizeDepHistograms(const std::vector<pat::Tau>& patTaus)
+void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
 {
   //std::cout << "<TauHistManager::fillTauIsoConeSizeDepHistograms>:" << std::endl;
 
-  for ( std::vector<pat::Tau>::const_iterator patTau = patTaus.begin(); 
-	patTau != patTaus.end(); ++patTau ) {
-    
-    if ( requireGenTauMatch_ && (!matchesGenTau(*patTau)) ) continue;
-
-    if ( !patTau->trackerIsoDeposit() ||
-	 !patTau->ecalIsoDeposit()    ||
-	 !patTau->hcalIsoDeposit() ) {
+  if ( !patTau.trackerIsoDeposit() ||
+       !patTau.ecalIsoDeposit()    ||
+       !patTau.hcalIsoDeposit() ) {
 /*
  CV: IsoDeposits are not computed for pat::Taus in CMSSW_2_2_3 yet
    --> no need to print-out this warning for each event !!
 
-      edm::LogError ("TauHistManager::fillTauIsoConeSizeDepHistograms") << " No IsoDeposits associated to pat::Tau with"
-									<< " E = " << patTau->energy() << ","
-									<< " theta = " << patTau->theta()*180./TMath::Pi() << "," 
-									<< " phi = " << patTau->phi()*180./TMath::Pi() << " !!";
+    edm::LogError ("TauHistManager::fillTauIsoConeSizeDepHistograms") << " No IsoDeposits associated to pat::Tau with"
+                                                                      << " E = " << patTau.energy() << ","
+								      << " theta = " << patTau.theta()*180./TMath::Pi() << "," 
+								      << " phi = " << patTau.phi()*180./TMath::Pi() << " !!";
  */
-      continue;
-    }
+    return;
+  }
 
-    for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
-      float isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
-
-      reco::isodeposit::AbsVetos tauTrkIsoParam;
-      tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
-      tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-      float tauTrkIsoDeposit_i = patTau->trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam, false);
-      hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
-      
-      reco::isodeposit::AbsVetos tauEcalIsoParam;
-      tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      float tauEcalIsoDeposit_i = patTau->ecalIsoDeposit()->countWithin(isoConeSize_i, tauEcalIsoParam, false);
-      hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
-      
-      reco::isodeposit::AbsVetos tauHcalIsoParam;
-      tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-      float tauHcalIsoDeposit_i = patTau->hcalIsoDeposit()->countWithin(isoConeSize_i, tauHcalIsoParam, false);
-      hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
-    }
+  for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
+    float isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
+    
+    reco::isodeposit::AbsVetos tauTrkIsoParam;
+    tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
+    tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
+    float tauTrkIsoDeposit_i = patTau.trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam, false);
+    hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
+    
+    reco::isodeposit::AbsVetos tauEcalIsoParam;
+    tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    float tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauEcalIsoParam, false);
+    hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
+    
+    reco::isodeposit::AbsVetos tauHcalIsoParam;
+    tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    float tauHcalIsoDeposit_i = patTau.hcalIsoDeposit()->countWithin(isoConeSize_i, tauHcalIsoParam, false);
+    hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
   }
 }
 

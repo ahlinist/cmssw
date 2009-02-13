@@ -28,13 +28,16 @@ class TauHistManager : public HistManagerBase
 //--- private functions
   void bookTauHistograms(DQMStore& dqmStore, MonitorElement*& hTauPt, MonitorElement*& hTauEta, MonitorElement*& hTauPhi, const char* histoSetName);
   
-  void fillTauHistograms(const std::vector<pat::Tau>& patTaus, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi);
-  void fillTauIsoHistograms(const std::vector<pat::Tau>& patTaus);
-  void fillTauIsoConeSizeDepHistograms(const std::vector<pat::Tau>& patTaus);
+  void fillTauHistograms(const pat::Tau& patTau, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi);
+  void fillTauIsoHistograms(const pat::Tau& patTau);
+  void fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau);
 
 //--- configuration parameters
   edm::InputTag tauSrc_;
   edm::InputTag vertexSrc_;
+
+  typedef std::vector<int> vint;
+  vint tauIndicesToPlot_;
 
   std::string dqmDirectory_store_;
 
