@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.1 2009/02/12 14:38:05 ssengupt Exp $
+// $Id: HcalZS.cc,v 1.2 2009/02/13 10:12:46 santanas Exp $
 //
 //
 
@@ -84,7 +84,7 @@
 //
 // static data member definitions
 //
-
+const float LIMIT = 0.000000001;
 
 //
 // constructors and destructor
@@ -171,18 +171,35 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
 	 HcalDetId id = digi.id();
 	 bool agree = false;
+
+	 //just counting
+	 if (id.subdet() == 1){
+	   if (id.depth() == 1)
+	     h_hbhf_d1_all->Fill(id.ieta(),id.iphi());
+	   if (id.depth() == 2)
+	     h_hbhf_d2_all->Fill(id.ieta(),id.iphi());
+	 }
+	 
+	 if (id.subdet() == 2){
+	   if (id.depth() == 1)
+	     h_he_d1_all->Fill(id.ieta(),id.iphi());
+	   if (id.depth() == 2)
+	     h_he_d2_all->Fill(id.ieta(),id.iphi());
+	   if (id.depth() == 3)
+	     h_he_d3_all->Fill(id.ieta(),id.iphi());
+	 }
 	 
 	 //-- Mark&Pass bit in the data
-	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
+	 //cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
 	 //-- ZS Emulation
 	 if ( id.subdet() == HcalBarrel ) 
-	   {
+	   {	  
 	     h_hbdigi_zsEmulation->Fill( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) );
 	     // 	     cout << "ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_): "
 	     // 		  << ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) << endl;
 	     
-	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) ==  digi.zsMarkAndPass() )
+	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) !=  digi.zsMarkAndPass() )
 	       agree = true;
 	   }
 	 else
@@ -191,10 +208,11 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     // 	     cout << "ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_): "
 	     // 		  << ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) << endl;
 	    
-	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) ==  digi.zsMarkAndPass() )
+	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) !=  digi.zsMarkAndPass() )
 	       agree = true;
 	   }
 	 
+
 	 //## Fill directly into Histogram?
 	 if ( agree == true ){
 
@@ -213,11 +231,29 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     if (id.depth() == 3)
 	       h_he_d3->Fill(id.ieta(),id.iphi());
 	   }
-	 } // end fill eta-phi histograms
+	 }// end fill eta-phi histograms
 
+	 if ( agree == false ){
+
+	   if (id.subdet() == 1){
+	     if (id.depth() == 1)
+	       h_hbhf_d1->Fill(id.ieta(),id.iphi(),0);
+	     if (id.depth() == 2)
+	       h_hbhf_d2->Fill(id.ieta(),id.iphi(),0);
+	   }
+	 
+	   if (id.subdet() == 2){
+	     if (id.depth() == 1)
+	       h_he_d1->Fill(id.ieta(),id.iphi(),0);
+	     if (id.depth() == 2)
+	       h_he_d2->Fill(id.ieta(),id.iphi(),0);
+	     if (id.depth() == 3)
+	       h_he_d3->Fill(id.ieta(),id.iphi(),0);
+	   }
+	 }// end fill eta-phi histograms
+	
        }// end loop of HBHE digi
    }//end check if hbhe_digi exists
-
 
 
    //hcal digis (HO)
@@ -226,7 +262,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const HODigiCollection* ho_digi = ho_digi_h.failedToGet () ? 0 : &*ho_digi_h;
 
    if (ho_digi) { // object is available 
-     
+    
+
      //      cout << "ho_digi is available" << endl;
      //      cout << "ho_digi->size(): " << ho_digi->size() << endl;
      
@@ -235,7 +272,13 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 const HODataFrame digi = (const HODataFrame)(*j);
 	 HcalDetId id = digi.id();
 	 bool agree = false;
-	 
+
+	 ho_digiCounter[ int( id.ieta() - 41) ][ id.iphi() ]++;
+
+	 //just counting
+	 if (id.subdet() == 3) 
+	   h_ho_d4_all->Fill(id.ieta(),id.iphi());	 
+	
 	 //-- Mark&Pass bit in the data
 	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
@@ -244,13 +287,18 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // 	 cout << "ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_): "
 	 // 	      << ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) << endl;
 
-	 if ( ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) == digi.zsMarkAndPass() )
+	 if ( ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) != digi.zsMarkAndPass() )
 	   agree = true;
 
 	 //## Fill directly into Histogram?
 	 if ( agree == true ) 
 	   if (id.subdet() == 3) 
-	     h_ho_d1->Fill(id.ieta(),id.iphi());	 
+	     h_ho_d4->Fill(id.ieta(),id.iphi());	 
+
+	 if ( agree == false ) 
+	   if (id.subdet() == 3) 
+	     h_ho_d4->Fill(id.ieta(),id.iphi(),0);	 
+
 	 
        }// end loop of HO digi
    }//end check if ho_digi exists
@@ -272,7 +320,17 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 const HFDataFrame digi = (const HFDataFrame)(*j);
 	 HcalDetId id = digi.id();
 	 bool agree = false;
-	 
+	
+	 hf_digiCounter[ int( id.ieta() - 41) ][ id.iphi() ]++;
+
+	 //just counting
+	 if (id.subdet() == 4){
+	   if (id.depth() == 1)
+	     h_hbhf_d1_all->Fill(id.ieta(),id.iphi());
+	   if (id.depth() == 2)
+	     h_hbhf_d2_all->Fill(id.ieta(),id.iphi());
+	 }
+ 
 	 //-- Mark&Pass bit in the data
 	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
@@ -281,7 +339,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // 	 cout << "ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_): "
 	 // 	      << ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) << endl;
 	 //if( digi.zsMarkAndPass() )
-	   if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) == digi.zsMarkAndPass() )
+	   if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) != digi.zsMarkAndPass() )
 	     agree = true;
 
 	 //## Fill directly into Histogram?
@@ -292,7 +350,16 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     if (id.depth() == 2)
 	       h_hbhf_d2->Fill(id.ieta(),id.iphi());
 	   }
-	 } //end fill eta-phi histograms
+	 }//end fill eta-phi histograms
+
+	 if ( agree == false ){
+	   if (id.subdet() == 4){
+	     if (id.depth() == 1)
+	       h_hbhf_d1->Fill(id.ieta(),id.iphi(),0);
+	     if (id.depth() == 2)
+	       h_hbhf_d2->Fill(id.ieta(),id.iphi(),0);
+	   }
+	 }//end fill eta-phi histograms
 
        }// end loop of HF digi
    }//end check if hf_digi exists
@@ -325,6 +392,7 @@ void HcalZS::beginJob(const edm::EventSetup&)
 					    "h_hfdigi_zsEmulation",
 					    2, -0.5, 1.5);
 
+  //M&P agreement
   h_hbhf_d1 = HcalDir.make<TH2F>("h_hcal_hbhfd1","HB HF Depth1",
 				 83,-41.5,41.5,
 				 72,0.5,72.5);
@@ -355,74 +423,206 @@ void HcalZS::beginJob(const edm::EventSetup&)
   h_he_d1->GetXaxis()->SetTitle("i#eta");
   h_he_d1->GetYaxis()->SetTitle("i#phi");
 
-  h_ho_d1   = HcalDir.make<TH2F>("h_hcal_hod1","HO all Depth",
+  h_ho_d4   = HcalDir.make<TH2F>("h_hcal_hod4","HO Depth4",
 				 83,-41.5,41.5,
 				 72,0.5,72.5);
-  h_ho_d1->GetXaxis()->SetTitle("i#eta");
-  h_ho_d1->GetYaxis()->SetTitle("i#phi");
+  h_ho_d4->GetXaxis()->SetTitle("i#eta");
+  h_ho_d4->GetYaxis()->SetTitle("i#phi");
+
+
+  //just counting
+  h_hbhf_d1_all = HcalDir.make<TH2F>("h_hcal_hbhfd1_all","HB HF Depth1",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_hbhf_d1_all->GetXaxis()->SetTitle("i#eta");
+  h_hbhf_d1_all->GetYaxis()->SetTitle("i#phi");
+
+  h_hbhf_d2_all = HcalDir.make<TH2F>("h_hcal_hbhfd2_all","HB HF Depth2",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_hbhf_d2_all->GetXaxis()->SetTitle("i#eta");
+  h_hbhf_d2_all->GetYaxis()->SetTitle("i#phi");
+
+  h_he_d3_all   = HcalDir.make<TH2F>("h_hcal_hed3_all","HE Depth3",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_he_d3_all->GetXaxis()->SetTitle("i#eta");
+  h_he_d3_all->GetYaxis()->SetTitle("i#phi");
+
+  h_he_d2_all   = HcalDir.make<TH2F>("h_hcal_hed2_all","HE Depth2",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_he_d2_all->GetXaxis()->SetTitle("i#eta");
+  h_he_d2_all->GetYaxis()->SetTitle("i#phi");
+
+  h_he_d1_all   = HcalDir.make<TH2F>("h_hcal_hed1_all","HE Depth1",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_he_d1_all->GetXaxis()->SetTitle("i#eta");
+  h_he_d1_all->GetYaxis()->SetTitle("i#phi");
+
+  h_ho_d4_all   = HcalDir.make<TH2F>("h_hcal_hod4_all","HO Depth4",
+				 83,-41.5,41.5,
+				 72,0.5,72.5);
+  h_ho_d4_all->GetXaxis()->SetTitle("i#eta");
+  h_ho_d4_all->GetYaxis()->SetTitle("i#phi");
 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalZS::endJob() {
 
-  //   //divide each bin for NtotEvents
-  //   h_hbhf_d1->Scale(scaleFactor);
-  //   h_hbhf_d2->Scale(scaleFactor);
-  //   h_he_d1->Scale(scaleFactor);
-  //   h_he_d2->Scale(scaleFactor);
-  //   h_he_d3->Scale(scaleFactor);
-  //   h_ho_d1->Scale(scaleFactor);
-  
+  cout << endl;
+
+  cout << "########## SUMMARY OF THE M&P TEST ##########" << endl;
+  //divide each bin for NtotEvents and final report
 
   //h_hbhf_d1
   for(int ieta = 1 ; ieta <= h_hbhf_d1->GetNbinsX() ; ieta++)
     for(int iphi = 1 ; iphi <= h_hbhf_d1->GetNbinsY() ; iphi++)
-      h_hbhf_d1->SetBinContent( ieta , iphi , float(h_hbhf_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
-
-  h_hbhf_d1->GetZaxis()->SetLimits(0,100);
-  h_hbhf_d1->GetZaxis()->SetRangeUser(0,100);
+      {
+	int thisNtotEvents = int(h_hbhf_d1_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_hbhf_d1->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_hbhf_d1->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_hbhf_d1->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HB/HF depth=1" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
+  
+  h_hbhf_d1->SetMinimum(LIMIT);
+  h_hbhf_d1->GetZaxis()->SetLimits(LIMIT,1);
+  h_hbhf_d1->GetZaxis()->SetRangeUser(LIMIT,1);
 
   //h_hbhf_d2
   for(int ieta = 1 ; ieta <= h_hbhf_d2->GetNbinsX() ; ieta++)
     for(int iphi = 1 ; iphi <= h_hbhf_d2->GetNbinsY() ; iphi++)
-      h_hbhf_d2->SetBinContent( ieta , iphi , float(h_hbhf_d2->GetBinContent(ieta,iphi) / NtotEvents)*100 );
-
-  h_hbhf_d2->GetZaxis()->SetLimits(0,100);
-  h_hbhf_d2->GetZaxis()->SetRangeUser(0,100);
+      {
+	int thisNtotEvents = int(h_hbhf_d2_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_hbhf_d2->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_hbhf_d2->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_hbhf_d2->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HB/HF depth=2" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
+  h_hbhf_d2->SetMinimum(LIMIT);
+  h_hbhf_d2->GetZaxis()->SetLimits(LIMIT,1);
+  h_hbhf_d2->GetZaxis()->SetRangeUser(LIMIT,1);
 
   //h_he_d1
   for(int ieta = 1 ; ieta <= h_he_d1->GetNbinsX() ; ieta++)
     for(int iphi = 1 ; iphi <= h_he_d1->GetNbinsY() ; iphi++)
-      h_he_d1->SetBinContent( ieta , iphi , float(h_he_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
-
-  h_he_d1->GetZaxis()->SetLimits(0,100);
-  h_he_d1->GetZaxis()->SetRangeUser(0,100);
+      {
+	int thisNtotEvents = int(h_he_d1_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_he_d1->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_he_d1->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_he_d1->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HE depth=1" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
+  h_he_d1->SetMinimum(LIMIT);
+  h_he_d1->GetZaxis()->SetLimits(LIMIT,1);
+  h_he_d1->GetZaxis()->SetRangeUser(LIMIT,1);
 
   //h_he_d2
   for(int ieta = 1 ; ieta <= h_he_d2->GetNbinsX() ; ieta++)
     for(int iphi = 1 ; iphi <= h_he_d2->GetNbinsY() ; iphi++)
-      h_he_d2->SetBinContent( ieta , iphi , float(h_he_d2->GetBinContent(ieta,iphi) / NtotEvents)*100 );
-
-  h_he_d2->GetZaxis()->SetLimits(0,100);
-  h_he_d2->GetZaxis()->SetRangeUser(0,100);
+      {
+	int thisNtotEvents = int(h_he_d2_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_he_d2->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_he_d2->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_he_d2->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HE depth=2" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
+  h_he_d2->SetMinimum(LIMIT);
+  h_he_d2->GetZaxis()->SetLimits(LIMIT,1);
+  h_he_d2->GetZaxis()->SetRangeUser(LIMIT,1);
 
   //h_he_d3
   for(int ieta = 1 ; ieta <= h_he_d3->GetNbinsX() ; ieta++)
     for(int iphi = 1 ; iphi <= h_he_d3->GetNbinsY() ; iphi++)
-      h_he_d3->SetBinContent( ieta , iphi , float(h_he_d3->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+      {
+	int thisNtotEvents = int(h_he_d3_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_he_d3->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_he_d3->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_he_d3->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HE depth=3" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
 
-  h_he_d3->GetZaxis()->SetLimits(0,100);
-  h_he_d3->GetZaxis()->SetRangeUser(0,100);
+  h_he_d3->SetMinimum(LIMIT);
+  h_he_d3->GetZaxis()->SetLimits(LIMIT,1);
+  h_he_d3->GetZaxis()->SetRangeUser(LIMIT,1);
 
-  //h_ho_d1
-  for(int ieta = 1 ; ieta <= h_ho_d1->GetNbinsX() ; ieta++)
-    for(int iphi = 1 ; iphi <= h_ho_d1->GetNbinsY() ; iphi++)
-      h_ho_d1->SetBinContent( ieta , iphi , float(h_ho_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+  //h_ho_d4
+  for(int ieta = 1 ; ieta <= h_ho_d4->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_ho_d4->GetNbinsY() ; iphi++)
+      {
+	int thisNtotEvents = int(h_ho_d4_all->GetBinContent(ieta,iphi));
+	if( thisNtotEvents == 0 ) 
+	  h_ho_d4->SetBinContent( ieta , iphi , 0. );
+	else
+	  {
+	    float percDisagree = 1 - float(h_ho_d4->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    h_ho_d4->SetBinContent( ieta , iphi , percDisagree);
+	    if(percDisagree > LIMIT)
+	      {
+		cout << "HO depth=4" 
+		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
+		     << " percentage of disagree=" << percDisagree 
+		     << " (number of digis used for the test=" << thisNtotEvents << ")" << endl;
+	      }
+	  }
+      }
 
-  h_ho_d1->GetZaxis()->SetLimits(0,100);
-  h_ho_d1->GetZaxis()->SetRangeUser(0,100);
+  h_ho_d4->SetMinimum(LIMIT);
+  h_ho_d4->GetZaxis()->SetLimits(LIMIT,1);
+  h_ho_d4->GetZaxis()->SetRangeUser(LIMIT,1);
 
-      
 }
 
