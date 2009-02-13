@@ -1147,6 +1147,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoRPC_2D->GetXaxis()->SetTitle("cm");
 		histoRPC_2D->GetYaxis()->SetTitle("cm");
 		histoRPC_2D->Draw();
+		histoRPC_2D->SetDrawOption("color");
 		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1154,14 +1155,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoDT_2D->GetXaxis()->SetTitle("cm");
 		histoDT_2D->GetYaxis()->SetTitle("cm");
 		histoDT_2D->Draw();
+		histoDT_2D->SetDrawOption("color");
 		labeltoSave = rpcsrv.name() + "/DTOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 
 		histoPRO_2D->GetXaxis()->SetTitle("cm");
 		histoPRO_2D->GetYaxis()->SetTitle("cm");
-		histoPRO_2D->SetDrawOption("color");
 		histoPRO_2D->Draw();
+		histoPRO_2D->SetDrawOption("color");
 		labeltoSave = rpcsrv.name() + "/Profile_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1528,7 +1530,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  }
 	}else if(endcap&&!cosmics){//ENDCAPs
 	  std::cout<<"In the EndCap"<<std::endl;
-
+	  
 	  const TrapezoidalStripTopology* top_= dynamic_cast<const TrapezoidalStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
@@ -1706,6 +1708,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  histoRPC_2D->GetXaxis()->SetTitle("cm");
 		  histoRPC_2D->GetYaxis()->SetTitle("cm");
 		  histoRPC_2D->Draw();
+		  histoRPC_2D->SetDrawOption("color");
 		  labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
@@ -1713,14 +1716,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  histoCSC_2D->GetXaxis()->SetTitle("cm");
 		  histoCSC_2D->GetYaxis()->SetTitle("cm");
 		  histoCSC_2D->Draw();
+		  histoCSC_2D->SetDrawOption("color");
 		  labeltoSave = rpcsrv.name() + "/DTOccupancy_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		  
 		  histoPRO_2D->GetXaxis()->SetTitle("cm");
 		  histoPRO_2D->GetYaxis()->SetTitle("cm");
-		  histoPRO_2D->SetDrawOption("color");
 		  histoPRO_2D->Draw();
+		  histoPRO_2D->SetDrawOption("color");
 		  labeltoSave = rpcsrv.name() + "/Profile_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
