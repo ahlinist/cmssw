@@ -14,9 +14,8 @@
      <Notes on implementation>
 */
 //
-// Original Author:  Efe Yazgan
-//         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.cc,v 1.1 2009/02/10 18:09:34 ssengupt Exp $
+// Original Author:  Francesco Santanastasio, Sinjini Sengupta
+// $Id: HcalZS.cc,v 1.1 2009/02/12 14:38:05 ssengupt Exp $
 //
 //
 
@@ -80,7 +79,7 @@
 //
 // constants, enums and typedefs
 //
- enum ZSMode { zs_SingleChannel=0, zs_TriggerTowerOR=1, zs_AllDepthsOR=2 };
+// enum ZSMode { zs_SingleChannel=0, zs_TriggerTowerOR=1, zs_AllDepthsOR=2 };
 
 //
 // static data member definitions
@@ -101,10 +100,10 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
   thresholdHO_ = iConfig.getUntrackedParameter < int > ("thresholdHO", 8);
   thresholdHF_ = iConfig.getUntrackedParameter < int > ("thresholdHF", 9);
 
-  cout << "using thresholdHB_ = " << thresholdHB_ << endl;
-  cout << "using thresholdHE_ = " << thresholdHE_ << endl;
-  cout << "using thresholdHO_ = " << thresholdHO_ << endl;
-  cout << "using thresholdHF_ = " << thresholdHF_ << endl;
+  cout << "using digi thresholdHB_ = " << thresholdHB_ << endl;
+  cout << "using digi thresholdHE_ = " << thresholdHE_ << endl;
+  cout << "using digi thresholdHO_ = " << thresholdHO_ << endl;
+  cout << "using digi thresholdHF_ = " << thresholdHF_ << endl;
 
 }
 
@@ -367,15 +366,63 @@ void HcalZS::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalZS::endJob() {
 
-//   double scaleFactor = 1./NtotEvents;
+  //   //divide each bin for NtotEvents
+  //   h_hbhf_d1->Scale(scaleFactor);
+  //   h_hbhf_d2->Scale(scaleFactor);
+  //   h_he_d1->Scale(scaleFactor);
+  //   h_he_d2->Scale(scaleFactor);
+  //   h_he_d3->Scale(scaleFactor);
+  //   h_ho_d1->Scale(scaleFactor);
+  
 
-//   //divide each bin of h_hcal_hbhe_fractionMatch for Ntotevents
-//   h_hbhf_d1->Scale(scaleFactor);
-//   h_hbhf_d2->Scale(scaleFactor);
-//   h_he_d1->Scale(scaleFactor);
-//   h_he_d2->Scale(scaleFactor);
-//   h_he_d3->Scale(scaleFactor);
-//   h_ho_d1->Scale(scaleFactor);
+  //h_hbhf_d1
+  for(int ieta = 1 ; ieta <= h_hbhf_d1->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_hbhf_d1->GetNbinsY() ; iphi++)
+      h_hbhf_d1->SetBinContent( ieta , iphi , float(h_hbhf_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
 
+  h_hbhf_d1->GetZaxis()->SetLimits(0,100);
+  h_hbhf_d1->GetZaxis()->SetRangeUser(0,100);
+
+  //h_hbhf_d2
+  for(int ieta = 1 ; ieta <= h_hbhf_d2->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_hbhf_d2->GetNbinsY() ; iphi++)
+      h_hbhf_d2->SetBinContent( ieta , iphi , float(h_hbhf_d2->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+
+  h_hbhf_d2->GetZaxis()->SetLimits(0,100);
+  h_hbhf_d2->GetZaxis()->SetRangeUser(0,100);
+
+  //h_he_d1
+  for(int ieta = 1 ; ieta <= h_he_d1->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_he_d1->GetNbinsY() ; iphi++)
+      h_he_d1->SetBinContent( ieta , iphi , float(h_he_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+
+  h_he_d1->GetZaxis()->SetLimits(0,100);
+  h_he_d1->GetZaxis()->SetRangeUser(0,100);
+
+  //h_he_d2
+  for(int ieta = 1 ; ieta <= h_he_d2->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_he_d2->GetNbinsY() ; iphi++)
+      h_he_d2->SetBinContent( ieta , iphi , float(h_he_d2->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+
+  h_he_d2->GetZaxis()->SetLimits(0,100);
+  h_he_d2->GetZaxis()->SetRangeUser(0,100);
+
+  //h_he_d3
+  for(int ieta = 1 ; ieta <= h_he_d3->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_he_d3->GetNbinsY() ; iphi++)
+      h_he_d3->SetBinContent( ieta , iphi , float(h_he_d3->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+
+  h_he_d3->GetZaxis()->SetLimits(0,100);
+  h_he_d3->GetZaxis()->SetRangeUser(0,100);
+
+  //h_ho_d1
+  for(int ieta = 1 ; ieta <= h_ho_d1->GetNbinsX() ; ieta++)
+    for(int iphi = 1 ; iphi <= h_ho_d1->GetNbinsY() ; iphi++)
+      h_ho_d1->SetBinContent( ieta , iphi , float(h_ho_d1->GetBinContent(ieta,iphi) / NtotEvents)*100 );
+
+  h_ho_d1->GetZaxis()->SetLimits(0,100);
+  h_ho_d1->GetZaxis()->SetRangeUser(0,100);
+
+      
 }
 
