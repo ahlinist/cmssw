@@ -63,7 +63,7 @@ private:
   virtual void endJob();
 
   /// Print a summary of counts for all selectors
-  virtual void printSummary(void);
+  //  virtual void printSummary(void);
   // Print an HLT trigger report
   virtual void printHLTreport(void); // georgia
  
@@ -71,15 +71,15 @@ private:
   /// Define all plots
   virtual void initPlots();
   /// Fill all plots for an event
-  virtual void fillPlots( const edm::Event&, const SelectorDecisions& );
+  // virtual void fillPlots( const edm::Event&, const SelectorDecisions& );
 
-  virtual bool filter(const edm::Event& evt,const edm::EventSetup& iSetup );
+  //  virtual bool filter(const edm::Event& evt,const edm::EventSetup& iSetup );
 
 
 private:
 
   // Selection
-  SelectorSequence sequence_;              ///< Interface to selectors
+  // SelectorSequence sequence_;              ///< Interface to selectors
   std::vector<std::string> plotSelection_; ///< Container for plotting selection
   std::vector<size_t> plotSelectionIndices_; ///< Selector indices for plotting selection
 

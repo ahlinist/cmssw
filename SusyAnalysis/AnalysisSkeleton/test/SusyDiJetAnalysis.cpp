@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.17 2009/02/03 13:42:22 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.18 2009/02/12 11:44:40 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -26,22 +26,19 @@ using namespace edm;
 
 //________________________________________________________________________________________
 SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
-  sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
-  plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
+  //sequence_( iConfig.getParameter<edm::ParameterSet>("selections") ),
+  // plotSelection_( iConfig.getParameter<std::vector<std::string> >("plotSelection") ),
   eventWeight_( iConfig.getParameter<double>("eventWeight") ),
   nrEventTotalRaw_(0), nrEventTotalWeighted_(0.0),
   pathNames_(0), nEvents_(0), nWasRun_(0), nAccept_(0), nErrors_(0), hlWasRun_(0), hlAccept_(0), hlErrors_(0), init_(false), //georgia
   genTag_(iConfig.getParameter<edm::InputTag>("genTag"))
 { 
   // Translate plotSelection strings to indices
-   plotSelectionIndices_.reserve(plotSelection_.size());
+  /*plotSelectionIndices_.reserve(plotSelection_.size());
   for ( size_t i=0; i<plotSelection_.size(); ++i )  plotSelectionIndices_.push_back(sequence_.selectorIndex(plotSelection_[i]));
    
 
-  // List all selectors and selection variables
-  edm::LogVerbatim("SusyDiJet") << "Selectors are:" << std::endl;
- 
-  for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
+   for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
         it != sequence_.selectors().end(); ++it )
     {  edm::LogVerbatim("SusyDiJet") << " * " << (*it)->name()
                                           << " selects on following " 
@@ -50,9 +47,19 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
 	edm::LogVerbatim("SusyDiJet") << "    - " << (*it)->variableNames()[i];
 	}
       edm::LogVerbatim("SusyDiJet") << std::endl;
-    }
+      }
 
-  mSelectorResults = new unsigned int[sequence_.size()];
+  // Initialise counters
+    nrEventSelected_.resize( sequence_.size(), 0.0 );
+   nrEventAllButOne_.resize( sequence_.size(), 0.0 );
+   nrEventCumulative_.resize( sequence_.size(), 0.0 );
+   */
+
+  // List all selectors and selection variables
+  edm::LogVerbatim("SusyDiJet") << "Selectors are:" << std::endl;
+ 
+ 
+  //  mSelectorResults = new unsigned int[sequence_.size()];
   
   // Say something about event weights
  
@@ -79,10 +86,7 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   pathNames_ = iConfig.getParameter< std::vector<std::string> >("pathNames");
 
   
-  // Initialise counters
-  nrEventSelected_.resize( sequence_.size(), 0.0 );
-  nrEventAllButOne_.resize( sequence_.size(), 0.0 );
-  nrEventCumulative_.resize( sequence_.size(), 0.0 );
+
 
   localPi = acos(-1.0);
 
@@ -98,7 +102,7 @@ SusyDiJetAnalysis::~SusyDiJetAnalysis() {}
 
 
 //filter---------------------------------------------------------
-bool
+/*bool
 SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup ){
 
   run_   = iEvent.id().run();
@@ -106,24 +110,24 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
   processId_   = 0;
 
  // Retrieve the decision of each selector module
-  SelectorDecisions decisions = sequence_.decisions(iEvent);
+  //SelectorDecisions decisions = sequence_.decisions(iEvent);
 
  // Count all events
   nrEventTotalRaw_++;
   nrEventTotalWeighted_ += eventWeight_;
 
    // Fill plots with all variables
-  bool dec(true);
+    bool dec(true);
   for ( size_t i=0; i<sequence_.size(); ++i ) {
     dec = dec && decisions.decision(i);
  
     // Add the decision to the tree
-    mSelectorResults[i] = (decisions.decision(i)?1:0);
+    // mSelectorResults[i] = (decisions.decision(i)?1:0);
     
     // Update counters
-    if ( decisions.decision(i) ) nrEventSelected_[i] += eventWeight_;
-    if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i] += eventWeight_;
-    if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += eventWeight_;
+    //  if ( decisions.decision(i) ) nrEventSelected_[i] += eventWeight_;
+    //  if ( decisions.complementaryDecision(i) ) nrEventAllButOne_[i] += eventWeight_;
+    // if ( decisions.cumulativeDecision(i) ) nrEventCumulative_[i] += eventWeight_;
     
   }
 
@@ -136,7 +140,7 @@ SusyDiJetAnalysis::filter(const edm::Event& iEvent,const edm::EventSetup& iSetup
       printSummary();
 
   return dec;
-}
+  }*/
 
 
 
@@ -159,17 +163,17 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // markus
   ///
-  if ( !filter(iEvent,iSetup)) {
-    // Just fill the failure
-    mGlobalDecision = 0;
-    mSelectorData->Fill();
-    return;
-  }
+  //  if ( !filter(iEvent,iSetup)) {
+  //  // Just fill the failure
+  // mGlobalDecision = 0;
+  // mSelectorData->Fill();
+  // return;
+  //}
   
 
   // Just fill the success
   mGlobalDecision = 1;
-  mSelectorData->Fill();
+  // mSelectorData->Fill();
   
  edm::LogVerbatim("SusyDiJetEvent") << " Trigger decision  " << std::endl;
  // std::cout << " trigger decision " << std::endl;
@@ -1062,14 +1066,14 @@ SusyDiJetAnalysis::beginJob(const edm::EventSetup&) {}
 void 
 SusyDiJetAnalysis::endJob() {
 
-  printSummary();
+  //  printSummary();
   printHLTreport();
 
 }
 
 
 //________________________________________________________________________________________
-void
+/*void
 SusyDiJetAnalysis::printSummary( void ) {
 
   edm::LogWarning("SusyDiJet|SummaryCount") << "*** Summary of counters: ";
@@ -1100,7 +1104,7 @@ SusyDiJetAnalysis::printSummary( void ) {
   }
   edm::LogWarning("SusyDiJet|SummaryCount") << summary.str();
 
-}
+  }*/
 
 
 // GEORGIA
@@ -1156,9 +1160,22 @@ SusyDiJetAnalysis::initPlots() {
 
   // 1. Event variables
   variables << "weight:process";
+
+  // Register this ntuple
+   edm::Service<TFileService> fs;
+  // ntuple_ = fs->make<TNtuple>( "ntuple","SusyDiJetAnalysis variables",
+  // variables.str().c_str() );
+
+  // Now we add some additional ones for the dijet analysis
+  mAllData = fs->make<TTree>( "allData", "data after cuts" );
+  
+
+  mAllData->SetAutoSave(10000);
+
+
  
   // 2. Decision from all selectors
-  for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
+  /*  for ( std::vector<const SusyEventSelector*>::const_iterator it = sequence_.selectors().begin();
         it != sequence_.selectors().end(); ++it ) {
     std::string var( (*it)->name() );
     var += "_result";
@@ -1177,27 +1194,16 @@ SusyDiJetAnalysis::initPlots() {
       variables << ":" << var;
     }
   }
-
-
-  // Register this ntuple
-  edm::Service<TFileService> fs;
-  ntuple_ = fs->make<TNtuple>( "ntuple","SusyDiJetAnalysis variables",
-                               variables.str().c_str() );
-
-  // Now we add some additional ones for the dijet analysis
-  mAllData = fs->make<TTree>( "allData", "data after cuts" );
-  mSelectorData = fs->make<TTree>( "selectorData" , "Bit results for selectors");
-
-  mAllData->SetAutoSave(10000);
-  mSelectorData->SetAutoSave(10000);
-
-  std::vector<std::string> names = sequence_.selectorNames();
-  for ( size_t i = 0 ; i < sequence_.size() ; ++i ) {
-    std::string tempName = names[i] + "/i";
-    mSelectorData->Branch(names[i].c_str(),&mSelectorResults[i],tempName.c_str());
-  }
-  mSelectorData->Branch("globalDecision",&mGlobalDecision,"globalDecision/i");
-  
+   
+     mSelectorData->SetAutoSave(10000);
+     mSelectorData = fs->make<TTree>( "selectorData" , "Bit results for selectors");
+     std::vector<std::string> names = sequence_.selectorNames();
+     for ( size_t i = 0 ; i < sequence_.size() ; ++i ) {
+     std::string tempName = names[i] + "/i";
+     mSelectorData->Branch(names[i].c_str(),&mSelectorResults[i],tempName.c_str());
+     }
+     mSelectorData->Branch("globalDecision",&mGlobalDecision,"globalDecision/i");
+  */
 
   // Add the branches
   mAllData->Branch("run",&mTempTreeRun,"run/int");
@@ -1538,11 +1544,7 @@ SusyDiJetAnalysis::initPlots() {
     mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
     
 
-  // add test stuff
  
-    // mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
-    ///  mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");  
-
  
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
   
@@ -1550,7 +1552,7 @@ SusyDiJetAnalysis::initPlots() {
 
 
 //________________________________________________________________________________________
-void
+/*void
 SusyDiJetAnalysis::fillPlots( const edm::Event& iEvent, 
     const SelectorDecisions& decisions ) {
   
@@ -1576,7 +1578,7 @@ SusyDiJetAnalysis::fillPlots( const edm::Event& iEvent,
 
   delete [] x; // Important! otherwise we'll leak...
 
-}
+  }*/
 
 //________________________________________________________________________________________
 // Define this as a plug-in
