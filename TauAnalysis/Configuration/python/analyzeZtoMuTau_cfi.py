@@ -22,6 +22,8 @@ from TauAnalysis.Core.vertexHistManager_cfi import *
 
 # import config for L1 & HLT histogram manager
 from TauAnalysis.Core.triggerHistManager_cfi import *
+triggerHistManager.l1Bits = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14')
+triggerHistManager.hltPaths = cms.vstring('HLT_Mu15', 'HLT_IsoMu11')
 
 muTauHistManagers = cms.vstring( 'muonHistManager',
                                  'tauHistManager',
@@ -54,7 +56,7 @@ muTauHistManagers = cms.vstring( 'muonHistManager',
 Trigger = cms.PSet(
   name = cms.string('Trigger'),
   type = cms.string('TriggerResultEventSelector'),
-  src = cms.InputTag('TriggerResults', '', 'HLT'),
+  src = cms.InputTag('TriggerResults::HLT'),
   triggerPaths = cms.vstring('HLT_Mu15', 'HLT_IsoMu11')
 )
 
@@ -240,7 +242,7 @@ muTauEventDump = cms.PSet(
   l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
   l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
 
-  hltResultsSource = cms.InputTag('TriggerResults', '', 'HLT'),
+  hltResultsSource = cms.InputTag('TriggerResults::HLT'),
   hltPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
       
   genParticleSource = cms.InputTag('genParticles'),
