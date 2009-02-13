@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.1 2009/02/10 18:09:34 ssengupt Exp $
+// $Id: HcalZS.h,v 1.1 2009/02/12 14:38:37 ssengupt Exp $
 //
 //
 
@@ -67,7 +67,20 @@ private:
   TH2F* h_he_d3;
   TH2F* h_he_d2;
   TH2F* h_he_d1;
-  TH2F* h_ho_d1;
+  TH2F* h_ho_d4;
+
+  TH2F* h_hbhf_d1_all;
+  TH2F* h_hbhf_d2_all;
+  TH2F* h_he_d3_all;
+  TH2F* h_he_d2_all;
+  TH2F* h_he_d1_all;
+  TH2F* h_ho_d4_all;
 
   int NtotEvents;
+
+  int hb_digiCounter[82][72];
+  int he_digiCounter[82][72];
+  int ho_digiCounter[82][72];
+  int hf_digiCounter[82][72];
+
 };
