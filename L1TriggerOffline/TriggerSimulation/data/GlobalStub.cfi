@@ -1,0 +1,7 @@
+module GlobalStubsFromSimHits = GlobalStubBuilder_PSimHit_{
+     InputTag LocalStubs = "LocalStubsFromSimHits"
+}
+
+module GlobalStubsFromPixelDigis = GlobalStubBuilder_PixelDigi_{
+     InputTag LocalStubs = "LocalStubsFromPixelDigis"
+}

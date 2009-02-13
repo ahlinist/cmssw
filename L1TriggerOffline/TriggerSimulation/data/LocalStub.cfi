@@ -1,0 +1,8 @@
+module LocalStubsFromSimHits = LocalStubBuilder_PSimHit_{
+     VInputTag rawHits = {"famosSimHits:TrackerHits"}
+}
+
+module LocalStubsFromPixelDigis = LocalStubBuilder_PixelDigi_{
+     VInputTag rawHits = {"siPixelDigis"}
+     uint32 ADCThreshold = 30
+}
