@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.2 2009/02/13 10:12:46 santanas Exp $
+// $Id: HcalZS.cc,v 1.3 2009/02/13 18:56:15 santanas Exp $
 //
 //
 
@@ -472,9 +472,12 @@ void HcalZS::beginJob(const edm::EventSetup&)
 // ------------ method called once each job just after ending the event loop  ------------
 void HcalZS::endJob() {
 
-  cout << endl;
-
   cout << "########## SUMMARY OF THE M&P TEST ##########" << endl;
+  float LIMITPREC = 1./float(NtotEvents);
+
+  cout << "NtotEvents: " << NtotEvents << endl;
+  cout << "Limit precision for this test: " << LIMITPREC << endl;
+
   //divide each bin for NtotEvents and final report
 
   //h_hbhf_d1
@@ -486,9 +489,13 @@ void HcalZS::endJob() {
 	  h_hbhf_d1->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_hbhf_d1->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_hbhf_d1->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      {
+		percDisagree = -LIMITPREC;
+	      }
 	    h_hbhf_d1->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HB/HF depth=1" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -498,9 +505,9 @@ void HcalZS::endJob() {
 	  }
       }
   
-  h_hbhf_d1->SetMinimum(LIMIT);
-  h_hbhf_d1->GetZaxis()->SetLimits(LIMIT,1);
-  h_hbhf_d1->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_hbhf_d1->SetMinimum(LIMITPREC);
+  h_hbhf_d1->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_hbhf_d1->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
   //h_hbhf_d2
   for(int ieta = 1 ; ieta <= h_hbhf_d2->GetNbinsX() ; ieta++)
@@ -511,9 +518,11 @@ void HcalZS::endJob() {
 	  h_hbhf_d2->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_hbhf_d2->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_hbhf_d2->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      percDisagree = -LIMITPREC;
 	    h_hbhf_d2->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HB/HF depth=2" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -522,9 +531,9 @@ void HcalZS::endJob() {
 	      }
 	  }
       }
-  h_hbhf_d2->SetMinimum(LIMIT);
-  h_hbhf_d2->GetZaxis()->SetLimits(LIMIT,1);
-  h_hbhf_d2->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_hbhf_d2->SetMinimum(LIMITPREC);
+  h_hbhf_d2->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_hbhf_d2->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
   //h_he_d1
   for(int ieta = 1 ; ieta <= h_he_d1->GetNbinsX() ; ieta++)
@@ -535,9 +544,11 @@ void HcalZS::endJob() {
 	  h_he_d1->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_he_d1->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_he_d1->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      percDisagree = -LIMITPREC;
 	    h_he_d1->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HE depth=1" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -546,9 +557,9 @@ void HcalZS::endJob() {
 	      }
 	  }
       }
-  h_he_d1->SetMinimum(LIMIT);
-  h_he_d1->GetZaxis()->SetLimits(LIMIT,1);
-  h_he_d1->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_he_d1->SetMinimum(LIMITPREC);
+  h_he_d1->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_he_d1->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
   //h_he_d2
   for(int ieta = 1 ; ieta <= h_he_d2->GetNbinsX() ; ieta++)
@@ -559,9 +570,11 @@ void HcalZS::endJob() {
 	  h_he_d2->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_he_d2->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_he_d2->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      percDisagree = -LIMITPREC;
 	    h_he_d2->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HE depth=2" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -570,9 +583,9 @@ void HcalZS::endJob() {
 	      }
 	  }
       }
-  h_he_d2->SetMinimum(LIMIT);
-  h_he_d2->GetZaxis()->SetLimits(LIMIT,1);
-  h_he_d2->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_he_d2->SetMinimum(LIMITPREC);
+  h_he_d2->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_he_d2->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
   //h_he_d3
   for(int ieta = 1 ; ieta <= h_he_d3->GetNbinsX() ; ieta++)
@@ -583,9 +596,11 @@ void HcalZS::endJob() {
 	  h_he_d3->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_he_d3->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_he_d3->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      percDisagree = -LIMITPREC;
 	    h_he_d3->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HE depth=3" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -595,9 +610,9 @@ void HcalZS::endJob() {
 	  }
       }
 
-  h_he_d3->SetMinimum(LIMIT);
-  h_he_d3->GetZaxis()->SetLimits(LIMIT,1);
-  h_he_d3->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_he_d3->SetMinimum(LIMITPREC);
+  h_he_d3->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_he_d3->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
   //h_ho_d4
   for(int ieta = 1 ; ieta <= h_ho_d4->GetNbinsX() ; ieta++)
@@ -608,9 +623,11 @@ void HcalZS::endJob() {
 	  h_ho_d4->SetBinContent( ieta , iphi , 0. );
 	else
 	  {
-	    float percDisagree = 1 - float(h_ho_d4->GetBinContent(ieta,iphi) / thisNtotEvents) - LIMIT;
+	    float percDisagree = 1 - float(h_ho_d4->GetBinContent(ieta,iphi) / thisNtotEvents);
+	    if(percDisagree == 0) 
+	      percDisagree = -LIMITPREC;
 	    h_ho_d4->SetBinContent( ieta , iphi , percDisagree);
-	    if(percDisagree > LIMIT)
+	    if(percDisagree > LIMITPREC)
 	      {
 		cout << "HO depth=4" 
 		     << " ieta=" << ieta - 42 << " iphi=" << iphi 
@@ -620,9 +637,9 @@ void HcalZS::endJob() {
 	  }
       }
 
-  h_ho_d4->SetMinimum(LIMIT);
-  h_ho_d4->GetZaxis()->SetLimits(LIMIT,1);
-  h_ho_d4->GetZaxis()->SetRangeUser(LIMIT,1);
+  h_ho_d4->SetMinimum(LIMITPREC);
+  h_ho_d4->GetZaxis()->SetLimits(LIMITPREC,1);
+  h_ho_d4->GetZaxis()->SetRangeUser(LIMITPREC,1);
 
 }
 
