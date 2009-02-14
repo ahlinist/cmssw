@@ -23,7 +23,7 @@ process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(10)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -34,8 +34,15 @@ process.source = cms.Source("PoolSource",
 # Z --> tau tau (all decay modes; simulated with TAUOLA)
 # 10k events RelVal sample
 #
-   'rfio:/castor/cern.ch/user/s/sunil/SkimFebruary09/test/Ztautau/EMuSkim_1.root'
-    )
+ 'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_1.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_4.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_5.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_6.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_7.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_8.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_9.root',
+   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_10.root'    
+)
 )
 #process.OutputModule = cms.OutputModule("PoolOutputModule",
 #      fileName = cms.untracked.string('/tmp/sunil/elecMuSkim.root')

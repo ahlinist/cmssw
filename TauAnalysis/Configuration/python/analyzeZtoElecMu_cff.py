@@ -8,7 +8,7 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
   name = cms.string('zElecMuAnalyzer'),
 
   eventSelection = cms.VPSet(
-    # generator level selection of Z --> e + tau-jet events
+    # generator level selection of Z --> e + mu events
     # passing basic acceptance and kinematic cuts
     # (NOTE: to be used for efficiency studies only !!)
     #genElectronCut,
@@ -16,6 +16,11 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
 
     # trigger selection
     Trigger,
+    
+    # primary event vertex selection
+    primaryEventVertex,
+    primaryEventVertexQuality,
+    primaryEventVertexPosition,
 
     # electron candidate selection
     tightElectronIdCut,
@@ -47,8 +52,12 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
   ),
 
   histManagers = cms.VPSet(
+    muonHistManager,
+    metHistManager,
     electronHistManager,
-    muonHistManager
+    vertexHistManager,
+    triggerHistManager
+ 
   ),
 
   eventDumps = cms.VPSet(
