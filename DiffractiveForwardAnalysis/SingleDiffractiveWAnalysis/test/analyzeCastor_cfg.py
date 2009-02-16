@@ -21,10 +21,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-       'file:/tmp/antoniov/POMWIG_SDWmunu_EdmDump_Castor_1.root',
-       'file:/tmp/antoniov/POMWIG_SDWmunu_EdmDump_Castor_2.root',
-       'file:/tmp/antoniov/POMWIG_SDWmunu_EdmDump_Castor_3.root',
-       'file:/tmp/antoniov/POMWIG_SDWmunu_EdmDump_Castor_4.root', 
+       'file:/tmp/antoniov/POMWIG_SDWmunu_EdmDump.root',
     )
 )
 
@@ -36,11 +33,12 @@ process.castorAnalysis = cms.EDAnalyzer("SimpleCastorAnalyzer",
     CastorGenInfoTag = cms.InputTag("castorGen"),
     CastorTowerInfoTag = cms.InputTag("castorTower"),
     GapSide = cms.int32(1),
-    ThresholdIndex = cms.uint32(45),
+    ThresholdIndexHF = cms.uint32(22),
+    ThresholdIndexCastor = cms.uint32(25),
     # If accessing directly the castor towers
     AccessCastorTowers = cms.bool(True),
     CastorTowersTag = cms.InputTag("CastorTowerReco"),
-    TowerThreshold = cms.double(10.0) 
+    TowerThreshold = cms.double(15.0) 
 )
 
 process.add_(cms.Service("TFileService",
