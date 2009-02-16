@@ -75,7 +75,8 @@ void plotL1Efficiency(  bool print=false) {
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Tau_Emu_vs_Sim.gif");
 
-  
+  //return;
+
   h_PFTauEt_L1Jet->SetMinimum(0);
   h_PFTauEt_L1Jet->SetMaximum(1.1);
   h_PFTauEt_L1Jet->Draw("PA");
@@ -93,7 +94,8 @@ void plotL1Efficiency(  bool print=false) {
   gPad->SetLogy(0);
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Tau_Eff.gif");
-  
+
+  //return; 
   //
   
 
@@ -158,6 +160,8 @@ void plotL1Efficiency(  bool print=false) {
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEta_L1Tau_Emu_vs_Sim.gif");
   
+  //return;
+
   h_PFTauEta_L1Jet->SetMinimum(0);
   h_PFTauEta_L1Jet->SetMaximum(1.1);
   h_PFTauEta_L1Jet->Draw("PA");
@@ -176,8 +180,7 @@ void plotL1Efficiency(  bool print=false) {
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEta_L1Tau_Eff.gif");
   
-  //
-  
+  //return;
   
   // L1Tau Et
   plotter->SetXTitle("L1 jet E_{T} (GeV)");
@@ -204,6 +207,8 @@ void plotL1Efficiency(  bool print=false) {
   plotter->SetFileName(plotDir+"L1Eff_L1JetEt_L1EmTauVeto_L1HadTauVeto");
   plotter->DrawHistogram("L1JetEt>>hnum(25.,0.,100.)","L1EmTauVeto==0||L1HadTauVeto==0");
   
+  //return;
+
   // L1Tau Eta
   plotter->SetXTitle("L1 jet #eta");
   plotter->SetFileName(plotDir+"L1Eff_L1JetEta_L1TauVeto");
@@ -230,5 +235,137 @@ void plotL1Efficiency(  bool print=false) {
   plotter->DrawHistogram("L1JetEta>>hnum(25.,-2.5,2.5)","L1EmTauVeto==0||L1HadTauVeto==0");
   
   
+
+  /*
+  */
+
+  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_L1Jet30.C");
+  TGraphAsymmErrors *h_PFTauEt_L1TauVeto_L1Jet30_Sim = 
+    plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","(L1TauVeto==0 || L1JetEt>30.)&& hasMatchedL1Jet==1",DenEtaCut);
+
+  // Parametrize Shower veto efficiency vs. PFTau Et
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Draw("PA");
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->SetMarkerColor(kBlack);
+
+  //TF1 *myfit = new TF1("myfit","[0]*(exp((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
+  TF1 *myfit = new TF1("myfit","[0]*(TMath::Erf((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
+  myfit->SetParameters(0,1.,1,10.,2,0.);
+
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Fit("myfit");
+  myfit->Draw("same");
+  //myfit->Draw("");
+
+  // Parametrize Shower veto efficiency vs. PFTau Et
+  h_PFTauEt_L1TauVeto_Sim->Draw("PA");
+  h_PFTauEt_L1TauVeto_Sim->SetMarkerColor(kBlack);
+
+  //TF1 *myfit = new TF1("myfit","[0]*(exp((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
+  TF1 *myfit = new TF1("myfit","[0]*(TMath::Erf((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
+  myfit->SetParameters(0,1.,1,10.,2,0.);
+
+  h_PFTauEt_L1TauVeto_Sim->Fit("myfit");
+  myfit->Draw("same");
+  //myfit->Draw("");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ****** */
+  // Parametrize Shower veto efficiency vs. PFTau Et
+
+  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetFileName("L1Eff_PFTauEt_L1Jet.C");
+  TGraphAsymmErrors *h_PFTauEt_L1Jet_Sim = 
+    plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","hasMatchedL1Jet==1",DenEtaCut);
+
+  h_PFTauEt_L1Jet_Sim->Draw("PA");
+  h_PFTauEt_L1Jet_Sim->SetMarkerColor(kBlack);
+
+  TF1 *myfit0 = new TF1("myfit0","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))", 0., 100.);
+  myfit0->SetParameters(0,.8,1,.1,2,0.1);
+
+  h_PFTauEt_L1Jet_Sim->Fit("myfit0","R+");
+  myfit0->Draw("same");
+
+  if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Jet_Fit.gif");
+
+  //return;
+
+  
+  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetFileName("L1Eff_PFTauEt_L1Jet30.C");
+  TGraphAsymmErrors *h_PFTauEt_L1Jet30_Sim = 
+    plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","L1JetEt>30. && hasMatchedL1Jet==1",DenEtaCut);
+
+  h_PFTauEt_L1Jet30_Sim->Draw("PA");
+  h_PFTauEt_L1Jet30_Sim->SetMarkerColor(kBlack);
+
+  TF1 *myfit1 = new TF1("myfit1","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))", 0., 100.);
+  myfit1->SetParameters(0,1.,1,.1,2,0.1);
+
+  h_PFTauEt_L1Jet30_Sim->Fit("myfit1","R+");
+  myfit1->Draw("same");
+
+  if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Jet30_Fit.gif");
+
+  //return;
+
+  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_L1Jet30.C");
+  TGraphAsymmErrors *h_PFTauEt_L1TauVeto_L1Jet30_Sim = 
+    plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","(L1TauVeto==0 || L1JetEt>30.) && hasMatchedL1Jet==1",DenEtaCut);
+
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Draw("PA");
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->SetMarkerColor(kBlack);
+
+  TF1 *myfit1 = new TF1("myfit1","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))", 0., 100.);
+  myfit1->SetParameters(0,1.,1,.1,2,0.1);
+
+  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Fit("myfit1","R+");
+  myfit1->Draw("same");
+
+  if (print) gPad->SaveAs(plotDir+"PFTauEt_L1TauVeto_L1Jet30_Fit.gif");
+
+  //return;
+
+  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_Fit.C");
+  TGraphAsymmErrors *h_PFTauEt_L1TauVeto_Fit_Sim = 
+    plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","L1TauVeto==0 && hasMatchedL1Jet==1",DenEtaCut);
+
+  h_PFTauEt_L1TauVeto_Fit_Sim->Draw("PA");
+  h_PFTauEt_L1TauVeto_Fit_Sim->SetMarkerColor(kBlack);
+
+  TF1 *myfit2 = new TF1("myfit2","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))", 0., 100.);
+  //TF1 *myfit2 = new TF1("myfit2","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))*TMath::Gaus(sqrt(x)-sqrt([3]),[4],[5])", 5., 80.);
+  myfit2->SetParameters(0,1.,1,15.,2,1.);
+
+  h_PFTauEt_L1TauVeto_Fit_Sim->Fit("myfit2","R+");
+  myfit2->Draw("same");
+
+  if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Tau_Fit.gif");
+
+  //return;
+
+
   delete plotter;
 }
