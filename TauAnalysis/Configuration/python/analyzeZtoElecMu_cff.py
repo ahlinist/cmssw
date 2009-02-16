@@ -12,7 +12,7 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
     # passing basic acceptance and kinematic cuts
     # (NOTE: to be used for efficiency studies only !!)
     #genElectronCut,
-    #genTauCut,
+    #genMuonCut,
 
     # trigger selection
     Trigger,
@@ -33,7 +33,7 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
     electronTrkCut,
     electronTrkIPcut,
 
- # muon candidate selection
+    # muon candidate selection
     globalMuonCut,
     muonEtaCut,
     muonPtCut,
@@ -44,20 +44,18 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
     muonAntiPionCut,
     muonTrkIPcut,
 
-    # require common event vertex for electron and tau-jet candidate
-    #elecTauEventVertex,
-
-    # acoplanarity cut between electron and tau-jet candidate
-    # ( dPhi(elec,tau) < 2.4 rad; not implemented yet)
+    # di-tau candidate selection
+    diTauCandidateForElecMuAcoplanarityCut,
+    diTauCandidateForElecMuZeroChargeCut
   ),
 
   histManagers = cms.VPSet(
-    muonHistManager,
-    metHistManager,
     electronHistManager,
+    muonHistManager,
+    diTauCandidateHistManagerForElecMu,
+    metHistManager,
     vertexHistManager,
-    triggerHistManager
- 
+    triggerHistManager 
   ),
 
   eventDumps = cms.VPSet(
