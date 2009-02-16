@@ -12,6 +12,7 @@
 ElecMuEventDump::ElecMuEventDump(const edm::ParameterSet& cfg)
   : GenericEventDump(cfg)
 {
+  //std::cout << "<ElecMuEventDump::ElecMuEventDump>:" << std::endl;
 }
 
 ElecMuEventDump::~ElecMuEventDump()
@@ -20,10 +21,11 @@ ElecMuEventDump::~ElecMuEventDump()
 }
 
 void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSetup, 
-			   const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
-			   const std::vector<std::pair<std::string, bool> >& filterResults_individual, 
-			   double eventWeight) const
+			    const std::vector<std::pair<std::string, bool> >& filterResults_cumulative, 
+			    const std::vector<std::pair<std::string, bool> >& filterResults_individual, 
+			    double eventWeight) const
 {  
+  //std::cout << "<ElecMuEventDump::print>:" << std::endl; 
 
   printEventHeaderInfo(iEvent, eventWeight);
 
@@ -43,7 +45,6 @@ void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   printElectronInfo(iEvent);
   printMuonInfo(iEvent);
-  printTauInfo(iEvent);
 
   printMissingEtInfo(iEvent);
 }
