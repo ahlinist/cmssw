@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.6 $
-  \date $Date: 2008/09/04 10:41:01 $
+  \version $Revision: 1.7 $
+  \date $Date: 2008/10/16 08:43:05 $
 */
 
 #include "TProfile2D.h"
@@ -97,6 +97,7 @@ void SiPixelRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) 
   }
   
   if( o.name.find( "adcCOMB" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogy(1);
+  if( o.name.find( "size_siPixelClusters" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogx(1);
 
 }
 
