@@ -25,7 +25,7 @@ process.load('FastSimulation.ForwardDetectors.CastorTowerProducer_cfi')
 process.load('RecoLocalCalo.Castor.Castor_cfi')
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('')
+    fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SingleDiffractiveWmunuPlus_10TeV_InitialLumPU_cff_py_RAW2DIGI_RECO.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -87,15 +87,41 @@ process.castorTower = cms.EDProducer("CastorTowerEdmNtupleDumper",
     NumberOfTresholds = cms.untracked.uint32(50)
 )
 
+process.hfTower = cms.EDProducer("HFTowerEdmNtupleDumperAOD",
+    CaloTowersTag = cms.InputTag("towerMaker"),
+    TowerEnergyTresholdMin = cms.untracked.double(0.0),
+    TowerEnergyTresholdMax = cms.untracked.double(10.0),
+    NumberOfTresholds = cms.untracked.uint32(50)
+)
+
+process.xiTower = cms.EDProducer("XiTowerDumper",
+    CaloTowersTag = cms.InputTag("towerMaker"),
+    MuonTag = cms.InputTag("muons"),
+    UseMETInfo = cms.bool(True),
+    CaloMETTag = cms.InputTag("met"),
+    HFPlusTowerThreshold = cms.double(1.0),
+    HFMinusTowerThreshold = cms.double(1.0),
+    HEPlusTowerThreshold = cms.double(1.0),
+    HEMinusTowerThreshold = cms.double(1.0),
+    HBTowerThreshold = cms.double(1.0) 
+)
+
+process.pileUpInfo = cms.EDProducer("PileUpEdmNtupleDumper")
+
 process.MyEventContent = cms.PSet(
         outputCommands = cms.untracked.vstring('drop *')
 )
-process.MyEventContent.outputCommands.append("keep *_*_*_Analysis")
+process.MyEventContent.outputCommands.append('keep *_*_*_Analysis')
+process.MyEventContent.outputCommands.append('keep recoMuons_muons_*_*')
+process.MyEventContent.outputCommands.append('keep recoTracks_generalTracks_*_*')
+process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVertices_*_*')
+process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVerticesWithBS_*_*')
 
 # Output definition
 process.output = cms.OutputModule("PoolOutputModule",
     outputCommands = process.MyEventContent.outputCommands,
-    fileName = cms.untracked.string('POMWIG_SDWmunu_EdmDump_Castor.root'),
+    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
+    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('USER'),
         filterName = cms.untracked.string('')
@@ -105,7 +131,7 @@ process.output = cms.OutputModule("PoolOutputModule",
     )
 )
 
-process.p1 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower) 
+process.p1 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.pileUpInfo) 
 process.out_step = cms.EndPath(process.output)
 
 process.schedule = cms.Schedule(process.p1,process.out_step)
