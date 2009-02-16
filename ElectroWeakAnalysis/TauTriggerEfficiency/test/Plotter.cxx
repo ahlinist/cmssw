@@ -9,6 +9,11 @@ public:
     inFile = new TFile("tteffAnalysis.root");
     //inFile = new TFile("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get("TTEffTree"));
+
+    plotXtitle = 0;
+    plotYtitle = 0;
+    format = 0;
+    save = false;
   }
   ~Plotter(){
     delete tree;
@@ -19,14 +24,18 @@ public:
   TGraphAsymmErrors *DrawHistogram(const char* varexp, const TCut& selection, const TCut& selection2);
   void SetXTitle(char* title) {plotXtitle   = title;}
   void SetYTitle(char* title) {plotYtitle   = title;}
-  void SetFileName(char* name){plotFileName = name;}
+  void SetFileName(TString name){plotFileName = name;}
+  void SetFormat(char *frmt){format = frmt;}
+  void SetSave(bool s) {save = s;}
 
 private:
   TFile* inFile;
   TTree* tree;
   char* plotXtitle;
   char* plotYtitle;
-  char* plotFileName;
+  TString plotFileName;
+  char *format;
+  bool save;
 };
 
 TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& selection){
@@ -66,7 +75,12 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   heff -> SetMarkerStyle(kFullDotLarge);
   heff -> Draw("PAE");
 
-  //gPad->SaveAs(plotFileName);
+  if(save) {
+    if(format)
+      gPad->SaveAs(plotFileName+format);
+    else
+      gPad->SaveAs(plotFileName);
+  }
   return heff;
 }
 
@@ -106,7 +120,12 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   heff -> SetMarkerStyle(kFullDotLarge);
   heff -> Draw("PAE");
 
-  //gPad->SaveAs(plotFileName);
+  if(save) {
+    if(format)
+      gPad->SaveAs(plotFileName+format);
+    else
+      gPad->SaveAs(plotFileName);
+  }
   return heff;
 }
 
@@ -123,5 +142,11 @@ void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
   hnum -> GetXaxis()->SetTitle(plotXtitle);
   hnum -> GetYaxis()->SetTitle(plotYtitle);
   hnum -> Draw("HIST");
-  //gPad->SaveAs(plotFileName);
+
+  if(save) {
+    if(format)
+      gPad->SaveAs(plotFileName+format);
+    else
+      gPad->SaveAs(plotFileName);
+  }
 }
