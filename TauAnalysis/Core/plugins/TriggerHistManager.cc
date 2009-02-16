@@ -74,34 +74,36 @@ void TriggerHistManager::fillHistograms(const edm::Event& iEvent, const edm::Eve
   //std::cout << "<TriggerHistManager::fillHistograms>:" << std::endl; 
 
 //--- fill histograms for L1 trigger bits
-  edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
-  iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GtReadoutRecord);
-  edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtObjectMapRecord;
-  iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GtObjectMapRecord);
-
-  DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
-  const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
-
-  for ( vstring::const_iterator l1Bit = l1Bits_.begin();
-	l1Bit != l1Bits_.end(); ++l1Bit ) {
-    bool isMatch = false;
-    for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
-	  l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
-      std::string l1Bit_i = (*l1GtObjectMap).algoName();
-      if ( l1Bit_i == (*l1Bit) ) {
-	int index = (*l1GtObjectMap).algoBitNumber();
-	bool isTriggered = l1GtDecision[index];	
-	hL1triggerBits_[*l1Bit]->Fill(isTriggered);
-	isMatch = true;
+  if ( l1GtReadoutRecordSrc_.label() != "" && l1GtObjectMapRecordSrc_.label() != "" ) {
+    edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
+    iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GtReadoutRecord);
+    edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtObjectMapRecord;
+    iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GtObjectMapRecord);
+    
+    DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
+    const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
+    
+    for ( vstring::const_iterator l1Bit = l1Bits_.begin();
+	  l1Bit != l1Bits_.end(); ++l1Bit ) {
+      bool isMatch = false;
+      for ( std::vector<L1GlobalTriggerObjectMap>::const_iterator l1GtObjectMap = l1GtObjectMaps.begin();
+	    l1GtObjectMap != l1GtObjectMaps.end(); ++l1GtObjectMap ) {
+	std::string l1Bit_i = (*l1GtObjectMap).algoName();
+	if ( l1Bit_i == (*l1Bit) ) {
+	  int index = (*l1GtObjectMap).algoBitNumber();
+	  bool isTriggered = l1GtDecision[index];	
+	  hL1triggerBits_[*l1Bit]->Fill(isTriggered);
+	  isMatch = true;
+	}
+      }
+    
+      if ( !isMatch ) {
+	edm::LogError ("TriggerHistManager::fillHistograms") << " Undefined L1 bit = " << (*l1Bit) << " --> skipping !!";
+	continue;
       }
     }
-    
-    if ( !isMatch ) {
-      edm::LogError ("TriggerHistManager::fillHistograms") << " Undefined L1 bit = " << (*l1Bit) << " --> skipping !!";
-      continue;
-    }
   }
-   
+
 //--- fill histograms for HLT results 
   edm::Handle<edm::TriggerResults> hltResults;
   iEvent.getByLabel(hltResultsSrc_, hltResults);

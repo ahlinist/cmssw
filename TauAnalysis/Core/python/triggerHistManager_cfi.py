@@ -4,8 +4,13 @@ triggerHistManager = cms.PSet(
   name = cms.string('triggerHistManager'),
   type = cms.string('TriggerHistManager'),
 
-  l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-  l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+  # L1 trigger bits not contained in AOD;
+  # in order to process Monte Carlo samples produced by FastSimulation,
+  # disable histogram filling for now
+  l1GtReadoutRecordSource = cms.InputTag(''),
+  l1GtObjectMapRecordSource = cms.InputTag(''),
+  #l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+  #l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
   l1Bits = cms.vstring(''),
 
   hltResultsSource = cms.InputTag('TriggerResults::HLT'),
