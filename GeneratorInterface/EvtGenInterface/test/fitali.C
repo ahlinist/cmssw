@@ -11,10 +11,11 @@
   hpiu->Add(hmumuMassSqrPlus,hmumuMassSqrMinus);
   hmeno->Add(hmumuMassSqrMinus,hmumuMassSqrPlus,1,-1);
   hasymMix->Divide(hmeno,hpiu);
+  hasymMix->SetLineColor(kBlue);
 // TF1 *cosDm = new TF1("cosDm","cos([0]*x) + [1]",0.,12.);
 //cosDm->SetParameters(0.502,0.);
 // hasymMix->Fit("pol0");
   hasymMix->Draw("e1");
 //  cosDm->Draw("same");
-  c1->SaveAs("fitali.eps");
+  c1->SaveAs("asymali.gif");
 }

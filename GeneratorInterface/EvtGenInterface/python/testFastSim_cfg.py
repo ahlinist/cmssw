@@ -3,23 +3,25 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("PROD")
 
 from Configuration.Generator.PythiaUESettings_cfi import *
-process.load("FastSimulation.Configuration.FamosSequences_cff")
+process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 
-process.load("IOMC.RandomEngine.IOMC_cff")
+process.load('Configuration/StandardSequences/Generator_cff')
 
-process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+process.load('FastSimulation/Configuration/FamosSequences_cff')
 
-process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
+process.load('Configuration.StandardSequences.L1TriggerDefaultMenu_cff')
 
-process.load("Configuration.StandardSequences.FakeConditions_cff")
+process.load('FastSimulation.PileUpProducer.PileUpSimulator10TeV_cfi')
 
-process.load("FastSimulation.Configuration.Geometries_cff")
+process.load('IOMC.EventVertexGenerators.VtxSmearedParameters_cfi')
 
-process.load("FastSimulation.Configuration.CommonInputsFake_cff")
+process.load('FastSimulation/Configuration/CommonInputs_cff')
+
+process.load('FastSimulation/Configuration/EventContent_cff')
 
 process.MessageLogger = cms.Service("MessageLogger",
     cout = cms.untracked.PSet(
-        threshold = cms.untracked.string('ERROR')
+       threshold = cms.untracked.string('ERROR')
     ),
     destinations = cms.untracked.vstring('pythiaevtgen.log', 
         'cout')
@@ -29,40 +31,59 @@ process.Timing = cms.Service("Timing")
 process.randomEngineStateProducer = cms.EDProducer("RandomEngineStateProducer")
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    saveFileName = cms.untracked.string(''),
-    initialSeed = cms.untracked.uint32(123456789),
-    moduleSeeds = cms.PSet(
-        g4SimHits = cms.untracked.uint32(11),
-        evtgenproducer = cms.untracked.uint32(1234566),
-        mix = cms.untracked.uint32(12345),
-        VtxSmeared = cms.untracked.uint32(98765432),
-        l1ParamMuons = cms.untracked.uint32(54525),
-        MuonSimHits = cms.untracked.uint32(97531),
-        caloRecHits = cms.untracked.uint32(654321),
-        muonCSCDigis = cms.untracked.uint32(525432),
-        muonDTDigis = cms.untracked.uint32(67673876),
-        famosSimHits = cms.untracked.uint32(13934),
-        paramMuons = cms.untracked.uint32(54525),
-        famosPileUp = cms.untracked.uint32(91827),
-        muonRPCDigis = cms.untracked.uint32(524964),
-        siTrackerGaussianSmearingRecHits = cms.untracked.uint32(24680)
-    ),
-
-      moduleEngines = cms.PSet(
-        l1ParamMuons = cms.untracked.string('TRandom3'),
-        caloRecHits = cms.untracked.string('TRandom3'),
-        MuonSimHits = cms.untracked.string('TRandom3'),
-        muonCSCDigis = cms.untracked.string('TRandom3'),
-        muonDTDigis = cms.untracked.string('TRandom3'),
-        famosSimHits = cms.untracked.string('TRandom3'),
-        paramMuons = cms.untracked.string('TRandom3'),
-        famosPileUp = cms.untracked.string('TRandom3'),
-        VtxSmeared = cms.untracked.string('TRandom3'),
-        muonRPCDigis = cms.untracked.string('TRandom3'),
-        siTrackerGaussianSmearingRecHits = cms.untracked.string('TRandom3')
-    ),
-                                 
-    sourceSeed = cms.untracked.uint32(123456789)
+     saveFileName = cms.untracked.string(''), 
+     theSource = cms.PSet(
+                    initialSeed = cms.untracked.uint32(123456789),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     VtxSmeared = cms.PSet(
+                    initialSeed = cms.untracked.uint32(123456789),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     famosPileUp = cms.PSet(
+                    initialSeed = cms.untracked.uint32(918273),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     famosSimHits = cms.PSet(
+                    initialSeed = cms.untracked.uint32(13579),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     siTrackerGaussianSmearingRecHits = cms.PSet(
+                    initialSeed = cms.untracked.uint32(24680),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     caloRecHits = cms.PSet(
+                    initialSeed = cms.untracked.uint32(654321),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     paramMuons = cms.PSet(
+                    initialSeed = cms.untracked.uint32(54525),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     l1ParamMuons = cms.PSet(
+                    initialSeed = cms.untracked.uint32(6453209),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     MuonSimHits = cms.PSet(
+                    initialSeed = cms.untracked.uint32(987346),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     simMuonRPCDigis = cms.PSet(
+                    initialSeed = cms.untracked.uint32(524964),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     simMuonCSCDigis = cms.PSet(
+                    initialSeed = cms.untracked.uint32(525432),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     simMuonDTDigis = cms.PSet(
+                    initialSeed = cms.untracked.uint32(67673876),
+                    engineName = cms.untracked.string('TRandom3')
+     ),
+     evtgenproducer = cms.PSet(
+                   initialSeed = cms.untracked.uint32(67676)
+     )
+   
 )
 
 process.load("Configuration.Generator.PythiaUESettings_cfi")

@@ -49,7 +49,7 @@ process.myout = cms.OutputModule("PoolOutputModule",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
@@ -381,7 +381,10 @@ process.schedule = cms.Schedule(process.evtgen,
                                 process.p6,
                                 process.outpath)
 
+process.VtxSmeared.src = 'evtgenproducer'
 process.g4SimHits.Generator.HepMCProductLabel = 'evtgenproducer'
-process.genParticleCandidates.src = 'evtgenproducer:'
-process.VtxSmeared.src = 'evtgenproducer:' 
+
+process.genParticleCandidates.src = 'evtgenproducer'
+process.genParticles.src = 'evtgenproducer'
+process.genParticles.abortOnUnknownPDGCode = False
 
