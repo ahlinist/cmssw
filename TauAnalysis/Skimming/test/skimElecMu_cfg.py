@@ -28,14 +28,8 @@ process.source = cms.Source("PoolSource",
 )
 
 #--------------------------------------------------------------------------------
-# select muons and electrons
+# select electrons and muons
 #--------------------------------------------------------------------------------
-
-process.selectedMuons = cms.EDFilter("MuonSelector",
-  src = cms.InputTag('muons'),
-  cut = cms.string("pt > 8 & abs(eta) < 2.5"),
-  filter = cms.bool(True)
-)
 
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
   src = cms.InputTag("pixelMatchGsfElectrons"),
@@ -43,27 +37,10 @@ process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
   filter = cms.bool(True)
 )
 
-#--------------------------------------------------------------------------------
-# combine selected muons and electrons into pairs;
-# disable cut on eta-phi distance between electron and muon
-# (should not be needed to avoid double-counting,
-#  as the electron and muon selections are rather exclusive)
-#--------------------------------------------------------------------------------
-
-process.elecMuPairs = cms.EDProducer("DiCandidatePairProducer",
-  useLeadingTausOnly = cms.bool(False),
-  srcLeg1 = cms.InputTag('selectedElectrons'),
-  srcLeg2 = cms.InputTag('selectedMuons'),
-  dRmin12 = cms.double(-1.),
-  srcMET = cms.InputTag(''),
-  recoMode = cms.string(""),
-  verbosity = cms.untracked.int32(0)                                       
-)
-
-process.selectedElecMuPairs = cms.EDFilter("DiCandidatePairSelector",
-  src = cms.InputTag('elecMuPairs'),
-  cut = cms.string("dR12 > -1."),
-  filter = cms.bool(True)                                     
+process.selectedMuons = cms.EDFilter("MuonSelector",
+  src = cms.InputTag('muons'),
+  cut = cms.string("pt > 8 & abs(eta) < 2.5"),
+  filter = cms.bool(True)
 )
 
 #--------------------------------------------------------------------------------
@@ -71,8 +48,7 @@ process.selectedElecMuPairs = cms.EDFilter("DiCandidatePairSelector",
 #--------------------------------------------------------------------------------
 
 process.elecMuSkimPath = cms.Path(
-  (process.selectedElectrons + process.selectedMuons)
- * process.elecMuPairs
+  process.selectedElectrons + process.selectedMuons
 )
 
 elecMuEventSelection = cms.untracked.PSet(
