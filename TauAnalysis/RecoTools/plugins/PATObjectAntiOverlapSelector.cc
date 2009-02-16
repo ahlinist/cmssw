@@ -8,7 +8,7 @@
 template <class T>
 PATObjectAntiOverlapSelector<T>::PATObjectAntiOverlapSelector(const edm::ParameterSet& cfg)
 {
-  srcNotToBeFiltered_ = cfg.getParameter<edm::InputTag>("srcNotToBeFiltered");
+  srcNotToBeFiltered_ = cfg.getParameter<vInputTag>("srcNotToBeFiltered");
   dRmin_ = cfg.getParameter<double>("dRmin");
 }
 
@@ -23,20 +23,34 @@ void PATObjectAntiOverlapSelector<T>::select(const edm::Handle<collection>& part
 					     const edm::Event& evt, const edm::EventSetup& es)
 {
   selected_.clear();
-  
-  edm::Handle<reco::CandidateView> particlesNotToBeFiltered;
-  evt.getByLabel(srcNotToBeFiltered_, particlesNotToBeFiltered);
 
-  for ( typename collection::const_iterator particleToBeFiltered = particlesToBeFiltered->begin();
-	particleToBeFiltered != particlesToBeFiltered->end(); ++particleToBeFiltered ) {
-    bool isOverlap = false;
+  std::vector<bool> isOverlap(particlesToBeFiltered->size());
+
+  for ( vInputTag::const_iterator it = srcNotToBeFiltered_.begin();
+	it != srcNotToBeFiltered_.end(); ++it ) {
+
+    edm::Handle<reco::CandidateView> particlesNotToBeFiltered;
+    evt.getByLabel(*it, particlesNotToBeFiltered);
+
     for ( reco::CandidateView::const_iterator particleNotToBeFiltered = particlesNotToBeFiltered->begin();
 	  particleNotToBeFiltered != particlesNotToBeFiltered->end(); ++particleNotToBeFiltered ) {
-      double dR = reco::deltaR(particleToBeFiltered->p4(), particleNotToBeFiltered->p4());
-      if ( dR < dRmin_ ) isOverlap = true;
+
+      int particleToBeFilteredIndex = 0;
+      for ( typename collection::const_iterator particleToBeFiltered = particlesToBeFiltered->begin();
+	    particleToBeFiltered != particlesToBeFiltered->end(); ++particleToBeFiltered, ++particleToBeFilteredIndex ) {
+
+	double dR = reco::deltaR(particleToBeFiltered->p4(), particleNotToBeFiltered->p4());
+
+	if ( dR < dRmin_ ) isOverlap[particleToBeFilteredIndex] = true;
+      }
     }
-    
-    if ( !isOverlap) selected_.push_back(&(*particleToBeFiltered)); 
+  }
+  
+  int particleToBeFilteredIndex = 0;
+  for ( typename collection::const_iterator particleToBeFiltered = particlesToBeFiltered->begin();
+	particleToBeFiltered != particlesToBeFiltered->end(); ++particleToBeFiltered, ++particleToBeFilteredIndex ) {
+
+    if ( !isOverlap[particleToBeFilteredIndex] ) selected_.push_back(&(*particleToBeFiltered)); 
   }
 }
 
