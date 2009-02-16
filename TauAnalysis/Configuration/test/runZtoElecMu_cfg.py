@@ -13,6 +13,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 process.load("TauAnalysis.Configuration.producePatLayer1_cff")
+process.load("TauAnalysis.CandidateTools.elecMuPairProducer_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 
@@ -34,23 +35,11 @@ process.source = cms.Source("PoolSource",
 # Z --> tau tau (all decay modes; simulated with TAUOLA)
 # 10k events RelVal sample
 #
- 'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_1.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_4.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_5.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_6.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_7.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_8.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_9.root',
-   'rfio:/castor/cern.ch/user/s/sunil/SkimJanuary09/ZtautauSkim/Ztautau/elecMuSkim_10.root'    
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
+    )
 )
-)
-#process.OutputModule = cms.OutputModule("PoolOutputModule",
-#      fileName = cms.untracked.string('/tmp/sunil/elecMuSkim.root')
-
-#)#
 
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
+                     +process.produceElecMuPairs
                      +process.analyzeZtoElecMu
-                     +process.saveZtoElecMu 
-)
-#process.o = cms.EndPath(process.OutputModule)
+                     +process.saveZtoElecMu )
