@@ -25,6 +25,16 @@ es_module HitMatchingAlgorithm_globalgeometry_PixelDigi_ = HitMatchingAlgorithm_
      double ipWidth = 15.0
 }
 
+es_module HitMatchingAlgorithm_globalgeometry_TTHit_ = HitMatchingAlgorithm_globalgeometry_TTHit_ {
+     # Minimum pt threhold for track finder
+     # This is a highly speed-optimised module, so setting this
+     # too low will introduce non-linearities
+     double minPtThreshold = 5.0
+
+     # IP width in cm
+     # Will have to be tuned according to LHC beam conditions
+     double ipWidth = 15.0
+}
 
 
 

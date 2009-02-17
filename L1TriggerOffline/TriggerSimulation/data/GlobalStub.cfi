@@ -5,3 +5,7 @@ module GlobalStubsFromSimHits = GlobalStubBuilder_PSimHit_{
 module GlobalStubsFromPixelDigis = GlobalStubBuilder_PixelDigi_{
      InputTag LocalStubs = "LocalStubsFromPixelDigis"
 }
+
+module GlobalStubsFromTrackTriggerHits = GlobalStubBuilder_TTHit_{
+     InputTag LocalStubs = "LocalStubsFromTrackTriggerHits"
+}

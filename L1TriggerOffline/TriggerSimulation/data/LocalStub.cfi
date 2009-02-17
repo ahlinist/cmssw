@@ -6,3 +6,7 @@ module LocalStubsFromPixelDigis = LocalStubBuilder_PixelDigi_{
      VInputTag rawHits = {"siPixelDigis"}
      uint32 ADCThreshold = 30
 }
+
+module LocalStubsFromTrackTriggerHits = LocalStubBuilder_TTHit_{
+     VInputTag rawHits = {"TrackTriggerHitsFromPixelDigis"}
+}
