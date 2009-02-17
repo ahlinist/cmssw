@@ -3,8 +3,8 @@
  * DQM for generic FED data: loops over feds and fills datasize histograms
  *   
  * 
- * $Date: 2007/10/09 08:08:04 $
- * $Revision: 1.1 $
+ * $Date: 2008/03/01 00:39:56 $
+ * $Revision: 1.2 $
  * \author E. Meschi PH/CMD
  *
 */
@@ -46,7 +46,7 @@ namespace dqm{
 	  hfedsize = dbe->book1D("fedsize","FED Size Distribution",100,0.,10000.);
 	  hfedprof = dbe->bookProfile("fedprof","FED Size by ID", 2048,0.,2048.,
 				      0,0.,5000.);
-	  hindfed = new MonitorElement*[FEDNumbering::lastFEDId()];
+	  hindfed = new MonitorElement*[FEDNumbering::MAXFEDID];
 
 	}
 	catch(cms::Exception &e)
@@ -63,7 +63,7 @@ namespace dqm{
 
       void beginJob(edm::EventSetup const&es)
       {
-	for(int i = 0; i<FEDNumbering::lastFEDId(); i++)
+	for(int i = 0; i<FEDNumbering::MAXFEDID; i++)
 	  hindfed[i] = 0;
       }
       void endJob()
@@ -96,7 +96,7 @@ namespace dqm{
 	  {
 	    edm::Handle<FEDRawDataCollection> rawdata;
 	    e.getByType(rawdata);
-	    for (int i = 0; i<FEDNumbering::lastFEDId(); i++){
+	    for (int i = 0; i<FEDNumbering::MAXFEDID; i++){
 	      const FEDRawData& data = rawdata->FEDData(i);
 	      if(size_t size=data.size()) {
 		hfedsize->Fill(float(size));
@@ -124,7 +124,7 @@ namespace dqm{
       }
       void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
       {
-	//	for (int i = 0; i<FEDNumbering::lastFEDId(); i++)
+	//	for (int i = 0; i<FEDNumbering::MAXFEDID; i++)
 	//	  if(hindfed[i]==0)
 	//	    hindfed[i]->Reset();
       }
