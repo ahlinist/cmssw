@@ -47,6 +47,8 @@ void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
   printMuonInfo(iEvent);
 
   printMissingEtInfo(iEvent);
+
+  printJetInfo(iEvent);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

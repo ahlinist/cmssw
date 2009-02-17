@@ -48,6 +48,8 @@ void MuTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSet
   printTauInfo(iEvent);
 
   printMissingEtInfo(iEvent);
+
+  printJetInfo(iEvent);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
