@@ -1,4 +1,3 @@
 # to compile locally on cmses01
 . env_cmses01.sh
 make -f makefile.standalone_cmses01
-
