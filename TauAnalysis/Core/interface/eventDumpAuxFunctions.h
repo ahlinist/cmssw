@@ -19,7 +19,7 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >&, 
 
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Handle<edm::View<reco::GenJet> >&, std::ostream*);
 
-void printTrackInfo(const edm::RefToBase<reco::Track>&, const reco::Candidate::Point&, std::ostream*);
+void printTrackInfo(const edm::RefToBase<reco::Track>&, const reco::Candidate::Point&, bool, bool, std::ostream*);
 void printVertexInfo(const reco::Candidate::Point&, std::ostream*);
 
 void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, std::ostream*);
