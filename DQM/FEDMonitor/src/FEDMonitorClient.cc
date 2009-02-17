@@ -141,9 +141,8 @@ namespace dqm{
 	int sste = 0;
 	int sstw = 0;
 	int ssto = 0;
-	pair<int, int> range = FEDNumbering::getSiStripFEDIds();
-	int sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	int sstt = FEDNumbering::MAXSiStripFEDID - FEDNumbering::MINSiStripFEDID + 1;
+	for (int i = FEDNumbering::MINSiStripFEDID; i <= FEDNumbering::MAXSiStripFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -173,9 +172,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getSiPixelFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXSiPixelFEDID - FEDNumbering::MINSiPixelFEDID + 1;
+	for (int i = FEDNumbering::MINSiPixelFEDID; i <= FEDNumbering::MAXSiPixelFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -205,9 +203,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getDTFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXDTFEDID - FEDNumbering::MINDTFEDID + 1;
+	for (int i = FEDNumbering::MINDTFEDID; i <= FEDNumbering::MAXDTFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -238,9 +235,8 @@ namespace dqm{
 
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getCSCFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXCSCFEDID - FEDNumbering::MINCSCFEDID + 1;
+	for (int i = FEDNumbering::MINCSCFEDID; i <= FEDNumbering::MAXCSCFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -270,9 +266,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getDTTFFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXDTTFFEDID - FEDNumbering::MINDTTFFEDID + 1;
+	for (int i = FEDNumbering::MINDTTFFEDID; i <= FEDNumbering::MAXDTTFFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -303,9 +298,8 @@ namespace dqm{
 
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getRPCFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXRPCFEDID - FEDNumbering::MINRPCFEDID+ 1;
+	for (int i = FEDNumbering::MINRPCFEDID; i <= FEDNumbering::MAXRPCFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -335,9 +329,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getPreShowerFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXPreShowerFEDID - FEDNumbering::MINPreShowerFEDID + 1;
+	for (int i = FEDNumbering::MINPreShowerFEDID; i <= FEDNumbering::MAXPreShowerFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -367,9 +360,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getEcalFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXECALFEDID - FEDNumbering::MINECALFEDID + 1;
+	for (int i = FEDNumbering::MINECALFEDID; i <= FEDNumbering::MAXECALFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -399,9 +391,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getHcalFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXHCALFEDID - FEDNumbering::MINHCALFEDID + 1;
+	for (int i = FEDNumbering::MINHCALFEDID; i <= FEDNumbering::MAXHCALFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -431,9 +422,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getTriggerGTPFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXTriggerGTPFEDID - FEDNumbering::MINTriggerGTPFEDID + 1;
+	for (int i = FEDNumbering::MINTriggerGTPFEDID; i <= FEDNumbering::MAXTriggerGTPFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -463,9 +453,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getTriggerEGTPFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXTriggerEGTPFEDID - FEDNumbering::MINTriggerEGTPFEDID + 1;
+	for (int i = FEDNumbering::MINTriggerEGTPFEDID; i <= FEDNumbering::MAXTriggerEGTPFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -496,9 +485,8 @@ namespace dqm{
 
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getCSCTFFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXCSCTFFEDID - FEDNumbering::MINCSCFEDID + 1;
+	for (int i = FEDNumbering::MINCSCFEDID; i <= FEDNumbering::MAXCSCTFFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
@@ -528,9 +516,8 @@ namespace dqm{
 	     << " </td><td> " << ssto << " </td></tr> " << endl;
 
 	sstn = 0; sste=0; sstw=0; ssto=0;
-	range = FEDNumbering::getDAQeFEDFEDIds();
-	sstt = range.second - range.first + 1;
-	for (int i = range.first; i <= range.second; i++) 
+	sstt = FEDNumbering::MAXDAQeFEDFEDID - FEDNumbering::MINDAQeFEDFEDID + 1;
+	for (int i = FEDNumbering::MINDAQeFEDFEDID; i <= FEDNumbering::MAXDAQeFEDFEDID; i++) 
 	  {
 	    ostringstream oss;
 	    oss << "FEDs/Collated/fed" << i;
