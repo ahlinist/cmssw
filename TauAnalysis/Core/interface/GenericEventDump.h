@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: GenericEventDump.h,v 1.1 2009/02/10 10:27:19 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.2 2009/02/11 15:41:29 veelken Exp $
  *
  */
 
@@ -41,6 +41,7 @@ class GenericEventDump : public EventDumpBase
   virtual void printMuonInfo(const edm::Event&) const;
   virtual void printTauInfo(const edm::Event&) const;
   virtual void printMissingEtInfo(const edm::Event&) const;
+  virtual void printJetInfo(const edm::Event&) const;
 
 //--- configuration parameters
   edm::InputTag l1GtReadoutRecordSource_;
@@ -59,6 +60,9 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag patTauSource_;
 
   edm::InputTag patMEtSource_;
+  edm::InputTag genMEtSource_;
+
+  edm::InputTag patJetSource_;
 
   edm::InputTag recoTrackSource_;
 };

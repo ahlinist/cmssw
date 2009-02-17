@@ -15,6 +15,9 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/METReco/interface/GenMET.h"
+#include "DataFormats/METReco/interface/GenMETFwd.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
@@ -50,7 +53,10 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   patMuonSource_ = getInputTag(cfg, "muonSource");
   patTauSource_ = getInputTag(cfg, "tauSource");
 
-  patMEtSource_ = getInputTag(cfg, "patMEtSource");
+  patMEtSource_ = getInputTag(cfg, "metSource");
+  genMEtSource_ = getInputTag(cfg, "genMEtSource");
+
+  patJetSource_ = getInputTag(cfg, "jetSource");
 
   recoTrackSource_ = getInputTag(cfg, "recoTrackSource");
 }
@@ -191,9 +197,9 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
 	*outputStream_ << "  none." << std::endl;
       }
       *outputStream_ << " Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->track()), patElectron->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->track()), patElectron->vertex(), true, false, outputStream_);
       *outputStream_ << " gsf Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), patElectron->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), patElectron->vertex(), true, false, outputStream_);
       *outputStream_ << " Supercluster Energy/Track Momentum = " << patElectron->eSuperClusterOverP() << std::endl;
       *outputStream_ << " electronID('robust') = " << patElectron->electronID("robust") << std::endl;
       *outputStream_ << " trackIso = " << patElectron->trackIso() << std::endl;
@@ -227,11 +233,11 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
       *outputStream_ << " theta = " << patMuon->theta()*180./TMath::Pi() << " (eta = " << patMuon->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patMuon->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " inner Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), patMuon->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), patMuon->vertex(), true, false, outputStream_);
       *outputStream_ << " outer Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->outerTrack()), patMuon->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->outerTrack()), patMuon->vertex(), true, false, outputStream_);
       *outputStream_ << " global Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), patMuon->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), patMuon->vertex(), true, false, outputStream_);
       *outputStream_ << " trackIso = " << patMuon->trackIso() << std::endl;
       if ( recoTrackSource_.label() != "" ) {
 	edm::Handle<reco::TrackCollection> recoTracks;
@@ -269,7 +275,7 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi() << " (eta = " << patTau->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " leading Track" << std::endl;
-      printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), outputStream_);
+      printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), true, false, outputStream_);
       *outputStream_ << " #signal Tracks = " << patTau->signalTracks().size() << std::endl;
       *outputStream_ << " tauId" << std::endl;
       *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
@@ -281,6 +287,39 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patTau->vertex(), outputStream_);
       ++iTau;
+    }
+
+    *outputStream_ << std::endl;
+  }
+}
+
+void GenericEventDump::printJetInfo(const edm::Event& evt) const
+{
+  if ( !outputStream_ ) {
+    edm::LogError ("printJetInfo") << " outputStream = NULL --> skipping !!";
+    return;
+  }
+
+  if ( patJetSource_.label() != "" ) {
+    edm::Handle<pat::JetCollection> patJets;
+    evt.getByLabel(patJetSource_, patJets);
+
+    unsigned iJet = 0;
+    for ( pat::JetCollection::const_iterator patJet = patJets->begin(); 
+	  patJet != patJets->end(); ++patJet ) {
+      *outputStream_ << "Jet(" << iJet << "):" << std::endl;
+      *outputStream_ << " Et = " << patJet->et() << std::endl;
+      *outputStream_ << " theta = " << patJet->theta()*180./TMath::Pi() << " (eta = " << patJet->eta() << ")" << std::endl;
+      *outputStream_ << " phi = " << patJet->phi()*180./TMath::Pi() << std::endl;
+      *outputStream_ << " Tracks" << std::endl;
+      double trackPtSum = 0.;
+      for ( reco::TrackRefVector::const_iterator track = patJet->associatedTracks().begin();
+	    track != patJet->associatedTracks().end(); ++track ) {
+	printTrackInfo(edm::RefToBase<reco::Track>(*track), patJet->vertex(), false, false, outputStream_);
+	trackPtSum += (*track)->pt();
+      }
+      *outputStream_ << "  sum Pt = " << trackPtSum << std::endl;
+      ++iJet;
     }
 
     *outputStream_ << std::endl;
@@ -309,22 +348,31 @@ void GenericEventDump::printMissingEtInfo(const edm::Event& evt) const
       
       *outputStream_ << "PAT MET:" 
 		     << " Et = " << patMET->pt() << "," 
-		     << " phi = " <<  patMET->phi() << std::endl;
-      *outputStream_ << " isCaloMET = " << patMET->isCaloMET() << std::endl;
-      
+		     << " phi = " <<  patMET->phi()*180./TMath::Pi() << std::endl;
+      *outputStream_ << " isCaloMET = " << patMET->isCaloMET() << std::endl;      
       if ( patMET->genMET() != NULL ) {
-	const reco::GenMET* genMET = patMET->genMET();
-	
-	*outputStream_ << "genMET:" 
-		       << " Et = " << genMET->pt() << "," 
-		       << " phi = " <<  genMET->phi() << std::endl;
-	
+	const reco::GenMET* genMET = patMET->genMET();	
+	*outputStream_ << " associated genMET" 
+		       << "  Et = " << genMET->pt() << "," 
+		       << "  phi = " <<  genMET->phi()*180./TMath::Pi() << std::endl;
       } else {
 	*outputStream_ << "no genMET associated to PAT MET !!" << std::endl;
       }
     }
-
-    *outputStream_ << std::endl;
   }
+
+  if ( genMEtSource_.label() != "" ) {
+    edm::Handle<reco::GenMETCollection> genMETs;
+    evt.getByLabel(genMEtSource_, genMETs);
+
+    for ( reco::GenMETCollection::const_iterator genMET = genMETs->begin(); 
+	  genMET != genMETs->end(); ++genMET ) {
+      *outputStream_ << "genMET (incl. Muons):" 
+		     << " Et = " << genMET->pt() << "," 
+		     << " phi = " <<  genMET->phi()*180./TMath::Pi() << std::endl;
+    }
+  }
+  
+  *outputStream_ << std::endl;
 }
 
