@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.2 2009/01/28 13:08:21 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.6 2009/02/13 17:06:16 carrillo Exp $
 //
 //
 
@@ -68,6 +68,9 @@ public:
   TFile * theFileOut;
   
   TH1F * statistics;
+  
+  TH1F * MeanResiduals;
+  TH1F * MeanResiduals11;
 
   TH2F * bxbarrel;
   TH2F * bxendcap;
@@ -346,6 +349,7 @@ private:
   std::ofstream rollsNotPointedForASegment;
   std::ofstream bxMeanList;
   std::ofstream efftxt;
+  std::ofstream alignment;
   bool prodimages;
   bool makehtml;
   bool cosmics;
@@ -381,6 +385,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
   efftxt.open("RPCDetId_Eff.dat");
+  alignment.open("Alignment.dat");
 }
 
 
@@ -630,6 +635,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   os="Efficiency_Roll_vs_Sector_Disk_+3";                                      
   Disk3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
   
+  MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
+  MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-1,1);
   
   //Producing plots for residuals and global statistics.
 
@@ -642,10 +649,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   folder = "DQMData/Muons/MuonSegEff/";
   
   meIdRES = folder + "Statistics";
+  
   statistics = (TH1F*)theFile->Get(meIdRES.c_str());
   statistics->GetXaxis()->LabelsOption("v");
   statistics->GetXaxis()->SetLabelSize(0.035);
   statistics->Draw();
+  
   labeltoSave = "Statistics.png";
   Ca3->SetBottomMargin(0.35);
   Ca3->SaveAs(labeltoSave.c_str()); 
@@ -881,7 +890,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	int nstrips = int((*r)->nstrips());
 
-	if(rpcId.region()==0 && barrel && (!cosmics||(station!=4))){  
+	if(rpcId.region()==0 && barrel){  
 	  
 	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
@@ -970,7 +979,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  if(histoRPC && histoDT && BXDistribution && histoRealRPC){
 	    int nstrips=(*r)->nstrips();
 	    for(int i=1;i<=int(nstrips);++i){
-	      if(histoRealRPC->GetBinContent(i)==0){
+	      if(histoRealRPC->GetBinContent(i)==0 || histoDT->GetBinContent(i)==0){
 		std::cout<<"1";
 		if(i==1){
 		  maskeffect[1]=true;
@@ -1056,9 +1065,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPRO->SetBinError(i,buffer);
 	    }
 
-	    for(int i=(*r)->nstrips()+1;i<=95;i++) efftxt<<"  "<<0.95;
-
-	    efftxt<<std::endl;
+	    for(int i=(*r)->nstrips()+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
 
 	    assert(NumberWithOutPrediction+NumberStripsPointed == (*r)->nstrips());
 	    
@@ -1075,6 +1082,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
 	      }
 	      
+	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
+
 	      DoubleGapBarrel->Fill(doublegapeff);
 	      
 	      int Ring = rpcId.ring();
@@ -1176,6 +1185,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }
 	    }
 
+	    alignment<<rpcsrv.name()<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
+
+	    MeanResiduals->Fill(histoResidual->GetMean());
+	    MeanResiduals11->Fill(histoResidual->GetMean());
 
 	    int Ring = rpcId.ring();
 	    int sector = rpcId.sector();
@@ -2564,6 +2577,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  Ca5->SaveAs("Pigi/Wheel2Summary.png"); Ca5->SaveAs("Pigi/Wheel2Summary.root");
  Ca5->Clear();
 
+ Ca0->Clear();
+ MeanResiduals->Draw(); MeanResiduals->GetXaxis()->SetTitle("cm");
+ Ca0->SaveAs("MeanResiduals.png"); Ca0->SaveAs("MeanResiduals.root");
+ Ca0->Clear();
+
+ MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
+ Ca0->SaveAs("MeanResiduals11.png"); Ca0->SaveAs("MeanResiduals11.root");
+ Ca0->Clear();
+
   if(endcap){
    
    Ca2->Clear();
@@ -2650,7 +2672,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca2->SaveAs("Sides/SegEff_Dm1near.png");
    Ca2->SaveAs("SegEff_Dm1near.root");
    Ca2->Clear();
- }
+  }
  
  //Barrel
  if(barrel){
@@ -3299,10 +3321,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca2->SaveAs("Sides/SegEff_Dm3near.png");
    Ca2->SaveAs("SegEff_Dm3near.root");
    Ca2->Clear();
+
  }
 
  Ca1 = new TCanvas("Ca1","Efficiency",800,600);
- 
  
  if(barrel){
    EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png");Ca1->SaveAs("EffDistroBarrel.root"); 
@@ -3352,8 +3374,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffDistroD3far->GetXaxis()->SetTitle("%"); EffDistroD3far->Draw(); Ca1->SaveAs("Distro/EffDistroD3far.png");Ca1->SaveAs("EffDistroD3far.root"); 
  }
 
-
- 
  theFileOut->cd();
 
  Wheelm2Summary->Write();
@@ -3549,7 +3569,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  theFile->Close();
 
  efftxt.close();
-
+ alignment.close();
 } 
 
 void 
