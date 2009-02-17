@@ -231,6 +231,14 @@ diTauCandidateForElecTauZeroChargeCut = cms.PSet(
   minNumber = cms.uint32(1)
 )
 
+# veto events containing additional central jets with Et > 20 GeV
+centralJetVeto = cms.PSet(
+  name = cms.string('centralJetVeto'),
+  type = cms.string('PATJetMaxEventSelector'),
+  src = cms.InputTag('selectedLayer1JetsEt20'),
+  maxNumber = cms.uint32(0)
+)
+
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -252,6 +260,8 @@ elecTauEventDump = cms.PSet(
   electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
   tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
   metSource = cms.InputTag('allLayer1METs'),
+  genMEtSource = cms.InputTag('genMETWithMu'),
+  jetSource = cms.InputTag('selectedLayer1JetsEt20'),
 
   #output = cms.string("elecTauEventDump.txt"),
   output = cms.string("std::cout"),
@@ -511,5 +521,15 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     histManagers = elecTauHistManagers,
     replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
+  #),
+
+  # veto events containing additional central jets with Et > 20 GeV
+  #cms.PSet(
+  #  filter = cms.string('centralJetVeto'),
+  #  title = cms.string('central Jet Veto'),
+  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #),
+  #cms.PSet(
+  #  histManagers = muTauHistManagers,
   )
 )

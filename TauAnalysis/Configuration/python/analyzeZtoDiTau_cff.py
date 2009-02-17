@@ -42,7 +42,10 @@ analyzeZtoDiTau = cms.EDAnalyzer("GenericAnalyzer",
     # di-tau candidate selection
     diTauCandidateForDiTauAntiOverlapVeto,
     diTauCandidateForDiTauAcoplanarityCut,
-    diTauCandidateForDiTauZeroChargeCut
+    diTauCandidateForDiTauZeroChargeCut,
+
+    # veto events containing additional central jets with Et > 20 GeV
+    centralJetVeto
   ),
   
   histManagers = cms.VPSet(

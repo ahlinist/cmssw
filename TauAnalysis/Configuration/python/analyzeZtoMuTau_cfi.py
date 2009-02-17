@@ -230,6 +230,14 @@ diTauCandidateForMuTauZeroChargeCut = cms.PSet(
   minNumber = cms.uint32(1)
 )
 
+# veto events containing additional central jets with Et > 20 GeV
+centralJetVeto = cms.PSet(
+  name = cms.string('centralJetVeto'),
+  type = cms.string('PATJetMaxEventSelector'),
+  src = cms.InputTag('selectedLayer1JetsEt20'),
+  maxNumber = cms.uint32(0)
+)
+
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -251,14 +259,14 @@ muTauEventDump = cms.PSet(
   muonSource = cms.InputTag('allLayer1MuonsSelForTauAnalyses'),
   tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
   metSource = cms.InputTag('allLayer1METs'),
+  genMEtSource = cms.InputTag('genMETWithMu'),
+  jetSource = cms.InputTag('selectedLayer1JetsEt20'),
 
   #output = cms.string("muTauEventDump.txt"),
   output = cms.string("std::cout"),
 
-  triggerConditions = cms.vstring("tauMuonVeto: passed_cumulative")
-  #triggerConditions = cms.vstring("muonTrkIsoCut: rejected_cumulative")
-  #triggerConditions = cms.vstring("muonTrkIPcut: rejected_cumulative")
-  #triggerConditions = cms.vstring("muTauEventVertex: rejected_cumulative")
+  #triggerConditions = cms.vstring("centralJetVeto: rejected_cumulative")
+  triggerConditions = cms.vstring("diTauCandidateForMuTauAcoplanarityCut: rejected_cumulative")
   #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
   #                                "globalMuonCut: rejected_cumulative",
   #                                "muonEtaCut: rejected_cumulative",
@@ -277,7 +285,6 @@ muTauEventDump = cms.PSet(
   #                                "tauEcalIsoCut: rejected_cumulative",
   #                                "tauProngCut: rejected_cumulative",
   #                                "tauMuonVeto: rejected_cumulative")
-  #triggerConditions = cms.vstring("tauEtaCut: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -531,5 +538,15 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     histManagers = muTauHistManagers,
     replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative')
+  #),
+
+  # veto events containing additional central jets with Et > 20 GeV
+  #cms.PSet(
+  #  filter = cms.string('centralJetVeto'),
+  #  title = cms.string('central Jet Veto'),
+  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #),
+  #cms.PSet(
+  #  histManagers = muTauHistManagers,
   )
 )
