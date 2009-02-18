@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.11 2009/02/04 18:55:25 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.12 2009/02/09 01:54:50 smaruyam Exp $
 //
 //
 
@@ -42,6 +42,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFProng = 0.;
   PFIso = 0;
   PFIsoSum = 0;
+  PFEnergy = 0;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauEt",&PFEt,"PFTauEt/F");
@@ -50,6 +51,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauProng", &PFProng, "PFTauProng/F");
   _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
+  _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
@@ -122,6 +124,8 @@ TTEffAnalyzer::fill(const reco::PFTau& tau) {
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng = tau.signalPFChargedHadrCands().size(); // check config file
   PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
+
+  PFEnergy = tau.energy();
 }
 
 void TTEffAnalyzer::fill(const reco::CaloTau& tau) {
