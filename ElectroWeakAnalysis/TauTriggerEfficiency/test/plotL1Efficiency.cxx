@@ -240,7 +240,7 @@ void plotL1Efficiency(  bool print=false) {
   */
 
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_L1Jet30.C");
+  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1TauVeto_L1Jet30");
   TGraphAsymmErrors *h_PFTauEt_L1TauVeto_L1Jet30_Sim = 
     plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","(L1TauVeto==0 || L1JetEt>30.)&& hasMatchedL1Jet==1",DenEtaCut);
 
@@ -287,13 +287,17 @@ void plotL1Efficiency(  bool print=false) {
 
 
 
-
+  TLatex l;
+  l.SetTextSize(.03);
+  l.SetNDC(kTRUE);
+  l.SetTextColor(kRed);
 
   /* ****** */
   // Parametrize Shower veto efficiency vs. PFTau Et
 
+  // L1 jet efficiency vs. PFTau Et
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName("L1Eff_PFTauEt_L1Jet.C");
+  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1Jet");
   TGraphAsymmErrors *h_PFTauEt_L1Jet_Sim = 
     plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","hasMatchedL1Jet==1",DenEtaCut);
 
@@ -306,13 +310,18 @@ void plotL1Efficiency(  bool print=false) {
   h_PFTauEt_L1Jet_Sim->Fit("myfit0","R+");
   myfit0->Draw("same");
 
+  l.DrawLatex(0.5, 0.6,  "p_{0} #times TMath::Freq  #left(#frac{ #sqrt{E_{T}}- #sqrt{p_{1}}}{2p_{2}}#right)");
+  l.DrawLatex(0.5, 0.53, Form("p_{0} = %8.5f  (plateau)", myfit0->GetParameter(0)));
+  l.DrawLatex(0.5, 0.49, Form("p_{1} = %8.5f  (turn on)", myfit0->GetParameter(1)));
+  l.DrawLatex(0.5, 0.45, Form("p_{2} = %8.5f  (turn on)", myfit0->GetParameter(2)));
+
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Jet_Fit.gif");
 
   //return;
 
-  
+  // L1Jet > 30 efficiency vs. PFTau Et
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName("L1Eff_PFTauEt_L1Jet30.C");
+  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1Jet30");
   TGraphAsymmErrors *h_PFTauEt_L1Jet30_Sim = 
     plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","L1JetEt>30. && hasMatchedL1Jet==1",DenEtaCut);
 
@@ -325,12 +334,18 @@ void plotL1Efficiency(  bool print=false) {
   h_PFTauEt_L1Jet30_Sim->Fit("myfit1","R+");
   myfit1->Draw("same");
 
+  l.DrawLatex(0.5, 0.6,  "p_{0} #times TMath::Freq  #left(#frac{ #sqrt{E_{T}}- #sqrt{p_{1}}}{2p_{2}}#right)");
+  l.DrawLatex(0.5, 0.53, Form("p_{0} = %8.5f  (plateau)", myfit1->GetParameter(0)));
+  l.DrawLatex(0.5, 0.49, Form("p_{1} = %8.5f  (turn on)", myfit1->GetParameter(1)));
+  l.DrawLatex(0.5, 0.45, Form("p_{2} = %8.5f  (turn on)", myfit1->GetParameter(2)));
+
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Jet30_Fit.gif");
 
   //return;
 
+  // Shower veto (L1Tau) OR L1Jet>30 efficiency OR vs. PFTau Et
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_L1Jet30.C");
+  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1TauVeto_L1Jet30");
   TGraphAsymmErrors *h_PFTauEt_L1TauVeto_L1Jet30_Sim = 
     plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","(L1TauVeto==0 || L1JetEt>30.) && hasMatchedL1Jet==1",DenEtaCut);
 
@@ -343,12 +358,18 @@ void plotL1Efficiency(  bool print=false) {
   h_PFTauEt_L1TauVeto_L1Jet30_Sim->Fit("myfit1","R+");
   myfit1->Draw("same");
 
+  l.DrawLatex(0.5, 0.6,  "p_{0} #times TMath::Freq  #left(#frac{ #sqrt{E_{T}}- #sqrt{p_{1}}}{2p_{2}}#right)");
+  l.DrawLatex(0.5, 0.53, Form("p_{0} = %8.5f  (plateau)", myfit1->GetParameter(0)));
+  l.DrawLatex(0.5, 0.49, Form("p_{1} = %8.5f  (turn on)", myfit1->GetParameter(1)));
+  l.DrawLatex(0.5, 0.45, Form("p_{2} = %8.5f  (turn on)", myfit1->GetParameter(2)));
+
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1TauVeto_L1Jet30_Fit.gif");
 
   //return;
 
+  // Shower veto (L1Tau) efficiency vs. PFTau Et
   plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName("L1Eff_PFTauEt_L1TauVeto_Fit.C");
+  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1TauVeto_Fit");
   TGraphAsymmErrors *h_PFTauEt_L1TauVeto_Fit_Sim = 
     plotter->DrawHistogram("PFTauEt>>hnum(50.,0.,100.)","L1TauVeto==0 && hasMatchedL1Jet==1",DenEtaCut);
 
@@ -356,13 +377,37 @@ void plotL1Efficiency(  bool print=false) {
   h_PFTauEt_L1TauVeto_Fit_Sim->SetMarkerColor(kBlack);
 
   TF1 *myfit2 = new TF1("myfit2","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))", 0., 100.);
-  //TF1 *myfit2 = new TF1("myfit2","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))*TMath::Gaus(sqrt(x)-sqrt([3]),[4],[5])", 5., 80.);
   myfit2->SetParameters(0,1.,1,15.,2,1.);
 
   h_PFTauEt_L1TauVeto_Fit_Sim->Fit("myfit2","R+");
   myfit2->Draw("same");
 
+  l.DrawLatex(0.5, 0.6,  "p_{0} #times TMath::Freq  #left(#frac{ #sqrt{E_{T}}- #sqrt{p_{1}}}{2p_{2}}#right)");
+  l.DrawLatex(0.5, 0.53, Form("p_{0} = %8.5f  (plateau)", myfit2->GetParameter(0)));
+  l.DrawLatex(0.5, 0.49, Form("p_{1} = %8.5f  (turn on)", myfit2->GetParameter(1)));
+  l.DrawLatex(0.5, 0.45, Form("p_{2} = %8.5f  (turn on)", myfit2->GetParameter(2)));
+
   if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Tau_Fit.gif");
+
+  // Same, but with gaussian addition
+  h_PFTauEt_L1TauVeto_Fit_Sim->Draw("PA");
+  h_PFTauEt_L1TauVeto_Fit_Sim->SetMarkerColor(kBlack);
+  TF1 *myfit2 = new TF1("myfit2","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))*TMath::Gaus(sqrt(x)-sqrt([3]),[4],[5])", 5., 100.);
+  myfit2->SetParameters(0,1.,1,15.,2,1.);
+
+  h_PFTauEt_L1TauVeto_Fit_Sim->Fit("myfit2","R+");
+  myfit2->Draw("same");
+
+
+  l.DrawLatex(0.5, 0.56,  "#splitline{p_{0} #times TMath::Freq  #left(#frac{ #sqrt{E_{T}}- #sqrt{p_{1}}}{2p_{2}}#right)}{     #times TMath::Gaus  #left( #sqrt{E_{T}}- #sqrt{p_{3}},p_{4},p_{5}#right)}");
+  l.DrawLatex(0.5, 0.49, Form("p_{0} = %8.5f  (plateau)", myfit2->GetParameter(0)));
+  l.DrawLatex(0.5, 0.45, Form("p_{1} = %8.5f  (turn on)", myfit2->GetParameter(1)));
+  l.DrawLatex(0.5, 0.41, Form("p_{2} = %8.5f  (turn on)", myfit2->GetParameter(2)));
+  l.DrawLatex(0.5, 0.37, Form("p_{3} = %8.5f", myfit2->GetParameter(3)));
+  l.DrawLatex(0.5, 0.33, Form("p_{4} = %8.5f", myfit2->GetParameter(4)));
+  l.DrawLatex(0.5, 0.29, Form("p_{5} = %8.5f", myfit2->GetParameter(5)));
+
+  if (print) gPad->SaveAs(plotDir+"PFTauEt_L1Tau_Fit_Gaussian.gif");
 
   //return;
 
