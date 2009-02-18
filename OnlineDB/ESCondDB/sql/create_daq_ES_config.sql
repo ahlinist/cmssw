@@ -1,5 +1,4 @@
 
-CONNECT cms_preshower_test/2008preshower@devdb10
 
 CREATE TABLE ES_RUN_MODE_DEF (
 	DEF_ID  NUMBER NOT NULL
