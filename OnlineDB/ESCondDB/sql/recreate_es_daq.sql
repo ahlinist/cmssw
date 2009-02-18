@@ -1,5 +1,5 @@
 
-CONNECT cms_preshower_test/2008preshower@devdb10
+CONNECT account@devdb10/passwd
 
 
 ALTER TABLE ES_TTCCI_CYCLE drop CONSTRAINT es_TTCCI_cycle_fk1;
