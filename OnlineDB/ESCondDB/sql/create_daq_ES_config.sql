@@ -1,4 +1,5 @@
 
+CONNECT cms_preshower_test/2008preshower@devdb10
 
 CREATE TABLE ES_RUN_MODE_DEF (
 	DEF_ID  NUMBER NOT NULL
@@ -524,6 +525,11 @@ select r.SCAN_ID SCAN_ID
 	ES_scan_dat r
 ;
 
+
+CREATE TABLE ES_DEAD_CHANNELS (
+	FED_ID  NUMBER NOT NULL
+      , CH_ID   NUMBER(20) NOT NULL
+);
 
 
 @insert_ES_run_mod_defs
