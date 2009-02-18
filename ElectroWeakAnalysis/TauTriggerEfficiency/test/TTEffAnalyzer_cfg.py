@@ -13,7 +13,7 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
-from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Mike_PFTauFiltered_HighEfficiency_run2 import *
+from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_SIM_RECO_RAW_HLTExtra_PFTauFiltered_HighEfficiency import *
 process.source = source
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
