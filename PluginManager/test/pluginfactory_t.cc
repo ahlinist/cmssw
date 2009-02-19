@@ -36,7 +36,7 @@ public:
     void setUp() {   
       if (!alreadySetup_) {
         alreadySetup_=true;
-        edmplugin::PluginManager& db = edmplugin::PluginManager::configure(edmplugin::standard::config());
+        edmplugin::PluginManager::configure(edmplugin::standard::config());
       }
     }
     void tearDown() {}
