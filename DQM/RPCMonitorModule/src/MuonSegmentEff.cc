@@ -562,8 +562,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		if(debug) std::cout<<"DT  \t \t \t Does the extrapolation go inside this roll?"<<std::endl;
 
 		if(fabs(PointExtrapolatedRPCFrame.z()) < 1. && 
-		   fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 && 
-		   fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+		   fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.6 && 
+		   fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.6){
 		  
 		  if(debug) std::cout<<"DT  \t \t \t \t yes"<<std::endl;	
 
@@ -584,16 +584,21 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 		    
 
-		  if(debug) std::cout<<"DT \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
-		  if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
-		  if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
-		  
-		  sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
-		  meMap[meIdDT]->Fill(stripPredicted);
-		  
+		  if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+		    if(debug) std::cout<<"DT \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
+
+		    if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+		    if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+		    
+		    sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
+		    meMap[meIdDT]->Fill(stripPredicted);
+		  }else{
+		    if(debug) std::cout<<"DT \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
+		  }
+
+
 		  sprintf(meIdDT,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
 		  meMap[meIdDT]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-
 		  
 		  //-----------------------------------------------------
 		  
@@ -838,8 +843,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      if(debug) std::cout<<"MB4 \t \t \t Does the extrapolation go inside this roll?"<<std::endl;
 		
 		      if(fabs(PointExtrapolatedRPCFrame.z()) < 5.  &&
-			 fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&
-			 fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+			 fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.6 &&
+			 fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.6){
 
 			if(debug) std::cout<<"MB4 \t \t \t \t yes"<<std::endl;
 			
@@ -859,11 +864,18 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			
 			std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 			
-			if(debug) std::cout<<"MB4 \t \t \t \t \t Filling Expected"<<std::endl;
-			
-			sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
-			meMap[meIdDT]->Fill(stripPredicted);
+			if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+			  if(debug) std::cout<<"MB4 \t \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
 
+			  if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+			  if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+
+			  sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
+			  meMap[meIdDT]->Fill(stripPredicted);
+			}else{
+			  if(debug) std::cout<<"MB4 \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
+			}
+			
 			sprintf(meIdDT,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
 			meMap[meIdDT]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
 
@@ -1177,8 +1189,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  if(debug) std::cout<<"CSC \t \t \t Does the extrapolation go inside this roll????"<<std::endl;
 
 		  if(fabs(PointExtrapolatedRPCFrame.z()) < 1. && 
-		     fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 && 
-		     fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){ 
+		     fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.6 && 
+		     fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.6){ 
 		    
 		    if(debug) std::cout<<"CSC \t \t \t \t yes"<<std::endl;
 
@@ -1200,15 +1212,19 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    
 		    std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 		    
-		    if(debug) std::cout<<"CSC \t \t \t \t Filling Expected"<<std::endl;
-		    
-		    sprintf(meIdCSC,"ExpectedOccupancyFromCSC_%s",detUnitLabel);
-		    meMap[meIdCSC]->Fill(stripPredicted);
-		    
+		    if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+		      
+		      if(debug) std::cout<<"CSC \t \t \t \t Filling Expected for "<<meIdCSC<<" with "<<stripPredicted<<std::endl;
+
+		      sprintf(meIdCSC,"ExpectedOccupancyFromCSC_%s",detUnitLabel);
+		      meMap[meIdCSC]->Fill(stripPredicted);
+		    }else{
+		      if(debug) std::cout<<"CSC \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
+		    }
+
 		    sprintf(meIdDT,"ExpectedOccupancy2DFromCSC_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-
-		    
+		   		    
 		    //--------------------------------------------------------------------
 	    		
 		    
