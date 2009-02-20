@@ -5,8 +5,8 @@ process = cms.Process("EdmDumpAnalysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.debugModules = cms.untracked.vstring('')
 #process.MessageLogger.cerr.threshold = 'DEBUG'
-process.MessageLogger.cerr.threshold = 'INFO'
-#process.MessageLogger.cerr.threshold = 'WARNING'
+#process.MessageLogger.cerr.threshold = 'INFO'
+process.MessageLogger.cerr.threshold = 'WARNING'
 process.MessageLogger.categories.append('Analysis')
 #process.MessageLogger.cerr.DEBUG = cms.untracked.PSet(
 #    default = cms.untracked.PSet( limit = cms.untracked.int32(0)),
@@ -20,8 +20,6 @@ process.MessageLogger.categories.append('Analysis')
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_noPU_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_InitialLumiPU_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusDiJets_StageA43Bx_cfi import filesPSet
 
 process.source = cms.Source("PoolSource",
     #fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root')
@@ -32,26 +30,10 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.singleVertexFilter = cms.EDFilter("SingleVertexFilter",
-    VertexTag = cms.InputTag("offlinePrimaryVertices")
-)
-
-process.edmDumpAnalysis = cms.EDAnalyzer("EdmDumpAnalyzer",
-    CastorGenInfoTag = cms.InputTag("castorGen"),
-    CastorTowerInfoTag = cms.InputTag("castorTower"),
-    GapSide = cms.int32(1),
-    VertexTag = cms.InputTag("offlinePrimaryVertices"),
-    ThresholdIndexHF = cms.uint32(22),
-    ThresholdIndexCastor = cms.uint32(25),
-    # If accessing directly the castor towers
-    AccessCastorTowers = cms.bool(False),
-    CastorTowersTag = cms.InputTag("CastorTowerReco"),
-    TowerThreshold = cms.double(15.0),
-    # If accessing the pile-up info
-    AccessPileUpInfo = cms.bool(False),  
-    # Saves or not ROOT TTree
-    SaveROOTTree = cms.untracked.bool(True)
-)
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleVertexFilter_cfi")
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
+process.edmDumpAnalysis.AccessPileUpInfo = False
+process.edmDumpAnalysis.SaveROOTTree = True
 
 process.edmDumpAnalysisSingleVertex = process.edmDumpAnalysis.clone()
 

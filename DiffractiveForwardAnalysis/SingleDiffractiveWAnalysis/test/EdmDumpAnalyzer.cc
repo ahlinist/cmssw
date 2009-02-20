@@ -20,11 +20,14 @@ public:
 private:
   void fillMultiplicities(const edm::Event&, const edm::EventSetup&);
   void fillFromTowers(const edm::Event&, const edm::EventSetup&);
+  void fillVertexInfo(const edm::Event&, const edm::EventSetup&);
+  void fillTrackInfo(const edm::Event&, const edm::EventSetup&);
 
   edm::InputTag castorGenInfoTag_;
   edm::InputTag castorTowerInfoTag_;
   edm::InputTag castorTowersTag_;
   edm::InputTag vertexTag_;
+  edm::InputTag tracksTag_;
   
   int gapSide_;
   unsigned int thresholdIndexHF_;
@@ -47,6 +50,7 @@ private:
     int nCastorTowerPlus_;
     int nCastorTowerMinus_;
     int nVertex_;
+    int nTracks_;
     double xiPlus_;
     double xiMinus_; 
   } eventData_;
@@ -78,6 +82,7 @@ private:
 
   TH1F* h_nPileUpBx0_;
   TH1F* h_nVertex_;
+  TH1F* h_nTracks_;
 
 };
 #endif
@@ -92,6 +97,8 @@ private:
 #include "DataFormats/CastorReco/interface/CastorTower.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -106,6 +113,7 @@ EdmDumpAnalyzer::EdmDumpAnalyzer(const edm::ParameterSet& conf){
   castorGenInfoTag_ = conf.getParameter<edm::InputTag>("CastorGenInfoTag");
   castorTowerInfoTag_ = conf.getParameter<edm::InputTag>("CastorTowerInfoTag");
   vertexTag_ = conf.getParameter<edm::InputTag>("VertexTag");  
+  tracksTag_ = conf.getParameter<edm::InputTag>("TracksTag");
  
   gapSide_ = conf.getParameter<int>("GapSide");
   thresholdIndexHF_ = conf.getParameter<unsigned int>("ThresholdIndexHF");
@@ -153,11 +161,13 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
     data_->Branch("nCastorTowerPlus",&eventData_.nCastorTowerPlus_,"nCastorTowerPlus/I");
     data_->Branch("nCastorTowerMinus",&eventData_.nCastorTowerMinus_,"nCastorTowerMinus/I");
     data_->Branch("nVertex",&eventData_.nVertex_,"nVertex/I");
+    data_->Branch("nTracks",&eventData_.nTracks_,"nTracks/I");
     data_->Branch("xiPlus",&eventData_.xiPlus_,"xiPlus/D");
     data_->Branch("xiMinus",&eventData_.xiMinus_,"xiMinus/D");
   }
 
   h_nVertex_ = fs->make<TH1F>("nVertex","Nr. of offline primary vertexes",10,0,10);
+  h_nTracks_ = fs->make<TH1F>("nTracks","Track multiplicity",50,0,50);
 
   h_nHFTowerPlus_ = fs->make<TH1F>("nHFTowerPlus","HF tower mult. plus",nBins,0,nBins);
   h_nHFTowerMinus_ = fs->make<TH1F>("nHFTowerMinus","HF tower mult. minus",nBins,0,nBins);
@@ -197,6 +207,15 @@ void EdmDumpAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& se
            edm::LogVerbatim("Analysis") << "  Number of pile-up events in bunch crossing 0: " << nPileUpBx0;
            h_nPileUpBx0_->Fill(nPileUpBx0);
         }
+        fillVertexInfo(event,setup);
+        fillTrackInfo(event,setup);
+
+        // Fill TTree
+        if(saveTTree_) data_->Fill();
+}
+
+void EdmDumpAnalyzer::fillVertexInfo(const edm::Event& event, const edm::EventSetup& setup)
+{
         // Access vertex collection
         edm::Handle<edm::View<Vertex> > vertexCollectionH;
         event.getByLabel(vertexTag_,vertexCollectionH);
@@ -222,9 +241,25 @@ void EdmDumpAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& se
 
         eventData_.nVertex_ = nGoodVertices;
         h_nVertex_->Fill(nGoodVertices);
+}
 
-        // Fill TTree
-        if(saveTTree_) data_->Fill();
+void EdmDumpAnalyzer::fillTrackInfo(const edm::Event& event, const edm::EventSetup& setup)
+{
+        // Get reconstructed tracks
+        edm::Handle<edm::View<Track> > trackCollectionH;
+        event.getByLabel(tracksTag_,trackCollectionH);
+        const edm::View<reco::Track>& trkColl = *(trackCollectionH.product());
+
+        double pt_min = 0.5;//FIXME: configurable, other parameters to select or do it externally
+
+        int nGoodTracks = 0;
+        for(edm::View<Track>::const_iterator track = trkColl.begin(); track != trkColl.end(); ++track){
+           if(track->pt() < pt_min) continue;
+           ++nGoodTracks;
+        } 
+        
+        eventData_.nTracks_ = nGoodTracks;
+        h_nTracks_->Fill(nGoodTracks);
 }
 
 void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::EventSetup& setup)
