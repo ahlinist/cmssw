@@ -153,6 +153,7 @@ process.load("Configuration.StandardSequences.RawToDigi_cff")
 process.load("L1TriggerOffline.TriggerSimulation.HitMatchingAlgorithmRegister_cfi")
 #es_prefer_HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PSimHit_")
 #es_prefer_HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
+process.HitMatchingAlgorithm_globalgeometry_PixelDigi_.ipWidth = 100.0
 
 process.load("L1TriggerOffline.TriggerSimulation.ClusteringAlgorithmRegister_cfi")
 #es_prefer_ClusteringAlgorithm_PSimHit_ = cms.ESPrefer("ClusteringAlgorithm_a_PSimHit_")
