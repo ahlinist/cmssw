@@ -1,4 +1,4 @@
-# $Id: Bs_Jpsiphi_mumuKK.dec,v 1.2 2008/01/16 08:58:08 covarell Exp $
+# $Id: Validation.dec,v 1.1 2008/11/28 11:28:30 covarell Exp $
 #
 # This is a validation decay file 
 #
@@ -63,14 +63,14 @@ Enddecay
 #
 Decay MyB_s0
   1.000         MyJ/psi     MyPhi        PVV_CPLH 0.02 1 Hp pHp Hz pHz Hm pHm;
-  0.500         D_s-     e+    nu_e      PHOTOS  ISGW2;
-  0.500         D_s-     mu+   nu_mu     PHOTOS  ISGW2;
+  0.500         MyD_s-     e+    nu_e      PHOTOS  ISGW2;
+  0.500         MyD_s-     mu+   nu_mu     PHOTOS  ISGW2;
 #
 Enddecay
 Decay Myanti-B_s0
   1.000         MyJ/psi     MyPhi        PVV_CPLH 0.02 1 Hp pHp Hz pHz Hm pHm;
-  0.500         D_s+     e-    anti-nu_e   PHOTOS  ISGW2;
-  0.500         D_s+     mu-    anti-nu_mu   PHOTOS  ISGW2;
+  0.500         MyD_s+     e-    anti-nu_e   PHOTOS  ISGW2;
+  0.500         MyD_s+     mu-    anti-nu_mu   PHOTOS  ISGW2;
 Enddecay
 #
 Decay MyJ/psi
@@ -84,5 +84,13 @@ Enddecay
 Decay MyPhi
   1.000         K+          K-           VSS;
 Enddecay
+#
+Decay MyD_s+
+  1.000        MyPhi           pi+                 SVS;
+Enddecay
+Decay MyD_s-
+  1.000        MyPhi          pi-                 SVS;
+Enddecay 
+#
 End
 

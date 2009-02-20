@@ -1,4 +1,4 @@
-# $Id: DECAY.DEC,v 1.40 2007/12/06 16:52:46 ibelyaev Exp $ 
+# $Id: DECAY_NOLONGLIFE.DEC,v 1.1 2009/02/16 10:53:32 covarell Exp $ 
 #Define the B0B0bar mass difference
 Define dm 0.502e12
 Define dgamma 0
@@ -7730,16 +7730,9 @@ Decay anti-Sigma(1775)0
 0.055  anti-Sigma*-   pi+         PHSP;
 0.22   anti-Lambda(1520)0 pi0                             PHSP;
 Enddecay
-Decay Sigma+
-0.5157    p+  pi0                       PHSP;
-0.4831    n0  pi+                       PHSP;
-0.0012    p+  gamma                      PHSP;
-Enddecay
-Decay anti-Sigma-
-0.5157    anti-p-  pi0                      PHSP;
-0.4831    anti-n0  pi-                      PHSP;
-0.0012    anti-p-  gamma                     PHSP;
-Enddecay
+#
+#  Sigma+ is decayed in GEANT
+#
 #
 Decay Delta+
 0.6630    p+  pi0                       PHSP;
@@ -7786,12 +7779,10 @@ Decay anti-Delta+
 1.0000    anti-n0   pi+                     PHSP;
 Enddecay
 #
-Decay Sigma-
-1.0000    n0    pi-                     PHSP;
-Enddecay
-Decay anti-Sigma+
-1.0000    anti-n0   pi+                     PHSP;
-Enddecay
+#
+#  Sigma- is decayed in GEANT
+#
+#
 #
 Decay Sigma0
 1.0000    gamma  Lambda0                     PHSP;
@@ -7833,19 +7824,10 @@ Decay anti-Sigma*0
 0.0600    anti-Sigma+  pi-                    PHSP;
 Enddecay
 #
-Decay Xi0
-1.0000    Lambda0   pi0                     PHSP;
-Enddecay
-Decay anti-Xi0
-1.0000    anti-Lambda0 pi0                     PHSP;
-Enddecay
 #
-Decay Xi-
-1.0000    Lambda0   pi-                     PHSP;
-Enddecay
-Decay anti-Xi+
-1.0000    anti-Lambda0 pi+                     PHSP;
-Enddecay
+#  Xi0/Xi- is decayed in GEANT
+#
+#
 #
 Decay Xi*-
 0.6670    Xi0   pi-                     PHSP;
@@ -7856,16 +7838,10 @@ Decay anti-Xi*+
 0.3330    anti-Xi+  pi0                     PHSP;
 Enddecay
 #
-Decay Omega-
-0.6780    Lambda0   K-                      PHSP;
-0.2360    Xi0   pi-                     PHSP;
-0.0860    Xi-   pi0                     PHSP;
-Enddecay
-Decay anti-Omega+
-0.6780    anti-Lambda0  K+                     PHSP;
-0.2360    anti-Xi0   pi+                    PHSP;
-0.0860    anti-Xi+   pi0                    PHSP;
-Enddecay
+#
+#
+#  Omega- is decayed in GEANT
+#
 #
 #
 Decay Sigma_c*0
