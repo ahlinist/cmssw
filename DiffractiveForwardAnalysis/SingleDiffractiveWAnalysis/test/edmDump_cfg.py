@@ -106,6 +106,18 @@ process.xiTower = cms.EDProducer("XiTowerDumper",
     HBTowerThreshold = cms.double(1.0) 
 )
 
+process.xiTowerNoMET = cms.EDProducer("XiTowerDumper",
+    CaloTowersTag = cms.InputTag("towerMaker"),
+    MuonTag = cms.InputTag("muons"),
+    UseMETInfo = cms.bool(False),
+    CaloMETTag = cms.InputTag("met"),
+    HFPlusTowerThreshold = cms.double(1.0),
+    HFMinusTowerThreshold = cms.double(1.0),
+    HEPlusTowerThreshold = cms.double(1.0),
+    HEMinusTowerThreshold = cms.double(1.0),
+    HBTowerThreshold = cms.double(1.0)
+)
+
 process.pileUpInfo = cms.EDProducer("PileUpEdmNtupleDumper")
 
 process.MyEventContent = cms.PSet(
@@ -120,8 +132,8 @@ process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVerticesWithB
 # Output definition
 process.output = cms.OutputModule("PoolOutputModule",
     outputCommands = process.MyEventContent.outputCommands,
-    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
-    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
+    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
+    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('USER'),
         filterName = cms.untracked.string('')
@@ -131,7 +143,7 @@ process.output = cms.OutputModule("PoolOutputModule",
     )
 )
 
-process.p1 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.pileUpInfo) 
+process.p1 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
 process.out_step = cms.EndPath(process.output)
 
 process.schedule = cms.Schedule(process.p1,process.out_step)
