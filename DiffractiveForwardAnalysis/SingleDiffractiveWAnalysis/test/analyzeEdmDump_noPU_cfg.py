@@ -19,8 +19,8 @@ process.MessageLogger.categories.append('Analysis')
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_noPU_cfi import filesPSet
-from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_InitialLumiPU_cfi import filesPSet
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_noPU_cfi import filesPSet
+#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_InitialLumiPU_cfi import filesPSet
 #from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusDiJets_StageA43Bx_cfi import filesPSet
 
 process.source = cms.Source("PoolSource",
@@ -36,15 +36,11 @@ process.singleVertexFilter = cms.EDFilter("SingleVertexFilter",
     VertexTag = cms.InputTag("offlinePrimaryVertices")
 )
 
-process.singleInteractionFilter = cms.EDFilter("SingleInteractionFilter",
-    PileUpInfoTag = cms.InputTag("pileUpInfo")
-)
-
 process.edmDumpAnalysis = cms.EDAnalyzer("EdmDumpAnalyzer",
     CastorGenInfoTag = cms.InputTag("castorGen"),
     CastorTowerInfoTag = cms.InputTag("castorTower"),
-    VertexTag = cms.InputTag("offlinePrimaryVertices"),
     GapSide = cms.int32(1),
+    VertexTag = cms.InputTag("offlinePrimaryVertices"),
     ThresholdIndexHF = cms.uint32(22),
     ThresholdIndexCastor = cms.uint32(25),
     # If accessing directly the castor towers
@@ -52,35 +48,19 @@ process.edmDumpAnalysis = cms.EDAnalyzer("EdmDumpAnalyzer",
     CastorTowersTag = cms.InputTag("CastorTowerReco"),
     TowerThreshold = cms.double(15.0),
     # If accessing the pile-up info
-    AccessPileUpInfo = cms.bool(True),
+    AccessPileUpInfo = cms.bool(False),  
     # Saves or not ROOT TTree
-    SaveROOTTree = cms.untracked.bool(False)
+    SaveROOTTree = cms.untracked.bool(True)
 )
 
 process.edmDumpAnalysisSingleVertex = process.edmDumpAnalysis.clone()
 
-process.edmDumpAnalysisSingleInteraction = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleInteraction.SaveROOTTree = True
-
-process.edmDumpAnalysisPileUp = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisPileUp.SaveROOTTree = True
-
-process.edmDumpAnalysisSingleVertexSingleInteraction = process.edmDumpAnalysis.clone()
-
-process.edmDumpAnalysisSingleVertexPileUp = process.edmDumpAnalysis.clone()
-
 process.add_(cms.Service("TFileService",
-		#fileName = cms.string("analysisEdmDump_histos_SDWmunu_noPU.root")
-                fileName = cms.string("analysisEdmDump_histos_SDWmunu_InitialLumPU.root")
-                #fileName = cms.string("analysisEdmDump_histos_SDDijets_StageA43Bx.root")
+		fileName = cms.string("analysisEdmDump_histos_SDWmunu_noPU.root")
 	)
 )
 
 process.p1 = cms.Path(process.edmDumpAnalysis) 
 process.p2 = cms.Path(process.singleVertexFilter*process.edmDumpAnalysisSingleVertex)
-process.p3 = cms.Path(process.singleInteractionFilter*process.edmDumpAnalysisSingleInteraction)
-process.p4 = cms.Path(~process.singleInteractionFilter*process.edmDumpAnalysisPileUp)
-process.p5 = cms.Path(process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexSingleInteraction)
-process.p6 = cms.Path(~process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexPileUp)
 
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6)
+process.schedule = cms.Schedule(process.p1,process.p2)

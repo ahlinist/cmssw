@@ -6,6 +6,7 @@
 
 class TH1F;
 class TH2F;
+class TTree;
 
 class EdmDumpAnalyzer: public edm::EDAnalyzer{
 public:
@@ -23,8 +24,7 @@ private:
   edm::InputTag castorGenInfoTag_;
   edm::InputTag castorTowerInfoTag_;
   edm::InputTag castorTowersTag_;
-
-  //edm::InputTag vertexTag_;
+  edm::InputTag vertexTag_;
   
   int gapSide_;
   unsigned int thresholdIndexHF_;
@@ -34,6 +34,22 @@ private:
   double thresholdTower_;
 
   bool accessPileUpInfo_;
+
+  bool saveTTree_;
+
+  TTree* data_;
+
+  struct EventData {
+    int nCastorGenPlus_;
+    int nCastorGenMinus_;
+    int nHFTowerPlus_;
+    int nHFTowerMinus_;
+    int nCastorTowerPlus_;
+    int nCastorTowerMinus_;
+    int nVertex_;
+    double xiPlus_;
+    double xiMinus_; 
+  } eventData_;
 
   TH1F* h_nCastorTowerPlusDirect_;
   TH1F* h_nCastorTowerMinusDirect_;
@@ -61,6 +77,7 @@ private:
   TH1F* h_xiMinus_;
 
   TH1F* h_nPileUpBx0_;
+  TH1F* h_nVertex_;
 
 };
 #endif
@@ -73,21 +90,22 @@ private:
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "DataFormats/CastorReco/interface/CastorTower.h"
-//#include "DataFormats/VertexReco/interface/VertexFwd.h"
-//#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TTree.h"
 
 using namespace reco;
 
 EdmDumpAnalyzer::EdmDumpAnalyzer(const edm::ParameterSet& conf){
   castorGenInfoTag_ = conf.getParameter<edm::InputTag>("CastorGenInfoTag");
   castorTowerInfoTag_ = conf.getParameter<edm::InputTag>("CastorTowerInfoTag");
-  //vertexTag_ = conf.getParameter<edm::InputTag>("VertexTag");  
+  vertexTag_ = conf.getParameter<edm::InputTag>("VertexTag");  
  
   gapSide_ = conf.getParameter<int>("GapSide");
   thresholdIndexHF_ = conf.getParameter<unsigned int>("ThresholdIndexHF");
@@ -98,6 +116,8 @@ EdmDumpAnalyzer::EdmDumpAnalyzer(const edm::ParameterSet& conf){
   if(accessCastorTowers_) thresholdTower_ = conf.getParameter<double>("TowerThreshold");
 
   accessPileUpInfo_ = conf.getParameter<bool>("AccessPileUpInfo");
+
+  saveTTree_ = conf.getUntrackedParameter<bool>("SaveROOTTree",false);
 }  
   
 EdmDumpAnalyzer::~EdmDumpAnalyzer()
@@ -123,6 +143,21 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
   if(accessPileUpInfo_){
     h_nPileUpBx0_ = fs->make<TH1F>("nPileUpBx0","Nr. of pile-up events in Bx0",10,0,10);
   }
+
+  if(saveTTree_){
+    data_ = fs->make<TTree>("data","data");
+    data_->Branch("nCastorGenPlus",&eventData_.nCastorGenPlus_,"nCastorGenPlus/I");
+    data_->Branch("nCastorGenMinus",&eventData_.nCastorGenMinus_,"nCastorGenMinus/I");
+    data_->Branch("nHFTowerPlus",&eventData_.nHFTowerPlus_,"nHFTowerPlus/I");
+    data_->Branch("nHFTowerMinus",&eventData_.nHFTowerMinus_,"nHFTowerMinus/I");
+    data_->Branch("nCastorTowerPlus",&eventData_.nCastorTowerPlus_,"nCastorTowerPlus/I");
+    data_->Branch("nCastorTowerMinus",&eventData_.nCastorTowerMinus_,"nCastorTowerMinus/I");
+    data_->Branch("nVertex",&eventData_.nVertex_,"nVertex/I");
+    data_->Branch("xiPlus",&eventData_.xiPlus_,"xiPlus/D");
+    data_->Branch("xiMinus",&eventData_.xiMinus_,"xiMinus/D");
+  }
+
+  h_nVertex_ = fs->make<TH1F>("nVertex","Nr. of offline primary vertexes",10,0,10);
 
   h_nHFTowerPlus_ = fs->make<TH1F>("nHFTowerPlus","HF tower mult. plus",nBins,0,nBins);
   h_nHFTowerMinus_ = fs->make<TH1F>("nHFTowerMinus","HF tower mult. minus",nBins,0,nBins);
@@ -161,7 +196,35 @@ void EdmDumpAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& se
            int nPileUpBx0 = bx0Iter->second;
            edm::LogVerbatim("Analysis") << "  Number of pile-up events in bunch crossing 0: " << nPileUpBx0;
            h_nPileUpBx0_->Fill(nPileUpBx0);
+        }
+        // Access vertex collection
+        edm::Handle<edm::View<Vertex> > vertexCollectionH;
+        event.getByLabel(vertexTag_,vertexCollectionH);
+        const edm::View<Vertex>& vtxColl = *(vertexCollectionH.product());
+
+        /*// Access primary vertex
+        const Vertex& primaryVertex = vtxColl.front();
+        bool goodPrimaryVertex = ((primaryVertex.isValid())&&(!primaryVertex.isFake()));
+
+        // Skip event if not well reconstructed primary vertex
+        if(!goodPrimaryVertex){
+           edm::LogVerbatim("Analysis") << ">>>>>  Could not find any good primary vertex ..skipping";
+           return false;
+        }*/
+
+        // Find number of good vertices
+        int nGoodVertices = 0;
+        for(edm::View<Vertex>::const_iterator vtx = vtxColl.begin(); vtx != vtxColl.end(); ++vtx){
+           if(!vtx->isValid()) continue; // skip non-valid vertices
+           if(vtx->isFake()) continue; // skip vertex from beam spot
+           ++nGoodVertices;
         } 
+
+        eventData_.nVertex_ = nGoodVertices;
+        h_nVertex_->Fill(nGoodVertices);
+
+        // Fill TTree
+        if(saveTTree_) data_->Fill();
 }
 
 void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::EventSetup& setup)
@@ -209,6 +272,18 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         unsigned int nCastorGen_plus = nAccPhiSliceplus;
         unsigned int nCastorGen_minus = nAccPhiSliceminus;
        
+        double xiTower_plus = *xiTowerPlus.product();
+        double xiTower_minus = *xiTowerMinus.product();
+
+        eventData_.nCastorGenPlus_ = nAccPhiSliceplus;
+        eventData_.nCastorGenMinus_ = nAccPhiSliceminus;
+        eventData_.nHFTowerPlus_ = nHF_plus;
+        eventData_.nHFTowerMinus_ = nHF_minus;
+        eventData_.nCastorTowerPlus_ = nCastorTwr_plus;
+        eventData_.nCastorTowerMinus_ = nCastorTwr_minus;
+        eventData_.xiPlus_ = xiTower_plus;
+        eventData_.xiMinus_ = xiTower_minus; 
+
         h_nHFTowerPlus_->Fill(nHF_plus);
         h_nHFTowerMinus_->Fill(nHF_minus);
 
@@ -224,8 +299,8 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         h_nHFTowerPlusvsnCastorTowerPlus_->Fill(nHF_plus,nCastorTwr_plus);
         h_nHFTowerMinusvsnCastorTowerMinus_->Fill(nHF_minus,nCastorTwr_minus);
 
-        h_xiPlus_->Fill(*xiTowerPlus.product());
-        h_xiMinus_->Fill(*xiTowerMinus.product());
+        h_xiPlus_->Fill(xiTower_plus);
+        h_xiMinus_->Fill(xiTower_minus);
 }
 
 void EdmDumpAnalyzer::fillFromTowers(const edm::Event& event, const edm::EventSetup& setup)
