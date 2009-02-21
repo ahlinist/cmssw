@@ -5,12 +5,18 @@
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
 
 #include "PhysicsTools/Utilities/interface/deltaR.h"
 
 #include <TMath.h>
 
 #include <stdlib.h>
+
+pat::IsolationKeys isoDepositKeyParticleFlowIso = pat::ParticleIso;
+pat::IsolationKeys isoDepositKeyPFChargedHadronIso = pat::ChargedParticleIso;
+pat::IsolationKeys isoDepositKeyPFNeutralHadronIso = pat::NeutralParticleIso;
+pat::IsolationKeys isoDepositKeyPFGammaIso = pat::GammaParticleIso;
 
 bool matchesGenTau(const pat::Tau& patTau)
 {
@@ -105,6 +111,11 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
     hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
     hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "TauIsoSumPt", 100, 0., 20.);
 
+    hTauParticleFlowIsoPt_ = dqmStore.book1D("TauParticleFlowIsoPt", "TauParticleFlowIsoPt", 100, 0., 20.);    
+    hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "TauPFChargedHadronIsoPt", 100, 0., 20.);   
+    hTauPFNeutralHadronIsoPt_ = dqmStore.book1D("TauPFNeutralHadronIsoPt", "TauPFNeutralHadronIsoPt", 100, 0., 20.);   
+    hTauPFGammaIsoPt_ = dqmStore.book1D("TauPFGammaIsoPt", "TauPFGammaIsoPt", 100, 0., 20.);  
+
     hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "TauTrkIsoEnProfile", 100, 0., 10.);
     hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "TauTrkIsoPtProfile", 100, 0., 10.);
     hTauTrkIsoEtaDistProfile_ = dqmStore.book1D("TauTrkIsoEtaDistProfile", "TauTrkIsoEtaDistProfile", 15, 0., 1.5);
@@ -115,14 +126,31 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
       iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
 
       std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, hTauTrkIsoPtConeSizeDepName_i, 
-							 100, 0., 20.));
+      hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, 
+							 hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
       std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, hTauEcalIsoPtConeSizeDepName_i, 
-							  100, 0., 20.));
+      hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, 
+							  hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
       std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, hTauHcalIsoPtConeSizeDepName_i, 
-							  100, 0., 20.));
+      hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, 
+							  hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+
+      std::string hTauParticleFlowIsoPtConeSizeDepName_i 
+	= std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hTauParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
+								  hTauParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
+	= std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hTauPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
+								     hTauPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
+	= std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
+								     hTauPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hTauPFGammaIsoPtConeSizeDepName_i 
+	= std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
+							     hTauPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
     }
   }
 }
@@ -229,6 +257,16 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau)
   hTauHcalIsoPt_->Fill(patTau.hcalIso());
   hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso());
   
+  std::cout << " particleIso = " << patTau.particleIso() << std::endl;
+  std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
+  std::cout << " neutralParticleIso = " << patTau.neutralParticleIso() << std::endl;
+  std::cout << " gammaParticleIso = " << patTau.gammaParticleIso() << std::endl;
+  
+  hTauParticleFlowIsoPt_->Fill(patTau.particleIso());
+  hTauPFChargedHadronIsoPt_->Fill(patTau.chargedParticleIso());
+  hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralParticleIso());
+  hTauPFGammaIsoPt_->Fill(patTau.gammaParticleIso());
+
   for ( reco::TrackRefVector::const_iterator isolationTrack = patTau.isolationTracks().begin();
 	isolationTrack != patTau.isolationTracks().end(); ++isolationTrack ) {	  
     hTauTrkIsoEnProfile_->Fill((*isolationTrack)->p());
@@ -242,41 +280,58 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
 {
   //std::cout << "<TauHistManager::fillTauIsoConeSizeDepHistograms>:" << std::endl;
 
-  if ( !patTau.trackerIsoDeposit() ||
-       !patTau.ecalIsoDeposit()    ||
-       !patTau.hcalIsoDeposit() ) {
-/*
- CV: IsoDeposits are not computed for pat::Taus in CMSSW_2_2_3 yet
-   --> no need to print-out this warning for each event !!
-
-    edm::LogError ("TauHistManager::fillTauIsoConeSizeDepHistograms") << " No IsoDeposits associated to pat::Tau with"
-                                                                      << " E = " << patTau.energy() << ","
-								      << " theta = " << patTau.theta()*180./TMath::Pi() << "," 
-								      << " phi = " << patTau.phi()*180./TMath::Pi() << " !!";
- */
-    return;
-  }
-
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
-    float isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
+    double isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
     
-    reco::isodeposit::AbsVetos tauTrkIsoParam;
-    tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
-    tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-    float tauTrkIsoDeposit_i = patTau.trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam, false);
-    hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
+    if ( patTau.trackerIsoDeposit() ) {
+      reco::isodeposit::AbsVetos tauTrkIsoParam;
+      tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
+      tauTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
+      double tauTrkIsoDeposit_i = patTau.trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam, false);
+      hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
+    }
     
-    reco::isodeposit::AbsVetos tauEcalIsoParam;
-    tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    tauEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    float tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauEcalIsoParam, false);
-    hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
+    reco::isodeposit::AbsVetos tauIsoParam;
+    tauIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    tauIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+
+    if ( patTau.ecalIsoDeposit() ) {
+      double tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauIsoParam, false);
+      hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
+    }
     
-    reco::isodeposit::AbsVetos tauHcalIsoParam;
-    tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    tauHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    float tauHcalIsoDeposit_i = patTau.hcalIsoDeposit()->countWithin(isoConeSize_i, tauHcalIsoParam, false);
-    hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
+    if ( patTau.hcalIsoDeposit() ) {
+      double tauHcalIsoDeposit_i = patTau.hcalIsoDeposit()->countWithin(isoConeSize_i, tauIsoParam, false);
+      hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
+    }
+
+    reco::isodeposit::AbsVetos tauParticleFlowIsoParam;
+    tauParticleFlowIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    tauParticleFlowIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
+
+    if ( patTau.isoDeposit(isoDepositKeyParticleFlowIso) ) {
+      double tauParticleFlowIsoDeposit_i 
+	= patTau.isoDeposit(isoDepositKeyParticleFlowIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam, false);
+      hTauParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauParticleFlowIsoDeposit_i);
+    }
+    
+    if ( patTau.isoDeposit(isoDepositKeyPFChargedHadronIso) ) {
+      double tauPFChargedHadronIsoDeposit_i 
+	= patTau.isoDeposit(isoDepositKeyPFChargedHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam, false);
+      hTauPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFChargedHadronIsoDeposit_i);
+    }
+    
+    if ( patTau.isoDeposit(isoDepositKeyPFNeutralHadronIso) ) {
+      double tauPFNeutralHadronIsoDeposit_i 
+	= patTau.isoDeposit(isoDepositKeyPFNeutralHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam, false);
+      hTauPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFNeutralHadronIsoDeposit_i);
+    }
+
+    if ( patTau.isoDeposit(isoDepositKeyPFGammaIso) ) {
+      double tauPFGammaIsoDeposit_i 
+	= patTau.isoDeposit(isoDepositKeyPFGammaIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam, false);
+      hTauPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFGammaIsoDeposit_i);
+    }
   }
 }
 
