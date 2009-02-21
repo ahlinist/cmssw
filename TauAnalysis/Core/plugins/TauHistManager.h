@@ -26,11 +26,11 @@ class TauHistManager : public HistManagerBase
  private:
 
 //--- private functions
-  void bookTauHistograms(DQMStore& dqmStore, MonitorElement*& hTauPt, MonitorElement*& hTauEta, MonitorElement*& hTauPhi, const char* histoSetName);
+  void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillTauHistograms(const pat::Tau& patTau, MonitorElement* hTauPt, MonitorElement* hTauEta, MonitorElement* hTauPhi);
-  void fillTauIsoHistograms(const pat::Tau& patTau);
-  void fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau);
+  void fillTauHistograms(const pat::Tau&, MonitorElement*, MonitorElement*, MonitorElement*);
+  void fillTauIsoHistograms(const pat::Tau&);
+  void fillTauIsoConeSizeDepHistograms(const pat::Tau&);
 
 //--- configuration parameters
   edm::InputTag tauSrc_;
@@ -70,6 +70,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauTrkIsoEtaDistProfile_;
   MonitorElement* hTauTrkIsoPhiDistProfile_;
 
+//--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hTauTrkIsoPt_;
   MonitorElement* hTauEcalIsoPt_;
   MonitorElement* hTauHcalIsoPt_;
@@ -78,6 +79,17 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauEcalIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauHcalIsoPtConeSizeDep_;
+  
+//--- IsoDeposits reconstructed from Partcile Flow
+  MonitorElement* hTauParticleFlowIsoPt_;
+  MonitorElement* hTauPFChargedHadronIsoPt_;
+  MonitorElement* hTauPFNeutralHadronIsoPt_;
+  MonitorElement* hTauPFGammaIsoPt_;
+
+  std::vector<MonitorElement*> hTauParticleFlowIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hTauPFChargedHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hTauPFNeutralHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hTauPFGammaIsoPtConeSizeDep_;
 };
 
 #endif  
