@@ -58,6 +58,7 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     tauHistManager,
     diTauCandidateHistManagerForMuTau,
     metHistManager,
+    jetHistManager,
     vertexHistManager,
     triggerHistManager
   ),
