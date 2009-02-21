@@ -26,11 +26,11 @@ class MuonHistManager : public HistManagerBase
  private:
 
 //--- private functions
-  void bookMuonHistograms(DQMStore& dqmStore, MonitorElement*& hMuonPt, MonitorElement*& hMuonEta, MonitorElement*& hMuonPhi, const char* histoSetName);
+  void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillMuonHistograms(const pat::Muon& patMuon, MonitorElement* hMuonPt, MonitorElement* hMuonEta, MonitorElement* hMuonPhi);
-  void fillMuonIsoHistograms(const pat::Muon& patMuon);
-  void fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon);
+  void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*);
+  void fillMuonIsoHistograms(const pat::Muon&);
+  void fillMuonIsoConeSizeDepHistograms(const pat::Muon&);
 
 //--- configuration parameters
   edm::InputTag muonSrc_;

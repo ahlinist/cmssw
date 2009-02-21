@@ -26,13 +26,11 @@ class ElectronHistManager : public HistManagerBase
  private:
 
 //--- private functions
-  void bookElectronHistograms(DQMStore& dqmStore, 
-			      MonitorElement*& hElectronPt, MonitorElement*& hElectronEta, MonitorElement*& hElectronPhi, const char* histoSetName);
+  void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillElectronHistograms(const pat::Electron& patElectron, 
-			      MonitorElement* hElectronPt, MonitorElement* hElectronEta, MonitorElement* hElectronPhi);
-  void fillElectronIsoHistograms(const pat::Electron& patElectrons);
-  void fillElectronIsoConeSizeDepHistograms(const pat::Electron& patElectrons);
+  void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*);
+  void fillElectronIsoHistograms(const pat::Electron&);
+  void fillElectronIsoConeSizeDepHistograms(const pat::Electron&);
 
 //--- configuration parameters
   edm::InputTag electronSrc_;
