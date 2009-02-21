@@ -95,7 +95,15 @@ namespace edm
   bool  decode(std::vector<edm::InputTag>&, std::string const&);
   bool  encode(std::string &, std::vector<edm::InputTag> const&);
 
-  // EventID
+   // ESInputTag
+   bool  decode(edm::ESInputTag&, std::string const&);
+   bool  encode(std::string &, edm::ESInputTag const&);
+   
+   // VESInputTag
+   bool  decode(std::vector<edm::ESInputTag>&, std::string const&);
+   bool  encode(std::string &, std::vector<edm::ESInputTag> const&);
+   
+   // EventID
   bool  decode(edm::EventID&, std::string const&);
   bool  encode(std::string &, edm::EventID const&);
 
