@@ -26,6 +26,7 @@
 #include "FWCore/Framework/interface/EventSetupRecord.h"
 #include "FWCore/Framework/interface/EventSetupRecordKey.h"
 #include "FWCore/Framework/interface/DataProxy.h"
+#include "FWCore/Utilities/interface/ESInputTag.h"
 
 // forward declarations
 namespace edm {
@@ -64,6 +65,15 @@ class EventSetupRecordImplementation : public EventSetupRecord
          iHolder = HolderT(value,desc);
       }
       
+      template< typename HolderT>
+      void get(const edm::ESInputTag& iTag, HolderT& iHolder) const {
+         const typename HolderT::value_type* value;
+         const ComponentDescription* desc;
+         this->getImplementation(value, iTag.data().c_str(),desc);
+         validate(desc,iTag);
+         iHolder = HolderT(value,desc);
+      }
+   
       virtual EventSetupRecordKey key() const {
          return EventSetupRecordKey::makeKey<T>();
       }
