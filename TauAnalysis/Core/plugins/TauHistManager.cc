@@ -257,10 +257,10 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau)
   hTauHcalIsoPt_->Fill(patTau.hcalIso());
   hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso());
   
-  std::cout << " particleIso = " << patTau.particleIso() << std::endl;
-  std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
-  std::cout << " neutralParticleIso = " << patTau.neutralParticleIso() << std::endl;
-  std::cout << " gammaParticleIso = " << patTau.gammaParticleIso() << std::endl;
+  //std::cout << " particleIso = " << patTau.particleIso() << std::endl;
+  //std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
+  //std::cout << " neutralParticleIso = " << patTau.neutralParticleIso() << std::endl;
+  //std::cout << " gammaParticleIso = " << patTau.gammaParticleIso() << std::endl;
   
   hTauParticleFlowIsoPt_->Fill(patTau.particleIso());
   hTauPFChargedHadronIsoPt_->Fill(patTau.chargedParticleIso());
