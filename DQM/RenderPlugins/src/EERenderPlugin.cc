@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.112 2009/01/30 10:13:02 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.113 2009/02/12 11:29:10 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.112 $
-  \date $Date: 2009/01/30 10:13:02 $
+  \version $Revision: 1.113 $
+  \date $Date: 2009/02/12 11:29:10 $
 */
 
 #include "TH1F.h"
@@ -85,6 +85,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8 = new TH2C( "ee_text8", "text8", 10, -150., 150., 10, -150., 150. );
   text9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
   text10 = new TH2C( "ee_text10", "text10", 20, 0., 40., 10, 0., 20. );
+  text11 = new TH2C( "ee_text11", "text11", 20, 0., 200., 10, 0., 100. );
 
   text1->SetMinimum(  0.01 );
   text3->SetMinimum(  0.01 );
@@ -94,13 +95,15 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8->SetMinimum( -9.01 );
   text9->SetMinimum( +0.01 );
   text10->SetMinimum( -9.01 );
+  text11->SetMinimum( -9.01 );
 
   text6->SetMaximum( -0.01 );
   text7->SetMaximum( +9.01 );
   text8->SetMaximum( -0.01 );
   text9->SetMaximum( +9.01 );
   text10->SetMaximum( -0.01 );
-
+  text11->SetMaximum( -0.01 );
+  
   for ( short j=0; j<400; j++ ) {
     int x = 5*(1 + j%20);
     int y = 5*(1 + j/20);
@@ -182,6 +185,26 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text10->SetBinContent(10+5, 2, +5);
   text10->SetBinContent(10+3, 3, +4);
 
+  text11->SetBinContent(2, 5, -3);
+  text11->SetBinContent(2, 7, -2);
+  text11->SetBinContent(4, 9, -1);
+  text11->SetBinContent(7, 9, -9);
+  text11->SetBinContent(9, 7, -8);
+  text11->SetBinContent(9, 5, -7);
+  text11->SetBinContent(8, 3, -6);
+  text11->SetBinContent(6, 2, -5);
+  text11->SetBinContent(3, 3, -4);
+
+  text11->SetBinContent(10+2, 5, +3);
+  text11->SetBinContent(10+2, 7, +2);
+  text11->SetBinContent(10+4, 9, +1);
+  text11->SetBinContent(10+7, 9, +9);
+  text11->SetBinContent(10+9, 7, +8);
+  text11->SetBinContent(10+9, 5, +7);
+  text11->SetBinContent(10+8, 3, +6);
+  text11->SetBinContent(10+5, 2, +5);
+  text11->SetBinContent(10+3, 3, +4);
+
   text1->SetMarkerSize( 2 );
   text3->SetMarkerSize( 2 );
   text4->SetMarkerSize( 2 );
@@ -190,6 +213,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8->SetMarkerSize( 2 );
   text9->SetMarkerSize( 2 );
   text10->SetMarkerSize( 2 );
+  text11->SetMarkerSize( 2 );
 
 }
 
@@ -812,10 +836,12 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) ) {
-      if ( name.find( "reportSummaryMap") != std::string::npos || 
-           name.find( "DAQSummaryMap") != std::string::npos ) {
+      if ( name.find( "reportSummaryMap") != std::string::npos ) {
         l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
         l.DrawLine(20+0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 20+0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+      } else if( name.find( "DAQSummaryMap") != std::string::npos ) {
+        l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
+        l.DrawLine(100+ixSectorsEE[i], iySectorsEE[i], 100+ixSectorsEE[i+1], iySectorsEE[i+1]);
       } else if( name.find( "EECLT" ) != std::string::npos ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
       } else if( name.find( " PN " ) == std::string::npos ) {
@@ -1043,8 +1069,7 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "reportSummaryMap" ) != std::string::npos || 
-      name.find( "DAQSummaryMap" ) != std::string::npos ) {
+  if( name.find( "reportSummaryMap" ) != std::string::npos ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -1052,6 +1077,17 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     text10->GetXaxis()->SetRange(x1, x2);
     text10->GetYaxis()->SetRange(y1, y2);
     text10->Draw("text,same");
+    return;
+  }
+
+  if( name.find( "DAQSummaryMap" ) != std::string::npos ) {
+    int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+    int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+    int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+    int y2 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+    text11->GetXaxis()->SetRange(x1, x2);
+    text11->GetYaxis()->SetRange(y1, y2);
+    text11->Draw("text,same");
     return;
   }
 
