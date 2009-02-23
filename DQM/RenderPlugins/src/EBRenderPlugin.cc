@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.102 2009/01/28 10:08:51 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.103 2009/02/12 11:29:10 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.102 $
-  \date $Date: 2009/01/28 10:08:51 $
+  \version $Revision: 1.103 $
+  \date $Date: 2009/02/12 11:29:10 $
 */
 
 #include "TH1F.h"
@@ -464,6 +464,13 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "DCSSummaryMap" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalBarrel DCS Summary Map");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EBIT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
@@ -839,7 +846,8 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
  
  if( name.find( "reportSummaryMap" ) != std::string::npos || 
-     name.find( "DAQSummaryMap" ) != std::string::npos ) {
+     name.find( "DAQSummaryMap" ) != std::string::npos || 
+     name.find( "DCSSummaryMap" ) != std::string::npos ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
