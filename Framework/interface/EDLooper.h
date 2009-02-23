@@ -40,7 +40,7 @@ namespace edm {
       Status doEndOfLoop(const edm::EventSetup& es);
       void prepareForNextLoop(eventsetup::EventSetupProvider* esp);
 
-      //This interface is depricated
+      //This interface is deprecated
       virtual void beginOfJob(const edm::EventSetup&); 
       virtual void beginOfJob();
       virtual void startingNewLoop(unsigned int ) = 0; 
