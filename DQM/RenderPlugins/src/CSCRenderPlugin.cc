@@ -2230,6 +2230,14 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
     return;
   }
 
+  if(reMatch(".*/CSC_L1A_out_of_sync$", o.name)) {
+    obj->SetStats(false);
+    gStyle->SetOptStat("e");
+    gPad->SetGridx();
+    gPad->SetGridy();
+    return;
+  }
+
   return;
 
 }
