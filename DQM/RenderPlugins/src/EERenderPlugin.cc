@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.114 2009/02/21 11:52:28 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.115 2009/02/23 11:34:41 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.114 $
-  \date $Date: 2009/02/21 11:52:28 $
+  \version $Revision: 1.115 $
+  \date $Date: 2009/02/23 11:34:41 $
 */
 
 #include "TH1F.h"
@@ -522,6 +522,13 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "DCSSummaryMap" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalEndcap DCS Summary Map");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EEIT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
@@ -811,7 +818,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   for ( int i=0; i<201; i=i+1){
     if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) ) {
       if( name.find( "reportSummaryMap") != std::string::npos || 
-          name.find( "DAQSummaryMap") != std::string::npos ) {
+          name.find( "DAQSummaryMap") != std::string::npos || 
+          name.find( "DCSSummaryMap") != std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
         l.DrawLine(100+ixSectorsEE[i], iySectorsEE[i], 100+ixSectorsEE[i+1], iySectorsEE[i+1]);
       } else if( name.find( "EECLT" ) != std::string::npos ) {
@@ -1042,7 +1050,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "reportSummaryMap" ) != std::string::npos ||
-      name.find( "DAQSummaryMap" ) != std::string::npos ) {
+      name.find( "DAQSummaryMap" ) != std::string::npos || 
+      name.find( "DCSSummaryMap" ) != std::string::npos ) {
     int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
