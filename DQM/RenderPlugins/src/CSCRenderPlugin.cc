@@ -425,6 +425,7 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 
   if(reMatch(".*/All_DDUs_in_Readout$", o.name)) {
     obj->SetStats(false);
+    obj->SetFillColor(45);
     gStyle->SetOptStat("em");
   
     return;
@@ -2222,6 +2223,13 @@ void CSCRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
    
   // ============== End generated from emuDQMBooking.xml by emuBooking2RenderPlugin.xsl ==================
 
+  if(reMatch(".*FEDIntegrity/FED(Entries|Fatal|NonFatal)$", o.name)) {
+    obj->SetStats(false);
+    obj->SetFillColor(45);
+    gStyle->SetOptStat("em");
+    return;
+  }
+
   return;
 
 }
@@ -2261,7 +2269,8 @@ void CSCRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const V
     return;
   }
 
-  if(reMatch(".*Summary/CSC_[a-zA-Z0-9_-]+$", o.name)) {
+  if(reMatch(".*Summary/CSC_[a-zA-Z0-9_-]+$", o.name) ||
+     reMatch(".*FEDIntegrity/CSC_[a-zA-Z0-9_-]+$", o.name)) {
     TH2* obj2 = dynamic_cast<TH2*>(obj);
     chamberMap.draw(obj2); 
     return;
