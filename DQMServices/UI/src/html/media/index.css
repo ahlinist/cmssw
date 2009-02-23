@@ -1,0 +1,267 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	background: url(img/cms_back.gif);
+}
+
+#helptable {
+	border-spacing: 12px;
+	border-collapse: separate;
+}
+
+#helptable th {
+	text-align: right;
+	vertical-align: top;
+}
+
+#logo_img {
+	text-align: right;
+	vertical-align: middle;
+	background: url(img/cms_small.gif) no-repeat center center;
+	width: 50px;
+	height: 50px;
+}
+
+#logo {
+	text-align: left;
+	vertical-align: middle;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+#login {
+	text-align: right;
+	vertical-align: middle;
+}
+
+.flexigrid div.fbutton .refresh {
+	background: url(img/refresh.png) no-repeat center left;
+}
+
+#flex1 span.stat {
+	padding-left: 16px;
+	width: 20px;
+}
+
+span.statGOOD {
+	background: url(img/smGOOD.png) no-repeat center left;
+}
+
+span.statBAD {
+background: url(img/smBAD.png) no-repeat center left;
+}
+
+span.statNOTSET {
+background: url(img/smNOTSET.png) no-repeat center left;
+}
+
+span.statEXCL {
+background: url(img/smEXCL.png) no-repeat center left;
+}
+
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #111;
+	background-color: #eee;
+	padding: 5px;
+	opacity: 0.85;
+}
+#tooltip h3, #tooltip div { margin: 0; }
+
+#edit_overlay {
+	position: fixed;
+	left: 0;
+	top: 0;
+	background-color: white;
+	z-index: 30;
+	width: 100%;
+	height: 100%;
+	opacity: 0.85;
+}
+
+#edit, #edit_loader {
+position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	border: 1px solid #111;
+	background-color: #eee;
+	margin: 5px auto 10px auto;
+	width: 800px;
+	z-index: 40;
+	opacity: 1;
+}
+
+#edit table td {
+	vertical-align: center;
+	text-align: left;
+}
+
+#edit table td.edit_col {
+	vertical-align: top;
+}
+
+#edit table td.edit_col input, #edit table td.edit_col textarea, #edit table td.edit_col select {
+vertical-align: top;
+	width: auto;
+}
+
+#edit table td.edit_col label {
+	float: left;
+	width: 80px;
+	margin: 0px;
+}
+
+#edit label {
+	margin-left: 1em;
+text-align: left;
+font-weight: bold;
+}
+
+#edit input, #edit textarea, #edit select {
+	text-align: left;
+	width: 100%;
+	border: green 1px solid;
+	margin: 2px;
+}
+
+#edit input.error, #edit select.error, #edit textarea.error {
+border: red 1px solid !important;
+margin: 2px;
+}
+
+#edit input[disabled],
+#edit input[readonly],
+#edit select[disabled],
+#edit select[readonly],
+#edit checkbox[disabled],
+#edit checkbox[readonly],
+#edit textarea[disabled],
+#edit textarea[readonly] {
+	background-color: #dcdcdc;
+	border: #3532ff 1px solid;
+} 
+
+#edit {
+	background: #F0F4EA none repeat scroll 0 0;
+	border: thin solid #BCD884;
+	margin-bottom: 5px;
+}
+
+html>body div.outerbox {
+	  padding: 0 5px 5px 0;
+		width: 120px;
+}
+
+html>body div.outerbox div.shadowbox1 {
+	position: absolute;
+	right: 0;
+	bottom: 5px;
+	width: 5px;
+	height: 100%;
+	background: url(myshadow.png) no-repeat right top;
+}
+
+html>body div.outerbox div.shadowbox2 {
+	position: absolute;
+	bottom: 0;
+	right: 5px;
+	height: 5px;
+	width: 100%;
+	background: url(myshadow.png) left bottom;
+}
+
+html>body div.outerbox div.shadowbox3 {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	height: 5px;
+	width: 5px;
+	background: url(myshadow.png) no-repeat right bottom;
+}
+
+html>body .innerbox {
+	margin: 0;
+	display: inherit;
+	background-color: white;
+}
+
+.activetarget{
+background-color: white;
+}
+
+* html div.menu-item {
+	display: inline; /* fixes problem in ie6 */
+}
+
+li.menumain {
+	float: left;
+	padding: 0 10px;
+}
+
+div.menu-item {
+	padding: 4px 10px 4px 4px;
+	list-style: none;
+}
+
+img.menu-item-arrow{
+	position: absolute;
+	right: 4px;
+	top: 8px;
+}
+
+li.menu-separator{
+	border-bottom: 1px solid #000;
+	font-size: 0; /* for ie */
+	height: 0;
+	line-height: 0; /* for ie */
+	margin: 2px 0;
+}
+
+ul.menu,
+#root-menu-div ul {
+background-color: #fff;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+li.menu-separator.active{
+	background-color: transparent;
+}
+
+li.active {
+	background-color: #DDD;
+}
+
+.ui-tabs-hide { display: none; }
+
+#batch_updater {
+}
+
+#batch_updater_progressbar {
+}
+
+#edit_table {
+  height: 500px;
+	width: 100%;
+}
+
+.tree_down {
+	background: url(tree_down.gif) no-repeat center center;
+}
+
+.tree_middle {
+	background: url(tree_middle.gif) no-repeat center center;
+}
+
+.tree_end {
+	background: url(tree_end.gif) no-repeat center center;
+}
+
+tr.prevTag {
+	/* background: #FFF39C; */
+	color: #0B0BFF;
+}
+

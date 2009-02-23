@@ -1,0 +1,117 @@
+<project name="cmsdqmrunregistry" default="dist" basedir=".">
+
+  <!-- INITIALIZATION -->
+
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="tomcat" location="../apache-tomcat-5.5.26"/>
+  <property name="html" location="html"/>
+  <property name="lib" location="lib"/>
+
+  <path id="local-cp">  
+    <fileset dir="lib" >  
+      <include name="*.jar"/>  
+    </fileset>  
+  </path>
+
+  <path id="global-cp">  
+    <fileset dir="${tomcat}/common/lib" >  
+      <include name="*.jar"/>  
+    </fileset>  
+  </path>
+
+  <!-- TARGETS -->
+
+  <target name="clean" description="clean up directory. Please use this before submitting to CVS!">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source" >
+    
+    <!-- Create timestamp (aka random) properties -->
+    <tstamp>
+      <format property="key" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp>
+
+    <!-- Replace key in Encoder file -->
+    <replace file="${src}/cms/dqm/workflow/Encoder.java" token="@@@" value="${key}" />
+
+    <!-- Compile -->
+    <javac srcdir="${src}" destdir="${build}">
+      <classpath>
+        <path refid="local-cp"/>
+        <path refid="global-cp"/>
+      </classpath>
+    </javac>
+
+    <!-- Replace back key to placeholder in Encoder file -->
+    <replace file="${src}/cms/dqm/workflow/Encoder.java" value="@@@" token="${key}" />
+
+  </target>
+
+  <target name="dist" depends="compile" description="generate the distribution">
+    <mkdir dir="${dist}" />
+    <jar jarfile="${dist}/cmsdqmrunregistry.jar" basedir="${build}"/>
+  </target>
+
+  <target name="deploy" depends="dist" description="deploy">
+    
+    <!-- get information about deployment environment -->
+    <input message="Application URL:" addproperty="url" defaultvalue="runregistry_dev" />
+    <input message="Database jdbc name:" addproperty="dbname" defaultvalue="dqmrunregistry_dev" />
+    <input message="Database username:" addproperty="username" defaultvalue="cms_dqm_run_registry_w"/>
+    <input message="Database password:" addproperty="password"/>
+    <input message="DBS DQM server url:" addproperty="dqmurl" defaultvalue="http://localhost:9999" />
+    <input message="Tomcat path:" addproperty="tomcatpath" defaultvalue="${tomcat}"/>
+    
+    <!-- backup web.xml file --> 
+    <copy file="WEB-INF/web.xml" tofile="WEB-INF/web_backup.xml" />
+
+    <!-- encrypt authentification parameters with encoder -->
+    <record name="encoded.txt" action="start"/>
+    <java classname="cms.dqm.workflow.Encoder">
+      <arg value="encode"/>
+      <arg value="username"/>
+      <arg value="password"/>
+      <classpath>
+        <pathelement location="${dist}/cmsdqmrunregistry.jar"/>
+        <path refid="local-cp"/>
+        <path refid="global-cp"/>
+      </classpath>
+    </java>
+    <record name="encoded.txt" action="stop"/>
+    <replace file="encoded.txt" token="[java]" value=""/>
+    <replace file="encoded.txt" token=" " value=""/>
+    <loadresource property="encoded_file">
+      <file file="encoded.txt"/>
+    </loadresource>
+    <delete file="encoded.txt"/>
+
+    <replace file="WEB-INF/web.xml" token="@AUTH@" value="${encoded_file}"/>
+    <replace file="WEB-INF/web.xml" token="@DB_NAME@" value="${dbname}"/>
+    <replace file="WEB-INF/web.xml" token="@DBS_DQM_URL@" value="${dqmurl}"/>
+    <replace file="WEB-INF/web.xml" token="@TOMCAT_PATH@" value="${tomcatpath}"/>
+    <replace file="WEB-INF/web.xml" token="@DQM_URL@" value="${url}"/>     
+
+    <war destfile="${dist}/${url}.war" webxml="WEB-INF/web.xml">
+      <fileset dir="${html}"/>
+      <lib dir="${lib}"/>
+      <lib file="${dist}/cmsdqmrunregistry.jar"/>
+      <webinf dir="WEB-INF">
+        <exclude name="web.xml"/>
+      </webinf>
+    </war>
+
+    <copy file="${dist}/${url}.war" todir="${tomcatpath}/webapps"/>
+    <delete file="WEB-INF/web.xml" />
+    <move file="WEB-INF/web_backup.xml" tofile="WEB-INF/web.xml"/>
+
+  </target>
+
+</project>
