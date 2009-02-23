@@ -40,7 +40,9 @@ namespace edm {
       Status doEndOfLoop(const edm::EventSetup& es);
       void prepareForNextLoop(eventsetup::EventSetupProvider* esp);
 
+      //This interface is depricated
       virtual void beginOfJob(const edm::EventSetup&); 
+      virtual void beginOfJob();
       virtual void startingNewLoop(unsigned int ) = 0; 
       virtual Status duringLoop(const edm::Event&, const edm::EventSetup&) = 0; 
       virtual Status endOfLoop(const edm::EventSetup&, unsigned int iCounter) = 0; 

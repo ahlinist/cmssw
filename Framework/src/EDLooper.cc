@@ -67,7 +67,8 @@ namespace edm {
                   esp, _1));
   }
 
-  void EDLooper::beginOfJob(const edm::EventSetup&) { }
+  void EDLooper::beginOfJob(const edm::EventSetup&) { beginOfJob();}
+  void EDLooper::beginOfJob() { }
 
   void EDLooper::endOfJob() { }
 
