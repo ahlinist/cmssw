@@ -8,7 +8,7 @@
 #include "TText.h"
 #include <cassert>
 
-#include "DQM/RenderPlugins/src/EGammmaRenderPlugin.h"
+#include "DQM/RenderPlugins/src/EGammaRenderPlugin.h"
 #include "DQM/RenderPlugins/src/utils.h"
 
 bool EGammaRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
