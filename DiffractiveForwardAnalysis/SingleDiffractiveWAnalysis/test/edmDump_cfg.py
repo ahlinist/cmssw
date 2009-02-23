@@ -32,91 +32,11 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.wmunuSelFilter = cms.EDFilter("WMuNuSelector",
-    # Defaults follow...
-    #
-    # Input collections ->
-    MuonTag = cms.untracked.InputTag("muons"),
-    METTag = cms.untracked.InputTag("met"),
-    JetTag = cms.untracked.InputTag("iterativeCone5CaloJets"),
-    #UseOnlyGlobalMuons = cms.bool(True),
-    #
-    # Main cuts ->
-    PtCut = cms.untracked.double(15.0),
-    EtaCut = cms.untracked.double(2.1),
-    IsRelativeIso = cms.untracked.bool(True),
-    IsoCut03 = cms.untracked.double(0.1),
-    MassTMin = cms.untracked.double(30.0),
-    MassTMax = cms.untracked.double(200.0),
-    #
-    # To suppress Zmm ->
-    #PtThrForZCount = cms.double(20.0),
-    #
-    # To suppress ttbar ->
-    #AcopCut = cms.double(999999.),
-    #EJetMin = cms.double(999999.),
-    #NJetMax = cms.int32(999999)
-)
+process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuSelFilter_cfi')
+process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuAnalyzer_cfi')
+process.wmunuAnalyzerAfterFilter = process.wmunuAnalyzer.clone()
 
-process.genParticlesCalo = cms.EDProducer(
-    "InputGenJetsParticleSelector",
-    src = cms.InputTag("genParticles"),
-    partonicFinalState = cms.bool(False),
-    excludeResonances = cms.bool(False),
-    excludeFromResonancePids = cms.vuint32(),
-    tausAsJets = cms.bool(False),
-    ignoreParticleIDs = cms.vuint32(
-    1000022, 2000012, 2000014,
-    2000016, 1000039, 5000039,
-    4000012, 9900012, 9900014,
-    9900016, 39, 12, 13, 14, 16)  ###These ID's will contribute to MET 
-)
-
-process.castorGen = cms.EDProducer("CASTORGenInfoDumper",
-    GenParticlesLabel = cms.InputTag("genParticlesCalo"),
-    CASTORParticleEnergyThreshold = cms.untracked.double(10.0),
-    CASTORPhiSliceEnergyThreshold = cms.untracked.double(10.0),
-    CASTOREtaMin = cms.untracked.double(5.2),
-    CASTOREtaMax = cms.untracked.double(6.6)
-)
-
-process.castorTower = cms.EDProducer("CastorTowerEdmNtupleDumper",
-    CastorTowersTag = cms.InputTag("CastorTowerReco"),
-    TowerEnergyTresholdMin = cms.untracked.double(0.0),
-    TowerEnergyTresholdMax = cms.untracked.double(20.0),
-    NumberOfTresholds = cms.untracked.uint32(50)
-)
-
-process.hfTower = cms.EDProducer("HFTowerEdmNtupleDumperAOD",
-    CaloTowersTag = cms.InputTag("towerMaker"),
-    TowerEnergyTresholdMin = cms.untracked.double(0.0),
-    TowerEnergyTresholdMax = cms.untracked.double(10.0),
-    NumberOfTresholds = cms.untracked.uint32(50)
-)
-
-process.xiTower = cms.EDProducer("XiTowerDumper",
-    CaloTowersTag = cms.InputTag("towerMaker"),
-    MuonTag = cms.InputTag("muons"),
-    UseMETInfo = cms.bool(True),
-    CaloMETTag = cms.InputTag("met"),
-    HFPlusTowerThreshold = cms.double(1.0),
-    HFMinusTowerThreshold = cms.double(1.0),
-    HEPlusTowerThreshold = cms.double(1.0),
-    HEMinusTowerThreshold = cms.double(1.0),
-    HBTowerThreshold = cms.double(1.0) 
-)
-
-process.xiTowerNoMET = cms.EDProducer("XiTowerDumper",
-    CaloTowersTag = cms.InputTag("towerMaker"),
-    MuonTag = cms.InputTag("muons"),
-    UseMETInfo = cms.bool(False),
-    CaloMETTag = cms.InputTag("met"),
-    HFPlusTowerThreshold = cms.double(1.0),
-    HFMinusTowerThreshold = cms.double(1.0),
-    HEPlusTowerThreshold = cms.double(1.0),
-    HEMinusTowerThreshold = cms.double(1.0),
-    HBTowerThreshold = cms.double(1.0)
-)
+process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff')
 
 process.pileUpInfo = cms.EDProducer("PileUpEdmNtupleDumper")
 
@@ -132,18 +52,24 @@ process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVerticesWithB
 # Output definition
 process.output = cms.OutputModule("PoolOutputModule",
     outputCommands = process.MyEventContent.outputCommands,
-    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
-    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
+    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
+    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('USER'),
         filterName = cms.untracked.string('')
     ),
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('p1')
+        SelectEvents = cms.vstring('p2')
     )
 )
 
-process.p1 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
+process.add_(cms.Service("TFileService",
+		fileName = cms.string("analysisWMuNu_histos.root")
+	)
+)
+
+process.p1 = cms.Path(process.wmunuAnalyzer)
+process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
 process.out_step = cms.EndPath(process.output)
 
-process.schedule = cms.Schedule(process.p1,process.out_step)
+process.schedule = cms.Schedule(process.p1,process.p2,process.out_step)
