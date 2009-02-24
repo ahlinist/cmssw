@@ -34,4 +34,8 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
+
+  <!-- create dictionaries for GenPhaseSpaceEventInfo objects -->
+  <class name="GenPhaseSpaceEventInfo"/>
+  <class name="edm::Wrapper<GenPhaseSpaceEventInfo>"/>
 </lcgdict>

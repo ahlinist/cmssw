@@ -2,6 +2,8 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/GenPhaseSpaceEventInfo.h"
+
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -45,5 +47,9 @@ namespace {
     edm::Wrapper<PATElecMuPair> dummyPATElecMuPairWrapper;
     PATElecMuPairCollection dummyPATElecMuPairCollection;
     edm::Wrapper<PATElecMuPairCollection> dummyPATElecMuPairCollectionWrapper;
+
+    /// create dictionaries for GenPhaseSpaceEventInfo objects
+    GenPhaseSpaceEventInfo dummyGenPhaseSpaceEventInfo;
+    edm::Wrapper<GenPhaseSpaceEventInfo> dummyGenPhaseSpaceEventInfoWrapper;
   };
 }
