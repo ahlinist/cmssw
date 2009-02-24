@@ -6,13 +6,13 @@ public:
     gROOT->LoadMacro("./tdrstyle.cxx");
     setTDRStyle();
 
-    inFile = new TFile("tteffAnalysis.root");
-    //inFile = new TFile("tteffAnalysis-merged.root");
+    inFile = TFile::Open("tteffAnalysis.root");
+    //inFile = TFile::Open("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get("TTEffTree"));
 
     plotXtitle = 0;
     plotYtitle = 0;
-    format = 0;
+    format = "";
     save = false;
   }
   ~Plotter(){
@@ -25,7 +25,7 @@ public:
   void SetXTitle(char* title) {plotXtitle   = title;}
   void SetYTitle(char* title) {plotYtitle   = title;}
   void SetFileName(TString name){plotFileName = name;}
-  void SetFormat(char *frmt){format = frmt;}
+  void SetFormat(const char *frmt){format = frmt;}
   void SetSave(bool s) {save = s;}
 
 private:
@@ -34,7 +34,7 @@ private:
   char* plotXtitle;
   char* plotYtitle;
   TString plotFileName;
-  char *format;
+  TString format;
   bool save;
 };
 
@@ -76,7 +76,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   heff -> Draw("PAE");
 
   if(save) {
-    if(format)
+    if(format != "")
       gPad->SaveAs(plotFileName+format);
     else
       gPad->SaveAs(plotFileName);
@@ -121,7 +121,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   heff -> Draw("PAE");
 
   if(save) {
-    if(format)
+    if(format != "")
       gPad->SaveAs(plotFileName+format);
     else
       gPad->SaveAs(plotFileName);
@@ -144,7 +144,7 @@ void Plotter::DrawDistribution(const char* varexp, const TCut& selection){
   hnum -> Draw("HIST");
 
   if(save) {
-    if(format)
+    if(format != "")
       gPad->SaveAs(plotFileName+format);
     else
       gPad->SaveAs(plotFileName);
