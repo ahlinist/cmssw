@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+# import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
+from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
+
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
 
@@ -27,7 +30,8 @@ triggerHistManager.l1Bits = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_Sing
                                         'L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14')
 triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I', 'HLT_Mu15', 'HLT_IsoMu11', 'HLT_IsoEle8_IsoMu7')
 
-elecMuHistManagers = cms.vstring( 'electronHistManager',
+elecMuHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
+                                  'electronHistManager',
                                   'muonHistManager',
                                   'diTauCandidateHistManagerForElecMu',
                                   'metHistManager',
@@ -37,6 +41,16 @@ elecMuHistManagers = cms.vstring( 'electronHistManager',
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
+
+# generator level phase-space selection
+# (NOTE: to be used in case of Monte Carlo samples
+#        overlapping in simulated phase-space only !!)
+genPhaseSpaceCut = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 # passing basic acceptance and kinematic cuts
 # (NOTE: to be used for efficiency studies only !!)
@@ -299,16 +313,27 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers
   ),
 
+  # generator level phase-space selection
+  # (NOTE: to be used in case of Monte Carlo samples
+  #        overlapping in simulated phase-space only !!)
+  cms.PSet(
+    filter = cms.string('genPhaseSpaceCut'),
+    title = cms.string('gen. Phase-Space')
+  ),
+  cms.PSet(
+    histManagers = elecMuHistManagers
+  ),
+
   # generator level selection of Z --> e + mu events
   # passing basic acceptance and kinematic cuts
   # (NOTE: to be used for efficiency studies only !!)
   #cms.PSet(
   #  filter = cms.string('genElectronCut'),
-  #  title = cms.string('gen. Electron'),
+  #  title = cms.string('gen. Electron')
   #),
   #cms.PSet(
   #  filter = cms.string('genMuonCut'),
-  #  title = cms.string('gen. Muon'),
+  #  title = cms.string('gen. Muon')
   #),
   #cms.PSet(
   #  histManagers = elecMuHistManagers

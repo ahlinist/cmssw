@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+# import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
+from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
+
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
 
@@ -26,7 +29,8 @@ triggerHistManager.l1Bits = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_Sing
                                         'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15')
 triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I')
 
-elecTauHistManagers = cms.vstring( 'electronHistManager',
+elecTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
+                                   'electronHistManager',
                                    'tauHistManager',
                                    'diTauCandidateHistManagerForElecTau',
                                    'metHistManager',
@@ -36,6 +40,16 @@ elecTauHistManagers = cms.vstring( 'electronHistManager',
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
+
+# generator level phase-space selection
+# (NOTE: to be used in case of Monte Carlo samples
+#        overlapping in simulated phase-space only !!)
+genPhaseSpaceCut = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 # generator level selection of Z --> e + tau-jet events
 # passing basic acceptance and kinematic cuts
@@ -277,6 +291,17 @@ elecTauEventDump = cms.PSet(
 
 elecTauAnalysisSequence = cms.VPSet(
   # fill histograms for full event sample
+  cms.PSet(
+    histManagers = elecTauHistManagers
+  ),
+
+  # generator level phase-space selection
+  # (NOTE: to be used in case of Monte Carlo samples
+  #        overlapping in simulated phase-space only !!)
+  cms.PSet(
+    filter = cms.string('genPhaseSpaceCut'),
+    title = cms.string('gen. Phase-Space')
+  ),
   cms.PSet(
     histManagers = elecTauHistManagers
   ),

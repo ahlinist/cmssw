@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+# import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
+from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
+
 # import config for muon histogram manager
 from TauAnalysis.Core.muonHistManager_cfi import *
 
@@ -28,7 +31,8 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 triggerHistManager.l1Bits = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14')
 triggerHistManager.hltPaths = cms.vstring('HLT_Mu15', 'HLT_IsoMu11')
 
-muTauHistManagers = cms.vstring( 'muonHistManager',
+muTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
+                                 'muonHistManager',
                                  'tauHistManager',
                                  'diTauCandidateHistManagerForMuTau',
                                  'metHistManager',
@@ -39,6 +43,16 @@ muTauHistManagers = cms.vstring( 'muonHistManager',
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
+
+# generator level phase-space selection
+# (NOTE: to be used in case of Monte Carlo samples
+#        overlapping in simulated phase-space only !!)
+genPhaseSpaceCut = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 # generator level selection of Z --> mu + tau-jet events
 # passing basic acceptance and kinematic cuts
@@ -298,6 +312,17 @@ muTauEventDump = cms.PSet(
 
 muTauAnalysisSequence = cms.VPSet(
   # fill histograms for full event sample
+  cms.PSet(
+    histManagers = muTauHistManagers
+  ),
+
+  # generator level phase-space selection
+  # (NOTE: to be used in case of Monte Carlo samples
+  #        overlapping in simulated phase-space only !!)
+  cms.PSet(
+    filter = cms.string('genPhaseSpaceCut'),
+    title = cms.string('gen. Phase-Space')
+  ),
   cms.PSet(
     histManagers = muTauHistManagers
   ),

@@ -17,6 +17,10 @@ process.load("TauAnalysis.CandidateTools.elecMuPairProducer_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 
+# import configuration parameters for submission of jobs to CERN batch system
+# (running over skimmed samples stored on CASTOR)
+from TauAnalysis.Configuration.sampleDefinitionsZtoElecMu_cfi import *
+
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
@@ -39,7 +43,42 @@ process.source = cms.Source("PoolSource",
     )
 )
 
+#--------------------------------------------------------------------------------
+# define "hooks" for replacing configuration parameters
+# in case running jobs on the CERN batch system:
+#
+#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
+#
+#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.maxEvents.input = cms.untracked.int32(100)"
+#
+#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
+#
+# to be replaced by e.g.
+#
+#  "extEventSelection = cms.VPSet()
+#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
+#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
+#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
+#
+#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
+#
+# to be replaced by e.g.
+#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
                      +process.produceElecMuPairs
                      +process.analyzeZtoElecMu
                      +process.saveZtoElecMu )
+
+# print-out all python configuration parameter information
+#print process.dumpPython()

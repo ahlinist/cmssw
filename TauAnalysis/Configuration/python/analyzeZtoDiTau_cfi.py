@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+# import config for histogram manager filling information about phase-space simulated in Monte Carlo sample
+from TauAnalysis.Core.genPhaseSpaceEventInfoHistManager_cfi import *
+
 # import config for tau-jet histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
 
@@ -28,7 +31,8 @@ triggerHistManager.hltPaths = cms.vstring('HLT_IsoTau_MET65_Trk20', 'HLT_IsoTau_
                                           'HLT_DoubleIsoTau_Trk3',
                                           'HLT_MET25', 'HLT_MET35', 'HLT_MET50', 'HLT_MET65', 'HLT_MET75')
 
-diTauHistManagers = cms.vstring( 'tauHistManager',
+diTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
+                                 'tauHistManager',
                                  'diTauCandidateHistManagerForDiTau',
                                  'metHistManager',
                                  'vertexHistManager',
@@ -37,6 +41,16 @@ diTauHistManagers = cms.vstring( 'tauHistManager',
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
+
+# generator level phase-space selection
+# (NOTE: to be used in case of Monte Carlo samples
+#        overlapping in simulated phase-space only !!)
+genPhaseSpaceCut = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 # generator level selection of pure hadronic Z --> tau-jet + tau-jet events
 # passing basic acceptance and kinematic cuts
@@ -247,6 +261,17 @@ diTauEventDump = cms.PSet(
 
 diTauAnalysisSequence = cms.VPSet(
   # fill histograms for full event sample
+  cms.PSet(
+    histManagers = diTauHistManagers
+  ),
+
+  # generator level phase-space selection
+  # (NOTE: to be used in case of Monte Carlo samples
+  #        overlapping in simulated phase-space only !!)
+  cms.PSet(
+    filter = cms.string('genPhaseSpaceCut'),
+    title = cms.string('gen. Phase-Space')
+  ),
   cms.PSet(
     histManagers = diTauHistManagers
   ),
