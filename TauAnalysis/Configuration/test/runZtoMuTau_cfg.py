@@ -41,12 +41,49 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/F01E4F34-BDCB-DD11-B87D-001617C3B77C.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/muTauSkim_famos.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/muTauSkim.root'
     )
 )
+
+#--------------------------------------------------------------------------------
+# define "hooks" for replacing configuration parameters
+# in case running jobs on the CERN batch system:
+#
+#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
+#
+#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.maxEvents.input = cms.untracked.int32(100)"
+#
+#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
+#
+# to be replaced by e.g.
+#
+#  "extEventSelection = cms.VPSet()
+#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
+#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
+#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
+#
+#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
+#
+# to be replaced by e.g.
+#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#
+#--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
                      +process.selectPFTausForMuTau
                      +process.produceMuTauPairs
                      +process.analyzeZtoMuTau
                      +process.saveZtoMuTau )
+
+# print-out all python configuration parameter information
+#print process.dumpPython()

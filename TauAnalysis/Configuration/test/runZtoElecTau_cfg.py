@@ -45,8 +45,43 @@ process.source = cms.Source("PoolSource",
      )
 )
 
+#--------------------------------------------------------------------------------
+# define "hooks" for replacing configuration parameters
+# in case running jobs on the CERN batch system:
+#
+#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
+#
+#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
+#
+# to be replaced by e.g.
+#
+#  "process.maxEvents.input = cms.untracked.int32(100)"
+#
+#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
+#
+# to be replaced by e.g.
+#
+#  "extEventSelection = cms.VPSet()
+#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
+#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
+#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
+#
+#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
+#
+# to be replaced by e.g.
+#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
                      +process.selectPFTausForElecTau 
                      +process.produceElecTauPairs
                      +process.analyzeZtoElecTau
                      +process.saveZtoElecTau )
+
+# print-out all python configuration parameter information
+#print process.dumpPython()
