@@ -41,7 +41,7 @@ process.source = cms.Source("PoolSource",
 #
         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
     ),
-    skipBadFiles = cms.bool(True)                        
+    skipBadFiles = cms.untracked.bool(True)                        
 )
 
 #--------------------------------------------------------------------------------
