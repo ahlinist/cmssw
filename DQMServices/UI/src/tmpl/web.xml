@@ -16,7 +16,7 @@
     <env-entry>
       <env-entry-name>db_name</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>jdbc/dqmrunregistry_dev</env-entry-value>
+      <env-entry-value>jdbc/@DB_NAME@</env-entry-value>
     </env-entry>
 
     <env-entry>
@@ -28,29 +28,25 @@
     <env-entry>
       <env-entry-name>db_auth</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>NKFP9ajtNqZH2UZiBuygUU+u+8hdygbFIkdXBVGUcQ8=
-</env-entry-value>
-      <!--<env-entry-value>3eZOlsE0nXo9f7/XXi3Y4lsfA0glzDHGV540SRLQyV/7ZFYhlkUgcg==</env-entry-value>-->
-      <!--env-entry-value>WBz+2qun3HqwIzr2gD8YQ/LpDlcVwyw76Rv+7eZGJVqvfTN269owGnwVAGsMgdht</env-entry-value-->
-      <!--env-entry-value>PYo98yvVZgFP+rdMAl/FxunnDhOAG3WINKKMA9HkVe8/beRmC0cpaoWJTuIyBIBz</env-entry-value-->
+      <env-entry-value>@AUTH@</env-entry-value>
     </env-entry>
 
     <env-entry>
       <env-entry-name>dbs_url</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>http://localhost:9999</env-entry-value>
+      <env-entry-value>@DBS_DQM_URL@</env-entry-value>
     </env-entry>
 
     <env-entry>
       <env-entry-name>js_dir</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>/home/tomcat/apache-tomcat-5.5.26/webapps/runregistry/media/</env-entry-value>
+      <env-entry-value>@TOMCAT_PATH@/webapps/@DQM_URL@/media/</env-entry-value>
     </env-entry>
 
     <env-entry>
       <env-entry-name>templates_dir</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>/home/tomcat/apache-tomcat-5.5.26/webapps/runregistry/templates/</env-entry-value>
+      <env-entry-value>@TOMCAT_PATH@/webapps/@DQM_URL@/templates/</env-entry-value>
     </env-entry>
 
     <env-entry>
@@ -138,11 +134,6 @@
     </servlet>
 
     <servlet>
-      <servlet-name>JSMin</servlet-name>
-      <servlet-class>cms.dqm.workflow.JSMin</servlet-class>
-    </servlet>
-
-    <servlet>
       <servlet-name>EditProvider</servlet-name>
       <servlet-class>cms.dqm.workflow.EditProvider</servlet-class>
     </servlet>
@@ -180,11 +171,6 @@
     <servlet-mapping>
         <servlet-name>RunEditData</servlet-name>
         <url-pattern>/runeditdata</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>JSMin</servlet-name>
-        <url-pattern>/jsmin</url-pattern>
     </servlet-mapping>
 
 </web-app>
