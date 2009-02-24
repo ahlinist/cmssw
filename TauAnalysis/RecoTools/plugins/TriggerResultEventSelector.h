@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: TriggerResultEventSelector.h,v 1.1 2009/01/22 16:30:03 veelken Exp $
+ * $Id: TriggerResultEventSelector.h,v 1.1 2009/01/23 14:58:12 veelken Exp $
  *
  */
 
@@ -24,9 +24,9 @@ class TriggerResultEventSelector : public EventSelectorBase
 {
  public:
   // constructor 
-  explicit TriggerResultEventSelector(const edm::ParameterSet& cfg);
+  explicit TriggerResultEventSelector(const edm::ParameterSet&);
   
-  bool operator()(edm::Event& evt, const edm::EventSetup&);
+  bool operator()(edm::Event&, const edm::EventSetup&);
  
  private:
   // source collection label
