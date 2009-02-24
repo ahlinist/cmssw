@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.12 2009/02/09 01:54:50 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.13 2009/02/18 07:50:21 mkortela Exp $
 //
 //
 
@@ -36,6 +36,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
 
   //reset vars
   PFPt = 0.;
+  PFInvPt = 0.;
   PFEt = 0.;
   PFEta = 0.;
   PFPhi = 0.;
@@ -45,6 +46,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFEnergy = 0;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
+  _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
   _TTEffTree->Branch("PFTauEt",&PFEt,"PFTauEt/F");
   _TTEffTree->Branch("PFTauEta", &PFEta, "PFTauEta/F");
   _TTEffTree->Branch("PFTauPhi", &PFPhi, "PFTauPhi/F");
@@ -53,8 +55,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
   _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
 
-  _L1analyzer.Setup(iConfig,_TTEffTree);
-  _L2analyzer.Setup(iConfig,_TTEffTree);
+//  _L1analyzer.Setup(iConfig,_TTEffTree);
+//  _L2analyzer.Setup(iConfig,_TTEffTree);
   _L25analyzer.Setup(iConfig,_TTEffTree);
 
 }
@@ -204,12 +206,13 @@ void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFT
    for(unsigned int iTau = 0; iTau < taus->size(); iTau++) {
    PFTauRef thisTauRef(taus,iTau);
    PFIso = isos[thisTauRef];
+   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
           // Fill common variables
           fill(taus->at(iTau));
 
           // Call individual analyzers
-          _L1analyzer.fill(iEvent, taus->at(iTau));
-          _L2analyzer.fill(iEvent, taus->at(iTau));
+//          _L1analyzer.fill(iEvent, taus->at(iTau));
+//          _L2analyzer.fill(iEvent, taus->at(iTau));
           _L25analyzer.fill(iEvent, taus->at(iTau));
 
           // Finally, fill the entry to tree
