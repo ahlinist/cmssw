@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.cc,v 1.16 2008/12/12 15:42:56 gfball Exp $
+// $Id: L25TauEfficiencyAnalyzer.cc,v 1.17 2009/02/04 18:47:01 smaruyam Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -22,6 +22,7 @@ void L25TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l25
   l25tree->Branch("l25Phi", &l25Phi,"l25Phi/F" );
   l25tree->Branch("l25Et", &l25Et,"l25Et/F" );
   l25tree->Branch("l25Pt", &l25Pt,"l25Pt/F" );
+  l25tree->Branch("l25InvPt", &l25InvPt,"l25InvPt/F" );
   l25tree->Branch("l25Depth", &l25Depth,"l25Depth/I" );
 }
 
@@ -45,6 +46,7 @@ void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVecto
   l25Phi = 0;
   l25Eta = 0;
   l25Pt = 0;
+  l25InvPt = 0;
   l25Depth = 0;
   if(iEvent.getByLabel(l25JetSource, tags)){
     for(unsigned int j = 0; j < tags->size(); j++){ // bare L2 Taus
@@ -55,7 +57,11 @@ void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVecto
 	l25Et   = (tags->at(j).jet()->et());
     const TrackRef leadTrk = tags->at(j).leadingSignalTrack(0.2,1.0);// track finding cone = 0.2 
 	if(leadTrk.isNonnull()){                                                        
-	    l25Pt  =  (leadTrk->pt() );
+	    if(l25Depth < 2){
+            l25Depth = 2; // lead track
+    	    l25Pt  =  (leadTrk->pt() );
+	        l25InvPt  =  1./(leadTrk->pt() );
+            }
 	    }// good lead cand
       }// calo and l25 tau match dr < l25MatchingCone
     }// for jet loop
@@ -64,8 +70,8 @@ void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVecto
   if(iEvent.getByLabel(l25PtCutSource, ptJets)){ // Leading Pt Cut > X GeV/c applied, check HLT Config file
     for(unsigned int j = 0; j < ptJets->size(); j++){
       if(deltaR(tau, ptJets->at(j) ) < l25MatchingCone){ // dr < l25MatchingCone
-	if(l25Depth < 2){
-	    l25Depth = 2; // lead pt cut match
+	if(l25Depth < 3){
+	    l25Depth = 3; // lead pt cut match
         break;
 	    }
       }// pf and l25 tau match dr < l25MatchingCone
@@ -75,8 +81,8 @@ void L25TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVecto
   if(iEvent.getByLabel(l25IsoSource, isoJets)){
     for(unsigned int j = 0; j < isoJets->size(); j++){
       if(deltaR(tau, isoJets->at(j)) < l25MatchingCone){ // dr < l25MatchingCone
-	if(l25Depth < 3){
-        l25Depth = 3; // iso match
+	if(l25Depth < 4){
+        l25Depth = 4; // iso match
         break;
         }
       }

@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.12 2008/12/12 15:42:55 gfball Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.13 2009/02/04 18:47:29 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -44,6 +44,7 @@ virtual void fill(const edm::Event&, const LorentzVector&);
       float l25Phi;
       float l25Eta;
       float l25Pt;
+      float l25InvPt;
       int   l25Depth;
       double l25MatchingCone;
 };
