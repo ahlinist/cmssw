@@ -40,7 +40,8 @@ process.source = cms.Source("PoolSource",
 # 10k events RelVal sample
 #
         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
-    )
+    ),
+    skipBadFiles = cms.bool(True)                        
 )
 
 #--------------------------------------------------------------------------------
