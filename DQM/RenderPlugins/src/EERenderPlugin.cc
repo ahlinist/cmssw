@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.116 2009/02/23 20:46:13 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.117 2009/02/24 12:12:23 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.116 $
-  \date $Date: 2009/02/23 20:46:13 $
+  \version $Revision: 1.117 $
+  \date $Date: 2009/02/24 12:12:23 $
 */
 
 #include "TH1F.h"
@@ -526,6 +526,13 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( nbx == 40 && nby == 20 ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(20);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
+  if( nbx == 200 && nby == 100 ) {
     gPad->SetGridx();
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(20);
