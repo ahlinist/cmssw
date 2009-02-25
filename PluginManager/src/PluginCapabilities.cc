@@ -71,7 +71,7 @@ PluginCapabilities::tryToFind(const SharedLibrary& iLoadable)
   const char** names;
   int size;
   //reinterpret_cast<void (*)(const char**&,int&)>(sym)(names,size);
-  ((void (*)(const char**&,int&))(sym))(names,size);
+  reinterpret_cast<void (*)(const char**&,int&)>(reinterpret_cast<unsigned long>(sym))(names,size);
 
   PluginInfo info;
   for(int i=0; i < size; ++i) {
