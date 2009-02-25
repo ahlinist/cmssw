@@ -15,12 +15,12 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
 from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_SIM_RECO_RAW_HLTExtra_PFTauFiltered_HighEfficiency import *
 process.source = source
-#process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring(
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
 ## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
-#	"file:test.root"
-#    )
-#)
+	"file:test.root"
+    )
+)
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
 #   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
@@ -37,7 +37,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
 	L1JetMatchingCone	= cms.double(0.5),
-        L2AssociationCollection = cms.InputTag("hltL2TauIsolationProducer","L2TauIsolationInfoAssociator"),
+        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
         L2matchingDeltaR        = cms.double(0.3),
         l25JetSource            = cms.InputTag("hltL25TauPixelTracksConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauPixelTracksLeadingTrackPtCutSelector"),
