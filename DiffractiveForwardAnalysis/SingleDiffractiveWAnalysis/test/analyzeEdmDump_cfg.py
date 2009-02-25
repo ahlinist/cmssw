@@ -5,8 +5,8 @@ process = cms.Process("EdmDumpAnalysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.debugModules = cms.untracked.vstring('')
 #process.MessageLogger.cerr.threshold = 'DEBUG'
-#process.MessageLogger.cerr.threshold = 'INFO'
-process.MessageLogger.cerr.threshold = 'WARNING'
+process.MessageLogger.cerr.threshold = 'INFO'
+#process.MessageLogger.cerr.threshold = 'WARNING'
 process.MessageLogger.categories.append('Analysis')
 #process.MessageLogger.cerr.DEBUG = cms.untracked.PSet(
 #    default = cms.untracked.PSet( limit = cms.untracked.int32(0)),
@@ -35,11 +35,16 @@ process.maxEvents = cms.untracked.PSet(
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleVertexFilter_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionFilter_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionTMVAFilter_cfi")
+process.singleInteractionTMVAFilter.CutOnClassifier = 0.9 
 
 process.edmDumpAnalysisSingleVertex = process.edmDumpAnalysis.clone()
 
 process.edmDumpAnalysisSingleInteraction = process.edmDumpAnalysis.clone()
 process.edmDumpAnalysisSingleInteraction.SaveROOTTree = True
+
+process.edmDumpAnalysisSingleInteractionTMVA = process.edmDumpAnalysis.clone()
+process.edmDumpAnalysisSingleInteractionTMVA.SaveROOTTree = True
 
 process.edmDumpAnalysisPileUp = process.edmDumpAnalysis.clone()
 process.edmDumpAnalysisPileUp.SaveROOTTree = True
@@ -62,4 +67,6 @@ process.p4 = cms.Path(~process.singleInteractionFilter*process.edmDumpAnalysisPi
 process.p5 = cms.Path(process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexSingleInteraction)
 process.p6 = cms.Path(~process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexPileUp)
 
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6)
+process.p7 = cms.Path(process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVA)
+
+process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7)
