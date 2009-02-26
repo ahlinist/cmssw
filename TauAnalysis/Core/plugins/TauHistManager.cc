@@ -293,7 +293,7 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
     
     reco::isodeposit::AbsVetos tauIsoParam;
     tauIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    tauIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
+    tauIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
 
     if ( patTau.ecalIsoDeposit() ) {
       double tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauIsoParam, false);
