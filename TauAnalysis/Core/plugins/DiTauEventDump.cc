@@ -47,6 +47,8 @@ void DiTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSet
   printMuonInfo(iEvent);
   printTauInfo(iEvent);
 
+  printDiTauCandidateInfo(iEvent);
+
   printMissingEtInfo(iEvent);
 
   printJetInfo(iEvent);

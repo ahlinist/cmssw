@@ -46,6 +46,8 @@ void ElecMuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
   printElectronInfo(iEvent);
   printMuonInfo(iEvent);
 
+  printDiTauCandidateInfo(iEvent);
+
   printMissingEtInfo(iEvent);
 
   printJetInfo(iEvent);

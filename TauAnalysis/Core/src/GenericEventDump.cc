@@ -1,8 +1,5 @@
 #include "TauAnalysis/Core/interface/GenericEventDump.h"
 
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Framework/interface/TriggerNames.h"
-
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
@@ -10,6 +7,7 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Framework/interface/TriggerNames.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -21,8 +19,6 @@
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
-
-#include <TMath.h>
 
 #include <iostream>
 #include <fstream>
@@ -52,6 +48,8 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   patElectronSource_ = getInputTag(cfg, "electronSource");
   patMuonSource_ = getInputTag(cfg, "muonSource");
   patTauSource_ = getInputTag(cfg, "tauSource");
+
+  diTauCandidateSource_ = getInputTag(cfg, "diTauCandidateSource");
 
   patMEtSource_ = getInputTag(cfg, "metSource");
   genMEtSource_ = getInputTag(cfg, "genMEtSource");
@@ -187,7 +185,8 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
 	  patElectron != patElectrons->end(); ++patElectron ) {
       *outputStream_ << "Electron(" << iElectron << "):" << std::endl;
       *outputStream_ << " Pt = " << patElectron->pt() << std::endl;
-      *outputStream_ << " theta = " << patElectron->theta()*180./TMath::Pi() << " (eta = " << patElectron->eta() << ")" << std::endl;
+      *outputStream_ << " theta = " << patElectron->theta()*180./TMath::Pi() 
+		     << " (eta = " << patElectron->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patElectron->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " Supercluster" << std::endl;
       if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
@@ -230,7 +229,8 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
 	  patMuon != patMuons->end(); ++patMuon ) {
       *outputStream_ << "Muon(" << iMuon << "):" << std::endl;
       *outputStream_ << " Pt = " << patMuon->pt() << std::endl;
-      *outputStream_ << " theta = " << patMuon->theta()*180./TMath::Pi() << " (eta = " << patMuon->eta() << ")" << std::endl;
+      *outputStream_ << " theta = " << patMuon->theta()*180./TMath::Pi() 
+		     << " (eta = " << patMuon->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patMuon->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " inner Track" << std::endl;
       printTrackInfo(edm::RefToBase<reco::Track>(patMuon->innerTrack()), patMuon->vertex(), true, false, outputStream_);
@@ -272,7 +272,8 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
 	  patTau != patTaus->end(); ++patTau ) {
       *outputStream_ << "Tau(" << iTau << "):" << std::endl;
       *outputStream_ << " Et = " << patTau->et() << std::endl;
-      *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi() << " (eta = " << patTau->eta() << ")" << std::endl;
+      *outputStream_ << " theta = " << patTau->theta()*180./TMath::Pi() 
+		     << " (eta = " << patTau->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patTau->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " leading Track" << std::endl;
       printTrackInfo(edm::RefToBase<reco::Track>(patTau->leadTrack()), patTau->vertex(), true, false, outputStream_);
@@ -293,6 +294,10 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
   }
 }
 
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 void GenericEventDump::printJetInfo(const edm::Event& evt) const
 {
   if ( !outputStream_ ) {
@@ -309,7 +314,8 @@ void GenericEventDump::printJetInfo(const edm::Event& evt) const
 	  patJet != patJets->end(); ++patJet ) {
       *outputStream_ << "Jet(" << iJet << "):" << std::endl;
       *outputStream_ << " Et = " << patJet->et() << std::endl;
-      *outputStream_ << " theta = " << patJet->theta()*180./TMath::Pi() << " (eta = " << patJet->eta() << ")" << std::endl;
+      *outputStream_ << " theta = " << patJet->theta()*180./TMath::Pi() 
+		     << " (eta = " << patJet->eta() << ")" << std::endl;
       *outputStream_ << " phi = " << patJet->phi()*180./TMath::Pi() << std::endl;
       *outputStream_ << " Tracks" << std::endl;
       double trackPtSum = 0.;
