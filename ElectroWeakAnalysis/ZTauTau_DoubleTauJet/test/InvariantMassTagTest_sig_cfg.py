@@ -5,22 +5,19 @@ process = cms.Process("TestMassTag")
 #Input Events
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/0A366D53-7C6C-DD11-8D69-000423D94A20.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/1AFF04B0-7C6C-DD11-822A-000423D98C20.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/1C34D986-7C6C-DD11-9471-001617DBD5AC.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/62244544-7C6C-DD11-BC1A-000423D98E6C.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/6C8EE0B6-7C6C-DD11-9697-000423D99AAE.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/76591936-7C6C-DD11-9AE3-001617E30E28.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/8047F04D-7C6C-DD11-8B43-001617C3B77C.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/90F05115-7C6C-DD11-AF42-001617C3B6CC.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/94113FF3-7C6C-DD11-BAD9-001617E30CE8.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/BE4CA84D-7C6C-DD11-9185-001617E30D4A.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/DA550D7D-7C6C-DD11-945C-001617C3B6C6.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/E2B86924-7C6C-DD11-960C-000423D99E46.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/EE9C82AC-7C6C-DD11-A1E9-000423D99E46.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/F8AB2A46-7C6C-DD11-8CA0-001617E30E28.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0004/FA6B0D56-7C6C-DD11-BD3F-000423D9970C.root',
-      '/store/relval/CMSSW_2_1_4/RelValZTT/GEN-SIM-DIGI-RAW-HLTDEBUG-RECO/STARTUP_V5_v1/0005/967F66ED-8B6C-DD11-B4B9-000423D6B358.root'
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0000/024D51A2-1EBA-DD11-B114-000423D6B48C.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0000/3EB23861-2CBA-DD11-9798-000423D944FC.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0000/48AC084C-2CBA-DD11-B886-000423D944F8.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/68AF79B4-89BA-DD11-AB31-000423D98FBC.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/8CF32D6A-8ABA-DD11-B002-000423D95220.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/CC4986A8-8ABA-DD11-AED0-000423D94908.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/D84ED9C2-89BA-DD11-A280-000423D94990.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/E4BA9EDF-89BA-DD11-A245-001617C3B6CC.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/FA03B176-8BBA-DD11-9D8D-000423D6B444.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/FABD890B-8CBA-DD11-B88F-000423D99BF2.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0001/FAF7515B-8ABA-DD11-88CF-001617E30D40.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0002/CA4525DB-FFBA-DD11-9C18-001617C3B65A.root',
+    '/store/relval/CMSSW_2_2_0/RelValZTT/GEN-SIM-RECO/IDEAL_V9_v3/0002/E007D363-19BB-DD11-BC98-000423D992A4.root'
     )
 )
 
@@ -32,10 +29,9 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.default.limit = -1
 process.MessageLogger.suppressInfo = ['ckfTrackCandidates', 'IterativeConeJetProducer']
 
-# Magnetic Field 
-process.load("MagneticField.Engine.uniformMagneticField_cfi")
-process.UniformMagneticFieldESProducer.ZFieldInTesla = cms.double(4.0)
-process.prefer("UniformMagneticFieldESProducer")
+# Magnetic Field
+process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+process.prefer("VolumeBasedMagneticFieldESProducer")
 
 # Geometry
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -43,41 +39,33 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 #Condition
 process.load("Configuration.StandardSequences.FakeConditions_cff")
 
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+# PF Tau and discrimination
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 
-process.load("RecoParticleFlow.Configuration.RecoParticleFlow_cff")
-process.load("RecoJets.JetAssociationProducers.ic5PFJetTracksAssociatorAtVertex_cfi")
-
-process.load("RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi")
-process.pfRecoTauDiscriminationByIsolation.ApplyDiscriminationByECALIsolation = True
-
-process.load("RecoTauTag.RecoTau.PFRecoTauTagInfoProducer_cfi")
-process.load("RecoTauTag.RecoTau.PFRecoTauProducer_cfi")
-process.pfRecoTauProducer.ECALSignalConeSizeFormula = cms.string('0.1')
-
-process.load("RecoJets.JetProducers.iterativeCone5GenJetsNoNuBSM_cff")
+# Gen Jet
+process.load("RecoJets.JetProducers.iterativeCone5GenJets_cff")
 process.load("RecoJets.Configuration.GenJetParticles_cff")
 
 process.load("SimGeneral.MixingModule.mixNoPU_cfi")
 process.load("SimGeneral.TrackingAnalysis.trackingParticles_cfi")
 
-process.load("PhysicsTools.HepMCCandAlgos.genParticles_cfi")
+###process.load("PhysicsTools.HepMCCandAlgos.genParticles_cfi") ! does not work for 2_2_0
+process.load("RecoJets.Configuration.GenJetParticles_cff")
 
-process.prefer("UniformMagneticFieldESProducer")
 process.massTagTest = cms.EDFilter("InvariantMassTagTest",
     LeadingTrackPt = cms.untracked.double(6.0),
     PFSimParticleProducer = cms.untracked.string('particleFlowSimParticle'),
     ClusterTrackMatchingCone = cms.untracked.double(0.08),
-    PFTauProducer = cms.untracked.string('pfRecoTauProducer'),
+    PFTauProducer = cms.untracked.string('pfRecoTauProducerHighEfficiency'),
     ClusterJetMatchingCone = cms.untracked.double(0.4),
     SignalCone = cms.untracked.double(0.1),
     TrackingTruthProducer = cms.untracked.InputTag("mergedtruth","MergedTrackTruth"),
     MassTagProd = cms.untracked.string('invariantMass'),
-    PFTauDiscriminatorByIsolationProducer = cms.untracked.string('pfRecoTauDiscriminationByIsolation'),
+    PFTauDiscriminatorByIsolationProducer = cms.untracked.string('pfRecoTauDiscriminationByIsolationHighEfficiency'),
     InvariantMassCutoff = cms.untracked.double(100.0),
     MatchingCone = cms.untracked.double(0.1),
     IsolationCone = cms.untracked.double(0.4),
-    GenJetProducer = cms.untracked.InputTag("iterativeCone5GenJetsNoNuBSM"),
+    GenJetProducer = cms.untracked.InputTag("iterativeCone5GenJets"),
     GenParticleProducer = cms.untracked.InputTag("source")
 )
 
@@ -112,8 +100,8 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('./mass_tag_sig_ztt.root')
 )
 
-process.tauGenJet = cms.Sequence(process.genParticles*process.genParticlesAllStableNoNuBSM*process.iterativeCone5GenJetsNoNuBSM)
-process.pfTauReco = cms.Sequence(process.particleFlowSimParticle*process.ic5PFJetTracksAssociatorAtVertex*process.pfRecoTauTagInfoProducer*process.pfRecoTauProducer*process.pfRecoTauDiscriminationByIsolation)
-process.p = cms.Path(process.mix*process.trackingParticles*process.tauGenJet*process.tauFilter*process.pfTauReco*process.massTagTest)
+#process.tauGenJet = cms.Sequence(process.genJetParticles*process.iterativeCone5GenJets)
+process.tauGenJet = cms.Sequence(process.genJetParticles*process.genParticlesAllStableNoNuBSM*process.iterativeCone5GenJets)
+process.p = cms.Path(process.mix*process.trackingParticles*process.tauGenJet*process.tauFilter*process.PFTau*process.massTagTest)
 
 

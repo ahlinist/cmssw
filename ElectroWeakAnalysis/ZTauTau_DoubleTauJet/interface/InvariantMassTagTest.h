@@ -70,7 +70,9 @@ private:
 
   TH1F* invMassFromPFJet;
   TH1F* invMass;
-  TH1F* invMassSigComp;
+  TH1F* invMassSigComp1;
+  TH1F* invMassSigComp2;
+  TH1F* invMassSigComp3;
   TH1F* invMass1;
   TH1F* invMass2;
   TH1F* invMass3;
