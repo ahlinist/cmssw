@@ -1,86 +1,41 @@
-#
-# Example python configuration file for
-# DQM Histogram plotting utility
-#
-# In case of questions,
-# please send an email to:
-#
-#  Christian Veelken ( christian.veelken@cern.ch )
-#
-
 import FWCore.ParameterSet.Config as cms
 
 #
-# configuration parameters for DQMFileLoader class
-#--> load histograms from .root files into DQMStore;
-#    histograms get stored in the directory specified by dqmDirectory_store
+# Plot histograms for Z --> mu + tau channel
 #
+# Author: Christian Veelken, UC Davis
+#
+
 loadMuTau = cms.EDAnalyzer("DQMFileLoader",
   zMuMu1kEv = cms.PSet(
-#
-# load all histograms contained in file ewkTauMuAnalyzer_zMuMu1kEv.root;
-# store them in directory zMuMu1kEv
-# (this defines the dummy "signal")    
-#
     inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu1kEv.root'), # single .root file
     scaleFactor = cms.double(1.),
     dqmDirectory_store = cms.string('zMuMu1kEv')
   ),
   zMuMu9kEv = cms.PSet(
-#
-# load all histograms contained in files ewkTauMuAnalyzer_zMuMu1kEv_01.root, ewkTauMuAnalyzer_zMuMu1kEv_02.root,
-# ewkTauMuAnalyzer_zMuMu1kEv_03.root, ewkTauMuAnalyzer_zMuMu1kEv_04.root and ewkTauMuAnalyzer_zMuMu5kEv.root;
-# store them in directory zMuMu9kEv
-# (this defines the dummy "background")    
-#    
     inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu1kEv_#RANGE01-04#.root', # total of 5 root files
                                  'ewkTauMuAnalyzer_zMuMu5kEv.root'),
     scaleFactor = cms.double(1.),
     dqmDirectory_store = cms.string('zMuMu9kEv')
   ),
   zMuMu10kEv = cms.PSet(
-#
-# load all histograms contained in file ewkTauMuAnalyzer_zMuMu1kEv.root;
-# store them in directory zMuMu10kEv
-# (this defines the dummy "data")    
-#    
     inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu10kEv.root'),
     scaleFactor = cms.double(1.),
     dqmDirectory_store = cms.string('zMuMu10kEv')
   )
 )
 
-#
-# configuration parameters for DQMHistAdder class
-#--> retrieve all histograms within directories specified by dqmDirectories_input from DQMStore and add them;
-#    the results get stored in the directory specified by dqmDirectory_output
-#
+
 addMuTau = cms.EDAnalyzer("DQMHistAdder",
   smSum = cms.PSet(
-#
-# sum dummy "signal" and dummy "background" histograms;
-# store the resulting "total Standard Model expectation" in directory "smSum"
-#    
     dqmDirectories_input = cms.vstring('zMuMu1kEv',
                                        'zMuMu9kEv'),
     dqmDirectory_output = cms.string('smSum')
   )
 )
 
-#
-# configuration parameters for DQMHistPlotter class
-#--> retrieve histograms that are to be plotter from DQMStore and draw them;
-#    drawing options supported by ROOT can be specified in a flexible way by configuration parameters 
-#
 plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
   processes = cms.PSet(
-#
-# define dummy "signal" and dummy "backgound" to be Standard Model Monte Carlo contributions;
-# set legend entries for these processes to "Z --> mu mu (1kEv)" and "Z --> mu mu (9kEv)" respectively     
-#
-# ( NOTE: processes of type smMC get added on top of each other in stacked plots,
-#         while processes of type bsmMC does always get drawn as a separate line and **not** get added to stacked plots )
-#
     zMuMu1kEv = cms.PSet(
       dqmDirectory = cms.string('zMuMu1kEv'),
       legendEntry = cms.string('Z #rightarrow #mu #mu (1kEv)'),
@@ -91,24 +46,11 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
       legendEntry = cms.string('Z #rightarrow #mu #mu (9kEv)'),
       type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ),
-#
-# define dummy "data" to be type data;
-# set legend entry to "Z --> mu mu (10kEv)"
-#    
     zMuMu10kEv = cms.PSet(
       dqmDirectory = cms.string('zMuMu10kEv'),
       legendEntry = cms.string('Z #rightarrow #mu #mu (10kEv)'),      
       type = cms.string('Data') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ),
-#
-# define dummy "total Standard Model expectation" as type smSumMC;
-# set legend entry to "All SM Processes".
-# A separate legend entry "SM Uncertainty", referring to the uncertainty on the total Standard Model expectation,
-# is automatically added by the plotting tool.
-#    
-# ( NOTE: a process of type smSumMC needs to be define in case Standard Model Monte Carlo contributions are drawn separately;
-#         it is **not** needed in case histograms are drawn as stacked plots )
-#     
     smSum = cms.PSet(
       dqmDirectory = cms.string('smSum'),
       legendEntry = cms.string('All SM Processes'),
@@ -117,23 +59,13 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# define title, position and size of the x-axis labels
-# ( the drawing options for the x-axis labels are based on http://root.cern.ch/root/html/TAxis.html ,
-#   which inherits from TAttAxis and TNamed )
-#                           
-#( NOTE: some configuration parameters have to be **always** specified,
-#        while other configuration parameters are optional;
-#        in case no value has been specified for optional configuration parameters,
-#        a default value is used by the plotting tool )
-#                           
   xAxes = cms.PSet(
     muonPt = cms.PSet(
-      xAxisTitle = cms.string('P_{T} / GeV'), # TNamed::SetTitle         ( no default; always needs to be specified )
-      xAxisTitleOffset = cms.double(1.0),     # TAttAxis::SetTitleOffset ( default = 1.0 )
-      xAxisTitleSize = cms.double(0.05)       # TAttAxis::SetTitleSize   ( default = 0.05 )
-#     xMin = cms.double(0.)                   # TAxis::SetLimits         ( default = not used )
-#     xMax = cms.double(100.)                 #     -""-
+      xAxisTitle = cms.string('P_{T} / GeV'),
+      xAxisTitleOffset = cms.double(1.0),
+      xAxisTitleSize = cms.double(0.05)       
+#     xMin = cms.double(0.)                   
+#     xMax = cms.double(100.)                
     ),
     muonEta = cms.PSet(
       xAxisTitle = cms.string('#eta'),
@@ -147,64 +79,42 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# define title, position and size of the x-axis labels
-# ( the drawing options for the y-axis labels are based on http://root.cern.ch/root/html/TAxis.html ,
-#   which inherits from TAttAxis and TNamed )                           
-# 
   yAxes = cms.PSet(                         
     numEntries_linear = cms.PSet(
-      yScale = cms.string('linear'),      # 'linear' ( TPad::SetLogy(0) ) or 'log' ( TPad::SetLogy(1) ) scale ( default = 'linear' )
-      yAxisTitle = cms.string(''),        # TNamed::SetTitle             ( no default; always needs to be specified )
-      yAxisTitleOffset = cms.double(1.1), # TAttAxis::SetTitleOffset     ( default = 1.0 )
-      yAxisTitleSize = cms.double(0.05)   # TAttAxis::SetTitleSize       ( default = 0.05 )
-#     yMin_linear = cms.double(0.)        # TAxis::SetLimits in case of linear scale ( default = not used )
-#     yMax_linear = cms.double(1.)        #     -""-
-#     yMin_log = cms.double(1.e-2)        # TAxis::SetLimits in case of logarithmic scale ( default = not used )
-#     yMax_log = cms.double(1.e+2)        #     -""-
+      yScale = cms.string('linear'),      
+      yAxisTitle = cms.string(''),        
+      yAxisTitleOffset = cms.double(1.1), 
+      yAxisTitleSize = cms.double(0.05)   
+#     yMin_linear = cms.double(0.)        
+#     yMax_linear = cms.double(1.)        
+#     yMin_log = cms.double(1.e-2)      
+#     yMax_log = cms.double(1.e+2)      
     ),
     numEntries_log = cms.PSet(
-      yScale = cms.string('log'), # linear/log
+      yScale = cms.string('log'), 
       minY_log = cms.double(1.e-1),
       yAxisTitle = cms.string(''), 
       yAxisTitleOffset = cms.double(1.1),
       yAxisTitleSize = cms.double(0.05)
     ),
     efficiency = cms.PSet(
-      yScale = cms.string('linear'), # linear/log
+      yScale = cms.string('linear'), 
       yAxisTitle = cms.string('#varepsilon'), 
       yAxisTitleOffset = cms.double(1.1),
       yAxisTitleSize = cms.double(0.05)
     )
   ),
 
-#
-# define position and drawing options for legend
-# ( the drawing options for the legend are based on http://root.cern.ch/root/html/TLegend.html ,
-#   which inherits from TBox (via TPave), TAttLine and TAttFill (via TBox), TAttText )
-#                           
-# ( NOTE: legend entries get added automatically by the drawing tool,
-#         according to which processes are drawn 
-#
-#         the configuration parameters posX, posY, sizeX and sizeY are defined in a coordinate system
-#         in which (0.,0.) refers to the lower left corner and (1.,1.) to the upper right corner of the plot area )                            
-#
   legends = cms.PSet(
     regular = cms.PSet(
-      posX = cms.double(0.60),             # TPave::SetX1NDC             ( default = 0.50 )
-      posY = cms.double(0.64),             # TPave::SetY1NDC             ( default = 0.50 ) 
-      sizeX = cms.double(0.29),            # TPave::SetX2NDC(posX + sizeX) ( default = 0.39 )
-      sizeY = cms.double(0.25),            # TPave::SetY2NDC(posY + sizeY) ( default = 0.34 )
-      header = cms.string(''),             # TLegend::SetHeader          ( default = "" )
-      option = cms.string('brNDC'),        # TPave::SetOption            ( default = "brNDC" == )
-#
-# ( NOTE: see http://root.cern.ch/root/html/TPave.html#TPave:TPave for description of available options )
-#      
-      borderSize = cms.int32(0),           # TPave::SetBorderSize        ( default = 0 == no border )
-      fillColor = cms.int32(0)             # TAttFill::SetFillColor      ( default = 0 == transparent )
-#
-# ( NOTE: see http://root.cern.ch/root/html/TAttFill.html for list of available fill-colors )
-#      
+      posX = cms.double(0.60),            
+      posY = cms.double(0.64),             
+      sizeX = cms.double(0.29),        
+      sizeY = cms.double(0.25),            
+      header = cms.string(''),          
+      option = cms.string('brNDC'),       
+      borderSize = cms.int32(0),          
+      fillColor = cms.int32(0)             
     ),
     eff_processes = cms.PSet(
       posX = cms.double(0.60),
@@ -228,34 +138,19 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# define position and drawing options for labels
-# ( the drawing options for the labels are based on http://root.cern.ch/root/html/TPaveText.html ,
-#   which inherits from TBox (via TPave), TAttLine and TAttFill (via TBox), TAttText )
-#
-# ( NOTE: the configuration parameters posX, posY, sizeX and sizeY are defined in a coordinate system
-#         in which (0.,0.) refers to the lower left corner and (1.,1.) to the upper right corner of the plot area )                           
-#
   labels = cms.PSet(
     pt = cms.PSet(
-      posX = cms.double(0.19),             # TPave::SetX1NDC             ( default = 0.66 )        
-      posY = cms.double(0.77),             # TPave::SetY1NDC             ( default = 0.82 ) 
-      sizeX = cms.double(0.12),            # TPave::SetX2NDC(posX + sizeX) ( default = 0.26 )
-      sizeY = cms.double(0.04),            # TPave::SetY2NDC(posY + sizeY) ( default = 0.10 )
-      option = cms.string('brNDC'),        # TPave::SetOption            ( default = "brNDC" == )
-      borderSize = cms.int32(0),           # TPave::SetBorderSize        ( default = 0 == no border )
-      fillColor = cms.int32(0),            # TAttFill::SetFillColor      ( default = 0 == transparent )
-      textColor = cms.int32(1),            # TAttText::SetTextColor      ( default = 1 == black )
-      textSize = cms.double(0.04),         # TAttText::SetTextSize       ( default = 0.05 )
-      textAlign = cms.int32(22),           # TAttText::SetTextAlign      ( default = 22 == horizontally and vertically centered )
-#     textAngle = cms.double(0.),          # TAttText::SetTextAngle      ( default = 0. == text drawn horizontally )
-#
-# ( NOTE: see http://root.cern.ch/root/html/TAttText.html for list of available alignment options and text angle definition )
-#
-      text = cms.vstring('P_{T} > 5 GeV')  # TPaveText::AddText
-#
-# ( NOTE: multiple lines of text can be added at once by specifying a list of comma separated strings for the text configuration parameter )
-#      
+      posX = cms.double(0.19),                
+      posY = cms.double(0.77),             
+      sizeX = cms.double(0.12),            
+      sizeY = cms.double(0.04),          
+      option = cms.string('brNDC'),   
+      borderSize = cms.int32(0),         
+      fillColor = cms.int32(0),           
+      textColor = cms.int32(1),           
+      textSize = cms.double(0.04),        
+      textAlign = cms.int32(22),          
+#     textAngle = cms.double(0.),         
     ),
     eta = cms.PSet(
       posX = cms.double(0.19),
@@ -272,42 +167,19 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# define draw options for histograms
-# for the case where the same quantity (e.g. muon Pt)
-# is drawn for different processes
-#
   drawOptionSets = cms.PSet(
     separate = cms.PSet(
-#
-# ( NOTE: in the drawOptionSets, one PSet needs to be specified for each process to be drawn,
-#         i.e. the names zMuMu1kEv, zMuMu9kEv, zMuMu10kEv and smSum specified in the following 
-#              need to match the names defined in the processes section of the configuration parameters )    
-#
       zMuMu1kEv = cms.PSet(
-#       markerColor = cms.int32(1),        # TAttMarker::SetMarkerColor ( default = 1 == black )
-#       markerSize = cms.int32(1),         # TAttMarker::SetMarkerSize ( default = 1 == small ) 
-#       markerStyle = cms.int32(2),        # TAttMarker::SetMarkerStyle ( default = 2 == cross )
-#
-# ( NOTE: see http://root.cern.ch/root/htmldoc/TAttMarker.html for a description of the available options how markers get drawn )
-#    
-        lineColor = cms.int32(30),         # TAttLine::SetLineColor ( default = 0 )
-        lineStyle = cms.int32(1),          # TAttLine::SetLineStyle ( default = 1 == solid line)
-        lineWidth = cms.int32(2),          # TAttLine::SetLineWidth ( default = 2 == two pixels wide )
-        fillColor = cms.int32(30),         # TAttFill::SetFillColor ( default = 0 == transparent )
-        fillStyle = cms.int32(3004),       # TAttFill::SetFillStyle ( default = 1001 == solid fill pattern )
-        drawOption = cms.string('hist'),   # TH1::Draw ( default = 1001 == solid fill pattern )
-#
-# ( NOTE: see http://root.cern.ch/root/html/THistPainter.html for the histogram drawing-options ;
-#         "eBand" is an extra draw-option specific to the drawing tool
-#        - it adds a shaded band indicating the uncertainty on the total Standard Model expectation,
-#         cf. slide 11 of http://indico.cern.ch/materialDisplay.py?contribId=3&sessionId=4&materialId=slides&confId=44892 )
-#        
-        drawOptionLegend = cms.string('f') # TLegend::AddEntry ( default = "lpf" )
-#
-# ( NOTE: drawOptionLegend specifies whether histograms are referenced in the legend
-#         by line (l), marker (p) or fill area (f) )
-#
+#       markerColor = cms.int32(1),        
+#       markerSize = cms.int32(1),         
+#       markerStyle = cms.int32(2),       
+        lineColor = cms.int32(30),        
+        lineStyle = cms.int32(1),         
+        lineWidth = cms.int32(2),         
+        fillColor = cms.int32(30),        
+        fillStyle = cms.int32(3004),      
+        drawOption = cms.string('hist'),  
+        drawOptionLegend = cms.string('f') 
       ),
       zMuMu9kEv = cms.PSet(
         lineColor = cms.int32(42),
@@ -393,11 +265,6 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# define draw options for histograms
-# for the case where different quantities (e.g. efficiencies for loose/medium/tight muon id.)
-# is drawn (compared) for the same process
-#
   drawOptionEntries = cms.PSet(
     eff_overlay01 = cms.PSet(
       markerColor = cms.int32(3),
@@ -451,20 +318,7 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ),
 
-#
-# specify draw-jobs
-# (each draw-job can create one or more plots)
-#
-# ( NOTE: see http://indico.cern.ch/materialDisplay.py?contribId=3&sessionId=4&materialId=slides&confId=44892
-#         for a description how processes, x-axes and y-axes, legends, labels and drawOptionSets/drawOptionEntries
-#         need to be referenced by the drawJobs )                           
-#
   drawJobs = cms.PSet(
-#
-# plot muon Pt, eta and phi for dummy "signal" and dummy "background" processes,
-# the dummy "total Standard Model expectation" in comparisson to the dummy "data"
-# (the dummy "signal" and dummy "background" processes are drawn as **separate** lines)
-#    
     muonKine_sep = cms.PSet(
       plots = cms.PSet(
         dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
@@ -479,10 +333,6 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
       drawOptionSet = cms.string('separate')                 
     ),
     muonKine_stack = cms.PSet(
-#
-# plot muon Pt, eta and phi for dummy "signal" and dummy "background" processes in comparisson to the dummy "data"
-# (the dummy "signal" and dummy "background" processes are drawn as **stacked** filled areas)
-#    
       plots = cms.PSet(
         dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
                                          '#PROCESSDIR#/MuonQuantities/MuonIdSel#PAR#'),
@@ -530,10 +380,6 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
       drawOptionSet = cms.string('eff_processes')
     ),  
     muonSelEff = cms.PSet(
-#
-# plot comparisson of different muon Id. efficiencies
-# (the different efficiencies are symbolized by markers of different colors)
-#      
       plots = cms.VPSet(
         cms.PSet(
           dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonHLTmatchEff#PAR#'),
@@ -575,24 +421,9 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
     )
   ), 
 
-#
-# define dimension of the plots;
-# set canvasSizeX = 800 and canvasSizeY = 640 (canvasSizeX = canvasSizeY = 600)
-# in case you want the plots to be drawn in landscape format ( to be quadratic)
-#
   canvasSizeX = cms.int32(800),
   canvasSizeY = cms.int32(640),                         
 
-#
-# define path and names of output files
-#
-# if outputFileName has been specified, a postscript file containing all plots is created with that name;
-# if indOutputFileName has been specified, individual graphics files are created
-# ( #PLOT# gets replaced with the name of the MonitorElement (e.g. "MuonIdEffPhi");
-#   the type of the graphics file is determined automatically from the suffix (e.g. ".png") of the file name )
-#
-# ( NOTE: you must specify either outputFileName or indOutputFileName - not both )                        
-#
   outputFilePath = cms.string('/uscms/home/veelken/work/CMSSW_2_1_9dev/src/ElectroWeakAnalysis/EWKTau/test/plots/'),
   #outputFileName = cms.string('ewkTauMuAnalyzer_zMuMu.ps')
   indOutputFileName = cms.string('#PLOT#_zMuMu.png')
