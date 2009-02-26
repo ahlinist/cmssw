@@ -24,6 +24,10 @@ process.saveZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoElecTau.root')
 )
 
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#  ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
 process.maxEvents = cms.untracked.PSet(            
     input = cms.untracked.int32(10000)    
 )
@@ -42,7 +46,8 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecTauSkim.root'
-     )
+    )
+    #skipBadFiles = cms.untracked.bool(True)    
 )
 
 #--------------------------------------------------------------------------------
