@@ -27,6 +27,10 @@ process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoElecMu.root')
 )
 
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#  ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
 process.maxEvents = cms.untracked.PSet(            
     input = cms.untracked.int32(-1)    
 )
@@ -40,8 +44,8 @@ process.source = cms.Source("PoolSource",
 # 10k events RelVal sample
 #
         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
-    ),
-    skipBadFiles = cms.untracked.bool(True)                        
+    )
+    #skipBadFiles = cms.untracked.bool(True)                        
 )
 
 #--------------------------------------------------------------------------------

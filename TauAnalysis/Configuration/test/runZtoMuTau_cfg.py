@@ -24,6 +24,10 @@ process.saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoMuTau.root')
 )
 
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#  ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
 process.maxEvents = cms.untracked.PSet(            
     input = cms.untracked.int32(-1)    
 )
@@ -43,8 +47,11 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
 #        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/muTauSkim_famos.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/muTauSkim.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/muTauSkim.root'
+#        'file:/afs/cern.ch/user/l/lusito/public/ZtautauMuTau.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/multipleDiTauCandidates.root'
     )
+    #skipBadFiles = cms.untracked.bool(True) 
 )
 
 #--------------------------------------------------------------------------------
