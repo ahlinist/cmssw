@@ -273,6 +273,7 @@ elecTauEventDump = cms.PSet(
   genTauJetSource = cms.InputTag('tauGenJets'),
   electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
   tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  diTauCandidateSource = cms.InputTag('allElecTauPairs'),
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
   jetSource = cms.InputTag('selectedLayer1JetsEt20'),
@@ -300,7 +301,8 @@ elecTauAnalysisSequence = cms.VPSet(
   #        overlapping in simulated phase-space only !!)
   cms.PSet(
     filter = cms.string('genPhaseSpaceCut'),
-    title = cms.string('gen. Phase-Space')
+    title = cms.string('gen. Phase-Space'),
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers
@@ -312,10 +314,12 @@ elecTauAnalysisSequence = cms.VPSet(
   #cms.PSet(
   #  filter = cms.string('genElectronCut'),
   #  title = cms.string('gen. Electron'),
+  #  saveRunEventNumbers = cms.vstring('')
   #),
   #cms.PSet(
   #  filter = cms.string('genTauCut'),
   #  title = cms.string('gen. Tau'),
+  #  saveRunEventNumbers = cms.vstring('')
   #),
   #cms.PSet(
   #  histManagers = elecTauHistManagers
@@ -325,7 +329,7 @@ elecTauAnalysisSequence = cms.VPSet(
   #cms.PSet(
   #  filter = cms.string('Trigger'),
   #  title = cms.string('isoEle15 Trigger'),
-  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #  saveRunEventNumbers = cms.vstring('')
   #),
   #cms.PSet(
   #  histManagers = elecTauHistManagers
@@ -335,17 +339,17 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('primaryEventVertex'),
     title = cms.string('Vertex'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexPosition'),
     title = cms.string('-50 < zVertex < +50 cm'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers
@@ -356,7 +360,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tightElectronIdCut'),
     title = cms.string('tight Electron Id.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -365,7 +369,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronAntiCrackCut'),
     title = cms.string('crack-Veto'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -374,7 +378,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronEtaCut'),
     title = cms.string('-2.1 < eta(Electron) < +2.1'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -383,7 +387,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronPtCut'),
     title = cms.string('Pt(Electron) > 15 GeV'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -392,7 +396,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronHLTmatchCut'),
     title = cms.string('Electron Trigger match'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -401,7 +405,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronTrkIsoCut'),
     title = cms.string('Electron Track iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -410,7 +414,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronEcalIsoCut'),
     title = cms.string('Electron ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -419,7 +423,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronTrkCut'),
     title = cms.string('Electron Track find.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -428,7 +432,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('electronTrkIPcut'),
     title = cms.string('Electron Track IP'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -440,7 +444,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauAntiOverlapWithElectronsVeto'),
     title = cms.string('Tau not overlapping with Electron'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -449,7 +453,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauEtaCut'),
     title = cms.string('-2.1 < eta(Tau) < +2.1'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -458,7 +462,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauPtCut'),
     title = cms.string('Pt(Tau) > 20 GeV'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -467,7 +471,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauLeadTrkCut'),
     title = cms.string('Tau lead. Track find.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -476,7 +480,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauLeadTrkPtCut'),
     title = cms.string('Tau lead. Track Pt'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -485,7 +489,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauTrkIsoCut'),
     title = cms.string('Tau Track iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -494,7 +498,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauEcalIsoCut'),
     title = cms.string('Tau ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -503,7 +507,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauProngCut'),
     title = cms.string('Tau 1||3-Prong'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -512,7 +516,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauElectronVeto'),
     title = cms.string('Tau e-Veto'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -523,7 +527,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
     title = cms.string('dR(Electron-Tau) > 0.7'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -532,7 +536,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
     title = cms.string('dPhi(Electron-MET) < 2.4'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -541,7 +545,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauZeroChargeCut'),
     title = cms.string('Charge(Electron+Tau) = 0'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('passed_cumulative')
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
@@ -552,7 +556,7 @@ elecTauAnalysisSequence = cms.VPSet(
   #cms.PSet(
   #  filter = cms.string('centralJetVeto'),
   #  title = cms.string('central Jet Veto'),
-  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #  saveRunEventNumbers = cms.vstring('passed_cumulative')
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers,

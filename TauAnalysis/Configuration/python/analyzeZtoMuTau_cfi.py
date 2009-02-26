@@ -276,6 +276,7 @@ muTauEventDump = cms.PSet(
   electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
   muonSource = cms.InputTag('allLayer1MuonsSelForTauAnalyses'),
   tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  diTauCandidateSource = cms.InputTag('allMuTauPairs'),
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
   jetSource = cms.InputTag('selectedLayer1JetsEt20'),
@@ -283,8 +284,7 @@ muTauEventDump = cms.PSet(
   #output = cms.string("muTauEventDump.txt"),
   output = cms.string("std::cout"),
 
-  #triggerConditions = cms.vstring("centralJetVeto: rejected_cumulative")
-  triggerConditions = cms.vstring("diTauCandidateForMuTauAcoplanarityCut: rejected_cumulative")
+  triggerConditions = cms.vstring("diTauCandidateForMuTauZeroChargeCut: passed_cumulative")
   #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
   #                                "globalMuonCut: rejected_cumulative",
   #                                "muonEtaCut: rejected_cumulative",
@@ -321,7 +321,8 @@ muTauAnalysisSequence = cms.VPSet(
   #        overlapping in simulated phase-space only !!)
   cms.PSet(
     filter = cms.string('genPhaseSpaceCut'),
-    title = cms.string('gen. Phase-Space')
+    title = cms.string('gen. Phase-Space'),
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers
@@ -333,10 +334,12 @@ muTauAnalysisSequence = cms.VPSet(
   #cms.PSet(
   #  filter = cms.string('genMuonCut'),
   #  title = cms.string('gen. Muon'),
+  #  saveRunEventNumbers = cms.vstring('')
   #),
   #cms.PSet(
   #  filter = cms.string('genTauCut'),
   #  title = cms.string('gen. Tau'),
+  #  saveRunEventNumbers = cms.vstring('')
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers
@@ -346,7 +349,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('Trigger'),
     title = cms.string('mu15 || isoMu11 Trigger'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers
@@ -356,17 +359,17 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('primaryEventVertex'),
     title = cms.string('Vertex'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexPosition'),
     title = cms.string('-50 < zVertex < +50 cm'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers
@@ -377,7 +380,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('globalMuonCut'),
     title = cms.string('global Muon'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -386,7 +389,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonEtaCut'),
     title = cms.string('-2.1 < eta(Muon) < +2.1'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -395,7 +398,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonPtCut'),
     title = cms.string('Pt(Muon) > 15 GeV'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -404,7 +407,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonHLTmatchCut'),
     title = cms.string('Muon Trigger match'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -413,7 +416,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonTrkIsoCut'),
     title = cms.string('Muon Track iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -422,7 +425,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonEcalIsoCut'),
     title = cms.string('Muon ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -431,7 +434,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonHcalIsoCut'),
     title = cms.string('Muon HCAL iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -440,7 +443,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonAntiPionCut'),
     title = cms.string('Muon pi-Veto'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -449,7 +452,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('muonTrkIPcut'),
     title = cms.string('Muon Track IP'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -461,7 +464,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauAntiOverlapWithMuonsVeto'),
     title = cms.string('Tau not overlapping with Muon'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -470,7 +473,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauEtaCut'),
     title = cms.string('-2.1 < eta(Tau) < +2.1'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -479,7 +482,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauPtCut'),
     title = cms.string('Pt(Tau) > 20 GeV'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -488,7 +491,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauLeadTrkCut'),
     title = cms.string('Tau lead. Track find.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -497,7 +500,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauLeadTrkPtCut'),
     title = cms.string('Tau lead. Track Pt'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -506,7 +509,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauTrkIsoCut'),
     title = cms.string('Tau Track iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -515,7 +518,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauEcalIsoCut'),
     title = cms.string('Tau ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -524,7 +527,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauProngCut'),
     title = cms.string('Tau 1||3-Prong'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -533,7 +536,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('tauMuonVeto'),
     title = cms.string('Tau mu-Veto'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -544,7 +547,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
     title = cms.string('dR(Muon-Tau) > 0.7'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -553,7 +556,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
     title = cms.string('dPhi(Muon-MET) < 2.4'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -562,7 +565,7 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
     title = cms.string('Charge(Muon+Tau) = 0'),
-    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    saveRunEventNumbers = cms.vstring('passed_cumulative')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
@@ -573,7 +576,7 @@ muTauAnalysisSequence = cms.VPSet(
   #cms.PSet(
   #  filter = cms.string('centralJetVeto'),
   #  title = cms.string('central Jet Veto'),
-  #  saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+  #  saveRunEventNumbers = cms.vstring('passed_cumulative')
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers,
