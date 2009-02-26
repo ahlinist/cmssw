@@ -20,7 +20,7 @@ process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
 ###<<<<<<<<<< Don't remove this line -- it's used by the gui when updating/replacing file names!
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(1000)
 )
 process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RECO/CRAFT_ALL_V4_ReReco-v1/0000/0C453DD0-55C1-DD11-AA47-001D0967D99A.root')
@@ -38,37 +38,17 @@ process.MessageLogger.cerr.noTimeStamps = True
                                      
 process.load("FWCore.MessageLogger.MessageLogger_cfi") 
 process.MessageLogger.cerr.default.limit = 10
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-#process.MessageLogger = cms.Service("MessageLogger",
-#    cout = cms.untracked.PSet(
-#        default = cms.untracked.PSet( ## kill all messages in the log
-#
-#            limit = cms.untracked.int32(0)
-#        ),
-#        FwkJob = cms.untracked.PSet( ## but FwkJob category - those unlimitted
-#
-#            limit = cms.untracked.int32(-1)
-#        )
-#    ),
-#    categories = cms.untracked.vstring('FwkJob'),
-#    destinations = cms.untracked.vstring('cout')
+#process.TFileService = cms.Service("TFileService",
+#    fileName = cms.string('prompt_out.root')
 #)
 
-process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('prompt_out.root')
-)
-
 process.prom = cms.EDFilter("HcalPromBremss",
-    baseHtmlDir = cms.untracked.string('.'),
-    printPromptHTML = cms.untracked.bool(True),
-    printRecHitHTML = cms.untracked.bool(True),
-    printJetMetHTML = cms.untracked.bool(True),
-    printCaloTowerHTML = cms.untracked.bool(False),
-    printDigiHTML = cms.untracked.bool(False),
-    printHPDNoiseHTML = cms.untracked.bool(False),
-    printMuonHTML = cms.untracked.bool(True)
-    #HBThreshold = cms.untracked.double(1.)
-)
+                            printOut = cms.untracked.bool(False),
+                            rootfileName = cms.untracked.string("muonData.root")
+                            #printMuonHTML = cms.untracked.bool(True)
+                            #HBThreshold = cms.untracked.double(1.)
+                            )
 
 process.p = cms.Path(process.prom)
