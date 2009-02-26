@@ -13,7 +13,7 @@
 //
 // Original Author:  Suchandra Dutta
 //         Wed Nov 15 21:18:17 CEST 2006
-// $Id: InvariantMassTagTest.cc,v 1.1 2008/07/08 12:28:14 sarkar Exp $
+// $Id: InvariantMassTagTest.cc,v 1.2 2008/09/29 07:28:28 dutta Exp $
 //
 // user include files
 // system include files
@@ -24,19 +24,17 @@
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
+#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/BTauReco/interface/TauMassTagInfo.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
-#include "DataFormats/TauReco/interface/PFTauDiscriminatorByIsolation.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/ParticleFlowReco/interface/PFSimParticle.h"
-#include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 
 
 #include "ElectroWeakAnalysis/ZTauTau_DoubleTauJet/interface/InvariantMassTagTest.h"
@@ -49,14 +47,15 @@ using namespace reco;
 using namespace edm;
 using namespace std;
 
+
 InvariantMassTagTest::InvariantMassTagTest(const edm::ParameterSet& iConfig)
 {
             MassTagProducer_    = iConfig.getUntrackedParameter<string>("MassTagProd", "invariantMass");
             PFTauProducer_      = iConfig.getUntrackedParameter<string>("PFTauProducer", "pfRecoTauProducer");
-  PFTauDiscByIsolationProducer_ = iConfig.getUntrackedParameter<string>("PFTauDiscriminatorByIsolationProducer","pfRecoTauDiscriminationByIsolation");
+ // PFTauDiscByIsolationProducer_ = iConfig.getUntrackedParameter<string>("PFTauDiscriminatorByIsolationProducer","pfRecoTauDiscriminationByIsolation");
+  PFTauDiscByIsolationProducer_ = iConfig.getUntrackedParameter<string>("PFTauDiscriminatorByIsolationProducer","pfRecoTauDiscriminationByTrackIsolationHighEfficiency");
                 GenJetProducer_ = iConfig.getUntrackedParameter<InputTag>("GenJetProducer");
            GenParticleProducer_ = iConfig.getUntrackedParameter<InputTag>("GenParticleProducer");
-         PFSimParticleProducer_ = iConfig.getUntrackedParameter<string>("PFSimParticleProducer", "particleFlowSimParticle");
          TrackingTruthProducer_ = iConfig.getUntrackedParameter<InputTag>("TrackingTruthProducer");
            
 
@@ -79,14 +78,14 @@ void InvariantMassTagTest::beginJob(const edm::EventSetup& iSetup)
   edm::Service < TFileService > fs;
   TFileDirectory dir = fs->mkdir("PFAnalysis");
 
-    discriminatorValue = dir.make<TH1F>("Discriminator",    "Value of Discriminator", 2, -0.5, 1.5);
-    invMassFromPFJet = dir.make<TH1F>("InvMassPFJet",    "Invariant Mass", 100, 0.0, 10.0);
-             invMass = dir.make<TH1F>("InvMass",         "Invariant Mass (Alternate Lorentz Vector)", 100, 0.0, 10.0);
-      invMassSigComp = dir.make<TH1F>("InvMassSigComponents", "Invariant Mass (Signal Components)", 100, 0.0, 10.0);
-            invMass1 = dir.make<TH1F>("InvMassCustomI",  "Invariant Mass (custom I )", 100, 0.0, 10.0);
-            invMass2 = dir.make<TH1F>("InvMassCustomII", "Invariant Mass (custom II )", 100, 0.0, 10.0);
-            invMass3 = dir.make<TH1F>("InvMassCustomIII","Invariant Mass (custom III )", 100, 0.0, 10.0);
- invMassFromSigChHad1= dir.make<TH1F>("InvMassSigChHad1","Invariant Mass From Ch.Hadron in SigCone (1 track)",100,0.0,10.0);
+  discriminatorValue = dir.make<TH1F>("Discriminator",       "Value of Discriminator", 2, -0.5, 1.5);
+    invMassFromPFJet = dir.make<TH1F>("InvMassPFJet",        "Invariant Mass", 100, 0.0, 10.0);
+     invMassSigComp1 = dir.make<TH1F>("InvMassSigComponentsI","Invariant Mass (Signal Components)", 100, 0.0, 10.0);
+     invMassSigComp2 = dir.make<TH1F>("InvMassSigComponentsII","Invariant Mass (Alternate Lorentz Vector)", 100, 0.0, 10.0);
+     invMassSigComp3 = dir.make<TH1F>("InvMassSigComponentsIII","Invariant Mass (Ch. Hadrons and Gammas in Sig Cone)", 100, 0.0, 10.0);
+            invMass1 = dir.make<TH1F>("InvMassCustomI",  "Invariant Mass (Ch. Tk. only)", 100, 0.0, 10.0);
+            invMass2 = dir.make<TH1F>("InvMassCustomII", "Invariant Mass (Ch. Tk. + Gam)", 100, 0.0, 10.0);
+            invMass3 = dir.make<TH1F>("InvMassCustomIII","Invariant Mass (Ch. Tk. + Gam + Neutral)", 100, 0.0, 10.0);
 
          nGamPFJet = dir.make<TH1F>("nGammaPFJet",        "No. of Gammas in PF Jet",          21, -0.5, 20.5);
 
@@ -173,8 +172,9 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
   Handle<PFTauCollection> thePFTauHandle;
   iEvent.getByLabel(PFTauProducer_,thePFTauHandle);
 
-  Handle<PFTauDiscriminatorByIsolation> theTauDiscriminatorByIsolation;
-  iEvent.getByLabel(PFTauDiscByIsolationProducer_, theTauDiscriminatorByIsolation);
+  Handle<PFTauDiscriminator> theTauDiscriminator;
+  iEvent.getByLabel(PFTauDiscByIsolationProducer_, theTauDiscriminator);
+
   
   Handle<TrackingParticleCollection> rawPH;
   TrackingParticleCollection* tkParticles = 0;
@@ -207,7 +207,7 @@ void InvariantMassTagTest::analyze(const Event& iEvent, const EventSetup& iSetup
     }
     const PFTau& tau = (*theTau);
     if (tau.pt() < min_tau_jet_pt) continue;
-    double tau_disc = (*theTauDiscriminatorByIsolation)[theTau];
+    double tau_disc = (*theTauDiscriminator)[theTau];
     discriminatorValue->Fill(tau_disc);
 
     if (tau_disc > 0.0) {
@@ -226,6 +226,7 @@ void InvariantMassTagTest::findPFInvMass(const edm::Event& iEvent,const reco::PF
    PFCandidateRefVector gammaCands   = tau.pfTauTagInfoRef()->PFGammaCands();
    PFCandidateRefVector neutralCands = tau.pfTauTagInfoRef()->PFNeutrHadrCands();
    PFCandidateRefVector sigChHadCands  = tau.signalPFChargedHadrCands();
+   PFCandidateRefVector sigGammaCands  = tau.signalPFGammaCands();
 
    nGamPFJet->Fill(gammaCands.size());
    nSigCandPFJet->Fill(sigCands.size());
@@ -238,16 +239,24 @@ void InvariantMassTagTest::findPFInvMass(const edm::Event& iEvent,const reco::PF
 
    invMassFromPFJet->Fill(tau.p4().M());
 
-   double mass = tau.alternatLorentzVect().M();
-   invMass->Fill(mass);
-   
-   math::XYZTLorentzVector sigCanP4;
-   for (PFCandidateRefVector::const_iterator iCand =sigCands.begin();iCand!=sigCands.end();iCand++){
-     sigCanP4 += (**iCand).p4();
+   math::XYZTLorentzVector sigCandsP4(0.,0.,0.,0.);   
+   for (PFCandidateRefVector::const_iterator iSig = sigCands.begin();iSig!=sigCands.end();iSig++){
+     sigCandsP4 += (**iSig).p4();
    }
-   invMassSigComp->Fill(sigCanP4.M());
+   invMassSigComp1->Fill(sigCandsP4.M());
 
-   if (sigChHadCands.size() == 1) invMassFromSigChHad1->Fill(mass);
+   double mass = tau.alternatLorentzVect().M();
+   invMassSigComp2->Fill(mass);
+   
+   math::XYZTLorentzVector altLVecP4(0.,0.,0.,0.);
+
+   for (PFCandidateRefVector::const_iterator iGam = sigGammaCands.begin();iGam != sigGammaCands.end();iGam++) {
+      altLVecP4 +=(**iGam).p4();
+   }
+   for (PFCandidateRefVector::const_iterator iChHad = sigChHadCands.begin();iChHad != sigChHadCands.end(); iChHad++) {
+     altLVecP4 += (**iChHad).p4();  
+   }
+   invMassSigComp3->Fill(altLVecP4.M());
 
 
    math::XYZTLorentzVector chHadCandsP4(0.,0.,0.,0.);   
