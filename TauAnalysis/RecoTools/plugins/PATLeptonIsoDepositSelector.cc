@@ -12,6 +12,9 @@
 template <class T>
 PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::ParameterSet& cfg)
 {
+//--- translate isolation "keys" from string to integer format
+//    (NOTE: the equivalence between strinsg and integers is defined in
+//           PhysicsTools/PatAlgos/src/MultiIsolator.cc )
   std::string isoDepositType_string = cfg.getParameter<std::string>("type");
   if ( isoDepositType_string == "tracker" ) {
     isoDepositType_ = pat::TrackerIso;
