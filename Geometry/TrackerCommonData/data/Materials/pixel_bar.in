@@ -272,8 +272,8 @@ MC Volume Flange	10.6x18x0.6=398.932cm3
 
 o Cables from Endring Prints to supply tube
 
-MC Volume: cable_endring_to_tube  Rin = 180, Rout = 182.5, Z=30 
-           V=85.4cm3
+MC Volume: cable_endring_to_tube  Rin = 175, Rout = 215, Z=30 
+           V=1470cm3
 
 (1) power cable copper  (32 x)     1.788g / 8.96 =0.2cm3
 (2) power cable aluminum (32 x)  1g / 2.7 = 0.37cm3
@@ -298,7 +298,7 @@ MC Volume: cable_endring_to_tube  Rin = 180, Rout = 182.5, Z=30
 (9) endprint clips connecting L12 and L3 boards Aluminum    0.6g / 2.7 = 0.22cm3
 (10) Alu flange on supply tube 176g/2.7 = 65cm3
 .....................................................................
-# "cable endring to tube"     "cable_endring_to_tube"   85.4   -1.
+# "cable endring to tube"     "cable_endring_to_tube"   1470   -1.
 * 1 "pow. cable copper"             "Copper"            0.2    32 CAB
 * 2 "pow. cable aluminium"       "Aluminium"            0.37   32 CAB
 * 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32 CAB
@@ -377,7 +377,8 @@ MC Volume: silicone_pipes_plus_coolant   967cm3 * 280/360 =  752cm3
 o Sector A
 -------------------------
 
-MC Volume: 1133cm3 1-shell, numbers below are per half shell, so MC = 1133/2 
+MC Volume: 6635cm3 per half-shell
+numbers below are per half-shell 
 
 see referece document from supply tube construction attached to
 https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
@@ -438,7 +439,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
      plus optical ribbon in SectorA 185.26g
      IN TOTAL SectorA = 434g / 1.17 = 370cm3
 .....................................................................
-# "SectorA"     "SectorA"     566.5   -1.           //FIXME: volume
+# "SectorA"       "SectorA"       6635     -1.          
 * 1 "inner shielding foil alu"     "Aluminium"                   6.54    1     SUP
 * 2 "inner shielding foil GFK"     "T_FR4"                      74.05    1     SUP
 * 3 "airex"                        "Nomex"                    2491       1     SUP
@@ -473,7 +474,8 @@ o Sector B
 -------------------------
 
 
-MC Volume: 3416.48 1-shell, numbers below are per half shell, so MC = 1708.24
+MC Volume: 5812cm3 per half-shell
+numbers below are per half-shell
 
 see referece document from supply tube construction attached to
 https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
@@ -501,7 +503,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 
 .....................................................................
-# "SectorB"     "SectorB"     1708.24   -1.
+# "SectorB"     "SectorB"     5812   -1.
 * 1 "Inner Shielding Foil Alu"           "Aluminium"               13.00     1   SUP
 * 2 "Inner Shielding Foil GFK"           "T_FR4"                  147.05     1   SUP
 * 3 "Alu Power Cables"                   "Aluminium"              248.75     1   CAB
@@ -524,7 +526,8 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 o Sector C
 -------------------------
-MC Volume: 1400 1-shell, numbers below are per half shell, so MC = 700
+MC Volume: 3533cm3 per half-shell
+numbers below are per half-shell
 
 see referece document from supply tube construction attached to
 https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
@@ -587,7 +590,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 
 ....................................................................
-# "SectorC"   "SectorC"   700    -1.
+# "SectorC"   "SectorC"        3533         -1.
 * 1 "Inner Shielding Foil Alu"           "Aluminium"                    5.67     1   SUP
 * 2 "Inner Shielding Foil GFK"           "T_FR4"                       64.18     1   SUP
 * 3 "Alu Power Cables"                   "Aluminium"                   92.92     1   CAB
@@ -619,7 +622,32 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 * 29 "Opto-fibers"                       "Acrylate"                   222        1   ELE
 ................................................................
 
+
+
+
+
+o Supply Tube Cabling to PP0
+-------------------------
+MC Volume: 3743cm3 per cylinder
+(in pixel barrel volume)
+
+see referece document from supply tube construction attached to
+https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
+
+the total amount of power cables is distributed equally (50%) in a cylinder between
+supply tube and PP0, and the disks in the bulkhead. 
+This material is also used in the bulkhead PixelCables disk.
+
+(1) power cable copper 2328.5g / 8.96 = 260cm3
+(2) power cable PE   1283g / 0.95 = 1350cm3
+
+
+....................................................................
+# "PixelBarrelSupTubCables"   "PixelBarrelSupTubCables"        3743         -1.
+* 1 "power cable copper"           "Copper"                     260     1   CAB
+* 2 "power cable PE"               "Polyethylene"              1350     1   CAB
+
+
 # "END"  "END"  0.  0.   
 this has to be the last line !
-
 

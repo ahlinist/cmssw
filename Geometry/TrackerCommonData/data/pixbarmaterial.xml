@@ -262,7 +262,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="cable_endring_to_tube" density="6.30220*g/cm3" symbol=" " method="mixture by weight">
+ <CompositeMaterial name="cable_endring_to_tube" density="0.36613*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.10301">
       <rMaterial name="materials:T_Kapton"/>
     </MaterialFraction>
@@ -337,7 +337,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="SectorA" density="5.59995*g/cm3" symbol=" " method="mixture by weight">
+ <CompositeMaterial name="SectorA" density="0.47813*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.10443">
       <rMaterial name="materials:C6F14_F2_-10C"/>
     </MaterialFraction>
@@ -379,7 +379,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="SectorB" density="2.55042*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="SectorB" density="0.74961*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.19011">
       <rMaterial name="materials:C6F14_F2_-10C"/>
     </MaterialFraction>
@@ -412,7 +412,7 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="SectorC" density="3.35211*g/cm3" symbol=" " method="mixture by weight">
+  <CompositeMaterial name="SectorC" density="0.66416*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.14778">
       <rMaterial name="materials:C6F14_F2_-10C"/>
     </MaterialFraction>
@@ -448,6 +448,15 @@
     </MaterialFraction>
     <MaterialFraction fraction="0.01264">
       <rMaterial name="materials:Nomex"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="PixelBarrelSupTubCables" density="0.96503*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.35506">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.64494">
+      <rMaterial name="materials:Copper"/>
     </MaterialFraction>
   </CompositeMaterial>
 
