@@ -3,7 +3,7 @@
 
 <ConstantsSection label="trackerbulkhead.xml" eval="true">
   <Constant name="zero"            value="0.0*fm"/>
-  <Constant name="Rin"             value="235*mm"/>
+  <Constant name="Rin"             value="190*mm"/>
   <Constant name="Rout"            value="1.233*m"/>
   <Constant name="Thick"           value="[BulkheadThick]+[BHDiskThick]+[BHCoversThick]"/>
   <Constant name="BulkheadZ"        value="[tob:Zv3]+0.5*[Thick]"/> <!--should be 4mm behind TEC is at the end of tob to prevent overlaps-->
@@ -37,9 +37,13 @@
   <Constant name="CtrlBoxDistX"     value="73.35*mm"/>
   <Constant name="CtrlBoxDistY"     value="12.85*mm"/>
 
-  <Constant name="AlignRingRin"    value="[Rin]"/>
+  <Constant name="AlignRingRin"    value="235*mm"/>
   <Constant name="AlignRingRout"   value="365*mm"/>
   <Constant name="AlignRingThick"  value="48.5*mm"/>
+
+  <Constant name="PixelCablesRin"    value="[Rin]"/>   <!-- cables going to pixel patchpanel -->
+  <Constant name="PixelCablesRout"   value="[AlignRingRout]"/>
+  <Constant name="PixelCablesThick"  value="12.2*mm"/>
 
   <Constant name="BHDiskRin"    value="[BulkheadRin]"/>
   <Constant name="BHDiskRout"   value="[BulkheadRout]"/>
@@ -77,7 +81,10 @@
   <Tubs name="TECAlignRing"       rMin="[AlignRingRin]" 
 	rMax="[AlignRingRout]"     dz="0.5*[AlignRingThick]" 
 	startPhi="0*deg"        deltaPhi="360*deg"/>
-  
+  <Tubs name="PixelCables"       rMin="[PixelCablesRin]" 
+	rMax="[PixelCablesRout]"     dz="0.5*[PixelCablesThick]" 
+	startPhi="0*deg"        deltaPhi="360*deg"/>  
+
   <Box name="TECPpBoxL" dx="0.5*[PpBoxLengthL]" 
        dy="0.5*[PpBoxWidth]" dz="0.5*[PpBoxThick]"/>
   <Box name="TECPpBoxS" dx="0.5*[PpBoxLengthS]" 
@@ -120,6 +127,11 @@
     <rSolid name="trackerbulkhead:TECAlignRing"/>
     <rMaterial name="tecmaterial:TEC_AlignRing"/>
   </LogicalPart>  
+  <LogicalPart name="PixelCables" category="unspecified">
+    <rSolid name="trackerbulkhead:PixelCables"/>
+    <rMaterial name="pixbarmaterial:PixelBarrelSupTubCables"/>
+  </LogicalPart>  
+
 
   <LogicalPart name="TECPpBoxL" category="unspecified">
     <rSolid name="trackerbulkhead:TECPpBoxL"/>
@@ -166,6 +178,11 @@
    <rParent name="trackerbulkhead:TrackerBulkhead"/>
    <rChild name="trackerbulkhead:TECAlignRing"/>
    <Translation x="[zero]" y="[zero]" z="-0.5*[Thick]+0.5*[AlignRingThick]+[BHDiskThick]"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="trackerbulkhead:TrackerBulkhead"/>
+   <rChild name="trackerbulkhead:PixelCables"/>
+   <Translation x="[zero]" y="[zero]" z="-0.5*[Thick]+0.5*[PixelCablesThick]+[AlignRingThick]+[BHDiskThick]"/>
  </PosPart>
 
  <PosPart copyNumber="1">
