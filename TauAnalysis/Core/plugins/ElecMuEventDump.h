@@ -6,6 +6,9 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+
 #include "TauAnalysis/Core/interface/GenericEventDump.h"
 
 class ElecMuEventDump : public GenericEventDump
@@ -13,6 +16,10 @@ class ElecMuEventDump : public GenericEventDump
  public:  
   explicit ElecMuEventDump(const edm::ParameterSet&);
   ~ElecMuEventDump();
+
+  void printDiTauCandidateInfo(const edm::Event& evt) const {
+    printDiTauCandidateInfoImp<pat::Electron, pat::Muon>(evt);
+  }
   
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
