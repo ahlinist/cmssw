@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.117 2009/02/24 12:12:23 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.118 2009/02/24 12:56:36 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.117 $
-  \date $Date: 2009/02/24 12:12:23 $
+  \version $Revision: 1.118 $
+  \date $Date: 2009/02/24 12:56:36 $
 */
 
 #include "TH1F.h"
@@ -454,9 +454,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "G12 RMS map" ) != std::string::npos ) {
-    obj->SetMinimum(1.0);
-    obj->SetMaximum(4.0);
+  if( name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos ) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
@@ -560,6 +558,13 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "CertificationSummaryMap" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalEndcap Data Certification Summary Map");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EEIT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
@@ -586,6 +591,15 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     } else {
       gStyle->SetPalette(10, pCol5);
     }
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "G12 RMS map" ) != std::string::npos ) {
+    obj->SetMinimum(1.0);
+    obj->SetMaximum(4.0);
+    gStyle->SetPalette(1);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -775,15 +789,17 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) ) {
-      if( name.find( "EECLT" ) != std::string::npos ) {
+      if( name.find( "EECLT" ) != std::string::npos && 
+          name.find( "seed" ) == std::string::npos ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
-      } else {
+      } else if ( name.find( "EECLT SC energy vs seed crystal energy" ) == std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
       }
     }
   }
 
-  if( name.find( "EECLT" ) != std::string::npos ) {
+  if( name.find( "EECLT" ) != std::string::npos && 
+      name.find( "seed" ) == std::string::npos ) {
     if( name.find( "EE -" ) != std::string::npos ) {
       int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -801,6 +817,30 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
       text9->GetXaxis()->SetRange(x1, x2);
       text9->GetYaxis()->SetRange(y1, y2);
       text9->Draw("text,same");
+    }
+    return;
+  }
+
+  if ( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos ) return;
+
+  if( name.find( "seed" ) != std::string::npos ) {
+    if( name.find( "EE -" ) != std::string::npos ) {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+    }
+    if( name.find( "EE +" ) != std::string::npos ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
     }
     return;
   }
@@ -853,10 +893,12 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
         l.DrawLine(20+0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 20+0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
       } else if( (name.find( "reportSummaryMap") != std::string::npos && nbx == 200 && nby == 100) || 
                  name.find( "DAQSummaryMap") != std::string::npos || 
-                 name.find( "DCSSummaryMap") != std::string::npos ) {
+                 name.find( "DCSSummaryMap") != std::string::npos || 
+                 name.find( "CertificationSummaryMap") != std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
         l.DrawLine(100+ixSectorsEE[i], iySectorsEE[i], 100+ixSectorsEE[i+1], iySectorsEE[i+1]);
-      } else if( name.find( "EECLT" ) != std::string::npos ) {
+      } else if( name.find( "EECLT" ) != std::string::npos && 
+                 name.find( "seed" ) == std::string::npos ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
       } else if( name.find( " PN " ) == std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
@@ -864,7 +906,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     }
   }
 
-  if( name.find( "EECLT" ) != std::string::npos ) {
+  if( name.find( "EECLT" ) != std::string::npos && 
+      name.find( "seed" ) == std::string::npos ) {
     if( name.find( "EE -" ) != std::string::npos ) {
       int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -882,6 +925,28 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       text9->GetXaxis()->SetRange(x1, x2);
       text9->GetYaxis()->SetRange(y1, y2);    
       text9->Draw("text,same");
+    }
+    return;
+  }
+
+  if( name.find( "seed" ) != std::string::npos ) {
+    if( name.find( "EE -" ) != std::string::npos ) {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+    }
+    if( name.find( "EE +" ) != std::string::npos ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
     }
     return;
   }
@@ -1039,7 +1104,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EEOT pedestal digi" ) != std::string::npos ) {
+  if( name.find( "EEOT pedestal digi" ) != std::string::npos ||
+      name.find( "G12 RMS map" ) != std::string::npos ) {
     if( name.find( "EE -" ) != std::string::npos ) {
       int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
@@ -1096,7 +1162,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( (name.find( "reportSummaryMap" ) != std::string::npos && nbx == 200 && nby == 100) ||
       name.find( "DAQSummaryMap" ) != std::string::npos || 
-      name.find( "DCSSummaryMap" ) != std::string::npos ) {
+      name.find( "DCSSummaryMap" ) != std::string::npos || 
+      name.find( "CertificationSummaryMap" ) != std::string::npos ) {
     int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());

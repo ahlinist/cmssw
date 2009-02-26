@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.103 2009/02/12 11:29:10 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.104 2009/02/23 20:46:12 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.103 $
-  \date $Date: 2009/02/12 11:29:10 $
+  \version $Revision: 1.104 $
+  \date $Date: 2009/02/23 20:46:12 $
 */
 
 #include "TH1F.h"
@@ -372,9 +372,7 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "G12 RMS map" ) != std::string::npos ) {
-    obj->SetMinimum(0.5);
-    obj->SetMaximum(3.0);
+  if( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos ) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
@@ -471,6 +469,13 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( name.find( "CertificationSummaryMap" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->SetTitle("EcalBarrel Data Certification Summary Map");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( name.find( "EBIT" ) != std::string::npos &&
       name.find( "quality" ) ==std::string::npos ) {
     obj->SetMinimum(0.0);
@@ -514,6 +519,15 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( name.find( "EBSRT" ) != std::string::npos ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
+    obj->SetOption("colz");
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
+  if( name.find( "G12 RMS map" ) != std::string::npos ) {
+    obj->SetMinimum(0.5);
+    obj->SetMaximum(3.0);
+    gStyle->SetPalette(1);
     obj->SetOption("colz");
     gStyle->SetPaintTextFormat("+g");
     return;
@@ -680,15 +694,26 @@ void EBRenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
     return;
   }
 
-  if( name.find( "EBCLT" ) != std::string::npos ) {
-    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-    text7->GetXaxis()->SetRange(x1, x2);
-    text7->GetYaxis()->SetRange(y1, y2);
-    text7->Draw("text,same");
-    return;
+  if( name.find( "EBCLT" ) != std::string::npos ) { 
+    if( name.find( "seed" ) == std::string::npos ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
+      return;
+    } else {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+      return;
+    }
   }
 
   if( nbx == 17 && nby == 4 ) {
@@ -748,14 +773,25 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   int nby = obj->GetNbinsY();
 
   if( name.find( "EBCLT" ) != std::string::npos ) {
-    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-    text7->GetXaxis()->SetRange(x1, x2);
-    text7->GetYaxis()->SetRange(y1, y2);
-    text7->Draw("text,same");
-    return;
+    if( name.find( "seed" ) == std::string::npos ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
+      return;
+    } else {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+      return;
+    }
   }
 
   if( name.find( "EBOT MEM" ) != std::string::npos ) {
@@ -834,7 +870,8 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-  if( name.find( "EBOT pedestal digi" ) != std::string::npos ) {
+  if( name.find( "EBOT pedestal digi" ) != std::string::npos ||
+      name.find( "G12 RMS map" ) != std::string::npos ) {
     int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
@@ -845,9 +882,7 @@ void EBRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
  
- if( name.find( "reportSummaryMap" ) != std::string::npos || 
-     name.find( "DAQSummaryMap" ) != std::string::npos || 
-     name.find( "DCSSummaryMap" ) != std::string::npos ) {
+  if( name.find( "SummaryMap" ) != std::string::npos ) {
     int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
     int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
     int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
