@@ -10,6 +10,7 @@
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/DipionDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/TestbeamDelegate.h"
+#include "RecoParticleFlow/PFAnalyses/interface/TestDelegate.h"
 
 #include <iostream>
 #include <exception>
@@ -21,7 +22,7 @@ using namespace reco;
 using namespace pftools;
 
 ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
-	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate") {
+	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate"), testtype_("TestDelegate") {
 	std::cout << __PRETTY_FUNCTION__ << "\n";
 	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
 	if (edtype_ == dptype_) {
@@ -29,6 +30,8 @@ ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 
 	} else if (edtype_ == tbtype_) {
 		ed_ = new TestbeamDelegate(isMC_);
+	} else if(edtype_ == testtype_) {
+		ed_ = new TestDelegate();
 	} else {
 		std::string msg("Couldn't find suitable delegate!");
 		//Exception e(msg);

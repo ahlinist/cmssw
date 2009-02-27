@@ -22,6 +22,7 @@ using namespace edm;
 using namespace std;
 using namespace reco;
 using namespace pftools;
+using namespace jamieb;
 
 TestbeamDelegate::TestbeamDelegate(bool isMC) :
 	isMC_(isMC), applyCleaningCuts_(true), computeVetos_(true),
