@@ -4,6 +4,7 @@
 #include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFRecHit.h"
 #include "DataFormats/ParticleFlowReco/interface/PFRecHitFwd.h"
+#include "DataFormats/ParticleFlowReco/interface/PFRecHitFraction.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElementFwd.h"
@@ -131,40 +132,44 @@ bool DipionDelegate::processEvent(const edm::Event& event,
 					}
 				}
 
-				//now find rec hits
-				if (debug_ > 1)
-					std::cout << "\tGetting rechits..." << std::endl;
-
-				std::vector<unsigned> matchingEcalRechits =
-						findObjectsInDeltaR(*rootTrack, **recHitsEcal_,
-								deltaRRechitsToTrack_);
-				for (std::vector<unsigned>::const_iterator rhIt =
-						matchingEcalRechits.begin(); rhIt
-						!= matchingEcalRechits.end(); ++rhIt) {
-					const PFRecHit& rh = (**recHitsEcal_)[*rhIt];
-					CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
-							rh.positionREP().phi(), rh.layer());
-					calib_->rechits_ecal_.push_back(ce);
-				}
-
-				std::vector<unsigned> matchingHcalRechits =
-						findObjectsInDeltaR(*rootTrack, **recHitsHcal_,
-								deltaRRechitsToTrack_);
-				for (std::vector<unsigned>::const_iterator rhIt =
-						matchingHcalRechits.begin(); rhIt
-						!= matchingHcalRechits.end(); ++rhIt) {
-					const PFRecHit& rh = (**recHitsHcal_)[*rhIt];
-					CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
-							rh.positionREP().phi(), rh.layer());
-					calib_->rechits_hcal_.push_back(ce);
-				}
-				if (debug_ > 1) {
-					std::cout << "\t\tECAL/HCAL matching rechits: ("
-							<< calib_->rechits_ecal_.size() << ", "
-							<< calib_->rechits_hcal_.size() << ")\n";
-				}
 				//Process clusters
 				if (!clustersFromCandidates_) {
+					//now find rec hits
+					if (debug_ > 1)
+						std::cout << "\tGetting rechits by hand..."
+								<< std::endl;
+
+					std::vector<unsigned> matchingEcalRechits =
+							findObjectsInDeltaR(*rootTrack, **recHitsEcal_,
+									deltaRRechitsToTrack_);
+					for (std::vector<unsigned>::const_iterator rhIt =
+							matchingEcalRechits.begin(); rhIt
+							!= matchingEcalRechits.end(); ++rhIt) {
+						const PFRecHit& rh = (**recHitsEcal_)[*rhIt];
+						CalibratableElement ce(rh.energy(),
+								rh.positionREP().eta(), rh.positionREP().phi(),
+								rh.layer());
+						calib_->rechits_ecal_.push_back(ce);
+					}
+
+					std::vector<unsigned> matchingHcalRechits =
+							findObjectsInDeltaR(*rootTrack, **recHitsHcal_,
+									deltaRRechitsToTrack_);
+					for (std::vector<unsigned>::const_iterator rhIt =
+							matchingHcalRechits.begin(); rhIt
+							!= matchingHcalRechits.end(); ++rhIt) {
+						const PFRecHit& rh = (**recHitsHcal_)[*rhIt];
+						CalibratableElement ce(rh.energy(),
+								rh.positionREP().eta(), rh.positionREP().phi(),
+								rh.layer());
+						calib_->rechits_hcal_.push_back(ce);
+					}
+					if (debug_ > 1) {
+						std::cout << "\t\tECAL/HCAL matching rechits: ("
+								<< calib_->rechits_ecal_.size() << ", "
+								<< calib_->rechits_hcal_.size() << ")\n";
+					}
+
 					if (debug_ > 1)
 						std::cout << "\tExtracting clusters by hand...\n";
 					//meaning we want to get clusters from cone around track, rather than
@@ -280,18 +285,17 @@ void DipionDelegate::extractSimParticle(const PFSimParticle& sim,
 		}
 	}
 
-//	PFRecHitCollection::const_iterator rhHcalIt = (*recHitsHcal_)->begin();
-//	for (; rhHcalIt != (*recHitsHcal_)->end(); ++rhHcalIt) {
-//		for (unsigned count(0); count < rechitsToSimIds.size(); ++count) {
-//			if (rechitsToSimIds[count] == (*rhHcalIt).detId())
-//				calib_->sim_energyHcal_ += (*rhHcalIt).energy()
-//						* recHitContribFrac[count] / 100;
-//		}
-//	}
+	//	PFRecHitCollection::const_iterator rhHcalIt = (*recHitsHcal_)->begin();
+	//	for (; rhHcalIt != (*recHitsHcal_)->end(); ++rhHcalIt) {
+	//		for (unsigned count(0); count < rechitsToSimIds.size(); ++count) {
+	//			if (rechitsToSimIds[count] == (*rhHcalIt).detId())
+	//				calib_->sim_energyHcal_ += (*rhHcalIt).energy()
+	//						* recHitContribFrac[count] / 100;
+	//		}
+	//	}
 
 	double impliedHcal = calib_->sim_energyEvent_ - calib_->sim_energyEcal_;
 	calib_->sim_energyHcal_ = impliedHcal;
-
 
 	if (debug_ > 3)
 		std::cout << "Sim energy " << calib_->sim_energyEvent_
@@ -361,6 +365,21 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 						theRealCluster.positionREP().phi(),
 						theRealCluster.layer());
 				calib_->cluster_ecal_.push_back(d);
+
+				const std::vector<PFRecHitFraction> rechitFracs =
+						theRealCluster.recHitFractions();
+				std::vector<PFRecHitFraction>::const_iterator rhfIt =
+						rechitFracs.begin();
+				for (; rhfIt != rechitFracs.end(); ++rhfIt) {
+					const PFRecHitFraction rhf = *rhfIt;
+					const PFRecHit rh = *(rhf.recHitRef());
+					CalibratableElement rhd(rh.energy() * rhf.fraction(),
+							rh.positionREP().eta(), rh.positionREP().phi(),
+							rh.layer());
+					calib_->rechits_ecal_.push_back(rhd);
+
+				}
+
 				if (debug_ > 3)
 					std::cout << "\t\tECAL cluster: " << theRealCluster << "\n";
 
@@ -376,6 +395,20 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 						theRealCluster.positionREP().phi(),
 						theRealCluster.layer());
 				calib_->cluster_hcal_.push_back(d);
+
+				const std::vector<PFRecHitFraction> rechitFracs =
+						theRealCluster.recHitFractions();
+				std::vector<PFRecHitFraction>::const_iterator rhfIt =
+						rechitFracs.begin();
+				for (; rhfIt != rechitFracs.end(); ++rhfIt) {
+					const PFRecHitFraction rhf = *rhfIt;
+					const PFRecHit rh = *(rhf.recHitRef());
+					CalibratableElement rhd(rh.energy() * rhf.fraction(),
+							rh.positionREP().eta(), rh.positionREP().phi(),
+							rh.layer());
+					calib_->rechits_hcal_.push_back(rhd);
+
+				}
 				if (debug_ > 3)
 					std::cout << "\t\tHCAL cluster: " << theRealCluster << "\n";
 

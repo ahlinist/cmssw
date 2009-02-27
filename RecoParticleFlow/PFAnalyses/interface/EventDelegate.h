@@ -78,7 +78,7 @@ public:
 
 	void endParticle();
 
-	/* 
+	/*
 	 * General cleanup for last event.
 	 */
 	virtual bool finish() {
@@ -163,7 +163,8 @@ template<class T> void EventDelegate::getCollection(edm::Handle<T>& c,
 	}
 	catch (cms::Exception& err) {
 		std::cout << "Couldn't get collection\n";
-		std::ostringstream err;
+		throw err;
+		//std::ostringstream err;
 		//LogError("Error getting collection!") << err;
 	}
 }

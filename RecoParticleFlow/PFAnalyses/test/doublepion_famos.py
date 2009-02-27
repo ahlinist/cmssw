@@ -1,28 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("PROD")
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100000)
-)
-process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    moduleSeeds = cms.PSet(
-        caloRecHits = cms.untracked.uint32(754321),
-        VtxSmeared = cms.untracked.uint32(223458),
-        muonCSCDigis = cms.untracked.uint32(525432),
-        muonDTDigis = cms.untracked.uint32(67673876),
-        famosSimHits = cms.untracked.uint32(235791312),
-        MuonSimHits = cms.untracked.uint32(834032),
-        famosPileUp = cms.untracked.uint32(918273),
-        muonRPCDigis = cms.untracked.uint32(524964),
-        siTrackerGaussianSmearingRecHits = cms.untracked.uint32(34680)
-    ),
-    sourceSeed = cms.untracked.uint32(1234)
+    input = cms.untracked.int32(2000)
 )
 
 #fastsim
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
-process.load("FastSimulation.Configuration.CommonInputsFake_cff")
+process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
+process.GlobalTag.globaltag = "IDEAL_30X::All"
+
 
 process.famosSimHits.SimulateCalorimetry = True
 process.famosSimHits.SimulateTracking = True
@@ -51,40 +40,15 @@ process.source = cms.Source("FlatRandomEGunSource",
         MaxEta = cms.untracked.double(0.5),
         MaxPhi = cms.untracked.double(3.14159265359),
         MinEta = cms.untracked.double(0.0),
-        MinE = cms.untracked.double(0),
+        MinE = cms.untracked.double(2.0),
         DoubleParticle = cms.untracked.bool(True),
         MinPhi = cms.untracked.double(-3.14159265359),
-        MaxE = cms.untracked.double(50.0)
+        MaxE = cms.untracked.double(2.01)
     ),
     Verbosity = cms.untracked.int32(1),
     AddAntiParticle = cms.untracked.bool(True)
 )
 
-process.MessageLogger = cms.Service("MessageLogger",
-    debugModules = cms.untracked.vstring('*'),
-    cout = cms.untracked.PSet(
-        INFO = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
-        ),
-        PFBlockProducer = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000)
-        ),
-        PFClusterProducer = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000)
-        ),
-        DEBUG = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
-        ),
-        PFProducer = cms.untracked.PSet(
-            limit = cms.untracked.int32(10000000)
-        ),
-        threshold = cms.untracked.string('INFO')
-    ),
-    categories = cms.untracked.vstring('PFClusterProducer', 
-        'PFBlockProducer', 
-        'PFProducer'),
-    destinations = cms.untracked.vstring('cout')
-)
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
@@ -113,19 +77,19 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('/castor/cern.ch/user/b/ballin/DipionDelegate_50GeV_BarrelOnly_100k_2_1_11.root')
-    #fileName = cms.string('DipionDelegate_50GeV_2_1_11.root')
+    fileName = cms.string('DipionDelegate_mono2GeV_BarrelOnly_2k_3_1.root')
+    #fileName = cms.string('DipionDelegate_mono25GeV_3_X_test.root')
 )
 
 #process.finishup = cms.OutputModule("PoolOutputModule",
-#   fileName=cms.untracked.string("finishup.root"),
+#   fileName=cms.untracked.string("DipionDelegate_mono50GeV_3_1_Collections.root"),
 #    outputCommands=cms.untracked.vstring('keep *')
 #    
 #)
 
 
 
-process.p1 = cms.Path(process.famosWithElectrons+process.famosWithCaloTowersAndParticleFlow+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
+process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
 #process.outpath = cms.EndPath(process.finishup)
 
 

@@ -24,14 +24,14 @@ class ExtractionAnalyzer : public edm::EDAnalyzer {
 public:
 	explicit ExtractionAnalyzer(const edm::ParameterSet& parameters);
 	virtual ~ExtractionAnalyzer();
-	
+
 	//Totally gratuituous over-exposure of fileservice!
 	//but quite fun to get experience of templatage
 	//You can then do: this.<TH1F>make("myHisto");
 	template<typename T, typename A> T* makeRootObject(const A& arg);
-	
+
 	template<typename T> T* makeRootObject();
-	
+
 	edm::Service<TFileService>* getFileService() {
 		return &fileservice_;
 	}
@@ -52,7 +52,8 @@ private:
 	std::string edtype_;
 	std::string dptype_;
 	std::string tbtype_;
-	
+	std::string testtype_;
+
 
 };
 

@@ -12,10 +12,9 @@ TFileService = cms.Service("TFileService",
 finishup = cms.OutputModule("PoolOutputModule",
     fileName=cms.untracked.string("finishup.root"),
     outputCommands=cms.untracked.vstring('drop *', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*')
-    
 )
 
-particleFlow.pf_newCalib = cms.bool(True)
+#particleFlow.pf_newCalib = cms.bool(True)
 particleFlow.pfcluster_globalP0 = cms.double(1.54)                              
 particleFlow.pfcluster_globalP1 = cms.double(0.90)
 particleFlow.pfcluster_lowEP0 = cms.double(-1.98)

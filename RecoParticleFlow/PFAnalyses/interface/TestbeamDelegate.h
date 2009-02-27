@@ -105,9 +105,9 @@ private:
 	double deltaRPhotonsToTrack_;
 	double deltaRNeutralsToTrack_;
 	
-	std::map<unsigned, RunInfo*> runInfos_;
+	std::map<unsigned, jamieb::RunInfo*> runInfos_;
 
-	RunInfo* thisRun_;
+	jamieb::RunInfo* thisRun_;
 	Quality conservatism_;
 	
 	edm::InputTag inputTagRawRecHitsEcal_;
