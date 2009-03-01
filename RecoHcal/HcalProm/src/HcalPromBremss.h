@@ -15,6 +15,7 @@ const int MAXnTRIGGER=300;
 const int MAXnMUONdt=50; 
 const int MAXnRecHitDTMu=50; 
 const int MAXnTRACK=50; 
+const int MAXnJET=20;
 
 class HcalPromBremss : public edm::EDAnalyzer {
    public:
@@ -107,6 +108,20 @@ class HcalPromBremss : public edm::EDAnalyzer {
       float trackChi2[MAXnTRACK];
       float trackLost[MAXnTRACK];
       int   trackCharge[MAXnTRACK];
+
+      int caloJetIC5Count;
+      float caloJetIC5Pt[MAXnJET];
+      float caloJetIC5Energy[MAXnJET];
+      float caloJetIC5Phi[MAXnJET];
+      float caloJetIC5Eta[MAXnJET];
+      float caloJetIC5EMF[MAXnJET];
+      float caloJetIC5HADF[MAXnJET];
+      float caloJetIC5towersArea[MAXnJET];
+      int caloJetIC5n90[MAXnJET];
+      int caloJetIC5n60[MAXnJET];
+
+      float caloMET; 
+      float caloMETPhi; 
 
       SteppingHelixPropagator* stepPropF;
       SteppingHelixPropagator* stepPropB;
