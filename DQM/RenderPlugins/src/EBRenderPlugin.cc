@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.104 2009/02/23 20:46:12 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.105 2009/02/26 15:04:47 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.104 $
-  \date $Date: 2009/02/23 20:46:12 $
+  \version $Revision: 1.105 $
+  \date $Date: 2009/02/26 15:04:47 $
 */
 
 #include "TH1F.h"
@@ -38,7 +38,6 @@ void EBRenderPlugin::initialise( int argc, char **argv ) {
 
   first = false;
 
-  // taken from DQM/EcalCommon/src/ColorPalette.cc
   float rgb[7][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
                      {1.00, 0.96, 0.00}, {0.50, 0.00, 0.00},
                      {0.00, 0.40, 0.00}, {0.94, 0.78, 0.00},
@@ -973,7 +972,6 @@ void EBRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 }
 
-// taken from DQM/EcalCommon/src/Numbers.cc
 int EBRenderPlugin::iEB( const int ism ) throw( std::runtime_error ) {
 
   // EB-
