@@ -272,8 +272,8 @@ MC Volume Flange	10.6x18x0.6=398.932cm3
 
 o Cables from Endring Prints to supply tube
 
-MC Volume: cable_endring_to_tube  Rin = 175, Rout = 215, Z=30 
-           V=1470cm3
+MC Volume: cable_endring_to_tube  Rin = 180, Rout = 188, Z=30 
+           V=277cm3
 
 (1) power cable copper  (32 x)     1.788g / 8.96 =0.2cm3
 (2) power cable aluminum (32 x)  1g / 2.7 = 0.37cm3
@@ -298,7 +298,7 @@ MC Volume: cable_endring_to_tube  Rin = 175, Rout = 215, Z=30
 (9) endprint clips connecting L12 and L3 boards Aluminum    0.6g / 2.7 = 0.22cm3
 (10) Alu flange on supply tube 176g/2.7 = 65cm3
 .....................................................................
-# "cable endring to tube"     "cable_endring_to_tube"   1470   -1.
+# "cable endring to tube"     "cable_endring_to_tube"   277   -1.
 * 1 "pow. cable copper"             "Copper"            0.2    32 CAB
 * 2 "pow. cable aluminium"       "Aluminium"            0.37   32 CAB
 * 3 "pow. cable insulation"         "FPix_Silicone"     2.06   32 CAB
@@ -526,7 +526,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 o Sector C
 -------------------------
-MC Volume: 3533cm3 per half-shell
+MC Volume: 2388cm3 per half-shell
 numbers below are per half-shell
 
 see referece document from supply tube construction attached to
@@ -590,7 +590,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 
 ....................................................................
-# "SectorC"   "SectorC"        3533         -1.
+# "SectorC"   "SectorC"        2388         -1.
 * 1 "Inner Shielding Foil Alu"           "Aluminium"                    5.67     1   SUP
 * 2 "Inner Shielding Foil GFK"           "T_FR4"                       64.18     1   SUP
 * 3 "Alu Power Cables"                   "Aluminium"                   92.92     1   CAB
