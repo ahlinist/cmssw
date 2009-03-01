@@ -33,6 +33,12 @@ process.source = cms.Source("PoolSource",
 )
 ###>>>>>>>>>>>  Don't remove this line!
 
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.connect = 'frontier://Frontier/CMS_COND_21X_GLOBALTAG'
+##process.GlobalTag.globaltag = 'CRAFT_V3P::All'  # update GlobalTag as neceesary
+process.GlobalTag.globaltag = 'CRAFT_ALL_V9::All'  # update GlobalTag as neceesary
+process.prefer("GlobalTag")
+
 process.MessageLogger.cerr.INFO.limit = 1000000
 process.MessageLogger.cerr.noTimeStamps = True
                                      
