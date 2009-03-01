@@ -13,7 +13,7 @@
 //
 // Original Author:  Francesco SANTANASTASIO
 //         Created:  Thu Jan 29 14:38:17 CET 2009
-// $Id$
+// $Id: HcalPromBremss.cc,v 1.3 2009/02/26 13:52:13 santanas Exp $
 //
 //
 
@@ -299,17 +299,26 @@ HcalPromBremss::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   //-- High level physics objects
 
-  //Missing Et
-  const CaloMET *calomet;
-  Handle < CaloMETCollection > recmet;
-  iEvent.getByLabel("met", recmet);
-  const CaloMETCollection *metCol = recmet.product();
-  calomet = &(metCol->front());
+//   //Missing Et
+//   const CaloMET *calomet;
+//   Handle < CaloMETCollection > recmet;
+//   iEvent.getByLabel("met", recmet);
+//   const CaloMETCollection *metCol = recmet.product();
+//   calomet = &(metCol->front());
+
+  // MET
+  Handle<CaloMETCollection> recoMETColl;
+  iEvent.getByLabel ( "met" , recoMETColl);
+  const reco::CaloMET & recomet = (*recoMETColl)[0];
 
   //Reco jets
-  Handle < CaloJetCollection > caloJet;
-  iEvent.getByLabel("iterativeCone15CaloJets", caloJet);
-  const CaloJetCollection cjet = *(caloJet.product());
+//   Handle < CaloJetCollection > caloJet;
+//   iEvent.getByLabel("iterativeCone15CaloJets", caloJet);
+//   const CaloJetCollection cjet = *(caloJet.product());
+
+  //Reco jets
+  edm::Handle<reco::CaloJetCollection> caloJetsIC5_raw;
+  iEvent.getByLabel ("iterativeCone5CaloJets", caloJetsIC5_raw); 
 
   //Tracker
   edm::Handle<reco::TrackCollection> ctfTrackCollectionHandle;
@@ -1102,6 +1111,37 @@ HcalPromBremss::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     }
 
+  //-- loop over jets
+  caloJetIC5Count=0;
+  for( CaloJetCollection::const_iterator calojet = caloJetsIC5_raw->begin(); calojet != caloJetsIC5_raw->end(); calojet++ ) 
+    {
+      //exit from loop when you reach the required number of electrons
+      if(caloJetIC5Count > MAXnJET)
+	break;
+
+      float EMF = calojet->emEnergyFraction();
+      float HADF = calojet->energyFractionHadronic();
+
+      caloJetIC5Pt[caloJetIC5Count]=calojet->pt();
+      caloJetIC5Energy[caloJetIC5Count]=calojet->energy();
+      caloJetIC5Phi[caloJetIC5Count]=calojet->phi();
+      caloJetIC5Eta[caloJetIC5Count]=calojet->eta();
+      caloJetIC5EMF[caloJetIC5Count]=EMF;
+      caloJetIC5HADF[caloJetIC5Count]=HADF;
+      caloJetIC5towersArea[caloJetIC5Count]=calojet->towersArea();
+      caloJetIC5n90[caloJetIC5Count]=calojet->n90();
+      caloJetIC5n60[caloJetIC5Count]=calojet->n60();
+
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      //next calo jet
+      caloJetIC5Count++; // don't move this
+      //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    }
+
+  //-- MET
+  caloMET = recomet.et();
+  caloMETPhi = recomet.phi();
 
   //########################################
   //## Fill the Tree ofr each event
@@ -1159,6 +1199,20 @@ HcalPromBremss::beginJob(const edm::EventSetup& iSetup)
   m_tree->Branch("trackChi2",&trackChi2,"trackChi2[trackCount]/F");
   m_tree->Branch("trackLost",&trackLost,"trackLost[trackCount]/F");
   m_tree->Branch("trackCharge",&trackCharge,"trackCharge[trackCount]/I");
+
+  m_tree->Branch("caloJetIC5Count",&caloJetIC5Count,"caloJetIC5Count/I");
+  m_tree->Branch("caloJetIC5Pt",&caloJetIC5Pt,"caloJetIC5Pt[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5Energy",&caloJetIC5Energy,"caloJetIC5Energy[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5Phi",&caloJetIC5Phi,"caloJetIC5Phi[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5Eta",&caloJetIC5Eta,"caloJetIC5Eta[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5EMF",&caloJetIC5EMF,"caloJetIC5EMF[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5HADF",&caloJetIC5HADF,"caloJetIC5HADF[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5towersArea",&caloJetIC5towersArea,"caloJetIC5towersArea[caloJetIC5Count]/F");
+  m_tree->Branch("caloJetIC5n90",&caloJetIC5n90,"caloJetIC5n90[caloJetIC5Count]/I");
+  m_tree->Branch("caloJetIC5n60",&caloJetIC5n60,"caloJetIC5n60[caloJetIC5Count]/I");
+
+  m_tree->Branch("caloMET",&caloMET,"caloMET/F");
+  m_tree->Branch("caloMETPhi",&caloMETPhi,"caloMETPhi/F");
 
   m_tree->Branch("muonDTnrstTrkDXY",&muonDTnrstTrkDXY,"muonDTnrstTrkDXY[muonDTCount]/F");
   m_tree->Branch("muonDTnrstTrkDZ",&muonDTnrstTrkDZ,"muonDTnrstTrkDZ[muonDTCount]/F");
