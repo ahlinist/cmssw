@@ -74,11 +74,11 @@
  <Constant name="Conn1Z"            value="[FlangeZ]-[FlangeT]/2-[Conn1T]/2"/>
  <Constant name="Conn2Z"            value="[FlangeZ]+[FlangeT]/2+[Conn1T]/2"/>
  <Constant name="Conn3Rout"         value="19.0*cm"/>
- <Constant name="Conn3Rin"          value="17.5*cm"/>
+ <Constant name="Conn3Rin"          value="18.0*cm"/>
  <Constant name="Conn4Rin"          value="18.0*cm"/>
  <Constant name="ConnToSTT"         value="3.00*cm"/>
- <Constant name="ConnToSTRin"       value="17.5*cm"/>
- <Constant name="ConnToSTRout"      value="21.5*cm"/>
+ <Constant name="ConnToSTRin"       value="18.0*cm"/>
+ <Constant name="ConnToSTRout"      value="18.8*cm"/>
  <Constant name="Conn3T"            value="49.3*cm"/>
  <Constant name="Conn4T"            value="120.00*cm"/>
  <Constant name="ConnToSTZ"         value="30.50*cm"/>
