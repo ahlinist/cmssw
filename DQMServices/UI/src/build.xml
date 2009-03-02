@@ -68,8 +68,8 @@
     <!-- encrypt authentification parameters with encoder -->
     <record name="encoded.txt" action="start"/>
     <java classname="cms.dqm.workflow.Encoder">
-      <arg value="username"/>
-      <arg value="password"/>
+      <arg value="${username}"/>
+      <arg value="${password}"/>
       <classpath>
         <pathelement location="dist/cmsdqmrunregistry.jar"/>
         <path refid="local-cp"/>
