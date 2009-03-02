@@ -53,6 +53,8 @@ private:
     int nTracks_;
     double xiPlus_;
     double xiMinus_; 
+    double forwardBackwardAsymmetryHFEnergy_;
+    double forwardBackwardAsymmetryHFMult_;
   } eventData_;
 
   TH1F* h_nCastorTowerPlusDirect_;
@@ -79,6 +81,9 @@ private:
 
   TH1F* h_xiPlus_;
   TH1F* h_xiMinus_;
+
+  TH1F* h_forwardBackwardAsymmetryHFEnergy_;
+  TH1F* h_forwardBackwardAsymmetryHFMult_;
 
   TH1F* h_nPileUpBx0_;
   TH1F* h_nVertex_;
@@ -164,6 +169,8 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
     data_->Branch("nTracks",&eventData_.nTracks_,"nTracks/I");
     data_->Branch("xiPlus",&eventData_.xiPlus_,"xiPlus/D");
     data_->Branch("xiMinus",&eventData_.xiMinus_,"xiMinus/D");
+    data_->Branch("forwardBackwardAsymmetryHFEnergy",&eventData_.forwardBackwardAsymmetryHFEnergy_,"forwardBackwardAsymmetryHFEnergy/D");
+    data_->Branch("forwardBackwardAsymmetryHFMult",&eventData_.forwardBackwardAsymmetryHFMult_,"forwardBackwardAsymmetryHFMult/D");
   }
 
   h_nVertex_ = fs->make<TH1F>("nVertex","Nr. of offline primary vertexes",10,0,10);
@@ -189,6 +196,9 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
 
   h_xiPlus_ = fs->make<TH1F>("xiPlus","Rec. xi from calo towers",200,0.,1.);
   h_xiMinus_ = fs->make<TH1F>("xiMinus","Rec. xi from calo towers",200,0.,1.);
+
+  h_forwardBackwardAsymmetryHFEnergy_ = fs->make<TH1F>("forwardBackwardAsymmetryHFEnergy","forwardBackwardAsymmetryHFEnergy",100,-1.,1.);
+  h_forwardBackwardAsymmetryHFMult_ = fs->make<TH1F>("forwardBackwardAsymmetryHFMult","forwardBackwardAsymmetryHFMult",100,-1.,1.);
 }     
 
 void EdmDumpAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& setup)
@@ -286,6 +296,12 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         edm::Handle<double> xiTowerMinus;
         event.getByLabel("xiTower","xiTowerminus",xiTowerMinus);
 
+        edm::Handle<std::vector<double> > forwardBackwardAsymmetryHFEnergy;
+        event.getByLabel("hfTower","FBAsymmetryFromHFEnergy",forwardBackwardAsymmetryHFEnergy);
+
+        edm::Handle<std::vector<double> > forwardBackwardAsymmetryHFMult;
+        event.getByLabel("hfTower","FBAsymmetryFromHFMult",forwardBackwardAsymmetryHFMult);
+ 
 	unsigned int nAccPhiSliceplus = 0;
 	for(unsigned int i = 0; i < (*acceptedPhiSliceplus.product()).size(); i++){
 		if((*acceptedPhiSliceplus.product())[i] == 1) nAccPhiSliceplus++;
@@ -310,6 +326,9 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         double xiTower_plus = *xiTowerPlus.product();
         double xiTower_minus = *xiTowerMinus.product();
 
+        double fbAsymmetryEnergy = (*forwardBackwardAsymmetryHFEnergy.product())[thresholdIndexHF_];
+        double fbAsymmetryMult = (*forwardBackwardAsymmetryHFMult.product())[thresholdIndexHF_]; 
+
         eventData_.nCastorGenPlus_ = nAccPhiSliceplus;
         eventData_.nCastorGenMinus_ = nAccPhiSliceminus;
         eventData_.nHFTowerPlus_ = nHF_plus;
@@ -318,6 +337,8 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         eventData_.nCastorTowerMinus_ = nCastorTwr_minus;
         eventData_.xiPlus_ = xiTower_plus;
         eventData_.xiMinus_ = xiTower_minus; 
+        eventData_.forwardBackwardAsymmetryHFEnergy_ = fbAsymmetryEnergy;
+        eventData_.forwardBackwardAsymmetryHFMult_ = fbAsymmetryMult;
 
         h_nHFTowerPlus_->Fill(nHF_plus);
         h_nHFTowerMinus_->Fill(nHF_minus);
@@ -336,6 +357,9 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
 
         h_xiPlus_->Fill(xiTower_plus);
         h_xiMinus_->Fill(xiTower_minus);
+ 
+        h_forwardBackwardAsymmetryHFEnergy_->Fill(fbAsymmetryEnergy);
+        h_forwardBackwardAsymmetryHFMult_->Fill(fbAsymmetryMult);
 }
 
 void EdmDumpAnalyzer::fillFromTowers(const edm::Event& event, const edm::EventSetup& setup)

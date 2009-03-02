@@ -38,7 +38,14 @@ process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnaly
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionTMVAFilter_cfi")
 process.singleInteractionTMVAFilter.CutOnClassifier = 0.9 
 
+process.load("Validation.RecoVertex.validationPrimaryVertex_cff")
+process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+
 process.edmDumpAnalysisSingleVertex = process.edmDumpAnalysis.clone()
+process.edmDumpAnalysisWithAdaptiveVertexFitter = process.edmDumpAnalysis.clone()
+process.edmDumpAnalysisWithAdaptiveVertexFitter.VertexTag = "offlinePrimaryVerticesFromCTFTracksAVF"
+process.edmDumpAnalysisWithKalmanVertexFitter = process.edmDumpAnalysis.clone()
+process.edmDumpAnalysisWithKalmanVertexFitter.VertexTag = "offlinePrimaryVerticesFromCTFTracksKVF"
 
 process.edmDumpAnalysisSingleInteraction = process.edmDumpAnalysis.clone()
 process.edmDumpAnalysisSingleInteraction.SaveROOTTree = True
@@ -60,13 +67,19 @@ process.add_(cms.Service("TFileService",
 	)
 )
 
-process.p1 = cms.Path(process.edmDumpAnalysis) 
+process.reco = cms.Path(process.vertexreco)
+process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter) 
+# Filter single-vertex events
 process.p2 = cms.Path(process.singleVertexFilter*process.edmDumpAnalysisSingleVertex)
+# Filter single-interaction (truth) events
 process.p3 = cms.Path(process.singleInteractionFilter*process.edmDumpAnalysisSingleInteraction)
+# Filter not single-interaction (truth) events
 process.p4 = cms.Path(~process.singleInteractionFilter*process.edmDumpAnalysisPileUp)
+# Filter single-interaction (truth) AND single-vertex events
 process.p5 = cms.Path(process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexSingleInteraction)
+# Filter not single-interaction (truth) events AND single-vertex events
 process.p6 = cms.Path(~process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexPileUp)
-
+# Filter single-interaction (from selection) events
 process.p7 = cms.Path(process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVA)
 
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7)
+process.schedule = cms.Schedule(process.reco,process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7)
