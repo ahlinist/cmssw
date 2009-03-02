@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.119 2009/02/26 15:04:47 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.120 2009/03/01 08:17:04 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.119 $
-  \date $Date: 2009/02/26 15:04:47 $
+  \version $Revision: 1.120 $
+  \date $Date: 2009/03/01 08:17:04 $
 */
 
 #include "TH1F.h"
@@ -84,7 +84,7 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text8 = new TH2C( "ee_text8", "text8", 10, -150., 150., 10, -150., 150. );
   text9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
   text10 = new TH2C( "ee_text10", "text10", 20, 0., 40., 10, 0., 20. );
-  text11 = new TH2C( "ee_text10", "text10", 20, 0., 200., 10, 0., 100. );
+  text11 = new TH2C( "ee_text11", "text11", 20, 0., 200., 10, 0., 100. );
 
   text1->SetMinimum(  0.01 );
   text3->SetMinimum(  0.01 );
