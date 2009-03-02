@@ -57,6 +57,8 @@ HFTowerEdmNtupleDumperAOD::HFTowerEdmNtupleDumperAOD(const edm::ParameterSet& co
 	produces<std::vector<double> >( alias = "etaHFmin" ).setBranchAlias( alias );
 	produces<std::map<unsigned int, std::vector<unsigned int> > >( alias = "mapTreshToiEtaplus" ).setBranchAlias( alias );
 	produces<std::map<unsigned int, std::vector<unsigned int> > >( alias = "mapTreshToiEtaminus" ).setBranchAlias( alias );
+        produces<std::vector<double> >( alias = "FBAsymmetryFromHFEnergy" ).setBranchAlias( alias );
+        produces<std::vector<double> >( alias = "FBAsymmetryFromHFMult" ).setBranchAlias( alias );
 }
 
 void HFTowerEdmNtupleDumperAOD::produce(edm::Event& evt, const edm::EventSetup& stp) {
@@ -74,26 +76,15 @@ void HFTowerEdmNtupleDumperAOD::produce(edm::Event& evt, const edm::EventSetup& 
         const CaloTowerCollection& towerCollection = *(towerCollectionH.product());
 	
 	//Loop over CaloTowers
-	std::vector<unsigned int> nhf_plus;
-        std::vector<unsigned int> nhf_minus;
-	std::vector<double> sumehf_plus;
-	std::vector<double> sumehf_minus;
-	std::vector<double> etagapmax;
-	std::vector<double> etagapmin;
-	std::vector<std::vector<int> > towersiEta;
-	std::vector<std::vector<unsigned int> > towersiEta_plus;
-	std::vector<std::vector<unsigned int> > towersiEta_minus;
-	for(unsigned int i = 0; i < n_iter; i++){
-		nhf_plus.push_back(0);
-		nhf_minus.push_back(0);
-		sumehf_plus.push_back(0);
-		sumehf_minus.push_back(0);
-		etagapmax.push_back(0.);
-		etagapmin.push_back(0.);
-		towersiEta.push_back(std::vector<int>());
-		towersiEta_plus.push_back(std::vector<unsigned int>());
-		towersiEta_minus.push_back(std::vector<unsigned int>());
-	} 
+	std::vector<unsigned int> nhf_plus(n_iter);
+        std::vector<unsigned int> nhf_minus(n_iter);
+	std::vector<double> sumehf_plus(n_iter);
+	std::vector<double> sumehf_minus(n_iter);
+	std::vector<double> etagapmax(n_iter);
+	std::vector<double> etagapmin(n_iter);
+	std::vector<std::vector<int> > towersiEta(n_iter);
+	std::vector<std::vector<unsigned int> > towersiEta_plus(n_iter);
+	std::vector<std::vector<unsigned int> > towersiEta_minus(n_iter);
 	for(CaloTowerCollection::const_iterator calotower = towerCollection.begin(); calotower != towerCollection.end(); calotower++) {	
 		bool hasHF = false;
 		bool hasHE = false;
@@ -145,6 +136,13 @@ void HFTowerEdmNtupleDumperAOD::produce(edm::Event& evt, const edm::EventSetup& 
                 }
 	}
 
+        std::vector<double> fbAsymmetryEnergy(n_iter);
+        std::vector<double> fbAsymmetryMult(n_iter);
+        for(unsigned int ithresh = 0; ithresh < n_iter; ++ithresh){
+                fbAsymmetryEnergy[ithresh] = (sumehf_plus[ithresh] - sumehf_minus[ithresh])/(sumehf_plus[ithresh] + sumehf_minus[ithresh]); 
+                fbAsymmetryMult[ithresh] = ((double)nhf_plus[ithresh] - (double)nhf_minus[ithresh])/((double)nhf_plus[ithresh] + (double)nhf_minus[ithresh]);
+        }
+
 	std::map<unsigned int, std::vector<unsigned int> > treshieta_plus;
 	treshieta_plus.clear();
 	std::map<unsigned int, std::vector<unsigned int> > treshieta_minus;
@@ -165,6 +163,8 @@ void HFTowerEdmNtupleDumperAOD::produce(edm::Event& evt, const edm::EventSetup& 
 	std::auto_ptr<std::vector<double> > etaHFmin(new std::vector<double>(etagapmin));
 	std::auto_ptr<std::map<unsigned int, std::vector<unsigned int> > > mapTreshToiEtaplus(new std::map<unsigned int, std::vector<unsigned int> >(treshieta_plus));
 	std::auto_ptr<std::map<unsigned int, std::vector<unsigned int> > > mapTreshToiEtaminus(new std::map<unsigned int, std::vector<unsigned int> >(treshieta_minus));
+        std::auto_ptr<std::vector<double> > FBAsymmetryFromHFEnergy(new std::vector<double>(fbAsymmetryEnergy));
+        std::auto_ptr<std::vector<double> > FBAsymmetryFromHFMult(new std::vector<double>(fbAsymmetryMult));
 
 	evt.put( nHFplus, "nHFplus" );
 	evt.put( nHFminus, "nHFminus" );
@@ -172,8 +172,10 @@ void HFTowerEdmNtupleDumperAOD::produce(edm::Event& evt, const edm::EventSetup& 
 	evt.put( sumEHFminus, "sumEHFminus" );
 	evt.put( etaHFmax, "etaHFmax" );
 	evt.put( etaHFmin, "etaHFmin" );
-	evt.put(mapTreshToiEtaplus, "mapTreshToiEtaplus" );
-	evt.put(mapTreshToiEtaminus, "mapTreshToiEtaminus" );
+	evt.put( mapTreshToiEtaplus, "mapTreshToiEtaplus" );
+	evt.put( mapTreshToiEtaminus, "mapTreshToiEtaminus" );
+        evt.put( FBAsymmetryFromHFEnergy, "FBAsymmetryFromHFEnergy" ); 
+        evt.put( FBAsymmetryFromHFMult, "FBAsymmetryFromHFMult" );
 }
 
 DEFINE_FWK_MODULE(HFTowerEdmNtupleDumperAOD);
