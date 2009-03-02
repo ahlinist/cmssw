@@ -22,6 +22,8 @@ static char* gArgV = 0;
 
 extern "C" char** environ;
 
+#define CHARSTAR(x) const_cast<char *>(x)
+
 class testRefInROOT: public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(testRefInROOT);
@@ -43,7 +45,10 @@ public:
       gSystem->Load("libFWCoreFWLite.so");
       AutoLibraryLoader::enable();
       
-      char* argv[] = {"testFWCoreFWLite","/bin/bash","FWCore/FWLite/test","RefTest.sh"};
+      char* argv[] = {CHARSTAR("testFWCoreFWLite"),
+		      CHARSTAR("/bin/bash"),
+		      CHARSTAR("FWCore/FWLite/test"),
+		      CHARSTAR("RefTest.sh")};
       argv[0] = gArgV;
       if(0!=ptomaine(sizeof(argv)/sizeof(const char*), argv, environ) ) {
         std::cerr <<"could not run script needed to make test files\n";
