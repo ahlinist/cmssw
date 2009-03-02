@@ -12,36 +12,8 @@
 #include "DQM/RenderPlugins/src/utils.h"
 
 bool EGammaRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
- 
+
   if (o.name.find( "PhotonAnalyzer/" )   == std::string::npos) return false;
-
-
-  /// directories up to and including CMSSW_3_0_X 
-
-  if( o.name.find( "/IsolationVariables/" ) != std::string::npos ) {
-    return true;
-  } 
-
-  if( o.name.find( "/AllPhotons/" ) != std::string::npos ) {
-    return true;
-  } 
-
-  if( o.name.find( "/IsolatedPhotons/" ) != std::string::npos ) {
-    return true;
-  } 
-
-  if( o.name.find( "/NonisolatedPhotons/" ) != std::string::npos ) {
-    return true;
-  } 
-
-  if( o.name.find( "/PiZero/" ) != std::string::npos ) {
-    return true;
-  } 
-  if( o.name.find( "Triggers" ) != std::string::npos ) {
-    return true;
-  } 
-
-  /// directories for CMSSW_3_1_X and beyond 
 
   if( o.name.find( "/Efficiencies/" ) != std::string::npos ) {
     return true;
@@ -58,8 +30,6 @@ bool EGammaRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgIn
   if( o.name.find( "/BackgroundPhotons/" ) != std::string::npos ) {
     return true;
   } 
-
-
 
   return false;
 
@@ -100,22 +70,38 @@ void EGammaRenderPlugin::preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ) 
   gStyle->SetOptStat("emr");
 
   if( o.name.find( "nPho" )  != std::string::npos) {
-    gStyle->SetOptStat(0);
+    gStyle->SetOptStat("em");
   }
-  if( o.name.find( "Eta" )  != std::string::npos) {
+  if( o.name.find( "nConv" )  != std::string::npos) {
+    gStyle->SetOptStat("em");
+  }
+  if( o.name.find( "nIsoTracks" )  != std::string::npos) {
+    gStyle->SetOptStat("em");
+  }
+  if( o.name.find( "phoEta" )  != std::string::npos) {
     gStyle->SetOptStat("e");
   }
-  if( o.name.find( "Phi" )  != std::string::npos) {
+  if( o.name.find( "phoConvEta" )  != std::string::npos) {
     gStyle->SetOptStat("e");
   }
+  if( o.name.find( "phoPhi" )  != std::string::npos) {
+    gStyle->SetOptStat("e");
+  }
+  if( o.name.find( "phoConvPhi" )  != std::string::npos) {
+    gStyle->SetOptStat("e");
+  }
+  if( o.name.find( "VsEta" )  != std::string::npos) {
+    gStyle->SetOptStat("e");
+  }
+
+
   return;
 }
 
 void EGammaRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
 
-
   c->cd();
-
+  
   if( dynamic_cast<TH1F*>( o.object ) ) {
     postDrawTH1F( c, o );
   }
@@ -130,23 +116,33 @@ void EGammaRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
 
   TH1F* obj = dynamic_cast<TH1F*>( o.object );
   assert( obj );
-
+  //gStyle->SetOptStat(11);
   obj->SetMinimum(0);
 
-  if( o.name.find( "Triggers" ) != std::string::npos ) {    
-    c->SetBottomMargin(0.15);
-    c->SetRightMargin(0.2);
-    gStyle->SetOptStat(0);
-    obj->SetMaximum(1.05);
-  }
-
   if( o.name.find( "Filters" ) != std::string::npos ) {    
-    c->SetBottomMargin(0.15);
-    c->SetRightMargin(0.25);
-    gStyle->SetOptStat(0);
+    c->SetBottomMargin(0.25);
+    c->SetRightMargin(0.35);
+    obj->SetStats(kFALSE);
     obj->SetMaximum(1.05);
   }
 
+  if( o.name.find( "hOverE" )  != std::string::npos) {
+    c->SetLogy(1);
+    obj->SetMinimum(0.5);
+  }
+  if( o.name.find( "h1OverE" )  != std::string::npos) {
+    c->SetLogy(1);
+    obj->SetMinimum(0.5);
+  }
+  if( o.name.find( "h2OverE" )  != std::string::npos) {
+    c->SetLogy(1);
+    obj->SetMinimum(0.5);
+  }
+
+  if( o.name.find( "DeltaR" )  != std::string::npos) {
+    c->SetLogy(1);
+    obj->SetMinimum(0.5);
+  }
   return;
 
 }
@@ -154,7 +150,7 @@ void EGammaRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 
   TH2F* obj = dynamic_cast<TH2F*>( o.object );
   assert( obj );
-
+  //gStyle->SetOptStat("e");
 
   int ixSectorsEE[202] = {61, 61, 60, 60, 59, 59, 58, 58, 57, 57, 55, 55, 45, 45, 43, 43, 42, 42, 41, 41, 40, 40, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 45, 45, 55, 55, 57, 57, 58, 58, 59, 59, 60, 60, 61, 61, 0,100,100, 97, 97, 95, 95, 92, 92, 87, 87, 85, 85, 80, 80, 75, 75, 65, 65, 60, 60, 40, 40, 35, 35, 25, 25, 20, 20, 15, 15, 13, 13,  8,  8,  5,  5,  3,  3,  0,  0,  3,  3,  5,  5,  8,  8, 13, 13, 15, 15, 20, 20, 25, 25, 35, 35, 40, 40, 60, 60, 65, 65, 75, 75, 80, 80, 85, 85, 87, 87, 92, 92, 95, 95, 97, 97,100,100,  0, 61, 65, 65, 70, 70, 80, 80, 90, 90, 92,  0, 61, 65, 65, 90, 90, 97,  0, 57, 60, 60, 65, 65, 70, 70, 75, 75, 80, 80,  0, 50, 50,  0, 43, 40, 40, 35, 35, 30, 30, 25, 25, 20, 20,  0, 39, 35, 35, 10, 10,  3,  0, 39, 35, 35, 30, 30, 20, 20, 10, 10,  8,  0, 45, 45, 40, 40, 35, 35,  0, 55, 55, 60, 60, 65, 65};
  
