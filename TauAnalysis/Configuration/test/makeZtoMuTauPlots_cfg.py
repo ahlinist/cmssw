@@ -2,12 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('makeZtoMuTauPlots')
 
-process.load("TauAnalysis.Configuration.zMuTau.plotZtoMuTau_cff")
+process.load("TauAnalysis.Configuration.plotZtoMuTau_cff")
 
 process.DQMStore = cms.Service("DQMStore")
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(0)         
+  input = cms.untracked.int32(0)         
 )
 
 process.source = cms.Source("EmptySource")
