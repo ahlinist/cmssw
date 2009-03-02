@@ -52,7 +52,7 @@ private:
 	std::string edtype_;
 	std::string dptype_;
 	std::string tbtype_;
-	std::string testtype_;
+	//std::string testtype_;
 
 
 };
