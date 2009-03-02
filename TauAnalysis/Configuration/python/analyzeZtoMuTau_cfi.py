@@ -140,13 +140,6 @@ muonEcalIsoCut = cms.PSet(
   src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
-muonHcalIsoCut = cms.PSet(
-  name = cms.string('muonHcalIsoCut'),
-  type = cms.string('PATMuonMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsHcalIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsHcalIsoIndividual'),
-  minNumber = cms.uint32(1)
-)
 muonAntiPionCut = cms.PSet(
   name = cms.string('muonAntiPionCut'),
   type = cms.string('PATMuonMinEventSelector'),
@@ -292,7 +285,6 @@ muTauEventDump = cms.PSet(
   #                                "muonHLTmatchCut: rejected_cumulative",
   #                                "muonTrkIsoCut: rejected_cumulative",
   #                                "muonEcalIsoCut: rejected_cumulative",
-  #                                "muonHcalIsoCut: rejected_cumulative",
   #                                "muonAntiPionCut: rejected_cumulative",
   #                                "muonTrkIPcut: rejected_cumulative",
   #                                "tauEtaCut: rejected_cumulative",
@@ -430,15 +422,6 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     histManagers = muTauHistManagers,
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonHcalIsoCut'),
-    title = cms.string('Muon HCAL iso.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsHcalIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonAntiPionCut'),
