@@ -37,7 +37,6 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     muonHLTmatchCut,
     muonTrkIsoCut,
     muonEcalIsoCut,
-    muonHcalIsoCut,
     muonAntiPionCut,
     muonTrkIPcut,
         

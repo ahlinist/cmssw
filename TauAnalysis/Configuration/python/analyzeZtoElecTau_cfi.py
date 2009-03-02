@@ -140,8 +140,8 @@ electronTrkIsoCut = cms.PSet(
 electronEcalIsoCut = cms.PSet(
   name = cms.string('electronEcalIsoCut'),
   type = cms.string('PATElectronMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1ElectronsHcalIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1ElectronsHcalIsoIndividual'),
+  src_cumulative = cms.InputTag('selectedLayer1ElectronsEcalIsoCumulative'),
+  src_individual = cms.InputTag('selectedLayer1ElectronsEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 electronTrkCut = cms.PSet(
@@ -418,7 +418,7 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsHcalIsoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEcalIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('electronTrkCut'),
