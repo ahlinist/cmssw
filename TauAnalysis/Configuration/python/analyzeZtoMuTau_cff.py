@@ -55,6 +55,7 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     diTauCandidateForMuTauAntiOverlapVeto,
     diTauCandidateForMuTauAcoplanarityCut,
     diTauCandidateForMuTauZeroChargeCut,
+    diTauCandidateForMuTauMt1METCut,
 
     # veto events containing additional central jets with Et > 20 GeV
     centralJetVeto

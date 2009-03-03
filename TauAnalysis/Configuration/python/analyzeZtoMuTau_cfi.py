@@ -240,6 +240,14 @@ diTauCandidateForMuTauZeroChargeCut = cms.PSet(
   src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
   minNumber = cms.uint32(1)
 )
+diTauCandidateForMuTauMt1METCut = cms.PSet(
+  name = cms.string('diTauCandidateForMuTauMt1METCut'),
+  type = cms.string('PATMuTauPairMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedMuTauPairsMt1METCumulative'),
+  src_individual = cms.InputTag('selectedMuTauPairsMt1METIndividual'),
+  minNumber = cms.uint32(1)
+)
+
 
 # veto events containing additional central jets with Et > 20 GeV
 centralJetVeto = cms.PSet(
@@ -548,11 +556,23 @@ muTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
     title = cms.string('Charge(Muon+Tau) = 0'),
+    saveRunEventNumbers = cms.vstring('')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers,
+    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForMuTauMt1METCut'),
+    title = cms.string('M_t(Muon-MET) < 60'),
     saveRunEventNumbers = cms.vstring('passed_cumulative')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative')
+    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulative')
+  )
+
+    
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
