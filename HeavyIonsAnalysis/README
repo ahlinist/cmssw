@@ -1,5 +1,5 @@
 
- % README (1st version by David d'Enterria, dde@cern.ch)
+ % README (2nd version by Edward Wenger, edward.wenger@cern.ch)
 
   ----------------------------------------------------------------
 
@@ -13,52 +13,21 @@
   Creating an analysis area in the Heavy-Ions repository
   ------------------------------------------------------
 
-
-  To create a CVS area for yourself, do the following:
-
-    1) Create your package (here for an example "HeavyIonsCentrality" object,
-       please use a similar syntax for any new package name):
+  The correct way to create a new package is by using the form at:
   
-        (set your CVSROOT to point to the CMSSW CVS repository)
+  http://cmstags.cern.ch/cgi-bin/CmsTC/CreateNewPackage
 
-	source /afs/cern.ch/cms/sw/cmsset_default.csh
-	project CMSSW
-	scramv1 list | grep CMSSW_X_X
-	scramv1 project CMSSW CMSSW_X_X_X
-	cd CMSSW_X_X_X/src
-	eval `scramv1 runtime -csh` (or appropiate option if your shell is not `cshell`)
-
-        (start the package creation)
-
-        cvs co HeavyIonsAnalysis/README
-        mkdir HeavyIonsAnalysis/HeavyIonsCentrality
-        cd HeavyIonsAnalysis
-        cvs add HeavyIonsCentrality
-  
-      In general it is advisable to structure it like a normal CMSSW package,
-      i.e. with the same subdirectory structure. To do this, you can do:
-  
-         mkdir HeavyIonsCentrality/src HeavyIonsCentrality/interface
-         cvs add HeavyIonsCentrality/src HeavyIonsCentrality/interface
-         mkdir HeavyIonsCentrality/data HeavyIonsCentrality/test
-         cvs add HeavyIonsCentrality/data HeavyIonsCentrality/test
- 
-      If you do not think you need some of these subdirectories at the
-      moment, you simply do not 'mkdir' and 'cvs add' them.
- 
-    2) Then you can 'cd' into the "src" area of some scram working/developer
-       area and do:
-  
-         cvs co HeavyIonsAnalysis/HeavyIonsCentrality
-  
-      and begin to add your code and cfg files to the subdirectories. If you 
-      need a BuildFile, you can copy an example from a normal CMSSW package 
-      and edit it to serve your purposes: 
-      https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideBuildFile
-
-
-    3) If you intend for your code to go into CMSSW releases, ask please 
-       the CMS-HI conveners to request it via the Tag Collector.
-
+  If you intend for your code to go into CMSSW releases, please ask 
+  the CMS-HI conveners to request it via the Tag Collector.
 
   ----------------------------------------------------------------
+  ----------------------------------------------------------------
+
+
+  Creating a user area in the CMSSW repository
+  --------------------------------------------
+
+  There is an area called "UserCode" in the CMSSW repository where you can
+  create yourself a package to store your code and cfg files.
+  
+  To create such a package, follow the instructions in /UserCode/README
