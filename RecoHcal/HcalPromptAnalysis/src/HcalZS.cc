@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.3 2009/02/13 18:56:15 santanas Exp $
+// $Id: HcalZS.cc,v 1.4 2009/02/14 13:26:27 santanas Exp $
 //
 //
 
@@ -94,6 +94,7 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
 {
   //now do what ever initialization is needed
   NtotEvents = 0;
+  NtotDigis = 0;
 
   thresholdHB_ = iConfig.getUntrackedParameter < int > ("thresholdHB", 8);
   thresholdHE_ = iConfig.getUntrackedParameter < int > ("thresholdHE", 8);
@@ -172,6 +173,14 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 HcalDetId id = digi.id();
 	 bool agree = false;
 
+	 //cout << "HBHE digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 h_hbhe_US->Fill(digi.zsUnsuppressed());
+	 if(digi.zsUnsuppressed() != 1)
+	   continue;
+
+	 //count digis
+	 NtotDigis++;
+
 	 //just counting
 	 if (id.subdet() == 1){
 	   if (id.depth() == 1)
@@ -211,7 +220,9 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) !=  digi.zsMarkAndPass() )
 	       agree = true;
 	   }
-	 
+
+
+	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
 	 if ( agree == true ){
@@ -273,8 +284,14 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 HcalDetId id = digi.id();
 	 bool agree = false;
 
-	 ho_digiCounter[ int( id.ieta() - 41) ][ id.iphi() ]++;
+	 //cout << "HO digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 h_ho_US->Fill(digi.zsUnsuppressed());
+	 if(digi.zsUnsuppressed() != 1)
+	   continue;
 
+	 //count digis
+	 NtotDigis++;
+	 
 	 //just counting
 	 if (id.subdet() == 3) 
 	   h_ho_d4_all->Fill(id.ieta(),id.iphi());	 
@@ -289,6 +306,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	 if ( ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) != digi.zsMarkAndPass() )
 	   agree = true;
+
+	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
 	 if ( agree == true ) 
@@ -320,8 +339,14 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 const HFDataFrame digi = (const HFDataFrame)(*j);
 	 HcalDetId id = digi.id();
 	 bool agree = false;
-	
-	 hf_digiCounter[ int( id.ieta() - 41) ][ id.iphi() ]++;
+
+	 //cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 h_hf_US->Fill(digi.zsUnsuppressed());
+	 if(digi.zsUnsuppressed() != 1)
+	   continue;
+
+	 //count digis
+	 NtotDigis++;
 
 	 //just counting
 	 if (id.subdet() == 4){
@@ -341,6 +366,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //if( digi.zsMarkAndPass() )
 	   if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) != digi.zsMarkAndPass() )
 	     agree = true;
+
+	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
 	 if ( agree == true ){
@@ -391,6 +418,22 @@ void HcalZS::beginJob(const edm::EventSetup&)
   h_hfdigi_zsEmulation = HcalDir.make<TH1F>("h_hfdigi_zsEmulation",
 					    "h_hfdigi_zsEmulation",
 					    2, -0.5, 1.5);
+
+  //ZS global agree
+  h_ZSagree = HcalDir.make<TH1F>("h_ZSagree",
+				 "h_ZSagree",
+				 2, -0.5, 1.5);
+
+  //US
+  h_hbhe_US = HcalDir.make<TH1F>("h_hbhe_US",
+				 "h_hbhe_US",
+				 2, -0.5, 1.5);
+  h_ho_US = HcalDir.make<TH1F>("h_ho_US",
+			       "h_ho_US",
+			       2, -0.5, 1.5);
+  h_hf_US = HcalDir.make<TH1F>("h_hf_US",
+			       "h_hf_US",
+			       2, -0.5, 1.5);
 
   //M&P agreement
   h_hbhf_d1 = HcalDir.make<TH2F>("h_hcal_hbhfd1","HB HF Depth1",
@@ -474,9 +517,14 @@ void HcalZS::endJob() {
 
   cout << "########## SUMMARY OF THE M&P TEST ##########" << endl;
   float LIMITPREC = 1./float(NtotEvents);
+  float LIMITPRECALL = 1./float(NtotDigis);
 
   cout << "NtotEvents: " << NtotEvents << endl;
-  cout << "Limit precision for this test: " << LIMITPREC << endl;
+  cout << "NtotDigis: " << NtotDigis << endl;
+  cout << "Limit precision for this test on the single channel: " << LIMITPREC << endl;
+  cout << "Limit precision for this test (considering all the digi): " << LIMITPRECALL << endl;
+
+  /*
 
   //divide each bin for NtotEvents and final report
 
@@ -640,6 +688,8 @@ void HcalZS::endJob() {
   h_ho_d4->SetMinimum(LIMITPREC);
   h_ho_d4->GetZaxis()->SetLimits(LIMITPREC,1);
   h_ho_d4->GetZaxis()->SetRangeUser(LIMITPREC,1);
+
+  */
 
 }
 
