@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.18 2009/02/12 11:44:40 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.19 2009/02/13 11:09:07 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -902,7 +902,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       for (int n=0;n<mTempTreeNccjets;n++){
 
       	
-	  if((*ccjetHandle)[n].originalObjectRef() == (*jetHandle)[i].originalObjectRef()){
+	  if((*ccjetHandle)[n].originalObjectRef() == (*jetHandle)[k].originalObjectRef()){
 	    mTempTreeccJetAssoc[i] = true;
 	    mTempTreeccJetAssoc_E[i] = (*ccjetHandle)[n].energy();
 	    mTempTreeccJetAssoc_px[i] = (*ccjetHandle)[n].px();
@@ -1042,7 +1042,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
 
 
-
+   mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
+   mTempAlpPtScale = myALPGENParticleId.getPt();
+ 
 
  
   //set information of event is affected by b-bug
@@ -1543,7 +1545,8 @@ SusyDiJetAnalysis::initPlots() {
     mAllData->Branch("genEta",genEta,"genEta[genN]/float");
     mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
     
-
+    mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
+    mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");  
  
  
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
