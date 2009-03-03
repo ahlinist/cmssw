@@ -32,7 +32,7 @@ void OverlapHistos::Loop(int redEntries){
   // 
   time_t start,end;
   time (&start);
-
+  cout << "before get entries" << endl;
   Long64_t nentries = ( redEntries == -1) ? fChain->GetEntriesFast() : redEntries;
   cout << "Run on : " << nentries<<" entries\n";
   TDirectory* curDir = gDirectory;
@@ -63,29 +63,8 @@ void OverlapHistos::Loop(int redEntries){
   TH2F* widthVsAngle = new TH2F("widthVsAngle", "width vs angle", 75, -0.75, 0.75, 400, -0.2, 0.2);
   widthVsAngle->GetXaxis()->SetTitle("dx/dz");
   widthVsAngle->GetYaxis()->SetTitle("#Deltax_{hit}-#Deltax_{pred}");
-  TH1F* simRecHistoAll = new TH1F("simRecAll","simRec all",400,-2.0,2.0);
-  TH1F* simRecMomentum = new TH1F("simRecMom","simRec momentum",100,0,20.0);
-  TH2F* widthVsAngle_TOB1 = new TH2F("widthVsAngleTOB1", "width vs angle TOB1", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* widthVsAngle_TOB2 = new TH2F("widthVsAngleTOB2", "width vs angle TOB2", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* widthVsAngle_TOB3 = new TH2F("widthVsAngleTOB3", "width vs angle TOB3", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* widthVsAngle_TOB4 = new TH2F("widthVsAngleTOB4", "width vs angle TOB4", 75, -0.75, 0.75, 400, -0.2, 0.2);
-
-  TH2F* width2VsAngle_TOB1 = new TH2F("width2VsAngleTOB1", "width2 vs angle TOB1", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* width2VsAngle_TOB2 = new TH2F("width2VsAngleTOB2", "width2 vs angle TOB2", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* width2VsAngle_TOB3 = new TH2F("width2VsAngleTOB3", "width2 vs angle TOB3", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* width2VsAngle_TOB4 = new TH2F("width2VsAngleTOB4", "width2 vs angle TOB4", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* predErr2VsAngle_TOB1 = new TH2F("predErr2VsAngleTOB1", "predErr2 vs angle TOB1", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* predErr2VsAngle_TOB2 = new TH2F("predErr2VsAngleTOB2", "predErr2 vs angle TOB2", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* predErr2VsAngle_TOB3 = new TH2F("predErr2VsAngleTOB3", "predErr2 vs angle TOB3", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* predErr2VsAngle_TOB4 = new TH2F("predErr2VsAngleTOB4", "predErr2 vs angle TOB4", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* hitErr2VsAngle_TOB1 = new TH2F("hitErr2VsAngleTOB1", "hitErr2 vs angle TOB1", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* hitErr2VsAngle_TOB2 = new TH2F("hitErr2VsAngleTOB2", "hitErr2 vs angle TOB2", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* hitErr2VsAngle_TOB3 = new TH2F("hitErr2VsAngleTOB3", "hitErr2 vs angle TOB3", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* hitErr2VsAngle_TOB4 = new TH2F("hitErr2VsAngleTOB4", "hitErr2 vs angle TOB4", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* alphaVsAngle_TOB1 = new TH2F("alphaVsAngleTOB1", "alpha vs angle TOB1", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* alphaVsAngle_TOB2 = new TH2F("alphaVsAngleTOB2", "alpha vs angle TOB2", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* alphaVsAngle_TOB3 = new TH2F("alphaVsAngleTOB3", "alpha vs angle TOB3", 75, -0.75, 0.75, 400, -0.2, 0.2);
-  TH2F* alphaVsAngle_TOB4 = new TH2F("alphaVsAngleTOB4", "alpha vs angle TOB4", 75, -0.75, 0.75, 400, -0.2, 0.2);
+  //TH1F* simRecHistoAll = new TH1F("simRecAll","simRec all",400,-2.0,2.0);
+  //TH1F* imRecMomentum = new TH1F("simRecMom","simRec momentum",100,0,20.0);
   TH1F* deltaXPred = new TH1F("deltaXPred", "delta x predicted", 220, -1.1, 1.1);
   TH1F* doubleDiff = new TH1F("doubleDiff", "double difference", 220, -1.1, 1.1);
 
@@ -99,8 +78,6 @@ void OverlapHistos::Loop(int redEntries){
   // each overlap-pair vould have. This allows to look only at the entries for 
   // which the pair has enough entries
   //
-  TH1F *layerH = new TH1F("layerH","layerH",34,0.5,34.5);
-  TH1F *stereoH = new TH1F("stereoH","stereoH",2,-0.5,+1.5);
   std::map<DetIdPair, iiPair> overlapCounter;
   int ctr= 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -116,10 +93,9 @@ void OverlapHistos::Loop(int redEntries){
     if (!acceptStereo[stereo&1]) continue;
     DetIdPair idPair(min(detids[0],detids[1]),
 		     max(detids[0],detids[1]));
-    if (!checkAdjacent(idPair.first, idPair.second, path)) continue;
+    //if (!checkAdjacent(idPair.first, idPair.second, path)) continue;
     
-//     cout << "first pass "<<min(detids[0],detids[1])<<" "<<
-// 		     max(detids[0],detids[1])<<" \n";
+    //cout << "first pass "<<min(detids[0],detids[1])<<" "<< max(detids[0],detids[1])<<" \n";
     std::map<DetIdPair,iiPair>::iterator it = overlapCounter.find(idPair);
     if ( it==overlapCounter.end() ) {
       it = overlapCounter.insert(it, pair<DetIdPair,iiPair>(idPair, iiPair(0,0)));
@@ -139,19 +115,6 @@ void OverlapHistos::Loop(int redEntries){
 	ih!=overlapCounter.end(); ++ih ) {
     if (max((*ih).second.first, (*ih).second.second) > threshold) {
       ++ctr;
-//     decode((*ih).first.first,subdet,layer,part,stereo);
-//     cout << "Pair "<< n<<" : " << (*ih).first.first<< " ( ";
-//     printId((*ih).first.first);
-//     cout <<" ) " << (*ih).first.second << " ( ";
-//     printId((*ih).first.second);     
-// //     decode((*ih).first.second,subdet,layer,part,stereo);
-// //     cout <<" ) " << (*ih).first.second << " ( " << subdet << " " << layer << " " << stereo 
-//     cout << " ) "<<(*ih).second  << " " << resHistos->GetEntries() 
-// 	 << (resHistos->GetEntries()>threshold  ? " YES " : "     " )
-// 	 << endl;
-
-//     cout << "check "<<(*ih).first.first<<" "<<(*ih).first.second<<
-//     " " << (*ih).second.first<<" "<<(*ih).second.second<<endl;
     }
   }
   cout << "Overlaps identified (after cuts): " << ctr<<endl;
@@ -159,18 +122,17 @@ void OverlapHistos::Loop(int redEntries){
 
     // histogram pointers for this pair
     TH1* resHisto(0);
-    TH1* resHistoPlusX(0);
-    TH1* resHistoMinusX(0);
-    TH1* resHistoPlusY(0);
-    TH1* resHistoMinusY(0);
+    TH1* resHistoY(0);
     TH1* predErrHisto(0);
     TH1* predErrHistoFirst(0);
     TH1* predErrHistoSecond(0);
+    TH1* predErrHistoY(0);
     TH1* hitErrHisto(0);
     TH1* hitErrHistoFirst(0);
     TH1* hitErrHistoSecond(0);
-    TH1* simRecHisto(0);
-    TH1* simTrkHisto(0);
+    TH1* hitErrHistoY(0);
+    //TH1* simRecHisto(0);
+    //TH1* simTrkHisto(0);
     TH1* dxdzHisto(0);
     TH1* posHistos[3];
     TH1* posHistosLocal[2];
@@ -194,10 +156,6 @@ void OverlapHistos::Loop(int redEntries){
 
   detIdPairs_.reserve(allIndices.size());
   residualHistos_.reserve(allIndices.size());
-  residualHistosPlusX_.reserve(allIndices.size());  
-  residualHistosMinusX_.reserve(allIndices.size()); 
-  residualHistosPlusY_.reserve(allIndices.size());  
-  residualHistosMinusY_.reserve(allIndices.size()); 
   predErrHistos_.reserve(allIndices.size());
   predErrHistosFirst_.reserve(allIndices.size());
   predErrHistosSecond_.reserve(allIndices.size());
@@ -243,17 +201,9 @@ void OverlapHistos::Loop(int redEntries){
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
-//     cout << "test "<<min(detids[0],detids[1])<<" "<<
-// 		     max(detids[0],detids[1])<<" ";
-    if (!cut()) continue;//{cout <<" cut\n";continue;}
-
-    //
-    widthVsAngle->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-   //(dx/dz, deltaHit-deltaPred)
-    deltaXPred->Fill(predX[0] + relSignX*predX[1]);
-    doubleDiff->Fill((hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-    pahtH->Fill(path);
-  
+    //cout << "test "<<min(detids[0],detids[1])<<" "<< max(detids[0],detids[1])<<" ";
+     if (!cut()) continue;//{cout <<" cut\n";continue;}
+    
     id = detids[0];
     decode(id,subdet,layer,part,stereo);
     // sequential layer number in TIB & TOB (for debugging)
@@ -264,21 +214,21 @@ void OverlapHistos::Loop(int redEntries){
     else if ( subdet==5 && layer>0 && layer<7 ) {
       k = layer + 4;
     }
-    
-    if(k==5)  widthVsAngle_TOB1->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-    
-    if(k==6)  widthVsAngle_TOB2->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-    
-    if(k==7)  widthVsAngle_TOB3->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-    
-    if(k==8)  widthVsAngle_TOB4->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
-    
 
+    //select layers here if desired
+    //if (!(k==9||k==10)) continue;
+
+    //
+    widthVsAngle->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
+    deltaXPred->Fill(predX[0] + relSignX*predX[1]);
+    doubleDiff->Fill((hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
+    pahtH->Fill(path);
+  
     // (ordered) DetId pair
     DetIdPair idPair(min(detids[0],detids[1]),
 		     max(detids[0],detids[1]));
 
-    if (!checkAdjacent(idPair.first, idPair.second, path)) continue;//{ cout <<"adj\n";continue;}
+    //if (!checkAdjacent(idPair.first, idPair.second, path)) continue;//{ cout <<"adj\n";continue;}
 
     std::map<DetIdPair, iiPair>::iterator it2 = overlapCounter.find(idPair);
 
@@ -303,133 +253,127 @@ void OverlapHistos::Loop(int redEntries){
       overlapIds_[0] = idPair.first;
       overlapIds_[1] = idPair.second;
       rootTree_->Fill();
-
+      
       char hn[32];
       hDir->cd();
-//       cout << "idPair "<<ind<<endl;
-      // create histograms for reverse / normal order of DetIds
-	resDir->cd();
-	sprintf(hn,"rh%4.4d",ind);
-	resHisto = new TH1F(hn,hn,200,-0.2,0.2);
-	residualHistos_.push_back(resHisto);
-	sprintf(hn,"rplusXh%4.4d",ind);
-	resHistoPlusX = new TH1F(hn,hn,200,-0.2,0.2);
-	residualHistosPlusX_.push_back(resHistoPlusX);
-	sprintf(hn,"rminusXh%4.4d",ind);
-	resHistoMinusX = new TH1F(hn,hn,200,-0.2,0.2);
-	residualHistosMinusX_.push_back(resHistoMinusX);
-	sprintf(hn,"rplusYh%4.4d",ind);
-	resHistoPlusY = new TH1F(hn,hn,200,-0.2,0.2);
-	residualHistosPlusY_.push_back(resHistoPlusY);
-	sprintf(hn,"rminusYh%4.4d",ind);
-	resHistoMinusY = new TH1F(hn,hn,200,-0.2,0.2);
-	residualHistosMinusY_.push_back(resHistoMinusY);
-	predDir->cd();
-	sprintf(hn,"pSig%4.4d",ind);
-	predErrHisto = new TH1F(hn,hn,100,0,0.01);
-	predErrHistos_.push_back(predErrHisto);
-	sprintf(hn,"pSigFirst%4.4d",ind);
-	predErrHistoFirst = new TH1F(hn,hn,100,0,0.01);
-	predErrHistosFirst_.push_back(predErrHistoFirst);
-	sprintf(hn,"pSigSecond%4.4d",ind);
-	predErrHistoSecond = new TH1F(hn,hn,100,0,0.01);
-	predErrHistosSecond_.push_back(predErrHistoSecond);
-	hitDir->cd();
-	sprintf(hn,"hSig%4.4d",ind);
-	hitErrHisto = new TH1F(hn,hn,100,0,0.05);
-	hitErrHistos_.push_back(hitErrHisto);
-	sprintf(hn,"hSigFirst%4.4d",ind);
-	hitErrHistoFirst = new TH1F(hn,hn,100,0,0.01);
-	hitErrHistosFirst_.push_back(hitErrHistoFirst);
-	sprintf(hn,"hSigSecond%4.4d",ind);
-	hitErrHistoSecond = new TH1F(hn,hn,100,0,0.01);
-	hitErrHistosSecond_.push_back(hitErrHistoSecond);
-	hDir->cd();
+      resDir->cd();
+      sprintf(hn,"rh%4.4d",ind);
+      resHisto = new TH1F(hn,hn,200,-0.2,0.2);
+      residualHistos_.push_back(resHisto);
+      sprintf(hn,"rhY%4.4d",ind);
+      resHistoY = new TH1F(hn,hn,200,-0.2,0.2);
+      residualHistosY_.push_back(resHistoY);
+      predDir->cd();
+      sprintf(hn,"pSig%4.4d",ind);
+      predErrHisto = new TH1F(hn,hn,100,0,0.01);
+      predErrHistos_.push_back(predErrHisto);
+      sprintf(hn,"pSigFirst%4.4d",ind);
+      predErrHistoFirst = new TH1F(hn,hn,100,0,0.05);
+      predErrHistosFirst_.push_back(predErrHistoFirst);
+      sprintf(hn,"pSigSecond%4.4d",ind);
+      predErrHistoSecond = new TH1F(hn,hn,100,0,0.05);
+      predErrHistosSecond_.push_back(predErrHistoSecond);
+      sprintf(hn,"pSigY%4.4d",ind);
+      predErrHistoY = new TH1F(hn,hn,100,0,0.01);
+      predErrHistosY_.push_back(predErrHistoY);
+      hitDir->cd();
+      sprintf(hn,"hSig%4.4d",ind);
+      hitErrHisto = new TH1F(hn,hn,100,0,0.05);
+      hitErrHistos_.push_back(hitErrHisto);
+      sprintf(hn,"hSigFirst%4.4d",ind);
+      hitErrHistoFirst = new TH1F(hn,hn,100,0,0.05);
+      hitErrHistosFirst_.push_back(hitErrHistoFirst);
+      sprintf(hn,"hSigSecond%4.4d",ind);
+      hitErrHistoSecond = new TH1F(hn,hn,100,0,0.05);
+      hitErrHistosSecond_.push_back(hitErrHistoSecond);
+      sprintf(hn,"hSigY%4.4d",ind);
+      hitErrHistoY = new TH1F(hn,hn,100,0,0.05);
+      hitErrHistosY_.push_back(hitErrHistoY);
+      hDir->cd();
 // 	sprintf(hn,"simrec%4.4d",ind);
 // 	simRecHisto = new TH1F(hn,hn,400,-0.2,0.2);
 // 	simRecHistos_.push_back(simRecHisto);                        
 // 	sprintf(hn,"simtrk%4.4d",ind);
 // 	simTrkHisto = new TH1F(hn,hn,400,-0.2,0.2);
 // 	simTrkHistos_.push_back(simTrkHisto);   
-	sprintf(hn,"hDxdz%4.4d",ind);
-	dxdzHisto = new TH1F(hn,hn,100,-2.,2.);
-	dxdzHistos_.push_back(dxdzHisto);
-	posDir->cd();
-	sprintf(hn,"rad%4.4d",ind);
-	posHistos[0] = new TH1F(hn,hn,110,0,110.);
-	radHistos_.push_back(posHistos[0]);
-	sprintf(hn,"phi%4.4d",ind);
-	posHistos[1] = new TH1F(hn,hn,100,-TMath::Pi(),TMath::Pi());
-	phiHistos_.push_back(posHistos[1]);
-	sprintf(hn,"z%4.4d",ind);
-	posHistos[2] = new TH1F(hn,hn,135,-270,270);
-	zHistos_.push_back(posHistos[2]);
-	sprintf(hn,"x%4.4d",ind);
-	posHistosLocal[0] = new TH1F(hn,hn,200,-10,10);
-	xHistos_.push_back(posHistosLocal[0]);
-	sprintf(hn,"y%4.4d",ind);
-	posHistosLocal[1] = new TH1F(hn,hn,200,-10,10);
-	yHistos_.push_back(posHistosLocal[1]);
-	pullDir->cd();
-	sprintf(hn,"doublePull%4.4d",ind);
-	doublePullHisto = new TH1F(hn,hn,150,-15.,15.);
-	doublePullHistos_.push_back(doublePullHisto);
-	sprintf(hn,"hitPull%4.4d",ind);
-	hitPullHisto = new TH1F(hn,hn,150,-15.,15.);
-	hitPullHistos_.push_back(hitPullHisto);
-	sprintf(hn,"predPull%4.4d",ind);
-	predPullHisto = new TH1F(hn,hn,150,-15.,15.);
-	predPullHistos_.push_back(predPullHisto);
+      sprintf(hn,"hDxdz%4.4d",ind);
+      dxdzHisto = new TH1F(hn,hn,100,-2.,2.);
+      dxdzHistos_.push_back(dxdzHisto);
+      posDir->cd();
+      sprintf(hn,"rad%4.4d",ind);
+      posHistos[0] = new TH1F(hn,hn,110,0,110.);
+      radHistos_.push_back(posHistos[0]);
+      sprintf(hn,"phi%4.4d",ind);
+      posHistos[1] = new TH1F(hn,hn,100,-TMath::Pi(),TMath::Pi());
+      phiHistos_.push_back(posHistos[1]);
+      sprintf(hn,"z%4.4d",ind);
+      posHistos[2] = new TH1F(hn,hn,135,-270,270);
+      zHistos_.push_back(posHistos[2]);
+      sprintf(hn,"x%4.4d",ind);
+      posHistosLocal[0] = new TH1F(hn,hn,200,-10,10);
+      xHistos_.push_back(posHistosLocal[0]);
+      sprintf(hn,"y%4.4d",ind);
+      posHistosLocal[1] = new TH1F(hn,hn,200,-10,10);
+      yHistos_.push_back(posHistosLocal[1]);
+      pullDir->cd();
+      sprintf(hn,"doublePull%4.4d",ind);
+      doublePullHisto = new TH1F(hn,hn,150,-15.,15.);
+      doublePullHistos_.push_back(doublePullHisto);
+      sprintf(hn,"hitPull%4.4d",ind);
+      hitPullHisto = new TH1F(hn,hn,150,-15.,15.);
+      hitPullHistos_.push_back(hitPullHisto);
+      sprintf(hn,"predPull%4.4d",ind);
+      predPullHisto = new TH1F(hn,hn,150,-15.,15.);
+      predPullHistos_.push_back(predPullHisto);
 #ifdef HISTOS2D
-	corrDir->cd();
-	sprintf(hn,"resVsAngle%4.4d",ind);
-	resVsAngle = new TH2F(hn,hn, 75, -0.75, 0.75, 100, -0.2, 0.2);
-	resVsAngleHistos_.push_back(resVsAngle);
-	sprintf(hn,"ddVsLocalX%4.4d",ind);
-	ddVsLocalX = new TH2F(hn,hn, 100, -5, 5, 100, -0.2, 0.2);
-	ddVsLocalXHistos_.push_back(ddVsLocalX);
-	sprintf(hn,"ddVsLocalY%4.4d",ind);
-	ddVsLocalY = new TH2F(hn,hn, 100, -10, 10, 100, -0.2, 0.2);
-	ddVsLocalYHistos_.push_back(ddVsLocalY);
-	sprintf(hn,"ddVsDxdz%4.4d",ind);
-	ddVsDxdz = new TH2F(hn,hn, 100, -1, 1, 100, -0.2, 0.2);
-	ddVsDxdzHistos_.push_back(ddVsDxdz);
-	sprintf(hn,"ddVsDydz%4.4d",ind);
-	ddVsDydz = new TH2F(hn,hn, 100, -1, 1, 100, -0.2, 0.2);
-	ddVsDydzHistos_.push_back(ddVsDydz);
-	if (allPlots){
-	  sprintf(hn,"localXVsLocalY%4.4d",ind);
-	  localXVsLocalY = new TH2F(hn,hn, 50, -5, 5, 50, -10, 10);
-	  localXVsLocalYHistos_.push_back(localXVsLocalY);
-	  sprintf(hn,"dxdzVsDydz%4.4d",ind);
-	  dxdzVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -1, 1);
-	  dxdzVsDydzHistos_.push_back(dxdzVsDydz);
-	  sprintf(hn,"localXVsDxdz%4.4d",ind);
-	  localXVsDxdz = new TH2F(hn,hn, 50, -1, 1, 50, -5, 5);
-	  localXVsDxdzHistos_.push_back(localXVsDxdz);
-	  sprintf(hn,"localYVsDxdz%4.4d",ind);
-	  localYVsDxdz = new TH2F(hn,hn, 50, -1, 1, 50, -10, 10);
-	  localYVsDxdzHistos_.push_back(localYVsDxdz);
-	  sprintf(hn,"localXVsDydz%4.4d",ind);
-	  localXVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -5, 5);
-	  localXVsDydzHistos_.push_back(localXVsDydz);
-	  sprintf(hn,"localYVsDydz%4.4d",ind);
-	  localYVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -10, 10);
-	  localYVsDydzHistos_.push_back(localYVsDydz);
-	  sprintf(hn,"dPreddSimVsdHitdSim%4.4d",ind);
-	  dPreddSimVsdHitdSim = new TH2F(hn,hn, 40, -0.02, 0.02, 40, -0.02, 0.02);
-	  dPreddSimVsdHitdSimHistos_.push_back(dPreddSimVsdHitdSim);
-	}
-	localY_.push_back(vector<double>());
-	localYE_.push_back(vector<double>());
-	dd_.push_back(vector<double>());
-	ddE_.push_back(vector<double>());
-	dxdz_.push_back(vector<double>());
-	dxdzE_.push_back(vector<double>());
-	
+      corrDir->cd();
+      sprintf(hn,"resVsAngle%4.4d",ind);
+      resVsAngle = new TH2F(hn,hn, 75, -0.75, 0.75, 100, -0.2, 0.2);
+      resVsAngleHistos_.push_back(resVsAngle);
+      sprintf(hn,"ddVsLocalX%4.4d",ind);
+      ddVsLocalX = new TH2F(hn,hn, 100, -5, 5, 100, -0.2, 0.2);
+      ddVsLocalXHistos_.push_back(ddVsLocalX);
+      sprintf(hn,"ddVsLocalY%4.4d",ind);
+      ddVsLocalY = new TH2F(hn,hn, 100, -10, 10, 100, -0.2, 0.2);
+      ddVsLocalYHistos_.push_back(ddVsLocalY);
+      sprintf(hn,"ddVsDxdz%4.4d",ind);
+      ddVsDxdz = new TH2F(hn,hn, 100, -1, 1, 100, -0.2, 0.2);
+      ddVsDxdzHistos_.push_back(ddVsDxdz);
+      sprintf(hn,"ddVsDydz%4.4d",ind);
+      ddVsDydz = new TH2F(hn,hn, 100, -1, 1, 100, -0.2, 0.2);
+      ddVsDydzHistos_.push_back(ddVsDydz);
+      if (allPlots){
+	sprintf(hn,"localXVsLocalY%4.4d",ind);
+	localXVsLocalY = new TH2F(hn,hn, 50, -5, 5, 50, -10, 10);
+	localXVsLocalYHistos_.push_back(localXVsLocalY);
+	sprintf(hn,"dxdzVsDydz%4.4d",ind);
+	dxdzVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -1, 1);
+	dxdzVsDydzHistos_.push_back(dxdzVsDydz);
+	sprintf(hn,"localXVsDxdz%4.4d",ind);
+	localXVsDxdz = new TH2F(hn,hn, 50, -1, 1, 50, -5, 5);
+	localXVsDxdzHistos_.push_back(localXVsDxdz);
+	sprintf(hn,"localYVsDxdz%4.4d",ind);
+	localYVsDxdz = new TH2F(hn,hn, 50, -1, 1, 50, -10, 10);
+	localYVsDxdzHistos_.push_back(localYVsDxdz);
+	sprintf(hn,"localXVsDydz%4.4d",ind);
+	localXVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -5, 5);
+	localXVsDydzHistos_.push_back(localXVsDydz);
+	sprintf(hn,"localYVsDydz%4.4d",ind);
+	localYVsDydz = new TH2F(hn,hn, 50, -1, 1, 50, -10, 10);
+	localYVsDydzHistos_.push_back(localYVsDydz);
+	sprintf(hn,"dPreddSimVsdHitdSim%4.4d",ind);
+	dPreddSimVsdHitdSim = new TH2F(hn,hn, 40, -0.02, 0.02, 40, -0.02, 0.02);
+	dPreddSimVsdHitdSimHistos_.push_back(dPreddSimVsdHitdSim);
+      }
+      localY_.push_back(vector<double>());
+      localYE_.push_back(vector<double>());
+      dd_.push_back(vector<double>());
+      ddE_.push_back(vector<double>());
+      dxdz_.push_back(vector<double>());
+      dxdzE_.push_back(vector<double>());
+      
 #endif
       curDir->cd();
-//cout << "Bookedok\n";
     }
     else {
       //
@@ -440,16 +384,15 @@ void OverlapHistos::Loop(int redEntries){
     // normal / reverse order?
     // histogram pointers
     resHisto = residualHistos_[ind];
-    resHistoPlusX = residualHistosPlusX_[ind];
-    resHistoMinusX = residualHistosMinusX_[ind];
-    resHistoPlusY = residualHistosPlusY_[ind];
-    resHistoMinusY = residualHistosMinusY_[ind];
+    resHistoY = residualHistosY_[ind];
     predErrHisto = predErrHistos_[ind];
     predErrHistoFirst = predErrHistosFirst_[ind];
     predErrHistoSecond = predErrHistosSecond_[ind];
+    predErrHistoY = predErrHistosY_[ind];
     hitErrHisto = hitErrHistos_[ind];
     hitErrHistoFirst = hitErrHistosFirst_[ind];
     hitErrHistoSecond = hitErrHistosSecond_[ind];
+    hitErrHistoY = hitErrHistosY_[ind];
 //     simRecHisto = simRecHistos_[ind];
 //     simTrkHisto = simTrkHistos_[ind];
     dxdzHisto = dxdzHistos_[ind];
@@ -466,6 +409,8 @@ void OverlapHistos::Loop(int redEntries){
     // local x difference / sum for predicted states
     double deltaPred = predX[0] + relSignX*predX[1];
     double deltaSim = simX[0] + relSignX*simX[1];
+    double deltaHitY = hitY[0] + relSignY*hitY[1];
+    double deltaPredY = predY[0] + relSignY*predY[1];
 #ifdef HISTOS2D
     resVsAngle = resVsAngleHistos_[ind];
     ddVsLocalX = ddVsLocalXHistos_[ind];
@@ -484,19 +429,15 @@ void OverlapHistos::Loop(int redEntries){
 #endif
     // fill histograms
     resHisto->Fill(deltaHit-deltaPred);
-      if (predX[0]>0) resHistoPlusX->Fill(deltaHit-deltaPred);
-      if (predX[0]<0) resHistoMinusX->Fill(deltaHit-deltaPred);
-      if (predY[0]>0) resHistoPlusY->Fill(deltaHit-deltaPred);
-      if (predY[0]<0) resHistoMinusY->Fill(deltaHit-deltaPred);
-    //fold in spread in central value to the error here. (syst)
-    //    double predEDeltaXSys = predHisto->getRMS();
-    //    double predEDeltaXTot = sqrt(predEDeltaX*predEDeltaX+predEDeltaXSys*predEDeltaXSys);
+    resHistoY->Fill(deltaHitY-deltaPredY);
     predErrHisto->Fill(predEDeltaX);
     predErrHistoFirst->Fill(predEX[0]);
     predErrHistoSecond->Fill(predEX[1]);
-    hitErrHisto->Fill(sqrt(hitEX[0]*hitEX[0]+hitEX[1]*hitEX[1]));
+    predErrHistoY->Fill(predEDeltaY);
+    hitErrHisto->Fill(sqrt((hitEX[0]*hitEX[0])+(hitEX[1]*hitEX[1])));
     hitErrHistoFirst->Fill(hitEX[0]);
     hitErrHistoSecond->Fill(hitEX[1]);
+    hitErrHistoY->Fill(sqrt((hitEY[0]*hitEY[0])+(hitEY[1]*hitEY[1])));
 //     if(simX[0]>-90 && simX[1]>-90){
 //       //      if( fabs(deltaSim-deltaHit) < 0.04 ) {
 //       simRecHisto->Fill(deltaSim-deltaHit);
@@ -573,6 +514,10 @@ void OverlapHistos::Loop(int redEntries){
   TH1* predErrMeansSecond = new TH1F(hn,hn,n,-0.5,n-0.5);
   predErrMeansSecond->GetXaxis()->SetTitle("module pair index");
   predErrMeansSecond->GetYaxis()->SetTitle("<#sigma(x_{pred2}> [#mum]");
+  sprintf(hn,"sigMeanY");
+  TH1* predErrMeansY = new TH1F(hn,hn,n,-0.5,n-0.5);
+  predErrMeansY->GetXaxis()->SetTitle("module pair index");
+  predErrMeansY->GetYaxis()->SetTitle("<#sigma(#Deltax_{pred}> [#mum]");
   sprintf(hn,"simRec");
   TH1* simRec = new TH1F(hn,hn,n,-0.5,n-0.5);
   simRec->GetXaxis()->SetTitle("module pair index");
@@ -585,19 +530,16 @@ void OverlapHistos::Loop(int redEntries){
   TH1* meanDiffs = new TH1F(hn,hn,n,-0.5,n-0.5);
   meanDiffs->GetXaxis()->SetTitle("module pair index");
   meanDiffs->GetYaxis()->SetTitle("<#Deltax_{hit}-#Deltax_{pred}> [#mum]");
-  sprintf(hn,"meanPlus");
-  TH1* meanDiffsPlus = new TH1F(hn,hn,n,-0.5,n-0.5);
-  meanDiffsPlus->GetXaxis()->SetTitle("module pair index");
-  meanDiffsPlus->GetYaxis()->SetTitle("fitted mean #Deltax_{hit}-#Deltax_{pred} y>0[#mum]");
-  sprintf(hn,"meanMinus");
-  TH1* meanDiffsMinus = new TH1F(hn,hn,n,-0.5,n-0.5);
-  meanDiffsMinus->GetXaxis()->SetTitle("module pair index");
-  meanDiffsMinus->GetYaxis()->SetTitle("fitted mean #Deltax_{hit}-#Deltax_{pred} y<0[#mum]");
   sprintf(hn,"width");
   TH1* sigmaDiffs = new TH1F(hn,hn,n,-0.5,n-0.5);
   sigmaDiffs->GetXaxis()->SetTitle("module pair index");
   sigmaDiffs->GetYaxis()->SetTitle("fitted width #Deltax_{hit}-#Deltax_{pred} [#mum]");
+  sprintf(hn,"widthY");
+  TH1* sigmaDiffsY = new TH1F(hn,hn,n,-0.5,n-0.5);
+  sigmaDiffsY->GetXaxis()->SetTitle("module pair index");
+  sigmaDiffsY->GetYaxis()->SetTitle("fitted width #Deltax_{hit}-#Deltax_{pred} [#mum]");
   TH1* hitErrMeans = new TH1F("hitSigX","hitSigX",n,-0.5,n-0.5);
+  TH1* hitErrMeansY = new TH1F("hitSigY","hitSigY",n,-0.5,n-0.5);
   TH1* dxdzMeans = new TH1F("dxdz","dxdz",n,-0.5,n-0.5);
   TH1* layerHisto = new TH1F("layer","layer",n,-0.5,n-0.5);
   TH1* stereoHisto = new TH1F("stereo","stereo",n,-0.5,n-0.5);
@@ -611,6 +553,7 @@ void OverlapHistos::Loop(int redEntries){
   TH1* hitPulls = new TH1F("hitPull","hitPull",n,-0.5,n-0.5);
   TH1* predPulls = new TH1F("predPull","predPull",n,-0.5,n-0.5);
   hitErrMeans->GetYaxis()->SetTitle("#sigma(#Deltax_{hit}) [#mum]");
+  hitErrMeansY->GetYaxis()->SetTitle("#sigma(#Deltay_{hit}) [#mum]");
   dxdzMeans->GetYaxis()->SetTitle("Local dx/dz");
   layerHisto->GetYaxis()->SetTitle("Layer");
   stereoHisto->GetYaxis()->SetTitle("Stereo");
@@ -656,16 +599,15 @@ void OverlapHistos::Loop(int redEntries){
       // Choose DetId order with more entries and retrieve histogram pointers
     //
     resHisto = residualHistos_[i];
-      resHistoPlusX = residualHistosPlusX_[i];
-      resHistoMinusX = residualHistosMinusX_[i];
-      resHistoPlusY = residualHistosPlusY_[i];
-      resHistoMinusY = residualHistosMinusY_[i];
+    resHistoY = residualHistosY_[i];
     predErrHisto = predErrHistos_[i];
     predErrHistoFirst = predErrHistosFirst_[i];
     predErrHistoSecond = predErrHistosSecond_[i];
+    predErrHistoY = predErrHistosY_[i];
 //     simRecHisto = simRecHistos_[i];
 //     simTrkHisto = simTrkHistos_[i];
     hitErrHisto = hitErrHistos_[i];
+    hitErrHistoY = hitErrHistosY_[i];
     dxdzHisto = dxdzHistos_[i];
     posHistos[0] = radHistos_[i];
     posHistos[1] = phiHistos_[i];
@@ -681,15 +623,6 @@ void OverlapHistos::Loop(int redEntries){
     ddVsDxdz = ddVsDxdzHistos_[i];
     ddVsDydz = ddVsDydzHistos_[i];
 #endif
-//     std::cout << "det IDs: " << detIdPairs_[i].first << " "
-//	      << detIdPairs_[i].second << " ";
-//     std::cout << resHisto->GetName() << " " << resHisto->GetEntries() << " ";
-//     if ( resHisto->GetEntries()>0 )
-//       std::cout << (resHisto->GetBinContent(0)+resHisto->GetBinContent(201))/
-// 	resHisto->GetEntries() << " ";
-//     else
-//       std::cout << "0 ";
-//     std::cout << std::endl;
 
     unsigned int subdet;
     unsigned int layer;
@@ -724,9 +657,6 @@ void OverlapHistos::Loop(int redEntries){
       hDir->cd();
 
       // Do this only if <10% of the hits are inside the area
-//       cout << resHisto->GetBinContent(0) <<" "<<resHisto->GetBinContent(resHisto->GetNbinsX()+1) <<" "<<resHisto->GetEntries() <<" "<<
-// ( (resHisto->GetBinContent(0)+resHisto->GetBinContent(resHisto->GetNbinsX()+1)) / resHisto->GetEntries())
-// <<endl;
       if (( (resHisto->GetBinContent(0)+resHisto->GetBinContent(resHisto->GetNbinsX()+1)) / resHisto->GetEntries()) < 0.1) {
 
 #ifdef HISTOS2D
@@ -745,26 +675,14 @@ void OverlapHistos::Loop(int redEntries){
 	curDir->cd();
 	// Gaussian fit to double-difference
 	//
-	//resHisto->Fit("gaus","Q0R","",resHisto->GetMean()-0.025,resHisto->GetMean()+0.025);
 	resHisto->Fit("gaus","Q0R","",resHisto->GetMean()-3*resHisto->GetRMS(),resHisto->GetMean()+3*resHisto->GetRMS());
 	//gStyle->SetOptFit(1011);
 	//resHisto->Fit("gaus","LQ0R");
 	resHisto->GetFunction("gaus")->ResetBit(kNotDraw);
-	//cout << "for index " << i << " chisq is " << resHisto->GetFunction("gaus")->GetChisquare() << "  RMS is " << resHisto->GetRMS() << "  fit sigma is " << resHisto->GetFunction("gaus")->GetParameter(2)  << endl;
 	double mDiff = resHisto->GetFunction("gaus")->GetParameter(1);
 	double emDiff = resHisto->GetFunction("gaus")->GetParError(1);
 	meanDiffs->SetBinContent(i+1,10000*mDiff);
 	meanDiffs->SetBinError(i+1,10000*emDiff);
-	if( predY[0] > 0) { //need to sort out if predY>0 before the overlap summary
-	  //cout << "positive: predY = " << predY[0] << endl;
-	  meanDiffsPlus->SetBinContent(i+1,10000*mDiff);
-	  meanDiffsPlus->SetBinError(i+1,10000*emDiff);
-	}
-	if( predY[0] < 0) {
-	  //cout << "negative: predY = " << predY[0] << endl;
-	  meanDiffsMinus->SetBinContent(i+1,10000*mDiff);
-	  meanDiffsMinus->SetBinError(i+1,10000*emDiff);
-	}
 	double sDiff = resHisto->GetFunction("gaus")->GetParameter(2);
 	double esDiff = resHisto->GetFunction("gaus")->GetParError(2);
 	sigmaDiffs->SetBinContent(i+1,10000*sDiff);
@@ -773,16 +691,25 @@ void OverlapHistos::Loop(int redEntries){
         cout << "Overflow/underflow problem with overlap ID "<<i<<endl;
 	cout << "DD summary plots will not be filled\n";
       }
+      resHistoY->Fit("gaus","Q0R","",resHistoY->GetMean()-3*resHistoY->GetRMS(),resHistoY->GetMean()+3*resHistoY->GetRMS());
+      //resHistoY->Fit("gaus","Q0RL");
+      double sDiffY = resHistoY->GetFunction("gaus")->GetParameter(2);
+      double esDiffY = resHistoY->GetFunction("gaus")->GetParError(2);
+      sigmaDiffsY->SetBinContent(i+1,10000*sDiffY);
+      sigmaDiffsY->SetBinError(i+1,10000*esDiffY);
       // predicted error // fold in some uncertainty from the spread (systematic)
-      fillMean(i+1,predErrMeans,predErrHisto,10000.);
-      // fillMeanWithSyst(i+1,predErrMeans,predErrHisto,predErrHistoFirst,10000.);
+      //fillMean(i+1,predErrMeans,predErrHisto,10000.);
+      fillMeanWithSyst(i+1,predErrMeans,predErrHisto,predErrHistoFirst,10000.);
       //predicted error for each overlap module individually
       fillMean(i+1,predErrMeansFirst,predErrHistoFirst,10000.);
       fillMean(i+1,predErrMeansSecond,predErrHistoSecond,10000.);
+      fillMeanWithSyst(i+1,predErrMeansY,predErrHistoY,predErrHistoFirst,10000.);
 //       fillWidth(i+1,simRec,simRecHisto,10000);
 //       fillWidth(i+1,simTrk,simTrkHisto,10000);
       // hit error
+      // could use a gaussian fit and uncertainty to avoid counting the tails
       fillMean(i+1,hitErrMeans,hitErrHisto,10000.);
+      fillMean(i+1,hitErrMeansY,hitErrHistoY,10000.);
       // local dxdz
       fillMean(i+1,dxdzMeans,dxdzHisto);
       // double pull
@@ -790,66 +717,24 @@ void OverlapHistos::Loop(int redEntries){
       // hit pull
       fillWidth(i+1,hitPulls,hitPullHisto,1.);
       // pred pull
-//       fillWidth(i+1,predPulls,predPullHisto,1.);
+      //       fillWidth(i+1,predPulls,predPullHisto,1.);
       predPulls->SetBinContent(i+1,predPullHisto->GetRMS());
-
+      
       //print out to check the ordering of the index within each layer
-//             std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
+      //             std::cout << "Index: " << i << "   Layer: " << k << "   Phi: " << posHistos[1]->GetMean() << "   r: " << posHistos[0]->GetMean() << "   z: " << posHistos[2]->GetMean() << "  dx/dz: " << dxdzHisto->GetMean() << "   detID = " << detIdPairs_[i].first << " and " << detIdPairs_[i].second << std::endl;
       //    std::cout << " geographical ID: " << id << std::endl;
-
-//       predErrMeans->SetBinContent(i+1,predErrHisto->GetMean());
-//       predErrMeans->SetBinError(i+1,predErrHisto->GetRMS()/predErrHisto->Integral());
-//       hitErrMeans->SetBinContent(i+1,hitErrHisto->GetMean());
-//       hitErrMeans->SetBinError(i+1,hitErrHisto->GetRMS()/hitErrHisto->Integral());
-//       double pred2Mean = predErrHisto->GetMean();
-//       double pred2Sigma = predErrHisto->GetRMS()/sqrt(predErrHisto->Integral());
-//       double sum2Mean = resHisto->GetFunction("gaus")->GetParameter(2);
-//       double sum2Sigma = 2*sum2Mean*resHisto->GetFunction("gaus")->GetParError(2);
-//       sum2Mean *= sum2Mean;
-//       double diffMean = sum2Mean - pred2Mean;
-//       diffMean = diffMean>0 ? sqrt(diffMean) : -sqrt(-diffMean);
-//       double diffSigma = sqrt(sum2Sigma*sum2Sigma+pred2Sigma*pred2Sigma)/2./fabs(diffMean);
-//       predErrMeans->SetBinContent(i+1,diffMean);
-//       predErrMeans->SetBinError(i+1,diffSigma);
-
-//       if(k==5)   { width2VsAngle_TOB1->Fill(dxdzHisto->GetMean(),sDiff*sDiff);
-// 	predErr2VsAngle_TOB1->Fill(dxdzHisto->GetMean(),predErrHisto->GetMean()*predErrHisto->GetMean());
-//       hitErr2VsAngle_TOB1->Fill(dxdzHisto->GetMean(),hitErrHisto->GetMean()*hitErrHisto->GetMean());
-//       alphaVsAngle_TOB1->Fill(dxdzHisto->GetMean(),sqrt((sDiff*sDiff-predErrHisto->GetMean()*predErrHisto->GetMean())/hitErrHisto->GetMean()*hitErrHisto->GetMean()));
-//     }
-//       if(k==6)   { width2VsAngle_TOB2->Fill(dxdzHisto->GetMean(),sDiff*sDiff);
-// 	predErr2VsAngle_TOB2->Fill(dxdzHisto->GetMean(),predErrHisto->GetMean()*predErrHisto->GetMean());
-//       hitErr2VsAngle_TOB2->Fill(dxdzHisto->GetMean(),hitErrHisto->GetMean()*hitErrHisto->GetMean());
-//       alphaVsAngle_TOB2->Fill(dxdzHisto->GetMean(),sqrt((sDiff*sDiff-predErrHisto->GetMean()*predErrHisto->GetMean())/hitErrHisto->GetMean()*hitErrHisto->GetMean()));
-//     }
-//       if(k==7)   { width2VsAngle_TOB3->Fill(dxdzHisto->GetMean(),sDiff*sDiff);
-// 	predErr2VsAngle_TOB3->Fill(dxdzHisto->GetMean()*dxdzHisto->GetMean(),predErrHisto->GetMean()*predErrHisto->GetMean());
-//       hitErr2VsAngle_TOB3->Fill(dxdzHisto->GetMean(),hitErrHisto->GetMean()*hitErrHisto->GetMean());
-//       alphaVsAngle_TOB3->Fill(dxdzHisto->GetMean(),sqrt((sDiff*sDiff-predErrHisto->GetMean()*predErrHisto->GetMean())/hitErrHisto->GetMean()*hitErrHisto->GetMean()));
-//     }
-//       if(k==8)   {
-// 	width2VsAngle_TOB4->Fill(dxdzHisto->GetMean(),sDiff*sDiff);
-// 	predErr2VsAngle_TOB4->Fill(dxdzHisto->GetMean(),predErrHisto->GetMean()*predErrHisto->GetMean());
-// 	hitErr2VsAngle_TOB4->Fill(dxdzHisto->GetMean(),hitErrHisto->GetMean()*hitErrHisto->GetMean());
-// 	alphaVsAngle_TOB4->Fill(dxdzHisto->GetMean(),sqrt((sDiff*sDiff-predErrHisto->GetMean()*predErrHisto->GetMean())/hitErrHisto->GetMean()*hitErrHisto->GetMean()));
-//       }
+      
     }
-  }
-  time (&end);
-  dif = difftime (end,start);
-  printf ("It took  %.2lf seconds to do the fits.\n", dif );
-  start=end;
-  out->Write();
-  time (&end);
-  dif = difftime (end,start);
-  printf ("It took  %.2lf seconds to save the plots.\n", dif );
-  start=end;
-  //out->Close();
-
-//   time (&end);
-//   dif = difftime (end,start);
-//   printf ("It took  %.2lf seconds to close the file.\n", dif );
-
+   }
+   time (&end);
+   dif = difftime (end,start);
+   printf ("It took  %.2lf seconds to do the fits.\n", dif );
+   start=end;
+   out->Write();
+   time (&end);
+   dif = difftime (end,start);
+   printf ("It took  %.2lf seconds to save the plots.\n", dif );
+   start=end;
 }
 
 
@@ -859,14 +744,21 @@ void OverlapHistos::Loop(int redEntries){
 bool
 OverlapHistos::cut() const
 {
-  // cut on 30deg local angle in x (any of the two modules)
-  //if ( fabs(predDX[0])>0.6 || fabs(predDX[1])>0.6 )  continue;
+  // .17 = 10 degress, .36 = 20, .6 = 30, .84 = 40
+  //if ( fabs(predDX[0])<0.17 || fabs(predDX[1])<0.17 )  return false;
+  //if ( fabs(predDX[0])<0.36 || fabs(predDX[1])<0.36 )  return false;
+  if ( fabs(predDX[0])>0.60 || fabs(predDX[1])>0.60 )  return false;
+  //if ( fabs(predDX[0])>0.84 || fabs(predDX[1])>0.84 )  return false;
   // extrapolation accuracy
-  if ( predEDeltaX<1.e-9 || predEDeltaX>0.005 ) return false;
+  if ( predEDeltaX<1.e-9 || predEDeltaX>0.0025 ) return false;
+  if ( predEDeltaY<1.e-9 || predEDeltaY>0.0025 ) return false; //for pixel only
   // chi2 cut
-  //if ( TMath::Prob(chi2,2*found-4)<1.e-3 )  continue;
-  if ( chi2[0] >200 ) return false;
-
+  if ( TMath::Prob((Double_t)chi2[0],chi2[1])<1.e-3 )  return false;
+  //if ( momentum < 20 || momentum > 500 ) return false; //for strips
+  //if ( path > 10 || path < -10 ) return false; //for strips
+  if ( momentum < 10 || momentum > 500 ) return false; //for pixels
+  if ( path > 5 || path < -5 ) return false; //for pixels
+  //if ( hitEX[0] > 0.006 || hitEX[1] > 0.006 ) return false;
   return true;
 }
 
@@ -921,10 +813,8 @@ OverlapHistos::fillMeanWithSyst (int ibin, TH1* resultHisto, TH1* inputHisto,
   double systEntries = inputSystHisto->GetEntries();
   if ( sum>0.00001 ) {
     resultHisto->SetBinContent(ibin,scale*inputHisto->GetMean());
-    //    resultHisto->SetBinError(ibin,scale*(sqrt(((inputHisto->GetRMS()*inputHisto->GetRMS())/sum)+((inputSystHisto->GetRMS()*inputSystHisto->GetRMS())/systEntries)+0.0000168)));
-    //the momentum estimation gives an uncertainty of 45% on 1/p, which scales
-    //as the uncertainty in the multiple scattering uncertainty
-    resultHisto->SetBinError(ibin,scale*(sqrt(((inputHisto->GetRMS()*inputHisto->GetRMS())/sum)+((inputSystHisto->GetRMS()*inputSystHisto->GetRMS())/systEntries)+(0.45*inputHisto->GetMean()*0.45*inputHisto->GetMean()))));
+    //a cut of 20 GeV on track momentum leaves up to a 3 micron uncertainty of track position
+    resultHisto->SetBinError(ibin,scale*(sqrt( (inputHisto->GetRMS()*inputHisto->GetRMS())+(.00003)*(.00003))));
   }
 }
 

@@ -364,7 +364,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		  cluster_info.push_back(sqrt(parameters.second.xx()));
 		  cluster_info.push_back(parameters.first.y());
 		  cluster_info.push_back(sqrt(parameters.second.yy()));
-		  cluster_info.push_back( clusterInfo.signalOverNoise() );
+		  //cluster_info.push_back( clusterInfo.signalOverNoise() );
+		  cluster_info.push_back( clusterInfo.getSignalOverNoise() );
 		  VCluster_info.push_back(cluster_info);
 		  nClusters++;
 		  if (DEBUG) cout << "Have ID match. residual = " << VCluster_info.back()[0] << "  res sigma = " << VCluster_info.back()[1] << endl;
