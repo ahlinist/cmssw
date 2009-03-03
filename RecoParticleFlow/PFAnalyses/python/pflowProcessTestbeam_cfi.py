@@ -21,6 +21,10 @@ particleFlowBlock.RecMuons = cms.InputTag("faketracks", "muons")
 particleFlowBlock.verbose = cms.untracked.bool(False)
 particleFlowBlock.debug = cms.untracked.bool(False)
 
+
+particleFlowBlock.pf_DPtoverPt_Cut = cms.vdouble(100.0,1.0,0.80,0.50)
+particleFlowBlock.pf_NHit_Cut = cms.vuint32(0,3,3,6)
+
 from Configuration.StandardSequences.Services_cff import *
 from Configuration.StandardSequences.Geometry_cff import *
 from RecoParticleFlow.PFProducer.particleFlow_cff import *

@@ -145,8 +145,8 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	//Construct a track
 	//Chisq = 1, ndof = 0, position, direction, charge, dummy covariance matrix
 	//UPDATE: need to not use "undefined algorithm" - cases a hissy fit in PFBlockAlgo in 3_X
+	//Track track(1.0, 0.0, originXYZ, dir, -1, m);
 	Track track(1.0, 0.0, originXYZ, dir, -1, m, TrackBase::ctf);
-
 	//TODO: this doesn't seem to have any effect?
 	math::XYZPoint caloSurface(1.0, 0.0, 0.0);
 

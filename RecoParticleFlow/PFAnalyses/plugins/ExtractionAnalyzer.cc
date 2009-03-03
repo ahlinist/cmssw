@@ -10,6 +10,7 @@
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/DipionDelegate.h"
 #include "RecoParticleFlow/PFAnalyses/interface/TestbeamDelegate.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 //#include "RecoParticleFlow/PFAnalyses/interface/TestDelegate.h"
 
 #include <iostream>
@@ -23,7 +24,7 @@ using namespace pftools;
 
 ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate") {
-	std::cout << __PRETTY_FUNCTION__ << "\n";
+	LogInfo("ExtractionAnalyzer")  << __PRETTY_FUNCTION__ << "\n";
 	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
 	if (edtype_ == dptype_) {
 		ed_ = new DipionDelegate(isMC_);
@@ -33,7 +34,7 @@ ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 //	} else if(edtype_ == testtype_) {
 //		ed_ = new TestDelegate();
 	} else {
-		std::string msg("Couldn't find suitable delegate!");
+		LogError("ExtractionAnalyzer") << "Couldn't find suitable delegate!" << std::endl;
 		//Exception e(msg);
 		//throw e;
 	}
@@ -42,9 +43,9 @@ ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 }
 
 ExtractionAnalyzer::~ExtractionAnalyzer() {
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	LogDebug("ExtractionAnalyzer") << __PRETTY_FUNCTION__ << std::endl;
 	delete ed_;
-	std::cout << "\tExtractionAnalyzer wishes you a nice day."<< std::endl;
+	LogInfo("ExtractionAnalyzer")  << "\tExtractionAnalyzer wishes you a nice day."<< std::endl;
 	//delete outputfile_;
 }
 
@@ -70,7 +71,7 @@ void ExtractionAnalyzer::analyze(const edm::Event& event,
 }
 
 void ExtractionAnalyzer::endJob() {
-	std::cout << __PRETTY_FUNCTION__ << "\n";
+	LogInfo("ExtractionAnalyzer")  << __PRETTY_FUNCTION__ << "\n";
 	ed_->finish();
 }
 

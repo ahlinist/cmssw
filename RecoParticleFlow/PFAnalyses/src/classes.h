@@ -4,7 +4,7 @@
 namespace {
 namespace {
 CommonProcessing cp;
-EnergyProcessing ep;
+
 }
 }
 

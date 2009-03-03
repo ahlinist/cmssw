@@ -7,7 +7,7 @@ print sys.argv
 from optparse import OptionParser
 
 #Edit this to write output files anywhere other then the current directory
-dest = '/castor/cern.ch/user/b/ballin/tbv5/'
+dest = ''
 home = '/afs/cern.ch/user/b/ballin/scratch0/cmssw/src'
 
 parser = OptionParser()
@@ -67,6 +67,8 @@ if options.python:
             output.write('process.TFileService.fileName = cms.string(\"' + dest + 'outputtree_' + str(options.energy) + 'GeV.root\")\n')
         elif str(line) == '<EVENT>\n':
             output.write('process.finishup.fileName = cms.untracked.string(\"' + dest + 'reprocessed_' + str(options.energy) + 'GeV.root\")\n')
+	elif str(line) == '<LOG>\n':
+	    output.write('log = \"' + dest + 'log_' + str(options.energy) + 'GeV.txt\"\n')
         else:
             output.write(line)
             

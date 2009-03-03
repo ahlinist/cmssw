@@ -18,6 +18,13 @@ process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
 # New Event file
 <EVENT>
 
+# LogFile
+<LOG>
+
+process.MessageLogger = cms.Service("MessageLogger",
+    destinations=cms.untracked.vstring(log)
+)
+
 process.source = cms.Source("PoolSource",
         fileNames = runs
 )
