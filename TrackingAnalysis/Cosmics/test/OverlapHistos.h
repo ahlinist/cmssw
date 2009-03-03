@@ -21,17 +21,17 @@
 #define HISTOS2D
 
 const bool defaultDet[7] = {false,
-	false, // PXB
-	false, // PXF
-	true,	// TIB
+	true, // PXB
+	true, // PXF
+	false,	// TIB
 	false,	//TID
 	false,	// TOB
 	false	// TEC
 };
- 
+
 const bool defaultStereo[2] = {
 	true, // rPhi
-	false // stereo
+	true // stereo
 };
 
 const bool allPlots = true;
@@ -82,10 +82,15 @@ private:
    Float_t         predEX[2];
    Float_t         predEY[2];
    Float_t         predEDeltaX;
+   Float_t         predEDeltaY;
    Char_t          relSignX;
+   Char_t          relSignY;
    Float_t         hitX[2];
+   Float_t         hitY[2];
    Float_t         hitEX[2];
+   Float_t         hitEY[2];
    Float_t         simX[2];
+   Float_t         momentum;
 
    // List of branches
    TBranch        *b_hitCounts;   //!
@@ -96,10 +101,15 @@ private:
    TBranch        *b_predPar;   //!
    TBranch        *b_predErr;   //!
    TBranch        *b_sigDeltaX;   //!
+   TBranch        *b_sigDeltaY;   //! 
    TBranch        *b_relSignX;   //!
+   TBranch        *b_relSignY;   //!
    TBranch        *b_hitX;   //!
+   TBranch        *b_hitY;   //!
    TBranch        *b_hitEX;   //!
+   TBranch        *b_hitEY;   //!
    TBranch        *b_simX;   //!
+   TBranch        *b_momentum;     //!
   //
   typedef std::pair<unsigned int, unsigned int> iiPair;
   typedef iiPair DetIdPair;
@@ -108,16 +118,15 @@ private:
   //
   std::vector<DetIdPair> detIdPairs_;
   std::vector<TH1*> residualHistos_;
-  std::vector<TH1*> residualHistosPlusX_;
-  std::vector<TH1*> residualHistosMinusX_;
-  std::vector<TH1*> residualHistosPlusY_;
-  std::vector<TH1*> residualHistosMinusY_;
+  std::vector<TH1*> residualHistosY_;
   std::vector<TH1*> predErrHistos_;
   std::vector<TH1*> predErrHistosFirst_;
   std::vector<TH1*> predErrHistosSecond_;
+  std::vector<TH1*> predErrHistosY_;
   std::vector<TH1*> hitErrHistos_;
   std::vector<TH1*> hitErrHistosFirst_;
   std::vector<TH1*> hitErrHistosSecond_;
+  std::vector<TH1*> hitErrHistosY_;
   std::vector<TH1*> simRecHistos_;
   std::vector<TH1*> simTrkHistos_;
   std::vector<TH1*> dxdzHistos_;
@@ -198,27 +207,21 @@ public:
 #ifdef OverlapHistos_cxx
 OverlapHistos::OverlapHistos(TTree *tree)
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-   if (tree == 0) {
-//       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("MyAnalyzer.root");
-//       if (!f) {
-// 	f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_7/src/crab_CTF_MCposC_newMC_TIF_Pass4_fix.root");
-// 	//f = new TFile("/uscmst1b_scratch/lpc1/lpctrk/kaulmer/CMSSW_1_7_5/src/MCposA_pass4_withSimHit.root");
-//       }
-      tree = (TTree*)gDirectory->Get("Overlaps");
-
-   }
-   Init(tree);
-   outputFile = "output_test.root";
-   threshold = 20;
-
-// Some default values:
-   acceptLayer = 0;
-   for (int i=0;i<7;++i) acceptDet[i] = defaultDet[i];
-//   acceptDet[3] = true;	// TIB
-   acceptStereo[0] = defaultStereo[0]; // rPhi
-   acceptStereo[1] = defaultStereo[1]; // stereo
+  // if parameter tree is not specified (or zero), connect the file
+  // used to generate this class and read the Tree.
+  if (tree == 0) {
+    tree = (TTree*)gDirectory->Get("Overlaps");
+  }
+  Init(tree);
+  outputFile = "output_test.root";
+  threshold = 15;
+  
+  // Some default values:
+  acceptLayer = 0;
+  for (int i=0;i<7;++i) acceptDet[i] = defaultDet[i];
+  //   acceptDet[3] = true;	// TIB
+  acceptStereo[0] = defaultStereo[0]; // rPhi
+  acceptStereo[1] = defaultStereo[1]; // stereo
   
 }
 
@@ -273,10 +276,15 @@ void OverlapHistos::Init(TTree *tree)
    fChain->SetBranchAddress("predPar", predQP, &b_predPar);
    fChain->SetBranchAddress("predErr", predEQP, &b_predErr);
    fChain->SetBranchAddress("predEDeltaX", &predEDeltaX, &b_sigDeltaX);
+   fChain->SetBranchAddress("predEDeltaY", &predEDeltaY, &b_sigDeltaY);
    fChain->SetBranchAddress("relSignX", &relSignX, &b_relSignX);
+   fChain->SetBranchAddress("relSignY", &relSignY, &b_relSignY);
    fChain->SetBranchAddress("hitX", hitX, &b_hitX);
+   fChain->SetBranchAddress("hitY", hitY, &b_hitY);
    fChain->SetBranchAddress("hitEX", hitEX, &b_hitEX);
+   fChain->SetBranchAddress("hitEY", hitEY, &b_hitEY);
    fChain->SetBranchAddress("simX", simX, &b_simX);
+   fChain->SetBranchAddress("momentum", &momentum, &b_momentum);
    Notify();
 }
 

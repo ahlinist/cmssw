@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.9 2009/02/05 20:19:43 kaulmer Exp $
+// $Id: HitRes.cc,v 1.10 2009/02/12 17:52:14 kaulmer Exp $
 //
 //
 
@@ -117,9 +117,13 @@ private:
   float predictedLocalParameters_[5][2];
   float predictedLocalErrors_[5][2];
   float predictedDeltaXError_;
+  float predictedDeltaYError_;
   char relativeXSign_;
+  char relativeYSign_;
   float hitPositions_[2];
   float hitErrors_[2];
+  float hitPositionsY_[2];
+  float hitErrorsY_[2];
   float simHitPositions_[2];
   vector<bool> acceptLayer;
   int run,event;
@@ -360,7 +364,8 @@ HitRes::analyze (const Trajectory& trajectory,
     }
 
     //print out local errors in X to check
-    //    cout << "Predicted local error in X at 1 = " << predictedLocalErrors_[3][0] << "   and predicted local error in X at 2 is = " <<  predictedLocalErrors_[3][1] << endl;
+    cout << "Predicted local error in X at 1 = " << predictedLocalErrors_[3][0] << "   and predicted local error in X at 2 is = " <<  predictedLocalErrors_[3][1] << endl;
+    cout << "Predicted local error in Y at 1 = " << predictedLocalErrors_[4][0] << "   and predicted local error in Y at 2 is = " <<  predictedLocalErrors_[4][1] << endl;
 
     //
     // jacobians (local-to-global@1,global 1-2,global-to-local@2)
@@ -389,19 +394,34 @@ HitRes::analyze (const Trajectory& trajectory,
       for ( int j=1; j<5; ++j )  c11 += jacobian(3,i)*covComb1(i,j)*jacobian(3,j);
     }
     // choose relative sign in order to minimize error on difference
-    //    double relSign = c10>0 ? -1 : 1;
     double diff = c00 - 2*fabs(c10) + c11;
     diff = diff>0 ? sqrt(diff) : -sqrt(-diff);
     predictedDeltaXError_ = diff;
     relativeXSign_ = c10>0 ? -1 : 1;
+    //
+    // now find variance and correlations for predicted local_y
+    double c00Y = covComb1(4,4);
+    double c10Y(0.);
+    double c11Y(0.);
+    for ( int i=1; i<5; ++i ) {
+      c10Y += jacobian(4,i)*covComb1(i,4);
+      for ( int j=1; j<5; ++j )  c11Y += jacobian(4,i)*covComb1(i,j)*jacobian(4,j);
+    }
+    double diffY = c00Y - 2*fabs(c10Y) + c11Y;
+    diffY = diffY>0 ? sqrt(diffY) : -sqrt(-diffY);
+    predictedDeltaYError_ = diffY;
+    relativeYSign_ = c10Y>0 ? -1 : 1;
+
     // information on modules and hits
     overlapIds_[0] = (*iol).first->recHit()->geographicalId().rawId();
     overlapIds_[1] = (*iol).second->recHit()->geographicalId().rawId();
-
+    
     if ( (*iol).first->recHit()->geographicalId().subdetId()==3 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId());
     else if (  (*iol).first->recHit()->geographicalId().subdetId()==5 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId())+4;
     else if ( (*iol).first->recHit()->geographicalId().subdetId()==4 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId())+10;
     else if (  (*iol).first->recHit()->geographicalId().subdetId()==6 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId())+13;
+    else if ( (*iol).first->recHit()->geographicalId().subdetId()==1 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId())+20;
+    else if (  (*iol).first->recHit()->geographicalId().subdetId()==2 ) layer_ =  layerFromId((*iol).first->recHit()->geographicalId().rawId())+30; 
     else layer_ = 99;
     
     if ( overlapIds_[0] ==  SiStripDetId((*iol).first->recHit()->geographicalId()).glued() )
@@ -416,6 +436,11 @@ HitRes::analyze (const Trajectory& trajectory,
     hitErrors_[0] = sqrt(firstRecHit->localPositionError().xx());
     hitPositions_[1] = secondRecHit->localPosition().x();
     hitErrors_[1] = sqrt(secondRecHit->localPositionError().xx());
+
+    hitPositionsY_[0] = firstRecHit->localPosition().y();
+    hitErrorsY_[0] = sqrt(firstRecHit->localPositionError().yy());
+    hitPositionsY_[1] = secondRecHit->localPosition().y();
+    hitErrorsY_[1] = sqrt(secondRecHit->localPositionError().yy());
 
     //cout << "printing local X hit position and error for the overlap hits. Hit 1 = " << hitPositions_[0] << "+-" << hitErrors_[0] << "  and hit 2 is "  << hitPositions_[1] << "+-" << hitErrors_[1] << endl;
 
@@ -516,6 +541,20 @@ HitRes::analyze (const Trajectory& trajectory,
 	simHitPositions_[1] = -99.;
       }
     }
+     cout << "DiffErr for X " 
+ 	 << c00 << " " << c10 << " " << c11 << " " << diff << std::endl;
+     cout << "Differences = " 
+	  << comb1.localPosition().x()+relativeXSign_*(comb1At2.localPosition().x()) << " "
+ 	 << (*iol).first->recHit()->localPosition().x()+
+       relativeXSign_*(*iol).second->recHit()->localPosition().x() << endl;
+
+     cout << "DiffErr for Y " 
+ 	 << c00Y << " " << c10Y << " " << c11Y << " " << diffY << std::endl;
+     cout << "Differences = " 
+	  << comb1.localPosition().y()+ relativeYSign_*(comb1At2.localPosition().y()) << " "
+ 	 << (*iol).first->recHit()->localPosition().y()+
+       relativeYSign_*(*iol).second->recHit()->localPosition().y() << endl;
+
     rootTree_->Fill();
   }
 }
@@ -570,9 +609,13 @@ HitRes::beginJob(const edm::EventSetup&)
   rootTree_->Branch("predErr",predictedLocalErrors_,
 		    "predEQP[2]/F:predEDX[2]/F:predEDY[2]/F:predEX[2]/F:predEY[2]/F");
   rootTree_->Branch("predEDeltaX",&predictedDeltaXError_,"sigDeltaX/F");
+  rootTree_->Branch("predEDeltaY",&predictedDeltaYError_,"sigDeltaY/F"); 
   rootTree_->Branch("relSignX",&relativeXSign_,"relSignX/B");
+  rootTree_->Branch("relSignY",&relativeYSign_,"relSignY/B");
   rootTree_->Branch("hitX",hitPositions_,"hitX[2]/F");
   rootTree_->Branch("hitEX",hitErrors_,"hitEX[2]/F");
+  rootTree_->Branch("hitY",hitPositionsY_,"hitY[2]/F");
+  rootTree_->Branch("hitEY",hitErrorsY_,"hitEY[2]/F");
   rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
   rootTree_->Branch("momentum",&momentum_,"momentum/F");
 }
