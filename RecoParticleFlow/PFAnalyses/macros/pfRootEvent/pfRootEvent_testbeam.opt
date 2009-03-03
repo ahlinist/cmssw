@@ -6,7 +6,7 @@ root outtree 1
 
 //root file reprocessed_7GeV.root
 print mctruthmatching 1 
-root file ../../test/display.root
+root file ../../test/demo_reprocessed_7GeV.root
 
 // filter ------------------------------------------------------------
 
@@ -256,7 +256,7 @@ particle_flow   nsigma_HCAL    1.0
 particle_flow   clusterRecovery 1
 
 particle_flow   mergedPhotons_mvaCut 		0.5
-particle_flow	mergedPhotons_mvaWeightFile	${CMSSW_RELEASE_BASE}/src/RecoParticleFlow/PFProducer/data/MVAnalysis_MLP.weights.txt
+particle_flow	mergedPhotons_mvaWeightFile ${CMSSW_DATA_PATH}/data-RecoParticleFlow-PFProducer/1/RecoParticleFlow/PFProducer/data/MVAnalysis_MLP.weights.txt
 particle_flow   mergedPhotons_PSCut  0.001   
 
 // PFElectrons
@@ -268,7 +268,7 @@ particle_flow 	final_chi2cut_gsfps  100.
 particle_flow   final_chi2cut_bremps  25.
 particle_flow   electron_mvaCut     -0.4
 particle_flow   usePFElectrons      0
-particle_flow   electronID_mvaWeightFile    ${CMSSW_BASE}/src/RecoParticleFlow/PFProducer/data/MVAnalysis_BDT.weights_finalID_hzz-pions.txt
+particle_flow   electronID_mvaWeightFile    ${CMSSW_DATA_PATH}/data-RecoParticleFlow-PFProducer/1/RecoParticleFlow/PFProducer/data/MVAnalysis_BDT.weights_PfElectrons23Jan.txt
 
 // PFConversions
 particle_flow   usePFConversions      0
@@ -284,7 +284,7 @@ particle_flow	calib_HCAL_slope    2.17
 particle_flow 	calib_HCAL_offset   1.73
 particle_flow 	calib_HCAL_damping  2.49
 
-particle_flow  newCalib 1
+particle_flow  newCalib 2
 
 // Brand-new calibration parameters
 //Apply corrections?

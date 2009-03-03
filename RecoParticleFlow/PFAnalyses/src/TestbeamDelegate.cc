@@ -32,8 +32,9 @@ TestbeamDelegate::TestbeamDelegate(bool isMC) :
 			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
 			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
 			electronCandidates_(0), protonKaonCandidates_(0),
-			goodPionsFound_(0), deltaRRecHitsToCenter_(0.4),
-			deltaRPhotonsToTrack_(0.1), deltaRNeutralsToTrack_(0.3) {
+			goodPionsFound_(0), deltaRRecHitsToCenterECAL_(0.4),
+			deltaRRecHitsToCenterHCAL_(0.4), deltaRPhotonsToTrack_(0.1),
+			deltaRNeutralsToTrack_(0.3) {
 
 }
 
@@ -47,8 +48,10 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			"maxEventsFromEachRun");
 	applyThresholdsToRawRecHits_ = parameters.getParameter<bool> (
 			"applyThresholdsToRawRecHits");
-	deltaRRecHitsToCenter_ = parameters.getParameter<double> (
-			"deltaRRecHitsToCenter");
+	deltaRRecHitsToCenterECAL_ = parameters.getParameter<double> (
+			"deltaRRecHitsToCenterECAL");
+	deltaRRecHitsToCenterHCAL_ = parameters.getParameter<double> (
+			"deltaRRecHitsToCenterHCAL");
 	deltaRPhotonsToTrack_ = parameters.getParameter<double> (
 			"deltaRPhotonsToTrack");
 	deltaRNeutralsToTrack_ = parameters.getParameter<double> (
@@ -64,41 +67,44 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 	TFile* file = TFile::Open(cuts.c_str());
 	TTree* tree(0);
 	thisRun_ = new RunInfo();
-	if (debug_ > 0) {
-		std::cout << "Resurrecting run infos from " << cuts << std::endl;
-	}
+	std::string m("Resurrecting run infos from " + cuts);
+	LogInfo(m.c_str());
+
 	if (file != 0) {
 		tree = (TTree*) file->FindObjectAny("RunInfo");
 		if (tree != 0) {
 			//Found tree successfully... loop over entries and resurrect infos
 			tree->SetBranchAddress("RunInfo", &thisRun_);
 			if (debug_ > 3) {
-				std::cout << "Cut file has " << tree->GetEntries()
-						<< " entries." << std::endl;
+				LogInfo("TestbeamDelegate") << "Cut file has "
+						<< tree->GetEntries() << " entries." << std::endl;
+
 			}
 			for (unsigned entry(0); entry < tree->GetEntries(); ++entry) {
 				tree->GetEntry(entry);
 				//Copy run info
 				if (debug_ > 4) {
-					std::cout << "Copying run info for run "
+					LogInfo("TestbeamDelegate") << "Copying run info for run "
 							<< thisRun_->runNumber_ << std::endl;
-					std::cout << *thisRun_;
+					//LogInfo("TestbeamDelegate") << *thisRun_;
 				}
 				RunInfo* aRun = new RunInfo(*thisRun_);
 				runInfos_[thisRun_->runNumber_] = aRun;
 			}
 		} else {
-			std::cout << "Tree pointer is null!" << std::endl;
+			LogError("TestbeamDelegate") << "Tree pointer is null!"
+					<< std::endl;
 		}
 		file->Close();
 	} else {
-		std::cout << "Couldn't open run info file!" << std::endl;
+		LogError("TestbeamDelegate") << "Couldn't open run info file!"
+				<< std::endl;
 	}
 
 }
 
 TestbeamDelegate::~TestbeamDelegate() {
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	LogInfo("TestbeamDelegate") << __PRETTY_FUNCTION__ << std::endl;
 }
 
 bool TestbeamDelegate::processEvent(const edm::Event& event,
@@ -152,16 +158,17 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		if (electron == DEFINITEYES && proton == DEFINITEYES) {
 			//something's gone awry!
 			if (debug_ > 3)
-				std::cout << "\tCould be both an electron and a proton?\n";
+				LogInfo("TestbeamDelegate")
+						<< "\tCould be both an electron and a proton?\n";
 		} else {
 			if (electron == DEFINITEYES) {
 				++electronCandidates_;
 				if (debug_ > 4)
-					std::cout << "\tIt's an electron.\n";
+					LogInfo("TestbeamDelegate") << "\tIt's an electron.\n";
 			} else if (proton == DEFINITEYES) {
 				++protonKaonCandidates_;
 				if (debug_ > 4)
-					std::cout << "\tIt's a proton/kaon.\n";
+					LogInfo("TestbeamDelegate") << "\tIt's a proton/kaon.\n";
 			}
 			if (electron == DEFINITEYES || proton == DEFINITEYES) {
 				if (saveAllCleanParticles_)
@@ -171,7 +178,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	}
 
 	if (debug_ > 3 && !thisEventPasses_) {
-		std::cout << "\tEvent doesn't pass cut criteria.\n";
+		LogInfo("TestbeamDelegate") << "\tEvent doesn't pass cut criteria.\n";
 		return thisEventPasses_;
 	}
 
@@ -246,7 +253,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 				double dR = deltaR(thisCell->getPosition().eta(),
 						thisRun_->ecalEta_, thisCell->getPosition().phi(),
 						thisRun_->ecalPhi_);
-				if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+				if (dR < deltaRRecHitsToCenterECAL_
+						|| deltaRRecHitsToCenterECAL_ <= 0) {
 					CalibratableElement
 							ce(erh.energy(), thisCell->getPosition().eta(),
 									thisCell->getPosition().phi(),
@@ -273,7 +281,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 				double dR = deltaR(thisCell->getPosition().eta(),
 						thisRun_->hcalEta_, thisCell->getPosition().phi(),
 						thisRun_->hcalPhi_);
-				if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+				if (dR < deltaRRecHitsToCenterHCAL_
+						|| deltaRRecHitsToCenterHCAL_ <= 0) {
 					CalibratableElement ce(hrh.energy(),
 							thisCell->getPosition().eta(),
 							thisCell->getPosition().phi(),
@@ -287,14 +296,15 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	}
 
 	if (debug_ > 4) {
-		std::cout << "\tRaw ecal energy: " << ecalHitsDecoded
-				<< ", Raw hcal energy: " << hcalHitsDecoded << "\n";
+		LogDebug("TestbeamDelegate") << "\tRaw ecal energy: "
+				<< ecalHitsDecoded << ", Raw hcal energy: " << hcalHitsDecoded
+				<< "\n";
 	}
 	double totalESeen = ecalHitsDecoded + hcalHitsDecoded;
 	if (stripAnomalousEvents_ && fabs(totalESeen) > stripAnomalousEvents_
 			* thisRun_->beamEnergy_) {
 		if (debug_ > 2)
-			std::cout
+			LogInfo("TestbeamDelegate")
 					<< "Huge excess (loss) of detector energy vs. beam energy = "
 					<< totalESeen << "(" << ecalHitsDecoded << ", "
 					<< hcalHitsDecoded << ")\n";
@@ -310,7 +320,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		const PFRecHit& rh = *rhIt;
 		double dR = deltaR(rh.positionREP().eta(), thisRun_->ecalEta_,
 				rh.positionREP().phi(), thisRun_->ecalPhi_);
-		if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+		if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
 			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
 					rh.positionREP().phi(), rh.layer());
 			calib_->rechits_ecal_.push_back(ce);
@@ -322,7 +332,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		const PFRecHit& rh = *rhIt;
 		double dR = deltaR(rh.positionREP().eta(), thisRun_->hcalEta_,
 				rh.positionREP().phi(), thisRun_->hcalPhi_);
-		if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+		if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
 			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
 					rh.positionREP().phi(), rh.layer());
 			calib_->rechits_hcal_.push_back(ce);
@@ -340,13 +350,13 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			double dR = deltaR(theCluster.positionREP().eta(),
 					thisRun_->ecalEta_, theCluster.positionREP().phi(),
 					thisRun_->ecalPhi_);
-			if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+			if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
 				CalibratableElement d(theCluster.energy(),
 						theCluster.positionREP().eta(),
 						theCluster.positionREP().phi(), theCluster.layer());
 				calib_->cluster_ecal_.push_back(d);
 				if (debug_ > 4)
-					std::cout << "\t" << theCluster << "\n";
+					LogDebug("TestbeamDelegate") << "\t" << theCluster << "\n";
 			}
 		}
 
@@ -356,13 +366,13 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			double dR = deltaR(theCluster.positionREP().eta(),
 					thisRun_->hcalEta_, theCluster.positionREP().phi(),
 					thisRun_->hcalPhi_);
-			if (dR < deltaRRecHitsToCenter_ || deltaRRecHitsToCenter_ <= 0) {
+			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
 				CalibratableElement d(theCluster.energy(),
 						theCluster.positionREP().eta(),
 						theCluster.positionREP().phi(), theCluster.layer());
 				calib_->cluster_hcal_.push_back(d);
 				if (debug_ > 4)
-					std::cout << "\t" << theCluster << "\n";
+					LogDebug("TestbeamDelegate") << "\t" << theCluster << "\n";
 			}
 		}
 	}
@@ -381,7 +391,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 
 void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	if (debug_ > 3)
-		std::cout << "\tCandidate: " << cand << "\n";
+		LogInfo("TestbeamDelegate") << "\tCandidate: " << cand << "\n";
 
 	PFClusterCollection ecalClusters = **clustersEcal_;
 	PFClusterCollection hcalClusters = **clustersHcal_;
@@ -393,14 +403,16 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	cw.energyEcal_ = cand.ecalEnergy();
 	cw.energyHcal_ = cand.hcalEnergy();
 	if (debug_ > 4)
-		std::cout << "\t\tECAL energy = " << cand.ecalEnergy()
-				<< ", HCAL energy = " << cand.hcalEnergy() << "\n";
+		LogDebug("TestbeamDelegate") << "\t\tECAL energy = "
+				<< cand.ecalEnergy() << ", HCAL energy = " << cand.hcalEnergy()
+				<< "\n";
 
 	//Now, extract block elements from the pfCandidate:
 	if (clustersFromCandidates_) {
 		PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
 		if (debug_ > 2)
-			std::cout << "\tLooping over elements in blocks, "
+			LogDebug("TestbeamDelegate")
+					<< "\tLooping over elements in blocks, "
 					<< eleInBlocks.size() << " of them." << std::endl;
 		for (PFCandidate::ElementsInBlocks::iterator bit = eleInBlocks.begin(); bit
 				!= eleInBlocks.end(); ++bit) {
@@ -426,7 +438,8 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 						theRealCluster.layer());
 				calib_->cluster_ecal_.push_back(d);
 				if (debug_ > 3)
-					std::cout << "\t\tECAL cluster: " << theRealCluster << "\n";
+					LogDebug("TestbeamDelegate") << "\t\tECAL cluster: "
+							<< theRealCluster << "\n";
 
 				break;
 			}
@@ -441,14 +454,15 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 						theRealCluster.layer());
 				calib_->cluster_hcal_.push_back(d);
 				if (debug_ > 3)
-					std::cout << "\t\tHCAL cluster: " << theRealCluster << "\n";
+					LogDebug("TestbeamDelegate") << "\t\tHCAL cluster: "
+							<< theRealCluster << "\n";
 
 				break;
 			}
 
 			default:
 				if (debug_ > 3)
-					std::cout << "\t\tOther block type: "
+					LogDebug("TestbeamDelegate") << "\t\tOther block type: "
 							<< elements[indexInBlock].type() << "\n";
 				break;
 			}
@@ -466,7 +480,8 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 		noiseCandidate = true;
 
 	if (debug_ > 2 && noiseCandidate)
-		std::cout << "\tExcluding candidate for noise: " << cand << "\n";
+		LogInfo("TestbeamDelegate") << "\tExcluding candidate for noise: "
+				<< cand << "\n";
 	if (!noiseCandidate)
 		calib_->cands_.push_back(cw);
 
@@ -477,34 +492,36 @@ bool TestbeamDelegate::finish() {
 	int total = goodPionsFound_ + protonKaonCandidates_ + electronCandidates_;
 
 	//Make some plots
-	std::cout << "------------------------------------------------------\n";
-	std::cout << "Summary:\n";
-	std::cout << "\tPossible muons: " << muonCands_ << "\n";
-	std::cout << "\tPossible beam halo: " << beamHaloCands_ << "\n";
-	std::cout << "\tPossible non MIP cands: " << nonMipCands_ << "\n";
-	std::cout << "\tPossible non Cerenkov pions: " << cerenkovNonPions_ << "\n";
-	std::cout << "\tPossible non TOF pions: " << tofNonPions_ << "\n";
-	std::cout << "\tPossible electrons: " << electronCandidates_ << "\n";
-	std::cout << "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n";
-	std::cout << "\tClass-31 pion candidates: " << goodPionsFound_ << "\n";
+	LogInfo("TestbeamDelegate")
+			<< "------------------------------------------------------\n"
+			<< "Summary:\n" << "\tPossible muons: " << muonCands_ << "\n"
+			<< "\tPossible beam halo: " << beamHaloCands_ << "\n"
+			<< "\tPossible non MIP cands: " << nonMipCands_ << "\n"
+			<< "\tPossible non Cerenkov pions: " << cerenkovNonPions_ << "\n"
+			<< "\tPossible non TOF pions: " << tofNonPions_ << "\n"
+			<< "\tPossible electrons: " << electronCandidates_ << "\n"
+			<< "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n"
+			<< "\tClass-31 pion candidates: " << goodPionsFound_ << "\n";
+
 	if (total != 0) {
 		int pionPer = static_cast<int> (100 * goodPionsFound_ / total);
 		int protonPer = static_cast<int> (100 * protonKaonCandidates_ / total);
 		int elecPer = static_cast<int> (100 * electronCandidates_ / total);
 
-		std::cout << "------------------------------------------------------\n";
-		std::cout << "Beam composition (%): \t pion/electron/proton-kaon\n";
-		std::cout << "\t\t" << pionPer << " / " << elecPer << " / "
-				<< protonPer << "\n";
+		LogInfo("TestbeamDelegate")
+				<< "------------------------------------------------------\n"
+				<< "Beam composition (%): \t pion/electron/proton-kaon\n"
+				<< "\t\t" << pionPer << " / " << elecPer << " / " << protonPer
+				<< "\n";
 	} else {
-		std::cout << "Total good particles found = 0?!\n";
+		LogProblem("TestbeamDelegate") << "Total good particles found = 0?!\n";
 	}
-	std::cout << "------------------------------------------------------\n";
-	std::cout << "Tree data:\n\tnEventWrites: " << nWrites_
-			<< ", nEventFails: " << nFails_ << "\n";
-	std::cout << "\tnParticleWrites: " << nParticleWrites_
-			<< ", nParticleFails: " << nParticleFails_ << "\n";
-	std::cout << "Leaving " << __PRETTY_FUNCTION__ << "\n";
+	LogInfo("TestbeamDelegate")
+			<< "------------------------------------------------------\n"
+			<< "Tree data:\n\tnEventWrites: " << nWrites_ << ", nEventFails: "
+			<< nFails_ << "\n" << "\tnParticleWrites: " << nParticleWrites_
+			<< ", nParticleFails: " << nParticleFails_ << "\n" << "Leaving "
+			<< __PRETTY_FUNCTION__ << std::endl;
 
 	return true;
 
@@ -516,14 +533,14 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	//first check for new run!
 	bool runok(true);
 	if (event.run() != thisRun_->runNumber_) {
-		std::cout << __PRETTY_FUNCTION__ << ": New run detected :"
-				<< event.run() << ".\n";
+		LogInfo("TestbeamDelegate") << __PRETTY_FUNCTION__
+				<< ": New run detected :" << event.run() << ".\n";
 		thisRun_ = runInfos_[event.run()];
 		eventsSeenInThisRun_ = 0;
 	}
 	if (!runok) {
-		std::cout << __PRETTY_FUNCTION__ << ": problem looking up run info?!"
-				<< std::endl;
+		LogError("TestbeamDelegate") << __PRETTY_FUNCTION__
+				<< ": problem looking up run info?!" << std::endl;
 		thisEventPasses_ = false;
 		return;
 	}
@@ -605,7 +622,7 @@ void TestbeamDelegate::endParticleCore() {
 			++goodPionsFound_;
 		if (debug_ > 4) {
 			//print a summary
-			std::cout << *calib_;
+			LogInfo("TestbeamDelegate") << *calib_;
 		}
 		if (thisEventCalibs_ != 0) {
 			//fill vector rather than tree
@@ -647,7 +664,8 @@ void TestbeamDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 		inputTagPFCandidates_ = parameters.getParameter<InputTag> (
 				"PFCandidates");
 	} catch (exception& e) {
-		std::cout << "Error getting parameters." << std::endl;
+		LogError("TestbeamDelegate") << "Error getting parameters."
+				<< std::endl;
 		throw e;
 	}
 }
@@ -679,7 +697,8 @@ Quality TestbeamDelegate::isNotMuon() {
 	}
 
 	if (debug_ > 4) {
-		std::cout << "\tEvent isn't a muon? :" << isNotMuonQuality << "\n";
+		LogDebug("TestbeamDelegate") << "\tEvent isn't a muon? :"
+				<< isNotMuonQuality << "\n";
 	}
 
 	return isNotMuonQuality;
@@ -760,8 +779,8 @@ Quality TestbeamDelegate::isTOFPion() {
 	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
 	double meanTOF = (tofS + tofJ) / 2.0;
 	if (debug_ > 4) {
-		std::cout << "\tTOFS = " << tofS << ",\tTOFJ = " << tofJ
-				<< ",\tmeanTOF: " << meanTOF << "\n";
+		LogDebug("TestbeamDelegate") << "\tTOFS = " << tofS << ",\tTOFJ = "
+				<< tofJ << ",\tmeanTOF: " << meanTOF << "\n";
 	}
 	//if ((tofS > thisRun_->tofMin_ && tofS < thisRun_->tofMax_) && (tofJ > thisRun_->tofMin_ && tofJ < thisRun_->tofMax_))
 	if (meanTOF > thisRun_->tofMin_ && meanTOF < thisRun_->tofMax_)
@@ -779,8 +798,8 @@ Quality TestbeamDelegate::isSingleMIP() {
 
 	Quality singleMipQuality(DEFINITEYES);
 	if (debug_ > 5)
-		std::cout << "\tS124adcs = " << counters.S1adc() << ", "
-				<< counters.S2adc() << ", " << counters.S4adc() << "\n";
+		LogDebug("TestbeamDelegate") << "\tS124adcs = " << counters.S1adc()
+				<< ", " << counters.S2adc() << ", " << counters.S4adc() << "\n";
 
 	if (counters.S1adc() > thisRun_->s1Min_ && counters.S1adc()
 			< thisRun_->s1Max_) {
@@ -810,7 +829,8 @@ Quality TestbeamDelegate::isSingleMIP() {
 	//		singleMipQuality = PROBABLY;
 
 	if (debug_ > 4) {
-		std::cout << "\tEvent is a single MIP? :" << singleMipQuality << "\n";
+		LogDebug("TestbeamDelegate") << "\tEvent is a single MIP? :"
+				<< singleMipQuality << "\n";
 	}
 	return singleMipQuality;
 }
@@ -821,9 +841,9 @@ Quality TestbeamDelegate::noBeamHalo() {
 	Quality beamHaloAbsenceQuality(DEFINITEYES);
 
 	if (debug_ > 5)
-		std::cout << "\tBH1234adcs = " << counters.BH1adc() << ", "
-				<< counters.BH2adc() << ", " << counters.BH3adc() << ", "
-				<< counters.BH4adc() << "\n";
+		LogDebug("TestbeamDelegate") << "\tBH1234adcs = " << counters.BH1adc()
+				<< ", " << counters.BH2adc() << ", " << counters.BH3adc()
+				<< ", " << counters.BH4adc() << "\n";
 
 	if (counters.BH1adc() < thisRun_->bh1Max_ && counters.BH2adc()
 			< thisRun_->bh2Max_ && counters.BH3adc() < thisRun_->bh3Max_
@@ -833,8 +853,8 @@ Quality TestbeamDelegate::noBeamHalo() {
 		beamHaloAbsenceQuality = UNLIKELY;
 
 	if (debug_ > 4) {
-		std::cout << "\tEvent has no beam halo? :" << beamHaloAbsenceQuality
-				<< "\n";
+		LogDebug("TestbeamDelegate") << "\tEvent has no beam halo? :"
+				<< beamHaloAbsenceQuality << "\n";
 	}
 	return beamHaloAbsenceQuality;
 }

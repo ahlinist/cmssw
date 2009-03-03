@@ -16,7 +16,7 @@ Color_t PlotUtil::pf_cluster = kViolet + 7;
 
 PlotUtil::PlotUtil() :
 	rootFile_(0) {
-	rootFile_ = new TFile("EnergyProcessing.root", "recreate");
+	rootFile_ = new TFile("PlotUtil.root", "recreate");
 }
 
 PlotUtil::~PlotUtil() {

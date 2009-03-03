@@ -26,7 +26,7 @@ class TestbeamDelegate : public EventDelegate
 public:
 	TestbeamDelegate(bool isMC);
 	virtual ~TestbeamDelegate();
-	
+
 	//The main workhorse
 	virtual bool processEvent(const edm::Event& event,
 			const edm::EventSetup& setup);
@@ -35,7 +35,7 @@ public:
 
 protected:
 	virtual void initCore(const edm::ParameterSet& parameters);
-	
+
 	virtual void startEventCore(const edm::Event& event,
 			const edm::EventSetup& setup);
 
@@ -51,37 +51,37 @@ protected:
 	 * Retrieves the tags listed below.
 	 */
 	virtual void getTagsCore(const edm::ParameterSet& parameters);
-	
+
 	/*
-	 * Returns a Quality for a muon candidate. 
+	 * Returns a Quality for a muon candidate.
 	 */
 	Quality isNotMuon();
-	
+
 	/*
 	 * Returns a Quality for a single MIP
 	 */
 	Quality isSingleMIP();
-	
+
 	Quality noBeamHalo();
-	
+
 	/*
 	 * Retuns a quality if this is a pion according to the TOF chambers.
 	 */
 	Quality isTOFPion();
-	
+
 	/*
 	 * Returns a quality if this is a pion in the cerenkov
 	 */
 	Quality isCerenkovPion();
-	
+
 	Quality isCerenkovElectronCandidate();
-	
+
 	Quality isCerenkovProtonKaonCandidate();
-	
+
 private:
-	
+
 	void extractCandidate(const reco::PFCandidate& cand);
-	
+
 	bool isMC_;
 	bool applyCleaningCuts_;
 	bool computeVetos_;
@@ -100,47 +100,48 @@ private:
 	unsigned electronCandidates_;
 	unsigned protonKaonCandidates_;
 	unsigned goodPionsFound_;
-	
-	double deltaRRecHitsToCenter_;
+
+	double deltaRRecHitsToCenterECAL_;
+	double deltaRRecHitsToCenterHCAL_;
 	double deltaRPhotonsToTrack_;
 	double deltaRNeutralsToTrack_;
-	
+
 	std::map<unsigned, jamieb::RunInfo*> runInfos_;
 
 	jamieb::RunInfo* thisRun_;
 	Quality conservatism_;
-	
+
 	edm::InputTag inputTagRawRecHitsEcal_;
 	edm::InputTag inputTagRawRecHitsHcal_;
-	
+
 	edm::InputTag inputTagBeamCounters_;
 	edm::InputTag inputTagTiming_;
 	edm::InputTag inputTagRunData_;
 	edm::InputTag inputTagEventPosition_;
 	edm::InputTag inputTagTriggerData_;
-	
+
 	edm::InputTag inputTagClustersEcal_;
 	edm::InputTag inputTagClustersHcal_;
 	edm::InputTag inputTagRecHitsEcal_;
 	edm::InputTag inputTagRecHitsHcal_;
 	edm::InputTag inputTagPFCandidates_;
-	
+
 	edm::Handle<HcalTBBeamCounters>* beamCounters_;
 	edm::Handle<HcalTBTiming>* timing_;
 	edm::Handle<HcalTBRunData>* runData_;
 	edm::Handle<HcalTBEventPosition> * eventPosition_;
 	edm::Handle<HcalTBTriggerData> * triggerData_;
-	
+
 	edm::Handle<EcalRecHitCollection>* rawRecHitsEcal_;
 	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
-	
+
 	edm::Handle<reco::PFClusterCollection>* clustersEcal_;
 	edm::Handle<reco::PFClusterCollection>* clustersHcal_;
 	edm::Handle<reco::PFRecHitCollection>* recHitsEcal_;
 	edm::Handle<reco::PFRecHitCollection>* recHitsHcal_;
 	edm::Handle<reco::PFCandidateCollection>* pfCandidates_;
-	
-	
+
+
 };
 
 #endif /*TESTBEAMDELEGATE_H_*/

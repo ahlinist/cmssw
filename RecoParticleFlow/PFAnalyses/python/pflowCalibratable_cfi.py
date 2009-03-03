@@ -17,7 +17,8 @@ calibratable = cms.EDProducer("CalibratableProducer",
     # Leave alone
     maxEventsFromEachRun=cms.uint32(0),
     # 0 => ignore, > 0 implies only save raw rechits within deltaR of beam spot.
-    deltaRRecHitsToCenter=cms.double(0),
+    deltaRRecHitsToCenterECAL=cms.double(0.1),
+    deltaRRecHitsToCenterHCAL=cms.double(0.2),
     # If not clustersFromCandidates, get clusters within cone DeltaR = around beamspot
     deltaRClustersToTrack=cms.double(0.4),
     #Ignore this
