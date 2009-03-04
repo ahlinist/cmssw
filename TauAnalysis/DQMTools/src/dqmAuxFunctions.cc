@@ -35,6 +35,27 @@ std::string dqmSubDirectoryName_merged(const std::string& directory, const std::
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+void dqmCheckExistence(DQMStore& dqmStore, const std::string& directoryName, const std::string& meName, int mode, int& errorFlag)
+{
+  MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(directoryName).append(meName));
+  //std::cout << " meOutput = " << meOutput << std::endl;
+ 
+  if ( meOutput ) {
+    switch ( mode ) {
+    case 1: // print error message 
+      edm::LogError ("copyRecursively") << " meName = " << meName << " already exists in directoryName = " << directoryName 
+					<< " --> skipping !!";
+      errorFlag = 1;
+      break;
+    case 2:
+      break;
+    default:
+      edm::LogError ("dqmCheckExistence") << " Undefined mode = " << mode << " !!";
+      errorFlag = 1;
+    }
+  }
+}
+
 void dqmRegisterHistogram(DQMStore& dqmStore, TH1* histogram, const std::string& name)
 {
   //std::cout << "<dqmRegisterHistogram>:" << std::endl;
@@ -91,36 +112,117 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       continue;
     }
 
-    TH1* histogram = meInput->getTH1();
-    //std::cout << " histogram = " << histogram << std::endl;
-    if ( !histogram ) {
-      edm::LogError ("copyRecursively") << " Failed to access histogram associated to meName = " << (*meName) << " in DQMStore" 
-					<< " --> skipping !!";
+    //-----------------------------------------------------begin of TauAnalysis specific code 
+    //
+    // WARNING: the following code is handles MonitorElements of different type differently;
+    //          the handling is specific to the TauAnalysis !!
+    //
+    //           o histograms are scaled then added
+    //           o strings are simply copied from input to output
+    //             (strings are used to encode run + event numbers in the TauAnalysis)
+    //           o integer numbers are added
+    //             (integer numbers are used in the TauAnalysis to count the number 
+    //              of **unweighted** events passing different stages in the event selection)
+    //           o real numbers are scaled then added
+    //             (real numbers are used in the TauAnalysis to count the number 
+    //              of **weighted** events passing different stages in the event selection)
+    //
+
+//--- skip "invalid" MonitorElements
+    if ( meInput->kind() == MonitorElement::DQM_KIND_INVALID ) {
+      edm::LogWarning ("copyRecursively") << " MonitorElement meName = " << (*meName) << " marked as invalid" 
+					  << " --> skipping !!";
       continue;
     }
 
-    std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
-    clone->Scale(scaleFactor);
-
-    dqmStore.setCurrentFolder(outputDirectory);   
-    MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
-    //std::cout << " meOutput = " << meOutput << std::endl;
-//--- check if outputHistogram does already exist
-    if ( meOutput ) {
-      switch ( mode ) {
-      case 1: // print error message 
-	edm::LogError ("copyRecursively") << " meName = " << (*meName) << " already exists in outputDirectory = " << outputDirectory 
+    if ( meInput->kind() == MonitorElement::DQM_KIND_TH1F      ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TH1S      ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TH2F      ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TH2S      ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TH3F      ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TPROFILE  ||
+	 meInput->kind() == MonitorElement::DQM_KIND_TPROFILE2D ) {
+      TH1* histogram = meInput->getTH1();
+      //std::cout << " histogram = " << histogram << std::endl;
+      if ( !histogram ) {
+	edm::LogError ("copyRecursively") << " Failed to access histogram associated to meName = " << (*meName) << " in DQMStore" 
 					  << " --> skipping !!";
-	break;
-      case 2: // overwrite outputHistogram
-	dqmRegisterHistogram(dqmStore, clone.release(), *meName);
-	break;
-      case 3: // add histogram to outputHistogram
-	meOutput->getTH1()->Add(clone.get(), scaleFactor);
+	continue;
       }
+
+      std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
+      clone->Scale(scaleFactor);
+
+      dqmStore.setCurrentFolder(outputDirectory);
+
+//--- check if output MonitorElement already exists
+      int error = 0;
+      dqmCheckExistence(dqmStore, outputDirectory, *meName, mode, error);
+      if ( error ) continue;
+
+      MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
+      if ( meOutput ) {
+//--- add histogram to outputHistogram
+	meOutput->getTH1()->Add(clone.get(), scaleFactor);
+      } else {
+//--- create new outputHistogram
+	dqmRegisterHistogram(dqmStore, clone.release(), *meName);
+      }
+    } else if ( meInput->kind() == MonitorElement::DQM_KIND_INT ) {
+      int intValue = meInput->getIntValue();
+
+      dqmStore.setCurrentFolder(outputDirectory);
+
+//--- check if output MonitorElement already exists
+      int error = 0;
+      dqmCheckExistence(dqmStore, outputDirectory, *meName, mode, error);
+      if ( error ) continue;
+
+      MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
+      if ( meOutput ) {
+	int intSum = meOutput->getIntValue();
+	meOutput->Fill(intSum + intValue);
+      } else {
+	meOutput = dqmStore.bookInt(*meName);
+	meOutput->Fill(intValue);
+      }
+    } else if ( meInput->kind() == MonitorElement::DQM_KIND_REAL ) {
+      double floatValue = meInput->getFloatValue();
+
+      dqmStore.setCurrentFolder(outputDirectory);
+
+//--- check if output MonitorElement already exists
+      int error = 0;
+      dqmCheckExistence(dqmStore, outputDirectory, *meName, mode, error);
+      if ( error ) continue;
+
+      MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
+      if ( meOutput ) {
+	double floatSum = meOutput->getFloatValue();
+	meOutput->Fill(floatSum + floatValue);
+      } else {
+	meOutput = dqmStore.bookFloat(*meName);
+	meOutput->Fill(floatValue);
+      }
+    } else if ( meInput->kind() == MonitorElement::DQM_KIND_STRING ) {
+      std::string stringValue = meInput->getStringValue();
+
+      dqmStore.setCurrentFolder(outputDirectory);
+
+//--- check if output MonitorElement already exists
+      int error = 0;
+      dqmCheckExistence(dqmStore, outputDirectory, *meName, mode, error);
+      if ( error ) continue;
+      
+      //std::cout << " --> calling DQMStore::bookString" << std::endl;
+      dqmStore.bookString(*meName, stringValue);
     } else {
-      dqmRegisterHistogram(dqmStore, clone.release(), *meName);
+      edm::LogError ("copyRecursively") << " MonitorElement meName = " << (*meName) << " of unknown type" 
+					<< " --> skipping !!";
+      continue;
     }
+    //
+    //-------------------------------------------------------end of TauAnalysis specific code 
 
     meInput_copied = true;
   }

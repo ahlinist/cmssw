@@ -50,7 +50,7 @@ void DQMHistAdder::cfgEntryAddJob::print() const
 
 DQMHistAdder::DQMHistAdder(const edm::ParameterSet& cfg)
 {
-  std::cout << "<DQMHistAdder::DQMHistAdder>:" << std::endl;
+  //std::cout << "<DQMHistAdder::DQMHistAdder>:" << std::endl;
 
   cfgError_ = 0;
 
@@ -58,7 +58,7 @@ DQMHistAdder::DQMHistAdder(const edm::ParameterSet& cfg)
   //std::cout << "--> configuring addJobs..." << std::endl;
   readCfgParameter<cfgEntryAddJob>(cfg, addJobs_);
   
-  std::cout << "done." << std::endl;
+  //std::cout << "done." << std::endl;
 }
 
 DQMHistAdder::~DQMHistAdder() 
@@ -106,7 +106,7 @@ void DQMHistAdder::endJob()
       
 //--- when processing first inputDirectory, check that histograms in outputDirectory do not yet exist;
 //    afterwards, add histograms in inputDirectory to those in outputDirectory
-      int mode = ( dqmDirectory_input == addJob->second.dqmDirectories_input_.begin() ) ? 1 : 3;
+      int mode = ( dqmDirectory_input == addJob->second.dqmDirectories_input_.begin() ) ? 1 : 2;
       //std::cout << " mode = " << mode << std::endl;
       dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, 1., mode, false);
     }
