@@ -17,6 +17,9 @@ diTauCandidateHistManagerForDiTau.diTauCandidateSource = cms.InputTag('allDiTauP
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
 
+# import config for central jet veto histogram manager
+from TauAnalysis.Core.jetHistManager_cfi import *
+
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
 
@@ -35,6 +38,7 @@ diTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
                                  'tauHistManager',
                                  'diTauCandidateHistManagerForDiTau',
                                  'metHistManager',
+                                 'jetHistManager',
                                  'vertexHistManager',
                                  'triggerHistManager' )
 

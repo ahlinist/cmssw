@@ -65,6 +65,7 @@ analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
     muonHistManager,
     diTauCandidateHistManagerForElecMu,
     metHistManager,
+    jetHistManager,
     vertexHistManager,
     triggerHistManager 
   ),

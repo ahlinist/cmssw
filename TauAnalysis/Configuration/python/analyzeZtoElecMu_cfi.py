@@ -20,6 +20,9 @@ diTauCandidateHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecM
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
 
+# import config for central jet veto histogram manager
+from TauAnalysis.Core.jetHistManager_cfi import *
+
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
 
@@ -35,6 +38,7 @@ elecMuHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
                                   'muonHistManager',
                                   'diTauCandidateHistManagerForElecMu',
                                   'metHistManager',
+                                  'jetHistManager',
                                   'vertexHistManager',
                                   'triggerHistManager' )
 
@@ -352,9 +356,15 @@ elecMuAnalysisSequence = cms.VPSet(
     saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
+    histManagers = elecMuHistManagers
+  ),
+  cms.PSet(
     filter = cms.string('primaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
     saveRunEventNumbers = cms.vstring('')
+  ),
+  cms.PSet(
+    histManagers = elecMuHistManagers
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexPosition'),
