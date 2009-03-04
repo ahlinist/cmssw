@@ -583,15 +583,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    
 		  std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 		    
+		  bool prediction=false;
 
 		  if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
 		    if(debug) std::cout<<"DT \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
 
-		    if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
-		    if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
-		    
 		    sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(stripPredicted);
+		    prediction = true;
 		  }else{
 		    if(debug) std::cout<<"DT \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
 		  }
@@ -639,7 +638,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      anycoincidence=true;
 		    }
 		  }
-		  if(anycoincidence){
+		  if(prediction && anycoincidence){
 		    if(debug) std::cout<<"DT  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Norm of Cosine Directors="<<dx*dx+dy*dy+dz*dz<<"~1?"<<std::endl;
 		    
@@ -662,11 +661,15 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    sprintf(meIdRPC,"RPCDataOccupancyFromDT_%s",detUnitLabel);
 		    meMap[meIdRPC]->Fill(stripPredicted);
 		    
-		    sprintf(meIdRPC,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
-		    meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-		    
 		    if(debug) std::cout<<"DT \t \t \t \t \t COINCIDENCE!!! Event="<<iEvent.id()<<" Filling RPC Data Occupancy for "<<meIdRPC<<" with "<<stripPredicted<<std::endl; 		    
 		  }
+		  
+		  if(anycoincidence){
+		    if(debug) std::cout<<"DT \t \t \t \t \t Filling 2D histo for RPC Occupancy "<<meIdRPC<<std::endl; 		    
+		    sprintf(meIdRPC,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
+		    meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+		  }
+
 		  else{
 		    RPCGeomServ rpcsrv(rollasociated->id());
 		    std::string nameRoll = rpcsrv.name();
@@ -864,6 +867,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			
 			std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 			
+			bool prediction=false;
+
 			if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
 
@@ -872,6 +877,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 			  sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
 			  meMap[meIdDT]->Fill(stripPredicted);
+			  prediction = true;
 			}else{
 			  if(debug) std::cout<<"MB4 \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
 			}
@@ -917,7 +923,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			    anycoincidence=true;
 			  }
 			}
-			if(anycoincidence){
+			if(prediction && anycoincidence){
 			  if(debug) std::cout<<"MB4  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 			  if(debug) std::cout<<"MB4  \t \t \t \t \t Norm of Cosine Directors="<<dx3*dx3+dy3*dy3+dz3*dz3<<"~1?"<<std::endl;
 		   
@@ -1042,7 +1048,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	
 	  if(debug) std::cout<<"CSC \t \t Is a good Segment? dim = 4, 4 <= nRecHits <= 10 Incident angle int range 45 < "<<acos(dz)*180/3.1415926<<" < 135? "<<std::endl;
 
-	  if(segment->dimension()==4 && (segment->nRecHits()<=10 && segment->nRecHits()>=4)&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 160. ){ 
+	  if(segment->dimension()==4){ // && (segment->nRecHits()<=10 && segment->nRecHits()>=4)&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 160. ){ 
 	    
 	    //&& segment->chi2()< ??)Add 3 segmentes in the endcaps???
 
@@ -1211,6 +1217,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    sprintf(layerLabel ,"%s",nameRoll.c_str());
 		    
 		    std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
+
+		    bool prediction=false;
 		    
 		    if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
 		      
@@ -1218,6 +1226,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 		      sprintf(meIdCSC,"ExpectedOccupancyFromCSC_%s",detUnitLabel);
 		      meMap[meIdCSC]->Fill(stripPredicted);
+		      prediction = true;
 		    }else{
 		      if(debug) std::cout<<"CSC \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
 		    }
@@ -1264,7 +1273,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			anycoincidence=true;
 		      }
 		    }
-		    if(anycoincidence){
+		    if(prediction && anycoincidence){
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t Norm of Cosine Directors="<<dx*dx+dy*dy+dz*dz<<"~1?"<<std::endl;
 
@@ -1288,12 +1297,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      sprintf(meIdRPC,"RPCDataOccupancyFromCSC_%s",detUnitLabel);
 		      meMap[meIdRPC]->Fill(stripPredicted);
 		      
-		      sprintf(meIdRPC,"RPCDataOccupancy2DFromCSC_%s",detUnitLabel);
-		      meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-
 		      if(debug) std::cout <<"CSC \t \t \t \t \t \t COINCEDENCE!!! Event="<<iEvent.id()<<"Filling Filling RPC Data Occupancy for "<<meIdRPC<<" with "<<stripPredicted<<std::endl;
 		    }
-		    else{
+		    
+		    if(anycoincidence){
+		      if(debug) std::cout<<"CSC \t \t \t \t \t \t Filling 2D histo for RPC Occupancy "<<meIdRPC<<std::endl; 	
+		      sprintf(meIdRPC,"RPCDataOccupancy2DFromCSC_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+		    }else if(prediction){
 		      RPCGeomServ rpcsrv(rollasociated->id());
 		      std::string nameRoll = rpcsrv.name();
 		      if(debug) std::cout<<"CSC \t \t \t \t \t \t A roll was ineficient in event"<<iEvent.id().event()<<std::endl;
