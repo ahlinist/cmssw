@@ -16,7 +16,6 @@
 #include <TList.h>
 #include <TKey.h>
 #include <TH1.h>
-//#include <TFormula.h>
 
 #include <iostream>
 
@@ -101,22 +100,7 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
       inputFileNames_.push_back(*inputFile);
     }
   }
-/*
-  if ( cfg.exists("scaleFactor") ) {
-    std::string scaleFactor_string = cfg.getParameter<std::string>("scaleFactor");
-    TFormula scaleFactor_expression("scaleFactor_expression", "scaleFactor_string");
-    if ( scaleFactor_expression.Compile() == 0 ) {
-      scaleFactor_ = scaleFactor_expression.Eval(0.);
-    } else {
-      edm::LogError ("DQMFileLoader::cfgEntryFileSet") << " Error in parsing expression = " << scaleFactor_string 
-						       << " for scale-factor !!";
-      scaleFactor_ = defaultScaleFactor;
-      cfgError_ = 1;
-    }
-  } else {
-    scaleFactor_ = defaultScaleFactor;
-  }
- */ 
+
   scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
 
   //dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : name_;
