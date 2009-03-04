@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.7 2009/02/17 16:09:39 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.8 2009/02/19 16:00:22 carrillo Exp $
 //
 //
 
@@ -186,6 +186,7 @@ public:
   TH2F * histoCSC_2D;
   TH1F * histoPRO;  
   TH1F * histoPROY;
+  TH1F * histoPROX;
   TH2F * histoPRO_2D;
   TH1F * histoRES;
   TH1F * BXDistribution;
@@ -899,7 +900,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	     
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual;
 	 
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
@@ -914,6 +915,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  meIdPRO = "Profile_For_"+rpcsrv.name();
 	  meIdPROY = "Y_Profile_For_"+rpcsrv.name();
+	  meIdPROX = "X_Profile_For_"+rpcsrv.name();
 	  meIdPRO_2D = "Profile2D_For_"+rpcsrv.name();
 	  meIdResidual =folder+"/RPCResidualsFromDT_"+ rpcsrv.name();
 	  meIdDT_2D =folder+"/ExpectedOccupancy2DFromDT_"+ rpcsrv.name();
@@ -936,6 +938,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
 
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
 	  
 	  std::cout <<folder<<"/"<<rpcsrv.name()<<std::endl;
 
@@ -949,14 +952,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float er =0;
 	  float efY =0;
 	  float erY =0;
+	  float efX =0;
+	  float erX =0;
 	  float ef2D =0;
 	  float er2D =0;
 	  float buffef = 0;
 	  float buffer = 0;
 	  float sumbuffef = 0;
 	  float sumbuffer = 0;
-	  float averageeff = 0;
-	  float averageerr = 0;
+	  float averageeff = 0.;
+	  float averageerr = 0.;
 
 	  float doublegapeff = 0;
 	  float doublegaperr = 0;
@@ -983,17 +988,34 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY();
 	    TH1D * profileDT_Y =  histoDT_2D->ProjectionY();
 	    
-	    for(int j=1;j<=4*nstrips;++j){
+	    for(int j=1;j<=4*nstrips;j++){
 	      efY=0.;
 	      erY=0.;
 	      if(profileDT_Y->GetBinContent(j) != 0){
 		efY = profileRPC_Y->GetBinContent(j)/profileDT_Y->GetBinContent(j);
 		erY = sqrt(efY*(1-efY)/profileDT_Y->GetBinContent(j));
 	      }	
-	      std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
+	      //std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
 	      histoPROY->SetBinContent(j,efY);
 	      histoPROY->SetBinError(j,erY);
 	    }
+
+	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX();
+	    TH1D * profileDT_X =  histoDT_2D->ProjectionX();
+	    
+
+	    for(int j=1;j<=2*nstrips;j++){
+	      efX=0.;
+	      erX=0.;
+	      if(profileDT_X->GetBinContent(j) != 0){
+		efX = profileRPC_X->GetBinContent(j)/profileDT_X->GetBinContent(j);
+		erX = sqrt(efX*(1-efX)/profileDT_X->GetBinContent(j));
+	      }	
+	      //std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
+	      histoPROX->SetBinContent(j,efX);
+	      histoPROX->SetBinError(j,erX);
+	    }
+
 	  }else{
 	    std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
@@ -1065,12 +1087,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
 	      }
+
+	      buffef=0.;
+	      buffer=0.;
 	      if(histoDT->GetBinContent(i)!=0){
 		buffef = float(histoRPC->GetBinContent(i))/float(histoDT->GetBinContent(i));
 		buffer = sqrt(buffef*(1.-buffef)/float(histoDT->GetBinContent(i)));
 		
-		std::cout<<" "<<buffef*100;
-
 		efftxt<<"  "<<buffef;
 		
 		sumbuffef = sumbuffef + buffef;
@@ -1141,6 +1164,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    histoPRO->Write();
 	    histoPROY->Write();
+	    histoPROX->Write();
+	    histoPRO_2D->Write();
 
 	    if(prodimages){
 	      histoPRO->GetXaxis()->SetTitle("Strip");
@@ -1194,7 +1219,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfy.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
-				
+			
+
+		histoPROX->SetTitle("Efficiency along X");
+		histoPROX->GetXaxis()->SetTitle("cm");
+		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
+		histoPROX->Draw();
+		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfx.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
 		histoDT_2D->GetXaxis()->SetTitle("cm");
 		histoDT_2D->GetYaxis()->SetTitle("cm");
 		histoDT_2D->Draw();
@@ -1220,6 +1254,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 	    
 	    delete histoPROY;
+	    delete histoPROX;
 
 	    alignment<<rpcsrv.name()<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
 
@@ -1584,7 +1619,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	  
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual;
 	 
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
@@ -1598,6 +1633,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdRealRPC =folder+"/RealDetectedOccupancyFromCSC_"+ rpcsrv.name();
 	  
 	  meIdPRO = "Profile_For_"+rpcsrv.name();
+	  meIdPROY = "Y_Profile_For_"+rpcsrv.name();
 	  meIdPRO_2D = "Profile2D_For_"+rpcsrv.name();
 	  meIdResidual =folder+"/RPCResidualsFromCSC_"+ rpcsrv.name();
 	  meIdCSC_2D =folder+"/ExpectedOccupancy2DFromCSC_"+ rpcsrv.name();
@@ -1617,6 +1653,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),int((*r)->nstrips()),0.5,int((*r)->nstrips())+0.5);
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
 	  
+	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
 
 	  std::cout <<folder<<"/"<<rpcsrv.name()<<std::endl;
 	  
@@ -1624,18 +1661,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  int NumberWithOutPrediction=0;
 	  double p = 0;
 	  double o = 0;
-	  float mybxhisto = 0;
-	  float mybxerror = 0;
-	  float ef =0;
-	  float er =0;
-	  float ef2D =0;
-	  float er2D =0;
-	  float buffef = 0;
-	  float buffer = 0;
-	  float sumbuffef = 0;
-	  float sumbuffer = 0;
-	  float averageeff = 0;
-	  float averageerr = 0;
+	  float mybxhisto = 0.;
+	  float mybxerror = 0.;
+	  float ef =0.;
+	  float er =0.;
+	  float efY =0;
+	  float erY =0;
+	  float ef2D =0.;
+	  float er2D =0.;
+	  float buffef = 0.;
+	  float buffer = 0.;
+	  float sumbuffef = 0.;
+	  float sumbuffer = 0.;
+	  float averageeff = 0.;
+	  float averageerr = 0.;
 	  
 	  int NumberStripsPointed = 0;
 	  
@@ -1644,6 +1683,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=4*nstrips;++j){
+		ef2D=0.;
+		ef2D=0.;
 		if(histoCSC_2D->GetBinContent(i,j) != 0){
 		  ef2D = histoRPC_2D->GetBinContent(i,j)/histoCSC_2D->GetBinContent(i,j);
 		  er2D = sqrt(ef2D*(1-ef2D)/histoCSC_2D->GetBinContent(i,j));
@@ -1652,10 +1693,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPRO_2D->SetBinError(i,j,er2D*100.);
 	      }//loop on the boxes
 	    }
+
+	    std::cout<<"Getting Profiles"<<rpcsrv.name()<<std::endl;
+	    
+	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY();
+	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY();
+	    
+	    for(int j=1;j<=4*nstrips;++j){
+	      efY=0.;
+	      erY=0.;
+	      if(profileCSC_Y->GetBinContent(j) != 0){
+		efY = profileRPC_Y->GetBinContent(j)/profileCSC_Y->GetBinContent(j);
+		erY = sqrt(efY*(1-efY)/profileCSC_Y->GetBinContent(j));
+	      }	
+	      //std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
+	      histoPROY->SetBinContent(j,efY);
+	      histoPROY->SetBinError(j,erY);
+	    }
 	  }else{
 	    std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
-
+	  
 	  efftxt<<rpcsrv.name()<<"  "<<rpcId.rawId();
 
 	  for(int i=1;i<=95;i++) efftxt<<"  "<<0.95;
@@ -1671,9 +1729,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
 	      }
+	      
+	      buffef=0.;
+	      buffer=0.;
 	      if(histoCSC->GetBinContent(i)!=0){
 		buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
+		//std::cout<<" buffef="<<buffef<<" predcitions="<<double(histoCSC->GetBinContent(i))<<std::endl;
 		buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
+		
+		//std::cout<<" buffer="<<buffer<<std::endl;
 
 		sumbuffef=sumbuffef+buffef;
 		sumbuffer = sumbuffer + buffer*buffer;
@@ -1691,6 +1755,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
 	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
+	      
+	      std::cout<<"sumbuffer="<<sumbuffer<<" NumSrripsPointer="<<NumberStripsPointed<<std::endl;
+	      
+	      
 	      EffEndCap->Fill(averageeff);
 	      //Filling eff distro
 	      int Disk=rpcId.station()*rpcId.region();
@@ -1719,6 +1787,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }
 
 	      histoPRO->Write();
+	      histoPROY->Write();
 
 	      if(prodimages){//ENDCAP	
 		std::cout<<"Creating Images for the endcap"<<std::endl;
@@ -1758,7 +1827,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		Ca0->Clear();
 		
 		if(dosD){
-		  std::cout<<"Iside if 2D= "<<std::endl;
+		  std::cout<<"Inside if 2D"<<std::endl;
 		  histoRPC_2D->GetXaxis()->SetTitle("cm");
 		  histoRPC_2D->GetYaxis()->SetTitle("cm");
 		  histoRPC_2D->Draw();
@@ -1767,6 +1836,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		   
+		  histoPROY->SetTitle("Efficiency along Y");
+		  histoPROY->GetXaxis()->SetTitle("cm");
+		  histoPROY->GetYaxis()->SetRangeUser(0.,1.);
+		  histoPROY->Draw();
+		  labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfy.png";
+		  Ca0->SaveAs(labeltoSave.c_str());
+		  Ca0->Clear();
+		    
 		  std::cout<<"histoCSC_2D "<<std::endl;
 		  histoCSC_2D->GetXaxis()->SetTitle("cm");
 		  histoCSC_2D->GetYaxis()->SetTitle("cm");
@@ -1793,8 +1870,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  Ca0->Clear();
 		}
 	      }
-	      
-	      
+	    
+	      delete histoPROY;
 	      delete histoPRO;
 	      delete histoPRO_2D;
 	      
@@ -1898,7 +1975,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  std::cout<<"maskedratio="<<maskedratio<<std::endl;
 	  std::cout<<"nopredictionsratio="<<nopredictionsratio<<std::endl;
 	  
-
 	  //Pigis Histogram
 
 
