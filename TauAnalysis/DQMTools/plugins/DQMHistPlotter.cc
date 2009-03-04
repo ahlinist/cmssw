@@ -583,7 +583,7 @@ void DQMHistPlotter::cfgEntryDrawJob::print() const
 
 DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 {
-  std::cout << "<DQMHistPlotter::DQMHistPlotter>:" << std::endl;
+  //std::cout << "<DQMHistPlotter::DQMHistPlotter>:" << std::endl;
 
   cfgError_ = 0;
 
@@ -683,10 +683,12 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
       std::string drawOptionSet = drawJob.getParameter<std::string>("drawOptionSet");
       //std::cout << "drawOptionSet = " << drawOptionSet << std::endl;
 
-      vstring stack = ( cfg.exists("stack") ) ? drawJob.getParameter<vstring>("stack") : vstring();
+      vstring stack = ( drawJob.exists("stack") ) ? drawJob.getParameter<vstring>("stack") : vstring();
+      //std::cout << "stack = " << format_vstring(stack) << std::endl;
 
       for ( vstring::const_iterator process = processes.begin();
 	    process != processes.end(); ++process ) {
+	//std::cout << "process = " << (*process) << std::endl;
 	int index = 0;
 	for ( vstring::const_iterator dqmMonitorElement = dqmMonitorElements.begin();
 	      dqmMonitorElement != dqmMonitorElements.end(); ++dqmMonitorElement ) {
@@ -897,7 +899,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
     cfgError_ = 1;
   }
 
-  std::cout << "done." << std::endl;
+  //std::cout << "done." << std::endl;
 }
 
 DQMHistPlotter::~DQMHistPlotter() 
