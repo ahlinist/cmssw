@@ -66,11 +66,17 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
   ),
 
   xAxes = cms.PSet(
-    pt = copy.deepcopy(xAxis_pt),
-    eta = copy.deepcopy(xAxis_eta),
-    phi = copy.deepcopy(xAxis_phi),
-    ipXY = copy.deepcopy(xAxis_ipXY),
+    Pt = copy.deepcopy(xAxis_pt),
+    Eta = copy.deepcopy(xAxis_eta),
+    Phi = copy.deepcopy(xAxis_phi),
+    IPxy = copy.deepcopy(xAxis_ipXY),
+    IPz = copy.deepcopy(xAxis_ipZ),
     dPhi = copy.deepcopy(xAxis_dPhi),
+    prob = copy.deepcopy(xAxis_prob),
+    posZ = copy.deepcopy(xAxis_posZ),
+    Mt = copy.deepcopy(xAxis_transMass),
+    M = copy.deepcopy(xAxis_mass),
+    N = copy.deepcopy(xAxis_num),
     unlabeled = copy.deepcopy(xAxis_unlabeled),
   ),
 
@@ -98,19 +104,48 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
   ),
 
   drawJobs = cms.PSet(
-    cutFlowControlPlots_electronPt_afterElectronEtaCut = copy.deepcopy(plots_ZtoElecMu_electronPt_afterElectronEtaCut),
-    cutFlowControlPlots_muonEta_afterGlobalMuonCut = copy.deepcopy(plots_ZtoElecMu_muonEta_afterGlobalMuonCut),
-    cutFlowControlPlots_muonTrackIPxy_afterMuonAntiPionCut = copy.deepcopy(plots_ZtoElecMu_muonTrackIPxy_afterMuonAntiPionCut),
-    cutFlowControlPlots_dPhi1MET_afterMuonTrkIPcut = copy.deepcopy(plots_ZtoElecMu_dPhi1MET_afterMuonTrkIPcut),
-    cutFlowControlPlots_dPhi2MET_afterMuonTrkIPcut = copy.deepcopy(plots_ZtoElecMu_dPhi2MET_afterMuonTrkIPcut)
+    # cut-flow control plots
+    #cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex = copy.deepcopy(plots_ZtoElecMu_vertexChi2Prob_afterPrimaryEventVertex),
+    #cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality = copy.deepcopy(plots_ZtoElecMu_vertexZ_afterPrimaryEventVertexQuality),
+    cutFlowControlPlots_electron_afterPrimaryEventVertexPosition = copy.deepcopy(plots_ZtoElecMu_electron_afterPrimaryEventVertexPosition),
+    cutFlowControlPlots_electron_afterTightElectronId = copy.deepcopy(plots_ZtoElecMu_electron_afterTightElectronId),
+    cutFlowControlPlots_electron_afterElectronAntiCrack = copy.deepcopy(plots_ZtoElecMu_electron_afterElectronAntiCrack),
+    cutFlowControlPlots_electron_afterElectronEta = copy.deepcopy(plots_ZtoElecMu_electron_afterElectronEta),
+    cutFlowControlPlots_electron_afterElectronPt = copy.deepcopy(plots_ZtoElecMu_electron_afterElectronPt),
+    cutFlowControlPlots_electronTrkIso_afterElectronHLTmatch = copy.deepcopy(plots_ZtoElecMu_electronTrkIso_afterElectronHLTmatch),
+    cutFlowControlPlots_electronEcalIso_afterElectronTrkIso = copy.deepcopy(plots_ZtoElecMu_electronEcalIso_afterElectronTrkIso),
+    cutFlowControlPlots_electron_afterElectronEcalIso = copy.deepcopy(plots_ZtoElecMu_electron_afterElectronEcalIso),
+    cutFlowControlPlots_electronTrkIP_afterElectronTrk = copy.deepcopy(plots_ZtoElecMu_electronTrkIP_afterElectronTrk),
+    cutFlowControlPlots_muon_afterElectronTrackIP = copy.deepcopy(plots_ZtoElecMu_muon_afterElectronTrackIP),
+    cutFlowControlPlots_muon_afterGlobalMuon = copy.deepcopy(plots_ZtoElecMu_muon_afterGlobalMuon),
+    cutFlowControlPlots_muon_afterMuonEta = copy.deepcopy(plots_ZtoElecMu_muon_afterMuonEta),
+    cutFlowControlPlots_muon_afterMuonPt = copy.deepcopy(plots_ZtoElecMu_muon_afterMuonPt),
+    cutFlowControlPlots_muonTrkIso_afterMuonHLTmatch = copy.deepcopy(plots_ZtoElecMu_muonTrkIso_afterMuonHLTmatch),
+    cutFlowControlPlots_muonEcalIso_afterMuonTrkIso = copy.deepcopy(plots_ZtoElecMu_muonEcalIso_afterMuonTrkIso),
+    cutFlowControlPlots_muonComp_afterMuonEcalIso = copy.deepcopy(plots_ZtoElecMu_muonComp_afterMuonEcalIso),
+    cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto = copy.deepcopy(plots_ZtoElecMu_muonTrkIP_afterMuonAntiPionVeto),
+    cutFlowControlPlots_dPhi1MET_afterMuonTrkIP = copy.deepcopy(plots_ZtoElecMu_dPhi1MET_afterMuonTrkIP),
+    cutFlowControlPlots_dPhi2MET_afterMuonTrkIP = copy.deepcopy(plots_ZtoElecMu_dPhi2MET_afterMuonTrkIP),
+    cutFlowControlPlots_diTauCharge_afterAcoplanarity = copy.deepcopy(plots_ZtoElecMu_diTauCharge_afterAcoplanarity),
+
+    # distributions plotted for events passing all cuts
+    finalSamplePlots_electron = copy.deepcopy(plots_ZtoElecMu_electron_finalEventSample),
+    finalSamplePlots_muon = copy.deepcopy(plots_ZtoElecMu_muon_finalEventSample),
+    finalSamplePlots_met = copy.deepcopy(plots_ZtoElecMu_met_finalEventSample),
+    finalSamplePlots_mtElectronMET = copy.deepcopy(plots_ZtoElecMu_mtElectronMET_finalEventSample),
+    finalSamplePlots_mtMuonMET = copy.deepcopy(plots_ZtoElecMu_mtMuonMET_finalEventSample),
+    finalSamplePlots_mtElectronMuonMET = copy.deepcopy(plots_ZtoElecMu_mtElectronMuonMET_finalEventSample),
+    finalSamplePlots_mCDFmethod = copy.deepcopy(plots_ZtoElecMu_mCDFmethod_finalEventSample),
+    finalSamplePlots_mCollApprox = copy.deepcopy(plots_ZtoElecMu_mCollApprox_finalEventSample),
+    finalSamplePlots_numCentralJets = copy.deepcopy(plots_ZtoElecMu_numCentralJets_finalEventSample)
   ),
 
   canvasSizeX = cms.int32(800),
   canvasSizeY = cms.int32(640),                         
 
   outputFilePath = cms.string('./plots/'),
-  outputFileName = cms.string('plotsZtoElecMu.ps')
-  #indOutputFileName = cms.string('plotZtoElecMu_#PLOT#.png')
+  #outputFileName = cms.string('plotsZtoElecMu.ps')
+  indOutputFileName = cms.string('plotZtoElecMu_#PLOT#.png')
 )
 
 saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
@@ -119,6 +154,6 @@ saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 makeZtoElecMuPlots = cms.Sequence( loadZtoElecMu
                                   +addZtoElecMu
-                                  +saveZtoElecMu 
+                                  #+saveZtoElecMu 
                                   +plotZtoElecMu )
   
