@@ -65,7 +65,7 @@ yAxis_numEntries_linear = cms.PSet(
 
 yAxis_numEntries_log = cms.PSet(
   yScale = cms.string('log'), 
-  minY_log = cms.double(1.e-1),
+  minY_log = cms.double(1.e-2),
   yAxisTitle = cms.string(''), 
   yAxisTitleOffset = cms.double(1.1),
   yAxisTitleSize = cms.double(0.05)
