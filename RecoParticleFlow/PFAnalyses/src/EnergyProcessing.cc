@@ -13,6 +13,7 @@
 #include <cmath>
 #include <TH2F.h>
 
+
 using namespace pftools;
 
 EnergyProcessing::EnergyProcessing(TTree* t, std::string graphicsFile,
@@ -150,7 +151,7 @@ void EnergyProcessing::doLoopedPlots() {
 				++nPhotons;
 				ePhotons += cw.energy_;
 				photonPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
-				photonDeltaR->Fill(cw.energy_, detaR(cw.eta_, pionEta, cw.phi_,
+				photonDeltaR->Fill(cw.energy_, deltaR(cw.eta_, pionEta, cw.phi_,
 						pionPhi));
 			}
 			//Neutrals
@@ -158,7 +159,7 @@ void EnergyProcessing::doLoopedPlots() {
 				++nNeutrals;
 				eNeutrals += cw.energy_;
 				neutralPositioning->Fill(cw.eta_, cw.phi_, cw.energy_);
-				neutralDeltaR->Fill(cw.energy_, detaR(cw.eta_, pionEta,
+				neutralDeltaR->Fill(cw.energy_, deltaR(cw.eta_, pionEta,
 						cw.phi_, pionPhi));
 			}
 		}
@@ -168,7 +169,7 @@ void EnergyProcessing::doLoopedPlots() {
 		if (nPhotons > 0)
 			allPhotons->Fill(ePhotons);
 
-		//Photon spectrum for no neutral activity		
+		//Photon spectrum for no neutral activity
 		if (nPhotons > 0 && nNeutrals == 0) {
 			if (nPhotons == 1)
 				onePhotonNoNeutrals->Fill(ePhotons);
