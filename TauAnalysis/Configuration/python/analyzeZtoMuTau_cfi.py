@@ -564,15 +564,12 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauMt1METCut'),
-    title = cms.string('M_t(Muon-MET) < 60'),
+    title = cms.string('M_{T}(Muon-MET) < 60 GeV'),
     saveRunEventNumbers = cms.vstring('passed_cumulative')
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
     replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulative')
-  )
-
-    
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
