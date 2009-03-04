@@ -561,7 +561,7 @@ elecMuAnalysisSequence = cms.VPSet(
   #  saveRunEventNumbers = cms.vstring('passed_cumulative')
   #),
   #cms.PSet(
-  #  histManagers = muTauHistManagers,
+  #  histManagers = elecMuHistManagers,
   )
 )
 
