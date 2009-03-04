@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.2 2009/02/13 18:56:14 santanas Exp $
+// $Id: HcalZS.h,v 1.3 2009/03/03 19:31:53 santanas Exp $
 //
 //
 
@@ -54,6 +54,7 @@ private:
   int thresholdHE_;
   int thresholdHO_;
   int thresholdHF_;
+  int thresholdCalib_;
 
   edm::Service<TFileService> fs;
 
@@ -61,10 +62,12 @@ private:
   TH1F* h_hedigi_zsEmulation;
   TH1F* h_hodigi_zsEmulation;
   TH1F* h_hfdigi_zsEmulation;
+  TH1F* h_calib_zsEmulation;
 
   TH1F* h_hbhe_US;
   TH1F* h_ho_US;
   TH1F* h_hf_US;
+  TH1F* h_calib_US;
 
   TH2F* h_hbhf_d1;
   TH2F* h_hbhf_d2;
@@ -81,6 +84,7 @@ private:
   TH2F* h_ho_d4_all;
 
   TH1F* h_ZSagree;
+  TH1F* h_ZSagree_calib;
 
   int NtotEvents;
   int NtotDigis;
