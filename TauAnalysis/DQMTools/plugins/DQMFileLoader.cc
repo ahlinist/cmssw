@@ -16,6 +16,7 @@
 #include <TList.h>
 #include <TKey.h>
 #include <TH1.h>
+//#include <TFormula.h>
 
 #include <iostream>
 
@@ -56,6 +57,8 @@ void mapSubDirectoryStructure(TDirectory* directory, std::string directoryName, 
 DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const edm::ParameterSet& cfg)
 {
   //std::cout << "<DQMFileLoader::cfgEntryFileSet>" << std::endl;
+
+  cfgError_ = 0;
 
   name_ = name;
 
@@ -98,7 +101,22 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
       inputFileNames_.push_back(*inputFile);
     }
   }
-
+/*
+  if ( cfg.exists("scaleFactor") ) {
+    std::string scaleFactor_string = cfg.getParameter<std::string>("scaleFactor");
+    TFormula scaleFactor_expression("scaleFactor_expression", "scaleFactor_string");
+    if ( scaleFactor_expression.Compile() == 0 ) {
+      scaleFactor_ = scaleFactor_expression.Eval(0.);
+    } else {
+      edm::LogError ("DQMFileLoader::cfgEntryFileSet") << " Error in parsing expression = " << scaleFactor_string 
+						       << " for scale-factor !!";
+      scaleFactor_ = defaultScaleFactor;
+      cfgError_ = 1;
+    }
+  } else {
+    scaleFactor_ = defaultScaleFactor;
+  }
+ */ 
   scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
 
   //dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : name_;
@@ -122,13 +140,22 @@ void DQMFileLoader::cfgEntryFileSet::print() const
 
 DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
 {
-  std::cout << "<DQMFileLoader::DQMFileLoader>:" << std::endl;
+  //std::cout << "<DQMFileLoader::DQMFileLoader>:" << std::endl;
 
   cfgError_ = 0;
 
 //--- configure fileSets  
   //std::cout << "--> configuring fileSets..." << std::endl;
   readCfgParameter<cfgEntryFileSet>(cfg, fileSets_);
+
+//--- check for errors in reading configuration parameters of fileSets
+  for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
+	fileSet != fileSets_.end(); ++fileSet ) {
+    if ( fileSet->second.cfgError_ ) {
+      edm::LogError ("DQMFileLoader") << " Error in Configuration Parameters of fileSet = " << fileSet->second.name_ << " !!";
+      cfgError_ = 1;
+    }
+  }
   
 //--- check that dqmDirectory_store configuration parameters are specified for all fileSets,
 //    unless there is only one fileSet to be loaded
@@ -143,7 +170,7 @@ DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
     }
   }
 
-  std::cout << "done." << std::endl;
+  //std::cout << "done." << std::endl;
 }
 
 DQMFileLoader::~DQMFileLoader() 
@@ -206,7 +233,7 @@ void DQMFileLoader::endJob()
       inputFile.Close();
     }
   }
-  
+
   //for ( std::map<std::string, sstring>::const_iterator inputFile = subDirectoryMap_.begin();
   //  	  inputFile != subDirectoryMap_.end(); ++inputFile ) {
   //  std::cout << "inputFile = " << inputFile->first << ":" << std::endl;
@@ -215,7 +242,7 @@ void DQMFileLoader::endJob()
   //    std::cout << " " << (*directory) << std::endl;
   //  }
   //}
-
+ 
 //--- load histograms from file
   //std::cout << "--> loading histograms from file..." << std::endl;
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
@@ -226,7 +253,7 @@ void DQMFileLoader::endJob()
       if ( verbosity ) std::cout << " opening inputFile = " << (*inputFileName) << std::endl;
       dqmStore.open(*inputFileName, true);
 
-      //if ( verbosity ) dqmStore.showDirStructure();
+      if ( verbosity ) dqmStore.showDirStructure();
       
 //--- if dqmDirectory_store specified in configuration parameters,
 //    move histograms from dqmRootDirectory to dqmDirectory_store
@@ -257,7 +284,7 @@ void DQMFileLoader::endJob()
 //    when processing first inputFile, check that histograms in outputDirectory do not yet exist;
 //    add histograms in inputFile to those in outputDirectory afterwards;
 //    clear inputDirectory once finished processing all inputFiles.
-	    int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 3;
+	    int mode = ( inputFileName == fileSet->second.inputFileNames_.begin() ) ? 1 : 2;
 	    dqmCopyRecursively(dqmStore, inputDirName_full, outputDirName_full, fileSet->second.scaleFactor_, mode, true);
 	  }
 	}
