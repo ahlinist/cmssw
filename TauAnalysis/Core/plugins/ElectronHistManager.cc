@@ -63,11 +63,24 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   // electrons in crack region excluded from histograms
   electronEtaMaxBarrel_ = 1.442;
   electronEtaMinEndcap_ = 1.560;
+
+//--- create "veto" objects for computation of IsoDeposit sums
+  electronTrkIsoParam_.push_back(IsoDepositVetoFactory::make("0.02"));
+  electronTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
+
+  electronEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  electronEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+
+  electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
 }
 
 ElectronHistManager::~ElectronHistManager()
 {
-//--- nothing to be done yet...
+//--- delete "veto" objects for computation of IsoDeposit sums
+  clearIsoParam(electronTrkIsoParam_);
+  clearIsoParam(electronEcalIsoParam_);
+  clearIsoParam(electronHcalIsoParam_);
 }
 
 void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
@@ -253,22 +266,13 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
   for ( unsigned iConeSize = 1; iConeSize <= numElectronIsoConeSizes_; ++iConeSize ) {
     float isoConeSize_i = iConeSize*electronIsoConeSizeIncr_;
     
-    reco::isodeposit::AbsVetos electronTrkIsoParam;
-    electronTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
-    electronTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-    float electronTrkIsoDeposit_i = patElectron.trackerIsoDeposit()->countWithin(isoConeSize_i, electronTrkIsoParam, false);
+    float electronTrkIsoDeposit_i = patElectron.trackerIsoDeposit()->countWithin(isoConeSize_i, electronTrkIsoParam_, false);
     hElectronTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronTrkIsoDeposit_i);
     
-    reco::isodeposit::AbsVetos electronEcalIsoParam;
-    electronEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    electronEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    float electronEcalIsoDeposit_i = patElectron.ecalIsoDeposit()->countWithin(isoConeSize_i, electronEcalIsoParam, false);
+    float electronEcalIsoDeposit_i = patElectron.ecalIsoDeposit()->countWithin(isoConeSize_i, electronEcalIsoParam_, false);
     hElectronEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronEcalIsoDeposit_i);
-    
-    reco::isodeposit::AbsVetos electronHcalIsoParam;
-    electronHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    electronHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    float electronHcalIsoDeposit_i = patElectron.hcalIsoDeposit()->countWithin(isoConeSize_i, electronHcalIsoParam, false);
+
+    float electronHcalIsoDeposit_i = patElectron.hcalIsoDeposit()->countWithin(isoConeSize_i, electronHcalIsoParam_, false);
     hElectronHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronHcalIsoDeposit_i);
   }
 }
