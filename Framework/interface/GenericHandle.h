@@ -35,6 +35,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Utilities/interface/UseReflex.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/Common/interface/ConvertHandle.h"
 
 // forward declarations
 namespace edm {
