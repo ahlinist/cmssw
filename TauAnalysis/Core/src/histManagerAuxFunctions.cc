@@ -16,3 +16,11 @@ void fillLeptonIsoDepositHistograms(const pat::IsoDeposit* isoDeposit,
     }
   }
 }
+
+void clearIsoParam(reco::isodeposit::AbsVetos& isoParam)
+{
+  for ( reco::isodeposit::AbsVetos::const_iterator it = isoParam.begin();
+	it != isoParam.end(); ++it ) {
+    delete (*it);
+  }
+}

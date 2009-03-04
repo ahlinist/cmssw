@@ -5,9 +5,8 @@
 
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 
-void fillLeptonIsoDepositHistograms(const pat::IsoDeposit* isoDeposit, 
-				    MonitorElement* isoDepositValProfile,
-				    MonitorElement* isoDepositEtaDistProfile, 
-				    MonitorElement* isoDepositPhiDistProfile);
+void fillLeptonIsoDepositHistograms(const pat::IsoDeposit*, MonitorElement*, MonitorElement*, MonitorElement*);
+
+void clearIsoParam(reco::isodeposit::AbsVetos&);
 
 #endif
