@@ -32,10 +32,10 @@ process.source = cms.Source("PoolSource",
 #--------------------------------------------------------------------------------
 
 process.selectedElectrons = cms.EDFilter("GsfElectronSelector",
-      src = cms.InputTag("pixelMatchGsfElectrons"),
-      cut = cms.string("pt > 8 & abs(eta) < 2.5 & eSuperClusterOverP>0.8 & eSuperClusterOverP<1.25"),
-      filter = cms.bool(True)
- )
+  src = cms.InputTag("pixelMatchGsfElectrons"),
+  cut = cms.string("pt > 8 & abs(eta) < 2.5 & eSuperClusterOverP>0.8 & eSuperClusterOverP<1.25"),
+  filter = cms.bool(True)
+)
 
 process.selectedPFTaus = cms.EDFilter("PFTauSelector",
   src = cms.InputTag('pfRecoTauProducer'),
