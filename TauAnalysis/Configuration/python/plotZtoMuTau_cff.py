@@ -150,7 +150,8 @@ plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
       textColor = cms.int32(1),           
       textSize = cms.double(0.04),        
       textAlign = cms.int32(22),          
-#     textAngle = cms.double(0.),         
+#     textAngle = cms.double(0.),
+      text = cms.vstring('P_{T} > 5 GeV')
     ),
     eta = cms.PSet(
       posX = cms.double(0.19),
