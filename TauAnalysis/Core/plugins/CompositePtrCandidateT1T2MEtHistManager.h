@@ -37,6 +37,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidatePt_;
   MonitorElement* hDiTauCandidateEta_;
   MonitorElement* hDiTauCandidatePhi_;
+  MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
 
   MonitorElement* hVisPt_;

@@ -53,6 +53,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms(const edm::E
     hDiTauCandidatePt_ = dqmStore.book1D("DiTauCandidatePt", "DiTauCandidatePt", 75, 0., 150.);
     hDiTauCandidateEta_ = dqmStore.book1D("DiTauCandidateEta", "DiTauCandidateEta", 100, -5., +5.);
     hDiTauCandidatePhi_ = dqmStore.book1D("DiTauCandidatePhi", "DiTauCandidatePhi", 36, -TMath::Pi(), +TMath::Pi());
+    hDiTauCandidateCharge_ = dqmStore.book1D("DiTauCandidateCharge", "DiTauCandidateCharge", 11, -5.5, +5.5);
     hDiTauCandidateMass_ = dqmStore.book1D("DiTauCandidateMass", "DiTauCandidateMass", 50, 0., 250.);
 
     hVisPt_ = dqmStore.book1D("VisPt", "VisPt", 50, 0., 100.);
@@ -109,6 +110,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     hDiTauCandidatePt_->Fill(diTauCandidate->pt());
     hDiTauCandidateEta_->Fill(diTauCandidate->eta());
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi());
+    hDiTauCandidateCharge_->Fill(diTauCandidate->charge());
     hDiTauCandidateMass_->Fill(diTauCandidate->mass());
 
     hVisPt_->Fill(diTauCandidate->p4Vis().pt());
