@@ -17,8 +17,8 @@ from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_S
 process.source = source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerAnalysisData/RelValQCD_Pt_80_120_CMSSW_2_1_10_IDEAL_V9_v2_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO.root"
-	"file:test.root"
+ 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
+#	"file:test.root"
     )
 )
 
@@ -33,15 +33,15 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"), # choose one which matched to pf tau collection you are using above
         PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationHighEfficiency"),
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT"),
-	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT"),
+	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
+	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
 	L1JetMatchingCone	= cms.double(0.5),
         L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
         L2matchingDeltaR        = cms.double(0.3),
-        l25JetSource            = cms.InputTag("hltL25TauPixelTracksConeIsolation"),
-        l25PtCutSource          = cms.InputTag("hltL25TauPixelTracksLeadingTrackPtCutSelector"),
-        l25IsoSource            = cms.InputTag("hltL25TauPixelTracksIsolationSelector"),
+        l25JetSource            = cms.InputTag("hltL25TauConeIsolation"),
+        l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
+        l25IsoSource            = cms.InputTag("hltL25TauIsolationSelector"),
         l25MatchingCone         = cms.double(0.3),
         outputFileName          = cms.string("tteffAnalysis.root")
 )
