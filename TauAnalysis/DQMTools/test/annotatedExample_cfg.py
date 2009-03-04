@@ -1,4 +1,6 @@
-#
+import FWCore.ParameterSet.Config as cms
+
+#--------------------------------------------------------------------------------
 # Example python configuration file for
 # DQM Histogram plotting utility
 #
@@ -6,16 +8,24 @@
 # please send an email to:
 #
 #  Christian Veelken ( christian.veelken@cern.ch )
-#
+#--------------------------------------------------------------------------------
 
-import FWCore.ParameterSet.Config as cms
+process = cms.Process('annotatedExample')
+
+process.DQMStore = cms.Service("DQMStore")
+
+process.maxEvents = cms.untracked.PSet(            
+  input = cms.untracked.int32(0)         
+)
+
+process.source = cms.Source("EmptySource")
 
 #
 # configuration parameters for DQMFileLoader class
 #--> load histograms from .root files into DQMStore;
 #    histograms get stored in the directory specified by dqmDirectory_store
 #
-loadMuMu = cms.EDAnalyzer("DQMFileLoader",
+process.loadMuMu = cms.EDAnalyzer("DQMFileLoader",
   zMuMu1kEv = cms.PSet(
 #
 # load all histograms contained in file annotatedExample_zMuMu1kEv.root;
@@ -55,7 +65,7 @@ loadMuMu = cms.EDAnalyzer("DQMFileLoader",
 #--> retrieve all histograms within directories specified by dqmDirectories_input from DQMStore and add them;
 #    the results get stored in the directory specified by dqmDirectory_output
 #
-addMuMu = cms.EDAnalyzer("DQMHistAdder",
+process.addMuMu = cms.EDAnalyzer("DQMHistAdder",
   smSum = cms.PSet(
 #
 # sum dummy "signal" and dummy "background" histograms;
@@ -76,7 +86,7 @@ addMuMu = cms.EDAnalyzer("DQMHistAdder",
 #     -----------------------
 #          muons tested
 #
-compEffMuon = cms.EDAnalyzer("DQMHistEffProducer",
+process.compEffMuon = cms.EDAnalyzer("DQMHistEffProducer",
   plots = cms.PSet(
     muonHLTmatchEff = cms.PSet(
       numerator = cms.string('/DQMData/MuonQuantities/MuonHLTmatchSel#PAR#'),
@@ -116,7 +126,7 @@ compEffMuon = cms.EDAnalyzer("DQMHistEffProducer",
 #--> retrieve histograms that are to be plotter from DQMStore and draw them;
 #    drawing options supported by ROOT can be specified in a flexible way by configuration parameters 
 #
-plotMuMu = cms.EDAnalyzer("DQMHistPlotter",
+process.plotMuMu = cms.EDAnalyzer("DQMHistPlotter",
   processes = cms.PSet(
 #
 # define dummy "signal" and dummy "backgound" to be Standard Model Monte Carlo contributions;
@@ -642,12 +652,13 @@ plotMuMu = cms.EDAnalyzer("DQMHistPlotter",
   #indOutputFileName = cms.string('#PLOT#_zMuMu.png')
 )
 
-saveMuMu = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveMuMu = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('annotatedExample_allProcesses.root')
 )
  
-process.p = cms.Path( loadMuMu
-                     +addMuMu
-                     +compEffMuon
-                     +plotMuMu
-                     +saveMuMu )
+process.p = cms.Path( process.loadMuMu
+                     +process.addMuMu
+                     +process.compEffMuon
+                     +process.saveMuMu
+                     +process.plotMuMu )
+
