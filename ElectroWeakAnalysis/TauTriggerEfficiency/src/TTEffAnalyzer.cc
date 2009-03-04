@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.13 2009/02/18 07:50:21 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.14 2009/02/24 19:15:25 smaruyam Exp $
 //
 //
 
@@ -55,8 +55,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
   _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
 
-//  _L1analyzer.Setup(iConfig,_TTEffTree);
-//  _L2analyzer.Setup(iConfig,_TTEffTree);
+  _L1analyzer.Setup(iConfig,_TTEffTree);
+  _L2analyzer.Setup(iConfig,_TTEffTree);
   _L25analyzer.Setup(iConfig,_TTEffTree);
 
 }
@@ -87,10 +87,11 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
    Handle<PFTauDiscriminatorByIsolation> thePFTauDiscriminatorByIsolation;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
-     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
-      else loop(iEvent, *PFTaus);
-    }  
+////      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
+////     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
+////      else 
+	loop(iEvent, *PFTaus);
+   }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
    }
