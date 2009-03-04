@@ -7,6 +7,16 @@
 #include <vector>
 #include <cmath>
 
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDFilter.h"
+
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 template<typename T> std::string obj2str(T n) {
 	std::ostringstream oss;
 	oss << n;
@@ -29,6 +39,24 @@ template<typename u> std::vector<u> arrToVec(u a[], int size) {
 namespace pftools {
 double deltaR(const double& eta1, const double& eta2, const double& phi1,
 		const double& phi2);
+
+template<class T> void getCollection(edm::Handle<T>& c,
+		const edm::InputTag& tag, const edm::Event& event) {
+
+	try {
+		event.getByLabel(tag, c);
+		if (!c.isValid()) {
+			edm::LogProblem("pftools::operations::getCollection")
+					<< "Warning! Collection for label " << tag
+					<< " is not valid!" << std::endl;
+		}
+	} catch (cms::Exception& err) {
+		edm::LogError("pftools::operations::getCollection")
+				<< "Couldn't get collection\n";
+		throw err;
+
+	}
+}
 
 }
 

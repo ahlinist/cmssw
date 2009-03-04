@@ -24,9 +24,10 @@ private:
 	virtual bool filter(edm::Event&, const edm::EventSetup&);
 	virtual void endJob();
 
-	pftools::ParticleFiltrationDelegate* fd_;
+	pftools::ParticleFiltrationDelegate* pfd_;
 
-	std::string tbType_;
+	std::string pfdType_;
+	std::string tbfdType_;
 
 };
 

@@ -8,8 +8,8 @@ using namespace edm;
 using namespace reco;
 
 EventDelegate::EventDelegate() :
-	thisEventPasses_(false), nWrites_(0), nFails_(0), nParticleWrites_(0),
-			nParticleFails_(0), tree_(0), thisEventCalibs_(0) {
+	thisEventPasses_(false), thisEventCalibs_(0), nWrites_(0), nFails_(0),
+			nParticleWrites_(0), nParticleFails_(0), tree_(0) {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
 }
 
@@ -23,7 +23,7 @@ void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
 	calib_ = new Calibratable();
 	tree_->Branch("Calibratable", "pftools::Calibratable", &calib_, 32000, 2);
 	getTags(parameters);
-	LogInfo("\tEventDelegate initialiation complete.\n");
+	LogInfo("\tEventDelegate initialisation complete.\n");
 	initCore(parameters);
 
 }
@@ -32,7 +32,7 @@ void EventDelegate::init(const edm::ParameterSet& parameters) {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
 	calib_ = new Calibratable();
 	getTags(parameters);
-	LogInfo("\tEventDelegate initialiation complete.\n");
+	LogInfo("\tEventDelegate initialisation complete.\n");
 	initCore(parameters);
 
 }
