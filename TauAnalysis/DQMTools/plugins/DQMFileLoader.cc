@@ -102,9 +102,11 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
   }
 
   scaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : defaultScaleFactor;
+  //std::cout << " scaleFactor = " << scaleFactor_ << std::endl;
 
   //dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : name_;
   dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : "";
+  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   if ( verbosity ) print();
 }
