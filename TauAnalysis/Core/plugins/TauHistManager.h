@@ -80,6 +80,10 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauEcalIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauHcalIsoPtConeSizeDep_;
   
+  reco::isodeposit::AbsVetos tauTrkIsoParam_;
+  reco::isodeposit::AbsVetos tauEcalIsoParam_;
+  reco::isodeposit::AbsVetos tauHcalIsoParam_;
+
 //--- IsoDeposits reconstructed from Partcile Flow
   MonitorElement* hTauParticleFlowIsoPt_;
   MonitorElement* hTauPFChargedHadronIsoPt_;
@@ -90,6 +94,8 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauPFChargedHadronIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauPFNeutralHadronIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauPFGammaIsoPtConeSizeDep_;
+
+  reco::isodeposit::AbsVetos tauParticleFlowIsoParam_;
 };
 
 #endif  

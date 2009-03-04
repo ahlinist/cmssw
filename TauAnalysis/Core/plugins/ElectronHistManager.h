@@ -85,6 +85,10 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronHcalIsoEtaDistProfile_;
   MonitorElement* hElectronHcalIsoPhiDistProfile_;
 
+  reco::isodeposit::AbsVetos electronTrkIsoParam_;
+  reco::isodeposit::AbsVetos electronEcalIsoParam_;
+  reco::isodeposit::AbsVetos electronHcalIsoParam_;
+
   std::vector<MonitorElement*> hElectronTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronEcalIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronHcalIsoPtConeSizeDep_;

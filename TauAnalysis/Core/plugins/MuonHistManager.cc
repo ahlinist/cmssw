@@ -56,11 +56,24 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   muonIsoConeSizeIncr_ = 0.1;
   numMuonIsoPtThresholds_ = 4;
   muonIsoPtThresholdIncr_ = 0.5;
+
+//--- create "veto" objects for computation of IsoDeposit sums
+  muonTrkIsoParam_.push_back(IsoDepositVetoFactory::make("0.02"));
+  muonTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
+  
+  muonEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  muonEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+
+  muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
 }
 
 MuonHistManager::~MuonHistManager()
 {
-//--- nothing to be done yet...
+//--- delete "veto" objects for computation of IsoDeposit sums
+  clearIsoParam(muonTrkIsoParam_);
+  clearIsoParam(muonEcalIsoParam_);
+  clearIsoParam(muonHcalIsoParam_);
 }
 
 void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
@@ -240,22 +253,13 @@ void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon)
   for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
     double isoConeSize_i = iConeSize*muonIsoConeSizeIncr_;
     
-    reco::isodeposit::AbsVetos muonTrkIsoParam;
-    muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("0.02"));
-    muonTrkIsoParam.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-    double muonTrkIsoDeposit_i = patMuon.trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam, false);
+    double muonTrkIsoDeposit_i = patMuon.trackerIsoDeposit()->countWithin(isoConeSize_i, muonTrkIsoParam_, false);
     hMuonTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonTrkIsoDeposit_i);
     
-    reco::isodeposit::AbsVetos muonEcalIsoParam;
-    muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    muonEcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    double muonEcalIsoDeposit_i = patMuon.ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam, false);
+    double muonEcalIsoDeposit_i = patMuon.ecalIsoDeposit()->countWithin(isoConeSize_i, muonEcalIsoParam_, false);
     hMuonEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonEcalIsoDeposit_i);
     
-    reco::isodeposit::AbsVetos muonHcalIsoParam;
-    muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    muonHcalIsoParam.push_back(IsoDepositVetoFactory::make("0.0"));
-    double muonHcalIsoDeposit_i = patMuon.hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam, false);
+    double muonHcalIsoDeposit_i = patMuon.hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam_, false);
     hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i);
   }
 }

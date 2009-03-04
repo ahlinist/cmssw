@@ -86,6 +86,10 @@ class MuonHistManager : public HistManagerBase
   std::vector<MonitorElement*> hMuonTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hMuonEcalIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hMuonHcalIsoPtConeSizeDep_;
+
+  reco::isodeposit::AbsVetos muonTrkIsoParam_;
+  reco::isodeposit::AbsVetos muonEcalIsoParam_;
+  reco::isodeposit::AbsVetos muonHcalIsoParam_;
 };
 
 #endif  
