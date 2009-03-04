@@ -5,8 +5,9 @@ using namespace pftools;
 using namespace edm;
 using namespace std;
 
+
 ParticleFiltrationDelegate::ParticleFiltrationDelegate() :
-	particle_("Pi+-") {
+	particle_("Pi+-"), thisEventPasses_(true), debug_(0), nPasses_(0), nFails_(0) {
 	LogDebug("ParticleFiltrationDelegate") << __PRETTY_FUNCTION__ << std::endl;
 	pdgCodes_.push_back(211);
 	pdgCodes_.push_back(-211);
@@ -22,6 +23,13 @@ bool ParticleFiltrationDelegate::isGoodParticleCore(edm::Event& event,
 	LogProblem("ParticleFiltrationDelegate")
 			<< "Subclass of ParticleFiltrationDelegate hasn't overridden isGoodParticleCore! Letting event pass anyway..."
 			<< std::endl;
-	return true;
+	return thisEventPasses_;
+}
+
+void ParticleFiltrationDelegate::getTags(const edm::ParameterSet& parameters) {
+	LogDebug("ParticleFiltrationDelegate") << __PRETTY_FUNCTION__ << std::endl;
+	debug_ = parameters.getParameter<int> ("debug");
+	getTagsCore(parameters);
+
 }
 

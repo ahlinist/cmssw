@@ -89,11 +89,6 @@ public:
 
 	void getTags(const edm::ParameterSet& parameters);
 
-	/*
-	 * Returns the collection in the event matching the Handle.
-	 */
-	template<class T> void getCollection(edm::Handle<T>& c,
-			const edm::InputTag& tag, const edm::Event& event) const;
 
 protected:
 	//Subclasses should override these methods to request their own tags
@@ -136,8 +131,7 @@ protected:
 	bool thisParticlePasses_;
 	//Simple on/off vetos
 	std::map<std::string, bool> vetos_;
-	//The Calibratable tree
-	TTree* tree_;
+
 
 	std::vector<pftools::Calibratable>* thisEventCalibs_;
 	//Some diagnostic histograms;
@@ -152,23 +146,11 @@ protected:
 	unsigned nWrites_, nFails_;
 	unsigned nParticleWrites_, nParticleFails_;
 
+	//The Calibratable tree
+	TTree* tree_;
+
 };
 
-template<class T> void EventDelegate::getCollection(edm::Handle<T>& c,
-		const edm::InputTag& tag, const edm::Event& event) const {
 
-	try {
-		event.getByLabel(tag, c);
-		if(!c.isValid()) {
-			std::cout << "Warning! Collection for label " << tag << " is not valid!" << std::endl;
-		}
-	}
-	catch (cms::Exception& err) {
-		std::cout << "Couldn't get collection\n";
-		throw err;
-		//std::ostringstream err;
-		//LogError("Error getting collection!") << err;
-	}
-}
 
 #endif /*EVENTDELEGATE_H_*/
