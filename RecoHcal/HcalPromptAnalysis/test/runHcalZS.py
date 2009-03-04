@@ -8,7 +8,7 @@ process = cms.Process("HcalZS")
 
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20000)
+    input = cms.untracked.int32(1000)
 )
 
 #-----------------------------
@@ -64,7 +64,8 @@ process.hcalZS = cms.EDAnalyzer ("HcalZS",
                                  thresholdHB = cms.untracked.int32(7),
                                  thresholdHE = cms.untracked.int32(7),
                                  thresholdHO = cms.untracked.int32(7),
-                                 thresholdHF = cms.untracked.int32(7)
+                                 thresholdHF = cms.untracked.int32(7),
+                                 thresholdCalib = cms.untracked.int32(0)
                                  )
 
 

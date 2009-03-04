@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.4 2009/02/14 13:26:27 santanas Exp $
+// $Id: HcalZS.cc,v 1.5 2009/03/03 19:31:53 santanas Exp $
 //
 //
 
@@ -96,16 +96,17 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
   NtotEvents = 0;
   NtotDigis = 0;
 
-  thresholdHB_ = iConfig.getUntrackedParameter < int > ("thresholdHB", 8);
-  thresholdHE_ = iConfig.getUntrackedParameter < int > ("thresholdHE", 8);
-  thresholdHO_ = iConfig.getUntrackedParameter < int > ("thresholdHO", 8);
+  thresholdHB_ = iConfig.getUntrackedParameter < int > ("thresholdHB", 9);
+  thresholdHE_ = iConfig.getUntrackedParameter < int > ("thresholdHE", 9);
+  thresholdHO_ = iConfig.getUntrackedParameter < int > ("thresholdHO", 9);
   thresholdHF_ = iConfig.getUntrackedParameter < int > ("thresholdHF", 9);
+  thresholdCalib_ = iConfig.getUntrackedParameter < int > ("thresholdCalib", 9);
 
   cout << "using digi thresholdHB_ = " << thresholdHB_ << endl;
   cout << "using digi thresholdHE_ = " << thresholdHE_ << endl;
   cout << "using digi thresholdHO_ = " << thresholdHO_ << endl;
   cout << "using digi thresholdHF_ = " << thresholdHF_ << endl;
-
+  cout << "using digi thresholdCalib_ = " << thresholdCalib_ << endl;
 }
 
 
@@ -364,8 +365,8 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // 	 cout << "ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_): "
 	 // 	      << ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) << endl;
 	 //if( digi.zsMarkAndPass() )
-	   if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) != digi.zsMarkAndPass() )
-	     agree = true;
+	 if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) != digi.zsMarkAndPass() )
+	   agree = true;
 
 	 h_ZSagree->Fill(agree);
 
@@ -390,6 +391,45 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
        }// end loop of HF digi
    }//end check if hf_digi exists
+
+
+   //calibration channels
+   edm::Handle<HcalCalibDigiCollection> calib;
+   iEvent.getByType(calib);
+   const HcalCalibDigiCollection* calib_digi = calib.failedToGet () ? 0 : &*calib;
+   
+   if(calib_digi) { // object is available 
+     
+     for(HcalCalibDigiCollection::const_iterator calibdigi=calib_digi->begin();calibdigi!=calib_digi->end();calibdigi++)
+       {
+
+	 // int nTS=calibdigi->size();
+	 // double e=0;
+	 // for(int i=0;i<nTS;i++){ e+=calibdigi->sample(i).adc(); }
+	 // 	 printf("hcalSubdet: %i ieta: %i iphi: %i Energy: %f\n",
+	 // 		calibdigi->id().hcalSubdet(),calibdigi->id().ieta(),calibdigi->id().iphi(),e);
+
+	 const HcalCalibDataFrame digi = (const HcalCalibDataFrame)(*calibdigi);
+	 bool agree = false;
+
+	 //cout << "HF digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
+	 h_calib_US->Fill(digi.zsUnsuppressed());
+	 if(digi.zsUnsuppressed() != 1)
+	   continue;
+
+	 //count digis
+	 NtotDigis++;
+
+	 //-- ZS Emulation
+	 h_calib_zsEmulation->Fill( ZSRealistic_impl::keepMe<HcalCalibDataFrame>(digi,thresholdCalib_) );
+	 if ( ZSRealistic_impl::keepMe<HcalCalibDataFrame>(digi,thresholdCalib_) != digi.zsMarkAndPass() )
+	   agree = true;
+
+	 h_ZSagree_calib->Fill(agree);
+	 h_ZSagree->Fill(agree);
+
+       }
+   }
 
    //increment number of events
    NtotEvents++;
@@ -419,10 +459,18 @@ void HcalZS::beginJob(const edm::EventSetup&)
 					    "h_hfdigi_zsEmulation",
 					    2, -0.5, 1.5);
 
+  h_calib_zsEmulation = HcalDir.make<TH1F>("h_calib_zsEmulation",
+					   "h_calib_zsEmulation",
+					   2, -0.5, 1.5);
+
   //ZS global agree
   h_ZSagree = HcalDir.make<TH1F>("h_ZSagree",
 				 "h_ZSagree",
 				 2, -0.5, 1.5);
+
+  h_ZSagree_calib = HcalDir.make<TH1F>("h_ZSagree_calib",
+				       "h_ZSagree_calib",
+				       2, -0.5, 1.5);
 
   //US
   h_hbhe_US = HcalDir.make<TH1F>("h_hbhe_US",
@@ -434,6 +482,9 @@ void HcalZS::beginJob(const edm::EventSetup&)
   h_hf_US = HcalDir.make<TH1F>("h_hf_US",
 			       "h_hf_US",
 			       2, -0.5, 1.5);
+  h_calib_US = HcalDir.make<TH1F>("h_calib_US",
+				  "h_calib_US",
+				  2, -0.5, 1.5);
 
   //M&P agreement
   h_hbhf_d1 = HcalDir.make<TH2F>("h_hcal_hbhfd1","HB HF Depth1",
