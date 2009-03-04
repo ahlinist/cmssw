@@ -14,6 +14,9 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlockElementFwd.h"
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+
+#include "RecoParticleFlow/PFAnalyses/interface/operations.h"
+
 #include <exception>
 #include <TFile.h>
 #include <TH1.h>
@@ -250,7 +253,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			if ((applyThresholdsToRawRecHits_ && erh.energy() > 0.08)
 					|| !applyThresholdsToRawRecHits_) {
 				//compute delta R
-				double dR = deltaR(thisCell->getPosition().eta(),
+				double dR = pftools::deltaR(thisCell->getPosition().eta(),
 						thisRun_->ecalEta_, thisCell->getPosition().phi(),
 						thisRun_->ecalPhi_);
 				if (dR < deltaRRecHitsToCenterECAL_
@@ -278,7 +281,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			if ((applyThresholdsToRawRecHits_ && hrh.energy() > 0.8)
 					|| !applyThresholdsToRawRecHits_) {
 				//compute delta R
-				double dR = deltaR(thisCell->getPosition().eta(),
+				double dR = pftools::deltaR(thisCell->getPosition().eta(),
 						thisRun_->hcalEta_, thisCell->getPosition().phi(),
 						thisRun_->hcalPhi_);
 				if (dR < deltaRRecHitsToCenterHCAL_
@@ -318,7 +321,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	for (std::vector<PFRecHit>::const_iterator rhIt = ecalRecHits.begin(); rhIt
 			!= ecalRecHits.end(); ++rhIt) {
 		const PFRecHit& rh = *rhIt;
-		double dR = deltaR(rh.positionREP().eta(), thisRun_->ecalEta_,
+		double dR = pftools::deltaR(rh.positionREP().eta(), thisRun_->ecalEta_,
 				rh.positionREP().phi(), thisRun_->ecalPhi_);
 		if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
 			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
@@ -330,7 +333,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	for (std::vector<PFRecHit>::const_iterator rhIt = hcalRecHits.begin(); rhIt
 			!= hcalRecHits.end(); ++rhIt) {
 		const PFRecHit& rh = *rhIt;
-		double dR = deltaR(rh.positionREP().eta(), thisRun_->hcalEta_,
+		double dR = pftools::deltaR(rh.positionREP().eta(), thisRun_->hcalEta_,
 				rh.positionREP().phi(), thisRun_->hcalPhi_);
 		if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
 			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
@@ -347,7 +350,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		for (std::vector<PFCluster>::const_iterator eit = ecalClusters.begin(); eit
 				!= ecalClusters.end(); ++eit) {
 			const PFCluster theCluster = *eit;
-			double dR = deltaR(theCluster.positionREP().eta(),
+			double dR = pftools::deltaR(theCluster.positionREP().eta(),
 					thisRun_->ecalEta_, theCluster.positionREP().phi(),
 					thisRun_->ecalPhi_);
 			if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
@@ -363,7 +366,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		for (std::vector<PFCluster>::const_iterator hit = hcalClusters.begin(); hit
 				!= hcalClusters.end(); ++hit) {
 			const PFCluster theCluster = *hit;
-			double dR = deltaR(theCluster.positionREP().eta(),
+			double dR = pftools::deltaR(theCluster.positionREP().eta(),
 					thisRun_->hcalEta_, theCluster.positionREP().phi(),
 					thisRun_->hcalPhi_);
 			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
@@ -471,11 +474,11 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	}
 	bool noiseCandidate(false);
 	//Photon from noise
-	if (cw.type_ == 4 && deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
+	if (cw.type_ == 4 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
 			thisRun_->ecalPhi_) > deltaRPhotonsToTrack_)
 		noiseCandidate = true;
 	//eta and phi defined at ECAL front surface so deltaR drawn relative to that
-	if (cw.type_ == 5 && deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
+	if (cw.type_ == 5 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
 			thisRun_->ecalPhi_) > deltaRNeutralsToTrack_)
 		noiseCandidate = true;
 

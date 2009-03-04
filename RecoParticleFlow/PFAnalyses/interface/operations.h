@@ -22,11 +22,14 @@ template<typename T> T* vecToArr(std::vector<T> input) {
 
 //This does work.
 template<typename u> std::vector<u> arrToVec(u a[], int size) {
-	std::vector<u> ans(a, a+size);
+	std::vector<u> ans(a, a + size);
 	return ans;
 }
 
-double detaR(const double& eta1, const double& eta2,
-		const double& phi1, const double& phi2);
+namespace pftools {
+double deltaR(const double& eta1, const double& eta2, const double& phi1,
+		const double& phi2);
+
+}
 
 #endif

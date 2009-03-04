@@ -22,6 +22,8 @@
 #include "DataFormats/ParticleFlowReco/interface/Calibratable.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
+#include "RecoParticleFlow/PFAnalyses/interface/operations.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -124,8 +126,8 @@ protected:
 	 */
 	bool within(double origin, double bound, double test);
 
-	double deltaR(const double& eta1, const double& eta2, const double& phi1,
-			const double& phi2);
+//	double deltaR(const double& eta1, const double& eta2, const double& phi1,
+//			const double& phi2);
 
 	//Debug?
 	int debug_;
