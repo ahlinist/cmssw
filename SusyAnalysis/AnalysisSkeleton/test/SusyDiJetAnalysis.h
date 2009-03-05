@@ -435,12 +435,16 @@ private:
   float genPx[1000];
   float genPy[1000];
   float genPz[1000];
-  float genPhi[1000];
-  float genEta[1000];
   int genStatus[1000];
 
-
-
+  int genLepLength;
+  int genLepIds[100];
+  int genLepRefs[100];
+  float genLepE[100];
+  float genLepPx[100];
+  float genLepPy[100];
+  float genLepPz[100];
+  int genLepStatus[100];
 
   double mTempTreeEventWeight;
   int    mTempTreeProcID;
