@@ -4,7 +4,7 @@ particleFiltration = cms.EDFilter("ParticleFilter",
                             
     ParticleFiltrationDelegateType=cms.string('TestbeamFiltrationDelegate'),
     # Set up to 7 to get outrageous amounts of output
-    debug=cms.int32(5),
+    debug=cms.int32(2),
 
     # Reject spurious events where the HCAL has some terrible noise
     # = 0, don't do this, > 0 multiple of beam energy found in HCAL before event is rejected

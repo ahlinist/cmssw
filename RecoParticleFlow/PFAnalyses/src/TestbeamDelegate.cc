@@ -26,11 +26,9 @@ using namespace std;
 using namespace reco;
 using namespace pftools;
 
-
 TestbeamDelegate::TestbeamDelegate(bool isMC) :
-	isMC_(isMC), applyCleaningCuts_(true), computeVetos_(true),
-			applyThresholdsToRawRecHits_(false), identifyCleanParticles_(true),
-			saveAllCleanParticles_(true), clustersFromCandidates_(true),
+	isMC_(isMC), applyCleaningCuts_(true), saveJustPions_(true),
+			applyThresholdsToRawRecHits_(false), clustersFromCandidates_(true),
 			stripAnomalousEvents_(0), maxEventsFromEachRun_(0),
 			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
 			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
@@ -44,7 +42,6 @@ TestbeamDelegate::TestbeamDelegate(bool isMC) :
 void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 
 	applyCleaningCuts_ = parameters.getParameter<bool> ("applyCleaningCuts");
-	computeVetos_ = parameters.getParameter<bool> ("computeVetos");
 	stripAnomalousEvents_ = parameters.getParameter<unsigned> (
 			"stripAnomalousEvents");
 	maxEventsFromEachRun_ = parameters.getParameter<unsigned> (
@@ -59,10 +56,8 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			"deltaRPhotonsToTrack");
 	deltaRNeutralsToTrack_ = parameters.getParameter<double> (
 			"deltaRPhotonsToTrack");
-	identifyCleanParticles_ = parameters.getParameter<bool> (
-			"identifyCleanParticles");
-	saveAllCleanParticles_ = parameters.getParameter<bool> (
-			"saveAllCleanParticles");
+	saveJustPions_ = parameters.getParameter<bool> (
+			"saveJustPions");
 	clustersFromCandidates_ = parameters.getParameter<bool> (
 			"clustersFromCandidates");
 
@@ -117,68 +112,40 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			> 0) {
 		return false;
 	}
-	char vetosPassed = 31;
-	if (computeVetos_) {
-		if (isNotMuon() < DEFINITEYES) {
-			++muonCands_;
-			if (applyCleaningCuts_)
-				thisEventPasses_ = false;
-			vetosPassed -= 4;
-		}
-		if (isSingleMIP() < DEFINITEYES) {
-			++nonMipCands_;
-			if (applyCleaningCuts_)
-				thisEventPasses_ = false;
-			vetosPassed -= 1;
-		}
-		if (noBeamHalo() < DEFINITEYES) {
-			++beamHaloCands_;
-			if (applyCleaningCuts_)
-				thisEventPasses_ = false;
-			vetosPassed -= 2;
-		}
-		if (isCerenkovPion() < DEFINITEYES) {
-			++cerenkovNonPions_;
-			if (applyCleaningCuts_)
-				thisEventPasses_ = false;
-			vetosPassed -= 16;
-		}
-		if (isTOFPion() < DEFINITEYES) {
-			++tofNonPions_;
-			if (applyCleaningCuts_)
-				thisEventPasses_ = false;
-			vetosPassed -= 8;
-		}
 
-	}
-	Quality electron(UNLIKELY);
-	Quality proton(UNLIKELY);
-	//If it passes singleMip, Beam halo and not muon counters, it may be an electron or proton
-	if (vetosPassed == 7 || vetosPassed == 15 || vetosPassed == 23) {
-		electron = isCerenkovElectronCandidate();
-		proton = isCerenkovProtonKaonCandidate();
+	//NEW! Use filtration object
+	ParticleFiltrationDecisionCollection decisions = **filtration_;
 
-		if (electron == DEFINITEYES && proton == DEFINITEYES) {
-			//something's gone awry!
-			if (debug_ > 3)
-				LogInfo("TestbeamDelegate")
-						<< "\tCould be both an electron and a proton?\n";
-		} else {
-			if (electron == DEFINITEYES) {
-				++electronCandidates_;
-				if (debug_ > 4)
-					LogInfo("TestbeamDelegate") << "\tIt's an electron.\n";
-			} else if (proton == DEFINITEYES) {
-				++protonKaonCandidates_;
-				if (debug_ > 4)
-					LogInfo("TestbeamDelegate") << "\tIt's a proton/kaon.\n";
-			}
-			if (electron == DEFINITEYES || proton == DEFINITEYES) {
-				if (saveAllCleanParticles_)
-					thisEventPasses_ = true;
-			}
-		}
+	if (decisions.size() > 1) {
+		LogProblem("TestbeamDelegate")
+				<< "\tMore than one ParticleFiltrationDecision... I can't handle that.\n"
+				<< "\tI used to be indecisive. Now I'm not so sure.\n";
+		thisEventPasses_ = false;
 	}
+
+	if (decisions.size() == 0) {
+		LogProblem("TestbeamDelegate")
+				<< "\tNo ParticleFiltrationDecision found... I can't handle that.\n";
+		thisEventPasses_ = false;
+		return false;
+	}
+
+	ParticleFiltrationDecision decision = decisions[0];
+
+	if (decision.type_ == ParticleFiltrationDecision::OTHER && applyCleaningCuts_) {
+		if (debug_ > 3 )
+			LogInfo("TestbeamDelegate")
+					<< "\tNo clean particle found according to decision.\n";
+		thisEventPasses_ = false;
+	}
+
+	if (decision.type_ != ParticleFiltrationDecision::PION && saveJustPions_) {
+		if (debug_ > 3 )
+			LogInfo("TestbeamDelegate")
+					<< "\tNot a pion - therefore skipping.\n";
+		thisEventPasses_ = false;
+	}
+
 
 	if (debug_ > 3 && !thisEventPasses_) {
 		LogInfo("TestbeamDelegate") << "\tEvent doesn't pass cut criteria.\n";
@@ -198,17 +165,21 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 
 	calib_->tb_pdg_ = thisRun_->particlePDG_;
 
-	if (identifyCleanParticles_ && electron == DEFINITEYES)
+	if (decision.type_ == ParticleFiltrationDecision::ELECTRON)
 		calib_->tb_pdg_ = 11;
-	else if (identifyCleanParticles_ && proton == DEFINITEYES)
+	else if (decision.type_ == ParticleFiltrationDecision::PROTON_KAON
+			|| decision.type_ == ParticleFiltrationDecision::PROTON)
 		calib_->tb_pdg_ = 2212;
-	else if (identifyCleanParticles_ && vetosPassed != 31)
+	else if (decision.type_ == ParticleFiltrationDecision::MUON)
+		calib_->tb_pdg_ = 12;
+	else if (decision.type_ == ParticleFiltrationDecision::OTHER) {
 		calib_->tb_pdg_ = 0;
+	}
 
 	calib_->tb_run_ = thisRun_->runNumber_;
 	calib_->tb_eta_ = thisRun_->tableEta_;
 	calib_->tb_phi_ = thisRun_->tablePhi_;
-	calib_->tb_vetosPassed_ = vetosPassed;
+	calib_->tb_vetosPassed_ = decision.vetosPassed_;
 
 	HcalTBBeamCounters counters = **beamCounters_;
 	calib_->tb_ck3_ = counters.CK3adc();
@@ -353,7 +324,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			double dR = pftools::deltaR(theCluster.positionREP().eta(),
 					thisRun_->ecalEta_, theCluster.positionREP().phi(),
 					thisRun_->ecalPhi_);
-			if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
+			if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_
+					<= 0) {
 				CalibratableElement d(theCluster.energy(),
 						theCluster.positionREP().eta(),
 						theCluster.positionREP().phi(), theCluster.layer());
@@ -369,7 +341,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			double dR = pftools::deltaR(theCluster.positionREP().eta(),
 					thisRun_->hcalEta_, theCluster.positionREP().phi(),
 					thisRun_->hcalPhi_);
-			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
+			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_
+					<= 0) {
 				CalibratableElement d(theCluster.energy(),
 						theCluster.positionREP().eta(),
 						theCluster.positionREP().phi(), theCluster.layer());
@@ -552,6 +525,8 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	//		return;
 	//	}
 
+	filtration_ = new Handle<ParticleFiltrationDecisionCollection> ;
+
 	runData_ = new Handle<HcalTBRunData> ;
 	timing_ = new Handle<HcalTBTiming> ;
 	eventPosition_ = new Handle<HcalTBEventPosition> ;
@@ -566,6 +541,8 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 
 	rawRecHitsEcal_ = new Handle<EcalRecHitCollection> ;
 	rawRecHitsHcal_ = new Handle<HBHERecHitCollection> ;
+
+	getCollection(*filtration_, inputTagParticleFiltration_, event);
 
 	getCollection(*clustersEcal_, inputTagClustersEcal_, event);
 	getCollection(*clustersHcal_, inputTagClustersHcal_, event);
@@ -593,6 +570,8 @@ bool TestbeamDelegate::endEventCore() {
 	} else {
 		++nFails_;
 	}
+
+	delete filtration_;
 
 	delete runData_;
 	delete timing_;
@@ -644,6 +623,8 @@ void TestbeamDelegate::endParticleCore() {
  */
 void TestbeamDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 	try {
+		inputTagParticleFiltration_ = parameters.getParameter<InputTag> (
+				"ParticleFiltration");
 		inputTagBeamCounters_ = parameters.getParameter<InputTag> (
 				"BeamCounters");
 		inputTagTiming_ = parameters.getParameter<InputTag> ("Timing");
@@ -671,194 +652,5 @@ void TestbeamDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 				<< std::endl;
 		throw e;
 	}
-}
-
-Quality TestbeamDelegate::isNotMuon() {
-
-	HcalTBBeamCounters counters = **beamCounters_;
-	Quality isNotMuonQuality(DEFINITEYES);
-
-	if (counters.VMBadc() > thisRun_->vmbMax_)
-		isNotMuonQuality = SURELYNOT;
-
-	//If VLE, has to pass VMX cuts too
-	//TODO: reimplement VM8 with its dodgy non gaussian pedestal
-	if (thisRun_->applyVMF_) {
-		if (counters.VM1adc() < thisRun_->vmx[0] && counters.VM2adc()
-				< thisRun_->vmx[1] && counters.VM3adc() < thisRun_->vmx[2]
-				&& counters.VM4adc() < thisRun_->vmx[3] && counters.VM5adc()
-				< thisRun_->vmx[4] && counters.VM6adc() < thisRun_->vmx[5]
-				&& counters.VM7adc() < thisRun_->vmx[6] && counters.VMFadc()
-				< thisRun_->vmfMax_) {
-			isNotMuonQuality = DEFINITEYES;
-			if (counters.VM8adc() > thisRun_->vmx[7]) {
-				isNotMuonQuality = UNLIKELY;
-			}
-		} else {
-			isNotMuonQuality = UNLIKELY;
-		}
-	}
-
-	if (debug_ > 4) {
-		LogDebug("TestbeamDelegate") << "\tEvent isn't a muon? :"
-				<< isNotMuonQuality << "\n";
-	}
-
-	return isNotMuonQuality;
-
-}
-
-Quality TestbeamDelegate::isCerenkovPion() {
-	if (!thisRun_->applyCK2_ && !thisRun_->applyCK3_) {
-		return DEFINITEYES;
-	}
-
-	Quality isCerenkovPion(DEFINITEYES);
-	HcalTBBeamCounters counters = **beamCounters_;
-
-	if (thisRun_->applyCK2_) {
-		if (counters.CK2adc() > thisRun_->ck2Max_ || counters.CK2adc()
-				< thisRun_->ck2Min_)
-			isCerenkovPion = UNLIKELY;
-	}
-
-	if (thisRun_->applyCK3_) {
-		if (counters.CK3adc() > thisRun_->ck3Max_ || counters.CK3adc()
-				< thisRun_->ck3Min_)
-			isCerenkovPion = UNLIKELY;
-	}
-
-	return isCerenkovPion;
-}
-
-Quality TestbeamDelegate::isCerenkovElectronCandidate() {
-
-	Quality electronQuality(DEFINITEYES);
-	HcalTBBeamCounters counters = **beamCounters_;
-
-	//CK2 uniquely determines electrons
-	if (thisRun_->applyCK2_) {
-		if (counters.CK2adc() <= thisRun_->ck2Max_)
-			electronQuality = UNLIKELY;
-	}
-
-	return electronQuality;
-
-}
-
-Quality TestbeamDelegate::isCerenkovProtonKaonCandidate() {
-
-	Quality protonQuality(DEFINITEYES);
-	HcalTBBeamCounters counters = **beamCounters_;
-
-	if (thisRun_->applyCK3_) {
-		if (counters.CK3adc() < thisRun_->ck2Max_) {
-			//Probably a pion
-			protonQuality = UNLIKELY;
-		}
-	}
-
-	if (thisRun_->applyCK2_) {
-		if (counters.CK2adc() >= thisRun_->ck2Max_) {
-			//Probably an electron
-			protonQuality = UNLIKELY;
-		}
-	}
-
-	return protonQuality;
-}
-
-Quality TestbeamDelegate::isTOFPion() {
-	if (!thisRun_->applyTOF_) {
-		return DEFINITEYES;
-	}
-
-	Quality tofPionQuality(UNLIKELY);
-	HcalTBTiming timing = **timing_;
-	//Beam energy 1 to 10 GeV
-	//Compute TOF
-	//TODO: verify implementation
-	double tofS = timing.TOF1Stime() - timing.TOF2Stime();
-	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
-	double meanTOF = (tofS + tofJ) / 2.0;
-	if (debug_ > 4) {
-		LogDebug("TestbeamDelegate") << "\tTOFS = " << tofS << ",\tTOFJ = "
-				<< tofJ << ",\tmeanTOF: " << meanTOF << "\n";
-	}
-	//if ((tofS > thisRun_->tofMin_ && tofS < thisRun_->tofMax_) && (tofJ > thisRun_->tofMin_ && tofJ < thisRun_->tofMax_))
-	if (meanTOF > thisRun_->tofMin_ && meanTOF < thisRun_->tofMax_)
-		tofPionQuality = DEFINITEYES;
-
-	return tofPionQuality;
-
-}
-
-Quality TestbeamDelegate::isSingleMIP() {
-
-	HcalTBBeamCounters counters = **beamCounters_;
-	HcalTBTriggerData triggers = **triggerData_;
-	HcalTBTiming timing = **timing_;
-
-	Quality singleMipQuality(DEFINITEYES);
-	if (debug_ > 5)
-		LogDebug("TestbeamDelegate") << "\tS124adcs = " << counters.S1adc()
-				<< ", " << counters.S2adc() << ", " << counters.S4adc() << "\n";
-
-	if (counters.S1adc() > thisRun_->s1Min_ && counters.S1adc()
-			< thisRun_->s1Max_) {
-		if (counters.S2adc() > thisRun_->s2Min_ && counters.S2adc()
-				< thisRun_->s2Max_) {
-			if (counters.S4adc() > thisRun_->s4Min_ && counters.S4adc()
-					< thisRun_->s4Max_) {
-				singleMipQuality = DEFINITEYES;
-			} else
-				singleMipQuality = PROBABLY;
-		} else
-			singleMipQuality = PROBABLY;
-	} else
-		singleMipQuality = PROBABLY;
-
-	//Test beam peculiarities!
-	if (!triggers.wasBeamTrigger())
-		singleMipQuality = UNLIKELY;
-
-	if (timing.ttcL1Atime() == 0)
-		singleMipQuality = UNLIKELY;
-
-	//	if (counters.S1adc() < thisRun_->s1Max_ && counters.S2adc()
-	//			< thisRun_->s2Max_ && counters.S4adc() < thisRun_->s4Max_)
-	//		singleMipQuality = DEFINITEYES;
-	//	else
-	//		singleMipQuality = PROBABLY;
-
-	if (debug_ > 4) {
-		LogDebug("TestbeamDelegate") << "\tEvent is a single MIP? :"
-				<< singleMipQuality << "\n";
-	}
-	return singleMipQuality;
-}
-
-Quality TestbeamDelegate::noBeamHalo() {
-
-	HcalTBBeamCounters counters = **beamCounters_;
-	Quality beamHaloAbsenceQuality(DEFINITEYES);
-
-	if (debug_ > 5)
-		LogDebug("TestbeamDelegate") << "\tBH1234adcs = " << counters.BH1adc()
-				<< ", " << counters.BH2adc() << ", " << counters.BH3adc()
-				<< ", " << counters.BH4adc() << "\n";
-
-	if (counters.BH1adc() < thisRun_->bh1Max_ && counters.BH2adc()
-			< thisRun_->bh2Max_ && counters.BH3adc() < thisRun_->bh3Max_
-			&& counters.BH4adc() < thisRun_->bh4Max_)
-		beamHaloAbsenceQuality = DEFINITEYES;
-	else
-		beamHaloAbsenceQuality = UNLIKELY;
-
-	if (debug_ > 4) {
-		LogDebug("TestbeamDelegate") << "\tEvent has no beam halo? :"
-				<< beamHaloAbsenceQuality << "\n";
-	}
-	return beamHaloAbsenceQuality;
 }
 

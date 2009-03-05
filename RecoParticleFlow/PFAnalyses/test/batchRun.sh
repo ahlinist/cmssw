@@ -39,7 +39,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD$OUTTREE
 rfcp $OUTPUT $DESTD$OUTPUT
-cp $LOG $RUND"tbv6"
+cp log.txt $RUND"tbv6"$LOG
 
 echo Done.
 exit 0
