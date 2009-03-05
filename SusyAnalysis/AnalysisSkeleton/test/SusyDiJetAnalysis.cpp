@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.3.2.2 2009/02/25 14:27:57 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.21 2009/03/05 17:00:22 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -894,6 +894,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
       
       mTempTreeccJetAssoc[i] = false;
+
+      mTempTreeJetMCCorrFactor[i] = -9999.;
+      mTempTreeJetJPTCorrFactor[i] = -9999.;
       
       // Add the cc jets
       int mTempTreeNccjets = ccjetHandle->size();
