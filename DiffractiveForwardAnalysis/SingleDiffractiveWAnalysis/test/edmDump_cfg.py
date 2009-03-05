@@ -48,6 +48,7 @@ process.MyEventContent.outputCommands.append('keep recoMuons_muons_*_*')
 process.MyEventContent.outputCommands.append('keep recoTracks_generalTracks_*_*')
 process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVertices_*_*')
 process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVerticesWithBS_*_*')
+process.MyEventContent.outputCommands.append('keep *_pixelVertices_*_*')
 
 # Output definition
 process.output = cms.OutputModule("PoolOutputModule",
@@ -64,12 +65,12 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 process.add_(cms.Service("TFileService",
-		fileName = cms.string("analysisWMuNu_histos.root")
+		fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
 	)
 )
 
 process.p1 = cms.Path(process.wmunuAnalyzer)
-process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
+process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorGenNoThreshold*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
 process.out_step = cms.EndPath(process.output)
 
 process.schedule = cms.Schedule(process.p1,process.p2,process.out_step)
