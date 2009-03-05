@@ -280,6 +280,8 @@ void ChamberMap::drawStats(TH2*& me) const {
           }
 
           fillColor = int(BinContent);
+
+          if (fillColor < 0 || fillColor > 4 || fillColor == 1) fillColor = 0; 
           legend.set(fillColor);
 
           b[n_side][station][n_ring][n_chamber] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
