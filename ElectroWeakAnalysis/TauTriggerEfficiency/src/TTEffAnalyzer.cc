@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.14 2009/02/24 19:15:25 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.15 2009/03/04 11:59:00 slehti Exp $
 //
 //
 
@@ -84,12 +84,11 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<std::vector<LorentzVector> > electronTaus;
-//   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
-   Handle<PFTauDiscriminatorByIsolation> thePFTauDiscriminatorByIsolation;
+   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-////      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
-////     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
-////      else 
+      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
+     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
+      else 
 	loop(iEvent, *PFTaus);
    }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
@@ -202,8 +201,7 @@ TTEffAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,co
   return out;
 }
 
-//void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos){
-void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminatorByIsolation isos){
+void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos){
    for(unsigned int iTau = 0; iTau < taus->size(); iTau++) {
    PFTauRef thisTauRef(taus,iTau);
    PFIso = isos[thisTauRef];
