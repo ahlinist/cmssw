@@ -16,6 +16,7 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitFwd.h"
 #include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
 
 #include <map>
 
@@ -52,31 +53,6 @@ protected:
 	 */
 	virtual void getTagsCore(const edm::ParameterSet& parameters);
 
-	/*
-	 * Returns a Quality for a muon candidate.
-	 */
-	Quality isNotMuon();
-
-	/*
-	 * Returns a Quality for a single MIP
-	 */
-	Quality isSingleMIP();
-
-	Quality noBeamHalo();
-
-	/*
-	 * Retuns a quality if this is a pion according to the TOF chambers.
-	 */
-	Quality isTOFPion();
-
-	/*
-	 * Returns a quality if this is a pion in the cerenkov
-	 */
-	Quality isCerenkovPion();
-
-	Quality isCerenkovElectronCandidate();
-
-	Quality isCerenkovProtonKaonCandidate();
 
 private:
 
@@ -84,10 +60,9 @@ private:
 
 	bool isMC_;
 	bool applyCleaningCuts_;
-	bool computeVetos_;
+	bool saveJustPions_;
+
 	bool applyThresholdsToRawRecHits_;
-	bool identifyCleanParticles_;
-	bool saveAllCleanParticles_;
 	bool clustersFromCandidates_;
 	unsigned stripAnomalousEvents_;
 	unsigned maxEventsFromEachRun_;
@@ -111,6 +86,8 @@ private:
 	pftools::RunInfo* thisRun_;
 	Quality conservatism_;
 
+	edm::InputTag inputTagParticleFiltration_;
+
 	edm::InputTag inputTagRawRecHitsEcal_;
 	edm::InputTag inputTagRawRecHitsHcal_;
 
@@ -125,6 +102,8 @@ private:
 	edm::InputTag inputTagRecHitsEcal_;
 	edm::InputTag inputTagRecHitsHcal_;
 	edm::InputTag inputTagPFCandidates_;
+
+	edm::Handle<pftools::ParticleFiltrationDecisionCollection>* filtration_;
 
 	edm::Handle<HcalTBBeamCounters>* beamCounters_;
 	edm::Handle<HcalTBTiming>* timing_;
