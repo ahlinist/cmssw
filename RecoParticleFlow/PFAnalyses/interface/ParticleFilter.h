@@ -13,6 +13,8 @@
 
 #include "RecoParticleFlow/PFAnalyses/interface/ParticleFiltrationDelegate.h"
 
+#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
+
 class ParticleFilter: public edm::EDFilter {
 
 public:
@@ -25,6 +27,7 @@ private:
 	virtual void endJob();
 
 	pftools::ParticleFiltrationDelegate* pfd_;
+
 
 	std::string pfdType_;
 	std::string tbfdType_;

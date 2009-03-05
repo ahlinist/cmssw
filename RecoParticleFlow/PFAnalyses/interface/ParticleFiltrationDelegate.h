@@ -8,6 +8,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
+
 #include <string>
 
 namespace pftools {
@@ -17,14 +19,24 @@ public:
 	ParticleFiltrationDelegate();
 	virtual ~ParticleFiltrationDelegate();
 
-	bool isGoodParticle(edm::Event& event, const edm::EventSetup& setup) {
+	ParticleFiltrationDecisionCollection isGoodParticle(edm::Event& event, const edm::EventSetup& setup) {
 		return isGoodParticleCore(event, setup);
 	}
 
 	void getTags(const edm::ParameterSet& parameters);
 
 	void init(const edm::ParameterSet& parameters) {
+		getTags(parameters);
 		initCore(parameters);
+	}
+
+	void startEvent(const edm::Event& event,
+			const edm::EventSetup& setup) {
+		return startEventCore(event, setup);
+	}
+
+	bool endEvent(const edm::Event& event) {
+		return endEventCore(event);
 	}
 
 	void finish() {
@@ -32,21 +44,20 @@ public:
 	}
 
 protected:
-	virtual bool isGoodParticleCore(edm::Event& event,
-			const edm::EventSetup& setup);
 
-	virtual void getTagsCore(const edm::ParameterSet& parameters) {
+	virtual void startEventCore(const edm::Event& event,
+			const edm::EventSetup& setup) = 0;
 
-	}
+	virtual bool endEventCore(const edm::Event& event) = 0;
 
-	virtual void initCore(const edm::ParameterSet& parameters) {
+	virtual ParticleFiltrationDecisionCollection isGoodParticleCore(edm::Event& event,
+			const edm::EventSetup& setup) = 0;
 
-	}
+	virtual void getTagsCore(const edm::ParameterSet& parameters) = 0;
 
-	virtual void finishCore() {
-		edm::LogInfo("ParticleFiltrationDelegate") << __PRETTY_FUNCTION__
-				<< ": hasn't been overwritten by subclass.\n";
-	}
+	virtual void initCore(const edm::ParameterSet& parameters) = 0;
+
+	virtual void finishCore() = 0;
 
 	/* PDG code of the particles we're looking for */
 	std::vector<int> pdgCodes_;
@@ -57,6 +68,8 @@ protected:
 	int debug_;
 
 	int nPasses_, nFails_;
+
+	pftools::ParticleFiltrationDecision decision_;
 
 };
 

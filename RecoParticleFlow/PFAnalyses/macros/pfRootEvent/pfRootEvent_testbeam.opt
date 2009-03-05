@@ -10,7 +10,7 @@ root file ../../test/demo_reprocessed_7GeV.root
 
 // filter ------------------------------------------------------------
 
-// filter   nparticles  10
+filter   nparticles  1
 	
 // filter   taus	     1 2
 

@@ -2,6 +2,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "RecoParticleFlow/PFAnalyses/interface/TestbeamFiltrationDelegate.h"
 
+
+
 using namespace std;
 using namespace edm;
 
@@ -25,6 +27,8 @@ ParticleFilter::ParticleFilter(const edm::ParameterSet& parameters) :
 	if (pfd_ != 0)
 		pfd_->init(parameters);
 
+	produces<pftools::ParticleFiltrationDecisionCollection> ("particleFiltration");
+
 }
 
 ParticleFilter::~ParticleFilter() {
@@ -37,15 +41,17 @@ void ParticleFilter::beginJob(const edm::EventSetup& setup) {
 }
 
 bool ParticleFilter::filter(edm::Event& event, const edm::EventSetup& setup) {
-	LogDebug("ParticleFilter") << __PRETTY_FUNCTION__ << std::endl;
+	pfd_->startEvent(event, setup);
 
-	LogInfo("ParticleFilter")
-			<< "\tBlindly accepting event as a pion candidate\n";
-	return true;
+	std::auto_ptr<ParticleFiltrationDecisionCollection> collection(
+			new ParticleFiltrationDecisionCollection(pfd_->isGoodParticle(
+					event, setup)));
+	event.put(collection, "particleFiltration");
+	return pfd_->endEvent(event);
 }
 
 void ParticleFilter::endJob() {
-
+	pfd_->finish();
 }
 
 //define this as a plug-in

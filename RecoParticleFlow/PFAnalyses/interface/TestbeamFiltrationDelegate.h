@@ -17,6 +17,7 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitFwd.h"
 #include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
 
+
 namespace pftools {
 class TestbeamFiltrationDelegate: public ParticleFiltrationDelegate {
 public:
@@ -24,20 +25,53 @@ public:
 	virtual ~TestbeamFiltrationDelegate();
 
 protected:
-	virtual bool isGoodParticleCore(edm::Event& event,
+
+	virtual void initCore(const edm::ParameterSet& parameters);
+
+	virtual void startEventCore(const edm::Event& event,
+			const edm::EventSetup& setup);
+
+	virtual bool endEventCore(const edm::Event& event);
+
+	virtual ParticleFiltrationDecisionCollection isGoodParticleCore(edm::Event& event,
 			const edm::EventSetup& setup);
 
 	virtual void getTagsCore(const edm::ParameterSet& parameters);
 
 	virtual void finishCore();
 
+	/*
+	 * Returns a Quality for a muon candidate.
+	 */
+	Quality isNotMuon();
+
+	/*
+	 * Returns a Quality for a single MIP
+	 */
+	Quality isSingleMIP();
+
+	Quality noBeamHalo();
+
+	/*
+	 * Retuns a quality if this is a pion according to the TOF chambers.
+	 */
+	Quality isTOFPion();
+
+	/*
+	 * Returns a quality if this is a pion in the cerenkov
+	 */
+	Quality isCerenkovPion();
+
+	Quality isCerenkovElectronCandidate();
+
+	Quality isCerenkovProtonKaonCandidate();
+
 	bool applyCleaningCuts_;
 	bool computeVetos_;
-	bool applyThresholdsToRawRecHits_;
 	bool identifyCleanParticles_;
 	bool saveAllCleanParticles_;
 	bool clustersFromCandidates_;
-	unsigned stripAnomalousEvents_;
+
 	unsigned muonCands_;
 	unsigned nonMipCands_;
 	unsigned beamHaloCands_;
@@ -47,13 +81,10 @@ protected:
 	unsigned protonKaonCandidates_;
 	unsigned goodPionsFound_;
 
-	std::map<unsigned, jamieb::RunInfo*> runInfos_;
+	std::map<unsigned, pftools::RunInfo*> runInfos_;
 
-	jamieb::RunInfo* thisRun_;
+	pftools::RunInfo* thisRun_;
 	Quality conservatism_;
-
-	edm::InputTag inputTagRawRecHitsEcal_;
-	edm::InputTag inputTagRawRecHitsHcal_;
 
 	edm::InputTag inputTagBeamCounters_;
 	edm::InputTag inputTagTiming_;
@@ -66,11 +97,6 @@ protected:
 	edm::Handle<HcalTBRunData>* runData_;
 	edm::Handle<HcalTBEventPosition> * eventPosition_;
 	edm::Handle<HcalTBTriggerData> * triggerData_;
-
-	edm::Handle<EcalRecHitCollection>* rawRecHitsEcal_;
-	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
-
-
 
 };
 }
