@@ -7,6 +7,7 @@ wmunuSelFilter = cms.EDFilter("WMuNuSelector",
     MuonTag = cms.InputTag("muons"),
     METTag = cms.InputTag("met"),
     JetTag = cms.InputTag("iterativeCone5CaloJets"),
+    VertexTag = cms.InputTag("offlinePrimaryVertices"),
     UseOnlyGlobalMuons = cms.bool(True),
     #
     # Main cuts ->
