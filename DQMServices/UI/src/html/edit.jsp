@@ -324,8 +324,8 @@ $(document).ready( function () {
           $("#edit form .edit_info .edit_online input").removeAttr("readonly");
           $("#edit form .edit_info .edit_online textarea").removeAttr("readonly");
 
-          //$("#edit form .edit_l1t input").removeAttr("readonly");
-          //$("#edit form .edit_l1t input").removeAttr("disabled");
+          $("#edit form .edit_l1t input").removeAttr("readonly");
+          $("#edit form .edit_l1t input").removeAttr("disabled");
           //keista
           $("#edit form .edit_l1t textarea").removeAttr("readonly");
           $("#edit form .edit_l1t textarea").removeAttr("disabled");
