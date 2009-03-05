@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.39 2008/12/12 17:58:43 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.40 2009/02/03 17:59:14 giorgia Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.39 $
-  \date $Date: 2008/12/12 17:58:43 $
+  \version $Revision: 1.40 $
+  \date $Date: 2009/02/03 17:59:14 $
 */
 
 #include "TProfile2D.h"
@@ -37,6 +37,7 @@ bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
      (o.name.find( "DT/9" ) != std::string::npos) ||
      (o.name.find( "DT/E" ) != std::string::npos) ||
      (o.name.find( "DT/F" ) != std::string::npos) ||
+     (o.name.find( "DT/C" ) != std::string::npos) ||
      (o.name.find( "DT/L" ) != std::string::npos)) {
     return true;
   } 
@@ -545,13 +546,13 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-  }  else if(o.name.find("MeanSummaryRes") != std::string::npos) {
+    }  else if(o.name.find("00-MeanRes/MeanSummaryRes") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
     c->SetGrid(1,1);
-  return;
+    return;
   } else if(o.name.find("SigmaSummaryRes_W") != std::string::npos) {
     labelMB4Sect4and13_wheel->Draw("same");
     labelMB4Sect10and14_wheel->Draw("same");
@@ -595,7 +596,44 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   //----------------- calib validation plots ---------------------
 
-  if(o.name.find("SetRange_2D") != std::string::npos) {
+    if(o.name.find("MeanSummaryRes_testFailed_") != std::string::npos) {
+       //   obj->GetXaxis()->SetNdivisions(13,true);
+       //obj->GetYaxis()->SetNdivisions(12,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(3.0);
+
+    int colorError1[3];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 800;// kOrange
+    colorError1[2] = 632;// kRed
+    gStyle->SetPalette(3, colorError1);
+    return;
+   }  else if(o.name.find("MeanSummaryRes_testFailedAtLeastBadSL") != std::string::npos) {
+     // obj->GetXaxis()->SetNdivisions(13,true);
+     //obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.1);
+    c->SetLeftMargin(0.15);
+    c->SetRightMargin(0.12);
+    obj->SetMinimum(-0.00000001);
+    obj->SetMaximum(2.0);
+
+    int colorError1[2];
+    colorError1[0] = 416;// kGreen
+    colorError1[1] = 632;// kRed
+    gStyle->SetPalette(2, colorError1);
+    return;
+   }
+
+    /*if(o.name.find("SetRange_2D") != std::string::npos) {
       obj->GetXaxis()->SetBinLabel(1,"MB1_SL1");
       obj->GetXaxis()->SetBinLabel(2,"MB1_SL2");
       obj->GetXaxis()->SetBinLabel(3,"MB1_SL3");
@@ -649,7 +687,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLeftMargin(0.1);
     c->SetRightMargin(0.12);
     return;
-  }
+    }*/
 
 }
 
