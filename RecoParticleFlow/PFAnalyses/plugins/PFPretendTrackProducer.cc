@@ -30,7 +30,7 @@
 
 using namespace edm;
 using namespace reco;
-using namespace jamieb;
+using namespace pftools;
 
 PFPretendTrackProducer::PFPretendTrackProducer(
 		const edm::ParameterSet& parameters) :

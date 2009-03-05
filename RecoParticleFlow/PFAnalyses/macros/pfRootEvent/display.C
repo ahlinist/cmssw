@@ -18,11 +18,11 @@
 
 	// display first entry
 	int i=0;
-	dm.display(i++);
+	dm.displayNextInteresting(i++);
 
 	// look for ECAL rechit with maximum energy
 	dm.lookForMaxRecHit(true);
-
+	i = em.eventNumber();
 	// create a dialogFrame:
 	DialogFrame *win = new DialogFrame(&em,&dm,gClient->GetRoot(), 200,220);
 

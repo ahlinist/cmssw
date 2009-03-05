@@ -18,14 +18,6 @@ ParticleFiltrationDelegate::~ParticleFiltrationDelegate() {
 	LogDebug("ParticleFiltrationDelegate") << __PRETTY_FUNCTION__ << std::endl;
 }
 
-bool ParticleFiltrationDelegate::isGoodParticleCore(edm::Event& event,
-		const edm::EventSetup& setup) {
-	LogProblem("ParticleFiltrationDelegate")
-			<< "Subclass of ParticleFiltrationDelegate hasn't overridden isGoodParticleCore! Letting event pass anyway..."
-			<< std::endl;
-	return thisEventPasses_;
-}
-
 void ParticleFiltrationDelegate::getTags(const edm::ParameterSet& parameters) {
 	LogDebug("ParticleFiltrationDelegate") << __PRETTY_FUNCTION__ << std::endl;
 	debug_ = parameters.getParameter<int> ("debug");

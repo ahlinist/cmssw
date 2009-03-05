@@ -24,11 +24,11 @@ private:
 	virtual void endJob();
 	virtual void produce(edm::Event&, const edm::EventSetup&);
 	int debug_;
-	jamieb::RunInfo* thisRun_;
+	pftools::RunInfo* thisRun_;
 	
 	PFTrackTransformer* transformer_;
 	
-	std::map<unsigned, jamieb::RunInfo*> runInfos_;
+	std::map<unsigned, pftools::RunInfo*> runInfos_;
 
 };
 

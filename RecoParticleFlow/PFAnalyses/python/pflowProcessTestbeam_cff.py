@@ -5,6 +5,7 @@ from RecoParticleFlow.PFAnalyses.pflowExtraction_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowFaketracks_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cfi import *
+from RecoParticleFlow.PFAnalyses.pflowParticleFiltration_cfi import *
 
 TFileService = cms.Service("TFileService",
     fileName=cms.string("outputtree.root")
@@ -12,8 +13,11 @@ TFileService = cms.Service("TFileService",
 
 finishup = cms.OutputModule("PoolOutputModule",
     fileName=cms.untracked.string("finishup.root"),
-    outputCommands=cms.untracked.vstring('drop *', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*')
-	#outputCommands=cms.untracked.vstring('keep *')
+    #outputCommands=cms.untracked.vstring('keep *'),
+    outputCommands=cms.untracked.vstring('drop *', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
+	SelectEvents=cms.untracked.PSet(
+                SelectEvents=cms.vstring('p1')
+                ) 
 )
 
 #particleFlow.pf_newCalib = cms.uint32(2)
@@ -31,9 +35,8 @@ pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCAL)
 pflowNoCleaning = cms.Sequence(faketracks * pfClusteringECAL * pfClusteringHCAL * particleFlowBlock * particleFlow)
 
 #The works.
-pflowProcessTestbeam = cms.Sequence(pionFiltration * faketracks * 
+pflowProcessTestbeam = cms.Sequence(particleFiltration * faketracks * 
                                     pfClusteringECAL * 
                                     pfClusteringHCAL * 
                                     particleFlowBlock * 
-                                    particleFlow * 
-                                    extraction)
+                                    particleFlow * extraction)
