@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.21 2009/03/05 17:00:22 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.22 2009/03/05 17:05:05 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -162,16 +162,69 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   ALPGENParticleId myALPGENParticleId;
  
+  mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
+  mTempAlpPtScale = myALPGENParticleId.getPt();
 
-  // markus
-  ///
-  //  if ( !filter(iEvent,iSetup)) {
-  //  // Just fill the failure
-  // mGlobalDecision = 0;
-  // mSelectorData->Fill();
-  // return;
-  //}
-  
+
+
+
+    // GEN INFO
+  // georgia
+  Handle<reco::GenParticleCollection>  genParticles;
+  iEvent.getByLabel(genTag_, genParticles);   
+
+  int count=0; int lcount=0;
+  //length=genParticles->size();
+  for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    const reco::Candidate& p = (*genParticles)[ i ];
+
+    int st = p.status();  
+
+    if (st==3) {
+      ids[count] = p.pdgId(); genStatus[count]=p.status();
+      genE[count]=p.energy(); genPx[count]=p.px(); genPy[count]=p.py(); genPz[count]=p.pz();
+      
+      if (p.numberOfMothers() > 0 ) { 
+	const reco::Candidate * mom = p.mother();
+
+	for( size_t j = 0; j < i; ++ j ) {
+	  const Candidate * ref = &((*genParticles)[j]);
+	  if (ref == mom) { refs[count]= j; }
+	}  
+      } else { refs[count]=-1;}
+
+      count++;
+    } else { // store also electrons or muons of status 1 
+      
+      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13) ) {
+	
+	genLepIds[lcount] = p.pdgId(); genLepStatus[lcount]=p.status();
+	genLepE[lcount]=p.energy(); genLepPx[lcount]=p.px(); genLepPy[lcount]=p.py(); genLepPz[lcount]=p.pz();
+	
+	if (p.numberOfMothers() > 0 ) { 
+	  const reco::Candidate * mom = p.mother();
+	  if (mom->pdgId() == p.pdgId()) { mom = mom->mother(); }
+
+	  for( size_t j = 0; j < i; ++ j ) {
+	    const Candidate * ref = &((*genParticles)[j]);
+	    if (ref == mom) { genLepRefs[lcount]=ref->pdgId(); }
+	  }  
+	} else { genLepRefs[lcount]=-1;}
+
+	//	cout << "Position = " << static_cast<int>(i) << " particle = " << genLepIds[lcount] 
+	// << " with mother at = " << genLepRefs[lcount] << endl;
+	lcount++;
+	
+      }
+
+    }
+    // Print-out the event
+    //    cout << "Position = " << static_cast<int>(i) << " particle = " << ids[count] << " with mother at = " << refs[count] << endl;
+
+    
+  }
+  length=count; genLepLength=lcount;
+
 
   // Just fill the success
   mGlobalDecision = 1;
@@ -1047,17 +1100,10 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //  mTempTreeSumET = metHandle->front().sumEt();
   //  mTempTreeSumETSignif = metHandle->front().mEtSig();
  
-
-
-  mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
-  mTempAlpPtScale = myALPGENParticleId.getPt();
-
- 
- 
   //set information of event is affected by b-bug
   // is_ok = true;
-   length = 1000;
-  length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genE, genPx, genPy, genPz ,genPhi ,genEta ,genStatus, length);
+//    length = 1000;
+//   length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genE, genPx, genPy, genPz ,genPhi ,genEta ,genStatus, length);
  
   
   // Fill the tree
@@ -1544,13 +1590,22 @@ SusyDiJetAnalysis::initPlots() {
     mAllData->Branch("genN",&length,"genN/int");
     mAllData->Branch("genid",ids,"ids[genN]/int");
     mAllData->Branch("genMother",refs,"refs[genN]/int");
-    mAllData->Branch("genPhi",genPhi,"genPhi[genN]/float");
     mAllData->Branch("genE",genE,"genE[genN]/float");
     mAllData->Branch("genPx",genPx,"genPx[genN]/float");
     mAllData->Branch("genPy",genPy,"genPy[genN]/float");
     mAllData->Branch("genPz",genPz,"genPz[genN]/float");
-    mAllData->Branch("genEta",genEta,"genEta[genN]/float");
     mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
+
+    // georgia    
+    mAllData->Branch("genLepN",&genLepLength,"genLepN/int");
+    mAllData->Branch("genLepId",genLepIds,"genLepIds[genLepN]/int");
+    mAllData->Branch("genLepMother",genLepRefs,"genLepRefs[genLepN]/int");
+    mAllData->Branch("genLepE",genLepE,"genLepE[genLepN]/float");
+    mAllData->Branch("genLepPx",genLepPx,"genLepPx[genLepN]/float");
+    mAllData->Branch("genLepPy",genLepPy,"genLepPy[genLepN]/float");
+    mAllData->Branch("genLepPz",genLepPz,"genLepPz[genLepN]/float");
+    mAllData->Branch("genLepStatus",genLepStatus,"genLepStatus[genLepN]/int");
+    // end georgia
 
     mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
     mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");
