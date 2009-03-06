@@ -2,7 +2,7 @@
 
 gROOT->Reset();
 
-TFile f("HcalZSnew.root");
+TFile f("HcalZS_All.root");
 //TFile f("HcalZS_73751.root");
 //TFile f("HcalZS_73749.root");
 
@@ -141,6 +141,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hod4->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hod4->GetBinContent(ieta,iphi);
       h_hcal_hod4->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
