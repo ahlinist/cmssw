@@ -5,19 +5,23 @@ from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorTower_cfi impor
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.hfTower_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.xiTower_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpInfo_cfi import *
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.selectGoodTracks_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.selectTracksAssociatedToPV_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.trackMultiplicity_cfi import *
 
 xiTowerNoMET = xiTower.clone(UseMETInfo = False)
 castorGenNoThreshold = castorGen.clone(CASTORParticleEnergyThreshold = 0.0)
+selectTracksAssociatedToPV.src = cms.InputTag("selectGoodTracks")
 selectTracksAwayFromPV = selectTracksAssociatedToPV.clone()
-selectTracksAwayFromPV.MinDistanceFromVertex = 0.8
+selectTracksAwayFromPV.MinDistanceFromVertex = 1.2
 selectTracksAwayFromPV.MaxDistanceFromVertex = 999.9
 trackMultiplicityAssociatedToPV = trackMultiplicity.clone(TracksTag = "selectTracksAssociatedToPV")
 trackMultiplicityAwayFromPV = trackMultiplicity.clone(TracksTag = "selectTracksAwayFromPV")
 
-edmDumpTracksAssociatedToPV = cms.Sequence(selectTracksAssociatedToPV*trackMultiplicityAssociatedToPV) 
-edmDumpTracksAwayFromPV = cms.Sequence(selectTracksAwayFromPV*trackMultiplicityAwayFromPV)
+edmDumpTracksAssociatedToPV = cms.Sequence(selectGoodTracks*selectTracksAssociatedToPV*trackMultiplicityAssociatedToPV) 
+edmDumpTracksAwayFromPV = cms.Sequence(selectGoodTracks*selectTracksAwayFromPV*trackMultiplicityAwayFromPV)
+edmDumpTracks = cms.Sequence(edmDumpTracksAssociatedToPV+edmDumpTracksAwayFromPV)
+
 edmDumpAll = cms.Sequence(castorGen + 
                           castorGenNoThreshold + 
                           castorTower +
@@ -25,8 +29,7 @@ edmDumpAll = cms.Sequence(castorGen +
                           xiTower +
                           xiTowerNoMET +
                           trackMultiplicity +
-                          edmDumpTracksAssociatedToPV + 
-                          edmDumpTracksAwayFromPV + 
+                          edmDumpTracks + 
                           pileUpInfo)
 edmDumpAllNoPileUp = cms.Sequence(castorGen +
                           castorGenNoThreshold +
@@ -35,5 +38,4 @@ edmDumpAllNoPileUp = cms.Sequence(castorGen +
                           xiTower +
                           xiTowerNoMET +
                           trackMultiplicity +
-                          edmDumpTracksAssociatedToPV +
-                          edmDumpTracksAwayFromPV)
+                          edmDumpTracks)
