@@ -633,7 +633,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    
 		    if(debug) std::cout<<"DT  \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual="<<minres<<std::endl;
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
-		    if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+		    if(fabs(minres)<=(rangestrips)*stripw){ //for HR
+		      //if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 		      if(debug) std::cout<<"DT  \t \t \t \t \t \t True!"<<std::endl;
 		      anycoincidence=true;
 		    }
@@ -918,7 +919,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual ="<<minres<<std::endl;
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
-			  if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+			  
+			  if(fabs(minres)<=(rangestrips)*stripw){ //for HR
+			    //if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t \t \t True!"<<std::endl;
 			    anycoincidence=true;
 			  }
@@ -1250,7 +1253,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
 		      countRecHits++;
 		      LocalPoint recHitPos=recHit->localPosition();
-		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x()*straighter(rollasociated->id());
+		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		      if(fabs(res)<fabs(minres)){
 			minres=res;
@@ -1268,7 +1271,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      
 		      if(debug) std::cout<<"CSC \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual"<<minres<<std::endl;
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
-		      if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+		      if(fabs(minres)<=(rangestrips)*stripw){ //for HR
+			//if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 			if(debug) std::cout<<"CSC  \t \t \t \t \t \t True!"<<std::endl;
 			anycoincidence=true;
 		      }
