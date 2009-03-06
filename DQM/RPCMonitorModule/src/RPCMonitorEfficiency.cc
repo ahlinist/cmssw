@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.8 2009/02/19 16:00:22 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.9 2009/03/04 16:25:31 carrillo Exp $
 //
 //
 
@@ -150,6 +150,27 @@ public:
   TH1F * DoubleGapDistroW2far;
 
   TH1F * EffEndCap;
+
+  TH1F * GregD1R2;  
+  TH1F * GregD1R3;  
+  TH1F * GregD2R2;  
+  TH1F * GregD2R3;  
+  TH1F * GregD3R2;  
+  TH1F * GregD3R3;  
+
+  TH1F * OcGregD1R2;  
+  TH1F * OcGregD1R3;  
+  TH1F * OcGregD2R2;  
+  TH1F * OcGregD2R3;  
+  TH1F * OcGregD3R2;  
+  TH1F * OcGregD3R3;  
+
+  TH1F * ExGregD1R2;  
+  TH1F * ExGregD1R3;  
+  TH1F * ExGregD2R2;  
+  TH1F * ExGregD2R3;  
+  TH1F * ExGregD3R2;  
+  TH1F * ExGregD3R3;  
 
   TH1F * EffDistroDm3;  
   TH1F * EffDistroDm2;
@@ -343,15 +364,7 @@ private:
   virtual void endJob() ;
   std::string file;
   std::string fileout;
-  std::ofstream rpcInfo;
-  std::ofstream rpcNames;
-  std::ofstream rollsWithData;
-  std::ofstream rollsWithOutData;
-  std::ofstream rollsBarrel;
-  std::ofstream rollsEndCap;
-  std::ofstream rollsPointedForASegment;
-  std::ofstream rollsNotPointedForASegment;
-  std::ofstream bxMeanList;
+  std::ofstream RollYEff;
   std::ofstream efftxt;
   std::ofstream alignment;
   bool prodimages;
@@ -390,6 +403,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
   efftxt.open("RPCDetId_Eff.dat");
   alignment.open("Alignment.dat");
+  RollYEff.open("rollYeff.txt");
 }
 
 
@@ -400,15 +414,7 @@ void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
   theFile = new TFile(file.c_str());
   if(!theFile)std::cout<<"The File Doesn't exist"<<std::endl;
   theFileOut = new TFile(fileout.c_str(), "RECREATE");
-  /*rpcInfo.open("RPCInfo.txt");
-  rpcNames.open("RPCNames.txt");
-  rollsWithOutData.open("rollsWithOutData.txt");
-  rollsWithData.open("rollsWithData.txt");
-  rollsBarrel.open("rollsBarrel.txt");
-  rollsEndCap.open("rollsEndCap.txt");
-  rollsPointedForASegment.open("rollsPointedForASegment.txt");
-  rollsNotPointedForASegment.open("rollsNotPointedForASegment.txt");
-  bxMeanList.open("bxMeanList.txt");*/
+
 }
 
 
@@ -434,49 +440,70 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
 
-  EffBarrel = new TH1F ("EffBarrel","Efficieny Distribution For All The Barrel",40,0.5,100.5);
+  EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",40,0.5,100.5);
 
-  DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficieny Distribution For All The Barrel",40,0.5,100.5);
+  DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",40,0.5,100.5);
 
-  EffDistroWm2= new TH1F ("EffDistroWm2near","Efficieny Distribution For Near Side Wheel -2",20,0.5,100.5);
-  EffDistroWm1= new TH1F ("EffDistroWm1near","Efficieny Distribution For Near Side Wheel -1",20,0.5,100.5);
-  EffDistroW0= new TH1F ("EffDistroW0near","Efficieny Distribution For Near Side Wheel 0",20,0.5,100.5);
-  EffDistroW1= new TH1F ("EffDistroW1near","Efficieny Distribution For Near Side Wheel 1",20,0.5,100.5);
-  EffDistroW2= new TH1F ("EffDistroW2near","Efficieny Distribution For Near Side Wheel 2",20,0.5,100.5);
+  EffDistroWm2= new TH1F ("EffDistroWm2near","Efficiency Distribution For Near Side Wheel -2",20,0.5,100.5);
+  EffDistroWm1= new TH1F ("EffDistroWm1near","Efficiency Distribution For Near Side Wheel -1",20,0.5,100.5);
+  EffDistroW0= new TH1F ("EffDistroW0near","Efficiency Distribution For Near Side Wheel 0",20,0.5,100.5);
+  EffDistroW1= new TH1F ("EffDistroW1near","Efficiency Distribution For Near Side Wheel 1",20,0.5,100.5);
+  EffDistroW2= new TH1F ("EffDistroW2near","Efficiency Distribution For Near Side Wheel 2",20,0.5,100.5);
 
-  EffDistroWm2far= new TH1F ("EffDistroWm2far","Efficieny Distribution For Far Side Wheel -2",20,0.5,100.5);
-  EffDistroWm1far= new TH1F ("EffDistroWm1far","Efficieny Distribution For Far Side Wheel -1",20,0.5,100.5);
-  EffDistroW0far= new TH1F ("EffDistroW0far","Efficieny Distribution For Far Side Wheel 0",20,0.5,100.5);
-  EffDistroW1far= new TH1F ("EffDistroW1far","Efficieny Distribution For Far Side Wheel 1",20,0.5,100.5);
-  EffDistroW2far= new TH1F ("EffDistroW2far","Efficieny Distribution For Far Side Wheel 2",20,0.5,100.5);
+  EffDistroWm2far= new TH1F ("EffDistroWm2far","Efficiency Distribution For Far Side Wheel -2",20,0.5,100.5);
+  EffDistroWm1far= new TH1F ("EffDistroWm1far","Efficiency Distribution For Far Side Wheel -1",20,0.5,100.5);
+  EffDistroW0far= new TH1F ("EffDistroW0far","Efficiency Distribution For Far Side Wheel 0",20,0.5,100.5);
+  EffDistroW1far= new TH1F ("EffDistroW1far","Efficiency Distribution For Far Side Wheel 1",20,0.5,100.5);
+  EffDistroW2far= new TH1F ("EffDistroW2far","Efficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
   
-  DoubleGapDistroWm2= new TH1F ("DoubleGapDistroWm2near","DoubleGapEfficieny Distribution For Near Side Wheel -2",20,0.5,100.5);
-  DoubleGapDistroWm1= new TH1F ("DoubleGapDistroWm1near","DoubleGapEfficieny Distribution For Near Side Wheel -1",20,0.5,100.5);
-  DoubleGapDistroW0= new TH1F ("DoubleGapDistroW0near","DoubleGapEfficieny Distribution For Near Side Wheel 0",20,0.5,100.5);
-  DoubleGapDistroW1= new TH1F ("DoubleGapDistroW1near","DoubleGapEfficieny Distribution For Near Side Wheel 1",20,0.5,100.5);
-  DoubleGapDistroW2= new TH1F ("DoubleGapDistroW2near","DoubleGapEfficieny Distribution For Near Side Wheel 2",20,0.5,100.5);
+  DoubleGapDistroWm2= new TH1F ("DoubleGapDistroWm2near","DoubleGapEfficiency Distribution For Near Side Wheel -2",20,0.5,100.5);
+  DoubleGapDistroWm1= new TH1F ("DoubleGapDistroWm1near","DoubleGapEfficiency Distribution For Near Side Wheel -1",20,0.5,100.5);
+  DoubleGapDistroW0= new TH1F ("DoubleGapDistroW0near","DoubleGapEfficiency Distribution For Near Side Wheel 0",20,0.5,100.5);
+  DoubleGapDistroW1= new TH1F ("DoubleGapDistroW1near","DoubleGapEfficiency Distribution For Near Side Wheel 1",20,0.5,100.5);
+  DoubleGapDistroW2= new TH1F ("DoubleGapDistroW2near","DoubleGapEfficiency Distribution For Near Side Wheel 2",20,0.5,100.5);
   
-  DoubleGapDistroWm2far= new TH1F ("DoubleGapDistroWm2far","DoubleGapEfficieny Distribution For Far Side Wheel -2",20,0.5,100.5);
-  DoubleGapDistroWm1far= new TH1F ("DoubleGapDistroWm1far","DoubleGapEfficieny Distribution For Far Side Wheel -1",20,0.5,100.5);
-  DoubleGapDistroW0far= new TH1F ("DoubleGapDistroW0far","DoubleGapEfficieny Distribution For Far Side Wheel 0",20,0.5,100.5);
-  DoubleGapDistroW1far= new TH1F ("DoubleGapDistroW1far","DoubleGapEfficieny Distribution For Far Side Wheel 1",20,0.5,100.5);
-  DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficieny Distribution For Far Side Wheel 2",20,0.5,100.5);
+  DoubleGapDistroWm2far= new TH1F ("DoubleGapDistroWm2far","DoubleGapEfficiency Distribution For Far Side Wheel -2",20,0.5,100.5);
+  DoubleGapDistroWm1far= new TH1F ("DoubleGapDistroWm1far","DoubleGapEfficiency Distribution For Far Side Wheel -1",20,0.5,100.5);
+  DoubleGapDistroW0far= new TH1F ("DoubleGapDistroW0far","DoubleGapEfficiency Distribution For Far Side Wheel 0",20,0.5,100.5);
+  DoubleGapDistroW1far= new TH1F ("DoubleGapDistroW1far","DoubleGapEfficiency Distribution For Far Side Wheel 1",20,0.5,100.5);
+  DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
 
-  EffEndCap= new TH1F ("EffDistroEndCap ","Efficieny Distribution For All The EndCaps",60,0.5,100.5);
+  EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",60,0.5,100.5);
 
-  EffDistroDm3= new TH1F ("EffDistroDm3near","Efficieny Distribution For Near Side Disk -3",20,0.5,100.5);  
-  EffDistroDm2= new TH1F ("EffDistroDm2near","Efficieny Distribution For Near Side Disk -2",20,0.5,100.5);
-  EffDistroDm1= new TH1F ("EffDistroDm1near","Efficieny Distribution For Near Side Disk -1",20,0.5,100.5);
-  EffDistroD1= new TH1F ("EffDistroD1near","Efficieny Distribution For Near Side Disk 1",20,0.5,100.5);
-  EffDistroD2= new TH1F ("EffDistroD2near","Efficieny Distribution For Near Side Disk 2",20,0.5,100.5);
-  EffDistroD3= new TH1F ("EffDistroD3near","Efficieny Distribution For Near Side Disk 3",20,0.5,100.5);
+  GregD1R2= new TH1F ("GregDistroD1R2","Efficiency Distribution for Station 1 Ring 2",36,0.5,36.5);
+  GregD1R3= new TH1F ("GregDistroD1R3","Efficiency Distribution for Station 1 Ring 3",36,0.5,36.5);
+  GregD2R2= new TH1F ("GregDistroD2R2","Efficiency Distribution for Station 2 Ring 2",36,0.5,36.5);
+  GregD2R3= new TH1F ("GregDistroD2R3","Efficiency Distribution for Station 2 Ring 3",36,0.5,36.5);
+  GregD3R2= new TH1F ("GregDistroD3R2","Efficiency Distribution for Station 3 Ring 2",36,0.5,36.5);
+  GregD3R3= new TH1F ("GregDistroD3R3","Efficiency Distribution for Station 3 Ring 3",36,0.5,36.5);
 
-  EffDistroDm3far= new TH1F ("EffDistroDm3far","Efficieny Distribution For Far Side Disk -3",20,0.5,100.5);
-  EffDistroDm2far= new TH1F ("EffDistroDm2far","Efficieny Distribution For Far Side Disk -2",20,0.5,100.5);
-  EffDistroDm1far= new TH1F ("EffDistroDm1far","Efficieny Distribution For Far Side Disk -1",20,0.5,100.5);
-  EffDistroD1far= new TH1F ("EffDistroD1far","Efficieny Distribution For Far Side Disk 1",20,0.5,100.5);
-  EffDistroD2far= new TH1F ("EffDistroD2far","Efficieny Distribution For Far Side Disk 2",20,0.5,100.5);
-  EffDistroD3far= new TH1F ("EffDistroD3far","Efficieny Distribution For Far Side Disk 3",20,0.5,100.5);
+  OcGregD1R2= new TH1F ("OcGregDistroD1R2","Occupancy Distribution for Station 1 Ring 2",36,0.5,36.5);
+  OcGregD1R3= new TH1F ("OcGregDistroD1R3","Occupancy Distribution for Station 1 Ring 3",36,0.5,36.5);
+  OcGregD2R2= new TH1F ("OcGregDistroD2R2","Occupancy Distribution for Station 2 Ring 2",36,0.5,36.5);
+  OcGregD2R3= new TH1F ("OcGregDistroD2R3","Occupancy Distribution for Station 2 Ring 3",36,0.5,36.5);
+  OcGregD3R2= new TH1F ("OcGregDistroD3R2","Occupancy Distribution for Station 3 Ring 2",36,0.5,36.5);
+  OcGregD3R3= new TH1F ("OcGregDistroD3R3","Occupancy Distribution for Station 3 Ring 3",36,0.5,36.5);
+
+  ExGregD1R2= new TH1F ("ExGregDistroD1R2","Expected Distribution for Station 1 Ring 2",36,0.5,36.5);
+  ExGregD1R3= new TH1F ("ExGregDistroD1R3","Expected Distribution for Station 1 Ring 3",36,0.5,36.5);
+  ExGregD2R2= new TH1F ("ExGregDistroD2R2","Expected Distribution for Station 2 Ring 2",36,0.5,36.5);
+  ExGregD2R3= new TH1F ("ExGregDistroD2R3","Expected Distribution for Station 2 Ring 3",36,0.5,36.5);
+  ExGregD3R2= new TH1F ("ExGregDistroD3R2","Expected Distribution for Station 3 Ring 2",36,0.5,36.5);
+  ExGregD3R3= new TH1F ("ExGregDistroD3R3","Expected Distribution for Station 3 Ring 3",36,0.5,36.5);
+
+  EffDistroDm3= new TH1F ("EffDistroDm3near","Efficiency Distribution For Near Side Disk -3",20,0.5,100.5);  
+  EffDistroDm2= new TH1F ("EffDistroDm2near","Efficiency Distribution For Near Side Disk -2",20,0.5,100.5);
+  EffDistroDm1= new TH1F ("EffDistroDm1near","Efficiency Distribution For Near Side Disk -1",20,0.5,100.5);
+  EffDistroD1= new TH1F ("EffDistroD1near","Efficiency Distribution For Near Side Disk 1",20,0.5,100.5);
+  EffDistroD2= new TH1F ("EffDistroD2near","Efficiency Distribution For Near Side Disk 2",20,0.5,100.5);
+  EffDistroD3= new TH1F ("EffDistroD3near","Efficiency Distribution For Near Side Disk 3",20,0.5,100.5);
+
+  EffDistroDm3far= new TH1F ("EffDistroDm3far","Efficiency Distribution For Far Side Disk -3",20,0.5,100.5);
+  EffDistroDm2far= new TH1F ("EffDistroDm2far","Efficiency Distribution For Far Side Disk -2",20,0.5,100.5);
+  EffDistroDm1far= new TH1F ("EffDistroDm1far","Efficiency Distribution For Far Side Disk -1",20,0.5,100.5);
+  EffDistroD1far= new TH1F ("EffDistroD1far","Efficiency Distribution For Far Side Disk 1",20,0.5,100.5);
+  EffDistroD2far= new TH1F ("EffDistroD2far","Efficiency Distribution For Far Side Disk 2",20,0.5,100.5);
+  EffDistroD3far= new TH1F ("EffDistroD3far","Efficiency Distribution For Far Side Disk 3",20,0.5,100.5);
 
   DoubleGapWm2= new TH1F ("DoubleGapEffWheel_-2near","Double Gap Efficiency Near Side Wheel -2",101,0.5,101.5);
   DoubleGapWm2far= new TH1F("DoubleGapEffWheel_-2far","Double Gap Efficiency Far Side Wheel -2",105,0.5,105.5);
@@ -1116,6 +1143,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    for(int i=(*r)->nstrips()+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
 
 	    assert(NumberWithOutPrediction+NumberStripsPointed == (*r)->nstrips());
+
+	    doublegapeff=0.;
+	    doublegaperr=0.;
 	    
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
@@ -1123,40 +1153,39 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      EffBarrel->Fill(averageeff);
 	      
-	      doublegapeff=0.;
-	      doublegaperr=0.;
 	      if(withouteffect!=0){
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
 		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
 	      }
 	      
 	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
-
-	      DoubleGapBarrel->Fill(doublegapeff);
-	      
-	      int Ring = rpcId.ring();
-	      
-	      if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
-		if(Ring==-2){ EffDistroWm2->Fill(averageeff);       DoubleGapDistroWm2->Fill(doublegapeff);
-		}else if(Ring==-1){ EffDistroWm1->Fill(averageeff); DoubleGapDistroWm1->Fill(doublegapeff);
-		}else if(Ring==0) { EffDistroW0->Fill(averageeff);  DoubleGapDistroW0->Fill(doublegapeff); 
-		}else if(Ring==1) { EffDistroW1->Fill(averageeff);  DoubleGapDistroW1->Fill(doublegapeff); 
-		}else if(Ring==2) { EffDistroW2->Fill(averageeff);  DoubleGapDistroW2->Fill(doublegapeff); 
-		}
-	      }else{
-		if(Ring==-2){ EffDistroWm2far->Fill(averageeff);       DoubleGapDistroWm2far->Fill(doublegapeff);
-		}else if(Ring==-1){ EffDistroWm1far->Fill(averageeff); DoubleGapDistroWm1far->Fill(doublegapeff);
-		}else if(Ring==0) { EffDistroW0far->Fill(averageeff);  DoubleGapDistroW0far->Fill(doublegapeff); 
-		}else if(Ring==1) { EffDistroW1far->Fill(averageeff);  DoubleGapDistroW1far->Fill(doublegapeff); 
-		}else if(Ring==2) { EffDistroW2far->Fill(averageeff);  DoubleGapDistroW2far->Fill(doublegapeff); 
-		}
-	      }
 	    }else{
 	      std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
 	    }
-	    
-	    std::cout<<std::endl;
 
+	    
+	    RollYEff<<rpcsrv.name()<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float((*r)->nstrips()))*100.<<std::endl;
+	    
+	    DoubleGapBarrel->Fill(doublegapeff);
+
+	    int Ring = rpcId.ring();
+
+	    if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
+	      if(Ring==-2){ EffDistroWm2->Fill(averageeff);       DoubleGapDistroWm2->Fill(doublegapeff);
+	      }else if(Ring==-1){ EffDistroWm1->Fill(averageeff); DoubleGapDistroWm1->Fill(doublegapeff);
+	      }else if(Ring==0) { EffDistroW0->Fill(averageeff);  DoubleGapDistroW0->Fill(doublegapeff); 
+	      }else if(Ring==1) { EffDistroW1->Fill(averageeff);  DoubleGapDistroW1->Fill(doublegapeff); 
+	      }else if(Ring==2) { EffDistroW2->Fill(averageeff);  DoubleGapDistroW2->Fill(doublegapeff); 
+	      }
+	    }else{
+	      if(Ring==-2){ EffDistroWm2far->Fill(averageeff);       DoubleGapDistroWm2far->Fill(doublegapeff);
+	      }else if(Ring==-1){ EffDistroWm1far->Fill(averageeff); DoubleGapDistroWm1far->Fill(doublegapeff);
+	      }else if(Ring==0) { EffDistroW0far->Fill(averageeff);  DoubleGapDistroW0far->Fill(doublegapeff); 
+	      }else if(Ring==1) { EffDistroW1far->Fill(averageeff);  DoubleGapDistroW1far->Fill(doublegapeff); 
+	      }else if(Ring==2) { EffDistroW2far->Fill(averageeff);  DoubleGapDistroW2far->Fill(doublegapeff); 
+	      }
+	    }
+	    
 	    if(prodimages || makehtml){
 	      command = "mkdir " + rpcsrv.name();
 	      system(command.c_str());
@@ -1261,7 +1290,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    MeanResiduals->Fill(histoResidual->GetMean());
 	    MeanResiduals11->Fill(histoResidual->GetMean());
 
-	    int Ring = rpcId.ring();
 	    int sector = rpcId.sector();
 	    //Near Side
 
@@ -1343,10 +1371,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  er=er*100;
 
 
-	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef;
-
-	  if(doublegapeff < averageeff) std::cout<<" Warning!!!"<<std::endl;
-	  else std::cout<<""<<std::endl;
+	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<""<<std::endl;
 	  
 	  std::string camera = rpcsrv.name().c_str();  
 	  float stripsratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
@@ -1951,7 +1976,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  p=histoCSC->Integral();
 	  o=histoRPC->Integral();
 
-
 	  int Disk = rpcId.station()*rpcId.region();
 
 	  std::cout<<"Disk="<<Disk<<std::endl;
@@ -1963,7 +1987,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	  ef=ef*100;
 	  er=er*100;
-	    
+
+	  //Filling GregHistograms
+
+	  if(rpcId.region()==1){
+	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),p);OcGregD1R2->Fill(rpcsrv.segment(),o); std::cout<<rpcsrv.name()<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregD1R3->Fill(rpcsrv.segment(),p);OcGregD1R3->Fill(rpcsrv.segment(),o); std::cout<<rpcsrv.name()<<"GREG Filling D1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregD2R2->Fill(rpcsrv.segment(),p);OcGregD2R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),p);OcGregD2R3->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),p);OcGregD3R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),p);OcGregD3R3->Fill(rpcsrv.segment(),o);}
+	  }
+    
 	  std::string camera = rpcsrv.name();
 	  
 	  float maskedratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
@@ -2266,6 +2301,35 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     command = "cat htmltemplates/indextail.html >> indexW2far.html"; system(command.c_str());
   }
 
+  float eff,N,err;
+  
+  for(int k=1;k<=36;k++){
+    err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
+    GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);
+
+    err=0; eff=0; N=ExGregD1R3->GetBinContent(k);
+    if(N!=0.){eff = OcGregD1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);
+    
+    err=0; eff=0; N=ExGregD2R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregD2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);
+
+    err=0; eff=0; N=ExGregD2R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregD2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);
+
+    err=0; eff=0; N=ExGregD3R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregD3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);
+
+    err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
+  }
+
+
   std::cout<<"Outside the loop of rolls"<<std::endl;
 
   Ca5->Clear();
@@ -2384,8 +2448,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobDm3->GetXaxis()->LabelsOption("v");
     BXGlobDm3->GetXaxis()->LabelsOption("v");
     MaskedGlobDm3->GetXaxis()->LabelsOption("v");
-    
-        
+          
     std::cout<<"Label Options Far"<<std::endl;
     NoPredictionDm3far->GetXaxis()->LabelsOption("v");
     AverageEffDm3far->GetXaxis()->LabelsOption("v");
@@ -2638,11 +2701,36 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   command = "mkdir Sides" ; system(command.c_str());
   command = "mkdir Distro" ; system(command.c_str());
   command = "mkdir Pigi" ; system(command.c_str());
+  command = "mkdir Greg" ; system(command.c_str());
   
   //Producing Images
  
  Ca5->Clear();
- 
+
+ GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D1R2.png"); Ca5->SaveAs("Greg/D1R2.root");
+ Ca5->Clear(); 
+
+ GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D1R3.png"); Ca5->SaveAs("Greg/D1R3.root");
+ Ca5->Clear(); 
+
+ GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D2R2.png"); Ca5->SaveAs("Greg/D2R2.root");
+ Ca5->Clear(); 
+
+ GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D2R3.png"); Ca5->SaveAs("Greg/D2R3.root");
+ Ca5->Clear(); 
+
+ GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D3R2.png"); Ca5->SaveAs("Greg/D3R2.root");
+ Ca5->Clear(); 
+
+ GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
+ Ca5->SaveAs("Greg/D3R3.png"); Ca5->SaveAs("Greg/D3R3.root");
+ Ca5->Clear(); 
+
  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
  Diskm3Summary->SetDrawOption("color");
  Ca5->SaveAs("Pigi/Diskm3Summary.png"); Ca5->SaveAs("Pigi/Diskm3Summary.root");
@@ -3537,6 +3625,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  EffEndCap->Write();
 
+ GregD1R2->Write();
+ GregD1R3->Write();
+ GregD2R2->Write();
+ GregD2R3->Write();
+ GregD3R2->Write();
+ GregD3R3->Write();
+
+ OcGregD1R2->Write();
+ OcGregD1R3->Write();
+ OcGregD2R2->Write();
+ OcGregD2R3->Write();
+ OcGregD3R2->Write();
+ OcGregD3R3->Write();
+
+ ExGregD1R2->Write();
+ ExGregD1R3->Write();
+ ExGregD2R2->Write();
+ ExGregD2R3->Write();
+ ExGregD3R2->Write();
+ ExGregD3R3->Write();
+
  EffDistroDm3->Write();  
  EffDistroDm2->Write();
  EffDistroDm1->Write();
@@ -3691,6 +3800,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  efftxt.close();
  alignment.close();
+ RollYEff.close();
 } 
 
 void 
