@@ -1,436 +1,146 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
+#--------------------------------------------------------------------------------
 #
-# Plot histograms for Z --> mu + tau channel
+# Plot histograms for Z --> mu + tau-jet channel
 #
 # Author: Christian Veelken, UC Davis
 #
+#--------------------------------------------------------------------------------
 
-loadMuTau = cms.EDAnalyzer("DQMFileLoader",
-  zMuMu1kEv = cms.PSet(
-    inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu1kEv.root'), # single .root file
-    scaleFactor = cms.double(1.),
-    dqmDirectory_store = cms.string('zMuMu1kEv')
-  ),
-  zMuMu9kEv = cms.PSet(
-    inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu1kEv_#RANGE01-04#.root', # total of 5 root files
-                                 'ewkTauMuAnalyzer_zMuMu5kEv.root'),
-    scaleFactor = cms.double(1.),
-    dqmDirectory_store = cms.string('zMuMu9kEv')
-  ),
-  zMuMu10kEv = cms.PSet(
-    inputFileNames = cms.vstring('ewkTauMuAnalyzer_zMuMu10kEv.root'),
-    scaleFactor = cms.double(1.),
-    dqmDirectory_store = cms.string('zMuMu10kEv')
-  )
+from TauAnalysis.Configuration.plotZtoMuTau_processes_cfi import *
+from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import *
+from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
+
+loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
+  Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmFileLoader),
+  InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmFileLoader)
 )
 
+addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
+  qcdSum = cms.PSet(
+    dqmDirectories_input = cms.vstring('InclusivePPmuX'),
+    dqmDirectory_output = cms.string('qcdSum')
+  )                          
+)
 
-addMuTau = cms.EDAnalyzer("DQMHistAdder",
+addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
   smSum = cms.PSet(
-    dqmDirectories_input = cms.vstring('zMuMu1kEv',
-                                       'zMuMu9kEv'),
+    dqmDirectories_input = cms.vstring( 'Ztautau',
+                                        'qcdSum' ),
     dqmDirectory_output = cms.string('smSum')
   )
 )
 
-plotMuTau = cms.EDAnalyzer("DQMHistPlotter",
+addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smSum)
+
+plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
   processes = cms.PSet(
-    zMuMu1kEv = cms.PSet(
-      dqmDirectory = cms.string('zMuMu1kEv'),
-      legendEntry = cms.string('Z #rightarrow #mu #mu (1kEv)'),
+    Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmHistPlotter),
+    InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmHistPlotter),
+    qcdSum = cms.PSet(
+      dqmDirectory = cms.string('qcdSum'),
+      legendEntry = cms.string('QCD'),
       type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-    ),
-    zMuMu9kEv = cms.PSet(
-      dqmDirectory = cms.string('zMuMu9kEv'),
-      legendEntry = cms.string('Z #rightarrow #mu #mu (9kEv)'),
-      type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-    ),
-    zMuMu10kEv = cms.PSet(
-      dqmDirectory = cms.string('zMuMu10kEv'),
-      legendEntry = cms.string('Z #rightarrow #mu #mu (10kEv)'),      
-      type = cms.string('Data') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-    ),
-    smSum = cms.PSet(
-      dqmDirectory = cms.string('smSum'),
-      legendEntry = cms.string('All SM Processes'),
-      legendEntryErrorBand = cms.string('SM Uncertainty'),
-      type = cms.string('smSumMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
   ),
 
   xAxes = cms.PSet(
-    muonPt = cms.PSet(
-      xAxisTitle = cms.string('P_{T} / GeV'),
-      xAxisTitleOffset = cms.double(1.0),
-      xAxisTitleSize = cms.double(0.05)       
-#     xMin = cms.double(0.)                   
-#     xMax = cms.double(100.)                
-    ),
-    muonEta = cms.PSet(
-      xAxisTitle = cms.string('#eta'),
-      xAxisTitleOffset = cms.double(1.0),
-      xAxisTitleSize = cms.double(0.05)
-    ),
-    muonPhi = cms.PSet(
-      xAxisTitle = cms.string('#phi'),
-      xAxisTitleOffset = cms.double(1.0),
-      xAxisTitleSize = cms.double(0.05)
-    )
+    Pt = copy.deepcopy(xAxis_pt),
+    Eta = copy.deepcopy(xAxis_eta),
+    Phi = copy.deepcopy(xAxis_phi),
+    IPxy = copy.deepcopy(xAxis_ipXY),
+    IPz = copy.deepcopy(xAxis_ipZ),
+    dPhi = copy.deepcopy(xAxis_dPhi),
+    prob = copy.deepcopy(xAxis_prob),
+    posZ = copy.deepcopy(xAxis_posZ),
+    Mt = copy.deepcopy(xAxis_transMass),
+    M = copy.deepcopy(xAxis_mass),
+    N = copy.deepcopy(xAxis_num),
+    unlabeled = copy.deepcopy(xAxis_unlabeled),
   ),
 
   yAxes = cms.PSet(                         
-    numEntries_linear = cms.PSet(
-      yScale = cms.string('linear'),      
-      yAxisTitle = cms.string(''),        
-      yAxisTitleOffset = cms.double(1.1), 
-      yAxisTitleSize = cms.double(0.05)   
-#     yMin_linear = cms.double(0.)        
-#     yMax_linear = cms.double(1.)        
-#     yMin_log = cms.double(1.e-2)      
-#     yMax_log = cms.double(1.e+2)      
-    ),
-    numEntries_log = cms.PSet(
-      yScale = cms.string('log'), 
-      minY_log = cms.double(1.e-1),
-      yAxisTitle = cms.string(''), 
-      yAxisTitleOffset = cms.double(1.1),
-      yAxisTitleSize = cms.double(0.05)
-    ),
-    efficiency = cms.PSet(
-      yScale = cms.string('linear'), 
-      yAxisTitle = cms.string('#varepsilon'), 
-      yAxisTitleOffset = cms.double(1.1),
-      yAxisTitleSize = cms.double(0.05)
-    )
+    numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
+    numEntries_log = copy.deepcopy(yAxis_numEntries_log)
   ),
 
   legends = cms.PSet(
-    regular = cms.PSet(
-      posX = cms.double(0.60),            
-      posY = cms.double(0.64),             
-      sizeX = cms.double(0.29),        
-      sizeY = cms.double(0.25),            
-      header = cms.string(''),          
-      option = cms.string('brNDC'),       
-      borderSize = cms.int32(0),          
-      fillColor = cms.int32(0)             
-    ),
-    eff_processes = cms.PSet(
-      posX = cms.double(0.60),
-      posY = cms.double(0.77),
-      sizeX = cms.double(0.29),
-      sizeY = cms.double(0.12),
-      header = cms.string(''),
-      option = cms.string('brNDC'),
-      borderSize = cms.int32(0),
-      fillColor = cms.int32(0)
-    ),
-    eff_overlay = cms.PSet(
-      posX = cms.double(0.60),
-      posY = cms.double(0.64),
-      sizeX = cms.double(0.29),
-      sizeY = cms.double(0.25),
-      header = cms.string(''),
-      option = cms.string('brNDC'),
-      borderSize = cms.int32(0),
-      fillColor = cms.int32(0)
-    )
+    regular = copy.deepcopy(legend_regular)
   ),
 
   labels = cms.PSet(
-    pt = cms.PSet(
-      posX = cms.double(0.19),                
-      posY = cms.double(0.77),             
-      sizeX = cms.double(0.12),            
-      sizeY = cms.double(0.04),          
-      option = cms.string('brNDC'),   
-      borderSize = cms.int32(0),         
-      fillColor = cms.int32(0),           
-      textColor = cms.int32(1),           
-      textSize = cms.double(0.04),        
-      textAlign = cms.int32(22),          
-#     textAngle = cms.double(0.),
-      text = cms.vstring('P_{T} > 5 GeV')
-    ),
-    eta = cms.PSet(
-      posX = cms.double(0.19),
-      posY = cms.double(0.83),
-      sizeX = cms.double(0.12),
-      sizeY = cms.double(0.04),
-      option = cms.string('brNDC'),
-      borderSize = cms.int32(0),
-      fillColor = cms.int32(0),
-      textColor = cms.int32(1),
-      textSize = cms.double(0.04),
-      textAlign = cms.int32(22),
-      text = cms.vstring('-2.5 < #eta < +2.5')
-    )
+    mcNormScale = copy.deepcopy(label_mcNormScale)
   ),
 
   drawOptionSets = cms.PSet(
-    separate = cms.PSet(
-      zMuMu1kEv = cms.PSet(
-#       markerColor = cms.int32(1),        
-#       markerSize = cms.int32(1),         
-#       markerStyle = cms.int32(2),       
-        lineColor = cms.int32(30),        
-        lineStyle = cms.int32(1),         
-        lineWidth = cms.int32(2),         
-        fillColor = cms.int32(30),        
-        fillStyle = cms.int32(3004),      
-        drawOption = cms.string('hist'),  
-        drawOptionLegend = cms.string('f') 
-      ),
-      zMuMu9kEv = cms.PSet(
-        lineColor = cms.int32(42),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        fillColor = cms.int32(42),
-        fillStyle = cms.int32(3005),
-        drawOption = cms.string('hist'),
-        drawOptionLegend = cms.string('f')
-      ),
-      zMuMu10kEv = cms.PSet(
-        markerColor = cms.int32(1),
-        markerSize = cms.double(1.),
-        markerStyle = cms.int32(8),
-        lineColor = cms.int32(1),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        drawOption = cms.string('e1p'),
-        drawOptionLegend = cms.string('p')
-      ),
-      smSum = cms.PSet(
-        lineColor = cms.int32(1),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        fillColor = cms.int32(3),
-        drawOption = cms.string('eBand'),
-        drawOptionLegend = cms.string('l')
-      )
-    ),
-    stacked = cms.PSet(
-      zMuMu1kEv = cms.PSet(
-        lineColor = cms.int32(2),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(1),
-        fillColor = cms.int32(2),
-        fillStyle = cms.int32(1001), #3004
-        drawOption = cms.string('hist'),
-        drawOptionLegend = cms.string('f')
-      ),
-      zMuMu9kEv = cms.PSet(
-        lineColor = cms.int32(6),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(1),
-        fillColor = cms.int32(6),
-        fillStyle = cms.int32(1001), #3005
-        drawOption = cms.string('hist'),
-        drawOptionLegend = cms.string('f')
-      ),
-      zMuMu10kEv = cms.PSet(
-        markerColor = cms.int32(1),
-        markerSize = cms.double(1.),
-        markerStyle = cms.int32(8),
-        lineColor = cms.int32(1),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        drawOption = cms.string('e1p'),
-        drawOptionLegend = cms.string('p')
-      ),
-      stack = cms.vstring('zMuMu1kEv',
-                          'zMuMu9kEv')
-    ),   
-    eff_processes = cms.PSet(
-      zMuMu1kEv = cms.PSet(
-        markerColor = cms.int32(1),
-        markerSize = cms.double(1.),
-        markerStyle = cms.int32(20),
-        lineColor = cms.int32(1),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        drawOption = cms.string('e1p'),
-        drawOptionLegend = cms.string('p')
-      ),
-      zMuMu10kEv = cms.PSet(
-        markerColor = cms.int32(2),
-        markerSize = cms.double(1.),
-        markerStyle = cms.int32(24),
-        lineColor = cms.int32(2),
-        lineStyle = cms.int32(1),
-        lineWidth = cms.int32(2),
-        drawOption = cms.string('e1p'),
-        drawOptionLegend = cms.string('p')
-      )
-    )
-  ),
-
-  drawOptionEntries = cms.PSet(
-    eff_overlay01 = cms.PSet(
-      markerColor = cms.int32(3),
-      markerSize = cms.double(1.),
-      markerStyle = cms.int32(24),
-      lineColor = cms.int32(3),
-      lineStyle = cms.int32(1),
-      lineWidth = cms.int32(2),
-      drawOption = cms.string('e1p'),
-      drawOptionLegend = cms.string('p')
-    ),
-    eff_overlay02 = cms.PSet(
-      markerColor = cms.int32(7),
-      markerSize = cms.double(1.),
-      markerStyle = cms.int32(24),
-      lineColor = cms.int32(7),
-      lineStyle = cms.int32(1),
-      lineWidth = cms.int32(2),
-      drawOption = cms.string('e1p'),
-      drawOptionLegend = cms.string('p')
-    ),
-    eff_overlay03 = cms.PSet(
-      markerColor = cms.int32(4),
-      markerSize = cms.double(1.),
-      markerStyle = cms.int32(24),
-      lineColor = cms.int32(4),
-      lineStyle = cms.int32(1),
-      lineWidth = cms.int32(2),
-      drawOption = cms.string('e1p'),
-      drawOptionLegend = cms.string('p')
-    ),
-    eff_overlay04 = cms.PSet(
-      markerColor = cms.int32(6),
-      markerSize = cms.double(1.),
-      markerStyle = cms.int32(24),
-      lineColor = cms.int32(6),
-      lineStyle = cms.int32(1),
-      lineWidth = cms.int32(2),
-      drawOption = cms.string('e1p'),
-      drawOptionLegend = cms.string('p')
-    ),
-    eff_overlay05 = cms.PSet(
-      markerColor = cms.int32(2),
-      markerSize = cms.double(1.),
-      markerStyle = cms.int32(24),
-      lineColor = cms.int32(2),
-      lineStyle = cms.int32(1),
-      lineWidth = cms.int32(2),
-      drawOption = cms.string('e1p'),
-      drawOptionLegend = cms.string('p')
+    default = cms.PSet(
+      Ztautau = copy.deepcopy(drawOption_Ztautau),
+      qcdSum = copy.deepcopy(drawOption_QCD)
     )
   ),
 
   drawJobs = cms.PSet(
-    muonKine_sep = cms.PSet(
-      plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
-                                         '#PROCESSDIR#/MuonQuantities/MuonIdSel#PAR#'),
-        processes = cms.vstring('zMuMu1kEv', 'zMuMu9kEv', 'zMuMu10kEv', 'smSum')
-      ),
-      parameter = cms.vstring('Pt', 'Eta', 'Phi'),
-      xAxis = cms.string('muon#PAR#'),
-      yAxis = cms.string('numEntries_linear'),
-      legend = cms.string('regular'),
-      labels = cms.vstring(''),                   
-      drawOptionSet = cms.string('separate')                 
-    ),
-    muonKine_stack = cms.PSet(
-      plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/Muon#PAR#',
-                                         '#PROCESSDIR#/MuonQuantities/MuonIdSel#PAR#'),
-        processes = cms.vstring('zMuMu1kEv', 'zMuMu9kEv', 'zMuMu10kEv')
-      ),
-      parameter = cms.vstring('Pt', 'Eta', 'Phi'),
-      xAxis = cms.string('muon#PAR#'),
-      yAxis = cms.string('numEntries_log'),
-      legend = cms.string('regular'),
-      labels = cms.vstring(''),                   
-      drawOptionSet = cms.string('stacked'),
-      stack =  cms.vstring('zMuMu1kEv', 'zMuMu9kEv')
-    ),
-    muonIdEff_Pt = cms.PSet(
-      plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonIdEffPt'),
-        processes = cms.vstring('zMuMu1kEv', 'zMuMu10kEv')
-      ),
-      xAxis = cms.string('muonPt'),
-      yAxis = cms.string('efficiency'),
-      legend = cms.string('eff_processes'),
-      labels = cms.vstring('eta'),
-      drawOptionSet = cms.string('eff_processes')
-    ),    
-    muonIdEff_Eta = cms.PSet(
-      plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonIdEffEta'),
-        processes = cms.vstring('zMuMu1kEv', 'zMuMu10kEv')
-      ),
-      xAxis = cms.string('muonEta'),
-      yAxis = cms.string('efficiency'),
-      legend = cms.string('eff_processes'),
-      labels = cms.vstring('pt'),
-      drawOptionSet = cms.string('eff_processes')
-    ),  
-    muonIdEff_Phi = cms.PSet(
-      plots = cms.PSet(
-        dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonIdEffPhi'),
-        processes = cms.vstring('zMuMu1kEv', 'zMuMu10kEv')
-      ),
-      xAxis = cms.string('muonPhi'),
-      yAxis = cms.string('efficiency'),
-      legend = cms.string('eff_processes'),
-      labels = cms.vstring('pt', 'eta'),
-      drawOptionSet = cms.string('eff_processes')
-    ),  
-    muonSelEff = cms.PSet(
-      plots = cms.VPSet(
-        cms.PSet(
-          dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonHLTmatchEff#PAR#'),
-          process = cms.string('zMuMu10kEv'),
-          drawOptionEntry = cms.string('eff_overlay01'),
-          legendEntry = cms.string('HLT Matching')
-        ),
-        cms.PSet(
-          dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonTrkIsoEff#PAR#'),
-          process = cms.string('zMuMu10kEv'),
-          drawOptionEntry = cms.string('eff_overlay02'),
-          legendEntry = cms.string('Track Iso.')
-        ),
-        cms.PSet(
-          dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonEcalIsoEff#PAR#'),
-          process = cms.string('zMuMu10kEv'),
-          drawOptionEntry = cms.string('eff_overlay03'),
-          legendEntry = cms.string('ECAL Iso.')
-        ),
-        cms.PSet(
-          dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonHcalIsoEff#PAR#'),
-          process = cms.string('zMuMu10kEv'),
-          drawOptionEntry = cms.string('eff_overlay04'),
-          legendEntry = cms.string('HCAL Iso.')
-        ),
-        cms.PSet(
-          dqmMonitorElements = cms.vstring('#PROCESSDIR#/MuonQuantities/MuonIdEff#PAR#'),
-          process = cms.string('zMuMu10kEv'),
-          drawOptionEntry = cms.string('eff_overlay05'),
-          legendEntry = cms.string('Muon Id.')
-        )
-      ),
-      parameter = cms.vstring('Pt', 'Eta', 'Phi'),
-      title = cms.string('muonSelectionEfficiencies#PAR#'),
-      xAxis = cms.string('muon#PAR#'),
-      yAxis = cms.string('efficiency'),
-      legend = cms.string('regular'),
-      labels = cms.vstring('')
-    )
-  ), 
+    # cut-flow control plots
+    #cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex = copy.deepcopy(plots_ZtoMuTau_vertexChi2Prob_afterPrimaryEventVertex),
+    #cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality = copy.deepcopy(plots_ZtoMuTau_vertexZ_afterPrimaryEventVertexQuality),
+    cutFlowControlPlots_muon_afterPrimaryEventVertexPosition = copy.deepcopy(plots_ZtoMuTau_muon_afterPrimaryEventVertexPosition),
+    cutFlowControlPlots_muon_afterGlobalMuon = copy.deepcopy(plots_ZtoMuTau_muon_afterGlobalMuon),
+    cutFlowControlPlots_muon_afterMuonEta = copy.deepcopy(plots_ZtoMuTau_muon_afterMuonEta),
+    cutFlowControlPlots_muon_afterMuonPt = copy.deepcopy(plots_ZtoMuTau_muon_afterMuonPt),
+    cutFlowControlPlots_muonTrkIso_afterMuonHLTmatch = copy.deepcopy(plots_ZtoMuTau_muonTrkIso_afterMuonHLTmatch),
+    cutFlowControlPlots_muonEcalIso_afterMuonTrkIso = copy.deepcopy(plots_ZtoMuTau_muonEcalIso_afterMuonTrkIso),
+    cutFlowControlPlots_muonComp_afterMuonEcalIso = copy.deepcopy(plots_ZtoMuTau_muonComp_afterMuonEcalIso),
+    cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto = copy.deepcopy(plots_ZtoMuTau_muonTrkIP_afterMuonAntiPionVeto),
+    cutFlowControlPlots_tau_afterMuonTrkIP = copy.deepcopy(plots_ZtoMuTau_tau_afterMuonTrkIP),
+    #cutFlowControlPlots_tauLeadTrkPt_afterMuonTrkIP = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_afterMuonTrkIP),
+    cutFlowControlPlots_tau_afterTauAntiOverlapWithMuonsVeto = copy.deepcopy(plots_ZtoMuTau_tau_afterTauAntiOverlapWithMuonsVeto),
+    #cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithMuonsVeto = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_afterTauAntiOverlapWithMuonsVeto),
+    cutFlowControlPlots_tau_afterTauEta = copy.deepcopy(plots_ZtoMuTau_tau_afterTauEta),
+    #cutFlowControlPlots_tauLeadTrkPt_afterTauEta = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_afterTauEta),
+    cutFlowControlPlots_tau_afterTauPt = copy.deepcopy(plots_ZtoMuTau_tau_afterTauPt),
+    #cutFlowControlPlots_tauLeadTrkPt_afterTauPt = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_afterTauPt),
+    cutFlowControlPlots_tau_afterTauLeadTrk = copy.deepcopy(plots_ZtoMuTau_tau_afterTauLeadTrk),
+    #cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_afterTauLeadTrk),
+    cutFlowControlPlots_tau_afterTauLeadTrkPt = copy.deepcopy(plots_ZtoMuTau_tau_afterTauLeadTrkPt),
+    cutFlowControlPlots_tau_afterTauTrkIso = copy.deepcopy(plots_ZtoMuTau_tau_afterTauTrkIso),
+    #cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso = copy.deepcopy(plots_ZtoMuTau_tauNumTracksSignalCone_afterTauEcalIso),
+    cutFlowControlPlots_tau_afterTauProng = copy.deepcopy(plots_ZtoMuTau_tau_afterTauProng),
+    #cutFlowControlPlots_tauAntiMuonDiscr_afterTauProng = copy.deepcopy(plots_ZtoMuTau_tauAntiMuonDiscr_afterTauProng),
+    cutFlowControlPlots_dR12_afterTauMuonVeto = copy.deepcopy(plots_ZtoMuTau_dR12_afterTauMuonVeto),
+    cutFlowControlPlots_dPhi1MET_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoMuTau_dPhi1MET_afterAntiOverlapVeto),
+    cutFlowControlPlots_dPhi2MET_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoMuTau_dPhi2MET_afterAntiOverlapVeto),
+    cutFlowControlPlots_diTauCharge_afterAcoplanarity = copy.deepcopy(plots_ZtoMuTau_diTauCharge_afterAcoplanarity),
+
+    # distributions plotted for events passing all cuts
+    finalSamplePlots_muon = copy.deepcopy(plots_ZtoMuTau_muon_finalEventSample),
+    finalSamplePlots_tau = copy.deepcopy(plots_ZtoMuTau_tau_finalEventSample),
+    #finalSamplePlots_tauLeadTrkPt = copy.deepcopy(plots_ZtoMuTau_tauLeadTrkPt_finalEventSample),
+    #finalSamplePlots_tauNumTracksSignalCone = copy.deepcopy(plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample),
+    finalSamplePlots_met = copy.deepcopy(plots_ZtoMuTau_met_finalEventSample),
+    finalSamplePlots_mtMuonMET = copy.deepcopy(plots_ZtoMuTau_mtMuonMET_finalEventSample),
+    finalSamplePlots_mtTauMET = copy.deepcopy(plots_ZtoMuTau_mtTauMET_finalEventSample),
+    finalSamplePlots_mtMuonTauMET = copy.deepcopy(plots_ZtoMuTau_mtMuonTauMET_finalEventSample),
+    finalSamplePlots_mCDFmethod = copy.deepcopy(plots_ZtoMuTau_mCDFmethod_finalEventSample),
+    finalSamplePlots_mCollApprox = copy.deepcopy(plots_ZtoMuTau_mCollApprox_finalEventSample),
+    finalSamplePlots_numCentralJets = copy.deepcopy(plots_ZtoMuTau_numCentralJets_finalEventSample)
+  ),
 
   canvasSizeX = cms.int32(800),
   canvasSizeY = cms.int32(640),                         
 
-  outputFilePath = cms.string('/uscms/home/veelken/work/CMSSW_2_1_9dev/src/ElectroWeakAnalysis/EWKTau/test/plots/'),
-  #outputFileName = cms.string('ewkTauMuAnalyzer_zMuMu.ps')
-  indOutputFileName = cms.string('#PLOT#_zMuMu.png')
+  outputFilePath = cms.string('./plots/'),
+  #outputFileName = cms.string('plotsZtoMuTau.ps')
+  indOutputFileName = cms.string('plotZtoMuTau_#PLOT#.png')
 )
 
-saveMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
-  outputFileName = cms.string('ewkTauMuAnalyzer_allProcesses.root')
+saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+  outputFileName = cms.string('plotsZtoMuTau_all.root')
 )
- 
+
+makeZtoMuTauPlots = cms.Sequence( loadZtoMuTau
+                                  +addZtoMuTau
+                                  #+saveZtoMuTau 
+                                  +plotZtoMuTau )
+  
