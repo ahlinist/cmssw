@@ -58,7 +58,8 @@ analyzeZtoDiTau = cms.EDAnalyzer("GenericAnalyzer",
   
   histManagers = cms.VPSet(
     genPhaseSpaceEventInfoHistManager,
-    tauHistManager,
+    tauHistManager1,
+    tauHistManager2,
     diTauCandidateHistManagerForDiTau,
     metHistManager,
     jetHistManager,
