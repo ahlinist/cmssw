@@ -80,10 +80,10 @@ void castorAnalysis(int maxEvents = -1, bool verbose = false) {
      if(verbose) std::cout << ">>> Event number: " << nEvts << endl;	
      // Access castor gen
      fwlite::Handle<std::vector<unsigned int> > acceptedPhiSliceplus; 
-     acceptedPhiSliceplus.getByLabel(ev,"castorGen","acceptedPhiSliceplus");
+     acceptedPhiSliceplus.getByLabel(ev,"castorGenNoThreshold","acceptedPhiSliceplus");
 
      fwlite::Handle<std::vector<double> > energyPhiSliceplus;
-     energyPhiSliceplus.getByLabel(ev,"castorGen","energyPhiSliceplus");
+     energyPhiSliceplus.getByLabel(ev,"castorGenNoThreshold","energyPhiSliceplus");
 
      unsigned int nAccPhiSliceplus = 0;
      double sumECastorGen_plus = 0.;
