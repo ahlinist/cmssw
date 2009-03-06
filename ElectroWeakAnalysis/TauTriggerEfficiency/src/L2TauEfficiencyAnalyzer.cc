@@ -199,7 +199,6 @@ L2TauEfficiencyAnalyzer::matchAndFillL2(const LV& jet,const L2TauInfoAssociation
 		  delta_min=delta;
 		  hasL2Jet=1;
 		  const reco::L2TauIsolationInfo l2info = (it->val);
-		  const reco::CaloJet& jet =*(it->key);
 		  ecalIsol_Et=l2info.ECALIsolConeCut;
 		  towerIsol_Et=l2info.TowerIsolConeCut;
 		  cl_Nclusters=l2info.ECALClusterNClusters;
@@ -207,12 +206,12 @@ L2TauEfficiencyAnalyzer::matchAndFillL2(const LV& jet,const L2TauInfoAssociation
 		  cl_phiRMS=l2info.ECALClusterPhiRMS;
 		  cl_drRMS=l2info.ECALClusterDRRMS;
 		  seedTowerEt = l2info.SeedTowerEt;
-		  JetEt = jet.et();
-		  JetEta = jet.eta();
-		  JetPhi = jet.phi();
-		  hadFraction = jet.energyFractionHadronic();
-		  NTowers60 = jet.n60();
-		  NTowers90 = jet.n90();
+		  JetEt = l2Jet.et();
+		  JetEta = l2Jet.eta();
+		  JetPhi = l2Jet.phi();
+		  hadFraction = l2Jet.energyFractionHadronic();
+		  NTowers60 = l2Jet.n60();
+		  NTowers90 = l2Jet.n90();
 
 		}
 	    }
