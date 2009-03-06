@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.5 2009/03/03 19:31:53 santanas Exp $
+// $Id: HcalZS.cc,v 1.6 2009/03/04 15:58:39 santanas Exp $
 //
 //
 
@@ -319,6 +319,19 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	   if (id.subdet() == 3) 
 	     h_ho_d4->Fill(id.ieta(),id.iphi(),0);	 
 
+	 // 	 //debug for Tullio
+	 // 	 if ( agree == false ) 
+	 // 	   if (id.subdet() == 3)
+	 // 	     {
+	 // 	       cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	 // 	       printf( "ieta: %i iphi: %i\n" , id.ieta(), id.iphi() ); 
+	 // 	       printf( "M&P: %i M&PEMU: %i\n", digi.zsMarkAndPass(), !(ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_)) );
+	 // 	       for(int i=0;i<digi.size();i++)
+	 // 		 { 
+	 // 		   cout << i << ") ---> " << digi.sample(i).adc() << endl;
+	 // 		 }
+	 // 	       cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	 // 	     }
 	 
        }// end loop of HO digi
    }//end check if ho_digi exists
