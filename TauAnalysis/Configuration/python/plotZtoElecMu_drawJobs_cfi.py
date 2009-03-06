@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 # define template for all kins of plots
-# (specific to Z --> e + mu e + mu analysis)
+# (specific to Z --> e + mu analysis)
 plots_ZtoElecMu = cms.PSet(
   plots = cms.PSet(  
     dqmMonitorElements = cms.vstring(''),

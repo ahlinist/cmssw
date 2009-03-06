@@ -1,11 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+#--------------------------------------------------------------------------------
 #
 # Plot histograms for Z --> e + mu channel
 #
 # Author: Christian Veelken, UC Davis
 #
+#--------------------------------------------------------------------------------
 
 from TauAnalysis.Configuration.plotZtoElecMu_processes_cfi import *
 from TauAnalysis.Configuration.plotZtoElecMu_drawJobs_cfi import *
