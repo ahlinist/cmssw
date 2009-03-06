@@ -18,6 +18,10 @@ process.load("TauAnalysis.CandidateTools.muTauPairProducer_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 
+# import configuration parameters for submission of jobs to CERN batch system
+# (running over skimmed samples stored on CASTOR)
+from TauAnalysis.Configuration.sampleDefinitionsZtoMuTau_cfi import *
+
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
