@@ -24,7 +24,7 @@ private:
 using namespace reco;
 
 TrackMultiplicityEdmNtupleDumper::TrackMultiplicityEdmNtupleDumper(const edm::ParameterSet& pset) {
-	tracksTag_ = pset.getParameter<edm::InputTag>("TracksLabel");
+	tracksTag_ = pset.getParameter<edm::InputTag>("TracksTag");
 
 	std::string alias;
 	produces<unsigned int>( alias = "trackMultiplicity" ).setBranchAlias( alias );
@@ -52,7 +52,7 @@ void TrackMultiplicityEdmNtupleDumper::produce(edm::Event& event, const edm::Eve
 
 	event.put(trackMultiplicity,"trackMultiplicity");
 	event.put(trackMultiplicityEtaPlus,"trackMultiplicityEtaPlus");
-	event.put(trackMultiplicityEtaPlus,"trackMultiplicityEtaPlus");
+	event.put(trackMultiplicityEtaMinus,"trackMultiplicityEtaMinus");
 }
 
 DEFINE_FWK_MODULE(TrackMultiplicityEdmNtupleDumper);
