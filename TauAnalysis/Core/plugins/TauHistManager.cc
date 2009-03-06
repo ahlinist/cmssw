@@ -120,10 +120,18 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
     hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "TauThetaCompToGen", 200, -0.050, +0.050);
     hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "TauPhiCompToGen", 200, -0.050, +0.050);
 
+    hTauNumTracksSignalCone_ = dqmStore.book1D("TauNumTracksSignalCone", "TauNumTracksSignalCone", 10, -0.5, 9.5);
+    hTauNumTracksIsoCone_ = dqmStore.book1D("TauNumTracksIsoCone", "TauNumTracksIsoCone", 20, -0.5, 19.5);
+
     bookTauHistograms(dqmStore, hTauLeadTrkPt_, hTauLeadTrkEta_, hTauLeadTrkPhi_, "TauLeadTrk");
     hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
     hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.100, 0.100);
     hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
+
+    hTauDiscriminatorAgainstElectrons_ =  dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
+							  "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
+    hTauDiscriminatorAgainstMuons_ =  dqmStore.book1D("TauDiscriminatorAgainstMuons", 
+						      "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
 
     hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
     hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
@@ -215,6 +223,9 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi());
     }
 
+    hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size());
+    hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size());
+
     if ( patTau->leadTrack().isAvailable() && patTau->leadTrack().isNonnull() ) {
       hTauLeadTrkPt_->Fill(patTau->leadTrack()->pt());
       hTauLeadTrkEta_->Fill(patTau->leadTrack()->eta());
@@ -232,6 +243,9 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 	}
       }
     }
+
+    hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"));
+    hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
 
     fillTauIsoHistograms(*patTau);
     fillTauIsoConeSizeDepHistograms(*patTau);
