@@ -12,7 +12,7 @@ class PileUpNumberFilter : public edm::EDFilter {
        virtual bool filter(edm::Event&, const edm::EventSetup&);
    private:
        edm::InputTag pileUpInfoTag_;
-       unsigned int numberPU_;
+       int numberPU_;
 };
 
 #endif

@@ -38,7 +38,8 @@ process.wmunuAnalyzerAfterFilter = process.wmunuAnalyzer.clone()
 
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff')
 
-process.pileUpInfo = cms.EDProducer("PileUpEdmNtupleDumper")
+#process.pileUpInfo.AccessCrossingFramePlayBack = True
+#process.pileUpInfo.BunchCrossings = cms.vint32(0)
 
 process.MyEventContent = cms.PSet(
         outputCommands = cms.untracked.vstring('drop *')
@@ -54,7 +55,9 @@ process.MyEventContent.outputCommands.append('keep *_pixelVertices_*_*')
 process.output = cms.OutputModule("PoolOutputModule",
     outputCommands = process.MyEventContent.outputCommands,
     #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
-    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
+    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
+    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_StageA43Bx.root'),
+    #fileName = cms.untracked.string('PYTHIA6_Wmunu_EdmDump_StageA43Bx.root'),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('USER'),
         filterName = cms.untracked.string('')
@@ -65,7 +68,9 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 process.add_(cms.Service("TFileService",
-		fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
+		#fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
+                fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_StageA43Bx.root")
+                #fileName = cms.string("analysisWMuNu_histos_Wmunu_StageA43Bx.root")
 	)
 )
 
