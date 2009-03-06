@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.105 2009/02/26 15:04:47 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.106 2009/03/01 08:17:04 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.105 $
-  \date $Date: 2009/02/26 15:04:47 $
+  \version $Revision: 1.106 $
+  \date $Date: 2009/03/01 08:17:04 $
 */
 
 #include "TH1F.h"
@@ -182,6 +182,7 @@ void EBRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
   gStyle->SetCanvasColor(10);
   gStyle->SetPadColor(10);
   gStyle->SetFillColor(10);
+  gStyle->SetFrameFillColor(10);
   gStyle->SetStatColor(10);
   gStyle->SetTitleFillColor(10);
   

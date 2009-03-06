@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.120 2009/03/01 08:17:04 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.121 2009/03/02 17:21:49 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.120 $
-  \date $Date: 2009/03/01 08:17:04 $
+  \version $Revision: 1.121 $
+  \date $Date: 2009/03/02 17:21:49 $
 */
 
 #include "TH1F.h"
@@ -261,6 +261,7 @@ void EERenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
   gStyle->SetCanvasColor(10);
   gStyle->SetPadColor(10);
   gStyle->SetFillColor(10);
+  gStyle->SetFrameFillColor(10);
   gStyle->SetStatColor(10);
   gStyle->SetTitleFillColor(10);
 
