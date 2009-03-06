@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-dataIntLumi = float(100.)
+dataIntLumi = float(200.)
 
 #--------------------------------------------------------------------------------
 # define names of different Monte Carlo processes
