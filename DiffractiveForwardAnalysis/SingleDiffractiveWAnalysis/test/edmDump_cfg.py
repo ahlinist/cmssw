@@ -36,6 +36,7 @@ process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuSelFilt
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuAnalyzer_cfi')
 process.wmunuAnalyzerAfterFilter = process.wmunuAnalyzer.clone()
 
+process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi')
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff')
 
 #process.pileUpInfo.AccessCrossingFramePlayBack = True
@@ -75,7 +76,9 @@ process.add_(cms.Service("TFileService",
 )
 
 process.p1 = cms.Path(process.wmunuAnalyzer)
-process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter*process.CastorTowerReco*process.genParticlesCalo*process.castorGen*process.castorGenNoThreshold*process.castorTower*process.hfTower*process.xiTower*process.xiTowerNoMET*process.pileUpInfo) 
+process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter)
+process.p3 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.edmDumpAll)
+
 process.out_step = cms.EndPath(process.output)
 
-process.schedule = cms.Schedule(process.p1,process.p2,process.out_step)
+process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.out_step)

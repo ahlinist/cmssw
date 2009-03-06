@@ -27,7 +27,9 @@ private:
   edm::InputTag castorTowerInfoTag_;
   edm::InputTag castorTowersTag_;
   edm::InputTag vertexTag_;
-  edm::InputTag tracksTag_;
+  /*edm::InputTag tracksTag_;
+  edm::InputTag tracksAssociatedToPVTag_;
+  edm::InputTag tracksAwayFromPVTag_;*/
   
   int gapSide_;
   unsigned int thresholdIndexHF_;
@@ -51,6 +53,8 @@ private:
     int nCastorTowerMinus_;
     int nVertex_;
     int nTracks_;
+    int nTracksAssociatedToPV_;
+    int nTracksAwayFromPV_;
     double xiPlus_;
     double xiMinus_; 
     double forwardBackwardAsymmetryHFEnergy_;
@@ -88,6 +92,8 @@ private:
   TH1F* h_nPileUpBx0_;
   TH1F* h_nVertex_;
   TH1F* h_nTracks_;
+  TH1F* h_nTracksAssociatedToPV_;
+  TH1F* h_nTracksAwayFromPV_;
 
 };
 #endif
@@ -114,23 +120,25 @@ private:
 
 using namespace reco;
 
-EdmDumpAnalyzer::EdmDumpAnalyzer(const edm::ParameterSet& conf){
-  castorGenInfoTag_ = conf.getParameter<edm::InputTag>("CastorGenInfoTag");
-  castorTowerInfoTag_ = conf.getParameter<edm::InputTag>("CastorTowerInfoTag");
-  vertexTag_ = conf.getParameter<edm::InputTag>("VertexTag");  
-  tracksTag_ = conf.getParameter<edm::InputTag>("TracksTag");
- 
-  gapSide_ = conf.getParameter<int>("GapSide");
-  thresholdIndexHF_ = conf.getParameter<unsigned int>("ThresholdIndexHF");
-  thresholdIndexCastor_ = conf.getParameter<unsigned int>("ThresholdIndexCastor");
- 
-  accessCastorTowers_ = conf.getParameter<bool>("AccessCastorTowers");
-  if(accessCastorTowers_) castorTowersTag_ = conf.getParameter<edm::InputTag>("CastorTowersTag");
-  if(accessCastorTowers_) thresholdTower_ = conf.getParameter<double>("TowerThreshold");
+EdmDumpAnalyzer::EdmDumpAnalyzer(const edm::ParameterSet& pset){
+  castorGenInfoTag_ = pset.getParameter<edm::InputTag>("CastorGenInfoTag");
+  castorTowerInfoTag_ = pset.getParameter<edm::InputTag>("CastorTowerInfoTag");
+  vertexTag_ = pset.getParameter<edm::InputTag>("VertexTag");  
+  /*tracksTag_ = pset.getParameter<edm::InputTag>("TracksTag");
+  tracksAssociatedToPVTag_ = pset.getParameter<edm::InputTag>("TracksAssociatedToPVTag");
+  tracksAwayFromPVTag_ = pset.getParameter<edm::InputTag>("TracksAwayFromPVTag");*/
 
-  accessPileUpInfo_ = conf.getParameter<bool>("AccessPileUpInfo");
+  gapSide_ = pset.getParameter<int>("GapSide");
+  thresholdIndexHF_ = pset.getParameter<unsigned int>("ThresholdIndexHF");
+  thresholdIndexCastor_ = pset.getParameter<unsigned int>("ThresholdIndexCastor");
+ 
+  accessCastorTowers_ = pset.getParameter<bool>("AccessCastorTowers");
+  if(accessCastorTowers_) castorTowersTag_ = pset.getParameter<edm::InputTag>("CastorTowersTag");
+  if(accessCastorTowers_) thresholdTower_ = pset.getParameter<double>("TowerThreshold");
 
-  saveTTree_ = conf.getUntrackedParameter<bool>("SaveROOTTree",false);
+  accessPileUpInfo_ = pset.getParameter<bool>("AccessPileUpInfo");
+
+  saveTTree_ = pset.getUntrackedParameter<bool>("SaveROOTTree",false);
 }  
   
 EdmDumpAnalyzer::~EdmDumpAnalyzer()
@@ -167,6 +175,8 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
     data_->Branch("nCastorTowerMinus",&eventData_.nCastorTowerMinus_,"nCastorTowerMinus/I");
     data_->Branch("nVertex",&eventData_.nVertex_,"nVertex/I");
     data_->Branch("nTracks",&eventData_.nTracks_,"nTracks/I");
+    data_->Branch("nTracksAssociatedToPV",&eventData_.nTracksAssociatedToPV_,"nTracksAssociatedToPV/I");
+    data_->Branch("nTracksAwayFromPV",&eventData_.nTracksAwayFromPV_,"nTracksAwayFromPV/I");
     data_->Branch("xiPlus",&eventData_.xiPlus_,"xiPlus/D");
     data_->Branch("xiMinus",&eventData_.xiMinus_,"xiMinus/D");
     data_->Branch("forwardBackwardAsymmetryHFEnergy",&eventData_.forwardBackwardAsymmetryHFEnergy_,"forwardBackwardAsymmetryHFEnergy/D");
@@ -175,6 +185,8 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
 
   h_nVertex_ = fs->make<TH1F>("nVertex","Nr. of offline primary vertexes",10,0,10);
   h_nTracks_ = fs->make<TH1F>("nTracks","Track multiplicity",50,0,50);
+  h_nTracksAssociatedToPV_ = fs->make<TH1F>("nTracksAssociatedToPV","Track multiplicity",50,0,50);
+  h_nTracksAwayFromPV_ = fs->make<TH1F>("nTracksAwayFromPV","Track multiplicity",50,0,50);
 
   h_nHFTowerPlus_ = fs->make<TH1F>("nHFTowerPlus","HF tower mult. plus",nBins,0,nBins);
   h_nHFTowerMinus_ = fs->make<TH1F>("nHFTowerMinus","HF tower mult. minus",nBins,0,nBins);
@@ -255,7 +267,7 @@ void EdmDumpAnalyzer::fillVertexInfo(const edm::Event& event, const edm::EventSe
 
 void EdmDumpAnalyzer::fillTrackInfo(const edm::Event& event, const edm::EventSetup& setup)
 {
-        // Get reconstructed tracks
+        /*// Get reconstructed tracks
         edm::Handle<edm::View<Track> > trackCollectionH;
         event.getByLabel(tracksTag_,trackCollectionH);
         const edm::View<reco::Track>& trkColl = *(trackCollectionH.product());
@@ -266,10 +278,27 @@ void EdmDumpAnalyzer::fillTrackInfo(const edm::Event& event, const edm::EventSet
         for(edm::View<Track>::const_iterator track = trkColl.begin(); track != trkColl.end(); ++track){
            if(track->pt() < pt_min) continue;
            ++nGoodTracks;
-        } 
+        }*/ 
         
-        eventData_.nTracks_ = nGoodTracks;
-        h_nTracks_->Fill(nGoodTracks);
+        edm::Handle<unsigned int> trackMultiplicity;
+        event.getByLabel("trackMultiplicity","trackMultiplicity",trackMultiplicity);
+
+        edm::Handle<unsigned int> trackMultiplicityAssociatedToPV;
+        event.getByLabel("trackMultiplicityAssociatedToPV","trackMultiplicity",trackMultiplicityAssociatedToPV);
+
+        edm::Handle<unsigned int> trackMultiplicityAwayFromPV;
+        event.getByLabel("trackMultiplicityAwayFromPV","trackMultiplicity",trackMultiplicityAwayFromPV);
+
+        unsigned int nTracks = *trackMultiplicity.product();
+        unsigned int nTracksAssociatedToPV = *trackMultiplicityAssociatedToPV.product();
+        unsigned int nTracksAwayFromPV = *trackMultiplicityAwayFromPV.product();
+
+        eventData_.nTracks_ = nTracks;
+        eventData_.nTracksAssociatedToPV_ = nTracksAssociatedToPV;
+        eventData_.nTracksAwayFromPV_ = nTracksAwayFromPV;
+        h_nTracks_->Fill(nTracks);
+        h_nTracksAssociatedToPV_->Fill(nTracksAssociatedToPV);
+        h_nTracksAwayFromPV_->Fill(nTracksAwayFromPV);
 }
 
 void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::EventSetup& setup)

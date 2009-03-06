@@ -33,6 +33,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleVertexFilter_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionFilter_cfi")
 
@@ -84,6 +85,7 @@ process.add_(cms.Service("TFileService",
 )
 
 process.reco = cms.Path(process.vertexreco)
+process.edmDump = cms.Path(process.trackMultiplicity+process.edmDumpTracksAssociatedToPV+process.edmDumpTracksAwayFromPV)
 process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter+process.edmDumpAnalysisWithPixelVertices) 
 # Filter single-vertex events
 process.p2 = cms.Path(process.singleVertexFilter*process.edmDumpAnalysisSingleVertex)
