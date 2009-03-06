@@ -119,7 +119,7 @@ label_mcNormScale = cms.PSet(
   textColor = cms.int32(1),           
   textSize = cms.double(0.04),        
   textAlign = cms.int32(22),
-  text = cms.vstring('sim. 100pb^{-1}',
+  text = cms.vstring('sim. 200pb^{-1}',
                      '#sqrt{s}=10TeV')
 )
 
