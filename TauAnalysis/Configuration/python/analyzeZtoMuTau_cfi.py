@@ -285,7 +285,7 @@ muTauEventDump = cms.PSet(
   #output = cms.string("muTauEventDump.txt"),
   output = cms.string("std::cout"),
 
-  triggerConditions = cms.vstring("diTauCandidateForMuTauZeroChargeCut: passed_cumulative")
+  triggerConditions = cms.vstring("muonTrkIsoCut: rejected")
   #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
   #                                "globalMuonCut: rejected_cumulative",
   #                                "muonEtaCut: rejected_cumulative",
@@ -362,9 +362,15 @@ muTauAnalysisSequence = cms.VPSet(
     saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
+    histManagers = muTauHistManagers
+  ),
+  cms.PSet(
     filter = cms.string('primaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
     saveRunEventNumbers = cms.vstring('')
+  ),
+  cms.PSet(
+    histManagers = muTauHistManagers
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexPosition'),
@@ -459,7 +465,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto')
   ),
   cms.PSet(
     filter = cms.string('tauEtaCut'),
@@ -468,7 +475,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
   ),
   cms.PSet(
     filter = cms.string('tauPtCut'),
@@ -477,7 +485,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
   ),
   cms.PSet(
     filter = cms.string('tauLeadTrkCut'),
@@ -486,7 +495,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauLeadTrkPtCut'),
@@ -495,7 +505,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauTrkIsoCut'),
@@ -504,7 +515,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauEcalIsoCut'),
@@ -513,7 +525,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauProngCut'),
@@ -522,7 +535,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauMuonVeto'),
@@ -531,7 +545,8 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
   ),
 
   #selection of muon + tau-jet combinations
@@ -542,7 +557,9 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVeto')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVeto')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
@@ -551,7 +568,9 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarityCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarityCumulative')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
@@ -560,7 +579,9 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauMt1METCut'),
@@ -569,7 +590,9 @@ muTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulative')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulative')
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
@@ -580,5 +603,8 @@ muTauAnalysisSequence = cms.VPSet(
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers,
+  #  replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+  #                        'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+  #                        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulative')
   )
 )

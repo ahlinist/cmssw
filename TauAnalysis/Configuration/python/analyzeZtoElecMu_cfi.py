@@ -468,7 +468,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobal')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsGlobal')
   ),
   cms.PSet(
     filter = cms.string('muonEtaCut'),
@@ -477,7 +478,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
   ),
   cms.PSet(
     filter = cms.string('muonPtCut'),
@@ -486,7 +488,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
   ),
   cms.PSet(
     filter = cms.string('muonHLTmatchCut'),
@@ -495,7 +498,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsHLTmatchCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsHLTmatchCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonTrkIsoCut'),
@@ -504,7 +508,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonEcalIsoCut'),
@@ -513,7 +518,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonAntiPionCut'),
@@ -522,7 +528,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonTrkIPcut'),
@@ -531,7 +538,8 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
   ),
 
   #selection of electron + muon combinations
@@ -542,7 +550,9 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarity')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarity')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecMuZeroChargeCut'),
@@ -551,7 +561,9 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
@@ -562,6 +574,9 @@ elecMuAnalysisSequence = cms.VPSet(
   #),
   #cms.PSet(
   #  histManagers = elecMuHistManagers,
+  #  replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+  #                        'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+  #                        'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
   )
 )
 

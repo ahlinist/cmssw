@@ -342,9 +342,15 @@ elecTauAnalysisSequence = cms.VPSet(
     saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
+    histManagers = elecTauHistManagers
+  ),
+  cms.PSet(
     filter = cms.string('primaryEventVertexQuality'),
     title = cms.string('p(chi2Vertex) > 0.01'),
     saveRunEventNumbers = cms.vstring('')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers
   ),
   cms.PSet(
     filter = cms.string('primaryEventVertexPosition'),
@@ -448,7 +454,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto')
   ),
   cms.PSet(
     filter = cms.string('tauEtaCut'),
@@ -457,7 +464,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauEta21Cumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauEta21Cumulative')
   ),
   cms.PSet(
     filter = cms.string('tauPtCut'),
@@ -466,7 +474,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauPt20Cumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauPt20Cumulative')
   ),
   cms.PSet(
     filter = cms.string('tauLeadTrkCut'),
@@ -475,7 +484,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauLeadTrkCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauLeadTrkCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauLeadTrkPtCut'),
@@ -484,7 +494,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauLeadTrkPtCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauLeadTrkPtCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauTrkIsoCut'),
@@ -493,7 +504,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauTrkIsoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauTrkIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauEcalIsoCut'),
@@ -502,7 +514,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauEcalIsoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalIsoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauProngCut'),
@@ -511,7 +524,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauProngCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauProngCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauElectronVeto'),
@@ -520,7 +534,8 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative')
   ),
 
   #selection of electron + tau-jet combinations
@@ -531,7 +546,9 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVeto')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVeto')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
@@ -540,7 +557,9 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAcoplanarityCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAcoplanarityCumulative')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauZeroChargeCut'),
@@ -549,7 +568,9 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
@@ -560,5 +581,8 @@ elecTauAnalysisSequence = cms.VPSet(
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers,
+  #  replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+  #                        'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
+  #                        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
   )
 )
