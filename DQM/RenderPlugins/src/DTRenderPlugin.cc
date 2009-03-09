@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.40 2009/02/03 17:59:14 giorgia Exp $
+// $Id: DTRenderPlugin.cc,v 1.41 2009/03/05 15:55:06 giorgia Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.40 $
-  \date $Date: 2009/02/03 17:59:14 $
+  \version $Revision: 1.41 $
+  \date $Date: 2009/03/05 15:55:06 $
 */
 
 #include "TProfile2D.h"
@@ -614,7 +614,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     colorError1[2] = 632;// kRed
     gStyle->SetPalette(3, colorError1);
     return;
-   }  else if(o.name.find("MeanSummaryRes_testFailedAtLeastBadSL") != std::string::npos) {
+   }  else if(o.name.find("MeanSummaryRes_testFailedByAtLeastBadSL") != std::string::npos) {
      // obj->GetXaxis()->SetNdivisions(13,true);
      //obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
