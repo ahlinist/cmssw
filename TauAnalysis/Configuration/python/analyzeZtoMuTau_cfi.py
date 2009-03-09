@@ -460,7 +460,7 @@ muTauAnalysisSequence = cms.VPSet(
   # produced in hadronic tau decay
   cms.PSet(
     filter = cms.string('tauAntiOverlapWithMuonsVeto'),
-    title = cms.string('Tau not overlapping with Muon'),
+    title = cms.string('Tau not overlapping w. Muon'),
     saveRunEventNumbers = cms.vstring('')
   ),
   cms.PSet(
