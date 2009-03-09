@@ -1,0 +1,1266 @@
+/*
+ *  See header file for a description of this class.
+ *
+ *
+ *  $Date: 2007/06/08 11:59:46 $
+ *  $Revision: 1.1 $
+ *  \author Haiyun.Teng - Peking University
+ *
+ */
+
+#include "RecoMuon/SeedGenerator/src/RPCSeedPattern.h"
+#include <RecoMuon/TrackingTools/interface/MuonPatternRecoDumper.h>
+#include <MagneticField/Engine/interface/MagneticField.h>
+#include <MagneticField/Records/interface/IdealMagneticFieldRecord.h>
+#include <TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h>
+#include <TrackingTools/DetLayers/interface/DetLayer.h>
+#include <DataFormats/TrajectoryState/interface/PTrajectoryStateOnDet.h>
+#include <DataFormats/Common/interface/OwnVector.h>
+#include <DataFormats/MuonDetId/interface/RPCDetId.h>
+#include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/MessageLogger/interface/MessageLogger.h>
+#include <Geometry/CommonDetUnit/interface/GeomDet.h>
+#include <Geometry/RPCGeometry/interface/RPCChamber.h>
+#include <Geometry/RPCGeometry/interface/RPCGeometry.h>
+#include <Geometry/Records/interface/MuonGeometryRecord.h>
+
+#include "gsl/gsl_statistics.h"
+#include "TH1F.h"
+#include "math.h"
+
+using namespace std;
+using namespace edm;
+
+
+RPCSeedPattern::RPCSeedPattern() {
+
+    isPatternChecked = false;
+    isConfigured = false;
+}
+
+RPCSeedPattern::~RPCSeedPattern() {
+
+}
+
+void RPCSeedPattern::configure(const edm::ParameterSet& iConfig) {
+
+    MaxRSD = iConfig.getParameter<double>("MaxRSD");
+    deltaRThreshold = iConfig.getParameter<double>("deltaRThreshold");
+    AlgorithmType = iConfig.getParameter<unsigned int>("AlgorithmType");
+    autoAlgorithmChoose = iConfig.getParameter<bool>("autoAlgorithmChoose");
+    ZError = iConfig.getParameter<double>("ZError");
+    MinDeltaPhi = iConfig.getParameter<double>("MinDeltaPhi");
+    stepLength = iConfig.getParameter<double>("stepLength");
+    sampleCount = iConfig.getParameter<unsigned int>("sampleCount");
+    isConfigured = true;
+}
+
+void RPCSeedPattern::clearPattern() {
+
+    // For complex pattern
+    isStraight2.clear();
+    Center2.clear();
+    meanRadius2.clear();
+    meanMagneticField2.clear();
+    lastPhi = 0;
+    S = 0;
+    // For simple pattern
+    Center = GlobalVector(0, 0, 0);
+}
+
+TrajectorySeed RPCSeedPattern::seed(const edm::EventSetup& eSetup, int& isGoodSeed) {
+
+    if(isConfigured == false)
+    {
+        cout << "Configuration not set yet" << endl;
+        return createFakeSeed(isGoodSeed, eSetup);
+    }
+
+    clearPattern();
+
+    // Check recHit number, if fail we return a fake seed and set pattern to "wrong"
+    unsigned int NumberofHitsinSeed = nrhit();
+    if(NumberofHitsinSeed < 3)
+        return createFakeSeed(isGoodSeed, eSetup);
+    // If only three recHits, we don't have other choice
+    if(NumberofHitsinSeed == 3)
+        ThreePointsAlgorithm();
+
+    if(NumberofHitsinSeed > 3)
+    {
+        if(autoAlgorithmChoose == false)
+        {
+            cout << "computePtWithmorerecHits" << endl;
+            if(AlgorithmType == 0)
+                ThreePointsAlgorithm();
+            if(AlgorithmType == 1)
+                MiddlePointsAlgorithm();
+            if(AlgorithmType == 2)
+                SegmentAlgorithm();
+            if(AlgorithmType == 3)
+            {
+                if(checkSegment())
+                    SegmentAlgorithmSpecial(eSetup);
+                else
+                {
+                    cout << "Not enough recHits for Special Segment Algorithm" << endl;
+                    return createFakeSeed(isGoodSeed, eSetup);
+                }
+            }
+        }
+        else
+        {
+            if(checkSegment())
+            {
+                AlgorithmType = 3;
+                SegmentAlgorithmSpecial(eSetup);
+            }
+            else
+            {
+                AlgorithmType = 2;
+                SegmentAlgorithm();
+            }
+        }
+    }
+
+    // Check the pattern
+    if(isPatternChecked == false)
+        if(AlgorithmType != 3)
+            checkSimplePattern(eSetup);
+        else
+            checkSegmentAlgorithmSpecial(eSetup);
+
+    return createSeed(isGoodSeed, eSetup);
+}
+
+void RPCSeedPattern::ThreePointsAlgorithm()
+{
+    cout << "computePtWith3recHits" << endl;
+    unsigned int NumberofHitsinSeed = nrhit();
+    // Check recHit number, if fail we set the pattern to "wrong"
+    if(NumberofHitsinSeed < 3)
+    {
+        isPatternChecked = true;
+        isGoodPattern = -1;
+        return;
+    }
+    // Choose every 3 recHits to form a part
+    unsigned int NumberofPart = NumberofHitsinSeed * (NumberofHitsinSeed - 1) * (NumberofHitsinSeed - 2) / (3 * 2);;
+    double *pt = new double[NumberofPart];
+    double *pt_err = new double[NumberofPart];
+    // Loop for each three-recHits part
+    ConstMuonRecHitPointer precHit[3];
+    unsigned int n = 0;
+    unsigned int NumberofStraight = 0;
+    for(unsigned int i = 0; i < (NumberofHitsinSeed - 2); i++)
+        for(unsigned int j = (i + 1); j < (NumberofHitsinSeed - 1); j++)
+            for(unsigned int k = (j + 1); k < NumberofHitsinSeed; k++)
+            {
+                precHit[0] = theRecHits[i];
+                precHit[1] = theRecHits[j];
+                precHit[2] = theRecHits[k];
+                bool checkStraight = checkStraightwithThreerecHits(precHit, MinDeltaPhi);
+                if(!checkStraight)
+                {
+                    GlobalVector Center_temp = computePtwithThreerecHits(pt[n], pt_err[n], precHit);
+                    // For simple pattern                        
+                    Center += Center_temp;
+                    // For complex pattern
+                    isStraight2.push_back(false);
+                    Center2.push_back(Center_temp);
+                    double meanR = getDistance(precHit[0], Center_temp);
+                    meanRadius2.push_back(meanR);
+                }
+                else
+                {
+                    // For simple pattern
+                    NumberofStraight++;
+                    pt[n] = upper_limit_pt;
+                    pt_err[n] = 0;
+                    // For complex pattern
+                    isStraight2.push_back(true);
+                    Center2.push_back(GlobalVector(0, 0, 0));
+                    meanRadius2.push_back(-1);
+                }
+                n++;
+            }
+    // For simple pattern, only one general parameter for pattern
+    if(NumberofStraight == NumberofPart)
+    {
+        isStraight = true;
+        meanRadius = -1;
+    }
+    else
+    {
+        isStraight = false;
+        Center /= (NumberofPart - NumberofStraight);
+        double meanR = 0.;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+            meanR += getDistance(*iter, Center);
+        meanR /= NumberofHitsinSeed;
+        meanRadius = meanR;
+    }
+
+    // Unset the pattern estimation signa
+    isPatternChecked = false;
+
+    double ptmean0 = 0;
+    double sptmean0 = 0;
+    computeBestPt(pt, pt_err, ptmean0, sptmean0, (NumberofPart - NumberofStraight));
+
+    delete [] pt;
+    delete [] pt_err;
+}
+
+void RPCSeedPattern::MiddlePointsAlgorithm()
+{
+    cout << "Using middle points algorithm" << endl;
+    unsigned int NumberofHitsinSeed = nrhit();
+    // Check recHit number, if fail we set the pattern to "wrong"
+    if(NumberofHitsinSeed < 4)
+    {
+        isPatternChecked = true;
+        isGoodPattern = -1;
+        return;
+    }
+    double *X = new double[NumberofHitsinSeed];
+    double *Y = new double[NumberofHitsinSeed];
+    unsigned int n = 0;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++) 
+    {
+        X[n] = (*iter)->globalPosition().x();
+        Y[n] = (*iter)->globalPosition().y();
+        cout << "X[" << n <<"] = " << X[n] << ", Y[" << n <<"]= " << Y[n] << endl;
+        n++;
+    }
+    unsigned int NumberofPoints = NumberofHitsinSeed;
+    while(NumberofPoints > 3)
+    {
+        for(unsigned int i = 0; i <= (NumberofPoints - 2); i++)
+        {
+            X[i] = (X[i] + X[i+1]) / 2;
+            Y[i] = (Y[i] + Y[i+1]) / 2;
+        }
+        NumberofPoints--;
+    }
+    double x[3], y[3];
+    for(unsigned int i = 0; i < 3; i++)
+    {
+        x[i] = X[i];
+        y[i] = Y[i];
+    }
+    double pt = 0;
+    double pt_err = 0;
+    bool checkStraight = checkStraightwithThreerecHits(x, y, MinDeltaPhi);
+    if(!checkStraight)
+    {
+
+        GlobalVector Center_temp = computePtWithThreerecHits(pt, pt_err, x, y);
+        double meanR = 0.;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+            meanR += getDistance(*iter, Center_temp);
+        meanR /= NumberofHitsinSeed;
+        // For simple pattern
+        isStraight = false;
+        Center = Center_temp;
+        meanRadius = meanR;
+        // For complex pattern
+        isStraight2.push_back(false);
+        Center2.push_back(Center_temp);
+        meanRadius2.push_back(meanR);
+    }
+    else
+    {
+        // For simple pattern
+        isStraight = true;
+        meanRadius = -1;
+        // For complex pattern
+        isStraight2.push_back(true);
+        Center2.push_back(GlobalVector(0, 0, 0));
+        meanRadius2.push_back(-1);
+    }
+
+    // Unset the pattern estimation signa
+    isPatternChecked = false;
+
+    delete [] X;
+    delete [] Y;
+}
+
+void RPCSeedPattern::SegmentAlgorithm()
+{
+    cout << "Using segments algorithm" << endl;
+    unsigned int NumberofHitsinSeed = nrhit();
+    // Check recHit number, if fail we set the pattern to "wrong"
+    if(NumberofHitsinSeed < 4)
+    {
+        isPatternChecked = true;
+        isGoodPattern = -1;
+        return;
+    }
+
+    RPCSegment* Segment;
+    unsigned int NumberofSegment = NumberofHitsinSeed - 2;
+    Segment = new RPCSegment[NumberofSegment];
+    unsigned int n = 0;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != (theRecHits.end()-2); iter++)
+    {
+        Segment[n].first = (*iter);
+        Segment[n].second = (*(iter + 2));
+        n++;
+    }
+    unsigned int NumberofStraight = 0;
+    for(unsigned int i = 0; i < NumberofSegment - 1; i++)
+    {
+        bool checkStraight = checkStraightwithSegment(Segment[i], Segment[i+1], MinDeltaPhi);
+        if(checkStraight == true)
+        {
+            // For simple patterm
+            NumberofStraight++;
+            // For complex pattern
+            isStraight2.push_back(true);
+            Center2.push_back(GlobalVector(0, 0, 0));
+            meanRadius2.push_back(-1);
+
+        }
+        else
+        {
+            GlobalVector Center_temp = computePtwithSegment(Segment[i], Segment[i+1]);
+            // For simple patterm
+            Center += Center_temp;
+            // For complex pattern
+            isStraight2.push_back(false);
+            Center2.push_back(Center_temp);
+            double meanR = 0.;
+            for(unsigned int j = 0; j < 2; j++)
+            {
+                meanR += getDistance(Segment[i+j].first, Center_temp);
+                meanR += getDistance(Segment[i+j].second, Center_temp);
+            }
+            meanR /= 4;
+            meanRadius2.push_back(meanR);
+        }
+    }
+    // For simple pattern, only one general parameter for pattern
+    if((NumberofSegment-1-NumberofStraight) > 0)
+    {
+        isStraight = false;
+        Center /= (NumberofSegment - 1 - NumberofStraight);
+        double meanR = 0.;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+            meanR += getDistance(*iter, Center);
+        meanR /= NumberofHitsinSeed;
+        meanRadius = meanR;
+    }
+    else
+    {
+        isStraight = true;
+        meanRadius = -1;
+    }
+
+    // Unset the pattern estimation signal
+    isPatternChecked = false;
+
+    delete [] Segment;
+}
+
+void RPCSeedPattern::SegmentAlgorithmSpecial(const edm::EventSetup& eSetup)
+{
+    // Get magnetic field
+    edm::ESHandle<MagneticField> Field;
+    eSetup.get<IdealMagneticFieldRecord>().get(Field);
+
+    //unsigned int NumberofHitsinSeed = nrhit();
+    if(!checkSegment())
+    {
+        isPatternChecked = true;
+        isGoodPattern = -1;
+        return;
+    }
+
+    // Get magnetice field sampling information, recHit's position is not the border of Chamber and Iron
+    //std::vector<GlobalVector> BValue;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != (theRecHits.end()-1); iter++) 
+    {
+        GlobalPoint gpFirst = (*iter)->globalPosition();
+        GlobalPoint gpLast = (*(iter+1))->globalPosition();
+        GlobalPoint* gp = new GlobalPoint[sampleCount];
+        double dx = (gpLast.x() - gpFirst.x()) / (sampleCount + 1);
+        double dy = (gpLast.y() - gpFirst.y()) / (sampleCount + 1);
+        double dz = (gpLast.z() - gpFirst.z()) / (sampleCount + 1);
+        for(unsigned int index = 0; index < sampleCount; index++)
+        {
+            gp[index] = GlobalPoint((gpFirst.x()+dx*(index+1)), (gpFirst.y()+dy*(index+1)), (gpFirst.z()+dz*(index+1)));
+            GlobalVector MagneticVec_temp = Field->inTesla(gp[index]);
+            cout << "Sampling magnetic field : " << MagneticVec_temp << endl;
+            //BValue.push_back(MagneticVec_temp);
+        }
+        delete [] gp;
+    }
+
+    // form two segments
+    RPCSegment Segment[2];
+    ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin();
+    for(unsigned int n = 0; n <= 1; n++)
+    {
+        Segment[n].first = (*iter);
+        cout << "segment " << n << " recHit: " << (*iter)->globalPosition() << endl;
+        iter++;
+        Segment[n].second = (*iter);
+        cout << "segment " << n << " recHit: " << (*iter)->globalPosition() << endl;
+        iter++;
+    }
+    GlobalVector segvec1 = (Segment[0].second)->globalPosition() - (Segment[0].first)->globalPosition();
+    GlobalVector segvec2 = (Segment[1].second)->globalPosition() - (Segment[1].first)->globalPosition();
+
+    // extrapolate the segment to find the Iron border which magnetic field is at large value
+    entryPosition = (Segment[0].second)->globalPosition();
+    leavePosition = (Segment[1].first)->globalPosition();
+    while(fabs(Field->inTesla(entryPosition).z()) < 0.5)
+    {
+        cout << "Entry position is : " << entryPosition << ", and stepping into next point" << endl;
+        entryPosition += segvec1.unit() * stepLength;
+    }
+    entryPosition -= segvec1.unit() * stepLength * 0.5;
+    cout << "Final entry position is : " << entryPosition << endl;
+
+    while(fabs(Field->inTesla(leavePosition).z()) < 0.5)
+    {
+        cout << "Leave position is : " << leavePosition << ", and stepping into next point" << endl;
+        leavePosition -= segvec2.unit() * stepLength;
+    }
+    leavePosition += segvec2.unit() * stepLength * 0.5;
+    cout << "Final leave position is : " << leavePosition << endl;
+
+    // Sampling magnetic field in Iron region
+    GlobalPoint* gp = new GlobalPoint[sampleCount];
+    double dx = (leavePosition.x() - entryPosition.x()) / (sampleCount + 1);
+    double dy = (leavePosition.y() - entryPosition.y()) / (sampleCount + 1);
+    double dz = (leavePosition.z() - entryPosition.z()) / (sampleCount + 1);
+    std::vector<GlobalVector> BValue;
+    BValue.clear();
+    for(unsigned int index = 0; index < sampleCount; index++)
+    {
+        gp[index] = GlobalPoint((entryPosition.x()+dx*(index+1)), (entryPosition.y()+dy*(index+1)), (entryPosition.z()+dz*(index+1)));
+        GlobalVector MagneticVec_temp = Field->inTesla(gp[index]);
+        cout << "Sampling magnetic field : " << MagneticVec_temp << endl;
+        BValue.push_back(MagneticVec_temp);
+    }
+    delete [] gp;
+    GlobalVector meanB2(0, 0, 0);
+    for(std::vector<GlobalVector>::const_iterator BIter = BValue.begin(); BIter != BValue.end(); BIter++)
+        meanB2 += (*BIter);
+    meanB2 /= BValue.size();
+    cout << "Mean B field is " << meanB2 << endl;
+    meanMagneticField2.push_back(meanB2);
+
+    double meanBz2 = meanB2.z();
+    double deltaBz2 = 0.;
+    for(std::vector<GlobalVector>::const_iterator BIter = BValue.begin(); BIter != BValue.end(); BIter++)
+        deltaBz2 += (BIter->z() - meanBz2) * (BIter->z() - meanBz2);;
+    deltaBz2 /= BValue.size();
+    deltaBz2 = sqrt(deltaBz2);
+    cout<< "delta Bz is " << deltaBz2 << endl;
+
+    // Distance of the initial 3 segment
+    S = 0;
+    bool checkStraight = checkStraightwithSegment(Segment[0], Segment[1], MinDeltaPhi);
+    if(checkStraight == true)
+    {
+        // Just for complex pattern
+        isStraight2.push_back(true);
+        Center2.push_back(GlobalVector(0, 0, 0));
+        meanRadius2.push_back(-1);
+        S += ((GlobalVector)((Segment[1].second)->globalPosition() - (Segment[0].first)->globalPosition())).perp();
+    }
+    else
+    {
+        GlobalVector seg1 = entryPosition - (Segment[0].first)->globalPosition();
+        S += seg1.perp();
+        GlobalVector seg2 = (Segment[1].second)->globalPosition() - leavePosition;
+        S += seg2.perp();
+        //GlobalPoint Point1 = (Segment[0].second)->globalPosition();
+        //GlobalPoint Point2 = (Segment[1].first)->globalPosition();
+        GlobalVector vecZ(0, 0, 1);
+        GlobalVector gvec1 = seg1.cross(vecZ);
+        GlobalVector gvec2 = seg2.cross(vecZ);
+        double A1 = gvec1.x();
+        double B1 = gvec1.y();
+        double A2 = gvec2.x();
+        double B2 = gvec2.y();
+        double X1 = entryPosition.x();
+        double Y1 = entryPosition.y();
+        double X2 = leavePosition.x();
+        double Y2 = leavePosition.y();
+        double XO = (A1*A2*(Y2-Y1)+A2*B1*X1-A1*B2*X2)/(A2*B1-A1*B2);
+        double YO = (B1*B2*(X2-X1)+B2*A1*Y1-B1*A2*Y2)/(B2*A1-B1*A2);
+        GlobalVector Center_temp(XO, YO, 0);
+        // Just for complex pattern
+        isStraight2.push_back(false);
+        Center2.push_back(Center_temp);
+
+        cout << "entryPosition: " << entryPosition << endl;
+        cout << "leavePosition: " << leavePosition << endl;
+        cout << "Center2 is : " << Center_temp << endl;
+
+        double R1 = GlobalVector((entryPosition.x() - Center_temp.x()), (entryPosition.y() - Center_temp.y()), (entryPosition.z() - Center_temp.z())).perp();
+        double R2 = GlobalVector((leavePosition.x() - Center_temp.x()), (leavePosition.y() - Center_temp.y()), (leavePosition.z() - Center_temp.z())).perp();
+        //double R1 = getDistance(Segment[1].first, Center_temp);
+        //double R2 = getDistance(Segment[0].second, Center_temp);
+        double meanR = (R1 + R2) / 2;
+        double deltaR = sqrt(((R1-meanR)*(R1-meanR)+(R2-meanR)*(R2-meanR))/2);
+        meanRadius2.push_back(meanR);
+        cout << "R1 is " << R1 << ", R2 is " << R2 << endl;
+        cout << "Mean radius is " << meanR << endl;
+        cout << "Delta R is " << deltaR << endl;
+        double deltaPhi = fabs(((leavePosition-GlobalPoint(XO, YO, 0)).phi()-(entryPosition-GlobalPoint(XO, YO, 0)).phi()).value());
+        S += meanR * deltaPhi;
+    }
+
+    // Unset the pattern estimation signa
+    isPatternChecked = false;
+}
+
+bool RPCSeedPattern::checkSegment() const
+{
+    bool isFit = true;
+    unsigned int count = 0;
+    // first 4 recHits should be located in RB1 and RB2
+    for(ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin(); iter!=theRecHits.end(); iter++)
+    {
+        count++;
+        const GeomDet* Detector = (*iter)->det();
+        if(dynamic_cast<const RPCChamber*>(Detector) != 0)
+        {
+            const RPCChamber* RPCCh = dynamic_cast<const RPCChamber*>(Detector);
+            RPCDetId RPCId = RPCCh->id();
+            int Region = RPCId.region();
+            int Station = RPCId.station();
+            //int Layer = RPCId.layer();
+            if(count <= 4)
+            {
+                if(Region != 0)
+                    isFit = false;
+                if(Station > 2)
+                    isFit = false;
+            }
+        }
+    }
+    // more than 4 recHits for pattern building
+    if(count <= 4)
+        isFit = false;
+    cout << "Check for segment fit: " << isFit << endl;
+    return isFit;
+}
+
+MuonTransientTrackingRecHit::ConstMuonRecHitPointer RPCSeedPattern::FirstRecHit() const 
+{ 
+    return theRecHits.front(); 
+}
+
+MuonTransientTrackingRecHit::ConstMuonRecHitPointer RPCSeedPattern::BestRefRecHit() const 
+{
+    ConstMuonRecHitPointer best;
+    // Use the last one for recHit on last layer has minmum delta Z for barrel or delta R for endcap while calculating the momentum
+    for (ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin(); iter!=theRecHits.end(); iter++) 
+        best = (*iter);
+    return best;
+}
+
+double RPCSeedPattern::getDistance(const ConstMuonRecHitPointer& precHit, const GlobalVector& Center) const
+{
+    return sqrt((precHit->globalPosition().x()-Center.x())*(precHit->globalPosition().x()-Center.x())+(precHit->globalPosition().y()-Center.y())*(precHit->globalPosition().y()-Center.y()));
+}
+
+bool RPCSeedPattern::checkStraightwithThreerecHits(ConstMuonRecHitPointer (&precHit)[3], double MinDeltaPhi) const
+{
+    GlobalVector segvec1 = precHit[1]->globalPosition() - precHit[0]->globalPosition();
+    GlobalVector segvec2 = precHit[2]->globalPosition() - precHit[1]->globalPosition();
+    double dPhi = (segvec2.phi() - segvec1.phi()).value();
+    if(fabs(dPhi) > MinDeltaPhi)
+    {
+        cout << "Part is estimate to be not straight" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "Part is estimate to be straight" << endl;
+        return true;
+    }
+}
+
+GlobalVector RPCSeedPattern::computePtwithThreerecHits(double& pt, double& pt_err, ConstMuonRecHitPointer (&precHit)[3]) const
+{
+    double x[3], y[3];
+    x[0] = precHit[0]->globalPosition().x();
+    y[0] = precHit[0]->globalPosition().y();
+    x[1] = precHit[1]->globalPosition().x();
+    y[1] = precHit[1]->globalPosition().y();
+    x[2] = precHit[2]->globalPosition().x();
+    y[2] = precHit[2]->globalPosition().y();
+    double A = (y[2]-y[1])/(x[2]-x[1]) - (y[1]-y[0])/(x[1]-x[0]);
+    double TYO = (x[2]-x[0])/A + (y[2]*y[2]-y[1]*y[1])/((x[2]-x[1])*A) - (y[1]*y[1]-y[0]*y[0])/((x[1]-x[0])*A);
+    double TXO = (x[2]+x[1]) + (y[2]*y[2]-y[1]*y[1])/(x[2]-x[1]) - TYO*(y[2]-y[1])/(x[2]-x[1]);
+    double XO = 0.5 * TXO;
+    double YO = 0.5 * TYO;
+    double R2 = (x[0]-XO)*(x[0]-XO) + (y[0]-YO)*(y[0]-YO);
+    cout << "R2 is " << R2 << endl;
+    // How this algorithm get the pt without magnetic field??
+    pt = 0.01 * sqrt(R2) * 2 * 0.3;
+    cout << "pt is " << pt << endl;
+    GlobalVector Center(XO, YO, 0);
+    return Center;
+}
+
+bool RPCSeedPattern::checkStraightwithSegment(const RPCSegment& Segment1, const RPCSegment& Segment2, double MinDeltaPhi) const
+{
+    GlobalVector segvec1 = (Segment1.second)->globalPosition() - (Segment1.first)->globalPosition();
+    GlobalVector segvec2 = (Segment2.second)->globalPosition() - (Segment2.first)->globalPosition();
+    GlobalVector segvec3 = (Segment2.first)->globalPosition() - (Segment1.first)->globalPosition();
+    // compare segvec 1&2 for paralle, 1&3 for straight
+    double dPhi1 = (segvec2.phi() - segvec1.phi()).value();
+    double dPhi2 = (segvec3.phi() - segvec1.phi()).value();
+    if(fabs(dPhi1) > MinDeltaPhi || fabs(dPhi2) > MinDeltaPhi)
+    {
+        cout << "Segment is estimate to be not straight" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "Segment is estimate to be straight" << endl;
+        return true;
+    }
+}
+
+GlobalVector RPCSeedPattern::computePtwithSegment(const RPCSegment& Segment1, const RPCSegment& Segment2) const
+{
+    GlobalVector segvec1 = (Segment1.second)->globalPosition() - (Segment1.first)->globalPosition();
+    GlobalVector segvec2 = (Segment2.second)->globalPosition() - (Segment2.first)->globalPosition();
+    GlobalPoint Point1(((Segment1.second)->globalPosition().x() + (Segment1.first)->globalPosition().x()) / 2, ((Segment1.second)->globalPosition().y() + (Segment1.first)->globalPosition().y()) / 2, ((Segment1.second)->globalPosition().z() + (Segment1.first)->globalPosition().z()) / 2);
+    GlobalPoint Point2(((Segment2.second)->globalPosition().x() + (Segment2.first)->globalPosition().x()) / 2, ((Segment2.second)->globalPosition().y() + (Segment2.first)->globalPosition().y()) / 2, ((Segment2.second)->globalPosition().z() + (Segment2.first)->globalPosition().z()) / 2);
+    GlobalVector vecZ(0, 0, 1);
+    GlobalVector gvec1 = segvec1.cross(vecZ);
+    GlobalVector gvec2 = segvec2.cross(vecZ);
+    double A1 = gvec1.x();
+    double B1 = gvec1.y();
+    double A2 = gvec2.x();
+    double B2 = gvec2.y();
+    double X1 = Point1.x();
+    double Y1 = Point1.y();
+    double X2 = Point2.x();
+    double Y2 = Point2.y();
+    double XO = (A1*A2*(Y2-Y1)+A2*B1*X1-A1*B2*X2)/(A2*B1-A1*B2);
+    double YO = (B1*B2*(X2-X1)+B2*A1*Y1-B1*A2*Y2)/(B2*A1-B1*A2);
+    GlobalVector Center(XO, YO, 0);
+    return Center;
+}
+
+bool RPCSeedPattern::checkStraightwithThreerecHits(double (&x)[3], double (&y)[3], double MinDeltaPhi) const
+{
+    GlobalVector segvec1((x[1]-x[0]), (y[1]-y[0]), 0);
+    GlobalVector segvec2((x[2]-x[1]), (y[2]-y[1]), 0);
+    double dPhi = (segvec2.phi() - segvec1.phi()).value();
+    if(fabs(dPhi) > MinDeltaPhi)
+    {
+        cout << "Part is estimate to be not straight" << endl;
+        return false;
+    }
+    else
+    {
+        cout << "Part is estimate to be straight" << endl;
+        return true;
+    }
+}
+
+GlobalVector RPCSeedPattern::computePtWithThreerecHits(double& pt, double& pt_err, double (&x)[3], double (&y)[3]) const
+{
+    double A = (y[2]-y[1])/(x[2]-x[1]) - (y[1]-y[0])/(x[1]-x[0]);
+    double TYO = (x[2]-x[0])/A + (y[2]*y[2]-y[1]*y[1])/((x[2]-x[1])*A) - (y[1]*y[1]-y[0]*y[0])/((x[1]-x[0])*A);
+    double TXO = (x[2]+x[1]) + (y[2]*y[2]-y[1]*y[1])/(x[2]-x[1]) - TYO*(y[2]-y[1])/(x[2]-x[1]);
+    double XO = 0.5 * TXO;
+    double YO = 0.5 * TYO;
+    double R2 = (x[0]-XO)*(x[0]-XO) + (y[0]-YO)*(y[0]-YO);
+    cout << "R2 is " << R2 << endl;
+    // How this algorithm get the pt without magnetic field??
+    pt = 0.01 * sqrt(R2) * 2 * 0.3;
+    cout << "pt is " << pt << endl;
+    GlobalVector Center(XO, YO, 0);
+    return Center;
+}
+
+void RPCSeedPattern::computeBestPt(double* pt, double* pt_err, double& ptmean0, double& sptmean0, unsigned int NumberofPt) const 
+{
+    cout << "[RPCSeedHits] --> computeBestPt class called." << endl;
+    double ptall = 0;
+    cout << "---< best pt computing >---" << endl;
+    for(unsigned int i = 0; i < NumberofPt; i++)
+    {
+        cout << "pt[" << i <<"] = " << pt[i] << endl;
+        ptall += pt[i];
+    }
+    ptmean0 = ptall / NumberofPt;
+    sptmean0 = 0;
+    for(unsigned int i = 0; i < NumberofPt; i++)
+    {
+        sptmean0 += (pt[i] - ptmean0) * (pt[i] - ptmean0);
+    }
+    sptmean0 /= NumberofPt;
+    sptmean0 = sqrt(sptmean0);
+
+    cout << "Ptmean0 : " << ptmean0 << endl;
+    cout << "Sptmean0 : " << sptmean0 << endl;
+}
+
+void RPCSeedPattern::checkSimplePattern(const edm::EventSetup& eSetup)
+{
+    if(isPatternChecked == true)
+        return;
+
+    // Get magnetic field
+    edm::ESHandle<MagneticField> Field;
+    eSetup.get<IdealMagneticFieldRecord>().get(Field);
+
+    unsigned int NumberofHitsinSeed = nrhit();
+
+    // Print the recHit's position
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+        cout << "Position of recHit is: " << (*iter)->globalPosition() << endl;
+
+    // Get magnetice field information
+    std::vector<double> BzValue;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != (theRecHits.end()-1); iter++) 
+    {
+        GlobalPoint gpFirst = (*iter)->globalPosition();
+        GlobalPoint gpLast = (*(iter+1))->globalPosition();
+        GlobalPoint *gp = new GlobalPoint[sampleCount];
+        double dx = (gpLast.x() - gpFirst.x()) / (sampleCount + 1);
+        double dy = (gpLast.y() - gpFirst.y()) / (sampleCount + 1);
+        double dz = (gpLast.z() - gpFirst.z()) / (sampleCount + 1);
+        for(unsigned int index = 0; index < sampleCount; index++)
+        {
+            gp[index] = GlobalPoint((gpFirst.x()+dx*(index+1)), (gpFirst.y()+dy*(index+1)), (gpFirst.z()+dz*(index+1)));
+            GlobalVector MagneticVec_temp = Field->inTesla(gp[index]);
+            cout << "Sampling magnetic field : " << MagneticVec_temp << endl;
+            BzValue.push_back(MagneticVec_temp.z());
+        }
+        delete [] gp;
+    }
+    meanBz = 0.;
+    for(unsigned int index = 0; index < BzValue.size(); index++)
+        meanBz += BzValue[index];
+    meanBz /= BzValue.size();
+    cout << "Mean Bz is " << meanBz << endl;
+    deltaBz = 0.;
+    for(unsigned int index = 0; index < BzValue.size(); index++)
+        deltaBz += (BzValue[index] - meanBz) * (BzValue[index] - meanBz);
+    deltaBz /= BzValue.size();
+    deltaBz = sqrt(deltaBz);
+    cout<< "delata Bz is " << deltaBz << endl;
+
+    // Set isGoodPattern to default true and check the failure 
+    isGoodPattern = 1;
+
+    // Check the Z direction
+    if(fabs((*(theRecHits.end()-1))->globalPosition().z() - (*(theRecHits.begin()))->globalPosition().z()) > ZError)
+    {
+        if(((*(theRecHits.end()-1))->globalPosition().z() - (*(theRecHits.begin()))->globalPosition().z()) > ZError)
+            isParralZ = 1;
+        else
+            isParralZ = -1;
+    }
+    else
+        isParralZ = 0;
+
+    cout << " Check isParralZ is :" << isParralZ << endl;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != (theRecHits.end()-1); iter++) 
+    {
+        if(isParralZ == 0)
+        {
+            if(fabs((*(iter+1))->globalPosition().z()-(*iter)->globalPosition().z()) > ZError)
+            {
+                cout << "Pattern find error in Z direction: wrong perpendicular direction" << endl;
+                isGoodPattern = 0;
+            }
+        }
+        else
+        {
+            if((int)(((*(iter+1))->globalPosition().z()-(*iter)->globalPosition().z())/ZError)*isParralZ < 0)
+            {
+                cout << "Pattern find error in Z direction: wrong Z direction" << endl;
+                isGoodPattern = 0;
+            }
+        }
+    }
+
+    // Check pattern
+    if(isStraight == false)
+    {
+        // Check clockwise direction
+        GlobalVector *vec = new GlobalVector[NumberofHitsinSeed];
+        unsigned int index = 0;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++) 
+        {
+            GlobalVector vec_temp(((*iter)->globalPosition().x()-Center.x()), ((*iter)->globalPosition().y()-Center.y()), ((*iter)->globalPosition().z()-Center.z()));
+            vec[index] = vec_temp;
+            index++;
+        }
+        isClockwise = 0;
+        for(unsigned int index = 0; index < (NumberofHitsinSeed-1); index++)
+        {
+            // Check phi direction, all sub-dphi direction should be the same
+            if((vec[index+1].phi()-vec[index].phi()) > 0)
+                isClockwise--;
+            else
+                isClockwise++;
+            cout << "Current isClockwise is : " << isClockwise << endl;
+        }
+        cout << "Check isClockwise is : " << isClockwise << endl;
+        if(abs(isClockwise) != (NumberofHitsinSeed-1))
+        {
+            cout << "Pattern find error in Phi direction" << endl;
+            isGoodPattern = 0;
+            isClockwise = 0;
+        }
+        else
+            isClockwise /= abs(isClockwise);
+        delete [] vec;
+
+        // Get meanPt and meanSpt
+        double deltaRwithBz = fabs(deltaBz * meanRadius / meanBz);
+        cout << "deltaR with Bz is " << deltaRwithBz << endl;
+
+        meanPt = 0.01 * meanRadius * meanBz * 0.3;
+        if(fabs(meanPt) > upper_limit_pt)
+            meanPt = upper_limit_pt * meanPt / fabs(meanPt);
+        cout << " meanRadius is " << meanRadius << endl;
+        cout << " meanPt is " << meanPt << endl;
+
+        double deltaR = 0.;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++) 
+        {
+            deltaR += (getDistance(*iter, Center) - meanRadius) * (getDistance(*iter, Center) - meanRadius);
+        }
+        deltaR = deltaR / NumberofHitsinSeed;
+        deltaR = sqrt(deltaR);
+        //meanSpt = 0.01 * deltaR * meanBz * 0.3;
+        meanSpt = deltaR;
+        cout << "DeltaR is " << deltaR << endl;
+        if(deltaR > deltaRThreshold)
+        {
+            cout << "Pattern find error: deltaR over threshold" << endl;
+            isGoodPattern = 0;
+        }
+    }
+    else
+    {
+        // Just set pattern to be straight
+        isClockwise =0;
+        meanPt = upper_limit_pt;
+        // Set the straight pattern with lowest priority among good pattern
+        meanSpt = deltaRThreshold;
+    }
+    cout << "III--> Seed Pt : " << meanPt << endl;
+    cout << "III--> Pattern is: " << isGoodPattern << endl;
+
+    // Set the pattern estimation signal
+    isPatternChecked = true;
+}
+
+void RPCSeedPattern::checkSegmentAlgorithmSpecial(const edm::EventSetup& eSetup)
+{
+    if(isPatternChecked == true)
+        return;
+
+    if(!checkSegment())
+    {
+        isPatternChecked = true;
+        isGoodPattern = -1;
+        return;
+    }
+
+    unsigned int NumberofHitsinSeed = nrhit();
+
+    // Set isGoodPattern to default true and check the failure 
+    isGoodPattern = 1;
+
+    // Print the recHit's position
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+        cout << "Position of recHit is: " << (*iter)->globalPosition() << endl;
+
+    // Check the Z direction
+    if(fabs((*(theRecHits.end()-1))->globalPosition().z() - (*(theRecHits.begin()))->globalPosition().z()) > ZError)
+    {
+        if(((*(theRecHits.end()-1))->globalPosition().z() - (*(theRecHits.begin()))->globalPosition().z()) > ZError)
+            isParralZ = 1;
+        else
+            isParralZ = -1;
+    }
+    else
+        isParralZ = 0;
+
+    cout << " Check isParralZ is :" << isParralZ << endl;
+    for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != (theRecHits.end()-1); iter++) 
+    {
+        if(isParralZ == 0)
+        {
+            if(fabs((*(iter+1))->globalPosition().z()-(*iter)->globalPosition().z()) > ZError)
+            {
+                cout << "Pattern find error in Z direction: wrong perpendicular direction" << endl;
+                isGoodPattern = 0;
+            }
+        }
+        else
+        {
+            if((int)(((*(iter+1))->globalPosition().z()-(*iter)->globalPosition().z())/ZError)*isParralZ < 0)
+            {
+                cout << "Pattern find error in Z direction: wrong Z direction" << endl;
+                isGoodPattern = 0;
+            }
+        }
+    }
+    // Cancel the Z direction check
+    cout << "Cancel the Z direction check" << endl;
+    isGoodPattern = 1;
+
+    // Check the pattern
+    if(isStraight2[0] == true)
+    {
+        // Set pattern to be straight
+        isClockwise =0;
+        meanPt = upper_limit_pt;
+        // Set the straight pattern with lowest priority among good pattern
+        meanSpt = deltaRThreshold;
+
+        // Extrapolate to other recHits and check deltaR
+        GlobalVector startSegment = theRecHits[3]->globalPosition() - theRecHits[2]->globalPosition();
+        GlobalPoint startPosition = theRecHits[3]->globalPosition();
+        GlobalVector startMomentum = startSegment*(meanPt/startSegment.perp());
+        unsigned int index = 0;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+        {
+            if(index < 4)
+            {
+                index++;
+                continue;
+            }
+            double tracklength = 0;
+            cout << "Now checking recHit " << index << endl;
+            double Distance = extropolateStep(startPosition, startMomentum, iter, isClockwise, tracklength, eSetup);
+            cout << "Final distance is " << Distance << endl;
+            if(Distance > MaxRSD)
+            {
+                cout << "Pattern find error in distance for other recHits: " << Distance << endl;
+                isGoodPattern = 0;
+            }
+            if(index == NumberofHitsinSeed - 1)
+                S += tracklength;
+        }
+    }
+    else
+    {
+        // Get meanPt
+        meanPt = 0.01 * meanRadius2[0] * meanMagneticField2[0].z() * 0.3;
+        cout << " meanRadius is " << meanRadius2[0] << ", with meanBz " << meanMagneticField2[0].z() << endl;
+        cout << " meanPt is " << meanPt << endl;
+        if(fabs(meanPt) > upper_limit_pt)
+            meanPt = upper_limit_pt * meanPt / fabs(meanPt);
+
+
+        // Get clockwise direction
+        GlobalVector vec[2];
+        for(unsigned int i = 1; i <= 2; i++) 
+        {
+            GlobalVector vec_temp((theRecHits[i]->globalPosition().x()-Center2[0].x()), (theRecHits[i]->globalPosition().y()-Center2[0].y()), (theRecHits[i]->globalPosition().z()-Center2[0].z()));
+            vec[i-1] = vec_temp;
+        }
+        isClockwise = 0;
+        if((vec[1].phi()-vec[0].phi()).value() > 0)
+            isClockwise = -1;
+        else
+            isClockwise = 1;
+
+        cout << "Check isClockwise is : " << isClockwise << endl;
+
+        // Check the initial 3 segments
+        cout << "entryPosition: " << entryPosition << endl;
+        cout << "leavePosition: " << leavePosition << endl;
+        cout << "Center2 is : " << Center2[0] << endl;
+        double R1 = GlobalVector((entryPosition.x() - Center2[0].x()), (entryPosition.y() - Center2[0].y()), (entryPosition.z() - Center2[0].z())).perp();
+        double R2 = GlobalVector((leavePosition.x() - Center2[0].x()), (leavePosition.y() - Center2[0].y()), (leavePosition.z() - Center2[0].z())).perp();
+        double deltaR  = sqrt(((R1-meanRadius2[0])*(R1-meanRadius2[0])+(R2-meanRadius2[0])*(R2-meanRadius2[0]))/2);
+        meanSpt = deltaR;
+        cout << "R1 is " << R1 << ", R2 is " << R2 << endl;
+        cout << "Delta R for the initial 3 segments is " << deltaR << endl;
+        if(deltaR > deltaRThreshold)
+        {
+            cout << "Pattern find error in delta R for the initial 3 segments" << endl;
+            isGoodPattern = 0;
+        }
+
+        // Extrapolate to other recHits and check deltaR
+        GlobalVector startSegment = theRecHits[3]->globalPosition() - theRecHits[2]->globalPosition();
+        GlobalPoint startPosition =theRecHits[3]->globalPosition();
+        GlobalVector startMomentum = startSegment*(fabs(meanPt)/startSegment.perp());
+        unsigned int index = 0;
+        for(ConstMuonRecHitContainer::const_iterator iter = theRecHits.begin(); iter != theRecHits.end(); iter++)
+        {
+            if(index < 4)
+            {
+                index++;
+                continue;
+            }
+            double tracklength = 0;
+            cout << "Now checking recHit " << index << endl;
+            double Distance = extropolateStep(startPosition, startMomentum, iter, isClockwise, tracklength, eSetup);
+            cout << "Final distance is " << Distance << endl;
+            if(Distance > MaxRSD)
+            {
+                cout << "Pattern find error in distance for other recHits: " << Distance << endl;
+                isGoodPattern = 0;
+            }
+            if(index == NumberofHitsinSeed - 1)
+                S += tracklength;
+            index++;
+        }
+    }
+
+    cout << "Checking finish, isGoodPattern now is " << isGoodPattern << endl; 
+    // Set the pattern estimation signal
+    isPatternChecked = true;
+}
+
+double RPCSeedPattern::extropolateStep(const GlobalPoint& startPosition, const GlobalVector& startMomentum, ConstMuonRecHitContainer::const_iterator iter, const int ClockwiseDirection, double& tracklength, const edm::EventSetup& eSetup)
+{
+    // Get magnetic field
+    edm::ESHandle<MagneticField> Field;
+    eSetup.get<IdealMagneticFieldRecord>().get(Field);
+
+    cout << "Extrapolating the track to check the pattern" << endl;
+    tracklength = 0;
+    // Get the iter recHit's detector geometry
+    DetId hitDet= (*iter)->hit()->geographicalId();
+    RPCDetId RPCId = RPCDetId(hitDet.rawId());
+    //const RPCChamber* hitRPC = dynamic_cast<const RPCChamber*>(hitDet);
+    edm::ESHandle<RPCGeometry> pRPCGeom;
+    eSetup.get<MuonGeometryRecord>().get(pRPCGeom);
+    const RPCGeometry* rpcGeometry = (const RPCGeometry*)&*pRPCGeom;
+
+    const BoundPlane RPCSurface = rpcGeometry->chamber(RPCId)->surface();
+    double startSide = RPCSurface.localZ(startPosition);
+    cout << "Start side : " << startSide;
+
+    GlobalPoint currentPosition = startPosition;
+    double currentSide = RPCSurface.localZ(currentPosition);
+    GlobalVector currentMomentum = startMomentum;
+    GlobalVector ZDirection(0, 0, 1);
+
+    // Use the perp other than mag, since initial segment might have small value while final recHit have large difference value at Z direction
+    double currentDistance = ((GlobalVector)(currentPosition - (*iter)->globalPosition())).perp();
+    cout << "Start current position is : " << currentPosition << endl;
+    cout << "Start current Momentum is: " << currentMomentum.mag() << ", in vector: " << currentMomentum << endl;
+    cout << "Start current distance is " << currentDistance << endl;
+    cout << "Start current radius is " << currentPosition.perp() << endl;
+    cout << "Destination radius is " << (*iter)->globalPosition().perp() << endl;
+
+    // Judge roughly if the stepping cross the Det surface of the recHit
+    //while((currentPosition.perp() < ((*iter)->globalPosition().perp())))
+    double currentDistance_next = currentDistance;
+    do
+    {
+        currentDistance = currentDistance_next;
+        if(ClockwiseDirection == 0)
+        {
+            currentPosition += currentMomentum.unit() * stepLength;
+        }
+        else
+        {
+            double Bz = Field->inTesla(currentPosition).z();
+            double Radius = currentMomentum.perp()/fabs(Bz*0.01*0.3);
+            double deltaPhi = (stepLength*currentMomentum.perp()/currentMomentum.mag())/Radius;
+
+            // Get the center for current step
+            GlobalVector currentPositiontoCentor = currentMomentum.unit().cross(ZDirection);
+            currentPositiontoCentor *= Radius;
+            // correction of ClockwiseDirection correction
+            currentPositiontoCentor *= ClockwiseDirection;
+            // continue to get the center for current step
+            GlobalPoint currentCenter = currentPosition;
+            currentCenter += currentPositiontoCentor;
+
+            // Get the next step position
+            GlobalVector CentortocurrentPosition = (GlobalVector)(currentPosition - currentCenter);
+            double Phi = CentortocurrentPosition.phi().value();
+            Phi += deltaPhi * (-1) * ClockwiseDirection;
+            double deltaZ = stepLength*currentMomentum.z()/currentMomentum.mag();
+            GlobalVector CentortonewPosition(GlobalVector::Cylindrical(CentortocurrentPosition.perp(), Phi, deltaZ));
+            double PtPhi = currentMomentum.phi().value();
+            PtPhi += deltaPhi * (-1) * ClockwiseDirection;
+            currentMomentum = GlobalVector(GlobalVector::Cylindrical(currentMomentum.perp(), PtPhi, currentMomentum.z()));
+            currentPosition = currentCenter + CentortonewPosition;
+        }
+
+        // count the total step length
+        tracklength += stepLength * currentMomentum.perp() / currentMomentum.mag();
+
+        // Get the next step distance
+        currentSide = RPCSurface.localZ(currentPosition);
+        cout << "Stepping current side : " << currentSide;
+        cout << "Stepping current position is: " << currentPosition << endl;
+        cout << "Stepping current Momentum is: " << currentMomentum.mag() << ", in vector: " << currentMomentum << endl;
+        currentDistance_next = ((GlobalVector)(currentPosition - (*iter)->globalPosition())).perp();
+        cout << "Stepping current distance is " << currentDistance << endl;
+        cout << "Stepping current radius is " << currentPosition.perp() << endl;
+    }while(currentDistance_next < currentDistance);
+    lastPhi = currentMomentum.phi().value();
+    return currentDistance;
+}
+
+TrajectorySeed RPCSeedPattern::createFakeSeed(int& isGoodSeed, const edm::EventSetup& eSetup)
+{
+    // Create a fake seed and return
+    cout << "Now create a fake seed" << endl;
+    isPatternChecked = true;
+    isGoodPattern = -1;
+    isStraight = true;
+    meanPt = upper_limit_pt;
+    meanSpt = 0;
+    Charge = 0;
+    isClockwise = 0;
+    isParralZ = 0;
+    meanRadius = -1;
+    //return createSeed(isGoodSeed, eSetup);
+
+    // Get the reference recHit, DON'T use the recHit on 1st layer(inner most layer) 
+    const ConstMuonRecHitPointer best = BestRefRecHit();
+
+    GlobalVector Momentum(0, 0, 0);
+    LocalPoint segPos=best->localPosition();
+    LocalVector segDirFromPos=best->det()->toLocal(Momentum);
+    LocalTrajectoryParameters param(segPos,segDirFromPos, Charge);
+
+    //AlgebraicVector t(4);
+    AlgebraicSymMatrix mat(5,0);
+    mat = best->parametersError().similarityT(best->projectionMatrix());
+    mat[0][0]= meanSpt;
+    LocalTrajectoryError error(mat);
+
+    edm::ESHandle<MagneticField> Field;
+    eSetup.get<IdealMagneticFieldRecord>().get(Field);
+
+    TrajectoryStateOnSurface tsos(param, error, best->det()->surface(), &*Field);
+
+    DetId id = best->geographicalId();
+    TrajectoryStateTransform tsTransform;
+    PTrajectoryStateOnDet *seedTSOS = tsTransform.persistentState(tsos, id.rawId());
+
+    edm::OwnVector<TrackingRecHit> container;
+    for(ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin(); iter!=theRecHits.end(); iter++)
+        container.push_back((*iter)->hit()->clone());
+
+    TrajectorySeed theSeed(*seedTSOS, container, oppositeToMomentum);
+    isGoodSeed = isGoodPattern;
+
+    delete seedTSOS;
+    return theSeed;
+}
+
+TrajectorySeed RPCSeedPattern::createSeed(int& isGoodSeed, const edm::EventSetup& eSetup)
+{
+    if(isPatternChecked == false || isGoodPattern == -1)
+    {
+        cout <<"Pattern is not yet checked! Create a fake seed instead!" << endl;
+        return createFakeSeed(isGoodSeed, eSetup);
+    }
+
+    edm::ESHandle<MagneticField> Field;
+    eSetup.get<IdealMagneticFieldRecord>().get(Field);
+
+    MuonPatternRecoDumper debug;
+
+    //double theMinMomentum = 3.0;
+
+    //if(fabs(meanPt) < lower_limit_pt) 
+        //meanPt = lower_limit_pt * meanPt / fabs(meanPt) ;
+
+    //AlgebraicVector t(4);
+    AlgebraicSymMatrix mat(5,0);
+
+    // For pattern we use is Clockwise other than isStraight to estimate charge
+    if(isClockwise == 0)
+        Charge = 0;
+    else
+        Charge=(int)(meanPt*(-isClockwise)/fabs(meanPt));
+
+    // Get the reference recHit, DON'T use the recHit on 1st layer(inner most layer) 
+    const ConstMuonRecHitPointer best = BestRefRecHit();
+    const ConstMuonRecHitPointer first = FirstRecHit();
+
+    GlobalVector Momentum;
+    if(isClockwise != 0)
+    {
+        if(AlgorithmType != 3)
+        {
+            // Get the momentum on reference recHit
+            GlobalVector vecRef1((first->globalPosition().x()-Center.x()), (first->globalPosition().y()-Center.y()), (first->globalPosition().z()-Center.z()));
+            GlobalVector vecRef2((best->globalPosition().x()-Center.x()), (best->globalPosition().y()-Center.y()), (best->globalPosition().z()-Center.z()));
+
+            double deltaPhi = (vecRef2.phi() - vecRef1.phi()).value();
+            double deltaS = meanRadius * fabs(deltaPhi);
+            double deltaZ = best->globalPosition().z() - first->globalPosition().z();
+
+            GlobalVector vecZ(0, 0, 1);
+            GlobalVector vecPt = (vecRef2.unit()).cross(vecZ);
+            if(isClockwise == -1)
+                vecPt *= -1;
+            vecPt *= deltaS;
+            Momentum = GlobalVector(0, 0, deltaZ);
+            Momentum += vecPt;
+            Momentum *= fabs(meanPt/deltaS);
+        }
+        else
+        {
+            double deltaZ = best->globalPosition().z() - first->globalPosition().z();
+            Momentum = GlobalVector(GlobalVector::Cylindrical(S, lastPhi, deltaZ));
+            Momentum *= fabs(meanPt/S);
+        }
+    }
+    else
+    {
+        Momentum = best->globalPosition() - first->globalPosition();
+        double deltaS = Momentum.perp();
+        Momentum *= fabs(meanPt/deltaS);
+    }
+    LocalPoint segPos=best->localPosition();
+    LocalVector segDirFromPos=best->det()->toLocal(Momentum);
+    LocalTrajectoryParameters param(segPos,segDirFromPos, Charge);
+
+    mat = best->parametersError().similarityT(best->projectionMatrix());
+    mat[0][0]= meanSpt;
+    LocalTrajectoryError error(mat);
+
+    TrajectoryStateOnSurface tsos(param, error, best->det()->surface(), &*Field);
+    cout << "Trajectory State on Surface before the extrapolation" << endl;
+    cout << debug.dumpTSOS(tsos);
+    DetId id = best->geographicalId();
+    cout << "The RecSegment relies on: "<<endl;
+    cout << debug.dumpMuonId(id);
+    cout << debug.dumpTSOS(tsos);
+    TrajectoryStateTransform tsTransform;
+    PTrajectoryStateOnDet *seedTSOS = tsTransform.persistentState(tsos, id.rawId());
+
+    edm::OwnVector<TrackingRecHit> container;
+    for(ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin(); iter!=theRecHits.end(); iter++)
+    {
+        // This casting withou clone will cause memory overflow when used in push_back
+        // Since container's deconstructor functiion free the pointer menber!
+        //TrackingRecHit* pt = dynamic_cast<TrackingRecHit*>(&*(*iter));
+        //cout << "Push recHit type " << pt->getType() << endl;
+        container.push_back((*iter)->hit()->clone());
+    }
+
+    TrajectorySeed theSeed(*seedTSOS, container, oppositeToMomentum);
+    isGoodSeed = isGoodPattern;
+
+    delete seedTSOS;
+    return theSeed;
+}
