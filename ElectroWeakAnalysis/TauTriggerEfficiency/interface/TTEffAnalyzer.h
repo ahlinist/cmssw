@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.17 2009/03/04 11:58:02 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.18 2009/03/05 23:10:18 smaruyam Exp $
 //
 //
 
@@ -59,7 +59,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       template <class T> void loop(const edm::Event& iEvent, const T& collection) {
         for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
           // Fill common variables
-          fill(*particle);
+	  unsigned int i = particle - collection.begin();
+          fill(*particle,i);
 
           // Call individual analyzers
           _L1analyzer.fill(iEvent, *particle);
@@ -71,18 +72,21 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
         }
       }
 
-      virtual void fill(const reco::PFTau&); 
-      virtual void fill(const reco::CaloTau&);
-      virtual void fill(const LorentzVector&);
+      virtual void fill(const reco::PFTau&,unsigned int i = 0); 
+      virtual void fill(const reco::CaloTau&,unsigned int i = 0);
+      virtual void fill(const LorentzVector&,unsigned int i = 0);
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
 
-      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
+//      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
 
       // ----------member data ---------------------------
       edm::InputTag  PFTaus_,PFTauIso_; //Path to analyze
       std::string rootFile_;
+
+      edm::Handle<PFTauCollection> PFTaus;
+      edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
