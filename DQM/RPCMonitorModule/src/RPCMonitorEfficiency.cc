@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.9 2009/03/04 16:25:31 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.10 2009/03/06 15:41:12 carrillo Exp $
 //
 //
 
@@ -150,6 +150,9 @@ public:
   TH1F * DoubleGapDistroW2far;
 
   TH1F * EffEndCap;
+  
+  TH2F * HeightVsEffR2;
+  TH2F * HeightVsEffR3;
 
   TH1F * GregD1R2;  
   TH1F * GregD1R3;  
@@ -469,6 +472,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
 
   EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",60,0.5,100.5);
+
+  HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
+  HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
 
   GregD1R2= new TH1F ("GregDistroD1R2","Efficiency Distribution for Station 1 Ring 2",36,0.5,36.5);
   GregD1R3= new TH1F ("GregDistroD1R3","Efficiency Distribution for Station 1 Ring 3",36,0.5,36.5);
@@ -1086,12 +1092,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 	    
 	    //Border Effect
-	    maskeffect[nstrips]=true;
-	    maskeffect[nstrips-1]=true;
-	    maskeffect[nstrips-2]=true;
-	    maskeffect[nstrips-3]=true;
-	    maskeffect[nstrips-4]=true;
-	    maskeffect[nstrips-5]=true;
+	    //maskeffect[nstrips]=true;
+	    //maskeffect[nstrips-1]=true;
+	    //maskeffect[nstrips-2]=true;
+	    //maskeffect[nstrips-3]=true;
+	    //maskeffect[nstrips-4]=true;
+	    //maskeffect[nstrips-5]=true;
 	    
 	    std::cout<<std::endl;
 	    
@@ -1261,7 +1267,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoDT_2D->GetXaxis()->SetTitle("cm");
 		histoDT_2D->GetYaxis()->SetTitle("cm");
 		histoDT_2D->Draw();
-		histoDT_2D->SetDrawOption("color");
+		histoDT_2D->SetDrawOption("COLZ");
 		labeltoSave = rpcsrv.name() + "/DTOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1269,7 +1275,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPRO_2D->GetXaxis()->SetTitle("cm");
 		histoPRO_2D->GetYaxis()->SetTitle("cm");
 		histoPRO_2D->Draw();
-		histoPRO_2D->SetDrawOption("color");
+		histoPRO_2D->SetDrawOption("COLZ");
 		labeltoSave = rpcsrv.name() + "/Profile_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -2272,6 +2278,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     }
   }
 
+  std::cout<<"Outside the loop of rolls"<<std::endl;
+  
   if(makehtml){
     command = "cat htmltemplates/indextail.html >> indexDm3near.html"; system(command.c_str());
     command = "cat htmltemplates/indextail.html >> indexDm2near.html"; system(command.c_str());
@@ -2304,31 +2312,38 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   float eff,N,err;
   
   for(int k=1;k<=36;k++){
+    float h = sin((k-1)*10*3.14159565/180.);
+  
     err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
     GregD1R2->SetBinContent(k,eff); GregD1R2->SetBinError(k,err);
-
+    HeightVsEffR2->Fill(eff,h);
+    
     err=0; eff=0; N=ExGregD1R3->GetBinContent(k);
     if(N!=0.){eff = OcGregD1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD1R3->SetBinContent(k,eff); GregD1R3->SetBinError(k,err);
+    HeightVsEffR3->Fill(eff,h);
     
     err=0; eff=0; N=ExGregD2R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD2R2->SetBinContent(k,eff); GregD2R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD2R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD2R3->SetBinContent(k,eff); GregD2R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R2->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R2->SetBinContent(k,eff); GregD3R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
 
     err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
   }
-
 
   std::cout<<"Outside the loop of rolls"<<std::endl;
 
@@ -2347,8 +2362,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxendcap->GetXaxis()->SetTitle("Mean (bx Units)");
   Ca5->SaveAs("bxendcap.png");
   Ca5->SaveAs("bxendcap.root");
-
-
+  
+  
   if(barrel){
     EffGlobWm2->GetXaxis()->LabelsOption("v");
     std::cout<<"Done the first Barrel"<<std::endl;
@@ -2647,6 +2662,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     
   }
 
+
   std::cout<<"Efficiency Images"<<std::endl;
 
   pave = new TPaveText(35,119,60,102);
@@ -2707,6 +2723,22 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  
  Ca5->Clear();
 
+ HeightVsEffR3->Draw(); HeightVsEffR3->GetXaxis()->SetTitle("Efficiency");HeightVsEffR3->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR3->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR3->GetXaxis()->SetRangeUser(0.,1.);
+ HeightVsEffR3->SetMarkerColor(4);
+ HeightVsEffR3->SetMarkerStyle(20);
+ HeightVsEffR3->SetMarkerSize(0.7);
+
+ Ca5->SaveAs("Greg/HeightVsEffR3.png"); Ca5->SaveAs("Greg/HeightVeEffR3.root");
+ Ca5->Clear(); 
+
+ HeightVsEffR2->Draw(); HeightVsEffR2->GetXaxis()->SetTitle("Efficiency");HeightVsEffR2->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR2->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR2->GetXaxis()->SetRangeUser(0.,1.);
+ HeightVsEffR2->SetMarkerColor(4);
+ HeightVsEffR2->SetMarkerStyle(20);
+ HeightVsEffR2->SetMarkerSize(0.7);
+
+ Ca5->SaveAs("Greg/HeightVsEffR2.png"); Ca5->SaveAs("Greg/HeightVeEffR2.root");
+ Ca5->Clear(); 
+ 
  GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
  Ca5->SaveAs("Greg/D1R2.png"); Ca5->SaveAs("Greg/D1R2.root");
  Ca5->Clear(); 
