@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.15 2009/03/04 11:59:00 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.16 2009/03/05 23:10:32 smaruyam Exp $
 //
 //
 
@@ -81,14 +81,17 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   edm::Handle<PFTauCollection> PFTaus;
+//   edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<std::vector<LorentzVector> > electronTaus;
-   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
+//   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
-     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
-      else 
+      try{
+	iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
+      }catch(...){}
+//      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
+//     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
+//      else 
 	loop(iEvent, *PFTaus);
    }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
@@ -102,7 +105,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // For electron lorentzvectors, add similar clauses
 }
 
-void TTEffAnalyzer::fill(const LorentzVector& tau) {
+void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
   PFPt = tau.Pt();
   PFEt = tau.Et();
   PFEta = tau.Eta();
@@ -110,7 +113,7 @@ void TTEffAnalyzer::fill(const LorentzVector& tau) {
 }
 
 void
-TTEffAnalyzer::fill(const reco::PFTau& tau) {
+TTEffAnalyzer::fill(const reco::PFTau& tau, unsigned int i) {
 
   // Standsrd PF variables
   fill(tau.p4());
@@ -128,9 +131,15 @@ TTEffAnalyzer::fill(const reco::PFTau& tau) {
   PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
 
   PFEnergy = tau.energy();
+  if(tau.leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./tau.leadPFChargedHadrCand()->pt();
+
+  if(thePFTauDiscriminatorByIsolation.isValid()){
+	const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
+	PFIso = ds.value(i);
+  }
 }
 
-void TTEffAnalyzer::fill(const reco::CaloTau& tau) {
+void TTEffAnalyzer::fill(const reco::CaloTau& tau, unsigned int i) {
   fill(tau.p4());
 } 
 
@@ -200,7 +209,7 @@ TTEffAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,co
 
   return out;
 }
-
+/*
 void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos){
    for(unsigned int iTau = 0; iTau < taus->size(); iTau++) {
    PFTauRef thisTauRef(taus,iTau);
@@ -218,3 +227,4 @@ void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFT
           _TTEffTree->Fill();
     }
 }
+*/
