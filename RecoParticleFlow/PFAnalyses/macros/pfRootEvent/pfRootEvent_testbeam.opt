@@ -4,9 +4,9 @@ root outtree 1
 
 //colin	mode 1
 
-//root file reprocessed_7GeV.root
-print mctruthmatching 1 
-root file ../../test/demo_reprocessed_7GeV.root
+root file ../reprocessed_100GeV.root
+print mctruthmatching 0 
+//root file ../../test/demo_reprocessed_7GeV.root
 
 // filter ------------------------------------------------------------
 
@@ -227,7 +227,8 @@ blockAlgo debug 1
 PFAlgo debug 1
 
 // Track Quality Cut: Tracks are kept if DPt/Pt < Cut
-particle_flow DPtoverPt_Cut   999.9
+particle_flow DPtoverPt_Cut  999. 1. 0.8 0.5
+particle_flow NHit_Cut 0 3 3 6
 
 // chi2 maximum limit for ECAL/Track association
 particle_flow chi2_ECAL_Track  500

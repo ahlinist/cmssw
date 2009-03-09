@@ -26,7 +26,7 @@ particleFiltration = cms.EDFilter("ParticleFilter",
     identifyCleanParticles=cms.bool(True),
     
     # Global cut parameters   
-    runinfo_cuts=cms.string("/castor/cern.ch/user/b/ballin/tbv6/testbeam_cuts.root"),
+    runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_v1_3X.root"),
     
     #Normal tags
     BeamCounters=cms.InputTag("tbunpacker"),
