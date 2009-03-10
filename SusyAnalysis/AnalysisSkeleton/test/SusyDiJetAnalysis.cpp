@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.22 2009/03/05 17:05:05 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.23 2009/03/05 17:22:28 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -1045,7 +1045,19 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 					<< metHandle->size() << " instead of 1";
     return;
   }
-  
+ 
+  if(metHandle->front().genMET()!=NULL) {
+    const reco::GenMET* myGenMet = metHandle->front().genMET();
+    mTempTreeMET_Gen[0] = myGenMet->px();
+    mTempTreeMET_Gen[1] = myGenMet->py();
+    mTempTreeMET_Gen[2] = myGenMet->pz();
+  }
+  else{
+    mTempTreeMET_Gen[0] = -99999999;
+    mTempTreeMET_Gen[0] = -99999999;
+    mTempTreeMET_Gen[0] = -99999999;
+  }
+
   // Do the MET save for full corr no cc MET
   mTempTreeMET_Fullcorr_nocc[0] = metHandle->front().momentum().X();
   mTempTreeMET_Fullcorr_nocc[1] = metHandle->front().momentum().Y();
@@ -1285,7 +1297,6 @@ SusyDiJetAnalysis::initPlots() {
   //  mAllData->Branch("MET_muoncorr_cc",mTempTreeMET_Muoncorr_cc,"mTempTreeMET_Muoncorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_jeccorr_nocc",mTempTreeMET_JECcorr_nocc,"mTempTreeMET_JECcorr_nocc[nUncorrMET]/double");
   //  mAllData->Branch("MET_jeccorr_cc",mTempTreeMET_JECcorr_cc,"mTempTreeMET_JECcorr_cc[nUncorrMET]/double");
- 
   mAllData->Branch("MET_Fullcorr_nocc_significance",&mTempTreeMET_Fullcorr_nocc_significance,"mTempTreeMET_Fullcorr_nocc_significance/double");
 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
