@@ -395,8 +395,12 @@ private:
   double mTempTreeGenTauPy[50];
   double mTempTreeGenTauPz[50];
   //PIOPPI
-  
 
+  // Stoye  
+  // Generated MET
+  double mTempTreeMET_Gen[3];
+  // Stoye
+ 
   // Do the MET save for non cc MET
   int nFullMET;
   double mTempTreeMET_Fullcorr_nocc[3];
