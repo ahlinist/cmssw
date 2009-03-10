@@ -34,3 +34,5 @@ process.selection_step = cms.Path(process.wmunuSelectionSequence)
 process.edmDump_step = cms.Path(process.edmDumpSequence)
 
 process.out_step = cms.EndPath(process.output)
+
+process.schedule = cms.Schedule(process.reco_step,process.selection_step,process.wmunu0PU,process.wmunu1PU,process.wmunu2PU,process.wmunu3PU,process.wmunu4PU,process.wmunuAfterFilter,process.edmDump_step,process.out_step)
