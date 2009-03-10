@@ -10,6 +10,92 @@ function textCounter(field,  maxlimit) {
    }
 }
 
+
+function textareaValue (name)
+{
+
+var field = name + '_comment';
+
+field = document.getElementById(field).value;
+/*sel = document.getElementById(name).value;
+selectbox = document.getElementById('expertCommentSel');
+*/
+sel = document.getElementById(name);
+selectbox = document.getElementById('expertCommentSel');
+selectbox.innerHTML = sel.innerHTML; 
+
+for (var i=0; i < selectbox.length; i++) {
+	if (selectbox[i].value == sel.value) {
+			selectbox[i].selected = true;
+		}
+	}
+
+document.getElementById('expertsComment').value=field;
+sel = document.getElementById(name);
+}
+
+function validateSubSelectExp(c) {
+    var sel = $(c).find("select");
+    //keista
+    //var inp = $(c).find("input");
+    var txa = $(c).find("textarea");
+
+    txa.removeAttr("error")
+    txa.removeClass("error");
+    if (sel.val() == "GOOD") {
+      sel.css("color", "green");
+    } else if (sel.val() == "NOTSET") {
+      sel.css("color", "blue");
+    } else if (sel.val() == "BAD") {
+      sel.css("color", "red");
+      if (txa.val() == "") {
+        //keista
+        txa.attr("error", "Comment for BAD subsystem must be set.");
+        txa.addClass("error");
+        //inp.attr("error", "Comment for BAD subsystem must be set.");
+        // inp.addClass("error");
+      }
+    } else if (sel.val() == "EXCL") {
+      sel.css("color", "blue");
+      //keista
+      if (txa.val() == "") {
+        txa.attr("error", "Comment for EXCL subsystem must be set.");
+        txa.addClass("error");
+
+      
+     // if (inp.val() == "") {
+     //   inp.attr("error", "Comment for EXCL subsystem must be set.");
+     //   inp.addClass("error");
+      }
+    }
+}
+
+function expertsSel(value) {
+var name = document.getElementById('expertsCommentSub').value;
+for (var i=0; i < sel.length; i++) {
+	if (sel[i].value == value) {
+			sel[i].selected = true;
+		}
+	}
+
+
+	
+	var sell = document.getElementById(name);
+	var c = $(sell).parent();
+	validateSubSelectExp(c);
+}
+
+function updateExpertsComment(comment)
+{
+var field = document.getElementById('expertsCommentSub').value+'_comment';
+ document.getElementById(field).value=comment;
+ 
+ 	var sell = document.getElementById(field);
+	var c = $(sell).parent();
+	validateSubSelectExp(c);
+	 
+}
+
 function fitToText()
 {
  if (this.scrollHeight>this.clientHeight)
@@ -22,6 +108,7 @@ function fitToText()
  this.style.height=(this.scrollHeight+20)+"px";
  }
 }
+
 
 
 
@@ -62,6 +149,7 @@ $(document).ready( function () {
     }
 
   };
+  
 
   var validateSubSelect = function(c) {
     var sel = $(c).find("select");
@@ -293,6 +381,21 @@ $(document).ready( function () {
           $("#edit form .edit_info textarea[name=" + o.nodeName + "]").val($(o).text());
 
         });
+		
+          document.getElementById('expertsCommentSub').selectedIndex = 0;
+          var field = 'sub_CSC_comment';
+
+          field = document.getElementById(field).value;
+          sel = document.getElementById('sub_CSC');
+          selectbox = document.getElementById('expertCommentSel');
+          selectbox.innerHTML = sel.innerHTML;
+          for (var i=0; i < selectbox.length; i++) {
+               if (selectbox[i].value == sel.value) {
+                            selectbox[i].selected = true;
+                  }
+          }
+          document.getElementById('expertsComment').value = field;
+
 
         validateInfo();
         $("#edit form .edit_l1t input[type=checkbox]").each(function () { validateL1T($(this).parent()); });
@@ -326,7 +429,6 @@ $(document).ready( function () {
 
           $("#edit form .edit_l1t input").removeAttr("readonly");
           $("#edit form .edit_l1t input").removeAttr("disabled");
-          //keista
           $("#edit form .edit_l1t textarea").removeAttr("readonly");
           $("#edit form .edit_l1t textarea").removeAttr("disabled");
 
@@ -336,6 +438,10 @@ $(document).ready( function () {
           $("#edit form .edit_sub_online textarea").removeAttr("readonly");
           $("#edit form .edit_sub_online select").removeAttr("disabled");
           $("#edit form .edit_sub_online select").removeAttr("readonly");
+		  
+		  $("#edit form .edit_sub_online_exp textarea").removeAttr("readonly");
+          $("#edit form .edit_sub_online_exp select").removeAttr("disabled");
+          $("#edit form .edit_sub_online_exp select").removeAttr("readonly");
           
           if (status == "") {
             $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"ONLINE\">ONLINE</option>"));
@@ -366,6 +472,10 @@ $(document).ready( function () {
             //$("#edit form .edit_sub_online input").removeAttr("readonly");
             $("#edit form .edit_sub_online select").removeAttr("disabled");
             $("#edit form .edit_sub_online select").removeAttr("readonly");
+			
+            $("#edit form .edit_sub_online_exp textarea").removeAttr("readonly");
+            $("#edit form .edit_sub_online_exp select").removeAttr("disabled");
+            $("#edit form .edit_sub_online_exp select").removeAttr("readonly");
           }
           
           $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
@@ -376,8 +486,9 @@ $(document).ready( function () {
 
         } else if (real_role == "EXPERT") {
 
+		  
           $("#edit form .edit_l1t input").removeAttr("readonly");
-          $("#edit form .edit_l1t input").removeAttr("disabled");
+          $("#edit form .edit_l1t input").removeAttr("disabled"); 
           //keista
           $("#edit form .edit_l1t textarea").removeAttr("readonly");
           $("#edit form .edit_l1t textarea").removeAttr("disabled");
@@ -394,6 +505,13 @@ $(document).ready( function () {
           //$("#edit form .edit_sub_online input").removeAttr("readonly");
           $("#edit form .edit_sub_online select").removeAttr("readonly");
           $("#edit form .edit_sub_online select").removeAttr("disabled");
+		  
+          $("#edit form .edit_sub_online_exp textarea").removeAttr("readonly");
+          $("#edit form .edit_sub_online_exp select").removeAttr("readonly");
+          $("#edit form .edit_sub_online_exp select").removeAttr("disabled");
+		  
+		  $("#edit form .expertSub select").removeAttr("readonly");
+          $("#edit form .expertSub select").removeAttr("disabled")
           
           //keista
           $("#edit form .edit_sub_offline textarea").removeAttr("readonly");
@@ -471,7 +589,9 @@ $(document).ready( function () {
               $("#edit button.submit_button").text("Save");
               $("#edit button.delete_button").text("Delete");
               $.hideRunEditForm();
+	      //var flexl_ = window.parent.$("#flex1");
               $("#flex1").flexReload();
+	      //  flexl_.flexReload();
               return;
             }
           });
@@ -484,23 +604,42 @@ $(document).ready( function () {
   };
 
   $.hideRunEditForm = function () {
+
+          var field = 'sub_CSC_comment';
+
+          field = document.getElementById(field).value;
+          sel = document.getElementById('sub_CSC');
+          selectbox = document.getElementById('expertCommentSel');
+          selectbox.innerHTML = sel.innerHTML;
+          for (var i=0; i < selectbox.length; i++) {
+               if (selectbox[i].value == sel.value) {
+                            selectbox[i].selected = true;
+                  }
+          }
+
+
     $("#edit_overlay").hide();
     $("#edit").hide();
     $("#edit_loader").hide();
+
+    //var Shadowbox = window.parent.Shadowbox;
+    //Shadowbox.close();
+    //window.close();
   };
 
   $("#edit_sub_tabs").tabs({ selected: 0 });
   $("#edit_l1t_tabs").tabs({ selected: 0 });
   $("#edit_info_tabs").tabs({ selected: 0 });
 
-});
-</script>
 
+});
+
+</script>
 <div id="edit_overlay" style="display: none;" > </div>
 <div id="edit_loader" style="display: none;" >
   <img src="media/img/load.gif"/>
 </div>
-<div id="edit" style="display: none;" >
+<div id="edit" style="display: none;">
 <form>
 
   <table id="edit_table" width="100%" border="0">
@@ -520,6 +659,7 @@ $(document).ready( function () {
         <ul id="edit_info_tabs">
           <li><a href="#edit_info_tab"><span>General Information</span></a></li>
           <li><a href="#edit_comp_tab"><span>Components</span></a></li>
+		  <li><a href="#edit_exp_com"><span>Comments</span></a></li>
         </ul>
         <div id="edit_info_tab">
           <table width="90%">
@@ -566,20 +706,18 @@ $(document).ready( function () {
                       <tr>
               <td><label for="RUN_STOP_REASON"> Stop reason: </label></td>
               <td colspan=3 class="edit_online"><textarea  name="RUN_STOP_REASON" readonly="true" maxlength="90" onKeyDown="texCounter(this.form.RUN_STOP_REASON,
-1000)"
-onKeyUp="textCounter(this.form.RUN_STOP_REASON, 1000)" oninput="fitToText.call(this)" onpopertychange="if (event.popertyName.toLowerCase()=='value') fitToText.call(this)"  /></textarea></td>
+1000);"
+onKeyUp="textCounter(this.form.RUN_STOP_REASON, 1000);"></textarea></td>
             </tr>
             <tr>
               <td><label for="RUN_ONLINE_COMMENT"> Online comment:  </label></td>
-              <td colspan=3 class="edit_online"><textarea name="RUN_ONLINE_COMMENT" readonly="true" maxlength="90" onKeyDown="textCounter(this.form.RUN_ONLINE_COMMENT, 1000)"
-onKeyUp="textCounter(this.form.RUN_NLINE_COMMENT, 1000);" oninput="fitToText.call(this)" onpropertychange="if (event.propertyName.toLowerCase()=='value') fitToText.call(this)"
-></textarea></td>
+              <td colspan=3 class="edit_online"><textarea name="RUN_ONLINE_COMMENT" readonly="true" maxlength="90" onKeyDown="textCounter(this.form.RUN_ONLINE_COMMENT, 1000);"
+onKeyUp="textCounter(this.form.RUN_NLINE_COMMENT, 1000);"></textarea></td>
             </tr>
             <tr>
               <td><label for="RUN_OFFLINE_COMMENT"> Offline comment:  </label></td>
               <td colspan=3 class="edit_offline"><textarea name="RUN_OFFLINE_COMMENT" id="RUN_OFFLINE_COMMENT" readonly="true" maxlength="90"
-onKeyDown="textCounter(this.form.RUN_OFFLINE_COMMENT,1000)" onKeyUp="textCounter(this.form.RUN_OFFLINE_COMMENT,1000)" oninput="fitToText.call(this)"
-onpropertychange="if (event.propertyName.toLowerCase()=='value') fitToText.call(this)" ></textarea></td>
+onKeyDown="textCounter(this.form.RUN_OFFLINE_COMMENT,1000);" onKeyUp="textCounter(this.form.RUN_OFFLINE_COMMENT,1000);"></textarea></td>
             </tr>
 
           </table>
@@ -600,8 +738,7 @@ onpropertychange="if (event.propertyName.toLowerCase()=='value') fitToText.call(
                     <input name="l1s_${l1s_abbr}" type="checkbox" disabled="true" readonly="true"/> 
                     <!--<input name="l1s_${l1s_abbr}_comment" type="text" value="" readonly="true" maxlength="90" />-->
                     <textarea name="l1s_${l1s_abbr}_comment" id="l1s_${l1s_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"
-onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" oninput="fitToText.call(this)" onpropertychange="if
-(event.propertyN$fitToText.call(this)"></textarea>
+onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000);" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000);"></textarea>
                   </div>
                   </dqm:listL1Sources>
                 </div>
@@ -617,12 +754,11 @@ onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" onKeyUp="textCo
                   <dqm:listSubsystems type="ONLINE">
                   <div>
                     <label for="sub_${sub_abbr}"> ${sub_abbr} </label>
-                    <select style="width: 80px" name="sub_${sub_abbr}" class="sub_online" disabled="true">
+                    <select style="width: 80px" name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_online" disabled="true">
                     </select>
                    <!-- <input name="sub_${sub_abbr}_comment" type="text" value="" readonly="true" maxlength="90" />-->
                     <textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"
-onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" oninput="fitToText.call(this)" onpropertychange="if 
-(event.propertyN$fitToText.call(this)"></textarea>
+onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000);" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000);"></textarea>
 
                   </div>
                   </dqm:listSubsystems>
@@ -631,15 +767,14 @@ onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" onKeyUp="textCo
                   <dqm:listSubsystems type="OFFLINE">
                     <div>
                       <label for="sub_${sub_abbr}"> ${sub_abbr} </label>
-                      <select style="width: 80px" name="sub_${sub_abbr}" class="sub_offline" disabled="true">
+                      <select style="width: 80px" name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_offline" disabled="true">
                         <option value="NOTSET">NOTSET</option>
                         <option value="GOOD">GOOD</option>
                         <option value="BAD">BAD</option>
                       </select>
                      <!-- <input name="sub_${sub_abbr}_comment" type="text" value="" readonly="true" maxlength="90" /> -->
                       <textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90" 
-onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000)" oninput="fitToText.call(this)" onpropertychange="if (event.propertyName.toLowerCase()=='value') 
-fitToText.call(this)"></textarea>
+onKeyDown="textCounter(this.form.sub_${sub_abbr}_comment, 1000);" onKeyUp="textCounter(this.form.sub_${sub_abbr}_comment, 1000);"></textarea>
 
                     </div>
                   </dqm:listSubsystems>
@@ -650,6 +785,42 @@ fitToText.call(this)"></textarea>
           </table>
 
         </div>
+		
+
+<div id="edit_exp_com">
+          <table width="100%">
+            <tr>
+              <td class="edit_col" width="100%">
+				  <div class="edit_sub_exp edit_sub_online_exp" id="edit_sub_online_tab">
+				  <b>Subsystem: </b>
+				  <select style="width: 80px"  name="expertsCommentSub" disabled="true" id="expertsCommentSub" onchange="textareaValue(this.value);">
+				  <dqm:listSubsystems type="ONLINE">				  
+				  	<option  value="sub_${sub_abbr}">${sub_abbr}</option> 
+                  </dqm:listSubsystems>
+                  <dqm:listSubsystems type="OFFLINE">
+                    <option  value="sub_${sub_abbr}">${sub_abbr}</option>
+                  </dqm:listSubsystems>
+				  </select>
+				  <b>Status: <b/> 
+				  <select style="width: 80px" name="expertCommentSel" id="expertCommentSel" class="sub_offline" disabled="true" onchange="expertsSel(this.value);"/>
+				  </div>
+  
+              </td>
+            </tr>
+            <tr>
+              <td class="edit_col" width="100%">
+
+		<div class="edit_sub edit_sub_online">
+		 <b>Comments: <b/>
+         <textarea name="expertsComment" cols="60" rows="10"  readonly="true" id="expertsComment" onchange="updateExpertsComment(this.value)"></textarea>
+  		</div>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+
+
 
       </td>
     </tr>
@@ -666,4 +837,3 @@ fitToText.call(this)"></textarea>
 
 </form>
 </div>
-
