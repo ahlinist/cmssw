@@ -5,8 +5,8 @@ process = cms.Process("Analysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.debugModules = cms.untracked.vstring('')
 #process.MessageLogger.cerr.threshold = 'DEBUG'
-process.MessageLogger.cerr.threshold = 'INFO'
-#process.MessageLogger.cerr.threshold = 'WARNING'
+#process.MessageLogger.cerr.threshold = 'INFO'
+process.MessageLogger.cerr.threshold = 'WARNING'
 process.MessageLogger.categories.append('Analysis')
 process.MessageLogger.cerr.DEBUG = cms.untracked.PSet(
     default = cms.untracked.PSet( limit = cms.untracked.int32(0)),
@@ -36,49 +36,47 @@ process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuSelFilt
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuAnalyzer_cfi')
 process.wmunuAnalyzerAfterFilter = process.wmunuAnalyzer.clone()
 
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
+process.filter0PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 0)
+process.filter1PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 1)
+process.filter2PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 2)
+process.filter3PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 3)
+process.filter4PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 4)
+
+process.wmunuAnalyzer0PU = process.wmunuAnalyzer.clone()
+process.wmunuAnalyzer1PU = process.wmunuAnalyzer.clone()
+process.wmunuAnalyzer2PU = process.wmunuAnalyzer.clone()
+process.wmunuAnalyzer3PU = process.wmunuAnalyzer.clone()
+process.wmunuAnalyzer4PU = process.wmunuAnalyzer.clone()
+
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi')
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff')
 
-#process.pileUpInfo.AccessCrossingFramePlayBack = True
-#process.pileUpInfo.BunchCrossings = cms.vint32(0)
-
-process.MyEventContent = cms.PSet(
-        outputCommands = cms.untracked.vstring('drop *')
-)
-process.MyEventContent.outputCommands.append('keep *_*_*_Analysis')
-process.MyEventContent.outputCommands.append('keep recoMuons_muons_*_*')
-process.MyEventContent.outputCommands.append('keep recoTracks_generalTracks_*_*')
-process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVertices_*_*')
-process.MyEventContent.outputCommands.append('keep *_offlinePrimaryVerticesWithBS_*_*')
-process.MyEventContent.outputCommands.append('keep *_pixelVertices_*_*')
-
-# Output definition
-process.output = cms.OutputModule("PoolOutputModule",
-    outputCommands = process.MyEventContent.outputCommands,
-    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_noPU.root'),
-    #fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'),
-    fileName = cms.untracked.string('POMWIG_SDPlusWmunu_EdmDump_StageA43Bx.root'),
-    #fileName = cms.untracked.string('PYTHIA6_Wmunu_EdmDump_StageA43Bx.root'),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('USER'),
-        filterName = cms.untracked.string('')
-    ),
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('p2')
-    )
-)
+process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.outputModule_cfi')
+#process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'
+process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_StageA43Bx.root'
+process.output.SelectEvents = cms.vstring('p2')
 
 process.add_(cms.Service("TFileService",
 		#fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
                 fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_StageA43Bx.root")
-                #fileName = cms.string("analysisWMuNu_histos_Wmunu_StageA43Bx.root")
 	)
 )
 
-process.p1 = cms.Path(process.wmunuAnalyzer)
+process.p0 = cms.Path(process.pileUpInfo)
+process.wmunu0PU = cms.Sequence(process.filter0PU*process.wmunuAnalyzer0PU)
+process.wmunu1PU = cms.Sequence(process.filter1PU*process.wmunuAnalyzer1PU)
+process.wmunu2PU = cms.Sequence(process.filter2PU*process.wmunuAnalyzer2PU)
+process.wmunu3PU = cms.Sequence(process.filter3PU*process.wmunuAnalyzer3PU)
+process.wmunu4PU = cms.Sequence(process.filter4PU*process.wmunuAnalyzer4PU)
+process.p1 = cms.Path(process.wmunuAnalyzer + 
+                      process.wmunu0PU + 
+                      process.wmunu1PU +
+                      process.wmunu2PU +
+                      process.wmunu3PU)
 process.p2 = cms.Path(process.wmunuSelFilter*process.wmunuAnalyzerAfterFilter)
-process.p3 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.edmDumpAll)
+process.p3 = cms.Path(process.wmunuSelFilter*process.CastorTowerReco*process.genParticlesCalo*process.edmDumpAllNoPileUp)
 
 process.out_step = cms.EndPath(process.output)
 
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.out_step)
+process.schedule = cms.Schedule(process.p0,process.p1,process.p2,process.p3,process.out_step)
