@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.23 2009/03/05 17:22:28 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.24 2009/03/10 10:18:40 mstoye Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -614,6 +614,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeMuonTrkChi[i]=(*muonHandle)[i].track()->chi2();
       mTempTreeMuonTrkCharge[i]=(*muonHandle)[i].track()->charge();
       mTempTreeMuonTrkQOverPError[i]=(*muonHandle)[i].track()->qoverpError();
+      mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
+      mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
 
     }
     else{
@@ -629,6 +631,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeMuonTrkChi[i]=999.;
       mTempTreeMuonTrkCharge[i]=999.;
       mTempTreeMuonTrkQOverPError[i]=999.;
+      mTempTreeMuonTrkOuterZ[i] =999.;
+      mTempTreeMuonTrkOuterR[i] = 999.;
     }
     //PIOPPI
     if (&(*(*muonHandle)[i].genLepton())!=0){
@@ -1054,8 +1058,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   }
   else{
     mTempTreeMET_Gen[0] = -99999999;
-    mTempTreeMET_Gen[0] = -99999999;
-    mTempTreeMET_Gen[0] = -99999999;
+    mTempTreeMET_Gen[1] = -99999999;
+    mTempTreeMET_Gen[2] = -99999999;
   }
 
   // Do the MET save for full corr no cc MET
@@ -1063,8 +1067,11 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   mTempTreeMET_Fullcorr_nocc[1] = metHandle->front().momentum().Y();
   mTempTreeMET_Fullcorr_nocc[2] = metHandle->front().momentum().z();
   // Do the MET save for no corr no cc MET
-  mTempTreeMET_Nocorr_nocc[0] = metHandle->front().corEx(pat::MET::UncorrectionType(0));//uncorr to bare bones
+  mTempTreeMET_Nocorr_nocc[0] = metHandle->front().corEx();//uncorr to bare bones
   mTempTreeMET_Nocorr_nocc[1] = metHandle->front().corEy(pat::MET::UncorrectionType(0));//uncorr to bare bones
+
+  edm::LogVerbatim("SusyDiJetEvent") <<  "metuncorr " <<  mTempTreeMET_Nocorr_nocc[0] << " met total " <<  mTempTreeMET_Fullcorr_nocc[0] << std::endl;
+
   // Do the MET save for muon corr no cc MET
   mTempTreeMET_Muoncorr_nocc[0] = metHandle->front().corEx(pat::MET::UncorrectionType(1));//uncorr for JEC
   mTempTreeMET_Muoncorr_nocc[1] = metHandle->front().corEy(pat::MET::UncorrectionType(1));//uncorr for JEC 
@@ -1281,27 +1288,31 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("HLTArray",HLTArray,"HLTArray[nHLT]/I");
   // end GEORGIA 
 
+
+  //Trigger information
   mAllData->Branch("HLT1JET",&mTempTreeHLT1JET,"HLT1JET/bool");
   mAllData->Branch("HLT2JET",&mTempTreeHLT2JET,"HLT2JET/bool");
   mAllData->Branch("HLT1MET1HT",&mTempTreeHLT1MET1HT,"HLT1MET1HT/bool");
   mAllData->Branch("HLT1MUON",&mTempTreeHLT1Muon,"HLT1MUON/bool");
   
-  mAllData->Branch("nFullMET",&nFullMET,"nFullMET/int");
+  //MET information
+
+ mAllData->Branch("nFullMET",&nFullMET,"nFullMET/int");
   mAllData->Branch("MET_fullcorr_nocc",mTempTreeMET_Fullcorr_nocc,"mTempTreeMET_Fullcorr_nocc[nFullMET]/double");
   mAllData->Branch("MET_fullcorr_cc",mTempTreeMET_Fullcorr_cc,"mTempTreeMET_Fullcorr_cc[nFullMET]/double");
   
   mAllData->Branch("nUncorrMET",&nUncorrMET,"nUncorrMET/int");
   mAllData->Branch("MET_nocorr_nocc",mTempTreeMET_Nocorr_nocc,"mTempTreeMET_Nocorr_nocc[nUncorrMET]/double");
-  //  mAllData->Branch("MET_nocorr_cc",mTempTreeMET_Nocorr_cc,"mTempTreeMET_Nocorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_muoncorr_nocc",mTempTreeMET_Muoncorr_nocc,"mTempTreeMET_Muoncorr_nocc[nUncorrMET]/double");
-  //  mAllData->Branch("MET_muoncorr_cc",mTempTreeMET_Muoncorr_cc,"mTempTreeMET_Muoncorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_jeccorr_nocc",mTempTreeMET_JECcorr_nocc,"mTempTreeMET_JECcorr_nocc[nUncorrMET]/double");
-  //  mAllData->Branch("MET_jeccorr_cc",mTempTreeMET_JECcorr_cc,"mTempTreeMET_JECcorr_cc[nUncorrMET]/double");
   mAllData->Branch("MET_Fullcorr_nocc_significance",&mTempTreeMET_Fullcorr_nocc_significance,"mTempTreeMET_Fullcorr_nocc_significance/double");
+
+  mAllData->Branch("GenMET",&mTempTreeMET_Gen,"mTempTreeMET_Gen[3]/double",6400);
+
 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
   mAllData->Branch("procID",&mTempTreeProcID,"procID/int");
-  mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
+  // mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
 
 
   // GEORGIA
@@ -1509,6 +1520,11 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("MuonTrkCharge",mTempTreeMuonTrkCharge,"mTempTreeMuonTrkCharge[Nmuon]/double");
   mAllData->Branch("MuonTrkChi",mTempTreeMuonTrkChi,"mTempTreeMuonTrkChi[Nmuon]/double");
   mAllData->Branch("MuonTrkQOverPError",mTempTreeMuonTrkQOverPError,"mTempTreeMuonTrkQOverPError[Nmuon]/double"); 
+  mAllData->Branch("MuonTrkOuterZ",mTempTreeMuonTrkOuterZ,"mTempTreeMuonOuterZ[Nmuon]/double");
+  mAllData->Branch("MuonTrkOuterR",mTempTreeMuonTrkOuterR,"mTempTreeMuonOuterR[Nmuon]/double");
+
+
+
   mAllData->Branch("MuonGenMother",mTempTreeGenMuonMother,"MuonGenMother[Nmuon]/double");
   mAllData->Branch("MuonGenPx",mTempTreeGenMuonPx,"MuonGenPx[Nmuon]/double");
   mAllData->Branch("MuonGenPy",mTempTreeGenMuonPy,"MuonGenPy[Nmuon]/double");
