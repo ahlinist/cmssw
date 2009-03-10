@@ -52,8 +52,26 @@
   <script type="text/javascript" src="media/ui.progressbar.js"></script>
 
 <script type="text/javascript">
-  var total = 0;
 
+  function checkSession() {
+    $.ajax({
+      type: "GET",
+      url: "heartbeat",
+      dataType: "text",
+      success: function(ret) {
+        if (ret == '0') {
+          logoutUser();
+        }
+      }
+    });
+  }
+
+  function logoutUser() {
+    frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
+    setTimeout("location.href=location.href.replace('https:','http:');", 200);
+  }
+
+  var total = 0;
 
   function getTag() {
     var tag = '';
@@ -151,6 +169,7 @@
   };
 
   $(document).ready( function () {
+
 
     var subsystems = [<dqm:listSubsystemsJS/>];
 
@@ -461,11 +480,6 @@
 
   });
 
-function logoutUser() {
-  frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
-  setTimeout("window.location.href = 'http://pccmsdqm04.cern.ch/runregistry/'", 200);
-}
-
 function dumpData(intpl, tpl, mime) {
 
   var url = "runregisterdata";
@@ -609,10 +623,9 @@ target="_blank">Tutorial</a>
 
         <% if (logged_in != null) { %>
           Logged in as <%= logged_in %> (<span id="roles"><%= logged_roles %></span>) - 
-          expire in <span style="display: inline-block; width: 30px" id="expire"></span>s -
           <a href="#" onclick="logoutUser()">Logout</a>
         <% } else { %>
-          <a href="https://pccmsdqm04.cern.ch/runregistry/">Login</a>
+          <a href="#" onclick="location.href=location.href.replace(/^http:\/\//,'https:\/\/')">Login</a>
         <% } %>
 
       </td>
@@ -640,20 +653,7 @@ target="_blank">Tutorial</a>
 
 <% if (logged_in != null) { %>
   <script language="javascript">
-    var elapsedTime = 0;
-    var maxTime = <%=session.getMaxInactiveInterval()%> + 1;
-    $("#expire").html(maxTime);
-    var oneSecond;
-    oneSecond = window.setTimeout("timeoutCheck();", 1000);
-    function timeoutCheck() {
-      elapsedTime = elapsedTime + 1;
-      if (elapsedTime > maxTime) {
-        logoutUser();
-      } else {
-        oneSecond = window.setTimeout("timeoutCheck();",1000);
-        $("#expire").html(maxTime - elapsedTime);
-      }
-    }
+   setInterval("checkSession();", 20000);
   </script>
 <% } %>
 
