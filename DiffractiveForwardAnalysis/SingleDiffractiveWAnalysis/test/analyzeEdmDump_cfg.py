@@ -48,8 +48,7 @@ process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnaly
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionTMVAFilter_cfi")
 process.singleInteractionTMVAFilter.CutOnClassifier = 0.7 
 
-process.load("Validation.RecoVertex.validationPrimaryVertex_cff")
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.offlinePrimaryVertices_cff")
 
 process.edmDumpAnalysis.SaveROOTTree = True
 process.edmDumpAnalysis.ThresholdIndexHF = 10
