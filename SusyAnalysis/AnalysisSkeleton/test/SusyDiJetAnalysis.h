@@ -302,6 +302,10 @@ private:
   double mTempTreeMuonTrkChi[50];
   double mTempTreeMuonTrkCharge[50];
   double mTempTreeMuonTrkQOverPError[50];
+  double mTempTreeMuonTrkOuterZ[50];
+  double mTempTreeMuonTrkOuterR[50];
+
+
   double mTempTreeGenMuonPdgId[50];
   double mTempTreeGenMuonMother[50];
   double mTempTreeGenMuonPx[50];
