@@ -31,9 +31,6 @@ process.add_(cms.Service("TFileService",
 
 process.reco_step = cms.Path(process.pileUpInfo+process.castorReco)
 process.selection_step = cms.Path(process.wmunuSelectionSequence)
-process.wmunuAnalysis_step = cms.Path(process.wmunuAnalysisSequence)
 process.edmDump_step = cms.Path(process.edmDumpSequence)
 
 process.out_step = cms.EndPath(process.output)
-
-process.schedule = cms.Schedule(process.reco_step,process.selection_step,process.wmunuAnalysis_step,process.edmDump_step,process.out_step)

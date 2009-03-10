@@ -20,18 +20,12 @@ wmunuAnalyzer4PU = wmunuAnalyzer.clone()
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff import *
 
-wmunu0PU = cms.Sequence(filter0PU*wmunuAnalyzer0PU)
-wmunu1PU = cms.Sequence(filter1PU*wmunuAnalyzer1PU)
-wmunu2PU = cms.Sequence(filter2PU*wmunuAnalyzer2PU)
-wmunu3PU = cms.Sequence(filter3PU*wmunuAnalyzer3PU)
-wmunu4PU = cms.Sequence(filter4PU*wmunuAnalyzer4PU)
-wmunuAfterFilter = cms.Sequence(wmunuSelFilter*wmunuAnalyzerAfterFilter)
-wmunuAnalysisSequence = cms.Sequence(wmunuAnalyzer + 
-                                     wmunu0PU + 
-                                     wmunu1PU +
-                                     wmunu2PU +
-                                     wmunu3PU +
-                                     wmunu4PU +
-                                     wmunuAfterFilter)
+wmunu0PU = cms.Path(filter0PU*wmunuAnalyzer0PU)
+wmunu1PU = cms.Path(filter1PU*wmunuAnalyzer1PU)
+wmunu2PU = cms.Path(filter2PU*wmunuAnalyzer2PU)
+wmunu3PU = cms.Path(filter3PU*wmunuAnalyzer3PU)
+wmunu4PU = cms.Path(filter4PU*wmunuAnalyzer4PU)
+wmunuAfterFilter = cms.Path(wmunuSelFilter*wmunuAnalyzerAfterFilter)
+
 wmunuSelectionSequence = cms.Sequence(wmunuSelFilter)
 edmDumpSequence = cms.Sequence(wmunuSelFilter*genParticlesCalo*edmDumpAllNoPileUp)
