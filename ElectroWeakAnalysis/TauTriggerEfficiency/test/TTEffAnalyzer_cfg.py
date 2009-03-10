@@ -17,8 +17,8 @@ from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_S
 process.source = source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
- 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
-#	"file:test.root"
+# 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
+	"file:test.root"
     )
 )
 
@@ -36,7 +36,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
 	L1JetMatchingCone	= cms.double(0.5),
-        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer","","HLT2"),
+        L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
         L2matchingDeltaR        = cms.double(0.3),
         l25JetSource            = cms.InputTag("hltL25TauConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),

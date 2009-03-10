@@ -209,9 +209,9 @@ L2TauEfficiencyAnalyzer::matchAndFillL2(const LV& jet,const L2TauInfoAssociation
 		  JetEt = l2Jet.et();
 		  JetEta = l2Jet.eta();
 		  JetPhi = l2Jet.phi();
-		  hadFraction = l2Jet.energyFractionHadronic();
-		  NTowers60 = l2Jet.n60();
-		  NTowers90 = l2Jet.n90();
+		  //		  hadFraction = l2Jet.energyFractionHadronic();
+		  //		  NTowers60 = l2Jet.n60();
+		  //		  NTowers90 = l2Jet.n90();
 
 		}
 	    }
