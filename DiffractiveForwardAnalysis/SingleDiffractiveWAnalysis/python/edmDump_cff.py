@@ -18,9 +18,9 @@ selectTracksAwayFromPV.MaxDistanceFromVertex = 999.9
 trackMultiplicityAssociatedToPV = trackMultiplicity.clone(TracksTag = "selectTracksAssociatedToPV")
 trackMultiplicityAwayFromPV = trackMultiplicity.clone(TracksTag = "selectTracksAwayFromPV")
 
-edmDumpTracksAssociatedToPV = cms.Sequence(selectGoodTracks*selectTracksAssociatedToPV*trackMultiplicityAssociatedToPV) 
-edmDumpTracksAwayFromPV = cms.Sequence(selectGoodTracks*selectTracksAwayFromPV*trackMultiplicityAwayFromPV)
-edmDumpTracks = cms.Sequence(edmDumpTracksAssociatedToPV+edmDumpTracksAwayFromPV)
+edmDumpTracksAssociatedToPV = cms.Sequence(selectTracksAssociatedToPV*trackMultiplicityAssociatedToPV) 
+edmDumpTracksAwayFromPV = cms.Sequence(selectTracksAwayFromPV*trackMultiplicityAwayFromPV)
+edmDumpTracks = cms.Sequence(selectGoodTracks*edmDumpTracksAssociatedToPV+edmDumpTracksAwayFromPV)
 
 edmDumpAll = cms.Sequence(castorGen + 
                           castorGenNoThreshold + 
