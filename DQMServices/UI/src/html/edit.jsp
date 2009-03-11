@@ -659,7 +659,7 @@ $(document).ready( function () {
         <ul id="edit_info_tabs">
           <li><a href="#edit_info_tab"><span>General Information</span></a></li>
           <li><a href="#edit_comp_tab"><span>Components</span></a></li>
-		  <li><a href="#edit_exp_com"><span>Comments</span></a></li>
+		  <li><a href="#edit_exp_com" onClick="textareaValue(getElementById('expertsCommentSub').value);"><span>Comments</span></a></li>
         </ul>
         <div id="edit_info_tab">
           <table width="90%">
