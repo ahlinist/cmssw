@@ -34,16 +34,19 @@ using namespace pftools;
 
 PFPretendTrackProducer::PFPretendTrackProducer(
 		const edm::ParameterSet& parameters) :
-	debug_(0), transformer_(0) {
+	debug_(0), transformer_(0), justCreateEmptyCollections_(false) {
 
 	produces<reco::TrackCollection> ("tracks");
 	produces<reco::TrackExtraCollection> ();
 	produces<reco::PFRecTrackCollection> ("pfRecTracks");
+
 	produces<GsfPFRecTrackCollection> ("gsfPfRecTracks");
 	produces<reco::PFClusterCollection> ("pfPS");
 	produces<reco::MuonCollection> ("muons");
 
 	debug_ = parameters.getParameter<int> ("debug");
+
+	justCreateEmptyCollections_ = parameters.getParameter<bool>("justCreateEmptyCollections");
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
@@ -124,6 +127,16 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	std::auto_ptr<TrackExtraCollection> trackExtrasColl(
 			new TrackExtraCollection());
 
+	if(justCreateEmptyCollections_) {
+		event.put(trackColl, "tracks");
+		event.put(trackExtrasColl);
+		event.put(pfRecTrackColl, "pfRecTracks");
+		event.put(gsfpfRecTrackColl, "gsfPfRecTracks");
+		event.put(pfPSColl, "pfPS");
+		event.put(muonColl, "muons");
+		return;
+	}
+
 	//Track starts from Experiment Origin
 	math::XYZPoint originXYZ(0, 0, 0);
 
@@ -195,6 +208,8 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	event.put(gsfpfRecTrackColl, "gsfPfRecTracks");
 	event.put(pfPSColl, "pfPS");
 	event.put(muonColl, "muons");
+
+
 }
 
 //define this as a plug-in

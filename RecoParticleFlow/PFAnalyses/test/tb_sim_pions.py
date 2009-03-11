@@ -2,8 +2,43 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("PROD")
 
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+# setup 'standard'  options
+options = VarParsing.VarParsing()
+options.register ('beamEnergy',
+                  100, # default value
+                  options.multiplicity.singleton, # singleton or list
+                  options.varType.int,          # string, int, or float
+                  "Beam energy to simulate")
+
+options.register ('kevents',
+                  1000, # default value
+                  options.multiplicity.singleton, # singleton or list
+                  options.varType.int,          # string, int, or float
+                  "Number of events in k to simulate")
+
+# setup any defaults you want
+options.beamEnergy = 100
+options.kevents = 1
+
+# get and parse the command line arguments
+options.parseArguments()
+
+
+outputTree = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_FastAllEffects_JamieAlgo.root"
+outputFile = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_Collections_FastAllEffects_JamieAlgo.root"
+
+print ("tb_sim_pions.py with options:")
+print "Beam energy: " + str(options.beamEnergy)
+print "kevents: " + str(options.kevents)
+
+print "Output file: " + outputFile
+print "Output tree: " + outputTree
+
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(options.kevents * 1000)
 )
 
 #fastsim
@@ -23,7 +58,7 @@ process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
-process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
 process.famosSimHits.MaterialEffects.PairProduction = True
@@ -44,10 +79,10 @@ process.generator = cms.EDProducer("Pythia6EGun",
         MaxEta = cms.double(0.22),
         MaxPhi = cms.double(0.02),
         MinEta = cms.double(0.22),
-        MinE = cms.double(100.0),
+        MinE = cms.double(options.beamEnergy),
         AddAntiParticle = cms.bool(False),
         MinPhi = cms.double(0.02),
-        MaxE = cms.double(100.01)
+        MaxE = cms.double(options.beamEnergy+0.001)
     ),
     pythiaVerbosity = cms.untracked.bool(False),
     PythiaParameters = cms.PSet(
@@ -87,15 +122,14 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
 )
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('DipionDelegate_mono100GeV_Testbeam_1k_3_1_FastAllEffects.root')
+    fileName = cms.string(outputTree)
 )
 
 process.finishup = cms.OutputModule("PoolOutputModule",
-   fileName=cms.untracked.string("DipionDelegate_mono100GeV_Testbeam_1k_3_1_Collections_FastAllEffects.root"),
-    outputCommands=cms.untracked.vstring('keep *')
+   fileName=cms.untracked.string(outputFile),
+   outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
     
 )
-
 
 
 process.p1 = cms.Path(process.generator+process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)

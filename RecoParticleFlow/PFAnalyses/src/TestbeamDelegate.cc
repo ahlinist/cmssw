@@ -56,8 +56,7 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			"deltaRPhotonsToTrack");
 	deltaRNeutralsToTrack_ = parameters.getParameter<double> (
 			"deltaRPhotonsToTrack");
-	saveJustPions_ = parameters.getParameter<bool> (
-			"saveJustPions");
+	saveJustPions_ = parameters.getParameter<bool> ("saveJustPions");
 	clustersFromCandidates_ = parameters.getParameter<bool> (
 			"clustersFromCandidates");
 
@@ -132,20 +131,20 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 
 	ParticleFiltrationDecision decision = decisions[0];
 
-	if (decision.type_ == ParticleFiltrationDecision::OTHER && applyCleaningCuts_) {
-		if (debug_ > 3 )
+	if (decision.type_ == ParticleFiltrationDecision::OTHER
+			&& applyCleaningCuts_) {
+		if (debug_ > 3)
 			LogInfo("TestbeamDelegate")
 					<< "\tNo clean particle found according to decision.\n";
 		thisEventPasses_ = false;
 	}
 
 	if (decision.type_ != ParticleFiltrationDecision::PION && saveJustPions_) {
-		if (debug_ > 3 )
+		if (debug_ > 3)
 			LogInfo("TestbeamDelegate")
 					<< "\tNot a pion - therefore skipping.\n";
 		thisEventPasses_ = false;
 	}
-
 
 	if (debug_ > 3 && !thisEventPasses_) {
 		LogInfo("TestbeamDelegate") << "\tEvent doesn't pass cut criteria.\n";
@@ -237,16 +236,48 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 					ecalHitsDecoded += erh.energy();
 				}
 			}
-		}
+		} else
+			LogWarning("TestbeamDelegate")
+					<< ": failed to decode ECAL rechit.\n";
 	}
 
 	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRawRecHits.begin(); hrIt
 			!= hcalRawRecHits.end(); ++hrIt) {
 
 		const HBHERecHit& hrh = *hrIt;
+		const HcalDetId& detid = hrh.detid();
+		HcalDetId* newDetId = 0;
+
+		//Corrections for HCAL cell numbering and for miscabling
+		//Valid for TB 2006
+		int ieta = detid.ieta();
+		int iphi = detid.iphi();
+		int depth = detid.depth();
+		int iphiNew = iphi - 12;
+		if (iphiNew <= 0)
+			iphiNew += 72;
+		int ietaNew = ieta;
+		if (iphi == 13) {
+			if (ieta == 12)
+				ietaNew = 1;
+			if (ieta == 11)
+				ietaNew = 2;
+			if (ieta == 10)
+				ietaNew = 3;
+			if (ieta == 9)
+				ietaNew = 4;
+			if (ieta == 8)
+				ietaNew = 5;
+		}
+		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
+		if (newDetId == 0) {
+			LogWarning("TestbeamDelegate")
+								<< ": couldn't create new HcalDetId.\n";
+			continue;
+		}
 		//const HcalDetId hDetId = hrh.id();
 		const CaloCellGeometry* thisCell = hcalBarrelGeometry->getGeometry(
-				hrh.detid());
+				*newDetId);
 		if (thisCell) {
 			//HCAL threshold is 0.8 GeV >> ECAL threshold
 			if ((applyThresholdsToRawRecHits_ && hrh.energy() > 0.8)
@@ -265,7 +296,9 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 					hcalHitsDecoded += hrh.energy();
 				}
 			}
-		}
+		} else
+			LogWarning("TestbeamDelegate")
+					<< ": failed to decode HCAL rechit.\n";
 
 	}
 
@@ -378,6 +411,7 @@ void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
 	cw.type_ = cand.particleId();
 	cw.energyEcal_ = cand.ecalEnergy();
 	cw.energyHcal_ = cand.hcalEnergy();
+
 	if (debug_ > 4)
 		LogDebug("TestbeamDelegate") << "\t\tECAL energy = "
 				<< cand.ecalEnergy() << ", HCAL energy = " << cand.hcalEnergy()

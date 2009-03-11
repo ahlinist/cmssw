@@ -25,10 +25,12 @@ private:
 	virtual void produce(edm::Event&, const edm::EventSetup&);
 	int debug_;
 	pftools::RunInfo* thisRun_;
-	
+
 	PFTrackTransformer* transformer_;
-	
+
 	std::map<unsigned, pftools::RunInfo*> runInfos_;
+
+	bool justCreateEmptyCollections_;
 
 };
 

@@ -5,13 +5,15 @@
 	gSystem->Load("libRecoParticleFlowPFAnalyses.so");
 	Cintex::Enable();
 
-	std::string graphicsFile("plots_100GeV.ps");
-	std::string macroFile("macro_100GeV.C");
+	std::string graphicsFile("plots.ps");
+	std::string macroFile("macro.C");
 
 	TChain* chain = new TChain("extraction/Extraction");
-	chain->Add("../test/DipionDelegate_mono100GeV_Testbeam_50evts_3_1_FullSim_38T.root");
 
-	EnergyProcessing ep(chain, graphicsFile.c_str(), macroFile.c_str(), "fullsim_100GeV_plots");
+	chain->Add("DipionDelegate_mono100GeV_Testbeam_10k_3_1_FastAllEffects_JamieAlgo.root");
+	//chain->Add("outputtree_100GeV_notracks.root");
+
+	EnergyProcessing ep(chain, graphicsFile.c_str(), macroFile.c_str(), "fastsim_JA_100GeV_plots", false);
 	ep.evaluatePlots(true);
 	ep.closeFiles();
 

@@ -11,8 +11,8 @@ particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecH
 particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
-particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.8)
-particleFlowClusterHCAL.thresh_Barrel = cms.double(0.4)
+#particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.8)
+#particleFlowClusterHCAL.thresh_Barrel = cms.double(0.4)
 
 #Change tags for PFBlock building
 from RecoParticleFlow.PFBlockProducer.particleFlowBlock_cff import *

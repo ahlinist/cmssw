@@ -15,8 +15,15 @@ Color_t PlotUtil::pf_rechits = kRed;
 Color_t PlotUtil::pf_cluster = kViolet + 7;
 
 PlotUtil::PlotUtil() :
-	rootFile_(0) {
+	rootFile_(0), amInitialised_(false) {
+
+}
+
+void PlotUtil::init() {
+
 	rootFile_ = new TFile("PlotUtil.root", "recreate");
+	amInitialised_ = true;
+
 }
 
 PlotUtil::~PlotUtil() {
