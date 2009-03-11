@@ -26,6 +26,8 @@ public:
 	PlotUtil();
 	virtual ~PlotUtil();
 
+	void init();
+
 	void setMacroFile(std::string s);
 	void setGraphicsFile(std::string s);
 
@@ -47,10 +49,10 @@ public:
 	void newPage();
 	void accumulateObjects(TObject* o, std::string options = "");
 	void flushAccumulatedObjects(std::string filename);
-	
+
 	void accumulateSpecial(TObject* o, TStyle* s,
 			std::string drawOptions, std::string preferredName);
-	
+
 	void flushSpecials(std::string directory = "");
 
 	TLegend* legendForStack(THStack* theStack);
@@ -63,6 +65,9 @@ private:
 
 	std::vector<std::pair<TObject*, std::string> > accumulatedObjects_;
 	std::vector<PlotSpecial> accumulatedSpecials_;
+
+	bool amInitialised_;
+
 
 };
 

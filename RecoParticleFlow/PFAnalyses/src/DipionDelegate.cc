@@ -332,9 +332,13 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 	cw.type_ = cand.particleId();
 	cw.energyEcal_ = cand.ecalEnergy();
 	cw.energyHcal_ = cand.hcalEnergy();
-	if (debug_ > 4)
-		std::cout << "\t\tECAL energy = " << cand.ecalEnergy()
-				<< ", HCAL energy = " << cand.hcalEnergy() << "\n";
+	//calib_.calowindow_ecal_.init(cw.eta_, cw.phi_);
+	if (debug_ > 4) {
+		std::cout << "\t\tECAL/HCAL energy before: (" << cand.rawEcalEnergy()
+				<< ", " << cand.rawHcalEnergy() << ")\n";
+		std::cout << "\t\tECAL/HCAL energy after : (" << cand.ecalEnergy()
+				<< ", " << cand.hcalEnergy() << ")\n";
+	}
 
 	//Now, extract block elements from the pfCandidate:
 	if (clustersFromCandidates_) {
@@ -424,6 +428,7 @@ void DipionDelegate::extractCandidate(const PFCandidate& cand) {
 
 		}
 	}
+
 	calib_->cands_.push_back(cw);
 
 }

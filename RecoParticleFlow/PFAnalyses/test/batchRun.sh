@@ -16,7 +16,7 @@ echo Script is: $SCRIPT
 
 OUTTREE="outputtree_"$ENERGY"GeV.root"
 OUTPUT="reprocessed_"$ENERGY"GeV.root"
-DESTD=/castor/cern.ch/user/b/ballin/tbv6A/
+DESTD=/castor/cern.ch/user/b/ballin/tbv6B/
 LOG="log_"$ENERGY"GeV.txt"
 
 echo Outputtree is: $OUTTREE
@@ -39,7 +39,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD$OUTTREE
 rfcp $OUTPUT $DESTD$OUTPUT
-cp $LOG $RUND"tbv6A"
+cp $LOG $RUND"tbv6B"
 
 echo Done.
 exit 0

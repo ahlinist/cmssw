@@ -17,9 +17,9 @@ class EnergyProcessing {
 public:
 	EnergyProcessing() {}
 	
-	EnergyProcessing(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory = "", long nEntries =1000000000);
+	EnergyProcessing(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory = "", bool tb = true, long nEntries =1000000000);
 
-	void reset(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory, long nEntries = 1000000000);
+	void reset(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory, bool tb = true, long nEntries = 1000000000);
 
 	void evaluatePlots(bool lowEnergy = true);
 
@@ -64,6 +64,7 @@ private:
 	std::string graphicsFile_;
 	std::string macroFile_;
 	
+	bool tb_;
 
 	void adcPerBin(TH1* histo, unsigned adcPerBin);
 
