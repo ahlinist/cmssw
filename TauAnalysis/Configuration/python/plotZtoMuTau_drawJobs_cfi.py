@@ -196,6 +196,7 @@ plots_ZtoMuTau_tau_afterTauProng = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_tau_afterTauProng.plots.dqmMonitorElements = cms.vstring(
   '#PROCESSDIR#/zMuTauAnalyzer/afterTauProngCut_beforeTauMuonVeto/TauQuantities/Tau#PAR#'
 )
+plots_ZtoMuTau_tau_afterTauProng.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoMuTau_tau_afterTauProng.title = cms.string('Tau (after Tau 1-Prong||3-Prong Cut)')
 plots_ZtoMuTau_tau_afterTauProng.xAxis = cms.string('#PAR#')
 plots_ZtoMuTau_tauAntiMuonDiscr_afterTauProng = copy.deepcopy(plots_ZtoMuTau)
@@ -232,6 +233,13 @@ plots_ZtoMuTau_diTauCharge_afterAcoplanarity.plots.dqmMonitorElements = cms.vstr
 plots_ZtoMuTau_diTauCharge_afterAcoplanarity.title = cms.string('Charge(Muon + Tau) (after Acoplanarity Cut)')
 plots_ZtoMuTau_diTauCharge_afterAcoplanarity.xAxis = cms.string('unlabeled')
 
+plots_ZtoMuTau_mtMuonMET_afterZeroCharge = copy.deepcopy(plots_ZtoMuTau)
+plots_ZtoMuTau_mtMuonMET_afterZeroCharge.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut_beforeDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/Mt1MET'
+)
+plots_ZtoMuTau_mtMuonMET_afterZeroCharge.title = cms.string('M_{T}(Muon + MET) (after opposite Charge Cut)')
+plots_ZtoMuTau_mtMuonMET_afterZeroCharge.xAxis = cms.string('Mt')
+
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
@@ -239,7 +247,7 @@ plots_ZtoMuTau_diTauCharge_afterAcoplanarity.xAxis = cms.string('unlabeled')
 
 plots_ZtoMuTau_muon_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_muon_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/MuonQuantities/Muon#PAR#'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/MuonQuantities/Muon#PAR#'
 )
 plots_ZtoMuTau_muon_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoMuTau_muon_finalEventSample.title = cms.string('Muon (final Event sample)')
@@ -247,68 +255,68 @@ plots_ZtoMuTau_muon_finalEventSample.xAxis = cms.string('#PAR#')
 
 plots_ZtoMuTau_tau_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_tau_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/TauQuantities/Tau#PAR#'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/TauQuantities/Tau#PAR#'
 )
 plots_ZtoMuTau_tau_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoMuTau_tau_finalEventSample.title = cms.string('Tau (final Event sample)')
 plots_ZtoMuTau_tau_finalEventSample.xAxis = cms.string('#PAR#')
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/TauQuantities/TauLeadTrkPt'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/TauQuantities/TauLeadTrkPt'
 )
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.title = cms.string('Tau lead. Track (final Event sample)')
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.xAxis = cms.string('Pt')
 plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/TauQuantities/TauNumTracksSignalCone'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/TauQuantities/TauNumTracksSignalCone'
 )
 plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.title = cms.string('Tau Tracks in Signal Cone (final Event sample)')
 plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.xAxis = cms.string('unlabeled')
 
 plots_ZtoMuTau_met_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_met_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/MEtQuantities/MEtPt'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/MEtQuantities/MEtPt'
 )
 plots_ZtoMuTau_met_finalEventSample.title = cms.string('MET (final Event sample)')
 plots_ZtoMuTau_met_finalEventSample.xAxis = cms.string('Pt')
 
 plots_ZtoMuTau_mtMuonMET_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mtMuonMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/Mt1MET'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/Mt1MET'
 )
 plots_ZtoMuTau_mtMuonMET_finalEventSample.title = cms.string('M_{T}(Muon + MET) (final Event sample)')
 plots_ZtoMuTau_mtMuonMET_finalEventSample.xAxis = cms.string('Mt')
 plots_ZtoMuTau_mtTauMET_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mtTauMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/Mt2MET'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/Mt2MET'
 )
 plots_ZtoMuTau_mtTauMET_finalEventSample.title = cms.string('M_{T}(Tau + MET) (final Event sample)')
 plots_ZtoMuTau_mtTauMET_finalEventSample.xAxis = cms.string('Mt')
 
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/Mt12MET'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/Mt12MET'
 )
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample.title = cms.string('M_{T}(Muon + Tau + MET) (final Event sample)')
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample.xAxis = cms.string('Mt')
 
 plots_ZtoMuTau_mCDFmethod_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mCDFmethod_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/CDFmethodMass'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/CDFmethodMass'
 )
 plots_ZtoMuTau_mCDFmethod_finalEventSample.title = cms.string('M(Muon + Tau), CDF method (final Event sample)')
 plots_ZtoMuTau_mCDFmethod_finalEventSample.xAxis = cms.string('M')
 
 plots_ZtoMuTau_mCollApprox_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mCollApprox_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/CollinearApproxMass'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/DiTauCandidateQuantities/CollinearApproxMass'
 )
 plots_ZtoMuTau_mCollApprox_finalEventSample.title = cms.string('M(Muon + Tau), collinear Approx. (final Event sample)')
 plots_ZtoMuTau_mCollApprox_finalEventSample.xAxis = cms.string('M')
 
 plots_ZtoMuTau_numCentralJets_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_numCentralJets_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauZeroChargeCut/JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3'
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3'
 )
 plots_ZtoMuTau_numCentralJets_finalEventSample.parameter = cms.vstring('15', '20', '30')
 plots_ZtoMuTau_numCentralJets_finalEventSample.title = cms.string('N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)')
