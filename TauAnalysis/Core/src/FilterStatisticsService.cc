@@ -106,8 +106,10 @@ void FilterStatisticsService::filterEntry::printPercentage(std::ostream& stream,
 							   const FilterStatisticsService::monElement* denominator) const
 {
   stream << " ";
-  stream << std::setw(width - 11) << std::setprecision(3) << std::right 
+  if(denominator->num_->getIntValue()!=0) stream << std::setw(width - 11) << std::setprecision(3) << std::right 
 	 << 100.*numerator->num_->getIntValue()/denominator->num_->getIntValue() << "%";
+  if(denominator->num_->getIntValue()==0) stream << std::setw(width - 11) << std::setprecision(3) << std::right 
+	 << 0 << "%";
   for ( unsigned iCharacter = 0; iCharacter < 10; ++iCharacter ) {
     stream << " ";
   }
