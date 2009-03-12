@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.25 2009/03/10 10:50:36 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.26 2009/03/12 13:45:56 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -227,8 +227,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
   Handle< int >  myProcess;
-    iEvent.getByLabel("genEventProcID",myProcess);
-    mTempTreeProcID = (*myProcess);
+  //  iEvent.getByLabel("genEventProcID",myProcess);
+  //  mTempTreeProcID = (*myProcess);
 
 
   // Just fill the success
@@ -383,7 +383,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::LogWarning("SusySelectorExample") << "No cc Photon results for InputTag " << ccphotTag_;
     return;
   }
-
+ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in photons " << endl;
 
   // Add the photons
   mTempTreeNphot = photHandle->size();
@@ -437,7 +437,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     return;
   }
   
- 
+  edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in electrons " << endl;
   // Add the electrons
   mTempTreeNelec= elecHandle->size();
   if ( mTempTreeNelec > 50 ) mTempTreeNelec = 50;
@@ -468,6 +468,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecVx[i] = (*elecHandle)[i].vx();
     mTempTreeElecVy[i] = (*elecHandle)[i].vy();
     mTempTreeElecVz[i] = (*elecHandle)[i].vz();
+
+    edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for gsfTrack " << endl;
     mTempTreeElecD0[i] = (*elecHandle)[i].gsfTrack()->d0();
     mTempTreeElecDz[i] = (*elecHandle)[i].gsfTrack()->dz();
     mTempTreeElecChargeMode[i] = (*elecHandle)[i].gsfTrack()->chargeMode();	
@@ -480,11 +482,13 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecLostHits[i] = (*elecHandle)[i].gsfTrack()->lost();
     mTempTreeElecValidHits[i] = (*elecHandle)[i].gsfTrack()->found();
     
-    mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
+edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for trackMomentumAtVtx " << endl;
+
+     mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
     mTempTreeElecEtaTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Eta();
     mTempTreeElecPhiTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Phi();
-       mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
-     mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
+        mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
+         mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
     mTempTreeElecPinTrk[i] = sqrt((*elecHandle)[i].trackMomentumAtVtx().Mag2());
     mTempTreeElecPoutTrk[i] = sqrt((*elecHandle)[i].trackMomentumOut().Mag2());
 
@@ -533,6 +537,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     edm::LogWarning("SusySelectorExample") << "No ccMuon results for InputTag " << ccmuonTag_;
     return;
   }
+edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 
 
   // Add the muons
@@ -619,8 +624,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeMuonTrkChi[i]=(*muonHandle)[i].track()->chi2();
       mTempTreeMuonTrkCharge[i]=(*muonHandle)[i].track()->charge();
       mTempTreeMuonTrkQOverPError[i]=(*muonHandle)[i].track()->qoverpError();
-       mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
-      mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
+        mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
+          mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
 
     }
     else{
@@ -670,11 +675,11 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   //get pthat of process
   mTempTreePthat = -999.;
-  if (theSoup==true) {
+
     Handle<double> genEventScale;
     iEvent.getByLabel( "genEventScale", genEventScale );
-    mTempTreePthat = *genEventScale;
-  }
+    if ( genEventScale.isValid() ) mTempTreePthat = *genEventScale;
+  
   
 
  
