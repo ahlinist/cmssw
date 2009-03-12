@@ -9,6 +9,13 @@
 
 #include <sstream>
 
+std::string getString(double value)
+{
+  std::ostringstream value_string;
+  value_string << value;
+  return value_string.str();
+}
+
 template <class T>
 PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::ParameterSet& cfg)
 {
@@ -35,10 +42,28 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
     cfgError_ = 1;
   }
 
-  dRvetoCone_ = cfg.exists("dRvetoCone") ? cfg.getParameter<double>("dRvetoCone") : -1.;
-  dRisoCone_ = cfg.getParameter<double>("dRisoCone");
+  if ( cfg.exists("dRvetoCone") ) {
+    double dRvetoCone = cfg.getParameter<double>("dRvetoCone");
+    std::string dRvetoCone_string = getString(dRvetoCone);
+    isoParam_.push_back(IsoDepositVetoFactory::make(dRvetoCone_string.data()));
+  }
 
-  ptMin_ = cfg.exists("ptMin") ? cfg.getParameter<double>("ptMin") : -1.;
+  if ( cfg.exists("ptMin") ) {
+    double ptMin = cfg.getParameter<double>("ptMin");
+    std::string ptMin_string = std::string("Threshold(").append(getString(ptMin)).append(")");
+    isoParam_.push_back(IsoDepositVetoFactory::make(ptMin_string.data()));
+  }
+
+  if ( cfg.exists("vetos") ) {
+    typedef std::vector<std::string> vstring;
+    vstring vetos = cfg.getParameter<vstring>("vetos");
+    for ( vstring::const_iterator veto = vetos.begin();
+	  veto != vetos.end(); ++veto ) {
+      isoParam_.push_back(IsoDepositVetoFactory::make(veto->data()));
+    }
+  }
+
+  dRisoCone_ = cfg.getParameter<double>("dRisoCone");
   
   sumPtMax_ = cfg.exists("sumPtMax") ? cfg.getParameter<double>("sumPtMax") : -1.;
   numMax_ = cfg.exists("numMax") ? cfg.getParameter<int>("numMax") : -1;
@@ -51,14 +76,10 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
 template <class T>
 PATLeptonIsoDepositSelector<T>::~PATLeptonIsoDepositSelector()
 {
-// nothing to be done yet...
-}
-
-std::string getString(double value)
-{
-  std::ostringstream value_string;
-  value_string << value;
-  return value_string.str();
+  for ( reco::isodeposit::AbsVetos::const_iterator it = isoParam_.begin();
+	it != isoParam_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 template <class T>
@@ -77,15 +98,8 @@ void PATLeptonIsoDepositSelector<T>::select(const edm::Handle<collection>& patLe
     const reco::IsoDeposit* isoDeposit = patLepton->isoDeposit(isoDepositType_);
 
     if ( isoDeposit ) {
-
-      reco::isodeposit::AbsVetos isoDepositParam;
-      std::string dRvetoCone_string = getString(dRvetoCone_);
-      if ( dRvetoCone_ > 0. ) isoDepositParam.push_back(IsoDepositVetoFactory::make(dRvetoCone_string.data()));
-      std::string ptMin_string = std::string("Threshold(").append(getString(ptMin_)).append(")");
-      if ( ptMin_      > 0. ) isoDepositParam.push_back(IsoDepositVetoFactory::make(ptMin_string.data()));
-
-      double sumPt = isoDeposit->depositWithin(dRisoCone_, isoDepositParam);
-      double num = isoDeposit->countWithin(dRisoCone_, isoDepositParam);
+      double sumPt = isoDeposit->depositWithin(dRisoCone_, isoParam_);
+      double num = isoDeposit->countWithin(dRisoCone_, isoParam_);
 
       if ( sumPtMax_ > 0. && sumPt > sumPtMax_ ) continue;
       if ( num       > 0  && num   > numMax_   ) continue;

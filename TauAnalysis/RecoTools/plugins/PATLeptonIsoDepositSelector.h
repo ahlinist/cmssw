@@ -11,9 +11,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATLeptonIsoDepositSelector.h,v 1.2 2009/02/16 16:00:31 veelken Exp $
+ * $Id: PATLeptonIsoDepositSelector.h,v 1.1 2009/02/25 11:42:54 veelken Exp $
  *
  */
 
@@ -22,6 +22,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/Handle.h"
 
+#include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 
 #include <vector>
@@ -48,10 +49,9 @@ class PATLeptonIsoDepositSelector
 
   pat::IsolationKeys isoDepositType_;
 
-  double dRvetoCone_;
-  double dRisoCone_;
+  reco::isodeposit::AbsVetos isoParam_;
 
-  double ptMin_;
+  double dRisoCone_;
 
   double sumPtMax_;
   int numMax_;
