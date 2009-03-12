@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.24 2009/03/10 10:18:40 mstoye Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.25 2009/03/10 10:50:36 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -224,6 +224,11 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     
   }
   length=count; genLepLength=lcount;
+
+
+  Handle< int >  myProcess;
+    iEvent.getByLabel("genEventProcID",myProcess);
+    mTempTreeProcID = (*myProcess);
 
 
   // Just fill the success
@@ -478,8 +483,8 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
     mTempTreeElecEtaTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Eta();
     mTempTreeElecPhiTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Phi();
-    mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
-    mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
+       mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
+     mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
     mTempTreeElecPinTrk[i] = sqrt((*elecHandle)[i].trackMomentumAtVtx().Mag2());
     mTempTreeElecPoutTrk[i] = sqrt((*elecHandle)[i].trackMomentumOut().Mag2());
 
@@ -614,7 +619,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeMuonTrkChi[i]=(*muonHandle)[i].track()->chi2();
       mTempTreeMuonTrkCharge[i]=(*muonHandle)[i].track()->charge();
       mTempTreeMuonTrkQOverPError[i]=(*muonHandle)[i].track()->qoverpError();
-      mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
+       mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
       mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
 
     }
@@ -663,7 +668,13 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //std::cout << " add the ccmuons " << std::endl;
   
 
-  
+  //get pthat of process
+  mTempTreePthat = -999.;
+  if (theSoup==true) {
+    Handle<double> genEventScale;
+    iEvent.getByLabel( "genEventScale", genEventScale );
+    mTempTreePthat = *genEventScale;
+  }
   
 
  
@@ -1312,7 +1323,7 @@ SusyDiJetAnalysis::initPlots() {
 
   mAllData->Branch("evtWeight",&mTempTreeEventWeight,"evtWeight/double");
   mAllData->Branch("procID",&mTempTreeProcID,"procID/int");
-  // mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
+  mAllData->Branch("pthat",&mTempTreePthat,"pthat/double");
 
 
   // GEORGIA
