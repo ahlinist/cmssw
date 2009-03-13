@@ -34,21 +34,20 @@
   <title>CMS DQM Run Registry</title>
 
   <link rel="stylesheet" type="text/css" href="media/flexigrid/css/flexigrid/flexigrid.css" />
-  <link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" />
+  <!--link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" /-->
   <link rel="stylesheet" type="text/css" href="media/index.css" />
-  <link rel="stylesheet" type="text/css" href="media/flora.tabs.css" />
+  <link type="text/css" href="media/smoothness/jquery-ui-1.7.custom.css" rel="stylesheet" />
 
-  <script type="text/javascript" src="media/jquery-1.2.6.js"></script>
+  <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="media/jquery-ui-1.7.custom.min.js"></script>
+
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
-  <script type="text/javascript" src="media/jquery.timers.js"></script>
   <script type="text/javascript" src="media/jquery.menu.js"></script>
   <script type="text/javascript" src="media/jquery.tooltip.js"></script>
   <script type="text/javascript" src="media/jquery.autocomplete.js"></script>
-  <script type="text/javascript" src="media/jquery.dimensions.js"></script>
   <script type="text/javascript" src="media/flexigrid/flexigrid.js"></script>
+  <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
   <script type="text/javascript" src="media/utils.js"></script>
-  <script type="text/javascript" src="media/ui.core.js"></script>
-  <script type="text/javascript" src="media/ui.tabs.js"></script>
   <script type="text/javascript" src="media/ui.progressbar.js"></script>
 
 <script type="text/javascript">
@@ -169,7 +168,6 @@
   };
 
   $(document).ready( function () {
-
 
     var subsystems = [<dqm:listSubsystemsJS/>];
 
@@ -598,6 +596,10 @@ function changeStatusTo(status) {
 
 <% } %>        
 
+        <a href="#" onclick="drawChart()">Plot Chart</a>
+
+        &nbsp;|&nbsp;
+
         <span id="dumpdatamenu"><a href="#">Dump Data</a>
           <ul>
             <li><a href="#" onclick="dumpData('xml,elog', '', 'text/plain')">ELOG</a></li>
@@ -615,9 +617,7 @@ function changeStatusTo(status) {
 
         &nbsp;|&nbsp;
 
-	<a id="tutorial" 
-href="https://twiki.cern.ch/twiki/bin/view/CMS/CMSDQMRunRegistry" 
-target="_blank">Tutorial</a>
+	<a id="tutorial" href="https://twiki.cern.ch/twiki/bin/view/CMS/CMSDQMRunRegistry" target="_blank">Tutorial</a>
 
         &nbsp;|&nbsp;
 
@@ -633,6 +633,7 @@ target="_blank">Tutorial</a>
   </table>
 
   <jsp:include page="edit.jsp" />
+  <jsp:include page="plot.jsp" />
 
   <table id="flex1"></table>
 
