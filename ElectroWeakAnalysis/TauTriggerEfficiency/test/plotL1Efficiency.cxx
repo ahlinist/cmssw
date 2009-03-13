@@ -38,7 +38,7 @@ void plotL1Efficiency(  bool print=false) {
 
   bool pftauet = false, pftauet_barrel = false, pftauet_endcap = false, pftaueta = false,
     pftauenergy = false, pftauenergy_barrel = false, pftauenergy_endcap = false,
-    l1tauet = false, l1taueta = false;
+    l1tauet = false, l1taueta = false, l2clusterRms = false, l2clusterRmsEt = false;
 
   pftauet = true;
   //pftauet_barrel = true;
@@ -49,6 +49,8 @@ void plotL1Efficiency(  bool print=false) {
   //pftauenergy_endcap = true;
   l1tauet = true;
   l1taueta = true;
+  //l2clusterRms = true;
+  //l2clusterRmsEt = true;
 
 
   TLatex l;
@@ -67,7 +69,7 @@ void plotL1Efficiency(  bool print=false) {
   TCut DenEtaCutEC = "abs(PFTauEta) >= 1.5";
   //TCut DenEtaCut = "PFTauEta<2.5&&PFTauEta>-2.";
 
-  plotter->SetXTitle("Tau jet E_{T} (GeV)");
+  plotter->SetXTitle("PF-#tau E_{T} (GeV)");
   if(pftauet) {
     Graphs PFTauEt = plotHelperPF(plotter, print, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut);
     plotHelperSimEmu(plotter, PFTauEt);
@@ -102,7 +104,7 @@ void plotL1Efficiency(  bool print=false) {
   // PFTau Eta
   TCut DenEtCut = "PFTauEt>10.";
   if(pftaueta) {
-    plotter->SetXTitle("Tau jet #eta (GeV)");
+    plotter->SetXTitle("PF-#tau #eta");
     Graphs PFTauEta = plotHelperPF(plotter, print, plotDir, "PFTauEta", "PFtauEta", 25, -2.5, 2.5, DenEtCut);
     plotHelperSimEmu(plotter, PFTauEta);
     if (print) gPad->SaveAs(plotDir+Form("PFTauEta_L1Tau_Emu_vs_Sim%s", format));
@@ -111,7 +113,7 @@ void plotL1Efficiency(  bool print=false) {
   }
 
   // PFTau energy
-  plotter->SetXTitle("Tau jet energy (GeV)");
+  plotter->SetXTitle("PF-#tau energy (GeV)");
   if(pftauenergy) {
     Graphs PFTauEnergy = plotHelperPF(plotter, print, plotDir, "PFTauEnergy", "PFTauEnergy", 50, 0., 300., DenEtaCut);
     plotHelperSimEmu(plotter, PFTauEnergy);
@@ -141,6 +143,27 @@ void plotL1Efficiency(  bool print=false) {
   
     // Efficiencies vs. PFTau energy
     fitHelper(l, PFTauEnergyEC, "PFTauEnergyEndcap", "E", print, plotDir, format, 10., 300.);
+  }
+
+  // L2Tau cluster RMS
+  TCut l2matched = "hasMatchedL2Jet";
+  if(l2clusterRms) {
+    plotter->SetXTitle("L2 cluster  #DeltaR RMS");
+    Graphs L2ClusterDrRms = plotHelperPF(plotter, print, plotDir, "L2ClusterDeltaRRMS", "L2ClusterDrRms", 50, 0, 0.5, DenEtCut && DenEtaCut && l2matched);
+    plotHelperSimEmu(plotter, L2ClusterDrRms);
+    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRms_L1Tau_Emu_vs_Sim%s", format));
+    plotHelperVetoBits(plotter, L2ClusterDrRms);
+    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRms_L1Tau_Eff%s", format));
+  }
+
+  // L2Tau cluster RMS * PFTau Et
+  if(l2clusterRmsEt) {
+    plotter->SetXTitle("L2 cluster  #DeltaR RMS #times PF-#tau E_{T}");
+    Graphs L2ClusterDrRmsEt = plotHelperPF(plotter, print, plotDir, "L2ClusterDeltaRRMS*PFTauEt", "L2ClusterDrRmsEt", 50, 0, 15, DenEtCut && DenEtaCut && l2matched);
+    plotHelperSimEmu(plotter, L2ClusterDrRmsEt);
+    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRmsEt_L1Tau_Emu_vs_Sim%s", format));
+    plotHelperVetoBits(plotter, L2ClusterDrRmsEt);
+    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRmsEt_L1Tau_Eff%s", format));
   }
 
   // L1Tau Et
@@ -213,7 +236,7 @@ Graphs plotHelperPF(Plotter *plotter, bool print, TString plotDir, const char *b
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Tau", name));
   ret.L1TauVeto_Emu = plotter->DrawHistogram(draw,"hasMatchedL1TauJet==1",selection2);
   
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto", branch));
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto", name));
   ret.L1TauVeto_Sim = plotter->DrawHistogram(draw,"L1TauVeto==0 && hasMatchedL1Jet==1",selection2);
 
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_L1Jet30", name));
