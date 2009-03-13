@@ -21,11 +21,11 @@
 #define HISTOS2D
 
 const bool defaultDet[7] = {false,
-	true, // PXB
-	true, // PXF
-	false,	// TIB
+	false, // PXB
+	false, // PXF
+	true,	// TIB
 	false,	//TID
-	false,	// TOB
+	true,	// TOB
 	false	// TEC
 };
 
@@ -54,7 +54,7 @@ public:
   void setType(bool rPhi = true, bool stereo = false) 
     {acceptStereo[0] = rPhi; acceptStereo[1] = stereo;}
 
-  bool cut() const;
+  bool cut();
 
 
 private:
@@ -113,6 +113,21 @@ private:
   //
   typedef std::pair<unsigned int, unsigned int> iiPair;
   typedef iiPair DetIdPair;
+
+  inline bool lt_map(std::pair<DetIdPair, iiPair> mapP1, std::pair<DetIdPair, iiPair> mapP2)
+  {
+    DetIdPair & idP1 = mapP1.first;
+    DetIdPair & idP2 = mapP2.first;
+  return ((idP1.first < idP2.first) || ((idP1.first == idP2.first)&&(idP1.second < idP2.second)) );
+  }
+
+  unsigned int subdet;
+  unsigned int layer;
+  unsigned int stereo;
+  int part;
+  unsigned int id;
+
+
   //
   // id pairs and histograms after "cleaning"
   //
@@ -153,10 +168,14 @@ private:
   std::vector<TH2*> localYVsDydzHistos_;
   std::vector<TH2*> dPreddSimVsdHitdSimHistos_;
 
+  std::vector< vector<double> > localX_;
+  std::vector< vector<double> > localXE_;
   std::vector< vector<double> > localY_;
   std::vector< vector<double> > localYE_;
   std::vector< vector<double> > dxdz_;
   std::vector< vector<double> > dxdzE_;
+  std::vector< vector<double> > dydz_;
+  std::vector< vector<double> > dydzE_;
   std::vector< vector<double> > dd_;
   std::vector< vector<double> > ddE_;
 
@@ -210,6 +229,7 @@ OverlapHistos::OverlapHistos(TTree *tree)
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
   if (tree == 0) {
+    gFile->cd("analysis");
     tree = (TTree*)gDirectory->Get("Overlaps");
   }
   Init(tree);
@@ -219,7 +239,6 @@ OverlapHistos::OverlapHistos(TTree *tree)
   // Some default values:
   acceptLayer = 0;
   for (int i=0;i<7;++i) acceptDet[i] = defaultDet[i];
-  //   acceptDet[3] = true;	// TIB
   acceptStereo[0] = defaultStereo[0]; // rPhi
   acceptStereo[1] = defaultStereo[1]; // stereo
   
