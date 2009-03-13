@@ -69,25 +69,14 @@ background: url(img/smEXCL.png) no-repeat center left;
 #tooltip h3, #tooltip div { margin: 0; }
 
 #edit_overlay {
-	position: fixed;
+	background: url(img/load_edit.gif) no-repeat center center;
+	position: absolute;
 	left: 0;
 	top: 0;
 	background-color: white;
 	z-index: 30;
 	width: 100%;
 	height: 100%;
-}
-
-#edit, #edit_loader {
-position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	border: 1px solid #111;
-	background-color: #eee;
-	margin: 5px auto 10px auto;
-	width: 800px;
-	z-index: 40;
 }
 
 #edit table td {
@@ -100,20 +89,22 @@ position: absolute;
 }
 
 #edit table td.edit_col input, #edit table td.edit_col textarea, #edit table td.edit_col select {
-vertical-align: top;
+	vertical-align: top;
 	width: auto;
 }
 
 #edit table td.edit_col label {
+	text-align: right;
 	float: left;
 	width: 80px;
 	margin: 0px;
+	font-size: 13px;
 }
 
 #edit label {
 	margin-left: 1em;
-text-align: left;
-font-weight: bold;
+	text-align: left;
+	font-weight: bold;
 }
 
 #edit input, #edit textarea, #edit select {
@@ -121,11 +112,12 @@ font-weight: bold;
 	width: 100%;
 	border: green 1px solid;
 	margin: 2px;
+	font-size: 13px;
 }
 
 #edit input.error, #edit select.error, #edit textarea.error {
-border: red 1px solid !important;
-margin: 2px;
+	border: red 1px solid !important;
+	margin: 2px;
 }
 
 #edit input[disabled],
@@ -139,12 +131,6 @@ margin: 2px;
 	background-color: #dcdcdc;
 	border: #3532ff 1px solid;
 } 
-
-#edit {
-	background: #F0F4EA none repeat scroll 0 0;
-	border: thin solid #BCD884;
-	margin-bottom: 5px;
-}
 
 html>body div.outerbox {
 	  padding: 0 5px 5px 0;
@@ -241,7 +227,6 @@ li.active {
 }
 
 #edit_table {
-  height: 500px;
 	width: 100%;
 }
 
