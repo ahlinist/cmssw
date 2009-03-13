@@ -12,11 +12,23 @@
 
 using namespace std;
 
+
 void fullDecode (unsigned int id, unsigned int& subdet, 
 		  unsigned int& layer, int & part, vector<unsigned int> & specific, unsigned int& stereo)
 {
   subdet = (id>>25) & 0x7;
-  if ( subdet==3 ) {
+  if ( subdet==1 ) {  // PXE
+    layer = (id>>16) & 0xF;
+    part  = 0;
+    specific.push_back((id>>8) & 0xFF);        // ladder
+    specific.push_back((id>>2) & 0x3F); // nbr   
+  } else if ( subdet==2 ) {  // PXB
+    layer = (id>>16) & 0xF;
+    part  = ((id>>23) & 0x3) == 1 ? +1 : -1 ;
+    specific.push_back((id>>10) & 0x3F);        // blade
+    specific.push_back((id>>8) & 0x3);        // pannel
+    specific.push_back((id>>2) & 0x3F); // nbr   
+  } else if ( subdet==3 ) {  // TIB
     layer = (id>>14) & 0x7;
     part  = ((id>>12) & 0x3) == 1 ? +1 : -1 ;
     specific.push_back((id>>10) & 0x3);        // side  
@@ -53,17 +65,43 @@ void printId(unsigned int id)
   int part;
   vector<unsigned int> info;
   fullDecode (id, subdet, layer, part,info, stereo);
-  if ( subdet==3 ) {	// TIB
+  if ( subdet==1 ) {
+  cout << "PXE " << layer //layer
+       << " Ladder " <<info[0]
+       << " Nbr " <<info[1];
+  }
+  else if ( subdet==2 ) {
+  cout << "PXE" << (part == +1 ? " + " : " - ") << layer //Wheel
+       << " Blade " <<info[0]
+       << " Pannel " <<info[1]
+       << " Nbr " <<info[2];
+  }
+  else if ( subdet==3 ) {	// TIB
   cout << "TIB" << (((id>>12) & 0x3) == 1 ? " + " : " - ") << ((id>>14) & 0x7) //layer
        << " Side " <<((id>>10) & 0x3)
        << " String " << ((id>>4) & 0x3F)
        << " Nbr "<< ((id>>2) & 0x3)
        << (stereo == 1 ? " Stereo " : " rPhi");
   }
+  else if ( subdet==4 ) {
+  cout << "TID" << (part == +1 ? " + " : " - ") << layer //Wheel
+       << " Side " <<info[1]
+       << " Ring " <<info[0]
+       << " Nbr " <<info[2]
+       << (stereo == 1 ? " Stereo " : " rPhi");
+  }
   else if ( subdet==5 ) {
   cout << "TOB" << (((id>>12) & 0x3) == 1 ? " + " : " - ") << ((id>>14) & 0x7) //layer
        << " ROD " <<((id>>5) & 0x7F)
        << " Nbr "<< ((id>>2) & 0x7)
+       << (stereo == 1 ? " Stereo " : " rPhi");
+  }
+  else if ( subdet==6 ) {
+  cout << "TEC" << (part == +1 ? " + " : " - ") << layer //Wheel
+       << " Side " <<info[0]
+       << " Petal " <<info[1]
+       << " Ring " <<info[2]
+       << " Nbr " <<info[3]
        << (stereo == 1 ? " Stereo " : " rPhi");
   }
   else {
@@ -88,7 +126,13 @@ bool checkAdjacent(unsigned int id1, unsigned int id2, float path)
   if (stereo1 != stereo2) return false;
 
 
-  if ( subdet1==3 ) {	// TIB
+  if ( subdet1==1 ) {	// PXB
+      if (fabs(path)>3.) return false;
+      return true;
+  } else if ( subdet1==2 ) {	// PXE
+      if (fabs(path)>10.) return false;
+      return true;
+  } else if ( subdet1==3 ) {	// TIB
     // First, check on which side both dets are
     if (info1[0]==info2[0]) {
       // Here we are on the same side, interior or exterior
@@ -134,6 +178,12 @@ bool checkAdjacent(unsigned int id1, unsigned int id2, float path)
     // Then, Check on the modules
     if ( (info1[1]!=(info2[1]+1)) && (info1[1]!=(info2[1]-1)) && (info1[1]!=info2[1]) ) return false;
     return true;
+  } else if ( subdet1==4 ) {	// TID
+      if (fabs(path)>20.) return false;
+      return true;
+  } else if ( subdet1==6 ) {	// TEC
+      if (fabs(path)>20.) return false;
+      return true;
   }
   return false;
 }
@@ -159,22 +209,39 @@ AdjacentType checkAdjacentType(unsigned int id1, unsigned int id2)
     // We are NOT on same ROD, so overlap parallel to strips.
     return parallelToStrips;
   }
+  else if ( subdet1==1 ) {	// PXE
+    // We are on same ladder, so overlap parallel to strips.
+    if (info1[0]==info2[0]) return parallelToStrips;
+    return parallelToStrips;
+  }
   return notAdjacent;
 }
 
 
-void detector (unsigned int id, unsigned int& subdet, 
-		  unsigned int& sign)
-{
-  subdet = (id>>25) & 0x7;
-  sign = (id>>12) & 0x3;
-}
+// void detector (unsigned int id, unsigned int& subdet, 
+// 		  unsigned int& sign)
+// {
+//   subdet = (id>>25) & 0x7;
+//   sign = (id>>12) & 0x3;
+// }
+
+// enum SubDetector {
+//   UNKNOWN = 0, PXB = 1, PXF = 2, TIB = 3, TID = 4, TOB = 5, TEC = 6
+// }
 
 void decode (unsigned int id, unsigned int& subdet, 
 		  unsigned int& layer, int & part, unsigned int& stereo)
 {
   subdet = (id>>25) & 0x7;
-  if ( subdet==3 ) {	// TIB
+  if ( subdet==1 ) {	// PXB
+    layer = (id>>16) & 0xF;
+    part = 0;
+  }
+  else if ( subdet==2 ) {	// PXF
+    layer = (id>>16) & 0xF;
+    part = ((id>>23) & 0x3) == 1 ? +1 : -1 ;
+  }
+  else if ( subdet==3 ) {	// TIB
     layer = (id>>14) & 0x7;
     part = ((id>>12) & 0x3) == 1 ? +1 : -1 ;
   }
@@ -236,7 +303,7 @@ TProfile* fillSlopeNew (TH2* inputHisto)  {
   return prof;
 }
 
-void fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto, TH2* inputHisto)  {
+float fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto, TH2* inputHisto)  {
   double sum = inputHisto->Integral();
   if ( sum>50 ) {
     TProfile *prof = fillSlopeNew(inputHisto);
@@ -246,7 +313,9 @@ void fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto, TH2* in
     resultSlopeHisto->SetBinError(ibin,prof->GetFunction("pol1")->GetParError(1));
     resultOffsetHisto->SetBinContent(ibin,prof->GetFunction("pol1")->GetParameter(0));
     resultOffsetHisto->SetBinError(ibin,prof->GetFunction("pol1")->GetParError(0));
+    return prof->GetFunction("pol1")->GetParameter(1);
   }
+  return 999.;
 }
 
 
@@ -266,27 +335,61 @@ fillWidth (int ibin, TH1* resultHisto, TH1* inputHisto,
 
 
 
-void fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto,
+float fillSlope (int ibin, TH1* resultSlopeHisto, TH1* resultOffsetHisto,
 	vector<double>& vx , vector<double>& vxe, vector<double>& vy, vector<double>& vye)  {
 
   const Int_t nrPnts = vx.size();
-  TVectorD x(nrPnts);
-  TVectorD y(nrPnts);
-  TVectorD xe(nrPnts);
-  TVectorD ye(nrPnts);
+  int pts=0;
   for (int i=0;i<nrPnts;++i){
-    x[i]=vx[i];
-    y[i]=vy[i];
-    xe[i]=vxe[i];
-    ye[i]=vye[i];
+    if (fabs(vy[i])<0.2) ++pts;
   }
-
+  TVectorD x(pts);
+  TVectorD y(pts);
+  TVectorD xe(pts);
+  TVectorD ye(pts);
+  pts=0;
+  for (int i=0;i<nrPnts;++i){
+    if (fabs(vy[i])<0.2) {
+      x[pts]=vx[i];
+      y[pts]=vy[i];
+      xe[pts]=vxe[i];
+      ye[pts]=vye[i];
+      ++pts;
+    }
+  }
+  
+  if (pts!=nrPnts) cout << "Outlies: Points: "<<pts<<" / "<<nrPnts<<endl;
   TGraphErrors *gr = new TGraphErrors(x,y,xe,ye);
+  gr->SetName("gr");
   TF1 *f1 = new TF1("f1","pol1",0,5);
+  f1->SetParameter(1, 0.);
+  f1->SetParameter(0, 0.);
   gr->Fit("f1","Q");
+  //if (ibin==62) 
+//  gr->Draw("ALP");
+  // cout << f1->GetChisquare()<< " "<< f1->GetNDF()<< " "<<f1->GetChisquare()/f1->GetNDF()<< " "<< f1->GetParameter(0)<< " "<< f1->GetParameter(1)<<endl;
 
   resultSlopeHisto->SetBinContent(ibin,f1->GetParameter(1));
   resultSlopeHisto->SetBinError(ibin,f1->GetParError(1));
   resultOffsetHisto->SetBinContent(ibin,f1->GetParameter(0));
   resultOffsetHisto->SetBinError(ibin,f1->GetParError(0));
+ delete f1;
+ delete gr;
+  return 0;//f1->GetParameter(1);
+}
+
+bool slopeOK(AdjacentType type, float slope)
+{
+  if (type == parallelToStrips) {
+    if (fabs(slope) > 0.002) {
+      cout << "Large rotation/Slope, Gaussian fit of DD unreliable: ";
+      return false;
+    }
+  } else {
+    if (fabs(slope) > 0.05) {
+      cout << "Large rotation/Slope, Gaussian fit of DD unreliable: ";
+      return false;
+    }
+  }
+  return true;
 }
