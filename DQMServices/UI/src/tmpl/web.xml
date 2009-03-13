@@ -134,6 +134,27 @@
     </servlet>
 
     <servlet>
+      <servlet-name>RunChartData</servlet-name>
+      <servlet-class>cms.dqm.workflow.DataProvider</servlet-class>
+      <init-param>
+        <param-name>format</param-name>
+        <param-value>json</param-value>
+      </init-param>
+      <init-param>
+        <param-name>query</param-name>
+        <param-value>select run_number, run_events, run_rate, run_bfield from rr_run_data</param-value>
+      </init-param>
+      <init-param>
+        <param-name>default_sort_name</param-name>
+        <param-value>RUN_NUMBER</param-value>
+      </init-param>
+      <init-param>
+        <param-name>default_sort_dir</param-name>
+        <param-value>desc</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet>
       <servlet-name>EditProvider</servlet-name>
       <servlet-class>cms.dqm.workflow.EditProvider</servlet-class>
     </servlet>
@@ -181,6 +202,11 @@
     <servlet-mapping>
         <servlet-name>HeartBeat</servlet-name>
         <url-pattern>/heartbeat</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RunChartData</servlet-name>
+        <url-pattern>/runchartdata</url-pattern>
     </servlet-mapping>
 
 </web-app>
