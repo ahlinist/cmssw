@@ -504,12 +504,12 @@ function dumpData(intpl, tpl, mime) {
       alert("Too many data: " + total + " records. \n Please narrow search and try again.");
       return;
     }
-    if ($.cookie("flex_qtype")) url += "&qtype=" + $.cookie("flex_qtype");
-    if ($.cookie("flex_query")) url += "&query=" + $.cookie("flex_query");
+    if ($.cookie("flex_qtype")) url += "&qtype=" + escape($.cookie("flex_qtype"));
+    if ($.cookie("flex_query")) url += "&query=" + escape($.cookie("flex_query"));
   }
 
-  if ($.cookie("flex_sortname")) url += "&sortname=" + $.cookie("flex_sortname");
-  if ($.cookie("flex_sortorder")) url += "&sortorder=" + $.cookie("flex_sortorder");
+  if ($.cookie("flex_sortname")) url += "&sortname=" + escape($.cookie("flex_sortname"));
+  if ($.cookie("flex_sortorder")) url += "&sortorder=" + escape($.cookie("flex_sortorder"));
   window.open(url);
 }
 

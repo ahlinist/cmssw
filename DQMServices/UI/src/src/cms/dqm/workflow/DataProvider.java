@@ -271,6 +271,8 @@ public class DataProvider extends HttpServlet {
           StreamResult result = new StreamResult(out);
 
           Transformer transformer = tf.newTransformer();
+          transformer.setOutputProperty("media-type", mimeType);
+          transformer.setOutputProperty("omit-xml-declaration", "yes");
           transformer.transform(domSource, result);
 
           break;

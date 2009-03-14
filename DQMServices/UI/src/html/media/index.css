@@ -68,7 +68,7 @@ background: url(img/smEXCL.png) no-repeat center left;
 }
 #tooltip h3, #tooltip div { margin: 0; }
 
-#edit_overlay {
+#edit_overlay, #plot_overlay {
 	background: url(img/load_edit.gif) no-repeat center center;
 	position: absolute;
 	left: 0;
