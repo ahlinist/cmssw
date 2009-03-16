@@ -15,35 +15,46 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
   Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmFileLoader),
-  InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmFileLoader)
+  Zmumu = copy.deepcopy(processZtoMuTau_Zmumu.config_dqmFileLoader),
+  WplusJets = copy.deepcopy(processZtoMuTau_WplusJets.config_dqmFileLoader),
+  #QCD_InclusivePPMuX= copy.deepcopy(processZtoMuTau_QCD_InclusivePPMuX.config_dqmFileLoader), 
+  PPmuXptGt20= copy.deepcopy(processZtoMuTau_PPmuXptGt20.config_dqmFileLoader)        
+  #InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmFileLoader)
 )
 
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
-  qcdSum = cms.PSet(
-    dqmDirectories_input = cms.vstring('InclusivePPmuX'),
-    dqmDirectory_output = cms.string('qcdSum')
-  )                          
-)
+   qcdSum = cms.PSet(
+     dqmDirectories_input = cms.vstring(#'QCD_InclusivePPmuX',
+                                        'PPmuXptGt20'),
+     dqmDirectory_output = cms.string('qcdSum')
+   )                          
+ )
 
 addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
   smSum = cms.PSet(
     dqmDirectories_input = cms.vstring( 'Ztautau',
+                                        'Zmumu',
+                                        'WplusJets',
                                         'qcdSum' ),
     dqmDirectory_output = cms.string('smSum')
   )
 )
 
 addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smSum)
-
+#addZtoMuTau = cms.Sequence(addZtoMuTau_smSum)
 plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
   processes = cms.PSet(
     Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmHistPlotter),
-    InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmHistPlotter),
-    qcdSum = cms.PSet(
-      dqmDirectory = cms.string('qcdSum'),
-      legendEntry = cms.string('QCD'),
-      type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-    )
+    Zmumu = copy.deepcopy(processZtoMuTau_Zmumu.config_dqmHistPlotter),
+    WplusJets = copy.deepcopy(processZtoMuTau_WplusJets.config_dqmHistPlotter),
+    #QCD_InclusivePPmuX = copy.deepcopy(processZtoMuTau_QCD_InclusivePPmuX.config_dqmHistPlotter),
+    PPmuXptGt20 = copy.deepcopy(processZtoMuTau_PPmuXptGt20.config_dqmHistPlotter),
+    #InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmHistPlotter),
+     qcdSum = cms.PSet(
+     dqmDirectory = cms.string('qcdSum'),
+       legendEntry = cms.string('QCD'),
+       type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+     )
   ),
 
   xAxes = cms.PSet(
@@ -77,6 +88,9 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
   drawOptionSets = cms.PSet(
     default = cms.PSet(
       Ztautau = copy.deepcopy(drawOption_Ztautau),
+      Zmumu = copy.deepcopy(drawOption_Zmumu),
+      WplusJets = copy.deepcopy(drawOption_WplusJets),
+      #PPmuXptGt20= copy.deepcopy(drawOption_PPmuXptGt20)
       qcdSum = copy.deepcopy(drawOption_QCD)
     )
   ),
@@ -141,6 +155,6 @@ saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 makeZtoMuTauPlots = cms.Sequence( loadZtoMuTau
                                   +addZtoMuTau
-                                  #+saveZtoMuTau 
+                                  +saveZtoMuTau 
                                   +plotZtoMuTau )
   
