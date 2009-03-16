@@ -22,6 +22,11 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1extraTauJetSource = iConfig.getParameter<edm::InputTag>("L1extraTauJetSource");
   L1extraCentralJetSource = iConfig.getParameter<edm::InputTag>("L1extraCentralJetSource");
   L1bitInfoSource = iConfig.getParameter<edm::InputTag>("L1bitInfoSource");
+
+  L1GtReadoutRecordSource = iConfig.getParameter<edm::InputTag>("L1GtReadoutRecord");
+  L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");;
+  HLTResultsSource = iConfig.getParameter<edm::InputTag>("HltResults");;
+  
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
 
   l1tree = trigtree;
@@ -42,6 +47,11 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet, "hasMatchedL1Jet/B");
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet, "hasMatchedL1TauJet/B");
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
+
+  _L1EvtCnt = 0;
+  _HltEvtCnt = 0;
+  _l1Flag = new bool[128]; 
+  _hltFlag = new bool[512]; 
 }
 
 void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const reco::PFTau& tau) {
@@ -74,18 +84,24 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   // Get data from event 
   Handle<FastL1BitInfoCollection> bitInfos;
   iEvent.getByLabel(L1bitInfoSource, bitInfos);
-  if(!bitInfos.isValid())
+  if(!bitInfos.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1 Bit Info found! " << std::endl;
     return;
+  }
 
   Handle<L1JetParticleCollection> l1TauHandle;
   iEvent.getByLabel(L1extraTauJetSource, l1TauHandle);
-  if(!l1TauHandle.isValid())
+  if(!l1TauHandle.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1extra TauJet found! " << std::endl;
     return;
+  }
 
   Handle<L1JetParticleCollection> l1CentralJetHandle;
   iEvent.getByLabel(L1extraCentralJetSource, l1CentralJetHandle);
-  if(!l1CentralJetHandle.isValid())
+  if(!l1CentralJetHandle.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1extra central jet found! " << std::endl;
     return;
+  }
 
   // Process L1 triggered taus
   const L1JetParticleCollection & l1Taus = *(l1TauHandle.product());
@@ -145,6 +161,81 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       }
     }
   }
+
+  // Store L1 trigger bits
+  edm::Handle<L1GlobalTriggerReadoutRecord>      l1GTRR;
+  edm::Handle<L1GlobalTriggerObjectMapRecord>    l1GTOMRec;
+
+  iEvent.getByLabel(L1GtReadoutRecordSource,l1GTRR);
+  if(!l1GTRR.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1GlobalTriggerReadouRecord found! " << std::endl;
+    return;
+  }
+
+  iEvent.getByLabel(L1GtObjectMapRecordSource,l1GTOMRec);
+  if(!l1GTOMRec.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No L1GlobalTriggerObjectMapRecord found! " << std::endl;
+    return;
+  }
+
+  TString algoBitToName[128];
+  // 1st event : Book as many branches as trigger paths provided in the input...
+  if (l1GTRR.isValid() and l1GTOMRec.isValid()) {  
+    DecisionWord gtDecisionWord = l1GTRR->decisionWord();
+    const unsigned int numberTriggerBits(gtDecisionWord.size());
+    if (_L1EvtCnt==0){
+      // get ObjectMaps from ObjectMapRecord
+      const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  l1GTOMRec->gtObjectMap();
+      // 1st event : Book as many branches as trigger paths provided in the input...
+      for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();
+           itMap != objMapVec.end(); ++itMap) {
+        // Get trigger bits
+        int itrig = (*itMap).algoBitNumber();
+        // Get trigger names
+        algoBitToName[itrig] = TString( (*itMap).algoName() );
+        
+        l1tree->Branch(algoBitToName[itrig],_l1Flag+itrig,algoBitToName[itrig]+"/B");
+      }
+      _L1EvtCnt++;
+    }
+    for (unsigned int iBit = 0; iBit < numberTriggerBits; ++iBit) {     
+      // ...Fill the corresponding accepts in branch-variables
+      _l1Flag[iBit] = (bool)gtDecisionWord[iBit];
+      //std::cout << "L1 TD: "<<iBit<<" "<<algoBitToName[iBit]<<" "<<gtDecisionWord[iBit]<< std::endl;
+    }
+  }
+
+
+  // Store HLT trigger bits
+  edm::Handle<edm::TriggerResults> hltresults;
+  iEvent.getByLabel(HLTResultsSource,hltresults);
+  if(!hltresults.isValid()) {
+    std::cout << "%L1TauEffAnalyzer -- No HltResults found! " << std::endl;
+    return;
+  }
+
+  if (hltresults.isValid()) {
+    int ntrigs = hltresults->size();
+    _triggerNames.init(* hltresults);
+
+    // 1st event : Book as many branches as trigger paths provided in the input...
+    if (_HltEvtCnt==0){
+      for (int itrig = 0; itrig != ntrigs; ++itrig) {
+        TString trigName = _triggerNames.triggerName(itrig);
+        l1tree->Branch(trigName,_hltFlag+itrig,trigName+"/B");
+      }
+      _HltEvtCnt++;
+    }
+    // ...Fill the corresponding accepts in branch-variables
+    for (int itrig = 0; itrig != ntrigs; ++itrig){
+      string trigName=_triggerNames.triggerName(itrig);
+      bool accept = hltresults->accept(itrig);
+
+      _hltFlag[itrig] = accept;
+    }
+  }
+
+
 } 
 
 

@@ -20,6 +20,14 @@
 #include "DataFormats/L1Trigger/interface/L1JetParticle.h"
 #include "DataFormats/L1Trigger/interface/L1JetParticleFwd.h"
 
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Framework/interface/TriggerNames.h"
 
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
@@ -54,6 +62,11 @@ class L1TauEfficiencyAnalyzer {
 	InputTag L1extraTauJetSource;  
         InputTag L1extraCentralJetSource;
         InputTag L1bitInfoSource;
+
+        InputTag L1GtReadoutRecordSource;
+        InputTag L1GtObjectMapRecordSource;
+        InputTag HLTResultsSource;
+
 	double   jetMatchingCone;
 
         // Output tree and related variables
@@ -62,5 +75,13 @@ class L1TauEfficiencyAnalyzer {
         float jetPt, jetEt, jetEta, jetPhi;
         char hasL1Jet, hasL1TauJet, hasL1CenJet;
         char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
+
+	int _L1EvtCnt;
+	int _HltEvtCnt;
+	bool *_l1Flag;
+	bool *_hltFlag;
+
+	edm::TriggerNames _triggerNames;
+
 };
 #endif
