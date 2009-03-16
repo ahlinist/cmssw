@@ -2,7 +2,7 @@
 
 gROOT->Reset();
 
-TFile f("HcalZS_All.root");
+TFile f("Cosmics__Commissioning09-v1__RAW_Allrun77037.root");
 //TFile f("HcalZS_73751.root");
 //TFile f("HcalZS_73749.root");
 
@@ -28,6 +28,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd1->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hbhfd1->GetBinContent(ieta,iphi);
       h_hcal_hbhfd1->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
@@ -50,6 +59,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd2->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hbhfd2->GetBinContent(ieta,iphi);
       h_hcal_hbhfd2->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
@@ -72,6 +90,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hed1->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hed1->GetBinContent(ieta,iphi);
       h_hcal_hed1->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
@@ -95,6 +122,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hed2->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hed2->GetBinContent(ieta,iphi);
       h_hcal_hed2->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
@@ -118,6 +154,15 @@ for(int ieta = 1 ; ieta <= h_hcal_hed3->GetNbinsX() ; ieta++)
     {
       float numDisagree = thisNtotEvents - h_hcal_hed3->GetBinContent(ieta,iphi);
       h_hcal_hed3->SetBinContent( ieta , iphi , numDisagree);
+
+      if(numDisagree > 0)
+	{
+	  cout << "%%%%%%%%%" << endl;
+	  int det_eta = ieta - 42 ; 
+	  int det_phi = iphi; 
+	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	}
+
     }
 }
 
@@ -162,6 +207,33 @@ TCanvas c2;
 h_ZSagree->Draw();
 h_ZSagree->SetTitle("Agreement between M&P bit and ZS emulation");
 
+
+TCanvas c3;
+c3.Divide(2,3);
+
+c3.cd(1);
+h_hcal_hbhfd1_all->Draw("colz");
+h_hcal_hbhfd1_all->SetStats(0);
+
+c3.cd(2);
+h_hcal_hbhfd2_all->Draw("colz");
+h_hcal_hbhfd2_all->SetStats(0);
+
+c3.cd(3);
+h_hcal_hed1_all->Draw("colz");
+h_hcal_hed1_all->SetStats(0);
+
+c3.cd(4);
+h_hcal_hed2_all->Draw("colz");
+h_hcal_hed2_all->SetStats(0);
+
+c3.cd(5);
+h_hcal_hed3_all->Draw("colz");
+h_hcal_hed3_all->SetStats(0);
+
+c3.cd(6);
+h_hcal_hod4_all->Draw("colz");
+h_hcal_hod4_all->SetStats(0);
 
 
 }
