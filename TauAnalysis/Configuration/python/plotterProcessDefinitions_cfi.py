@@ -12,7 +12,8 @@ dataIntLumi = float(200.)
 process_Ztautau = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/1289.),
+    #scaleFactor = cms.double(dataIntLumi/1289.),
+    scaleFactor = cms.double(0.18),
     dqmDirectory_store = cms.string('Ztautau')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -27,7 +28,8 @@ process_Ztautau = cms.PSet(
 process_Zmumu = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/905.),
+    #scaleFactor = cms.double(dataIntLumi/905.),
+    scaleFactor = cms.double(1.83),
     dqmDirectory_store = cms.string('Zmumu')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -57,7 +59,8 @@ process_Zee = cms.PSet(
 process_WplusJets = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/536.),
+    #scaleFactor = cms.double(dataIntLumi/536.),
+    scaleFactor = cms.double(1.87),
     dqmDirectory_store = cms.string('WplusJets')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -67,9 +70,9 @@ process_WplusJets = cms.PSet(
   )
 )
 
-# electron enriched QCD generated with Pythia
-# in the range 20 GeV < Pt(hat) < 30 GeV
-# integrated luminosity = 9.15 pb^-1
+## # electron enriched QCD generated with Pythia
+## # in the range 20 GeV < Pt(hat) < 30 GeV
+## # integrated luminosity = 9.15 pb^-1
 process_QCD_BCtoE_Pt20to30 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
@@ -83,9 +86,9 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
   )
 )
 
-# electron enriched QCD generated with Pythia
-# in the range 30 GeV < Pt(hat) < 80 GeV
-# integrated luminosity = 7.34 pb^-1
+## # electron enriched QCD generated with Pythia
+## # in the range 30 GeV < Pt(hat) < 80 GeV
+## # integrated luminosity = 7.34 pb^-1
 process_QCD_BCtoE_Pt30to80 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
@@ -99,16 +102,16 @@ process_QCD_BCtoE_Pt30to80 = cms.PSet(
   )
 )
 
-# muon enriched QCD generated with Pythia
-# integrated luminosity = 0.044 pb^-1
-process_InclusivePPmuX = cms.PSet(
+## # muon enriched QCD generated with Pythia
+## # integrated luminosity = 0.044 pb^-1
+process_QCD_InclusivePPmuX = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
     scaleFactor = cms.double(dataIntLumi/0.044),
-    dqmDirectory_store = cms.string('InclusivePPmuX')
+    dqmDirectory_store = cms.string('QCD_InclusivePPmuX')
   ),
   config_dqmHistPlotter = cms.PSet(
-    dqmDirectory = cms.string('InclusivePPmuX'),
+    dqmDirectory = cms.string('QCD_InclusivePPmuX'),
     legendEntry = cms.string('#muQCD'),
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
@@ -120,7 +123,7 @@ process_InclusivePPmuX = cms.PSet(
 process_PPmuXptGt20 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/49.7),
+    scaleFactor = cms.double(553),
     dqmDirectory_store = cms.string('PPmuXptGt20')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -129,3 +132,4 @@ process_PPmuXptGt20 = cms.PSet(
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )
+
