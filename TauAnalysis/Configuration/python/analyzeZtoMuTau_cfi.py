@@ -23,6 +23,25 @@ from TauAnalysis.Core.metHistManager_cfi import *
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
 
+# import config for particle flow candidate histogram manager
+from TauAnalysis.Core.pfCandidateHistManager_cfi import *
+allPFCandidateHistManager = copy.deepcopy(pfCandidateHistManager)
+allPFCandidateHistManager.name = cms.string('allPFCandidateHistManager')
+allPFCandidateHistManager.pfCandidateSource = cms.InputTag("particleFlow")
+allPFCandidateHistManager.dqmDirectory_store = cms.string('AllPFCandidateQuantities')
+pfChargedHadronHistManager = copy.deepcopy(pfCandidateHistManager)
+pfChargedHadronHistManager.name = cms.string('pfChargedHadronHistManager')
+pfChargedHadronHistManager.pfCandidateSource = cms.InputTag("pfAllChargedHadrons")
+pfChargedHadronHistManager.dqmDirectory_store = cms.string('PFChargedHadronQuantities')
+pfGammaHistManager = copy.deepcopy(pfCandidateHistManager)
+pfGammaHistManager.name = cms.string('pfGammaHistManager')
+pfGammaHistManager.pfCandidateSource = cms.InputTag("pfAllPhotons")
+pfGammaHistManager.dqmDirectory_store = cms.string('PFGammaQuantities')
+pfNeutralHadronHistManager = copy.deepcopy(pfCandidateHistManager)
+pfNeutralHadronHistManager.name = cms.string('pfNeutralHadronHistManager')
+pfNeutralHadronHistManager.pfCandidateSource = cms.InputTag("pfAllNeutralHadrons")
+pfNeutralHadronHistManager.dqmDirectory_store = cms.string('PFNeutralHadronQuantities')
+
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
 
@@ -37,6 +56,10 @@ muTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
                                  'diTauCandidateHistManagerForMuTau',
                                  'metHistManager',
                                  'jetHistManager',
+                                 'allPFCandidateHistManager',
+                                 'pfChargedHadronHistManager',
+                                 'pfGammaHistManager',
+                                 'pfNeutralHadronHistManager', 
                                  'vertexHistManager',
                                  'triggerHistManager' )
 
@@ -281,6 +304,10 @@ muTauEventDump = cms.PSet(
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
   jetSource = cms.InputTag('selectedLayer1JetsEt20'),
+  recoTrackSource = cms.InputTag('generalTracks'),
+  pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+  pfGammaSource = cms.InputTag('pfAllPhotons'),
+  pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
   #output = cms.string("muTauEventDump.txt"),
   output = cms.string("std::cout"),
