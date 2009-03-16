@@ -19,6 +19,8 @@ std::string getString(double value)
 template <class T>
 PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::ParameterSet& cfg)
 {
+  cfgError_ = 0;
+
 //--- translate isolation "keys" from string to integer format
 //    (NOTE: the equivalence between strinsg and integers is defined in
 //           PhysicsTools/PatAlgos/src/MultiIsolator.cc )
