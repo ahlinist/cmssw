@@ -278,8 +278,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 
       std::vector<TrajectoryAtValidHit> TMs;
       
-      //for double sided layers check both sensors--the trajectory measurements only have one entry      
-      // for a trajectory measurement on a matched surface no hit was found on either sensor surface
+      // for double sided layers check both sensors--if no hit was found on either sensor surface,
+      // the trajectory measurements only have one invalid hit entry on the matched surface
       // so get the TrajectoryAtValidHit for both surfaces and include them in the study
       if (isDoubleSided(iidd) &&  ((iidd & 0x3)==0) ) {
 	// do hit eff check twice--once for each sensor
@@ -287,8 +287,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 1));
 	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 2));
       } else if ( isDoubleSided(iidd) && (!check2DPartner(iidd, TMeas)) ) {
-	// with checkNeighbor( ) to check if there is a trajectory measurement on the detector that is the rphi/stereo
-	//partner of the one we are looking at.
+      // if only one hit was found the trajectory measurement is on that sensor surface, and the other surface from
+      // the matched layer should be added to the study as well
 	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 1));
 	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 2));
 	if (DEBUG) cout << " found a hit with a missing partner" << endl;
@@ -354,8 +354,16 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		  //iter is a single SiStripCluster
 		  StripClusterParameterEstimator::LocalValues parameters=stripcpe.localParameters(*iter,*stripdet);
 		  float res = (parameters.first.x() - xloc);
-		  float sigma = checkConsistency(parameters , xloc, xErr);
-		  SiStripClusterInfo clusterInfo = SiStripClusterInfo(*iter, es);  
+      		  float sigma = checkConsistency(parameters , xloc, xErr);
+		  // The consistency is probably more accurately measured with the Chi2MeasurementEstimator. To use it
+		  // you need a TransientTrackingRecHit instead of the cluster
+		  //theEstimator=       new Chi2MeasurementEstimator(30);
+		  //const Chi2MeasurementEstimator *theEstimator(100);
+		  //theEstimator->estimate(TM->tsos(), TransientTrackingRecHit);
+
+		  //SiStripClusterInfo clusterInfo = SiStripClusterInfo(*iter, es);  
+		  // signal to noise from SiStripClusterInfo not working in 225. I'll fix this after the interface
+		  // redesign in 300 -ku
 		  //float cluster_info[7] = {res, sigma, parameters.first.x(), sqrt(parameters.second.xx()), parameters.first.y(), sqrt(parameters.second.yy()), signal_to_noise};
 		  std::vector< float > cluster_info;
 		  cluster_info.push_back(res); 
@@ -364,8 +372,10 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		  cluster_info.push_back(sqrt(parameters.second.xx()));
 		  cluster_info.push_back(parameters.first.y());
 		  cluster_info.push_back(sqrt(parameters.second.yy()));
+		  cout << "before getting signal over noise" << endl;
 		  //cluster_info.push_back( clusterInfo.signalOverNoise() );
-		  cluster_info.push_back( clusterInfo.getSignalOverNoise() );
+		  //cluster_info.push_back( clusterInfo.getSignalOverNoise() );
+		  cout << "after getting signal over noise" << endl;
 		  VCluster_info.push_back(cluster_info);
 		  nClusters++;
 		  if (DEBUG) cout << "Have ID match. residual = " << VCluster_info.back()[0] << "  res sigma = " << VCluster_info.back()[1] << endl;
