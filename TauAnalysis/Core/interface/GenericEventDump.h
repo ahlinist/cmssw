@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: GenericEventDump.h,v 1.3 2009/02/17 10:57:40 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.4 2009/02/26 15:40:26 veelken Exp $
  *
  */
 
@@ -123,6 +123,11 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag patJetSource_;
 
   edm::InputTag recoTrackSource_;
+  edm::InputTag recoVertexSource_;
+
+  edm::InputTag pfChargedHadronSource_;
+  edm::InputTag pfGammaSource_;
+  edm::InputTag pfNeutralHadronSource_;
 };
 
 #endif       

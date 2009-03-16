@@ -158,7 +158,8 @@ void printVertexInfo(const reco::Candidate::Point& vertex, std::ostream* stream)
 //
 
 void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>& recoTracks, 
-			     const reco::Candidate::Vector& direction, double coneSize,
+			     const reco::Candidate::Vector& direction, double vetoConeSize, double isolationConeSize, double minPt,
+			     const reco::Vertex::Point& thePrimaryEventVertexPosition,
 			     std::ostream* stream)
 {
   if ( !stream ) {
@@ -169,25 +170,56 @@ void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>& recoTrack
   unsigned iTrack = 0;
   for ( reco::TrackCollection::const_iterator recoTrack = recoTracks->begin(); 
 	recoTrack != recoTracks->end(); ++recoTrack ) {
-    double dR = reco::deltaR(*recoTrack, direction);
-    if ( dR < coneSize ) {
-      *stream << "Track(" << iTrack << "):" << std::endl;
-      *stream << " Pt = " << recoTrack->pt() << std::endl;
-      *stream << " theta = " << recoTrack->theta()*180./TMath::Pi() << std::endl;
-      *stream << " phi = " << recoTrack->phi()*180./TMath::Pi() << std::endl;
-      *stream << " Hits" << std::endl;
-      const reco::HitPattern& hitPattern = recoTrack->hitPattern();
-      *stream << "  numberOfValidTrackerHits = " << hitPattern.numberOfValidTrackerHits() << std::endl;
-      *stream << "   numberOfValidPixelHits = " << hitPattern.numberOfValidPixelHits() << std::endl;
-      *stream << "   numberOfValidStripHits = " << hitPattern.numberOfValidStripHits() << std::endl;
-      *stream << "  trackerLayersWithMeasurement = " << hitPattern.trackerLayersWithMeasurement() << std::endl;
-      *stream << "   pixelLayersWithMeasurement = " << hitPattern.pixelLayersWithMeasurement() << std::endl;
-      *stream << "   stripLayersWithMeasurement = " << hitPattern.stripLayersWithMeasurement() << std::endl;
-      ++iTrack;
+    if ( recoTrack->pt() > minPt ) {
+      double dR = reco::deltaR(*recoTrack, direction);
+      if ( dR > vetoConeSize      &&
+	   dR < isolationConeSize ) {
+	*stream << "Track(" << iTrack << "):" << std::endl;
+	*stream << " dR = " << dR << std::endl;
+	*stream << " Pt = " << recoTrack->pt() << std::endl;
+	*stream << " theta = " << recoTrack->theta()*180./TMath::Pi() << std::endl;
+	*stream << " phi = " << recoTrack->phi()*180./TMath::Pi() << std::endl;
+	*stream << " Hits" << std::endl;
+	const reco::HitPattern& hitPattern = recoTrack->hitPattern();
+	*stream << "  numberOfValidTrackerHits = " << hitPattern.numberOfValidTrackerHits() << std::endl;
+	*stream << "   numberOfValidPixelHits = " << hitPattern.numberOfValidPixelHits() << std::endl;
+	*stream << "   numberOfValidStripHits = " << hitPattern.numberOfValidStripHits() << std::endl;
+	*stream << "  trackerLayersWithMeasurement = " << hitPattern.trackerLayersWithMeasurement() << std::endl;
+	*stream << "   pixelLayersWithMeasurement = " << hitPattern.pixelLayersWithMeasurement() << std::endl;
+	*stream << "   stripLayersWithMeasurement = " << hitPattern.stripLayersWithMeasurement() << std::endl;
+	*stream << " dXY = " << recoTrack->dxy(thePrimaryEventVertexPosition) << std::endl;
+	*stream << " dZ = " << recoTrack->dz(thePrimaryEventVertexPosition) << std::endl;
+	++iTrack;
+      }
     }
   }
+}
 
-  *stream << std::endl;
+void printPFCandidateIsolationInfo(const edm::Handle<reco::PFCandidateCollection>& pfCandidates, std::string pfCandidateLabel,
+				   const reco::Candidate::Vector& direction, double vetoConeSize, double isolationConeSize, double minPt,
+				   std::ostream* stream)
+{
+  if ( !stream ) {
+    edm::LogError ("printPFCandidateIsolationInfo") << " stream = NULL --> skipping !!";
+    return;
+  }
+  
+  unsigned iPFCandidate = 0;
+  for ( reco::PFCandidateCollection::const_iterator pfCandidate = pfCandidates->begin(); 
+	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
+    if ( pfCandidate->pt() > minPt ) {
+      double dR = reco::deltaR(*pfCandidate, direction);
+      if ( dR > vetoConeSize      &&
+	   dR < isolationConeSize ) {
+	*stream << pfCandidateLabel << "(" << iPFCandidate << "):" << std::endl;
+	*stream << " dR = " << dR << std::endl;
+	*stream << " Pt = " << pfCandidate->pt() << std::endl;
+	*stream << " theta = " << pfCandidate->theta()*180./TMath::Pi() << std::endl;
+	*stream << " phi = " << pfCandidate->phi()*180./TMath::Pi() << std::endl;	
+	++iPFCandidate;
+      }
+    }
+  }
 }
 
 //
