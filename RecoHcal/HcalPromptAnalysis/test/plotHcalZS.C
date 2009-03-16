@@ -34,7 +34,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd1->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hbhfd1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
@@ -65,7 +65,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd2->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hbhfd2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
@@ -96,7 +96,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hed1->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hed1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
@@ -128,7 +128,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hed2->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hed2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
@@ -160,7 +160,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hed3->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hed3: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
@@ -192,7 +192,7 @@ for(int ieta = 1 ; ieta <= h_hcal_hod4->GetNbinsX() ; ieta++)
 	  cout << "%%%%%%%%%" << endl;
 	  int det_eta = ieta - 42 ; 
 	  int det_phi = iphi; 
-	  printf("ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
+	  printf("hod4: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
 	}
 
     }
