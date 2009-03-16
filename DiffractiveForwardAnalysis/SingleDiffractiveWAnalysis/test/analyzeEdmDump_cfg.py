@@ -5,8 +5,8 @@ process = cms.Process("EdmDumpAnalysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.debugModules = cms.untracked.vstring('')
 #process.MessageLogger.cerr.threshold = 'DEBUG'
-process.MessageLogger.cerr.threshold = 'INFO'
-#process.MessageLogger.cerr.threshold = 'WARNING'
+#process.MessageLogger.cerr.threshold = 'INFO'
+process.MessageLogger.cerr.threshold = 'WARNING'
 process.MessageLogger.categories.append('Analysis')
 #process.MessageLogger.cerr.DEBUG = cms.untracked.PSet(
 #    default = cms.untracked.PSet( limit = cms.untracked.int32(0)),
@@ -21,8 +21,10 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 #from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_noPU_cfi import filesPSet
 #from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_InitialLumiPU_cfi import filesPSet
+#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_StageA43Bx_cfi import filesPSet
 #from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusDiJets_StageA43Bx_cfi import filesPSet
-from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_Wmunu_StageA43Bx_cfi import filesPSet
+#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_Wmunu_StageA43Bx_cfi import filesPSet
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_Wmunu_InitialLumPU_cfi import filesPSet
 
 process.source = cms.Source("PoolSource",
     #fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root')
@@ -78,8 +80,10 @@ process.edmDumpAnalysisSingleVertexPileUp = process.edmDumpAnalysis.clone()
 process.add_(cms.Service("TFileService",
 		#fileName = cms.string("analysisEdmDump_SDWmunu_noPU.root")
                 #fileName = cms.string("analysisEdmDump_SDWmunu_InitialLumPU.root")
+                #fileName = cms.string("analysisEdmDump_SDWmunu_StageA43Bx.root")
                 #fileName = cms.string("analysisEdmDump_SDDijets_StageA43Bx.root")
-                fileName = cms.string("analysisEdmDump_Wmunu_StageA43Bx.root")
+                #fileName = cms.string("analysisEdmDump_Wmunu_StageA43Bx.root")
+                fileName = cms.string("analysisEdmDump_Wmunu_InitialLumPU.root")
 	)
 )
 
