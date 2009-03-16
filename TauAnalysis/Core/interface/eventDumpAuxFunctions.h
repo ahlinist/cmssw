@@ -9,6 +9,9 @@
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include <vector>
 #include <string>
@@ -22,6 +25,8 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >&, edm::Hand
 void printTrackInfo(const edm::RefToBase<reco::Track>&, const reco::Candidate::Point&, bool, bool, std::ostream*);
 void printVertexInfo(const reco::Candidate::Point&, std::ostream*);
 
-void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, std::ostream*);
+void printTrackIsolationInfo(const edm::Handle<reco::TrackCollection>&, const reco::Candidate::Vector&, double, double, double, const reco::Vertex::Point&, std::ostream*);
+void printPFCandidateIsolationInfo(const edm::Handle<reco::PFCandidateCollection>&, std::string,
+				   const reco::Candidate::Vector&, double, double, double, std::ostream*);
 
 #endif

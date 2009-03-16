@@ -57,6 +57,11 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   patJetSource_ = getInputTag(cfg, "jetSource");
 
   recoTrackSource_ = getInputTag(cfg, "recoTrackSource");
+  recoVertexSource_ = getInputTag(cfg, "recoVertexSource");
+
+  pfChargedHadronSource_ = getInputTag(cfg, "pfChargedHadronSource");
+  pfGammaSource_ = getInputTag(cfg, "pfGammaSource");
+  pfNeutralHadronSource_ = getInputTag(cfg, "pfNeutralHadronSource");
 }
 
 GenericEventDump::~GenericEventDump()
@@ -224,6 +229,14 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
     edm::Handle<pat::MuonCollection> patMuons;
     evt.getByLabel(patMuonSource_, patMuons);
 
+    //reco::Vertex::Point thePrimaryEventVertexPosition(0,0,0);
+    //edm::Handle<reco::VertexCollection> primaryEventVertexCollection;
+    //evt.getByLabel(recoVertexSource_, primaryEventVertexCollection);
+    //if ( primaryEventVertexCollection->size() >= 1 ) {
+    //  const reco::Vertex& thePrimaryEventVertex = (*primaryEventVertexCollection->begin());
+    //  thePrimaryEventVertexPosition = thePrimaryEventVertex.position();
+    //}
+
     unsigned iMuon = 0;
     for ( pat::MuonCollection::const_iterator patMuon = patMuons->begin(); 
 	  patMuon != patMuons->end(); ++patMuon ) {
@@ -242,7 +255,22 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
       if ( recoTrackSource_.label() != "" ) {
 	edm::Handle<reco::TrackCollection> recoTracks;
 	evt.getByLabel(recoTrackSource_, recoTracks);
-	printTrackIsolationInfo(recoTracks, patMuon->momentum(), 1.0, outputStream_);
+	printTrackIsolationInfo(recoTracks, patMuon->momentum(), 0.01, 1.0, -1., patMuon->vertex(), outputStream_);
+      }
+      if ( pfChargedHadronSource_.label() != "" ) {
+	edm::Handle<reco::PFCandidateCollection> pfChargedHadrons;
+	evt.getByLabel(pfChargedHadronSource_, pfChargedHadrons);
+	printPFCandidateIsolationInfo(pfChargedHadrons, "PFChargedHadron", patMuon->momentum(), 0.01, 1.0, -1., outputStream_);
+      }
+      if ( pfGammaSource_.label() != "" ) {
+	edm::Handle<reco::PFCandidateCollection> pfGammas;
+	evt.getByLabel(pfGammaSource_, pfGammas);
+	printPFCandidateIsolationInfo(pfGammas, "PFGamma", patMuon->momentum(), 0.01, 1.0, -1., outputStream_);
+      }
+      if ( pfNeutralHadronSource_.label() != "" ) {
+	edm::Handle<reco::PFCandidateCollection> pfNeutralHadrons;
+	evt.getByLabel(pfNeutralHadronSource_, pfNeutralHadrons);
+	printPFCandidateIsolationInfo(pfNeutralHadrons, "PFNeutralHadron", patMuon->momentum(), 0.01, 1.0, -1., outputStream_);
       }
       *outputStream_ << " caloIso = " << patMuon->caloIso() << std::endl;
       *outputStream_ << " ecalIso = " << patMuon->ecalIso() << std::endl;
