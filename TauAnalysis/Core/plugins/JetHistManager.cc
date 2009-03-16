@@ -2,7 +2,6 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DataFormats/PatCandidates/interface/Jet.h"
 
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
@@ -54,8 +53,6 @@ void JetHistManager::bookHistograms(const edm::EventSetup& setup)
 
     dqmStore.setCurrentFolder(dqmDirectory_store_);
 
-//--- book histograms for Pt, eta and phi distributions
-//    of muons passing all id. and isolation selections
     hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 50, -0.5, 49.5);
 
     bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
