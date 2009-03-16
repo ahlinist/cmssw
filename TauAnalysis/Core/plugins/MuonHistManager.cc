@@ -85,6 +85,9 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
 
     dqmStore.setCurrentFolder(dqmDirectory_store_);
 
+//--- book histogram for number of muons in each event
+    hNumMuons_ = dqmStore.book1D("NumMuons", "NumMuons", 10, -0.5, 9.5);
+
 //--- book histograms for Pt, eta and phi distributions
 //    of muons passing all id. and isolation selections
     bookMuonHistograms(dqmStore, hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
@@ -147,6 +150,7 @@ void MuonHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventS
   iEvent.getByLabel(muonSrc_, patMuons);
 
   //std::cout << " patMuons.size = " << patMuons->size() << std::endl;
+  hNumMuons_->Fill(patMuons->size());
 
   for ( std::vector<pat::Muon>::const_iterator patMuon = patMuons->begin(); 
 	patMuon != patMuons->end(); ++patMuon ) {

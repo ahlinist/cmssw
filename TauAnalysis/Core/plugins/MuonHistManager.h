@@ -46,6 +46,8 @@ class MuonHistManager : public HistManagerBase
   double muonIsoPtThresholdIncr_;
 
 //--- histograms
+  MonitorElement* hNumMuons_;
+
   MonitorElement* hMuonPt_;
   MonitorElement* hMuonEta_;
   MonitorElement* hMuonPtVsEta_;
