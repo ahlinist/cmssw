@@ -70,9 +70,9 @@ process_WplusJets = cms.PSet(
   )
 )
 
-## # electron enriched QCD generated with Pythia
-## # in the range 20 GeV < Pt(hat) < 30 GeV
-## # integrated luminosity = 9.15 pb^-1
+# electron enriched QCD generated with Pythia
+# in the range 20 GeV < Pt(hat) < 30 GeV
+# integrated luminosity = 9.15 pb^-1
 process_QCD_BCtoE_Pt20to30 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
@@ -86,9 +86,9 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
   )
 )
 
-## # electron enriched QCD generated with Pythia
-## # in the range 30 GeV < Pt(hat) < 80 GeV
-## # integrated luminosity = 7.34 pb^-1
+# electron enriched QCD generated with Pythia
+# in the range 30 GeV < Pt(hat) < 80 GeV
+# integrated luminosity = 7.34 pb^-1
 process_QCD_BCtoE_Pt30to80 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
@@ -102,17 +102,17 @@ process_QCD_BCtoE_Pt30to80 = cms.PSet(
   )
 )
 
-## # muon enriched QCD generated with Pythia
-## # integrated luminosity = 0.044 pb^-1
-process_QCD_InclusivePPmuX = cms.PSet(
+# muon enriched QCD generated with Pythia
+# integrated luminosity = 0.044 pb^-1
+process_InclusivePPmuX = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
     scaleFactor = cms.double(dataIntLumi/0.044),
-    dqmDirectory_store = cms.string('QCD_InclusivePPmuX')
+    dqmDirectory_store = cms.string('InclusivePPmuX')
   ),
   config_dqmHistPlotter = cms.PSet(
-    dqmDirectory = cms.string('QCD_InclusivePPmuX'),
-    legendEntry = cms.string('#muQCD'),
+    dqmDirectory = cms.string('InclusivePPmuX'),
+    legendEntry = cms.string('pp#muX'),
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )
@@ -128,7 +128,7 @@ process_PPmuXptGt20 = cms.PSet(
   ),
   config_dqmHistPlotter = cms.PSet(
     dqmDirectory = cms.string('PPmuXptGt20'),
-    legendEntry = cms.string('#muQCD #hat{P}_T > 20 GeV'),
+    legendEntry = cms.string('pp#muX #hat{P}_T > 20 GeV'),
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )

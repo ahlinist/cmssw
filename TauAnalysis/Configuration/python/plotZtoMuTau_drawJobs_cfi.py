@@ -17,12 +17,10 @@ plots_ZtoMuTau = cms.PSet(
   legend = cms.string('regular'),
   labels = cms.vstring('mcNormScale'),                   
   drawOptionSet = cms.string('default'),
-  stack = cms.vstring('Ztautau',
-                      'qcdSum',
-                      'Zmumu',
-                      'WplusJets',
-                      
-                      )
+  stack = cms.vstring( 'Ztautau',
+                       'Zmumu',
+                       'WplusJets',
+                       'qcdSum' )
 )
 
 #--------------------------------------------------------------------------------
