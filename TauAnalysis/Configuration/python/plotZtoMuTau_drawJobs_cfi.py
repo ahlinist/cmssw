@@ -7,16 +7,22 @@ plots_ZtoMuTau = cms.PSet(
   plots = cms.PSet(  
     dqmMonitorElements = cms.vstring(''),
     processes = cms.vstring( 'Ztautau',
+                             'Zmumu',
+                             'WplusJets',
                              'qcdSum' )
   ),
   xAxis = cms.string('unlabeled'),
-  #yAxis = cms.string('numEntries_linear'),
-  yAxis = cms.string('numEntries_log'),
+  yAxis = cms.string('numEntries_linear'),
+  #yAxis = cms.string('numEntries_log'),
   legend = cms.string('regular'),
   labels = cms.vstring('mcNormScale'),                   
   drawOptionSet = cms.string('default'),
-  stack = cms.vstring( 'Ztautau',
-                       'qcdSum' )
+  stack = cms.vstring('Ztautau',
+                      'qcdSum',
+                      'Zmumu',
+                      'WplusJets',
+                      
+                      )
 )
 
 #--------------------------------------------------------------------------------
@@ -299,6 +305,7 @@ plots_ZtoMuTau_mtMuonTauMET_finalEventSample.plots.dqmMonitorElements = cms.vstr
 )
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample.title = cms.string('M_{T}(Muon + Tau + MET) (final Event sample)')
 plots_ZtoMuTau_mtMuonTauMET_finalEventSample.xAxis = cms.string('Mt')
+#plots_ZtoMuTau_mtMuonTauMET_finalEventSample.
 
 plots_ZtoMuTau_mCDFmethod_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mCDFmethod_finalEventSample.plots.dqmMonitorElements = cms.vstring(
