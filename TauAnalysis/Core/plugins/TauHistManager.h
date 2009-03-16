@@ -49,6 +49,8 @@ class TauHistManager : public HistManagerBase
   double tauIsoPtThresholdIncr_;
 
 //--- histograms
+  MonitorElement* hNumTaus_;
+
   MonitorElement* hTauPt_;
   MonitorElement* hTauEta_;
   MonitorElement* hTauPtVsEta_;

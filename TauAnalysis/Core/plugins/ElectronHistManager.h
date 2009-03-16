@@ -48,6 +48,8 @@ class ElectronHistManager : public HistManagerBase
   double electronEtaMinEndcap_;
 
 //--- histograms
+  MonitorElement* hNumElectrons_; 
+
   MonitorElement* hElectronPt_; 
   MonitorElement* hElectronEta_;
   MonitorElement* hElectronPtVsEta_;

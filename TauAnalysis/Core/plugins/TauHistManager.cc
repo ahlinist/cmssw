@@ -111,8 +111,11 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
 
     dqmStore.setCurrentFolder(dqmDirectory_store_);
 
+//--- book histogram for number of tau-jets in each event
+    hNumTaus_ = dqmStore.book1D("NumTaus", "NumTaus", 10, -0.5, 9.5);
+
 //--- book histograms for Pt, eta and phi distributions
-//    of taus passing all id. and isolation selections
+//    of tau-jets passing all id. and isolation selections
     bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
     hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
 
@@ -190,6 +193,7 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
   iEvent.getByLabel(tauSrc_, patTaus);
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
+  hNumTaus_->Fill(patTaus->size());
 
   int patTauIndex = 0;
   for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 

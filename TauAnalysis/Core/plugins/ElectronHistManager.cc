@@ -92,6 +92,9 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
 
     dqmStore.setCurrentFolder(dqmDirectory_store_);
 
+//--- book histogram for number of electrons in each event
+    hNumElectrons_ = dqmStore.book1D("NumElectrons", "NumElectrons", 10, -0.5, 9.5);
+
 //--- book histograms for Pt, eta and phi distributions
 //    of electrons passing all id. and isolation selections
     bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
@@ -156,6 +159,7 @@ void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::Ev
   iEvent.getByLabel(electronSrc_, patElectrons);
 
   //std::cout << " patElectrons.size = " << patElectrons->size() << std::endl;
+  hNumElectrons_->Fill(patElectrons->size());
 
   for ( std::vector<pat::Electron>::const_iterator patElectron = patElectrons->begin(); 
 	patElectron != patElectrons->end(); ++patElectron ) {
