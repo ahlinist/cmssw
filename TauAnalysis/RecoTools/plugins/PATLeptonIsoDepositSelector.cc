@@ -101,10 +101,12 @@ void PATLeptonIsoDepositSelector<T>::select(const edm::Handle<collection>& patLe
 
     if ( isoDeposit ) {
       double sumPt = isoDeposit->depositWithin(dRisoCone_, isoParam_);
+      //std::cout << "sumPt = " << sumPt << std::endl;
       double num = isoDeposit->countWithin(dRisoCone_, isoParam_);
+      //std::cout << "num = " << num << std::endl;
 
-      if ( sumPtMax_ > 0. && sumPt > sumPtMax_ ) continue;
-      if ( num       > 0  && num   > numMax_   ) continue;
+      if ( sumPtMax_ >  0. && sumPt > sumPtMax_ ) continue;
+      if ( numMax_   >= 0  && num   > numMax_   ) continue;
 
       selected_.push_back(&(*patLepton)); 
     } else {
