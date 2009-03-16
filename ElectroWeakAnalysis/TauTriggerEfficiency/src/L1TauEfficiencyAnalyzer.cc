@@ -27,6 +27,8 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   L1GtObjectMapRecordSource = iConfig.getParameter<edm::InputTag>("L1GtObjectMapRecord");;
   HLTResultsSource = iConfig.getParameter<edm::InputTag>("HltResults");;
   
+  L1TauTriggerSource = iConfig.getParameter<edm::InputTag>("L1TauTriggerSource");
+
   jetMatchingCone = iConfig.getParameter<double>("L1JetMatchingCone");
 
   l1tree = trigtree;
@@ -47,6 +49,10 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1Jet", &hasL1Jet, "hasMatchedL1Jet/B");
   l1tree->Branch("hasMatchedL1TauJet", &hasL1TauJet, "hasMatchedL1TauJet/B");
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
+
+  l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet, "hasTriggeredAndMatchedL1TauJet/B");
+  l1tree->Branch("hasTriggeredAndMatchedL1Jet", &hasTriggeredL1Jet, "hasTriggeredAndMatchedL1Jet/B");
+
 
   _L1EvtCnt = 0;
   _HltEvtCnt = 0;
@@ -80,6 +86,8 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   hasMaxEt = 0;
   hasSoft = 0;
   hasHard = 0;
+  hasTriggeredL1TauJet = 0;
+  hasTriggeredL1Jet = 0;
 
   // Get data from event 
   Handle<FastL1BitInfoCollection> bitInfos;
@@ -234,6 +242,56 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       _hltFlag[itrig] = accept;
     }
   }
+
+
+  // Find fired L1 trigger objects
+  std::vector<l1extra::L1JetParticleRef> tauCandRefVec;
+  std::vector<l1extra::L1JetParticleRef> jetCandRefVec;
+
+  edm::Handle<trigger::TriggerFilterObjectWithRefs> l1TriggeredTaus;
+  if(iEvent.getByLabel(L1TauTriggerSource,l1TriggeredTaus)) {
+
+    tauCandRefVec.clear();
+    jetCandRefVec.clear();
+
+    l1TriggeredTaus->getObjects(trigger::TriggerL1TauJet,tauCandRefVec);
+    l1TriggeredTaus->getObjects(trigger::TriggerL1CenJet,jetCandRefVec);
+
+    //std::cout<<tauCandRefVec.size()<<std::endl;
+    minDR = 99999999.;
+    for( unsigned int iL1Tau=0; iL1Tau <tauCandRefVec.size();iL1Tau++) { 
+      if(&tauCandRefVec[iL1Tau]) {
+	
+	double DR = deltaR(tauCandRefVec[iL1Tau]->eta(), tauCandRefVec[iL1Tau]->phi(), 
+			   tau.Eta(), tau.Phi());
+	if(DR < jetMatchingCone && DR < minDR) {
+	  minDR = DR;
+	  hasTriggeredL1TauJet = 1;
+	  //std::cout<<"Found triggered tau: "<<tauCandRefVec[iL1Tau]->et()
+	  //   <<" "<<tauCandRefVec[iL1Tau]->eta()
+	  //   <<" "<<tauCandRefVec[iL1Tau]->phi()<<std::endl;
+	}
+      }
+    }
+    minDR = 99999999.;
+    for( unsigned int iL1Jet=0; iL1Jet <jetCandRefVec.size();iL1Jet++) {  
+      if(&jetCandRefVec[iL1Jet]) {
+	double DR = deltaR(jetCandRefVec[iL1Jet]->eta(), jetCandRefVec[iL1Jet]->phi(), 
+			   tau.Eta(), tau.Phi());
+	if(DR < jetMatchingCone && DR < minDR) {
+	  minDR = DR;
+	  hasTriggeredL1Jet = 1;
+	  //std::cout<<"Found triggered jet: "<<jetCandRefVec[iL1Jet]->et()
+	  //   <<" "<<jetCandRefVec[iL1Jet]->eta()
+	  //   <<" "<<jetCandRefVec[iL1Jet]->phi()<<std::endl;
+	}
+      }
+    }
+
+  }
+
+
+
 
 
 } 

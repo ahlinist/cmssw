@@ -1,3 +1,5 @@
+import copy
+
 process = cms.Process("TTEffAnalysis")
 
 process.maxEvents = cms.untracked.PSet(
@@ -29,6 +31,21 @@ process.source = cms.Source("PoolSource",
 #   discriminator = cms.InputTag("pfRecoTauDiscriminationHighEfficiency")
 #)
 
+process.load("L1Trigger/Configuration/L1Config_cff")
+process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
+#process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1030/L1Menu_2008MC_2E30_Unprescaled_cff")
+process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
+process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
+process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
+process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
+#process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet80")
+#process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
+process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis")
+process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap")
+process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles")
+process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles")
+
+
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
@@ -40,6 +57,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L1GtReadoutRecord       = cms.InputTag("hltGtDigis"),
         L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap"),
         HltResults              = cms.InputTag("TriggerResults::HLT"),
+        L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
         L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
         L2matchingDeltaR        = cms.double(0.3),
@@ -53,7 +71,8 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 
 process.runEDAna = cms.Path(
 #    process.PFTausSelected*
-    process.TTEffAnalysis
+    process.tteffL1GTSeed
+    *process.TTEffAnalysis
 ) 
 
 #process.o1 = cms.OutputModule("PoolOutputModule",

@@ -29,6 +29,8 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Framework/interface/TriggerNames.h"
 
+#include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
+
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
@@ -67,6 +69,8 @@ class L1TauEfficiencyAnalyzer {
         InputTag L1GtObjectMapRecordSource;
         InputTag HLTResultsSource;
 
+        InputTag L1TauTriggerSource;
+
 	double   jetMatchingCone;
 
         // Output tree and related variables
@@ -75,6 +79,9 @@ class L1TauEfficiencyAnalyzer {
         float jetPt, jetEt, jetEta, jetPhi;
         char hasL1Jet, hasL1TauJet, hasL1CenJet;
         char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
+
+	char hasTriggeredL1TauJet;
+ 	char hasTriggeredL1Jet;
 
 	int _L1EvtCnt;
 	int _HltEvtCnt;
