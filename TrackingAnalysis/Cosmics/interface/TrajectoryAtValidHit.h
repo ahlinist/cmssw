@@ -1,6 +1,11 @@
 #ifndef TrajectoryAtValidHit_H
 #define TrajectoryAtValidHit_H
 
+// Class to hold the trajectory information at an invalid hit
+// For matched layers, the invalid hit on the trajectory is located
+// on the matched surface. To compare with rechits propagate the 
+// information to the actual sensor surface for rphi or stereo 
+
 #include "TrackingTools/PatternTools/interface/TrajectoryMeasurement.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementError.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementVector.h"
@@ -30,7 +35,8 @@ public:
 
   LocalPoint project(const GeomDet *det, const GeomDet* projdet, LocalPoint position, LocalVector trackdirection) const; 
   bool isDoubleSided(uint iidd) const;
- 
+  TrajectoryStateOnSurface tsos() const;
+
 private:
 
   TrajectoryStateOnSurface theCombinedPredictedState;
