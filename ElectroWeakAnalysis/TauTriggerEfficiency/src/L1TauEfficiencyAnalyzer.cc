@@ -51,7 +51,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("hasMatchedL1CenJet", &hasL1CenJet, "hasMatchedL1CenJet/B");
 
   l1tree->Branch("hasTriggeredAndMatchedL1TauJet", &hasTriggeredL1TauJet, "hasTriggeredAndMatchedL1TauJet/B");
-  l1tree->Branch("hasTriggeredAndMatchedL1Jet", &hasTriggeredL1Jet, "hasTriggeredAndMatchedL1Jet/B");
+  l1tree->Branch("hasTriggeredAndMatchedL1CenJet", &hasTriggeredL1CenJet, "hasTriggeredAndMatchedL1CenJet/B");
 
 
   _L1EvtCnt = 0;
@@ -87,7 +87,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   hasSoft = 0;
   hasHard = 0;
   hasTriggeredL1TauJet = 0;
-  hasTriggeredL1Jet = 0;
+  hasTriggeredL1CenJet = 0;
 
   // Get data from event 
   Handle<FastL1BitInfoCollection> bitInfos;
@@ -280,7 +280,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
 			   tau.Eta(), tau.Phi());
 	if(DR < jetMatchingCone && DR < minDR) {
 	  minDR = DR;
-	  hasTriggeredL1Jet = 1;
+	  hasTriggeredL1CenJet = 1;
 	  //std::cout<<"Found triggered jet: "<<jetCandRefVec[iL1Jet]->et()
 	  //   <<" "<<jetCandRefVec[iL1Jet]->eta()
 	  //   <<" "<<jetCandRefVec[iL1Jet]->phi()<<std::endl;

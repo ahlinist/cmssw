@@ -81,7 +81,7 @@ class L1TauEfficiencyAnalyzer {
         char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
 
 	char hasTriggeredL1TauJet;
- 	char hasTriggeredL1Jet;
+ 	char hasTriggeredL1CenJet;
 
 	int _L1EvtCnt;
 	int _HltEvtCnt;
