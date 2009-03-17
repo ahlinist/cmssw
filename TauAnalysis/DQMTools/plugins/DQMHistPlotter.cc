@@ -930,9 +930,6 @@ void DQMHistPlotter::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-//--- stop ROOT from keeping references to all hsitograms
-  //TH1::AddDirectory(false);
-
 //--- stop ROOT from opening X-window for canvas output
 //    (in order to be able to run in batch mode) 
   gROOT->SetBatch(true);

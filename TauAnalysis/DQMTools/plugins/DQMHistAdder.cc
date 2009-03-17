@@ -87,9 +87,6 @@ void DQMHistAdder::endJob()
     return;
   }
 
-//--- stop ROOT from keeping references to all histograms
-  //TH1::AddDirectory(false);
-
 //--- add histograms
   //std::cout << "--> adding histograms..." << std::endl;
   DQMStore& dqmStore = (*edm::Service<DQMStore>());

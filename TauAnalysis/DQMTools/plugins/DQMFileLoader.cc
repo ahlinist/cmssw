@@ -187,9 +187,6 @@ void DQMFileLoader::endJob()
     return;
   }
 
-//--- stop ROOT from keeping references to all histograms
-  //TH1::AddDirectory(false);
-
 //--- check that inputFiles exist;
 //    store list of directories existing in inputFile,
 //    in order to separate histogram directories existing in the inputFile from directories existing in DQMStore
