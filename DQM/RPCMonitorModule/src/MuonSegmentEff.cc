@@ -88,6 +88,7 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   std::string folder = "Muons/MuonSegEff/";
   dbe->setCurrentFolder(folder);
   statistics = dbe->book1D("Statistics","All Statistics",33,0.5,33.5);
+  bxVsy = dbe->book2D("bxVsy","BX Vs distance to the top of the chamber",7,-3.5,3.5,150,0,150);
   
   if(debug) std::cout<<"booking Global histograms"<<std::endl;
 
@@ -605,6 +606,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  //-------RecHitPart Just For Residual--------
 		  int countRecHits = 0;
 		  int cluSize = 0;
+		  int bx = 100;
 		  float minres = 3000.;
 		  
 		  if(debug) std::cout<<"DT  \t \t \t \t Getting RecHits in Roll Asociated"<<std::endl;
@@ -620,6 +622,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    if(fabs(res)<fabs(minres)){
 		      minres=res;
 		      cluSize = recHit->clusterSize();
+		      bx=recHit->BunchX(); 
 		      if(debug) std::cout<<"DT  \t \t \t \t \t \t New Min Res "<<res<<"cm."<<std::endl;
 		    }
 		  }
@@ -640,6 +643,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    }
 		  }
 		  if(prediction && anycoincidence){
+		    float distocontact = stripl*0.5 + PointExtrapolatedRPCFrame.y();
+		    if(minres<stripw*0.5) bxVsy->Fill(bx,distocontact);
 		    if(debug) std::cout<<"DT  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Norm of Cosine Directors="<<dx*dx+dy*dy+dz*dz<<"~1?"<<std::endl;
 		    
