@@ -22,12 +22,12 @@ loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
 )
 
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
-   qcdSum = cms.PSet(
-     dqmDirectories_input = cms.vstring('InclusivePPmuX',
-                                        'PPmuXptGt20'),
-     dqmDirectory_output = cms.string('qcdSum')
-   )                          
- )
+  qcdSum = cms.PSet(
+    dqmDirectories_input = cms.vstring('InclusivePPmuX',
+                                       'PPmuXptGt20'),
+    dqmDirectory_output = cms.string('qcdSum')
+  )                          
+)
 
 addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
   smSum = cms.PSet(
@@ -40,7 +40,7 @@ addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
 )
 
 addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smSum)
-#addZtoMuTau = cms.Sequence(addZtoMuTau_smSum)
+
 plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
   processes = cms.PSet(
     Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmHistPlotter),
