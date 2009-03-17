@@ -18,42 +18,34 @@ muTauHistManagers_factorizedWithMuonIsolation = cms.vstring( 'genPhaseSpaceEvent
 
 # muon candidate selection with "loose" muon isolation criteria applied
 muonTrkIsoCutLooseMuonIsolation = copy.deepcopy(muonTrkIsoCut)
-muonTrkIsoCutLooseMuonIsolation.name = cms.string('muonTrkIsoCutLooseMuonIsolation')
 muonTrkIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoCumulativeLooseMuonIsolation')
 muonTrkIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoIndividualLooseMuonIsolation')
 
 muonEcalIsoCutLooseMuonIsolation = copy.deepcopy(muonEcalIsoCut)
-muonEcalIsoCutLooseMuonIsolation.name = cms.string('muonEcalIsoCutLooseMuonIsolation')
 muonEcalIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoCumulativeLooseMuonIsolation')
 muonEcalIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividualLooseMuonIsolation')
 
 muonAntiPionCutLooseMuonIsolation = copy.deepcopy(muonAntiPionCut)
-muonAntiPionCutLooseMuonIsolation.name = cms.string('muonAntiPionCutLooseMuonIsolation')
 muonAntiPionCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoCumulativeLooseMuonIsolation')
 muonAntiPionCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoIndividualLooseMuonIsolation')
 
 muonTrkIPcutLooseMuonIsolation = copy.deepcopy(muonTrkIPcut)
-muonTrkIPcutLooseMuonIsolation.name = cms.string('muonTrkIPcutLooseMuonIsolation')
 muonTrkIPcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation')
 muonTrkIPcutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPindividualLooseMuonIsolation')
 
 # selection of di-tau candidates composed of combination of tau-jet with "loosely" isolated muon 
 diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauAntiOverlapVeto)
-diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.name = cms.string('diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation')
 diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
 
 diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauAcoplanarityCut)
-diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation.name = cms.string('diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation')
 diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarityCumulativeLooseMuonIsolation')
 diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAcoplanarityIndividualLooseMuonIsolation')
 
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauZeroChargeCut)
-diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.name = cms.string('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation')
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation')
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividualLooseMuonIsolation')
 
 diTauCandidateForMuTauMt1METCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauMt1METCut)
-diTauCandidateForMuTauMt1METCutLooseMuonIsolation.name = cms.string('diTauCandidateForMuTauMt1METCutLooseMuonIsolation')
 diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
 diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METIndividualLooseMuonIsolation')
 
@@ -169,7 +161,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsHLTmatchCumulative')
   ),
   cms.PSet(
-    filter = cms.string('muonTrkIsoCutLooseMuonIsolation'),
+    filter = cms.string('muonTrkIsoCut'),
     title = cms.string('Muon Track iso.'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -178,7 +170,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulativeLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('muonEcalIsoCutLooseMuonIsolation'),
+    filter = cms.string('muonEcalIsoCut'),
     title = cms.string('Muon ECAL iso.'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -187,7 +179,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulativeLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('muonAntiPionCutLooseMuonIsolation'),
+    filter = cms.string('muonAntiPionCut'),
     title = cms.string('Muon pi-Veto'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -196,7 +188,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulativeLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('muonTrkIPcutLooseMuonIsolation'),
+    filter = cms.string('muonTrkIPcut'),
     title = cms.string('Muon Track IP'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -300,7 +292,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
 
   #selection of muon + tau-jet combinations
   cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation'),
+    filter = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
     title = cms.string('dR(Muon-Tau) > 0.7'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -311,7 +303,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
                           'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation'),
+    filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
     title = cms.string('dPhi(Muon-MET) < 2.4'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -322,7 +314,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
                           'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarityCumulativeLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation'),
+    filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
     title = cms.string('Charge(Muon+Tau) = 0'),
     saveRunEventNumbers = cms.vstring('')
   ),
@@ -333,7 +325,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
                           'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation'),
   ),
   cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauMt1METCutLooseMuonIsolation'),
+    filter = cms.string('diTauCandidateForMuTauMt1METCut'),
     title = cms.string('M_{T}(Muon-MET) < 60 GeV'),
     saveRunEventNumbers = cms.vstring('passed_cumulative')
   ),
