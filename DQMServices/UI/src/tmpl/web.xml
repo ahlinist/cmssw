@@ -209,4 +209,8 @@
         <url-pattern>/runchartdata</url-pattern>
     </servlet-mapping>
 
+    <session-config>
+      <session-timeout>240</session-timeout> 
+    </session-config>
+
 </web-app>
