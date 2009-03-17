@@ -28,38 +28,53 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
 
   cfgError_ = 0;
 
-  cfgScaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : -1.;
-  //std::cout << "cfgScaleFactor = " << cfgScaleFactor_ << std::endl;
-
-  if ( cfg.exists("numerator") && cfg.exists("denominator") && cfg.exists("type") ) {
-    numerator_ = cfg.getParameter<std::string>("numerator");
-    denominator_ = cfg.getParameter<std::string>("denominator");
-    type_ = cfg.getParameter<std::string>("type");
-  } else {
-    numerator_ = "";
-    denominator_ = "";
-    type_ =  "";
-  }
-  //std::cout << "numerator = " << numerator_ << std::endl;
-  //std::cout << "denominator = " << denominator_ << std::endl;
-  //std::cout << "type = " << type_ << std::endl;
-
   dqmDirectory_input_ = cfg.getParameter<std::string>("dqmDirectory_input");
+  std::cout << " dqmDirectory_input = " << dqmDirectory_input_ << std::endl;
   if ( cfg.exists("dqmSubDirectories_input") ) dqmSubDirectories_input_ = cfg.getParameter<vstring>("dqmSubDirectories_input");
+  std::cout << " dqmSubDirectories_input = " << format_vstring(dqmSubDirectories_input_) << std::endl;
 
+  unsigned numScales = 0;
+
+  if ( cfg.exists("scaleFactor") ) {
+    cfgScaleFactor_ = cfg.getParameter<double>("scaleFactor");
+    ++numScales;
+  } else {
+    cfgScaleFactor_ = -1.;
+  }
+  cfgScaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : -1.;
+  std::cout << " scaleFactor = " << cfgScaleFactor_ << std::endl;
+
+  if ( cfg.exists("dqmDirectory_normalization") &&
+       cfg.exists("meNameNumerator") && 
+       cfg.exists("meNameDenominator") && 
+       cfg.exists("meType") ) {
+    dqmDirectory_normalization_ = cfg.getParameter<std::string>("dqmDirectory_normalization");
+    meNameNumerator_ = cfg.getParameter<std::string>("meNameNumerator");
+    meNameDenominator_ = cfg.getParameter<std::string>("meNameDenominator");
+    meType_ = cfg.getParameter<std::string>("meType");
+    ++numScales;
+  } else {
+    dqmDirectory_normalization_ = "";
+    meNameNumerator_ = "";
+    meNameDenominator_ = "";
+    meType_ =  "";
+  }
+  std::cout << " dqmDirectory_normalization = " << dqmDirectory_normalization_ << std::endl;
+  std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
+  std::cout << " meNameDenominator = " << meNameDenominator_ << std::endl;
+  std::cout << " meType = " << meType_ << std::endl;
+ 
   dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
+  std::cout << " dqmDirectory_output = " << dqmDirectory_output_ << std::endl;
 
 //--- check that either:
 //     o scaleFactor
 //    or
 //     o numerator + denominator
 //    configuration parameters are defined 
-  unsigned numScales = 0;
-  if ( cfgScaleFactor_ != -1. ) ++numScales;
-  if ( numerator_ != "" && denominator_ != "" && type_ != "" ) ++numScales;
   if ( numScales != 1 ) {
     edm::LogError("DQMHistScaler") << " Need to specify either Configuration parameter 'scaleFactor'"
-				   << " or 'numerator', 'denominator' and 'type' !!";
+				   << " or 'dqmDirectory_normalization', 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
     cfgError_ = 1;
   } 
 
@@ -84,9 +99,14 @@ std::string dqmDirectoryName_full(const std::string& dqmDirectory, const std::st
 }
 
 
-double getMonitorElementNorm(DQMStore& dqmStore, const std::string& meName, const std::string& meType, int& errorFlag)
+double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory, 
+			     const std::string& meName, const std::string& meType, int& errorFlag)
 {
-  MonitorElement* me = dqmStore.get(meName);
+  std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
+  //std::cout << " meName_full = " <<  meName_full << std::endl;
+
+  dqmStore.setCurrentFolder(dqmDirectory);
+  MonitorElement* me = dqmStore.get(meName_full);
 
   if ( meType == "real" ) {
     return me->getFloatValue();
@@ -131,15 +151,15 @@ void DQMHistScaler::endJob()
     scaleFactor = cfgScaleFactor_;
   } else {
     int errorFlag = 0;
-    double normNumerator = getMonitorElementNorm(dqmStore, numerator_, type_, errorFlag);
-    double normDenominator = getMonitorElementNorm(dqmStore, denominator_, type_, errorFlag);
+    double normNumerator = getMonitorElementNorm(dqmStore, dqmDirectory_normalization_, meNameNumerator_, meType_, errorFlag);
+    double normDenominator = getMonitorElementNorm(dqmStore, dqmDirectory_normalization_, meNameDenominator_, meType_, errorFlag);
     if ( errorFlag ) {
       edm::LogError ("endJob") << " Failed to access numerator and denominator Monitor Elements"
 			       << " --> histograms will NOT be scaled !!";
       return;
     }
 
-    scaleFactor = normNumerator/normDenominator;
+    scaleFactor = ( normDenominator > 0. ) ? normNumerator/normDenominator : 0.;
   }
   std::cout << " scaleFactor = " << scaleFactor << std::endl;
 
