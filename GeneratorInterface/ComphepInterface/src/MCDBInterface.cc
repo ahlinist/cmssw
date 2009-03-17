@@ -1,42 +1,44 @@
 //************************************
 //* Generators interface with the LCG MCDB
-//*
 //* Hector Naves Sordo 
-//* 
-//* First version: 25/10/06 
-//* 
+//* First version: 25/10/06
+//
+// Sandro Fonseca de Souza:20/11/08
+// Fixed a MCDB
+//  
 //************************************
-#include "GeneratorInterface/MadGraphInterface/interface/MCDBInterface.h"
-#include "FWCore/PluginManager/interface/PluginManager.h"
+#include "GeneratorInterface/ComphepInterface/interface/MCDBInterface.h"
 #include "FWCore/PluginManager/interface/standard.h"
+#include "Utilities/StorageFactory/interface/IOTypes.h"
 #include "Utilities/StorageFactory/interface/Storage.h"
 
 // Makes a local copy of a CASTOR file.
 // This code is a modified version of 
 // Utilities/StorageFactory/test/any.cpp by Vincenzo Innocente
-void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
+void mcdbGetInputFile(std::string  &compHEPInputFile, int &mcdbArticleID) {
   
   // Parse the filename from the MCDB CASTOR PATH
   // Needed for the local name.
-  int mcdbPathLength = madGraphInputFile.size();
-  int mcdbStartFromHere = madGraphInputFile.rfind("/",mcdbPathLength);
-  std::string mcdbLocalFileName = madGraphInputFile.substr(mcdbStartFromHere + 1);
+  int mcdbPathLength = compHEPInputFile.size();
+  int mcdbStartFromHere = compHEPInputFile.rfind("/",mcdbPathLength);
+  std::string mcdbLocalFileName = compHEPInputFile.substr(mcdbStartFromHere + 1);
   
   // Parse the MCDB Article Number from the MCDB CASTOR PATH
-  int mcdbStartArticleIDFromHere =  madGraphInputFile.rfind("/", mcdbStartFromHere - 1);
-  std::string mcdbArticleIDFromPath = madGraphInputFile.substr(mcdbStartArticleIDFromHere + 1, (mcdbStartFromHere - mcdbStartArticleIDFromHere) - 1);
+  int mcdbStartArticleIDFromHere =  compHEPInputFile.rfind("/", mcdbStartFromHere - 1);
+  std::string mcdbArticleIDFromPath = compHEPInputFile.substr(mcdbStartArticleIDFromHere + 1, (mcdbStartFromHere - mcdbStartArticleIDFromHere) - 1);
   
-  std::cout << "MCDBInterface: MCDB input file..." << std::endl;
+  std::cout << "MCDBInterface: MCDB input file... "<< compHEPInputFile<< std::endl;
   
-  // Makes the local copy of the CASTOR file 
-  edmplugin::PluginManager::configure(edmplugin::standard::config());
+  // Makes the local copy of the CASTOR file
+  // bug https://twiki.cern.ch/twiki/bin/view/LCG/CMSSWInterface 
+  //  edmplugin::PluginManager::configure(edmplugin::standard::config());
   
   IOOffset    mcdbFileSize = -1;
   StorageFactory::get()->enableAccounting(true);
-  bool mcdbFileExists = StorageFactory::get()->check(madGraphInputFile, &mcdbFileSize);
+  bool mcdbFileExists = StorageFactory::get()->check(compHEPInputFile, &mcdbFileSize);
   
   std::cout << "MCDB Article ID: " << mcdbArticleIDFromPath << std::endl;
-  std::cout << "Retrieving file: " << madGraphInputFile << std::endl;
+  std::cout << "Retrieving file: " << compHEPInputFile << std::endl;
   std::cout << "           Size: " << mcdbFileSize << std::endl;
   
   if (!mcdbFileExists) {
@@ -45,7 +47,7 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
       <<" Cannot open MCDB input file, check file name and path.";
   }
   
-  Storage  *mcdbFile =  StorageFactory::get()->open(madGraphInputFile);
+  Storage  *mcdbFile =  StorageFactory::get()->open(compHEPInputFile);
   char mcdbBuf [1024];
   IOSize mcdbNSize;
   
@@ -58,6 +60,8 @@ void mcdbGetInputFile(std::string  &madGraphInputFile, int &mcdbArticleID) {
   std::cout << "MCDBInterface: MCDB stats:\n" << StorageAccount::summaryText () <<std::endl <<std::endl;
 
   // Once the local copy of the file is done, we only need the filename and the Article ID...
-  madGraphInputFile = mcdbLocalFileName;
+  compHEPInputFile = mcdbLocalFileName;
   mcdbArticleID = atoi(mcdbArticleIDFromPath.c_str());
 }
+
+
