@@ -271,7 +271,6 @@ diTauCandidateForMuTauMt1METCut = cms.PSet(
   minNumber = cms.uint32(1)
 )
 
-
 # veto events containing additional central jets with Et > 20 GeV
 centralJetVeto = cms.PSet(
   name = cms.string('centralJetVeto'),
