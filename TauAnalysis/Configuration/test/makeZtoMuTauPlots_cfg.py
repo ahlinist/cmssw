@@ -14,5 +14,9 @@ process.source = cms.Source("EmptySource")
 
 process.p = cms.Path(process.makeZtoMuTauPlots)
 
+# import utility function to enable factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoMuTauPlots
+enableFactorization_makeZtoMuTauPlots(process)
+
 # print-out all python configuration parameter information
 #print process.dumpPython()
