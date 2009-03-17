@@ -12,16 +12,22 @@
  *   ( port from FAMOS )
  * Serge Slabospitsky 11/09/06
  *   read all possible cards for CompHEP Setup
+
+ * Sandro Fonseca de Souza :Implementation of TAUOLA (03/16/09)
+
  ***************************************/
 
 #define PYCOMP pycomp_
 
-//#include "FWCore/Framework/interface/GeneratedInputSource.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <map>
 #include <string>
 #include "HepMC/GenEvent.h"
+#include "CLHEP/Random/RandomEngine.h"
+
+
+#include "GeneratorInterface/CommonInterface/interface/TauolaInterface.h"
 
 
 namespace CLHEP
@@ -29,6 +35,9 @@ namespace CLHEP
   class RandFlat ;
   class HepRandomEngine;
 }
+
+
+
 
 namespace edm
 {
@@ -68,7 +77,18 @@ namespace edm
     /// Sets the MCDB Article ID (0 if none)
     int MCDBArticleID_;
 
-    
+
+ ///  input file
+      std::vector<std::string> CHfiles_;
+      std::string CHfile_;
+      std::string process_ ;
+      int CompHEPFirstEvent_;
+
+     // external generators (tauola,...)
+    bool useExternalGenerators_ ;
+    bool useTauola_ ;
+    bool useTauolaPolarization_ ;
+    TauolaInterface tauola_ ;
  
     // for single particle generation in pythia
     int    particleID;

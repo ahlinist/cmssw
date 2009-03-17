@@ -46,7 +46,8 @@
 
 ****************** read CompHEP output header and input parameters
 *...read input parameters from the file (INPARM.DAT)
-      CALL RINPAR
+c      CALL RINPAR
+
 *...switch to smear the mass of unstable particles in CompHEP out-state
       ISMEAR=1     ! 0 - no Breit-Wigner smearing, 1- yes
 *...set some phys. parameters (masses etc) in PYTHIA according to CompHEP
@@ -56,7 +57,9 @@
       CALL SUBNUM
 *...read header for event flow
       CALL RHEADER
-*...If firevt doesn't equal 1, processing begins from firevt event
+
+
+*...  If firevt doesn't equal 1, processing begins from firevt event
        call SHIFT(FIREVT)
 
 *************   USER can change these switches or add others ********
@@ -1150,58 +1153,139 @@ c      read(*,*)
 *...read input parameters from DAT file
 *   15.12.99  V.Ilyin
 *****************************************
-      SUBROUTINE RINPAR
-      COMMON/INPARM/IS,NEVPY,FIREVT,PROCESS,EVFILE
-      INTEGER IS,NEVPY,FIREVT
-      CHARACTER EVFILE*500,PROCESS*80,XXX*500,CMPRS*500
-      SAVE
-      character*132                            CXpar
-      integer         Ixpar 
-      double precision            RXpar
-      common /EXGPAR/ IXpar(100), RXpar(100), CXpar(100)
+c$$$      SUBROUTINE RINPAR
+c$$$      COMMON/INPARM/IS,NEVPY,FIREVT,PROCESS,EVFILE
+c$$$      INTEGER IS,NEVPY,FIREVT
+c$$$      CHARACTER EVFILE*500,PROCESS*80,XXX*500,CMPRS*500
+c$$$      SAVE
+c      character*132                            CXpar
+c      integer         Ixpar 
+c      double precision            RXpar
+c      common /EXGPAR/ IXpar(100), RXpar(100), CXpar(100)
 C
 *      OPEN (UNIT=22, ERR=3000, FILE='INPARM.DAT', STATUS='OLD')
 
 *      READ (UNIT=22, FMT='(A500)', ERR=1000) XXX
 *      READ (UNIT=22, FMT='(A500)', ERR=1000) XXX
 *      EVFILE = CMPRS(XXX)
-       EVFILE = CXpar(1) ! '../data/CompHEP_events.PEV'
+c       EVFILE = CXpar(1) ! '../data/CompHEP_events.PEV'
 *      READ (UNIT=22, FMT='(A500)', ERR=1000) XXX
 *      READ (UNIT=22, FMT='(A500)', ERR=1000) XXX
 *      PROCESS = CMPRS(XXX)
-       PROCESS = CXpar(2) !  ! p,p -> p,p'
-       WRITE(*,*) PROCESS   
-
+c       PROCESS = CXpar(2) !  ! p,p -> p,p'
+c       WRITE(*,*) PROCESS   
+c      CALL STRCATH(EVFILE,'.PEV',TMPSTR)
+c      WRITE(*,*) TMPSTR 
 c      READ (UNIT=22, FMT='(A500)', ERR=1000) XXX
 c      READ (UNIT=22, FMT='(i10)', ERR=1000) NEVPY
 
 *      READ(UNIT=22,FMT='(A500)', ERR=1000) XXX
 *      READ(UNIT=22,FMT='(i10)', ERR=1000) FIREVT
-       FIREVT = IXpar(1)
-      if (FIREVT.LT.1) then
-        write(*,*)'***Warning! First event parameter in INPARM.DAT file'
-	write(*,*)'    does not have to less than 1. So it is set to 1.'
-	FIREVT=1
-      endif
+c       FIREVT = IXpar(1)
+c      if (FIREVT.LT.1) then
+c        write(*,*)'***Warning! First event parameter in INPARM.DAT file'
+c	write(*,*)'    does not have to less than 1. So it is set to 1.'
+c	FIREVT=1
+c      endif
 
 *      CLOSE(UNIT=22)
+     
+
+*... input channel for unweighted events 
+c     IS = 44
+c      OPEN(IS,FILE = EVFILE,STATUS='OLD',ERR=3001)
+c      RETURN
+
+c 1000 WRITE(*,*)'Error: I can not read INPARM.DAT! Stop!'
+c      STOP
+
+c 3000 WRITE(*,*)'Error: I can not open INPARM.DAT! Stop!'
+c      STOP
+
+c 3001 WRITE(*,*)
+c     + 'Error: I can not open a file with events (',EVFILE,')! Stop!'
+c      STOP
+
+c      END
+
+*******************************************************************************************************************
+* Sandro Fonseca de Souza 17/11/08
+* Extern function to open CompHEP file  and others parameters
+******************************************************************************************************************
+*...C++ helper to open CompHEP event file passed as argument
+      subroutine MGOPEN(FILENAME)
+      CHARACTER*(*) FILENAME
+      INTEGER IS,NEVPY,FIREVT,MYFIREVT
+      COMMON/INPARM/IS,NEVPY,FIREVT,PROCESS,EVFILE
+      CHARACTER EVFILE*500,PROCESS*80,XXX*500,CMPRS*500
+      SAVE
+      character*132                            CXpar
+      integer         Ixpar 
+      double precision            RXpar
+      common /EXGPAR/RXpar(100), CXpar(100),IXpar(100)
+c      WRITE(*,*) "Filename: ",FILENAME 
+       EVFILE = FILENAME
 
 *... input channel for unweighted events 
       IS = 44
-      OPEN(IS,FILE=EVFILE,STATUS='OLD',ERR=3001)
+      OPEN(IS,FILE=EVFILE,STATUS='OLD',ERR=501)
       RETURN
-
- 1000 WRITE(*,*)'Error: I can not read INPARM.DAT! Stop!'
-      STOP
-
- 3000 WRITE(*,*)'Error: I can not open INPARM.DAT! Stop!'
-      STOP
-
- 3001 WRITE(*,*)
+  501 WRITE(*,*)
      + 'Error: I can not open a file with events (',EVFILE,')! Stop!'
       STOP
 
       END
+c..................................................................
+
+*******************************************************************************************************************
+* Sandro Fonseca de Souza 19/11/08
+* PROCESS this function is setting a process 
+******************************************************************************************************************
+*...C++ helper to passed PROCESS as argument
+      subroutine EXTPROCESS(MYPROCESS)
+      CHARACTER*(*) MYPROCESS
+      INTEGER IS,NEVPY,FIREVT,MYFIREVT
+      COMMON/INPARM/IS,NEVPY,FIREVT,PROCESS,EVFILE
+      CHARACTER EVFILE*500,PROCESS*80,XXX*500,CMPRS*500
+      SAVE
+      character*132                            CXpar
+      integer         Ixpar 
+      double precision            RXpar
+      common /EXGPAR/RXpar(100), CXpar(100),IXpar(100)
+
+      PROCESS = MYPROCESS !  ! p,p -> p,p'
+c      WRITE(*,*) "Process: ",PROCESS   
+
+       END
+c...................................................................
+
+*******************************************************************************************************************
+* Sandro Fonseca de Souza 19/11/08
+* CHFIRSTEVT this function is setting a number of first event in CompHEP data file 
+******************************************************************************************************************
+*...C++ helper to passed PROCESS as argument
+      subroutine CHFIRSTEVT(MYFIREVT)
+      CHARACTER*(*) MYPROCESS
+      INTEGER IS,NEVPY,FIREVT,MYFIREVT
+      COMMON/INPARM/IS,NEVPY,FIREVT,PROCESS,EVFILE
+      CHARACTER EVFILE*500,PROCESS*80,XXX*500,CMPRS*500
+      SAVE
+      character*132                            CXpar
+      integer         Ixpar 
+      double precision            RXpar
+      common /EXGPAR/RXpar(100), CXpar(100),IXpar(100)
+c.....First event
+c      FIREVT = IXpar(1)
+      FIREVT = MYFIREVT
+c      WRITE(*,*) "First event number: ",FIREVT       
+      if (FIREVT.LT.1) then
+        write(*,*)'***Warning! First event parameter in INPARM.DAT file'
+	write(*,*)'    does not have to less than 1. So it is set to 1.'
+      FIREVT=1
+      endif
+      END
+
+
 *************************************************
 *   Shift of event read from event file         *
 *                                               *
@@ -1217,7 +1301,8 @@ c      READ (UNIT=22, FMT='(i10)', ERR=1000) NEVPY
       SAVE
 
       N = 0
-       IF (FIRST.GT.1) THEN         
+c      WRITE(*,*) "First event number (SHIFT): ",FIRST
+      IF (FIRST.GT.1) THEN         
          DO 15 I=1,FIRST-1
            READ(IS,FMT='(I2)') nev
 	   N=N+1
@@ -1692,4 +1777,6 @@ C...User process initialization commonblock.
 
       RETURN
       END
+
+
 

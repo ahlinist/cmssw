@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/04/09 14:25:40 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/01/04 11:54:29 $
+ *  $Revision: 1.2 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -10,18 +10,29 @@
  *  Serge SLabospitsky : added Comphep reading tools 
  *
  *  Hector Naves : added MCDB Interface (25/10/06)
+ *
+ * Sandro Fonseca de Souza : Fix bug in PYR function (17/02/09)
+
+ * Sandro Fonseca de Souza: Implementation of TAUOLA (03/16/09)
+
  */
 
 
 #include "GeneratorInterface/ComphepInterface/interface/ComphepProducer.h"
 #include "GeneratorInterface/ComphepInterface/interface/ComphepWrapper.h"
-#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+
+#include "GeneratorInterface/ComphepInterface/interface/PYR.h"
+//#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/RandomNumberGenerator.h"
 #include "CLHEP/Random/JamesRandom.h"
 #include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandomEngine.h"
 
+
+#include <string>
 #include <iostream>
 #include "time.h"
 
@@ -39,7 +50,25 @@ using namespace std;
 #include "GeneratorInterface/CommonInterface/interface/Txgive.h"
 
 HepMC::IO_HEPEVT conv2;
-// ***********************
+
+//###################################################################
+
+//Extern function in comphep.f
+#define MGOPEN mgopen_
+extern "C" {
+    void mgopen_(const char *fname, int len);
+ }
+
+#define EXTPROCESS extprocess_
+extern "C" {
+    void extprocess_(const char *process, int lenprocess);
+ }
+
+#define CHFIRSTEVT chfirstevt_
+extern "C" {
+    void chfirstevt_(int&);
+ }
+
 
 // MCDB Interface
 #include "GeneratorInterface/ComphepInterface/interface/MCDBInterface.h"
@@ -48,21 +77,8 @@ HepMC::IO_HEPEVT conv2;
   static const unsigned long kNanoSecPerSec = 1000000000;
   static const unsigned long kAveEventPerSec = 200;
 
-// Added 12 March '08 by JMM as part of forcing Pythia to use
-// the random number engines from the random service.  The
-// remaining question is how to make sure this version of PYR
-// is used instead of the one embedded in Pythia.
 
-#define PYR pyr_
-extern "C" {
-  static HepRandomEngine* RandomEnginePointer;
-
-  double PYR(int idummy)
-  {
-    return RandomEnginePointer->flat();
-  }
-}
-
+//########################################################################
 ComphepProducer::ComphepProducer( const ParameterSet & pset) :
   EDProducer(), evt(0), 
   pythiaPylistVerbosity_ (pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0)),
@@ -70,9 +86,44 @@ ComphepProducer::ComphepProducer( const ParameterSet & pset) :
   maxEventsToPrint_ (pset.getUntrackedParameter<int>("maxEventsToPrint",1)),
   getInputFromMCDB_ (pset.getUntrackedParameter<bool>("getInputFromMCDB",false)),
   MCDBArticleID_ (pset.getParameter<int>("MCDBArticleID")),
+ 
+  CHfiles_ (pset.getUntrackedParameter<std::vector<std::string> >("ComphepInputFile")),
+  process_(pset.getUntrackedParameter<string>("process","")),
+  CompHEPFirstEvent_ (pset.getParameter<int>("CompHEPFirstEvent")),
+  useExternalGenerators_(false),
+  useTauola_(false),
+  useTauolaPolarization_(false),
   eventNumber_(0)
+
+
   {
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+
+
+//Introduction
+ cout <<"############################################################################################################################################"<< endl
+ << "####################### Using the COMPHEPInterface in CMSSW ################################################################################"<< endl
+      <<"############################################################################################################################################"<< endl
+      <<"## CompHEP: a package for evaluation of Feynman diagrams, integration over multi-particle phase space and event generation                ##"<< endl
+      <<"## (supported in part by RFBR grants).                                                                                                    ##"<< endl
+      <<"##                           CompHEP Collaboration (2008):                                                                                ##"<< endl
+      <<"## E.Boos, V.Bunichev, M.Dubinin, L.Dudko, V.Edneral, V.Ilyin, A.Kryukov, V.Savrin-SINP MSU, Moscow, Russia.A.Semenov-JINR, Dubna, Russia.##"<< endl
+      <<"## A.Sherstnev - SINP MSU, Moscow, Russia and University of Cambridge, UK.                                                                ##"<< endl
+      <<"##                 More information in :http://comphep.sinp.msu.ru/                                                                       ##"<< endl
+      <<"############################################################################################################################################"<< endl
+      <<"############################################################################################################################################"<< endl;
+
+  
+ 
+  cout << "----------------------------------------------" << endl;
+  cout << "Initialization ComphepProducer....." << endl;
+  cout << "----------------------------------------------" << endl;
+  
+ 
+
+
+ ///////////////////////////////////////////////////////////////////////
 
   //******
   // Interface with the LCG MCDB
@@ -84,9 +135,36 @@ ComphepProducer::ComphepProducer( const ParameterSet & pset) :
   //  
   //******
 
+  //Open input file
+   CHfile_ = CHFile_ = CHfiles_[0];
 
+//strip the input file name
+  if ( CHfile_.find("file:") || CHfile_.find("rfio:")){
+    CHfile_.erase(0,5);
+    }   
+
+  //########################################################################
+  //Move the name file from comphep.F 
+     const char* myfilename = CHfile_.c_str();
+     MGOPEN(myfilename,strlen(myfilename));
+     cout << "----------------------------------------------" << endl;
+     cout << "CompHepProducer input file is: " << CHfile_.c_str() << endl;
+     cout << "----------------------------------------------" << endl;
+     //external process
+     const char* myprocess =  process_.c_str();
+     EXTPROCESS(myprocess,strlen(myprocess));
+     //cout << "----------------------------------------------" << endl;
+     cout << "PROCESS in CompHEPInterface: " << process_.c_str() << endl;
+     //cout << "----------------------------------------------" << endl;
+    //setting the number of first event   
+     int myfirst =  CompHEPFirstEvent_;
+    CHFIRSTEVT(myfirst);
+     //cout << "----------------------------------------------" << endl;    
+    cout << "Number of first event in CompHEP data file: " << myfirst << endl;
+    cout << "----------------------------------------------" << endl;
   
-  
+    //###################################################################
+
   // PYLIST Verbosity Level
   // Valid PYLIST arguments are: 1, 2, 3, 5, 7, 11, 12, 13
   pythiaPylistVerbosity_ = pset.getUntrackedParameter<int>("pythiaPylistVerbosity",0);
@@ -153,18 +231,21 @@ ComphepProducer::ComphepProducer( const ParameterSet & pset) :
   }
 
 }
-
-
- // Read the Comphep parameter
-#include "GeneratorInterface/CommonInterface/interface/ExternalGenRead.inc"
-
-
+ 
+  //##########################################################################
 
   //In the future, we will get the random number seed on each event and tell 
   // pythia to use that new seed
-  edm::Service<RandomNumberGenerator> rng;
-  RandomEnginePointer = &(rng->getEngine());
 
+
+  cout << "----------------------------------------------" << endl;
+  cout << "ComphepProducer.....Setting Pythia random number seed" << endl;
+  cout << "----------------------------------------------" << endl;
+
+
+  edm::Service<RandomNumberGenerator> rng;
+  fRandomEngine = &(rng->getEngine());
+  randomEngine = fRandomEngine; 
   uint32_t seed = rng->mySeed();
   ostringstream sRandomSet;
   sRandomSet <<"MRPY(1)="<<seed;
@@ -172,25 +253,84 @@ ComphepProducer::ComphepProducer( const ParameterSet & pset) :
 
   call_pevmain(); 
 
-  //  call_pretauola(-1);     // TAUOLA initialization
+ 
+//##################################################################
+// TAUOLA, etc.
+//####################################################################
+  useExternalGenerators_ = pset.getUntrackedParameter<bool>("UseExternalGenerators",false);
+//  useTauola_ = pset.getUntrackedParameter<bool>("UseTauola", false);
+//  useTauolaPolarization_ = pset.getUntrackedParameter<bool>("UseTauolaPolarization", false);
 
-  cout << endl; // Statically add for the output
-  //********                                      
+  if ( useExternalGenerators_ ) {
+ // read External Generator parameters
+    ParameterSet ext_gen_params =
+       pset.getParameter<ParameterSet>("ExternalGenerators") ;
+    vector<string> extGenNames =
+       ext_gen_params.getParameter< vector<string> >("parameterSets");
+    for (unsigned int ip=0; ip<extGenNames.size(); ++ip )
+    {
+      string curSet = extGenNames[ip];
+      ParameterSet gen_par_set =
+         ext_gen_params.getUntrackedParameter< ParameterSet >(curSet);
+
+     cout << "----------------------------------------------" << endl;
+     cout << "Read External Generator parameter set "  << endl;
+     cout << "----------------------------------------------" << endl;
+     if ( curSet == "Tauola" )
+     {
+        useTauola_ = true;
+        if ( useTauola_ ) {
+           cout << "--> use TAUOLA" << endl;
+        } 
+	useTauolaPolarization_ = gen_par_set.getParameter<bool>("UseTauolaPolarization");
+        if ( useTauolaPolarization_ ) 
+	{
+           cout << "(Polarization effects enabled)" << endl;
+           tauola_.enablePolarizationEffects();
+        } 
+	else 
+	{
+           cout << "(Polarization effects disabled)" << endl;
+           tauola_.disablePolarizationEffects();
+        }
+	vector<string> cards = gen_par_set.getParameter< vector<string> >("InputCards");
+	cout << "----------------------------------------------" << endl;
+        cout << "Initializing Tauola" << endl;
+        for( vector<string>::const_iterator
+                itPar = cards.begin(); itPar != cards.end(); ++itPar )
+        {
+           // call_txgive(*itPar);
+	   TXGIVE( (*itPar).c_str(), (*itPar).length() );
+	   cout << "     " <<  (*itPar).c_str() << endl;
+        }
+        tauola_.initialize();
+        //call_pretauola(-1); // initialize TAUOLA package for tau decays
+     }
+    }
+    // cout << "----------------------------------------------" << endl;
+  }
+
+                            
   
   produces<HepMCProduct>();
 }
-
+//##########################################################################
 
 ComphepProducer::~ComphepProducer(){
   call_pystat(1);
-  //  call_pretauola(1);  // output from TAUOLA 
+ 
+if ( useTauola_ ) {
+    tauola_.print();
+   
+  }
+
   clear(); 
 }
-
+//####################################################################
 void ComphepProducer::clear() {
  
 }
-
+//##########################################################################
 
 void ComphepProducer::produce(Event & e, const EventSetup& es ) {
 
@@ -200,7 +340,12 @@ void ComphepProducer::produce(Event & e, const EventSetup& es ) {
     //
 
     call_pyevnt();      // generate one event with Pythia
-    //    call_pretauola(0);  // tau-lepton decays with TAUOLA 
+    //Using TAUOLA
+ if ( useTauola_ ) {
+      tauola_.processEvent();
+      //call_pretauola(0); // generate tau decays with TAUOLA
+    }
+
 
     call_pyhepc( 1 );
     
@@ -237,7 +382,7 @@ void ComphepProducer::produce(Event & e, const EventSetup& es ) {
 
     e.put(bare_product);
 }
-
+//########################################################################
 bool 
 ComphepProducer::call_pygive(const std::string& iParm ) 
  {
@@ -248,7 +393,7 @@ ComphepProducer::call_pygive(const std::string& iParm )
 //if an error or warning happens it is problem
   return pydat1.mstu[26] == numWarn && pydat1.mstu[22] == numErr;   
 }
-//------------
+//########################################################################
 bool 
 ComphepProducer::call_txgive(const std::string& iParm ) 
    {
@@ -256,10 +401,11 @@ ComphepProducer::call_txgive(const std::string& iParm )
      TXGIVE( iParm.c_str(), iParm.length() );  
      return 1;  
    }
-
+//########################################################################
 bool
 ComphepProducer::call_txgive_init() 
 {
    TXGIVE_INIT();
    return 1;
 }
+//#########################################################################
