@@ -27,8 +27,8 @@
 //                 by default the behavior will not change, but
 //                 there will now be a way to control the verbosity.
 // 
-// 4 - mf 3/18/09  The per-event output TimeModule is changed to LogPrint.
-//		   The per-module output TimeModule is changed to LogVerbatim.
+// 4 - mf 3/18/09  The per-event output TimeEvent is changed to LogPrint.
+//		   The per-module output TimeModule is changed to LogPrint.
 //
 
 #include "FWCore/Services/interface/Timing.h"
@@ -213,7 +213,7 @@ namespace edm {
       double t = getTime() - curr_module_time_;
       //edm::LogInfo("TimeModule")
       if (not summary_only_) {
-        edm::LogVerbatim("TimeModule") << "TimeModule> "	// ChangeLog 4
+        edm::LogPrint("TimeModule") << "TimeModule> "		// ChangeLog 4
 	   << curr_event_.event() << " "
 	   << curr_event_.run() << " "
 	   << desc.moduleLabel() << " "
