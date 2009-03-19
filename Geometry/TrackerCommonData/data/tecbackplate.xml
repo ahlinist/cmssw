@@ -13,6 +13,9 @@
   <Constant name="CircPipeRin"    value="[ThermalShieldRout]"/>
   <Constant name="CircPipeRout"   value="[Rout]"/>
   <Constant name="CircPipeThick"  value="[ThermalShieldThick]"/>
+  <Constant name="TiltmeterDist"  value="792*mm"/>
+  <Constant name="TiltmeterDxy"   value="42*mm"/>
+  <Constant name="TiltmeterDz"    value="[ThermalShieldThick]/2."/>
 </ConstantsSection>
   
 <SolidSection label="tecbackplate.xml">
@@ -25,6 +28,8 @@
   <Tubs name="TECCircPipe"       rMin="[CircPipeRin]" 
         rMax="[CircPipeRout]"     dz="0.5*[CircPipeThick]" 
         startPhi="0*deg"        deltaPhi="360*deg"/>
+  <Box name="TECTiltmeter" dx="[TiltmeterDxy]" dy="[TiltmeterDxy]"
+       dz="[TiltmeterDz]"/>
 </SolidSection>
 
 <LogicalPartSection label="tecbackplate.xml">
@@ -53,7 +58,13 @@
   <LogicalPart name="TECCircPipe" category="unspecified">
     <rSolid name="tecbackplate:TECCircPipe"/>
     <rMaterial name="tecmaterial:TEC_CircPipe"/>
-  </LogicalPart>  
+  </LogicalPart>
+
+ <LogicalPart name="TECTiltmeter" category="unspecified">
+   <rSolid name="tecbackplate:TECTiltmeter"/>
+   <rMaterial name="tecmaterial:TEC_Tiltmeter"/>
+   <rMaterial name="materials:Air"/>
+ </LogicalPart>
 </LogicalPartSection>
 
 <PosPartSection label="tecbackplate.xml">
@@ -82,6 +93,27 @@
    <Translation x="[zero]" y="[zero]" z="(-0.5*[Thick]+[tecwheel:DiskT]+0.5*[CircPipeThick])"/>
  </PosPart>
 
+ <PosPart copyNumber="1">
+   <rParent name="tecbackplate:TECThermalShield"/>
+   <rChild name="tecbackplate:TECTiltmeter"/>
+   <Translation x="[zero]" y="[TiltmeterDist]" z="[zero]"/>
+ </PosPart>
+ <PosPart copyNumber="2">
+   <rParent name="tecbackplate:TECThermalShield"/>
+   <rChild name="tecbackplate:TECTiltmeter"/>
+   <Translation x="[TiltmeterDist]" y="[zero]" z="[zero]"/>
+ </PosPart>
+ <PosPart copyNumber="3">
+   <rParent name="tecbackplate:TECThermalShield"/>
+   <rChild name="tecbackplate:TECTiltmeter"/>
+   <Translation x="[zero]" y="-[TiltmeterDist]" z="[zero]"/>
+ </PosPart>
+ <PosPart copyNumber="4">
+   <rParent name="tecbackplate:TECThermalShield"/>
+   <rChild name="tecbackplate:TECTiltmeter"/>
+   <Translation x="-[TiltmeterDist]" y="[zero]" z="[zero]"/>
+ </PosPart>
+   
 </PosPartSection>
 
 <Algorithm name="track:DDTrackerAngular">
