@@ -154,8 +154,4 @@ saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoElecMu_all.root')
 )
 
-makeZtoElecMuPlots = cms.Sequence( loadZtoElecMu
-                                  +addZtoElecMu
-                                  #+saveZtoElecMu 
-                                  +plotZtoElecMu )
   
