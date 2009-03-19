@@ -123,7 +123,8 @@ process_InclusivePPmuX = cms.PSet(
 process_PPmuXptGt20 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(553),
+    scaleFactor = cms.double(dataIntLumi/49.7),
+    #scaleFactor = cms.double(553),
     dqmDirectory_store = cms.string('PPmuXptGt20')
   ),
   config_dqmHistPlotter = cms.PSet(
