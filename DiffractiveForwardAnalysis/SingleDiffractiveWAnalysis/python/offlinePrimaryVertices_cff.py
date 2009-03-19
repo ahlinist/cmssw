@@ -10,14 +10,17 @@ GlobalTag.globaltag = 'IDEAL_V11::All'
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi
 offlinePrimaryVerticesFromCTFTracksAVF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
-import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi
-offlinePrimaryVerticesFromCTFTracksKVF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
-import RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi
-offlinePrimaryVerticesFromCTFTracksTKF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
-#include "Validation/RecoVertex/data/OffLinePVFromRSTracks.cfi"
-vertexreco = cms.Sequence(offlinePrimaryVerticesFromCTFTracksAVF*offlinePrimaryVerticesFromCTFTracksKVF)
 offlinePrimaryVerticesFromCTFTracksAVF.algorithm = 'AdaptiveVertexFitter'
+offlinePrimaryVerticesFromCTFTracksKVF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
 offlinePrimaryVerticesFromCTFTracksKVF.algorithm = 'KalmanVertexFitter'
+offlinePrimaryVerticesFromCTFTracksTKF = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
 offlinePrimaryVerticesFromCTFTracksTKF.algorithm = 'TrimmedKalmanFinder'
+offlinePrimaryVerticesFromCTFTracksAVFModified = RecoVertex.PrimaryVertexProducer.OfflinePrimaryVertices_cfi.offlinePrimaryVertices.clone()
+offlinePrimaryVerticesFromCTFTracksAVFModified.algorithm = 'AdaptiveVertexFitter'
+offlinePrimaryVerticesFromCTFTracksAVFModified.TkFilterParameters.minSiliconHits = 4
+offlinePrimaryVerticesFromCTFTracksAVFModified.TkFilterParameters.maxD0Significance = 10.0
+offlinePrimaryVerticesFromCTFTracksAVFModified.TkClusParameters.zSeparation = 0.05
 
-
+vertexreco = cms.Sequence(offlinePrimaryVerticesFromCTFTracksAVF + 
+                          offlinePrimaryVerticesFromCTFTracksKVF +
+                          offlinePrimaryVerticesFromCTFTracksAVFModified)

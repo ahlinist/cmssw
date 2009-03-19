@@ -15,6 +15,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorReco_cff')
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.analysisSequencesDiJets_cff')
+process.pileUpInfo.AccessCrossingFramePlayBack = True
+process.pileUpInfo.BunchCrossings = cms.vint32(-1,0,1)
 
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.outputModule_cfi')
 process.output.fileName = 'POMWIG_SDDijetsPt80_InitialLumPU_EdmDump.root'
