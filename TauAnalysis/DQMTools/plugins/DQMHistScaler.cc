@@ -44,22 +44,26 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
   cfgScaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : -1.;
   std::cout << " scaleFactor = " << cfgScaleFactor_ << std::endl;
 
-  if ( cfg.exists("dqmDirectory_normalization") &&
+  if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
+       cfg.exists("dqmDirectory_factorizedTightSel") &&
        cfg.exists("meNameNumerator") && 
        cfg.exists("meNameDenominator") && 
        cfg.exists("meType") ) {
-    dqmDirectory_normalization_ = cfg.getParameter<std::string>("dqmDirectory_normalization");
+    dqmDirectory_factorizedLooseSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedLooseSel");
+    dqmDirectory_factorizedTightSel_ = cfg.getParameter<std::string>("dqmDirectory_factorizedTightSel");
     meNameNumerator_ = cfg.getParameter<std::string>("meNameNumerator");
     meNameDenominator_ = cfg.getParameter<std::string>("meNameDenominator");
     meType_ = cfg.getParameter<std::string>("meType");
     ++numScales;
   } else {
-    dqmDirectory_normalization_ = "";
+    dqmDirectory_factorizedLooseSel_ = "";
+    dqmDirectory_factorizedTightSel_ = "";
     meNameNumerator_ = "";
     meNameDenominator_ = "";
     meType_ =  "";
   }
-  std::cout << " dqmDirectory_normalization = " << dqmDirectory_normalization_ << std::endl;
+  std::cout << " dqmDirectory_factorizedLooseSel = " << dqmDirectory_factorizedLooseSel_ << std::endl;
+  std::cout << " dqmDirectory_factorizedTightSel = " << dqmDirectory_factorizedTightSel_ << std::endl;
   std::cout << " meNameNumerator = " << meNameNumerator_ << std::endl;
   std::cout << " meNameDenominator = " << meNameDenominator_ << std::endl;
   std::cout << " meType = " << meType_ << std::endl;
@@ -74,7 +78,8 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
 //    configuration parameters are defined 
   if ( numScales != 1 ) {
     edm::LogError("DQMHistScaler") << " Need to specify either Configuration parameter 'scaleFactor'"
-				   << " or 'dqmDirectory_normalization', 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
+				   << " or 'dqmDirectory_factorizedLooseSel', 'dqmDirectory_factorizedTightSel'," 
+				   << " 'meNameNumerator', 'meNameDenominator' and 'meType' !!";
     cfgError_ = 1;
   } 
 
@@ -103,10 +108,20 @@ double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory
 			     const std::string& meName, const std::string& meType, int& errorFlag)
 {
   std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
-  //std::cout << " meName_full = " <<  meName_full << std::endl;
+  std::cout << " meName_full = " <<  meName_full << std::endl;
 
-  dqmStore.setCurrentFolder(dqmDirectory);
+  std::string dqmDirectory_full = dqmDirectoryName(dqmDirectory);
+  if ( meName.find_last_of('/') != std::string::npos ) dqmDirectory_full.append(std::string(meName, 0, meName.find_last_of('/')));
+  std::cout << " dqmDirectory_full = " << dqmDirectory_full << std::endl;
+
+  dqmStore.setCurrentFolder(dqmDirectory_full);
   MonitorElement* me = dqmStore.get(meName_full);
+
+  if ( !me ) {
+    edm::LogError("getMonitorElementNorm") << " Failed to access Monitor Element = " << meName << " !!";
+    errorFlag = 1;
+    return -1.;
+  }
 
   if ( meType == "real" ) {
     return me->getFloatValue();
@@ -151,17 +166,34 @@ void DQMHistScaler::endJob()
     scaleFactor = cfgScaleFactor_;
   } else {
     int errorFlag = 0;
-    double normNumerator = getMonitorElementNorm(dqmStore, dqmDirectory_normalization_, meNameNumerator_, meType_, errorFlag);
-    double normDenominator = getMonitorElementNorm(dqmStore, dqmDirectory_normalization_, meNameDenominator_, meType_, errorFlag);
+
+    double numeratorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, 
+						     meNameNumerator_, meType_, errorFlag);
+    std::cout << " numeratorLooseSel = " << numeratorLooseSel << std::endl;
+    double denominatorLooseSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedLooseSel_, 
+						       meNameDenominator_, meType_, errorFlag);
+    std::cout << " denominatorLooseSel = " << denominatorLooseSel << std::endl;
+    double efficiencyLooseSel = ( denominatorLooseSel > 0. ) ? numeratorLooseSel/denominatorLooseSel : 0.;
+    std::cout << " efficiencyLooseSel = " << efficiencyLooseSel << std::endl;
+
+    double numeratorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, 
+						     meNameNumerator_, meType_, errorFlag);
+    std::cout << " numeratorTightSel = " << numeratorTightSel << std::endl;
+    double denominatorTightSel = getMonitorElementNorm(dqmStore, dqmDirectory_factorizedTightSel_, 
+						       meNameDenominator_, meType_, errorFlag);
+    std::cout << " denominatorTightSel = " << denominatorTightSel << std::endl;
+    double efficiencyTightSel = ( denominatorTightSel > 0. ) ? numeratorTightSel/denominatorTightSel : 0.;
+    std::cout << " efficiencyTightSel = " << efficiencyTightSel << std::endl;
+
     if ( errorFlag ) {
       edm::LogError ("endJob") << " Failed to access numerator and denominator Monitor Elements"
 			       << " --> histograms will NOT be scaled !!";
       return;
     }
 
-    scaleFactor = ( normDenominator > 0. ) ? normNumerator/normDenominator : 0.;
+    scaleFactor = ( efficiencyLooseSel > 0. ) ? efficiencyTightSel/efficiencyLooseSel : 0.;
+    std::cout << " scaleFactor = " << scaleFactor << std::endl;
   }
-  std::cout << " scaleFactor = " << scaleFactor << std::endl;
 
 //--- scale histograms;
 //    in case specific subdirectories have been specified in configuration parameters, 
