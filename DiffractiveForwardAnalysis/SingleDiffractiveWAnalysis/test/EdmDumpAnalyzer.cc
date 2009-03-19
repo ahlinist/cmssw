@@ -45,6 +45,7 @@ private:
   TTree* data_;
 
   struct EventData {
+    int lowEnergySide_;
     int nCastorGenPlus_;
     int nCastorGenMinus_;
     int nHFTowerPlus_;
@@ -167,6 +168,7 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
 
   if(saveTTree_){
     data_ = fs->make<TTree>("data","data");
+    data_->Branch("lowEnergySide",&eventData_.lowEnergySide_,"lowEnergySide/I");
     data_->Branch("nCastorGenPlus",&eventData_.nCastorGenPlus_,"nCastorGenPlus/I");
     data_->Branch("nCastorGenMinus",&eventData_.nCastorGenMinus_,"nCastorGenMinus/I");
     data_->Branch("nHFTowerPlus",&eventData_.nHFTowerPlus_,"nHFTowerPlus/I");
@@ -310,6 +312,12 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         edm::Handle<std::vector<unsigned int> > nHFTowerMinus;
         event.getByLabel("hfTower","nHFminus",nHFTowerMinus); 
 
+        edm::Handle<std::vector<double> > sumEnergyHFPlus;
+        event.getByLabel("hfTower","sumEHFplus",sumEnergyHFPlus);
+  
+        edm::Handle<std::vector<double> > sumEnergyHFMinus;
+        event.getByLabel("hfTower","sumEHFminus",sumEnergyHFMinus);
+
 	edm::Handle<std::vector<unsigned int> > nCastorTowerPlus;
         event.getByLabel(castorTowerInfoTag_.label(),"nCastorTowerPlus",nCastorTowerPlus);
 
@@ -347,6 +355,9 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         unsigned int nHF_plus = (*nHFTowerPlus.product())[thresholdIndexHF_];
         unsigned int nHF_minus = (*nHFTowerMinus.product())[thresholdIndexHF_];
 
+        double sumEHF_plus = (*sumEnergyHFPlus.product())[thresholdIndexHF_];
+        double sumEHF_minus = (*sumEnergyHFMinus.product())[thresholdIndexHF_];
+
         unsigned int nCastorTwr_plus = (*nCastorTowerPlus.product())[thresholdIndexCastor_];
         unsigned int nCastorTwr_minus = (*nCastorTowerMinus.product())[thresholdIndexCastor_];
         unsigned int nCastorGen_plus = nAccPhiSliceplus;
@@ -358,6 +369,7 @@ void EdmDumpAnalyzer::fillMultiplicities(const edm::Event& event, const edm::Eve
         double fbAsymmetryEnergy = (*forwardBackwardAsymmetryHFEnergy.product())[thresholdIndexHF_];
         double fbAsymmetryMult = (*forwardBackwardAsymmetryHFMult.product())[thresholdIndexHF_]; 
 
+        eventData_.lowEnergySide_ = (sumEHF_plus >= sumEHF_minus)?-1:1;
         eventData_.nCastorGenPlus_ = nAccPhiSliceplus;
         eventData_.nCastorGenMinus_ = nAccPhiSliceminus;
         eventData_.nHFTowerPlus_ = nHF_plus;

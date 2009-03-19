@@ -20,6 +20,7 @@ wmunuAnalyzer4PU = wmunuAnalyzer.clone()
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff import *
 
+wmunuAnalysis = cms.Path(wmunuAnalyzer)
 wmunu0PU = cms.Path(filter0PU*wmunuAnalyzer0PU)
 wmunu1PU = cms.Path(filter1PU*wmunuAnalyzer1PU)
 wmunu2PU = cms.Path(filter2PU*wmunuAnalyzer2PU)

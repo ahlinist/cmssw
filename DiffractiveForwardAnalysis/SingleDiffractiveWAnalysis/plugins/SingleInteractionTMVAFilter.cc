@@ -37,6 +37,8 @@ class SingleInteractionTMVAFilter : public edm::EDFilter {
           int nHFTowerPlus_;
           float xiPlus_;
           int nTracks_;
+          int nTracksAssociatedToPV_;
+          int nTracksAwayFromPV_;
           float forwardBackwardAsymmetryHFEnergy_;
        } eventData_;//FIXME: put in a single place
 };
@@ -82,7 +84,9 @@ void SingleInteractionTMVAFilter::beginJob(edm::EventSetup const& setup){
         //reader_->AddVariable("nHFTowerPlus", &eventData_.nHFTowerPlus_);
         reader_->AddVariable("xiPlus", &eventData_.xiPlus_);
         //reader_->AddVariable("nTracks", &eventData_.nTracks_);
-        reader_->AddVariable("forwardBackwardAsymmetryHFEnergy", &eventData_.forwardBackwardAsymmetryHFEnergy_);
+        //reader_->AddVariable("nTracksAssociatedToPV", &eventData_.nTracksAssociatedToPV_);
+        reader_->AddVariable("nTracksAwayFromPV", &eventData_.nTracksAwayFromPV_);
+        //reader_->AddVariable("forwardBackwardAsymmetryHFEnergy", &eventData_.forwardBackwardAsymmetryHFEnergy_);
 
         reader_->BookMVA("My MVA method",weights_file_.fullPath().c_str());
 }
@@ -100,8 +104,23 @@ bool SingleInteractionTMVAFilter::filter(edm::Event& event, const edm::EventSetu
         event.getByLabel("xiTower","xiTowerplus",xiTowerPlus);
         double xiTower_plus = *xiTowerPlus.product();
         eventData_.xiPlus_ = xiTower_plus;
-         
-        eventData_.nTracks_ = getNTracks(event,setup);
+ 
+        edm::Handle<unsigned int> trackMultiplicity;
+        event.getByLabel("trackMultiplicity","trackMultiplicity",trackMultiplicity);
+
+        edm::Handle<unsigned int> trackMultiplicityAssociatedToPV;
+        event.getByLabel("trackMultiplicityAssociatedToPV","trackMultiplicity",trackMultiplicityAssociatedToPV);
+
+        edm::Handle<unsigned int> trackMultiplicityAwayFromPV;
+        event.getByLabel("trackMultiplicityAwayFromPV","trackMultiplicity",trackMultiplicityAwayFromPV);
+
+        unsigned int nTracks = *trackMultiplicity.product();
+        unsigned int nTracksAssociatedToPV = *trackMultiplicityAssociatedToPV.product();
+        unsigned int nTracksAwayFromPV = *trackMultiplicityAwayFromPV.product();
+        
+        eventData_.nTracks_ = nTracks;
+        eventData_.nTracksAssociatedToPV_ = nTracksAssociatedToPV; 
+        eventData_.nTracksAwayFromPV_ = nTracksAwayFromPV;        
 
         edm::Handle<std::vector<double> > forwardBackwardAsymmetryHFEnergy;
         event.getByLabel("hfTower","FBAsymmetryFromHFEnergy",forwardBackwardAsymmetryHFEnergy);
@@ -129,24 +148,6 @@ int SingleInteractionTMVAFilter::getNVertexes(edm::Event& event, const edm::Even
         }
 
         return nGoodVertices; 
-}
-
-int SingleInteractionTMVAFilter::getNTracks(const edm::Event& event, const edm::EventSetup& setup)
-{
-        // Get reconstructed tracks
-        edm::Handle<edm::View<Track> > trackCollectionH;
-        event.getByLabel(tracksTag_,trackCollectionH);
-        const edm::View<reco::Track>& trkColl = *(trackCollectionH.product());
-
-        double pt_min = 0.5;//FIXME: configurable, other parameters to select or do it externally
-
-        int nGoodTracks = 0;
-        for(edm::View<Track>::const_iterator track = trkColl.begin(); track != trkColl.end(); ++track){
-           if(track->pt() < pt_min) continue;
-           ++nGoodTracks;
-        } 
- 
-        return nGoodTracks;       
 }
 
 DEFINE_FWK_MODULE(SingleInteractionTMVAFilter);

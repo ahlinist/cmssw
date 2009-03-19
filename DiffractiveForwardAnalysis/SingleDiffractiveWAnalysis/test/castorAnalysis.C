@@ -29,8 +29,9 @@
 void castorAnalysis(int maxEvents = -1, bool verbose = false) {
    // Create a vector of input files
    vector<string> fileNames;
-   fileNames.push_back("rfio:/castor/cern.ch/user/a/antoniov/Analysis/SingleDiffractiveWmunu/InitialLumiPileUP/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_1.root");
-   fileNames.push_back("rfio:/castor/cern.ch/user/a/antoniov/Analysis/SingleDiffractiveWmunu/InitialLumiPileUP/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root");
+   //fileNames.push_back("rfio:/castor/cern.ch/user/a/antoniov/Analysis/SingleDiffractiveWmunu/InitialLumiPileUP/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_1.root");
+   //fileNames.push_back("rfio:/castor/cern.ch/user/a/antoniov/Analysis/SingleDiffractiveWmunu/InitialLumiPileUP/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root");
+   fileNames.push_back("rfio:/castor/cern.ch/user/a/antoniov/Analysis/SingleDiffractiveWmunu/NoPileUP/SDPlusWmunu/POMWIG_SDPlusWmunu_EdmDump_noPU_2.root");
    
    // Chain the input files
    fwlite::ChainEvent ev(fileNames);

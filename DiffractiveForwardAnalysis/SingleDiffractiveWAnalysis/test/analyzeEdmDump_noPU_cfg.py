@@ -28,17 +28,18 @@ process.source = cms.Source("PoolSource",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(-1)
 )
 
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleVertexFilter_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionFilter_cfi")
+
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionTMVAFilter_cfi")
-process.singleInteractionTMVAFilter.CutOnClassifier = 0.7 
+process.singleInteractionTMVAFilter.CutOnClassifier = 0.7
 
-process.load("Validation.RecoVertex.validationPrimaryVertex_cff")
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.offlinePrimaryVertices_cff")
 
 process.edmDumpAnalysis.AccessPileUpInfo = False
 process.edmDumpAnalysis.SaveROOTTree = True
@@ -61,11 +62,10 @@ process.add_(cms.Service("TFileService",
 )
 
 process.reco = cms.Path(process.vertexreco)
-#process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter+process.edmDumpAnalysisWithPixelVertices) 
-process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter)
+process.edmDump = cms.Path(process.trackMultiplicity+process.selectGoodTracks*process.edmDumpTracksAssociatedToPV+process.edmDumpTracksAwayFromPV)
+process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter+process.edmDumpAnalysisWithPixelVertices) 
+#process.p1 = cms.Path(process.edmDumpAnalysis+process.edmDumpAnalysisWithAdaptiveVertexFitter+process.edmDumpAnalysisWithKalmanVertexFitter)
 # Filter single-vertex events
 process.p2 = cms.Path(process.singleVertexFilter*process.edmDumpAnalysisSingleVertex)
 # Filter single-interaction (from MVA selection) events
 process.p3 = cms.Path(process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVA)
-
-process.schedule = cms.Schedule(process.reco,process.p1,process.p2,process.p3)

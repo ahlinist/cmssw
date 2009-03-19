@@ -17,15 +17,11 @@ process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorReco_c
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.analysisSequences_cff')
 
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.outputModule_cfi')
-#process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'
-#process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_StageA43Bx.root'
-process.output.fileName = 'PYTHIA6_Wmunu_EdmDump_InitialLumPU.root'
+process.output.fileName = 'PYTHIA6_Wmunu_EdmDump_StageA43BxPU.root'
 process.output.SelectEvents.SelectEvents = cms.vstring('selection_step')
 
 process.add_(cms.Service("TFileService",
-		#fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
-                #fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_StageA43Bx.root")
-                fileName = cms.string("analysisWMuNu_histos_Wmunu_InitialLumPU.root")
+                fileName = cms.string("analysisWMuNu_histos_Wmunu_StageA43BxPU.root")
 	)
 )
 
