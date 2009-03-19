@@ -417,7 +417,7 @@ int BranchMapReader::getFileVersion(TFile* file) const
   TBranch* bVer = metaDataTree->GetBranch(edm::poolNames::fileFormatVersionBranchName().c_str());
   bVer->SetAddress(&pV);
   bVer->GetEntry(0);
-  return v.value_;
+  return v.value();
 }
 
 bool BranchMapReader::updateEvent(Long_t newevent)
