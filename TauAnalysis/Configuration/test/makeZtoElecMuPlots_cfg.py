@@ -12,6 +12,15 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
+# import utility function to enable factorization
+#from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoElecMuPlots
+#enableFactorization_makeZtoElecMuPlots(process)
+
+process.makeZtoElecMuPlots = cms.Sequence( process.loadZtoElecMu
+                                          +process.addZtoElecMu
+                                          #+process.saveZtoElecMu 
+                                          +process.plotZtoElecMu )
+
 process.p = cms.Path(process.makeZtoElecMuPlots)
 
 # print-out all python configuration parameter information
