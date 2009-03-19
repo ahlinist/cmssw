@@ -163,9 +163,11 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
       if ( meOutput ) {
 //--- add histogram to outputHistogram
-	meOutput->getTH1()->Add(clone.get(), scaleFactor);
+	//std::cout << "--> adding to existing histogram." << std::endl;
+	meOutput->getTH1()->Add(clone.get());
       } else {
 //--- create new outputHistogram
+	//std::cout << "--> registering as new histogram." << std::endl;
 	dqmRegisterHistogram(dqmStore, clone.release(), *meName);
       }
     } else if ( meInput->kind() == MonitorElement::DQM_KIND_INT ) {
@@ -187,7 +189,8 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 	meOutput->Fill(intValue);
       }
     } else if ( meInput->kind() == MonitorElement::DQM_KIND_REAL ) {
-      double floatValue = meInput->getFloatValue();
+      double realValue = meInput->getFloatValue();
+      realValue *= scaleFactor;
 
       dqmStore.setCurrentFolder(outputDirectory);
 
@@ -198,11 +201,11 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 
       MonitorElement* meOutput = dqmStore.get(dqmDirectoryName(outputDirectory).append(*meName));
       if ( meOutput ) {
-	double floatSum = meOutput->getFloatValue();
-	meOutput->Fill(floatSum + floatValue);
+	double realSum = meOutput->getFloatValue();
+	meOutput->Fill(realSum + realValue);
       } else {
 	meOutput = dqmStore.bookFloat(*meName);
-	meOutput->Fill(floatValue);
+	meOutput->Fill(realValue);
       }
     } else if ( meInput->kind() == MonitorElement::DQM_KIND_STRING ) {
       std::string stringValue = meInput->getStringValue();
