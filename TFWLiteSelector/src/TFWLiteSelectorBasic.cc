@@ -275,7 +275,7 @@ TFWLiteSelectorBasic::Process(Long64_t iEntry) {
       //     }
 
       edm::History history;
-      if (m_->fileFormatVersion_.value_ >= 7) {
+      if (m_->fileFormatVersion_.eventHistoryTree()) {
          edm::History* pHistory = &history;
          TBranch* eventHistoryBranch = m_->eventHistoryTree_->GetBranch(edm::poolNames::eventHistoryBranchName().c_str());
          if (!eventHistoryBranch)
@@ -408,7 +408,7 @@ TFWLiteSelectorBasic::setupNewFile(TFile& iFile) {
   }  
   //std::cout <<"Notify end"<<std::endl;
    
-   if (m_->fileFormatVersion_.value_ >= 7) {
+   if (m_->fileFormatVersion_.eventHistoryTree()) {
       m_->eventHistoryTree_ = dynamic_cast<TTree*>(iFile.Get(edm::poolNames::eventHistoryTreeName().c_str()));
       if(0==m_->eventHistoryTree_) {
          std::cout <<"could not find TTree "<<edm::poolNames::eventHistoryTreeName() <<std::endl;
