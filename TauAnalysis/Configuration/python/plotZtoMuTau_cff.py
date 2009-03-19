@@ -150,8 +150,5 @@ saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoMuTau_all.root')
 )
 
-makeZtoMuTauPlots = cms.Sequence( loadZtoMuTau
-                                 +addZtoMuTau
-                                 #+saveZtoMuTau 
-                                 +plotZtoMuTau )
+
   
