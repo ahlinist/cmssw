@@ -23,10 +23,13 @@ pat::IsolationKeys isoDepositKeyPFGammaIso = pat::GammaParticleIso;
 bool matchesGenTau(const pat::Tau& patTau)
 {
   bool isGenTauMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patTau.genParticleRefs().begin(); 
-	it != patTau.genParticleRefs().end(); ++it ) {
-    const reco::GenParticleRef& genParticle = (*it);
-    if ( genParticle->pdgId() == -15 || genParticle->pdgId() == +15 ) isGenTauMatched = true;
+  std::vector<reco::GenParticleRef> associatedGenParticles = patTau.genParticleRefs();
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
+	it != associatedGenParticles.end(); ++it ) {
+    if ( it->ref().isNonnull() && it->ref().isValid() ) {
+      const reco::GenParticleRef& genParticle = (*it);
+      if ( genParticle->pdgId() == -15 || genParticle->pdgId() == +15 ) isGenTauMatched = true;
+    }
   }
   return isGenTauMatched;
 }
