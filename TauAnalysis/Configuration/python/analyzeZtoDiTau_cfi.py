@@ -72,7 +72,7 @@ genPhaseSpaceCut = cms.PSet(
 # (NOTE: to be used for efficiency studies only !!)
 #genDiTauCut = cms.PSet(
 #  name = cms.string('genTauCut'),
-#  type = cms.string('TauGenJetMinEventSelector'),
+#  type = cms.string('PATCandViewMinEventSelector'),
 #  src = cms.InputTag('selectedGenTauDecaysToHadronsPt20Cumulative'),
 #  minNumber = cms.uint32(2)
 #)
@@ -108,49 +108,49 @@ primaryEventVertexPosition = cms.PSet(
 # selection of first tau-jet candidate
 firstTauEtaCut = cms.PSet(
   name = cms.string('firstTauEtaCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauEta21Cumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauEta21Individual'),
   minNumber = cms.uint32(1)
 )
 firstTauPtCut = cms.PSet(
   name = cms.string('firstTauPtCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauPt20Cumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauPt20Individual'),
   minNumber = cms.uint32(1)
 )
 firstTauLeadTrkCut = cms.PSet(
   name = cms.string('firstTauLeadTrkCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauLeadTrkCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauLeadTrkIndividual'),
   minNumber = cms.uint32(1)
 )
 firstTauLeadTrkPtCut = cms.PSet(
   name = cms.string('firstTauLeadTrkPtCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauLeadTrkPtCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauLeadTrkPtIndividual'),
   minNumber = cms.uint32(1)
 )
 firstTauTrkIsoCut = cms.PSet(
   name = cms.string('firstTauTrkIsoCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauTrkIsoCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauTrkIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 firstTauEcalIsoCut = cms.PSet(
   name = cms.string('firstTauEcalIsoCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauEcalIsoCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 firstTauProngCut = cms.PSet(
   name = cms.string('firstTauProngCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs1stTauProngCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs1stTauProngIndividual'),
   minNumber = cms.uint32(1)
@@ -159,49 +159,49 @@ firstTauProngCut = cms.PSet(
 # selection of second tau-jet candidate
 secondTauEtaCut = cms.PSet(
   name = cms.string('secondTauEtaCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauEta21Cumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauEta21Individual'),
   minNumber = cms.uint32(1)
 )
 secondTauPtCut = cms.PSet(
   name = cms.string('secondTauPtCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauPt20Cumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauPt20Individual'),
   minNumber = cms.uint32(1)
 )
 secondTauLeadTrkCut = cms.PSet(
   name = cms.string('secondTauLeadTrkCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauLeadTrkCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauLeadTrkIndividual'),
   minNumber = cms.uint32(1)
 )
 secondTauLeadTrkPtCut = cms.PSet(
   name = cms.string('secondTauLeadTrkPtCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauLeadTrkPtCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauLeadTrkPtIndividual'),
   minNumber = cms.uint32(1)
 )
 secondTauTrkIsoCut = cms.PSet(
   name = cms.string('secondTauTrkIsoCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauTrkIsoCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauTrkIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 secondTauEcalIsoCut = cms.PSet(
   name = cms.string('secondTauEcalIsoCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauEcalIsoCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 secondTauProngCut = cms.PSet(
   name = cms.string('secondTauProngCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauProngCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairs2ndTauProngIndividual'),
   minNumber = cms.uint32(1)
@@ -210,20 +210,20 @@ secondTauProngCut = cms.PSet(
 # di-tau candidate selection
 diTauCandidateForDiTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForDiTauAntiOverlapVeto'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src = cms.InputTag('selectedDiTauPairsAntiOverlapVeto'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForDiTauAcoplanarityCut = cms.PSet(
   name = cms.string('diTauCandidateForDiTauAcoplanarityCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairsAcoplanarityCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairsAcoplanarityIndividual'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForDiTauZeroChargeCut = cms.PSet(
   name = cms.string('diTauCandidateForDiTauZeroChargeCut'),
-  type = cms.string('PATDiTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedDiTauPairsZeroChargeCumulative'),
   src_individual = cms.InputTag('selectedDiTauPairsZeroChargeIndividual'),
   minNumber = cms.uint32(1)
@@ -232,7 +232,7 @@ diTauCandidateForDiTauZeroChargeCut = cms.PSet(
 # veto events containing additional central jets with Et > 20 GeV
 centralJetVeto = cms.PSet(
   name = cms.string('centralJetVeto'),
-  type = cms.string('PATJetMaxEventSelector'),
+  type = cms.string('PATCandViewMaxEventSelector'),
   src = cms.InputTag('selectedLayer1JetsEt20'),
   maxNumber = cms.uint32(0)
 )

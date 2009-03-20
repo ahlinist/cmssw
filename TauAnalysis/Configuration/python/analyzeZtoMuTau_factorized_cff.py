@@ -28,7 +28,6 @@ analyzeZtoMuTau_factorizedWithoutMuonIsolation = cms.EDAnalyzer("GenericAnalyzer
     globalMuonCut,
     muonEtaCut,
     muonPtCut,
-    muonHLTmatchCut,
     muonTrkIsoCutLooseMuonIsolation,
     muonEcalIsoCutLooseMuonIsolation,
     muonAntiPionCutLooseMuonIsolation,
@@ -47,9 +46,11 @@ analyzeZtoMuTau_factorizedWithoutMuonIsolation = cms.EDAnalyzer("GenericAnalyzer
 
     # di-tau candidate selection
     diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
-    diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation,
     diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
     diTauCandidateForMuTauMt1METCutLooseMuonIsolation,
+
+    # veto events containing additional central jets with Et > 20 GeV
+    #centralJetVeto
   ),
   
   histManagers = cms.VPSet(
@@ -95,7 +96,6 @@ analyzeZtoMuTau_factorizedWithMuonIsolation = cms.EDAnalyzer("GenericAnalyzer",
     globalMuonCut,
     muonEtaCut,
     muonPtCut,
-    muonHLTmatchCut,
     muonTrkIsoCut,
     muonEcalIsoCut,
     muonAntiPionCut,
