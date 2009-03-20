@@ -1,5 +1,5 @@
 //
-// $Id: PATObjectEventSelector.h,v 1.1 2009/01/22 16:30:03 veelken Exp $
+// $Id: PATObjectEventSelector.h,v 1.1 2009/01/23 14:58:11 veelken Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_PATObjectEventSelector_h
@@ -9,7 +9,7 @@
 #include "PhysicsTools/UtilAlgos/interface/ObjectCountEventSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/MinNumberSelector.h"
 #include "PhysicsTools/PatUtils/interface/MaxNumberSelector.h"
-
+/*
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
@@ -17,11 +17,14 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Particle.h"
+ */
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Common/interface/View.h"
 
 #include <vector>
 
 namespace pat {
-
+/*
   typedef ObjectCountEventSelector<std::vector<Electron>, AnySelector, MinNumberSelector> PATElectronMinEventSelector;
   typedef ObjectCountEventSelector<std::vector<Muon>,     AnySelector, MinNumberSelector> PATMuonMinEventSelector;
   typedef ObjectCountEventSelector<std::vector<Tau>,      AnySelector, MinNumberSelector> PATTauMinEventSelector;
@@ -29,7 +32,9 @@ namespace pat {
   typedef ObjectCountEventSelector<std::vector<Jet>,      AnySelector, MinNumberSelector> PATJetMinEventSelector;
   typedef ObjectCountEventSelector<std::vector<MET>,      AnySelector, MinNumberSelector> PATMETMinEventSelector;
   typedef ObjectCountEventSelector<std::vector<Particle>, AnySelector, MinNumberSelector> PATParticleMinEventSelector;
-
+ */
+  typedef ObjectCountEventSelector<edm::View<reco::Candidate>, AnySelector, MinNumberSelector> PATCandViewMinEventSelector;
+/*
   typedef ObjectCountEventSelector<std::vector<Electron>, AnySelector, MaxNumberSelector> PATElectronMaxEventSelector;
   typedef ObjectCountEventSelector<std::vector<Muon>,     AnySelector, MaxNumberSelector> PATMuonMaxEventSelector;
   typedef ObjectCountEventSelector<std::vector<Tau>,      AnySelector, MaxNumberSelector> PATTauMaxEventSelector;
@@ -37,7 +42,8 @@ namespace pat {
   typedef ObjectCountEventSelector<std::vector<Jet>,      AnySelector, MaxNumberSelector> PATJetMaxEventSelector;
   typedef ObjectCountEventSelector<std::vector<MET>,      AnySelector, MaxNumberSelector> PATMETMaxEventSelector;
   typedef ObjectCountEventSelector<std::vector<Particle>, AnySelector, MaxNumberSelector> PATParticleMaxEventSelector;
-
+ */
+  typedef ObjectCountEventSelector<edm::View<reco::Candidate>, AnySelector, MaxNumberSelector> PATCandViewMaxEventSelector;
 }
 
 #endif
