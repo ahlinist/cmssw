@@ -67,20 +67,12 @@ plots_ZtoMuTau_muon_afterMuonEta.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoMuTau_muon_afterMuonEta.title = cms.string('Muon (after Muon #eta Cut)')
 plots_ZtoMuTau_muon_afterMuonEta.xAxis = cms.string('#PAR#')
 
-plots_ZtoMuTau_muon_afterMuonPt = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_muon_afterMuonPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterMuonPtCut_beforeMuonHLTmatchCut/MuonQuantities/Muon#PAR#'
+plots_ZtoMuTau_muonTrkIso_afterMuonPt = copy.deepcopy(plots_ZtoMuTau)
+plots_ZtoMuTau_muonTrkIso_afterMuonPt.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zMuTauAnalyzer/afterMuonPtCut_beforeMuonTrkIsoCut/MuonQuantities/MuonTrkIsoPt'
 )
-plots_ZtoMuTau_muon_afterMuonPt.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoMuTau_muon_afterMuonPt.title = cms.string('Muon (after Muon P_{T} Cut)')
-plots_ZtoMuTau_muon_afterMuonPt.xAxis = cms.string('#PAR#')
-
-plots_ZtoMuTau_muonTrkIso_afterMuonHLTmatch = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_muonTrkIso_afterMuonHLTmatch.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterMuonHLTmatchCut_beforeMuonTrkIsoCut/MuonQuantities/MuonTrkIsoPt'
-)
-plots_ZtoMuTau_muonTrkIso_afterMuonHLTmatch.title = cms.string('Muon Track iso. (after Muon HLT-match Cut)')
-plots_ZtoMuTau_muonTrkIso_afterMuonHLTmatch.xAxis = cms.string('Pt')
+plots_ZtoMuTau_muonTrkIso_afterMuonPt.title = cms.string('Muon Track iso. (after Muon P_{T} Cut)')
+plots_ZtoMuTau_muonTrkIso_afterMuonPt.xAxis = cms.string('Pt')
 
 plots_ZtoMuTau_muonEcalIso_afterMuonTrkIso = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_muonEcalIso_afterMuonTrkIso.plots.dqmMonitorElements = cms.vstring(
@@ -217,25 +209,12 @@ plots_ZtoMuTau_dR12_afterTauMuonVeto.plots.dqmMonitorElements = cms.vstring(
 plots_ZtoMuTau_dR12_afterTauMuonVeto.title = cms.string('#Delta R(Muon,Tau) (after Tau #mu-Veto Cut')
 plots_ZtoMuTau_dR12_afterTauMuonVeto.xAxis = cms.string('dPhi')
 
-plots_ZtoMuTau_dPhi1MET_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_dPhi1MET_afterAntiOverlapVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauAntiOverlapVeto_beforeDiTauCandidateForMuTauAcoplanarityCut/DiTauCandidateQuantities/DPhi1MET'
+plots_ZtoMuTau_diTauCharge_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoMuTau)
+plots_ZtoMuTau_diTauCharge_afterAntiOverlapVeto.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauAntiOverlapVeto_beforeDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/DiTauCandidateCharge'
 )
-plots_ZtoMuTau_dPhi1MET_afterAntiOverlapVeto.title = cms.string('#Delta #phi(Muon,MET) (after anti-Overlap Cut)')
-plots_ZtoMuTau_dPhi1MET_afterAntiOverlapVeto.xAxis = cms.string('dPhi')
-plots_ZtoMuTau_dPhi2MET_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_dPhi2MET_afterAntiOverlapVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauAntiOverlapVeto_beforeDiTauCandidateForMuTauAcoplanarityCut/DiTauCandidateQuantities/DPhi2MET'
-)
-plots_ZtoMuTau_dPhi2MET_afterAntiOverlapVeto.title = cms.string('#Delta #phi(Tau,MET) (after anti-Overlap Cut)')
-plots_ZtoMuTau_dPhi2MET_afterAntiOverlapVeto.xAxis = cms.string('dPhi')
-
-plots_ZtoMuTau_diTauCharge_afterAcoplanarity = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_diTauCharge_afterAcoplanarity.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauAcoplanarityCut_beforeDiTauCandidateForMuTauZeroChargeCut/DiTauCandidateQuantities/DiTauCandidateCharge'
-)
-plots_ZtoMuTau_diTauCharge_afterAcoplanarity.title = cms.string('Charge(Muon + Tau) (after Acoplanarity Cut)')
-plots_ZtoMuTau_diTauCharge_afterAcoplanarity.xAxis = cms.string('unlabeled')
+plots_ZtoMuTau_diTauCharge_afterAntiOverlapVeto.title = cms.string('Charge(Muon + Tau) (after Acoplanarity Cut)')
+plots_ZtoMuTau_diTauCharge_afterAntiOverlapVeto.xAxis = cms.string('unlabeled')
 
 plots_ZtoMuTau_mtMuonMET_afterZeroCharge = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_mtMuonMET_afterZeroCharge.plots.dqmMonitorElements = cms.vstring(
@@ -270,12 +249,12 @@ plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.plots.dqmMonitorElements = cms.vstr
 )
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.title = cms.string('Tau lead. Track (final Event sample)')
 plots_ZtoMuTau_tauLeadTrkPt_finalEventSample.xAxis = cms.string('Pt')
-plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
-plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.plots.dqmMonitorElements = cms.vstring(
+plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
+plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.plots.dqmMonitorElements = cms.vstring(
   '#PROCESSDIR#/zMuTauAnalyzer/afterDiTauCandidateForMuTauMt1METCut/TauQuantities/TauNumTracksSignalCone'
 )
-plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.title = cms.string('Tau Tracks in Signal Cone (final Event sample)')
-plots_ZtoMuTau_plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.xAxis = cms.string('unlabeled')
+plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.title = cms.string('Tau Tracks in Signal Cone (final Event sample)')
+plots_ZtoMuTau_tauNumTracksSignalCone_finalEventSample.xAxis = cms.string('unlabeled')
 
 plots_ZtoMuTau_met_finalEventSample = copy.deepcopy(plots_ZtoMuTau)
 plots_ZtoMuTau_met_finalEventSample.plots.dqmMonitorElements = cms.vstring(

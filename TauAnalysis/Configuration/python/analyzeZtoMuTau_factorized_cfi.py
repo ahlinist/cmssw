@@ -37,10 +37,6 @@ muonTrkIPcutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1Muon
 diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauAntiOverlapVeto)
 diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
 
-diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauAcoplanarityCut)
-diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarityCumulativeLooseMuonIsolation')
-diTauCandidateForMuTauAcoplanarityCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAcoplanarityIndividualLooseMuonIsolation')
-
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauZeroChargeCut)
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation')
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividualLooseMuonIsolation')
@@ -150,15 +146,6 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonHLTmatchCut'),
-    title = cms.string('Muon Trigger match'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsHLTmatchCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonTrkIsoCut'),
@@ -303,17 +290,6 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
                           'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
   ),
   cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauAcoplanarityCut'),
-    title = cms.string('dPhi(Muon-MET) < 2.4'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarityCumulativeLooseMuonIsolation')
-  ),
-  cms.PSet(
     filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
     title = cms.string('Charge(Muon+Tau) = 0'),
     saveRunEventNumbers = cms.vstring('')
@@ -334,6 +310,19 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
                           'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
+  #),
+
+  # veto events containing additional central jets with Et > 20 GeV
+  #cms.PSet(
+  #  filter = cms.string('centralJetVeto'),
+  #  title = cms.string('central Jet Veto'),
+  #  saveRunEventNumbers = cms.vstring('passed_cumulative')
+  #),
+  #cms.PSet(
+  #  histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
+  #  replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+  #                        'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+  #                        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
   )
 )
 
@@ -419,15 +408,6 @@ muTauAnalysisSequence_factorizedWithMuonIsolation = cms.VPSet(
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithMuonIsolation,
     replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonHLTmatchCut'),
-    title = cms.string('Muon Trigger match'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers_factorizedWithMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsHLTmatchCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonTrkIsoCut'),

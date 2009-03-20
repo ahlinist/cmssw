@@ -77,20 +77,12 @@ plots_ZtoElecMu_electron_afterElectronEta.parameter = cms.vstring('Pt', 'Eta', '
 plots_ZtoElecMu_electron_afterElectronEta.title = cms.string('Electron (after Electron #eta Cut)')
 plots_ZtoElecMu_electron_afterElectronEta.xAxis = cms.string('#PAR#')
 
-plots_ZtoElecMu_electron_afterElectronPt = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_electron_afterElectronPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecMuAnalyzer/afterElectronPtCut_beforeElectronHLTmatchCut/ElectronQuantities/Electron#PAR#'
+plots_ZtoElecMu_electronTrkIso_afterElectronPt = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_electronTrkIso_afterElectronPt.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterElectronPtCut_beforeElectronTrkIsoCut/ElectronQuantities/ElectronTrkIsoPt'
 )
-plots_ZtoElecMu_electron_afterElectronPt.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecMu_electron_afterElectronPt.title = cms.string('Electron (after Electron P_{T} Cut)')
-plots_ZtoElecMu_electron_afterElectronPt.xAxis = cms.string('#PAR#')
-
-plots_ZtoElecMu_electronTrkIso_afterElectronHLTmatch = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_electronTrkIso_afterElectronHLTmatch.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecMuAnalyzer/afterElectronHLTmatchCut_beforeElectronTrkIsoCut/ElectronQuantities/ElectronTrkIsoPt'
-)
-plots_ZtoElecMu_electronTrkIso_afterElectronHLTmatch.title = cms.string('Electron Track iso. (after Electron HLT-match Cut)')
-plots_ZtoElecMu_electronTrkIso_afterElectronHLTmatch.xAxis = cms.string('Pt')
+plots_ZtoElecMu_electronTrkIso_afterElectronPt.title = cms.string('Electron Track iso. (after Electron P_{T} Cut)')
+plots_ZtoElecMu_electronTrkIso_afterElectronPt.xAxis = cms.string('Pt')
 
 plots_ZtoElecMu_electronEcalIso_afterElectronTrkIso = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_electronEcalIso_afterElectronTrkIso.plots.dqmMonitorElements = cms.vstring(
@@ -139,20 +131,12 @@ plots_ZtoElecMu_muon_afterMuonEta.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoElecMu_muon_afterMuonEta.title = cms.string('Muon (after Muon #eta Cut)')
 plots_ZtoElecMu_muon_afterMuonEta.xAxis = cms.string('#PAR#')
 
-plots_ZtoElecMu_muon_afterMuonPt = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_muon_afterMuonPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecMuAnalyzer/afterMuonPtCut_beforeMuonHLTmatchCut/MuonQuantities/Muon#PAR#'
+plots_ZtoElecMu_muonTrkIso_afterMuonPt = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_muonTrkIso_afterMuonPt.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterMuonPtCut_beforeMuonTrkIsoCut/MuonQuantities/MuonTrkIsoPt'
 )
-plots_ZtoElecMu_muon_afterMuonPt.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecMu_muon_afterMuonPt.title = cms.string('Muon (after Muon P_{T} Cut)')
-plots_ZtoElecMu_muon_afterMuonPt.xAxis = cms.string('#PAR#')
-
-plots_ZtoElecMu_muonTrkIso_afterMuonHLTmatch = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_muonTrkIso_afterMuonHLTmatch.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecMuAnalyzer/afterMuonHLTmatchCut_beforeMuonTrkIsoCut/MuonQuantities/MuonTrkIsoPt'
-)
-plots_ZtoElecMu_muonTrkIso_afterMuonHLTmatch.title = cms.string('Muon Track iso. (after Muon HLT-match Cut)')
-plots_ZtoElecMu_muonTrkIso_afterMuonHLTmatch.xAxis = cms.string('Pt')
+plots_ZtoElecMu_muonTrkIso_afterMuonPt.title = cms.string('Muon Track iso. (after Muon P_{T} Cut)')
+plots_ZtoElecMu_muonTrkIso_afterMuonPt.xAxis = cms.string('Pt')
 
 plots_ZtoElecMu_muonEcalIso_afterMuonTrkIso = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_muonEcalIso_afterMuonTrkIso.plots.dqmMonitorElements = cms.vstring(

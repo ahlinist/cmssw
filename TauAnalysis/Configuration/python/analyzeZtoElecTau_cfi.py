@@ -56,13 +56,13 @@ genPhaseSpaceCut = cms.PSet(
 # (NOTE: to be used for efficiency studies only !!)
 #genElectronCut = cms.PSet(
 #  name = cms.string('genElectronCut'),
-#  type = cms.string('TauGenJetMinEventSelector'),
+#  type = cms.string('PATCandViewMinEventSelector'),
 #  src = cms.InputTag('selectedGenTauDecaysToElectronPt15Cumulative'),
 #  minNumber = cms.uint32(1)
 #)
 #genTauCut = cms.PSet(
 #  name = cms.string('genTauCut'),
-#  type = cms.string('TauGenJetMinEventSelector'),
+#  type = cms.string('PATCandViewMinEventSelector'),
 #  src = cms.InputTag('selectedGenTauDecaysToHadronsPt20Cumulative'),
 #  minNumber = cms.uint32(1)
 #)
@@ -98,62 +98,55 @@ primaryEventVertexPosition = cms.PSet(
 # electron candidate selection
 tightElectronIdCut = cms.PSet(
   name = cms.string('tightElectronIdCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src = cms.InputTag('selectedLayer1ElectronsTightId'),
   minNumber = cms.uint32(1)
 )
 electronAntiCrackCut = cms.PSet(
   name = cms.string('electronAntiCrackCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsAntiCrackCutCumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual'),
   minNumber = cms.uint32(1)
 )
 electronEtaCut = cms.PSet(
   name = cms.string('electronEtaCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsEta21Cumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsEta21Individual'),
   minNumber = cms.uint32(1)
 )
 electronPtCut = cms.PSet(
   name = cms.string('electronPtCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsPt15Cumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsPt15Individual'),
   minNumber = cms.uint32(1)
 )
-electronHLTmatchCut = cms.PSet(
-  name = cms.string('electronHLTmatchCut'),
-  type = cms.string('PATElectronMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1ElectronsHLTmatchCumulative'),
-  src_individual = cms.InputTag('selectedLayer1ElectronsHLTmatchIndividual'),
-  minNumber = cms.uint32(1)
-)
 electronTrkIsoCut = cms.PSet(
   name = cms.string('electronTrkIsoCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIsoCumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsTrkIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 electronEcalIsoCut = cms.PSet(
   name = cms.string('electronEcalIsoCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsEcalIsoCumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 electronTrkCut = cms.PSet(
   name = cms.string('electronTrkCut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkCumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsTrkIndividual'),
   minNumber = cms.uint32(1)
 )
 electronTrkIPcut = cms.PSet(
   name = cms.string('electronTrkIPcut'),
-  type = cms.string('PATElectronMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
   src_individual = cms.InputTag('selectedLayer1ElectronsTrkIPindividual'),
   minNumber = cms.uint32(1)
@@ -162,62 +155,62 @@ electronTrkIPcut = cms.PSet(
 # tau candidate selection
 tauAntiOverlapWithElectronsVeto = cms.PSet(
   name = cms.string('tauAntiOverlapWithElectronsVeto'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src = cms.InputTag('selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto'),
   minNumber = cms.uint32(1)
 )
 tauEtaCut = cms.PSet(
   name = cms.string('tauEtaCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauEta21Cumulative'),
   src_individual = cms.InputTag('selectedLayer1TausEta21Individual'),
   minNumber = cms.uint32(1)
 )
 tauPtCut = cms.PSet(
   name = cms.string('tauPtCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauPt20Cumulative'),
   src_individual = cms.InputTag('selectedLayer1TausPt20Individual'),
   minNumber = cms.uint32(1)
 )
 tauLeadTrkCut = cms.PSet(
   name = cms.string('tauLeadTrkCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauLeadTrkCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausLeadTrkIndividual'),
   minNumber = cms.uint32(1)
 )
 tauLeadTrkPtCut = cms.PSet(
   name = cms.string('tauLeadTrkPtCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauLeadTrkPtCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausLeadTrkPtIndividual'),
   minNumber = cms.uint32(1)
 )
 tauTrkIsoCut = cms.PSet(
   name = cms.string('tauTrkIsoCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauTrkIsoCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausTrkIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 tauEcalIsoCut = cms.PSet(
   name = cms.string('tauEcalIsoCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauEcalIsoCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausEcalIsoIndividual'),
   minNumber = cms.uint32(1)
 )
 tauProngCut = cms.PSet(
   name = cms.string('tauProngCut'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauProngCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausProngIndividual'),
   minNumber = cms.uint32(1)
 )
 tauElectronVeto = cms.PSet(
   name = cms.string('tauElectronVeto'),
-  type = cms.string('PATTauMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
   src_individual = cms.InputTag('selectedLayer1TausElectronVetoIndividual'),
   minNumber = cms.uint32(1)
@@ -226,32 +219,32 @@ tauElectronVeto = cms.PSet(
 # di-tau candidate selection
 diTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
-  type = cms.string('PATElecTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src = cms.InputTag('selectedElecTauPairsAntiOverlapVeto'),
-  minNumber = cms.uint32(1)
-)
-diTauCandidateForElecTauAcoplanarityCut = cms.PSet(
-  name = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
-  type = cms.string('PATElecTauPairMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedElecTauPairsAcoplanarityCumulative'),
-  src_individual = cms.InputTag('selectedElecTauPairsAcoplanarityIndividual'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForElecTauZeroChargeCut = cms.PSet(
   name = cms.string('diTauCandidateForElecTauZeroChargeCut'),
-  type = cms.string('PATElecTauPairMinEventSelector'),
+  type = cms.string('PATCandViewMinEventSelector'),
   src_cumulative = cms.InputTag('selectedElecTauPairsZeroChargeCumulative'),
   src_individual = cms.InputTag('selectedElecTauPairsZeroChargeIndividual'),
   minNumber = cms.uint32(1)
 )
+diTauCandidateForElecTauMt1METCut = cms.PSet(
+  name = cms.string('diTauCandidateForElecTauMt1METCut'),
+  type = cms.string('PATCandViewMinEventSelector'),
+  src_cumulative = cms.InputTag('selectedElecTauPairsMt1METCumulative'),
+  src_individual = cms.InputTag('selectedElecTauPairsMt1METIndividual'),
+  minNumber = cms.uint32(1)
+)
 
 # veto events containing additional central jets with Et > 20 GeV
-centralJetVeto = cms.PSet(
-  name = cms.string('centralJetVeto'),
-  type = cms.string('PATJetMaxEventSelector'),
-  src = cms.InputTag('selectedLayer1JetsEt20'),
-  maxNumber = cms.uint32(0)
-)
+#centralJetVeto = cms.PSet(
+#  name = cms.string('centralJetVeto'),
+#  type = cms.string('PATCandViewMaxEventSelector'),
+#  src = cms.InputTag('selectedLayer1JetsEt20'),
+#  maxNumber = cms.uint32(0)
+#)
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -400,15 +393,6 @@ elecTauAnalysisSequence = cms.VPSet(
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative')
   ),
   cms.PSet(
-    filter = cms.string('electronHLTmatchCut'),
-    title = cms.string('Electron Trigger match'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = elecTauHistManagers,
-    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsHLTmatchCumulative')
-  ),
-  cms.PSet(
     filter = cms.string('electronTrkIsoCut'),
     title = cms.string('Electron Track iso.'),
     saveRunEventNumbers = cms.vstring('')
@@ -551,17 +535,6 @@ elecTauAnalysisSequence = cms.VPSet(
                           'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVeto')
   ),
   cms.PSet(
-    filter = cms.string('diTauCandidateForElecTauAcoplanarityCut'),
-    title = cms.string('dPhi(Electron-MET) < 2.4'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = elecTauHistManagers,
-    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
-                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAcoplanarityCumulative')
-  ),
-  cms.PSet(
     filter = cms.string('diTauCandidateForElecTauZeroChargeCut'),
     title = cms.string('Charge(Electron+Tau) = 0'),
     saveRunEventNumbers = cms.vstring('passed_cumulative')
@@ -571,6 +544,17 @@ elecTauAnalysisSequence = cms.VPSet(
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
                           'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
+  ),
+  cms.PSet(
+    filter = cms.string('diTauCandidateForElecTauMt1METCut'),
+    title = cms.string('M_{T}(Electron-MET) < 60 GeV'),
+    saveRunEventNumbers = cms.vstring('passed_cumulative')
+  ),
+  cms.PSet(
+    histManagers = elecTauHistManagers,
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1MuonsTrkIPcumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauMuonVetoCumulative',
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METCumulative')  
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
@@ -580,7 +564,7 @@ elecTauAnalysisSequence = cms.VPSet(
   #  saveRunEventNumbers = cms.vstring('passed_cumulative')
   #),
   #cms.PSet(
-  #  histManagers = muTauHistManagers,
+  #  histManagers = elecTauHistManagers,
   #  replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
   #                        'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
   #                        'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')

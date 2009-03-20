@@ -34,7 +34,6 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
     globalMuonCut,
     muonEtaCut,
     muonPtCut,
-    muonHLTmatchCut,
     muonTrkIsoCut,
     muonEcalIsoCut,
     muonAntiPionCut,
@@ -53,12 +52,11 @@ analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
 
     # di-tau candidate selection
     diTauCandidateForMuTauAntiOverlapVeto,
-    diTauCandidateForMuTauAcoplanarityCut,
     diTauCandidateForMuTauZeroChargeCut,
     diTauCandidateForMuTauMt1METCut,
 
     # veto events containing additional central jets with Et > 20 GeV
-    centralJetVeto
+    #centralJetVeto
   ),
   
   histManagers = cms.VPSet(
