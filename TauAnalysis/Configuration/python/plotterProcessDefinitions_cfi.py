@@ -54,6 +54,21 @@ process_Zee = cms.PSet(
   )
 )
 
+# Z + jets generated with Madgraph
+# integrated luminosity = ~300 pb^-1
+process_ZplusJets = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(dataIntLumi/300.),
+    dqmDirectory_store = cms.string('ZplusJets')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('ZplusJets'),
+    legendEntry = cms.string('Z + jets'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
 # W + jets generated with Pythia
 # integrated luminosity = 536 pb^-1
 process_WplusJets = cms.PSet(
