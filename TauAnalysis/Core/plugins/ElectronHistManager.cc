@@ -15,8 +15,9 @@ bool matchesGenElectron(const pat::Electron& patElectron)
   //std::cout << "<matchesGenElectron>:" << std::endl;
 
   bool isGenElectronMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patElectron.genParticleRefs().begin(); 
-	it != patElectron.genParticleRefs().end(); ++it ) {
+  std::vector<reco::GenParticleRef> associatedGenParticles = patElectron.genParticleRefs();
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
+	it != associatedGenParticles.end(); ++it ) {
     if ( it->ref().isNonnull() && it->ref().isValid() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -11 || genParticle->pdgId() == +11 ) isGenElectronMatched = true;

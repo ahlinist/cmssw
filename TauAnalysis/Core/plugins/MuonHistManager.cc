@@ -16,8 +16,9 @@ bool matchesGenMuon(const pat::Muon& patMuon)
   //std::cout << "<matchesGenMuon>:" << std::endl;
 
   bool isGenMuonMatched = false;
-  for ( std::vector<reco::GenParticleRef>::const_iterator it = patMuon.genParticleRefs().begin(); 
-	it != patMuon.genParticleRefs().end(); ++it ) {
+  std::vector<reco::GenParticleRef> associatedGenParticles = patMuon.genParticleRefs();
+  for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
+	it != associatedGenParticles.end(); ++it ) {
     if ( it->ref().isNonnull() && it->ref().isValid() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -13 || genParticle->pdgId() == +13 ) isGenMuonMatched = true;
