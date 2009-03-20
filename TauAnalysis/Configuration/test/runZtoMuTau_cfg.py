@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 process = cms.Process('runZtoMuTau')
 
@@ -11,6 +12,10 @@ process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
+
+# import particle data table
+# needed for print-out of generator level information
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.load("TauAnalysis.Configuration.producePatLayer1_cff")
 process.load("TauAnalysis.RecoTools.pftauPatSelectorForMuTau_cfi")
@@ -30,6 +35,11 @@ process.saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
 #  ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
+#process.printList = cms.EDAnalyzer("ParticleListDrawer",
+#  src = cms.InputTag("genParticles"),
+#  maxEventsToPrint = cms.untracked.int32(10)
 #)
 
 process.maxEvents = cms.untracked.PSet(            
@@ -90,7 +100,8 @@ process.source = cms.Source("PoolSource",
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
                      +process.selectPFTausForMuTau
                      +process.produceMuTauPairs
-                     +process.produceMuTauPairsLooseMuonIsolation                    
+                     +process.produceMuTauPairsLooseMuonIsolation
+#                     +process.printList  
                      +process.analyzeZtoMuTau
                      +process.saveZtoMuTau )
 
