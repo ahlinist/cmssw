@@ -78,9 +78,7 @@
     <record name="encoded.txt" action="stop"/>
     <replace file="encoded.txt" token="[java]" value=""/>
     <replace file="encoded.txt" token=" " value=""/>
-    <loadresource property="auth">
-      <file file="encoded.txt"/>
-    </loadresource>
+    <loadfile property="auth" srcFile="encoded.txt"/>
     <delete file="encoded.txt"/>
 
     <replace file="WEB-INF/web.xml" token="@AUTH@" value="${auth}"/>
