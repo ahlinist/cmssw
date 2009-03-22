@@ -79,11 +79,12 @@ void HitEff::beginJob(const edm::EventSetup& c){
   traj->Branch("TrajGlbX",&TrajGlbX,"TrajGlbX/F");
   traj->Branch("TrajGlbY",&TrajGlbY,"TrajGlbY/F");
   traj->Branch("TrajGlbZ",&TrajGlbZ,"TrajGlbZ/F");
-  traj->Branch("trackAngle",&trackAngle,"trackAngle/F");
   traj->Branch("TrajLocX",&TrajLocX,"TrajLocX/F");
   traj->Branch("TrajLocY",&TrajLocY,"TrajLocY/F");
   traj->Branch("TrajLocErrX",&TrajLocErrX,"TrajLocErrX/F");
   traj->Branch("TrajLocErrY",&TrajLocErrY,"TrajLocErrY/F");
+  traj->Branch("TrajLocDxDz",&TrajLocDxDz,"TrajLocDxDz/F");
+  traj->Branch("TrajLocDyDz",&TrajLocDyDz,"TrajLocDyDz/F");
   traj->Branch("ClusterLocX",&ClusterLocX,"ClusterLocX/F");
   traj->Branch("ClusterLocY",&ClusterLocY,"ClusterLocY/F");
   traj->Branch("ClusterLocErrX",&ClusterLocErrX,"ClusterLocErrX/F");
@@ -244,6 +245,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     double yloc = 0.;
     double xErr = 0.;
     double yErr = 0.;
+    double dxdz = -999.;
+    double dydz = -999.;
     double xglob,yglob,zglob;
     
     if (DEBUG)      cout << "lenght of TMeas = " << TMeas.size() << endl;      
@@ -313,7 +316,10 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	
 	xErr =  TM->localErrorX();
 	yErr =  TM->localErrorY();
-	
+
+	dxdz = TM->localDxDz();
+	dydz = TM->localDyDz();
+
 	xglob = TM->globalX();
 	yglob = TM->globalY();
 	zglob = TM->globalZ();
@@ -329,8 +335,9 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	if (layers == TKlayers) {   // Look at the layer not used to reconstruct the track
 	  
 	  if (DEBUG)	  cout << "Looking at layer under study" << endl;
-	  TrajGlbX = 0.0; TrajGlbY = 0.0; TrajGlbZ = 0.0; trackAngle = 0.0; ModIsBad = 0; Id = 0; SiStripQualBad = 0; 
-	  run = 0; event = 0; TrajLocX = 0.0; TrajLocY = 0.0; TrajLocErrX = 0.0; TrajLocErrY = 0.0; ResX = 0.0; ResXSig = 0.0;
+	  TrajGlbX = 0.0; TrajGlbY = 0.0; TrajGlbZ = 0.0; ModIsBad = 0; Id = 0; SiStripQualBad = 0; 
+	  run = 0; event = 0; TrajLocX = 0.0; TrajLocY = 0.0; TrajLocErrX = 0.0; TrajLocErrY = 0.0; 
+	  TrajLocDxDz = -999.0; TrajLocDyDz = -999.0;	ResX = 0.0; ResXSig = 0.0;
 	  ClusterLocX = 0.0; ClusterLocY = 0.0; ClusterLocErrX = 0.0; ClusterLocErrY = 0.0; ClusterStoN = 0.0;
 	  for (int i=0;i<500;i++){
 	    RHX[i] = 0; RHY[i] = 0; RHZ[i] = 0; RHID[i] = 0;
@@ -442,12 +449,12 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	      
 	      //if ( SiStripQualityForCluster_->getBadApvs(iidd)==0 ) {
 	      
-	      std::pair<float,float> monoAng = theAngleFinder->findtrackangle(*itm);
-	      trackAngle = monoAng.first;
 	      TrajLocX = xloc;
 	      TrajLocY = yloc;
 	      TrajLocErrX = xErr;
 	      TrajLocErrY = yErr;
+	      TrajLocDxDz = dxdz;
+	      TrajLocDyDz = dydz;
 	      ResX = FinalCluster[0];
 	      ResXSig = FinalResSig;
 	      if (FinalResSig != FinalCluster[1]) cout << "Problem with best cluster selection because FinalResSig = " << FinalResSig << " and FinalCluster[1] = " << FinalCluster[1] << endl;
