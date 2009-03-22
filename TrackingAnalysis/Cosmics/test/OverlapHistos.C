@@ -61,7 +61,7 @@ cout << "Before\n";
   TH1F* deltaXPred = new TH1F("deltaXPred", "delta x predicted", 220, -1.1, 1.1);
   TH1F* doubleDiff = new TH1F("doubleDiff", "double difference", 220, -1.1, 1.1);
 
-  TH1F* pahtH = new TH1F("path", "path", 200, -50., 50.);
+  TH1F* pahtH = new TH1F("path", "path", 50, -50., 0.);
 
 
   Long64_t nbytes = 0, nb = 0;
@@ -86,7 +86,7 @@ cout << "Before\n";
     if (!acceptStereo[stereo&1]) continue;
     DetIdPair idPair(min(detids[0],detids[1]),
 		     max(detids[0],detids[1]));
-    if (!checkAdjacent(idPair.first, idPair.second, path)) continue;
+    //if (!checkAdjacent(idPair.first, idPair.second, path)) continue;
     
     //cout << "first pass "<<min(detids[0],detids[1])<<" "<< max(detids[0],detids[1])<<" \n";
     std::map<DetIdPair,iiPair>::iterator it = overlapCounter.find(idPair);
@@ -157,8 +157,6 @@ cout << "Before\n";
 
       char hn[32];
       hDir->cd();
-//       cout << "idPair "<<ind<<endl;
-      // create histograms for reverse / normal order of DetIds
       resDir->cd();
 
       int bins = 200;
@@ -282,31 +280,13 @@ cout << "Before\n";
       dxdzE_.push_back(vector<double>());
       dydz_.push_back(vector<double>());
       dydzE_.push_back(vector<double>());
-	
+
       curDir->cd();
 
       ++ind;
-//cout << "Bookedok\n";
-
-//     decode((*ih).first.first,subdet,layer,part,stereo);
-//     cout << "Pair "<< n<<" : " << (*ih).first.first<< " ( ";
-//     printId((*ih).first.first);
-//     cout <<" ) " << (*ih).first.second << " ( ";
-//     printId((*ih).first.second);     
-// //     decode((*ih).first.second,subdet,layer,part,stereo);
-// //     cout <<" ) " << (*ih).first.second << " ( " << subdet << " " << layer << " " << stereo 
-//     cout << " ) "<<(*ih).second  << " " << resHistos->GetEntries() 
-// 	 << (resHistos->GetEntries()>threshold  ? " YES " : "     " )
-// 	 << endl;
-
-//     cout << "check "<<(*ih).first.first<<" "<<(*ih).first.second<<
-//     " " << (*ih).second.first<<" "<<(*ih).second.second<<endl;
     }
   }
   cout << "Overlaps identified (after cuts): " << ind<<endl;
-//return;
-
-
   nbytes = 0; nb = 0;
   ctr=0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -327,9 +307,6 @@ cout << "Before\n";
     else if ( subdet==5 && layer>0 && layer<7 ) {
       k = layer + 4;
     }
-
-    //select layers here if desired
-    //if (!(k==9||k==10)) continue;
 
     //
     widthVsAngle->Fill(predDX[0],(hitX[0] + relSignX*hitX[1]) - (predX[0] + relSignX*predX[1]));
@@ -357,6 +334,7 @@ cout << "Before\n";
     }
 
     ind = (*it).second;
+
     // histogram pointers
     resHisto = residualHistos_[ind];
     resHistoY = residualHistosY_[ind];
@@ -565,9 +543,7 @@ cout << "Before\n";
   const int kNotDraw = 1<<9;
 
   time (&start);
-//   TCanvas * scanC = new TCanvas("scan","Scan", 1200, 600);
    for ( unsigned int i=0; i<n; ++i ) {
-   //if (i!=62) continue;
 //  for ( unsigned int i=0; i<1; ++i ) {
     //
       // Choose DetId order with more entries and retrieve histogram pointers
@@ -641,7 +617,8 @@ cout << "Before\n";
       fillMean(i+1,xHisto,posHistosLocal[0]);
       fillMean(i+1,yHisto,posHistosLocal[1]);
       hDir->cd();
-      // Do this only if <10% of the hits are outside the area
+
+      // Do this only if <10% of the hits are inside the area
       if (( (resHisto->GetBinContent(0)+resHisto->GetBinContent(resHisto->GetNbinsX()+1)) / resHisto->GetEntries()) < 0.1) {
 
 	// Now the plots on the slopes dd vs. local pos.
@@ -652,40 +629,31 @@ cout << "Before\n";
  	if (posHistosLocal[1]->GetRMS()>1.)
  	  slopeX = fillSlope(i+1,ddVsLocalYSlope, ddVsLocalYOffset, localY_[i], localYE_[i], dd_[i], ddE_[i]);
 	slopeY = fillSlope(i+1,ddVsDxdzSlope, ddVsDxdzOffset, dxdz_[i], dxdzE_[i], dd_[i], ddE_[i]);
-// if (i==62) {
-// scanC->Update();
-// scanC->SaveAs("a.eps");
-// return;
-// }	
+
 	if (type == parallelToStrips) {
 	  slope = slopeX;
 	} else {
 	  slope = slopeY;
 	}
 
-	if (posHistosLocal[0]->GetRMS()>1.)
-	  fillSlope(i+1,ddVsLocalXSlope, ddVsLocalXOffset, localX_[i], localXE_[i], dd_[i], ddE_[i]);
-	fillSlope(i+1,ddVsDydzSlope, ddVsDydzOffset, dydz_[i], dydzE_[i], dd_[i], ddE_[i]);
+	fillSlope(i+1,ddVsDydzSlope, ddVsDydzOffset, ddVsDydz);
 
 	curDir->cd();
-	if (slopeOK(type, slope)) {
-	  // Gaussian fit to double-difference
-	  //
-	  resHisto->Fit("gaus","Q0R","",resHisto->GetMean()-3*resHisto->GetRMS(),resHisto->GetMean()+3*resHisto->GetRMS());
-	  //gStyle->SetOptFit(1011);
-	  //resHisto->Fit("gaus","LQ0R");
-	  resHisto->GetFunction("gaus")->ResetBit(kNotDraw);
-	  double mDiff = resHisto->GetFunction("gaus")->GetParameter(1);
-	  double emDiff = resHisto->GetFunction("gaus")->GetParError(1);
-	  meanDiffs->SetBinContent(i+1,10000*mDiff);
-	  meanDiffs->SetBinError(i+1,10000*emDiff);
-	  double sDiff = resHisto->GetFunction("gaus")->GetParameter(2);
-	  double esDiff = resHisto->GetFunction("gaus")->GetParError(2);
-	  sigmaDiffs->SetBinContent(i+1,10000*sDiff);
-	  sigmaDiffs->SetBinError(i+1,10000*esDiff);
-	}
-        else cout << "with overlap ID "<<i<<endl;
-     } else {
+	// Gaussian fit to double-difference
+	//
+	resHisto->Fit("gaus","Q0R","",resHisto->GetMean()-3*resHisto->GetRMS(),resHisto->GetMean()+3*resHisto->GetRMS());
+	//gStyle->SetOptFit(1011);
+	//resHisto->Fit("gaus","LQ0R");
+	resHisto->GetFunction("gaus")->ResetBit(kNotDraw);
+	double mDiff = resHisto->GetFunction("gaus")->GetParameter(1);
+	double emDiff = resHisto->GetFunction("gaus")->GetParError(1);
+	meanDiffs->SetBinContent(i+1,10000*mDiff);
+	meanDiffs->SetBinError(i+1,10000*emDiff);
+	double sDiff = resHisto->GetFunction("gaus")->GetParameter(2);
+	double esDiff = resHisto->GetFunction("gaus")->GetParError(2);
+	sigmaDiffs->SetBinContent(i+1,10000*sDiff);
+	sigmaDiffs->SetBinError(i+1,10000*esDiff);
+      } else {
         cout << "Overflow/underflow problem with overlap ID "<<i<<endl;
 	cout << "DD summary plots will not be filled\n";
       }
@@ -749,16 +717,24 @@ OverlapHistos::cut()
   //if ( fabs(predDX[0])>0.84 || fabs(predDX[1])>0.84 )  return false;
   // extrapolation accuracy
   if ( predEDeltaX<1.e-9 || predEDeltaX>0.0025 ) return false;
-  decode(detids[0],subdet,layer,part,stereo);
-  if ( (subdet==1 || subdet==2 ) && ( predEDeltaY<1.e-9 || predEDeltaY>0.0025 ) )
-	return false; //for pixel only
   // chi2 cut
   if ( TMath::Prob((Double_t)chi2[0],chi2[1])<1.e-3 )  return false;
-  //if ( momentum < 20 || momentum > 500 ) return false; //for strips
-  //if ( path > 10 || path < -10 ) return false; //for strips
-  if ( momentum < 10 || momentum > 500 ) return false; //for pixels
-  //if ( hitEX[0] > 0.006 || hitEX[1] > 0.006 ) return false;
-  return true;
+  decode(detids[0],subdet,layer,part,stereo);
+  if (subdet==1 || subdet==2 ) {
+  //pixel only cuts here:
+    if ( predEDeltaY<1.e-9 || predEDeltaY>0.0025 ) return false;
+    if ( momentum < 5 || momentum > 500 ) return false;
+    if ( path > 2 || path < -2 ) return false;
+    if ( hitEX[0] > 0.0025 || hitEX[1] > 0.0025 ||
+         hitEY[0] > 0.0040 || hitEY[1] > 0.0040 ) return false;
+    return true;
+  } else {
+  //strip only cuts here:
+    if ( momentum < 20 || momentum > 500 ) return false; //for strips
+    if ( path > 10 || path < -10 ) return false; //for strips
+    if ( hitEX[0] > 0.006 || hitEX[1] > 0.006 ) return false; // for strips
+    return true;
+  }
 }
 
 void
