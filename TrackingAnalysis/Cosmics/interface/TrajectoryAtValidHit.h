@@ -24,7 +24,10 @@ public:
   double localY() const;
   double localErrorX() const;
   double localErrorY() const;
- 
+
+  double localDxDz() const;
+  double localDyDz() const;
+
   double localZ() const;
 
   double globalX() const;

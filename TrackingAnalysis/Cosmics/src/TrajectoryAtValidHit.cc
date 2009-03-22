@@ -29,8 +29,6 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
 
   theHit = tm.recHit();  
   iidd = theHit->geographicalId().rawId();
-  TrajectoryStateTransform tsostransform;
-  PTrajectoryStateOnDet* combinedptsod=tsostransform.persistentState( theCombinedPredictedState,iidd);
 
   StripSubdetector strip=StripSubdetector(iidd);
   unsigned int subid=strip.subdetId();
@@ -57,7 +55,7 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
     
     // get the sensor det indicated by mono
     if (mono == 1) monodet=gdet->stereoDet();
-    if (mono == 2) monodet=gdet->monoDet();
+    else  monodet=gdet->monoDet(); // this should only be mono == 2
 
     // set theCombinedPredictedState to be on the sensor surface, not the matched surface
     const FreeTrajectoryState &fts = *(theCombinedPredictedState.freeTrajectoryState());
@@ -126,6 +124,12 @@ double TrajectoryAtValidHit::localErrorX() const
 double TrajectoryAtValidHit::localErrorY() const
 {
   return sqrt(theCombinedPredictedState.localError().positionError().yy());
+}
+double TrajectoryAtValidHit::localDxDz() const {
+  return theCombinedPredictedState.localParameters().vector()[1];
+}
+double TrajectoryAtValidHit::localDyDz() const {
+  return theCombinedPredictedState.localParameters().vector()[2];
 }
 double TrajectoryAtValidHit::globalX() const
 {
