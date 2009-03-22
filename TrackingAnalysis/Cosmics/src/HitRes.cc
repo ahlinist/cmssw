@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.10 2009/02/12 17:52:14 kaulmer Exp $
+// $Id: HitRes.cc,v 1.11 2009/03/03 00:48:37 kaulmer Exp $
 //
 //
 
@@ -243,12 +243,13 @@ HitRes::analyze (const Trajectory& trajectory,
 
   // quality cuts on trajectory
   // min. # hits / matched hits
-  
+
   if ( trajectory.foundHits()<6 )  return;
   if ( ChiSquaredProbability((double)( trajectory.chiSquared() ),(double)( trajectory.ndof(false) )) < 0.001 ) return;
   //
   // loop over measurements in the trajectory and calculate residuals
   //
+
   vector<TrajectoryMeasurement> measurements(trajectory.measurements());
   for ( vector<TrajectoryMeasurement>::const_iterator itm=measurements.begin();
 	itm!=measurements.end(); ++itm ) {
@@ -315,10 +316,10 @@ HitRes::analyze (const Trajectory& trajectory,
     // backward predicted state at module 1
      TrajectoryStateOnSurface bwdPred1 = (*iol).first->backwardPredictedState();
     if ( !bwdPred1.isValid() )  continue;
-    cout << "momentum from backward predicted state = " << bwdPred1.globalMomentum().mag() << endl;
+    //cout << "momentum from backward predicted state = " << bwdPred1.globalMomentum().mag() << endl;
     // forward predicted state at module 2
     TrajectoryStateOnSurface fwdPred2 = (*iol).second->forwardPredictedState();
-    cout << "momentum from forward predicted state = " << fwdPred2.globalMomentum().mag() << endl;
+    //cout << "momentum from forward predicted state = " << fwdPred2.globalMomentum().mag() << endl;
     if ( !fwdPred2.isValid() )  continue;
     // extrapolate fwdPred2 to module 1
     TrajectoryStateOnSurface fwdPred2At1 = propagator.propagate(fwdPred2,bwdPred1.surface());
@@ -341,8 +342,8 @@ HitRes::analyze (const Trajectory& trajectory,
     predictedPositions_[1][0] = position.y();
     predictedPositions_[2][0] = position.z();
     momentum_ = comb1.globalMomentum().mag();
-    cout << "momentum from combination = " << momentum_ << endl;
-    cout << "magnetic field from TSOS = " << comb1.magneticField()->inTesla(position).mag() << endl;
+    //cout << "momentum from combination = " << momentum_ << endl;
+    //cout << "magnetic field from TSOS = " << comb1.magneticField()->inTesla(position).mag() << endl;
     // local parameters and errors on module 1
     AlgebraicVector5 pars = comb1.localParameters().vector();
     AlgebraicSymMatrix55 errs = comb1.localError().matrix();
@@ -364,8 +365,8 @@ HitRes::analyze (const Trajectory& trajectory,
     }
 
     //print out local errors in X to check
-    cout << "Predicted local error in X at 1 = " << predictedLocalErrors_[3][0] << "   and predicted local error in X at 2 is = " <<  predictedLocalErrors_[3][1] << endl;
-    cout << "Predicted local error in Y at 1 = " << predictedLocalErrors_[4][0] << "   and predicted local error in Y at 2 is = " <<  predictedLocalErrors_[4][1] << endl;
+    //cout << "Predicted local error in X at 1 = " << predictedLocalErrors_[3][0] << "   and predicted local error in X at 2 is = " <<  predictedLocalErrors_[3][1] << endl;
+    //cout << "Predicted local error in Y at 1 = " << predictedLocalErrors_[4][0] << "   and predicted local error in Y at 2 is = " <<  predictedLocalErrors_[4][1] << endl;
 
     //
     // jacobians (local-to-global@1,global 1-2,global-to-local@2)

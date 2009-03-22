@@ -78,7 +78,7 @@ class HitEff : public edm::EDAnalyzer {
   // Tree declarations
   // Trajectory positions for modules included in the study
   float TrajGlbX, TrajGlbY, TrajGlbZ;
-  float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY, TrajLocDxDz, TrajLocDyDz;
+  float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY, TrajLocAngleX, TrajLocAngleY;
   float ClusterLocX, ClusterLocY, ClusterLocErrX, ClusterLocErrY, ClusterStoN;
   float ResX, ResXSig;
   uint ModIsBad; uint Id; uint SiStripQualBad;

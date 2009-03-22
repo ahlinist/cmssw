@@ -21,11 +21,11 @@
 #define HISTOS2D
 
 const bool defaultDet[7] = {false,
-	false, // PXB
-	false, // PXF
-	true,	// TIB
+	true, // PXB
+	true, // PXF
+	false,	// TIB
 	false,	//TID
-	true,	// TOB
+	false,	// TOB
 	false	// TEC
 };
 
