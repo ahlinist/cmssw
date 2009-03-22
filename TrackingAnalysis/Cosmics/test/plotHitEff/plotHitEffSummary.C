@@ -1,7 +1,7 @@
 ////////////////////////////
 // Script to plot sensor efficiency layer by layer
 // The input files are the output from TrackingAnalysis/Cosmics/src/HitRes.cc
-// Usage in root: root> .x plotHitEffSummary.C()
+// Usage in root: root> .x plotHitEffSummary.C
 // Original Author:  Keith Ulmer  University of Colorado 
 //                   keith.ulmer@colorado.edu
 ////////////////////////////
