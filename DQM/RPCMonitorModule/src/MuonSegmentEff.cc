@@ -43,19 +43,6 @@ double straighter(RPCDetId rpcId){
   }
 }
 
-int mySegment(RPCDetId rpcId){
-  int seg=0;
-  int nsec=36;
-  int nsub=6;
-  if (rpcId.ring()==1 && rpcId.station() > 1) {
-    nsub=3;
-    nsec=18;
-  }
-  seg =rpcId.subsector()+nsub*(rpcId.sector()-1);
-  if(seg==nsec+1)seg=1;
-  return seg;
-}
-
 void MuonSegmentEff::beginJob(){
   
 }
@@ -253,7 +240,6 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
 	std::string nameRoll = rpcsrv.name();
 	//std::cout<<"Booking for "<<nameRoll<<std::endl;
 
-	
 	if(region==0&&(incldt||incldtMB4)){
 	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
@@ -282,9 +268,9 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
           int cscring=ring;
           int cscstation=station;
 	  RPCGeomServ rpcsrv(rpcId);
-	  int rpcsegment = mySegment(rpcId); //This replace rpcsrv.segment();
-	  //std::cout<<"My segment="<<mySegment(rpcId)<<" GeomServ="<<rpcsrv.segment()<<std::endl;
-	  int cscchamber = rpcsegment;//FIX THIS ACCORDING TO RPCGeomServ::segment()Definition
+	  int rpcsegment = rpcsrv.segment();
+	  
+	  int cscchamber = rpcsegment; //FIX THIS ACCORDING TO RPCGeomServ::segment()Definition
           if((station==2||station==3)&&ring==3){//Adding Ring 3 of RPC to the CSC Ring 2
             cscring = 2;
           }
@@ -302,11 +288,9 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
     }
   }
 
-  //Now filling in order to extrapolate to other wheels.
-  /*
   for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
     if( dynamic_cast< RPCChamber* >( *it ) != 0 ){
-
+      
       RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
       std::vector< const RPCRoll*> roles = (ch->rolls());
       for(std::vector<const RPCRoll*>::const_iterator r = roles.begin();r != roles.end(); ++r){
@@ -314,7 +298,7 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
 	
 	int region=rpcId.region();
 	
-	if(region==0&&(incldt||incldtMB4)&&rpcId.ring()!=0&&rpcId.station()!=4){
+	/*if(region==0&&(incldt||incldtMB4)&&rpcId.ring()!=0&&rpcId.station()!=4){
 	  //std::cout<<"--Filling the dtstore for statistics"<<rpcId<<std::endl;
 	  
 	  int sidewheel = 0;
@@ -339,47 +323,43 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
 	  if (rollstoreDT.find(ind)!=rollstoreDT.end()) myrolls=rollstoreDT[ind];
 	  myrolls.insert(rpcId);
 	  rollstoreDT[ind]=myrolls;
-	}
-	if(region!=0 && inclcsc && (rpcId.ring()==2 || rpcId.ring()==3)){
-	  int region=rpcId.region();
-          int station=rpcId.station();
-          int ring=rpcId.ring();
-	  int sidering = 0;
-	  if(ring==2)sidering =3;
-	  else if(ring==3) sidering =2;
-	  
-          int cscring=sidering;
-          int cscstation=station;
-	  RPCGeomServ rpcsrv(rpcId);
-	  int rpcsegment = mySegment(rpcId);
-	  
-	  if((station==2||station==3)&&ring==3) cscring = 2; //CSC Ring 2 covers rpc ring 2 & 3
-          	  
-	  int cscchamber = rpcsegment+1;
-	  if(cscchamber==37)cscchamber=1;
-	  CSCStationIndex ind(region,cscstation,cscring,cscchamber);
-          std::set<RPCDetId> myrolls;
-	  if (rollstoreCSC.find(ind)!=rollstoreCSC.end())myrolls=rollstoreCSC[ind];          
-          myrolls.insert(rpcId);
-          rollstoreCSC[ind]=myrolls;
-	  
-	  cscchamber = rpcsegment-1;
-	  if(cscchamber==0)cscchamber=36;
-	  CSCStationIndex indDos(region,cscstation,cscring,cscchamber);
-          std::set<RPCDetId> myrollsDos;
-	  if (rollstoreCSC.find(indDos)!=rollstoreCSC.end())myrollsDos=rollstoreCSC[indDos];          
-          myrollsDos.insert(rpcId);
-          rollstoreCSC[indDos]=myrolls;
-	  
+	  }*/
 
+	if(region!=0 && inclcsc && (rpcId.ring()==2 || rpcId.ring()==3)){
+	  int region=rpcId.region();                                                                                         
+          int station=rpcId.station();                                                                                       
+          int ring=rpcId.ring();                                                                                             
+	  int cscring = ring;
+	    
+	  if((station==2||station==3)&&ring==3) cscring = 2; //CSC Ring 2 covers rpc ring 2 & 3                              
+
+
+          int cscstation=station;                                                                                            
+          RPCGeomServ rpcsrv(rpcId);                                                                                         
+          int rpcsegment = rpcsrv.segment();                                                                                 
+                                                                                                                             
+                                                                                                                                       
+          int cscchamber = rpcsegment+1;                                                                                     
+          if(cscchamber==37)cscchamber=1;                                                                                    
+          CSCStationIndex ind(region,cscstation,cscring,cscchamber);                                                         
+	  std::set<RPCDetId> myrolls;                                                                                        
+          if (rollstoreCSC.find(ind)!=rollstoreCSC.end())myrolls=rollstoreCSC[ind];                                          
+          myrolls.insert(rpcId);                                                                                             
+          rollstoreCSC[ind]=myrolls;                                                                                         
+                                                                                                                             
+          cscchamber = rpcsegment-1;                                                                                         
+          if(cscchamber==0)cscchamber=36;                                                                                    
+          CSCStationIndex indDos(region,cscstation,cscring,cscchamber);                                                      
+	  std::set<RPCDetId> myrollsDos;                                                                                     
+          if (rollstoreCSC.find(indDos)!=rollstoreCSC.end()) myrollsDos=rollstoreCSC[indDos];                                 
+          myrollsDos.insert(rpcId);                                                                                          
+          rollstoreCSC[indDos]=myrollsDos;                                                                                      
+                                           
         }
       }
     }
   }
-  */
-  //booking global histograms
-
- 
+   
 }//beginRun
 
 
@@ -1041,15 +1021,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  int rpcRing = cscRing;
 	  if(cscRing==4)rpcRing =1;
 	  int rpcStation = cscStation;
-	  int rpcSegment = 0;
+	  int rpcSegment = CSCId.chamber();
 	
-	  if(cscStation!=1&&cscRing==1){//las de 18 CSC
-	    rpcSegment = CSCId.chamber();
-	  }
-	  else{//las de 36 CSC
-	    rpcSegment = (CSCId.chamber()==1) ? 36 : CSCId.chamber()-1;
-	  }
-     
 	  LocalPoint segmentPosition= segment->localPosition();
 	  LocalVector segmentDirection=segment->localDirection();
 	  float dz=segmentDirection.z();
@@ -1141,7 +1114,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      <<" cscphi="<<cscphi*180/3.14159265
 		      <<"\t RPC Station= "<<rpcId.station()
 		      <<" ring= "<<rpcId.ring()
-		      <<" segment =-> "<<mySegment(rpcId)
+		      <<" segment =-> "<<rpcsrv.segment()
 		      <<" rollphi="<<rpcphi*180/3.14159265
 		      <<"\t dfg="<<dfg
 		      <<" dz="<<diffz
