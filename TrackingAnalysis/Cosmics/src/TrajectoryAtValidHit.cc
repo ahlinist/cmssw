@@ -17,10 +17,10 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TrackingRecHitProjector.h"
 #include "RecoTracker/TransientTrackingRecHit/interface/ProjectedRecHit2D.h"
 
-
 using namespace std;
 TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm, 
 					    const TrackerGeometry* tracker,
+					    const Propagator& propagator,
 					    const uint mono)
 {
 
@@ -58,10 +58,12 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
     else  monodet=gdet->monoDet(); // this should only be mono == 2
 
     // set theCombinedPredictedState to be on the sensor surface, not the matched surface
-    const FreeTrajectoryState &fts = *(theCombinedPredictedState.freeTrajectoryState());
+    //const FreeTrajectoryState &fts = *(theCombinedPredictedState.freeTrajectoryState());
     DetId mono_id = monodet->geographicalId();
     const Surface &surface = tracker->idToDet(mono_id)->surface();
-    theCombinedPredictedState = TrajectoryStateOnSurface(fts, surface);
+    //theCombinedPredictedState = TrajectoryStateOnSurface(fts, surface);
+    theCombinedPredictedState = propagator.propagate(theCombinedPredictedState, 
+						     surface);
     
     //set module id to be mono det
     iidd = monodet->geographicalId().rawId();
