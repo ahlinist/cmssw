@@ -107,8 +107,8 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
 
   drawJobs = cms.PSet(
     # cut-flow control plots
-    #cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex = copy.deepcopy(plots_ZtoElecMu_vertexChi2Prob_afterPrimaryEventVertex),
-    #cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality = copy.deepcopy(plots_ZtoElecMu_vertexZ_afterPrimaryEventVertexQuality),
+    cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex = copy.deepcopy(plots_ZtoElecMu_vertexChi2Prob_afterPrimaryEventVertex),
+    cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality = copy.deepcopy(plots_ZtoElecMu_vertexZ_afterPrimaryEventVertexQuality),
     cutFlowControlPlots_electron_afterPrimaryEventVertexPosition = copy.deepcopy(plots_ZtoElecMu_electron_afterPrimaryEventVertexPosition),
     cutFlowControlPlots_electron_afterTightElectronId = copy.deepcopy(plots_ZtoElecMu_electron_afterTightElectronId),
     cutFlowControlPlots_electron_afterElectronAntiCrack = copy.deepcopy(plots_ZtoElecMu_electron_afterElectronAntiCrack),
