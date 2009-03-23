@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.10 2009/03/06 15:41:12 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.11 2009/03/09 13:05:41 carrillo Exp $
 //
 //
 
@@ -174,6 +174,24 @@ public:
   TH1F * ExGregD2R3;  
   TH1F * ExGregD3R2;  
   TH1F * ExGregD3R3;  
+
+  TH1F * sectorEffWm2;  
+  TH1F * sectorEffWm1;  
+  TH1F * sectorEffW0;  
+  TH1F * sectorEffW1;  
+  TH1F * sectorEffW2;  
+
+  TH1F * OcsectorEffWm2;  
+  TH1F * OcsectorEffWm1;  
+  TH1F * OcsectorEffW0;  
+  TH1F * OcsectorEffW1;  
+  TH1F * OcsectorEffW2;  
+
+  TH1F * ExsectorEffWm2;  
+  TH1F * ExsectorEffWm1;  
+  TH1F * ExsectorEffW0;  
+  TH1F * ExsectorEffW1;  
+  TH1F * ExsectorEffW2;  
 
   TH1F * EffDistroDm3;  
   TH1F * EffDistroDm2;
@@ -417,7 +435,6 @@ void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
   theFile = new TFile(file.c_str());
   if(!theFile)std::cout<<"The File Doesn't exist"<<std::endl;
   theFileOut = new TFile(fileout.c_str(), "RECREATE");
-
 }
 
 
@@ -476,12 +493,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
   HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
 
-  GregD1R2= new TH1F ("GregDistroD1R2","Efficiency Distribution for Station 1 Ring 2",36,0.5,36.5);
-  GregD1R3= new TH1F ("GregDistroD1R3","Efficiency Distribution for Station 1 Ring 3",36,0.5,36.5);
-  GregD2R2= new TH1F ("GregDistroD2R2","Efficiency Distribution for Station 2 Ring 2",36,0.5,36.5);
-  GregD2R3= new TH1F ("GregDistroD2R3","Efficiency Distribution for Station 2 Ring 3",36,0.5,36.5);
-  GregD3R2= new TH1F ("GregDistroD3R2","Efficiency Distribution for Station 3 Ring 2",36,0.5,36.5);
-  GregD3R3= new TH1F ("GregDistroD3R3","Efficiency Distribution for Station 3 Ring 3",36,0.5,36.5);
+  sectorEffWm2= new TH1F ("AzimutalDistroWm2","Efficiency per Sector Wheel -2",12,0.5,12.5);
+  sectorEffWm1= new TH1F ("AzimutalDistroWm1","Efficiency per Sector Wheel -1",12,0.5,12.5);
+  sectorEffW0= new TH1F ("AzimutalDistroW0","Efficiency per Sector Wheel 0",12,0.5,12.5);
+  sectorEffW1= new TH1F ("AzimutalDistroW1","Efficiency per Sector Wheel 1",12,0.5,12.5);
+  sectorEffW2= new TH1F ("AzimutalDistroW2","Efficiency per Sector Wheel 2",12,0.5,12.5);
+
+  OcsectorEffWm2= new TH1F ("AzimutalDistroWm2","Occupancy per Sector Wheel -2",12,0.5,12.5);
+  OcsectorEffWm1= new TH1F ("AzimutalDistroWm1","Occupancy per Sector Wheel -1",12,0.5,12.5);
+  OcsectorEffW0= new TH1F ("AzimutalDistroW0","Ocuppancy per Sector Wheel 0",12,0.5,12.5);
+  OcsectorEffW1= new TH1F ("AzimutalDistroW1","Ocuppancy per Sector Wheel 1",12,0.5,12.5);
+  OcsectorEffW2= new TH1F ("AzimutalDistroW2","Ocupancy per Sector Wheel 2",12,0.5,12.5);
+
+  ExsectorEffWm2= new TH1F ("AzimutalDistroWm2","Expected per Sector Wheel -2",12,0.5,12.5);
+  ExsectorEffWm1= new TH1F ("AzimutalDistroWm1","Expected per Sector Wheel -1",12,0.5,12.5);
+  ExsectorEffW0= new TH1F ("AzimutalDistroW0","Expected per Sector Wheel 0",12,0.5,12.5);
+  ExsectorEffW1= new TH1F ("AzimutalDistroW1","Expected per Sector Wheel 1",12,0.5,12.5);
+  ExsectorEffW2= new TH1F ("AzimutalDistroW2","Expected per Sector Wheel 2",12,0.5,12.5);
+  
+  GregD1R2= new TH1F ("GregDistroD1R2","Efficiency for Station 1 Ring 2",36,0.5,36.5);
+  GregD1R3= new TH1F ("GregDistroD1R3","Efficiency for Station 1 Ring 3",36,0.5,36.5);
+  GregD2R2= new TH1F ("GregDistroD2R2","Efficiency for Station 2 Ring 2",36,0.5,36.5);
+  GregD2R3= new TH1F ("GregDistroD2R3","Efficiency for Station 2 Ring 3",36,0.5,36.5);
+  GregD3R2= new TH1F ("GregDistroD3R2","Efficiency for Station 3 Ring 2",36,0.5,36.5);
+  GregD3R3= new TH1F ("GregDistroD3R3","Efficiency for Station 3 Ring 3",36,0.5,36.5);
 
   OcGregD1R2= new TH1F ("OcGregDistroD1R2","Occupancy Distribution for Station 1 Ring 2",36,0.5,36.5);
   OcGregD1R3= new TH1F ("OcGregDistroD1R3","Occupancy Distribution for Station 1 Ring 3",36,0.5,36.5);
@@ -673,7 +708,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Disk3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
-  MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-1,1);
+  MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
   
   //Producing plots for residuals and global statistics.
 
@@ -1291,11 +1326,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    delete histoPROY;
 	    delete histoPROX;
 
-	    alignment<<rpcsrv.name()<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
-
-	    MeanResiduals->Fill(histoResidual->GetMean());
-	    MeanResiduals11->Fill(histoResidual->GetMean());
-
 	    int sector = rpcId.sector();
 	    //Near Side
 
@@ -1365,6 +1395,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  	  
 	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
+
+	  
 	  
 	  std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 
@@ -1376,13 +1408,44 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  ef=ef*100;
 	  er=er*100;
 
+	  //Filling azimutal Wheel Histograms
+
+	  int wheel = rpcId.ring();
+	  int sector = rpcId.sector();
+	  int station = rpcId.station();
+	  int layer = rpcId.layer();
+	  int region = rpcId.region();
+
+	  if(region ==0){
+	    //if(station==1 && layer==1)
+	      {
+		if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);}
+		if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);}
+		if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);}
+		if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);}
+		if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);}
+	      }
+	  }
 
 	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<""<<std::endl;
 	  
 	  std::string camera = rpcsrv.name().c_str();  
 	  float stripsratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float((*r)->nstrips()))*100.;
+
 	  
+	  alignment<<rpcsrv.name()<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
+	  
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
+	  
+	  if(fabs(histoResidual->GetMean()>4.) && averageeff > 10. && nopredictionsratio < 70) 
+	    std::cout<<"Super offsets in  "<<rpcsrv.name()<<" mean="<<histoResidual->GetMean()
+		     <<" AverageEff"<<averageeff
+		     <<" No Prediction Ration"<<nopredictionsratio
+		     <<std::endl;
+	  
+		  
 	  //Pigi Histos
 
 	  std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<averageeff<<" "<<std::endl;
@@ -1994,7 +2057,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  ef=ef*100;
 	  er=er*100;
 
-	  //Filling GregHistograms
+	  //Filling azimutal GregHistograms
 
 	  if(rpcId.region()==1){
 	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),p);OcGregD1R2->Fill(rpcsrv.segment(),o); std::cout<<rpcsrv.name()<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
@@ -2310,8 +2373,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
 
   float eff,N,err;
-  
-  for(int k=1;k<=36;k++){
+  int k;
+  for(k=1;k<=36;k++){
     float h = sin((k-1)*10*3.14159565/180.);
   
     err=0; eff=0; N=ExGregD1R2->GetBinContent(k);
@@ -2343,6 +2406,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
     //HeightVsEffR3->Fill(eff,h);
+  }
+
+  for(k=1;k<=12;k++){
+    err=0; eff=0; N=ExsectorEffWm2->GetBinContent(k);
+    if(N!=0.){ eff = OcsectorEffWm2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    sectorEffWm2->SetBinContent(k,eff); sectorEffWm2->SetBinError(k,err);
+
+    err=0; eff=0; N=ExsectorEffWm1->GetBinContent(k);
+    if(N!=0.){ eff = OcsectorEffWm1->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    sectorEffWm1->SetBinContent(k,eff); sectorEffWm1->SetBinError(k,err);
+
+    err=0; eff=0; N=ExsectorEffW0->GetBinContent(k);
+    if(N!=0.){ eff = OcsectorEffW0->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    sectorEffW0->SetBinContent(k,eff); sectorEffW0->SetBinError(k,err);
+
+    err=0; eff=0; N=ExsectorEffW1->GetBinContent(k);
+    if(N!=0.){ eff = OcsectorEffW1->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    sectorEffW1->SetBinContent(k,eff); sectorEffW1->SetBinError(k,err);
+
+    err=0; eff=0; N=ExsectorEffW2->GetBinContent(k);
+    if(N!=0.){ eff = OcsectorEffW2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    sectorEffW2->SetBinContent(k,eff); sectorEffW2->SetBinError(k,err);
   }
 
   std::cout<<"Outside the loop of rolls"<<std::endl;
@@ -2720,8 +2805,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   command = "mkdir Greg" ; system(command.c_str());
   
   //Producing Images
+
+  Ca5->Clear();
  
- Ca5->Clear();
+  sectorEffWm2->Draw(); sectorEffWm2->GetXaxis()->SetTitle("Sector");  sectorEffWm2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Wm2.png"); Ca5->SaveAs("Greg/Wm2.root");
+  Ca5->Clear(); 
+
+  sectorEffWm1->Draw(); sectorEffWm1->GetXaxis()->SetTitle("Sector");  sectorEffWm1->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Wm1.png"); Ca5->SaveAs("Greg/Wm1.root");
+  Ca5->Clear(); 
+
+  sectorEffW0->Draw(); sectorEffW0->GetXaxis()->SetTitle("Sector");  sectorEffW0->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/W0.png"); Ca5->SaveAs("Greg/W0.root");
+  Ca5->Clear(); 
+
+  sectorEffW1->Draw(); sectorEffW1->GetXaxis()->SetTitle("Sector");  sectorEffW1->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/W1.png"); Ca5->SaveAs("Greg/W1.root");
+  Ca5->Clear(); 
+
+  sectorEffW2->Draw(); sectorEffW2->GetXaxis()->SetTitle("Sector");  sectorEffW2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/W2.png"); Ca5->SaveAs("Greg/W2.root");
+  Ca5->Clear(); 
 
  HeightVsEffR3->Draw(); HeightVsEffR3->GetXaxis()->SetTitle("Efficiency");HeightVsEffR3->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR3->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR3->GetXaxis()->SetRangeUser(0.,1.);
  HeightVsEffR3->SetMarkerColor(4);
@@ -3616,6 +3721,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  }
 
  theFileOut->cd();
+
+ MeanResiduals11->Write();
+ MeanResiduals->Write();
 
  Wheelm2Summary->Write();
  Wheelm1Summary->Write();
