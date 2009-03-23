@@ -481,7 +481,8 @@ void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   filterStatisticsService_->update(filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- save run & event numbers
-  runEventNumberService_->update(iEvent.id().run(), iEvent.id().event(), filterResults_cumulative, filterResults_individual, eventWeight);
+  runEventNumberService_->update(iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock(),
+				 filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- if requested, dump event information 
   for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
