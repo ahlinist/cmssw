@@ -10,6 +10,7 @@
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementError.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementVector.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 
 class Topology;
 class TransientTrackingRecHit;
@@ -18,7 +19,10 @@ class PixelTopology;
 class TrajectoryAtValidHit {
 public:
 
-  TrajectoryAtValidHit( const TrajectoryMeasurement&, const TrackerGeometry * tracker, const uint mono = 0);
+  TrajectoryAtValidHit( const TrajectoryMeasurement&, 
+			const TrackerGeometry * tracker, 
+			const Propagator& propagator,
+			const uint mono = 0);
 
   double localX() const;
   double localY() const;

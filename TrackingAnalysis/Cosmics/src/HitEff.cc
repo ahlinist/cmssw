@@ -41,6 +41,7 @@
 #include "DataFormats/SiStripDetId/interface/TOBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TECDetId.h"
 #include "RecoLocalTracker/ClusterParameterEstimator/interface/StripClusterParameterEstimator.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 
 #include "AnalysisDataFormats/SiStripClusterInfo/interface/SiStripClusterInfo.h"
 #include "CalibTracker/Records/interface/SiStripDetCablingRcd.h"
@@ -175,6 +176,10 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   edm::ESHandle<SiStripDetCabling> SiStripDetCabling_;
   es.get<SiStripDetCablingRcd>().get(SiStripDetCabling_);  
 
+  edm::ESHandle<MagneticField> magFieldHandle;
+  es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
+  const MagneticField* magField_ = magFieldHandle.product();
+
   events++;
   
   // *************** SiStripCluster Collection
@@ -277,25 +282,29 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
       }
       if (DEBUG)	cout << "TKlayer from trajectory: " << TKlayers << "  from module = " << iidd <<  "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
 
+      // Make vector of TrajectoryAtValidHits to hold the trajectories
       std::vector<TrajectoryAtValidHit> TMs;
       
+      // Make AnalyticalPropagator to use in TAVH constructor
+      AnalyticalPropagator propagator(magField_,anyDirection); 
+
       // for double sided layers check both sensors--if no hit was found on either sensor surface,
       // the trajectory measurements only have one invalid hit entry on the matched surface
       // so get the TrajectoryAtValidHit for both surfaces and include them in the study
       if (isDoubleSided(iidd) &&  ((iidd & 0x3)==0) ) {
 	// do hit eff check twice--once for each sensor
 	//add a TM for each surface
-	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 1));
-	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 2));
+	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator, 1));
+	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator, 2));
       } else if ( isDoubleSided(iidd) && (!check2DPartner(iidd, TMeas)) ) {
       // if only one hit was found the trajectory measurement is on that sensor surface, and the other surface from
       // the matched layer should be added to the study as well
-	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 1));
-	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, 2));
+	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator, 1));
+	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator, 2));
 	if (DEBUG) cout << " found a hit with a missing partner" << endl;
       } else {
 	//only add one TM for the single surface and the other will be added in the next iteration
-	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom));
+	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator));
       }
       
       cout << "size of TMs = " << TMs.size() << endl;
