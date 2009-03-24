@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.26 2009/03/12 13:45:56 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.27 2009/03/12 18:15:05 trommers Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -413,14 +413,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	
       }
     }//end loop over cc Photons
- 
-    
-
   }
 
 
-  
-  
   // get the electrons
   edm::Handle< std::vector<pat::Electron> > elecHandle;
   iEvent.getByLabel(elecTag_, elecHandle);
@@ -586,6 +581,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeMuonCombDz[i]=999.;
 
     }
+
     // MICHELE
     if((*muonHandle)[i].isStandAloneMuon() && (*muonHandle)[i].standAloneMuon().isNonnull()){
       mTempTreeMuonStandValidHits[i]=(*muonHandle)[i].standAloneMuon()->found();
@@ -624,12 +620,11 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeMuonTrkChi[i]=(*muonHandle)[i].track()->chi2();
       mTempTreeMuonTrkCharge[i]=(*muonHandle)[i].track()->charge();
       mTempTreeMuonTrkQOverPError[i]=(*muonHandle)[i].track()->qoverpError();
-        mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
-          mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
+      //  mTempTreeMuonTrkOuterZ[i]=(*muonHandle)[i].track()->outerZ();
+      //  mTempTreeMuonTrkOuterR[i]=(*muonHandle)[i].track()->outerRadius();
 
     }
     else{
-
       mTempTreeMuonTrkChiNorm[i] = 999.;
       mTempTreeMuonTrkValidHits[i]=999.;
       mTempTreeMuonTrkLostHits[i]=999.;
@@ -681,8 +676,39 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     if ( genEventScale.isValid() ) mTempTreePthat = *genEventScale;
   
   
+    //get tracks
 
- 
+    //    reco::TrackCollection myTracks;
+    // iEvent.getByLabel("generalTracks",myTracks);
+    edm::Handle<View<reco::Track> >  myTracks;
+    iEvent.getByLabel("generalTracks",myTracks);
+    double ptMax_= 500;
+    math::XYZTLorentzVector totalP3;
+    for(View<reco::Track>::const_iterator elem = myTracks->begin(); elem
+	  != myTracks->end(); ++elem) {
+      
+      if (!(elem->quality(reco::TrackBase::highPurity))) continue;
+      
+      double elemPt = elem->pt();
+      
+      if ( elemPt > ptMax_) continue;
+      
+      math::XYZTLorentzVector p3(elem->px(),elem->py(),elem->pz(),elem->p());
+      totalP3-=p3;
+      
+    }
+
+    mTempTreeMPTPhi=totalP3.phi();
+    mTempTreeMPTPx=totalP3.px();
+    mTempTreeMPTPy=totalP3.py();
+    mTempTreeMPTPz=totalP3.pz();
+
+
+
+    //   return totalP3;
+    
+
+
 
   // get the taus
   edm::Handle< std::vector<pat::Tau> > tauHandle;
@@ -712,8 +738,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     mTempTreeTauECalIso[i] = (*tauHandle)[i].ecalIso();
     mTempTreeTauHCalIso[i] = (*tauHandle)[i].hcalIso() ;
     mTempTreeTauAllIso[i] = (*tauHandle)[i].caloIso() ;
-
-//     //MICHELE
+    //MICHELE
     mTempTreeTauVx[i] =(*tauHandle)[i].vx();
     mTempTreeTauVy[i] =(*tauHandle)[i].vy();
     mTempTreeTauVz[i] =(*tauHandle)[i].vz();
@@ -902,7 +927,30 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
   if ( mTempTreeNjets >50 ) mTempTreeNjets = 50;
   for (int k=0;k<mTempTreeNjets;k++){
     const pat::Jet& uncorrJet =((*jetHandle)[k].isCaloJet())? (*jetHandle)[k].correctedJet("RAW"): (*jetHandle)[k];
-    if ( uncorrJet.et() > 20. ){
+    if ( uncorrJet.et() > 10. ){
+
+      const reco::TrackRefVector & mrTracksInJet= (*jetHandle)[k].associatedTracks();
+
+      mTempTreeJetTrackPt[k]=0;
+      mTempTreeJetTrackPhi[k]=0;
+      mTempTreeJetTrackPhiWeighted[k]=0;
+      mTempTreeJetTrackNo[k]=0;
+
+      for (reco::TrackRefVector::iterator aIter = mrTracksInJet.begin();aIter!= mrTracksInJet.end();aIter++)
+	{
+	  mTempTreeJetTrackPt[k] += (*aIter)->pt();	 
+	  mTempTreeJetTrackPhiWeighted[k] += (*aIter)->pt()*(*aIter)->phi();
+	  mTempTreeJetTrackPhi[k] += (*aIter)->phi();
+	  mTempTreeJetTrackNo[k]++;
+	}
+
+      mTempTreeJetTrackPhiWeighted[k] = mTempTreeJetTrackPhiWeighted[k]/ mTempTreeJetTrackPt[k];
+      mTempTreeJetTrackPhi[k] =  mTempTreeJetTrackPhi[k]/float(mTempTreeJetTrackNo[k]);
+ 
+      // cout <<" phi"<< mTempTreeJetTrackPhi[k] << " = " << uncorrJet.phi();
+      // cout <<" pt "<< mTempTreeJetTrackPt[k] << " = " << uncorrJet.pt();
+      // cout <<" eta "<< uncorrJet.eta()<<endl;
+
       mTempTreeJetsPt[i] = uncorrJet.pt();
       mTempTreeJetsE[i] = uncorrJet.energy();
       mTempTreeJetsEt[i] = uncorrJet.et();
@@ -1086,6 +1134,14 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
   mTempTreeMET_Nocorr_nocc[0] = metHandle->front().corEx();//uncorr to bare bones
   mTempTreeMET_Nocorr_nocc[1] = metHandle->front().corEy(pat::MET::UncorrectionType(0));//uncorr to bare bones
 
+
+
+
+
+
+
+
+
   edm::LogVerbatim("SusyDiJetEvent") <<  "metuncorr " <<  mTempTreeMET_Nocorr_nocc[0] << " met total " <<  mTempTreeMET_Fullcorr_nocc[0] << std::endl;
 
   // Do the MET save for muon corr no cc MET
@@ -1247,19 +1303,19 @@ void
 SusyDiJetAnalysis::initPlots() {
 
   std::ostringstream variables; // Container for all variables
-
+  
   // 1. Event variables
   variables << "weight:process";
-
+  
   // Register this ntuple
-   edm::Service<TFileService> fs;
+  edm::Service<TFileService> fs;
   // ntuple_ = fs->make<TNtuple>( "ntuple","SusyDiJetAnalysis variables",
   // variables.str().c_str() );
-
+  
   // Now we add some additional ones for the dijet analysis
   mAllData = fs->make<TTree>( "allData", "data after cuts" );
   
-
+  
   mAllData->SetAutoSave(10000);
 
 
@@ -1402,8 +1458,10 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("JetPartonPhi" ,mTempTreeJetPartonPhi ,"JetPartonPhi[Njets]/double"); 
   mAllData->Branch("JetPartonEta" ,mTempTreeJetPartonEta ,"JetPartonEta[Njets]/double"); 
   mAllData->Branch("JetPartonFlavour",mTempTreeJetPartonFlavour,"JetPartonFlavour[Njets]/int");
-
-  
+  mAllData->Branch("JetTrackPt",mTempTreeJetTrackPt,"JetTrackPt[Njets]/double"); 
+  mAllData->Branch("JetTrackPhi",mTempTreeJetTrackPhi,"JetTrackPhi[Njets]/double"); 
+  mAllData->Branch("JetTrackPhiWeighted",mTempTreeJetTrackPhiWeighted,"JetTrackPhiWeighted[Njets]/double"); 
+  mAllData->Branch("JetTrackNo",mTempTreeJetTrackNo,"JetTrackNo[Njets]/int");
 
   //add photons
   mAllData->Branch("Nphot" ,&mTempTreeNphot ,"Nphot/int");  
@@ -1630,29 +1688,34 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("TauGenPz",mTempTreeGenTauPz,"TauGenPz[Ntau]/double");
   //PIOPPI
  
-    mAllData->Branch("genN",&length,"genN/int");
-    mAllData->Branch("genid",ids,"ids[genN]/int");
-    mAllData->Branch("genMother",refs,"refs[genN]/int");
-    mAllData->Branch("genE",genE,"genE[genN]/float");
-    mAllData->Branch("genPx",genPx,"genPx[genN]/float");
-    mAllData->Branch("genPy",genPy,"genPy[genN]/float");
-    mAllData->Branch("genPz",genPz,"genPz[genN]/float");
-    mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
+  mAllData->Branch("genN",&length,"genN/int");
+  mAllData->Branch("genid",ids,"ids[genN]/int");
+  mAllData->Branch("genMother",refs,"refs[genN]/int");
+  mAllData->Branch("genE",genE,"genE[genN]/float");
+  mAllData->Branch("genPx",genPx,"genPx[genN]/float");
+  mAllData->Branch("genPy",genPy,"genPy[genN]/float");
+  mAllData->Branch("genPz",genPz,"genPz[genN]/float");
+  mAllData->Branch("genStatus",genStatus,"genStatus[genN]/int");
 
-    // georgia    
-    mAllData->Branch("genLepN",&genLepLength,"genLepN/int");
-    mAllData->Branch("genLepId",genLepIds,"genLepIds[genLepN]/int");
-    mAllData->Branch("genLepMother",genLepRefs,"genLepRefs[genLepN]/int");
-    mAllData->Branch("genLepE",genLepE,"genLepE[genLepN]/float");
-    mAllData->Branch("genLepPx",genLepPx,"genLepPx[genLepN]/float");
-    mAllData->Branch("genLepPy",genLepPy,"genLepPy[genLepN]/float");
-    mAllData->Branch("genLepPz",genLepPz,"genLepPz[genLepN]/float");
-    mAllData->Branch("genLepStatus",genLepStatus,"genLepStatus[genLepN]/int");
-    // end georgia
-
-    mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
-    mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");
-    
+  // georgia    
+  mAllData->Branch("genLepN",&genLepLength,"genLepN/int");
+  mAllData->Branch("genLepId",genLepIds,"genLepIds[genLepN]/int");
+  mAllData->Branch("genLepMother",genLepRefs,"genLepRefs[genLepN]/int");
+  mAllData->Branch("genLepE",genLepE,"genLepE[genLepN]/float");
+  mAllData->Branch("genLepPx",genLepPx,"genLepPx[genLepN]/float");
+  mAllData->Branch("genLepPy",genLepPy,"genLepPy[genLepN]/float");
+  mAllData->Branch("genLepPz",genLepPz,"genLepPz[genLepN]/float");
+  mAllData->Branch("genLepStatus",genLepStatus,"genLepStatus[genLepN]/int");
+  // end georgia
+  
+  mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
+  mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");
+  
+  // MPT Markus 
+  mAllData->Branch("MPTPhi" ,& mTempTreeMPTPhi ,"MPTPhi/double");
+  mAllData->Branch("MPTPx" ,& mTempTreeMPTPx ,"MPTPx/double");
+  mAllData->Branch("MPTPy" ,& mTempTreeMPTPy ,"MPTPy/double");
+  mAllData->Branch("MPTPz" ,& mTempTreeMPTPz ,"MPTPz/double");
     
   edm::LogInfo("SusyDiJet") << "Ntuple variables " << variables.str();
   
