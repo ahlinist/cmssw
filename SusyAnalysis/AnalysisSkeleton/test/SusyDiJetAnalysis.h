@@ -138,6 +138,14 @@ private:
   int mTempTreeJetPartonFlavour[50];
   int mTempTreeJetsHemi[50];
 
+  // track info:
+  int mTempTreeJetTrackNo[50];
+  double mTempTreeJetTrackPhi[50];
+  double mTempTreeJetTrackPhiWeighted[50];
+  double mTempTreeJetTrackPt[50];
+
+
+
   double mTempTreeJetMCCorrFactor[50];
   double mTempTreeJetJPTCorrFactor[50];
 
@@ -431,6 +439,13 @@ private:
   double mTempTreeHemispheresE[2];
   double mTempTreeHemispheresEta[2];
   double mTempTreeHemispheresPhi[2]; 
+
+
+
+  double mTempTreeMPTPhi;
+  double mTempTreeMPTPx;
+  double mTempTreeMPTPy;
+  double mTempTreeMPTPz;
 
 
   //  bool is_ok;
