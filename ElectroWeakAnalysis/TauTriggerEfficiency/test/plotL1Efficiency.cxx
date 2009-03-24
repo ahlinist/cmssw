@@ -1,33 +1,56 @@
 #include "Plotter.cxx"
 
 struct Graphs {
-  Graph(): L1Jet_Sim(0), L1Jet30_Sim(0), L1TauVeto_Emu(0), L1TauVeto_Sim(0), L1TauVetoFired_Sim(0), L1TauIsoVeto_Sim(0) {}
+  TGraphAsymmErrors *L1Jet_Emu;
 
-  TGraphAsymmErrors *L1Jet_Sim;
-  TGraphAsymmErrors *L1Jet30_Sim;
+  TGraphAsymmErrors *L1Jet10_Emu;
+  TGraphAsymmErrors *L1Jet20_Emu;
+  TGraphAsymmErrors *L1Jet30_Emu;
+  TGraphAsymmErrors *L1Jet40_Emu;
+
+  TGraphAsymmErrors *L1Jet10_TauVeto_Emu;
+  TGraphAsymmErrors *L1Jet20_TauVeto_Emu;
+  TGraphAsymmErrors *L1Jet30_TauVeto_Emu;
+  TGraphAsymmErrors *L1Jet40_TauVeto_Emu;
+
   TGraphAsymmErrors *L1TauVeto_Emu;
   TGraphAsymmErrors *L1TauVeto_Sim;
-  TGraphAsymmErrors *L1TauVetoFired_Sim;
-  TGraphAsymmErrors *L1TauVeto_L1Jet30_Sim;
   TGraphAsymmErrors *L1TauIsoVeto_Sim;
+
+  void plotPF(Plotter *plotter, TString plotDir, const char *branch, const char *name, int nbins, double min, double max, TCut selection2);
+  void plotL1(Plotter *plotter, TString plotDir, const char *branch, const char *name, int nbins, double min, double max);
+  void combinePlots(const char *prefix, TString plotDir, const char *format, bool print);
+  void fit(const char *xvar, double min, double max, TLatex& l, const char *name, TString plotdir, const char *format, bool print);
 };
 
-Graphs plotHelperPF(Plotter *plotter, bool print, TString plotDir, const char *branch, const char *name,
-                    int nbins, double min, double max, TCut selection2);
-void plotHelperSimEmu(Plotter *plotter, Graphs& graphs);
-void plotHelperVetoBits(Plotter *plotter, Graphs& graphs);
-void plotHelperL1(Plotter *plotter, bool print, TString plotDir, const char *branch, const char *name,
-                  int nbins, double min, double max);
-void fitHelperFreq(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max);
-void fitHelperFreqGaus(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max);
-void fitHelperLinear(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max);
-void fitHelper(TLatex& l, Graphs& graphs, const char *name, const char *xvar,
-               bool print, TString plotDir, const char *format, double min, double max);
+struct DataGraphs {
+  DataGraphs(const char *filename, const char *plotdir, const char *format, bool print):
+    plotter(new Plotter(filename)), plotDir(plotdir) {
+    plotter->SetFormat(format);
+    plotter->SetSave(print);
+    this->format = format;
+    this->print = print;
+  }
 
-void plotL1Efficiency(  bool print=false) {
-  //gROOT->LoadMacro("./Plotter.cxx");
-  Plotter* plotter = new Plotter();
-  
+  ~DataGraphs() {delete plotter;}
+  Plotter *plotter;
+  TString plotDir;
+  TString format;
+  bool print;
+
+  Graphs PFTauEt;
+  Graphs PFTauEta;
+  Graphs PFTauEnergy;
+  Graphs L1TauEt;
+  Graphs L1TauEta;
+  Graphs L2ClusterRMS;
+
+  void plot();
+};
+
+void combineDataGraphs(Graphs& ztt, Graphs& qcd, TString plotDir, const char *name, const char *format, bool print);
+
+void plotL1Efficiency_v2(bool print=false) {
   TString plotDir = "l1plots/";
 
   const char *format = ".C";
@@ -36,278 +59,249 @@ void plotL1Efficiency(  bool print=false) {
   //const char *format = ".eps";
   //const char *format = ".pdf";
 
-  bool pftauet = false, pftauet_barrel = false, pftauet_endcap = false, pftaueta = false,
-    pftauenergy = false, pftauenergy_barrel = false, pftauenergy_endcap = false,
-    l1tauet = false, l1taueta = false, l2clusterRms = false, l2clusterRmsEt = false;
+  DataGraphs plots_ztt("tteffAnalysis-ztautau.root", "l1plots-ztt/", format, print);
+  DataGraphs plots_qcd("tteffAnalysis-qcd.root", "l1plots-qcd/", format, print);
+
+  plots_ztt.plot();
+  plots_qcd.plot();
+
+  if(plots_ztt.PFTauEt.L1Jet_Emu && plots_qcd.PFTauEt.L1Jet_Emu) {
+    combineDataGraphs(plots_ztt.PFTauEt, plots_qcd.PFTauEt, plotDir, "PFTauEt", format, print);
+  }
+  if(plots_ztt.PFTauEta.L1Jet_Emu && plots_qcd.PFTauEta.L1Jet_Emu) {
+    combineDataGraphs(plots_ztt.PFTauEta, plots_qcd.PFTauEta, plotDir, "PFTauEta", format, print);
+  }
+  if(plots_ztt.PFTauEnergy.L1Jet_Emu && plots_qcd.PFTauEnergy.L1Jet_Emu) {
+    combineDataGraphs(plots_ztt.PFTauEnergy, plots_qcd.PFTauEnergy, plotDir, "PFTauEnergy", format, print);
+  }
+  if(plots_ztt.L2ClusterRMS.L1Jet_Emu && plots_qcd.L2ClusterRMS.L1Jet_Emu) {
+    combineDataGraphs(plots_ztt.L2ClusterRMS, plots_qcd.L2ClusterRMS, plotDir, "L2ClusterRMS", format, print);
+  }
+}
+
+void DataGraphs::plot() {
+  bool pftauet = false, pftaueta = false,  pftauenergy = false,
+    l1jetet = false, l1jeteta = false, l2clusterRms = false;
 
   pftauet = true;
-  //pftauet_barrel = true;
-  //pftauet_endcap = true;
   pftaueta = true;
   //pftauenergy = true;
-  //pftauenergy_barrel = true;
-  //pftauenergy_endcap = true;
-  l1tauet = true;
-  l1taueta = true;
+  l1jetet = true;
+  l1jeteta = true;
   //l2clusterRms = true;
-  //l2clusterRmsEt = true;
-
 
   TLatex l;
-  l.SetTextSize(.03);
+  l.SetTextSize(0.03);
   l.SetNDC(kTRUE);
   l.SetTextColor(kRed);
 
-  plotter->SetFormat(format);
-  plotter->SetSave(print);
-  
   gStyle->SetOptFit(1111);
 
-  // PFTau Et
   TCut DenEtaCut = "abs(PFTauEta) < 2.5";
-  TCut DenEtaCutB = "abs(PFTauEta) < 1.5";
-  TCut DenEtaCutEC = "abs(PFTauEta) >= 1.5";
-  //TCut DenEtaCut = "PFTauEta<2.5&&PFTauEta>-2.";
+  TCut DenEtCut = "PFTauEt>10.";
 
-  plotter->SetXTitle("PF-#tau E_{T} (GeV)");
+  // PFTau Et
   if(pftauet) {
-    Graphs PFTauEt = plotHelperPF(plotter, print, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut);
-    plotHelperSimEmu(plotter, PFTauEt);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEt_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEt);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEt_L1Tau_Eff%s", format));
-
-    // Parametrize Shower veto efficiency vs. PFTau Et
-    fitHelper(l, PFTauEt, "PFTauEt", "E_{T}", print, plotDir, format, 5., 140.);
-  }
-  if(pftauet_barrel) {
-    Graphs PFTauEtB = plotHelperPF(plotter, print, plotDir, "PFTauEt", "PFTauEtBarrel", 50, 0., 100., DenEtaCutB);
-    plotHelperSimEmu(plotter, PFTauEtB);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEtBarrel_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEtB);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEtBarrel_L1Tau_Eff%s", format));
-
-    // Parametrize Shower veto efficiency vs. PFTau Et
-    fitHelper(l, PFTauEtB, "PFTauEtBarrel", "E_{T}", print, plotDir, format, 5., 100.);
-  }
-  if(pftauet_endcap) {
-    Graphs PFTauEtEC = plotHelperPF(plotter, print, plotDir, "PFTauEt", "PFTauEtEndcap", 50, 0., 100., DenEtaCutEC);
-    plotHelperSimEmu(plotter, PFTauEtEC);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEtEndcap_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEtEC);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEtEndcap_L1Tau_Eff%s", format));
-
-    // Parametrize Shower veto efficiency vs. PFTau Et
-    fitHelper(l, PFTauEtEC, "PFTauEtEndcap", "E_{T}", print, plotDir, format, 5., 100.);
+    plotter->SetXTitle("PF-#tau E_{T} (GeV)");
+    PFTauEt.plotPF(plotter, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut);
+    PFTauEt.combinePlots("PFTauEt", plotDir, format, print);
+    PFTauEt.fit("E_{T}", 5., 140., l, "PFTauEt", plotDir, format, print);
   }
 
   // PFTau Eta
-  TCut DenEtCut = "PFTauEt>10.";
   if(pftaueta) {
     plotter->SetXTitle("PF-#tau #eta");
-    Graphs PFTauEta = plotHelperPF(plotter, print, plotDir, "PFTauEta", "PFtauEta", 25, -2.5, 2.5, DenEtCut);
-    plotHelperSimEmu(plotter, PFTauEta);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEta_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEta);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEta_L1Tau_Eff%s", format));
+    PFTauEta.plotPF(plotter, plotDir, "PFTauEta", "PFTauEta", 50, -2.5, 2.5, DenEtCut);
+    PFTauEta.combinePlots("PFTauEta", plotDir, format, print);
   }
 
-  // PFTau energy
-  plotter->SetXTitle("PF-#tau energy (GeV)");
+  // PFTau Energy
   if(pftauenergy) {
-    Graphs PFTauEnergy = plotHelperPF(plotter, print, plotDir, "PFTauEnergy", "PFTauEnergy", 50, 0., 300., DenEtaCut);
-    plotHelperSimEmu(plotter, PFTauEnergy);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergy_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEnergy);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergy_L1Tau_Eff%s", format));
-  
-    // Efficiencies vs. PFTau energy
-    fitHelper(l, PFTauEnergy, "PFTauEnergy", "E", print, plotDir, format, 5., 300.);
-  }
-  if(pftauenergy_barrel) {
-    Graphs PFTauEnergyB = plotHelperPF(plotter, print, plotDir, "PFTauEnergy", "PFTauEnergyBarrel", 50, 0., 300., DenEtaCutB);
-    plotHelperSimEmu(plotter, PFTauEnergyB);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergyBarrel_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEnergyB);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergyBarrel_L1Tau_Eff%s", format));
-  
-    // Efficiencies vs. PFTau energy
-    fitHelper(l, PFTauEnergyB, "PFTauEnergyBarrel", "E", print, plotDir, format, 5., 300.);
-  }
-  if(pftauenergy_endcap) {
-    Graphs PFTauEnergyEC = plotHelperPF(plotter, print, plotDir, "PFTauEnergy", "PFTauEnergyEndcap", 50, 0., 300., DenEtaCutEC);
-    plotHelperSimEmu(plotter, PFTauEnergyEC);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergyEndcap_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, PFTauEnergyEC);
-    if (print) gPad->SaveAs(plotDir+Form("PFTauEnergyEndcap_L1Tau_Eff%s", format));
-  
-    // Efficiencies vs. PFTau energy
-    fitHelper(l, PFTauEnergyEC, "PFTauEnergyEndcap", "E", print, plotDir, format, 10., 300.);
+    plotter->SetXTitle("PF-#tau energy (GeV)");
+    PFTauEnergy.plotPF(plotter, plotDir, "PFTauEnergy", "PFTauEnergy", 50, 0, 200, DenEtaCut);
+    PFTauEnergy.combinePlots("PFTauEnergy", plotDir, format, print);
   }
 
-  // L2Tau cluster RMS
+  // L2Tau Cluster RMS
   TCut l2matched = "hasMatchedL2Jet";
   if(l2clusterRms) {
     plotter->SetXTitle("L2 cluster  #DeltaR RMS");
-    Graphs L2ClusterDrRms = plotHelperPF(plotter, print, plotDir, "L2ClusterDeltaRRMS", "L2ClusterDrRms", 50, 0, 0.5, DenEtCut && DenEtaCut && l2matched);
-    plotHelperSimEmu(plotter, L2ClusterDrRms);
-    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRms_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, L2ClusterDrRms);
-    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRms_L1Tau_Eff%s", format));
+    L2ClusterRMS.plotPF(plotter, plotDir, "L2ClusterDeltaRRMS", "L2ClusterRMS", 50, 0, 0.5, l2matched);
+    L2ClusterRMS.combinePlots("L2ClusterRMS", plotDir, format, print);
   }
 
-  // L2Tau cluster RMS * PFTau Et
-  if(l2clusterRmsEt) {
-    plotter->SetXTitle("L2 cluster  #DeltaR RMS #times PF-#tau E_{T}");
-    Graphs L2ClusterDrRmsEt = plotHelperPF(plotter, print, plotDir, "L2ClusterDeltaRRMS*PFTauEt", "L2ClusterDrRmsEt", 50, 0, 15, DenEtCut && DenEtaCut && l2matched);
-    plotHelperSimEmu(plotter, L2ClusterDrRmsEt);
-    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRmsEt_L1Tau_Emu_vs_Sim%s", format));
-    plotHelperVetoBits(plotter, L2ClusterDrRmsEt);
-    if(print) gPad->SaveAs(plotDir+Form("L2ClusterDrRmsEt_L1Tau_Eff%s", format));
-  }
-
-  // L1Tau Et
-  if(l1tauet) {
+  // L1 Jet Et
+  if(l1jetet) {
     plotter->SetXTitle("L1 jet E_{T} (GeV)");
-    plotHelperL1(plotter, print, plotDir, "L1JetEt", "L1JetEt", 25, 0., 100.);
+    L1TauEt.plotL1(plotter, plotDir, "L1JetEt", "L1JetEt", 50, 0, 100);
   }
 
-  // L1Tau Eta
-  if(l1taueta) {
+  // L1 Jet Eta
+  if(l1jetet) {
     plotter->SetXTitle("L1 jet #eta");
-    plotHelperL1(plotter, print, plotDir, "L1JetEta", "L1JetEt", 25, -2.5, 2.5);
+    L1TauEta.plotL1(plotter, plotDir, "L1JetEta", "L1JetEta", 50, -2.5, 2.5);
   }
-
-
-  /*
-  */
-
-  /*
-  plotter->SetXTitle("Tau jet E_{T} (GeV)");
-  plotter->SetFileName(plotDir+"L1Eff_PFTauEt_L1TauVeto_L1Jet30");
-  TGraphAsymmErrors *h_PFTauEt_L1TauVeto_L1Jet30_Sim = 
-    plotter->DrawHistogram("PFTauEt>>hnum(25.,0.,100.)","(L1TauVeto==0 || L1JetEt>30.)&& hasMatchedL1Jet==1",DenEtaCut);
-
-  // Parametrize Shower veto efficiency vs. PFTau Et
-  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Draw("PA");
-  h_PFTauEt_L1TauVeto_L1Jet30_Sim->SetMarkerColor(kBlack);
-
-  //TF1 *myfit = new TF1("myfit","[0]*(exp((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
-  TF1 *myfit = new TF1("myfit","[0]*(TMath::Erf((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
-  myfit->SetParameters(0,1.,1,10.,2,0.);
-
-  h_PFTauEt_L1TauVeto_L1Jet30_Sim->Fit("myfit");
-  myfit->Draw("same");
-  //myfit->Draw("");
-
-  // Parametrize Shower veto efficiency vs. PFTau Et
-  h_PFTauEt_L1TauVeto_Sim->Draw("PA");
-  h_PFTauEt_L1TauVeto_Sim->SetMarkerColor(kBlack);
-
-  //TF1 *myfit = new TF1("myfit","[0]*(exp((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
-  TF1 *myfit = new TF1("myfit","[0]*(TMath::Erf((sqrt(x)-sqrt([1])/(2*[2]))))", 0., 100.);
-  myfit->SetParameters(0,1.,1,10.,2,0.);
-
-  h_PFTauEt_L1TauVeto_Sim->Fit("myfit");
-  myfit->Draw("same");
-  //myfit->Draw("");
-
-  */
-
-  /* ****** */
-
-  delete plotter;
 }
 
-Graphs plotHelperPF(Plotter *plotter, bool print, TString plotDir, const char *branch, const char *name,
-                    int nbins, double min, double max, TCut selection2) {
+
+TLegend *combine2Plots(TGraph *plot1, TGraph *plot2,
+                       const char *legend1=0, const char *legend2=0) {
+  plot1->SetMinimum(0);
+  plot1->SetMaximum(1.1);
+  plot1->Draw("PA");
+  plot1->SetMarkerColor(kBlack);
+  plot2->Draw("P same");
+  plot2->SetMarkerColor(kRed);
+
+  TLegend *leg = new TLegend(0.4,0.2,0.7,0.4);
+  leg->SetFillColor(kWhite);
+  if(legend1 || legend2) {
+    if(legend1) leg->AddEntry(plot1, legend1,"p");
+    if(legend2) leg->AddEntry(plot2, legend2,"p");
+    leg->Draw();
+  }
+  return leg;
+}
+TLegend *combine3Plots(TGraph *plot1, TGraph *plot2, TGraph *plot3,
+                       const char *legend1=0, const char *legend2=0, const char *legend3=0) {
+  TLegend *leg = combine2Plots(plot1, plot2, legend1, legend2);
+  plot3->Draw("P same");
+  plot3->SetMarkerColor(kBlue);
+
+  if(legend3) {
+    leg->AddEntry(plot3, legend3, "p");
+    leg->Draw();
+  }
+  return leg;
+}
+TLegend *combine4Plots(TGraph *plot1, TGraph *plot2, TGraph *plot3, TGraph *plot4,
+                       const char *legend1=0, const char *legend2=0, const char *legend3=0, const char *legend4=0) {
+  TLegend *leg = combine3Plots(plot1, plot2, plot3, legend1, legend2, legend3);
+  plot4->Draw("P same");
+  plot4->SetMarkerColor(kGreen);
+
+  if(legend4) {
+    leg->AddEntry(plot4, legend4, "p");
+    leg->Draw();
+  }
+  return leg;
+}
+
+void combineDataGraphs(Graphs& ztt, Graphs& qcd, TString plotDir, const char *name, const char *format, bool print) {
+  const char *leg1 = "Z#rightarrow #tau#tau          "; // Quick&dirty: add spaces so that the text becomes smaller
+  const char *leg2 = "QCD";
+
+  combine2Plots(ztt.L1Jet_Emu, qcd.L1Jet_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Emu_Ztt_vs_QCD%s", name, format));
+
+  combine2Plots(ztt.L1Jet10_Emu, qcd.L1Jet10_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet10_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet20_Emu, qcd.L1Jet20_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet20_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet30_Emu, qcd.L1Jet30_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet30_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet40_Emu, qcd.L1Jet40_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet40_Emu_Ztt_vs_QCD%s", name, format));
+
+  combine2Plots(ztt.L1Jet10_TauVeto_Emu, qcd.L1Jet10_TauVeto_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1TauVeto_Jet10_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet20_TauVeto_Emu, qcd.L1Jet20_TauVeto_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1TauVeto_Jet20_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet30_TauVeto_Emu, qcd.L1Jet30_TauVeto_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1TauVeto_Jet30_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1Jet40_TauVeto_Emu, qcd.L1Jet40_TauVeto_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1TauVeto_Jet40_Emu_Ztt_vs_QCD%s", name, format));
+}
+
+void Graphs::combinePlots(const char *prefix, TString plotDir, const char *format, bool print) {
+  // Emulator vs. Simulator
+  combine2Plots(L1TauVeto_Emu, L1TauIsoVeto_Sim, "L1 Emulator", "L1 CaloSim");
+  //combine2Plots(L1TauVeto_Emu, L1TauVeto_Sim, "L1 Emulator", "L1 CaloSim");
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Emu_vs_Sim%s", prefix, format));
+
+  // Simulator veto bits
+  combine3Plots(L1Jet_Emu, L1TauVeto_Sim, L1TauIsoVeto_Sim,
+                "L1 Jet reconstruction",
+                "L1 Shower veto",
+                "L1 Shower+Isol. Veto");
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Eff%s", prefix, format));
+
+  // Efficiency of L1 Et threshold
+  combine4Plots(L1Jet10_Emu, L1Jet20_Emu, L1Jet30_Emu, L1Jet40_Emu,
+                "L1 Jet E_{T} > 10",
+                "L1 Jet E_{T} > 20",
+                "L1 Jet E_{T} > 30",
+                "L1 Jet E_{T} > 40");
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_EtCut%s", prefix, format));
+
+  // Efficiency of L1 tau veto
+  combine4Plots(L1Jet10_TauVeto_Emu, L1Jet20_TauVeto_Emu, L1Jet30_TauVeto_Emu, L1Jet40_TauVeto_Emu, 
+                "L1 Jet E_{T} > 10",
+                "L1 Jet E_{T} > 20",
+                "L1 Jet E_{T} > 30",
+                "L1 Jet E_{T} > 40");
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Tau_EtCut%s", prefix, format));
+}
+
+void Graphs::plotPF(Plotter *plotter, TString plotDir, const char *branch, const char *name, int nbins, double min, double max, TCut selection2) {
   TString draw;
   draw.Form("%s>>hnum(%d,%f,%f)", branch, nbins, min, max);
 
-  Graphs ret;
+  TCut L1JetReco("hasMatchedL1Jet==1");
+  TCut L1TauReco("hasMatchedL1TauJet==1");
 
   plotter->SetYTitle("Level-1 efficiency");
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet", name));
-  ret.L1Jet_Sim =  plotter->DrawHistogram(draw,"hasMatchedL1Jet==1",selection2);
+  L1Jet_Emu = plotter->DrawHistogram(draw, L1JetReco, selection2);
 
+  TCut L1Jet10("L1JetEt>10.");
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet10", name));
+  L1Jet10_Emu = plotter->DrawHistogram(draw, L1Jet10 && L1JetReco, L1JetReco && selection2);
+
+  TCut L1Jet20("L1JetEt>20.");
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet20", name));
+  L1Jet20_Emu = plotter->DrawHistogram(draw, L1Jet20 && L1JetReco, L1JetReco && selection2);
+
+  TCut L1Jet30("L1JetEt>30.");
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet30", name));
-  ret.L1Jet30_Sim =  plotter->DrawHistogram(draw,"L1JetEt>30. && hasMatchedL1Jet==1",selection2);
+  L1Jet30_Emu = plotter->DrawHistogram(draw, L1Jet30 && L1JetReco, L1JetReco && selection2);
+
+  TCut L1Jet40("L1JetEt>40.");
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet40", name));
+  L1Jet40_Emu = plotter->DrawHistogram(draw, L1Jet40 && L1JetReco, L1JetReco && selection2);
+
+
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_Jet10", name));
+  L1Jet10_TauVeto_Emu = plotter->DrawHistogram(draw, L1TauReco && L1Jet10 && L1JetReco, L1Jet10 && L1JetReco && selection2);
+
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_Jet20", name));
+  L1Jet20_TauVeto_Emu = plotter->DrawHistogram(draw, L1TauReco && L1Jet20 && L1JetReco, L1Jet20 && L1JetReco && selection2);
+
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_Jet30", name));
+  L1Jet30_TauVeto_Emu = plotter->DrawHistogram(draw, L1TauReco && L1Jet30 && L1JetReco, L1Jet30 && L1JetReco && selection2);
+
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_Jet40", name));
+  L1Jet40_TauVeto_Emu = plotter->DrawHistogram(draw, L1TauReco && L1Jet40 && L1JetReco, L1Jet40 && L1JetReco && selection2);
+
 
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Tau", name));
-  ret.L1TauVeto_Emu = plotter->DrawHistogram(draw,"hasMatchedL1TauJet==1",selection2);
+  L1TauVeto_Emu = plotter->DrawHistogram(draw, L1TauReco, selection2);
   
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto", name));
-  ret.L1TauVeto_Sim = plotter->DrawHistogram(draw,"L1TauVeto==0 && hasMatchedL1Jet==1",selection2);
+  L1TauVeto_Sim = plotter->DrawHistogram(draw,"L1TauVeto==0 && hasMatchedL1Jet==1",selection2);
 
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_L1Jet30", name));
-  ret.L1TauVeto_L1Jet30_Sim = plotter->DrawHistogram(draw,"(L1TauVeto==0 || L1JetEt>30.)&& hasMatchedL1Jet==1",selection2);
-  
+ 
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1IsolationVeto", name));
   plotter->DrawHistogram(draw,"L1IsolationVeto==0 && hasMatchedL1Jet==1",selection2);
   
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_L1IsolationVeto", name));
-  ret.L1TauIsoVeto_Sim = plotter->DrawHistogram(draw,"L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1",selection2);
-   
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1EmTauVeto", name));
-  plotter->DrawHistogram(draw,"L1EmTauVeto==0&&hasMatchedL1Jet==1",selection2);
-  
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1HadTauVeto", name));
-  plotter->DrawHistogram(draw,"L1HadTauVeto==0&&hasMatchedL1Jet==1",selection2);
-
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1EmTauVeto_L1HadTauVeto", name));
-  plotter->DrawHistogram(draw,"(L1EmTauVeto==0||L1HadTauVeto==0)&&hasMatchedL1Jet==1",selection2);
-
-  //plotter->SetYTitle("1 - L1 eff");
-  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVetoFired", name));
-  ret.L1TauVetoFired_Sim = plotter->DrawHistogram(draw,"L1TauVeto==1 && hasMatchedL1Jet==1",selection2);
-
-  return ret;
+  L1TauIsoVeto_Sim = plotter->DrawHistogram(draw,"L1TauVeto==0&&L1IsolationVeto==0&&hasMatchedL1Jet==1",selection2);
 }
 
-void plotHelperSimEmu(Plotter *plotter, Graphs& graphs) {
-  graphs.L1TauVeto_Emu->SetMinimum(0);
-  graphs.L1TauVeto_Emu->SetMaximum(1.1);
-  graphs.L1TauVeto_Emu->Draw("PA");
-  //graph.L1TauVeto_Emu->SetAxisRange(0.,1.1,"Y");
-  graphs.L1TauVeto_Emu->SetMarkerColor(kBlack);
-  //graphs.L1TauVeto_Sim->Draw("e same");
-  //graphs.L1TauVeto_Sim->SetMarkerColor(kRed);
-  graphs.L1TauIsoVeto_Sim->Draw("P same");
-  graphs.L1TauIsoVeto_Sim->SetMarkerColor(kRed);
-  
-  TLegend* leg = new TLegend(0.4,0.2,0.7,0.4);
-  //leg->SetHeader("L1Emu vs. L1Sim tau efficiency");
-  leg->AddEntry(graphs.L1TauVeto_Emu,"L1 Emulator","p");
-  //leg->AddEntry(graphs.L1TauVeto_Sim,"L1 CaloSim","p");
-  leg->AddEntry(graphs.L1TauIsoVeto_Sim,"L1 CaloSim","p");
-  gPad->SetLogy(0);
-  leg->Draw();
-}
-
-void plotHelperVetoBits(Plotter *plotter, Graphs& graphs) {
-  graphs.L1Jet_Sim->SetMinimum(0);
-  graphs.L1Jet_Sim->SetMaximum(1.1);
-  graphs.L1Jet_Sim->Draw("PA");
-  //graphs.L1Jet_Sim->SetAxisRange(0.,1.1,"Y");
-  graphs.L1Jet_Sim->SetMarkerColor(kBlack);
-  graphs.L1TauVeto_Sim->Draw("P same");
-  graphs.L1TauVeto_Sim->SetMarkerColor(kRed);
-  graphs.L1TauIsoVeto_Sim->Draw("P same");
-  graphs.L1TauIsoVeto_Sim->SetMarkerColor(kBlue);
-  
-  TLegend* leg = new TLegend(0.4,0.2,0.7,0.4);
-  leg->AddEntry(graphs.L1Jet_Sim,"L1 Jet matched","p");
-  leg->AddEntry(graphs.L1TauVeto_Sim,"L1 Shower Veto","p");
-  leg->AddEntry(graphs.L1TauIsoVeto_Sim,"L1 Shower+Isol. Veto","p");
-  gPad->SetLogy(0);
-  leg->Draw();
-}
-
-void plotHelperL1(Plotter *plotter, bool print, TString plotDir, const char *branch, const char *name,
-                  int nbins, double min, double max) {
+void Graphs::plotL1(Plotter *plotter, TString plotDir, const char *branch, const char *name, int nbins, double min, double max) {
   TString draw;
   draw.Form("%s>>hnum(%d,%f,%f)", branch, nbins, min, max);
-  
+
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto", name));
   plotter->DrawHistogram(draw,"L1TauVeto==0");
   
@@ -327,35 +321,6 @@ void plotHelperL1(Plotter *plotter, bool print, TString plotDir, const char *bra
   plotter->DrawHistogram(draw,"L1EmTauVeto==0||L1HadTauVeto==0");
 }
 
-void fitHelper(TLatex& l, Graphs& graphs, const char *name, const char *xvar,
-               bool print, TString plotDir, const char *format, double min, double max) {
-    // L1 jet efficiency vs. branch
-  fitHelperFreq(graphs.L1Jet_Sim, l, xvar, min, max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Fit%s", name, format));
-
-  // L1Jet > 30 efficiency vs. PFTau Et
-  fitHelperFreq(graphs.L1Jet30_Sim, l, xvar, min, max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1Jet30_Fit%s", name, format));
-
-  // Shower veto (L1Tau) OR L1Jet>30 efficiency OR vs. PFTau Et
-  fitHelperFreq(graphs.L1TauVeto_L1Jet30_Sim, l, xvar, min, max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1TauVeto_L1Jet30_Fit%s", name, format));
-
-  // Shower veto (L1Tau) efficiency vs. PFTau Et
-  TGraphAsymmErrors *temp = graphs.L1TauVeto_Sim->Clone();
-  fitHelperFreq(graphs.L1TauVeto_Sim, l, xvar, min, max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Fit%s",name, format));
-
-  // Same, but with gaussian addition
-  fitHelperFreqGaus(temp, l, xvar, min, max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Fit_Gaussian%s", name, format));
-
-  // Linear fit to the L1JetEff - L1TauEff
-  fitHelperLinear(graphs.L1TauVetoFired_Sim, l, xvar, 30., max);
-  if (print) gPad->SaveAs(plotDir+Form("%s_L1TauVetoFired_Fit%s", name, format));
-}
-
-
 TPaveStats *getStatsBox(TGraph *graph) {
   TList *lst = graph->GetListOfFunctions();
   if(!lst)
@@ -364,7 +329,7 @@ TPaveStats *getStatsBox(TGraph *graph) {
   return dynamic_cast<TPaveStats *>(lst->FindObject("stats"));
 }
 
-void fitHelperFreq(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max) {
+void fitHelperFreq(TGraph *graph, const char *xvar, double min, double max, TLatex& l) {
   graph->Draw("PA");
   graph->SetMarkerColor(kBlack);
 
@@ -378,7 +343,6 @@ void fitHelperFreq(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double
   double yc = 0.58;
   l.DrawLatex(xc, yc, Form("p_{0} #times TMath::Freq  #left(#frac{ #sqrt{%s}- #sqrt{p_{1}}}{2p_{2}}#right)", xvar)); yc -= 0.07;
   gPad->Update();
-  //TPaveStats *st = dynamic_cast<TPaveStats *>(graph->GetListOfFunctions()->FindObject("stats"));
   TPaveStats *st = getStatsBox(graph);
   if(st) {
     st->SetTextSize(0.03);
@@ -395,7 +359,7 @@ void fitHelperFreq(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double
   }
 }
 
-void fitHelperFreqGaus(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max) {
+void fitHelperFreqGaus(TGraphAsymmErrors *graph, const char *xvar, double min, double max, TLatex& l) {
   graph->Draw("PA");
   graph->SetMarkerColor(kBlack);
   TF1 *myfit = new TF1("myfit","[0]*(TMath::Freq((sqrt(x)-sqrt([1]))/(2*[2])))*TMath::Gaus(sqrt(x)-sqrt([3]),[4],[5])", min, max);
@@ -408,7 +372,6 @@ void fitHelperFreqGaus(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, do
   double yc = 0.55;
   l.DrawLatex(xc, yc, Form("#splitline{p_{0} #times TMath::Freq  #left(#frac{ #sqrt{%s}- #sqrt{p_{1}}}{2p_{2}}#right)}{     #times TMath::Gaus  #left( #sqrt{E_{T}}- #sqrt{p_{3}},p_{4},p_{5}#right)}", xvar)); yc -= 0.07;
   gPad->Update();
-  //TPaveStats *st = dynamic_cast<TPaveStats *>(graph->GetListOfFunctions()->FindObject("stats"));
   TPaveStats *st = getStatsBox(graph);
   if(st) {
     st->SetTextSize(0.03);
@@ -428,7 +391,7 @@ void fitHelperFreqGaus(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, do
   }
 }
 
-void fitHelperLinear(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, double min, double max) {
+void fitHelperLinear(TGraphAsymmErrors *graph, const char *xvar, double min, double max, TLatex& l) {
   graph->Draw("PA");
   graph->SetMarkerColor(kBlack);
   TF1 *myfit = new TF1("myfit","[0]+[1]*x", min, max);
@@ -441,7 +404,6 @@ void fitHelperLinear(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, doub
   double yc = 0.9;
   gPad->Update();
   l.DrawLatex(xc, yc, Form("p_{0} + p_{1}%s", xvar)); yc -= 0.04;
-  //TPaveStats *st = dynamic_cast<TPaveStats *>(graph->GetListOfFunctions()->FindObject("stats"));
   TPaveStats *st = getStatsBox(graph);
   if(st) {
     st->SetTextSize(0.03);
@@ -455,4 +417,29 @@ void fitHelperLinear(TGraphAsymmErrors *graph, TLatex& l, const char *xvar, doub
     l.DrawLatex(xc, yc, Form("p_{0} = %8.5f", myfit->GetParameter(0))); yc -= 0.04;
     l.DrawLatex(xc, yc, Form("p_{1} = %8.5f", myfit->GetParameter(1))); yc -= 0.04;
   }
+}
+
+void Graphs::fit(const char *xvar, double min, double max, TLatex& l, const char *name, TString plotDir, const char *format, bool print) {
+  TGraphAsymmErrors *temp = 0;
+
+  // L1 jet efficiency
+  if(L1Jet_Emu) {
+    temp = dynamic_cast<TGraphAsymmErrors *>(L1Jet_Emu->Clone());
+    fitHelperFreq(temp, xvar, min, max, l);
+    if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Fit%s", name, format));
+  }
+  /*
+
+  // L1 tau efficiency
+  if(L1TauVeto_Emu) {
+    temp = dynamic_cast<TGraphAsymmErrors *>(L1TauVeto_Emu->Clone());
+    fitHelperFreq(temp, xvar, min, max, l);
+    if (print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Fit%s",name, format));
+
+    // Same, but with gaussian addition
+    temp = dynamic_cast<TGraphAsymmErrors *>(L1TauVeto_Emu->Clone());
+    fitHelperFreqGaus(temp, xvar, min, max, l);
+    if (print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Fit_Gaussian%s", name, format));
+  }
+  */
 }
