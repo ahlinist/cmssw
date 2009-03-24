@@ -14,12 +14,14 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.27 2009/03/12 18:15:05 trommers Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.28 2009/03/24 14:03:51 mstoye Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
 #include "SusyAnalysis/AnalysisSkeleton/test/SusyDiJetAnalysis.h"
-
+//#define _USE_MATH_DEFINES
+//#include <math.h>
+#include <TMath.h>
 using namespace std;
 using namespace reco;
 using namespace edm;
@@ -936,12 +938,27 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeJetTrackPhiWeighted[k]=0;
       mTempTreeJetTrackNo[k]=0;
 
+      float JetPhi = (*jetHandle)[k].phi();
+
+      //  cout << "JetPhi "<< JetPhi << endl;
+
       for (reco::TrackRefVector::iterator aIter = mrTracksInJet.begin();aIter!= mrTracksInJet.end();aIter++)
 	{
-	  mTempTreeJetTrackPt[k] += (*aIter)->pt();	 
-	  mTempTreeJetTrackPhiWeighted[k] += (*aIter)->pt()*(*aIter)->phi();
-	  mTempTreeJetTrackPhi[k] += (*aIter)->phi();
+	  mTempTreeJetTrackPt[k] += (*aIter)->pt();
+	  float myPhi = (*aIter)->phi();
+	  if( JetPhi > 2. ) {
+	    if(myPhi<0) myPhi = myPhi + 2*TMath::Pi();
+	    // if(JetPhi<0&&myPhi>0) myPhi = myPhi - 2*TMath::Pi();
+	  }
+	  if( JetPhi < -2. ) {
+	    if(myPhi>0) myPhi = myPhi - 2*TMath::Pi();
+	    // if(JetPhi<0&&myPhi>0) myPhi = myPhi - 2*TMath::Pi();
+	  }
+	  //	 if (fabs(JetPhi)>2.5 ) cout << myPhi << endl;
+	  mTempTreeJetTrackPhiWeighted[k] += (*aIter)->pt()*myPhi;
+	  mTempTreeJetTrackPhi[k] += myPhi;
 	  mTempTreeJetTrackNo[k]++;
+
 	}
 
       mTempTreeJetTrackPhiWeighted[k] = mTempTreeJetTrackPhiWeighted[k]/ mTempTreeJetTrackPt[k];
