@@ -1,12 +1,13 @@
 #include <string>
 class Plotter {
 public:
-  Plotter(){
+  Plotter(TString filename="tteffAnalysis.root"){
 
     gROOT->LoadMacro("./tdrstyle.cxx");
     setTDRStyle();
 
-    inFile = TFile::Open("tteffAnalysis.root");
+    inFile = TFile::Open(filename);
+    //inFile = TFile::Open("tteffAnalysis.root");
     //inFile = TFile::Open("tteffAnalysis-merged.root");
     tree = (TTree *) (inFile->Get("TTEffTree"));
 
