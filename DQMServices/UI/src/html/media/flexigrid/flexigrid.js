@@ -5,7 +5,7 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Date: 2008-07-14 00:09:43 +0800 (Tue, 14 Jul 2008) $
+ * $Date: 2009/02/23 16:29:52 $
  */
  
 (function($){
@@ -40,6 +40,8 @@
 			 procmsg: 'Processing, please wait ...',
 			 query: '',
 			 qtype: '',
+			 querya: '',
+			 qoperator: '',
 			 nomsg: 'No items',
 			 minColToggle: 1, //minimum allowed column to be hidden
 			 showToggleBtn: false, //show or hide column toggle popup
@@ -555,7 +557,7 @@
 				if (p.postProcess)
 					p.postProcess();
 			},
-			saveParams: ['sortname', 'sortdir', 'page', 'rp', 'query', 'qtype', 'height'],
+			saveParams: ['sortname', 'sortdir', 'page', 'rp', 'query', 'qtype', 'querya', 'operator',  'height'],
 			saveParamsInt: ['page', 'rp', 'height'],
 			saveState: function() {
 				if (! p.savePrefix) return;
@@ -672,7 +674,9 @@
 				if (!p.newp) p.newp = 1;
 				
 				if (p.page>p.pages) p.page = p.pages;
+				//alert(p.qoperator);
 				//var param = {page:p.newp, rp: p.rp, sortname: p.sortname, sortorder: p.sortorder, query: p.query, qtype: p.qtype};
+				
 				var param = [
 					 { name : 'page', value : p.newp }
 					,{ name : 'rp', value : p.rp }
@@ -680,12 +684,15 @@
 					,{ name : 'sortorder', value : p.sortorder }
 					,{ name : 'query', value : p.query}
 					,{ name : 'qtype', value : p.qtype}
+					,{ name : 'querya', value : p.querya}
+					,{ name : 'qoperator', value : p.qoperator}
 				];							 
 							 
 				if (p.params)
 					{
 						for (var pi = 0; pi < p.params.length; pi++) param[param.length] = p.params[pi];
 					}
+
 				
 					$.ajax({
 					   type: p.method,
@@ -703,6 +710,23 @@
 				p.qtype = $('select[name=qtype]',g.sDiv).val();
 				p.newp = 1;
 
+				this.populate();				
+			},
+                        doClear: function () {
+                                p.query ='';
+                                p.qtype = '';
+				p.querya='';
+                                p.newp = 1;
+
+                                this.populate();
+                        },
+
+			doSearchAdv: function (a) {
+				p.query = '';
+				p.qtype = '';
+				p.querya = a.query;
+				p.qoperator = a.operator;
+				p.newp = 1;
 				this.populate();				
 			},
 			changePage: function (ctype){ //change page
@@ -1315,10 +1339,11 @@
 				if (p.query)
 					query = p.query;
 
-				$(g.sDiv).append("<div class='sDiv2'>Quick Search <input type='text' size='30' name='q' class='qsbox' value='"+query+"'/><select name='qtype'>"+sopt+"</select> <input type='button' value='Clear' /></div>");
+				$(g.sDiv).append("<div class='sDiv2'>Quick Search <input type='text' size='30' name='q' class='qsbox' value='"+query+"'/><select name='qtype'>"+sopt+"</select> <input type='button' value='Search' /> <input type='button' value='Clear' /></div>");
 
 				$('input[name=q],select[name=qtype]',g.sDiv).keydown(function(e){if(e.keyCode==13) g.doSearch()});
-				$('input[value=Clear]',g.sDiv).click(function(){$('input[name=q]',g.sDiv).val(''); p.query = ''; g.doSearch(); });
+	                        $('input[value=Search]',g.sDiv).click(function(){ g.doSearch(); });		
+				$('input[value=Clear]',g.sDiv).click(function(){$('input[name=q]',g.sDiv).val(''); p.query = ''; p.querya = '';  p.qoperator =''; g.doSearch(); });
 				$(g.bDiv).after(g.sDiv);				
 
 				if (p.query)
@@ -1535,10 +1560,25 @@
 	$.fn.flexReload = function(p) { // function to reload grid
 
 		return this.each( function() {
+				
 				if (this.grid&&this.p.url) this.grid.populate();
 			});
 
 	}; //end flexReload
+
+	$.fn.flexSearch = function(a) { // function to reload grid
+		return this.each( function() {
+				this.grid.doSearchAdv(a);
+			});
+
+	}; //end flexReload
+
+        $.fn.flexClear = function() { // function to reload grid
+                return this.each( function() {
+                                this.grid.doClear();
+                        });
+
+        }; 
 
 	$.fn.flexReset = function(p) { // function to reset grid
 		return this.each( function() {

@@ -40,11 +40,12 @@
 
   <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
   <script type="text/javascript" src="media/jquery-ui-1.7.custom.min.js"></script>
-
+  <script type="text/javascript" src="media/jquery.timers.js"></script>
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
   <script type="text/javascript" src="media/jquery.menu.js"></script>
   <script type="text/javascript" src="media/jquery.tooltip.js"></script>
   <script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+  <script type="text/javascript" src="media/jquery.json-1.3.js"></script>
   <script type="text/javascript" src="media/flexigrid/flexigrid.js"></script>
   <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
   <script type="text/javascript" src="media/utils.js"></script>
@@ -64,6 +65,11 @@
       }
     });
   }
+  
+  function quickSearch () {
+
+      $.showSearchForm();
+    }
 
   function logoutUser() {
     frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
@@ -483,9 +489,9 @@ function dumpData(intpl, tpl, mime) {
   var url = "runregisterdata";
   if ($.cookie("flex_table_summary")) url = "runinfodata";
   url += "?format=xml";
-  if (intpl != '') url += "&intpl=" + intpl;
-  if (tpl != '')   url += "&tpl=" + tpl;
-  if (mime != '')  url += "&mime=" + mime;
+  if (intpl != '') url += "&intpl=" + escape(intpl);
+  if (tpl != '')   url += "&tpl=" + escape(tpl);
+  if (mime != '')  url += "&mime=" + escape(mime);
 
   if ($.cookie("flex_multiselect") == "true") {
     if($("#flex1 .trSelected").length == 0) {
@@ -506,6 +512,7 @@ function dumpData(intpl, tpl, mime) {
     }
     if ($.cookie("flex_qtype")) url += "&qtype=" + escape($.cookie("flex_qtype"));
     if ($.cookie("flex_query")) url += "&query=" + escape($.cookie("flex_query"));
+    if ($.cookie("flex_querya")) url += "&querya=" + escape($.cookie("flex_querya"));
   }
 
   if ($.cookie("flex_sortname")) url += "&sortname=" + escape($.cookie("flex_sortname"));
@@ -599,6 +606,10 @@ function changeStatusTo(status) {
         <a href="#" onclick="drawChart()">Plot Chart</a>
 
         &nbsp;|&nbsp;
+		
+		<a id="advanced_search" href="#" onClick="quickSearch();">Advanced search</a>
+
+        &nbsp;|&nbsp;
 
         <span id="dumpdatamenu"><a href="#">Dump Data</a>
           <ul>
@@ -631,7 +642,7 @@ function changeStatusTo(status) {
       </td>
     </tr>
   </table>
-
+  <jsp:include page="search.jsp" />
   <jsp:include page="edit.jsp" />
   <jsp:include page="plot.jsp" />
 

@@ -75,9 +75,12 @@ public class DataProvider extends HttpServlet {
     String sort_dir = (!checkParam(request.getParameter("sortorder"))? default_sort_dir  : checkSQL(request.getParameter("sortorder")));
     String filter_field = (!checkParam(request.getParameter("qtype"))? null              : checkSQL(request.getParameter("qtype")));
     String filter_value = (!checkParam(request.getParameter("query"))? null              : checkSQL(request.getParameter("query")));
+    String filter_values = (!checkParam(request.getParameter("querya"))? null            : request.getParameter("querya"));
+    String filter_operator = (!checkParam(request.getParameter("qoperator"))? "OR"       : checkSQL(request.getParameter("qoperator")));
     boolean debug    = (!checkParam(request.getParameter("debug"))   ? false             : true);
     String template  = request.getParameter("tpl");
     String intemplate = request.getParameter("intpl");
+
 
     FormatType format = default_format;
     String mimeType = "text/xml";
@@ -104,18 +107,43 @@ public class DataProvider extends HttpServlet {
     }
 
     PrintWriter out = response.getWriter();
-
     boolean where_exists = false;
+	boolean where_exists2 = false;
     String where = "";
-    if (filter_field != null && filter_value != null) {
-      m = fieldPattern.matcher(filter_field);
-      if (m.find()) {
-        filter_field = filter_field.replaceAll("'", "\'");
-        filter_value = filter_value.replaceAll("'", "\'");
-        where = " WHERE REGEXP_LIKE(" + filter_field + ", ?, 'i')";
-        where_exists = true;
-      }
-    }
+ 
+	if (filter_values!= null) {
+		try {
+			where = "WHERE ";
+			JSONArray fvalues = new JSONArray(filter_values);	
+			for (int i = 0; i < fvalues.length(); i++) {
+				JSONObject o = fvalues.getJSONObject(i);
+				//out.println("field = " + o.getString("field"));
+				if ((o.has("range_from")) && (o.has("range_to"))) 
+				{where = where + (i > 0 ? filter_operator : "") + " ( ? < " + o.getString("field") + " and ? > " + o.getString("field") + ") ";}
+				else {where = where + (i > 0 ? filter_operator : "") + " REGEXP_LIKE(" +  o.getString("field") + ", ?, 'i') ";}
+				
+				
+			}
+			
+		  where_exists2 = true;
+		} catch (JSONException e) {
+			out.println(e);
+		}
+		
+	}
+	else { 
+   		if (filter_field != null && filter_value != null) {
+		  m = fieldPattern.matcher(filter_field);
+		  if (m.find()) {
+			filter_field = filter_field.replaceAll("'", "\'");
+			filter_value = filter_value.replaceAll("'", "\'");
+			where = "WHERE REGEXP_LIKE(" + filter_field + ", ?, 'i')";
+			where_exists = true;
+		  }
+		}
+	}
+
+
 
     JSONArray arr                  = null;
     DocumentBuilderFactory factory = null;
@@ -142,8 +170,32 @@ public class DataProvider extends HttpServlet {
       DBWorker db = new DBWorker();
 
       String count_sql = "select count(*) from (select * from (" + query + ") "+ where + ")";
+	 
       PreparedStatement pstmt = db.prepareSQL(count_sql);
+
+
       if (where_exists) pstmt.setString(1, filter_value);
+	  else if (where_exists2) 
+	  	{
+			try {
+				JSONArray fvalues = new JSONArray(filter_values);
+				
+					for (int i = 0; i < fvalues.length(); i++) {
+						JSONObject o = fvalues.getJSONObject(i);
+						if ((o.has("range_from")) && (o.has("range_to"))) 
+						{pstmt.setDouble(i+1, o.getDouble("range_from")); pstmt.setDouble(i+2, o.getDouble("range_to"));}
+						else {pstmt.setString(i+1, o.getString("value"));}
+							
+					}
+				}
+			 catch (JSONException e) {
+				out.println(e);
+			}
+				
+			
+		}
+		
+		
       ResultSet r = pstmt.executeQuery();
 
       r.next();
@@ -167,6 +219,22 @@ public class DataProvider extends HttpServlet {
       pstmt = db.prepareSQL(sql);
       int pnum = 1;
       if (where_exists) pstmt.setString(pnum++, filter_value);
+	  else if (where_exists2) {
+	 			try {
+				JSONArray fvalues = new JSONArray(filter_values);
+	  
+					for (int i = 0; i < fvalues.length(); i++) {
+					JSONObject o = fvalues.getJSONObject(i);
+					if ((o.has("range_from")) && (o.has("range_to"))) 
+					{ pstmt.setDouble(pnum++, o.getDouble("range_from")); pstmt.setDouble(pnum++, o.getDouble("range_to"));}
+					else {pstmt.setString(pnum++, o.getString("value"));}
+					}
+				}
+				catch (JSONException e) {
+					out.println(e);
+				}
+				 
+		}
       if (page_size > 0) pstmt.setInt(pnum++, page_start + page_size);
       pstmt.setInt(pnum++, page_start + 1);
       r = pstmt.executeQuery();
@@ -240,6 +308,8 @@ public class DataProvider extends HttpServlet {
             results.setAttribute("default_sort_name", default_sort_name);
             results.setAttribute("default_sort_dir", default_sort_dir);
             results.setAttribute("where", where);
+            results.setAttribute("avalues", filter_values);
+            results.setAttribute("aoperator", filter_operator);
           }
           results.setAttribute("total", String.valueOf(totalResultsAvailable));
           results.setAttribute("page", String.valueOf(page));
