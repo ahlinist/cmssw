@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.4 $
-  \date $Date: 2008/08/22 11:52:02 $
+  \version $Revision: 1.5 $
+  \date $Date: 2008/11/20 14:51:19 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -287,9 +287,10 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
     gPad->SetLogz();
     gPad->SetGridx();
     gPad->SetGridy();}
-  else   // red when high, green when low
+  else   // default is rainbow color
     {
-      gStyle->SetPalette(20, errorFracColors);
+      gStyle->SetPalette(1);
+      //gStyle->SetPalette(20, errorFracColors);
       obj->SetOption("colz");
     }
 
