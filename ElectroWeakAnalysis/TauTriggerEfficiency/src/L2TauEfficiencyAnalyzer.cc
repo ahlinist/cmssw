@@ -126,6 +126,10 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const reco::CaloTau& tau)
   fill(iEvent,tau.p4());
 }
 
+void
+L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const reco::GsfElectron& tau) {
+  fill(iEvent,tau.p4());
+}
 
 
 std::vector<double> 

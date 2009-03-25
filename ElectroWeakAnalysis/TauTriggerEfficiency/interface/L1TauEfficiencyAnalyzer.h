@@ -33,6 +33,7 @@
 
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include <TTree.h>
@@ -57,6 +58,7 @@ class L1TauEfficiencyAnalyzer {
         void fill(const edm::Event&, const reco::PFTau&);
         void fill(const edm::Event&, const reco::CaloTau&);
         void fill(const edm::Event&, const LorentzVector&);
+        void fill(const edm::Event&, const reco::GsfElectron&);
 
    private:
         // Input parameters

@@ -19,6 +19,7 @@
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/CaloTauFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include <string>
@@ -39,6 +40,7 @@ class L2TauEfficiencyAnalyzer {
       void fill(const edm::Event&,const reco::PFTau&);
       void fill(const edm::Event&,const reco::CaloTau&);
       void fill(const edm::Event&,const LV&);
+      void fill(const edm::Event&,const reco::GsfElectron&);
 
    private:
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );

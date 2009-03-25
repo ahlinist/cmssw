@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.19 2009/03/09 15:35:05 slehti Exp $
+// $Id: TTEffAnalyzer.h,v 1.20 2009/03/10 22:29:26 bachtis Exp $
 //
 //
 
@@ -34,6 +34,9 @@
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
@@ -71,10 +74,11 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
           _TTEffTree->Fill();
         }
       }
-
+      
       virtual void fill(const reco::PFTau&,unsigned int i = 0); 
       virtual void fill(const reco::CaloTau&,unsigned int i = 0);
       virtual void fill(const LorentzVector&,unsigned int i = 0);
+      virtual void fill(const reco::GsfElectron&,unsigned int i = 0);
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
