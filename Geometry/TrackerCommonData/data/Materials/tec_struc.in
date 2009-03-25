@@ -218,8 +218,9 @@ o TEC cooling Inserts (petalinserts)
   (6) Distance-Rings
   (7-10)  Sideframe-Tails (4x)
   	  the rest of the side frame cable (see tec_module.in)
-  (11-12) cable coming from the hybrid UNKNOWN
+  (11-12) cable coming from the hybrid
   (13-16) material from mounted electronics as in ICB_Buget.ods
+  (17-19) Plugs for Hybrid cables
 .......................................................................
 o TEC ICC01LF
   -----------------------------
@@ -237,47 +238,54 @@ o TEC ICC01LF
 * 8  "Gold"		  "Gold"      	  0.00005  4   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  4   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  4   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   4   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   4   ELE
 * 13 "el. components"	  "Ceramic"	  0.5701   1   ELE
 * 14 "el. components"	  "Polyethylene"  8.1725   1   ELE
 * 15 "el. components"	  "Copper"	  0.4315   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.1271   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   8   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   8   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   4   ELE
 
 .......................................................................
 =======================================================================
 o TEC ICC2F
   -----------------------------
-  MC Volume: 8.1464 cm3
+  MC Volume: 7.2412 cm3
 
 .......................................................................
-# "icb3fp"		      "TEC_ICC2F"        8.1464     67.8865
+# "icb3fp"		      "TEC_ICC2F"        7.2412   -1
 * 1  "bare FR4"           "T_FR4"     	  4.7563   1   ELE
 * 2  "Copper traces" 	  "Copper"    	  0.3905   1   ELE
 * 3  "M1.6x5"		  "Brass"     	  0.0192   4   SUP
 * 4  "Brass washer"	  "Brass"     	  0.0026   4   SUP
 * 5  "Spring washer"	  "Copper"    	  0.0019   4   SUP
 * 6  "Distance-Rings"	  "Aluminium" 	  0.0585   4   SUP	
-* 7  "Copper traces"      "Copper"    	  0.02135  4   ELE
-* 8  "Gold"		  "Gold"      	  0.00005  4   ELE
-* 9  "Nickel"		  "Nickel"    	  0.00203  4   ELE
-* 10 "LV Kapton"          "T_Kapton"  	  0.18527  4   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 7  "Copper traces"      "Copper"    	  0.02135  3   ELE
+* 8  "Gold"		  "Gold"      	  0.00005  3   ELE
+* 9  "Nickel"		  "Nickel"    	  0.00203  3   ELE
+* 10 "LV Kapton"          "T_Kapton"  	  0.18527  3   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   3   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   3   ELE
 * 13 "el. components"	  "Ceramic"	  0.2820   1   ELE
 * 14 "el. components"	  "Polyethylene"  4.2378   1   ELE
 * 15 "el. components"	  "Copper"	  0.1731   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.0609   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   6   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   6   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   3   ELE
 .......................................................................
 =======================================================================
 o TEC ICC35F
   -----------------------------
-  MC Volume: 79.0931 cm3
+  MC Volume: 79.0929 cm3
  
-  (14-15) Petal grounding cable: Copper 0,464g =>0.0518 cm3
+  (20-21) Petal grounding cable: Copper 0,464g =>0.0518 cm3
           Petal grounding strip: Copper 0,282g =>0.0315 cm3
+  (22-24) Shielding
 .......................................................................
-# "Icb46fp" "TEC_ICC35F"        79.0931     659.1088
+# "Icb46fp" "TEC_ICC35F"        79.0929     -1
 * 1  "bare FR4"           "T_FR4"     	 80.5918   1   ELE
 * 2  "Copper traces" 	  "Copper"    	  4.3219   1   ELE
 * 3  "M1.6x5"		  "Brass"     	  0.0192  12   SUP
@@ -285,18 +293,23 @@ o TEC ICC35F
 * 5  "Spring washer"	  "Copper"    	  0.0019  12   SUP
 * 6  "Distance-Rings"	  "Aluminium" 	  0.0585  12   SUP	
 * 7  "Copper traces"      "Copper"    	  0.02135  8   ELE
-* 8  "Nickel"		  "Nickel"    	  0.00203  8   ELE
-* 9 "LV Kapton"          "T_Kapton"  	  0.18527  8   ELE
-* 10 "el. components"	  "Ceramic"	  1.1620   1   ELE
-* 11 "el. components"	  "Polyethylene" 28.4428   1   ELE
-* 12 "el. components"	  "Copper"	  1.8036   1   ELE
-* 13 "Soldering Paste"	  "BGA"		  0.2820   1   ELE
-* 14 "grounding cable"    "Copper"   	  0.0518   1   ELE
-* 15 "grounding strip"    "Copper"	  0.0315   1   ELE
-
- 16  "Gold"		  "Gold"      	  0.00005  8   ELE
- 17 "Copper traces"      "Air"    	  0.000    1   ELE
- 18 "LV Kapton"          "Air"  	  0.000    1   ELE
+* 8  "Gold"		  "Gold"      	  0.00005  8   ELE
+* 9  "Nickel"		  "Nickel"    	  0.00203  8   ELE
+* 10 "LV Kapton"          "T_Kapton"  	  0.18527  8   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   8   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   8   ELE
+* 13 "el. components"	  "Ceramic"	  1.1620   1   ELE
+* 14 "el. components"	  "Polyethylene" 28.4428   1   ELE
+* 15 "el. components"	  "Copper"	  1.8036   1   ELE
+* 16 "Soldering Paste"	  "BGA"		  0.2820   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   16  ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   16  ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   8   ELE
+* 20 "grounding cable"    "Copper"   	  0.0518   1   ELE
+* 21 "grounding strip"    "Copper"	  0.0315   1   ELE
+* 22 "Shield FR4"	  "T_FR4"	  2.0679   1   ELE
+* 23 "Shield Cu"	  "Copper"	  0.7444   1   ELE
+* 24 "Shield Insolation"  "Epoxy"	  0.8272   1   ELE
 
 .......................................................................
 =======================================================================
@@ -305,7 +318,7 @@ o TEC ICC1SF
   MC Volume: 18.9028 cm3
 
 .......................................................................
-# "icb2fp_w46" "TEC_ICC1SF"       18.9028	157.5234
+# "Icb2fp_w46" "TEC_ICC1SF"       18.9028	157.5234
 * 1  "bare FR4"           "T_FR4"     	 11.0264   1   ELE
 * 2  "Copper traces" 	  "Copper"    	  0.7025   1   ELE
 * 3  "M1.6x5"		  "Brass"     	  0.0192   6   SUP
@@ -316,13 +329,15 @@ o TEC ICC1SF
 * 8  "Gold"		  "Gold"      	  0.00005  4   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  4   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  4   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   4   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   4   ELE
 * 13 "el. components"	  "Ceramic"	  0.2820   1   ELE
 * 14 "el. components"	  "Polyethylene"  4.2378   1   ELE
 * 15 "el. components"	  "Copper"	  0.3119   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.0836   1   ELE
-
+* 17 "PEEK Casing"        "Peek"  	  0.1530   8   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   8   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   4   ELE
 .......................................................................
 =======================================================================
 o TEC ICC0F
@@ -341,13 +356,15 @@ o TEC ICC0F
 * 8  "Gold"		  "Gold"      	  0.00005  4   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  4   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  4   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   4   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   4   ELE
 * 13 "el. components"	  "Ceramic"	  0.2902   1   ELE
 * 14 "el. components"	  "Polyethylene"  5.5577   1   ELE
 * 15 "el. components"	  "Copper"	  0.2040   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.0659   1   ELE
-
+* 17 "PEEK Casing"        "Peek"  	  0.1530   8   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   8   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   4   ELE
 .......................................................................
 =======================================================================
 o TEC ICC46F
@@ -367,12 +384,15 @@ o TEC ICC46F
 * 8  "Gold"		  "Gold"      	  0.00005  9   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  9   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  9   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   9   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   9   ELE
 * 13 "el. components"	  "Ceramic"	  0.6057   1   ELE
 * 14 "el. components"	  "Polyethylene" 10.6530   1   ELE
 * 15 "el. components"	  "Copper"	  0.4616   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.1545   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   18  ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   18  ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   9   ELE
 .......................................................................
 =======================================================================
 o TEC ICC1B
@@ -391,41 +411,50 @@ o TEC ICC1B
 * 8  "Gold"		  "Gold"      	  0.00005  2   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  2   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  2   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   2   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   2   ELE
 * 13 "el. components"	  "Ceramic"	  0.2380   1   ELE
 * 14 "el. components"	  "Polyethylene"  4.3301   1   ELE
 * 15 "el. components"	  "Copper"	  0.2260   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.0590   1   ELE
+ 17 "PEEK Casing"        "Peek"  	  0.1530   4   ELE
+ 18 "Copper Contacts"    "Copper"    	  0.0148   4   ELE
+ 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   2   ELE
 
 .......................................................................
 =======================================================================
 o TEC ICC35B
   -----------------------------
   MC Volume: 71.0783 cm3
- (17-18) Petal grounding cable: Copper 0,464g =>0.0518 cm3
+ (20-21) Petal grounding cable: Copper 0,464g =>0.0518 cm3
           Petal grounding strip: Copper 0,282g =>0.0315 cm3
+ (22-24) Shielding
 .......................................................................
-# "Icb46bp" "TEC_ICC35B"        71.0783		592.3194
+# "Icb46bp" "TEC_ICC35B"        71.0783		-1
 * 1  "bare FR4"           "T_FR4"     	 71.8317   1   ELE
 * 2  "Copper traces" 	  "Copper"    	  3.7218   1   ELE
 * 3  "M1.6x5"		  "Brass"     	  0.0192  10   SUP
 * 4  "Brass washer"	  "Brass"     	  0.0026  10   SUP
 * 5  "Spring washer"	  "Copper"    	  0.0019  10   SUP
 * 6  "Distance-Rings"	  "Aluminium" 	  0.0585  10   SUP	
-* 7  "Copper traces"      "Copper"    	  0.02135  8   ELE
-* 8  "Nickel"		  "Nickel"    	  0.00203  8   ELE
-* 9  "LV Kapton"          "T_Kapton"  	  0.18527  8   ELE
-* 10 "el. components"	  "Ceramic"	  1.0584   1   ELE
-* 11 "el. components"	  "Polyethylene"  26.2609  1   ELE
-* 12 "el. components"	  "Copper"	  1.6773   1   ELE
-* 13 "Soldering Paste"	  "BGA"		  0.2557   1   ELE
-* 14 "grounding cable"	  "Copper"	  0.0518   1   ELE
-* 15 "grounding strip"	  "Copper"	  0.0315   1   ELE
-
- 16  "Gold"		  "Gold"      	  0.00005  8   ELE
- 17 "Copper traces"      "Air"    	  0.000      1   ELE
- 18 "LV Kapton"          "Air"  	  0.000      1   ELE
+* 7  "Copper traces"      "Copper"    	  0.02135  6   ELE
+* 8  "Gold"		  "Gold"      	  0.00005  6   ELE
+* 9  "Nickel"		  "Nickel"    	  0.00203  6   ELE
+* 10  "LV Kapton"          "T_Kapton"  	  0.18527  6   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   6   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   6   ELE
+* 13 "el. components"	  "Ceramic"	  1.0584   1   ELE
+* 14 "el. components"	  "Polyethylene"  26.2609  1   ELE
+* 15 "el. components"	  "Copper"	  1.6773   1   ELE
+* 16 "Soldering Paste"	  "BGA"		  0.2557   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   12  ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   12  ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   6   ELE
+* 20 "grounding cable"	  "Copper"	  0.0518   1   ELE
+* 21 "grounding strip"	  "Copper"	  0.0315   1   ELE
+* 22 "Shield FR4"	  "T_FR4"	  1.8457   1   ELE
+* 23 "Shield Cu"	  "Copper"	  0.6645   1   ELE
+* 24 "Shield Insolation"  "Epoxy"	  0.7383   1   ELE
 
 .......................................................................
 =======================================================================
@@ -442,25 +471,27 @@ o TEC ICC0LB
 * 5  "Spring washer"	  "Copper"    	  0.0019   4   SUP
 * 6  "Distance-Rings"	  "Aluminium" 	  0.0585   4   SUP	
 * 7  "Copper traces"      "Copper"    	  0.02135  2   ELE
-* 8  "Nickel"		  "Nickel"    	  0.00203  2   ELE
-* 9 "LV Kapton"          "T_Kapton"  	  0.18527  2   ELE
-* 10 "el. components"	  "Ceramic"	  0.2309   1   ELE
-* 11 "el. components"	  "Polyethylene"  3.5514   1   ELE
-* 12 "el. components"	  "Copper"	  0.1361   1   ELE
-* 13 "Soldering Paste"	  "BGA"		  0.0479   1   ELE
-
- 14 "Copper traces"      "Copper"    	  1        1   ELE
- 15 "LV Kapton"          "T_Kapton"  	  1        1   ELE
- 16  "Gold"		  "Gold"      	  0.00005  2   ELE
+* 8  "Gold"		  "Gold"      	  0.00005  2   ELE
+* 9  "Nickel"		  "Nickel"    	  0.00203  2   ELE
+* 10 "LV Kapton"          "T_Kapton"  	  0.18527  2   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   2   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   2   ELE
+* 13 "el. components"	  "Ceramic"	  0.2309   1   ELE
+* 14 "el. components"	  "Polyethylene"  3.5514   1   ELE
+* 15 "el. components"	  "Copper"	  0.1361   1   ELE
+* 16 "Soldering Paste"	  "BGA"		  0.0479   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   4   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   4   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   2   ELE
 
 .......................................................................
 =======================================================================
 o TEC ICC2B
   -----------------------------
-  MC Volume: 8.659 cm3
+  MC Volume: 7.6969 cm3
 
 .......................................................................
-# "Icb3bp" "TEC_ICC2B"        8.659	72.1587
+# "Icb3bp" "TEC_ICC2B"        7.6969	-1
 * 1  "bare FR4"           "T_FR4"     	  5.3542   1   ELE
 * 2  "Copper traces" 	  "Copper"    	  0.3245   1   ELE
 * 3  "M1.6x5"		  "Brass"     	  0.0192   4   SUP
@@ -471,12 +502,15 @@ o TEC ICC2B
 * 8  "Gold"		  "Gold"      	  0.00005  2   ELE
 * 9  "Nickel"		  "Nickel"    	  0.00203  2   ELE
 * 10 "LV Kapton"          "T_Kapton"  	  0.18527  2   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   2   ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   2   ELE
 * 13 "el. components"	  "Ceramic"	  0.2309   1   ELE
 * 14 "el. components"	  "Polyethylene"  3.5514   1   ELE
 * 15 "el. components"	  "Copper"	  0.1361   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.0480   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   4   ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   4   ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   2   ELE
 
 .......................................................................
 =======================================================================
@@ -492,16 +526,19 @@ o TEC ICC46B
 * 4  "Brass washer"	  "Brass"     	  0.0026   8   SUP
 * 5  "Spring washer"	  "Copper"    	  0.0019   8   SUP
 * 6  "Distance-Rings"	  "Aluminium" 	  0.0585   8   SUP	
-* 7  "Copper traces"      "Copper"    	  0.02135  7   ELE
-* 8  "Gold"		  "Gold"      	  0.00005  7   ELE
-* 9  "Nickel"		  "Nickel"    	  0.00203  7   ELE
-* 10 "LV Kapton"          "T_Kapton"  	  0.18527  7   ELE
-* 11 "Copper traces"      "Copper"    	  1        1   ELE
-* 12 "LV Kapton"          "T_Kapton"  	  1        1   ELE
+* 7  "Copper traces"      "Copper"    	  0.02135  11  ELE
+* 8  "Gold"		  "Gold"      	  0.00005  11  ELE
+* 9  "Nickel"		  "Nickel"    	  0.00203  11  ELE
+* 10 "LV Kapton"          "T_Kapton"  	  0.18527  11  ELE
+* 11 "Copper traces"      "Copper"    	  0.0093   11  ELE
+* 12 "LV Kapton"          "T_Kapton"  	  0.0407   11  ELE
 * 13 "el. components"	  "Ceramic"	  0.7695   1   ELE
 * 14 "el. components"	  "Polyethylene" 12.7787   1   ELE
 * 15 "el. components"	  "Copper"	  0.5563   1   ELE
 * 16 "Soldering Paste"	  "BGA"		  0.1874   1   ELE
+* 17 "PEEK Casing"        "Peek"  	  0.1530   22  ELE
+* 18 "Copper Contacts"    "Copper"    	  0.0148   22  ELE
+* 19 "Kapton regidifier"  "T_Kapton"  	  0.0479   11  ELE
 
 .......................................................................
 =======================================================================
@@ -884,14 +921,14 @@ MCVolume: 11884.6 cm3 (for all TEC)
    TM = Tiltmeter
 
 ....................................................................................
-#   "TEC_AlignRing"             "TEC_AlignRing"         11884.6         11884.6
+#   "TEC_AlignRing"             "TEC_AlignRing"         11884.6       -1
 * 1 "Ring itself"              "Carbon fibre str."  3075.54  1 SUP
 * 2 "pillars"		       "Aluminium"   	    126.77   1 SUP
 * 3 "support Clamp"	       "Aluminium"	    12.37    1 SUP
 * 4 "inserts"		       "Aluminium"	    0.86     1 SUP
 * 5 "TM Mechanics"	       "Aluminium"	    84.44    1 ELE
 * 6 "TM active"		       "Epoxy"		    436.92   1 ELE
-* 7 "TM electronics"	       "T_FR4"		    1.0	     1 ELE
+* 7 "TM electronics"	       "T_FR4"		    334.12   1 ELE
 * 8 "TM box"		       "Carbon fibre str."  21.53    1 SUP
 
 ....................................................................................
