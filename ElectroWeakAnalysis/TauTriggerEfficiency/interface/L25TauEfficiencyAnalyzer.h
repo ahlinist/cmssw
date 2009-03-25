@@ -1,7 +1,7 @@
 // Class:      L25TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25TauEfficiencyAnalyzer.h,v 1.13 2009/02/04 18:47:29 smaruyam Exp $
+// $Id: L25TauEfficiencyAnalyzer.h,v 1.14 2009/02/24 18:03:32 smaruyam Exp $
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -17,6 +17,7 @@
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -31,6 +32,7 @@ void Setup(const edm::ParameterSet&,TTree*);
 virtual void fill(const edm::Event&, const reco::PFTau&);   
 virtual void fill(const edm::Event&, const reco::CaloTau&);
 virtual void fill(const edm::Event&, const LorentzVector&);
+virtual void fill(const edm::Event&, const reco::GsfElectron&);
 
    private:
       virtual void beginJob(const edm::EventSetup&) ;
@@ -44,7 +46,24 @@ virtual void fill(const edm::Event&, const LorentzVector&);
       float l25Phi;
       float l25Eta;
       float l25Pt;
+      char l25Depth;
+      char leadDepth1;
+      char leadDepth2;
+      float minDR;
+      float bareEt;
       float l25InvPt;
-      int   l25Depth;
+      
       double l25MatchingCone;
+      float l25PtLdgJetDRLoose;
+      float l25EtaLdgLoose;
+      float l25PhiLdgLoose;
+      float l25PtLdgLoose;
+      char l25DefDisc13;
+      char l25DefDisc23;
+      char l25DefDisc21;
+      char l25LooseDisc21;
+      char l25LooseDisc13;
+      char l25LooseDisc23;
+
+
 };

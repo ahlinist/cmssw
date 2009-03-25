@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.16 2009/03/05 23:10:32 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.17 2009/03/09 15:35:04 slehti Exp $
 //
 //
 
@@ -83,8 +83,9 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 //   edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
-   edm::Handle<std::vector<LorentzVector> > electronTaus;
+   edm::Handle<reco::GsfElectronCollection> electronTaus;
 //   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
+
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
       try{
 	iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
@@ -110,6 +111,10 @@ void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
   PFEt = tau.Et();
   PFEta = tau.Eta();
   PFPhi = tau.Phi();
+}
+
+void TTEffAnalyzer::fill(const reco::GsfElectron& tau, unsigned int i) {
+  fill(tau.p4());
 }
 
 void

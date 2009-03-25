@@ -4,6 +4,8 @@
 //adapted from DQMOffline/Trigger/src/HLTTauRefProducer by {bachtis,berryhil,kap01}
 //minimal modifications for this application by gfball
 
+//change to produce GsfElectrons instead of LorentzVectors
+
 ElectronProducer::ElectronProducer(const edm::ParameterSet& iConfig) {
   e_ = iConfig.getParameter<edm::InputTag>("ElectronCollection");
   e_idAssocProd_ = iConfig.getParameter<edm::InputTag>("IdCollection");
@@ -22,13 +24,16 @@ ElectronProducer::ElectronProducer(const edm::ParameterSet& iConfig) {
   e_fromZet_ = iConfig.getParameter<double>("ElecEtFromZcut");
   e_etaMax_ = iConfig.getParameter<double>("EtaMax");
 
-  produces<LorentzVectorCollection>("Electrons");
+  //produces<LorentzVectorCollection>("Electrons");
+  produces<reco::GsfElectronCollection>();
 }
 
 ElectronProducer::~ElectronProducer() {}
 
 void ElectronProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  std::auto_ptr<LorentzVectorCollection> product_Electrons(new LorentzVectorCollection);
+  //std::auto_ptr<LorentzVectorCollection> product_Electrons(new LorentzVectorCollection);
+  
+  std::auto_ptr<reco::GsfElectronCollection> product_Electrons(new reco::GsfElectronCollection);
   //Retrieve the collections
   //std::cout<<"Entering ElectronProducer"<<std::endl;
   edm::Handle<edm::ValueMap<float> > pEleID;
@@ -57,14 +62,16 @@ void ElectronProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       if((*electrons)[i].pt()>ptMinElectron_&&fabs((*electrons)[i].eta())<e_etaMax_&&idDec) {
 	if(e_doTrackIso_){
 	  double isolation_value_ele = ElectronTrkIsolation(ctfTracks,(*electrons)[i]);
-	  if(isolation_value_ele<e_isoMaxSumPt_){
-	    LorentzVector vec((*electrons)[i].px(),(*electrons)[i].py(),(*electrons)[i].pz(),(*electrons)[i].energy());
-	    product_Electrons->push_back(vec);
+	  if(isolation_value_ele<=e_isoMaxSumPt_){
+	    //LorentzVector vec((*electrons)[i].px(),(*electrons)[i].py(),(*electrons)[i].pz(),(*electrons)[i].energy());
+	    //product_Electrons->push_back(vec);
+      product_Electrons->push_back((*electrons)[i]);
 	  } 
 	}
 	else{ 
-	  LorentzVector vec((*electrons)[i].px(),(*electrons)[i].py(),(*electrons)[i].pz(),(*electrons)[i].energy());
-	  product_Electrons->push_back(vec);
+	  //LorentzVector vec((*electrons)[i].px(),(*electrons)[i].py(),(*electrons)[i].pz(),(*electrons)[i].energy());
+	  //product_Electrons->push_back(vec);
+    product_Electrons->push_back((*electrons)[i]);
 	}
       }
     }
@@ -72,23 +79,23 @@ void ElectronProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   if(e_fromZ_) {
     //std::cout<<"Starting ElectronsFromZ"<<std::endl;
     if (product_Electrons->size()==2) {
-      LorentzVector e1 = product_Electrons->at(0);
-      LorentzVector e2 = product_Electrons->at(1);
+      LorentzVector e1 = product_Electrons->at(0).p4();
+      LorentzVector e2 = product_Electrons->at(1).p4();
       double zmass = (e1+e2).M();
       if (zmass > e_zMmin_ && zmass < e_zMmax_) {
 	if (e1.Et()>e_fromZet_ && e2.Et()>e_fromZet_) {
 	  //std::cout<<"Putting ElectronsFromZ"<<std::endl;
-	  iEvent.put(product_Electrons,"Electrons");
+	  iEvent.put(product_Electrons);
 	  return;
 	}
       }
     }
     //std::cout<<"Emptying collection, failed ElectronsFromZ"<<std::endl;
     product_Electrons->clear();
-    iEvent.put(product_Electrons,"Electrons");
+    iEvent.put(product_Electrons);
     return;
   } else {
-    iEvent.put(product_Electrons,"Electrons");
+    iEvent.put(product_Electrons);
     return;
   }
 

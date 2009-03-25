@@ -1,109 +1,61 @@
 import FWCore.ParameterSet.Config as cms
 import sys
+import glob
+import copy
 
 """
 This is the config file for Tau trigger efficiency analysis using electrons faking taus.
 Author: gfball
 
-Some options are intended for future work to enable the reading of triggers with additional steps and will be irrelevant here.
+This originally used sys.stdin to read options from the command line, using the style "echo opt1,opt2... | cmsRun ETTEff...py".
+However, I realise this doesn't exactly meet any criteria of user friendliness and just confuses people, so the variables I did read from stdin are now written just below this point.
+From CMSSW 3 (or 2.2x with some tags) there is a VarParsing package (see bottom of twiki:SWGuideAboutPythonConfigFile) which will allow a more sensible command line input. (Note, you cannot use sys.argv because the config file is exec'd from within cmsRun and so sys.argv is empty).
 
-This first section is used to read command line options from stdin, since cmsRun seems to strip the sys.argv parameter.
-To use this you would do something like "echo electronTau,robust,219 | cmsRun ETTEffAnalyzer.py"
+By default, files are read using a slightly messy parser that allows either datasets, wildcard strings of local files or DBS python output to be read. If you want to run this remotely (grid or batch) you may wish to replace this with just a static list of files - in which case uncomment the readfiles variable at the top. Otherwise, the following syntax works:
 
-If you do not like this style of input, then comment out the following section...
-
-"""
-
-paths = ("DoubleIsoTau","IsoElecIsoTau","NewSingleTauMET","SingleTau","DoubleTau","SingleTauMET","ElectronTau","MuonTau")
-eidquals = ("robust","loose","tight")
-datas = (212,216,217,219)
-
-input = sys.stdin.read()
-path,eidqual,data = input.split(",")
-data=int(data)
-if not path in paths:
-    print "Invalid path"
-    sys.exit(-1)
-if not eidqual in eidquals:
-    print "Invalid eIDqual"
-    sys.exit(-1)
-if not data in datas:
-    print "Invalid data"
-    sys.exit(-1)
-
-"""
-...down to here and then manually declare variables:
-path: the name of an tau trigger path. Note the actual names are irrelevant, this name will be used in the following dictionaries to determine the parameters for the ETTEffAnalyzer. Feel free to change the parameters if for instance you use a different trigger table. This was intended to be a conveience for multiple running by just having to change the stdin parameters.
-eidqual: E/Gamma electron id quality. Typically one of (robust, tight, loose)
-data: One of the relval datasets defined in the ZEEData dictionary. Alternatively if you're using an alternative data import, set this to anything useful you'd like appended to the output filename.
+data = "/full/dbs/dataset/name/GEN-SIM-RAW/RECO" - this dataset will be looked up in DBS and the full list of files used.
+data = "glob:/tmp/data/*.root" - all files named '*.root' in /tmp/data will be used.
+data = "file:my_file_list_cfi.py" - file containing a source and readfile list (as DBS produces) is executed and the contents used
 
 """
 
+#Important variables
 
-print "Using path=%s and eIDqual=%s and data=%s" % (path,eidqual,data)
+#data to use OR list of files
+#you either need to change this, or add something to the readfiles list
+#if there are filenames in readfile they will be used instead of anything in data
+data = "glob:/localscratch/2110ZEE/*.root"
+readFiles = cms.untracked.vstring()
 
-UseNewHLTDict={
-    "DoubleIsoTau":True,
-    "IsoElecIsoTau":True,
-    "NewSingleTauMET":True,
-    "SingleTau":False,
-    "DoubleTau":False,
-    "SingleTauMET":False,
-    "ElectronTau":False,
-    "MuonTau":False
-    }
+#Use tighter electron requirements - minpt>0.5, isolation=0 in cone 0.7
+highpurity = False
 
-L2AssocDict={
-    "DoubleIsoTau":cms.InputTag("hltL2TauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "IsoElecIsoTau":cms.InputTag("hltL2TauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "NewSingleTauMET":cms.InputTag("hltL2TauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "SingleTau":cms.InputTag("hltL2SingleTauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "DoubleTau":cms.InputTag("hltL2DoubleTauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "SingleTauMET":cms.InputTag("hltL2SingleTauMETIsolationProducer","L2TauIsolationInfoAssociator"),
-    "ElectronTau":cms.InputTag("hltL2ElectronTauIsolationProducer","L2TauIsolationInfoAssociator"),
-    "MuonTau":cms.InputTag("hltL2MuonTauIsolationProducer","L2TauIsolationInfoAssociator")
-    }
+#Use full tracks instead of pixel tracks for L25 (only works with dohlt=True)
+nopixel = False
 
-L1FilterDict={
-    "DoubleIsoTau":cms.InputTag("hltL1sDoubleTau40"),
-    "IsoElecIsoTau":cms.InputTag("hltL1sIsoEG10Tau20"),
-    "NewSingleTauMET":cms.InputTag("hltL1sTau30ETM30"),
-    "SingleTau":cms.InputTag(""),
-    "DoubleTau":cms.InputTag(""),
-    "SingleTauMET":cms.InputTag(""),
-    "ElectronTau":cms.InputTag(""),
-    "MuonTau":cms.InputTag("")
-    }
+#Electron ID quality to use. Should be one of (loose,robust,tight)
+eidqual = 'robust'
 
-L2FilterDict={    
-    "DoubleIsoTau":cms.InputTag("hltFilterL2EcalIsolationDoubleTau"),
-    "IsoElecIsoTau":cms.InputTag("hltFilterL2EcalIsolationElectronTau"),
-    "NewSingleTauMET":cms.InputTag("hltFilterL2EcalIsolationSingleTauMET"),
-    "SingleTau":cms.InputTag(""),
-    "DoubleTau":cms.InputTag(""),
-    "SingleTauMET":cms.InputTag(""),
-    "ElectronTau":cms.InputTag(""),
-    "MuonTau":cms.InputTag("")
-    }
+#Prefix for output filename
+prefix = 'etteff'
 
-L25FilterDict={
-    "DoubleIsoTau":(cms.InputTag("hltFilterL25PixelTracksLeadingTrackPtCutDoubleTau"),cms.InputTag("hltFilterL25PixelTracksIsolationDoubleTau")),
-    "IsoElecIsoTau":(cms.InputTag("hltFilterL25PixelTracksLeadingTrackPtCutElectronTau"),cms.InputTag("hltFilterL25PixelTracksIsolationElectronTau")),
-    "NewSingleTauMET":(cms.InputTag("hltFilterL25PixelTracksLeadingTrackPtCutSingleTauMET"),cms.InputTag("hltFilterL25PixelTracksIsolationSingleTauMET")),
-    "SingleTau":(cms.InputTag(""),cms.InputTag("")),
-    "DoubleTau":(cms.InputTag(""),cms.InputTag("")),
-    "SingleTauMET":(cms.InputTag(""),cms.InputTag("")),
-    "ElectronTau":(cms.InputTag(""),cms.InputTag("")),
-    "MuonTau":(cms.InputTag(""),cms.InputTag(""))
-    }
+#Use L1Calosim
+docalosim = True
+
+#Use HLTTauV1 table
+dohlt = True
 
 
-"""
-End the dictionary definitions, start the process definition
 
-"""
+filename = "%s_%s" % (prefix,eidqual)
+if highpurity:
+  filename+="_highpurity"
+if nopixel:
+  filename+="_nopixel"
+filename += ".root"
 
 
+#Start defining the process
 process = cms.Process("TEST")
 
 process.load("Configuration.StandardSequences.Geometry_cff")
@@ -111,93 +63,121 @@ process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 process.load("FWCore/MessageService/MessageLogger_cfi")
 
 """
-Automatically load a list of files from ZEEData based on the data string.
-If you don't want to use ZEE RelVal data, then you'll need to comment out this section and add a command instead to import your own data source...
+File load section.
+As above, if the "readFiles" list already contains a list of files we'll use that.
+Alternatively, we will either:
+  execute a python file list file (syntax 'file:my_filelist_cfi.py')
+  expand a local list of root files (syntax 'glob:/path/*.root')
+  look up files from DBS (syntax '/full/dataset/name')
 """
-from ElectroWeakAnalysis.TauTriggerEfficiency.ZEEData_cfi import DataDict
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
-readFiles = cms.untracked.vstring()
-secFiles = cms.untracked.vstring() 
-process.source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
-readFiles.extend(DataDict[data])
-process.source = source
-"""
-...end of data load section.
-"""
+from ElectroWeakAnalysis.TauTriggerEfficiency.DBSFetch import DBSFetch
+if not len(readFiles):
+  if data.startswith('file:'):
+    data = data.split(':')[1]
+    x={}
+    print "Reading python filelist:",data
+    execfile(data,globals(),x)
+    readFiles.extend(x['readFiles'])
+  elif data.startswith('glob:'):
+    data = data.split(':')[1]
+    print "Expanding file glob:",data
+    files = glob.glob(data)
+    files = ["file:%s"%(f) for f in files]
+    readFiles.extend(files)
+  else:
+    print "Performing DBS lookup:",data
+    readFiles.extend(DBSFetch.getFiles(data))
+else:
+  print "Using supplied filelist"
+process.source = cms.Source ("PoolSource",fileNames = readFiles)
 
 
-
+#Load the electron producer
 process.load("ElectroWeakAnalysis.TauTriggerEfficiency.ElectronProducer_cff")
-
 process.eidCutBasedExt.electronQuality = eidqual
 
-"""
-Define the main analysis process.
-Note that a number of parameters not found in the TTEffAnalyzer are set here. These are to support triggers with extra filters, when I get round to moving that functionality into the main tree. For the moment they don't matter.
 
-Because of the CMS insistence on using CMS primitives not python primitives the dictionaries have to contain these.
-"""
+#Define the main analysis process.
 
 process.ETTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
-        PFTauCollection         = cms.InputTag("ElectronProducer","Electrons"),
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles:Tau"),
+        PFTauCollection         = cms.InputTag("ElectronProducer"),
+        PFTauIsoCollection      = cms.InputTag("None"),
+        L1extraTauJetSource     = cms.InputTag("hltL1extraParticles:Tau"),
         L1extraCentralJetSource = cms.InputTag("hltL1extraParticles:Central"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
-	L1JetMatchingCone	= cms.double(0.5),
-        L2AssociationCollection = L2AssocDict[path],
+        L1GtReadoutRecord       = cms.InputTag("hltGtDigis"),
+        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap"),
+        L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
+        HltResults              = cms.InputTag("TriggerResults::HLT"),
+        L1JetMatchingCone       = cms.double(0.5),
+        L2AssociationCollection = cms.InputTag("hltL2TauIsolationProducer","L2TauIsolationInfoAssociator"),
         L2matchingDeltaR        = cms.double(0.3),
-        outputFileName          = cms.string("test_%s_%s_%d.root" %(path,eidqual,data)),
-        doFilter                = cms.bool(UseNewHLTDict[path]),
-        L1filter                = L1FilterDict[path],
-        L2filter                = L2FilterDict[path],
+        outputFileName          = cms.string(filename),
         l25JetSource            = cms.InputTag("hltL25TauPixelTracksConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauPixelTracksLeadingTrackPtCutSelector"),
         l25IsoSource            = cms.InputTag("hltL25TauPixelTracksIsolationSelector"),
         l25MatchingCone         = cms.double(0.3),
-        l25filter0              = L25FilterDict[path][0],
-        l25filter1              = L25FilterDict[path][1]
+        l1JetFilters            = cms.VInputTag(),
+        caloTauFilters          = cms.VInputTag()
                                         
 )
-process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLTFilter_cff")
-
-"""
-This list of HLTs should be suitable for electron analysis - weakest possible electron triggers.
-"""
-process.IncludedHLTs.HLTSelection = cms.VInputTag("HLT_IsoEle15_L1",
-                                                  "HLT_LooseIsoEle15_LW_L1R",
-                                                  "HLT_Ele10_SW_L1R",
-                                                  "HLT_DoubleIsoEle10_L1I"
-                                                  )
 
 """
 If we're using one of the new trigger types, we need to re-run the HLT. This section conditionally loads the necessary includes for this. Re-runs both the base HLT 2E30 trigger table and then an additional tau one.
 """
 
-if (UseNewHLTDict[path]):
+if docalosim:
+    print "Using L1calosim"
+    process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
+    process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
+    process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
+    process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
+    process.load("RecoTauTag.L1CaloSim.l1calosim_cfi")
+    process.l1CaloSim.AlgorithmSource = "RecHits" 
+    process.l1CaloSim.EmInputs = cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"), cms.InputTag("ecalRecHit","EcalRecHitsEE"))
+    process.l1CaloSim.DoBitInfo = cms.bool(True)
+    process.o = cms.Path(process.l1CaloSim)  
+
+if dohlt:
     print "Using new HLT"
     process.load("Configuration.StandardSequences.GeometryPilot2_cff")
     process.load("Configuration.StandardSequences.MagneticField_cff")
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-    process.GlobalTag.globaltag = 'STARTUP_V4::All'
+    process.GlobalTag.globaltag = 'IDEAL_V9::All'
     process.load("Configuration.StandardSequences.L1Emulator_cff")
     process.load("Configuration.StandardSequences.L1TriggerDefaultMenu_cff")
     process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
     process.load("HLTrigger.Configuration.HLT_2E30_cff")
     #process.load("DQMOffline.Trigger.Tau.HLTTau_V_Fixed_cff")
     process.load("ElectroWeakAnalysis.TauTriggerEfficiency.HLT_Tau_V1_cff")
+    
+    process.load("L1Trigger/Configuration/L1Config_cff")
+    process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
+    #process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1030/L1Menu_2008MC_2E30_Unprescaled_cff")
+    process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
+    process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
+    process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
+    process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
+    #process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet80")
+    #process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
+    process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis")
+    process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap")
+    process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles")
+    process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles")
 
+if nopixel:
+    print "Using full tracks"
+    process.hltL25TauJetPixelTracksAssociator.tracks=cms.InputTag("generalTracks")
+    process.hltL25TauPixelTracksConeIsolation.vertexSrc=cms.InputTag("offlinePrimaryVertices")
 
-"""
-Comment in whichever process you want to run.
+if highpurity:
+    print "Using High Purity Mode"
+    process.ElectronProducer.ptMinTrack=cms.double(0.5)
+    process.ElectronProducer.MaxIsoVar=cms.double(0.0)
+    process.ElectronProducer.OuterConeDR=cms.double(0.7)
 
-"""
+process.p = cms.Path(process.tteffL1GTSeed*process.ElectronProductionSequence*process.ETTEffAnalysis)
+if docalosim:
+    process.p = cms.Path(process.ElectronProductionSequence*process.l1CaloSim*process.ETTEffAnalysis)
 
-process.p = cms.Path(process.ElectronProductionSequence+process.IncludedHLTs+process.ETTEffAnalysis)
-
-#process.p = cms.Path(process.ElectronProductionSequence+process.ETTEffAnalysis)
-
-#process.p = cms.Path(process.ElectronProductionSequence+process.IncludedHLTs)
-
-#process.p = cms.Path(process.ElectronProductionSequence)
-
-#process.p = cms.Path(process.IncludedHLTs)
