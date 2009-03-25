@@ -286,346 +286,391 @@
 				<rMaterial name="materials:Peek"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="1.466*g/cm3" method="mixture by weight" name="TEC_ICC01LF" symbol=" ">
-			<MaterialFraction fraction="0.06004">
+		<CompositeMaterial density="1.218*g/cm3" method="mixture by weight" name="TEC_ICC01LF" symbol=" ">
+			<MaterialFraction fraction="0.04545">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02723">
+			<MaterialFraction fraction="0.03276">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="9e-05">
+			<MaterialFraction fraction="0.00011">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.05568">
+			<MaterialFraction fraction="0.06699">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.40496">
+			<MaterialFraction fraction="0.26301">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.03195">
+			<MaterialFraction fraction="0.03844">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.19123">
+			<MaterialFraction fraction="0.04788">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.23006">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.19944">
+			<MaterialFraction fraction="0.23995">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02761">
+			<MaterialFraction fraction="0.03322">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00178">
+			<MaterialFraction fraction="0.00214">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="3.989*g/cm3" method="mixture by weight" name="TEC_ICC2F" symbol=" ">
-			<MaterialFraction fraction="0.07501">
+		<CompositeMaterial density="3.355*g/cm3" method="mixture by weight" name="TEC_ICC2F" symbol=" ">
+			<MaterialFraction fraction="0.04734">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01944">
+			<MaterialFraction fraction="0.026">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
 			<MaterialFraction fraction="0.00012">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.03441">
+			<MaterialFraction fraction="0.04602">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.45676">
+			<MaterialFraction fraction="0.2773">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02281">
+			<MaterialFraction fraction="0.03051">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.12389">
+			<MaterialFraction fraction="0.04987">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.1657">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.24882">
+			<MaterialFraction fraction="0.3328">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01653">
+			<MaterialFraction fraction="0.02211">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
 			<MaterialFraction fraction="0.00222">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.969*g/cm3" method="mixture by weight" name="TEC_ICC35F" symbol=" ">
-			<MaterialFraction fraction="0.00884">
+		<CompositeMaterial density="3.200*g/cm3" method="mixture by weight" name="TEC_ICC35F" symbol=" ">
+			<MaterialFraction fraction="0.01212">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00807">
+			<MaterialFraction fraction="0.00749">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01962">
+			<MaterialFraction fraction="3e-05">
+				<rMaterial name="materials:Gold"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.0182">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.24429">
+			<MaterialFraction fraction="0.26402">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00947">
+			<MaterialFraction fraction="0.00425">
+				<rMaterial name="materials:Epoxy"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00879">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.11507">
+			<MaterialFraction fraction="0.01277">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.10676">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.58344">
+			<MaterialFraction fraction="0.55519">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01059">
+			<MaterialFraction fraction="0.00983">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00061">
+			<MaterialFraction fraction="0.00057">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.545*g/cm3" method="mixture by weight" name="TEC_ICC1SF" symbol=" ">
-			<MaterialFraction fraction="0.05066">
+		<CompositeMaterial density="2.183*g/cm3" method="mixture by weight" name="TEC_ICC1SF" symbol=" ">
+			<MaterialFraction fraction="0.03717">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0197">
+			<MaterialFraction fraction="0.02297">
+				<rMaterial name="materials:Aluminium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="9e-05">
+				<rMaterial name="materials:Gold"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.0271">
+				<rMaterial name="materials:Ceramic"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.27509">
+				<rMaterial name="materials:Copper"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.02695">
+				<rMaterial name="materials:Brass"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.03916">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.09757">
+				<rMaterial name="materials:Polyethylene"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.45429">
+				<rMaterial name="materials:T_FR4"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.01787">
+				<rMaterial name="materials:BGA"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00175">
+				<rMaterial name="materials:Nickel"/>
+			</MaterialFraction>
+		</CompositeMaterial>
+		<CompositeMaterial density="3.343*g/cm3" method="mixture by weight" name="TEC_ICC0F" symbol=" ">
+			<MaterialFraction fraction="0.05789">
+				<rMaterial name="materials:T_Kapton"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.02385">
+				<rMaterial name="materials:Aluminium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00014">
+				<rMaterial name="materials:Gold"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.04343">
+				<rMaterial name="materials:Ceramic"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.25615">
+				<rMaterial name="materials:Copper"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.02798">
+				<rMaterial name="materials:Brass"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.06098">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.19929">
+				<rMaterial name="materials:Polyethylene"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.30564">
+				<rMaterial name="materials:T_FR4"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.02194">
+				<rMaterial name="materials:BGA"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00272">
+				<rMaterial name="materials:Nickel"/>
+			</MaterialFraction>
+		</CompositeMaterial>
+		<CompositeMaterial density="2.865*g/cm3" method="mixture by weight" name="TEC_ICC46F" symbol=" ">
+			<MaterialFraction fraction="0.04776">
+				<rMaterial name="materials:T_Kapton"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00874">
+				<rMaterial name="materials:Aluminium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00012">
+				<rMaterial name="materials:Gold"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.03324">
+				<rMaterial name="materials:Ceramic"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.2646">
+				<rMaterial name="materials:Copper"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.01026">
+				<rMaterial name="materials:Brass"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.05032">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.14008">
+				<rMaterial name="materials:Polyethylene"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.42377">
+				<rMaterial name="materials:T_FR4"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.01886">
+				<rMaterial name="materials:BGA"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00224">
+				<rMaterial name="materials:Nickel"/>
+			</MaterialFraction>
+		</CompositeMaterial>
+		<CompositeMaterial density="2.115*g/cm3" method="mixture by weight" name="TEC_ICC1B" symbol=" ">
+			<MaterialFraction fraction="0.02528">
+				<rMaterial name="materials:T_Kapton"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.02524">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
 			<MaterialFraction fraction="8e-05">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02324">
+			<MaterialFraction fraction="0.03771">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.39314">
+			<MaterialFraction fraction="0.2752">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02311">
+			<MaterialFraction fraction="0.02962">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.08367">
+			<MaterialFraction fraction="0.16436">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.38958">
+			<MaterialFraction fraction="0.42028">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01532">
+			<MaterialFraction fraction="0.02079">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0015">
+			<MaterialFraction fraction="0.00144">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="4.208*g/cm3" method="mixture by weight" name="TEC_ICC0F" symbol=" ">
-			<MaterialFraction fraction="0.07309">
+		<CompositeMaterial density="3.157*g/cm3" method="mixture by weight" name="TEC_ICC35B" symbol=" ">
+			<MaterialFraction fraction="0.01025">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01895">
+			<MaterialFraction fraction="0.00704">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00011">
+			<MaterialFraction fraction="3e-05">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.03451">
+			<MaterialFraction fraction="0.01871">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.43038">
+			<MaterialFraction fraction="0.26067">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02223">
+			<MaterialFraction fraction="0.00428">
+				<rMaterial name="materials:Epoxy"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00826">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.15833">
+			<MaterialFraction fraction="0.0108">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.11119">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.24282">
+			<MaterialFraction fraction="0.55824">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01743">
+			<MaterialFraction fraction="0.01005">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00216">
+			<MaterialFraction fraction="0.00048">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.963*g/cm3" method="mixture by weight" name="TEC_ICC46F" symbol=" ">
-			<MaterialFraction fraction="0.04998">
+		<CompositeMaterial density="2.916*g/cm3" method="mixture by weight" name="TEC_ICC0LB" symbol=" ">
+			<MaterialFraction fraction="0.04027">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00846">
+			<MaterialFraction fraction="0.03318">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00011">
+			<MaterialFraction fraction="0.0001">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.03214">
+			<MaterialFraction fraction="0.04808">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.33378">
+			<MaterialFraction fraction="0.2504">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00992">
+			<MaterialFraction fraction="0.03892">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.13545">
+			<MaterialFraction fraction="0.04242">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.17716">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.40975">
+			<MaterialFraction fraction="0.3454">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01824">
+			<MaterialFraction fraction="0.02218">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00217">
+			<MaterialFraction fraction="0.00189">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.967*g/cm3" method="mixture by weight" name="TEC_ICC1B" symbol=" ">
-			<MaterialFraction fraction="0.05465">
+		<CompositeMaterial density="2.868*g/cm3" method="mixture by weight" name="TEC_ICC2B" symbol=" ">
+			<MaterialFraction fraction="0.03474">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.018">
+			<MaterialFraction fraction="0.02862">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="5e-05">
+			<MaterialFraction fraction="9e-05">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02688">
+			<MaterialFraction fraction="0.04148">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.44666">
+			<MaterialFraction fraction="0.23894">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02111">
+			<MaterialFraction fraction="0.03358">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.11717">
+			<MaterialFraction fraction="0.03659">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.15283">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.29961">
+			<MaterialFraction fraction="0.41232">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01482">
+			<MaterialFraction fraction="0.01918">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00103">
+			<MaterialFraction fraction="0.00163">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.954*g/cm3" method="mixture by weight" name="TEC_ICC35B" symbol=" ">
-			<MaterialFraction fraction="0.00988">
+		<CompositeMaterial density="3.096*g/cm3" method="mixture by weight" name="TEC_ICC46B" symbol=" ">
+			<MaterialFraction fraction="0.04246">
 				<rMaterial name="materials:T_Kapton"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00752">
+			<MaterialFraction fraction="0.01272">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.01999">
-				<rMaterial name="materials:Ceramic"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.24203">
-				<rMaterial name="materials:Copper"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.00882">
-				<rMaterial name="materials:Brass"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.11881">
-				<rMaterial name="materials:Polyethylene"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.58153">
-				<rMaterial name="materials:T_FR4"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.01074">
-				<rMaterial name="materials:BGA"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.00069">
-				<rMaterial name="materials:Nickel"/>
-			</MaterialFraction>
-		</CompositeMaterial>
-		<CompositeMaterial density="2.647*g/cm3" method="mixture by weight" name="TEC_ICC0LB" symbol=" ">
-			<MaterialFraction fraction="0.03001">
-				<rMaterial name="materials:T_Kapton"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.03654">
-				<rMaterial name="materials:Aluminium"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.05296">
-				<rMaterial name="materials:Ceramic"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.23549">
-				<rMaterial name="materials:Copper"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.04287">
-				<rMaterial name="materials:Brass"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.19514">
-				<rMaterial name="materials:Polyethylene"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.38046">
-				<rMaterial name="materials:T_FR4"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.02444">
-				<rMaterial name="materials:BGA"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.00208">
-				<rMaterial name="materials:Nickel"/>
-			</MaterialFraction>
-		</CompositeMaterial>
-		<CompositeMaterial density="3.543*g/cm3" method="mixture by weight" name="TEC_ICC2B" symbol=" ">
-			<MaterialFraction fraction="0.06254">
-				<rMaterial name="materials:T_Kapton"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.02059">
-				<rMaterial name="materials:Aluminium"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="6e-05">
+			<MaterialFraction fraction="0.0001">
 				<rMaterial name="materials:Gold"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02984">
+			<MaterialFraction fraction="0.03072">
 				<rMaterial name="materials:Ceramic"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.44122">
+			<MaterialFraction fraction="0.238">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.02416">
+			<MaterialFraction fraction="0.01492">
 				<rMaterial name="materials:Brass"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.10996">
+			<MaterialFraction fraction="0.04473">
+				<rMaterial name="materials:Peek"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.12221">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.29666">
+			<MaterialFraction fraction="0.47552">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0138">
+			<MaterialFraction fraction="0.01664">
 				<rMaterial name="materials:BGA"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00117">
-				<rMaterial name="materials:Nickel"/>
-			</MaterialFraction>
-		</CompositeMaterial>
-		<CompositeMaterial density="3.060*g/cm3" method="mixture by weight" name="TEC_ICC46B" symbol=" ">
-			<MaterialFraction fraction="0.03275">
-				<rMaterial name="materials:T_Kapton"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.01287">
-				<rMaterial name="materials:Aluminium"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="7e-05">
-				<rMaterial name="materials:Gold"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.03108">
-				<rMaterial name="materials:Ceramic"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.28523">
-				<rMaterial name="materials:Copper"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.0151">
-				<rMaterial name="materials:Brass"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.12365">
-				<rMaterial name="materials:Polyethylene"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.48114">
-				<rMaterial name="materials:T_FR4"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.01684">
-				<rMaterial name="materials:BGA"/>
-			</MaterialFraction>
-			<MaterialFraction fraction="0.00128">
+			<MaterialFraction fraction="0.002">
 				<rMaterial name="materials:Nickel"/>
 			</MaterialFraction>
 		</CompositeMaterial>
@@ -884,17 +929,17 @@
 				<rMaterial name="materials:Fibre_Ribbon"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="0.539*g/cm3" method="mixture by weight" name="TEC_AlignRing" symbol=" ">
-			<MaterialFraction fraction="0.08861">
+		<CompositeMaterial density="0.587*g/cm3" method="mixture by weight" name="TEC_AlignRing" symbol=" ">
+			<MaterialFraction fraction="0.08142">
 				<rMaterial name="materials:Epoxy"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00027">
+			<MaterialFraction fraction="0.08142">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.09454">
+			<MaterialFraction fraction="0.08687">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.81658">
+			<MaterialFraction fraction="0.75029">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
