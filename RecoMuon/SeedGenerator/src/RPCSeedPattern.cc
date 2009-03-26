@@ -829,7 +829,10 @@ void RPCSeedPattern::checkSimplePattern(const edm::EventSetup& eSetup)
         double deltaRwithBz = fabs(deltaBz * meanRadius / meanBz);
         cout << "deltaR with Bz is " << deltaRwithBz << endl;
 
-        meanPt = 0.01 * meanRadius * meanBz * 0.3;
+        if(isClockwise == 0)
+            meanPt = upper_limit_pt;
+        else
+            meanPt = 0.01 * meanRadius * meanBz * 0.3 * isClockwise;
         if(fabs(meanPt) > upper_limit_pt)
             meanPt = upper_limit_pt * meanPt / fabs(meanPt);
         cout << " meanRadius is " << meanRadius << endl;
@@ -919,8 +922,8 @@ void RPCSeedPattern::checkSegmentAlgorithmSpecial(const edm::EventSetup& eSetup)
         }
     }
     // Cancel the Z direction check
-    cout << "Cancel the Z direction check" << endl;
-    isGoodPattern = 1;
+    //cout << "Cancel the Z direction check" << endl;
+    //isGoodPattern = 1;
 
     // Check the pattern
     if(isStraight2[0] == true)
@@ -958,21 +961,10 @@ void RPCSeedPattern::checkSegmentAlgorithmSpecial(const edm::EventSetup& eSetup)
     }
     else
     {
-        // Get meanPt
-        meanPt = 0.01 * meanRadius2[0] * meanMagneticField2[0].z() * 0.3;
-        cout << " meanRadius is " << meanRadius2[0] << ", with meanBz " << meanMagneticField2[0].z() << endl;
-        cout << " meanPt is " << meanPt << endl;
-        if(fabs(meanPt) > upper_limit_pt)
-            meanPt = upper_limit_pt * meanPt / fabs(meanPt);
-
-
         // Get clockwise direction
         GlobalVector vec[2];
-        for(unsigned int i = 1; i <= 2; i++) 
-        {
-            GlobalVector vec_temp((theRecHits[i]->globalPosition().x()-Center2[0].x()), (theRecHits[i]->globalPosition().y()-Center2[0].y()), (theRecHits[i]->globalPosition().z()-Center2[0].z()));
-            vec[i-1] = vec_temp;
-        }
+        vec[0] = GlobalVector((entryPosition.x()-Center2[0].x()), (entryPosition.y()-Center2[0].y()), (entryPosition.z()-Center2[0].z()));
+        vec[1] = GlobalVector((leavePosition.x()-Center2[0].x()), (leavePosition.y()-Center2[0].y()), (leavePosition.z()-Center2[0].z()));
         isClockwise = 0;
         if((vec[1].phi()-vec[0].phi()).value() > 0)
             isClockwise = -1;
@@ -980,6 +972,13 @@ void RPCSeedPattern::checkSegmentAlgorithmSpecial(const edm::EventSetup& eSetup)
             isClockwise = 1;
 
         cout << "Check isClockwise is : " << isClockwise << endl;
+
+        // Get meanPt
+        meanPt = 0.01 * meanRadius2[0] * meanMagneticField2[0].z() * 0.3 * isClockwise;
+        cout << " meanRadius is " << meanRadius2[0] << ", with meanBz " << meanMagneticField2[0].z() << endl;
+        cout << " meanPt is " << meanPt << endl;
+        if(fabs(meanPt) > upper_limit_pt)
+            meanPt = upper_limit_pt * meanPt / fabs(meanPt);
 
         // Check the initial 3 segments
         cout << "entryPosition: " << entryPosition << endl;
@@ -1157,7 +1156,7 @@ TrajectorySeed RPCSeedPattern::createFakeSeed(int& isGoodSeed, const edm::EventS
     for(ConstMuonRecHitContainer::const_iterator iter=theRecHits.begin(); iter!=theRecHits.end(); iter++)
         container.push_back((*iter)->hit()->clone());
 
-    TrajectorySeed theSeed(*seedTSOS, container, oppositeToMomentum);
+    TrajectorySeed theSeed(*seedTSOS, container, alongMomentum);
     isGoodSeed = isGoodPattern;
 
     delete seedTSOS;
@@ -1178,7 +1177,6 @@ TrajectorySeed RPCSeedPattern::createSeed(int& isGoodSeed, const edm::EventSetup
     MuonPatternRecoDumper debug;
 
     //double theMinMomentum = 3.0;
-
     //if(fabs(meanPt) < lower_limit_pt) 
         //meanPt = lower_limit_pt * meanPt / fabs(meanPt) ;
 
@@ -1189,7 +1187,7 @@ TrajectorySeed RPCSeedPattern::createSeed(int& isGoodSeed, const edm::EventSetup
     if(isClockwise == 0)
         Charge = 0;
     else
-        Charge=(int)(meanPt*(-isClockwise)/fabs(meanPt));
+        Charge=(int)(meanPt/fabs(meanPt));
 
     // Get the reference recHit, DON'T use the recHit on 1st layer(inner most layer) 
     const ConstMuonRecHitPointer best = BestRefRecHit();
@@ -1258,7 +1256,7 @@ TrajectorySeed RPCSeedPattern::createSeed(int& isGoodSeed, const edm::EventSetup
         container.push_back((*iter)->hit()->clone());
     }
 
-    TrajectorySeed theSeed(*seedTSOS, container, oppositeToMomentum);
+    TrajectorySeed theSeed(*seedTSOS, container, alongMomentum);
     isGoodSeed = isGoodPattern;
 
     delete seedTSOS;
