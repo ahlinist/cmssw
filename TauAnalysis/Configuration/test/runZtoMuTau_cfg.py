@@ -17,9 +17,7 @@ process.GlobalTag.globaltag = 'IDEAL_V9::All'
 # needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
-process.load("TauAnalysis.Configuration.producePatLayer1_cff")
-process.load("TauAnalysis.RecoTools.pftauPatSelectorForMuTau_cfi")
-process.load("TauAnalysis.CandidateTools.muTauPairProducer_cff")
+process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 
@@ -29,8 +27,12 @@ from TauAnalysis.Configuration.sampleDefinitionsZtoMuTau_cfi import *
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoMuTau.root')
+)
+
+process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
+  fileName = cms.untracked.string('muTauSkim_patTuple.root')
 )
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
@@ -43,7 +45,7 @@ process.saveZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 #)
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(100)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -60,7 +62,10 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/selEvents_alfredo.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Configuration/test/muTauSkim.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/selEvents_alfredo.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_Zmumu.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_WplusJets.root' 
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -97,17 +102,16 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatLayer1ForTauAnalyses
-                     +process.selectPFTausForMuTau
-                     +process.produceMuTauPairs
-                     +process.produceMuTauPairsLooseMuonIsolation
-#                     +process.printList  
+process.p = cms.Path( process.producePatTuple
+#                    +process.printList            # uncomment to enable print-out of generator level particles
+#                    +process.content              # uncomment to enable dump of event content after PAT-tuple production
+#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoMuTau
-                     +process.saveZtoMuTau )
+                     +process.saveZtoMuTauPlots )
 
 # import utility function to enable factorization
 #from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
 #enableFactorization_runZtoMuTau(process)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()

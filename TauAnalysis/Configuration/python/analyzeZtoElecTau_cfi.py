@@ -264,8 +264,10 @@ elecTauEventDump = cms.PSet(
 
   genParticleSource = cms.InputTag('genParticles'),
   genTauJetSource = cms.InputTag('tauGenJets'),
-  electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
-  tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  #electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
+  electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
+  #tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  tauSource = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
   diTauCandidateSource = cms.InputTag('allElecTauPairs'),
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
