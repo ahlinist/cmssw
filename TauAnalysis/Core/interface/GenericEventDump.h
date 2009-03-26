@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: GenericEventDump.h,v 1.4 2009/02/26 15:40:26 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.5 2009/03/16 10:25:22 veelken Exp $
  *
  */
 
@@ -38,8 +38,16 @@ class GenericEventDump : public EventDumpBase
   // destructor
   virtual ~GenericEventDump();
 
+  // derrived-class method for print-out of event level information
+  virtual void analyze(const edm::Event&, const edm::EventSetup&, 
+		       const EventDumpBase::filterResults_type&, const EventDumpBase::filterResults_type&, double);
+
  protected:
-//--- functions to be used by derrived classes
+//--- function to count types of particles faking reconstructed electrons,
+//    muons and tau-jets
+  void countFakeParticles(const edm::Event&);
+
+//--- print functions to be used by derrived classes
   virtual void printEventHeaderInfo(const edm::Event&, double) const;
   virtual void printEventTriggerInfo(const edm::Event&) const;
 
@@ -128,6 +136,35 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag pfChargedHadronSource_;
   edm::InputTag pfGammaSource_;
   edm::InputTag pfNeutralHadronSource_;
+
+//--- count different types of particles faking reconstructed electrons,
+//    muons and tau-jets
+  unsigned numRecoElectronsMatchingGenMuons_;
+  unsigned numRecoElectronsMatchingGenElectrons_;
+  unsigned numRecoElectronsMatchingGenTauJets_;
+  unsigned numRecoElectronsMatchingGenBottomQuarks_;
+  unsigned numRecoElectronsMatchingGenCharmQuarks_;
+  unsigned numRecoElectronsMatchingGenGluons_;
+  unsigned numRecoElectronsMatchingGenLightQuarks_;
+  unsigned numRecoElectronsUndeterminedGenMatch_;
+
+  unsigned numRecoMuonsMatchingGenMuons_;
+  unsigned numRecoMuonsMatchingGenElectrons_;
+  unsigned numRecoMuonsMatchingGenTauJets_;
+  unsigned numRecoMuonsMatchingGenBottomQuarks_;
+  unsigned numRecoMuonsMatchingGenCharmQuarks_;
+  unsigned numRecoMuonsMatchingGenGluons_;
+  unsigned numRecoMuonsMatchingGenLightQuarks_;
+  unsigned numRecoMuonsUndeterminedGenMatch_;
+
+  unsigned numRecoTauJetsMatchingGenMuons_;
+  unsigned numRecoTauJetsMatchingGenElectrons_;
+  unsigned numRecoTauJetsMatchingGenTauJets_;
+  unsigned numRecoTauJetsMatchingGenBottomQuarks_;
+  unsigned numRecoTauJetsMatchingGenCharmQuarks_;
+  unsigned numRecoTauJetsMatchingGenGluons_;
+  unsigned numRecoTauJetsMatchingGenLightQuarks_;
+  unsigned numRecoTauJetsUndeterminedGenMatch_;
 };
 
 #endif       

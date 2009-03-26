@@ -17,6 +17,8 @@
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 
+#include "PhysicsTools/Utilities/interface/deltaR.h"
+
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
@@ -64,9 +66,234 @@ GenericEventDump::GenericEventDump(const edm::ParameterSet& cfg)
   pfNeutralHadronSource_ = getInputTag(cfg, "pfNeutralHadronSource");
 }
 
+void printMatchingGenParticleTypes(const char* header_matched, 
+				   unsigned numMatchingMuons, 
+				   unsigned numMatchingElectrons, 
+				   unsigned numMatchingTauJets,
+				   unsigned numMatchingBottomQuarks,
+				   unsigned numMatchingCharmQuarks,
+				   unsigned numMatchingGluons,
+				   unsigned numMatchingLightQuarks,
+				   const char* header_unmatched, 
+				   unsigned numUndeterminedMatches,
+				   std::ostream* stream)
+{
+  if ( stream ) {
+    *stream << header_matched << ":" << std::endl;
+    *stream << " Muons = " << numMatchingMuons << std::endl;
+    *stream << " Electrons = " << numMatchingElectrons << std::endl;
+    *stream << " Tau-Jets = " << numMatchingTauJets << std::endl;
+    *stream << " b-Quarks = " << numMatchingBottomQuarks << std::endl;
+    *stream << " c-Quarks = " << numMatchingCharmQuarks << std::endl;
+    *stream << " Gluons = " << numMatchingGluons << std::endl;
+    *stream << " u,d,s-Quarks = " << numMatchingLightQuarks << std::endl;
+    *stream << header_unmatched << " = " << numUndeterminedMatches << std::endl;
+    *stream << std::endl;
+  }
+}
+
 GenericEventDump::~GenericEventDump()
 {
-// nothing to be done yet...
+//--- print counts of different types of particles faking reconstructed electrons,
+//    muons and tau-jets
+  printMatchingGenParticleTypes("Number of reconstructed Electrons matching generated", 
+				numRecoElectronsMatchingGenMuons_, 
+				numRecoElectronsMatchingGenElectrons_,
+				numRecoElectronsMatchingGenTauJets_,
+				numRecoElectronsMatchingGenBottomQuarks_,
+				numRecoElectronsMatchingGenCharmQuarks_,
+				numRecoElectronsMatchingGenGluons_,
+				numRecoElectronsMatchingGenLightQuarks_,
+				"Number of reconstructed Electrons not matched to generator level information",
+				numRecoElectronsUndeterminedGenMatch_,
+				outputStream_);
+  printMatchingGenParticleTypes("Number of reconstructed Muons matching generated", 
+				numRecoMuonsMatchingGenMuons_, 
+				numRecoMuonsMatchingGenElectrons_,
+				numRecoMuonsMatchingGenTauJets_,
+				numRecoMuonsMatchingGenBottomQuarks_,
+				numRecoMuonsMatchingGenCharmQuarks_,
+				numRecoMuonsMatchingGenGluons_,
+				numRecoMuonsMatchingGenLightQuarks_,
+				"Number of reconstructed Muons not matched to generator level information",
+				numRecoMuonsUndeterminedGenMatch_,
+				outputStream_);
+  printMatchingGenParticleTypes("Number of reconstructed Tau-Jets matching generated", 
+				numRecoTauJetsMatchingGenMuons_, 
+				numRecoTauJetsMatchingGenElectrons_,
+				numRecoTauJetsMatchingGenTauJets_,
+				numRecoTauJetsMatchingGenBottomQuarks_,
+				numRecoTauJetsMatchingGenCharmQuarks_,
+				numRecoTauJetsMatchingGenGluons_,
+				numRecoTauJetsMatchingGenLightQuarks_,
+				"Number of reconstructed Tau-Jets not matched to generator level information",
+				numRecoTauJetsUndeterminedGenMatch_,
+				outputStream_);
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+void GenericEventDump::analyze(const edm::Event& evt, const edm::EventSetup& es, 
+			       const EventDumpBase::filterResults_type& filterResults_cumulative, 
+			       const EventDumpBase::filterResults_type& filterResults_individual, 
+			       double eventWeight) 
+{
+  //std::cout << "<GenericEventDump::analyze>:" << std::endl;
+
+  EventDumpBase::analyze(evt, es, filterResults_cumulative, filterResults_individual, eventWeight);
+
+  countFakeParticles(evt);
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+bool matchesGenParticleType(const reco::GenParticleCollection& genParticleCollection, int pdgId)
+{
+  for ( reco::GenParticleCollection::const_iterator genParticle = genParticleCollection.begin(); 
+	genParticle != genParticleCollection.end(); ++genParticle ) {
+
+//--- genParticle with pdgId given as function argument contained in collection
+    if ( genParticle->pdgId() == pdgId ) return true;
+  }
+
+//--- genParticle with pdgId given as function argument **not** contained in collection
+  return false;
+}
+  
+void countMatchingGenParticleTypes(const reco::Particle::LorentzVector& recoMomentum,
+				   const edm::Event& evt,
+				   const edm::InputTag& genParticleSrc,
+				   const edm::InputTag& genTauJetSrc,
+				   unsigned& numMatchingMuons, 
+				   unsigned& numMatchingElectrons, 
+				   unsigned& numMatchingTauJets,
+				   unsigned& numMatchingBottomQuarks,
+				   unsigned& numMatchingCharmQuarks,
+				   unsigned& numMatchingGluons,
+				   unsigned& numMatchingLightQuarks,
+				   unsigned& numUndeterminedMatches)
+{
+//--- select genParticles matching direction of reconstructed particle
+//    within cone of size dR = 0.5;
+//    require generated transverse momentum to be at least half of reconstructed transverse momentum
+  edm::Handle<edm::View<reco::GenParticle> > genParticleCollection;
+  evt.getByLabel(genParticleSrc, genParticleCollection);
+  reco::GenParticleCollection matchingGenParticles;
+  for ( edm::View<reco::GenParticle>::const_iterator genParticle = genParticleCollection->begin(); 
+	genParticle != genParticleCollection->end(); ++genParticle ) {
+
+//--- skip "documentation line" entries
+//    (copied over to reco::GenParticle from HepMC product)
+    if ( genParticle->status() == 3 ) continue;
+
+    if ( genParticle->pt() > 0.50*recoMomentum.pt() &&
+	 reco::deltaR(genParticle->p4(), recoMomentum) < 0.5 ) {
+      matchingGenParticles.push_back(*genParticle);
+    }
+  }
+
+//--- select genTauJets matching direction of reconstructed particle
+//    within cone of size dR = 0.5; 
+//    require generated visible momentum of tau-jet to be at least half of reconstructed momentum
+  edm::Handle<edm::View<reco::GenJet> > genTauJetCollection;
+  evt.getByLabel(genTauJetSrc, genTauJetCollection);
+  reco::GenJetCollection matchingGenTauJets;
+  for ( edm::View<reco::GenJet>::const_iterator genTauJet = genTauJetCollection->begin(); 
+	genTauJet != genTauJetCollection->end(); ++genTauJet ) {
+
+    if ( genTauJet->pt() > 0.50*recoMomentum.pt() &&
+	 reco::deltaR(genTauJet->p4(), recoMomentum) < 0.5 ) {
+      matchingGenTauJets.push_back(*genTauJet);
+    }
+  }
+
+//--- count matched generator level particles and tau-jets in the order
+//     electron, muon, tau-jet, b-quark, c-quark, gluon, uds-quarks;
+//    count also number of cases in which matching failed 
+//    (e.g. due to matching transverse momentum requirement)
+  if ( matchesGenParticleType(matchingGenParticles, 11) ) {
+    ++numMatchingMuons;
+  } else if ( matchesGenParticleType(matchingGenParticles, 13) ) {
+    ++numMatchingElectrons;
+  } else if ( matchingGenTauJets.size() >= 1 ) {
+    ++numMatchingTauJets;
+  } else if ( matchesGenParticleType(matchingGenParticles, 5) ) {
+    ++numMatchingBottomQuarks;
+  } else if ( matchesGenParticleType(matchingGenParticles, 4) ) {
+    ++numMatchingCharmQuarks;
+  } else if ( matchesGenParticleType(matchingGenParticles, 21) ) {
+    ++numMatchingGluons;
+  } else if ( matchesGenParticleType(matchingGenParticles, 1) ||
+	      matchesGenParticleType(matchingGenParticles, 2) ||
+	      matchesGenParticleType(matchingGenParticles, 3) ) {
+    ++numMatchingLightQuarks;
+  } else {
+    ++numUndeterminedMatches;
+  }
+}
+
+void GenericEventDump::countFakeParticles(const edm::Event& evt)
+{
+//--- count different types of particles faking reconstructed electrons
+  if ( patElectronSource_.label() != "" ) {
+    edm::Handle<pat::ElectronCollection> patElectrons;
+    evt.getByLabel(patElectronSource_, patElectrons);
+    for ( pat::ElectronCollection::const_iterator patElectron = patElectrons->begin(); 
+	  patElectron != patElectrons->end(); ++patElectron ) {
+      countMatchingGenParticleTypes(patElectron->p4(), 
+				    evt, genParticleSource_, genTauJetSource_,
+				    numRecoElectronsMatchingGenMuons_, 
+				    numRecoElectronsMatchingGenElectrons_,
+				    numRecoElectronsMatchingGenTauJets_,
+				    numRecoElectronsMatchingGenBottomQuarks_,
+				    numRecoElectronsMatchingGenCharmQuarks_,
+				    numRecoElectronsMatchingGenGluons_,
+				    numRecoElectronsMatchingGenLightQuarks_,
+				    numRecoElectronsUndeterminedGenMatch_);
+    }
+  }
+
+//--- count different types of particles faking reconstructed muons
+  if ( patMuonSource_.label() != "" ) {
+    edm::Handle<pat::MuonCollection> patMuons;
+    evt.getByLabel(patMuonSource_, patMuons);
+    for ( pat::MuonCollection::const_iterator patMuon = patMuons->begin(); 
+	  patMuon != patMuons->end(); ++patMuon ) {
+      countMatchingGenParticleTypes(patMuon->p4(), 
+				    evt, genParticleSource_, genTauJetSource_,
+				    numRecoMuonsMatchingGenMuons_, 
+				    numRecoMuonsMatchingGenElectrons_,
+				    numRecoMuonsMatchingGenTauJets_,
+				    numRecoMuonsMatchingGenBottomQuarks_,
+				    numRecoMuonsMatchingGenCharmQuarks_,
+				    numRecoMuonsMatchingGenGluons_,
+				    numRecoMuonsMatchingGenLightQuarks_,
+				    numRecoMuonsUndeterminedGenMatch_);
+    }
+  }
+
+//--- count different types of particles faking reconstructed tau-jets
+  if ( patTauSource_.label() != "" ) {
+    edm::Handle<pat::TauCollection> patTaus;
+    evt.getByLabel(patTauSource_, patTaus);
+    for ( pat::TauCollection::const_iterator patTau = patTaus->begin(); 
+	  patTau != patTaus->end(); ++patTau ) {
+      countMatchingGenParticleTypes(patTau->p4(), 
+				    evt, genParticleSource_, genTauJetSource_,
+				    numRecoTauJetsMatchingGenMuons_, 
+				    numRecoTauJetsMatchingGenElectrons_,
+				    numRecoTauJetsMatchingGenTauJets_,
+				    numRecoTauJetsMatchingGenBottomQuarks_,
+				    numRecoTauJetsMatchingGenCharmQuarks_,
+				    numRecoTauJetsMatchingGenGluons_,
+				    numRecoTauJetsMatchingGenLightQuarks_,
+				    numRecoTauJetsUndeterminedGenMatch_);
+    }
+  }
 }
 
 //
