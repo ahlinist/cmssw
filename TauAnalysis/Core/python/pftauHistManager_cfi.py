@@ -4,7 +4,7 @@ tauHistManager = cms.PSet(
   name = cms.string('tauHistManager'),
   type = cms.string('TauHistManager'),
       
-  tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  tauSource = cms.InputTag('allLayer1TausSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
 
   tauIndicesToPlot = cms.string('all'),
