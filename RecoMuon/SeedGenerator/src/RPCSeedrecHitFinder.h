@@ -1,5 +1,5 @@
-#ifndef RecoMuon_MuonSeedGenerator_RPCSeedrecHitFinder_H
-#define RecoMuon_MuonSeedGenerator_RPCSeedrecHitFinder_H
+#ifndef RecoMuon_SeedGenerator_RPCSeedrecHitFinder_H
+#define RecoMuon_SeedGenerator_RPCSeedrecHitFinder_H
 
 /** \class RPCSeedLayerFinder
  *  
