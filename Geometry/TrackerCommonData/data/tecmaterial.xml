@@ -801,11 +801,11 @@
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="0.212*g/cm3" method="mixture by weight" name="TEC_Skin" symbol=" ">
-			<MaterialFraction fraction="0.18497">
+		<CompositeMaterial density="1.352*g/cm3" method="mixture by weight" name="TEC_Skin" symbol=" ">
+			<MaterialFraction fraction="0.18681">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.81503">
+			<MaterialFraction fraction="0.81319">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
@@ -828,22 +828,25 @@
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="2.378*g/cm3" method="mixture by weight" name="TEC_BackDiskCF" symbol=" ">
+		<CompositeMaterial density="2.984*g/cm3" method="mixture by weight" name="TEC_BackDiskCF" symbol=" ">
 			<MaterialFraction fraction="1.0">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
 		<CompositeMaterial density="0.164*g/cm3" method="mixture by weight" name="TEC_ThermalShield" symbol=" ">
-			<MaterialFraction fraction="0.00385">
+			<MaterialFraction fraction="0.0039">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0037">
+			<MaterialFraction fraction="0.00374">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.24581">
+			<MaterialFraction fraction="0.21916">
 				<rMaterial name="tecmaterial:TEC_Nomex"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.74664">
+			<MaterialFraction fraction="0.01819">
+				<rMaterial name="materials:Aluminium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.75501">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
@@ -943,11 +946,17 @@
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="0.152*g/cm3" method="mixture by weight" name="Tk_SO_FC_C" symbol=" ">
-			<MaterialFraction fraction="0.17661">
+		<CompositeMaterial density="0.178*g/cm3" method="mixture by weight" name="Tk_SO_FC_C" symbol=" ">
+			<MaterialFraction fraction="0.13847">
+				<rMaterial name="materials:Aluminium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.00404">
+				<rMaterial name="materials:Copper"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.15144">
 				<rMaterial name="tecmaterial:TEC_Nomex"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.82339">
+			<MaterialFraction fraction="0.70605">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
