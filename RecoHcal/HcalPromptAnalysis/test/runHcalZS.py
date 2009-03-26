@@ -35,11 +35,12 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.myFilter = cms.EDFilter("MyFilter")
 
-#process.source = cms.Source("PoolSource",   
-process.source = cms.Source("HcalTBSource",  
+process.source = cms.Source("PoolSource",   
+#process.source = cms.Source("HcalTBSource",  
                             dropMetaData = cms.untracked.bool(True),
                             fileNames = cms.untracked.vstring(
-                            'file:/home/santanas/Data/HCAL/LocalRuns/RAW/USC_073751.root'
+                            '/store/data/Commissioning09/Cosmics/RAW/v1/000/077/037/0CF0E102-9009-DE11-8926-001617E30F58.root'
+                            #'file:/home/santanas/Data/HCAL/LocalRuns/RAW/USC_073751.root'
                             #'file:/home/santanas/Data/HCAL/LocalRuns/RAW/USC_073740.root'
                             #'/store/data/Commissioning08/Cosmics/RAW/v1/000/069/261/08C24831-AAAA-DD11-B6BD-001617E30D38.root'
                             #'/store/data/Commissioning08/Cosmics/RAW/v1/000/065/947/68153D94-A699-DD11-A1E0-000423D9970C.root' #ZS
@@ -61,11 +62,11 @@ process.source = cms.Source("HcalTBSource",
 #                                   )
 
 process.hcalZS = cms.EDAnalyzer ("HcalZS",
-                                 thresholdHB = cms.untracked.int32(7),
-                                 thresholdHE = cms.untracked.int32(7),
-                                 thresholdHO = cms.untracked.int32(7),
-                                 thresholdHF = cms.untracked.int32(7),
-                                 thresholdCalib = cms.untracked.int32(0)
+                                 thresholdHB = cms.untracked.int32(9),
+                                 thresholdHE = cms.untracked.int32(9),
+                                 thresholdHO = cms.untracked.int32(9),
+                                 thresholdHF = cms.untracked.int32(9),
+                                 thresholdCalib = cms.untracked.int32(255)
                                  )
 
 
