@@ -4,7 +4,7 @@ muonHistManager = cms.PSet(
   name = cms.string('muonHistManager'),
   type = cms.string('MuonHistManager'),
       
-  muonSource = cms.InputTag('allLayer1MuonsSelForTauAnalyses'),
+  muonSource = cms.InputTag('allLayer1MuonsSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
 
   dqmDirectory_store = cms.string('MuonQuantities'),

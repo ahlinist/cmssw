@@ -4,7 +4,7 @@ electronHistManager = cms.PSet(
   name = cms.string('electronHistManager'),
   type = cms.string('ElectronHistManager'),
       
-  electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
+  electronSource = cms.InputTag('allLayer1ElectronsSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
 
   dqmDirectory_store = cms.string('ElectronQuantities'),
