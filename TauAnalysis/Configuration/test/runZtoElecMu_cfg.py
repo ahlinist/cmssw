@@ -13,8 +13,7 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
-process.load("TauAnalysis.Configuration.producePatLayer1_cff")
-process.load("TauAnalysis.CandidateTools.elecMuPairProducer_cff")
+process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
 process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 
@@ -24,8 +23,12 @@ from TauAnalysis.Configuration.sampleDefinitionsZtoElecMu_cfi import *
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveZtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoElecMu.root')
+)
+
+process.saveZtoElecMuPatTuple = cms.OutputModule("PoolOutputModule",
+  fileName = cms.untracked.string('elecMuSkim_patTuple.root')
 )
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
@@ -81,10 +84,12 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatLayer1ForTauAnalyses
-                     +process.produceElecMuPairs
+process.p = cms.Path( process.producePatTuple
+#                    +process.printList             # uncomment to enable print-out of generator level particles
+#                    +process.content               # uncomment to enable dump of event content after PAT-tuple production
+#                    +process.saveZtoElecMuPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoElecMu
-                     +process.saveZtoElecMu )
+                     +process.saveZtoElecMuPlots )
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
