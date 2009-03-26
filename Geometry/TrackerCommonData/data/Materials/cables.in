@@ -363,50 +363,58 @@ Volumes per centimeter.
 ......................................................................
 ======================================================================
 
+
+
+
 o Bulkhead cables: Pixel input/output
   ------------------------------------
 MC Volume: 30308.3 cm^3
 
-(1-2) Cooling pipes: per unit length
-        Aluminium x-section (r=0.33-0.3 cm) = 0.0594 cm^2   
-        Coolant r=0.3 cm  => 0.2827 cm^2     
-        Barrel pipes: 20 
-        Encap pipes:  16
-        Flushing pipes: 4  => total 40 
-        Length = 80 cm 
+cables and cooling updated by alschmid 20090326:
+
+(1-2) Pipes between PP0 and PP1:
+      18 cooling, 12 gas, 16 thermal screen pipes =46 pieces
+      material copper, inner diameter 10mm, outer diam. 12mm
+      length between PP0 and PP1 approx 1m.
+      => 34.55cm3 of copper per pipe
+         80cm3 coolant
 (3-4) Copper power cables
-      Here I have to improvise and extrapolate from the pixel barrel Al
-      cables and the Si strip tracker cables...
-      I estimate:
-        ratio (total pixel)/(pixel barrel) = 5 : 3 
-        - pixel barrel cables have 3 cm^2 cross-section Al, 
-          so outside cables may have 1.5 * 3 cm^2 Cu for barrel, 
-          ==> total x-sect 7.5 cm^2, length = 80cm ==> V = 600 cm^3
-          Insulation: ~970 cm^3 (factor as in MS_Cu60 cable)
+      cable specifications available on twiki page:
+      https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
+      1meter is in the cable channel area which results in
+      16kg copper  ==  1780cm3
+      3 kg PE  = 3160cm3 
+
 (5-6) Optical ribbon
        Number of fibers: for barrel, I calculated 576 fibers, 
        i.e. total = 960 fibers -> 80 ribbons, length 80 cm
 
 
 ......................................................................
-# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"    30380.980   -1
-* 1 "Cooling pipes"           "Steel-008"         14.48   20    COL
-* 2 "Coolant"                 "C6F14"             76.0    20    COL
-* 3 "Copper power cables"       "Copper"          600.0     1   CAB
-* 4 "Power cable insulation"    "Polyethylene"    970.0     1   CAB
+# "Bulkhead pixel in/out-put"  "Tk_panels_mid1"    30308.3   -1
+* 1 "Cooling pipes"           "Copper"            34.55    46   COL
+* 2 "Coolant"                 "C6F14"             80.0     18   COL
+* 3 "Copper power cables"       "Copper"          1780      1   CAB
+* 4 "Power cable insulation"    "Polyethylene"    3160      1   CAB
 * 5 "Optical Fibers"             "Quartz"        1.27E-4  960   CAB
 * 6 "Ribbon shield"              "Polyethylene"   8.1e-3   80   CAB
 ......................................................................
 ======================================================================
 
+
+
+
 o Bulkhead cables: Pixel cables/connectors
   ----------------------------------------
 MC Volume: 70285.7 cm3
 
-(1-2) Copper power cables (neglect Al cables to connectors here)
-          ==> total x-sect 7.5 cm^2, 
-          length = 2*pi*r(~50cm)* 0.25 = ~80 cm ==> 600 cm^3
-          Insulation: ~970 cm^3 (factor as in MS_Cu60 cable)
+copper cables updated 20090326 by alschmid
+(1-2) Copper power cables:
+      cable specifications available on twiki page:
+      https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
+      1meter is in the PP0 area which results in
+      16kg copper  ==  1780cm3
+      3 kg PE  = 3160cm3 
 (3-4) Optical ribbon
        Number of fibers: for barrel, I calculated 576 fibers, 
        i.e. total = 960 fibers -> 80 ribbons, length 80 cm
@@ -418,9 +426,9 @@ MC Volume: 70285.7 cm3
         28 stacks of 5 connectors each -> 140
 (7-8) Optoconnectors - as in strip detector
 ......................................................................
-# "Bulkhead pixel connectors"  "Tk_panels_mid2"  70513.251 -1
-* 1 "Copper power cables"       "Copper"         600.0     1   CAB
-* 2 "Power cable insulation"    "Polyethylene"   970.0     1   CAB
+# "Bulkhead pixel connectors"  "Tk_panels_mid2"  70285.7 -1
+* 1 "Copper power cables"       "Copper"         1780      1   CAB
+* 2 "Power cable insulation"    "Polyethylene"   3160      1   CAB
 * 3 "Optical Fibers"            "Quartz"        1.27E-4  960   CAB
 * 4 "Ribbon shield"             "Polyethylene"   8.1e-3   80   CAB
 * 5 "Power connector"           "T_Kapton"       10.2    140   CAB
@@ -429,6 +437,8 @@ MC Volume: 70285.7 cm3
 * 8 "Optoconnector"             "Copper"         0.446    80   CAB    
 ......................................................................
 ======================================================================
+
+
 
 o Bulkhead cables: TEC cables
   ----------------------------------------

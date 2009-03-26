@@ -318,37 +318,37 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial density="0.370000*g/cm3" method="mixture by weight" name="Tk_panels_mid1" symbol=" ">
-      <MaterialFraction fraction="0.085670">
-        <rMaterial name="materials:Steel-008"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.449650">
-        <rMaterial name="materials:C6F14"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.177500">
-        <rMaterial name="materials:Copper"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.287140">
-        <rMaterial name="materials:Polyethylene"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.000040">
-        <rMaterial name="materials:Quartz"/>
-      </MaterialFraction>
-    </CompositeMaterial>
-    <CompositeMaterial density="0.178000*g/cm3" method="mixture by weight" name="Tk_panels_mid2" symbol=" ">
-      <MaterialFraction fraction="0.197860">
-        <rMaterial name="materials:Copper"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.216350">
-        <rMaterial name="materials:Polyethylene"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.000030">
-        <rMaterial name="materials:Quartz"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.585760">
-        <rMaterial name="materials:T_Kapton"/>
-      </MaterialFraction>
-    </CompositeMaterial>
+  <CompositeMaterial name="Tk_panels_mid1" density="1.17876*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1e-05">
+      <rMaterial name="materials:Quartz"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.08405">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.84501">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.07094">
+      <rMaterial name="materials:C6F14"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="Tk_panels_mid2" density="0.35866*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1e-05">
+      <rMaterial name="materials:Quartz"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.14595">
+      <rMaterial name="materials:T_Kapton"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.11911">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.73492">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+
     <CompositeMaterial density="0.221000*g/cm3" method="mixture by weight" name="Tk_panels_up" symbol=" ">
       <MaterialFraction fraction="0.281640">
         <rMaterial name="trackermaterial:CAB_Al36"/>
