@@ -709,12 +709,12 @@ For the connectors 70% Kapton and 30% Copper is estimated
 
 o Skin
   ------------------
-MC Volume: 4485.44 cm3 all TEC
+MC Volume: 5608.2595 cm3 all TEC
 
 ...................................................................
-# "TEC Skin"		"TEC_Skin"	4485.44		112136
-* 1 "CF Skin"         "Carbon fibre str."   457.73     	 1	 SUP
-* 2 "HF Shield"       "Aluminium"   	   65.02     	 1	 ELE
+# "TEC Skin"		"TEC_Skin"	5608.2595		-1
+* 1 "CF Skin"         "Carbon fibre str."  3647.82     	 1	 SUP
+* 2 "HF Shield"       "Aluminium"   	   524.52    	 1	 ELE
 
 ....................................................................
 =====================================================================
@@ -796,7 +796,7 @@ MCVolume: 2818.74 cm3 (for all TEC)
 ....................................................................................
 #   "TEC_BackDiskCF"    "TEC_BackDiskCF"	2818.74         2818.74
 * 1 "CF Skin"              "Carbon fibre str."     3822.09  1 SUP
-* 2 "Bones"                "Carbon fibre str."     144.38   1 SUP
+* 2 "Bones"                "Carbon fibre str."     144.38   8 SUP
 ....................................................................................
 ====================================================================================
 o TEC_ThermalShield
@@ -807,11 +807,12 @@ MCVolume: 158218 cm3 (for all TEC)
 note that the MC volume is maller because there is not enough space in TEC mothervolume.
 
 ....................................................................................
-#   "TEC Thermal Shield"         "TEC_ThermalShield"             158218	158218
-* 1 "Nomex Disk"              "TEC_Nomex"           	    219990.32  1 SUP
+#   "TEC Thermal Shield"      "TEC_ThermalShield"           156815    -1
+* 1 "Nomex Disk"              "TEC_Nomex"           	    193961.83  1 SUP
 * 2 "CF Skin"          	      "Carbon fibre str."           11466.27   1 SUP
 * 3 "Tiltmeter cable"         "Copper"                      10.71      1 ELE
 * 4 "Tiltmeter cable sup"     "Polyethylene"		    105.26     1 ELE
+* 5 "HF shield"               "Aluminium"                   172.94     1 ELE
 ....................................................................................
 ====================================================================================
 o TEC_Tiltmeter
@@ -947,9 +948,11 @@ o TEC Frontplate
   (1) Carbon fibre skins 2 * 0.02 cm 
   (2) NOMEX core, 0.5 cm thick
 ...................................................................
-# "TEC Frontplate"     "Tk_SO_FC_C"          19749.6    36573.4
-* 1 "CF skins 0.2 mm"  "Carbon fibre str."    731.47     2       SUP
+# "TEC_Frontplate"     "Tk_SO_FC_C"          19656.     -1
+* 1 "CF skins 0.2 mm"  "Carbon fibre str."   1462.94     1       SUP
 * 2 "Nomex core"       "TEC_Nomex"           18286.7     1       SUP
+* 3 "HF shield"        "Aluminium"           179.58	 1	 ELE
+* 4 "Grounding strips" "Copper"		     1.580       1       ELE
 ....................................................................
 =====================================================================
 
