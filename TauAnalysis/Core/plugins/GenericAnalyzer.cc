@@ -487,7 +487,7 @@ void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 //--- if requested, dump event information 
   for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
 	it != eventDumps_.end(); ++it ) {
-    const EventDumpBase* eventDump = (*it);
+    EventDumpBase* eventDump = (*it);
     eventDump->analyze(iEvent, iSetup, filterResults_cumulative, filterResults_individual, eventWeight);
   }
 }

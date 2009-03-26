@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: EventDumpBase.h,v 1.1 2009/01/22 16:30:02 veelken Exp $
+ * $Id: EventDumpBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
  *
  */
 
@@ -30,10 +30,10 @@ class EventDumpBase
   // destructor
   virtual ~EventDumpBase();
 
-  // methods for print-out of event level information
+  // base-class method for print-out of event level information
   typedef std::vector<std::pair<std::string, bool> > filterResults_type;
   virtual void analyze(const edm::Event&, const edm::EventSetup&, 
-		       const filterResults_type&, const filterResults_type&, double) const;
+		       const filterResults_type&, const filterResults_type&, double);
 
  protected:
   virtual void print(const edm::Event&, const edm::EventSetup&, 
