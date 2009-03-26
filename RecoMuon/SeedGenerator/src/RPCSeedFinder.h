@@ -1,5 +1,5 @@
-#ifndef RecoMuon_SeedGenerator_RPCSeedFinder_H
-#define RecoMuon_SeedGenerator_RPCSeedFinder_H
+#ifndef RecoMuon_MuonSeedGenerator_RPCSeedFinder_H
+#define RecoMuon_MuonSeedGenerator_RPCSeedFinder_H
 
 
 /** \class RPCSeedFinder
@@ -16,7 +16,7 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Framework/interface/EventSetup.h>
 #include <vector>
-#include <algorithm>
+//#include <algorithm>
 
 namespace edm {class EventSetup;}
 

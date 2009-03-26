@@ -3,7 +3,7 @@
 // Package:    RPCSeedGenerator
 // Class:      RPCSeedGenerator
 // 
-/**\class RPCSeedGenerator RPCSeedGenerator.cc MyMTCCAnalyzer/RPCSeedGenerator/src/RPCSeedGenerator.cc
+/**\class RPCSeedGenerator RecoMuon/SeedGenerator/src/RPCSeedGenerator.cc
 
 Description: <one line class summary>
 
