@@ -537,7 +537,17 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << "  leadingTrackFinding = " << patTau->tauID("leadingTrackFinding") << std::endl;
       *outputStream_ << "  leadingTrackPtCut = " << patTau->tauID("leadingTrackPtCut") << std::endl;
       *outputStream_ << "  trackIsolation = " << patTau->tauID("trackIsolation") << std::endl;
+      double sumPtIsolationConeTracks = 0.;
+      for ( reco::TrackRefVector::const_iterator isolationTrack = patTau->isolationTracks().begin();
+	    isolationTrack != patTau->isolationTracks().end(); ++isolationTrack ) {	  
+	sumPtIsolationConeTracks += (*isolationTrack)->pt();
+      }
+      *outputStream_ << "  trackIsolation (from isolation cone Tracks) = " << sumPtIsolationConeTracks << std::endl;
       *outputStream_ << "  ecalIsolation = " << patTau->tauID("ecalIsolation") << std::endl;
+      *outputStream_ << "  pfCandidateIsolation = " << patTau->particleIso() << std::endl;
+      *outputStream_ << "  pfChargedHadronIsolation = " << patTau->chargedParticleIso() << std::endl;
+      *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralParticleIso() << std::endl;
+      *outputStream_ << "  pfGammaIsolation = " << patTau->gammaParticleIso() << std::endl;
       *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
       *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
       *outputStream_ << " vertex" << std::endl;
