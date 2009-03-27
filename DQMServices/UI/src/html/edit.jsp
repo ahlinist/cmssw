@@ -36,10 +36,10 @@ function validateSubSelectExp(c) {
       }
     } else if (sel.val() == "EXCL") {
       sel.css("color", "blue");
-      if (txa.val() == "") {
-        txa.attr("error", "Comment for EXCL subsystem must be set.");
-        txa.addClass("error");
-      }
+    //  if (txa.val() == "") {
+    //    txa.attr("error", "Comment for EXCL subsystem must be set.");
+    //    txa.addClass("error");
+    // }
     }
 }
 
@@ -80,6 +80,7 @@ $(document).ready( function () {
       },
       "Delete": function() { },
       "Apply": function() { },
+	  "Finish DQM": function() { },
     }
   });
 
@@ -132,10 +133,10 @@ $(document).ready( function () {
       }
     } else if (sel.val() == "EXCL") {
       sel.css("color", "blue");
-      if (txa.val() == "") {
-        txa.attr("error", "Comment for EXCL subsystem must be set.");
-        txa.addClass("error");
-      }
+     // if (txa.val() == "") {
+     //   txa.attr("error", "Comment for EXCL subsystem must be set.");
+     //   txa.addClass("error");
+     // }
     }
   };
 
@@ -172,7 +173,7 @@ $(document).ready( function () {
 
   $("#edit form .edit_l1t input[type=checkbox]").unbind("change").change(function () { validateL1T($(this).parent().parent()); });
 
-  var build_xml = function () {
+  var build_xml = function (stat) {
     var xml = "";
     var status = "";
 
@@ -180,12 +181,20 @@ $(document).ready( function () {
             if ($(o).attr("readonly")) return;
             xml += "\t<" +$(o).attr("name")+ ">" + escapeXML($(o).val()) + "</" +$(o).attr("name")+ ">\n";
     });
-
-    $("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
-      if ($(this).attr("readonly")) return;
-      status = $("#edit .edit_info select[name=RUN_STATUS]").val();
-      xml += "\t<RUN_STATUS>"+ status  +"</RUN_STATUS>\n";
-    });
+    if (stat!=null)
+	{
+	  if (stat=='OFFLINE') {status = 'SIGNOFF';}
+	  	else if (stat=='ONLINE') {status = 'OFFLINE';}
+		else if (stat=='SIGNOFF') {status = 'COMPLETED';}
+	  xml += "\t<RUN_STATUS>"+ status  +"</RUN_STATUS>\n";
+	
+	}else {
+				$("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
+				  if ($(this).attr("readonly")) return;
+				  status = $("#edit .edit_info select[name=RUN_STATUS]").val();
+				  xml += "\t<RUN_STATUS>"+ status  +"</RUN_STATUS>\n";
+				});
+			}
 
     $("#edit .edit_l1t input[type=checkbox]").each(function (i, o) {
 			if ($(o).attr("readonly")) return;
@@ -217,6 +226,7 @@ $(document).ready( function () {
     $('#edit').dialog('open');
     $('#edit').dialog('option', 'title', 'View/Edit Run #' + number);
 
+	$("button:contains('Finish')").hide();   
     $("button:contains('Apply')").hide();
     $("button:contains('Delete')").hide();
 
@@ -317,6 +327,13 @@ $(document).ready( function () {
 
         var real_role = "";
         var status = $(xml).find("RUN_STATUS").text();
+		if (status =='COMPLETED') 
+			{$("button:contains('Finish')").hide();}
+		else {
+				$("button:contains('Finish')").text('Finish '+status+' DQM');
+				$("button:contains('Finish')").val('Finish '+status+' DQM');
+			}
+
         var count_tags = parseInt($(xml).find("RUN_COUNT_TAGS").text());
         count_tags--;
      
@@ -365,7 +382,8 @@ $(document).ready( function () {
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("button:contains('Apply')").show();
+          $("button:contains('Finish')").show();
+		  $("button:contains('Apply')").show();
 
         } else if (real_role == "OFFLINE")  {
 
@@ -390,7 +408,8 @@ $(document).ready( function () {
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("button:contains('Apply')").show();
+          $("button:contains('Finish')").show();
+		  $("button:contains('Apply')").show();
 
         } else if (real_role == "EXPERT") {
 
@@ -421,7 +440,8 @@ $(document).ready( function () {
           $("#edit form .edit_sub_offline select").removeAttr("readonly");
           $("#edit form .edit_sub_offline select").removeAttr("disabled");
 
-          $("button:contains('Apply')").show();
+          $("button:contains('Finish')").show();
+		  $("button:contains('Apply')").show();
           $("button:contains('Delete')").show();
           
           if (status == "") {
@@ -454,7 +474,7 @@ $(document).ready( function () {
 
         $("button:contains('Apply'):visible").unbind("click").click(function () {
           var number = $("#edit form input[name=RUN_NUMBER]").val();
-          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>" + build_xml();
+          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>" + build_xml(null);
 					var err = $("#edit .error");
 					if (err.length > 0) {
 						$(err[0]).focus();
@@ -478,6 +498,36 @@ $(document).ready( function () {
               return;
             }
           });
+
+        });
+		
+        $("button:contains('Finish'):visible").unbind("click").click(function () {
+          var number = $("#edit form input[name=RUN_NUMBER]").val();
+          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>" + build_xml(status);
+					var err = $("#edit .error");
+					if (err.length > 0) {
+						$(err[0]).focus();
+						alert($(err[0]).attr("error"));
+						return;
+					};
+					xml = "<?xml version=\"1.0\"?>\n" + xml + "</RUN>";
+
+
+          $.ajax({
+            type: "POST",
+            url: "editprovider",
+            data: xml,
+            processData: false,
+            dataType: "xml",
+            error: function(o) {
+              errorMessage(o);
+            },
+            success: function(ret) {
+              $('#edit').dialog('close');
+              $("#flex1").flexReload();
+              return;
+            }
+          }); 
 
         });
 

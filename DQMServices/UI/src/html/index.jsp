@@ -613,7 +613,7 @@ function changeStatusTo(status) {
 
         <span id="dumpdatamenu"><a href="#">Dump Data</a>
           <ul>
-            <li><a href="#" onclick="dumpData('xml,elog', '', 'text/plain')">ELOG</a></li>
+            <li><a href="#" onclick="dumpData('xml,elog', '', 'text/plain')">Email</a></li>
             <li><a href="#" onclick="dumpData('xml,twiki', '', 'text/plain')">TWiki</a></li>
             <li><a href="#" onclick="dumpData('xml,text_csv', '', 'text/plain')">Text&nbsp;(CSV)</a></li>
             <li><a href="#" onclick="dumpData('xml,text_tsv', '', 'text/plain')">Text&nbsp;(TSV)</a></li>
