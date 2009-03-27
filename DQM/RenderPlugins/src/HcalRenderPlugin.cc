@@ -15,7 +15,6 @@
 #include "DQM/RenderPlugins/src/HcalRenderPlugin.h" 
 #include "DQM/RenderPlugins/src/utils.h"
 
-
 //---define parameters for HTR/Channel Plots
 #define MARGIN  1
 #define FEDS_X0 3
@@ -93,11 +92,13 @@ bool HcalRenderPlugin::applies(const DQMNet::CoreObject &o,
 
 void
 HcalRenderPlugin::preDraw (TCanvas * c,
-			      const DQMNet::CoreObject &o,
-			      const VisDQMImgInfo &i,
-			      VisDQMRenderInfo &r)
+			   const DQMNet::CoreObject &o,
+			   const VisDQMImgInfo &i,
+			   VisDQMRenderInfo &r)
 {
 
+  if (!applies(o,i))
+    return;
 #ifdef DEBUG 
   std::cout << "HcalRenderPlugin:preDraw " << o.name << std::endl; 
 #endif 
@@ -149,6 +150,9 @@ HcalRenderPlugin::postDraw (TCanvas * c,
 			       const DQMNet::CoreObject & o,
 			       const VisDQMImgInfo & i)
 {
+  
+  if (!applies(o,i))
+    return;
 
 #ifdef DEBUG 
   std::cout << "HcalRenderPlugin:postDraw " << o.name << std::endl; 
@@ -204,7 +208,23 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
   if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
     obj->SetMinimum(0);
 
-  
+  if (  ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) && 
+	 (o.name.find(" CapID") != std::string::npos)) ||
+	((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) && 
+	 (o.name.find(" Digi Shape") != std::string::npos))
+	)
+    {
+      obj->SetMinimum(0.);
+    }
+  if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
+    gPad->SetLogy(1);
+  if (o.name.find("DigiMonitor_Hcal/digi_info/# of Digis") !=std::string::npos)
+    {
+      gPad->SetLogy(1);
+      gStyle->SetOptStat("rmen");
+      obj->SetStats(kTRUE);
+    }
+
   return;
 
 } // preDrawTH1(...)
@@ -241,26 +261,85 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   if (o.name.find("reportSummaryMap" ) != std::string::npos)
     {
       gStyle->SetPalette(40,summaryColors);
-      obj->SetOption("col");
+      obj->SetOption("textcol");
     }
-  // green when = 0, red when =1 -- don't yet know how to get # of events in order to normalize
-
-  else if ( (o.name.find("SubPedestal") != std::string::npos )
-	    || (o.name.find("RawPedestal") != std::string::npos)
-	    || (o.name.find("Occupancy Map") != std::string::npos )
-
+  else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
+    {
+      gStyle->SetPalette(40,summaryColors);
+      obj->SetOption("colz");
+    }
+  
+  // Overall problem hot cells are plotted with error Fraction colors (0 = green, 1 = red)
+  else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
+	    (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
+	    (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
+	    (o.name.find("DigiMonitor_Hcal/problem_digis")!= std::string::npos ) ||
+	    (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
+	    (o.name.find("PedestalMonitor_Hcal/problem_pedestals")!=std::string::npos) ||
+	    (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
+	    (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
+	    (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
+	    (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")!= std::string::npos ) 
 	    )
     {
-      gStyle->SetPalette(1);
+      double scale = obj->GetBinContent(0,0);
+      if (scale>0)
+	{
+	  obj->Scale(1./scale);
+	  obj->SetMinimum(0.);
+	  obj->SetMaximum(1.);
+	}
+      //gStyle->SetPalette(20, errorFracColors);
+      setErrorColor();
+      obj->SetOption("colz");
+    }
+  
+  // Problem cell histograms should have maximum set to total number of events, but they don't get normalized
+  else if (// Hot Cell subdirectories
+	   (o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
+	   (o.name.find("HotCellMonitor_Hcal/hot_rechit_above_threshold/") != std::string::npos) ||
+	   (o.name.find("HotCellMonitor_Hcal/hot_rechit_always_above_threshold/") != std::string::npos) ||
+	   (o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
+	   // Dead Cell subdirectories
+	   (o.name.find("DeadCellMonitor_Hcal/dead_neighbortest")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!= std::string::npos ) 
+	   )
+    {
+      if (obj->GetBinContent(0,0))
+	{
+	  obj->SetMaximum(obj->GetBinContent(0,0));
+	  obj->SetMinimum(0.);
+	}
+      setErrorColor();
       obj->SetOption("colz");
     }
 
-  // green when high, red when low
-  else if ( (o.name.find("_abovePed") != std::string::npos )
-	    || (o.name.find("above_pedestal_Depth") != std::string::npos )
-	    )
+  else if ( 
+	   (
+	    (o.name.find("PedestalMonitor_Hcal/") != std::string::npos) &&
+	    (o.name.find("ADC") != std::string::npos) 
+	    ) 
+	   &&
+	   (o.name.find("Subtracted") == std::string::npos)
+	   )
     {
-      gStyle->SetPalette(20, standardColors);
+      // ADC pedestals should be centered at 3; set maximum to 2*3=6
+      obj->SetMinimum(0.);
+      if (
+	  (o.name.find("Pedestal Mean Map") != std::string::npos) ||
+	  (o.name.find("Pedestal Values Map") != std::string::npos)
+	  )
+	obj->SetMaximum(6.);
+      else if (
+	       (o.name.find("Pedestal RMS Map") != std::string::npos) ||
+	       (o.name.find("Pedestal Widths Map") != std::string::npos)
+	       )
+	obj->SetMaximum(2.);
+      
+      setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
       obj->SetOption("colz");
     }
 
@@ -276,7 +355,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   else if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Error and Warning") != std::string::npos ) ||
 	    (o.name.find("DataFormatMonitor/DCC Plots/All Evt") != std::string::npos )               ||
 	    (o.name.find("DataFormatMonitor/DCC Plots/DCC Nonzero") != std::string::npos )           
-	    // Certain plots dissappear when we include them in the OR. WTF?
+	    // Certain plots disappear when we include them in the OR. WTF?
 	    //(o.name.find("DataFormatMonitor/HTR Plots/BCN Inconsistent") != std::string::npos )           ||
 	    //(o.name.find("DataFormatMonitor/HTR Plots/EvN Inconsistent") != std::string::npos )           ||
 	    //(o.name.find("DataFormatMonitor/HTR Plots/HTR Error Word") != std::string::npos )           ||
@@ -287,32 +366,13 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
     gPad->SetLogz();
     gPad->SetGridx();
     gPad->SetGridy();}
-  else   // default is rainbow color
+  else   // default color is rainbow
     {
       gStyle->SetPalette(1);
       //gStyle->SetPalette(20, errorFracColors);
       obj->SetOption("colz");
+
     }
-
-  if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Status") != std::string::npos ) ||
-       (o.name.find("DeadCellMonitor/ ProblemDeadCells") != std::string::npos )         ){
-    if (obj->GetEntries() == 0) {
-      obj->SetStats(1111);
-      TText t;
-      t.DrawText(1,1,"No News is Good News."); }
-    else {
-      gPad->SetGridx();
-      gPad->SetGridy(); }}
-  
-  // This time, just rainbows.
-  if (o.name.find("DataFormatMonitor/") != std::string::npos ) {
-    gStyle->SetPalette(1);
-    obj->SetOption("colz");}
-
-
-
-///	    (o.name.find("DataFormatMonitor/HTR Plots/BCN Inconsistent") != std::string::npos )      ||
-///	    (o.name.find("DataFormatMonitor/HTR Plots/EvN Inconsistent") != std::string::npos )        
 
   return;
 } // preDrawTH2(...)
@@ -370,6 +430,8 @@ void HcalRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
   TH2* obj = dynamic_cast<TH2*>( o.object ); 
   assert( obj ); 
 
+
+  // Want to move colz palette, but this crashes code, and does not move the palette.  Hmm...
   obj->GetYaxis()->SetTickLength(0.0);
   obj->GetXaxis()->SetTickLength(0.0);
       
@@ -480,5 +542,125 @@ void HcalRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
     TText tx;
     tx.SetTextSize( 0.05);
     tx.DrawText(36, -4, "Crate / FED ID");}
-    
+
+  else if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Status") != std::string::npos ) ||
+       (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
+       (o.name.find("DigiMonitor_Hcal/problem_digis")!= std::string::npos ) ||
+       (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
+       (o.name.find("PedestalMonitor_Hcal/problem_pedestals")!=std::string::npos) ||
+       (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
+       (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
+       (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
+       (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")!= std::string::npos ) ||
+       (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
+       (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
+       (o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos) ||
+       ((o.name.find("DataFormatMonitor") !=std::string::npos) && (o.name.find("Hardware Watch Cells") !=std::string::npos))
+      ){
+    if ((obj->GetEntries()==0) ||
+	((obj->GetEntries()-obj->GetBinContent(0,0)) == 0) //underflow bin (0,0) stores ievt_; ignore this when checking for empty histograms?  nope, still doesn't work.  Dang!
+	)      
+      {
+	gStyle->SetOptStat(1111);
+	obj->SetStats(1111);
+	TText t;
+	t.DrawText(1,1,"No News is Good News."); }
+    else {
+      gPad->SetGridx();
+      gPad->SetGridy(); 
+    }
+  }
+
+  //drawEtaPhiLines(obj);
+
+  // Want to move colz palette, but this doesn't seem to work.  Hmm...
+  //std::string obj_option=obj->GetOption();
+  /*
+  TPaletteAxis *palette = 
+    (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+  if (palette)
+    {
+      palette->SetX1NDC(0.5);
+      palette->SetX2NDC(0.925);
+      palette->SetLabelSize(0.02);
+      palette->SetTitleOffset(0.5);
+      c->Modified();
+    }
+  */
 } // postDrawTH2(...)
+
+
+void HcalRenderPlugin::setRainbowColor(void)
+{
+  // This sets a rainbow scale, with finer gradations than the default
+  const Int_t NRGBs = 5;
+  const Int_t NCont = 100;
+  
+  // stops[NRGBs] determines the relative fraction points on the palette at which to
+  // define colors.  red, green, blue define colors at each point.
+  Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+  Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+  Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+  Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  gStyle->SetNumberContours(NCont);
+  return;
+} // setRainbow()
+
+
+
+void HcalRenderPlugin::setErrorColor(void)
+{
+  // This sets an error color scale:  green = 0-5%, then yellow-orange-red
+  const Int_t NRGBs = 6;
+  const Int_t NCont = 50;
+  
+  // stops[NRGBs] determines the relative fraction points on the palette at which to
+  // define colors.  red, green, blue define colors at each point.
+  Double_t stops[NRGBs] = { 0.00, 0.05, 0.40, 0.75, 0.95, 1.00};
+  Double_t red[NRGBs]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 0.60};
+  Double_t green[NRGBs] = { 1.00, 1.00, 0.67, 0.33, 0.00, 0.00};
+  Double_t blue[NRGBs]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00};
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  gStyle->SetNumberContours(NCont);
+  return;
+} // setRainbow()
+
+void HcalRenderPlugin::drawEtaPhiLines(TH2* obj)
+{
+  // I don't think we want these; it's easier just to zoom in from onlineDQM
+  TAxis *xaxis =obj->GetXaxis();
+  TAxis *yaxis=obj->GetYaxis();
+  if (xaxis->GetXmax()!=HCAL_ETAMAX) return;
+  if (xaxis->GetXmin()!=HCAL_ETAMIN) return;
+  if (yaxis->GetXmax()!=HCAL_PHIMAX) return;
+  if (yaxis->GetXmin()!=HCAL_PHIMIN) return;
+
+
+  TLine* vert=0;
+  TLine* horiz=0;
+  // Draw vertical lines
+        
+  for (int xx=int(xaxis->GetXmin());
+       xx<=int(xaxis->GetXmax()); ++xx)
+    {
+      if (xx<-42 || xx >= 42) continue;
+      vert = new TLine(xx+0.5,0.5,xx+0.5,72.5);
+      vert->SetLineStyle(3);
+      vert->Draw("same");
+    }
+  // Draw horizontal lines
+  for (int yy=int(yaxis->GetXmin()); yy<int(yaxis->GetXmax());++yy)
+    {
+      if (yy%4==0)
+	horiz = new TLine(-41.5,yy+0.5,41.5,yy+0.5);
+      else if (yy%2==0)
+	horiz = new TLine(-39.5,yy+0.5,39.5,yy+0.5);
+      else
+	    horiz = new TLine(-20.5,yy+0.5,20.5,yy+0.5);
+      horiz->SetLineStyle(3);
+      horiz->Draw("same");
+    }
+  return;
+} // void HcalRenderPlugin::drawEtaPhiLines(TH2* obj)
+
