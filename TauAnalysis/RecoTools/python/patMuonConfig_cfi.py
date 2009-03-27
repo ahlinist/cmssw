@@ -10,7 +10,8 @@ from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import *
 
 # add isolated HLT muon trigger to PAT trigger match sequence
 patTrigMatchMuon = cms.Sequence( patTrigMatchHLT1MuonNonIso + patTrigMatchHLT1MuonIso )
-patTrigMatch.replace(patTrigMatchHLT1MuonNonIso, patTrigMatchMuon)
+#patTrigMatch.replace(patTrigMatchHLT1MuonNonIso, patTrigMatchMuon)
+patTrigMatch._seq = patTrigMatch._seq * patTrigMatchHLT1MuonIso
 
 # increase size of muon isolation cone from default of deltaR = 0.3 to 0.6;
 # for muons to be considered "isolated", require:
