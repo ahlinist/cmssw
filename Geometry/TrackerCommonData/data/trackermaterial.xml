@@ -255,6 +255,43 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="Tk_Cables_PP1" density="2.07590*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.00998">
+      <rMaterial name="trackermaterial:TS_PowerCable"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.06704">
+      <rMaterial name="materials:Steel-008"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0">
+      <rMaterial name="materials:C6F14_3M_-15C"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.22783">
+      <rMaterial name="trackermaterial:CAB_Al60"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.01863">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.13358">
+      <rMaterial name="materials:C6F14_F2_-30C"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.10686">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.08857">
+      <rMaterial name="trackermaterial:T_RuggRibbon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.12643">
+      <rMaterial name="trackermaterial:CAB_Al48"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.21136">
+      <rMaterial name="trackermaterial:CAB_Al36"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.00972">
+      <rMaterial name="trackermaterial:TS_SignalCable"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+
   <CompositeMaterial name="Tk_Cables_PP1" density="1.37596*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.19950">
       <rMaterial name="trackermaterial:CAB_Al36"/>
