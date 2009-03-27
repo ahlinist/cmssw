@@ -10,12 +10,6 @@
    \date 18 May 2005
 */
 
-#include "DataFormats/Provenance/interface/PassID.h"
-#include "DataFormats/Provenance/interface/ReleaseVersion.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/src/WorkerParams.h"
-#include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
-
 #include "boost/shared_ptr.hpp"
 #include "boost/utility.hpp"
 
@@ -26,6 +20,8 @@
 namespace edm {
 
   class Worker;
+  struct ActivityRegistry;
+  struct WorkerParams;
 
   /**
      \class ModuleRegistry ModuleRegistry.h "edm/ModuleRegistry.h"
@@ -49,16 +45,10 @@ namespace edm {
     /** If the worker with that set of parameters does not exist,
         create it
         @note Workers are owned by this class, do not delete them*/
-    Worker*  getWorker(WorkerParams const&);
+    Worker* getWorker(WorkerParams const& p, std::string const& moduleLabel);
     void clear();
     
   private:
-    /// Get a unique name for the worker
-    /** Form a string to be used as a key in the map of workers */
-    void mangleWorkerParameters(ParameterSet const& parameterSet,
-				ProcessConfiguration const& processConfiguration,
-				std::string& result);
-
     /// the container of workers
     typedef std::map<std::string, boost::shared_ptr<Worker> > WorkerMap;
 

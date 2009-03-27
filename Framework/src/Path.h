@@ -30,7 +30,6 @@
 #include "FWCore/Framework/src/RunStopwatch.h"
 
 namespace edm {
-  class ParameterSet;
 
   class Path {
   public:
@@ -43,7 +42,6 @@ namespace edm {
     Path(int bitpos, std::string const& path_name,
 	 WorkersInPath const& workers,
 	 TrigResPtr trptr,
-	 ParameterSet const& proc_pset,
 	 ActionTable& actions,
 	 boost::shared_ptr<ActivityRegistry> reg,
 	 bool isEndPath);

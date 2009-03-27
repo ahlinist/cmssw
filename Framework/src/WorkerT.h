@@ -19,6 +19,8 @@ $Id$
 
 namespace edm {
 
+  class ProductRegistry;
+
   template <typename T>
   class WorkerT : public Worker {
   public:
@@ -44,6 +46,11 @@ namespace edm {
     T const& module() const {return *module_;}
 
   private:
+
+    virtual void registerAnyProducts_(ProductRegistry * productRegistry) {
+      module_->registerAnyProducts(module_, productRegistry);
+    }
+
     virtual bool implDoBegin(EventPrincipal& ep, EventSetup const& c,
                             CurrentProcessingContext const* cpc);
     virtual bool implDoEnd(EventPrincipal& ep, EventSetup const& c,
@@ -75,7 +82,6 @@ namespace edm {
     Worker(md, wp),
     module_(ed) {
     module_->setModuleDescription(md);
-    module_->registerAnyProducts(module_, wp.reg_);
   }
 
   template <typename T>

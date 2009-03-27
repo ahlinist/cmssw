@@ -47,6 +47,10 @@ namespace edm {
     Worker(ModuleDescription const& iMD, WorkerParams const& iWP);
     virtual ~Worker();
 
+    void registerAnyProducts(ProductRegistry * productRegistry) {
+      registerAnyProducts_(productRegistry);
+    }
+
     template <typename T>
     bool doWork(typename T::MyPrincipal&, EventSetup const& c,
 		CurrentProcessingContext const* cpc);
@@ -100,6 +104,9 @@ namespace edm {
     virtual void implEndJob() = 0;
 
   private:
+
+    virtual void registerAnyProducts_(ProductRegistry * productRegistry) = 0;
+
     virtual void implRespondToOpenInputFile(FileBlock const& fb) = 0;
     virtual void implRespondToCloseInputFile(FileBlock const& fb) = 0;
     virtual void implRespondToOpenOutputFiles(FileBlock const& fb) = 0;

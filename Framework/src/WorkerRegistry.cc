@@ -9,66 +9,44 @@
 
 static const char CVSId[] = "$Id$";
 
-
 #include "FWCore/Framework/src/WorkerRegistry.h"
 #include "FWCore/Framework/src/Worker.h"
 #include "FWCore/Framework/src/Factory.h"
+#include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
 
 namespace edm {
 
-WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg) :
-  m_workerMap(),
-  actReg_(areg)
-{
-}
+  WorkerRegistry::WorkerRegistry(boost::shared_ptr<ActivityRegistry> areg) :
+    m_workerMap(),
+    actReg_(areg)
+  {
+  }
 
-WorkerRegistry:: ~WorkerRegistry() {
-  m_workerMap.clear();
-}
+  WorkerRegistry:: ~WorkerRegistry() {
+    m_workerMap.clear();
+  }
 
-void WorkerRegistry::clear() {
-  m_workerMap.clear();
-}
+  void WorkerRegistry::clear() {
+    m_workerMap.clear();
+  }
 
-Worker* WorkerRegistry::getWorker(const WorkerParams& p) {
+  Worker* WorkerRegistry::getWorker(WorkerParams const& p, std::string const& moduleLabel) {
 
-  std::string workerid;
-  mangleWorkerParameters(*p.pset_, *p.processConfiguration_, workerid);
-
-  WorkerMap::iterator workerIt = m_workerMap.find(workerid);
+    WorkerMap::iterator workerIt = m_workerMap.find(moduleLabel);
   
-  // if the worker is not there, make it
-  if (workerIt == m_workerMap.end()){
+    // if the worker is not there, make it
+    if (workerIt == m_workerMap.end()){
     
-    std::auto_ptr<Worker> workerPtr=
-      Factory::get()->makeWorker(p,actReg_->preModuleConstructionSignal_,
-                                 actReg_->postModuleConstructionSignal_);
+      std::auto_ptr<Worker> workerPtr=
+        Factory::get()->makeWorker(p,actReg_->preModuleConstructionSignal_,
+                                   actReg_->postModuleConstructionSignal_);
     
-    workerPtr->setActivityRegistry(actReg_);
+      workerPtr->setActivityRegistry(actReg_);
 
-    // Transfer ownership of worker to the registry 
-    m_workerMap[workerid].reset(workerPtr.release());
-    return m_workerMap[workerid].get();
-    
-  } 
-  
-  return (workerIt->second.get());
-
+      // Transfer ownership of worker to the registry 
+      m_workerMap[moduleLabel].reset(workerPtr.release());
+      return m_workerMap[moduleLabel].get(); 
+    } 
+    return (workerIt->second.get());
+  }
 }
-
-
-void WorkerRegistry::mangleWorkerParameters(ParameterSet const& parameterSet,
-					      ProcessConfiguration const& processConfiguration,
-					      std::string& result) {
-
-  parameterSet.toString(result); 
-  result += processConfiguration.processName();
-  result += processConfiguration.releaseVersion();
-  result += processConfiguration.passID();
-
-}
-
-}
-
-
-
