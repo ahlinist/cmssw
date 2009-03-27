@@ -5,8 +5,6 @@
 
   Author: Jim Kowalkowski 28-01-06
 
-  $Id$
-
   An object of this type represents one path in a job configuration.
   It holds the assigned bit position and the list of workers that are
   an event must pass through when this parh is processed.  The workers

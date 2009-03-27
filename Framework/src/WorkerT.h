@@ -5,8 +5,6 @@
   
 WorkerT: Code common to all workers.
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include <memory>

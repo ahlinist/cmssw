@@ -3,11 +3,8 @@
    Implementation of class WorkerRegistry
 
    \author Stefano ARGIRO
-   \version $Id$
    \date 18 May 2005
 */
-
-static const char CVSId[] = "$Id$";
 
 #include "FWCore/Framework/src/WorkerRegistry.h"
 #include "FWCore/Framework/src/Worker.h"
