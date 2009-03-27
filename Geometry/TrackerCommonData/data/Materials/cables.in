@@ -655,7 +655,15 @@ Cooling Pipes TS --> ?? cm
 1 Rail Volume = 259.6 cm^3
 8 copies
 
---------> Still Missing: TS Cooling Pipes, TEC, PXB, PXF cables
+
+(13), (14) Copper power cables:
+           cable specifications available on twiki page:
+           https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
+           1meter is in the PP0 area which results in
+           24kg copper  ==  2670cm3
+           4.5 kg PE  = 4740cm3
+
+--------> Still Missing: TS Cooling Pipes, TEC,  cables
 
 .................................................................................
 # "Tracker Cables to PP1"           "Tk_Cables_PP1"   116407.5          -1
@@ -671,7 +679,9 @@ Cooling Pipes TS --> ?? cm
 * 10 "TS Cooling Pipes"             "Copper"               7.854E-3      0  COL
 * 11 "TS Cooling Fluid"             "C6F14_3M_-15C"        0.6362        0  COL
 * 12 "Inox Rail"                    "Steel-008"          259.6           8  SUP
-.................................................................................
+* 13 "Copper power cables"          "Copper"             2670.0          1  CAB
+* 14 "PE in power cables"           "Polyethylene"       4740.0          1  CAB
+..................................................................................
 =================================================================================
 
 
