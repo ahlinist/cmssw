@@ -13,8 +13,11 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
+# import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
+# import sequence for filling of histograms, cut-flow table
+# and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeZtoDiTau_cff")
 
 process.DQMStore = cms.Service("DQMStore")

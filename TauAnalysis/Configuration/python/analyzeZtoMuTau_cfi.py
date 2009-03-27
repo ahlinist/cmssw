@@ -285,8 +285,8 @@ muTauEventDump = cms.PSet(
   electronSource = cms.InputTag('allLayer1ElectronsSel'),
   #muonSource = cms.InputTag('allLayer1MuonsSel'),
   muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-  #tauSource = cms.InputTag('allLayer1PFTausSel'),
-  tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
+  tauSource = cms.InputTag('allLayer1TausSel'),
+  #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
   diTauCandidateSource = cms.InputTag('allMuTauPairs'),
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
@@ -299,7 +299,8 @@ muTauEventDump = cms.PSet(
   #output = cms.string("muTauEventDump.txt"),
   output = cms.string("std::cout"),
 
-  triggerConditions = cms.vstring("diTauCandidateForMuTauMt1METCut: passed_cumulative")
+  triggerConditions = cms.vstring("tauTrkIsoCut: rejected_cumulative")
+  #triggerConditions = cms.vstring("diTauCandidateForMuTauMt1METCut: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
