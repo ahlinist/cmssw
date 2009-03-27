@@ -17,8 +17,11 @@ process.GlobalTag.globaltag = 'IDEAL_V9::All'
 # needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
+# import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
+# import sequence for filling of histograms, cut-flow table
+# and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system

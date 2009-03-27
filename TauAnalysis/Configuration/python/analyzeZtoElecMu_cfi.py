@@ -248,11 +248,11 @@ elecMuEventDump = cms.PSet(
       
   genParticleSource = cms.InputTag('genParticles'),
   genTauJetSource = cms.InputTag('tauGenJets'),
-  #electronSource = cms.InputTag('allLayer1ElectronsSelForTauAnalyses'),
+  #electronSource = cms.InputTag('allLayer1ElectronsSel'),
   electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-  #muonSource = cms.InputTag('allLayer1MuonsSelForTauAnalyses'),
+  #muonSource = cms.InputTag('allLayer1MuonsSel'),
   muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-  tauSource = cms.InputTag('allLayer1PFTausSelForTauAnalyses'),
+  tauSource = cms.InputTag('allLayer1TausSel'),
   diTauCandidateSource = cms.InputTag('allElecMuPairs'),
   metSource = cms.InputTag('allLayer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
@@ -262,27 +262,6 @@ elecMuEventDump = cms.PSet(
   output = cms.string("std::cout"),
 
   triggerConditions = cms.vstring("diTauCandidateForElecMuZeroChargeCut: passed_cumulative")
-  #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
-  #                                "primaryEventVertex: rejected_cumulative",
-  #                                "primaryEventVertexQuality: rejected_cumulative",
-  #                                "primaryEventVertexPosition: rejected_cumulative",
-  #                                "tightElectronIdCut: rejected_cumulative",
-  #                                "electronEtaCut: rejected_cumulative",
-  #                                "electronPtCut: rejected_cumulative",
-  #                                "electronTrkIsoCut: rejected_cumulative",
-  #                                "electronEcalIsoCut: rejected_cumulative",
-  #                                "electronTrkCut: rejected_cumulative",
-  #                                "electronTrkIPcut: rejected_cumulative",
-  #                                "globalMuonCut: rejected_cumulative",
-  #                                "muonEtaCut: rejected_cumulative",
-  #                                "muonPtCut: rejected_cumulative",
-  #                                "muonTrkIsoCut: rejected_cumulative",
-  #                                "muonEcalIsoCut: rejected_cumulative",
-  #                                "muonAntiPionCut: rejected_cumulative",
-  #                                "muonTrkIPcut: rejected_cumulative",
-  #                                "diTauCandidateForElecMuAntiOverlapVeto: rejected_cumulative",
-  #                                "diTauCandidateForElecMuAcoplanarityCut: rejected_cumulative",
-  #                                "diTauCandidateForElecMuZeroChargeCut: rejected_cumulative")
 )
 
 #--------------------------------------------------------------------------------
