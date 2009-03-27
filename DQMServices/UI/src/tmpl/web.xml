@@ -58,6 +58,16 @@
     <!-- Servlets go below -->
 
     <servlet>
+      <servlet-name>XmlRpcServlet</servlet-name>
+      <servlet-class>org.apache.xmlrpc.webserver.XmlRpcServlet</servlet-class>
+      <init-param>
+        <param-name>enabledForExtensions</param-name>
+        <param-value>true</param-value>
+        <description>Sets, whether the servlet supports vendor extensions for XML-RPC.</description>
+      </init-param>
+    </servlet>
+
+    <servlet>
       <servlet-name>RunRegisterData</servlet-name>
       <servlet-class>cms.dqm.workflow.DataProvider</servlet-class>
       <init-param>
@@ -168,6 +178,11 @@
       <servlet-name>HeartBeat</servlet-name>
       <servlet-class>cms.dqm.workflow.HeartBeat</servlet-class>
     </servlet>
+
+    <servlet-mapping>
+      <servlet-name>XmlRpcServlet</servlet-name>
+      <url-pattern>/xmlrpc</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
       <servlet-name>BatchEditProvider</servlet-name>
