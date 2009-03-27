@@ -42,6 +42,8 @@
       </classpath>
     </javac>
 
+    <copy file="tmpl/XmlRpcServlet.properties" todir="build/org/apache/xmlrpc/webserver" />
+
     <!-- Remove Encoder file -->
     <delete file="src/cms/dqm/workflow/Encoder.java" />
 
