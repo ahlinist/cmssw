@@ -1,6 +1,6 @@
 /*
- *  $Date: 2008/04/10 13:00:08 $
- *  $Revision: 1.5 $
+ *  $Date: 2009/01/09 10:23:14 $
+ *  $Revision: 1.7 $
  *  
  *  Filip Moorgat & Hector Naves 
  *  26/10/05
@@ -13,7 +13,6 @@
 
 #include "GeneratorInterface/TopRexInterface/interface/ToprexSource.h"
 #include "GeneratorInterface/TopRexInterface/interface/PYR.h"
-#include "GeneratorInterface/CommonInterface/interface/FindJets.h"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -34,8 +33,10 @@ using namespace std;
 //#include "CLHEP/HepMC/CBhepevt.h"
 
 
-#include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
-#include "GeneratorInterface/CommonInterface/interface/Txgive.h"
+//#include "GeneratorInterface/CommonInterface/interface/PythiaCMS.h"
+//#include "GeneratorInterface/CommonInterface/interface/Txgive.h"
+#include "GeneratorInterface/TopRexInterface/interface/PythiaCMS.h"
+#include "GeneratorInterface/TopRexInterface/interface/Txgive.h"
 
 
 HepMC::IO_HEPEVT conv;
@@ -142,7 +143,7 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
   //In the future, we will get the random number seed on each event and tell 
   // pythia to use that new seed
     cout << "----------------------------------------------" << endl;
-    cout << "Setting Pythia random number seed " << endl;
+    //  cout << "Setting Pythia random number seed " << endl;
     cout << "----------------------------------------------" << endl;
   edm::Service<RandomNumberGenerator> rng;
   randomEngine = fRandomEngine = &(rng->getEngine());
@@ -152,9 +153,9 @@ ToprexSource::ToprexSource( const ParameterSet & pset,
   call_pygive(sRandomSet.str());
 
  // srs insertion
-  //  cout << "TopReX start called OK" << endl;
-  call_toprex( "USER", "p", "p", 14000. );
-  // cout << "TopReX was called OK" << endl;
+    cout << "TopReX start called OK" << endl;
+     call_toprex( "USER", "p", "p", 14000. );
+   cout << "TopReX was called OK" << endl;
   call_pyinit( "USER", "p", "p", 14000. );
   //
   //     call_pretauola(-1);     // TAUOLA initialization
@@ -182,9 +183,6 @@ bool ToprexSource::produce(Event & e) {
 
     call_pyevnt();      // generate one event with Pythia
 
-    //        call_pretauola(0);       // tau-lepton decays with TAUOLA 
-
-    call_findjets();      // find jets 
     call_pyhepc( 1 );
     
     HepMC::GenEvent* evt = conv.read_next_event();
