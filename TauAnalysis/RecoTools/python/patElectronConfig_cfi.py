@@ -86,9 +86,9 @@ allLayer1Electrons.isoDeposits = cms.PSet(
 #
 allLayer1Electrons.addElectronID = cms.bool(True)
 allLayer1Electrons.electronIDSources = cms.PSet(
-   robust = cms.InputTag("elecIdCutBasedRobust"),
-   loose  = cms.InputTag("elecIdCutBasedLoose"),
-   tight  = cms.InputTag("elecIdCutBasedTight")        
+   robust = cms.InputTag("patElectronIds", "elecIdCutBasedRobust"),
+   loose  = cms.InputTag("patElectronIds", "elecIdCutBasedLoose"),
+   tight  = cms.InputTag("patElectronIds", "elecIdCutBasedTight")        
 )
 #
 # enable matching to HLT trigger information
