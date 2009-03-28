@@ -108,7 +108,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
 
 
 
- if(o.name.find("Roll_vs_Sector") != std::string::npos){/
+ if(o.name.find("Roll_vs_Sector") != std::string::npos){
   obj->GetXaxis()->SetNdivisions(-510);
    obj->GetYaxis()->SetNdivisions(-510);
    obj->GetXaxis()->CenterLabels();
