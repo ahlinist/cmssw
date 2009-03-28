@@ -13,7 +13,7 @@
 //
 // Original Author:  Ka Vang TSANG
 //         Created:  Tue Jul 22 15:29:01 CEST 2008
-// $Id: HcalTPGValidation.cc,v 1.3 2008/08/15 14:57:58 kvtsang Exp $
+// $Id: HcalTPGValidation.cc,v 1.4 2008/08/21 19:39:27 kvtsang Exp $
 //
 //
 
@@ -24,6 +24,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -40,8 +41,19 @@
 #include "CalibFormats/HcalObjects/interface/HcalTPGRecord.h"
 #include "CalibFormats/HcalObjects/interface/HcalTPGCoder.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "Geometry/CaloTopology/interface/HcalTopology.h"
 
-//TFileService
+//FE Error
+#include "DataFormats/FEDRawData/interface/FEDRawDataCollection.h"
+#include "DataFormats/FEDRawData/interface/FEDNumbering.h"
+#include "DataFormats/HcalDetId/interface/HcalElectronicsId.h"
+#include "EventFilter/HcalRawToDigi/interface/HcalDCCHeader.h"
+#include "EventFilter/HcalRawToDigi/interface/HcalHTRData.h"
+#include "CondFormats/HcalObjects/interface/HcalElectronicsMap.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbService.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
+
+//FileService
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
@@ -65,13 +77,36 @@ class HcalTPGValidation : public edm::EDAnalyzer {
       virtual void endJob() ;
 
       // ----------member data ---------------------------
-		 HcalTrigTowerGeometry theTrigTowerGeometry;
+		HcalTrigTowerGeometry theTrigTowerGeometry;
+            std::multimap<HcalTrigTowerDetId, HcalDetId> MapTrigerTower;
+		const HcalElectronicsMap *emap;
+		std::set<uint32_t> FrontEndErrors;
+
+		//--------------------
+		//Error Flag
+		// 1:	Matched 
+		// 2:	Mismatched e/et
+		// 3:	Data only
+		// 4: Emul only
+		// 5: Mismatched FG bit
+		// 6: Z.S. error
+		//--------------------
+		enum ErrorFlag {
+			ErrFlag_ZeroTP,
+			ErrFlag_Matched,
+			ErrFlag_MismatchedE,
+			ErrFlag_DataOnly,
+			ErrFlag_EmulOnly,
+			ErrFlag_MismatchedFG,
+			ErrFlag_ZS
+		};
 
 		TH2F *alldata_map;
 		TH2F *allemul_map;
 		TH2F *dataonly_map;
 		TH2F *emulonly_map;
 		TH2F *mismatch_map;
+		TH2F *mismatch_FG_map;
 		TH1F *alldata_et_HBHE;
 		TH1F *allemul_et_HBHE;
 		TH1F *alldata_et_HF;
@@ -80,6 +115,8 @@ class HcalTPGValidation : public edm::EDAnalyzer {
 		TH1F *emulonly_et_HBHE;
 		TH1F *dataonly_et_HF;
 		TH1F *emulonly_et_HF;
+		TH1F *emulZS_et_HBHE;
+		TH1F *emulZS_et_HF;
 		TH1F *data_FG_HF;
 		TH1F *data_FG_HBHE;
 		TH1F *emul_FG_HF;
@@ -88,14 +125,28 @@ class HcalTPGValidation : public edm::EDAnalyzer {
 		TH1F *data_FGet_HBHE;
 		TH1F *emul_FGet_HF;
 		TH1F *emul_FGet_HBHE;
+		TH2F *data_FG_et_HF;
+		TH2F *emul_FG_et_HF;
 
 		TH1F *errflag_HF;
 		TH1F *errflag_HBHE;
 		TH2F *etcorr_HF;
 		TH2F *etcorr_HBHE;
+		TH2F *etcorr2_HF;
+		TH2F *etcorr2_HBHE;
 
-		std::vector<int> DebugHF;
-		std::vector<int> DebugHBHE;
+		TH2F *emul_ZS_map;
+		TH1F *dataCollectionSize;
+		TH1F *emulCollectionSize;
+		TH1F *HFTSCollectionSize;
+		TH1F *HBHETSCollectionSize;
+
+		TH1F *dataSOI_HF;
+		TH1F *emulSOI_HF;
+		TH1F *dataSOI_HBHE;
+		TH1F *emulSOI_HBHE;
+
+		TH2F *HTRErrMap;
 };
 
 //
@@ -136,28 +187,48 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	mismatch_map->SetXTitle("ieta");
 	mismatch_map->SetYTitle("iphi");
 
-	errflag_HF = fs->make<TH1F>("errflag_HF","Error Flags (HF)",5,0.5,5.5);
+	mismatch_FG_map = fs->make<TH2F>("mismatch_FG_map","Mismatched FG bit",65,-32.5,32.5,80,0,80);
+	mismatch_FG_map->SetXTitle("ieta");
+	mismatch_FG_map->SetYTitle("iphi");
+
+	emul_ZS_map = fs->make<TH2F>("emul_ZS_map","Z.S. error",65,-32.5,32.5,80,0,80);
+	emul_ZS_map->SetXTitle("emul.ieta");
+	emul_ZS_map->SetYTitle("emul.iphi");
+
+	HTRErrMap = fs->make<TH2F>("HTRErrMap","HTR Errors",65,-32.5,32.5,80,0,80);
+	HTRErrMap->SetXTitle("ieta");
+	HTRErrMap->SetYTitle("iphi");
+
+	errflag_HF = fs->make<TH1F>("errflag_HF","Error Flags (HF)",6,0.5,6.5);
 	xaxis = errflag_HF->GetXaxis();
 	xaxis->SetBinLabel(1,"Matched");
 	xaxis->SetBinLabel(2,"Mismatched et");
 	xaxis->SetBinLabel(3,"Data only");
 	xaxis->SetBinLabel(4,"Emul only");
 	xaxis->SetBinLabel(5,"Mismatched FG bit");
+	xaxis->SetBinLabel(6,"Z.S.");
 
-	errflag_HBHE = fs->make<TH1F>("errflag_HBHE","Error Flags (HBHE)",5,0.5,5.5);
+	errflag_HBHE = fs->make<TH1F>("errflag_HBHE","Error Flags (HBHE)",6,0.5,6.5);
 	xaxis = errflag_HBHE->GetXaxis();
 	xaxis->SetBinLabel(1,"Matched");
 	xaxis->SetBinLabel(2,"Mismatched e");
 	xaxis->SetBinLabel(3,"Data only");
 	xaxis->SetBinLabel(4,"Emul only");
 	xaxis->SetBinLabel(5,"Mismatched FG bit");
+	xaxis->SetBinLabel(6,"Z.S.");
 
 	etcorr_HBHE = fs->make<TH2F>("etcorr_HBHE","HB/HE",50,0,256,50,0,256);
 	etcorr_HBHE->SetXTitle("data.e");
 	etcorr_HBHE->SetYTitle("emul.e");
-	etcorr_HF = fs->make<TH2F>("etcorr_HF","HF",256,0,256,256,0,256);
+	etcorr_HF = fs->make<TH2F>("etcorr_HF","HF",56,0,56,56,0,56);
 	etcorr_HF->SetXTitle("data.et");
 	etcorr_HF->SetYTitle("emul.et");
+	etcorr2_HBHE = fs->make<TH2F>("etcorr2_HBHE","HB/HE",50,0,256,10,0,10);
+	etcorr2_HBHE->SetXTitle("data.e");
+	etcorr2_HBHE->SetYTitle("data.e-emul.e");
+	etcorr2_HF = fs->make<TH2F>("etcorr2_HF","HF",56,0,56,10,0,10);
+	etcorr2_HF->SetXTitle("data.et");
+	etcorr2_HF->SetYTitle("data.et-emul.et");
 
 	alldata_et_HBHE = fs->make<TH1F>("alldata_et_HBHE","All Data (HB/HE)",256,0,256);
 	alldata_et_HBHE->SetXTitle("data.e");
@@ -175,6 +246,10 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	emulonly_et_HBHE->SetXTitle("emul.e");
 	emulonly_et_HF = fs->make<TH1F>("emulonly_et_HF","Emul Only (HF)",256,0,256);
 	emulonly_et_HF->SetXTitle("emul.et");
+	emulZS_et_HBHE = fs->make<TH1F>("emulZS_et_HBHE","ZS Errors (HB/HE)",256,0,256);
+	emulZS_et_HBHE->SetXTitle("emul.e");
+	emulZS_et_HF = fs->make<TH1F>("emulZS_et_HF","ZS Errors (HF)",256,0,256);
+	emulZS_et_HF->SetXTitle("emul.e");
 
 	//FG bit
 	data_FG_HF = fs->make<TH1F>("data_FG_HF","Data FG bit (HF)",2,-0.5,1.5);
@@ -194,17 +269,71 @@ HcalTPGValidation::HcalTPGValidation(const edm::ParameterSet& iConfig)
 	xaxis->SetBinLabel(1,"False");
 	xaxis->SetBinLabel(2,"True");
 
-	data_FGet_HF = fs->make<TH1F>("data_FGet_HF","FG=1 (HF)",255,0,255);
+	data_FGet_HF = fs->make<TH1F>("data_FGet_HF","FG=1 (HF)",256,0,256);
 	data_FGet_HF->SetXTitle("data.et");
-	data_FGet_HBHE = fs->make<TH1F>("data_FGet_HBHE","FG=1 (HB/HE)",255,0,255);
+	data_FGet_HBHE = fs->make<TH1F>("data_FGet_HBHE","FG=1 (HB/HE)",256,0,256);
 	data_FGet_HBHE->SetXTitle("data.e");
-	emul_FGet_HF = fs->make<TH1F>("emul_FGet_HF","FG=1 (HF)",255,0,255);
+	emul_FGet_HF = fs->make<TH1F>("emul_FGet_HF","FG=1 (HF)",256,0,256);
 	emul_FGet_HF->SetXTitle("emul.et");
-	emul_FGet_HBHE = fs->make<TH1F>("emul_FGet_HBHE","FG=1 (HB/HE)",255,0,255);
+	emul_FGet_HBHE = fs->make<TH1F>("emul_FGet_HBHE","FG=1 (HB/HE)",256,0,256);
 	emul_FGet_HBHE->SetXTitle("emul.e");
-	
-	DebugHF = iConfig.getParameter< std::vector<int> >("DebugHF");
-	DebugHBHE = iConfig.getParameter< std::vector<int> >("DebugHBHE");
+
+	data_FG_et_HF = fs->make<TH2F>("data_FG_et_HF","FG bit vs et",256,0,256,2,-0.5,2.5);
+	data_FG_et_HF->SetXTitle("data.et");
+	data_FG_et_HF->SetYTitle("FG bit");
+	emul_FG_et_HF = fs->make<TH2F>("emul_FG_et_HF","FG bit vs et",256,0,256,2,-0.5,2.5);
+	emul_FG_et_HF->SetXTitle("emul.et");
+	emul_FG_et_HF->SetYTitle("FG bit");
+
+	dataCollectionSize = fs->make<TH1F>("dataCollectionSize","Data Collection Size",8000,0,8000);
+	emulCollectionSize = fs->make<TH1F>("emulCollectionSize","Emul Collection Size",8000,0,8000);
+	HFTSCollectionSize = fs->make<TH1F>("HFTSCollectionSize","HF Collection Size",8000,0,8000);
+	HBHETSCollectionSize = fs->make<TH1F>("HBHETSCollectionSize","HB/HE Collection Size",8000,0,8000);
+
+	dataSOI_HF = fs->make<TH1F>("dataSOI_HF","data SOI (HF)",4,-0.5,3.5);
+	emulSOI_HF = fs->make<TH1F>("emulSOI_HF","emul SOI (HF)",10,-0.5,9.5);
+	dataSOI_HBHE = fs->make<TH1F>("dataSOI_HBHE","data SOI (HB/HE)",4,-0.5,3.5);
+	emulSOI_HBHE = fs->make<TH1F>("emulSOI_HBHE","emul SOI (HB/HE)",10,-0.5,9.5);
+
+      //Build Triger Tower Map
+      HcalTopology theTopo;
+      for (int ieta=-41; ieta <= 41; ieta++) {
+         for (int depth = 1; depth <= 3; depth++) {
+            for (int iphi = 1; iphi <= 72; iphi++) {
+               HcalDetId did(HcalBarrel,ieta,iphi,depth);
+               if (!theTopo.valid(did)) continue;
+               std::vector<HcalTrigTowerDetId> trigtowers = theTrigTowerGeometry.towerIds(did);
+               for (std::vector<HcalTrigTowerDetId>::const_iterator trigId=trigtowers.begin(); trigId!=trigtowers.end(); ++trigId){
+                  //std::cerr << *trigId << "\t\t" << did << std::endl;
+                  MapTrigerTower.insert(std::make_pair(*trigId,did));
+               }
+            }
+         }
+      }
+      for (int ieta=-41; ieta <= 41; ieta++) {
+         for (int depth = 1; depth <= 3; depth++) {
+            for (int iphi = 1; iphi <= 72; iphi++) {
+               HcalDetId did(HcalEndcap,ieta,iphi,depth);
+               if (!theTopo.valid(did)) continue;
+               std::vector<HcalTrigTowerDetId> trigtowers = theTrigTowerGeometry.towerIds(did);
+               for (std::vector<HcalTrigTowerDetId>::const_iterator trigId=trigtowers.begin(); trigId!=trigtowers.end(); ++trigId){
+                  MapTrigerTower.insert(std::make_pair(*trigId,did));
+               }
+            }
+         }
+      }
+      for (int ieta=-41; ieta <= 41; ieta++) {
+         for (int depth = 1; depth <= 3; depth++) {
+            for (int iphi = 1; iphi <= 72; iphi++) {
+               HcalDetId did(HcalForward,ieta,iphi,depth);
+               if (!theTopo.valid(did)) continue;
+               std::vector<HcalTrigTowerDetId> trigtowers = theTrigTowerGeometry.towerIds(did);
+               for (std::vector<HcalTrigTowerDetId>::const_iterator trigId=trigtowers.begin(); trigId!=trigtowers.end(); ++trigId){
+                  MapTrigerTower.insert(std::make_pair(*trigId,did));
+               }
+            }
+         }
+      }
 }
 
 
@@ -242,201 +371,190 @@ HcalTPGValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	edm::ESHandle<HcalTPGCoder> inputCoder;
 	iSetup.get<HcalTPGRecord>().get(inputCoder);
 
-	typedef HcalTrigPrimDigiCollection::const_iterator TPItr;
-	if (hcal_tp_data.isValid() && hcal_tp_emul.isValid()){
-		for(TPItr emul = hcal_tp_emul->begin(); emul != hcal_tp_emul->end(); ++emul){
-
-			bool IsHF = (emul->id().ietaAbs()>=29);
-			TPItr data = hcal_tp_data->find(emul->id());
-			if (data == hcal_tp_data->end()) continue;
-
-			//--------------------
-			//Error Flag
-			// 1:	Matched 
-			// 2:	Mismatched e/et
-			// 3:	Data only
-			// 4: Emul only
-			// 5: Mismatched FG bit
-			//--------------------
-
-			int errflag = 0;
-			int dataEt = data->SOI_compressedEt();
-			int emulEt = emul->SOI_compressedEt();
-			 if (dataEt == emulEt){
-				if (dataEt>0){
-					if (data->SOI_fineGrain() == emul->SOI_fineGrain()) errflag=1;
-					else errflag = 5;
-				}
-			}
-			else{
-				if (emulEt == 0) errflag=3;
-				else {
-					if (dataEt == 0) errflag=4;
-					else if (dataEt != emulEt) errflag=2;
-				}
-			}
-
-			//Next trigger tower if both emul and data TP are zero
-			if (errflag == 0) continue;
-
-			alldata_map->Fill(data->id().ieta(),data->id().iphi());
-			allemul_map->Fill(emul->id().ieta(),emul->id().iphi());
-
-			//Histograms for HF
-			if (IsHF) {
-				errflag_HF->Fill(errflag);
-				alldata_et_HF->Fill(dataEt);
-				allemul_et_HF->Fill(emulEt);
-				data_FG_HF->Fill(data->SOI_fineGrain());
-				emul_FG_HF->Fill(emul->SOI_fineGrain());
-				if(data->SOI_fineGrain()) data_FGet_HF->Fill(dataEt);
-				if(emul->SOI_fineGrain()) emul_FGet_HF->Fill(emulEt);
-				switch (errflag){
-					case 1:
-						etcorr_HF->Fill(dataEt,emulEt);
-						break;
-					case 2:
-						etcorr_HF->Fill(dataEt,emulEt);
-						mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
-						break;
-					case 3:
-						dataonly_et_HF->Fill(dataEt);
-						dataonly_map->Fill(data->id().ieta(),data->id().iphi());
-						break;
-					case 4:
-						emulonly_et_HF->Fill(emulEt);
-						emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
-						break;
-					case 5:
-						etcorr_HF->Fill(dataEt,emulEt);
-						break;
-				}
-			}
-			//Histograms for HB/HE
-			else {
-				errflag_HBHE->Fill(errflag);
-				alldata_et_HBHE->Fill(dataEt);
-				allemul_et_HBHE->Fill(emulEt);
-				data_FG_HBHE->Fill(data->SOI_fineGrain());
-				emul_FG_HBHE->Fill(emul->SOI_fineGrain());
-				if(data->SOI_fineGrain()) data_FGet_HBHE->Fill(dataEt);
-				if(emul->SOI_fineGrain()) emul_FGet_HBHE->Fill(emulEt);
-				switch (errflag){
-					case 1:
-						etcorr_HBHE->Fill(dataEt,emulEt);
-						break;
-					case 2:
-						etcorr_HBHE->Fill(dataEt,emulEt);
-						mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
-						break;
-					case 3:
-						dataonly_et_HBHE->Fill(dataEt);
-						dataonly_map->Fill(data->id().ieta(),data->id().iphi());
-						break;
-					case 4:
-						emulonly_et_HBHE->Fill(emulEt);
-						emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
-						break;
-					case 5:
-						etcorr_HBHE->Fill(dataEt,emulEt);
-						break;
-				}
-			}
-			//Debug for HBHE
-			if (!IsHF && DebugHBHE[errflag-1]==1) {
-				edm::LogInfo ("DebugHBHE") << "HBHE\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
-				std::stringstream debugString("");
-				debugString << "data:\t" << data->presamples() << '\t';
-				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).compressedEt() << ' ';
-				debugString << '\n';
-				debugString << "emul:\t" << emul->presamples() << '\t';
-				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).compressedEt() << ' ';
-				debugString << '\n';
-				for (HBHEDigiCollection::const_iterator frame = hbheDigis->begin(); frame != hbheDigis->end(); ++frame){
-					HcalTrigTowerGeometry theTrigTowerGeometry;
-					std::vector<HcalTrigTowerDetId> ids = theTrigTowerGeometry.towerIds(frame->id());
-					if (data->id().rawId() != ids[0].rawId()) continue;
-					debugString << "HBHE Frames:\t";
-					for (int i=0;i<frame->size(); ++i){
-						debugString << frame->sample(i).adc() << ' ';
-					}
-					debugString << '\n';
-					
-					debugString << "adc2Linear\t";
-					IntegerCaloSamples samples(ids[0], frame->size());
-					samples.setPresamples(frame->presamples());
-					inputCoder->adc2Linear(*frame, samples);
-					for (int i=0;i<samples.size();++i) debugString << samples[i] << ' ';
-					debugString << '\n';
-					edm::LogVerbatim ("DebugHBHE") << debugString.str();	
-					break;
-				}	
-			}
-			//Debug for HF
-			if (IsHF && DebugHF[errflag-1]==1){
-				edm::LogInfo ("DebugHF") << "HF\t ieta: " << emul->id().ieta() << "\tiphi: " << emul->id().iphi() << "\tdata.et: " << data->SOI_compressedEt() << "\temul.et: " << emul->SOI_compressedEt();
-				std::stringstream debugString("");
-				debugString << "data:\t" << data->presamples() << '\t' << data->id().ieta() << '/' << data->id().iphi() << '\t';
-				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).compressedEt() << ' ';
-				debugString << '\n';
-				//Dump FG bit
-				debugString << "data FG bit:\t";
-				for (int i=0; i<data->size(); ++i) debugString << data->sample(i).fineGrain() << ' ';
-				debugString << '\n';
-
-				debugString << "emul:\t" << emul->presamples() << '\t' << emul->id().ieta() << '/' << emul->id().iphi() << '\t';
-				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).compressedEt() << ' ';
-				debugString << '\n';
-				//Dump FG bit
-				debugString << "emul FG bit:\t";
-				for (int i=0; i<emul->size(); ++i) debugString << emul->sample(i).fineGrain() << ' ';
-				debugString << '\n';
-
-				IntegerCaloSamples *sum = NULL;
-				for ( HFDigiCollection::const_iterator frame = hfDigis->begin(); frame != hfDigis->end(); ++frame){
-					std::vector<HcalTrigTowerDetId> ids = theTrigTowerGeometry.towerIds(frame->id());
-					if (ids[0] == emul->id()){
-						debugString <<  "HF Frames:\t";
-						for (int i=0;i<frame->size(); ++i)
-							debugString << frame->sample(i).adc() << ' ';
-						debugString << '\n';
-
-						IntegerCaloSamples samples(ids[0], frame->size());
-						samples.setPresamples(frame->presamples());
-						inputCoder->adc2Linear(*frame, samples);
-
-						if(sum == NULL) {
-							sum = new IntegerCaloSamples(ids[0], frame->size());
-							sum->setPresamples(frame->presamples());
+	HFTSCollectionSize->Fill(hfDigis->size());
+	HBHETSCollectionSize->Fill(hbheDigis->size());
+	
+	//Front End Format Errors
+	Handle<FEDRawDataCollection> rawraw;
+	iEvent.getByType(rawraw);
+	if(rawraw.isValid()){
+		for(int i=FEDNumbering::getHcalFEDIds().first; i<=FEDNumbering::getHcalFEDIds().second; ++i){
+			const FEDRawData& raw = rawraw->FEDData(i);
+			if (raw.size()<12) continue;
+			const HcalDCCHeader* dccHeader=(const HcalDCCHeader*)(raw.data());
+			if(!dccHeader) continue;
+			HcalHTRData htr;
+			for (int spigot=0; spigot<HcalDCCHeader::SPIGOT_COUNT; spigot++) {
+				if (!dccHeader->getSpigotPresent(spigot)) continue;
+				dccHeader->getSpigotData(spigot,htr,raw.size());
+				int dccid = dccHeader->getSourceId();
+				int errWord = htr.getErrorsWord() & 0x1FFFF;
+				bool HTRError = (!htr.check() || htr.isHistogramEvent() || (errWord ^ 0x8000)!=0);
+				
+				if(HTRError){
+					bool valid =false;
+					for(int fchan=0; fchan<3 && !valid; fchan++){
+						for(int fib=0; fib<9 && !valid; fib++){
+							HcalElectronicsId eid(fchan,fib,spigot,dccid-FEDNumbering::getHcalFEDIds().first);
+							eid.setHTR(htr.readoutVMECrateId(),htr.htrSlot(),htr.htrTopBottom());
+							DetId detId = emap->lookup(eid);
+							if(detId.null()) continue;
+							HcalSubdetector subdet=(HcalSubdetector(detId.subdetId()));
+							if (detId.det()!=4|| 
+									(subdet!=HcalBarrel && subdet!=HcalEndcap && 
+									subdet!=HcalForward )) continue;
+							std::vector<HcalTrigTowerDetId> ids = theTrigTowerGeometry.towerIds(detId);
+							for (std::vector<HcalTrigTowerDetId>::const_iterator triggerId=ids.begin(); triggerId != ids.end(); ++triggerId){
+								FrontEndErrors.insert(triggerId->rawId());
+							}
+							//valid = true;
 						}
-
-						debugString << "adc2Linear:\t";
-						for(int i = 0; i < samples.size(); ++i) {
-							(*sum)[i] += samples[i];
-							debugString << samples[i] << ' ';
-						}
-						debugString << '\n';
 					}
 				}
-
-				debugString << "Sum:\t";
-				for(int i = 0; i < sum->size(); ++i) {
-					debugString << (*sum)[i] << ' ';
-					(*sum)[i] /= 8;
-				}
-				debugString << '\n';
-				edm::LogVerbatim ("DebugHF") << debugString.str();	
-				if (sum != NULL) delete sum;
 			}
 		}
 	}
+
+	//Loop over TP collection
+	typedef HcalTrigPrimDigiCollection::const_iterator TPItr;
+	if (hcal_tp_data.isValid() && hcal_tp_emul.isValid()){
+		dataCollectionSize->Fill(hcal_tp_data->size());
+		emulCollectionSize->Fill(hcal_tp_emul->size());
+		for(TPItr emul = hcal_tp_emul->begin(); emul != hcal_tp_emul->end(); ++emul){
+
+			//Need a better method to determine HF ieta
+			bool IsHF = (emul->id().ietaAbs()>=29);
+			TPItr data = hcal_tp_data->find(emul->id());
+
+			if (data == hcal_tp_data->end()) continue;
+
+			ErrorFlag errflag = ErrFlag_ZeroTP;
+			bool FEError=false;
+			for (int i=0; i<data->size() && !FEError; ++i){
+				int dataEt = data->sample(i).compressedEt();
+				int emulEt = emul->sample(i).compressedEt();
+				int dataFG = data->sample(i).fineGrain();
+				int emulFG = emul->sample(i).fineGrain();
+
+				//exclude zero TPs
+				if (dataEt==0 && emulEt==0) continue;
+
+				if (dataEt==emulEt && dataFG==emulFG && data->zsMarkAndPass()==emul->zsMarkAndPass()) errflag=ErrFlag_Matched;
+				else if (dataEt==0) errflag=ErrFlag_EmulOnly;
+				else if (emulEt==0) errflag=ErrFlag_DataOnly;
+				else if (dataEt!=emulEt) errflag=ErrFlag_MismatchedE;
+				else if (dataFG!=emulFG) errflag=ErrFlag_MismatchedFG;
+                        else errflag = ErrFlag_ZS;
+
+				//Check Front End Format Errors
+				if (errflag != ErrFlag_Matched) {
+					std::set<uint32_t>::const_iterator itr = FrontEndErrors.find(data->id().rawId());
+					if (itr != FrontEndErrors.end()) {
+						FEError = true;
+						HTRErrMap->Fill(data->id().ieta(),data->id().iphi());
+						continue;
+					}
+				}
+
+				alldata_map->Fill(data->id().ieta(),data->id().iphi());
+				allemul_map->Fill(emul->id().ieta(),emul->id().iphi());
+
+				//Histograms for HF
+				if (IsHF) {
+					errflag_HF->Fill(errflag);
+					alldata_et_HF->Fill(dataEt);
+					allemul_et_HF->Fill(emulEt);
+					data_FG_HF->Fill(dataFG);
+					emul_FG_HF->Fill(emulFG);
+					data_FG_et_HF->Fill(dataEt,dataFG);
+					emul_FG_et_HF->Fill(emulEt,emulFG);
+					dataSOI_HF->Fill(data->presamples());
+					emulSOI_HF->Fill(emul->presamples());
+					if(dataFG) data_FGet_HF->Fill(dataEt);
+					if(emulFG) emul_FGet_HF->Fill(emulEt);
+					switch (errflag){
+						case ErrFlag_Matched:
+							etcorr_HF->Fill(dataEt,emulEt);
+							etcorr2_HF->Fill(dataEt,dataEt-emulEt);
+							break;
+						case ErrFlag_MismatchedE:
+							etcorr_HF->Fill(dataEt,emulEt);
+							etcorr2_HF->Fill(dataEt,dataEt-emulEt);
+							mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+						case ErrFlag_DataOnly:
+							dataonly_et_HF->Fill(dataEt);
+							dataonly_map->Fill(data->id().ieta(),data->id().iphi());
+							break;
+						case ErrFlag_EmulOnly:
+							emulonly_et_HF->Fill(emulEt);
+							emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+						case ErrFlag_MismatchedFG:
+							etcorr_HF->Fill(dataEt,emulEt);
+							etcorr2_HF->Fill(dataEt,dataEt-emulEt);
+							mismatch_FG_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+                                    case ErrFlag_ZS:
+                                          emul_ZS_map->Fill(emul->id().ieta(),emul->id().iphi());
+                                    default:
+                                          break;
+					}
+				}
+				//Histograms for HB/HE
+				else {
+					errflag_HBHE->Fill(errflag);
+					alldata_et_HBHE->Fill(dataEt);
+					allemul_et_HBHE->Fill(emulEt);
+					data_FG_HBHE->Fill(dataFG);
+					emul_FG_HBHE->Fill(emulFG);
+					dataSOI_HBHE->Fill(data->presamples());
+					emulSOI_HBHE->Fill(emul->presamples());
+					if(dataFG) data_FGet_HBHE->Fill(dataEt);
+					if(emulFG) emul_FGet_HBHE->Fill(emulEt);
+					switch (errflag){
+						case ErrFlag_Matched:
+							etcorr_HBHE->Fill(dataEt,emulEt);
+							etcorr2_HBHE->Fill(dataEt,dataEt-emulEt);
+							break;
+						case ErrFlag_MismatchedE:
+							etcorr_HBHE->Fill(dataEt,emulEt);
+							etcorr2_HBHE->Fill(dataEt,dataEt-emulEt);
+							mismatch_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+						case ErrFlag_DataOnly:
+							dataonly_et_HBHE->Fill(dataEt);
+							dataonly_map->Fill(data->id().ieta(),data->id().iphi());
+							break;
+						case ErrFlag_EmulOnly:
+							emulonly_et_HBHE->Fill(emulEt);
+							emulonly_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+						case ErrFlag_MismatchedFG:
+							etcorr_HBHE->Fill(dataEt,emulEt);
+							etcorr2_HBHE->Fill(dataEt,dataEt-emulEt);
+							mismatch_FG_map->Fill(emul->id().ieta(),emul->id().iphi());
+							break;
+                                    case ErrFlag_ZS:
+                                          emul_ZS_map->Fill(emul->id().ieta(),emul->id().iphi());
+                                    default:
+                                          break;
+					}
+				}
+			}
+		}
+	}
+	FrontEndErrors.clear();
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-HcalTPGValidation::beginJob(const edm::EventSetup&)
+HcalTPGValidation::beginJob(const edm::EventSetup& eventSetup)
 {
+	edm::ESHandle<HcalDbService> pSetup;
+	eventSetup.get<HcalDbRecord>().get( pSetup );
+	emap = pSetup->getHcalMapping();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

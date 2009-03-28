@@ -4,6 +4,7 @@
 <use name=PhysicsTools/UtilAlgos>
 <use name=Geometry/HcalTowerAlgo>
 <use name=CalibCalorimetry/HcalAlgos>
+<use name=EventFilter/HcalRawToDigi>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=HcalTPGValidation>
@@ -13,4 +14,5 @@
 	<use name=PhysicsTools/UtilAlgos>
 	<use name=Geometry/HcalTowerAlgo>
 	<use name=CalibCalorimetry/HcalAlgos>
+	<use name=EventFilter/HcalRawToDigi>
 </export>
