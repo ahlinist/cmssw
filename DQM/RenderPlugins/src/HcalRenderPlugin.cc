@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.5 $
-  \date $Date: 2008/11/20 14:51:19 $
+  \version $Revision: 1.7 $
+  \date $Date: 2009/03/27 19:57:38 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -271,15 +271,27 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   
   // Overall problem hot cells are plotted with error Fraction colors (0 = green, 1 = red)
   else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
-	    (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
+	    (o.name.find("RecHitMonitor_Hcal/problem_rechits/")!= std::string::npos ) ||
 	    (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
-	    (o.name.find("DigiMonitor_Hcal/problem_digis")!= std::string::npos ) ||
+	    (o.name.find("DigiMonitor_Hcal/problem_digis/")!= std::string::npos ) ||
 	    (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
-	    (o.name.find("PedestalMonitor_Hcal/problem_pedestals")!=std::string::npos) ||
+	    (o.name.find("PedestalMonitor_Hcal/problem_pedestals/")!=std::string::npos) ||
 	    (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
 	    (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
 	    (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
-	    (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")!= std::string::npos ) 
+	    (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) 
+	    // || // normalize these to error rate, or just to raw number of events (see below)?
+	    // HotCell Subdirectories
+	    //(o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
+	    //(o.name.find("HotCellMonitor_Hcal/hot_rechit_above_threshold/") != std::string::npos) ||
+	    //(o.name.find("HotCellMonitor_Hcal/hot_rechit_always_above_threshold/") != std::string::npos) ||
+	    //(o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
+	    // Dead Cell subdirectories
+	    //(o.name.find("DeadCellMonitor_Hcal/dead_neighbortest/")!= std::string::npos ) ||
+	    //(o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest/")!= std::string::npos ) ||
+	    //(o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi/")!= std::string::npos ) ||
+	    //(o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit/")!= std::string::npos ) ||
+	    //(o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos ) 
 	    )
     {
       double scale = obj->GetBinContent(0,0);
@@ -289,26 +301,31 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	  obj->SetMinimum(0.);
 	  obj->SetMaximum(1.);
 	}
+
       //gStyle->SetPalette(20, errorFracColors);
       setErrorColor();
       obj->SetOption("colz");
     }
   
-  // Problem cell histograms should have maximum set to total number of events, but they don't get normalized
+  // Do we want these plots to show error fractions (0-1) as well?
+  // I think it's useful to have raw number of events plotted here; don't renormalize (yet)
+
   else if (// Hot Cell subdirectories
 	   (o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
 	   (o.name.find("HotCellMonitor_Hcal/hot_rechit_above_threshold/") != std::string::npos) ||
 	   (o.name.find("HotCellMonitor_Hcal/hot_rechit_always_above_threshold/") != std::string::npos) ||
 	   (o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
 	   // Dead Cell subdirectories
-	   (o.name.find("DeadCellMonitor_Hcal/dead_neighbortest")!= std::string::npos ) ||
-	   (o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest")!= std::string::npos ) ||
-	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi")!= std::string::npos ) ||
-	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit")!= std::string::npos ) ||
-	   (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!= std::string::npos ) 
+	   (o.name.find("DeadCellMonitor_Hcal/dead_neighbortest/")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest/")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi/")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit/")!= std::string::npos ) ||
+	   (o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos ) 
 	   )
     {
-      if (obj->GetBinContent(0,0))
+
+      double scale = obj->GetBinContent(0,0);
+      if (scale>0)
 	{
 	  obj->SetMaximum(obj->GetBinContent(0,0));
 	  obj->SetMinimum(0.);
@@ -316,6 +333,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
       setErrorColor();
       obj->SetOption("colz");
     }
+
 
   else if ( 
 	   (
