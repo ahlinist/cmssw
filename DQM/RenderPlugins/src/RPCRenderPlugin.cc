@@ -105,7 +105,20 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  TH2* obj = dynamic_cast<TH2*>( o.object );
  assert( obj );
 
- if(o.name.find("reportSummaryMap") != std::string::npos){//report summary map
+
+
+
+ if(o.name.find("Roll_vs_Sector") != std::string::npos){/
+  obj->GetXaxis()->SetNdivisions(-510);
+   obj->GetYaxis()->SetNdivisions(-510);
+   obj->GetXaxis()->CenterLabels();
+   obj->GetYaxis()->CenterLabels();
+   c->SetGridx();
+   c->SetGridy();
+ }
+
+
+ if(o.name.find("SummaryMap") != std::string::npos){//report summary map
    obj->GetXaxis()->SetNdivisions(-510);
    obj->GetYaxis()->SetNdivisions(-510);
    obj->GetXaxis()->CenterLabels();
@@ -127,10 +140,9 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    return;
  }
 
- if(o.name.find("Occupancy") != std::string::npos)
-  //  && o.name.find("Sector") != std::string::npos &&
-//    o.name.find("Wheel") != std::string::npos  )
-{ //sector occupancy plots
+
+ if(o.name.find("Occupancy") != std::string::npos && o.name.find("SummaryBySectors") != std::string::npos && o.name.find("Wheel") != std::string::npos  ){
+   //sector occupancy plots
    TLine line;
    line.SetLineWidth(2);// Draw lines to delimitate the end of the roll
    //rb1in
@@ -147,22 +159,16 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    line.DrawLine(85, 9.5, 43, 9.5);
    //rb3
    line.DrawLine(43, 9.5, 43, 13.5);
- 
+   
    gPad->Update();
    TPaletteAxis *palette;
    palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
    palette->GetAxis()->SetLabelSize(0.024); 
    gPad->Update();
-   
-
-
-  
- }
+  }
 
 
  
-
-
  if(o.name.find("Occupancy") != std::string::npos){          //summary occupancy plots
    obj->GetXaxis()->SetNdivisions(-510);
    obj->GetYaxis()->SetNdivisions(-510);
@@ -171,29 +177,28 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
    c->SetGridx();
    c->SetGridy(); 
 //    return;
- }
+}
 
 
- if(o.name.find("OccupancyNormByGeoAndRPCEvents_Wheel")!= std::string::npos) {
-
+ if(o.name.find("OccupancyNormByGeoAndRPCEvents")!= std::string::npos) {
+   
    obj->SetMaximum(0.2);
-   //gStyle->SetPalette(100);
    return;
  }
  
  if( o.name.find("AfterPulse")!= std::string::npos) {//afterpulse 2D plots
-	obj->GetXaxis()->LabelsOption("v");
-	obj->GetXaxis()->SetLabelSize(0.03);
-	obj->GetXaxis()->SetLabelOffset(0.005);
-	obj->GetXaxis()->SetNdivisions(-510);
-	obj->GetYaxis()->SetLabelSize(0.03);
-	obj->GetYaxis()->SetLabelOffset(0.005);
-	obj->GetYaxis()->SetNdivisions(-510);
-	return;
+   obj->GetXaxis()->LabelsOption("v");
+   obj->GetXaxis()->SetLabelSize(0.03);
+   obj->GetXaxis()->SetLabelOffset(0.005);
+   obj->GetXaxis()->SetNdivisions(-510);
+   obj->GetYaxis()->SetLabelSize(0.03);
+   obj->GetYaxis()->SetLabelOffset(0.005);
+   obj->GetYaxis()->SetNdivisions(-510);
+   return;
   }
  
  
- if(o.name.find("ClusterSizeIn1Bin_Roll_vs_Sector_Wheel") != std::string::npos) {
+ if(o.name.find("ClusterSizeIn1Bin_Roll_vs_Sector") != std::string::npos) {
    
    obj->SetMinimum(0.0);
    obj->SetMaximum(1.0);
@@ -216,7 +221,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  }
  
 
-  if(o.name.find("AsymmetryLeftRight_Roll_vs_Sector_Wheel") != std::string::npos) {
+ if(o.name.find("AsymmetryLeftRight_Roll_vs_Sector") != std::string::npos) {
    
    obj->SetMinimum(0.0);
    obj->SetMaximum(1.0);
@@ -289,13 +294,6 @@ if(o.name.find("RPCChamberQuality") != std::string::npos) {
    
    gStyle->SetPalette(7, colorPalette3);
    
-   //  obj->GetXaxis()->SetNdivisions(-510);
-   //    obj->GetYaxis()->SetNdivisions(-510);
-   //    obj->GetXaxis()->CenterLabels();
-   //    obj->GetYaxis()->CenterLabels();
-   //    c->SetGridx();
-   //    c->SetGridy(); 
-   
    c->cd();
    gPad->Update();
 
@@ -308,15 +306,6 @@ if(o.name.find("RPCChamberQuality") != std::string::npos) {
    palette->SetTitleSize(0.025);
    
    //    gPad->Update();
-
-
-   obj->GetXaxis()->SetNdivisions(-510);
-   obj->GetYaxis()->SetNdivisions(-510);
-   obj->GetXaxis()->CenterLabels();
-   obj->GetYaxis()->CenterLabels();
-   c->SetGridx();
-   c->SetGridy(); 
-   
 
    return;
  }
