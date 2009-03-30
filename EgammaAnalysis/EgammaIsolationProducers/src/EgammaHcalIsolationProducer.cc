@@ -77,7 +77,7 @@ EgammaHcalIsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   EgammaHcalIsolation myHadIsolation(egHcalIsoConeSizeOut_,
 			      egHcalIsoConeSizeIn_,
 			      egHcalIsoPtMin_,
-			      caloGeom,
+			      edm::ESHandle<CaloGeometry>(caloGeom),
 			      &mhbhe) ;
 
   
