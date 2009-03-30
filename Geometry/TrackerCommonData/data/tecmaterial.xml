@@ -932,17 +932,20 @@
 				<rMaterial name="materials:Fibre_Ribbon"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="0.540*g/cm3" method="mixture by weight" name="TEC_AlignRing" symbol=" ">
-			<MaterialFraction fraction="0.08844">
+		<CompositeMaterial density="0.533*g/cm3" method="mixture by weight" name="TEC_AlignRing" symbol=" ">
+			<MaterialFraction fraction="0.04487">
 				<rMaterial name="materials:Epoxy"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.00747">
+			<MaterialFraction fraction="0.00379">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.11275">
+			<MaterialFraction fraction="0.01896">
+				<rMaterial name="materials:Titanium"/>
+			</MaterialFraction>
+			<MaterialFraction fraction="0.16544">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.79134">
+			<MaterialFraction fraction="0.76695">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
@@ -1041,26 +1044,26 @@
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
 		</CompositeMaterial>
-		<CompositeMaterial density="0.633*g/cm3" method="mixture by weight" name="TEC_Tiltmeter" symbol=" ">
-			<MaterialFraction fraction="0.25214">
+		<CompositeMaterial density="0.659*g/cm3" method="mixture by weight" name="TEC_Tiltmeter" symbol=" ">
+			<MaterialFraction fraction="0.24222">
 				<rMaterial name="materials:Aluminium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0045">
+			<MaterialFraction fraction="0.00433">
 				<rMaterial name="materials:Titanium"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0045">
+			<MaterialFraction fraction="0.00433">
 				<rMaterial name="materials:Copper"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.63936">
+			<MaterialFraction fraction="0.61421">
 				<rMaterial name="materials:Epoxy"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.0045">
+			<MaterialFraction fraction="0.00433">
 				<rMaterial name="materials:Polyethylene"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.05403">
+			<MaterialFraction fraction="0.0519">
 				<rMaterial name="materials:T_FR4"/>
 			</MaterialFraction>
-			<MaterialFraction fraction="0.04096">
+			<MaterialFraction fraction="0.07869">
 				<rMaterial name="materials:Carbon fibre str."/>
 			</MaterialFraction>
 		</CompositeMaterial>
