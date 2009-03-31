@@ -27,22 +27,6 @@ camilo.carrilloATcern.ch
 #include "TAxis.h"
 #include "TString.h"
 
-double straighter(RPCDetId rpcId){
-  
-  bool ok = true;
-  RPCGeomServ rpcsrv(rpcId);
-
-  if(rpcId.station()==2||rpcId.station()==1&&rpcId.ring()==2&&rpcsrv.segment()%2==0){
-    ok=false;
-  }
-  
-  if(ok == false){
-    return -1.;
-  }else{
-    return 1.;
-  }
-}
-
 void MuonSegmentEff::beginJob(){
   
 }
@@ -56,10 +40,10 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
  
   rangestrips = iConfig.getUntrackedParameter<double>("rangestrips",1.);
   rangestripsRB4=iConfig.getUntrackedParameter<double>("rangestripsRB4",4.);
-  dupli = iConfig.getUntrackedParameter<int>("DuplicationCorrection",2); 
+  dupli = iConfig.getUntrackedParameter<int>("DuplicationCorrection",1); 
   MinCosAng=iConfig.getUntrackedParameter<double>("MinCosAng",0.9999);
-  MaxD=iConfig.getUntrackedParameter<double>("MaxD",20.);
-  MaxDrb4=iConfig.getUntrackedParameter<double>("MaxDrb4",30.);
+  MaxD=iConfig.getUntrackedParameter<double>("MaxD",80.);
+  MaxDrb4=iConfig.getUntrackedParameter<double>("MaxDrb4",150.);
   muonRPCDigis=iConfig.getUntrackedParameter<std::string>("muonRPCDigis","muonRPCDigis");
   cscSegments=iConfig.getUntrackedParameter<std::string>("cscSegments","cscSegments");
   dt4DSegments=iConfig.getUntrackedParameter<std::string>("dt4DSegments","dt4DSegments");
