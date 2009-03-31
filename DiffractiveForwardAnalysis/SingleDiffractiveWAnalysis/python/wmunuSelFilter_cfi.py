@@ -9,6 +9,7 @@ wmunuSelFilter = cms.EDFilter("WMuNuSelector",
     JetTag = cms.InputTag("iterativeCone5CaloJets"),
     VertexTag = cms.InputTag("offlinePrimaryVertices"),
     UseOnlyGlobalMuons = cms.bool(True),
+    AssociateMuonWithPV = cms.bool(False),
     #
     # Main cuts ->
     PtCut = cms.double(25.0),
