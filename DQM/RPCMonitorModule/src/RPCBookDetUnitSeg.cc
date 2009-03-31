@@ -52,7 +52,15 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
     sprintf(meId,"BXDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXDistribution_for_%s",layerLabel);
     meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
-    
+
+    sprintf(meId,"CLSDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"CLSDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle, 11,0.5,10.5);
+
+    sprintf(meId,"BXYDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"BXYDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,130);   
+
     //New 2D and more
 
     sprintf(meId,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
@@ -85,6 +93,14 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
     sprintf(meId,"BXDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXDistribution_for_%s",layerLabel);
     meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
+
+    sprintf(meId,"CLSDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"CLSDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle, 11,0.5,10.5);
+
+    sprintf(meId,"BXYDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"BXYDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,130);   
     
     //New 2D and more
 
