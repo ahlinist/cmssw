@@ -28,7 +28,7 @@ def crabCall(uiworkingdir):
 #    print ''
 #    print 'New CMSSW.sh: '
 #    os.system('cat job_'+ process +'_'+ jetalgo +'/job/CMSSW.sh | grep filesToCheck=')
-#    print ''#
+#    print ''
     print '##########################################'
     print 'Submiting job...'
     print '##########################################'
