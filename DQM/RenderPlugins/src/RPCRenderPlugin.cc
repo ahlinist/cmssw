@@ -200,7 +200,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  
  if(o.name.find("ClusterSizeIn1Bin_Roll_vs_Sector") != std::string::npos) {
    
-   obj->SetMinimum(0.0);
+   obj->SetMinimum(-1.e15);
    obj->SetMaximum(1.0);
    
    int colorPalette[20];
@@ -223,7 +223,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
 
  if(o.name.find("AsymmetryLeftRight_Roll_vs_Sector") != std::string::npos) {
    
-   obj->SetMinimum(0.0);
+   obj->SetMinimum(-1.e-15);
    obj->SetMaximum(1.0);
    
    int colorPalette1[10];
@@ -251,8 +251,8 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
 
  if(o.name.find("DeadChannelFraction_Roll_vs_Sector") != std::string::npos) {
    
-   obj->SetMinimum(0.0);
-   obj->SetMaximum(0.1);
+   obj->SetMinimum(-1.e-15);
+   obj->SetMaximum(1.0);
    
    int colorPalette2[10];
    
