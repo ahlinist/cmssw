@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.11 2009/03/09 13:05:41 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.12 2009/03/23 14:18:58 carrillo Exp $
 //
 //
 
@@ -234,6 +234,10 @@ public:
   TH1F * BXDistribution;
   TH1F * histoRealRPC;
   TH1F * histoResidual;
+  TH1F * histoCLS;
+  TH2F * histoBXY;
+  
+
 
   TH1F * EffGlobWm2;
   TH1F * EffGlobWm1;
@@ -392,6 +396,8 @@ private:
   bool makehtml;
   bool cosmics;
   bool dosD;
+  bool CLSandBXY;
+  bool debug;
   double threshold;
   bool endcap;
   bool barrel; 
@@ -419,6 +425,8 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   makehtml=iConfig.getUntrackedParameter<bool>("makehtml");
   cosmics=iConfig.getUntrackedParameter<bool>("cosmics");
   dosD=iConfig.getUntrackedParameter<bool>("dosD");
+  CLSandBXY=iConfig.getUntrackedParameter<bool>("CLSandBXY",false);
+  debug=iConfig.getUntrackedParameter<bool>("debug",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
@@ -431,16 +439,16 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
 RPCMonitorEfficiency::~RPCMonitorEfficiency(){}
 
 void RPCMonitorEfficiency::beginJob(const edm::EventSetup&){
-  std::cout <<"Begin Job"<<std::endl;
+  if(debug) std::cout <<"Begin Job"<<std::endl;
   theFile = new TFile(file.c_str());
-  if(!theFile)std::cout<<"The File Doesn't exist"<<std::endl;
+  if(!theFile)if(debug) std::cout<<"The File Doesn't exist"<<std::endl;
   theFileOut = new TFile(fileout.c_str(), "RECREATE");
 }
 
 
 void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   //  bool first=false;
-  std::cout <<"\t Getting the RPC Geometry"<<std::endl;
+  if(debug) std::cout <<"\t Getting the RPC Geometry"<<std::endl;
   edm::ESHandle<RPCGeometry> rpcGeo;
   iSetup.get<MuonGeometryRecord>().get(rpcGeo);
 
@@ -676,7 +684,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   MaskedGlobDm3far = new TH1F ("GlobMaskedDisk_m3far","Masked Far Side Disk -3",109,0.5,109.5);
   AverageEffDm3=new TH1F ("AverageEfficiencyDisk_m3near","Average Efficiency Near Side Disk -3 ",109,0.5,109.5);
   AverageEffDm3far=new TH1F ("AverageEfficiencyDisk_m3far","Average Efficiency Far Side Disk -3 ",109,0.5,109.5);
-  std::cout<<"Creating Problematic Histogram"<<std::endl;
+  if(debug) std::cout<<"Creating Problematic Histogram"<<std::endl;
   NoPredictionDm3=new TH1F ("NoPredictionDisk_m3near","No Predictions Near Side Disk -3 ",109,0.5,109.5);
   NoPredictionDm3far=new TH1F ("NoPredictionDisk_m3far","No Predictions Efficiency Far Side Disk -3 ",109,0.5,109.5);
 
@@ -843,7 +851,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   for(int i=1;i<=22;i++){
     rollNamesExter[i]=rollNamesInter[i];
-    //std::cout<<rollNamesInter[i]<<std::endl;
+    //if(debug) std::cout<<rollNamesInter[i]<<std::endl;
   }
   
   rollNamesExter[6]="RB2in F";
@@ -866,7 +874,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   for(int i=1;i<=6;i++){
     binLabel.str("");
     binLabel<<"Sec "<<i;
-    //std::cout<<"Labeling EndCaps"<<binLabel.str()<<std::endl;
+    //if(debug) std::cout<<"Labeling EndCaps"<<binLabel.str()<<std::endl;
     Diskm3Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm2Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm1Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
@@ -879,7 +887,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     for(int su=1;su<=6;su++){
       binLabel.str("");
       binLabel<<"Ri"<<ri<<" Su"<<su;
-      //std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
+      //if(debug) std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
       Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
       Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
       Diskm1Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
@@ -945,7 +953,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     
   }
   
-  //std::cout<<"Before Rolls Loop"<<std::endl;
+  //if(debug) std::cout<<"Before Rolls Loop"<<std::endl;
   
   Ca0 = new TCanvas("Ca0","Profile",400,300);
   
@@ -962,39 +970,56 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	int nstrips = int((*r)->nstrips());
 
+	
+	std::string name = rpcsrv.name();
+		
 	if(rpcId.region()==0 && barrel){  
 	  
 	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	     
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual;
-	 
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual,meIdCLS,meIdBXY;
+	  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
 
 	  delete folderStr;
-		
-	  meIdRPC = folder +"/RPCDataOccupancyFromDT_"+ rpcsrv.name();	
-	  meIdDT =folder+"/ExpectedOccupancyFromDT_"+ rpcsrv.name();
 
-	  bxDistroId =folder+"/BXDistribution_"+ rpcsrv.name();
-	  meIdRealRPC =folder+"/RealDetectedOccupancyFromDT_"+ rpcsrv.name();  
+	  meIdRPC = folder +"/RPCDataOccupancyFromDT_"+ name;	
+	  meIdDT =folder+"/ExpectedOccupancyFromDT_"+ name;
 
-	  meIdPRO = "Profile_For_"+rpcsrv.name();
-	  meIdPROY = "Y_Profile_For_"+rpcsrv.name();
-	  meIdPROX = "X_Profile_For_"+rpcsrv.name();
-	  meIdPRO_2D = "Profile2D_For_"+rpcsrv.name();
-	  meIdResidual =folder+"/RPCResidualsFromDT_"+ rpcsrv.name();
-	  meIdDT_2D =folder+"/ExpectedOccupancy2DFromDT_"+ rpcsrv.name();
-	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromDT_"+ rpcsrv.name();	
+	  bxDistroId =folder+"/BXDistribution_"+ name;
+	  meIdRealRPC =folder+"/RealDetectedOccupancyFromDT_"+ name;  
 
+	  meIdPRO = "Profile_For_"+name;
+	  meIdPROY = "Y_Profile_For_"+name;
+	  meIdPROX = "X_Profile_For_"+name;
+	  meIdPRO_2D = "Profile2D_For_"+name;
+	  meIdResidual = folder+"/RPCResidualsFromDT_"+ name;
+	  meIdDT_2D = folder+"/ExpectedOccupancy2DFromDT_"+ name;
+	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromDT_"+ name;	
+	  meIdCLS = folder +"/CLSDistribution_"+ name;	
+	  meIdBXY = folder +"/BXYDistribution_"+ name;
 	  
-
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	  }
+	  
+	  if(CLSandBXY){
+	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
+	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
+
+	    if(histoBXY && histoCLS){
+	      if(debug) std::cout<<"the histograms exist"<<std::endl;
+	    }else{
+	      if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
+	      if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
+	      
+	    }
+
 	  }
 
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str());
@@ -1002,13 +1027,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
           BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());
           histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());
 	  
-	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),int((*r)->nstrips()),0.5,int((*r)->nstrips())+0.5);
+	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
 
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
 	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
 	  
-	  std::cout <<folder<<"/"<<rpcsrv.name()<<std::endl;
+	  
+	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
 
 	  int NumberMasked=0;
 	  int NumberWithOutPrediction=0;
@@ -1040,7 +1066,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  int NumberStripsPointed = 0;
 	  
 	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual){
-	    //std::cout<<"Leidos los histogramas 2D!"<<std::endl;
+	    //if(debug) std::cout<<"Leidos los histogramas 2D!"<<std::endl;
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=4*nstrips;++j){
 		ef2D=0.;
@@ -1063,7 +1089,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		efY = profileRPC_Y->GetBinContent(j)/profileDT_Y->GetBinContent(j);
 		erY = sqrt(efY*(1-efY)/profileDT_Y->GetBinContent(j));
 	      }	
-	      //std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
+	      //if(debug) std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
 	      histoPROY->SetBinContent(j,efY);
 	      histoPROY->SetBinError(j,erY);
 	    }
@@ -1079,23 +1105,22 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		efX = profileRPC_X->GetBinContent(j)/profileDT_X->GetBinContent(j);
 		erX = sqrt(efX*(1-efX)/profileDT_X->GetBinContent(j));
 	      }	
-	      //std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
+	      //if(debug) std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
 	      histoPROX->SetBinContent(j,efX);
 	      histoPROX->SetBinError(j,erX);
 	    }
 
 	  }else{
-	    std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
+	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
 
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
 	    
 	  if(histoRPC && histoDT && BXDistribution && histoRealRPC){
-	    int nstrips=(*r)->nstrips();
-	    for(int i=1;i<=int(nstrips);++i){
+	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0 || histoDT->GetBinContent(i)==0){
-		std::cout<<"1";
+		//if(debug) std::cout<<"1";
 		if(i==1){
 		  maskeffect[1]=true;
 		  maskeffect[2]=true;
@@ -1105,11 +1130,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  maskeffect[2]=true;
 		  maskeffect[3]=true;
 		  maskeffect[4]=true;
-		}else if(i==(*r)->nstrips()){
+		}else if(i==nstrips){
 		  maskeffect[nstrips-2]=true;
 		  maskeffect[nstrips-1]=true;
 		  maskeffect[nstrips]=true;
-		}else if(i==(*r)->nstrips()-1){
+		}else if(i==nstrips-1){
 		  maskeffect[nstrips-3]=true;
 		  maskeffect[nstrips-2]=true;
 		  maskeffect[nstrips-1]=true;
@@ -1122,7 +1147,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  maskeffect[i+2]=true;
 		}
 	      }else{
-		std::cout<<"0";
+		//if(debug) std::cout<<"0";
 	      }
 	    }
 	    
@@ -1134,24 +1159,24 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    //maskeffect[nstrips-4]=true;
 	    //maskeffect[nstrips-5]=true;
 	    
-	    std::cout<<std::endl;
+	    if(debug) std::cout<<std::endl;
 	    
 	    float withouteffect=0.;
 	    
-	    for(int i=1;i<=int((*r)->nstrips());i++){
+	    for(int i=1;i<=nstrips;i++){
 	      if(maskeffect[i]==false){
 		withouteffect++;
-		std::cout<<"0";
+		//if(debug) std::cout<<"0";
 	      }else{
-		std::cout<<"1";
+		//if(debug) std::cout<<"1";
 	      }
 	    }
 
-	    std::cout<<std::endl;
+	    if(debug) std::cout<<std::endl;
 
-	    efftxt<<rpcsrv.name()<<"  "<<rpcId.rawId();
+	    efftxt<<name<<"  "<<rpcId.rawId();
 
-	    for(int i=1;i<=int((*r)->nstrips());++i){
+	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
 	      }
@@ -1173,7 +1198,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
 		}
 	      }else{
-		std::cout<<" NP";
+		//if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
 		efftxt<<"  "<<0.95;
 	      }
@@ -1181,9 +1206,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPRO->SetBinError(i,buffer);
 	    }
 
-	    for(int i=(*r)->nstrips()+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
+	    for(int i=nstrips+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
 
-	    assert(NumberWithOutPrediction+NumberStripsPointed == (*r)->nstrips());
+	    assert(NumberWithOutPrediction+NumberStripsPointed == nstrips);
 
 	    doublegapeff=0.;
 	    doublegaperr=0.;
@@ -1201,11 +1226,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
 	    }else{
-	      std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
+	      if(debug) std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
 	    }
 
 	    
-	    RollYEff<<rpcsrv.name()<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float((*r)->nstrips()))*100.<<std::endl;
+	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<std::endl;
 	    
 	    DoubleGapBarrel->Fill(doublegapeff);
 
@@ -1228,7 +1253,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 	    
 	    if(prodimages || makehtml){
-	      command = "mkdir " + rpcsrv.name();
+	      command = "mkdir " + name;
 	      system(command.c_str());
 	    }
 
@@ -1242,43 +1267,60 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
 	      histoPRO->GetYaxis()->SetRangeUser(0.,1.);
 	      histoPRO->Draw();
-	      std::string labeltoSave = rpcsrv.name() + "/Profile.png";
+	      std::string labeltoSave = name + "/Profile.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 
 	      histoRPC->GetXaxis()->SetTitle("Strip");
 	      histoRPC->GetYaxis()->SetTitle("Occupancy Extrapolation");
 	      histoRPC->Draw();
-	      labeltoSave = rpcsrv.name() + "/RPCOccupancy.png";
+	      labeltoSave = name + "/RPCOccupancy.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 
 	      histoRealRPC->GetXaxis()->SetTitle("Strip");
 	      histoRealRPC->GetYaxis()->SetTitle("RPC Occupancy");
 	      histoRealRPC->Draw();
-	      labeltoSave = rpcsrv.name() + "/DQMOccupancy.png";
+	      labeltoSave = name + "/DQMOccupancy.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 	      
 	      histoDT->GetXaxis()->SetTitle("Strip");
 	      histoDT->GetYaxis()->SetTitle("Expected Occupancy");
 	      histoDT->Draw();
-	      labeltoSave = rpcsrv.name() + "/DTOccupancy.png";
+	      labeltoSave = name + "/DTOccupancy.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 	      
 	      BXDistribution->GetXaxis()->SetTitle("BX");
 	      BXDistribution->Draw();
-	      labeltoSave = rpcsrv.name() + "/BXDistribution.png";
+	      labeltoSave = name + "/BXDistribution.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
+
+	      if(CLSandBXY){
+		histoCLS->GetXaxis()->SetTitle("Cluster Size");
+		histoCLS->Draw();
+		labeltoSave = name + "/CLS.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		histoBXY->GetXaxis()->SetTitle("BX");
+		histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
+		
+		histoBXY->Draw();
+		labeltoSave = name + "/BXY.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+	      }
+
 
 	      if(dosD){
 		histoRPC_2D->GetXaxis()->SetTitle("cm");
 		histoRPC_2D->GetYaxis()->SetTitle("cm");
 		histoRPC_2D->Draw();
 		histoRPC_2D->SetDrawOption("color");
-		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D.png";
+		labeltoSave = name + "/RPCOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
@@ -1286,7 +1328,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPROY->GetXaxis()->SetTitle("cm");
 		histoPROY->GetYaxis()->SetRangeUser(0.,1.);
 		histoPROY->Draw();
-		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfy.png";
+		labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 			
@@ -1295,7 +1337,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPROX->GetXaxis()->SetTitle("cm");
 		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
 		histoPROX->Draw();
-		labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfx.png";
+		labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
@@ -1303,7 +1345,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoDT_2D->GetYaxis()->SetTitle("cm");
 		histoDT_2D->Draw();
 		histoDT_2D->SetDrawOption("COLZ");
-		labeltoSave = rpcsrv.name() + "/DTOccupancy_2D.png";
+		labeltoSave = name + "/DTOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 
@@ -1311,13 +1353,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPRO_2D->GetYaxis()->SetTitle("cm");
 		histoPRO_2D->Draw();
 		histoPRO_2D->SetDrawOption("COLZ");
-		labeltoSave = rpcsrv.name() + "/Profile_2D.png";
+		labeltoSave = name + "/Profile_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
 		histoResidual->GetXaxis()->SetTitle("cm");
 		histoResidual->Draw();
-		labeltoSave = rpcsrv.name() + "/Residual.png";
+		labeltoSave = name + "/Residual.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 	      }
@@ -1329,55 +1371,55 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    int sector = rpcId.sector();
 	    //Near Side
 
-	    //std::cout<<"Before if = "<<makehtml<<std::endl;
+	    //if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
 	    if(makehtml){
-	      command = "cp htmltemplates/indexLocal.html " + rpcsrv.name() + "/index.html"; system(command.c_str());
-	      std::cout<<"html for "<<rpcId<<std::endl;
+	      command = "cp htmltemplates/indexLocal.html " + name + "/index.html"; system(command.c_str());
+	      if(debug) std::cout<<"html for "<<rpcId<<std::endl;
 	      
 	      std::string color = "#0000FF";
 	      if(averageeff<threshold) color = "#ff4500";
 
 	      if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
 		if(Ring==-2){ 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexWm2near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm2near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2near.html"; system(command.c_str());
 		}
 		else if(Ring==-1){ 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexWm1near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm1near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1near.html"; system(command.c_str());
 		}
 		else if(Ring==0){ 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW0near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW0near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0near.html"; system(command.c_str());
 		}
 		else if(Ring==1) { 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW1near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW1near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1near.html"; system(command.c_str());
 		}
 		else if(Ring==2) { 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW2near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW2near.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2near.html"; system(command.c_str());
 		}     
 	      }else{
 		if(Ring==-2){ 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexWm2far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm2far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2far.html"; system(command.c_str());
 		}
 		else if(Ring==-1){ 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexWm1far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm1far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1far.html"; system(command.c_str());
 		}
 		else if(Ring==0) { 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW0far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW0far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0far.html"; system(command.c_str());
 		}
 		else if(Ring==1) { 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW1far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW1far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1far.html"; system(command.c_str());
 		}
 		else if(Ring==2) { 
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexW2far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW2far.html"; system(command.c_str());
+		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2far.html"; system(command.c_str());
 		}     
 	      }
 	    }
@@ -1389,7 +1431,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    bxbarrel->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());
 	    
 	  }else{
-	    std::cout<<"One of the histograms Doesn't exist for Barrel!!!"<<std::endl;
+	    if(debug) std::cout<<"One of the histograms Doesn't exist for Barrel!!!"<<std::endl;
 	    exit(1);
 	  }
 	  	  
@@ -1398,7 +1440,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  
 	  
-	  std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
+	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 
 	  if(p!=0){
 	    ef = float(o)/float(p); 
@@ -1412,57 +1454,52 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  int wheel = rpcId.ring();
 	  int sector = rpcId.sector();
-	  int station = rpcId.station();
-	  int layer = rpcId.layer();
 	  int region = rpcId.region();
 
 	  if(region ==0){
-	    //if(station==1 && layer==1)
-	      {
-		if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);}
-		if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);}
-		if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);}
-		if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);}
-		if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);}
-	      }
+	    {
+	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);}
+	      if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);}
+	      if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);}
+	      if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);}
+	      if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);}
+	    }
 	  }
 
-	  std::cout<<rpcsrv.name()<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<""<<std::endl;
+	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<""<<std::endl;
 	  
-	  std::string camera = rpcsrv.name().c_str();  
-	  float stripsratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
-	  float nopredictionsratio = (float(NumberWithOutPrediction)/float((*r)->nstrips()))*100.;
+	  std::string camera = name.c_str();  
+	  float stripsratio = (float(NumberMasked)/float(nstrips))*100.;
+	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 
 	  
-	  alignment<<rpcsrv.name()<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
+	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
 	  
 	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
 	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
 	  
 	  if(fabs(histoResidual->GetMean()>4.) && averageeff > 10. && nopredictionsratio < 70) 
-	    std::cout<<"Super offsets in  "<<rpcsrv.name()<<" mean="<<histoResidual->GetMean()
+	    if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
 		     <<" AverageEff"<<averageeff
 		     <<" No Prediction Ration"<<nopredictionsratio
 		     <<std::endl;
 	  
 		  
 	  //Pigi Histos
-
-	  std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<averageeff<<" "<<std::endl;
 	  
 	  if(abs((*r)->id().ring())==2){
-	    std::cout<<rollY(rpcsrv.shortname(),rollNamesExter)<<"--"<<rpcsrv.shortname()<<std::endl;
+	    //if(debug) std::cout<<rollY(rpcsrv.shortname(),rollNamesExter)<<"--"<<rpcsrv.shortname()<<std::endl;
 	    if((*r)->id().ring()==2) Wheel2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
 	    else Wheelm2Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesExter),averageeff);
-					  
+	    
 	  }else{
-	    std::cout<<rollY(rpcsrv.shortname(),rollNamesInter)<<"--"<<rpcsrv.shortname()<<std::endl; 
+	    //if(debug) std::cout<<rollY(rpcsrv.shortname(),rollNamesInter)<<"--"<<rpcsrv.shortname()<<std::endl; 
 	    if((*r)->id().ring()==-1) Wheelm1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	    else if((*r)->id().ring()==0) Wheel0Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	  }
 	  	  
-	  std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
+	  if(debug) std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
 	  
 	  //Near Side
 
@@ -1707,7 +1744,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 	  }
 	}else if(endcap&&!cosmics){//ENDCAPs
-	  std::cout<<"In the EndCap"<<std::endl;
+	  if(debug) std::cout<<"In the EndCap"<<std::endl;
 	  
 	  const TrapezoidalStripTopology* top_= dynamic_cast<const TrapezoidalStripTopology*> (&((*r)->topology()));
 	  float stripl = top_->stripLength();
@@ -1720,18 +1757,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  delete folderStr;
 	
-	  meIdRPC = folder +"/RPCDataOccupancyFromCSC_"+ rpcsrv.name();	
-	  meIdCSC =folder+"/ExpectedOccupancyFromCSC_"+ rpcsrv.name();
+	  meIdRPC = folder +"/RPCDataOccupancyFromCSC_"+ name;	
+	  meIdCSC =folder+"/ExpectedOccupancyFromCSC_"+ name;
 
-	  bxDistroId =folder+"/BXDistribution_"+ rpcsrv.name();
-	  meIdRealRPC =folder+"/RealDetectedOccupancyFromCSC_"+ rpcsrv.name();
+	  bxDistroId =folder+"/BXDistribution_"+ name;
+	  meIdRealRPC =folder+"/RealDetectedOccupancyFromCSC_"+ name;
 	  
-	  meIdPRO = "Profile_For_"+rpcsrv.name();
-	  meIdPROY = "Y_Profile_For_"+rpcsrv.name();
-	  meIdPRO_2D = "Profile2D_For_"+rpcsrv.name();
-	  meIdResidual =folder+"/RPCResidualsFromCSC_"+ rpcsrv.name();
-	  meIdCSC_2D =folder+"/ExpectedOccupancy2DFromCSC_"+ rpcsrv.name();
-	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromCSC_"+ rpcsrv.name();
+	  meIdPRO = "Profile_For_"+name;
+	  meIdPROY = "Y_Profile_For_"+name;
+	  meIdPRO_2D = "Profile2D_For_"+name;
+	  meIdResidual =folder+"/RPCResidualsFromCSC_"+ name;
+	  meIdCSC_2D =folder+"/ExpectedOccupancy2DFromCSC_"+ name;
+	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromCSC_"+ name;
 	 
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
@@ -1739,17 +1776,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
 	  }
 
-	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl; 
-	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)std::cout<<meIdCSC<<"Doesn't exist"<<std::endl; 
-	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)std::cout<<BXDistribution<<"Doesn't exist"<<std::endl; 
-	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl; 
+	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) if(debug) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl; 
+	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)if(debug) std::cout<<meIdCSC<<"Doesn't exist"<<std::endl; 
+	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)if(debug) std::cout<<BXDistribution<<"Doesn't exist"<<std::endl; 
+	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl; 
 	  
-	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),int((*r)->nstrips()),0.5,int((*r)->nstrips())+0.5);
+	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
 	  
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
 
-	  std::cout <<folder<<"/"<<rpcsrv.name()<<std::endl;
+	  if(debug) std::cout <<folder<<"/"<<name<<std::endl;
 	  
 	  int NumberMasked=0;
 	  int NumberWithOutPrediction=0;
@@ -1772,7 +1809,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  std::cout<<"Checking 2D Histograms for"<<rpcsrv.name()<<std::endl;
+	  if(debug) std::cout<<"Checking 2D Histograms for"<<name<<std::endl;
 
 	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
 	    for(int i=1;i<=2*nstrips;++i){
@@ -1788,7 +1825,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }//loop on the boxes
 	    }
 
-	    std::cout<<"Getting Profiles"<<rpcsrv.name()<<std::endl;
+	    if(debug) std::cout<<"Getting Profiles"<<name<<std::endl;
 	    
 	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY();
 	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY();
@@ -1800,24 +1837,24 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		efY = profileRPC_Y->GetBinContent(j)/profileCSC_Y->GetBinContent(j);
 		erY = sqrt(efY*(1-efY)/profileCSC_Y->GetBinContent(j));
 	      }	
-	      //std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
+	      //if(debug) std::cout<<"Filling Y profile Y="<<j<<" efY="<<efY*100.<<" erY="<<erY*100.<<std::endl;
 	      histoPROY->SetBinContent(j,efY);
 	      histoPROY->SetBinError(j,erY);
 	    }
 	  }else{
-	    std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
+	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
 	  
-	  efftxt<<rpcsrv.name()<<"  "<<rpcId.rawId();
+	  efftxt<<name<<"  "<<rpcId.rawId();
 
 	  for(int i=1;i<=95;i++) efftxt<<"  "<<0.95;
 
 	  efftxt<<std::endl;
 
-	  std::cout<<"Checking 1D Histograms for"<<rpcsrv.name()<<std::endl;
+	  if(debug) std::cout<<"Checking 1D Histograms for"<<name<<std::endl;
 
 	  if(histoRPC && histoCSC && BXDistribution && histoRealRPC){
-	    //std::cout<<"All Histograms Exists"<<std::endl;
+	    //if(debug) std::cout<<"All Histograms Exists"<<std::endl;
 
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
@@ -1828,17 +1865,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      buffer=0.;
 	      if(histoCSC->GetBinContent(i)!=0){
 		buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
-		//std::cout<<" buffef="<<buffef<<" predcitions="<<double(histoCSC->GetBinContent(i))<<std::endl;
+		//if(debug) std::cout<<" buffef="<<buffef<<" predcitions="<<double(histoCSC->GetBinContent(i))<<std::endl;
 		buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
 		
-		//std::cout<<" buffer="<<buffer<<std::endl;
+		//if(debug) std::cout<<" buffer="<<buffer<<std::endl;
 
 		sumbuffef=sumbuffef+buffef;
 		sumbuffer = sumbuffer + buffer*buffer;
 		NumberStripsPointed++;
 
 	      }else{
-		std::cout<<" NP";
+		//if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
 	      }
 	      histoPRO->SetBinContent(i,buffef);
@@ -1850,7 +1887,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
 	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
 	      
-	      std::cout<<"sumbuffer="<<sumbuffer<<" NumSrripsPointer="<<NumberStripsPointed<<std::endl;
+	      if(debug) std::cout<<"sumbuffer="<<sumbuffer<<" NumSrripsPointer="<<NumberStripsPointed<<std::endl;
 	      
 	      
 	      EffEndCap->Fill(averageeff);
@@ -1876,7 +1913,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 
 	      if(prodimages || makehtml){	       
-		command = "mkdir " + rpcsrv.name();
+		command = "mkdir " + name;
 		system(command.c_str());
 	      }
 
@@ -1884,49 +1921,49 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROY->Write();
 
 	      if(prodimages){//ENDCAP	
-		std::cout<<"Creating Images for the endcap"<<std::endl;
+		if(debug) std::cout<<"Creating Images for the endcap"<<std::endl;
 		histoPRO->GetXaxis()->SetTitle("Strip");
 		histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
 		histoPRO->GetYaxis()->SetRangeUser(0.,1.);
 		histoPRO->Draw();
-		std::string labeltoSave = rpcsrv.name() + "/Profile.png";
+		std::string labeltoSave = name + "/Profile.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 	      
 		histoRPC->GetXaxis()->SetTitle("Strip");
 		histoRPC->GetYaxis()->SetTitle("Occupancy Extrapolation");
 		histoRPC->Draw();
-		labeltoSave = rpcsrv.name() + "/RPCOccupancy.png";
+		labeltoSave = name + "/RPCOccupancy.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 	    
 		histoRealRPC->GetXaxis()->SetTitle("Strip");
 		histoRealRPC->GetYaxis()->SetTitle("RPC Occupancy");
 		histoRealRPC->Draw();
-		labeltoSave = rpcsrv.name() + "/DQMOccupancy.png";
+		labeltoSave = name + "/DQMOccupancy.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 	      
 		histoCSC->GetXaxis()->SetTitle("Strip");
 		histoCSC->GetYaxis()->SetTitle("Expected Occupancy");
 		histoCSC->Draw();
-		labeltoSave = rpcsrv.name() + "/DTOccupancy.png";
+		labeltoSave = name + "/DTOccupancy.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 	      
 		BXDistribution->GetXaxis()->SetTitle("BX");
 		BXDistribution->Draw();
-		labeltoSave = rpcsrv.name() + "/BXDistribution.png";
+		labeltoSave = name + "/BXDistribution.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
 		if(dosD){
-		  std::cout<<"Inside if 2D"<<std::endl;
+		  if(debug) std::cout<<"Inside if 2D"<<std::endl;
 		  histoRPC_2D->GetXaxis()->SetTitle("cm");
 		  histoRPC_2D->GetYaxis()->SetTitle("cm");
 		  histoRPC_2D->Draw();
 		  histoRPC_2D->SetDrawOption("color");
-		  labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D.png";
+		  labeltoSave = name + "/RPCOccupancy_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		   
@@ -1934,32 +1971,32 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  histoPROY->GetXaxis()->SetTitle("cm");
 		  histoPROY->GetYaxis()->SetRangeUser(0.,1.);
 		  histoPROY->Draw();
-		  labeltoSave = rpcsrv.name() + "/RPCOccupancy_2D_pfy.png";
+		  labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		    
-		  std::cout<<"histoCSC_2D "<<std::endl;
+		  if(debug) std::cout<<"histoCSC_2D "<<std::endl;
 		  histoCSC_2D->GetXaxis()->SetTitle("cm");
 		  histoCSC_2D->GetYaxis()->SetTitle("cm");
 		  histoCSC_2D->Draw();
 		  histoCSC_2D->SetDrawOption("color");
-		  labeltoSave = rpcsrv.name() + "/DTOccupancy_2D.png";
+		  labeltoSave = name + "/DTOccupancy_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		  
-		  std::cout<<"histoPRO_2D "<<std::endl;
+		  if(debug) std::cout<<"histoPRO_2D "<<std::endl;
 		  histoPRO_2D->GetXaxis()->SetTitle("cm");
 		  histoPRO_2D->GetYaxis()->SetTitle("cm");
 		  histoPRO_2D->Draw();
 		  histoPRO_2D->SetDrawOption("color");
-		  labeltoSave = rpcsrv.name() + "/Profile_2D.png";
+		  labeltoSave = name + "/Profile_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		  
-		  std::cout<<"histoResidual "<<std::endl;
+		  if(debug) std::cout<<"histoResidual "<<std::endl;
 		  histoResidual->GetXaxis()->SetTitle("cm");
 		  histoResidual->Draw();
-		  labeltoSave = rpcsrv.name() + "/Residual.png";
+		  labeltoSave = name + "/Residual.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		}
@@ -1972,10 +2009,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      int sector = rpcId.sector();
 	      //Near Side
 	      
-	      std::cout<<"Before if = "<<makehtml<<std::endl;
+	      if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
 	      if(makehtml){
-		command = "cp htmltemplates/indexLocal.html " + rpcsrv.name() + "/index.html"; system(command.c_str());
-		std::cout<<"html for "<<rpcId<<std::endl;
+		command = "cp htmltemplates/indexLocal.html " + name + "/index.html"; system(command.c_str());
+		if(debug) std::cout<<"html for "<<rpcId<<std::endl;
 		
 		std::string color = "#0000FF";
 		if(averageeff<threshold) color = "#ff4500";
@@ -1984,47 +2021,47 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		
 		if(sector==1||sector==2||sector==3){
 		  if(Disk==-3){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexDm3near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm3near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3near.html"; system(command.c_str());
 		  }
 		  else if(Disk==-2){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/ndextemplate.html >> indexDm2near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/ndextemplate.html >> indexDm2near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2near.html"; system(command.c_str());
 		  }
 		  else if(Disk==-1){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexDm1near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm1near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1near.html"; system(command.c_str());
 		  }
 		  else if(Disk==1){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD1near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD1near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1near.html"; system(command.c_str());
 		  }
 		  else if(Disk==2) { 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD2near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD2near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2near.html"; system(command.c_str());
 		  }else if(Disk==3){
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD3near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD3near.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3near.html"; system(command.c_str());
 		  }
 		}else{
 		  if(Disk==-3){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexDm3far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm3far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3far.html"; system(command.c_str());
 		  }else if(Disk==-2){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexDm2far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm2far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2far.html"; system(command.c_str());
 		  }else if(Disk==-1){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexDm1far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm1far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1far.html"; system(command.c_str());
 		  }else if(Disk==1){ 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD1far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD1far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1far.html"; system(command.c_str());
 		  }else if(Disk==2) { 
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD2far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD2far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2far.html"; system(command.c_str());
 		  }else if(Disk==3){
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" htmltemplates/indextemplate.html >> indexD3far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + rpcsrv.name() + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD3far.html"; system(command.c_str());
+		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3far.html"; system(command.c_str());
 		  }
 		}
 	      }
@@ -2038,7 +2075,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    
 	  }else{
-	    std::cout<<"One of the histograms Doesn't exist!!!"<<std::endl;
+	    if(debug) std::cout<<"One of the histograms Doesn't exist!!!"<<std::endl;
 	    exit(1);
 	  }
 	  
@@ -2047,7 +2084,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  int Disk = rpcId.station()*rpcId.region();
 
-	  std::cout<<"Disk="<<Disk<<std::endl;
+	  if(debug) std::cout<<"Disk="<<Disk<<std::endl;
 	  
 	  if(p!=0){
 	    ef = float(o)/float(p); 
@@ -2060,31 +2097,31 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  //Filling azimutal GregHistograms
 
 	  if(rpcId.region()==1){
-	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),p);OcGregD1R2->Fill(rpcsrv.segment(),o); std::cout<<rpcsrv.name()<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
-	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregD1R3->Fill(rpcsrv.segment(),p);OcGregD1R3->Fill(rpcsrv.segment(),o); std::cout<<rpcsrv.name()<<"GREG Filling D1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregD1R2->Fill(rpcsrv.segment(),p);OcGregD1R2->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling D1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregD1R3->Fill(rpcsrv.segment(),p);OcGregD1R3->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling D1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
 	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregD2R2->Fill(rpcsrv.segment(),p);OcGregD2R2->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),p);OcGregD2R3->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),p);OcGregD3R2->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),p);OcGregD3R3->Fill(rpcsrv.segment(),o);}
 	  }
     
-	  std::string camera = rpcsrv.name();
+	  std::string camera = name;
 	  
-	  float maskedratio = (float(NumberMasked)/float((*r)->nstrips()))*100.;
-	  float nopredictionsratio = (float(NumberWithOutPrediction)/float((*r)->nstrips()))*100.;
+	  float maskedratio = (float(NumberMasked)/float(nstrips))*100.;
+	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 	  
-	  std::cout<<"p="<<p<<" o="<<o<<std::endl;
-	  std::cout<<"ef="<<ef<<" +/- er="<<er<<std::endl;
-	  std::cout<<"averageeff="<<averageeff<<" +/- averageerr="<<averageerr<<std::endl;
-	  std::cout<<"maskedratio="<<maskedratio<<std::endl;
-	  std::cout<<"nopredictionsratio="<<nopredictionsratio<<std::endl;
+	  if(debug) std::cout<<"p="<<p<<" o="<<o<<std::endl;
+	  if(debug) std::cout<<"ef="<<ef<<" +/- er="<<er<<std::endl;
+	  if(debug) std::cout<<"averageeff="<<averageeff<<" +/- averageerr="<<averageerr<<std::endl;
+	  if(debug) std::cout<<"maskedratio="<<maskedratio<<std::endl;
+	  if(debug) std::cout<<"nopredictionsratio="<<nopredictionsratio<<std::endl;
 	  
 	  //Pigis Histogram
 
 
 	  int Y=((*r)->id().ring()-2)*6+(*r)->id().subsector();
 
-	  std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
+	  if(debug) std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
 
 	  if(Disk==-3) Diskm3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
 	  else if(Disk==-2) Diskm2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
@@ -2113,7 +2150,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      AverageEffDm3->SetBinError(indexDisk[0],averageerr);  
 	      AverageEffDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
 	      
-	      std::cout<<"Filling Problematic Histogram with"<<nopredictionsratio<<std::endl;
+	      if(debug) std::cout<<"Filling Problematic Histogram with"<<nopredictionsratio<<std::endl;
 	      NoPredictionDm3->SetBinContent(indexDisk[0],nopredictionsratio);
               NoPredictionDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
 	    }else if(Disk==-2){
@@ -2341,7 +2378,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     }
   }
 
-  std::cout<<"Outside the loop of rolls"<<std::endl;
+  if(debug) std::cout<<"Outside the loop of rolls"<<std::endl;
   
   if(makehtml){
     command = "cat htmltemplates/indextail.html >> indexDm3near.html"; system(command.c_str());
@@ -2430,7 +2467,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     sectorEffW2->SetBinContent(k,eff); sectorEffW2->SetBinError(k,err);
   }
 
-  std::cout<<"Outside the loop of rolls"<<std::endl;
+  if(debug) std::cout<<"Outside the loop of rolls"<<std::endl;
 
   Ca5->Clear();
   
@@ -2451,7 +2488,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   if(barrel){
     EffGlobWm2->GetXaxis()->LabelsOption("v");
-    std::cout<<"Done the first Barrel"<<std::endl;
+    if(debug) std::cout<<"Done the first Barrel"<<std::endl;
     EffGlobWm1->GetXaxis()->LabelsOption("v");
     EffGlobW0->GetXaxis()->LabelsOption("v");
     EffGlobW1->GetXaxis()->LabelsOption("v");
@@ -2499,7 +2536,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobW1far->GetYaxis()->SetRangeUser(0.,100.);
     EffGlobW2far->GetYaxis()->SetRangeUser(0.,100.);
   
-    std::cout<<"Done with Eff Glob"<<std::endl;
+    if(debug) std::cout<<"Done with Eff Glob"<<std::endl;
 
     BXGlobWm2far->GetXaxis()->LabelsOption("v");
     BXGlobWm1far->GetXaxis()->LabelsOption("v");
@@ -2513,7 +2550,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     MaskedGlobW1far->GetXaxis()->LabelsOption("v");
     MaskedGlobW2far->GetXaxis()->LabelsOption("v");
 
-    std::cout<<"Done with Average Masked"<<std::endl;
+    if(debug) std::cout<<"Done with Average Masked"<<std::endl;
 
     AverageEffWm2->GetXaxis()->LabelsOption("v");
     AverageEffWm1->GetXaxis()->LabelsOption("v");
@@ -2533,30 +2570,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     NoPredictionW1->GetXaxis()->LabelsOption("v");
     NoPredictionW2->GetXaxis()->LabelsOption("v");
     
-    NoPredictionWm2far->GetXaxis()->LabelsOption("v"); std::cout<<"Done with Wm2fa  "<<std::endl;
-    NoPredictionWm1far->GetXaxis()->LabelsOption("v"); std::cout<<"Done with Wm1fa  "<<std::endl;
-    NoPredictionW0far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W0far  "<<std::endl;
-    NoPredictionW1far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W1far  "<<std::endl;
-    NoPredictionW2far->GetXaxis()->LabelsOption("v");  std::cout<<"Done with W2far  "<<std::endl;
+    NoPredictionWm2far->GetXaxis()->LabelsOption("v"); if(debug) std::cout<<"Done with Wm2fa  "<<std::endl;
+    NoPredictionWm1far->GetXaxis()->LabelsOption("v"); if(debug) std::cout<<"Done with Wm1fa  "<<std::endl;
+    NoPredictionW0far->GetXaxis()->LabelsOption("v");  if(debug) std::cout<<"Done with W0far  "<<std::endl;
+    NoPredictionW1far->GetXaxis()->LabelsOption("v");  if(debug) std::cout<<"Done with W1far  "<<std::endl;
+    NoPredictionW2far->GetXaxis()->LabelsOption("v");  if(debug) std::cout<<"Done with W2far  "<<std::endl;
     
   }if(endcap&&!cosmics){  
-    std::cout<<"Label Options Near"<<std::endl;
+    if(debug) std::cout<<"Label Options Near"<<std::endl;
     NoPredictionDm3->GetXaxis()->LabelsOption("v");
-    std::cout<<"Label Options AverageEffDm3"<<std::endl;
+    if(debug) std::cout<<"Label Options AverageEffDm3"<<std::endl;
     AverageEffDm3->GetXaxis()->LabelsOption("v");
-    std::cout<<"Label Options EffGlobDm3"<<std::endl;
+    if(debug) std::cout<<"Label Options EffGlobDm3"<<std::endl;
     EffGlobDm3->GetXaxis()->LabelsOption("v");
     BXGlobDm3->GetXaxis()->LabelsOption("v");
     MaskedGlobDm3->GetXaxis()->LabelsOption("v");
           
-    std::cout<<"Label Options Far"<<std::endl;
+    if(debug) std::cout<<"Label Options Far"<<std::endl;
     NoPredictionDm3far->GetXaxis()->LabelsOption("v");
     AverageEffDm3far->GetXaxis()->LabelsOption("v");
     EffGlobDm3far->GetXaxis()->LabelsOption("v");
     BXGlobDm3far->GetXaxis()->LabelsOption("v");
     MaskedGlobDm3far->GetXaxis()->LabelsOption("v");
     
-    std::cout<<"Label Size"<<std::endl;
+    if(debug) std::cout<<"Label Size"<<std::endl;
     NoPredictionDm3->GetXaxis()->SetLabelSize(0.03);
     AverageEffDm3->GetXaxis()->SetLabelSize(0.03);
     EffGlobDm3->GetXaxis()->SetLabelSize(0.03);
@@ -2568,7 +2605,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     BXGlobDm3far->GetXaxis()->SetLabelSize(0.03);
     MaskedGlobDm3far->GetXaxis()->SetLabelSize(0.03);
     
-    std::cout<<"Range User"<<std::endl;
+    if(debug) std::cout<<"Range User"<<std::endl;
     NoPredictionDm3->GetYaxis()->SetRangeUser(0.,100.);
     AverageEffDm3->GetYaxis()->SetRangeUser(0.,100.);
     EffGlobDm3->GetYaxis()->SetRangeUser(0.,100.);
@@ -2580,7 +2617,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     NoPredictionDm2->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobDm3far->GetYaxis()->SetRangeUser(0.,100.);
 
-    std::cout<<"Done with Disk m 3"<<std::endl;
+    if(debug) std::cout<<"Done with Disk m 3"<<std::endl;
 
     NoPredictionDm2->GetXaxis()->LabelsOption("v");
     AverageEffDm2->GetXaxis()->LabelsOption("v");
@@ -2613,7 +2650,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobDm2far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobDm2far->GetYaxis()->SetRangeUser(0.,100.);
 
-    std::cout<<"Done with Disk m 2"<<std::endl;
+    if(debug) std::cout<<"Done with Disk m 2"<<std::endl;
 
     NoPredictionDm1->GetXaxis()->LabelsOption("v");
     AverageEffDm1->GetXaxis()->LabelsOption("v");
@@ -2647,7 +2684,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobDm1far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobDm1far->GetYaxis()->SetRangeUser(0.,100.);
 
-    std::cout<<"Done with Disk m1"<<std::endl;
+    if(debug) std::cout<<"Done with Disk m1"<<std::endl;
 
     AverageEffD1->GetXaxis()->LabelsOption("v");
     EffGlobD1->GetXaxis()->LabelsOption("v");
@@ -2679,7 +2716,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobD1far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobD1far->GetYaxis()->SetRangeUser(0.,100.);
 
-    std::cout<<"Done with Disk 1"<<std::endl;
+    if(debug) std::cout<<"Done with Disk 1"<<std::endl;
 
     NoPredictionD2->GetXaxis()->LabelsOption("v");
     AverageEffD2->GetXaxis()->LabelsOption("v");
@@ -2712,7 +2749,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     EffGlobD2far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobD2far->GetYaxis()->SetRangeUser(0.,100.);
 
-    std::cout<<"Done with Disk 2"<<std::endl;
+    if(debug) std::cout<<"Done with Disk 2"<<std::endl;
 
     NoPredictionD3->GetXaxis()->LabelsOption("v");
     AverageEffD3->GetXaxis()->LabelsOption("v");
@@ -2748,7 +2785,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
 
 
-  std::cout<<"Efficiency Images"<<std::endl;
+  if(debug) std::cout<<"Efficiency Images"<<std::endl;
 
   pave = new TPaveText(35,119,60,102);
   TText *t1=pave->AddText("BX Distribution (Right Axis ->)");
