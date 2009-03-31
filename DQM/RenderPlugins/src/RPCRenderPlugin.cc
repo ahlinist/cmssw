@@ -1,3 +1,4 @@
+
 #include "TProfile2D.h"
 #include "TStyle.h"
 #include "TCanvas.h"
@@ -200,7 +201,7 @@ void  RPCRenderPlugin::postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o){
  
  if(o.name.find("ClusterSizeIn1Bin_Roll_vs_Sector") != std::string::npos) {
    
-   obj->SetMinimum(-1.e15);
+   obj->SetMinimum(-1.e-15);
    obj->SetMaximum(1.0);
    
    int colorPalette[20];
@@ -361,3 +362,5 @@ if(o.name.find("NumberOfDigi_Mean_Roll_vs_Sector") != std::string::npos) {
 
  return;
 }
+
+
