@@ -16,6 +16,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TLine.h"
 
 #include <cassert>
 #include "DQM/RenderPlugins/src/utils.h"
@@ -120,16 +121,6 @@ void L1TRPCTFRenderPlugin::preDrawTH1F ( TCanvas *c, const DQMNet::CoreObject &o
   TH1F* obj = dynamic_cast<TH1F*>( o.object ); 
   assert (obj); // checks that object indeed exists
 
-  // Code used in SiStripRenderPlugin -- do we want similar defaults?
-
-  /*
-    gStyle->SetOptStat(0111); 
-    if ( obj->GetMaximum(1.e5) > 0. ) { 
-    gPad->SetLogy(1); 
-    } else { 
-    gPad->SetLogy(0); 
-    } 
-  */
 
   return;
 
@@ -145,49 +136,12 @@ void L1TRPCTFRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o
   TH2F* obj = dynamic_cast<TH2F*>( o.object ); 
   assert( obj ); 
 
-  /*
   //put in preDrawTH2F  
-  if( o.name.find( "reportSummaryMap" )  != std::string::npos) {
+  if( o.name.find( "muons_eta_phi" )  != std::string::npos) {
     obj->SetStats( kFALSE );
-    dqm::utils::reportSummaryMapPalette(obj);
-    obj->SetOption("colz");
 
-
-    obj->SetTitle("L1TEMU Report Summary Map");
-    
-    obj->GetXaxis()->SetNdivisions(1,true);
-    obj->GetYaxis()->SetNdivisions(12,true);
-    obj->GetXaxis()->CenterLabels();
-    obj->GetYaxis()->CenterLabels();
-    
-    gPad->SetGrid(1,1);
-    return;
+   
   }
-
-  gStyle->SetCanvasBorderMode( 0 ); 
-  gStyle->SetPadBorderMode( 0 ); 
-  gStyle->SetPadBorderSize( 0 ); 
-  
-  // I don't think we want to set stats to 0 for Hcal
-  //gStyle->SetOptStat( 0 ); 
-  //obj->SetStats( kFALSE ); 
-
-  // Use same labeling format as SiStripRenderPlugin.cc
-  TAxis* xa = obj->GetXaxis(); 
-  TAxis* ya = obj->GetYaxis(); 
-  
-  xa->SetTitleOffset(0.7); 
-  xa->SetTitleSize(0.05); 
-  xa->SetLabelSize(0.04); 
-  
-  ya->SetTitleOffset(0.7); 
-  ya->SetTitleSize(0.05); 
-  ya->SetLabelSize(0.04); 
-
-  // Now the important stuff -- set 2D hist drawing option to "colz"
-  gStyle->SetPalette(1);
-  obj->SetOption("colz");
-  */
 
   return;
 } // preDrawTH2F(...)
@@ -199,39 +153,6 @@ void L1TRPCTFRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o
 {
 
   // Add error/warning text to 1-D histograms.  Do we want this at this time?
-  /*
-  TText tt; 
-  tt.SetTextSize(0.12); 
-
-  if (o.flags == 0) return; 
-
-  else 
-    { 
-      if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR) 
-	{ 
-	  tt.SetTextColor(2); // error color = RED 
-	  tt.DrawTextNDC(0.5, 0.5, "Error"); 
-	}  // DQM_FLAG_REPORT_ERROR
-
-      else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING) 
-	{ 
-	  tt.SetTextColor(5); 
-	  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW 
-	} // DQM_FLAG_REPORT_WARNING
-
-      else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER) 
-	{  
-	  tt.SetTextColor(1); // other color = BLACK
-	  tt.DrawTextNDC(0.5, 0.5, "Other ");       
-	} // DQM_FLAG_REPORT_OTHER
-
-      else 
-	{ 
-	  tt.SetTextColor(3); 
-	  tt.DrawTextNDC(0.5, 0.5, "Ok "); 
-	} //else
-    } // else (  o.flags != 0  )
-  */
   return;
 
 } // postDrawTH1F(...)
@@ -241,10 +162,38 @@ void L1TRPCTFRenderPlugin::postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o
 
 void L1TRPCTFRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
 {
-  // nothing to put here just yet
-  // in the future, we can add text output based on error status,
-  // or set bin range based on filled histograms, etc.  
-  // Maybe add a big "OK" sign to histograms with no entries (i.e., no errors)?
+
+  TH2F* obj = dynamic_cast<TH2F*>( o.object );
+  assert( obj );
+
+
+  if( o.name.find( "muons_eta_phi" )  != std::string::npos) {
+
+      TLine line;
+      line.SetLineWidth(1);
+      for (int tc=0;tc<12;++tc) {
+        int phi = tc*12+2;
+        //line.DrawLine(-3.5, 0.5, -3.5, 6.5);
+        line.DrawLine(-16.5, phi, 16.5, phi);
+      }
+
+      for (int tb=0;tb<8;++tb) {
+        float eta = -12.5;
+        if (tb==1) eta = -8.5;
+        else if (tb==2) eta = -4.5;
+        else if (tb==3) eta = -1.5;
+        else if (tb==4) eta = 1.5;
+        else if (tb==5) eta = 4.5;
+        else if (tb==6) eta = 8.5;
+        else if (tb==7) eta = 12.5;
+         
+        line.DrawLine(eta, 0, eta, 143);
+
+      }
+     
+  }
+
+
 
   return;
 
