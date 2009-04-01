@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.12 2009/03/23 14:18:58 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.13 2009/03/31 18:20:01 carrillo Exp $
 //
 //
 
@@ -55,6 +55,7 @@
 #include "TText.h"
 #include "TPaveText.h"
 #include "TH1D.h"
+#include "TGraphErrors.h"
 
 //
 // class decleration
@@ -236,9 +237,8 @@ public:
   TH1F * histoResidual;
   TH1F * histoCLS;
   TH2F * histoBXY;
+  TH2F * histoINEF;
   
-
-
   TH1F * EffGlobWm2;
   TH1F * EffGlobWm1;
   TH1F * EffGlobW0;
@@ -723,6 +723,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca3 = new TCanvas("Ca3","Profile",1200,600);
   
   gStyle->SetOptStat(1);
+  gStyle->SetPalette(1);
   
   std::string meIdRES,folder,labeltoSave,command;
   
@@ -979,7 +980,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	     
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual,meIdCLS,meIdBXY;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual,meIdCLS,meIdBXY,meIdINEF;
 	  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
@@ -1001,25 +1002,45 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromDT_"+ name;	
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
+	  meIdINEF = folder +"/Inefficiency2DFromDT_"+ name;
 	  
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	    histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
 	  }
+
+	  const int n = 20;
 	  
+	  float x[n];
+	  float y[n];
+	  float ex[n];
+	  float ey[n];
+	  	  
 	  if(CLSandBXY){
 	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
 	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
 
 	    if(histoBXY && histoCLS){
 	      if(debug) std::cout<<"the histograms exist"<<std::endl;
+	        
+	      float step = stripl/float(n);
+	      for(int i=0;i<n;i++){
+		float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
+		float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
+		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
+		
+		x[i]=(i+1)*step;
+		ex[i]=step;
+		y[i]=mean;
+		ey[i]=error;
+	      }
+	      
 	    }else{
 	      if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
 	      if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
-	      
 	    }
-
 	  }
 
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str());
@@ -1207,7 +1228,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 
 	    for(int i=nstrips+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
-
+	    
 	    assert(NumberWithOutPrediction+NumberStripsPointed == nstrips);
 
 	    doublegapeff=0.;
@@ -1261,8 +1282,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoPROY->Write();
 	    histoPROX->Write();
 	    histoPRO_2D->Write();
+	    histoCLS->Write();
+	    histoBXY->Write();
+	    
 
-	    if(prodimages){
+	    if(prodimages){//BARREL
 	      histoPRO->GetXaxis()->SetTitle("Strip");
 	      histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
 	      histoPRO->GetYaxis()->SetRangeUser(0.,1.);
@@ -1298,7 +1322,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 
-	      if(CLSandBXY){
+	      if(CLSandBXY){//Barrel
 		histoCLS->GetXaxis()->SetTitle("Cluster Size");
 		histoCLS->Draw();
 		labeltoSave = name + "/CLS.png";
@@ -1308,7 +1332,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoBXY->GetXaxis()->SetTitle("BX");
 		histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
 		
-		histoBXY->Draw();
+		TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+		plot->SetMarkerColor(6);
+		plot->SetMarkerStyle(20);
+		plot->SetMarkerSize(0.5);
+		plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
+		plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
+		plot->Draw("AP");
 		labeltoSave = name + "/BXY.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1324,6 +1354,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
+		histoINEF->GetXaxis()->SetTitle("cm");
+		histoINEF->GetYaxis()->SetTitle("cm");
+		histoINEF->Draw();
+		histoINEF->SetDrawOption("color");
+		labeltoSave = name + "/INEF.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+
 		histoPROY->SetTitle("Efficiency along Y");
 		histoPROY->GetXaxis()->SetTitle("cm");
 		histoPROY->GetYaxis()->SetRangeUser(0.,1.);
@@ -1332,7 +1371,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 			
-
 		histoPROX->SetTitle("Efficiency along X");
 		histoPROX->GetXaxis()->SetTitle("cm");
 		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
@@ -1365,8 +1403,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }
 	    }
 	    
+	    delete histoPRO;
 	    delete histoPROY;
 	    delete histoPROX;
+	    delete histoPRO_2D;
+	    delete histoCLS;
+	    delete histoBXY;
+	    delete histoINEF;
 
 	    int sector = rpcId.sector();
 	    //Near Side
@@ -1378,50 +1421,26 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      std::string color = "#0000FF";
 	      if(averageeff<threshold) color = "#ff4500";
-
+	      
+	      std::string target;
+	      
 	      if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
-		if(Ring==-2){ 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm2near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2near.html"; system(command.c_str());
-		}
-		else if(Ring==-1){ 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm1near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1near.html"; system(command.c_str());
-		}
-		else if(Ring==0){ 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW0near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0near.html"; system(command.c_str());
-		}
-		else if(Ring==1) { 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW1near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1near.html"; system(command.c_str());
-		}
-		else if(Ring==2) { 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW2near.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2near.html"; system(command.c_str());
-		}     
+		if(Ring==-2) target = "Wm2near.html";
+		else if(Ring==-1) target = "Wm1near.html";
+		else if(Ring==0) target = "W0near.html";
+		else if(Ring==1) target = "W1near.html";
+		else if(Ring==2) target = "W2near.html";
 	      }else{
-		if(Ring==-2){ 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm2far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm2far.html"; system(command.c_str());
-		}
-		else if(Ring==-1){ 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexWm1far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertWm1far.html"; system(command.c_str());
-		}
-		else if(Ring==0) { 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW0far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW0far.html"; system(command.c_str());
-		}
-		else if(Ring==1) { 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW1far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW1far.html"; system(command.c_str());
-		}
-		else if(Ring==2) { 
-		  command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexW2far.html"; system(command.c_str());
-		  command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertW2far.html"; system(command.c_str());
-		}     
+		if(Ring==-2) target = "Wm2far.html";
+		else if(Ring==-1) target = "Wm1far.html";
+		else if(Ring==0)  target = "W0far.html";
+		else if(Ring==1) target = "W1far.html";
+		else if(Ring==2) target = "W2far.html";
 	      }
+	      
+	      command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> index" + target; system(command.c_str());
+	      command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insert" + target; system(command.c_str());
+
 	    }
 
 	    //exit(1);
@@ -1750,7 +1769,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	  
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual,meIdCLS,meIdBXY, meIdINEF;
 	 
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
@@ -1765,28 +1784,66 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  meIdPRO = "Profile_For_"+name;
 	  meIdPROY = "Y_Profile_For_"+name;
+	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
-	  meIdResidual =folder+"/RPCResidualsFromCSC_"+ name;
-	  meIdCSC_2D =folder+"/ExpectedOccupancy2DFromCSC_"+ name;
+	  meIdResidual = folder+"/RPCResidualsFromCSC_"+ name;
+	  meIdCSC_2D = folder+"/ExpectedOccupancy2DFromCSC_"+ name;
 	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromCSC_"+ name;
-	 
+	  meIdCLS = folder +"/CLSDistribution_"+ name;	
+	  meIdBXY = folder +"/BXYDistribution_"+ name;
+	  meIdINEF = folder +"/Inefficiency2DFromCSC_"+ name;
+	  
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
-	  }
+	    histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
+	  } 
 
-	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) if(debug) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl; 
-	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)if(debug) std::cout<<meIdCSC<<"Doesn't exist"<<std::endl; 
-	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)if(debug) std::cout<<BXDistribution<<"Doesn't exist"<<std::endl; 
-	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl; 
+	  const int n = 20;
+	  
+	  float x[n];
+	  float y[n];
+	  float ex[n];
+	  float ey[n];
+
+	  if(CLSandBXY){//EndCap
+	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
+	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
+	    
+	    if(histoBXY && histoCLS){
+	      if(debug) std::cout<<"the histograms exist"<<std::endl;
+	      
+	      float step = stripl/float(n);
+	      for(int i=0;i<n;i++){
+		float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
+		float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
+		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
+		
+		x[i]=(i+1)*step;
+		ex[i]=step;
+		y[i]=mean;
+		ey[i]=error;
+	      }
+	    
+	    }else{
+	      if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
+	      if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
+	    }
+	  }
+	  
+	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) if(debug) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl;
+	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)if(debug) std::cout<<meIdCSC<<"Doesn't exist"<<std::endl;
+	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)if(debug) std::cout<<BXDistribution<<"Doesn't exist"<<std::endl;
+	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl;
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
 	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
 	  
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
 
-	  if(debug) std::cout <<folder<<"/"<<name<<std::endl;
+	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
 	  
 	  int NumberMasked=0;
 	  int NumberWithOutPrediction=0;
@@ -1919,6 +1976,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	      histoPRO->Write();
 	      histoPROY->Write();
+	      histoPRO_2D->Write();
+	      histoCLS->Write();
+	      histoBXY->Write();
+
 
 	      if(prodimages){//ENDCAP	
 		if(debug) std::cout<<"Creating Images for the endcap"<<std::endl;
@@ -1957,6 +2018,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
 		
+		if(CLSandBXY){//EndCap
+		  histoCLS->GetXaxis()->SetTitle("Cluster Size");
+		  histoCLS->Draw();
+		  labeltoSave = name + "/CLS.png";
+		  Ca0->SaveAs(labeltoSave.c_str());
+		  Ca0->Clear();
+		
+		  histoBXY->GetXaxis()->SetTitle("BX");
+		  histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
+		  
+		  TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+		  plot->SetMarkerColor(6);
+		  plot->SetMarkerStyle(20);
+		  plot->SetMarkerSize(0.5);
+		  plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
+		  plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
+		  plot->Draw("AP");
+		  labeltoSave = name + "/BXY.png";
+		  Ca0->SaveAs(labeltoSave.c_str());
+		  Ca0->Clear();
+		}
+		
 		if(dosD){
 		  if(debug) std::cout<<"Inside if 2D"<<std::endl;
 		  histoRPC_2D->GetXaxis()->SetTitle("cm");
@@ -1966,12 +2049,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  labeltoSave = name + "/RPCOccupancy_2D.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
-		   
+
+		  histoINEF->GetXaxis()->SetTitle("cm");
+		  histoINEF->GetYaxis()->SetTitle("cm");
+		  histoINEF->Draw();
+		  histoINEF->SetDrawOption("color");
+		  labeltoSave = name + "/INEF.png";
+		  Ca0->SaveAs(labeltoSave.c_str());
+		  Ca0->Clear();
+		  
 		  histoPROY->SetTitle("Efficiency along Y");
 		  histoPROY->GetXaxis()->SetTitle("cm");
 		  histoPROY->GetYaxis()->SetRangeUser(0.,1.);
 		  histoPROY->Draw();
 		  labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
+		  Ca0->SaveAs(labeltoSave.c_str());
+		  Ca0->Clear();
+
+		  histoPROX->SetTitle("Efficiency along X");
+		  histoPROX->GetXaxis()->SetTitle("cm");
+		  histoPROX->GetYaxis()->SetRangeUser(0.,1.);
+		  histoPROX->Draw();
+		  labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
 		  Ca0->SaveAs(labeltoSave.c_str());
 		  Ca0->Clear();
 		    
@@ -2002,10 +2101,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		}
 	      }
 	    
-	      delete histoPROY;
 	      delete histoPRO;
+	      delete histoPROX;
+	      delete histoPROY;
 	      delete histoPRO_2D;
-	      
+	      delete histoCLS;
+	      delete histoBXY;
+	      delete histoINEF;
+
 	      int sector = rpcId.sector();
 	      //Near Side
 	      
@@ -2016,54 +2119,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		
 		std::string color = "#0000FF";
 		if(averageeff<threshold) color = "#ff4500";
+
+		std::string target;
 		
 		int Disk=rpcId.station()*rpcId.region();
 		
 		if(sector==1||sector==2||sector==3){
-		  if(Disk==-3){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm3near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3near.html"; system(command.c_str());
-		  }
-		  else if(Disk==-2){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/ndextemplate.html >> indexDm2near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2near.html"; system(command.c_str());
-		  }
-		  else if(Disk==-1){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm1near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1near.html"; system(command.c_str());
-		  }
-		  else if(Disk==1){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD1near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1near.html"; system(command.c_str());
-		  }
-		  else if(Disk==2) { 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD2near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2near.html"; system(command.c_str());
-		  }else if(Disk==3){
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD3near.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3near.html"; system(command.c_str());
-		  }
+		  if(Disk==-3) target = "Dm3near.html";
+		  else if(Disk==-2) target = "Dm2near.html";
+		  else if(Disk==-1) target = "Dm1near.html";
+		  else if(Disk==1) target = "D1near.html";
+		  else if(Disk==2) target = "D2near.html";
+		  else if(Disk==3) target = "D3near.html";
 		}else{
-		  if(Disk==-3){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm3far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm3far.html"; system(command.c_str());
-		  }else if(Disk==-2){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm2far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm2far.html"; system(command.c_str());
-		  }else if(Disk==-1){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexDm1far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertDm1far.html"; system(command.c_str());
-		  }else if(Disk==1){ 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD1far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD1far.html"; system(command.c_str());
-		  }else if(Disk==2) { 
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD2far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD2far.html"; system(command.c_str());
-		  }else if(Disk==3){
-		    command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> indexD3far.html"; system(command.c_str());
-		    command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insertD3far.html"; system(command.c_str());
-		  }
+		  if(Disk==-3) target = "Dm3far.html";
+		  else if(Disk==-2) target = "Dm2far.html";
+		  else if(Disk==-1) target = "Dm1far.html";
+		  else if(Disk==1) target = "D1far.html";
+		  else if(Disk==2) target = "D2far.html";
+		  else if(Disk==3) target = "D3far.html";
 		}
+		command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> index" + target; system(command.c_str());
+		command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insert" + target; system(command.c_str());
 	      }
 	    }
 
@@ -2833,6 +2910,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxAxisEndCap->CenterTitle();
   
   gStyle->SetOptStat(1);
+  gStyle->SetPalette(1);
+
+
   
   //Negative EndCap
   
