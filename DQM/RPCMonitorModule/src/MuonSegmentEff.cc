@@ -47,22 +47,21 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   muonRPCDigis=iConfig.getUntrackedParameter<std::string>("muonRPCDigis","muonRPCDigis");
   cscSegments=iConfig.getUntrackedParameter<std::string>("cscSegments","cscSegments");
   dt4DSegments=iConfig.getUntrackedParameter<std::string>("dt4DSegments","dt4DSegments");
-
+  
   nameInLog = iConfig.getUntrackedParameter<std::string>("moduleLogName", "RPC_Eff");
   EffSaveRootFile  = iConfig.getUntrackedParameter<bool>("EffSaveRootFile", false); 
   EffRootFileName  = iConfig.getUntrackedParameter<std::string>("EffRootFileName", "MuonSegmentEff.root"); 
-
+  
   //Interface
-
+  
   dbe = edm::Service<DQMStore>().operator->();
   
   std::string folder = "Muons/MuonSegEff/";
   dbe->setCurrentFolder(folder);
   statistics = dbe->book1D("Statistics","All Statistics",33,0.5,33.5);
-  bxVsy = dbe->book2D("bxVsy","BX Vs distance to the top of the chamber",7,-3.5,3.5,150,0,150);
   
   if(debug) std::cout<<"booking Global histograms"<<std::endl;
-
+  
   statistics->setBinLabel(1,"Events ",1);
   statistics->setBinLabel(2,"Events with DT segments",1);
   statistics->setBinLabel(3,"Events with 1 DT segment",1);
@@ -600,15 +599,22 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    
 		    if(debug) std::cout<<"DT  \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual="<<minres<<std::endl;
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
-		    if(fabs(minres)<=(rangestrips)*stripw){ //for HR
-		      //if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+		    
+		    if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 		      if(debug) std::cout<<"DT  \t \t \t \t \t \t True!"<<std::endl;
 		      anycoincidence=true;
 		    }
 		  }
 		  if(prediction && anycoincidence){
-		    float distocontact = stripl*0.5 + PointExtrapolatedRPCFrame.y();
-		    if(minres<stripw*0.5) bxVsy->Fill(bx,distocontact);
+		    float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y();
+
+		    sprintf(meIdDT,"BXYDistribution_%s",detUnitLabel);
+		    meMap[meIdDT]->Fill(bx,distobottom);
+
+		    sprintf(meIdDT,"CLSDistribution_%s",detUnitLabel);
+		    meMap[meIdDT]->Fill(cluSize);
+		    
+		    
 		    if(debug) std::cout<<"DT  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Norm of Cosine Directors="<<dx*dx+dy*dy+dz*dz<<"~1?"<<std::endl;
 		    
@@ -643,6 +649,10 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  else{
 		    RPCGeomServ rpcsrv(rollasociated->id());
 		    std::string nameRoll = rpcsrv.name();
+		    
+		    sprintf(meIdRPC,"Inefficiency2DFromDT_%s",detUnitLabel);
+		    meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+
 		    if(debug) std::cout<<"DT \t \t \t \t \t A roll was ineficient in event "<<iEvent.id().event()<<std::endl;
 		    if(debug) ofrej<<"DTs \t Wh "<<dtWheel
 				   <<"\t St "<<dtStation
@@ -861,6 +871,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			//-------RecHitPart Just For Residual--------
 			int countRecHits = 0;
 			int cluSize = 0;
+			int bx = 0;
 			float minres = 3000.;
 			
 			if(debug) std::cout<<"MB4 \t \t \t \t Getting RecHits in Roll Asociated"<<std::endl;
@@ -876,6 +887,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  if(fabs(res)<fabs(minres)){
 			    minres=res;
 			    cluSize = recHit->clusterSize();
+			    bx = recHit->BunchX();
 			  }
 			}		
 
@@ -896,18 +908,26 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  }
 			}
 			if(prediction && anycoincidence){
+			  float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y();
+			  
+			  sprintf(meIdDT,"BXYDistribution_%s",detUnitLabel);
+			  meMap[meIdDT]->Fill(bx,distobottom);
+			  
+			  sprintf(meIdDT,"CLSDistribution_%s",detUnitLabel);
+			  meMap[meIdDT]->Fill(cluSize);
+			  
 			  if(debug) std::cout<<"MB4  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 			  if(debug) std::cout<<"MB4  \t \t \t \t \t Norm of Cosine Directors="<<dx3*dx3+dy3*dy3+dz3*dz3<<"~1?"<<std::endl;
-		   
+			  
 			  //-----RESIDUALS----------
 			  if(inves){
 			    float cosal = dx/sqrt(dx*dx+dz*dz);
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t Angle="<<acos(cosal)*180/3.1415926<<" degree"<<std::endl;
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
 			    assert(rollId.station()==4);
-			    if(cluSize==1*dupli){ hGlobalResClu1La6->Fill(minres); if(minres<0.005*stripw) AngClu1La6->Fill(acos(cosal)); if(fabs(minres)<stripw*0.5) DistBorderClu1La6->Fill(minres/stripw+0.5);}
-			    else if(cluSize==2*dupli){ hGlobalResClu2La6->Fill(minres); if(minres<0.005*stripw) AngClu2La6->Fill(acos(cosal));}
-			    else if(cluSize==3*dupli){ hGlobalResClu3La6->Fill(minres); if(minres<0.005*stripw) AngClu3La6->Fill(acos(cosal));}
+			    if(cluSize==1*dupli){ hGlobalResClu1La6->Fill(minres); AngClu1La6->Fill(acos(cosal)); DistBorderClu1La6->Fill(minres/stripw+0.5);}
+			    else if(cluSize==2*dupli){ hGlobalResClu2La6->Fill(minres); AngClu2La6->Fill(acos(cosal)); DistBorderClu2La6->Fill(minres/stripw+0.5);}
+			    else if(cluSize==3*dupli){ hGlobalResClu3La6->Fill(minres); AngClu3La6->Fill(acos(cosal)); DistBorderClu3La6->Fill(minres/stripw+0.5);}
 			  }
 			  //--------------------------------
 			  
@@ -925,6 +945,10 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			else{
 			  RPCGeomServ rpcsrv(rollasociated->id());
 			  std::string nameRoll = rpcsrv.name();
+
+			  sprintf(meIdRPC,"Inefficiency2DFromDT_%s",detUnitLabel);
+			  meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t A roll was ineficient in event"<<iEvent.id().event()<<std::endl;
 			  if(debug) ofrej<<"MB4 \t Wh "<<dtWheel
 					 <<"\t St "<<dtStation
@@ -1204,6 +1228,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    
 		    //-------RecHitPart Just For Residual--------
 		    int cluSize = 0;
+		    int bx =0;
 		    int countRecHits = 0;
 		    float minres = 3000.;
 		    
@@ -1220,6 +1245,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      if(fabs(res)<fabs(minres)){
 			minres=res;
 			cluSize = recHit->clusterSize();
+			bx = recHit->BunchX();
 			if(debug) std::cout<<"CSC  \t \t \t \t \t \t \t New Min Res "<<res<<"cm."<<std::endl;
 		      }
 		    }
@@ -1240,6 +1266,15 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      }
 		    }
 		    if(prediction && anycoincidence){
+		      
+		      float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y(); //For the endcaps we should check where are the CONTACTSSS!!!
+		      
+		      sprintf(meIdCSC,"BXYDistribution_%s",detUnitLabel);
+		      meMap[meIdCSC]->Fill(bx,distobottom);
+		      
+		      sprintf(meIdCSC,"CLSDistribution_%s",detUnitLabel);
+		      meMap[meIdCSC]->Fill(cluSize);
+		      
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t At least one RecHit inside the range, Predicted="<<stripPredicted<<" minres="<<minres<<"cm range="<<rangestrips<<"strips stripw="<<stripw<<"cm"<<std::endl;
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t Norm of Cosine Directors="<<dx*dx+dy*dy+dz*dz<<"~1?"<<std::endl;
 
@@ -1273,6 +1308,10 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    }else if(prediction){
 		      RPCGeomServ rpcsrv(rollasociated->id());
 		      std::string nameRoll = rpcsrv.name();
+
+		      sprintf(meIdRPC,"Inefficiency2DFromCSC_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+		      
 		      if(debug) std::cout<<"CSC \t \t \t \t \t \t A roll was ineficient in event"<<iEvent.id().event()<<std::endl;
 		      if(debug) ofrej<<"CSC \t EndCap "<<rpcRegion
 				     <<"\t cscStation "<<cscStation

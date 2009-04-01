@@ -59,7 +59,7 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"BXYDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXYDistribution_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,130);   
+    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,stripl);   
 
     //New 2D and more
 
@@ -69,6 +69,10 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromDT_for_%s",layerLabel);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+
+    sprintf(meId,"Inefficiency2DFromDT_%s",detUnitLabel);
+    sprintf(meTitle,"Inefficiency2DFromDT_for_%s",layerLabel);
     meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCResidualsFromDT_%s",detUnitLabel);
@@ -100,7 +104,7 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"BXYDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXYDistribution_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,130);   
+    meMap[meId] = dbe->book2D(meId, meTitle,7,-3.5,3.5,20,0,stripl);   
     
     //New 2D and more
 
@@ -110,6 +114,10 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"RPCDataOccupancy2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromCSC_for_%s",layerLabel);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+
+    sprintf(meId,"Inefficiency2DFromCSC_%s",detUnitLabel);
+    sprintf(meTitle,"Inefficiency2DFromCSC_for_%s",layerLabel);
     meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCResidualsFromCSC_%s",detUnitLabel);
