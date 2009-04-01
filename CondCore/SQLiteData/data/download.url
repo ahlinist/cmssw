@@ -44,8 +44,10 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/CSCDBConstants_310.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/CSCIdealGeometry310me42_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/CSCIdealGeometryErrors310me42_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/dbfile_Strip_31X.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/dbfile_Strip_31X_31Mar.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/geometry.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/HCAL_CMSSW_3_1_0_pre5.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/testNewXML_all.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/EaryCollision_IDEAL.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/Ecal_31X.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/pixelLA.db
