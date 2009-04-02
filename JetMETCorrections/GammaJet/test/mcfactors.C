@@ -1,4 +1,5 @@
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
 #include "TCanvas.h"
@@ -9,13 +10,14 @@
 #include "TLatex.h"
 #include "TPaveStats.h"
 #include "TStyle.h"
+#include "TROOT.h"
 
 #include "Config.hpp"
 
 #include <string>
 #include <iostream>
 
-#include "deltac.C"
+//#include "deltac.C"
 
 // Current ROOT version (5.14) doesn't yet support member functions
 // with TF1 so need to make these things global, ugh 
@@ -28,14 +30,19 @@ Double_t bkgbias::deltac(const Double_t *ptgamma, const Double_t *p) {
 
 using namespace std;
 
+const int kDarkGreen = kGreen+50;
+const int kDarkYellow = kYellow+50;
+
 const bool drawBars = false;
 const bool drawStats = true;//false;
 const bool drawPeak = true;
+const double _ptreco = 8.;
 
 void doRatio(const TGraphErrors *a, const TGraphErrors *b, TGraphErrors *c,
 	     double xmatch=0.1);
 
-double FindPeak(TH1D* h, double &err);
+double FindPeak(TH1D* h, double &err, const double pt = 0.);
+double CorrectedMean(TH1D* h, const double pt);
 
 TGraphErrors* divide(const TGraphErrors *g, const TF1 *f);
 
@@ -48,8 +55,11 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   else gStyle->SetOptFit(0);
 
   cafe::Config config("factor");
-  string _algoname = config.get("AlgoName", "");
-  
+  string _algo = config.get("Algorithm", "ite");
+  string _algoname = "";
+  if (_algo=="ite")   _algoname = "ICone0.5";
+  if (_algo=="pfite") _algoname = "PFlow";
+
   string dirs = "Ekin";
   string dirsp = "EkinID";
   string dirb = "EkinSB";
@@ -76,6 +86,37 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     files[i] = sigfiles[i];
   for (unsigned int i = 0; i != bkgfiles.size(); ++i)
     files[i+sigfiles.size()] = bkgfiles[i];
+
+  // MC truth flavor fractions vs ptgamma (signal)
+  TGraphErrors *gfgluons = new TGraphErrors(); gfgluons->SetName("gfgluons");
+  TGraphErrors *gflights = new TGraphErrors(); gflights->SetName("gflights");
+  TGraphErrors *gfcharms = new TGraphErrors(); gfcharms->SetName("gfcharms");
+  TGraphErrors *gfbottoms = new TGraphErrors();
+  gfbottoms->SetName("gfbottoms");
+
+  // MC truth flavor fractions vs ptgamma (background)
+  TGraphErrors *gfgluonb = new TGraphErrors(); gfgluonb->SetName("gfgluonb");
+  TGraphErrors *gflightb = new TGraphErrors(); gflightb->SetName("gflightb");
+  TGraphErrors *gfcharmb = new TGraphErrors(); gfcharmb->SetName("gfcharmb");
+  TGraphErrors *gfbottomb = new TGraphErrors();
+  gfbottomb->SetName("gfbottomb");
+
+  // MC truth flavor response mapped vs ptgen (signal)
+  TGraphErrors *gralls = new TGraphErrors(); gralls->SetName("gralls");
+  TGraphErrors *grgluons = new TGraphErrors(); grgluons->SetName("grgluons");
+  TGraphErrors *grlights = new TGraphErrors(); grlights->SetName("grlights");
+  TGraphErrors *grcharms = new TGraphErrors(); grcharms->SetName("grcharms");
+  TGraphErrors *grbottoms = new TGraphErrors();
+  grbottoms->SetName("grbottoms");
+
+  // MC truth flavor response mapped vs ptgen (background)
+  TGraphErrors *grallb = new TGraphErrors(); grallb->SetName("grallb");
+  TGraphErrors *grgluonb = new TGraphErrors(); grgluonb->SetName("grgluonb");
+  TGraphErrors *grlightb = new TGraphErrors(); grlightb->SetName("grlightb");
+  TGraphErrors *grcharmb = new TGraphErrors(); grcharmb->SetName("grcharmb");
+  TGraphErrors *grbottomb = new TGraphErrors();
+  grbottomb->SetName("grbottomb");
+
 
   // MC truth jet response mapped vs ptgen (!ptgamma)
   TGraphErrors *grjets = new TGraphErrors(); grjets->SetName("grjets");
@@ -171,30 +212,139 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     string dir = (i < sigfiles.size() ? dirs : dirb);
     TH1D *hptphot = (TH1D*)f->Get((dir+"/lrp_pt").c_str());
     TH1D *hptgen = (TH1D*)f->Get((dir+"/lgj_pt").c_str());
-    assert(hptphot);
+    //assert(hptphot);
+    if (!hptphot) {
+      cout << "Warning: file "<<files[i]<<" has no photons" << endl
+	   << "Skipping..." << endl;
+      continue;
+    }
     assert(hptgen);
 
-    // MC truth jet response (reco jet vs genjet) mapped vs ptgen
-    
-     dir = (i < sigfiles.size() ? dirs : dirb);
-    TH1D *hrjet = (TH1D*)f->Get((dir+"/lrj_dptvg").c_str());
 
-    if (!hrjet) cout << files[i].c_str() << endl;
-    assert(hrjet);
-
-    // Replace with Gaussian fit later
-    double rjet = hrjet->GetMean();
-    double rjet_err = max(0.1,hrjet->GetRMS())
-      / sqrt(max(1.,hrjet->Integral()));
-    double rjet2_err = 0.;
-    double rjet2 = FindPeak(hrjet, rjet2_err);
-
+    // Average pTphot and pTgen
     double ptphot = hptphot->GetMean();
     double ptphot_err = max(0.1*ptphot, hptphot->GetRMS())
       / sqrt(max(1.,hptphot->Integral()));
     double ptgen = hptgen->GetMean();
     double ptgen_err = max(0.1,hptgen->GetRMS())
       / sqrt(max(1.,hptgen->Integral()));
+
+
+    // MC truth flavor mapped vs ptphot
+    dir = (i < sigfiles.size() ? dirs : dirb);
+    TH1D *hflav = (TH1D*)f->Get((dir+"/flavor").c_str());
+    if (!hflav) hflav = (TH1D*)f->Get((dir+"/lrj_flavor").c_str());
+
+    if (!hflav) cout << files[i].c_str() << endl;
+    assert(hflav);
+    //if (!hflav) hflav = new TH1D(Form("hflav%d",i),"",81,-40.5,40.5);
+
+    double total = max(1., hflav->GetEntries());
+    int zero = hflav->FindBin(0);
+    double gluonf = hflav->GetBinContent(zero+21) / total;
+    double lightf = (hflav->Integral(zero-3,zero-1) +
+		     hflav->Integral(zero+1,zero+3)) / total;
+    double charmf = (hflav->GetBinContent(zero-4) +
+		     hflav->GetBinContent(zero+4)) / total;
+    double bottomf = (hflav->GetBinContent(zero-5) +
+		      hflav->GetBinContent(zero+5)) / total;
+
+    if (total && ptphot && ptgen) {
+ 
+      TGraphErrors *gfgluon = (i < sigfiles.size() ? gfgluons : gfgluonb);
+      int n = gfgluon->GetN();
+      gfgluon->SetPoint(n, ptphot, gluonf);
+      gfgluon->SetPointError(n, ptphot_err, 0.);
+ 
+      TGraphErrors *gflight = (i < sigfiles.size() ? gflights : gflightb);
+      gflight->SetPoint(n, ptphot, lightf);
+      gflight->SetPointError(n, ptphot_err, 0.);
+
+      double cscale = (i < sigfiles.size() ? 1. : 10.);
+      TGraphErrors *gfcharm = (i < sigfiles.size() ? gfcharms : gfcharmb);
+      gfcharm->SetPoint(n, ptphot, cscale*charmf);
+      gfcharm->SetPointError(n, ptphot_err, cscale*0.);
+      
+      double bscale = (i < sigfiles.size() ? 10. : 10.);
+      TGraphErrors *gfbottom = (i < sigfiles.size() ? gfbottoms : gfbottomb);
+      gfbottom->SetPoint(n, ptphot, bscale*bottomf);
+      gfbottom->SetPointError(n, ptphot_err, bscale*0.);
+    }
+
+    // MC truth flavor response mapped vs ptphot
+    dir = (i < sigfiles.size() ? dirs : dirb);
+    //TH2D *hrall = (TH2D*)f->Get((dir+"/lrj_dptvg2a").c_str()); // buggy plot
+    TH2D *hrall = (TH2D*)f->Get((dir+"/lrj_dptvg2").c_str()); // no quark req.
+    TH2D *hrgluon = (TH2D*)f->Get((dir+"/lrj_dptvg2g").c_str());
+    TH2D *hrlight = (TH2D*)f->Get((dir+"/lrj_dptvg2lq").c_str());
+    TH2D *hrcharm = (TH2D*)f->Get((dir+"/lrj_dptvg2cq").c_str());
+    TH2D *hrbottom = (TH2D*)f->Get((dir+"/lrj_dptvg2bq").c_str());
+
+    if (!hrgluon || !hrgluon || !hrlight || !hrcharm || !hrbottom)
+      cout << files[i].c_str() << endl;
+    assert(hrall);
+    assert(hrgluon);
+    assert(hrlight);
+    assert(hrcharm);
+    assert(hrbottom);
+
+    // Add Gaussian fit later
+    double rall = CorrectedMean(hrall->ProjectionY(), ptphot);
+    double rall_err = max(0.1,hrall->GetRMS(2))
+      / sqrt(max(1.,hrall->Integral()));
+    double rgluon = CorrectedMean(hrgluon->ProjectionY(), ptphot);
+    double rgluon_err = max(0.1,hrgluon->GetRMS(2))
+      / sqrt(max(1.,hrgluon->Integral()));
+    double rlight = CorrectedMean(hrlight->ProjectionY(), ptphot);
+    double rlight_err = max(0.1,hrlight->GetRMS(2))
+      / sqrt(max(1.,hrlight->Integral()));
+    double rcharm = CorrectedMean(hrcharm->ProjectionY(), ptphot);
+    double rcharm_err = max(0.1,hrcharm->GetRMS(2))
+      / sqrt(max(1.,hrcharm->Integral()));
+    double rbottom = CorrectedMean(hrbottom->ProjectionY(), ptphot);
+    double rbottom_err = max(0.1,hrbottom->GetRMS(2))
+      / sqrt(max(1.,hrbottom->Integral()));
+
+    if (rall && ptphot && ptgen) {
+ 
+      TGraphErrors *grall = (i < sigfiles.size() ? gralls : grallb);
+      int n = grall->GetN();
+      grall->SetPoint(n, ptphot, rall);
+      grall->SetPointError(n, ptphot_err, rall_err);
+
+      TGraphErrors *grgluon = (i < sigfiles.size() ? grgluons : grgluonb);
+      grgluon->SetPoint(n, ptphot, rgluon);
+      grgluon->SetPointError(n, ptphot_err, rgluon_err);
+ 
+      TGraphErrors *grlight = (i < sigfiles.size() ? grlights : grlightb);
+      grlight->SetPoint(n, ptphot, rlight);
+      grlight->SetPointError(n, ptphot_err, rlight_err);
+
+      TGraphErrors *grcharm = (i < sigfiles.size() ? grcharms : grcharmb);
+      grcharm->SetPoint(n, ptphot, rcharm);
+      grcharm->SetPointError(n, ptphot_err, rcharm_err);
+      
+      TGraphErrors *grbottom = (i < sigfiles.size() ? grbottoms : grbottomb);
+      grbottom->SetPoint(n, ptphot, rbottom);
+      grbottom->SetPointError(n, ptphot_err, rbottom_err);
+    }
+
+
+    // MC truth jet response (reco jet vs genjet) mapped vs ptgen
+    
+    dir = (i < sigfiles.size() ? dirs : dirb);
+    TH1D *hrjet = (TH1D*)f->Get((dir+"/lrj_dptvg").c_str());
+
+    if (!hrjet) cout << files[i].c_str() << endl;
+    assert(hrjet);
+
+    // Arithmetic mean
+    double rjet = CorrectedMean(hrjet, ptphot); //hrjet->GetMean();
+    double rjet_err = max(0.1,hrjet->GetRMS())
+      / sqrt(max(1.,hrjet->Integral()));
+    // Gaussian peak fit
+    double rjet2_err = 0.;
+    double rjet2 = FindPeak(hrjet, rjet2_err, ptphot);
 
     if (rjet && ptphot && ptgen) {
       TGraphErrors *grjet = (i < sigfiles.size() ? grjets : grjetb);
@@ -244,7 +394,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
      double rkjet_err = max(0.05,hrkjet->GetRMS())
        / sqrt(max(1.,hrkjet->Integral()));
      double rkjet2_err = 0.;
-     double rkjet2 = FindPeak(hrkjet, rkjet2_err);
+     double rkjet2 = FindPeak(hrkjet, rkjet2_err, ptphot);
 
      if (rkjet && ptphot && ptgen) {
        TGraphErrors *grkjet = (i < sigfiles.size() ? grkjets : grkjetb);
@@ -447,6 +597,349 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   doRatio(prkphos,prkphob,prkphor);
   doRatio(prmeasb,prmeass,prmeasr);
 
+  // Flavor physics (gamma+jet)
+  TCanvas *cflavs = new TCanvas("cflavs","cflavs",600,600);
+  cflavs->SetLogx();
+
+  TH1D *hflavs = new TH1D("hflavs","hflavs",1000,0.,2000.);
+  hflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hflavs->GetXaxis()->SetMoreLogLabels();
+  hflavs->GetXaxis()->SetNoExponent();
+  hflavs->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hflavs->GetYaxis()->SetTitle("Flavor fraction (#gamma jet)");
+  hflavs->GetYaxis()->SetRangeUser(0.0,1.10); 
+  hflavs->Draw();
+
+  gfgluons->SetLineColor(kRed);
+  gfgluons->SetMarkerColor(gfgluons->GetLineColor());
+  gfgluons->SetMarkerStyle(kFullCircle);
+  gfgluons->Draw("PSAME");
+
+  //gfgluonb->SetLineColor(kRed);
+  //gfgluonb->SetMarkerColor(gfgluonb->GetLineColor());
+  //gfgluonb->SetMarkerStyle(kOpenCircle);
+  //gfgluonb->Draw("PSAME");
+
+  gflights->SetLineColor(kBlue);
+  gflights->SetMarkerColor(gflights->GetLineColor());
+  gflights->SetMarkerStyle(kFullSquare);
+  gflights->Draw("PSAME");
+
+  //gflightb->SetLineColor(kBlue);
+  //gflightb->SetMarkerColor(gflightb->GetLineColor());
+  //gflightb->SetMarkerStyle(kOpenSquare);
+  //gflightb->Draw("PSAME");
+  
+  gfcharms->SetLineColor(kGreen);
+  gfcharms->SetMarkerColor(gfcharms->GetLineColor());
+  gfcharms->SetMarkerStyle(kFullTriangleUp);
+  gfcharms->Draw("PSAME");
+
+  gfbottoms->SetLineColor(kYellow);
+  gfbottoms->SetMarkerColor(gfbottoms->GetLineColor());
+  gfbottoms->SetMarkerStyle(kFullTriangleDown);
+  gfbottoms->Draw("PSAME");
+
+  TLegend *lflavs = new TLegend(0.5, 0.73, 0.95, 0.93, "", "brNDC");
+  lflavs->SetBorderSize(0);
+  lflavs->SetFillStyle(kNone);
+  lflavs->SetTextSize(0.05);
+  lflavs->AddEntry(gfgluons, "gluon", "P");
+  //lflavs->AddEntry(gfgluonb, "gluon (QCD dijet)", "P");
+  lflavs->AddEntry(gflights, "light", "P");
+  //lflavs->AddEntry(gflightb, "light (QCD dijet)", "P");
+  lflavs->AddEntry(gfcharms, "charm", "P");
+  lflavs->AddEntry(gfbottoms, "bottom x 10", "P");
+  lflavs->Draw();
+
+  TLatex *tflavs0 = new TLatex(0.25, 0.85, "#sqrt{s} = 10 TeV");
+  tflavs0->SetNDC();
+  tflavs0->SetTextSize(0.05);
+  tflavs0->Draw();
+  TLatex *tflavs1 = new TLatex(0.25, 0.78, "|y_{jet}| < 1.3");
+  tflavs1->SetNDC();
+  tflavs1->SetTextSize(0.05);
+  tflavs1->Draw();
+
+  cflavs->SaveAs("eps/mcfactors_flavor_gjet.eps");
+
+
+  // More flavor physics (QCD)
+  TCanvas *cflavb = new TCanvas("cflavb","cflavb",600,600);
+  cflavb->SetLogx();
+
+  TH1D *hflavb = new TH1D("hflavb","hflavb",1000,0.,2000.);
+  hflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hflavb->GetXaxis()->SetMoreLogLabels();
+  hflavb->GetXaxis()->SetNoExponent();
+  hflavb->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hflavb->GetYaxis()->SetTitle("Flavor fraction (QCD dijet)");
+  hflavb->GetYaxis()->SetRangeUser(0.0,1.10); 
+  hflavb->Draw();
+
+  gfgluonb->SetLineColor(kRed);
+  gfgluonb->SetMarkerColor(gfgluonb->GetLineColor());
+  gfgluonb->SetMarkerStyle(kFullCircle);//kOpenCircle);
+  gfgluonb->Draw("PSAME");
+
+  gflightb->SetLineColor(kBlue);
+  gflightb->SetMarkerColor(gflightb->GetLineColor());
+  gflightb->SetMarkerStyle(kFullSquare);//kOpenSquare);
+  gflightb->Draw("PSAME");
+  
+  gfcharmb->SetLineColor(kGreen);
+  gfcharmb->SetMarkerColor(gfcharmb->GetLineColor());
+  gfcharmb->SetMarkerStyle(kFullTriangleUp);//kOpenTriangleUp);
+  gfcharmb->Draw("PSAME");
+
+  gfbottomb->SetLineColor(kYellow);
+  gfbottomb->SetMarkerColor(gfbottomb->GetLineColor());
+  gfbottomb->SetMarkerStyle(kFullTriangleDown);//kOpenDiamond);
+  gfbottomb->Draw("PSAME");
+
+  TLegend *lflavb = new TLegend(0.5, 0.73, 0.95, 0.93, "", "brNDC");
+  lflavb->SetBorderSize(0);
+  lflavb->SetFillStyle(kNone);
+  lflavb->SetTextSize(0.05);
+  lflavb->AddEntry(gfgluonb, "gluon", "P");
+  lflavb->AddEntry(gflightb, "light", "P");
+  lflavb->AddEntry(gfcharmb, "charm x 10", "P");
+  lflavb->AddEntry(gfbottomb, "bottom x 10", "P");
+  lflavb->Draw();
+
+  TLatex *tflavb0 = new TLatex(0.25, 0.85, "#sqrt{s} = 10 TeV");
+  tflavb0->SetNDC();
+  tflavb0->SetTextSize(0.05);
+  tflavb0->Draw();
+  TLatex *tflavb1 = new TLatex(0.25, 0.78, "|y_{jet}| < 1.3");
+  tflavb1->SetNDC();
+  tflavb1->SetTextSize(0.05);
+  tflavb1->Draw();
+
+  cflavb->SaveAs("eps/mcfactors_flavor_qcd.eps");
+
+
+  // Comparison of gluon fractions in photon+jet and QCD
+  // (remember that photon+jet has also sizable c-quark fraction)
+  TCanvas *cfgluon = new TCanvas("cfgluon","cfgluon",600,600);
+  cfgluon->SetLogx();
+
+  TH1D *hfgluon = new TH1D("hfgluon","hfgluon",1000,0.,2000.);
+  hfgluon->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hfgluon->GetXaxis()->SetMoreLogLabels();
+  hfgluon->GetXaxis()->SetNoExponent();
+  hfgluon->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hfgluon->GetYaxis()->SetTitle("Gluon jet fraction");
+  hfgluon->GetYaxis()->SetRangeUser(0.0,1.10); 
+  hfgluon->Draw();
+
+  gfgluons->SetLineColor(kRed);
+  gfgluons->SetMarkerColor(gfgluons->GetLineColor());
+  gfgluons->SetMarkerStyle(kFullCircle);
+  gfgluons->Draw("PSAME");
+
+  //gflights->SetLineColor(kBlue);
+  //gflights->SetMarkerColor(gflights->GetLineColor());
+  //gflights->SetMarkerStyle(kOpenSquare);
+  //gflights->Draw("PSAME");
+
+  gfgluonb->SetLineColor(kBlue);
+  gfgluonb->SetMarkerColor(gfgluonb->GetLineColor());
+  gfgluonb->SetMarkerStyle(kFullCircle);
+  gfgluonb->Draw("PSAME");
+
+  //gflightb->SetLineColor(kBlue);
+  //gflightb->SetMarkerColor(gflightb->GetLineColor());
+  //gflightb->SetMarkerStyle(kOpenSquare);
+  //gflightb->Draw("PSAME");
+  
+  TLegend *lfgluon = new TLegend(0.5, 0.73, 0.95, 0.93, "", "brNDC");
+  lfgluon->SetBorderSize(0);
+  lfgluon->SetFillStyle(kNone);
+  lfgluon->SetTextSize(0.05);
+  lfgluon->AddEntry(gfgluons, "#gamma jet", "P");
+  lfgluon->AddEntry(gfgluonb, "QCD dijet", "P");
+  lfgluon->Draw();
+
+  TLatex *tfgluon0 = new TLatex(0.25, 0.85, "#sqrt{s} = 10 TeV");
+  tfgluon0->SetNDC();
+  tfgluon0->SetTextSize(0.05);
+  tfgluon0->Draw();
+  TLatex *tfgluon1 = new TLatex(0.25, 0.78, "|y_{jet}| < 1.3");
+  tfgluon1->SetNDC();
+  tfgluon1->SetTextSize(0.05);
+  tfgluon1->Draw();
+
+  cfgluon->SaveAs("eps/mcfactors_flavor_gluons.eps");
+
+
+  // Flavor physics response (gamma+jet)
+  TCanvas *crflavs = new TCanvas("crflavs","crflavs",600,600);
+  crflavs->SetLogx();
+
+  TH1D *hrflavs = new TH1D("hrflavs","hrflavs",1000,0.,2000.);
+  hrflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrflavs->GetXaxis()->SetMoreLogLabels();
+  hrflavs->GetXaxis()->SetNoExponent();
+  hrflavs->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hrflavs->GetYaxis()->SetTitle("Flavor responses (#gamma jet)");
+  hrflavs->GetYaxis()->SetRangeUser(0.3,1.10); 
+  if (_algo=="pfite") hrflavs->GetYaxis()->SetRangeUser(0.5,1.30); 
+  hrflavs->Draw();
+
+  grgluons->SetLineColor(kRed);
+  grgluons->SetMarkerColor(grgluons->GetLineColor());
+  grgluons->SetMarkerStyle(kFullCircle);
+  grgluons->Draw("PSAME");
+
+  grlights->SetLineColor(kBlue);
+  grlights->SetMarkerColor(grlights->GetLineColor());
+  grlights->SetMarkerStyle(kFullSquare);
+  grlights->Draw("PSAME");
+
+  grcharms->SetLineColor(kGreen);
+  grcharms->SetMarkerColor(grcharms->GetLineColor());
+  grcharms->SetMarkerStyle(kFullTriangleUp);
+  grcharms->Draw("PSAME");
+
+  grbottoms->SetLineColor(kYellow);
+  grbottoms->SetMarkerColor(grbottoms->GetLineColor());
+  grbottoms->SetMarkerStyle(kFullTriangleDown);
+  grbottoms->Draw("PSAME");
+
+  gralls->SetLineColor(kBlack);
+  gralls->SetMarkerColor(gralls->GetLineColor());
+  gralls->SetMarkerStyle(kOpenStar);
+  gralls->Draw("PSAME");
+
+  TLegend *lrflavs = new TLegend(0.45, 0.73, 0.90, 0.93, "", "brNDC");
+  lrflavs->SetBorderSize(0);
+  lrflavs->SetFillStyle(kNone);
+  lrflavs->SetTextSize(0.05);
+  lrflavs->AddEntry(grgluons, "gluon", "P");
+  lrflavs->AddEntry(grlights, "light", "P");
+  lrflavs->AddEntry(grcharms, "charm", "P");
+  lrflavs->AddEntry(grbottoms, "bottom", "P");
+  lrflavs->Draw();
+
+  TLegend *lrflavs2 = new TLegend(0.45, 0.30, 0.90, 0.37, "", "brNDC");
+  lrflavs2->SetBorderSize(0);
+  lrflavs2->SetFillStyle(kNone);
+  lrflavs2->SetTextSize(0.05);
+  lrflavs2->AddEntry(gralls, "mixture", "P");
+  lrflavs2->Draw();
+
+  TLatex *trflavs0 = new TLatex(0.22, 0.85, "#sqrt{s} = 10 TeV");
+  trflavs0->SetNDC();
+  trflavs0->SetTextSize(0.05);
+  trflavs0->Draw();
+  TLatex *trflavs1 = new TLatex(0.22, 0.78, "|y_{jet}| < 1.3");
+  trflavs1->SetNDC();
+  trflavs1->SetTextSize(0.05);
+  trflavs1->Draw();
+
+  crflavs->SaveAs("eps/mcfactors_flavresp_gjet.eps");
+
+
+  // More flavor physics (QCD)
+  TCanvas *crflavb = new TCanvas("crflavb","crflavb",600,600);
+  crflavb->SetLogx();
+
+  TH1D *hrflavb = new TH1D("hrflavb","hrflavb",1000,0.,2000.);
+  hrflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrflavb->GetXaxis()->SetMoreLogLabels();
+  hrflavb->GetXaxis()->SetNoExponent();
+  hrflavb->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hrflavb->GetYaxis()->SetTitle("Flavor response (QCD dijet)");
+  hrflavb->GetYaxis()->SetRangeUser(0.3,1.10); 
+  if (_algo=="pfite") hrflavb->GetYaxis()->SetRangeUser(0.5,1.30); 
+  hrflavb->Draw();
+
+  grgluonb->SetLineColor(kRed);
+  grgluonb->SetMarkerColor(grgluonb->GetLineColor());
+  grgluonb->SetMarkerStyle(kFullCircle);//kOpenCircle);
+  grgluonb->Draw("PSAME");
+
+  grlightb->SetLineColor(kBlue);
+  grlightb->SetMarkerColor(grlightb->GetLineColor());
+  grlightb->SetMarkerStyle(kFullSquare);//kOpenSquare);
+  grlightb->Draw("PSAME");
+
+  grcharmb->SetLineColor(kGreen);
+  grcharmb->SetMarkerColor(grcharmb->GetLineColor());
+  grcharmb->SetMarkerStyle(kFullTriangleUp);//kOpenTriangleUp);
+  grcharmb->Draw("PSAME");
+
+  grbottomb->SetLineColor(kYellow);
+  grbottomb->SetMarkerColor(grbottomb->GetLineColor());
+  grbottomb->SetMarkerStyle(kFullTriangleDown);//kOpenDiamond);
+  grbottomb->Draw("PSAME");
+
+  grallb->SetLineColor(kBlack);
+  grallb->SetMarkerColor(gralls->GetLineColor());
+  grallb->SetMarkerStyle(kOpenStar);
+  grallb->Draw("PSAME");
+
+  TLegend *lrflavb = new TLegend(0.45, 0.73, 0.90, 0.93, "", "brNDC");
+  lrflavb->SetBorderSize(0);
+  lrflavb->SetFillStyle(kNone);
+  lrflavb->SetTextSize(0.05);
+  lrflavb->AddEntry(grgluonb, "gluon", "P");
+  lrflavb->AddEntry(grlightb, "light", "P");
+  lrflavb->AddEntry(grcharmb, "charm", "P");
+  lrflavb->AddEntry(grbottomb, "bottom", "P");
+  lrflavb->Draw();
+
+  TLegend *lrflavb2 = new TLegend(0.45, 0.30, 0.90, 0.37, "", "brNDC");
+  lrflavb2->SetBorderSize(0);
+  lrflavb2->SetFillStyle(kNone);
+  lrflavb2->SetTextSize(0.05);
+  lrflavb2->AddEntry(grallb, "mixture", "P");
+  lrflavb2->Draw();
+
+  TLatex *trflavb0 = new TLatex(0.22, 0.85, "#sqrt{s} = 10 TeV");
+  trflavb0->SetNDC();
+  trflavb0->SetTextSize(0.05);
+  trflavb0->Draw();
+  TLatex *trflavb1 = new TLatex(0.22, 0.78, "|y_{jet}| < 1.3");
+  trflavb1->SetNDC();
+  trflavb1->SetTextSize(0.05);
+  trflavb1->Draw();
+
+  crflavb->SaveAs("eps/mcfactors_flavresp_qcd.eps");
+
+  // B-version to compare flavor response from gamma+jet
+  hrflavb->GetYaxis()->SetTitle("Flavor response");
+  hrflavb->Draw();
+  grgluonb->Draw("PSAME");
+  grlightb->Draw("PSAME");
+  //grcharmb->Draw("PSAME");
+  //grbottomb->Draw("PSAME");
+  //lrflavb->Draw();
+  trflavb0->Draw();
+  trflavb1->Draw();
+
+  grgluons->SetMarkerStyle(kOpenCircle);
+  grgluons->Draw("PSAME");
+
+  grlights->SetMarkerStyle(kOpenSquare);
+  grlights->Draw("PSAME");
+  
+  //TLegend *lrflavb3 = new TLegend(0.5, 0.30, 0.95, 0.43, "", "brNDC");
+  TLegend *lrflavb3 = new TLegend(0.45, 0.73, 0.90, 0.93, "", "brNDC");
+  lrflavb3->SetBorderSize(0);
+  lrflavb3->SetFillStyle(kNone);
+  lrflavb3->SetTextSize(0.05);
+  lrflavb3->AddEntry(grgluonb, "gluon (QCD dijet)", "P");
+  lrflavb3->AddEntry(grlightb, "light (QCD dijet)", "P");
+  lrflavb3->AddEntry(grgluons, "gluon (#gamma jet)", "P");
+  lrflavb3->AddEntry(grlights, "light (#gamma jet)", "P");
+  lrflavb3->Draw();
+
+  crflavb->SaveAs("eps/mcfactors_flavresp_qcd+gjet.eps");
+
+
+
   TCanvas *crjet = new TCanvas("crjet","crjet",600,600);
   crjet->SetLogx();
 
@@ -457,49 +950,98 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hrjet->GetXaxis()->SetRangeUser(30.,2000.);
   hrjet->GetYaxis()->SetTitle("R_{jet} = p_{T,calojet} / p_{T,genjet}");
   hrjet->GetYaxis()->SetRangeUser(0.40,1.10);
+  if (_algo=="pfite") hrjet->GetYaxis()->SetRangeUser(0.50,1.20);
   //if (!drawStats) hrjet->GetYaxis()->SetRangeUser(0.40,1.05);
 
   // Ugly trick to get the second stats box
   // For some reason doesn't seem to be created for TGraphErrors
   TH1D* hrjet2 = (TH1D*)hrjet->Clone("hrjet2");
 
-  TF1 *frjets = new TF1("frjets","1-[0]*pow(x,[1]-1)",10.,14000.);
-  frjets->SetParNames("a","m");
+  TF1 *frjets = 0;
+  if (_algo=="pfite") {
+    frjets = new TF1("frjets","[0]+log(0.01*x)*([1]+log(0.01*x)*[2])",
+		     10.,14000.);
+    frjets->SetParNames("p_{0}","p_{1}","p_{2}");
+    frjets->SetParameters(0.9,0.05,-0.05);
+  }
+  else {
+    frjets = new TF1("frjets","1-[0]*pow(x,[1]-1)",10.,14000.);
+    frjets->SetParNames("a","m");
+    frjets->SetParameters(2,0.6);
+  }
   frjets->SetLineColor(kRed);
   frjets->SetRange(50.,14000.);
-  frjets->SetParameters(2,0.6);
   grjets->Fit(frjets,"QRN");
   frjets->SetRange(10.,14000.);
   hrjet->GetListOfFunctions()->Add(frjets);
 
-  TF1 *fprjets = new TF1("fprjets","1-[0]*pow(x,[1]-1)",10.,14000.);
-  fprjets->SetParNames("a","m");
+  TF1 *fprjets = 0;
+  if (_algo=="pfite") {
+    fprjets = new TF1("fprjets","[0]+log(0.01*x)*([1]+log(0.01*x)*[2])",
+		      10.,14000.);
+    fprjets->SetParNames("p_{0}","p_{1}","p_{2}");
+    fprjets->SetParameters(0.9,0.05,-0.05);
+  }
+  else {
+    fprjets = new TF1("fprjets","1-[0]*pow(x,[1]-1)",10.,14000.);
+    fprjets->SetParNames("a","m");
+    fprjets->SetParameters(2,0.6);
+  }
   fprjets->SetLineColor(kRed);
   fprjets->SetLineStyle(kDashed);
   fprjets->SetRange(50.,14000.);
-  fprjets->SetParameters(2,0.6);
   prjets->Fit(fprjets,"QRN");
   fprjets->SetRange(10.,14000.);
   //hrjet->GetListOfFunctions()->Add(frjets);
  
-  cout << Form("double rjets = 1 - %1.4g * pow(y, %1.4g);",
-	       frjets->GetParameter(0),frjets->GetParameter(1)-1) << endl;
+  if (_algo=="pfite") {
+    cout << Form("double rjets = %1.4g+log(0.01*y)*(%1.4g+log(0.01*y)*%1.4g);",
+		 frjets->GetParameter(0), frjets->GetParameter(1),
+		 frjets->GetParameter(2)) << endl;
+  }
+  else {
+    cout << Form("double rjets = 1 - %1.4g * pow(y, %1.4g);",
+		 frjets->GetParameter(0), frjets->GetParameter(1)-1) << endl;
+  }
 
-  TF1 *frjetb = new TF1("frjetb","1-[0]*pow(x,[1]-1)",10.,14000.);
-  frjetb->SetParNames("a","m");
+  TF1 *frjetb = 0;
+  if (_algo=="pfite") {
+    frjetb = new TF1("frjetb","[0]+log(0.01*x)*([1]+log(0.01*x)*[2])",
+		     10.,14000.);
+    frjetb->SetParNames("p_{0}","p_{1}","p_{2}");
+    frjetb->SetParameters(0.9,0.05,-0.05);
+    frjetb->SetParameters(frjets->GetParameter(0),frjets->GetParameter(1),
+			  frjets->GetParameter(2));
+  }
+  else {
+    frjetb = new TF1("frjetb","1-[0]*pow(x,[1]-1)",10.,14000.);
+    frjetb->SetParNames("a","m");
+    frjetb->SetParameters(frjets->GetParameter(0),frjets->GetParameter(1));
+  }
   frjetb->SetLineColor(kBlue);
   frjetb->SetRange(10.,14000.);
-  frjetb->SetParameters(frjets->GetParameter(0),frjets->GetParameter(1));
   grjetb->Fit(frjetb,"QRN");
   frjetb->SetRange(10.,14000.);
   hrjet2->GetListOfFunctions()->Add(frjetb);
 
-  TF1 *fprjetb = new TF1("fprjetb","1-[0]*pow(x,[1]-1)",10.,14000.);
-  fprjetb->SetParNames("a","m");
+  TF1 *fprjetb = 0;
+  if (_algo=="pfite") {
+    fprjetb = new TF1("fprjetb","[0]+log(0.01*x)*([1]+log(0.01*x)*[2])",
+		     10.,14000.);
+    fprjetb->SetParNames("p_{0}","p_{1}","p_{2}");
+    fprjetb->SetParameters(0.9,0.05,-0.05);
+    fprjetb->SetParameters(fprjets->GetParameter(0),fprjets->GetParameter(1),
+			   fprjets->GetParameter(2));
+  }
+  else {
+    fprjetb = new TF1("fprjetb","1-[0]*pow(x,[1]-1)",10.,14000.);
+    fprjetb->SetParNames("a","m");
+    fprjetb->SetParameters(fprjets->GetParameter(0),fprjets->GetParameter(1),
+			   fprjets->GetParameter(2));
+  }
   fprjetb->SetLineColor(kBlue);
   fprjetb->SetLineStyle(kDotted);
   fprjetb->SetRange(10.,14000.);
-  fprjetb->SetParameters(fprjets->GetParameter(0),fprjets->GetParameter(1));
   prjetb->Fit(fprjetb,"QRN");
   fprjetb->SetRange(10.,14000.);
 
@@ -1158,9 +1700,10 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkqcd->GetXaxis()->SetMoreLogLabels();
   hkqcd->GetXaxis()->SetNoExponent();
   hkqcd->GetXaxis()->SetRangeUser(30.,2000.);//500.);
-  title = "#DeltaC = #DeltaR_{jet} #Deltak_{jet} / (#DeltaR_{#gamma} #Deltak_{#gamma})";
+  title = "1+#DeltaC = #DeltaR_{jet} #Deltak_{jet} / (#DeltaR_{#gamma} #Deltak_{#gamma})";
   hkqcd->GetYaxis()->SetTitle(title.c_str());
-  hkqcd->GetYaxis()->SetRangeUser(0.70,1.40);
+  //hkqcd->GetYaxis()->SetRangeUser(0.70,1.40);
+  hkqcd->GetYaxis()->SetRangeUser(0.6001,1.4999);
 
 
   TF1 *fkqcd_jr = new TF1("fkqcd_jr",
@@ -1239,17 +1782,22 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
     cout << Form("%1.4g, ", fkqcd->GetParameter(i));
   cout << endl << endl;
 
-  TLegend *lkqcd1 = new TLegend(0.69,0.60,0.92,0.93,_algoname.c_str(),"brNDC");
+//TLegend *lkqcd1 = new TLegend(0.69,0.60,0.92,0.93,_algoname.c_str(),"brNDC");
+  TLegend *lkqcd1 = new TLegend(0.20,0.73,0.74,0.93,
+				(_algoname+"  "+idtype+"ID").c_str(),"brNDC");
   lkqcd1->SetBorderSize(0);
   lkqcd1->SetFillStyle(kNone);
   lkqcd1->SetTextSize(0.04);
-  TLegend *lkqcd2 = new TLegend(0.69,0.20,0.92,0.36,"","brNDC");
+//TLegend *lkqcd2 = new TLegend(0.69,0.20,0.92,0.36,"","brNDC");
+  TLegend *lkqcd2 = new TLegend(0.20,0.18,0.74,0.30,"","brNDC");
   lkqcd2->SetBorderSize(0);
   lkqcd2->SetFillStyle(kNone);
   lkqcd2->SetTextSize(0.04);
+  /*
   TLatex *tkqcd = new TLatex(0.25,0.87,(idtype+"ID").c_str());
   tkqcd->SetNDC();
   tkqcd->SetTextSize(0.04);
+  */
   //
   fkqcd_pr->SetLineColor(kRed);
   fkqcd_pr->SetLineStyle(kDashed);
@@ -1280,11 +1828,22 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   grmeasr->SetMarkerStyle(kOpenDiamond);
   grmeasr->SetMarkerSize(1.2);
   grmeasr->SetLineWidth(2);
+  /*
   lkqcd1->AddEntry(grkphor, "(#DeltaR_{#gamma} #Deltak_{#gamma})^{-1}", "LP");
   lkqcd1->AddEntry(fkqcd_pr, "(#DeltaR_{#gamma})^{-1}", "L");
   lkqcd1->AddEntry(fkqcd, "#DeltaC", "L");
   lkqcd2->AddEntry(fkqcd_jr, "#DeltaR_{jet}", "L");
   lkqcd2->AddEntry(grkjetr, "#DeltaR_{jet} #Deltak_{jet}", "LP");
+  */
+  lkqcd1->AddEntry(grkphor, "EM parton correction ratio "
+		   "((#DeltaR_{#gamma}#Deltak_{#gamma})^{-1})", "LP");
+  lkqcd1->AddEntry(fkqcd_pr, "EM correction ratio "
+		   "((#DeltaR_{#gamma})^{-1})", "L");
+  lkqcd1->AddEntry(fkqcd, "1+#DeltaC", "L");
+  lkqcd2->AddEntry(fkqcd_jr, "Jet response ratio "
+		   "(#DeltaR_{jet})", "L");
+  lkqcd2->AddEntry(grkjetr, "Jet parton response ratio "
+		   "(#DeltaR_{jet}#Deltak_{jet})", "LP");
 
   hkqcd->Draw();
   fkqcd_jr->Draw("same");
@@ -1298,7 +1857,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   if (drawBars) grmeasr->Draw("same p");
   lkqcd1->Draw();
   lkqcd2->Draw();
-  tkqcd->Draw();
+  //tkqcd->Draw();
 
   ckqcd->SaveAs("eps/mcfactors_deltac.eps");
 
@@ -1380,17 +1939,18 @@ void doRatio(const TGraphErrors *a, const TGraphErrors *b, TGraphErrors *c,
 } // doRatio
   
 
-double FindPeak(TH1D* h, double &err) {
+double FindPeak(TH1D* h, double &err, double pt) {
 
-  TF1 *f = new TF1("g","gaus",0.,2.);
+  double xmin = (pt ? _ptreco / pt : 0.);
+  TF1 *f = new TF1("g","gaus",xmin,2.);
   h->Fit(f, "QRN");
-  f->SetRange(f->GetParameter(1)-2.*f->GetParameter(2),
+  f->SetRange(max(xmin,f->GetParameter(1)-2.*f->GetParameter(2)),
 	      f->GetParameter(1)+2.*f->GetParameter(2));
   h->Fit(f, "QRN");
-  f->SetRange(f->GetParameter(1)-1.5*f->GetParameter(2),
+  f->SetRange(max(xmin,f->GetParameter(1)-1.5*f->GetParameter(2)),
 	      f->GetParameter(1)+1.5*f->GetParameter(2));
   h->Fit(f, "QRN");
-  f->SetRange(f->GetParameter(1)-1.*f->GetParameter(2),
+  f->SetRange(max(xmin,f->GetParameter(1)-1.*f->GetParameter(2)),
 	      f->GetParameter(1)+1.*f->GetParameter(2));
   h->Fit(f, "QRN");
   // Could determine from mean-mu on which side the tails are
@@ -1400,8 +1960,40 @@ double FindPeak(TH1D* h, double &err) {
   err = f->GetParError(1)
     * sqrt(max(1.,f->GetChisquare()/max(1,f->GetNDF())));
 
-  return f->GetParameter(1);
+  double peak = f->GetParameter(1);
+
+  delete f;
+
+  return peak;
 } // FindPeak
+
+// Mean corrected for low pT bias
+double CorrectedMean(TH1D *hrjet, const double pt) {
+
+  double mean = hrjet->GetMean();
+  double xmin = _ptreco / pt; // low edge of unbiased region
+  int imin = hrjet->FindBin(xmin)+1; // first bin in unbiased region
+  xmin = hrjet->GetBinLowEdge(imin); // round to bin edge
+  double dm = 0; // biased region mean
+  for (int i = 1; i != imin; ++i) {
+    dm += hrjet->GetBinContent(i) * hrjet->GetBinCenter(i);
+  }
+  dm /= hrjet->Integral();
+
+  TF1 *f = new TF1("g","gaus",xmin, 2.);
+  hrjet->Fit(f, "QRN");
+  TF1 *fx = new TF1("gx","x*gaus",0., 2.);
+  fx->SetParameters(f->GetParameter(0),f->GetParameter(1),
+		    f->GetParameter(2));
+  double corrmean = (mean - dm ) * (fx->Integral(0.,2.)/f->Integral(0.,2.))
+   / (fx->Integral(xmin,2.)/f->Integral(xmin,2.));
+  //double corrmean = mean - dm  + fx->Integral(0.,xmin)/f->Integral(0.,2.);
+
+  delete f;
+  delete fx;
+
+  return corrmean;
+}
 
 // Divide TGraphErrors by the function TF1
 // If TGraphErrors has functions associated to it, divide them, too
