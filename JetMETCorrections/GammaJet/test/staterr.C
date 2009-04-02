@@ -13,10 +13,12 @@
 #include "TList.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "TROOT.h"
 
 #include <iostream>
 
 using namespace std;
+
 
 int kDarkYellow = kYellow+100;
 int kDarkGreen = kGreen+100;
@@ -58,8 +60,9 @@ void staterr() {
 
   bool _randstat = true; // randomize statistics also
   bool _notemode = true;
+  bool _fptalk = true;
 
-  double lumi = 10.;
+  double lumi = 100.;//10.;
   //int XBINS = 27;
   double xmin = 25.;
   double xmax = 700.;
@@ -67,7 +70,11 @@ void staterr() {
     //{25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300,
     //325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600,
     //625, 650, 675, 700};
-    {25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270, 500, 700};
+    // for 10 pb-1
+    //{25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270, 500, 700};
+    // for 100 pb-1
+    {25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270,
+     320, 385, 460, 560, 800};
   const int XBINS = sizeof(xbins0)/sizeof(xbins0[0])-1;
   const double* xbins = &xbins0[0];
   int YBINS = 27;
@@ -88,7 +95,8 @@ void staterr() {
   xsec_x->SetNpx(1000);
   
   TF1 *mean = new TF1("mean", "1 - [0] * pow(x, [1])", xmin, xmax);
-  mean->SetParameters(2.112, -0.3986);
+  //mean->SetParameters(2.112, -0.3986); // CSA07 ( 1-1.881*pow(x,0.6198-1) )
+  mean->SetParameters(2.136,0.5801-1); // Summer08
   //TF1 *rjet2 = new TF1("rjet2", "[2] - [0] * pow(x, [1])", xmin, xmax);
   TF1 *rjet2 = new TF1("rjet2", "[2] - [0] * pow(0.01*x, [1]-1)", xmin, xmax);
   //rjet2->SetParameters(2.112*0.1, -0.3986+1, 1.);
@@ -150,8 +158,8 @@ void staterr() {
   //gRandom->SetSeed(t.GetTime());
   TTimeStamp t;
   TRandom3 *rand = new TRandom3();
-  rand->SetSeed(t.GetNanoSec()/1000);//123456);
-  //rand->SetSeed(771156000); // note default
+  //rand->SetSeed(t.GetNanoSec()/1000);//123456);
+  rand->SetSeed(771156000); // note default
   //rand->SetSeed(293658000); // very pretty curves with chi2/NDF=1.053
   //rand->SetSeed(63900000); // representative for stat uncertainty (note)
   gRandom = rand; // can we replace this?
@@ -260,6 +268,9 @@ void staterr() {
 
 
   TCanvas *c1 = new TCanvas();
+  if (_fptalk) {
+    delete c1; c1 = new TCanvas("c1","c1",600,600);
+  }
   c1->SetLogx();
   
   TH1D *h1 = new TH1D("h1", "", 2000, 20., 700.);
@@ -268,6 +279,10 @@ void staterr() {
   h1->GetXaxis()->SetTitle("p_{T} (GeV)");
   h1->GetYaxis()->SetRangeUser(0.3, 1.1);
   h1->GetYaxis()->SetTitle(Form("ToyMC jet response (%1.0f pb^{-1})",lumi));
+  if (_fptalk) {
+    h1->GetYaxis()->SetTitleSize(0.05);
+    h1->GetYaxis()->SetTitleOffset(1.2);
+  }
 
   rjet2->SetLineColor(_notemode ? kBlack : kBlue);
   rjet2->SetLineWidth(1);
@@ -280,6 +295,7 @@ void staterr() {
 
   TH1D *he_sig2 = getBand(rjet2, emat);
 
+  /*
   // Alternative fit with 2-parameter powerlaw
   rjet2a->SetLineColor(kDarkGreen);
   gr_sig2->Fit(rjet2a,"QR+");
@@ -299,6 +315,7 @@ void staterr() {
   gMinuit->mnemat(&ematb[0][0], ndimb);
 
   TH1D *he_sig2b = getBand(rjet2b, ematb);
+  */
 
   /*
   TVectorD eigvs(ndim);
@@ -413,28 +430,37 @@ void staterr() {
     he_sig4->SetFillColor(kRed);
     he_sig4->SetFillStyle(kLeftHatch);
   }
+  if (_fptalk) {
+    mean->SetLineStyle(kDashed);
+  }
 
   h1->Draw();
   mean->Draw("same");
   he_sig2->Draw("same e4");
-  he_sig4->Draw("same e4");
+  if (!_fptalk) he_sig4->Draw("same e4");
   gr_sig2->Draw("SAMEP");
   if (!_notemode) {
     gr_sig->Draw("SAMEP");  
     gr_sig3->Draw("SAMEP");
   }
-  gr_sig4->Draw("SAMEP");
+  if (!_fptalk) gr_sig4->Draw("SAMEP");
 
   if (_notemode) {
 
-    TLegend *leg = new TLegend(0.16, 0.52, 0.45, 0.92, "", "brNDC");
+    //TLegend *leg = new TLegend(0.16, 0.52, 0.45, 0.92, "", "brNDC");
+    TLegend *leg = new TLegend(0.16, 0.57, 0.55, 0.92, "", "brNDC");
+    if (_fptalk) {
+      delete leg; leg = new TLegend(0.16, 0.71, 0.65, 0.92, "", "brNDC");
+    }
     leg->SetBorderSize(0);
     leg->SetFillStyle(kNone);
     leg->AddEntry(mean, "Input response" , "L");
     leg->AddEntry(gr_sig2, "Arithmetic mean", "LP");
-    leg->AddEntry(gr_sig4, "Gaussian peak", "LP");
-    leg->AddEntry(he_sig2, "Arithmetic fit error", "F");
-    leg->AddEntry(he_sig4, "Gaussian fit error", "F");
+    if (!_fptalk) leg->AddEntry(gr_sig4, "Gaussian peak", "LP");
+    leg->AddEntry(he_sig2, "Fit unc. on mean", "F");
+    if (!_fptalk) leg->AddEntry(he_sig4, "Fit unc. on peak", "F");
+    //leg->AddEntry(he_sig2, "Arithmetic fit error", "F");
+    //leg->AddEntry(he_sig4, "Gaussian fit error", "F");
     leg->Draw();
 
     gROOT->ProcessLine(".! mkdir eps");
@@ -444,6 +470,10 @@ void staterr() {
 
 
   TCanvas *c2 = new TCanvas();
+  if (_fptalk) {
+    delete c2; c2 = new TCanvas("c2","c2",600,600);
+    c2->SetLeftMargin(0.14); c2->SetRightMargin(0.02);
+  }
   c2->SetLogx();
   
   TH1D *h2 = new TH1D("h2", "", 2000, 20., 700.);
@@ -453,6 +483,10 @@ void staterr() {
   //h2->GetYaxis()->SetRangeUser(0.85, 1.15);
   h2->GetYaxis()->SetRangeUser(0.90, 1.10);
   h2->GetYaxis()->SetTitle(Form("ToyMC over input (%1.0f pb^{-1})",lumi));
+  if (_fptalk) {
+    h2->GetYaxis()->SetTitleSize(0.05);
+    h2->GetYaxis()->SetTitleOffset(1.4);//1.2);
+  }
   h2->Draw();
 
   TGraphErrors *gr2_r = divide(gr_sig2, mean);
@@ -471,19 +505,24 @@ void staterr() {
   */
 
   he2_r->Draw("SAME E4");
-  he4_r->Draw("SAME E4");
+  if (!_fptalk) he4_r->Draw("SAME E4");
   gr2_r->Draw("SAMEP");
-  gr4_r->Draw("SAMEP");
+  if (!_fptalk) gr4_r->Draw("SAMEP");
 
   if (_notemode) {
 
     TLegend *leg = new TLegend(0.16, 0.67, 0.45, 0.93, "", "brNDC");
+    if (_fptalk) {
+      delete leg; leg = new TLegend(0.16, 0.78, 0.65, 0.92, "", "brNDC");
+    }
     leg->SetBorderSize(0);
     leg->SetFillStyle(kNone);
     leg->AddEntry(gr2_r, "Arithmetic mean", "LP");
-    leg->AddEntry(gr4_r, "Gaussian peak", "LP");
-    leg->AddEntry(he2_r, "Arithmetic fit error", "F");
-    leg->AddEntry(he4_r, "Gaussian fit error", "F");
+    if (!_fptalk) leg->AddEntry(gr4_r, "Gaussian peak", "LP");
+    leg->AddEntry(he2_r, "Fit unc. on mean", "F");
+    if (!_fptalk) leg->AddEntry(he4_r, "Fit unc. on peak", "F");
+    //leg->AddEntry(he2_r, "Arithmetic fit error", "F");
+    //leg->AddEntry(he4_r, "Gaussian fit error", "F");
     leg->Draw();
     
     c2->SaveAs(Form("eps/toymc/staterr%1.0fpb_r.eps",lumi));
@@ -501,6 +540,28 @@ void staterr() {
   h3->GetYaxis()->SetTitle(Form("ToyMC over input (%1.0f pb^{-1})",lumi));
   h3->Draw();
 
+  // Alternative fit with 2-parameter powerlaw
+  rjet2a->SetLineColor(kDarkGreen);
+  gr_sig2->Fit(rjet2a,"QR+");
+
+  const int ndima = rjet2a->GetNpar();
+  TMatrixD emata(ndima, ndima);
+  gMinuit->mnemat(&emata[0][0], ndima);
+
+  TH1D *he_sig2a = getBand(rjet2a, emata);
+
+  // Another alternative fit with 5-parameter function from Kostas/Daniele
+  rjet2b->SetLineColor(kBlue);
+  gr_sig2->Fit(rjet2b,"QR+");//"MR");
+
+  const int ndimb = rjet2b->GetNpar();
+  TMatrixD ematb(ndimb, ndimb);
+  gMinuit->mnemat(&ematb[0][0], ndimb);
+
+  TH1D *he_sig2b = getBand(rjet2b, ematb);
+
+  // Redo ratio to get extra fits in
+  TGraphErrors *gr2_r3 = divide(gr_sig2, mean);
 
   TH1D *he2a_r = divide(he_sig2a, mean);
   he2a_r->SetFillStyle(kLeftHatch);
@@ -511,17 +572,17 @@ void staterr() {
 
   if (_notemode) {
     he2a_r->SetLineColor(kRed);
-    if (gr2_r->GetFunction("rjet2a_over_mean"))
-      gr2_r->GetFunction("rjet2a_over_mean")->SetLineColor(kRed);
-    if (gr2_r->GetFunction("rjet2_over_mean"))
-      gr2_r->GetFunction("rjet2_over_mean")->SetLineWidth(2);
+    if (gr2_r3->GetFunction("rjet2a_over_mean"))
+      gr2_r3->GetFunction("rjet2a_over_mean")->SetLineColor(kRed);
+    if (gr2_r3->GetFunction("rjet2_over_mean"))
+      gr2_r3->GetFunction("rjet2_over_mean")->SetLineWidth(2);
   }
 
   h3->Draw();
   he2b_r->Draw("SAME E4");
   he2_r->Draw("SAME E4");
   he2a_r->Draw("SAME E4");
-  gr2_r->Draw("SAME P");
+  gr2_r3->Draw("SAME P");
 
   if (_notemode) {
 

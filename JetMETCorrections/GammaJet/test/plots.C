@@ -4,6 +4,8 @@
 #include "TPaveStats.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "TMath.h"
+#include "TROOT.h"
 
 #include <string>
 #include <iostream>
@@ -174,7 +176,8 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       if (j==2) { hname += "emf"; epsname = "EMF"; }
       if (j==3) { hname += "sMajMaj"; epsname = "ClusMajMaj";}
       if (j==4) { hname += "sMinMin"; epsname = "ClusMinMin"; }
-      if (j==5) { hname += "ecaliso_new"; epsname = "EcalIso"; }
+      //if (j==5) { hname += "ecaliso_new"; epsname = "EcalIso"; }
+      if (j==5) { hname += "ecaliso"; epsname = "EcalIso"; }
       
       TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
       TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
@@ -251,6 +254,7 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
 
       if (i==0) { 
 	title += "(calo-#gamma, gen-#gamma)";
+	if (j==0) title = "p_{T}(calo-#gamma) / p_{T}(gen-#gamma)";
 	if (j==0) { hname += "dptvgg"; epsname = "DPtvGenPhot"; }
 	if (j==1) { hname += "detavgg"; epsname = "DEtavGenPhot"; }
 	if (j==2) { hname += "dphivgg"; epsname = "DPhivGenPhot"; }
@@ -258,20 +262,23 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       }
       if (i==1) { 
 	title += "(calo-#gamma, parton-#gamma)";
+	if (j==0) title = "p_{T}(calo-#gamma) / p_{T}(parton-#gamma)";
 	if (j==0) { hname += "dptvg"; epsname = "DPtvParton"; }
 	if (j==1) { hname += "detavg"; epsname = "DEtavParton"; }
 	if (j==2) { hname += "dphivg"; epsname = "DPhivParton"; }
 	if (j==3) { hname += "drvg"; epsname = "DRvParton";}
       }
       if (i==2) {
-	title += "(calojet,genjet)";
+	title += "(calojet, genjet)";
+	if (j==0) title = "p_{T}(calojet) / p_{T}(genjet)";
 	if (j==0) { hname += "dptvg"; epsname = "DPtvGenJet"; }
 	if (j==1) { hname += "detavg"; epsname = "DEtavGenJet"; }
 	if (j==2) { hname += "dphivg"; epsname = "DPhivGenJet"; }
 	if (j==3) { hname += "drvg"; epsname = "DRvGenJet";}
       }
       if (i==3) {
-	title += "(calojet, parton-jet)";
+	title += "(calojet, jet parton)";
+	if (j==0) title = "p_{T}(calojet) / p_{T}(jet parton)";
 	if (j==0) { hname += "dptvq"; epsname = "DPtvParton"; }
 	if (j==1) { hname += "detavq"; epsname = "DEtavParton"; }
 	if (j==2) { hname += "dphivq"; epsname = "DPhivParton"; }
@@ -279,13 +286,15 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       }
       if (i==4) { 
 	title += "(gen-#gamma, parton-#gamma)";
+	if (j==0) title = "p_{T}(gen-#gamma) / p_{T}(parton-#gamma)";
 	if (j==0) { hname += "dptvg"; epsname = "DPtvParton"; }
 	if (j==1) { hname += "detavg"; epsname = "DEtavParton"; }
 	if (j==2) { hname += "dphivg"; epsname = "DPhivParton"; }
 	if (j==3) { hname += "drvg"; epsname = "DRvParton";}
       }      
       if (i==5) {
-	title += "(genjet, parton-jet)";
+	title += "(genjet, jet parton)";
+	if (j==0) title = "p_{T}(genjet) / p_{T}(jet parton)";
 	if (j==0) { hname += "dptvq"; epsname = "DPtvParton"; }
 	if (j==1) { hname += "detavq"; epsname = "DEtavParton"; }
 	if (j==2) { hname += "dphivq"; epsname = "DPhivParton"; }
@@ -399,7 +408,7 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
 
     if (i==0) h1->GetXaxis()->SetTitle("p_{T}(calojet) / p_{T}(calo-#gamma)");
     if (i==1) h1->GetXaxis()->SetTitle("p_{T}(genjet) / p_{T}(calo-#gamma)");
-    if (i==2) h1->GetXaxis()->SetTitle("p_{T}(parton-jet) / p_{T}(calo-#gamma)");
+    if (i==2) h1->GetXaxis()->SetTitle("p_{T}(jet parton) / p_{T}(calo-#gamma)");
 
     h1->SetLineColor(kRed);
     h1->SetFillColor(kRed);

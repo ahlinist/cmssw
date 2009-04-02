@@ -30,12 +30,12 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
+
+
    // Declaration of leave types
    Int_t           photonid;
    Int_t           isgamma;
    Int_t           ismatched;
-   //Int_t           isphoton;
-   //Int_t           issignal;
    Float_t         weight;
    Float_t         nniso;
    Float_t         nniso_int;
@@ -46,6 +46,8 @@ public :
    Float_t         phiphot;
    Float_t         phijet;
    Float_t         pt2jet;
+   Float_t         pt2sum;
+   Float_t         pt2vecsum;
    Float_t         pt2phot;
    Float_t         ptphottrue;
    Float_t         ptjettrue;
@@ -63,8 +65,6 @@ public :
    TBranch        *b_photonid;   //!
    TBranch        *b_isgamma;   //!
    TBranch        *b_ismatched;   //!
-   //TBranch        *b_isphoton;   //!
-   //TBranch        *b_issignal;   //!
    TBranch        *b_weight;   //!
    TBranch        *b_nniso;   //!
    TBranch        *b_nniso_int;   //!
@@ -75,6 +75,8 @@ public :
    TBranch        *b_phiph;   //!
    TBranch        *b_phij;   //!
    TBranch        *b_pt2jet;   //!
+   TBranch        *b_pt2sum;   //!
+   TBranch        *b_pt2vecsum;   //!
    TBranch        *b_pt2phot;   //!
    TBranch        *b_ptphottrue;   //!
    TBranch        *b_ptjettrue;   //!
@@ -154,6 +156,7 @@ public :
 
    gjet_response(TTree *tree=0, char * outputname = "test.root", int xbin = 100, int ybin = 100, const char* cfg = "final");
    virtual ~gjet_response();
+   virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
@@ -188,6 +191,11 @@ public :
    float _deltaeta;
 
    std::string _mctruthfunc;
+   std::string _mctruthcsa07;
+
+   float _lowptreco;
+   bool _lowptbias;
+   float _fitptmin;
 
    float _xmin, _xmax;
    int _rebin;
@@ -210,6 +218,9 @@ gjet_response::gjet_response(TTree *tree, char *outputname, int xbin, int ybin,
       tree = (TTree*)gDirectory->Get("AnaTree");
 
    }
+
+   tree->SetCacheSize(0);
+
    XBINS = xbin;
    YBINS = ybin;
    Init(tree);
@@ -257,7 +268,7 @@ void gjet_response::Init(TTree *tree)
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
    // pointers of the tree will be set.
-   // It is normaly not necessary to make changes to the generated
+   // It is normally not necessary to make changes to the generated
    // code, but the routine can be extended by the user if needed.
    // Init() will be called many times when running on PROOF
    // (once per file to be processed).
@@ -271,8 +282,6 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("photonid", &photonid, &b_photonid);
    fChain->SetBranchAddress("isgamma", &isgamma, &b_isgamma);
    fChain->SetBranchAddress("ismatched", &ismatched, &b_ismatched);
-   //fChain->SetBranchAddress("isphoton", &isphoton, &b_isphoton);
-   //fChain->SetBranchAddress("issignal", &issignal, &b_issignal);
    fChain->SetBranchAddress("weight", &weight, &b_weight);
    fChain->SetBranchAddress("nniso", &nniso, &b_nniso);
    fChain->SetBranchAddress("nniso_int", &nniso_int, &b_nniso_int);
@@ -283,6 +292,8 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("phiphot", &phiphot, &b_phiph);
    fChain->SetBranchAddress("phijet", &phijet, &b_phij);
    fChain->SetBranchAddress("pt2jet", &pt2jet, &b_pt2jet);
+   fChain->SetBranchAddress("pt2sum", &pt2sum, &b_pt2sum);
+   fChain->SetBranchAddress("pt2vecsum", &pt2vecsum, &b_pt2vecsum);
    fChain->SetBranchAddress("pt2phot", &pt2phot, &b_pt2phot);
    fChain->SetBranchAddress("ptphottrue", &ptphottrue, &b_ptphottrue);
    fChain->SetBranchAddress("ptjettrue", &ptjettrue, &b_ptjettrue);
@@ -311,5 +322,12 @@ void gjet_response::Show(Long64_t entry)
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
+}
+Int_t gjet_response::Cut(Long64_t entry)
+{
+// This function may be called from Loop.
+// returns  1 if entry is accepted.
+// returns -1 otherwise.
+   return 1;
 }
 #endif // #ifdef gjet_response_cxx
