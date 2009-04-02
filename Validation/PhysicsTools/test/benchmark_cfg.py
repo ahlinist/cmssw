@@ -57,9 +57,12 @@ process.p =cms.Path(
 #    process.patBenchmarkGeneric*
     process.patLayer0*
     process.patLayer1*
-#    process.patJetTag*
-#    process.patBenchmarkGeneric*
-    process.patJetTag
+    process.patJetTag*
+    process.patMuonTag*
+    process.patElectronTag*
+    process.patMETTag*
+    process.patTauTag*
+    process.patPhotonTag	
    )
 
 # load the pat layer 1 event content
