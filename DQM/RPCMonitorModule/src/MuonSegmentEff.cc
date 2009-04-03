@@ -476,8 +476,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      RPCDetId rpcId = rollasociated->id();
 	      const BoundPlane & RPCSurface = rollasociated->surface(); 
 
-	      assert(rpcId.station()==4);
-	      
 	      RPCGeomServ rpcsrv(rpcId);
 	      std::string nameRoll = rpcsrv.name();
 
