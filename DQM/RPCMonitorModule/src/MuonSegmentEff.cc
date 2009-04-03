@@ -31,6 +31,12 @@ void MuonSegmentEff::beginJob(){
   
 }
 
+int distsector(int sector1,int sector2){
+  int distance = abs(sector1 - sector2);
+  if(distance>6) distance = 12-distance;
+  return distance;
+}
+
 MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   incldt=iConfig.getUntrackedParameter<bool>("incldt",true);
   incldtMB4=iConfig.getUntrackedParameter<bool>("incldtMB4",true);
@@ -41,7 +47,7 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   rangestrips = iConfig.getUntrackedParameter<double>("rangestrips",1.);
   rangestripsRB4=iConfig.getUntrackedParameter<double>("rangestripsRB4",4.);
   dupli = iConfig.getUntrackedParameter<int>("DuplicationCorrection",1); 
-  MinCosAng=iConfig.getUntrackedParameter<double>("MinCosAng",0.9999);
+  MinCosAng=iConfig.getUntrackedParameter<double>("MinCosAng",0.95);
   MaxD=iConfig.getUntrackedParameter<double>("MaxD",80.);
   MaxDrb4=iConfig.getUntrackedParameter<double>("MaxDrb4",150.);
   muonRPCDigis=iConfig.getUntrackedParameter<std::string>("muonRPCDigis","muonRPCDigis");
@@ -378,7 +384,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	std::string nameRoll = rpcsrv.name();
 	std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 	sprintf(detUnitLabel ,"%s",nameRoll.c_str());
-
 	sprintf(layerLabel ,"%s",nameRoll.c_str());
 	RPCDigiCollection::Range rpcRangeDigi=rpcDigis->get(rpcId);
 	for (RPCDigiCollection::const_iterator digiIt = rpcRangeDigi.first;digiIt!=rpcRangeDigi.second;++digiIt){
@@ -391,7 +396,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
 	  }
 	  meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
-	  
 	}
       }
     }
@@ -471,6 +475,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      const RPCRoll* rollasociated = rpcGeo->roll(*iteraRoll);
 	      RPCDetId rpcId = rollasociated->id();
 	      const BoundPlane & RPCSurface = rollasociated->surface(); 
+
+	      assert(rpcId.station()==4);
 	      
 	      RPCGeomServ rpcsrv(rpcId);
 	      std::string nameRoll = rpcsrv.name();
@@ -550,16 +556,17 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  bool prediction=false;
 
 		  if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
-		    if(debug) std::cout<<"DT \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
+		    if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+		    if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
 
 		    sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
+		    if(debug) std::cout<<"DT \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
 		    meMap[meIdDT]->Fill(stripPredicted);
 		    prediction = true;
 		  }else{
 		    if(debug) std::cout<<"DT \t \t \t \t In fact the extrapolation goes outside the roll was done just for 2D histograms"<<std::endl;
 		  }
-
-
+		  
 		  sprintf(meIdDT,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
 		  meMap[meIdDT]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
 		  
@@ -605,6 +612,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      anycoincidence=true;
 		    }
 		  }
+
+		  if(debug) std::cout<<"DT  \t \t \t \t \t "<<prediction<<anycoincidence<<std::endl;
+
 		  if(prediction && anycoincidence){
 		    float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y();
 
@@ -644,9 +654,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    if(debug) std::cout<<"DT \t \t \t \t \t Filling 2D histo for RPC Occupancy "<<meIdRPC<<std::endl; 		    
 		    sprintf(meIdRPC,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
 		    meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-		  }
-
-		  else{
+		  }else if(prediction){
 		    RPCGeomServ rpcsrv(rollasociated->id());
 		    std::string nameRoll = rpcsrv.name();
 		    
@@ -696,12 +704,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	DTSegmentCounter[segment->chamberId()]++;
       }    
 
-      if(debug) std::cout<<"MB4 \t \t Loop Over all4DSegments"<<std::endl;
+      if(debug) std::cout<<"MB4 \t \t Loop Over all4DSegments "<<std::endl;
       for (segment = all4DSegments->begin(); segment != all4DSegments->end(); ++segment){ 
     
 	DTChamberId DTId = segment->chamberId();
 
-	if(debug) std::cout<<"MB4 \t \t \t Is the only one in the chamber? and is in the Station 4?"<<std::endl;
+	if(debug) std::cout<<"MB4 \t \t This Segment is in Chamber id: "<<DTId<<std::endl;
+	if(debug) std::cout<<"MB4 \t \t Number of segments in this DT = "<<DTSegmentCounter[DTId]<<std::endl;
+	if(debug) std::cout<<"MB4 \t \t \t Is the only one in this DT? and is in the Station 4?"<<std::endl;
 
 	if(DTSegmentCounter[DTId] == 1 && DTId.station()==4){
 
@@ -723,8 +733,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    LocalPoint segmentPositionMB4=segmentPosition;
 	
 	    bool compatiblesegments=false;
-	    float dx=segmentDirectionMB4.x();
-	    float dz=segmentDirectionMB4.z();
 	    
 	    const BoundPlane& DTSurface4 = dtGeo->idToDet(DTId)->surface();
 	    
@@ -735,28 +743,45 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      
 	      DTChamberId dtid3 = segMB3->chamberId();  
 	      
-	      if(dtid3.sector()==DTId.sector() 
+	      if(distsector(dtid3.sector(),DTId.sector())<=1
 		 && dtid3.station()==3
-		 && abs(dtid3.wheel()-DTId.wheel())<2
+		 && dtid3.wheel()==DTId.wheel()
 		 && DTSegmentCounter[dtid3] == 1
 		 && segMB3->dimension()==4){
 
 		const GeomDet* gdet3=dtGeo->idToDet(segMB3->geographicalId());
 		const BoundPlane & DTSurface3 = gdet3->surface();
-	      
-		float dx3=segMB3->localDirection().x();
-		float dy3=segMB3->localDirection().y();
-		float dz3=segMB3->localDirection().z();
-	    
-		LocalVector segDirMB4inMB3Frame=DTSurface3.toLocal(DTSurface4.toGlobal(segmentDirectionMB4));
+
 		
-		double cosAng=fabs(dx*dx3+dz*dz3/sqrt((dx3*dx3+dz3*dz3)*(dx*dx+dz*dz)));
+		LocalVector segmentDirectionMB3 =  segMB3->localDirection();
+		GlobalPoint segmentPositionMB3inGlobal = DTSurface3.toGlobal(segMB3->localPosition());
+		
+		
+		LocalVector segDirMB4inMB3Frame=DTSurface3.toLocal(DTSurface4.toGlobal(segmentDirectionMB4));
+		LocalVector segDirMB3inMB4Frame=DTSurface4.toLocal(DTSurface3.toGlobal(segmentDirectionMB3));
+		
+		GlobalVector segDirMB4inGlobalFrame=DTSurface4.toGlobal(segmentDirectionMB4);
+		GlobalVector segDirMB3inGlobalFrame=DTSurface3.toGlobal(segmentDirectionMB3);
+		
+		float dx=segDirMB4inGlobalFrame.x();
+		float dy=segDirMB4inGlobalFrame.y();
+		float dz=segDirMB4inGlobalFrame.z();
+		
+		float dx3=segDirMB3inGlobalFrame.x();
+		float dy3=segDirMB3inGlobalFrame.y();
+		float dz3=segDirMB3inGlobalFrame.z();
+		
+		double cosAng=fabs(dx*dx3+dy*dy3/sqrt((dx3*dx3+dy3*dy3)*(dx*dx+dy*dy)));
+
+		if(debug) std::cout<<"MB4 \t \t \t \t cosAng"<<cosAng<<"Beetween "<<dtid3<<" and "<<DTId<<std::endl;
+		
 		if(fabs(cosAng)>1.){
-		  std::cout<<"dx="<<dx<<" dz="<<dz<<std::endl;
-		  std::cout<<"dx3="<<dx3<<" dz3="<<dz<<std::endl;
+		  std::cout<<"dx="<<dx<<" dy="<<dy<<std::endl;
+		  std::cout<<"dx3="<<dx3<<" dy3="<<dy<<std::endl;
 		  std::cout<<cosAng<<std::endl;
 		}
 		
+
 		if(cosAng>MinCosAng){
 		  compatiblesegments=true;
 		  if(dtSector==13){
@@ -766,31 +791,49 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    dtSector=10;
 		  }
 		  
-		  std::set<RPCDetId> rollsForThisDT = rollstoreDT[DTStationIndex(0,dtWheel,dtSector,4)]; //It should be always 4
+		  std::set<RPCDetId> rollsForThisDT = rollstoreDT[DTStationIndex(0,dtWheel,dtSector,dtStation)]; //Station should be always 4
 	      
+		  if(debug) std::cout<<"MB4 \t \t Number of rolls for this DT = "<<rollsForThisDT.size()<<std::endl;
+		  
 		  assert(rollsForThisDT.size()>=1);
      	      
+		  if(debug) std::cout<<"MB4  \t \t Loop over all the rolls asociated to this DT"<<std::endl;
 		  for (std::set<RPCDetId>::iterator iteraRoll=rollsForThisDT.begin();iteraRoll != rollsForThisDT.end(); iteraRoll++){
 		    const RPCRoll* rollasociated = rpcGeo->roll(*iteraRoll); //roll asociado a MB4
+		    RPCDetId rpcId = rollasociated->id();
 		    const BoundPlane & RPCSurfaceRB4 = rollasociated->surface(); //surface MB4
-		    const GeomDet* gdet=dtGeo->idToDet(segMB3->geographicalId()); 
-		    const BoundPlane & DTSurfaceMB3 = gdet->surface(); // surface MB3
-		
+
+		    RPCGeomServ rpcsrv(rpcId);
+		    std::string nameRoll = rpcsrv.name();
+
+		    if(debug) std::cout<<"MB4  \t \t \t RollName: "<<nameRoll<<std::endl;
+		    if(debug) std::cout<<"MB4  \t \t \t Doing the extrapolation to this roll"<<std::endl;
+		    
 		    GlobalPoint CenterPointRollGlobal=RPCSurfaceRB4.toGlobal(LocalPoint(0,0,0));
-		
-		    LocalPoint CenterRollinMB3Frame = DTSurfaceMB3.toLocal(CenterPointRollGlobal);
+		    LocalPoint CenterRollinMB4Frame = DTSurface4.toLocal(CenterPointRollGlobal); //In MB4
+		    LocalPoint segmentPositionMB3inMB4Frame = DTSurface4.toLocal(segmentPositionMB3inGlobal); //In MB4
+		    LocalPoint segmentPositionMB3inRB4Frame = RPCSurfaceRB4.toLocal(segmentPositionMB3inGlobal); //In MB4
+		    LocalVector segmentDirectionMB3inMB4Frame = DTSurface4.toLocal(segDirMB3inGlobalFrame); //In MB4
+		    
+		    //The exptrapolation is done in MB4 frame. for local x and z is done from MB4,
+		    float Dxz=CenterRollinMB4Frame.z();
+		    float Xo4=segmentPositionMB4.x();
+		    float dxl=segmentDirectionMB4.x(); //dx local for MB4 segment in MB4 Frame
+		    float dzl=segmentDirectionMB4.z(); //dx local for MB4 segment in MB4 Frame
+		    
+		    float X=Xo4+dxl*Dxz/dzl; //In MB4 frame
+		    float Z=Dxz;//In MB4 frame
+		    
+		    //for local y is done from MB3 
+		    float Yo34=segmentPositionMB3inMB4Frame.y();
+		    float dy34 = segmentDirectionMB3inMB4Frame.y();
+		    float dz34 = segmentDirectionMB3inMB4Frame.z();
+		    float Dy=Dxz-(segmentPositionMB3inMB4Frame.z()); //Distance beetween the segment in MB3 and the RB4 surface
 
-		    float D=CenterRollinMB3Frame.z();
-		
-		    float Xo3=segMB3->localPosition().x();
-		    float Yo3=segMB3->localPosition().y();
-		    float Zo3=segMB3->localPosition().z();
-
-		    float X=Xo3+dx3*D/dz3;
-		    float Y=Yo3+dy3*D/dz3;
-		    float Z=D;
-
-		
+		    if(debug) std::cout<<"MB4 \t \t \t The distance to extrapolate in Y from MB3 is "<<Dy<<"cm"<<std::endl;
+		    
+		    float Y=Yo34+dy34*Dy/dz34;//In MB4 Frame
+		      
 		    const RectangularStripTopology* top_
 		      =dynamic_cast<const RectangularStripTopology*>(&(rollasociated->topology())); //Topology roll asociated MB4
 		    LocalPoint xmin = top_->localPosition(0.);
@@ -803,16 +846,27 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    if(debug) std::cout<<"MB4 \t \t \t Strip Lenght "<<stripl<<"cm"<<std::endl;
 		    if(debug) std::cout<<"MB4 \t \t \t Strip Width "<<stripw<<"cm"<<std::endl;
 
-		    if(debug) std::cout<<"MB4 \t \t \t X Predicted in MB3Local= "<<X<<"cm"<<std::endl;
-		    if(debug) std::cout<<"MB4 \t \t \t Y Predicted in MB3DTLocal= "<<Y<<"cm"<<std::endl;
-		    if(debug) std::cout<<"MB4 \t \t \t Z Predicted in MB3DTLocal= "<<Z<<"cm"<<std::endl;
+		    if(debug) std::cout<<"MB4 \t \t \t X Predicted in MB4DTLocal= "<<X<<"cm"<<std::endl;
+		    if(debug) std::cout<<"MB4 \t \t \t Y Predicted in MB4DTLocal= "<<Y<<"cm"<<std::endl;
+		    if(debug) std::cout<<"MB4 \t \t \t Z Predicted in MB4DTLocal= "<<Z<<"cm"<<std::endl;
 
-		    float extrapolatedDistance = sqrt((X-Xo3)*(X-Xo3)+(Y-Yo3)*(Y-Yo3)+(Z-Zo3)*(Z-Zo3));
+		    float extrapolatedDistance = sqrt((Y-Yo34)*(Y-Yo34)+Dy*Dy);
+
+		    if(debug) std::cout<<"MB4 \t \t \t segmentPositionMB3inMB4Frame"<<segmentPositionMB3inMB4Frame<<std::endl;
+		    if(debug) std::cout<<"MB4 \t \t \t segmentPositionMB4inMB4Frame"<<segmentPosition<<std::endl;
+
+		    if(debug) std::cout<<"MB4 \t \t \t segmentDirMB3inMB4Frame"<<segDirMB3inMB4Frame<<std::endl;
+		    if(debug) std::cout<<"MB4 \t \t \t segmentDirMB4inMB4Frame"<<segmentDirectionMB4<<std::endl;
+		    
+		    if(debug) std::cout<<"MB4 \t \t \t CenterRB4PositioninMB4Frame"<<CenterRollinMB4Frame<<std::endl;
+		    
+		    if(debug) std::cout<<"MB4 \t \t \t Is the extrapolation distance ="<<extrapolatedDistance<<"less than "<<MaxDrb4<<std::endl;
+    
 
 		    if(extrapolatedDistance<=MaxDrb4){ 
 		      if(debug) std::cout<<"MB4 \t \t \t yes"<<std::endl;
 
-		      GlobalPoint GlobalPointExtrapolated = DTSurfaceMB3.toGlobal(LocalPoint(X,Y,Z));
+		      GlobalPoint GlobalPointExtrapolated = DTSurface4.toGlobal(LocalPoint(X,Y,Z));
 		      
 		      if(debug) std::cout<<"MB4 \t \t \t Point ExtraPolated in Global"<<GlobalPointExtrapolated<< std::endl;
 		      
@@ -850,12 +904,11 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			bool prediction=false;
 
 			if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
-			  if(debug) std::cout<<"MB4 \t \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
-
-			  if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
-			  if(fabs(stripPredicted)<1.) if(debug) std::cout<<"DT \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+			  if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"MB4 \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+			  if(fabs(stripPredicted)<1.) if(debug) std::cout<<"MB4 \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
 
 			  sprintf(meIdDT,"ExpectedOccupancyFromDT_%s",detUnitLabel);
+			  if(debug) std::cout<<"MB4 \t \t \t \t \t Filling Expected for "<<meIdDT<<" with "<<stripPredicted<<std::endl;
 			  meMap[meIdDT]->Fill(stripPredicted);
 			  prediction = true;
 			}else{
@@ -883,7 +936,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  countRecHits++;
 			  LocalPoint recHitPos=recHit->localPosition();
 			  float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();	    
-			  if(debug) std::cout<<"DT  \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
+			  if(debug) std::cout<<"MB4  \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 			  if(fabs(res)<fabs(minres)){
 			    minres=res;
 			    cluSize = recHit->clusterSize();
@@ -901,12 +954,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual ="<<minres<<std::endl;
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
 			  
-			  if(fabs(minres)<=(rangestrips)*stripw){ //for HR
-			    //if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+			  if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t \t \t True!"<<std::endl;
 			    anycoincidence=true;
 			  }
 			}
+
+			if(debug) std::cout<<"MB4  \t \t \t \t \t "<<prediction<<anycoincidence<<std::endl;
+			
 			if(prediction && anycoincidence){
 			  float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y();
 			  
@@ -921,7 +976,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  
 			  //-----RESIDUALS----------
 			  if(inves){
-			    float cosal = dx/sqrt(dx*dx+dz*dz);
+			    float cosal = dxl/sqrt(dxl*dxl+dzl*dzl);
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t Angle="<<acos(cosal)*180/3.1415926<<" degree"<<std::endl;
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
 			    assert(rollId.station()==4);
@@ -937,12 +992,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  sprintf(meIdRPC,"RPCDataOccupancyFromDT_%s",detUnitLabel);
 			  meMap[meIdRPC]->Fill(stripPredicted);
 
-			  sprintf(meIdRPC,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
-			  meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
-
 			  if(debug) std::cout<<"MB4 \t \t \t \t \t \t COINCIDENCE!!! Event="<<iEvent.id()<<"Filling RPC Data Occupancy for "<<meIdRPC<<" with "<<stripPredicted<<std::endl; 
 			}
-			else{
+			
+			if(anycoincidence){
+			  if(debug) std::cout<<"MB4 \t \t \t \t \t Filling 2D histo for RPC Occupancy "<<meIdRPC<<std::endl; 		
+			  sprintf(meIdRPC,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
+			  meMap[meIdRPC]->Fill(PointExtrapolatedRPCFrame.x(),PointExtrapolatedRPCFrame.y());
+			}else  if(prediction){
 			  RPCGeomServ rpcsrv(rollasociated->id());
 			  std::string nameRoll = rpcsrv.name();
 
@@ -1210,10 +1267,11 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    bool prediction=false;
 		    
 		    if(fabs(PointExtrapolatedRPCFrame.x()) < rsize*0.5 &&  fabs(PointExtrapolatedRPCFrame.y()) < stripl*0.5){
+		      if(fabs(stripPredicted-rollasociated->nstrips())<1.) if(debug) std::cout<<"CSC \t \t \t \t Extrapolating near last strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
+		      if(fabs(stripPredicted)<1.) if(debug) std::cout<<"CSC \t \t \t \t Extrapolating near first strip, Event"<<iEvent.id()<<" stripPredicted="<<stripPredicted<<" Number of strips="<<rollasociated->nstrips()<<std::endl;
 		      
-		      if(debug) std::cout<<"CSC \t \t \t \t Filling Expected for "<<meIdCSC<<" with "<<stripPredicted<<std::endl;
-
 		      sprintf(meIdCSC,"ExpectedOccupancyFromCSC_%s",detUnitLabel);
+		      if(debug) std::cout<<"CSC \t \t \t \t Filling Expected for "<<meIdCSC<<" with "<<stripPredicted<<std::endl;
 		      meMap[meIdCSC]->Fill(stripPredicted);
 		      prediction = true;
 		    }else{
@@ -1259,12 +1317,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      
 		      if(debug) std::cout<<"CSC \t \t \t \t \t PointExtrapolatedRPCFrame.x="<<PointExtrapolatedRPCFrame.x()<<" Minimal Residual"<<minres<<std::endl;
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t Minimal Residual less than stripw*rangestrips? minres="<<minres<<" range="<<rangestrips<<" stripw="<<stripw<<" cluSize"<<cluSize<<" <=compare minres with"<<(rangestrips+cluSize*0.5)*stripw<<std::endl;
-		      if(fabs(minres)<=(rangestrips)*stripw){ //for HR
-			//if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
+		      if(fabs(minres)<=(rangestrips+cluSize*0.5)*stripw){
 			if(debug) std::cout<<"CSC  \t \t \t \t \t \t True!"<<std::endl;
 			anycoincidence=true;
 		      }
 		    }
+
+		    if(debug) std::cout<<"CSC  \t \t \t \t \t "<<prediction<<anycoincidence<<std::endl;
+		    
 		    if(prediction && anycoincidence){
 		      
 		      float distobottom = stripl*0.5 + PointExtrapolatedRPCFrame.y(); //For the endcaps we should check where are the CONTACTSSS!!!
