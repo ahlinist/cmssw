@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.20 2009/03/10 22:29:26 bachtis Exp $
+// $Id: TTEffAnalyzer.h,v 1.21 2009/03/25 15:08:19 gfball Exp $
 //
 //
 
@@ -40,7 +40,7 @@
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
-#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25TauEfficiencyAnalyzer.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
@@ -68,7 +68,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
           // Call individual analyzers
           _L1analyzer.fill(iEvent, *particle);
           _L2analyzer.fill(iEvent, *particle);
-          _L25analyzer.fill(iEvent, *particle);
+          _L25and3analyzer.fill(iEvent, *particle);
 
           // Finally, fill the entry to tree
           _TTEffTree->Fill();
@@ -83,10 +83,8 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
 
-//      virtual void loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos);
-
       // ----------member data ---------------------------
-      edm::InputTag  PFTaus_,PFTauIso_; //Path to analyze
+      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_; //Path to analyze
       std::string rootFile_;
 
       edm::Handle<PFTauCollection> PFTaus;
@@ -97,7 +95,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
         float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
-      L25TauEfficiencyAnalyzer _L25analyzer;
+      L25and3TauEfficiencyAnalyzer _L25and3analyzer;
 
 };
 
