@@ -50,7 +50,9 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+# Check that Isolation collection below actually matched up with Tau Collection above
         PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
+
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
@@ -63,8 +65,11 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L2matchingDeltaR        = cms.double(0.3),
         l25JetSource            = cms.InputTag("hltL25TauConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
-        l25IsoSource            = cms.InputTag("hltL3TauIsolationSelector"),
+        l3IsoSource             = cms.InputTag("hltL3TauIsolationSelector"),
         l25MatchingCone         = cms.double(0.3),
+        HLTPFTau                = cms.bool(False),
+        MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
+
         outputFileName          = cms.string("/tmp/chinhan/qcd_tteffAnalysis.root")
 #        outputFileName          = cms.string("/tmp/chinhan/ztt_tteffAnalysis.root")
 )
