@@ -13,21 +13,19 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.17 2009/03/09 15:35:04 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.18 2009/03/25 15:08:19 gfball Exp $
 //
 //
-
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/TTEffAnalyzer.h"
 #include "Math/GenVector/VectorUtil.h"
 
-//
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
+  MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName"))
 {
-
   // File setup
   _TTEffFile = TFile::Open(rootFile_.c_str(), "RECREATE");
   //_TTEffFile = TFile::Open("test.root", "RECREATE");
@@ -57,11 +55,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
-  _L25analyzer.Setup(iConfig,_TTEffTree);
-
+  _L25and3analyzer.Setup(iConfig,_TTEffTree);
 }
 
-//
 TTEffAnalyzer::~TTEffAnalyzer()
 {
  
@@ -81,24 +77,23 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-//   edm::Handle<PFTauCollection> PFTaus;
+   edm::Handle<std::vector<LorentzVector> > mcTaus;
+   edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<reco::GsfElectronCollection> electronTaus;
-//   Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
 
-   if(iEvent.getByLabel(PFTaus_, PFTaus)) {
+   if(iEvent.getByLabel(MCTaus_, mcTaus)){
+    loop(iEvent, *mcTaus);
+    }
+   else if(iEvent.getByLabel(PFTaus_, PFTaus)) {
       try{
 	iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
       }catch(...){}
-//      if(iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation) ) 
-//     loop2(iEvent, PFTaus, *thePFTauDiscriminatorByIsolation);
-//      else 
 	loop(iEvent, *PFTaus);
    }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
    }
-
    else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
      loop(iEvent, *electronTaus);
    }
@@ -113,12 +108,12 @@ void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
   PFPhi = tau.Phi();
 }
 
-void TTEffAnalyzer::fill(const reco::GsfElectron& tau, unsigned int i) {
+void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
   fill(tau.p4());
 }
 
 void
-TTEffAnalyzer::fill(const reco::PFTau& tau, unsigned int i) {
+TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
 
   // Standsrd PF variables
   fill(tau.p4());
@@ -140,11 +135,11 @@ TTEffAnalyzer::fill(const reco::PFTau& tau, unsigned int i) {
 
   if(thePFTauDiscriminatorByIsolation.isValid()){
 	const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
-	PFIso = ds.value(i);
+	PFIso = ds.value(i);// it's possible some random number is filled here
   }
 }
 
-void TTEffAnalyzer::fill(const reco::CaloTau& tau, unsigned int i) {
+void TTEffAnalyzer::fill(const reco::CaloTau& tau,unsigned int i) {
   fill(tau.p4());
 } 
 
@@ -214,22 +209,3 @@ TTEffAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,co
 
   return out;
 }
-/*
-void TTEffAnalyzer::loop2(const Event& iEvent, Handle<PFTauCollection> taus, PFTauDiscriminator isos){
-   for(unsigned int iTau = 0; iTau < taus->size(); iTau++) {
-   PFTauRef thisTauRef(taus,iTau);
-   PFIso = isos[thisTauRef];
-   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
-          // Fill common variables
-          fill(taus->at(iTau));
-
-          // Call individual analyzers
-//          _L1analyzer.fill(iEvent, taus->at(iTau));
-//          _L2analyzer.fill(iEvent, taus->at(iTau));
-          _L25analyzer.fill(iEvent, taus->at(iTau));
-
-          // Finally, fill the entry to tree
-          _TTEffTree->Fill();
-    }
-}
-*/
