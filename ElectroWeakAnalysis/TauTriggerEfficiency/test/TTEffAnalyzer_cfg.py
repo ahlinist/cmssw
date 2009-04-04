@@ -49,9 +49,10 @@ process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles")
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection         = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
-        #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+        PFTauIsoCollection         = cms.InputTag("thisPFTauDiscriminationByIsolationHighEfficiency"),
 # Check that Isolation collection below actually matched up with Tau Collection above
-        PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
+        #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+        #PFTauIsoCollection         = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
 
 	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT2"),
 	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT2"),
