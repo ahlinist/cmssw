@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.18 2009/03/25 15:08:19 gfball Exp $
+// $Id: TTEffAnalyzer.cc,v 1.19 2009/04/04 06:48:55 smaruyam Exp $
 //
 //
 
@@ -78,7 +78,6 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
 
    edm::Handle<std::vector<LorentzVector> > mcTaus;
-   edm::Handle<PFTauCollection> PFTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<reco::GsfElectronCollection> electronTaus;
 
@@ -114,29 +113,30 @@ void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
 
 void
 TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
+// Here is workaround, though not beautiful, to access PFIso info with PFRef
+// While keeping the generic structure of loop method
+  const PFTauRef thisTauRef(PFTaus,i);
+  if(thePFTauDiscriminatorByIsolation.isValid()){
+	const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
+	PFIso = ds[thisTauRef];// it should crash if CMSSW cannot find a match between TauRef and Iso collection
+                            // Then check configuration files to make sure a correct pair is being fed into TTEFF
+  }
+   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
+  // Fill common variables
+   fill(PFTaus->at(i));
 
-  // Standsrd PF variables
-  fill(tau.p4());
+  // Fill #signal tracks, and PtSum in isolation annulus 
+  PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
+  PFIsoSum = PFTaus->at(i).isolationPFChargedHadrCandsPtSum();
+  PFEnergy = PFTaus->at(i).energy();
 
-  //get RMS Values of Candidates
   /*
+  //get RMS Values of Candidates
   std::vector<double> rms = clusterSeparation(tau.isolationPFGammaCands(),tau.signalPFCands());
   PFEGEtaRMS = rms[0];
   PFEGPhiRMS = rms[1];
   PFEGDrRMS = rms[2];
   */
-
-  // Fill #signal tracks, and PtSum in isolation annulus 
-  PFProng = tau.signalPFChargedHadrCands().size(); // check config file
-  PFIsoSum = tau.isolationPFChargedHadrCandsPtSum();
-
-  PFEnergy = tau.energy();
-  if(tau.leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./tau.leadPFChargedHadrCand()->pt();
-
-  if(thePFTauDiscriminatorByIsolation.isValid()){
-	const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
-	PFIso = ds.value(i);// it's possible some random number is filled here
-  }
 }
 
 void TTEffAnalyzer::fill(const reco::CaloTau& tau,unsigned int i) {
