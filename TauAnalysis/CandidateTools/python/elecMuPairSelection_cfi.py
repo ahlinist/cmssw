@@ -5,7 +5,8 @@ import copy
 # produce collections of electron + muons pairs passing selection criteria
 #--------------------------------------------------------------------------------
 
-# require muon and tau not to be back-to-back
+# require missing transverse momentum to point either in direction of the electron
+# or in direction of the muon in the transverse plane
 selectedElecMuPairsAcoplanarity = cms.EDFilter("PATElecMuPairSelector",
      src = cms.InputTag("allElecMuPairs"),
      cut = cms.string('cos(dPhi1MET) > 0.5 | cos(dPhi2MET) > 0.5'),
