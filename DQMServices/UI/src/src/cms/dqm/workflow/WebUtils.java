@@ -6,6 +6,8 @@ import java.util.regex.*;
 import java.security.cert.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.security.*;
+import java.math.*;
 
 public class WebUtils {
 
@@ -15,7 +17,7 @@ public class WebUtils {
 
   private static Pattern p1 = Pattern.compile("OU\\=\"*([a-zA-Z,]+)\"*");
   private static Pattern p2 = Pattern.compile("dqm(\\w+)");
-  private static Pattern p3 = Pattern.compile("CN\\=\"*([a-zA-Z,]+)\"*");
+  private static Pattern p3 = Pattern.compile("CN\\=\"*([^\",]+)\"*");
 
   public static String getLoggedUser(HttpServletRequest request) {
     if (request.isSecure() && request.getHeader("ADFS_LOGIN") != null) {
@@ -95,6 +97,16 @@ public class WebUtils {
     if (s1 == null && s2 == null) return true;
     if (s1 != null && s2 != null && s1.equals(s2)) return true;
     return false;
+  }
+
+  public static String md5(String s) {
+    try {
+      MessageDigest m = MessageDigest.getInstance("MD5");
+      m.update(s.getBytes(), 0, s.length());
+      return (new BigInteger(1, m.digest())).toString(16);
+    } catch (java.security.NoSuchAlgorithmException e) {
+      return s;
+    }
   }
 
 }
