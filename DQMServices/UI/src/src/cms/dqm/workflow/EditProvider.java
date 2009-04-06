@@ -72,29 +72,29 @@ public class EditProvider extends HttpServlet {
 
       String next_status = data.get(KEY_STATUS);
       if (next_status == null) next_status = current_status;
-      String user = WebUtils.getLoggedUser(request);
+      MessageUser user = MessageUser.get(request);
       boolean delete = (data.get("DELETE") != null && data.get("DELETE").equals("true") ? true : false);
 
-      if (user == null) throw new Exception("Not logged in!");
+      if (!user.isLogged()) throw new Exception("Not logged in!");
       if (current_status.equals("COMPLETED")) throw new Exception("Can not edit COMLETED run!");
 
-      data.put(KEY_LAST_USER, user);
+      data.put(KEY_LAST_USER, user.getName());
 
-      if (!delete && !exists && (WebUtils.hasLoggedRole(request, WebUtils.ONLINE) || WebUtils.hasLoggedRole(request, WebUtils.EXPERT))) {
+      if (!delete && !exists && (user.hasLoggedRole(WebUtils.ONLINE) || user.hasLoggedRole(WebUtils.EXPERT))) {
 
         doInsert(run_number, data);
 
-      } else if (delete && ((current_status.equals("ONLINE") && WebUtils.hasLoggedRole(request, WebUtils.ONLINE)) || WebUtils.hasLoggedRole(request, WebUtils.EXPERT))) {
+      } else if (delete && ((current_status.equals("ONLINE") && user.hasLoggedRole(WebUtils.ONLINE)) || user.hasLoggedRole(WebUtils.EXPERT))) {
         
         doDelete(current_id);
 
       } else if (
 
-        WebUtils.hasLoggedRole(request, WebUtils.EXPERT) ||
-        (current_status.equals("ONLINE") && (next_status.equals("ONLINE") || next_status.equals("OFFLINE")) && WebUtils.hasLoggedRole(request, WebUtils.ONLINE)) ||
-        (current_status.equals("OFFLINE") && (next_status.equals("OFFLINE") || next_status.equals("SIGNOFF")) && WebUtils.hasLoggedRole(request, WebUtils.OFFLINE))) {
+        user.hasLoggedRole(WebUtils.EXPERT) ||
+        (current_status.equals("ONLINE") && (next_status.equals("ONLINE") || next_status.equals("OFFLINE")) && user.hasLoggedRole(WebUtils.ONLINE)) ||
+        (current_status.equals("OFFLINE") && (next_status.equals("OFFLINE") || next_status.equals("SIGNOFF")) && user.hasLoggedRole(WebUtils.OFFLINE))) {
 
-        if (WebUtils.hasLoggedRole(request, WebUtils.EXPERT)) {
+        if (user.hasLoggedRole(WebUtils.EXPERT)) {
 
           if (next_status.equals("COMPLETED")) {
 
@@ -122,9 +122,9 @@ public class EditProvider extends HttpServlet {
       
         String message = "current_status=" + current_status +
           ", next_status=" + next_status +
-          ", " + WebUtils.ONLINE + "=" + WebUtils.hasLoggedRole(request, WebUtils.ONLINE) +
-          ", " + WebUtils.OFFLINE + "=" + WebUtils.hasLoggedRole(request, WebUtils.OFFLINE) +
-          ", " + WebUtils.EXPERT + "=" + WebUtils.hasLoggedRole(request, WebUtils.EXPERT);
+          ", " + WebUtils.ONLINE + "=" + user.hasLoggedRole(WebUtils.ONLINE) +
+          ", " + WebUtils.OFFLINE + "=" + user.hasLoggedRole(WebUtils.OFFLINE) +
+          ", " + WebUtils.EXPERT + "=" + user.hasLoggedRole(WebUtils.EXPERT);
 
         throw new Exception("Bad role/status combination: " + message);
       }
