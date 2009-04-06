@@ -65,15 +65,15 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancy2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"Inefficiency2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"Inefficiency2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCResidualsFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RPCResidualsFromDT_for_%s",layerLabel);
@@ -110,15 +110,15 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"ExpectedOccupancy2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancy2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCDataOccupancy2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"Inefficiency2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"Inefficiency2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,4*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCResidualsFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RPCResidualsFromCSC_for_%s",layerLabel);
