@@ -628,38 +628,47 @@ https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 o Supply Tube Cabling to PP0
 -------------------------
-MC Volume: 3743cm3 per cylinder
-(in pixel barrel volume)
-
 see referece document from supply tube construction attached to
 https://twiki.cern.ch/twiki/bin/view/CMS/PixelBarrelGeometryMaterials
 
 the total amount of power cables is distributed equally (50%) in a cylinder between
 supply tube and PP0, and the disks in the bulkhead. 
-This material is also used in the bulkhead PixelCables disk.
+This material is also used in the bulkhead PixelCables disk, but with a different
+MC volume.
 
 (1) power cable copper 2328.5g / 8.96 = 260cm3
 (2) power cable PE   1283g / 0.95 = 1350cm3
 
-addition: this now also includes the forward pixel and cooling:
+addition: this now also includes the forward pixel detector and cooling:
 (3) forward pixel cable copper 1671g / 8.96 = 186.5cm3
 (4) forward pixel cable PE 1114g/ 0.95 = 1172cm3
 
-(5) steel cooling pipes 18 pieces, length 30cm, inner diameter 10mm, 
-    outer diameter 12mm   =>  1450g /7.8 = 186cm3
+(5) steel cooling pipes 20 pieces, length 30cm, inner diameter 10mm, 
+    outer diameter 12mm   
+    weight measured by Peter Robmann:=>  1262g /7.8 = 161cm3
 (6) coolant in pipes   770g / 1.82 = 424cm3 
 
 
-in addition, the PXF cabling
-
+disk "Pixel Cables" in the bulkhead with MCvolume 3742cm3:
 ....................................................................
 # "PixelBarrelSupTubCables"   "PixelBarrelSupTubCables"        3743         -1.
 * 1 "power cable copper"           "Copper"                     260     1   CAB
 * 2 "power cable PE"               "Polyethylene"              1350     1   CAB
 * 3 "forward pixel cable copper"   "Copper"                    186.5    1   CAB
 * 4 "forward pixel cable PE"       "Polyethylene"              1172     1   CAB
-* 5 "cooling pipes steel"          "Steel-008"                 186      1   COL
+* 5 "cooling pipes steel"          "Steel-008"                 161      1   COL
 * 6 "coolant"                      "C6F14_F2_-10C"             424      1   COL
+
+cylinder in the PXB volume: PixelBarrelSupTubCables with MCvolume 13757
+....................................................................
+# "PixelBarrelSupTubCables2"   "PixelBarrelSupTubCables2"        13757        -1.
+* 1 "power cable copper"           "Copper"                     260     1   CAB
+* 2 "power cable PE"               "Polyethylene"              1350     1   CAB
+* 3 "forward pixel cable copper"   "Copper"                    186.5    1   CAB
+* 4 "forward pixel cable PE"       "Polyethylene"              1172     1   CAB
+* 5 "cooling pipes steel"          "Steel-008"                 161      1   COL
+* 6 "coolant"                      "C6F14_F2_-10C"             424      1   COL
+
 
 # "end"  "END"  0.  0.   
 this has to be the last line !

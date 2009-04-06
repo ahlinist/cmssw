@@ -6,12 +6,14 @@
  <Constant name="Rin1"              value="3.10*cm"/>
  <Constant name="Rin2"              value="18.00*cm"/>
  <Constant name="Rin3"              value="18.50*cm"/>
+ <Constant name="RinSupTubCab"      value="15.00*cm"/>
  <Constant name="Rout1"             value="21.80*cm"/>
  <Constant name="Rout2"             value="21.00*cm"/>
  <Constant name="Zv1"               value="30.00*cm"/>
  <Constant name="Zv2"               value="56.00*cm"/>
  <Constant name="Zv3"               value="110.5*cm"/>
  <Constant name="Zv4"               value="282.0*cm"/>
+ <Constant name="ZvSupTubCab"       value="248.0*cm"/>
  <Constant name="SupportL"          value="221.0*cm"/>
  <Constant name="SupportRin"        value="21.65*cm"/>
  <Constant name="SupportW"          value="20.00*cm"/>
@@ -109,16 +111,20 @@
 
 <SolidSection label="pixbar.xml">
  <Polycone name="PixelBarrel" startPhi="0*deg" deltaPhi="360*deg">
-  <ZSection z="-[Zv4]"     rMin="[Rin2]"       rMax="[Rout2]" />
-  <ZSection z="-[Zv3]"     rMin="[Rin2]"       rMax="[Rout2]" />
-  <ZSection z="-[Zv3]"     rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="-[Zv1]"     rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="-[Zv1]"     rMin="[Rin1]"       rMax="[Rout1]" />
-  <ZSection z="[Zv1]"      rMin="[Rin1]"       rMax="[Rout1]" />
-  <ZSection z="[Zv1]"      rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="[Zv3]"      rMin="[Rin2]"       rMax="[Rout1]" />
-  <ZSection z="[Zv3]"      rMin="[Rin2]"       rMax="[Rout2]" />
-  <ZSection z="[Zv4]"      rMin="[Rin2]"       rMax="[Rout2]" />
+  <ZSection z="-[Zv4]"         rMin="[RinSupTubCab]"  rMax="[Rout2]" />
+  <ZSection z="-[ZvSupTubCab]" rMin="[RinSupTubCab]"  rMax="[Rout2]" />
+  <ZSection z="-[ZvSupTubCab]" rMin="[Rin2]"          rMax="[Rout2]" />
+  <ZSection z="-[Zv3]"         rMin="[Rin2]"          rMax="[Rout2]" />
+  <ZSection z="-[Zv3]"         rMin="[Rin2]"          rMax="[Rout1]" />
+  <ZSection z="-[Zv1]"         rMin="[Rin2]"          rMax="[Rout1]" />
+  <ZSection z="-[Zv1]"         rMin="[Rin1]"          rMax="[Rout1]" />
+  <ZSection z="[Zv1]"          rMin="[Rin1]"          rMax="[Rout1]" />
+  <ZSection z="[Zv1]"          rMin="[Rin2]"          rMax="[Rout1]" />
+  <ZSection z="[Zv3]"          rMin="[Rin2]"          rMax="[Rout1]" />
+  <ZSection z="[Zv3]"          rMin="[Rin2]"          rMax="[Rout2]" />
+  <ZSection z="[ZvSupTubCab]"  rMin="[Rin2]"          rMax="[Rout2]" />
+  <ZSection z="[ZvSupTubCab]"  rMin="[RinSupTubCab]"  rMax="[Rout2]" />
+  <ZSection z="[Zv4]"          rMin="[RinSupTubCab]"  rMax="[Rout2]" />
  </Polycone> 
  <Tubs name="PixelBarrelSuppTub" rMin="[SupportRin]"     rMax="[Rout1]"
        dz="[SupportL]/2"         startPhi="0*deg"        deltaPhi="360*deg"/>
@@ -172,7 +178,7 @@
        dz="[Conn4T]/2"           startPhi="285*deg"        deltaPhi="150*deg"/>
  <Tubs name="PixelBarrelService" rMin="[ServiceRin]"           rMax="[ServiceRout]"
        dz="[ServT]/2"            startPhi="293*deg"        deltaPhi="134*deg"/>
- <Tubs name="PixelBarrelSupTubCables" rMin="[Rin2]"           rMax="[Conn3Rout]"
+ <Tubs name="PixelBarrelSupTubCables" rMin="[RinSupTubCab]" rMax="[Conn3Rout]"
        dz="[ServCablT]/2"            startPhi="0*deg"        deltaPhi="360*deg"/>
 </SolidSection>
 
@@ -267,7 +273,7 @@
  </LogicalPart>
  <LogicalPart name="PixelBarrelSupTubCables" category="unspecified">
   <rSolid name="PixelBarrelSupTubCables"/>
-  <rMaterial name="pixbarmaterial:PixelBarrelSupTubCables"/>
+  <rMaterial name="pixbarmaterial:PixelBarrelSupTubCables2"/>
  </LogicalPart>
 </LogicalPartSection>
 
