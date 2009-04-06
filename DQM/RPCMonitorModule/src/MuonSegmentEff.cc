@@ -32,6 +32,13 @@ void MuonSegmentEff::beginJob(){
 }
 
 int distsector(int sector1,int sector2){
+
+  if(sector1==13) sector1=4;
+  if(sector1==14) sector1=10;
+  
+  if(sector2==13) sector2=4;
+  if(sector2==14) sector2=10;
+  
   int distance = abs(sector1 - sector2);
   if(distance>6) distance = 12-distance;
   return distance;
@@ -741,11 +748,13 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      
 	      DTChamberId dtid3 = segMB3->chamberId();  
 	      
-	      if(distsector(dtid3.sector(),DTId.sector())<=1
+	      if(distsector(dtid3.sector(),DTId.sector())<=1 //The DT sector could be 13 or 14 and because is corrected in the calculation of the distance.
 		 && dtid3.station()==3
 		 && dtid3.wheel()==DTId.wheel()
 		 && DTSegmentCounter[dtid3] == 1
 		 && segMB3->dimension()==4){
+
+		std::cout<<"MB4  \t \t \t \t distsector ="<<distsector(dtid3.sector(),DTId.sector())<<std::endl;
 
 		const GeomDet* gdet3=dtGeo->idToDet(segMB3->geographicalId());
 		const BoundPlane & DTSurface3 = gdet3->surface();
