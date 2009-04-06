@@ -1140,17 +1140,21 @@ void Onia2MuMu::fillPhotons(const edm::Event &iEvent) {
 void Onia2MuMu::fillMuons(const edm::Event &iEvent){
  
   if(theDebugLevel>0) cout << "fillMuons called " << endl;
-   
+
+  Handle<reco::TrackCollection> stas;
+  iEvent.getByLabel(theStandAloneMuonsLabel, stas);
+
+  Handle<reco::TrackCollection> glbmuons;
+  iEvent.getByLabel(theGlobalMuonsLabel, glbmuons);
+
   /////////// StandAlone Muons
   if ( theStoreSTAMuonFlag ) { 
-    Reco_mu_sta_size=0;
-    Handle<reco::TrackCollection> stas;
-    iEvent.getByLabel(theStandAloneMuonsLabel,stas);
+    Reco_mu_sta_size=0;    
     if(theDebugLevel>1) cout << "SIZE STA Muons " <<  stas->size() << endl;
     for (reco::TrackCollection::const_iterator muoni = stas->begin();
        muoni != stas->end()&&Reco_mu_sta_size<Max_mu_size;
        muoni++) {
-      if(theDebugLevel>1) cout << "Nieuw STA muon " << endl;
+      if(theDebugLevel>1) cout << "New STA muon " << endl;
       if(theDebugLevel>0) printTrack(*muoni);
       TLorentzVector a=lorentzMomentum(*muoni);
       if(theDebugLevel>1)cout << "StandAloneMuon PT " << a.Pt() << endl;
@@ -1184,13 +1188,11 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
   /////////// Global Muons 
   if ( theStoreGLBMuonFlag ) {
     Reco_mu_glb_size=0;
-    Handle<reco::TrackCollection> muons;
-    iEvent.getByLabel(theGlobalMuonsLabel,muons);
-    if(theDebugLevel>1) cout << "SIZE Global Muons " <<  muons->size() << endl;
-    for (reco::TrackCollection::const_iterator muoni = muons->begin();
-         muoni != muons->end()&&Reco_mu_glb_size<Max_mu_size; 
+    if(theDebugLevel>1) cout << "SIZE Global Muons " <<  glbmuons->size() << endl;
+    for (reco::TrackCollection::const_iterator muoni = glbmuons->begin();
+         muoni != glbmuons->end()&&Reco_mu_glb_size<Max_mu_size; 
          muoni++) {
-      if(theDebugLevel>1) cout << "Nieuw GLB muon " << endl;
+      if(theDebugLevel>1) cout << "New GLB muon " << endl;
       if(theDebugLevel>0) printTrack(*muoni);
       TLorentzVector a=lorentzMomentum(*muoni);
       if(theDebugLevel>1)cout << "GlobalMuon PT " << a.Pt() << endl;
@@ -1221,66 +1223,66 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     }
   } 
 
-  if ( theStoreAllMuonFlag ) {
-    Reco_mu_size=0;
+  Reco_mu_size=0;
+  
+  Handle<reco::MuonCollection> muons;
+  iEvent.getByLabel(theMuonsLabel,muons);
 
-    Handle<reco::MuonCollection> muons;
-    iEvent.getByLabel(theMuonsLabel,muons);
-    if(theDebugLevel>1)cout << "SIZE muons " <<  muons->size() << endl;
-    Reco_mu_Normsize=muons->size();
-    for (reco::MuonCollection::const_iterator muoni=muons->begin() ;
+  if(theDebugLevel>1)cout << "SIZE muons " <<  muons->size() << endl;
+  Reco_mu_Normsize=muons->size();
+  for (reco::MuonCollection::const_iterator muoni=muons->begin() ;
        muoni !=muons->end()&&Reco_mu_size<Max_track_size ;
        muoni++ ){
-      if(theDebugLevel>1) cout << "New MUON nr " << Reco_mu_size << endl;
-      Reco_mu_is_sta[Reco_mu_size]= muoni->isStandAloneMuon();
-      Reco_mu_is_glb[Reco_mu_size]= muoni->isGlobalMuon();
-      Reco_mu_is_trk[Reco_mu_size]= muoni->isTrackerMuon(); 
-      Reco_mu_is_cal[Reco_mu_size]= muoni->isCaloMuon();
-      if(theDebugLevel>1) cout << "Reco_mu_is_sta[Reco_mu_size]" << Reco_mu_is_sta[Reco_mu_size] << endl;
-      if(theDebugLevel>1) cout << "Reco_mu_is_glb[Reco_mu_size]" << Reco_mu_is_glb[Reco_mu_size] << endl;
-      if(theDebugLevel>1) cout << "Reco_mu_is_trk[Reco_mu_size]" << Reco_mu_is_trk[Reco_mu_size] << endl;
-      if(theDebugLevel>1) cout << "Reco_mu_is_cal[Reco_mu_size]" << Reco_mu_is_cal[Reco_mu_size] << endl;
-      TrackRef glbTrack = muoni->combinedMuon();
-      Reco_mu_links_glb[Reco_mu_size]=glbTrack.index(); 
-      if(theDebugLevel>1) cout << "Link to glb mu " << Reco_mu_links_glb[Reco_mu_size] << endl;
-      TrackRef staTrack = muoni->standAloneMuon();
-      Reco_mu_links_sta[Reco_mu_size]=staTrack.index();
-      if(theDebugLevel>1) cout << "Link to sta mu " << Reco_mu_links_sta[Reco_mu_size] << endl;
-      TrackRef trkTrack = muoni->track();
-      Reco_mu_links_trk[Reco_mu_size]=trkTrack.index();
-      if(theDebugLevel>1) cout << "Link to trk mu " << Reco_mu_links_trk[Reco_mu_size] << endl;
-      Reco_mu_caloComp[Reco_mu_size]=muoni->caloCompatibility();
+    if(theDebugLevel>1) cout << "New MUON nr " << Reco_mu_size << endl;
+    Reco_mu_is_sta[Reco_mu_size] = muoni->isStandAloneMuon();
+    Reco_mu_is_glb[Reco_mu_size] = muoni->isGlobalMuon();
+    Reco_mu_is_trk[Reco_mu_size] = muoni->isTrackerMuon(); 
+    Reco_mu_is_cal[Reco_mu_size] = muoni->isCaloMuon();
+    if(theDebugLevel>1) cout << "Reco_mu_is_sta[Reco_mu_size]" << Reco_mu_is_sta[Reco_mu_size] << endl;
+    if(theDebugLevel>1) cout << "Reco_mu_is_glb[Reco_mu_size]" << Reco_mu_is_glb[Reco_mu_size] << endl;
+    if(theDebugLevel>1) cout << "Reco_mu_is_trk[Reco_mu_size]" << Reco_mu_is_trk[Reco_mu_size] << endl;
+    if(theDebugLevel>1) cout << "Reco_mu_is_cal[Reco_mu_size]" << Reco_mu_is_cal[Reco_mu_size] << endl;
+    TrackRef glbTrack = muoni->combinedMuon();
+    Reco_mu_links_glb[Reco_mu_size]=glbTrack.index(); 
+    if(theDebugLevel>1) cout << "Link to glb mu " << Reco_mu_links_glb[Reco_mu_size] << endl;
+    TrackRef staTrack = muoni->standAloneMuon();
+    Reco_mu_links_sta[Reco_mu_size]=staTrack.index();
+    if(theDebugLevel>1) cout << "Link to sta mu " << Reco_mu_links_sta[Reco_mu_size] << endl;
+    TrackRef trkTrack = muoni->track();
+    Reco_mu_links_trk[Reco_mu_size]=trkTrack.index();
+    if(theDebugLevel>1) cout << "Link to trk mu " << Reco_mu_links_trk[Reco_mu_size] << endl;
+    Reco_mu_caloComp[Reco_mu_size]=muoni->caloCompatibility();
       if(theDebugLevel>1) cout << " calocompatibility " << muoni->caloCompatibility() << endl;
       Reco_mu_size++;
-    }
+  }
+  
+  if(theDebugLevel>1) cout << "after normal Reco_mu_size " << Reco_mu_size << endl;
+  
+  edm::Handle<reco::CaloMuonCollection> calmuons;
+  iEvent.getByLabel(theCaloMuonsLabel, calmuons);
 
-    if(theDebugLevel>1) cout << "now Reco_mu_size " << Reco_mu_size << endl;
-
-    edm::Handle<reco::CaloMuonCollection> calmuons;
-    iEvent.getByLabel(theCaloMuonsLabel, calmuons);
-    if(theDebugLevel>1)cout << "SIZE Calomuons " <<  calmuons->size() << endl;
-    Reco_mu_Calmsize=muons->size();
-    for (reco::CaloMuonCollection::const_iterator muoni=calmuons->begin() ;
-       muoni !=calmuons->end()&&Reco_mu_size<Max_track_size ;
-       muoni++ ){
-      Reco_mu_is_sta[Reco_mu_size]= false;
-      Reco_mu_is_glb[Reco_mu_size]= false;
-      Reco_mu_is_trk[Reco_mu_size]= false;
-      Reco_mu_is_cal[Reco_mu_size]= true;
-      Reco_mu_links_glb[Reco_mu_size]=4294967295;
-      Reco_mu_links_sta[Reco_mu_size]=4294967295;
-      TrackRef trkTrack = muoni->track();
-      Reco_mu_links_trk[Reco_mu_size]=trkTrack.index();
-      if(theDebugLevel>1) cout << "Link to trk mu " << Reco_mu_links_trk[Reco_mu_size] << endl;    
-      Reco_mu_caloComp[Reco_mu_size]=muoni->caloCompatibility(); 
-      if(theDebugLevel>1) cout << " calocompatibility " << muoni->caloCompatibility() << endl;
-      Reco_mu_size++;
-    } 
+  if(theDebugLevel>1)cout << "SIZE Calomuons " <<  calmuons->size() << endl;
+  Reco_mu_Calmsize = calmuons->size();
+  for (reco::CaloMuonCollection::const_iterator calmuoni=calmuons->begin() ;
+       calmuoni !=calmuons->end()&&Reco_mu_size<Max_track_size ;
+       calmuoni++ ){
+    Reco_mu_is_sta[Reco_mu_size]= false;
+    Reco_mu_is_glb[Reco_mu_size]= false;
+    Reco_mu_is_trk[Reco_mu_size]= false;
+    Reco_mu_is_cal[Reco_mu_size]= true;
+    Reco_mu_links_glb[Reco_mu_size] = -10000;
+    Reco_mu_links_sta[Reco_mu_size] = -10000;
+    TrackRef trkTrack = calmuoni->track();
+    Reco_mu_links_trk[Reco_mu_size]=trkTrack.index();
+    if(theDebugLevel>1) cout << "Link to trk mu " << Reco_mu_links_trk[Reco_mu_size] << endl;    
+    Reco_mu_caloComp[Reco_mu_size]=calmuoni->caloCompatibility(); 
+    if(theDebugLevel>1) cout << " calocompatibility " << calmuoni->caloCompatibility() << endl;
+    Reco_mu_size++;
   } 
-   if(theDebugLevel>1) cout << "now Reco_mu_size " << Reco_mu_size << endl;
+ 
+  if(theDebugLevel>1) cout << "after calo Reco_mu_size " << Reco_mu_size << endl;
 
-
-  Handle<reco::TrackCollection> stas;
+  /* Handle<reco::TrackCollection> stas;
   iEvent.getByLabel(theStandAloneMuonsLabel,stas);
   Handle<reco::MuonCollection> muons;
   iEvent.getByLabel(theMuonsLabel,muons);
@@ -1299,7 +1301,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       if( glbTrack->ndof()==0 || staTrack->ndof()==0 ) cout<<"Oooops, glb_ndf="<<glbTrack->ndof()<<" and sta_ndf="<<staTrack->ndof()<<endl;  
   
     }
-  } 
+    } */
 }
 
 ////////////////
