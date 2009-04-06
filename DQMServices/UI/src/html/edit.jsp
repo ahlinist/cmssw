@@ -1,6 +1,10 @@
 <%@ page import="cms.dqm.workflow.*" %>
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
 
+<%
+  MessageUser user = MessageUser.get(request);
+%>
+
 <script type="text/javascript">
 
 function textareaValue (name) {
@@ -338,10 +342,10 @@ $(document).ready( function () {
         count_tags--;
      
         if (status != "COMPLETED") {
-          if (<%= WebUtils.hasLoggedRole(request, WebUtils.EXPERT) %>) real_role = "EXPERT";
-          else if (<%= WebUtils.hasLoggedRole(request, WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
+          if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) real_role = "EXPERT";
+          else if (<%= user.hasLoggedRole(WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
             real_role = "ONLINE";
-          else if (<%= WebUtils.hasLoggedRole(request, WebUtils.OFFLINE) %> && status == "OFFLINE")
+          else if (<%= user.hasLoggedRole(WebUtils.OFFLINE) %> && status == "OFFLINE")
             real_role = "OFFLINE";
         }
  
@@ -374,7 +378,7 @@ $(document).ready( function () {
           
           if (status == "") {
             $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"ONLINE\">ONLINE</option>"));
-            $("#edit form .edit_info input[name='RUN_ONLINE_SHIFTER']").val("<%=WebUtils.getLoggedUser(request)%>");
+            $("#edit form .edit_info input[name='RUN_ONLINE_SHIFTER']").val("<%=user.getName()%>");
           } else {
             $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
             $("button:contains('Delete')").show();

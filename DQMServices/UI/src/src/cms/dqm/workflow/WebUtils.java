@@ -13,6 +13,10 @@ public class WebUtils {
   public static final String OFFLINE = "OFFLINE";
   public static final String EXPERT = "EXPERT";
 
+  private static Pattern p1 = Pattern.compile("OU\\=\"*([a-zA-Z,]+)\"*");
+  private static Pattern p2 = Pattern.compile("dqm(\\w+)");
+  private static Pattern p3 = Pattern.compile("CN\\=\"*([a-zA-Z,]+)\"*");
+
   public static String getLoggedUser(HttpServletRequest request) {
     if (request.isSecure() && request.getHeader("ADFS_LOGIN") != null) {
       return request.getHeader("ADFS_FULLNAME");
@@ -20,18 +24,10 @@ public class WebUtils {
     return null;
   }
 
-  public static boolean hasLoggedRole(HttpServletRequest request, String role) {
-    role = role.toUpperCase();
-    Vector<String> v = getLoggedRoles(request);
-    return (v.indexOf(role) > -1);
-  }
-
   public static Vector<String> getLoggedRoles(HttpServletRequest request) {
     Vector<String> v = new Vector<String>();
     X509Certificate[] certs = (X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
     if (certs != null) {
-      Pattern p1 = Pattern.compile("OU\\=\"*([a-zA-Z,]+)\"*");
-      Pattern p2 = Pattern.compile("dqm(\\w+)");
       for (int i = 0; i < certs.length; i++) {
         Matcher m = p1.matcher(certs[i].getSubjectDN().getName());
         if (m.find()) {
@@ -47,6 +43,17 @@ public class WebUtils {
       }
     }
     return v;
+  }
+
+  public static String getCertCN(HttpServletRequest request) {
+    X509Certificate[] certs = (X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
+    if (certs != null) {
+      for (int i = 0; i < certs.length; i++) {
+        Matcher m = p3.matcher(certs[i].getSubjectDN().getName());
+        if (m.find()) return m.group(1);
+      }
+    }
+    return null;
   }
 
   public static String getCertInfo(HttpServletRequest request) {

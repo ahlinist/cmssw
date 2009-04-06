@@ -2,28 +2,7 @@
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
 
 <%
-  
-  try {
-    DBWorker db = new DBWorker();
-    db.executeSQL("select 1 from dual");
-  } catch (Exception e) {
-    out.println("No connection to the database.");
-  }
-
-  String logged_in = WebUtils.getLoggedUser(request);
-  String logged_roles = "";
-
-
-  Vector<String> v = WebUtils.getLoggedRoles(request);
-  for (Iterator i = v.iterator(); i.hasNext(); ) {
-    logged_roles = logged_roles + i.next();
-    if (i.hasNext()) {
-      logged_roles = logged_roles + ", ";
-    }
-  }
-
-  if (logged_roles.equals("")) logged_roles = "NONE";
-
+  MessageUser user = MessageUser.get(request);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -36,10 +15,10 @@
   <link rel="stylesheet" type="text/css" href="media/flexigrid/css/flexigrid/flexigrid.css" />
   <!--link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" /-->
   <link rel="stylesheet" type="text/css" href="media/index.css" />
-  <link type="text/css" href="media/smoothness/jquery-ui-1.7.custom.css" rel="stylesheet" />
+  <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
 
   <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
-  <script type="text/javascript" src="media/jquery-ui-1.7.custom.min.js"></script>
+  <script type="text/javascript" src="media/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="media/jquery.timers.js"></script>
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
   <script type="text/javascript" src="media/jquery.menu.js"></script>
@@ -53,6 +32,7 @@
 
 <script type="text/javascript">
 
+/* TODO remove!
   function checkSession() {
     $.ajax({
       type: "GET",
@@ -65,11 +45,12 @@
       }
     });
   }
+
+*/
   
   function quickSearch () {
-
-      $.showSearchForm();
-    }
+    $.showSearchForm();
+  }
 
   function logoutUser() {
     frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
@@ -276,9 +257,9 @@
 
     var canEdit = function (status) {
       if (status == "COMPLETED") return false;
-      if (<%= WebUtils.hasLoggedRole(request, WebUtils.EXPERT) %>) return true;
-      if (status == "ONLINE" && <%= WebUtils.hasLoggedRole(request, WebUtils.ONLINE) %>) return true;
-      if (status == "OFFLINE" && <%= WebUtils.hasLoggedRole(request, WebUtils.OFFLINE) %>) return true;
+      if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) return true;
+      if (status == "ONLINE" && <%= user.hasLoggedRole(WebUtils.ONLINE) %>) return true;
+      if (status == "OFFLINE" && <%= user.hasLoggedRole(WebUtils.OFFLINE) %>) return true;
       return false;
     }
 
@@ -460,15 +441,6 @@
       }
     });
 
-    $("#roles").tooltip({
-      delay: 0,
-      fade: 250,
-      showURL: false,
-      bodyHandler: function() {
-        return "<%= WebUtils.getCertInfo(request).replaceAll(", ", "<br/>").replaceAll("\"", "") %>";
-      }
-    });
-
     // init
     $("#flex1").flexReload();
 
@@ -583,7 +555,7 @@ function changeStatusTo(status) {
       <td id="logo">CMS DQM Run Registry</td>
       <td id="login">
 
-<% if (WebUtils.hasLoggedRole(request, WebUtils.EXPERT)) { %>
+<% if (user.hasLoggedRole(WebUtils.EXPERT)) { %>
 
         <span id="batch_updater" style="display: none;" >
           Updating: 
@@ -602,6 +574,10 @@ function changeStatusTo(status) {
         &nbsp;|&nbsp;
 
 <% } %>        
+
+        <a href="#" onclick="openMessageBoard()" id="chat_notification"> Message Board </a>
+
+        &nbsp;|&nbsp;
 
         <a href="#" onclick="drawChart()">Plot Chart</a>
 
@@ -632,8 +608,8 @@ function changeStatusTo(status) {
 
         &nbsp;|&nbsp;
 
-        <% if (logged_in != null) { %>
-          Logged in as <%= logged_in %> (<span id="roles"><%= logged_roles %></span>) - 
+        <% if (user.isLogged()) { %>
+          Logged in as <%= user.getName() %> (<span id="roles"><%= user.getRoles() %></span>) @ <%= user.getLocation() %> - 
           <a href="#" onclick="logoutUser()">Logout</a>
         <% } else { %>
           <a href="#" onclick="location.href=location.href.replace(/^http:\/\//,'https:\/\/')">Login</a>
@@ -645,6 +621,7 @@ function changeStatusTo(status) {
   <jsp:include page="search.jsp" />
   <jsp:include page="edit.jsp" />
   <jsp:include page="plot.jsp" />
+  <jsp:include page="chat.jsp" />
 
   <table id="flex1"></table>
 
@@ -663,18 +640,12 @@ function changeStatusTo(status) {
     <jsp:include page="help.html" />
   </div>
 
-<% if (logged_in != null) { %>
-  <script language="javascript">
-   setInterval("checkSession();", 20000);
-  </script>
-<% } %>
-
 </body>
 </html>
 
 <!-- 
-  NICE User:   <%= logged_in %>
+  NICE User:   <%= user.getName() %>
   Certificate: <%= WebUtils.getCertInfo(request) %> 
-  Roles:       <%= logged_roles %>
+  Roles:       <%= user.getRoles() %>
   Address:     <%= request.getRemoteAddr()%>
 -->

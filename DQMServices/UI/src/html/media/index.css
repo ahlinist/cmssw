@@ -68,7 +68,7 @@ background: url(img/smEXCL.png) no-repeat center left;
 }
 #tooltip h3, #tooltip div { margin: 0; }
 
-#edit_overlay, #plot_overlay {
+#edit_overlay, #plot_overlay, #chat_overlay {
 	background: url(img/load_edit.gif) no-repeat center center;
 	position: absolute;
 	left: 0;
@@ -202,9 +202,8 @@ li.menu-separator{
 	margin: 2px 0;
 }
 
-ul.menu,
-#root-menu-div ul {
-background-color: #fff;
+ul.menu, #root-menu-div ul {
+	background-color: #fff;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -245,5 +244,69 @@ li.active {
 tr.prevTag {
 	/* background: #FFF39C; */
 	color: #0B0BFF;
+}
+
+#chat_messages {
+	position: relative;
+	overflow-x: hidden;
+	/* overflow-y: hidden; */
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #bbbbbb;
+	border-right-color: #bbbbbb;
+	border-bottom-color: #bbbbbb;
+	border-left-color: #bbbbbb;
+	height: 300px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	background-color: #ffffff;
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	background-x-position: 0%;
+	background-y-position: 0%;
+	margin-bottom: 5px;
+  overflow-y: auto;
+}
+
+.chat_line {
+	margin-top: 0pt;
+	margin-right: 0pt;
+	margin-bottom: 5pt;
+	margin-left: 0pt;
+	text-align: left;
+}
+
+.chat_line_header {
+	text-align: left;
+	font-size: 10px;
+	color: #444444;
+}
+
+.chat_line_text {
+	font-weight: bold;
+	text-align: left;
+	font-size: 12px;
+}
+
+.chat_priority0 {
+	color: #777777;
+}
+
+.chat_priority1 {
+	color: #000000;
+}
+
+.chat_priority2 {
+	background-color: #ffeeee;
+	color: #ff0000;
 }
 

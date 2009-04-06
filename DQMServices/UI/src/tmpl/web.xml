@@ -179,6 +179,11 @@
       <servlet-class>cms.dqm.workflow.HeartBeat</servlet-class>
     </servlet>
 
+    <servlet>
+      <servlet-name>MessageBoard</servlet-name>
+      <servlet-class>cms.dqm.workflow.MessageBoard</servlet-class>
+    </servlet>
+
     <servlet-mapping>
       <servlet-name>XmlRpcServlet</servlet-name>
       <url-pattern>/xmlrpc</url-pattern>
@@ -222,6 +227,11 @@
     <servlet-mapping>
         <servlet-name>RunChartData</servlet-name>
         <url-pattern>/runchartdata</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MessageBoard</servlet-name>
+        <url-pattern>/messageboard</url-pattern>
     </servlet-mapping>
 
     <session-config>
