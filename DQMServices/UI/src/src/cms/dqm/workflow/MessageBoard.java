@@ -30,6 +30,7 @@ public class MessageBoard extends HttpServlet {
 
     String msg = (!checkParam(request.getParameter("msg"))  ? null : request.getParameter("msg"));
     long  last = (!checkParam(request.getParameter("last")) ? 0    : Long.valueOf(request.getParameter("last")));
+    long  lastUser = (!checkParam(request.getParameter("last_user")) ? 0    : Long.valueOf(request.getParameter("last_user")));
 
     response.setContentType("text/plain");
     PrintWriter out = response.getWriter();
@@ -38,11 +39,9 @@ public class MessageBoard extends HttpServlet {
 
     DBWorker db = null;
 
-    // long last_before = MessageBoardSyn.getInstance().getLast();
+    MessageUser user = MessageUser.get(request);
 
     if (msg != null) {
-
-      MessageUser user = MessageUser.get(request);
 
       JSONObject message = new JSONObject(msg);	
       String text = message.getString("text").trim();
@@ -67,9 +66,10 @@ public class MessageBoard extends HttpServlet {
 
     }
 
-    JSONArray msgs = new JSONArray();	
+    JSONObject resp = new JSONObject();
+    resp.put("logged", user.isLogged());
 
-    // long last_middle = MessageBoardSyn.getInstance().getLast();
+    JSONArray msgs = new JSONArray();
 
     if (MessageBoardSyn.getInstance().getLast() < 0 || MessageBoardSyn.getInstance().getLast() > last) {
 
@@ -83,23 +83,37 @@ public class MessageBoard extends HttpServlet {
       ResultSet r = pstmt.executeQuery();
       ResultSetMetaData rm = r.getMetaData();
       int cols = rm.getColumnCount();
+      long newLast = MessageBoardSyn.getInstance().getLast();
 
       while (r.next()) {
         HashMap<String, Object> map  = new HashMap<String, Object>();
         for (int i = 1; i < cols + 1; i++) map.put(rm.getColumnName(i), r.getObject(i));
         msgs.put(map);
-        MessageBoardSyn.getInstance().setLast(r.getLong(1));
+        newLast = r.getLong(1);
       }
-
+      MessageBoardSyn.getInstance().setLast(newLast);
     }
+    resp.put("msgs", msgs);
 
-    // long last_after = MessageBoardSyn.getInstance().getLast();
-    // HashMap<String, Object> map  = new HashMap<String, Object>();
-    // map.put("TEXT", "before: " + String.valueOf(last_before) + "; middle: " + String.valueOf(last_middle) + "; after: " + String.valueOf(last_after));
-    // map.put("ID", last_after);
-    // msgs.put(map);
+    JSONArray users = new JSONArray();
+    if (MessageBoardSyn.getInstance().getLastUser() > lastUser) {
+      Iterator<MessageUser> it = MessageBoardSyn.getInstance().getUsers();
+      if (it != null) {
+        while (it.hasNext()) {
+          HashMap<String, Object> map  = new HashMap<String, Object>();
+          MessageUser u = it.next();
+          map.put("name", u.getName());
+          map.put("roles", u.getRoles());
+          map.put("loc", u.getLocation());
+          users.put(map);
+        }
+      }
+    }
+    resp.put("users", users);
 
-    msgs.write(out);
+    resp.put("last_msg", MessageBoardSyn.getInstance().getLast());
+    resp.put("last_user", MessageBoardSyn.getInstance().getLastUser());
+    resp.write(out);
 
     } catch (Exception e) {
       throw new ServletException(e);

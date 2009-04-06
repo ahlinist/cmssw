@@ -609,7 +609,7 @@ function changeStatusTo(status) {
         &nbsp;|&nbsp;
 
         <% if (user.isLogged()) { %>
-          Logged in as <%= user.getName() %> (<span id="roles"><%= user.getRoles() %></span>) @ <%= user.getLocation() %> - 
+          Logged in as <%= user.getName() %> (<span id="roles"><%= user.getRoles() %></span>) @ <%= user.getLocation() %>
           <a href="#" onclick="logoutUser()">Logout</a>
         <% } else { %>
           <a href="#" onclick="location.href=location.href.replace(/^http:\/\//,'https:\/\/')">Login</a>

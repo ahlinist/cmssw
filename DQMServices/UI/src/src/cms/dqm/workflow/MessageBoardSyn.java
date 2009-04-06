@@ -8,16 +8,21 @@ public class MessageBoardSyn {
 
   static private MessageBoardSyn instance = null;
   private long last;
+  private long lastUser;
 
-  Hashtable<String, HttpSession> sessions;
+  Hashtable<String, MessageUser> users;
 
   private MessageBoardSyn() {
+    users = new Hashtable<String, MessageUser>();
     resetLast();
+    lastUser = 1;
   }
 
   public long getLast() { return last; }
   public void setLast(long last_) { last = last_; }
   public void resetLast() { last = -1; }
+
+  public long getLastUser() { return lastUser; }
 
   static public MessageBoardSyn getInstance() {
     if (null == instance) {
@@ -26,16 +31,23 @@ public class MessageBoardSyn {
     return instance;
   }
 
-  public void addSession(HttpSession session) {
-    String id = session.getId();
-    if (sessions.get(id) != null) return;
-    sessions.put(id, session);
+  public void loginUser(MessageUser user) {
+    if (!user.isLogged()) return;
+    if (users.get(user.getId()) != null) return;
+    users.put(user.getId(), user);
+    lastUser++;
   }
 
-  public void remSession(HttpSession session) {
-    sessions.remove(session.getId());
+  public void logoutUser(MessageUser user) {
+    if (!user.isLogged()) return;
+    if (users.get(user.getId()) != null) return;
+    users.remove(user.getId());
+    lastUser++;
   }
 
+  public Iterator<MessageUser> getUsers() { 
+    return users.values().iterator();
+  }
 
 }
 
