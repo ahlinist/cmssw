@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.41 2009/03/05 15:55:06 giorgia Exp $
+// $Id: DTRenderPlugin.cc,v 1.42 2009/03/09 11:00:22 giorgia Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.41 $
-  \date $Date: 2009/03/05 15:55:06 $
+  \version $Revision: 1.42 $
+  \date $Date: 2009/03/09 11:00:22 $
 */
 
 #include "TProfile2D.h"
@@ -26,7 +26,6 @@ DTRenderPlugin::DTRenderPlugin() {
   labelMB4Sect_global = 0;
   labelMB4Sect4and13_wheel = new TLatex(4,4.5,"4/13");
   labelMB4Sect10and14_wheel = new TLatex(9.85,4.5,"10/14");
-
 }
 
 bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
@@ -37,6 +36,7 @@ bool DTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
      (o.name.find( "DT/9" ) != std::string::npos) ||
      (o.name.find( "DT/E" ) != std::string::npos) ||
      (o.name.find( "DT/F" ) != std::string::npos) ||
+     (o.name.find( "DT/B" ) != std::string::npos) ||
      (o.name.find( "DT/C" ) != std::string::npos) ||
      (o.name.find( "DT/L" ) != std::string::npos)) {
     return true;
@@ -110,8 +110,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   if(obj->GetEntries() != 0) c->SetLogz(0);
 
   //gStyle->SetLabelSize(0.7);
-  obj->GetXaxis()->SetLabelSize(0.07);
-  obj->GetYaxis()->SetLabelSize(0.07);
+  obj->GetXaxis()->SetLabelSize(0.06);
+  obj->GetYaxis()->SetLabelSize(0.06);
 
 
 
@@ -144,6 +144,18 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if( o.name.find( "GlbSummary" ) != std::string::npos ) {
+    dqm::utils::reportSummaryMapPalette(obj);
+    obj->GetXaxis()->SetNdivisions(13,true);
+    obj->GetYaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    obj->SetOption("text,colz");
+    obj->SetMarkerSize( 2 );
+//     gStyle->SetPaintTextFormat("2.0f");
+    c->SetGrid(1,1);
+    return;
+  }
 
   // --------------------------------------------------------------
   // Data integrity plots
@@ -153,6 +165,19 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLeftMargin(0.15);
     return;
   }
+
+  if( o.name.find("SCSizeVsROSSize") != std::string::npos ) {
+    c->SetGrid(1,1);
+    c->SetBottomMargin(0.15);
+    c->SetLeftMargin(0.15);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    obj->GetXaxis()->SetNdivisions(13,true);
+
+    return;
+  }
+
+
 
   // --------------------------------------------------------------
   // Data integrity plots
@@ -593,6 +618,16 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if(o.name.find("CountSectVsChamb") != std::string::npos ||
+     o.name.find("ExtrapSectVsChamb") != std::string::npos) {
+    obj->GetXaxis()->SetNdivisions(15,true);
+    obj->GetYaxis()->SetNdivisions(5,true);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetYaxis()->CenterLabels();
+    c->SetGrid(1,1);
+    c->SetRightMargin(0.15);
+    return;
+  }
 
   //----------------- calib validation plots ---------------------
 
@@ -706,7 +741,23 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->GetXaxis()->SetLabelSize(0.07);
   obj->GetYaxis()->SetLabelSize(0.07);
 
+  if( o.name.find("MeanDistr") != std::string::npos ) {
+    gStyle->SetOptStat( 1111111 );
+    obj->SetStats( kTRUE );
+    obj->GetXaxis()->SetLabelSize(0.05);
+    obj->GetYaxis()->SetLabelSize(0.05);
+
+    return;
+  }
   
+  if( o.name.find("SigmaDistr") != std::string::npos ) {
+    gStyle->SetOptStat( 1111111 );
+    obj->SetStats( kTRUE );
+    obj->GetXaxis()->SetLabelSize(0.05);
+    obj->GetYaxis()->SetLabelSize(0.05);
+
+    return;
+  }
 
   if( o.name.find("ROSEventLenght") != std::string::npos ) {
      if(obj->GetEntries() != 0) c->SetLogy(1);
