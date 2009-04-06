@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.13 2009/03/31 18:20:01 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.14 2009/04/01 17:24:22 carrillo Exp $
 //
 //
 
@@ -122,9 +122,9 @@ public:
   TH1F * hGlobalResClu3R2B;
   TH1F * hGlobalResClu3R2A;
   
-  TH1F * EffBarrel;
-
-  TH1F * DoubleGapBarrel;
+  TH1F * EffBarrel; //Average
+  TH1F * DoubleGapBarrel; //Double Gap
+  TH1F * PinoBarrel; //Central Zone
 
   TH1F * EffDistroWm2;
   TH1F * EffDistroWm1;
@@ -150,8 +150,10 @@ public:
   TH1F * DoubleGapDistroW1far;
   TH1F * DoubleGapDistroW2far;
 
-  TH1F * EffEndCap;
-  
+  TH1F * EffEndCap; //Average
+  TH1F * DoubleGapEndCap; //Double Gap
+  TH1F * PinoEndCap; //Central Zone
+
   TH2F * HeightVsEffR2;
   TH2F * HeightVsEffR3;
 
@@ -175,7 +177,19 @@ public:
   TH1F * ExGregD2R3;  
   TH1F * ExGregD3R2;  
   TH1F * ExGregD3R3;  
+  
+  TH1F * CLSWm2;  
+  TH1F * CLSWm1;  
+  TH1F * CLSW0;  
+  TH1F * CLSW1;  
+  TH1F * CLSW2;
 
+  TH1F * sectorCLSWm2[13];  
+  TH1F * sectorCLSWm1[13];  
+  TH1F * sectorCLSW0[13];  
+  TH1F * sectorCLSW1[13];  
+  TH1F * sectorCLSW2[13];
+  
   TH1F * sectorEffWm2;  
   TH1F * sectorEffWm1;  
   TH1F * sectorEffW0;  
@@ -398,6 +412,7 @@ private:
   bool dosD;
   bool CLSandBXY;
   bool debug;
+  bool stat;
   double threshold;
   bool endcap;
   bool barrel; 
@@ -427,6 +442,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   dosD=iConfig.getUntrackedParameter<bool>("dosD");
   CLSandBXY=iConfig.getUntrackedParameter<bool>("CLSandBXY",false);
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
+  stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
   endcap=iConfig.getUntrackedParameter<bool>("endcap");
   barrel=iConfig.getUntrackedParameter<bool>("barrel");
@@ -469,8 +485,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
 
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",40,0.5,100.5);
-
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",40,0.5,100.5);
+  PinoBarrel = new TH1F ("PinoBarrel","Efficiency in central part For All The Barrel",40,0.5,100.5);
 
   EffDistroWm2= new TH1F ("EffDistroWm2near","Efficiency Distribution For Near Side Wheel -2",20,0.5,100.5);
   EffDistroWm1= new TH1F ("EffDistroWm1near","Efficiency Distribution For Near Side Wheel -1",20,0.5,100.5);
@@ -497,9 +513,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
 
   EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",60,0.5,100.5);
+  DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",40,0.5,100.5);
+  PinoEndCap = new TH1F ("PinoEndCap","Efficiency in central part For All The EndCaps",40,0.5,100.5);
 
   HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
   HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
+
+  CLSWm2= new TH1F ("ClusterSizePerSectorWm2","Cluster Size per Sector Wheel -2",50,0.5,10.5);
+  CLSWm1= new TH1F ("ClusterSizePerSectorWm1","Cluster Size per Sector Wheel -1",50,0.5,10.5);
+  CLSW0= new TH1F ("ClusterSizePerSectorW0","Cluster Size per Sector Wheel 0",50,0.5,10.5);
+  CLSW1= new TH1F ("ClusterSizePerSectorW1","Cluster Size per Sector Wheel 1",50,0.5,10.5);
+  CLSW2= new TH1F ("ClusterSizePerSectorW2","Cluster Size per Sector Wheel 2",50,0.5,10.5);
 
   sectorEffWm2= new TH1F ("AzimutalDistroWm2","Efficiency per Sector Wheel -2",12,0.5,12.5);
   sectorEffWm1= new TH1F ("AzimutalDistroWm1","Efficiency per Sector Wheel -1",12,0.5,12.5);
@@ -722,7 +746,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   Ca3 = new TCanvas("Ca3","Profile",1200,600);
   
-  gStyle->SetOptStat(1);
+  int Stat = 0;
+  if(statistics) Stat = 1;
+  gStyle->SetOptStat(Stat);
   gStyle->SetPalette(1);
   
   std::string meIdRES,folder,labeltoSave,command;
@@ -1032,7 +1058,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
 		
 		x[i]=(i+1)*step;
-		ex[i]=step;
+		ex[i]=step*0.5;
 		y[i]=mean;
 		ey[i]=error;
 	      }
@@ -1049,10 +1075,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
           histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,2*nstrips,-0.6*stripl,0.6*stripl);
 
-	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
-	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripw*nstrips,0.6*stripw*nstrips);
 	  
 	  
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
@@ -1083,13 +1109,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  float bufdoublegapeff = 0;
 	  float bufdoublegaperr = 0;
+
+	  float pinoeff = 0;
+	  float pinoerr = 0;
 	  
 	  int NumberStripsPointed = 0;
 	  
 	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual){
 	    //if(debug) std::cout<<"Leidos los histogramas 2D!"<<std::endl;
 	    for(int i=1;i<=2*nstrips;++i){
-	      for(int j=1;j<=4*nstrips;++j){
+	      for(int j=1;j<=2*nstrips;++j){
 		ef2D=0.;
 		ef2D=0.;
 		if(histoDT_2D->GetBinContent(i,j) != 0){
@@ -1100,10 +1129,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoPRO_2D->SetBinError(i,j,er2D*100.);
 	      }//loop on the boxes
 	    }
-	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY();
-	    TH1D * profileDT_Y =  histoDT_2D->ProjectionY();
 	    
-	    for(int j=1;j<=4*nstrips;j++){
+	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileDT_Y =  histoDT_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    
+	    for(int j=1;j<=2*nstrips;j++){
 	      efY=0.;
 	      erY=0.;
 	      if(profileDT_Y->GetBinContent(j) != 0){
@@ -1115,10 +1145,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROY->SetBinError(j,erY);
 	    }
 
-	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX();
-	    TH1D * profileDT_X =  histoDT_2D->ProjectionX();
+	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileDT_X =  histoDT_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
 	    
-
 	    for(int j=1;j<=2*nstrips;j++){
 	      efX=0.;
 	      erX=0.;
@@ -1131,9 +1160,34 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROX->SetBinError(j,erX);
 	    }
 
+	    int firstxbin = int(nstrips)-int(nstrips*0.4/0.6);
+	    int lastxbin = int(nstrips)+int(nstrips*0.4/0.6);
+	    int firstybin = int(nstrips)-int(nstrips*0.4/0.6);
+	    int lastybin = int(nstrips)+int(nstrips*0.4/0.6);
+
+	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
+	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
+	      
+	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    float pinoexpected = histoDT_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+
+	    if(pinoexpected != 0){
+	      pinoeff = (pinoobserved/pinoexpected)*100;
+	      pinoerr = (sqrt(100.-pinoeff)/pinoexpected);
+	    }	
+	    
+	    if(debug) std::cout<<" deleting profiles"<<std::endl;
+
+	    delete profileDT_X;
+	    delete profileDT_Y;
+	    delete profileRPC_X;
+	    delete profileRPC_Y;
+
 	  }else{
 	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
+
+	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
 
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
@@ -1141,7 +1195,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  if(histoRPC && histoDT && BXDistribution && histoRealRPC){
 	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0 || histoDT->GetBinContent(i)==0){
-		//if(debug) std::cout<<"1";
+		if(debug) std::cout<<"1";
 		if(i==1){
 		  maskeffect[1]=true;
 		  maskeffect[2]=true;
@@ -1168,7 +1222,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  maskeffect[i+2]=true;
 		}
 	      }else{
-		//if(debug) std::cout<<"0";
+		if(debug) std::cout<<"0";
 	      }
 	    }
 	    
@@ -1187,15 +1241,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    for(int i=1;i<=nstrips;i++){
 	      if(maskeffect[i]==false){
 		withouteffect++;
-		//if(debug) std::cout<<"0";
+		if(debug) std::cout<<"0";
 	      }else{
-		//if(debug) std::cout<<"1";
+		if(debug) std::cout<<"1";
 	      }
 	    }
 
 	    if(debug) std::cout<<std::endl;
-
+	    
 	    efftxt<<name<<"  "<<rpcId.rawId();
+
+	    if(debug) std::cout<<"Before the loop for the strips profiles"<<std::endl;
 
 	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
@@ -1204,6 +1260,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	      buffef=0.;
 	      buffer=0.;
+	      
+	      if(debug) std::cout<<"Inside the loop"<<std::endl;
+
 	      if(histoDT->GetBinContent(i)!=0){
 		buffef = float(histoRPC->GetBinContent(i))/float(histoDT->GetBinContent(i));
 		buffer = sqrt(buffef*(1.-buffef)/float(histoDT->GetBinContent(i)));
@@ -1219,10 +1278,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
 		}
 	      }else{
-		//if(debug) std::cout<<" NP";
+		if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
 		efftxt<<"  "<<0.95;
 	      }
+
+	      if(debug) std::cout<<"Filling the histograms"<<std::endl;
+
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
 	    }
@@ -1231,6 +1293,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    assert(NumberWithOutPrediction+NumberStripsPointed == nstrips);
 
+	    if(debug) std::cout<<"Checking assertion"<<std::endl;
+
 	    doublegapeff=0.;
 	    doublegaperr=0.;
 	    
@@ -1238,6 +1302,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
 	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
 	      
+	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
+
 	      EffBarrel->Fill(averageeff);
 	      
 	      if(withouteffect!=0){
@@ -1249,14 +1315,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }else{
 	      if(debug) std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
 	    }
-
+	    
+	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
 	    
 	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<std::endl;
-	    
+
+
+	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
+
 	    DoubleGapBarrel->Fill(doublegapeff);
+	    PinoBarrel->Fill(pinoeff);
 
 	    int Ring = rpcId.ring();
-
+	    
 	    if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
 	      if(Ring==-2){ EffDistroWm2->Fill(averageeff);       DoubleGapDistroWm2->Fill(doublegapeff);
 	      }else if(Ring==-1){ EffDistroWm1->Fill(averageeff); DoubleGapDistroWm1->Fill(doublegapeff);
@@ -1278,6 +1349,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      system(command.c_str());
 	    }
 
+	    if(debug) std::cout<<"Writing histograms"<<std::endl;
+	    
 	    histoPRO->Write();
 	    histoPROY->Write();
 	    histoPROX->Write();
@@ -1285,7 +1358,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoCLS->Write();
 	    histoBXY->Write();
 	    
-
+	    if(debug) std::cout<<"Producing images"<<std::endl;
 	    if(prodimages){//BARREL
 	      histoPRO->GetXaxis()->SetTitle("Strip");
 	      histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
@@ -1344,12 +1417,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		Ca0->Clear();
 	      }
 
-
 	      if(dosD){
 		histoRPC_2D->GetXaxis()->SetTitle("cm");
 		histoRPC_2D->GetYaxis()->SetTitle("cm");
 		histoRPC_2D->Draw();
-		histoRPC_2D->SetDrawOption("color");
+		histoRPC_2D->SetDrawOption("COLZ");
 		labeltoSave = name + "/RPCOccupancy_2D.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1357,7 +1429,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		histoINEF->GetXaxis()->SetTitle("cm");
 		histoINEF->GetYaxis()->SetTitle("cm");
 		histoINEF->Draw();
-		histoINEF->SetDrawOption("color");
+		histoINEF->SetDrawOption("COLZ");
 		labeltoSave = name + "/INEF.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -1407,14 +1479,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    delete histoPROY;
 	    delete histoPROX;
 	    delete histoPRO_2D;
-	    delete histoCLS;
 	    delete histoBXY;
 	    delete histoINEF;
 
 	    int sector = rpcId.sector();
 	    //Near Side
 
-	    //if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
+	    if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
 	    if(makehtml){
 	      command = "cp htmltemplates/indexLocal.html " + name + "/index.html"; system(command.c_str());
 	      if(debug) std::cout<<"html for "<<rpcId<<std::endl;
@@ -1437,18 +1508,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		else if(Ring==1) target = "W1far.html";
 		else if(Ring==2) target = "W2far.html";
 	      }
-	      
 	      command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> index" + target; system(command.c_str());
 	      command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insert" + target; system(command.c_str());
-
 	    }
 
-	    //exit(1);
 	    mybxhisto = 50.+BXDistribution->GetMean()*10;
 	    mybxerror = BXDistribution->GetRMS()*10;
 	    
 	    bxbarrel->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());
-	    
 	  }else{
 	    if(debug) std::cout<<"One of the histograms Doesn't exist for Barrel!!!"<<std::endl;
 	    exit(1);
@@ -1456,11 +1523,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  	  
 	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
-
-	  
 	  
 	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
-
+	  
 	  if(p!=0){
 	    ef = float(o)/float(p); 
 	    er = sqrt(ef*(1.-ef)/float(p));
@@ -1477,33 +1542,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  if(region ==0){
 	    {
-	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);}
-	      if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);}
-	      if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);}
-	      if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);}
-	      if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);}
+	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);CLSWm2->Fill(histoCLS->GetMean());}
+	      if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);CLSWm1->Fill(histoCLS->GetMean());}
+	      if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);CLSW0->Fill(histoCLS->GetMean());}
+	      if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);CLSW1->Fill(histoCLS->GetMean());}
+	      if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);CLSW2->Fill(histoCLS->GetMean());}
 	    }
 	  }
 
-	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<""<<std::endl;
+	  delete histoCLS;
 	  
-	  std::string camera = name.c_str();  
-	  float stripsratio = (float(NumberMasked)/float(nstrips))*100.;
+	  std::string camera = name.c_str();
+	  float maskedratio = (float(NumberMasked)/float(nstrips))*100.;
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 
-	  
 	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
 	  
 	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
 	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
 	  
-	  if(fabs(histoResidual->GetMean()>4.) && averageeff > 10. && nopredictionsratio < 70) 
-	    if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
-		     <<" AverageEff"<<averageeff
-		     <<" No Prediction Ration"<<nopredictionsratio
-		     <<std::endl;
+	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
+			     <<" AverageEff"<<averageeff
+			     <<" No Prediction Ration"<<nopredictionsratio
+			     <<std::endl;
 	  
-		  
 	  //Pigi Histos
 	  
 	  if(abs((*r)->id().ring())==2){
@@ -1518,8 +1580,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    else if((*r)->id().ring()==1) Wheel1Summary->SetBinContent((*r)->id().sector(),rollY(rpcsrv.shortname(),rollNamesInter),averageeff);
 	  }
 	  	  
-	  if(debug) std::cout<<"Filling Global with: Average Eff="<<averageeff<<" Ingegral Eff="<<ef<<" Strips Ratio"<<stripsratio<<" No Predictionratio="<<nopredictionsratio<<std::endl;
-	  
 	  //Near Side
 
 	  int Ring = rpcId.ring();
@@ -1534,7 +1594,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm2->SetBinError(indexWheel[0],mybxerror);  
 	      BXGlobWm2->GetXaxis()->SetBinLabel(indexWheel[0],camera.c_str());
 	      
-	      MaskedGlobWm2->SetBinContent(indexWheel[0],stripsratio);  
+	      MaskedGlobWm2->SetBinContent(indexWheel[0],maskedratio);  
 	      MaskedGlobWm2->GetXaxis()->SetBinLabel(indexWheel[0],camera.c_str());
 
 	      AverageEffWm2->SetBinContent(indexWheel[0],averageeff);
@@ -1557,7 +1617,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm1->SetBinError(indexWheel[1],mybxerror);  
 	      BXGlobWm1->GetXaxis()->SetBinLabel(indexWheel[1],camera.c_str());
 	      
-	      MaskedGlobWm1->SetBinContent(indexWheel[1],stripsratio);  
+	      MaskedGlobWm1->SetBinContent(indexWheel[1],maskedratio);  
 	      MaskedGlobWm1->GetXaxis()->SetBinLabel(indexWheel[1],camera.c_str());
 
 	      AverageEffWm1->SetBinContent(indexWheel[1],averageeff);
@@ -1581,7 +1641,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW0->SetBinError(indexWheel[2],mybxerror);  
 	      BXGlobW0->GetXaxis()->SetBinLabel(indexWheel[2],camera.c_str());
 
-	      MaskedGlobW0->SetBinContent(indexWheel[2],stripsratio);  
+	      MaskedGlobW0->SetBinContent(indexWheel[2],maskedratio);  
 	      MaskedGlobW0->GetXaxis()->SetBinLabel(indexWheel[2],camera.c_str());
 	      
 	      AverageEffW0->SetBinContent(indexWheel[2],averageeff);
@@ -1604,7 +1664,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW1->SetBinError(indexWheel[3],mybxerror);  
 	      BXGlobW1->GetXaxis()->SetBinLabel(indexWheel[3],camera.c_str());
 
-	      MaskedGlobW1->SetBinContent(indexWheel[3],stripsratio);  
+	      MaskedGlobW1->SetBinContent(indexWheel[3],maskedratio);  
 	      MaskedGlobW1->GetXaxis()->SetBinLabel(indexWheel[3],camera.c_str());
 
 	      AverageEffW1->SetBinContent(indexWheel[3],averageeff);
@@ -1627,7 +1687,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW2->SetBinError(indexWheel[4],mybxerror);  
 	      BXGlobW2->GetXaxis()->SetBinLabel(indexWheel[4],camera.c_str());
 	      
-	      MaskedGlobW2->SetBinContent(indexWheel[4],stripsratio);  
+	      MaskedGlobW2->SetBinContent(indexWheel[4],maskedratio);  
 	      MaskedGlobW2->GetXaxis()->SetBinLabel(indexWheel[4],camera.c_str());
 
 	      AverageEffW2->SetBinContent(indexWheel[4],averageeff);
@@ -1652,7 +1712,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm2far->SetBinError(indexWheelf[0],mybxerror);  
 	      BXGlobWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
 	      
-	      MaskedGlobWm2far->SetBinContent(indexWheelf[0],stripsratio);
+	      MaskedGlobWm2far->SetBinContent(indexWheelf[0],maskedratio);
 	      MaskedGlobWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
 	      
 	      AverageEffWm2far->SetBinContent(indexWheelf[0],averageeff);
@@ -1676,7 +1736,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm1far->SetBinError(indexWheelf[1],mybxerror);  
 	      BXGlobWm1far->GetXaxis()->SetBinLabel(indexWheelf[1],camera.c_str());
 	      
-	      MaskedGlobWm1far->SetBinContent(indexWheelf[1],stripsratio);
+	      MaskedGlobWm1far->SetBinContent(indexWheelf[1],maskedratio);
 	      MaskedGlobWm1far->GetXaxis()->SetBinLabel(indexWheelf[1],camera.c_str());
 
 	      AverageEffWm1far->SetBinContent(indexWheelf[1],averageeff);
@@ -1700,7 +1760,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW0far->SetBinError(indexWheelf[2],mybxerror);  
 	      BXGlobW0far->GetXaxis()->SetBinLabel(indexWheelf[2],camera.c_str());
 
-	      MaskedGlobW0far->SetBinContent(indexWheelf[2],stripsratio);
+	      MaskedGlobW0far->SetBinContent(indexWheelf[2],maskedratio);
 	      MaskedGlobW0far->GetXaxis()->SetBinLabel(indexWheelf[2],camera.c_str());
 
 	      AverageEffW0far->SetBinContent(indexWheelf[2],averageeff);
@@ -1723,7 +1783,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW1far->SetBinError(indexWheelf[3],mybxerror);  
 	      BXGlobW1far->GetXaxis()->SetBinLabel(indexWheelf[3],camera.c_str());
 
-	      MaskedGlobW1far->SetBinContent(indexWheelf[3],stripsratio);
+	      MaskedGlobW1far->SetBinContent(indexWheelf[3],maskedratio);
 	      MaskedGlobW1far->GetXaxis()->SetBinLabel(indexWheelf[3],camera.c_str());
 	      
 	      AverageEffW1far->SetBinContent(indexWheelf[3],averageeff);
@@ -1747,7 +1807,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW2far->SetBinError(indexWheelf[4],mybxerror);  
 	      BXGlobW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
 	      
-	      MaskedGlobW2far->SetBinContent(indexWheelf[4],stripsratio);
+	      MaskedGlobW2far->SetBinContent(indexWheelf[4],maskedratio);
 	      MaskedGlobW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
 
 	      AverageEffW2far->SetBinContent(indexWheelf[4],averageeff);
@@ -1821,7 +1881,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
 		
 		x[i]=(i+1)*step;
-		ex[i]=step;
+		ex[i]=step*0.5;
 		y[i]=mean;
 		ey[i]=error;
 	      }
@@ -1838,10 +1898,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl;
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,4*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,2*nstrips,-0.6*stripl,0.6*stripl);
 	  
-	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),4*nstrips,-0.6*stripl,0.6*stripl);
-	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripw*nstrips,0.6*stripw*nstrips);
+
 
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
 	  
@@ -1853,6 +1914,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float mybxerror = 0.;
 	  float ef =0.;
 	  float er =0.;
+	  float efX =0;
+	  float erX =0;
 	  float efY =0;
 	  float erY =0;
 	  float ef2D =0.;
@@ -1863,6 +1926,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float sumbuffer = 0.;
 	  float averageeff = 0.;
 	  float averageerr = 0.;
+
+	  float doublegapeff = 0;
+	  float doublegaperr = 0;
+
+	  float bufdoublegapeff = 0;
+	  float bufdoublegaperr = 0;
+
+	  float pinoeff = 0;
+	  float pinoerr = 0;
 	  
 	  int NumberStripsPointed = 0;
 	  
@@ -1870,7 +1942,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
 	    for(int i=1;i<=2*nstrips;++i){
-	      for(int j=1;j<=4*nstrips;++j){
+	      for(int j=1;j<=2*nstrips;++j){
 		ef2D=0.;
 		ef2D=0.;
 		if(histoCSC_2D->GetBinContent(i,j) != 0){
@@ -1884,10 +1956,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Getting Profiles"<<name<<std::endl;
 	    
-	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY();
-	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY();
+	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
 	    
-	    for(int j=1;j<=4*nstrips;++j){
+	    for(int j=1;j<=2*nstrips;++j){
 	      efY=0.;
 	      erY=0.;
 	      if(profileCSC_Y->GetBinContent(j) != 0){
@@ -1898,21 +1970,116 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROY->SetBinContent(j,efY);
 	      histoPROY->SetBinError(j,erY);
 	    }
+	    
+	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileCSC_X =  histoCSC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    
+	    for(int j=1;j<=2*nstrips;j++){
+	      efX=0.;
+	      erX=0.;
+	      if(profileCSC_X->GetBinContent(j) != 0){
+		efX = profileRPC_X->GetBinContent(j)/profileCSC_X->GetBinContent(j);
+		erX = sqrt(efX*(1-efX)/profileCSC_X->GetBinContent(j));
+	      }	
+	      //if(debug) std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
+	      histoPROX->SetBinContent(j,efX);
+	      histoPROX->SetBinError(j,erX);
+	    }
+
+	    int firstxbin = int(nstrips)-int(nstrips*0.4/0.6);
+	    int lastxbin = int(nstrips)+int(nstrips*0.4/0.6);
+	    int firstybin = int(nstrips)-int(nstrips*0.4/0.6);
+	    int lastybin = int(nstrips)+int(nstrips*0.4/0.6);
+
+	    if(debug) std::cout<<" firstxbin"<<firstxbin<<" lastxbin"<<lastxbin;
+	    if(debug) std::cout<<" firstybin"<<firstybin<<" lastybin"<<lastybin;
+	    
+	    
+	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    float pinoexpected = histoCSC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    
+	    if(pinoexpected != 0){
+	      pinoeff = (pinoobserved/pinoexpected)*100.;
+	      pinoerr = (sqrt(100.-pinoeff)/pinoexpected);
+	    }	
+
+	    if(debug) std::cout<<" deleting profiles"<<std::endl;
+
+	    delete profileCSC_X;
+	    delete profileCSC_Y;
+	    delete profileRPC_X;
+	    delete profileRPC_Y;
+	  
 	  }else{
 	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
-	  
-	  efftxt<<name<<"  "<<rpcId.rawId();
 
-	  for(int i=1;i<=95;i++) efftxt<<"  "<<0.95;
+	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
 
-	  efftxt<<std::endl;
-
-	  if(debug) std::cout<<"Checking 1D Histograms for"<<name<<std::endl;
+	  bool maskeffect[100];
+	  for(int i=0;i<100;i++) maskeffect[i]=false;
 
 	  if(histoRPC && histoCSC && BXDistribution && histoRealRPC){
-	    //if(debug) std::cout<<"All Histograms Exists"<<std::endl;
+	    for(int i=1;i<=nstrips;++i){
+	      if(histoRealRPC->GetBinContent(i)==0 || histoCSC->GetBinContent(i)==0){
+		if(debug) std::cout<<"1";
+		if(i==1){
+		  maskeffect[1]=true;
+		  maskeffect[2]=true;
+		  maskeffect[3]=true;
+		}else if(i==2){
+		  maskeffect[1]=true;
+		  maskeffect[2]=true;
+		  maskeffect[3]=true;
+		  maskeffect[4]=true;
+		}else if(i==nstrips){
+		  maskeffect[nstrips-2]=true;
+		  maskeffect[nstrips-1]=true;
+		  maskeffect[nstrips]=true;
+		}else if(i==nstrips-1){
+		  maskeffect[nstrips-3]=true;
+		  maskeffect[nstrips-2]=true;
+		  maskeffect[nstrips-1]=true;
+		  maskeffect[nstrips]=true;
+		}else{
+		  maskeffect[i-2]=true;
+		  maskeffect[i-1]=true;
+		  maskeffect[i]=true;
+		  maskeffect[i+1]=true;
+		  maskeffect[i+2]=true;
+		}
+	      }else{
+		if(debug) std::cout<<"0";
+	      }
+	    }
+	    
+	    //Border Effect
+	    //maskeffect[nstrips]=true;
+	    //maskeffect[nstrips-1]=true;
+	    //maskeffect[nstrips-2]=true;
+	    //maskeffect[nstrips-3]=true;
+	    //maskeffect[nstrips-4]=true;
+	    //maskeffect[nstrips-5]=true;
+	    
+	    if(debug) std::cout<<std::endl;
+	    
+	    float withouteffect=0.;
+	    
+	    for(int i=1;i<=nstrips;i++){
+	      if(maskeffect[i]==false){
+		withouteffect++;
+		if(debug) std::cout<<"0";
+	      }else{
+		if(debug) std::cout<<"1";
+	      }
+	    }
+	    
+	    if(debug) std::cout<<std::endl;
+	    
+	    efftxt<<name<<"  "<<rpcId.rawId();
 
+	    if(debug) std::cout<<"Before the loop for the strips profiles"<<std::endl;
+	    
 	    for(int i=1;i<=int((*r)->nstrips());++i){
 	      if(histoRealRPC->GetBinContent(i)==0){
 		NumberMasked++;
@@ -1920,237 +2087,271 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      buffef=0.;
 	      buffer=0.;
+
+	      if(debug) std::cout<<"Inside the loop"<<std::endl;
+	    
 	      if(histoCSC->GetBinContent(i)!=0){
-		buffef = double(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
-		//if(debug) std::cout<<" buffef="<<buffef<<" predcitions="<<double(histoCSC->GetBinContent(i))<<std::endl;
+		buffef = float(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
 		buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
 		
-		//if(debug) std::cout<<" buffer="<<buffer<<std::endl;
-
+		efftxt<<"  "<<buffef;
+		
 		sumbuffef=sumbuffef+buffef;
 		sumbuffer = sumbuffer + buffer*buffer;
 		NumberStripsPointed++;
 
+		if(maskeffect[i]==false){
+		  bufdoublegapeff=bufdoublegapeff+buffef;
+		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
+		}
 	      }else{
-		//if(debug) std::cout<<" NP";
+		if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
+		efftxt<<"  "<<0.95;
 	      }
+
+	      if(debug) std::cout<<"Filling the histograms"<<std::endl;	      
+
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
 	    }
 
+	    for(int i=nstrips+1;i<=95;i++) efftxt<<"  "<<0.95; efftxt<<std::endl;
 	    
+	    assert(NumberWithOutPrediction+NumberStripsPointed == nstrips);
+
+	    if(debug) std::cout<<"Checking assertion"<<std::endl;
+	    
+	    doublegapeff=0.;
+	    doublegaperr=0.;
+	    	    
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
 	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
-	      
-	      if(debug) std::cout<<"sumbuffer="<<sumbuffer<<" NumSrripsPointer="<<NumberStripsPointed<<std::endl;
-	      
-	      
+
+	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
+     
 	      EffEndCap->Fill(averageeff);
-	      //Filling eff distro
-	      int Disk=rpcId.station()*rpcId.region();
-	      if(sector==1||sector==2||sector==6){
-		if(Disk==-3){EffDistroDm3->Fill(averageeff);
-		}else if(Disk==-2){EffDistroDm2->Fill(averageeff);
-		}else if(Disk==-1){EffDistroDm1->Fill(averageeff);
-		}else if(Disk==1){EffDistroD1->Fill(averageeff);
-		}else if(Disk==2){EffDistroD2->Fill(averageeff);
-		}else if(Disk==3){EffDistroD3->Fill(averageeff);
-		}
-	      }else{//Far Side 
-		if(Disk==-3){EffDistroDm3far->Fill(averageeff);
-		}else if(Disk==-2){EffDistroDm2far->Fill(averageeff);
-		}else if(Disk==-1){EffDistroDm1far->Fill(averageeff);
-		}else if(Disk==1){EffDistroD1far->Fill(averageeff);
-		}else if(Disk==2){EffDistroD2far->Fill(averageeff);
-		}else if(Disk==3){EffDistroD3far->Fill(averageeff);
-		}
-	      }//Finishing EndCap
-	      
 
-	      if(prodimages || makehtml){	       
-		command = "mkdir " + name;
-		system(command.c_str());
+	      if(withouteffect!=0){
+		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
+		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
 	      }
-
-	      histoPRO->Write();
-	      histoPROY->Write();
-	      histoPRO_2D->Write();
-	      histoCLS->Write();
-	      histoBXY->Write();
-
-
-	      if(prodimages){//ENDCAP	
-		if(debug) std::cout<<"Creating Images for the endcap"<<std::endl;
-		histoPRO->GetXaxis()->SetTitle("Strip");
-		histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
-		histoPRO->GetYaxis()->SetRangeUser(0.,1.);
-		histoPRO->Draw();
-		std::string labeltoSave = name + "/Profile.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
 	      
-		histoRPC->GetXaxis()->SetTitle("Strip");
-		histoRPC->GetYaxis()->SetTitle("Occupancy Extrapolation");
-		histoRPC->Draw();
-		labeltoSave = name + "/RPCOccupancy.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
+	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
+	    }else{
+	      if(debug) std::cout<<"This Roll Doesn't have any strip Pointed"<<std::endl;
+	    }
+	     
+	    if(debug) std::cout<<"Filling txt file with roll and efficiency"<<std::endl;
+
+	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<std::endl;
+
+	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 	    
-		histoRealRPC->GetXaxis()->SetTitle("Strip");
-		histoRealRPC->GetYaxis()->SetTitle("RPC Occupancy");
-		histoRealRPC->Draw();
-		labeltoSave = name + "/DQMOccupancy.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      
-		histoCSC->GetXaxis()->SetTitle("Strip");
-		histoCSC->GetYaxis()->SetTitle("Expected Occupancy");
-		histoCSC->Draw();
-		labeltoSave = name + "/DTOccupancy.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      
-		BXDistribution->GetXaxis()->SetTitle("BX");
-		BXDistribution->Draw();
-		labeltoSave = name + "/BXDistribution.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		if(CLSandBXY){//EndCap
-		  histoCLS->GetXaxis()->SetTitle("Cluster Size");
-		  histoCLS->Draw();
-		  labeltoSave = name + "/CLS.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		
-		  histoBXY->GetXaxis()->SetTitle("BX");
-		  histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
-		  
-		  TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-		  plot->SetMarkerColor(6);
-		  plot->SetMarkerStyle(20);
-		  plot->SetMarkerSize(0.5);
-		  plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
-		  plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
-		  plot->Draw("AP");
-		  labeltoSave = name + "/BXY.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		}
-		
-		if(dosD){
-		  if(debug) std::cout<<"Inside if 2D"<<std::endl;
-		  histoRPC_2D->GetXaxis()->SetTitle("cm");
-		  histoRPC_2D->GetYaxis()->SetTitle("cm");
-		  histoRPC_2D->Draw();
-		  histoRPC_2D->SetDrawOption("color");
-		  labeltoSave = name + "/RPCOccupancy_2D.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
+	    DoubleGapEndCap->Fill(doublegapeff);
+	    PinoEndCap->Fill(pinoeff);
+	    
+	    if(debug) std::cout<<"Filled New histograms"<<std::endl;
 
-		  histoINEF->GetXaxis()->SetTitle("cm");
-		  histoINEF->GetYaxis()->SetTitle("cm");
-		  histoINEF->Draw();
-		  histoINEF->SetDrawOption("color");
-		  labeltoSave = name + "/INEF.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		  
-		  histoPROY->SetTitle("Efficiency along Y");
-		  histoPROY->GetXaxis()->SetTitle("cm");
-		  histoPROY->GetYaxis()->SetRangeUser(0.,1.);
-		  histoPROY->Draw();
-		  labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-
-		  histoPROX->SetTitle("Efficiency along X");
-		  histoPROX->GetXaxis()->SetTitle("cm");
-		  histoPROX->GetYaxis()->SetRangeUser(0.,1.);
-		  histoPROX->Draw();
-		  labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		    
-		  if(debug) std::cout<<"histoCSC_2D "<<std::endl;
-		  histoCSC_2D->GetXaxis()->SetTitle("cm");
-		  histoCSC_2D->GetYaxis()->SetTitle("cm");
-		  histoCSC_2D->Draw();
-		  histoCSC_2D->SetDrawOption("color");
-		  labeltoSave = name + "/DTOccupancy_2D.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		  
-		  if(debug) std::cout<<"histoPRO_2D "<<std::endl;
-		  histoPRO_2D->GetXaxis()->SetTitle("cm");
-		  histoPRO_2D->GetYaxis()->SetTitle("cm");
-		  histoPRO_2D->Draw();
-		  histoPRO_2D->SetDrawOption("color");
-		  labeltoSave = name + "/Profile_2D.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		  
-		  if(debug) std::cout<<"histoResidual "<<std::endl;
-		  histoResidual->GetXaxis()->SetTitle("cm");
-		  histoResidual->Draw();
-		  labeltoSave = name + "/Residual.png";
-		  Ca0->SaveAs(labeltoSave.c_str());
-		  Ca0->Clear();
-		}
+	    int Disk=rpcId.station()*rpcId.region();
+	    
+	    if(sector==1||sector==2||sector==6){
+	      if(Disk==-3){EffDistroDm3->Fill(averageeff);
+	      }else if(Disk==-2){EffDistroDm2->Fill(averageeff);
+	      }else if(Disk==-1){EffDistroDm1->Fill(averageeff);
+	      }else if(Disk==1){EffDistroD1->Fill(averageeff);
+	      }else if(Disk==2){EffDistroD2->Fill(averageeff);
+	      }else if(Disk==3){EffDistroD3->Fill(averageeff);
 	      }
-	    
-	      delete histoPRO;
-	      delete histoPROX;
-	      delete histoPROY;
-	      delete histoPRO_2D;
-	      delete histoCLS;
-	      delete histoBXY;
-	      delete histoINEF;
-
-	      int sector = rpcId.sector();
-	      //Near Side
-	      
-	      if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
-	      if(makehtml){
-		command = "cp htmltemplates/indexLocal.html " + name + "/index.html"; system(command.c_str());
-		if(debug) std::cout<<"html for "<<rpcId<<std::endl;
-		
-		std::string color = "#0000FF";
-		if(averageeff<threshold) color = "#ff4500";
-
-		std::string target;
-		
-		int Disk=rpcId.station()*rpcId.region();
-		
-		if(sector==1||sector==2||sector==3){
-		  if(Disk==-3) target = "Dm3near.html";
-		  else if(Disk==-2) target = "Dm2near.html";
-		  else if(Disk==-1) target = "Dm1near.html";
-		  else if(Disk==1) target = "D1near.html";
-		  else if(Disk==2) target = "D2near.html";
-		  else if(Disk==3) target = "D3near.html";
-		}else{
-		  if(Disk==-3) target = "Dm3far.html";
-		  else if(Disk==-2) target = "Dm2far.html";
-		  else if(Disk==-1) target = "Dm1far.html";
-		  else if(Disk==1) target = "D1far.html";
-		  else if(Disk==2) target = "D2far.html";
-		  else if(Disk==3) target = "D3far.html";
-		}
-		command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> index" + target; system(command.c_str());
-		command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insert" + target; system(command.c_str());
+	    }else{//Far Side 
+	      if(Disk==-3){EffDistroDm3far->Fill(averageeff);
+	      }else if(Disk==-2){EffDistroDm2far->Fill(averageeff);
+	      }else if(Disk==-1){EffDistroDm1far->Fill(averageeff);
+	      }else if(Disk==1){EffDistroD1far->Fill(averageeff);
+	      }else if(Disk==2){EffDistroD2far->Fill(averageeff);
+	      }else if(Disk==3){EffDistroD3far->Fill(averageeff);
 	      }
 	    }
+	    
+	    if(prodimages || makehtml){	       
+	      command = "mkdir " + name;
+	      system(command.c_str());
+	    }
 
+
+	    if(debug) std::cout<<"Writing histograms"<<std::endl;
+	    histoPRO->Write();
+	    histoPROY->Write();
+	    histoPRO_2D->Write();
+	    histoCLS->Write();
+	    histoBXY->Write();
+
+	    if(debug) std::cout<<"Producing images"<<std::endl;
+	    if(prodimages){//ENDCAP	
+	      if(debug) std::cout<<"Creating Images for the endcap"<<std::endl;
+	      histoPRO->GetXaxis()->SetTitle("Strip");
+	      histoPRO->GetYaxis()->SetTitle("Efficiency (%)");
+	      histoPRO->GetYaxis()->SetRangeUser(0.,1.);
+	      histoPRO->Draw();
+	      std::string labeltoSave = name + "/Profile.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoRPC->GetXaxis()->SetTitle("Strip");
+	      histoRPC->GetYaxis()->SetTitle("Occupancy Extrapolation");
+	      histoRPC->Draw();
+	      labeltoSave = name + "/RPCOccupancy.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoRealRPC->GetXaxis()->SetTitle("Strip");
+	      histoRealRPC->GetYaxis()->SetTitle("RPC Occupancy");
+	      histoRealRPC->Draw();
+	      labeltoSave = name + "/DQMOccupancy.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoCSC->GetXaxis()->SetTitle("Strip");
+	      histoCSC->GetYaxis()->SetTitle("Expected Occupancy");
+	      histoCSC->Draw();
+	      labeltoSave = name + "/DTOccupancy.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      BXDistribution->GetXaxis()->SetTitle("BX");
+	      BXDistribution->Draw();
+	      labeltoSave = name + "/BXDistribution.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+		
+	      if(CLSandBXY){//EndCap
+		histoCLS->GetXaxis()->SetTitle("Cluster Size");
+		histoCLS->Draw();
+		labeltoSave = name + "/CLS.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		histoBXY->GetXaxis()->SetTitle("BX");
+		histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
+		
+		TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+		plot->SetMarkerColor(6);
+		plot->SetMarkerStyle(20);
+		plot->SetMarkerSize(0.5);
+		plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
+		plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
+		plot->Draw("AP");
+		labeltoSave = name + "/BXY.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+	      }
+	      
+	      if(dosD){
+		histoRPC_2D->GetXaxis()->SetTitle("cm");
+		histoRPC_2D->GetYaxis()->SetTitle("cm");
+		histoRPC_2D->Draw();
+		histoRPC_2D->SetDrawOption("COLZ");
+		labeltoSave = name + "/RPCOccupancy_2D.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		histoINEF->GetXaxis()->SetTitle("cm");
+		histoINEF->GetYaxis()->SetTitle("cm");
+		histoINEF->Draw();
+		histoINEF->SetDrawOption("COLZ");
+		labeltoSave = name + "/INEF.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		histoPROY->SetTitle("Efficiency along Y");
+		histoPROY->GetXaxis()->SetTitle("cm");
+		histoPROY->GetYaxis()->SetRangeUser(0.,1.);
+		histoPROY->Draw();
+		labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		histoPROX->SetTitle("Efficiency along X");
+		histoPROX->GetXaxis()->SetTitle("cm");
+		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
+		histoPROX->Draw();
+		labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		if(debug) std::cout<<"histoCSC_2D "<<std::endl;
+		histoCSC_2D->GetXaxis()->SetTitle("cm");
+		histoCSC_2D->GetYaxis()->SetTitle("cm");
+		histoCSC_2D->Draw();
+		histoCSC_2D->SetDrawOption("COLZ");
+		labeltoSave = name + "/DTOccupancy_2D.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		if(debug) std::cout<<"histoPRO_2D "<<std::endl;
+		histoPRO_2D->GetXaxis()->SetTitle("cm");
+		histoPRO_2D->GetYaxis()->SetTitle("cm");
+		histoPRO_2D->Draw();
+		histoPRO_2D->SetDrawOption("COLZ");
+		labeltoSave = name + "/Profile_2D.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+		
+		if(debug) std::cout<<"histoResidual "<<std::endl;
+		histoResidual->GetXaxis()->SetTitle("cm");
+		histoResidual->Draw();
+		labeltoSave = name + "/Residual.png";
+		Ca0->SaveAs(labeltoSave.c_str());
+		Ca0->Clear();
+	      }
+	    }
+	    
+	    delete histoPRO;
+	    delete histoPROX;
+	    delete histoPROY;
+	    delete histoPRO_2D;
+	    delete histoBXY;
+	    delete histoINEF;
+
+	    int sector = rpcId.sector();
+	    //Near Side
+	    
+	    if(debug) std::cout<<"Before if = "<<makehtml<<std::endl;
+	    if(makehtml){
+	      command = "cp htmltemplates/indexLocal.html " + name + "/index.html"; system(command.c_str());
+	      if(debug) std::cout<<"html for "<<rpcId<<std::endl;
+	      
+	      std::string color = "#0000FF";
+	      if(averageeff<threshold) color = "#ff4500";
+	      
+	      std::string target;
+	      
+	      int Disk=rpcId.station()*rpcId.region();
+	      
+	      if(sector==1||sector==2||sector==3){
+		if(Disk==-3) target = "Dm3near.html";
+		else if(Disk==-2) target = "Dm2near.html";
+		else if(Disk==-1) target = "Dm1near.html";
+		else if(Disk==1) target = "D1near.html";
+		else if(Disk==2) target = "D2near.html";
+		else if(Disk==3) target = "D3near.html";
+	      }else{
+		if(Disk==-3) target = "Dm3far.html";
+		else if(Disk==-2) target = "Dm2far.html";
+		else if(Disk==-1) target = "Dm1far.html";
+		else if(Disk==1) target = "D1far.html";
+		else if(Disk==2) target = "D2far.html";
+		else if(Disk==3) target = "D3far.html";
+	      }
+	      command = "sed -e \"s|roll|" + name + "|g\" htmltemplates/indextemplate.html >> index" + target; system(command.c_str());
+	      command = "sed -e \"s|roll|" + name + "|g\" -e \"s|colore|" + color + "|g\" htmltemplates/indexline.html >> insert" + target; system(command.c_str());
+	    }
 	    
 	    mybxhisto = 50.+BXDistribution->GetMean()*10;
 	    mybxerror = BXDistribution->GetRMS()*10;
 	    
 	    bxendcap->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());
-
-	    
 	  }else{
 	    if(debug) std::cout<<"One of the histograms Doesn't exist!!!"<<std::endl;
 	    exit(1);
@@ -2158,6 +2359,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  p=histoCSC->Integral();
 	  o=histoRPC->Integral();
+
+	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 
 	  int Disk = rpcId.station()*rpcId.region();
 
@@ -2181,19 +2384,25 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),p);OcGregD3R2->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),p);OcGregD3R3->Fill(rpcsrv.segment(),o);}
 	  }
-    
-	  std::string camera = name;
 	  
+
+	  delete histoCLS;
+	  
+	  std::string camera = name.c_str();
 	  float maskedratio = (float(NumberMasked)/float(nstrips))*100.;
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 	  
-	  if(debug) std::cout<<"p="<<p<<" o="<<o<<std::endl;
-	  if(debug) std::cout<<"ef="<<ef<<" +/- er="<<er<<std::endl;
-	  if(debug) std::cout<<"averageeff="<<averageeff<<" +/- averageerr="<<averageerr<<std::endl;
-	  if(debug) std::cout<<"maskedratio="<<maskedratio<<std::endl;
-	  if(debug) std::cout<<"nopredictionsratio="<<nopredictionsratio<<std::endl;
+	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
 	  
-	  //Pigis Histogram
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
+	  
+	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
+			     <<" AverageEff"<<averageeff
+			     <<" No Prediction Ration"<<nopredictionsratio
+			     <<std::endl;
+	  
+	  //Pigi Histos
 
 
 	  int Y=((*r)->id().ring()-2)*6+(*r)->id().subsector();
@@ -2206,7 +2415,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  else if(Disk==1) Disk1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
 	  else if(Disk==2) Disk2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
 	  else if(Disk==3) Disk3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  
+
+
  	  //Near Side
 
 	  if(sector==1||sector==2||sector==6){
@@ -2909,10 +3119,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxAxisEndCap->SetTitleColor(9);
   bxAxisEndCap->CenterTitle();
   
-  gStyle->SetOptStat(1);
+  Stat = 0;
+  if(statistics) Stat = 1;
+  gStyle->SetOptStat(Stat);
   gStyle->SetPalette(1);
-
-
   
   //Negative EndCap
   
@@ -2920,11 +3130,32 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   command = "mkdir Distro" ; system(command.c_str());
   command = "mkdir Pigi" ; system(command.c_str());
   command = "mkdir Greg" ; system(command.c_str());
+  command = "mkdir CLS" ; system(command.c_str());
   
   //Producing Images
 
   Ca5->Clear();
- 
+
+  CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Cluster Size");
+  Ca5->SaveAs("CLS/Wm2.png"); Ca5->SaveAs("CLS/Wm2.root");
+  Ca5->Clear(); 
+
+  CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Cluster Size");
+  Ca5->SaveAs("CLS/Wm1.png"); Ca5->SaveAs("CLS/Wm1.root");
+  Ca5->Clear(); 
+
+  CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Cluster Size");  
+  Ca5->SaveAs("CLS/W0.png"); Ca5->SaveAs("CLS/W0.root");
+  Ca5->Clear(); 
+
+  CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Cluster Size");  
+  Ca5->SaveAs("CLS/W1.png"); Ca5->SaveAs("CLS/W1.root");
+  Ca5->Clear(); 
+
+  CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Cluster Size");  
+  Ca5->SaveAs("CLS/W2.png"); Ca5->SaveAs("CLS/W2.root");
+  Ca5->Clear(); 
+
   sectorEffWm2->Draw(); sectorEffWm2->GetXaxis()->SetTitle("Sector");  sectorEffWm2->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/Wm2.png"); Ca5->SaveAs("Greg/Wm2.root");
   Ca5->Clear(); 
@@ -2945,196 +3176,196 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("Greg/W2.png"); Ca5->SaveAs("Greg/W2.root");
   Ca5->Clear(); 
 
- HeightVsEffR3->Draw(); HeightVsEffR3->GetXaxis()->SetTitle("Efficiency");HeightVsEffR3->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR3->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR3->GetXaxis()->SetRangeUser(0.,1.);
- HeightVsEffR3->SetMarkerColor(4);
- HeightVsEffR3->SetMarkerStyle(20);
- HeightVsEffR3->SetMarkerSize(0.7);
-
- Ca5->SaveAs("Greg/HeightVsEffR3.png"); Ca5->SaveAs("Greg/HeightVeEffR3.root");
- Ca5->Clear(); 
-
- HeightVsEffR2->Draw(); HeightVsEffR2->GetXaxis()->SetTitle("Efficiency");HeightVsEffR2->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR2->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR2->GetXaxis()->SetRangeUser(0.,1.);
- HeightVsEffR2->SetMarkerColor(4);
- HeightVsEffR2->SetMarkerStyle(20);
- HeightVsEffR2->SetMarkerSize(0.7);
-
- Ca5->SaveAs("Greg/HeightVsEffR2.png"); Ca5->SaveAs("Greg/HeightVeEffR2.root");
- Ca5->Clear(); 
- 
- GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D1R2.png"); Ca5->SaveAs("Greg/D1R2.root");
- Ca5->Clear(); 
-
- GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D1R3.png"); Ca5->SaveAs("Greg/D1R3.root");
- Ca5->Clear(); 
-
- GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D2R2.png"); Ca5->SaveAs("Greg/D2R2.root");
- Ca5->Clear(); 
-
- GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D2R3.png"); Ca5->SaveAs("Greg/D2R3.root");
- Ca5->Clear(); 
-
- GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D3R2.png"); Ca5->SaveAs("Greg/D3R2.root");
- Ca5->Clear(); 
-
- GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
- Ca5->SaveAs("Greg/D3R3.png"); Ca5->SaveAs("Greg/D3R3.root");
- Ca5->Clear(); 
-
- Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
- Diskm3Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Diskm3Summary.png"); Ca5->SaveAs("Pigi/Diskm3Summary.root");
- Ca5->Clear();
- 
- Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Sector");
- Diskm2Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Diskm2Summary.png"); Ca5->SaveAs("Pigi/Diskm2Summary.root");
- Ca5->Clear();
- 
- Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Sector");
- Diskm1Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Diskm1Summary.png"); Ca5->SaveAs("Pigi/Diskm1Summary.root");
- Ca5->Clear();
+  HeightVsEffR3->Draw(); HeightVsEffR3->GetXaxis()->SetTitle("Efficiency");HeightVsEffR3->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR3->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR3->GetXaxis()->SetRangeUser(0.,1.);
+  HeightVsEffR3->SetMarkerColor(4);
+  HeightVsEffR3->SetMarkerStyle(20);
+  HeightVsEffR3->SetMarkerSize(0.7);
   
- Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Sector");
- Disk3Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Disk3Summary.png"); Ca5->SaveAs("Pigi/Disk3Summary.root");
- Ca5->Clear();
-
- Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Sector");
- Disk2Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Disk2Summary.png"); Ca5->SaveAs("Pigi/Disk2Summary.root");
- Ca5->Clear();
-
- Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Sector");
- Disk1Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Disk1Summary.png"); Ca5->SaveAs("Pigi/Disk1Summary.root");
- Ca5->Clear();
-
- Wheelm2Summary->Draw(); Wheelm2Summary->GetXaxis()->SetTitle("Sector");
- Wheelm2Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Wheelm2Summary.png"); Ca5->SaveAs("Pigi/Wheelm2Summary.root");
- Ca5->Clear();
- 
- Wheelm1Summary->Draw(); Wheelm1Summary->GetXaxis()->SetTitle("Sector");
- Wheelm1Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Wheelm1Summary.png"); Ca5->SaveAs("Pigi/Wheelm1Summary.root");
- Ca5->Clear();
-
- Wheel0Summary->Draw(); Wheel0Summary->GetXaxis()->SetTitle("Sector");
- Wheel0Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Wheel0Summary.png"); Ca5->SaveAs("Pigi/Wheel0Summary.root");
- Ca5->Clear();
-
- Wheel1Summary->Draw(); Wheel1Summary->GetXaxis()->SetTitle("Sector");
- Wheel1Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Wheel1Summary.png"); Ca5->SaveAs("Pigi/Wheel1Summary.root");
- Ca5->Clear();
-
- Wheel2Summary->Draw(); Wheel2Summary->GetXaxis()->SetTitle("Sector");
- Wheel2Summary->SetDrawOption("color");
- Ca5->SaveAs("Pigi/Wheel2Summary.png"); Ca5->SaveAs("Pigi/Wheel2Summary.root");
- Ca5->Clear();
-
- Ca0->Clear();
- MeanResiduals->Draw(); MeanResiduals->GetXaxis()->SetTitle("cm");
- Ca0->SaveAs("MeanResiduals.png"); Ca0->SaveAs("MeanResiduals.root");
- Ca0->Clear();
-
- MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
- Ca0->SaveAs("MeanResiduals11.png"); Ca0->SaveAs("MeanResiduals11.root");
- Ca0->Clear();
-
+  Ca5->SaveAs("Greg/HeightVsEffR3.png"); Ca5->SaveAs("Greg/HeightVeEffR3.root");
+  Ca5->Clear(); 
+  
+  HeightVsEffR2->Draw(); HeightVsEffR2->GetXaxis()->SetTitle("Efficiency");HeightVsEffR2->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR2->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR2->GetXaxis()->SetRangeUser(0.,1.);
+  HeightVsEffR2->SetMarkerColor(4);
+  HeightVsEffR2->SetMarkerStyle(20);
+  HeightVsEffR2->SetMarkerSize(0.7);
+  
+  Ca5->SaveAs("Greg/HeightVsEffR2.png"); Ca5->SaveAs("Greg/HeightVeEffR2.root");
+  Ca5->Clear(); 
+  
+  GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D1R2.png"); Ca5->SaveAs("Greg/D1R2.root");
+  Ca5->Clear(); 
+  
+  GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D1R3.png"); Ca5->SaveAs("Greg/D1R3.root");
+  Ca5->Clear(); 
+  
+  GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D2R2.png"); Ca5->SaveAs("Greg/D2R2.root");
+  Ca5->Clear(); 
+  
+  GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D2R3.png"); Ca5->SaveAs("Greg/D2R3.root");
+  Ca5->Clear(); 
+  
+  GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D3R2.png"); Ca5->SaveAs("Greg/D3R2.root");
+  Ca5->Clear(); 
+  
+  GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/D3R3.png"); Ca5->SaveAs("Greg/D3R3.root");
+  Ca5->Clear(); 
+  
+  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
+  Diskm3Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Diskm3Summary.png"); Ca5->SaveAs("Pigi/Diskm3Summary.root");
+  Ca5->Clear();
+  
+  Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Sector");
+  Diskm2Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Diskm2Summary.png"); Ca5->SaveAs("Pigi/Diskm2Summary.root");
+  Ca5->Clear();
+  
+  Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Sector");
+  Diskm1Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Diskm1Summary.png"); Ca5->SaveAs("Pigi/Diskm1Summary.root");
+  Ca5->Clear();
+  
+  Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Sector");
+  Disk3Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Disk3Summary.png"); Ca5->SaveAs("Pigi/Disk3Summary.root");
+  Ca5->Clear();
+  
+  Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Sector");
+  Disk2Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Disk2Summary.png"); Ca5->SaveAs("Pigi/Disk2Summary.root");
+  Ca5->Clear();
+  
+  Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Sector");
+  Disk1Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Disk1Summary.png"); Ca5->SaveAs("Pigi/Disk1Summary.root");
+  Ca5->Clear();
+  
+  Wheelm2Summary->Draw(); Wheelm2Summary->GetXaxis()->SetTitle("Sector");
+  Wheelm2Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Wheelm2Summary.png"); Ca5->SaveAs("Pigi/Wheelm2Summary.root");
+  Ca5->Clear();
+  
+  Wheelm1Summary->Draw(); Wheelm1Summary->GetXaxis()->SetTitle("Sector");
+  Wheelm1Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Wheelm1Summary.png"); Ca5->SaveAs("Pigi/Wheelm1Summary.root");
+  Ca5->Clear();
+  
+  Wheel0Summary->Draw(); Wheel0Summary->GetXaxis()->SetTitle("Sector");
+  Wheel0Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Wheel0Summary.png"); Ca5->SaveAs("Pigi/Wheel0Summary.root");
+  Ca5->Clear();
+  
+  Wheel1Summary->Draw(); Wheel1Summary->GetXaxis()->SetTitle("Sector");
+  Wheel1Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Wheel1Summary.png"); Ca5->SaveAs("Pigi/Wheel1Summary.root");
+  Ca5->Clear();
+  
+  Wheel2Summary->Draw(); Wheel2Summary->GetXaxis()->SetTitle("Sector");
+  Wheel2Summary->SetDrawOption("color");
+  Ca5->SaveAs("Pigi/Wheel2Summary.png"); Ca5->SaveAs("Pigi/Wheel2Summary.root");
+  Ca5->Clear();
+  
+  Ca0->Clear();
+  MeanResiduals->Draw(); MeanResiduals->GetXaxis()->SetTitle("cm");
+  Ca0->SaveAs("MeanResiduals.png"); Ca0->SaveAs("MeanResiduals.root");
+  Ca0->Clear();
+  
+  MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
+  Ca0->SaveAs("MeanResiduals11.png"); Ca0->SaveAs("MeanResiduals11.root");
+  Ca0->Clear();
+  
   if(endcap){
+    
+    Ca2->Clear();
    
-   Ca2->Clear();
+    EffGlobDm3->Draw();
+    EffGlobDm3->GetYaxis()->SetTitle("%");
    
-   EffGlobDm3->Draw();
-   EffGlobDm3->GetYaxis()->SetTitle("%");
+    BXGlobDm3->SetMarkerColor(9);
+    BXGlobDm3->SetLineColor(9);
+    BXGlobDm3->Draw("same");
    
-   BXGlobDm3->SetMarkerColor(9);
-   BXGlobDm3->SetLineColor(9);
-   BXGlobDm3->Draw("same");
+    MaskedGlobDm3->SetMarkerColor(2);
+    MaskedGlobDm3->SetLineColor(2);
+    MaskedGlobDm3->Draw("same");
    
-   MaskedGlobDm3->SetMarkerColor(2);
-   MaskedGlobDm3->SetLineColor(2);
-   MaskedGlobDm3->Draw("same");
+    AverageEffDm3->SetMarkerColor(8);
+    AverageEffDm3->SetLineColor(8);
+    AverageEffDm3->Draw("same");
    
-   AverageEffDm3->SetMarkerColor(8);
-   AverageEffDm3->SetLineColor(8);
-   AverageEffDm3->Draw("same");
+    NoPredictionDm3->SetMarkerColor(5);
+    NoPredictionDm3->SetLineColor(5);
+    NoPredictionDm3->Draw("same");
    
-   NoPredictionDm3->SetMarkerColor(5);
-   NoPredictionDm3->SetLineColor(5);
-   NoPredictionDm3->Draw("same");
-   
-   pave->Draw();
+    pave->Draw();
 
-   bxAxisEndCap->Draw("same");
+    bxAxisEndCap->Draw("same");
   
-   Ca2->SaveAs("Sides/SegEff_Dm3near.png");
-   Ca2->SaveAs("SegEff_Dm3near.root");
-   Ca2->Clear();
+    Ca2->SaveAs("Sides/SegEff_Dm3near.png");
+    Ca2->SaveAs("SegEff_Dm3near.root");
+    Ca2->Clear();
 
 
-   EffGlobDm2->Draw();
-   EffGlobDm2->GetYaxis()->SetTitle("%");
+    EffGlobDm2->Draw();
+    EffGlobDm2->GetYaxis()->SetTitle("%");
   
-   BXGlobDm2->SetMarkerColor(9);
-   BXGlobDm2->SetLineColor(9);
-   BXGlobDm2->Draw("same");
+    BXGlobDm2->SetMarkerColor(9);
+    BXGlobDm2->SetLineColor(9);
+    BXGlobDm2->Draw("same");
 
-   MaskedGlobDm2->SetMarkerColor(2);
-   MaskedGlobDm2->SetLineColor(2);
-   MaskedGlobDm2->Draw("same");
+    MaskedGlobDm2->SetMarkerColor(2);
+    MaskedGlobDm2->SetLineColor(2);
+    MaskedGlobDm2->Draw("same");
 
-   AverageEffDm2->SetMarkerColor(8);
-   AverageEffDm2->SetLineColor(8);
-   AverageEffDm2->Draw("same");
+    AverageEffDm2->SetMarkerColor(8);
+    AverageEffDm2->SetLineColor(8);
+    AverageEffDm2->Draw("same");
 
-   NoPredictionDm2->SetMarkerColor(5);
-   NoPredictionDm2->SetLineColor(5);
-   NoPredictionDm2->Draw("same");
+    NoPredictionDm2->SetMarkerColor(5);
+    NoPredictionDm2->SetLineColor(5);
+    NoPredictionDm2->Draw("same");
 
-   pave->Draw();
+    pave->Draw();
 
-   bxAxisEndCap->Draw("same");
+    bxAxisEndCap->Draw("same");
   
-   Ca2->SaveAs("Sides/SegEff_Dm2near.png");
-   Ca2->SaveAs("SegEff_Dm2near.root");
-   Ca2->Clear();
+    Ca2->SaveAs("Sides/SegEff_Dm2near.png");
+    Ca2->SaveAs("SegEff_Dm2near.root");
+    Ca2->Clear();
 
 
-   EffGlobDm1->Draw();
-   EffGlobDm1->GetYaxis()->SetTitle("%");
+    EffGlobDm1->Draw();
+    EffGlobDm1->GetYaxis()->SetTitle("%");
   
-   BXGlobDm1->SetMarkerColor(9);
-   BXGlobDm1->SetLineColor(9);
-   BXGlobDm1->Draw("same");
+    BXGlobDm1->SetMarkerColor(9);
+    BXGlobDm1->SetLineColor(9);
+    BXGlobDm1->Draw("same");
 
-   MaskedGlobDm1->SetMarkerColor(2);
-   MaskedGlobDm1->SetLineColor(2);
-   MaskedGlobDm1->Draw("same");
+    MaskedGlobDm1->SetMarkerColor(2);
+    MaskedGlobDm1->SetLineColor(2);
+    MaskedGlobDm1->Draw("same");
 
-   AverageEffDm1->SetMarkerColor(8);
-   AverageEffDm1->SetLineColor(8);
-   AverageEffDm1->Draw("same");
+    AverageEffDm1->SetMarkerColor(8);
+    AverageEffDm1->SetLineColor(8);
+    AverageEffDm1->Draw("same");
 
-   NoPredictionDm1->SetMarkerColor(5);
-   NoPredictionDm1->SetLineColor(5);
-   NoPredictionDm1->Draw("same");
+    NoPredictionDm1->SetMarkerColor(5);
+    NoPredictionDm1->SetLineColor(5);
+    NoPredictionDm1->Draw("same");
 
-   pave->Draw();
+    pave->Draw();
 
-   bxAxisEndCap->Draw("same");
+    bxAxisEndCap->Draw("same");
   
-   Ca2->SaveAs("Sides/SegEff_Dm1near.png");
-   Ca2->SaveAs("SegEff_Dm1near.root");
-   Ca2->Clear();
+    Ca2->SaveAs("Sides/SegEff_Dm1near.png");
+    Ca2->SaveAs("SegEff_Dm1near.root");
+    Ca2->Clear();
   }
  
  //Barrel
@@ -3792,6 +4023,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  if(barrel){
    EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png");Ca1->SaveAs("EffDistroBarrel.root"); 
    DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");Ca1->SaveAs("DoubleGapBarrel.root"); 
+   PinoBarrel->GetXaxis()->SetTitle("%"); PinoBarrel->Draw(); Ca1->SaveAs("Distro/PinoBarrel.png");Ca1->SaveAs("PinoBarrel.root"); 
    
    EffDistroWm2->GetXaxis()->SetTitle("%"); EffDistroWm2->Draw(); Ca1->SaveAs("Distro/EffDistroWm2.png");Ca1->SaveAs("EffDistroWm2.root"); 
    EffDistroWm1->GetXaxis()->SetTitle("%"); EffDistroWm1->Draw(); Ca1->SaveAs("Distro/EffDistroWm1.png");Ca1->SaveAs("EffDistroWm1.root"); 
@@ -3821,7 +4053,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  if(endcap){
    EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); Ca1->SaveAs("Distro/EffDistroEndCap.png");Ca1->SaveAs("EffEndCap.root"); 
-
+   DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); Ca1->SaveAs("Distro/DoubleGapEndCap.png");Ca1->SaveAs("DoubleGapEndCap.root"); 
+   PinoEndCap->GetXaxis()->SetTitle("%"); PinoEndCap->Draw(); Ca1->SaveAs("Distro/PinoEndCap.png");Ca1->SaveAs("PinoEndCap.root"); 
+   
    EffDistroDm3->GetXaxis()->SetTitle("%"); EffDistroDm3->Draw(); Ca1->SaveAs("Distro/EffDistroDm3.png");Ca1->SaveAs("EffDistroDm3.root");   
    EffDistroDm2->GetXaxis()->SetTitle("%"); EffDistroDm2->Draw(); Ca1->SaveAs("Distro/EffDistroDm2.png");Ca1->SaveAs("EffDistroDm2.root"); 
    EffDistroDm1->GetXaxis()->SetTitle("%"); EffDistroDm1->Draw(); Ca1->SaveAs("Distro/EffDistroDm1.png");Ca1->SaveAs("EffDistroDm1.root"); 
