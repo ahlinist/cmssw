@@ -175,11 +175,6 @@
     </servlet>
 
     <servlet>
-      <servlet-name>HeartBeat</servlet-name>
-      <servlet-class>cms.dqm.workflow.HeartBeat</servlet-class>
-    </servlet>
-
-    <servlet>
       <servlet-name>MessageBoard</servlet-name>
       <servlet-class>cms.dqm.workflow.MessageBoard</servlet-class>
     </servlet>
@@ -236,11 +231,6 @@
     <servlet-mapping>
         <servlet-name>RunEditData</servlet-name>
         <url-pattern>/runeditdata</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>HeartBeat</servlet-name>
-        <url-pattern>/heartbeat</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

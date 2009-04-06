@@ -32,26 +32,6 @@
 
 <script type="text/javascript">
 
-/* TODO remove!
-  function checkSession() {
-    $.ajax({
-      type: "GET",
-      url: "heartbeat",
-      dataType: "text",
-      success: function(ret) {
-        if (ret == '0') {
-          logoutUser();
-        }
-      }
-    });
-  }
-
-*/
-  
-  function quickSearch () {
-    $.showSearchForm();
-  }
-
   function logoutUser() {
     frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
     setTimeout("location.href=location.href.replace('https:','http:');", 200);
@@ -133,12 +113,12 @@
             });
 
             $(row).find("TD[field=NR] div").html("");
-						if (rownum == 0) {
-							$(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_end");
-						} else {
-							$(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_middle");
-						}
-						rownum++;
+            if (rownum == 0) {
+              $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_end");
+            } else {
+              $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_middle");
+            }
+            rownum++;
             $(row).insertAfter("#row" + number);
 
           });
@@ -583,7 +563,7 @@ function changeStatusTo(status) {
 
         &nbsp;|&nbsp;
 		
-		<a id="advanced_search" href="#" onClick="quickSearch();">Advanced search</a>
+		<a id="advanced_search" href="#" onClick="$.showSearchForm()">Advanced search</a>
 
         &nbsp;|&nbsp;
 
