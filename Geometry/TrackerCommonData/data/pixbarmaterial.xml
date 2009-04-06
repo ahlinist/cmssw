@@ -451,20 +451,37 @@
     </MaterialFraction>
   </CompositeMaterial>
 
-  <CompositeMaterial name="PixelBarrelSupTubCables" density="2.30274*g/cm3" symbol=" " method="mixture by weight">
-    <MaterialFraction fraction="0.08955">
-     <rMaterial name="materials:C6F14_F2_-10C"/>
+  <CompositeMaterial name="PixelBarrelSupTubCables" density="2.25064*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.09162">
+      <rMaterial name="materials:C6F14_F2_-10C"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.16832">
+    <MaterialFraction fraction="0.14907">
       <rMaterial name="materials:Steel-008"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.27798">
+    <MaterialFraction fraction="0.28441">
       <rMaterial name="materials:Polyethylene"/>
     </MaterialFraction>
-    <MaterialFraction fraction="0.46416">
+    <MaterialFraction fraction="0.4749">
       <rMaterial name="materials:Copper"/>
     </MaterialFraction>
   </CompositeMaterial>
+
+
+ <CompositeMaterial name="PixelBarrelSupTubCables2" density="0.61235*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.09162">
+      <rMaterial name="materials:C6F14_F2_-10C"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.14907">
+      <rMaterial name="materials:Steel-008"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.28441">
+      <rMaterial name="materials:Polyethylene"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.4749">
+      <rMaterial name="materials:Copper"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
 
 </MaterialSection>
 
