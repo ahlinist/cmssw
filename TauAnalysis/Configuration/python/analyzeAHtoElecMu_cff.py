@@ -74,8 +74,7 @@ analyzeAHtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
     metHistManager,
     jetHistManager,
     vertexHistManager,
-    triggerHistManager,
-    ahemuHistManager
+    triggerHistManager
   ),
 
   eventDumps = cms.VPSet(
