@@ -2,6 +2,8 @@ es_module HitMatchingAlgorithm_a_PSimHit_ = HitMatchingAlgorithm_a_PSimHit_ {
 }
 es_module HitMatchingAlgorithm_a_PixelDigi_  = HitMatchingAlgorithm_a_PixelDigi_ {
 }
+es_module HitMatchingAlgorithm_a_TTHit_  = HitMatchingAlgorithm_a_TTHit_ {
+}
 
 es_module HitMatchingAlgorithm_globalgeometry_PSimHit_ = HitMatchingAlgorithm_globalgeometry_PSimHit_ {
      # Minimum pt threhold for track finder
