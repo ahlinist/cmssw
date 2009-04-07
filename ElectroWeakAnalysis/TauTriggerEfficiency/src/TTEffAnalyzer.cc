@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.19 2009/04/04 06:48:55 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.20 2009/04/04 22:31:58 smaruyam Exp $
 //
 //
 
@@ -87,8 +87,8 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    else if(iEvent.getByLabel(PFTaus_, PFTaus)) {
       try{
 	iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
-      }catch(...){}
-	loop(iEvent, *PFTaus);
+      }catch(...){ cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;}
+      loop(iEvent, *PFTaus);
    }  
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
@@ -123,7 +123,7 @@ TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
   }
    if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
-   fill(PFTaus->at(i));
+   fill(tau.p4());
 
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
