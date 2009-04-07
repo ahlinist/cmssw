@@ -66,6 +66,7 @@
     
     <!-- copy web.xml file --> 
     <copy file="tmpl/web.xml" tofile="WEB-INF/web.xml" />
+    <copy file="tmpl/quartz.properties" tofile="WEB-INF/quartz.properties" />
 
     <!-- encrypt authentification parameters with encoder -->
     <record name="encoded.txt" action="start"/>
@@ -89,6 +90,9 @@
     <replace file="WEB-INF/web.xml" token="@TOMCAT_PATH@" value="${tomcatpath}"/>
     <replace file="WEB-INF/web.xml" token="@DQM_URL@" value="${url}"/>     
 
+    <replace file="WEB-INF/quartz.properties" token="@TOMCAT_PATH@" value="${tomcatpath}"/>
+    <replace file="WEB-INF/quartz.properties" token="@DQM_URL@" value="${url}"/>     
+
     <war destfile="dist/${url}.war" webxml="WEB-INF/web.xml">
       <fileset dir="html"/>
       <lib dir="lib"/>
@@ -100,6 +104,7 @@
 
     <copy file="dist/${url}.war" todir="${tomcatpath}/webapps"/>
     <delete file="WEB-INF/web.xml" />
+    <delete file="WEB-INF/quartz.properties" />
 
   </target>
 

@@ -113,6 +113,7 @@ public class MessageBoard extends HttpServlet {
 
     resp.put("last_msg", MessageBoardSyn.getInstance().getLast());
     resp.put("last_user", MessageBoardSyn.getInstance().getLastUser());
+    //resp.put("alive", MessageBoardSyn.getInstance().alive);
     resp.write(out);
 
     } catch (Exception e) {

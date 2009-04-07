@@ -34,7 +34,7 @@
 
   function logoutUser() {
     frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
-    setTimeout("location.href=location.href.replace('https:','http:');", 200);
+    setTimeout("window.location.href = 'logout.jsp';", 200);
   }
 
   var total = 0;
