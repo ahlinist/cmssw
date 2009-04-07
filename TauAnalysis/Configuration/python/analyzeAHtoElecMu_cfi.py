@@ -33,18 +33,14 @@ triggerHistManager.l1Bits = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_Sing
                                         'L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14')
 triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I', 'HLT_Mu15', 'HLT_IsoMu11', 'HLT_IsoEle8_IsoMu7')
 
-# import config for AHemu histogram manager
-from TauAnalysis.Core.ahemuHistManager_cfi import *
-
-
 elecMuHistManagers = cms.vstring( 'electronHistManager',
                                   'muonHistManager',
                                   'diTauCandidateHistManagerForElecMu',
                                   'metHistManager',
                                   'jetHistManager',
                                   'vertexHistManager',
-                                  'triggerHistManager',
-                                  'ahemuHistManager')
+                                  'triggerHistManager'
+                                  )
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -605,7 +601,7 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                          'ahemuHistManager.diTauSource = selectedElecMuPairsImpParamSigCumulative')
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative')
   ),
 
   #selection of jets
@@ -618,7 +614,7 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                          'ahemuHistManager.diTauSource = selectedElecMuPairsImpParamSigCumulative',
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
                           'jetHistManager.jetSource = selectedLayer1JetsEt20')
   ),
   cms.PSet(
@@ -630,7 +626,7 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                          'ahemuHistManager.diTauSource = selectedElecMuPairsImpParamSigCumulative',
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
                           'jetHistManager.jetSource = selectedLayer1JetsEt20')
   ),
   cms.PSet(
@@ -642,8 +638,8 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                          'ahemuHistManager.diTauSource = selectedElecMuPairsImpParamSigCumulative',
-                          'ahemuHistManager.jetSource = selectedLayer1JetsBtag')
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                          'jetHistManager.jetSource = selectedLayer1JetsBtag')
   ),
   cms.PSet(
     filter = cms.string('jetBtagMaxCut'),
@@ -654,8 +650,8 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                          'ahemuHistManager.diTauSource = selectedElecMuPairsImpParamSigCumulative',
-                          'ahemuHistManager.jetSource = selectedLayer1JetsBtag')
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                          'jetHistManager.jetSource = selectedLayer1JetsBtag')
   )
 )
 
