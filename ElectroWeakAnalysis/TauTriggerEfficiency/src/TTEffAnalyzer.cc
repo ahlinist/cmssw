@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.20 2009/04/04 22:31:58 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.21 2009/04/07 13:17:15 chinhan Exp $
 //
 //
 
@@ -123,7 +123,7 @@ TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
   }
    if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
-   fill(tau.p4());
+   fill(PFTaus->at(i).p4());
 
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
