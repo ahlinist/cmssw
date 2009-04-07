@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.42 2009/03/09 11:00:22 giorgia Exp $
+// $Id: DTRenderPlugin.cc,v 1.43 2009/04/06 16:58:32 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.42 $
-  \date $Date: 2009/03/09 11:00:22 $
+  \version $Revision: 1.43 $
+  \date $Date: 2009/04/06 16:58:32 $
 */
 
 #include "TProfile2D.h"
@@ -171,7 +171,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetBottomMargin(0.15);
     c->SetLeftMargin(0.15);
     obj->GetXaxis()->CenterLabels();
-    obj->GetYaxis()->CenterLabels();
+  //   obj->GetYaxis()->CenterLabels();
     obj->GetXaxis()->SetNdivisions(13,true);
 
     return;
