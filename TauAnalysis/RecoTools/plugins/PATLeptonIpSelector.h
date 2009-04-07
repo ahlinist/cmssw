@@ -10,9 +10,9 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.1 2009/01/29 13:22:18 veelken Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.2 2009/02/06 14:18:59 veelken Exp $
  *
  */
 
@@ -20,10 +20,11 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
+#include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 
 #include <vector>
 
-template <typename T, typename TExtr>
+template <typename T>
 class PATLeptonIpSelector
 {
   public:
@@ -48,7 +49,10 @@ class PATLeptonIpSelector
     double ipMax_;
     bool applyIpMax_;
 
-    TExtr ipExtractor_;
+//--- "helper" class for accessing the track
+//    of pat::Electrons and pat::Muons 
+//    and the "leading" (i.e. highest Pt) track of pat::Taus
+    PATLeptonTrackExtractor<T> trackExtractor_;
 };
 
 #endif
