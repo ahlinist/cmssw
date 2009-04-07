@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.28 2009/03/24 14:03:51 mstoye Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.29 2009/03/24 17:19:04 mstoye Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -175,7 +175,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   Handle<reco::GenParticleCollection>  genParticles;
   iEvent.getByLabel(genTag_, genParticles);   
 
-  int count=0; int lcount=0;
+  int count=0; int lcount=0; int tcount=0;
   //length=genParticles->size();
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const reco::Candidate& p = (*genParticles)[ i ];
@@ -220,12 +220,76 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
 
     }
-    // Print-out the event
-    //    cout << "Position = " << static_cast<int>(i) << " particle = " << ids[count] << " with mother at = " << refs[count] << endl;
+ 
 
+    //store taus
+    if ( abs(p.pdgId()) == 15) {
+
+      genTauIds[tcount] = p.pdgId(); genTauStatus[tcount]=p.status();
+      genTauE[tcount]=p.energy(); genTauPx[tcount]=p.px(); genTauPy[tcount]=p.py(); genTauPz[tcount]=p.pz();
+
+      
+      if (p.numberOfMothers() > 0 ) { 
+	const reco::Candidate * mom = p.mother();
+	if (mom->pdgId() == p.pdgId()) { mom = mom->mother(); }
+
+	for( size_t j = 0; j < i; ++ j ) {
+	  const Candidate * ref = &((*genParticles)[j]);
+	  if (ref == mom) { genTauRefs[tcount]=ref->pdgId(); }
+	}  
+      } else { genTauRefs[tcount]=-1;}
+      
+      int ndau_charged=0;
+      int ndau_neutral=0;
+      int ndau_neutrinos=0;
+      int ndau_leptonic=0;
+      float energy_charged=0.;
+      float energy_neutral=0.;
+      float energy_neutrinos=0.;
+      float energy_leptonic=0.;
+
+      
+      if(p.numberOfDaughters()>0){
+	for(size_t dau=0; dau<p.numberOfDaughters(); dau++){
+	  if(p.daughter(dau)->charge()!=0){
+	    if(abs(p.daughter(dau)->pdgId())==11 || abs(p.daughter(dau)->pdgId())==13 || abs(p.daughter(dau)->pdgId())==15){
+	      ndau_leptonic++;
+	      energy_leptonic=energy_leptonic+p.daughter(dau)->energy();
+	    }
+	    else {
+	      ndau_charged++;
+	      energy_charged=energy_charged+p.daughter(dau)->energy();
+	    }
+	  }
+	  if(p.daughter(dau)->charge()==0){
+	    if(abs(p.daughter(dau)->pdgId())==12 || abs(p.daughter(dau)->pdgId())==14 ||abs(p.daughter(dau)->pdgId())==16 ){
+	      ndau_neutrinos++;
+	      energy_neutrinos=energy_neutrinos+p.daughter(dau)->energy();
+	    }
+	    else {	  
+	      ndau_neutral++;
+	      energy_neutral=energy_neutral+p.daughter(dau)->energy();
+	    }
+	    
+	  }
+	}
+	
+      }
+      genTauDauLeptonic[tcount]=ndau_leptonic;
+      genTauDauCharged[tcount]=ndau_charged;
+      genTauDauNeutral[tcount]=ndau_neutral;
+      genTauDauNeutrinos[tcount]=ndau_neutrinos;
+      
+      genTauDauEnergyLeptonic[tcount]=energy_leptonic;
+      genTauDauEnergyCharged[tcount]=energy_charged;
+      genTauDauEnergyNeutral[tcount]=energy_neutral;
+      genTauDauEnergyNeutrinos[tcount]=energy_neutrinos;
+      
+      tcount++;
+    }
     
   }
-  length=count; genLepLength=lcount;
+  length=count; genLepLength=lcount; genTauLength=tcount;
 
 
   Handle< int >  myProcess;
@@ -744,7 +808,18 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     mTempTreeTauVx[i] =(*tauHandle)[i].vx();
     mTempTreeTauVy[i] =(*tauHandle)[i].vy();
     mTempTreeTauVz[i] =(*tauHandle)[i].vz();
-    mTempTreeTauNTks[i] =(*tauHandle)[i].isolationTracks().size();
+    mTempTreeTauNTks[i] =(*tauHandle)[i].signalTracks().size();
+    //Benedetta
+    mTempTreeTauNIsoTks[i] =(*tauHandle)[i].isolationTracks().size();
+    double ptsum=0.;
+    if((*tauHandle)[i].isolationTracks().size()>0){
+      for(size_t j=0; j<(*tauHandle)[i].isolationTracks().size(); j++){    
+	ptsum=ptsum+(*tauHandle)[i].isolationTracks()[j]->pt();
+      }
+    }
+    mTempTreeTauIsoTkPt[i]=ptsum;
+    //end Benedetta
+
     //NEUTRAL
     if ((*tauHandle)[i].isPFTau()){
       int ntnsize=(*tauHandle)[i].signalPFNeutrHadrCands().size();
@@ -763,22 +838,22 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeTauNeutralHOverHPlusE[i]=999.;
       mTempTreeTauNNeutrals[i] =999.;
     }
-    if ((*tauHandle)[i].isolationTracks().size()>0){
+    if ((*tauHandle)[i].signalTracks().size()>0){
       //TK1
-      mTempTreeTauTk1Vx[i]=(*tauHandle)[i].isolationTracks()[0]->vx();
-      mTempTreeTauTk1Vy[i]=(*tauHandle)[i].isolationTracks()[0]->vy();
-      mTempTreeTauTk1Vz[i]=(*tauHandle)[i].isolationTracks()[0]->vz();
-      mTempTreeTauTk1D0[i]=(*tauHandle)[i].isolationTracks()[0]->d0();
-      mTempTreeTauTk1Dz[i]=(*tauHandle)[i].isolationTracks()[0]->dz();
-      mTempTreeTauTk1Pt[i]=(*tauHandle)[i].isolationTracks()[0]->pt(); 
-      mTempTreeTauTk1Pz[i]=(*tauHandle)[i].isolationTracks()[0]->pz();
-      mTempTreeTauTk1Eta[i]=(*tauHandle)[i].isolationTracks()[0]->eta();
-      mTempTreeTauTk1Phi[i]=(*tauHandle)[i].isolationTracks()[0]->phi();
-      mTempTreeTauTk1Chi[i]=(*tauHandle)[i].isolationTracks()[0]->chi2();
-      mTempTreeTauTk1Charge[i]=(*tauHandle)[i].isolationTracks()[0]->charge();
-      mTempTreeTauTk1QOverPError[i]=(*tauHandle)[i].isolationTracks()[0]->qoverpError();
-      mTempTreeTauTk1ValidHits[i]=(*tauHandle)[i].isolationTracks()[0]->found();
-      mTempTreeTauTk1LostHits[i]=(*tauHandle)[i].isolationTracks()[0]->lost();
+      mTempTreeTauTk1Vx[i]=(*tauHandle)[i].signalTracks()[0]->vx();
+      mTempTreeTauTk1Vy[i]=(*tauHandle)[i].signalTracks()[0]->vy();
+      mTempTreeTauTk1Vz[i]=(*tauHandle)[i].signalTracks()[0]->vz();
+      mTempTreeTauTk1D0[i]=(*tauHandle)[i].signalTracks()[0]->d0();
+      mTempTreeTauTk1Dz[i]=(*tauHandle)[i].signalTracks()[0]->dz();
+      mTempTreeTauTk1Pt[i]=(*tauHandle)[i].signalTracks()[0]->pt(); 
+      mTempTreeTauTk1Pz[i]=(*tauHandle)[i].signalTracks()[0]->pz();
+      mTempTreeTauTk1Eta[i]=(*tauHandle)[i].signalTracks()[0]->eta();
+      mTempTreeTauTk1Phi[i]=(*tauHandle)[i].signalTracks()[0]->phi();
+      mTempTreeTauTk1Chi[i]=(*tauHandle)[i].signalTracks()[0]->chi2();
+      mTempTreeTauTk1Charge[i]=(*tauHandle)[i].signalTracks()[0]->charge();
+      mTempTreeTauTk1QOverPError[i]=(*tauHandle)[i].signalTracks()[0]->qoverpError();
+      mTempTreeTauTk1ValidHits[i]=(*tauHandle)[i].signalTracks()[0]->found();
+      mTempTreeTauTk1LostHits[i]=(*tauHandle)[i].signalTracks()[0]->lost();
       mTempTreeTauTk1CaloE[i]=2.;
     }
     else {
@@ -800,22 +875,22 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeTauTk1CaloE[i]=999.;
     }
     //TK2
-    if ((*tauHandle)[i].isolationTracks().size()>1){
+    if ((*tauHandle)[i].signalTracks().size()>1){
       //TK2
-      mTempTreeTauTk2Vx[i]=(*tauHandle)[i].isolationTracks()[1]->vx();
-      mTempTreeTauTk2Vy[i]=(*tauHandle)[i].isolationTracks()[1]->vy();
-      mTempTreeTauTk2Vz[i]=(*tauHandle)[i].isolationTracks()[1]->vz();
-      mTempTreeTauTk2D0[i]=(*tauHandle)[i].isolationTracks()[1]->d0();
-      mTempTreeTauTk2Dz[i]=(*tauHandle)[i].isolationTracks()[1]->dz();
-      mTempTreeTauTk2Pt[i]=(*tauHandle)[i].isolationTracks()[1]->pt(); 
-      mTempTreeTauTk2Pz[i]=(*tauHandle)[i].isolationTracks()[1]->pz();
-      mTempTreeTauTk2Eta[i]=(*tauHandle)[i].isolationTracks()[1]->eta();
-      mTempTreeTauTk2Phi[i]=(*tauHandle)[i].isolationTracks()[1]->phi();
-      mTempTreeTauTk2Chi[i]=(*tauHandle)[i].isolationTracks()[1]->chi2();
-      mTempTreeTauTk2Charge[i]=(*tauHandle)[i].isolationTracks()[1]->charge();
-      mTempTreeTauTk2QOverPError[i]=(*tauHandle)[i].isolationTracks()[1]->qoverpError();
-      mTempTreeTauTk2ValidHits[i]=(*tauHandle)[i].isolationTracks()[1]->found();
-      mTempTreeTauTk2LostHits[i]=(*tauHandle)[i].isolationTracks()[1]->lost();
+      mTempTreeTauTk2Vx[i]=(*tauHandle)[i].signalTracks()[1]->vx();
+      mTempTreeTauTk2Vy[i]=(*tauHandle)[i].signalTracks()[1]->vy();
+      mTempTreeTauTk2Vz[i]=(*tauHandle)[i].signalTracks()[1]->vz();
+      mTempTreeTauTk2D0[i]=(*tauHandle)[i].signalTracks()[1]->d0();
+      mTempTreeTauTk2Dz[i]=(*tauHandle)[i].signalTracks()[1]->dz();
+      mTempTreeTauTk2Pt[i]=(*tauHandle)[i].signalTracks()[1]->pt(); 
+      mTempTreeTauTk2Pz[i]=(*tauHandle)[i].signalTracks()[1]->pz();
+      mTempTreeTauTk2Eta[i]=(*tauHandle)[i].signalTracks()[1]->eta();
+      mTempTreeTauTk2Phi[i]=(*tauHandle)[i].signalTracks()[1]->phi();
+      mTempTreeTauTk2Chi[i]=(*tauHandle)[i].signalTracks()[1]->chi2();
+      mTempTreeTauTk2Charge[i]=(*tauHandle)[i].signalTracks()[1]->charge();
+      mTempTreeTauTk2QOverPError[i]=(*tauHandle)[i].signalTracks()[1]->qoverpError();
+      mTempTreeTauTk2ValidHits[i]=(*tauHandle)[i].signalTracks()[1]->found();
+      mTempTreeTauTk2LostHits[i]=(*tauHandle)[i].signalTracks()[1]->lost();
       mTempTreeTauTk2CaloE[i]=2.;
     }
     else {
@@ -837,22 +912,22 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeTauTk2CaloE[i]=999.;
     }
     //TK3
-    if ((*tauHandle)[i].isolationTracks().size()>2){
+    if ((*tauHandle)[i].signalTracks().size()>2){
       //TK2
-      mTempTreeTauTk3Vx[i]=(*tauHandle)[i].isolationTracks()[2]->vx();
-      mTempTreeTauTk3Vy[i]=(*tauHandle)[i].isolationTracks()[2]->vy();
-      mTempTreeTauTk3Vz[i]=(*tauHandle)[i].isolationTracks()[2]->vz();
-      mTempTreeTauTk3D0[i]=(*tauHandle)[i].isolationTracks()[2]->d0();
-      mTempTreeTauTk3Dz[i]=(*tauHandle)[i].isolationTracks()[2]->dz();
-      mTempTreeTauTk3Pt[i]=(*tauHandle)[i].isolationTracks()[2]->pt(); 
-      mTempTreeTauTk3Pz[i]=(*tauHandle)[i].isolationTracks()[2]->pz();
-      mTempTreeTauTk3Eta[i]=(*tauHandle)[i].isolationTracks()[2]->eta();
-      mTempTreeTauTk3Phi[i]=(*tauHandle)[i].isolationTracks()[2]->phi();
-      mTempTreeTauTk3Chi[i]=(*tauHandle)[i].isolationTracks()[2]->chi2();
-      mTempTreeTauTk3Charge[i]=(*tauHandle)[i].isolationTracks()[2]->charge();
-      mTempTreeTauTk3QOverPError[i]=(*tauHandle)[i].isolationTracks()[2]->qoverpError();
-      mTempTreeTauTk3ValidHits[i]=(*tauHandle)[i].isolationTracks()[2]->found();
-      mTempTreeTauTk3LostHits[i]=(*tauHandle)[i].isolationTracks()[2]->lost();
+      mTempTreeTauTk3Vx[i]=(*tauHandle)[i].signalTracks()[2]->vx();
+      mTempTreeTauTk3Vy[i]=(*tauHandle)[i].signalTracks()[2]->vy();
+      mTempTreeTauTk3Vz[i]=(*tauHandle)[i].signalTracks()[2]->vz();
+      mTempTreeTauTk3D0[i]=(*tauHandle)[i].signalTracks()[2]->d0();
+      mTempTreeTauTk3Dz[i]=(*tauHandle)[i].signalTracks()[2]->dz();
+      mTempTreeTauTk3Pt[i]=(*tauHandle)[i].signalTracks()[2]->pt(); 
+      mTempTreeTauTk3Pz[i]=(*tauHandle)[i].signalTracks()[2]->pz();
+      mTempTreeTauTk3Eta[i]=(*tauHandle)[i].signalTracks()[2]->eta();
+      mTempTreeTauTk3Phi[i]=(*tauHandle)[i].signalTracks()[2]->phi();
+      mTempTreeTauTk3Chi[i]=(*tauHandle)[i].signalTracks()[2]->chi2();
+      mTempTreeTauTk3Charge[i]=(*tauHandle)[i].signalTracks()[2]->charge();
+      mTempTreeTauTk3QOverPError[i]=(*tauHandle)[i].signalTracks()[2]->qoverpError();
+      mTempTreeTauTk3ValidHits[i]=(*tauHandle)[i].signalTracks()[2]->found();
+      mTempTreeTauTk3LostHits[i]=(*tauHandle)[i].signalTracks()[2]->lost();
       mTempTreeTauTk3CaloE[i]=2.;
     }
     else {
@@ -1725,6 +1800,25 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("genLepStatus",genLepStatus,"genLepStatus[genLepN]/int");
   // end georgia
   
+  //benedetta
+  mAllData->Branch("genTauN",&genTauLength ,"genTauN/int");
+  mAllData->Branch("genTauId",genTauIds ,"genTauId[genTauN]/int");
+  mAllData->Branch("genTauStatus",genTauStatus ,"genTauStatus[genTauN]/int");
+  mAllData->Branch("genTauE",genTauE ,"genTauE[genTauN]/float");
+  mAllData->Branch("genTauPx",genTauPx ,"genTauPx[genTauN]/float");
+  mAllData->Branch("genTauPy",genTauPy ,"genTauPy[genTauN]/float");
+  mAllData->Branch("genTauPz",genTauPz ,"genTauPz[genTauN]/float");
+  mAllData->Branch("genTauMother",genTauRefs ,"genTauMother[genTauN]/int");
+  mAllData->Branch("genTauDauLeptonic",genTauDauLeptonic ,"genTauDauLeptonic[genTauN]/int");
+  mAllData->Branch("genTauDauCharged",genTauDauCharged ,"genTauDauCharged[genTauN]/int");
+  mAllData->Branch("genTauDauNeutral",genTauDauNeutral ,"genTauDauNeutral[genTauN]/int");
+  mAllData->Branch("genTauDauNeutrinos",genTauDauNeutrinos ,"genTauDauNeutrinos[genTauN]/int");
+  mAllData->Branch("genTauDauEnergyLeptonic",genTauDauEnergyLeptonic ,"genTauDauEnergyLeptonic[genTauN]/float");
+  mAllData->Branch("genTauDauEnergyCharged",genTauDauEnergyCharged ,"genTauDauEnergyCharged[genTauN]/float");
+  mAllData->Branch("genTauDauEnergyNeutral",genTauDauEnergyNeutral ,"genTauDauEnergyNeutral[genTauN]/float");
+  mAllData->Branch("genTauDauEnergyNeutrinos",genTauDauEnergyNeutrinos ,"genTauDauEnergyNeutrinos[genTauN]/float");
+  //end benedetta
+
   mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
   mAllData->Branch("AlpIdTest" ,&mTempAlpIdTest ,"AlpIdTest/int");
   
