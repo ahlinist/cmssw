@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.14 2009/04/01 17:24:22 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.15 2009/04/06 17:53:19 carrillo Exp $
 //
 //
 
@@ -184,11 +184,23 @@ public:
   TH1F * CLSW1;  
   TH1F * CLSW2;
 
+  TH1F * CLSWm2layer;  
+  TH1F * CLSWm1layer;  
+  TH1F * CLSW0layer;  
+  TH1F * CLSW1layer;  
+  TH1F * CLSW2layer;
+
   TH1F * sectorCLSWm2[13];  
   TH1F * sectorCLSWm1[13];  
   TH1F * sectorCLSW0[13];  
   TH1F * sectorCLSW1[13];  
   TH1F * sectorCLSW2[13];
+
+  TH1F * layerCLSWm2[7];  
+  TH1F * layerCLSWm1[7];  
+  TH1F * layerCLSW0[7];  
+  TH1F * layerCLSW1[7];  
+  TH1F * layerCLSW2[7];
   
   TH1F * sectorEffWm2;  
   TH1F * sectorEffWm1;  
@@ -484,9 +496,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
 
-  EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",40,0.5,100.5);
-  DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",40,0.5,100.5);
-  PinoBarrel = new TH1F ("PinoBarrel","Efficiency in central part For All The Barrel",40,0.5,100.5);
+  EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
+  DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
+  PinoBarrel = new TH1F ("PinoBarrel","Efficiency in central part For All The Barrel",51,-1,101);
 
   EffDistroWm2= new TH1F ("EffDistroWm2near","Efficiency Distribution For Near Side Wheel -2",20,0.5,100.5);
   EffDistroWm1= new TH1F ("EffDistroWm1near","Efficiency Distribution For Near Side Wheel -1",20,0.5,100.5);
@@ -512,18 +524,64 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   DoubleGapDistroW1far= new TH1F ("DoubleGapDistroW1far","DoubleGapEfficiency Distribution For Far Side Wheel 1",20,0.5,100.5);
   DoubleGapDistroW2far= new TH1F ("DoubleGapDistroW2far","DoubleGapEfficiency Distribution For Far Side Wheel 2",20,0.5,100.5);
 
-  EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",60,0.5,100.5);
-  DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",40,0.5,100.5);
-  PinoEndCap = new TH1F ("PinoEndCap","Efficiency in central part For All The EndCaps",40,0.5,100.5);
+  EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",51,-1,101);
+  DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
+  PinoEndCap = new TH1F ("PinoEndCap","Efficiency in central part For All The EndCaps",51,-1,101);
 
   HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
   HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
 
-  CLSWm2= new TH1F ("ClusterSizePerSectorWm2","Cluster Size per Sector Wheel -2",50,0.5,10.5);
-  CLSWm1= new TH1F ("ClusterSizePerSectorWm1","Cluster Size per Sector Wheel -1",50,0.5,10.5);
-  CLSW0= new TH1F ("ClusterSizePerSectorW0","Cluster Size per Sector Wheel 0",50,0.5,10.5);
-  CLSW1= new TH1F ("ClusterSizePerSectorW1","Cluster Size per Sector Wheel 1",50,0.5,10.5);
-  CLSW2= new TH1F ("ClusterSizePerSectorW2","Cluster Size per Sector Wheel 2",50,0.5,10.5);
+  CLSWm2= new TH1F ("ClusterSizeWm2","Cluster Size Wheel -2 per sector",12,0.5,12.5);
+  CLSWm1= new TH1F ("ClusterSizeWm1","Cluster Size Wheel -1 per sector",12,0.5,12.5);
+  CLSW0= new TH1F ("ClusterSizeW0","Cluster Size Wheel 0 per sector",12,0.5,12.5);
+  CLSW1= new TH1F ("ClusterSizeW1","Cluster Size Wheel 1 per sector",12,0.5,12.5);
+  CLSW2= new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per sector",12,0.5,12.5);
+
+  std::stringstream meId; 
+  std::stringstream title; 
+  
+  for(int k=1;k<=12;k++){
+    meId <<"ClusterSizeWm2Sector"<<k;
+    title <<"Cluster Size Wheel - 2 Sector "<<k;
+    sectorCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeWm1Sector"<<k;
+    title <<"Cluster Size Wheel - 1 Sector "<<k;
+    sectorCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeW0Sector"<<k;
+    title <<"Cluster Size Wheel 0 Sector "<<k;
+    sectorCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeW1Sector"<<k;
+    title <<"Cluster Size Wheel 1 Sector "<<k;
+    sectorCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeWm2Sector"<<k;
+    title <<"Cluster Size Wheel 2 Sector "<<k;
+    sectorCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+  }
+
+  CLSWm2layer = new TH1F ("ClusterSizeWm2","Cluster Size Wheel -2 per layer",12,0.5,12.5);
+  CLSWm1layer = new TH1F ("ClusterSizeWm1","Cluster Size Wheel -1 per layer",12,0.5,12.5);
+  CLSW0layer = new TH1F ("ClusterSizeW0","Cluster Size Wheel 0 per layer ",12,0.5,12.5);
+  CLSW1layer = new TH1F ("ClusterSizeW1","Cluster Size Wheel 1 per layer",12,0.5,12.5);
+  CLSW2layer = new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per layer",12,0.5,12.5);
+  
+  for(int k=1;k<=6;k++){
+    meId <<"ClusterSizeWm2Layer"<<k;
+    title <<"Cluster Size Wheel - 2 Layer "<<k;
+    layerCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeWm1Layer"<<k;
+    title <<"Cluster Size Wheel - 1 Layer "<<k;
+    layerCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeW0Layer"<<k;
+    title <<"Cluster Size Wheel 0 Layer "<<k;
+    layerCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeW1Layer"<<k;
+    title <<"Cluster Size Wheel 1 Layer "<<k;
+    layerCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeWm2Layer"<<k;
+    title <<"Cluster Size Wheel 2 Layer "<<k;
+    layerCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+  }
+
 
   sectorEffWm2= new TH1F ("AzimutalDistroWm2","Efficiency per Sector Wheel -2",12,0.5,12.5);
   sectorEffWm1= new TH1F ("AzimutalDistroWm1","Efficiency per Sector Wheel -1",12,0.5,12.5);
@@ -1110,8 +1168,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float bufdoublegapeff = 0;
 	  float bufdoublegaperr = 0;
 
-	  float pinoeff = 0;
-	  float pinoerr = 0;
+	  float pinoeff = 0.;
+	  float pinoerr = 0.;
 	  
 	  int NumberStripsPointed = 0;
 	  
@@ -1186,8 +1244,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  }else{
 	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
-
-	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
 
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
@@ -1304,8 +1360,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
 
-	      EffBarrel->Fill(averageeff);
-	      
 	      if(withouteffect!=0){
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
 		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
@@ -1320,12 +1374,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    RollYEff<<name<<" "<<doublegapeff<<" "<<doublegaperr<<" "<<(1.-withouteffect/float(nstrips))*100.<<std::endl;
 
-
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 
-	    DoubleGapBarrel->Fill(doublegapeff);
-	    PinoBarrel->Fill(pinoeff);
+	    if(NumberStripsPointed!=0) DoubleGapBarrel->Fill(doublegapeff);
+	    if(NumberStripsPointed!=0) PinoBarrel->Fill(pinoeff);
+	    if(NumberStripsPointed!=0) EffBarrel->Fill(averageeff);
 
+	    if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
+
+	    
 	    int Ring = rpcId.ring();
 	    
 	    if(sector==1||sector==2||sector==3||sector==10||sector==11||sector==12){
@@ -1540,14 +1597,22 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  int sector = rpcId.sector();
 	  int region = rpcId.region();
 
+	  
 	  if(region ==0){
-	    {
-	      if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);CLSWm2->Fill(histoCLS->GetMean());}
-	      if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);CLSWm1->Fill(histoCLS->GetMean());}
-	      if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);CLSW0->Fill(histoCLS->GetMean());}
-	      if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);CLSW1->Fill(histoCLS->GetMean());}
-	      if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);CLSW2->Fill(histoCLS->GetMean());}
-	    }
+	    int layer = 0;
+	    
+	    if(rpcId.station()==1&&rpcId.layer()==1) layer = 1;
+	    else if(rpcId.station()==1&&rpcId.layer()==2) layer = 2;
+	    else if(rpcId.station()==2&&rpcId.layer()==1) layer = 3;
+	    else if(rpcId.station()==2&&rpcId.layer()==2)  layer = 4;
+	    else if(rpcId.station()==3) layer = 5;
+	    else if(rpcId.station()==4) layer = 6;
+	    
+	    if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);CLSWm2->Fill(histoCLS->GetMean()); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);CLSWm1->Fill(histoCLS->GetMean());sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);CLSW0->Fill(histoCLS->GetMean());sectorCLSW0[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);CLSW1->Fill(histoCLS->GetMean());sectorCLSW1[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);CLSW2->Fill(histoCLS->GetMean());sectorCLSW2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
 	  }
 
 	  delete histoCLS;
@@ -2014,8 +2079,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(debug) std::cout<<"Warning!!! Alguno de los  histogramas 2D no fue leido!"<<std::endl;
 	  }
 
-	  if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
-
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
 
@@ -2131,8 +2194,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
      
-	      EffEndCap->Fill(averageeff);
-
 	      if(withouteffect!=0){
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
 		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
@@ -2149,9 +2210,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Filling New histograms"<<std::endl;
 	    
-	    DoubleGapEndCap->Fill(doublegapeff);
-	    PinoEndCap->Fill(pinoeff);
-	    
+	    if(NumberStripsPointed!=0) DoubleGapEndCap->Fill(doublegapeff);
+	    if(NumberStripsPointed!=0) PinoEndCap->Fill(pinoeff);
+	    if(NumberStripsPointed!=0) EffEndCap->Fill(averageeff);
+
+	    if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
+
 	    if(debug) std::cout<<"Filled New histograms"<<std::endl;
 
 	    int Disk=rpcId.station()*rpcId.region();
@@ -3135,6 +3199,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   //Producing Images
 
   Ca5->Clear();
+  /*
+  for(k=1;k=<12;k++){
+    sectorCLSWm2[k]->Draw(); sectorCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size"); Ca5->SaveAs("CLS/Wm2.png"); Ca5->SaveAs("CLS/Wm2.root");  Ca5->Clear(); 
+  }
+
+  for(k=1;k=<6;k++){
+    
+  }
+  */
 
   CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/Wm2.png"); Ca5->SaveAs("CLS/Wm2.root");
