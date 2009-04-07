@@ -33,8 +33,7 @@ process.source = cms.Source("PoolSource",
 
 process.load("L1Trigger/Configuration/L1Config_cff")
 process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
-#process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_2008MC_1E31_Unprescaled_cff")
-#process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v1_L1T_Scales_20080922_Imp0_Unprescaled_cff")
+#process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
 process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
 process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
 process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
