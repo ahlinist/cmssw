@@ -6,6 +6,8 @@ diTauCandidateHistManager = cms.PSet(
       
   diTauCandidateSource = cms.InputTag(''),
 
+  vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+
   dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
 
   #requireGenMatch = cms.bool(True)
