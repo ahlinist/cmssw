@@ -350,6 +350,8 @@ private:
   double mTempTreeTauVy[50];
   double mTempTreeTauVz[50];
   double mTempTreeTauNTks[50];
+  double mTempTreeTauNIsoTks[50];
+  double mTempTreeTauIsoTkPt[50];
   double mTempTreeTauNNeutrals[50];
   double mTempTreeTauTk1Vx[50];
   double mTempTreeTauTk1Vy[50];
@@ -468,6 +470,26 @@ private:
   float genLepPy[100];
   float genLepPz[100];
   int genLepStatus[100];
+
+  //benedetta
+  int genTauLength;
+  int genTauIds[50];
+  int genTauStatus[50];
+  int genTauRefs[50];
+  float genTauE[50];
+  float genTauPx[50];
+  float genTauPy[50];
+  float genTauPz[50];
+
+  int genTauDauCharged[50];
+  int genTauDauLeptonic[50];
+  int genTauDauNeutral[50];
+  int genTauDauNeutrinos[50];
+  float genTauDauEnergyLeptonic[50];
+  float genTauDauEnergyCharged[50];
+  float genTauDauEnergyNeutral[50];
+  float genTauDauEnergyNeutrinos[50];
+  //end benedetta
 
   double mTempTreeEventWeight;
   int    mTempTreeProcID;
