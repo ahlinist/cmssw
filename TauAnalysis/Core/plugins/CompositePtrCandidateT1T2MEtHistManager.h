@@ -8,6 +8,7 @@
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+#include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
 #include <vector>
@@ -28,10 +29,16 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
+  edm::InputTag vertexSrc_;
 
   std::string dqmDirectory_store_;
 
   bool requireGenMatch_;
+
+//--- "helper" classes for accessing the tracks 
+//    of the two tau decay products
+  PATLeptonTrackExtractor<T1> trackExtractorLeg1_;
+  PATLeptonTrackExtractor<T2> trackExtractorLeg2_;
 
 //--- histograms
   MonitorElement* hDiTauCandidatePt_;
@@ -39,6 +46,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidatePhi_;
   MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
+
+  MonitorElement* hDiTauCandidateImpParSig_;
 
   MonitorElement* hVisPt_;
   MonitorElement* hVisPhi_;
