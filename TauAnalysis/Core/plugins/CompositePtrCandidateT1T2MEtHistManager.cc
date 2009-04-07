@@ -4,6 +4,8 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include <TMath.h>
 
@@ -26,6 +28,9 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   diTauCandidateSrc_ = cfg.getParameter<edm::InputTag>("diTauCandidateSource");
   //std::cout << " diTauCandidateSrc = " << diTauCandidateSrc_ << std::endl;
+
+  vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
+  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -55,6 +60,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms(const edm::E
     hDiTauCandidatePhi_ = dqmStore.book1D("DiTauCandidatePhi", "DiTauCandidatePhi", 36, -TMath::Pi(), +TMath::Pi());
     hDiTauCandidateCharge_ = dqmStore.book1D("DiTauCandidateCharge", "DiTauCandidateCharge", 11, -5.5, +5.5);
     hDiTauCandidateMass_ = dqmStore.book1D("DiTauCandidateMass", "DiTauCandidateMass", 50, 0., 250.);
+
+    hDiTauCandidateImpParSig_ = dqmStore.book1D("DiTauCandidateImpParSig", "DiTauCandidateImpParSig", 30, 0., 15.);
 
     hVisPt_ = dqmStore.book1D("VisPt", "VisPt", 50, 0., 100.);
     hVisPhi_ = dqmStore.book1D("VisPhi", "VisPhi", 36, -TMath::Pi(), +TMath::Pi());
@@ -98,6 +105,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
 
   //std::cout << " diTauCandidates.size = " << diTauCandidates->size() << std::endl;
 
+  edm::Handle<std::vector<reco::Vertex> > recoVertices;
+  iEvent.getByLabel(vertexSrc_, recoVertices);
+
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
 	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
 
@@ -112,6 +122,18 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi());
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge());
     hDiTauCandidateMass_->Fill(diTauCandidate->mass());
+
+    const reco::Track* trackLeg1 = trackExtractorLeg1_(*diTauCandidate->leg1());
+    const reco::Track* trackLeg2 = trackExtractorLeg2_(*diTauCandidate->leg2());
+    if ( trackLeg1 && trackLeg2 &&
+	 recoVertices->size() >= 1 ) {
+      const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
+
+      double trackLeg1IpSig = trackLeg1->dxy(thePrimaryEventVertex.position())/trackLeg1->dxyError();
+      double trackLeg2IpSig = trackLeg2->dxy(thePrimaryEventVertex.position())/trackLeg2->dxyError();
+
+      hDiTauCandidateImpParSig_->Fill(TMath::Sqrt(trackLeg1IpSig*trackLeg1IpSig + trackLeg2IpSig*trackLeg2IpSig));
+    }
 
     hVisPt_->Fill(diTauCandidate->p4Vis().pt());
     hVisPhi_->Fill(diTauCandidate->p4Vis().phi());
