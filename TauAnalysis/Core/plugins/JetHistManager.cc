@@ -37,6 +37,9 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
   centralJetsToBeVetoedEtMin_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("etMin");
   centralJetsToBeVetoedEtaMax_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("etaMax");
   centralJetsToBeVetoedAlphaMin_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("alphaMin");
+
+  btaggingAlgo_ = cfg.getParameter<std::string>("btaggingAlgo");
+  discr_ = cfg.getParameter<double>("discriminator");
 }
 
 JetHistManager::~JetHistManager()
@@ -81,6 +84,11 @@ void JetHistManager::bookHistograms(const edm::EventSetup& setup)
 	}
       }
     }
+
+    hBtagDisc_ = dqmStore.book1D("BtagDisc", "BtagDisc", 120, -10., 50.);
+    hNumBtags_ = dqmStore.book1D("NumBtags", "NumBtags", 15, -0.5, 14.5);
+    hPtBtags_ = dqmStore.book1D("PtBtags", "PtBtags", 75, 0., 150.);
+
   }
 }
 
@@ -105,6 +113,7 @@ void JetHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
   hNumJets_->Fill(patJets->size());
 
+  unsigned int nbtags = 0;
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets->begin(); 
 	patJet != patJets->end(); ++patJet ) {
   
@@ -128,7 +137,14 @@ void JetHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
     }
     hJetNumTracks_->Fill(numTracks);
     if ( numTracks > 0 ) hJetLeadTrkPt_->Fill(maxPt);
+
+    hBtagDisc_->Fill(patJet->bDiscriminator(btaggingAlgo_));
+    if (patJet->bDiscriminator(btaggingAlgo_)>discr_) {
+      nbtags++;
+      hPtBtags_->Fill(patJet->pt());
+    }
   }
+  hNumBtags_->Fill(nbtags);
 
   int index = 0;
   for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();

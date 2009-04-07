@@ -43,6 +43,8 @@ class JetHistManager : public HistManagerBase
   vdouble centralJetsToBeVetoedEtaMax_;
   vdouble centralJetsToBeVetoedAlphaMin_;
 
+  std::string btaggingAlgo_;
+  double discr_;
 //--- histograms
   MonitorElement* hNumJets_;
 
@@ -55,6 +57,10 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hJetNumTracks_;
   MonitorElement* hJetTrkPt_;
   MonitorElement* hJetLeadTrkPt_;
+
+  MonitorElement* hNumBtags_;
+  MonitorElement* hPtBtags_;
+  MonitorElement* hBtagDisc_;
 
   std::vector<MonitorElement*> hNumCentralJetsToBeVetoed_;
 };
