@@ -485,10 +485,36 @@ private:
   int genTauDauLeptonic[50];
   int genTauDauNeutral[50];
   int genTauDauNeutrinos[50];
+  int genTauDauLeptonId[50];
   float genTauDauEnergyLeptonic[50];
   float genTauDauEnergyCharged[50];
   float genTauDauEnergyNeutral[50];
   float genTauDauEnergyNeutrinos[50];
+  float genTauDauPxLeptonic[50];
+  float genTauDauPxCharged[50];
+  float genTauDauPxNeutral[50];
+  float genTauDauPxNeutrinos[50];
+  float genTauDauPyLeptonic[50];
+  float genTauDauPyCharged[50];
+  float genTauDauPyNeutral[50];
+  float genTauDauPyNeutrinos[50];
+  float genTauDauPzLeptonic[50];
+  float genTauDauPzCharged[50];
+  float genTauDauPzNeutral[50];
+  float genTauDauPzNeutrinos[50];
+  int genTauDauCh1Id[50];
+  float genTauDauCh1Px[50];
+  float genTauDauCh1Py[50];
+  float genTauDauCh1Pz[50];
+  int genTauDauCh2Id[50];
+  float genTauDauCh2Px[50];
+  float genTauDauCh2Py[50];
+  float genTauDauCh2Pz[50];
+  int genTauDauCh3Id[50];
+  float genTauDauCh3Px[50];
+  float genTauDauCh3Py[50];
+  float genTauDauCh3Pz[50];
+
   //end benedetta
 
   double mTempTreeEventWeight;
