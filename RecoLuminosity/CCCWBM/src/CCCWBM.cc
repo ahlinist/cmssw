@@ -41,8 +41,7 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     }    
   }while(errorCode != 1);
   
-
-  if(currentRunNumber > -1 && currentRunNumber != lumiSection.hdr.runNumber){
+  if((currentRunNumber > -1) && (currentRunNumber != static_cast<int>(lumiSection.hdr.runNumber))){
     this->resetHistos();
   }else{
     currentRunNumber= lumiSection.hdr.runNumber;
@@ -84,7 +83,7 @@ void CCCWBM::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   gROOT->SetBatch(kTRUE);
   gStyle->cd();
   //std::cout<<"time offset= "<<3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec<<std::endl;
-  Int_t wrongBy = 2;
+  //Int_t wrongBy = 2;
   //if(timeinfo->tm_hour >= 12){ wrongBy= 2;}
   gStyle->SetTimeOffset(offset_time);
   //gStyle->SetTimeOffset(3600*timeinfo->tm_hour + 60*timeinfo->tm_min + timeinfo->tm_sec - 3*3600); //I don't know why the -3*3600 should be there... 
