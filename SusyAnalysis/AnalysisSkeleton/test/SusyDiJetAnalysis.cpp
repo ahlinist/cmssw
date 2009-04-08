@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.29 2009/03/24 17:19:04 mstoye Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.30 2009/04/07 09:04:45 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -218,77 +218,281 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	lcount++;
 	
       }
-
+     
     }
  
+    int ndau_charged=0;
+    int ndau_neutral=0;
+    int ndau_neutrinos=0;
+    int ndau_leptonic=0;
+    float energy_charged=0.;
+    float energy_neutral=0.;
+    float energy_neutrinos=0.;
+    float energy_leptonic=0.;
+    float px_charged=0.;
+    float px_neutral=0.;
+    float px_neutrinos=0.;
+    float px_leptonic=0.;
+    float py_charged=0.;
+    float py_neutral=0.;
+    float py_neutrinos=0.;
+    float py_leptonic=0.;
+    float pz_charged=0.;
+    float pz_neutral=0.;
+    float pz_neutrinos=0.;
+    float pz_leptonic=0.;
+    int id_lepton_fromtau=0;
+    float px[5], py[5], pz[5];
+    int id[5];
+	
 
     //store taus
     if ( abs(p.pdgId()) == 15) {
-
-      genTauIds[tcount] = p.pdgId(); genTauStatus[tcount]=p.status();
-      genTauE[tcount]=p.energy(); genTauPx[tcount]=p.px(); genTauPy[tcount]=p.py(); genTauPz[tcount]=p.pz();
-
-      
-      if (p.numberOfMothers() > 0 ) { 
-	const reco::Candidate * mom = p.mother();
-	if (mom->pdgId() == p.pdgId()) { mom = mom->mother(); }
-
-	for( size_t j = 0; j < i; ++ j ) {
-	  const Candidate * ref = &((*genParticles)[j]);
-	  if (ref == mom) { genTauRefs[tcount]=ref->pdgId(); }
-	}  
-      } else { genTauRefs[tcount]=-1;}
-      
-      int ndau_charged=0;
-      int ndau_neutral=0;
-      int ndau_neutrinos=0;
-      int ndau_leptonic=0;
-      float energy_charged=0.;
-      float energy_neutral=0.;
-      float energy_neutrinos=0.;
-      float energy_leptonic=0.;
-
-      
-      if(p.numberOfDaughters()>0){
-	for(size_t dau=0; dau<p.numberOfDaughters(); dau++){
-	  if(p.daughter(dau)->charge()!=0){
-	    if(abs(p.daughter(dau)->pdgId())==11 || abs(p.daughter(dau)->pdgId())==13 || abs(p.daughter(dau)->pdgId())==15){
-	      ndau_leptonic++;
-	      energy_leptonic=energy_leptonic+p.daughter(dau)->energy();
-	    }
-	    else {
-	      ndau_charged++;
-	      energy_charged=energy_charged+p.daughter(dau)->energy();
-	    }
-	  }
-	  if(p.daughter(dau)->charge()==0){
-	    if(abs(p.daughter(dau)->pdgId())==12 || abs(p.daughter(dau)->pdgId())==14 ||abs(p.daughter(dau)->pdgId())==16 ){
-	      ndau_neutrinos++;
-	      energy_neutrinos=energy_neutrinos+p.daughter(dau)->energy();
-	    }
-	    else {	  
-	      ndau_neutral++;
-	      energy_neutral=energy_neutral+p.daughter(dau)->energy();
-	    }
-	    
-	  }
-	}
+      if(p.status()==2){
+	genTauIds[tcount] = p.pdgId(); genTauStatus[tcount]=p.status();
+	genTauE[tcount]=p.energy(); genTauPx[tcount]=p.px(); genTauPy[tcount]=p.py(); genTauPz[tcount]=p.pz();
 	
-      }
-      genTauDauLeptonic[tcount]=ndau_leptonic;
-      genTauDauCharged[tcount]=ndau_charged;
-      genTauDauNeutral[tcount]=ndau_neutral;
-      genTauDauNeutrinos[tcount]=ndau_neutrinos;
+	if (p.numberOfMothers() > 0 ) { 
+	  const reco::Candidate * mom = p.mother();
+	  if (mom->pdgId() == p.pdgId()) { mom = mom->mother(); }
+	  
+	  for( size_t j = 0; j < i; ++ j ) {
+	    const Candidate * ref = &((*genParticles)[j]);
+	    if (ref == mom) { genTauRefs[tcount]=ref->pdgId(); }
+	  }  
+
+	} else { genTauRefs[tcount]=-1;}
       
-      genTauDauEnergyLeptonic[tcount]=energy_leptonic;
-      genTauDauEnergyCharged[tcount]=energy_charged;
-      genTauDauEnergyNeutral[tcount]=energy_neutral;
-      genTauDauEnergyNeutrinos[tcount]=energy_neutrinos;
+
+	if(p.numberOfDaughters()>0){
+	  for(size_t dau=0; dau<p.numberOfDaughters(); dau++){
+	    //charged daughters
+	    if(p.daughter(dau)->charge()!=0){
+	      //lepton daughters
+	      if(abs(p.daughter(dau)->pdgId())==11 || abs(p.daughter(dau)->pdgId())==13 || abs(p.daughter(dau)->pdgId())==15){
+		ndau_leptonic++;
+                id_lepton_fromtau=p.daughter(dau)->pdgId();
+		energy_leptonic=energy_leptonic+p.daughter(dau)->energy();
+		px_leptonic=px_leptonic+p.daughter(dau)->px();
+		py_leptonic=py_leptonic+p.daughter(dau)->py();
+		pz_leptonic=pz_leptonic+p.daughter(dau)->pz();
+
+	      }
+	      //hadron daughters
+	      else {
+		//figlie cariche stabili ok!
+		if(abs(p.daughter(dau)->pdgId())!=213){
+		  px[ndau_charged]=p.daughter(dau)->px();
+		  py[ndau_charged]=p.daughter(dau)->py();
+		  pz[ndau_charged]=p.daughter(dau)->pz();
+		  id[ndau_charged]=p.daughter(dau)->pdgId();
+		  
+		  ndau_charged++;
+		  energy_charged=energy_charged+p.daughter(dau)->energy();
+		  px_charged=px_charged+p.daughter(dau)->px();
+		  py_charged=py_charged+p.daughter(dau)->py();
+		  pz_charged=pz_charged+p.daughter(dau)->pz();
+
+		}
+		//figlie cariche non stabili
+		else {
+		  //loop sulle nipoti
+		  for(size_t nep=0; nep<p.daughter(dau)->numberOfDaughters(); nep++){
+		    //nipoti neutre 		    
+		    if(p.daughter(dau)->daughter(nep)->charge()==0){
+		      //nipoti neutre stabili ok!
+		      if(p.daughter(dau)->daughter(nep)->pdgId()!=113 && p.daughter(dau)->daughter(nep)->pdgId()!=223 && p.daughter(dau)->daughter(nep)->pdgId()!=221 ){
+
+			cout <<p.daughter(dau)->daughter(nep)->pdgId()<<endl;
+			ndau_neutral++;
+			energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->energy();
+			px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->px();
+			py_neutral=py_neutral+p.daughter(dau)->daughter(nep)->py();
+			pz_neutral=pz_neutral+p.daughter(dau)->daughter(nep)->pz();
+		      		      }
+		      //nipoti neutre non stabili
+		      else {
+			//loop sulle bisnipoti
+			for(size_t bisnep=0; bisnep<p.daughter(dau)->daughter(nep)->numberOfDaughters(); bisnep++){
+			  //bisnipoti neutre ok!
+			  if(p.daughter(dau)->daughter(nep)->daughter(bisnep)->charge()==0){
+			    cout <<p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
+			    ndau_neutral++;
+			    energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
+			    px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py_neutral=py_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz_neutral=pz_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			  }
+			  //bisnipoti cariche ok!
+			  else {
+			    px[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			    id[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId();
+			    
+			    ndau_charged++;
+			    energy_charged=energy_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
+			    px_charged=px_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py_charged=py_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz_charged=pz_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			  }
+			  
+			}
+		      }
+		    }
+		    //nipoti cariche ok!
+		    else {
+		      px[ndau_charged]=p.daughter(dau)->daughter(nep)->px();
+		      py[ndau_charged]=p.daughter(dau)->daughter(nep)->py();
+		      pz[ndau_charged]=p.daughter(dau)->daughter(nep)->pz();
+		      id[ndau_charged]=p.daughter(dau)->daughter(nep)->pdgId();
+		      
+		      ndau_charged++;
+		      energy_charged=energy_charged+p.daughter(dau)->daughter(nep)->energy();
+		      px_charged=px_charged+p.daughter(dau)->daughter(nep)->px();
+		      py_charged=py_charged+p.daughter(dau)->daughter(nep)->py();
+		      pz_charged=pz_charged+p.daughter(dau)->daughter(nep)->pz();
+		    }
+		    
+		  }
+		}
+	      }
+	    }
+	    //figlie neutre
+	    if(p.daughter(dau)->charge()==0){
+	      // figlie neutrini
+	      if(abs(p.daughter(dau)->pdgId())==12 || abs(p.daughter(dau)->pdgId())==14 ||abs(p.daughter(dau)->pdgId())==16 ){
+		ndau_neutrinos++;
+		energy_neutrinos=energy_neutrinos+p.daughter(dau)->energy();
+		px_neutrinos=px_neutrinos+p.daughter(dau)->px();
+		py_neutrinos=py_neutrinos+p.daughter(dau)->py();
+		pz_neutrinos=pz_neutrinos+p.daughter(dau)->pz();
+	      }
+	      // figlie non neutrini
+	      else {	  
+		// figlie neutre stabili ok!
+		if(p.daughter(dau)->pdgId()!=113 && p.daughter(dau)->pdgId()!=223 && p.daughter(dau)->pdgId()!=221){
+		  cout << p.daughter(dau)->pdgId()<<endl;
+		  ndau_neutral++;
+		  energy_neutral=energy_neutral+p.daughter(dau)->energy();
+		  px_neutral=px_neutral+p.daughter(dau)->px();
+		  py_neutral=py_neutral+p.daughter(dau)->py();
+		  pz_neutral=pz_neutral+p.daughter(dau)->pz();
+		}
+		// figlie neutre non stabili
+		else{
+		  //loop sulle nipoti
+		  for(size_t nep=0; nep<p.daughter(dau)->numberOfDaughters(); nep++){
+		    // nipoti neutre ok!
+		    if(p.daughter(dau)->daughter(nep)->charge()==0){
+		      cout << p.daughter(dau)->daughter(nep)->pdgId() <<endl;
+		      ndau_neutral++;
+		      energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->energy();
+		      px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->px();
+		      py_neutral=py_neutral+p.daughter(dau)->daughter(nep)->py();
+		      pz_neutral=pz_neutral+p.daughter(dau)->daughter(nep)->pz();
+		    }
+		    //nipoti cariche
+		    else {
+		      // nipoti cariche stabili ok!
+		      if(abs(p.daughter(dau)->daughter(nep)->pdgId())!=213){
+			  px[ndau_charged]=p.daughter(dau)->daughter(nep)->px();
+			  py[ndau_charged]=p.daughter(dau)->daughter(nep)->py();
+			  pz[ndau_charged]=p.daughter(dau)->daughter(nep)->pz();
+			  id[ndau_charged]=p.daughter(dau)->daughter(nep)->pdgId();
+			  
+			  ndau_charged++;
+			  energy_charged=energy_charged+p.daughter(dau)->daughter(nep)->energy();
+			  px_charged=px_charged+p.daughter(dau)->daughter(nep)->px();
+			  py_charged=py_charged+p.daughter(dau)->daughter(nep)->py();
+			  pz_charged=pz_charged+p.daughter(dau)->daughter(nep)->pz();
+		      }
+		      //nipoti cariche non stabili
+		      else{
+			//loop sulle bisnipoti
+			for(size_t bisnep=0; bisnep<p.daughter(dau)->daughter(nep)->numberOfDaughters(); bisnep++){
+			  //bisnipoti neutre ok!
+			  if(p.daughter(dau)->daughter(nep)->daughter(bisnep)->charge()==0){
+			    cout << p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
+			    ndau_neutral++;
+			    energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
+			    px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py_neutral=py_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz_neutral=pz_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			  }
+			  //bisnipoti cariche ok!
+			  else {
+			    px[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			    id[ndau_charged]=p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId();
+			    
+			    ndau_charged++;
+			    energy_charged=energy_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
+			    px_charged=px_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
+			    py_charged=py_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->py();
+			    pz_charged=pz_charged+p.daughter(dau)->daughter(nep)->daughter(bisnep)->pz();
+			  }
+			}
+		      }
+		      
+		    }
+		  }
+		}
+	      }
+	      
+	    }
+	  }
+	  
+	}
       
-      tcount++;
-    }
     
+        //	if(ndau_charged>0) {cout << id[0] <<"   "<<id[1]<<"    "<<id[2]<<endl;}
+	
+	genTauDauCh1Id[tcount]=id[0];
+	genTauDauCh1Px[tcount]=px[0];
+	genTauDauCh1Py[tcount]=py[0];
+	genTauDauCh1Pz[tcount]=pz[0];
+	
+	genTauDauCh2Id[tcount]=id[1];
+	genTauDauCh2Px[tcount]=px[1];
+	genTauDauCh2Py[tcount]=py[1];
+	genTauDauCh2Pz[tcount]=pz[1];
+	
+	genTauDauCh3Id[tcount]=id[2];
+	genTauDauCh3Px[tcount]=px[2];
+	genTauDauCh3Py[tcount]=py[2];
+	genTauDauCh3Pz[tcount]=pz[2];
+	
+        genTauDauLeptonId[tcount]=id_lepton_fromtau;
+	genTauDauLeptonic[tcount]=ndau_leptonic;
+	genTauDauCharged[tcount]=ndau_charged;
+	genTauDauNeutral[tcount]=ndau_neutral;
+	genTauDauNeutrinos[tcount]=ndau_neutrinos;
+	
+	genTauDauEnergyLeptonic[tcount]=energy_leptonic;
+	genTauDauEnergyCharged[tcount]=energy_charged;
+	genTauDauEnergyNeutral[tcount]=energy_neutral;
+	genTauDauEnergyNeutrinos[tcount]=energy_neutrinos;
+	
+	genTauDauPxLeptonic[tcount]=px_leptonic;
+	genTauDauPxCharged[tcount]=px_charged;
+	genTauDauPxNeutral[tcount]=px_neutral;
+	genTauDauPxNeutrinos[tcount]=px_neutrinos;
+	genTauDauPyLeptonic[tcount]=py_leptonic;
+	genTauDauPyCharged[tcount]=py_charged;
+	genTauDauPyNeutral[tcount]=py_neutral;
+	genTauDauPyNeutrinos[tcount]=py_neutrinos;
+	genTauDauPzLeptonic[tcount]=pz_leptonic;
+	genTauDauPzCharged[tcount]=pz_charged;
+	genTauDauPzNeutral[tcount]=pz_neutral;
+	genTauDauPzNeutrinos[tcount]=pz_neutrinos;
+
+	tcount++;
+      }
+    }
   }
+  
   length=count; genLepLength=lcount; genTauLength=tcount;
 
 
@@ -1809,6 +2013,7 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("genTauPy",genTauPy ,"genTauPy[genTauN]/float");
   mAllData->Branch("genTauPz",genTauPz ,"genTauPz[genTauN]/float");
   mAllData->Branch("genTauMother",genTauRefs ,"genTauMother[genTauN]/int");
+  mAllData->Branch("genTauDauLeptonId",genTauDauLeptonId ,"genTauDauLeptonId[genTauN]/int");
   mAllData->Branch("genTauDauLeptonic",genTauDauLeptonic ,"genTauDauLeptonic[genTauN]/int");
   mAllData->Branch("genTauDauCharged",genTauDauCharged ,"genTauDauCharged[genTauN]/int");
   mAllData->Branch("genTauDauNeutral",genTauDauNeutral ,"genTauDauNeutral[genTauN]/int");
@@ -1817,6 +2022,37 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("genTauDauEnergyCharged",genTauDauEnergyCharged ,"genTauDauEnergyCharged[genTauN]/float");
   mAllData->Branch("genTauDauEnergyNeutral",genTauDauEnergyNeutral ,"genTauDauEnergyNeutral[genTauN]/float");
   mAllData->Branch("genTauDauEnergyNeutrinos",genTauDauEnergyNeutrinos ,"genTauDauEnergyNeutrinos[genTauN]/float");
+ 
+ mAllData->Branch("genTauDauPxLeptonic",genTauDauPxLeptonic ,"genTauDauPxLeptonic[genTauN]/float");
+ mAllData->Branch("genTauDauPxCharged",genTauDauPxCharged ,"genTauDauPxCharged[genTauN]/float");
+ mAllData->Branch("genTauDauPxNeutral",genTauDauPxNeutral ,"genTauDauPxNeutral[genTauN]/float");
+ mAllData->Branch("genTauDauPxNeutrinos",genTauDauPxNeutrinos ,"genTauDauPxNeutrinos[genTauN]/float");
+ mAllData->Branch("genTauDauPyLeptonic",genTauDauPyLeptonic ,"genTauDauPyLeptonic[genTauN]/float");
+ mAllData->Branch("genTauDauPyCharged",genTauDauPyCharged ,"genTauDauPyCharged[genTauN]/float");
+ mAllData->Branch("genTauDauPyNeutral",genTauDauPyNeutral ,"genTauDauPyNeutral[genTauN]/float");
+ mAllData->Branch("genTauDauPyNeutrinos",genTauDauPyNeutrinos ,"genTauDauPyNeutrinos[genTauN]/float");
+
+
+ mAllData->Branch("genTauDauPzLeptonic",genTauDauPzLeptonic ,"genTauDauPzLeptonic[genTauN]/float");
+ mAllData->Branch("genTauDauPzCharged",genTauDauPzCharged ,"genTauDauPzCharged[genTauN]/float");
+ mAllData->Branch("genTauDauPzNeutral",genTauDauPzNeutral ,"genTauDauPzNeutral[genTauN]/float");
+ mAllData->Branch("genTauDauPzNeutrinos",genTauDauPzNeutrinos ,"genTauDauPzNeutrinos[genTauN]/float");
+
+
+
+  mAllData->Branch("genTauDauCh1Id",genTauDauCh1Id ,"genTauDauCh1Id[genTauN]/int");
+  mAllData->Branch("genTauDauCh1Px",genTauDauCh1Px ,"genTauDauCh1Px[genTauN]/float");
+  mAllData->Branch("genTauDauCh1Py",genTauDauCh1Py ,"genTauDauCh1Py[genTauN]/float");
+  mAllData->Branch("genTauDauCh1Pz",genTauDauCh1Pz ,"genTauDauCh1Pz[genTauN]/float");
+  mAllData->Branch("genTauDauCh2Id",genTauDauCh2Id ,"genTauDauCh2Id[genTauN]/int");
+  mAllData->Branch("genTauDauCh2Px",genTauDauCh2Px ,"genTauDauCh2Px[genTauN]/float");
+  mAllData->Branch("genTauDauCh2Py",genTauDauCh2Py ,"genTauDauCh2Py[genTauN]/float");
+  mAllData->Branch("genTauDauCh2Pz",genTauDauCh2Pz ,"genTauDauCh2Pz[genTauN]/float");
+  mAllData->Branch("genTauDauCh3Id",genTauDauCh3Id ,"genTauDauCh3Id[genTauN]/int");
+  mAllData->Branch("genTauDauCh3Px",genTauDauCh3Px ,"genTauDauCh3Px[genTauN]/float");
+  mAllData->Branch("genTauDauCh3Py",genTauDauCh3Py ,"genTauDauCh3Py[genTauN]/float");
+  mAllData->Branch("genTauDauCh3Pz",genTauDauCh3Pz ,"genTauDauCh3Pz[genTauN]/float");
+
   //end benedetta
 
   mAllData->Branch("AlpPtScale" ,&mTempAlpPtScale,"mTempAlpPtScale/double");
