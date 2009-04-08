@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.8 $
-  \date $Date: 2009/03/28 17:22:56 $
+  \version $Revision: 1.9 $
+  \date $Date: 2009/04/08 16:21:15 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -14,6 +14,7 @@
 
 #include "DQM/RenderPlugins/src/HcalRenderPlugin.h" 
 #include "DQM/RenderPlugins/src/utils.h"
+#include <math.h>
 
 //---define parameters for HTR/Channel Plots
 #define MARGIN  1
@@ -24,6 +25,7 @@
 #define YS 4
 ////#define _XBINS (24*ERIC_HDP_XS+ERIC_HDP_X0)
 ////#define _YBINS (15*ERIC_HDP_YS+ERIC_HDP_Y0)
+
 
 void
 HcalRenderPlugin::initialise (int argc, char ** argv)
@@ -66,7 +68,67 @@ HcalRenderPlugin::initialise (int argc, char ** argv)
       if( ! color ) color = new TColor( 901+i, 0, 0, 0, "" );
       color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
     }
-  setErrorColor();
+
+
+  // Make rainbow colors.  Assign colors positions 1001-1101;
+  // Commented out for the moment.  This will be uncommented (along with calls to setErrorColor, setRainbowColor) after it has been tested
+
+  /*
+  NRGBs_rainbow = 5; // specify number of RGB boundaries for rainbow
+  NCont_rainbow = 100; // specify number of contours for rainbow
+  Double_t stops_rainbow[] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+  Double_t red_rainbow[]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+  Double_t green_rainbow[] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+  Double_t blue_rainbow[]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+  Int_t nColorsGradient=0;
+
+  int highestIndex=0;
+  for (int g=1;g<NRGBs_rainbow;++g)
+    {
+      nColorsGradient = (Int_t) (floor(NCont_rainbow*stops_rainbow[g]) - floor(NCont_rainbow*stops_rainbow[g-1])); // specify number of gradients between stops (g-1) and (g)
+      for (int c = 0; c < nColorsGradient; c++) 
+	{
+	  hcalRainbowColors[highestIndex]=1001+highestIndex;
+	  TColor* color = gROOT->GetColor(1001+highestIndex); 
+	  // Make new color only if old color does not exist
+	  if (!color)  
+	    color = new TColor(1001+highestIndex,
+			       red_rainbow[g-1] + c * (red_rainbow[g] - red_rainbow[g-1])/ nColorsGradient,
+			       green_rainbow[g-1] + c * (green_rainbow[g] - green_rainbow[g-1])/ nColorsGradient,
+			       blue_rainbow[g-1] + c * (blue_rainbow[g] - blue_rainbow[g-1])/ nColorsGradient,
+			       "  ");
+	  highestIndex++;
+	}
+    }
+
+  // repeat for hcal error colors.  Assign color positions 1201-1301;
+  
+  NRGBs_hcalError = 5; // specify number of RGB boundaries for rainbow
+  NCont_hcalError = 100; // specify number of contours for rainbow
+  Double_t stops_hcalError[] = { 0.00, 0.05, 0.40, 0.75, 0.95, 1.00};
+  Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 0.60};
+  Double_t green_hcalError[] = { 1.00, 1.00, 0.67, 0.33, 0.00, 0.00};
+  Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00};
+  nColorsGradient=0;
+  highestIndex=0;
+  for (int g=1;g<NRGBs_hcalError;++g)
+    {
+      nColorsGradient = (Int_t) (floor(NCont_hcalError*stops_hcalError[g]) - floor(NCont_hcalError*stops_hcalError[g-1])); // specify number of gradients between stops (g-1) and (g)
+      for (int c = 0; c < nColorsGradient; c++) 
+	{
+	  hcalErrorColors[highestIndex]=1201+highestIndex;
+	  TColor* color = gROOT->GetColor(1201+highestIndex); 
+	  // Make new color only if old color does not exist
+	  if (!color)  
+	    color = new TColor(1001+highestIndex,
+			       red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
+			       green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
+			       blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
+			       "  ");
+	  highestIndex++;
+	}
+    }
+  */
   return;
 }
 
@@ -323,7 +385,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	  obj->SetMaximum(obj->GetBinContent(0,0));
 	  obj->SetMinimum(0.);
 	}
-      setErrorColor();
+      //setErrorColor();
       obj->SetOption("colz");
     }
 
@@ -350,6 +412,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	       )
 	obj->SetMaximum(2.);
       
+      gStyle->SetPalette(1);
       //setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
       obj->SetOption("colz");
     }
@@ -603,7 +666,12 @@ void HcalRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
 
 void HcalRenderPlugin::setRainbowColor(void)
 {
+  gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
+
   // This sets a rainbow scale, with finer gradations than the default
+  // This crashes the code, by constantly adding values into color table!
+  // Use the above method instead!
+  /*
   const Int_t NRGBs = 5;
   const Int_t NCont = 100;
   
@@ -615,6 +683,7 @@ void HcalRenderPlugin::setRainbowColor(void)
   Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
   gStyle->SetNumberContours(NCont);
+  */
   return;
 } // setRainbow()
 
@@ -622,7 +691,12 @@ void HcalRenderPlugin::setRainbowColor(void)
 
 void HcalRenderPlugin::setErrorColor(void)
 {
+  gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
+
   // This sets an error color scale:  green = 0-5%, then yellow-orange-red
+  // This crashes the code, by constantly adding values into color table!
+  // Use the above method instead!
+  /*
   const Int_t NRGBs = 6;
   const Int_t NCont = 50;
   
@@ -634,8 +708,18 @@ void HcalRenderPlugin::setErrorColor(void)
   Double_t blue[NRGBs]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00};
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
   gStyle->SetNumberContours(NCont);
+  */
   return;
-} // setRainbow()
+} // setErrorColor()
+
+/*
+  // Perhaps add this functionality later?
+void HcalRenderPlugin::setColorScheme()
+{
+
+} //void HcalRenderPlugin::setColorScheme()
+*/
+
 
 void HcalRenderPlugin::drawEtaPhiLines(TH2* obj)
 {
