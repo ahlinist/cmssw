@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.7 $
-  \date $Date: 2009/03/27 19:57:38 $
+  \version $Revision: 1.8 $
+  \date $Date: 2009/03/28 17:22:56 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -66,7 +66,7 @@ HcalRenderPlugin::initialise (int argc, char ** argv)
       if( ! color ) color = new TColor( 901+i, 0, 0, 0, "" );
       color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
     }
-
+  setErrorColor();
   return;
 }
 
@@ -97,8 +97,6 @@ HcalRenderPlugin::preDraw (TCanvas * c,
 			   VisDQMRenderInfo &r)
 {
 
-  if (!applies(o,i))
-    return;
 #ifdef DEBUG 
   std::cout << "HcalRenderPlugin:preDraw " << o.name << std::endl; 
 #endif 
@@ -150,9 +148,6 @@ HcalRenderPlugin::postDraw (TCanvas * c,
 			       const DQMNet::CoreObject & o,
 			       const VisDQMImgInfo & i)
 {
-  
-  if (!applies(o,i))
-    return;
 
 #ifdef DEBUG 
   std::cout << "HcalRenderPlugin:postDraw " << o.name << std::endl; 
@@ -302,8 +297,6 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	  obj->SetMaximum(1.);
 	}
 
-      //gStyle->SetPalette(20, errorFracColors);
-      setErrorColor();
       obj->SetOption("colz");
     }
   
@@ -357,7 +350,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	       )
 	obj->SetMaximum(2.);
       
-      setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
+      //setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
       obj->SetOption("colz");
     }
 
