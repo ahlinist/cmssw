@@ -198,6 +198,8 @@ void gjet_response::Loop(const string idtype)
 
    Long64_t nentries = fChain->GetEntriesFast();
 
+   cout << "Looping over "<<nentries<<" entries" << flush;
+
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -205,6 +207,9 @@ void gjet_response::Loop(const string idtype)
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
       
+      if (jentry%100000==1) cout << "." << flush;
+      if (jentry%5000000==1 || jentry==nentries-1) cout << endl << flush;
+
       ptphot_nocut->Fill(ptphot,weight);
       response_nocut->Fill(ptjet/ptphot,weight);
       responsevspt_nocut->Fill(ptphot,ptjet/ptphot,weight);
@@ -946,7 +951,7 @@ void gjet_response::Fit(bool arithmetic)
   }
 
   // Create graphs with correct bin x-axis means (<p_T^phot>)
-  TGraphErrors *gr_sig = new TGraphErrors();
+  TGraphErrors *gr_sig = new TGraphErrors(0);
   for (int i = 1; i != gmean_sig->GetNbinsX()+1; ++i) {
 
     double x = ptmean_sig->GetBinContent(i);
@@ -965,7 +970,7 @@ void gjet_response::Fit(bool arithmetic)
   gr_sig->SetMarkerColor(kRed);
   gr_sig->SetLineColor(kRed);
 
-  TGraphErrors *gr_bkg = new TGraphErrors();
+  TGraphErrors *gr_bkg = new TGraphErrors(0);
   for (int i = 1; i != gmean_bkg->GetNbinsX()+1; ++i) {
 
     double x = ptmean_bkg->GetBinContent(i);
@@ -984,7 +989,7 @@ void gjet_response::Fit(bool arithmetic)
   gr_bkg->SetMarkerColor(kBlue);
   gr_bkg->SetLineColor(kBlue);
 
-  TGraphErrors *gr_mix = new TGraphErrors();
+  TGraphErrors *gr_mix = new TGraphErrors(0);
   for (int i = 1; i != gmean_mix->GetNbinsX()+1; ++i) {
 
     double x = ptmean_mix->GetBinContent(i);
@@ -1071,7 +1076,11 @@ void gjet_response::Fit(bool arithmetic)
   fx->Draw("same");
 
   c0->SaveAs("xsecvspt_sig.eps");
-  
+
+  c0->SetLogx(1);
+  c0->SaveAs("xsecvspt_sig_log.eps");
+  c0->SetLogx(0);
+
 
   c0->SetLogy(0);
   c1->cd();
@@ -1288,6 +1297,8 @@ void gjet_response::Fit(bool arithmetic)
   purity->SetMaximum(1.);
   purity->SetTitle("");
   purity->SetXTitle("p_{T} [GeV/c]");
+  purity->GetXaxis()->SetMoreLogLabels();
+  purity->GetXaxis()->SetNoExponent();
   purity->SetYTitle("#gamma jet purity");
   purity->GetYaxis()->SetTitleOffset(1.5);
 
@@ -1317,13 +1328,33 @@ void gjet_response::Fit(bool arithmetic)
 	       pemat[1][1],pemat[1][2],pemat[2][2]) << endl;
 
   c3->SaveAs("purity.eps");
+
   c3->SetLogx();
   c3->SaveAs("purity_log.eps");
+
+  // Wider bins
+  int nwide = 3;
+  TH1D *purity_w = (TH1D*)purity->Clone(Form("%s_w",purity->GetName()));
+  TH1D *ptphot_sig_w = (TH1D*)ptphot_sig->Clone("w1");
+  TH1D *ptphot_mix_w = (TH1D*)ptphot_mix->Clone("w2");
+  ptphot_sig_w->Rebin(nwide);
+  ptphot_mix_w->Rebin(nwide);
+  purity_w->Rebin(nwide);
+  purity_w->Divide(ptphot_sig_w, ptphot_mix_w, 1., 1., "");//"B");
+  delete ptphot_sig_w;
+  delete ptphot_mix_w;
+
+  purity_w->SetMinimum(0.);
+  purity_w->SetMaximum(1.);
+  purity_w->Draw();
+  c3->SetLogx(0);
+  c3->Update();
+  c3->SaveAs("purity_wide.eps");
   c0->cd();
 
   // Purity statistical uncertainty from the top of the error bars
   c3s->cd();
-  TGraphErrors *puritystat = new TGraphErrors();
+  TGraphErrors *puritystat = new TGraphErrors(0);
   for (int i = 1; i != purity->GetNbinsX()+1; ++i) {
     puritystat->SetPoint(i-1, purity->GetBinCenter(i),
 			 purity->GetBinError(i));
@@ -1366,8 +1397,8 @@ void gjet_response::Fit(bool arithmetic)
   sovb->SetMaximum(1e2);//10000.);
   sovb->SetTitle("");
   sovb->SetXTitle("p_{T} [GeV/c]");
-  //sovb->GetYaxis()->SetMoreLogLabels();
-  //sovb->GetYaxis()->SetNoExponent();
+  sovb->GetXaxis()->SetMoreLogLabels();
+  sovb->GetXaxis()->SetNoExponent();
   sovb->SetYTitle("#gamma jet S/B");
   sovb->GetYaxis()->SetTitleOffset(1.5);
 
@@ -1384,6 +1415,28 @@ void gjet_response::Fit(bool arithmetic)
   }
 
   c3b->SaveAs("sovb.eps");
+
+  c3b->SetLogx();
+  c3b->SaveAs("sovb_log.eps");
+
+  // Wider bins
+  //int nwide = 3;
+  TH1D *sovb_w = (TH1D*)sovb->Clone(Form("%s_w", sovb->GetName()));
+  ptphot_sig_w = (TH1D*)ptphot_sig->Clone("w1");
+  TH1D *ptphot_bkg_w = (TH1D*)ptphot_bkg->Clone("w2");
+  ptphot_sig_w->Rebin(nwide);
+  ptphot_bkg_w->Rebin(nwide);
+  sovb_w->Rebin(nwide);
+  sovb_w->Divide(ptphot_sig_w, ptphot_bkg_w, 1., 1., "");//"B");
+  delete ptphot_sig_w;
+  delete ptphot_bkg_w;
+
+  sovb_w->SetMinimum(1e-1);
+  sovb_w->SetMaximum(1e2);
+  sovb_w->Draw();
+  c3b->SetLogx(0);
+  c3b->Update();
+  c3b->SaveAs("sovb_wide.eps");
   c0->cd();
 
   // EFFICIENCY
@@ -1396,6 +1449,8 @@ void gjet_response::Fit(bool arithmetic)
   efficiency->SetMaximum(0.5);//1.);
   efficiency->SetTitle("");
   efficiency->SetXTitle("p_{T} [GeV/c]");
+  efficiency->GetXaxis()->SetMoreLogLabels();
+  efficiency->GetXaxis()->SetNoExponent();
   efficiency->SetYTitle("#gamma jet efficiency");
   efficiency->GetYaxis()->SetTitleOffset(1.5);
 
@@ -1413,7 +1468,32 @@ void gjet_response::Fit(bool arithmetic)
   }
 
   c4->SaveAs("efficiency.eps");
+
+  c4->SetLogx();
+  c4->SaveAs("efficiency_log.eps");
+
+  // Wider bins
+  //int nwide = 3;
+  TH1D *efficiency_w =
+    (TH1D*)efficiency->Clone(Form("%s_w", efficiency->GetName()));
+  ptphot_sig_w = (TH1D*)ptphot_sig->Clone("w1");
+  TH1D *ptphot_nocut_sig_w = (TH1D*)ptphot_nocut_sig->Clone("w2");
+  ptphot_sig_w->Rebin(nwide);
+  ptphot_nocut_sig_w->Rebin(nwide);
+  efficiency_w->Rebin(nwide);
+  efficiency_w->Divide(ptphot_sig_w, ptphot_nocut_sig_w, 1., 1., "");//"B");
+  delete ptphot_sig_w;
+  delete ptphot_nocut_sig_w;
+
+  efficiency_w->SetMinimum(0.);
+  efficiency_w->SetMaximum(0.5);
+  efficiency_w->Draw();
+  c4->SetLogx(0);
+  c4->Update();
+  c4->SaveAs("efficiency_wide.eps");
   c0->cd();
+
+
 
   // EFFICIENCY (PHOTON ID ONLY)
   c4b->cd();
@@ -1466,6 +1546,8 @@ void gjet_response::Fit(bool arithmetic)
   rejection->SetMaximum(1e7);
   rejection->SetTitle("");
   rejection->SetXTitle("p_{T} [GeV/c]");
+  rejection->GetXaxis()->SetMoreLogLabels();
+  rejection->GetXaxis()->SetNoExponent();
   rejection->SetYTitle("QCD rejection");
   rejection->GetYaxis()->SetTitleOffset(1.5);
   //rejection->GetYaxis()->SetMoreLogLabels();
@@ -1476,6 +1558,29 @@ void gjet_response::Fit(bool arithmetic)
   }
 
   c5->SaveAs("rejection.eps");
+
+  c5->SetLogx();
+  c5->SaveAs("rejection_log.eps");
+
+  // Wider bins
+  //int nwide = 3;
+  TH1D *rejection_w =
+    (TH1D*)rejection->Clone(Form("%s_w", rejection->GetName()));
+  TH1D *ptphot_nocut_bkg_w = (TH1D*)ptphot_nocut_bkg->Clone("w1");
+  ptphot_bkg_w = (TH1D*)ptphot_bkg->Clone("w2");
+  ptphot_nocut_bkg_w->Rebin(nwide);
+  ptphot_bkg_w->Rebin(nwide);
+  rejection_w->Rebin(nwide);
+  rejection_w->Divide(ptphot_nocut_bkg_w, ptphot_bkg_w, 1., 1., "");//"B");
+  delete ptphot_nocut_bkg_w;
+  delete ptphot_bkg_w;
+
+  rejection_w->SetMinimum(1e2);
+  rejection_w->SetMaximum(1e7);
+  rejection_w->Draw();
+  c5->SetLogx(0);
+  c5->Update();
+  c5->SaveAs("rejection_wide.eps");
   c0->cd();
 
   // Save some debug histos

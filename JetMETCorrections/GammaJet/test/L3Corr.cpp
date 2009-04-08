@@ -53,12 +53,20 @@ void L3Corr::SetJetAlg(const JetAlg& jetalg) {
     _par[0] = 0.275; _par[1] = 0.4576; _par[2] = 0.9269;
     // These are from staterr.C toyMC study
     // TRandom3 seed 771156000
-    // Signal sample (toyMC 10 pb-1, 1.5-sigma peak):
+    /*
+    // CSA07 Signal sample (toyMC 10 pb-1, 1.5-sigma peak):
     _pstat[0] = 0.3473; _pstat[1] = 0.6239; _pstat[2] = 1.004; // [2]+/-0.079
     _chi2 = 0.7393; // 8.9/12
     _eig[0][0] = -0.1097; _eig[1][0] = -0.1064; _eig[2][0]  = -0.1106;
     _eig[0][1] = -0.001698; _eig[1][1] = 0.008222; _eig[2][1]  = -0.006228;
     _eig[0][2] = 0.001132; _eig[1][2] = -0.000357; _eig[2][2]  = -0.00078;
+    */
+    // Summer08 Signal sample (toyMC 10 pb-1, binned xsec, arithmetic mean):
+    _pstat[0] = 0.2675; _pstat[1] = 0.5318; _pstat[2] = 0.9552; // [2]+/-0.097
+    _chi2 = 0.4365; // 4.4/10
+    _eig[0][0] = -0.09631; _eig[1][0] = -0.1354; _eig[2][0]  = -0.09627;
+    _eig[0][1] = -0.004067; _eig[1][1] = 0.008479; _eig[2][1]  = -0.007861;
+    _eig[0][2] = 0.001375; _eig[1][2] = -0.0002672; _eig[2][2]  = -0.0009995;
     /*
     // These are from signal reco MC (medium+deltaeta)
     _par[0] = 0.275; _par[1] = 0.4576; _par[2] = 0.9269;
@@ -199,7 +207,7 @@ double L3Corr::_SystErr(const double pTprime) const {
     // [- estimate UE at ~0.5 GeV per 0.7 cone; take 100% as uncertainty
     //    (D0 estimated UE at ~0.2 GeV per 0.7 cone at reco level,
     //     which is around 2.5 times more at generator level)]
-    // - QCD group's CR2008/034 gives dN/dphideta~1.7, dpT/dphideta~2.2-3
+    // - QCD group's CR2008/032 gives dN/dphideta~1.7, dpT/dphideta~2.2-3
     //   for charged tracks (I guess charged+neutral is 1.5 times larger)
     //   in Fig. 3; however, Fig. 4 has significantly lower UE of
     //   dpT/dphideta~0.5-1.5, dN~0.5 for drell-Yan? See CMS Note 2006/067
@@ -241,11 +249,14 @@ double L3Corr::_SystErr(const double pTprime) const {
   //double rjet3 = 0.9459 - 0.2859*pow(pTprime, 0.4928-1.); //pT2<0.05*pT,5GeV
     // These are for pure signal with deltaeta cut
     double x = 0.01*pTprime; // BUG, forgot 0.01 before (fixed 12-19-2008)
-    double rjet05 = 0.9391 - 0.2758*pow(x,0.4703-1.); //pT2<0.05*pT,5GeV
-    double rjet10 = 0.9269 - 0.2750*pow(x,0.4576-1.); //pT2<0.10*pT,10GeV
+    //double rjet05 = 0.9391 - 0.2758*pow(x,0.4703-1.); //pT2<0.05*pT,5GeV
+    //double rjet10 = 0.9269 - 0.2750*pow(x,0.4576-1.); //pT2<0.10*pT,10GeV
+    double rjet05 = 0.9750 - 0.3069*pow(x,0.5749-1.); //pT2<0.05*pT,2.5GeV
+    double rjet10 = 0.9603 - 0.3048*pow(x,0.5589-1.); //pT2<0.10*pT,2.5GeV
     //double rjet20 = 0.9853 - 0.3465*pow(x,0.6151-1.); //pT2<0.20*pT,20GeV
     //double eg = 0.5 * (fabs(rjet05/rjet10 - 1.) + fabs(rjet20/rjet10 - 1.));
     double eg = fabs(rjet05/rjet10 - 1.);
+    // eg *= 0.5; // estimate for 1 fb-1
 
     err2 += eg * eg;
   }
@@ -259,7 +270,8 @@ double L3Corr::_SystErr(const double pTprime) const {
     // in this regard, but CMS should do better
 
     double drjet = 0.5 * (_flavorMap(pTprime) - 1.);
-    
+    // drjet *= 0.5; /// estimate for 1 fb-1
+
     err2 += drjet * drjet;
   }
 
@@ -335,6 +347,9 @@ double L3Corr::_purity(const double pTprime, const PhotonID& id) const {
   if (id == kMedium005) {
     P = 0.9921 + x*(-0.0128 + x*0.005335); // deltaeta, no rebin
     //P = 0.9876 + x*(-0.03873 + x*0.01767);
+  }
+  if (id == kMedium010) { // copy of kMedium
+    P = 0.9673 + x*(-0.01242 + x*0.01187); // deltaeta, no rebin
   }
   if (id == kMedium020) {
     P = 0.9581 + x*(-0.01365 + x*0.007251); // deltaeta, no rebin
@@ -443,6 +458,8 @@ double L3Corr::_StatPurity(const double pTprime, const PhotonID& id) const {
 //     stat = sqrt(0.0005035 + 2*-2.595e-05*x + 2*-0.0001639*x*x
 // 		+ 0.001006*x*x + 2*-0.0005597*x*x*x
 // 		+ 0.0004097*x*x*x*x); // deltaeta, no rebin
+  if (id == kMedium010) // copy of kMedium
+    stat = 0.08077; // top of err.bars
   if (id == kMedium020)
     stat = 0.08077; // top of medium err.bars
 //     stat = sqrt(0.0003208 + 2*2.855e-05*x + 2*-0.0001461*x*x
@@ -474,7 +491,8 @@ double L3Corr::_deltaC(const double pTprime, double& syserr,
     kphos = 1 - 1.877e-12 * pow(y, -0.4549);
     kphob = 0.9236 + x * (0.0313 + x * -0.004696);
   }
-  if (id == kMedium) {
+  if (id == kMedium
+      || id == kMedium005 || id == kMedium010 || id == kMedium020) {
     rphos = 1 - 0.003445 * pow(y, 0.1838);
     rphob = 1 - 0.226 * pow(y, -0.4005);
     kphos = 1 - 1.397e-12 * pow(y, -0.4546);
@@ -590,6 +608,11 @@ double L3Corr::_deltaRjet(const double pTprime, const PhotonID& id) const {
   return deltaRjet;
 }
 
+double L3Corr::_parton(const double pTprime) const {
+
+  return (_partonFrag(pTprime) * _partonUE(pTprime));
+}
+
 double L3Corr::_partonFrag(const double pTprime) const {
 
   // kjets = hadronization * underlying event
@@ -601,7 +624,8 @@ double L3Corr::_partonFrag(const double pTprime) const {
 double L3Corr::_partonUE(const double pTprime) const {
 
   // [(charged+neutral)/charged=1.5] * [dpT/dphideta=1.5] * pi * R2
-  double due = 0.50 * 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime;
+  //double due = 0.50 * 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime; //BUG 26-01-2009
+  double due = 1.5 * 1.5 * 3.14 * 0.5 *0.5 / pTprime; // estimated UE
 
   return (1. + due);
 }
@@ -609,10 +633,11 @@ double L3Corr::_partonUE(const double pTprime) const {
 double L3Corr::_flavorMap(const double pTprime) const {
 
   // These should be the same as inside DeltaC
-  double rjets = 1. - 1.881 * pow(pTprime, -0.3802);
-  double rjetb = 1. - 2.332 * pow(pTprime, -0.4005);  
+  //double rjets = 1. - 1.881 * pow(pTprime, -0.3802);
+  //double rjetb = 1. - 2.332 * pow(pTprime, -0.4005);  
 
-  return (rjetb / rjets);
+  //return (rjetb / rjets);
+  return (_RjetTruthQCD(pTprime) / _RjetTruth(pTprime));
 }
 
 double L3Corr::_powerlaw(const double& pTprime, const double* par) const {  
@@ -633,4 +658,106 @@ double L3Corr::_eigpowerlaw(const double& pTprime, const double* par,
   //return (eig[ieig][0]*df0 + eig[ieig][1]*df1 + eig[ieig][2]*df2) / f;
   return (eig[0][ieig]*df0 + eig[1][ieig]*df1 + eig[2][ieig]*df2) / f;
   
+}
+
+double L3Corr::_Rbias(const double pT, const PhotonID& id) const {
+  
+  return (_RbiasBkg(pT, id) * _RbiasTopo(pT, id) * _RbiasPeak(pT)); 
+}
+
+// This equals in principle _deltaRjet, but is not factorized
+double L3Corr::_RbiasBkg(const double pT, const PhotonID& id) const {
+
+  //return (1+_deltaRjet(pT, id));
+  return (_RjetMix(pT,id) / _RjetReco(pT,id));
+}
+
+// This could be factorized more, now its just a fit of the difference
+// between photon+jet MC truth and reconstructed MC
+// Unfortunately, separate fits don't extrapolate too well at pT<60 GeV...
+double L3Corr::_RbiasTopo(const double pT, const PhotonID& id) const {
+
+  return (_RjetReco(pT,id) / _RjetTruth(pT) );
+}
+
+double L3Corr::_RbiasPeak(const double pT) const {
+
+  if (pT);
+  return 1.; // comparing to mean for now
+}
+
+// Response in reco MC for mixed sample
+double L3Corr::_RjetMix(const double pT, const PhotonID& id) const {
+
+  double p[3] = {0, 0, 0};
+  //p[0] = 0.2795; p[1] = 0.4658; p[2] = 0.931; // 50 GeV-> fit, pT2>10 GeV
+  //p[0] = 0.3266; p[1] = 0.5940; p[2] = 0.9817; // 30 GeV-> fit, pT2>2.5 GeV
+  
+  // All fits from 33 GeV upwards, with pTlead>10 GeV
+  if (id==kLoose) {
+    p[0] = 0.2606; p[1] = 0.5256; p[2] = 0.9409; // pT2>8 GeV
+  }
+  if (id==kMedium) {
+    p[0] = 0.2986; p[1] = 0.5242; p[2] = 0.9510; // pT2>8 GeV
+  }
+  if (id==kTight) {
+    p[0] = 0.2811; p[1] = 0.4970; p[2] = 0.9318; // pT2>8 GeV
+  }
+  if (id==kMedium005) {
+    p[0] = 0.3048; p[1] = 0.5616; p[2] = 0.9722; // pT2>2.5 GeV
+  }
+  if (id==kMedium010) {
+    p[0] = 0.3125; p[1] = 0.5668; p[2] = 0.9676; // pT2>2.5 GeV
+  }
+  if (id==kMedium020) {
+    p[0] = 0.3602; p[1] = 0.6246; p[2] = 0.9989; // pT2>2.5 GeV
+  }
+
+  return (p[2] - p[0] * pow(0.01*pT, p[1]-1));
+}
+
+// Response in reco MC for pure photon+jet sample
+double L3Corr::_RjetReco(const double pT, const PhotonID& id) const {
+
+  double p[3] = {0, 0, 0};
+  //p[0] = 0.2751; p[1] = 0.4577; p[2] = 0.927; // 50 GeV-> fit, pT2>10 GeV
+  //p[0] = 0.3048; p[1] = 0.5589; p[2] = 0.9603; // 30 GeV-> fit, pT2>10 GeV
+
+  // All fits from 33 GeV upwards, with pTlead>10 GeV
+  if (id==kLoose) {
+    p[0] = 0.2902; p[1] = 0.5211; p[2] = 0.9466; // pT2>8 GeV
+  }
+  if (id==kMedium) {
+    p[0] = 0.2853; p[1] = 0.5021; p[2] = 0.9387; // pT2>8 GeV
+  }
+  if (id==kTight) {
+    p[0] = 0.2803; p[1] = 0.4927; p[2] = 0.9306; // pT2>8 GeV
+  }
+  if (id==kMedium005) {
+    p[0] = 0.2954; p[1] = 0.5480; p[2] = 0.9630; // pT2>2.5 GeV 
+  }
+  if (id==kMedium010) {
+    p[0] = 0.2958; p[1] = 0.5377; p[2] = 0.951; // pT2>2.5 GeV
+  }
+  if (id==kMedium020) {
+    p[0] = 0.3354; p[1] = 0.5989; p[2] = 0.9732; // pT2>2.5 GeV
+  }
+
+  return (p[2] - p[0] * pow(0.01*pT, p[1]-1));
+}
+
+// Response in MC truth for photon+jet (pThat binning, vs <pTgamma>)
+// Currently arithmetic mean, not peak value
+double L3Corr::_RjetTruth(const double pT) const {
+
+  // This should be the same as inside DeltaC
+  return (1. - 1.881 * pow(pT, -0.3802));
+}
+
+// Response in MC truth for QCD dijet (pThat binning, vs <pTgamma>)
+// Currently arithmetic mean, not peak value
+double L3Corr::_RjetTruthQCD(const double pT) const {
+
+  // This should be the same as inside DeltaC
+  return (1. - 2.332 * pow(pT, -0.4005));
 }

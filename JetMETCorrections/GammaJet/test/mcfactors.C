@@ -30,13 +30,22 @@ Double_t bkgbias::deltac(const Double_t *ptgamma, const Double_t *p) {
 
 using namespace std;
 
+int _debug = 0;
+
 const int kDarkGreen = kGreen+50;
 const int kDarkYellow = kYellow+50;
 
 const bool drawBars = false;
-const bool drawStats = true;//false;
+const bool drawStats = false;
 const bool drawPeak = true;
 const double _ptreco = 8.;
+
+// Add a small minimum systematic uncertainty to the response measurement
+// Otherwise the <<1.% stat.uncert. at high pT pulls the low pT fit too much
+const double minsys = 0.002;
+inline double oplus(double a, double b) {
+  return sqrt(a*a + b*b);
+}
 
 void doRatio(const TGraphErrors *a, const TGraphErrors *b, TGraphErrors *c,
 	     double xmatch=0.1);
@@ -80,6 +89,24 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     dirsp = "EkinNN";
     dirbp = "EkinNN";
   }
+  if (idtype=="medium05") {
+    dirs  = "Ekin05ID";
+    dirsp = "Ekin05ID";
+    dirb  = "Ekin05SB";
+    dirbp = "Ekin05ID";
+  }
+  if (idtype=="medium10") {
+    dirs  = "Ekin10ID";
+    dirsp = "Ekin10ID";
+    dirb  = "Ekin10SB";
+    dirbp = "Ekin10ID";
+  }
+  if (idtype=="medium20") {
+    dirs  = "Ekin20ID";
+    dirsp = "Ekin20ID";
+    dirb  = "Ekin20SB";
+    dirbp = "Ekin20ID";
+  }
 
   vector<string> files(sigfiles.size()+bkgfiles.size());
   for (unsigned int i = 0; i != sigfiles.size(); ++i)
@@ -87,125 +114,132 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   for (unsigned int i = 0; i != bkgfiles.size(); ++i)
     files[i+sigfiles.size()] = bkgfiles[i];
 
+  // Note the silly bug in ROOT (5.22/00 at least):
+  // TGraph::GetListOfFunctions() returns 0x0 if the default constructor
+  // is used. Quick fix is to call TGraphErrors(Int_t n) instead.
+  // See https://savannah.cern.ch/bugs/?45607
+
   // MC truth flavor fractions vs ptgamma (signal)
-  TGraphErrors *gfgluons = new TGraphErrors(); gfgluons->SetName("gfgluons");
-  TGraphErrors *gflights = new TGraphErrors(); gflights->SetName("gflights");
-  TGraphErrors *gfcharms = new TGraphErrors(); gfcharms->SetName("gfcharms");
-  TGraphErrors *gfbottoms = new TGraphErrors();
+  TGraphErrors *gfgluons = new TGraphErrors(0); gfgluons->SetName("gfgluons");
+  TGraphErrors *gflights = new TGraphErrors(0); gflights->SetName("gflights");
+  TGraphErrors *gfcharms = new TGraphErrors(0); gfcharms->SetName("gfcharms");
+  TGraphErrors *gfbottoms = new TGraphErrors(0);
   gfbottoms->SetName("gfbottoms");
 
   // MC truth flavor fractions vs ptgamma (background)
-  TGraphErrors *gfgluonb = new TGraphErrors(); gfgluonb->SetName("gfgluonb");
-  TGraphErrors *gflightb = new TGraphErrors(); gflightb->SetName("gflightb");
-  TGraphErrors *gfcharmb = new TGraphErrors(); gfcharmb->SetName("gfcharmb");
-  TGraphErrors *gfbottomb = new TGraphErrors();
+  TGraphErrors *gfgluonb = new TGraphErrors(0); gfgluonb->SetName("gfgluonb");
+  TGraphErrors *gflightb = new TGraphErrors(0); gflightb->SetName("gflightb");
+  TGraphErrors *gfcharmb = new TGraphErrors(0); gfcharmb->SetName("gfcharmb");
+  TGraphErrors *gfbottomb = new TGraphErrors(0);
   gfbottomb->SetName("gfbottomb");
 
   // MC truth flavor response mapped vs ptgen (signal)
-  TGraphErrors *gralls = new TGraphErrors(); gralls->SetName("gralls");
-  TGraphErrors *grgluons = new TGraphErrors(); grgluons->SetName("grgluons");
-  TGraphErrors *grlights = new TGraphErrors(); grlights->SetName("grlights");
-  TGraphErrors *grcharms = new TGraphErrors(); grcharms->SetName("grcharms");
-  TGraphErrors *grbottoms = new TGraphErrors();
+  TGraphErrors *gralls = new TGraphErrors(0); gralls->SetName("gralls");
+  TGraphErrors *grgluons = new TGraphErrors(0); grgluons->SetName("grgluons");
+  TGraphErrors *grlights = new TGraphErrors(0); grlights->SetName("grlights");
+  TGraphErrors *grcharms = new TGraphErrors(0); grcharms->SetName("grcharms");
+  TGraphErrors *grbottoms = new TGraphErrors(0);
   grbottoms->SetName("grbottoms");
 
   // MC truth flavor response mapped vs ptgen (background)
-  TGraphErrors *grallb = new TGraphErrors(); grallb->SetName("grallb");
-  TGraphErrors *grgluonb = new TGraphErrors(); grgluonb->SetName("grgluonb");
-  TGraphErrors *grlightb = new TGraphErrors(); grlightb->SetName("grlightb");
-  TGraphErrors *grcharmb = new TGraphErrors(); grcharmb->SetName("grcharmb");
-  TGraphErrors *grbottomb = new TGraphErrors();
+  TGraphErrors *grallb = new TGraphErrors(0); grallb->SetName("grallb");
+  TGraphErrors *grgluonb = new TGraphErrors(0); grgluonb->SetName("grgluonb");
+  TGraphErrors *grlightb = new TGraphErrors(0); grlightb->SetName("grlightb");
+  TGraphErrors *grcharmb = new TGraphErrors(0); grcharmb->SetName("grcharmb");
+  TGraphErrors *grbottomb = new TGraphErrors(0);
   grbottomb->SetName("grbottomb");
 
 
   // MC truth jet response mapped vs ptgen (!ptgamma)
-  TGraphErrors *grjets = new TGraphErrors(); grjets->SetName("grjets");
-  TGraphErrors *grjetb = new TGraphErrors(); grjetb->SetName("grjetb");
-  TGraphErrors *grjetr = new TGraphErrors(); grjetr->SetName("grjetr");
+  TGraphErrors *grjets = new TGraphErrors(0); grjets->SetName("grjets");
+  TGraphErrors *grjetb = new TGraphErrors(0); grjetb->SetName("grjetb");
+  TGraphErrors *grjetr = new TGraphErrors(0); grjetr->SetName("grjetr");
   // Same with peak (most probable) values
-  TGraphErrors *prjets = new TGraphErrors(); prjets->SetName("prjets");
-  TGraphErrors *prjetb = new TGraphErrors(); prjetb->SetName("prjetb");
-  TGraphErrors *prjetr = new TGraphErrors(); prjetr->SetName("prjetr");
+  TGraphErrors *prjets = new TGraphErrors(0); prjets->SetName("prjets");
+  TGraphErrors *prjetb = new TGraphErrors(0); prjetb->SetName("prjetb");
+  TGraphErrors *prjetr = new TGraphErrors(0); prjetr->SetName("prjetr");
 
   // Parton to genjet correction mapped vs ptgen (!ptgamma)
-  TGraphErrors *gkjets = new TGraphErrors(); gkjets->SetName("gkjets");
-  TGraphErrors *gkjetb = new TGraphErrors(); gkjetb->SetName("gkjetb");
-  TGraphErrors *gkjetr = new TGraphErrors(); gkjetr->SetName("gkjetr");
+  TGraphErrors *gkjets = new TGraphErrors(0); gkjets->SetName("gkjets");
+  TGraphErrors *gkjetb = new TGraphErrors(0); gkjetb->SetName("gkjetb");
+  TGraphErrors *gkjetr = new TGraphErrors(0); gkjetr->SetName("gkjetr");
   // Same with peak (most probable) values
-  TGraphErrors *pkjets = new TGraphErrors(); pkjets->SetName("pkjets");
-  TGraphErrors *pkjetb = new TGraphErrors(); pkjetb->SetName("pkjetb");
-  TGraphErrors *pkjetr = new TGraphErrors(); pkjetr->SetName("pkjetr");
+  TGraphErrors *pkjets = new TGraphErrors(0); pkjets->SetName("pkjets");
+  TGraphErrors *pkjetb = new TGraphErrors(0); pkjetb->SetName("pkjetb");
+  TGraphErrors *pkjetr = new TGraphErrors(0); pkjetr->SetName("pkjetr");
 
   // reco vs parton correction mapped vs ptgen (!ptgamma)
-  TGraphErrors *grkjets = new TGraphErrors(); grkjets->SetName("grkjets");
-  TGraphErrors *grkjetb = new TGraphErrors(); grkjetb->SetName("grkjetb");
-  TGraphErrors *grkjetr = new TGraphErrors(); grkjetr->SetName("grkjetr");
+  TGraphErrors *grkjets = new TGraphErrors(0); grkjets->SetName("grkjets");
+  TGraphErrors *grkjetb = new TGraphErrors(0); grkjetb->SetName("grkjetb");
+  TGraphErrors *grkjetr = new TGraphErrors(0); grkjetr->SetName("grkjetr");
   // Same with peak (most probable) values
-  TGraphErrors *prkjets = new TGraphErrors(); prkjets->SetName("prkjets");
-  TGraphErrors *prkjetb = new TGraphErrors(); prkjetb->SetName("prkjetb");
-  TGraphErrors *prkjetr = new TGraphErrors(); prkjetr->SetName("prkjetr");
+  TGraphErrors *prkjets = new TGraphErrors(0); prkjets->SetName("prkjets");
+  TGraphErrors *prkjetb = new TGraphErrors(0); prkjetb->SetName("prkjetb");
+  TGraphErrors *prkjetr = new TGraphErrors(0); prkjetr->SetName("prkjetr");
 
 
   // Parton to photon correction mapped vs ptgamma
-  TGraphErrors *grphos = new TGraphErrors(); grphos->SetName("grphos");
-  TGraphErrors *grphob = new TGraphErrors(); grphob->SetName("grphob");
-  TGraphErrors *grphor = new TGraphErrors(); grphor->SetName("grphor");
+  TGraphErrors *grphos = new TGraphErrors(0); grphos->SetName("grphos");
+  TGraphErrors *grphob = new TGraphErrors(0); grphob->SetName("grphob");
+  TGraphErrors *grphor = new TGraphErrors(0); grphor->SetName("grphor");
   // Same with peak (most probable) values
-  TGraphErrors *prphos = new TGraphErrors(); prphos->SetName("prphos");
-  TGraphErrors *prphob = new TGraphErrors(); prphob->SetName("prphob");
-  TGraphErrors *prphor = new TGraphErrors(); prphor->SetName("prphor");
+  TGraphErrors *prphos = new TGraphErrors(0); prphos->SetName("prphos");
+  TGraphErrors *prphob = new TGraphErrors(0); prphob->SetName("prphob");
+  TGraphErrors *prphor = new TGraphErrors(0); prphor->SetName("prphor");
 
   // Parton to genphoton correction mapped vs ptgamma
-  TGraphErrors *gkphos = new TGraphErrors(); gkphos->SetName("gkphos");
-  TGraphErrors *gkphob = new TGraphErrors(); gkphob->SetName("gkphob");
-  TGraphErrors *gkphor = new TGraphErrors(); gkphor->SetName("gkphor");
+  TGraphErrors *gkphos = new TGraphErrors(0); gkphos->SetName("gkphos");
+  TGraphErrors *gkphob = new TGraphErrors(0); gkphob->SetName("gkphob");
+  TGraphErrors *gkphor = new TGraphErrors(0); gkphor->SetName("gkphor");
   // Same with peak (most probable) values
-  TGraphErrors *pkphos = new TGraphErrors(); pkphos->SetName("pkphos");
-  TGraphErrors *pkphob = new TGraphErrors(); pkphob->SetName("pkphob");
-  TGraphErrors *pkphor = new TGraphErrors(); pkphor->SetName("pkphor");
+  TGraphErrors *pkphos = new TGraphErrors(0); pkphos->SetName("pkphos");
+  TGraphErrors *pkphob = new TGraphErrors(0); pkphob->SetName("pkphob");
+  TGraphErrors *pkphor = new TGraphErrors(0); pkphor->SetName("pkphor");
 
   // Reco gamma vs parton correction mapped vs ptgamma
-  TGraphErrors *grkphos = new TGraphErrors(); grkphos->SetName("grkphos");
-  TGraphErrors *grkphob = new TGraphErrors(); grkphob->SetName("grkphob");
-  TGraphErrors *grkphor = new TGraphErrors(); grkphor->SetName("grkphor");
+  TGraphErrors *grkphos = new TGraphErrors(0); grkphos->SetName("grkphos");
+  TGraphErrors *grkphob = new TGraphErrors(0); grkphob->SetName("grkphob");
+  TGraphErrors *grkphor = new TGraphErrors(0); grkphor->SetName("grkphor");
   // Same with peak (most probable) values
-  TGraphErrors *prkphos = new TGraphErrors(); prkphos->SetName("prkphos");
-  TGraphErrors *prkphob = new TGraphErrors(); prkphob->SetName("prkphob");
-  TGraphErrors *prkphor = new TGraphErrors(); prkphor->SetName("prkphor");
+  TGraphErrors *prkphos = new TGraphErrors(0); prkphos->SetName("prkphos");
+  TGraphErrors *prkphob = new TGraphErrors(0); prkphob->SetName("prkphob");
+  TGraphErrors *prkphor = new TGraphErrors(0); prkphor->SetName("prkphor");
 
 
   // Direct method imbalance pTgenjet/pTrecogamma vs ptgamma
-  TGraphErrors *gkgams = new TGraphErrors(); gkgams->SetName("gkgams");
-  TGraphErrors *gkgamb = new TGraphErrors(); gkgamb->SetName("gkgamb");
-  TGraphErrors *gkgamr = new TGraphErrors(); gkgamr->SetName("gkgamr");
+  TGraphErrors *gkgams = new TGraphErrors(0); gkgams->SetName("gkgams");
+  TGraphErrors *gkgamb = new TGraphErrors(0); gkgamb->SetName("gkgamb");
+  TGraphErrors *gkgamr = new TGraphErrors(0); gkgamr->SetName("gkgamr");
   // Same with peak (most probable) values
-  TGraphErrors *pkgams = new TGraphErrors(); pkgams->SetName("pkgams");
-  TGraphErrors *pkgamb = new TGraphErrors(); pkgamb->SetName("pkgamb");
-  TGraphErrors *pkgamr = new TGraphErrors(); pkgamr->SetName("pkgamr");
+  TGraphErrors *pkgams = new TGraphErrors(0); pkgams->SetName("pkgams");
+  TGraphErrors *pkgamb = new TGraphErrors(0); pkgamb->SetName("pkgamb");
+  TGraphErrors *pkgamr = new TGraphErrors(0); pkgamr->SetName("pkgamr");
 
   // Parton to genjet correction mapped vs ptgen (!ptgamma)
-  TGraphErrors *gktopos = new TGraphErrors(); gktopos->SetName("gktopos");
-  TGraphErrors *gktopob = new TGraphErrors(); gktopob->SetName("gktopob");
-  TGraphErrors *gktopor = new TGraphErrors(); gktopor->SetName("gktopor");
+  TGraphErrors *gktopos = new TGraphErrors(0); gktopos->SetName("gktopos");
+  TGraphErrors *gktopob = new TGraphErrors(0); gktopob->SetName("gktopob");
+  TGraphErrors *gktopor = new TGraphErrors(0); gktopor->SetName("gktopor");
   // Same with peak (most probable) values
-  TGraphErrors *pktopos = new TGraphErrors(); pktopos->SetName("pktopos");
-  TGraphErrors *pktopob = new TGraphErrors(); pktopob->SetName("pktopob");
-  TGraphErrors *pktopor = new TGraphErrors(); pktopor->SetName("pktopor");
+  TGraphErrors *pktopos = new TGraphErrors(0); pktopos->SetName("pktopos");
+  TGraphErrors *pktopob = new TGraphErrors(0); pktopob->SetName("pktopob");
+  TGraphErrors *pktopor = new TGraphErrors(0); pktopor->SetName("pktopor");
 
   // Parton to genjet correction mapped vs ptgamma
-  TGraphErrors *grmeass = new TGraphErrors(); grmeass->SetName("grmeass");
-  TGraphErrors *grmeasb = new TGraphErrors(); grmeasb->SetName("grmeasb");
-  TGraphErrors *grmeasr = new TGraphErrors(); grmeasr->SetName("grmeasr");
+  TGraphErrors *grmeass = new TGraphErrors(0); grmeass->SetName("grmeass");
+  TGraphErrors *grmeasb = new TGraphErrors(0); grmeasb->SetName("grmeasb");
+  TGraphErrors *grmeasr = new TGraphErrors(0); grmeasr->SetName("grmeasr");
   // Same with peak (most probable) values
-  TGraphErrors *prmeass = new TGraphErrors(); prmeass->SetName("prmeass");
-  TGraphErrors *prmeasb = new TGraphErrors(); prmeasb->SetName("prmeasb");
-  TGraphErrors *prmeasr = new TGraphErrors(); prmeasr->SetName("prmeasr");
+  TGraphErrors *prmeass = new TGraphErrors(0); prmeass->SetName("prmeass");
+  TGraphErrors *prmeasb = new TGraphErrors(0); prmeasb->SetName("prmeasb");
+  TGraphErrors *prmeasr = new TGraphErrors(0); prmeasr->SetName("prmeasr");
 
+  cout << "Reading in "<<files.size()<<" files" << flush;
 
   for (unsigned int i = 0; i != files.size(); ++i) {
 
     TFile *f = new TFile(files[i].c_str(), "READ");
     assert(!f->IsZombie());
+    cout << "." << flush;
 
     // Get the average genjet pt and reco photon pt
 
@@ -350,11 +384,11 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
       TGraphErrors *grjet = (i < sigfiles.size() ? grjets : grjetb);
       int n = grjet->GetN();
       grjet->SetPoint(n, ptgen, rjet);
-      grjet->SetPointError(n, ptgen_err, rjet_err);
+      grjet->SetPointError(n, ptgen_err, oplus(rjet_err, minsys*rjet));
       TGraphErrors *prjet = (i < sigfiles.size() ? prjets : prjetb);
       n = prjet->GetN();
       prjet->SetPoint(n, ptgen, rjet2);
-      prjet->SetPointError(n, ptgen_err, rjet2_err);
+      prjet->SetPointError(n, ptgen_err, oplus(rjet2_err, minsys*rjet2));
     }
 
     // Genjet vs parton correction mapped vs ptgen
@@ -372,14 +406,15 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
      double kjet2 = FindPeak(hkjet, kjet2_err);
 
      if (kjet && ptphot && ptgen) {
+       double ms = (i < sigfiles.size() ? 0. : minsys);
        TGraphErrors *gkjet = (i < sigfiles.size() ? gkjets : gkjetb);
        int n = gkjet->GetN();
        gkjet->SetPoint(n, ptgen, kjet);
-       gkjet->SetPointError(n, ptgen_err, kjet_err);
+       gkjet->SetPointError(n, ptgen_err, oplus(kjet_err, ms*kjet));
        TGraphErrors *pkjet = (i < sigfiles.size() ? pkjets : pkjetb);
        n = pkjet->GetN();
        pkjet->SetPoint(n, ptgen, kjet2);
-       pkjet->SetPointError(n, ptgen_err, kjet2_err);
+       pkjet->SetPointError(n, ptgen_err, oplus(kjet2_err, ms*kjet2));
      }
 
     // Reco jet vs parton correction mapped vs ptgen
@@ -523,11 +558,11 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
        TGraphErrors *gktopo = (i < sigfiles.size() ? gktopos : gktopob);
        int n = gktopo->GetN();
        gktopo->SetPoint(n, ptgen, ktopo);
-       gktopo->SetPointError(n, ptgen_err, ktopo_err);
+       gktopo->SetPointError(n, ptgen_err, oplus(ktopo_err, minsys*ktopo));
        TGraphErrors *pktopo = (i < sigfiles.size() ? pktopos : pktopob);
        n = pktopo->GetN();
        pktopo->SetPoint(n, ptgen, ktopo2);
-       pktopo->SetPointError(n, ptgen_err, ktopo2_err);
+       pktopo->SetPointError(n, ptgen_err, oplus(ktopo2_err, minsys*ktopo2));
      }
 
      // Direct method imbalance pTgenjet/pTrecogamma
@@ -584,7 +619,9 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     f->Close();
   } // for i
   curdir->cd();
+  cout << endl << flush;
 
+  cout << "Doing ratio plots" << endl << flush;
 
   // Do the ratio
   doRatio(grjetb,grjets,grjetr);
@@ -597,6 +634,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   doRatio(prkphos,prkphob,prkphor);
   doRatio(prmeasb,prmeass,prmeasr);
 
+  cout << "Some flavor physics" << endl << flush;
+
   // Flavor physics (gamma+jet)
   TCanvas *cflavs = new TCanvas("cflavs","cflavs",600,600);
   cflavs->SetLogx();
@@ -605,7 +644,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
   hflavs->GetXaxis()->SetMoreLogLabels();
   hflavs->GetXaxis()->SetNoExponent();
-  hflavs->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hflavs->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
   hflavs->GetYaxis()->SetTitle("Flavor fraction (#gamma jet)");
   hflavs->GetYaxis()->SetRangeUser(0.0,1.10); 
   hflavs->Draw();
@@ -672,7 +711,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
   hflavb->GetXaxis()->SetMoreLogLabels();
   hflavb->GetXaxis()->SetNoExponent();
-  hflavb->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hflavb->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
   hflavb->GetYaxis()->SetTitle("Flavor fraction (QCD dijet)");
   hflavb->GetYaxis()->SetRangeUser(0.0,1.10); 
   hflavb->Draw();
@@ -728,7 +767,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hfgluon->GetXaxis()->SetTitle("p_{T} (GeV)");
   hfgluon->GetXaxis()->SetMoreLogLabels();
   hfgluon->GetXaxis()->SetNoExponent();
-  hfgluon->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hfgluon->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
   hfgluon->GetYaxis()->SetTitle("Gluon jet fraction");
   hfgluon->GetYaxis()->SetRangeUser(0.0,1.10); 
   hfgluon->Draw();
@@ -781,7 +820,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hrflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
   hrflavs->GetXaxis()->SetMoreLogLabels();
   hrflavs->GetXaxis()->SetNoExponent();
-  hrflavs->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hrflavs->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
   hrflavs->GetYaxis()->SetTitle("Flavor responses (#gamma jet)");
   hrflavs->GetYaxis()->SetRangeUser(0.3,1.10); 
   if (_algo=="pfite") hrflavs->GetYaxis()->SetRangeUser(0.5,1.30); 
@@ -849,7 +888,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hrflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
   hrflavb->GetXaxis()->SetMoreLogLabels();
   hrflavb->GetXaxis()->SetNoExponent();
-  hrflavb->GetXaxis()->SetRangeUser(30.,1997.);//2000.);
+  hrflavb->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
   hrflavb->GetYaxis()->SetTitle("Flavor response (QCD dijet)");
   hrflavb->GetYaxis()->SetRangeUser(0.3,1.10); 
   if (_algo=="pfite") hrflavb->GetYaxis()->SetRangeUser(0.5,1.30); 
@@ -947,9 +986,9 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hrjet->GetXaxis()->SetTitle("p_{T} (GeV)");
   hrjet->GetXaxis()->SetMoreLogLabels();
   hrjet->GetXaxis()->SetNoExponent();
-  hrjet->GetXaxis()->SetRangeUser(30.,2000.);
+  hrjet->GetXaxis()->SetRangeUser(20.,2000.);
   hrjet->GetYaxis()->SetTitle("R_{jet} = p_{T,calojet} / p_{T,genjet}");
-  hrjet->GetYaxis()->SetRangeUser(0.40,1.10);
+  hrjet->GetYaxis()->SetRangeUser(0.25,1.20);//0.40,1.10);
   if (_algo=="pfite") hrjet->GetYaxis()->SetRangeUser(0.50,1.20);
   //if (!drawStats) hrjet->GetYaxis()->SetRangeUser(0.40,1.05);
 
@@ -1118,29 +1157,34 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   hrjetz->GetXaxis()->SetTitle("p_{T} (GeV)");
   hrjetz->GetXaxis()->SetMoreLogLabels();
   hrjetz->GetXaxis()->SetNoExponent();
-  hrjetz->GetXaxis()->SetRangeUser(30.,2000.);
+  hrjetz->GetXaxis()->SetRangeUser(20.,2000.);
   //hrjetz->GetYaxis()->SetTitle("R_{jet} over fit");
   //hrjetz->GetYaxis()->SetRangeUser(0.95,1.25); // over fprjetb
-hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
-  hrjetz->GetYaxis()->SetRangeUser(0.95,1.10); // over fprjets,b
+  hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
+  //hrjetz->GetYaxis()->SetRangeUser(0.95,1.10); // over fprjets,b
+  hrjetz->GetYaxis()->SetRangeUser(0.90,1.05); // over fprjets,b
 
-  
   if (!grjets->GetListOfFunctions()) {
-    grjets->Fit("pol0","QR"); grjets->GetListOfFunctions()->Clear();
+    grjets->Fit("pol0","QR");
+    assert(grjets->GetListOfFunctions());
+    grjets->GetListOfFunctions()->Clear();
   }
   grjets->GetListOfFunctions()->Add(frjets);
   //hrjet->GetListOfFunctions()->Remove(frjets);
   if (!prjets->GetListOfFunctions()) {
-    prjets->Fit("pol0","QR"); prjets->GetListOfFunctions()->Clear();
+    prjets->Fit("pol0","QR"); assert(prjets->GetListOfFunctions());
+    prjets->GetListOfFunctions()->Clear();
   }
   prjets->GetListOfFunctions()->Add(fprjets);
   if (!grjetb->GetListOfFunctions()) {
-    grjetb->Fit("pol0","QR"); grjetb->GetListOfFunctions()->Clear();
+    grjetb->Fit("pol0","QR"); assert(grjetb->GetListOfFunctions());
+    grjetb->GetListOfFunctions()->Clear();
   }
   grjetb->GetListOfFunctions()->Add(frjetb);
   //hrjet2->GetListOfFunctions()->Clear();
   if (!prjetb->GetListOfFunctions()) {
-    prjetb->Fit("pol0","QR"); prjetb->GetListOfFunctions()->Clear();
+    prjetb->Fit("pol0","QR"); assert(prjetb->GetListOfFunctions());
+    prjetb->GetListOfFunctions()->Clear();
   }
   prjetb->GetListOfFunctions()->Add(fprjetb);
   TGraphErrors *drjets  = divide(grjets, fprjets);
@@ -1155,8 +1199,8 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   if (drawPeak) dprjetb->Draw("same P");
 
   TLegend *lrjetz = (drawPeak ? 
-		     new TLegend(0.60,0.5,0.95,0.8,_algoname.c_str(),"brNDC") :
-		     new TLegend(0.65,0.5,0.95,0.9,_algoname.c_str(),"brNDC"));
+		     new TLegend(0.60,0.2,0.95,0.5,_algoname.c_str(),"brNDC") :
+		     new TLegend(0.65,0.2,0.95,0.6,_algoname.c_str(),"brNDC"));
   lrjetz->SetBorderSize(0);
   lrjetz->SetFillStyle(kNone);
   lrjetz->SetTextSize(0.05);
@@ -1180,7 +1224,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkjet->GetXaxis()->SetTitle("p_{T} (GeV)");
   hkjet->GetXaxis()->SetMoreLogLabels();
   hkjet->GetXaxis()->SetNoExponent();
-  hkjet->GetXaxis()->SetRangeUser(30.,2000.);
+  hkjet->GetXaxis()->SetRangeUser(20.,2000.);
   hkjet->GetYaxis()->SetTitle("k_{jet} = p_{T,genjet} / p_{T,parton-jet}");
   hkjet->GetYaxis()->SetRangeUser(0.85,1.10);
   //if (!drawStats) hkjet->GetYaxis()->SetRangeUser(0.45,1.05);
@@ -1313,7 +1357,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hktopo->GetXaxis()->SetTitle("p_{T} (GeV)");
   hktopo->GetXaxis()->SetMoreLogLabels();
   hktopo->GetXaxis()->SetNoExponent();
-  hktopo->GetXaxis()->SetRangeUser(30.,2000.);
+  hktopo->GetXaxis()->SetRangeUser(20.,2000.);
   string title = "k_{topo} = p_{T,parton-jet} / p_{T,parton-#gamma}";
   hktopo->GetYaxis()->SetTitle(title.c_str());
   hktopo->GetYaxis()->SetRangeUser(0.9,1.10);
@@ -1410,7 +1454,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hrpho->GetXaxis()->SetTitle("p_{T} (GeV)");
   hrpho->GetXaxis()->SetMoreLogLabels();
   hrpho->GetXaxis()->SetNoExponent();
-  hrpho->GetXaxis()->SetRangeUser(30.,2000.);//500.);
+  hrpho->GetXaxis()->SetRangeUser(20.,2000.);//500.);
   title = "R_{#gamma} = p_{T,calo-#gamma} / p_{T,gen-#gamma}";
   hrpho->GetYaxis()->SetTitle(title.c_str());
   hrpho->GetYaxis()->SetRangeUser(0.45,1.30);
@@ -1556,7 +1600,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkpho->GetXaxis()->SetTitle("p_{T} (GeV)");
   hkpho->GetXaxis()->SetMoreLogLabels();
   hkpho->GetXaxis()->SetNoExponent();
-  hkpho->GetXaxis()->SetRangeUser(30.,2000.);//500.);
+  hkpho->GetXaxis()->SetRangeUser(20.,2000.);//500.);
   title = "k_{#gamma} = p_{T,gen-#gamma} / p_{T,parton-#gamma}";
   hkpho->GetYaxis()->SetTitle(title.c_str());
   hkpho->GetYaxis()->SetRangeUser(0.85,1.10);//0.45,1.30);
@@ -1660,7 +1704,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkgam->GetXaxis()->SetTitle("p_{T} (GeV)");
   hkgam->GetXaxis()->SetMoreLogLabels();
   hkgam->GetXaxis()->SetNoExponent();
-  hkgam->GetXaxis()->SetRangeUser(30.,2000.);
+  hkgam->GetXaxis()->SetRangeUser(20.,2000.);
   title = "k_{#gamma+jet} = p_{T,genjet} / p_{T,calo-#gamma}";
   hkgam->GetYaxis()->SetTitle(title.c_str());
   hkgam->GetYaxis()->SetRangeUser(0.90,1.10);
@@ -1686,7 +1730,9 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkgam->Draw();
   fkgam->Draw("same");
   gkgams->SetLineColor(kRed);
-  gkgams->Draw("same");
+  gkgams->SetMarkerStyle(kCircle);
+  gkgams->SetMarkerColor(kRed);
+  gkgams->Draw("same P");
   tkgam->Draw();
 
   ckgam->SaveAs("eps/mcfactors_kgam.eps");
@@ -1699,7 +1745,7 @@ hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
   hkqcd->GetXaxis()->SetTitle("p_{T} (GeV)");
   hkqcd->GetXaxis()->SetMoreLogLabels();
   hkqcd->GetXaxis()->SetNoExponent();
-  hkqcd->GetXaxis()->SetRangeUser(30.,2000.);//500.);
+  hkqcd->GetXaxis()->SetRangeUser(20.,2000.);//500.);
   title = "1+#DeltaC = #DeltaR_{jet} #Deltak_{jet} / (#DeltaR_{#gamma} #Deltak_{#gamma})";
   hkqcd->GetYaxis()->SetTitle(title.c_str());
   //hkqcd->GetYaxis()->SetRangeUser(0.70,1.40);
@@ -1943,6 +1989,8 @@ double FindPeak(TH1D* h, double &err, double pt) {
 
   double xmin = (pt ? _ptreco / pt : 0.);
   TF1 *f = new TF1("g","gaus",xmin,2.);
+  f->SetParLimits(1, h->GetMean()-h->GetRMS(), h->GetMean()+h->GetRMS());
+  f->SetParLimits(2, 0.5*h->GetRMS(), 2.*h->GetRMS());
   h->Fit(f, "QRN");
   f->SetRange(max(xmin,f->GetParameter(1)-2.*f->GetParameter(2)),
 	      f->GetParameter(1)+2.*f->GetParameter(2));
@@ -2015,7 +2063,7 @@ TGraphErrors *divide(const TGraphErrors *g, const TF1 *f) {
     TListIter it(g->GetListOfFunctions());
     TObject *obj;
 
-    while (obj = it.Next()) {
+    while ( (obj = it.Next()) ) {
 
       TF1 *f1 = (TF1*)obj;
       string formula = Form("(%s)/(%s)",&f1->GetExpFormula("p")[0],

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+//#include <exception> // For Error: Symbol G__exception is not defined in current scope
 
 using namespace std;
 
@@ -57,25 +58,44 @@ for (unsigned int i = 0; i != files2.size(); ++i)
 
 /*
 mcfactors(files1, files2, "loose");
-gROOT->ProcessLine(".! mkdir eps/mcfactors_loose");
-gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_loose");
-
-mcfactors(files1, files2, "medium");
-gROOT->ProcessLine(".! mkdir eps/mcfactors_medium");
-gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_medium");
-
-mcfactors(files1, files2, "tight");
-gROOT->ProcessLine(".! mkdir eps/mcfactors_tight");
-gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_tight");
-
-mcfactors(files1, files2, "NN");
-gROOT->ProcessLine(".! mkdir eps/mcfactors_nn");
-gROOT->ProcessLine(".! mv eps/mcfactors*.eps eps/mcfactors_nn");
-*/
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_loose_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_loose_%s",
+			algo.c_str()));
 
 mcfactors(files1, files2, "medium");
 gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_medium_%s",algo.c_str()));
 gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_medium_%s",
 			algo.c_str()));
 
+mcfactors(files1, files2, "tight");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_tight_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_tight_%s",
+			algo.c_str()));
+
+mcfactors(files1, files2, "NN");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_nn_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_nn_%s",
+			algo.c_str()));
+*/
+mcfactors(files1, files2, "medium05");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_medium05_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_medium05_%s",
+			algo.c_str()));
+
+mcfactors(files1, files2, "medium10");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_medium10_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_medium10_%s",
+			algo.c_str()));
+
+mcfactors(files1, files2, "medium20");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_medium20_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_medium20_%s",
+			algo.c_str()));
+
+/*
+mcfactors(files1, files2, "loose");
+gROOT->ProcessLine(Form(".! mkdir eps/mcfactors_loose_%s",algo.c_str()));
+gROOT->ProcessLine(Form(".! mv eps/mcfactors*.eps eps/mcfactors_loose_%s",
+			algo.c_str()));
+*/
 }

@@ -14,6 +14,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TROOT.h"
+#include "TFile.h"
 
 #include <iostream>
 
@@ -26,15 +27,19 @@ const int kRightHatch = 3454;//3654;
 const int kLeftHatch = 3445;//3645;
 const int kVertHatch = 3499;//3645;
 
+const bool useBinnedXsec = true;
+TH1D *h_xsec = 0;
+
 Double_t cross_section(Double_t *xx, Double_t *p) {
   double x = (*xx);
   if (x<p[3] || x>=p[4]) return 0.;
+  if (useBinnedXsec && h_xsec) {
+    return h_xsec->Interpolate(x);
+  }
   return (p[0]*pow(x,p[1])*exp(p[2]*x));
 }
 Double_t cross_section_x(Double_t *xx, Double_t *p) {
-  double x = (*xx);
-  if (x<p[3] || x>=p[4]) return 0.;
-  return (x*p[0]*pow(x,p[1])*exp(p[2]*x));
+  return ( (*xx) * cross_section(xx, p) );
 }
 
 // Divide TGraphErrors/TH1 by the function TF1
@@ -62,7 +67,7 @@ void staterr() {
   bool _notemode = true;
   bool _fptalk = true;
 
-  double lumi = 100.;//10.;
+  double lumi = 10.;//10.;
   //int XBINS = 27;
   double xmin = 25.;
   double xmax = 700.;
@@ -73,8 +78,10 @@ void staterr() {
     // for 10 pb-1
     //{25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270, 500, 700};
     // for 100 pb-1
-    {25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270,
-     320, 385, 460, 560, 800};
+    //{25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 270,
+    //320, 385, 460, 560, 800};
+    // for 10 pb-1, sqrt(s)=10 TeV
+    {25, 30, 36, 43, 52, 62, 75, 90, 107, 129, 155, 186, 225, 460, 700};
   const int XBINS = sizeof(xbins0)/sizeof(xbins0[0])-1;
   const double* xbins = &xbins0[0];
   int YBINS = 27;
@@ -85,15 +92,53 @@ void staterr() {
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
+  TCanvas *c0 = new TCanvas("c0","c0",600,600);
+  c0->SetLogx();
+  c0->SetLogy();
+
+  if (useBinnedXsec) {
+
+    TFile *f = new TFile("output/output_mixed_medium_ite.root","READ");
+    assert(!f->IsZombie());
+    h_xsec = (TH1D*)f->Get("ptphot_sig");
+    assert(h_xsec);
+    // Normalize cross section units to 1./(25 GeV * fb)
+    for (int i = 1; i != h_xsec->GetNbinsX()+1; ++i)
+      h_xsec->SetBinContent(i, h_xsec->GetBinContent(i)
+			    / h_xsec->GetBinWidth(i) * 25.);
+    cout << "Using binned cross section" << endl;
+
+    TH1D *h0 = new TH1D("h0","h0",1000,0.,1000.);
+    h0->SetMinimum(1.);
+    h0->SetMaximum(1e7);
+    h0->GetXaxis()->SetTitle("p_{T}^{#gamma} (GeV)");
+    h0->GetXaxis()->SetMoreLogLabels();
+    h0->GetXaxis()->SetNoExponent();
+    h0->GetXaxis()->SetRangeUser(25.,900.);
+    h0->GetYaxis()->SetTitle("events / 25 GeV / fb^{-1}");
+    h0->Draw();
+
+    h_xsec->SetLineWidth(2);
+    h_xsec->SetLineColor(kRed);
+    h_xsec->SetMarkerStyle(kCircle);
+    h_xsec->SetMarkerColor(kRed);
+    h_xsec->Draw("SAME");
+    
+    c0->SaveAs("eps/toymc/xsec.eps");
+  }
+  else
+    cout << "Using parameterized cross section" << endl;
+
   // Photon+jets after photonID and kinematic cuts
   // events/25 GeV/fb-1
+  // NB: first three parameters are meaningless if h_xsec is provided
   TF1 *xsec = new TF1("xsec", cross_section, xmin, xmax, 5);
   xsec->SetParameters(7.729e+10, -3.104, -0.003991, xmin, xmax);
   xsec->SetNpx(1000);
   TF1 *xsec_x = new TF1("xsec_x", cross_section_x, xmin, xmax, 5);
   xsec_x->SetParameters(7.729e+10, -3.104, -0.003991, xmin, xmax);
   xsec_x->SetNpx(1000);
-  
+
   TF1 *mean = new TF1("mean", "1 - [0] * pow(x, [1])", xmin, xmax);
   //mean->SetParameters(2.112, -0.3986); // CSA07 ( 1-1.881*pow(x,0.6198-1) )
   mean->SetParameters(2.136,0.5801-1); // Summer08
@@ -147,11 +192,11 @@ void staterr() {
   TH1D *gmean_sig = new TH1D("gmean_sig","gmean",//XBINS,xmin,xmax);
 			     XBINS, xbins);
   
-  TGraphErrors *gr_sig = new TGraphErrors();
-  TGraphErrors *gr_sig2 = new TGraphErrors();
-  TGraphErrors *gr_sig3 = new TGraphErrors();
-  TGraphErrors *gr_sig4 = new TGraphErrors();
-  TGraphErrors *gr_sig5 = new TGraphErrors();
+  TGraphErrors *gr_sig = new TGraphErrors(0);
+  TGraphErrors *gr_sig2 = new TGraphErrors(0);
+  TGraphErrors *gr_sig3 = new TGraphErrors(0);
+  TGraphErrors *gr_sig4 = new TGraphErrors(0);
+  TGraphErrors *gr_sig5 = new TGraphErrors(0);
   
   // Set a random seed for the random number sequence
   //TTimer t;
@@ -159,7 +204,8 @@ void staterr() {
   TTimeStamp t;
   TRandom3 *rand = new TRandom3();
   //rand->SetSeed(t.GetNanoSec()/1000);//123456);
-  rand->SetSeed(771156000); // note default
+  rand->SetSeed(624161); // new note default (summer08)
+  //rand->SetSeed(771156000); // note default
   //rand->SetSeed(293658000); // very pretty curves with chi2/NDF=1.053
   //rand->SetSeed(63900000); // representative for stat uncertainty (note)
   gRandom = rand; // can we replace this?
@@ -289,11 +335,11 @@ void staterr() {
   gr_sig2->Fit(rjet2, "QR");
 
   // Retrieve and factorize correlation matrix for L3Corr.cpp
-  const int ndim = rjet2->GetNpar();
-  TMatrixD emat(ndim, ndim);
-  gMinuit->mnemat(&emat[0][0], ndim);
+  const int ndim2 = rjet2->GetNpar();
+  TMatrixD emat2(ndim2, ndim2);
+  gMinuit->mnemat(&emat2[0][0], ndim2);
 
-  TH1D *he_sig2 = getBand(rjet2, emat);
+  TH1D *he_sig2 = getBand(rjet2, emat2);
 
   /*
   // Alternative fit with 2-parameter powerlaw
@@ -380,15 +426,21 @@ void staterr() {
   rjet4->SetLineWidth(1);
   gr_sig4->Fit(rjet4, "QR");
 
-  gMinuit->mnemat(&emat[0][0], ndim);
-  TH1D *he_sig4 = getBand(rjet4, emat);
+  const int ndim4 = rjet4->GetNpar();
+  TMatrixD emat4(ndim4, ndim4);
+  gMinuit->mnemat(&emat4[0][0], ndim4);
+  TH1D *he_sig4 = getBand(rjet4, emat4);
 
-  TVectorD eigvs(ndim);
-  TMatrixD eigs(emat.EigenVectors(eigvs));
+  // Solve eigenvectors for arithmetic mean (emat2)
+  // Optional would be for gaussian mean (emat4)
+  TVectorD eigvs(ndim2);
+  TMatrixD eigs(emat2.EigenVectors(eigvs));
 
   // Print out the signal fit parameters to be used in L3Corr.cpp
-  cout << Form("// Signal sample (toyMC %1.0f pb-1, %1.1f-sigma peak):",
-	       lumi, ns) << endl;
+  //cout << Form("// Signal sample (toyMC %1.0f pb-1, %1.1f-sigma peak):",
+  //	       lumi, ns) << endl;
+  cout << Form("// Signal sample (toyMC %1.0f pb-1, %s, arithmetic mean):",
+	       lumi, (useBinnedXsec ? "binned xsec" : "fitted xsec")) << endl;
   cout << Form("_pstat[0] = %1.4g; _pstat[1] = %1.4g; _pstat[2] = %1.4g;"
 	       " // [2]+/-%1.3f",
 	       rjet2->GetParameter(0), rjet2->GetParameter(1),
