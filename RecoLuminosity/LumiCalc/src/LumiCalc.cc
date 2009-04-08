@@ -347,7 +347,7 @@ namespace HCAL_HLX {
 	 if( numGoodBX > 0 ){ 
 	    localSection.lumiSummary.InstantETLumi /= numGoodBX;
 	    localSection.lumiSummary.InstantETLumiErr = sqrt( ETSumError*normNumBX_ + ETSumNoiseError );
-	    localSection.lumiSummary.InstantETLumiQlty = (i16)(999*(float)numGoodBX*normNumBX_);
+	    localSection.lumiSummary.InstantETLumiQlty = static_cast<int16_t>(999*(float)numGoodBX*normNumBX_);
 	 } else {
 	    localSection.lumiSummary.InstantETLumi = 0;  // error
 	    localSection.lumiSummary.InstantETLumiErr = 0; // error
@@ -804,14 +804,14 @@ namespace HCAL_HLX {
       // normailze to the number of active, good bunches
       if( numGoodBX[0] > 0 ){
 	 localSection.lumiSummary.InstantOccLumi[0] /= (float)numGoodBX[0];
-	 localSection.lumiSummary.InstantOccLumiQlty[0] = (i16)(999*(float)numGoodBX[0]*normNumBX_);
+	 localSection.lumiSummary.InstantOccLumiQlty[0] = static_cast<int16_t>(999*(float)numGoodBX[0]*normNumBX_);
       } else {
 	 localSection.lumiSummary.InstantOccLumi[0] = 0;
 	 localSection.lumiSummary.InstantOccLumiQlty[0] = -900;
       }
       if( numGoodBX[1] > 0 ){
 	 localSection.lumiSummary.InstantOccLumi[1] /= (float)numGoodBX[1];
-	 localSection.lumiSummary.InstantOccLumiQlty[1] = (i16)(999*(float)numGoodBX[1]*normNumBX_);
+	 localSection.lumiSummary.InstantOccLumiQlty[1] = static_cast<int16_t>(999*(float)numGoodBX[1]*normNumBX_);
       } else {
 	 localSection.lumiSummary.InstantOccLumi[1] = 0;
 	 localSection.lumiSummary.InstantOccLumiQlty[1] = -900;
