@@ -16,6 +16,10 @@ const bool drawStats = false;
 const int kRedHatch = 3654;
 const int kBlueHatch = 3645;
 
+// Draw histo with max of h1, h2 in each bin
+// (helps automatic y-range setting)
+void DoubleDraw(const TH1D *h1, const TH1D *h2);
+
 int plots(string file1, string file2, string dirs = "/", string dirb = "/",
 	  string outdir = "eps", bool rebin = false) {
 
@@ -120,8 +124,10 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       h2->GetXaxis()->SetTitle(title.c_str());
 
       // Histogram drawn first determines the y-axis range
-      if (j!=4) h1->Draw("HF");
-      else h2->Draw("HF");
+      //if (j!=4) h1->Draw("HF");
+      //else h2->Draw("HF");
+      // Draw max of the two in each bin for proper y-axis range
+      DoubleDraw(h1, h2); 
 
       h1->SetLineColor(kRed);
       h1->SetFillColor(kRed);
@@ -220,10 +226,12 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       leg->AddEntry(h1, "#gamma jet","F");
       leg->AddEntry(h2, "QCD","F");
       
+      DoubleDraw(h1, h2);
+
       h1->SetLineColor(kRed);
       h1->SetFillColor(kRed);
       h1->SetFillStyle(kRedHatch);
-      h1->Draw("HF");
+      h1->Draw("HFsame");
       
       h2->SetLineColor(kBlue);
       h2->SetFillColor(kBlue);
@@ -349,10 +357,12 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       h1->GetXaxis()->SetTitle(title.c_str());
       h2->GetXaxis()->SetTitle(title.c_str());
 
+      DoubleDraw(h1,h2);
+
       h1->SetLineColor(kRed);
       h1->SetFillColor(kRed);
       h1->SetFillStyle(kRedHatch);
-      h1->Draw("HF");
+      h1->Draw("HFsame");
       
       h2->SetLineColor(kBlue);
       h2->SetFillColor(kBlue);
@@ -410,10 +420,12 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
     if (i==1) h1->GetXaxis()->SetTitle("p_{T}(genjet) / p_{T}(calo-#gamma)");
     if (i==2) h1->GetXaxis()->SetTitle("p_{T}(jet parton) / p_{T}(calo-#gamma)");
 
+    DoubleDraw(h1,h2);
+
     h1->SetLineColor(kRed);
     h1->SetFillColor(kRed);
     h1->SetFillStyle(kRedHatch);
-    h1->Draw("HF");
+    h1->Draw("HFsame");
 
     h2->SetLineColor(kBlue);
     h2->SetFillColor(kBlue);
@@ -433,4 +445,22 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
   gROOT->Clear(); // important, otherwise mk_plots.C crashes in third loop
 
   return 0;
+}
+
+
+// Draw histo with max of h1, h2 in each bin
+// (helps automatic y-range setting)
+void DoubleDraw(const TH1D *h1, const TH1D *h2) {
+
+  assert(h1->GetNbinsX()==h2->GetNbinsX());
+  TH1D *h3 = (TH1D*)h1->Clone(Form("h3_%s_%s",h1->GetName(),h2->GetName()));
+  for (int i = 1; i != h1->GetNbinsX()+1; ++i) {
+    h3->SetBinContent(i, max(h1->GetBinContent(i), h2->GetBinContent(i)));
+  }
+
+  h3->SetFillStyle(kNone);
+  h3->SetLineColor(kBlack);
+  h3->Draw("H");
+
+  return;
 }

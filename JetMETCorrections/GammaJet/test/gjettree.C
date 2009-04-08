@@ -762,20 +762,20 @@ void gjettree::Loop(double cross, double genpt_start, double genpt_limit,
     // or one with highest pT if multiple at DeltaR<Rcone
     {
       double mindeltar(999.);
-      double maxgenpt(0.);
+      double maxgenjetpt(0.);
       this->igenphot = -1;
       
       for (int j = 0; j != nJetGen; ++j) {
 	
-	double genpt = eJetGen[j] / cosh(etaJetGen[j]);
+	double genjetpt = eJetGen[j] / cosh(etaJetGen[j]);
 	double deltar = sqrt(pow(delta_eta(etaJetGen[j],phot.eta),2)
 			     + pow(delta_phi(phiJetGen[j],phot.phi),2));
 	
 	bool ismatch = (deltar < _rcone);
 	bool hasmatch = (mindeltar < _rcone);
-	if ( (hasmatch && ismatch && genpt > maxgenpt) ||
+	if ( (hasmatch && ismatch && genjetpt > maxgenjetpt) ||
 	     (!hasmatch && deltar < mindeltar)) {
-	  maxgenpt = genpt;
+	  maxgenjetpt = genjetpt;
 	  mindeltar = deltar;
 	  this->igenphot = j;
 	}
@@ -801,20 +801,20 @@ void gjettree::Loop(double cross, double genpt_start, double genpt_limit,
       if (hasjet) {
 
 	double mindeltar(999.);
-	double maxgenpt(0.);
+	double maxgenjetpt(0.);
 
 	for (int j = 0; j != nJetGen; ++j) {
 
-	  double genpt = eJetGen[j] / cosh(etaJetGen[j]);
+	  double genjetpt = eJetGen[j] / cosh(etaJetGen[j]);
 	  double deltar = sqrt(pow(delta_eta(etaJetGen[j],jet.eta),2)
 			       +pow(delta_phi(phiJetGen[j],jet.phi),2));
 
 	  bool ismatch = (deltar < _rcone);
 	  bool hasmatch = (mindeltar < _rcone);
 
-	  if ( (hasmatch && ismatch && genpt > maxgenpt) ||
+	  if ( (hasmatch && ismatch && genjetpt > maxgenjetpt) ||
 	       (!hasmatch && deltar < mindeltar)) {
-	    maxgenpt = genpt;
+	    maxgenjetpt = genjetpt;
 	    mindeltar = deltar;
 	    this->igenjet = j;
 	  }
@@ -823,26 +823,31 @@ void gjettree::Loop(double cross, double genpt_start, double genpt_limit,
       else { // !hasjet
 	
 	double maxdeltaphigen(-1);
-	double maxgenpt(0.);
+	double maxgenjetpt(0.);
 
 	for (int j = 0; j != nJetGen; ++j) {
 
-	  double genpt = eJetGen[j] / cosh(etaJetGen[j]);
+	  double genjetpt = eJetGen[j] / cosh(etaJetGen[j]);
 	  double deltaphigen = delta_phi(phiJetGen[j], phiMC[imcphot]);
 
 	  bool isbacktoback = (deltaphigen > _backtoback);
 	  bool hasbacktoback = (maxdeltaphigen > _backtoback);
 
-	  if ( (hasbacktoback && isbacktoback && genpt > maxgenpt) ||
+	  if ( (hasbacktoback && isbacktoback && genjetpt > maxgenjetpt) ||
 	       (!hasbacktoback && deltaphigen > maxdeltaphigen)) {
-	    maxgenpt = genpt;
+	    maxgenjetpt = genjetpt;
 	    maxdeltaphigen = deltaphigen;
 	    this->igenjet = j;
 	  }
 	} // for j
       } 
 
-      assert(this->igenjet != -1);
+      //assert(this->igenjet != -1);
+      if (this->igenjet == -1) {
+	cerr << "Warning: no gen jet found! ("<<jentry<<")"
+	     << " #GenJet " << nJetGen << endl;
+      }
+			      
     } // Find matching/recoiling genjet
     
     

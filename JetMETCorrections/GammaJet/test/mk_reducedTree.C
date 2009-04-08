@@ -36,18 +36,7 @@
   // *** Summer08 ***
   // Break wide pThat bins into smaller ones for mc factorization
   // This is a manual mapping from narrow bins to original files
-//   signal["30"] = "30";
-//   signal["50"] = "30";
-//   signal["80"] = "80";
-//   signal["120"] = "80";
-//   signal["170"] = "170";
-//   signal["230"] = "170";
-//   signal["300"] = "300";
-//   signal["380"] = "300";
-//   signal["470"] = "470";
-//   signal["800"] = "800";
   signal["15"] = 15;
-  /*
   signal["30"] = 30;
   signal["50"] = 30;
   signal["80"] = 80;
@@ -58,7 +47,6 @@
   //signal["380"] = 300;
   signal["470"] = 470;
   signal["800"] = 800;
-  */
   signal["1400"] = 1400;
 
   // Cross sections per file listed in
@@ -105,21 +93,19 @@
   // Remove old output file list
   gROOT->ProcessLine(Form(".! rm output_PhotonJets_%s.txt", algo.c_str()));
   gROOT->ProcessLine(Form(".! mkdir output_PhotonJets_%s", algo.c_str()));
-  //for (map<string, string>::const_iterator it = signal.begin();
+
   for (map<string, int>::const_iterator it = signal.begin();
        it != signal.end(); ++it) {
     
     // Create temporary file list for given pT hat bin only
-    //gROOT->ProcessLine(Form(".! grep EtGamma_%s_summer08 inputfiles_summer08_PhotonJets.txt > inputfiles_tmp.txt", it->second));
-    //gROOT->ProcessLine(Form(".! grep EtGamma_%d_summer08 inputfiles_summer08_PhotonJets.txt > inputfiles_tmp.txt", it->second));
-    //gROOT->ProcessLine(Form(".! grep EtGamma_%d_summer08 inputfiles_summer08_PhotonJets_170.txt > inputfiles_tmp.txt", it->second));
     gROOT->ProcessLine(Form(".! grep EtGamma_%d_summer08 inputfiles_summer08_PhotonJets_new.txt > inputfiles_tmp.txt", it->second));
 
     // Produce a root tuple for the pT hat bin
     gjettree *sig = new gjettree(getchain("inputfiles_tmp.txt"), Form("output_PhotonJets_%s/output_PhotonJets_%s.root", algo.c_str(), it->first));
-    //sig->Loop(signal_xsec[it->second],signal_start[it->first],
-    sig->Loop(signal_xsec[Form("%d",it->second)],signal_start[it->first],
+    sig->Loop(signal_xsec[Form("%d",it->second)], // int->string workaround
+	      signal_start[it->first],
 	      signal_limit[it->first],true);
+
     // Add new root tuple to output file list
     gROOT->ProcessLine(Form(".! echo \"output_PhotonJets_%s/output_PhotonJets_%s.root\" >> output_PhotonJets_%s.txt", algo.c_str(), it->first, algo.c_str()));
     delete sig;
@@ -135,8 +121,8 @@
   map<string, double> qcd_start;
   map<string, double> qcd_limit;
   // *** Summer08 ***
-  // https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008#Pythia6
-  // units in pb
+  // Break wide pThat bins into smaller ones for mc factorization
+  // This is a manual mapping from narrow bins to original files
   qcd["30"] = 30;
   qcd["50"] = 30;
   qcd["80"] = 80;
@@ -151,6 +137,10 @@
   qcd["1000"] = 800;
   qcd["1400"] = 1400;
 
+  // Cross sections per file listed in
+  // https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008#Pythia6
+  // original units in pb
+  // NB: not yet corrected for imposing an upper limit
   qcd_xsec["30"] = 109057220.4;
   qcd_xsec["80"] = 1934639.567;
   qcd_xsec["80"] = 1934639.567;
@@ -160,6 +150,7 @@
   qcd_xsec["800"] = 11.9419745;
   qcd_xsec["1400"] = 0.1720187189;
 
+  // Manual mapping of the starting value
   qcd_start["30"] = 30.;
   qcd_start["50"] = 50.;
   qcd_start["80"] = 80.;
@@ -174,6 +165,7 @@
   qcd_start["1000"] = 1000.;
   qcd_start["1400"] = 1400.;
 
+  // Manual mapping of the upper limit
   qcd_limit["30"] = 50.;
   qcd_limit["50"] = 80.;
   qcd_limit["80"] = 120.;
@@ -191,28 +183,28 @@
   // Remove old output file list
   gROOT->ProcessLine(Form(".! rm output_QCD_%s.txt", algo.c_str()));
   gROOT->ProcessLine(Form(".! mkdir output_QCD_%s", algo.c_str()));
-  //for (map<string, string>::const_iterator it = qcd.begin();
+
   for (map<string, int>::const_iterator it = qcd.begin();
        it != qcd.end(); ++it) {
 
     // Create temporary file list for given pT hat bin only
-    // *** Summer08 ***
-    //gROOT->ProcessLine(Form(".! grep QCD_%s_summer08 inputfiles_summer08_QCD.txt > inputfiles_tmp.txt", it->first));
-    gROOT->ProcessLine(Form(".! grep QCD_%d_summer08 inputfiles_summer08_QCD.txt > inputfiles_tmp.txt", it->second));
+    gROOT->ProcessLine(Form(".! grep QCD_%d_summer08 inputfiles_summer08_QCD_new.txt > inputfiles_tmp.txt", it->second));
 
     // Produce a root tuple for the pT hat bin
     gjettree *bkg =new gjettree(getchain("inputfiles_tmp.txt"), Form("output_QCD_%s/output_QCD_%s.root", algo.c_str(), it->first));
-    //bkg->Loop(qcd_xsec[it->second], qcd_start[it->first],
-        bkg->Loop(qcd_xsec[Form("%d",it->second)], qcd_start[it->first],
+    bkg->Loop(qcd_xsec[Form("%d",it->second)], // int->string workaround
+	      qcd_start[it->first],
 	      qcd_limit[it->first], false);
+
     // Add new root tuple to output file list
     gROOT->ProcessLine(Form(".! echo \"output_QCD_%s/output_QCD_%s.root\" >> output_QCD_%s.txt", algo.c_str(), it->first, algo.c_str()));
     delete bkg;
   } // for qcd
 
+  */
+
   // Merge PhotonJets and QCD lists
   gROOT->ProcessLine(Form(".! cat output_PhotonJets_%s.txt > output_mixed_%s.txt", algo.c_str(), algo.c_str()));
   gROOT->ProcessLine(Form(".! cat output_QCD_%s.txt >> output_mixed_%s.txt", algo.c_str(), algo.c_str()));
-  */
 
 }
