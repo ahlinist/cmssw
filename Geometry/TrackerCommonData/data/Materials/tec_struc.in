@@ -829,6 +829,7 @@ MCVolume: 1402.7328 cm3 (for all TEC)
 * 5 "Tiltmeter box"	    "Carbon fibre str."	  21.5290 1	SUP
 * 6 "Tiltmeter cable" 	    "Copper"	  	   0.4464 1     CAB
 * 7 "Tiltmeter cable sup"   "Polyethylene"         4.2105 1     CAB
+* 8 "Tiltmeter box cap"     "Carbon fibre str."   21.53   1     SUP
 ....................................................................................
 ====================================================================================
 o TEC_CircPipe
@@ -919,20 +920,25 @@ o TEC_AlignRing
 
 MCVolume: 11884.6 cm3 (for all TEC)
 
-   TM = Tiltmeter
+   TM = Tiltmeter. Cables are missing, do neither have drawings nor know
+   routing or type. Also no info about collimators, missing six pieces.
 
 ....................................................................................
-#   "TEC_AlignRing"             "TEC_AlignRing"         11884.6       -1
-* 1 "Ring itself"              "Carbon fibre str."  2985.86  1 SUP
-* 2 "pillars"		       "Aluminium"   	    126.77   1 SUP
-* 3 "support Clamp"	       "Aluminium"	    37.11    1 SUP
-* 4 "inserts"		       "Aluminium"	    19.89    1 SUP
-* 5 "TM Mechanics"	       "Aluminium"	    84.44    1 SUP
-* 6 "TM active"		       "Epoxy"		    436.92   1 ELE
-* 7 "TM electronics"	       "T_FR4"		    28.2353  1 ELE
-* 8 "TM box"		       "Carbon fibre str."  21.53    1 SUP
- 9 "Large inserts"            "Aluminium"           -1  1 SUP 
- To be filled by M. Wlochal
+#   "TEC_AlignRing"            "TEC_AlignRing"      11884.6       -1
+* 1 "Ring itself"              "Carbon fibre str."  2798.29  1 SUP
+* 2 "Pillars Alu"	       "Aluminium"   	    43.10    1 SUP
+* 3 "Pillars CF"               "Carbon fibre str."  74.39    1 SUP
+* 3 "Pillar inserts"	       "Aluminium"	    37.11    1 SUP
+* 4 "Small inserts"	       "Aluminium"	    20.76    1 SUP
+* 5 "TM Mechanics"	       "Aluminium"	    42.22    1 SUP
+* 6 "TM active"		       "Epoxy"		    218.46   1 ELE
+* 7 "TM electronics"	       "T_FR4"		    14.1176  1 ELE
+* 8 "TM cover"		       "Aluminium"  	    23.70    1 SUP
+* 9 "Bolts"		       "Aluminium"          116.53   1 SUP
+* 10 "Collimator housing"      "Titanium"           26.49    1 SUP
+* 11 "Collimator cover"        "Aluminium"          62.22    1 SUP
+* 12 "Collimator optics"       "Silicon"            7.725    1 ELE
+* 13 "Potentiometers"          "Aluminium"          42.22    1 ELE
 ....................................................................................
 ====================================================================================
 
