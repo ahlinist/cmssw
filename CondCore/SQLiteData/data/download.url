@@ -1,5 +1,4 @@
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/cmscond_build_localcatalog
-http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/mydata.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/MVAJetTags_CMSSW160validation.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/DTFullMap.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/data200/electronIdLikelihood.db
@@ -53,3 +52,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/EarlyCollision.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/Ecal_31X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/pixelLA.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/l1config31XV2.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/mydata.db
+
