@@ -44,7 +44,7 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/CSCIdealGeometry310me42_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/CSCIdealGeometryErrors310me42_mc.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/dbfile_Strip_31X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/dbfile_Strip_31X_31Mar.db
-http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/geometry.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/geometry_v3.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/HCAL_CMSSW_3_1_0_pre5.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/testNewXML_all.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/EaryCollision_IDEAL.db
@@ -52,5 +52,10 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/EarlyCollision.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/Ecal_31X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/pixelLA.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/l1config31XV2.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DElectronPayload.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DKaonPayload.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DMipPayload.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DPionPayload.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DProtonPayload.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/RecoTauTagConditions_31X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/mydata.db
-
