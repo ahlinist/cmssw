@@ -36,7 +36,7 @@ process.allLayer0PFJets.removeOverlaps.electrons.collection = cms.InputTag("allL
 addJetCollection(process,'iterativeCone5PFJets', 'PF', [0,1], runCleaner="PFJet",doJTA=False,doBTagging=True,jetCorrLabel=None,doType1MET=True,doL1Counters=False)
 #switchJetCollection(process,'iterativeCone5PFJets', [0,1], runCleaner="PFJet",doJTA=False,doBTagging=True,jetCorrLabel=None,doType1MET=True)
 
-process.load("TauAnalysis.CandidateTools.elecMuPairProducer_cff")
+process.load("TauAnalysis.CandidateTools.elecMuPairProduction_cff")
 
 process.testBTag = cms.EDAnalyzer('TestBTag',
   jetTag = cms.InputTag('allLayer1Jets'),
