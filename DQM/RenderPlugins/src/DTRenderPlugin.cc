@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.44 2009/04/07 08:20:16 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.45 2009/04/09 11:48:52 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.44 $
-  \date $Date: 2009/04/07 08:20:16 $
+  \version $Revision: 1.45 $
+  \date $Date: 2009/04/09 11:48:52 $
 */
 
 #include "TProfile2D.h"
@@ -115,7 +115,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
 
-  if(o.name.find("04-Noise/NoiseSummary") != std::string::npos) {
+  if(o.name.find("05-Noise/NoiseSummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
