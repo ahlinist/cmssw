@@ -10,6 +10,8 @@
 
 #include <TMath.h>
 
+#include <stdlib.h>
+
 bool matchesGenElectron(const pat::Electron& patElectron)
 {
   //std::cout << "<matchesGenElectron>:" << std::endl;
@@ -74,6 +76,9 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
 
   electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+
+  electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
 }
 
 ElectronHistManager::~ElectronHistManager()
@@ -82,6 +87,7 @@ ElectronHistManager::~ElectronHistManager()
   clearIsoParam(electronTrkIsoParam_);
   clearIsoParam(electronEcalIsoParam_);
   clearIsoParam(electronHcalIsoParam_);
+  clearIsoParam(electronParticleFlowIsoParam_);
 }
 
 void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
@@ -121,6 +127,11 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
     hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
     hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
 
+    hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "ElectronParticleFlowIsoPt", 100, 0., 20.);    
+    hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "ElectronPFChargedHadronIsoPt", 100, 0., 20.);   
+    hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "ElectronPFNeutralHadronIsoPt", 100, 0., 20.);   
+    hElectronPFGammaIsoPt_ = dqmStore.book1D("ElectronPFGammaIsoPt", "ElectronPFGammaIsoPt", 100, 0., 20.);  
+
     hElectronTrkIsoValProfile_ = dqmStore.book1D("ElectronTrkIsoValProfile", "ElectronTrkIsoValProfile", 100, 0., 10.);
     hElectronTrkIsoEtaDistProfile_ = dqmStore.book1D("ElectronTrkIsoEtaDistProfile", "ElectronTrkIsoEtaDistProfile", 15, 0., 1.5);
     hElectronTrkIsoPhiDistProfile_ = dqmStore.book1D("ElectronTrkIsoPhiDistProfile", "ElectronTrkIsoPhiDistProfile", 15, 0., 1.5);
@@ -146,6 +157,23 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
       std::string hElectronHcalIsoPtConeSizeDepName_i = std::string("ElectronHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
       hElectronHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronHcalIsoPtConeSizeDepName_i, hElectronHcalIsoPtConeSizeDepName_i, 
 							       100, 0., 20.));
+
+      std::string hElectronParticleFlowIsoPtConeSizeDepName_i 
+	= std::string("ElectronParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hElectronParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronParticleFlowIsoPtConeSizeDepName_i, 
+								       hElectronParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hElectronPFChargedHadronIsoPtConeSizeDepName_i 
+	= std::string("ElectronChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hElectronPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFChargedHadronIsoPtConeSizeDepName_i, 
+									  hElectronPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hElectronPFNeutralHadronIsoPtConeSizeDepName_i 
+	= std::string("ElectronPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hElectronPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 
+									  hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hElectronPFGammaIsoPtConeSizeDepName_i 
+	= std::string("ElectronPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hElectronPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFGammaIsoPtConeSizeDepName_i, 
+								  hElectronPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
     }
   }
 }
@@ -256,6 +284,16 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   hElectronHcalIsoPt_->Fill(patElectron.hcalIso());
   hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso());
   
+  //std::cout << " particleIso = " << patElectron.particleIso() << std::endl;
+  //std::cout << " chargedParticleIso = " << patElectron.chargedParticleIso() << std::endl;
+  //std::cout << " neutralParticleIso = " << patElectron.neutralParticleIso() << std::endl;
+  //std::cout << " gammaParticleIso = " << patElectron.gammaParticleIso() << std::endl;
+  
+  hElectronParticleFlowIsoPt_->Fill(patElectron.particleIso());
+  hElectronPFChargedHadronIsoPt_->Fill(patElectron.chargedParticleIso());
+  hElectronPFNeutralHadronIsoPt_->Fill(patElectron.neutralParticleIso());
+  hElectronPFGammaIsoPt_->Fill(patElectron.gammaParticleIso());
+
   fillLeptonIsoDepositHistograms(patElectron.trackerIsoDeposit(), 
 				 hElectronTrkIsoValProfile_, hElectronTrkIsoEtaDistProfile_, hElectronTrkIsoPhiDistProfile_);
   fillLeptonIsoDepositHistograms(patElectron.ecalIsoDeposit(), 
@@ -279,6 +317,30 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
 
     float electronHcalIsoDeposit_i = patElectron.hcalIsoDeposit()->countWithin(isoConeSize_i, electronHcalIsoParam_, false);
     hElectronHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronHcalIsoDeposit_i);
+
+    if ( patElectron.isoDeposit(pat::ParticleIso) ) {
+      double electronParticleFlowIsoDeposit_i 
+	= patElectron.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+      hElectronParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronParticleFlowIsoDeposit_i);
+    }
+    
+    if ( patElectron.isoDeposit(pat::ChargedParticleIso) ) {
+      double electronPFChargedHadronIsoDeposit_i 
+	= patElectron.isoDeposit(pat::ChargedParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+      hElectronPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFChargedHadronIsoDeposit_i);
+    }
+    
+    if ( patElectron.isoDeposit(pat::NeutralParticleIso) ) {
+      double electronPFNeutralHadronIsoDeposit_i 
+	= patElectron.isoDeposit(pat::NeutralParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+      hElectronPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFNeutralHadronIsoDeposit_i);
+    }
+
+    if ( patElectron.isoDeposit(pat::GammaParticleIso) ) {
+      double electronPFGammaIsoDeposit_i 
+	= patElectron.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
+      hElectronPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFGammaIsoDeposit_i);
+    }
   }
 }
 

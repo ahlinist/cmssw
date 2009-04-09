@@ -68,6 +68,7 @@ class ElectronHistManager : public HistManagerBase
 
   MonitorElement* hElectronIdRobust_;
   
+//--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hElectronTrkIsoPt_;
   MonitorElement* hElectronEcalIsoPt_;
   MonitorElement* hElectronEcalIsoPtBarrel_;
@@ -94,6 +95,19 @@ class ElectronHistManager : public HistManagerBase
   std::vector<MonitorElement*> hElectronTrkIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronEcalIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronHcalIsoPtConeSizeDep_;
+
+//--- IsoDeposits reconstructed from Partcile Flow
+  MonitorElement* hElectronParticleFlowIsoPt_;
+  MonitorElement* hElectronPFChargedHadronIsoPt_;
+  MonitorElement* hElectronPFNeutralHadronIsoPt_;
+  MonitorElement* hElectronPFGammaIsoPt_;
+
+  std::vector<MonitorElement*> hElectronParticleFlowIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hElectronPFChargedHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hElectronPFNeutralHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hElectronPFGammaIsoPtConeSizeDep_;
+
+  reco::isodeposit::AbsVetos electronParticleFlowIsoParam_;
 };
 
 #endif  

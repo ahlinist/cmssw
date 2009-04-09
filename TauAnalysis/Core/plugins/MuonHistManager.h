@@ -68,6 +68,7 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonNumberOfChambers_;
   MonitorElement* hMuonSegmentCompatibility_;
 
+//--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hMuonTrkIsoPt_;
   MonitorElement* hMuonEcalIsoPt_;
   MonitorElement* hMuonHcalIsoPt_;
@@ -92,6 +93,19 @@ class MuonHistManager : public HistManagerBase
   reco::isodeposit::AbsVetos muonTrkIsoParam_;
   reco::isodeposit::AbsVetos muonEcalIsoParam_;
   reco::isodeposit::AbsVetos muonHcalIsoParam_;
+
+//--- IsoDeposits reconstructed from Partcile Flow
+  MonitorElement* hMuonParticleFlowIsoPt_;
+  MonitorElement* hMuonPFChargedHadronIsoPt_;
+  MonitorElement* hMuonPFNeutralHadronIsoPt_;
+  MonitorElement* hMuonPFGammaIsoPt_;
+
+  std::vector<MonitorElement*> hMuonParticleFlowIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hMuonPFChargedHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hMuonPFNeutralHadronIsoPtConeSizeDep_;
+  std::vector<MonitorElement*> hMuonPFGammaIsoPtConeSizeDep_;
+
+  reco::isodeposit::AbsVetos muonParticleFlowIsoParam_;
 };
 
 #endif  
