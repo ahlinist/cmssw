@@ -10,8 +10,13 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
+
+# import utility function for switching pat::Tau input
+# to different reco::Tau collection stored on AOD
+from PhysicsTools.PatAlgos.tools.tauTools import * 
 
 # import particle data table
 # needed for print-out of generator level information
@@ -38,6 +43,8 @@ process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
   fileName = cms.untracked.string('muTauSkim_patTuple.root')
 )
 
+# print memory consumed by cmsRun
+# (for debugging memory leaks)
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
 #  ignoreTotal = cms.untracked.int32(1) # default is one
 #)
@@ -47,8 +54,12 @@ process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
 #  maxEventsToPrint = cms.untracked.int32(10)
 #)
 
+# print debug information whenever plugins get loaded dynamically from libraries
+# (for debugging problems with plugin related dynamic library loading)
+#process.add_( cms.Service("PrintLoadingPlugins") )
+
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(100)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -66,9 +77,11 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
         'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Configuration/test/muTauSkim.root'
-#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Skimming/test/selEvents_alfredo.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_Zmumu.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_WplusJets.root' 
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_WplusJets.root'
+#    ),
+#    eventsToProcess = cms.untracked.VEventID(
+#      '1:386'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -104,6 +117,15 @@ process.source = cms.Source("PoolSource",
 #  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
 #
 #--------------------------------------------------------------------------------
+
+# comment-out to take reco::CaloTaus instead of reco::PFTaus
+# as input for pat::Tau production
+#switchToCaloTau(process)
+
+# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
+# instead of fixed dR = 0.07 signal cone reco::PFTaus
+# as input for pat::Tau production
+switchToPFTauShrinkingCone(process)
 
 process.p = cms.Path( process.producePatTuple
 #                    +process.printList            # uncomment to enable print-out of generator level particles
