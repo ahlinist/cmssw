@@ -7,27 +7,7 @@ import FWCore.ParameterSet.Config as cms
 #
 # import "official" PAT production sequences
 #
-from PhysicsTools.PatAlgos.patLayer0_cff import *
-from PhysicsTools.PatAlgos.patLayer1_cff import *
-
-#--------------------------------------------------------------------------------
-#
-# CV: disable PAT photon sequences for now
-# (until tags are more stable...)
-#
-# NOTE: temporary fix for CMSSW_2_2_x only !!
-#
-patBeforeLevel0Reco.remove(patAODPhotonIsolation)
-patLayer0Cleaners.remove(allLayer0Photons)
-patHighLevelReco_withoutPFTau.remove(patPhotonId)
-patHighLevelReco_withoutPFTau.remove(patLayer0PhotonIsolation)
-patMCTruth_LeptonPhoton.remove(photonMatch)
-patTrigMatch.remove(photonTrigMatchHLT1PhotonRelaxed)
-allObjects.remove(layer1Photons)
-allObjects.remove(layer1Hemispheres)
-
-eleIsoDepositHcalFromTowers.ExtractorPSet = cms.PSet(EleIsoHcalFromTowersExtractorBlock)
-#--------------------------------------------------------------------------------
+from PhysicsTools.PatAlgos.patSequences_cff import *
 
 #
 # reconstruct objects needed by TauAnalysis customized PAT sequences
@@ -70,8 +50,8 @@ from TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff import *
 #
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 
-producePatTuple = cms.Sequence( producePrePat         # comment-out if running on "officially" produced PAT-tuples
-                               +patLayer0 + patLayer1 # comment-out if running on "officially" produced PAT-tuples
+producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
+                               +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
                                +producePostPat
                                +produceLayer1SelLeptons + selectLayer1Jets
                                +produceDiTauPairsAllKinds
