@@ -73,6 +73,17 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorAgainstElectrons_;
   MonitorElement* hTauDiscriminatorAgainstMuons_;
 
+  MonitorElement* hTauTaNCoutputOneProngNoPi0s_;
+  MonitorElement* hTauTaNCoutputOneProngOnePi0_;
+  MonitorElement* hTauTaNCoutputOneProngTwoPi0s_;
+  MonitorElement* hTauTaNCoutputThreeProngNoPi0s_;
+  MonitorElement* hTauTaNCoutputThreeProngOnePi0_;
+  
+  MonitorElement* hTauDiscriminatorTaNCfrOnePercent_;
+  MonitorElement* hTauDiscriminatorTaNCfrHalfPercent_;
+  MonitorElement* hTauDiscriminatorTaNCfrQuarterPercent_;
+  MonitorElement* hTauDiscriminatorTaNCfrTenthPercent_;
+
   MonitorElement* hTauTrkIsoEnProfile_;
   MonitorElement* hTauTrkIsoPtProfile_;
   MonitorElement* hTauTrkIsoEtaDistProfile_;
