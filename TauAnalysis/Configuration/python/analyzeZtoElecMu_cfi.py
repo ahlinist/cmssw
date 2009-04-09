@@ -248,13 +248,13 @@ elecMuEventDump = cms.PSet(
       
   genParticleSource = cms.InputTag('genParticles'),
   genTauJetSource = cms.InputTag('tauGenJets'),
-  #electronSource = cms.InputTag('allLayer1ElectronsSel'),
+  #electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
   electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-  #muonSource = cms.InputTag('allLayer1MuonsSel'),
+  #muonSource = cms.InputTag('cleanLayer1MuonsSel'),
   muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-  tauSource = cms.InputTag('allLayer1TausSel'),
+  tauSource = cms.InputTag('cleanLayer1TausSel'),
   diTauCandidateSource = cms.InputTag('allElecMuPairs'),
-  metSource = cms.InputTag('allLayer1METs'),
+  metSource = cms.InputTag('layer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
   jetSource = cms.InputTag('selectedLayer1JetsEt20'),
 
