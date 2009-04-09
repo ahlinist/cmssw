@@ -9,7 +9,8 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
 process.GlobalTag.globaltag = 'IDEAL_V11::All'
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
@@ -84,7 +85,6 @@ process.source = cms.Source("PoolSource",
 #  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
 #
 #--------------------------------------------------------------------------------
-
 
 process.p = cms.Path( process.producePatLayer1ForTauAnalyses
                      +process.produceElecMuPairs
