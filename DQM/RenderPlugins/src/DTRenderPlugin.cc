@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.43 2009/04/06 16:58:32 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.44 2009/04/07 08:20:16 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.43 $
-  \date $Date: 2009/04/06 16:58:32 $
+  \version $Revision: 1.44 $
+  \date $Date: 2009/04/07 08:20:16 $
 */
 
 #include "TProfile2D.h"
@@ -386,7 +386,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( o.name.find("CorrFractionSummary_W") != std::string::npos ||
       o.name.find("PhiSlopeSummary_W")     != std::string::npos ||
       o.name.find("PhibSlopeSummary_W")    != std::string::npos ||
-      o.name.find("2ndFractionSummary_W")  != std::string::npos ) {
+      o.name.find("2ndFractionSummary_W")  != std::string::npos ||
+      o.name.find("MatchingSummary_W")     != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(5,true);
     obj->GetXaxis()->CenterLabels();
@@ -408,7 +409,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   } else if( o.name.find("CorrFractionSummary") != std::string::npos ||
 	     o.name.find("PhiSlopeSummary")     != std::string::npos ||
-	     o.name.find("PhibSlopeSummary")    != std::string::npos ||
+ 	     o.name.find("PhibSlopeSummary")    != std::string::npos ||
+	     o.name.find("MatchingSummary")     != std::string::npos ||
 	     o.name.find("2ndFractionSummary")  != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
@@ -452,6 +454,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 	     o.name.find("ResidualBX")       != std::string::npos ||
 	     o.name.find("PhiTkvsTrig")      != std::string::npos ||
 	     o.name.find("PhibTkvsTrig")     != std::string::npos ||
+	     o.name.find("Matching")         != std::string::npos ||
 	     o.name.find("TriggerInclusive") != std::string::npos ) {
     obj->GetXaxis()->SetNdivisions(13,true);
     if(o.name.find("Phi") != std::string::npos)
@@ -476,8 +479,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     else if(o.name.find("TkvsTrigIntercept") != std::string::npos) {
       obj->SetMaximum(10.);
       obj->SetMinimum(-10.);
-    }
-    else if(o.name.find("TriggerInclusive") != std::string::npos) {
+    } 
+    else if(o.name.find("Matching")         != std::string::npos ||
+	    o.name.find("TriggerInclusive") != std::string::npos) {
       obj->SetMinimum(-0.00000001);
     }
     else if(o.name.find("BX") != std::string::npos) {
