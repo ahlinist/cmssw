@@ -103,21 +103,4 @@ pfElectronIsol = cms.Sequence( pfeleIsoDepositPFCandidates
                               * pfeleIsoNeDepositPFCandidates
                               * pfeleIsoGaDepositPFCandidates )
 
-#--------------------------------------------------------------------------------
-# read IsoDeposits and convert to ValueMap<IsoDeposit> keyed to electron candidate
-#--------------------------------------------------------------------------------
-
-electronIsolationValueMap = cms.EDFilter("MultipleIsoDepositsToValueMaps",
-    collection   = cms.InputTag("pixelMatchGsfElectrons"),
-    associations = cms.VInputTag(
-        cms.InputTag("eleIsoDepositTk"),
-        cms.InputTag("eleIsoDepositEcalFromHits"),
-        cms.InputTag("eleIsoDepositHcalFromTowers"),
-        cms.InputTag("pfeleIsoDepositPFCandidates"),
-        cms.InputTag("pfeleIsoChDepositPFCandidates"),
-        cms.InputTag("pfeleIsoNeDepositPFCandidates"),
-        cms.InputTag("pfeleIsoGaDepositPFCandidates")
-    )
-)
-
-recoElectronIsolation = cms.Sequence( electronIsoDeposits * pfElectronIsol * electronIsolationValueMap )
+recoElectronIsolation = cms.Sequence( electronIsoDeposits * pfElectronIsol )

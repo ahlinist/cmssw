@@ -56,10 +56,10 @@ allLayer1Electrons.isoDeposits = cms.PSet(
    tracker         = allLayer1Electrons.isolation.tracker.src,
    ecal            = allLayer1Electrons.isolation.ecal.src,
    hcal            = allLayer1Electrons.isolation.hcal.src,
-   particle        = cms.InputTag("electronIsolationValueMap", "pfeleIsoDepositPFCandidates"),
-   chargedparticle = cms.InputTag("electronIsolationValueMap", "pfeleIsoChDepositPFCandidates"),
-   neutralparticle = cms.InputTag("electronIsolationValueMap", "pfeleIsoNeDepositPFCandidates"),
-   gammaparticle   = cms.InputTag("electronIsolationValueMap", "pfeleIsoGaDepositPFCandidates")
+   particle        = cms.InputTag("pfeleIsoDepositPFCandidates"),
+   chargedparticle = cms.InputTag("pfeleIsoChDepositPFCandidates"),
+   neutralparticle = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
+   gammaparticle   = cms.InputTag("pfeleIsoGaDepositPFCandidates")
 )
 #
 # add electron Id. flags

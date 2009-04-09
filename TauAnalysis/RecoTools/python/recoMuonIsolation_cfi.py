@@ -16,23 +16,4 @@ pfMuonIsol = cms.Sequence( pfmuIsoDepositPFCandidates
                           * pfmuIsoNeDepositPFCandidates
                           * pfmuIsoGaDepositPFCandidates )
 
-#--------------------------------------------------------------------------------
-# read IsoDeposits and convert to ValueMap<IsoDeposit> keyed to muon candidate
-#--------------------------------------------------------------------------------
-
-muonIsolationValueMap = cms.EDFilter("MultipleIsoDepositsToValueMaps",
-    collection   = cms.InputTag("muons"),
-    associations = cms.VInputTag(
-        cms.InputTag("muIsoDepositCalByAssociatorTowers", "ecal"),
-        cms.InputTag("muIsoDepositCalByAssociatorTowers", "hcal"),
-        cms.InputTag("muIsoDepositCalByAssociatorTowers", "ho"),
-        cms.InputTag("muIsoDepositTk"),
-        cms.InputTag("muIsoDepositJets"),
-        cms.InputTag("pfmuIsoDepositPFCandidates"),
-        cms.InputTag("pfmuIsoChDepositPFCandidates"),
-        cms.InputTag("pfmuIsoNeDepositPFCandidates"),
-        cms.InputTag("pfmuIsoGaDepositPFCandidates")
-    )
-)
-
-recoMuonIsolation = cms.Sequence( pfMuonIsol * muonIsolationValueMap )
+recoMuonIsolation = cms.Sequence( pfMuonIsol )
