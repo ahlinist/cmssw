@@ -10,9 +10,9 @@
  * \author Konstantinos A. Petridis, Imperial College;
  *  modified by Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: PATLeptonIpSelector.h,v 1.2 2009/02/06 14:18:59 veelken Exp $
+ * $Id: PATLeptonIpSelector.h,v 1.3 2009/04/07 08:29:50 veelken Exp $
  *
  */
 
@@ -43,7 +43,9 @@ class PATLeptonIpSelector
 
   private:
     std::vector<const T*> selected_;
+
     edm::InputTag vertexSrc_;
+
     double ipMin_;
     bool applyIpMin_;
     double ipMax_;
