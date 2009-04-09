@@ -3,7 +3,7 @@ import copy
 
 # require tau candidate to be within geometric acceptance of Pixel + SiTracker detectors
 selectedLayer1TausEta21Individual = cms.EDFilter("PATTauSelector",
-    src = cms.InputTag("allLayer1Taus"),
+    src = cms.InputTag("cleanLayer1Taus"),
     cut = cms.string("abs(eta) < 2.1"),
     filter = cms.bool(False)                                 
 )
@@ -77,9 +77,9 @@ selectLayer1Taus = cms.Sequence( selectedLayer1TausEta21Individual
                                 *selectedLayer1TausElectronVetoIndividual
                                 *selectedLayer1TausMuonVetoIndividual )
 
-allLayer1TausSel = cms.EDProducer("PATTauSelProducer",
+cleanLayer1TausSel = cms.EDProducer("PATTauSelProducer",
 
-  leptonSource = cms.InputTag("allLayer1Taus"),
+  leptonSource = cms.InputTag("cleanLayer1Taus"),
 
   selFlags = cms.PSet(
     tauAnalysisSelTauEta21 = cms.PSet(
@@ -112,4 +112,4 @@ allLayer1TausSel = cms.EDProducer("PATTauSelProducer",
   )
 )
 
-produceLayer1SelTaus = cms.Sequence( selectLayer1Taus * allLayer1TausSel )
+produceLayer1SelTaus = cms.Sequence( selectLayer1Taus * cleanLayer1TausSel )

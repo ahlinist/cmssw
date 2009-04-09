@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-#--------------------------------------------------------------------------------  
-# reconstruct IsoDeposits for electrons in an enlarged isolation cone 
+#--------------------------------------------------------------------------------
+# compute IsoDeposits based on reconstructed tracks,
+# ECAL crystals and clusters and on HCAL towers in an enlarged isolation cone 
 #--------------------------------------------------------------------------------
 
 from RecoEgamma.EgammaIsolationAlgos.eleTrackExtractorBlocks_cff import *
@@ -26,8 +27,10 @@ from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff import *
 #
 #        if module gets included twice.
 #
-# NOTE: include temporarily disabled for CMSSW_2_2_x only !!
+# NOTE: temporarily import eleIsoDepositHcalFromTowers from
+#        PhysicsTools/PatAlgos/python/recoLayer0/electronIsolation_cff.py !!
 #
+from PhysicsTools.PatAlgos.recoLayer0.electronIsolation_cff import *
 #from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositHcalFromTowers_cff import *
 #--------------------------------------------------------------------------------
 
@@ -36,6 +39,7 @@ from RecoEgamma.EgammaIsolationAlgos.eleIsoDepositEcalFromHits_cff import *
 #
 EleIsoTrackExtractorBlock.DR_Max = cms.double(1.)
 
+eleIsoDepositTk.src = cms.InputTag("pixelMatchGsfElectrons")
 eleIsoDepositTk.ExtractorPSet = cms.PSet(EleIsoTrackExtractorBlock)
 
 #
@@ -43,6 +47,7 @@ eleIsoDepositTk.ExtractorPSet = cms.PSet(EleIsoTrackExtractorBlock)
 #
 EleIsoEcalFromHitsExtractorBlock.extRadius = cms.double(1.)
 
+eleIsoDepositEcalFromHits.src = cms.InputTag("pixelMatchGsfElectrons")
 eleIsoDepositEcalFromHits.ExtractorPSet = cms.PSet(EleIsoEcalFromHitsExtractorBlock)
 
 #
@@ -50,9 +55,10 @@ eleIsoDepositEcalFromHits.ExtractorPSet = cms.PSet(EleIsoEcalFromHitsExtractorBl
 #
 EleIsoHcalFromTowersExtractorBlock.extRadius = cms.double(1.)
 
-#eleIsoDepositHcalFromTowers.ExtractorPSet = cms.PSet(EleIsoHcalFromTowersExtractorBlock)
+eleIsoDepositHcalFromTowers.src = cms.InputTag("pixelMatchGsfElectrons")
+eleIsoDepositHcalFromTowers.ExtractorPSet = cms.PSet(EleIsoHcalFromTowersExtractorBlock)
 
-electronIsoDeposits = cms.Sequence( eleIsoDepositEcalFromHits )
+#electronIsoDeposits = cms.Sequence( eleIsoDepositEcalFromHits )
 #--------------------------------------------------------------------------------
 #
 # CV: eleIsoDepositTk module already executed by sequence eleIsoDepositAOD
@@ -76,7 +82,42 @@ electronIsoDeposits = cms.Sequence( eleIsoDepositEcalFromHits )
 #     ---- ScheduleExecutionFailure END
 #
 #        if module gets executed twice.
-#electronIsoDeposits = cms.Sequence( eleIsoDepositTk
-#                                   *eleIsoDepositEcalFromHits 
-#                                   *eleIsoDepositHcalFromTowers )
+electronIsoDeposits = cms.Sequence( eleIsoDepositTk
+                                   *eleIsoDepositEcalFromHits 
+                                   *eleIsoDepositHcalFromTowers )
 #--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# compute particle flow based IsoDeposits
+#--------------------------------------------------------------------------------
+
+from PhysicsTools.PFCandProducer.pfElectronIsolation_cff import *
+pfeleIsoDepositPFCandidates.src = cms.InputTag("pixelMatchGsfElectrons")
+pfeleIsoChDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfeleIsoNeDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfeleIsoGaDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfElectrons.src = pfeleIsoDepositPFCandidates.src
+
+pfElectronIsol = cms.Sequence( pfeleIsoDepositPFCandidates
+                              * pfeleIsoChDepositPFCandidates
+                              * pfeleIsoNeDepositPFCandidates
+                              * pfeleIsoGaDepositPFCandidates )
+
+#--------------------------------------------------------------------------------
+# read IsoDeposits and convert to ValueMap<IsoDeposit> keyed to electron candidate
+#--------------------------------------------------------------------------------
+
+electronIsolationValueMap = cms.EDFilter("MultipleIsoDepositsToValueMaps",
+    collection   = cms.InputTag("pixelMatchGsfElectrons"),
+    associations = cms.VInputTag(
+        cms.InputTag("eleIsoDepositTk"),
+        cms.InputTag("eleIsoDepositEcalFromHits"),
+        cms.InputTag("eleIsoDepositHcalFromTowers"),
+        cms.InputTag("pfeleIsoDepositPFCandidates"),
+        cms.InputTag("pfeleIsoChDepositPFCandidates"),
+        cms.InputTag("pfeleIsoNeDepositPFCandidates"),
+        cms.InputTag("pfeleIsoGaDepositPFCandidates")
+    )
+)
+
+recoElectronIsolation = cms.Sequence( electronIsoDeposits * pfElectronIsol * electronIsolationValueMap )

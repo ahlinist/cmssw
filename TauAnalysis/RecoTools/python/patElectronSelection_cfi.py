@@ -10,7 +10,7 @@ import copy
 
 # require electron candidate to pass the tight electron id. criteria
 selectedLayer1ElectronsTightId = cms.EDFilter("PATElectronSelector",
-     src = cms.InputTag("allLayer1Electrons"),
+     src = cms.InputTag("cleanLayer1Electrons"),
      cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'),
      filter = cms.bool(False)
 )
@@ -116,9 +116,9 @@ selectLayer1Electrons = cms.Sequence( selectedLayer1ElectronsTightId
 # indicating whether or not electrons passed individual selection criteria
 #--------------------------------------------------------------------------------
 
-allLayer1ElectronsSel = cms.EDProducer("PATElectronSelProducer",
+cleanLayer1ElectronsSel = cms.EDProducer("PATElectronSelProducer",
 
-  leptonSource = cms.InputTag("allLayer1Electrons"),
+  leptonSource = cms.InputTag("cleanLayer1Electrons"),
 
   selFlags = cms.PSet(
     tauAnalysisSelElectronTightIdGlobal = cms.PSet(
@@ -148,4 +148,4 @@ allLayer1ElectronsSel = cms.EDProducer("PATElectronSelProducer",
   )
 )
 
-produceLayer1SelElectrons = cms.Sequence( selectLayer1Electrons * allLayer1ElectronsSel )
+produceLayer1SelElectrons = cms.Sequence( selectLayer1Electrons * cleanLayer1ElectronsSel )

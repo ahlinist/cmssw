@@ -1,37 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
-from PhysicsTools.PatAlgos.cleaningLayer0.muonCleaner_cfi import *
+from PhysicsTools.PatAlgos.recoLayer0.muonIsolation_cff import *
 from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import *
+from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 
 #--------------------------------------------------------------------------------  
 # PAT layer 0 muon configuration parameters
 #--------------------------------------------------------------------------------
 
 # add isolated HLT muon trigger to PAT trigger match sequence
-patTrigMatchMuon = cms.Sequence( patTrigMatchHLT1MuonNonIso + patTrigMatchHLT1MuonIso )
-#patTrigMatch.replace(patTrigMatchHLT1MuonNonIso, patTrigMatchMuon)
 patTrigMatch._seq = patTrigMatch._seq * patTrigMatchHLT1MuonIso
-
-# increase size of muon isolation cone from default of deltaR = 0.3 to 0.6;
-# for muons to be considered "isolated", require:
-#  o sum(Pt) of tracks in isolation cone < 1 GeV
-#  o sum(Pt) of ECAL energy deposits in isolation cone < 1 GeV
-#  o ...
-allLayer0Muons.isolation.tracker.deltaR = cms.double(0.6)
-allLayer0Muons.isolation.tracker.cut = cms.double(1.0)
-
-allLayer0Muons.isolation.ecal.deltaR = cms.double(0.6)
-allLayer0Muons.isolation.ecal.cut = cms.double(1.0)
-
-allLayer0Muons.isolation.hcal.deltaR = cms.double(0.6)
-#allLayer0Muons.isolation.hcal.cut = cms.double(2.0)
-
-allLayer0Muons.isolation.user.deltaR = cms.double(0.6)
-#allLayer0Muons.isolation.user.cut = cms.double(2.0)
-
-# flag non-isolated muons, but do not reject them
-allLayer0Muons.bitsToIgnore = cms.vstring('Isolation/All')
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 muon configuration parameters
@@ -45,7 +24,18 @@ allLayer1Muons.isolation.ecal.deltaR = cms.double(0.6)
 allLayer1Muons.isolation.hcal.deltaR = cms.double(0.6)
 
 allLayer1Muons.isolation.user.deltaR = cms.double(0.6)
-
+#
+# add IsoDeposit objects for Track, ECAL and HCAL based isolation
+#
+allLayer1Muons.isoDeposits = cms.PSet(
+   tracker         = allLayer1Muons.isolation.tracker.src,
+   ecal            = allLayer1Muons.isolation.ecal.src,
+   hcal            = allLayer1Muons.isolation.hcal.src,
+   particle        = cms.InputTag("muonIsolationValueMap", "pfmuIsoDepositPFCandidates"),
+   chargedparticle = cms.InputTag("muonIsolationValueMap", "pfmuIsoChDepositPFCandidates"),
+   neutralparticle = cms.InputTag("muonIsolationValueMap", "pfmuIsoNeDepositPFCandidates"),
+   gammaparticle   = cms.InputTag("muonIsolationValueMap", "pfmuIsoGaDepositPFCandidates")
+)
 #
 # enable matching to HLT trigger information;
 # match offline reconstructed muons to isolated and non-isolated HLT muon paths
