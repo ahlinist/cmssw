@@ -10,7 +10,7 @@ import copy
 
 # select jets not identified as electron, muon or tau-jets
 selectedLayer1JetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
-     src = cms.InputTag("allLayer1Jets"),
+     src = cms.InputTag("cleanLayer1Jets"),
      srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkIPcumulative",
                                         "selectedLayer1MuonsTrkIPcumulative",
                                         "selectedLayer1TausForDiTauProngCumulative"),

@@ -11,7 +11,7 @@ import copy
 # require muon candidate to be a global muon
 # (track in muon system linked to track in Pixel + SiTracker detectors)
 selectedLayer1MuonsGlobal = cms.EDFilter("PATMuonSelector",
-     src = cms.InputTag("allLayer1Muons"),
+     src = cms.InputTag("cleanLayer1Muons"),
      cut = cms.string('isGlobalMuon()'),
      filter = cms.bool(False)
 )
@@ -121,9 +121,9 @@ selectLayer1Muons = cms.Sequence( selectedLayer1MuonsGlobal
 # indicating whether or not muons passed individual selection criteria
 #--------------------------------------------------------------------------------
 
-allLayer1MuonsSel = cms.EDProducer("PATMuonSelProducer",
+cleanLayer1MuonsSel = cms.EDProducer("PATMuonSelProducer",
 
-  leptonSource = cms.InputTag("allLayer1Muons"),
+  leptonSource = cms.InputTag("cleanLayer1Muons"),
 
   selFlags = cms.PSet(
     tauAnalysisSelMuonGlobal = cms.PSet(
@@ -150,7 +150,7 @@ allLayer1MuonsSel = cms.EDProducer("PATMuonSelProducer",
   )
 )
 
-produceLayer1SelMuons = cms.Sequence( selectLayer1Muons * allLayer1MuonsSel )
+produceLayer1SelMuons = cms.Sequence( selectLayer1Muons * cleanLayer1MuonsSel )
 
 #--------------------------------------------------------------------------------
 # define additional collections of muon candidates
