@@ -10,7 +10,8 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 # import sequence for PAT-tuple production
@@ -87,6 +88,15 @@ process.source = cms.Source("PoolSource",
 #  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
 #
 #--------------------------------------------------------------------------------
+
+# comment-out to take reco::CaloTaus instead of reco::PFTaus
+# as input for pat::Tau production
+#switchToCaloTau(process)
+
+# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
+# instead of fixed dR = 0.07 signal cone reco::PFTaus
+# as input for pat::Tau production
+switchToPFTauShrinkingCone(process)
 
 process.p = cms.Path( process.producePatTuple
 #                    +process.printList              # uncomment to enable print-out of generator level particles
