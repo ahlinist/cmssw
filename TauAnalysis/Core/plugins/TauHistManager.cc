@@ -6,6 +6,7 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 
 #include "PhysicsTools/Utilities/interface/deltaR.h"
 
@@ -14,11 +15,6 @@
 #include <TMath.h>
 
 #include <stdlib.h>
-
-pat::IsolationKeys isoDepositKeyParticleFlowIso = pat::ParticleIso;
-pat::IsolationKeys isoDepositKeyPFChargedHadronIso = pat::ChargedParticleIso;
-pat::IsolationKeys isoDepositKeyPFNeutralHadronIso = pat::NeutralParticleIso;
-pat::IsolationKeys isoDepositKeyPFGammaIso = pat::GammaParticleIso;
 
 bool matchesGenTau(const pat::Tau& patTau)
 {
@@ -134,11 +130,42 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
     hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.100, 0.100);
     hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
 
-    hTauDiscriminatorAgainstElectrons_ =  dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
-							  "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
-    hTauDiscriminatorAgainstMuons_ =  dqmStore.book1D("TauDiscriminatorAgainstMuons", 
-						      "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
+    hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
+							 "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
+    hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
+						     "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
 
+/*
+  add histograms of:
+   o TauGenJet decay mode
+   o reco TauDecayMode
+   o reco TauDecayMode (y-ayis) vs. TauGenJet decay mode (x-axis)
+   o TauGenJet mass
+   o pat::Tau mass
+   o reco TauDecayMode mass
+   o reco TauDecayMode mass separately for different decay modes
+ */
+
+    hTauTaNCoutputOneProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngNoPi0s", 
+						    "TauTaNCoutputOneProngNoPi0s", 102, -0.01, 1.01); 
+    hTauTaNCoutputOneProngOnePi0_ = dqmStore.book1D("TauTaNCoutputOneProngOnePi0", 
+						    "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
+    hTauTaNCoutputOneProngTwoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngTwoPi0s", 
+						     "TauTaNCoutputOneProngTwoPi0s", 102, -0.01, 1.01);
+    hTauTaNCoutputThreeProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngZeroPi0s", 
+						      "TauTaNCoutputOneProngZeroPi0s", 102, -0.01, 1.01);
+    hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputOneProngOnePi0", 
+						      "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
+
+    hTauDiscriminatorTaNCfrOnePercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrOnePercent",
+							 "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
+    hTauDiscriminatorTaNCfrHalfPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrHalfPercent",
+							  "TauDiscriminatorTaNCfrHalfPercent", 102, -0.01, 1.01);
+    hTauDiscriminatorTaNCfrQuarterPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrQuarterPercent",
+							     "TauDiscriminatorTaNCfrQuarterPercent", 102, -0.01, 1.01);
+    hTauDiscriminatorTaNCfrTenthPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrTenthPercent",
+							   "TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
+    
     hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
     hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
     hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
@@ -253,7 +280,29 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"));
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
+  
+    int tauDecayMode = patTau->decayMode();
+    MonitorElement* hTauTaNCoutput = 0;
+    if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) {
+      hTauTaNCoutput = hTauTaNCoutputOneProngNoPi0s_;
+    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion1PiZero ) {
+      hTauTaNCoutput = hTauTaNCoutputOneProngOnePi0_;
+    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion2PiZero ) {
+      hTauTaNCoutput = hTauTaNCoutputOneProngTwoPi0s_;
+    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion0PiZero ) {
+      hTauTaNCoutput = hTauTaNCoutputThreeProngNoPi0s_;
+    } else if ( tauDecayMode == reco::PFTauDecayMode::tauDecay3ChargedPion1PiZero ) {
+      hTauTaNCoutput = hTauTaNCoutputThreeProngOnePi0_;
+    } 
+    if ( hTauTaNCoutput ) {
+      hTauTaNCoutput->Fill(patTau->tauID("byTaNC"));
+    }
 
+    hTauDiscriminatorTaNCfrOnePercent_->Fill(patTau->tauID("byTaNCfrOnePercent"));
+    hTauDiscriminatorTaNCfrHalfPercent_->Fill(patTau->tauID("byTaNCfrHalfPercent"));
+    hTauDiscriminatorTaNCfrQuarterPercent_->Fill(patTau->tauID("byTaNCfrQuarterPercent"));
+    hTauDiscriminatorTaNCfrTenthPercent_->Fill(patTau->tauID("byTaNCfrTenthPercent"));
+ 
     fillTauIsoHistograms(*patTau);
     fillTauIsoConeSizeDepHistograms(*patTau);
   }
@@ -338,27 +387,27 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
       hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
     }
 
-    if ( patTau.isoDeposit(isoDepositKeyParticleFlowIso) ) {
+    if ( patTau.isoDeposit(pat::ParticleIso) ) {
       double tauParticleFlowIsoDeposit_i 
-	= patTau.isoDeposit(isoDepositKeyParticleFlowIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauParticleFlowIsoDeposit_i);
     }
     
-    if ( patTau.isoDeposit(isoDepositKeyPFChargedHadronIso) ) {
+    if ( patTau.isoDeposit(pat::ChargedParticleIso) ) {
       double tauPFChargedHadronIsoDeposit_i 
-	= patTau.isoDeposit(isoDepositKeyPFChargedHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::ChargedParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFChargedHadronIsoDeposit_i);
     }
     
-    if ( patTau.isoDeposit(isoDepositKeyPFNeutralHadronIso) ) {
+    if ( patTau.isoDeposit(pat::NeutralParticleIso) ) {
       double tauPFNeutralHadronIsoDeposit_i 
-	= patTau.isoDeposit(isoDepositKeyPFNeutralHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::NeutralParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFNeutralHadronIsoDeposit_i);
     }
 
-    if ( patTau.isoDeposit(isoDepositKeyPFGammaIso) ) {
+    if ( patTau.isoDeposit(pat::GammaParticleIso) ) {
       double tauPFGammaIsoDeposit_i 
-	= patTau.isoDeposit(isoDepositKeyPFGammaIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFGammaIsoDeposit_i);
     }
   }
