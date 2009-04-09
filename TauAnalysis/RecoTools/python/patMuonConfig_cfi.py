@@ -31,10 +31,10 @@ allLayer1Muons.isoDeposits = cms.PSet(
    tracker         = allLayer1Muons.isolation.tracker.src,
    ecal            = allLayer1Muons.isolation.ecal.src,
    hcal            = allLayer1Muons.isolation.hcal.src,
-   particle        = cms.InputTag("muonIsolationValueMap", "pfmuIsoDepositPFCandidates"),
-   chargedparticle = cms.InputTag("muonIsolationValueMap", "pfmuIsoChDepositPFCandidates"),
-   neutralparticle = cms.InputTag("muonIsolationValueMap", "pfmuIsoNeDepositPFCandidates"),
-   gammaparticle   = cms.InputTag("muonIsolationValueMap", "pfmuIsoGaDepositPFCandidates")
+   particle        = cms.InputTag("pfmuIsoDepositPFCandidates"),
+   chargedparticle = cms.InputTag("pfmuIsoChDepositPFCandidates"),
+   neutralparticle = cms.InputTag("pfmuIsoNeDepositPFCandidates"),
+   gammaparticle   = cms.InputTag("pfmuIsoGaDepositPFCandidates")
 )
 #
 # enable matching to HLT trigger information;
