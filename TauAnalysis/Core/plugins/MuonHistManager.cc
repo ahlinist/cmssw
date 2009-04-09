@@ -11,6 +11,8 @@
 
 #include <TMath.h>
 
+#include <stdlib.h>
+
 bool matchesGenMuon(const pat::Muon& patMuon)
 {
   //std::cout << "<matchesGenMuon>:" << std::endl;
@@ -67,6 +69,9 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 
   muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+
+  muonParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  muonParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
 }
 
 MuonHistManager::~MuonHistManager()
@@ -75,6 +80,7 @@ MuonHistManager::~MuonHistManager()
   clearIsoParam(muonTrkIsoParam_);
   clearIsoParam(muonEcalIsoParam_);
   clearIsoParam(muonHcalIsoParam_);
+  clearIsoParam(muonParticleFlowIsoParam_);
 }
 
 void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
@@ -114,6 +120,11 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
     hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
     hMuonIsoSumPt_ = dqmStore.book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
 
+    hMuonParticleFlowIsoPt_ = dqmStore.book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
+    hMuonPFChargedHadronIsoPt_ = dqmStore.book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
+    hMuonPFNeutralHadronIsoPt_ = dqmStore.book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 20.);   
+    hMuonPFGammaIsoPt_ = dqmStore.book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 20.);  
+
     hMuonTrkIsoValProfile_ = dqmStore.book1D("MuonTrkIsoValProfile", "MuonTrkIsoValProfile", 100, 0., 10.);
     hMuonTrkIsoEtaDistProfile_ = dqmStore.book1D("MuonTrkIsoEtaDistProfile", "MuonTrkIsoEtaDistProfile", 15, 0., 1.5);
     hMuonTrkIsoPhiDistProfile_ = dqmStore.book1D("MuonTrkIsoPhiDistProfile", "MuonTrkIsoPhiDistProfile", 15, 0., 1.5);
@@ -139,6 +150,23 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
       std::string hMuonHcalIsoPtConeSizeDepName_i = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
       hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, hMuonHcalIsoPtConeSizeDepName_i, 
 							   100, 0., 20.));
+
+      std::string hMuonParticleFlowIsoPtConeSizeDepName_i 
+	= std::string("MuonParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hMuonParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonParticleFlowIsoPtConeSizeDepName_i, 
+								   hMuonParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hMuonPFChargedHadronIsoPtConeSizeDepName_i 
+	= std::string("MuonChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hMuonPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFChargedHadronIsoPtConeSizeDepName_i, 
+								      hMuonPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hMuonPFNeutralHadronIsoPtConeSizeDepName_i 
+	= std::string("MuonPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hMuonPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 
+								      hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+      std::string hMuonPFGammaIsoPtConeSizeDepName_i 
+	= std::string("MuonPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+      hMuonPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFGammaIsoPtConeSizeDepName_i, 
+							      hMuonPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
     }
   }
 }
@@ -242,6 +270,16 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon)
   hMuonEcalIsoPt_->Fill(patMuon.ecalIso());
   hMuonHcalIsoPt_->Fill(patMuon.hcalIso());
   hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso());
+
+  //std::cout << " particleIso = " << patMuon.particleIso() << std::endl;
+  //std::cout << " chargedParticleIso = " << patMuon.chargedParticleIso() << std::endl;
+  //std::cout << " neutralParticleIso = " << patMuon.neutralParticleIso() << std::endl;
+  //std::cout << " gammaParticleIso = " << patMuon.gammaParticleIso() << std::endl;
+  
+  hMuonParticleFlowIsoPt_->Fill(patMuon.particleIso());
+  hMuonPFChargedHadronIsoPt_->Fill(patMuon.chargedParticleIso());
+  hMuonPFNeutralHadronIsoPt_->Fill(patMuon.neutralParticleIso());
+  hMuonPFGammaIsoPt_->Fill(patMuon.gammaParticleIso());
   
   fillLeptonIsoDepositHistograms(patMuon.trackerIsoDeposit(), 
 				 hMuonTrkIsoValProfile_, hMuonTrkIsoEtaDistProfile_, hMuonTrkIsoPhiDistProfile_);
@@ -266,6 +304,30 @@ void MuonHistManager::fillMuonIsoConeSizeDepHistograms(const pat::Muon& patMuon)
     
     double muonHcalIsoDeposit_i = patMuon.hcalIsoDeposit()->countWithin(isoConeSize_i, muonHcalIsoParam_, false);
     hMuonHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonHcalIsoDeposit_i);
+
+    if ( patMuon.isoDeposit(pat::ParticleIso) ) {
+      double muonParticleFlowIsoDeposit_i 
+	= patMuon.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+      hMuonParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonParticleFlowIsoDeposit_i);
+    }
+    
+    if ( patMuon.isoDeposit(pat::ChargedParticleIso) ) {
+      double muonPFChargedHadronIsoDeposit_i 
+	= patMuon.isoDeposit(pat::ChargedParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+      hMuonPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFChargedHadronIsoDeposit_i);
+    }
+    
+    if ( patMuon.isoDeposit(pat::NeutralParticleIso) ) {
+      double muonPFNeutralHadronIsoDeposit_i 
+	= patMuon.isoDeposit(pat::NeutralParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+      hMuonPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFNeutralHadronIsoDeposit_i);
+    }
+
+    if ( patMuon.isoDeposit(pat::GammaParticleIso) ) {
+      double muonPFGammaIsoDeposit_i 
+	= patMuon.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, muonParticleFlowIsoParam_, false);
+      hMuonPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(muonPFGammaIsoDeposit_i);
+    }
   }
 }
 
