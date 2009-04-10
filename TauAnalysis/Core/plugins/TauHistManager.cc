@@ -39,14 +39,14 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   //std::cout << "<TauHistManager::TauHistManager>:" << std::endl;
 
   tauSrc_ = cfg.getParameter<edm::InputTag>("tauSource");
-  //std::cout << " tauSrc = " << tauSrc_ << std::endl;
+  //std::cout << " tauSrc = " << tauSrc_.label() << std::endl;
 
   vertexSrc_ = ( cfg.exists("vertexSource") ) ? cfg.getParameter<edm::InputTag>("vertexSource") : edm::InputTag();
   if ( vertexSrc_.label() == "" ) {
     edm::LogWarning("TauHistManager") << " Configuration parameter 'vertexSource' not specified" 
 				      << " --> Impact Parameter histograms will NOT be plotted !!";
   }
-  //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+  //std::cout << " vertexSrc = " << vertexSrc_.label() << std::endl;
 
   if ( cfg.exists("tauIndicesToPlot") ) {
     std::string tauIndicesToPlot_string = cfg.getParameter<std::string>("tauIndicesToPlot");
@@ -145,6 +145,8 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
    o reco TauDecayMode mass
    o reco TauDecayMode mass separately for different decay modes
  */
+    
+    hTauRecDecayMode_ = dqmStore.book1D("TauRecDecayMode", "TauRecDecayMode", 25, -0.5, 24.5);
 
     hTauTaNCoutputOneProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngNoPi0s", 
 						    "TauTaNCoutputOneProngNoPi0s", 102, -0.01, 1.01); 
@@ -215,6 +217,28 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
   }
 }
 
+void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat::Tau& patTau, const char* discrName,
+						   std::map<std::string, bool>& discrAvailability_hasBeenChecked)
+{
+//--- tau id. discriminators not available for all kinds of taus
+//    (in particular those based on TaNC are available only for shrinking signal cone PFTaus so far),
+//    so need to check whether a given discriminator is available before filling histogram,
+//    in order to avoid pat::Tau::tauID method from triggering an exception;
+//    availability is checked only once and a warning is printed 
+//    in case the discriminator given as function argument is unavailable
+  if ( !discrAvailability_hasBeenChecked[discrName] ) {
+    if ( !patTau.isTauIDAvailable(discrName) ) {
+      edm::LogWarning("TauHistManager") << " Discriminator = " << discrName 
+					<< " unavailable for pat::Tau collection = " << tauSrc_.label() 
+					<< " --> skipping filling of histogram = " << h->getName() << " !!";
+    }
+    
+    discrAvailability_hasBeenChecked[discrName] = true;
+  }
+  
+  if ( patTau.isTauIDAvailable(discrName) ) float discrValue = patTau.tauID(discrName);
+}
+
 void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {  
   //std::cout << "<TauHistManager::fillHistograms>:" << std::endl; 
@@ -282,6 +306,18 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
   
     int tauDecayMode = patTau->decayMode();
+    hTauRecDecayMode_->Fill(tauDecayMode);
+
+    static std::map<std::string, bool> discrAvailability_hasBeenChecked;
+    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrOnePercent_, *patTau, "byTaNCfrOnePercent", 
+				  discrAvailability_hasBeenChecked);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrHalfPercent_, *patTau, "byTaNCfrHalfPercent",
+				  discrAvailability_hasBeenChecked);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrQuarterPercent_, *patTau, "byTaNCfrQuarterPercent",
+				  discrAvailability_hasBeenChecked);
+    fillTauDiscriminatorHistogram(hTauDiscriminatorTaNCfrTenthPercent_, *patTau, "byTaNCfrTenthPercent",
+				  discrAvailability_hasBeenChecked);
+
     MonitorElement* hTauTaNCoutput = 0;
     if ( tauDecayMode == reco::PFTauDecayMode::tauDecay1ChargedPion0PiZero ) {
       hTauTaNCoutput = hTauTaNCoutputOneProngNoPi0s_;
@@ -295,13 +331,9 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
       hTauTaNCoutput = hTauTaNCoutputThreeProngOnePi0_;
     } 
     if ( hTauTaNCoutput ) {
-      hTauTaNCoutput->Fill(patTau->tauID("byTaNC"));
+      fillTauDiscriminatorHistogram(hTauTaNCoutput, *patTau, "byTaNC", 
+				    discrAvailability_hasBeenChecked);
     }
-
-    hTauDiscriminatorTaNCfrOnePercent_->Fill(patTau->tauID("byTaNCfrOnePercent"));
-    hTauDiscriminatorTaNCfrHalfPercent_->Fill(patTau->tauID("byTaNCfrHalfPercent"));
-    hTauDiscriminatorTaNCfrQuarterPercent_->Fill(patTau->tauID("byTaNCfrQuarterPercent"));
-    hTauDiscriminatorTaNCfrTenthPercent_->Fill(patTau->tauID("byTaNCfrTenthPercent"));
  
     fillTauIsoHistograms(*patTau);
     fillTauIsoConeSizeDepHistograms(*patTau);
