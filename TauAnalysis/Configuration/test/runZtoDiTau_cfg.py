@@ -21,14 +21,18 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 # and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeZtoDiTau_cff")
 
+# import event-content definition of products to be stored in patTuple
+from TauAnalysis.Configuration.patTupleEventContent_cff import *
+
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoDiTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-  outputFileName = cms.string('plotsZtoDiTau.root')
+    outputFileName = cms.string('plotsZtoDiTau.root')
 )
 
 process.saveZtoDiTauPatTuple = cms.OutputModule("PoolOutputModule",
-  fileName = cms.untracked.string('diTauSkim_patTuple.root')
+    patTupleEventContent,
+    fileName = cms.untracked.string('diTauSkim_patTuple.root')
 )
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
