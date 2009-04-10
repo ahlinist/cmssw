@@ -23,6 +23,7 @@ public:
 	static Color_t pf_rechits;
 	static Color_t pf_cluster;
 
+
 	PlotUtil();
 	virtual ~PlotUtil();
 
@@ -57,6 +58,10 @@ public:
 
 	TLegend* legendForStack(THStack* theStack);
 
+	Color_t nextColor();
+	
+	std::pair<double, double> fitStabilisedGaussian(TH1* histo);
+
 	//void closeFiles();
 private:
 	std::string graphicsFile_;
@@ -65,6 +70,7 @@ private:
 
 	std::vector<std::pair<TObject*, std::string> > accumulatedObjects_;
 	std::vector<PlotSpecial> accumulatedSpecials_;
+	std::vector<Color_t> colors_;
 
 	bool amInitialised_;
 

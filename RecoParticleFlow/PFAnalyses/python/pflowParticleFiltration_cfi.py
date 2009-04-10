@@ -25,6 +25,10 @@ particleFiltration = cms.EDFilter("ParticleFilter",
     # Recommended: True
     identifyCleanParticles=cms.bool(True),
     
+    # Enable this if you want just pure noise events.
+    # Default/recommended: False
+    noiseMode=cms.bool(False),
+    
     # Global cut parameters   
     runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_v1_3X.root"),
     

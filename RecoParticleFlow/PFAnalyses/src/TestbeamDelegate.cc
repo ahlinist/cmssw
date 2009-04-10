@@ -59,6 +59,7 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 	saveJustPions_ = parameters.getParameter<bool> ("saveJustPions");
 	clustersFromCandidates_ = parameters.getParameter<bool> (
 			"clustersFromCandidates");
+	rechitsFromCandidates_ = parameters.getParameter<bool>("rechitsFromCandidates");
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());

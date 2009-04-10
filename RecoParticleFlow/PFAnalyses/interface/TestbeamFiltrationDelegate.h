@@ -66,11 +66,18 @@ protected:
 
 	Quality isCerenkovProtonKaonCandidate();
 
+	/*
+	 * Returns a quality for whether this particle was just a bad trigger, and therefore just noise
+	 */
+	Quality isNoiseCandidate();
+
 	bool applyCleaningCuts_;
 	bool computeVetos_;
 	bool identifyCleanParticles_;
 	bool saveAllCleanParticles_;
 	bool clustersFromCandidates_;
+
+	bool noiseMode_;
 
 	unsigned muonCands_;
 	unsigned nonMipCands_;
@@ -80,6 +87,7 @@ protected:
 	unsigned electronCandidates_;
 	unsigned protonKaonCandidates_;
 	unsigned goodPionsFound_;
+	unsigned pureNoiseEvents_;
 
 	std::map<unsigned, pftools::RunInfo*> runInfos_;
 

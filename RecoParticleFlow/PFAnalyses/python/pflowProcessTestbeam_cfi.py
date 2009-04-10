@@ -11,8 +11,7 @@ particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecH
 particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
-#particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.8)
-#particleFlowClusterHCAL.thresh_Barrel = cms.double(0.4)
+
 
 #Change tags for PFBlock building
 from RecoParticleFlow.PFBlockProducer.particleFlowBlock_cff import *
@@ -26,6 +25,11 @@ particleFlowBlock.debug = cms.untracked.bool(False)
 
 particleFlowBlock.pf_DPtoverPt_Cut = cms.vdouble(100.0,1.0,0.80,0.50)
 particleFlowBlock.pf_NHit_Cut = cms.vuint32(0,3,3,6)
+
+particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
+particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
+particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 from Configuration.StandardSequences.Services_cff import *
 from Configuration.StandardSequences.Geometry_cff import *
