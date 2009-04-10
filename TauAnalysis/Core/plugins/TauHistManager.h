@@ -29,6 +29,7 @@ class TauHistManager : public HistManagerBase
   void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillTauHistograms(const pat::Tau&, MonitorElement*, MonitorElement*, MonitorElement*);
+  void fillTauDiscriminatorHistogram(MonitorElement*, const pat::Tau&, const char*, std::map<std::string, bool>&);
   void fillTauIsoHistograms(const pat::Tau&);
   void fillTauIsoConeSizeDepHistograms(const pat::Tau&);
 
@@ -72,6 +73,8 @@ class TauHistManager : public HistManagerBase
 
   MonitorElement* hTauDiscriminatorAgainstElectrons_;
   MonitorElement* hTauDiscriminatorAgainstMuons_;
+
+  MonitorElement* hTauRecDecayMode_;
 
   MonitorElement* hTauTaNCoutputOneProngNoPi0s_;
   MonitorElement* hTauTaNCoutputOneProngOnePi0_;
