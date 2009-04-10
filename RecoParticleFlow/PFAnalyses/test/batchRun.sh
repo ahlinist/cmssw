@@ -8,16 +8,17 @@ fi
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 ENERGY=$1
+SUFFIX=$2
 RUND=/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/
 
-SCRIPT=$RUND"pflow_"$ENERGY"GeV.py"
+SCRIPT=$RUND"pflow_tb_general.py"
 
 echo Script is: $SCRIPT
 
-OUTTREE="outputtree_"$ENERGY"GeV.root"
-OUTPUT="reprocessed_"$ENERGY"GeV.root"
-DESTD=/castor/cern.ch/user/b/ballin/tbv6B/
-LOG="log_"$ENERGY"GeV.txt"
+OUTTREE="outputtree_"$ENERGY"GeV"$SUFFIX".root"
+OUTPUT="reprocessed_"$ENERGY"GeV"$SUFFIX".root"
+DESTD=/castor/cern.ch/user/b/ballin/tbv7C/
+LOG="log_"$ENERGY"GeV_"$SUFFIX".txt"
 
 echo Outputtree is: $OUTTREE
 echo Reprocessed file is: $OUTPUT
@@ -30,7 +31,7 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT 
+cmsRun $SCRIPT beamEnergy=$ENERGY fileSuffix=$SUFFIX kevents=0 notracks=1
 echo cmsRun complete.
 
 echo Directory listing of $PWD
@@ -39,7 +40,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD$OUTTREE
 rfcp $OUTPUT $DESTD$OUTPUT
-cp $LOG $RUND"tbv6B"
+cp $LOG $RUND"tbv7C"
 
 echo Done.
 exit 0

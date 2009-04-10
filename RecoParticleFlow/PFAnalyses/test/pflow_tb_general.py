@@ -8,6 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("PROD")
 process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
+
 from RecoParticleFlow.PFAnalyses.RunDict import *
 import FWCore.ParameterSet.VarParsing as VarParsing
 
@@ -16,42 +17,63 @@ options = VarParsing.VarParsing()
 options.register ('beamEnergy',
                   100, # default value
                   options.multiplicity.singleton, # singleton or list
-                  options.varType.int,          # string, int, or float
+                  options.varType.int, # string, int, or float
                   "Beam energy to simulate")
 
 options.register ('fileSuffix',
                   '', # default value
                   options.multiplicity.singleton, # singleton or list
-                  options.varType.string,          # string, int, or float
+                  options.varType.string, # string, int, or float
                   "Label to append to output file names")
+
+options.register ('notracks',
+                  '0', # default value
+                  options.multiplicity.singleton, # singleton or list
+                  options.varType.int, # string, int, or float
+                  "Disable tracking?")
+
+options.register('kevents',
+                 '0',
+                 options.multiplicity.singleton,
+                 options.varType.int,
+                 "Max number of events in thousands")
 
 # setup any defaults you want
 options.beamEnergy = 100
-options.fileSuffix = ''
-
+options.notracks = 0
+options.kevents = 0
 # get and parse the command line arguments
 options.parseArguments()
 
-suffix = ''
-if not options.fileSuffix ==  '':
-    suffix = '_' + options.fileSuffix 
+#process.particleFlow.pf_newCalib = cms.uint32(1)
+    
+outputTree = "outputtree_" + str(options.beamEnergy) + "GeV" + options.fileSuffix + ".root"
+outputFile = "reprocessed_" + str(options.beamEnergy) + "GeV" + options.fileSuffix + ".root"
+logFile = "log_" + str(options.beamEnergy) + "GeV" + options.fileSuffix + ".txt"
 
-outputTree = "outputtree_" + str(options.beamEnergy) + "GeV" + suffix + ".root"
-outputFile = "reprocessed_" + str(options.beamEnergy) + "GeV" + suffix + ".root"
-logFile = "log_" + str(options.beamEnergy) + "GeV" + suffix + ".txt"
-
-print ("pflow_tb_general.py with options:")
+print ("cmsRun for pflow testbeam with options:")
 print "Beam energy: " + str(options.beamEnergy)
 print "File suffix: " + str(options.fileSuffix)
 print "Output file: " + outputFile
 print "Output tree: " + outputTree
+print "kEvents:" + str(options.kevents)
+
+if options.notracks <> 0:
+    process.faketracks.justCreateEmptyCollections = cms.bool(True)
+    print "Running in notrack mode"
 
 specifiedE = energies[options.beamEnergy]
 result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
 
+if options.kevents <> 0:
+    process.maxEvents = cms.untracked.PSet(
+        input=cms.untracked.int32(options.kevents*1000)
+        )
 
 # Files to process
 runs = cms.untracked.vstring(result)
+print "Input files :"
+print result
 
 # Output tree of cleaned particles
 process.TFileService.fileName = cms.string(outputTree)
@@ -70,4 +92,4 @@ process.source = cms.Source("PoolSource",
 )
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)
-process.outpath = cms.EndPath(process.finishup)
+#process.outpath = cms.EndPath(process.finishup)

@@ -27,7 +27,7 @@ public:
 	DipionDelegate(bool isMC);
 
 	virtual ~DipionDelegate() {
-		std::cout << "Leaving "<< __PRETTY_FUNCTION__ << std::endl;
+		LogDebug("DipionDelegate") << "Leaving "<< __PRETTY_FUNCTION__ << std::endl;
 	}
 
 	//The main workhorse
@@ -97,11 +97,21 @@ private:
 	bool isMC_;
 	bool useSimAsTrack_;
 	bool clustersFromCandidates_;
+	bool rechitsFromCandidates_;
+	bool neutralMode_;
+	bool noSimDaughters_;
 	double deltaEta_;
 	double deltaPhi_;
 	double deltaRCandToTrack_;
 	double deltaRRechitsToTrack_;
 	double deltaRClustersToTrack_;
+
+	unsigned nPanesEcalCaloWindow_;
+	unsigned nPanesHcalCaloWindow_;
+	unsigned nRingsEcalCaloWindow_;
+	unsigned nRingsHcalCaloWindow_;
+	double deltaREcalCaloWindow_;
+	double deltaRHcalCaloWindow_;
 	//this is useful for extensibility or subclassing :-)
 	int pionPdg_;
 

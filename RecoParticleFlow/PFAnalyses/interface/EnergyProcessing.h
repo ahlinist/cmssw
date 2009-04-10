@@ -16,7 +16,7 @@
 class EnergyProcessing {
 public:
 	EnergyProcessing() {}
-	
+
 	EnergyProcessing(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory = "", bool tb = true, long nEntries =1000000000);
 
 	void reset(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory, bool tb = true, long nEntries = 1000000000);
@@ -38,14 +38,16 @@ public:
 	void doEEmagOnETotPlots();
 
 	void doElectronDiscriminationPlots();
-	
+
 	void doPFCandidatePlots();
 
 	void doBeamCompositionPlots();
-	
+
 	void doLoopedPlots();
-	
+
 	void doBeamSpotPlots();
+
+	void doCandidateTypePlots();
 
 	void closeFiles();
 
@@ -56,14 +58,14 @@ private:
 	TTree* tree_;
 	TStyle* defaultStyle_;
 	PlotUtil util_;
-	
+
 	long nEntries_;
 	long zero_;
-	
+
 	std::string directory_;
 	std::string graphicsFile_;
 	std::string macroFile_;
-	
+
 	bool tb_;
 
 	void adcPerBin(TH1* histo, unsigned adcPerBin);

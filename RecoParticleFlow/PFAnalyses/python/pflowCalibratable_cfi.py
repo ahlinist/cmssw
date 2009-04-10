@@ -11,6 +11,8 @@ calibratable = cms.EDProducer("CalibratableProducer",
     # Get PFClusters from PFCandidates, rather than whatever's in the cluster collections
     # Recommended = True
     clustersFromCandidates=cms.bool(True),
+    
+    rechitsFromCandidates=cms.bool(True),
     # Reject spurious events where the HCAL has some terrible noise
     # = 0, don't do this, > 0 multiple of beam energy found in HCAL before event is rejected
     stripAnomalousEvents=cms.uint32(6),

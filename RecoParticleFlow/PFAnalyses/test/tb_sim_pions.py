@@ -26,8 +26,8 @@ options.kevents = 1
 options.parseArguments()
 
 
-outputTree = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_FastAllEffects_JamieAlgo.root"
-outputFile = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_Collections_FastAllEffects_JamieAlgo.root"
+outputTree = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_Fast.root"
+outputFile = "DipionDelegate_mono" + str(options.beamEnergy) + "GeV_Testbeam_" + str(options.kevents) + "k_3_1_Collections_Fast.root"
 
 print ("tb_sim_pions.py with options:")
 print "Beam energy: " + str(options.beamEnergy)
@@ -61,11 +61,11 @@ process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
-process.famosSimHits.MaterialEffects.PairProduction = True
-process.famosSimHits.MaterialEffects.Bremsstrahlung = True
-process.famosSimHits.MaterialEffects.EnergyLoss = True
-process.famosSimHits.MaterialEffects.MultipleScattering = True
-process.famosSimHits.MaterialEffects.NuclearInteraction = True
+process.famosSimHits.MaterialEffects.PairProduction = False
+process.famosSimHits.MaterialEffects.Bremsstrahlung = False
+process.famosSimHits.MaterialEffects.EnergyLoss = False
+process.famosSimHits.MaterialEffects.MultipleScattering = False
+process.famosSimHits.MaterialEffects.NuclearInteraction = False
 process.famosSimHits.Calorimetry.UnfoldedMode = True
 
 process.load("RecoParticleFlow.PFBlockProducer.particleFlowSimParticle_cff")
@@ -106,7 +106,7 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     PFCandidates = cms.InputTag("particleFlow"),
     deltaRRechitsToTrack = cms.double(0.4),
     deltaPhi = cms.double(0.4),
-    debug = cms.int32(1),
+    debug = cms.int32(4),
     PFRecTracks = cms.InputTag("trackerDrivenElectronSeeds"),
     PFRecHitsEcal = cms.InputTag("particleFlowRecHitECAL"),
     deltaEta = cms.double(0.4),
@@ -118,7 +118,13 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     particlePDG = cms.int32(211),
     SimCaloRecHitsEcalEB = cms.InputTag("famosSimHits", "EcalHitsEB"),
     SimCaloRecHitsEcalEE = cms.InputTag("famosSimHits", "EcalHitsEE"),
-    SimCaloRecHitsHcal = cms.InputTag("famosSimHits", "HcalHits")
+    SimCaloRecHitsHcal = cms.InputTag("famosSimHits", "HcalHits"),
+    deltaREcalCaloWindow=cms.double(0.0125),
+    deltaRHcalCaloWindow=cms.double(0.04),
+    nRingsEcalCaloWindow=cms.uint32(5),
+    nRingsHcalCaloWindow=cms.uint32(3),
+    nPanesEcalCaloWindow=cms.uint32(4),
+    nPanesHcalCaloWindow=cms.uint32(4),
 )
 
 process.TFileService = cms.Service("TFileService",

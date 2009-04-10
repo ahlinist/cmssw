@@ -64,6 +64,7 @@ private:
 
 	bool applyThresholdsToRawRecHits_;
 	bool clustersFromCandidates_;
+	bool rechitsFromCandidates_;
 	unsigned stripAnomalousEvents_;
 	unsigned maxEventsFromEachRun_;
 	unsigned eventsSeenInThisRun_;
@@ -80,6 +81,7 @@ private:
 	double deltaRRecHitsToCenterHCAL_;
 	double deltaRPhotonsToTrack_;
 	double deltaRNeutralsToTrack_;
+
 
 	std::map<unsigned, pftools::RunInfo*> runInfos_;
 

@@ -9,13 +9,23 @@
 #include <TList.h>
 #include <TPaveText.h>
 #include <cmath>
+#include <TF1.h>
 
 Color_t PlotUtil::tb_rechits = kGreen;
 Color_t PlotUtil::pf_rechits = kRed;
 Color_t PlotUtil::pf_cluster = kViolet + 7;
 
+
 PlotUtil::PlotUtil() :
 	rootFile_(0), amInitialised_(false) {
+
+	colors_.push_back(kBlue + 3);
+	colors_.push_back(kRed);
+	colors_.push_back(kGray + 3);
+	colors_.push_back(kOrange + 1);
+	colors_.push_back(kPink - 9);
+	colors_.push_back(kCyan + 3);
+	colors_.push_back(kAzure);
 
 }
 
@@ -24,6 +34,10 @@ void PlotUtil::init() {
 	rootFile_ = new TFile("PlotUtil.root", "recreate");
 	amInitialised_ = true;
 
+}
+
+Color_t PlotUtil::nextColor() {
+	return colors_[accumulatedObjects_.size() % colors_.size()];
 }
 
 PlotUtil::~PlotUtil() {
@@ -217,5 +231,22 @@ TStyle* PlotUtil::makeStyle(const std::string& name) {
 	style->SetPadGridX(true);
 	style->SetPadGridY(true);
 	return style;
+}
+
+std::pair<double, double> PlotUtil::fitStabilisedGaussian(TH1* histo) {
+	TF1 g("g", "gaus", histo->GetMean() - histo->GetRMS()/2, histo->GetMean()
+			+ histo->GetRMS()/2);
+	histo->Fit(&g, "RQ");
+	TF1 improved("imp", "gaus", g.GetParameter(1) - 5*g.GetParameter(2),
+			g.GetParameter(1) + 5*g.GetParameter(2));
+	histo->Fit(&improved, "RQ");
+	std::pair<double, double> ans(improved.GetParameter(1),
+			improved.GetParameter(2));
+	double quality = improved.GetChisquare()/improved.GetNDF();
+	if (quality > 50) {
+		std::cout << __PRETTY_FUNCTION__ << "WARNING: Fit quality is poor. Chisq/NDF = " << quality
+				<< "\n";
+	}
+	return ans;
 }
 

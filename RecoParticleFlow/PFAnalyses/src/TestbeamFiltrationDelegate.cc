@@ -17,7 +17,7 @@ TestbeamFiltrationDelegate::TestbeamFiltrationDelegate() :
 			identifyCleanParticles_(true), saveAllCleanParticles_(true),
 			muonCands_(0), nonMipCands_(0), beamHaloCands_(0),
 			cerenkovNonPions_(0), tofNonPions_(0), electronCandidates_(0),
-			protonKaonCandidates_(0), goodPionsFound_(0) {
+			protonKaonCandidates_(0), goodPionsFound_(0), pureNoiseEvents_(0) {
 	LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
 			<< ": looking for single charged pions." << std::endl;
 	pdgCodes_.clear();
@@ -161,6 +161,16 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 		thisEventPasses_ = true;
 	}
 
+	if (noiseMode_) {
+		//Select events where there certainly wasn't any particle!
+		thisEventPasses_ = false;
+		if (isNoiseCandidate() > UNLIKELY && isNotMuon() == DEFINITEYES
+				&& vetosPassed != 31) {
+			++pureNoiseEvents_;
+			thisEventPasses_ = true;
+		}
+	}
+
 	if (debug_ > 3 && thisEventPasses_)
 		LogInfo("TestbeamFiltrationDelegate")
 				<< "\tEvent PASSES cut criteria.\n";
@@ -205,12 +215,18 @@ void TestbeamFiltrationDelegate::initCore(const edm::ParameterSet& parameters) {
 	saveAllCleanParticles_ = parameters.getParameter<bool> (
 			"saveAllCleanParticles");
 
+	noiseMode_ = parameters.getParameter<bool> ("noiseMode");
+
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
 	TTree* tree(0);
 	thisRun_ = new RunInfo();
-	LogInfo("TestbeamFiltrationDelegtate") << "Resurrecting run infos from "
+	LogInfo("TestbeamFiltrationDelegate") << "Resurrecting run infos from "
 			<< cuts << "\n";
+
+	if (noiseMode_)
+		LogInfo("TestbeamFiltrationDelegate")
+				<< "Running with noiseMode = true: this means you'll only get noise events and no particles! Run on high energy beams please.\n";
 
 	if (file != 0) {
 		tree = (TTree*) file->FindObjectAny("RunInfo");
@@ -250,7 +266,7 @@ void TestbeamFiltrationDelegate::finishCore() {
 
 	int total = goodPionsFound_ + protonKaonCandidates_ + electronCandidates_;
 
-	//Make some plots
+	//Summarise running
 	LogInfo("TestbeamFiltrationDelegate")
 			<< "------------------------------------------------------\n"
 			<< "Summary of TestbeamFiltrationDelegate's activities:\n"
@@ -261,6 +277,7 @@ void TestbeamFiltrationDelegate::finishCore() {
 			<< "\tPossible non TOF pions: " << tofNonPions_ << "\n"
 			<< "\tPossible electrons: " << electronCandidates_ << "\n"
 			<< "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n"
+			<< "\tPossible pure noise events: " << pureNoiseEvents_ << "\n"
 			<< "\tClass-31 pion candidates: " << goodPionsFound_ << "\n";
 
 	if (total != 0) {
@@ -277,6 +294,11 @@ void TestbeamFiltrationDelegate::finishCore() {
 		LogProblem("TestbeamFiltrationDelegate")
 				<< "Total good particles found = 0?!\n";
 	}
+
+	if (noiseMode_)
+		LogInfo("TestbeamFiltrationDelegate")
+				<< "(polite reminder): Ran with noiseMode = true! Run on high energy (> 50 GeV) beams please.\n";
+
 	LogInfo("TestbeamFiltrationDelegate")
 			<< "------------------------------------------------------\n"
 			<< "\tnPasses: " << nPasses_ << ", nFails: " << nFails_ << "\n"
@@ -430,10 +452,7 @@ Quality TestbeamFiltrationDelegate::isSingleMIP() {
 		singleMipQuality = PROBABLY;
 
 	//Test beam peculiarities!
-	if (!triggers.wasBeamTrigger())
-		singleMipQuality = UNLIKELY;
-
-	if (timing.ttcL1Atime() == 0)
+	if (isNoiseCandidate() > UNLIKELY)
 		singleMipQuality = UNLIKELY;
 
 	//	if (counters.S1adc() < thisRun_->s1Max_ && counters.S2adc()
@@ -447,6 +466,27 @@ Quality TestbeamFiltrationDelegate::isSingleMIP() {
 				<< singleMipQuality << "\n";
 	}
 	return singleMipQuality;
+}
+
+Quality TestbeamFiltrationDelegate::isNoiseCandidate() {
+	Quality noiseQuality(UNLIKELY);
+
+	HcalTBTriggerData triggers = **triggerData_;
+	HcalTBTiming timing = **timing_;
+	HcalTBBeamCounters counters = **beamCounters_;
+
+	if (counters.S1adc() < thisRun_->s1Min_ && counters.S2adc()
+			< thisRun_->s2Min_ && counters.S4adc() < thisRun_->s4Min_)
+		noiseQuality = PROBABLY;
+
+	//Test beam peculiarities!
+	if (!triggers.wasBeamTrigger())
+		noiseQuality = PROBABLY;
+
+	if (timing.ttcL1Atime() == 0)
+		noiseQuality = PROBABLY;
+
+	return noiseQuality;
 }
 
 Quality TestbeamFiltrationDelegate::noBeamHalo() {
