@@ -59,3 +59,5 @@ http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DPionPayload.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/DeDxH3DProtonPayload.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/RecoTauTagConditions_31X.db
 http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/mydata.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/Simulation31X_EcalIntercalibConstantsTag.db
+http://cern.ch/cms-sdt/CondCore/SQLiteData/31X/Simulation31X_EcalIntercalibConstantsMCTag.db
