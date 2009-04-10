@@ -154,10 +154,10 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
 						    "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
     hTauTaNCoutputOneProngTwoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngTwoPi0s", 
 						     "TauTaNCoutputOneProngTwoPi0s", 102, -0.01, 1.01);
-    hTauTaNCoutputThreeProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngZeroPi0s", 
-						      "TauTaNCoutputOneProngZeroPi0s", 102, -0.01, 1.01);
-    hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputOneProngOnePi0", 
-						      "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
+    hTauTaNCoutputThreeProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputThreeProngNoPi0s", 
+						      "TauTaNCoutputThreeProngNoPi0s", 102, -0.01, 1.01);
+    hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputThreeProngOnePi0", 
+						      "TauTaNCoutputThreeProngOnePi0", 102, -0.01, 1.01);
 
     hTauDiscriminatorTaNCfrOnePercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrOnePercent",
 							 "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
@@ -236,7 +236,7 @@ void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat:
     discrAvailability_hasBeenChecked[discrName] = true;
   }
   
-  if ( patTau.isTauIDAvailable(discrName) ) float discrValue = patTau.tauID(discrName);
+  if ( patTau.isTauIDAvailable(discrName) ) h->Fill(patTau.tauID(discrName));
 }
 
 void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
