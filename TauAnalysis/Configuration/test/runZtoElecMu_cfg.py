@@ -25,14 +25,18 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 # (running over skimmed samples stored on CASTOR)
 from TauAnalysis.Configuration.sampleDefinitionsZtoElecMu_cfi import *
 
+# import event-content definition of products to be stored in patTuple
+from TauAnalysis.Configuration.patTupleEventContent_cff import *
+
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-  outputFileName = cms.string('plotsZtoElecMu.root')
+    outputFileName = cms.string('plotsZtoElecMu.root')
 )
 
 process.saveZtoElecMuPatTuple = cms.OutputModule("PoolOutputModule",
-  fileName = cms.untracked.string('elecMuSkim_patTuple.root')
+    patTupleEventContent,                                                   
+    fileName = cms.untracked.string('elecMuSkim_patTuple.root')
 )
 
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
