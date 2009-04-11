@@ -14,14 +14,11 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
-# import utility function for switching pat::Tau input
-# to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import * 
-
 # import particle data table
 # needed for print-out of generator level information
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
+#--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
@@ -35,18 +32,9 @@ from TauAnalysis.Configuration.sampleDefinitionsZtoMuTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
+#--------------------------------------------------------------------------------
 
-process.DQMStore = cms.Service("DQMStore")
-
-process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoMuTau.root')
-)
-
-process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
-    patTupleEventContent,                                               
-    fileName = cms.untracked.string('muTauSkim_patTuple.root')
-)
-
+#--------------------------------------------------------------------------------
 # print memory consumed by cmsRun
 # (for debugging memory leaks)
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
@@ -61,9 +49,21 @@ process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
 #process.add_( cms.Service("PrintLoadingPlugins") )
+#--------------------------------------------------------------------------------
+
+process.DQMStore = cms.Service("DQMStore")
+
+process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('plotsZtoMuTau.root')
+)
+
+process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
+    patTupleEventContent,                                               
+    fileName = cms.untracked.string('muTauSkim_patTuple.root')
+)
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(10)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -122,6 +122,11 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for switching pat::Tau input
+# to different reco::Tau collection stored on AOD
+from PhysicsTools.PatAlgos.tools.tauTools import * 
+
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
 #switchToCaloTau(process)
@@ -131,6 +136,7 @@ process.source = cms.Source("PoolSource",
 # as input for pat::Tau production
 #switchToPFTauShrinkingCone(process)
 switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
 #                    +process.printList            # uncomment to enable print-out of generator level particles
@@ -144,4 +150,4 @@ process.p = cms.Path( process.producePatTuple
 #enableFactorization_runZtoMuTau(process)
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
