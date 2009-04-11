@@ -8,29 +8,38 @@ from TauAnalysis.RecoTools.patPFTauSelectionForElecTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForDiTau_cfi import *
 
+from TauAnalysis.RecoTools.objSelConfigurator import *
+
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Electrons
 # (settings made here overwrite values defined in electronPatSelector_cfi)
 #--------------------------------------------------------------------------------
 
 selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
-selectedLayer1ElectronsAntiCrackCutIndividual.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
-selectedLayer1ElectronsEta21Individual.cut = cms.string('abs(eta) < 2.1')
-selectedLayer1ElectronsPt15Individual.cut = cms.string('pt > 15.')
-selectedLayer1ElectronsTrkIsoIndividual.cut = cms.string('trackIso < 1.')
-selectedLayer1ElectronsEcalIsoIndividual.cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 1.0) | (abs(superCluster.eta) > 1.479 & ecalIso < 2.5)')
-selectedLayer1ElectronsTrkIndividual.cut = cms.string('gsfTrack.isNonnull')
-selectedLayer1ElectronsTrkIPindividual.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
-selectedLayer1ElectronsTrkIPindividual.IpMax = cms.double(0.05)
+selectedLayer1ElectronsAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
+selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.1')
+selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
+selectedLayer1ElectronsTrkIso.cut = cms.string('trackIso < 1.')
+selectedLayer1ElectronsEcalIso.cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 1.0) | (abs(superCluster.eta) > 1.479 & ecalIso < 2.5)')
+selectedLayer1ElectronsTrk.cut = cms.string('gsfTrack.isNonnull')
+selectedLayer1ElectronsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedLayer1ElectronsTrkIP.IpMax = cms.double(0.05)
 
-selectedLayer1ElectronsAntiCrackCutCumulative.cut = selectedLayer1ElectronsAntiCrackCutIndividual.cut
-selectedLayer1ElectronsEta21Cumulative.cut = selectedLayer1ElectronsEta21Individual.cut
-selectedLayer1ElectronsPt15Cumulative.cut = selectedLayer1ElectronsPt15Individual.cut
-selectedLayer1ElectronsTrkIsoCumulative.cut = selectedLayer1ElectronsTrkIsoIndividual.cut
-selectedLayer1ElectronsEcalIsoCumulative.cut = selectedLayer1ElectronsEcalIsoIndividual.cut
-selectedLayer1ElectronsTrkCumulative.cut = selectedLayer1ElectronsTrkIndividual.cut
-selectedLayer1ElectronsTrkIPcumulative.vertexSource = selectedLayer1ElectronsTrkIPindividual.vertexSource
-selectedLayer1ElectronsTrkIPcumulative.IpMax = selectedLayer1ElectronsTrkIPindividual.IpMax
+patElectronSelConfigurator = objSelConfigurator(
+    [ selectedLayer1ElectronsTightId,
+      selectedLayer1ElectronsAntiCrackCut,
+      selectedLayer1ElectronsEta21,
+      selectedLayer1ElectronsPt15,
+      selectedLayer1ElectronsTrkIso,
+      selectedLayer1ElectronsEcalIso,
+      selectedLayer1ElectronsTrk,
+      selectedLayer1ElectronsTrkIP ],
+    src = "cleanLayer1Electrons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1Electrons = patElectronSelConfigurator.configure()
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Muons
@@ -120,7 +129,7 @@ selectedLayer1TausForDiTauTrkIsoCumulative.cut = selectedLayer1TausEcalIsoIndivi
 selectedLayer1TausForDiTauEcalIsoCumulative.cut = selectedLayer1TausEcalIsoIndividual.cut
 selectedLayer1TausForDiTauProngCumulative.cut = selectedLayer1TausMuonVetoIndividual.cut
 
-produceLayer1SelLeptons = cms.Sequence ( produceLayer1SelElectrons
+produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons
                                         +produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
                                         +produceLayer1SelTaus
                                         +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau )
