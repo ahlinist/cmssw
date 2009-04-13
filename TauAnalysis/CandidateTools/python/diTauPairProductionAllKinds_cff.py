@@ -5,6 +5,7 @@ from TauAnalysis.CandidateTools.elecTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.muTauPairProduction_cff import *
 from TauAnalysis.CandidateTools.diTauPairProduction_cff import *
 
-produceDiTauPairsAllKinds = cms.Sequence( produceElecTauPairs
+produceDiTauPairsAllKinds = cms.Sequence( produceElecMuPairs
+                                         +produceElecTauPairs
                                          +produceMuTauPairsAll
                                          +produceDiTauPairs )
