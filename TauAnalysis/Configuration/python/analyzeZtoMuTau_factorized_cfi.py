@@ -18,32 +18,33 @@ muTauHistManagers_factorizedWithMuonIsolation = cms.vstring( 'genPhaseSpaceEvent
 
 # muon candidate selection with "loose" muon isolation criteria applied
 muonTrkIsoCutLooseMuonIsolation = copy.deepcopy(muonTrkIsoCut)
-muonTrkIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoCumulativeLooseMuonIsolation')
-muonTrkIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoIndividualLooseMuonIsolation')
+muonTrkIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseMuonIsolationCumulative')
+muonTrkIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseMuonIsolationIndividual')
 
 muonEcalIsoCutLooseMuonIsolation = copy.deepcopy(muonEcalIsoCut)
-muonEcalIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoCumulativeLooseMuonIsolation')
-muonEcalIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividualLooseMuonIsolation')
+muonEcalIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseMuonIsolationCumulative')
+muonEcalIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseMuonIsolationIndividual')
 
 muonAntiPionCutLooseMuonIsolation = copy.deepcopy(muonAntiPionCut)
-muonAntiPionCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoCumulativeLooseMuonIsolation')
-muonAntiPionCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoIndividualLooseMuonIsolation')
+muonAntiPionCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseMuonIsolationCumulative')
+muonAntiPionCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseMuonIsolationIndividual')
 
 muonTrkIPcutLooseMuonIsolation = copy.deepcopy(muonTrkIPcut)
-muonTrkIPcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation')
-muonTrkIPcutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPindividualLooseMuonIsolation')
+muonTrkIPcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative')
+muonTrkIPcutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseMuonIsolationIndividual')
 
 # selection of di-tau candidates composed of combination of tau-jet with "loosely" isolated muon 
 diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauAntiOverlapVeto)
-diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
+diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative')
+diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationIndividual')
 
 diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauZeroChargeCut)
-diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation')
-diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividualLooseMuonIsolation')
+diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative')
+diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
 
 diTauCandidateForMuTauMt1METCutLooseMuonIsolation = copy.deepcopy(diTauCandidateForMuTauMt1METCut)
-diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
-diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METIndividualLooseMuonIsolation')
+diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
+diTauCandidateForMuTauMt1METCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationIndividual')
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -127,7 +128,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobal')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonEtaCut'),
@@ -154,7 +155,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulativeLooseMuonIsolation')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoLooseMuonIsolationCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonEcalIsoCut'),
@@ -163,7 +164,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulativeLooseMuonIsolation')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoLooseMuonIsolationCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonAntiPionCut'),
@@ -172,7 +173,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulativeLooseMuonIsolation')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoLooseMuonIsolationCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonTrkIPcut'),
@@ -181,7 +182,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative')
   ),
     
   # selection of tau-jet candidate
@@ -193,8 +194,8 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
+                          'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauEtaCut'),
@@ -203,7 +204,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
   ),
   cms.PSet(
@@ -213,7 +214,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
   ),
   cms.PSet(
@@ -223,7 +224,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
   ),
   cms.PSet(
@@ -233,7 +234,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
   ),
   cms.PSet(
@@ -243,7 +244,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
   ),
   cms.PSet(
@@ -253,7 +254,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
   ),
   cms.PSet(
@@ -263,7 +264,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
   ),
   cms.PSet(
@@ -273,7 +274,7 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
   ),
 
@@ -285,9 +286,9 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation')
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
@@ -296,9 +297,9 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation'),
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative'),
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForMuTauMt1METCut'),
@@ -307,9 +308,9 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
+                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
@@ -320,9 +321,9 @@ muTauAnalysisSequence_factorizedWithoutMuonIsolation = cms.VPSet(
   #),
   #cms.PSet(
   #  histManagers = muTauHistManagers_factorizedWithoutMuonIsolation,
-  #  replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulativeLooseMuonIsolation',
+  #  replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseMuonIsolationCumulative',
   #                        'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-  #                        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METCumulativeLooseMuonIsolation')
+  #                        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
   )
 )
 
@@ -389,7 +390,7 @@ muTauAnalysisSequence_factorizedWithMuonIsolation = cms.VPSet(
   ),
   cms.PSet(
     histManagers = muTauHistManagers_factorizedWithMuonIsolation,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobal')
+    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonEtaCut'),

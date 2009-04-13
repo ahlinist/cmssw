@@ -211,7 +211,8 @@ secondTauProngCut = cms.PSet(
 diTauCandidateForDiTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForDiTauAntiOverlapVeto'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedDiTauPairsAntiOverlapVeto'),
+  src_cumulative = cms.InputTag('selectedDiTauPairsAntiOverlapVetoCumulative'),
+  src_individual = cms.InputTag('selectedDiTauPairsAntiOverlapVetoIndividual'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForDiTauAcoplanarityCut = cms.PSet(
@@ -233,7 +234,7 @@ diTauCandidateForDiTauZeroChargeCut = cms.PSet(
 centralJetVeto = cms.PSet(
   name = cms.string('centralJetVeto'),
   type = cms.string('PATCandViewMaxEventSelector'),
-  src = cms.InputTag('selectedLayer1JetsEt20'),
+  src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
   maxNumber = cms.uint32(0)
 )
 
@@ -262,7 +263,11 @@ diTauEventDump = cms.PSet(
   diTauCandidateSource = cms.InputTag('allDiTauPairs'),
   metSource = cms.InputTag('layer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
-  jetSource = cms.InputTag('selectedLayer1JetsEt20'),
+  jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+  recoTrackSource = cms.InputTag('generalTracks'),
+  pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+  pfGammaSource = cms.InputTag('pfAllPhotons'),
+  pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
   #output = cms.string("diTauEventDump.txt"),
   output = cms.string("std::cout"),
@@ -488,7 +493,7 @@ diTauAnalysisSequence = cms.VPSet(
     histManagers = diTauHistManagers,
     replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauProngCumulative',
                           'tauHistManager2.tauSource = selectedLayer1TausForDiTauProngCumulative',
-                          'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAntiOverlapVeto')
+                          'diTauCandidateHistManagerForDiTau.diTauCandidateSource = selectedDiTauPairsAntiOverlapVetoCumulative')
   ),  
   cms.PSet(
     filter = cms.string('diTauCandidateForDiTauAcoplanarityCut'),

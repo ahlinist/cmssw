@@ -99,7 +99,8 @@ primaryEventVertexPosition = cms.PSet(
 tightElectronIdCut = cms.PSet(
   name = cms.string('tightElectronIdCut'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedLayer1ElectronsTightId'),
+  src_cumulative = cms.InputTag('selectedLayer1ElectronsTightIdCumulative'),
+  src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
   minNumber = cms.uint32(1)
 )
 electronAntiCrackCut = cms.PSet(
@@ -156,7 +157,8 @@ electronTrkIPcut = cms.PSet(
 tauAntiOverlapWithElectronsVeto = cms.PSet(
   name = cms.string('tauAntiOverlapWithElectronsVeto'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto'),
+  src_cumulative = cms.InputTag('selectedLayer1TausForElecTauAntiOverlapWithElectronsVetoCumulative'),
+  src_individual = cms.InputTag('selectedLayer1TausForElecTauAntiOverlapWithElectronsVetoIndividual'),
   minNumber = cms.uint32(1)
 )
 tauEtaCut = cms.PSet(
@@ -220,7 +222,8 @@ tauElectronVeto = cms.PSet(
 diTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
   name = cms.string('diTauCandidateForElecTauAntiOverlapVeto'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedElecTauPairsAntiOverlapVeto'),
+  src_cumulative = cms.InputTag('selectedElecTauPairsAntiOverlapVetoCumulative'),
+  src_individual = cms.InputTag('selectedElecTauPairsAntiOverlapVetoIndividual'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForElecTauZeroChargeCut = cms.PSet(
@@ -233,8 +236,8 @@ diTauCandidateForElecTauZeroChargeCut = cms.PSet(
 diTauCandidateForElecTauMt1METCut = cms.PSet(
   name = cms.string('diTauCandidateForElecTauMt1METCut'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedElecTauPairsMt1METCumulative'),
-  src_individual = cms.InputTag('selectedElecTauPairsMt1METIndividual'),
+  src_cumulative = cms.InputTag('selectedElecTauPairsMt1METcumulative'),
+  src_individual = cms.InputTag('selectedElecTauPairsMt1METindividual'),
   minNumber = cms.uint32(1)
 )
 
@@ -242,7 +245,7 @@ diTauCandidateForElecTauMt1METCut = cms.PSet(
 #centralJetVeto = cms.PSet(
 #  name = cms.string('centralJetVeto'),
 #  type = cms.string('PATCandViewMaxEventSelector'),
-#  src = cms.InputTag('selectedLayer1JetsEt20'),
+#  src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
 #  maxNumber = cms.uint32(0)
 #)
 
@@ -271,7 +274,11 @@ elecTauEventDump = cms.PSet(
   diTauCandidateSource = cms.InputTag('allElecTauPairs'),
   metSource = cms.InputTag('layer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
-  jetSource = cms.InputTag('selectedLayer1JetsEt20'),
+  jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+  recoTrackSource = cms.InputTag('generalTracks'),
+  pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+  pfGammaSource = cms.InputTag('pfAllPhotons'),
+  pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
   #output = cms.string("elecTauEventDump.txt"),
   output = cms.string("std::cout"),
@@ -365,7 +372,7 @@ elecTauAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecTauHistManagers,
-    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightId')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
   ),
   cms.PSet(
     filter = cms.string('electronAntiCrackCut'),
@@ -441,7 +448,7 @@ elecTauAnalysisSequence = cms.VPSet(
   cms.PSet(
     histManagers = elecTauHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto')
+                          'tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVetoCumulative')
   ),
   cms.PSet(
     filter = cms.string('tauEtaCut'),
@@ -534,7 +541,7 @@ elecTauAnalysisSequence = cms.VPSet(
     histManagers = elecTauHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
-                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVeto')
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAntiOverlapVetoCumulative')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecTauZeroChargeCut'),
@@ -556,7 +563,7 @@ elecTauAnalysisSequence = cms.VPSet(
     histManagers = elecTauHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1MuonsTrkIPcumulative',
                           'tauHistManager.tauSource = selectedLayer1TausForElecTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METCumulative')  
+                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative')  
   #),
 
   # veto events containing additional central jets with Et > 20 GeV
