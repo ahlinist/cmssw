@@ -103,7 +103,8 @@ primaryEventVertexPosition = cms.PSet(
 tightElectronIdCut = cms.PSet(
   name = cms.string('tightElectronIdCut'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedLayer1ElectronsTightId'),
+  src_cumulative = cms.InputTag('selectedLayer1ElectronsTightIdCumulative'),
+  src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
   minNumber = cms.uint32(1)
 )
 electronAntiCrackCut = cms.PSet(
@@ -160,7 +161,8 @@ electronTrkIPcut = cms.PSet(
 globalMuonCut = cms.PSet(
   name = cms.string('globalMuonCut'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedLayer1MuonsGlobal'),
+  src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
+  src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
   minNumber = cms.uint32(1)
 )
 muonEtaCut = cms.PSet(
@@ -210,7 +212,8 @@ muonTrkIPcut = cms.PSet(
 diTauCandidateForElecMuAcoplanarityCut = cms.PSet(
   name = cms.string('diTauCandidateForElecMuAcoplanarityCut'),
   type = cms.string('PATCandViewMinEventSelector'),
-  src = cms.InputTag('selectedElecMuPairsAcoplanarity'),
+  src_cumulative = cms.InputTag('selectedElecMuPairsAcoplanarityCumulative'),
+  src_individual = cms.InputTag('selectedElecMuPairsAcoplanarityIndividual'),
   minNumber = cms.uint32(1)
 )
 diTauCandidateForElecMuZeroChargeCut = cms.PSet(
@@ -225,7 +228,7 @@ diTauCandidateForElecMuZeroChargeCut = cms.PSet(
 centralJetVeto = cms.PSet(
   name = cms.string('centralJetVeto'),
   type = cms.string('PATCandViewMaxEventSelector'),
-  src = cms.InputTag('selectedLayer1JetsEt20'),
+  src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
   maxNumber = cms.uint32(0)
 )
 
@@ -256,7 +259,11 @@ elecMuEventDump = cms.PSet(
   diTauCandidateSource = cms.InputTag('allElecMuPairs'),
   metSource = cms.InputTag('layer1METs'),
   genMEtSource = cms.InputTag('genMETWithMu'),
-  jetSource = cms.InputTag('selectedLayer1JetsEt20'),
+  jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+  recoTrackSource = cms.InputTag('generalTracks'),
+  pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+  pfGammaSource = cms.InputTag('pfAllPhotons'),
+  pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
   #output = cms.string("elecMuEventDump.txt"),
   output = cms.string("std::cout"),
@@ -349,7 +356,7 @@ elecMuAnalysisSequence = cms.VPSet(
   ),
   cms.PSet(
     histManagers = elecMuHistManagers,
-    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightId')
+    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
   ),
   cms.PSet(
     filter = cms.string('electronAntiCrackCut'),
@@ -425,7 +432,7 @@ elecMuAnalysisSequence = cms.VPSet(
   cms.PSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                          'muonHistManager.muonSource = selectedLayer1MuonsGlobal')
+                          'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
   ),
   cms.PSet(
     filter = cms.string('muonEtaCut'),
@@ -498,7 +505,7 @@ elecMuAnalysisSequence = cms.VPSet(
     histManagers = elecMuHistManagers,
     replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                           'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarity')
+                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative')
   ),
   cms.PSet(
     filter = cms.string('diTauCandidateForElecMuZeroChargeCut'),
