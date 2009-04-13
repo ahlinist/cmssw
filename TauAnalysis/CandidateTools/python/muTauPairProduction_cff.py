@@ -24,7 +24,7 @@ produceMuTauPairs = cms.Sequence( allMuTauPairs )
 
 allMuTauPairsLooseMuonIsolation = cms.EDProducer("PATMuTauPairProducer",
   useLeadingTausOnly = cms.bool(False),
-  srcLeg1 = cms.InputTag('selectedLayer1MuonsTrkIPcumulativeLooseIsolation'),
+  srcLeg1 = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative'),
   srcLeg2 = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
   dRmin12 = cms.double(0.3),
   srcMET = cms.InputTag('layer1METs'),

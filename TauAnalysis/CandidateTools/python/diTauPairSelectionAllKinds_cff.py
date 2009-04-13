@@ -1,8 +1,29 @@
 import FWCore.ParameterSet.Config as cms
 
+from TauAnalysis.CandidateTools.elecMuPairSelection_cfi import *
 from TauAnalysis.CandidateTools.elecTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.muTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.diTauPairSelection_cfi import *
+
+from TauAnalysis.RecoTools.objSelConfigurator import *
+
+#--------------------------------------------------------------------------------
+# define selection criteria for e + mu pairs
+# (settings made here overwrite values defined in elecMuPairSelector_cfi)
+#--------------------------------------------------------------------------------
+
+selectedElecMuPairsAcoplanarity.cut = cms.string('cos(dPhi1MET) > 0.5 | cos(dPhi2MET) > 0.5')
+selectedElecMuPairsZeroCharge.cut = cms.string('charge = 0')
+
+patElecMuPairSelConfigurator = objSelConfigurator(
+    [ selectedElecMuPairsAcoplanarity,
+      selectedElecMuPairsZeroCharge ],
+    src = "allElecMuPairs",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecMuPairs = patElecMuPairSelConfigurator.configure()
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + tau-jet pairs
@@ -10,18 +31,19 @@ from TauAnalysis.CandidateTools.diTauPairSelection_cfi import *
 #--------------------------------------------------------------------------------
 
 selectedElecTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedElecTauPairsZeroChargeIndividual.cut = cms.string('charge = 0')
-selectedElecTauPairsMt1METIndividual.cut = cms.string('mt1MET < 60.')
+selectedElecTauPairsZeroCharge.cut = cms.string('charge = 0')
+selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 60.')
 
-selectedElecTauPairsZeroChargeCumulative.cut = selectedElecTauPairsZeroChargeIndividual.cut
-selectedElecTauPairsMt1METCumulative.cut = selectedElecTauPairsMt1METIndividual.cut
+patElecTauPairSelConfigurator = objSelConfigurator(
+    [ selectedElecTauPairsAntiOverlapVeto,
+      selectedElecTauPairsZeroCharge,
+      selectedElecTauPairsMt1MET ],
+    src = "allElecTauPairs",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
 
-selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation.cut = selectedElecTauPairsAntiOverlapVeto.cut
-selectedElecTauPairsZeroChargeIndividualLooseElectronIsolation.cut = selectedElecTauPairsZeroChargeIndividual.cut
-selectedElecTauPairsMt1METIndividualLooseElectronIsolation.cut = selectedElecTauPairsMt1METIndividual.cut
-
-selectedElecTauPairsZeroChargeCumulativeLooseElectronIsolation.cut = selectedElecTauPairsZeroChargeIndividualLooseElectronIsolation.cut
-selectedElecTauPairsMt1METCumulativeLooseElectronIsolation.cut = selectedElecTauPairsMt1METIndividualLooseElectronIsolation.cut
+selectElecTauPairs = patElecTauPairSelConfigurator.configure()
 
 #--------------------------------------------------------------------------------
 # define selection criteria for mu + tau-jet pairs
@@ -29,18 +51,34 @@ selectedElecTauPairsMt1METCumulativeLooseElectronIsolation.cut = selectedElecTau
 #--------------------------------------------------------------------------------
 
 selectedMuTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedMuTauPairsZeroChargeIndividual.cut = cms.string('charge = 0')
-selectedMuTauPairsMt1METIndividual.cut = cms.string('mt1MET < 60.')
+selectedMuTauPairsZeroCharge.cut = cms.string('charge = 0')
+selectedMuTauPairsMt1MET.cut = cms.string('mt1MET < 60.')
 
-selectedMuTauPairsZeroChargeCumulative.cut = selectedMuTauPairsZeroChargeIndividual.cut
-selectedMuTauPairsMt1METCumulative.cut = selectedMuTauPairsMt1METIndividual.cut
+patMuTauPairSelConfigurator = objSelConfigurator(
+    [ selectedMuTauPairsAntiOverlapVeto,
+      selectedMuTauPairsZeroCharge,
+      selectedMuTauPairsMt1MET ],
+    src = "allMuTauPairs",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectMuTauPairs = patMuTauPairSelConfigurator.configure()
 
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation.cut = selectedMuTauPairsAntiOverlapVeto.cut
-selectedMuTauPairsZeroChargeIndividualLooseMuonIsolation.cut = selectedMuTauPairsZeroChargeIndividual.cut
-selectedMuTauPairsMt1METIndividualLooseMuonIsolation.cut = selectedMuTauPairsMt1METIndividual.cut
+selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsZeroCharge.cut
+selectedMuTauPairsMt1METlooseMuonIsolation.cut = selectedMuTauPairsMt1MET.cut
 
-selectedMuTauPairsZeroChargeCumulativeLooseMuonIsolation.cut = selectedMuTauPairsZeroChargeIndividualLooseMuonIsolation.cut
-selectedMuTauPairsMt1METCumulativeLooseMuonIsolation.cut = selectedMuTauPairsMt1METIndividualLooseMuonIsolation.cut
+patMuTauPairSelConfiguratorLooseMuonIsolation = objSelConfigurator(
+    [ selectedMuTauPairsAntiOverlapVeto,
+      selectedMuTauPairsZeroCharge,
+      selectedMuTauPairsMt1MET ],
+    src = "allMuTauPairsLooseMuonIsolation",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure()
 
 #--------------------------------------------------------------------------------
 # define selection criteria for tau-jet + tau-jet pairs
@@ -48,12 +86,21 @@ selectedMuTauPairsMt1METCumulativeLooseMuonIsolation.cut = selectedMuTauPairsMt1
 #--------------------------------------------------------------------------------
 
 selectedDiTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
-selectedDiTauPairsAcoplanarityIndividual.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
-selectedDiTauPairsZeroChargeIndividual.cut = cms.string('charge = 0')
+selectedDiTauPairsAcoplanarity.cut = cms.string('(dPhi1MET < 2.4) | (dPhi2MET < 2.4)')
+selectedDiTauPairsZeroCharge.cut = cms.string('charge = 0')
 
-selectedDiTauPairsAcoplanarityCumulative.cut = selectedDiTauPairsAcoplanarityIndividual.cut
-selectedDiTauPairsZeroChargeCumulative.cut = selectedDiTauPairsZeroChargeIndividual.cut
+patDiTauPairSelConfigurator = objSelConfigurator(
+    [ selectedDiTauPairsAntiOverlapVeto,
+      selectedDiTauPairsAcoplanarity,
+      selectedDiTauPairsZeroCharge ],
+    src = "selectedDiTauPairs2ndTauProngCumulative",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
 
-selectDiTauPairsAllKinds = cms.Sequence( selectElecTauPairs
-                                        +selectMuTauPairsAll
+selectDiTauPairs = patDiTauPairSelConfigurator.configure()
+
+selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs
+                                        +selectElecTauPairs
+                                        +selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
                                         +selectDiTauPairs )
