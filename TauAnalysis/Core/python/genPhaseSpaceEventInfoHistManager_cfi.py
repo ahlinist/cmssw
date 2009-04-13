@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 genPhaseSpaceEventInfoHistManager = cms.PSet(
-  name = cms.string('genPhaseSpaceEventInfoHistManager'),
-  type = cms.string('GenPhaseSpaceEventInfoHistManager'),
+  pluginName = cms.string('genPhaseSpaceEventInfoHistManager'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoHistManager'),
       
   source = cms.InputTag('genPhaseSpaceEventInfo'),
 

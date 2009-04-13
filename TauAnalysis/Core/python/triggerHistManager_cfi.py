@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 triggerHistManager = cms.PSet(
-  name = cms.string('triggerHistManager'),
-  type = cms.string('TriggerHistManager'),
+  pluginName = cms.string('triggerHistManager'),
+  pluginType = cms.string('TriggerHistManager'),
 
   # L1 trigger bits not contained in AOD;
   # in order to process Monte Carlo samples produced by FastSimulation,

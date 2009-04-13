@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 diTauCandidateHistManager = cms.PSet(    
-  name = cms.string('diTauCandidateHistManager'),
-  type = cms.string('DiCandidatePairHistManager'),
+  pluginName = cms.string('diTauCandidateHistManager'),
+  pluginType = cms.string('DiCandidatePairHistManager'),
       
   diTauCandidateSource = cms.InputTag(''),
 

@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 electronHistManager = cms.PSet(
-  name = cms.string('electronHistManager'),
-  type = cms.string('ElectronHistManager'),
+  pluginName = cms.string('electronHistManager'),
+  pluginType = cms.string('ElectronHistManager'),
       
   electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),

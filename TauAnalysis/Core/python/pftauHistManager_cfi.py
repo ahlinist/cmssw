@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 tauHistManager = cms.PSet(    
-  name = cms.string('tauHistManager'),
-  type = cms.string('TauHistManager'),
+  pluginName = cms.string('tauHistManager'),
+  pluginType = cms.string('TauHistManager'),
       
   tauSource = cms.InputTag('cleanLayer1TausSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
