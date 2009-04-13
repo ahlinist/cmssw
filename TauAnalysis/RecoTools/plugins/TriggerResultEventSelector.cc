@@ -31,7 +31,7 @@ bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSet
 //--- event triggered by triggerPath
       if ( triggerResults->accept(index) ) return true;
     } else {
-      edm::LogError ("TriggerResultEventSelector::operator") << " Undefined trigger Path = " << (*triggerPath) << " --> skipping !!";
+      edm::LogError ("TriggerResultEventSelector::operator()") << " Undefined trigger Path = " << (*triggerPath) << " --> skipping !!";
       continue;
     }
   }
