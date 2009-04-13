@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import copy
 
 #--------------------------------------------------------------------------------  
 # produce collections of pat::Electrons passing selection criteria
@@ -10,8 +9,8 @@ import copy
 
 # require electron candidate to pass the tight electron id. criteria
 selectedLayer1ElectronsTightId = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsTightId"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsTightId"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'),
     filter = cms.bool(False)
 )
@@ -19,24 +18,24 @@ selectedLayer1ElectronsTightId = cms.PSet(
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
 selectedLayer1ElectronsAntiCrackCut = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsAntiCrackCut"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsAntiCrackCut"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560'),
     filter = cms.bool(False)
 )
 
 # require electron candidate to be within geometric acceptance of electron trigger
 selectedLayer1ElectronsEta21 = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsEta21"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsEta21"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
 
 # require electron candidate to have transverse momentum above threshold
 selectedLayer1ElectronsPt15 = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsPt15"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsPt15"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
@@ -44,8 +43,8 @@ selectedLayer1ElectronsPt15 = cms.PSet(
 # require electron candidate to be isolated
 # with respect to tracks (of Pt >~ 0.3 GeV)
 selectedLayer1ElectronsTrkIso = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsTrkIso"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsTrkIso"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('trackIso < 1.'),
     filter = cms.bool(False)
 )
@@ -54,16 +53,16 @@ selectedLayer1ElectronsTrkIso = cms.PSet(
 # with respect to energy deposits in ECAL
 # (not associated to electron candidate)
 selectedLayer1ElectronsEcalIso = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsEcalIso"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsEcalIso"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('(abs(superCluster.eta) < 1.479 & ecalIso < 1.0) | (abs(superCluster.eta) > 1.479 & ecalIso < 2.5)'),
     filter = cms.bool(False)
 )
 
 # require electron candidate to be linked to (GSF) track
 selectedLayer1ElectronsTrk = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsTrk"),
-    type = cms.string("PATElectronSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsTrk"),
+    pluginType = cms.string("PATElectronSelector"),
     cut = cms.string('gsfTrack.isNonnull'),
     filter = cms.bool(False)
 )
@@ -71,8 +70,8 @@ selectedLayer1ElectronsTrk = cms.PSet(
 # require track of electron candidate to have small transverse impact parameter
 # (in order to veto electrons resulting from b-quark decays)
 selectedLayer1ElectronsTrkIP = cms.PSet(
-    name = cms.string("selectedLayer1ElectronsTrkIP"),
-    type = cms.string("PATElectronIpSelector"),
+    pluginName = cms.string("selectedLayer1ElectronsTrkIP"),
+    pluginType = cms.string("PATElectronIpSelector"),
     vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
@@ -89,7 +88,7 @@ cleanLayer1ElectronsSel = cms.EDProducer("PATElectronSelProducer",
 
   selFlags = cms.PSet(
     tauAnalysisSelElectronTightIdGlobal = cms.PSet(
-      src = cms.InputTag('selectedLayer1ElectronsTightId')
+      src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
     ),
     tauAnalysisSelElectronAntiCrackCut = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual')

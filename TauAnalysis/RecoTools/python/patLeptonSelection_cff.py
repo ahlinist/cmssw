@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import copy
 
 from TauAnalysis.RecoTools.patElectronSelection_cfi import *
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
@@ -47,46 +46,94 @@ selectLayer1Electrons = patElectronSelConfigurator.configure()
 #--------------------------------------------------------------------------------
 
 selectedLayer1MuonsGlobal.cut = cms.string('isGlobalMuon()')
-selectedLayer1MuonsEta21Individual.cut = cms.string('abs(eta) < 2.1')
-selectedLayer1MuonsPt15Individual.cut = cms.string('pt > 15.')
-selectedLayer1MuonsTrkIsoIndividual.vetos = vetos = cms.vstring("0.01")
-selectedLayer1MuonsTrkIsoIndividual.dRisoCone = cms.double(0.6)
-selectedLayer1MuonsTrkIsoIndividual.sumPtMax = cms.double(1.)
-selectedLayer1MuonsEcalIsoIndividual.cut = cms.string('ecalIso < 1.')
-selectedLayer1MuonsPionVetoIndividual.CaloCompCoefficient = cms.double(0.8)
-selectedLayer1MuonsPionVetoIndividual.SegmCompCoefficient = cms.double(1.2)
-selectedLayer1MuonsPionVetoIndividual.AntiPionCut = cms.double(1.0)
-selectedLayer1MuonsTrkIndividual.cut = cms.string('innerTrack.isNonnull')
-selectedLayer1MuonsTrkIPindividual.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
-selectedLayer1MuonsTrkIPindividual.IpMax = cms.double(0.05)
+selectedLayer1MuonsEta21.cut = cms.string('abs(eta) < 2.1')
+selectedLayer1MuonsPt15.cut = cms.string('pt > 15.')
+selectedLayer1MuonsTrkIso.vetos = vetos = cms.vstring("0.01")
+selectedLayer1MuonsTrkIso.dRisoCone = cms.double(0.6)
+selectedLayer1MuonsTrkIso.sumPtMax = cms.double(1.)
+selectedLayer1MuonsEcalIso.cut = cms.string('ecalIso < 1.')
+selectedLayer1MuonsPionVeto.CaloCompCoefficient = cms.double(0.8)
+selectedLayer1MuonsPionVeto.SegmCompCoefficient = cms.double(1.2)
+selectedLayer1MuonsPionVeto.AntiPionCut = cms.double(1.0)
+selectedLayer1MuonsTrk.cut = cms.string('innerTrack.isNonnull')
+selectedLayer1MuonsTrkIP.vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
+selectedLayer1MuonsTrkIP.IpMax = cms.double(0.05)
 
-selectedLayer1MuonsEta21Cumulative.cut = selectedLayer1MuonsEta21Individual.cut
-selectedLayer1MuonsPt15Cumulative.cut = selectedLayer1MuonsPt15Individual.cut
-selectedLayer1MuonsTrkIsoCumulative.vetos = selectedLayer1MuonsTrkIsoIndividual.vetos
-selectedLayer1MuonsTrkIsoCumulative.dRisoCone = selectedLayer1MuonsTrkIsoIndividual.dRisoCone
-selectedLayer1MuonsTrkIsoCumulative.sumPtMax = selectedLayer1MuonsTrkIsoIndividual.sumPtMax
-selectedLayer1MuonsEcalIsoCumulative.cut = selectedLayer1MuonsEcalIsoIndividual.cut
-selectedLayer1MuonsPionVetoCumulative.CaloCompCoefficient = selectedLayer1MuonsPionVetoIndividual.CaloCompCoefficient
-selectedLayer1MuonsPionVetoCumulative.SegmCompCoefficient = selectedLayer1MuonsPionVetoIndividual.SegmCompCoefficient
-selectedLayer1MuonsPionVetoCumulative.AntiPionCut = selectedLayer1MuonsPionVetoIndividual.AntiPionCut
-selectedLayer1MuonsTrkCumulative.cut = selectedLayer1MuonsTrkIndividual.cut
-selectedLayer1MuonsTrkIPcumulative.vertexSource = selectedLayer1MuonsTrkIPindividual.vertexSource
-selectedLayer1MuonsTrkIPcumulative.IpMax = selectedLayer1MuonsTrkIPindividual.IpMax
+patMuonSelConfigurator = objSelConfigurator(
+    [ selectedLayer1MuonsGlobal,
+      selectedLayer1MuonsEta21,
+      selectedLayer1MuonsPt15,
+      selectedLayer1MuonsTrkIso,
+      selectedLayer1MuonsEcalIso,
+      selectedLayer1MuonsPionVeto,
+      selectedLayer1MuonsTrk,
+      selectedLayer1MuonsTrkIP ],
+    src = "cleanLayer1Muons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1Muons = patMuonSelConfigurator.configure()
+
+selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
+selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
+selectedLayer1MuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
+selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1MuonsPionVetoLooseIsolation.CaloCompCoefficient = selectedLayer1MuonsPionVeto.CaloCompCoefficient
+selectedLayer1MuonsPionVetoLooseIsolation.SegmCompCoefficient = selectedLayer1MuonsPionVeto.SegmCompCoefficient
+selectedLayer1MuonsPionVetoLooseIsolation.AntiPionCut = selectedLayer1MuonsPionVeto.AntiPionCut
+selectedLayer1MuonsTrkLooseIsolation.cut = selectedLayer1MuonsTrk.cut
+selectedLayer1MuonsTrkIPlooseIsolation.vertexSource = selectedLayer1MuonsTrkIP.vertexSource
+selectedLayer1MuonsTrkIPlooseIsolation.IpMax = selectedLayer1MuonsTrkIP.IpMax
+
+patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
+    [ selectedLayer1MuonsGlobal,
+      selectedLayer1MuonsEta21,
+      selectedLayer1MuonsPt15,
+      selectedLayer1MuonsTrkIsoLooseIsolation,
+      selectedLayer1MuonsEcalIsoLooseIsolation,
+      selectedLayer1MuonsPionVetoLooseIsolation,
+      selectedLayer1MuonsTrkLooseIsolation,
+      selectedLayer1MuonsTrkIPlooseIsolation ],
+    src = "cleanLayer1Muons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure()
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::(PF)Taus
 # (settings made here overwrite values defined in pftauPatSelector_cfi)
 #--------------------------------------------------------------------------------
 
-selectedLayer1TausEta21Individual.cut = cms.string("abs(eta) < 2.1")
-selectedLayer1TausPt20Individual.cut = cut = cms.string("pt > 20.")
-selectedLayer1TausLeadTrkIndividual.cut = cms.string('tauID("leadingTrackFinding") > 0.5')
-selectedLayer1TausLeadTrkPtIndividual.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
-selectedLayer1TausTrkIsoIndividual.cut = cms.string('tauID("trackIsolation") > 0.5')
-selectedLayer1TausEcalIsoIndividual.cut = cms.string('tauID("ecalIsolation") > 0.5')
-selectedLayer1TausProngIndividual.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
-selectedLayer1TausElectronVetoIndividual.cut = cms.string('tauID("againstElectron") > 0.5')
-selectedLayer1TausMuonVetoIndividual.cut = cms.string('tauID("againstMuon") > 0.5')
+selectedLayer1TausEta21.cut = cms.string("abs(eta) < 2.1")
+selectedLayer1TausPt20.cut = cut = cms.string("pt > 20.")
+selectedLayer1TausLeadTrk.cut = cms.string('tauID("leadingTrackFinding") > 0.5')
+selectedLayer1TausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
+selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
+selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
+selectedLayer1TausProng.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
+selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
+selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
+
+patTauSelConfigurator = objSelConfigurator(
+    [ selectedLayer1TausEta21,
+      selectedLayer1TausPt20,
+      selectedLayer1TausLeadTrk,
+      selectedLayer1TausLeadTrkPt,
+      selectedLayer1TausTrkIso,
+      selectedLayer1TausEcalIso,
+      selectedLayer1TausProng,
+      selectedLayer1TausElectronVeto,
+      selectedLayer1TausMuonVeto ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelCumulative = False,
+    doSelIndividual = True
+)
+
+selectLayer1Taus = patTauSelConfigurator.configure()
 #
 # define collections of pat::(PF)Taus used in semi-leptonic e + tau-jet channel
 # (require electron and tau-jet candidates to be separated in eta-phi,
@@ -94,14 +141,31 @@ selectedLayer1TausMuonVetoIndividual.cut = cms.string('tauID("againstMuon") > 0.
 #  apply anti-electron veto only; no need to apply anti-muon veto)
 #
 selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto.dRmin = cms.double(0.3)
-selectedLayer1TausForElecTauEta21Cumulative.cut = selectedLayer1TausEta21Individual.cut
-selectedLayer1TausForElecTauPt20Cumulative.cut = selectedLayer1TausPt20Individual.cut
-selectedLayer1TausForElecTauLeadTrkCumulative.cut = selectedLayer1TausLeadTrkIndividual.cut
-selectedLayer1TausForElecTauLeadTrkPtCumulative.cut = selectedLayer1TausLeadTrkPtIndividual.cut
-selectedLayer1TausForElecTauTrkIsoCumulative.cut = selectedLayer1TausTrkIsoIndividual.cut
-selectedLayer1TausForElecTauEcalIsoCumulative.cut = selectedLayer1TausEcalIsoIndividual.cut
-selectedLayer1TausForElecTauProngCumulative.cut = selectedLayer1TausProngIndividual.cut
-selectedLayer1TausForElecTauElectronVetoCumulative.cut = selectedLayer1TausElectronVetoIndividual.cut
+selectedLayer1TausForElecTauEta21.cut = selectedLayer1TausEta21.cut
+selectedLayer1TausForElecTauPt20.cut = selectedLayer1TausPt20.cut
+selectedLayer1TausForElecTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
+selectedLayer1TausForElecTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForElecTauTrkIso.cut = selectedLayer1TausTrkIso.cut
+selectedLayer1TausForElecTauEcalIso.cut = selectedLayer1TausEcalIso.cut
+selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForElecTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
+
+patTauSelConfiguratorForElecTau = objSelConfigurator(
+    [ selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto,
+      selectedLayer1TausForElecTauEta21,
+      selectedLayer1TausForElecTauPt20,
+      selectedLayer1TausForElecTauLeadTrk,
+      selectedLayer1TausForElecTauLeadTrkPt,
+      selectedLayer1TausForElecTauTrkIso,
+      selectedLayer1TausForElecTauEcalIso,
+      selectedLayer1TausForElecTauProng,
+      selectedLayer1TausForElecTauElectronVeto ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1TausForElecTau = patTauSelConfiguratorForElecTau.configure()
 #
 # define collections of pat::(PF)Taus used in semi-leptonic mu + tau-jet channel
 # (require muon and tau-jet candidates to be separated in eta-phi,
@@ -109,27 +173,59 @@ selectedLayer1TausForElecTauElectronVetoCumulative.cut = selectedLayer1TausElect
 #  apply anti-muon veto only; no need to apply anti-electron veto)
 #
 selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
-selectedLayer1TausForMuTauEta21Cumulative.cut = selectedLayer1TausEta21Individual.cut
-selectedLayer1TausForMuTauPt20Cumulative.cut = selectedLayer1TausPt20Individual.cut
-selectedLayer1TausForMuTauLeadTrkCumulative.cut = selectedLayer1TausLeadTrkIndividual.cut
-selectedLayer1TausForMuTauLeadTrkPtCumulative.cut = selectedLayer1TausLeadTrkPtIndividual.cut
-selectedLayer1TausForMuTauTrkIsoCumulative.cut = selectedLayer1TausTrkIsoIndividual.cut
-selectedLayer1TausForMuTauEcalIsoCumulative.cut = selectedLayer1TausEcalIsoIndividual.cut
-selectedLayer1TausForMuTauProngCumulative.cut = selectedLayer1TausProngIndividual.cut
-selectedLayer1TausForMuTauMuonVetoCumulative.cut = selectedLayer1TausMuonVetoIndividual.cut
+selectedLayer1TausForMuTauEta21.cut = selectedLayer1TausEta21.cut
+selectedLayer1TausForMuTauPt20.cut = selectedLayer1TausPt20.cut
+selectedLayer1TausForMuTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
+selectedLayer1TausForMuTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForMuTauTrkIso.cut = selectedLayer1TausTrkIso.cut
+selectedLayer1TausForMuTauEcalIso.cut = selectedLayer1TausEcalIso.cut
+selectedLayer1TausForMuTauProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForMuTauMuonVeto.cut = selectedLayer1TausMuonVeto.cut
+
+patTauSelConfiguratorForMuTau = objSelConfigurator(
+    [ selectedLayer1TausForMuTauAntiOverlapWithMuonsVeto,
+      selectedLayer1TausForMuTauEta21,
+      selectedLayer1TausForMuTauPt20,
+      selectedLayer1TausForMuTauLeadTrk,
+      selectedLayer1TausForMuTauLeadTrkPt,
+      selectedLayer1TausForMuTauTrkIso,
+      selectedLayer1TausForMuTauEcalIso,
+      selectedLayer1TausForMuTauProng,
+      selectedLayer1TausForMuTauMuonVeto ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure()
 #
 # define collections of pat::(PF)Taus used in pure hadronic tau-jet + tau-jet channel
 # (no need to apply anti-electron or anti-muon vetos)
 #
-selectedLayer1TausForDiTauEta21Cumulative.cut = selectedLayer1TausEta21Individual.cut
-selectedLayer1TausForDiTauPt20Cumulative.cut = selectedLayer1TausPt20Individual.cut
-selectedLayer1TausForDiTauLeadTrkCumulative.cut = selectedLayer1TausLeadTrkIndividual.cut
-selectedLayer1TausForDiTauLeadTrkPtCumulative.cut = selectedLayer1TausLeadTrkPtIndividual.cut
-selectedLayer1TausForDiTauTrkIsoCumulative.cut = selectedLayer1TausEcalIsoIndividual.cut
-selectedLayer1TausForDiTauEcalIsoCumulative.cut = selectedLayer1TausEcalIsoIndividual.cut
-selectedLayer1TausForDiTauProngCumulative.cut = selectedLayer1TausMuonVetoIndividual.cut
+selectedLayer1TausForDiTauEta21.cut = selectedLayer1TausEta21.cut
+selectedLayer1TausForDiTauPt20.cut = selectedLayer1TausPt20.cut
+selectedLayer1TausForDiTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
+selectedLayer1TausForDiTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
+selectedLayer1TausForDiTauTrkIso.cut = selectedLayer1TausEcalIso.cut
+selectedLayer1TausForDiTauEcalIso.cut = selectedLayer1TausEcalIso.cut
+selectedLayer1TausForDiTauProng.cut = selectedLayer1TausMuonVeto.cut
+
+patTauSelConfiguratorForDiTau = objSelConfigurator(
+    [ selectedLayer1TausForDiTauEta21,
+      selectedLayer1TausForDiTauPt20,
+      selectedLayer1TausForDiTauLeadTrk,
+      selectedLayer1TausForDiTauLeadTrkPt,
+      selectedLayer1TausForDiTauTrkIso,
+      selectedLayer1TausForDiTauEcalIso,
+      selectedLayer1TausForDiTauProng ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure()
 
 produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons
-                                        +produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
-                                        +produceLayer1SelTaus
+                                        +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
+                                        +selectLayer1Taus + produceLayer1SelTaus
                                         +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau )
