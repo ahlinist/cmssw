@@ -33,7 +33,7 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 									   const edm::ParameterSet& cfgFilter, int& cfgError)
   : analysisSequenceEntry(name)
 {
-  std::string filterType = cfgFilter.getParameter<std::string>("type");
+  std::string filterType = cfgFilter.getParameter<std::string>("pluginType");
 
   if ( cfgFilter.exists("src_cumulative") &&
        cfgFilter.exists("src_individual") ) {
@@ -89,7 +89,7 @@ GenericAnalyzer::analysisSequenceEntry_histManagers::analysisSequenceEntry_histM
 {
   for ( std::list<edm::ParameterSet>::const_iterator cfgHistManager = cfgHistManagers.begin(); 
 	cfgHistManager != cfgHistManagers.end(); ++cfgHistManager ) {
-    std::string histManagerType = cfgHistManager->getParameter<std::string>("type");
+    std::string histManagerType = cfgHistManager->getParameter<std::string>("pluginType");
     HistManagerBase* histManager = HistManagerPluginFactory::get()->create(histManagerType, *cfgHistManager);
     histManagers_.push_back(histManager);
   }
@@ -292,7 +292,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     vParameterSet cfgFilters = cfg.getParameter<vParameterSet>("eventSelection");
     for ( vParameterSet::const_iterator cfgFilter = cfgFilters.begin(); 
 	  cfgFilter != cfgFilters.end(); ++cfgFilter ) {
-      std::string cfgFilterName = cfgFilter->getParameter<std::string>("name");
+      std::string cfgFilterName = cfgFilter->getParameter<std::string>("pluginName");
       //std::cout << " cfgFilterName = " << cfgFilterName << std::endl;
       cfgFilters_.insert(std::pair<std::string, edm::ParameterSet>(cfgFilterName, *cfgFilter)); 
     }
@@ -304,7 +304,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     vParameterSet cfgHistManagers = cfg.getParameter<vParameterSet>("histManagers");
     for ( vParameterSet::const_iterator cfgHistManager = cfgHistManagers.begin(); 
 	  cfgHistManager != cfgHistManagers.end(); ++cfgHistManager ) {
-      std::string cfgHistManagerName = cfgHistManager->getParameter<std::string>("name");
+      std::string cfgHistManagerName = cfgHistManager->getParameter<std::string>("pluginName");
       //std::cout << " cfgHistManagerName = " << cfgHistManagerName << std::endl;
       cfgHistManagers_.insert(std::pair<std::string, edm::ParameterSet>(cfgHistManagerName, *cfgHistManager));
     }
@@ -412,10 +412,10 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     vParameterSet cfgEventDumps = cfg.getParameter<vParameterSet>("eventDumps");
     for ( vParameterSet::const_iterator cfgEventDump = cfgEventDumps.begin(); 
 	  cfgEventDump != cfgEventDumps.end(); ++cfgEventDump ) {
-      std::string eventDumpName = cfgEventDump->getParameter<std::string>("name");
+      std::string eventDumpName = cfgEventDump->getParameter<std::string>("pluginName");
       //std::cout << " eventDumpName = " << eventDumpName << std::endl;
 
-      std::string eventDumpType = cfgEventDump->getParameter<std::string>("type");
+      std::string eventDumpType = cfgEventDump->getParameter<std::string>("pluginType");
       //std::cout << " eventDumpType = " << eventDumpType << std::endl;
 
       EventDumpBase* entry = EventDumpPluginFactory::get()->create(eventDumpType, *cfgEventDump);
