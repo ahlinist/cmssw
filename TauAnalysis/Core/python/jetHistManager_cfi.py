@@ -1,10 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 jetHistManager = cms.PSet(
-  name = cms.string('jetHistManager'),
-  type = cms.string('JetHistManager'),
+  pluginName = cms.string('jetHistManager'),
+  pluginType = cms.string('JetHistManager'),
       
-  jetSource = cms.InputTag('selectedLayer1JetsAntiOverlapWithLeptonsVeto'),
+  jetSource = cms.InputTag('selectedLayer1JetsAntiOverlapWithLeptonsVetoCumulative'),
 
   dqmDirectory_store = cms.string('JetQuantities'),
 

@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 muonHistManager = cms.PSet(
-  name = cms.string('muonHistManager'),
-  type = cms.string('MuonHistManager'),
+  pluginName = cms.string('muonHistManager'),
+  pluginType = cms.string('MuonHistManager'),
       
   muonSource = cms.InputTag('cleanLayer1MuonsSel'),
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
