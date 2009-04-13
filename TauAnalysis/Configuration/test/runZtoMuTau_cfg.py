@@ -63,7 +63,7 @@ process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(10)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -150,4 +150,4 @@ process.p = cms.Path( process.producePatTuple
 #enableFactorization_runZtoMuTau(process)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
