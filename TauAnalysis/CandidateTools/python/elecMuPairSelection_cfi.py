@@ -6,17 +6,13 @@ import FWCore.ParameterSet.Config as cms
 
 # require missing transverse momentum to point either in direction of the electron
 # or in direction of the muon in the transverse plane
-selectedElecMuPairsAcoplanarity = cms.PSet(
-    pluginName = cms.string("selectedElecMuPairsAcoplanarity"),
-    pluginType = cms.string("PATElecMuPairSelector"),
+selectedElecMuPairsAcoplanarity = cms.EDFilter("PATElecMuPairSelector",
     cut = cms.string('cos(dPhi1MET) > 0.5 | cos(dPhi2MET) > 0.5'),
     filter = cms.bool(False)
 )
 
 # require muon and tau to form a zero-charge pair
-selectedElecMuPairsZeroCharge = cms.PSet(
-    pluginName = cms.string("selectedElecMuPairsZeroCharge"),
-    pluginType = cms.string("PATElecMuPairSelector"),              
+selectedElecMuPairsZeroCharge = cms.EDFilter("PATElecMuPairSelector",
     cut = cms.string('charge = 0'),
     filter = cms.bool(False)
 )
