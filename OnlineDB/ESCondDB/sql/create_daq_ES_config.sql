@@ -1,5 +1,5 @@
 
-CONNECT cms_preshower_test/2008preshower@devdb10
+CONNECT CMS_ES_COMIS@cms_omds_lb/es164644
 
 CREATE TABLE ES_RUN_MODE_DEF (
 	DEF_ID  NUMBER NOT NULL
@@ -285,9 +285,9 @@ ALTER TABLE ECAL_srp_CYCLE ADD CONSTRAINT ecal_srp_cycle_fk2 FOREIGN KEY (srp_co
 
 
 
--- ********** Es_Ttcci
+-- ********** ECAL_Ttcci
 
-CREATE TABLE ES_TTCCI_CONFIGURATION (
+CREATE TABLE ECAL_TTCCI_CONFIGURATION (
 	TTCCI_configuration_id NUMBER NOT NULL
         , TTCCI_tag VARCHAR2(32) NOT NULL
 	, TTCCI_configuration_file varchar2(130)
@@ -297,19 +297,19 @@ CREATE TABLE ES_TTCCI_CONFIGURATION (
        , CONFIGURATION_SCRIPT varchar2(100)
        , CONFIGURATION_SCRIPT_PARAMS varchar2(100)
 );
-ALTER TABLE ES_TTCCI_CONFIGURATION ADD CONSTRAINT es_ttcci_config_pk PRIMARY KEY (TTCCI_configuration_id);
+ALTER TABLE ECAL_TTCCI_CONFIGURATION ADD CONSTRAINT ecal_ttcci_config_pk PRIMARY KEY (TTCCI_configuration_id);
 
-CREATE SEQUENCE es_ttcci_CONFIG_sq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE ecal_ttcci_CONFIG_sq INCREMENT BY 1 START WITH 1;
 
 
-CREATE TABLE ES_TTCCI_CYCLE (
+CREATE TABLE ECAL_TTCCI_CYCLE (
            CYCLE_ID NUMBER NOT NULL
 	 , TTCCI_CONFIGURATION_ID NUMBER NOT NULL
          );    
 
-ALTER TABLE ES_TTCCI_CYCLE ADD CONSTRAINT es_ttcci_cycle_pk PRIMARY KEY (cycle_id);
-ALTER TABLE ES_TTCCI_CYCLE ADD CONSTRAINT es_ttcci_cycle_fk1 FOREIGN KEY (cycle_id) REFERENCES ES_CYCLE_DAT (cycle_id);
-ALTER TABLE ES_TTCCI_CYCLE ADD CONSTRAINT es_ttcci_cycle_fk2 FOREIGN KEY (ttcci_configuration_id) REFERENCES ES_TTCCI_CONFIGURATION (TTCCI_configuration_id);
+ALTER TABLE ECAL_TTCCI_CYCLE ADD CONSTRAINT ecal_ttcci_cycle_pk PRIMARY KEY (cycle_id);
+ALTER TABLE ECAL_TTCCI_CYCLE ADD CONSTRAINT ecal_ttcci_cycle_fk1 FOREIGN KEY (cycle_id) REFERENCES ES_CYCLE_DAT (cycle_id);
+ALTER TABLE ECAL_TTCCI_CYCLE ADD CONSTRAINT ecal_ttcci_cycle_fk2 FOREIGN KEY (ttcci_configuration_id) REFERENCES ECAL_TTCCI_CONFIGURATION (TTCCI_configuration_id);
 
 -- ********** ECAL_LTC
 
@@ -498,7 +498,7 @@ FROM
 --	left outer join
 --	ECAL_tcc_CYCLE tcc on e.cycle_id=tcc.cycle_ID
 --	left outer join
-	es_ttcci_CYCLE ttcci on  e.cycle_id=ttcci.cycle_ID
+	ecal_ttcci_CYCLE ttcci on  e.cycle_id=ttcci.cycle_ID
 	left outer join
 	ES_jbh4_CYCLE jbh4 on  e.cycle_id=jbh4.cycle_ID
 	left outer join
