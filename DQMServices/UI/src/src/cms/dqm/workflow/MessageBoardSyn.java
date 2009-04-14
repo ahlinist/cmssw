@@ -1,6 +1,7 @@
 package cms.dqm.workflow;
 
 import java.util.*;
+import java.sql.*;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,39 +37,75 @@ public class MessageBoardSyn {
     if (!user.isLogged()) return;
     if (!users.containsKey(user.getId())) {
       users.put(user.getId(), user);
+      sendMessage("User " + user.getMessageLine() + " logged in", 0);
       lastUser++;
     }
     alive.put(user.getId(), Calendar.getInstance().getTimeInMillis() + (30 * 1000));
   }
 
   public void logoutUser(MessageUser user) {
-    if (users.remove(user.getId()) != null) lastUser++;
-    alive.remove(user.getId());
+    logoutUser(user.getId());
+  }
+
+  private void logoutUser(String userId) {
+    MessageUser user = users.remove(userId);
+    if (user != null) {
+      if (user.isLogged()) {
+        sendMessage("User " + user.getMessageLine() + " logged out", 0);
+      }
+      lastUser++;
+    }
+    alive.remove(userId);
   }
 
   public void refreshUsers() {
     
     long now = Calendar.getInstance().getTimeInMillis();
-    boolean changed = false;
 
     Enumeration<String> it = alive.keys();
     while (it.hasMoreElements()) {
       String id = it.nextElement();
-      if (alive.get(id).longValue() < now) {
-        users.remove(id);
-        alive.remove(id);
-        changed = true;
+      if (alive.get(id).longValue() < now || !users.get(id).isLogged()) {
+        logoutUser(id);
       }
     }
 
-    if (changed) {
-      lastUser++;
-    }
+    try {
+      DBWorker db = new DBWorker();
+      PreparedStatement pstmt = db.prepareSQL("select max(msg_id) from rr_messages");
+      last = db.getFirstRowValueInt(pstmt);
+      db.close();
+    } catch (Exception e) { }
 
   }
 
   public Iterator<MessageUser> getUsers() { 
     return users.values().iterator();
+  }
+
+  public void sendMessage(MessageUser user, int priority, String text) {
+    try {
+      DBWorker db = new DBWorker();
+      PreparedStatement pstmt = db.prepareSQL("select RR_MSG_BOARD.ADD_MESSAGE(?, ?, ?, ?, ?) from dual");
+      db.setStringNull(pstmt, user.getName(), 1);
+      db.setStringNull(pstmt, text, 2);
+      pstmt.setInt(3, priority);
+      db.setStringNull(pstmt, user.getRoles(), 4);
+      db.setStringNull(pstmt, user.getLocation(), 5);
+      last = db.getFirstRowValueInt(pstmt);
+      db.close();
+    } catch (Exception e) { }
+  }
+
+  public void sendMessage(String text, int priority) {
+    try {
+      DBWorker db = new DBWorker();
+      PreparedStatement pstmt = db.prepareSQL("select RR_MSG_BOARD.ADD_SYS_MESSAGE(?, ?) from dual");
+      db.setStringNull(pstmt, text, 1);
+      pstmt.setInt(2, priority);
+      last = db.getFirstRowValueInt(pstmt);
+      db.close();
+    } catch (Exception e) { }
   }
 
 }

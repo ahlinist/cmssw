@@ -38,25 +38,36 @@ body {
 	background: url(img/refresh.png) no-repeat center left;
 }
 
-#flex1 span.stat {
-	padding-left: 16px;
-	width: 20px;
+#flex1 div.stat {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 8px;
+	padding: 0px;
+	margin: 0px;
 }
 
-span.statGOOD {
-	background: url(img/smGOOD.png) no-repeat center left;
+div.statUP {
+	border-bottom: 1px solid #111111;
 }
 
-span.statBAD {
-background: url(img/smBAD.png) no-repeat center left;
+div.statTip {
+	color: navy;
+	cursor: help;
 }
 
-span.statNOTSET {
-background: url(img/smNOTSET.png) no-repeat center left;
+div.statGOOD {
+	background: #ADE38C;
 }
 
-span.statEXCL {
-background: url(img/smEXCL.png) no-repeat center left;
+div.statBAD {
+	background: #F7515A;
+}
+
+div.statNOTSET {
+}
+
+div.statEXCL {
+	background: #dddddd;
 }
 
 #tooltip {
@@ -329,6 +340,27 @@ tr.prevTag {
 	text-align: left;
 	font-size: 12px;
 }
+
+.rr_line {
+	color: navy;
+}
+
+.rr_priority0 {
+	background-color: #eeeeee;
+	font-size: 10px;
+}
+.rr_priority1 {
+	background-color: #eeeeee;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.rr_priority2 {
+	font-weight: bold;
+	background-color: #ffeeee;
+	color: #ff0000;
+}
+
 
 .chat_priority0 {
 	color: #777777;

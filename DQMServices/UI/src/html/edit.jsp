@@ -7,22 +7,50 @@
 
 <script type="text/javascript">
 
-function textareaValue (name) {
-  var field = name + '_comment';
-  field = document.getElementById(field).value;
-  sel = document.getElementById(name);
-  selectbox = document.getElementById('expertCommentSel');
-  selectbox.innerHTML = sel.innerHTML; 
-  for (var i=0; i < selectbox.length; i++) {
-    if (selectbox[i].value == sel.value) {
-      selectbox[i].selected = true;
-    }
-  }
-  document.getElementById('expertsComment').value=field;
-  sel = document.getElementById(name);
-}
+$(document).ready( function () {
 
-function validateSubSelectExp(c) {
+  $('#edit').dialog({
+    autoOpen: false,
+    width: 880,
+    height: 620,
+    modal: false,
+    buttons: {
+      "Close": function() { 
+        $(this).dialog("close"); 
+      },
+      "Delete Run": function() { },
+      "Apply Run": function() { },
+      "Finish Run": function() { },
+    }
+  });
+
+  $("button:contains('Delete Run')").attr("id", "btn-run-delete");
+  $("button:contains('Apply Run')").attr("id", "btn-run-apply");
+  $("button:contains('Finish Run')").attr("id", "btn-run-finish");
+  $("#btn-run-delete").text("Delete");
+  $("#btn-run-apply").text("Apply");
+  $("#btn-run-finish").text("Finish");
+
+  $("#edit_sub_tabs").tabs();
+  $("#edit_l1t_tabs").tabs();
+  $("#edit_info_tabs").tabs();
+
+  var textareaValue = function(name) {
+    var field = name + '_comment';
+    field = document.getElementById(field).value;
+    sel = document.getElementById(name);
+    selectbox = document.getElementById('expertCommentSel');
+    selectbox.innerHTML = sel.innerHTML; 
+    for (var i=0; i < selectbox.length; i++) {
+      if (selectbox[i].value == sel.value) {
+        selectbox[i].selected = true;
+      }
+    }
+    document.getElementById('expertsComment').value=field;
+    sel = document.getElementById(name);
+  }
+
+  var validateSubSelectExp = function(c) {
     var sel = $(c).find("select");
     var txa = $(c).find("textarea");
 
@@ -45,67 +73,33 @@ function validateSubSelectExp(c) {
     //    txa.addClass("error");
     // }
     }
-}
-
-function expertsSel(value) {
-  var name = document.getElementById('expertsCommentSub').value;
-  for (var i=0; i < sel.length; i++) {
-    if (sel[i].value == value) {
-      sel[i].selected = true;
-    }
   }
-  var sell = document.getElementById(name);
-  var c = $(sell).parent().parent();
-  validateSubSelectExp(c);
-}
 
-function updateExpertsComment(comment) {
-  var field = document.getElementById('expertsCommentSub').value+'_comment';
-  document.getElementById(field).value=comment;
-  var sell = document.getElementById(field);
-  var c = $(sell).parent().parent();
-  validateSubSelectExp(c);
-}
-
-var errorMessage = function (o) {
-	alert("Error! Changes where not saved. Reason:\n\n" + o.responseText + "\n\nPlease copy above text and post ELOG message.");
-}
-
-$(document).ready( function () {
-
-  $('#edit').dialog({
-    autoOpen: false,
-    width: 880,
-		height: 620,
-    modal: false,
-    buttons: {
-      "Close": function() { 
-        $(this).dialog("close"); 
-      },
-      "Delete": function() { },
-      "Apply": function() { },
-	  "Finish DQM": function() { },
+  var expertsSel = function(value) {
+    var name = document.getElementById('expertsCommentSub').value;
+    for (var i=0; i < sel.length; i++) {
+      if (sel[i].value == value) {
+        sel[i].selected = true;
+      }
     }
-  });
-
-  $("#edit_sub_tabs").tabs();
-  $("#edit_l1t_tabs").tabs();
-  $("#edit_info_tabs").tabs();
+    var sell = document.getElementById(name);
+    var c = $(sell).parent().parent();
+    validateSubSelectExp(c);
+  }
+  
+  var updateExpertsComment = function(comment) {
+    var field = document.getElementById('expertsCommentSub').value+'_comment';
+    document.getElementById(field).value=comment;
+    var sell = document.getElementById(field);
+    var c = $(sell).parent().parent();
+    validateSubSelectExp(c);
+  }
 
   var isTrue = function (s) {
     if (!s) return false;
     if ((s == "null") || (s == "")) return false;
     return true;
   }
-
-  var escapeXML = function (s) {
-		if (s == undefined || s == '') return s;
-    var LT = new RegExp("<", "g");
-    var GT = new RegExp(">", "g");
-    var AMP = new RegExp("&", "g");
-    var TAB = new RegExp("\t", "g");
-    return s.replace(AMP,"&amp;").replace(LT, "&lt;").replace(GT, "&gt;").replace(TAB, "    ");
-  };
 
   var validateInfo = function() {
     var glob = $("#edit .edit_info input[name=RUN_GLOBALNAME]");
@@ -145,24 +139,23 @@ $(document).ready( function () {
   };
 
   var validateL1T = function (c) {
-      var sel = $(c).find("input[type=checkbox]");
-      var txa = $(c).find("textarea");
+    var sel = $(c).find("input[type=checkbox]");
+    var txa = $(c).find("textarea");
 
-      if (sel.is(":checked")) {
-        txa.removeAttr("disabled");
-      } else {
-        txa.attr("disabled", "true");
-      }
+    if (sel.is(":checked")) {
+      txa.removeAttr("disabled");
+    } else {
+      txa.attr("disabled", "true");
+    }
  
-      if ($("#edit .edit_l1t input:checkbox:checked").length == 0) {
-        $("#edit .edit_l1t textarea").addClass("error");
-        $("#edit .edit_l1t textarea").attr("error", "At least one L1 source must be set.");
+    if ($("#edit .edit_l1t input:checkbox:checked").length == 0) {
+      $("#edit .edit_l1t textarea").addClass("error");
+      $("#edit .edit_l1t textarea").attr("error", "At least one L1 source must be set.");
+    } else {
+      $("#edit .edit_l1t textarea").removeClass("error");
+      $("#edit .edit_l1t textarea").removeAttr("error");
+    }
 
-      } else {
-        $("#edit .edit_l1t textarea").removeClass("error");
-        $("#edit .edit_l1t textarea").removeAttr("error");
-
-      }
   };
 
   $("#edit form .edit_info input[type=text]").unbind("change").change(function () { validateInfo(); });
@@ -177,51 +170,73 @@ $(document).ready( function () {
 
   $("#edit form .edit_l1t input[type=checkbox]").unbind("change").change(function () { validateL1T($(this).parent().parent()); });
 
-  var build_xml = function (stat) {
-    var xml = "";
+  var build_xml = function (next_status) {
+
+    var number = $("#edit form input[name=RUN_NUMBER]").val();
+    var msg = { RUN_NUMBER: number };
     var status = "";
 
     $("#edit .edit_info input[type=text], #edit .edit_info textarea").each(function (i, o) {
-            if ($(o).attr("readonly")) return;
-            xml += "\t<" +$(o).attr("name")+ ">" + escapeXML($(o).val()) + "</" +$(o).attr("name")+ ">\n";
+      if ($(o).attr("readonly")) return;
+      $(msg).attr($(o).attr("name"), $(o).val());
     });
-    if (stat!=null)
-	{
-	  if (stat=='OFFLINE') {status = 'SIGNOFF';}
-	  	else if (stat=='ONLINE') {status = 'OFFLINE';}
-		else if (stat=='SIGNOFF') {status = 'COMPLETED';}
-	  xml += "\t<RUN_STATUS>"+ status  +"</RUN_STATUS>\n";
-	
-	}else {
-				$("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
-				  if ($(this).attr("readonly")) return;
-				  status = $("#edit .edit_info select[name=RUN_STATUS]").val();
-				  xml += "\t<RUN_STATUS>"+ status  +"</RUN_STATUS>\n";
-				});
-			}
+
+    $("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
+      if ($(this).attr("readonly")) return;
+      status = $(this).val();
+      if (next_status) {
+        if (status == "ONLINE") status = "OFFLINE";
+        else if (status == "OFFLINE") status = "SIGNOFF";
+        else if (status == "SIGNOFF") status = "COMPLETED";
+      }
+      $(msg).attr("STATUS", status);
+    });
 
     $("#edit .edit_l1t input[type=checkbox]").each(function (i, o) {
-			if ($(o).attr("readonly")) return;
-			var name = $(o).attr("name");
-			xml += "\t<" +name+ ">" + $(o).is(":checked") + "</" +name+ ">\n";
-			if ($(o).is(":checked"))
-				xml += "\t<" +name+ "_comment>" + $("#" + name + "_comment").val() + "</" +name+ "_comment>\n";
+      if ($(o).attr("readonly")) return;
+      var name = $(o).attr("name");
+      $(msg).attr(name, $(o).is(":checked"));
+      if ($(o).is(":checked")) {
+        $(msg).attr(name + "_comment", $("#" + name + "_comment").val());
+      }
     });
 
     $("#edit .edit_sub select").each(function (i, o) {
-			if ($(o).attr("readonly")) return;
-			if ($(o).attr("disabled")) return;
-			var name = $(o).attr("name").replace("sub_", "");
-			xml += "\t<" +name+ ">" + $(o).val() + "</" +name+ ">\n";
-			xml += "\t<" +name+ "_comment>" + $("#sub_" + name + "_comment").val() + "</" +name+ "_comment>\n";
+      if ($(o).attr("readonly")) return;
+      if ($(o).attr("disabled")) return;
+      var name = $(o).attr("name").replace("sub_", "");
+      $(msg).attr(name, $(o).val());
+      $(msg).attr(name + "_comment", $("#sub_" + name + "_comment").val());
     });
 
     if (status == "COMPLETED") {
-      var tag = getTag();
-      xml += "\t<TAG>"+ tag + "</TAG>\n";
+      $(msg).attr("TAG", getTag());
     }
 
-    return xml
+    return msg;
+  };
+
+  var sendEditMessage = function (o) {
+    var message = $.toJSON( o );
+
+    $.ajax({
+      type: "POST",
+      url: "editprovider",
+      data: message,
+      processData: false,
+      dataType: "xml",
+
+      error: function(o) {
+        errorMessage(o);
+      },
+
+      success: function(ret) {
+        $("#edit").dialog("close");
+        $("#flex1").flexReload();
+      }
+
+    });
+
   };
 
   $.showRunEditForm = function (number) {
@@ -230,32 +245,32 @@ $(document).ready( function () {
     $('#edit').dialog('open');
     $('#edit').dialog('option', 'title', 'View/Edit Run #' + number);
 
-	$("button:contains('Finish')").hide();   
-    $("button:contains('Apply')").hide();
-    $("button:contains('Delete')").hide();
+    $("#btn-run-finish").hide();   
+    $("#btn-run-apply").hide();
+    $("#btn-run-delete").hide();
 
     $.ajax({
       type: "GET",
-      url: "runeditdata?qtype=RUN_NUMBER&query=" + number,
+      url: "runeditdata?qtype=RUN_NUMBER&format=json&query=" + number,
       processData: false,
       async: true,
-      dataType: "xml",
+      dataType: "json",
 
       error: function(o) {
         errorMessage(o);
         $('#edit').dialog('close');
       },
 
-      success: function(ret) {
-        var xml = $(ret).find("RESULTS");
-
-        if ($(xml).find("ROW").length == 0) {
-          alert("Run not found?");
+      success: function(json) {
+	  
+        if (json.rows.length == 0) {
+          errorMessage("Run not found");
           $('#edit').dialog('close');
           return;
         }
 
-        /* Pagrindine inicializacija */
+        var run = json.rows[0];
+
         $("#edit input").attr("readonly", "true");
         $("#edit select").attr("readonly", "true");
         $("#edit textarea").attr("readonly", "true"); 
@@ -266,17 +281,17 @@ $(document).ready( function () {
         
         $("#edit form input[name=RUN_NUMBER]").val(number);
 
-        $(xml).find("ROW").children().each(function (i, o) {
+        jQuery.each(run, function (n, v) {
 
-          $("#edit form .edit_sub select[name=sub_" +o.nodeName+ "]").each(function (i, sel) {
-            $("#edit form .edit_sub textarea[name=sub_" +o.nodeName+ "_comment]").val($(xml).find(o.nodeName+ "_comment").text());
+          $("#edit form .edit_sub select[name=sub_" + n + "]").each(function (i, sel) {
+            $("#edit form .edit_sub textarea[name=sub_" + n + "_comment]").val($(run).attr(n + "_comment"));
           });
 
-          $("#edit form .edit_sub select[name=sub_" +o.nodeName+ "][class=sub_online]").each(function (i, sel) {
-            if (isTrue($(o).text()) && $(o).text() != "EXCL") {
+          $("#edit form .edit_sub select[name=sub_" + n + "][class=sub_online]").each(function (i, sel) {
+            if (isTrue(v) && v != "EXCL") {
               $(sel).append("<option value=\"GOOD\">GOOD</option>");
               $(sel).append("<option value=\"BAD\">BAD</option>");
-              if ($(o).text() == "BAD") 
+              if (v == "BAD") 
                 $(sel).val("BAD");
               else 
                 $(sel).val("GOOD");
@@ -285,29 +300,29 @@ $(document).ready( function () {
             };
           });
 
-          $("#edit form .edit_sub select[name=sub_" +o.nodeName+ "][class=sub_offline]").each(function (i, sel) {
-            if (isTrue($(o).text())) {
-              if ($(o).text() == "BAD") $(sel).val("BAD");
-              if ($(o).text() == "GOOD") $(sel).val("GOOD");
-              if ($(o).text() == "NOTSET") $(sel).val("NOTSET");
+          $("#edit form .edit_sub select[name=sub_" + n + "][class=sub_offline]").each(function (i, sel) {
+            if (isTrue(v)) {
+              if (v == "BAD") $(sel).val("BAD");
+              if (v == "GOOD") $(sel).val("GOOD");
+              if (v == "NOTSET") $(sel).val("NOTSET");
             } else {
               $(sel).val("NOTSET");
             };
           });
 
-          $("#edit form .edit_l1t input[name=" +o.nodeName+ "]").each(function (i, sel) {
-            if (isTrue($(o).text())) {
+          $("#edit form .edit_l1t input[name=" +n+ "]").each(function (i, sel) {
+            if (isTrue(v)) {
               $(sel).attr("checked", true);
-              $("#edit form .edit_l1t textarea[name=" +o.nodeName+ "_comment]").val($(xml).find(o.nodeName+ "_comment").text());
+              $("#edit form .edit_l1t textarea[name=" +n+ "_comment]").val($(run).attr(n + "_comment")); //$(run).attr(n + "_comment")
             }
           });
 
-          if (o.nodeName == "RUN_STATUS" && $(o).text() != "") {
-            $("#edit .edit_info select[name=RUN_STATUS]").append($("<option readonly=\"true\" value=\"+ $(o).text() +\">"+ $(o).text() +"</option>"));
+          if (n == "RUN_STATUS" && v != "" && v != null) {
+            $("#edit .edit_info select[name=RUN_STATUS]").append($("<option readonly=\"true\" value=\"+ $(o).text() +\">"+ v +"</option>"));
           }
 
-          $("#edit form .edit_info input[name=" + o.nodeName + "]").val($(o).text());
-          $("#edit form .edit_info textarea[name=" + o.nodeName + "]").val($(o).text());
+          $("#edit form .edit_info input[name=" + n + "]").val(v);
+          $("#edit form .edit_info textarea[name=" + n + "]").val(v);
 
         });
 		
@@ -328,19 +343,21 @@ $(document).ready( function () {
         validateInfo();
         $("#edit form .edit_l1t input[type=checkbox]").each(function () { validateL1T($(this).parent().parent()); });
         $("#edit form .edit_sub select").each(function () { validateSubSelect($(this).parent().parent()); });
+		
 
         var real_role = "";
-        var status = $(xml).find("RUN_STATUS").text();
-		if (status =='COMPLETED') 
-			{$("button:contains('Finish')").hide();}
-		else {
-				$("button:contains('Finish')").text('Finish '+status+' DQM');
-				$("button:contains('Finish')").val('Finish '+status+' DQM');
-			}
+        var status = $(run).attr("RUN_STATUS"); 
+        if (status == null) status = "";
 
-        var count_tags = parseInt($(xml).find("RUN_COUNT_TAGS").text());
+        if (status == 'COMPLETED') {
+          $("#btn-run-finish").hide();
+        } else {
+          $("#btn-run-finish").text('Finish ' + status + ' DQM');
+        }
+
+        var count_tags = parseInt($(run).attr("RUN_COUNT_TAGS")); 
         count_tags--;
-     
+
         if (status != "COMPLETED") {
           if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) real_role = "EXPERT";
           else if (<%= user.hasLoggedRole(WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
@@ -349,13 +366,13 @@ $(document).ready( function () {
             real_role = "OFFLINE";
         }
  
-        if ($(xml).find("RUN_EVENTS").text() == "" || 
-            $(xml).find("RUN_START_TIME").text() == "" ||
-            $(xml).find("RUN_RATE").text() == "" ||
-            $(xml).find("RUN_L1KEY").text() == "" ||
-            $(xml).find("RUN_HLTKEY").text() == "") {
+        if ($(run).attr("RUN_EVENTS") == "" ||  
+            $(run).attr("RUN_START_TIME") == "" ||
+            $(run).attr("RUN_RATE") == "" ||
+            $(run).attr("RUN_L1KEY") == "" ||
+            $(run).attr("RUN_HLTKEY") == "") {
           real_role = "";
-        }
+        } 
 
         if (real_role == "ONLINE") {
 
@@ -381,13 +398,13 @@ $(document).ready( function () {
             $("#edit form .edit_info input[name='RUN_ONLINE_SHIFTER']").val("<%=user.getName()%>");
           } else {
             $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
-            $("button:contains('Delete')").show();
+            $("#btn-run-delete").show();
           }
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("button:contains('Finish')").show();
-		  $("button:contains('Apply')").show();
+          $("#btn-run-finish").show();
+          $("#btn-run-apply").show();
 
         } else if (real_role == "OFFLINE")  {
 
@@ -412,8 +429,8 @@ $(document).ready( function () {
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("button:contains('Finish')").show();
-		  $("button:contains('Apply')").show();
+          $("#btn-run-finish").show();
+          $("#btn-run-apply").show();
 
         } else if (real_role == "EXPERT") {
 
@@ -444,9 +461,9 @@ $(document).ready( function () {
           $("#edit form .edit_sub_offline select").removeAttr("readonly");
           $("#edit form .edit_sub_offline select").removeAttr("disabled");
 
-          $("button:contains('Finish')").show();
-		  $("button:contains('Apply')").show();
-          $("button:contains('Delete')").show();
+          $("#btn-run-finish").show();
+          $("#btn-run-apply").show();
+          $("#btn-run-delete").show();
           
           if (status == "") {
             $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"ONLINE\">ONLINE</option>"));
@@ -476,95 +493,40 @@ $(document).ready( function () {
           $("#edit form .edit_info .edit_offline textarea").attr("readonly", true);
         }
 
-        $("button:contains('Apply'):visible").unbind("click").click(function () {
-          var number = $("#edit form input[name=RUN_NUMBER]").val();
-          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>" + build_xml(null);
-					var err = $("#edit .error");
-					if (err.length > 0) {
-						$(err[0]).focus();
-						alert($(err[0]).attr("error"));
-						return;
-					};
-					xml = "<?xml version=\"1.0\"?>\n" + xml + "</RUN>";
-
-          $.ajax({
-            type: "POST",
-            url: "editprovider",
-            data: xml,
-            processData: false,
-            dataType: "xml",
-            error: function(o) {
-              errorMessage(o);
-            },
-            success: function(ret) {
-              $('#edit').dialog('close');
-              $("#flex1").flexReload();
-              return;
-            }
-          });
-
+        $("#btn-run-apply:visible").unbind("click").click(function () {
+          var err = $("#edit .error");
+          if (err.length > 0) {
+            $(err[0]).focus();
+            alert($(err[0]).attr("error"));
+            return;
+          };
+          sendEditMessage(build_xml(false));
         });
 		
-        $("button:contains('Finish'):visible").unbind("click").click(function () {
-          var number = $("#edit form input[name=RUN_NUMBER]").val();
-          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>" + build_xml(status);
-					var err = $("#edit .error");
-					if (err.length > 0) {
-						$(err[0]).focus();
-						alert($(err[0]).attr("error"));
-						return;
-					};
-					xml = "<?xml version=\"1.0\"?>\n" + xml + "</RUN>";
+        $("#btn-run-finish:visible").unbind("click").click(function () {
+          var err = $("#edit .error");
+          if (err.length > 0) {
+            $(err[0]).focus();
+            alert($(err[0]).attr("error"));
+            return;
+          };
+          sendEditMessage(build_xml(true));
+        }); 
 
-
-          $.ajax({
-            type: "POST",
-            url: "editprovider",
-            data: xml,
-            processData: false,
-            dataType: "xml",
-            error: function(o) {
-              errorMessage(o);
-            },
-            success: function(ret) {
-              $('#edit').dialog('close');
-              $("#flex1").flexReload();
-              return;
-            }
-          }); 
-
+        $("#btn-run-delete:visible").unbind("click").click(function () {
+          var message = { 
+            RUN_NUMBER: $("#edit form input[name=RUN_NUMBER]").val(),
+            DELETE: true
+          };
+          if(!confirm("Do you really want to delete run #" + message.RUN_NUMBER +"?")) return;          
+          sendEditMessage(message);
         });
 
-        $("button:contains('Delete'):visible").unbind("click").click(function () {
-          var number = $("#edit form input[name=RUN_NUMBER]").val();
-					if(!confirm("Do you really want to delete run #" + number +"?")) return;          
-          var xml = "<RUN><RUN_NUMBER>" + number + "</RUN_NUMBER>";
-					xml = "<?xml version=\"1.0\"?>\n" + xml + "\t<DELETE>true</DELETE></RUN>";
-          $.ajax({
-            type: "POST",
-            url: "editprovider",
-            data: xml,
-            processData: false,
-            dataType: "xml",
-            error: function(o) {
-              errorMessage(o);
-            },
-            success: function(ret) {
-              $('#edit').dialog('close');
-              $("#flex1").flexReload();
-              return;
-            }
-          });
+        $('#edit_overlay').hide('fast');
 
-        });
-
-				$('#edit_overlay').hide('fast');
-
-      } 
-
+      }
     });
-
-  };
+  }
 
 });
 
@@ -726,10 +688,10 @@ $(document).ready( function () {
             </tr>
             <tr>
               <td class="edit_col" width="100%">
-								<div class="edit_sub edit_sub_online">
-									<b>Comments: <b/>
-									<textarea name="expertsComment" style="width:100%;height:300px" readonly="true" id="expertsComment" onchange="updateExpertsComment(this.value)"></textarea>
-								</div>
+                <div class="edit_sub edit_sub_online">
+                  <b>Comments: <b/>
+                  <textarea name="expertsComment" style="width:100%;height:300px" readonly="true" id="expertsComment" onchange="updateExpertsComment(this.value)"></textarea>
+                </div>
               </td>
             </tr>
           </table>

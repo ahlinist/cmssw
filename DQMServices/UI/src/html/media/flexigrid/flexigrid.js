@@ -5,7 +5,7 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Date: 2009/02/23 16:29:52 $
+ * $Date: 2009/03/25 11:16:39 $
  */
  
 (function($){
@@ -694,9 +694,9 @@
 					}
 
 				
-					$.ajax({
-					   type: p.method,
-					   url: p.url,
+                                $.ajax({
+                                  type: p.method,
+                                  url: p.url,
 					   data: param,
 					   dataType: p.dataType,
 					   success: function(data){g.addData(data);},

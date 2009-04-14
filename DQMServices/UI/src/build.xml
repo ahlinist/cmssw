@@ -43,6 +43,8 @@
     </javac>
 
     <copy file="tmpl/XmlRpcServlet.properties" todir="build/org/apache/xmlrpc/webserver" />
+    <copy file="tmpl/quartz.properties" todir="build" />
+    <copy file="tmpl/jobs.xml" todir="build" />
 
     <!-- Remove Encoder file -->
     <delete file="src/cms/dqm/workflow/Encoder.java" />
@@ -63,10 +65,11 @@
     <input message="Database password:" addproperty="password"/>
     <input message="DBS DQM server url:" addproperty="dqmurl" defaultvalue="http://localhost:9999" />
     <input message="Tomcat path:" addproperty="tomcatpath" defaultvalue="${tomcat}"/>
+    <input message="Start scheduler (true|false)?:" addproperty="start_scheduler" defaultvalue="false"/>
     
     <!-- copy web.xml file --> 
     <copy file="tmpl/web.xml" tofile="WEB-INF/web.xml" />
-    <copy file="tmpl/quartz.properties" tofile="WEB-INF/quartz.properties" />
+    <!--copy file="tmpl/quartz.properties" tofile="WEB-INF/quartz.properties" /-->
 
     <!-- encrypt authentification parameters with encoder -->
     <record name="encoded.txt" action="start"/>
@@ -89,9 +92,7 @@
     <replace file="WEB-INF/web.xml" token="@DBS_DQM_URL@" value="${dqmurl}"/>
     <replace file="WEB-INF/web.xml" token="@TOMCAT_PATH@" value="${tomcatpath}"/>
     <replace file="WEB-INF/web.xml" token="@DQM_URL@" value="${url}"/>     
-
-    <replace file="WEB-INF/quartz.properties" token="@TOMCAT_PATH@" value="${tomcatpath}"/>
-    <replace file="WEB-INF/quartz.properties" token="@DQM_URL@" value="${url}"/>     
+    <replace file="WEB-INF/web.xml" token="@START_SCHEDULER@" value="${start_scheduler}"/>     
 
     <war destfile="dist/${url}.war" webxml="WEB-INF/web.xml">
       <fileset dir="html"/>
@@ -104,7 +105,7 @@
 
     <copy file="dist/${url}.war" todir="${tomcatpath}/webapps"/>
     <delete file="WEB-INF/web.xml" />
-    <delete file="WEB-INF/quartz.properties" />
+    <!--delete file="WEB-INF/quartz.properties" /-->
 
   </target>
 

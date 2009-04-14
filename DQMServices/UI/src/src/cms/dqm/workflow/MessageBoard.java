@@ -37,38 +37,22 @@ public class MessageBoard extends HttpServlet {
 
     try {
 
-    DBWorker db = null;
-
     MessageUser user = MessageUser.get(request);
 
     if (msg != null) {
-
       JSONObject message = new JSONObject(msg);	
       String text = message.getString("text").trim();
       int priority = message.getInt("priority");
-
       if (text.length() != 0) {
-
         if (!user.isLogged()) throw new Exception("Not logged in!");
-        if (db == null) db = new DBWorker();
-
-        PreparedStatement pstmt = db.prepareSQL("select RR_MSG_BOARD.ADD_MESSAGE(?, ?, ?, ?, ?) from dual");
-        db.setStringNull(pstmt, user.getName(), 1);
-        db.setStringNull(pstmt, text, 2);
-        pstmt.setInt(3, priority);
-        db.setStringNull(pstmt, user.getRoles(), 4);
-        db.setStringNull(pstmt, user.getLocation(), 5);
-        pstmt.execute();
-
-        MessageBoardSyn.getInstance().resetLast();
-
+        MessageBoardSyn.getInstance().sendMessage(user, priority, text);
       }
-
     }
 
     JSONObject resp = new JSONObject();
-    resp.put("logged", user.isLogged());
+    resp.put("logged", request.isRequestedSessionIdValid());
 
+    DBWorker db = null;
     JSONArray msgs = new JSONArray();
 
     if (MessageBoardSyn.getInstance().getLast() < 0 || MessageBoardSyn.getInstance().getLast() > last) {
@@ -86,9 +70,11 @@ public class MessageBoard extends HttpServlet {
       long newLast = MessageBoardSyn.getInstance().getLast();
 
       while (r.next()) {
-        HashMap<String, Object> map  = new HashMap<String, Object>();
-        for (int i = 1; i < cols + 1; i++) map.put(rm.getColumnName(i), r.getObject(i));
-        msgs.put(map);
+        if (last > 0 || r.getInt(6) > 0) {
+          HashMap<String, Object> map  = new HashMap<String, Object>();
+          for (int i = 1; i < cols + 1; i++) map.put(rm.getColumnName(i), r.getObject(i));
+          msgs.put(map);
+        }
         newLast = r.getLong(1);
       }
       MessageBoardSyn.getInstance().setLast(newLast);
@@ -100,12 +86,14 @@ public class MessageBoard extends HttpServlet {
       Iterator<MessageUser> it = MessageBoardSyn.getInstance().getUsers();
       if (it != null) {
         while (it.hasNext()) {
-          HashMap<String, Object> map  = new HashMap<String, Object>();
           MessageUser u = it.next();
-          map.put("name", u.getName());
-          map.put("roles", u.getRoles());
-          map.put("loc", u.getLocation());
-          users.put(map);
+          if (u.isLogged()) {
+            HashMap<String, Object> map  = new HashMap<String, Object>();
+            map.put("name", u.getName());
+            map.put("roles", u.getRoles());
+            map.put("loc", u.getLocation());
+            users.put(map);
+          }
         }
       }
     }
@@ -113,8 +101,10 @@ public class MessageBoard extends HttpServlet {
 
     resp.put("last_msg", MessageBoardSyn.getInstance().getLast());
     resp.put("last_user", MessageBoardSyn.getInstance().getLastUser());
-    //resp.put("alive", MessageBoardSyn.getInstance().alive);
+
     resp.write(out);
+
+    if (db != null) db.close();
 
     } catch (Exception e) {
       throw new ServletException(e);
