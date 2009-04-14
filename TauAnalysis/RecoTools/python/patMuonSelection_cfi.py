@@ -10,32 +10,24 @@ import copy
 
 # require muon candidate to be a global muon
 # (track in muon system linked to track in Pixel + SiTracker detectors)
-selectedLayer1MuonsGlobal = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsGlobal"),
-    pluginType = cms.string("PATMuonSelector"),
+selectedLayer1MuonsGlobal = cms.EDFilter("PATMuonSelector",
     cut = cms.string('isGlobalMuon()'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to be within geometric acceptance of muon trigger
-selectedLayer1MuonsEta21 = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsEta21"),
-    pluginType = cms.string("PATMuonSelector"),
+selectedLayer1MuonsEta21 = cms.EDFilter("PATMuonSelector",
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to have transverse momentum above threshold
-selectedLayer1MuonsPt15 = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsPt15"),
-    pluginType = cms.string("PATMuonSelector"),
+selectedLayer1MuonsPt15 = cms.EDFilter("PATMuonSelector",
     cut = cms.string('pt > 15.'),
     filter = cms.bool(False)
 )
 
-selectedLayer1MuonsTrkIso = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsTrkIso"),
-    pluginType = cms.string("PATMuonIsoDepositSelector"),
+selectedLayer1MuonsTrkIso = cms.EDFilter("PATMuonIsoDepositSelector",
     type = cms.string('tracker'),
     #vetos = cms.vstring("0.01", "Threshold(0.9)"),
     vetos = cms.vstring("0.01"),                          
@@ -48,17 +40,13 @@ selectedLayer1MuonsTrkIso = cms.PSet(
 # require muon candidate to be isolated
 # with respect to energy deposits in ECAL
 # (not associated to muon candidate)
-selectedLayer1MuonsEcalIso = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsEcalIso"),
-    pluginType = cms.string("PATMuonSelector"),
+selectedLayer1MuonsEcalIso = cms.EDFilter("PATMuonSelector",
     cut = cms.string('ecalIso < 1.'),
     filter = cms.bool(False)
 )
 
 # require muon candidate to pass pion veto
-selectedLayer1MuonsPionVeto = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsPionVeto"),
-    pluginType = cms.string("PATMuonAntiPionSelector"),
+selectedLayer1MuonsPionVeto = cms.EDFilter("PATMuonAntiPionSelector",
     CaloCompCoefficient = cms.double(0.8),
     SegmCompCoefficient = cms.double(1.2),
     AntiPionCut = cms.double(1.0),
@@ -69,18 +57,14 @@ selectedLayer1MuonsPionVeto = cms.PSet(
 # (all global muons should be linked to tracks in the "inner" tracking detectors;
 #  in case the muon is not linked to an "inner" track,
 #  the track impact parameter selection will cause processing of the entire event to be skipped !!)
-selectedLayer1MuonsTrk = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsTrk"),
-    pluginType = cms.string("PATMuonSelector"),
+selectedLayer1MuonsTrk = cms.EDFilter("PATMuonSelector",
     cut = cms.string('innerTrack.isNonnull'),
     filter = cms.bool(False)
 )
 
 # require track of muon candidate to have small transverse impact parameter
 # (in order to veto muons resulting from b-quark decays)
-selectedLayer1MuonsTrkIP = cms.PSet(
-    pluginName = cms.string("selectedLayer1MuonsTrkIP"),
-    pluginType = cms.string("PATMuonIpSelector"),
+selectedLayer1MuonsTrkIP = cms.EDFilter("PATMuonIpSelector",
     vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
@@ -96,23 +80,18 @@ selectedLayer1MuonsTrkIP = cms.PSet(
 #--------------------------------------------------------------------------------
 
 selectedLayer1MuonsTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1MuonsTrkIso)
-selectedLayer1MuonsTrkIsoLooseIsolation.pluginName = cms.string("selectedLayer1MuonsTrkIsoLooseIsolation")
 selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
 selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
 selectedLayer1MuonsTrkIsoLooseIsolation.sumPtMax = cms.double(8.)
 
 selectedLayer1MuonsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1MuonsEcalIso)
-selectedLayer1MuonsEcalIsoLooseIsolation.pluginName = cms.string("selectedLayer1MuonsEcalLooseIsolation")
 selectedLayer1MuonsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
 
 selectedLayer1MuonsPionVetoLooseIsolation = copy.deepcopy(selectedLayer1MuonsPionVeto)
-selectedLayer1MuonsPionVetoLooseIsolation.pluginName = cms.string("selectedLayer1MuonsPionVetoLooseIsolation")
 
 selectedLayer1MuonsTrkLooseIsolation = copy.deepcopy(selectedLayer1MuonsTrk)
-selectedLayer1MuonsTrkLooseIsolation.pluginName = cms.string("selectedLayer1MuonsTrkLooseIsolation")
 
 selectedLayer1MuonsTrkIPlooseIsolation = copy.deepcopy(selectedLayer1MuonsTrkIP)
-selectedLayer1MuonsTrkIPlooseIsolation.pluginName = cms.string("selectedLayer1MuonsTrkIPlooseIsolation")
 
 #--------------------------------------------------------------------------------
 # produce "summary" collection of pat::Muons with flags added,

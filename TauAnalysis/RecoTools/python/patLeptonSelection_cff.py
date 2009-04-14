@@ -38,7 +38,7 @@ patElectronSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1Electrons = patElectronSelConfigurator.configure()
+selectLayer1Electrons = patElectronSelConfigurator.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Muons
@@ -73,7 +73,7 @@ patMuonSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1Muons = patMuonSelConfigurator.configure()
+selectLayer1Muons = patMuonSelConfigurator.configure(namespace = locals())
 
 selectedLayer1MuonsTrkIsoLooseIsolation.vetos = cms.vstring("0.01")
 selectedLayer1MuonsTrkIsoLooseIsolation.numMax = cms.int32(-1)
@@ -100,7 +100,7 @@ patMuonSelConfiguratorLooseIsolation = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure()
+selectLayer1MuonsLooseIsolation = patMuonSelConfiguratorLooseIsolation.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::(PF)Taus
@@ -133,7 +133,7 @@ patTauSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1Taus = patTauSelConfigurator.configure()
+selectLayer1Taus = patTauSelConfigurator.configure(namespace = locals())
 #
 # define collections of pat::(PF)Taus used in semi-leptonic e + tau-jet channel
 # (require electron and tau-jet candidates to be separated in eta-phi,
@@ -165,7 +165,7 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1TausForElecTau = patTauSelConfiguratorForElecTau.configure()
+selectLayer1TausForElecTau = patTauSelConfiguratorForElecTau.configure(namespace = locals())
 #
 # define collections of pat::(PF)Taus used in semi-leptonic mu + tau-jet channel
 # (require muon and tau-jet candidates to be separated in eta-phi,
@@ -197,7 +197,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure()
+selectLayer1TausForMuTau = patTauSelConfiguratorForMuTau.configure(namespace = locals())
 #
 # define collections of pat::(PF)Taus used in pure hadronic tau-jet + tau-jet channel
 # (no need to apply anti-electron or anti-muon vetos)
@@ -223,7 +223,7 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure()
+selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(namespace = locals())
 
 produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons
                                         +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
