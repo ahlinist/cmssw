@@ -10,6 +10,8 @@ import javax.servlet.http.*;
 
 public class EditProvider extends HttpServlet {
 
+  private static final long serialVersionUID = 1003L;
+
   public enum RunType {
     ONLINE,
     OFFLINE,
@@ -23,6 +25,7 @@ public class EditProvider extends HttpServlet {
   public final static String KEY_COMMENT = "RUN_ONLINE_COMMENT";
   public final static String KEY_OFFLINE_COMMENT = "RUN_OFFLINE_COMMENT";
   public final static String KEY_STATUS = "RUN_STATUS";
+  public final static String KEY_CURRENT_STATUS = "CURRENT_STATUS";
   public final static String KEY_BFIELD_COMMENT = "RUN_BFIELD_COMMENT";
   public final static String KEY_LAST_USER = "RUN_LAST_USER";
   public final static String KEY_ID = "RUN_ID";
@@ -49,6 +52,7 @@ public class EditProvider extends HttpServlet {
       Hashtable<String, String> data = new Hashtable<String, String>();
       {
         JSONObject obj = new JSONObject(sb.toString());	
+        @SuppressWarnings("unchecked")
         Iterator<String> it = obj.keys();
         while (it.hasNext()) {
           String k = it.next();
@@ -76,8 +80,14 @@ public class EditProvider extends HttpServlet {
 
       if (!user.isLogged()) throw new Exception("Not logged in!");
       if (current_status.equals("COMPLETED")) throw new Exception("Can not edit COMLETED run!");
+      if (data.get(KEY_STATUS) != null && 
+         !data.get(KEY_STATUS).equals("ONLINE") && 
+         !data.get(KEY_STATUS).equals("OFFLINE") && 
+         !data.get(KEY_STATUS).equals("SIGNOFF") && 
+         !data.get(KEY_STATUS).equals("COMPLETED")) throw new Exception("Wrong status provided [" + data.get(KEY_STATUS) + "]!");
 
       data.put(KEY_LAST_USER, user.getName());
+      data.put(KEY_CURRENT_STATUS, current_status);
 
       if (!delete && !exists && (user.hasLoggedRole(WebUtils.ONLINE) || user.hasLoggedRole(WebUtils.EXPERT))) {
 
@@ -99,8 +109,7 @@ public class EditProvider extends HttpServlet {
 
           if (next_status.equals("COMPLETED")) {
 
-            if (data.get(KEY_TAG) == null || data.get(KEY_TAG) == "") throw new Exception("Tag do not provided for COMPLETED run");
-
+            if (data.get(KEY_TAG) == null || data.get(KEY_TAG) == "") throw new Exception("Tag does not provided for COMPLETED run");
             if(writeToDBS(run_number, db, null) == false) {
               throw new Exception("Writing to DBS failed. Run was not moved to COMPLETED.");
             }
@@ -256,22 +265,19 @@ public class EditProvider extends HttpServlet {
 
   }
   
-  private void updateSubsystems(int id, Hashtable<String, String>  data, RunType type) throws Exception {
+  private void updateSubsystems(int id, Hashtable<String, String> data, RunType type) throws Exception {
 
     PreparedStatement pstmt, pstmt2;
     ResultSet res;
 
     try {
 
-      switch (type) {
-        case ONLINE:
-          pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join (select * from rr_run_subsystems where rsu_run_id = ? ) on (rsu_sub_abbr = sub_abbr) WHERE sub_type = 'ONLINE'");
-          break;
-        case OFFLINE:
-          pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join (select * from rr_run_subsystems where rsu_run_id = ? ) on (rsu_sub_abbr = sub_abbr) WHERE sub_type = 'OFFLINE'");
-          break;
-        default:
-          pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join (select * from rr_run_subsystems where rsu_run_id = ? ) on (rsu_sub_abbr = sub_abbr)");
+      if (data.get(KEY_CURRENT_STATUS).equals("ONLINE")) {
+        pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join " +
+                "(select * from rr_run_subsystems where rsu_run_id = ? and rsu_shift_type = 'ONLINE') on (rsu_sub_abbr = sub_abbr) WHERE sub_type = 'ONLINE'");
+      } else {
+        pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join " +
+                "(select * from rr_run_subsystems where rsu_run_id = ? and rsu_shift_type = 'OFFLINE') on (rsu_sub_abbr = sub_abbr)");
       }
 
       pstmt.setInt(1, id);
@@ -293,21 +299,31 @@ public class EditProvider extends HttpServlet {
 
         if (rexists) {
           if (exist && (!WebUtils.EqualStrings(comment, rcomment) || !WebUtils.EqualStrings(value, rvalue))) {
-            pstmt2 = db.prepareSQL("UPDATE RR_RUN_SUBSYSTEMS SET rsu_comment = ?, rsu_value = ? WHERE rsu_sub_abbr = ? AND rsu_run_id = ?");
+            pstmt2 = db.prepareSQL("UPDATE RR_RUN_SUBSYSTEMS SET rsu_comment = ?, rsu_value = ? WHERE rsu_sub_abbr = ? AND rsu_run_id = ? AND rsu_shift_type = ?");
           } else 
           if (!exist) {
-            pstmt2 = db.prepareSQL("INSERT INTO RR_RUN_SUBSYSTEMS (rsu_comment, rsu_value, rsu_sub_abbr, rsu_run_id) VALUES (?,?,?,?)");
+            pstmt2 = db.prepareSQL("INSERT INTO RR_RUN_SUBSYSTEMS (rsu_comment, rsu_value, rsu_sub_abbr, rsu_run_id, rsu_shift_type) VALUES (?, ?, ?, ?, ?)");
           }
           if (pstmt2 != null) {
             db.setStringNull(pstmt2, rcomment, 1);
             pstmt2.setString(2, rvalue);
             pstmt2.setString(3, abbr);
             pstmt2.setInt(4, id);
+            if (type == RunType.ONLINE) {
+              pstmt2.setString(5, "ONLINE");
+            } else {
+              pstmt2.setString(5, "OFFLINE");
+            }
           }
         } else {
-          pstmt2 = db.prepareSQL("DELETE FROM RR_RUN_SUBSYSTEMS WHERE rsu_sub_abbr = ? AND rsu_run_id = ?");
+          pstmt2 = db.prepareSQL("DELETE FROM RR_RUN_SUBSYSTEMS WHERE rsu_sub_abbr = ? AND rsu_run_id = ? AND rsu_shift_type = ?");
           pstmt2.setString(1, abbr);
           pstmt2.setInt(2, id);
+          if (type == RunType.ONLINE) {
+            pstmt2.setString(3, "ONLINE");
+          } else {
+            pstmt2.setString(3, "OFFLINE");
+          }
         }
         if (pstmt2 != null) pstmt2.execute();
 

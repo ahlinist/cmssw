@@ -18,6 +18,8 @@ import javax.xml.transform.stream.*;
 
 public class DataProvider extends HttpServlet {
 
+  private static final long serialVersionUID = 1002L;
+
   enum FormatType { JSON, XML };
 
   String query;

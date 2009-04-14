@@ -10,6 +10,8 @@ import javax.servlet.http.*;
 
 public class ListSubsystemsJS extends TagSupport {
 
+  private static final long serialVersionUID = 1005L;
+
   public int doStartTag() throws JspException {
     try {
 
