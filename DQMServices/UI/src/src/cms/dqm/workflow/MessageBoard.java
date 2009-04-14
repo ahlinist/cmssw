@@ -11,6 +11,8 @@ import java.util.regex.*;
 
 public class MessageBoard extends HttpServlet {
 
+  private static final long serialVersionUID = 1006L;
+
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
   }

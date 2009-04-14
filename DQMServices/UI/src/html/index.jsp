@@ -50,7 +50,7 @@
       }
     });
 
-    var errorMessage = function (line1, caption, line2) {
+    var messageBox = function (line1, caption, line2) {
       $("#messageBox p.line1").text(line1);  
       $("#messageBox p.line2").text(line2);  
       $("#messageBox").dialog("open");
@@ -96,7 +96,7 @@
           error: function(o) {
             $(load).hide();
             $(plus).show();
-            errorMessage(o);
+            messageBox(o);
           },
 
           success: function(ret) {
@@ -173,6 +173,10 @@
 
           var off_v = row["off_" + so];
           var on_v = row["on_" + so];
+          
+          off_v = (off_v == "NOTSET" ? "" : off_v);
+          on_v  = (on_v  == "NOTSET" ? "" : on_v);
+
           var cell = "off_" + so;
           if (on_v && on_v != "null") cell = "on_" + so;
 
@@ -187,7 +191,7 @@
           }
           
           if (off_v) {
-            var tip = row["on_" + so + "_comment"];
+            var tip = row["off_" + so + "_comment"];
             if (tip == "null") tip = "";
             row[cell] += "<div comment=\"" + row["off_" + so + "_comment"] + "\"" + 
                          " class=\"stat stat" + off_v + " " + 
@@ -205,12 +209,12 @@
 
     var postProcess = function () {
 
-      $("div.statTip").parent().tooltip({
+      $("div.statTip").tooltip({
         delay: 0,
         fade: 250,
         track: true,
         bodyHandler: function() {
-          var comment = $("div.statTip", this).attr("comment");
+          var comment = $(this).attr("comment");
           return comment;
         }
       });
@@ -582,7 +586,7 @@
 
 <% } %>        
 
-        <a href="#" onclick="openMessageBoard()" id="chat_notification"> Message Board </a>
+        <a href="#" id="chat_notification"> Message Board </a>
 
         &nbsp;|&nbsp;
 
@@ -632,6 +636,8 @@
   <jsp:include page="chat.jsp" />
 
   <table id="flex1"></table>
+  <br/>
+  <div align="right">Compiled: <%=Encoder.getCompileDate()%></div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 

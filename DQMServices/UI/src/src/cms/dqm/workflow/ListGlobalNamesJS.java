@@ -10,6 +10,8 @@ import javax.servlet.http.*;
 
 public class ListGlobalNamesJS extends TagSupport {
 
+  private static final long serialVersionUID = 1004L;
+
   public int doStartTag() throws JspException {
     try {
 

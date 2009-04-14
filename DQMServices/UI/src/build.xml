@@ -26,17 +26,34 @@
 
   <target name="compile" depends="init" description="compile the source" >
     
+    <!-- Compile RandomGen-->
+    <javac srcdir="tmpl" destdir="build" includes="RandomGen.java">
+      <classpath>
+        <path refid="local-cp"/>
+      </classpath>
+    </javac>
+
+    <!-- Get random string -->
+    <java classname="RandomGen" outputproperty="rand">
+      <classpath>
+        <path refid="local-cp"/>
+        <pathelement location="build"/>
+      </classpath>
+    </java>
+
     <!-- Create timestamp (aka random) properties -->
     <tstamp>
-      <format property="key" pattern="MM/dd/yyyy hh:mm aa"/>
+      <format property="compiledate" pattern="MM/dd/yyyy hh:mm aa"/>
     </tstamp>
 
     <!-- copy and replace key in Encoder file -->
     <copy file="tmpl/Encoder.java" todir="src/cms/dqm/workflow"/>
-    <replace file="src/cms/dqm/workflow/Encoder.java" token="@@@" value="${key}" />
+    <replace file="src/cms/dqm/workflow/Encoder.java" token="@RAND@" value="${compiledate}${rand}" />
+    <replace file="src/cms/dqm/workflow/Encoder.java" token="@COMPILEDATE@" value="${compiledate}" />
 
     <!-- Compile -->
     <javac srcdir="src" destdir="build">
+      <compilerarg value="-Xlint"/>
       <classpath>
         <path refid="local-cp"/>
       </classpath>
@@ -72,8 +89,7 @@
     <!--copy file="tmpl/quartz.properties" tofile="WEB-INF/quartz.properties" /-->
 
     <!-- encrypt authentification parameters with encoder -->
-    <record name="encoded.txt" action="start"/>
-    <java classname="cms.dqm.workflow.Encoder">
+    <java classname="cms.dqm.workflow.Encoder" outputproperty="auth">
       <arg value="${username}"/>
       <arg value="${password}"/>
       <classpath>
@@ -81,11 +97,6 @@
         <path refid="local-cp"/>
       </classpath>
     </java>
-    <record name="encoded.txt" action="stop"/>
-    <replace file="encoded.txt" token="[java]" value=""/>
-    <replace file="encoded.txt" token=" " value=""/>
-    <loadfile property="auth" srcFile="encoded.txt"/>
-    <delete file="encoded.txt"/>
 
     <replace file="WEB-INF/web.xml" token="@AUTH@" value="${auth}"/>
     <replace file="WEB-INF/web.xml" token="@DB_NAME@" value="${dbname}"/>

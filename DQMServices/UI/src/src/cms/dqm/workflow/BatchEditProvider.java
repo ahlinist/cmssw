@@ -11,6 +11,8 @@ import javax.xml.parsers.*;
 
 public class BatchEditProvider extends HttpServlet {
 
+  private static final long serialVersionUID = 1001L;
+
   public void batchStatusUpdate(int run_number, String status, DBWorker db, String url, String username, String tag) throws Exception {
 
       if (status.equals("COMPLETED")) {

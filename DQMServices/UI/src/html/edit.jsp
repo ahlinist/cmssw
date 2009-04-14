@@ -34,6 +34,8 @@ $(document).ready( function () {
   $("#edit_sub_tabs").tabs();
   $("#edit_l1t_tabs").tabs();
   $("#edit_info_tabs").tabs();
+  
+
 
   var textareaValue = function(name) {
     var field = name + '_comment';
@@ -48,7 +50,11 @@ $(document).ready( function () {
     }
     document.getElementById('expertsComment').value=field;
     sel = document.getElementById(name);
-  }
+  } 
+  
+   $("#expertsCommentSub").change(function(){ 
+	  textareaValue(this.value)
+    });
 
   var validateSubSelectExp = function(c) {
     var sel = $(c).find("select");
@@ -85,7 +91,11 @@ $(document).ready( function () {
     var sell = document.getElementById(name);
     var c = $(sell).parent().parent();
     validateSubSelectExp(c);
-  }
+  } 
+ 
+   $("#expertCommentSel").change(function(){ 
+	  expertsSel(this.value);
+    });
   
   var updateExpertsComment = function(comment) {
     var field = document.getElementById('expertsCommentSub').value+'_comment';
@@ -94,6 +104,14 @@ $(document).ready( function () {
     var c = $(sell).parent().parent();
     validateSubSelectExp(c);
   }
+  
+   $("#expertsComment").keyup(function(){ 
+	  updateExpertsComment(this.value);
+    });
+
+   $("#commentLink").click(function(){ 
+	  textareaValue($("#expertsCommentSub").val());
+    });
 
   var isTrue = function (s) {
     if (!s) return false;
@@ -174,23 +192,27 @@ $(document).ready( function () {
 
     var number = $("#edit form input[name=RUN_NUMBER]").val();
     var msg = { RUN_NUMBER: number };
-    var status = "";
+    var status = $('#edit').attr("current_status");
+
+    status = (status != "" ? status : "ONLINE");
 
     $("#edit .edit_info input[type=text], #edit .edit_info textarea").each(function (i, o) {
       if ($(o).attr("readonly")) return;
       $(msg).attr($(o).attr("name"), $(o).val());
     });
 
-    $("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
-      if ($(this).attr("readonly")) return;
-      status = $(this).val();
-      if (next_status) {
-        if (status == "ONLINE") status = "OFFLINE";
-        else if (status == "OFFLINE") status = "SIGNOFF";
-        else if (status == "SIGNOFF") status = "COMPLETED";
-      }
-      $(msg).attr("STATUS", status);
-    });
+    if (next_status) {
+      if (status == "ONLINE") status = "OFFLINE";
+      else if (status == "OFFLINE") status = "SIGNOFF";
+      else if (status == "SIGNOFF") status = "COMPLETED";
+    } else {
+      $("#edit .edit_info select[name=RUN_STATUS] option:selected").each(function () {
+        if ($(this).attr("readonly")) return;
+        status = $(this).val();
+      });
+    }
+    $(msg).attr("RUN_STATUS", status);
+
 
     $("#edit .edit_l1t input[type=checkbox]").each(function (i, o) {
       if ($(o).attr("readonly")) return;
@@ -227,7 +249,7 @@ $(document).ready( function () {
       dataType: "xml",
 
       error: function(o) {
-        errorMessage(o);
+        messageBox(o);
       },
 
       success: function(ret) {
@@ -257,14 +279,14 @@ $(document).ready( function () {
       dataType: "json",
 
       error: function(o) {
-        errorMessage(o);
+        messageBox(o);
         $('#edit').dialog('close');
       },
 
       success: function(json) {
 	  
         if (json.rows.length == 0) {
-          errorMessage("Run not found");
+          messageBox("Run not found");
           $('#edit').dialog('close');
           return;
         }
@@ -348,6 +370,8 @@ $(document).ready( function () {
         var real_role = "";
         var status = $(run).attr("RUN_STATUS"); 
         if (status == null) status = "";
+		
+        $('#edit').attr("current_status", status);
 
         if (status == 'COMPLETED') {
           $("#btn-run-finish").hide();
@@ -384,7 +408,6 @@ $(document).ready( function () {
           $("#edit form .edit_l1t textarea").removeAttr("readonly");
           $("#edit form .edit_l1t textarea").removeAttr("disabled");
 
-
           $("#edit form .edit_sub_online textarea").removeAttr("readonly");
           $("#edit form .edit_sub_online select").removeAttr("disabled");
           $("#edit form .edit_sub_online select").removeAttr("readonly");
@@ -415,15 +438,13 @@ $(document).ready( function () {
           $("#edit form .edit_sub_offline select").removeAttr("readonly");
           $("#edit form .edit_sub_offline select").removeAttr("disabled");
 
-          if (count_tags != 0) {
-            $("#edit form .edit_sub_online textarea").removeAttr("readonly");
-            $("#edit form .edit_sub_online select").removeAttr("disabled");
-            $("#edit form .edit_sub_online select").removeAttr("readonly");
+          $("#edit form .edit_sub_online textarea").removeAttr("readonly");
+          $("#edit form .edit_sub_online select").removeAttr("disabled");
+          $("#edit form .edit_sub_online select").removeAttr("readonly");
 			
-            $("#edit form .edit_sub_online_exp textarea").removeAttr("readonly");
-            $("#edit form .edit_sub_online_exp select").removeAttr("disabled");
-            $("#edit form .edit_sub_online_exp select").removeAttr("readonly");
-          }
+          $("#edit form .edit_sub_online_exp textarea").removeAttr("readonly");
+          $("#edit form .edit_sub_online_exp select").removeAttr("disabled");
+          $("#edit form .edit_sub_online_exp select").removeAttr("readonly");
           
           $("#edit .edit_info select[name=RUN_STATUS]").append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
@@ -551,7 +572,7 @@ $(document).ready( function () {
         <ul>
           <li><a href="#edit_info_tab"><span>General Information</span></a></li>
           <li><a href="#edit_comp_tab"><span>Components</span></a></li>
-	  <li><a href="#edit_exp_com"><span>Comments</span></a></li>
+	  <li><a href="#edit_exp_com" id="commentLink"><span>Comments</span></a></li>
         </ul>
         <div id="edit_info_tab" width="100%" height="100%">
           <table width="100%">
@@ -673,7 +694,7 @@ $(document).ready( function () {
               <td class="edit_col" width="100%">
                 <div class="edit_sub_exp edit_sub_online_exp" id="edit_sub_online_tab">
                   <b>Subsystem: </b>
-                  <select style="width: 80px"  name="expertsCommentSub" disabled="true" id="expertsCommentSub" onchange="textareaValue(this.value);">
+                  <select style="width: 80px"  name="expertsCommentSub" disabled="true" id="expertsCommentSub">
                   <dqm:listSubsystems type="ONLINE">				  
                     <option  value="sub_${sub_abbr}">${sub_abbr}</option> 
                   </dqm:listSubsystems>
@@ -682,7 +703,7 @@ $(document).ready( function () {
                   </dqm:listSubsystems>
                     </select>
                     <b>Status: <b/> 
-                      <select style="width: 80px" name="expertCommentSel" id="expertCommentSel" class="sub_offline" disabled="true" onchange="expertsSel(this.value);"/>
+                      <select style="width: 80px" name="expertCommentSel" id="expertCommentSel" class="sub_offline" disabled="true"/>
                   </div>
               </td>
             </tr>
@@ -690,7 +711,7 @@ $(document).ready( function () {
               <td class="edit_col" width="100%">
                 <div class="edit_sub edit_sub_online">
                   <b>Comments: <b/>
-                  <textarea name="expertsComment" style="width:100%;height:300px" readonly="true" id="expertsComment" onchange="updateExpertsComment(this.value)"></textarea>
+                  <textarea name="expertsComment" style="width:100%;height:300px" readonly="true" id="expertsComment"></textarea>
                 </div>
               </td>
             </tr>
