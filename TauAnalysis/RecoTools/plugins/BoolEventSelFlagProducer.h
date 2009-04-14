@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: BoolEventSelFlagProducer.h,v 1.1 2009/01/22 14:02:08 veelken Exp $
+ * $Id: BoolEventSelFlagProducer.h,v 1.1 2009/04/13 13:58:35 veelken Exp $
  *
  */
 
@@ -21,9 +21,18 @@
 
 #include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
 
+#include <string>
+#include <vector>
+
 class BoolEventSelFlagProducer : public edm::EDProducer
 {
  public:
+
+  struct eventSelectorEntry
+  {
+    std::string instanceName_;
+    EventSelectorBase* plugin_;
+  };
 
   // constructor 
   explicit BoolEventSelFlagProducer(const edm::ParameterSet& cfg);
@@ -37,8 +46,7 @@ class BoolEventSelFlagProducer : public edm::EDProducer
   // and adding boolean flag to the event
   void produce(edm::Event&, const edm::EventSetup&);
 
-  // plugin computing the actual decision whether event passes or fails the event selection
-  EventSelectorBase* eventSelector_;
+  std::vector<eventSelectorEntry> eventSelectors_;
 };
 
 #endif    
