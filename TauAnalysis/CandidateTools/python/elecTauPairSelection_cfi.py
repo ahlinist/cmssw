@@ -8,26 +8,20 @@ import FWCore.ParameterSet.Config as cms
 # in order to ensure that both do not refer to one and the same physical particle
 # (NOTE: cut is already applied during skimming,
 #        so should not reject any events)
-selectedElecTauPairsAntiOverlapVeto = cms.PSet(
-    pluginName = cms.string("selectedElecTauPairsAntiOverlapVeto"),
-    pluginType = cms.string("PATElecTauPairSelector"),                                                
+selectedElecTauPairsAntiOverlapVeto = cms.EDFilter("PATElecTauPairSelector",
     cut = cms.string('dR12 > 0.7'),
     filter = cms.bool(False)
 )
 
 # require electron and tau to form a zero-charge pair
-selectedElecTauPairsZeroCharge = cms.PSet(
-    pluginName = cms.string("selectedElecTauPairsZeroChargeIndividual"),
-    pluginType = cms.string("PATElecTauPairSelector"),                                                    
+selectedElecTauPairsZeroCharge = cms.EDFilter("PATElecTauPairSelector",
     cut = cms.string('charge = 0'),
     #cut = cms.string('(leg1.charge + leg2.leadTrack.charge) = 0'), # NOTE: to be used for background studies only !!                    
     filter = cms.bool(False)
 )
 
 #require cut transverse mass of electron and MET
-selectedElecTauPairsMt1MET = cms.PSet(
-    pluginName = cms.string("selectedElecTauPairsMt1MET"),
-    pluginType = cms.string("PATElecTauPairSelector"),                                                
+selectedElecTauPairsMt1MET = cms.EDFilter("PATElecTauPairSelector",
     cut = cms.string('mt1MET < 60.'),
     filter = cms.bool(False)
 )

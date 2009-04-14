@@ -23,7 +23,7 @@ patElecMuPairSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectElecMuPairs = patElecMuPairSelConfigurator.configure()
+selectElecMuPairs = patElecMuPairSelConfigurator.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + tau-jet pairs
@@ -43,7 +43,7 @@ patElecTauPairSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectElecTauPairs = patElecTauPairSelConfigurator.configure()
+selectElecTauPairs = patElecTauPairSelConfigurator.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for mu + tau-jet pairs
@@ -63,7 +63,7 @@ patMuTauPairSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectMuTauPairs = patMuTauPairSelConfigurator.configure()
+selectMuTauPairs = patMuTauPairSelConfigurator.configure(namespace = locals())
 
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation.cut = selectedMuTauPairsAntiOverlapVeto.cut
 selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsZeroCharge.cut
@@ -78,7 +78,7 @@ patMuTauPairSelConfiguratorLooseMuonIsolation = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure()
+selectMuTauPairsLooseMuonIsolation = patMuTauPairSelConfiguratorLooseMuonIsolation.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for tau-jet + tau-jet pairs
@@ -98,7 +98,7 @@ patDiTauPairSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
-selectDiTauPairs = patDiTauPairSelConfigurator.configure()
+selectDiTauPairs = patDiTauPairSelConfigurator.configure(namespace = locals())
 
 selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs
                                         +selectElecTauPairs
