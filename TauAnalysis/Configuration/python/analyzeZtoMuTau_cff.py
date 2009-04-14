@@ -3,76 +3,76 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
-analyzeZtoMuTau = cms.EDAnalyzer("GenericAnalyzer",
+analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
-  name = cms.string('zMuTauAnalyzer'), 
+    name = cms.string('zMuTauAnalyzer'), 
                             
-  eventSelection = cms.VPSet(
-    # generator level phase-space selection
-    # (NOTE: (1) to be used in case of Monte Carlo samples
-    #            overlapping in simulated phase-space only !!
-    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
-    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
-    #            to the CERN batch system will not work !!)
-    genPhaseSpaceCut,
+    eventSelection = cms.VPSet(
+        # generator level phase-space selection
+        # (NOTE: (1) to be used in case of Monte Carlo samples
+        #            overlapping in simulated phase-space only !!
+        #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
+        #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
+        #            to the CERN batch system will not work !!)
+        genPhaseSpaceCut,
     
-    # generator level selection of Z --> mu + tau-jet events
-    # passing basic acceptance and kinematic cuts
-    # (NOTE: to be used for efficiency studies only !!)
-    #genMuonCut,
-    #genTauCut,
-    
-    # trigger selection
-    Trigger,
+        # generator level selection of Z --> mu + tau-jet events
+        # passing basic acceptance and kinematic cuts
+        # (NOTE: to be used for efficiency studies only !!)
+        #genMuonCut,
+        #genTauCut,
 
-    # primary event vertex selection
-    primaryEventVertex,
-    primaryEventVertexQuality,
-    primaryEventVertexPosition,
-    
-    # muon candidate selection
-    globalMuonCut,
-    muonEtaCut,
-    muonPtCut,
-    muonTrkIsoCut,
-    muonEcalIsoCut,
-    muonAntiPionCut,
-    muonTrkIPcut,
-        
-    # tau candidate selection
-    tauAntiOverlapWithMuonsVeto,
-    tauEtaCut,
-    tauPtCut,
-    tauLeadTrkCut,
-    tauLeadTrkPtCut,
-    tauTrkIsoCut,
-    tauEcalIsoCut,
-    tauProngCut,
-    tauMuonVeto,
+        # trigger selection
+        evtSelTrigger,
 
-    # di-tau candidate selection
-    diTauCandidateForMuTauAntiOverlapVeto,
-    diTauCandidateForMuTauZeroChargeCut,
-    diTauCandidateForMuTauMt1METCut,
+        # primary event vertex selection
+        evtSelPrimaryEventVertex,
+        evtSelPrimaryEventVertexQuality,
+        evtSelPrimaryEventVertexPosition,
 
-    # veto events containing additional central jets with Et > 20 GeV
-    #centralJetVeto
-  ),
+        # muon candidate selection
+        evtSelGlobalMuon,
+        evtSelMuonEta,
+        evtSelMuonPt,
+        evtSelMuonTrkIso,
+        evtSelMuonEcalIso,
+        evtSelMuonAntiPion,
+        evtSelMuonTrkIP,
+
+        # tau candidate selection
+        evtSelTauAntiOverlapWithMuonsVeto,
+        evtSelTauEta,
+        evtSelTauPt,
+        evtSelTauLeadTrk,
+        evtSelTauLeadTrkPt,
+        evtSelTauTrkIso,
+        evtSelTauEcalIso,
+        evtSelTauProng,
+        evtSelTauMuonVeto,
+
+        # di-tau candidate selection
+        evtSelDiTauCandidateForMuTauAntiOverlapVeto,
+        evtSelDiTauCandidateForMuTauZeroCharge,
+        evtSelDiTauCandidateForMuTauMt1MET
+
+        # veto events containing additional central jets with Et > 20 GeV
+        #evtSelCentralJetVeto
+    ),
   
-  histManagers = cms.VPSet(
-    genPhaseSpaceEventInfoHistManager,
-    muonHistManager,
-    tauHistManager,
-    diTauCandidateHistManagerForMuTau,
-    metHistManager,
-    jetHistManager,
-    vertexHistManager,
-    triggerHistManager
-  ),
+    histManagers = cms.VPSet(
+        genPhaseSpaceEventInfoHistManager,
+        muonHistManager,
+        tauHistManager,
+        diTauCandidateHistManagerForMuTau,
+        metHistManager,
+        jetHistManager,
+        vertexHistManager,
+        triggerHistManager
+    ),
 
-  eventDumps = cms.VPSet(
-    muTauEventDump
-  ),
+    eventDumps = cms.VPSet(
+        muTauEventDump
+    ),
    
-  analysisSequence = muTauAnalysisSequence
+    analysisSequence = muTauAnalysisSequence
 )
