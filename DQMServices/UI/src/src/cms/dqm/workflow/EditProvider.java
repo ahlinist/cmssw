@@ -4,10 +4,9 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import oracle.sql.*;
-import org.w3c.dom.*;
+import org.json.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.*;
 
 public class EditProvider extends HttpServlet {
 
@@ -40,20 +39,20 @@ public class EditProvider extends HttpServlet {
       db = new DBWorker();
       db.setAutoCommit(false);  
 
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder loader = factory.newDocumentBuilder();
-      Document doc = loader.parse(request.getInputStream());
+      StringBuilder sb = new StringBuilder();
+      { 
+        BufferedReader reader = request.getReader();
+        String line = null;
+        while ((line = reader.readLine()) != null) sb.append(line);
+      }
 
       Hashtable<String, String> data = new Hashtable<String, String>();
-      NodeList nodes = doc.getDocumentElement().getChildNodes();
-      for (int i = 0; i < nodes.getLength(); i++) {
-        Node node = nodes.item(i);
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-          String key = node.getNodeName();
-          String value = node.getTextContent();
-          if (key != null && value != null) {
-            data.put(key, value);
-          }
+      {
+        JSONObject obj = new JSONObject(sb.toString());	
+        Iterator<String> it = obj.keys();
+        while (it.hasNext()) {
+          String k = it.next();
+          data.put(k, obj.getString(k));
         }
       }
 
@@ -83,10 +82,12 @@ public class EditProvider extends HttpServlet {
       if (!delete && !exists && (user.hasLoggedRole(WebUtils.ONLINE) || user.hasLoggedRole(WebUtils.EXPERT))) {
 
         doInsert(run_number, data);
+        MessageBoardSyn.getInstance().sendMessage(user, 2, "Run #" + String.valueOf(run_number) + " has been created in Run Registry");
 
       } else if (delete && ((current_status.equals("ONLINE") && user.hasLoggedRole(WebUtils.ONLINE)) || user.hasLoggedRole(WebUtils.EXPERT))) {
         
         doDelete(current_id);
+        MessageBoardSyn.getInstance().sendMessage(user, 2, "Run #" + String.valueOf(run_number) + " has been deleted from Run Registry");
 
       } else if (
 
@@ -115,6 +116,8 @@ public class EditProvider extends HttpServlet {
             doUpdate(current_id, data, (prev_tags == 0 ? RunType.OFFLINE : RunType.OFFLINE_NEXT));
           }
         } 
+
+        MessageBoardSyn.getInstance().sendMessage(user, 1, "Run #" + String.valueOf(run_number) + " (" + current_status + ") has been updated (status " + next_status + ")");
 
       } else {
 

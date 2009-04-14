@@ -21,7 +21,7 @@
   <script type="text/javascript" src="media/jquery-ui-1.7.1.custom.min.js"></script>
   <script type="text/javascript" src="media/jquery.timers.js"></script>
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
-  <script type="text/javascript" src="media/jquery.menu.js"></script>
+  <script type="text/javascript" src="media/jquery.menu.min.js"></script>
   <script type="text/javascript" src="media/jquery.tooltip.js"></script>
   <script type="text/javascript" src="media/jquery.autocomplete.js"></script>
   <script type="text/javascript" src="media/jquery.json-1.3.js"></script>
@@ -32,111 +32,116 @@
 
 <script type="text/javascript">
 
-  function logoutUser() {
-    frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
-    setTimeout("window.location.href = 'logout.jsp';", 200);
-  }
-
-  var total = 0;
-
-  function getTag() {
-    var tag = '';
-    do { 
-      tag = prompt('Please type in Tag value for COMPLETED run(s) (required)');
-    } while (tag == '' || tag == null);
-    return tag;
-  }
-
-  function toggleRows(number) {
-    
-    var plus = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=plus]");
-    var minus = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=minus]");
-
-    if ($("[tagParent=" + number + "]").length == 0) {
-      
-      var load = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=tagloader]").show();
-      $(plus).hide();
-      $(load).show();
-      
-      $.ajax({
-        type: "GET",
-        url: "runversiondata?qtype=RUN_NUMBER&query=" + number,
-        processData: false,
-        dataType: "xml",
-        error: function(o) {
-          $(load).hide();
-          $(plus).show();
-          errorMessage(o);
-        },
-        success: function(ret) {
-          var xml = $(ret).find("RESULTS");
-					var rownum = 0;
-          $(xml).children().each(function (i, r) {
-            var row = $("#row" + number).clone();
-            $(row).removeAttr("id");
-            $(row).addClass("prevTag");
-            $(row).removeClass("erow");
-            $(row).attr("tagParent", number);
-            $(r).children().each(function (i, o) {
-              var t = $(o).text();
-              if (o.nodeName == "RUN_NUMBER") t = "";
-              else if (o.nodeName == "RUN_EVENTS" || o.nodeName == "RUN_RATE" || o.nodeName == "RUN_BFIELD") t = formatNumber(t);
-              $(row).find("TD[field = " + o.nodeName + "] div").text(t);
-            });
-
-            $.each([<dqm:listSubsystemsJS/>], function(si, so) {
-              var v = $(r).find(so).text();
-              if (v) {
-                var c = $(r).find(so + "_comment").text();
-                var arrows = "&nbsp;";
-                var statTip = "";
-                if (c != "") {
-                  arrows = "!";
-                  statTip = " statTip";
-                }
-                var t = "<span class=\"stat stat" + v + statTip + "\" status=\"" + v + "\"\>" + arrows + "</span>";
-                $(row).find("TD[field = " + so + "] div").html(t)
-
-                if (c != "") {
-                  $(row).find("TD[field=" + so + "] div").tooltip({
-                    delay: 0,
-                    fade: 250,
-                    track: true,
-                    bodyHandler: function() {
-                      var comment = c;
-                      return comment;
-                    }
-                  });
-                }
-
-              }
-            });
-
-            $(row).find("TD[field=NR] div").html("");
-            if (rownum == 0) {
-              $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_end");
-            } else {
-              $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_middle");
-            }
-            rownum++;
-            $(row).insertAfter("#row" + number);
-
-          });
-          $(load).hide();
-          $(minus).show();
-        }
-      });
-    } else {
-      $("[tagParent=" + number + "]").toggle();
-      $(plus).toggle();
-      $(minus).toggle();
-    }
-
-  };
-
-  $(document).ready( function () {
+  //jQuery.noConflict();
+  $(document).ready(function() {
 
     var subsystems = [<dqm:listSubsystemsJS/>];
+    var total = 0;
+
+    $("#messageBox").dialog({
+      autoOpen: false,
+      width: 200,
+      height: 120,
+      modal: true,
+      buttons: {
+        "Close": function() { 
+          $(this).dialog("close"); 
+        },
+      }
+    });
+
+    var errorMessage = function (line1, caption, line2) {
+      $("#messageBox p.line1").text(line1);  
+      $("#messageBox p.line2").text(line2);  
+      $("#messageBox").dialog("open");
+    };
+
+    var logoutUser = function() {
+      frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
+      setTimeout("window.location.href = 'logout.jsp';", 200);
+    };
+
+    $("a:contains('Logout')").click(function(){ 
+      logoutUser(); 
+    });
+    $("a:contains('Login')").click(function(){
+      location.href = location.href.replace(/^http:\/\//,'https:\/\/');
+    });
+
+    var getTag = function() {
+      var tag = '';
+      do { 
+        tag = prompt('Please type in Tag value for COMPLETED run(s) (required)');
+      } while (tag == '' || tag == null);
+      return tag;
+    };
+
+    var toggleRows = function(number) {
+    
+      var plus = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=plus]");
+      var minus = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=minus]");
+
+      if ($("[tagParent=" + number + "]").length == 0) {
+      
+        var load = $("#row" + number + " TD[field=RUN_COUNT_TAGS] div").find("img[src*=tagloader]").show();
+        $(plus).hide();
+        $(load).show();
+      
+        $.ajax({
+          type: "GET",
+          url: "runversiondata?qtype=RUN_NUMBER&query=" + number + "&format=json",
+          processData: true,
+          dataType: "json",
+
+          error: function(o) {
+            $(load).hide();
+            $(plus).show();
+            errorMessage(o);
+          },
+
+          success: function(ret) {
+            var rownum = 0;
+            var ret = preProcess(ret);
+          
+            $.each(ret.rows, function (i, r) {
+
+              var row = $("#row" + number).clone();
+
+              $(row).removeAttr("id");
+              $(row).addClass("prevTag");
+              $(row).removeClass("erow");
+              $(row).attr("tagParent", number);
+          
+              $.each(r, function (k, t) {
+                if (k == "RUN_NUMBER") t = "";
+                else if (k == "RUN_EVENTS" || k == "RUN_RATE" || k == "RUN_BFIELD") t = formatNumber(t);
+                $(row).find("TD[field='" + k + "'] div").empty().append(t);
+              });
+
+              $(row).find("TD[field=NR] div").html("");
+              if (rownum == 0) {
+                $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_end");
+              } else {
+                $(row).find("TD[field=RUN_COUNT_TAGS]").addClass("tree_middle");
+              }
+              rownum++;
+              $(row).insertAfter("#row" + number);
+            });
+
+            postProcess();
+
+            $(load).hide();
+            $(minus).show();
+          }
+        });
+      } else {
+
+        $("[tagParent=" + number + "]").toggle();
+        $(plus).toggle();
+        $(minus).toggle();
+
+      }
+    };
 
     var preProcess = function (data) {
 
@@ -157,25 +162,40 @@
 
         var tags = parseInt(row["RUN_COUNT_TAGS"]) - 1;
         if (tags > 0) {
-          row["RUN_COUNT_TAGS"] = "<img onclick=\"toggleRows(" + number + ");\" src=\"media/plus.png\"/><img onclick=\"toggleRows(" + number + ");\" style=\"display: none\" src=\"media/minus.png\"/><img style=\"display: none\" src=\"media/tagloader.gif\"/>";
+          row["RUN_COUNT_TAGS"] = "<img runnumber=\"" + number + "\" src=\"media/plus.png\"/>" +
+                                  "<img runnumber=\"" + number + "\" style=\"display: none\" src=\"media/minus.png\"/>" +
+                                  "<img style=\"display: none\" src=\"media/tagloader.gif\"/>";
         } else {
           row["RUN_COUNT_TAGS"] = "";
         }
 
         $.each(subsystems, function(si, so) {
-          if ((row[so]) && row[so] != "null") {
-            var arrows = "&nbsp;";
-            var statTip = "";
-            if ((row[so + "_comment"]) && (row[so + "_comment"] != "null")) {
-              arrows = "!";
-              statTip = " statTip";
-            }
-            row[so] = "<span class=\"stat stat" + 
-              row[so] + statTip + 
-              "\" status=\"" + row[so] + 
-              "\" comment=\"" + row[so + "_comment"] + "\">" + 
-              arrows + "</span>";
+
+          var off_v = row["off_" + so];
+          var on_v = row["on_" + so];
+          var cell = "off_" + so;
+          if (on_v && on_v != "null") cell = "on_" + so;
+
+          if (on_v) {
+            var tip = row["on_" + so + "_comment"];
+            if (tip == "null") tip = "";
+            row[cell] =  "<div comment=\"" + tip + "\"" + 
+                         " class=\"stat statUP stat" + on_v + " " + 
+                         (tip ? "statTip" : "") + "\">" + on_v + "</div>";
+          } else {
+            row[cell] =  "<div class=\"stat statUP\">&nbsp;</div>";
           }
+          
+          if (off_v) {
+            var tip = row["on_" + so + "_comment"];
+            if (tip == "null") tip = "";
+            row[cell] += "<div comment=\"" + row["off_" + so + "_comment"] + "\"" + 
+                         " class=\"stat stat" + off_v + " " + 
+                         (tip ? "statTip" : "") + "\">" + off_v + "</div>";
+          } else {
+            row[cell] += "<div class=\"stat\">&nbsp;</div>";
+          }
+
         });
 
       });
@@ -184,15 +204,21 @@
     };
 
     var postProcess = function () {
-      $("span.statTip").parent().tooltip({
+
+      $("div.statTip").parent().tooltip({
         delay: 0,
         fade: 250,
         track: true,
         bodyHandler: function() {
-          var comment = $("span.statTip", this).attr("comment");
+          var comment = $("div.statTip", this).attr("comment");
           return comment;
         }
       });
+
+      $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]").unbind("click").click(function(){
+        toggleRows($(this).attr("runnumber"));
+      }).css("cursor", "pointer");
+
     };
 
     var timerToggle = function () {
@@ -244,38 +270,29 @@
     }
 
     var editPress = function () {
-
       var number = parseInt($("div.button_edit").attr("run_number"));
-
       if (!number) {
         alert("Run not selected.");
         return;
       }
-
       $.showRunEditForm(number);
     }
 
     var goLink = function (l) {
       var number = parseInt($("div.button_edit").attr("run_number"));
-
       if (!number) {
         alert("Run not selected.");
         return;
       }
-
       l = l.replace(/\{RUN_NUMBER\}/g, number);
       window.open(l);
     }
 
     var onRowSelected = function (row) {
-
       var number = parseInt($("td[field=RUN_NUMBER] div", row).text());
       var status = $("td[abbr=RUN_STATUS] div", row).text();
-
       if (trim(status).length < 2) status = "ONLINE";
-
       $("div.button_edit").attr("run_number", number);
-
       var allow = canEdit(status);
       if (allow) {
         if ($("td[abbr=RUN_EVENTS] div", row).text() == "null" || 
@@ -286,7 +303,6 @@
           allow = 0;
         }
       }
-
       if (allow) {
         $("div.button_edit span").text("Edit #"+ number);
       } else {
@@ -329,10 +345,10 @@
         {display: 'Online Comment', name: 'RUN_ONLINE_COMMENT', width : 150, sortable: true, align: 'left'},
         {display: 'Offline Comment', name: 'RUN_OFFLINE_COMMENT', width : 150, sortable: true, align: 'left', hide: 'true'},
         <dqm:listSubsystems type="ONLINE">
-        {display: '${sub_abbr}', name: '${sub_abbr}', width: 30, sortable: true, align: 'center'},
+        {display: '${sub_abbr}', name: 'on_${sub_abbr}', width: 30, sortable: true, align: 'center'},
         </dqm:listSubsystems>
         <dqm:listSubsystems type="OFFLINE">
-        {display: '${sub_abbr}', name: '${sub_abbr}', width: 30, sortable: true, align: 'center', hide: 'true'},
+        {display: '${sub_abbr}', name: 'off_${sub_abbr}', width: 30, sortable: true, align: 'center', hide: 'true'},
         </dqm:listSubsystems>
         {display: 'Created', name: 'RUN_CREATE_TIME', width: 100, sortable: true, align: 'left', hide: 'true'}
       ],
@@ -356,10 +372,10 @@
         {display: 'Events', name : 'RUN_EVENTS'},
         {display: 'Rate, hz', name : 'RUN_RATE'},
         <dqm:listSubsystems type="ONLINE">
-        {display: '${sub_abbr}', name: '${sub_abbr}'},
+        {display: '${sub_abbr}', name: 'on_${sub_abbr}'},
         </dqm:listSubsystems>
         <dqm:listSubsystems type="OFFLINE">
-        {display: '${sub_abbr}', name: '${sub_abbr}'},
+        {display: '${sub_abbr}', name: 'off_${sub_abbr}'},
         </dqm:listSubsystems>
         {display: 'Created', name : 'RUN_CREATE_TIME'}
       ],
@@ -424,6 +440,7 @@
     // init
     $("#flex1").flexReload();
 
+
     $("#dumpdatamenu").menu({
       hoverOpenDelay: 200 
     });
@@ -434,96 +451,106 @@
 
     $("#batch_updater_progressbar").progressBar({ barImage: 'media/img/progressbg_red.gif', boxImage: 'media/img/progressbar.gif', showText: true});
 
-  });
+    var dumpData = function(intpl, tpl, mime) {
 
-function dumpData(intpl, tpl, mime) {
+      var url = "runregisterdata";
+      if ($.cookie("flex_table_summary")) url = "runinfodata";
+      url += "?format=xml";
+      if (intpl != '') url += "&intpl=" + escape(intpl);
+      if (tpl != '')   url += "&tpl=" + escape(tpl);
+      if (mime != '')  url += "&mime=" + escape(mime);
 
-  var url = "runregisterdata";
-  if ($.cookie("flex_table_summary")) url = "runinfodata";
-  url += "?format=xml";
-  if (intpl != '') url += "&intpl=" + escape(intpl);
-  if (tpl != '')   url += "&tpl=" + escape(tpl);
-  if (mime != '')  url += "&mime=" + escape(mime);
-
-  if ($.cookie("flex_multiselect") == "true") {
-    if($("#flex1 .trSelected").length == 0) {
-      alert("In Multi Select mode at least one run must be selected for dumping.");
-      return;
-    }
-    var runs = "";
-    var selruns = $("#flex1 .trSelected td[field=RUN_NUMBER] div");
-    $.each(selruns, function(i,c){ 
-      runs += "(" + $(c).text() + ")?"; 
-    } );
-    url += "&qtype=RUN_NUMBER";
-    url += "&query=^" + runs + "$";
-  } else {
-    if (total >= 1000) {
-      alert("Too many data: " + total + " records. \n Please narrow search and try again.");
-      return;
-    }
-    if ($.cookie("flex_qtype")) url += "&qtype=" + escape($.cookie("flex_qtype"));
-    if ($.cookie("flex_query")) url += "&query=" + escape($.cookie("flex_query"));
-    if ($.cookie("flex_querya")) url += "&querya=" + escape($.cookie("flex_querya"));
-  }
-
-  if ($.cookie("flex_sortname")) url += "&sortname=" + escape($.cookie("flex_sortname"));
-  if ($.cookie("flex_sortorder")) url += "&sortorder=" + escape($.cookie("flex_sortorder"));
-  window.open(url);
-}
-
-function changeStatusTo(status) {
-
-  var len = $("#flex1 .trSelected").length;
-  if(len == 0) {
-    alert("At least one run must be selected for batch update.");
-    return;
-  }
-
-  var tag = '';
-  var status_name = status;
-  if (status == 'COMPLETED') {
-    tag = getTag();
-    status_name += "(" + tag + ")";
-  }
-
-  if (!confirm("Do you wish to move to " + status_name + " selected " + $("#flex1 .trSelected").length + " run(s)?")) return;
-
-  var cancel = false;
-  var pbvalue = 0;
-  $("#batchupdatemenu").hide();
-  $(".menu-ul innerbox").hide();
-  $("#batch_updater").show();
-  $("#batch_updater_progressbar").progressBar(0);
-
-  $.each($("#flex1 .trSelected td[field=RUN_NUMBER] div"), function(i, c){ 
-    if (cancel) return;
-    var run = $(c).text();
-    $.ajax({
-      type: "GET",
-      async: false,
-      url: "beditprovider?run_number=" + run + "&action=changestatus&status=" + status + "&tag=" + tag,
-      processData: false,
-      dataType: "xml",
-      error: function(o) {
-        if (!cancel) {
-          if(!confirm("Error!\n\n" + o.responseText + "\n\nDo you wish to continue?")) {
-            cancel = 1;
-          }
+      if ($.cookie("flex_multiselect") == "true") {
+        if($("#flex1 .trSelected").length == 0) {
+          alert("In Multi Select mode at least one run must be selected for dumping.");
+          return;
         }
-      },
-      complete: function(ret) {
-        pbvalue += 100 / len;
-        $("#batch_updater_progressbar").progressBar(pbvalue);
+        var runs = "";
+        var selruns = $("#flex1 .trSelected td[field=RUN_NUMBER] div");
+        $.each(selruns, function(i,c){ 
+          runs += "(" + $(c).text() + ")?"; 
+        });
+        url += "&qtype=RUN_NUMBER";
+        url += "&query=^" + runs + "$";
+      } else {
+        if (total >= 1000) {
+          alert("Too many data: " + total + " records. \n Please narrow search and try again.");
+          return;
+        }
+        if ($.cookie("flex_qtype")) url += "&qtype=" + escape($.cookie("flex_qtype"));
+        if ($.cookie("flex_query")) url += "&query=" + escape($.cookie("flex_query"));
+        if ($.cookie("flex_querya")) url += "&querya=" + escape($.cookie("flex_querya"));
       }
-    });
-  });
 
-  $("#flex1").flexReload();
-  $("#batch_updater").hide();
-  $("#batchupdatemenu").show();
-  $("#batch_updater_progressbar").progressBar(0);
-}
+      if ($.cookie("flex_sortname")) url += "&sortname=" + escape($.cookie("flex_sortname"));
+      if ($.cookie("flex_sortorder")) url += "&sortorder=" + escape($.cookie("flex_sortorder"));
+      window.open(url);
+    }
+
+    $("div.menu-item > a[dump-intpl]").parent().click(function(){ 
+      var intpl = $(this).find("a").attr("dump-intpl");
+      var tpl   = $(this).find("a").attr("dump-tpl");
+      var mime  = $(this).find("a").attr("dump-mime");
+      dumpData(intpl, tpl, mime);
+    });
+
+    var changeStatusTo = function(status) {
+      var len = $("#flex1 .trSelected").length;
+      if(len == 0) {
+        alert("At least one run must be selected for batch update.");
+        return;
+      }
+      var tag = '';
+      var status_name = status;
+      if (status == 'COMPLETED') {
+        tag = getTag();
+        status_name += "(" + tag + ")";
+      }
+
+      if (!confirm("Do you wish to move to " + status_name + " selected " + $("#flex1 .trSelected").length + " run(s)?")) return;
+  
+      var cancel = false;
+      var pbvalue = 0;
+      $("#batchupdatemenu").hide();
+      $(".menu-ul innerbox").hide();
+      $("#batch_updater").show();
+      $("#batch_updater_progressbar").progressBar(0);
+  
+      $.each($("#flex1 .trSelected td[field=RUN_NUMBER] div"), function(i, c){ 
+        if (cancel) return;
+        var run = $(c).text();
+        $.ajax({
+          type: "GET",
+          async: false,
+          url: "beditprovider?run_number=" + run + "&action=changestatus&status=" + status + "&tag=" + tag,
+          processData: false,
+          dataType: "xml",
+          error: function(o) {
+            if (!cancel) {
+              if(!confirm("Error!\n\n" + o.responseText + "\n\nDo you wish to continue?")) {
+                cancel = 1;
+              }
+            }
+          },
+          complete: function(ret) {
+            pbvalue += 100 / len;
+            $("#batch_updater_progressbar").progressBar(pbvalue);
+          }
+        });
+      });
+
+      $("#flex1").flexReload();
+      $("#batch_updater").hide();
+      $("#batchupdatemenu").show();
+      $("#batch_updater_progressbar").progressBar(0);
+    };
+
+    $("div.menu-item > a[change-status]").parent().click(function(){ 
+      var status = $(this).find("a").attr("change-status");
+      changeStatusTo(status);
+    });
+
+  });
 
 </script>
 </head>
@@ -544,10 +571,10 @@ function changeStatusTo(status) {
 
         <span id="batchupdatemenu"><a href="#">Update Selected</a>
           <ul>
-            <li><a href="#" onclick="changeStatusTo('ONLINE')">To ONLINE</a></li>
-            <li><a href="#" onclick="changeStatusTo('OFFLINE')">To OFFLINE</a></li>
-            <li><a href="#" onclick="changeStatusTo('SIGNOFF')">To SIGNOFF</a></li>
-            <li><a href="#" onclick="changeStatusTo('COMPLETED')">To COMPLETED</a></li>
+            <li><a href="#" change-status="ONLINE">To ONLINE</a></li>
+            <li><a href="#" change-status="OFFLINE">To OFFLINE</a></li>
+            <li><a href="#" change-status="SIGNOFF">To SIGNOFF</a></li>
+            <li><a href="#" change-status="COMPLETED">To COMPLETED</a></li>
           </ul>
         </span>
 
@@ -569,12 +596,12 @@ function changeStatusTo(status) {
 
         <span id="dumpdatamenu"><a href="#">Dump Data</a>
           <ul>
-            <li><a href="#" onclick="dumpData('xml,elog', '', 'text/plain')">Email</a></li>
-            <li><a href="#" onclick="dumpData('xml,twiki', '', 'text/plain')">TWiki</a></li>
-            <li><a href="#" onclick="dumpData('xml,text_csv', '', 'text/plain')">Text&nbsp;(CSV)</a></li>
-            <li><a href="#" onclick="dumpData('xml,text_tsv', '', 'text/plain')">Text&nbsp;(TSV)</a></li>
-            <li><a href="#" onclick="dumpData('xml', '', 'text/xml')">XML</a></li>
-            <li><a href="#" onclick="dumpData('xml,table', '', 'text/html')">HTML&nbsp;Table</a></li>
+            <li><a href="#" dump-intpl="xml,elog"     dump-tpl="" dump-mime="text/plain">Email</a></li>
+            <li><a href="#" dump-intpl="xml,twiki"    dump-tpl="" dump-mime="text/plain">TWiki</a></li>
+            <li><a href="#" dump-intpl="xml,text_csv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(CSV)</a></li>
+            <li><a href="#" dump-intpl="xml,text_tsv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(TSV)</a></li>
+            <li><a href="#" dump-intpl="xml"          dump-tpl="" dump-mime="text/xml">XML</a></li>
+            <li><a href="#" dump-intpl="xml,table"    dump-tpl="" dump-mime="text/html">HTML&nbsp;Table</a></li>
           </ul>
         </span>
 
@@ -590,14 +617,15 @@ function changeStatusTo(status) {
 
         <% if (user.isLogged()) { %>
           Logged in as <%= user.getName() %> (<span id="roles"><%= user.getRoles() %></span>) @ <%= user.getLocation() %>
-          <a href="#" onclick="logoutUser()">Logout</a>
+          <a href="#">Logout</a>
         <% } else { %>
-          <a href="#" onclick="location.href=location.href.replace(/^http:\/\//,'https:\/\/')">Login</a>
+          <a href="#">Login</a>
         <% } %>
 
       </td>
     </tr>
   </table>
+
   <jsp:include page="search.jsp" />
   <jsp:include page="edit.jsp" />
   <jsp:include page="plot.jsp" />
@@ -605,19 +633,15 @@ function changeStatusTo(status) {
 
   <table id="flex1"></table>
 
-  <br/>
-  <div>
-    <b>Status reference: </b>
-    <span class="statGOOD">&nbsp;&nbsp;&nbsp;&nbsp; - GOOD</span>
-    <span class="statBAD">&nbsp;&nbsp;&nbsp;&nbsp; - BAD</span>
-    <span class="statNOTSET">&nbsp;&nbsp;&nbsp;&nbsp; - NOTSET (offline subsystems only)</span>
-    <span class="statEXCL">&nbsp;&nbsp;&nbsp;&nbsp; - EXCLUDED (online subsystems only)</span>
-  </div>
-
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 
   <div id="helphtml" style="display: none;">
     <jsp:include page="help.html" />
+  </div>
+
+  <div id="messageBox">
+    <p class="line1"/>
+    <p class="line2"/>
   </div>
 
 </body>
