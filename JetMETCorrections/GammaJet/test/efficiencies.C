@@ -59,8 +59,8 @@ TH1D* eff_pt_true_deltaeta_int = new TH1D("eff_pt_true_deltaeta_int","eff_pt_tru
 
 void sum(char* histo, bool issig = 1){
 
-  int nbins = 7;
-  if(!issig) nbins = 18;
+  int nbins = 8;
+  if(!issig) nbins = 7;
 
   for (int i=0; i<nbins; i++) {
     
@@ -170,49 +170,64 @@ void efficiencies(bool issig = 1){
   //signal["0_15"] = 1.6e6; // what's the xsect?
   //signal["15_20"] = 2.5e5;// what's the xsect?
   //signal["20_30"] = 
-  signal["30_50"] = 41140.;
-  signal["50_80"] = 7210.;
-  signal["80_120"] = 1307.;
-  signal["120_170"] = 276.;
-  signal["170_300"] = 87.1;
-  signal["300_500"] = 8.29;
-  signal["500_7000"] = 0.878;
+//   signal["30_50"] = 41140.;
+//   signal["50_80"] = 7210.;
+//   signal["80_120"] = 1307.;
+//   signal["120_170"] = 276.;
+//   signal["170_300"] = 87.1;
+//   signal["300_500"] = 8.29;
+//   signal["500_7000"] = 0.878;
+  signal["15"] = 2.887E+05;//E-04;
+  signal["30"] = 3.222E+04;//E-05;
+  signal["80"] = 1.010E+03;//E-06;
+  signal["170"] = 5.143E+01;//E-08;
+  signal["300"] = 4.193E+00;//E-09;
+  signal["470"] = 4.515E-01;//E-10;
+  signal["800"] = 2.003E-02;//E-11;
+  signal["1400"] = 2.686E-04;//E-13;
   
   // PROCESS QCD
   // Set pT hat bin cross sections, needed for event weights
   map<string, double> qcd;
-  qcd["30_50"] = 163000000.;
-  qcd["50_80"]  =  21600000.;
-  qcd["80_120"] =   3080000.;
-  qcd["120_170"]  =    494000.;
-  qcd["170_230"]  =    101000.;
-  qcd["230_300"]  =     24500.;
-  qcd["300_380"]  =      6240.;
-  qcd["380_470"]  =      1780.;
-  qcd["470_600"]  =       683.;
-  qcd["600_800"]  =       204.;
-  qcd["800_1000"] =       35.1;
-  qcd["1000_1400"]=       10.9;
-  qcd["1400_1800"]=       1.06;
-  qcd["1800_2200"]=       0.145;
-  qcd["2200_2600"]=       0.0238;
-  qcd["2600_3000"]=       0.00429;
-  qcd["3000_3500"]=       0.000844;
-  qcd["3500_inf"] =       0.000108;
+ //  qcd["30_50"] = 163000000.;
+//   qcd["50_80"]  =  21600000.;
+//   qcd["80_120"] =   3080000.;
+//   qcd["120_170"]  =    494000.;
+//   qcd["170_230"]  =    101000.;
+//   qcd["230_300"]  =     24500.;
+//   qcd["300_380"]  =      6240.;
+//   qcd["380_470"]  =      1780.;
+//   qcd["470_600"]  =       683.;
+//   qcd["600_800"]  =       204.;
+//   qcd["800_1000"] =       35.1;
+//   qcd["1000_1400"]=       10.9;
+//   qcd["1400_1800"]=       1.06;
+//   qcd["1800_2200"]=       0.145;
+//   qcd["2200_2600"]=       0.0238;
+//   qcd["2600_3000"]=       0.00429;
+//   qcd["3000_3500"]=       0.000844;
+//   qcd["3500_inf"] =       0.000108;
+  qcd["30"] = 109057220.4;
+  qcd["80"] = 1934639.567;
+  qcd["170"] = 62562.87713;
+  qcd["300"] = 3664.608301;
+  qcd["470"] = 315.5131272;
+  qcd["800"] = 11.9419745;
+  qcd["1400"] = 0.1720187189;
   
   int i=0;
   for (map<string, double>::iterator it = signal.begin();
        it != signal.end(); ++it) {
-    signalfile[i] = new TFile(Form("output_PhotonJets_eff/output_PhotonJets_%s.root", it->first));
-    cout << i << "   " << Form("output_PhotonJets_eff/output_PhotonJets_%s.root", it->first) << endl;
+    signalfile[i] = new TFile(Form("output_fix_PhotonJets_ite/output_PhotonJets_%s.root", it->first));
+    cout << i << "   " << Form("output_fix_PhotonJets_ite/output_PhotonJets_%s.root", it->first) << endl;
     i++;
   } // for signal
   
   i=0;
   for (map<string, double>::iterator it = qcd.begin();
        it != qcd.end(); ++it) {
-    bkgfile[i] = new TFile(Form("output_QCD_eff/output_QCD_%s.root", it->first));
-    cout << i << "   " << Form("output_QCD_eff/output_QCD_%s.root", it->first) << endl;
+    bkgfile[i] = new TFile(Form("output_fix_QCD_ite/output_QCD_%s.root", it->first));
+    cout << i << "   " << Form("output_fix_QCD_ite/output_QCD_%s.root", it->first) << endl;
     i++;
   } // for signal
   
@@ -259,7 +274,7 @@ void efficiencies(bool issig = 1){
 
   gROOT->cd();
  
-  double min(0.3), max(1.05);
+  double min(0.1), max(1.05);
   c0->SetLogy(0);
   char namex[100];
   sprintf(namex,"true #gamma p_{T} [GeV]");
@@ -353,7 +368,7 @@ void efficiencies(bool issig = 1){
   if(issig) c0->SaveAs("eff_sing_id_signal.eps");
   elsec0->SaveAs("eff_sing_id_bkg.eps");
 
-  max = .85;
+  max = .95;
   if(!issig){c0->SetLogy(1);max = 1.05;}
   eff_pt_true_etajet_int->SetAxisRange(0.,700.);
   eff_pt_true_etajet_int->SetMaximum(max);
@@ -414,6 +429,7 @@ void efficiencies(bool issig = 1){
   eff_pt_true_deltaeta->SetMarkerStyle(22);
   eff_pt_true_deltaeta->SetMarkerSize(1.5);
   eff_pt_true_deltaeta->Draw("pesame");
+
   leg2->Draw();    
   if(issig) c0->SaveAs("eff_sing_event_signal.eps");
   else c0->SaveAs("eff_sing_event_bkg.eps"); 
