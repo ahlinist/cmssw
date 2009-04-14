@@ -70,179 +70,154 @@ genPhaseSpaceCut = cms.PSet(
 #  minNumber = cms.uint32(1)
 #)
 
-# trigger selection
-Trigger = cms.PSet(
-  pluginName = cms.string('Trigger'),
-  pluginType = cms.string('TriggerResultEventSelector'),
-  src = cms.InputTag('TriggerResults::HLT'),
-  triggerPaths = cms.vstring('HLT_Mu15', 'HLT_IsoMu11')
+evtSelTrigger = cms.PSet(
+    pluginName = cms.string('evtSelTrigger'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('Trigger'),
 )
 
 # primary event vertex selection
-primaryEventVertex = cms.PSet(
-  pluginName = cms.string('primaryEventVertex'),
-  pluginType = cms.string('VertexMinEventSelector'),
-  src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
-  minNumber = cms.uint32(1)
+evtSelPrimaryEventVertex = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertex'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertex'),
 )
-primaryEventVertexQuality = cms.PSet(
-  pluginName = cms.string('primaryEventVertexQuality'),
-  pluginType = cms.string('VertexMinEventSelector'),
-  src = cms.InputTag('selectedPrimaryVertexQuality'),
-  minNumber = cms.uint32(1)
+evtSelPrimaryEventVertexQuality = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexQuality'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexQuality'),
 )
-primaryEventVertexPosition = cms.PSet(
-  pluginName = cms.string('primaryEventVertexPosition'),
-  pluginType = cms.string('VertexMinEventSelector'),
-  src = cms.InputTag('selectedPrimaryVertexPosition'),
-  minNumber = cms.uint32(1)
+evtSelPrimaryEventVertexPosition = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexPosition'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexPosition'),
 )
 
 # muon candidate selection
-globalMuonCut = cms.PSet(
-  pluginName = cms.string('globalMuonCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
-  minNumber = cms.uint32(1)
+evtSelGlobalMuon = cms.PSet(
+    pluginName = cms.string('evtSelGlobalMuon'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('globalMuonCut', 'cumulative'),
+    src_individual = cms.InputTag('globalMuonCut', 'individual')
 )
-muonEtaCut = cms.PSet(
-  pluginName = cms.string('muonEtaCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsEta21Cumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsEta21Individual'),
-  minNumber = cms.uint32(1)
+evtSelMuonEta = cms.PSet(
+    pluginName = cms.string('evtSelMuonEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonEtaCut', 'cumulative'),
+    src_individual = cms.InputTag('muonEtaCut', 'individual')
 )
-muonPtCut = cms.PSet(
-  pluginName = cms.string('muonPtCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsPt15Individual'),
-  minNumber = cms.uint32(1)
+evtSelMuonPt = cms.PSet(
+    pluginName = cms.string('evtSelMuonPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonPtCut', 'cumulative'),
+    src_individual = cms.InputTag('muonPtCut', 'individual')
 )
-muonTrkIsoCut = cms.PSet(
-  pluginName = cms.string('muonTrkIsoCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelMuonTrkIso = cms.PSet(
+    pluginName = cms.string('evtSelMuonTrkIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonTrkIsoCut', 'cumulative'),
+    src_individual = cms.InputTag('muonTrkIsoCut', 'individual')
 )
-muonEcalIsoCut = cms.PSet(
-  pluginName = cms.string('muonEcalIsoCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelMuonEcalIso = cms.PSet(
+    pluginName = cms.string('evtSelMuonEcalIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonEcalIsoCut', 'cumulative'),
+    src_individual = cms.InputTag('muonEcalIsoCut', 'individual')
 )
-muonAntiPionCut = cms.PSet(
-  pluginName = cms.string('muonAntiPionCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsPionVetoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelMuonAntiPion = cms.PSet(
+    pluginName = cms.string('evtSelMuonAntiPion'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonAntiPionCut', 'cumulative'),
+    src_individual = cms.InputTag('muonAntiPionCut', 'individual')
 )
-muonTrkIPcut = cms.PSet(
-  pluginName = cms.string('muonTrkIPcut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-  src_individual = cms.InputTag('selectedLayer1MuonsTrkIPindividual'),
-  minNumber = cms.uint32(1)
+evtSelMuonTrkIP = cms.PSet(
+    pluginName = cms.string('evtSelMuonTrkIP'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonTrkIPcut', 'cumulative'),
+    src_individual = cms.InputTag('muonTrkIPcut', 'individual')
 )
 
 # tau candidate selection
-tauAntiOverlapWithMuonsVeto = cms.PSet(
-  pluginName = cms.string('tauAntiOverlapWithMuonsVeto'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauAntiOverlapWithMuonsVeto = cms.PSet(
+    pluginName = cms.string('evtSelTauAntiOverlapWithMuonsVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauAntiOverlapWithMuonsVeto', 'cumulative'),
+    src_individual = cms.InputTag('tauAntiOverlapWithMuonsVeto', 'individual')
 )
-tauEtaCut = cms.PSet(
-  pluginName = cms.string('tauEtaCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauEta21Cumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausEta21Individual'),
-  minNumber = cms.uint32(1)
+evtSelTauEta = cms.PSet(
+    pluginName = cms.string('evtSelTauEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
+    src_individual = cms.InputTag('tauEtaCut', 'individual')
 )
-tauPtCut = cms.PSet(
-  pluginName = cms.string('tauPtCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauPt20Cumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausPt20Individual'),
-  minNumber = cms.uint32(1)
+evtSelTauPt = cms.PSet(
+    pluginName = cms.string('evtSelTauPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauPtCut', 'cumulative'),
+    src_individual = cms.InputTag('tauPtCut', 'individual')
 )
-tauLeadTrkCut = cms.PSet(
-  pluginName = cms.string('tauLeadTrkCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauLeadTrkCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausLeadTrkIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauLeadTrk = cms.PSet(
+    pluginName = cms.string('evtSelTauLeadTrk'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauLeadTrkCut', 'cumulative'),
+    src_individual = cms.InputTag('tauLeadTrkCut', 'individual')
 )
-tauLeadTrkPtCut = cms.PSet(
-  pluginName = cms.string('tauLeadTrkPtCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauLeadTrkPtCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausLeadTrkPtIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauLeadTrkPt = cms.PSet(
+    pluginName = cms.string('evtSelTauLeadTrkPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauLeadTrkPtCut', 'cumulative'),
+    src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual')
 )
-tauTrkIsoCut = cms.PSet(
-  pluginName = cms.string('tauTrkIsoCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauTrkIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausTrkIsoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauTrkIso = cms.PSet(
+    pluginName = cms.string('evtSelTauTrkIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauTrkIsoCut', 'cumulative'),
+    src_individual = cms.InputTag('tauTrkIsoCut', 'individual')
 )
-tauEcalIsoCut = cms.PSet(
-  pluginName = cms.string('tauEcalIsoCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauEcalIsoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausEcalIsoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauEcalIso = cms.PSet(
+    pluginName = cms.string('evtSelTauEcalIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauEcalIsoCut', 'cumulative'),
+    src_individual = cms.InputTag('tauEcalIsoCut', 'individual')
 )
-tauProngCut = cms.PSet(
-  pluginName = cms.string('tauProngCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauProngCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausProngIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauProng = cms.PSet(
+    pluginName = cms.string('evtSelTauProng'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauProngCut', 'cumulative'),
+    src_individual = cms.InputTag('tauProngCut', 'individual')
 )
-tauMuonVeto = cms.PSet(
-  pluginName = cms.string('tauMuonVeto'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
-  src_individual = cms.InputTag('selectedLayer1TausMuonVetoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelTauMuonVeto = cms.PSet(
+    pluginName = cms.string('evtSelTauMuonVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauMuonVeto', 'cumulative'),
+    src_individual = cms.InputTag('tauMuonVeto', 'individual')
 )
 
 # di-tau candidate selection
-diTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
-  pluginName = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedMuTauPairsAntiOverlapVetoCumulative'),
-  src_individual = cms.InputTag('selectedMuTauPairsAntiOverlapVetoIndividual'),
-  minNumber = cms.uint32(1)
+evtSelDiTauCandidateForMuTauAntiOverlapVeto = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForMuTauAntiOverlapVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual')
 )
-diTauCandidateForMuTauZeroChargeCut = cms.PSet(
-  pluginName = cms.string('diTauCandidateForMuTauZeroChargeCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeCumulative'),
-  src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
-  minNumber = cms.uint32(1)
+evtSelDiTauCandidateForMuTauZeroCharge = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForMuTauZeroCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'individual')
 )
-diTauCandidateForMuTauMt1METCut = cms.PSet(
-  pluginName = cms.string('diTauCandidateForMuTauMt1METCut'),
-  pluginType = cms.string('PATCandViewMinEventSelector'),
-  src_cumulative = cms.InputTag('selectedMuTauPairsMt1METcumulative'),
-  src_individual = cms.InputTag('selectedMuTauPairsMt1METindividual'),
-  minNumber = cms.uint32(1)
+evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'individual')
 )
 
 # veto events containing additional central jets with Et > 20 GeV
-#centralJetVeto = cms.PSet(
-#  pluginName = cms.string('centralJetVeto'),
-#  pluginType = cms.string('PATCandViewMaxEventSelector'),
-#  src = cms.InputTag('selectedLayer1JetsEt20'),
-#  maxNumber = cms.uint32(0)
+#evtSelCentralJetVeto = cms.PSet(
+#    pluginName = cms.string('evtSelCentralJetVeto'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src = cms.InputTag('centralJetVeto'),
 #)
 
 #--------------------------------------------------------------------------------
@@ -250,37 +225,37 @@ diTauCandidateForMuTauMt1METCut = cms.PSet(
 #--------------------------------------------------------------------------------
 
 muTauEventDump = cms.PSet(
-  pluginName = cms.string('muTauEventDump'),
-  pluginType = cms.string('MuTauEventDump'),
+    pluginName = cms.string('muTauEventDump'),
+    pluginType = cms.string('MuTauEventDump'),
 
-  l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-  l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
-  l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
-
-  hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-  hltPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
-      
-  genParticleSource = cms.InputTag('genParticles'),
-  genTauJetSource = cms.InputTag('tauGenJets'),
-  electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
-  #muonSource = cms.InputTag('cleanLayer1MuonsSel'),
-  muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-  tauSource = cms.InputTag('cleanLayer1TausSel'),
-  #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
-  diTauCandidateSource = cms.InputTag('allMuTauPairs'),
-  metSource = cms.InputTag('layer1METs'),
-  genMEtSource = cms.InputTag('genMETWithMu'),
-  jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-  recoTrackSource = cms.InputTag('generalTracks'),
-  pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
-  pfGammaSource = cms.InputTag('pfAllPhotons'),
-  pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
-
-  #output = cms.string("muTauEventDump.txt"),
-  output = cms.string("std::cout"),
-
-  triggerConditions = cms.vstring("tauTrkIsoCut: rejected_cumulative")
-  #triggerConditions = cms.vstring("diTauCandidateForMuTauMt1METCut: passed_cumulative")
+    l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+    l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
+    
+    hltResultsSource = cms.InputTag('TriggerResults::HLT'),
+    hltPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
+    
+    genParticleSource = cms.InputTag('genParticles'),
+    genTauJetSource = cms.InputTag('tauGenJets'),
+    electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
+    #muonSource = cms.InputTag('cleanLayer1MuonsSel'),
+    muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    tauSource = cms.InputTag('cleanLayer1TausSel'),
+    #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
+    diTauCandidateSource = cms.InputTag('allMuTauPairs'),
+    metSource = cms.InputTag('layer1METs'),
+    genMEtSource = cms.InputTag('genMETWithMu'),
+    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    recoTrackSource = cms.InputTag('generalTracks'),
+    pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+    pfGammaSource = cms.InputTag('pfAllPhotons'),
+    pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
+    
+    #output = cms.string("muTauEventDump.txt"),
+    output = cms.string("std::cout"),
+    
+    triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
+    #triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauMt1MET: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -289,280 +264,280 @@ muTauEventDump = cms.PSet(
 #--------------------------------------------------------------------------------
 
 muTauAnalysisSequence = cms.VPSet(
-  # fill histograms for full event sample
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
+    # fill histograms for full event sample
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
 
-  # generator level phase-space selection
-  # (NOTE: to be used in case of Monte Carlo samples
-  #        overlapping in simulated phase-space only !!)
-  cms.PSet(
-    filter = cms.string('genPhaseSpaceCut'),
-    title = cms.string('gen. Phase-Space'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
+    # generator level phase-space selection
+    # (NOTE: to be used in case of Monte Carlo samples
+    #        overlapping in simulated phase-space only !!)
+    cms.PSet(
+        filter = cms.string('genPhaseSpaceCut'),
+        title = cms.string('gen. Phase-Space'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
 
-  # generator level selection of Z --> mu + tau-jet events
-  # passing basic acceptance and kinematic cuts
-  # (NOTE: to be used for efficiency studies only !!)
-  #cms.PSet(
-  #  filter = cms.string('genMuonCut'),
-  #  title = cms.string('gen. Muon'),
-  #  saveRunEventNumbers = cms.vstring('')
-  #),
-  #cms.PSet(
-  #  filter = cms.string('genTauCut'),
-  #  title = cms.string('gen. Tau'),
-  #  saveRunEventNumbers = cms.vstring('')
-  #),
-  #cms.PSet(
-  #  histManagers = muTauHistManagers
-  #),
+    # generator level selection of Z --> mu + tau-jet events
+    # passing basic acceptance and kinematic cuts
+    # (NOTE: to be used for efficiency studies only !!)
+    #cms.PSet(
+    #    filter = cms.string('genMuonCut'),
+    #    title = cms.string('gen. Muon'),
+    #    saveRunEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('genTauCut'),
+    #    title = cms.string('gen. Tau'),
+    #    saveRunEventNumbers = cms.vstring('')
+    #),
+    #cms.PSet(
+    #    histManagers = muTauHistManagers
+    #),
     
-  # trigger selection
-  cms.PSet(
-    filter = cms.string('Trigger'),
-    title = cms.string('mu15 || isoMu11 Trigger'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
+    # trigger selection
+    cms.PSet(
+        filter = cms.string('evtSelTrigger'),
+        title = cms.string('mu15 || isoMu11 Trigger'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
 
-  # primary event vertex selection
-  cms.PSet(
-    filter = cms.string('primaryEventVertex'),
-    title = cms.string('Vertex'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
-  cms.PSet(
-    filter = cms.string('primaryEventVertexQuality'),
-    title = cms.string('p(chi2Vertex) > 0.01'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
-  cms.PSet(
-    filter = cms.string('primaryEventVertexPosition'),
-    title = cms.string('-50 < zVertex < +50 cm'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers
-  ),
+    # primary event vertex selection
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertex'),
+        title = cms.string('Vertex'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexQuality'),
+        title = cms.string('p(chi2Vertex) > 0.01'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelPrimaryEventVertexPosition'),
+        title = cms.string('-50 < zVertex < +50 cm'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers
+    ),
     
-  # selection of muon candidate
-  # produced in muonic tau decay
-  cms.PSet(
-    filter = cms.string('globalMuonCut'),
-    title = cms.string('global Muon'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonEtaCut'),
-    title = cms.string('-2.1 < eta(Muon) < +2.1'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonPtCut'),
-    title = cms.string('Pt(Muon) > 15 GeV'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonTrkIsoCut'),
-    title = cms.string('Muon Track iso.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonEcalIsoCut'),
-    title = cms.string('Muon ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonAntiPionCut'),
-    title = cms.string('Muon pi-Veto'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('muonTrkIPcut'),
-    title = cms.string('Muon Track IP'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
-  ),
+    # selection of muon candidate
+    # produced in muonic tau decay
+    cms.PSet(
+        filter = cms.string('evtSelGlobalMuon'),
+        title = cms.string('global Muon'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonEta'),
+        title = cms.string('-2.1 < eta(Muon) < +2.1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonPt'),
+        title = cms.string('Pt(Muon) > 15 GeV'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonTrkIso'),
+        title = cms.string('Muon Track iso.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonEcalIso'),
+        title = cms.string('Muon ECAL iso.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonAntiPion'),
+        title = cms.string('Muon pi-Veto'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelMuonTrkIP'),
+        title = cms.string('Muon Track IP'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
+    ),
     
-  # selection of tau-jet candidate
-  # produced in hadronic tau decay
-  cms.PSet(
-    filter = cms.string('tauAntiOverlapWithMuonsVeto'),
-    title = cms.string('Tau not overlapping w. Muon'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauEtaCut'),
-    title = cms.string('-2.1 < eta(Tau) < +2.1'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauPtCut'),
-    title = cms.string('Pt(Tau) > 20 GeV'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauLeadTrkCut'),
-    title = cms.string('Tau lead. Track find.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauLeadTrkPtCut'),
-    title = cms.string('Tau lead. Track Pt'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauTrkIsoCut'),
-    title = cms.string('Tau Track iso.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauEcalIsoCut'),
-    title = cms.string('Tau ECAL iso.'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauProngCut'),
-    title = cms.string('Tau 1||3-Prong'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('tauMuonVeto'),
-    title = cms.string('Tau mu-Veto'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
-  ),
+    # selection of tau-jet candidate
+    # produced in hadronic tau decay
+    cms.PSet(
+        filter = cms.string('evtSelTauAntiOverlapWithMuonsVeto'),
+        title = cms.string('Tau not overlapping w. Muon'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauEta'),
+        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauPt'),
+        title = cms.string('Pt(Tau) > 20 GeV'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrk'),
+        title = cms.string('Tau lead. Track find.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauLeadTrkPt'),
+        title = cms.string('Tau lead. Track Pt'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauTrkIso'),
+        title = cms.string('Tau Track iso.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauEcalIso'),
+        title = cms.string('Tau ECAL iso.'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauProng'),
+        title = cms.string('Tau 1||3-Prong'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauMuonVeto'),
+        title = cms.string('Tau mu-Veto'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
+    ),
 
-  #selection of muon + tau-jet combinations
-  cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauAntiOverlapVeto'),
-    title = cms.string('dR(Muon-Tau) > 0.7'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoCumulative')
-  ),
-  cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauZeroChargeCut'),
-    title = cms.string('Charge(Muon+Tau) = 0'),
-    saveRunEventNumbers = cms.vstring('')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
-  ),
-  cms.PSet(
-    filter = cms.string('diTauCandidateForMuTauMt1METCut'),
-    title = cms.string('M_{T}(Muon-MET) < 60 GeV'),
-    saveRunEventNumbers = cms.vstring('passed_cumulative')
-  ),
-  cms.PSet(
-    histManagers = muTauHistManagers,
-    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
-  #),
+    #selection of muon + tau-jet combinations
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForMuTauAntiOverlapVeto'),
+        title = cms.string('dR(Muon-Tau) > 0.7'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForMuTauZeroCharge'),
+        title = cms.string('Charge(Muon+Tau) = 0'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
+        title = cms.string('M_{T}(Muon-MET) < 60 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        histManagers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
+    #),
 
-  # veto events containing additional central jets with Et > 20 GeV
-  #cms.PSet(
-  #  filter = cms.string('centralJetVeto'),
-  #  title = cms.string('central Jet Veto'),
-  #  saveRunEventNumbers = cms.vstring('passed_cumulative')
-  #),
-  #cms.PSet(
-  #  histManagers = muTauHistManagers,
-  #  replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-  #                        'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-  #                        'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
-  )
+    # veto events containing additional central jets with Et > 20 GeV
+    #cms.PSet(
+    #    filter = cms.string('evtSelCentralJetVeto'),
+    #    title = cms.string('central Jet Veto'),
+    #    saveRunEventNumbers = cms.vstring('passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = muTauHistManagers,
+    #    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+    #                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+    #                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
+    )
 )

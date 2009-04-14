@@ -22,6 +22,9 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
+# import sequence for event selection
+process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
+
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
@@ -141,8 +144,9 @@ switchToPFTauFixedCone(process)
 process.p = cms.Path( process.producePatTuple
 #                    +process.printList            # uncomment to enable print-out of generator level particles
 #                    +process.content              # uncomment to enable dump of event content after PAT-tuple production
-#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
-                     +process.analyzeZtoMuTau
+                     +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
+                     +process.selectZtoMuTauEvents
+                     +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
 
 # import utility function to enable factorization
