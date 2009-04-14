@@ -28,11 +28,26 @@ bool gjetefficiency::cutID(int i, photonidcuts const& pid){
   bool ntrkiso = ntrkiso035Phot[i] < pid.tracknb;
   bool ptiso = ptiso035Phot[i] / ptphot < pid.trackiso;
   bool emf = hcalovecal04Phot[i] < pid.hcaliso;
-  bool smaj = sMajMajPhot[i] < pid.smajmaj;
-  bool smin = sMinMinPhot[i] < pid.sminmin;
-  bool ecaliso = (ecaliso04Phot[i] - ePhot[i]) / ePhot[i] < pid.ecaliso;
+
+  if (_version=="CSA07") { // CSA07 cuts, CSA07 variables
+
+    bool smaj = sMajMajoldPhot[i] < pid.smajmaj;
+    bool smin = sMinMinoldPhot[i] < pid.sminmin;
+    bool ecaliso = (ecaliso04oldPhot[i] - ePhot[i]) / ePhot[i] < pid.ecaliso;
   
-  return (ntrkiso && ptiso && emf && ecaliso && smaj && smin);
+    return (ntrkiso && ptiso && emf && ecaliso && smaj && smin);
+  }
+  else if (_version=="CSA07new") { // CSA07 cuts, CSA08 variables 
+    
+    // Calculation of cluster shape has changed slightly
+    bool smaj = sMajMajPhot[i] < pid.smajmaj;
+    bool smin = sMinMinPhot[i] < pid.sminmin;
+    // Photon clusters are now already subtracted from ECAL isolation
+    bool ecaliso = ecaliso04Phot[i] / ePhot[i] < pid.ecaliso;
+  
+    return (ntrkiso && ptiso && emf && ecaliso && smaj && smin);
+  }
+ 
 }
 
 bool gjetefficiency::NNID(int i, vector<IClassifierReader*> const& classreaders) {
@@ -42,9 +57,18 @@ bool gjetefficiency::NNID(int i, vector<IClassifierReader*> const& classreaders)
   inputVec[0] = ntrkiso035Phot[i];
   inputVec[1] = ptiso035Phot[i] / ptphot;
   inputVec[2] = hcalovecal04Phot[i];
-  inputVec[3] = sMajMajPhot[i];
-  inputVec[4] = sMinMinPhot[i];
-  inputVec[5] = (ecaliso04Phot[i] - ePhot[i]) / ePhot[i];
+  if (_version=="CSA07") {
+    inputVec[3] = sMajMajoldPhot[i];
+    inputVec[4] = sMinMinoldPhot[i];
+    inputVec[5] = (ecaliso04oldPhot[i] - ePhot[i]) / ePhot[i];
+  }
+  else if (_version=="CSA07new") {
+    inputVec[3] = sMajMajPhot[i];
+    inputVec[4] = sMinMinPhot[i];
+    inputVec[5] = ecaliso04Phot[i] / ePhot[i];
+  }
+  else
+    assert(false);
   // NB: optimization of NN used pthot in the denominator for inputVec[5]
   
   double nnval = 0;
@@ -80,6 +104,11 @@ void gjetefficiency::Configure(const char* cfg) {
 	 << "  gSystem->Setenv(\"CAFE_CONFIG\", \"gjetefficiency.config\");" << endl;
     exit(10);
   }
+
+  // Version of the photon ID variables
+  _version = config.get("Version","CSA07");
+  _algo = config.get("Algorithm","ite");
+  _readall = config.get("ReadAll",false);
 
   // Algorithm variables
 
@@ -136,6 +165,10 @@ void gjetefficiency::DumpConfig() {
 
   cout << "Running gjetefficiency.C with the following configuration:" << endl
        << endl
+       << "Variable version: " << _version << endl
+       << "Jet algorithm:    " << _algo << endl
+       << "ReadAll:          " << _readall << endl
+       << endl
        << "Algorithm configuration:" << endl
        << "--------------------" << endl
        << "Rcone:      " << _rcone << endl
@@ -177,7 +210,8 @@ void gjetefficiency::DumpConfig() {
   
 } // DumpConfig
 
-void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
+void gjetefficiency::Loop(double cross, double genpt_start, double genpt_limit,
+		    bool isgammajet, int NEVT)
 {
 //   In a ROOT session, you can do:
 //      Root > .L gjetefficiency.C
@@ -204,6 +238,8 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
 //by  b_branchname->GetEntry(ientry); //read only this branch
 
   if (fChain == 0) return;
+  assert(genpt_limit!=0);
+  assert(genpt_start<genpt_limit);
   
   Int_t nentries = Int_t(fChain->GetEntries());
   
@@ -267,19 +303,119 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
       = phijettrue = phiquarktrue = -999.;
 
 
+    // ENFORCE PTHAT BIN UPPER LIMIT
+    // Need to figure out this upper bound outside from the file name
+    if (!_readall) b_genpt->GetEntry(ientry); // SPEED
+    if (genpt >= genpt_limit) continue;
+    if (genpt < genpt_start) continue;
+    
+    // SWITCH TO CORRECT JET ALGORITHM
+    nJet = 0;
+    if (_algo=="ite") {
+      if (!_readall) {
+	b_nJet_ite->GetEntry(ientry);   b_nJetGen_ite->GetEntry(ientry);
+	b_eJet_ite->GetEntry(ientry);   b_eJetGen_ite->GetEntry(ientry);
+	b_etaJet_ite->GetEntry(ientry); b_etaJetGen_ite->GetEntry(ientry);
+	b_phiJet_ite->GetEntry(ientry); b_phiJetGen_ite->GetEntry(ientry);
+      }
+      nJet = nJet_ite;                nJetGen = nJetGen_ite;
+      eJet = &eJet_ite[0];            eJetGen = &eJetGen_ite[0]; 
+      etaJet = &etaJet_ite[0];        etaJetGen = &etaJetGen_ite[0];
+      phiJet = &phiJet_ite[0];        phiJetGen = &phiJetGen_ite[0];
+    }
+    if (_algo=="kt4") {
+      if (!_readall) {
+	b_nJet_kt4->GetEntry(ientry);   b_nJetGen_kt4->GetEntry(ientry);
+	b_eJet_kt4->GetEntry(ientry);   b_eJetGen_kt4->GetEntry(ientry);
+	b_etaJet_kt4->GetEntry(ientry); b_etaJetGen_kt4->GetEntry(ientry);
+	b_phiJet_kt4->GetEntry(ientry); b_phiJetGen_kt4->GetEntry(ientry);
+      }
+      nJet = nJet_kt4;                nJetGen = nJetGen_kt4;
+      eJet = &eJet_kt4[0];            eJetGen = &eJetGen_kt4[0]; 
+      etaJet = &etaJet_kt4[0];        etaJetGen = &etaJetGen_kt4[0];
+      phiJet = &phiJet_kt4[0];        phiJetGen = &phiJetGen_kt4[0];
+    }
+    if (_algo=="kt6") {
+      if (!_readall) {
+	b_nJet_kt6->GetEntry(ientry);   b_nJetGen_kt6->GetEntry(ientry);
+	b_eJet_kt6->GetEntry(ientry);   b_eJetGen_kt6->GetEntry(ientry);
+	b_etaJet_kt6->GetEntry(ientry); b_etaJetGen_kt6->GetEntry(ientry);
+	b_phiJet_kt6->GetEntry(ientry); b_phiJetGen_kt6->GetEntry(ientry);
+      }
+      nJet = nJet_kt6;                nJetGen = nJetGen_kt6;
+      eJet = &eJet_kt6[0];            eJetGen = &eJetGen_kt6[0]; 
+      etaJet = &etaJet_kt6[0];        etaJetGen = &etaJetGen_kt6[0];
+      phiJet = &phiJet_kt6[0];        phiJetGen = &phiJetGen_kt6[0];
+     }
+    if (_algo=="pfite") {
+      if (!_readall) {
+	b_nJet_pfite->GetEntry(ientry);   b_nJetGen_ite->GetEntry(ientry);
+	b_eJet_pfite->GetEntry(ientry);   b_eJetGen_ite->GetEntry(ientry);
+	b_etaJet_pfite->GetEntry(ientry); b_etaJetGen_ite->GetEntry(ientry);
+	b_phiJet_pfite->GetEntry(ientry); b_phiJetGen_ite->GetEntry(ientry);
+      }
+      nJet = nJet_pfite;                nJetGen = nJetGen_ite;
+      eJet = &eJet_pfite[0];            eJetGen = &eJetGen_ite[0]; 
+      etaJet = &etaJet_pfite[0];        etaJetGen = &etaJetGen_ite[0];
+      phiJet = &phiJet_pfite[0];        phiJetGen = &phiJetGen_ite[0];
+    }
+    if (_algo=="sis5") {
+      if (!_readall) {
+	b_nJet_sis5->GetEntry(ientry);   b_nJetGen_sis5->GetEntry(ientry);
+	b_eJet_sis5->GetEntry(ientry);   b_eJetGen_sis5->GetEntry(ientry);
+	b_etaJet_sis5->GetEntry(ientry); b_etaJetGen_sis5->GetEntry(ientry);
+	b_phiJet_sis5->GetEntry(ientry); b_phiJetGen_sis5->GetEntry(ientry);
+      }
+      nJet = nJet_sis5;                nJetGen = nJetGen_sis5;
+      eJet = &eJet_sis5[0];            eJetGen = &eJetGen_sis5[0];
+      etaJet = &etaJet_sis5[0];        etaJetGen = &etaJetGen_sis5[0];
+      phiJet = &phiJet_sis5[0];        phiJetGen = &phiJetGen_sis5[0];
+    }
+    if (_algo=="sis7") {
+      if (_readall) {
+	b_nJet_sis7->GetEntry(ientry);   b_nJetGen_sis7->GetEntry(ientry);
+	b_eJet_sis7->GetEntry(ientry);   b_eJetGen_sis7->GetEntry(ientry);
+	b_etaJet_sis7->GetEntry(ientry); b_etaJetGen_sis7->GetEntry(ientry);
+	b_phiJet_sis7->GetEntry(ientry); b_phiJetGen_sis7->GetEntry(ientry);
+      }
+      nJet = nJet_sis7;                nJetGen = nJetGen_sis7;
+      eJet = &eJet_sis7[0];            eJetGen = &eJetGen_sis7[0];
+      etaJet = &etaJet_sis7[0];        etaJetGen = &etaJetGen_sis7[0];
+      phiJet = &phiJet_sis7[0];        phiJetGen = &phiJetGen_sis7[0];
+    }
+    
+
     // FINDING THE LEADING RECONSTRUCTED PHOTON
     // => Consider only photons that pass some reasonable cuts
     //    to avoid photon/jet overlaps
     // => Look everywhere in the calorimeter for maximum acceptance
     {
+      if (!_readall) {
+
+	b_nPhot->GetEntry(ientry);   b_ePhot->GetEntry(ientry);
+	b_etaPhot->GetEntry(ientry); b_phiPhot->GetEntry(ientry);
+
+	b_ntrkiso035Phot->GetEntry(ientry);
+	b_ptiso035Phot->GetEntry(ientry);
+	b_hcalovecal04Phot->GetEntry(ientry);
+	if (_version=="CSA07") {
+	  b_sMajMajoldPhot->GetEntry(ientry);
+	  b_sMinMinoldPhot->GetEntry(ientry);
+	  b_ecaliso04oldPhot->GetEntry(ientry);
+	} else {
+	  b_sMajMajPhot->GetEntry(ientry);
+	  b_sMinMinPhot->GetEntry(ientry);
+	  b_ecaliso04Phot->GetEntry(ientry);
+	}
+      }
+
       double maxptphot(0);
       this->irecphot = -1;
 
       for (int i = 0; i != nPhot; ++i){
       
 	if (cutID(i, _looseid) || NNID(i, classReaders)) {
-	  //	if (ePhot[i] / cosh(etaPhot[i])>25.) {
-	  
+
 	  double ptphot = ePhot[i] / cosh(etaPhot[i]);
 	  if (ptphot > maxptphot) {
 	    maxptphot = ptphot;
@@ -346,6 +482,13 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
     //          useful to get kjet, ktopo and rjet for QCD with higher stats
     //          Don't store these events to the tree
     {
+      if (!_readall) {
+	b_nMC->GetEntry(ientry);     b_eMC->GetEntry(ientry);
+	b_etaMC->GetEntry(ientry);   b_phiMC->GetEntry(ientry);
+	b_pdgIdMC->GetEntry(ientry); b_statusMC->GetEntry(ientry);
+	b_motherIDMC->GetEntry(ientry);
+      }
+      
       this->isubjet = -1;
       this->isubphot = -1;
 
@@ -614,7 +757,7 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
 	} // for i
       } // isqcd
 
-      assert(this->imcphot != -1);
+      //      assert(this->imcphot != -1);
       //assert(this->imcjet != -1); // crashes on photon+jets?!
     } // Find EM-parton and recoiling quark
 
@@ -700,7 +843,7 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
 	} // for j
       } 
 
-      assert(this->igenjet != -1);
+      //      assert(this->igenjet != -1);
     } // Find matching/recoiling genjet
     
 
@@ -730,7 +873,7 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
 	   if(hcalovecal04Phot[irecphoteff] < _mediumid.hcaliso) {pt_true_emf->Fill(ptphotgen,w); eta_true_emf->Fill(etaphotgen,w); }
 	   if(sMajMajPhot[irecphoteff] < _mediumid.smajmaj && sMajMajPhot[irecphoteff] > 0) {pt_true_smaj->Fill(ptphotgen,w); eta_true_smaj->Fill(etaphotgen,w); }
 	   if(sMinMinPhot[irecphoteff] < _mediumid.sminmin && sMinMinPhot[irecphoteff] > 0) {pt_true_smin->Fill(ptphotgen,w); eta_true_smin->Fill(etaphotgen,w); }
-	   if((ecaliso04Phot[irecphoteff] - ePhot[irecphoteff]) / ePhot[irecphoteff] < _mediumid.ecaliso) { pt_true_ecaliso->Fill(ptphotgen,w); eta_true_ecaliso->Fill(etaphotgen,w); }
+	   if(ecaliso04Phot[irecphoteff]  / ePhot[irecphoteff] < _mediumid.ecaliso) { pt_true_ecaliso->Fill(ptphotgen,w); eta_true_ecaliso->Fill(etaphotgen,w); }
       }
       
       if(ePhot[irecphoteff]/ cosh(etaPhot[irecphoteff]) > _photptcut) {
@@ -740,7 +883,7 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
 	      if(hcalovecal04Phot[irecphoteff] < _mediumid.hcaliso) { pt_true_emf_int->Fill (ptphotgen,w); eta_true_emf_int->Fill(etaphotgen,w);
 		if(sMajMajPhot[irecphoteff] < _mediumid.smajmaj && sMajMajPhot[irecphoteff] > 0) { pt_true_smaj_int->Fill(ptphotgen,w); eta_true_smaj_int->Fill(etaphotgen,w);
 		  if(sMinMinPhot[irecphoteff] < _mediumid.sminmin && sMinMinPhot[irecphoteff] > 0) { pt_true_smin_int->Fill(ptphotgen,w); eta_true_smin_int->Fill(etaphotgen,w);
-		    if((ecaliso04Phot[irecphoteff] - ePhot[irecphoteff]) / ePhot[irecphoteff] < _mediumid.ecaliso) { pt_true_ecaliso_int->Fill(ptphotgen,w); eta_true_ecaliso_int->Fill(etaphotgen,w);
+		    if(ecaliso04Phot[irecphoteff]  / ePhot[irecphoteff] < _mediumid.ecaliso) { pt_true_ecaliso_int->Fill(ptphotgen,w); eta_true_ecaliso_int->Fill(etaphotgen,w);
 		      if(fabs(jet.eta) < _jetetacut) {pt_true_etajet->Fill(ptphotgen,w); eta_true_etajet->Fill(etaphotgen,w); }
 		      if(delta_phi(jet.phi, phot.phi) > _deltaphi) {pt_true_deltaphi->Fill(ptphotgen,w); eta_true_deltaphi->Fill(etaphotgen,w); }
 		      if(pt2ndjet < _jet2_maxfrac*phot.pt || pt2ndjet < _jet2_minpt) {pt_true_2ndjet->Fill(ptphotgen,w); eta_true_2ndjet->Fill(etaphotgen,w); }
@@ -773,9 +916,16 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
       inputVec[0] = ntrkiso035Phot[irecphot];
       inputVec[1] = ptiso035Phot[irecphot] / phot.pt;
       inputVec[2] = hcalovecal04Phot[irecphot];
-      inputVec[3] = sMajMajPhot[irecphot];
-      inputVec[4] = sMinMinPhot[irecphot];
-      inputVec[5] = (ecaliso04Phot[irecphot] - phot.e) / phot.e;
+      if (_version=="CSA07") {
+	inputVec[3] = sMajMajoldPhot[irecphot];
+	inputVec[4] = sMinMinoldPhot[irecphot];
+	inputVec[5] = (ecaliso04oldPhot[irecphot] - phot.e) / phot.e;
+      }
+      else if (_version=="CSA07new") {
+	inputVec[3] = sMajMajPhot[irecphot];
+	inputVec[4] = sMinMinPhot[irecphot];
+	inputVec[5] = ecaliso04Phot[irecphot] / phot.e;
+      }
       // NB: NN optimization had a bug that replaced denominator with pt
       
       double nnval_int = classReader->GetMvaValue( inputVec );
@@ -798,11 +948,11 @@ void gjetefficiency::Loop(double cross, bool isgammajet, int NEVT)
       pts = ePhot[irecphoteff]/cosh(etaPhot[irecphoteff]);
       ntrkisos = ntrkiso035Phot[irecphoteff];
       ptisos = ptiso035Phot[irecphoteff] / pts;
-      ptisoatecals = ptisoatecal035Phot[irecphoteff] / pts;
+      //      ptisoatecals = ptisoatecal035Phot[irecphoteff] / pts;
       hcalovecals = hcalovecal04Phot[irecphoteff];
       sMajMajs = sMajMajPhot[irecphoteff];
       sMinMins = sMinMinPhot[irecphoteff];
-      ecalisos = (ecaliso04Phot[irecphoteff] - ePhot[irecphoteff]) / ePhot[irecphoteff];
+      ecalisos = ecaliso04Phot[irecphoteff]  / ePhot[irecphoteff];
       weights = w;
       S_tree->Fill();
     }

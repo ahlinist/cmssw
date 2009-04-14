@@ -40,6 +40,24 @@ void cutvar(){
 
   TFile file("plots.root");
 
+  // official ("medium ID") cuts
+  double smajcut = 0.3;
+  double smincut = 0.25;
+  double ntrkcut = 3;
+  double ptcut = 0.1;
+  double ecalcut = 0.05;
+  double hcalcut = 0.053;
+  double jet2cut = 0.1;
+  double deltaphicut = 3.14-0.2;
+  double deltaetacut = 1;
+  double etacut = 1.3;
+
+  double maximum(0);
+  TArrow *arr = new TArrow();
+  arr -> SetArrowSize(0.04);
+  arr -> SetLineWidth(3.);
+  arr -> SetFillColor(kMagenta);
+
   //majoraxis
   sMajMajphot->Rebin(10);
   sMajMajphot->SetNormFactor(1);
@@ -60,12 +78,12 @@ void cutvar(){
   sMajMajbkg->SetTitleOffset(1.3,"Y");
   sMajMajbkg->SetStats(0);
   sMajMajbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = sMajMajphot->GetMaximum()/sMajMajphot->Integral();  
+  arr -> DrawArrow(smajcut,maximum*1.,smajcut,maximum*0.3);
+  // arr->Draw();
   leg->Draw("same");
-   c0->SaveAs("plots/sMajMajphot.eps");
-   c0->SaveAs("plots/sMajMajphot.gif");
+  c0->SaveAs("plots/sMajMajphot.eps");
+  c0->SaveAs("plots/sMajMajphot.gif");
 
   //majoraxis
   sMinMinphot->SetNormFactor(1);
@@ -87,19 +105,18 @@ void cutvar(){
   sMinMinbkg->SetTitleOffset(1.3,"Y");
   sMinMinbkg->SetStats(0);
   sMinMinbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = sMinMinphot->GetMaximum()/sMinMinphot->Integral();  
+  arr -> DrawArrow(smincut,maximum*1.,smincut,maximum*.3);
   leg->Draw("same");
-   c0->SaveAs("plots/sMinMinphot.eps");
-   c0->SaveAs("plots/sMinMinphot.gif");
+  c0->SaveAs("plots/sMinMinphot.eps");
+  c0->SaveAs("plots/sMinMinphot.gif");
 
 
   //trk iso pt
   ptisophot->Rebin(2);
   ptisophot->SetNormFactor(1);
   ptisophot->SetTitle("");  
-  ptisophot->SetXTitle("p_{T} trk isol");
+  ptisophot->SetXTitle("p_{T} track isolation");
   ptisophot->SetYTitle("Arbitrary Norm.");
   ptisophot->SetLineColor(kRed);
   ptisophot->SetFillColor(kRed);
@@ -115,7 +132,8 @@ void cutvar(){
   ptisobkg->SetTitleOffset(1.3,"Y");
   ptisobkg->SetStats(0);
   ptisobkg->Draw("same");
-  //arr -> DrawArrow(0.04,0.2,0.04,0.01);
+  maximum = ptisophot->GetMaximum()/ptisophot->Integral();  
+  arr -> DrawArrow(ptcut,maximum*1.,ptcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ptisophot.eps");
   c0->SaveAs("plots/ptisophot.gif");
@@ -123,7 +141,7 @@ void cutvar(){
   //trk iso ntrk
   ntrkisophot->SetNormFactor(1);
   ntrkisophot->SetTitle("");  
-  ntrkisophot->SetXTitle("Ntrk isol");
+  ntrkisophot->SetXTitle("N_{track} isolation");
   ntrkisophot->SetYTitle("Arbitrary Norm.");
   ntrkisophot->SetLineColor(kRed);
   ntrkisophot->SetFillColor(kRed);
@@ -138,7 +156,8 @@ void cutvar(){
   ntrkisobkg->SetTitleOffset(1.3,"Y");
   ntrkisobkg->SetStats(0);
   ntrkisobkg->Draw("same");
-  //arr -> DrawArrow(2,1.1,2,0.2);
+  maximum = ntrkisophot->GetMaximum()/ntrkisophot->Integral();  
+  arr -> DrawArrow(ntrkcut,maximum*1.,ntrkcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ntrkisophot.eps");
   c0->SaveAs("plots/ntrkisophot.gif");
@@ -147,7 +166,7 @@ void cutvar(){
   hcalovecalphot->Rebin(10);
   hcalovecalphot->SetNormFactor(1);
   hcalovecalphot->SetTitle("");  
-  hcalovecalphot->SetXTitle("HCAL/ECAL isol");
+  hcalovecalphot->SetXTitle("HCAL isolation");
   hcalovecalphot->SetYTitle("Arbitrary Norm.");
   hcalovecalphot->SetLineColor(kRed);
   hcalovecalphot->SetFillColor(kRed);
@@ -163,7 +182,8 @@ void cutvar(){
   hcalovecalbkg->SetTitleOffset(1.3,"Y");
   hcalovecalbkg->SetStats(0);
   hcalovecalbkg->Draw("same");
-  //arr -> DrawArrow(0.03,1.,0.03,0.1);
+  maximum = hcalovecalphot->GetMaximum()/hcalovecalphot->Integral();  
+  arr -> DrawArrow(hcalcut,maximum*1.,hcalcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/hcalovecalphot.eps");
   c0->SaveAs("plots/hcalovecalphot.gif");
@@ -172,7 +192,7 @@ void cutvar(){
   ecalisophot->Rebin(4);
   ecalisophot->SetNormFactor(1);
   ecalisophot->SetTitle("");  
-  ecalisophot->SetXTitle("ECAL isol");
+  ecalisophot->SetXTitle("ECAL isolation");
   ecalisophot->SetYTitle("Arbitrary Norm.");
   ecalisophot->SetLineColor(kRed);
   ecalisophot->SetFillColor(kRed);
@@ -188,7 +208,8 @@ void cutvar(){
   ecalisobkg->SetTitleOffset(1.3,"Y");
   ecalisobkg->SetStats(0);
   ecalisobkg->Draw("same");
-  //arr -> DrawArrow(0.03,1.,0.03,0.1);
+  maximum = ecalisophot->GetMaximum()/ecalisophot->Integral();  
+  arr -> DrawArrow(ecalcut,maximum*1.,ecalcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ecalisophot.eps");
   c0->SaveAs("plots/ecalisophot.gif");
@@ -215,9 +236,8 @@ void cutvar(){
   sMajMajcutbkg->SetTitleOffset(1.3,"Y");
   sMajMajcutbkg->SetStats(0);
   sMajMajcutbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = sMajMajcutphot->GetMaximum()/sMajMajcutphot->Integral();  
+  arr -> DrawArrow(smajcut,maximum*1.,smajcut,maximum*0.3);
   leg->Draw("same");
    c0->SaveAs("plots/sMajMajcutphot.eps");
    c0->SaveAs("plots/sMajMajcutphot.gif");
@@ -242,19 +262,18 @@ void cutvar(){
   sMinMincutbkg->SetTitleOffset(1.3,"Y");
   sMinMincutbkg->SetStats(0);
   sMinMincutbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = sMinMincutphot->GetMaximum()/sMinMincutphot->Integral();  
+  arr -> DrawArrow(smincut,maximum*1.,smincut,maximum*0.3);
   leg->Draw("same");
-   c0->SaveAs("plots/sMinMincutphot.eps");
-   c0->SaveAs("plots/sMinMincutphot.gif");
+  c0->SaveAs("plots/sMinMincutphot.eps");
+  c0->SaveAs("plots/sMinMincutphot.gif");
 
 
   //trk iso pt
   ptisocutphot->Rebin(2);
   ptisocutphot->SetNormFactor(1);
   ptisocutphot->SetTitle("");  
-  ptisocutphot->SetXTitle("p_{T} trk isol");
+  ptisocutphot->SetXTitle("p_{T} track isolation");
   ptisocutphot->SetYTitle("Arbitrary Norm.");
   ptisocutphot->SetLineColor(kRed);
   ptisocutphot->SetFillColor(kRed);
@@ -270,7 +289,8 @@ void cutvar(){
   ptisocutbkg->SetTitleOffset(1.3,"Y");
   ptisocutbkg->SetStats(0);
   ptisocutbkg->Draw("same");
-  //arr -> DrawArrow(0.04,0.2,0.04,0.01);
+  maximum = ptisocutphot->GetMaximum()/ptisocutphot->Integral();  
+  arr -> DrawArrow(ptcut,maximum*1.,ptcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ptisocutphot.eps");
   c0->SaveAs("plots/ptisocutphot.gif");
@@ -278,7 +298,7 @@ void cutvar(){
   //trk iso ntrk
   ntrkisocutphot->SetNormFactor(1);
   ntrkisocutphot->SetTitle("");  
-  ntrkisocutphot->SetXTitle("Ntrk isol");
+  ntrkisocutphot->SetXTitle("N_{track} isolation");
   ntrkisocutphot->SetYTitle("Arbitrary Norm.");
   ntrkisocutphot->SetLineColor(kRed);
   ntrkisocutphot->SetFillColor(kRed);
@@ -293,7 +313,8 @@ void cutvar(){
   ntrkisocutbkg->SetTitleOffset(1.3,"Y");
   ntrkisocutbkg->SetStats(0);
   ntrkisocutbkg->Draw("same");
-  //arr -> DrawArrow(2,1.1,2,0.2);
+  maximum = ntrkisocutphot->GetMaximum()/ntrkisocutphot->Integral();  
+  arr -> DrawArrow(ntrkcut,maximum*1.,ntrkcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ntrkisocutphot.eps");
   c0->SaveAs("plots/ntrkisocutphot.gif");
@@ -302,7 +323,7 @@ void cutvar(){
   hcalovecalcutphot->Rebin(10);
   hcalovecalcutphot->SetNormFactor(1);
   hcalovecalcutphot->SetTitle("");  
-  hcalovecalcutphot->SetXTitle("HCAL/ECAL isol");
+  hcalovecalcutphot->SetXTitle("HCAL isolation");
   hcalovecalcutphot->SetYTitle("Arbitrary Norm.");
   hcalovecalcutphot->SetLineColor(kRed);
   hcalovecalcutphot->SetFillColor(kRed);
@@ -318,7 +339,8 @@ void cutvar(){
   hcalovecalcutbkg->SetTitleOffset(1.3,"Y");
   hcalovecalcutbkg->SetStats(0);
   hcalovecalcutbkg->Draw("same");
-  //arr -> DrawArrow(0.03,1.,0.03,0.1);
+  maximum = hcalovecalcutphot->GetMaximum()/hcalovecalcutphot->Integral();  
+  arr -> DrawArrow(hcalcut,maximum*1.,hcalcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/hcalovecalcutphot.eps");
   c0->SaveAs("plots/hcalovecalcutphot.gif");
@@ -327,7 +349,7 @@ void cutvar(){
   ecalisocutphot->Rebin(4);
   ecalisocutphot->SetNormFactor(1);
   ecalisocutphot->SetTitle("");  
-  ecalisocutphot->SetXTitle("ECAL isol");
+  ecalisocutphot->SetXTitle("ECAL isolation");
   ecalisocutphot->SetYTitle("Arbitrary Norm.");
   ecalisocutphot->SetLineColor(kRed);
   ecalisocutphot->SetFillColor(kRed);
@@ -343,7 +365,8 @@ void cutvar(){
   ecalisocutbkg->SetTitleOffset(1.3,"Y");
   ecalisocutbkg->SetStats(0);
   ecalisocutbkg->Draw("same");
-  //arr -> DrawArrow(0.03,1.,0.03,0.1);
+  maximum = ecalisocutphot->GetMaximum()/ecalisocutphot->Integral();  
+  arr -> DrawArrow(ecalcut,maximum*1.,ecalcut,maximum*0.3);
   leg->Draw("same");
   c0->SaveAs("plots/ecalisocutphot.eps");
   c0->SaveAs("plots/ecalisocutphot.gif");
@@ -352,28 +375,28 @@ void cutvar(){
 
   c0->SetLogy(0);
   //etajetsig
-  etajetbkg->Rebin(1);
-  etajetbkg->SetTitle("");  
-  etajetbkg->SetXTitle("#eta jet");
-  etajetbkg->SetYTitle("Arbitrary Norm.");
-  etajetbkg->SetNormFactor(1);
-  etajetbkg->SetLineColor(kBlue);
-  etajetbkg->SetFillColor(kBlue);
-  etajetbkg->SetFillStyle(3005);
-  etajetbkg->SetTitleOffset(1.3,"Y");
-  etajetbkg->SetStats(0);
-  etajetbkg->Draw();
   etajetsig->Rebin(1);
+  etajetsig->SetTitle("");  
+  etajetsig->SetXTitle("#eta jet");
+  etajetsig->SetYTitle("Arbitrary Norm.");
   etajetsig->SetNormFactor(1);
-  etajetsig->SetLineColor(kRed);
-  etajetsig->SetFillColor(kRed);
-  etajetsig->SetFillStyle(3004);
+  etajetsig->SetLineColor(kBlue);
+  etajetsig->SetFillColor(kBlue);
+  etajetsig->SetFillStyle(3005);
   etajetsig->SetTitleOffset(1.3,"Y");
   etajetsig->SetStats(0);
-  etajetsig->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  etajetsig->Draw();
+  etajetbkg->Rebin(1);
+  etajetbkg->SetNormFactor(1);
+  etajetbkg->SetLineColor(kRed);
+  etajetbkg->SetFillColor(kRed);
+  etajetbkg->SetFillStyle(3004);
+  etajetbkg->SetTitleOffset(1.3,"Y");
+  etajetbkg->SetStats(0);
+  etajetbkg->Draw("same");
+  maximum = etajetbkg->GetMaximum()/etajetbkg->Integral();  
+  arr -> DrawArrow(etacut,maximum*1.,etacut,maximum*0.5);
+  arr -> DrawArrow(-1*etacut,maximum*1.,-1*etacut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/etajetsig.eps");
   c0->SaveAs("plots/etajetsig.gif");
@@ -398,9 +421,8 @@ void cutvar(){
   deltaphibkg->SetTitleOffset(1.3,"Y");
   deltaphibkg->SetStats(0);
   deltaphibkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = deltaphisig->GetMaximum()/deltaphisig->Integral();  
+  arr -> DrawArrow(deltaphicut,maximum*.6,deltaphicut,maximum*0.25);
   leg2->Draw("same");
   c0->SaveAs("plots/deltaphisig.eps");
   c0->SaveAs("plots/deltaphisig.gif");
@@ -425,9 +447,9 @@ void cutvar(){
   deltaetabkg->SetTitleOffset(1.3,"Y");
   deltaetabkg->SetStats(0);
   deltaetabkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = deltaetasig->GetMaximum()/deltaetasig->Integral();  
+  arr -> DrawArrow(deltaetacut,maximum*1.,deltaetacut,maximum*0.5);
+  arr -> DrawArrow(-1*deltaetacut,maximum*1.,-1*deltaetacut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/deltaetasig.eps");
   c0->SaveAs("plots/deltaetasig.gif");
@@ -452,9 +474,8 @@ void cutvar(){
   secondjetbkg->SetTitleOffset(1.3,"Y");
   secondjetbkg->SetStats(0);
   secondjetbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = secondjetsig->GetMaximum()/secondjetsig->Integral();  
+  arr -> DrawArrow(jet2cut,maximum*1.,jet2cut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/secondjetsig.eps");
   c0->SaveAs("plots/secondjetsig.gif");
@@ -479,9 +500,9 @@ void cutvar(){
   etajetcutsig->SetTitleOffset(1.3,"Y");
   etajetcutsig->SetStats(0);
   etajetcutsig->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = etajetcutbkg->GetMaximum()/etajetcutbkg->Integral();  
+  arr -> DrawArrow(etacut,maximum*1.,etacut,maximum*0.5);
+  arr -> DrawArrow(-1*etacut,maximum*1.,-1*etacut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/etajetcutsig.eps");
   c0->SaveAs("plots/etajetcutsig.gif");
@@ -506,9 +527,8 @@ void cutvar(){
   deltaphicutbkg->SetTitleOffset(1.3,"Y");
   deltaphicutbkg->SetStats(0);
   deltaphicutbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = deltaphicutsig->GetMaximum()/deltaphicutsig->Integral();  
+  arr -> DrawArrow(deltaphicut,maximum*.6,deltaphicut,maximum*0.25);
   leg2->Draw("same");
   c0->SaveAs("plots/deltaphicutsig.eps");
   c0->SaveAs("plots/deltaphicutsig.gif");
@@ -533,9 +553,9 @@ void cutvar(){
   deltaetacutbkg->SetTitleOffset(1.3,"Y");
   deltaetacutbkg->SetStats(0);
   deltaetacutbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = deltaetacutsig->GetMaximum()/deltaetacutsig->Integral();  
+  arr -> DrawArrow(deltaetacut,maximum*1.,deltaetacut,maximum*0.5);
+  arr -> DrawArrow(-1*deltaetacut,maximum*1.,-1*deltaetacut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/deltaetacutsig.eps");
   c0->SaveAs("plots/deltaetacutsig.gif");
@@ -560,9 +580,8 @@ void cutvar(){
   secondjetcutbkg->SetTitleOffset(1.3,"Y");
   secondjetcutbkg->SetStats(0);
   secondjetcutbkg->Draw("same");
-  TArrow *arr = new TArrow();
-  //arr -> SetArrowSize(0.03);
-  //arr -> DrawArrow(0.35,0.2,0.35,0.01);
+  maximum = secondjetcutsig->GetMaximum()/secondjetcutsig->Integral();  
+  arr -> DrawArrow(jet2cut,maximum*1.,jet2cut,maximum*0.5);
   leg2->Draw("same");
   c0->SaveAs("plots/secondjetcutsig.eps");
   c0->SaveAs("plots/secondjetcutsig.gif");
