@@ -126,7 +126,7 @@
       </init-param>
       <init-param>
         <param-name>default_sort_dir</param-name>
-        <param-value>desc</param-value>
+        <param-value>asc</param-value>
       </init-param>
     </servlet>
 

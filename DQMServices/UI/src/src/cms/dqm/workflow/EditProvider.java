@@ -173,6 +173,7 @@ public class EditProvider extends HttpServlet {
       pstmt.setString(2, data.get(KEY_LAST_USER));
       pstmt.setString(3, data.get(KEY_GLOBALNAME));
       int id = db.getFirstRowValueInt(pstmt);
+      data.put(KEY_CURRENT_STATUS, "ONLINE");
       doUpdate(id, data, RunType.ONLINE);
       db.commit();
     } catch (SQLException e) {
@@ -254,7 +255,7 @@ public class EditProvider extends HttpServlet {
 
       }
 
-      updateSubsystems(id, data, type);
+      updateSubsystems(id, data);
 
       db.commit();
 
@@ -265,14 +266,15 @@ public class EditProvider extends HttpServlet {
 
   }
   
-  private void updateSubsystems(int id, Hashtable<String, String> data, RunType type) throws Exception {
+  private void updateSubsystems(int id, Hashtable<String, String> data) throws Exception {
 
     PreparedStatement pstmt, pstmt2;
     ResultSet res;
+    boolean online = data.get(KEY_CURRENT_STATUS).equals("ONLINE");
 
     try {
 
-      if (data.get(KEY_CURRENT_STATUS).equals("ONLINE")) {
+      if (online) {
         pstmt = db.prepareSQL("SELECT sub_abbr, DECODE(rsu_run_id, null, 0, 1), rsu_comment, rsu_value FROM rr_subsystems left join " +
                 "(select * from rr_run_subsystems where rsu_run_id = ? and rsu_shift_type = 'ONLINE') on (rsu_sub_abbr = sub_abbr) WHERE sub_type = 'ONLINE'");
       } else {
@@ -309,21 +311,15 @@ public class EditProvider extends HttpServlet {
             pstmt2.setString(2, rvalue);
             pstmt2.setString(3, abbr);
             pstmt2.setInt(4, id);
-            if (type == RunType.ONLINE) {
-              pstmt2.setString(5, "ONLINE");
-            } else {
-              pstmt2.setString(5, "OFFLINE");
-            }
+            if (online) pstmt2.setString(5, "ONLINE");
+            else pstmt2.setString(5, "OFFLINE");
           }
         } else {
           pstmt2 = db.prepareSQL("DELETE FROM RR_RUN_SUBSYSTEMS WHERE rsu_sub_abbr = ? AND rsu_run_id = ? AND rsu_shift_type = ?");
           pstmt2.setString(1, abbr);
           pstmt2.setInt(2, id);
-          if (type == RunType.ONLINE) {
-            pstmt2.setString(3, "ONLINE");
-          } else {
-            pstmt2.setString(3, "OFFLINE");
-          }
+          if (online) pstmt2.setString(3, "ONLINE");
+          else pstmt2.setString(3, "OFFLINE");
         }
         if (pstmt2 != null) pstmt2.execute();
 
