@@ -478,7 +478,7 @@ void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   }
 
 //--- update filter statistics table
-  filterStatisticsService_->update(filterResults_cumulative, filterResults_individual, eventWeight);
+  filterStatisticsService_->filterStatisticsTable()->update(filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- save run & event numbers
   runEventNumberService_->update(iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock(),
@@ -503,6 +503,8 @@ void GenericAnalyzer::beginJob(const edm::EventSetup& iSetup)
 	entry != analysisSequence_.end(); ++entry ) {
     (*entry)->beginJob(iSetup);
   }
+
+  filterStatisticsService_->createFilterStatisticsTable();
 }
 
 void GenericAnalyzer::endJob()
@@ -518,7 +520,9 @@ void GenericAnalyzer::endJob()
   benchmark_.Show(std::string("GenericAnalyzer").append("-").append(name_).data());
 
 //--- print filter statistics (cut-flow) table
-  filterStatisticsService_->print(std::cout);
+//    and save results in DQM file
+  filterStatisticsService_->filterStatisticsTable()->print(std::cout);
+  filterStatisticsService_->saveFilterStatisticsTable();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

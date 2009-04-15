@@ -10,281 +10,167 @@
 #include <iostream>
 #include <iomanip>
 
-FilterStatisticsService::monElement::monElement(const std::string& name)
-{
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
-    num_ = dqmStore.bookInt(std::string(name).append("_num"));
-    numWeighted_ = dqmStore.bookFloat(std::string(name).append("_numWeighted"));
-  } else { 
-    edm::LogError ("FilterStatisticsService::monElement") << " Failed to access dqmStore !!";
-    num_ = NULL;
-    numWeighted_ = NULL;
-    return;
-  }
-}
-
-FilterStatisticsService::monElement::~monElement()
-{
-// nothing to be done yet...
-}
- 
-void FilterStatisticsService::monElement::update(bool filterPassed, double eventWeight)
-{
-  if ( filterPassed ) {
-    num_->Fill(num_->getIntValue() + 1);
-    numWeighted_->Fill(numWeighted_->getFloatValue() + eventWeight);
-  }
-}
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-FilterStatisticsService::filterEntry::filterEntry(const std::string& name, const std::string& title, unsigned position,
-						  const std::string& dqmDirectory_store)
-{
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
-
-    dqmDirectory_store_ = dqmDirectory_store;
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
- 
-    std::ostringstream fullTitle;
-    fullTitle << std::setw(3) << position << ". : " << title;
-    name_ = dqmStore.bookString("name", fullTitle.str());
-
-    processed_ = new monElement("processed");
-    passed_ = new monElement("passed");
-    exclRejected_ = new monElement("exclRejected");
-    processed_cumulative_ = new monElement("processed_cumulative");
-    passed_cumulative_ = new monElement("passed_cumulative");
-  } else {
-    edm::LogError ("FilterStatisticsService::filterEntry") << " Failed to access dqmStore !!";
-    name_ = NULL;
-    processed_ = NULL;
-    passed_ = NULL;
-    exclRejected_ = NULL;
-    processed_cumulative_ = NULL;
-    passed_cumulative_ = NULL;
-  }
-}
-
-FilterStatisticsService::filterEntry::~filterEntry()
-{
-  delete processed_;
-  delete passed_;
-  delete exclRejected_;
-  delete processed_cumulative_;
-  delete passed_cumulative_;
-}
-
-void FilterStatisticsService::filterEntry::update(bool filterPassed_cumulative, bool previousFiltersPassed, bool filterPassed_individual, 
-						  unsigned numFiltersPassed_individual, unsigned numFiltersRejected_individual, 
-						  double eventWeight)
-{
-  processed_->update(true, eventWeight);
-  passed_->update(filterPassed_individual, eventWeight);
-  exclRejected_->update(!filterPassed_individual && numFiltersRejected_individual == 1, eventWeight);
-  processed_cumulative_->update(previousFiltersPassed, eventWeight);
-  passed_cumulative_->update(previousFiltersPassed && filterPassed_cumulative, eventWeight);
-}
-
-void FilterStatisticsService::filterEntry::printNumber(std::ostream& stream, unsigned width, 
-						       const FilterStatisticsService::monElement* number) const
-{
-  stream << " ";
-  stream << std::setw(width - 10) << std::setprecision(3) << std::right 
-	 << number->num_->getIntValue();
-  for ( unsigned iCharacter = 0; iCharacter < 10; ++iCharacter ) {
-    stream << " ";
-  }
-} 
-
-void FilterStatisticsService::filterEntry::printPercentage(std::ostream& stream, unsigned width,
-							   const FilterStatisticsService::monElement* numerator, 
-							   const FilterStatisticsService::monElement* denominator) const
-{
-  stream << " ";
-  if(denominator->num_->getIntValue()!=0) stream << std::setw(width - 11) << std::setprecision(3) << std::right 
-	 << 100.*numerator->num_->getIntValue()/denominator->num_->getIntValue() << "%";
-  if(denominator->num_->getIntValue()==0) stream << std::setw(width - 11) << std::setprecision(3) << std::right 
-	 << 0 << "%";
-  for ( unsigned iCharacter = 0; iCharacter < 10; ++iCharacter ) {
-    stream << " ";
-  }
-} 
-
-void FilterStatisticsService::filterEntry::print(std::ostream& stream, unsigned widthNameColumn, unsigned widthNumberColumns) const
-{
-  //std::cout << "<FilterStatisticsService::filterEntry::print>:" << std::endl;
-  stream << std::setw(widthNameColumn) << std::left << name_->getStringValue();
-  printNumber(stream, widthNameColumn, passed_cumulative_);
-  printPercentage(stream, widthNumberColumns, passed_cumulative_, processed_cumulative_);
-  printPercentage(stream, widthNumberColumns, passed_cumulative_, processed_);
-  printPercentage(stream, widthNumberColumns, exclRejected_, processed_);
-  stream << std::endl;
-}
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
+const std::string meNamePrefixNum = "_num";
+const std::string meNamePrefixNumWeighted = "_numWeighted";
+const std::string meTitleSeparator = ". :";
 
 FilterStatisticsService::FilterStatisticsService(const edm::ParameterSet& cfg)
 {
-  //std::cout << "<FilterStatisticsService::FilterStatisticsService>:" << std::endl;
-
-  cfgError_ = 0;
-
   name_ = cfg.getParameter<std::string>("name");
-  //std::cout << " name = " << name_ << std::endl;
 
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory");
 
-  typedef std::vector<edm::ParameterSet> vParameterSet;
+  cfgFilterStatisticsTable_ = new edm::ParameterSet(cfg);
 
-  if ( cfg.exists("config") ) {
-    unsigned filterId = 1;
-    vParameterSet cfgFilters = cfg.getParameter<vParameterSet>("config");
-    for ( vParameterSet::const_iterator cfgFilter = cfgFilters.begin(); 
-	  cfgFilter != cfgFilters.end(); ++cfgFilter ) {
-      std::string filterName = cfgFilter->getParameter<std::string>("filterName");
-      std::string filterTitle = ( cfgFilter->exists("filterTitle") ) ? 
-	cfgFilter->getParameter<std::string>("filterTitle") : filterName;
-      
-      std::string dqmDirectory_filter = dqmDirectoryName(dqmDirectory_store_).append(filterName);
-
-      filterEntry* entry = new filterEntry(filterName, filterTitle, filterId, dqmDirectory_filter);
-      filterEntries_.push_back(filterEntry_type(filterName, entry));
-      ++filterId;
-    }
-  }
-
-  numEventsProcessed_ = 0;
-  numEventsPassedAllFilters_ = 0;
+  filterStatisticsTable_ = 0;
 }
 
 FilterStatisticsService::~FilterStatisticsService()
 {
-  for ( std::vector<filterEntry_type>::const_iterator filterEntry = filterEntries_.begin();
-	filterEntry != filterEntries_.end(); ++filterEntry ) {
-    delete filterEntry->second;
-  }
+  delete cfgFilterStatisticsTable_;
+  delete filterStatisticsTable_;
 }
 
-void FilterStatisticsService::update(const filterResults_type& filterResults_cumulative, 
-				     const filterResults_type& filterResults_individual, double eventWeight)
+void FilterStatisticsService::createFilterStatisticsTable()
 {
-//--- check that configuration parameters contain no errors
-  if ( cfgError_ ) {
-    edm::LogError ("FilterStatisticsService::update") << " Error in Configuration ParameterSet --> skipping !!";
+  delete filterStatisticsTable_;
+  filterStatisticsTable_ = new FilterStatisticsTable(*cfgFilterStatisticsTable_);
+}
+
+FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const std::string& dqmDirectory, const std::string& elementName)
+{
+//--- load MonitorElements holding the number of
+//    unweighted and weighted event counts 
+  std::string meName_num = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNum);
+  MonitorElement* meNum = dqmStore.get(meName_num);
+  long num = meNum->getIntValue();
+
+  std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNumWeighted);
+  MonitorElement* meNumWeighted = dqmStore.get(meName_numWeighted);
+  double numWeighted = meNumWeighted->getFloatValue();
+
+  return new FilterStatisticsElement(elementName, num, numWeighted);
+}
+
+void FilterStatisticsService::loadFilterStatisticsTable()
+{
+//--- check if DQMStore is available;
+//    print and error message and return if not
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") << " Failed to access dqmStore !!";
     return;
-  }  
-
-//--- first pass through filterResults: 
-//    count number of filters which passed/rejected the event
-  unsigned numFiltersPassed_individual = 0;
-  unsigned numFiltersRejected_individual = 0;
-  for ( filterResults_type::const_iterator filterResult_individual = filterResults_individual.begin();
-	filterResult_individual != filterResults_individual.end(); ++filterResult_individual ) {
-    if (  filterResult_individual->second ) ++numFiltersPassed_individual;
-    if ( !filterResult_individual->second ) ++numFiltersRejected_individual;
   }
 
-  unsigned numFiltersPassed_cumulative = 0;
-  unsigned numFiltersRejected_cumulative = 0;
-  for ( filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
-	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
-    if (  filterResult_cumulative->second ) ++numFiltersPassed_cumulative;
-    if ( !filterResult_cumulative->second ) ++numFiltersRejected_cumulative;
-  }
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-//--- second pass through filterResults: 
-//    update statistics of individual filters
-  bool previousFiltersPassed = true;
-  for ( filterResults_type::const_iterator filterResult_cumulative = filterResults_cumulative.begin();
-	filterResult_cumulative != filterResults_cumulative.end(); ++filterResult_cumulative ) {
-    const std::string& filterName = filterResult_cumulative->first;
-    bool filterPassed_cumulative = filterResult_cumulative->second;
+  delete filterStatisticsTable_;
+  filterStatisticsTable_ = new FilterStatisticsTable();
+
+//--- load MonitorElement holding name of FilterStatisticsTable
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  MonitorElement* meFilterStatisticsTableName = dqmStore.get("name");
+  filterStatisticsTable_->name_ = meFilterStatisticsTableName->getStringValue();
+
+//--- check for DQM subdirectories
+//    and iteratively load all MonitorElements stored in them
+  std::vector<std::string> dirNames = dqmStore.getSubdirs();
+  for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
+	dirName != dirNames.end(); ++dirName ) {
+    std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory_store_, *dirName);
     
-    filterResults_type::const_iterator filterResult_individual = filterResults_individual.end();
-    for ( filterResults_type::const_iterator it = filterResults_individual.begin();
-	  it != filterResults_individual.end(); ++it ) {
-      if ( it->first == filterName ) {
-	filterResult_individual = it;
-	break;
-      }
-    }
-    if ( filterResult_individual == filterResults_individual.end() ) {
-      edm::LogError ("FilterStatisticsService::update") << " Failed to find filterResult_individual for filterName = " << filterName
-							<< " --> skipping !!";     
-      continue;
-    }
+    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory_store_).append(subDirName);
+    dqmStore.setCurrentFolder(dqmDirectory_row);
 
-    bool filterPassed_individual = filterResult_individual->second;
+    int filterId = -1;
+    std::string filterName = *dirName;
+    std::string filterTitle = "undefined";
 
-    filterEntry* entry = NULL;
-    for ( std::vector<filterEntry_type>::const_iterator it = filterEntries_.begin();
-	  it != filterEntries_.end(); ++it ) {
-      if ( it->first == filterName ) {
-	entry = it->second;
-	break;
-      }
-    }
-    if ( !entry ) {
-      edm::LogError ("FilterStatisticsService::update") << " Failed to access filterConfigEntry for filterName = " << filterName
-							<< " --> skipping !!";     
-      continue;
-    }
+//--- load MonitorElement indicating results of which event filter
+//    are stored in DQM directory
+    MonitorElement* meTitle = dqmStore.get("name");
+    std::string meTitleStr = meTitle->getStringValue();
+    size_t posSeparator = meTitleStr.find(meTitleSeparator);
+    filterId = atoi(std::string(meTitleStr, 0, posSeparator).data());
+    filterTitle = std::string(meTitleStr, posSeparator + meTitleSeparator.length());
+    
+    std::cout << "filterId = " << filterId << std::endl;
+    std::cout << "filterName = " << filterName << std::endl;
+    std::cout << "filterTitle = " << filterTitle << std::endl;
 
-    entry->update(filterPassed_cumulative, previousFiltersPassed, filterPassed_individual,
-		  numFiltersPassed_individual, numFiltersRejected_individual, eventWeight);
-      
-    if ( !filterPassed_cumulative ) previousFiltersPassed = false;
+    FilterStatisticsRow* row = new FilterStatisticsRow(filterId, filterName, filterTitle);
+
+//--- load number of events passing and failing event filter
+//    and store as data-members of FilterStatisticsRow 
+//    (two separate numbers per filter for unweighted and weighted event count)
+    row->numEvents_processed_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::processed);
+    row->numEvents_passed_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::passed);
+    row->numEvents_exclRejected_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::exclRejected);
+    row->numEvents_processed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::processed_cumulative);
+    row->numEvents_passed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::passed_cumulative);
+
+    filterStatisticsTable_->rows_[filterName] = row;
   }
-
-  ++numEventsProcessed_;
-  if ( numFiltersRejected_cumulative == 0 ) ++numEventsPassedAllFilters_;
 }
 
-void FilterStatisticsService::print(std::ostream& stream, unsigned widthNameColumn, unsigned widthNumberColumns) const
+void FilterStatisticsService::saveFilterStatisticsElement(DQMStore& dqmStore, const FilterStatisticsElement* element) const
 {
-  //std::cout << "<FilterStatisticsService::print>:" << std::endl;
-  stream << "Filter Statistics for " << name_ << std::endl;
-  stream << std::endl;
-  stream << " number of events processed = " << numEventsProcessed_ << "," 
-	 << " of which " <<  numEventsPassedAllFilters_ << " passed all Filters" << std::endl;
-  stream << std::endl;
-  stream << std::setw(widthNameColumn) << std::left << "Cut";
-  std::list<std::string> columnLabels;
-  columnLabels.push_back(std::string("Passed"));
-  columnLabels.push_back(std::string("Efficiency"));
-  columnLabels.push_back(std::string("cumul. Efficiency"));
-  columnLabels.push_back(std::string("excl. Rejection"));
-  for ( std::list<std::string>::const_iterator columnLabel = columnLabels.begin();
-	columnLabel != columnLabels.end(); ++columnLabel ) {
-    stream << " "; 
-    for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
-      stream << " ";
-    }
-    //stream << " " << std::setw(widthNumberColumns) << std::right << (*columnLabel);
-    stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
-  }
-  stream << std::endl;
-  for ( unsigned iCharacter = 0; iCharacter < widthNameColumn + columnLabels.size()*(widthNumberColumns + 2); ++iCharacter ) {
-    stream << "-";
-  }
-  stream << std::endl;
-  for ( std::vector<filterEntry_type>::const_iterator it = filterEntries_.begin();
-	it != filterEntries_.end(); ++it ) {
-    filterEntry* entry = it->second;
-    entry->print(stream, widthNameColumn, widthNumberColumns);
-  }
-  for ( unsigned iCharacter = 0; iCharacter < widthNameColumn + columnLabels.size()*(widthNumberColumns + 2); ++iCharacter ) {
-    stream << "-";
-  }
-  stream << std::endl << std::endl;
+//--- create and save MonitorElements holding the number of
+//    unweighted and weighted event counts 
+  MonitorElement* meNum = dqmStore.bookInt(std::string(element->name_).append(meNamePrefixNum));
+  meNum->Fill(element->num_);
+
+  MonitorElement* meNumWeighted = dqmStore.bookFloat(std::string(element->name_).append(meNamePrefixNumWeighted));
+  meNumWeighted->Fill(element->numWeighted_);
 }
 
+void FilterStatisticsService::saveFilterStatisticsTable() const
+{
+//--- check that FilterStatisticsService objects holds a FilterStatisticsTable
+  if ( !filterStatisticsTable_ ) {
+    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " FilterStatisticsTable not initialized !!";
+    return;
+  }
 
+//--- check if DQMStore is available;
+//    print and error message and return if not
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " Failed to access dqmStore !!";
+    return;
+  }
+
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+
+//--- create and save MonitorElement holding name of FilterStatisticsTable
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  dqmStore.bookString("name", filterStatisticsTable_->name_);
+
+//--- iterate over rows of FilterStatisticsTable;
+//    each row represents the statistics of one event filter
+//    and gets stored in a separate DQM directory
+  for ( std::map<std::string, FilterStatisticsRow*>::const_iterator it = filterStatisticsTable_->rows_.begin();
+	it != filterStatisticsTable_->rows_.end(); ++it ) {
+    const FilterStatisticsRow* row = it->second;
+
+    int filterId = row->filterId_;
+    const std::string& filterName = row->filterName_;
+    const std::string& filterTitle = row->filterTitle_;
+
+    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory_store_).append(filterName);
+    dqmStore.setCurrentFolder(dqmDirectory_row);
+
+//--- create and save MonitorElement indicating results of which event filter
+//    are stored in DQM directory
+    std::ostringstream meTitleStr;
+    meTitleStr << std::setw(3) << filterId << meTitleSeparator << filterTitle;
+    dqmStore.bookString("name", meTitleStr.str());
+
+//--- iterate over data-members of FilterStatisticsRow 
+//    and store number of events passing and failing event filter
+//    (two separate numbers per filter for unweighted and weighted event count)
+    saveFilterStatisticsElement(dqmStore, row->numEvents_processed_);
+    saveFilterStatisticsElement(dqmStore, row->numEvents_passed_);
+    saveFilterStatisticsElement(dqmStore, row->numEvents_exclRejected_);
+    saveFilterStatisticsElement(dqmStore, row->numEvents_processed_cumulative_);
+    saveFilterStatisticsElement(dqmStore, row->numEvents_passed_cumulative_);
+  }
+}
