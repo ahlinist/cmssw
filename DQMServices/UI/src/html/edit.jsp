@@ -35,8 +35,6 @@ $(document).ready( function () {
   $("#edit_l1t_tabs").tabs();
   $("#edit_info_tabs").tabs();
   
-
-
   var textareaValue = function(name) {
     var field = name + '_comment';
     field = document.getElementById(field).value;
@@ -232,7 +230,9 @@ $(document).ready( function () {
     });
 
     if (status == "COMPLETED") {
-      $(msg).attr("TAG", getTag());
+      var tag = getTag();
+      if (tag == null || tag == '') return false;
+      $(msg).attr("TAG", tag);
     }
 
     return msg;
@@ -373,7 +373,7 @@ $(document).ready( function () {
 		
         $('#edit').attr("current_status", status);
 
-        if (status == 'COMPLETED') {
+        if ((status == 'COMPLETED') || (status == '') || (status == null))  {
           $("#btn-run-finish").hide();
         } else {
           $("#btn-run-finish").text('Finish ' + status + ' DQM');
@@ -426,7 +426,7 @@ $(document).ready( function () {
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("#btn-run-finish").show();
+          if (status != "") $("#btn-run-finish").show();
           $("#btn-run-apply").show();
 
         } else if (real_role == "OFFLINE")  {
@@ -450,7 +450,7 @@ $(document).ready( function () {
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("disabled");
           $("#edit .edit_info select[name=RUN_STATUS]").removeAttr("readonly");
 
-          $("#btn-run-finish").show();
+          if (status != "") $("#btn-run-finish").show();
           $("#btn-run-apply").show();
 
         } else if (real_role == "EXPERT") {
@@ -482,7 +482,7 @@ $(document).ready( function () {
           $("#edit form .edit_sub_offline select").removeAttr("readonly");
           $("#edit form .edit_sub_offline select").removeAttr("disabled");
 
-          $("#btn-run-finish").show();
+          if (status != "") $("#btn-run-finish").show();
           $("#btn-run-apply").show();
           $("#btn-run-delete").show();
           
@@ -521,7 +521,8 @@ $(document).ready( function () {
             alert($(err[0]).attr("error"));
             return;
           };
-          sendEditMessage(build_xml(false));
+          var msg = build_xml(false);
+          if (msg) sendEditMessage(msg);
         });
 		
         $("#btn-run-finish:visible").unbind("click").click(function () {
@@ -531,7 +532,8 @@ $(document).ready( function () {
             alert($(err[0]).attr("error"));
             return;
           };
-          sendEditMessage(build_xml(true));
+          var msg = build_xml(true);
+          if (msg) sendEditMessage(msg);
         }); 
 
         $("#btn-run-delete:visible").unbind("click").click(function () {

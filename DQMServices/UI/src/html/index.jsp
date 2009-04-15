@@ -32,6 +32,10 @@
 
 <script type="text/javascript">
 
+  var getTag = {};
+  var logoutUser = {};
+  var messageBox = {};
+
   //jQuery.noConflict();
   $(document).ready(function() {
 
@@ -50,13 +54,13 @@
       }
     });
 
-    var messageBox = function (line1, caption, line2) {
+    messageBox = function (line1, caption, line2) {
       $("#messageBox p.line1").text(line1);  
       $("#messageBox p.line2").text(line2);  
       $("#messageBox").dialog("open");
     };
 
-    var logoutUser = function() {
+    logoutUser = function() {
       frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
       setTimeout("window.location.href = 'logout.jsp';", 200);
     };
@@ -64,16 +68,13 @@
     $("a:contains('Logout')").click(function(){ 
       logoutUser(); 
     });
+
     $("a:contains('Login')").click(function(){
       location.href = location.href.replace(/^http:\/\//,'https:\/\/');
     });
 
-    var getTag = function() {
-      var tag = '';
-      do { 
-        tag = prompt('Please type in Tag value for COMPLETED run(s) (required)');
-      } while (tag == '' || tag == null);
-      return tag;
+    getTag = function() {
+      return prompt('Please type in Tag value for COMPLETED run(s) (required)');
     };
 
     var toggleRows = function(number) {
@@ -113,7 +114,7 @@
               $(row).attr("tagParent", number);
           
               $.each(r, function (k, t) {
-                if (k == "RUN_NUMBER") t = "";
+                if (k == "RUN_NUMBER") t += "-" + rownum;
                 else if (k == "RUN_EVENTS" || k == "RUN_RATE" || k == "RUN_BFIELD") t = formatNumber(t);
                 $(row).find("TD[field='" + k + "'] div").empty().append(t);
               });
@@ -182,20 +183,24 @@
 
           if (on_v) {
             var tip = row["on_" + so + "_comment"];
-            if (tip == "null") tip = "";
+            var t = on_v;
+            if (tip == null) tip = "";
+            else t += "!";
             row[cell] =  "<div comment=\"" + tip + "\"" + 
                          " class=\"stat statUP stat" + on_v + " " + 
-                         (tip ? "statTip" : "") + "\">" + on_v + "</div>";
+                         (tip ? "statTip" : "") + "\">" + t + "</div>";
           } else {
             row[cell] =  "<div class=\"stat statUP\">&nbsp;</div>";
           }
           
           if (off_v) {
             var tip = row["off_" + so + "_comment"];
-            if (tip == "null") tip = "";
+            var t = off_v;
+            if (tip == null) tip = "";
+            else t += "!";
             row[cell] += "<div comment=\"" + row["off_" + so + "_comment"] + "\"" + 
                          " class=\"stat stat" + off_v + " " + 
-                         (tip ? "statTip" : "") + "\">" + off_v + "</div>";
+                         (tip ? "statTip" : "") + "\">" + t + "</div>";
           } else {
             row[cell] += "<div class=\"stat\">&nbsp;</div>";
           }
@@ -218,6 +223,8 @@
           return comment;
         }
       });
+
+			$("div.stat").parent().css("padding-top", "1px").css("padding-bottom", "1px");
 
       $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]").unbind("click").click(function(){
         toggleRows($(this).attr("runnumber"));
@@ -453,6 +460,10 @@
       hoverOpenDelay: 200 
     });
 
+    $("#messageboardmenu").menu({
+      hoverOpenDelay: 200 
+    });
+
     $("#batch_updater_progressbar").progressBar({ barImage: 'media/img/progressbg_red.gif', boxImage: 'media/img/progressbar.gif', showText: true});
 
     var dumpData = function(intpl, tpl, mime) {
@@ -508,6 +519,7 @@
       var status_name = status;
       if (status == 'COMPLETED') {
         tag = getTag();
+        if (tag == '' || tag == null) return;
         status_name += "(" + tag + ")";
       }
 
@@ -586,7 +598,12 @@
 
 <% } %>        
 
-        <a href="#" id="chat_notification"> Message Board </a>
+        <span id="messageboardmenu"><a href="#" id="chat_notification"> Message Board </a>
+          <ul>
+            <li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
+          </ul>
+        </span>
+
 
         &nbsp;|&nbsp;
 
