@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.121 2009/03/02 17:21:49 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.122 2009/03/06 13:20:07 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.121 $
-  \date $Date: 2009/03/02 17:21:49 $
+  \version $Revision: 1.122 $
+  \date $Date: 2009/03/06 13:20:07 $
 */
 
 #include "TH1F.h"
@@ -356,6 +356,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -377,6 +378,7 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
   obj->SetMinimum(0.0);
   gStyle->SetPalette(10, pCol4);
   obj->SetOption("colz");
+  gPad->SetRightMargin(0.15);
   return;
 
 }
@@ -457,6 +459,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos ) {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -469,6 +472,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -478,6 +482,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     return;
   }
 
@@ -570,6 +575,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -592,6 +598,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       gStyle->SetPalette(10, pCol5);
     }
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -601,6 +608,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMaximum(4.0);
     gStyle->SetPalette(1);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -609,6 +617,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -618,6 +627,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol5);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -626,6 +636,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -634,6 +645,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
@@ -661,6 +673,7 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->SetMinimum(0.0);
     gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");
     return;
   }
