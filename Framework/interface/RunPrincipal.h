@@ -64,12 +64,12 @@ namespace edm {
 
     void mergeRun(boost::shared_ptr<RunPrincipal> rp);
 
-    void put(std::auto_ptr<EDProduct> edp,
+    void put(boost::shared_ptr<EDProduct> edp,
 	     ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
     void addGroup(ConstBranchDescription const& bd);
 
-    void addGroup(std::auto_ptr<EDProduct> prod, ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
+    void addGroup(boost::shared_ptr<EDProduct> prod, ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
     void addGroup(ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 

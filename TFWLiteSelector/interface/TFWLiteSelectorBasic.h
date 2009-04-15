@@ -17,13 +17,13 @@ allows you to access data using an edm::Event.
 //
 // Original Author:  Chris Jones
 //         Created:  Tue Jun 27 16:37:27 EDT 2006
-// $Id$
 //
 
 // system include files
 #include "TSelector.h"
 
 // user include files
+#include "boost/shared_ptr.hpp"
 
 // forward declarations
 class TFile;
@@ -96,7 +96,7 @@ class TFWLiteSelectorBasic : public TSelector
       
       void setupNewFile(TFile&);
       // ---------- member data --------------------------------
-      edm::root::TFWLiteSelectorMembers* m_;
+      boost::shared_ptr<edm::root::TFWLiteSelectorMembers> m_;
       bool everythingOK_;
 };
 

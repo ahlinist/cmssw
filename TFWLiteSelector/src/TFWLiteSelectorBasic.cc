@@ -185,7 +185,6 @@ TFWLiteSelectorBasic::TFWLiteSelectorBasic() : m_(new edm::root::TFWLiteSelector
 
 TFWLiteSelectorBasic::~TFWLiteSelectorBasic()
 {
-  delete m_;
 }
 
 //
