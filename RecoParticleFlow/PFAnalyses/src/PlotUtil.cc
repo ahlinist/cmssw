@@ -91,6 +91,7 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 	} else {
 		dimX = dimY = static_cast<int>(ceil(sqrt(accumulatedObjects_.size())));
 	}
+	dimX = dimY = 3;
 
 	TCanvas canv("Accumulated", "Accumulated");
 	canv.Divide(dimX, dimY);
@@ -203,11 +204,13 @@ TH1* PlotUtil::formatHisto(const std::string& name, const std::string& title,
 
 void PlotUtil::formatGraph(TGraph* graph, const std::string& title,
 		const std::string& xtitle, const std::string ytitle, Color_t marker,
-		int thickness) {
+		int size, int thickness) {
 	graph->SetTitle(title.c_str());
 	graph->GetXaxis()->SetTitle(xtitle.c_str());
 	graph->GetYaxis()->SetTitle(ytitle.c_str());
 	graph->SetMarkerColor(marker);
+	graph->SetMarkerStyle(4);
+	graph->SetMarkerSize(size);
 	graph->SetLineWidth(thickness);
 }
 

@@ -43,7 +43,7 @@ public:
 			int thickness = 1);
 
 	void formatGraph(TGraph* graph, const std::string& title,
-			const std::string& xtitle, const std::string ytitle, Color_t line,
+			const std::string& xtitle, const std::string ytitle, Color_t line, int size = 1.5,
 			int thickness = 1);
 
 	void flushPage();
@@ -59,7 +59,7 @@ public:
 	TLegend* legendForStack(THStack* theStack);
 
 	Color_t nextColor();
-	
+
 	std::pair<double, double> fitStabilisedGaussian(TH1* histo);
 
 	//void closeFiles();

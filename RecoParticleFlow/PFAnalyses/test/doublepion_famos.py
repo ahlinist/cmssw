@@ -50,6 +50,12 @@ process.source = cms.Source("FlatRandomEGunSource",
 )
 
 
+process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
+process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
+process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
+
+
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
