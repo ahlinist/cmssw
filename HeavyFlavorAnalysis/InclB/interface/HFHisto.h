@@ -27,6 +27,7 @@ class HFHisto : public edm::EDAnalyzer {
   
   TFile        *fFile; 
   TH1          *fHisto;
+  TH1          *fErrorHisto;
 
   int nevt;
 };

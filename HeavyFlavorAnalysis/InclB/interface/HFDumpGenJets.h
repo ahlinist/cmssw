@@ -6,30 +6,38 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 
 class TFile;
 class TTree;
 class TAna00Event;
 
+class TrackAssociatorBase;
 
 // ----------------------------------------------------------------------
-class HFDumpVertex : public edm::EDAnalyzer {
+class HFDumpGenJets : public edm::EDAnalyzer {
  public:
-  explicit HFDumpVertex(const edm::ParameterSet&);
-  ~HFDumpVertex();
+  explicit HFDumpGenJets(const edm::ParameterSet&);
+  ~HFDumpGenJets();
   
  private:
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-
-  int           fVerbose;
-  std::string   fVertexLabel;
+  int           fVerbose; 
+  std::string   fGenJetsLabel;
+  std::string   fGenCandidatesLabel;
+  edm::InputTag fsourceByRefer;
 
   int nevt;
+ 
+
+  
 
 };
+
