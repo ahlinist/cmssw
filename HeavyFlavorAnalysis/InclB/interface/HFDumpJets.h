@@ -1,3 +1,4 @@
+
 // system include files
 #include <memory>
 
@@ -29,25 +30,14 @@ class HFDumpJets : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string fJetsLabel;
-  std::string fCorrJetsLabel;
-  std::string fGenJetsLabel;
-  std::string fDisc1;
-  std::string fDisc2;
-  std::string fDisc3;
-  std::string fDisc4;
-  std::string fDisc5;
-  std::string fDisc6;
-  std::string fDisc7;
-  edm::InputTag fJetPartonMapAlgo;
-  edm::InputTag fJetPartonMapPhys;
-  edm::InputTag fGenJetPartonMapAlgo;
-  edm::InputTag fGenJetPartonMapPhys;
-
+  int           fVerbose; 
+  std::string   fJetsLabel;
+  std::string   fGenCandidatesLabel;
+  edm::InputTag fsourceByRefer;
+ 
   int nevt;
  
 
   
 
 };
-

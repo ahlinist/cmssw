@@ -51,6 +51,7 @@ void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   nevt++;
   gHFEvent->fRunNumber   = iEvent.id().run();
   gHFEvent->fEventNumber = iEvent.id().event();
+  
   cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
        << " event: " << gHFEvent->fEventNumber 
        << endl;
@@ -66,7 +67,7 @@ void  HFTree::beginJob(const edm::EventSetup&) {
 
 // ------------ method called once each job just after ending the event loop  ------------
 void  HFTree::endJob() { 
-  cout << "HFTree> Summary: Events processed: " << nevt << endl;
+  cout << "HFTree>       Summary: Events processed: " << nevt << endl;
 }
 
 //define this as a plug-in

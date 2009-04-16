@@ -1,3 +1,4 @@
+
 // system include files
 #include <memory>
 
@@ -25,9 +26,9 @@ class HFDumpSignal : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  int         fVerbose; 
   std::string fMuonLabel;
   
   int nevt;
 
 };
-

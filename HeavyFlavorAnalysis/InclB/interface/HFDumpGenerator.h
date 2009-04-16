@@ -1,4 +1,7 @@
-// system include files
+
+#ifndef _HFDUMPGENERATOR_h_
+#define _HFDUMPGENERATOR_h_
+
 #include <memory>
 
 // user include files
@@ -9,6 +12,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+
 
 class TFile;
 class TTree;
@@ -25,9 +29,12 @@ class HFDumpGenerator : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  int         fVerbose;
   std::string fGenCandidatesLabel, fGenEventLabel;
-
-  int nevt;
+  std::string fGenEventScale, fGenEventProcID, fGenEventWeight;
+ 
+  
 
 };
 
+#endif

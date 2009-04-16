@@ -7,6 +7,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
@@ -22,8 +23,9 @@ using namespace edm;
 
 
 // ----------------------------------------------------------------------
-HFDumpVertex::HFDumpVertex(const edm::ParameterSet& iConfig):
-  fVertexLabel(iConfig.getUntrackedParameter<string>("vertexLabel", string("offlinePrimaryVerticesFromCTFTracks")))
+HFDumpVertex::HFDumpVertex(const edm::ParameterSet& iConfig):  
+  fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
+  fVertexLabel(iConfig.getUntrackedParameter<string>("vertexLabel", string("offlinePrimaryVertices")))
 {
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpVertex constructor" << endl;
@@ -64,8 +66,8 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pVtx->fD3dE=0;
     pVtx->fC3d=0;
     gHFEvent->fPrimaryVertex = *pVtx;
-    for(reco::track_iterator tr=v->tracks_begin(); tr!=v->tracks_end(); ++tr){
-      pVtx->addTrack((*tr).index());
+    for(reco::Vertex::trackRef_iterator tr=v->tracks_begin(); tr!=v->tracks_end(); ++tr){
+      //pVtx->addTrack((*tr).index());
     }
         
     nvtx++;
@@ -82,10 +84,13 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pVtx->fD3dE=-9999;
     pVtx->fC3d=-9999;
     gHFEvent->fPrimaryVertex = *pVtx;
+    gHFEvent->fError = gHFEvent->fError + 1024;
   } 
- 
-   cout << "===> Vertex " << endl;
-   pVtx->dump();
+  
+  if (fVerbose > 0) {
+    cout << "===> Vertex " << endl;
+    pVtx->dump();
+  }
 
 }
 

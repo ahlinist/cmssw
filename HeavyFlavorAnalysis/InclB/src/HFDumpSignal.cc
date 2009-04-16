@@ -12,6 +12,7 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 
 // -- Yikes!
 extern TAna00Event *gHFEvent;
@@ -23,6 +24,7 @@ using namespace edm;
 
 // ----------------------------------------------------------------------
 HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) :
+  fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fMuonLabel(iConfig.getUntrackedParameter<string>("muonLabel", string("globalMuons"))) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
@@ -44,35 +46,31 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   nevt++;
 
-  Handle<reco::MuonCollection> muons;
+  edm::Handle<reco::MuonCollection> muons;
   iEvent.getByLabel( fMuonLabel.c_str(), muons);
 
-  TAnaCand *pCand;
-  int index=0;
+  TAnaTrack *pTrack;
+
+  int index = 0;
+  if (fVerbose > 0) cout << "==>HFDumpSignal> nMuons =" << muons->size() << endl;
   for (  reco::MuonCollection::const_iterator muon = muons->begin(); muon != muons->end(); ++ muon ) {
+
+    pTrack            = gHFEvent->addSigTrack();
+
+    pTrack->fMuType   = 0;
+    pTrack->fMCID     = muon->charge()*-13; 
+    pTrack->fMuID     = (muon->track()).index();
+    pTrack->fIndex    = index;
+    pTrack->fGenIndex = -1; 
+    pTrack->fQ        = muon->charge();
+    pTrack->fPlab.SetPtEtaPhi(muon->pt(),
+			      muon->eta(),
+			      muon->phi()
+			      );
     
-    pCand   = gHFEvent->addCand();  
-    
-    if (muon->charge()==1) pCand->fType  = 13;
-    else if (muon->charge()==-1) pCand->fType  = -13;
-    else  pCand->fType  = -9999;
-      
-    pCand->fMass  = mMuon;
-  
-    pCand->fPlab.SetPtEtaPhi(muon->pt(),
-			     muon->eta(),
-			     muon->phi()
-			     ); 
-    
-    if (index==0) cout << "===> Signal " << endl;
-    pCand->fSig1  = (muon->track()).index();
-    pCand->dump();
-    //cout << "track " << pCand->fSig1 <<  endl;
+    if (fVerbose > 0) pTrack->dump(); 
     index++;
   }
-
- 
- 
 
 }
 

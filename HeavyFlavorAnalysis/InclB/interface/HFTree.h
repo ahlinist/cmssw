@@ -1,3 +1,4 @@
+
 // system include files
 #include <memory>
 
@@ -31,5 +32,4 @@ class HFTree : public edm::EDAnalyzer {
 
   int nevt;
 };
-
 

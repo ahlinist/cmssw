@@ -1,4 +1,6 @@
-// system include files
+#ifndef _HFDUMPTRACKS_h_
+#define _HFDUMPTRACKS_h_
+
 #include <memory>
 
 // user include files
@@ -27,10 +29,14 @@ class HFDumpTracks : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  std::string fTracksLabel, fAssociatorLabel, fGenParticlesLabel;
+  std::string          fTracksLabel, fTrackCandsLabel;
+  std::string          fGenEventLabel, fGenParticlesLabel, fSimTracksLabel,
+                       fAssociatorLabel, fAssociatorLabel3, fTrackingParticlesLabel;
+  edm::InputTag        fMuonsLabel; 
+
+  int                  fVerbose, fDoTruthMatching; 
 
   TrackAssociatorBase *fAssociator;
-
-  int nevt;
 };
 
+#endif

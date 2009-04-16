@@ -12,6 +12,8 @@
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 
+extern TAna00Event *gHFEvent;
+
 using namespace::std;
 
 // ----------------------------------------------------------------------
@@ -20,8 +22,9 @@ HFHisto::HFHisto(const edm::ParameterSet& iConfig) {
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFHisto constructor" << endl;
   cout << "----------------------------------------------------------------------" << endl;
-  fFile = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
-  fHisto = new TH1I("nevt", "number of events ", 1000, 0., 1000.);
+  fFile       = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
+  fHisto      = new TH1I("nevt", "number of events ", 1000, 0., 1000.);
+  fErrorHisto = new TH1I("error", "errors in events ", 2000, 0., 2000.);
 
 }
 
@@ -32,6 +35,7 @@ HFHisto::~HFHisto() {
   // -- Save output
   fFile->cd();
   fHisto->Write();
+  fErrorHisto->Write();
   fFile->Write();
   fFile->Close();
   delete fFile;
@@ -43,6 +47,7 @@ void HFHisto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   nevt++;
   fHisto->SetBinContent(nevt,1);
+  fErrorHisto->Fill(gHFEvent->fError);
   
 }
 
@@ -53,7 +58,7 @@ void  HFHisto::beginJob(const edm::EventSetup&) {
 
 // ------------ method called once each job just after ending the event loop  ------------
 void  HFHisto::endJob() { 
-  cout << "HFHisto> Summary: Events processed: " << nevt << endl;
+  cout << "HFHisto>      Summary: Events processed: " << nevt << endl;
 
 }
 
