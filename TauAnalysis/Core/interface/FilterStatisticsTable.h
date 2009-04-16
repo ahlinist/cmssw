@@ -54,12 +54,16 @@ class FilterStatisticsRow
   explicit FilterStatisticsRow(int, const std::string&, const std::string&);
   ~FilterStatisticsRow();
 
+  int filterId() const { return filterId_; }
+  const std::string& filterName() const { return filterName_; }
+  const std::string& filterTitle() const { return filterTitle_; }
+
   void update(bool, bool, bool, unsigned, unsigned, double);
   
   void print(std::ostream&, unsigned, unsigned) const;
 
-  static const std::vector<std::string>& columnLabels() { return columnLabels_; }
-  enum { kPassed_cumulative, kEff_cumulative, kEff_individual, kExclRejected };
+  static std::vector<std::string> columnLabels() { return columnLabels_; }
+  enum { kFilterTitle, kPassed_cumulative, kEff_cumulative, kEff_individual, kExclRejected, kNumColumns };
 
   double extractNumber(const std::string&, bool) const;
   
@@ -85,13 +89,16 @@ class FilterStatisticsTable
   explicit FilterStatisticsTable();
   explicit FilterStatisticsTable(const edm::ParameterSet&);
   ~FilterStatisticsTable();
+
+  const std::string& name() const { return name_; }
   
   typedef std::vector<std::pair<std::string, bool> > filterResults_type;
   void update(const filterResults_type&, const filterResults_type&, double);
 
   void print(std::ostream&, unsigned = 30, unsigned = 20) const;
 
-  std::vector<double> extractColumn(const std::string&, bool);
+  std::vector<std::string> extractFilterTitleColumn() const;
+  std::vector<double> extractColumn(const std::string&, bool) const;
 
  private:
   std::string name_;
@@ -99,7 +106,8 @@ class FilterStatisticsTable
   long numEvents_processed_;
   long numEvents_passedAllFilters_;
 
-  std::map<std::string, FilterStatisticsRow*> rows_; 
+  typedef std::pair<std::string, FilterStatisticsRow*> rowEntry_type; 
+  std::vector<rowEntry_type> rows_; 
 };
 
 #endif  
