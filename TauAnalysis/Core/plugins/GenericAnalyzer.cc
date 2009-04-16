@@ -364,10 +364,12 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   if ( cfgError_ ) return;
 
 //--- configure filter statistics service
-  edm::ParameterSet cfgFilterStatisticsService;
-  cfgFilterStatisticsService.addParameter<std::string>("name", std::string(name_).append("-").append("FilterStatisticsService"));
-  cfgFilterStatisticsService.addParameter<std::string>("dqmDirectory_store", dqmDirectoryName(name_).append("FilterStatistics"));
-  vParameterSet filterStatisticsService_config;
+//    and create filter statistics table
+  filterStatisticsService_ = new FilterStatisticsService();
+  filterStatisticsService_dqmDirectory_ = dqmDirectoryName(name_).append("FilterStatistics");
+
+  edm::ParameterSet cfgFilterStatisticsTable;
+  vParameterSet filterStatisticsTable_config;
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
 	cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
     if ( cfgAnalysisSequenceEntry->exists("filter") ) {
@@ -379,11 +381,11 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
       config.addParameter<std::string>("filterName", filterName);
       config.addParameter<std::string>("filterTitle", filterTitle);
       
-      filterStatisticsService_config.push_back(config);
+      filterStatisticsTable_config.push_back(config);
     }
   }
-  cfgFilterStatisticsService.addParameter<vParameterSet>("config", filterStatisticsService_config);
-  filterStatisticsService_ = new FilterStatisticsService(cfgFilterStatisticsService);
+  cfgFilterStatisticsTable.addParameter<vParameterSet>("config", filterStatisticsTable_config);
+  filterStatisticsTable_ = filterStatisticsService_->createFilterStatisticsTable(cfgFilterStatisticsTable);
  
 //--- configure run & event number service
   edm::ParameterSet cfgRunEventNumberService;
@@ -432,6 +434,7 @@ GenericAnalyzer::~GenericAnalyzer()
   }
 
   delete filterStatisticsService_;
+  delete filterStatisticsTable_;
   delete runEventNumberService_;
 }
 
@@ -478,7 +481,7 @@ void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   }
 
 //--- update filter statistics table
-  filterStatisticsService_->filterStatisticsTable()->update(filterResults_cumulative, filterResults_individual, eventWeight);
+  filterStatisticsTable_->update(filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- save run & event numbers
   runEventNumberService_->update(iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock(),
@@ -503,8 +506,6 @@ void GenericAnalyzer::beginJob(const edm::EventSetup& iSetup)
 	entry != analysisSequence_.end(); ++entry ) {
     (*entry)->beginJob(iSetup);
   }
-
-  filterStatisticsService_->createFilterStatisticsTable();
 }
 
 void GenericAnalyzer::endJob()
@@ -521,8 +522,8 @@ void GenericAnalyzer::endJob()
 
 //--- print filter statistics (cut-flow) table
 //    and save results in DQM file
-  filterStatisticsService_->filterStatisticsTable()->print(std::cout);
-  filterStatisticsService_->saveFilterStatisticsTable();
+  filterStatisticsTable_->print(std::cout);
+  filterStatisticsService_->saveFilterStatisticsTable(filterStatisticsService_dqmDirectory_, filterStatisticsTable_);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
