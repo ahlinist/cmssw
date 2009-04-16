@@ -22,7 +22,14 @@ process.loadFilterStatistics = cms.EDAnalyzer("DQMFileLoader",
 )
 
 process.dumpFilterStatisticsTables = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
-    dqmDirectories = cms.vstring('tmp/zElecMuAnalyzer/FilterStatistics/'),
+    dqmDirectories = cms.PSet(
+        Ztautau = cms.string('tmp/zMuTauAnalyzer/FilterStatistics')
+        #Ztautau = cms.string('tmp/zMuTauAnalyzer/FilterStatistics/Ztautau'),
+        #Zmumu = cms.string('tmp/zMuTauAnalyzer/FilterStatistics/'),
+        #WplusJets = cms.string('tmp/zMuTauAnalyzer/FilterStatistics/'),
+        #InclusivePPmuX = cms.string('tmp/zMuTauAnalyzer/FilterStatistics/'),
+        #PPmuXptGt20 cms.string('tmp/zMuTauAnalyzer/FilterStatistics/')
+    ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "Efficiency")
 )
  
