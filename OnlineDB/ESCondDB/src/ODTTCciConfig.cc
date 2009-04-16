@@ -46,7 +46,7 @@ int ODTTCciConfig::fetchNextId()  throw(std::runtime_error) {
     this->checkConnection();
 
     m_readStmt = m_conn->createStatement(); 
-    m_readStmt->setSQL("select es_ttcci_config_sq.NextVal from dual");
+    m_readStmt->setSQL("select ecal_ttcci_config_sq.NextVal from dual");
     ResultSet* rset = m_readStmt->executeQuery();
     while (rset->next ()){
       result= rset->getInt(1);
@@ -72,7 +72,7 @@ void ODTTCciConfig::prepareWrite()
 
   try {
     m_writeStmt = m_conn->createStatement();
-    m_writeStmt->setSQL("INSERT INTO ES_TTCci_CONFIGURATION (ttcci_configuration_id, ttcci_tag, "
+    m_writeStmt->setSQL("INSERT INTO ECAL_TTCci_CONFIGURATION (ttcci_configuration_id, ttcci_tag, "
 			" TTCCI_configuration_file, TRG_MODE, TRG_SLEEP, Configuration, configuration_script, configuration_script_params  ) "
                         "VALUES (:1, :2, :3, :4, :5, :6, :7, :8  )");
     m_writeStmt->setInt(1, next_id);
@@ -95,7 +95,7 @@ void ODTTCciConfig::prepareWrite()
 
     // now we read and update it 
     m_writeStmt = m_conn->createStatement(); 
-    m_writeStmt->setSQL ("SELECT Configuration FROM ES_TTCci_CONFIGURATION WHERE"
+    m_writeStmt->setSQL ("SELECT Configuration FROM ECAL_TTCci_CONFIGURATION WHERE"
 			 " ttcci_configuration_id=:1 FOR UPDATE");
 
     std::cout<<"updating the clob 0"<<std::endl;
@@ -215,7 +215,7 @@ void ODTTCciConfig::fetchData(ODTTCciConfig * result)
   try {
 
     m_readStmt->setSQL("SELECT * "
-		       "FROM ES_TTCci_CONFIGURATION  "
+		       "FROM ECAL_TTCci_CONFIGURATION  "
 		       " where ( ttcci_configuration_id = :1 or ttcci_tag=:2 )" );
     m_readStmt->setInt(1, result->getId());
     m_readStmt->setString(2, result->getConfigTag());
@@ -268,7 +268,7 @@ int ODTTCciConfig::fetchID()    throw(std::runtime_error)
 
   try {
     Statement* stmt = m_conn->createStatement();
-    stmt->setSQL("SELECT ttcci_configuration_id FROM es_ttcci_configuration "
+    stmt->setSQL("SELECT ttcci_configuration_id FROM ecal_ttcci_configuration "
                  "WHERE  ttcci_tag=:ttcci_tag "
 		 );
 

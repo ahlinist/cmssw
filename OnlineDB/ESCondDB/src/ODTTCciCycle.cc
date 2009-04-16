@@ -30,7 +30,7 @@ void ODTTCciCycle::prepareWrite()
 
   try {
     m_writeStmt = m_conn->createStatement();
-    m_writeStmt->setSQL("INSERT INTO ES_TTCci_Cycle (cycle_id, ttcci_configuration_id ) "
+    m_writeStmt->setSQL("INSERT INTO ECAL_TTCci_Cycle (cycle_id, ttcci_configuration_id ) "
 		 "VALUES (:1, :2 )");
   } catch (SQLException &e) {
     throw(runtime_error("ODTTCciCycle::prepareWrite():  "+e.getMessage()));
@@ -80,7 +80,7 @@ int ODTTCciCycle::fetchID()
 
   try {
     Statement* stmt = m_conn->createStatement();
-    stmt->setSQL("SELECT cycle_id, ttcci_configuration_id FROM es_ttcci_cycle "
+    stmt->setSQL("SELECT cycle_id, ttcci_configuration_id FROM ecal_ttcci_cycle "
 		 "WHERE cycle_id = :1 ");
     stmt->setInt(1, m_ID);
     ResultSet* rset = stmt->executeQuery();
@@ -109,7 +109,7 @@ void ODTTCciCycle::setByID(int id)
 
   try {
     Statement* stmt = m_conn->createStatement();
-    stmt->setSQL("SELECT cycle_id, ttcci_configuration_id FROM es_ttcci_cycle "
+    stmt->setSQL("SELECT cycle_id, ttcci_configuration_id FROM ecal_ttcci_cycle "
 		 "WHERE cycle_id = :1 ");
     stmt->setInt(1, id);
     ResultSet* rset = stmt->executeQuery();
@@ -140,7 +140,7 @@ void ODTTCciCycle::fetchData(ODTTCciCycle * result)
 
   try {
 
-    m_readStmt->setSQL("SELECT  ttcci_configuration_id FROM es_ttcci_cycle "
+    m_readStmt->setSQL("SELECT  ttcci_configuration_id FROM ecal_ttcci_cycle "
 		 "WHERE cycle_id = :1 ");
 
     m_readStmt->setInt(1, result->getId());

@@ -1,5 +1,5 @@
 
-CONNECT account@devdb10/passwd
+CONNECT CMS_ES_COMIS@cms_omds_lb/es164644
 
 
 ALTER TABLE ECAL_TTCCI_CYCLE drop CONSTRAINT ecal_TTCCI_cycle_fk1;
