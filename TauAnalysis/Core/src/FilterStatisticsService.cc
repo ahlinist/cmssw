@@ -14,27 +14,17 @@ const std::string meNamePrefixNum = "_num";
 const std::string meNamePrefixNumWeighted = "_numWeighted";
 const std::string meTitleSeparator = ". :";
 
-FilterStatisticsService::FilterStatisticsService(const edm::ParameterSet& cfg)
-{
-  name_ = cfg.getParameter<std::string>("name");
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory");
-
-  cfgFilterStatisticsTable_ = new edm::ParameterSet(cfg);
-
-  filterStatisticsTable_ = 0;
-}
+FilterStatisticsService::FilterStatisticsService()
+{}
 
 FilterStatisticsService::~FilterStatisticsService()
 {
-  delete cfgFilterStatisticsTable_;
-  delete filterStatisticsTable_;
+//--- nothing to be done yet...
 }
 
-void FilterStatisticsService::createFilterStatisticsTable()
+FilterStatisticsTable* FilterStatisticsService::createFilterStatisticsTable(const edm::ParameterSet& cfg) const
 {
-  delete filterStatisticsTable_;
-  filterStatisticsTable_ = new FilterStatisticsTable(*cfgFilterStatisticsTable_);
+  return new FilterStatisticsTable(cfg);
 }
 
 FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const std::string& dqmDirectory, const std::string& elementName)
@@ -52,33 +42,32 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
   return new FilterStatisticsElement(elementName, num, numWeighted);
 }
 
-void FilterStatisticsService::loadFilterStatisticsTable()
+FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const std::string& dqmDirectory) const
 {
 //--- check if DQMStore is available;
-//    print and error message and return if not
+//    print an error message and return if not
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") << " Failed to access dqmStore !!";
-    return;
+    return 0;
   }
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  delete filterStatisticsTable_;
-  filterStatisticsTable_ = new FilterStatisticsTable();
+  FilterStatisticsTable* filterStatisticsTable = new FilterStatisticsTable();
 
 //--- load MonitorElement holding name of FilterStatisticsTable
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  dqmStore.setCurrentFolder(dqmDirectory);
   MonitorElement* meFilterStatisticsTableName = dqmStore.get("name");
-  filterStatisticsTable_->name_ = meFilterStatisticsTableName->getStringValue();
+  filterStatisticsTable->name_ = meFilterStatisticsTableName->getStringValue();
 
 //--- check for DQM subdirectories
 //    and iteratively load all MonitorElements stored in them
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
-    std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory_store_, *dirName);
+    std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory, *dirName);
     
-    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory_store_).append(subDirName);
+    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(subDirName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
 
     int filterId = -1;
@@ -108,8 +97,10 @@ void FilterStatisticsService::loadFilterStatisticsTable()
     row->numEvents_processed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::processed_cumulative);
     row->numEvents_passed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::passed_cumulative);
 
-    filterStatisticsTable_->rows_[filterName] = row;
+    filterStatisticsTable->rows_.push_back(FilterStatisticsTable::rowEntry_type(filterName, row));
   }
+
+  return filterStatisticsTable;
 }
 
 void FilterStatisticsService::saveFilterStatisticsElement(DQMStore& dqmStore, const FilterStatisticsElement* element) const
@@ -123,16 +114,17 @@ void FilterStatisticsService::saveFilterStatisticsElement(DQMStore& dqmStore, co
   meNumWeighted->Fill(element->numWeighted_);
 }
 
-void FilterStatisticsService::saveFilterStatisticsTable() const
+void FilterStatisticsService::saveFilterStatisticsTable(const std::string& dqmDirectory, 
+							const FilterStatisticsTable* filterStatisticsTable) const
 {
 //--- check that FilterStatisticsService objects holds a FilterStatisticsTable
-  if ( !filterStatisticsTable_ ) {
+  if ( !filterStatisticsTable ) {
     edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " FilterStatisticsTable not initialized !!";
     return;
   }
 
 //--- check if DQMStore is available;
-//    print and error message and return if not
+//    print an error message and return if not
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("FilterStatisticsService::saveFilterStatisticsTable") << " Failed to access dqmStore !!";
     return;
@@ -141,21 +133,21 @@ void FilterStatisticsService::saveFilterStatisticsTable() const
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
 //--- create and save MonitorElement holding name of FilterStatisticsTable
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  dqmStore.bookString("name", filterStatisticsTable_->name_);
+  dqmStore.setCurrentFolder(dqmDirectory);
+  dqmStore.bookString("name", filterStatisticsTable->name_);
 
 //--- iterate over rows of FilterStatisticsTable;
 //    each row represents the statistics of one event filter
 //    and gets stored in a separate DQM directory
-  for ( std::map<std::string, FilterStatisticsRow*>::const_iterator it = filterStatisticsTable_->rows_.begin();
-	it != filterStatisticsTable_->rows_.end(); ++it ) {
+  for ( std::vector<FilterStatisticsTable::rowEntry_type>::const_iterator it = filterStatisticsTable->rows_.begin();
+	it != filterStatisticsTable->rows_.end(); ++it ) {
     const FilterStatisticsRow* row = it->second;
 
     int filterId = row->filterId_;
     const std::string& filterName = row->filterName_;
     const std::string& filterTitle = row->filterTitle_;
 
-    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory_store_).append(filterName);
+    std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(filterName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
 
 //--- create and save MonitorElement indicating results of which event filter

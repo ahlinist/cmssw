@@ -10,26 +10,17 @@
 class FilterStatisticsService
 {
  public: 
-  explicit FilterStatisticsService(const edm::ParameterSet&);
+  explicit FilterStatisticsService();
   ~FilterStatisticsService();
 
-  void createFilterStatisticsTable();
-  void loadFilterStatisticsTable();
-  void saveFilterStatisticsTable() const;
-
-  FilterStatisticsTable* filterStatisticsTable() { return filterStatisticsTable_; }
-  const FilterStatisticsTable* filterStatisticsTable() const { return filterStatisticsTable_; }
+  FilterStatisticsTable* createFilterStatisticsTable(const edm::ParameterSet&) const;
+  FilterStatisticsTable* loadFilterStatisticsTable(const std::string&) const;
+  void saveFilterStatisticsTable(const std::string&, const FilterStatisticsTable*) const;
 
  private:
   void saveFilterStatisticsElement(DQMStore&, const FilterStatisticsElement*) const;
 
   std::string name_;
-
-  std::string dqmDirectory_store_;
-
-  edm::ParameterSet* cfgFilterStatisticsTable_;
-
-  FilterStatisticsTable* filterStatisticsTable_;
 };
 
 #endif  
