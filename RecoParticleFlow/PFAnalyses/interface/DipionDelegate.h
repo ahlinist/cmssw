@@ -12,6 +12,8 @@
 #include "DataFormats/ParticleFlowReco/interface/PFTrack.h"
 
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 
@@ -78,6 +80,9 @@ private:
 	edm::InputTag inputTagCaloHitsEcalEB_;
 	edm::InputTag inputTagCaloHitsEcalEE_;
 	edm::InputTag inputTagCaloHitsHcal_;
+	edm::InputTag inputTagRawHitsEcalEB_;
+	edm::InputTag inputTagRawHitsEcalEE_;
+	edm::InputTag inputTagRawHitsHcal_;
 
 
 	//collections
@@ -88,6 +93,10 @@ private:
 	edm::Handle<reco::PFRecHitCollection>* recHitsEcal_;
 	edm::Handle<reco::PFRecHitCollection>* recHitsHcal_;
 	edm::Handle<reco::PFRecTrackCollection>* recTracks_;
+
+	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEB_;
+	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEE_;
+	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
 
 	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEB_;
 	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEE_;
