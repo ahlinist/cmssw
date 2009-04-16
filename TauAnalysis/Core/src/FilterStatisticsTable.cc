@@ -19,7 +19,9 @@ FilterStatisticsRow::FilterStatisticsRow(int filterId, const std::string& filter
   numEvents_passed_cumulative_ = new FilterStatisticsElement(fsElement::passed_cumulative);
 
 //--- initialize static data-mebers
-  columnLabels_[FilterStatisticsRow::kPassed_cumulative] = std::string("Passed");
+  columnLabels_.resize(kNumColumns);
+  columnLabels_[FilterStatisticsRow::kFilterTitle] = "Cut";
+  columnLabels_[FilterStatisticsRow::kPassed_cumulative] = "Passed";
   columnLabels_[FilterStatisticsRow::kEff_cumulative] = "Efficiency";
   columnLabels_[FilterStatisticsRow::kEff_individual] = "cumul. Efficiency";
   columnLabels_[FilterStatisticsRow::kExclRejected] = "excl. Rejection";
@@ -118,7 +120,7 @@ FilterStatisticsTable::FilterStatisticsTable(const edm::ParameterSet& cfg)
 	cfgFilter->getParameter<std::string>("filterTitle") : filterName;
 
       FilterStatisticsRow* row = new FilterStatisticsRow(filterId, filterName, filterTitle);
-      rows_[filterName] = row;
+      rows_.push_back(rowEntry_type(filterName, row));
       ++filterId;
     }
   }
@@ -129,7 +131,7 @@ FilterStatisticsTable::FilterStatisticsTable(const edm::ParameterSet& cfg)
 
 FilterStatisticsTable::~FilterStatisticsTable()
 {
-  for ( std::map<std::string, FilterStatisticsRow*>::iterator it = rows_.begin();
+  for ( std::vector<rowEntry_type>::iterator it = rows_.begin();
 	it != rows_.end(); ++it ) {
     delete it->second;
   }
@@ -182,7 +184,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     bool filterPassed_individual = filterResult_individual->second;
 
     FilterStatisticsRow* row = 0;
-    for ( std::map<std::string, FilterStatisticsRow*>::iterator it = rows_.begin();
+    for ( std::vector<rowEntry_type>::iterator it = rows_.begin();
 	  it != rows_.end(); ++it ) {
       if ( it->first == filterName ) {
 	row = it->second;
@@ -205,10 +207,21 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
   if ( numFiltersRejected_cumulative == 0 ) ++numEvents_passedAllFilters_;
 }
 
-std::vector<double> FilterStatisticsTable::extractColumn(const std::string& columnLabel, bool weighted)
+std::vector<std::string> FilterStatisticsTable::extractFilterTitleColumn() const
+{
+  std::vector<std::string> filterTitleColumn;
+  for ( std::vector<rowEntry_type>::const_iterator it = rows_.begin();
+	it != rows_.end(); ++it ) {
+    const FilterStatisticsRow* row = it->second;
+    filterTitleColumn.push_back(row->filterTitle());
+  }
+  return filterTitleColumn;
+}
+
+std::vector<double> FilterStatisticsTable::extractColumn(const std::string& columnLabel, bool weighted) const
 {
   std::vector<double> column;
-  for ( std::map<std::string, FilterStatisticsRow*>::const_iterator it = rows_.begin();
+  for ( std::vector<rowEntry_type>::const_iterator it = rows_.begin();
 	it != rows_.end(); ++it ) {
     const FilterStatisticsRow* row = it->second;
     column.push_back(row->extractNumber(columnLabel, weighted));
@@ -223,22 +236,25 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
   stream << " number of events processed = " << numEvents_processed_ << "," 
 	 << " of which " <<  numEvents_passedAllFilters_ << " passed all Filters" << std::endl;
   stream << std::endl;
-  stream << std::setw(widthNameColumn) << std::left << "Cut";
   const std::vector<std::string>& columnLabels = FilterStatisticsRow::columnLabels();
   for ( std::vector<std::string>::const_iterator columnLabel = columnLabels.begin();
 	columnLabel != columnLabels.end(); ++columnLabel ) {
-    stream << " "; 
-    for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
-      stream << " ";
+    if ( columnLabel == columnLabels.begin() ) {
+      stream << std::setw(widthNameColumn) << std::left << (*columnLabel);
+    } else {
+      stream << " "; 
+      for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
+	stream << " ";
+      }
+      stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
     }
-    stream << " " << std::setw(columnLabel->length()) << std::left << (*columnLabel);
   }
   stream << std::endl;
   for ( unsigned iCharacter = 0; iCharacter < widthNameColumn + columnLabels.size()*(widthNumberColumns + 2); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl;
-  for ( std::map<std::string, FilterStatisticsRow*>::const_iterator it = rows_.begin();
+  for ( std::vector<rowEntry_type>::const_iterator it = rows_.begin();
 	it != rows_.end(); ++it ) {
     const FilterStatisticsRow* row = it->second;
     row->print(stream, widthNameColumn, widthNumberColumns);
