@@ -87,6 +87,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
   FilterStatisticsService* filterStatisticsService_;
   std::string filterStatisticsService_dqmDirectory_;
   FilterStatisticsTable* filterStatisticsTable_;
+
   RunEventNumberService* runEventNumberService_;
   
   std::list<EventDumpBase*> eventDumps_;

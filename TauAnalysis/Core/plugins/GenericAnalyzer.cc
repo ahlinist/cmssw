@@ -369,6 +369,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   filterStatisticsService_dqmDirectory_ = dqmDirectoryName(name_).append("FilterStatistics");
 
   edm::ParameterSet cfgFilterStatisticsTable;
+  cfgFilterStatisticsTable.addParameter<std::string>("name", std::string(name_).append("-").append("FilterStatisticsService"));
   vParameterSet filterStatisticsTable_config;
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
 	cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
