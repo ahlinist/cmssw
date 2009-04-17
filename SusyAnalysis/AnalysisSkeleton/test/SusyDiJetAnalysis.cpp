@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.31 2009/04/08 15:04:34 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.32 2009/04/17 09:14:45 georgia Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -22,6 +22,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //#define _USE_MATH_DEFINES
 //#include <math.h>
 #include <TMath.h>
+#include <sstream>
 using namespace std;
 using namespace reco;
 using namespace edm;
@@ -745,19 +746,38 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecValidHits[i] = (*elecHandle)[i].gsfTrack()->found();
     
     edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for trackMomentumAtVtx " << endl;
-
-    mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
+    
+    try {
+      mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
+    } catch ( const cms::Exception& e ) {
+      mTempTreeElecNCluster[i] = -999;
+      std::stringstream ss;
+      ss << " cms::Exception thrown!"
+	 << " Invalid edm::Ref<reco::SuperCluster> returned from pat::Electron!" 
+	 << std::endl 
+	 << " Setting numberOfClusters to -999!"
+	 << std::endl 
+	 << e.what();
+      edm::LogWarning("SusyDiJetAnalysis") << ss.str();
+    }
     mTempTreeElecEtaTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Eta();
     mTempTreeElecPhiTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Phi();
 
-    // Added protection statement, 
-    // against missing SuperCluster collection in 2_1_X PatLayer1 samples
-    if ( &(*(*elecHandle)[i].superCluster()) != 0 ) {
+    // Added protection statement, against missing SuperCluster collection in 2_1_X PatLayer1 samples
+    try { 
       mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
       mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
-    } else {
+    } catch ( const cms::Exception& e ) {
       mTempTreeElecWidthClusterEta[i]=-999.;
       mTempTreeElecWidthClusterPhi[i]=-999.;
+      std::stringstream ss;
+      ss << " cms::Exception thrown!"
+	 << " Invalid edm::Ref<reco::SuperCluster> returned from pat::Electron!" 
+	 << std::endl 
+	 << " Setting ClusterEta and ClusterPhi to -999.!" 
+	 << std::endl 
+	 << e.what();
+      edm::LogWarning("SusyDiJetAnalysis") << ss.str();
     }
     
     mTempTreeElecPinTrk[i] = sqrt((*elecHandle)[i].trackMomentumAtVtx().Mag2());
