@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.32 2009/04/17 09:14:45 georgia Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.33 2009/04/17 12:35:21 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -752,10 +752,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     } catch ( const cms::Exception& e ) {
       mTempTreeElecNCluster[i] = -999;
       std::stringstream ss;
-      ss << " cms::Exception thrown!"
+      ss << " cms::Exception caught!"
 	 << " Invalid edm::Ref<reco::SuperCluster> returned from pat::Electron!" 
 	 << std::endl 
 	 << " Setting numberOfClusters to -999!"
+	 << std::endl 
+	 << " Output from cms::Exception::what():"
 	 << std::endl 
 	 << e.what();
       edm::LogWarning("SusyDiJetAnalysis") << ss.str();
@@ -771,10 +773,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       mTempTreeElecWidthClusterEta[i]=-999.;
       mTempTreeElecWidthClusterPhi[i]=-999.;
       std::stringstream ss;
-      ss << " cms::Exception thrown!"
+      ss << " cms::Exception caught!"
 	 << " Invalid edm::Ref<reco::SuperCluster> returned from pat::Electron!" 
 	 << std::endl 
 	 << " Setting ClusterEta and ClusterPhi to -999.!" 
+	 << std::endl 
+	 << " Output from cms::Exception::what():"
 	 << std::endl 
 	 << e.what();
       edm::LogWarning("SusyDiJetAnalysis") << ss.str();
