@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.30 2009/04/07 09:04:45 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.31 2009/04/08 15:04:34 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -166,9 +166,6 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
   mTempAlpIdTest = myALPGENParticleId.AplGenParID(iEvent,genTag_);
   mTempAlpPtScale = myALPGENParticleId.getPt();
-
-
-
 
     // GEN INFO
   // georgia
@@ -747,13 +744,22 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecLostHits[i] = (*elecHandle)[i].gsfTrack()->lost();
     mTempTreeElecValidHits[i] = (*elecHandle)[i].gsfTrack()->found();
     
-edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for trackMomentumAtVtx " << endl;
+    edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for trackMomentumAtVtx " << endl;
 
-     mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
+    mTempTreeElecNCluster[i] = (*elecHandle)[i].numberOfClusters();
     mTempTreeElecEtaTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Eta();
     mTempTreeElecPhiTrk[i] = (*elecHandle)[i].trackMomentumAtVtx().Phi();
-        mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
-         mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
+
+    // Added protection statement, 
+    // against missing SuperCluster collection in 2_1_X PatLayer1 samples
+    if ( &(*(*elecHandle)[i].superCluster()) != 0 ) {
+      mTempTreeElecWidthClusterEta[i] = (*elecHandle)[i].superCluster()->etaWidth();
+      mTempTreeElecWidthClusterPhi[i] = (*elecHandle)[i].superCluster()->phiWidth();
+    } else {
+      mTempTreeElecWidthClusterEta[i]=-999.;
+      mTempTreeElecWidthClusterPhi[i]=-999.;
+    }
+    
     mTempTreeElecPinTrk[i] = sqrt((*elecHandle)[i].trackMomentumAtVtx().Mag2());
     mTempTreeElecPoutTrk[i] = sqrt((*elecHandle)[i].trackMomentumOut().Mag2());
 
@@ -764,6 +770,10 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " before asking for trackMomentumAtVtx 
       mTempTreeGenElecPz[i] = (*elecHandle)[i].genLepton()->pz();
       if(&(*(*elecHandle)[i].genLepton()->mother())!=0){
 	mTempTreeGenElecMother[i]= (*elecHandle)[i].genLepton()->mother()->pdgId();
+	if ( (*elecHandle)[i].genLepton()->mother()->pdgId() ==  (*elecHandle)[i].genLepton()->pdgId()) 
+	  {
+	    mTempTreeGenElecMother[i]= (*elecHandle)[i].genLepton()->mother()->mother()->pdgId();
+	  }
       }
     }
     else {
@@ -915,9 +925,15 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeGenMuonPx[i]=(*muonHandle)[i].genLepton()->px();
       mTempTreeGenMuonPy[i]=(*muonHandle)[i].genLepton()->py();
       mTempTreeGenMuonPz[i]=(*muonHandle)[i].genLepton()->pz();
-      if (&(*(*muonHandle)[i].genLepton()->mother())!=0)
+      if (&(*(*muonHandle)[i].genLepton()->mother())!=0) {
 	mTempTreeGenMuonMother[i]=(*muonHandle)[i].genLepton()->mother()->pdgId();
-      else mTempTreeGenMuonMother[i]=999.;
+	if ( (*muonHandle)[i].genLepton()->mother()->pdgId() ==  (*muonHandle)[i].genLepton()->pdgId()) 
+	  {
+	    mTempTreeGenMuonMother[i]= (*muonHandle)[i].genLepton()->mother()->mother()->pdgId();
+	  }
+      } else {
+	mTempTreeGenMuonMother[i]=999.;
+      }
     }
     else{
       mTempTreeGenMuonPdgId[i]=999.;
