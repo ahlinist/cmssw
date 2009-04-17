@@ -22,8 +22,8 @@ FilterStatisticsRow::FilterStatisticsRow(int filterId, const std::string& filter
   columnLabels_.resize(kNumColumns);
   columnLabels_[FilterStatisticsRow::kFilterTitle] = "Cut";
   columnLabels_[FilterStatisticsRow::kPassed_cumulative] = "Passed";
-  columnLabels_[FilterStatisticsRow::kEff_cumulative] = "Efficiency";
-  columnLabels_[FilterStatisticsRow::kEff_individual] = "cumul. Efficiency";
+  columnLabels_[FilterStatisticsRow::kEff_cumulative] = "cumul. Efficiency";
+  columnLabels_[FilterStatisticsRow::kEff_individual] = "Efficiency";
   columnLabels_[FilterStatisticsRow::kExclRejected] = "excl. Rejection";
 }
 
@@ -56,8 +56,8 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
   if ( columnLabel == columnLabels_[FilterStatisticsRow::kPassed_cumulative] ) {
     return ( weighted ) ? numEvents_passed_cumulative_->numWeighted() : numEvents_passed_cumulative_->num();
   } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kEff_cumulative] ) {
-    return ( weighted ) ? compEff(numEvents_passed_cumulative_->numWeighted(), numEvents_processed_cumulative_->numWeighted())
-      : compEff(numEvents_passed_cumulative_->num(), numEvents_processed_cumulative_->num());
+    return ( weighted ) ? compEff(numEvents_passed_cumulative_->numWeighted(), numEvents_processed_->numWeighted())
+      : compEff(numEvents_passed_cumulative_->num(), numEvents_processed_->num());
   } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kEff_individual] ) {
     return ( weighted ) ? compEff(numEvents_passed_->numWeighted(), numEvents_processed_->numWeighted())
       : compEff(numEvents_passed_->num(), numEvents_processed_->num());
@@ -72,21 +72,19 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
 void printNumber(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width - 10) << std::setprecision(3) << std::right << number;
-  for ( unsigned iCharacter = 0; iCharacter < 10; ++iCharacter ) stream << " ";
+  stream << std::setw(width) << std::setprecision(3) << std::right << number;
 } 
 
 void printPercentage(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width - 11) << std::setprecision(3) << std::right << 100.*number << "%";
-  for ( unsigned iCharacter = 0; iCharacter < 10; ++iCharacter ) stream << " ";
+  stream << std::setw(width - 1) << std::setprecision(3) << std::right << 100.*number << "%";
 } 
 
 void FilterStatisticsRow::print(std::ostream& stream, unsigned widthNameColumn, unsigned widthNumberColumns) const
 {
   stream << std::setw(widthNameColumn) << std::left << filterTitle_;
-  printNumber(stream, widthNameColumn, extractNumber(columnLabels_[FilterStatisticsRow::kPassed_cumulative], false));
+  printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kPassed_cumulative], false));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_cumulative], true));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_individual], true));
   printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kExclRejected], true));
@@ -242,7 +240,6 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     if ( columnLabel == columnLabels.begin() ) {
       stream << std::setw(widthNameColumn) << std::left << (*columnLabel);
     } else {
-      stream << " "; 
       for ( unsigned iCharacter = 0; iCharacter < (widthNumberColumns - columnLabel->length()); ++iCharacter ) {
 	stream << " ";
       }
@@ -250,7 +247,7 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     }
   }
   stream << std::endl;
-  for ( unsigned iCharacter = 0; iCharacter < widthNameColumn + columnLabels.size()*(widthNumberColumns + 2); ++iCharacter ) {
+  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl;
@@ -259,7 +256,7 @@ void FilterStatisticsTable::print(std::ostream& stream, unsigned widthNameColumn
     const FilterStatisticsRow* row = it->second;
     row->print(stream, widthNameColumn, widthNumberColumns);
   }
-  for ( unsigned iCharacter = 0; iCharacter < widthNameColumn + columnLabels.size()*(widthNumberColumns + 2); ++iCharacter ) {
+  for ( unsigned iCharacter = 0; iCharacter < (widthNameColumn + columnLabels.size()*widthNumberColumns + 4); ++iCharacter ) {
     stream << "-";
   }
   stream << std::endl << std::endl;
