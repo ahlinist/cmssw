@@ -24,28 +24,10 @@ from RecoTauTag.TauTagTools.TauMVADiscriminator_cfi import *
 # for different tau-jet efficiency vs. QCD-jet fake rate "working-points"
 from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 
-#--------------------------------------------------------------------------------
-#
 # define DataBase source for TaNC configurations
-#
-# NOTE: only needed temporary for CMSSW_2_2_x !!
-#
-from CondCore.DBCommon.CondDBSetup_cfi import *
-TauMVAFromDB = cms.ESSource("PoolDBESSource",
-    CondDBSetup,
-    timetype = cms.untracked.string('runnumber'),
-    toGet = cms.VPSet(
-        cms.PSet(
-	    #record = cms.string('TauTagMVAComputerRcd'),
-            record = cms.string('BTauGenericMVAJetTagComputerRcd'),
-	    tag = cms.string('MyTestMVATag')
-	)
-    ),
-    connect = cms.string('sqlite_file:/afs/cern.ch/user/f/friis/scratch0/Example.db'),
-    BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService')
-)
-es_prefer_TauMVAFromDB = cms.ESPrefer("PoolDBESSource", "TauMVAFromDB")
-#--------------------------------------------------------------------------------
+# (need esprefer statement in order to prevent conflict with Fake BTau conditions)
+from RecoTauTag.Configuration.RecoTauTag_FakeConditions_cff import *
+es_prefer_TauMVA = cms.ESPrefer("PoolDBESSource", "TauTagMVAComputerRecord")
 
 producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
                              + electronIdCutBased + recoElectronIsolation
