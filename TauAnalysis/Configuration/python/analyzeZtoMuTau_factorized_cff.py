@@ -1,119 +1,65 @@
 import FWCore.ParameterSet.Config as cms
 
-# import config for event selection, event print-out and analysis sequence
+#--------------------------------------------------------------------------------
+# import the two configs for event selection, event print-out and analysis sequence
+# of Z --> mu + tau-jet events with and without muon isolation criteria applied;
+# import config of "regular" Z --> mu + tau-jet analysis module
+#--------------------------------------------------------------------------------
+
 from TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cfi import *
+from TauAnalysis.Configuration.analyzeZtoMuTau_cff import *
+#from TauAnalysis.Configuration.factorizationTools import replaceEventSelection
 
-analyzeZtoMuTau_factorizedWithoutMuonIsolation = cms.EDAnalyzer("GenericAnalyzer",
-  
-  name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation'), 
-                            
-  eventSelection = cms.VPSet(
-    # generator level phase-space selection
-    # (NOTE: (1) to be used in case of Monte Carlo samples
-    #            overlapping in simulated phase-space only !!
-    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
-    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
-    #            to the CERN batch system will not work !!)
-    genPhaseSpaceCut,
-    
-    # trigger selection
-    Trigger,
+#--------------------------------------------------------------------------------
+# define Z --> mu + tau-jet analysis module
+# for the path with "loose" muon isolation criteria applied
+#--------------------------------------------------------------------------------
 
-    # primary event vertex selection
-    primaryEventVertex,
-    primaryEventVertexQuality,
-    primaryEventVertexPosition,
-    
-    # muon candidate selection
-    globalMuonCut,
-    muonEtaCut,
-    muonPtCut,
-    muonTrkIsoCutLooseMuonIsolation,
-    muonEcalIsoCutLooseMuonIsolation,
-    muonAntiPionCutLooseMuonIsolation,
-    muonTrkIPcutLooseMuonIsolation,
-        
-    # tau candidate selection
-    tauAntiOverlapWithMuonsVeto,
-    tauEtaCut,
-    tauPtCut,
-    tauLeadTrkCut,
-    tauLeadTrkPtCut,
-    tauTrkIsoCut,
-    tauEcalIsoCut,
-    tauProngCut,
-    tauMuonVeto,
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = copy.copy(analyzeZtoMuTauEvents)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation')
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonTrkIso)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonTrkIsoLooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonEcalIso)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonEcalIsoLooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonAntiPion)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonAntiPionLooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonTrkIP)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonTrkIPlooseMuonIsolation)      
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauAntiOverlapVeto)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauZeroCharge)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauMt1MET)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelMuonTrkIso, evtSelMuonTrkIsoLooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelMuonEcalIso, evtSelMuonEcalIsoLooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelMuonAntiPion, evtSelMuonAntiPionLooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelMuonTrkIP, evtSelMuonTrkIPlooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelDiTauCandidateForMuTauZeroCharge, evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation)
+#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
+#                      evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation)
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
+analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
 
-    # di-tau candidate selection
-    diTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
-    diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
-    diTauCandidateForMuTauMt1METCutLooseMuonIsolation,
+#--------------------------------------------------------------------------------
+# define Z --> mu + tau-jet analysis module
+# for the path with "regular" muon isolation criteria applied
+#--------------------------------------------------------------------------------
 
-    # veto events containing additional central jets with Et > 20 GeV
-    #centralJetVeto
-  ),
-  
-  histManagers = cms.VPSet(
-    genPhaseSpaceEventInfoHistManager,
-    muonHistManager,
-    tauHistManager,
-    diTauCandidateHistManagerForMuTau,
-    metHistManager,
-    jetHistManager,
-    allPFCandidateHistManager,
-    pfChargedHadronHistManager,
-    pfGammaHistManager,
-    pfNeutralHadronHistManager,
-    vertexHistManager,
-    triggerHistManager
-  ),
-
-  analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
-)
-
-analyzeZtoMuTau_factorizedWithMuonIsolation = cms.EDAnalyzer("GenericAnalyzer",
-  
-  name = cms.string('zMuTauAnalyzer_factorizedWithMuonIsolation'), 
-                            
-  eventSelection = cms.VPSet(
-    # generator level phase-space selection
-    # (NOTE: (1) to be used in case of Monte Carlo samples
-    #            overlapping in simulated phase-space only !!
-    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
-    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
-    #            to the CERN batch system will not work !!)
-    genPhaseSpaceCut,
-    
-    # trigger selection
-    Trigger,
-
-    # primary event vertex selection
-    primaryEventVertex,
-    primaryEventVertexQuality,
-    primaryEventVertexPosition,
-    
-    # muon candidate selection
-    globalMuonCut,
-    muonEtaCut,
-    muonPtCut,
-    muonTrkIsoCut,
-    muonEcalIsoCut,
-    muonAntiPionCut,
-    muonTrkIPcut
-  ),
-  
-  histManagers = cms.VPSet(
+analyzeZtoMuTauEvents_factorizedWithMuonIsolation = copy.deepcopy(analyzeZtoMuTauEvents)
+analyzeZtoMuTauEvents_factorizedWithMuonIsolation.histManagers = cms.VPSet(
     genPhaseSpaceEventInfoHistManager,
     muonHistManager,
     vertexHistManager,
     triggerHistManager
-  ),
-
-  eventDumps = cms.VPSet(
-    muTauEventDump_factorizedWithMuonIsolation
-  ),                                                           
-   
-  analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
 )
-
+analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
+analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
 
