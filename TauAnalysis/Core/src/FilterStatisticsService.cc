@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 const std::string meNamePrefixNum = "_num";
 const std::string meNamePrefixNumWeighted = "_numWeighted";
@@ -42,6 +43,11 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
   return new FilterStatisticsElement(elementName, num, numWeighted);
 }
 
+bool operator<(const std::pair<std::string, FilterStatisticsRow*>& row_1, const std::pair<std::string, FilterStatisticsRow*>& row_2)
+{
+  return row_1.second->filterId() < row_2.second->filterId();
+} 
+
 FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const std::string& dqmDirectory) const
 {
 //--- check if DQMStore is available;
@@ -57,7 +63,7 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
 
 //--- load MonitorElement holding name of FilterStatisticsTable
   dqmStore.setCurrentFolder(dqmDirectory);
-  MonitorElement* meFilterStatisticsTableName = dqmStore.get("name");
+  MonitorElement* meFilterStatisticsTableName = dqmStore.get(dqmDirectoryName(dqmDirectory).append("name"));
   filterStatisticsTable->name_ = meFilterStatisticsTableName->getStringValue();
 
 //--- check for DQM subdirectories
@@ -66,7 +72,7 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
     std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory, *dirName);
-    
+
     std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(subDirName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
 
@@ -76,15 +82,11 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
 
 //--- load MonitorElement indicating results of which event filter
 //    are stored in DQM directory
-    MonitorElement* meTitle = dqmStore.get("name");
+    MonitorElement* meTitle = dqmStore.get(dqmDirectoryName(dqmDirectory_row).append("name"));
     std::string meTitleStr = meTitle->getStringValue();
     size_t posSeparator = meTitleStr.find(meTitleSeparator);
     filterId = atoi(std::string(meTitleStr, 0, posSeparator).data());
     filterTitle = std::string(meTitleStr, posSeparator + meTitleSeparator.length());
-    
-    std::cout << "filterId = " << filterId << std::endl;
-    std::cout << "filterName = " << filterName << std::endl;
-    std::cout << "filterTitle = " << filterTitle << std::endl;
 
     FilterStatisticsRow* row = new FilterStatisticsRow(filterId, filterName, filterTitle);
 
@@ -96,9 +98,14 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
     row->numEvents_exclRejected_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::exclRejected);
     row->numEvents_processed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::processed_cumulative);
     row->numEvents_passed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::passed_cumulative);
-
     filterStatisticsTable->rows_.push_back(FilterStatisticsTable::rowEntry_type(filterName, row));
   }
+
+//--- sort rows of FilterStatisticsTable by filterId
+  std::sort(filterStatisticsTable->rows_.begin(), filterStatisticsTable->rows_.end()); 
+
+  filterStatisticsTable->numEvents_processed_ = filterStatisticsTable->rows_.front().second->numEvents_processed_->num_;
+  filterStatisticsTable->numEvents_passedAllFilters_ = filterStatisticsTable->rows_.back().second->numEvents_passed_cumulative_->num_;
 
   return filterStatisticsTable;
 }
