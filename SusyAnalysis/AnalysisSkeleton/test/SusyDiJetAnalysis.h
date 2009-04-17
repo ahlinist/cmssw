@@ -196,10 +196,17 @@ private:
   double mTempTreePhotECalIso[50];
   double mTempTreePhotHCalIso[50];
   double mTempTreePhotAllIso[50];
+
   bool mTempTreeccPhotAssoc[50];
   bool mTempTreePhotLooseEM[50];
   bool mTempTreePhotLoosePhoton[50];
   bool mTempTreePhotTightPhoton[50];
+
+  double mTempTreeGenPhotPdgId[50];
+  double mTempTreeGenPhotMother[50];
+  double mTempTreeGenPhotPx[50];
+  double mTempTreeGenPhotPy[50];
+  double mTempTreeGenPhotPz[50];
 
   int    mTempTreeNelec;
   double mTempTreeElecEt[50];
