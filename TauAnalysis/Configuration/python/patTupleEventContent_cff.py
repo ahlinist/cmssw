@@ -51,3 +51,13 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_tauGenJets*_*_*', ]
 )
+
+#--------------------------------------------------------------------------------
+# keep boolean flags indicating whether or not an event
+# passes or fails the event selection criteria
+#--------------------------------------------------------------------------------
+
+patTupleEventContent.outputCommands.extend(
+    [ 'keep bool_*_*_*', ]
+)
+
