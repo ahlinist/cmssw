@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.33 2009/04/17 12:35:21 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.34 2009/04/17 12:41:14 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -194,9 +194,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       } else { refs[count]=-1;}
 
       count++;
-    } else { // store also electrons or muons of status 1 
+    } else { // store also electrons or muons or photons of status 1 
       
-      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13) ) {
+      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13) || p.pdgId() == 22 ) {
 	
 	genLepIds[lcount] = p.pdgId(); genLepStatus[lcount]=p.status();
 	genLepE[lcount]=p.energy(); genLepPx[lcount]=p.px(); genLepPy[lcount]=p.py(); genLepPz[lcount]=p.pz();
@@ -680,8 +680,30 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	mTempTreeccPhotAssoc[i] = true;
 	
       }
-    }//end loop over cc Photons
-  }
+    } // loop over cross-cleaned pat::Photons
+
+    // GenPhoton info
+    reco::Particle* part = const_cast<reco::Particle*>( (*photHandle)[i].genPhoton() );
+    reco::Candidate* cand = dynamic_cast<reco::Candidate*>( part );
+    if ( cand ) {
+      mTempTreeGenPhotPdgId[i] = cand->pdgId();   
+      mTempTreeGenPhotPx[i] = cand->px();
+      mTempTreeGenPhotPy[i] = cand->py();
+      mTempTreeGenPhotPz[i] = cand->pz();
+      const reco::Candidate* mother = cand->mother();
+      if ( mother && cand->pdgId() == cand->mother()->pdgId() ) { mother = mother->mother(); }
+      if ( mother ) {
+	mTempTreeGenPhotMother[i] = mother->pdgId();
+      }
+    } else {
+      mTempTreeGenPhotPdgId[i] = 1.e8; // ie, invalid PDG id! 
+      mTempTreeGenPhotPx[i]=1.e8;
+      mTempTreeGenPhotPy[i]=1.e8;
+      mTempTreeGenPhotPz[i]=1.e8;
+      mTempTreeGenPhotMother[i] = 1.e8;
+    }
+    
+  } // loop over pat::Photons
 
 
   // get the electrons
@@ -1817,8 +1839,11 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("PhotLooseEM",mTempTreePhotLooseEM,"mTempTreePhotLooseEM[Nphot]/bool");
   mAllData->Branch("PhotLoosePhoton",mTempTreePhotLoosePhoton,"mTempTreePhotLoosePhoton[Nphot]/bool");
   mAllData->Branch("PhotTightPhoton",mTempTreePhotTightPhoton,"mTempTreePhotTightPhoton[Nphot]/bool");
-
-
+  mAllData->Branch("PhotGenPdgId",mTempTreeGenPhotPdgId,"PhotGenPdgId[Nphot]/double");
+  mAllData->Branch("PhotGenMother",mTempTreeGenPhotMother,"PhotGenMother[Nphot]/double");
+  mAllData->Branch("PhotGenPx",mTempTreeGenPhotPx,"PhotGenPx[Nphot]/double");
+  mAllData->Branch("PhotGenPy",mTempTreeGenPhotPy,"PhotGenPy[Nphot]/double");
+  mAllData->Branch("PhotGenPz",mTempTreeGenPhotPz,"PhotGenPz[Nphot]/double");
  
   //add electrons
   mAllData->Branch("Nelec" ,&mTempTreeNelec ,"Nelec/int");  
