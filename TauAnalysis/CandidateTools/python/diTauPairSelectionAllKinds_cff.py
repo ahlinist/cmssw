@@ -70,9 +70,9 @@ selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsZeroCharg
 selectedMuTauPairsMt1METlooseMuonIsolation.cut = selectedMuTauPairsMt1MET.cut
 
 patMuTauPairSelConfiguratorLooseMuonIsolation = objSelConfigurator(
-    [ selectedMuTauPairsAntiOverlapVeto,
-      selectedMuTauPairsZeroCharge,
-      selectedMuTauPairsMt1MET ],
+    [ selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation,
+      selectedMuTauPairsZeroChargeLooseMuonIsolation,
+      selectedMuTauPairsMt1METlooseMuonIsolation ],
     src = "allMuTauPairsLooseMuonIsolation",
     pyModuleName = __name__,
     doSelIndividual = True
