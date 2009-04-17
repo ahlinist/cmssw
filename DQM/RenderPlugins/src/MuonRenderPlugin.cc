@@ -11,7 +11,16 @@
 
 
 
-MuonRenderPlugin::MuonRenderPlugin() {}
+MuonRenderPlugin::MuonRenderPlugin() {
+
+  label_resTk = new TLatex(2.5,4.5,"NA");
+  label_resSTA = new TLatex(3.5,4.5,"NA");
+  label_muonIdSTA = new TLatex(3.5,5.5,"NA");
+  label_glbHO = new TLatex(1.5,3.5,"NA");
+  label_tkHO = new TLatex(2.5,3.5,"NA");
+  label_staHO = new TLatex(3.5,3.5,"NA");
+
+}
 
 
 bool MuonRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
@@ -240,6 +249,20 @@ void MuonRenderPlugin::postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o
 }
 
 void MuonRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
+
+  if( o.name.find( "reportSummaryMap" ) != std::string::npos ) {
+    label_resTk->Draw("same");
+    label_resSTA->Draw("same");
+    label_muonIdSTA->Draw("same");
+    return;
+  }
+
+  if(o.name.find("energySummaryMap") != std::string::npos) {
+    label_glbHO->Draw("same");
+    label_tkHO->Draw("same");
+    label_staHO->Draw("same");
+    return;
+  }
 
 return;
 
