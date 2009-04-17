@@ -89,12 +89,11 @@ private:
   TNtuple *nGenMuon, *nGenJpsi, *nGenUpsilon, *nGenZ0;
   TNtuple *nGenPriJpsi, *nGenPriUpsi, *nGenPriZ0;
   TNtuple *nGenSecJpsi, *nGenSecUpsi, *nGenSecZ0; 
-  TNtuple *nGenSec9900Jpsi, *nGenJpsi9900Muon, *nGenJpsi9900MM, *nGenJpsi9900Mom, *nGenJpsi9900Dau;
   TNtuple *nGenJpsiMuon, *nGenUpsiMuon, *nGenZ0Muon;
   TNtuple *nGenJpsiMM, *nGenUpsiMM, *nGenZ0MM;
   TNtuple *nGenJpsiToMM, *nGenUpsiToMM, *nGenZ0ToMM;
   TNtuple *nGenMuonMom, *nGenJpsiMom, *nGenUpsiMom, *nGenZ0Mom; 
-  TNtuple *nGenJpsiDau, *nGenUpsiDau, *nGenZ0Dau; //, *nParInfo; TNtuple *nGenJpsiToMM, *nGenUpsiToMM, *nGenZ0ToMM;
+  TNtuple *nGenJpsiDau, *nGenUpsiDau, *nGenZ0Dau; 
 
   TNtuple *nGenPriJpsiDau, *nGenPriJpsiMuon, *nGenPriJpsiMM;
   TNtuple *nGenPriUpsiDau, *nGenPriUpsiMuon, *nGenPriUpsiMM;
@@ -140,7 +139,6 @@ void
 HydQuarkoniaAnalyzer::beginJob(const edm::EventSetup&)
 {
   hOutputFile   = new TFile( fOutputFile_.c_str(), "RECREATE" ) ;
-  //nParInfo = new TNtuple("nParInfo","Gen Particle info","id:p_pt:p_eta:p_phi:p_mass");
   nGenMuon = new TNtuple("nGenMuon","Gen Muon","Mu_pt:Mu_eta:Mu_phi:Mu_mass");
   nGenJpsi = new TNtuple("nGenJpsi","Gen Jpsi","Jp_pt:Jp_eta:Jp_phi:Jp_mass:Jp_st");
   nGenPriJpsi = new TNtuple("nGenPriJpsi","Gen pri Jpsi","Jp_pt:Jp_eta:Jp_phi:Jp_mass:Jp_st");
@@ -156,7 +154,6 @@ HydQuarkoniaAnalyzer::beginJob(const edm::EventSetup&)
   nGenZ0Muon = new TNtuple("nGenZ0Muon","Gen Z0 Mu","ZMu_pt:ZMu_eta:ZMu_phi:ZMu_mass");
  
   nGenJpsiMM = new TNtuple("nGenJpsiMM","Gen Jpsi to mumu","Jp_pt:Jp_eta:Jp_phi:Jp_mass");
-//  nGenJpsi9900MM = new TNtuple("nGenJpsi9900MM","Gen Jpsi to mumu","Jp_pt:Jp_eta:Jp_phi:Jp_mass");
   nGenJpsiToMM = new TNtuple("nGenJpsiToMM","Gen Jpsi to mumu","Jp_id:Jp_pt:Jp_eta:Jp_phi:Jp_mass");
   nGenUpsiMM = new TNtuple("nGenUpsiMM","Gen Upsilon to mumu","Up_pt:Up_eta:Up_phi:Up_mass");
   nGenUpsiToMM = new TNtuple("nGenUpsiToMM","Gen Upsilon to mumu","Up_id:Up_pt:Up_eta:Up_phi:Up_mass");
@@ -164,11 +161,9 @@ HydQuarkoniaAnalyzer::beginJob(const edm::EventSetup&)
   nGenZ0MM = new TNtuple("nGenZ0MM","Gen Z_0 to mumu","z_pt:z_eta:z_phi:z_mass");
   nGenMuonMom = new TNtuple("nGenMuonMom","muon's mother","m_id:m_pt:m_eta:m_phi:m_mass");
   nGenJpsiMom = new TNtuple("nGenJpsiMom","Jpsi's mother","m_id:m_pt:m_eta:m_phi:m_mass:m_st");
-//  nGenJpsi9900Mom = new TNtuple("nGenJpsi9900Mom","Jpsi's mother","m_id:m_pt:m_eta:m_phi:m_mass");
   nGenUpsiMom = new TNtuple("nGenUpsiMom","Upsi's mother","m_id:m_pt:m_eta:m_phi:m_mass:m_st");
   nGenZ0Mom = new TNtuple("nGenZ0Mom","Z0's mother","m_id:m_pt:m_eta:m_phi:m_mass:m_st");
   nGenJpsiDau = new TNtuple("nGenJpsiDau","Jpsi's daughter","d_id:d_pt:d_eta:d_phi:d_mass");
-//  nGenJpsi9900Dau = new TNtuple("nGenJpsi9900Dau","Jpsi's daughter","d_id:d_pt:d_eta:d_phi:d_mass");
   nGenUpsiDau = new TNtuple("nGenUpsiDau","Upsilon's daughter","d_id:d_pt:d_eta:d_phi:d_mass");
   nGenZ0Dau = new TNtuple("nGenZ0Dau","Z0's daughter","d_id:d_pt:d_eta:d_phi:d_mass");
 
