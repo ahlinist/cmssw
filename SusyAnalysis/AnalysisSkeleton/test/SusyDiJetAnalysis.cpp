@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.34 2009/04/17 12:41:14 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.35 2009/04/17 14:19:03 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -195,9 +195,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
       count++;
     } else { // store also electrons or muons or photons of status 1 
-      
-      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13) || p.pdgId() == 22 ) {
-	
+      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13)  ) {
+      //      if ( (abs(p.pdgId()) == 11) || (abs(p.pdgId()) == 13) || p.pdgId() == 22 ) {
+
 	genLepIds[lcount] = p.pdgId(); genLepStatus[lcount]=p.status();
 	genLepE[lcount]=p.energy(); genLepPx[lcount]=p.px(); genLepPy[lcount]=p.py(); genLepPz[lcount]=p.pz();
 	
