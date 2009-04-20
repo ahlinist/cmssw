@@ -11,9 +11,30 @@ process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 #process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-process.GlobalTag.globaltag = 'IDEAL_V11::All'
+#process.GlobalTag.globaltag = 'IDEAL_V11::All'
+#
+# CV: 'IDEAL_V11::All' causes the following run-time error
+#
+#      %MSG-s CMSException:  AfterModuleConstruction 20-Apr-2009 09:59:31 CEST  pre-events
+#      cms::Exception caught in cmsRun
+#      ---- EventSetupConflict BEGIN
+#      two EventSetup Sources want to deliver type="CSCBadChambers" label=""
+#       from record CSCBadChambersRcd. The two providers are 
+#      1) type="PoolDBESSource" label="GlobalTag"
+#      2) type="PoolDBESSource" label="cscBadChambers"
+#      Please either
+#         remove one of these Sources
+#         or find a way of configuring one of them so it does not deliver this data
+#         or use an es_prefer statement in the configuration to choose one.
+#      ---- EventSetupConflict END
+#
+#    --> use 'IDEAL_V9::All' for the time being...
+#
+process.GlobalTag.globaltag = 'IDEAL_V9::All'
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
+# import sequence for PAT-tuple production
+process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.customSelectionForAHtoElecMu_cff")
 
 process.load("TauAnalysis.Configuration.analyzeAHtoElecMu_cff")
@@ -24,7 +45,7 @@ from TauAnalysis.Configuration.sampleDefinitionsAHtoElecMu_cfi import *
 
 process.DQMStore = cms.Service("DQMStore")
 
-process.saveAHtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveAHtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsAHtoElecMu.root')
 )
 
@@ -33,7 +54,7 @@ process.saveAHtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
 #)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000)    
+    input = cms.untracked.int32(-1)    
 #    input = cms.untracked.int32(10)    
 )
 
@@ -44,13 +65,14 @@ process.source = cms.Source("PoolSource",
     #firstRun = cms.untracked.uint32(1),
     fileNames = cms.untracked.vstring(
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_1.root',
-#       'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_2.root',
+#        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_2.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_3.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_4.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_5.root'
         'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_1.root',
         'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_2.root',
         'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_3.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
 )
 
@@ -86,10 +108,25 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatLayer1ForTauAnalyses
-                     +process.produceElecMuPairs
-                     +process.analyzeAHtoElecMu
-                     +process.saveAHtoElecMu )
+#--------------------------------------------------------------------------------
+# import utility function for switching pat::Tau input
+# to different reco::Tau collection stored on AOD
+from PhysicsTools.PatAlgos.tools.tauTools import *
+
+# comment-out to take reco::CaloTaus instead of reco::PFTaus
+# as input for pat::Tau production
+#switchToCaloTau(process)
+
+# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
+# instead of fixed dR = 0.07 signal cone reco::PFTaus
+# as input for pat::Tau production
+#switchToPFTauShrinkingCone(process)
+switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
+
+process.p = cms.Path( process.producePatTuple
+                     +process.analyzeAHtoElecMuEvents
+                     +process.saveAHtoElecMuPlots )
 
 # print-out all python configuration parameter information
 #print process.dumpPython()

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeAHtoElecMu_cfi import *
 
-analyzeAHtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
+analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
 
   name = cms.string('ahElecMuAnalyzer'),
 
