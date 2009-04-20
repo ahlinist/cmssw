@@ -14,8 +14,12 @@ process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
+#--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+
+# import sequence for event selection
+process.load("TauAnalysis.Configuration.selectZtoElecMu_cff")
 
 # import sequence for filling of histograms, cut-flow table
 # and of run + event number pairs for events passing event selection
@@ -27,6 +31,7 @@ from TauAnalysis.Configuration.sampleDefinitionsZtoElecMu_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
+#--------------------------------------------------------------------------------
 
 process.DQMStore = cms.Service("DQMStore")
 
@@ -39,23 +44,18 @@ process.saveZtoElecMuPatTuple = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('elecMuSkim_patTuple.root')
 )
 
-#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
-#  ignoreTotal = cms.untracked.int32(1) # default is one
-#)
-
 process.maxEvents = cms.untracked.PSet(            
     input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
-    #firstEvent = cms.untracked.uint32(4097),
-    #firstRun = cms.untracked.uint32(1),
     fileNames = cms.untracked.vstring(
 #
 # Z --> tau tau (all decay modes; simulated with TAUOLA)
 # 10k events RelVal sample
 #
         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'    
     )
     #skipBadFiles = cms.untracked.bool(True)                        
 )
@@ -92,6 +92,11 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for switching pat::Tau input
+# to different reco::Tau collection stored on AOD
+from PhysicsTools.PatAlgos.tools.tauTools import *
+
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
 #switchToCaloTau(process)
@@ -101,12 +106,13 @@ process.source = cms.Source("PoolSource",
 # as input for pat::Tau production
 #switchToPFTauShrinkingCone(process)
 switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
-#                    +process.printList             # uncomment to enable print-out of generator level particles
 #                    +process.content               # uncomment to enable dump of event content after PAT-tuple production
 #                    +process.saveZtoElecMuPatTuple # uncomment to write-out produced PAT-tuple
-                     +process.analyzeZtoElecMu
+                     +process.selectZtoElecMuEvents
+                     +process.analyzeZtoElecMuEvents
                      +process.saveZtoElecMuPlots )
 
 # print-out all python configuration parameter information
