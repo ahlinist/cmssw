@@ -14,25 +14,25 @@ from TauAnalysis.Configuration.selectZtoMuTau_cff import *
 #--------------------------------------------------------------------------------
 
 # muon candidate selection with "loose" muon isolation criteria applied
-cfgMuonTrkIsoCutLooseMuonIsolation = copy.deepcopy(cfgMuonTrkIsoCut)
-cfgMuonTrkIsoCutLooseMuonIsolation.pluginName = "muonTrkIsoCutLooseMuonIsolation"
-cfgMuonTrkIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationCumulative')
-cfgMuonTrkIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationIndividual')
+cfgMuonTrkIsoCutLooseIsolation = copy.deepcopy(cfgMuonTrkIsoCut)
+cfgMuonTrkIsoCutLooseIsolation.pluginName = "muonTrkIsoCutLooseIsolation"
+cfgMuonTrkIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationCumulative')
+cfgMuonTrkIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoLooseIsolationIndividual')
 
-cfgMuonEcalIsoCutLooseMuonIsolation = copy.deepcopy(cfgMuonEcalIsoCut)
-cfgMuonEcalIsoCutLooseMuonIsolation.pluginName = "muonEcalIsoCutLooseMuonIsolation"
-cfgMuonEcalIsoCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative')
-cfgMuonEcalIsoCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationIndividual')
+cfgMuonEcalIsoCutLooseIsolation = copy.deepcopy(cfgMuonEcalIsoCut)
+cfgMuonEcalIsoCutLooseIsolation.pluginName = "muonEcalIsoCutLooseIsolation"
+cfgMuonEcalIsoCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative')
+cfgMuonEcalIsoCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationIndividual')
 
-cfgMuonAntiPionCutLooseMuonIsolation = copy.deepcopy(cfgMuonAntiPionCut)
-cfgMuonAntiPionCutLooseMuonIsolation.pluginName = "muonAntiPionCutLooseMuonIsolation"
-cfgMuonAntiPionCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationCumulative')
-cfgMuonAntiPionCutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationIndividual')
+cfgMuonAntiPionCutLooseIsolation = copy.deepcopy(cfgMuonAntiPionCut)
+cfgMuonAntiPionCutLooseIsolation.pluginName = "muonAntiPionCutLooseIsolation"
+cfgMuonAntiPionCutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationCumulative')
+cfgMuonAntiPionCutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsPionVetoLooseIsolationIndividual')
 
-cfgMuonTrkIPcutLooseMuonIsolation = copy.deepcopy(cfgMuonTrkIPcut)
-cfgMuonTrkIPcutLooseMuonIsolation.pluginName = "muonTrkIPcutLooseMuonIsolation"
-cfgMuonTrkIPcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative')
-cfgMuonTrkIPcutLooseMuonIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationIndividual')
+cfgMuonTrkIPcutLooseIsolation = copy.deepcopy(cfgMuonTrkIPcut)
+cfgMuonTrkIPcutLooseIsolation.pluginName = "muonTrkIPcutLooseIsolation"
+cfgMuonTrkIPcutLooseIsolation.src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationCumulative')
+cfgMuonTrkIPcutLooseIsolation.src_individual = cms.InputTag('selectedLayer1MuonsTrkIPlooseIsolationIndividual')
 
 # selection of di-tau candidates composed of combination of tau-jet with "loosely" isolated muon 
 cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauAntiOverlapVeto)
@@ -51,10 +51,10 @@ cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_cumulative = cms.InputT
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationIndividual')
 
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
-    [ cfgMuonTrkIsoCutLooseMuonIsolation,
-      cfgMuonEcalIsoCutLooseMuonIsolation,
-      cfgMuonAntiPionCutLooseMuonIsolation,
-      cfgMuonTrkIPcutLooseMuonIsolation,
+    [ cfgMuonTrkIsoCutLooseIsolation,
+      cfgMuonEcalIsoCutLooseIsolation,
+      cfgMuonAntiPionCutLooseIsolation,
+      cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation ],
