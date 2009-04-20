@@ -1,0 +1,4 @@
+<library file="*.cc" name=L1TriggerPlugins>
+ <use name=SLHCUpgradeSimulations/L1Trigger>
+<flags EDM_PLUGIN=1>
+</library>
