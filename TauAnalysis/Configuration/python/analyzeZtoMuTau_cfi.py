@@ -48,49 +48,49 @@ muTauHistManagers = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
 # (NOTE: to be used in case of Monte Carlo samples
 #        overlapping in simulated phase-space only !!)
 genPhaseSpaceCut = cms.PSet(
-  pluginName = cms.string('genPhaseSpaceCut'),
-  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
+    pluginName = cms.string('genPhaseSpaceCut'),
+    pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
+    src = cms.InputTag('genPhaseSpaceEventInfo'),
+    cut = cms.string('')
 )
 
 # generator level selection of Z --> mu + tau-jet events
 # passing basic acceptance and kinematic cuts
 # (NOTE: to be used for efficiency studies only !!)
 #genMuonCut = cms.PSet(
-#  pluginName = cms.string('genMuonCut'),
-#  pluginType = cms.string('PATCandViewMinEventSelector'),
-#  src = cms.InputTag('selectedGenTauDecaysToMuonPt15Cumulative'),
-#  minNumber = cms.uint32(1)
+#    pluginName = cms.string('genMuonCut'),
+#    pluginType = cms.string('PATCandViewMinEventSelector'),
+#    src = cms.InputTag('selectedGenTauDecaysToMuonPt15Cumulative'),
+#    minNumber = cms.uint32(1)
 #)
 #genTauCut = cms.PSet(
-#  pluginName = cms.string('genTauCut'),
-#  pluginType = cms.string('PATCandViewMinEventSelector'),
-#  src = cms.InputTag('selectedGenTauDecaysToHadronsPt20Cumulative'),
-#  minNumber = cms.uint32(1)
+#    pluginName = cms.string('genTauCut'),
+#    pluginType = cms.string('PATCandViewMinEventSelector'),
+#    src = cms.InputTag('selectedGenTauDecaysToHadronsPt20Cumulative'),
+#    minNumber = cms.uint32(1)
 #)
 
 evtSelTrigger = cms.PSet(
     pluginName = cms.string('evtSelTrigger'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('Trigger'),
+    src = cms.InputTag('Trigger')
 )
 
 # primary event vertex selection
 evtSelPrimaryEventVertex = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertex'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('primaryEventVertex'),
+    src = cms.InputTag('primaryEventVertex')
 )
 evtSelPrimaryEventVertexQuality = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertexQuality'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('primaryEventVertexQuality'),
+    src = cms.InputTag('primaryEventVertexQuality')
 )
 evtSelPrimaryEventVertexPosition = cms.PSet(
     pluginName = cms.string('evtSelPrimaryEventVertexPosition'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('primaryEventVertexPosition'),
+    src = cms.InputTag('primaryEventVertexPosition')
 )
 
 # muon candidate selection
@@ -217,7 +217,7 @@ evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
 #evtSelCentralJetVeto = cms.PSet(
 #    pluginName = cms.string('evtSelCentralJetVeto'),
 #    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('centralJetVeto'),
+#    src = cms.InputTag('centralJetVeto')
 #)
 
 #--------------------------------------------------------------------------------
