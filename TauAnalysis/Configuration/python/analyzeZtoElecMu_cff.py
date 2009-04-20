@@ -3,75 +3,75 @@ import FWCore.ParameterSet.Config as cms
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 
-analyzeZtoElecMu = cms.EDAnalyzer("GenericAnalyzer",
+analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
 
-  name = cms.string('zElecMuAnalyzer'),
+    name = cms.string('zElecMuAnalyzer'),
 
-  eventSelection = cms.VPSet(
-    # generator level phase-space selection
-    # (NOTE: (1) to be used in case of Monte Carlo samples
-    #            overlapping in simulated phase-space only !!
-    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
-    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
-    #            to the CERN batch system will not work !!)
-    genPhaseSpaceCut,
+    eventSelection = cms.VPSet(
+        # generator level phase-space selection
+        # (NOTE: (1) to be used in case of Monte Carlo samples
+        #            overlapping in simulated phase-space only !!
+        #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
+        #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
+        #            to the CERN batch system will not work !!)
+        genPhaseSpaceCut,
     
-    # generator level selection of Z --> e + mu events
-    # passing basic acceptance and kinematic cuts
-    # (NOTE: to be used for efficiency studies only !!)
-    #genElectronCut,
-    #genMuonCut,
+        # generator level selection of Z --> e + mu events
+        # passing basic acceptance and kinematic cuts
+        # (NOTE: to be used for efficiency studies only !!)
+        #genElectronCut,
+        #genMuonCut,
+        
+        # trigger selection
+        evtSelTrigger,
+        
+        # primary event vertex selection
+        evtSelPrimaryEventVertex,
+        evtSelPrimaryEventVertexQuality,
+        evtSelPrimaryEventVertexPosition,
+        
+        # electron candidate selection
+        evtSelTightElectronId,
+        evtSelElectronAntiCrack,
+        evtSelElectronEta,
+        evtSelElectronPt,
+        evtSelElectronTrkIso,
+        evtSelElectronEcalIso,
+        evtSelElectronTrk,
+        evtSelElectronTrkIP,
 
-    # trigger selection
-    Trigger,
-    
-    # primary event vertex selection
-    primaryEventVertex,
-    primaryEventVertexQuality,
-    primaryEventVertexPosition,
+        # muon candidate selection
+        evtSelGlobalMuon,
+        evtSelMuonEta,
+        evtSelMuonPt,
+        evtSelMuonTrkIso,
+        evtSelMuonEcalIso,
+        evtSelMuonAntiPion,
+        evtSelMuonTrkIP,
+        
+        # di-tau candidate selection
+        evtSelDiTauCandidateForElecMuAcoplanarity,
+        evtSelDiTauCandidateForElecMuZeroCharge,
+        
+        # veto events containing additional central jets with Et > 20 GeV
+        evtSelCentralJetVeto
+    ),
 
-    # electron candidate selection
-    tightElectronIdCut,
-    electronAntiCrackCut,
-    electronEtaCut,
-    electronPtCut,
-    electronTrkIsoCut,
-    electronEcalIsoCut,
-    electronTrkCut,
-    electronTrkIPcut,
+    histManagers = cms.VPSet(
+        genPhaseSpaceEventInfoHistManager,
+        electronHistManager,
+        muonHistManager,
+        diTauCandidateHistManagerForElecMu,
+        metHistManager,
+        jetHistManager,
+        vertexHistManager,
+        triggerHistManager 
+    ),
 
-    # muon candidate selection
-    globalMuonCut,
-    muonEtaCut,
-    muonPtCut,
-    muonTrkIsoCut,
-    muonEcalIsoCut,
-    muonAntiPionCut,
-    muonTrkIPcut,
+    eventDumps = cms.VPSet(
+        elecMuEventDump
+    ),
 
-    # di-tau candidate selection
-    diTauCandidateForElecMuAcoplanarityCut,
-    diTauCandidateForElecMuZeroChargeCut,
-
-    # veto events containing additional central jets with Et > 20 GeV
-    centralJetVeto
-  ),
-
-  histManagers = cms.VPSet(
-    genPhaseSpaceEventInfoHistManager,
-    electronHistManager,
-    muonHistManager,
-    diTauCandidateHistManagerForElecMu,
-    metHistManager,
-    jetHistManager,
-    vertexHistManager,
-    triggerHistManager 
-  ),
-
-  eventDumps = cms.VPSet(
-    elecMuEventDump
-  ),
-
-  analysisSequence = elecMuAnalysisSequence
+    analysisSequence = elecMuAnalysisSequence
 )
 
