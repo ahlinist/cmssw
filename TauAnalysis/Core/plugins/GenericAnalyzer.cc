@@ -513,6 +513,8 @@ void GenericAnalyzer::endJob()
 {
   //std::cout << "<GenericAnalyzer::endJob>:" << std::endl;
 
+  if ( cfgError_ ) return;
+
 //--- call endJob method of each EDFilter/EDAnalyzer
   for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
 	entry != analysisSequence_.end(); ++entry ) {
