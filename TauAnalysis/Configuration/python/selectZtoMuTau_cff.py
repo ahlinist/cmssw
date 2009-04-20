@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import copy
 
 from TauAnalysis.RecoTools.eventSelFlagProdConfigurator import *
 
