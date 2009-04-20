@@ -166,7 +166,27 @@
  <Constant name="ZOverlapStack8"       value="0.6*cm"/> 
  <Constant name="ZOverlapStack9"       value="0.6*cm"/> 
 
+ <Constant name="StackOffsetStack0"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack1"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack2"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack3"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack4"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack5"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack6"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack7"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack8"   value="0.0*mm"/>
+ <Constant name="StackOffsetStack9"   value="0.0*mm"/>
 
+ <Constant name="StackOffsetTStack0"   value="0"/>
+ <Constant name="StackOffsetTStack1"   value="0"/>
+ <Constant name="StackOffsetTStack2"   value="0"/>
+ <Constant name="StackOffsetTStack3"   value="0"/>
+ <Constant name="StackOffsetTStack4"   value="0"/>
+ <Constant name="StackOffsetTStack5"   value="0"/>
+ <Constant name="StackOffsetTStack6"   value="0"/>
+ <Constant name="StackOffsetTStack7"   value="0"/>
+ <Constant name="StackOffsetTStack8"   value="0"/>
+ <Constant name="StackOffsetTStack9"   value="0"/>
 
 <!--
 =========== Layout 1(TOB-like) not functional in FastSim. Default is 0(TIB-like) ===========

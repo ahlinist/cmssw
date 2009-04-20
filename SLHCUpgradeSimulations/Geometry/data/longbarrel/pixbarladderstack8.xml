@@ -9,6 +9,8 @@
  <Constant name="SensorSeparation"  value="[pixbar:SeparationStack8]"/>
  <Constant name="SensorWidth"       value="[pixbar:SensorWidthStack8]"/>
  <Constant name="SensorThick"       value="[pixbar:SensorThickStack8]"/>
+ <Constant name="StackOffset"       value="[pixbar:StackOffsetStack8]"/>
+ <Constant name="StackOffsetT"      value="[pixbar:StackOffsetTStack8]"/>
  <Constant name="Overlap"           value="[pixbar:OverlapStack8]"/>
  <Constant name="ZOverlap"          value="[Overlap]*[pixbar:ZOverlapStack8]"/>
 
@@ -368,10 +370,12 @@
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="Theta"       value="0*deg"/>
   <Numeric name="Phi"         value="0*deg"/>
-  <Numeric name="Offset"      value="[ModuleZ]" />
+  <Numeric name="Offset"      value="[ModuleDz]/2" />
   <Numeric name="Delta"       value="[ModuleDz]-[ZOverlap]"/>
   <String name="Rotation"     value="pixbarladder:NULL" />
   <Numeric name="ZOffset"     value="[ZOffset]"/>
+  <Numeric name="StackOffset" value="[StackOffset]"/>
+  <Numeric name="StackOffsetT" value="[StackOffsetT]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 
     [zero], [zero], [zero] </Vector>
 </Algorithm>
@@ -381,10 +385,12 @@
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="Theta"       value="0*deg"/>
   <Numeric name="Phi"         value="0*deg"/>
-  <Numeric name="Offset"      value="[ModuleZ]" />
+  <Numeric name="Offset"      value="[ModuleDz]/2" />
   <Numeric name="Delta"       value="[ModuleDz]-[ZOverlap]"/>
   <String name="Rotation"     value="pixbarladder:NULL" />
-  <Numeric name="ZOffset"     value="[zero]"/> 
+  <Numeric name="ZOffset"     value="[zero]"/>
+  <Numeric name="StackOffset" value="[zero]"/>
+  <Numeric name="StackOffsetT" value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3">
     [zero], [zero], [zero] </Vector>
 </Algorithm>
@@ -394,10 +400,12 @@
   <Numeric name="Number"      value="[Modules]"/>
   <Numeric name="Theta"       value="0*deg"/>
   <Numeric name="Phi"         value="0*deg"/>
-  <Numeric name="Offset"      value="[ModuleZ]" />
+  <Numeric name="Offset"      value="[ModuleDz]/2" />
   <Numeric name="Delta"       value="[ModuleDz]-[ZOverlap]"/>
   <String name="Rotation"     value="pixbarladder:NULL" />
-  <Numeric name="ZOffset"     value="[ZOffset]"/> 
+  <Numeric name="ZOffset"     value="[ZOffset]"/>
+  <Numeric name="StackOffset" value="[zero]"/>
+  <Numeric name="StackOffsetT" value="[zero]"/>
   <Vector name="Center" type="numeric" nEntries="3"> 
     [zero], [zero], [zero] </Vector>
 </Algorithm>
