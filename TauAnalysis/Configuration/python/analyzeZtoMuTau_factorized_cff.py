@@ -54,20 +54,6 @@ analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSe
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation)
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauMt1MET)
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelDiTauCandidateForMuTauZeroCharge, evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation)
-#replaceEventSelection(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection,
-#                      evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation)
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
 

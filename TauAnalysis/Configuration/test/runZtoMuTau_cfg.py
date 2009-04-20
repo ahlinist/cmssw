@@ -70,8 +70,6 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-    #firstEvent = cms.untracked.uint32(510),
-    #firstRun = cms.untracked.uint32(1),
     fileNames = cms.untracked.vstring(
 #
 # Z --> tau tau (all decay modes; simulated with TAUOLA)
@@ -83,9 +81,7 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_3/src/TauAnalysis/Configuration/test/muTauSkim.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_Zmumu.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/passZtoMuTau/selEventsZtoMuTau_WplusJets.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
 #    ),
 #    eventsToProcess = cms.untracked.VEventID(
 #      '1:386'
