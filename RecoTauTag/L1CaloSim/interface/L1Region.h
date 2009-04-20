@@ -15,7 +15,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.h,v 1.3 2008/09/24 21:44:42 chinhan Exp $
+// $Id: L1Region.h,v 1.5 2009/02/08 18:14:36 chinhan Exp $
 //
 
 // user include files
@@ -71,6 +71,9 @@ struct L1Config {
   double MuonNoiseLevel; 
   double CrystalEBThreshold;
   double CrystalEEThreshold;
+
+  double EMActiveLevelIso; 
+  double HadActiveLevelIso; 
 
   double TowerEMLSB;
   double TowerHadLSB;

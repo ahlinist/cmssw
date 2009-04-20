@@ -15,7 +15,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.h,v 1.1.2.1 2008/07/08 18:05:53 chinhan Exp $
+// $Id: L1GlobalAlgo.h,v 1.2 2008/07/24 10:20:30 chinhan Exp $
 //
 
 // system include files
@@ -107,6 +107,7 @@ class L1GlobalAlgo {
       bool isTauJet(int rgnid);
       bool TauIsolation(int rgnid);
 
+      void checkPartialTauIsolation(int cRgn); 	 
       void findJets();
       void addJet(int rgnId, bool taubit);
       void checkMapping();
