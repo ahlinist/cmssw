@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.22 2009/04/04 06:48:23 smaruyam Exp $
+// $Id: TTEffAnalyzer.h,v 1.23 2009/04/21 00:52:53 smaruyam Exp $
 //
 //
 
@@ -33,6 +33,7 @@
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/LorentzVectorFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
@@ -82,6 +83,11 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
+  
+      void clusterShape(const reco::PFTau& tau, std::vector<double>& rms) const;
+      void clusterShape(const math::XYZTLorentzVectorCollection& clusters, std::vector<double>& rms) const;
+      void getPFClusters(const PFCandidateRefVector& pfCands, math::XYZTLorentzVectorCollection& clusters) const;
+      bool checkPos(const std::vector<math::XYZPoint>& CalPos, const math::XYZPoint& CandPos) const;
 
       // ----------member data ---------------------------
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_; //Path to analyze
@@ -94,6 +100,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
+      float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
       double MCMatchingCone;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
