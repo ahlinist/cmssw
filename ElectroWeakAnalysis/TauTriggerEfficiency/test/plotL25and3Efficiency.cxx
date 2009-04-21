@@ -2,7 +2,7 @@ void plotL25and3Efficiency(  bool print=true) {
   gROOT->LoadMacro("./Plotter.cxx");
   Plotter* plotter = new Plotter();
   plotter->SetYTitle("Level-2.5 efficiency");
-  TString plotDir = "Newl25plots/";
+  TString plotDir = "l25and3plots/";
   // PFTau Et
   TCut DenEtaPtCut = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauInvPt<0.2&&l25Depth>0";// check L1,2 when it's possible
   TCut DenEtPtCut  = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEt>15&&PFTauInvPt<0.2&&l25Depth>0";// check L1,2 when it's possible
