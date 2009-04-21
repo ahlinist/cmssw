@@ -6,7 +6,7 @@ OrEventSelector::OrEventSelector(const edm::ParameterSet& cfg)
   vParameterSet cfgSelectors = cfg.getParameter<vParameterSet>("selectors");
   for ( vParameterSet::const_iterator cfgSelector = cfgSelectors.begin(); 
 	cfgSelector != cfgSelectors.end(); ++cfgSelector ) {
-    std::string selectorType = cfgSelector->getParameter<std::string>("type");
+    std::string selectorType = cfgSelector->getParameter<std::string>("pluginType");
     EventSelectorBase* selector = EventSelectorPluginFactory::get()->create(selectorType, *cfgSelector);
     selectors_.push_back(selector);
   }
