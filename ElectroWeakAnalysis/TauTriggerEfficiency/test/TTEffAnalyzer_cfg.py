@@ -68,6 +68,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
         l3IsoSource             = cms.InputTag("hltL3TauIsolationSelector"),
         l25MatchingCone         = cms.double(0.3),
+        MCMatchingCone         = cms.double(0.2),
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 
