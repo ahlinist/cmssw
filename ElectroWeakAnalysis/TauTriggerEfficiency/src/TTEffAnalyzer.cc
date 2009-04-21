@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.21 2009/04/07 13:17:15 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.22 2009/04/07 13:27:58 chinhan Exp $
 //
 //
 
@@ -24,6 +24,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
+  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName"))
 {
   // File setup
@@ -42,6 +43,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFIso = 0;
   PFIsoSum = 0;
   PFEnergy = 0;
+  MCMatch = 0;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
@@ -52,6 +54,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
   _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
+  _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
@@ -77,19 +80,18 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   edm::Handle<std::vector<LorentzVector> > mcTaus;
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<reco::GsfElectronCollection> electronTaus;
 
-   if(iEvent.getByLabel(MCTaus_, mcTaus)){
-    loop(iEvent, *mcTaus);
-    }
-   else if(iEvent.getByLabel(PFTaus_, PFTaus)) {
+   if(iEvent.getByLabel(PFTaus_, PFTaus)) {
       try{
-	iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
+        iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
       }catch(...){ cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;}
+      try{
+    iEvent.getByLabel(MCTaus_, mcTaus);
+    }catch(...){}
       loop(iEvent, *PFTaus);
-   }  
+   }
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent, *caloTaus);
    }
@@ -113,6 +115,10 @@ void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
 
 void
 TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
+using namespace reco;
+  PFInvPt = 0.;
+  PFIso = 0;
+
 // Here is workaround, though not beautiful, to access PFIso info with PFRef
 // While keeping the generic structure of loop method
   const PFTauRef thisTauRef(PFTaus,i);
@@ -121,6 +127,15 @@ TTEffAnalyzer::fill(const reco::PFTau& tau,unsigned int i) {
 	PFIso = ds[thisTauRef];// it should crash if CMSSW cannot find a match between TauRef and Iso collection
                             // Then check configuration files to make sure a correct pair is being fed into TTEFF
   }
+MCMatch = 0;
+  if(mcTaus.isValid()){
+    for(unsigned int k = 0 ; k < mcTaus->size(); k++){
+    if( deltaR(PFTaus->at(i),mcTaus->at(k) ) < MCMatchingCone ){ // match within 0.2 cone
+         MCMatch = 1;
+        break;
+    }
+  }
+}
    if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
    fill(PFTaus->at(i).p4());
