@@ -13,12 +13,15 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.23 2009/04/21 00:53:37 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.24 2009/04/21 01:13:03 smaruyam Exp $
 //
 //
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/TTEffAnalyzer.h"
 #include "Math/GenVector/VectorUtil.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlockElement.h"
+#include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
@@ -54,6 +57,10 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFTauIso", &PFIso, "PFTauIso/F");
   _TTEffTree->Branch("PFTauIsoSum", &PFIsoSum, "PFTauIsoSum/F");
   _TTEffTree->Branch("PFTauEnergy", &PFEnergy, "PFTauEnergy/F");
+  _TTEffTree->Branch("PFClusterEtaRMS", &PFClusterEtaRMS, "PFClusterEtaRMS/F");
+  _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS, "PFClusterPhiRMS/F");
+  _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS, "PFClusterDrRMS/F");
+  
   _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
@@ -127,18 +134,18 @@ using namespace reco;
 	PFIso = ds[thisTauRef];// it should crash if CMSSW cannot find a match between TauRef and Iso collection
                             // Then check configuration files to make sure a correct pair is being fed into TTEFF
   }
-MCMatch = 0;
+  MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
-    if( deltaR(PFTaus->at(i),mcTaus->at(k) ) < MCMatchingCone ){ // match within 0.2 cone
+      if( deltaR(PFTaus->at(i),mcTaus->at(k) ) < MCMatchingCone ){ // match within 0.2 cone
          MCMatch = 1;
         break;
+      }
     }
   }
-}
-   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
+  if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
-   fill(PFTaus->at(i).p4());
+  fill(PFTaus->at(i).p4());
 
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
@@ -152,6 +159,11 @@ MCMatch = 0;
   PFEGPhiRMS = rms[1];
   PFEGDrRMS = rms[2];
   */
+  std::vector<double> rms;
+  clusterShape(tau, rms);
+  PFClusterEtaRMS = rms[0];
+  PFClusterPhiRMS = rms[1];
+  PFClusterDrRMS = rms[2];
 }
 
 void TTEffAnalyzer::fill(const reco::CaloTau& tau,unsigned int i) {
@@ -223,4 +235,108 @@ TTEffAnalyzer::clusterSeparation(const reco::PFCandidateRefVector& isol_cands,co
   out.push_back(drrms/sumet);
 
   return out;
+}
+
+
+
+struct RecHitPtComparator {
+  bool operator()(const math::XYZTLorentzVector v1, const math::XYZTLorentzVector v2) const {
+    return v1.pt() > v2.pt();
+  }
+};
+
+void TTEffAnalyzer::clusterShape(const reco::PFTau& tau, std::vector<double>& rms) const {
+  // Get PFCandidates
+  math::XYZTLorentzVectorCollection clusters;
+  getPFClusters(tau.signalPFCands(), clusters);
+  getPFClusters(tau.isolationPFCands(), clusters);
+
+  std::sort(clusters.begin(), clusters.end(), RecHitPtComparator());
+
+  clusterShape(clusters, rms);
+}
+
+void TTEffAnalyzer::clusterShape(const math::XYZTLorentzVectorCollection& clusters, std::vector<double>& rms) const {
+  double eta_rms =0;
+  double phi_rms =0;
+  double dr_rms = 0;
+  double sumpt = 0;
+
+  if(clusters.size() > 0) {
+    math::XYZTLorentzVector direction(0,0,0,0);
+    for(math::XYZTLorentzVectorCollection::const_iterator c = clusters.begin(); c!=clusters.end(); ++c) {
+      direction += *c;
+    }
+
+    for(math::XYZTLorentzVectorCollection::const_iterator c = clusters.begin(); c!=clusters.end(); ++c) {
+      eta_rms += c->pt() * pow(c->eta() - direction.eta(), 2);
+      phi_rms += c->pt() * pow(ROOT::Math::VectorUtil::DeltaPhi(*c,direction), 2);
+      dr_rms  += c->pt() * pow(ROOT::Math::VectorUtil::DeltaR(*c,direction),   2);
+      sumpt   += c->pt();			   
+    }
+  }
+  else {
+    eta_rms=0.;
+    phi_rms=0.;
+    dr_rms =0.;
+    sumpt=1.;
+  }
+
+  rms.push_back(eta_rms/sumpt);
+  rms.push_back(phi_rms/sumpt);
+  rms.push_back(dr_rms/sumpt);
+}
+
+void TTEffAnalyzer::getPFClusters(const PFCandidateRefVector& pfCands, math::XYZTLorentzVectorCollection& clusters) const {
+  // Against double counting of PFClusters
+  // See also RecoTauTag/RecoTau/src/PFRecoTauAlgorithm.cc
+  std::vector<math::XYZPoint> hcalPosV;
+  std::vector<math::XYZPoint> ecalPosV;
+  
+  for(unsigned int i=0; i<pfCands.size(); ++i) {
+    const reco::PFCandidate::ElementsInBlocks& el = pfCands[i]->elementsInBlocks();
+    for(reco::PFCandidate::ElementsInBlocks::const_iterator iter = el.begin(); iter != el.end(); ++iter) {
+      const reco::PFBlock& block = *(iter->first);
+      unsigned int block_index = iter->second;
+
+      const edm::OwnVector<reco::PFBlockElement>& elements = block.elements();
+      assert(block_index < elements.size());
+
+      const reco::PFBlockElement& element = elements[block_index];
+
+      //element.Dump();
+      //PFClusterRef foo = element.clusterRef();
+      //std::cout << "Block index " << block_index << " is available " << foo.isAvailable() << " is null " << foo.isNull() << std::endl;
+
+      // If referenced cluster is not available, ignore it
+      // This is possible source of an error
+      if(!element.clusterRef().isAvailable())
+        continue;
+
+      math::XYZPoint cluster_pos = element.clusterRef()->position();
+      double energy = element.clusterRef()->energy();
+
+      if(element.type() == reco::PFBlockElement::HCAL) {
+        if(!checkPos(hcalPosV, cluster_pos)) {
+          hcalPosV.push_back(cluster_pos);
+          clusters.push_back(math::XYZTLorentzVector(cluster_pos.x(), cluster_pos.y(), cluster_pos.z(), energy));
+        }
+      }
+      else if(element.type() == reco::PFBlockElement::ECAL) {
+        if(!checkPos(ecalPosV, cluster_pos)) {
+          ecalPosV.push_back(cluster_pos);
+          clusters.push_back(math::XYZTLorentzVector(cluster_pos.x(), cluster_pos.y(), cluster_pos.z(), energy));
+        }
+      }
+    }
+  }
+}
+
+
+bool TTEffAnalyzer::checkPos(const std::vector<math::XYZPoint>& CalPos, const math::XYZPoint& CandPos) const {
+  for (unsigned int i=0; i<CalPos.size(); i++)
+    if (CalPos[i] == CandPos)
+      return true;
+
+  return false;
 }
