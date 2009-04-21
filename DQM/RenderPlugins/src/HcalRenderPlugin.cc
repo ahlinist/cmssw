@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.9 $
-  \date $Date: 2009/04/08 16:21:15 $
+  \version $Revision: 1.10 $
+  \date $Date: 2009/04/08 18:05:37 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -255,8 +255,17 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
 	(o.name.find("DataFormatMonitor/DCC Plots/DCC Ev Fragment")!=std::string::npos) ||
 	(o.name.find("DataFormatMonitor/DCC Plots/Spigot Format")!=std::string::npos)   ||
 	(o.name.find("DataFormatMonitor/HTR Plots/BCN from HTRs")!=std::string::npos)   ||
-	(o.name.find("DataFormatMonitor/HTR Plots/EvN Difference")!=std::string::npos)     )
+	(o.name.find("DataFormatMonitor/HTR Plots/EvN Difference")!=std::string::npos)  ||
+	(o.name.find("RecHitMonitor_Hcal/rechit_1D_plots") !=std::string::npos)
+	)
     gPad->SetLogy(1);
+  
+  if (o.name.find("Problem_Total_DeadCells_") != std::string::npos ||
+      o.name.find("rechit_1D_plots")!= std::string.npos)
+    {
+      gStyle->SetOptStat("irmen");
+      obj->SetStats( kTRUE );
+    }
 
   if (  (o.name.find("DataFormatMonitor/HTR Plots/")!=std::string::npos) &&
 	(o.name.find("Data Format Error Word")!=std::string::npos)          )
@@ -302,6 +311,13 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   // Do we want to set stats to 0 for Hcal?
   gStyle->SetOptStat( 0 ); 
   obj->SetStats( kFALSE ); 
+
+  if (o.name.find("DeadCellMonitor_Hcal/Problem_Total_DeadCells_") != std::string::npos ||
+      o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")!= std::string.npos)
+    {
+      gStyle->SetOptStat("irmen");
+      obj->SetStats( kTRUE );
+    }
 
    // Set default color scheme
 
@@ -357,6 +373,8 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	  obj->Scale(1./scale);
 	  obj->SetMinimum(0.);
 	  obj->SetMaximum(1.);
+	  //Set error palette just for normalized histograms?
+	  gStyle->SetPalette(20, errorFracColors);
 	}
 
       obj->SetOption("colz");
@@ -386,6 +404,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	  obj->SetMinimum(0.);
 	}
       //setErrorColor();
+      gStyle->SetPalette(20, errorFracColors);
       obj->SetOption("colz");
     }
 
