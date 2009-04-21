@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.21 2009/03/25 15:08:19 gfball Exp $
+// $Id: TTEffAnalyzer.h,v 1.22 2009/04/04 06:48:23 smaruyam Exp $
 //
 //
 
@@ -89,10 +89,12 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       edm::Handle<PFTauCollection> PFTaus;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
+      edm::Handle<std::vector<LorentzVector> > mcTaus;
 
       // PF Variables
-      int NEGCandsInAnnulus,NHadCandsInAnnulus;
-        float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
+      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch;
+      float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
+      double MCMatchingCone;
       L1TauEfficiencyAnalyzer _L1analyzer;
       L2TauEfficiencyAnalyzer _L2analyzer;
       L25and3TauEfficiencyAnalyzer _L25and3analyzer;
