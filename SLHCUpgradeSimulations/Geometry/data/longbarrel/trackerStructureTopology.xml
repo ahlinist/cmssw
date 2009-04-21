@@ -16,6 +16,7 @@
       <PartSelector path="//PixelBarrelLayer0" />
       <PartSelector path="//PixelBarrelLayer1" />
       <PartSelector path="//PixelBarrelLayer2" />
+      <PartSelector path="//PixelBarrelLayer3" />
       <PartSelector path="//PixelBarrelLayerStack0" />
       <PartSelector path="//PixelBarrelLayerStack1" />
       <PartSelector path="//PixelBarrelLayerStack2" />
@@ -23,9 +24,9 @@
       <PartSelector path="//PixelBarrelLayerStack4" />
       <PartSelector path="//PixelBarrelLayerStack5" />
       <PartSelector path="//PixelBarrelLayerStack6" />
-<PartSelector path="//PixelBarrelLayerStack7" />
-<PartSelector path="//PixelBarrelLayerStack8" />
-<PartSelector path="//PixelBarrelLayerStack9" />
+      <PartSelector path="//PixelBarrelLayerStack7" />
+      <PartSelector path="//PixelBarrelLayerStack8" />
+      <PartSelector path="//PixelBarrelLayerStack9" />
       <Parameter name="TkDDDStructure" value="PixelBarrelLayer"/>
     </SpecPar>
 

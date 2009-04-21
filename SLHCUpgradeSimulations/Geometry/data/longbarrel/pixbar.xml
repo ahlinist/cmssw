@@ -4,42 +4,20 @@
 <ConstantsSection label="pixbar.xml" eval="true">
 
 <!--
-=========== These are new constants relating to the standard pixel layers ===========
--->
-
-
- <Constant name="Radius0"           value="4.4429*cm"/>
- <Constant name="Radius1"           value="7.32575*cm"/>
- <Constant name="Radius2"           value="10.1853*cm"/>
-
- <Constant name="Ladders0"          value="0.4124*[Radius0]"/>
- <Constant name="Ladders1"          value="0.4124*[Radius1]"/>
- <Constant name="Ladders2"          value="0.4214*[Radius2]"/>
-
-
-<!--
 =========== These are new constants relating to the stacked pixel layers ===========
 -->
 
-<!--
- <Constant name="RadiusStack0"         value="25.0*cm"/>
- <Constant name="RadiusStack1"         value="35.0*cm"/>
- <Constant name="RadiusStack2"         value="55.0*cm"/>
- <Constant name="RadiusStack3"         value="65.0*cm"/>
- <Constant name="RadiusStack4"         value="95.0*cm"/>
- <Constant name="RadiusStack5"         value="105.0*cm"/>
--->
 
-<Constant name="RadiusStack0"         value="34.0*cm"/>
+ <Constant name="RadiusStack0"         value="34.0*cm"/>
  <Constant name="RadiusStack1"         value="38.0*cm"/>
  <Constant name="RadiusStack2"         value="50.0*cm"/>
  <Constant name="RadiusStack3"         value="54.0*cm"/>
  <Constant name="RadiusStack4"         value="66.3*cm"/>
  <Constant name="RadiusStack5"         value="70.3*cm"/>
-  <Constant name="RadiusStack6"         value="82.3*cm"/>
-  <Constant name="RadiusStack7"         value="86.3*cm"/>
-  <Constant name="RadiusStack8"         value="100.5*cm"/>
-  <Constant name="RadiusStack9"         value="104.0*cm"/>
+ <Constant name="RadiusStack6"         value="82.3*cm"/>
+ <Constant name="RadiusStack7"         value="86.3*cm"/>
+ <Constant name="RadiusStack8"         value="100.5*cm"/>
+ <Constant name="RadiusStack9"         value="104.0*cm"/>
 
  <Constant name="SeparationStack0"     value="1.0*mm"/>
  <Constant name="SeparationStack1"     value="1.0*mm"/>
@@ -47,10 +25,10 @@
  <Constant name="SeparationStack3"     value="1.0*mm"/>
  <Constant name="SeparationStack4"     value="1.0*mm"/>
  <Constant name="SeparationStack5"     value="1.0*mm"/>
-  <Constant name="SeparationStack6"     value="1.0*mm"/>
-  <Constant name="SeparationStack7"     value="1.0*mm"/>
+ <Constant name="SeparationStack6"     value="1.0*mm"/>
+ <Constant name="SeparationStack7"     value="1.0*mm"/>
  <Constant name="SeparationStack8"     value="1.0*mm"/>
-<Constant name="SeparationStack9"     value="1.0*mm"/>
+ <Constant name="SeparationStack9"     value="1.0*mm"/>
 
  <Constant name="SensorWidthStack0"    value="100.0*mm"/>
  <Constant name="SensorWidthStack1"    value="100.0*mm"/>
@@ -58,10 +36,10 @@
  <Constant name="SensorWidthStack3"    value="100.0*mm"/>
  <Constant name="SensorWidthStack4"    value="100.0*mm"/>
  <Constant name="SensorWidthStack5"    value="100.0*mm"/>
-  <Constant name="SensorWidthStack6"    value="100.0*mm"/>
+ <Constant name="SensorWidthStack6"    value="100.0*mm"/>
  <Constant name="SensorWidthStack7"    value="100.0*mm"/>
  <Constant name="SensorWidthStack8"    value="100.0*mm"/>
-<Constant name="SensorWidthStack9"    value="100.0*mm"/>
+ <Constant name="SensorWidthStack9"    value="100.0*mm"/>
 
  <Constant name="SensorThickStack0"    value="0.285*mm"/>
  <Constant name="SensorThickStack1"    value="0.285*mm"/>
@@ -73,18 +51,6 @@
  <Constant name="SensorThickStack7"    value="0.285*mm"/>
  <Constant name="SensorThickStack8"    value="0.285*mm"/>
  <Constant name="SensorThickStack9"    value="0.285*mm"/>
-<!--
- <Constant name="LaddersStack0"        value="26"/>
- <Constant name="LaddersStack1"        value="32"/>
- <Constant name="LaddersStack2"        value="38"/>
- <Constant name="LaddersStack3"        value="44"/>
- <Constant name="LaddersStack4"        value="50"/>
- <Constant name="LaddersStack5"        value="56"/>
-  <Constant name="LaddersStack6"        value="62"/>
- <Constant name="LaddersStack7"        value="68"/>
- <Constant name="LaddersStack8"        value="74"/>
-  <Constant name="LaddersStack9"        value="74"/>
--->
 
  <Constant name="LaddersStack0"        value="24"/>
  <Constant name="LaddersStack1"        value="24"/>
@@ -92,33 +58,31 @@
  <Constant name="LaddersStack3"        value="38"/>
  <Constant name="LaddersStack4"        value="52"/>
  <Constant name="LaddersStack5"        value="52"/>
-  <Constant name="LaddersStack6"        value="64"/>
+ <Constant name="LaddersStack6"        value="64"/>
  <Constant name="LaddersStack7"        value="64"/>
  <Constant name="LaddersStack8"        value="76"/>
-  <Constant name="LaddersStack9"        value="76"/>
+ <Constant name="LaddersStack9"        value="76"/>
 
-<!--
- <Constant name="PhiOffsetStack0"      value="15*deg"/>
- <Constant name="PhiOffsetStack1"      value="15*deg"/>
- <Constant name="PhiOffsetStack2"      value="13*deg"/>
- <Constant name="PhiOffsetStack3"      value="13*deg"/>
- <Constant name="PhiOffsetStack4"      value="10*deg"/>
- <Constant name="PhiOffsetStack5"      value="10*deg"/>
-  <Constant name="PhiOffsetStack6"      value="10*deg"/>
- <Constant name="PhiOffsetStack7"      value="10*deg"/>
- <Constant name="PhiOffsetStack8"      value="10*deg"/>
- <Constant name="PhiOffsetStack9"      value="10*deg"/>
--->
  <Constant name="PhiOffsetStack0"      value="0*deg"/>
  <Constant name="PhiOffsetStack1"      value="0*deg"/>
  <Constant name="PhiOffsetStack2"      value="0*deg"/>
  <Constant name="PhiOffsetStack3"      value="0*deg"/>
  <Constant name="PhiOffsetStack4"      value="0*deg"/>
  <Constant name="PhiOffsetStack5"      value="0*deg"/>
-  <Constant name="PhiOffsetStack6"      value="0*deg"/>
+ <Constant name="PhiOffsetStack6"      value="0*deg"/>
  <Constant name="PhiOffsetStack7"      value="0*deg"/>
  <Constant name="PhiOffsetStack8"      value="0*deg"/>
  <Constant name="PhiOffsetStack9"      value="0*deg"/>
+ <!-- <Constant name="PhiOffsetStack0"      value="15*deg"/>
+ <Constant name="PhiOffsetStack1"      value="15*deg"/>
+ <Constant name="PhiOffsetStack2"      value="13*deg"/>
+ <Constant name="PhiOffsetStack3"      value="13*deg"/>
+ <Constant name="PhiOffsetStack4"      value="13*deg"/>
+ <Constant name="PhiOffsetStack5"      value="13*deg"/>
+ <Constant name="PhiOffsetStack6"      value="13*deg"/>
+ <Constant name="PhiOffsetStack7"      value="13*deg"/>
+ <Constant name="PhiOffsetStack8"      value="10*deg"/>
+ <Constant name="PhiOffsetStack9"      value="10*deg"/> -->
 
 
  <Constant name="ModulesStack0"        value="42"/>
@@ -127,7 +91,7 @@
  <Constant name="ModulesStack3"        value="54"/>
  <Constant name="ModulesStack4"        value="54"/>
  <Constant name="ModulesStack5"        value="54"/>
-<Constant name="ModulesStack6"        value="54"/>
+ <Constant name="ModulesStack6"        value="54"/>
  <Constant name="ModulesStack7"        value="54"/>
  <Constant name="ModulesStack8"        value="54"/>
  <Constant name="ModulesStack9"        value="54"/>
@@ -138,7 +102,7 @@
  <Constant name="LayerDzStack3"        value="540.0*cm"/>
  <Constant name="LayerDzStack4"        value="540.0*cm"/>
  <Constant name="LayerDzStack5"        value="540.0*cm"/>
-  <Constant name="LayerDzStack6"        value="540.0*cm"/>
+ <Constant name="LayerDzStack6"        value="540.0*cm"/>
  <Constant name="LayerDzStack7"        value="540.0*cm"/>
  <Constant name="LayerDzStack8"        value="540.0*cm"/>
  <Constant name="LayerDzStack9"        value="540.0*cm"/>
@@ -162,7 +126,7 @@
  <Constant name="ZOverlapStack4"       value="0.6*cm"/>
  <Constant name="ZOverlapStack5"       value="0.6*cm"/>
  <Constant name="ZOverlapStack6"       value="0.6*cm"/> 
-<Constant name="ZOverlapStack7"       value="0.6*cm"/> 
+ <Constant name="ZOverlapStack7"       value="0.6*cm"/> 
  <Constant name="ZOverlapStack8"       value="0.6*cm"/> 
  <Constant name="ZOverlapStack9"       value="0.6*cm"/> 
 
@@ -198,10 +162,20 @@
  <Constant name="LayoutStack3"         value="1"/>
  <Constant name="LayoutStack4"         value="1"/>
  <Constant name="LayoutStack5"         value="1"/>
-  <Constant name="LayoutStack6"         value="1"/>
+ <Constant name="LayoutStack6"         value="1"/>
  <Constant name="LayoutStack7"         value="1"/>
  <Constant name="LayoutStack8"         value="1"/>
  <Constant name="LayoutStack9"         value="1"/>
+ <!-- <Constant name="LayoutStack0"         value="0"/>
+ <Constant name="LayoutStack1"         value="0"/>
+ <Constant name="LayoutStack2"         value="0"/>
+ <Constant name="LayoutStack3"         value="0"/>
+ <Constant name="LayoutStack4"         value="0"/>
+ <Constant name="LayoutStack5"         value="0"/>
+ <Constant name="LayoutStack6"         value="0"/>
+ <Constant name="LayoutStack7"         value="0"/>
+ <Constant name="LayoutStack8"         value="0"/>
+ <Constant name="LayoutStack9"         value="0"/> -->
 
 
 <!--
@@ -210,17 +184,14 @@
 
  <Constant name="zero"              value="0.0*fm"/>
  <Constant name="Rin1"              value="3.10*cm"/>
- <Constant name="Rin2"              value="18.00*cm"/>
+ <Constant name="Rin2"              value="17.00*cm"/> <!-- was 18.00 -->
  <Constant name="Rin3"              value="18.50*cm"/>
-<!-- <Constant name="Rout1"             value="21.80*cm"/>
- <Constant name="Rout2"             value="19.00*cm"/>-->
  <Constant name="Rout1"             value="121.80*cm"/>
- <Constant name="Rout2"             value="119.00*cm"/>
+ <Constant name="Rout2"             value="19.00*cm"/> <!-- was 119.00 -->
  <Constant name="Zv1"               value="30.00*cm"/>
- <Constant name="Zv2"               value="56.00*cm"/>
- <Constant name="Zv3"               value="110.5*cm"/>
-<!-- <Constant name="Zv4"               value="282.0*cm"/>-->
- <Constant name="Zv4"               value="112.0*cm"/>
+ <Constant name="Zv2"               value="71.60*cm"/> <!-- was 56.00 -->
+ <Constant name="Zv3"               value="270.0*cm"/> <!-- was 110.5 -->
+ <Constant name="Zv4"               value="282.0*cm"/> <!-- was 112.0 -->
  <Constant name="SupportL"          value="221.0*cm"/>
  <Constant name="SupportRin"        value="21.65*cm"/>
  <Constant name="SupportW"          value="20.00*cm"/>
@@ -687,6 +658,10 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
  <PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
    <rChild name="pixbarlayer2:PixelBarrelLayer2"/>
+ </PosPart>
+ <PosPart copyNumber="1">
+   <rParent name="pixbar:PixelBarrel"/>
+   <rChild name="pixbarlayer3:PixelBarrelLayer3"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
