@@ -21,16 +21,15 @@ class CalibratableProducer : public edm::EDProducer {
 public:
 	explicit CalibratableProducer(const edm::ParameterSet& parameters);
 	virtual ~CalibratableProducer();
-	
+
 private:
-	
+
 	virtual void beginJob(const edm::EventSetup& setup);
 	virtual void produce(edm::Event& event, const edm::EventSetup& setup);
 	virtual void endJob();
 
 	EventDelegate* ed_;
 
-	bool isMC_;
 	std::string edtype_;
 	std::string dptype_;
 	std::string tbtype_;

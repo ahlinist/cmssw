@@ -21,7 +21,7 @@ process.famosSimHits.VertexGenerator.BetaStar = 0.00001
 process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
-process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+process.load("Configuration.StandardSequences.MagneticField_0T_cff")
 #process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
@@ -53,7 +53,7 @@ process.source = cms.Source("FlatRandomEGunSource",
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
 process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
-particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
+process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
@@ -94,8 +94,8 @@ process.TFileService = cms.Service("TFileService",
 #)
 
 
-
-process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
+process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle)
+#process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
 #process.outpath = cms.EndPath(process.finishup)
 
 

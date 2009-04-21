@@ -26,7 +26,7 @@
 class DipionDelegate : public EventDelegate {
 
 public:
-	DipionDelegate(bool isMC);
+	DipionDelegate();
 
 	virtual ~DipionDelegate() {
 		LogDebug("DipionDelegate") << "Leaving "<< __PRETTY_FUNCTION__ << std::endl;
@@ -36,7 +36,6 @@ public:
 	virtual bool processEvent(const edm::Event& event,
 			const edm::EventSetup& setup);
 
-	virtual bool finish();
 
 protected:
 
@@ -46,9 +45,9 @@ protected:
 	 *
 	 * Returns a vector of pairs of unsigneds - the indices in the input vector.
 	 */
-	std::vector<std::pair<unsigned, unsigned > > associate(
-			const std::vector<reco::PFSimParticle>& sims,
-			const std::vector<reco::PFCandidate>& cands);
+//	std::vector<std::pair<unsigned, unsigned > > associate(
+//			const std::vector<reco::PFSimParticle>& sims,
+//			const std::vector<reco::PFCandidate>& cands);
 
 	//Checks vetos
 	//Return true if you want the particle written to the tree
@@ -64,7 +63,7 @@ protected:
 	/*
 	 * Retrieves the tags listed below.
 	 */
-	virtual void getTagsCore(const edm::ParameterSet& parameters);
+	virtual void initCore(const edm::ParameterSet& parameters);
 
 private:
 
@@ -101,58 +100,6 @@ private:
 	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEB_;
 	edm::Handle<std::vector<PCaloHit> >* simCaloHitsEcalEE_;
 	edm::Handle<std::vector<PCaloHit> >* simCaloHitsHcal_;
-
-	//Extra tags
-	bool isMC_;
-	bool useSimAsTrack_;
-	bool clustersFromCandidates_;
-	bool rechitsFromCandidates_;
-	bool neutralMode_;
-	bool noSimDaughters_;
-	double deltaEta_;
-	double deltaPhi_;
-	double deltaRCandToTrack_;
-	double deltaRRechitsToTrack_;
-	double deltaRClustersToTrack_;
-
-	unsigned nPanesEcalCaloWindow_;
-	unsigned nPanesHcalCaloWindow_;
-	unsigned nRingsEcalCaloWindow_;
-	unsigned nRingsHcalCaloWindow_;
-	double deltaREcalCaloWindow_;
-	double deltaRHcalCaloWindow_;
-	//this is useful for extensibility or subclassing :-)
-	int pionPdg_;
-
-	/*
-	 * Worker method to fill the Calibratable with sim information.
-	 */
-	void extractSimParticle(const reco::PFSimParticle& sim, unsigned index);
-
-	/*
-	 * Selects primary sim particles from the event, vetoing any that don't meet certain criteria.
-	 */
-	std::vector<unsigned> findPrimarySimParticles(
-			const std::vector<reco::PFSimParticle>& sims);
-
-	std::vector<unsigned> findCandidatesInDeltaR(const reco::PFTrack& pft,
-			const std::vector<reco::PFCandidate>& cands, const double& deltaR);
-
-	template<typename T> std::vector<unsigned> findObjectsInDeltaR(const reco::PFTrack& pft,
-			const std::vector<T>& objects, const double& deltaR);
-
-	unsigned findClosestRecTrack(const reco::PFSimParticle& sim,
-			const std::vector<reco::PFRecTrack>& tracks);
-
-	double findSimToTrackDeltaR(const reco::PFSimParticle& sim,
-			const reco::PFTrack& track);
-
-	/*
-	 * Worker method to fill the Calibratable with Candidate information.
-	 */
-	void extractCandidate(const reco::PFCandidate& cand);
-
-	void extractTrack(const reco::PFTrack& track);
 
 
 };

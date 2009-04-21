@@ -58,7 +58,7 @@ process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
-process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+process.load("Configuration.StandardSequences.MagneticField_0T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
 process.famosSimHits.MaterialEffects.PairProduction = False
@@ -138,7 +138,7 @@ process.finishup = cms.OutputModule("PoolOutputModule",
 )
 
 
-process.p1 = cms.Path(process.generator+process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
+process.p1 = cms.Path(process.generator+process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle)
 process.outpath = cms.EndPath(process.finishup)
 
 
