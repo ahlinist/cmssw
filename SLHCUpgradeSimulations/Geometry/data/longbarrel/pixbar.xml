@@ -194,6 +194,7 @@
  <Constant name="Zv4"               value="282.0*cm"/> <!-- was 112.0 -->
  <Constant name="SupportL"          value="221.0*cm"/>
  <Constant name="SupportRin"        value="21.65*cm"/>
+ <Constant name="SupportRout"       value="21.80*cm"/> <!-- new -->
  <Constant name="SupportW"          value="20.00*cm"/>
  <Constant name="SupportT"          value="0.350*cm"/>
  <Constant name="SupportY"          value="19.00*cm"/>
@@ -272,13 +273,6 @@
 
 </ConstantsSection>
 
-<!--
-
-PixelBarrelSupTub and PixelBarrelService have been removed in order to expand the pixel
-barrel without affecting other volumes i.e. PIXFWD, TEC
-
- -->
-
 <RotationSection label="pixbar.xml">
   <Rotation name="180D" thetaX="90*deg" phiX="180*deg"   thetaY="90*deg" 
                         phiY="90*deg"   thetaZ="180*deg" phiZ="0*deg" />
@@ -301,8 +295,8 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
   <ZSection z="[Zv3]"      rMin="[Rin3]"       rMax="[Rout2]" />
   <ZSection z="[Zv4]"      rMin="[Rin3]"       rMax="[Rout2]" />
  </Polycone> 
-<!-- <Tubs name="PixelBarrelSuppTub" rMin="[SupportRin]"     rMax="[Rout1]"
-       dz="[SupportL]/2"         startPhi="0*deg"        deltaPhi="360*deg"/>-->
+ <Tubs name="PixelBarrelSuppTub" rMin="[SupportRin]"     rMax="[SupportRout]"
+       dz="[SupportL]/2"         startPhi="0*deg"        deltaPhi="360*deg"/>
  <Box name="PixelBarrelSuppBox"  dx="[SupportW]/2"       dy="[SupportT]/2"
        dz="[SupportL]/2"/>
  <Tubs name="PixelBarrelShield1" rMin="[Shield1Rin]"     rMax="[Shield1Rout]"
@@ -351,8 +345,8 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
        dz="[Conn3T]/2"           startPhi="0*deg"        deltaPhi="360*deg"/>
  <Tubs name="PixelBarrelConn4"   rMin="[Rin2]"           rMax="[Conn3Rout]"
        dz="[Conn4T]/2"           startPhi="0*deg"        deltaPhi="360*deg"/>
-<!-- <Tubs name="PixelBarrelService" rMin="[Rin3]"           rMax="[ServRout]"
-       dz="[ServT]/2"            startPhi="0*deg"        deltaPhi="360*deg"/>-->
+ <Tubs name="PixelBarrelService" rMin="[Rin3]"           rMax="[ServRout]"
+       dz="[ServT]/2"            startPhi="0*deg"        deltaPhi="360*deg"/>
 </SolidSection>
 
 <LogicalPartSection label="pixbar.xml">
@@ -360,10 +354,10 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
   <rSolid name="PixelBarrel"/>
   <rMaterial name="materials:Air"/> 
  </LogicalPart>
-<!-- <LogicalPart name="PixelBarrelSuppTub" category="unspecified">
+ <LogicalPart name="PixelBarrelSuppTub" category="unspecified">
   <rSolid name="PixelBarrelSuppTub"/>
   <rMaterial name="materials:Carbon fibre str."/>
- </LogicalPart>-->
+ </LogicalPart>
  <LogicalPart name="PixelBarrelSuppBox" category="unspecified">
   <rSolid name="PixelBarrelSuppBox"/>
   <rMaterial name="materials:Carbon fibre str."/>
@@ -440,17 +434,17 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
   <rSolid name="PixelBarrelConn4"/>
   <rMaterial name="pixbarmaterial:Pix_Bar_Conn3"/>
  </LogicalPart>
-<!-- <LogicalPart name="PixelBarrelService" category="unspecified">
+ <LogicalPart name="PixelBarrelService" category="unspecified">
   <rSolid name="PixelBarrelService"/>
   <rMaterial name="pixbarmaterial:Pix_Bar_Services"/>
- </LogicalPart>-->
+ </LogicalPart>
 </LogicalPartSection>
 
 <PosPartSection label="pixbar.xml">
-<!--<PosPart copyNumber="1">
+<PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
    <rChild name="pixbar:PixelBarrelSuppTub"/>
- </PosPart>-->
+ </PosPart>
  <PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
    <rChild name="pixbar:PixelBarrelSuppBox"/>
@@ -636,7 +630,7 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
   <rRotation name="pixbar:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[Conn4Z]" />
  </PosPart>
-<!--  <PosPart copyNumber="1">
+ <PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
    <rChild name="pixbar:PixelBarrelService"/>
   <Translation x="[zero]" y="[zero]" z="[ServZ]" />
@@ -646,7 +640,7 @@ barrel without affecting other volumes i.e. PIXFWD, TEC
    <rChild name="pixbar:PixelBarrelService"/>
   <rRotation name="pixbar:180D"/>
   <Translation x="[zero]" y="[zero]" z="-[ServZ]" />
- </PosPart> -->
+ </PosPart>
  <PosPart copyNumber="1">
    <rParent name="pixbar:PixelBarrel"/>
    <rChild name="pixbarlayer0:PixelBarrelLayer0"/>
