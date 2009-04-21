@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.22 2009/04/07 13:27:58 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.23 2009/04/21 00:53:37 smaruyam Exp $
 //
 //
 
@@ -24,8 +24,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
-  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone")),
-  rootFile_(iConfig.getParameter<std::string>("outputFileName"))
+  rootFile_(iConfig.getParameter<std::string>("outputFileName")),
+  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
   // File setup
   _TTEffFile = TFile::Open(rootFile_.c_str(), "RECREATE");
