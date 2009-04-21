@@ -2,10 +2,10 @@ void plotL25and3Efficiency(  bool print=true) {
   gROOT->LoadMacro("./Plotter.cxx");
   Plotter* plotter = new Plotter();
   plotter->SetYTitle("Level-2.5 efficiency");
-  TString plotDir = "l25plots/";
+  TString plotDir = "Newl25plots/";
   // PFTau Et
-  TCut DenEtaPtCut = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauPt>5.&&l25Depth>0";// check L1,2 when it's possible
-  TCut DenEtPtCut  = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEt>15&&PFTauPt>5.&&l25Depth>0";// check L1,2 when it's possible
+  TCut DenEtaPtCut = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauInvPt<0.2&&l25Depth>0";// check L1,2 when it's possible
+  TCut DenEtPtCut  = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEt>15&&PFTauInvPt<0.2&&l25Depth>0";// check L1,2 when it's possible
   plotter->SetXTitle("PF#tau E_{T} (GeV)");
   plotter->SetFileName("L25Eff_PFTauEt_L25Match.C"); //
   TGraphAsymmErrors *h_PFTauEt_L25Match = 
@@ -52,12 +52,12 @@ void plotL25and3Efficiency(  bool print=true) {
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEta_L25.gif");
 
-TCut L25Match     = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauPt>5.&&l25Depth>0";
-TCut L25TrkFindEt = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauPt>5.&&l25Depth>1";
+TCut L25Match     = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauInvPt<0.2&&l25Depth>0";
+TCut L25TrkFindEt = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauInvPt<0.2&&l25Depth>1";
 TCut L25TrkFindPt = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&l25Depth>1";
 TCut L25PtCutPt   = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&l25Depth>2";
-TCut L25PtCutEtPt = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&PFTauPt>5.&&l25Depth>2";
-TCut L3Iso       = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&PFTauPt>5.&&l25Depth>3";
+TCut L25PtCutEtPt = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&PFTauInvPt<0.2&&l25Depth>2";
+TCut L3Iso        = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PFTauEta>-2.&&PFTauEt>15.&&PFTauInvPt<0.2&&l25Depth>3";
   plotter->SetXTitle("PF#tau E_{T}");
   plotter->SetYTitle("L25 Relative Track_{lead} Finding Eff");
   plotter->SetFileName("L25Eff_L25TauEt_L25TrkFindRel.C");
@@ -79,14 +79,14 @@ TCut L3Iso       = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&PF
   if (print) gPad->SaveAs(plotDir+"PFTauLeadPtRel_L25.gif");
 
   plotter->SetXTitle("PF#tau #Sigma p_{T}^{track}");
-  plotter->SetYTitle("L25 Relative Tracker Isolation Eff");
+  plotter->SetYTitle("L3 Relative Tracker Isolation Eff");
   plotter->SetFileName("L25Eff_L25TauEt_L3IsoRel.C");
   TGraphAsymmErrors *h_PFTauIsoSum_L3IsoRel =
   plotter->DrawHistogram("PFTauIsoSum>>hnum(25,0.,3.)",L3Iso,L25PtCutEtPt);
   h_PFTauIsoSum_L3IsoRel->SetMinimum(0);
   h_PFTauIsoSum_L3IsoRel->SetMaximum(1.1);
   h_PFTauIsoSum_L3IsoRel->Draw("PA");
-  if (print) gPad->SaveAs(plotDir+"PFTauTrackIsoRel_L25.gif");
+  if (print) gPad->SaveAs(plotDir+"PFTauTrackIsoRel_L3.gif");
 
   delete plotter;
 }
