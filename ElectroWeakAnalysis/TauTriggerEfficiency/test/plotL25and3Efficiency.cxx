@@ -82,7 +82,7 @@ TCut L3Iso        = "PFTauIso==1&&(PFTauProng==1||PFTauProng==3)&&PFTauEta<2.&&P
   plotter->SetYTitle("L3 Relative Tracker Isolation Eff");
   plotter->SetFileName("L25Eff_L25TauEt_L3IsoRel.C");
   TGraphAsymmErrors *h_PFTauIsoSum_L3IsoRel =
-  plotter->DrawHistogram("PFTauIsoSum>>hnum(25,0.,3.)",L3Iso,L25PtCutEtPt);
+  plotter->DrawHistogram("PFTauIsoSum>>hnum(4,0.,2.)",L3Iso,L25PtCutEtPt);
   h_PFTauIsoSum_L3IsoRel->SetMinimum(0);
   h_PFTauIsoSum_L3IsoRel->SetMaximum(1.1);
   h_PFTauIsoSum_L3IsoRel->Draw("PA");
