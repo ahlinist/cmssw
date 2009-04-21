@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.10 $
-  \date $Date: 2009/04/08 18:05:37 $
+  \version $Revision: 1.11 $
+  \date $Date: 2009/04/21 11:41:53 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -261,14 +261,15 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
     gPad->SetLogy(1);
   
   if (o.name.find("Problem_Total_DeadCells_") != std::string::npos ||
-      o.name.find("rechit_1D_plots")!= std::string.npos)
+      o.name.find("rechit_1D_plots")!= std::string::npos)
     {
       gStyle->SetOptStat("irmen");
       obj->SetStats( kTRUE );
     }
 
   if (  (o.name.find("DataFormatMonitor/HTR Plots/")!=std::string::npos) &&
-	(o.name.find("Data Format Error Word")!=std::string::npos)          )
+	(o.name.find("Data Format Error Word")!=std::string::npos)
+	)
     gPad->SetLogy(1);
   
   if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
@@ -313,7 +314,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   obj->SetStats( kFALSE ); 
 
   if (o.name.find("DeadCellMonitor_Hcal/Problem_Total_DeadCells_") != std::string::npos ||
-      o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")!= std::string.npos)
+      o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")!= std::string::npos)
     {
       gStyle->SetOptStat("irmen");
       obj->SetStats( kTRUE );
