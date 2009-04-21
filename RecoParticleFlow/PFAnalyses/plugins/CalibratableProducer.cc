@@ -28,16 +28,15 @@ CalibratableProducer::CalibratableProducer(const edm::ParameterSet& parameters) 
 
 	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
 	if (edtype_ == dptype_) {
-		ed_ = new DipionDelegate(isMC_);
-
+		ed_ = new DipionDelegate();
 	} else if (edtype_ == tbtype_) {
-		ed_ = new TestbeamDelegate(isMC_);
+		ed_ = new TestbeamDelegate();
 	} else {
 		std::string msg("Couldn't find suitable delegate!");
 		//Exception e(msg);
 		//throw e;
 	}
-	
+
 	ed_->init(parameters);
 
 }
@@ -53,7 +52,7 @@ void CalibratableProducer::beginJob(const edm::EventSetup& setup) {
 
 void CalibratableProducer::produce(edm::Event& event,
 		const edm::EventSetup& setup) {
-	//create the empty collections 
+	//create the empty collections
 	std::auto_ptr<std::vector<pftools::Calibratable> >
 			calibColl(new std::vector<pftools::Calibratable>());
 	ed_->startEvent(event, setup, calibColl.get());

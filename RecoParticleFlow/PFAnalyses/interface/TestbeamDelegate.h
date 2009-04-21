@@ -25,7 +25,7 @@
 class TestbeamDelegate : public EventDelegate
 {
 public:
-	TestbeamDelegate(bool isMC);
+	TestbeamDelegate();
 	virtual ~TestbeamDelegate();
 
 	//The main workhorse
@@ -48,23 +48,17 @@ protected:
 
 	virtual void endParticleCore();
 
-	/*
-	 * Retrieves the tags listed below.
-	 */
-	virtual void getTagsCore(const edm::ParameterSet& parameters);
+	virtual void extractHcalRecHits(const HBHERecHitCollection& hcalRechits, const CaloSubdetectorGeometry* geometry, double targetEta, double targetPhi);
+
 
 
 private:
 
-	void extractCandidate(const reco::PFCandidate& cand);
 
-	bool isMC_;
 	bool applyCleaningCuts_;
 	bool saveJustPions_;
 
-	bool applyThresholdsToRawRecHits_;
-	bool clustersFromCandidates_;
-	bool rechitsFromCandidates_;
+
 	unsigned stripAnomalousEvents_;
 	unsigned maxEventsFromEachRun_;
 	unsigned eventsSeenInThisRun_;
@@ -79,6 +73,8 @@ private:
 
 	double deltaRRecHitsToCenterECAL_;
 	double deltaRRecHitsToCenterHCAL_;
+	double deltaRClustersToCenterECAL_;
+	double deltaRClustersToCenterHCAL_;
 	double deltaRPhotonsToTrack_;
 	double deltaRNeutralsToTrack_;
 

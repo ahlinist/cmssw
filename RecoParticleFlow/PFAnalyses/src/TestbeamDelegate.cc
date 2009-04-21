@@ -26,13 +26,11 @@ using namespace std;
 using namespace reco;
 using namespace pftools;
 
-TestbeamDelegate::TestbeamDelegate(bool isMC) :
-	isMC_(isMC), applyCleaningCuts_(true), saveJustPions_(true),
-			applyThresholdsToRawRecHits_(false), clustersFromCandidates_(true),
-			stripAnomalousEvents_(0), maxEventsFromEachRun_(0),
-			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
-			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
-			electronCandidates_(0), protonKaonCandidates_(0),
+TestbeamDelegate::TestbeamDelegate() :
+	applyCleaningCuts_(true), saveJustPions_(true), stripAnomalousEvents_(0),
+			maxEventsFromEachRun_(0), eventsSeenInThisRun_(0), muonCands_(0),
+			nonMipCands_(0), beamHaloCands_(0), cerenkovNonPions_(0),
+			tofNonPions_(0), electronCandidates_(0), protonKaonCandidates_(0),
 			goodPionsFound_(0), deltaRRecHitsToCenterECAL_(0.4),
 			deltaRRecHitsToCenterHCAL_(0.4), deltaRPhotonsToTrack_(0.1),
 			deltaRNeutralsToTrack_(0.3) {
@@ -46,20 +44,41 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			"stripAnomalousEvents");
 	maxEventsFromEachRun_ = parameters.getParameter<unsigned> (
 			"maxEventsFromEachRun");
-	applyThresholdsToRawRecHits_ = parameters.getParameter<bool> (
-			"applyThresholdsToRawRecHits");
 	deltaRRecHitsToCenterECAL_ = parameters.getParameter<double> (
 			"deltaRRecHitsToCenterECAL");
 	deltaRRecHitsToCenterHCAL_ = parameters.getParameter<double> (
 			"deltaRRecHitsToCenterHCAL");
+	deltaRClustersToCenterECAL_ = parameters.getParameter<double> (
+			"deltaRClustersToCenterECAL");
+	deltaRClustersToCenterHCAL_ = parameters.getParameter<double> (
+			"deltaRClustersToCenterHCAL");
 	deltaRPhotonsToTrack_ = parameters.getParameter<double> (
 			"deltaRPhotonsToTrack");
 	deltaRNeutralsToTrack_ = parameters.getParameter<double> (
 			"deltaRPhotonsToTrack");
 	saveJustPions_ = parameters.getParameter<bool> ("saveJustPions");
-	clustersFromCandidates_ = parameters.getParameter<bool> (
-			"clustersFromCandidates");
-	rechitsFromCandidates_ = parameters.getParameter<bool>("rechitsFromCandidates");
+
+	inputTagParticleFiltration_ = parameters.getParameter<InputTag> (
+			"ParticleFiltration");
+	inputTagBeamCounters_ = parameters.getParameter<InputTag> ("BeamCounters");
+	inputTagTiming_ = parameters.getParameter<InputTag> ("Timing");
+	inputTagEventPosition_
+			= parameters.getParameter<InputTag> ("EventPosition");
+	inputTagRunData_ = parameters.getParameter<InputTag> ("RunData");
+	inputTagTriggerData_ = parameters.getParameter<InputTag> ("TriggerData");
+	inputTagClustersEcal_
+			= parameters.getParameter<InputTag> ("PFClustersEcal");
+	inputTagClustersHcal_
+			= parameters.getParameter<InputTag> ("PFClustersHcal");
+	inputTagRecHitsEcal_ = parameters.getParameter<InputTag> ("PFRecHitsEcal");
+	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
+	inputTagRawRecHitsEcal_ = parameters.getParameter<InputTag> (
+			"RawRecHitsEcal");
+	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> (
+			"RawRecHitsHcal");
+	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
+
+	LogError("TestbeamDelegate") << "Error getting parameters." << std::endl;
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
@@ -207,43 +226,92 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
 	assert(hcalBarrelGeometry);
 
-	EcalRecHitCollection ecalRawRecHits = **rawRecHitsEcal_;
-	HBHERecHitCollection hcalRawRecHits = **rawRecHitsHcal_;
+	extractEBRecHits(**rawRecHitsEcal_, ecalBarrelGeometry, thisRun_->ecalEta_,
+			thisRun_->ecalPhi_);
+	extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry,
+			thisRun_->hcalEta_, thisRun_->hcalPhi_);
 
-	double ecalHitsDecoded(0);
-	double hcalHitsDecoded(0);
-	for (std::vector<EcalRecHit>::const_iterator erIt = ecalRawRecHits.begin(); erIt
-			!= ecalRawRecHits.end(); ++erIt) {
+	calib_->recompute();
 
-		const EcalRecHit& erh = *erIt;
-		const CaloCellGeometry* thisCell = ecalBarrelGeometry->getGeometry(
-				erh.detid());
-		//const EBDetId eDetId(erh.id());
-		if (thisCell) {
-			// ECAL threshold is 0.08 GeV
-			if ((applyThresholdsToRawRecHits_ && erh.energy() > 0.08)
-					|| !applyThresholdsToRawRecHits_) {
-				//compute delta R
-				double dR = pftools::deltaR(thisCell->getPosition().eta(),
-						thisRun_->ecalEta_, thisCell->getPosition().phi(),
-						thisRun_->ecalPhi_);
-				if (dR < deltaRRecHitsToCenterECAL_
-						|| deltaRRecHitsToCenterECAL_ <= 0) {
-					CalibratableElement
-							ce(erh.energy(), thisCell->getPosition().eta(),
-									thisCell->getPosition().phi(),
-									PFLayer::ECAL_BARREL);
-					calib_->tb_ecal_.push_back(ce);
-					ecalHitsDecoded += erh.energy();
-				}
-			}
-		} else
-			LogWarning("TestbeamDelegate")
-					<< ": failed to decode ECAL rechit.\n";
+	if (stripAnomalousEvents_ && fabs(calib_->tb_energyEvent_)
+			> stripAnomalousEvents_ * thisRun_->beamEnergy_) {
+		if (debug_ > 2)
+			LogInfo("TestbeamDelegate")
+					<< "Huge excess (loss) of detector energy vs. beam energy = "
+					<< calib_->tb_energyEvent_ << " vs. "
+					<< thisRun_->beamEnergy_ << "\n";
+		thisEventPasses_ = false;
 	}
 
-	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRawRecHits.begin(); hrIt
-			!= hcalRawRecHits.end(); ++hrIt) {
+	/* Deal with rec hits */
+	if (!rechitsFromCandidates_) {
+		PFRecHitCollection ecalRecHits = **recHitsEcal_;
+		PFRecHitCollection hcalRecHits = **recHitsHcal_;
+
+		std::vector<unsigned> matchingEcalIndicies = findObjectsInDeltaR(
+				ecalRecHits, thisRun_->ecalEta_, thisRun_->ecalPhi_,
+				deltaRRecHitsToCenterECAL_);
+		std::vector<unsigned> matchingHcalIndicies = findObjectsInDeltaR(
+				hcalRecHits, thisRun_->hcalEta_, thisRun_->hcalPhi_,
+				deltaRRecHitsToCenterHCAL_);
+
+		extractEcalPFRecHits(ecalRecHits, matchingEcalIndicies);
+		extractHcalPFRecHits(hcalRecHits, matchingHcalIndicies);
+	}
+
+	/* Deal with clusters if clusters from candidates is not true*/
+	if (!clustersFromCandidates_) {
+		PFClusterCollection ecalClusters = **clustersEcal_;
+		PFClusterCollection hcalClusters = **clustersHcal_;
+
+		std::vector<unsigned> ecalClusterIndicies = findObjectsInDeltaR(
+				ecalClusters, thisRun_->ecalEta_, thisRun_->ecalPhi_,
+				deltaRClustersToCenterECAL_);
+		std::vector<unsigned> hcalClusterIndicies = findObjectsInDeltaR(
+				hcalClusters, thisRun_->hcalEta_, thisRun_->hcalPhi_,
+				deltaRClustersToCenterHCAL_);
+
+		extractEcalPFClusters(ecalClusters, ecalClusterIndicies);
+		extractHcalPFClusters(hcalClusters, hcalClusterIndicies);
+	}
+
+	//Extract PFCandidates
+	PFCandidateCollection cands = **pfCandidates_;
+	for (PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
+		extractCandidate(*it);
+		if (calib_->cands_.end() != calib_->cands_.begin()) {
+			//i.e. a candidate was found successfully,
+			CandidateWrapper& cw = *(calib_->cands_.end());
+			bool noiseCandidate(false);
+			//Photon from noise
+			if (cw.type_ == 4 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_,
+					cw.phi_, thisRun_->ecalPhi_) > deltaRPhotonsToTrack_)
+				noiseCandidate = true;
+			//eta and phi defined at ECAL front surface so deltaR drawn relative to that
+			if (cw.type_ == 5 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_,
+					cw.phi_, thisRun_->ecalPhi_) > deltaRNeutralsToTrack_)
+				noiseCandidate = true;
+
+			if (noiseCandidate) {
+				//delete the element
+				calib_->cands_.pop_back();
+			}
+		}
+	}
+
+	endParticle();
+
+	return thisEventPasses_;
+
+}
+
+void TestbeamDelegate::extractHcalRecHits(
+		const HBHERecHitCollection& hcalRechits,
+		const CaloSubdetectorGeometry* geometry, double targetEta,
+		double targetPhi) {
+
+	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRechits.begin(); hrIt
+			!= hcalRechits.end(); ++hrIt) {
 
 		const HBHERecHit& hrh = *hrIt;
 		const HcalDetId& detid = hrh.detid();
@@ -273,229 +341,29 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
 		if (newDetId == 0) {
 			LogWarning("TestbeamDelegate")
-								<< ": couldn't create new HcalDetId.\n";
+					<< ": couldn't create new HcalDetId.\n";
 			continue;
 		}
 		//const HcalDetId hDetId = hrh.id();
-		const CaloCellGeometry* thisCell = hcalBarrelGeometry->getGeometry(
-				*newDetId);
+		const CaloCellGeometry* thisCell = geometry->getGeometry(*newDetId);
 		if (thisCell) {
-			//HCAL threshold is 0.8 GeV >> ECAL threshold
-			if ((applyThresholdsToRawRecHits_ && hrh.energy() > 0.8)
-					|| !applyThresholdsToRawRecHits_) {
-				//compute delta R
-				double dR = pftools::deltaR(thisCell->getPosition().eta(),
-						thisRun_->hcalEta_, thisCell->getPosition().phi(),
-						thisRun_->hcalPhi_);
-				if (dR < deltaRRecHitsToCenterHCAL_
-						|| deltaRRecHitsToCenterHCAL_ <= 0) {
-					CalibratableElement ce(hrh.energy(),
-							thisCell->getPosition().eta(),
-							thisCell->getPosition().phi(),
-							PFLayer::HCAL_BARREL1);
-					calib_->tb_hcal_.push_back(ce);
-					hcalHitsDecoded += hrh.energy();
-				}
+
+			//compute delta R
+			double dR = pftools::deltaR(thisCell->getPosition().eta(),
+					thisRun_->hcalEta_, thisCell->getPosition().phi(),
+					thisRun_->hcalPhi_);
+			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_
+					<= 0) {
+				CalibratableElement ce(hrh.energy(),
+						thisCell->getPosition().eta(),
+						thisCell->getPosition().phi(), PFLayer::HCAL_BARREL1);
+				calib_->tb_hcal_.push_back(ce);
 			}
 		} else
 			LogWarning("TestbeamDelegate")
 					<< ": failed to decode HCAL rechit.\n";
 
 	}
-
-	if (debug_ > 4) {
-		LogDebug("TestbeamDelegate") << "\tRaw ecal energy: "
-				<< ecalHitsDecoded << ", Raw hcal energy: " << hcalHitsDecoded
-				<< "\n";
-	}
-	double totalESeen = ecalHitsDecoded + hcalHitsDecoded;
-	if (stripAnomalousEvents_ && fabs(totalESeen) > stripAnomalousEvents_
-			* thisRun_->beamEnergy_) {
-		if (debug_ > 2)
-			LogInfo("TestbeamDelegate")
-					<< "Huge excess (loss) of detector energy vs. beam energy = "
-					<< totalESeen << "(" << ecalHitsDecoded << ", "
-					<< hcalHitsDecoded << ")\n";
-		thisEventPasses_ = false;
-	}
-
-	/* Deal with rec hits */
-	PFRecHitCollection ecalRecHits = **recHitsEcal_;
-	PFRecHitCollection hcalRecHits = **recHitsHcal_;
-
-	for (std::vector<PFRecHit>::const_iterator rhIt = ecalRecHits.begin(); rhIt
-			!= ecalRecHits.end(); ++rhIt) {
-		const PFRecHit& rh = *rhIt;
-		double dR = pftools::deltaR(rh.positionREP().eta(), thisRun_->ecalEta_,
-				rh.positionREP().phi(), thisRun_->ecalPhi_);
-		if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_ <= 0) {
-			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
-					rh.positionREP().phi(), rh.layer());
-			calib_->rechits_ecal_.push_back(ce);
-		}
-	}
-
-	for (std::vector<PFRecHit>::const_iterator rhIt = hcalRecHits.begin(); rhIt
-			!= hcalRecHits.end(); ++rhIt) {
-		const PFRecHit& rh = *rhIt;
-		double dR = pftools::deltaR(rh.positionREP().eta(), thisRun_->hcalEta_,
-				rh.positionREP().phi(), thisRun_->hcalPhi_);
-		if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
-			CalibratableElement ce(rh.energy(), rh.positionREP().eta(),
-					rh.positionREP().phi(), rh.layer());
-			calib_->rechits_hcal_.push_back(ce);
-		}
-	}
-
-	/* Deal with clusters if clusters from candidates is not true*/
-	if (!clustersFromCandidates_) {
-		PFClusterCollection ecalClusters = **clustersEcal_;
-		PFClusterCollection hcalClusters = **clustersHcal_;
-
-		for (std::vector<PFCluster>::const_iterator eit = ecalClusters.begin(); eit
-				!= ecalClusters.end(); ++eit) {
-			const PFCluster theCluster = *eit;
-			double dR = pftools::deltaR(theCluster.positionREP().eta(),
-					thisRun_->ecalEta_, theCluster.positionREP().phi(),
-					thisRun_->ecalPhi_);
-			if (dR < deltaRRecHitsToCenterECAL_ || deltaRRecHitsToCenterECAL_
-					<= 0) {
-				CalibratableElement d(theCluster.energy(),
-						theCluster.positionREP().eta(),
-						theCluster.positionREP().phi(), theCluster.layer());
-				calib_->cluster_ecal_.push_back(d);
-				if (debug_ > 4)
-					LogDebug("TestbeamDelegate") << "\t" << theCluster << "\n";
-			}
-		}
-
-		for (std::vector<PFCluster>::const_iterator hit = hcalClusters.begin(); hit
-				!= hcalClusters.end(); ++hit) {
-			const PFCluster theCluster = *hit;
-			double dR = pftools::deltaR(theCluster.positionREP().eta(),
-					thisRun_->hcalEta_, theCluster.positionREP().phi(),
-					thisRun_->hcalPhi_);
-			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_
-					<= 0) {
-				CalibratableElement d(theCluster.energy(),
-						theCluster.positionREP().eta(),
-						theCluster.positionREP().phi(), theCluster.layer());
-				calib_->cluster_hcal_.push_back(d);
-				if (debug_ > 4)
-					LogDebug("TestbeamDelegate") << "\t" << theCluster << "\n";
-			}
-		}
-	}
-
-	//Extract PFCandidates
-	PFCandidateCollection cands = **pfCandidates_;
-	for (PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
-		extractCandidate(*it);
-	}
-
-	endParticle();
-
-	return thisEventPasses_;
-
-}
-
-void TestbeamDelegate::extractCandidate(const PFCandidate& cand) {
-	if (debug_ > 3)
-		LogInfo("TestbeamDelegate") << "\tCandidate: " << cand << "\n";
-
-	PFClusterCollection ecalClusters = **clustersEcal_;
-	PFClusterCollection hcalClusters = **clustersHcal_;
-	CandidateWrapper cw;
-	cw.energy_ = cand.energy();
-	cw.eta_ = cand.eta();
-	cw.phi_ = cand.phi();
-	cw.type_ = cand.particleId();
-	cw.energyEcal_ = cand.ecalEnergy();
-	cw.energyHcal_ = cand.hcalEnergy();
-
-	if (debug_ > 4)
-		LogDebug("TestbeamDelegate") << "\t\tECAL energy = "
-				<< cand.ecalEnergy() << ", HCAL energy = " << cand.hcalEnergy()
-				<< "\n";
-
-	//Now, extract block elements from the pfCandidate:
-	if (clustersFromCandidates_) {
-		PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
-		if (debug_ > 2)
-			LogDebug("TestbeamDelegate")
-					<< "\tLooping over elements in blocks, "
-					<< eleInBlocks.size() << " of them." << std::endl;
-		for (PFCandidate::ElementsInBlocks::iterator bit = eleInBlocks.begin(); bit
-				!= eleInBlocks.end(); ++bit) {
-
-			//Extract block reference
-			PFBlockRef blockRef((*bit).first);
-			//Extract index
-			unsigned indexInBlock((*bit).second);
-			//Dereference the block (what a palava)
-			const PFBlock& block = *blockRef;
-			//And finally get a handle on the elements
-			const edm::OwnVector<reco::PFBlockElement> & elements =
-					block.elements();
-			//get references to the candidate's track, ecal clusters and hcal clusters
-			switch (elements[indexInBlock].type()) {
-			case PFBlockElement::ECAL: {
-				reco::PFClusterRef clusterRef =
-						elements[indexInBlock].clusterRef();
-				const PFCluster theRealCluster = *clusterRef;
-				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(),
-						theRealCluster.positionREP().phi(),
-						theRealCluster.layer());
-				calib_->cluster_ecal_.push_back(d);
-				if (debug_ > 3)
-					LogDebug("TestbeamDelegate") << "\t\tECAL cluster: "
-							<< theRealCluster << "\n";
-
-				break;
-			}
-
-			case PFBlockElement::HCAL: {
-				reco::PFClusterRef clusterRef =
-						elements[indexInBlock].clusterRef();
-				const PFCluster theRealCluster = *clusterRef;
-				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(),
-						theRealCluster.positionREP().phi(),
-						theRealCluster.layer());
-				calib_->cluster_hcal_.push_back(d);
-				if (debug_ > 3)
-					LogDebug("TestbeamDelegate") << "\t\tHCAL cluster: "
-							<< theRealCluster << "\n";
-
-				break;
-			}
-
-			default:
-				if (debug_ > 3)
-					LogDebug("TestbeamDelegate") << "\t\tOther block type: "
-							<< elements[indexInBlock].type() << "\n";
-				break;
-			}
-
-		}
-	}
-	bool noiseCandidate(false);
-	//Photon from noise
-	if (cw.type_ == 4 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
-			thisRun_->ecalPhi_) > deltaRPhotonsToTrack_)
-		noiseCandidate = true;
-	//eta and phi defined at ECAL front surface so deltaR drawn relative to that
-	if (cw.type_ == 5 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_, cw.phi_,
-			thisRun_->ecalPhi_) > deltaRNeutralsToTrack_)
-		noiseCandidate = true;
-
-	if (debug_ > 2 && noiseCandidate)
-		LogInfo("TestbeamDelegate") << "\tExcluding candidate for noise: "
-				<< cand << "\n";
-	if (!noiseCandidate)
-		calib_->cands_.push_back(cw);
-
 }
 
 bool TestbeamDelegate::finish() {
@@ -650,42 +518,6 @@ void TestbeamDelegate::endParticleCore() {
 			tree_->Fill();
 	} else {
 		++nParticleFails_;
-	}
-}
-
-/*
- * Retrieves the tags listed below.
- */
-void TestbeamDelegate::getTagsCore(const edm::ParameterSet& parameters) {
-	try {
-		inputTagParticleFiltration_ = parameters.getParameter<InputTag> (
-				"ParticleFiltration");
-		inputTagBeamCounters_ = parameters.getParameter<InputTag> (
-				"BeamCounters");
-		inputTagTiming_ = parameters.getParameter<InputTag> ("Timing");
-		inputTagEventPosition_ = parameters.getParameter<InputTag> (
-				"EventPosition");
-		inputTagRunData_ = parameters.getParameter<InputTag> ("RunData");
-		inputTagTriggerData_
-				= parameters.getParameter<InputTag> ("TriggerData");
-		inputTagClustersEcal_ = parameters.getParameter<InputTag> (
-				"PFClustersEcal");
-		inputTagClustersHcal_ = parameters.getParameter<InputTag> (
-				"PFClustersHcal");
-		inputTagRecHitsEcal_ = parameters.getParameter<InputTag> (
-				"PFRecHitsEcal");
-		inputTagRecHitsHcal_ = parameters.getParameter<InputTag> (
-				"PFRecHitsHcal");
-		inputTagRawRecHitsEcal_ = parameters.getParameter<InputTag> (
-				"RawRecHitsEcal");
-		inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> (
-				"RawRecHitsHcal");
-		inputTagPFCandidates_ = parameters.getParameter<InputTag> (
-				"PFCandidates");
-	} catch (exception& e) {
-		LogError("TestbeamDelegate") << "Error getting parameters."
-				<< std::endl;
-		throw e;
 	}
 }
 

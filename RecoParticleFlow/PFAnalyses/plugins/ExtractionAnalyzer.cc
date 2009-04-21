@@ -27,10 +27,9 @@ ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 	LogInfo("ExtractionAnalyzer")  << __PRETTY_FUNCTION__ << "\n";
 	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
 	if (edtype_ == dptype_) {
-		ed_ = new DipionDelegate(isMC_);
-
+		ed_ = new DipionDelegate();
 	} else if (edtype_ == tbtype_) {
-		ed_ = new TestbeamDelegate(isMC_);
+		ed_ = new TestbeamDelegate();
 //	} else if(edtype_ == testtype_) {
 //		ed_ = new TestDelegate();
 	} else {

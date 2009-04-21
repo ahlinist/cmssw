@@ -17,7 +17,6 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
-
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 
 class ExtractionAnalyzer : public edm::EDAnalyzer {
