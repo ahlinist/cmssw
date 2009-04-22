@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.46 2009/04/09 16:00:00 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.47 2009/04/22 09:19:11 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.46 $
-  \date $Date: 2009/04/09 16:00:00 $
+  \version $Revision: 1.47 $
+  \date $Date: 2009/04/22 09:19:11 $
 */
 
 #include "TProfile2D.h"
@@ -1094,7 +1094,7 @@ void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   if( o.name.find("EventLenght") != std::string::npos ) {
     TH1F * histo =  dynamic_cast<TH1F*>( o.object );
     int nBins = histo->GetNbinsX();
-    if(histo->GetBinContent(nBins) != 0) {
+    if(histo->GetBinContent(nBins) != 0 || histo->GetBinContent(nBins+1) != 0) {
       TLatex *labelOverflow = new TLatex(0.5,0.5,"Overflow");
       labelOverflow->SetTextColor(kRed);
       labelOverflow->SetNDC();
