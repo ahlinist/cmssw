@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.45 2009/04/09 11:48:52 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.46 2009/04/09 16:00:00 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.45 $
-  \date $Date: 2009/04/09 11:48:52 $
+  \version $Revision: 1.46 $
+  \date $Date: 2009/04/09 16:00:00 $
 */
 
 #include "TProfile2D.h"
@@ -110,12 +110,12 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
   if(obj->GetEntries() != 0) c->SetLogz(0);
 
   //gStyle->SetLabelSize(0.7);
-  obj->GetXaxis()->SetLabelSize(0.06);
-  obj->GetYaxis()->SetLabelSize(0.06);
+  obj->GetXaxis()->SetLabelSize(0.05);
+  obj->GetYaxis()->SetLabelSize(0.05);
 
 
 
-  if(o.name.find("05-Noise/NoiseSummary") != std::string::npos) {
+  if(o.name.find("Noise/NoiseSummary") != std::string::npos) {
     obj->GetXaxis()->SetNdivisions(13,true);
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
@@ -150,7 +150,7 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     obj->GetYaxis()->SetNdivisions(6,true);
     obj->GetXaxis()->CenterLabels();
     obj->GetYaxis()->CenterLabels();
-    obj->SetOption("text,colz");
+//     obj->SetOption("text,colz");
     obj->SetMarkerSize( 2 );
 //     gStyle->SetPaintTextFormat("2.0f");
     c->SetGrid(1,1);
@@ -742,8 +742,8 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
   gStyle->SetPadBorderSize( 0 );
   obj->SetStats( kFALSE );
   //gStyle->SetLabelSize(0.7);
-  obj->GetXaxis()->SetLabelSize(0.07);
-  obj->GetYaxis()->SetLabelSize(0.07);
+  obj->GetXaxis()->SetLabelSize(0.05);
+  obj->GetYaxis()->SetLabelSize(0.05);
 
   if( o.name.find("MeanDistr") != std::string::npos ) {
     gStyle->SetOptStat( 1111111 );
@@ -1091,10 +1091,10 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 void DTRenderPlugin::postDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
-  if( o.name.find("ROSEventLenght") != std::string::npos ) {
+  if( o.name.find("EventLenght") != std::string::npos ) {
     TH1F * histo =  dynamic_cast<TH1F*>( o.object );
     int nBins = histo->GetNbinsX();
-    if(histo->GetBinContent(nBins+1) != 0) {
+    if(histo->GetBinContent(nBins) != 0) {
       TLatex *labelOverflow = new TLatex(0.5,0.5,"Overflow");
       labelOverflow->SetTextColor(kRed);
       labelOverflow->SetNDC();
