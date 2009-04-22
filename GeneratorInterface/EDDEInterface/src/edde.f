@@ -139,7 +139,7 @@ c-----------------------------------------------------------------
       IMPLICIT INTEGER(I-N)
 
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -215,7 +215,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -307,7 +307,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -494,7 +494,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c- *...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -676,7 +676,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -853,7 +853,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -1069,7 +1069,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -1291,7 +1291,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -1580,7 +1580,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -1999,7 +1999,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c- *...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -2318,7 +2318,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)
@@ -2899,9 +2899,11 @@ c-... "hard" slope, function for the "soft" survival factor
       DOUBLE COMPLEX BH,BH2
       DOUBLE COMPLEX SFU1,SFU2,SFU3,SFU4
       DOUBLE COMPLEX SFU10,SFU20,SFU30,SFU40
-      DOUBLE COMPLEX BIND,FLL2,FLL2M
+c      DOUBLE COMPLEX BIND,FLL2,FLL2M
+      DOUBLE COMPLEX BIND
       DOUBLE PRECISION REBIND,IMBIND
-      DOUBLE COMPLEX FU1,FU2,FU3,FU4
+c      DOUBLE COMPLEX FU1,FU2,FU3,FU4
+      DOUBLE COMPLEX FU1,FU2,FU3
       DOUBLE PRECISION FIM,FIMM,SURV2,SURV2M
       DOUBLE PRECISION VPB,VBVSP,VBVSP2
 c-... gp->gp amplitude unitar.corr. generation parameters .....
@@ -3207,7 +3209,8 @@ c----- parameters for hard cross-sections -----------------
      
       DOUBLE PRECISION EDDEX
       DOUBLE PRECISION MX,BTM,PYR
-      DOUBLE PRECISION Y0,Y1,YSR,YSM,YGEN,FYGEN
+c      DOUBLE PRECISION Y0,Y1,YSR,YSM,YGEN,FYGEN
+      DOUBLE PRECISION Y0,Y1,YSR,YGEN,FYGEN
 C-     
        BTM=MX*MX/(SQS*SQS)
        Y1=DLOG(SQS/MX)
@@ -3526,7 +3529,8 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
       
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMUGG,DCSGG
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
@@ -3680,7 +3684,8 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
      
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMUQQ,DCSQQ,MQ
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
@@ -3871,8 +3876,9 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
      
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMU2GAM,DCS2GAM
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
-       DOUBLE PRECISION POWCS,STE1,STE2
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+        DOUBLE PRECISION RMG,RETAJ,RAT
+      DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
      & ETAJMAX,PLUM,PSURV,PSUD,ETASIMAX,SQS,
@@ -3950,9 +3956,11 @@ c--- N=0 exact, N>0 upper estimation for X3 generator --------
        IMPLICIT NONE
        INTEGER N
        DOUBLE PRECISION DX3G,IALPHAS
-       DOUBLE PRECISION M,MU,ETA,X3,PT3,RDI
+c       DOUBLE PRECISION M,MU,ETA,X3,PT3,RDI
+       DOUBLE PRECISION M,MU,ETA,X3,RDI
        DOUBLE PRECISION PT3MIN,PT3MAX
-       DOUBLE PRECISION AUX1,AUX2,AUX3
+c       DOUBLE PRECISION AUX1,AUX2,AUX3
+       DOUBLE PRECISION AUX1,AUX2
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
       DOUBLE PRECISION PI,CSMB,LAMQCD,
@@ -4147,7 +4155,8 @@ c--- N=0 - exact function, N>0 - upper curve ----
        IMPLICIT NONE
        INTEGER N
        DOUBLE PRECISION FMU3G,MG
-       DOUBLE PRECISION AUX1,AUX2,AUX3,AUX4
+c       DOUBLE PRECISION AUX1,AUX2,AUX3,AUX4
+       DOUBLE PRECISION AUX1,AUX2,AUX3
        DOUBLE PRECISION SOFTSURV,ISUD02
        DOUBLE PRECISION CS3G,POWCS
        DOUBLE PRECISION GFMGEN,STE1,STE2
@@ -4201,12 +4210,14 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
    
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMU3G,DCS3G,DX3G
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION GX3,RX3,GPT3,RPT3,GFI3
        DOUBLE PRECISION X3GMIN,X3GMAX,X3GMAX0
        DOUBLE PRECISION PT3GMIN,PT3GMAX
        DOUBLE PRECISION POWCS,STE1,STE2
-       DOUBLE PRECISION AUX1,AUX2,AUX3
+c       DOUBLE PRECISION AUX1,AUX2,AUX3
+       DOUBLE PRECISION AUX1,AUX2
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
       DOUBLE PRECISION PI,CSMB,LAMQCD,
@@ -4438,7 +4449,8 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION GX3,GFIS,GTHETAS
        DOUBLE PRECISION FMUQQG,DCSQQG
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2,AUX1
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
@@ -4636,8 +4648,10 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
        IMPLICIT NONE
     
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
-       DOUBLE PRECISION FMUGGSI,DCSGGSI
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION FMUGGSI,DCSGGSI
+       DOUBLE PRECISION FMUGGSI
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
@@ -4826,7 +4840,8 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
       
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMUQQSI,DCSQQSI,MQ
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
@@ -4866,7 +4881,6 @@ c--- aux function -----
       FUNCTION AU2GAMSI(ETA)
 
        IMPLICIT NONE
-       INTEGER N
        DOUBLE PRECISION AU2GAMSI,ETA,TETA
        DOUBLE PRECISION AUX0,AUX1,AUX2,AUX3
 c------ fundamental constants -----------------------------
@@ -5049,7 +5063,8 @@ c--- generator of (Mgg,etaj*) in c.m. of initial gg ----------
     
        DOUBLE PRECISION PYR,GMG,GMGG,GETAJ
        DOUBLE PRECISION FMU2GAMSI,DCS2GAMSI
-       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+c       DOUBLE PRECISION RMG,RMGG,RETAJ,RAT
+       DOUBLE PRECISION RMG,RETAJ,RAT
        DOUBLE PRECISION POWCS,STE1,STE2
 c----- parameters for hard cross-sections -----------------
       DOUBLE PRECISION MGGCUT,ETJCUT,MXMAX,
@@ -5216,8 +5231,10 @@ c- NEVE2=(2*N2)!/N2!/2**N2, NEVE3=(3*N3)!/N3!/6**N3 ---------------
 c- random 0->1
        DOUBLE PRECISION PYR 
 c- indexes,probability, aux. vars.
-       INTEGER I,J,L,II,JJ,LL,IC,III 
-       DOUBLE PRECISION PROB,AUX1,AUX2
+c       INTEGER I,J,L,II,JJ,LL,IC,III 
+       INTEGER I,J,L,II,JJ,LL,IC 
+c       DOUBLE PRECISION PROB,AUX1,AUX2
+       DOUBLE PRECISION PROB,AUX1
 
        K=0
 c- definition N - even or add  
@@ -5462,7 +5479,8 @@ C-============================================================
        
        IMPLICIT NONE
 c- number of gluons in both cascads
-       INTEGER I,J,N1,N2,IAU,NFAIL
+c       INTEGER I,J,N1,N2,IAU,NFAIL
+       INTEGER I,N1,N2,IAU,NFAIL
 c- jj mass, {X+jj+Y} mass,momenta of cascad gluons,
 c- momenta of final colliding hard gluons
        DOUBLE PRECISION MC,MX,PG1(5,500),PG2(5,500),
@@ -5818,7 +5836,8 @@ C-============================================================
        
        IMPLICIT NONE
 c- functions and variables
-      INTEGER N,NKON,IAU,IBU
+c      INTEGER N,NKON,IAU,IBU
+      INTEGER NKON,IAU,IBU
       DOUBLE PRECISION CFUNX,CFUNPT,MU,FX,RX,FPT,RPT,FFI,RAT 
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
@@ -5898,9 +5917,12 @@ C-============================================================
        IMPLICIT NONE
        INTEGER IAU,IBU
 c- functions and variables
-      INTEGER N,NKON
+c      INTEGER N,NKON
+      INTEGER NKON
+c      DOUBLE PRECISION CFUNPT,CFUNZ,MU,XFIX,PTFIX,GPT,GX,
+c     & RPT,RX,RZ,RAT 
       DOUBLE PRECISION CFUNPT,CFUNZ,MU,XFIX,PTFIX,GPT,GX,
-     & RPT,RX,RZ,RAT 
+     & RPT,RZ,RAT 
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
       DOUBLE PRECISION PI,CSMB,LAMQCD,
@@ -6032,7 +6054,8 @@ c- commons for cascad generation
        DOUBLE PRECISION FGGQ0,FGGQS
        COMMON/EDDEFGG/FGGQ0,FGGQS
 c- aux. vars.
-       DOUBLE PRECISION LIM1,LIM2,YMU,FMIN,FMAX
+c       DOUBLE PRECISION LIM1,LIM2,YMU,FMIN,FMAX
+       DOUBLE PRECISION LIM1,LIM2,FMIN,FMAX
 
 c- upper and lower limits of generation
        LIM1=FGGQ0/(MU+FGGQ0)
@@ -6110,7 +6133,8 @@ c- commons for cascad generation
        DOUBLE PRECISION FGGQ0,FGGQS
        COMMON/EDDEFGG/FGGQ0,FGGQS
 c- aux. vars.
-       DOUBLE PRECISION LIM1,LIM2,FMIN,FMAX,YPT,DFMAX,AUX1,AUX2
+c       DOUBLE PRECISION LIM1,LIM2,FMIN,FMAX,YPT,DFMAX,AUX1,AUX2
+       DOUBLE PRECISION LIM1,LIM2,DFMAX,AUX1,AUX2
 
 c- upper and lower limits of generation
        LIM1=X*(MU+FGGQ0)/MU
@@ -6358,7 +6382,8 @@ C--- check+
 
        IMPLICIT NONE
        INTEGER N
-       DOUBLE PRECISION ISUD02,A1,AUX2,AUX3
+c       DOUBLE PRECISION ISUD02,A1,AUX2,AUX3
+       DOUBLE PRECISION ISUD02,A1
        DOUBLE PRECISION ISUDGEN2,MU
 c------ fundamental constants -----------------------------
       INTEGER NF,NC,NLOSW
@@ -6727,7 +6752,8 @@ c-subroutine to calc. obs. mass and width --------------------
        DOUBLE PRECISION ALPHAS,GF,MTOP,MU
        DOUBLE COMPLEX FSMH 
 c--- additional variables -----------------------
-       DOUBLE PRECISION AUX1,AUX2,AUX3,AUX4,AUX5,AUX6
+c       DOUBLE PRECISION AUX1,AUX2,AUX3,AUX4,AUX5,AUX6
+       DOUBLE PRECISION AUX1,AUX2
        DOUBLE PRECISION RSXIMIN,RSXIMAX
        DOUBLE PRECISION RSZ,RSTHETA,RSAF,RSBF,RSCF,RSDF
        DOUBLE PRECISION RSA34F,RSA12F,RSMEDGE2,RSMEDGE3
@@ -7123,7 +7149,8 @@ c-----------------
 c------ integrated gg luminocity -----------------------------      
       DOUBLE PRECISION M2DLUMDM2
       
-      DOUBLE PRECISION LIM1,LIM2,AUX1,AUX2,AUX3
+c      DOUBLE PRECISION LIM1,LIM2,AUX1,AUX2,AUX3
+      DOUBLE PRECISION LIM1,LIM2,AUX1,AUX2
 c----- for resonances -------------------------------------
       DOUBLE PRECISION WIDTHSMH
       DOUBLE PRECISION RSMOBS,RSWD,RSBR
@@ -12137,183 +12164,6 @@ c-- tables for dfM_g/g(x,Y)/dY, Y=DLOG(PT**2/LAMQCD**2) ---
      & 0.00000D+00/
 
        END
-c-------------------------------------------------------------              
-c-!!+++++++++++++ EDDE2.1 SUBROUTINES ++++++++++++++++++++++++
-
-C-***************************************************************
-C- additional subroutines *************************************** 
-C...PY3ENT
-C...Stores three partons or particles in their CM frame,
-C...with the first along the +z axis and the third in the (x,z)
-C...plane with x > 0.
- 
-      SUBROUTINE PY3ENT_ori(IP,KF1,KF2,KF3,PECM,X1,X3)
- 
-C...DOUBLE PRECISION and INTEGER declarations.
-      IMPLICIT DOUBLE PRECISION(A-H, O-Z)
-      IMPLICIT INTEGER(I-N)
-      INTEGER PYK,PYCHGE,PYCOMP
-C...Commonblocks.
-      COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
-      COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
-      COMMON/PYDAT2/KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
-      SAVE /PYJETS/,/PYDAT1/,/PYDAT2/
- 
-C...Standard checks.
-      MSTU(28)=0
-      IF(MSTU(12).GE.1) CALL PYLIST(0)
-      IPA=MAX(1,IABS(IP))
-      IF(IPA.GT.MSTU(4)-2) CALL PYERRM(21,
-     &'(PY3ENT:) writing outside PYJETS memory')
-      KC1=PYCOMP(KF1)
-      KC2=PYCOMP(KF2)
-      KC3=PYCOMP(KF3)
-      IF(KC1.EQ.0.OR.KC2.EQ.0.OR.KC3.EQ.0) CALL PYERRM(12,
-     &'(PY3ENT:) unknown flavour code')
- 
-C...Find masses. Reset K, P and V vectors.
-      PM1=0D0
-      IF(MSTU(10).EQ.1) PM1=P(IPA,5)
-      IF(MSTU(10).GE.2) PM1=PYMASS(KF1)
-      PM2=0D0
-      IF(MSTU(10).EQ.1) PM2=P(IPA+1,5)
-      IF(MSTU(10).GE.2) PM2=PYMASS(KF2)
-      PM3=0D0
-      IF(MSTU(10).EQ.1) PM3=P(IPA+2,5)
-      IF(MSTU(10).GE.2) PM3=PYMASS(KF3)
-      DO 110 I=IPA,IPA+2
-        DO 100 J=1,5
-          K(I,J)=0
-          P(I,J)=0D0
-          V(I,J)=0D0
-  100   CONTINUE
-  110 CONTINUE
- 
-C...Check flavours.
-      KQ1=KCHG(KC1,2)*ISIGN(1,KF1)
-      KQ2=KCHG(KC2,2)*ISIGN(1,KF2)
-      KQ3=KCHG(KC3,2)*ISIGN(1,KF3)
-      IF(MSTU(19).EQ.1) THEN
-        MSTU(19)=0
-      ELSEIF(KQ1.EQ.0.AND.KQ2.EQ.0.AND.KQ3.EQ.0) THEN
-      ELSEIF(KQ1.NE.0.AND.KQ2.EQ.2.AND.(KQ1+KQ3.EQ.0.OR.
-     &  KQ1+KQ3.EQ.4)) THEN
-      ELSE
-        CALL PYERRM(2,'(PY3ENT:) unphysical flavour combination')
-      ENDIF
-      K(IPA,2)=KF1
-      K(IPA+1,2)=KF2
-      K(IPA+2,2)=KF3
- 
-C...Store partons/particles in K vectors for normal case.
-      IF(IP.GE.0) THEN
-        K(IPA,1)=1
-        IF(KQ1.NE.0.AND.(KQ2.NE.0.OR.KQ3.NE.0)) K(IPA,1)=2
-        K(IPA+1,1)=1
-        IF(KQ2.NE.0.AND.KQ3.NE.0) K(IPA+1,1)=2
-        K(IPA+2,1)=1
- 
-C...Store partons in K vectors for parton shower evolution.
-      ELSE
-        K(IPA,1)=3
-        K(IPA+1,1)=3
-        K(IPA+2,1)=3
-        KCS=4
-        IF(KQ1.EQ.-1) KCS=5
-        K(IPA,KCS)=MSTU(5)*(IPA+1)
-        K(IPA,9-KCS)=MSTU(5)*(IPA+2)
-        K(IPA+1,KCS)=MSTU(5)*(IPA+2)
-        K(IPA+1,9-KCS)=MSTU(5)*IPA
-        K(IPA+2,KCS)=MSTU(5)*IPA
-        K(IPA+2,9-KCS)=MSTU(5)*(IPA+1)
-      ENDIF
- 
-C...Check kinematics.
-      MKERR=0
-c      IF(0.5D0*X1*PECM.LE.PM1.OR.0.5D0*(2D0-X1-X3)*PECM.LE.PM2.OR.
-c     &0.5D0*X3*PECM.LE.PM3) MKERR=1
-      PA1=SQRT(MAX(1D-10,(0.5D0*X1*PECM)**2-PM1**2))
-      PA2=SQRT(MAX(1D-10,(0.5D0*(2D0-X1-X3)*PECM)**2-PM2**2))
-      PA3=SQRT(MAX(1D-10,(0.5D0*X3*PECM)**2-PM3**2))
-      CTHE2=(PA3**2-PA1**2-PA2**2)/(2D0*PA1*PA2)
-      CTHE3=(PA2**2-PA1**2-PA3**2)/(2D0*PA1*PA3)
-c      IF(ABS(CTHE2).GE.1.001D0.OR.ABS(CTHE3).GE.1.001D0) MKERR=1
-      CTHE3=MAX(-1D0,MIN(1D0,CTHE3))
-c      IF(MKERR.NE.0) CALL PYERRM(13,
-c     &'(PY3ENT:) unphysical kinematical variable setup')
- 
-C...Store partons/particles in P vectors.
-      P(IPA,3)=PA1
-      P(IPA,4)=SQRT(PA1**2+PM1**2)
-      P(IPA,5)=PM1
-      P(IPA+2,1)=PA3*SQRT(1D0-CTHE3**2)
-      P(IPA+2,3)=PA3*CTHE3
-      P(IPA+2,4)=SQRT(PA3**2+PM3**2)
-      P(IPA+2,5)=PM3
-      P(IPA+1,1)=-P(IPA+2,1)
-      P(IPA+1,3)=-P(IPA,3)-P(IPA+2,3)
-      P(IPA+1,4)=SQRT(P(IPA+1,1)**2+P(IPA+1,3)**2+PM2**2)
-      P(IPA+1,5)=PM2
- 
-C...Set N. Optionally fragment/decay.
-      N=IPA+2
-      IF(IP.EQ.0) CALL PYEXEC
- 
-      RETURN
-      END
- 
-      SUBROUTINE PYERRM_ori(MERR,CHMESS)
- 
-C...DOUBLE PRECISION and INTEGER declarations.
-      IMPLICIT DOUBLE PRECISION(A-H, O-Z)
-      IMPLICIT INTEGER(I-N)
-      INTEGER PYK,PYCHGE,PYCOMP
-C...Commonblocks.
-      COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
-      COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
-      SAVE /PYJETS/,/PYDAT1/
-C...Local character variable.
-      CHARACTER CHMESS*(*)
- 
-C...Write first few warnings, then be silent.
-      IF(MERR.LE.10) THEN
-        MSTU(27)=MSTU(27)+1
-        MSTU(28)=MERR
-        IF(MSTU(25).EQ.1.AND.MSTU(27).LE.MSTU(26)) WRITE(MSTU(11),5000)
-     &  MERR,MSTU(31),CHMESS
- 
-C...Write first few errors, then be silent or stop program.
-      ELSEIF(MERR.LE.20) THEN
-        IF(MSTU(29).EQ.0) MSTU(23)=MSTU(23)+1
-        MSTU(24)=MERR-10
-        IF(MSTU(21).GE.1.AND.MSTU(23).LE.MSTU(22)) WRITE(MSTU(11),5100)
-     &  MERR-10,MSTU(31),CHMESS
-        IF(MSTU(21).GE.2.AND.MSTU(23).GT.MSTU(22)) THEN
-          WRITE(MSTU(11),5100) MERR-10,MSTU(31),CHMESS
-          WRITE(MSTU(11),5200)
-          IF(MERR.NE.17) CALL PYLIST(2)
-c          STOP
-        ENDIF
- 
-C...Stop program in case of irreparable error.
-      ELSE
-        WRITE(MSTU(11),5300) MERR-20,MSTU(31),CHMESS
-c        STOP
-      ENDIF
- 
-C...Formats for output.
- 5000 FORMAT(/5X,'Advisory warning type',I2,' given after',I9,
-     &' PYEXEC calls:'/5X,A)
- 5100 FORMAT(/5X,'Error type',I2,' has occured after',I9,
-     &' PYEXEC calls:'/5X,A)
- 5200 FORMAT(5X,'Execution will be stopped after listing of last ',
-     &'event!')
- 5300 FORMAT(/5X,'Fatal error type',I2,' has occured after',I9,
-     &' PYEXEC calls:'/5X,A/5X,'Execution will now be stopped!')
- 
-      RETURN
-      END
- 
 c----------------------------------------------------------------------              
 c-*... jet with flat E vs eta distr. /A.Sobol
 c----------------------------------------------------------------------              
@@ -12321,7 +12171,7 @@ c----------------------------------------------------------------------
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 c-*...standard PYTHIA ( v. >= 6.2) commons for initialization
-      INTEGER PYCOMP
+c      INTEGER PYCOMP
       COMMON /PYJETS/ NN, NPAD, KK(4000,5), PP(4000,5), VV(4000,5)
       COMMON /PYDAT2/ KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
       COMMON /PYINT5/ NGENPD,NGEN(0:500,3),XSEC(0:500,3)

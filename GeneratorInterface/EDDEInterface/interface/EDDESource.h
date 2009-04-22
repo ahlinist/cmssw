@@ -3,8 +3,10 @@
 
 /** \class EDDESource
  *
- * Generates EDDE + Pythia ==> HepMC events
+ * Generates EDDE + Pythia ==> HepMC events 
  *
+ * Andrey Kuznetsov
+ *   changes the interface to work with new CMSSW versions. 16/04/09  
  * Kirill Datsko
  *   for the Generator Interface. 04/07/07
  * Patrick Janot
