@@ -22,8 +22,8 @@
 #include <utility>
 
 
-
-class DipionDelegate : public EventDelegate {
+namespace pftools {
+class DipionDelegate : public pftools::EventDelegate {
 
 public:
 	DipionDelegate();
@@ -103,6 +103,8 @@ private:
 
 
 };
+
+}
 
 
 #endif /*DIPIONDELEGATE_H_*/
