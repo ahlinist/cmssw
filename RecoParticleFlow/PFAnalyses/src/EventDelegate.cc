@@ -42,6 +42,8 @@
 
 #include "RecoParticleFlow/Benchmark/interface/PFBenchmarkAlgo.h"
 
+#include "RecoParticleFlow/PFAnalyses/interface/CandidateConverter.h"
+
 #include <iostream>
 
 using namespace pftools;
@@ -52,10 +54,12 @@ EventDelegate::EventDelegate() :
 	thisEventPasses_(false), thisEventCalibs_(0), nWrites_(0), nFails_(0),
 			nParticleWrites_(0), nParticleFails_(0), tree_(0) {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
+	std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 EventDelegate::~EventDelegate() {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
+	std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
@@ -76,7 +80,6 @@ void EventDelegate::init(const edm::ParameterSet& parameters) {
 	getTags(parameters);
 	initCore(parameters);
 	LogInfo("\tEventDelegate initialisation complete.\n");
-
 }
 
 void EventDelegate::getTags(const edm::ParameterSet& parameters) {
@@ -389,221 +392,24 @@ void EventDelegate::extractCandidate(const PFCandidate& cand) {
 	if (debug_ > 3)
 		LogDebug("EventDelegate") << "\tCandidate: " << cand << "\n";
 
-	CandidateWrapper cw;
-	cw.energy_ = cand.energy();
-	cw.eta_ = cand.eta();
-	cw.phi_ = cand.phi();
-	cw.type_ = cand.particleId();
-	cw.energyEcal_ = cand.ecalEnergy();
-	cw.energyHcal_ = cand.hcalEnergy();
-
-	if (debug_ > 4) {
-		LogInfo("EventDelegate") << "\t\tECAL/HCAL energy before: ("
-				<< cand.rawEcalEnergy() << ", " << cand.rawHcalEnergy()
-				<< ")\n";
-		LogInfo("EventDelegate") << "\t\tECAL/HCAL energy after : ("
-				<< cand.ecalEnergy() << ", " << cand.hcalEnergy() << ")\n";
-	}
-
-	//Now, extract block elements from the pfCandidate:
-	bool seenEcalAlready(false);
-	bool seenHcalAlready(false);
-	if (clustersFromCandidates_) {
-		PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
-		if (debug_ > 2)
-			LogDebug("EventDelegate") << "\tLooping over elements in blocks, "
-					<< eleInBlocks.size() << " of them." << std::endl;
-		for (PFCandidate::ElementsInBlocks::iterator bit = eleInBlocks.begin(); bit
-				!= eleInBlocks.end(); ++bit) {
-
-			//Extract block reference
-			PFBlockRef blockRef((*bit).first);
-			//Extract index
-			unsigned indexInBlock((*bit).second);
-			//Dereference the block (what a palava)
-			const PFBlock& block = *blockRef;
-			//And finally get a handle on the elements
-			const edm::OwnVector<reco::PFBlockElement> & elements =
-					block.elements();
-
-			//get references to the candidate's track, ecal clusters and hcal clusters
-			switch (elements[indexInBlock].type()) {
-			case PFBlockElement::ECAL: {
-
-				reco::PFClusterRef clusterRef =
-						elements[indexInBlock].clusterRef();
-				const PFCluster theRealCluster = *clusterRef;
-				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(),
-						theRealCluster.positionREP().phi(),
-						theRealCluster.layer());
-
-				if (debug_ > 3) {
-					LogInfo("EventDelegate") << "\t\tECAL cluster: "
-							<< theRealCluster << "\n";
-					double clusterSep = pftools::deltaR(cw.eta_, d.eta_,
-							cw.phi_, d.phi_);
-					LogInfo("EventDelegate") << "\t\tDeltaR cand to cluster = "
-							<< clusterSep << "\n";
-				}
-
-				if (!seenEcalAlready) {
-					cw.calowindow_ecal_.init(d.eta_, d.phi_,
-							nRingsEcalCaloWindow_, deltaREcalCaloWindow_,
-							nPanesEcalCaloWindow_);
-					seenEcalAlready = true;
-				} else
-					LogDebug("EventDelegate")
-							<< "More than one ECAL cluster on candidate?"
-							<< std::endl;
-
-				if (rechitsFromCandidates_) {
-					const std::vector<PFRecHitFraction> rechitFracs =
-							theRealCluster.recHitFractions();
-					std::vector<PFRecHitFraction>::const_iterator rhfIt =
-							rechitFracs.begin();
-					double absDeltaR(0.0);
-					for (; rhfIt != rechitFracs.end(); ++rhfIt) {
-						//LogDebug("EventDelegate") << "\tecal rechit..." << std::endl;
-						const PFRecHitFraction rhf = *rhfIt;
-						const PFRecHit rh = *(rhf.recHitRef());
-						CalibratableElement rhd(rh.energy() * rhf.fraction(),
-								rh.positionREP().eta(), rh.positionREP().phi(),
-								rh.layer());
-						calib_->rechits_ecal_.push_back(rhd);
-
-						absDeltaR += fabs(pftools::deltaR(rhd.eta_, d.eta_,
-								rhd.phi_, d.phi_));
-
-						bool added = cw.calowindow_ecal_.addHit(
-								rh.positionREP().eta(), rh.positionREP().phi(),
-								rh.energy() * rhf.fraction());
-						/*if (debug_ > 4 && added) {
-						 LogDebug("EventDelegate") << "\t\tAdded ECAL rechit (E = "
-						 << rh.energy() << ", releta = "
-						 << rh.positionREP().eta() - d.eta_
-						 << ", relphi = " << rh.positionREP().phi()
-						 - d.phi_ << ")\n";
-						 } else if (debug_ > 4 && !added) {
-						 LogDebug("EventDelegate") << "\t\tFailed ECAL rechit (E = "
-						 << rh.energy() << ", releta = "
-						 << rh.positionREP().eta() - d.eta_
-						 << ", relphi = " << rh.positionREP().phi()
-						 - d.phi_ << ")\n";
-						 }
-						 LogDebug("EventDelegate") << "\t---------" << std::endl; */
-					}
-
-					d.extent_ = absDeltaR / rechitFracs.size();
-				} else {
-					d.extent_ = 0.0;
-				}
-				if(clustersFromCandidates_)
-					calib_->cluster_ecal_.push_back(d);
-
-				break;
-			}
-
-			case PFBlockElement::HCAL: {
-				reco::PFClusterRef clusterRef =
-						elements[indexInBlock].clusterRef();
-				const PFCluster theRealCluster = *clusterRef;
-				CalibratableElement d(theRealCluster.energy(),
-						theRealCluster.positionREP().eta(),
-						theRealCluster.positionREP().phi(),
-						theRealCluster.layer());
-
-				if (debug_ > 3) {
-					LogInfo("EventDelegate") << "\t\tHCAL cluster: "
-							<< theRealCluster << "\n";
-					double clusterSep = pftools::deltaR(cw.eta_, d.eta_,
-							cw.phi_, d.phi_);
-					LogInfo("EventDelegate") << "\t\tDeltaR cand to cluster = "
-							<< clusterSep << "\n";
-				}
-
-				if (!seenHcalAlready) {
-					cw.calowindow_hcal_.init(d.eta_, d.phi_,
-							nRingsHcalCaloWindow_, deltaRHcalCaloWindow_,
-							nPanesHcalCaloWindow_);
-					seenHcalAlready = true;
-				} else
-					LogDebug("EventDelegate")
-							<< "More than one HCAL cluster on candidate?"
-							<< std::endl;
-
-				if (rechitsFromCandidates_) {
-					const std::vector<PFRecHitFraction> rechitFracs =
-							theRealCluster.recHitFractions();
-					double absDeltaR(0.0);
-					std::vector<PFRecHitFraction>::const_iterator rhfIt =
-							rechitFracs.begin();
-					for (; rhfIt != rechitFracs.end(); ++rhfIt) {
-						//LogDebug("EventDelegate") << "\thcal rechit..." << std::endl;
-						const PFRecHitFraction rhf = *rhfIt;
-						const PFRecHit rh = *(rhf.recHitRef());
-						CalibratableElement rhd(rh.energy() * rhf.fraction(),
-								rh.positionREP().eta(), rh.positionREP().phi(),
-								rh.layer());
-						calib_->rechits_hcal_.push_back(rhd);
-
-						absDeltaR += fabs(pftools::deltaR(rhd.eta_, d.eta_,
-								rhd.phi_, d.phi_));
-
-						bool added = cw.calowindow_hcal_.addHit(
-								rh.positionREP().eta(), rh.positionREP().phi(),
-								rh.energy() * rhf.fraction());
-						/*if (debug_ > 4 && added) {
-						 LogDebug("EventDelegate") << "\t\tAdded HCAL rechit (E = "
-						 << rh.energy() << ", releta = "
-						 << rh.positionREP().eta() - d.eta_
-						 << ", relphi = " << rh.positionREP().phi()
-						 - d.phi_ << ")\n";
-						 } else if (debug_ > 4 && !added) {
-						 LogDebug("EventDelegate") << "\t\tFailed HCAL rechit (E = "
-						 << rh.energy() << ", releta = "
-						 << rh.positionREP().eta() - d.eta_
-						 << ", relphi = " << rh.positionREP().phi()
-						 - d.phi_ << ")\n";
-						 }
-						 LogDebug("EventDelegate") << "\t---------" << std::endl; */
-					}
-
-					d.extent_ = absDeltaR / rechitFracs.size();
-				} else {
-					d.extent_ = 0.0;
-				}
-				if(clustersFromCandidates_)
-					calib_->cluster_hcal_.push_back(d);
-
-				break;
-			}
-
-			default:
-				if (debug_ > 3)
-					LogDebug("EventDelegate") << "\t\tOther block type: "
-							<< elements[indexInBlock].type() << "\n";
-				break;
-			}
-
-		}
-	}
-	if (!seenEcalAlready)
-		cw.calowindow_ecal_.init(cw.eta_, cw.phi_, nRingsEcalCaloWindow_,
-				deltaREcalCaloWindow_, nPanesEcalCaloWindow_);
-
-	if (!seenHcalAlready)
-		cw.calowindow_hcal_.init(cw.eta_, cw.phi_, nRingsHcalCaloWindow_,
-				deltaRHcalCaloWindow_, nPanesHcalCaloWindow_);
-
-	if (debug_ > 2) {
-		LogInfo("EventDelegate") << "ECAL calo window: " << cw.calowindow_ecal_
-				<< std::endl;
-		LogInfo("EventDelegate") << "HCAL calo window: " << cw.calowindow_hcal_
-				<< std::endl;
-	}
-
+	CandidateConverter converter;
+	CandidateWrapper cw = converter.convert(cand);
 	calib_->cands_.push_back(cw);
+
+	if(clustersFromCandidates_) {
+		std::vector<CalibratableElement> ecal, hcal;
+		converter.extractClustersFromCandidate(cand, ecal, hcal);
+		calib_->cluster_ecal_ = ecal;
+		calib_->cluster_hcal_ = hcal;
+	}
+
+	if(rechitsFromCandidates_) {
+		std::vector<CalibratableElement> ecal, hcal;
+		converter.extractRechitsFromCandidate(cand, ecal, hcal);
+		calib_->rechits_ecal_ = ecal;
+		calib_->rechits_hcal_ = hcal;
+	}
+
 	LogDebug("EventDelegate") << "Leaving " << __PRETTY_FUNCTION__ << std::endl;
 }
 

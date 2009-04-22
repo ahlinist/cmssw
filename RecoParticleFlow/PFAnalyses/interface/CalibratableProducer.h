@@ -28,7 +28,7 @@ private:
 	virtual void produce(edm::Event& event, const edm::EventSetup& setup);
 	virtual void endJob();
 
-	EventDelegate* ed_;
+	pftools::EventDelegate* ed_;
 
 	std::string edtype_;
 	std::string dptype_;

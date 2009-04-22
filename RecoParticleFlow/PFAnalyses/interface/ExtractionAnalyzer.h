@@ -42,7 +42,7 @@ private:
 	virtual void analyze(const edm::Event& event, const edm::EventSetup& setup);
 	virtual void endJob();
 
-	EventDelegate* ed_;
+	pftools::EventDelegate* ed_;
 	TTree* tree_;
 	edm::Service<TFileService> fileservice_;
 	std::vector<TObject*> userObjects_;

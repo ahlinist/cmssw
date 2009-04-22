@@ -12,7 +12,6 @@
 <use name=rootrflx>
 <use name=DataFormats/EcalRecHit>
 <use name=DataFormats/HcalRecHit>
-<use name=Geometry/CaloEventSetup>
 <use name=Geometry/CaloGeometry>
 <use name=Geometry/CaloTopology>
 <use name=DataFormats/HcalDetId>

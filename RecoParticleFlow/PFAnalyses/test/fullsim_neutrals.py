@@ -53,7 +53,7 @@ process.source = cms.Source("EmptySource")
 from Configuration.Generator.PythiaUESettings_cfi import *
 process.generator = cms.EDProducer("Pythia6EGun",
     PGunParameters = cms.PSet(
-       ParticleID = cms.vint32(130),
+       ParticleID = cms.vint32(211),
        MinPhi = cms.double(0.02),
        MaxPhi = cms.double(0.02),
        MinEta = cms.double(0.2),
@@ -112,7 +112,7 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     deltaRClustersToTrack=cms.double(0.4),
     EventDelegateType=cms.string('DipionDelegate'),
     deltaRCandToTrack=cms.double(0.4),
-    neutralMode=cms.bool(True),
+    neutralMode=cms.bool(False),
     noSimDaughters=cms.bool(True),
     PFCandidates=cms.InputTag("particleFlow"),
     deltaRRechitsToTrack=cms.double(0.15),
@@ -127,7 +127,7 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     PFClustersEcal=cms.InputTag("particleFlowClusterECAL"),
     clustersFromCandidates=cms.bool(True),
     rechitsFromCandidates=cms.bool(False),
-    particlePDG=cms.int32(130),
+    particlePDG=cms.int32(211),
     SimCaloRecHitsEcalEB = cms.InputTag("g4SimHits", "EcalHitsEB"),
     SimCaloRecHitsEcalEE = cms.InputTag("g4SimHits", "EcalHitsEE"),
     SimCaloRecHitsHcal = cms.InputTag("g4SimHits", "HcalHits"),
@@ -144,7 +144,6 @@ process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
 )
 
 
-
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string(outputTree)
 )
@@ -159,8 +158,10 @@ process.p1 = cms.Path(
     process.globalreco + 
     process.egammareco + 
     process.particleFlowReco +
-    process.particleFlowSimParticle
+    process.particleFlowSimParticle +
+    process.extraction
 )
+
 
 
 #process.finishup = cms.OutputModule("PoolOutputModule",

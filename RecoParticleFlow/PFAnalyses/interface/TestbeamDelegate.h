@@ -22,8 +22,9 @@
 
 #include <TH1.h>
 #include <TH1F.h>
-class TestbeamDelegate : public EventDelegate
-{
+
+namespace pftools {
+class TestbeamDelegate: public pftools::EventDelegate {
 public:
 	TestbeamDelegate();
 	virtual ~TestbeamDelegate();
@@ -48,16 +49,14 @@ protected:
 
 	virtual void endParticleCore();
 
-	virtual void extractHcalRecHits(const HBHERecHitCollection& hcalRechits, const CaloSubdetectorGeometry* geometry, double targetEta, double targetPhi);
-
-
+	virtual void extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
+			const CaloSubdetectorGeometry* geometry, double targetEta,
+			double targetPhi);
 
 private:
 
-
 	bool applyCleaningCuts_;
 	bool saveJustPions_;
-
 
 	unsigned stripAnomalousEvents_;
 	unsigned maxEventsFromEachRun_;
@@ -77,7 +76,6 @@ private:
 	double deltaRClustersToCenterHCAL_;
 	double deltaRPhotonsToTrack_;
 	double deltaRNeutralsToTrack_;
-
 
 	std::map<unsigned, pftools::RunInfo*> runInfos_;
 
@@ -118,7 +116,7 @@ private:
 	edm::Handle<reco::PFRecHitCollection>* recHitsHcal_;
 	edm::Handle<reco::PFCandidateCollection>* pfCandidates_;
 
-
 };
+}
 
 #endif /*TESTBEAMDELEGATE_H_*/

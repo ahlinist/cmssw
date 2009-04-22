@@ -33,6 +33,7 @@
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 #include "RecoParticleFlow/PFAnalyses/interface/operations.h"
+#include "RecoParticleFlow/PFAnalyses/interface/Initialisable.h"
 
 #include <map>
 #include <string>
@@ -41,8 +42,10 @@
 
 #include <TTree.h>
 #include <TH2F.h>
+namespace pftools {
 
-class EventDelegate {
+
+class EventDelegate: public pftools::Initialisable {
 public:
 
 	virtual ~EventDelegate();
@@ -50,6 +53,7 @@ public:
 	//Call this straight after construction
 	virtual void init(TTree* tree, const edm::ParameterSet& parameters);
 
+	//Call this straight after construction
 	virtual void init(const edm::ParameterSet& parameters);
 
 	void startEvent(const edm::Event& event, const edm::EventSetup& setup,
@@ -250,7 +254,7 @@ template<typename T> std::vector<unsigned> EventDelegate::findObjectsInDeltaR(
 	return answers;
 }
 
-template<typename T> std::vector<unsigned> EventDelegate::findObjectsInDeltaR(
+template<typename T> std::vector<unsigned> pftools::EventDelegate::findObjectsInDeltaR(
 		const std::vector<T>& objects, const double centralEta,
 		const double centralPhi, const double deltaRCut) {
 	using namespace edm;
@@ -271,6 +275,8 @@ template<typename T> std::vector<unsigned> EventDelegate::findObjectsInDeltaR(
 		++index;
 	}
 	return answers;
+}
+
 }
 
 #endif /*EVENTDELEGATE_H_*/
