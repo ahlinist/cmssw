@@ -5,8 +5,8 @@
 
 // Producer for validation histograms for CaloJet objects
 // F. Ratnikov, Sept. 7, 2006
-// Modified by J F Novak July 10, 2008
-// $Id: CaloJetTester.h,v 1.10 2009/03/28 04:57:58 hatake Exp $
+// Modified for PAT Validation by Sudhir Malik  April 21, 2009
+// $Id: PATValidation_Jet.h,v 1.1 2009/04/22 06:03:37 malik Exp $
 
 #include <string>
 
