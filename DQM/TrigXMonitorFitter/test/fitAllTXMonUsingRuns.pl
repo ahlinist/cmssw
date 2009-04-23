@@ -71,7 +71,15 @@ foreach (@ARGV)
 
 
 
-
+# when converting this pl file into a py file
+# please rewrite this section, entirely.
+# this segment assumes that each run number is 6
+# digits long. This will not be so for the first
+# 99,999 runs. One should use copyRoot.py for
+# obtaining the run numbers. A run file of 001
+# has been added to the testdata file for trouble
+# -shooting
+# Happy Hunting, ~richard~
 if ($filename)
   {
     open (SOURCE, $filename) or die;
