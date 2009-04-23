@@ -118,7 +118,8 @@ double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory
   MonitorElement* me = dqmStore.get(meName_full);
 
   if ( !me ) {
-    edm::LogError("getMonitorElementNorm") << " Failed to access Monitor Element = " << meName << " !!";
+    edm::LogError("getMonitorElementNorm") << " Failed to retrieve Monitor Element = " << meName 
+					   << " from dqmDirectory = " << dqmDirectory_full << " !!";
     errorFlag = 1;
     return -1.;
   }
