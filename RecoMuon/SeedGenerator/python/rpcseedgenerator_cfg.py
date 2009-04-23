@@ -2,30 +2,26 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("RPCSeed")
 
-#process.load("FWCore.MessageService.MessageLogger_cfi")
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.load("Configuration.StandardSequences.Services_cff")
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.Reconstruction_cff")
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.GlobalTag.globaltag = 'IDEAL_31X::All'
+
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/h/hyteng/CMSSW_2_1_10/muongun_1pair_10Gev.root')
+fileNames = cms.untracked.vstring(
+    #'rfio:/castor/cern.ch/user/h/hyteng/CMSSW_2_1_10/muongun_1pair_10Gev.root'
+    '/store/relval/CMSSW_3_1_0_pre5/RelValSingleMuPt10/GEN-SIM-RECO/IDEAL_31X_v1/0000/F85A8D98-CB2B-DE11-93D6-000423D98634.root'
+    )
 #fileNames = cms.untracked.vstring('file:muongun.root')
 )
 
-# MuonRecoGeometryRecord could be used when include following es_module
-process.load("Geometry.MuonCommonData.muonIdealGeometryXML_cfi");
-#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi");
-process.load("Geometry.CSCGeometry.cscGeometry_cfi");
-process.load("Geometry.DTGeometry.dtGeometry_cfi");
-process.load("Geometry.RPCGeometry.rpcGeometry_cfi");
-process.load("CalibMuon.Configuration.Muon_FakeAlignment_cff");
-
-process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi");
-process.load("RecoMuon.DetLayers.muonDetLayerGeometry_cfi");
-
-# MagneticField.Engine.volumeBasedMagneticField_cfi is obsolete
-#process.load("MagneticField.Engine.volumeBasedMagneticField_cfi");
-process.load("Configuration.StandardSequences.MagneticField_cff");
 
 process.myRPCSeed = cms.EDProducer('RPCSeedGenerator', 
         RangeofLayersinBarrel = cms.vuint32(5),
@@ -61,11 +57,25 @@ process.content = cms.PSet(
             'keep *_simMuonRPCDigis_RPCDigiSimLink_*')
         )
 process.out = cms.OutputModule("PoolOutputModule",
-        process.content, 
+#        process.content, 
         fileName = cms.untracked.string('muonseed.root')
 )
 
+
+
+# Stand alone made with RPC seeds as starting states, but it can collect DT/CSC/RPC hits during pattern recognition 
+process.standAloneMuonsRPCSeed = process.standAloneMuons.clone()
+process.standAloneMuonsRPCSeed.InputObjects = cms.InputTag('myRPCSeed','goodSeeds')
+
+# Stand alone made with RPC hits only
+process.standAloneMuonsFullRPC = process.standAloneMuonsRPCSeed.clone()
+process.standAloneMuonsFullRPC.STATrajBuilderParameters.FilterParameters.EnableCSCMeasurement=False
+process.standAloneMuonsFullRPC.STATrajBuilderParameters.BWFilterParameters.EnableCSCMeasurement=False
+process.standAloneMuonsFullRPC.STATrajBuilderParameters.FilterParameters.EnableDTMeasurement=False
+process.standAloneMuonsFullRPC.STATrajBuilderParameters.BWFilterParameters.EnableDTMeasurement=False
+
+
   
-process.p = cms.Path(process.myRPCSeed)
+process.p = cms.Path(process.myRPCSeed*process.standAloneMuonsRPCSeed*process.standAloneMuonsFullRPC)
 
 process.e = cms.EndPath(process.out)
