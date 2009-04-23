@@ -20,7 +20,6 @@ selectedLayer1JetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSe
 
 # select central jets
 selectedLayer1JetsEta21 = cms.EDFilter("PATJetSelector",
-    src = cms.InputTag("selectedLayer1JetsAntiOverlapWithLeptonsVeto"),
     cut = cms.string('abs(eta) < 2.1'),
     filter = cms.bool(False)
 )
