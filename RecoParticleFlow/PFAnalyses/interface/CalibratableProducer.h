@@ -16,6 +16,24 @@
 
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
 
+/**
+ * @class CalibratableProducer
+ * @brief EDProducer making Calibratable
+ *
+ * Uses an EventDelegate to select Calibratable candidate from the event.
+ * See EventDelegate documentation for details.
+ *
+ * The type of EventDelegate to produce is specified for in the edm::ParameterSet
+ * at construction, via "EventDelegateType"
+ *
+ * New EventDelegate currently have to be added to this class by hand;
+ * there is no dynamic loading.
+ *
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ *
+ */
 class CalibratableProducer : public edm::EDProducer {
 
 public:
@@ -25,6 +43,13 @@ public:
 private:
 
 	virtual void beginJob(const edm::EventSetup& setup);
+	/**
+	 * Uses the EventDelegate to construct potential Calibratables from the event
+	 * and put them in the event.
+	 *
+	 * @param event
+	 * @param setup
+	 */
 	virtual void produce(edm::Event& event, const edm::EventSetup& setup);
 	virtual void endJob();
 

@@ -14,6 +14,19 @@
 #include <map>
 #include <vector>
 
+/**
+ * @class PFPretendTrackProducer
+ * @brief Creates tracks for the 2006 testbeam environment where no explicit tracking was available
+ *
+ * Uses the RunInfo object to determine what eta/phi to propagate a perfect track to, starting
+ * from the experimental origin (0, 0, 0)
+ *
+ * In 2006, the beam position was known to within 4 x 4 cm via veto counters. So this approach is fine
+ * for any HCAL granularity study, but less so for ECAL.
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ */
 class PFPretendTrackProducer : public edm::EDProducer {
 public:
 	PFPretendTrackProducer(const edm::ParameterSet&);

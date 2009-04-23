@@ -44,7 +44,24 @@
 #include <TH2F.h>
 namespace pftools {
 
-
+/**
+ * @class EventDelegate
+ * @brief Workhorse base class to extract salient information about the event and put it in 'Calibratable'
+ *
+ * Implementations should implement processEvent and all the core methods in the protected domain.
+ * For each particle deemed worthy of a Calibratable instance, call startParticle. Fill the
+ * calibratable with the pointer 'calib_', and when done, call endParticle. Repeat as necessary.
+ *
+ * Set thisEventPasses_ if all Calibratables found in this event should not be written to the tree/event
+ * Set thisParticlePasses_ if that particular Calibratable should not be written to the tree/event.
+ *
+ * TODO: Needs some work if Calibratables should be written to an Event and not to a seperate tree
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ *
+ *
+ */
 class EventDelegate: public pftools::Initialisable {
 public:
 
@@ -96,6 +113,9 @@ protected:
 
 	virtual void startParticleCore() = 0;
 
+	/**
+	 * THIS WON'T WORK PROPERLY FOR EDPRODUCERS!
+	 */
 	virtual void endParticleCore() = 0;
 
 	EventDelegate();

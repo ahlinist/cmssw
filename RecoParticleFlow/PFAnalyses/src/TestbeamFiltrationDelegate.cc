@@ -1,6 +1,6 @@
-#include "RecoParticleFlow/PFAnalyses/interface/TestbeamFiltrationDelegate.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "RecoParticleFlow/PFAnalyses/interface/operations.h"
+#include "RecoParticleFlow/PFAnalyses/interface/TestbeamFiltrationDelegate.h"
 
 using namespace pftools;
 using namespace edm;
@@ -409,7 +409,7 @@ Quality TestbeamFiltrationDelegate::isTOFPion() {
 	HcalTBTiming timing = **timing_;
 	//Beam energy 1 to 10 GeV
 	//Compute TOF
-	//TODO: verify implementation
+
 	double tofS = timing.TOF1Stime() - timing.TOF2Stime();
 	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
 	double meanTOF = (tofS + tofJ) / 2.0;

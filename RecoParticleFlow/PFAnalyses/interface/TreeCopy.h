@@ -8,6 +8,14 @@
 
 namespace pftools {
 
+/**
+ * @class TreeCopy
+ * @brief Read in Calibratable tree in format A, calls recompute() on each element
+ * and write it out again.
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ */
 class TreeCopy {
 public:
 	TreeCopy() {
@@ -15,6 +23,13 @@ public:
 	virtual ~TreeCopy() {
 	}
 
+	/**
+	 * Read from sourceFile, recompute elements, write to destFile
+	 * No error handling...
+	 *
+	 * @param sourceFile
+	 * @param destFile
+	 */
 	void doCopy(std::string sourceFile, std::string destFile) {
 		std::cout << "Opening source file " << sourceFile << std::endl;
 		TFile source(sourceFile.c_str());
@@ -42,8 +57,6 @@ public:
 			destTree->Fill();
 			if(u % 1000 == 0)
 				std::cout << *sourceCalib << "\n";
-			if(sourceCalib->cand_energyEvent_ > 160)
-				std::cout << "Exceptional event: " << *sourceCalib << "\n";
 		}
 
 		destTree->Write();

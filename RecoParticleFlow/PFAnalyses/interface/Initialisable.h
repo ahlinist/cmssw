@@ -11,6 +11,18 @@
 
 namespace pftools {
 
+/**
+ * @class Initialisable
+ * @brief For any class that should be initialised with some edm::ParameterSet
+ * before usage
+ *
+ * I found I needed this for some multiple inheritance case...
+ *
+ * Oh how I miss Java interfaces.
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ */
 class Initialisable {
 public:
 	Initialisable();

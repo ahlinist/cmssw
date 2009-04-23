@@ -23,6 +23,22 @@
 
 
 namespace pftools {
+/**
+ * @class DipionDelegate
+ * @brief Extracts Calibratable objects from particle gun events (classically dipions gun)
+ *
+ * This class was designed for MonteCarlo particle gun events, in the absence of pile up.
+ * Recent improvements allow it to search for particles other then pions, and handle more
+ * than 2 of them per event, or indeed, just one (though this has not been extensively
+ * tested).
+ *
+ * An entry is made to the Calibratable collection for each isolated pion successfully found.
+ *
+ * See EventDelegate for more information.
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ */
 class DipionDelegate : public pftools::EventDelegate {
 
 public:
@@ -39,18 +55,7 @@ public:
 
 protected:
 
-	/*
-	 * Matches PFCandidates to Sim Particles in dipion events, but making sure
-	 * they are within deltaEta_, deltaPhi_ of each other at the ECAL surface.
-	 *
-	 * Returns a vector of pairs of unsigneds - the indices in the input vector.
-	 */
-//	std::vector<std::pair<unsigned, unsigned > > associate(
-//			const std::vector<reco::PFSimParticle>& sims,
-//			const std::vector<reco::PFCandidate>& cands);
 
-	//Checks vetos
-	//Return true if you want the particle written to the tree
 	virtual bool endEventCore();
 
 	virtual void startEventCore(const edm::Event& event,
@@ -60,7 +65,7 @@ protected:
 
 	virtual void endParticleCore();
 
-	/*
+	/**
 	 * Retrieves the tags listed below.
 	 */
 	virtual void initCore(const edm::ParameterSet& parameters);

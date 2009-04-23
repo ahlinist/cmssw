@@ -14,6 +14,17 @@
 
 namespace pftools {
 
+/**
+ * @class ParticleFiltrationDelegate
+ * @brief Abstract class to filter events based on various quality criteria
+ *
+ * Specifically devloped for testbeam appications.
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ *
+ * @since CMSSW 3_1
+ */
 class ParticleFiltrationDelegate {
 public:
 	ParticleFiltrationDelegate();
