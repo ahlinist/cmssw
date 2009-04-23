@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from RecoParticleFlow.PFAnalyses.pflowExtraction_cfi import *
+
 from RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowFaketracks_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cfi import *
