@@ -11,7 +11,7 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 process.GlobalTag.globaltag = 'IDEAL_31X::All'
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(200))
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
