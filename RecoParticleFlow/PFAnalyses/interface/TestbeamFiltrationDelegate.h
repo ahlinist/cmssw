@@ -19,6 +19,30 @@
 
 
 namespace pftools {
+/**
+ * @class TestbeamFiltrationDelegate
+ * @brief Selects single pion MIP events from testbeam data
+ *
+ * There are many parameters available to control execution, such as:
+ * a) Reject all events that aren't single pion candidates
+ * b) Let clean particles through (including electrons etc)
+ * c) Try to identify the particles explicitly
+ *
+ * A file of RunInfo objects is required, which contains the test beam parameters
+ * for all runs. See TestbeamPreprocessor for details.
+ *
+ *	bool applyCleaningCuts_; - reject all events that aren't single MIP candidates
+ *	bool computeVetos_; - just keep this true (legacy variable...)
+ *	bool identifyCleanParticles_; - if we can disentangle protons/kaons/electrons/pion/muons, do so
+ *	bool saveAllCleanParticles_; - pass everything as long as it's clean
+ *	bool noiseMode_; - looks for events without any activity!
+ *
+ * @bug Probably a few :-(
+ * @bug While we can "identifyCleanParticles", this information is not conveyed to the ParticleFiltrationDecision
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ */
 class TestbeamFiltrationDelegate: public ParticleFiltrationDelegate {
 public:
 	TestbeamFiltrationDelegate();
@@ -33,50 +57,73 @@ protected:
 
 	virtual bool endEventCore(const edm::Event& event);
 
+	/**
+	 * Produces a collection (of just one entry) to be stuck into the event, identifying
+	 * whether this event matches criteria given in the config files.
+	 * @param event
+	 * @param setup
+	 * @return
+	 */
 	virtual ParticleFiltrationDecisionCollection isGoodParticleCore(edm::Event& event,
 			const edm::EventSetup& setup);
 
 	virtual void getTagsCore(const edm::ParameterSet& parameters);
 
+	/**
+	 * Prints a summary via LogInfo
+	 * @param event
+	 * @return
+	 */
 	virtual void finishCore();
 
-	/*
+	/**
 	 * Returns a Quality for a muon candidate.
 	 */
 	Quality isNotMuon();
 
-	/*
+	/**
 	 * Returns a Quality for a single MIP
 	 */
 	Quality isSingleMIP();
 
+	/**
+	 * Returns a Quality of this being a beam halo event
+	 * @return
+	 */
 	Quality noBeamHalo();
 
-	/*
+	/**
 	 * Retuns a quality if this is a pion according to the TOF chambers.
 	 */
 	Quality isTOFPion();
 
-	/*
+	/**
 	 * Returns a quality if this is a pion in the cerenkov
 	 */
 	Quality isCerenkovPion();
 
+	/**
+	 * Likelihood for this being an electron according to Cerenkov
+	 * @return
+	 */
 	Quality isCerenkovElectronCandidate();
 
+	/**
+	 * Likelihood for this being a proton or kaon according to Cerenkov
+	 * @return
+	 */
 	Quality isCerenkovProtonKaonCandidate();
 
-	/*
+	/**
 	 * Returns a quality for whether this particle was just a bad trigger, and therefore just noise
 	 */
 	Quality isNoiseCandidate();
+
 
 	bool applyCleaningCuts_;
 	bool computeVetos_;
 	bool identifyCleanParticles_;
 	bool saveAllCleanParticles_;
-	bool clustersFromCandidates_;
-
 	bool noiseMode_;
 
 	unsigned muonCands_;

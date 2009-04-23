@@ -24,6 +24,18 @@
 #include <TH1F.h>
 
 namespace pftools {
+/**
+ * @class TestbeamDelegate
+ * @brief EventDelegate specifically designed for extracting Calibratables from testbeam data
+ *
+ * @author Jamie Ballin
+ * @date April 2009
+ *
+ * This ones a bit complex :) ...
+ * TODO: DOCUMENTATION!
+ * See private parameters below for specific explanations
+ *
+ */
 class TestbeamDelegate: public pftools::EventDelegate {
 public:
 	TestbeamDelegate();
@@ -41,14 +53,19 @@ protected:
 	virtual void startEventCore(const edm::Event& event,
 			const edm::EventSetup& setup);
 
-	//Checks vetos
-	//Return true if you want the particle written to the tree
 	virtual bool endEventCore();
 
 	virtual void startParticleCore();
 
 	virtual void endParticleCore();
 
+	/**
+	 * Overrides parent class, since HCAL hits need fixing at 2006 testbeam setup
+	 * @param hcalRechits
+	 * @param geometry
+	 * @param targetEta
+	 * @param targetPhi
+	 */
 	virtual void extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
 			const CaloSubdetectorGeometry* geometry, double targetEta,
 			double targetPhi);

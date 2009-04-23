@@ -108,7 +108,7 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.plucker = cms.EDFilter("CalibratablePlucker" ,
+process.pluckingPF = cms.EDFilter("CalibratablePlucker" ,
     PFCandidates=cms.InputTag("particleFlow"),
 )
 
@@ -157,7 +157,7 @@ process.extraction = cms.EDProducer("CalibratableProducer",
 
 process.finishup = cms.OutputModule("PoolOutputModule",
    fileName=cms.untracked.string(outputFile),
-   outputCommands=cms.untracked.vstring('drop *', 'keep *_plucker_*_*'),
+   outputCommands=cms.untracked.vstring('drop *', 'keep *_pluckingPF_*_*'),
     
 )
 
