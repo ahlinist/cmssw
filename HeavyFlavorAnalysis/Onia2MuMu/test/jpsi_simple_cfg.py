@@ -13,7 +13,7 @@ process.load('RecoEcal/EgammaClusterProducers/geometryForClustering_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 process.options = cms.untracked.PSet(
@@ -24,6 +24,7 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
+
       ### Jpsi prompt 0-20
      ##  '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_0_20/GEN-SIM-RECO/IDEAL_V9_v1/0003/2013DB5B-F6C4-DD11-B170-000423D9970C.root',
 ##       '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_0_20/GEN-SIM-RECO/IDEAL_V9_v1/0003/2806E882-EFC4-DD11-9235-001D09F250AF.root',
@@ -65,10 +66,11 @@ process.source = cms.Source("PoolSource",
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     OutputFileName       = cms.string('InclusiveppToMu_pt25_225.root'),
+    # OutputFileName       = cms.string('/tmp/PromptJpsi_20_inf_221.root'),
     OniaType             = cms.int32(443),
     DebugLevel           = cms.int32(0),
     genParticlesLabel    = cms.InputTag("genParticles"),
-    StandAloneMuonsLabel = cms.InputTag("standAloneMuons"),
+    # StandAloneMuonsLabel = cms.InputTag("standAloneMuons"),
     GlobalMuonsLabel     = cms.InputTag("globalMuons"),
     MuonsLabel           = cms.InputTag("muons"),
     CaloMuonsLabel       = cms.InputTag("calomuons"),
@@ -88,15 +90,15 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     StoreTrkFlag         = cms.bool(False),
     StorePhotonFlag      = cms.bool(False),
     # StorePFMuonFlag      = cms.bool(True),
-    StoreSTAMuonFlag     = cms.bool(True),
+    StoreTRKMuonFlag     = cms.bool(True),
     StoreGLBMuonFlag     = cms.bool(True),
-    StoreAllMuonFlag     = cms.bool(True),
+    StoreCALMuonFlag     = cms.bool(True),
     StoreBeamSpotFlag    = cms.bool(True),
     StorePriVtxFlag      = cms.bool(True),
     StoreOniaFlag        = cms.bool(True),
-    StoreChicFlag        = cms.bool(False),
+    StoreChicFlag        = cms.bool(True),
     StoreBpFlag          = cms.bool(False),                     
-    StoreWSOnia          = cms.bool(False),                                  
+    StoreWSOnia          = cms.bool(True),                                  
     StoreOniaRadiation   = cms.bool(False),
     UsingBeamSpot        = cms.bool(True),
     minimumFlag          = cms.bool(False),
