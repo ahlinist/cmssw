@@ -89,10 +89,12 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const LV& tau)
 
   //Now look if there is L2 Association in the evnt.If yes,match to the L2 and fill L2 Variables
   Handle<L2TauInfoAssociation> l2TauInfoAssoc; //Handle to the input (L2 Tau Info Association)
-   if(iEvent.getByLabel(l2TauInfoAssoc_,l2TauInfoAssoc))//get the handle
-     {
-       matchAndFillL2(tau,*l2TauInfoAssoc);
-     }
+  iEvent.getByLabel(l2TauInfoAssoc_,l2TauInfoAssoc); //get the handle
+  if(l2TauInfoAssoc.isValid()) {
+    matchAndFillL2(tau,*l2TauInfoAssoc);
+  } else {
+    std::cout<<"No L2TauInfoAssociation in event!"<<std::endl;
+  }
    
 
 }
