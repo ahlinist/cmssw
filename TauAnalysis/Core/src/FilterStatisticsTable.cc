@@ -72,19 +72,19 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
 void printNumber(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width) << std::setprecision(3) << std::right << number;
+  stream << std::setw(width) << std::setprecision(3) << std::fixed << std::right << number;
 } 
 
 void printPercentage(std::ostream& stream, unsigned width, double number)
 {
   stream << " ";
-  stream << std::setw(width - 1) << std::setprecision(3) << std::right << 100.*number << "%";
+  stream << std::setw(width - 1) << std::setprecision(3) << std::fixed << std::right << 100.*number << "%";
 } 
 
 void FilterStatisticsRow::print(std::ostream& stream, unsigned widthNameColumn, unsigned widthNumberColumns) const
 {
   stream << std::setw(widthNameColumn) << std::left << filterTitle_;
-  printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kPassed_cumulative], false));
+  printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kPassed_cumulative], true));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_cumulative], true));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_individual], true));
   printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kExclRejected], true));
