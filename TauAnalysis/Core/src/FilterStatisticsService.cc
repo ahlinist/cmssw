@@ -63,8 +63,9 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
 
 //--- load MonitorElement holding name of FilterStatisticsTable
   dqmStore.setCurrentFolder(dqmDirectory);
+
   MonitorElement* meFilterStatisticsTableName = dqmStore.get(dqmDirectoryName(dqmDirectory).append("name"));
-  filterStatisticsTable->name_ = meFilterStatisticsTableName->getStringValue();
+  filterStatisticsTable->name_ = ( meFilterStatisticsTableName ) ? meFilterStatisticsTableName->getStringValue() : "undefined";
 
 //--- check for DQM subdirectories
 //    and iteratively load all MonitorElements stored in them
@@ -72,7 +73,6 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
     std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory, *dirName);
-
     std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(subDirName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
 
