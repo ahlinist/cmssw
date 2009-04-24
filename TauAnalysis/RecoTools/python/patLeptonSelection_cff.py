@@ -206,9 +206,9 @@ selectedLayer1TausForDiTauEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForDiTauPt20.cut = selectedLayer1TausPt20.cut
 selectedLayer1TausForDiTauLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForDiTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
-selectedLayer1TausForDiTauTrkIso.cut = selectedLayer1TausEcalIso.cut
+selectedLayer1TausForDiTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForDiTauEcalIso.cut = selectedLayer1TausEcalIso.cut
-selectedLayer1TausForDiTauProng.cut = selectedLayer1TausMuonVeto.cut
+selectedLayer1TausForDiTauProng.cut = selectedLayer1TausProng.cut
 
 patTauSelConfiguratorForDiTau = objSelConfigurator(
     [ selectedLayer1TausForDiTauEta21,
