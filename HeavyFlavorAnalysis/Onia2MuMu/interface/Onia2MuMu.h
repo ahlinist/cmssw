@@ -42,6 +42,7 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 
 #include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
+#include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
 #include "DataFormats/HLTReco/interface/TriggerFilterObjectWithRefs.h"
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
@@ -112,6 +113,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       TLorentzVector lorentzMomentum(const reco::PFCandidate& pfcl) const;
       TLorentzVector lorentzMomentumPi(const reco::Track& tr) const;
       TLorentzVector lorentzMomentumKa(const reco::Track& tr) const;
+      std::vector<unsigned int> muonStatHits(const reco::Track& tr);
       TLorentzVector lorentzTriObj(const trigger::TriggerObject& muon) const;
       double invMass(const reco::Track& lhs, const reco::Track& rhs) const;
 
@@ -119,7 +121,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int theOniaType;                     // 443 for Jpsi, 553 for Upsilon, etc
       int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
       edm::InputTag thegenParticlesLabel;
-      edm::InputTag theStandAloneMuonsLabel;      // Muon information from standalone muons
+      // edm::InputTag theStandAloneMuonsLabel;      // Muon information from standalone muons
       edm::InputTag theGlobalMuonsLabel;          // Muon information from global muons
       edm::InputTag theMuonsLabel;                // From this one can get both global and track info
       edm::InputTag theCaloMuonsLabel;             
@@ -139,9 +141,11 @@ class Onia2MuMu : public edm::EDAnalyzer {
       bool theStoreTrkFlag;                // Yes or No to store track information (e.g. for hadr. act.)
       bool theStorePhotFlag;                // Yes or No to store photon information (e.g. for Chi_c)
 
-      bool theStoreSTAMuonFlag;
+      // bool theStoreSTAMuonFlag;
       bool theStoreGLBMuonFlag;
-      bool theStoreAllMuonFlag;
+      bool theStoreTRKMuonFlag;
+      bool theStoreCALMuonFlag;
+      // bool theStoreAllMuonFlag;
       bool theStoreBeamSpotFlag; 
       bool theStorePriVtxFlag;             // Yes or No to store primary vertex
       bool theStoreOniaFlag;               // Yes or No to store Onium info
@@ -160,11 +164,11 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double branch_ratio;      
       
       static const int NTRIGGERS = 8;
-      int Max_track_size;
-      int Max_QQ_size;
-      int Max_mu_size;
-      int Max_PriVtx_size;
-      unsigned int Max_trig_size;
+      static const int Max_track_size = 3000;
+      static const int Max_QQ_size = 100;
+      static const int Max_mu_size = 100;
+      static const int Max_PriVtx_size = 20;
+      static const unsigned int Max_trig_size = 10;
 
       int Mc_ProcessId;               // Process ID in PYTHIA (e.g. octet vs singlet)
       double Mc_EventScale;           // Pthat of process
@@ -208,22 +212,11 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_gamma_phi[3000];  // phi 
       double Reco_gamma_eta[3000];  // eta
 
-      int Reco_mu_size;
-      int Reco_mu_Normsize;
-      int Reco_mu_Calmsize;
-      int Reco_mu_links_glb[200];
-      int Reco_mu_links_sta[200];
-      int Reco_mu_links_trk[200];
-      bool Reco_mu_is_sta[200];
-      bool Reco_mu_is_glb[200];
-      bool Reco_mu_is_trk[200];
-      bool Reco_mu_is_cal[200];
-      double Reco_mu_caloComp[200];
-
       int Reco_mu_glb_size;           // Number of reconstructed global muons
       TClonesArray* Reco_mu_glb_4mom; // Array of 4-momentum of Reconstructed global muons
+      TClonesArray* Reco_mu_glb_track4mom; // Array of 4-momentum of Reconstructed global muons' track 
       TClonesArray* Reco_mu_glb_3vec; // Array of 3-d creation vertex of Reconstructed global muons
-      TClonesArray* Reco_mu_glb_CovM;
+      // TClonesArray* Reco_mu_glb_CovM;
       double Reco_mu_glb_ptErr[200];   // Vector of err on pt of global muons
       double Reco_mu_glb_phiErr[200];  // Vector of err on phi of global muons
       double Reco_mu_glb_etaErr[200];  // Vector of err on eta of global muons
@@ -233,9 +226,51 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_glb_dzerr[200];   // Vector of dzerr of global muons
       int Reco_mu_glb_charge[200];  // Vector of charge of global muons
       double Reco_mu_glb_chi2[200];   // Vector of chi2 of global muons
-      double Reco_mu_glb_ndof[200];   // Vector of ndof of global muons
-      int Reco_mu_glb_nhits[200];  // Vector of number of valid hits of global muons
+      // double Reco_mu_glb_ndof[200];   // Vector of ndof of global muons
+      int Reco_mu_glb_nhitsCSC[200];    // Vector of number of valid hits of global muons
+      int Reco_mu_glb_nhitsDT[200];    // Vector of number of valid hits of global muons
+      int Reco_mu_glb_nhitstrack[200];    // Vector of number of valid hits of global muons
+      double Reco_mu_glb_caloComp[200];    // Vector of calorimeter compatibilities
+      double Reco_mu_glb_segmComp[200];    // Vector of muon segment compatibilities 
+      double Reco_mu_glb_iso[200];    // Vector of isolations (NOW ONLY SUMPt OF TRACKS) 
 
+      int Reco_mu_trk_size;           // Number of reconstructed tracker muons
+      TClonesArray* Reco_mu_trk_4mom; // Array of 4-momentum of Reconstructed tracker muons
+      TClonesArray* Reco_mu_trk_3vec; // Array of 3-d creation vertex of Reconstructed tracker muons
+      // TClonesArray* Reco_mu_trk_CovM;
+      double Reco_mu_trk_ptErr[200];   // Vector of err on pt of tracker muons
+      double Reco_mu_trk_phiErr[200];  // Vector of err on phi of tracker muons
+      double Reco_mu_trk_etaErr[200];  // Vector of err on eta of tracker muons
+      double Reco_mu_trk_d0[200];      // Vector of d0 of tracker muons
+      double Reco_mu_trk_d0err[200];   // Vector of d0err of tracker muons
+      double Reco_mu_trk_dz[200];      // Vector of dz of tracker muons
+      double Reco_mu_trk_dzerr[200];   // Vector of dzerr of tracker muons
+      int Reco_mu_trk_charge[200];  // Vector of charge of tracker muons
+      double Reco_mu_trk_chi2[200];   // Vector of chi2 of tracker muons
+      // double Reco_mu_trk_ndof[200];   // Vector of ndof of tracker muons
+      int Reco_mu_trk_nhitsCSC[200];    // Vector of number of valid hits of tracker muons
+      int Reco_mu_trk_nhitsDT[200];    // Vector of number of valid hits of tracker muons
+      int Reco_mu_trk_nhitstrack[200];    // Vector of number of valid hits of tracker muons
+      double Reco_mu_trk_caloComp[200];    // Vector of calorimeter compatibilities
+      double Reco_mu_trk_segmComp[200];    // Vector of muon segment compatibilities 
+      double Reco_mu_trk_iso[200];    // Vector of isolations (NOW ONLY SUMPt OF TRACKS) 
+
+      int Reco_mu_cal_size;           // Number of reconstructed calo muons
+      TClonesArray* Reco_mu_cal_4mom; // Array of 4-momentum of Reconstructed calo muons
+      TClonesArray* Reco_mu_cal_3vec; // Array of 3-d creation vertex of Reconstructed calo muons
+      // TClonesArray* Reco_mu_cal_CovM;
+      double Reco_mu_cal_ptErr[200];   // Vector of err on pt of calo muons
+      double Reco_mu_cal_phiErr[200];  // Vector of err on phi of calo muons
+      double Reco_mu_cal_etaErr[200];  // Vector of err on eta of calo muons
+      double Reco_mu_cal_d0[200];      // Vector of d0 of calo muons
+      double Reco_mu_cal_d0err[200];   // Vector of d0err of calo muons
+      double Reco_mu_cal_dz[200];      // Vector of dz of calo muons
+      double Reco_mu_cal_dzerr[200];   // Vector of dzerr of calo muons
+      int Reco_mu_cal_charge[200];  // Vector of charge of calo muons
+      double Reco_mu_cal_chi2[200];   // Vector of chi2 of calo muons
+      // double Reco_mu_cal_ndof[200];   // Vector of ndof of calo muons
+      int Reco_mu_cal_nhitstrack[200];    // Vector of number of valid hits of calo muons
+      double Reco_mu_cal_caloComp[200];    // Vector of calorimeter compatibilities 
 
 /////////////////// PAT muons
       
@@ -305,7 +340,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
                   
 //////////////////////////////////////////      
 
-      int Reco_mu_sta_size;           // Number of reconstructed standalone muons
+      /* int Reco_mu_sta_size;           // Number of reconstructed standalone muons
       TClonesArray* Reco_mu_sta_4mom; // Array of 4-momentum of Reconstructed standalone muons
       TClonesArray* Reco_mu_sta_3vec; // Array of 3-d creation vertex of Reconstructed standalone muons
       TClonesArray* Reco_mu_sta_CovM;
@@ -319,7 +354,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int Reco_mu_sta_charge[200];   // Vector of charge of standalone muons
       double Reco_mu_sta_chi2[200];   // Vector of chi2 of standalone muons
       double Reco_mu_sta_ndof[200];   // Vector of ndof of standalone muons
-      int Reco_mu_sta_nhits[200];  // Vector of number of valid hits of standalone muons
+      int Reco_mu_sta_nhits[200];  // Vector of number of valid hits of standalone muons */
 
       int Reco_QQ_size;           // Number of reconstructed Onia 
       int Reco_QQ_type[3000];     // Onia category:
@@ -336,6 +371,8 @@ class Onia2MuMu : public edm::EDAnalyzer {
       TClonesArray* Reco_QQ_4mom; // Array of 4-momentum of Reconstructed onia
       int Reco_QQ_mupl[3000];       // Index of muon plus in onia 
       int Reco_QQ_mumi[3000];       // Index of muon minus in onia
+      int Reco_QQ_mulpt[3000];      // Index of lower-pT muon in onia 
+      int Reco_QQ_muhpt[3000];      // Index of higher-pT minus in onia
       double Reco_QQ_DeltaR[3000];  // DeltaR of the two muons
       double Reco_QQ_cosTheta[3000];// Polarization angle 
       double Reco_QQ_s[3000];       // S : the sum of the to muons impact parameter significance 
@@ -467,10 +504,16 @@ class Onia2MuMu : public edm::EDAnalyzer {
 
       HLTConfigProvider hltConfig;
       edm::ESHandle<TransientTrackBuilder> theB;
+
+      // physics objects (RECO)
       edm::Handle<reco::PFCandidateCollection> pfAll;
       reco::PFCandidateCollection pfClusters;
       edm::Handle<TrackCollection> allTracks;
- 
+      reco::TrackCollection noMuonTracks;
+      reco::MuonCollection theGlobalMuons;
+      reco::MuonCollection theTrkMuons;
+      reco::CaloMuonCollection theCaloMuons;  
+
       unsigned int fNevt;            // event number
       unsigned int maxCatToStoreChic;
       unsigned int maxCatToStoreBp;

@@ -26,7 +26,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theOniaType                = iConfig.getParameter<int>("OniaType");
   theDebugLevel              = iConfig.getParameter<int>("DebugLevel");
   thegenParticlesLabel       = iConfig.getParameter<edm::InputTag>("genParticlesLabel");  
-  theStandAloneMuonsLabel    = iConfig.getParameter<edm::InputTag>("StandAloneMuonsLabel");
+  // theStandAloneMuonsLabel    = iConfig.getParameter<edm::InputTag>("StandAloneMuonsLabel");
   theGlobalMuonsLabel        = iConfig.getParameter<edm::InputTag>("GlobalMuonsLabel");
   theMuonsLabel              = iConfig.getParameter<edm::InputTag>("MuonsLabel");
   theCaloMuonsLabel          = iConfig.getParameter<edm::InputTag>("CaloMuonsLabel");
@@ -44,9 +44,11 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theStoreL1Flag             = iConfig.getParameter<bool>("StoreL1Flag");
   theStoreTrkFlag            = iConfig.getParameter<bool>("StoreTrkFlag");
   theStorePhotFlag           = iConfig.getParameter<bool>("StorePhotonFlag");
-  theStoreSTAMuonFlag        = iConfig.getParameter<bool>("StoreSTAMuonFlag");
+  // theStoreSTAMuonFlag        = iConfig.getParameter<bool>("StoreSTAMuonFlag");
   theStoreGLBMuonFlag        = iConfig.getParameter<bool>("StoreGLBMuonFlag");
-  theStoreAllMuonFlag        = iConfig.getParameter<bool>("StoreAllMuonFlag");
+  theStoreTRKMuonFlag        = iConfig.getParameter<bool>("StoreTRKMuonFlag");
+  theStoreCALMuonFlag        = iConfig.getParameter<bool>("StoreCALMuonFlag");
+  // theStoreAllMuonFlag        = iConfig.getParameter<bool>("StoreAllMuonFlag");
   theStoreBeamSpotFlag       = iConfig.getParameter<bool>("StoreBeamSpotFlag");
   theStorePriVtxFlag         = iConfig.getParameter<bool>("StorePriVtxFlag");
   theStoreOniaFlag           = iConfig.getParameter<bool>("StoreOniaFlag");
@@ -113,14 +115,6 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     // return;
   }
 
-  // Set maximum array sizes
-  Max_track_size=3000;
-  Max_QQ_size=100;
-  Max_mu_size=100;
-  Max_PriVtx_size=20;
-  Max_trig_size=10;
-
-
   Mc_QQ_4mom=new TClonesArray("TLorentzVector", 10000);
   Mc_QQ_3vec=new TClonesArray("TVector3", 10000);
   Mc_QQmoth_4mom=new TClonesArray("TLorentzVector", 10000);
@@ -134,8 +128,13 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   // Reco_gamma_3pos=new TClonesArray("TVector3", 10000);
   Reco_track_CovM = new TClonesArray("TMatrixD", 10000);
   Reco_mu_glb_4mom=new TClonesArray("TLorentzVector", 10000);
+  Reco_mu_glb_track4mom=new TClonesArray("TLorentzVector", 10000);
   Reco_mu_glb_3vec=new TClonesArray("TVector3", 10000);
-  Reco_mu_glb_CovM = new TClonesArray("TMatrixD", 10000);
+  Reco_mu_trk_4mom=new TClonesArray("TLorentzVector", 10000);
+  Reco_mu_trk_3vec=new TClonesArray("TVector3", 10000); 
+  Reco_mu_cal_4mom=new TClonesArray("TLorentzVector", 10000);
+  Reco_mu_cal_3vec=new TClonesArray("TVector3", 10000); 
+  // Reco_mu_glb_CovM = new TClonesArray("TMatrixD", 10000);
   Pat_mu_glb_4mom=new TClonesArray("TLorentzVector", 10000);
   Pat_mu_glb_3vec=new TClonesArray("TVector3", 10000);
   Pat_mu_glb_CovM = new TClonesArray("TMatrixD", 10000);
@@ -148,9 +147,9 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   Pat_mu_cal_4mom=new TClonesArray("TLorentzVector", 10000);
   Pat_mu_cal_3vec=new TClonesArray("TVector3", 10000);
   Pat_mu_cal_CovM = new TClonesArray("TMatrixD", 10000);
-  Reco_mu_sta_4mom=new TClonesArray("TLorentzVector", 10000);
-  Reco_mu_sta_3vec=new TClonesArray("TVector3", 10000);
-  Reco_mu_sta_CovM = new TClonesArray("TMatrixD", 10000);
+  // Reco_mu_sta_4mom=new TClonesArray("TLorentzVector", 10000);
+  // Reco_mu_sta_3vec=new TClonesArray("TVector3", 10000);
+  // Reco_mu_sta_CovM = new TClonesArray("TMatrixD", 10000);
   Reco_QQ_4mom=new TClonesArray("TLorentzVector",10000);
   Reco_QQ_Vtx =new TClonesArray("TVector3",10000);
   Reco_Chic_4mom=new TClonesArray("TLorentzVector",10000);
@@ -231,9 +230,10 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   if(theStoreGLBMuonFlag){
     fTree->Branch("Reco_mu_glb_size",    &Reco_mu_glb_size,    "Reco_mu_glb_size/I");
     fTree->Branch("Reco_mu_glb_4mom",    "TClonesArray",       &Reco_mu_glb_4mom, 32000, 0);
+    fTree->Branch("Reco_mu_glb_track4mom",    "TClonesArray",       &Reco_mu_glb_track4mom, 32000, 0);
     fTree->Branch("Reco_mu_glb_3vec",    "TClonesArray",       &Reco_mu_glb_3vec, 32000, 0);
     if(!theminimumFlag) {
-      fTree->Branch("Reco_mu_glb_CovM",     "TClonesArray",       &Reco_mu_glb_CovM, 32000, 0);
+      // fTree->Branch("Reco_mu_glb_CovM",     "TClonesArray",       &Reco_mu_glb_CovM, 32000, 0);
       fTree->Branch("Reco_mu_glb_phiErr",   Reco_mu_glb_phiErr,  "Reco_mu_glb_phiErr[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_etaErr",   Reco_mu_glb_etaErr,  "Reco_mu_glb_etaErr[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_ptErr",    Reco_mu_glb_ptErr,   "Reco_mu_glb_ptErr[Reco_mu_glb_size]/D");
@@ -241,11 +241,65 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_glb_d0err",    Reco_mu_glb_d0err,   "Reco_mu_glb_d0err[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_dz",       Reco_mu_glb_dz,      "Reco_mu_glb_dz[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_dzerr",    Reco_mu_glb_dzerr,   "Reco_mu_glb_dzerr[Reco_mu_glb_size]/D");
+      fTree->Branch("Reco_mu_glb_chi2",     Reco_mu_glb_chi2,    "Reco_mu_glb_chi2[Reco_mu_glb_size]/D");
+    // fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
+      fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_caloComp",   Reco_mu_glb_caloComp,  "Reco_mu_glb_caloComp[Reco_mu_glb_size]/D"); 
+      fTree->Branch("Reco_mu_glb_segmComp",   Reco_mu_glb_segmComp,  "Reco_mu_glb_segmComp[Reco_mu_glb_size]/D"); 
+      fTree->Branch("Reco_mu_glb_iso",   Reco_mu_glb_iso,  "Reco_mu_glb_iso[Reco_mu_glb_size]/D");  
     }
-    fTree->Branch("Reco_mu_glb_charge",   Reco_mu_glb_charge,  "Reco_mu_glb_charge[Reco_mu_glb_size]/I");
-    fTree->Branch("Reco_mu_glb_chi2",     Reco_mu_glb_chi2,    "Reco_mu_glb_chi2[Reco_mu_glb_size]/D");
-    fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
-    fTree->Branch("Reco_mu_glb_nhits",    Reco_mu_glb_nhits,   "Reco_mu_glb_nhits[Reco_mu_glb_size]/I");
+
+    fTree->Branch("Reco_mu_glb_charge",   Reco_mu_glb_charge,  "Reco_mu_glb_charge[Reco_mu_glb_size]/I"); 
+  }   
+
+  if(theStoreTRKMuonFlag){
+    fTree->Branch("Reco_mu_trk_size",    &Reco_mu_trk_size,    "Reco_mu_trk_size/I");
+    fTree->Branch("Reco_mu_trk_4mom",    "TClonesArray",       &Reco_mu_trk_4mom, 32000, 0);
+    fTree->Branch("Reco_mu_trk_3vec",    "TClonesArray",       &Reco_mu_trk_3vec, 32000, 0);
+    if(!theminimumFlag) {
+      // fTree->Branch("Reco_mu_trk_CovM",     "TClonesArray",       &Reco_mu_trk_CovM, 32000, 0);
+      fTree->Branch("Reco_mu_trk_phiErr",   Reco_mu_trk_phiErr,  "Reco_mu_trk_phiErr[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_etaErr",   Reco_mu_trk_etaErr,  "Reco_mu_trk_etaErr[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_ptErr",    Reco_mu_trk_ptErr,   "Reco_mu_trk_ptErr[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_d0",       Reco_mu_trk_d0,      "Reco_mu_trk_d0[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_d0err",    Reco_mu_trk_d0err,   "Reco_mu_trk_d0err[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_dz",       Reco_mu_trk_dz,      "Reco_mu_trk_dz[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_dzerr",    Reco_mu_trk_dzerr,   "Reco_mu_trk_dzerr[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_chi2",     Reco_mu_trk_chi2,    "Reco_mu_trk_chi2[Reco_mu_trk_size]/D");
+    // fTree->Branch("Reco_mu_trk_ndof",     Reco_mu_trk_ndof,    "Reco_mu_trk_ndof[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_nhitstrack",    Reco_mu_trk_nhitstrack,   "Reco_mu_trk_nhitstrack[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsDT",    Reco_mu_trk_nhitsDT,   "Reco_mu_trk_nhitsDT[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsCSC",    Reco_mu_trk_nhitsCSC,   "Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_caloComp",   Reco_mu_trk_caloComp,  "Reco_mu_trk_caloComp[Reco_mu_trk_size]/D"); 
+      fTree->Branch("Reco_mu_trk_segmComp",   Reco_mu_trk_segmComp,  "Reco_mu_trk_segmComp[Reco_mu_trk_size]/D"); 
+      fTree->Branch("Reco_mu_trk_iso",   Reco_mu_trk_iso,  "Reco_mu_trk_iso[Reco_mu_trk_size]/D");  
+    }
+
+    fTree->Branch("Reco_mu_trk_charge",   Reco_mu_trk_charge,  "Reco_mu_trk_charge[Reco_mu_trk_size]/I"); 
+  }   
+  
+  if(theStoreCALMuonFlag){
+    fTree->Branch("Reco_mu_cal_size",    &Reco_mu_cal_size,    "Reco_mu_cal_size/I");
+    fTree->Branch("Reco_mu_cal_4mom",    "TClonesArray",       &Reco_mu_cal_4mom, 32000, 0);
+    fTree->Branch("Reco_mu_cal_3vec",    "TClonesArray",       &Reco_mu_cal_3vec, 32000, 0);
+    if(!theminimumFlag) {
+      // fTree->Branch("Reco_mu_cal_CovM",     "TClonesArray",       &Reco_mu_cal_CovM, 32000, 0);
+      fTree->Branch("Reco_mu_cal_phiErr",   Reco_mu_cal_phiErr,  "Reco_mu_cal_phiErr[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_etaErr",   Reco_mu_cal_etaErr,  "Reco_mu_cal_etaErr[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_ptErr",    Reco_mu_cal_ptErr,   "Reco_mu_cal_ptErr[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_d0",       Reco_mu_cal_d0,      "Reco_mu_cal_d0[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_d0err",    Reco_mu_cal_d0err,   "Reco_mu_cal_d0err[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_dz",       Reco_mu_cal_dz,      "Reco_mu_cal_dz[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_dzerr",    Reco_mu_cal_dzerr,   "Reco_mu_cal_dzerr[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_chi2",     Reco_mu_cal_chi2,    "Reco_mu_cal_chi2[Reco_mu_cal_size]/D");
+    // fTree->Branch("Reco_mu_cal_ndof",     Reco_mu_cal_ndof,    "Reco_mu_cal_ndof[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_nhitstrack",    Reco_mu_cal_nhitstrack,   "Reco_mu_cal_nhitstrack[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_caloComp",   Reco_mu_cal_caloComp,  "Reco_mu_cal_caloComp[Reco_mu_cal_size]/D");   
+    }
+
+    fTree->Branch("Reco_mu_cal_charge",   Reco_mu_cal_charge,  "Reco_mu_cal_charge[Reco_mu_cal_size]/I"); 
   }   
   
   if(theStorePATFlag){
@@ -323,8 +377,8 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Pat_mu_cal_nhits",    Pat_mu_cal_nhits,   "Pat_mu_cal_nhits[Pat_mu_cal_size]/I");         
   }   
  
-  if (theStoreSTAMuonFlag) { 
-    fTree->Branch("Reco_mu_sta_size",    &Reco_mu_sta_size,    "Reco_mu_sta_size/I");
+  // if (theStoreSTAMuonFlag) { 
+    /*  fTree->Branch("Reco_mu_sta_size",    &Reco_mu_sta_size,    "Reco_mu_sta_size/I");
     fTree->Branch("Reco_mu_sta_4mom",    "TClonesArray",       &Reco_mu_sta_4mom, 32000, 0);
     fTree->Branch("Reco_mu_sta_3vec",    "TClonesArray",       &Reco_mu_sta_3vec, 32000, 0);
     if(!theminimumFlag) {
@@ -340,10 +394,10 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_mu_sta_charge",   Reco_mu_sta_charge,  "Reco_mu_sta_charge[Reco_mu_sta_size]/I");
     fTree->Branch("Reco_mu_sta_chi2",     Reco_mu_sta_chi2,    "Reco_mu_sta_chi2[Reco_mu_sta_size]/D");
     fTree->Branch("Reco_mu_sta_ndof",     Reco_mu_sta_ndof,    "Reco_mu_sta_ndof[Reco_mu_sta_size]/D");
-    fTree->Branch("Reco_mu_sta_nhits",    Reco_mu_sta_nhits,   "Reco_mu_sta_nhits[Reco_mu_sta_size]/I");
-  }   
+    fTree->Branch("Reco_mu_sta_nhits",    Reco_mu_sta_nhits,   "Reco_mu_sta_nhits[Reco_mu_sta_size]/I"); */
+  // }   
 
-  if (theStoreAllMuonFlag){
+  /* if (theStoreAllMuonFlag){
     fTree->Branch("Reco_mu_size",      &Reco_mu_size,     "Reco_mu_size/I");
     fTree->Branch("Reco_mu_Normsize",  &Reco_mu_Normsize, "Reco_mu_Normsize/I");
     fTree->Branch("Reco_mu_Calmsize",  &Reco_mu_Calmsize, "Reco_mu_Calmsize/I"); 
@@ -355,7 +409,7 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_mu_is_trk",    Reco_mu_is_trk,    "Reco_mu_is_trk[Reco_mu_size]/B");
     fTree->Branch("Reco_mu_is_cal",    Reco_mu_is_cal,    "Reco_mu_is_cal[Reco_mu_size]/B");
     fTree->Branch("Reco_mu_caloComp",  Reco_mu_caloComp,  "Reco_mu_caloComp[Reco_mu_size]/D"); 
-  }
+    } */
 
   if(theStoreOniaFlag){
     fTree->Branch("Reco_QQ_size",    &Reco_QQ_size,    "Reco_QQ_size/I");
@@ -363,6 +417,8 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_QQ_4mom",    "TClonesArray",       &Reco_QQ_4mom, 32000, 0);
     fTree->Branch("Reco_QQ_mupl",     Reco_QQ_mupl,    "Reco_QQ_mupl[Reco_QQ_size]/I");
     fTree->Branch("Reco_QQ_mumi",     Reco_QQ_mumi,    "Reco_QQ_mumi[Reco_QQ_size]/I");
+    fTree->Branch("Reco_QQ_mulpt",    Reco_QQ_mulpt,   "Reco_QQ_mulpt[Reco_QQ_size]/I");
+    fTree->Branch("Reco_QQ_muhpt",    Reco_QQ_muhpt,   "Reco_QQ_muhpt[Reco_QQ_size]/I");
     fTree->Branch("Reco_QQ_DeltaR",   Reco_QQ_DeltaR,  "Reco_QQ_DeltaR[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_cosTheta", Reco_QQ_cosTheta,"Reco_QQ_cosTheta[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_s",        Reco_QQ_s,       "Reco_QQ_s[Reco_QQ_size]/D");
@@ -455,35 +511,6 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("HLTGlobal_wasrun",    &HLTGlobal_wasrun,    "HLTGlobal_wasrun/B");
     fTree->Branch("HLTGlobal_Decision",  &HLTGlobal_Decision,  "HLTGlobal_Decision/B");
     fTree->Branch("HLTGlobal_error",     &HLTGlobal_error,     "HLTGlobal_error/B");
-
-    /*
-    fTree->Branch("HLT_mu_L2_size",    &HLT_mu_L2_size,    "HLT_mu_L2_size/I");
-    fTree->Branch("HLT_mu_L2_4mom",    "TClonesArray",       &HLT_mu_L2_4mom, 32000, 0);
-    fTree->Branch("HLT_mu_L2_charge",   HLT_mu_L2_charge,  "HLT_mu_L2_charge[HLT_mu_L2_size]/I");
-
-    fTree->Branch("HLT_mu_L3_size",    &HLT_mu_L3_size,    "HLT_mu_L3_size/I");
-    fTree->Branch("HLT_mu_L3_4mom",    "TClonesArray",       &HLT_mu_L3_4mom, 32000, 0);
-    fTree->Branch("HLT_mu_L3_charge",   HLT_mu_L3_charge,  "HLT_mu_L3_charge[HLT_mu_L3_size]/I");
-    */
-
-    // RC: OLD!!! Must be replaced (automatically in future)
-    /* hltModules[0].push_back("hltSingleMuPrescale3L2PreFiltered");
-    hltModules[0].push_back("hltSingleMuPrescale5L2PreFiltered");
-    hltModules[0].push_back("hltSingleMuPrescale77L2PreFiltered");
-    hltModules[0].push_back("hltSingleMuPrescale710L2PreFiltered");
-    hltModules[0].push_back("hltSingleMuNoIsoL2PreFiltered");
-    hltModules[0].push_back("hltDiMuonNoIsoL2PreFiltered");
-    hltModules[0].push_back("hltJpsiMML2Filtered");
-    hltModules[0].push_back("hltUpsilonMML2Filtered");
-    // Level-3 paths (module names)
-    hltModules[1].push_back("hltSingleMuPrescale3L3PreFiltered");
-    hltModules[1].push_back("hltSingleMuPrescale5L3PreFiltered");
-    hltModules[1].push_back("hltSingleMuPrescale77L3PreFiltered");
-    hltModules[1].push_back("hltSingleMuPrescale710L3PreFiltered");
-    hltModules[1].push_back("hltSingleMuNoIsoL3PreFiltered");
-    hltModules[1].push_back("hltDiMuonNoIsoL3PreFiltered");
-    hltModules[1].push_back("hltJpsiMML3Filtered");
-    hltModules[1].push_back("hltUpsilonMML3Filtered");*/
 
     /* fTree->Branch("HLT1Mu3_L2_size",  &HLT1Mu3_L2_size,  "HLT1Mu3_L2_size/I");
     fTree->Branch("HLT1Mu3_L2_4mom",  "TClonesArray",    &HLT1Mu3_L2_4mom, 32000, 0);
@@ -603,9 +630,11 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   fNevt++;
 
-  // -- get the collection of RecoTracks 
+  // BUILD USEFUL COLLECTIONS
+  // -- 1 - get the collection of RecoTracks 
   iEvent.getByLabel(theTrackLabel, allTracks);  
-  // -- get the collection of PFCandidates
+
+  // -- 2 - get the collection of PF Photons
   iEvent.getByLabel(thePhotonLabel, pfAll);
   pfClusters.clear();
   for(PFCandidateCollection::const_iterator itPFC = pfAll->begin();
@@ -615,12 +644,54 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
+  // -- 3 - Get NON-OVERLAPPING collections of muons
+  Handle<reco::MuonCollection> allmuons;
+  iEvent.getByLabel(theMuonsLabel,allmuons);
+
+  edm::Handle<reco::CaloMuonCollection> allcalmuons;
+  iEvent.getByLabel(theCaloMuonsLabel, allcalmuons);
+  
+  std::vector<int> theMuonTrkIndexes;
+
+  for (MuonCollection::const_iterator nmuon = allmuons->begin();
+       nmuon != allmuons->end(); ++nmuon) {
+    if (nmuon->isGlobalMuon()) {
+      theGlobalMuons.push_back(*nmuon);
+      theMuonTrkIndexes.push_back(nmuon->innerTrack().index());
+    }
+    if (!(nmuon->isGlobalMuon()) && nmuon->isTrackerMuon()) {
+      theTrkMuons.push_back(*nmuon);
+      theMuonTrkIndexes.push_back(nmuon->innerTrack().index());
+    }
+  } 
+
+  for (CaloMuonCollection::const_iterator cmuon = allcalmuons->begin();
+       cmuon != allcalmuons->end(); ++cmuon) {
+    bool storeThisOne = true; 
+    for (int i = 0; i<theMuonTrkIndexes.size(); ++i) {
+      if (cmuon->track().index() == theMuonTrkIndexes.at(i)) storeThisOne = false;
+    }
+    if (storeThisOne) theCaloMuons.push_back(*cmuon); 
+  } 
+
+  // -- 4 - Get track collection of NON-muons
+  int k = 0;
+  for (TrackCollection::const_iterator thetrk = allTracks->begin();
+       thetrk != allTracks->end(); ++thetrk) {
+    k++;
+    bool storeThisOther = true;
+    for (int j = 0; j<theMuonTrkIndexes.size(); ++j) {
+      if (k == theMuonTrkIndexes.at(j)) storeThisOther = false;
+    }
+    if (storeThisOther) noMuonTracks.push_back(*thetrk);
+  } 
+
   if(theStoreL1Flag)       l1Report(iEvent);
   if(theStoreHLTFlag)      hltReport(iEvent);
   if(theStoreGenFlag)      fillGeneratorBlock(iEvent);
   if(theStoreTrkFlag)      fillRecTracks(iEvent);
   if(theStorePhotFlag)     fillPhotons(iEvent);
-  if(theStoreAllMuonFlag)  fillMuons(iEvent);
+  if(theStoreGLBMuonFlag || theStoreTRKMuonFlag || theStoreCALMuonFlag)  fillMuons(iEvent);
   if(theStorePATFlag)      fillPATMuons(iEvent);
   if(theStorePATFlag)      PAT_l1Report(iEvent);
   if(theStorePATFlag)      PAT_hltReport(iEvent);
@@ -629,6 +700,12 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(theStoreOniaFlag)     findOniaCategories(iEvent);
   fTree->Fill(); 
 
+  // CLEAR ALL VECTORS
+  pfClusters.clear();
+  noMuonTracks.clear();
+  theGlobalMuons.clear();
+  theTrkMuons.clear();
+  theCaloMuons.clear();
   Mc_QQ_4mom->Clear();
   Mc_QQ_3vec->Clear();
   Mc_QQmoth_4mom->Clear();
@@ -636,7 +713,12 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Mc_mu_4mom->Clear();
   Mc_mu_3vec->Clear();
   Reco_mu_glb_4mom->Clear();
+  Reco_mu_glb_track4mom->Clear();
   Reco_mu_glb_3vec->Clear();
+  Reco_mu_trk_4mom->Clear();
+  Reco_mu_trk_3vec->Clear();
+  Reco_mu_cal_4mom->Clear();
+  Reco_mu_cal_3vec->Clear();
   Pat_mu_glb_4mom->Clear();
   Pat_mu_glb_3vec->Clear();
   Pat_mu_sta_4mom->Clear();
@@ -645,8 +727,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Pat_mu_trk_3vec->Clear();
   Pat_mu_cal_4mom->Clear();
   Pat_mu_cal_3vec->Clear();
-  Reco_mu_sta_4mom->Clear();
-  Reco_mu_sta_3vec->Clear();
+  // Reco_mu_sta_4mom->Clear();
+  // Reco_mu_sta_3vec->Clear();
   Reco_QQ_4mom->Clear();
   Reco_QQ_Vtx->Clear();
   Reco_Chic_4mom->Clear();
@@ -657,8 +739,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Reco_track_3vec->Clear();
   Reco_gamma_4mom->Clear();
   Reco_track_CovM->Clear();
-  Reco_mu_glb_CovM->Clear();
-  Reco_mu_sta_CovM->Clear();
+  // Reco_mu_glb_CovM->Clear();
+  // Reco_mu_sta_CovM->Clear();
   L1_mu_4mom->Clear();
   HLT1Mu3_L2_4mom->Clear();
   HLT1Mu3_L3_4mom->Clear();
@@ -685,7 +767,6 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 ///////////////////////////////////////////////////////////////
 void Onia2MuMu::endJob()
 {
-  
   outFile->cd();
   fTree->Write();
   outFile->Close();
@@ -1141,14 +1222,14 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
  
   if(theDebugLevel>0) cout << "fillMuons called " << endl;
 
-  Handle<reco::TrackCollection> stas;
-  iEvent.getByLabel(theStandAloneMuonsLabel, stas);
+  // Handle<reco::TrackCollection> stas;
+  // iEvent.getByLabel(theStandAloneMuonsLabel, stas);
 
-  Handle<reco::TrackCollection> glbmuons;
-  iEvent.getByLabel(theGlobalMuonsLabel, glbmuons);
+  // Handle<reco::TrackCollection> glbmuons;
+  // iEvent.getByLabel(theGlobalMuonsLabel, glbmuons);
 
   /////////// StandAlone Muons
-  if ( theStoreSTAMuonFlag ) { 
+  /* if ( theStoreSTAMuonFlag ) { 
     Reco_mu_sta_size=0;    
     if(theDebugLevel>1) cout << "SIZE STA Muons " <<  stas->size() << endl;
     for (reco::TrackCollection::const_iterator muoni = stas->begin();
@@ -1183,47 +1264,160 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
 
       Reco_mu_sta_size++;
     }
-  }
+    }*/
 
   /////////// Global Muons 
   if ( theStoreGLBMuonFlag ) {
     Reco_mu_glb_size=0;
-    if(theDebugLevel>1) cout << "SIZE Global Muons " <<  glbmuons->size() << endl;
-    for (reco::TrackCollection::const_iterator muoni = glbmuons->begin();
-         muoni != glbmuons->end()&&Reco_mu_glb_size<Max_mu_size; 
+    if(theDebugLevel>1) cout << "SIZE Global Muons " <<  theGlobalMuons.size() << endl;
+    for (reco::MuonCollection::const_iterator muoni = theGlobalMuons.begin();
+         muoni != theGlobalMuons.end()&&Reco_mu_glb_size<Max_mu_size; 
          muoni++) {
       if(theDebugLevel>1) cout << "New GLB muon " << endl;
-      if(theDebugLevel>0) printTrack(*muoni);
-      TLorentzVector a=lorentzMomentum(*muoni);
+      TrackRef glbTrack = muoni->globalTrack();
+      TrackRef innTrack = muoni->innerTrack();
+      if(theDebugLevel>0) printTrack(*glbTrack);
+
+      TLorentzVector a=lorentzMomentum(*glbTrack);
       if(theDebugLevel>1)cout << "GlobalMuon PT " << a.Pt() << endl;
       new((*Reco_mu_glb_4mom)[Reco_mu_glb_size])TLorentzVector(a); 
-      TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
-      new((*Reco_mu_glb_3vec)[Reco_mu_glb_size])TVector3(b);
-      Reco_mu_glb_ptErr[Reco_mu_glb_size]=muoni->ptError();
-      Reco_mu_glb_phiErr[Reco_mu_glb_size]=muoni->phiError();
-      Reco_mu_glb_etaErr[Reco_mu_glb_size]=muoni->etaError();
-      Reco_mu_glb_d0[Reco_mu_glb_size]=muoni->d0();
-      Reco_mu_glb_d0err[Reco_mu_glb_size]=muoni->d0Error();
-      Reco_mu_glb_dz[Reco_mu_glb_size]=muoni->dz();
-      Reco_mu_glb_dzerr[Reco_mu_glb_size]=muoni->dzError();
-      Reco_mu_glb_charge[Reco_mu_glb_size]=muoni->charge();
-      Reco_mu_glb_chi2[Reco_mu_glb_size]=muoni->chi2();
-      Reco_mu_glb_ndof[Reco_mu_glb_size]=muoni->ndof();
-      Reco_mu_glb_nhits[Reco_mu_glb_size]=muoni->numberOfValidHits();
+
+      TLorentzVector a2=lorentzMomentum(*innTrack);
+      if(theDebugLevel>1)cout << "GlobalMuon track PT " << a2.Pt() << endl;
+      new((*Reco_mu_glb_track4mom)[Reco_mu_glb_size])TLorentzVector(a2); 
  
-      TMatrixD cov1(5,5);
+      TVector3 b(glbTrack->vx(),glbTrack->vy(),glbTrack->vz());
+      new((*Reco_mu_glb_3vec)[Reco_mu_glb_size])TVector3(b);
+
+      Reco_mu_glb_ptErr[Reco_mu_glb_size]=glbTrack->ptError();
+      Reco_mu_glb_phiErr[Reco_mu_glb_size]=glbTrack->phiError();
+      Reco_mu_glb_etaErr[Reco_mu_glb_size]=glbTrack->etaError();
+      Reco_mu_glb_d0[Reco_mu_glb_size]=glbTrack->d0();
+      Reco_mu_glb_d0err[Reco_mu_glb_size]=glbTrack->d0Error();
+      Reco_mu_glb_dz[Reco_mu_glb_size]=glbTrack->dz();
+      Reco_mu_glb_dzerr[Reco_mu_glb_size]=glbTrack->dzError();
+      Reco_mu_glb_charge[Reco_mu_glb_size]=glbTrack->charge();
+      Reco_mu_glb_chi2[Reco_mu_glb_size]=glbTrack->chi2();
+      // Reco_mu_glb_ndof[Reco_mu_glb_size]=glbTrack->ndof();
+      Reco_mu_glb_nhitstrack[Reco_mu_glb_size]=innTrack->numberOfValidHits();
+ 
+      std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
+      Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theMuonHits.at(0);
+      Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
+
+      Reco_mu_glb_caloComp[Reco_mu_glb_size]=muoni->caloCompatibility();
+      Reco_mu_glb_segmComp[Reco_mu_glb_size]=muoni->segmentCompatibility();
+      Reco_mu_glb_iso[Reco_mu_glb_size]=muoni->isolationR03().sumPt;
+
+      /* TMatrixD cov1(5,5);
       for (int lan=0;lan<5;lan++ ) {
         for ( int len=0;len<5;len++ ) {
           cov1(lan,len)=muoni->covariance(lan,len);
         }
       }
-      new((*Reco_mu_glb_CovM)[Reco_mu_glb_size])TMatrixD(cov1);
+      new((*Reco_mu_glb_CovM)[Reco_mu_glb_size])TMatrixD(cov1); */
 
       Reco_mu_glb_size++;
     }
   } 
 
-  Reco_mu_size=0;
+  /////////// Tracker Muons 
+  if ( theStoreTRKMuonFlag ) {
+    Reco_mu_trk_size=0;
+    if(theDebugLevel>1) cout << "SIZE Trk Muons " <<  theTrkMuons.size() << endl;
+    for (reco::MuonCollection::const_iterator trkmuoni = theTrkMuons.begin();
+         trkmuoni != theTrkMuons.end()&&Reco_mu_trk_size<Max_mu_size; 
+         trkmuoni++) {
+      if(theDebugLevel>1) cout << "New TRK muon " << endl;
+      // TrackRef glbTrack = trkmuoni->globalTrack();
+      TrackRef innTrack = trkmuoni->innerTrack();
+      if(theDebugLevel>0) printTrack(*innTrack);
+
+      TLorentzVector a=lorentzMomentum(*innTrack);
+      if(theDebugLevel>1)cout << "TrkMuon PT " << a.Pt() << endl;
+      new((*Reco_mu_trk_4mom)[Reco_mu_trk_size])TLorentzVector(a); 
+
+      TVector3 b(innTrack->vx(),innTrack->vy(),innTrack->vz());
+      new((*Reco_mu_trk_3vec)[Reco_mu_trk_size])TVector3(b);
+
+      Reco_mu_trk_ptErr[Reco_mu_trk_size]=innTrack->ptError();
+      Reco_mu_trk_phiErr[Reco_mu_trk_size]=innTrack->phiError();
+      Reco_mu_trk_etaErr[Reco_mu_trk_size]=innTrack->etaError();
+      Reco_mu_trk_d0[Reco_mu_trk_size]=innTrack->d0();
+      Reco_mu_trk_d0err[Reco_mu_trk_size]=innTrack->d0Error();
+      Reco_mu_trk_dz[Reco_mu_trk_size]=innTrack->dz();
+      Reco_mu_trk_dzerr[Reco_mu_trk_size]=innTrack->dzError();
+      Reco_mu_trk_charge[Reco_mu_trk_size]=innTrack->charge();
+      Reco_mu_trk_chi2[Reco_mu_trk_size]=innTrack->chi2();
+      // Reco_mu_trk_ndof[Reco_mu_trk_size]=innTrack->ndof();
+      Reco_mu_trk_nhitstrack[Reco_mu_trk_size]=innTrack->numberOfValidHits();
+ 
+      // std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
+      Reco_mu_trk_nhitsDT[Reco_mu_trk_size]=-1;
+      Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]=-1;
+
+      Reco_mu_trk_caloComp[Reco_mu_trk_size]=trkmuoni->caloCompatibility();
+      Reco_mu_trk_segmComp[Reco_mu_trk_size]=trkmuoni->segmentCompatibility();
+      Reco_mu_trk_iso[Reco_mu_trk_size]=trkmuoni->isolationR03().sumPt;
+
+      /* TMatrixD cov1(5,5);
+      for (int lan=0;lan<5;lan++ ) {
+        for ( int len=0;len<5;len++ ) {
+          cov1(lan,len)=trkmuoni->covariance(lan,len);
+        }
+      }
+      new((*Reco_mu_trk_CovM)[Reco_mu_trk_size])TMatrixD(cov1); */
+
+      Reco_mu_trk_size++;
+    }
+  } 
+
+  /////////// Calo Muons 
+  if ( theStoreCALMuonFlag ) {
+    Reco_mu_cal_size=0;
+    if(theDebugLevel>1) cout << "SIZE Cal Muons " <<  theCaloMuons.size() << endl;
+    for (reco::CaloMuonCollection::const_iterator calmuoni = theCaloMuons.begin();
+         calmuoni != theCaloMuons.end()&&Reco_mu_cal_size<Max_mu_size; 
+         calmuoni++) {
+      if(theDebugLevel>1) cout << "New CAL muon " << endl;
+  
+      TrackRef innTrack = calmuoni->track();
+      if(theDebugLevel>0) printTrack(*innTrack);
+
+      TLorentzVector a=lorentzMomentum(*innTrack);
+      if(theDebugLevel>1)cout << "CalMuon PT " << a.Pt() << endl;
+      new((*Reco_mu_cal_4mom)[Reco_mu_cal_size])TLorentzVector(a); 
+
+      TVector3 b(innTrack->vx(),innTrack->vy(),innTrack->vz());
+      new((*Reco_mu_cal_3vec)[Reco_mu_cal_size])TVector3(b);
+
+      Reco_mu_cal_ptErr[Reco_mu_cal_size]=innTrack->ptError();
+      Reco_mu_cal_phiErr[Reco_mu_cal_size]=innTrack->phiError();
+      Reco_mu_cal_etaErr[Reco_mu_cal_size]=innTrack->etaError();
+      Reco_mu_cal_d0[Reco_mu_cal_size]=innTrack->d0();
+      Reco_mu_cal_d0err[Reco_mu_cal_size]=innTrack->d0Error();
+      Reco_mu_cal_dz[Reco_mu_cal_size]=innTrack->dz();
+      Reco_mu_cal_dzerr[Reco_mu_cal_size]=innTrack->dzError();
+      Reco_mu_cal_charge[Reco_mu_cal_size]=innTrack->charge();
+      Reco_mu_cal_chi2[Reco_mu_cal_size]=innTrack->chi2();
+      // Reco_mu_cal_ndof[Reco_mu_cal_size]=innTrack->ndof();
+      Reco_mu_cal_nhitstrack[Reco_mu_cal_size]=innTrack->numberOfValidHits();
+ 
+      Reco_mu_cal_caloComp[Reco_mu_cal_size]=calmuoni->caloCompatibility();
+
+      /* TMatrixD cov1(5,5);
+      for (int lan=0;lan<5;lan++ ) {
+        for ( int len=0;len<5;len++ ) {
+          cov1(lan,len)=calmuoni->covariance(lan,len);
+        }
+      }
+      new((*Reco_mu_cal_CovM)[Reco_mu_cal_size])TMatrixD(cov1); */
+
+      Reco_mu_cal_size++;
+    }
+  } 
+
+  /* Reco_mu_size=0;
   
   Handle<reco::MuonCollection> muons;
   iEvent.getByLabel(theMuonsLabel,muons);
@@ -1242,13 +1436,13 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     if(theDebugLevel>1) cout << "Reco_mu_is_glb[Reco_mu_size]" << Reco_mu_is_glb[Reco_mu_size] << endl;
     if(theDebugLevel>1) cout << "Reco_mu_is_trk[Reco_mu_size]" << Reco_mu_is_trk[Reco_mu_size] << endl;
     if(theDebugLevel>1) cout << "Reco_mu_is_cal[Reco_mu_size]" << Reco_mu_is_cal[Reco_mu_size] << endl;
-    TrackRef glbTrack = muoni->combinedMuon();
+    TrackRef glbTrack = muoni->globalTrack();
     Reco_mu_links_glb[Reco_mu_size]=glbTrack.index(); 
     if(theDebugLevel>1) cout << "Link to glb mu " << Reco_mu_links_glb[Reco_mu_size] << endl;
-    TrackRef staTrack = muoni->standAloneMuon();
+    TrackRef staTrack = muoni->outerTrack();
     Reco_mu_links_sta[Reco_mu_size]=staTrack.index();
     if(theDebugLevel>1) cout << "Link to sta mu " << Reco_mu_links_sta[Reco_mu_size] << endl;
-    TrackRef trkTrack = muoni->track();
+    TrackRef trkTrack = muoni->innerTrack();
     Reco_mu_links_trk[Reco_mu_size]=trkTrack.index();
     if(theDebugLevel>1) cout << "Link to trk mu " << Reco_mu_links_trk[Reco_mu_size] << endl;
     Reco_mu_caloComp[Reco_mu_size]=muoni->caloCompatibility();
@@ -1280,28 +1474,8 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
     Reco_mu_size++;
   } 
  
-  if(theDebugLevel>1) cout << "after calo Reco_mu_size " << Reco_mu_size << endl;
+  if(theDebugLevel>1) cout << "after calo Reco_mu_size " << Reco_mu_size << endl; */
 
-  /* Handle<reco::TrackCollection> stas;
-  iEvent.getByLabel(theStandAloneMuonsLabel,stas);
-  Handle<reco::MuonCollection> muons;
-  iEvent.getByLabel(theMuonsLabel,muons);
-
-  for (reco::MuonCollection::const_iterator muoni=muons->begin() ;
-     muoni !=muons->end()&&Reco_mu_size<Max_track_size ;
-     muoni++ ){
-    if( muoni->isStandAloneMuon() ) {
-      TrackRef staTrack = muoni->standAloneMuon();
-      if( staTrack.index() >= stas->size() ) cout<<"Oooops, sta muons not enough!"<<endl;
-    }
-    if( muoni->isGlobalMuon() ) {
-      TrackRef glbTrack = muoni->combinedMuon();
-      TrackRef staTrack = muoni->standAloneMuon();
-      TrackRef trkTrack = muoni->track();
-      if( glbTrack->ndof()==0 || staTrack->ndof()==0 ) cout<<"Oooops, glb_ndf="<<glbTrack->ndof()<<" and sta_ndf="<<staTrack->ndof()<<endl;  
-  
-    }
-    } */
 }
 
 ////////////////
@@ -1322,7 +1496,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       muoni!=muons.end(); 
       ++muoni) {
 
-/// global muons      
+    /// global muons      
     if (muoni->isGlobalMuon()) {      
       TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
       new((*Pat_mu_glb_3vec)[Pat_mu_glb_size])TVector3(b);
@@ -1352,7 +1526,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       new((*Pat_mu_glb_CovM)[Pat_mu_glb_size])TMatrixD(cov1PAT);
       Pat_mu_glb_size++;     
     }
-/// stand alone muons      
+    /// stand alone muons      
     if (muoni->isStandAloneMuon()) {      
       TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
       new((*Pat_mu_sta_3vec)[Pat_mu_sta_size])TVector3(b);
@@ -1360,7 +1534,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       TLorentzVector a=lorentzMomentum(*muoni);
       if(theDebugLevel>1)cout << "PAT Muon PT " << a.Pt() << endl;
       new((*Pat_mu_sta_4mom)[Pat_mu_sta_size])TLorentzVector(a); 
-      TrackRef muonRefe = muoni->standAloneMuon();
+      TrackRef muonRefe = muoni->outerTrack();
       if ( muonRefe.isNull() ) { cout << "muon reference is null!"<<endl; } 
       Pat_mu_sta_ptErr[Pat_mu_sta_size]=muonRefe->ptError();
       Pat_mu_sta_phiErr[Pat_mu_sta_size]=muonRefe->phiError();
@@ -1381,7 +1555,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       new((*Pat_mu_sta_CovM)[Pat_mu_sta_size])TMatrixD(cov2PAT);
       Pat_mu_sta_size++;     
     }
-/// tracker muons      
+    /// tracker muons      
     if (muoni->isTrackerMuon()) {      
       TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
       new((*Pat_mu_trk_3vec)[Pat_mu_trk_size])TVector3(b);
@@ -1389,7 +1563,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       TLorentzVector a=lorentzMomentum(*muoni);
       if(theDebugLevel>1)cout << "PAT Muon PT " << a.Pt() << endl;
       new((*Pat_mu_trk_4mom)[Pat_mu_trk_size])TLorentzVector(a); 
-      TrackRef muonRefe = muoni->track();
+      TrackRef muonRefe = muoni->innerTrack();
       if ( muonRefe.isNull() ) { cout << "muon reference is null!"<<endl; } 
       Pat_mu_trk_ptErr[Pat_mu_trk_size]=muonRefe->ptError();
       Pat_mu_trk_phiErr[Pat_mu_trk_size]=muonRefe->phiError();
@@ -1410,7 +1584,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       new((*Pat_mu_trk_CovM)[Pat_mu_trk_size])TMatrixD(cov3PAT);
       Pat_mu_trk_size++;     
     }
-/// calorimeter muons      
+    /// calorimeter muons      
     if (muoni->isCaloMuon()) {      
       TVector3 b(muoni->vx(),muoni->vy(),muoni->vz());
       new((*Pat_mu_cal_3vec)[Pat_mu_cal_size])TVector3(b);
@@ -1418,7 +1592,7 @@ void Onia2MuMu::fillPATMuons(const edm::Event &iEvent){
       TLorentzVector a=lorentzMomentum(*muoni);
       if(theDebugLevel>1)cout << "PAT Muon PT " << a.Pt() << endl;
       new((*Pat_mu_cal_4mom)[Pat_mu_cal_size])TLorentzVector(a);
-      TrackRef muonRefe = muoni->track();
+      TrackRef muonRefe = muoni->innerTrack();
       if ( muonRefe.isNull() ) { cout << "muon reference is null!"<<endl; }  
       Pat_mu_cal_ptErr[Pat_mu_cal_size]=muonRefe->ptError();
       Pat_mu_cal_phiErr[Pat_mu_cal_size]=muonRefe->phiError();
@@ -1533,93 +1707,79 @@ void Onia2MuMu::findOniaCategories(const edm::Event &iEvent) {
     }
   }
   
-  Handle<reco::MuonCollection> muons;
-  iEvent.getByLabel(theMuonsLabel,muons);
-
-  edm::Handle<reco::CaloMuonCollection> calmuons;
-  iEvent.getByLabel(theCaloMuonsLabel, calmuons);
-
   MuonCollection::const_iterator nmuon1;
   MuonCollection::const_iterator nmuon2;
+  MuonCollection::const_iterator tmuon1;
+  MuonCollection::const_iterator tmuon2;
   CaloMuonCollection::const_iterator cmuon1;
   CaloMuonCollection::const_iterator cmuon2;
 
-  int oniacato;
+  // int oniacato;
   TrackRef muon1;
   TrackRef muon2;
   int m1=0;
-  int m2=0;
+  int m2g=0;
+  int m2t=0;
+  int m2c=0;
   
-  for ( nmuon1 = muons->begin(); nmuon1 != muons->end(); nmuon1++) {
-    for( nmuon2 = nmuon1+1; nmuon2 != muons->end()&&Reco_QQ_size<3000; nmuon2++ ) {
-      m2++;
-      oniacato=-1;
-      if(nmuon1->isGlobalMuon()) {
-        muon1 = nmuon1->track();    
-        if(nmuon2->isGlobalMuon()) {
-          muon2 = nmuon2->track(); 
-          oniacato = 0;
-          //cout<<"A "<<oniacato<<" Muon 1 track index: "<<muon1.index()<<" and muon 2 index: "<<muon2.index()<<endl;
-        }
-        else if(nmuon2->isTrackerMuon()) {
-          muon2 = nmuon2->track();
-          oniacato = 1;
-          //cout<<"B "<<oniacato<<" Muon 1 track index: "<<muon1.index()<<" and muon 2 index: "<<muon2.index()<<endl;
-        }
-      }
-      else if(nmuon1->isTrackerMuon()) {
-        muon1 = nmuon1->track();
-        if(nmuon2->isGlobalMuon()) {
-          muon2 = nmuon2->track();
-          oniacato = 1;
-          //cout<<"C "<<oniacato<<" Muon 1 track index: "<<muon1.index()<<" and muon 2 index: "<<muon2.index()<<endl;
-        }
-        else if(nmuon2->isTrackerMuon()) {
-          muon2 = nmuon2->track();
-          oniacato = 2;
-          //cout<<"D "<<oniacato<<" Muon 1 track index: "<<muon1.index()<<" and muon 2 index: "<<muon2.index()<<endl;
-        }
-      }
-      
-      fillOniaMuMuTracks(muon1, m1, muon2, m2, vperp2, oniacato);
+  for ( nmuon1 = theGlobalMuons.begin(); nmuon1 != theGlobalMuons.end(); nmuon1++) {
+    for( nmuon2 = nmuon1+1; nmuon2 != theGlobalMuons.end()&&Reco_QQ_size<3000; nmuon2++ ) {
+      muon1 = nmuon1->innerTrack();    
+      muon2 = nmuon2->innerTrack(); 
+      m2g++;
+      fillOniaMuMuTracks(muon1, m1, muon2, m1+m2g, vperp2, 0);
     }
-    
-    for( cmuon1=calmuons->begin(); cmuon1!=calmuons->end()&&Reco_QQ_size<3000; cmuon1++ ) {
-      m2++;
-      oniacato=-1;
-      if(nmuon1->isGlobalMuon()) {
-        muon1 = nmuon1->track();
-        muon2 = cmuon1->track();
-        oniacato = 3;
+    if ( theStoreTRKMuonFlag ) {
+      for( tmuon2 = theTrkMuons.begin(); tmuon2 != theTrkMuons.end()&&Reco_QQ_size<3000; tmuon2++ ) {
+	muon1 = nmuon1->innerTrack();    
+	muon2 = tmuon2->innerTrack(); 
+	fillOniaMuMuTracks(muon1, m1, muon2, m2t, vperp2, 1);
+	m2t++;
       }
-      if(nmuon1->isTrackerMuon()) {
-        muon1 = nmuon1->track();
-        muon2 = cmuon1->track();
-        oniacato = 4;
+    }
+    if ( theStoreCALMuonFlag ) {
+      for( cmuon2 = theCaloMuons.begin(); cmuon2 != theCaloMuons.end()&&Reco_QQ_size<3000; cmuon2++ ) {
+	muon1 = nmuon1->innerTrack();    
+	muon2 = cmuon2->track(); 
+	fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 3);
+	m2c++;
       }
-      
-      fillOniaMuMuTracks(muon1, m1, muon2, m2, vperp2, oniacato);
-    }  
+    }
     m1++;
-    m2=m1;
-  } 
-  
-  for( cmuon1=calmuons->begin(); cmuon1!=calmuons->end(); cmuon1++ ) {
-    for( cmuon2=cmuon1+1; cmuon2!=calmuons->end()&&Reco_QQ_size<3000; cmuon2++ ) {
-      m2++;
-      oniacato=-1;
-      muon1 = cmuon1->track();
-      muon2 = cmuon2->track();
-      oniacato = 5;
-
-      fillOniaMuMuTracks(muon1, m1, muon2, m2, vperp2, oniacato);
-      
-    } 
-    m1++;
-    m2=m1;
-  }  
+  }
+  m1=0; m2t=0; m2c=0; 
+  if ( theStoreTRKMuonFlag ) {
+    for ( tmuon1 = theTrkMuons.begin(); tmuon1 != theTrkMuons.end(); tmuon1++) {
+      for( tmuon2 = tmuon1+1; tmuon2 != theTrkMuons.end()&&Reco_QQ_size<3000; tmuon2++ ) {
+	muon1 = tmuon1->innerTrack();    
+	muon2 = tmuon2->innerTrack(); 
+	m2t++; 
+	fillOniaMuMuTracks(muon1, m1, muon2, m2t+m1, vperp2, 2);
+      }
+      if ( theStoreCALMuonFlag ) {
+	for( cmuon2 = theCaloMuons.begin(); cmuon2 != theCaloMuons.end()&&Reco_QQ_size<3000; cmuon2++ ) {
+	  muon1 = tmuon1->innerTrack();    
+	  muon2 = cmuon2->track(); 
+	  fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 4);
+	  m2c++;
+	}
+      }
+      m1++;
+    }
+  }
+  m1=0; m2c=0;
+  if ( theStoreCALMuonFlag ) {
+    for ( cmuon1 = theCaloMuons.begin(); cmuon1 != theCaloMuons.end(); cmuon1++) {
+      for( cmuon2 = cmuon1+1; cmuon2 != theCaloMuons.end()&&Reco_QQ_size<3000; cmuon2++ ) {
+	muon1 = cmuon1->track();    
+	muon2 = cmuon2->track(); 
+	m2c++; 
+	fillOniaMuMuTracks(muon1, m1, muon2, m2c+m1, vperp2, 5);
+      }
+      m1++;
+    }
+  }
 }
-
 //////////////////////////////////////////////////////////////////////////
 // checks if phi is in range
 //////////////////////////////////////////////////////////////////////////
@@ -1819,7 +1979,14 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     Reco_QQ_mumi[Reco_QQ_size]=m1;
     Reco_QQ_cosTheta[Reco_QQ_size]=cos(GetTheta(mu2, mu1));
   }
-  
+  if (oniacato == 1 || oniacato == 3 || oniacato == 4 || mu1.Perp() > mu2.Perp()) {   // different muon categories 
+    Reco_QQ_muhpt[Reco_QQ_size]=mu1.Perp();
+    Reco_QQ_mulpt[Reco_QQ_size]=mu2.Perp();
+  } else {
+    Reco_QQ_muhpt[Reco_QQ_size]=mu2.Perp();
+    Reco_QQ_mulpt[Reco_QQ_size]=mu1.Perp();
+  }
+    
   std::auto_ptr<VertexCollection> vertexCollection(new VertexCollection());
   vector<TransientTrack> t_tks;
   TransientTrack ttkp1   = (*theB).build(&(*muon1));
@@ -1889,8 +2056,8 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
   if (theStoreBpFlag && Reco_QQ_sign[Reco_QQ_size]==0 && oniacato<=maxCatToStoreBp) {
  
     int countTracks = 0;
-    for(TrackCollection::const_iterator itTr = allTracks->begin();
-	itTr != allTracks->end()&&Reco_Bp_size<3000;
+    for(TrackCollection::const_iterator itTr = noMuonTracks.begin();
+	itTr != noMuonTracks.end()&&Reco_Bp_size<3000;
 	++itTr) {
       TLorentzVector kappa = lorentzMomentumKa(*itTr);
       TLorentzVector bplus = onia + kappa;
@@ -1916,6 +2083,29 @@ double Onia2MuMu::invMass(const reco::Track& lhs, const reco::Track& rhs) const 
 
   return (lorentzMomentum(lhs) + lorentzMomentum(rhs)).Mag();
 
+}
+
+/////////////////////////////////////////////////////////////////////
+// Number of hits per muon
+/////////////////////////////////////////////////////////////////////
+std::vector<unsigned int> Onia2MuMu::muonStatHits(const reco::Track& tr) {
+
+  std::vector<unsigned int> theMuonHits;
+  unsigned int nRecHitDT(0), nRecHitCSC(0), nRecHitRPC(0);
+
+  for(trackingRecHit_iterator recHit = tr.recHitsBegin(); recHit != tr.recHitsEnd(); ++recHit){
+     DetId detIdHit = (*recHit)->geographicalId();
+     if (detIdHit.det() == DetId::Muon ){
+       if (detIdHit.subdetId() == MuonSubdetId::DT ) nRecHitDT++;
+       else if (detIdHit.subdetId() == MuonSubdetId::CSC ) nRecHitCSC++;
+       else if (detIdHit.subdetId() == MuonSubdetId::RPC ) nRecHitRPC++;
+     }
+   }
+
+  theMuonHits.push_back(nRecHitDT); 
+  theMuonHits.push_back(nRecHitCSC);
+  theMuonHits.push_back(nRecHitRPC);
+  return theMuonHits; 
 }
 
 //define this as a plug-in
