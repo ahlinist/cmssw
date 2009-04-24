@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('makeZtoMuTauPlots')
 
+process.load("TauAnalysis.Configuration.dumpZtoMuTau_cff")
 process.load("TauAnalysis.Configuration.plotZtoMuTau_cff")
 
 process.DQMStore = cms.Service("DQMStore")
@@ -18,7 +19,8 @@ enableFactorization_makeZtoMuTauPlots(process)
 
 process.makeZtoMuTauPlots = cms.Sequence( process.loadZtoMuTau
                                          +process.addZtoMuTau
-                                         +process.saveZtoMuTau 
+                                         +process.saveZtoMuTau
+                                         +process.dumpZtoMuTau
                                          +process.plotZtoMuTau )
 
 process.p = cms.Path(process.makeZtoMuTauPlots)
