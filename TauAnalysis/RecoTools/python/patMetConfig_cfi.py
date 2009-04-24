@@ -5,11 +5,6 @@ from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.metProducer_cfi import *
 
 from JetMETCorrections.Type1MET.TauMetCorrections_cff import * 
-tauMetCorr.InputCaloJetsLabel = corMetType1Icone5.inputUncorJetsLabel
-tauMetCorr.jetPTthreshold = corMetType1Icone5.jetPTthreshold
-tauMetCorr.jetEMfracLimit = corMetType1Icone5.jetEMfracLimit
-tauMetCorr.correctorLabel = corMetType1Icone5.corrector
-tauMetCorr.InputMETLabel = cms.string('corMetType1Icone5Muons')
 
 #--------------------------------------------------------------------------------  
 # PAT layer 0 MET configuration parameters
@@ -17,6 +12,13 @@ tauMetCorr.InputMETLabel = cms.string('corMetType1Icone5Muons')
 
 # apply tau-jet specific corrections to reco::MET per default
 # (comment-out the next line in case you prefer to **not** apply the tau-jet specific MET corrections)
+
+tauMetCorr.InputCaloJetsLabel = corMetType1Icone5.inputUncorJetsLabel
+tauMetCorr.jetPTthreshold = corMetType1Icone5.jetPTthreshold
+tauMetCorr.jetEMfracLimit = corMetType1Icone5.jetEMfracLimit
+tauMetCorr.correctorLabel = corMetType1Icone5.corrector
+tauMetCorr.InputMETLabel = cms.string('corMetType1Icone5Muons')
+
 patMETCorrections._seq = patMETCorrections._seq * MetTauCorrections
 
 #--------------------------------------------------------------------------------  
