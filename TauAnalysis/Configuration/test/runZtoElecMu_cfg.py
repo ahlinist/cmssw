@@ -85,10 +85,15 @@ process.source = cms.Source("PoolSource",
 #   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
 #   process.analyzeZtoElecMu.eventSelection = extEventSelection"
 #
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
+#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
 #
 # to be replaced by e.g.
-#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#  "process.saveZtoElecMuPlots.outputFileName = plotsOutputFileNameQCD_BCtoE_Pt20to30"
+#
+#---This_is_a_Hook_for_Replacement_of_fileName_Parameter_of_PoolOutputModule
+#
+# to be replaced by e.g.
+#  "process.saveZtoElecMuPatTuple.fileName = patTupleOutputFileNameQCD_BCtoE_Pt20to30"
 #
 #--------------------------------------------------------------------------------
 
