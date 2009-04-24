@@ -71,8 +71,8 @@ void printSummaryTable(std::ostream& stream, unsigned widthNameColumn, unsigned 
 		       const std::vector<std::string>& columnLabels, const std::vector<std::string>& filterTitles,
 		       table_type& table, size_t numFilters, size_t numProcesses)
 {
-  std::cout << "Summary Table for " << summaryTableType << " Selection:" << std::endl;
-  std::cout << std::endl;
+  stream << "Summary Table for " << summaryTableType << " Selection:" << std::endl;
+  stream << std::endl;
   for ( std::vector<std::string>::const_iterator columnLabel = columnLabels.begin();
 	columnLabel != columnLabels.end(); ++columnLabel ) {
     if ( columnLabel == columnLabels.begin() ) {
@@ -123,6 +123,8 @@ void DQMDumpFilterStatisticsTables::endJob()
   for ( vstring::const_iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     const std::string& dqmDirectory = dqmDirectories_[*process];
+    //std::cout << "retrieving FilterStatisticsTable for process = " << (*process) 
+    //	        << " from dqmDirectory = " << dqmDirectory << "..." << std::endl;
 
     FilterStatisticsTable* filterStatisticsTable = filterStatisticsService_->loadFilterStatisticsTable(dqmDirectory); 
 
@@ -139,6 +141,7 @@ void DQMDumpFilterStatisticsTables::endJob()
   for ( std::vector<std::string>::const_iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     FilterStatisticsTable* filterStatisticsTable = filterStatisticsTables_[*process];
+    std::cout << "Filter Statistics for process = " << (*process) << ":" << std::endl;
     filterStatisticsTable->print(std::cout);
   }
 
