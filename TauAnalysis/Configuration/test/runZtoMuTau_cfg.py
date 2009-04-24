@@ -82,9 +82,6 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
         'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
-#    ),
-#    eventsToProcess = cms.untracked.VEventID(
-#      '1:386'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -114,10 +111,15 @@ process.source = cms.Source("PoolSource",
 #   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
 #   process.analyzeZtoElecMu.eventSelection = extEventSelection"
 #
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
+#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
 #
 # to be replaced by e.g.
-#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#  "process.saveZtoMuTauPlots.outputFileName = plotsOutputFileNameQCD_BCtoE_Pt20to30"
+#
+#---This_is_a_Hook_for_Replacement_of_fileName_Parameter_of_PoolOutputModule
+#
+# to be replaced by e.g.
+#  "process.saveZtoMuTauPatTuple.fileName = patTupleOutputFileNameQCD_BCtoE_Pt20to30"
 #
 #--------------------------------------------------------------------------------
 
