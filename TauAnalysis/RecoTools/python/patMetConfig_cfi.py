@@ -1,9 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
+
 from PhysicsTools.PatAlgos.producersLayer1.metProducer_cfi import *
 
 from JetMETCorrections.Type1MET.TauMetCorrections_cff import * 
+tauMetCorr.InputCaloJetsLabel = corMetType1Icone5.inputUncorJetsLabel
+tauMetCorr.jetPTthreshold = corMetType1Icone5.jetPTthreshold
+tauMetCorr.jetEMfracLimit = corMetType1Icone5.jetEMfracLimit
+tauMetCorr.correctorLabel = corMetType1Icone5.corrector
+tauMetCorr.InputMETLabel = cms.string('corMetType1Icone5Muons')
 
 #--------------------------------------------------------------------------------  
 # PAT layer 0 MET configuration parameters
