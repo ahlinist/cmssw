@@ -37,7 +37,8 @@ bool L1TEMURenderPlugin::applies(const DQMNet::CoreObject &o,
 #ifdef DEBUG 
   std::cout << "L1TEMURenderPlugin:applies " << o.name << std::endl; 
 #endif 
-  if (o.name.find( "L1TEMU/" ) != std::string::npos )
+  if (o.name.find( "L1TEMU/" ) != std::string::npos &&
+      o.name.find( "L1TEMU/L1TdeRCT/" ) == std::string::npos )
     {
       return true;
     }
