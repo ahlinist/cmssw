@@ -150,7 +150,8 @@ namespace edm {
       currentRunPrincipal_ = rp;
       return true;
     }
-
+    //the new RunPrincipal has the structure which matches the updated ProductRegistry
+    swap(iter->second,rp);
     iter->second->mergeRun(rp);
     currentRunPrincipal_ = iter->second;
     
@@ -168,6 +169,8 @@ namespace edm {
       return true;
     }
 
+    //the new RunPrincipal has the structure which matches the updated ProductRegistry
+    swap(iter->second,lbp);
     iter->second->mergeLuminosityBlock(lbp);
     currentLumiPrincipal_ = iter->second;
     
