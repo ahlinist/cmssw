@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.35 2009/04/17 14:19:03 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.36 2009/04/19 10:36:32 georgia Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -1083,6 +1083,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	ptsum=ptsum+(*tauHandle)[i].isolationTracks()[j]->pt();
       }
     }
+
     mTempTreeTauIsoTkPt[i]=ptsum;
     //end Benedetta
 
@@ -1992,7 +1993,9 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("TauNNeutrals",mTempTreeTauNNeutrals,"TauNNeutrals[Ntau]/double");
   mAllData->Branch("TauNeutralE",mTempTreeTauNeutralE,"TauNeutralE[Ntau]/double");
   mAllData->Branch("TauNeutralHOverHPlusE",mTempTreeTauNeutralHOverHPlusE,"TauNeutralHOverHPlusE[Ntau]/double");
-
+  //MICHELE 26/04/2009
+  mAllData->Branch("TauNIsoTks",mTempTreeTauNIsoTks,"TauNIsoTks[Ntau]/double");
+  mAllData->Branch("TauPtIsoTks", mTempTreeTauIsoTkPt,"TauPtIsoTks[Ntau]/double");
   //TK1
   mAllData->Branch("TauTk1Vx",mTempTreeTauTk1Vx,"TauTk1Vx[Ntau]/double");
   mAllData->Branch("TauTk1Vy",mTempTreeTauTk1Vy,"TauTk1Vy[Ntau]/double");
