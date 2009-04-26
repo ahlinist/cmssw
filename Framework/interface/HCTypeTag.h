@@ -33,10 +33,16 @@ namespace edm {
    namespace eventsetup {
       namespace heterocontainer {
 template< class Group >
+class HCTypeTagRegistrar {
+public:
+   HCTypeTagRegistrar(const char* iTypeName,const std::type_info& iInfo);
+};
+         
+template< class Group >
 class HCTypeTag : public TypeIDBase
 {
       // ---------- friend classes and functions ---------------
-
+      friend class HCTypeTagRegistrar<Group>;
    public:
       // ---------- constants, enums and typedefs --------------
 
@@ -92,7 +98,6 @@ class HCTypeTag : public TypeIDBase
 
 
 };
-
       }
    }
 }
