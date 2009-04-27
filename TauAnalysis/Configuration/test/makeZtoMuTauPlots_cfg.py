@@ -8,7 +8,7 @@ process.load("TauAnalysis.Configuration.plotZtoMuTau_cff")
 process.DQMStore = cms.Service("DQMStore")
 
 process.maxEvents = cms.untracked.PSet(            
-  input = cms.untracked.int32(0)         
+    input = cms.untracked.int32(0)         
 )
 
 process.source = cms.Source("EmptySource")
