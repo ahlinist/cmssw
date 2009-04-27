@@ -41,13 +41,16 @@ from TauAnalysis.Configuration.patTupleEventContent_cff import *
 # print memory consumed by cmsRun
 # (for debugging memory leaks)
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
-#  ignoreTotal = cms.untracked.int32(1) # default is one
+#    ignoreTotal = cms.untracked.int32(1) # default is one
 #)
 
-#process.printList = cms.EDAnalyzer("ParticleListDrawer",
-#  src = cms.InputTag("genParticles"),
-#  maxEventsToPrint = cms.untracked.int32(10)
-#)
+process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+    src = cms.InputTag("genParticles"),
+    maxEventsToPrint = cms.untracked.int32(10)
+)
+
+# print event content 
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 # print debug information whenever plugins get loaded dynamically from libraries
 # (for debugging problems with plugin related dynamic library loading)
@@ -140,8 +143,8 @@ switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
-#                    +process.printList            # uncomment to enable print-out of generator level particles
-#                    +process.content              # uncomment to enable dump of event content after PAT-tuple production
+#                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
+#                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
 #                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.selectZtoMuTauEvents
                      +process.analyzeZtoMuTauEvents
