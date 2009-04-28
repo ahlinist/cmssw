@@ -257,6 +257,9 @@ private:
   double mTempTreeElecNormChi2[50];
   bool mTempTreeccElecAssoc[50];
 
+  double mTempTreeElecECalIsoDeposit[50];
+  double mTempTreeElecHCalIsoDeposit[50];
+
  
 
   int    mTempTreeNmuon;
@@ -284,9 +287,12 @@ private:
   bool mTempTreeMuonTM2DCompatibilityTight[50];
   bool mTempTreeccMuonAssoc[50];
 
-
+ double mTempTreeMuonECalIsoDeposit[50];
+ double mTempTreeMuonHCalIsoDeposit[50];
  
-
+ double mTempTreeMuonCombChi2[50];
+ double mTempTreeMuonCombNdof[50];
+ double mTempTreeMuonTrkD0[50];
 
   //MICHELE
   double  mTempTreeMuonId[50];
