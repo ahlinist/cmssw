@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.47 2009/04/22 09:19:11 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.48 2009/04/22 09:28:21 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.47 $
-  \date $Date: 2009/04/22 09:19:11 $
+  \version $Revision: 1.48 $
+  \date $Date: 2009/04/22 09:28:21 $
 */
 
 #include "TProfile2D.h"
@@ -190,7 +190,8 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( o.name.find("ROSError") != std::string::npos ) {
     c->SetGrid(1,1);
-    c->SetBottomMargin(0.15);
+    obj->GetXaxis()->LabelsOption("v");
+    c->SetBottomMargin(0.28);
     c->SetLeftMargin(0.12);
     obj->GetXaxis()->SetLabelSize(0.05);
     obj->GetYaxis()->SetLabelSize(0.05);
@@ -199,8 +200,11 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
 
   if( o.name.find("TDCError") != std::string::npos ) {
     c->SetGrid(1,1);
-    c->SetBottomMargin(0.15);
-    c->SetLeftMargin(0.2);
+    obj->GetXaxis()->LabelsOption("v");
+    obj->GetXaxis()->SetLabelSize(0.05);
+    obj->GetYaxis()->SetLabelSize(0.05);
+    c->SetBottomMargin(0.20);
+    c->SetLeftMargin(0.15);
     return;
   }
 
@@ -1006,40 +1010,108 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if(o.name.find("ROSSummary") != std::string::npos) {
+    TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+    int nBinsY = histo->GetNbinsY();
+
+    static TLine *lineRosTdc = new TLine(14,1,14,nBinsY+1); 
+    lineRosTdc->Draw("same");
+
+    static TLatex *rosLabel = new TLatex(4.75,7.5,"ROS");
+    rosLabel->SetTextColor(kGray);
+    rosLabel->SetTextSize(0.11);
+    rosLabel->Draw("same");
+
+    static TLatex *tdcLabel = new TLatex(14.9,7.5,"TDC");
+    tdcLabel->SetTextColor(kGray);
+    tdcLabel->SetTextSize(0.11);
+    tdcLabel->Draw("same");
+
+    return;
+  }
+
   if(o.name.find("ROSError") != std::string::npos) {
     TH2F * histo =  dynamic_cast<TH2F*>( o.object );
     int nBinsX = histo->GetNbinsX();
+    int nBinsY = histo->GetNbinsY();
+
+    static TLine *lineRosTdc = new TLine(11,0,11,nBinsY); 
+     lineRosTdc->Draw("same");
+
 
     static TLine *lineMB1 = new TLine(0,6,nBinsX,6); 
     lineMB1->Draw("same");
-    static TLatex *mb1Label = new TLatex(5,1.5,"MB1");
+    static TLatex *mb1Label = new TLatex(4,1.5,"MB1");
     mb1Label->SetTextColor(kGray);
     mb1Label->SetTextSize(0.11);
     mb1Label->Draw("same");
 
     static TLine *lineMB2 = new TLine(0,12,nBinsX,12); 
     lineMB2->Draw("same");
-    static TLatex *mb2Label = new TLatex(5,7.5,"MB2");
+    static TLatex *mb2Label = new TLatex(4,7.5,"MB2");
     mb2Label->SetTextColor(kGray);
     mb2Label->SetTextSize(0.11);
     mb2Label->Draw("same");
 
     static TLine *lineMB3 = new TLine(0,18,nBinsX,18); 
     lineMB3->Draw("same");
-    static TLatex *mb3Label = new TLatex(5,13.5,"MB3");
+    static TLatex *mb3Label = new TLatex(4,13.5,"MB3");
     mb3Label->SetTextColor(kGray);
     mb3Label->SetTextSize(0.11);
     mb3Label->Draw("same");
 
     static TLine *lineMB4 = new TLine(0,24,nBinsX,24); 
     lineMB4->Draw("same");
-    static TLatex *mb4Label = new TLatex(5,19.5,"MB4");
+    static TLatex *mb4Label = new TLatex(4,19.5,"MB4");
     mb4Label->SetTextColor(kGray);
     mb4Label->SetTextSize(0.11);
     mb4Label->Draw("same");
 
-    static TLine *lineMB3b = new TLine(0,25,nBinsX,25); 
-    lineMB3b->Draw("same");
+    static TLine *lineSC = new TLine(0,25,nBinsX,25); 
+    lineSC->Draw("same");
+
+    return;
+  }
+
+  if(o.name.find("TDCError") != std::string::npos) {
+    TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+    int nBinsX = histo->GetNbinsX();
+    int nBinsY = histo->GetNbinsY();
+
+    static TLine *lineCEROS0 = new TLine(0,6,nBinsX,6);    
+    lineCEROS0->Draw("same");
+    static TLine *lineCEROS1 = new TLine(0,12,nBinsX,12); 
+    lineCEROS1->Draw("same");
+    static TLine *lineCEROS2 = new TLine(0,18,nBinsX,18); 
+    lineCEROS2->Draw("same");
+    static TLine *lineCEROS3 = new TLine(0,24,nBinsX,24); 
+    lineCEROS3->Draw("same");
+    
+    static TLine *lineTDC0 = new TLine(6,0,6,nBinsY); 
+    lineTDC0->Draw("same");
+    static TLatex *tdc0Label = new TLatex(0.5,11.,"TDC 0");
+    tdc0Label->SetTextColor(kGray);
+    tdc0Label->SetTextSize(0.07);
+    tdc0Label->Draw("same");
+
+    static TLine *lineTDC1 = new TLine(12,0,12,nBinsY); 
+    lineTDC1->Draw("same");
+    static TLatex *tdc1Label = new TLatex(6.5,11.,"TDC 1");
+    tdc1Label->SetTextColor(kGray);
+    tdc1Label->SetTextSize(0.07);
+    tdc1Label->Draw("same");
+
+    static TLine *lineTDC2 = new TLine(18,0,18,nBinsY); 
+    lineTDC2->Draw("same");
+    static TLatex *tdc2Label = new TLatex(12.5,11.,"TDC 2");
+    tdc2Label->SetTextColor(kGray);
+    tdc2Label->SetTextSize(0.07);
+    tdc2Label->Draw("same");
+
+    static TLatex *tdc3Label = new TLatex(18.5,11.,"TDC 3");
+    tdc3Label->SetTextColor(kGray);
+    tdc3Label->SetTextSize(0.07);
+    tdc3Label->Draw("same");
 
     return;
   }
