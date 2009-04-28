@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.36 2009/04/19 10:36:32 georgia Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.37 2009/04/26 18:48:34 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -156,12 +156,12 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 {
   using namespace edm;
 
-  
-  //std::cout<< " in analyze " << std::endl;
-
-   edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
+  edm::LogVerbatim("SusyDiJetEvent") << " Start  " << std::endl;
 
   std::ostringstream dbg;
+
+  run_   = iEvent.id().run();
+  event_ = iEvent.id().event();
 
   ALPGENParticleId myALPGENParticleId;
  
@@ -742,6 +742,9 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     mTempTreeElecAllIso[i] = (*elecHandle)[i].caloIso() ;
     mTempTreeElecCharge[i] = (*elecHandle)[i].charge();
 
+    mTempTreeElecECalIsoDeposit[i]  = (*elecHandle)[i].ecalIsoDeposit()->candEnergy() ;
+    mTempTreeElecHCalIsoDeposit[i]  = (*elecHandle)[i].hcalIsoDeposit()->candEnergy() ;
+
     //MICHELE
     mTempTreeElecIdLoose[i] = (*elecHandle)[i].electronID("eidLoose");
     mTempTreeElecIdTight[i] = (*elecHandle)[i].electronID("eidTight");
@@ -888,9 +891,14 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     mTempTreeMuonTM2DCompatibilityLoose[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(9));
     mTempTreeMuonTM2DCompatibilityTight[i] = (*muonHandle)[i].isGood(pat::Muon::SelectionType(10));
     
+    mTempTreeMuonECalIsoDeposit[i]  = (*muonHandle)[i].ecalIsoDeposit()->candEnergy() ;
+    mTempTreeMuonHCalIsoDeposit[i]  = (*muonHandle)[i].hcalIsoDeposit()->candEnergy() ;
 
     // Vertex info is stored only for GlobalMuons (combined muons)
     if((*muonHandle)[i].isGlobalMuon() && (*muonHandle)[i].combinedMuon().isNonnull()){ 
+
+      mTempTreeMuonCombChi2[i]=(*muonHandle)[i].combinedMuon()->chi2();
+      mTempTreeMuonCombNdof[i]=(*muonHandle)[i].combinedMuon()->ndof();
 
       mTempTreeMuonCombVx[i]=(*muonHandle)[i].combinedMuon()->vx();
       mTempTreeMuonCombVy[i]=(*muonHandle)[i].combinedMuon()->vy();
@@ -938,6 +946,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeMuonTrkChiNorm[i] = (*muonHandle)[i].track()->normalizedChi2();
       mTempTreeMuonTrkValidHits[i]=(*muonHandle)[i].track()->found();
       mTempTreeMuonTrkLostHits[i]=(*muonHandle)[i].track()->lost();
+      mTempTreeMuonTrkD0[i]=(*muonHandle)[i].track()->d0();
       mTempTreeMuonTrkPt[i]=(*muonHandle)[i].track()->pt();
       mTempTreeMuonTrkPz[i]=(*muonHandle)[i].track()->pz();
       mTempTreeMuonTrkP[i]=(*muonHandle)[i].track()->p();
@@ -1862,6 +1871,10 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("ElecHCalIso", mTempTreeElecHCalIso ,"ElecHCalIso[Nelec]/double");
   mAllData->Branch("ElecAllIso",  mTempTreeElecAllIso ,"ElecAllIso[Nelec]/double");
   mAllData->Branch("ElecTrkChiNorm",mTempTreeElecNormChi2  ,"ElecTrkChiNorm[Nelec]/double");
+
+  mAllData->Branch("ElecECalIsoDeposit", mTempTreeElecECalIsoDeposit,"ElecECalIsoDeposit[Nelec]/double");
+  mAllData->Branch("ElecHCalIsoDeposit", mTempTreeElecHCalIsoDeposit ,"ElecHCalIsoDeposit[Nelec]/double");
+
   //MICHELE
   mAllData->Branch("ElecIdLoose",mTempTreeElecIdLoose,"ElecIdLoose [Nelec]/double");
   mAllData->Branch("ElecIdTight",mTempTreeElecIdTight,"ElecIdTight [Nelec]/double");
@@ -1918,6 +1931,9 @@ SusyDiJetAnalysis::initPlots() {
   mAllData->Branch("MuonAllIso",  mTempTreeMuonAllIso ,"MuonAllIso[Nmuon]/double");
   mAllData->Branch("MuonTrkChiNorm",mTempTreeMuonTrkChiNorm  ,"MuonTrkChiNorm[Nmuon]/double");
 
+  mAllData->Branch("MuonECalIsoDeposit", mTempTreeMuonECalIsoDeposit,"MuonECalIsoDeposit[Nmuon]/double");
+  mAllData->Branch("MuonHCalIsoDeposit", mTempTreeMuonHCalIsoDeposit ,"MuonHCalIsoDeposit[Nmuon]/double");
+
   mAllData->Branch("MuonIsGlobal",mTempTreeMuonIsGlobal,"mTempTreeMuonIsGlobal[Nmuon]/bool");
   mAllData->Branch("MuonIsStandAlone",mTempTreeMuonIsStandAlone,"mTempTreeMuonIsStandAlone[Nmuon]/bool");
   mAllData->Branch("MuonIsGlobalTight",mTempTreeMuonIsGlobalTight,"mTempTreeMuonIsGlobalTight[Nmuon]/bool");
@@ -1929,6 +1945,8 @@ SusyDiJetAnalysis::initPlots() {
 
   //MICHELE
   //  mAllData->Branch("MuonId",mTempTreeMuonId,"mTempTreeMuonId[Nmuon]/double");
+  mAllData->Branch("MuonCombChi2",mTempTreeMuonCombChi2,"mTempTreeMuonCombChi2[Nmuon]/double");
+  mAllData->Branch("MuonCombNdof",mTempTreeMuonCombNdof,"mTempTreeMuonCombNdof[Nmuon]/double");
   mAllData->Branch("MuonCombVx",mTempTreeMuonCombVx,"mTempTreeMuonCombVx[Nmuon]/double");
   mAllData->Branch("MuonCombVy",mTempTreeMuonCombVy,"mTempTreeMuonCombVy[Nmuon]/double");
   mAllData->Branch("MuonCombVz",mTempTreeMuonCombVz,"mTempTreeMuonCombVz[Nmuon]/double");
@@ -1948,6 +1966,7 @@ SusyDiJetAnalysis::initPlots() {
 
   mAllData->Branch("MuonTrkValidHits",mTempTreeMuonTrkValidHits,"mTempTreeMuonTrkValidHits[Nmuon]/double");
   mAllData->Branch("MuonTrkLostHits",mTempTreeMuonTrkLostHits,"mTempTreeMuonTrkLostHits[Nmuon]/double");
+  mAllData->Branch("MuonTrkD0",mTempTreeMuonTrkD0,"mTempTreeMuonTrkD0[Nmuon]/double");
   mAllData->Branch("MuonTrkPt",mTempTreeMuonTrkPt,"mTempTreeMuonTrkPt[Nmuon]/double");
   mAllData->Branch("MuonTrkPz",mTempTreeMuonTrkPz,"mTempTreeMuonTrkPz[Nmuon]/double");
   mAllData->Branch("MuonTrkP",mTempTreeMuonTrkP,"mTempTreeMuonTrkP[Nmuon]/double");
