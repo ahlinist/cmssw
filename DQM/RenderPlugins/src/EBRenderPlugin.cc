@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.107 2009/03/06 13:20:07 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.108 2009/04/15 07:30:11 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.107 $
-  \date $Date: 2009/03/06 13:20:07 $
+  \version $Revision: 1.108 $
+  \date $Date: 2009/04/15 07:30:11 $
 */
 
 #include "TH1F.h"
@@ -272,6 +272,19 @@ void EBRenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     return;
   }
 
+  if( name.find( "EBSRT" ) != std::string::npos ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18, kFALSE);
+    obj->GetYaxis()->SetNdivisions(2, kFALSE);
+    obj->SetMinimum(0.0);
+    gStyle->SetPalette(1);
+    obj->SetOption("colz");
+    gPad->SetRightMargin(0.15);
+    gStyle->SetPaintTextFormat("+g");
+    return;
+  }
+
   if( nbx == 72 && nby == 34 ) {
     gPad->SetGridx();
     gPad->SetGridy();
@@ -374,7 +387,13 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos ) {
+  if( name.find( "EBSRT" ) != std::string::npos || 
+      name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(18, kFALSE);
+    obj->GetYaxis()->SetNdivisions(2, kFALSE);
+    obj->SetMinimum(0.0);
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     gPad->SetRightMargin(0.15);
@@ -518,15 +537,6 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       name.find( "summary" ) ==std::string::npos ) { 
     obj->SetMinimum(0.0); 
     gStyle->SetPalette(10, pCol5);
-    obj->SetOption("colz");
-    gPad->SetRightMargin(0.15);
-    gStyle->SetPaintTextFormat("+g");
-    return;
-  }
-
-  if( name.find( "EBSRT" ) != std::string::npos ) {
-    obj->SetMinimum(0.0);
-    gStyle->SetPalette(10, pCol4);
     obj->SetOption("colz");
     gPad->SetRightMargin(0.15);
     gStyle->SetPaintTextFormat("+g");

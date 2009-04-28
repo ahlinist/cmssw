@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.122 2009/03/06 13:20:07 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.123 2009/04/15 07:30:11 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.122 $
-  \date $Date: 2009/03/06 13:20:07 $
+  \version $Revision: 1.123 $
+  \date $Date: 2009/04/15 07:30:11 $
 */
 
 #include "TH1F.h"
@@ -837,6 +837,28 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   if ( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos ) return;
 
   if( name.find( "seed" ) != std::string::npos ) {
+    if( name.find( "EE -" ) != std::string::npos ) {
+      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text6->GetXaxis()->SetRange(x1, x2);
+      text6->GetYaxis()->SetRange(y1, y2);
+      text6->Draw("text,same");
+    }
+    if( name.find( "EE +" ) != std::string::npos ) {
+      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+      text7->GetXaxis()->SetRange(x1, x2);
+      text7->GetYaxis()->SetRange(y1, y2);
+      text7->Draw("text,same");
+    }
+    return;
+  }
+  
+  if( name.find( "EESRT") != std::string::npos ) {
     if( name.find( "EE -" ) != std::string::npos ) {
       int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
       int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
