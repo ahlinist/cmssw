@@ -1,4 +1,4 @@
-# $Id: Validation.dec,v 1.1 2008/11/28 11:28:30 covarell Exp $
+# $Id: Validation.dec,v 1.2 2009/02/20 10:38:04 covarell Exp $
 #
 # This is a validation decay file 
 #
@@ -30,15 +30,6 @@ Alias      MyD_s+     D_s+
 Alias      MyD_s-     D_s-
 ChargeConj MyD_s-   MyD_s+
 
-#
-Decay MyD_s+
-1.000    MyPhi   pi+                      SVS;      
-Enddecay
-#
-Decay MyD_s-
-1.000    MyPhi   pi-                      SVS;
-Enddecay
-#
 Decay MyB0
   1.000        MyK*0     mu+     mu-    BTOSLLBALL;
   1.000        MyKs     MyJ/psi         SSD_CP 0.502e12 0.0 1.0 -0.775 1.0 0. 1.0 0.;
