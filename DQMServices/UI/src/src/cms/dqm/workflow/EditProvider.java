@@ -131,6 +131,7 @@ public class EditProvider extends HttpServlet {
       } else {
 
         db.close();
+        db = null;
       
         String message = "current_status=" + current_status +
           ", next_status=" + next_status +
@@ -142,8 +143,10 @@ public class EditProvider extends HttpServlet {
       }
 
       db.close();
+      db = null;
 
     } catch (Exception e) {
+      if (db != null) db.close();
       throw new ServletException(e);
     }
 

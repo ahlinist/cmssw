@@ -252,8 +252,8 @@ li.active {
 }
 
 tr.prevTag {
-	/* background: #FFF39C; */
-	color: #0B0BFF;
+	background: #FFF39C;
+	/* color: #0B0BFF; */
 }
 
 #chat_messages, #chat_users {

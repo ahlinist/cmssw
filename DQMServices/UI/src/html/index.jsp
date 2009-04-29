@@ -16,6 +16,7 @@
   <!--link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" /-->
   <link rel="stylesheet" type="text/css" href="media/index.css" />
   <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="media/jquery.treeview.css" />
 
   <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
   <script type="text/javascript" src="media/jquery-ui-1.7.1.custom.min.js"></script>
@@ -29,6 +30,8 @@
   <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
   <script type="text/javascript" src="media/utils.js"></script>
   <script type="text/javascript" src="media/ui.progressbar.js"></script>
+  <script type="text/javascript" src="media/jquery.treeview.js" ></script>
+
 
 <script type="text/javascript">
 
@@ -288,6 +291,16 @@
       }
       $.showRunEditForm(number);
     }
+	
+    var summeryValues = function () {
+      var number = parseInt($("div.button_summary").attr("run_number"));
+      if (!number) {
+        alert("Run not selected.");
+        return;
+      }
+
+      $.showRunSummaryForm(number);
+    }
 
     var goLink = function (l) {
       var number = parseInt($("div.button_edit").attr("run_number"));
@@ -304,6 +317,7 @@
       var status = $("td[abbr=RUN_STATUS] div", row).text();
       if (trim(status).length < 2) status = "ONLINE";
       $("div.button_edit").attr("run_number", number);
+	  $("div.button_summary").attr("run_number", number);
       var allow = canEdit(status);
       if (allow) {
         if ($("td[abbr=RUN_EVENTS] div", row).text() == "null" || 
@@ -319,12 +333,14 @@
       } else {
         $("div.button_edit span").text("View #"+ number);
       }
+	  if ($('#summary').dialog('isOpen')) summeryValues();
 
     }
 
     var onRowDblClick = function (row) {
       var number = parseInt($("td[field=RUN_NUMBER] div", row).text());
       $("div.button_edit").attr("run_number", number);
+	  $("div.button_summary").attr("run_number", number);
       editPress();
     }
 
@@ -410,6 +426,8 @@
         {name: 'Columns', dclass: 'button_toggle', onpress : function () { $("#flex1").flexColToggler(this); } },  
         {separator: true},
         {name: 'Reset', dclass: 'button_reset', onpress : function () { $("#flex1").flexReset(); window.location.href = window.location.href; } },  
+        {separator: true},
+        {name: 'Summary values', dclass: 'button_summary', onpress : summeryValues },
         {separator: true},
         {name: 'Edit', dclass: 'button_edit', onpress : editPress },
         {separator: true},
@@ -649,6 +667,7 @@
 
   <jsp:include page="search.jsp" />
   <jsp:include page="edit.jsp" />
+  <jsp:include page="summary.jsp" />
   <jsp:include page="plot.jsp" />
   <jsp:include page="chat.jsp" />
 
