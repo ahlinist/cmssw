@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.12 $
-  \date $Date: 2009/04/21 12:00:07 $
+  \version $Revision: 1.13 $
+  \date $Date: 2009/04/22 19:37:18 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -163,7 +163,7 @@ HcalRenderPlugin::preDraw (TCanvas * c,
   c->cd(); 
 
   gStyle->Reset("Default");
-  //defNCont_=gStyle->GetNumberOfContours(); // test this later 
+  defNCont_=gStyle->GetNumberContours(); // test this later 
   gStyle->SetCanvasColor(10);
   gStyle->SetPadColor(10);
   gStyle->SetFillColor(10);
@@ -232,7 +232,7 @@ HcalRenderPlugin::postDraw (TCanvas * c,
 
   // reset number of contours -- to be tested
   
-  //gStyle->SetNumberOfContours(defNCont_);
+  gStyle->SetNumberContours(defNCont_);
   return;
 } // HcalRenderPlugin::postDraw(...)
 
@@ -259,19 +259,19 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
 	(o.name.find("DataFormatMonitor/HTR Plots/EvN Difference")!=std::string::npos)  ||
 	(o.name.find("RecHitMonitor_Hcal/rechit_1D_plots") !=std::string::npos)
 	)
-    gPad->SetLogy(1);
+    if (obj->GetMaximum()>0) gPad->SetLogy(1);
   
   if (o.name.find("Problem_Total_DeadCells_") != std::string::npos ||
       o.name.find("rechit_1D_plots")!= std::string::npos)
     {
-      gStyle->SetOptStat("irmen");
+      gStyle->SetOptStat("iourmen");
       obj->SetStats( kTRUE );
     }
 
   if (  (o.name.find("DataFormatMonitor/HTR Plots/")!=std::string::npos) &&
 	(o.name.find("Data Format Error Word")!=std::string::npos)
 	)
-    gPad->SetLogy(1);
+    if (obj->GetMaximum()>0) gPad->SetLogy(1);
   
   if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
     obj->SetMinimum(0);
@@ -285,11 +285,11 @@ void HcalRenderPlugin::preDrawTH1 ( TCanvas *c, const DQMNet::CoreObject &o )
       obj->SetMinimum(0.);
     }
   if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
-    gPad->SetLogy(1);
+    if (obj->GetMaximum()>0) gPad->SetLogy(1);
   if (o.name.find("DigiMonitor_Hcal/digi_info/# of Digis") !=std::string::npos)
     {
-      gPad->SetLogy(1);
-      gStyle->SetOptStat("rmen");
+      if (obj->GetMaximum()>0) gPad->SetLogy(1);
+      gStyle->SetOptStat("iourmen");
       obj->SetStats(kTRUE);
     }
 
@@ -322,23 +322,23 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 
   // Always use most up-to-date color scheme for reportSummaryMap,
   // so that it's consistent with other maps.
-  
-  // reportSummaryMapPalette currently only takes TH2Fs;
-  // need to make separate cast
+  // Set reportSummary Map color with dqm::utils::reportSummaryMapPalette(obj);
 
   // I don't think we want to do this yet, because reportSummaryMap doesn't
   // yet provide useful colors when value = -1?
-
+  // Instead, use the summaryColors defined within this code
   // green when =1, red when = 0, grey when = -1
 
 
   if (o.name.find("reportSummaryMap" ) != std::string::npos)
     {
+      gStyle->SetNumberContours(40); // should maintain reportSummaryMap color scheme, but allow for additional colors (from -1->0)
       gStyle->SetPalette(40,summaryColors);
       obj->SetOption("textcol");
     }
   else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
     {
+      gStyle->SetNumberContours(40);
       gStyle->SetPalette(40,summaryColors);
       obj->SetOption("colz");
     }
@@ -445,7 +445,8 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
       gStyle->SetPalette(1);
       obj->SetOption("colz");
       c->SetBottomMargin(0.200);
-      gPad->SetLogz();}
+      if (obj->GetMaximum()>0) gPad->SetLogz();
+  }
   else if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Error and Warning") != std::string::npos ) ||
 	    (o.name.find("DataFormatMonitor/DCC Plots/All Evt") != std::string::npos )               ||
 	    (o.name.find("DataFormatMonitor/DCC Plots/DCC Nonzero") != std::string::npos )           
@@ -457,7 +458,7 @@ void HcalRenderPlugin::preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
 	    )  {
     gStyle->SetPalette(1);
     obj->SetOption("colz");
-    gPad->SetLogz();
+    if (obj->GetMaximum()>0) gPad->SetLogz();
     gPad->SetGridx();
     gPad->SetGridy();}
   else   // default color is rainbow
@@ -686,25 +687,8 @@ void HcalRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
 
 void HcalRenderPlugin::setRainbowColor(void)
 {
-  //gStyle->SetNumberOfContours(NCont_rainbow); // will this affect other histograms that don't use this palette?  Shouldn't -- Ncontours gets reset to default in post
+  gStyle->SetNumberContours(NCont_rainbow); // will this affect other histograms that don't use this palette?  Shouldn't -- Ncontours gets reset to default in post
   gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
-
-  // This sets a rainbow scale, with finer gradations than the default
-  // This crashes the code, by constantly adding values into color table!
-  // Use the above method instead!
-  /*
-  const Int_t NRGBs = 5;
-  const Int_t NCont = 100;
-  
-  // stops[NRGBs] determines the relative fraction points on the palette at which to
-  // define colors.  red, green, blue define colors at each point.
-  Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-  Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
-  Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
-  Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
-  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-  gStyle->SetNumberContours(NCont);
-  */
   return;
 } // setRainbow()
 
@@ -712,7 +696,7 @@ void HcalRenderPlugin::setRainbowColor(void)
 
 void HcalRenderPlugin::setErrorColor(void)
 {
-  //gStyle->SetNumberOfContours(NCont_hcalError);
+  gStyle->SetNumberContours(NCont_hcalError);
   gStyle->SetPalette(NCont_hcalError,hcalErrorColors);
 
   return;
