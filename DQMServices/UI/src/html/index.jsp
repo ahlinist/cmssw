@@ -16,7 +16,7 @@
   <!--link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" /-->
   <link rel="stylesheet" type="text/css" href="media/index.css" />
   <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="media/jquery.treeview.css" />
+
 
   <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
   <script type="text/javascript" src="media/jquery-ui-1.7.1.custom.min.js"></script>
@@ -30,8 +30,6 @@
   <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
   <script type="text/javascript" src="media/utils.js"></script>
   <script type="text/javascript" src="media/ui.progressbar.js"></script>
-  <script type="text/javascript" src="media/jquery.treeview.js" ></script>
-
 
 <script type="text/javascript">
 
@@ -41,6 +39,8 @@
 
   //jQuery.noConflict();
   $(document).ready(function() {
+
+    jQuery.fx.off = true;
 
     var subsystems = [<dqm:listSubsystemsJS/>];
     var total = 0;
@@ -457,15 +457,6 @@
       $("div.button_select").each(selectToggle);
     }
 
-    $("#help").tooltip({
-      delay: 0,
-      fade: 250,
-      showURL: false,
-      bodyHandler: function() {
-        return $("#helphtml").html();
-      }
-    });
-
     // init
     $("#flex1").flexReload();
 
@@ -676,10 +667,6 @@
   <div align="right">Compiled: <%=Encoder.getCompileDate()%></div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
-
-  <div id="helphtml" style="display: none;">
-    <jsp:include page="help.html" />
-  </div>
 
   <div id="messageBox">
     <p class="line1"/>
