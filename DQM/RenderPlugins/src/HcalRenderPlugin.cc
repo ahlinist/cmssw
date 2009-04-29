@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.13 $
-  \date $Date: 2009/04/22 19:37:18 $
+  \version $Revision: 1.14 $
+  \date $Date: 2009/04/29 15:33:51 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -26,6 +26,8 @@
 ////#define _XBINS (24*ERIC_HDP_XS+ERIC_HDP_X0)
 ////#define _YBINS (15*ERIC_HDP_YS+ERIC_HDP_Y0)
 
+using std::cout;
+using std::endl;
 
 void
 HcalRenderPlugin::initialise (int argc, char ** argv)
@@ -164,6 +166,7 @@ HcalRenderPlugin::preDraw (TCanvas * c,
 
   gStyle->Reset("Default");
   defNCont_=gStyle->GetNumberContours(); // test this later 
+  
   gStyle->SetCanvasColor(10);
   gStyle->SetPadColor(10);
   gStyle->SetFillColor(10);
@@ -233,6 +236,7 @@ HcalRenderPlugin::postDraw (TCanvas * c,
   // reset number of contours -- to be tested
   
   gStyle->SetNumberContours(defNCont_);
+  gStyle->UseCurrentStyle();
   return;
 } // HcalRenderPlugin::postDraw(...)
 
