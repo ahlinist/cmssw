@@ -74,24 +74,38 @@ public class BatchEditProvider extends HttpServlet {
     String url  = args[0];
     String auth = args[1];
     String user = args[2];
-    String tag  = args[3];
 
     System.out.println("url  = " + url);
     System.out.println("auth = " + auth);
+    System.out.println("user = " + user);
 
     try {
-      DBWorker db = new DBWorker(url, auth);
-      BatchEditProvider beprovider = new BatchEditProvider();
-      Vector<String> numbers = db.getStringList("select run_number from rr_runs where run_globalname like 'CRAFT%' and run_number > 67219 order by run_number", 1);
-      db.close();
 
+      DBWorker db = new DBWorker(url, auth);
+
+      DBSWriter writer = new DBSWriter("http://localhost:9999");
+
+      PreparedStatement pstmt1 = db.prepareSQL("select run_number, run_tag from rr_runs where run_status = 'COMPLETED' and run_number >= 82368 order by run_number");
+      ResultSet res = pstmt1.executeQuery();
+      while (res.next()) {
+        int run_number = res.getInt(1);
+        String run_tag = res.getString(2);
+        PreparedStatement pstmt2 = db.prepareSQL("SELECT \"tag\", \"value\" FROM RR_DBSFLAGS WHERE \"run\" = ? ");
+        pstmt2.setInt(1, run_number);
+        Hashtable<String, String> map = db.getStringsMap(pstmt2);
+        System.out.print("Writing run #" + String.valueOf(run_number) + "...");
+        System.out.println(writer.write(run_number, map));
+      }
+
+      /*
+      BatchEditProvider beprovider = new BatchEditProvider();
+      Vector<String> numbers = db.getStringList("select run_number from rr_runs where run_status = 'COMPLETED' and run_number >= 82368 order by run_number", 1);
       for (int i = 0; i < numbers.size(); i++) {
-        db = new DBWorker(url, auth);
         System.out.print("Writing run #" + numbers.elementAt(i) + "...");
         beprovider.batchStatusUpdate(Integer.valueOf(numbers.elementAt(i)), "COMPLETED", db, "http://localhost:9999", user, tag);
         System.out.println("OK");
-        db.close();
       }
+      */
 
       db.close();
 

@@ -165,6 +165,19 @@
     </servlet>
 
     <servlet>
+      <servlet-name>RunSummaryValues</servlet-name>
+      <servlet-class>cms.dqm.workflow.DataProvider</servlet-class>
+      <init-param>
+        <param-name>format</param-name>
+        <param-value>xml</param-value>
+      </init-param>
+      <init-param>
+        <param-name>query</param-name>
+        <param-value>select * from rr_run_summary_values</param-value>
+      </init-param>
+    </servlet>
+
+    <servlet>
       <servlet-name>EditProvider</servlet-name>
       <servlet-class>cms.dqm.workflow.EditProvider</servlet-class>
     </servlet>
@@ -241,6 +254,11 @@
     <servlet-mapping>
         <servlet-name>MessageBoard</servlet-name>
         <url-pattern>/messageboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RunSummaryValues</servlet-name>
+        <url-pattern>/runsummaryvalues</url-pattern>
     </servlet-mapping>
 
     <session-config>
