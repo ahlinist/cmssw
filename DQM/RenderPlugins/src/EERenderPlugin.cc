@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.123 2009/04/15 07:30:11 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.124 2009/04/28 13:32:19 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.123 $
-  \date $Date: 2009/04/15 07:30:11 $
+  \version $Revision: 1.124 $
+  \date $Date: 2009/04/28 13:32:19 $
 */
 
 #include "TH1F.h"
@@ -85,6 +85,8 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text9 = new TH2C( "ee_text9", "text9", 10, -150., 150., 10, -150., 150. );
   text10 = new TH2C( "ee_text10", "text10", 20, 0., 40., 10, 0., 20. );
   text11 = new TH2C( "ee_text11", "text11", 20, 0., 200., 10, 0., 100. );
+  text12 = new TH2C( "ee_text12", "text12", 10, 0., 20., 10, 0., 20. );
+  text13 = new TH2C( "ee_text13", "text13", 10, 0., 20., 10, 0., 20. );
 
   text1->SetMinimum(  0.01 );
   text3->SetMinimum(  0.01 );
@@ -95,6 +97,8 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text9->SetMinimum( +0.01 );
   text10->SetMinimum( -9.01 );
   text11->SetMinimum( -9.01 );
+  text12->SetMinimum( -9.01 );
+  text13->SetMinimum( +0.01 );
 
   text6->SetMaximum( -0.01 );
   text7->SetMaximum( +9.01 );
@@ -102,7 +106,9 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text9->SetMaximum( +9.01 );
   text10->SetMaximum( -0.01 );
   text11->SetMaximum( -0.01 );
-  
+  text12->SetMinimum( -9.01 );
+  text13->SetMinimum( +0.01 );
+
   for ( short j=0; j<400; j++ ) {
     int x = 5*(1 + j%20);
     int y = 5*(1 + j/20);
@@ -115,6 +121,8 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
       text7->SetBinContent(i, j, -10);
       text8->SetBinContent(i, j, -10);
       text9->SetBinContent(i, j, -10);
+      text12->SetBinContent(i, j, -10);
+      text13->SetBinContent(i, j, -10);
     }
   }
   for( short i=0; i<2; i++ ) {
@@ -202,6 +210,26 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text11->SetBinContent(10+5, 2, +5);
   text11->SetBinContent(10+3, 3, +4);
 
+  text12->SetBinContent(2, 5, -3);
+  text12->SetBinContent(2, 7, -2);
+  text12->SetBinContent(4, 9, -1);
+  text12->SetBinContent(7, 9, -9);
+  text12->SetBinContent(9, 7, -8);
+  text12->SetBinContent(9, 5, -7);
+  text12->SetBinContent(8, 3, -6);
+  text12->SetBinContent(6, 2, -5);
+  text12->SetBinContent(3, 3, -4);
+
+  text13->SetBinContent(2, 5, +3);
+  text13->SetBinContent(2, 7, +2);
+  text13->SetBinContent(4, 9, +1);
+  text13->SetBinContent(7, 9, +9);
+  text13->SetBinContent(9, 7, +8);
+  text13->SetBinContent(9, 5, +7);
+  text13->SetBinContent(8, 3, +6);
+  text13->SetBinContent(5, 2, +5);
+  text13->SetBinContent(3, 3, +4);
+
   text1->SetMarkerSize( 2 );
   text3->SetMarkerSize( 2 );
   text4->SetMarkerSize( 2 );
@@ -211,6 +239,8 @@ void EERenderPlugin::initialise( int argc, char **argv ) {
   text9->SetMarkerSize( 2 );
   text10->SetMarkerSize( 2 );
   text11->SetMarkerSize( 2 );
+  text12->SetMarkerSize( 2 );
+  text13->SetMarkerSize( 2 );
 
 }
 
@@ -375,6 +405,14 @@ void EERenderPlugin::preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o 
     obj->GetYaxis()->SetNdivisions(10);
   }
 
+  if( nbx == 20 && nby == 20 && 
+      name.find( "EESRT" ) != std::string::npos ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
+  }
+
   obj->SetMinimum(0.0);
   gStyle->SetPalette(10, pCol4);
   obj->SetOption("colz");
@@ -498,6 +536,14 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(20);
     obj->GetYaxis()->SetNdivisions(20);
+  }
+
+  if( nbx == 20 && nby == 20 && 
+      name.find( "EESRT" ) != std::string::npos ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    obj->GetXaxis()->SetNdivisions(10);
+    obj->GetYaxis()->SetNdivisions(10);
   }
 
   if( nbx == 10 && ( nby == 1 || nby == 5 ) ) {
@@ -797,12 +843,17 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
     return;
   }
 
+  int nbx = obj->GetNbinsX();
+  int nby = obj->GetNbinsY();
+
   c->SetBit(TGraph::kClipFrame);
   TLine l;
   l.SetLineWidth(1);
   for ( int i=0; i<201; i=i+1){
     if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) ) {
-      if( name.find( "EECLT" ) != std::string::npos && 
+      if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 ) {
+        l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+      } else if( name.find( "EECLT" ) != std::string::npos && 
           name.find( "seed" ) == std::string::npos ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
       } else if ( name.find( "EECLT SC energy vs seed crystal energy" ) == std::string::npos ) {
@@ -859,23 +910,44 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
   }
   
   if( name.find( "EESRT") != std::string::npos ) {
-    if( name.find( "EE -" ) != std::string::npos ) {
-      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-      text6->GetXaxis()->SetRange(x1, x2);
-      text6->GetYaxis()->SetRange(y1, y2);
-      text6->Draw("text,same");
-    }
-    if( name.find( "EE +" ) != std::string::npos ) {
-      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-      text7->GetXaxis()->SetRange(x1, x2);
-      text7->GetYaxis()->SetRange(y1, y2);
+    if( nbx == 100 && nby == 100 ) {
+      if( name.find( "EE -" ) != std::string::npos ) {
+        int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text6->GetXaxis()->SetRange(x1, x2);
+        text6->GetYaxis()->SetRange(y1, y2);
+        text6->Draw("text,same");
+      }
+      if( name.find( "EE +" ) != std::string::npos ) {
+        int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text7->GetXaxis()->SetRange(x1, x2);
+        text7->GetYaxis()->SetRange(y1, y2);
       text7->Draw("text,same");
+      }
+    } else if( nbx == 20 && nby == 20 ) {
+      if( name.find( "EE -" ) != std::string::npos ) {
+        int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text12->GetXaxis()->SetRange(x1, x2);
+        text12->GetYaxis()->SetRange(y1, y2);
+        text12->Draw("text,same");
+      }
+      if( name.find( "EE +" ) != std::string::npos ) {
+        int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text13->GetXaxis()->SetRange(x1, x2);
+        text13->GetYaxis()->SetRange(y1, y2);
+        text13->Draw("text,same");
+      }
     }
     return;
   }
@@ -935,6 +1007,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
       } else if( name.find( "EECLT" ) != std::string::npos && 
                  name.find( "seed" ) == std::string::npos ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
+      } else if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 ) {
+        l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
       } else if( name.find( " PN " ) == std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
       }
@@ -1163,23 +1237,44 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   }
 
   if( name.find( "EESRT") != std::string::npos ) {
-    if( name.find( "EE -" ) != std::string::npos ) {
-      int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-      int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-      int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-      int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-      text6->GetXaxis()->SetRange(x1, x2);
-      text6->GetYaxis()->SetRange(y1, y2);
-      text6->Draw("text,same");
-    }
-    if( name.find( "EE +" ) != std::string::npos ) {
-      int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-      int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-      int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-      int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-      text7->GetXaxis()->SetRange(x1, x2);
-      text7->GetYaxis()->SetRange(y1, y2);
-      text7->Draw("text,same");
+    if( nbx == 100 && nby == 100 ) {
+      if( name.find( "EE -" ) != std::string::npos ) {
+        int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text6->GetXaxis()->SetRange(x1, x2);
+        text6->GetYaxis()->SetRange(y1, y2);
+        text6->Draw("text,same");
+      }
+      if( name.find( "EE +" ) != std::string::npos ) {
+        int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text7->GetXaxis()->SetRange(x1, x2);
+        text7->GetYaxis()->SetRange(y1, y2);
+        text7->Draw("text,same");
+      }
+    } else if( nbx == 20 && nby == 20 ) {
+      if( name.find( "EE -" ) != std::string::npos ) {
+        int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text12->GetXaxis()->SetRange(x1, x2);
+        text12->GetYaxis()->SetRange(y1, y2);
+        text12->Draw("text,same");
+      }
+      if( name.find( "EE +" ) != std::string::npos ) {
+        int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text13->GetXaxis()->SetRange(x1, x2);
+        text13->GetYaxis()->SetRange(y1, y2);
+        text13->Draw("text,same");
+      }
     }
     return;
   }
