@@ -317,6 +317,7 @@ tr.prevTag {
 }
 
 .rr_line {
+	text-align: left;
 	color: navy;
 }
 
