@@ -18,6 +18,8 @@ from RecoParticleFlow.PFBlockProducer.particleFlowBlock_cff import *
 particleFlowBlock.RecTracks = cms.InputTag("faketracks", "pfRecTracks")
 particleFlowBlock.GsfRecTracks = cms.InputTag("faketracks", "gsfPfRecTracks")
 particleFlowBlock.PFClustersPS = cms.InputTag("faketracks", "pfPS")
+particleFlowBlock.PFClustersHFEM = cms.InputTag("faketracks", "pfHFHAD")
+particleFlowBlock.PFClustersHFHAD = cms.InputTag("faketracks", "pfHFEM")
 particleFlowBlock.RecMuons = cms.InputTag("faketracks", "muons")
 particleFlowBlock.verbose = cms.untracked.bool(False)
 particleFlowBlock.debug = cms.untracked.bool(False)

@@ -71,19 +71,20 @@ TestbeamDelegate = cms.PSet(
     # Recommended: True
     saveJustPions=cms.bool(True),
     # Global cut parameters   
-    runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_v1_3X.root"),
+    runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310pre2.root"),
     maxEventsFromEachRun=cms.uint32(0),
     
     #Normal tags
     ParticleFiltration=cms.InputTag("particleFiltration", "particleFiltration"),
-    RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB"),
     BeamCounters=cms.InputTag("tbunpacker"),
     RunData=cms.InputTag("tbunpacker"),
     Timing=cms.InputTag("tbunpacker"),
     EventPosition=cms.InputTag("tbunpacker"),
-    TriggerData=cms.InputTag("tbunpacker")
-    
+    TriggerData=cms.InputTag("tbunpacker")   
 )
+
+TestbeamDelegate.RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
+
 #Testbeam related options
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
 

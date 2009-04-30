@@ -8,7 +8,7 @@
 	using namespace pftools;
 
 	TestbeamPreprocessor process(true);
-	/*
+
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030139.combined.OutServ_0.0-cmsswreco.root", 30139);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030140.combined.OutServ_0.0-cmsswreco.root", 30140);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030141.combined.OutServ_0.0-cmsswreco.root", 30141);
@@ -32,6 +32,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029703.combined.OutServ_0.0-cmsswreco.root", 29703);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029704.combined.OutServ_0.0-cmsswreco.root", 29704);
 
+	/*
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029705.combined.OutServ_0.0-cmsswreco.root", 29705);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029706.combined.OutServ_0.0-cmsswreco.root", 29706);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029707.combined.OutServ_0.0-cmsswreco.root", 29707);
@@ -53,8 +54,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029728.combined.OutServ_0.0-cmsswreco.root", 29728);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029729.combined.OutServ_0.0-cmsswreco.root", 29729);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029730.combined.OutServ_0.0-cmsswreco.root", 29730);
-	*/
-	/*
+
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029731.combined.OutServ_0.0-cmsswreco.root", 29731);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029754.combined.OutServ_0.0-cmsswreco.root", 29754);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029755.combined.OutServ_0.0-cmsswreco.root", 29755);
@@ -76,9 +76,9 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029732.combined.OutServ_0.0-cmsswreco.root", 29732);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029733.combined.OutServ_0.0-cmsswreco.root", 29733);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029734.combined.OutServ_0.0-cmsswreco.root", 29734);
-	*/
 
-	//process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029760.combined.OutServ_0.0-cmsswreco.root", 29760);
+
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029760.combined.OutServ_0.0-cmsswreco.root", 29760);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029761.combined.OutServ_0.0-cmsswreco.root", 29761);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029762.combined.OutServ_0.0-cmsswreco.root", 29762);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030110.combined.OutServ_0.0-cmsswreco.root", 30110);
@@ -88,7 +88,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029764.combined.OutServ_0.0-cmsswreco.root", 29764);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029767.combined.OutServ_0.0-cmsswreco.root", 29767);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029650.combined.OutServ_0.0-cmsswreco.root", 29650);
-	//process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029737.combined.OutServ_0.0-cmsswreco.root", 29737);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029737.combined.OutServ_0.0-cmsswreco.root", 29737);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029738.combined.OutServ_0.0-cmsswreco.root", 29738);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030109.combined.OutServ_0.0-cmsswreco.root", 30109);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030379.combined.OutServ_0.0-cmsswreco.root", 30379);
@@ -99,7 +99,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030388.combined.OutServ_0.0-cmsswreco.root", 30388);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030389.combined.OutServ_0.0-cmsswreco.root", 30389);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030390.combined.OutServ_0.0-cmsswreco.root", 30390);
-
+	*/
 
 	process.finish("testbeam_cuts_v1_3X.root");
 

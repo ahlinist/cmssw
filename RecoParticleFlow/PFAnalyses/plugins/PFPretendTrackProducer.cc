@@ -42,6 +42,8 @@ PFPretendTrackProducer::PFPretendTrackProducer(
 
 	produces<GsfPFRecTrackCollection> ("gsfPfRecTracks");
 	produces<reco::PFClusterCollection> ("pfPS");
+	produces<reco::PFClusterCollection> ("pfHFHAD");
+	produces<reco::PFClusterCollection>("pfHFEM");
 	produces<reco::MuonCollection> ("muons");
 
 	debug_ = parameters.getParameter<int> ("debug");
@@ -123,6 +125,8 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	std::auto_ptr<GsfPFRecTrackCollection> gsfpfRecTrackColl(
 			new GsfPFRecTrackCollection());
 	std::auto_ptr<PFClusterCollection> pfPSColl(new PFClusterCollection());
+	std::auto_ptr<PFClusterCollection> pfHFHADColl(new PFClusterCollection());
+	std::auto_ptr<PFClusterCollection> pfHFEMColl(new PFClusterCollection());
 	std::auto_ptr<MuonCollection> muonColl(new MuonCollection());
 	std::auto_ptr<TrackExtraCollection> trackExtrasColl(
 			new TrackExtraCollection());
@@ -133,6 +137,8 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 		event.put(pfRecTrackColl, "pfRecTracks");
 		event.put(gsfpfRecTrackColl, "gsfPfRecTracks");
 		event.put(pfPSColl, "pfPS");
+		event.put(pfHFHADColl, "pfHFHAD");
+		event.put(pfHFEMColl, "pfHFEM");
 		event.put(muonColl, "muons");
 		return;
 	}
@@ -207,6 +213,8 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	event.put(pfRecTrackColl, "pfRecTracks");
 	event.put(gsfpfRecTrackColl, "gsfPfRecTracks");
 	event.put(pfPSColl, "pfPS");
+	event.put(pfHFHADColl, "pfHFHAD");
+	event.put(pfHFEMColl, "pfHFEM");
 	event.put(muonColl, "muons");
 
 

@@ -29,25 +29,25 @@ process.source = cms.Source("PoolSource",
 )
 
 
-process.MessageLogger = cms.Service("MessageLogger",
-    debugModules=cms.untracked.vstring('particleFiltration', 'extraction'),
-    cout=cms.untracked.PSet(
-        TestbeamFiltratrionDelegate=cms.untracked.PSet(
-            limit=cms.untracked.int32(10000000)
-        ),
-        TestbeamDelegate=cms.untracked.PSet(
-            limit=cms.untracked.int32(10000000)
-        ),
-        threshold=cms.untracked.string('INFO')
-    ),
-    log=cms.untracked.PSet(
-     
-        threshold=cms.untracked.string('INFO')
-    ),
-    categories=cms.untracked.vstring('TestbeamFiltrationDelegate',
-        'TestbeamDelegate'),
-    destinations=cms.untracked.vstring('cout', 'log.txt')
-)
+#process.MessageLogger = cms.Service("MessageLogger",
+#    debugModules=cms.untracked.vstring('particleFiltration', 'extraction'),
+#    cout=cms.untracked.PSet(
+#        TestbeamFiltratrionDelegate=cms.untracked.PSet(
+#            limit=cms.untracked.int32(10000000)
+#        ),
+#        TestbeamDelegate=cms.untracked.PSet(
+#            limit=cms.untracked.int32(10000000)
+#        ),
+#        threshold=cms.untracked.string('INFO')
+#    ),
+#    log=cms.untracked.PSet(
+#     
+#        threshold=cms.untracked.string('INFO')
+#    ),
+#    categories=cms.untracked.vstring('TestbeamFiltrationDelegate',
+#        'TestbeamDelegate'),
+#    destinations=cms.untracked.vstring('cout', 'log.txt')
+#)
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)
 process.outpath = cms.EndPath(process.finishup)
