@@ -20,12 +20,6 @@
     </env-entry>
 
     <env-entry>
-      <env-entry-name>writeToDBS</env-entry-name>
-      <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>1</env-entry-value>
-    </env-entry>
-
-    <env-entry>
       <env-entry-name>db_auth</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
       <env-entry-value>@AUTH@</env-entry-value>
@@ -35,18 +29,6 @@
       <env-entry-name>dbs_url</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
       <env-entry-value>@DBS_DQM_URL@</env-entry-value>
-    </env-entry>
-
-    <env-entry>
-      <env-entry-name>js_dir</env-entry-name>
-      <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>@TOMCAT_PATH@/webapps/@DQM_URL@/media/</env-entry-value>
-    </env-entry>
-
-    <env-entry>
-      <env-entry-name>templates_dir</env-entry-name>
-      <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>@TOMCAT_PATH@/webapps/@DQM_URL@/templates/</env-entry-value>
     </env-entry>
 
     <env-entry>

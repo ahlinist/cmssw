@@ -401,9 +401,6 @@ public class EditProvider extends HttpServlet {
       url = WebUtils.GetEnv("dbs_url");
     }
 
-    boolean isWrite = (WebUtils.GetEnv("writeToDBS").equals("1") ? true : false);
-    if (!isWrite) return true;
-
     DBSWriter dbswriter = new DBSWriter(url);
 
     PreparedStatement pstmt = db.prepareSQL("SELECT \"tag\", \"value\" FROM RR_DBSFLAGS WHERE \"run\" = ? ");
