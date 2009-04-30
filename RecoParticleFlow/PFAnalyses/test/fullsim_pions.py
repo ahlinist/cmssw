@@ -4,14 +4,10 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("PROD")
 
 
-process.maxEvents = cms.untracked.PSet(
-    input=cms.untracked.int32(1000)
-)
+from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
 #generation
-
 process.load("Configuration.StandardSequences.SimulationRandomNumberGeneratorSeeds_cff")
-
 #simulation
 process.load("Configuration.StandardSequences.Simulation_cff")
 process.load("Configuration.StandardSequences.MixingNoPileUp_cff")
@@ -28,9 +24,8 @@ process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.L1Emulator_cff")
 
 
-
 process.MessageLogger = cms.Service("MessageLogger",
-                                    destinations=cms.untracked.vstring('cout'),
+                                    destinations=cms.untracked.vstring('Dipion_' + logLabel + '.txt'),
                                     FullSim=cms.untracked.PSet(
     threshold=cms.untracked.string('INFO')
     )
@@ -46,8 +41,8 @@ process.generator = cms.EDProducer("Pythia6EGun",
        MaxPhi = cms.double(0.02),
        MinEta = cms.double(0.2),
        MaxEta = cms.double(0.2),
-       MinE = cms.double(20),
-       MaxE = cms.double(20+0.0001),
+       MinE = cms.double(options.minBeamEnergy),
+       MaxE = cms.double(options.beamEnergy+0.0001),
        AddAntiParticle = cms.bool(True)
      ),
     pythiaVerbosity = cms.untracked.bool(False),
@@ -60,75 +55,38 @@ process.generator = cms.EDProducer("Pythia6EGun",
     )
 )
 
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(10)
+)
+
 process.ProductionFilterSequence = cms.Sequence(process.generator)
-
-
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
 process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
-
-process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
-    useSimAsTrack = cms.bool(False),
-    PFClustersHcal = cms.InputTag("particleFlowClusterHCAL"),
-    deltaRClustersToTrack = cms.double(0.4),
-    EventDelegateType = cms.string('DipionDelegate'),
-    deltaRCandToTrack = cms.double(0.4),
-    PFCandidates = cms.InputTag("particleFlow"),
-    deltaRRechitsToTrack = cms.double(0.4),
-    deltaPhi = cms.double(0.4),
-    debug = cms.int32(1),
-    PFRecTracks = cms.InputTag("trackerDrivenElectronSeeds"),
-    PFRecHitsEcal = cms.InputTag("particleFlowRecHitECAL"),
-    deltaEta = cms.double(0.4),
-    PFSimParticles = cms.InputTag("particleFlowSimParticle"),
-    PFRecHitsHcal = cms.InputTag("particleFlowRecHitHCAL"),
-    isMC = cms.bool(True),
-    PFClustersEcal = cms.InputTag("particleFlowClusterECAL"),
-    clustersFromCandidates = cms.bool(True),
-    particlePDG = cms.int32(211),
-    SimCaloRecHitsEcalEB = cms.InputTag("g4SimHits", "EcalHitsEB"),
-    SimCaloRecHitsEcalEE = cms.InputTag("g4SimHits", "EcalHitsEE"),
-    SimCaloRecHitsHcal = cms.InputTag("g4SimHits", "HcalHits"),
-        
-    deltaREcalCaloWindow=cms.double(0.01),
-    deltaRHcalCaloWindow=cms.double(0.05),
-    nRingsEcalCaloWindow=cms.uint32(5),
-    nRingsHcalCaloWindow=cms.uint32(3),
-    nPanesEcalCaloWindow=cms.uint32(1),
-    nPanesHcalCaloWindow=cms.uint32(1),
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string('Dipion_' + fileLabel)
 )
 
-
-
-process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('DipionDelegate_mono50GeV_Testbeam_100evts_3_1_FullSim_0T.root')
+from RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi import *
+process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
+    EventDelegateFullSim
 )
 
 process.p1 = cms.Path(
     process.ProductionFilterSequence +
-    process.simulation + 
+    process.simulation +
     process.L1Emulator + 
     process.DigiToRaw + 
     process.RawToDigi + 
     process.localreco + 
     process.globalreco + 
-    process.egammareco + 
     process.particleFlowReco +
-    process.particleFlowSimParticle
+    process.particleFlowSimParticle + 
+    process.extraction
 )
 
 
-#process.finishup = cms.OutputModule("PoolOutputModule",
-#   fileName=cms.untracked.string("DipionDelegate_mono100GeV_Testbeam_50evts_3_1_Collections_FullSim_38T.root"),
-#    outputCommands=cms.untracked.vstring('keep *')
-#    
-#)
-
-#process.outpath = cms.EndPath(
-#   process.finishup
-#)
-
-#
+#process.outpath = cms.EndPath(process.finishup)

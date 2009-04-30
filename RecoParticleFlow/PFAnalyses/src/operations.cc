@@ -1,5 +1,6 @@
 #include "RecoParticleFlow/PFAnalyses/interface/operations.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+//#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 double pftools::deltaR(const double& eta1, const double& eta2,
 		const double& phi1, const double& phi2) {
 //	double deltaEta = fabs(eta1 - eta2);

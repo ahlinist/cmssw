@@ -17,6 +17,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+
 template<typename T> std::string obj2str(T n) {
 	std::ostringstream oss;
 	oss << n;
@@ -58,6 +59,80 @@ template<class T> void getCollection(edm::Handle<T>& c,
 	}
 }
 
+template<typename T> std::vector<unsigned> findObjectsInDeltaR(
+		const std::vector<T>& objects, const double centralEta,
+		const double centralPhi, const double deltaRCut) {
+//	using namespace edm;
+//	using namespace reco;
+
+	unsigned index(0);
+	std::vector<unsigned> answers;
+	for (typename std::vector<T>::const_iterator oit = objects.begin(); oit
+			!= objects.end(); ++oit) {
+		T obj = *oit;
+		double rhEta = obj.positionREP().eta();
+		double rhPhi = obj.positionREP().phi();
+
+		if (pftools::deltaR(rhEta, centralEta, rhPhi, centralPhi) < deltaRCut) {
+			//accept
+			answers.push_back(index);
+		}
+		++index;
+	}
+	return answers;
+}
+
+
+
+template<typename T> std::vector<unsigned> findCandidatesInDeltaR(
+		const std::vector<T>& objects, const double centralEta,
+		const double centralPhi, const double deltaRCut) {
+//	using namespace edm;
+//	using namespace reco;
+
+	unsigned index(0);
+	std::vector<unsigned> answers;
+	for (typename std::vector<T>::const_iterator oit = objects.begin(); oit
+			!= objects.end(); ++oit) {
+		T obj = *oit;
+		double rhEta = obj.eta();
+		double rhPhi = obj.phi();
+
+		if (pftools::deltaR(rhEta, centralEta, rhPhi, centralPhi) < deltaRCut) {
+			//accept
+			answers.push_back(index);
+		}
+		++index;
+	}
+	return answers;
+
+}
+
+template<typename T> std::vector<unsigned> findCandidatesInDeltaRECAL(
+		const std::vector<T>& objects, const double centralEta,
+		const double centralPhi, const double deltaRCut) {
+//	using namespace edm;
+//	using namespace reco;
+
+	unsigned index(0);
+	std::vector<unsigned> answers;
+	for (typename std::vector<T>::const_iterator oit = objects.begin(); oit
+			!= objects.end(); ++oit) {
+		T obj = *oit;
+		double rhEta = obj.positionAtECALEntrance().eta();
+		double rhPhi = obj.positionAtECALEntrance().phi();
+
+		if (pftools::deltaR(rhEta, centralEta, rhPhi, centralPhi) < deltaRCut) {
+			//accept
+			answers.push_back(index);
+		}
+		++index;
+	}
+	return answers;
+
+}
+
 }
 
 #endif
+

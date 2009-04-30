@@ -57,8 +57,10 @@ if options.notracks <> 0:
 
 if options.fileSuffix <> '':
     fileLabel = fileLabel + "_" + options.fileSuffix
-    
+
+logLabel = fileLabel + ".txt"
 fileLabel = fileLabel + ".root"
+
 
 print ("Options:")
 print "Min beam energy: " + str(options.minBeamEnergy)
@@ -66,5 +68,6 @@ print "Beam energy: " + str(options.beamEnergy)
 print "kevents: " + str(options.kevents)
 print "fileSuffix: " + options.fileSuffix
 print "fileLabel: " + fileLabel
+print "logLabel: " + logLabel
 
 

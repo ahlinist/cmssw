@@ -95,7 +95,7 @@ process.TFileService = cms.Service("TFileService",
 #)
 
 
-process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle)
+process.p1 = cms.Path(process.famosWithTracksAndEcalClusters+process.caloTowersRec+process.famosParticleFlowSequence*process.particleFlowSimParticle)
 #process.p1 = cms.Path(process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle*process.extraction)
 #process.outpath = cms.EndPath(process.finishup)
 

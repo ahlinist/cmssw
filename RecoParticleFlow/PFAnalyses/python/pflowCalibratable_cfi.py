@@ -6,7 +6,7 @@ EventDelegate = cms.PSet(
 
     EventDelegateType=cms.string('DipionDelegate'),
     # Set up to 7 to get outrageous amounts of output
-    debug=cms.int32(2),
+    debug=cms.int32(4),
     isMC = cms.bool(True),
     useSimAsTrack=cms.bool(True),
     deltaRClustersToTrack=cms.double(masterConeDeltaR * 2),
@@ -14,7 +14,7 @@ EventDelegate = cms.PSet(
     deltaRCandToTrack=cms.double(masterConeDeltaR * 2),
     clustersFromCandidates=cms.bool(True),
     rechitsFromCandidates=cms.bool(False),
-    neutralMode=cms.bool(True),
+    neutralMode=cms.bool(False),
     noSimDaughters=cms.bool(True),
     particlePDG=cms.int32(211),    
     
@@ -39,6 +39,11 @@ EventDelegate = cms.PSet(
     nPanesEcalCaloWindow=cms.uint32(1),
     nPanesHcalCaloWindow=cms.uint32(2),
 )
+
+EventDelegateFullSim = EventDelegate.clone()
+EventDelegateFullSim.SimCaloRecHitsEcalEB=cms.InputTag("g4SimHits", "EcalHitsEB")
+EventDelegateFullSim.SimCaloRecHitsEcalEE=cms.InputTag("g4SimHits", "EcalHitsEE")
+EventDelegateFullSim.SimCaloRecHitsHcal=cms.InputTag("g4SimHits", "HcalHits")
     
 TestbeamDelegate = cms.PSet(
     EventDelegate,
@@ -81,5 +86,22 @@ TestbeamDelegate = cms.PSet(
 )
 #Testbeam related options
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
+
+IsolatedParticleExtractor=cms.PSet(
+    #PFCandidate types to extract
+    ParticleType = cms.uint32(1),
+    #If more than one particle is found matching isolation cuts, only extract the 'best' one
+    MostIsolatedOnly = cms.bool(False),
+    
+    #If not, just pass all PFCandidates matching particleType_ cut
+    ApplyIsolationCuts = cms.bool(False),
+    
+    #Isolation required in the ECAL
+    DeltaREcalIsolation = cms.double(0.3),
+    
+    #Isolation required in the HCAL
+    DeltaRHcalIsolation = cms.double(0.3),
+    
+)
     
 

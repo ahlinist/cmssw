@@ -133,10 +133,6 @@ protected:
 			const reco::PFTrack& pft, const std::vector<T>& objects,
 			const double deltaR);
 
-	template<typename T> std::vector<unsigned> findObjectsInDeltaR(
-			const std::vector<T>& objects, const double centralEta,
-			const double centralPhi, const double deltaR);
-
 	unsigned findClosestRecTrack(const reco::PFSimParticle& sim,
 			const std::vector<reco::PFRecTrack>& tracks);
 
@@ -274,28 +270,7 @@ template<typename T> std::vector<unsigned> EventDelegate::findObjectsInDeltaR(
 	return answers;
 }
 
-template<typename T> std::vector<unsigned> pftools::EventDelegate::findObjectsInDeltaR(
-		const std::vector<T>& objects, const double centralEta,
-		const double centralPhi, const double deltaRCut) {
-	using namespace edm;
-	using namespace reco;
 
-	unsigned index(0);
-	std::vector<unsigned> answers;
-	for (typename std::vector<T>::const_iterator oit = objects.begin(); oit
-			!= objects.end(); ++oit) {
-		T obj = *oit;
-		double rhEta = obj.positionREP().eta();
-		double rhPhi = obj.positionREP().phi();
-
-		if (pftools::deltaR(rhEta, centralEta, rhPhi, centralPhi) < deltaRCut) {
-			//accept
-			answers.push_back(index);
-		}
-		++index;
-	}
-	return answers;
-}
 
 }
 

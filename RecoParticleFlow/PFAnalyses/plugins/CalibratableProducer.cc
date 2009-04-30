@@ -24,15 +24,17 @@ using namespace pftools;
 CalibratableProducer::CalibratableProducer(const edm::ParameterSet& parameters) :
 	dptype_("DipionDelegate"), tbtype_("TestbeamDelegate") {
 
-	produces<std::vector<pftools::Calibratable> >();
+	produces<std::vector<pftools::Calibratable> > ();
 
-	edtype_ = parameters.getParameter<std::string>("EventDelegateType");
+	edtype_ = parameters.getParameter<std::string> ("EventDelegateType");
 	if (edtype_ == dptype_) {
 		ed_ = new DipionDelegate();
 	} else if (edtype_ == tbtype_) {
 		ed_ = new TestbeamDelegate();
 	} else {
-		std::string msg("Couldn't find suitable delegate!");
+		LogError("CalibratableProducer")
+				<< " Couldn't find a suitable delegate! You asked for "
+				<< edtype_ << std::endl;
 		//Exception e(msg);
 		//throw e;
 	}
@@ -43,7 +45,8 @@ CalibratableProducer::CalibratableProducer(const edm::ParameterSet& parameters) 
 
 CalibratableProducer::~CalibratableProducer() {
 	delete ed_;
-	std::cout << "\tCalibratableProducer wishes you a nice day."<< std::endl;
+	LogInfo("CalibratableProducer") << "... wishes you a nice day."
+			<< std::endl;
 }
 
 void CalibratableProducer::beginJob(const edm::EventSetup& setup) {
@@ -53,8 +56,8 @@ void CalibratableProducer::beginJob(const edm::EventSetup& setup) {
 void CalibratableProducer::produce(edm::Event& event,
 		const edm::EventSetup& setup) {
 	//create the empty collections
-	std::auto_ptr<std::vector<pftools::Calibratable> >
-			calibColl(new std::vector<pftools::Calibratable>());
+	std::auto_ptr<std::vector<pftools::Calibratable> > calibColl(
+			new std::vector<pftools::Calibratable>());
 	ed_->startEvent(event, setup, calibColl.get());
 	ed_->processEvent(event, setup);
 	ed_->endEvent();
@@ -67,5 +70,5 @@ void CalibratableProducer::endJob() {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(CalibratableProducer);
+DEFINE_FWK_MODULE( CalibratableProducer);
 

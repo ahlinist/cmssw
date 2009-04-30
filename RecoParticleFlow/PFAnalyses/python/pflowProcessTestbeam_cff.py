@@ -1,10 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi import *
+import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable 
 from RecoParticleFlow.PFAnalyses.pflowFaketracks_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowParticleFiltration_cfi import *
+
 
 TFileService = cms.Service("TFileService",
     fileName=cms.string("outputtree.root")
@@ -33,9 +34,13 @@ pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCAL)
 #Tracking, clustering, pflow - no cleaning
 pflowNoCleaning = cms.Sequence(faketracks * pfClusteringECAL * pfClusteringHCAL * particleFlowBlock * particleFlow)
 
+extraction = cms.EDAnalyzer("ExtractionAnalyzer",
+    calibratable.TestbeamDelegate
+)
+
 #The works.
 pflowProcessTestbeam = cms.Sequence(particleFiltration * faketracks * 
                                     pfClusteringECAL * 
                                     pfClusteringHCAL * 
                                     particleFlowBlock * 
-                                    particleFlow * extraction)
+                                    particleFlow)

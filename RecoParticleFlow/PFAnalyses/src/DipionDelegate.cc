@@ -313,17 +313,7 @@ void DipionDelegate::startParticleCore() {
 }
 
 void DipionDelegate::endParticleCore() {
-	if (thisEventPasses_ && thisParticlePasses_) {
-		++nParticleWrites_;
-		calib_->recompute();
-		if (debug_ > 2) {
-			//print a summary
-			LogInfo("DipionDelegate") << *calib_;
-		}
-		tree_->Fill();
-	} else {
-		++nParticleFails_;
-	}
+
 }
 
 //Checks vetos
