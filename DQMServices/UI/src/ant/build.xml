@@ -2,7 +2,7 @@
 
   <!-- INITIALIZATION -->
 
-  <property name="tomcat" location="/home/tomcat/apache-tomcat-5.5.26"/>
+  <property name="webapps" location="/home/tomcat/apache-tomcat-5.5.26/webapps"/>
 
   <path id="local-cp">  
     <fileset dir="lib">
@@ -18,6 +18,11 @@
   <target name="clean" description="clean up directory. Please use this before submitting to CVS!">
     <delete dir="build"/>
     <delete dir="dist"/>
+    <delete file="*.war">
+      <fileset dir="." >  
+        <include name="*.war"/>  
+      </fileset>  
+    </delete>
   </target>
 
   <target name="init" depends="clean">
@@ -81,7 +86,7 @@
     <input message="Database username:" addproperty="username" defaultvalue="cms_dqm_run_registry_w"/>
     <input message="Database password:" addproperty="password"/>
     <input message="DBS DQM server url:" addproperty="dqmurl" defaultvalue="http://localhost:9999" />
-    <input message="Tomcat path (to copy war file):" addproperty="tomcatpath" defaultvalue="${tomcat}"/>
+    <input message="Webapps path (to copy war file):" addproperty="webappspath" defaultvalue="${webapps}"/>
     <input message="Start scheduler (true|false)?:" addproperty="start_scheduler" defaultvalue="false"/>
     
     <!-- copy web.xml file --> 
@@ -111,7 +116,7 @@
       </webinf>
     </war>
 
-    <copy file="dist/${url}.war" todir="${tomcatpath}/webapps"/>
+    <copy file="dist/${url}.war" todir="${webappspath}"/>
     <delete file="WEB-INF/web.xml" />
 
   </target>
