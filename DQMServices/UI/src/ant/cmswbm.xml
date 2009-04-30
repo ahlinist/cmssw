@@ -1,0 +1,46 @@
+<project name="runregistry_cmswbm" default="dist" basedir=".">
+
+  <target name="cmswbm" depends="dist" description="deploy to cmswbm">
+    
+    <!-- get information about deployment environment -->
+    <property name="url" value="runregistry"/>
+    <property name="dbname" value="cmsonr"/>
+    <property name="username" value="cms_dqm_run_registry_w"/>
+    <property name="dqmurl" value="http://localhost:9999"/>
+    <property name="tomcatpath" location="."/>
+    <property name="start_scheduler" value="true"/>
+    <input message="Database password for ${username}@${dbname}:" addproperty="password"/>
+    
+    <!-- copy web.xml file --> 
+    <copy file="tmpl/web.xml" tofile="WEB-INF/web.xml" />
+
+    <!-- encrypt authentification parameters with encoder -->
+    <java classname="cms.dqm.workflow.Encoder" outputproperty="auth">
+      <arg value="${username}"/>
+      <arg value="${password}"/>
+      <classpath>
+        <pathelement location="dist/cmsdqmrunregistry.jar"/>
+        <path refid="local-cp"/>
+      </classpath>
+    </java>
+
+    <replace file="WEB-INF/web.xml" token="@AUTH@" value="${auth}"/>
+    <replace file="WEB-INF/web.xml" token="@DB_NAME@" value="${dbname}"/>
+    <replace file="WEB-INF/web.xml" token="@DBS_DQM_URL@" value="${dqmurl}"/>
+    <replace file="WEB-INF/web.xml" token="@START_SCHEDULER@" value="${start_scheduler}"/>     
+
+    <war destfile="dist/${url}.war" webxml="WEB-INF/web.xml">
+      <fileset dir="html"/>
+      <lib dir="lib"/>
+      <lib file="dist/cmsdqmrunregistry.jar"/>
+      <webinf dir="WEB-INF">
+        <exclude name="web.xml"/>
+      </webinf>
+    </war>
+
+    <copy file="dist/${url}.war" todir="${tomcatpath}"/>
+    <delete file="WEB-INF/web.xml" />
+
+  </target>
+
+</project>
