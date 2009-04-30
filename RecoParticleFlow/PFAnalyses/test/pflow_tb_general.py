@@ -44,7 +44,7 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 # LogFile
 
 process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring(logFile)
+    destinations=cms.untracked.vstring('cout')
 )
 
 process.source = cms.Source("PoolSource",

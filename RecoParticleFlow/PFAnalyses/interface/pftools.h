@@ -19,6 +19,12 @@
  * @section intro_sec Introduction
  * Take a look at lolcats to brighten up your day.
  *
+ * @section Setup
+ * Get UserCode/JamieBallinDictionary
+ * Hack DataFormats for latest calibratable
+ * Install patch for PFRecHitProducer/HCAL
+ * Stage files from castor
+ *
  * @section Usage
  * To be included at some point
  */

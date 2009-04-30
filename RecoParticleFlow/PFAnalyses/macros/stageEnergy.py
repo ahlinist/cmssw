@@ -16,6 +16,7 @@ parser.add_option("-s", action="store_true", dest="nostage", help="Don't stage f
 parser.add_option("-c", "--cuts", dest="cuts", metavar="FILE", help="Write testbeam cut macro to FILE")
 parser.add_option("-p", "--python", dest="python", metavar="FILE", help="Write CMSSW python config to FILE")
 parser.add_option("-b", "--batch", dest="batchCmd", metavar="FILE", help="Write batchfile too!")
+parser.add_option("-t", action="store_true", dest="temp", help="Copy files to /tmp")
 (options, args) = parser.parse_args()
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
@@ -46,6 +47,11 @@ for line in result:
 print 'Currently staged files...'
 for file in files:
     print file
+    
+if options.temp:
+    print 'Copying staged files to /tmp'
+    for file in files:
+        commands.getoutput('rfcp ' + file + ' /tmp')
 
 if options.cuts:
     print 'Testbeam cut processing...'
