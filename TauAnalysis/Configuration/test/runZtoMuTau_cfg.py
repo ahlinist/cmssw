@@ -145,8 +145,8 @@ switchToPFTauFixedCone(process)
 process.p = cms.Path( process.producePatTuple
 #                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
 #                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.selectZtoMuTauEvents
+#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple                    
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
 
