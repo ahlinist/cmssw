@@ -111,8 +111,8 @@ switchToPFTauFixedCone(process)
 
 process.p = cms.Path( process.producePatTuple
 #                    +process.content              # uncomment to enable dump of event content after PAT-tuple production
-#                    +process.saveZtoDiTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.selectZtoDiTauEvents
+#                    +process.saveZtoDiTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.analyzeZtoDiTauEvents
                      +process.saveZtoDiTauPlots )
 
