@@ -73,7 +73,7 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 	inputTagRecHitsEcal_ = parameters.getParameter<InputTag> ("PFRecHitsEcal");
 	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
 	inputTagRawRecHitsEcal_ = parameters.getParameter<InputTag> (
-			"RawRecHitsEcal");
+			"RawRecHitsEcalEB");
 	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> (
 			"RawRecHitsHcal");
 	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
@@ -248,10 +248,10 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFRecHitCollection ecalRecHits = **recHitsEcal_;
 		PFRecHitCollection hcalRecHits = **recHitsHcal_;
 
-		std::vector<unsigned> matchingEcalIndicies = findObjectsInDeltaR(
+		std::vector<unsigned> matchingEcalIndicies = pftools::findObjectsInDeltaR(
 				ecalRecHits, thisRun_->ecalEta_, thisRun_->ecalPhi_,
 				deltaRRecHitsToCenterECAL_);
-		std::vector<unsigned> matchingHcalIndicies = findObjectsInDeltaR(
+		std::vector<unsigned> matchingHcalIndicies = pftools::findObjectsInDeltaR(
 				hcalRecHits, thisRun_->hcalEta_, thisRun_->hcalPhi_,
 				deltaRRecHitsToCenterHCAL_);
 
@@ -264,10 +264,10 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFClusterCollection ecalClusters = **clustersEcal_;
 		PFClusterCollection hcalClusters = **clustersHcal_;
 
-		std::vector<unsigned> ecalClusterIndicies = findObjectsInDeltaR(
+		std::vector<unsigned> ecalClusterIndicies = pftools::findObjectsInDeltaR(
 				ecalClusters, thisRun_->ecalEta_, thisRun_->ecalPhi_,
 				deltaRClustersToCenterECAL_);
-		std::vector<unsigned> hcalClusterIndicies = findObjectsInDeltaR(
+		std::vector<unsigned> hcalClusterIndicies = pftools::findObjectsInDeltaR(
 				hcalClusters, thisRun_->hcalEta_, thisRun_->hcalPhi_,
 				deltaRClustersToCenterHCAL_);
 
@@ -500,24 +500,7 @@ void TestbeamDelegate::startParticleCore() {
 }
 
 void TestbeamDelegate::endParticleCore() {
-	if (thisParticlePasses_ && thisEventPasses_) {
-		++nParticleWrites_;
-		calib_->recompute();
-		if (calib_->tb_vetosPassed_ == 31)
-			++goodPionsFound_;
-		if (debug_ > 4) {
-			//print a summary
-			LogInfo("TestbeamDelegate") << *calib_;
-		}
-		if (thisEventCalibs_ != 0) {
-			//fill vector rather than tree
-			Calibratable c(*calib_);
-			thisEventCalibs_->push_back(c);
-		}
-		if (tree_ != 0)
-			tree_->Fill();
-	} else {
-		++nParticleFails_;
-	}
+	if (calib_->tb_vetosPassed_ == 31)
+		++goodPionsFound_;
 }
 

@@ -5,6 +5,7 @@
 #include "RecoParticleFlow/PFAnalyses/interface/Initialisable.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/ParticleFlowReco/interface/PFSimParticleFwd.h"
 
 namespace pftools {
 /**
@@ -32,6 +33,9 @@ public:
 	 */
 	virtual std::vector<unsigned> findCandidates(const edm::Event& event,
 			const edm::EventSetup& setup, const reco::PFCandidateCollection& cands) = 0;
+
+	virtual std::vector<unsigned> findCandidates(const edm::Event& event,
+			const edm::EventSetup& setup, const reco::PFCandidateCollection& cands, const reco::PFSimParticleCollection& sims) = 0;
 
 };
 }

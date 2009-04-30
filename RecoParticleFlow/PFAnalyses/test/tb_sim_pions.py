@@ -59,7 +59,7 @@ process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
 process.load("Configuration.StandardSequences.MagneticField_0T_cff")
-process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
+process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = False
 
 process.famosSimHits.MaterialEffects.PairProduction = False
 process.famosSimHits.MaterialEffects.Bremsstrahlung = False
@@ -133,12 +133,14 @@ process.TFileService = cms.Service("TFileService",
 
 process.finishup = cms.OutputModule("PoolOutputModule",
    fileName=cms.untracked.string(outputFile),
-   outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
+   outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*', 'keep recoPFSimParticle_*_*_*'),
     
 )
 
 
-process.p1 = cms.Path(process.generator+process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle)
+
+process.p1 = cms.Path(process.generator+process.simulationWithFamos+process.famosWithTracksAndEcalClusters+process.famosGsfTrackSequence+process.famosParticleFlowSequence+process.particleFlowSimParticle)
+#process.p1 = cms.Path(process.generator+process.famosWithEverything+process.caloJetMetGen*process.particleFlowSimParticle)
 process.outpath = cms.EndPath(process.finishup)
 
 

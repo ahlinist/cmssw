@@ -54,12 +54,12 @@ EventDelegate::EventDelegate() :
 	thisEventPasses_(false), thisEventCalibs_(0), nWrites_(0), nFails_(0),
 			nParticleWrites_(0), nParticleFails_(0), tree_(0) {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+
 }
 
 EventDelegate::~EventDelegate() {
 	LogDebug("EventDelegate") << __PRETTY_FUNCTION__ << std::endl;
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+
 }
 
 void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
@@ -69,7 +69,8 @@ void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
 	tree_->Branch("Calibratable", "pftools::Calibratable", &calib_, 32000, 2);
 	getTags(parameters);
 	initCore(parameters);
-	LogInfo("\tEventDelegate initialisation complete.\n");
+	LogInfo("EventDelegate") <<  "Operating in tree mode.\n";
+	LogDebug("EventDelegate") << "EventDelegate initialisation complete.\n";
 
 }
 
@@ -79,7 +80,8 @@ void EventDelegate::init(const edm::ParameterSet& parameters) {
 	debug_ = parameters.getParameter<int> ("debug");
 	getTags(parameters);
 	initCore(parameters);
-	LogInfo("\tEventDelegate initialisation complete.\n");
+	LogInfo("EventDelegate") <<  "Operating in framework mode.\n";
+	LogDebug("EventDelegate") << "EventDelegate initialisation complete.\n";
 }
 
 void EventDelegate::getTags(const edm::ParameterSet& parameters) {
@@ -137,6 +139,26 @@ void EventDelegate::startEvent(const edm::Event& event,
 }
 
 void EventDelegate::endParticle() {
+
+	if (thisParticlePasses_ && thisEventPasses_) {
+		++nParticleWrites_;
+		calib_->recompute();
+
+		if (debug_ > 4) {
+			//print a summary
+			LogInfo("EventDelegate") << *calib_;
+		}
+		if (thisEventCalibs_ != 0) {
+			//fill vector rather than tree
+			Calibratable c(*calib_);
+			thisEventCalibs_->push_back(c);
+		}
+		if (tree_ != 0)
+			tree_->Fill();
+	} else {
+		++nParticleFails_;
+	}
+
 	endParticleCore();
 
 }

@@ -12,24 +12,33 @@
 
 	std::vector<int> energies;
 	energies.push_back(2);
-//	energies.push_back(3);
-//	energies.push_back(4);
+	energies.push_back(3);
+	energies.push_back(4);
 	energies.push_back(5);
-//	energies.push_back(6);
-//	energies.push_back(7);
-//	energies.push_back(8);
+	energies.push_back(6);
+	energies.push_back(7);
+	energies.push_back(8);
 	energies.push_back(9);
 	energies.push_back(20);
-	//energies.push_back(30);
+//	energies.push_back(30);
 	energies.push_back(50);
-//	energies.push_back(100);
+	energies.push_back(100);
 //	energies.push_back(200);
 //	energies.push_back(300);
 	chain->Add("/tmp/DipionDelegate_2GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_3GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_4GeV_2k_notracks_full.root");
 	chain->Add("/tmp/DipionDelegate_5GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_6GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_7GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_8GeV_2k_notracks_full.root");
 	chain->Add("/tmp/DipionDelegate_9GeV_2k_notracks_full.root");
 	chain->Add("/tmp/DipionDelegate_20GeV_2k_notracks_full.root");
 	chain->Add("/tmp/DipionDelegate_50GeV_2k_notracks_full.root");
+	chain->Add("/tmp/DipionDelegate_100GeV_2k_notracks_full.root");
+//	chain->Add("/tmp/DipionDelegate_200GeV_2k_notracks_full.root");
+//	chain->Add("/tmp/DipionDelegate_300GeV_2k_notracks_full.root");
+
 
 
 //

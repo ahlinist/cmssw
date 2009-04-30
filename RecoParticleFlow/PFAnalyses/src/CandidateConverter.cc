@@ -30,12 +30,12 @@ using namespace std;
 
 CandidateConverter::CandidateConverter(unsigned debug) :
 	debug_(debug) {
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	LogDebug("CandidateConverter") << __PRETTY_FUNCTION__ << std::endl;
 
 }
 
 CandidateConverter::~CandidateConverter() {
-	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	LogDebug("CandidateConverter") << __PRETTY_FUNCTION__ << std::endl;
 }
 
 
