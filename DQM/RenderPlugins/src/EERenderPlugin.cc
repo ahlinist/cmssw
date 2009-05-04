@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.124 2009/04/28 13:32:19 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.125 2009/04/30 17:35:37 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.124 $
-  \date $Date: 2009/04/28 13:32:19 $
+  \version $Revision: 1.125 $
+  \date $Date: 2009/04/30 17:35:37 $
 */
 
 #include "TH1F.h"
@@ -494,7 +494,16 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
   obj->SetStats(kFALSE);
   gPad->SetLogy(kFALSE);
 
-  if( name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos ) {
+  if( name.find( "EESRT" ) != std::string::npos || 
+      name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos ) {
+    gPad->SetGridx();
+    gPad->SetGridy();
+    if( name.find( "EESRT event size vs DCC" ) != std::string::npos ) {
+      obj->GetXaxis()->SetNdivisions(18, kFALSE);
+      obj->GetYaxis()->SetNdivisions(2, kFALSE);
+      gPad->SetLogx(kTRUE);
+    }
+    obj->SetMinimum(0.0);
     gStyle->SetPalette(1);
     obj->SetOption("colz");
     gPad->SetRightMargin(0.15);
@@ -1009,7 +1018,8 @@ void EERenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
         l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
       } else if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 ) {
         l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-      } else if( name.find( " PN " ) == std::string::npos ) {
+      } else if( name.find( " PN " ) == std::string::npos && 
+                 name.find( "EESRT event size vs DCC" ) == std::string::npos ) {
         l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
       }
     }

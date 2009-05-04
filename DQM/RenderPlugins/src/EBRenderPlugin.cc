@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.108 2009/04/15 07:30:11 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.109 2009/04/28 13:32:19 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.108 $
-  \date $Date: 2009/04/15 07:30:11 $
+  \version $Revision: 1.109 $
+  \date $Date: 2009/04/28 13:32:19 $
 */
 
 #include "TH1F.h"
@@ -393,6 +393,9 @@ void EBRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetGridy();
     obj->GetXaxis()->SetNdivisions(18, kFALSE);
     obj->GetYaxis()->SetNdivisions(2, kFALSE);
+    if( name.find( "EBSRT event size vs DCC" ) != std::string::npos ) {
+      gPad->SetLogx(kTRUE);
+    }
     obj->SetMinimum(0.0);
     gStyle->SetPalette(1);
     obj->SetOption("colz");
