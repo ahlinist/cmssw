@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.125 2009/04/30 17:35:37 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.126 2009/05/04 17:54:47 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.125 $
-  \date $Date: 2009/04/30 17:35:37 $
+  \version $Revision: 1.126 $
+  \date $Date: 2009/05/04 17:54:47 $
 */
 
 #include "TH1F.h"
@@ -936,7 +936,7 @@ void EERenderPlugin::postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o
         int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
         text7->GetXaxis()->SetRange(x1, x2);
         text7->GetYaxis()->SetRange(y1, y2);
-      text7->Draw("text,same");
+        text7->Draw("text,same");
       }
     } else if( nbx == 20 && nby == 20 ) {
       if( name.find( "EE -" ) != std::string::npos ) {
