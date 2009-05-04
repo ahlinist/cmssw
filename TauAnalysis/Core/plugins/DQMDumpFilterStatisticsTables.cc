@@ -123,8 +123,8 @@ void DQMDumpFilterStatisticsTables::endJob()
   for ( vstring::const_iterator process = processes_.begin();
 	process != processes_.end(); ++process ) {
     const std::string& dqmDirectory = dqmDirectories_[*process];
-    //std::cout << "retrieving FilterStatisticsTable for process = " << (*process) 
-    //	        << " from dqmDirectory = " << dqmDirectory << "..." << std::endl;
+    std::cout << "retrieving FilterStatisticsTable for process = " << (*process) 
+	      << " from dqmDirectory = " << dqmDirectory << "..." << std::endl;
 
     FilterStatisticsTable* filterStatisticsTable = filterStatisticsService_->loadFilterStatisticsTable(dqmDirectory); 
 
