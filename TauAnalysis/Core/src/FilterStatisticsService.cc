@@ -32,12 +32,23 @@ FilterStatisticsElement* loadFilterStatisticsElement(DQMStore& dqmStore, const s
 {
 //--- load MonitorElements holding the number of
 //    unweighted and weighted event counts 
+
   std::string meName_num = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNum);
   MonitorElement* meNum = dqmStore.get(meName_num);
+  if ( !meNum ) {
+    edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_num = " << meName_num 
+						  << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
+    return 0;
+  }
   long num = meNum->getIntValue();
 
   std::string meName_numWeighted = dqmDirectoryName(dqmDirectory).append(elementName).append(meNamePrefixNumWeighted);
   MonitorElement* meNumWeighted = dqmStore.get(meName_numWeighted);
+  if ( !meNumWeighted ) {
+    edm::LogError ("loadFilterStatisticsElement") << " Failed to load meName_numWeighted = " << meName_numWeighted 
+						  << " from dqmDirectory = " << dqmDirectory << " --> skipping !!";
+    return 0;
+  }
   double numWeighted = meNumWeighted->getFloatValue();
 
   return new FilterStatisticsElement(elementName, num, numWeighted);
@@ -98,7 +109,14 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
     row->numEvents_exclRejected_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::exclRejected);
     row->numEvents_processed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::processed_cumulative);
     row->numEvents_passed_cumulative_ = loadFilterStatisticsElement(dqmStore, dqmDirectory_row, fsElement::passed_cumulative);
+
     filterStatisticsTable->rows_.push_back(FilterStatisticsTable::rowEntry_type(filterName, row));
+  }
+
+  if ( !filterStatisticsTable->rows_.size() ) {
+    edm::LogError ("FilterStatisticsService::loadFilterStatisticsTable") << " Failed to load any FilterStatisticsRows"
+									 << " --> skipping !!";
+    return 0;
   }
 
 //--- sort rows of FilterStatisticsTable by filterId
