@@ -65,10 +65,10 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   muonTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
   
   muonEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  muonEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  muonEcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
 
   muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  muonHcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
 
   muonParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   muonParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));

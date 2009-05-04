@@ -72,10 +72,10 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   electronTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
 
   electronEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  electronEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  electronEcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
 
   electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
+  electronHcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
 
   electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   electronParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
