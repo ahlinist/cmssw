@@ -407,7 +407,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
   }
-  
+
   //------------------------------------------------------------------------------------
   
   if(debug) std::cout <<"\t Getting the RPC RecHits"<<std::endl;
@@ -743,7 +743,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    
 	    DTRecSegment4DCollection::const_iterator segMB3;  
 	    
-	    if(debug) std::cout<<"MB4 \t \t \t \t Loop on segments in =sector && MB3 && adjacent Wheel && y dim=4"<<std::endl;
+	    if(debug) std::cout<<"MB4 \t \t \t \t Loop on segments in =sector && MB3 && adjacent sectors && y dim=4"<<std::endl;
 	    for(segMB3=all4DSegments->begin();segMB3!=all4DSegments->end();++segMB3){
 	      
 	      DTChamberId dtid3 = segMB3->chamberId();  
@@ -759,7 +759,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		const GeomDet* gdet3=dtGeo->idToDet(segMB3->geographicalId());
 		const BoundPlane & DTSurface3 = gdet3->surface();
 
-		
 		LocalVector segmentDirectionMB3 =  segMB3->localDirection();
 		GlobalPoint segmentPositionMB3inGlobal = DTSurface3.toGlobal(segMB3->localPosition());
 		
