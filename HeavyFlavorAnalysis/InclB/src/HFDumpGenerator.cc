@@ -73,18 +73,19 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   gHFEvent->fFilterEff    = -99999;
   gHFEvent->fEventWeight  = 1; 
 
-  try { 
+  try {
     Handle<HepMCProduct> mc;
     iEvent.getByLabel(fGenEventLabel.c_str(), mc);
     const HepMC::GenEvent * genEvt = mc->GetEvent();
-      
+    
     gHFEvent->fPtHat     = genEvt->event_scale(); 
     gHFEvent->fProcessID = genEvt->signal_process_id();
     if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat = " << gHFEvent->fPtHat << endl;
     if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
-
-
-  } catch (Exception event) {
+    
+    
+  } catch (cms::Exception &ex) {
+    
     try {
       edm::Handle<double> genEventScaleHandle;
       iEvent.getByLabel(fGenEventScale.c_str(), genEventScaleHandle);
@@ -101,7 +102,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       gHFEvent->fProcessID = *genProcessID; 
 
       if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
-
+      
     } catch (cms::Exception &ex) {
       gHFEvent->fError = gHFEvent->fError+4;
       if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genProcessID not found (fError=" << gHFEvent->fError << ")" << endl;      
