@@ -73,6 +73,8 @@ namespace edm {
 
     void addGroup(ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
+    void swap(RunPrincipal&);
+
   private:
 
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);

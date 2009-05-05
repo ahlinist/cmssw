@@ -96,6 +96,8 @@ namespace edm {
 
     void addGroup(ConstBranchDescription const& bd, std::auto_ptr<ProductProvenance> productProvenance);
 
+    void swap(LuminosityBlockPrincipal&);
+
   private:
     virtual void addOrReplaceGroup(std::auto_ptr<Group> g);
 
