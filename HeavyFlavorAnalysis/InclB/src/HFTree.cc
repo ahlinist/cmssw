@@ -52,9 +52,9 @@ void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   gHFEvent->fRunNumber   = iEvent.id().run();
   gHFEvent->fEventNumber = iEvent.id().event();
   
-  cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
-       << " event: " << gHFEvent->fEventNumber 
-       << endl;
+  //cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
+  //   << " event: " << gHFEvent->fEventNumber 
+  //   << endl;
   // cout << "HFTree> number of events: " << nevt << endl;
       
   fTree->Fill();

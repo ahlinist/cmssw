@@ -210,19 +210,18 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       pTrack   = gHFEvent->addSigTrack();
       pTrack->fMuType   = 1;
       pTrack->fMCID     = muItr->charge()*-13; 
-      pTrack->fMuID     = gmtCand.quality();
       pTrack->fIndex    = index;
       pTrack->fGenIndex = -1; 
-      pTrack->fQ        = muItr->charge();
+      pTrack->fQ        = gmtCand.quality();
       pTrack->fPlab.SetPtEtaPhi(muItr->pt(),
 				muItr->eta(),
 				muItr->phi()
 				);
 
-      pTrack->fLip     = muItr->isIsolated(); 
-      pTrack->fLipE    = muItr->isMip();
-      pTrack->fTip     = muItr->isForward(); 
-      pTrack->fTipE    = muItr->isRPC();
+      pTrack->fLip     = gmtCand.useInSingleMuonTrigger(); 
+      pTrack->fLipE    = gmtCand.isMatchedCand();
+      pTrack->fTip     = gmtCand.isHaloCand();
+      pTrack->fTipE    = muItr->isIsolated();
  
       index++;
     }
@@ -354,8 +353,10 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       //L2 candidates
       if ( !strcmp(triggerhandle->collectionTag(iC).encode().c_str(), fHLTFilterObject2.c_str() ) ) {   
-	int start = triggerhandle->collectionKey(iC)-1;
-	int end   = triggerhandle->collectionKey(iC+1)-1;
+	int start = 0;
+	if (iC > 0)
+	  start = triggerhandle->collectionKey(iC-1);
+	int end   = triggerhandle->collectionKey(iC);
 	if ( fVerbose ) cout << " =============>  found " << fHLTFilterObject2.c_str() << ": " << start  << " " << end << endl;
 
 	for (int i=start; i<end; i++){ 
@@ -388,8 +389,10 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       //L3 candidates
       if ( !strcmp(triggerhandle->collectionTag(iC).encode().c_str(), fHLTFilterObject3.c_str() ) ) {   
-	int start = triggerhandle->collectionKey(iC)-1;
-	int end   = triggerhandle->collectionKey(iC+1)-1;
+	int start = 0;
+	if (iC > 0)
+	  start = triggerhandle->collectionKey(iC-1);
+	int end   = triggerhandle->collectionKey(iC);
 	if ( fVerbose ) cout << " =============>  found " << fHLTFilterObject3.c_str() << ": " << start  << " " << end << endl;
 
 	for (int i=start; i<end; i++){ 

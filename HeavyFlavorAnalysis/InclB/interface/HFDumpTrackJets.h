@@ -33,6 +33,9 @@ class HFDumpTrackJets : public edm::EDAnalyzer {
   int           fVerbose; 
   std::string   fJetsLabel;
   std::string   fTracksLabel;
+  std::string   fGenCandidatesLabel;
+  edm::InputTag fsourceByRefer;
+ 
 
  
   int nevt;
