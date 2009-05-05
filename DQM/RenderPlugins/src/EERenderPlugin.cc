@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.126 2009/05/04 17:54:47 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.127 2009/05/04 19:21:57 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo 
-  \version $Revision: 1.126 $
-  \date $Date: 2009/05/04 17:54:47 $
+  \version $Revision: 1.127 $
+  \date $Date: 2009/05/04 19:21:57 $
 */
 
 #include "TH1F.h"
@@ -499,9 +499,12 @@ void EERenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
     gPad->SetGridx();
     gPad->SetGridy();
     if( name.find( "EESRT event size vs DCC" ) != std::string::npos ) {
+      gPad->SetLogy(kTRUE);
+      gPad->SetBottomMargin(0.2);
       obj->GetXaxis()->SetNdivisions(18, kFALSE);
       obj->GetYaxis()->SetNdivisions(2, kFALSE);
-      gPad->SetLogx(kTRUE);
+      obj->GetXaxis()->LabelsOption("v"); 
+      obj->GetYaxis()->SetRangeUser(0.1, 0.608*132);
     }
     obj->SetMinimum(0.0);
     gStyle->SetPalette(1);
