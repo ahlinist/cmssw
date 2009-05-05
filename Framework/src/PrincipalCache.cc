@@ -151,7 +151,8 @@ namespace edm {
       return true;
     }
     //the new RunPrincipal has the structure which matches the updated ProductRegistry
-    swap(iter->second,rp);
+    // we must swap the objects because the pointer to the object is used elsewhere
+    iter->second->swap(*rp);
     iter->second->mergeRun(rp);
     currentRunPrincipal_ = iter->second;
     
@@ -169,8 +170,9 @@ namespace edm {
       return true;
     }
 
-    //the new RunPrincipal has the structure which matches the updated ProductRegistry
-    swap(iter->second,lbp);
+    //the new LuminosityBlockPrincipal has the structure which matches the updated ProductRegistry
+    // we must swap the objects because the pointer to the object is used elsewhere
+    iter->second->swap(*lbp);
     iter->second->mergeLuminosityBlock(lbp);
     currentLumiPrincipal_ = iter->second;
     
