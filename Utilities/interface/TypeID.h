@@ -31,8 +31,6 @@ namespace edm {
       TypeIDBase(t)
     { }
 
-    // Copy assignment disallowed; see below.
-
     template <typename T>
     explicit TypeID(const T& t) :
       TypeIDBase(typeid(t))
@@ -50,7 +48,7 @@ namespace edm {
     bool hasDictionary() const;
 
   private:
-    TypeID& operator=(const TypeID&); // not implemented
+    //TypeID& operator=(const TypeID&); // allow default
    
     static bool stripTemplate(std::string& theName);
 
