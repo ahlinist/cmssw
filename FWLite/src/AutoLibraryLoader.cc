@@ -35,6 +35,9 @@
 //
 
 bool AutoLibraryLoader::enabled_(false);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,22,0)
+extern "C" int G__EnableAutoDictionary;
+#endif
 
 //
 // constructors and destructor
@@ -105,6 +108,9 @@ AutoLibraryLoader::enable()
    if (0 != gApplication) {
      gApplication->InitializeGraphics();
    }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,22,0)
+   G__EnableAutoDictionary = 0;
+#endif
 }
 
 void
