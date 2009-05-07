@@ -59,6 +59,7 @@ class L1TauEfficiencyAnalyzer {
         void fill(const edm::Event&, const reco::CaloTau&);
         void fill(const edm::Event&, const LorentzVector&);
         void fill(const edm::Event&, const reco::GsfElectron&);
+	double L1JetEtUncorr(const double corPt);
 
    private:
         // Input parameters
@@ -78,7 +79,7 @@ class L1TauEfficiencyAnalyzer {
         // Output tree and related variables
         TTree *l1tree;
 
-        float jetPt, jetEt, jetEta, jetPhi;
+        float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi;
         char hasL1Jet, hasL1TauJet, hasL1CenJet;
         char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasPartialIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
 

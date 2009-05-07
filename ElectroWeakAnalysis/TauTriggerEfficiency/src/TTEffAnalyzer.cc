@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.24 2009/04/21 01:13:03 smaruyam Exp $
+// $Id: TTEffAnalyzer.cc,v 1.25 2009/04/21 13:29:00 mkortela Exp $
 //
 //
 
@@ -47,6 +47,10 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFIsoSum = 0;
   PFEnergy = 0;
   MCMatch = 0;
+  MCTauEt = -1.;
+  MCTauE = -1.;
+  MCTauEta = -1.;
+  MCTauPhi = -1.;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
@@ -62,6 +66,10 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS, "PFClusterDrRMS/F");
   
   _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
+  _TTEffTree->Branch("MCTauEt", &MCTauEt, "MCTauEt/F");
+  _TTEffTree->Branch("MCTauE", &MCTauE, "MCTauE/F");
+  _TTEffTree->Branch("MCTauEta", &MCTauEta, "MCTauEta/F");
+  _TTEffTree->Branch("MCTauPhi", &MCTauPhi, "MCTauPhi/F");
 
   _L1analyzer.Setup(iConfig,_TTEffTree);
   _L2analyzer.Setup(iConfig,_TTEffTree);
@@ -139,6 +147,10 @@ using namespace reco;
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
       if( deltaR(PFTaus->at(i),mcTaus->at(k) ) < MCMatchingCone ){ // match within 0.2 cone
          MCMatch = 1;
+	 MCTauE = mcTaus->at(k).energy();
+	 MCTauEt = mcTaus->at(k).Et();
+	 MCTauEta = mcTaus->at(k).Eta();
+	 MCTauPhi = mcTaus->at(k).Phi();
         break;
       }
     }
