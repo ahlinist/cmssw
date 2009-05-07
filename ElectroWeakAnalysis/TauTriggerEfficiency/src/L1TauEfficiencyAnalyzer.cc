@@ -3,6 +3,8 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "PhysicsTools/Utilities/interface/deltaR.h"
 
+#include "TF1.h"
+
 // Default constructor
 L1TauEfficiencyAnalyzer::L1TauEfficiencyAnalyzer()
 {}
@@ -78,6 +80,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   // Reset variables
   jetPt = 0.0;
   jetEt = 0.0;
+  jetUncorrEt = 0.0;
   jetEta = 0.0;
   jetPhi = 0.0;
   hasL1Jet = 0;
@@ -132,6 +135,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
       minDR = DR;
       jetPt = iJet->pt();
       jetEt = iJet->et();
+      jetUncorrEt = L1JetEtUncorr(jetEt);
       jetEta = iJet->eta();
       jetPhi = iJet->phi();
       hasL1Jet = 1;
@@ -150,6 +154,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
         minDR = DR;
         jetPt = iJet->pt();
         jetEt = iJet->et();
+	jetUncorrEt = L1JetEtUncorr(jetEt);
         jetEta = iJet->eta();
         jetPhi = iJet->phi();
         hasL1Jet = 1;
@@ -298,10 +303,20 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   }
 
 
-
-
-
 } 
 
+double L1TauEfficiencyAnalyzer::L1JetEtUncorr(const double corPt)
+{
+  TF1 *Response = new TF1("Response","[0]-[1]/(pow(log10(x),[2])+[3])+[4]/x",4,5000);
+  Response->SetParameter(0,0.976811);
+  Response->SetParameter(1,14.2444);
+  Response->SetParameter(2,4.47607);
+  Response->SetParameter(3,18.482);
+  Response->SetParameter(4,0.717231);  
+  double r = Response->Eval(corPt);
+  double Pt = corPt*r;
+  //cout<<"Corrected jet Pt = "<<corPt<<" GeV, Response = "<<r<<", Uncorrected jet Pt = "<<Pt<<" GeV"<<endl;                  
+  return Pt;
+}
 
 

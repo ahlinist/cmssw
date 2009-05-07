@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.23 2009/04/21 00:52:53 smaruyam Exp $
+// $Id: TTEffAnalyzer.h,v 1.24 2009/04/21 13:29:00 mkortela Exp $
 //
 //
 
@@ -99,6 +99,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch;
+      float MCTauE,MCTauEt,MCTauEta,MCTauPhi;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
       float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
       double MCMatchingCone;
