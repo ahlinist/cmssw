@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.48 2009/04/22 09:28:21 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.49 2009/04/28 13:04:18 battilan Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.48 $
-  \date $Date: 2009/04/22 09:28:21 $
+  \version $Revision: 1.49 $
+  \date $Date: 2009/04/28 13:04:18 $
 */
 
 #include "TProfile2D.h"
@@ -165,6 +165,9 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     c->SetLeftMargin(0.15);
     return;
   }
+
+
+
 
   if( o.name.find("SCSizeVsROSSize") != std::string::npos ) {
     c->SetGrid(1,1);
@@ -676,6 +679,18 @@ void DTRenderPlugin::preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
    }
 
+  if(o.name.find("TTSSummary") != std::string::npos) {
+    c->SetGrid(1,1);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetXaxis()->SetNdivisions(11,true);
+    c->SetLeftMargin(0.15);
+
+
+
+    return;
+  }
+
+
     /*if(o.name.find("SetRange_2D") != std::string::npos) {
       obj->GetXaxis()->SetBinLabel(1,"MB1_SL1");
       obj->GetXaxis()->SetBinLabel(2,"MB1_SL2");
@@ -796,11 +811,6 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
-
-  if( o.name.find( "FED770TTSValues_Percent" ) != std::string::npos ) {
-     if(obj->GetEntries() != 0) c->SetLogy( 1 );
-    return;
-  }
   
   if( o.name.find( "MeanTest" ) != std::string::npos ) {
     obj->GetYaxis()->SetRangeUser(-0.1,0.1);
@@ -938,6 +948,21 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if(o.name.find("ROSList") != std::string::npos) {
+    c->SetGrid(1,0);
+    obj->GetXaxis()->CenterLabels();
+    obj->GetXaxis()->SetNdivisions(13,true);
+    if(obj->Integral() != 0) c->SetLogy(1);
+    return;
+  }
+
+  if(o.name.find("TTSValues") != std::string::npos) {
+    if(obj->Integral() != 0) c->SetLogy(1);
+    return;
+  }
+
+
+
 
   return;
 
@@ -1018,12 +1043,12 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     lineRosTdc->Draw("same");
 
     static TLatex *rosLabel = new TLatex(4.75,7.5,"ROS");
-    rosLabel->SetTextColor(kGray);
+    rosLabel->SetTextColor(15);
     rosLabel->SetTextSize(0.11);
     rosLabel->Draw("same");
 
     static TLatex *tdcLabel = new TLatex(14.9,7.5,"TDC");
-    tdcLabel->SetTextColor(kGray);
+    tdcLabel->SetTextColor(15);
     tdcLabel->SetTextSize(0.11);
     tdcLabel->Draw("same");
 
@@ -1042,28 +1067,28 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     static TLine *lineMB1 = new TLine(0,6,nBinsX,6); 
     lineMB1->Draw("same");
     static TLatex *mb1Label = new TLatex(4,1.5,"MB1");
-    mb1Label->SetTextColor(kGray);
+    mb1Label->SetTextColor(15);
     mb1Label->SetTextSize(0.11);
     mb1Label->Draw("same");
 
     static TLine *lineMB2 = new TLine(0,12,nBinsX,12); 
     lineMB2->Draw("same");
     static TLatex *mb2Label = new TLatex(4,7.5,"MB2");
-    mb2Label->SetTextColor(kGray);
+    mb2Label->SetTextColor(15);
     mb2Label->SetTextSize(0.11);
     mb2Label->Draw("same");
 
     static TLine *lineMB3 = new TLine(0,18,nBinsX,18); 
     lineMB3->Draw("same");
     static TLatex *mb3Label = new TLatex(4,13.5,"MB3");
-    mb3Label->SetTextColor(kGray);
+    mb3Label->SetTextColor(15);
     mb3Label->SetTextSize(0.11);
     mb3Label->Draw("same");
 
     static TLine *lineMB4 = new TLine(0,24,nBinsX,24); 
     lineMB4->Draw("same");
     static TLatex *mb4Label = new TLatex(4,19.5,"MB4");
-    mb4Label->SetTextColor(kGray);
+    mb4Label->SetTextColor(15);
     mb4Label->SetTextSize(0.11);
     mb4Label->Draw("same");
 
@@ -1090,26 +1115,26 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     static TLine *lineTDC0 = new TLine(6,0,6,nBinsY); 
     lineTDC0->Draw("same");
     static TLatex *tdc0Label = new TLatex(0.5,11.,"TDC 0");
-    tdc0Label->SetTextColor(kGray);
+    tdc0Label->SetTextColor(15);
     tdc0Label->SetTextSize(0.07);
     tdc0Label->Draw("same");
 
     static TLine *lineTDC1 = new TLine(12,0,12,nBinsY); 
     lineTDC1->Draw("same");
     static TLatex *tdc1Label = new TLatex(6.5,11.,"TDC 1");
-    tdc1Label->SetTextColor(kGray);
+    tdc1Label->SetTextColor(15);
     tdc1Label->SetTextSize(0.07);
     tdc1Label->Draw("same");
 
     static TLine *lineTDC2 = new TLine(18,0,18,nBinsY); 
     lineTDC2->Draw("same");
     static TLatex *tdc2Label = new TLatex(12.5,11.,"TDC 2");
-    tdc2Label->SetTextColor(kGray);
+    tdc2Label->SetTextColor(15);
     tdc2Label->SetTextSize(0.07);
     tdc2Label->Draw("same");
 
     static TLatex *tdc3Label = new TLatex(18.5,11.,"TDC 3");
-    tdc3Label->SetTextColor(kGray);
+    tdc3Label->SetTextColor(15);
     tdc3Label->SetTextSize(0.07);
     tdc3Label->Draw("same");
 
@@ -1157,6 +1182,39 @@ void DTRenderPlugin::postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o ) {
     return;
   }
 
+  if(o.name.find("TTSSummary") != std::string::npos) {
+    TH2F * histo =  dynamic_cast<TH2F*>( o.object );
+    int nBinsX = histo->GetNbinsX();
+
+    static TLatex *warningLabel = new TLatex(773,1.7,"warning");
+    warningLabel->SetTextColor(15);
+    warningLabel->SetTextSize(0.11);
+    warningLabel->Draw("same");
+
+    static TLine *lineWarningBusy = new TLine(770,3,770+nBinsX,3);
+    lineWarningBusy->Draw("same");
+
+    static TLatex *busyLabel = new TLatex(774,3.7,"busy");
+    busyLabel->SetTextColor(kOrange);
+    busyLabel->SetTextSize(0.11);
+    busyLabel->Draw("same");
+
+    static TLine *lineBusyOos = new TLine(770,5,770+nBinsX,5);
+    lineBusyOos->Draw("same");
+
+    static TLatex *oosLabel = new TLatex(772,6.7,"out of synch");
+    oosLabel->SetTextColor(kRed);
+    oosLabel->SetTextSize(0.11);
+    oosLabel->Draw("same");
+
+    static TLine *lineOosDDULogic = new TLine(770,9,770+nBinsX,9);
+    lineOosDDULogic->Draw("same");
+
+
+
+
+    return;
+  }
   return;
 
 }
