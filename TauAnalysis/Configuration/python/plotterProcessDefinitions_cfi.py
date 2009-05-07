@@ -12,7 +12,7 @@ dataIntLumi = float(200.)
 process_Ztautau = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/1289.),
+    scaleFactor = cms.double(dataIntLumi/1135.4),
     dqmDirectory_store = cms.string('Ztautau')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -27,7 +27,7 @@ process_Ztautau = cms.PSet(
 process_Zmumu = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/905.),
+    scaleFactor = cms.double(dataIntLumi/633.),
     dqmDirectory_store = cms.string('Zmumu')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -42,7 +42,7 @@ process_Zmumu = cms.PSet(
 process_Zee = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/127.),
+    scaleFactor = cms.double(dataIntLumi/90.),
     dqmDirectory_store = cms.string('Zee')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -62,7 +62,7 @@ process_Zee = cms.PSet(
 process_ZplusJets = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/270.),
+    scaleFactor = cms.double(dataIntLumi/197.),
     dqmDirectory_store = cms.string('ZplusJets')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -82,12 +82,25 @@ process_ZplusJets = cms.PSet(
 process_WplusJets = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/250.),
+    scaleFactor = cms.double(dataIntLumi/297.),
     dqmDirectory_store = cms.string('WplusJets')
   ),
   config_dqmHistPlotter = cms.PSet(
     dqmDirectory = cms.string('WplusJets'),
     legendEntry = cms.string('W + jets'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
+process_TTplusJets = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(dataIntLumi/1145.),
+    dqmDirectory_store = cms.string('TTplusJets')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('TTplusJets'),
+    legendEntry = cms.string('TT + jets'),
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )
@@ -98,7 +111,7 @@ process_WplusJets = cms.PSet(
 process_QCD_BCtoE_Pt20to30 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/9.15),
+    scaleFactor = cms.double(dataIntLumi/8.24),
     dqmDirectory_store = cms.string('QCD_BCtoE_Pt20to30')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -114,7 +127,7 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
 process_QCD_BCtoE_Pt30to80 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/7.34),
+    scaleFactor = cms.double(dataIntLumi/3.67),
     dqmDirectory_store = cms.string('QCD_BCtoE_Pt30to80')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -145,7 +158,7 @@ process_InclusivePPmuX = cms.PSet(
 process_PPmuXptGt20 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/49.7),
+    scaleFactor = cms.double(dataIntLumi/42.0),
     dqmDirectory_store = cms.string('PPmuXptGt20')
   ),
   config_dqmHistPlotter = cms.PSet(

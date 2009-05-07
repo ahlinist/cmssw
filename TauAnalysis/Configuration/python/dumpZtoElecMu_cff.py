@@ -7,9 +7,10 @@ import FWCore.ParameterSet.Config as cms
 dumpZtoElecMu = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
         Ztautau = cms.string('Ztautau/zElecMuAnalyzer/FilterStatistics'),
-        Zee = cms.string('Zee/zElecMuAnalyzer/FilterStatistics/'),
+#        Zee = cms.string('Zee/zElecMuAnalyzer/FilterStatistics/'),
         Zmumu = cms.string('Zmumu/zElecMuAnalyzer/FilterStatistics/'),
         WplusJets = cms.string('WplusJets/zElecMuAnalyzer/FilterStatistics/'),
+        TTplusJets = cms.string('TTplusJets/zElecMuAnalyzer/FilterStatistics/'),
         QCD = cms.string('qcdSum/zElecMuAnalyzer/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "Efficiency")
