@@ -144,13 +144,15 @@ cfgMuonTrkIPcut = cms.PSet(
 )
 
 # di-tau candidate selection
-cfgDiTauCandidateForElecMuAcoplanarityCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuAcoplanarityCut'),
+
+cfgDiTauCandidateForElecMuAntiOverlapVeto = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuAntiOverlapVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsAcoplanarityCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsAcoplanarityIndividual'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsAntiOverlapVetoCumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsAntiOverlapVetoIndividual'),
     minNumber = cms.uint32(1)
 )
+
 cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuZeroChargeCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -158,6 +160,24 @@ cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
+
+cfgDiTauCandidateForElecMuMt1METcut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuMt1METcut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsMt1METcumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsMt1METindividual'),
+    minNumber = cms.uint32(1)
+)
+
+cfgDiTauCandidateForElecMuMt2METcut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuMt2METcut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsMt2METcumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsMt2METindividual'),
+    minNumber = cms.uint32(1)
+)
+
+
 
 # veto events containing additional central jets with Et > 20 GeV
 #cfgCentralJetVeto = cms.PSet(
@@ -187,8 +207,10 @@ zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgMuonEcalIsoCut,
       cfgMuonAntiPionCut,
       cfgMuonTrkIPcut,
-      cfgDiTauCandidateForElecMuAcoplanarityCut,
-      cfgDiTauCandidateForElecMuZeroChargeCut ],
+      cfgDiTauCandidateForElecMuAntiOverlapVeto,      
+      cfgDiTauCandidateForElecMuZeroChargeCut,
+      cfgDiTauCandidateForElecMuMt1METcut,
+      cfgDiTauCandidateForElecMuMt2METcut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )

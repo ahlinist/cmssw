@@ -12,12 +12,15 @@ from TauAnalysis.RecoTools.objSelConfigurator import *
 # (settings made here overwrite values defined in elecMuPairSelector_cfi)
 #--------------------------------------------------------------------------------
 
-selectedElecMuPairsAcoplanarity.cut = cms.string('cos(dPhi1MET) > 0.5 | cos(dPhi2MET) > 0.5')
+selectedElecMuPairsAntiOverlapVeto.cut = cms.string('dR12 > 1.57')
 selectedElecMuPairsZeroCharge.cut = cms.string('charge = 0')
-
+selectedElecMuPairsMt1MET.cut = cms.string('mt1MET < 50.')
+selectedElecMuPairsMt2MET.cut = cms.string('mt2MET < 50.')
 patElecMuPairSelConfigurator = objSelConfigurator(
-    [ selectedElecMuPairsAcoplanarity,
-      selectedElecMuPairsZeroCharge ],
+    [ selectedElecMuPairsAntiOverlapVeto,
+      selectedElecMuPairsZeroCharge,
+      selectedElecMuPairsMt1MET,
+      selectedElecMuPairsMt2MET ],
     src = "allElecMuPairs",
     pyModuleName = __name__,
     doSelIndividual = True

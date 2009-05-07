@@ -161,25 +161,35 @@ plots_ZtoElecMu_muonTrkIP_afterMuonAntiPionVeto.parameter = cms.vstring('xy', 'z
 plots_ZtoElecMu_muonTrkIP_afterMuonAntiPionVeto.title = cms.string('Muon Track IP_{#PAR#}(after Muon #pi-Veto Cut)')
 plots_ZtoElecMu_muonTrkIP_afterMuonAntiPionVeto.xAxis = cms.string('IP#PAR#')
 
-plots_ZtoElecMu_dPhi1MET_afterMuonTrkIP = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_dPhi1MET_afterMuonTrkIP.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelMuonTrkIP_beforeEvtSelDiTauCandidateForElecMuAcoplanarity/DiTauCandidateQuantities/DPhi1MET'
-)
-plots_ZtoElecMu_dPhi1MET_afterMuonTrkIP.title = cms.string('#Delta #phi(Electron,MET) (after Muon Track IP_{xy} Cut)')
-plots_ZtoElecMu_dPhi1MET_afterMuonTrkIP.xAxis = cms.string('dPhi')
-plots_ZtoElecMu_dPhi2MET_afterMuonTrkIP = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_dPhi2MET_afterMuonTrkIP.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelMuonTrkIP_beforeEvtSelDiTauCandidateForElecMuAcoplanarity/DiTauCandidateQuantities/DPhi2MET'
-)
-plots_ZtoElecMu_dPhi2MET_afterMuonTrkIP.title = cms.string('#Delta #phi(Muon,MET) (after Muon Track IP_{xy} Cut)')
-plots_ZtoElecMu_dPhi2MET_afterMuonTrkIP.xAxis = cms.string('dPhi')
 
-plots_ZtoElecMu_diTauCharge_afterAcoplanarity = copy.deepcopy(plots_ZtoElecMu)
-plots_ZtoElecMu_diTauCharge_afterAcoplanarity.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuAcoplanarity_beforeEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/DiTauCandidateCharge'
+plots_ZtoElecMu_dR12_afterMuonTrkIPcut = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_dR12_afterMuonTrkIPcut.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelMuonTrkIP_beforeEvtSelDiTauCandidateForElecMuAntiOverlapVeto/DiTauCandidateQuantities/DR12')
+plots_ZtoElecMu_dR12_afterMuonTrkIPcut.title = cms.string('#Delta R(Muon,Electron) (after  #mu-IP Cut')
+plots_ZtoElecMu_dR12_afterMuonTrkIPcut.xAxis = cms.string('dPhi')
+
+
+
+plots_ZtoElecMu_diTauCharge_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_diTauCharge_afterAntiOverlapVeto.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuAntiOverlapVeto_beforeEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/DiTauCandidateCharge'
 )
-plots_ZtoElecMu_diTauCharge_afterAcoplanarity.title = cms.string('Charge(Electron + Muon) (after Acoplanarity Cut)')
-plots_ZtoElecMu_diTauCharge_afterAcoplanarity.xAxis = cms.string('unlabeled')
+plots_ZtoElecMu_diTauCharge_afterAntiOverlapVeto.title = cms.string('Charge(Muon + Electron) (after Acoplanarity Cut)')
+plots_ZtoElecMu_diTauCharge_afterAntiOverlapVeto.xAxis = cms.string('unlabeled')
+
+plots_ZtoElecMu_mtElectronMET_afterZeroCharge = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_mtElectronMET_afterZeroCharge.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge_beforeEvtSelDiTauCandidateForElecMuMt1MET/DiTauCandidateQuantities/Mt1MET'
+)
+plots_ZtoElecMu_mtElectronMET_afterZeroCharge.title = cms.string('M_{T}(Electron+ MET) (after opposite Charge Cut)')
+plots_ZtoElecMu_mtElectronMET_afterZeroCharge.xAxis = cms.string('Mt')
+
+plots_ZtoElecMu_mtMuonMET_aftermtElectronMET = copy.deepcopy(plots_ZtoElecMu)
+plots_ZtoElecMu_mtMuonMET_aftermtElectronMET.plots.dqmMonitorElements = cms.vstring(
+  '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt1MET_beforeEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/Mt2MET'
+)
+plots_ZtoElecMu_mtMuonMET_aftermtElectronMET.title = cms.string('M_{T}(Muon + MET) (after M_{T}(Electron + MET) Cut)')
+plots_ZtoElecMu_mtMuonMET_aftermtElectronMET.xAxis = cms.string('Mt')
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
@@ -188,7 +198,7 @@ plots_ZtoElecMu_diTauCharge_afterAcoplanarity.xAxis = cms.string('unlabeled')
 
 plots_ZtoElecMu_electron_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_electron_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/ElectronQuantities/Electron#PAR#'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/ElectronQuantities/Electron#PAR#'
 )
 plots_ZtoElecMu_electron_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoElecMu_electron_finalEventSample.title = cms.string('Electron (final Event sample)')
@@ -196,7 +206,7 @@ plots_ZtoElecMu_electron_finalEventSample.xAxis = cms.string('#PAR#')
 
 plots_ZtoElecMu_muon_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_muon_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/MuonQuantities/Muon#PAR#'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/MuonQuantities/Muon#PAR#'
 )
 plots_ZtoElecMu_muon_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
 plots_ZtoElecMu_muon_finalEventSample.title = cms.string('Muon (final Event sample)')
@@ -204,48 +214,48 @@ plots_ZtoElecMu_muon_finalEventSample.xAxis = cms.string('#PAR#')
 
 plots_ZtoElecMu_met_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_met_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/MEtQuantities/RAWplusJESplusMUON_MEtPt'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/MEtQuantities/RAWplusJESplusMUON_MEtPt'
 )
 plots_ZtoElecMu_met_finalEventSample.title = cms.string('MET (final Event sample)')
 plots_ZtoElecMu_met_finalEventSample.xAxis = cms.string('Pt')
 
 plots_ZtoElecMu_mtElectronMET_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_mtElectronMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/Mt1MET'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/Mt1MET'
 )
 plots_ZtoElecMu_mtElectronMET_finalEventSample.title = cms.string('M_{T}(Electron + MET) (final Event sample)')
 plots_ZtoElecMu_mtElectronMET_finalEventSample.xAxis = cms.string('Mt')
 plots_ZtoElecMu_mtMuonMET_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_mtMuonMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/Mt2MET'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/Mt2MET'
 )
 plots_ZtoElecMu_mtMuonMET_finalEventSample.title = cms.string('M_{T}(Muon + MET) (final Event sample)')
 plots_ZtoElecMu_mtMuonMET_finalEventSample.xAxis = cms.string('Mt')
 
 plots_ZtoElecMu_mtElectronMuonMET_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_mtElectronMuonMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/Mt12MET'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/Mt12MET'
 )
 plots_ZtoElecMu_mtElectronMuonMET_finalEventSample.title = cms.string('M_{T}(Electron + Muon + MET) (final Event sample)')
 plots_ZtoElecMu_mtElectronMuonMET_finalEventSample.xAxis = cms.string('Mt')
 
 plots_ZtoElecMu_mCDFmethod_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_mCDFmethod_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/CDFmethodMass'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/CDFmethodMass'
 )
 plots_ZtoElecMu_mCDFmethod_finalEventSample.title = cms.string('M(Electron + Muon), CDF method (final Event sample)')
 plots_ZtoElecMu_mCDFmethod_finalEventSample.xAxis = cms.string('M')
 
 plots_ZtoElecMu_mCollApprox_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_mCollApprox_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/DiTauCandidateQuantities/CollinearApproxMass'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/DiTauCandidateQuantities/CollinearApproxMass'
 )
 plots_ZtoElecMu_mCollApprox_finalEventSample.title = cms.string('M(Electron + Muon), collinear Approx. (final Event sample)')
 plots_ZtoElecMu_mCollApprox_finalEventSample.xAxis = cms.string('M')
 
 plots_ZtoElecMu_numCentralJets_finalEventSample = copy.deepcopy(plots_ZtoElecMu)
 plots_ZtoElecMu_numCentralJets_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuZeroCharge/JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3'
+    '#PROCESSDIR#/zElecMuAnalyzer/afterEvtSelDiTauCandidateForElecMuMt2MET/JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3'
 )
 plots_ZtoElecMu_numCentralJets_finalEventSample.parameter = cms.vstring('15', '20', '30')
 plots_ZtoElecMu_numCentralJets_finalEventSample.title = cms.string('N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)')
