@@ -38,7 +38,7 @@ allLayer1Electrons.isolation.ecal.deltaR = cms.double(0.6)
 allLayer1Electrons.isolation.ecal.vetos = cms.vstring(
     'EcalBarrel:0.045', 
     'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
-    'EcalEndcaps:0.01',                         #0.07
+    'EcalEndcaps:0.1',                         #0.07
     'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
     'EcalBarrel:ThresholdFromTransverse(0.12)', #0.08
     'EcalEndcaps:ThresholdFromTransverse(0.3)'
