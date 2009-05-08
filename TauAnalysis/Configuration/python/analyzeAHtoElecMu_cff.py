@@ -23,48 +23,50 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
     #genMuonCut,
 
     # trigger selection
-    Trigger,
+    evtSelTrigger,
     
     # primary event vertex selection
-    primaryEventVertex,
-    primaryEventVertexQuality,
-    primaryEventVertexPosition,
+    evtSelPrimaryEventVertex,
+    evtSelPrimaryEventVertexQuality,
+    evtSelPrimaryEventVertexPosition,
 
     # electron candidate selection
-    tightElectronIdMinCut,
-    tightElectronIdMaxCut,
-    electronAntiCrackCut,
-    electronEtaCut, #default 2.1, switch to 2.4
-    electronPtCut, #now 15, too low?
-    electronTrkIsoCut,
-    electronEcalIsoCut,
-    #electron hcal iso?
-    electronTrkCut,
-    ##electronTrkIPcut, #mmm... we used to cut on combined d0 significance!
+    evtSelElectronIdMin,
+    #evtSelElectronIdMax,
+    evtSelElectronAntiCrack,
+    evtSelElectronEta, #default 2.1, switch to 2.4
+    evtSelElectronPt, #now 15
+    evtSelElectronIso,
+    #evtSelElectronTrkIso,
+    #evtSelElectronEcalIso,
+    #evtSelElectronHcalIso,
+    evtSelElectronTrk,
+    #evtSelElectronTrkIP, #mmm... we used to cut on combined d0 significance!
 
     # muon candidate selection
-    globalMuonMinCut,
-    globalMuonMaxCut,
-    muonEtaCut, #default 2.1, switch to 2.4
-    muonPtCut, #now 15, too low?
-    muonTrkIsoCut,
-    muonEcalIsoCut,
-    #muonHcalIsoCut, #why not?
-    muonAntiPionCut,
-    ##muonTrkIPcut, #mmm... we used to cut on combined d0 significance!
+    evtSelGlobalMuonMin,
+    #evtSelGlobalMuonMax,
+    evtSelMuonEta, #default 2.1, switch to 2.4
+    evtSelMuonPt, #now 15
+    evtSelMuonIso,
+    #evtSelMuonTrkIso,
+    #evtSelMuonEcalIso,
+    #evtSelMuonHcalIso, #why not?
+    evtSelMuonAntiPion,
+    #evtSelMuonTrkIP, #mmm... we used to cut on combined d0 significance!
 
     # di-tau candidate selection
-    ##diTauCandidateForElecMuAcoplanarityCut, #use it in case of no collinear approximation?
-    diTauCandidateForElecMuZeroChargeCut,
-    diTauCandidateForElecMuDPhiCut,
-    diTauCandidateForElecMuImpParamSigCut,
+    evtSelDiTauCandidateForElecMuZeroCharge,
+    evtSelDiTauCandidateForElecMuAcoplanarity, #use it in case of no collinear approximation?
+    #evtSelDiTauCandidateForElecMuDPhi,
+    #evtSelDiTauCandidateForElecMuImpParamSig,
 
     # jet candidate selection...
-    jetMinCut, #default eta<2.1 too tight, need 2.4 for b-tagging
-    jetMaxCut,    
+    evtSelJetMin, #default eta<2.1 too tight, need 2.4 for b-tagging
+    evtSelJetMax,    
     # b-tagging candidate selection...
-    jetBtagMinCut,
-    jetBtagMaxCut
+    evtSelJetBtagMin,
+    evtSelJetBtagMax
   ),
 
   histManagers = cms.VPSet(
