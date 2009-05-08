@@ -75,6 +75,12 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronEcalIsoPtEndcap_;
   MonitorElement* hElectronHcalIsoPt_;
   MonitorElement* hElectronIsoSumPt_;
+  MonitorElement* hElectronTrkIsoPtRel_;
+  MonitorElement* hElectronEcalIsoPtRel_;
+  MonitorElement* hElectronEcalIsoPtBarrelRel_;
+  MonitorElement* hElectronEcalIsoPtEndcapRel_;
+  MonitorElement* hElectronHcalIsoPtRel_;
+  MonitorElement* hElectronIsoSumPtRel_;
   
   MonitorElement* hElectronTrkIsoValProfile_;
   MonitorElement* hElectronTrkIsoEtaDistProfile_;

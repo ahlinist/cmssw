@@ -73,6 +73,10 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonEcalIsoPt_;
   MonitorElement* hMuonHcalIsoPt_;
   MonitorElement* hMuonIsoSumPt_;
+  MonitorElement* hMuonTrkIsoPtRel_;
+  MonitorElement* hMuonEcalIsoPtRel_;
+  MonitorElement* hMuonHcalIsoPtRel_;
+  MonitorElement* hMuonIsoSumPtRel_;
 
   MonitorElement* hMuonTrkIsoValProfile_;
   MonitorElement* hMuonTrkIsoEtaDistProfile_;
