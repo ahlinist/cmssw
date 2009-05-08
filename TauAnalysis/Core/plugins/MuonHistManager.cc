@@ -119,6 +119,10 @@ void MuonHistManager::bookHistograms(const edm::EventSetup& setup)
     hMuonEcalIsoPt_ = dqmStore.book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
     hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
     hMuonIsoSumPt_ = dqmStore.book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
+    hMuonTrkIsoPtRel_ = dqmStore.book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 200, 0., 2.);    
+    hMuonEcalIsoPtRel_ = dqmStore.book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 200, 0., 2.);
+    hMuonHcalIsoPtRel_ = dqmStore.book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
+    hMuonIsoSumPtRel_ = dqmStore.book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 200, 0., 2.);
 
     hMuonParticleFlowIsoPt_ = dqmStore.book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
     hMuonPFChargedHadronIsoPt_ = dqmStore.book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
@@ -270,6 +274,10 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon)
   hMuonEcalIsoPt_->Fill(patMuon.ecalIso());
   hMuonHcalIsoPt_->Fill(patMuon.hcalIso());
   hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso());
+  hMuonTrkIsoPtRel_->Fill(patMuon.trackIso()/patMuon.pt());
+  hMuonEcalIsoPtRel_->Fill(patMuon.ecalIso()/patMuon.pt());
+  hMuonHcalIsoPtRel_->Fill(patMuon.hcalIso()/patMuon.pt());
+  hMuonIsoSumPtRel_->Fill((patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso())/patMuon.pt());
 
   //std::cout << " particleIso = " << patMuon.particleIso() << std::endl;
   //std::cout << " chargedParticleIso = " << patMuon.chargedParticleIso() << std::endl;

@@ -126,6 +126,12 @@ void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
     hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "ElectronEcalIsoPtEndcap", 100, 0., 20.);
     hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
     hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
+    hElectronTrkIsoPtRel_ = dqmStore.book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
+    hElectronEcalIsoPtRel_ = dqmStore.book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
+    hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "ElectronEcalIsoPtBarrelRel", 200, 0., 2.);
+    hElectronEcalIsoPtEndcapRel_ = dqmStore.book1D("ElectronEcalIsoPtEndcapRel", "ElectronEcalIsoPtEndcapRel", 200, 0., 2.);
+    hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "ElectronHcalIsoPtRel", 200, 0., 2.);
+    hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "ElectronIsoSumPtRel", 200, 0., 2.);
 
     hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "ElectronParticleFlowIsoPt", 100, 0., 20.);    
     hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "ElectronPFChargedHadronIsoPt", 100, 0., 20.);   
@@ -283,6 +289,16 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   }
   hElectronHcalIsoPt_->Fill(patElectron.hcalIso());
   hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso());
+  hElectronTrkIsoPtRel_->Fill(patElectron.trackIso()/patElectron.pt());
+  hElectronEcalIsoPtRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+  if ( patElectron.superCluster().isAvailable() && patElectron.superCluster().isNonnull() ) {
+    if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
+      hElectronEcalIsoPtBarrelRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+    if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 
+      hElectronEcalIsoPtEndcapRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+  }
+  hElectronHcalIsoPtRel_->Fill(patElectron.hcalIso()/patElectron.pt());
+  hElectronIsoSumPtRel_->Fill((patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso())/patElectron.pt());
   
   //std::cout << " particleIso = " << patElectron.particleIso() << std::endl;
   //std::cout << " chargedParticleIso = " << patElectron.chargedParticleIso() << std::endl;
