@@ -1,5 +1,5 @@
-#ifndef FWCore_ParameterSet_IfExistsDescription_h
-#define FWCore_ParameterSet_IfExistsDescription_h
+#ifndef FWCore_ParameterSet_ANDGroupDescription_h
+#define FWCore_ParameterSet_ANDGroupDescription_h
 
 #include "FWCore/ParameterSet/interface/ParameterDescriptionNode.h"
 
@@ -15,22 +15,22 @@ namespace edm {
   class ParameterSet;
   class DocFormatHelper;
 
-  class IfExistsDescription : public ParameterDescriptionNode {
+  class ANDGroupDescription : public ParameterDescriptionNode {
   public:
-    IfExistsDescription(ParameterDescriptionNode const& node_left,
+    ANDGroupDescription(ParameterDescriptionNode const& node_left,
                         ParameterDescriptionNode const& node_right);
 
-    IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+    ANDGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
                         ParameterDescriptionNode const& node_right);
 
-    IfExistsDescription(ParameterDescriptionNode const& node_left,
+    ANDGroupDescription(ParameterDescriptionNode const& node_left,
                         std::auto_ptr<ParameterDescriptionNode> node_right);
 
-    IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+    ANDGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
                         std::auto_ptr<ParameterDescriptionNode> node_right);
 
     virtual ParameterDescriptionNode* clone() const {
-      return new IfExistsDescription(*this);
+      return new ANDGroupDescription(*this);
     }
 
   private:
@@ -66,6 +66,7 @@ namespace edm {
     virtual bool partiallyExists_(ParameterSet const& pset) const;
 
     virtual int howManyXORSubNodesExist_(ParameterSet const& pset) const;
+
 
     void throwIfDuplicateLabels(std::set<std::string> const& labelsLeft,
                                 std::set<std::string> const& labelsRight) const;
