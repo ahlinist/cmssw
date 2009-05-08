@@ -1,7 +1,10 @@
 
-#include "FWCore/ParameterSet/interface/IfExistsDescription.h"
+#include "FWCore/ParameterSet/interface/ANDGroupDescription.h"
+#include "FWCore/Utilities/interface/Algorithms.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/ParameterSet/interface/DocFormatHelper.h"
+
+#include "boost/bind.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -10,36 +13,36 @@
 
 namespace edm {
 
-  IfExistsDescription::
-  IfExistsDescription(ParameterDescriptionNode const& node_left,
+  ANDGroupDescription::
+  ANDGroupDescription(ParameterDescriptionNode const& node_left,
                       ParameterDescriptionNode const& node_right) :
     node_left_(node_left.clone()),
     node_right_(node_right.clone()) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+  ANDGroupDescription::
+  ANDGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
                       ParameterDescriptionNode const& node_right) :
     node_left_(node_left),
     node_right_(node_right.clone()) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(ParameterDescriptionNode const& node_left,
+  ANDGroupDescription::
+  ANDGroupDescription(ParameterDescriptionNode const& node_left,
                       std::auto_ptr<ParameterDescriptionNode> node_right) :
     node_left_(node_left.clone()),
     node_right_(node_right) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+  ANDGroupDescription::
+  ANDGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
                       std::auto_ptr<ParameterDescriptionNode> node_right) :
     node_left_(node_left),
     node_right_(node_right) {
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   checkAndGetLabelsAndTypes_(std::set<std::string> & usedLabels,
                              std::set<ParameterTypes> & parameterTypes,
                              std::set<ParameterTypes> & wildcardTypes) const {
@@ -69,33 +72,18 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   validate_(ParameterSet & pset,
             std::set<std::string> & validatedLabels,
             bool optional) const {
-
-    bool leftExists = node_left_->exists(pset);
-    bool rightExists = node_right_->exists(pset);
-
-    if (!leftExists && !rightExists) {
-      return;
-    }
-    else if (leftExists && rightExists) {
-      node_left_->validate(pset, validatedLabels, false);
-      node_right_->validate(pset, validatedLabels, false);
-    }
-    else if (leftExists && !rightExists) {
-      node_left_->validate(pset, validatedLabels, false);
-      if (!optional) node_right_->validate(pset, validatedLabels, false);
-    }
-    else if (!leftExists && rightExists) {
+    if (partiallyExists(pset) || !optional) {
       node_left_->validate(pset, validatedLabels, false);
       node_right_->validate(pset, validatedLabels, false);
     }
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   writeCfi_(std::ostream & os,
             bool & startWithComma,
             int indentation,
@@ -105,16 +93,23 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   print_(std::ostream & os,
          bool optional,
          bool writeToCfi,
          DocFormatHelper & dfh) {
 
+    if (dfh.parent() == DocFormatHelper::AND) {
+      dfh.decrementCounter();
+      node_left_->print(os, false, true, dfh);
+      node_right_->print(os, false, true, dfh);
+      return;
+    }
+
     if (dfh.pass() == 1) {
 
       dfh.indent(os);
-      os << "IfExists pair:";
+      os << "AND group:";
 
       if (dfh.brief()) {
 
@@ -151,10 +146,17 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   printNestedContent_(std::ostream & os,
                       bool optional,
                       DocFormatHelper & dfh) {
+
+    if (dfh.parent() == DocFormatHelper::AND) {
+      dfh.decrementCounter();
+      node_left_->printNestedContent(os, false, dfh);
+      node_right_->printNestedContent(os, false, dfh);
+      return;
+    }
 
     int indentation = dfh.indentation();
     if (dfh.parent() != DocFormatHelper::TOP) {
@@ -166,15 +168,14 @@ namespace edm {
     std::string newSection = ss.str();
 
     os << std::setfill(' ') << std::setw(indentation) << "";
-    os << "Section " << newSection;
-    if (optional) os << " optional";
-    os << " IfExists pair description:\n";
+    os << "Section " << newSection
+       << " AND group description:\n";
     os << std::setfill(' ') << std::setw(indentation) << "";
     if (optional) {
-      os << "If the first parameter exists, then the second is allowed to exist\n";
+      os << "This optional AND group requires all or none of the following to be in the PSet\n";
     }
     else {
-      os << "If the first parameter exists, then the second is required to exist\n";
+      os << "This AND group requires all of the following to be in the PSet\n";
     }
     if (!dfh.brief()) os << "\n";
 
@@ -182,7 +183,7 @@ namespace edm {
     new_dfh.init();
     new_dfh.setSection(newSection);
     new_dfh.setIndentation(indentation + DocFormatHelper::offsetSectionContent());
-    new_dfh.setParent(DocFormatHelper::OTHER);
+    new_dfh.setParent(DocFormatHelper::AND);
 
     node_left_->print(os, false, true, new_dfh);
     node_right_->print(os, false, true, new_dfh);
@@ -197,34 +198,29 @@ namespace edm {
     new_dfh.setCounter(0);
 
     node_left_->printNestedContent(os, false, new_dfh);
-    node_right_->printNestedContent(os, false , new_dfh);
+    node_right_->printNestedContent(os, false, new_dfh);
   }
 
   bool
-  IfExistsDescription::
+  ANDGroupDescription::
   exists_(ParameterSet const& pset) const {
-    bool leftExists = node_left_->exists(pset);
-    bool rightExists = node_right_->exists(pset);
-
-    if (leftExists && rightExists) return true;
-    else if (!leftExists && !rightExists) return true;
-    return false;
+    return node_left_->exists(pset) && node_right_->exists(pset);
   }
 
   bool
-  IfExistsDescription::
+  ANDGroupDescription::
   partiallyExists_(ParameterSet const& pset) const {
-    return exists(pset);
+    return node_left_->partiallyExists(pset) || node_right_->partiallyExists(pset);
   }
 
   int
-  IfExistsDescription::
+  ANDGroupDescription::
   howManyXORSubNodesExist_(ParameterSet const& pset) const {
-    return exists(pset) ? 1 : 0;
+    return exists(pset) ? 1 : 0; 
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   throwIfDuplicateLabels(std::set<std::string> const& labelsLeft,
                          std::set<std::string> const& labelsRight) const {
 
@@ -242,9 +238,8 @@ namespace edm {
         ss << " \"" << *iter <<  "\"\n";
       }
       throw edm::Exception(errors::LogicError)
-        << "Labels used in a node of a ParameterSetDescription\n"
-        << "\"ifExists\" expression must be not be the same as labels used\n"
-        << "in other nodes of the expression.  The following duplicate\n"
+        << "Labels used in different nodes of a ParameterSetDescription\n"
+        << "\"and\" expression must be unique.  The following duplicate\n"
         << "labels were detected:\n"
         << ss.str()
         << "\n";
@@ -252,7 +247,7 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ANDGroupDescription::
   throwIfDuplicateTypes(std::set<ParameterTypes> const& types1,
                         std::set<ParameterTypes> const& types2) const
   {
@@ -271,9 +266,9 @@ namespace edm {
           ss << " \"" << parameterTypeEnumToString(*iter) <<  "\"\n";
         }
         throw edm::Exception(errors::LogicError)
-          << "Types used for wildcards in a node of a ParameterSetDescription\n"
-          << "\"ifExists\" expression must be different from types used for other parameters\n"
-          << "in other nodes.  The following duplicate types were detected:\n"
+          << "Types used for wildcards in different nodes of a ParameterSetDescription\n"
+          << "\"and\" expression must be different from types used for other parameters.\n"
+          << "The following duplicate types were detected:\n"
           << ss.str()
           << "\n";
       }

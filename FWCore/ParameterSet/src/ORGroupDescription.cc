@@ -1,5 +1,5 @@
 
-#include "FWCore/ParameterSet/interface/IfExistsDescription.h"
+#include "FWCore/ParameterSet/interface/ORGroupDescription.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/ParameterSet/interface/DocFormatHelper.h"
 
@@ -10,36 +10,36 @@
 
 namespace edm {
 
-  IfExistsDescription::
-  IfExistsDescription(ParameterDescriptionNode const& node_left,
-                      ParameterDescriptionNode const& node_right) :
+  ORGroupDescription::
+  ORGroupDescription(ParameterDescriptionNode const& node_left,
+                     ParameterDescriptionNode const& node_right) :
     node_left_(node_left.clone()),
     node_right_(node_right.clone()) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
-                      ParameterDescriptionNode const& node_right) :
+  ORGroupDescription::
+  ORGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+                     ParameterDescriptionNode const& node_right) :
     node_left_(node_left),
     node_right_(node_right.clone()) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(ParameterDescriptionNode const& node_left,
-                      std::auto_ptr<ParameterDescriptionNode> node_right) :
+  ORGroupDescription::
+  ORGroupDescription(ParameterDescriptionNode const& node_left,
+                     std::auto_ptr<ParameterDescriptionNode> node_right) :
     node_left_(node_left.clone()),
     node_right_(node_right) {
   }
 
-  IfExistsDescription::
-  IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
-                      std::auto_ptr<ParameterDescriptionNode> node_right) :
+  ORGroupDescription::
+  ORGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+                     std::auto_ptr<ParameterDescriptionNode> node_right) :
     node_left_(node_left),
     node_right_(node_right) {
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   checkAndGetLabelsAndTypes_(std::set<std::string> & usedLabels,
                              std::set<ParameterTypes> & parameterTypes,
                              std::set<ParameterTypes> & wildcardTypes) const {
@@ -69,7 +69,7 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   validate_(ParameterSet & pset,
             std::set<std::string> & validatedLabels,
             bool optional) const {
@@ -77,44 +77,44 @@ namespace edm {
     bool leftExists = node_left_->exists(pset);
     bool rightExists = node_right_->exists(pset);
 
-    if (!leftExists && !rightExists) {
+    if (leftExists || rightExists) {
+      if (leftExists) node_left_->validate(pset, validatedLabels, false);
+      if (rightExists) node_right_->validate(pset, validatedLabels, false);
       return;
     }
-    else if (leftExists && rightExists) {
-      node_left_->validate(pset, validatedLabels, false);
-      node_right_->validate(pset, validatedLabels, false);
-    }
-    else if (leftExists && !rightExists) {
-      node_left_->validate(pset, validatedLabels, false);
-      if (!optional) node_right_->validate(pset, validatedLabels, false);
-    }
-    else if (!leftExists && rightExists) {
-      node_left_->validate(pset, validatedLabels, false);
-      node_right_->validate(pset, validatedLabels, false);
-    }
+
+    if (optional) return;
+
+    node_left_->validate(pset, validatedLabels, false);
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   writeCfi_(std::ostream & os,
             bool & startWithComma,
             int indentation,
             bool & wroteSomething) const {
     node_left_->writeCfi(os, startWithComma, indentation, wroteSomething);
-    node_right_->writeCfi(os, startWithComma, indentation, wroteSomething);
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   print_(std::ostream & os,
          bool optional,
          bool writeToCfi,
          DocFormatHelper & dfh) {
 
+    if (dfh.parent() == DocFormatHelper::OR) {
+      dfh.decrementCounter();
+      node_left_->print(os, false, true, dfh);
+      node_right_->print(os, false, true, dfh);
+      return;
+    }
+
     if (dfh.pass() == 1) {
 
       dfh.indent(os);
-      os << "IfExists pair:";
+      os << "OR group:";
 
       if (dfh.brief()) {
 
@@ -151,10 +151,17 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   printNestedContent_(std::ostream & os,
                       bool optional,
                       DocFormatHelper & dfh) {
+
+    if (dfh.parent() == DocFormatHelper::OR) {
+      dfh.decrementCounter();
+      node_left_->printNestedContent(os, false, dfh);
+      node_right_->printNestedContent(os, false, dfh);
+      return;
+    }
 
     int indentation = dfh.indentation();
     if (dfh.parent() != DocFormatHelper::TOP) {
@@ -166,15 +173,17 @@ namespace edm {
     std::string newSection = ss.str();
 
     os << std::setfill(' ') << std::setw(indentation) << "";
-    os << "Section " << newSection;
-    if (optional) os << " optional";
-    os << " IfExists pair description:\n";
+    os << "Section " << newSection
+       << " OR group description:\n";
     os << std::setfill(' ') << std::setw(indentation) << "";
     if (optional) {
-      os << "If the first parameter exists, then the second is allowed to exist\n";
+      // An optional OR group is kind of pointless, it would be
+      // easier just make the parameters be independent optional parameters
+      // I only allow it to make the behavior analogous to the other groups
+      os << "This optional OR group requires at least one or none of the following to be in the PSet\n";
     }
     else {
-      os << "If the first parameter exists, then the second is required to exist\n";
+      os << "This OR group requires at least one of the following to be in the PSet\n";
     }
     if (!dfh.brief()) os << "\n";
 
@@ -182,7 +191,7 @@ namespace edm {
     new_dfh.init();
     new_dfh.setSection(newSection);
     new_dfh.setIndentation(indentation + DocFormatHelper::offsetSectionContent());
-    new_dfh.setParent(DocFormatHelper::OTHER);
+    new_dfh.setParent(DocFormatHelper::OR);
 
     node_left_->print(os, false, true, new_dfh);
     node_right_->print(os, false, true, new_dfh);
@@ -197,34 +206,30 @@ namespace edm {
     new_dfh.setCounter(0);
 
     node_left_->printNestedContent(os, false, new_dfh);
-    node_right_->printNestedContent(os, false , new_dfh);
+    node_right_->printNestedContent(os, false, new_dfh);
   }
 
   bool
-  IfExistsDescription::
+  ORGroupDescription::
   exists_(ParameterSet const& pset) const {
-    bool leftExists = node_left_->exists(pset);
-    bool rightExists = node_right_->exists(pset);
-
-    if (leftExists && rightExists) return true;
-    else if (!leftExists && !rightExists) return true;
-    return false;
+    return node_left_->exists(pset) ||
+           node_right_->exists(pset);
   }
 
   bool
-  IfExistsDescription::
+  ORGroupDescription::
   partiallyExists_(ParameterSet const& pset) const {
     return exists(pset);
   }
 
   int
-  IfExistsDescription::
+  ORGroupDescription::
   howManyXORSubNodesExist_(ParameterSet const& pset) const {
     return exists(pset) ? 1 : 0;
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   throwIfDuplicateLabels(std::set<std::string> const& labelsLeft,
                          std::set<std::string> const& labelsRight) const {
 
@@ -243,7 +248,7 @@ namespace edm {
       }
       throw edm::Exception(errors::LogicError)
         << "Labels used in a node of a ParameterSetDescription\n"
-        << "\"ifExists\" expression must be not be the same as labels used\n"
+        << "\"or\" expression must be not be the same as labels used\n"
         << "in other nodes of the expression.  The following duplicate\n"
         << "labels were detected:\n"
         << ss.str()
@@ -252,7 +257,7 @@ namespace edm {
   }
 
   void
-  IfExistsDescription::
+  ORGroupDescription::
   throwIfDuplicateTypes(std::set<ParameterTypes> const& types1,
                         std::set<ParameterTypes> const& types2) const
   {
@@ -272,7 +277,7 @@ namespace edm {
         }
         throw edm::Exception(errors::LogicError)
           << "Types used for wildcards in a node of a ParameterSetDescription\n"
-          << "\"ifExists\" expression must be different from types used for other parameters\n"
+          << "\"or\" expression must be different from types used for other parameters\n"
           << "in other nodes.  The following duplicate types were detected:\n"
           << ss.str()
           << "\n";

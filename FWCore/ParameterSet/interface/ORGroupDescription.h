@@ -1,5 +1,5 @@
-#ifndef FWCore_ParameterSet_IfExistsDescription_h
-#define FWCore_ParameterSet_IfExistsDescription_h
+#ifndef FWCore_ParameterSet_ORGroupDescription_h
+#define FWCore_ParameterSet_ORGroupDescription_h
 
 #include "FWCore/ParameterSet/interface/ParameterDescriptionNode.h"
 
@@ -15,22 +15,22 @@ namespace edm {
   class ParameterSet;
   class DocFormatHelper;
 
-  class IfExistsDescription : public ParameterDescriptionNode {
+  class ORGroupDescription : public ParameterDescriptionNode {
   public:
-    IfExistsDescription(ParameterDescriptionNode const& node_left,
-                        ParameterDescriptionNode const& node_right);
+    ORGroupDescription(ParameterDescriptionNode const& node_left,
+                       ParameterDescriptionNode const& node_right);
 
-    IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
-                        ParameterDescriptionNode const& node_right);
+    ORGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+                       ParameterDescriptionNode const& node_right);
 
-    IfExistsDescription(ParameterDescriptionNode const& node_left,
-                        std::auto_ptr<ParameterDescriptionNode> node_right);
+    ORGroupDescription(ParameterDescriptionNode const& node_left,
+                       std::auto_ptr<ParameterDescriptionNode> node_right);
 
-    IfExistsDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
-                        std::auto_ptr<ParameterDescriptionNode> node_right);
+    ORGroupDescription(std::auto_ptr<ParameterDescriptionNode> node_left,
+                       std::auto_ptr<ParameterDescriptionNode> node_right);
 
     virtual ParameterDescriptionNode* clone() const {
-      return new IfExistsDescription(*this);
+      return new ORGroupDescription(*this);
     }
 
   private:
