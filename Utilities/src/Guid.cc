@@ -9,7 +9,6 @@
 //      Author    : Markus Frank
 //      
 //      ====================================================================
-//$Id$
 #include "Guid.h"
 #include <cstdio>
 #include <cstring>
