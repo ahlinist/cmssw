@@ -27,23 +27,25 @@ class DbsDQOptionParser(optparse.OptionParser):
     #self.add_option("--tag", action="store", type="string", dest="tag", help="Quality Information Mask")
     #self.add_option("--value", action="store", type="string", dest="value", help="Value can be GOOD, BAD and UNKNOWN or a INTEGER value")
 
+def get_datasets(run):
+  datasets = []
+  query="find dataset where run=" + str(run) + " and dataset like '%RAW'"
+  results = api.executeQuery(query)
+  class Handler (xml.sax.handler.ContentHandler):
+    def startElement(self, name, attrs):
+      if name == 'result':
+        datasets.append(str(attrs['PATH']))
+  xml.sax.parseString(results, Handler())
+  return datasets
+
 def insertdq(run, tags):
   try:
 
     print "Received: ", run, tags
     
-    datasets = []
-    query="find dataset where run=" + str(run) + " and dataset like '%RAW'"
-    results = api.executeQuery(query)
+    datasets = get_datasets(run)
 
-    class Handler (xml.sax.handler.ContentHandler):
-      def startElement(self, name, attrs):
-        if name == 'result':
-          datasets.append(str(attrs['PATH']))
-
-    xml.sax.parseString(results, Handler())
-
-    print datasets
+    print "Datasets:", datasets
 
     for t in tags.keys():
 
@@ -61,18 +63,18 @@ def insertdq(run, tags):
       for dataset in datasets:
 
         curr = querydq(dataset, run, t)
-        
-        print "run=", run, " dataset=", dataset, " tag=", t, " value=", tags[t], " curr=", curr, 
+
+        print "Run:", run, "Dataset:", dataset, "Tag:", t, "DBS value:", curr, "RR value:", tags[t], "Action:",
         
         if curr == 'NOTFOUND':
-            print " == insert"
-            api.insertRunLumiDQ(dataset, [run_dq])
+          print "insert"
+          api.insertRunLumiDQ(dataset, [run_dq])
         else:
-          if curr == tags[t]:
-            print " == same"
-          else:
-            print " == update"
+          if curr != tags[t]:
+            print "update"
             api.updateRunLumiDQ(dataset, [run_dq])
+          else:
+            print "none"
 	  
     return "OK"
 		
@@ -90,17 +92,6 @@ def querydq(dataset, run, tag):
 
   try:
 
-    # One can pass a LIST of DbsRunLumiDQ Objects, that tells the API
-    # What Runs/LumiSections to Look for and what Flags to look for
-    # If the Objects are prepared with "hierarch or NOT, they will be pulled 
-    # in hierarch.	
-
-    #dqHierarchyList =  api.listRunLumiDQ()
-    #print_flags_nice(dqHierarchyList)
-
-    # Mind that run_dq_search_criteria is just one object, API takes a LIST of such objects
-    # So you must pass it as list
-
     dqHierarchyList =  api.listRunLumiDQ(dataset, runLumiDQList=[run_dq_search_criteria]  )
     for aDQ in dqHierarchyList:
       for aSubDQ in aDQ['DQFlagList']:
@@ -114,8 +105,6 @@ def querydq(dataset, run, tag):
 		
   except DbsApiException, ex:
     msg = "Caught API Exception %s: %s "  % (ex.getClassName(), ex.getErrorMessage() )
-    #if ex.getErrorCode() not in (None, ""):
-    #  print "DBS Exception Error Code: ", ex.getErrorCode()
     return msg
 
 if __name__ == "__main__":
