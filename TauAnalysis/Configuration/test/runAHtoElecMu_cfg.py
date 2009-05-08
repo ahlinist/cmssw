@@ -37,6 +37,11 @@ process.GlobalTag.globaltag = 'IDEAL_V9::All'
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 process.load("TauAnalysis.Configuration.customSelectionForAHtoElecMu_cff")
 
+# import sequence for event selection
+process.load("TauAnalysis.Configuration.selectAHtoElecMu_cff")
+
+# import sequence for filling of histograms, cut-flow table
+# and of run + event number pairs for events passing event selection
 process.load("TauAnalysis.Configuration.analyzeAHtoElecMu_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
@@ -55,7 +60,7 @@ process.saveAHtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)    
-#    input = cms.untracked.int32(10)    
+#    input = cms.untracked.int32(5)    
 )
 
 #process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
@@ -64,14 +69,15 @@ process.source = cms.Source("PoolSource",
     #firstEvent = cms.untracked.uint32(4097),
     #firstRun = cms.untracked.uint32(1),
     fileNames = cms.untracked.vstring(
+        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH115bb_tautau_1.root'
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_1.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_2.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_3.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_4.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160bb_tautau_5.root'
-        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_1.root',
-        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_2.root',
-        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_3.root'
+#        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_1.root',
+#        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_2.root',
+#        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_3.root'
 #        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
 )
@@ -125,6 +131,7 @@ switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
+                     +process.selectAHtoElecMuEvents
                      +process.analyzeAHtoElecMuEvents
                      +process.saveAHtoElecMuPlots )
 

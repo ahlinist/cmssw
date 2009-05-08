@@ -3,9 +3,11 @@ import copy
 
 # import config for electron histogram manager
 from TauAnalysis.Core.electronHistManager_cfi import *
+electronHistManager.electronSource = cms.InputTag('selectedLayer1ElectronsTightIdCumulative') #no crappy electrons in plots!
 
 # import config for muon histogram manager
 from TauAnalysis.Core.muonHistManager_cfi import *
+muonHistManager.muonSource = cms.InputTag('selectedLayer1MuonsGlobalCumulative') #no crappy muons in plots!
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -19,6 +21,7 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 jetHistManager.centralJetsToBeVetoed.etMin = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.etaMax = cms.vdouble()
 jetHistManager.centralJetsToBeVetoed.alphaMin = cms.vdouble()
+jetHistManager.jetSource = cms.InputTag('selectedLayer1JetsEta21Cumulative')
 
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
@@ -71,210 +74,207 @@ genPhaseSpaceCut = cms.PSet(
 #)
 
 # trigger selection
-Trigger = cms.PSet(
-    pluginName = cms.string('Trigger'),
-    pluginType = cms.string('TriggerResultEventSelector'),
-    src = cms.InputTag('TriggerResults::HLT'),
-    triggerPaths = cms.vstring('HLT_IsoEle15_L1I', 'HLT_Mu15', 'HLT_IsoMu11', 'HLT_IsoEle8_IsoMu7')
+evtSelTrigger = cms.PSet(
+    pluginName = cms.string('evtSelTrigger'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('Trigger')
 )
 
 # primary event vertex selection
-primaryEventVertex = cms.PSet(
-    pluginName = cms.string('primaryEventVertex'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexHighestPtTrackSum'),
-    minNumber = cms.uint32(1)
+evtSelPrimaryEventVertex = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertex'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertex')
 )
-primaryEventVertexQuality = cms.PSet(
-    pluginName = cms.string('primaryEventVertexQuality'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexQuality'),
-    minNumber = cms.uint32(1)
+evtSelPrimaryEventVertexQuality = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexQuality'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexQuality')
 )
-primaryEventVertexPosition = cms.PSet(
-    pluginName = cms.string('primaryEventVertexPosition'),
-    pluginType = cms.string('VertexMinEventSelector'),
-    src = cms.InputTag('selectedPrimaryVertexPosition'),
-    minNumber = cms.uint32(1)
+evtSelPrimaryEventVertexPosition = cms.PSet(
+    pluginName = cms.string('evtSelPrimaryEventVertexPosition'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('primaryEventVertexPosition')
 )
 
 # electron candidate selection
-tightElectronIdMinCut = cms.PSet(
-    pluginName = cms.string('tightElectronIdMinCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTightIdCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
-    minNumber = cms.uint32(1)
+evtSelElectronIdMin = cms.PSet(
+    pluginName = cms.string('evtSelElectronIdMin'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronIdMinCut','cumulative'),
+    src_individual = cms.InputTag('electronIdMinCut','individual')
 )
-tightElectronIdMaxCut = cms.PSet(
-    pluginName = cms.string('tightElectronIdMaxCut'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTightIdCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
-    maxNumber = cms.uint32(1)
+evtSelElectronIdMax = cms.PSet(
+    pluginName = cms.string('evtSelElectronIdMax'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronIdMaxCut','cumulative'),
+    src_individual = cms.InputTag('electronIdMaxCut','individual')
 )
-electronAntiCrackCut = cms.PSet(
-    pluginName = cms.string('electronAntiCrackCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsAntiCrackCutCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual'),
-    minNumber = cms.uint32(1)
+evtSelElectronAntiCrack = cms.PSet(
+    pluginName = cms.string('evtSelElectronAntiCrack'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronAntiCrackCut','cumulative'),
+    src_individual = cms.InputTag('electronAntiCrackCut','individual')
 )
-electronEtaCut = cms.PSet(
-    pluginName = cms.string('electronEtaCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsEta21Individual'),
-    minNumber = cms.uint32(1)
+evtSelElectronEta = cms.PSet(
+    pluginName = cms.string('evtSelElectronEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronEtaCut','cumulative'),
+    src_individual = cms.InputTag('electronEtaCut','individual')
 )
-electronPtCut = cms.PSet(
-    pluginName = cms.string('electronPtCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsPt15Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsPt15Individual'),
-    minNumber = cms.uint32(1)
+evtSelElectronPt = cms.PSet(
+    pluginName = cms.string('evtSelElectronPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronPtCut','cumulative'),
+    src_individual = cms.InputTag('electronPtCut','individual')
 )
-electronTrkIsoCut = cms.PSet(
-    pluginName = cms.string('electronTrkIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIsoIndividual'),
-    minNumber = cms.uint32(1)
+evtSelElectronIso = cms.PSet(
+    pluginName = cms.string('evtSelElectronIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronIsoCut','cumulative'),
+    src_individual = cms.InputTag('electronIsoCut','individual')
 )
-electronEcalIsoCut = cms.PSet(
-    pluginName = cms.string('electronEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsEcalIsoIndividual'),
-    minNumber = cms.uint32(1)
-)
-electronTrkCut = cms.PSet(
-    pluginName = cms.string('electronTrkCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIndividual'),
-    minNumber = cms.uint32(1)
-)
-#electronTrkIPcut = cms.PSet(
-#    pluginName = cms.string('electronTrkIPcut'),
-#    pluginType = cms.string('PATCandViewMinEventSelector'),
-#    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-#    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIPindividual'),
-#    minNumber = cms.uint32(1)
+#evtSelElectronTrkIso = cms.PSet(
+#    pluginName = cms.string('evtSelElectronTrkIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('electronTrkIsoCut','cumulative'),
+#    src_individual = cms.InputTag('electronTrkIsoCut','individual')
 #)
+#evtSelElectronEcalIso = cms.PSet(
+#    pluginName = cms.string('evtSelElectronEcalIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('electronEcalIsoCut','cumulative'),
+#    src_individual = cms.InputTag('electronEcalIsoCut','individual')
+#)
+#evtSelElectronHcalIso = cms.PSet(
+#    pluginName = cms.string('evtSelElectronHcalIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('electronHcalIsoCut','cumulative'),
+#    src_individual = cms.InputTag('electronHcalIsoCut','individual')
+#)
+evtSelElectronTrk = cms.PSet(
+    pluginName = cms.string('evtSelElectronTrk'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronTrkCut','cumulative'),
+    src_individual = cms.InputTag('electronTrkCut','individual')
+    #src = cms.InputTag('electronTrkCut','individual')
+)
+evtSelElectronTrkIP = cms.PSet(
+    pluginName = cms.string('evtSelElectronTrkIP'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronTrkIPCut','cumulative'),
+    src_individual = cms.InputTag('electronTrkIPCut','individual')
+    #src = cms.InputTag('electronTrkIPCut','individual')
+)
 
 # muon candidate selection
-globalMuonMinCut = cms.PSet(
-    pluginName = cms.string('globalMuonMinCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
-    minNumber = cms.uint32(1)
+evtSelGlobalMuonMin = cms.PSet(
+    pluginName = cms.string('evtSelGlobalMuonMin'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('globalMuonMinCut','cumulative'),
+    src_individual = cms.InputTag('globalMuonMinCut','individual')
 )
-globalMuonMaxCut = cms.PSet(
-    pluginName = cms.string('globalMuonMaxCut'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
-    maxNumber = cms.uint32(1)
+evtSelGlobalMuonMax = cms.PSet(
+    pluginName = cms.string('evtSelGlobalMuonMax'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('globalMuonMaxCut','cumulative'),
+    src_individual = cms.InputTag('globalMuonMaxCut','individual')
 )
-muonEtaCut = cms.PSet(
-    pluginName = cms.string('muonEtaCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsEta21Individual'),
-    minNumber = cms.uint32(1)
+evtSelMuonEta = cms.PSet(
+    pluginName = cms.string('evtSelMuonEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonEtaCut','cumulative'),
+    src_individual = cms.InputTag('muonEtaCut','individual')
 )
-muonPtCut = cms.PSet(
-    pluginName = cms.string('muonPtCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsPt15Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsPt15Individual'),
-    minNumber = cms.uint32(1)
+evtSelMuonPt = cms.PSet(
+    pluginName = cms.string('evtSelMuonPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonPtCut','cumulative'),
+    src_individual = cms.InputTag('muonPtCut','individual')
 )
-muonTrkIsoCut = cms.PSet(
-    pluginName = cms.string('muonTrkIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsTrkIsoIndividual'),
-    minNumber = cms.uint32(1)
+evtSelMuonIso = cms.PSet(
+    pluginName = cms.string('evtSelMuonIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonIsoCut','cumulative'),
+    src_individual = cms.InputTag('muonIsoCut','individual')
 )
-muonEcalIsoCut = cms.PSet(
-    pluginName = cms.string('muonEcalIsoCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsEcalIsoIndividual'),
-    minNumber = cms.uint32(1)
-)
-#muonHcalIsoCut = cms.PSet(
-#    pluginName = cms.string('muonHcalIsoCut'),
-#    pluginType = cms.string('PATCandViewMinEventSelector'),
-#    src_cumulative = cms.InputTag('selectedLayer1MuonsHcalIsoCumulative'),
-#    src_individual = cms.InputTag('selectedLayer1MuonsHcalIsoIndividual'),
-#    minNumber = cms.uint32(1)
+#evtSelMuonTrkIso = cms.PSet(
+#    pluginName = cms.string('evtSelMuonTrkIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('muonTrkIsoCut','cumulative'),
+#    src_individual = cms.InputTag('muonTrkIsoCut','individual')
 #)
-muonAntiPionCut = cms.PSet(
-    pluginName = cms.string('muonAntiPionCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1MuonsPionVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1MuonsPionVetoIndividual'),
-    minNumber = cms.uint32(1)
-)
-#muonTrkIPcut = cms.PSet(
-#    pluginName = cms.string('muonTrkIPcut'),
-#    pluginType = cms.string('PATCandViewMinEventSelector'),
-#    src_cumulative = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-#    src_individual = cms.InputTag('selectedLayer1MuonsTrkIPindividual'),
-#    minNumber = cms.uint32(1)
+#evtSelMuonEcalIso = cms.PSet(
+#    pluginName = cms.string('evtSelMuonEcalIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('muonEcalIsoCut','cumulative'),
+#    src_individual = cms.InputTag('muonEcalIsoCut','individual')
 #)
+#evtSelMuonHcalIso = cms.PSet(
+#    pluginName = cms.string('evtSelMuonHcalIso'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('muonHcalIsoCut','cumulative'),
+#    src_individual = cms.InputTag('muonHcalIsoCut','individual')
+#)
+evtSelMuonAntiPion = cms.PSet(
+    pluginName = cms.string('evtSelMuonAntiPion'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonAntiPionCut','cumulative'),
+    src_individual = cms.InputTag('muonAntiPionCut','individual')
+)
+evtSelMuonTrkIP = cms.PSet(
+    pluginName = cms.string('evtSelMuonTrkIP'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('muonTrkIPCut','cumulative'),
+    src_individual = cms.InputTag('muonTrkIPCut','individual')
+)
 
 # di-tau candidate selection
-diTauCandidateForElecMuZeroChargeCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuZeroChargeCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsZeroChargeCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsZeroChargeIndividual'),
-    minNumber = cms.uint32(1)
+evtSelDiTauCandidateForElecMuZeroCharge = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecMuZeroCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForElecMuZeroChargeCut','cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecMuZeroChargeCut','individual')
 )
-diTauCandidateForElecMuDPhiCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuDPhiCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsDPhiCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsDPhiIndividual'),
-    minNumber = cms.uint32(1)
+evtSelDiTauCandidateForElecMuAcoplanarity = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecMuAcoplanarity'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForElecMuAcoplanarityCut','cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecMuAcoplanarityCut','individual')
 )
-diTauCandidateForElecMuImpParamSigCut = cms.PSet(
-    pluginName = cms.string('diTauCandidateForElecMuImpParamSigCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedElecMuPairsImpParamSigCumulative'),
-    src_individual = cms.InputTag('selectedElecMuPairsImpParamSigIndividual'),
-    minNumber = cms.uint32(1)
-)
+#evtSelDiTauCandidateForElecMuDPhi = cms.PSet(
+#    pluginName = cms.string('evtSelDiTauCandidateForElecMuDPhi'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('diTauCandidateForElecMuDPhiCut','cumulative'),
+#    src_individual = cms.InputTag('diTauCandidateForElecMuDPhiCut','individual')
+#)
+#evtSelDiTauCandidateForElecMuImpParamSig = cms.PSet(
+#    pluginName = cms.string('evtSelDiTauCandidateForElecMuImpParamSig'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src_cumulative = cms.InputTag('diTauCandidateForElecMuImpParamSigCut','cumulative'),
+#    src_individual = cms.InputTag('diTauCandidateForElecMuImpParamSigCut','individual')
+#)
 
 # jet candidate selection
-jetMinCut = cms.PSet(
-    pluginName = cms.string('jetMinCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    minNumber = cms.uint32(0)
+evtSelJetMin = cms.PSet(
+    pluginName = cms.string('evtSelJetMin'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('jetMinCut')
 )
-jetMaxCut = cms.PSet(
-    pluginName = cms.string('jetMaxCut'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    maxNumber = cms.uint32(2)
+evtSelJetMax = cms.PSet(
+    pluginName = cms.string('evtSelJetMax'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('jetMaxCut')
 )
-jetBtagMinCut = cms.PSet(
-    pluginName = cms.string('jetBtagMinCut'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsBtagCumulative'),
-    minNumber = cms.uint32(0)
+evtSelJetBtagMin = cms.PSet(
+    pluginName = cms.string('evtSelJetBtagMin'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('jetBtagMinCut')
 )
-jetBtagMaxCut = cms.PSet(
-    pluginName = cms.string('jetBtagMaxCut'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsBtagCumulative'),
-    maxNumber = cms.uint32(1)
+evtSelJetBtagMax = cms.PSet(
+    pluginName = cms.string('evtSelJetBtagMax'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('jetBtagMaxCut')
 )
 
 #--------------------------------------------------------------------------------
@@ -296,15 +296,15 @@ elecMuEventDump = cms.PSet(
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
-    #electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
-    electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-    #muonSource = cms.InputTag('cleanLayer1MuonsSel'),
-    muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-    tauSource = cms.InputTag('cleanLayer1TausSel'),
+    electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
+    #electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
+    muonSource = cms.InputTag('cleanLayer1MuonsSel'),
+    #muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
+    #tauSource = cms.InputTag('allLayer1Taus'),
     diTauCandidateSource = cms.InputTag('allElecMuPairs'),
     metSource = cms.InputTag('layer1METs'),
     genMEtSource = cms.InputTag('genMETWithMu'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    jetSource = cms.InputTag('selectedLayer1JetsEta21Cumulative'),
     recoTrackSource = cms.InputTag('generalTracks'),
     pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
     pfGammaSource = cms.InputTag('pfAllPhotons'),
@@ -313,29 +313,7 @@ elecMuEventDump = cms.PSet(
     #output = cms.string("elecMuEventDump.txt"),
     output = cms.string("std::cout"),
     
-    triggerConditions = cms.vstring("diTauCandidateForElecMuZeroChargeCut: passed_cumulative")
-    #triggerConditions = cms.vstring("Trigger: rejected_cumulative",
-    #                                "primaryEventVertex: rejected_cumulative",
-    #                                "primaryEventVertexQuality: rejected_cumulative",
-    #                                "primaryEventVertexPosition: rejected_cumulative",
-    #                                "tightElectronIdCut: rejected_cumulative",
-    #                                "electronEtaCut: rejected_cumulative",
-    #                                "electronPtCut: rejected_cumulative",
-    #                                "electronTrkIsoCut: rejected_cumulative",
-    #                                "electronEcalIsoCut: rejected_cumulative",
-    #                                "electronTrkCut: rejected_cumulative",
-    #                                "electronTrkIPcut: rejected_cumulative",
-    #                                "globalMuonCut: rejected_cumulative",
-    #                                "muonEtaCut: rejected_cumulative",
-    #                                "muonPtCut: rejected_cumulative",
-    #                                "muonTrkIsoCut: rejected_cumulative",
-    #                                "muonEcalIsoCut: rejected_cumulative",
-    #                                "muonHcalIsoCut: rejected_cumulative",
-    #                                "muonAntiPionCut: rejected_cumulative",
-    #                                "muonTrkIPcut: rejected_cumulative",
-    #                                "diTauCandidateForElecMuAntiOverlapVeto: rejected_cumulative",
-    #                                "diTauCandidateForElecMuAcoplanarityCut: rejected_cumulative",
-    #                                "diTauCandidateForElecMuZeroChargeCut: rejected_cumulative")
+    triggerConditions = cms.vstring("evtSelDiTauCandidateForElecMuZeroCharge: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -366,7 +344,7 @@ elecMuAnalysisSequence = cms.VPSet(
     
     # trigger selection
     cms.PSet(
-        filter = cms.string('Trigger'),
+        filter = cms.string('evtSelTrigger'),
         title = cms.string('Elec || Muon Triggers'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -376,17 +354,17 @@ elecMuAnalysisSequence = cms.VPSet(
 
     # primary event vertex selection
     cms.PSet(
-        filter = cms.string('primaryEventVertex'),
+        filter = cms.string('evtSelPrimaryEventVertex'),
         title = cms.string('Vertex'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        filter = cms.string('primaryEventVertexQuality'),
+        filter = cms.string('evtSelPrimaryEventVertexQuality'),
         title = cms.string('p(chi2Vertex) > 0.01'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        filter = cms.string('primaryEventVertexPosition'),
+        filter = cms.string('evtSelPrimaryEventVertexPosition'),
         title = cms.string('-50 < zVertex < +50 cm'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -396,25 +374,25 @@ elecMuAnalysisSequence = cms.VPSet(
 
     #only 1 electron and 1 muon
     cms.PSet(
-        filter = cms.string('tightElectronIdMinCut'),
-        title = cms.string('tight Electron Id. Min'),
+        filter = cms.string('evtSelElectronIdMin'),
+        title = cms.string('electron Id. Min'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
     ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelElectronIdMax'),
+    #    title = cms.string('electron Id. Max'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
+    #),
     cms.PSet(
-        filter = cms.string('tightElectronIdMaxCut'),
-        title = cms.string('tight Electron Id. Max'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-    ),
-    cms.PSet(
-        histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('globalMuonMinCut'),
+        filter = cms.string('evtSelGlobalMuonMin'),
         title = cms.string('global Muon min'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -423,20 +401,20 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
-    cms.PSet(
-        filter = cms.string('globalMuonMaxCut'),
-        title = cms.string('global Muon max'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-    ),
-    cms.PSet(
-        histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
-    ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelGlobalMuonMax'),
+    #    title = cms.string('global Muon max'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
+    #),
 
     # kinematic cuts
     cms.PSet(
-        filter = cms.string('electronAntiCrackCut'),
+        filter = cms.string('evtSelElectronAntiCrack'),
         title = cms.string('crack-Veto'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -446,7 +424,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
     cms.PSet(
-        filter = cms.string('electronEtaCut'),
+        filter = cms.string('evtSelElectronEta'),
         title = cms.string('-2.4 < eta(Elec) < +2.4'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -456,7 +434,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
     cms.PSet(
-        filter = cms.string('muonEtaCut'),
+        filter = cms.string('evtSelMuonEta'),
         title = cms.string('-2.4 < eta(Muon) < +2.4'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -466,7 +444,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
     ),
     cms.PSet(
-        filter = cms.string('electronPtCut'),
+        filter = cms.string('evtSelElectronPt'),
         title = cms.string('Pt(Electron) > 15 GeV'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -476,7 +454,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
     ),
     cms.PSet(
-        filter = cms.string('muonPtCut'),
+        filter = cms.string('evtSelMuonPt'),
         title = cms.string('Pt(Muon) > 15 GeV'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -488,27 +466,47 @@ elecMuAnalysisSequence = cms.VPSet(
 
     #electron isolation
     cms.PSet(
-        filter = cms.string('electronTrkIsoCut'),
-        title = cms.string('Electron Track iso.'),
+        filter = cms.string('evtSelElectronIso'),
+        title = cms.string('Electron iso.'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIsoCumulative',
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIsoCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelElectronTrkIso'),
+    #    title = cms.string('Electron Track iso.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelElectronEcalIso'),
+    #    title = cms.string('Electron ECAL iso.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEcalIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelElectronHcalIso'),
+    #    title = cms.string('Electron HCAL iso.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsHcalIsoCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    #),
     cms.PSet(
-        filter = cms.string('electronEcalIsoCut'),
-        title = cms.string('Electron ECAL iso.'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-    ),
-    cms.PSet(
-        histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEcalIsoCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('electronTrkCut'),
+        filter = cms.string('evtSelElectronTrk'),
         title = cms.string('Electron Track find.'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -517,30 +515,50 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelElectronTrkIP'),
+    #    title = cms.string('Electron Track IP cut.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
+    #),
 
     # muon isolation
     cms.PSet(
-        filter = cms.string('muonTrkIsoCut'),
-        title = cms.string('Muon Track iso.'),
+        filter = cms.string('evtSelMuonIso'),
+        title = cms.string('Muon iso.'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('muonEcalIsoCut'),
-        title = cms.string('Muon ECAL iso.'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-    ),
-    cms.PSet(
-        histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+                              'muonHistManager.muonSource = selectedLayer1MuonsIsoCumulative')
     ),
     #cms.PSet(
-    #    filter = cms.string('muonHcalIsoCut'),
+    #    filter = cms.string('evtSelMuonTrkIso'),
+    #    title = cms.string('Muon Track iso.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelMuonEcalIso'),
+    #    title = cms.string('Muon ECAL iso.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSelMuonHcalIso'),
     #    title = cms.string('Muon HCAL iso.'),
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
@@ -550,7 +568,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #                          'muonHistManager.muonSource = selectedLayer1MuonsHcalIsoCumulative')
     #),
     cms.PSet(
-        filter = cms.string('muonAntiPionCut'),
+        filter = cms.string('evtSelMuonAntiPion'),
         title = cms.string('Muon pi-Veto'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
@@ -559,89 +577,111 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
     ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelMuonTrkIP'),
+    #    title = cms.string('Muon Track IP cut.'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
+    #),
 
     #selection of electron + muon combinations
     cms.PSet(
-        filter = cms.string('diTauCandidateForElecMuZeroChargeCut'),
+        filter = cms.string('evtSelDiTauCandidateForElecMuZeroCharge'),
         title = cms.string('Charge(Elec+Muon) = 0'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
     ),
     cms.PSet(
-        filter = cms.string('diTauCandidateForElecMuDPhiCut'),
-        title = cms.string('DPhi(Elec,Muon) < 3.07'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+        filter = cms.string('evtSelDiTauCandidateForElecMuAcoplanarity'),
+        title = cms.string('cos(dPhi(lepton-MET)) > 0.5'),
+        saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative')
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative')
     ),
-    cms.PSet(
-        filter = cms.string('diTauCandidateForElecMuImpParamSigCut'),
-        title = cms.string('Imp.Param. Significance'),
-        saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
-    ),
-    cms.PSet(
-        histManagers = elecMuHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative')
-    ),
+    #cms.PSet(
+    #    filter = cms.string('evtSelDiTauCandidateForElecMuDPhi'),
+    #    title = cms.string('DPhi(Elec,Muon) < 3.07'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+    #                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative')
+    #),
+    #cms.PSet(
+    #    filter = cms.string('evtSeliTauCandidateForElecMuImpParamSig'),
+    #    title = cms.string('Imp.Param. Significance'),
+    #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
+    #),
+    #cms.PSet(
+    #    histManagers = elecMuHistManagers,
+    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
+    #                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+    #                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative')
+    #),
+    
 
     #selection of jets
     cms.PSet(
-        filter = cms.string('jetMinCut'),
+        filter = cms.string('evtSelJetMin'),
         title = cms.string('Jet min'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
                               'jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
     ),
     cms.PSet(
-        filter = cms.string('jetMaxCut'),
+        filter = cms.string('evtSelJetMax'),
         title = cms.string('Jet max'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
                               'jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
     ),
     cms.PSet(
-        filter = cms.string('jetBtagMinCut'),
+        filter = cms.string('evtSelJetBtagMin'),
         title = cms.string('b-tagging min cut'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
                               'jetHistManager.jetSource = selectedLayer1JetsBtagCumulative')
     ),
     cms.PSet(
-        filter = cms.string('jetBtagMaxCut'),
+        filter = cms.string('evtSelJetBtagMax'),
         title = cms.string('b-tagging max cut'),
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
-                              'muonHistManager.muonSource = selectedLayer1MuonsTrkCumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
                               'jetHistManager.jetSource = selectedLayer1JetsBtagCumulative')
     )
 )
