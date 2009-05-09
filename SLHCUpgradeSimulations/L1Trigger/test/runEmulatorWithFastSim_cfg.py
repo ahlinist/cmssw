@@ -55,7 +55,7 @@ process.load("L1TriggerConfig.L1ScalesProducers.L1CaloScalesConfig_cff")
 
 process.load("SLHCUpgradeSimulations.L1Trigger.L1SLHCEmulator_cff")
 
-process.p1 = cms.Path(process.simulationWithFamos+
+process.p1 = cms.Path(process.simulationWithFamos+process.caloJetMetGen+
                       process.simEcalTriggerPrimitiveDigis+
                       process.simHcalTriggerPrimitiveDigis+
                       process.L1SLHCEmulator)
