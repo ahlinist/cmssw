@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.49 2009/04/28 13:04:18 battilan Exp $
+// $Id: DTRenderPlugin.cc,v 1.50 2009/05/07 08:49:58 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.49 $
-  \date $Date: 2009/04/28 13:04:18 $
+  \version $Revision: 1.50 $
+  \date $Date: 2009/05/07 08:49:58 $
 */
 
 #include "TProfile2D.h"
@@ -919,7 +919,7 @@ void DTRenderPlugin::preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 
   if(o.name.find("FEDIntegrity" ) < o.name.size()) {
-    obj->GetXaxis()->SetNdivisions(6,true);
+    obj->GetXaxis()->SetNdivisions(11,true);
     obj->GetXaxis()->CenterLabels();
     c->SetGrid(1,0);
     return;
