@@ -15,8 +15,6 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
-#from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_SIM_RECO_RAW_HLTExtra_PFTauFiltered_HighEfficiency import *
-#process.source = source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 # 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
@@ -26,6 +24,8 @@ process.source = cms.Source("PoolSource",
 # 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
     )
 )
+#from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_SIM_RECO_RAW_HLTExtra_PFTauFiltered_HighEfficiency import *
+#process.source = source
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
 #   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
@@ -73,8 +73,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 
-#        outputFileName          = cms.string("qcd_tteffAnalysis.root")
-        outputFileName          = cms.string("/tmp/chinhan/qcd_tteffAnalysis.root")
+        outputFileName          = cms.string("tteffAnalysis.root")
 )
 
 process.runEDAna = cms.Path(
