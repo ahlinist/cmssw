@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.9 2008/11/06 17:36:50 asavin Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.10 2009/01/27 09:49:56 asavin Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin 
-  \version $Revision: 1.9 $
-  \date $Date: 2008/11/06 17:36:50 $
+  \version $Revision: 1.10 $
+  \date $Date: 2009/01/27 09:49:56 $
 */
 
 #include <cassert>
@@ -150,43 +150,43 @@ bool L1TdeRCTRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImg
   std::cout << "L1TdeRCTRenderPlugin:applies " << o.name << std::endl;
 #endif
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/IsoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/NisoEm" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/NisoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/NisoEm/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/NisoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/EffCurves/NisoEm" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/EffCurves/NisoEm" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/EffCurves/NisoEm/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/EffCurves/NisoEm/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/RegionData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/RegionData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/RegionData/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/RegionData/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/BitData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/BitData" ) != std::string::npos ) {
     return true;
   }
 
-  if( o.name.find( "L1TEMU/L1TdeRCT/BitData/ServiceData" ) != std::string::npos ) {
+  if( o.name.find( "L1TdeRCT/BitData/ServiceData" ) != std::string::npos ) {
     return true;
   }
 
