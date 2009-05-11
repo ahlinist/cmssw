@@ -15,17 +15,17 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-# 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
-      "file:/tmp/chinhan/hltExtra.root"
-#	"file:/tmp/chinhan/test.root"
-# 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/QCDpt30_Summer08_IDEAL_V11_redigi_v1_HLT_RECO_PFTauFiltered/HLTFromDigiRaw_960_RECO_sampleProducer.root"
-# 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
-    )
-)
-#from ElectroWeakAnalysis.TauTriggerEfficiency.QCDpt80_Summer08_IDEAL_V9_v2_GEN_SIM_RECO_RAW_HLTExtra_PFTauFiltered_HighEfficiency import *
-#process.source = source
+#process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring(
+## 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
+#      "file:/tmp/chinhan/hltExtra.root"
+##	"file:/tmp/chinhan/test.root"
+## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/QCDpt30_Summer08_IDEAL_V11_redigi_v1_HLT_RECO_PFTauFiltered/HLTFromDigiRaw_960_RECO_sampleProducer.root"
+## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
+#    )
+#)
+from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run3_cfg import *
+process.source = source
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
 #   src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
