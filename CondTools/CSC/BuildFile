@@ -58,3 +58,6 @@
   <flags EDM_PLUGIN=1>
 </library>
 
+<library name=plugins/CSCDCSDataPopConAnalyzer file=src/CSCDCSDataHandler.cc,plugins/CSCDCSDataPopConAnalyzer.cc>
+  <flags EDM_PLUGIN=1>
+</library>
