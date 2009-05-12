@@ -14,6 +14,7 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/EgammaCandidates/interface/Electron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"

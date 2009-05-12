@@ -349,8 +349,8 @@ bool MCProcessor::IsTauJet(int indexInGenData)
   if(GenData[indexInGenData]->particleType()< 50 ||
      GenData[indexInGenData]->particleType()>=80) {return false;}
 // store MCData particles that are the constituents of the GenJet in an array
-  std::vector <const GenParticleCandidate*> constituents = 
-    dynamic_cast<const GenJet*>(GenData[indexInGenData]->jetCandidate())->getConstituents();
+  std::vector <const GenParticle*> constituents = 
+    dynamic_cast<const GenJet*>(GenData[indexInGenData]->jetCandidate())->getGenConstituents();
   std::vector <int> indexinMCData;
   for (int i=0; i< (int) constituents.size(); ++i) {
     for (int j=0; j< (int) MCData.size(); ++j){

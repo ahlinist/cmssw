@@ -16,31 +16,51 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HLTReco/interface/HLTFilterObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEventWithRefs.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
+#include "FWCore/Framework/interface/TriggerNames.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
 
 #include "DataFormats/Common/interface/Ref.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
-#include "DataFormats/JetReco/interface/GenJetfwd.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
-#include "DataFormats/BTauReco/interface/JetTracksAssociation.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/BTauReco/interface/IsolatedTauTagInfo.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+//#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
+// needed for cluster shape in 2_2_X
+//#include "FWCore/Framework/interface/ESHandle.h"
+//#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+//#include "Geometry/Records/interface/IdealGeometryRecord.h"
+//#include "Geometry/Records/interface/CaloGeometryRecord.h"
+//#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+//
+
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h"
 #include "AnalysisExamples/SusyAnalysis/interface/MrEvent.h"
+#include "AnalysisExamples/SusyAnalysis/interface/InputMcData.h"
 #include "AnalysisExamples/SusyAnalysis/interface/MCProcessor.h"
 #include "AnalysisExamples/SusyAnalysis/interface/RecoProcessor.h"
 #include "AnalysisExamples/SusyAnalysis/interface/ShapeAnalyzer.h"
@@ -70,9 +90,9 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      string m_tracksSrc;
      string m_vertexSrc;
      string m_jetsSrc;
-     //string m_jetsCorrectionService;
-     string m_jetsCorrectionL2RelativeService;
-     string m_jetsCorrectionL3AbsoluteService;
+     //string m_jetsCorrectionL2RelativeService;
+     //string m_jetsCorrectionL3AbsoluteService;
+     string m_jetsCorrectionChainService;
      string m_jetsgenSrc;
      string m_tautaginfo;
      string m_photonSrc;
@@ -82,6 +102,8 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      edm::InputTag m_hlTriggerResults;
      edm::InputTag m_clusterShapeBarrel;
      edm::InputTag m_clusterShapeEndcap;
+     edm::InputTag m_reducedEndcapRecHitCollection;
+     edm::InputTag m_reducedBarrelRecHitCollection;
 
   // names of histogram output file
      TFile*      hOutputFile ;
@@ -92,13 +114,14 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      vector<MrParticle*> MCData; 
      vector<MrParticle*> RecoData;
      vector<MrParticle*> GenData; 
-  
+      
   // The pointer to the MrEvent data
      
      MrEvent * EventData;
   
   // names of parameter sets  
-      
+  
+     edm::ParameterSet InputMC_params;
      edm::ParameterSet rejectEvent_params;
      edm::ParameterSet acceptance_cuts;
      edm::ParameterSet cleaner_params;
@@ -120,6 +143,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      const BasicClusterShapeAssociationCollection * clusterShapeBarrelData; 
      const BasicClusterShapeAssociationCollection * clusterShapeEndcapData; 
 
+     InputMcData * myInputMcData;
      MCProcessor * myMCProcessor;
      RecoProcessor * myRecoProcessor;
      EffProcessor * myEffProcessor;
@@ -138,8 +162,10 @@ class SusyAnalyzer : public edm::EDAnalyzer {
 
   //counters for L1
   std::vector<int> numTotL1BitsBeforeCuts;
+  std::vector<std::string> l1Names;
   //counters for HLT
   std::vector<int> numTotHltBitsBeforeCuts;
+  std::vector<std::string> hlNames;
     
   int numTotEvt;
   int numTotMCReject;
@@ -163,13 +189,14 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotMCTau;
   int numTotMCPhot;
   int numTotMCJet;
-                                                                                                                                   
+  
   int numTotMCElecBigEta;
   int numTotMCMuonBigEta;
   int numTotMCTauBigEta;
   int numTotMCPhotBigEta;
   int numTotMCJetBigEta;
 
+  
   int numTotNotPrimaryTrk;
   int numTotNotClean;
   int numTotDuplicate;
@@ -190,7 +217,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotElectronsfinalBadHOE;  
   int numTotElectronsfinalBadShsh;  
   int numTotElectronsfinalBadTmat;  
-  int numTotElectronsMatched;
+  int numTotElectronsMatched;  
   int numTotElectronsIsoMatched;
   int numTotElectronsMatchedBadHOE;
   int numTotElectronsMatchedBadShsh;
@@ -204,7 +231,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotMuonsNonIsoBad;  
   int numTotMuonsfinal;  
   int numTotMuonsfinalBad;  
-  int numTotMuonsMatched;
+  int numTotMuonsMatched;  
   int numTotMuonsIsoMatched;
   int numTotMuonsMatchedBad;
   int numTotTaus;
@@ -216,7 +243,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotTausNonIsoBad;
   int numTotTausfinal;
   int numTotTausfinalBad;
-  int numTotTausMatched;
+  int numTotTausMatched;  
   int numTotTausIsoMatched;
   int numTotTausMatchedBad;
   int numTotPhotons;  
@@ -263,16 +290,14 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   int numTotUfosMatchedBad;
   
   int numTotEventsAfterCuts;
-                                                                                                                                   
+
+  int firstsusymother[2];
+    
   TH1I *hEventStats; //17 bins
   TH1I *hElecMuonStats;//10 bins
   TH1I *hPhotonJetStats;//10 bins
   TH1I *hMiscObjStats; // 78 bins
-                                                                                                                                   
-
-  int firstsusymother[2];
-    
-
+ 
   // private methods
   virtual void PrintTitle(void);
   virtual void PrintEvtRej(void);
@@ -283,10 +308,12 @@ class SusyAnalyzer : public edm::EDAnalyzer {
   virtual void PrintIsolatorCuts(void);
   virtual void PrintObjectMatchingCuts(void);
   virtual bool AcceptTrigger();  // could become a class once implemented
-  virtual void PrintStatistics(void);
+  virtual void PrintStatistics(void);  
   virtual void SetHistoWithStats(void);
   virtual void CleanMemory();
 
 };
+
+DEFINE_FWK_MODULE(SusyAnalyzer);
 
 #endif

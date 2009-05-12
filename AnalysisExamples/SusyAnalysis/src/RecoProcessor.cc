@@ -300,7 +300,7 @@ bool RecoProcessor::RecoDriver()
      // for electrons
      if (RecoData[i]->particleType() == 10){
 //       cout << "elecand pointer " << RecoData[i]->electronCandidate() << endl;
-       const PixelMatchGsfElectron* elecand = RecoData[i]->electronCandidate();
+       const GsfElectron* elecand = RecoData[i]->electronCandidate();
 
        // Apply first acceptance cuts
        if (fabs(RecoData[i]->eta()) < ana_elecEtaMax && 
@@ -1046,17 +1046,17 @@ bool RecoProcessor::RecoDriver()
       if (ptype == 5 || ptype == 6){
       reco::Particle::LorentzVector lv = reco::Particle::LorentzVector(RecoData[i]->px(), RecoData[i]->py(), 
                            RecoData[i]->pz(), RecoData[i]->energy());
+     
       float scale = 1.;
+      float oldscale = 1.;
+      reco::Particle::LorentzVector lvdot = lv;
       
       int pjetCorrectorsSize=pjetCorrectors->size(); // equals to the number of factorial  L2 and L3... LN applied
-      if(pjetCorrectorsSize==2)   // For the moment only L2 and L3 are treated
-      {
-          vector<const JetCorrector *>::const_iterator jcit=pjetCorrectors->begin();
-          float L2scale = (*pjetCorrectors)[0]->correction(lv);
-                                                                                
-          reco::Particle::LorentzVector lvdot = L2scale*lv;
-	  float L3scale = (*pjetCorrectors)[1]->correction(lvdot);
-          scale = L2scale*L3scale;
+           
+      for (int j = 0; j < pjetCorrectorsSize ; j++){ 
+          lvdot = oldscale*lvdot;
+	  oldscale = (*pjetCorrectors)[j]->correction(lvdot); 
+          scale *= oldscale;                                                                               
       }
                                                                                 
      // correct for a modified mrjet (where the added piece does not need to be corrected)
@@ -1081,7 +1081,10 @@ bool RecoProcessor::RecoDriver()
       }
     
     }
-   
+
+
+     
+     
   // ******************************************************** 
   // Apply the final acceptance cuts
    

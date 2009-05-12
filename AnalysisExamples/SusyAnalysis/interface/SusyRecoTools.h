@@ -20,7 +20,9 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -53,7 +55,6 @@ virtual void GetNonLeptonicTracks(vector<int>*);
 virtual void GetIsoCandInJets(int, int, float, float, float, vector<int>* , vector<int>*);
 virtual void GetJetTrksFromCalo(int, int, float, float, vector<int>*);
 virtual void GetJetTrksInCone(int, int, float, float, vector<int>*);
-virtual void GetJetTrksFromTag(int, int, float, vector<int>*);
 virtual float CaloTowerSizePhi(float);
 virtual float CaloTowerSizeEta(float);
 virtual bool IsFromPrimaryVx(int, float);

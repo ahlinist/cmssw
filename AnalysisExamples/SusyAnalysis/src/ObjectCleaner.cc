@@ -1,5 +1,6 @@
 #include "AnalysisExamples/SusyAnalysis/interface/ObjectCleaner.h"
 
+
 using namespace std;
 
 using std::vector;
@@ -36,10 +37,10 @@ clean_FracChmin(0.1), clean_FracEmmin(0.175),
 clean_METmin(50.), clean_dPhiJetMETmin(0.), clean_dR12min(0.5), clean_dR21min(0.5), useFastSim(false)
 {}
 
-ObjectCleaner::ObjectCleaner(MrEvent* pEvtData, edm::ParameterSet param): SusyRecoTools(pEvtData), 
+ObjectCleaner::ObjectCleaner(MrEvent* pEvtData, edm::ParameterSet param): SusyRecoTools(pEvtData)
 //RecoData(*pData), TrackData(Tracks), VertexData(Vertices), CaloTowerData(CaloTowers),
-clusterShapeBarrelData(pEvtData->clusterShapeBarrelCollection()), 
-clusterShapeEndcapData(pEvtData->clusterShapeEndcapCollection())
+// clusterShapeBarrelData(pEvtData->clusterShapeBarrelCollection()), 
+// clusterShapeEndcapData(pEvtData->clusterShapeEndcapCollection())
 //primVx(NULL)
 {
 clean_chisqVxmax = param.getParameter<double>("clean_chisqVxmax") ;
@@ -397,7 +398,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
 
  if (ichk < 0){return false;}
  
- const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+ const GsfElectron* elecand = RecoData[ichk]->electronCandidate();
  if (elecand == NULL) {
    if (DEBUGLVL >= 2){
      cout << " No electron candidate for this electron, index = " << ichk << endl;
@@ -411,7 +412,7 @@ bool ObjectCleaner::CleanElectron(int ichk)
    float ele_eta = elecand->superCluster()->eta();
 //   float ele_phi = elecand->superCluster()->phi();
    float ele_theta = 2. * atan(exp(-ele_eta));
-//   float p_track = elecand->gsfTrack()->p();
+//   float p_track = elecand->track()->p();
    float pt_track = elecand->gsfTrack()->pt();
    float et_em = fabs(elenergy*sin(ele_theta));
 //   float e_had = 0.;                       
@@ -433,44 +434,52 @@ bool ObjectCleaner::CleanElectron(int ichk)
   float deltaPhiOut = elecand->deltaPhiSeedClusterTrackAtCalo();
   float invEOverInvP = (1./elecand->caloEnergy())-(1./elecand->trackMomentumAtVtx().R());
   
-  BasicClusterShapeAssociationCollection::const_iterator seedShpItr;
-  bool findFail = true;
+  //  BasicClusterShapeAssociationCollection::const_iterator seedShpItr;
+//   bool findFail = true;
 
-    if (elecand->classification()<100) {
-      seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
-      findFail = (seedShpItr == clusterShapeBarrelData->end());
-    }
-    if (findFail || elecand->classification()>=100 ) {
-      seedShpItr = clusterShapeEndcapData->find(elecand->superCluster()->seed());  
-      findFail = (seedShpItr == clusterShapeEndcapData->end());
-    }
-    if (findFail ) {
-      seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
-      findFail = (seedShpItr == clusterShapeBarrelData->end());
-    }
+//     if (elecand->classification()<100) {
+//       seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
+//       findFail = (seedShpItr == clusterShapeBarrelData->end());
+//     }
+//     if (findFail || elecand->classification()>=100 ) {
+//       seedShpItr = clusterShapeEndcapData->find(elecand->superCluster()->seed());  
+//       findFail = (seedShpItr == clusterShapeEndcapData->end());
+//     }
+//     if (findFail ) {
+//       seedShpItr = clusterShapeBarrelData->find(elecand->superCluster()->seed());
+//       findFail = (seedShpItr == clusterShapeBarrelData->end());
+//     }
     
-      if (findFail) {      
-        cout << " Can't find cluster shape information for this electron, index = " << ichk << 
-        " with eta = " << eta << endl;      
-      return false;
-    }
+//       if (findFail) {      
+//         cout << " Can't find cluster shape information for this electron, index = " << ichk << 
+//         " with eta = " << eta << endl;      
+//       return false;
+//       }
 
   
   
-    //edm::Ref to Cluster shape of electron
-    const ClusterShapeRef& clusterShape = seedShpItr->val;
+//     //edm::Ref to Cluster shape of electron
+//       const ClusterShapeRef& clusterShape = seedShpItr->val;
 
-    if (clusterShape.isNull()) {
-      if (DEBUGLVL >= 2){
-	cout << " No cluster shape information for this electron, index = " << ichk << endl;
-      }
-      return false;
-    }
 
-  float sigmaee = sqrt(clusterShape->covEtaEta());
-  float sigmapp = sqrt(clusterShape->covPhiPhi());
-  float E9overE25 = clusterShape->e3x3()/clusterShape->e5x5();
 
+//     if (clusterShape.isNull()) {
+//       if (DEBUGLVL >= 2){
+// 	cout << " No cluster shape information for this electron, index = " << ichk << endl;
+//       }
+//       return false;
+//     }
+//   float sigmaee = sqrt(clusterShape->covEtaEta());
+//   float sigmapp = sqrt(clusterShape->covPhiPhi());
+//   float E9overE25 = clusterShape->e3x3()/clusterShape->e5x5();
+
+    std::vector<float> covariances = EventData->lazyTool()->localCovariances(*(elecand->superCluster()->seed())) ;
+    float sce33 = EventData->lazyTool()->e3x3(*(elecand->superCluster()->seed()));
+    float sce55 = EventData->lazyTool()->e5x5(*(elecand->superCluster()->seed()));
+    
+  float sigmaee = sqrt(covariances[0]);
+  float sigmapp = sqrt(covariances[2]);
+  float E9overE25 = sce33/sce55;
 
 // correct sigmaee for xtal shape in endcap (wait advice from David)
   
@@ -810,7 +819,7 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
  MrParticle * recopart = RecoData[ichk];
  if (recopart->particleType()/10 != 1){return isDuplicate;}
 
- const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+ const GsfElectron* elecand = RecoData[ichk]->electronCandidate();
 // cout << " pointer to elec cand " << elecand;
 // float elecmom = elecand->p();
 // cout << " momentum " << elecmom << endl;
@@ -831,7 +840,7 @@ bool ObjectCleaner::DuplicateElectron(int ichk)
                                 recopart->phi(), RecoData[j]->phi());
         if (deltaR < clean_dRSSelecmax){
    
-          const PixelMatchGsfElectron* newcand = RecoData[j]->electronCandidate();
+          const GsfElectron* newcand = RecoData[j]->electronCandidate();
           const SuperCluster* newsuper =&(*(newcand->superCluster()));
           const GsfTrack* newtrack = &(*newcand->gsfTrack());
 //          cout << " pointer to new supercluster " << newsuper << endl;
@@ -879,6 +888,7 @@ bool ObjectCleaner::CleanMuon(int ichk)
  
 
  if (ichk < 0){return false;}
+
  
  const Muon* muoncand = RecoData[ichk]->muonCandidate();
 //cout << " Clean muon cand with pointer " << muoncand << endl;
@@ -887,14 +897,15 @@ bool ObjectCleaner::CleanMuon(int ichk)
  if (useFastSim) {
     muontrack = muoncand->track();
  } else {
-    muontrack = muoncand->combinedMuon();
+   muontrack = muoncand->combinedMuon();
  }
  
  bool goodmuon = false;
  if (muoncand != NULL) {
  
    // Verify the muon quality
-// cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
+ 
+ //cout << " Comb muon address " << &(*(muoncand->combinedMuon())) << endl;
    float pt_track = muontrack->pt();
 //   following does not work anymore in 130
 //   float dpt_track = muoncand->combinedMuon()->ptError();
@@ -994,7 +1005,7 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
  if (useFastSim) {
     muontrack = muoncand->track();
  } else {
-    muontrack = muoncand->combinedMuon();
+   muontrack = muoncand->combinedMuon();
  }
 
  float ptmuon = muontrack->pt();
@@ -1023,7 +1034,7 @@ bool ObjectCleaner::DuplicateMuon(int ichk)
             if (useFastSim) {
               muonnewtrack = muonnew->track();
             } else {
-              muonnewtrack = muonnew->combinedMuon();
+	      muonnewtrack = muonnew->combinedMuon();
             }
             float ptnew = muonnewtrack->pt();
             //   following does not work anymore in 130
@@ -1273,10 +1284,10 @@ bool ObjectCleaner::CleanJet(int ichk)
     pt_track = GetJetTrkPtsum(ichk, 2, 
        clean_nJetTkHitsmin, clean_JetTkPtmin, clean_dRTrkFromJet);
   }
-  else if (clean_methodTksInJet == 3){
-    pt_track = GetJetTrkPtsum(ichk, 3, 
-       clean_nJetTkHitsmin, clean_JetTkPtmin, 0.);
-  }
+//   else if (clean_methodTksInJet == 3){
+//     pt_track = GetJetTrkPtsum(ichk, 3, 
+//        clean_nJetTkHitsmin, clean_JetTkPtmin, 0.);
+//   }
   float eFractEm = jetcand->emEnergyFraction();
   float eFractHad = jetcand->energyFractionHadronic();
 //  cout << "  Jet " << ichk << " pt = " << RecoData[ichk]->pt()
