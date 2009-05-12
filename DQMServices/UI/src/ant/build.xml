@@ -2,7 +2,8 @@
 
   <!-- INITIALIZATION -->
 
-  <property name="webapps" location="/home/tomcat/apache-tomcat-5.5.26/webapps"/>
+  <property environment="os"/>
+  <property name="webapps" location="${os.CATALINA_BASE}/webapps"/>
 
   <path id="local-cp">  
     <fileset dir="lib">
@@ -25,11 +26,10 @@
     </delete>
   </target>
 
-  <target name="init" depends="clean">
-    <mkdir dir="build"/>
-  </target>
+  <target name="compile" depends="clean" description="compile the source" >
 
-  <target name="compile" depends="init" description="compile the source" >
+    <echo message="webapps: ${webapps}"/>
+    <mkdir dir="build"/>
     
     <!-- Compile RandomGen-->
     <javac srcdir="tmpl" destdir="build" includes="RandomGen.java">
