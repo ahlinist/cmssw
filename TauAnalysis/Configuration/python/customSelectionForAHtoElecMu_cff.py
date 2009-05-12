@@ -8,7 +8,23 @@ from TauAnalysis.Configuration.producePatTuple_cff import *
 #from TauAnalysis.RecoTools.patJetSelection_cff import *
 
 #------------------------------------- met --------------------------------------#
+#******* custom reco ********
+from TauAnalysis.GenSimTools.genMETWithMu_cff import *
+producePrePat.replace( pfAllChargedHadrons, produceGenMETwithMu + pfAllChargedHadrons )
+from PhysicsTools.PFCandProducer.pfMET_cfi  import *
+#pfMET.verbose = cms.untracked.bool(True)
+patAODExtraReco.replace( patJetMETCorrections, patJetMETCorrections + pfMET )
+### Use this to add the PF MET side-by-side to the PAT MET
+layer1PFMETs = layer1METs.clone(
+    metSource = cms.InputTag("pfMET"),
+    addMuonCorrections = cms.bool(False),
+    addTrigMatch = cms.bool(False),
+    genMETSource = cms.InputTag("genMETWithMu")
+)
 layer1METs.metSource  = cms.InputTag("corMetType1Icone5Muons")
+#layer1METs.addMuonCorrections = cms.bool(True) ###this is completely dummy!!!!!!!!
+layer1METs.genMETSource = cms.InputTag("genMETWithMu")
+allLayer1Objects.replace( layer1METs, layer1METs + layer1PFMETs)
 
 #---------------------------------- electrons -----------------------------------#
 #******* custom reco ********
@@ -168,6 +184,14 @@ produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1Se
 allElecMuPairs.srcLeg1 = cms.InputTag('selectedLayer1ElectronsTightIdCumulative')
 allElecMuPairs.srcLeg2 = cms.InputTag('selectedLayer1MuonsGlobalCumulative')
 allElecMuPairs.useLeadingTausOnly = cms.bool(True)
+allElecMuPairs.srcMET = cms.InputTag('layer1PFMETs')
+#allElecMuPairs.srcMET = cms.InputTag('layer1METs')
+# require missing transverse momentum to point either in direction of the electron
+# or in direction of the muon in the transverse plane
+selectedElecMuPairsAcoplanarity = cms.EDFilter("PATElecMuPairSelector",
+    cut = cms.string('cos(dPhi1MET) > 0.5 | cos(dPhi2MET) > 0.5'),
+    filter = cms.bool(False)
+)
 # require muon and tau not to be back-to-back
 selectedElecMuPairsDPhi = cms.EDFilter("PATElecMuPairSelector",
      cut = cms.string('dPhi12 < 3.07'),
@@ -218,7 +242,7 @@ selectLayer1Jets = patJetSelConfigurator.configure(namespace = locals())
 #----------------------------------- pattuple -----------------------------------#
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
-                               +producePostPat
+                               +producePostPat                               
                                +produceLayer1SelLeptons + selectLayer1Jets
                                +produceDiTauPairsAllKinds
                                +selectDiTauPairsAllKinds )
