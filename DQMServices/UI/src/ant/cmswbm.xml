@@ -36,6 +36,7 @@
       <webinf dir="WEB-INF">
         <exclude name="web.xml"/>
       </webinf>
+      <classes dir="xslt" includes="**/*.xsl"/>
     </war>
 
     <copy file="dist/${url}.war" todir="${tomcatpath}"/>
