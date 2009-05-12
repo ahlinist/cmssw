@@ -35,8 +35,9 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_vertexSrc  = iConfig.getParameter<string>("vertices");
   m_jetsSrc    = iConfig.getParameter<string>("jets");
   //m_jetsCorrectionService    = iConfig.getParameter<string>("JetCorrectionService");
-  m_jetsCorrectionL2RelativeService    = iConfig.getParameter<string>("JetCorrectionL2RelativeService");
-  m_jetsCorrectionL3AbsoluteService    = iConfig.getParameter<string>("JetCorrectionL3AbsoluteService");
+  //m_jetsCorrectionL2RelativeService    = iConfig.getParameter<string>("JetCorrectionL2RelativeService");
+  //m_jetsCorrectionL3AbsoluteService    = iConfig.getParameter<string>("JetCorrectionL3AbsoluteService");
+  m_jetsCorrectionChainService    = iConfig.getParameter<string>("JetCorrectionChainService");
   m_jetsgenSrc = iConfig.getParameter<string>("jetsgen");
   m_calotowers = iConfig.getParameter<string>("calotowers");
   m_photonSrc  = iConfig.getParameter<string>("photons");
@@ -44,10 +45,17 @@ SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
   m_bjettag = iConfig.getParameter<string>("bjettag");
   m_tautag = iConfig.getParameter<string>("tautag");
   m_hlTriggerResults = iConfig.getParameter<edm::InputTag>("HLTriggerResults");
-  m_clusterShapeBarrel = iConfig.getParameter<edm::InputTag>("clusterShapeBarrel");
-  m_clusterShapeEndcap = iConfig.getParameter<edm::InputTag>("clusterShapeEndcap");
- 
+  //m_clusterShapeBarrel = iConfig.getParameter<edm::InputTag>("clusterShapeBarrel");
+  //m_clusterShapeEndcap = iConfig.getParameter<edm::InputTag>("clusterShapeEndcap");
+  m_reducedEndcapRecHitCollection = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection");
+  m_reducedBarrelRecHitCollection = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection");
+
   // get parameters, save them in a structure Config
+  
+  // get MC input parameters
+  InputMC_params =
+    iConfig.getParameter<ParameterSet>("InputMCParams");
+  myConfig.InputMC_params = InputMC_params;
   
   // get event rejection decisions
   rejectEvent_params =
@@ -302,8 +310,6 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Variables and counters valid per event
   
 //  if (iEvent.id().run() != 3415 || iEvent.id().event() != 10) {return;}
-
-  int mccounter = 0;
   
   numTotEvt++;
   if (DEBUGLVL >= 1){
@@ -320,141 +326,13 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Input the MC data and store them as MrParticle
   // ******************************************************** 
 
-/*
-  // get MC info from HepMC
-  Handle<HepMCProduct> EvtHandle ;
-  iEvent.getByLabel( "VtxSmeared", EvtHandle ) ;
-  const HepMC::GenEvent* evt = EvtHandle->GetEvent() ;
-  // evt->print();
-  vector<int> barPart, barMoth;
+  myInputMcData = new  InputMcData(&myConfig, iEvent );
+  myInputMcData->SetDebug(DEBUGLVL);
   
-  // fill MC info into MCData vector  
-  for ( HepMC::GenEvent::particle_const_iterator p = evt->particles_begin();
-	p != evt->particles_end(); ++p ) {
-
-    MrParticle* mcpart = new MrParticle((*p)->momentum().px(),
-           (*p)->momentum().py(),(*p)->momentum().pz(),(*p)->momentum().e());
-           
-    mcpart->setPID((*p)->pdg_id());
-    mcpart->setStatus((*p)->status());
-    mcpart->setMotherIndex(0);         // to be fixed, see below
+  myInputMcData->InputMcDriver(EventData);
   
-    MCData.push_back(mcpart);  
-    mccounter++;
-  
-    // Temporary fiddle to set up the mother index from barcodes
-    //cout << " pointer of particle: " << (*p) << endl;
-    //cout << " barcode of particle: " << (*p)->barcode() << endl;
-    barPart.push_back((*p)->barcode()); 
-    //cout << " pointer to mother: " << (*p)->mother() << endl;
-    //cout << " barcode of mother: " << (*p)->mother()->barcode() << endl;
-    if ((*p)->mother() != NULL) {
-      barMoth.push_back((*p)->mother()->barcode()); 
-    } else {
-      barMoth.push_back(-1);
-    }
-  }
-  
-  for (int i= (int) barPart.size()-1; i>=0; i--){
-    if (barMoth[i] < 0){
-      MCData[i]->setMotherIndex(-1);
-    } else {
-      for (int j=i-1; j>=0; j--){
-        if (barMoth[i] == barPart[j]){
-          MCData[i]->setMotherIndex(j);
-          break;
-        }
-      }
-    }
-  }
-
-  barPart.clear();
-  barMoth.clear();
-  
-  */
-  
-   // get MC info from GenParticleCandidates 
-    Handle<CandidateCollection> genParticles;
-    iEvent.getByLabel( "genParticleCandidates", genParticles );
-  
-    for( size_t i = 0; i < genParticles->size(); ++ i ) {
-    
-     const Candidate & p = (*genParticles)[ i ];
-     
-     MrParticle* mcpart = new MrParticle(p.px(),p.py(),p.pz(),p.energy());
-  
-     mcpart->setPID(p.pdgId());
-     mcpart->setStatus(p.status());
-     mcpart->setMotherIndex(0);
-     
-     MCData.push_back(mcpart);  
-     mccounter++;
- 
-     if (p.numberOfMothers() > 0 ) { 
-       const Candidate * mom = p.mother();
-//       for( size_t j = 0; j < genParticles->size(); ++ j ) {
-       for( size_t j = 0; j < i; ++ j ) {
- 	const Candidate * ref = &((*genParticles)[j]);
- 	if (ref == mom)
- 	  {
- 	    MCData[i]->setMotherIndex(j);
- 	  }
- 	//if (ref == mom) MCData[i]->setMotherIndex(j);
-       }  
-     } else {
-       MCData[i]->setMotherIndex(-1);
-    }
-
-  }
-  
-  
-  
-  // Save the MCData in the Event data
-  EventData->setMCData(&MCData);
-
-/*
-  //Save the cross section and the event weight (CSA07 only!)
-  Handle<int> genProcessID;
-  iEvent.getByLabel( "genEventProcID", genProcessID );
-  double processID = *genProcessID;
-  double cs = -1;
-  if (processID != 4) { 
-    Handle<double> genCrossSect;
-    iEvent.getByLabel( "genEventRunInfo", "PreCalculatedCrossSection", genCrossSect); 
-    cs = *genCrossSect;
-  }
-  Handle< double> weightHandle;
-  iEvent.getByLabel ("csaweightproducer","weight", weightHandle);
-  double weight = * weightHandle;
-  EventData->setCrossSection(cs);
-  EventData->setEventWeight(weight);
-*/
-
-  // make the GenData
-  // first loop over the electrons and muons from the MCData 
-  for (int i = 0; i < (int) MCData.size(); i++) { 
-    if((abs(MCData[i]->pid()) == 11 || abs(MCData[i]->pid()) == 13) && MCData[i]->status() == 1) { 
-      MrParticle* part = new MrParticle(*MCData[i]);
-      part->setPartonIndex(i);
-      GenData.push_back(part);
-    }
-  }   
-  // then add the gen jet collection
-  Handle<GenJetCollection> jetsgen;
-  iEvent.getByLabel(m_jetsgenSrc, jetsgen);
-  for (unsigned int j = 0; j < jetsgen->size(); j++) {
-
-      MrJet* part = new MrJet((*jetsgen)[j].px(),
-           (*jetsgen)[j].py(),(*jetsgen)[j].pz(),(*jetsgen)[j].energy(), &(*jetsgen)[j],0);
-
-      part->setPartonIndex(-1);
-      GenData.push_back(part);
-   
-  }
-
-  // Save the GenData in the Event data
-  EventData->setGenData(&GenData);
-
+  // keep InputMcData alive this the end
+  // (else its created MrParticles disappear)
 
    // handle MC and make MC printout
   
@@ -496,30 +374,53 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   bool triggerExists = true;
   // Get the L1 Info
-  Handle<l1extra::L1ParticleMapCollection> L1PMC;
-  try {iEvent.getByType(L1PMC);} catch (...) {;}
+  Handle<L1GlobalTriggerReadoutRecord> L1GTRR;
+  iEvent.getByLabel("gtDigis",L1GTRR);
   std::vector<int> l1bits;
-  if (!L1PMC.isValid()) {
-    triggerExists = false;
+  if (!L1GTRR.isValid()) {
+    triggerExists = false;    
     EventData->setNoTriggerData();
     if (DEBUGLVL >= 1){
-      cout << "L1ParticleMapCollection Not Valid!" << endl;
+      cout << "L1GlobalTriggerReadoutRecord Not Valid!" << endl;
     }
   }
   else {  
-   int nL1size = L1PMC->size();
+   int nL1size = L1GTRR->decisionWord().size();
+   if(numTotEvt==1) {numTotL1BitsBeforeCuts.resize(nL1size);}
    for (int i=0; i<nL1size; ++i) {
-     l1bits.push_back((*L1PMC)[i].triggerDecision());
-     if((*L1PMC)[i].triggerDecision()) numTotL1BitsBeforeCuts[i]++;
+     l1bits.push_back(L1GTRR->decisionWord()[i]);
+     if(L1GTRR->decisionWord()[i]) numTotL1BitsBeforeCuts[i]++;
    }
   }
   EventData->setL1Bits(l1bits);
+  
+  //Get the names of the L1 paths
+  //for the moment the names are not included in L1GlobalTriggerReadoutRecord
+  //we need to use L1GlobalTriggerObjectMapRecord
+  if(numTotEvt==1) {
+    edm::Handle<L1GlobalTriggerObjectMapRecord> gtObjectMapRecord;
+    iEvent.getByLabel("hltL1GtObjectMap", gtObjectMapRecord);
+    std::map<int,std::string> l1NameMap;
+    const std::vector<L1GlobalTriggerObjectMap>& objMapVec =
+      gtObjectMapRecord->gtObjectMap();
+    for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();
+	 itMap != objMapVec.end(); ++itMap) {
+      int algoBit = (*itMap).algoBitNumber();
+      std::string algoNameStr = (*itMap).algoName();
+      l1NameMap[algoBit] = algoNameStr;
+    }
+    l1Names.resize(L1GTRR->decisionWord().size());
+    for (unsigned int i=0; i!=L1GTRR->decisionWord().size(); i++) {    
+      l1Names[i]=l1NameMap[i];
+    }
+   EventData->setL1Names(l1Names);
+ }
 
   // Get the HLT Info
   //vector<Handle<TriggerResults> > trhv;
   //try {iEvent.getManyByType(trhv);} catch (...) {;}
-  Handle<TriggerResults> trh;
-  try {iEvent.getByLabel(m_hlTriggerResults, trh);} catch (...) {;}
+  Handle<TriggerResults> trh;  
+  iEvent.getByLabel(m_hlTriggerResults, trh);
   //const unsigned int n(trhv.size());
   //if(n>1) cout << "More than one trigger table! Please check you are using the correct one" << endl;
   std::vector<int> hltbits;
@@ -531,9 +432,16 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
   }
   else {  
+   if(numTotEvt==1) {numTotHltBitsBeforeCuts.resize(trh->size());}
    for(unsigned int i=0; i< trh->size(); i++) {
-     hltbits.push_back(trh->accept(i));
-     if(trh->accept(i)) numTotHltBitsBeforeCuts[i]++;
+     hltbits.push_back((*trh)[i].accept());
+     if((*trh)[i].accept()) numTotHltBitsBeforeCuts[i]++;
+   }
+   if(numTotEvt==1) {
+     edm::TriggerNames triggerNames_;  // TriggerNames class
+     triggerNames_.init(*trh);
+     hlNames=triggerNames_.triggerNames();
+     EventData->setHltNames(hlNames);
    }
   }
   EventData->setHltBits(hltbits);
@@ -575,8 +483,8 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // Input the Reconstructed data and store them as MrParticle objects
   // ******************************************************** 
 
-  // get electron collection
-  Handle<PixelMatchGsfElectronCollection> electrons; 
+  // get electron collection 
+  Handle<GsfElectronCollection> electrons;  
   iEvent.getByLabel(m_electronSrc, electrons);
 
   for (unsigned int j = 0; j < electrons->size(); j++)
@@ -607,14 +515,14 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //get electron cluster shape Collection -> association map (electron,clustershape)  
 
   //barrel
-  edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeBarrel;
-  iEvent.getByLabel(m_clusterShapeBarrel,clusterShapeBarrel);
-  clusterShapeBarrelData = clusterShapeBarrel.product();
+  //edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeBarrel;
+  //iEvent.getByLabel(m_clusterShapeBarrel,clusterShapeBarrel);
+  //clusterShapeBarrelData = clusterShapeBarrel.product();
   
   //endcap
-  edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeEndcap;
-  iEvent.getByLabel(m_clusterShapeEndcap,clusterShapeEndcap);
-  clusterShapeEndcapData = clusterShapeEndcap.product();
+  //edm::Handle<reco::BasicClusterShapeAssociationCollection> clusterShapeEndcap;
+  //iEvent.getByLabel(m_clusterShapeEndcap,clusterShapeEndcap);
+  //clusterShapeEndcapData = clusterShapeEndcap.product();
 
 
   // get muons collection
@@ -623,19 +531,19 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   for (unsigned int j = 0; j < muons->size(); j++)
   {
- 
-   MrMuon* recopart = new MrMuon((*muons)[j].px(),
-           (*muons)[j].py(),(*muons)[j].pz(),(*muons)[j].energy(), &(*muons)[j] );
+   if((*muons)[j].isGlobalMuon()) {
+     MrMuon* recopart = new MrMuon((*muons)[j].px(),
+            (*muons)[j].py(),(*muons)[j].pz(),(*muons)[j].energy(), &(*muons)[j] );
   
-   RecoData.push_back(recopart);
-
+    RecoData.push_back(recopart);
+   }
   }
 
 
    // get photons collection
    
    Handle<PhotonCollection> photons; 
-   iEvent.getByLabel(m_photonSrc, photons);
+   iEvent.getByLabel(m_photonSrc,"", photons);
    
    for (unsigned int j = 0; j < photons->size(); j++)
    {
@@ -653,10 +561,10 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // iEvent.getByLabel(m_tautag, tauTagInfoHandle);
   // const IsolatedTauTagInfoCollection * tauTagInfo = tauTagInfoHandle.product();
   
-  // from CMSSW_1_6_0 onwards 
-   Handle<JetTagCollection> tauTagInfoHandle;
-   iEvent.getByLabel(m_tautag, tauTagInfoHandle);
-   const JetTagCollection * tauTagInfo = tauTagInfoHandle.product();
+  // from CMSSW_1_6_0 till CMSSW_2_0_0 
+  // Handle<JetTagCollection> tauTagInfoHandle;
+  // iEvent.getByLabel(m_tautag, tauTagInfoHandle);
+  // const JetTagCollection * tauTagInfo = tauTagInfoHandle.product();
 
 
 
@@ -677,7 +585,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   for (unsigned int j = 0; j < jets->size(); j++)
   {
-    for (unsigned int i = 0; i < tauTagInfo->size(); i++) {
+  /*   for (unsigned int i = 0; i < tauTagInfo->size(); i++) {
 
  
      if (
@@ -693,19 +601,21 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
        break;
      }
     }
-  
+  */
  
     for (unsigned int i = 0; i < jetsAndTracks->size(); i++){
       if (
-      //  &(*jetsAndTracks)[i].jet() == &(*jets)[j] )
-          fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].jet()->px())/  (*jets)[j].px()) < EPSILON_BT && 
-	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].jet()->py())/  (*jets)[j].py()) < EPSILON_BT &&
-	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].jet()->pz())/  (*jets)[j].pz()) < EPSILON_BT &&
-	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].jet()->energy())/  (*jets)[j].energy()) < EPSILON_BT )  {
+
+      //  &(*jetsAndTracks)[i].first == &(*jets)[j] )
+          fabs( ((*jets)[j].px() - (*jetsAndTracks)[i].first->px())/  (*jets)[j].px()) < EPSILON_BT && 
+	   fabs( ((*jets)[j].py() - (*jetsAndTracks)[i].first->py())/  (*jets)[j].py()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].pz() - (*jetsAndTracks)[i].first->pz())/  (*jets)[j].pz()) < EPSILON_BT &&
+	   fabs( ((*jets)[j].energy() - (*jetsAndTracks)[i].first->energy())/  (*jets)[j].energy()) < EPSILON_BT )  {
    
-	  btagdiscriminator =  (*jetsAndTracks)[i].discriminator();
+	  btagdiscriminator =  (*jetsAndTracks)[i].second;
 	  jetTag = &(*jetsAndTracks)[i];
 	  break;
+      
 	}
     }
     MrJet* recopart = new MrJet((*jets)[j].px(),
@@ -769,12 +679,16 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      }
    }
    
-  // get jet corrections
-   const JetCorrector* jetCorrectorL2 = JetCorrector::getJetCorrector (m_jetsCorrectionL2RelativeService, iSetup);
-   const JetCorrector* jetCorrectorL3 = JetCorrector::getJetCorrector (m_jetsCorrectionL3AbsoluteService, iSetup);
+     
+   // get jet corrections
+   //const JetCorrector* jetCorrectorL2 = JetCorrector::getJetCorrector (m_jetsCorrectionL2RelativeService, iSetup);
+   //const JetCorrector* jetCorrectorL3 = JetCorrector::getJetCorrector (m_jetsCorrectionL3AbsoluteService, iSetup);
    vector<const JetCorrector*> jetCorrectors;
-   jetCorrectors.push_back(jetCorrectorL2);
-   jetCorrectors.push_back(jetCorrectorL3);
+   //jetCorrectors.push_back(jetCorrectorL2);
+   //jetCorrectors.push_back(jetCorrectorL3);
+   const JetCorrector* jetCorrectorChain = JetCorrector::getJetCorrector (m_jetsCorrectionChainService, iSetup);
+   jetCorrectors.push_back(jetCorrectorChain);
+
 
    // Save the pointers to vertex, track and calotower collections in MrEvent
    
@@ -783,9 +697,15 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    EventData->setTrackCollection(TrackData); 
    EventData->setVertexCollection(VertexData); 
    EventData->setCaloTowerCollection(CaloTowerData); 
-   EventData->setClusterShapeBarrelCollection(clusterShapeBarrelData);
-   EventData->setClusterShapeEndcapCollection(clusterShapeEndcapData);
+   //EventData->setClusterShapeBarrelCollection(clusterShapeBarrelData);
+   //EventData->setClusterShapeEndcapCollection(clusterShapeEndcapData);
    EventData->setJetCorrectors(&jetCorrectors);
+  
+   //for cluster shape in 2_2_X 
+//   ESHandle<CaloGeometry> caloGeometry;
+//   iSetup.get<CaloGeometryRecord>().get(caloGeometry);   
+   EcalClusterLazyTools lazyTool( iEvent, iSetup, m_reducedBarrelRecHitCollection, m_reducedEndcapRecHitCollection);
+   EventData->setLazyTools(&lazyTool);
 
 
    // make printout of candidates, etc.
@@ -858,7 +778,13 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // ******************************************************** 
   // Compute efficiencies and fake rates 
-  
+  // Filip: to be removed for present release .....
+   
+   myEffProcessor = new EffProcessor(&myConfig);
+   myEffProcessor->SetDebug(DEBUGLVL);
+   
+   myEffProcessor->EffDriver(EventData);
+   
 
   // ******************************************************** 
   // Recontruct and match the hemispheres 
@@ -1014,6 +940,7 @@ void SusyAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // End of the event analysis
   // ******************************************************** 
 
+  delete myInputMcData;
 
 
  
@@ -1588,14 +1515,14 @@ void SusyAnalyzer::PrintStatistics(void)
  cout << "   ***L1          : " << endl;
  cout << "        Before Any Cut: " << endl;
  for (int i=0; i<(int)numTotL1BitsBeforeCuts.size(); i++) {
-   cout << "      Bit n. " << i << "\t Fired " << numTotL1BitsBeforeCuts[i] << 
-     " \t times \t (" << 100.*(float)numTotL1BitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
+   cout << "      Bit n. " << right << setw(4) << i << "   " << left << setw(29) << l1Names[i] <<"\t Fired " << right << setw(7) << numTotL1BitsBeforeCuts[i] << 
+    " \t times \t (" << 100.*(float)numTotL1BitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
  }
  cout << "   ***HLT          : " << endl;
  cout << "        Before Any Cut: " << endl;
  for (int i=0; i<(int)numTotHltBitsBeforeCuts.size(); i++) {
-   cout << "      Bit n. " << i << "\t Fired " << numTotHltBitsBeforeCuts[i] << 
-     " \t times \t (" << 100.*(float)numTotHltBitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
+    cout << "      Bit n. " << right << setw(4) << i << "   " << left << setw(29) << hlNames[i] <<"\t Fired " << right << setw(7) << numTotHltBitsBeforeCuts[i] << 
+    " \t times \t (" << 100.*(float)numTotHltBitsBeforeCuts[i]/(float)numTotEvt << " %) " << endl;
  }
  
  cout << endl;

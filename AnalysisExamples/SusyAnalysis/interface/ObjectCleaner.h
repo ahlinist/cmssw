@@ -21,14 +21,18 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h" 
+#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h" 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
 
+
 #include "AnalysisExamples/SusyAnalysis/interface/MrEvent.h" 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 #include "AnalysisExamples/SusyAnalysis/interface/SusyRecoTools.h"
+
 
 #include <vector>
 #include <iostream>

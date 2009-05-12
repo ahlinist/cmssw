@@ -23,12 +23,15 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "DataFormats/L1Trigger/interface/L1ParticleMap.h"
 #include "DataFormats/EgammaReco/interface/ClusterShapeFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterShapeAssociation.h"
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
+
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h" 
 
@@ -76,6 +79,8 @@ MrEvent() : pMcData(0), pRecoData(0), pGenData(0), TrackData(0), VertexData(0), 
   }
   NumJets = 0;
   PtSumLeadJets = 0.;
+  EventWeight = 1.;
+  CrossSection = 0.;
 };
 
 // destructor
@@ -92,7 +97,9 @@ const VertexCollection * vertexCollection() {return VertexData;}
 const CaloTowerCollection * caloTowerCollection() {return CaloTowerData;}
 const BasicClusterShapeAssociationCollection * clusterShapeBarrelCollection()  {return ClusterShapeBarrelData;}  
 const BasicClusterShapeAssociationCollection * clusterShapeEndcapCollection()  {return ClusterShapeEndcapData;}  
+EcalClusterLazyTools * lazyTool() {return LazyTool;}
 std::vector<const JetCorrector*>* jetCorrectors(){return m_jetCorrectors;}
+
 
 // event and run number
 int run() {return RunNumber;}
@@ -101,8 +108,10 @@ int event() {return EventNumber;}
 int triggeredL1(){return TrigL1;}
 int triggeredHLT(){return TrigHLT;}
 //Trigger Vectors
-std::vector<int> l1Bits() {return L1Bits;} 
+std::vector<int> l1Bits() {return L1Bits;}
+ std::vector<std::string> l1Names() {return L1Names;} 
 std::vector<int> hltBits() {return HltBits;} 
+ std::vector<std::string> hltNames() {return HltNames;}
 // quality index (=0 if good event) is a long integer
 long quality() {return EventQuality;} // but individual settings are preferred
 bool qualNoTriggerfired(){return IsSomeBitSet (7);} // globally for L1 and HLT
@@ -156,12 +165,16 @@ std::vector<float> hemiAxis2(){return HemiAxis2;}
 // Hemisphere masses
 float hemiMass1(){return sqrt(HemiAxis1[4]*HemiAxis1[4]-HemiAxis1[3]*HemiAxis1[3]);}
 float hemiMass2(){return sqrt(HemiAxis2[4]*HemiAxis2[4]-HemiAxis2[3]*HemiAxis2[3]);}
+// Hemisphere Pt's
+float hemiPt1(){return sqrt(HemiAxis1[0]*HemiAxis1[0]+HemiAxis1[1]*HemiAxis1[1])*HemiAxis1[3];}
+float hemiPt2(){return sqrt(HemiAxis2[0]*HemiAxis2[0]+HemiAxis2[1]*HemiAxis2[1])*HemiAxis2[3];}
 // Index in MCData of the partons matching the hemispheres
 int indexMatchedSusyMother1(){return IndexMatchedSusyMother1;}
 int indexMatchedSusyMother2(){return IndexMatchedSusyMother2;}
 // Event weight and cross section
 float eventWeight(){return EventWeight;}
 float crossSection(){return CrossSection;}
+
 
 // Quantities derived from the RecoData
 // Number of jets (up to 15 max) stored in decreasing p_T
@@ -199,12 +212,15 @@ void setVertexCollection(const VertexCollection * vc) {VertexData = vc;}
 void setCaloTowerCollection(const CaloTowerCollection * cc) {CaloTowerData = cc;}
 void setClusterShapeBarrelCollection(const BasicClusterShapeAssociationCollection * cc) {ClusterShapeBarrelData = cc;}
 void setClusterShapeEndcapCollection(const BasicClusterShapeAssociationCollection * cc) {ClusterShapeEndcapData = cc;}
+void setLazyTools(EcalClusterLazyTools * lT) {LazyTool = lT;}
 void setRun(int run) {RunNumber = run;}
 void setEvent(int ev) {EventNumber = ev;}
 void setTriggeredL1(int trig){TrigL1 = trig;}
 void setTriggeredHLT(int trig){TrigHLT = trig;}
 void setL1Bits(std::vector<int> l1bits) {L1Bits = l1bits;}
+ void setL1Names(std::vector<std::string> l1names) {L1Names = l1names;}
 void setHltBits(std::vector<int> hltbits) {HltBits = hltbits;}
+ void setHltNames(std::vector<std::string> hltnames) {HltNames = hltnames;}
 void setQuality(int qual) {EventQuality |= qual;} // but individual settings are preferred
 void setNoTriggerData(){EventQuality |= 1;}
 void setNoL1fired(){EventQuality |= 2;}
@@ -246,6 +262,8 @@ void setJetCorrectors(std::vector<const JetCorrector*>* jc){m_jetCorrectors=jc;}
 void setEventWeight(float ew) {EventWeight = ew;}
 void setCrossSection(float cs) {CrossSection = cs;}
 
+
+
 private:
 
 // data members
@@ -257,13 +275,15 @@ const VertexCollection * VertexData;
 const CaloTowerCollection * CaloTowerData;
 const BasicClusterShapeAssociationCollection * ClusterShapeBarrelData; 
 const BasicClusterShapeAssociationCollection * ClusterShapeEndcapData; 
+EcalClusterLazyTools * LazyTool;
 std::vector<const JetCorrector*>* m_jetCorrectors;
-
 
 int RunNumber, EventNumber;
 int TrigL1, TrigHLT;
 std::vector<int> L1Bits;
+ std::vector<std::string> L1Names;
 std::vector<int> HltBits;
+ std::vector<std::string> HltNames;
 int EventQuality;
 float Chi2, Ndof, NormalizedChi2, PVx, PVy, PVz, PVdx, PVdy, PVdz, PvPtsum;
 long IndexPVx, PvnTracks;
@@ -276,6 +296,8 @@ int LeadJets[Njetsmax], NumJets;
 float PtSumLeadJets;
 bool jetsprocessed;
 float EventWeight, CrossSection;
+
+
 
 
 // methods

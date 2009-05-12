@@ -61,8 +61,8 @@ void SusyRecoTools::PrintRecoInfo(void)
   for (unsigned int j=0; j<RecoData.size(); j++){
    if (RecoData[j]->particleType()/10 == 1) {
       const Electron * pcand = RecoData[j]->electronCandidate();
-      reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->gsfTrack();
-      reco::TrackRef tr = (*pcand).gsfTrack();
+      reco::TrackRef tr2 = (RecoData[j]->electronCandidate())->track();
+      reco::TrackRef tr = (*pcand).track();
       cout << " Information about the track of the electrons : " << endl;
       cout << " Pt track = " << tr->outerPt() 
       << " Eta track = " << tr->outerEta()
@@ -105,9 +105,25 @@ int SusyRecoTools::GetPrimaryVertex(float clean_etaTkfromVxmax)
  EventData->setPVdz(primVx->zError() );
  
  // Store also the number and scalar pt sum of all associated tracks
+   if (DEBUGLVL >= 2){
+     cout << "*****************" << endl;
+     cout << "Number of tracks from vertex = " << primVx->tracksSize() << endl;
+     cout << "primVx->chi2()           "  << primVx->chi2()               << endl;
+     cout << "primVx->ndof() 	       "  << primVx->ndof() 	       	  << endl;
+     cout << "primVx->normalizedChi2() "  << primVx->normalizedChi2()     << endl;
+     cout << "primVx->x() 	       "  << primVx->x() 		  << endl;
+     cout << "primVx->y() 	       "  << primVx->y() 		  << endl;
+     cout << "primVx->z() 	       "  << primVx->z() 		  << endl;
+     cout << "primVx->xError() 	       "  << primVx->xError() 	       	  << endl;
+     cout << "primVx->yError() 	       "  << primVx->yError() 	       	  << endl;
+     cout << "primVx->zError()         "  << primVx->zError()             << endl; 
+     
+   }
+
  EventData->setPvnTracks(primVx->tracksSize() );
  float ptsum = 0.;
- track_iterator itk = primVx->tracks_begin();
+ // track_iterator itk = primVx->tracks_begin();
+ Vertex::trackRef_iterator itk = primVx->tracks_begin();
  for (; itk != primVx->tracks_end(); ++itk) {
    float eta = (*itk)->eta();
    if (fabs(eta) < clean_etaTkfromVxmax){
@@ -146,10 +162,7 @@ bool SusyRecoTools::GetJetVx(int ichk, int imethod,
     GetJetTrksInCone(ichk, nJetTkHitsmin, jetVxTkPtmin, paramTksInJet, 
                      & tracksFromJet);
   }
-  else if (imethod == 3){
-    GetJetTrksFromTag(ichk,  nJetTkHitsmin, jetVxTkPtmin, 
-                     & tracksFromJet);
-  }
+
   float nberTracks = tracksFromJet.size();
   RecoData[ichk]->setNumTracks(tracksFromJet.size() );
 
@@ -213,16 +226,16 @@ void SusyRecoTools::GetNonLeptonicTracks(vector<int> * selTrkIndices)
    if (pTrack->eta() <= ana_ufoEtaMax && pTrack->pt() >= ana_ufoPtMin1){
 //     cout << " UFO track pT " << pTrack->pt() << endl;
      bool keepTrack = true;
-     const Track* newTrack = NULL;
+     const GsfTrack* newTrack = NULL;
      for(int j = 0; j < (int) RecoData.size(); ++j){
        int ptype = RecoData[j]->particleType()/10;
        if (ptype == 1) {
-         const PixelMatchGsfElectron* elecand = RecoData[j]->electronCandidate();
+         const GsfElectron* elecand = RecoData[j]->electronCandidate();
          newTrack = &(*(elecand->gsfTrack()));
 //         cout << " ele track pT " << newTrack->pt() << endl;
        } else if (ptype == 2) {
        }
-       // Not possible: gsfTrack or combinedMuon are not in track list
+       // Not possible: track or combinedMuon are not in track list
        float eps = 0.1;
 //       if (newTrack == pTrack){
        if (newTrack != NULL &&
@@ -264,10 +277,7 @@ void SusyRecoTools::GetIsoCandInJets(int ufoSelMethod,
      } else if (ufoSelMethod == 2){
        GetJetTrksInCone(i, ufoTkHitsmin, ufoPtMin, paramTksInJet, 
                      & tracksFromJet);
-     } else if (ufoSelMethod == 3){
-       GetJetTrksFromTag(i, ufoTkHitsmin, ufoPtMin, & tracksFromJet);
-     }
-//     cout << " tracksFromJet " << tracksFromJet.size() << endl;
+     } 
      for (int itk = 0; itk < (int) tracksFromJet.size(); ++itk) {
        const Track* pTrack = &(*TrackData)[tracksFromJet[itk]];
        bool accept = true;
@@ -359,7 +369,7 @@ void SusyRecoTools::GetJetTrksFromCalo(int iJet, int nJetTkHitsmin,
  float phimin=0., phimax=0., etamin=10., etamax=-10.;
  float pi    = 3.141592654;
  float twopi = 6.283185307;
- vector<CaloTowerRef> jetCaloRefs = jetcand->getConstituents();
+ vector<CaloTowerPtr> jetCaloRefs = jetcand->getCaloConstituents();
 //   cout << " Jet id = " << iJet 
 //   << ", E = "<< RecoData[iJet]->energy() 
 //   << ", pt = "<< RecoData[iJet]->pt() 
@@ -474,39 +484,6 @@ void SusyRecoTools::GetJetTrksInCone(int ichk,  int nJetTkHitsmin,
 
 //------------------------------------------------------------------------------
 
-void SusyRecoTools::GetJetTrksFromTag(int ichk,  int nJetTkHitsmin, 
-                    float tkPtmin, vector<int> * tracksFromJet)
-{ // makes a list of all tracks compatible with coming from a jet
-  // using the list of tracks from jetTag
-  // it returns the indices in the track collection in a vector
-  
-  const JetTag * jetTag = RecoData[ichk]->jetTag();
-  if (jetTag == NULL){
-    cout << "Warning: No jetTag exists for a jet *******" << endl;
-    return;
-  }
-  TrackRefVector jetTracks = jetTag->tracks();
-//  unsigned int n = jetTracks.size();
-//  cout << " jetTag tracks size " << n << endl;
-  
-  for (int i=0; i< (int) jetTracks.size(); ++i){
-    int nHits = jetTracks[i]->found();
-    float pt = jetTracks[i]->pt();
-    if ( nHits >= nJetTkHitsmin && pt >= tkPtmin){
-      for (int j=0; j< (int) TrackData->size(); ++j){
-        const Track* pTrack = &(*TrackData)[j];
-        if ( &(*jetTracks[i]) == pTrack ) {
-          (*tracksFromJet).push_back(j);
-        }
-      }
-    }
-  }
-  
-  return;
-}
-
-//------------------------------------------------------------------------------
-
 float SusyRecoTools::CaloTowerSizePhi(float eta)
 { // Returns the half size of a CaloTower in phi
   // numbers from ptdr1, p.201
@@ -545,7 +522,7 @@ float SusyRecoTools::CaloTowerSizeEta(float eta)
 bool SusyRecoTools::IsFromPrimaryVx(int ichk, float distVxmax)
 {
   // Checks whether the object is compatible with the primary vertex
-
+ 
  if (RecoData[ichk]->particleType()/10 == 4) {return true;}
  
  int indPrim = EventData->indexPrimaryVx();
@@ -667,10 +644,6 @@ float SusyRecoTools::GetJetTrkPtsum(int ichk, int imethod,
     GetJetTrksInCone(ichk, nJetTkHitsmin, jetTkPtmin, paramTksInJet, 
                      & tracksFromJet);
   }
-  else if (imethod == 3){
-    GetJetTrksFromTag(ichk, nJetTkHitsmin, jetTkPtmin,
-                     & tracksFromJet);
-  }
 
   if (tracksFromJet.size() <= 0){
     tracksFromJet.clear();
@@ -783,7 +756,7 @@ float SusyRecoTools::IsoPvxTrkSum (int itra, float TrkEta, float TrkPhi,
   if (indPrim < 0) {return true;}
   primVx = &(*VertexData)[indPrim];
 
-  track_iterator itk = primVx->tracks_begin();
+  Vertex::trackRef_iterator itk = primVx->tracks_begin();
   for (; itk != primVx->tracks_end(); ++itk) {
     if ((*itk)->p() > iso_Seed){
       float eta = (*itk)->eta();
@@ -915,7 +888,7 @@ bool SusyRecoTools::EMCaloTowerWindow(int ichk,
  int ptype = RecoData[ichk]->particleType()/10;
  if (ptype == 1){
    // Get the electron candidate
-   const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+   const GsfElectron* elecand = RecoData[ichk]->electronCandidate();
    if (elecand == NULL) {
      return false;
    }
@@ -1038,7 +1011,7 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  int ptype = RecoData[ichk]->particleType()/10;
  if (ptype == 1){
    // Get the electron candidate
-   const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+   const GsfElectron* elecand = RecoData[ichk]->electronCandidate();
    if (elecand == NULL) {
      if (DEBUGLVL >= 2){
        cout << " IsEMObjectInJet: No electron candidate for this electron, index = " 
@@ -1111,7 +1084,7 @@ bool SusyRecoTools::IsEMObjectInJet(int ichk, int iJet, math::XYZVector* sharedM
  // Collect the CaloTowers detIds for the jet 
   // the following line does not work for 130
 // vector<CaloTowerDetId> jetDetId = jetcand->getTowerIndices();
- vector<CaloTowerRef> jetCaloRefs = jetcand->getConstituents();
+ vector<CaloTowerPtr> jetCaloRefs = jetcand->getCaloConstituents();
  if (DEBUGLVL >= 2){
    cout << "  Jet energy = " << jetcand->energy() << endl;
  }

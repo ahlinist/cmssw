@@ -68,9 +68,12 @@ private:
      TH1D*       hPtJet3;
      TH1D*       hMissingETmc;
      TH1D*       hMissingET;
+     TH1D*       hETvisH1;
+     TH1D*       hETvisH2;
      TH1D*       hEtSum;
      TH1D*       hHT;
      TH1D*       hHemiMass;
+     TH1D*       hAllHemiMass;
      TH1D*       hJetGoodEt;
      TH1D*       hJetWrongEt;
  

@@ -108,6 +108,7 @@ bool Isolator::IsObjectIsolated(int ichk)
    if (ptype == 1){
      isIsolated = IsoObject(ichk, 1);
    }
+
    else if (ptype == 2){
      isIsolated = IsoObject(ichk, 2);
    }
@@ -157,7 +158,8 @@ bool Isolator::IsoObject(int ichk, int itype)
       << " does not correspond to the type for isolation method " << itype << endl;
     return isIsolated;
   }
-  
+
+
   if (ptype == 1){
     iso_MethodObj = iso_MethodElec;
     iso_jetbyObjEmin = iso_jetbyElEmin;
@@ -244,6 +246,7 @@ bool Isolator::IsoObject(int ichk, int itype)
     }
   }
   
+  
   if (iso_MethodObj == 0){return isIsolated;}
   
   // Decode the isolation method:
@@ -306,14 +309,16 @@ bool Isolator::IsoObject(int ichk, int itype)
     int ntkTrkSubtr = 0;
     float trkEta = 0., trkPhi = 0.;
     
+
     if (ptype == 1){
+     
       // for Calo isolation
-      const PixelMatchGsfElectron* elecand = RecoData[ichk]->electronCandidate();
+      const GsfElectron* elecand = RecoData[ichk]->electronCandidate();
       const SuperCluster* supercluster = &(*(elecand->superCluster()));
       if (itra == 1) {
         float eta = supercluster->eta();
         float theta = 2. * atan(exp(-eta)); // pseudorapidity or rapidity?
-        etest = supercluster->energy() * fabs(sin(theta));
+      etest = supercluster->energy() * fabs(sin(theta));
       } else if (itra == 2) {
         etest = supercluster->energy();
       } else if (itra == 3) {
@@ -326,8 +331,8 @@ bool Isolator::IsoObject(int ichk, int itype)
       ntkCalSubtr = (int)etest;
       calEta = supercluster->eta();
       calPhi = supercluster->phi();
-      // for Tracker isolation
-      const Track* eletrack = &(*(elecand->gsfTrack()));
+     // for Tracker isolation
+      const GsfTrack* eletrack = &(*(elecand->gsfTrack()));
       trkEta = eletrack->eta();
       trkPhi = eletrack->phi();
       // special loop to find the Kalman track matching the GSF one
@@ -555,7 +560,7 @@ bool Isolator::IsoObject(int ichk, int itype)
       }
     }
 
-    // using candidate information, not recommended, not advertized
+   // using candidate information, not recommended, not advertized
     // uses the cuts defined for tracks
     if (idet == 4){
       if (itra == 1) {

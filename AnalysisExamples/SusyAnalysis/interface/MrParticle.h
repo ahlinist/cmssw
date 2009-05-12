@@ -11,12 +11,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/EgammaCandidates/interface/PixelMatchGsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 using namespace reco;
 using namespace std;
@@ -45,6 +47,7 @@ Vx(p.vx()), Vy(p.vy()), Vz(p.vz()), D0Error(p.d0Error()), DzError(p.dzError()),
 ParticleType(p.particleType()), ParticleIso(p.particleIso()), ParticleIsoValue(p.particleIsoValue()), Hemi(p.hemisphere()),
 NumTracks(p.numTracks()), Pt_tracks(p.pt_tracks()), Et_em(p.et_em()), Et_had(p.et_had()), EffID(p.effID()), EffToBeFake(p.effToBeFake()),
 MCParton(p.partonIndex()), PID(p.pid()), Status(p.status()), Mother1(p.motherIndex()), BtagDiscriminator(p.getBtagDiscriminator()), TauTagDiscriminator(p.getTauTagDiscriminator()) {};
+
 
 // destructor
 virtual ~MrParticle(){};
@@ -109,7 +112,7 @@ int hemisphere() {return Hemi;}
 // number of tracks (useful for jets) and scalar sum of their pt
 int numTracks() {return NumTracks;}
 float pt_tracks() {return Pt_tracks;}
-// electromagnetic and hadronic energy fractions
+// electromagnetic and hadronic transverse energies
 float et_em() {return Et_em;}
 float et_had() {return Et_had;}
 float effID() {return EffID;}
@@ -129,7 +132,8 @@ int motherIndex() {return Mother1;}
 // are jet energy corrections applied or not
 bool isECorrected() {return Corrected;}
 
-virtual const PixelMatchGsfElectron* electronCandidate() {
+
+virtual const GsfElectron* electronCandidate() {
 //                   cout << "Pointer to electron candidate not defined." << endl;
                    return NULL;}
 virtual const Muon* muonCandidate() {
@@ -200,6 +204,7 @@ void setFourVectorToCorrected (bool flag) {
   }
 }
 
+
 private:
 
 // data members
@@ -228,7 +233,7 @@ public:
 // constructors
 MrElectron() : MrParticle(),  PCandidate(0) {MrParticle::setParticleType(10);};
 
-MrElectron(float px, float py, float pz, float e, const PixelMatchGsfElectron* mycand) : 
+MrElectron(float px, float py, float pz, float e, const GsfElectron* mycand) : 
  MrParticle(px,py,pz,e), PCandidate(mycand) 
  {MrParticle::setParticleType(10);
  MrParticle::setCharge(mycand->charge());}
@@ -236,10 +241,10 @@ MrElectron(float px, float py, float pz, float e, const PixelMatchGsfElectron* m
 virtual ~MrElectron() {};
 
 //access methods
-virtual const PixelMatchGsfElectron* electronCandidate() {return PCandidate;}
+virtual const GsfElectron* electronCandidate() {return PCandidate;}
 
 //set methods
-void setCandidate (const PixelMatchGsfElectron* mycand) {PCandidate = mycand;}
+void setCandidate (const GsfElectron* mycand) {PCandidate = mycand;}
 virtual void setParticleType(int ptype) {
                if (ptype/10 != 1){ cout << "Changing type to non-electron not allowed." << endl;}
                 else { MrParticle::setParticleType(ptype); }
@@ -248,7 +253,7 @@ virtual void setParticleType(int ptype) {
 private:
 
 // data members
-const PixelMatchGsfElectron* PCandidate;
+const GsfElectron* PCandidate;
 
 
 };
@@ -394,7 +399,9 @@ const Track* PTrack;
 // invoked from SusyAnalyzer.
 // It may be a temporary solution.
 
-struct Config_t {
+struct Config_t {     
+     edm::ParameterSet InputMC_params;
+     edm::ParameterSet InputReco_params;
      edm::ParameterSet rejectEvent_params;
      edm::ParameterSet acceptance_cuts;
      edm::ParameterSet cleaner_params;

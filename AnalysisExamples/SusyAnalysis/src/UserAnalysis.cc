@@ -42,6 +42,8 @@ myConfig(theConfig), EventData(0)
   // book histograms for MET, ETSum and HT
    hMissingETmc = new TH1D( "MissingETmc", "Missing transverse energyfrom MC", 100, 0.0, 1000.0);
    hMissingET = new TH1D( "MissingET", "Missing transverse energy", 100, 0.0, 1000.0);
+   hETvisH1 = new TH1D( "hETvisH1", "Transverse visible energy sum Hemi1", 100, 0.0, 2000.0);
+   hETvisH2 = new TH1D( "hETvisH2", "Transverse visible energy sum Hemi2", 100, 0.0, 2000.0);
    hEtSum = new TH1D( "ETsum", "Transverse energy sum", 100, 0.0, 2000.0);
    hHT = new TH1D( "HT", "Transverse energy sum", 100, 0.0, 2000.0);
    hHemiMass = new TH1D( "HemiMass", "Hemisphere mass", 100, 0.0, 1000.0);
@@ -49,6 +51,10 @@ myConfig(theConfig), EventData(0)
   // book histograms for ET distribution of jets correctly and wrongly assigned to hemispheres
    hJetGoodEt = new TH1D( "JetGoodEt", "Et spectrum of Jets correctly ID'ed", 80, 0.0, 800.0);
    hJetWrongEt = new TH1D( "JetWrongEt", "Et spectrum of Jets wrongly ID'ed", 80, 0.0, 800.0);
+
+  // book histograms for hemisphere mass
+   hAllHemiMass = new TH1D( "AllHemiMass", "Invariant mass of hemisphere", 50, 0.0, 1000.0);
+
    
   // Initialize user counters
   nTotEvtSelUser = 0;
@@ -166,6 +172,8 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
     int NJets=0;
     int NBJets=0;
 
+    float ETvisH1 = 0.;
+    float ETvisH2 = 0.;
     for (int i = 0; i < (int) RecoData.size(); i++){
       if (RecoData[i]->particleType() == 10) { NElectrons++;}
       if (RecoData[i]->particleType() == 20) { NMuons++;}
@@ -175,7 +183,9 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
         if (RecoData[i]->particleType() == 60){
           NBJets++;
 	}  	  
-      }    
+      }
+      if (RecoData[i]->hemisphere() == 1){ETvisH1 += RecoData[i]->pt();}
+      else if (RecoData[i]->hemisphere() == 2){ETvisH2 += RecoData[i]->pt();}
     }
     hLeptonMult->Fill(NElectrons+NMuons);
     hElectronMult->Fill(NElectrons);
@@ -193,7 +203,8 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
         hPtMuon->Fill(RecoData[i]->pt());
       }
     }
-    int nJets = EventData->numJets();
+    int nJetst = EventData->numJets();
+    int nJets = nJetst;
     if (nJets > 3){nJets = 3;}
     for (int iJet = 1; iJet <= nJets; iJet++){
       float ptjet = EventData->ptJet(iJet);
@@ -202,14 +213,16 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
       if (iJet == 3){hPtJet3->Fill(ptjet);}
     }
     
-    if (nJets > 0){
+    if (nJetst >= 6){
       // make plots of Missing energy from MC and recoil
       float metmc = EventData->metMCMod();
       hMissingETmc->Fill(metmc);
       float metrec = EventData->metRecoilMod();
       hMissingET->Fill(metrec);
   
-      // make a plot of ETsum and HT (using the MET from recoil)
+      // make a plot of ETvis, ETsum and HT (using the MET from recoil)
+      hETvisH1->Fill(ETvisH1);
+      hETvisH2->Fill(ETvisH2);
       float etSum = EventData->etSumRecoil();
       float ht = EventData->htRecoil();
       hEtSum->Fill(etSum);
@@ -220,6 +233,8 @@ void UserAnalysis::doAnalysis(MrEvent* theEventData)
       float mass2 = EventData->hemiMass2();
       float mass = mass1 > mass2 ? mass1 : mass2;
       hHemiMass->Fill(mass);
+      hAllHemiMass->Fill(mass1);
+      hAllHemiMass->Fill(mass2);
     }
     
 //    cout << " Now look at hemispheres, njets = " << nJets << endl;
