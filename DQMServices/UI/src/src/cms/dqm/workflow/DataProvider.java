@@ -29,7 +29,6 @@ public class DataProvider extends HttpServlet {
   FormatType default_format;
   Pattern fieldPattern;
   Pattern sortPattern;
-  String templates_dir;
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -45,7 +44,6 @@ public class DataProvider extends HttpServlet {
     }
     fieldPattern = Pattern.compile("^[a-zA-Z_0-9]+$");
     sortPattern = Pattern.compile("^(asc|desc|ASC|DESC)$");
-    templates_dir = config.getServletContext().getRealPath("/templates").concat("/");
   }
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -329,7 +327,7 @@ public class DataProvider extends HttpServlet {
           TransformerFactory tf = TransformerFactory.newInstance();
 
           for (int i = 0; i < intemplates.length; i++) {
-            File xsltFile = new File(templates_dir + intemplates[i] + ".xsl");
+            File xsltFile = new File(this.getClass().getResource("/templates/" + intemplates[i] + ".xsl").getPath());
             Source xsltSource = new StreamSource(xsltFile);
             DOMSource domSource = new DOMSource(doc);
             DOMResult result = new DOMResult();
@@ -339,7 +337,7 @@ public class DataProvider extends HttpServlet {
           }
 
           if (template != null) {
-            ProcessingInstruction process = doc.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"" + WebUtils.GetEnv("templates_url") + template + ".xsl\"");
+            ProcessingInstruction process = doc.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"templates/" + template + ".xsl\"");
             doc.insertBefore(process, doc.getDocumentElement());
           }
 
