@@ -25,6 +25,8 @@ jetHistManager.jetSource = cms.InputTag('selectedLayer1JetsEta21Cumulative')
 
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
+metHistManager.metSource = cms.InputTag("layer1PFMETs")
+#metHistManager.metSource = cms.InputTag("layer1METs")
 
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
@@ -302,7 +304,7 @@ elecMuEventDump = cms.PSet(
     #muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     #tauSource = cms.InputTag('allLayer1Taus'),
     diTauCandidateSource = cms.InputTag('allElecMuPairs'),
-    metSource = cms.InputTag('layer1METs'),
+    metSource = cms.InputTag('layer1PFMETs'),
     genMEtSource = cms.InputTag('genMETWithMu'),
     jetSource = cms.InputTag('selectedLayer1JetsEta21Cumulative'),
     recoTrackSource = cms.InputTag('generalTracks'),
