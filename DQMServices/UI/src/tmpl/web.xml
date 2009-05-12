@@ -31,12 +31,6 @@
       <env-entry-value>@DBS_DQM_URL@</env-entry-value>
     </env-entry>
 
-    <env-entry>
-      <env-entry-name>templates_url</env-entry-name>
-      <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>templates/</env-entry-value>
-    </env-entry>
-
     <!-- Servlets go below -->
 
     <servlet>

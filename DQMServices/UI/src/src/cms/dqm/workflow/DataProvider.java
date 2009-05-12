@@ -45,7 +45,7 @@ public class DataProvider extends HttpServlet {
     }
     fieldPattern = Pattern.compile("^[a-zA-Z_0-9]+$");
     sortPattern = Pattern.compile("^(asc|desc|ASC|DESC)$");
-    templates_dir = config.getServletContext().getRealPath("/".concat(WebUtils.GetEnv("templates_url"))).concat("/");
+    templates_dir = config.getServletContext().getRealPath("/templates").concat("/");
   }
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
