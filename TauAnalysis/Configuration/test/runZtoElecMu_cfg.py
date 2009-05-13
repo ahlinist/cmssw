@@ -112,6 +112,17 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 #switchToPFTauShrinkingCone(process)
 switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
+# import utility function for managing pat::METs
+from TauAnalysis.Configuration.tools.metTools import *
+# comment-out to add pfMET
+# first Boolean swich on genMET with mu's production
+# second Boolean swich on type-1 corrections
+addPFMet(process,True,False)
+# comment-out to replce caloMET by pfMET in all di-tau objects
+replaceMETforDiTaus(process,
+                    cms.InputTag('layer1METs'),
+                    cms.InputTag('layer1PFMETs'))
+#--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
 #                    +process.content               # uncomment to enable dump of event content after PAT-tuple production
