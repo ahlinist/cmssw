@@ -1,32 +1,33 @@
 import FWCore.ParameterSet.Config as cms
+import sys
 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuSelFilter_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.wmunuAnalyzer_cfi import *
 wmunuAnalyzerAfterFilter = wmunuAnalyzer.clone()
 
-from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
-filter0PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 0)
-filter1PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 1)
-filter2PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 2)
-filter3PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 3)
-filter4PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 4)
+wmunuAnalysis = cms.Path(wmunuAnalyzer)
+wmunuAfterFilter = cms.Path(wmunuSelFilter*wmunuAnalyzerAfterFilter)
 
-wmunuAnalyzer0PU = wmunuAnalyzer.clone()
-wmunuAnalyzer1PU = wmunuAnalyzer.clone()
-wmunuAnalyzer2PU = wmunuAnalyzer.clone()
-wmunuAnalyzer3PU = wmunuAnalyzer.clone()
-wmunuAnalyzer4PU = wmunuAnalyzer.clone()
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
+"""
+for i in range(5):
+    filter = pileUpNumberFilter.clone(NumberOfPileUpEvents = i)
+    globals()['filter%dPU'%i] = filter
+    analyzer = wmunuAnalyzer.clone()
+    globals()['wmunuAnalyzer%dPU'%i] = analyzer
+    globals()['wmunu%dPU'%i] = cms.Path(filter*analyzer)
+"""
+
+glob = sys.modules[__name__]
+for i in range(5):
+    filter = 'filter%dPU'%i
+    setattr(glob,filter,pileUpNumberFilter.clone(NumberOfPileUpEvents = i))
+    analyzer = 'wmunuAnalyzer%dPU'%i
+    setattr(glob,analyzer,wmunuAnalyzer.clone()) 
+    setattr(glob,'wmunu%dPU'%i,cms.Path(getattr(glob,filter)*getattr(glob,analyzer)))
 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff import *
-
-wmunuAnalysis = cms.Path(wmunuAnalyzer)
-wmunu0PU = cms.Path(filter0PU*wmunuAnalyzer0PU)
-wmunu1PU = cms.Path(filter1PU*wmunuAnalyzer1PU)
-wmunu2PU = cms.Path(filter2PU*wmunuAnalyzer2PU)
-wmunu3PU = cms.Path(filter3PU*wmunuAnalyzer3PU)
-wmunu4PU = cms.Path(filter4PU*wmunuAnalyzer4PU)
-wmunuAfterFilter = cms.Path(wmunuSelFilter*wmunuAnalyzerAfterFilter)
 
 wmunuSelectionSequence = cms.Sequence(wmunuSelFilter)
 edmDumpSequence = cms.Sequence(wmunuSelFilter*genParticlesCalo*edmDumpAllNoPileUp)
