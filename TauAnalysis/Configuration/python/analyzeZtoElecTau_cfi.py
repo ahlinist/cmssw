@@ -538,7 +538,7 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         histManagers = elecTauHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForElecTauMuonVetoCumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauElectronVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative')  
     #),
 
