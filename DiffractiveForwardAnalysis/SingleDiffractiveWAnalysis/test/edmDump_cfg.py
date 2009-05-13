@@ -6,7 +6,7 @@ process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.messageLogge
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SingleDiffractiveWmunuPlus_10TeV_InitialLumPU_cff_py_RAW2DIGI_RECO.root')
+    fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SingleDiffractiveWmunuPlus_10TeV_StageA43Bx_cff_py_RAW2DIGI_RECO.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -17,15 +17,11 @@ process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorReco_c
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.analysisSequences_cff')
 
 process.load('DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.outputModule_cfi')
-#process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_InitialLumPU.root'
-#process.output.fileName = 'POMWIG_SDPlusWmunu_EdmDump_StageA43Bx.root'
-process.output.fileName = 'PYTHIA6_Wmunu_EdmDump_InitialLumPU.root'
+process.output.fileName = 'edmDump_WMuNu.root'
 process.output.SelectEvents.SelectEvents = cms.vstring('selection_step')
 
 process.add_(cms.Service("TFileService",
-		#fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_InitialLumPU.root")
-                #fileName = cms.string("analysisWMuNu_histos_SDPlusWmunu_StageA43Bx.root")
-                fileName = cms.string("analysisWMuNu_histos_Wmunu_InitialLumPU.root")
+                fileName = cms.string("analysisWMuNu_histos.root")
 	)
 )
 
