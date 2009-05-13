@@ -1036,7 +1036,9 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   }
   else {
     Handle< HepMCProduct > HepMCEvt;
-    iEvent.getByLabel( "source", HepMCEvt );
+    if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
+	iEvent.getByLabel( "source", HepMCEvt );
+    }
     const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
     Mc_ProcessId   = myGenEvent->signal_process_id();
     Mc_EventScale  = myGenEvent->event_scale();
