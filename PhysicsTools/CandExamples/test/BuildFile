@@ -1,0 +1,3 @@
+<bin file=extendedLikelihoodFit.cpp name=extendedLikelihoodFit>
+  <use name=rootroofit>
+</bin> 
