@@ -19,113 +19,46 @@ process.MessageLogger.categories.append('Analysis')
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_InitialLumiPU_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusWmunu_StageA43Bx_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_Wmunu_StageA43Bx_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_Wmunu_InitialLumPU_cfi import filesPSet
-
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_POMWIG_SDPlusDiJets_StageA43Bx_cfi import filesPSet
-#from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.fileNames_PYTHIA6_QCD_80_120_InitialLumPU_cfi import filesPSet
-
 process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root')
-    filesPSet
+    fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
-process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff")
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.offlinePrimaryVertices_cff")
+process.reco = cms.Path(process.vertexreco)
+
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleVertexFilter_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionFilter_cfi")
-
-from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
-process.filter0PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 0)
-process.filter1PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 1)
-process.filter2PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 2)
-process.filter3PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 3)
-process.filter4PU = pileUpNumberFilter.clone(NumberOfPileUpEvents = 4)
-
-process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleInteractionTMVAFilter_cfi")
-process.singleInteractionTMVAFilter.CutOnClassifier = 0.4 
+process.singleInteractionTMVAFilter.CutOnClassifier = 0.4
 process.singleInteractionTMVAFilterTight = process.singleInteractionTMVAFilter.clone(CutOnClassifier = 0.8)
 
-process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.offlinePrimaryVertices_cff")
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
+listFiltersPU = []
+for i in range(5):
+    listFiltersPU.append('filter%dPU'%i)
+    setattr(process,'filter%dPU'%i,pileUpNumberFilter.clone(NumberOfPileUpEvents = i))
 
+filters = ['singleInteractionFilter','!singleInteractionFilter','singleVertexFilter','singleInteractionTMVAFilter','singleInteractionTMVAFilterTight']
+filters.extend(listFiltersPU)
+
+vertexAlgos = ['pixelVertices',
+               'offlinePrimaryVerticesFromCTFTracksAVFModified']
+
+attributes = {'VertexTag':vertexAlgos}
+
+from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.analysisTools import *
+process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
 process.edmDumpAnalysis.SaveROOTTree = True
-process.edmDumpAnalysis.ThresholdIndexHF = 10
+process.edmDumpAnalysis.ThresholdIndexHF = 12
 
-process.edmDumpAnalysisSingleInteraction = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisPileUp = process.edmDumpAnalysis.clone()
-
-process.edmDumpAnalysisWithAdaptiveVertexFitter = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisWithAdaptiveVertexFitter.VertexTag = "offlinePrimaryVerticesFromCTFTracksAVF"
-process.edmDumpAnalysisWithKalmanVertexFitter = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisWithKalmanVertexFitter.VertexTag = "offlinePrimaryVerticesFromCTFTracksKVF"
-#process.edmDumpAnalysisWithTrimmedKalmanFinder = process.edmDumpAnalysis.clone()
-#process.edmDumpAnalysisWithTrimmedKalmanFinder.VertexTag = "offlinePrimaryVerticesFromCTFTracksTKF"
-process.edmDumpAnalysisWithPixelVertices = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisWithPixelVertices.VertexTag = "pixelVertices"
-process.edmDumpAnalysisWithAVFModified = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisWithAVFModified.VertexTag = "offlinePrimaryVerticesFromCTFTracksAVFModified"
-
-process.edmDumpAnalysis0PU = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysis1PU = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysis2PU = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysis3PU = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysis4PU = process.edmDumpAnalysis.clone()
-
-process.edmDumpAnalysisSingleInteractionTMVA = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleInteractionTMVASingleInteraction = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleInteractionTMVAPileUp = process.edmDumpAnalysis.clone()
-
-process.edmDumpAnalysisSingleInteractionTMVATight = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleInteractionTMVATightSingleInteraction = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleInteractionTMVATightPileUp = process.edmDumpAnalysis.clone()
-
-process.edmDumpAnalysisSingleVertex = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleVertexSingleInteraction = process.edmDumpAnalysis.clone()
-process.edmDumpAnalysisSingleVertexPileUp = process.edmDumpAnalysis.clone()
+makeAnalysis(process,'edmDumpAnalysis',attributes,filters)
 
 process.add_(cms.Service("TFileService",
-                fileName = cms.string("analysisEdmDump_SDWmunu_InitialLumPU.root")
-                #fileName = cms.string("analysisEdmDump_SDWmunu_StageA43Bx.root")
-                #fileName = cms.string("analysisEdmDump_Wmunu_StageA43Bx.root")
-                #fileName = cms.string("analysisEdmDump_Wmunu_InitialLumPU.root")
-                #fileName = cms.string("analysisEdmDump_SDDijetsPt80_StageA43Bx.root")
-                #fileName = cms.string("analysisEdmDump_SDDijetsPt80_InitialLumPU.root")
-                #fileName = cms.string("analysisEdmDump_QCD_80_120_InitialLumPU.root")
+		fileName = cms.string("analysisEdmDump_SDWmunu.root")
+                #fileName = cms.string("analysisEdmDump_Wmunu.root")
 	)
 )
-
-process.reco = cms.Path(process.vertexreco)
-process.edmDump = cms.Path(process.trackMultiplicity+process.edmDumpTracks)
-
-process.analysis = cms.Path(process.edmDumpAnalysis + 
-                      process.edmDumpAnalysisWithAdaptiveVertexFitter + 
-                      process.edmDumpAnalysisWithKalmanVertexFitter + 
-                      process.edmDumpAnalysisWithPixelVertices + 
-                      process.edmDumpAnalysisWithAVFModified)
- 
-process.analysisSingleInteraction = cms.Path(process.singleInteractionFilter*process.edmDumpAnalysisSingleInteraction)
-process.analysisPileUp = cms.Path(~process.singleInteractionFilter*process.edmDumpAnalysisPileUp)
-
-process.analysisSV = cms.Path(process.singleVertexFilter*process.edmDumpAnalysisSingleVertex)
-process.analysisSV_SI = cms.Path(process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexSingleInteraction)
-process.analysisSV_PU = cms.Path(~process.singleInteractionFilter*process.singleVertexFilter*process.edmDumpAnalysisSingleVertexPileUp)
-
-process.analysisMVA = cms.Path(process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVA)
-process.analysisMVA_SI = cms.Path(process.singleInteractionFilter*process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVASingleInteraction)
-process.analysisMVA_PU = cms.Path(~process.singleInteractionFilter*process.singleInteractionTMVAFilter*process.edmDumpAnalysisSingleInteractionTMVAPileUp)
-
-process.analysisMVA_tight = cms.Path(process.singleInteractionTMVAFilterTight*process.edmDumpAnalysisSingleInteractionTMVATight)
-process.analysisMVA_tight_SI = cms.Path(process.singleInteractionFilter*process.singleInteractionTMVAFilterTight*process.edmDumpAnalysisSingleInteractionTMVATightSingleInteraction)
-process.analysisMVA_tight_PU = cms.Path(~process.singleInteractionFilter*process.singleInteractionTMVAFilterTight*process.edmDumpAnalysisSingleInteractionTMVATightPileUp)
-
-process.analysis0PU = cms.Path(process.filter0PU*process.edmDumpAnalysis0PU)
-process.analysis1PU = cms.Path(process.filter1PU*process.edmDumpAnalysis1PU)
-process.analysis2PU = cms.Path(process.filter2PU*process.edmDumpAnalysis2PU)
-process.analysis3PU = cms.Path(process.filter3PU*process.edmDumpAnalysis3PU)
-process.analysis4PU = cms.Path(process.filter4PU*process.edmDumpAnalysis4PU)
