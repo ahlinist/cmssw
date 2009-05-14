@@ -11,6 +11,7 @@ def addPFMet(process,redoGenMet=True,correct=False):
     process.load("PhysicsTools.PFCandProducer.pfType1MET_cff")
     process.layer1PFMETs = process.layer1METs.clone()
     process.layer1PFMETs.addMuonCorrections = False
+    process.layer1PFMETs.addTrigMatch = False
     if correct:
         process.patAODExtraReco += process.pfCorMET
         process.layer1PFMETs.metSource = cms.InputTag('pfType1MET')
