@@ -5,17 +5,6 @@
 //
 // Package:    BsToJpsiPhi
 // Class:      BsToJpsiPhiAnalysis
-// 
-/**\class BsToJpsiPhiAnalysis BsToJpsiPhiAnalysis.cc HeavyFlavorAnalysis/BsToJpsiPhi/src/BsToJpsiPhiAnalysis.cc
-*
-* Analysis of th eBs to Jpsi phi decay
-* Lotte Wilke October 2007
-* 
-*/
-//
-// Original Author:  Lotte Wilke
-//         Created:  18.10.2007
-//
 //
 
 
@@ -58,7 +47,6 @@ public:
 
 private:
 
-// 	void fillhistograms(const RefCountedKinematicTree& myTree) const;
 	const TrackingVertex * getSimVertex(const TrackingVertexCollection * tVC) const;
 	double deltaRRecoSim(const reco::TransientTrack *ttk, const TrackingParticleRef *tpr);
 	
@@ -75,19 +63,7 @@ private:
 	bool isSim_; // is it simulated data
 	double deltaR_; //for matching sim and reco tracks
 	
-// 	TFile* hFile_;
-// 	TH1F * h_Bs_mass;
-// 	TH1F * h_l_xy;
-// 	TH1F * h_l;
-// 	TH1F * h_t_xy;
-// 	TH1F * h_t;
-// 	TH1F * h_pT_muon;
-// 	TH1F * h_pT_Kaon;
-// 	TH1F * h_pT_Jpsi;
-// 	TH1F * h_pT_phi;
-// 	TH1F * h_pT_Bs;
-// 	TH1F * h_fit_prob;
-	
 	int event_counter_;
+	int flag;
 };
 #endif
