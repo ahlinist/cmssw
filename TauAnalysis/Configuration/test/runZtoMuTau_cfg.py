@@ -63,7 +63,29 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau.root')
 )
 
-process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",
+process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
+    flags = cms.VInputTag( cms.InputTag('genPhaseSpaceEventInfo'),
+                           cms.InputTag('Trigger'),
+                           cms.InputTag('primaryEventVertex'),
+                           cms.InputTag('primaryEventVertexQuality'),
+                           cms.InputTag('primaryEventVertexPosition'),
+                           cms.InputTag('muonTrkIPcutLooseIsolation', 'cumulative'),
+                           cms.InputTag('tauMuonVeto', 'cumulative'),                                                        
+                           cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual') )
+)
+
+process.skimPath = cms.Path( process.selectEventsByBoolEventSelFlags )
+
+eventSelection = cms.untracked.PSet(
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('skimPath')
+    )
+)
+
+process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",                                                
+    eventSelection, # comment to add all events to the produced PAT-tuple;
+                    # if uncommented, only those events passing the list of cuts
+                    # defined in selectEventsByBoolEventSelFlags.flags are added to the PAT-tuple
     patTupleEventContent,                                               
     fileName = cms.untracked.string('muTauSkim_patTuple.root')
 )
@@ -146,7 +168,7 @@ process.p = cms.Path( process.producePatTuple
 #                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
 #                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
                      +process.selectZtoMuTauEvents
-#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple                    
+                     +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple                    
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
 
