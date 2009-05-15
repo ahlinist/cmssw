@@ -114,51 +114,65 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   folder = "Muons/MuonSegEff/Residuals/Investigation";
   dbe->setCurrentFolder(folder);
 
-  //Paper TH1Fs
+  //High Resolution TH1Fs
 
-  DistBorderClu1La1 = dbe->book1D("DistBorderClu1La1","Distance to the Border of the Strip Layer 1 Cluster Size 1",50,-2.,3.);
-  DistBorderClu1La2 = dbe->book1D("DistBorderClu1La2","Distance to the Border of the Strip Layer 2 Cluster Size 1",50,-2.,3.);
-  DistBorderClu1La3 = dbe->book1D("DistBorderClu1La3","Distance to the Border of the Strip Layer 3 Cluster Size 1",50,-2.,3.);
-  DistBorderClu1La4 = dbe->book1D("DistBorderClu1La4","Distance to the Border of the Strip Layer 4 Cluster Size 1",50,-2.,3.);
-  DistBorderClu1La5 = dbe->book1D("DistBorderClu1La5","Distance to the Border of the Strip Layer 5 Cluster Size 1",50,-2.,3.);
-  DistBorderClu1La6 = dbe->book1D("DistBorderClu1La6","Distance to the Border of the Strip Layer 6 Cluster Size 1",50,-2.,3.);
+  DistBorderClu1La1 = dbe->book1D("DistBorderClu1La1","Distance to the Border of the Strip Layer 1 Cluster Size 1",200,-2.,3.);
+  DistBorderClu1La2 = dbe->book1D("DistBorderClu1La2","Distance to the Border of the Strip Layer 2 Cluster Size 1",200,-2.,3.);
+  DistBorderClu1La3 = dbe->book1D("DistBorderClu1La3","Distance to the Border of the Strip Layer 3 Cluster Size 1",200,-2.,3.);
+  DistBorderClu1La4 = dbe->book1D("DistBorderClu1La4","Distance to the Border of the Strip Layer 4 Cluster Size 1",200,-2.,3.);
+  DistBorderClu1La5 = dbe->book1D("DistBorderClu1La5","Distance to the Border of the Strip Layer 5 Cluster Size 1",200,-2.,3.);
+  DistBorderClu1La6 = dbe->book1D("DistBorderClu1La6","Distance to the Border of the Strip Layer 6 Cluster Size 1",200,-2.,3.);
 
-  DistBorderClu2La1 = dbe->book1D("DistBorderClu2La1","Distance to the Border of the Strip Layer 1 Cluster Size 2",50,-2.,3.);
-  DistBorderClu2La2 = dbe->book1D("DistBorderClu2La2","Distance to the Border of the Strip Layer 2 Cluster Size 2",50,-2.,3.);
-  DistBorderClu2La3 = dbe->book1D("DistBorderClu2La3","Distance to the Border of the Strip Layer 3 Cluster Size 2",50,-2.,3.);
-  DistBorderClu2La4 = dbe->book1D("DistBorderClu2La4","Distance to the Border of the Strip Layer 4 Cluster Size 2",50,-2.,3.);
-  DistBorderClu2La5 = dbe->book1D("DistBorderClu2La5","Distance to the Border of the Strip Layer 5 Cluster Size 2",50,-2.,3.);
-  DistBorderClu2La6 = dbe->book1D("DistBorderClu2La6","Distance to the Border of the Strip Layer 6 Cluster Size 2",50,-2.,3.);
+  DistBorderClu2La1 = dbe->book1D("DistBorderClu2La1","Distance to the Border of the Strip Layer 1 Cluster Size 2",200,-2.,3.);
+  DistBorderClu2La2 = dbe->book1D("DistBorderClu2La2","Distance to the Border of the Strip Layer 2 Cluster Size 2",200,-2.,3.);
+  DistBorderClu2La3 = dbe->book1D("DistBorderClu2La3","Distance to the Border of the Strip Layer 3 Cluster Size 2",200,-2.,3.);
+  DistBorderClu2La4 = dbe->book1D("DistBorderClu2La4","Distance to the Border of the Strip Layer 4 Cluster Size 2",200,-2.,3.);
+  DistBorderClu2La5 = dbe->book1D("DistBorderClu2La5","Distance to the Border of the Strip Layer 5 Cluster Size 2",200,-2.,3.);
+  DistBorderClu2La6 = dbe->book1D("DistBorderClu2La6","Distance to the Border of the Strip Layer 6 Cluster Size 2",200,-2.,3.);
 
-  DistBorderClu3La1 = dbe->book1D("DistBorderClu3La1","Distance to the Border of the Strip Layer 1 Cluster Size 3",50,-2.,3.);
-  DistBorderClu3La2 = dbe->book1D("DistBorderClu3La2","Distance to the Border of the Strip Layer 2 Cluster Size 3",50,-2.,3.);
-  DistBorderClu3La3 = dbe->book1D("DistBorderClu3La3","Distance to the Border of the Strip Layer 3 Cluster Size 3",50,-2.,3.);
-  DistBorderClu3La4 = dbe->book1D("DistBorderClu3La4","Distance to the Border of the Strip Layer 4 Cluster Size 3",50,-2.,3.);
-  DistBorderClu3La5 = dbe->book1D("DistBorderClu3La5","Distance to the Border of the Strip Layer 5 Cluster Size 3",50,-2.,3.);
-  DistBorderClu3La6 = dbe->book1D("DistBorderClu3La6","Distance to the Border of the Strip Layer 6 Cluster Size 3",50,-2.,3.);
+  DistBorderClu3La1 = dbe->book1D("DistBorderClu3La1","Distance to the Border of the Strip Layer 1 Cluster Size 3",200,-2.,3.);
+  DistBorderClu3La2 = dbe->book1D("DistBorderClu3La2","Distance to the Border of the Strip Layer 2 Cluster Size 3",200,-2.,3.);
+  DistBorderClu3La3 = dbe->book1D("DistBorderClu3La3","Distance to the Border of the Strip Layer 3 Cluster Size 3",200,-2.,3.);
+  DistBorderClu3La4 = dbe->book1D("DistBorderClu3La4","Distance to the Border of the Strip Layer 4 Cluster Size 3",200,-2.,3.);
+  DistBorderClu3La5 = dbe->book1D("DistBorderClu3La5","Distance to the Border of the Strip Layer 5 Cluster Size 3",200,-2.,3.);
+  DistBorderClu3La6 = dbe->book1D("DistBorderClu3La6","Distance to the Border of the Strip Layer 6 Cluster Size 3",200,-2.,3.);
   
   //Ang Dependence
-  float pi = 3.14159265;
-  AngClu1La1 = dbe->book1D("AngClu1La1","Angle of incident Muon Layer 1 Cluster Size 1",50,0.,pi);
-  AngClu1La2 = dbe->book1D("AngClu1La2","Angle of incident Muon Layer 2 Cluster Size 1",50,0.,pi);
-  AngClu1La3 = dbe->book1D("AngClu1La3","Angle of incident Muon Layer 3 Cluster Size 1",50,0.,pi);
-  AngClu1La4 = dbe->book1D("AngClu1La4","Angle of incident Muon Layer 4 Cluster Size 1",50,0.,pi);
-  AngClu1La5 = dbe->book1D("AngClu1La5","Angle of incident Muon Layer 5 Cluster Size 1",50,0.,pi);
-  AngClu1La6 = dbe->book1D("AngClu1La6","Angle of incident Muon Layer 6 Cluster Size 1",50,0.,pi);
+
+  ScatterPlotAlphaCLSLa1 = dbe->book2D("ScatterPlotAlphaCLSLa1","Scatter Plot Incident Angle and Cluster Size Layer 1",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaCLSLa2 = dbe->book2D("ScatterPlotAlphaCLSLa2","Scatter Plot Incident Angle and Cluster Size Layer 2",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaCLSLa3 = dbe->book2D("ScatterPlotAlphaCLSLa3","Scatter Plot Incident Angle and Cluster Size Layer 3",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaCLSLa4 = dbe->book2D("ScatterPlotAlphaCLSLa4","Scatter Plot Incident Angle and Cluster Size Layer 4",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaCLSLa5 = dbe->book2D("ScatterPlotAlphaCLSLa5","Scatter Plot Incident Angle and Cluster Size Layer 5",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaCLSLa6 = dbe->book2D("ScatterPlotAlphaCLSLa6","Scatter Plot Incident Angle and Cluster Size Layer 6",50,0.,180.,7,0.5,7.5);
+
+  ScatterPlotAlphaPCLSLa1 = dbe->book2D("ScatterPlotAlphaPCLSLa1","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 1",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaPCLSLa2 = dbe->book2D("ScatterPlotAlphaPCLSLa2","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 2",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaPCLSLa3 = dbe->book2D("ScatterPlotAlphaPCLSLa3","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 3",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaPCLSLa4 = dbe->book2D("ScatterPlotAlphaPCLSLa4","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 4",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaPCLSLa5 = dbe->book2D("ScatterPlotAlphaPCLSLa5","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 5",50,0.,180.,7,0.5,7.5);
+  ScatterPlotAlphaPCLSLa6 = dbe->book2D("ScatterPlotAlphaPCLSLa6","Scatter Plot Incident Perpendicular Angle and Cluster Size Layer 6",50,0.,180.,7,0.5,7.5);
   
-  AngClu2La1 = dbe->book1D("AngClu2La1","Angle of incident Muon Layer 1 Cluster Size 2",50,0.,pi);
-  AngClu2La2 = dbe->book1D("AngClu2La2","Angle of incident Muon Layer 2 Cluster Size 2",50,0.,pi);
-  AngClu2La3 = dbe->book1D("AngClu2La3","Angle of incident Muon Layer 3 Cluster Size 2",50,0.,pi);
-  AngClu2La4 = dbe->book1D("AngClu2La4","Angle of incident Muon Layer 4 Cluster Size 2",50,0.,pi);
-  AngClu2La5 = dbe->book1D("AngClu2La5","Angle of incident Muon Layer 5 Cluster Size 2",50,0.,pi);
-  AngClu2La6 = dbe->book1D("AngClu2La6","Angle of incident Muon Layer 6 Cluster Size 2",50,0.,pi);
+  AngClu1La1 = dbe->book1D("AngClu1La1","Angle of incident Muon Layer 1 Cluster Size 1",50,0.,180.);
+  AngClu1La2 = dbe->book1D("AngClu1La2","Angle of incident Muon Layer 2 Cluster Size 1",50,0.,180.);
+  AngClu1La3 = dbe->book1D("AngClu1La3","Angle of incident Muon Layer 3 Cluster Size 1",50,0.,180.);
+  AngClu1La4 = dbe->book1D("AngClu1La4","Angle of incident Muon Layer 4 Cluster Size 1",50,0.,180.);
+  AngClu1La5 = dbe->book1D("AngClu1La5","Angle of incident Muon Layer 5 Cluster Size 1",50,0.,180.);
+  AngClu1La6 = dbe->book1D("AngClu1La6","Angle of incident Muon Layer 6 Cluster Size 1",50,0.,180.);
   
-  AngClu3La1 = dbe->book1D("AngClu3La1","Angle of incident Muon Layer 1 Cluster Size 3",50,0.,pi);
-  AngClu3La2 = dbe->book1D("AngClu3La2","Angle of incident Muon Layer 2 Cluster Size 3",50,0.,pi);
-  AngClu3La3 = dbe->book1D("AngClu3La3","Angle of incident Muon Layer 3 Cluster Size 3",50,0.,pi);
-  AngClu3La4 = dbe->book1D("AngClu3La4","Angle of incident Muon Layer 4 Cluster Size 3",50,0.,pi);
-  AngClu3La5 = dbe->book1D("AngClu3La5","Angle of incident Muon Layer 5 Cluster Size 3",50,0.,pi);
-  AngClu3La6 = dbe->book1D("AngClu3La6","Angle of incident Muon Layer 6 Cluster Size 3",50,0.,pi);
+  AngClu2La1 = dbe->book1D("AngClu2La1","Angle of incident Muon Layer 1 Cluster Size 2",50,0.,180.);
+  AngClu2La2 = dbe->book1D("AngClu2La2","Angle of incident Muon Layer 2 Cluster Size 2",50,0.,180.);
+  AngClu2La3 = dbe->book1D("AngClu2La3","Angle of incident Muon Layer 3 Cluster Size 2",50,0.,180.);
+  AngClu2La4 = dbe->book1D("AngClu2La4","Angle of incident Muon Layer 4 Cluster Size 2",50,0.,180.);
+  AngClu2La5 = dbe->book1D("AngClu2La5","Angle of incident Muon Layer 5 Cluster Size 2",50,0.,180.);
+  AngClu2La6 = dbe->book1D("AngClu2La6","Angle of incident Muon Layer 6 Cluster Size 2",50,0.,180.);
+  
+  AngClu3La1 = dbe->book1D("AngClu3La1","Angle of incident Muon Layer 1 Cluster Size 3",50,0.,180.);
+  AngClu3La2 = dbe->book1D("AngClu3La2","Angle of incident Muon Layer 2 Cluster Size 3",50,0.,180.);
+  AngClu3La3 = dbe->book1D("AngClu3La3","Angle of incident Muon Layer 3 Cluster Size 3",50,0.,180.);
+  AngClu3La4 = dbe->book1D("AngClu3La4","Angle of incident Muon Layer 4 Cluster Size 3",50,0.,180.);
+  AngClu3La5 = dbe->book1D("AngClu3La5","Angle of incident Muon Layer 5 Cluster Size 3",50,0.,180.);
+  AngClu3La6 = dbe->book1D("AngClu3La6","Angle of incident Muon Layer 6 Cluster Size 3",50,0.,180.);
 
   folder = "Muons/MuonSegEff/Residuals/Barrel";
   dbe->setCurrentFolder(folder);
@@ -583,6 +597,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  int cluSize = 0;
 		  int bx = 100;
 		  float minres = 3000.;
+		  float distbord = 0;
 		  
 		  if(debug) std::cout<<"DT  \t \t \t \t Getting RecHits in Roll Asociated"<<std::endl;
 		  typedef std::pair<RPCRecHitCollection::const_iterator, RPCRecHitCollection::const_iterator> rangeRecHits;
@@ -636,16 +651,43 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    //-----RESIDUALS----------
 		    if(inves){
 		      float cosal = dx/sqrt(dx*dx+dz*dz);
-		      if(debug) std::cout<<"DT \t \t \t \t \t Angle="<<acos(cosal)*180/3.1415926<<" degree"<<std::endl;
-		      if(debug) std::cout<<"DT \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Alpha="<<cosal<<std::endl;
-		      if(rollId.station()==1&&rollId.layer()==1)     { if(cluSize==1*dupli) {hGlobalResClu1La1->Fill(minres); AngClu1La1->Fill(acos(cosal)); DistBorderClu1La1->Fill(minres/stripw+0.5);}if(cluSize==2*dupli){ hGlobalResClu2La1->Fill(minres);  AngClu2La1->Fill(acos(cosal));DistBorderClu2La1->Fill(minres/stripw+0.5);} if(cluSize==3*dupli){ hGlobalResClu3La1->Fill(minres);  AngClu3La1->Fill(acos(cosal));} DistBorderClu3La1->Fill(minres/stripw+0.5);}
-		      else if(rollId.station()==1&&rollId.layer()==2){ if(cluSize==1*dupli) {hGlobalResClu1La2->Fill(minres); AngClu1La2->Fill(acos(cosal)); DistBorderClu1La2->Fill(minres/stripw+0.5);}if(cluSize==2*dupli){ hGlobalResClu2La2->Fill(minres);  AngClu2La2->Fill(acos(cosal));DistBorderClu2La2->Fill(minres/stripw+0.5);} if(cluSize==3*dupli){ hGlobalResClu3La2->Fill(minres);  AngClu3La2->Fill(acos(cosal));} DistBorderClu3La2->Fill(minres/stripw+0.5);}
-		      else if(rollId.station()==2&&rollId.layer()==1){ if(cluSize==1*dupli) {hGlobalResClu1La3->Fill(minres); AngClu1La3->Fill(acos(cosal)); DistBorderClu1La3->Fill(minres/stripw+0.5);}if(cluSize==2*dupli){ hGlobalResClu2La3->Fill(minres);  AngClu2La3->Fill(acos(cosal));DistBorderClu2La3->Fill(minres/stripw+0.5);} if(cluSize==3*dupli){ hGlobalResClu3La3->Fill(minres);  AngClu3La3->Fill(acos(cosal));} DistBorderClu3La3->Fill(minres/stripw+0.5);}
-		      else if(rollId.station()==2&&rollId.layer()==2){ if(cluSize==1*dupli) {hGlobalResClu1La4->Fill(minres); AngClu1La4->Fill(acos(cosal)); DistBorderClu1La4->Fill(minres/stripw+0.5);}if(cluSize==2*dupli){ hGlobalResClu2La4->Fill(minres);  AngClu2La4->Fill(acos(cosal));DistBorderClu2La4->Fill(minres/stripw+0.5);} if(cluSize==3*dupli){ hGlobalResClu3La4->Fill(minres);  AngClu3La4->Fill(acos(cosal));} DistBorderClu3La4->Fill(minres/stripw+0.5);}
-		      else if(rollId.station()==3)                   { if(cluSize==1*dupli) {hGlobalResClu1La5->Fill(minres); AngClu1La5->Fill(acos(cosal)); DistBorderClu1La5->Fill(minres/stripw+0.5);}if(cluSize==2*dupli){ hGlobalResClu2La5->Fill(minres);  AngClu2La5->Fill(acos(cosal));DistBorderClu2La5->Fill(minres/stripw+0.5);} if(cluSize==3*dupli){ hGlobalResClu3La5->Fill(minres);  AngClu3La5->Fill(acos(cosal));} DistBorderClu3La5->Fill(minres/stripw+0.5);}
+		      float cosalp = dy/sqrt(dy*dy+dz*dz);
+		      
+		      float angle = acos(cosal)*180/3.1415926;
+		      float anglep = acos(cosalp)*180/3.1415926;
+		      
+		      if(debug) std::cout<<"DT \t \t \t \t \t Angle="<<angle<<" degree"<<std::endl;
+		      
+		      //Filling Residuals
+		      if(rollId.station()==1&&rollId.layer()==1)     { if(cluSize==1*dupli) {hGlobalResClu1La1->Fill(minres);}if(cluSize==2*dupli){ hGlobalResClu2La1->Fill(minres); }if(cluSize==3*dupli){ hGlobalResClu3La1->Fill(minres);}}
+		      else if(rollId.station()==1&&rollId.layer()==2){ if(cluSize==1*dupli) {hGlobalResClu1La2->Fill(minres);}if(cluSize==2*dupli){ hGlobalResClu2La2->Fill(minres); }if(cluSize==3*dupli){ hGlobalResClu3La2->Fill(minres);}}
+		      else if(rollId.station()==2&&rollId.layer()==1){ if(cluSize==1*dupli) {hGlobalResClu1La3->Fill(minres);}if(cluSize==2*dupli){ hGlobalResClu2La3->Fill(minres); }if(cluSize==3*dupli){ hGlobalResClu3La3->Fill(minres);}}
+		      else if(rollId.station()==2&&rollId.layer()==2){ if(cluSize==1*dupli) {hGlobalResClu1La4->Fill(minres);}if(cluSize==2*dupli){ hGlobalResClu2La4->Fill(minres); }if(cluSize==3*dupli){ hGlobalResClu3La4->Fill(minres);}}
+		      else if(rollId.station()==3)                   { if(cluSize==1*dupli) {hGlobalResClu1La5->Fill(minres);}if(cluSize==2*dupli){ hGlobalResClu2La5->Fill(minres); }if(cluSize==3*dupli){ hGlobalResClu3La5->Fill(minres);}}
+		      
+
+		      //Filling High Resolution Histograms
+		      if(cluSize == 1*dupli){
+			distbord = minres/stripw + 0.5;
+		      }else if(cluSize == 2*dupli){
+			distbord = minres/stripw;				
+		      }else if(cluSize == 3*dupli){
+			distbord = minres/stripw + 0.5;
+		      }
+		      
+		      if(debug) std::cout<<"DT \t \t \t \t \t Filling high resolution histograms with distbord="<<distbord
+					 <<" cosal="<<cosal
+					 <<" cls="<<cluSize<<std::endl;
+		      
+		      if(rollId.station()==1&&rollId.layer()==1)     { ScatterPlotAlphaPCLSLa1->Fill(anglep,cluSize); ScatterPlotAlphaCLSLa1->Fill(angle,cluSize); if(cluSize==1*dupli) {AngClu1La1->Fill(angle); DistBorderClu1La1->Fill(distbord);}if(cluSize==2*dupli){ AngClu2La1->Fill(angle);DistBorderClu2La1->Fill(distbord);}  if(cluSize==3*dupli){AngClu3La1->Fill(angle); DistBorderClu3La1->Fill(distbord);}}
+		      else if(rollId.station()==1&&rollId.layer()==2){ ScatterPlotAlphaPCLSLa2->Fill(anglep,cluSize); ScatterPlotAlphaCLSLa2->Fill(angle,cluSize); if(cluSize==1*dupli) {AngClu1La2->Fill(angle); DistBorderClu1La2->Fill(distbord);}if(cluSize==2*dupli){ AngClu2La2->Fill(angle);DistBorderClu2La2->Fill(distbord);}  if(cluSize==3*dupli){AngClu3La2->Fill(angle); DistBorderClu3La2->Fill(distbord);}}
+		      else if(rollId.station()==2&&rollId.layer()==1){ ScatterPlotAlphaPCLSLa3->Fill(anglep,cluSize); ScatterPlotAlphaCLSLa3->Fill(angle,cluSize); if(cluSize==1*dupli) {AngClu1La3->Fill(angle); DistBorderClu1La3->Fill(distbord);}if(cluSize==2*dupli){ AngClu2La3->Fill(angle);DistBorderClu2La3->Fill(distbord);}  if(cluSize==3*dupli){AngClu3La3->Fill(angle); DistBorderClu3La3->Fill(distbord);}}
+		      else if(rollId.station()==2&&rollId.layer()==2){ ScatterPlotAlphaPCLSLa4->Fill(anglep,cluSize); ScatterPlotAlphaCLSLa4->Fill(angle,cluSize); if(cluSize==1*dupli) {AngClu1La4->Fill(angle); DistBorderClu1La4->Fill(distbord);}if(cluSize==2*dupli){ AngClu2La4->Fill(angle);DistBorderClu2La4->Fill(distbord);}  if(cluSize==3*dupli){AngClu3La4->Fill(angle); DistBorderClu3La4->Fill(distbord);}}
+		      else if(rollId.station()==3)                   { ScatterPlotAlphaPCLSLa5->Fill(anglep,cluSize); ScatterPlotAlphaCLSLa5->Fill(angle,cluSize); if(cluSize==1*dupli) {AngClu1La5->Fill(angle); DistBorderClu1La5->Fill(distbord);}if(cluSize==2*dupli){ AngClu2La5->Fill(angle);DistBorderClu2La5->Fill(distbord);}  if(cluSize==3*dupli){AngClu3La5->Fill(angle); DistBorderClu3La5->Fill(distbord);}}
+		      
 		      //------------------------
 		    }
-
+		    
 		    sprintf(meIdRPC,"RPCResidualsFromDT_%s",detUnitLabel);
 		    meMap[meIdRPC]->Fill(minres);
 
@@ -932,6 +974,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			int cluSize = 0;
 			int bx = 0;
 			float minres = 3000.;
+			float distbord = 0;
 			
 			if(debug) std::cout<<"MB4 \t \t \t \t Getting RecHits in Roll Asociated"<<std::endl;
 			typedef std::pair<RPCRecHitCollection::const_iterator, RPCRecHitCollection::const_iterator> rangeRecHits;
@@ -983,12 +1026,39 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  //-----RESIDUALS----------
 			  if(inves){
 			    float cosal = dxl/sqrt(dxl*dxl+dzl*dzl);
-			    if(debug) std::cout<<"MB4 \t \t \t \t \t Angle="<<acos(cosal)*180/3.1415926<<" degree"<<std::endl;
-			    if(debug) std::cout<<"MB4 \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
+			    float cosalp = dy3/sqrt(dy3*dy3+dzl*dzl);
+			    
+			    float angle = acos(cosal)*180/3.1415926;
+			    float anglep = acos(cosalp)*180/3.1415926;
+			    
+			    if(debug) std::cout<<"MB4 \t \t \t \t \t Angle="<<angle<<" degree"<<std::endl;
+			    
+			    //Filling Residuals
 			    assert(rollId.station()==4);
-			    if(cluSize==1*dupli){ hGlobalResClu1La6->Fill(minres); AngClu1La6->Fill(acos(cosal)); DistBorderClu1La6->Fill(minres/stripw+0.5);}
-			    else if(cluSize==2*dupli){ hGlobalResClu2La6->Fill(minres); AngClu2La6->Fill(acos(cosal)); DistBorderClu2La6->Fill(minres/stripw+0.5);}
-			    else if(cluSize==3*dupli){ hGlobalResClu3La6->Fill(minres); AngClu3La6->Fill(acos(cosal)); DistBorderClu3La6->Fill(minres/stripw+0.5);}
+			    hGlobalResClu1La6->Fill(minres);
+			    hGlobalResClu2La6->Fill(minres);
+			    hGlobalResClu3La6->Fill(minres);
+			    
+			    if(debug) std::cout<<"MB4 \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
+			    
+			    //Filling High Resolution Histograms
+			    if(cluSize == 1*dupli){
+			      distbord = minres/stripw + 0.5;
+			    }else if(cluSize == 2*dupli){
+			      distbord = minres/stripw;				
+			    }else if(cluSize == 3*dupli){
+			      distbord = minres/stripw + 0.5;
+			    }
+			    
+			    if(debug) std::cout<<"MB4 \t \t \t \t \t \t Filling high resolution histogram with distbord="<<distbord
+					       <<" cosal="<<cosal
+					       <<" cls="<<cluSize<<std::endl;
+			    
+			    ScatterPlotAlphaCLSLa6->Fill(angle,cluSize);
+			    ScatterPlotAlphaPCLSLa6->Fill(anglep,cluSize);
+			    if(cluSize==1*dupli){ AngClu1La6->Fill(angle); DistBorderClu1La6->Fill(distbord);}
+			    else if(cluSize==2*dupli){ AngClu2La6->Fill(angle); DistBorderClu2La6->Fill(distbord);}
+			    else if(cluSize==3*dupli){ AngClu3La6->Fill(angle); DistBorderClu3La6->Fill(distbord);}
 			  }
 			  //--------------------------------
 			  
@@ -1347,17 +1417,31 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      //----RESIDUALS----
 		      if(inves){
 			float cosal = dx/sqrt(dx*dx+dz*dz);
-			if(debug) std::cout<<"CSC \t \t \t \t \t Angle="<<acos(cosal)*180/3.1415926<<" degree"<<std::endl;
-			if(debug) std::cout<<"CSC \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
+			float angle = acos(cosal)*180/3.1415926;
+			if(debug) std::cout<<"CSC \t \t \t \t \t Angle="<<angle<<" degree"<<std::endl;
+
+			//Filling Residuals
+			
 			if(rollId.ring()==2&&rollId.roll()==1){if(cluSize==1*dupli) hGlobalResClu1R2A->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R2A->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R2A->Fill(minres);}
 			if(rollId.ring()==2&&rollId.roll()==2){if(cluSize==1*dupli) hGlobalResClu1R2B->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R2B->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R2B->Fill(minres);}
 			if(rollId.ring()==2&&rollId.roll()==3){if(cluSize==1*dupli) hGlobalResClu1R2C->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R2C->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R2C->Fill(minres);}
 			if(rollId.ring()==3&&rollId.roll()==1){if(cluSize==1*dupli) hGlobalResClu1R3A->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R3A->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R3A->Fill(minres);}
 			if(rollId.ring()==3&&rollId.roll()==2){if(cluSize==1*dupli) hGlobalResClu1R3B->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R3B->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R3B->Fill(minres);}
 			if(rollId.ring()==3&&rollId.roll()==3){if(cluSize==1*dupli) hGlobalResClu1R3C->Fill(minres); if(cluSize==2*dupli) hGlobalResClu2R3C->Fill(minres); if(cluSize==3*dupli) hGlobalResClu3R3C->Fill(minres);}
-		      }
-		      //------------------------
 
+			
+			//Filling High Resolution Histograms
+			/*if(fabs(minres)<=0.5){
+			  distbord = stripPredicted - (int) stripPredicted;
+			  if(debug) std::cout<<"CSC \t \t \t \t \t Filling high resolution histograms with distbord"<<distbord
+					   <<" cosal=="<<cosal
+					     <<" cls="<<cluSize<<std::endl;
+			  //Mising high resolution hiistos for CSCs.
+			  }*/
+
+			
+			//------------------------
+		      }
 		      sprintf(meIdRPC,"RPCResidualsFromCSC_%s",detUnitLabel);
 		      meMap[meIdRPC]->Fill(minres);
 		      

@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.15 2009/04/06 17:53:19 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.16 2009/04/07 12:45:03 carrillo Exp $
 //
 //
 
@@ -201,6 +201,10 @@ public:
   TH1F * layerCLSW0[7];  
   TH1F * layerCLSW1[7];  
   TH1F * layerCLSW2[7];
+
+  TH1F * CLSlayer[7];
+
+  TH1F * CLS;
   
   TH1F * sectorEffWm2;  
   TH1F * sectorEffWm1;  
@@ -407,6 +411,20 @@ public:
   TH1F * NoPredictionD2far;
   TH1F * NoPredictionD3far;
 
+  TH2F * ScatterPlotAlphaCLSLa1;
+  TH2F * ScatterPlotAlphaCLSLa2;
+  TH2F * ScatterPlotAlphaCLSLa3;
+  TH2F * ScatterPlotAlphaCLSLa4;
+  TH2F * ScatterPlotAlphaCLSLa5;
+  TH2F * ScatterPlotAlphaCLSLa6;
+
+  TH2F * ScatterPlotAlphaPCLSLa1;
+  TH2F * ScatterPlotAlphaPCLSLa2;
+  TH2F * ScatterPlotAlphaPCLSLa3;
+  TH2F * ScatterPlotAlphaPCLSLa4;
+  TH2F * ScatterPlotAlphaPCLSLa5;
+  TH2F * ScatterPlotAlphaPCLSLa6;
+
   TPaveText * pave;
 
 private:
@@ -541,21 +559,21 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   std::stringstream title; 
   
   for(int k=1;k<=12;k++){
-    meId <<"ClusterSizeWm2Sector"<<k;
-    title <<"Cluster Size Wheel - 2 Sector "<<k;
-    sectorCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
-    meId <<"ClusterSizeWm1Sector"<<k;
+    meId <<"ClusterSizeWm2Sector"<<k; 
+    title <<"Cluster Size Wheel - 2 Sector "<<k; 
+    sectorCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
+    meId <<"ClusterSizeWm1Sector"<<k; 
     title <<"Cluster Size Wheel - 1 Sector "<<k;
-    sectorCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    sectorCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeW0Sector"<<k;
     title <<"Cluster Size Wheel 0 Sector "<<k;
-    sectorCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    sectorCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeW1Sector"<<k;
     title <<"Cluster Size Wheel 1 Sector "<<k;
-    sectorCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    sectorCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeWm2Sector"<<k;
     title <<"Cluster Size Wheel 2 Sector "<<k;
-    sectorCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    sectorCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
   }
 
   CLSWm2layer = new TH1F ("ClusterSizeWm2","Cluster Size Wheel -2 per layer",12,0.5,12.5);
@@ -565,21 +583,21 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   CLSW2layer = new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per layer",12,0.5,12.5);
   
   for(int k=1;k<=6;k++){
-    meId <<"ClusterSizeWm2Layer"<<k;
-    title <<"Cluster Size Wheel - 2 Layer "<<k;
-    layerCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
-    meId <<"ClusterSizeWm1Layer"<<k;
-    title <<"Cluster Size Wheel - 1 Layer "<<k;
-    layerCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
-    meId <<"ClusterSizeW0Layer"<<k;
-    title <<"Cluster Size Wheel 0 Layer "<<k;
-    layerCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    meId <<"ClusterSizeWm2Layer"<<k; 
+    title <<"Cluster Size Wheel - 2 Layer "<<k; 
+    layerCLSWm2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
+    meId <<"ClusterSizeWm1Layer"<<k; 
+    title <<"Cluster Size Wheel - 1 Layer "<<k; 
+    layerCLSWm1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
+    meId <<"ClusterSizeW0Layer"<<k; 
+    title <<"Cluster Size Wheel 0 Layer "<<k; 
+    layerCLSW0[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeW1Layer"<<k;
     title <<"Cluster Size Wheel 1 Layer "<<k;
-    layerCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    layerCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
     meId <<"ClusterSizeWm2Layer"<<k;
     title <<"Cluster Size Wheel 2 Layer "<<k;
-    layerCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    layerCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
   }
 
 
@@ -1042,6 +1060,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   Ca0 = new TCanvas("Ca0","Profile",400,300);
   
+  theFileOut->cd();
+  
   for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
     if( dynamic_cast< RPCChamber* >( *it ) != 0 ){
       RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
@@ -1087,7 +1107,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
 	  meIdINEF = folder +"/Inefficiency2DFromDT_"+ name;
-	  
+
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
@@ -1104,6 +1124,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  	  
 	  if(CLSandBXY){
 	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
+
 	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
 
 	    if(histoBXY && histoCLS){
@@ -1317,8 +1338,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      buffef=0.;
 	      buffer=0.;
 	      
-	      if(debug) std::cout<<"Inside the loop"<<std::endl;
-
 	      if(histoDT->GetBinContent(i)!=0){
 		buffef = float(histoRPC->GetBinContent(i))/float(histoDT->GetBinContent(i));
 		buffer = sqrt(buffef*(1.-buffef)/float(histoDT->GetBinContent(i)));
@@ -1334,12 +1353,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
 		}
 	      }else{
-		if(debug) std::cout<<" NP";
+		//if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
 		efftxt<<"  "<<0.95;
 	      }
-
-	      if(debug) std::cout<<"Filling the histograms"<<std::endl;
 
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
@@ -1608,11 +1625,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    else if(rpcId.station()==3) layer = 5;
 	    else if(rpcId.station()==4) layer = 6;
 	    
-	    if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o);CLSWm2->Fill(histoCLS->GetMean()); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	    else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o);CLSWm1->Fill(histoCLS->GetMean());sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	    else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o);CLSW0->Fill(histoCLS->GetMean());sectorCLSW0[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	    else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o);CLSW1->Fill(histoCLS->GetMean());sectorCLSW1[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
-	    else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o);CLSW2->Fill(histoCLS->GetMean());sectorCLSW2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    if(wheel==-2){ExsectorEffWm2->Fill(sector,p); OcsectorEffWm2->Fill(sector,o); sectorCLSWm2[sector]->Add(histoCLS);layerCLSWm2[layer]->Add(histoCLS);}
+	    else if(wheel==-1){ExsectorEffWm1->Fill(sector,p); OcsectorEffWm1->Fill(sector,o); sectorCLSWm1[sector]->Add(histoCLS);layerCLSWm1[layer]->Add(histoCLS);}
+	    else if(wheel==0){ExsectorEffW0->Fill(sector,p); OcsectorEffW0->Fill(sector,o); sectorCLSW0[sector]->Add(histoCLS);layerCLSW0[layer]->Add(histoCLS);}
+	    else if(wheel==1){ExsectorEffW1->Fill(sector,p); OcsectorEffW1->Fill(sector,o); sectorCLSW1[sector]->Add(histoCLS);layerCLSW1[layer]->Add(histoCLS);}
+	    else if(wheel==2){ExsectorEffW2->Fill(sector,p); OcsectorEffW2->Fill(sector,o); sectorCLSW2[sector]->Add(histoCLS);layerCLSW2[layer]->Add(histoCLS);}
 	  }
 
 	  delete histoCLS;
@@ -1917,7 +1934,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
 	  meIdINEF = folder +"/Inefficiency2DFromCSC_"+ name;
-	  
+
 	  if(dosD){
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
@@ -2055,10 +2072,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    int lastxbin = int(nstrips)+int(nstrips*0.4/0.6);
 	    int firstybin = int(nstrips)-int(nstrips*0.4/0.6);
 	    int lastybin = int(nstrips)+int(nstrips*0.4/0.6);
-
+	    
 	    if(debug) std::cout<<" firstxbin"<<firstxbin<<" lastxbin"<<lastxbin;
 	    if(debug) std::cout<<" firstybin"<<firstybin<<" lastybin"<<lastybin;
-	    
 	    
 	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
 	    float pinoexpected = histoCSC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
@@ -2151,8 +2167,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      buffef=0.;
 	      buffer=0.;
 
-	      if(debug) std::cout<<"Inside the loop"<<std::endl;
-	    
 	      if(histoCSC->GetBinContent(i)!=0){
 		buffef = float(histoRPC->GetBinContent(i))/double(histoCSC->GetBinContent(i));
 		buffer = sqrt(buffef*(1.-buffef)/double(histoCSC->GetBinContent(i)));
@@ -2172,8 +2186,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		NumberWithOutPrediction++;
 		efftxt<<"  "<<0.95;
 	      }
-
-	      if(debug) std::cout<<"Filling the histograms"<<std::endl;	      
 
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
@@ -2246,9 +2258,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
 	    histoPRO->Write();
-	    histoPROY->Write();
-	    histoPRO_2D->Write();
-	    histoCLS->Write();
+	    //histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
+	    //histoPRO_2D->Write(); //ahora este
+	    //histoCLS->Write(); //parece este
 	    histoBXY->Write();
 
 	    if(debug) std::cout<<"Producing images"<<std::endl;
@@ -2760,6 +2772,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     command = "cat htmltemplates/indextail.html >> indexW2far.html"; system(command.c_str());
   }
 
+
   float eff,N,err;
   int k;
   for(k=1;k<=36;k++){
@@ -2818,24 +2831,38 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     sectorEffW2->SetBinContent(k,eff); sectorEffW2->SetBinError(k,err);
   }
 
-  if(debug) std::cout<<"Outside the loop of rolls"<<std::endl;
+  for(int sector = 1;sector <=12 ; sector++){
+    CLSWm2->SetBinContent(sector,sectorCLSWm2[sector]->GetMean());
+    CLSWm2->SetBinError(sector,sectorCLSWm2[sector]->GetRMS()/sectorCLSWm2[sector]->GetEntries());
 
+    CLSWm1->SetBinContent(sector,sectorCLSWm1[sector]->GetMean());
+    CLSWm1->SetBinError(sector,sectorCLSWm1[sector]->GetRMS()/sectorCLSWm1[sector]->GetEntries());
+
+    CLSW0->SetBinContent(sector,sectorCLSW0[sector]->GetMean());
+    CLSW0->SetBinError(sector,sectorCLSW0[sector]->GetRMS()/sectorCLSW0[sector]->GetEntries());
+
+    CLSW1->SetBinContent(sector,sectorCLSW1[sector]->GetMean());
+    CLSW1->SetBinError(sector,sectorCLSW1[sector]->GetRMS()/sectorCLSW1[sector]->GetEntries());
+
+    CLSW2->SetBinContent(sector,sectorCLSW2[sector]->GetMean());
+    CLSW2->SetBinError(sector,sectorCLSW2[sector]->GetRMS()/sectorCLSW2[sector]->GetEntries());
+  }
+  
   Ca5->Clear();
   
   bxbarrel->Draw();
   bxbarrel->GetYaxis()->SetTitle("RMS (bx Units)");
   bxbarrel->GetXaxis()->SetTitle("Mean (bx Units)");
   Ca5->SaveAs("bxbarrel.png");
-  Ca5->SaveAs("bxbarrel.root");
-  
+  bxbarrel->Write();
   Ca5->Clear();
   
   bxendcap->Draw();
   bxendcap->GetYaxis()->SetTitle("RMS (bx Units)");
   bxendcap->GetXaxis()->SetTitle("Mean (bx Units)");
+  bxendcap->Write();
   Ca5->SaveAs("bxendcap.png");
-  Ca5->SaveAs("bxendcap.root");
-  
+    
   
   if(barrel){
     EffGlobWm2->GetXaxis()->LabelsOption("v");
@@ -3198,55 +3225,434 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   //Producing Images
 
+  const int n=50;
+
+  float step = 180/float(n);
+
+  float x[n];
+  float y[n];
+  float ex[n];
+  float ey[n];
+  
+  if(debug) std::cout<<"Producing Scatter Plots"<<std::endl;
+
   Ca5->Clear();
-  /*
-  for(k=1;k=<12;k++){
-    sectorCLSWm2[k]->Draw(); sectorCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size"); Ca5->SaveAs("CLS/Wm2.png"); Ca5->SaveAs("CLS/Wm2.root");  Ca5->Clear(); 
+
+  ScatterPlotAlphaCLSLa1= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa1");
+  if(ScatterPlotAlphaCLSLa1){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaCLSLa1->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaCLSLa1->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaCLSLa1->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);         
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+
+       std::cout<<i<<" "<<x[i]<<" "<<y[i]<<std::endl;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("Angle (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleLa1.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
   }
 
-  for(k=1;k=<6;k++){
+  ScatterPlotAlphaCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa2");
+  if(ScatterPlotAlphaCLSLa2){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("Angle (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleLa2.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
+  }
+  
+  ScatterPlotAlphaCLSLa3= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa3");
+  if(ScatterPlotAlphaCLSLa3){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("Angle (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleLa3.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
+  }
+  
+
+  ScatterPlotAlphaCLSLa4= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa4");
+  if(ScatterPlotAlphaCLSLa4){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
     
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("Angle (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleLa4.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
   }
-  */
 
+  ScatterPlotAlphaCLSLa5= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa5");
+  if(ScatterPlotAlphaCLSLa5){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
+    
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("Angle (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleLa5.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
+  }
+
+  ScatterPlotAlphaCLSLa6= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa6");
+  if(ScatterPlotAlphaCLSLa6){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
+    
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("Angle (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleLa6.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
+  }
+
+  //El otro angulo
+
+  ScatterPlotAlphaPCLSLa1= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa1");
+  if(ScatterPlotAlphaPCLSLa1){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);         
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+
+       std::cout<<i<<" "<<x[i]<<" "<<y[i]<<std::endl;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleParallelLa1.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
+  }
+
+  ScatterPlotAlphaPCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa2");
+  if(ScatterPlotAlphaPCLSLa2){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleParallelLa2.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
+  }
+  
+  ScatterPlotAlphaPCLSLa3= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa3");
+  if(ScatterPlotAlphaPCLSLa3){
+     for(int i=0;i<n;i++){
+       float mean = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetMean();
+       float entries = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetEntries();
+       float error = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       x[i]=(i+1)*step;
+       ex[i]=step*0.5;
+       y[i]=mean;
+       ey[i]=error;
+     }
+     
+     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+     plot->SetMarkerColor(6);
+     plot->SetMarkerStyle(20);
+     plot->SetMarkerSize(0.5);
+     plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
+     plot->Draw("AP");
+     labeltoSave = "CLS/ClusterSizeVsAngleParallelLa3.png";
+     Ca5->SaveAs(labeltoSave.c_str());
+     Ca5->Clear();
+  }
+  
+
+  ScatterPlotAlphaPCLSLa4= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa4");
+  if(ScatterPlotAlphaPCLSLa4){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
+    
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleParallelLa4.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
+  }
+
+  ScatterPlotAlphaPCLSLa5= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa5");
+  if(ScatterPlotAlphaPCLSLa5){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
+    
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleParallelLa5.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
+  }
+
+  ScatterPlotAlphaPCLSLa6= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa6");
+  if(ScatterPlotAlphaPCLSLa6){
+    for(int i=0;i<n;i++){
+      float mean = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetMean();
+      float entries = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetEntries();
+      float error = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      x[i]=(i+1)*step;
+      ex[i]=step*0.5;
+      y[i]=mean;
+      ey[i]=error;
+    }
+    
+    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+    plot->SetMarkerColor(6);
+    plot->SetMarkerStyle(20);
+    plot->SetMarkerSize(0.5);
+    plot->GetXaxis()->SetTitle("AngleParallel (degree)");
+    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
+    plot->Draw("AP");
+    labeltoSave = "CLS/ClusterSizeVsAngleParallelLa6.png";
+    Ca5->SaveAs(labeltoSave.c_str());
+    Ca5->Clear();
+  }
+  
+  Ca5->Clear();
+
+  std::stringstream nametosave;
+  nametosave.str("");
+  
+  for(k=1;k<=12;k++){
+    sectorCLSWm2[k]->Draw(); sectorCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size");
+    nametosave<<"CLS/Wm2sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    sectorCLSWm2[k]->Write();
+    Ca5->Clear();
+    sectorCLSWm1[k]->Draw(); sectorCLSWm1[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/Wm1sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    sectorCLSWm1[k]->Write();
+    Ca5->Clear(); 
+    sectorCLSW0[k]->Draw(); sectorCLSW0[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W0sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    sectorCLSW0[k]->Write();
+    Ca5->Clear(); 
+    sectorCLSW1[k]->Draw(); sectorCLSW1[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W1sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    sectorCLSW1[k]->Write();
+    Ca5->Clear(); 
+    sectorCLSW2[k]->Draw(); sectorCLSW2[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W2sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    sectorCLSW2[k]->Write(); 
+    Ca5->Clear(); 
+  }
+  
+  nametosave.str("");
+
+  for(k=1;k<=6;k++){
+    layerCLSWm2[k]->Draw(); layerCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/Wm2layer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    layerCLSWm2[k]->Write(); 
+    Ca5->Clear(); 
+
+    layerCLSWm1[k]->Draw(); layerCLSWm1[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/Wm1layer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    layerCLSWm1[k]->Write();
+    Ca5->Clear(); 
+
+    layerCLSW0[k]->Draw(); layerCLSW0[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W0layer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    layerCLSW0[k]->Write();
+    Ca5->Clear(); 
+
+    layerCLSW1[k]->Draw(); layerCLSW1[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W1layer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    layerCLSW1[k]->Write();
+    Ca5->Clear(); 
+
+    layerCLSW2[k]->Draw(); layerCLSW2[k]->GetXaxis()->SetTitle("Cluster Size"); 
+    nametosave<<"CLS/W2layer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    layerCLSW2[k]->Write();
+    Ca5->Clear(); 
+    
+    std::stringstream Id; Id.str(""); Id<<"ClusterSizeForLayer"<<k;
+    std::stringstream title; title.str(""); title<<"Cluster Size For Layer "<<k;
+
+    CLSlayer[k] = new TH1F (Id.str().c_str(),title.str().c_str(),10,0.5,10.5);
+    CLSlayer[k]->Add(layerCLSWm2[k]);
+    CLSlayer[k]->Add(layerCLSWm1[k]);
+    CLSlayer[k]->Add(layerCLSW0[k]);
+    CLSlayer[k]->Add(layerCLSW1[k]);
+    CLSlayer[k]->Add(layerCLSW2[k]);
+
+    CLSlayer[k]->Draw(); CLSlayer[k]->GetXaxis()->SetTitle(title.str().c_str()); 
+
+    nametosave<<"CLS/ClusterSizeForLayer"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
+    CLSlayer[k]->Write();
+    Ca5->Clear(); 
+  }
+
+  CLS = new TH1F ("CLS","Cluster Size for all the barrel",10,0.5,10.5);
+
+  for(k=1;k<=6;k++) CLS->Add(CLSlayer[k]);
+
+  CLS->Draw(); CLS->GetXaxis()->SetTitle("Cluster Size For The Barrel");
+  Ca5->SaveAs("CLS/CLS.png"); CLS->Write(); 
+  Ca5->Clear(); 
+    
   CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Cluster Size");
-  Ca5->SaveAs("CLS/Wm2.png"); Ca5->SaveAs("CLS/Wm2.root");
+  Ca5->SaveAs("CLS/Wm2.png"); CLSWm2->Write();
   Ca5->Clear(); 
 
   CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Cluster Size");
-  Ca5->SaveAs("CLS/Wm1.png"); Ca5->SaveAs("CLS/Wm1.root");
+  Ca5->SaveAs("CLS/Wm1.png"); CLSWm1->Write();
   Ca5->Clear(); 
 
   CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W0.png"); Ca5->SaveAs("CLS/W0.root");
+  Ca5->SaveAs("CLS/W0.png"); CLSW0->Write();
   Ca5->Clear(); 
 
   CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W1.png"); Ca5->SaveAs("CLS/W1.root");
+  Ca5->SaveAs("CLS/W1.png"); CLSW1->Write();
   Ca5->Clear(); 
 
   CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W2.png"); Ca5->SaveAs("CLS/W2.root");
+  Ca5->SaveAs("CLS/W2.png"); CLSW2->Write();
   Ca5->Clear(); 
 
   sectorEffWm2->Draw(); sectorEffWm2->GetXaxis()->SetTitle("Sector");  sectorEffWm2->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/Wm2.png"); Ca5->SaveAs("Greg/Wm2.root");
+  Ca5->SaveAs("Greg/Wm2.png"); sectorEffWm2->Write();
   Ca5->Clear(); 
 
   sectorEffWm1->Draw(); sectorEffWm1->GetXaxis()->SetTitle("Sector");  sectorEffWm1->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/Wm1.png"); Ca5->SaveAs("Greg/Wm1.root");
+  Ca5->SaveAs("Greg/Wm1.png"); sectorEffWm1->Write(); 
   Ca5->Clear(); 
 
   sectorEffW0->Draw(); sectorEffW0->GetXaxis()->SetTitle("Sector");  sectorEffW0->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/W0.png"); Ca5->SaveAs("Greg/W0.root");
+  Ca5->SaveAs("Greg/W0.png"); sectorEffW0->Write();
   Ca5->Clear(); 
 
   sectorEffW1->Draw(); sectorEffW1->GetXaxis()->SetTitle("Sector");  sectorEffW1->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/W1.png"); Ca5->SaveAs("Greg/W1.root");
+  Ca5->SaveAs("Greg/W1.png"); sectorEffW1->Write();
   Ca5->Clear(); 
 
   sectorEffW2->Draw(); sectorEffW2->GetXaxis()->SetTitle("Sector");  sectorEffW2->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/W2.png"); Ca5->SaveAs("Greg/W2.root");
+  Ca5->SaveAs("Greg/W2.png"); sectorEffW2->Write();
   Ca5->Clear(); 
 
   HeightVsEffR3->Draw(); HeightVsEffR3->GetXaxis()->SetTitle("Efficiency");HeightVsEffR3->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR3->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR3->GetXaxis()->SetRangeUser(0.,1.);
@@ -3254,7 +3660,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   HeightVsEffR3->SetMarkerStyle(20);
   HeightVsEffR3->SetMarkerSize(0.7);
   
-  Ca5->SaveAs("Greg/HeightVsEffR3.png"); Ca5->SaveAs("Greg/HeightVeEffR3.root");
+  Ca5->SaveAs("Greg/HeightVsEffR3.png");  HeightVsEffR3->Write();
   Ca5->Clear(); 
   
   HeightVsEffR2->Draw(); HeightVsEffR2->GetXaxis()->SetTitle("Efficiency");HeightVsEffR2->GetYaxis()->SetTitle("Height(R units)"); HeightVsEffR2->GetYaxis()->SetRangeUser(-1.,1.); HeightVsEffR2->GetXaxis()->SetRangeUser(0.,1.);
@@ -3262,95 +3668,95 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   HeightVsEffR2->SetMarkerStyle(20);
   HeightVsEffR2->SetMarkerSize(0.7);
   
-  Ca5->SaveAs("Greg/HeightVsEffR2.png"); Ca5->SaveAs("Greg/HeightVeEffR2.root");
+  Ca5->SaveAs("Greg/HeightVsEffR2.png"); HeightVsEffR2->Write();
   Ca5->Clear(); 
   
   GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D1R2.png"); Ca5->SaveAs("Greg/D1R2.root");
+  Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
   Ca5->Clear(); 
   
   GregD1R3->Draw(); GregD1R3->GetXaxis()->SetTitle("Chamber");  GregD1R3->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D1R3.png"); Ca5->SaveAs("Greg/D1R3.root");
+  Ca5->SaveAs("Greg/D1R3.png"); GregD1R3->Write();
   Ca5->Clear(); 
   
   GregD2R2->Draw(); GregD2R2->GetXaxis()->SetTitle("Chamber");GregD2R2->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D2R2.png"); Ca5->SaveAs("Greg/D2R2.root");
+  Ca5->SaveAs("Greg/D2R2.png"); GregD2R2->Write();
   Ca5->Clear(); 
   
   GregD2R3->Draw(); GregD2R3->GetXaxis()->SetTitle("Chamber"); GregD2R3->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D2R3.png"); Ca5->SaveAs("Greg/D2R3.root");
+  Ca5->SaveAs("Greg/D2R3.png");  GregD2R3->Write();
   Ca5->Clear(); 
   
   GregD3R2->Draw(); GregD3R2->GetXaxis()->SetTitle("Chamber");GregD3R2->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D3R2.png"); Ca5->SaveAs("Greg/D3R2.root");
+  Ca5->SaveAs("Greg/D3R2.png"); GregD3R2->Write();
   Ca5->Clear(); 
   
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
-  Ca5->SaveAs("Greg/D3R3.png"); Ca5->SaveAs("Greg/D3R3.root");
+  Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
   Ca5->Clear(); 
   
   Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
   Diskm3Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Diskm3Summary.png"); Ca5->SaveAs("Pigi/Diskm3Summary.root");
+  Ca5->SaveAs("Pigi/Diskm3Summary.png"); Diskm3Summary->Write();
   Ca5->Clear();
   
   Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Sector");
   Diskm2Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Diskm2Summary.png"); Ca5->SaveAs("Pigi/Diskm2Summary.root");
+  Ca5->SaveAs("Pigi/Diskm2Summary.png");  Diskm2Summary->Write();
   Ca5->Clear();
   
   Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Sector");
   Diskm1Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Diskm1Summary.png"); Ca5->SaveAs("Pigi/Diskm1Summary.root");
+  Ca5->SaveAs("Pigi/Diskm1Summary.png"); Diskm1Summary->Write();
   Ca5->Clear();
   
   Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Sector");
   Disk3Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Disk3Summary.png"); Ca5->SaveAs("Pigi/Disk3Summary.root");
+  Ca5->SaveAs("Pigi/Disk3Summary.png"); Disk3Summary->Write();
   Ca5->Clear();
   
   Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Sector");
   Disk2Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Disk2Summary.png"); Ca5->SaveAs("Pigi/Disk2Summary.root");
+  Ca5->SaveAs("Pigi/Disk2Summary.png"); Disk2Summary->Write(); 
   Ca5->Clear();
   
   Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Sector");
   Disk1Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Disk1Summary.png"); Ca5->SaveAs("Pigi/Disk1Summary.root");
+  Ca5->SaveAs("Pigi/Disk1Summary.png"); Disk1Summary->Write(); 
   Ca5->Clear();
   
   Wheelm2Summary->Draw(); Wheelm2Summary->GetXaxis()->SetTitle("Sector");
   Wheelm2Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Wheelm2Summary.png"); Ca5->SaveAs("Pigi/Wheelm2Summary.root");
+  Ca5->SaveAs("Pigi/Wheelm2Summary.png");  Wheelm2Summary->Write(); //aca voyu convirtiendo para salvar dentro del root file 2
   Ca5->Clear();
   
   Wheelm1Summary->Draw(); Wheelm1Summary->GetXaxis()->SetTitle("Sector");
   Wheelm1Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Wheelm1Summary.png"); Ca5->SaveAs("Pigi/Wheelm1Summary.root");
+  Ca5->SaveAs("Pigi/Wheelm1Summary.png");  Wheelm1Summary->Write();
   Ca5->Clear();
   
   Wheel0Summary->Draw(); Wheel0Summary->GetXaxis()->SetTitle("Sector");
   Wheel0Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Wheel0Summary.png"); Ca5->SaveAs("Pigi/Wheel0Summary.root");
+  Ca5->SaveAs("Pigi/Wheel0Summary.png");  Wheel0Summary->Write();
   Ca5->Clear();
   
   Wheel1Summary->Draw(); Wheel1Summary->GetXaxis()->SetTitle("Sector");
   Wheel1Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Wheel1Summary.png"); Ca5->SaveAs("Pigi/Wheel1Summary.root");
+  Ca5->SaveAs("Pigi/Wheel1Summary.png");   Wheel1Summary->Write();
   Ca5->Clear();
   
   Wheel2Summary->Draw(); Wheel2Summary->GetXaxis()->SetTitle("Sector");
   Wheel2Summary->SetDrawOption("color");
-  Ca5->SaveAs("Pigi/Wheel2Summary.png"); Ca5->SaveAs("Pigi/Wheel2Summary.root");
+  Ca5->SaveAs("Pigi/Wheel2Summary.png"); Wheel2Summary->Write();
   Ca5->Clear();
   
   Ca0->Clear();
   MeanResiduals->Draw(); MeanResiduals->GetXaxis()->SetTitle("cm");
-  Ca0->SaveAs("MeanResiduals.png"); Ca0->SaveAs("MeanResiduals.root");
+  Ca0->SaveAs("MeanResiduals.png");  MeanResiduals->Write();
   Ca0->Clear();
   
   MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
-  Ca0->SaveAs("MeanResiduals11.png"); Ca0->SaveAs("MeanResiduals11.root");
+  Ca0->SaveAs("MeanResiduals11.png");  MeanResiduals11->Write();
   Ca0->Clear();
   
   if(endcap){
@@ -3381,7 +3787,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     bxAxisEndCap->Draw("same");
   
     Ca2->SaveAs("Sides/SegEff_Dm3near.png");
-    Ca2->SaveAs("SegEff_Dm3near.root");
     Ca2->Clear();
 
 
@@ -3409,9 +3814,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     bxAxisEndCap->Draw("same");
   
     Ca2->SaveAs("Sides/SegEff_Dm2near.png");
-    Ca2->SaveAs("SegEff_Dm2near.root");
     Ca2->Clear();
-
 
     EffGlobDm1->Draw();
     EffGlobDm1->GetYaxis()->SetTitle("%");
@@ -3437,7 +3840,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     bxAxisEndCap->Draw("same");
   
     Ca2->SaveAs("Sides/SegEff_Dm1near.png");
-    Ca2->SaveAs("SegEff_Dm1near.root");
     Ca2->Clear();
   }
  
@@ -3474,7 +3876,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxis->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Wm2near.png");
-   Ca2->SaveAs("SegEff_Wm2near.root");
    Ca2->Clear();
 
    EffGlobWm2far->Draw();
@@ -3505,7 +3906,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisFar->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Wm2far.png");
-   Ca2->SaveAs("SegEff_Wm2far.root");
    Ca2->Clear();
 
    EffGlobWm1->Draw();
@@ -3536,7 +3936,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxis->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_Wm1near.png");
-   Ca2->SaveAs("SegEff_Wm1near.root");
    Ca2->Clear();
 
    EffGlobWm1far->Draw();
@@ -3567,7 +3966,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisFar->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_Wm1far.png");
-   Ca2->SaveAs("SegEff_Wm1far.root");
    Ca2->Clear();
 
    EffGlobW0->Draw();
@@ -3598,7 +3996,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxis->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_W0near.png");
-   Ca2->SaveAs("SegEff_W0near.root");
    Ca2->Clear();
 
    EffGlobW0far->Draw();
@@ -3629,7 +4026,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisFar->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_W0far.png");
-   Ca2->SaveAs("SegEff_W0far.root");
    Ca2->Clear();
 
    EffGlobW1->Draw();
@@ -3660,7 +4056,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxis->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_W1near.png");
-   Ca2->SaveAs("SegEff_W1near.root");
    Ca2->Clear();
 
    EffGlobW1far->Draw();
@@ -3691,7 +4086,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisFar->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_W1far.png");
-   Ca2->SaveAs("SegEff_W1far.root");
    Ca2->Clear();
 
    EffGlobW2->Draw();
@@ -3722,7 +4116,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxis->Draw("same");
 
    Ca2->SaveAs("Sides/SegEff_W2near.png");
-   Ca2->SaveAs("SegEff_W2near.root");
    Ca2->Clear();
   
    EffGlobW2far->Draw();
@@ -3753,7 +4146,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisFar->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_W2far.png");
-   Ca2->SaveAs("SegEff_W2far.root");
    Ca2->Clear();
  }
 
@@ -3785,7 +4177,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D1near.png");
-   Ca2->SaveAs("SegEff_D1near.root");
    Ca2->Clear();
 
    EffGlobD1far->Draw();
@@ -3812,7 +4203,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D1far.png");
-   Ca2->SaveAs("SegEff_D1far.root");
    Ca2->Clear();
 
    EffGlobD2->Draw();
@@ -3839,7 +4229,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D2near.png");
-   Ca2->SaveAs("SegEff_D2near.root");
    Ca2->Clear();
 
    EffGlobD2far->Draw();
@@ -3866,7 +4255,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D2far.png");
-   Ca2->SaveAs("SegEff_D2far.root");
    Ca2->Clear();
 
 
@@ -3894,7 +4282,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D3far.png");
-   Ca2->SaveAs("SegEff_D3far.root");
    Ca2->Clear();
 
    EffGlobD3->Draw();
@@ -3921,7 +4308,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_D3near.png");
-   Ca2->SaveAs("SegEff_D3near.root");
    Ca2->Clear();
    
    //NEGATIVE
@@ -3950,7 +4336,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm1near.png");
-   Ca2->SaveAs("SegEff_Dm1near.root");
    Ca2->Clear();
 
    EffGlobDm1far->Draw();
@@ -3977,7 +4362,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm1far.png");
-   Ca2->SaveAs("SegEff_Dm1far.root");
    Ca2->Clear();
 
    EffGlobDm2->Draw();
@@ -4004,7 +4388,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm2near.png");
-   Ca2->SaveAs("SegEff_Dm2near.root");
    Ca2->Clear();
 
    EffGlobDm2far->Draw();
@@ -4031,7 +4414,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm2far.png");
-   Ca2->SaveAs("SegEff_Dm2far.root");
    Ca2->Clear();
 
 
@@ -4059,7 +4441,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm3far.png");
-   Ca2->SaveAs("SegEff_Dm3far.root");
    Ca2->Clear();
 
    EffGlobDm3->Draw();
@@ -4086,7 +4467,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    bxAxisEndCap->Draw("same");
   
    Ca2->SaveAs("Sides/SegEff_Dm3near.png");
-   Ca2->SaveAs("SegEff_Dm3near.root");
    Ca2->Clear();
 
  }
@@ -4094,57 +4474,87 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  Ca1 = new TCanvas("Ca1","Efficiency",800,600);
  
  if(barrel){
-   EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png");Ca1->SaveAs("EffDistroBarrel.root"); 
-   DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");Ca1->SaveAs("DoubleGapBarrel.root"); 
-   PinoBarrel->GetXaxis()->SetTitle("%"); PinoBarrel->Draw(); Ca1->SaveAs("Distro/PinoBarrel.png");Ca1->SaveAs("PinoBarrel.root"); 
+   EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png"); EffBarrel->Write();
+   DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");DoubleGapBarrel->Write();
+   PinoBarrel->GetXaxis()->SetTitle("%"); PinoBarrel->Draw(); Ca1->SaveAs("Distro/PinoBarrel.png"); PinoBarrel->Write(); //voy aca moviendo al root file....
    
-   EffDistroWm2->GetXaxis()->SetTitle("%"); EffDistroWm2->Draw(); Ca1->SaveAs("Distro/EffDistroWm2.png");Ca1->SaveAs("EffDistroWm2.root"); 
-   EffDistroWm1->GetXaxis()->SetTitle("%"); EffDistroWm1->Draw(); Ca1->SaveAs("Distro/EffDistroWm1.png");Ca1->SaveAs("EffDistroWm1.root"); 
-   EffDistroW0->GetXaxis()->SetTitle("%"); EffDistroW0->Draw(); Ca1->SaveAs("Distro/EffDistroW0.png");Ca1->SaveAs("EffDistroW0.root"); 
-   EffDistroW1->GetXaxis()->SetTitle("%"); EffDistroW1->Draw(); Ca1->SaveAs("Distro/EffDistroW1.png");Ca1->SaveAs("EffDistroW1.root"); 
-   EffDistroW2->GetXaxis()->SetTitle("%"); EffDistroW2->Draw(); Ca1->SaveAs("Distro/EffDistroW2.png");Ca1->SaveAs("EffDistroW2.root"); 
+   EffDistroWm2->GetXaxis()->SetTitle("%"); EffDistroWm2->Draw(); Ca1->SaveAs("Distro/EffDistroWm2.png");EffDistroWm2->Write(); 
+   EffDistroWm1->GetXaxis()->SetTitle("%"); EffDistroWm1->Draw(); Ca1->SaveAs("Distro/EffDistroWm1.png");EffDistroWm1->Write(); 
+   EffDistroW0->GetXaxis()->SetTitle("%"); EffDistroW0->Draw(); Ca1->SaveAs("Distro/EffDistroW0.png");EffDistroW0->Write(); 
+   EffDistroW1->GetXaxis()->SetTitle("%"); EffDistroW1->Draw(); Ca1->SaveAs("Distro/EffDistroW1.png");EffDistroW1->Write(); 
+   EffDistroW2->GetXaxis()->SetTitle("%"); EffDistroW2->Draw(); Ca1->SaveAs("Distro/EffDistroW2.png");EffDistroW2->Write(); 
 
-   EffDistroWm2far->GetXaxis()->SetTitle("%"); EffDistroWm2far->Draw(); Ca1->SaveAs("Distro/EffDistroWm2far.png");Ca1->SaveAs("EffDistroWm2far.root"); 
-   EffDistroWm1far->GetXaxis()->SetTitle("%"); EffDistroWm1far->Draw(); Ca1->SaveAs("Distro/EffDistroWm1far.png");Ca1->SaveAs("EffDistroWm1far.root"); 
-   EffDistroW0far->GetXaxis()->SetTitle("%"); EffDistroW0far->Draw(); Ca1->SaveAs("Distro/EffDistroW0far.png");Ca1->SaveAs("EffDistroW0far.root"); 
-   EffDistroW1far->GetXaxis()->SetTitle("%"); EffDistroW1far->Draw(); Ca1->SaveAs("Distro/EffDistroW1far.png");Ca1->SaveAs("EffDistroW1far.root"); 
-   EffDistroW2far->GetXaxis()->SetTitle("%"); EffDistroW2far->Draw(); Ca1->SaveAs("Distro/EffDistroW2far.png");Ca1->SaveAs("EffDistroW2far.root"); 
-   
-   DoubleGapDistroWm2->GetXaxis()->SetTitle("%"); DoubleGapDistroWm2->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm2.png");Ca1->SaveAs("DoubleGapDistroWm2.root"); 
-   DoubleGapDistroWm1->GetXaxis()->SetTitle("%"); DoubleGapDistroWm1->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm1.png");Ca1->SaveAs("DoubleGapDistroWm1.root"); 
-   DoubleGapDistroW0->GetXaxis()->SetTitle("%"); DoubleGapDistroW0->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW0.png");Ca1->SaveAs("DoubleGapDistroW0.root"); 
-   DoubleGapDistroW1->GetXaxis()->SetTitle("%"); DoubleGapDistroW1->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW1.png");Ca1->SaveAs("DoubleGapDistroW1.root"); 
-   DoubleGapDistroW2->GetXaxis()->SetTitle("%"); DoubleGapDistroW2->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW2.png");Ca1->SaveAs("DoubleGapDistroW2.root"); 
+ EffDistroWm2far->GetXaxis()->SetTitle("%"); EffDistroWm2far->Draw(); Ca1->SaveAs("Distro/EffDistroWm2far.png");
+ EffDistroWm1far->GetXaxis()->SetTitle("%"); EffDistroWm1far->Draw(); Ca1->SaveAs("Distro/EffDistroWm1far.png");
+  EffDistroW0far->GetXaxis()->SetTitle("%"); EffDistroW0far->Draw();  Ca1->SaveAs("Distro/EffDistroW0far.png");
+  EffDistroW1far->GetXaxis()->SetTitle("%"); EffDistroW1far->Draw();  Ca1->SaveAs("Distro/EffDistroW1far.png");
+  EffDistroW2far->GetXaxis()->SetTitle("%"); EffDistroW2far->Draw();  Ca1->SaveAs("Distro/EffDistroW2far.png");
 
-   DoubleGapDistroWm2far->GetXaxis()->SetTitle("%"); DoubleGapDistroWm2far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm2far.png");Ca1->SaveAs("DoubleGapDistroWm2far.root"); 
-   DoubleGapDistroWm1far->GetXaxis()->SetTitle("%"); DoubleGapDistroWm1far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm1far.png");Ca1->SaveAs("DoubleGapDistroWm1far.root"); 
-   DoubleGapDistroW0far->GetXaxis()->SetTitle("%"); DoubleGapDistroW0far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW0far.png");Ca1->SaveAs("DoubleGapDistroW0far.root"); 
-   DoubleGapDistroW1far->GetXaxis()->SetTitle("%"); DoubleGapDistroW1far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW1far.png");Ca1->SaveAs("DoubleGapDistroW1far.root"); 
-   DoubleGapDistroW2far->GetXaxis()->SetTitle("%"); DoubleGapDistroW2far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroW2far.png");Ca1->SaveAs("DoubleGapDistroW2far.root"); 
+  EffDistroWm2far->Write();
+  EffDistroWm1far->Write();
+  EffDistroW0far->Write(); 
+  EffDistroW1far->Write(); 
+  EffDistroW2far->Write(); 
+  
+  DoubleGapDistroWm2->GetXaxis()->SetTitle("%"); DoubleGapDistroWm2->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm2.png");
+  DoubleGapDistroWm1->GetXaxis()->SetTitle("%"); DoubleGapDistroWm1->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm1.png");
+  DoubleGapDistroW0->GetXaxis()->SetTitle("%");  DoubleGapDistroW0->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW0.png");
+  DoubleGapDistroW1->GetXaxis()->SetTitle("%");  DoubleGapDistroW1->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW1.png");
+  DoubleGapDistroW2->GetXaxis()->SetTitle("%");  DoubleGapDistroW2->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW2.png");
+
+  DoubleGapDistroWm2->Write();
+  DoubleGapDistroWm1->Write();
+  DoubleGapDistroW0->Write(); 
+  DoubleGapDistroW1->Write(); 
+  DoubleGapDistroW2->Write(); 
+
+  DoubleGapDistroWm2far->GetXaxis()->SetTitle("%"); DoubleGapDistroWm2far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm2far.png"); 
+  DoubleGapDistroWm1far->GetXaxis()->SetTitle("%"); DoubleGapDistroWm1far->Draw(); Ca1->SaveAs("Distro/DoubleGapDistroWm1far.png"); 
+  DoubleGapDistroW0far->GetXaxis()->SetTitle("%");  DoubleGapDistroW0far->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW0far.png"); 
+  DoubleGapDistroW1far->GetXaxis()->SetTitle("%");  DoubleGapDistroW1far->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW1far.png"); 
+  DoubleGapDistroW2far->GetXaxis()->SetTitle("%");  DoubleGapDistroW2far->Draw();  Ca1->SaveAs("Distro/DoubleGapDistroW2far.png"); 
+
+  DoubleGapDistroWm2far->Write();
+  DoubleGapDistroWm1far->Write();
+  DoubleGapDistroW0far->Write(); 
+  DoubleGapDistroW1far->Write(); 
+  DoubleGapDistroW2far->Write(); 
 
  }
 
  if(endcap){
-   EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); Ca1->SaveAs("Distro/EffDistroEndCap.png");Ca1->SaveAs("EffEndCap.root"); 
-   DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); Ca1->SaveAs("Distro/DoubleGapEndCap.png");Ca1->SaveAs("DoubleGapEndCap.root"); 
-   PinoEndCap->GetXaxis()->SetTitle("%"); PinoEndCap->Draw(); Ca1->SaveAs("Distro/PinoEndCap.png");Ca1->SaveAs("PinoEndCap.root"); 
-   
-   EffDistroDm3->GetXaxis()->SetTitle("%"); EffDistroDm3->Draw(); Ca1->SaveAs("Distro/EffDistroDm3.png");Ca1->SaveAs("EffDistroDm3.root");   
-   EffDistroDm2->GetXaxis()->SetTitle("%"); EffDistroDm2->Draw(); Ca1->SaveAs("Distro/EffDistroDm2.png");Ca1->SaveAs("EffDistroDm2.root"); 
-   EffDistroDm1->GetXaxis()->SetTitle("%"); EffDistroDm1->Draw(); Ca1->SaveAs("Distro/EffDistroDm1.png");Ca1->SaveAs("EffDistroDm1.root"); 
-   EffDistroD1->GetXaxis()->SetTitle("%"); EffDistroD1->Draw(); Ca1->SaveAs("Distro/EffDistroD1.png");Ca1->SaveAs("EffDistroD1.root"); 
-   EffDistroD2->GetXaxis()->SetTitle("%"); EffDistroD2->Draw(); Ca1->SaveAs("Distro/EffDistroD2.png");Ca1->SaveAs("EffDistroD2.root"); 
-   EffDistroD3->GetXaxis()->SetTitle("%"); EffDistroD3->Draw(); Ca1->SaveAs("Distro/EffDistroD3.png");Ca1->SaveAs("EffDistroD3.root"); 
-   
-   EffDistroDm3far->GetXaxis()->SetTitle("%"); EffDistroDm3far->Draw(); Ca1->SaveAs("Distro/EffDistroDm3far.png");Ca1->SaveAs("EffDistroDm3far.root");   
-   EffDistroDm2far->GetXaxis()->SetTitle("%"); EffDistroDm2far->Draw(); Ca1->SaveAs("Distro/EffDistroDm2far.png");Ca1->SaveAs("EffDistroDm2far.root"); 
-   EffDistroDm1far->GetXaxis()->SetTitle("%"); EffDistroDm1far->Draw(); Ca1->SaveAs("Distro/EffDistroDm1far.png");Ca1->SaveAs("EffDistroDm1far.root"); 
-   EffDistroD1far->GetXaxis()->SetTitle("%"); EffDistroD1far->Draw(); Ca1->SaveAs("Distro/EffDistroD1far.png");Ca1->SaveAs("EffDistroD1far.root"); 
-   EffDistroD2far->GetXaxis()->SetTitle("%"); EffDistroD2far->Draw(); Ca1->SaveAs("Distro/EffDistroD2far.png");Ca1->SaveAs("EffDistroD2far.root"); 
-   EffDistroD3far->GetXaxis()->SetTitle("%"); EffDistroD3far->Draw(); Ca1->SaveAs("Distro/EffDistroD3far.png");Ca1->SaveAs("EffDistroD3far.root"); 
- }
+   EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); Ca1->SaveAs("Distro/EffDistroEndCap.png");EffEndCap->Write();
+   DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); Ca1->SaveAs("Distro/DoubleGapEndCap.png");  DoubleGapEndCap->Write();
+   PinoEndCap->GetXaxis()->SetTitle("%"); PinoEndCap->Draw(); Ca1->SaveAs("Distro/PinoEndCap.png");PinoEndCap->Write();
+  
+   EffDistroDm3->GetXaxis()->SetTitle("%"); EffDistroDm3->Draw(); Ca1->SaveAs("Distro/EffDistroDm3.png");   
+   EffDistroDm2->GetXaxis()->SetTitle("%"); EffDistroDm2->Draw(); Ca1->SaveAs("Distro/EffDistroDm2.png"); 
+   EffDistroDm1->GetXaxis()->SetTitle("%"); EffDistroDm1->Draw(); Ca1->SaveAs("Distro/EffDistroDm1.png"); 
+   EffDistroD1->GetXaxis()->SetTitle("%");  EffDistroD1->Draw();  Ca1->SaveAs("Distro/EffDistroD1.png"); 
+   EffDistroD2->GetXaxis()->SetTitle("%");  EffDistroD2->Draw();  Ca1->SaveAs("Distro/EffDistroD2.png"); 
+   EffDistroD3->GetXaxis()->SetTitle("%");  EffDistroD3->Draw();  Ca1->SaveAs("Distro/EffDistroD3.png"); 
 
- theFileOut->cd();
+   EffDistroDm3->Write();
+   EffDistroDm2->Write();
+   EffDistroDm1->Write();
+   EffDistroD1->Write(); 
+   EffDistroD2->Write(); 
+   EffDistroD3->Write(); 
+   
+   EffDistroDm3far->GetXaxis()->SetTitle("%"); EffDistroDm3far->Draw(); Ca1->SaveAs("Distro/EffDistroDm3far.png");   
+   EffDistroDm2far->GetXaxis()->SetTitle("%"); EffDistroDm2far->Draw(); Ca1->SaveAs("Distro/EffDistroDm2far.png"); 
+   EffDistroDm1far->GetXaxis()->SetTitle("%"); EffDistroDm1far->Draw(); Ca1->SaveAs("Distro/EffDistroDm1far.png"); 
+   EffDistroD1far->GetXaxis()->SetTitle("%");  EffDistroD1far->Draw();  Ca1->SaveAs("Distro/EffDistroD1far.png"); 
+   EffDistroD2far->GetXaxis()->SetTitle("%");  EffDistroD2far->Draw();  Ca1->SaveAs("Distro/EffDistroD2far.png"); 
+   EffDistroD3far->GetXaxis()->SetTitle("%");  EffDistroD3far->Draw();  Ca1->SaveAs("Distro/EffDistroD3far.png"); 
+   
+   EffDistroDm3far->Write();
+   EffDistroDm2far->Write();
+   EffDistroDm1far->Write();
+   EffDistroD1far->Write(); 
+   EffDistroD2far->Write(); 
+   EffDistroD3far->Write(); 
+ }
 
  MeanResiduals11->Write();
  MeanResiduals->Write();
