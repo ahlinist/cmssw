@@ -32,7 +32,6 @@ void MuonSegmentEff::beginJob(){
 }
 
 int distsector(int sector1,int sector2){
-
   if(sector1==13) sector1=4;
   if(sector1==14) sector1=10;
   
@@ -50,6 +49,7 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   inclcsc=iConfig.getUntrackedParameter<bool>("inclcsc",true);
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
   inves=iConfig.getUntrackedParameter<bool>("inves");
+  manualalignment=iConfig.getUntrackedParameter<bool>("manualalignment",false);
  
   rangestrips = iConfig.getUntrackedParameter<double>("rangestrips",1.);
   rangestripsRB4=iConfig.getUntrackedParameter<double>("rangestripsRB4",4.);
@@ -64,7 +64,8 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   nameInLog = iConfig.getUntrackedParameter<std::string>("moduleLogName", "RPC_Eff");
   EffSaveRootFile  = iConfig.getUntrackedParameter<bool>("EffSaveRootFile", false); 
   EffRootFileName  = iConfig.getUntrackedParameter<std::string>("EffRootFileName", "MuonSegmentEff.root"); 
-  
+  AlignmentinfoFile  = iConfig.getUntrackedParameter<std::string>("AliFileName","/afs/cern.ch/user/c/carrillo/segments/CMSSW_2_2_10/src/DQM/RPCMonitorModule/data/Alignment.dat"); 
+    
   //Interface
   
   dbe = edm::Service<DQMStore>().operator->();
@@ -234,6 +235,19 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
 
 void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup){
 
+  std::ifstream ifin(AlignmentinfoFile.c_str());
+
+  if(manualalignment){
+    int rawId;
+    std::string name;
+    float offset;
+    float rms;
+    while (ifin.good()){
+      ifin >>name >>rawId >> offset >> rms;
+      alignmentinfo[rawId]=offset;
+    }
+  }
+  
   iSetup.get<MuonGeometryRecord>().get(rpcGeo);
   iSetup.get<MuonGeometryRecord>().get(dtGeo);
   iSetup.get<MuonGeometryRecord>().get(cscGeo);
@@ -369,7 +383,8 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
       }
     }
   }
-   
+
+    
 }//beginRun
 
 
@@ -608,6 +623,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    countRecHits++;
 		    LocalPoint recHitPos=recHit->localPosition();
 		    float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();	    
+		    if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		    if(fabs(res)<fabs(minres)){
 		      minres=res;
@@ -985,6 +1001,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  countRecHits++;
 			  LocalPoint recHitPos=recHit->localPosition();
 			  float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();	    
+			  if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 			  if(debug) std::cout<<"MB4  \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 			  if(fabs(res)<fabs(minres)){
 			    minres=res;
@@ -1375,6 +1392,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      countRecHits++;
 		      LocalPoint recHitPos=recHit->localPosition();
 		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();
+		      if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		      if(fabs(res)<fabs(minres)){
 			minres=res;

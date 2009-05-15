@@ -4,8 +4,8 @@
  *
  * Class for RPC Monitoring using RPCDigi and DT and CSC Segments.
  *
- *  $Date: 2009/03/17 09:28:11 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/05/15 15:23:41 $
+ *  $Revision: 1.3 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -115,6 +115,8 @@ class MuonSegmentEff : public edm::EDAnalyzer {
       virtual void endRun(const edm::Run& r, const edm::EventSetup& iSetup);
       std::map<DTStationIndex,std::set<RPCDetId> > rollstoreDT;
       std::map<CSCStationIndex,std::set<RPCDetId> > rollstoreCSC;
+      std::map<int,float> alignmentinfo;
+      
       edm::ESHandle<RPCGeometry> rpcGeo;
       edm::ESHandle<DTGeometry> dtGeo;
       edm::ESHandle<CSCGeometry> cscGeo;
@@ -236,6 +238,7 @@ class MuonSegmentEff : public edm::EDAnalyzer {
       bool debug;
       bool paper;
       bool inves;
+      bool manualalignment;
       double rangestrips;
       double rangestripsRB4;
       double MinCosAng;
@@ -252,6 +255,7 @@ class MuonSegmentEff : public edm::EDAnalyzer {
       
       bool EffSaveRootFile;
       std::string EffRootFileName;
+      std::string AlignmentinfoFile;
       std::string nameInLog;
 
       DQMStore * dbe;
