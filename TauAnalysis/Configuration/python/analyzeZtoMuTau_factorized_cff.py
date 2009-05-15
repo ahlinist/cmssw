@@ -8,7 +8,6 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cfi import *
 from TauAnalysis.Configuration.analyzeZtoMuTau_cff import *
-#from TauAnalysis.Configuration.factorizationTools import replaceEventSelection
 
 #--------------------------------------------------------------------------------
 # define Z --> mu + tau-jet analysis module
