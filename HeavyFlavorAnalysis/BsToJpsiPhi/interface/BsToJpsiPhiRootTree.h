@@ -8,6 +8,9 @@
 #include <TH2F.h>
 #include <TF1.h>
 #include "TROOT.h"
+#include "TLorentzVector.h"
+#include "TVector3.h"
+#include "TLorentzRotation.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicVertex.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicTree.h"
@@ -16,17 +19,6 @@
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-
-// #include ""
-// #include "HepMC/HepLorentzVector"
-// #include "HepMC/GenVertex.h"
-/**
-* 
-* Class to fill a root tree for the angular BsToJpsiPhi analysis
-* Lotte Wilke, October 2007
-*
-*/
-
 
 class BsToJpsiPhiRootTree {
 public:
@@ -41,6 +33,7 @@ public:
 	void addDecay(const RefCountedKinematicTree& myBsTree, const reco::Vertex * myPV);
 	void addSimDecay(const TrackingVertex * simVertex, const TrackingVertex * pVertex);
 	void setAssociation(const bool association);
+	void getTrigBit(const int flag);
 	bool getAssociation();
 	void fill();  //!< copy the information from memory to Ntuple
 
@@ -203,6 +196,13 @@ private:
 	int ndof_;
 	double prob_;
 	double angleBsDecayLength_;
+	double MuMuInvMass_;
+	double KKInvMass_;
+	double JpsiPhiInvMass_;
+	double angle_costheta_;
+	double angle_phi_;
+	double angle_cospsi_;
+	double triggerbit_;
 	
 	TFile* bsFile_;
 	TTree* bsTree_; 
