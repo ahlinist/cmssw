@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from TauAnalysis.Configuration.factorizationTools import switchHistManagers
+from TauAnalysis.Configuration.analysisSequenceTools import switchHistManagers
+from TauAnalysis.Configuration.analysisSequenceTools import replaceHistManagerInputTags
 
 #--------------------------------------------------------------------------------
 # import config for event print-out and analysis sequence of Z --> mu + tau-jet events
@@ -72,42 +73,14 @@ muTauEventDump_factorizedWithMuonIsolation.triggerConditions = cms.vstring("")
 
 muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
 switchHistManagers(muTauAnalysisSequence_factorizedWithoutMuonIsolation, muTauHistManagers_factorizedWithoutMuonIsolation)
-ref = muTauAnalysisSequence_factorizedWithoutMuonIsolation
-ref[18].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIsoLooseIsolationCumulative')
-ref[20].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsEcalIsoLooseIsolationCumulative')
-ref[22].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsPionVetoLooseIsolationCumulative')
-ref[24].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative')
-ref[26].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauAntiOverlapWithMuonsVetoCumulative')
-ref[28].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauEta21Cumulative')
-ref[30].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauPt20Cumulative')
-ref[32].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkCumulative')
-ref[34].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauLeadTrkPtCumulative')
-ref[36].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauTrkIsoCumulative')
-ref[38].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauEcalIsoCumulative')
-ref[40].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
-ref[42].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
-ref[44].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative')
-ref[46].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative')
-ref[48].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
-#ref[50].replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPlooseIsolationCumulative',
-#                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-#                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
-del ref
+replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
+    [ ["selectedLayer1MuonsTrkIsoCumulative", "selectedLayer1MuonsTrkIsoLooseIsolationCumulative"],
+      ["selectedLayer1MuonsEcalIsoCumulative", "selectedLayer1MuonsEcalIsoLooseIsolationCumulative"],
+      ["selectedLayer1MuonsPionVetoCumulative", "selectedLayer1MuonsPionVetoLooseIsolationCumulative"],
+      ["selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative"],
+      ["selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative"],
+      ["selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative"],
+      ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"] ]) 
 
 muTauAnalysisSequence_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
 switchHistManagers(muTauAnalysisSequence_factorizedWithMuonIsolation, muTauHistManagers_factorizedWithMuonIsolation)
