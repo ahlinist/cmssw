@@ -21,7 +21,7 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.sampleDefinitionsZtoElecTau_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 
 process.DQMStore = cms.Service("DQMStore")
 
