@@ -27,7 +27,7 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.sampleDefinitionsZtoElecMu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
