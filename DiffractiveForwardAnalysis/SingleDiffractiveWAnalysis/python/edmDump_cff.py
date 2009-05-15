@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff import *
+#from JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff import *
+from JetMETCorrections.Configuration.L2L3Corrections_Summer08_cff import *
 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorGen_cfi import *
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.castorTower_cfi import *
