@@ -1,9 +1,11 @@
+
+
 /** \class RPCEfficiency
  *
  * Class for RPC Monitoring using RPCDigi and DT and CSC Segments.
  *
- *  $Date: 2008/12/04 12:24:42 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/03/17 09:28:11 $
+ *  $Revision: 1.2 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -143,6 +145,21 @@ class MuonSegmentEff : public edm::EDAnalyzer {
       MonitorElement * DistBorderClu3La6;
       
       //Ang Dependence
+
+      MonitorElement * ScatterPlotAlphaCLSLa1;
+      MonitorElement * ScatterPlotAlphaCLSLa2;
+      MonitorElement * ScatterPlotAlphaCLSLa3;
+      MonitorElement * ScatterPlotAlphaCLSLa4;
+      MonitorElement * ScatterPlotAlphaCLSLa5;
+      MonitorElement * ScatterPlotAlphaCLSLa6;
+
+      MonitorElement * ScatterPlotAlphaPCLSLa1;
+      MonitorElement * ScatterPlotAlphaPCLSLa2;
+      MonitorElement * ScatterPlotAlphaPCLSLa3;
+      MonitorElement * ScatterPlotAlphaPCLSLa4;
+      MonitorElement * ScatterPlotAlphaPCLSLa5;
+      MonitorElement * ScatterPlotAlphaPCLSLa6;
+
       MonitorElement * AngClu1La1;
       MonitorElement * AngClu1La2;
       MonitorElement * AngClu1La3;
