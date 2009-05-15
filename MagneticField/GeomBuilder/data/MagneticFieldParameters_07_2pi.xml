@@ -1912,6 +1912,674 @@
    <Parameter name="masterSector" value="4" eval="true"/>
  </SpecPar>
 
+
+<!-- S9-specific properties. Note that ORDER MATTERS - values specified -->
+<!-- here override those specified above -->
+
+<!-- S9 L3 -->
+ <SpecPar name="Magnetic field map of Volume_286 S9">
+   <PartSelector path="//V_286[9]"/>
+   <Parameter name="table" value="S9/grid.286.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_287 S9">
+   <PartSelector path="//V_287[9]"/>
+   <Parameter name="table" value="S9/grid.287.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_288 S9">
+   <PartSelector path="//V_288[9]"/>
+   <Parameter name="table" value="S9/grid.288.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_289 S9">
+   <PartSelector path="//V_289[9]"/>
+   <Parameter name="table" value="S9/grid.289.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_290 S9">
+   <PartSelector path="//V_290[9]"/>
+   <Parameter name="table" value="S9/grid.290.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_291 S9">
+   <PartSelector path="//V_291[9]"/>
+   <Parameter name="table" value="S9/grid.291.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_292 S9">
+   <PartSelector path="//V_292[9]"/>
+   <Parameter name="table" value="S9/grid.292.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_293 S9">
+   <PartSelector path="//V_293[9]"/>
+   <Parameter name="table" value="S9/grid.293.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_294 S9">
+   <PartSelector path="//V_294[9]"/>
+   <Parameter name="table" value="S9/grid.294.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_295 S9">
+   <PartSelector path="//V_295[9]"/>
+   <Parameter name="table" value="S9/grid.295.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_296 S9">
+   <PartSelector path="//V_296[9]"/>
+   <Parameter name="table" value="S9/grid.296.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+
+<!-- S9 air outside L3-->
+ <SpecPar name="Magnetic field map of Volume_297 S9">
+   <PartSelector path="//V_297[9]"/>
+   <Parameter name="table" value="S9/grid.297.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_298 S9">
+   <PartSelector path="//V_298[9]"/>
+   <Parameter name="table" value="S9/grid.298.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_299 S9">
+   <PartSelector path="//V_299[9]"/>
+   <Parameter name="table" value="S9/grid.299.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_300 S9">
+   <PartSelector path="//V_300[9]"/>
+   <Parameter name="table" value="S9/grid.300.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_301 S9">
+   <PartSelector path="//V_301[9]"/>
+   <Parameter name="table" value="S9/grid.301.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_302 S9">
+   <PartSelector path="//V_302[9]"/>
+   <Parameter name="table" value="S9/grid.302.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_303 S9">
+   <PartSelector path="//V_303[9]"/>
+   <Parameter name="table" value="S9/grid.303.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_304 S9">
+   <PartSelector path="//V_304[9]"/>
+   <Parameter name="table" value="S9/grid.304.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_305 S9">
+   <PartSelector path="//V_305[9]"/>
+   <Parameter name="table" value="S9/grid.305.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_306 S9">
+   <PartSelector path="//V_306[9]"/>
+   <Parameter name="table" value="S9/grid.306.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_307 S9">
+   <PartSelector path="//V_307[9]"/>
+   <Parameter name="table" value="S9/grid.307.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+
+<!-- S9 YE- -->
+ <SpecPar name="Magnetic field map of Volume_14 S9">
+   <PartSelector path="//V_14[9]"/>
+   <Parameter name="table" value="S9/grid.014.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_20 S9">
+   <PartSelector path="//V_20[9]"/>
+   <Parameter name="table" value="S9/grid.020.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_24 S9">
+   <PartSelector path="//V_24[9]"/>
+   <Parameter name="table" value="S9/grid.024.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_26 S9">
+   <PartSelector path="//V_26[9]"/>
+   <Parameter name="table" value="S9/grid.026.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_32 S9">
+   <PartSelector path="//V_32[9]"/>
+   <Parameter name="table" value="S9/grid.032.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_40 S9">
+   <PartSelector path="//V_40[9]"/>
+   <Parameter name="table" value="S9/grid.040.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_48 S9">
+   <PartSelector path="//V_48[9]"/>
+   <Parameter name="table" value="S9/grid.048.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_56 S9">
+   <PartSelector path="//V_56[9]"/>
+   <Parameter name="table" value="S9/grid.056.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_62 S9">
+   <PartSelector path="//V_62[9]"/>
+   <Parameter name="table" value="S9/grid.062.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_70 S9">
+   <PartSelector path="//V_70[9]"/>
+   <Parameter name="table" value="S9/grid.070.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+
+<!-- S9 YE+ -->
+ <SpecPar name="Magnetic field map of Volume_15 S9">
+   <PartSelector path="//V_15[9]"/>
+   <Parameter name="table" value="S9/grid.015.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_21 S9">
+   <PartSelector path="//V_21[9]"/>
+   <Parameter name="table" value="S9/grid.021.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_25 S9">
+   <PartSelector path="//V_25[9]"/>
+   <Parameter name="table" value="S9/grid.025.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_27 S9">
+   <PartSelector path="//V_27[9]"/>
+   <Parameter name="table" value="S9/grid.027.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_33 S9">
+   <PartSelector path="//V_33[9]"/>
+   <Parameter name="table" value="S9/grid.033.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_41 S9">
+   <PartSelector path="//V_41[9]"/>
+   <Parameter name="table" value="S9/grid.041.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_49 S9">
+   <PartSelector path="//V_49[9]"/>
+   <Parameter name="table" value="S9/grid.049.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_57 S9">
+   <PartSelector path="//V_57[9]"/>
+   <Parameter name="table" value="S9/grid.057.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_63 S9">
+   <PartSelector path="//V_63[9]"/>
+   <Parameter name="table" value="S9/grid.063.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_71 S9">
+   <PartSelector path="//V_71[9]"/>
+   <Parameter name="table" value="S9/grid.071.bin"/>
+   <Parameter name="masterSector" value="9" eval="true"/>
+ </SpecPar>
+
+
+
+<!-- S10-specific properties. Note that ORDER MATTERS - values specified -->
+<!-- here override those specified above -->
+
+<!-- S10 L3 -->
+ <SpecPar name="Magnetic field map of Volume_286 S10">
+   <PartSelector path="//V_286[10]"/>
+   <Parameter name="table" value="S10/grid.286.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_287 S10">
+   <PartSelector path="//V_287[10]"/>
+   <Parameter name="table" value="S10/grid.287.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_288 S10">
+   <PartSelector path="//V_288[10]"/>
+   <Parameter name="table" value="S10/grid.288.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_289 S10">
+   <PartSelector path="//V_289[10]"/>
+   <Parameter name="table" value="S10/grid.289.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_290 S10">
+   <PartSelector path="//V_290[10]"/>
+   <Parameter name="table" value="S10/grid.290.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_291 S10">
+   <PartSelector path="//V_291[10]"/>
+   <Parameter name="table" value="S10/grid.291.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_292 S10">
+   <PartSelector path="//V_292[10]"/>
+   <Parameter name="table" value="S10/grid.292.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_293 S10">
+   <PartSelector path="//V_293[10]"/>
+   <Parameter name="table" value="S10/grid.293.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_294 S10">
+   <PartSelector path="//V_294[10]"/>
+   <Parameter name="table" value="S10/grid.294.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_295 S10">
+   <PartSelector path="//V_295[10]"/>
+   <Parameter name="table" value="S10/grid.295.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_296 S10">
+   <PartSelector path="//V_296[10]"/>
+   <Parameter name="table" value="S10/grid.296.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+
+<!-- S10 air outside L3-->
+% <SpecPar name="Magnetic field map of Volume_297 S10">
+   <PartSelector path="//V_297[10]"/>
+   <Parameter name="table" value="S10/grid.297.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_298 S10">
+   <PartSelector path="//V_298[10]"/>
+   <Parameter name="table" value="S10/grid.298.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_299 S10">
+   <PartSelector path="//V_299[10]"/>
+   <Parameter name="table" value="S10/grid.299.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_300 S10">
+   <PartSelector path="//V_300[10]"/>
+   <Parameter name="table" value="S10/grid.300.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_301 S10">
+   <PartSelector path="//V_301[10]"/>
+   <Parameter name="table" value="S10/grid.301.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_302 S10">
+   <PartSelector path="//V_302[10]"/>
+   <Parameter name="table" value="S10/grid.302.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_303 S10">
+   <PartSelector path="//V_303[10]"/>
+   <Parameter name="table" value="S10/grid.303.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_304 S10">
+   <PartSelector path="//V_304[10]"/>
+   <Parameter name="table" value="S10/grid.304.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_305 S10">
+   <PartSelector path="//V_305[10]"/>
+   <Parameter name="table" value="S10/grid.305.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_306 S10">
+   <PartSelector path="//V_306[10]"/>
+   <Parameter name="table" value="S10/grid.306.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_307 S10">
+   <PartSelector path="//V_307[10]"/>
+   <Parameter name="table" value="S10/grid.307.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+
+
+<!-- S10 YE- -->
+ <SpecPar name="Magnetic field map of Volume_14 S10">
+   <PartSelector path="//V_14[10]"/>
+   <Parameter name="table" value="S10/grid.014.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_20 S10">
+   <PartSelector path="//V_20[10]"/>
+   <Parameter name="table" value="S10/grid.020.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_24 S10">
+   <PartSelector path="//V_24[10]"/>
+   <Parameter name="table" value="S10/grid.024.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_26 S10">
+   <PartSelector path="//V_26[10]"/>
+   <Parameter name="table" value="S10/grid.026.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_32 S10">
+   <PartSelector path="//V_32[10]"/>
+   <Parameter name="table" value="S10/grid.032.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_40 S10">
+   <PartSelector path="//V_40[10]"/>
+   <Parameter name="table" value="S10/grid.040.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_48 S10">
+   <PartSelector path="//V_48[10]"/>
+   <Parameter name="table" value="S10/grid.048.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_56 S10">
+   <PartSelector path="//V_56[10]"/>
+   <Parameter name="table" value="S10/grid.056.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_62 S10">
+   <PartSelector path="//V_62[10]"/>
+   <Parameter name="table" value="S10/grid.062.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_70 S10">
+   <PartSelector path="//V_70[10]"/>
+   <Parameter name="table" value="S10/grid.070.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+
+<!-- S10 YE+ -->
+ <SpecPar name="Magnetic field map of Volume_15 S10">
+   <PartSelector path="//V_15[10]"/>
+   <Parameter name="table" value="S10/grid.015.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_21 S10">
+   <PartSelector path="//V_21[10]"/>
+   <Parameter name="table" value="S10/grid.021.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_25 S10">
+   <PartSelector path="//V_25[10]"/>
+   <Parameter name="table" value="S10/grid.025.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_27 S10">
+   <PartSelector path="//V_27[10]"/>
+   <Parameter name="table" value="S10/grid.027.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_33 S10">
+   <PartSelector path="//V_33[10]"/>
+   <Parameter name="table" value="S10/grid.033.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_41 S10">
+   <PartSelector path="//V_41[10]"/>
+   <Parameter name="table" value="S10/grid.041.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_49 S10">
+   <PartSelector path="//V_49[10]"/>
+   <Parameter name="table" value="S10/grid.049.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_57 S10">
+   <PartSelector path="//V_57[10]"/>
+   <Parameter name="table" value="S10/grid.057.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_63 S10">
+   <PartSelector path="//V_63[10]"/>
+   <Parameter name="table" value="S10/grid.063.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_71 S10">
+   <PartSelector path="//V_71[10]"/>
+   <Parameter name="table" value="S10/grid.071.bin"/>
+   <Parameter name="masterSector" value="10" eval="true"/>
+ </SpecPar>
+
+
+<!-- S11-specific properties. Note that ORDER MATTERS - values specified -->
+<!-- here override those specified above -->
+
+<!-- S11 L3 -->
+ <SpecPar name="Magnetic field map of Volume_286 S11">
+   <PartSelector path="//V_286[11]"/>
+   <Parameter name="table" value="S11/grid.286.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_287 S11">
+   <PartSelector path="//V_287[11]"/>
+   <Parameter name="table" value="S11/grid.287.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_288 S11">
+   <PartSelector path="//V_288[11]"/>
+   <Parameter name="table" value="S11/grid.288.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_289 S11">
+   <PartSelector path="//V_289[11]"/>
+   <Parameter name="table" value="S11/grid.289.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_290 S11">
+   <PartSelector path="//V_290[11]"/>
+   <Parameter name="table" value="S11/grid.290.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_291 S11">
+   <PartSelector path="//V_291[11]"/>
+   <Parameter name="table" value="S11/grid.291.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_292 S11">
+   <PartSelector path="//V_292[11]"/>
+   <Parameter name="table" value="S11/grid.292.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_293 S11">
+   <PartSelector path="//V_293[11]"/>
+   <Parameter name="table" value="S11/grid.293.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_294 S11">
+   <PartSelector path="//V_294[11]"/>
+   <Parameter name="table" value="S11/grid.294.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_295 S11">
+   <PartSelector path="//V_295[11]"/>
+   <Parameter name="table" value="S11/grid.295.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_296 S11">
+   <PartSelector path="//V_296[11]"/>
+   <Parameter name="table" value="S11/grid.296.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+
+<!-- S11 air outside L3-->
+ <SpecPar name="Magnetic field map of Volume_297 S11">
+   <PartSelector path="//V_297[11]"/>
+   <Parameter name="table" value="S11/grid.297.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_298 S11">
+   <PartSelector path="//V_298[11]"/>
+   <Parameter name="table" value="S11/grid.298.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_299 S11">
+   <PartSelector path="//V_299[11]"/>
+   <Parameter name="table" value="S11/grid.299.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_300 S11">
+   <PartSelector path="//V_300[11]"/>
+   <Parameter name="table" value="S11/grid.300.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_301 S11">
+   <PartSelector path="//V_301[11]"/>
+   <Parameter name="table" value="S11/grid.301.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_302 S11">
+   <PartSelector path="//V_302[11]"/>
+   <Parameter name="table" value="S11/grid.302.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_303 S11">
+   <PartSelector path="//V_303[11]"/>
+   <Parameter name="table" value="S11/grid.303.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_304 S11">
+   <PartSelector path="//V_304[11]"/>
+   <Parameter name="table" value="S11/grid.304.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_305 S11">
+   <PartSelector path="//V_305[11]"/>
+   <Parameter name="table" value="S11/grid.305.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_306 S11">
+   <PartSelector path="//V_306[11]"/>
+   <Parameter name="table" value="S11/grid.306.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_307 S11">
+   <PartSelector path="//V_307[11]"/>
+   <Parameter name="table" value="S11/grid.307.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+
+<!-- S11 YE- -->
+ <SpecPar name="Magnetic field map of Volume_14 S11">
+   <PartSelector path="//V_14[11]"/>
+   <Parameter name="table" value="S11/grid.014.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_20 S11">
+   <PartSelector path="//V_20[11]"/>
+   <Parameter name="table" value="S11/grid.020.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_24 S11">
+   <PartSelector path="//V_24[11]"/>
+   <Parameter name="table" value="S11/grid.024.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_26 S11">
+   <PartSelector path="//V_26[11]"/>
+   <Parameter name="table" value="S11/grid.026.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_32 S11">
+   <PartSelector path="//V_32[11]"/>
+   <Parameter name="table" value="S11/grid.032.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_40 S11">
+   <PartSelector path="//V_40[11]"/>
+   <Parameter name="table" value="S11/grid.040.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_48 S11">
+   <PartSelector path="//V_48[11]"/>
+   <Parameter name="table" value="S11/grid.048.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_56 S11">
+   <PartSelector path="//V_56[11]"/>
+   <Parameter name="table" value="S11/grid.056.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_62 S11">
+   <PartSelector path="//V_62[11]"/>
+   <Parameter name="table" value="S11/grid.062.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_70 S11">
+   <PartSelector path="//V_70[11]"/>
+   <Parameter name="table" value="S11/grid.070.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+
+<!-- S11 YE+ -->
+ <SpecPar name="Magnetic field map of Volume_15 S11">
+   <PartSelector path="//V_15[11]"/>
+   <Parameter name="table" value="S11/grid.015.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_21 S11">
+   <PartSelector path="//V_21[11]"/>
+   <Parameter name="table" value="S11/grid.021.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_25 S11">
+   <PartSelector path="//V_25[11]"/>
+   <Parameter name="table" value="S11/grid.025.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_27 S11">
+   <PartSelector path="//V_27[11]"/>
+   <Parameter name="table" value="S11/grid.027.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_33 S11">
+   <PartSelector path="//V_33[11]"/>
+   <Parameter name="table" value="S11/grid.033.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_41 S11">
+   <PartSelector path="//V_41[11]"/>
+   <Parameter name="table" value="S11/grid.041.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_49 S11">
+   <PartSelector path="//V_49[11]"/>
+   <Parameter name="table" value="S11/grid.049.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_57 S11">
+   <PartSelector path="//V_57[11]"/>
+   <Parameter name="table" value="S11/grid.057.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_63 S11">
+   <PartSelector path="//V_63[11]"/>
+   <Parameter name="table" value="S11/grid.063.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+ <SpecPar name="Magnetic field map of Volume_71 S11">
+   <PartSelector path="//V_71[11]"/>
+   <Parameter name="table" value="S11/grid.071.bin"/>
+   <Parameter name="masterSector" value="11" eval="true"/>
+ </SpecPar>
+
 </SpecParSection> 
 
 </DDDefinition>
