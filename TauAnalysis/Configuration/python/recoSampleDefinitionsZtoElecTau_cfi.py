@@ -4,10 +4,17 @@ import copy
 # define configuration parameters for submission of Z --> e + tau-jet jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
 
+intLumiData = float(200.)
+
+patTupleOutputDirectoryName = cms.string('/castor/cern.ch/user/v/veelken/CMSSW_2_2_7/')
 
 #--------------------------------------------------------------------------------
-# Z --> tau+ tau- sample - part01
+# Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
+#  integrated luminosity = 1135 pb^-1
+# (to be corrected for missing files)
 #
+intLumiZtautau = float(1135.4)
+
 fileNamesZtautau_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_2.root'
@@ -21,86 +28,52 @@ genPhaseSpaceCutZtautau_part01 = cms.PSet(
 )
 
 outputFileNameZtautau_part01 = cms.string('plotsZtoElecTau_Ztautau_part01.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# Z --> tau+ tau- sample - part02
-#
 fileNamesZtautau_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_4.root'
 )
 
-genPhaseSpaceCutZtautau_part02 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutZtautau_part02 = genPhaseSpaceCutZtautau_part01
 
 outputFileNameZtautau_part02 = cms.string('plotsZtoElecTau_Ztautau_part02.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# Z --> tau+ tau- sample - part03
-#
 fileNamesZtautau_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_6.root'
 )
 
-genPhaseSpaceCutZtautau_part03 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutZtautau_part03 = genPhaseSpaceCutZtautau_part01
 
 outputFileNameZtautau_part03 = cms.string('plotsZtoElecTau_Ztautau_part03.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# Z --> tau+ tau- sample - part04
-#
 fileNamesZtautau_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_8.root'
 )
 
-genPhaseSpaceCutZtautau_part04 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutZtautau_part04 = genPhaseSpaceCutZtautau_part01
 
 outputFileNameZtautau_part04 = cms.string('plotsZtoElecTau_Ztautau_part04.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# Z --> tau+ tau- sample - part05
-#
 fileNamesZtautau_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_10.root'
 )
 
-genPhaseSpaceCutZtautau_part05 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutZtautau_part05 = genPhaseSpaceCutZtautau_part01
 
 outputFileNameZtautau_part05 = cms.string('plotsZtoElecTau_Ztautau_part05.root')
 #--------------------------------------------------------------------------------
 
 
-
-
 #--------------------------------------------------------------------------------
-# Z --> e+ e- sample 
+# Z --> e+ e- sample generated with Pythia
+#  integrated luminosity = 90 pb^-1
+# (to be corrected for missing files)
 #
+intLumiZee = float(90.)
+
 fileNamesZee_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_2.root',
@@ -269,6 +242,34 @@ genPhaseSpaceCutZee_part01 = cms.PSet(
   cut = cms.string('')
 )
 
+genPhaseSpaceCutZee_part02 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part03 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part04 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part05 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part06 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part07 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part08 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part09 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part10 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part11 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part12 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part13 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part14 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part15 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part16 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part17 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part18 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part19 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part20 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part21 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part22 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part23 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part24 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part25 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part26 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part27 = genPhaseSpaceCutZee_part01  
+genPhaseSpaceCutZee_part28 = genPhaseSpaceCutZee_part01 
+
 outputFileNameZee_part01 = cms.string('plotsZtoElecTau_Zee_part01.root')
 outputFileNameZee_part02 = cms.string('plotsZtoElecTau_Zee_part02.root')
 outputFileNameZee_part03 = cms.string('plotsZtoElecTau_Zee_part03.root')
@@ -297,40 +298,13 @@ outputFileNameZee_part25 = cms.string('plotsZtoElecTau_Zee_part25.root')
 outputFileNameZee_part26 = cms.string('plotsZtoElecTau_Zee_part26.root')
 outputFileNameZee_part27 = cms.string('plotsZtoElecTau_Zee_part27.root')
 outputFileNameZee_part28 = cms.string('plotsZtoElecTau_Zee_part28.root')
-
-genPhaseSpaceCutZee_part02 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part03 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part04 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part05 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part06 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part07 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part08 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part09 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part10 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part11 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part12 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part13 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part14 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part15 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part16 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part17 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part18 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part19 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part20 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part21 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part22 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part23 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part24 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part25 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part26 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part27 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part28 = genPhaseSpaceCutZee_part01  
-
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt20to30 - part01
+# electron enriched b/c --> e QCD sample generated with Pythia (20 GeV < Pt(hat) < 30 GeV)
 #
+#intLumiQCD_EMenriched_Pt20to30 = float()
+
 fileNamesQCD_EMenriched_Pt20to30_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_2.root',
@@ -367,11 +341,7 @@ genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01 = cms.PSet(
 )
 
 outputFileNameQCD_EMenriched_Pt20to30_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part01.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt20to30 - part02
-#
 fileNamesQCD_EMenriched_Pt20to30_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_27.root',
@@ -400,19 +370,10 @@ fileNamesQCD_EMenriched_Pt20to30_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_50.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part02 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt20to30_part02 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01
 
 outputFileNameQCD_EMenriched_Pt20to30_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part02.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt20to30 - part03
-#
 fileNamesQCD_EMenriched_Pt20to30_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_52.root',
@@ -441,19 +402,10 @@ fileNamesQCD_EMenriched_Pt20to30_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_75.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part03 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt20to30_part03 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01
 
 outputFileNameQCD_EMenriched_Pt20to30_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part03.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt20to30 - part04
-#
 fileNamesQCD_EMenriched_Pt20to30_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_76.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_77.root',
@@ -482,19 +434,10 @@ fileNamesQCD_EMenriched_Pt20to30_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_100.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part04 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt20to30_part04 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01
 
 outputFileNameQCD_EMenriched_Pt20to30_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part04.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt20to30 - part05
-#
 fileNamesQCD_EMenriched_Pt20to30_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_101.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_102.root',
@@ -526,23 +469,17 @@ fileNamesQCD_EMenriched_Pt20to30_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_128.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part05 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt20to30_part05 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01
 
 outputFileNameQCD_EMenriched_Pt20to30_part05 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part05.root')
 #--------------------------------------------------------------------------------
 
 
-
-
-
 #--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part01
+# electron enriched b/c --> e QCD sample generated with Pythia (30 GeV < Pt(hat) < 80 GeV)
 #
+#intLumiQCD_EMenriched_Pt30to80 = float()
+
 fileNamesQCD_EMenriched_Pt30to80_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_2.root',
@@ -564,11 +501,7 @@ genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01 = cms.PSet(
 )
 
 outputFileNameQCD_EMenriched_Pt30to80_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part01.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part02
-#
 fileNamesQCD_EMenriched_Pt30to80_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_12.root',
@@ -582,19 +515,10 @@ fileNamesQCD_EMenriched_Pt30to80_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_20.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part02 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part02 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part02.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part03
-#
 fileNamesQCD_EMenriched_Pt30to80_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_22.root',
@@ -616,11 +540,7 @@ genPhaseSpaceCutQCD_EMenriched_Pt30to80_part03 = cms.PSet(
 )
 
 outputFileNameQCD_EMenriched_Pt30to80_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part03.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part04
-#
 fileNamesQCD_EMenriched_Pt30to80_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_32.root',
@@ -642,11 +562,7 @@ genPhaseSpaceCutQCD_EMenriched_Pt30to80_part04 = cms.PSet(
 )
 
 outputFileNameQCD_EMenriched_Pt30to80_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part04.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part05
-#
 fileNamesQCD_EMenriched_Pt30to80_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_42.root',
@@ -660,20 +576,10 @@ fileNamesQCD_EMenriched_Pt30to80_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_50.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part05 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part05 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part05 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part05.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part06
-#
 fileNamesQCD_EMenriched_Pt30to80_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_52.root',
@@ -687,19 +593,10 @@ fileNamesQCD_EMenriched_Pt30to80_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_60.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part06 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part06 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part06 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part06.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part07
-#
 fileNamesQCD_EMenriched_Pt30to80_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_62.root',
@@ -713,19 +610,10 @@ fileNamesQCD_EMenriched_Pt30to80_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_70.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part07 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part07 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part07 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part07.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part08
-#
 fileNamesQCD_EMenriched_Pt30to80_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_71.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_72.root',
@@ -739,19 +627,10 @@ fileNamesQCD_EMenriched_Pt30to80_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_80.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part08 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part08 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part08 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part08.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part09
-#
 fileNamesQCD_EMenriched_Pt30to80_part09 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_81.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_82.root',
@@ -765,19 +644,10 @@ fileNamesQCD_EMenriched_Pt30to80_part09 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_90.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part09 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part09 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part09 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part09.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part10
-#
 fileNamesQCD_EMenriched_Pt30to80_part10 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_91.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_92.root',
@@ -791,19 +661,10 @@ fileNamesQCD_EMenriched_Pt30to80_part10 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_100.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part10 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part10 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part10 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part10.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part11
-#
 fileNamesQCD_EMenriched_Pt30to80_part11 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_101.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_102.root',
@@ -817,19 +678,10 @@ fileNamesQCD_EMenriched_Pt30to80_part11 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_110.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part11 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part11 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part11 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part11.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part12
-#
 fileNamesQCD_EMenriched_Pt30to80_part12 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_111.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_112.root',
@@ -843,19 +695,10 @@ fileNamesQCD_EMenriched_Pt30to80_part12 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_120.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part12 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part12 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part12 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part12.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part13
-#
 fileNamesQCD_EMenriched_Pt30to80_part13 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_121.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_122.root',
@@ -869,19 +712,10 @@ fileNamesQCD_EMenriched_Pt30to80_part13 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_130.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part13 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part13 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part13 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part13.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part14
-#
 fileNamesQCD_EMenriched_Pt30to80_part14 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_131.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_132.root',
@@ -895,19 +729,10 @@ fileNamesQCD_EMenriched_Pt30to80_part14 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_140.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part14 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part14 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part14 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part14.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part15
-#
 fileNamesQCD_EMenriched_Pt30to80_part15 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_141.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_142.root',
@@ -921,19 +746,10 @@ fileNamesQCD_EMenriched_Pt30to80_part15 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_150.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part15 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part15 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part15 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part15.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt30to80 - part16
-#
 fileNamesQCD_EMenriched_Pt30to80_part16 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_152.root',
@@ -952,29 +768,17 @@ fileNamesQCD_EMenriched_Pt30to80_part16 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_165.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part16 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt30to80_part16 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01
 
 outputFileNameQCD_EMenriched_Pt30to80_part16 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part16.root')
 #--------------------------------------------------------------------------------
 
 
-
-
-
-
 #--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt80to170 - part01
+# electron enriched b/c --> e QCD sample generated with Pythia (80 GeV < Pt(hat) < 170 GeV)
 #
-#
-# ----------->>>> FINISH <<<< -------------------
-#
-#
-#
+#intLumiQCD_EMenriched_Pt80to170 = float()
+
 fileNamesQCD_EMenriched_Pt80to170_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_152.root',
@@ -1004,12 +808,9 @@ genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01 = cms.PSet(
 )
 
 outputFileNameQCD_EMenriched_Pt80to170_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part01.root')
-#--------------------------------------------------------------------------------
 
+# ----------->>>> FINISH <<<< -------------------
 
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt80to170 - part02
-#
 fileNamesQCD_EMenriched_Pt80to170_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_152.root',
@@ -1031,20 +832,10 @@ fileNamesQCD_EMenriched_Pt80to170_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_168.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part02 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt80to170_part02 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01
 
 outputFileNameQCD_EMenriched_Pt80to170_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part02.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt80to170 - part03
-#
 fileNamesQCD_EMenriched_Pt80to170_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_152.root',
@@ -1066,20 +857,10 @@ fileNamesQCD_EMenriched_Pt80to170_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_168.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part03 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt80to170_part03 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01
 
 outputFileNameQCD_EMenriched_Pt80to170_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part03.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# electron enriched b/c->e QCD sample - Pt80to170 - part04
-#
 fileNamesQCD_EMenriched_Pt80to170_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_152.root',
@@ -1101,24 +882,19 @@ fileNamesQCD_EMenriched_Pt80to170_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_QCD_EMenriched_Pt80to170_168.root'
 )
 
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part04 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
+genPhaseSpaceCutQCD_EMenriched_Pt80to170_part04 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01
 
 outputFileNameQCD_EMenriched_Pt80to170_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part04.root')
 #--------------------------------------------------------------------------------
 
 
-
-
-
-
 #--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt20to30 - part01 
+# QCD b/c --> e sample generated with Pythia (20 GeV < Pt(hat) < 30 GeV)
+#  integrated luminosity = 8.24 pb^-1
+# (to be corrected by scale factor for missing files)
 #
+intLumiQCD_BCtoE_Pt20to30 = float(8.24)
+
 fileNamesQCD_BCtoE_Pt20to30_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_2.root',
@@ -1139,11 +915,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt20to30_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part01.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - part02 
-#
 fileNamesQCD_BCtoE_Pt20to30_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_11.root',
@@ -1165,11 +937,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt20to30_part02 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt20to30_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part02.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - part03 
-#
 fileNamesQCD_BCtoE_Pt20to30_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_21.root',
@@ -1191,11 +959,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt20to30_part03 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt20to30_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part03.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - part04 
-#
 fileNamesQCD_BCtoE_Pt20to30_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_30.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_31.root',
@@ -1217,11 +981,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt20to30_part04 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt20to30_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part04.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - part05 
-#
 fileNamesQCD_BCtoE_Pt20to30_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_40.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_41.root',
@@ -1245,13 +1005,13 @@ outputFileNameQCD_BCtoE_Pt20to30_part05 = cms.string('plotsZtoElecTau_QCD_BCtoE_
 #--------------------------------------------------------------------------------
 
 
-
-
-
-
 #--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part01
+# QCD b/c -->e sample generated with Pythia (30 GeV < Pt(hat) < 80 GeV)
+#  integrated luminosity = 3.67 pb^-1
+# (to be corrected by scale factor for missing files)
 #
+intLumiQCD_BCtoE_Pt30to80 = float(3.67)
+
 fileNamesQCD_BCtoE_Pt30to80_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_2.root',
@@ -1313,11 +1073,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part01.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part02
-#
 fileNamesQCD_BCtoE_Pt30to80_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_52.root',
@@ -1381,11 +1137,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part02 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part02.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part03
-#
 fileNamesQCD_BCtoE_Pt30to80_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_101.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_102.root',
@@ -1447,11 +1199,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part03 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part03.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part04
-#
 fileNamesQCD_BCtoE_Pt30to80_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_151.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_152.root',
@@ -1515,13 +1263,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part04 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part04.root')
-#--------------------------------------------------------------------------------
 
-
-
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part05
-#
 fileNamesQCD_BCtoE_Pt30to80_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_201.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_202.root',
@@ -1583,11 +1325,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part05 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part05 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part05.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part06
-#
 fileNamesQCD_BCtoE_Pt30to80_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_251.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_252.root',
@@ -1652,9 +1390,6 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part06 = cms.PSet(
 
 outputFileNameQCD_BCtoE_Pt30to80_part06 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part06.root')
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part07
-#
 fileNamesQCD_BCtoE_Pt30to80_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_301.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_302.root',
@@ -1716,11 +1451,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part07 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt30to80_part07 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part07.root')
-#--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt30to80 - part08
-#
 fileNamesQCD_BCtoE_Pt30to80_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_351.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_352.root',
@@ -1793,11 +1524,13 @@ outputFileNameQCD_BCtoE_Pt30to80_part08 = cms.string('plotsZtoElecTau_QCD_BCtoE_
 #--------------------------------------------------------------------------------
 
 
-
-
 #--------------------------------------------------------------------------------
-#  QCD b/c->e sample - Pt80to170 - part01
+# QCD b/c -->e sample generated with Pythia (80 GeV < Pt(hat) < 170 GeV)
+#  integrated luminosity = 3.67 pb^-1
+# (to be corrected by scale factor for missing files)
 #
+#intLumiQCD_BCtoE_Pt30to80 = float()
+
 fileNamesQCD_BCtoE_Pt80to170_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_2.root',
@@ -1834,12 +1567,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt80to170_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part01.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt80to170 - part02
-#
 fileNamesQCD_BCtoE_Pt80to170_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_27.root',
@@ -1876,12 +1604,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt80to170_part02 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt80to170_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part02.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt80to170 - part03
-#
 fileNamesQCD_BCtoE_Pt80to170_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_52.root',
@@ -1918,12 +1641,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt80to170_part03 = cms.PSet(
 )
 
 outputFileNameQCD_BCtoE_Pt80to170_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part03.root')
-#--------------------------------------------------------------------------------
 
-
-#--------------------------------------------------------------------------------
-# QCD b/c->e sample - Pt80to170 - part04
-#
 fileNamesQCD_BCtoE_Pt80to170_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_76.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_77.root',
@@ -1975,12 +1693,6 @@ genPhaseSpaceCutQCD_BCtoE_Pt80to170_part04 = cms.PSet(
 
 outputFileNameQCD_BCtoE_Pt80to170_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part04.root')
 #--------------------------------------------------------------------------------
-
-
-
-
-
-
 
 #--------------------------------------------------------------------------------
 # photon + jets samples
@@ -2041,8 +1753,16 @@ outputFileNamePhotonJets_Pt35     = cms.string('plotsZtoElecTau_PhotonJets_Pt35.
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# W + jets (madgraph) sample
+# W + jets sample generated with Madgraph
+#  integrated luminosity = 297 pb^-1
+# (to be corrected for missing files)
 #
+# (NOTE: for Monte Carlo samples generated by Madgraph,
+#        the filter efficiency is already included in the cross-sections
+#        listed at https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008 !!)
+#
+intLumiWplusJets = float(297.)
+
 fileNamesWjets_madgraph = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_2.root',
@@ -2070,8 +1790,16 @@ outputFileNameWjets_madgraph = cms.string('plotsZtoElecTau_Wjets_madgraph.root')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# Z + jets (madgraph) sample
+# Z + jets sample generated with Madgraph (exclusing Z --> tau+ tau- decays)
+#  integrated luminosity = 197 pb^-1
+# (to be corrected for missing files)
 #
+# (NOTE: for Monte Carlo samples generated by Madgraph,
+#        the filter efficiency is already included in the cross-sections
+#        listed at https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008 !!)
+#
+intLumiZplusJets = float(197.)
+
 fileNamesZjets_madgraph = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_Zjets_madgraph_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_Zjets_madgraph_2.root',
@@ -2101,6 +1829,8 @@ outputFileNameZjets_madgraph = cms.string('plotsZtoElecTau_Zjets_madgraph.root')
 #--------------------------------------------------------------------------------
 # TT + jets (madgraph) sample
 #
+#intLumiTTplusJets = float()
+
 fileNamesTTjets_madgraph = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_TTjets_madgraph_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_TTjets_madgraph_2.root',
@@ -2127,4 +1857,3 @@ genPhaseSpaceCutTTjets_madgraph = cms.PSet(
 outputFileNameTTjets_madgraph = cms.string('plotsZtoElecTau_TTjets_madgraph.root')
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
