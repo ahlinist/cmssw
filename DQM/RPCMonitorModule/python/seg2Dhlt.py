@@ -20,7 +20,7 @@ process.GlobalTag.globaltag = "CRUZET4_V6P::All"
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(20000)
 )
 process.source = cms.Source("PoolSource",
 #   fileNames = cms.untracked.vstring('//store/data/Commissioning08/Cosmics/RECO/v1/000/066/722/FE445906-729D-DD11-8E47-000423D99EEE.root')
@@ -33,8 +33,9 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     incldtMB4 = cms.untracked.bool(True),
     inclcsc = cms.untracked.bool(True),
 
-    debug = cms.untracked.bool(True),
+    debug = cms.untracked.bool(False),
     inves = cms.untracked.bool(True),
+    manualalignment = cms.untracked.bool(True),
     
     DuplicationCorrection = cms.untracked.int32(1),
 	
