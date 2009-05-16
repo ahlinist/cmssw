@@ -54,7 +54,11 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
         angle_phi_ =0;
         angle_cospsi_ =0;
 
-	triggerbit_ =0;
+	triggerbit_HLTmu3_ =0;
+	triggerbit_HLTmu5_ =0;
+	triggerbit_HLTdoubleIsoMu3_ =0;
+	triggerbit_HLTdoubleMu3_ =0;
+	triggerbit_HLTdoubleMu3_JPsi_ =0;
 
 	isMatched_ = false;
 	
@@ -113,7 +117,12 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 	bsTree_->Branch("costheta", &angle_costheta_, "angle_costheta/D");
 	bsTree_->Branch("phi", &angle_phi_, "angle_phi/D");
 	bsTree_->Branch("cospsi", &angle_cospsi_, "angle_cospsi/D");
-	bsTree_->Branch("triggerbit", &triggerbit_, "triggerbit/D");
+	bsTree_->Branch("triggerbit_HLTmu3", &triggerbit_HLTmu3_, "triggerbit_HLTmu3/I");
+	bsTree_->Branch("triggerbit_HLTmu5", &triggerbit_HLTmu5_, "triggerbit_HLTmu5/I");
+	bsTree_->Branch("triggerbit_HLTdoubleIsoMu3", &triggerbit_HLTdoubleIsoMu3_, "triggerbit_HLTdoubleIsoMu3/I");
+	bsTree_->Branch("triggerbit_HLTdoubleMu3", &triggerbit_HLTdoubleMu3_, "triggerbit_HLTdoubleMu3/I");
+	bsTree_->Branch("triggerbit_HLTdoubleMu3_JPsi", &triggerbit_HLTdoubleMu3_JPsi_, "triggerbit_HLTdoubleMu3_JPsi/I");
+
 }
 
 BsToJpsiPhiRootTree::~BsToJpsiPhiRootTree()
@@ -172,7 +181,12 @@ void BsToJpsiPhiRootTree::resetEntries()
   angle_costheta_ = 0;
   angle_phi_ = 0;
   angle_cospsi_ = 0;
-  triggerbit_ = 0;
+  
+  triggerbit_HLTmu3_ =0;
+  triggerbit_HLTmu5_ =0;
+  triggerbit_HLTdoubleIsoMu3_ =0;
+  triggerbit_HLTdoubleMu3_ =0;
+  triggerbit_HLTdoubleMu3_JPsi_ =0;
   
   isMatched_ = false;
 } 
@@ -424,9 +438,14 @@ bool BsToJpsiPhiRootTree::getAssociation()
   return isMatched_;
 }
 
-void BsToJpsiPhiRootTree::getTrigBit(const int flag)
+void BsToJpsiPhiRootTree::getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5)
 {
-  triggerbit_ = flag;
+  triggerbit_HLTmu3_ = flag_1;
+  triggerbit_HLTmu5_ = flag_2;
+  triggerbit_HLTdoubleIsoMu3_ = flag_3;
+  triggerbit_HLTdoubleMu3_ = flag_4;
+  triggerbit_HLTdoubleMu3_JPsi_ = flag_5;
+
 }
 
 void BsToJpsiPhiRootTree::fill()
