@@ -64,6 +64,11 @@ private:
 	double deltaR_; //for matching sim and reco tracks
 	
 	int event_counter_;
-	int flag;
+	int flag_1;
+	int flag_2;
+	int flag_3;
+	int flag_4;
+	int flag_5;
+
 };
 #endif

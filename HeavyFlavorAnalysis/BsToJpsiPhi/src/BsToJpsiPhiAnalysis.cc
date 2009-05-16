@@ -75,7 +75,11 @@ void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
   bsRootTree_ = new BsToJpsiPhiRootTree(outputFile_);
 	
   event_counter_ = 0;
-  flag = 0;
+  flag_1 = 0;
+  flag_2 = 0;
+  flag_3 = 0;
+  flag_4 = 0;
+  flag_5 = 0;
 }
 
 void BsToJpsiPhiAnalysis::endJob() 
@@ -293,19 +297,31 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  edm::TriggerNames triggerNames_;
 			  triggerNames_.init(* hltresults);
 
-			  // for more trigger bit just duplicate this code and replace the tag
-			  // flag = 0 other paths
 			  // flag = 1 HLT_Mu3
 			  // flag = 2 HLT_Mu5
 			  // flag = 3 HLT_DoubleIsoMu3
 			  // flag = 4 HLT_DoubleMu3
 			  // flag = 5 HLT_DoubleMu3_JPsi
 
-			  flag = 0;
+			  flag_1 = 0;
+			  flag_2 = 0;
+			  flag_3 = 0;
+			  flag_4 = 0;
+			  flag_5 = 0;
 
-			  if (hltresults->accept(itrig3)) flag = 4;
+			  int itrig_1 = triggerNames_.triggerIndex("HLT_Mu3");
+			  int itrig_2 = triggerNames_.triggerIndex("HLT_Mu5");
+			  int itrig_3 = triggerNames_.triggerIndex("HLT_DoubleIsoMu3");
+			  int itrig_4 = triggerNames_.triggerIndex("HLT_DoubleMu3");
+			  int itrig_5 = triggerNames_.triggerIndex("HLT_DoubleMu3_JPsi");
 
-			  bsRootTree_->getTrigBit(flag);			  
+			  if (hltresults->accept(itrig_1)) flag_1 = 1;
+			  if (hltresults->accept(itrig_2)) flag_2 = 1;
+			  if (hltresults->accept(itrig_3)) flag_3 = 1;
+			  if (hltresults->accept(itrig_4)) flag_4 = 1;
+			  if (hltresults->accept(itrig_5)) flag_5 = 1;
+			  
+			  bsRootTree_->getTrigBit(flag_1,flag_2,flag_3,flag_4,flag_5);			  
 			  bsRootTree_->fill();
 			}
 			// end loop over Bs

@@ -33,7 +33,7 @@ public:
 	void addDecay(const RefCountedKinematicTree& myBsTree, const reco::Vertex * myPV);
 	void addSimDecay(const TrackingVertex * simVertex, const TrackingVertex * pVertex);
 	void setAssociation(const bool association);
-	void getTrigBit(const int flag);
+	void getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5);
 	bool getAssociation();
 	void fill();  //!< copy the information from memory to Ntuple
 
@@ -202,7 +202,12 @@ private:
 	double angle_costheta_;
 	double angle_phi_;
 	double angle_cospsi_;
-	double triggerbit_;
+
+        int triggerbit_HLTmu3_;
+        int triggerbit_HLTmu5_;
+        int triggerbit_HLTdoubleIsoMu3_;
+        int triggerbit_HLTdoubleMu3_;
+        int triggerbit_HLTdoubleMu3_JPsi_;
 	
 	TFile* bsFile_;
 	TTree* bsTree_; 
