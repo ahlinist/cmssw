@@ -24,7 +24,7 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 ## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
 #    )
 #)
-from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run3_cfg import *
+from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run4_cfg import *
 process.source = source
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
