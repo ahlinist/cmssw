@@ -543,8 +543,10 @@ namespace HCAL_HLX
 
       // If resync condition, update the run number
       if ( resyncCondition ) {
-	mCurrentRunNumber = mNextRunNumber;
-	mSectionNumber = 1;
+	if ( mCurrentRunNumber != mNextRunNumber ) {
+	  mCurrentRunNumber = mNextRunNumber;
+	  mSectionNumber = 1;
+	}
 	mResyncCount++;
       }
 
