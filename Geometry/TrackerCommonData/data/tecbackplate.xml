@@ -63,7 +63,6 @@
  <LogicalPart name="TECTiltmeter" category="unspecified">
    <rSolid name="tecbackplate:TECTiltmeter"/>
    <rMaterial name="tecmaterial:TEC_Tiltmeter"/>
-   <rMaterial name="materials:Air"/>
  </LogicalPart>
 </LogicalPartSection>
 
