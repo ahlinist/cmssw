@@ -2197,7 +2197,7 @@
  </SpecPar>
 
 <!-- S10 air outside L3-->
-% <SpecPar name="Magnetic field map of Volume_297 S10">
+<SpecPar name="Magnetic field map of Volume_297 S10">
    <PartSelector path="//V_297[10]"/>
    <Parameter name="table" value="S10/grid.297.bin"/>
    <Parameter name="masterSector" value="10" eval="true"/>
