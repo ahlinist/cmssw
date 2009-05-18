@@ -1,6 +1,6 @@
 
 
-#include "L1TriggerOffline/TriggerSimulation/interface/TrackTriggerNaiveGeometry.h"
+#include "SLHCUpgradeSimulations/L1Trigger/interface/TrackTriggerNaiveGeometry.h"
 
 #include <TMath.h>
 

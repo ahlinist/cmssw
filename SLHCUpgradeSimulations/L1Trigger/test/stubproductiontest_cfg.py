@@ -155,6 +155,7 @@ process.load("SLHCUpgradeSimulations.L1Trigger.HitMatchingAlgorithmRegister_cfi"
 #es_prefer_HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
 process.HitMatchingAlgorithm_globalgeometry_PixelDigi_.ipWidth = 100.0
 
+
 process.load("SLHCUpgradeSimulations.L1Trigger.ClusteringAlgorithmRegister_cfi")
 #es_prefer_ClusteringAlgorithm_PSimHit_ = cms.ESPrefer("ClusteringAlgorithm_a_PSimHit_")
 #es_prefer_ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer("ClusteringAlgorithm_a_PixelDigi_")
@@ -196,7 +197,7 @@ process.load("SLHCUpgradeSimulations.L1Trigger.TrackTriggerHitsFromPixelDigis_cf
 # To write out events (not need: FastSimulation _is_ fast!)
 process.o1 = cms.OutputModule(
     "PoolOutputModule",
-    outputCommands = cms.untracked.vstring("keep *","drop *_mix_*_*"),
+    outputCommands = cms.untracked.vstring('keep *'),
     fileName = cms.untracked.string('out.root')
 )
 process.outpath = cms.EndPath(process.o1)
@@ -209,6 +210,9 @@ process.outpath = cms.EndPath(process.o1)
 # Make the job crash in case of missing product
 process.options = cms.untracked.PSet( Rethrow = cms.untracked.vstring('ProductNotFound') )
 
+process.demo = cms.EDFilter("stubproductiontest")
+process.p = cms.Path(process.demo)
+
 # Famos with tracks
 process.p1 = cms.Path(process.famosWithTrackerHits)
 process.p2 = cms.Path(process.trDigi)
@@ -220,4 +224,4 @@ process.p7 = cms.Path(process.TrackTriggerHitsFromPixelDigis*process.LocalStubsF
 #process.p5 = cms.Path(process.trackerlocalreco)
 #process.p6 = cms.Path(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks)
 #process.p7 = cms.Path(process.trackingParticles*process.cutsTPEffic*process.cutsTPFake*process.multiTrackValidator)
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7,process.outpath)
+process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7,process.p,process.outpath)

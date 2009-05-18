@@ -1,18 +1,18 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("PROD")
-process.load("L1TriggerOffline.TriggerSimulation.pythiaMinBias_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.pythiaMinBias_cfi")
 
-process.load("L1TriggerOffline.TriggerSimulation.slhcPileUp_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.slhcPileUp_cfi")
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
-process.load("L1TriggerOffline.TriggerSimulation.TrackTriggerNaiveGeometry_cff")
-process.load("L1TriggerOffline.TriggerSimulation.trackTriggerHitsFromMC_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.TrackTriggerNaiveGeometry_cff")
+process.load("SLHCUpgradeSimulations.L1Trigger.trackTriggerHitsFromMC_cfi")
 process.trackTriggerHits.inputTag = 'source'
 process.trackTriggerHits.doPileUp = True
 
-#process.load("L1TriggerOffline.TriggerSimulation.dumpL1TrackHits_cfi")
+#process.load("SLHCUpgradeSimulations.L1Trigger.dumpL1TrackHits_cfi")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
