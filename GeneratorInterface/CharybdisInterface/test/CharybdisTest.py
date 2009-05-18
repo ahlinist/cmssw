@@ -19,7 +19,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
     )
 )
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.source = cms.Source("EmptySource")
 process.generator = cms.EDProducer("CharybdisProducer",
@@ -63,8 +63,8 @@ process.GEN = cms.OutputModule("PoolOutputModule",
     )
 
 configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision$'),
-    name = cms.untracked.string('$Source$'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/GeneratorInterface/CharybdisInterface/test/CharybdisTest.py,v $'),
     annotation = cms.untracked.string('Charybdis test cfg file for sqrt(s)=10 TeV')
     )
 
