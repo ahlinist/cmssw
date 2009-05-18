@@ -1,3 +1,4 @@
+* CMSSW_3_1_X migration modifications May '09 by halil
 * Last modified on 04/Dec/2007 by halil
 * this routine is renamed and modified in order to read parameters from
 * charybdis common blocks. srs,  13/08/2006 
@@ -284,13 +285,11 @@ C--Les Houches run common block
 *.................
 * CHARYBDIS common blocks
       integer         NCHSRCH 
-      
 C--parameters for the initial maximum weight search
       if(Ipar(140).ne.NCHSRCH) then
          NCHSRCH = Ipar(140) 
          if(NCHSRCH.le.0) NCHSRCH = 10000 ! default
       endif
-        print*,' CHARYBDIS:  NCHSRCH = ',NCHSRCH
 * 
       if(Ipar(141).ge.1.and.Ipar(141).le.3) MSSDEF = Ipar(141)
 *
@@ -324,6 +323,13 @@ C--Remnant decay model: Boiling at Maximum Hawking temperature
 *...
 C
 **** FLOAT parameters
+C--COM Energy
+      if (Rpar(140).ge.0.d0) then 
+	 EBMUP(1) = Rpar(140)
+	 EBMUP(2) = Rpar(140)
+      endif
+      
+
       if(Rpar(141).ge.1.d0) MPLNCK=rpar(141) 
 C--Set mass window for black holes produced
       if(Rpar(142).ge.1.d0) MINMSS=rpar(142)

@@ -1,0 +1,5 @@
+<use name=GeneratorInterface/CharybdisInterface>
+<library file="*.cc" name=GeneratorInterfaceCharybdisInterfacePlugins>
+        <flags EDM_PLUGIN=1>
+</library>
+
