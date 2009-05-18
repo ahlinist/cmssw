@@ -314,6 +314,5 @@ class SusyAnalyzer : public edm::EDAnalyzer {
 
 };
 
-DEFINE_FWK_MODULE(SusyAnalyzer);
 
 #endif
