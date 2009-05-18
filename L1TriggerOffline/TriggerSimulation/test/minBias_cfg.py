@@ -67,10 +67,10 @@ process.source = cms.Source("PythiaSource",
 
 
 # track trigger
-process.load("L1TriggerOffline.TriggerSimulation.TrackTriggerNaiveGeometry_cff")
-process.load("L1TriggerOffline.TriggerSimulation.trackTriggerHitsFromMC_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.TrackTriggerNaiveGeometry_cff")
+process.load("SLHCUpgradeSimulations.L1Trigger.trackTriggerHitsFromMC_cfi")
 
-#process.load("L1TriggerOffline.TriggerSimulation.dumpL1TrackHits_cfi")
+#process.load("SLHCUpgradeSimulations.L1Trigger.dumpL1TrackHits_cfi")
 
 
 process.tester = cms.EDFilter("EventSetupRecordDataGetter",

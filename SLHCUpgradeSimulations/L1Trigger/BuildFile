@@ -21,6 +21,11 @@
 <use name=boost>
 <use name=root>
 <use name=rootrflx>
+
+<use name=SimDataFormats/Track>
+<use name=SimDataFormats/SLHC>
+<use name=DataFormats/SiPixelDetId>
+
 <export>
   <lib name=SLHCUpgradeSimulationsL1Trigger>
   <use name=FWCore/Framework>

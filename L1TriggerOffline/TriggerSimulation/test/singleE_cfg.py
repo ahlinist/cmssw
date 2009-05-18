@@ -48,15 +48,15 @@ process.source = cms.Source("FlatRandomEGunSource",
 )
 
 # track trigger
-process.load("L1TriggerOffline.TriggerSimulation.TrackTriggerNaiveGeometry_cff")
-process.load("L1TriggerOffline.TriggerSimulation.trackTriggerHitsFromMC_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.TrackTriggerNaiveGeometry_cff")
+process.load("SLHCUpgradeSimulations.L1Trigger.trackTriggerHitsFromMC_cfi")
 process.trackTriggerHits.inputTag = 'source'
 process.trackTriggerHits.doPileUp = False
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string( 'trackTrigHistos.root' )
 )
-process.load("L1TriggerOffline.TriggerSimulation.trackTriggerAnalyzer_cfi")
+process.load("SLHCUpgradeSimulations.L1Trigger.trackTriggerAnalyzer_cfi")
 
 process.p = cms.Path(process.trackTriggerHits*
                      process.trackTriggerAnalyzer)
