@@ -20,7 +20,7 @@ process.MessageLogger.categories.append('Analysis')
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/tmp/antoniov/POMWIG_SDPlusWmunu_EdmDump_InitialLumPU_2.root')
+    fileNames = cms.untracked.vstring('file:/tmp/antoniov/edmDump_WMuNu.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -36,13 +36,17 @@ process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.singleIntera
 process.singleInteractionTMVAFilter.CutOnClassifier = 0.4
 process.singleInteractionTMVAFilterTight = process.singleInteractionTMVAFilter.clone(CutOnClassifier = 0.8)
 
+process.pileUpFilter = cms.Sequence(~process.singleInteractionFilter)
+process.singleInteractionTMVA_SingleInteraction = cms.Sequence(process.singleInteractionFilter+process.singleInteractionTMVAFilter)
+process.singleInteractionTMVATight_SingleInteraction = cms.Sequence(process.singleInteractionFilter+process.singleInteractionTMVAFilterTight)
+
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.pileUpNumberFilter_cfi import *
 listFiltersPU = []
 for i in range(5):
     listFiltersPU.append('filter%dPU'%i)
     setattr(process,'filter%dPU'%i,pileUpNumberFilter.clone(NumberOfPileUpEvents = i))
 
-filters = ['singleInteractionFilter','!singleInteractionFilter','singleVertexFilter','singleInteractionTMVAFilter','singleInteractionTMVAFilterTight']
+filters = ['singleInteractionFilter','!singleInteractionFilter','pileUpFilter','singleVertexFilter','singleInteractionTMVAFilter','singleInteractionTMVAFilterTight','singleInteractionTMVA_SingleInteraction','singleInteractionTMVATight_SingleInteraction']
 filters.extend(listFiltersPU)
 
 vertexAlgos = ['pixelVertices',

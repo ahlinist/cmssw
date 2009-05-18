@@ -5,5 +5,8 @@ singleInteractionTMVAFilter = cms.EDFilter("SingleInteractionTMVAFilter",
     TracksTag = cms.InputTag("generalTracks"),
     WeightsFile = cms.FileInPath("DiffractiveForwardAnalysis/SingleDiffractiveWAnalysis/data/MVAnalysis_MLP.weights.txt"),
     CutOnClassifier = cms.double(-0.23),
-    ThresholdIndexHF = cms.uint32(10)
+    ThresholdIndexHF = cms.uint32(10),
+    InputVariables = cms.vstring("nVertex",
+                                 "xiPlus",
+                                 "nTracksAwayFromPV")
 )

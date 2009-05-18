@@ -45,6 +45,7 @@ private:
   TTree* data_;
 
   struct EventData {
+    int nPileUpBx0_;
     int lowEnergySide_;
     int nCastorGenPlus_;
     int nCastorGenMinus_;
@@ -168,6 +169,7 @@ void EdmDumpAnalyzer::beginJob(edm::EventSetup const&iSetup){
 
   if(saveTTree_){
     data_ = fs->make<TTree>("data","data");
+    data_->Branch("nPileUpBx0",&eventData_.nPileUpBx0_,"nPileUpBx0/I");
     data_->Branch("lowEnergySide",&eventData_.lowEnergySide_,"lowEnergySide/I");
     data_->Branch("nCastorGenPlus",&eventData_.nCastorGenPlus_,"nCastorGenPlus/I");
     data_->Branch("nCastorGenMinus",&eventData_.nCastorGenMinus_,"nCastorGenMinus/I");
@@ -229,7 +231,10 @@ void EdmDumpAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& se
            }
            int nPileUpBx0 = bx0Iter->second;
            edm::LogVerbatim("Analysis") << "  Number of pile-up events in bunch crossing 0: " << nPileUpBx0;
+           eventData_.nPileUpBx0_ = nPileUpBx0;
            h_nPileUpBx0_->Fill(nPileUpBx0);
+        } else {
+           eventData_.nPileUpBx0_ = -1;
         }
         fillVertexInfo(event,setup);
         fillTrackInfo(event,setup);
