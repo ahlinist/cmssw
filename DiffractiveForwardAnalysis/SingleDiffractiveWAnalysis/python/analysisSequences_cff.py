@@ -30,4 +30,4 @@ from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.genParticlesCalo_cfi 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDump_cff import *
 
 wmunuSelectionSequence = cms.Sequence(wmunuSelFilter)
-edmDumpSequence = cms.Sequence(wmunuSelFilter*genParticlesCalo*edmDumpAll)
+edmDumpSequence = cms.Sequence(wmunuSelFilter*genParticlesCalo*edmDumpAllNoPileUp)
