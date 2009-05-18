@@ -1,14 +1,11 @@
  
 
       subroutine ihepevt
-  
-  
-#include "SimDataFormats/HepMCProduct/data/stdhep.inc"
-#include "SimDataFormats/HepMCProduct/data/hepev4.inc"
-  
+
+#include "SimDataFormats/GeneratorProducts/data/stdhep.inc"
+#include "SimDataFormats/GeneratorProducts/data/hepev4.inc"
+
       return
       end
 
-#include "GeneratorInterface/CommonInterface/interface/txgive.F"
-
-#include "GeneratorInterface/CommonInterface/interface/pydata.f"
+#include "GeneratorInterface/Core/src/pydata.F"  
