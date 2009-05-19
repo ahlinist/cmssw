@@ -7,10 +7,13 @@
 <use name=RecoTracker/TkSeedingLayers>
 <use name=FWCore/PluginManager>
 <use name=RecoLocalTracker/SiPixelRecHits>
-
+<use name=CondTools/SiPixel> 
+<use name=CondFormats/SiPixelObjects>
 <export>
   <lib name=RecoTrackerPixelStubs>	 
   <use name=DataFormats/TrackerRecHit2D>
   <use name=RecoTracker/TkSeedingLayers>
   <use name=RecoLocalTracker/SiPixelRecHits>
+  <use name=CondTools/SiPixel>
+  <use name=CondFormats/SiPixelObjects>
 </export>
