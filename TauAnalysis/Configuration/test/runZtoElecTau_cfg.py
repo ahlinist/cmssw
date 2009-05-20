@@ -33,15 +33,19 @@ from TauAnalysis.Configuration.patTupleEventContent_cff import *
 # (running over skimmed samples stored on CASTOR)
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 
+# print event content 
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+
 process.DQMStore = cms.Service("DQMStore")
 
-process.saveZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
   outputFileName = cms.string('plotsZtoElecTau.root')
 )
 
 process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
     patTupleEventContent,
-    fileName = cms.untracked.string('elecTauSkim_patTuple.root')
+#    fileName = cms.untracked.string('/data/jkolb/elecTauAnalysis/elecTauSkim_patTuple.root')
+   fileName = cms.untracked.string('elecTauSkim_patTuple.root')
 )
 
 # control output frequency
@@ -50,15 +54,16 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(100)    
+    input = cms.untracked.int32(600)    
 )
 
 process.source = cms.Source("PoolSource",
     #firstEvent = cms.untracked.uint32(4097),
     #firstRun = cms.untracked.uint32(1),
     fileNames = cms.untracked.vstring(
-# Z --> tau tau (all decay modes; simulated with TAUOLA)
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
+	 # Z --> tau tau (all decay modes; simulated with TAUOLA)
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -111,9 +116,9 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 process.p = cms.Path( process.producePatTuple
-#                    +process.content                # uncomment to enable dump of event content after PAT-tuple production
+#                     +process.printEventContent                # uncomment to enable dump of event content after PAT-tuple production
                      +process.selectZtoElecTauEvents
-#                    +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
+#                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.analyzeZtoElecTauEvents
                      +process.saveZtoElecTauPlots )
 
