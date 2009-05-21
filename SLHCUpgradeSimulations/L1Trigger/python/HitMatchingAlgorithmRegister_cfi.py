@@ -40,16 +40,16 @@ HitMatchingAlgorithm_window_PixelDigi_ = cms.ESProducer(
     "HitMatchingAlgorithm_window_PixelDigi_",
     ipWidth = cms.double(15.0),
     minPtThreshold = cms.double(5.0),
-    RowResolution = cms.double(0.5),
-    ColResolution = cms.double(0.5)
+    RowResolution = cms.double(1),
+    ColResolution = cms.double(1)
     )
 
 HitMatchingAlgorithm_window_a_TTHit_ = cms.ESProducer(
     "HitMatchingAlgorithm_window_TTHit_",
     ipWidth = cms.double(15.0),
     minPtThreshold = cms.double(5.0),
-    RowResolution = cms.double(0.5),
-    ColResolution = cms.double(0.5)
+    RowResolution = cms.double(1),
+    ColResolution = cms.double(1)
     )
 """
 

@@ -78,6 +78,13 @@ DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_broadside_PixelDigi_);
 typedef ES_ClusteringAlgorithm_broadside<cmsUpgrades::Ref_TTHit_> ClusteringAlgorithm_broadside_TTHit_;
 DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_broadside_TTHit_);
 
+#include "SLHCUpgradeSimulations/L1Trigger/interface/ClusteringAlgorithm_2d.h"
+typedef ES_ClusteringAlgorithm_2d<cmsUpgrades::Ref_PSimHit_> ClusteringAlgorithm_2d_PSimHit_;
+DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_PSimHit_);
+typedef ES_ClusteringAlgorithm_2d<cmsUpgrades::Ref_PixelDigi_> ClusteringAlgorithm_2d_PixelDigi_;
+DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_PixelDigi_);
+typedef ES_ClusteringAlgorithm_2d<cmsUpgrades::Ref_TTHit_> ClusteringAlgorithm_2d_TTHit_;
+DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_TTHit_);
 
 
 /*

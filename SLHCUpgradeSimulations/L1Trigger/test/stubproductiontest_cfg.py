@@ -130,7 +130,7 @@ process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 process.load("SLHCUpgradeSimulations.Utilities.StackedTrackerGeometry_cfi")
 
 # If you want to turn on/off pile-up
-process.famosPileUp.PileUpSimulator.averageNumber = 20
+process.famosPileUp.PileUpSimulator.averageNumber = 200
 # You may not want to simulate everything for your study
 process.famosSimHits.SimulateCalorimetry = False
 process.famosSimHits.SimulateTracking = True
@@ -145,16 +145,23 @@ process.simSiPixelDigis.AddPixelInefficiency = -1
 process.simSiStripDigis.ROUList =  ['famosSimHitsTrackerHits']
 process.simSiPixelDigis.LorentzAngle_DB = False
 process.simSiPixelDigis.killModules = False
+process.simSiPixelDigis.NumPixelBarrel = cms.int32(10)   
+process.simSiPixelDigis.NumPixelEndcap = cms.int32(3)      
 
-process.load("Configuration.StandardSequences.DigiToRaw_cff")
 
-process.load("Configuration.StandardSequences.RawToDigi_cff")
+process.famosSimHits.ParticleFilter.etaMax = 3.0
+process.famosSimHits.ParticleFilter.pTMin = 0.05
+process.famosSimHits.TrackerSimHits.pTmin = 0.05
+process.famosSimHits.TrackerSimHits.firstLoop = False
+
+
+#process.load("Configuration.StandardSequences.DigiToRaw_cff")
+#process.load("Configuration.StandardSequences.RawToDigi_cff")
 
 process.load("SLHCUpgradeSimulations.L1Trigger.HitMatchingAlgorithmRegister_cfi")
 #es_prefer_HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PSimHit_")
 #es_prefer_HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
-process.HitMatchingAlgorithm_globalgeometry_PixelDigi_.ipWidth = 100.0
-
+#process.HitMatchingAlgorithm_globalgeometry_PixelDigi_.ipWidth = 100.0
 
 process.load("SLHCUpgradeSimulations.L1Trigger.ClusteringAlgorithmRegister_cfi")
 #es_prefer_ClusteringAlgorithm_PSimHit_ = cms.ESPrefer("ClusteringAlgorithm_a_PSimHit_")
@@ -216,12 +223,12 @@ process.p = cms.Path(process.demo)
 # Famos with tracks
 process.p1 = cms.Path(process.famosWithTrackerHits)
 process.p2 = cms.Path(process.trDigi)
-process.p3 = cms.Path(process.siPixelRawData*process.SiStripDigiToRaw*process.rawDataCollector)
-process.p4 = cms.Path(process.siPixelDigis*process.SiStripRawToDigis)
+#process.p3 = cms.Path(process.siPixelRawData*process.SiStripDigiToRaw*process.rawDataCollector)
+#process.p4 = cms.Path(process.siPixelDigis*process.SiStripRawToDigis)
 process.p5 = cms.Path(process.LocalStubsFromSimHits*process.GlobalStubsFromSimHits*process.TrackletsFromSimHits)
 process.p6 = cms.Path(process.LocalStubsFromPixelDigis*process.GlobalStubsFromPixelDigis*process.TrackletsFromPixelDigis)
 process.p7 = cms.Path(process.TrackTriggerHitsFromPixelDigis*process.LocalStubsFromTrackTriggerHits*process.GlobalStubsFromTrackTriggerHits*process.TrackletsFromTrackTriggerHits)
 #process.p5 = cms.Path(process.trackerlocalreco)
 #process.p6 = cms.Path(process.offlineBeamSpot+process.recopixelvertexing*process.ckftracks)
 #process.p7 = cms.Path(process.trackingParticles*process.cutsTPEffic*process.cutsTPFake*process.multiTrackValidator)
-process.schedule = cms.Schedule(process.p1,process.p2,process.p3,process.p4,process.p5,process.p6,process.p7,process.p,process.outpath)
+process.schedule = cms.Schedule(process.p1,process.p2,process.p5,process.p6,process.p7,process.p,process.outpath)
