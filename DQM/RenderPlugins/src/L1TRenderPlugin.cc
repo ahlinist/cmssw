@@ -413,6 +413,12 @@ void L1TRenderPlugin::preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o )
     return;
   }
 
+  else if(REMATCH("BX_Correlation_*", o.name)) {
+    TAxis* yBX = obj->GetYaxis();
+    yBX->SetTitleOffset(1.1);
+    return;
+  }
+
   return;
 } // preDrawTH2F(...)
 
