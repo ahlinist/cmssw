@@ -56,6 +56,13 @@ class WindowFinder{
 		PixelGeomDetUnit *mInnerDet , *mOuterDet;
 		double mSeparation;
 		double mHalfPixelLength;
+
+		double mInnerDetRadius , mInnerDetPhi;
+
+		double mlastInnerRow , mlastInnerCol;
+
+
+
 };
 
 /*=======================================================================================================================================================*/
