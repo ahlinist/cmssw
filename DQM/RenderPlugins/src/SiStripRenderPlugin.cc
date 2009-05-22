@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.9 $
-  \date $Date: 2008/08/19 12:29:57 $
+  \version $Revision: 1.10 $
+  \date $Date: 2009/05/22 19:05:24 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -24,19 +24,19 @@ public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if (o.name.find( "SiStrip/" ) == std::string::npos)
-	return false;
+        return false;
 
       if( o.name.find( "/EventInfo/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/MechanicalView/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/ReadoutView/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/Tracks/" ) != std::string::npos )
-	return true;
+        return true;
 
       return false;
     }
@@ -47,11 +47,11 @@ public:
 
       if( dynamic_cast<TH2F*>( o.object ) )
       {
-	preDrawTH2F( c, o );
+        preDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	preDrawTH1F( c, o );
+        preDrawTH1F( c, o );
       }
     }
 
@@ -61,11 +61,11 @@ public:
 
       if( dynamic_cast<TH1F*>( o.object ) )
       {
-	postDrawTH1F( c, o );
+        postDrawTH1F( c, o );
       }
       if( dynamic_cast<TH2F*>( o.object ) )
       {
-	postDrawTH2F( c, o );
+        postDrawTH2F( c, o );
       }
     }
 
@@ -95,41 +95,41 @@ private:
 
       if( o.name.find( "PedsEvolution" ) != std::string::npos)
       {
-	gStyle->SetOptStat( 1111 );
-	obj->SetStats( kTRUE );
-	obj->SetOption( "lego2" );
-	return;
+        gStyle->SetOptStat( 1111 );
+        obj->SetStats( kTRUE );
+        obj->SetOption( "lego2" );
+        return;
       }
       if( o.name.find( "CMDistribution " )  != std::string::npos)
       {
-	obj->GetXaxis()->LabelsOption("d");
-	obj->SetOption( "lego2" );
-	return;
+        obj->GetXaxis()->LabelsOption("d");
+        obj->SetOption( "lego2" );
+        return;
       }
       if( o.name.find( "CMSlopeDistribution " )  != std::string::npos)
       {
-	obj->GetXaxis()->LabelsOption("d");
-	obj->SetOption( "lego2" );
-	return;
+        obj->GetXaxis()->LabelsOption("d");
+        obj->SetOption( "lego2" );
+        return;
       }
       if( o.name.find( "PedestalDistribution " )  != std::string::npos)
       {
-	obj->GetXaxis()->LabelsOption("d");
-	obj->SetOption( "lego" );
-	return;
+        obj->GetXaxis()->LabelsOption("d");
+        obj->SetOption( "lego" );
+        return;
       }
       if( o.name.find( "reportSummaryMap" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetOption("colztext");
-	return;
+        obj->SetStats( kFALSE );
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetOption("colztext");
+        return;
       }
       if( o.name.find( "SummaryOfCabling" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	obj->SetOption("text");
-	return;
+        obj->SetStats( kFALSE );
+        obj->SetOption("text");
+        return;
       }
       return;
     }
@@ -148,24 +148,24 @@ private:
       //  }
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	obj->SetMaximum(2.0);
-	obj->SetMinimum(-0.1);
-	return;
+        obj->SetStats( kFALSE );
+        obj->SetMaximum(2.0);
+        obj->SetMinimum(-0.1);
+        return;
       }
       if( o.name.find( "Summary_MeanNumberOfClusters" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	obj->SetMaximum(0.05);
-	obj->SetMinimum(-0.001);
-	return;
+        obj->SetStats( kFALSE );
+        obj->SetMaximum(0.05);
+        obj->SetMinimum(-0.001);
+        return;
       }
       if( o.name.find( "Summary_MeanClusterWidth" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	obj->SetMaximum(20.0);
-	obj->SetMinimum(-1.0);
-	return;
+        obj->SetStats( kFALSE );
+        obj->SetMaximum(20.0);
+        obj->SetMinimum(-1.0);
+        return;
       }
     }
 
@@ -176,21 +176,21 @@ private:
       if (o.flags == 0) return;
       else
       {
-	if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-	{
-	  tt.SetTextColor(2);
-	  tt.DrawTextNDC(0.5, 0.5, "Error");
-	}
-	else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-	{
-	  tt.SetTextColor(5);
-	  tt.DrawTextNDC(0.5, 0.5, "Warning");
-	}
-	else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-	{
-	  tt.SetTextColor(1);
-	  tt.DrawTextNDC(0.5, 0.5, "Other ");
-	}
+        if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+        {
+          tt.SetTextColor(2);
+          tt.DrawTextNDC(0.5, 0.5, "Error");
+        }
+        else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+        {
+          tt.SetTextColor(5);
+          tt.DrawTextNDC(0.5, 0.5, "Warning");
+        }
+        else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+        {
+          tt.SetTextColor(1);
+          tt.DrawTextNDC(0.5, 0.5, "Other ");
+        }
       }
     }
 
@@ -203,15 +203,15 @@ private:
 
       if( name.find( "reportSummaryMap" ) != std::string::npos )
       {
-	c->SetGridx();
-	c->SetGridy();
-	return;
+        c->SetGridx();
+        c->SetGridy();
+        return;
       }
       if( name.find( "SummaryOfCabling" ) != std::string::npos )
       {
-	c->SetGridx();
-	c->SetGridy();
-	return;
+        c->SetGridx();
+        c->SetGridy();
+        return;
       }
     }
 };

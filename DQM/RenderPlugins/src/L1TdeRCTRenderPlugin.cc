@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.11 2009/05/10 15:02:23 asavin Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.12 2009/05/22 19:05:23 lat Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.11 $
-  \date $Date: 2009/05/10 15:02:23 $
+  \version $Revision: 1.12 $
+  \date $Date: 2009/05/22 19:05:23 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -42,145 +42,145 @@ public:
 
       for (Int_t i = 0; i < paletteSize; i++)
       {
-	rgb[3 * i + 0] = 0.0;
-	rgb[3 * i + 1] = 0.8;
-	rgb[3 * i + 2] = 0.0;
+        rgb[3 * i + 0] = 0.0;
+        rgb[3 * i + 1] = 0.8;
+        rgb[3 * i + 2] = 0.0;
 
-	if (i <= 98)
-	{
-	  rgb[3 * i + 0] = 0.5;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 94)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 89)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 0.5;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 84)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 0.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	pEff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
+        if (i <= 98)
+        {
+          rgb[3 * i + 0] = 0.5;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 94)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 89)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 0.5;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 84)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 0.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        pEff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
       }
 
       for (Int_t i = 0; i < paletteSize; i++)
       {
-	rgb[3 * i + 0] = 1.0;
-	rgb[3 * i + 1] = 0.0;
-	rgb[3 * i + 2] = 0.0;
+        rgb[3 * i + 0] = 1.0;
+        rgb[3 * i + 1] = 0.0;
+        rgb[3 * i + 2] = 0.0;
 
-	if (i <= 14)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 0.5;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 9)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 4)
-	{
-	  rgb[3 * i + 0] = 0.5;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i < 1)
-	{
-	  rgb[3 * i + 0] = 0.0;
-	  rgb[3 * i + 1] = 0.8;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	pIneff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
+        if (i <= 14)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 0.5;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 9)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 4)
+        {
+          rgb[3 * i + 0] = 0.5;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i < 1)
+        {
+          rgb[3 * i + 0] = 0.0;
+          rgb[3 * i + 1] = 0.8;
+          rgb[3 * i + 2] = 0.0;
+        }
+        pIneff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
       }
 
       for (Int_t i = 0; i < paletteSize; i++)
       {
-	rgb[3 * i + 0] = 1.0;
-	rgb[3 * i + 1] = 0.0;
-	rgb[3 * i + 2] = 0.0;
+        rgb[3 * i + 0] = 1.0;
+        rgb[3 * i + 1] = 0.0;
+        rgb[3 * i + 2] = 0.0;
 
-	if (i <= 14)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 0.5;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 9)
-	{
-	  rgb[3 * i + 0] = 1.0;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i <= 4)
-	{
-	  rgb[3 * i + 0] = 0.5;
-	  rgb[3 * i + 1] = 1.0;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	if (i < 1)
-	{
-	  rgb[3 * i + 0] = 0.0;
-	  rgb[3 * i + 1] = 0.8;
-	  rgb[3 * i + 2] = 0.0;
-	}
-	pOvereff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
+        if (i <= 14)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 0.5;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 9)
+        {
+          rgb[3 * i + 0] = 1.0;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 4)
+        {
+          rgb[3 * i + 0] = 0.5;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i < 1)
+        {
+          rgb[3 * i + 0] = 0.0;
+          rgb[3 * i + 1] = 0.8;
+          rgb[3 * i + 2] = 0.0;
+        }
+        pOvereff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
       }
 
       dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
       {
-	for(int j=0; j<18; j++)
-	{
-	  dummybox->Fill(i,j);
-	}
+        for(int j=0; j<18; j++)
+        {
+          dummybox->Fill(i,j);
+        }
       }
     }
 
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "L1TdeRCT/IsoEm" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/IsoEm/ServiceData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/NisoEm" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/NisoEm/ServiceData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/EffCurves/NisoEm" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/EffCurves/NisoEm/ServiceData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/RegionData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/RegionData/ServiceData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/BitData" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "L1TdeRCT/BitData/ServiceData" ) != std::string::npos )
-	return true;
+        return true;
 
       return false;
     }
@@ -211,23 +211,23 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	preDrawTProfile2D( c, o );
+        preDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TProfile*>( o.object ) )
       {
-	preDrawTProfile( c, o );
+        preDrawTProfile( c, o );
       }
       else if( dynamic_cast<TH3F*>( o.object ) )
       {
-	preDrawTH3F( c, o );
+        preDrawTH3F( c, o );
       }
       else if( dynamic_cast<TH2F*>( o.object ) )
       {
-	preDrawTH2F( c, o );
+        preDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	preDrawTH1F( c, o );
+        preDrawTH1F( c, o );
       }
       r.drawOptions = "";
     }
@@ -238,19 +238,19 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	postDrawTProfile2D( c, o );
+        postDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TH3F*>( o.object ) )
       {
-	postDrawTH3F( c, o );
+        postDrawTH3F( c, o );
       }
       else if( dynamic_cast<TH2F*>( o.object ) )
       {
-	postDrawTH2F( c, o );
+        postDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	postDrawTH1F( c, o );
+        postDrawTH1F( c, o );
       }
     }
 
@@ -286,430 +286,430 @@ private:
       //--Iso stuff
       if( name.find( "rctIsoEmDataOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmEmulOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmEff1Occ" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmEff2Occ" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmIneffOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmOvereffOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctIsoEmEff1" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctIsoEmEff2" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.0);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.0);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctIsoEmIneff" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctIsoEmOvereff" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       //--Niso stuff
       if( name.find( "rctNisoEmDataOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmEmulOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmEff1Occ" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmEff2Occ" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmIneffOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmOvereffOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctNisoEmEff1" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctNisoEmEff2" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.0);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.0);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctNisoEmIneff" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctNisoEmOvereff" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       //--Regional stuff
       if( name.find( "rctRegDataOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegEmulOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegMatchedOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegUnmatchedDataOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegUnmatchedEmulOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegDeltaEtOcc2D" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctRegEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctRegSpEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.0);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.0);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctRegIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctRegOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       // Eff Curves
       if( name.find( "trigEffThreshOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "trigEffTriggThreshOcc" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "trigEffThresh" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       //--Bit data
       if( name.find( "rctBitEmul" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctBitData" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctBitMatched" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctBitUnmatched" ) != std::string::npos )
       {
-	obj->SetOption("box");
-	return;
+        obj->SetOption("box");
+        return;
       }
 
       if( name.find( "rctBitOverFlowEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitOverFlowIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitOverFlowOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitTauVetoEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitTauVetoIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitTauVetoOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitMipEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitMipIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitMipOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitQuietEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitQuietIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitQuietOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauEff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pEff);
-	obj->SetMinimum(0.005);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pEff);
+        obj->SetMinimum(0.005);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauIneff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pIneff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauOvereff2D" ) != std::string::npos )
       {
-	gStyle->SetPalette(paletteSize, pOvereff);
-	obj->SetMinimum(0.0002);
-	obj->SetMaximum(1.0);
-	obj->SetStats(kFALSE);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(paletteSize, pOvereff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
       }
     }
 
@@ -733,180 +733,180 @@ private:
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
       if( name.find( "rctIsoEmEff1" ) != std::string::npos &&
-	  name.find( "rctIsoEmEff1" ) != name.find( "rctIsoEmEff1Occ" ))
+          name.find( "rctIsoEmEff1" ) != name.find( "rctIsoEmEff1Occ" ))
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctIsoEmEff2" ) != std::string::npos &&
-	  name.find( "rctIsoEmEff2" ) != name.find( "rctIsoEmEff2Occ" ) )
+          name.find( "rctIsoEmEff2" ) != name.find( "rctIsoEmEff2Occ" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctIsoEmIneff" ) != std::string::npos &&
-	  name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneffOcc" ) )
+          name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneffOcc" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctIsoEmOvereff" ) != std::string::npos &&
-	  name.find( "rctIsoEmOvereff" ) != name.find( "rctIsoEmOvereffOcc" ) )
+          name.find( "rctIsoEmOvereff" ) != name.find( "rctIsoEmOvereffOcc" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctNisoEmEff1" ) != std::string::npos &&
-	  name.find( "rctNisoEmEff1" ) != name.find( "rctNisoEmEff1Occ") )
+          name.find( "rctNisoEmEff1" ) != name.find( "rctNisoEmEff1Occ") )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctNisoEmEff2" ) != std::string::npos &&
-	  name.find( "rctNisoEmEff2" ) != name.find( "rctNisoEmEff2Occ" ) )
+          name.find( "rctNisoEmEff2" ) != name.find( "rctNisoEmEff2Occ" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctNisoEmIneff" ) != std::string::npos &&
-	  name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneffOcc" ) )
+          name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneffOcc" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctNisoEmOvereff" ) != std::string::npos &&
-	  name.find( "rctNisoEmOvereff" ) != name.find( "rctNisoEmOvereffOcc" ) )
+          name.find( "rctNisoEmOvereff" ) != name.find( "rctNisoEmOvereffOcc" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctRegEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctRegIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctRegOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctRegSpEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "trigEffThresh" ) != std::string::npos &&
-	  name.find( "trigEffThresh" ) != name.find( "trigEffThreshOcc" ) )
+          name.find( "trigEffThresh" ) != name.find( "trigEffThreshOcc" ) )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitOverFlowEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitOverFlowIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitOverFlowOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitTauVetoEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitTauVetoIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitTauVetoOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitMipEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitMipIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitMipOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitQuietEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitQuietIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitQuietOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauEff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauIneff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
 
       if( name.find( "rctBitHfPlusTauOvereff2D" ) != std::string::npos )
       {
-	dummybox->Draw("box,same");
-	return;
+        dummybox->Draw("box,same");
+        return;
       }
     }
 

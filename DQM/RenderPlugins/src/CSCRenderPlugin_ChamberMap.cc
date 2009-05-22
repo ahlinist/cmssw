@@ -199,7 +199,7 @@ void ChamberMap::draw(TH2*& me) const
       for(int n_ring = 1; n_ring <= N_ring(station); n_ring++)
       {
         for(int n_chamber = 1; n_chamber <= N_chamber(station, n_ring); n_chamber++)
-	{
+        {
           x_min_chamber = Xmin_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
           x_max_chamber = Xmax_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
           y_min_chamber = Ymin_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
@@ -211,29 +211,29 @@ void ChamberMap::draw(TH2*& me) const
           /** VR: if the station/ring is an exceptional one (less chambers) we should
            * correct x coordinates of source. Casts are just to avoid warnings :) */
           if(station > 1 && n_ring == 1)
-	  {
+          {
             BinContent = (float) me->GetBinContent((int) x_max_chamber / 2, (int) y_max_chamber);
           }
-	  else
-	  {
+          else
+          {
             BinContent = (float) me->GetBinContent((int) x_max_chamber, (int) y_max_chamber);
           }
           if(BinContent != 0)
-	  {
+          {
             /** VR: color calculation differs for linear and log10 scales though... */
             if(gPad->GetLogz() == 1)
-	    {
+            {
               fillColor = 51 + (int) ((( log10(BinContent) - log10(HistoMaxValue) + 3 ) / 3 ) * 49.0 );
             }
-	    else
-	    {
+            else
+            {
               fillColor = 51 + (int)(((BinContent - HistoMinValue) / (HistoMaxValue - HistoMinValue)) * 49.0);
             }
             /** VR: just to be sure :) */
             if(fillColor > 100)
-	    { fillColor = 100; }
+            { fillColor = 100; }
             if(fillColor < 51 )
-	    { fillColor = 51;  }
+            { fillColor = 51;  }
           }
 
           b[n_side][station][n_ring][n_chamber] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
@@ -290,7 +290,7 @@ void ChamberMap::drawStats(TH2*& me) const
       for(int n_ring = 1; n_ring <= N_ring(station); n_ring++)
       {
         for(int n_chamber = 1; n_chamber <= N_chamber(station, n_ring); n_chamber++)
-	{
+        {
           x_min_chamber = Xmin_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
           x_max_chamber = Xmax_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
           y_min_chamber = Ymin_local_derived_from_ChamberID(n_side, station, n_ring, n_chamber);
@@ -302,11 +302,11 @@ void ChamberMap::drawStats(TH2*& me) const
           /** VR: if the station/ring is an exceptional one (less chambers) we should
            * correct x coordinates of source. Casts are just to avoid warnings :) */
           if(station > 1 && n_ring == 1)
-	  {
+          {
             BinContent = (float) me->GetBinContent((int) x_max_chamber / 2, (int) y_max_chamber);
           }
-	  else
-	  {
+          else
+          {
             BinContent = (float) me->GetBinContent((int) x_max_chamber, (int) y_max_chamber);
           }
 

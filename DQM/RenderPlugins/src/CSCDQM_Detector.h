@@ -75,33 +75,33 @@ namespace cscdqm
 
     const bool operator== (const Address& a) const
       {
-	if (mask.side    == a.mask.side    && mask.side    == true && side    != a.side)    return false;
-	if (mask.station == a.mask.station && mask.station == true && station != a.station) return false;
-	if (mask.ring    == a.mask.ring    && mask.ring    == true && ring    != a.ring)    return false;
-	if (mask.chamber == a.mask.chamber && mask.chamber == true && chamber != a.chamber) return false;
-	if (mask.layer   == a.mask.layer   && mask.layer   == true && layer   != a.layer)   return false;
-	if (mask.cfeb    == a.mask.cfeb    && mask.cfeb    == true && cfeb    != a.cfeb)    return false;
-	if (mask.hv      == a.mask.hv      && mask.hv      == true && hv      != a.hv)      return false;
-	return true;
+        if (mask.side    == a.mask.side    && mask.side    == true && side    != a.side)    return false;
+        if (mask.station == a.mask.station && mask.station == true && station != a.station) return false;
+        if (mask.ring    == a.mask.ring    && mask.ring    == true && ring    != a.ring)    return false;
+        if (mask.chamber == a.mask.chamber && mask.chamber == true && chamber != a.chamber) return false;
+        if (mask.layer   == a.mask.layer   && mask.layer   == true && layer   != a.layer)   return false;
+        if (mask.cfeb    == a.mask.cfeb    && mask.cfeb    == true && cfeb    != a.cfeb)    return false;
+        if (mask.hv      == a.mask.hv      && mask.hv      == true && hv      != a.hv)      return false;
+        return true;
       }
 
     Address* operator= (const Address& a)
       {
-	mask.side    = a.mask.side;
-	side         = a.side;
-	mask.station = a.mask.station;
-	station      = a.station;
-	mask.ring    = a.mask.ring;
-	ring         = a.ring;
-	mask.chamber = a.mask.chamber;
-	chamber      = a.chamber;
-	mask.layer   = a.mask.layer;
-	layer        = a.layer;
-	mask.cfeb    = a.mask.cfeb;
-	cfeb         = a.cfeb;
-	mask.hv      = a.mask.hv;
-	hv           = a.hv;
-	return this;
+        mask.side    = a.mask.side;
+        side         = a.side;
+        mask.station = a.mask.station;
+        station      = a.station;
+        mask.ring    = a.mask.ring;
+        ring         = a.ring;
+        mask.chamber = a.mask.chamber;
+        chamber      = a.chamber;
+        mask.layer   = a.mask.layer;
+        layer        = a.layer;
+        mask.cfeb    = a.mask.cfeb;
+        cfeb         = a.cfeb;
+        mask.hv      = a.mask.hv;
+        hv           = a.hv;
+        return this;
       }
   };
 

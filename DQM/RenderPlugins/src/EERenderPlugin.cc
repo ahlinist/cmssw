@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.128 2009/05/05 10:04:27 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.129 2009/05/22 19:05:23 lat Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.128 $
-  \date $Date: 2009/05/05 10:04:27 $
+  \version $Revision: 1.129 $
+  \date $Date: 2009/05/22 19:05:23 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -54,35 +54,35 @@ public:
   virtual void initialise( int, char ** )
     {
       float rgb[7][3]   = {{ 1.00,   0.00,   0.00},   { 0.00,   1.00,   0.00},
-			   { 1.00,   0.96,   0.00},   { 0.50,   0.00,   0.00},
-			   { 0.00,   0.40,   0.00},   { 0.94,   0.78,   0.00},
-			   { 1.00,   1.00,   1.00}};
+                           { 1.00,   0.96,   0.00},   { 0.50,   0.00,   0.00},
+                           { 0.00,   0.40,   0.00},   { 0.94,   0.78,   0.00},
+                           { 1.00,   1.00,   1.00}};
 
       float rgb2[10][3] = {{ 0.0000, 0.6510, 1.0000}, { 0.0000, 0.6135, 0.9455},
-			   { 0.0000, 0.5760, 0.8911}, { 0.0000, 0.5386, 0.8366},
-			   { 0.0000, 0.5011, 0.7821}, { 0.0000, 0.4636, 0.7277},
-			   { 0.0000, 0.4261, 0.6732}, { 0.0000, 0.3887, 0.6187},
-			   { 0.0000, 0.3512, 0.5643}, { 0.0000, 0.3137, 0.5098}};
+                           { 0.0000, 0.5760, 0.8911}, { 0.0000, 0.5386, 0.8366},
+                           { 0.0000, 0.5011, 0.7821}, { 0.0000, 0.4636, 0.7277},
+                           { 0.0000, 0.4261, 0.6732}, { 0.0000, 0.3887, 0.6187},
+                           { 0.0000, 0.3512, 0.5643}, { 0.0000, 0.3137, 0.5098}};
 
       for( int i=0; i<6; i++ )
       {
-	TColor* color = gROOT->GetColor( 301+i );
-	if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
-	color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
+        TColor* color = gROOT->GetColor( 301+i );
+        if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
+        color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       }
 
       for( int i=0; i<10; i++ )
       {
-	TColor* color = gROOT->GetColor( 401+i );
-	if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
-	color->SetRGB( rgb2[i][0], rgb2[i][1], rgb2[i][2] );
+        TColor* color = gROOT->GetColor( 401+i );
+        if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
+        color->SetRGB( rgb2[i][0], rgb2[i][1], rgb2[i][2] );
       }
 
       for( int i=0; i<10; i++ )
       {
-	TColor* color = gROOT->GetColor( 501+i );
-	if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
-	color->SetRGB( rgb2[i][1], 0, 0 );
+        TColor* color = gROOT->GetColor( 501+i );
+        if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
+        color->SetRGB( rgb2[i][1], 0, 0 );
       }
 
       for( short i=0; i<7; i++ ) pCol3[i]  = i+301;
@@ -128,28 +128,28 @@ public:
 
       for ( short j=0; j<400; j++ )
       {
-	int x = 5*(1 + j%20);
-	int y = 5*(1 + j/20);
-	text1->SetBinContent(x, y, inTowersEE[j]);
+        int x = 5*(1 + j%20);
+        int y = 5*(1 + j/20);
+        text1->SetBinContent(x, y, inTowersEE[j]);
       }
 
       for ( short i=1; i<=10; i++)
       {
-	for ( int j=1; j<=10; j++)
-	{
-	  text6->SetBinContent(i, j, -10);
-	  text7->SetBinContent(i, j, -10);
-	  text8->SetBinContent(i, j, -10);
-	  text9->SetBinContent(i, j, -10);
-	  text12->SetBinContent(i, j, -10);
-	  text13->SetBinContent(i, j, -10);
-	}
+        for ( int j=1; j<=10; j++)
+        {
+          text6->SetBinContent(i, j, -10);
+          text7->SetBinContent(i, j, -10);
+          text8->SetBinContent(i, j, -10);
+          text9->SetBinContent(i, j, -10);
+          text12->SetBinContent(i, j, -10);
+          text13->SetBinContent(i, j, -10);
+        }
       }
 
       for( short i=0; i<2; i++ )
       {
-	text3->Fill( 2+i*5, 2, i+1+68 );
-	text4->Fill( i, 0., i+1+68 );
+        text3->Fill( 2+i*5, 2, i+1+68 );
+        text4->Fill( i, 0., i+1+68 );
       }
 
       text6->SetBinContent(2, 5, -3);
@@ -268,22 +268,22 @@ public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "EcalEndcap/EE" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "EcalEndcap/EcalInfo" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "EcalEndcap/EventInfo" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "EcalEndcap/Run summary/EE" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "EcalEndcap/Run summary/EcalInfo" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "EcalEndcap/Run summary/EventInfo" ) != std::string::npos )
-	return true;
+        return true;
 
       return false;
     }
@@ -315,23 +315,23 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	preDrawTProfile2D( c, o );
+        preDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TProfile*>( o.object ) )
       {
-	preDrawTProfile( c, o );
+        preDrawTProfile( c, o );
       }
       else if( dynamic_cast<TH3F*>( o.object ) )
       {
-	preDrawTH3F( c, o );
+        preDrawTH3F( c, o );
       }
       else if( dynamic_cast<TH2F*>( o.object ) )
       {
-	preDrawTH2F( c, o );
+        preDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	preDrawTH1F( c, o );
+        preDrawTH1F( c, o );
       }
       r.drawOptions = "";
     }
@@ -342,19 +342,19 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	postDrawTProfile2D( c, o );
+        postDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TH3F*>( o.object ) )
       {
-	postDrawTH3F( c, o );
+        postDrawTH3F( c, o );
       }
       else if( dynamic_cast<TH2F*>( o.object ) )
       {
-	postDrawTH2F( c, o );
+        postDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	postDrawTH1F( c, o );
+        postDrawTH1F( c, o );
       }
     }
 
@@ -377,74 +377,74 @@ private:
 
       if( name.find( "EELT shape" ) != std::string::npos )
       {
-	c->SetTheta(+30.);
-	c->SetPhi(-60.);
-	obj->GetXaxis()->SetTitleOffset(2.5);
-	obj->GetYaxis()->SetTitleOffset(3.0);
-	obj->GetZaxis()->SetTitleOffset(1.3);
-	obj->SetOption("lego");
-	return;
+        c->SetTheta(+30.);
+        c->SetPhi(-60.);
+        obj->GetXaxis()->SetTitleOffset(2.5);
+        obj->GetYaxis()->SetTitleOffset(3.0);
+        obj->GetZaxis()->SetTitleOffset(1.3);
+        obj->SetOption("lego");
+        return;
       }
 
       if( name.find( "EELDT shape" ) != std::string::npos )
       {
-	c->SetTheta(+30.);
-	c->SetPhi(-60.);
-	obj->GetXaxis()->SetTitleOffset(2.5);
-	obj->GetYaxis()->SetTitleOffset(3.0);
-	obj->GetZaxis()->SetTitleOffset(1.3);
-	obj->SetOption("lego");
-	return;
+        c->SetTheta(+30.);
+        c->SetPhi(-60.);
+        obj->GetXaxis()->SetTitleOffset(2.5);
+        obj->GetYaxis()->SetTitleOffset(3.0);
+        obj->GetZaxis()->SetTitleOffset(1.3);
+        obj->SetOption("lego");
+        return;
       }
 
       if( name.find( "EETPT shape" ) != std::string::npos )
       {
-	c->SetTheta(+30.);
-	c->SetPhi(-60.);
-	obj->GetXaxis()->SetTitleOffset(2.5);
-	obj->GetYaxis()->SetTitleOffset(3.0);
-	obj->GetZaxis()->SetTitleOffset(1.3);
-	obj->SetOption("lego");
-	return;
+        c->SetTheta(+30.);
+        c->SetPhi(-60.);
+        obj->GetXaxis()->SetTitleOffset(2.5);
+        obj->GetYaxis()->SetTitleOffset(3.0);
+        obj->GetZaxis()->SetTitleOffset(1.3);
+        obj->SetOption("lego");
+        return;
       }
 
       if( name.find( "EECLT" ) != std::string::npos )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10, kFALSE);
-	obj->GetYaxis()->SetNdivisions(10, kFALSE);
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10, kFALSE);
+        obj->GetYaxis()->SetNdivisions(10, kFALSE);
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( nbx == 50 && nby == 50 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 100 && nby == 100 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 20 && nby == 20 &&
-	  name.find( "EESRT" ) != std::string::npos )
+          name.find( "EESRT" ) != std::string::npos )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       obj->SetMinimum(0.0);
@@ -468,26 +468,26 @@ private:
 
       if( name.find( "EEMM digi number profile" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EEMM hit number profile" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EEMM TP digi number profile" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EESRT DCC event size" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
     }
 
@@ -522,283 +522,283 @@ private:
       gPad->SetLogy(kFALSE);
 
       if( name.find( "EESRT" ) != std::string::npos ||
-	  name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos )
+          name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	if( name.find( "EESRT event size vs DCC" ) != std::string::npos )
-	{
-	  gPad->SetLogy(kTRUE);
-	  gPad->SetBottomMargin(0.2);
-	  obj->GetXaxis()->SetNdivisions(18, kFALSE);
-	  obj->GetYaxis()->SetNdivisions(2, kFALSE);
-	  obj->GetXaxis()->LabelsOption("v");
-	  obj->GetYaxis()->SetRangeUser(0.1, 0.608*132);
-	}
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(1);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        gPad->SetGridx();
+        gPad->SetGridy();
+        if( name.find( "EESRT event size vs DCC" ) != std::string::npos )
+        {
+          gPad->SetLogy(kTRUE);
+          gPad->SetBottomMargin(0.2);
+          obj->GetXaxis()->SetNdivisions(18, kFALSE);
+          obj->GetYaxis()->SetNdivisions(2, kFALSE);
+          obj->GetXaxis()->LabelsOption("v");
+          obj->GetYaxis()->SetRangeUser(0.1, 0.608*132);
+        }
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EECLT" ) != std::string::npos )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10, kFALSE);
-	obj->GetYaxis()->SetNdivisions(10, kFALSE);
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10, kFALSE);
+        obj->GetYaxis()->SetNdivisions(10, kFALSE);
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EETMT timing vs amplitude" ) != std::string::npos )
       {
-	if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	return;
+        if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        return;
       }
 
       if( nbx == 50 && nby == 50 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 20 && nby == 20 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(20);
-	obj->GetYaxis()->SetNdivisions(20);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(20);
+        obj->GetYaxis()->SetNdivisions(20);
       }
 
       if( nbx == 20 && nby == 20 &&
-	  name.find( "EESRT" ) != std::string::npos )
+          name.find( "EESRT" ) != std::string::npos )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 10 && ( nby == 1 || nby == 5 ) )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(1);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(1);
       }
 
       if( nbx == 2 && nby == 1 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(2);
-	obj->GetYaxis()->SetNdivisions(1);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(2);
+        obj->GetYaxis()->SetNdivisions(1);
       }
 
       if( nbx == 100 && nby == 100 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(10);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 90 && nby == 20 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(18);
-	obj->GetYaxis()->SetNdivisions(2);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(18);
+        obj->GetYaxis()->SetNdivisions(2);
       }
 
       if( nbx == 40 && nby == 20 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(20);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(20);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( nbx == 200 && nby == 100 )
       {
-	gPad->SetGridx();
-	gPad->SetGridy();
-	obj->GetXaxis()->SetNdivisions(20);
-	obj->GetYaxis()->SetNdivisions(10);
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(20);
+        obj->GetYaxis()->SetNdivisions(10);
       }
 
       if( name.find( "reportSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetTitle("EcalEndcap Report Summary Map");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetTitle("EcalEndcap Report Summary Map");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "DAQSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetTitle("EcalEndcap DAQ Summary Map");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetTitle("EcalEndcap DAQ Summary Map");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "DCSSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetTitle("EcalEndcap DCS Summary Map");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetTitle("EcalEndcap DCS Summary Map");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "CertificationSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetTitle("EcalEndcap Data Certification Summary Map");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetTitle("EcalEndcap Data Certification Summary Map");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EEIT" ) != std::string::npos &&
-	  name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) ==std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol5);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol5);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EETTT" ) != std::string::npos &&
-	  name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) ==std::string::npos )
       {
-	if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
-	{
-	  obj->SetMinimum(-1.0);
-	  obj->SetMaximum(6.0);
-	}
-	else
-	{
-	  obj->SetMinimum(0.0);
-	}
+        if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
+        {
+          obj->SetMinimum(-1.0);
+          obj->SetMaximum(6.0);
+        }
+        else
+        {
+          obj->SetMinimum(0.0);
+        }
 
-	if( name.find( "Error" ) ==std::string::npos )
-	{
-	  if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
-	  {
-	    gStyle->SetPalette(7, pCol6);
-	  }
-	  else
-	  {
-	    gStyle->SetPalette(10, pCol4);
-	  }
-	}
-	else
-	{
-	  gStyle->SetPalette(10, pCol5);
-	}
+        if( name.find( "Error" ) ==std::string::npos )
+        {
+          if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
+          {
+            gStyle->SetPalette(7, pCol6);
+          }
+          else
+          {
+            gStyle->SetPalette(10, pCol4);
+          }
+        }
+        else
+        {
+          gStyle->SetPalette(10, pCol5);
+        }
 
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "G12 RMS map" ) != std::string::npos )
       {
-	obj->SetMinimum(1.0);
-	obj->SetMaximum(4.0);
-	gStyle->SetPalette(1);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(1.0);
+        obj->SetMaximum(4.0);
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EEOT" ) != std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EESFT" ) != std::string::npos &&
-	  name.find( "summary" ) ==std::string::npos )
+          name.find( "summary" ) ==std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol5);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol5);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EESRT" ) != std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EECT" ) != std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "summary" ) != std::string::npos &&
-	  name.find( "Trigger Primitives Timing" ) == std::string::npos )
+          name.find( "Trigger Primitives Timing" ) == std::string::npos )
       {
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(7.0);
-	gStyle->SetPalette(7, pCol3);
-	obj->SetOption("col");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(7.0);
+        gStyle->SetPalette(7, pCol3);
+        obj->SetOption("col");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "quality" ) != std::string::npos )
       {
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(7.0);
-	gStyle->SetPalette(7, pCol3);
-	obj->SetOption("col");
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(7.0);
+        gStyle->SetPalette(7, pCol3);
+        obj->SetOption("col");
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EEMM event" ) != std::string::npos )
       {
-	obj->SetMinimum(0.0);
-	gStyle->SetPalette(10, pCol4);
-	obj->SetOption("colz");
-	gPad->SetRightMargin(0.15);
-	gStyle->SetPaintTextFormat("+g");
-	return;
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
     }
 
@@ -823,56 +823,56 @@ private:
 
       if( name.find( "EVTTYPE" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.4);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.4);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EEMM DCC" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EEIT DCC" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "front-end status bits" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.25);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.25);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EERDT" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EERDT event type" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.4);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.4);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "front-end status errors summary" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "quality errors summary" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
 
       if( name.find( "EEOT digi occupancy summary 1D" ) != std::string::npos )
       {
-	gPad->SetBottomMargin(0.2);
-	obj->GetXaxis()->LabelsOption("v");
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
       }
     }
 
@@ -885,17 +885,17 @@ private:
 
       if( name.find( "EELT shape" ) != std::string::npos )
       {
-	return;
+        return;
       }
 
       if( name.find( "EELDT shape" ) != std::string::npos )
       {
-	return;
+        return;
       }
 
       if( name.find( "EETPT shape" ) != std::string::npos )
       {
-	return;
+        return;
       }
 
       int nbx = obj->GetNbinsX();
@@ -906,131 +906,131 @@ private:
       l.SetLineWidth(1);
       for ( int i=0; i<201; i=i+1)
       {
-	if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) )
-	{
-	  if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 )
-	  {
-	    l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-	  }
-	  else if( name.find( "EECLT" ) != std::string::npos &&
+        if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) )
+        {
+          if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 )
+          {
+            l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+          }
+          else if( name.find( "EECLT" ) != std::string::npos &&
                    name.find( "seed" ) == std::string::npos )
-	  {
-	    l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
-	  }
-	  else if ( name.find( "EECLT SC energy vs seed crystal energy" ) == std::string::npos )
-	  {
-	    l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
-	  }
-	}
+          {
+            l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
+          }
+          else if ( name.find( "EECLT SC energy vs seed crystal energy" ) == std::string::npos )
+          {
+            l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
+          }
+        }
       }
 
       if( name.find( "EECLT" ) != std::string::npos &&
-	  name.find( "seed" ) == std::string::npos )
+          name.find( "seed" ) == std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text8->GetXaxis()->SetRange(x1, x2);
-	  text8->GetYaxis()->SetRange(y1, y2);
-	  text8->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text8->GetXaxis()->SetRange(x1, x2);
+          text8->GetYaxis()->SetRange(y1, y2);
+          text8->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text9->GetXaxis()->SetRange(x1, x2);
-	  text9->GetYaxis()->SetRange(y1, y2);
-	  text9->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text9->GetXaxis()->SetRange(x1, x2);
+          text9->GetYaxis()->SetRange(y1, y2);
+          text9->Draw("text,same");
+        }
+        return;
       }
 
       if ( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos )
-	return;
+        return;
 
       if( name.find( "seed" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EESRT") != std::string::npos )
       {
-	if( nbx == 100 && nby == 100 )
-	{
-	  if( name.find( "EE -" ) != std::string::npos )
-	  {
-	    int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text6->GetXaxis()->SetRange(x1, x2);
-	    text6->GetYaxis()->SetRange(y1, y2);
-	    text6->Draw("text,same");
-	  }
+        if( nbx == 100 && nby == 100 )
+        {
+          if( name.find( "EE -" ) != std::string::npos )
+          {
+            int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text6->GetXaxis()->SetRange(x1, x2);
+            text6->GetYaxis()->SetRange(y1, y2);
+            text6->Draw("text,same");
+          }
 
-	  if( name.find( "EE +" ) != std::string::npos )
-	  {
-	    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text7->GetXaxis()->SetRange(x1, x2);
-	    text7->GetYaxis()->SetRange(y1, y2);
-	    text7->Draw("text,same");
-	  }
-	}
-	else if( nbx == 20 && nby == 20 )
-	{
-	  if( name.find( "EE -" ) != std::string::npos )
-	  {
-	    int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text12->GetXaxis()->SetRange(x1, x2);
-	    text12->GetYaxis()->SetRange(y1, y2);
-	    text12->Draw("text,same");
-	  }
+          if( name.find( "EE +" ) != std::string::npos )
+          {
+            int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text7->GetXaxis()->SetRange(x1, x2);
+            text7->GetYaxis()->SetRange(y1, y2);
+            text7->Draw("text,same");
+          }
+        }
+        else if( nbx == 20 && nby == 20 )
+        {
+          if( name.find( "EE -" ) != std::string::npos )
+          {
+            int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text12->GetXaxis()->SetRange(x1, x2);
+            text12->GetYaxis()->SetRange(y1, y2);
+            text12->Draw("text,same");
+          }
 
-	  if( name.find( "EE +" ) != std::string::npos )
-	  {
-	    int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text13->GetXaxis()->SetRange(x1, x2);
-	    text13->GetYaxis()->SetRange(y1, y2);
-	    text13->Draw("text,same");
-	  }
-	}
-	return;
+          if( name.find( "EE +" ) != std::string::npos )
+          {
+            int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text13->GetXaxis()->SetRange(x1, x2);
+            text13->GetYaxis()->SetRange(y1, y2);
+            text13->Draw("text,same");
+          }
+        }
+        return;
       }
 
       int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
@@ -1054,10 +1054,10 @@ private:
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
       if( name.find( "EETTT Et map" ) != std::string::npos )
-	return;
+        return;
 
       if( name.find( "EETMT timing vs amplitude" ) != std::string::npos )
-	return;
+        return;
 
       int nbx = obj->GetNbinsX();
       int nby = obj->GetNbinsY();
@@ -1067,438 +1067,438 @@ private:
       l.SetLineWidth(1);
       for ( int i=0; i<201; i=i+1)
       {
-	if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) )
-	{
-	  if( name.find( "reportSummaryMap") != std::string::npos && nbx == 40 && nby == 20 )
-	  {
-	    l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-	    l.DrawLine(20+0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 20+0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-	  }
-	  else if( (name.find( "reportSummaryMap") != std::string::npos && nbx == 200 && nby == 100) ||
+        if ( (ixSectorsEE[i]!=0 || iySectorsEE[i]!=0) && (ixSectorsEE[i+1]!=0 || iySectorsEE[i+1]!=0) )
+        {
+          if( name.find( "reportSummaryMap") != std::string::npos && nbx == 40 && nby == 20 )
+          {
+            l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+            l.DrawLine(20+0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 20+0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+          }
+          else if( (name.find( "reportSummaryMap") != std::string::npos && nbx == 200 && nby == 100) ||
                    name.find( "DAQSummaryMap") != std::string::npos ||
                    name.find( "DCSSummaryMap") != std::string::npos ||
                    name.find( "CertificationSummaryMap") != std::string::npos )
-	  {
-	    l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
-	    l.DrawLine(100+ixSectorsEE[i], iySectorsEE[i], 100+ixSectorsEE[i+1], iySectorsEE[i+1]);
-	  }
-	  else if( name.find( "EECLT" ) != std::string::npos &&
+          {
+            l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
+            l.DrawLine(100+ixSectorsEE[i], iySectorsEE[i], 100+ixSectorsEE[i+1], iySectorsEE[i+1]);
+          }
+          else if( name.find( "EECLT" ) != std::string::npos &&
                    name.find( "seed" ) == std::string::npos )
-	  {
-	    l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
-	  }
-	  else if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 )
-	  {
-	    l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
-	  }
-	  else if( name.find( " PN " ) == std::string::npos &&
+          {
+            l.DrawLine(3.0*(ixSectorsEE[i]-50), 3.0*(iySectorsEE[i]-50), 3.0*(ixSectorsEE[i+1]-50), 3.0*(iySectorsEE[i+1]-50));
+          }
+          else if( name.find( "EESRT" ) != std::string::npos && nbx == 20 && nby == 20 )
+          {
+            l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
+          }
+          else if( name.find( " PN " ) == std::string::npos &&
                    name.find( "EESRT event size vs DCC" ) == std::string::npos )
-	  {
-	    l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
-	  }
-	}
+          {
+            l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
+          }
+        }
       }
 
       if( name.find( "EECLT" ) != std::string::npos &&
-	  name.find( "seed" ) == std::string::npos )
+          name.find( "seed" ) == std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text8->GetXaxis()->SetRange(x1, x2);
-	  text8->GetYaxis()->SetRange(y1, y2);
-	  text8->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text8->GetXaxis()->SetRange(x1, x2);
+          text8->GetYaxis()->SetRange(y1, y2);
+          text8->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text9->GetXaxis()->SetRange(x1, x2);
-	  text9->GetYaxis()->SetRange(y1, y2);
-	  text9->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text9->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text9->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text9->GetXaxis()->SetRange(x1, x2);
+          text9->GetYaxis()->SetRange(y1, y2);
+          text9->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "seed" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT MEM" ) != std::string::npos )
       {
-	int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text3->GetXaxis()->SetRange(x1, x2);
-	text3->GetYaxis()->SetRange(y1, y2);
-	text3->Draw("text,same");
-	return;
+        int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text3->GetXaxis()->SetRange(x1, x2);
+        text3->GetYaxis()->SetRange(y1, y2);
+        text3->Draw("text,same");
+        return;
       }
 
       if( name.find( "EEOT digi" ) != std::string::npos )
       {
-	if( nbx == 50 && nby == 50 )
-	{
-	  int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text1->GetXaxis()->SetRange(x1, x2);
-	  text1->GetYaxis()->SetRange(y1, y2);
-	  text1->Draw("text,same");
-	  return;
-	}
+        if( nbx == 50 && nby == 50 )
+        {
+          int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text1->GetXaxis()->SetRange(x1, x2);
+          text1->GetYaxis()->SetRange(y1, y2);
+          text1->Draw("text,same");
+          return;
+        }
 
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT rec hit" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT TP digi" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT test pulse digi" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT laser digi" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT led digi" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EEOT pedestal digi" ) != std::string::npos ||
-	  name.find( "G12 RMS map" ) != std::string::npos )
+          name.find( "G12 RMS map" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
 
       if( name.find( "EESRT") != std::string::npos )
       {
-	if( nbx == 100 && nby == 100 )
-	{
-	  if( name.find( "EE -" ) != std::string::npos )
-	  {
-	    int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text6->GetXaxis()->SetRange(x1, x2);
-	    text6->GetYaxis()->SetRange(y1, y2);
-	    text6->Draw("text,same");
-	  }
+        if( nbx == 100 && nby == 100 )
+        {
+          if( name.find( "EE -" ) != std::string::npos )
+          {
+            int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text6->GetXaxis()->SetRange(x1, x2);
+            text6->GetYaxis()->SetRange(y1, y2);
+            text6->Draw("text,same");
+          }
 
-	  if( name.find( "EE +" ) != std::string::npos )
-	  {
-	    int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text7->GetXaxis()->SetRange(x1, x2);
-	    text7->GetYaxis()->SetRange(y1, y2);
-	    text7->Draw("text,same");
-	  }
-	}
-	else if( nbx == 20 && nby == 20 )
-	{
-	  if( name.find( "EE -" ) != std::string::npos )
-	  {
-	    int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text12->GetXaxis()->SetRange(x1, x2);
-	    text12->GetYaxis()->SetRange(y1, y2);
-	    text12->Draw("text,same");
-	  }
+          if( name.find( "EE +" ) != std::string::npos )
+          {
+            int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text7->GetXaxis()->SetRange(x1, x2);
+            text7->GetYaxis()->SetRange(y1, y2);
+            text7->Draw("text,same");
+          }
+        }
+        else if( nbx == 20 && nby == 20 )
+        {
+          if( name.find( "EE -" ) != std::string::npos )
+          {
+            int x1 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text12->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text12->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text12->GetXaxis()->SetRange(x1, x2);
+            text12->GetYaxis()->SetRange(y1, y2);
+            text12->Draw("text,same");
+          }
 
-	  if( name.find( "EE +" ) != std::string::npos )
-	  {
-	    int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	    int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	    int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	    int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	    text13->GetXaxis()->SetRange(x1, x2);
-	    text13->GetYaxis()->SetRange(y1, y2);
-	    text13->Draw("text,same");
-	  }
-	}
-	return;
+          if( name.find( "EE +" ) != std::string::npos )
+          {
+            int x1 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text13->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text13->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text13->GetXaxis()->SetRange(x1, x2);
+            text13->GetYaxis()->SetRange(y1, y2);
+            text13->Draw("text,same");
+          }
+        }
+        return;
       }
 
       if( name.find( "reportSummaryMap" ) != std::string::npos && nbx == 40 && nby == 20 )
       {
-	int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text10->GetXaxis()->SetRange(x1, x2);
-	text10->GetYaxis()->SetRange(y1, y2);
-	text10->Draw("text,same");
-	return;
+        int x1 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text10->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text10->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text10->GetXaxis()->SetRange(x1, x2);
+        text10->GetYaxis()->SetRange(y1, y2);
+        text10->Draw("text,same");
+        return;
       }
 
       if( (name.find( "reportSummaryMap" ) != std::string::npos && nbx == 200 && nby == 100) ||
-	  name.find( "DAQSummaryMap" ) != std::string::npos ||
-	  name.find( "DCSSummaryMap" ) != std::string::npos ||
-	  name.find( "CertificationSummaryMap" ) != std::string::npos )
+          name.find( "DAQSummaryMap" ) != std::string::npos ||
+          name.find( "DCSSummaryMap" ) != std::string::npos ||
+          name.find( "CertificationSummaryMap" ) != std::string::npos )
       {
-	int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text11->GetXaxis()->SetRange(x1, x2);
-	text11->GetYaxis()->SetRange(y1, y2);
-	text11->Draw("text,same");
-	return;
+        int x1 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text11->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text11->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text11->GetXaxis()->SetRange(x1, x2);
+        text11->GetYaxis()->SetRange(y1, y2);
+        text11->Draw("text,same");
+        return;
       }
 
       if( nbx == 50 && nby == 50 )
       {
-	int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text1->GetXaxis()->SetRange(x1, x2);
-	text1->GetYaxis()->SetRange(y1, y2);
-	text1->Draw("text,same");
-	return;
+        int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text1->GetXaxis()->SetRange(x1, x2);
+        text1->GetYaxis()->SetRange(y1, y2);
+        text1->Draw("text,same");
+        return;
       }
 
       if( nbx == 10 && ( nby == 1 || nby == 5 ) )
       {
-	int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text3->GetXaxis()->SetRange(x1, x2);
-	text3->GetYaxis()->SetRange(y1, y2);
-	text3->Draw("text,same");
-	return;
+        int x1 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text3->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text3->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text3->GetXaxis()->SetRange(x1, x2);
+        text3->GetYaxis()->SetRange(y1, y2);
+        text3->Draw("text,same");
+        return;
       }
 
       if( nbx == 2 && nby == 1 )
       {
-	int x1 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	int x2 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	int y1 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	int y2 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	text4->GetXaxis()->SetRange(x1, x2);
-	text4->GetYaxis()->SetRange(y1, y2);
-	text4->Draw("text,same");
-	return;
+        int x1 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text4->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text4->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text4->GetXaxis()->SetRange(x1, x2);
+        text4->GetYaxis()->SetRange(y1, y2);
+        text4->Draw("text,same");
+        return;
       }
 
       if( name.find( "summary" ) != std::string::npos )
       {
-	if( name.find( "EE -" ) != std::string::npos )
-	{
-	  int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text6->GetXaxis()->SetRange(x1, x2);
-	  text6->GetYaxis()->SetRange(y1, y2);
-	  text6->Draw("text,same");
-	}
+        if( name.find( "EE -" ) != std::string::npos )
+        {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+        }
 
-	if( name.find( "EE +" ) != std::string::npos )
-	{
-	  int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-	  int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-	  int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-	  int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-	  text7->GetXaxis()->SetRange(x1, x2);
-	  text7->GetYaxis()->SetRange(y1, y2);
-	  text7->Draw("text,same");
-	}
-	return;
+        if( name.find( "EE +" ) != std::string::npos )
+        {
+          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text7->GetXaxis()->SetRange(x1, x2);
+          text7->GetYaxis()->SetRange(y1, y2);
+          text7->Draw("text,same");
+        }
+        return;
       }
     }
 

@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.15 $
-  \date $Date: 2009/04/29 17:18:04 $
+  \version $Revision: 1.16 $
+  \date $Date: 2009/05/22 19:05:23 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -448,35 +448,35 @@ private:
   void postDrawTH1( TCanvas *, const DQMNet::CoreObject & )
     {
       /*
-      	// Add error/warning text to 1-D histograms.  Do we want this at this time?
-      	TText tt;
-      	tt.SetTextSize(0.12);
+        // Add error/warning text to 1-D histograms.  Do we want this at this time?
+        TText tt;
+        tt.SetTextSize(0.12);
 
-      	if (o.flags == 0)
-	  return;
-      	else
-      	{
-      	  if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-      	  {
-      		  tt.SetTextColor(2); // error color = RED
-      		  tt.DrawTextNDC(0.5, 0.5, "Error");
-      	  } // DQM_FLAG_REPORT_ERROR
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-      	  {
-      		  tt.SetTextColor(5);
-      		  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-      	  } // DQM_FLAG_REPORT_WARNING
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-      	  {
-      		  tt.SetTextColor(1); // other color = BLACK
-      		  tt.DrawTextNDC(0.5, 0.5, "Other ");
-      	  } // DQM_FLAG_REPORT_OTHER
-      	  else
-      	  {
-      		  tt.SetTextColor(3);
-      		  tt.DrawTextNDC(0.5, 0.5, "Ok ");
-      	  } //else
-      	} // else (  o.flags != 0  )
+        if (o.flags == 0)
+          return;
+        else
+        {
+          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          {
+                  tt.SetTextColor(2); // error color = RED
+                  tt.DrawTextNDC(0.5, 0.5, "Error");
+          } // DQM_FLAG_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          {
+                  tt.SetTextColor(5);
+                  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
+          } // DQM_FLAG_REPORT_WARNING
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          {
+                  tt.SetTextColor(1); // other color = BLACK
+                  tt.DrawTextNDC(0.5, 0.5, "Other ");
+          } // DQM_FLAG_REPORT_OTHER
+          else
+          {
+                  tt.SetTextColor(3);
+                  tt.DrawTextNDC(0.5, 0.5, "Ok ");
+          } //else
+        } // else (  o.flags != 0  )
       */
     }
 
@@ -502,7 +502,7 @@ private:
         TText t;
         t.SetTextSize( 0.1);
         if (obj->GetEntries() == 0)
-	{
+        {
           t.DrawText(1, 1, "Empty == OK"); }
         //else {
         //  char yop[20];
@@ -516,9 +516,9 @@ private:
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<24; i++)
-	{   // x-axis:24 channels
+        {   // x-axis:24 channels
           for (int j=0; j<15; j++)
-	  { // y-axis:15 spigots
+          { // y-axis:15 spigots
             line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*CHNS_Y0),
                           ((i+1) *  FEDS_X0), MARGIN+(j*CHNS_Y0)    );
             line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*CHNS_Y0)+2,
@@ -562,9 +562,9 @@ private:
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<32; i++)
-	{    // x-axis:32 DCC's (FEDs 700:731)
+        {    // x-axis:32 DCC's (FEDs 700:731)
           for (int j=0; j<15; j++)
-	  {  // y-axis:15 spigots
+          {  // y-axis:15 spigots
             line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*SPIG_Y0),
                           ((i+1) *  FEDS_X0), MARGIN+(j*SPIG_Y0)    );
             line.DrawLine(MARGIN+(i*FEDS_X0), MARGIN+(j*SPIG_Y0)+3,
@@ -588,7 +588,7 @@ private:
         TText tx;
         tx.SetTextSize( 0.02);
         if (o.name.find("Channel") != std::string::npos )
-	{
+        {
           tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-2  , "AOK");
           tx.DrawText((FEDS_X0*30)-8, (SPIG_Y0*17)-3.5, "DigiSize");
           tx.DrawText((FEDS_X0*30)-9, (SPIG_Y0*17)-5  , "WdCntErr");
@@ -597,7 +597,7 @@ private:
           tx.DrawText((FEDS_X0*30)+4 , (SPIG_Y0*17)-3.5, "CapRotat");
           tx.DrawText((FEDS_X0*30)+4 , (SPIG_Y0*17)-5  , "SizeDecl");}
         if (o.name.find("Half-HTR") != std::string::npos )
-	{
+        {
           tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-2  , "EvN");
           tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-3.5, "BcN");
           tx.DrawText((FEDS_X0*30)-5, (SPIG_Y0*17)-5  , "OrN");
@@ -639,7 +639,7 @@ private:
           TText t;
           t.DrawText(1,1,"No News is Good News."); }
         else
-	{
+        {
           gPad->SetGridx();
           gPad->SetGridy();
         }

@@ -74,11 +74,11 @@ private:
 
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
       /*
-      	gStyle->SetOptStat(0111);
-      	if ( obj->GetMaximum(1.e5) > 0. )
-      	  gPad->SetLogy(1);
-      	else
-      	  gPad->SetLogy(0);
+        gStyle->SetOptStat(0111);
+        if ( obj->GetMaximum(1.e5) > 0. )
+          gPad->SetLogy(1);
+        else
+          gPad->SetLogy(0);
       */
     }
 
@@ -132,35 +132,35 @@ private:
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
     {
       /*
-      	// Add error/warning text to 1-D histograms.  Do we want this at this time?
-      	TText tt;
-      	tt.SetTextSize(0.12);
+        // Add error/warning text to 1-D histograms.  Do we want this at this time?
+        TText tt;
+        tt.SetTextSize(0.12);
 
-      	if (o.flags == 0)
-      		return;
-      	else
-      	{
-      	  if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-      	  {
-      		  tt.SetTextColor(2); // error color = RED
-      		  tt.DrawTextNDC(0.5, 0.5, "Error");
-      	  } // DQM_FLAG_REPORT_ERROR
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-      	  {
-      		  tt.SetTextColor(5);
-      		  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-      	  } // DQM_FLAG_REPORT_WARNING
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-      	  {
-      		  tt.SetTextColor(1); // other color = BLACK
-      		  tt.DrawTextNDC(0.5, 0.5, "Other ");
-      	  } // DQM_FLAG_REPORT_OTHER
-      	  else
-      	  {
-      		  tt.SetTextColor(3);
-      		  tt.DrawTextNDC(0.5, 0.5, "Ok ");
-      	  } //else
-      	} // else (  o.flags != 0  )
+        if (o.flags == 0)
+                return;
+        else
+        {
+          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          {
+                  tt.SetTextColor(2); // error color = RED
+                  tt.DrawTextNDC(0.5, 0.5, "Error");
+          } // DQM_FLAG_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          {
+                  tt.SetTextColor(5);
+                  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
+          } // DQM_FLAG_REPORT_WARNING
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          {
+                  tt.SetTextColor(1); // other color = BLACK
+                  tt.DrawTextNDC(0.5, 0.5, "Other ");
+          } // DQM_FLAG_REPORT_OTHER
+          else
+          {
+                  tt.SetTextColor(3);
+                  tt.DrawTextNDC(0.5, 0.5, "Ok ");
+          } //else
+        } // else (  o.flags != 0  )
       */
     }
 

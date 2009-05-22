@@ -21,19 +21,19 @@ public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if (o.name.find( "PhotonAnalyzer/" )   == std::string::npos)
-	return false;
+        return false;
 
       if( o.name.find( "/Efficiencies/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/AllPhotons/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/GoodCandidatePhotons/" ) != std::string::npos )
-	return true;
+        return true;
 
       if( o.name.find( "/BackgroundPhotons/" ) != std::string::npos )
-	return true;
+        return true;
 
       return false;
     }
@@ -44,11 +44,11 @@ public:
 
       if( dynamic_cast<TH2F*>( o.object ) )
       {
-	preDrawTH2F( c, o );
+        preDrawTH2F( c, o );
       }
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
-	preDrawTH1F( c, o );
+        preDrawTH1F( c, o );
       }
     }
 
@@ -57,11 +57,11 @@ public:
       c->cd();
       if( dynamic_cast<TH1F*>( o.object ) )
       {
-	postDrawTH1F( c, o );
+        postDrawTH1F( c, o );
       }
       if( dynamic_cast<TH2F*>( o.object ) )
       {
-	postDrawTH2F( c, o );
+        postDrawTH2F( c, o );
       }
     }
 
@@ -84,28 +84,28 @@ private:
       gStyle->SetOptStat("emr");
 
       if( o.name.find( "nPho" )  != std::string::npos)
-	gStyle->SetOptStat("em");
+        gStyle->SetOptStat("em");
 
       if( o.name.find( "nConv" )  != std::string::npos)
-	gStyle->SetOptStat("em");
+        gStyle->SetOptStat("em");
 
       if( o.name.find( "nIsoTracks" )  != std::string::npos)
-	gStyle->SetOptStat("em");
+        gStyle->SetOptStat("em");
 
       if( o.name.find( "phoEta" )  != std::string::npos)
-	gStyle->SetOptStat("e");
+        gStyle->SetOptStat("e");
 
       if( o.name.find( "phoConvEta" )  != std::string::npos)
-	gStyle->SetOptStat("e");
+        gStyle->SetOptStat("e");
 
       if( o.name.find( "phoPhi" )  != std::string::npos)
-	gStyle->SetOptStat("e");
+        gStyle->SetOptStat("e");
 
       if( o.name.find( "phoConvPhi" )  != std::string::npos)
-	gStyle->SetOptStat("e");
+        gStyle->SetOptStat("e");
 
       if( o.name.find( "VsEta" )  != std::string::npos)
-	gStyle->SetOptStat("e");
+        gStyle->SetOptStat("e");
     }
 
   void postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
@@ -117,30 +117,30 @@ private:
 
       if( o.name.find( "Filters" ) != std::string::npos )
       {
-	c->SetBottomMargin(0.25);
-	c->SetRightMargin(0.35);
-	obj->SetStats(kFALSE);
-	obj->SetMaximum(1.05);
+        c->SetBottomMargin(0.25);
+        c->SetRightMargin(0.35);
+        obj->SetStats(kFALSE);
+        obj->SetMaximum(1.05);
       }
       if( o.name.find( "hOverE" )  != std::string::npos)
       {
-	c->SetLogy(1);
-	obj->SetMinimum(0.5);
+        c->SetLogy(1);
+        obj->SetMinimum(0.5);
       }
       if( o.name.find( "h1OverE" )  != std::string::npos)
       {
-	c->SetLogy(1);
-	obj->SetMinimum(0.5);
+        c->SetLogy(1);
+        obj->SetMinimum(0.5);
       }
       if( o.name.find( "h2OverE" )  != std::string::npos)
       {
-	c->SetLogy(1);
-	obj->SetMinimum(0.5);
+        c->SetLogy(1);
+        obj->SetMinimum(0.5);
       }
       if( o.name.find( "DeltaR" )  != std::string::npos)
       {
-	c->SetLogy(1);
-	obj->SetMinimum(0.5);
+        c->SetLogy(1);
+        obj->SetMinimum(0.5);
       }
     }
 
@@ -156,59 +156,59 @@ private:
 
       for (int i=0;i!=202;++i)
       {
-	ixSectorsEE[i]=ixSectorsEE[i]*3-150;
-	iySectorsEE[i]=iySectorsEE[i]*3-150;
+        ixSectorsEE[i]=ixSectorsEE[i]*3-150;
+        iySectorsEE[i]=iySectorsEE[i]*3-150;
       }
 
       barreltext = new TH2C( "eb_text", "ebtext", 18, -3.14+0.1745, 3.14+0.1745, 2, -1.479, 1.479);
 
       for ( short i=0; i<36; i++ )
       {
-	int x = 1 + i%18;
-	int y = 2 - i/18;
-	int z = x + 10;
-	if ( z > 18 ) z = z - 18;
-	if (z!=10)
-	{
-	  if ( y == 1 )
-	  {
-	    barreltext->SetBinContent(x, y, -z);
-	  }
-	  else
-	  {
-	    barreltext->SetBinContent(x, y, +z);
-	  }
-	}
+        int x = 1 + i%18;
+        int y = 2 - i/18;
+        int z = x + 10;
+        if ( z > 18 ) z = z - 18;
+        if (z!=10)
+        {
+          if ( y == 1 )
+          {
+            barreltext->SetBinContent(x, y, -z);
+          }
+          else
+          {
+            barreltext->SetBinContent(x, y, +z);
+          }
+        }
       }
 
       barreltext->SetMarkerSize( 1.5 );
 
       if( o.name.find( "DistributionAllEcal" ) != std::string::npos )
       {
-	TLine l;
-	l.SetLineWidth(1);
-	l.DrawLine(-3.14,0, 3.14, 0.);
-	l.DrawLine(-3.14,1.479, 3.14, 1.479);
-	l.DrawLine(-3.14,-1.479, 3.14, -1.479);
-	for (int i =1;i!=19;++i)
-	{
-	  l.DrawLine(-3.14-0.1745+3.14/9*i, -1.479,-3.14-0.1745+3.14/9*i, 1.479);
-	}
-	barreltext->Draw("text,same");
-	return;
+        TLine l;
+        l.SetLineWidth(1);
+        l.DrawLine(-3.14,0, 3.14, 0.);
+        l.DrawLine(-3.14,1.479, 3.14, 1.479);
+        l.DrawLine(-3.14,-1.479, 3.14, -1.479);
+        for (int i =1;i!=19;++i)
+        {
+          l.DrawLine(-3.14-0.1745+3.14/9*i, -1.479,-3.14-0.1745+3.14/9*i, 1.479);
+        }
+        barreltext->Draw("text,same");
+        return;
       }
 
       if( o.name.find( "DistributionBarrel" ) != std::string::npos )
       {
-	TLine l;
-	l.SetLineWidth(1);
-	l.DrawLine(-3.14,0, 3.14, 0.);
-	for (int i =1;i!=19;++i)
-	{
-	  l.DrawLine(-3.14-0.1745+3.14/9*i, -1.479,-3.14-0.1745+3.14/9*i, 1.479);
-	}
-	barreltext->Draw("text,same");
-	return;
+        TLine l;
+        l.SetLineWidth(1);
+        l.DrawLine(-3.14,0, 3.14, 0.);
+        for (int i =1;i!=19;++i)
+        {
+          l.DrawLine(-3.14-0.1745+3.14/9*i, -1.479,-3.14-0.1745+3.14/9*i, 1.479);
+        }
+        barreltext->Draw("text,same");
+        return;
       }
 
       minusendcaptext = new TH2C( "ee-text", "ee-text", 10, -150., 150., 10, -150., 150. );
@@ -239,22 +239,22 @@ private:
 
       if( o.name.find( "DistributionEndcap" ) != std::string::npos )
       {
-	TLine l;
-	l.SetLineWidth(1);
-	for ( int i=0; i<201; i=i+1)
-	{
-	  if ( (ixSectorsEE[i]!=-150 || iySectorsEE[i]!=-150) &&
-	       (ixSectorsEE[i+1]!=-150 || iySectorsEE[i+1]!=-150) )
-	  {
-	    l.DrawLine(ixSectorsEE[i], iySectorsEE[i],
-		       ixSectorsEE[i+1], iySectorsEE[i+1]);
-	  }
-	}
-	if( o.name.find( "Minus" ) != std::string::npos )
-	  minusendcaptext->Draw("text,same");
-	if( o.name.find( "Plus" ) != std::string::npos )
-	  plusendcaptext->Draw("text,same");
-	return;
+        TLine l;
+        l.SetLineWidth(1);
+        for ( int i=0; i<201; i=i+1)
+        {
+          if ( (ixSectorsEE[i]!=-150 || iySectorsEE[i]!=-150) &&
+               (ixSectorsEE[i+1]!=-150 || iySectorsEE[i+1]!=-150) )
+          {
+            l.DrawLine(ixSectorsEE[i], iySectorsEE[i],
+                       ixSectorsEE[i+1], iySectorsEE[i+1]);
+          }
+        }
+        if( o.name.find( "Minus" ) != std::string::npos )
+          minusendcaptext->Draw("text,same");
+        if( o.name.find( "Plus" ) != std::string::npos )
+          plusendcaptext->Draw("text,same");
+        return;
       }
     }
 };
