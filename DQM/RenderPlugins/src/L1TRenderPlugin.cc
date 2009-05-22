@@ -185,18 +185,18 @@ private:
         int nbins = obj->GetNbinsX();
         int maxRange = nbins;
         for ( int i = nbins; i > 0; --i )
-	{
+        {
           if ( obj->GetBinContent(i) != 0 )
-	  {
+          {
             maxRange = i;
             break;
           }
         }
         int minRange = 0;
         for ( int i = 0; i <= nbins; ++i )
-	{
+        {
           if ( obj->GetBinContent(i) != 0 )
-	  {
+          {
             minRange = i;
             break;
           }
@@ -216,9 +216,9 @@ private:
       /*
         gStyle->SetOptStat(0111);
         if ( obj->GetMaximum(1.e5) > 0. ) {
-	  gPad->SetLogy(1);
+          gPad->SetLogy(1);
         } else {
-	  gPad->SetLogy(0);
+          gPad->SetLogy(0);
         }
       */
     }
@@ -358,9 +358,9 @@ private:
       }
 
       else if(REMATCH("BX_Correlation_*", o.name)) {
-	TAxis* yBX = obj->GetYaxis();
-	yBX->SetTitleOffset(1.1);
-	return;
+        TAxis* yBX = obj->GetYaxis();
+        yBX->SetTitleOffset(1.1);
+        return;
       }
     }
 
@@ -372,29 +372,29 @@ private:
         tt.SetTextSize(0.12);
 
         if (o.flags == 0)
-	  return;
+          return;
         else
         {
-	  if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-	  {
-	    tt.SetTextColor(2); // error color = RED
-	    tt.DrawTextNDC(0.5, 0.5, "Error");
-	  } // DQM_FLAG_REPORT_ERROR
-	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-	  {
-	    tt.SetTextColor(5);
-	    tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-	  } // DQM_FLAG_REPORT_WARNING
-	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-	  {
-	    tt.SetTextColor(1); // other color = BLACK
-	    tt.DrawTextNDC(0.5, 0.5, "Other ");
-	  } // DQM_FLAG_REPORT_OTHER
-	  else
-	  {
-	    tt.SetTextColor(3);
-	    tt.DrawTextNDC(0.5, 0.5, "Ok ");
-	  } //else
+          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          {
+            tt.SetTextColor(2); // error color = RED
+            tt.DrawTextNDC(0.5, 0.5, "Error");
+          } // DQM_FLAG_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          {
+            tt.SetTextColor(5);
+            tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
+          } // DQM_FLAG_REPORT_WARNING
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          {
+            tt.SetTextColor(1); // other color = BLACK
+            tt.DrawTextNDC(0.5, 0.5, "Other ");
+          } // DQM_FLAG_REPORT_OTHER
+          else
+          {
+            tt.SetTextColor(3);
+            tt.DrawTextNDC(0.5, 0.5, "Ok ");
+          } //else
         } // else (  o.flags != 0  )
       */
     }

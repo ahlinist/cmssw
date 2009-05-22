@@ -45,13 +45,13 @@ namespace cscdqm
       {
         station_partitions[adr.station - 1].from[adr.side - 1] = i;
         for (adr.ring = 1; adr.ring <= NumberOfRings(adr.station); adr.ring++)
-	{
+        {
           for (adr.chamber = 1; adr.chamber <= NumberOfChambers(adr.station, adr.ring); adr.chamber++)
-	  {
+          {
             for (adr.cfeb = 1; adr.cfeb <= NumberOfChamberCFEBs(adr.station, adr.ring); adr.cfeb++)
-	    {
+            {
               for (adr.hv = 1; adr.hv <= NumberOfChamberHVs(adr.station, adr.ring); adr.hv++)
-	      {
+              {
                 float z = Z(adr.station, adr.ring);
                 float r_min = RMinHV(adr.station, adr.ring, adr.hv);
                 float r_max = RMaxHV(adr.station, adr.ring, adr.hv);
@@ -63,12 +63,12 @@ namespace cscdqm
                 float phi_max = 0;
 
                 if(adr.station == 1 && adr.ring == 1 && adr.hv == 1)
-		{
+                {
                   phi_min = PhiMinCFEB(adr.station, adr.ring, adr.chamber, 1);
                   phi_max = PhiMaxCFEB(adr.station, adr.ring, adr.chamber, NumberOfChamberCFEBs(adr.station, adr.ring));
                 }
-		else
-		{
+                else
+                {
                   phi_min = PhiMinCFEB(adr.station, adr.ring, adr.chamber, adr.cfeb);
                   phi_max = PhiMaxCFEB(adr.station, adr.ring, adr.chamber, adr.cfeb);
                 }
@@ -94,13 +94,13 @@ namespace cscdqm
                 unsigned int y2 = int( ceil(yboxmax / PARTITION_STEP_Y));
 
                 for (unsigned int x = x1; x < x2; x++)
-		{
+                {
                   for (unsigned int y = y1; y < y2; y++)
-		  {
+                  {
                     unsigned int index = PARTITION_INDEX(x, y);
                     PartitionMapIterator iter = partitions.find(index);
                     if (iter == partitions.end())
-		    {
+                    {
                       std::vector<unsigned int> v;
                       partitions.insert(std::make_pair(index, v));
                     }
@@ -295,26 +295,26 @@ namespace cscdqm
     /*
       if (mask.mask.station)
       {
-	unsigned int side = 1;
-	if (mask.mask.side) side = mask.side;
-	if (i == 0)
-	  i = station_partitions[mask.station - 1].from[side - 1];
-	else
-	{
-	  if (mask.mask.side)
-	  {
-	    if (i > station_partitions[mask.station - 1].to[side - 1])
-	      i = N_ELEMENTS;
-	  }
-	  else
-	  {
-	    if (i > station_partitions[mask.station - 1].to[0] && i < station_partitions[mask.station - 1].from[1])
-	      i = station_partitions[mask.station - 1].from[1];
-	    else
-	      if (i > station_partitions[mask.station - 1].to[1])
-		i = N_ELEMENTS;
-	  }
-	}
+        unsigned int side = 1;
+        if (mask.mask.side) side = mask.side;
+        if (i == 0)
+          i = station_partitions[mask.station - 1].from[side - 1];
+        else
+        {
+          if (mask.mask.side)
+          {
+            if (i > station_partitions[mask.station - 1].to[side - 1])
+              i = N_ELEMENTS;
+          }
+          else
+          {
+            if (i > station_partitions[mask.station - 1].to[0] && i < station_partitions[mask.station - 1].from[1])
+              i = station_partitions[mask.station - 1].from[1];
+            else
+              if (i > station_partitions[mask.station - 1].to[1])
+                i = N_ELEMENTS;
+          }
+        }
       }
     */
 
@@ -334,24 +334,24 @@ namespace cscdqm
   {
     /*
       const bool Detector::NextAddressBoxByPartition (unsigned int& i,
-						      unsigned int& px,
-						      unsigned int& py,
-						      const AddressBox*& box,
-						      const Address& mask,
-						      const float xmin, const float xmax,
-						      const float ymin, const float ymax)
-	{
-	  for(; i < N_ELEMENTS; i++ )
-	  {
-	    if (boxes[i].adr == mask); else continue;
-	    if ((xmin < boxes[i].xmin && xmax < boxes[i].xmin) || (xmin > boxes[i].xmax && xmax > boxes[i].xmax)) continue;
-	    if ((ymin < boxes[i].ymin && ymax < boxes[i].ymin) || (ymin > boxes[i].ymax && ymax > boxes[i].ymax)) continue;
-	    box = &boxes[i];
-	    i++;
-	    return true;
-	  }
-	  return false;
-	}
+                                                      unsigned int& px,
+                                                      unsigned int& py,
+                                                      const AddressBox*& box,
+                                                      const Address& mask,
+                                                      const float xmin, const float xmax,
+                                                      const float ymin, const float ymax)
+        {
+          for(; i < N_ELEMENTS; i++ )
+          {
+            if (boxes[i].adr == mask); else continue;
+            if ((xmin < boxes[i].xmin && xmax < boxes[i].xmin) || (xmin > boxes[i].xmax && xmax > boxes[i].xmax)) continue;
+            if ((ymin < boxes[i].ymin && ymax < boxes[i].ymin) || (ymin > boxes[i].ymax && ymax > boxes[i].ymax)) continue;
+            box = &boxes[i];
+            i++;
+            return true;
+          }
+          return false;
+        }
     */
 
     unsigned int index = PARTITION_INDEX(px, py);
@@ -560,19 +560,19 @@ namespace cscdqm
       {
         oss << "_Station" << std::setfill('0') << std::setw(2) << adr.station;
         if (adr.mask.ring)
-	{
+        {
           oss << "_Ring" << std::setfill('0') << std::setw(2) << adr.ring;
           if (adr.mask.chamber)
-	  {
+          {
             oss << "_Chamber" << std::setfill('0') << std::setw(2) << adr.chamber;
             if (adr.mask.layer)
-	    {
+            {
               oss << "_Layer" << std::setfill('0') << std::setw(2) << adr.layer;
               if (adr.mask.cfeb)
-	      {
+              {
                 oss << "_CFEB" << std::setfill('0') << std::setw(2) << adr.cfeb;
                 if (adr.mask.hv)
-		{
+                {
                   oss << "_HV" << std::setfill('0') << std::setw(2) << adr.hv;
                 }
               }
@@ -602,11 +602,11 @@ namespace cscdqm
       if (token.compare("*") != 0)
       {
         if(stringToNumber<unsigned int>(num, token, std::dec))
-	{
+        {
           mask = true;
         }
-	else
-	{
+        else
+        {
           return false;
         }
       }

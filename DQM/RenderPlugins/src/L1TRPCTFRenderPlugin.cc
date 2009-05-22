@@ -97,14 +97,14 @@ private:
         TLine line;
         line.SetLineWidth(1);
         for (int tc=0;tc<12;++tc)
-	{
+        {
           int phi = tc*12+2;
           //line.DrawLine(-3.5, 0.5, -3.5, 6.5);
           line.DrawLine(-16.5, phi, 16.5, phi);
         }
 
         for (int tb=0;tb<8;++tb)
-	{
+        {
           float eta = -12.5;
           if (tb==1) eta = -8.5;
           else if (tb==2) eta = -4.5;

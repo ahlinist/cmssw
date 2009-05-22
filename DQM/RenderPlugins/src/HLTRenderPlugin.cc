@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.5 2008/10/01 17:57:39 lorenzo Exp $
+  $Id: HLTRenderPlugin.cc,v 1.6 2009/05/22 19:05:23 lat Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.6  2009/05/22 19:05:23  lat
+  Adapt to keeping render plug-ins outside server RPM. Clean up and harmonise code.
+
   Revision 1.5  2008/10/01 17:57:39  lorenzo
   changed EventInfo format
 
@@ -88,9 +91,9 @@ private:
 
         int maxRange = nbins;
         for ( int i = nbins; i > 0; --i )
-	{
+        {
           if ( obj->GetBinContent(i) != 0 )
-	  {
+          {
             maxRange = i;
             break;
           }
@@ -98,9 +101,9 @@ private:
 
         int minRange = 0;
         for ( int i = 0; i <= nbins; ++i )
-	{
+        {
           if ( obj->GetBinContent(i) != 0 )
-	  {
+          {
             minRange = i;
             break;
           }
@@ -111,11 +114,11 @@ private:
 
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
       /*
-      	gStyle->SetOptStat(0111);
-      	if ( obj->GetMaximum(1.e5) > 0. )
-      	  gPad->SetLogy(1);
-      	else
-      	  gPad->SetLogy(0);
+        gStyle->SetOptStat(0111);
+        if ( obj->GetMaximum(1.e5) > 0. )
+          gPad->SetLogy(1);
+        else
+          gPad->SetLogy(0);
       */
     }
 
@@ -166,36 +169,36 @@ private:
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
     {
       /*
-      	// Add error/warning text to 1-D histograms.  Do we want this at this time?
-      	TText tt;
-      	tt.SetTextSize(0.12);
+        // Add error/warning text to 1-D histograms.  Do we want this at this time?
+        TText tt;
+        tt.SetTextSize(0.12);
 
-      	if (o.flags == 0)
-      		return;
+        if (o.flags == 0)
+                return;
 
-      	else
-      	{
-      	  if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-      	  {
-      		  tt.SetTextColor(2); // error color = RED
-      		  tt.DrawTextNDC(0.5, 0.5, "Error");
-      	  } // DQM_FLAG_REPORT_ERROR
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-      	  {
-      		  tt.SetTextColor(5);
-      		  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-      	  } // DQM_FLAG_REPORT_WARNING
-      	  else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-      	  {
-      		  tt.SetTextColor(1); // other color = BLACK
-      		  tt.DrawTextNDC(0.5, 0.5, "Other ");
-      	  } // DQM_FLAG_REPORT_OTHER
-      	  else
-      	  {
-      		  tt.SetTextColor(3);
-      		  tt.DrawTextNDC(0.5, 0.5, "Ok ");
-      	  } //else
-      	} // else (  o.flags != 0  )
+        else
+        {
+          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          {
+                  tt.SetTextColor(2); // error color = RED
+                  tt.DrawTextNDC(0.5, 0.5, "Error");
+          } // DQM_FLAG_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          {
+                  tt.SetTextColor(5);
+                  tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
+          } // DQM_FLAG_REPORT_WARNING
+          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          {
+                  tt.SetTextColor(1); // other color = BLACK
+                  tt.DrawTextNDC(0.5, 0.5, "Other ");
+          } // DQM_FLAG_REPORT_OTHER
+          else
+          {
+                  tt.SetTextColor(3);
+                  tt.DrawTextNDC(0.5, 0.5, "Ok ");
+          } //else
+        } // else (  o.flags != 0  )
       */
     }
 

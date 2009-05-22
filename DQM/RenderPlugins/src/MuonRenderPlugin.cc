@@ -32,14 +32,14 @@ public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if((o.name.find( "Muons/E" ) != std::string::npos) ||
-	 (o.name.find( "Muons/M" ) != std::string::npos) ||
-	 (o.name.find( "Muons/R" ) != std::string::npos) ||
-	 (o.name.find( "Muons/S" ) != std::string::npos) ||
-	 (o.name.find( "Muons/T" ) != std::string::npos) ||
-	 (o.name.find( "Muons/c" ) != std::string::npos) ||
-	 (o.name.find( "Muons/g" ) != std::string::npos) ||
-	 (o.name.find( "Muons/s" ) != std::string::npos))
-	return true;
+         (o.name.find( "Muons/M" ) != std::string::npos) ||
+         (o.name.find( "Muons/R" ) != std::string::npos) ||
+         (o.name.find( "Muons/S" ) != std::string::npos) ||
+         (o.name.find( "Muons/T" ) != std::string::npos) ||
+         (o.name.find( "Muons/c" ) != std::string::npos) ||
+         (o.name.find( "Muons/g" ) != std::string::npos) ||
+         (o.name.find( "Muons/s" ) != std::string::npos))
+        return true;
 
       return false;
     }
@@ -50,19 +50,19 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	preDrawTProfile2D( c, o );
+        preDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TProfile*>( o.object ) )
       {
-	preDrawTProfile( c, o );
+        preDrawTProfile( c, o );
       }
       else if( dynamic_cast<TH2*>( o.object ) )
       {
-	preDrawTH2( c, o );
+        preDrawTH2( c, o );
       }
       else if( dynamic_cast<TH1*>( o.object ) )
       {
-	preDrawTH1( c, o );
+        preDrawTH1( c, o );
       }
     }
 
@@ -72,19 +72,19 @@ public:
 
       if( dynamic_cast<TProfile2D*>( o.object ) )
       {
-	postDrawTProfile2D( c, o );
+        postDrawTProfile2D( c, o );
       }
       else if( dynamic_cast<TProfile*>( o.object ) )
       {
-	postDrawTProfile( c, o );
+        postDrawTProfile( c, o );
       }
       else if( dynamic_cast<TH2*>( o.object ) )
       {
-	postDrawTH2( c, o );
+        postDrawTH2( c, o );
       }
       else if( dynamic_cast<TH1*>( o.object ) )
       {
-	postDrawTH1( c, o );
+        postDrawTH1( c, o );
       }
     }
 
@@ -114,7 +114,7 @@ private:
       obj->SetOption("colz");
 
       if(obj->GetEntries() != 0)
-	c->SetLogz(0);
+        c->SetLogz(0);
 
       obj->GetXaxis()->SetLabelSize(0.06);
       obj->GetYaxis()->SetLabelSize(0.06);
@@ -122,98 +122,98 @@ private:
       // Summary map
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->GetXaxis()->SetNdivisions(4,true);
-	obj->GetYaxis()->SetNdivisions(8,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
-	c->SetGrid(1,1);
-	return;
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->GetXaxis()->SetNdivisions(4,true);
+        obj->GetYaxis()->SetNdivisions(8,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        return;
       }
 
       // ------------------- summary plots -------------------
       if(o.name.find("energySummaryMap") != std::string::npos)
       {
-	obj->GetXaxis()->SetNdivisions(4,true);
-	obj->GetYaxis()->SetNdivisions(4,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
-	c->SetGrid(1,1);
-	obj->GetXaxis()->SetTitleOffset(1.15);
-	c->SetBottomMargin(0.1);
-	c->SetLeftMargin(0.15);
-	c->SetRightMargin(0.12);
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(2.0);
+        obj->GetXaxis()->SetNdivisions(4,true);
+        obj->GetYaxis()->SetNdivisions(4,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        obj->GetXaxis()->SetTitleOffset(1.15);
+        c->SetBottomMargin(0.1);
+        c->SetLeftMargin(0.15);
+        c->SetRightMargin(0.12);
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(2.0);
 
-	int colorErrorDI[2];
-	colorErrorDI[0] = 416;// kGreen
-	colorErrorDI[1] = 632;// kRed
-	gStyle->SetPalette(2, colorErrorDI);
-	return;
+        int colorErrorDI[2];
+        colorErrorDI[0] = 416;// kGreen
+        colorErrorDI[1] = 632;// kRed
+        gStyle->SetPalette(2, colorErrorDI);
+        return;
       }
 
       if(o.name.find("kinematicsSummaryMap") != std::string::npos)
       {
-	obj->GetXaxis()->SetNdivisions(6,true);
-	obj->GetYaxis()->SetNdivisions(4,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
-	c->SetGrid(1,1);
-	obj->GetXaxis()->SetTitleOffset(1.15);
-	c->SetBottomMargin(0.1);
-	c->SetLeftMargin(0.15);
-	c->SetRightMargin(0.12);
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(2.0);
+        obj->GetXaxis()->SetNdivisions(6,true);
+        obj->GetYaxis()->SetNdivisions(4,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        obj->GetXaxis()->SetTitleOffset(1.15);
+        c->SetBottomMargin(0.1);
+        c->SetLeftMargin(0.15);
+        c->SetRightMargin(0.12);
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(2.0);
 
-	int colorErrorDI[2];
-	colorErrorDI[0] = 416;// kGreen
-	colorErrorDI[1] = 632;// kRed
-	gStyle->SetPalette(2, colorErrorDI);
-	return;
+        int colorErrorDI[2];
+        colorErrorDI[0] = 416;// kGreen
+        colorErrorDI[1] = 632;// kRed
+        gStyle->SetPalette(2, colorErrorDI);
+        return;
       }
 
       if(o.name.find("muonIdSummaryMap") != std::string::npos)
       {
-	obj->GetXaxis()->SetNdivisions(3,true);
-	obj->GetYaxis()->SetNdivisions(4,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
-	c->SetGrid(1,1);
-	obj->GetXaxis()->SetTitleOffset(1.15);
-	c->SetBottomMargin(0.1);
-	c->SetLeftMargin(0.15);
-	c->SetRightMargin(0.12);
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(2.0);
+        obj->GetXaxis()->SetNdivisions(3,true);
+        obj->GetYaxis()->SetNdivisions(4,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        obj->GetXaxis()->SetTitleOffset(1.15);
+        c->SetBottomMargin(0.1);
+        c->SetLeftMargin(0.15);
+        c->SetRightMargin(0.12);
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(2.0);
 
-	int colorErrorDI[2];
-	colorErrorDI[0] = 416;// kGreen
-	colorErrorDI[1] = 632;// kRed
-	gStyle->SetPalette(2, colorErrorDI);
-	return;
+        int colorErrorDI[2];
+        colorErrorDI[0] = 416;// kGreen
+        colorErrorDI[1] = 632;// kRed
+        gStyle->SetPalette(2, colorErrorDI);
+        return;
       }
 
       if(o.name.find("residualsSummaryMap") != std::string::npos)
       {
-	obj->GetXaxis()->SetNdivisions(4,true);
-	obj->GetYaxis()->SetNdivisions(5,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
-	c->SetGrid(1,1);
-	obj->GetXaxis()->SetTitleOffset(1.15);
-	c->SetBottomMargin(0.1);
-	c->SetLeftMargin(0.15);
-	c->SetRightMargin(0.12);
-	obj->SetMinimum(-0.00000001);
-	obj->SetMaximum(2.0);
+        obj->GetXaxis()->SetNdivisions(4,true);
+        obj->GetYaxis()->SetNdivisions(5,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        c->SetGrid(1,1);
+        obj->GetXaxis()->SetTitleOffset(1.15);
+        c->SetBottomMargin(0.1);
+        c->SetLeftMargin(0.15);
+        c->SetRightMargin(0.12);
+        obj->SetMinimum(-0.00000001);
+        obj->SetMaximum(2.0);
 
-	int colorErrorDI[2];
-	colorErrorDI[0] = 416;// kGreen
-	colorErrorDI[1] = 632;// kRed
-	gStyle->SetPalette(2, colorErrorDI);
-	return;
+        int colorErrorDI[2];
+        colorErrorDI[0] = 416;// kGreen
+        colorErrorDI[1] = 632;// kRed
+        gStyle->SetPalette(2, colorErrorDI);
+        return;
       }
     }
 
@@ -236,17 +236,17 @@ private:
     {
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
-	label_resTk->Draw("same");
-	label_resSTA->Draw("same");
-	label_muonIdSTA->Draw("same");
-	return;
+        label_resTk->Draw("same");
+        label_resSTA->Draw("same");
+        label_muonIdSTA->Draw("same");
+        return;
       }
       if(o.name.find("energySummaryMap") != std::string::npos)
       {
-	label_glbHO->Draw("same");
-	label_tkHO->Draw("same");
-	label_staHO->Draw("same");
-	return;
+        label_glbHO->Draw("same");
+        label_tkHO->Draw("same");
+        label_staHO->Draw("same");
+        return;
       }
     }
 

@@ -110,7 +110,7 @@ void SummaryMap::drawDetector(TH2* me)
         b[x][y]->SetFillStyle(1001);
 
         switch (value)
-	{
+        {
         case -1:
           // Error (RED)
           b[x][y]->SetFillColor(2);
@@ -129,12 +129,12 @@ void SummaryMap::drawDetector(TH2* me)
 
       /*
         if(me->GetBinContent(x + 1, y + 1) > 0)
-	{
-	  b[x][y] = new TBox(xmin, ymin, xmax, ymax);
-	  b[x][y]->SetFillColor(8);
-	  b[x][y]->SetFillStyle(1001);
-	  b[x][y]->Draw("");
-	}
+        {
+          b[x][y] = new TBox(xmin, ymin, xmax, ymax);
+          b[x][y]->SetFillColor(8);
+          b[x][y]->SetFillStyle(1001);
+          b[x][y]->Draw("");
+        }
       */
     }
   }

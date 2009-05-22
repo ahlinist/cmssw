@@ -29,7 +29,7 @@ public:
     {
       // determine whether core object is an L1T object
       if(o.name.find( "FED/" ) != std::string::npos)
-	return true;
+        return true;
 
       return false;
     }
@@ -40,7 +40,7 @@ public:
 
       // object is TH2 histogram
       if( dynamic_cast<TH2F*>( o.object ) )
-	preDrawTH2F( c, o );
+        preDrawTH2F( c, o );
     }
 
 private:
@@ -52,19 +52,19 @@ private:
       //put in preDrawTH2F
       if( o.name.find( "reportSummaryMap" )  != std::string::npos)
       {
-	obj->SetStats( kFALSE );
-	dqm::utils::reportSummaryMapPalette(obj);
-	obj->SetOption("colz");
-	obj->SetTitle("FED Report Summary Map");
+        obj->SetStats( kFALSE );
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetOption("colz");
+        obj->SetTitle("FED Report Summary Map");
 
-	obj->GetXaxis()->SetNdivisions(1,true);
-	obj->GetYaxis()->SetNdivisions(7,true);
-	obj->GetXaxis()->CenterLabels();
-	obj->GetYaxis()->CenterLabels();
+        obj->GetXaxis()->SetNdivisions(1,true);
+        obj->GetYaxis()->SetNdivisions(7,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
 
-	gPad->SetGrid(1,1);
+        gPad->SetGrid(1,1);
 
-	return;
+        return;
       }
 
       gStyle->SetCanvasBorderMode( 0 );

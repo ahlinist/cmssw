@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.9 $
-  \date $Date: 2009/02/16 12:48:52 $
+  \version $Revision: 1.10 $
+  \date $Date: 2009/05/22 19:05:24 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -22,7 +22,7 @@ public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "Pixel/" ) != std::string::npos )
-	return true;
+        return true;
 
       return false;
     }
@@ -32,11 +32,11 @@ public:
       c->cd();
       if( dynamic_cast<TH2*>( o.object ) )
       {
-	preDrawTH2( c, o );
+        preDrawTH2( c, o );
       }
       else if( dynamic_cast<TH1*>( o.object ) )
       {
-	preDrawTH1( c, o );
+        preDrawTH1( c, o );
       }
     }
 
@@ -46,7 +46,7 @@ public:
 
       if( dynamic_cast<TH1*>( o.object ) )
       {
-	postDrawTH1( c, o );
+        postDrawTH1( c, o );
       }
     }
 
@@ -76,19 +76,19 @@ private:
       ya->SetLabelSize(0.04);
 
       if( o.name.find( "hitmap" ) != std::string::npos  ||
-	  o.name.find( "Occupancy" ) != std::string::npos)
+          o.name.find( "Occupancy" ) != std::string::npos)
       {
-	gStyle->SetPalette(1);
-	obj->SetOption("colz");
-	return;
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        return;
       }
 
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
-	dqm::utils::reportSummaryMapPalette(obj2);
-	return;
+        dqm::utils::reportSummaryMapPalette(obj2);
+        return;
       }
     }
 
@@ -101,11 +101,11 @@ private:
       gStyle->SetOptStat(0111);
       if ( obj->GetMaximum(1.e5) > 0. )
       {
-	gPad->SetLogy(1);
+        gPad->SetLogy(1);
       }
       else
       {
-	gPad->SetLogy(0);
+        gPad->SetLogy(0);
       }
 
       if( o.name.find( "adcCOMB" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogy(1);
@@ -123,27 +123,27 @@ private:
       if (o.flags == 0) return;
       else
       {
-	/*    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-	      {
-	      tt.SetTextColor(2);
-	      tt.DrawTextNDC(0.5, 0.5, "Error");
-	      }
-	      else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-	      {
-	      tt.SetTextColor(5);
-	      tt.DrawTextNDC(0.5, 0.5, "Warning");
-	      }
-	      else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-	      {
-	      tt.SetTextColor(1);
-	      tt.DrawTextNDC(0.5, 0.5, "Other ");
-	      }
-	      else
-	      {
-	      tt.SetTextColor(3);
-	      tt.DrawTextNDC(0.5, 0.5, "Ok ");
-	      }
-	*/
+        /*    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+              {
+              tt.SetTextColor(2);
+              tt.DrawTextNDC(0.5, 0.5, "Error");
+              }
+              else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+              {
+              tt.SetTextColor(5);
+              tt.DrawTextNDC(0.5, 0.5, "Warning");
+              }
+              else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+              {
+              tt.SetTextColor(1);
+              tt.DrawTextNDC(0.5, 0.5, "Other ");
+              }
+              else
+              {
+              tt.SetTextColor(3);
+              tt.DrawTextNDC(0.5, 0.5, "Ok ");
+              }
+        */
       }
     }
 };
