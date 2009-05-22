@@ -75,11 +75,11 @@ process_WplusJets = cms.PSet(
   )
 )
 
-
+# gamma + jets 
 process_gammaPlusJets = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
-    scaleFactor = cms.double(dataIntLumi/250.),
+    scaleFactor = cms.double(1.),
     dqmDirectory_store = cms.string('gammaPlusJets')
   ),
   config_dqmHistPlotter = cms.PSet(
@@ -88,7 +88,6 @@ process_gammaPlusJets = cms.PSet(
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )
-
 
 
 process_TTplusJets = cms.PSet(
