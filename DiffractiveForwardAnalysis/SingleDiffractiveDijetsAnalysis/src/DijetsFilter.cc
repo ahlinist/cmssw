@@ -157,7 +157,7 @@ DijetsFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //filter
-     usual Jets_eta cut
+     ////usual Jets_eta cut
     if (jet1Et >= 55. && jet2Et >= 55. && fabs(jet1Eta - jet2Eta) < 3)
     {
         if (GapSide_ > 0)
