@@ -2137,7 +2137,7 @@ fileNamesPhotonJets_Pt25to30 = cms.untracked.vstring(
 fileNamesPhotonJets_Pt30to35 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/PhotonJets_Pt30to35/skimElecTau_PhotonJets_Pt30to35_1.root'
 )
-fileNamesPhotonJets_Pt35 = cms.untracked.vstring(
+fileNamesPhotonJets_PtGt35 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/PhotonJets_Pt35/skimElecTau_PhotonJets_Pt35_1.root'
 )
 
@@ -2145,7 +2145,7 @@ intLumiPhotonJets_Pt15to20 = float(1.075)
 intLumiPhotonJets_Pt20to25 = float(3.38)
 intLumiPhotonJets_Pt25to30 = float(8.95)
 intLumiPhotonJets_Pt30to35 = float(21.89)
-intLumiPhotonJets_Pt35     = float(13.36)
+intLumiPhotonJets_PtGt35     = float(13.36)
 
 genPhaseSpaceCutPhotonJets_Pt15to20 = cms.PSet(
   name = cms.string('genPhaseSpaceCut'),
@@ -2171,7 +2171,7 @@ genPhaseSpaceCutPhotonJets_Pt30to35 = cms.PSet(
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
-genPhaseSpaceCutPhotonJets_Pt35 = cms.PSet(
+genPhaseSpaceCutPhotonJets_PtGt35 = cms.PSet(
   name = cms.string('genPhaseSpaceCut'),
   type = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
@@ -2182,7 +2182,7 @@ outputFileNamePhotonJets_Pt15to20 = cms.string('plotsZtoElecTau_PhotonJets_Pt15t
 outputFileNamePhotonJets_Pt20to25 = cms.string('plotsZtoElecTau_PhotonJets_Pt20to25.root')
 outputFileNamePhotonJets_Pt25to30 = cms.string('plotsZtoElecTau_PhotonJets_Pt25to30.root')
 outputFileNamePhotonJets_Pt30to35 = cms.string('plotsZtoElecTau_PhotonJets_Pt30to35.root')
-outputFileNamePhotonJets_Pt35     = cms.string('plotsZtoElecTau_PhotonJets_Pt35.root')
+outputFileNamePhotonJets_PtGt35   = cms.string('plotsZtoElecTau_PhotonJets_PtGt35.root')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
