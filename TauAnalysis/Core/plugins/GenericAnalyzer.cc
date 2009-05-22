@@ -84,7 +84,7 @@ bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm:
 //
 
 GenericAnalyzer::analysisSequenceEntry_histManagers::analysisSequenceEntry_histManagers(const std::string& name , 
-										       const std::list<edm::ParameterSet>& cfgHistManagers)
+											const std::list<edm::ParameterSet>& cfgHistManagers)
   : analysisSequenceEntry(name)
 {
   for ( std::list<edm::ParameterSet>::const_iterator cfgHistManager = cfgHistManagers.begin(); 
@@ -152,7 +152,7 @@ void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& sa
     analysisSequence_.push_back(entry);
   } else {
     edm::LogError ("GenericAnalyzer::addFilter") << " Failed to access configuration parameter for filter = " << filterName
-						<< " --> skipping !!";
+						 << " --> skipping !!";
     cfgError_ = 1;
   }
 }
