@@ -13,7 +13,7 @@
 //
 // Original Author:  Felipe Araújo (CMS)
 //         Created:  Thu Mar  5 22:43:36 BRT 2009
-// $Id$
+// $Id: WeightProducer.cc,v 1.1 2009/03/30 04:04:26 fsilva Exp $
 //
 //
 
@@ -126,11 +126,11 @@ WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
         if (geneventscale > 30. && geneventscale <= 80.)
         {
-            *Weight = (300000.*RGSP*Lumi*Eff)/(182828.);
+            *Weight = (300000.*RGSP*Lumi*Eff)/(5600914.);
         }
         if (geneventscale > 80.)
         {
-            *Weight = (4000.*RGSP*Lumi*Eff)/(134236.);
+            *Weight = (4000.*RGSP*Lumi*Eff)/(1231451.);
         }
     }
 
@@ -138,39 +138,39 @@ WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
         if (geneventscale > 15. && geneventscale <= 30.)
         {
-            *Weight = (1457159248.*Lumi*Eff)/(1043.);
+            *Weight = (1457159248.*Lumi*Eff)/(21184096.);
         }
         if (geneventscale > 30. && geneventscale <= 80.)
         {
-            *Weight = (109057220.4*Lumi*Eff)/(354642.);
+            *Weight = (109057220.4*Lumi*Eff)/(11443625.);
         }
         if (geneventscale > 80. && geneventscale <= 170.)
         {
-            *Weight = (1934639.567*Lumi*Eff)/(3069588.);
+            *Weight = (1934639.567*Lumi*Eff)/(9217463.);
         }
         if (geneventscale > 170. && geneventscale <= 300.)
         {
-            *Weight = (62562.87713*Lumi*Eff)/(3013403.);
+            *Weight = (62562.87713*Lumi*Eff)/(9206001.);
         }
         if (geneventscale > 300. && geneventscale <= 470.)
         {
-            *Weight = (3664.608301*Lumi*Eff)/(2954509.);
+            *Weight = (3664.608301*Lumi*Eff)/(9210406.);
         }
         if (geneventscale > 470. && geneventscale <= 800.)
         {
-            *Weight = (315.5131272*Lumi*Eff)/(2915446.);
+            *Weight = (315.5131272*Lumi*Eff)/(9980402.);
         }
         if (geneventscale > 800. && geneventscale <= 1400.)
         {
-            *Weight = (11.9419745*Lumi*Eff)/(3204312.);
+            *Weight = (11.9419745*Lumi*Eff)/(9440071.);
         }
         if (geneventscale > 1400. && geneventscale <= 2200.)
         {
-            *Weight = (0.1720187189*Lumi*Eff)/(259900.);
+            *Weight = (0.1720187189*Lumi*Eff)/(4694722.);
         }
         if (geneventscale > 2200.)
         {
-            *Weight = (0.0014207778*Lumi*Eff)/(1506308.);
+            *Weight = (0.0014207778*Lumi*Eff)/(5035140.);
         }
     }
 

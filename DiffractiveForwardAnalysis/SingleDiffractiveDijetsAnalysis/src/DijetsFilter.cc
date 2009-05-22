@@ -13,7 +13,7 @@
 //
 // Original Author:  Felipe Araújo (CMS)
 //         Created:  Mon Mar  2 00:45:29 BRT 2009
-// $Id$
+// $Id: DijetsFilter.cc,v 1.1 2009/03/30 04:04:26 fsilva Exp $
 //
 //
 
@@ -157,18 +157,37 @@ DijetsFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     //filter
+    // usual Jets_eta cut
+//    if (jet1Et >= 55. && jet2Et >= 55. && fabs(jet1Eta - jet2Eta) < 3)
+//    {
+//        if (GapSide_ > 0)
+//        {
+//            if ( (jet1Eta < 1. && jet1Eta > -4.) && (jet2Eta < 1. && jet2Eta > -4.) )
+//            {
+//                FilterResult = true;
+//            }
+//        }
+//        if (GapSide_ < 0)
+//        {
+//            if ( (jet1Eta > -1. && jet1Eta < 4.) && (jet2Eta > -1. && jet2Eta < 4.) )
+//            {
+//                FilterResult = true;
+//            }
+//        }
+//    }
+    // stricker Jets_eta cut
     if (jet1Et >= 55. && jet2Et >= 55. && fabs(jet1Eta - jet2Eta) < 3)
     {
         if (GapSide_ > 0)
         {
-            if ( (jet1Eta < 1. && jet1Eta > -4.) && (jet2Eta < 1. && jet2Eta > -4.) )
+            if ( (jet1Eta < -1. && jet1Eta > -4.) && (jet2Eta < -1. && jet2Eta > -4.) )
             {
                 FilterResult = true;
             }
         }
         if (GapSide_ < 0)
         {
-            if ( (jet1Eta > -1. && jet1Eta < 4.) && (jet2Eta > -1. && jet2Eta < 4.) )
+            if ( (jet1Eta > 1. && jet1Eta < 4.) && (jet2Eta > 1. && jet2Eta < 4.) )
             {
                 FilterResult = true;
             }
