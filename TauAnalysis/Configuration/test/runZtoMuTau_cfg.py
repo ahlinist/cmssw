@@ -63,29 +63,7 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoMuTau.root')
 )
 
-process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
-    flags = cms.VInputTag( cms.InputTag('genPhaseSpaceEventInfo'),
-                           cms.InputTag('Trigger'),
-                           cms.InputTag('primaryEventVertex'),
-                           cms.InputTag('primaryEventVertexQuality'),
-                           cms.InputTag('primaryEventVertexPosition'),
-                           cms.InputTag('muonTrkIPcutLooseIsolation', 'cumulative'),
-                           cms.InputTag('tauMuonVeto', 'cumulative'),                                                        
-                           cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual') )
-)
-
-process.skimPath = cms.Path( process.selectEventsByBoolEventSelFlags )
-
-eventSelection = cms.untracked.PSet(
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('skimPath')
-    )
-)
-
 process.saveZtoMuTauPatTuple = cms.OutputModule("PoolOutputModule",                                                
-    eventSelection, # comment to add all events to the produced PAT-tuple;
-                    # if uncommented, only those events passing the list of cuts
-                    # defined in selectEventsByBoolEventSelFlags.flags are added to the PAT-tuple
     patTupleEventContent,                                               
     fileName = cms.untracked.string('muTauSkim_patTuple.root')
 )
@@ -106,7 +84,7 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -133,8 +111,8 @@ process.source = cms.Source("PoolSource",
 #
 #  "extEventSelection = cms.VPSet()
 #   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
-#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
-#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
+#   extEventSelection.insert(process.analyzeZtoMuTau.eventSelection)
+#   process.analyzeZtoMuTau.eventSelection = extEventSelection"
 #
 #---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
 #
@@ -168,7 +146,7 @@ process.p = cms.Path( process.producePatTuple
 #                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
 #                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
                      +process.selectZtoMuTauEvents
-                     +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple                    
+#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
 
