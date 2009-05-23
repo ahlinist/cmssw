@@ -102,7 +102,7 @@ evtSelPrimaryEventVertexPosition = cms.PSet(
     src = cms.InputTag('primaryEventVertexPosition')
 )
 
-# selection of first tau-jet candidate
+# acceptance cuts on first tau-jet candidate
 evtSelFirstTauEta = cms.PSet(
     pluginName = cms.string('evtSelFirstTauEta'),
     pluginType = cms.string('BoolEventSelector'),
@@ -115,6 +115,22 @@ evtSelFirstTauPt = cms.PSet(
     src_cumulative = cms.InputTag('firstTauPtCut', 'cumulative'),
     src_individual = cms.InputTag('firstTauPtCut', 'individual')
 )
+
+# acceptance cuts on second tau-jet candidate
+evtSelSecondTauEta = cms.PSet(
+    pluginName = cms.string('evtSelSecondTauEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('secondTauEtaCut', 'cumulative'),
+    src_individual = cms.InputTag('secondTauEtaCut', 'individual')
+)
+evtSelSecondTauPt = cms.PSet(
+    pluginName = cms.string('evtSelSecondTauPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('secondTauPtCut', 'cumulative'),
+    src_individual = cms.InputTag('secondTauPtCut', 'individual')
+)
+
+# (id.) selection of first tau-jet candidate
 evtSelFirstTauLeadTrk = cms.PSet(
     pluginName = cms.string('evtSelFirstTauLeadTrk'),
     pluginType = cms.string('BoolEventSelector'),
@@ -146,19 +162,7 @@ evtSelFirstTauProng = cms.PSet(
     src_individual = cms.InputTag('firstTauProngCut', 'individual')
 )
 
-# selection of second tau-jet candidate
-evtSelSecondTauEta = cms.PSet(
-    pluginName = cms.string('evtSelSecondTauEta'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('secondTauEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('secondTauEtaCut', 'individual')
-)
-evtSelSecondTauPt = cms.PSet(
-    pluginName = cms.string('evtSelSecondTauPt'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('secondTauPtCut', 'cumulative'),
-    src_individual = cms.InputTag('secondTauPtCut', 'individual')
-)
+# (id.) selection of second tau-jet candidate
 evtSelSecondTauLeadTrk = cms.PSet(
     pluginName = cms.string('evtSelSecondTauLeadTrk'),
     pluginType = cms.string('BoolEventSelector'),
@@ -325,8 +329,8 @@ diTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         histManagers = diTauHistManagers
     ),
-    
-    # selection of first tau-jet candidate
+
+    # acceptance cuts on first tau-jet
     cms.PSet(
         filter = cms.string('evtSelFirstTauEta'),
         title = cms.string('-2.1 < eta(1.Tau) < +2.1'),
@@ -345,6 +349,30 @@ diTauAnalysisSequence = cms.VPSet(
         histManagers = diTauHistManagers,
         replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative')
     ),
+
+    # acceptance cuts on second tau-jet
+    cms.PSet(
+        filter = cms.string('evtSelSecondTauEta'),
+        title = cms.string('-2.1 < eta(2.Tau) < +2.1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = diTauHistManagers,
+        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative',
+                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauEta21Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelSecondTauPt'),
+        title = cms.string('Pt(2.Tau) > 20 GeV'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = diTauHistManagers,
+        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauPt20Cumulative',
+                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauPt20Cumulative')
+    ),
+    
+    # selection of first tau-jet candidate (id.)
     cms.PSet(
         filter = cms.string('evtSelFirstTauLeadTrk'),
         title = cms.string('1.Tau lead. Track find.'),
@@ -391,27 +419,7 @@ diTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauProngCumulative')
     ),
 
-    # selection of second tau-jet candidate
-    cms.PSet(
-        filter = cms.string('evtSelSecondTauEta'),
-        title = cms.string('-2.1 < eta(2.Tau) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        histManagers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauProngCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauEta21Cumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelSecondTauPt'),
-        title = cms.string('Pt(2.Tau) > 20 GeV'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        histManagers = diTauHistManagers,
-        replace = cms.vstring('tauHistManager1.tauSource = selectedLayer1TausForDiTauProngCumulative',
-                              'tauHistManager2.tauSource = selectedLayer1TausForDiTauPt20Cumulative')
-    ),
+    # selection of second tau-jet candidate (id.)
     cms.PSet(
         filter = cms.string('evtSelSecondTauLeadTrk'),
         title = cms.string('2.Tau lead. Track find.'),
