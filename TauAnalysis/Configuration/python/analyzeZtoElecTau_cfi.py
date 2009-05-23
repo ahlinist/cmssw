@@ -91,7 +91,7 @@ evtSelPrimaryEventVertexPosition = cms.PSet(
     src = cms.InputTag('primaryEventVertexPosition')
 )
 
-# electron candidate selection
+# electron acceptance cuts
 evtSelTightElectronId = cms.PSet(
     pluginName = cms.string('evtSelTightElectronId'),
     pluginType = cms.string('BoolEventSelector'),
@@ -116,6 +116,28 @@ evtSelElectronPt = cms.PSet(
     src_cumulative = cms.InputTag('electronPtCut', 'cumulative'),
     src_individual = cms.InputTag('electronPtCut', 'individual')
 )
+
+# tau acceptance cuts
+evtSelTauAntiOverlapWithElectronsVeto = cms.PSet(
+    pluginName = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'cumulative'),
+    src_individual = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'individual')
+)
+evtSelTauEta = cms.PSet(
+    pluginName = cms.string('evtSelTauEta'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
+    src_individual = cms.InputTag('tauEtaCut', 'individual')
+)
+evtSelTauPt = cms.PSet(
+    pluginName = cms.string('evtSelTauPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauPtCut', 'cumulative'),
+    src_individual = cms.InputTag('tauPtCut', 'individual')
+)
+
+# electron candidate (isolation & id.) selection
 evtSelElectronTrkIso = cms.PSet(
     pluginName = cms.string('evtSelElectronTrkIso'),
     pluginType = cms.string('BoolEventSelector'),
@@ -141,25 +163,7 @@ evtSelElectronTrkIP = cms.PSet(
     src_individual = cms.InputTag('electronTrkIPcut', 'individual')
 )
 
-# tau candidate selection
-evtSelTauAntiOverlapWithElectronsVeto = cms.PSet(
-    pluginName = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'cumulative'),
-    src_individual = cms.InputTag('tauAntiOverlapWithElectronsVeto', 'individual')
-)
-evtSelTauEta = cms.PSet(
-    pluginName = cms.string('evtSelTauEta'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('tauEtaCut', 'cumulative'),
-    src_individual = cms.InputTag('tauEtaCut', 'individual')
-)
-evtSelTauPt = cms.PSet(
-    pluginName = cms.string('evtSelTauPt'),
-    pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('tauPtCut', 'cumulative'),
-    src_individual = cms.InputTag('tauPtCut', 'individual')
-)
+# tau candidate (id.) selection
 evtSelTauLeadTrk = cms.PSet(
     pluginName = cms.string('evtSelTauLeadTrk'),
     pluginType = cms.string('BoolEventSelector'),
@@ -338,10 +342,9 @@ elecTauAnalysisSequence = cms.VPSet(
     cms.PSet(
         histManagers = elecTauHistManagers
     ),
-  
-    # selection of electron candidate
-    # produced in electronic tau decay
-    cms.PSet(
+
+    # electron acceptance cuts
+     cms.PSet(
         filter = cms.string('evtSelTightElectronId'),
         title = cms.string('tight Electron Id.'),
         saveRunEventNumbers = cms.vstring('')
@@ -377,6 +380,41 @@ elecTauAnalysisSequence = cms.VPSet(
         histManagers = elecTauHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative')
     ),
+
+    # tau acceptance cuts
+    cms.PSet(
+        filter = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
+        title = cms.string('Tau not overlapping with Electron'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVetoCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauEta'),
+        title = cms.string('-2.1 < eta(Tau) < +2.1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauEta21Cumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelTauPt'),
+        title = cms.string('Pt(Tau) > 20 GeV'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        histManagers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauPt20Cumulative')
+    ),
+  
+    # selection of electron candidate (isolation & id.)
+    # produced in electronic tau decay
     cms.PSet(
         filter = cms.string('evtSelElectronTrkIso'),
         title = cms.string('Electron Track iso.'),
@@ -414,38 +452,8 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative')
     ),
   
-    # selection of tau-jet candidate
+    # selection of tau-jet candidate (id.)
     # produced in hadronic tau decay
-    cms.PSet(
-        filter = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
-        title = cms.string('Tau not overlapping with Electron'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        histManagers = elecTauHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForElecTauAntiOverlapWithElectronsVetoCumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauEta'),
-        title = cms.string('-2.1 < eta(Tau) < +2.1'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        histManagers = elecTauHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForElecTauEta21Cumulative')
-    ),
-    cms.PSet(
-        filter = cms.string('evtSelTauPt'),
-        title = cms.string('Pt(Tau) > 20 GeV'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        histManagers = elecTauHistManagers,
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                              'tauHistManager.tauSource = selectedLayer1TausForElecTauPt20Cumulative')
-    ),
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrk'),
         title = cms.string('Tau lead. Track find.'),
