@@ -8,6 +8,7 @@ import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_factorized_cfi import *
 from TauAnalysis.Configuration.analyzeZtoMuTau_cff import *
+from TauAnalysis.Configuration.factorizationTools import replaceEventSelections
 
 #--------------------------------------------------------------------------------
 # define Z --> mu + tau-jet analysis module
@@ -39,20 +40,15 @@ analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence = muTauAnalys
 
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation = copy.copy(analyzeZtoMuTauEvents)
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.name = cms.string('zMuTauAnalyzer_factorizedWithoutMuonIsolation')
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonTrkIso)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonTrkIsoLooseIsolation)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonEcalIso)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonEcalIsoLooseIsolation)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonAntiPion)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonAntiPionLooseIsolation)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelMuonTrkIP)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelMuonTrkIPlooseIsolation)      
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauAntiOverlapVeto)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauZeroCharge)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.remove(evtSelDiTauCandidateForMuTauMt1MET)
-analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventSelection.append(evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation)
+replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation, 
+    [ [ evtSelMuonTrkIso, evtSelMuonTrkIsoLooseIsolation ],
+      [ evtSelMuonEcalIso, evtSelMuonEcalIsoLooseIsolation ],
+      [ evtSelMuonAntiPion, evtSelMuonAntiPionLooseIsolation ],
+      [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
+      [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],
+      [ evtSelDiTauCandidateForMuTauZeroCharge, evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation ],
+      [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ] ]
+)                       
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation
 
