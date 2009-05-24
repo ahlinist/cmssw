@@ -15,6 +15,7 @@ muTauHistManagers_factorizedWithoutMuonIsolation = copy.deepcopy(muTauHistManage
 
 muTauHistManagers_factorizedWithMuonIsolation = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
                                                              'muonHistManager',
+                                                             'tauHistManager',
                                                              'vertexHistManager',
                                                              'triggerHistManager' )
 
