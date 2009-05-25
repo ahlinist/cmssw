@@ -20,6 +20,7 @@ analyzeZtoMuTauEvents_factorizedWithMuonIsolation.name = cms.string('zMuTauAnaly
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation.histManagers = cms.VPSet(
     genPhaseSpaceEventInfoHistManager,
     muonHistManager,
+    tauHistManager,
     vertexHistManager,
     triggerHistManager
 )
