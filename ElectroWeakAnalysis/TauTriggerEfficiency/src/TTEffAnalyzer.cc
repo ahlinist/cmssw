@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.25 2009/04/21 13:29:00 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.26 2009/05/07 10:26:10 chinhan Exp $
 //
 //
 
@@ -105,13 +105,13 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       try{
     iEvent.getByLabel(MCTaus_, mcTaus);
     }catch(...){}
-      loop(iEvent, *PFTaus);
+      loop(iEvent,iSetup,*PFTaus);
    }
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
-     loop(iEvent, *caloTaus);
+     loop(iEvent,iSetup, *caloTaus);
    }
    else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
-     loop(iEvent, *electronTaus);
+     loop(iEvent,iSetup, *electronTaus);
    }
    
    // For electron lorentzvectors, add similar clauses
@@ -145,7 +145,8 @@ using namespace reco;
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
-      if( deltaR(PFTaus->at(i),mcTaus->at(k) ) < MCMatchingCone ){ // match within 0.2 cone
+      //Mike B: Changed this to ROOT ::Math since it was confised which deltaR to use
+      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(i).p4(),mcTaus->at(k)) < MCMatchingCone ){ // match within 0.2 cone
          MCMatch = 1;
 	 MCTauE = mcTaus->at(k).energy();
 	 MCTauEt = mcTaus->at(k).Et();

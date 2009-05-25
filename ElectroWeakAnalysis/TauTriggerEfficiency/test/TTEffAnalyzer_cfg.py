@@ -15,6 +15,12 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
+
+#Mike needs Calo Geometry
+process.load('Configuration/StandardSequences/GeometryPilot2_cff')
+
+
+
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
 ## 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
@@ -24,6 +30,7 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 ## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
 #    )
 #)
+
 from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run4_cfg import *
 process.source = source
 
@@ -64,7 +71,13 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
         L2AssociationCollection = cms.InputTag("hltL2TauNarrowConeIsolationProducer"),
-        L2matchingDeltaR        = cms.double(0.3),
+        EERecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEE"),
+        EBRecHits               = cms.untracked.InputTag("ecalRecHit","EcalRecHitsEB"),
+        outerCone               = cms.untracked.double(0.5),
+        innerCone               = cms.untracked.double(0.15),
+        crystalThresholdEB      = cms.untracked.double(0.15),
+        crystalThresholdEE      = cms.untracked.double(0.45),
+        L2matchingDeltaR        = cms.double(0.2),
         l25JetSource            = cms.InputTag("hltL25TauConeIsolation"),
         l25PtCutSource          = cms.InputTag("hltL25TauLeadingTrackPtCutSelector"),
         l3IsoSource             = cms.InputTag("hltL3TauIsolationSelector"), #obsolet: L25/L3 merged?
@@ -72,7 +85,6 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         MCMatchingCone         = cms.double(0.2),
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
-
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
