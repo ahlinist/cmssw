@@ -16,6 +16,7 @@ selectedElecMuPairsAntiOverlapVeto.cut = cms.string('dR12 > 1.57')
 selectedElecMuPairsZeroCharge.cut = cms.string('charge = 0')
 selectedElecMuPairsMt1MET.cut = cms.string('mt1MET < 50.')
 selectedElecMuPairsMt2MET.cut = cms.string('mt2MET < 50.')
+
 patElecMuPairSelConfigurator = objSelConfigurator(
     [ selectedElecMuPairsAntiOverlapVeto,
       selectedElecMuPairsZeroCharge,
@@ -27,6 +28,22 @@ patElecMuPairSelConfigurator = objSelConfigurator(
 )
 
 selectElecMuPairs = patElecMuPairSelConfigurator.configure(namespace = locals())
+
+selectedElecMuPairsAntiOverlapVetoLooseElectronIsolation.cut = selectedElecMuPairsAntiOverlapVeto.cut
+selectedElecMuPairsZeroChargeLooseElectronIsolation.cut = selectedElecMuPairsZeroCharge.cut
+selectedElecMuPairsMt1METlooseElectronIsolation.cut = selectedElecMuPairsMt1MET.cut
+
+patElecMuPairSelConfiguratorLooseElectronIsolation = objSelConfigurator(
+    [ selectedElecMuPairsAntiOverlapVetoLooseElectronIsolation,
+      selectedElecMuPairsZeroChargeLooseElectronIsolation,
+      selectedElecMuPairsMt1METlooseElectronIsolation,
+      selectedElecMuPairsMt2METlooseElectronIsolation ],
+    src = "allElecMuPairsLooseElectronIsolation",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecMuPairsLooseElectronIsolation = patElecMuPairSelConfiguratorLooseElectronIsolation.configure(namespace = locals())
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + tau-jet pairs
@@ -103,7 +120,7 @@ patDiTauPairSelConfigurator = objSelConfigurator(
 
 selectDiTauPairs = patDiTauPairSelConfigurator.configure(namespace = locals())
 
-selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs
+selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
                                         +selectElecTauPairs
                                         +selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
                                         +selectDiTauPairs )
