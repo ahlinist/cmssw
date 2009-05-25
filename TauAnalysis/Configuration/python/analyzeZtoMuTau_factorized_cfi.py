@@ -81,7 +81,8 @@ replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation
       ["selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative"],
       ["selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative"],
       ["selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative"],
-      ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"] ]) 
+      ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"] ]
+) 
 
 muTauAnalysisSequence_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
 switchHistManagers(muTauAnalysisSequence_factorizedWithMuonIsolation, muTauHistManagers_factorizedWithMuonIsolation)
