@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.16 $
-  \date $Date: 2009/05/22 19:05:23 $
+  \version $Revision: 1.17 $
+  \date $Date: 2009/05/22 19:09:33 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -105,7 +105,7 @@ public:
         color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       }
 
-      // Make rainbow colors.  Assign colors positions 1001-1101;
+      // Make rainbow colors.  Assign colors positions 1101-1200;
       NRGBs_rainbow = 5; // specify number of RGB boundaries for rainbow
       NCont_rainbow = 100; // specify number of contours for rainbow
       Double_t stops_rainbow[] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
@@ -120,11 +120,11 @@ public:
         nColorsGradient = (Int_t) (floor(NCont_rainbow*stops_rainbow[g]) - floor(NCont_rainbow*stops_rainbow[g-1])); // specify number of gradients between stops (g-1) and (g)
         for (int c = 0; c < nColorsGradient; c++)
         {
-          hcalRainbowColors[highestIndex]=1001+highestIndex;
-          TColor* color = gROOT->GetColor(1001+highestIndex);
+          hcalRainbowColors[highestIndex]=1101+highestIndex;
+          TColor* color = gROOT->GetColor(1101+highestIndex);
           // Make new color only if old color does not exist
           if (!color)
-            color = new TColor(1001+highestIndex,
+            color = new TColor(1101+highestIndex,
                                red_rainbow[g-1] + c * (red_rainbow[g] - red_rainbow[g-1])/ nColorsGradient,
                                green_rainbow[g-1] + c * (green_rainbow[g] - green_rainbow[g-1])/ nColorsGradient,
                                blue_rainbow[g-1] + c * (blue_rainbow[g] - blue_rainbow[g-1])/ nColorsGradient,
@@ -133,7 +133,7 @@ public:
         }
       }
 
-      // repeat for hcal error colors.  Assign color positions 1201-1301;
+      // repeat for hcal error colors.  Assign color positions 1201-1300;
       NRGBs_hcalError = 6; // specify number of RGB boundaries for hcalError
       NCont_hcalError = 100; // specify number of contours for hcalError
       Double_t stops_hcalError[] = { 0.00, 0.05, 0.40, 0.75, 0.95, 1.00};
@@ -317,31 +317,34 @@ private:
         gStyle->SetPalette(40,summaryColors);
         obj->SetOption("colz");
       }
+
+      // Overall pedestal plots should always be colored yellow-red (no green allowed; ZS doesn't let us normalize to Nevents properly (yet) )
+      else if (   (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
+		  (o.name.find("PedestalMonitor_Hcal/problem_pedestals/")!=std::string::npos) 
+		  )
+	{
+	  double scale = obj->GetBinContent(0,0);
+	  obj->Scale(1./scale);
+	  obj->SetMinimum(0.);
+	  obj->SetMaximum(1.); 
+	  // Make special color scheme for pedestals at some point?
+	}
+      
+      
       // Overall problem hot cells are plotted with error Fraction colors (0 = green, 1 = red)
       else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
                 (o.name.find("RecHitMonitor_Hcal/problem_rechits/")!= std::string::npos ) ||
                 (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
                 (o.name.find("DigiMonitor_Hcal/problem_digis/")!= std::string::npos ) ||
-                (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
-                (o.name.find("PedestalMonitor_Hcal/problem_pedestals/")!=std::string::npos) ||
-                (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
+		(o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
                 (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
                 (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
                 (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos )
-                // || // normalize these to error rate, or just to raw number of events (see below)?
-                // HotCell Subdirectories
-                //(o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
-                //(o.name.find("HotCellMonitor_Hcal/hot_rechit_above_threshold/") != std::string::npos) ||
-                //(o.name.find("HotCellMonitor_Hcal/hot_rechit_always_above_threshold/") != std::string::npos) ||
-                //(o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
-                // Dead Cell subdirectories
-                //(o.name.find("DeadCellMonitor_Hcal/dead_neighbortest/")!= std::string::npos ) ||
-                //(o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest/")!= std::string::npos ) ||
-                //(o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi/")!= std::string::npos ) ||
-                //(o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit/")!= std::string::npos ) ||
-                //(o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos )
-        )
+		)
+		
       {
+	c->SetFrameFillColor(18);
+	gStyle->SetFrameFillColor(18);
         double scale = obj->GetBinContent(0,0);
         if (scale>0)
         {
@@ -364,18 +367,28 @@ private:
         (o.name.find("HotCellMonitor_Hcal/hot_rechit_always_above_threshold/") != std::string::npos) ||
         (o.name.find("HotCellMonitor_Hcal/hot_neighbortest/") != std::string::npos)  ||
         // Dead Cell subdirectories
-        (o.name.find("DeadCellMonitor_Hcal/dead_neighbortest/")!= std::string::npos ) ||
-        (o.name.find("DeadCellMonitor_Hcal/dead_pedestaltest/")!= std::string::npos ) ||
-        (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_digi/")!= std::string::npos ) ||
-        (o.name.find("DeadCellMonitor_Hcal/dead_unoccupied_rechit/")!= std::string::npos ) ||
-        (o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos )
+        (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing/")!= std::string::npos ) ||
+        (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present/")!= std::string::npos ) ||
+	(o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos )
         )
       {
+	gPad->SetGridx();
+	gPad->SetGridy();
         double scale = obj->GetBinContent(0,0);
         if (scale>0)
         {
           obj->SetMaximum(obj->GetBinContent(0,0));
           obj->SetMinimum(0.);
+	  if (o.name.find("dead_digi_never_present/") != std::string::npos && scale > 1000) 
+	    {
+	      gStyle->SetOptStat(0);
+	      obj->SetStats(0);
+	    }
+	  else if (scale>10000)
+	    {
+	      gStyle->SetOptStat(0);
+	      obj->SetStats(0);
+	    }
         }
         setErrorColor();
         //gStyle->SetPalette(20, errorFracColors);
@@ -393,16 +406,17 @@ private:
       {
         // ADC pedestals should be centered at 3; set maximum to 2*3=6
         obj->SetMinimum(0.);
-        if (
-          (o.name.find("Pedestal Mean Map") != std::string::npos) ||
-          (o.name.find("Pedestal Values Map") != std::string::npos)
-          )
-          obj->SetMaximum(6.);
-        else if (
-          (o.name.find("Pedestal RMS Map") != std::string::npos) ||
-          (o.name.find("Pedestal Widths Map") != std::string::npos)
-          )
-          obj->SetMaximum(2.);
+        if ( (obj->GetMaximum()<6.) &&
+	     ((o.name.find("Pedestal Mean Map") != std::string::npos) ||
+	      (o.name.find("Pedestal Values Map") != std::string::npos))
+	    )
+	      obj->SetMaximum(6.);
+
+        else if ( (obj->GetMaximum()<2.) &&
+		  ((o.name.find("Pedestal RMS Map") != std::string::npos) ||
+		   (o.name.find("Pedestal Widths Map") != std::string::npos))
+		 )
+	      obj->SetMaximum(2.);
 
         setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
         obj->SetOption("colz");
@@ -445,8 +459,52 @@ private:
       }
     }
 
-  void postDrawTH1( TCanvas *, const DQMNet::CoreObject & )
-    {
+  void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
+  {
+    TH1* obj = dynamic_cast<TH1*>( o.object ); 
+    assert( obj ); 
+    
+    // Dead Cell check -- warn that plots need many events before they update
+    if (o.name.find("DeadCellMonitor_Hcal/" )!=std::string::npos)
+      {
+	if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
+	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!=std::string::npos) ||
+	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells") != std::string::npos) ||
+	     (o.name.find("DeadCellMonitor_Hcal/Problem_") != std::string::npos) 
+	     )
+	  {
+	    if (obj->GetBinContent(0)<10000)
+	      {
+		TText t;
+		t.DrawTextNDC(0.05,0.01,"Histogram updates every 10,000 events");
+		gStyle->SetOptStat(1111);
+		obj->SetStats(1111); 
+	      }
+	    else
+	      {
+		gStyle->SetOptStat(0);
+		obj->SetStats(0);
+	      }
+	  } 
+	else if ( (o.name.find("Problem_NeverPresentCells_") != std::string::npos) 		
+		  ) 
+	  {
+	    if (obj->GetBinContent(0)<1000)
+	      {
+		TText t;
+		t.DrawTextNDC(0.05,0.01,"Histogram updates every 1,000 events");
+		
+	      }
+	    else
+	      {
+		gStyle->SetOptStat(0);
+		obj->SetStats(0);
+		gPad->SetGridx();
+		gPad->SetGridy(); 
+	      }
+	  }
+      } // if (o.name.find("DeadCellMonitor_Hcal/"...))
+
       /*
         // Add error/warning text to 1-D histograms.  Do we want this at this time?
         TText tt;
@@ -484,6 +542,16 @@ private:
     {
       TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
+
+      // Move histogram to accomodate colz column
+      TPaletteAxis *pal = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+      if (pal!=0)
+	{
+	  c->SetRightMargin(0.15);
+	  pal->SetX1NDC(0.85);
+	  pal->SetX2NDC(0.90);
+	}
+      
 
       // Want to move colz palette, but this crashes code, and does not move the palette.  Hmm...
       obj->GetYaxis()->SetTickLength(0.0);
@@ -644,22 +712,55 @@ private:
           gPad->SetGridy();
         }
       }
+      
+      // Dead Cell check -- warn that plots need many events before they update
+      if (o.name.find("DeadCellMonitor_Hcal/" )!=std::string::npos)
+	{
+	  if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
+	       (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!=std::string::npos) ||
+	       (o.name.find("DeadCellMonitor_Hcal/problem_deadcells") != std::string::npos) ||
+	       (o.name.find("DeadCellMonitor_Hcal/Problem_") != std::string::npos) ||
+	       (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing/Problem_") != std::string::npos) 
+	       )
+	    {
+	      if (obj->GetBinContent(0)<10000)
+		{
+		  TText t;
+		  t.DrawTextNDC(0.05,0.01,"Histogram updates every 10,000 events");
+		  gStyle->SetOptStat(1111);
+		  obj->SetStats(1111); 
+		}
+	      else
+		{
+		  gStyle->SetOptStat(0);
+		  obj->SetStats(0);
+		  gPad->SetGridx();
+		  gPad->SetGridy(); 
+		}
+	    } 
+	  else if ( (o.name.find("Problem_NeverPresentCells_") != std::string::npos) ||
+		    (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells") != std::string::npos) ||
+		    (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/") != std::string::npos) ||
+		    (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present") != std::string::npos)
+		    )
+	    {
+	      if (obj->GetBinContent(0)<1000)
+		{
+		  TText t;
+		  t.DrawTextNDC(0.05,0.01,"Histogram updates every 1,000 events");
+		}
+	      else
+		{
+		  gStyle->SetOptStat(0);
+		  obj->SetStats(0);
+		  gPad->SetGridx();
+		  gPad->SetGridy(); 
+		}
+	    }
+	} // if (o.name.find(" DeadCellMonitor_Hcal/"...)
+      
       //drawEtaPhiLines(obj);
 
-      // Want to move colz palette, but this doesn't seem to work.  Hmm...
-      //std::string obj_option=obj->GetOption();
-      /*
-        TPaletteAxis *palette =
-        (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
-        if (palette)
-        {
-        palette->SetX1NDC(0.5);
-        palette->SetX2NDC(0.925);
-        palette->SetLabelSize(0.02);
-        palette->SetTitleOffset(0.5);
-        c->Modified();
-        }
-      */
     }
 
   void setRainbowColor(void)
@@ -710,6 +811,6 @@ private:
         horiz->Draw("same");
       }
     }
-};
+}; // HcalRenderPlugin class
 
 static HcalRenderPlugin instance;
