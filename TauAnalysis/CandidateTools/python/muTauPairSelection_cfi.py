@@ -21,14 +21,14 @@ selectedMuTauPairsZeroCharge = cms.EDFilter("PATMuTauPairSelector",
     filter = cms.bool(False)
 )
 
-#require cut transverse mass of muon and MET
+#require low transverse mass of muon and MET
 selectedMuTauPairsMt1MET = cms.EDFilter("PATMuTauPairSelector",
     cut = cms.string('mt1MET < 60.'),
     filter = cms.bool(False)
 )
 
-# define additional collections of muon candidates
-# with loose track and ECAL isolation applied
+# define additional collections of muon + tau-jet candidates
+# with loose track and ECAL isolation applied on muon leg
 # (NOTE: to be used for the purpose of factorizing efficiencies
 #        of muon isolation from other event selection criteria,
 #        in order to avoid problems with limited Monte Carlo statistics)
