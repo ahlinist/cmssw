@@ -20,29 +20,29 @@ intLumiZtautau = float(1146.9)
 patTupleOutputFileNameZtautau = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Ztautau_partXX.root')
 plotsOutputFileNameZtautau = cms.string('plotsZtoElecTau_Ztautau_partXX.root')
 genPhaseSpaceCutZtautau = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesZtautau_part01 = cms.untracked.vstring(
+fileNamesZtautau_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_2.root'
 )
-fileNamesZtautau_part02 = cms.untracked.vstring(
+fileNamesZtautau_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_4.root'
 )
-fileNamesZtautau_part03 = cms.untracked.vstring(
+fileNamesZtautau_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_6.root'
 )
-fileNamesZtautau_part04 = cms.untracked.vstring(
+fileNamesZtautau_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_8.root'
 )
-fileNamesZtautau_part05 = cms.untracked.vstring(
+fileNamesZtautau_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_10.root'
 )
@@ -64,53 +64,53 @@ intLumiZee = float(667.)
 patTupleOutputFileNameZee = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Zee_partXX.root')
 plotsOutputFileNameZee = cms.string('plotsZtoElecTau_Zee_partXX.root')
 genPhaseSpaceCutZee = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesZee_part01 = cms.untracked.vstring(
+fileNamesZee_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_3.root'
 )
-fileNamesZee_part02 = cms.untracked.vstring(
+fileNamesZee_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_4.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_6.root'
 )
-fileNamesZee_part03 = cms.untracked.vstring(
+fileNamesZee_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_9.root'
 )
-fileNamesZee_part04 = cms.untracked.vstring(
+fileNamesZee_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_12.root'
 )
-fileNamesZee_part05 = cms.untracked.vstring(
+fileNamesZee_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_15.root'
 )
-fileNamesZee_part06 = cms.untracked.vstring(
+fileNamesZee_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_16.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_18.root'
 )
-fileNamesZee_part07 = cms.untracked.vstring(
+fileNamesZee_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_19.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_21.root'
 )
-fileNamesZee_part08 = cms.untracked.vstring(
+fileNamesZee_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_22.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_23.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_24.root'
 )
-fileNamesZee_part09 = cms.untracked.vstring(
+fileNamesZee_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_25.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_27.root'
@@ -230,12 +230,12 @@ intLumiQCD_EMenriched_Pt20to30 = float(6.36)
 patTupleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
 plotsOutputFileNameQCD_EMenriched_Pt20to30 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
 genPhaseSpaceCutQCD_EMenriched_Pt20to30 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
-fileNamesQCD_EMenriched_Pt20to30_part01 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_3.root',
@@ -246,7 +246,7 @@ fileNamesQCD_EMenriched_Pt20to30_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_9.root',
 )
-fileNamesQCD_EMenriched_Pt20to30_part02 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_12.root',
@@ -258,7 +258,7 @@ fileNamesQCD_EMenriched_Pt20to30_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_18.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_19.root',
 )
-fileNamesQCD_EMenriched_Pt20to30_part03 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_22.root',
@@ -270,7 +270,7 @@ fileNamesQCD_EMenriched_Pt20to30_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_29.root',
 )
-fileNamesQCD_EMenriched_Pt20to30_part04 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_30.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_32.root',
@@ -282,7 +282,7 @@ fileNamesQCD_EMenriched_Pt20to30_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_38.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_39.root',
 )
-fileNamesQCD_EMenriched_Pt20to30_part05 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_40.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_42.root',
@@ -294,7 +294,7 @@ fileNamesQCD_EMenriched_Pt20to30_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_48.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_49.root',
 )
-fileNamesQCD_EMenriched_Pt20to30_part06 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_50.root'
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_52.root',
@@ -306,7 +306,7 @@ fileNamesQCD_EMenriched_Pt20to30_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_58.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_59.root'
 )
-fileNamesQCD_EMenriched_Pt20to30_part07 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_50.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_62.root',
@@ -318,7 +318,7 @@ fileNamesQCD_EMenriched_Pt20to30_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_68.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_69.root'
 )
-fileNamesQCD_EMenriched_Pt20to30_part08 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_70.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_71.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_72.root',
@@ -330,7 +330,7 @@ fileNamesQCD_EMenriched_Pt20to30_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_78.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_79.root'
 )
-fileNamesQCD_EMenriched_Pt20to30_part09 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt20to30_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_80.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_81.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_82.root',
@@ -409,44 +409,44 @@ intLumiQCD_EMenriched_Pt30to80 = float(8.15)
 patTupleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
 plotsOutputFileNameQCD_EMenriched_Pt30to80 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
 genPhaseSpaceCutQCD_EMenriched_Pt30to80 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
-fileNamesQCD_EMenriched_Pt30to80_part01 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_2.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part02 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_4.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part03 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_6.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part04 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_8.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part05 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_10.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part06 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_12.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part07 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_14.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part08 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_15.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_16.root'
 )
-fileNamesQCD_EMenriched_Pt30to80_part09 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt30to80_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_18.root'
 )
@@ -774,61 +774,61 @@ patTupleOutputFileNameQCD_EMenriched_Pt80to170 = cms.untracked.string(patTupleOu
 plotsOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_partXX.root')
 
 genPhaseSpaceCutQCD_EMenriched_Pt80to170 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesQCD_EMenriched_Pt80to170_part01 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_4.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part02 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_6.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_8.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part03 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_12.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part04 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part4 = cms.untracked.vstring(
 #	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_16.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part05 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_18.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_19.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_20.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part06 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_22.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_23.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_24.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part07 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part7 = cms.untracked.vstring(
 #	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_25.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_27.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_28.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part08 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_29.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_31.root'
 #	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_32.root',
 )
-fileNamesQCD_EMenriched_Pt80to170_part09 = cms.untracked.vstring(
+fileNamesQCD_EMenriched_Pt80to170_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_33.root',
 #	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_34.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_35.root',
@@ -941,53 +941,53 @@ patTupleOutputFileNameQCD_BCtoE_Pt20to30 = cms.untracked.string(patTupleOutputDi
 plotsOutputFileNameQCD_BCtoE_Pt20to30 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_partXX.root')
 
 genPhaseSpaceCutQCD_BCtoE_Pt20to30 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesQCD_BCtoE_Pt20to30_part01 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_3.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part02 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_4.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_6.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part03 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_9.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part04 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_12.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part05 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_15.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part06 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_16.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_18.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part07 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_19.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_21.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part08 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_22.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_23.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_24.root'
 )
-fileNamesQCD_BCtoE_Pt20to30_part09 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt20to30_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_25.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_27.root'
@@ -1050,13 +1050,13 @@ patTupleOutputFileNameQCD_BCtoE_Pt30to80 = cms.untracked.string(patTupleOutputDi
 plotsOutputFileNameQCD_BCtoE_Pt30to80 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_partXX.root')
 
 genPhaseSpaceCutQCD_BCtoE_Pt30to80 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesQCD_BCtoE_Pt30to80_part01 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_3.root',
@@ -1072,7 +1072,7 @@ fileNamesQCD_BCtoE_Pt30to80_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_14.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part02 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_15.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_16.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_17.root',
@@ -1089,7 +1089,7 @@ fileNamesQCD_BCtoE_Pt30to80_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_29.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part03 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_30.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_32.root',
@@ -1106,7 +1106,7 @@ fileNamesQCD_BCtoE_Pt30to80_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_43.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_44.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part04 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_45.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_46.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_47.root',
@@ -1123,7 +1123,7 @@ fileNamesQCD_BCtoE_Pt30to80_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_58.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_59.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part05 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_60.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_62.root',
@@ -1140,7 +1140,7 @@ fileNamesQCD_BCtoE_Pt30to80_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_73.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_74.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part06 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_75.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_76.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_77.root',
@@ -1157,7 +1157,7 @@ fileNamesQCD_BCtoE_Pt30to80_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_88.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_89.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part07 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_90.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_91.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_92.root',
@@ -1174,7 +1174,7 @@ fileNamesQCD_BCtoE_Pt30to80_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_103.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_104.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part08 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_105.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_106.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_107.root',
@@ -1191,7 +1191,7 @@ fileNamesQCD_BCtoE_Pt30to80_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_118.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_119.root'
 )
-fileNamesQCD_BCtoE_Pt30to80_part09 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt30to80_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_120.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_121.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_122.root',
@@ -1541,13 +1541,13 @@ patTupleOutputFileNameQCD_BCtoE_Pt80to170 = cms.untracked.string(patTupleOutputD
 plotsOutputFileNameQCD_BCtoE_Pt80to170 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_partXX.root')
 
 genPhaseSpaceCutQCD_BCtoE_Pt80to170 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-fileNamesQCD_BCtoE_Pt80to170_part01 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_3.root',
@@ -1558,7 +1558,7 @@ fileNamesQCD_BCtoE_Pt80to170_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_9.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part02 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_12.root',
@@ -1570,7 +1570,7 @@ fileNamesQCD_BCtoE_Pt80to170_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_18.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_19.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part03 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_22.root',
@@ -1582,7 +1582,7 @@ fileNamesQCD_BCtoE_Pt80to170_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_29.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part04 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_30.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_32.root',
@@ -1594,7 +1594,7 @@ fileNamesQCD_BCtoE_Pt80to170_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_38.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_39.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part05 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_40.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_42.root',
@@ -1606,7 +1606,7 @@ fileNamesQCD_BCtoE_Pt80to170_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_48.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_49.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part06 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_50.root'
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_52.root',
@@ -1618,7 +1618,7 @@ fileNamesQCD_BCtoE_Pt80to170_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_58.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_59.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part07 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_60.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_62.root',
@@ -1630,7 +1630,7 @@ fileNamesQCD_BCtoE_Pt80to170_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_68.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_69.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part08 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_70.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_71.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_72.root',
@@ -1642,7 +1642,7 @@ fileNamesQCD_BCtoE_Pt80to170_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_78.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_79.root'
 )
-fileNamesQCD_BCtoE_Pt80to170_part09 = cms.untracked.vstring(
+fileNamesQCD_BCtoE_Pt80to170_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_80.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_81.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_82.root',
@@ -1722,32 +1722,32 @@ intLumiPhotonJets_Pt30to35 = float(21.89)
 intLumiPhotonJets_PtGt35   = float(13.36)
 
 genPhaseSpaceCutPhotonJets_Pt15to20 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 genPhaseSpaceCutPhotonJets_Pt20to25 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 genPhaseSpaceCutPhotonJets_Pt25to30 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 genPhaseSpaceCutPhotonJets_Pt30to35 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 genPhaseSpaceCutPhotonJets_PtGt35 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
@@ -1787,71 +1787,71 @@ intLumiWplusJets = float(242.)
 patTupleOutputFileNameWjets_madgraph = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Wjets_madgraph_partXX.root')
 plotsOutputFileNameWjets_madgraph = cms.string('plotsZtoElecTau_Wjets_madgraph_partXX.root')
 genPhaseSpaceCutWjets_madgraph = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 #
 #  4.7kev/file, 5 files/job, 23kev/job, 18 jobs, 89 files 
 #
-fileNamesWjets_madgraph_part01 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_4.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_5.root'
 )
-fileNamesWjets_madgraph_part02 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_6.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_10.root'
 )
-fileNamesWjets_madgraph_part03 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_12.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_15.root'
 )
-fileNamesWjets_madgraph_part04 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_16.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_18.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_19.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_20.root'
 )
-fileNamesWjets_madgraph_part05 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_22.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_23.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_24.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_25.root'
 )
-fileNamesWjets_madgraph_part06 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_27.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_29.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_30.root'
 )
-fileNamesWjets_madgraph_part07 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_32.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_33.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_34.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_35.root'
 )
-fileNamesWjets_madgraph_part08 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_36.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_37.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_38.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_39.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_40.root'
 )
-fileNamesWjets_madgraph_part09 = cms.untracked.vstring(
+fileNamesWjets_madgraph_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_42.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_43.root',
@@ -1946,15 +1946,15 @@ intLumiZplusJets = float(341.)
 patTupleOutputFileNameZjets_madgraph = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Zjets_madgraph_partXX.root')
 plotsOutputFileNameZjets_madgraph = cms.string('plotsZtoElecTau_Zjets_madgraph_partXX.root')
 genPhaseSpaceCutZjets_madgraph = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 # 13 jobs; 10 files/job; 128 files; ~21k ev/job
 #
 #
-fileNamesZjets_madgraph_part01 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part1 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_3.root',
@@ -1965,7 +1965,7 @@ fileNamesZjets_madgraph_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_9.root'
 )
-fileNamesZjets_madgraph_part02 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part2 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_12.root',
@@ -1977,7 +1977,7 @@ fileNamesZjets_madgraph_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_18.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_19.root'
 )
-fileNamesZjets_madgraph_part03 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part3 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_21.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_22.root',
@@ -1989,7 +1989,7 @@ fileNamesZjets_madgraph_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_29.root'
 )
-fileNamesZjets_madgraph_part04 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part4 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_30.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_32.root',
@@ -2001,7 +2001,7 @@ fileNamesZjets_madgraph_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_38.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_39.root'
 )
-fileNamesZjets_madgraph_part05 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part5 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_40.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_42.root',
@@ -2013,7 +2013,7 @@ fileNamesZjets_madgraph_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_48.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_49.root'
 )
-fileNamesZjets_madgraph_part06 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part6 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_50.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_51.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_52.root',
@@ -2025,7 +2025,7 @@ fileNamesZjets_madgraph_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_58.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_59.root'
 )
-fileNamesZjets_madgraph_part07 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part7 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_60.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_62.root',
@@ -2037,7 +2037,7 @@ fileNamesZjets_madgraph_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_68.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_69.root'
 )
-fileNamesZjets_madgraph_part08 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part8 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_70.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_71.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_72.root',
@@ -2049,7 +2049,7 @@ fileNamesZjets_madgraph_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_78.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_79.root'
 )
-fileNamesZjets_madgraph_part09 = cms.untracked.vstring(
+fileNamesZjets_madgraph_part9 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_80.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_81.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_82.root',
@@ -2138,8 +2138,8 @@ fileNamesTTjets_madgraph = cms.untracked.vstring(
 )
 
 genPhaseSpaceCutTTjets_madgraph = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  pluginName = cms.string('genPhaseSpaceCut'),
+  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
