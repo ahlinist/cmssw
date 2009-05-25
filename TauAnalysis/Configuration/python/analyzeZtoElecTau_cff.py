@@ -70,9 +70,9 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         triggerHistManager
     ),
 
-    eventDumps = cms.VPSet(
-        elecTauEventDump
-    ),
+#    eventDumps = cms.VPSet(
+#        elecTauEventDump
+#    ),
    
     analysisSequence = elecTauAnalysisSequence
 )
