@@ -6,7 +6,7 @@ import copy
 
 intLumiData = float(200.)
 
-patTupleOutputDirectoryName = cms.string('/castor/cern.ch/user/v/veelken/CMSSW_2_2_7/')
+patTupleOutputDirectoryName = cms.string('/castor/cern.ch/user/j/jkolb/elecTauPatTuple/')
 
 #--------------------------------------------------------------------------------
 # Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
@@ -17,56 +17,38 @@ patTupleOutputDirectoryName = cms.string('/castor/cern.ch/user/v/veelken/CMSSW_2
 #
 intLumiZtautau = float(1146.9)
 
-fileNamesZtautau_part01 = cms.untracked.vstring(
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root',
-	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_2.root'
-)
-
-genPhaseSpaceCutZtautau_part01 = cms.PSet(
+patTupleOutputFileNameZtautau = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Ztautau_partXX.root')
+plotsOutputFileNameZtautau = cms.string('plotsZtoElecTau_Ztautau_partXX.root')
+genPhaseSpaceCutZtautau = cms.PSet(
   name = cms.string('genPhaseSpaceCut'),
   type = cms.string('GenPhaseSpaceEventInfoSelector'),
   src = cms.InputTag('genPhaseSpaceEventInfo'),
   cut = cms.string('')
 )
 
-outputFileNameZtautau_part01 = cms.string('plotsZtoElecTau_Ztautau_part01.root')
-
+fileNamesZtautau_part01 = cms.untracked.vstring(
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root',
+	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_2.root'
+)
 fileNamesZtautau_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_3.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_4.root'
 )
-
-genPhaseSpaceCutZtautau_part02 = genPhaseSpaceCutZtautau_part01
-
-outputFileNameZtautau_part02 = cms.string('plotsZtoElecTau_Ztautau_part02.root')
-
 fileNamesZtautau_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_6.root'
 )
-
-genPhaseSpaceCutZtautau_part03 = genPhaseSpaceCutZtautau_part01
-
-outputFileNameZtautau_part03 = cms.string('plotsZtoElecTau_Ztautau_part03.root')
-
 fileNamesZtautau_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_8.root'
 )
-
-genPhaseSpaceCutZtautau_part04 = genPhaseSpaceCutZtautau_part01
-
-outputFileNameZtautau_part04 = cms.string('plotsZtoElecTau_Ztautau_part04.root')
-
 fileNamesZtautau_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_9.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_10.root'
 )
-
-genPhaseSpaceCutZtautau_part05 = genPhaseSpaceCutZtautau_part01
-
-outputFileNameZtautau_part05 = cms.string('plotsZtoElecTau_Ztautau_part05.root')
 #--------------------------------------------------------------------------------
+
+
 
 
 #--------------------------------------------------------------------------------
@@ -79,126 +61,115 @@ outputFileNameZtautau_part05 = cms.string('plotsZtoElecTau_Ztautau_part05.root')
 #
 intLumiZee = float(667.)
 
+patTupleOutputFileNameZee = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Zee_partXX.root')
+plotsOutputFileNameZee = cms.string('plotsZtoElecTau_Zee_partXX.root')
+genPhaseSpaceCutZee = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
+
 fileNamesZee_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_2.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_3.root'
 )
-
 fileNamesZee_part02 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_4.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_5.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_6.root'
 )
-
 fileNamesZee_part03 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_7.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_8.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_9.root'
 )
-
 fileNamesZee_part04 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_10.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_11.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_12.root'
 )
-
 fileNamesZee_part05 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_13.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_14.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_15.root'
 )
-
 fileNamesZee_part06 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_16.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_17.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_18.root'
 )
-
 fileNamesZee_part07 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_19.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_20.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_21.root'
 )
-
 fileNamesZee_part08 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_22.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_23.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_24.root'
 )
-
 fileNamesZee_part09 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_25.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_26.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_27.root'
 )
-
 fileNamesZee_part10 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_28.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_29.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_30.root'
 )
-
 fileNamesZee_part11 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_31.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_32.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_33.root'
 )
-
 fileNamesZee_part12 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_34.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_35.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_36.root'
 )
-
 fileNamesZee_part13 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_37.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_38.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_39.root'
 )
-
 fileNamesZee_part14 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_40.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_41.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_42.root'
 )
-
 fileNamesZee_part15 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_43.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_44.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_45.root'
 )
-
 fileNamesZee_part16 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_46.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_47.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_48.root'
 )
-
 fileNamesZee_part17 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_49.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_50.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_51.root'
 )
-
 fileNamesZee_part18 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_52.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_53.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_54.root'
 )
-
 fileNamesZee_part19 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_55.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_56.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_57.root'
 )
-
 fileNamesZee_part20 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_58.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_59.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_60.root'
 )
-
 fileNamesZee_part21 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_61.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_62.root',
@@ -234,76 +205,15 @@ fileNamesZee_part27 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_80.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_81.root'
 )
-
 fileNamesZee_part28 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_82.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_83.root'
 )
 
-genPhaseSpaceCutZee_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutZee_part02 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part03 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part04 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part05 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part06 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part07 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part08 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part09 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part10 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part11 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part12 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part13 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part14 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part15 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part16 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part17 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part18 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part19 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part20 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part21 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part22 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part23 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part24 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part25 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part26 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part27 = genPhaseSpaceCutZee_part01  
-genPhaseSpaceCutZee_part28 = genPhaseSpaceCutZee_part01 
-
-outputFileNameZee_part01 = cms.string('plotsZtoElecTau_Zee_part01.root')
-outputFileNameZee_part02 = cms.string('plotsZtoElecTau_Zee_part02.root')
-outputFileNameZee_part03 = cms.string('plotsZtoElecTau_Zee_part03.root')
-outputFileNameZee_part04 = cms.string('plotsZtoElecTau_Zee_part04.root')
-outputFileNameZee_part05 = cms.string('plotsZtoElecTau_Zee_part05.root')
-outputFileNameZee_part06 = cms.string('plotsZtoElecTau_Zee_part06.root')
-outputFileNameZee_part07 = cms.string('plotsZtoElecTau_Zee_part07.root')
-outputFileNameZee_part08 = cms.string('plotsZtoElecTau_Zee_part08.root')
-outputFileNameZee_part09 = cms.string('plotsZtoElecTau_Zee_part09.root')
-outputFileNameZee_part10 = cms.string('plotsZtoElecTau_Zee_part10.root')
-outputFileNameZee_part11 = cms.string('plotsZtoElecTau_Zee_part11.root')
-outputFileNameZee_part12 = cms.string('plotsZtoElecTau_Zee_part12.root')
-outputFileNameZee_part13 = cms.string('plotsZtoElecTau_Zee_part13.root')
-outputFileNameZee_part14 = cms.string('plotsZtoElecTau_Zee_part14.root')
-outputFileNameZee_part15 = cms.string('plotsZtoElecTau_Zee_part15.root')
-outputFileNameZee_part16 = cms.string('plotsZtoElecTau_Zee_part16.root')
-outputFileNameZee_part17 = cms.string('plotsZtoElecTau_Zee_part17.root')
-outputFileNameZee_part18 = cms.string('plotsZtoElecTau_Zee_part18.root')
-outputFileNameZee_part19 = cms.string('plotsZtoElecTau_Zee_part19.root')
-outputFileNameZee_part20 = cms.string('plotsZtoElecTau_Zee_part20.root')
-outputFileNameZee_part21 = cms.string('plotsZtoElecTau_Zee_part21.root')
-outputFileNameZee_part22 = cms.string('plotsZtoElecTau_Zee_part22.root')
-outputFileNameZee_part23 = cms.string('plotsZtoElecTau_Zee_part23.root')
-outputFileNameZee_part24 = cms.string('plotsZtoElecTau_Zee_part24.root')
-outputFileNameZee_part25 = cms.string('plotsZtoElecTau_Zee_part25.root')
-outputFileNameZee_part26 = cms.string('plotsZtoElecTau_Zee_part26.root')
-outputFileNameZee_part27 = cms.string('plotsZtoElecTau_Zee_part27.root')
-outputFileNameZee_part28 = cms.string('plotsZtoElecTau_Zee_part28.root')
 #--------------------------------------------------------------------------------
+
+
+
 
 #--------------------------------------------------------------------------------
 # electron enriched b/c --> e QCD sample generated with Pythia (20 GeV < Pt(hat) < 30 GeV)
@@ -317,6 +227,14 @@ outputFileNameZee_part28 = cms.string('plotsZtoElecTau_Zee_part28.root')
 
 intLumiQCD_EMenriched_Pt20to30 = float(6.36)
 
+patTupleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
+plotsOutputFileNameQCD_EMenriched_Pt20to30 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
+genPhaseSpaceCutQCD_EMenriched_Pt20to30 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 fileNamesQCD_EMenriched_Pt20to30_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_2.root',
@@ -472,39 +390,6 @@ fileNamesQCD_EMenriched_Pt20to30_part13 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt20to30/skimElecTau_QCD_EMenriched_Pt20to30_128.root'
 )
 
-outputFileNameQCD_EMenriched_Pt20to30_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part01.root')
-outputFileNameQCD_EMenriched_Pt20to30_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part02.root')
-outputFileNameQCD_EMenriched_Pt20to30_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part03.root')
-outputFileNameQCD_EMenriched_Pt20to30_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part04.root')
-outputFileNameQCD_EMenriched_Pt20to30_part05 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part05.root')
-outputFileNameQCD_EMenriched_Pt20to30_part06 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part06.root')
-outputFileNameQCD_EMenriched_Pt20to30_part07 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part07.root')
-outputFileNameQCD_EMenriched_Pt20to30_part08 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part08.root')
-outputFileNameQCD_EMenriched_Pt20to30_part09 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part09.root')
-outputFileNameQCD_EMenriched_Pt20to30_part10 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part10.root')
-outputFileNameQCD_EMenriched_Pt20to30_part11 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part11.root')
-outputFileNameQCD_EMenriched_Pt20to30_part12 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part12.root')
-outputFileNameQCD_EMenriched_Pt20to30_part13 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt20to30_part13.root')
-
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part02 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part03 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part04 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part05 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part06 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part07 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part08 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part09 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part10 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part11 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part12 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt20to30_part13 = genPhaseSpaceCutQCD_EMenriched_Pt20to30_part01  
 
 #--------------------------------------------------------------------------------
 
@@ -521,6 +406,14 @@ genPhaseSpaceCutQCD_EMenriched_Pt20to30_part13 = genPhaseSpaceCutQCD_EMenriched_
 #
 intLumiQCD_EMenriched_Pt30to80 = float(8.15)
 
+patTupleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
+plotsOutputFileNameQCD_EMenriched_Pt30to80 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
+genPhaseSpaceCutQCD_EMenriched_Pt30to80 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 fileNamesQCD_EMenriched_Pt30to80_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_2.root'
@@ -853,179 +746,6 @@ fileNamesQCD_EMenriched_Pt30to80_part83 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt30to80/skimElecTau_QCD_EMenriched_Pt30to80_165.root'
 )
 
-outputFileNameQCD_EMenriched_Pt30to80_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part01.root')
-outputFileNameQCD_EMenriched_Pt30to80_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part02.root')
-outputFileNameQCD_EMenriched_Pt30to80_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part03.root')
-outputFileNameQCD_EMenriched_Pt30to80_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part04.root')
-outputFileNameQCD_EMenriched_Pt30to80_part05 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part05.root')
-outputFileNameQCD_EMenriched_Pt30to80_part06 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part06.root')
-outputFileNameQCD_EMenriched_Pt30to80_part07 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part07.root')
-outputFileNameQCD_EMenriched_Pt30to80_part08 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part08.root')
-outputFileNameQCD_EMenriched_Pt30to80_part09 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part09.root')
-outputFileNameQCD_EMenriched_Pt30to80_part10 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part10.root')
-outputFileNameQCD_EMenriched_Pt30to80_part11 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part11.root')
-outputFileNameQCD_EMenriched_Pt30to80_part12 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part12.root')
-outputFileNameQCD_EMenriched_Pt30to80_part13 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part13.root')
-outputFileNameQCD_EMenriched_Pt30to80_part14 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part14.root')
-outputFileNameQCD_EMenriched_Pt30to80_part15 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part15.root')
-outputFileNameQCD_EMenriched_Pt30to80_part16 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part16.root')
-outputFileNameQCD_EMenriched_Pt30to80_part17 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part17.root')
-outputFileNameQCD_EMenriched_Pt30to80_part18 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part18.root')
-outputFileNameQCD_EMenriched_Pt30to80_part19 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part19.root')
-outputFileNameQCD_EMenriched_Pt30to80_part20 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part20.root')
-outputFileNameQCD_EMenriched_Pt30to80_part21 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part21.root')
-outputFileNameQCD_EMenriched_Pt30to80_part22 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part22.root')
-outputFileNameQCD_EMenriched_Pt30to80_part23 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part23.root')
-outputFileNameQCD_EMenriched_Pt30to80_part24 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part24.root')
-outputFileNameQCD_EMenriched_Pt30to80_part25 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part25.root')
-outputFileNameQCD_EMenriched_Pt30to80_part26 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part26.root')
-outputFileNameQCD_EMenriched_Pt30to80_part27 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part27.root')
-outputFileNameQCD_EMenriched_Pt30to80_part28 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part28.root')
-outputFileNameQCD_EMenriched_Pt30to80_part29 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part29.root')
-outputFileNameQCD_EMenriched_Pt30to80_part30 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part30.root')
-outputFileNameQCD_EMenriched_Pt30to80_part31 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part31.root')
-outputFileNameQCD_EMenriched_Pt30to80_part32 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part32.root')
-outputFileNameQCD_EMenriched_Pt30to80_part33 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part33.root')
-outputFileNameQCD_EMenriched_Pt30to80_part34 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part34.root')
-outputFileNameQCD_EMenriched_Pt30to80_part35 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part35.root')
-outputFileNameQCD_EMenriched_Pt30to80_part36 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part36.root')
-outputFileNameQCD_EMenriched_Pt30to80_part37 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part37.root')
-outputFileNameQCD_EMenriched_Pt30to80_part38 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part38.root')
-outputFileNameQCD_EMenriched_Pt30to80_part39 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part39.root')
-outputFileNameQCD_EMenriched_Pt30to80_part40 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part40.root')
-outputFileNameQCD_EMenriched_Pt30to80_part41 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part41.root')
-outputFileNameQCD_EMenriched_Pt30to80_part42 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part42.root')
-outputFileNameQCD_EMenriched_Pt30to80_part43 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part43.root')
-outputFileNameQCD_EMenriched_Pt30to80_part44 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part44.root')
-outputFileNameQCD_EMenriched_Pt30to80_part45 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part45.root')
-outputFileNameQCD_EMenriched_Pt30to80_part46 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part46.root')
-outputFileNameQCD_EMenriched_Pt30to80_part47 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part47.root')
-outputFileNameQCD_EMenriched_Pt30to80_part48 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part48.root')
-outputFileNameQCD_EMenriched_Pt30to80_part49 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part49.root')
-outputFileNameQCD_EMenriched_Pt30to80_part50 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part50.root')
-outputFileNameQCD_EMenriched_Pt30to80_part51 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part51.root')
-outputFileNameQCD_EMenriched_Pt30to80_part52 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part52.root')
-outputFileNameQCD_EMenriched_Pt30to80_part53 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part53.root')
-outputFileNameQCD_EMenriched_Pt30to80_part54 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part54.root')
-outputFileNameQCD_EMenriched_Pt30to80_part55 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part55.root')
-outputFileNameQCD_EMenriched_Pt30to80_part56 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part56.root')
-outputFileNameQCD_EMenriched_Pt30to80_part57 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part57.root')
-outputFileNameQCD_EMenriched_Pt30to80_part58 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part58.root')
-outputFileNameQCD_EMenriched_Pt30to80_part59 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part59.root')
-outputFileNameQCD_EMenriched_Pt30to80_part60 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part60.root')
-outputFileNameQCD_EMenriched_Pt30to80_part61 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part61.root')
-outputFileNameQCD_EMenriched_Pt30to80_part62 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part62.root')
-outputFileNameQCD_EMenriched_Pt30to80_part63 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part63.root')
-outputFileNameQCD_EMenriched_Pt30to80_part64 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part64.root')
-outputFileNameQCD_EMenriched_Pt30to80_part65 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part65.root')
-outputFileNameQCD_EMenriched_Pt30to80_part66 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part66.root')
-outputFileNameQCD_EMenriched_Pt30to80_part67 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part67.root')
-outputFileNameQCD_EMenriched_Pt30to80_part68 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part68.root')
-outputFileNameQCD_EMenriched_Pt30to80_part69 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part69.root')
-outputFileNameQCD_EMenriched_Pt30to80_part70 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part70.root')
-outputFileNameQCD_EMenriched_Pt30to80_part71 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part71.root')
-outputFileNameQCD_EMenriched_Pt30to80_part72 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part72.root')
-outputFileNameQCD_EMenriched_Pt30to80_part73 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part73.root')
-outputFileNameQCD_EMenriched_Pt30to80_part74 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part74.root')
-outputFileNameQCD_EMenriched_Pt30to80_part75 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part75.root')
-outputFileNameQCD_EMenriched_Pt30to80_part76 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part76.root')
-outputFileNameQCD_EMenriched_Pt30to80_part77 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part77.root')
-outputFileNameQCD_EMenriched_Pt30to80_part78 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part78.root')
-outputFileNameQCD_EMenriched_Pt30to80_part79 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part79.root')
-outputFileNameQCD_EMenriched_Pt30to80_part80 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part80.root')
-outputFileNameQCD_EMenriched_Pt30to80_part81 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part81.root')
-outputFileNameQCD_EMenriched_Pt30to80_part82 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part82.root')
-outputFileNameQCD_EMenriched_Pt30to80_part83 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt30to80_part83.root')
-
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part02 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part03 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part04 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part05 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part06 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part07 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part08 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part09 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part10 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part11 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part12 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part13 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part14 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part15 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part16 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part17 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part18 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part19 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part20 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part21 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part22 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part23 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part24 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part25 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part26 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part27 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part28 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part29 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part30 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part31 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part32 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part33 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part34 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part35 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part36 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part37 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part38 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part39 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part40 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part41 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part42 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part43 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part44 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part45 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part46 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part47 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part48 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part49 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part50 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part51 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part52 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part53 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part54 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part55 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part56 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part57 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part58 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part59 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part60 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part61 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part62 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part63 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part64 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part65 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part66 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part67 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part68 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part69 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part70 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part71 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part72 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part73 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part74 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part75 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part76 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part77 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part78 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part79 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part80 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part81 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part82 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt30to80_part83 = genPhaseSpaceCutQCD_EMenriched_Pt30to80_part01  
 
 #--------------------------------------------------------------------------------
 
@@ -1048,6 +768,17 @@ genPhaseSpaceCutQCD_EMenriched_Pt30to80_part83 = genPhaseSpaceCutQCD_EMenriched_
 #  84 good skim output files: 518k ev, 23 jobs, 22k ev/job, 
 #
 intLumiQCD_EMenriched_Pt80to170 = float(19.5)
+
+patTupleOutputFileNameQCD_EMenriched_Pt80to170 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_EMenriched_Pt80to170_partXX.root')
+
+plotsOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_partXX.root')
+
+genPhaseSpaceCutQCD_EMenriched_Pt80to170 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 fileNamesQCD_EMenriched_Pt80to170_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_1.root',
@@ -1186,61 +917,6 @@ fileNamesQCD_EMenriched_Pt80to170_part23 = cms.untracked.vstring(
 #	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_EMenriched_Pt80to170/skimElecTau_90.root'
 )
 
-outputFileNameQCD_EMenriched_Pt80to170_part01 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part01.root')
-outputFileNameQCD_EMenriched_Pt80to170_part02 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part02.root')
-outputFileNameQCD_EMenriched_Pt80to170_part03 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part03.root')
-outputFileNameQCD_EMenriched_Pt80to170_part04 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part04.root')
-outputFileNameQCD_EMenriched_Pt80to170_part05 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part05.root')
-outputFileNameQCD_EMenriched_Pt80to170_part06 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part06.root')
-outputFileNameQCD_EMenriched_Pt80to170_part07 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part07.root')
-outputFileNameQCD_EMenriched_Pt80to170_part08 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part08.root')
-outputFileNameQCD_EMenriched_Pt80to170_part09 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part09.root')
-outputFileNameQCD_EMenriched_Pt80to170_part10 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part10.root')
-outputFileNameQCD_EMenriched_Pt80to170_part11 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part11.root')
-outputFileNameQCD_EMenriched_Pt80to170_part12 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part12.root')
-outputFileNameQCD_EMenriched_Pt80to170_part13 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part13.root')
-outputFileNameQCD_EMenriched_Pt80to170_part14 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part14.root')
-outputFileNameQCD_EMenriched_Pt80to170_part15 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part15.root')
-outputFileNameQCD_EMenriched_Pt80to170_part16 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part16.root')
-outputFileNameQCD_EMenriched_Pt80to170_part17 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part17.root')
-outputFileNameQCD_EMenriched_Pt80to170_part18 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part18.root')
-outputFileNameQCD_EMenriched_Pt80to170_part19 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part19.root')
-outputFileNameQCD_EMenriched_Pt80to170_part20 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part20.root')
-outputFileNameQCD_EMenriched_Pt80to170_part21 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part21.root')
-outputFileNameQCD_EMenriched_Pt80to170_part22 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part22.root')
-outputFileNameQCD_EMenriched_Pt80to170_part23 = cms.string('plotsZtoElecTau_QCD_EMenriched_Pt80to170_part23.root')
-
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part02 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part03 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part04 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part05 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part06 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part07 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part08 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part09 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part10 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part11 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part12 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part13 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part14 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part15 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part16 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part17 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part18 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part19 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part20 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part21 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part22 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part23 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-genPhaseSpaceCutQCD_EMenriched_Pt80to170_part24 = genPhaseSpaceCutQCD_EMenriched_Pt80to170_part01  
-
 #--------------------------------------------------------------------------------
 
 
@@ -1259,6 +935,17 @@ genPhaseSpaceCutQCD_EMenriched_Pt80to170_part24 = genPhaseSpaceCutQCD_EMenriched
 #  435k events, 48 files, 3 files/job, 16 jobs, 27k ev/job
 #
 intLumiQCD_BCtoE_Pt20to30 = float(10.4)
+
+patTupleOutputFileNameQCD_BCtoE_Pt20to30 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_BCtoE_Pt20to30_partXX.root')
+
+plotsOutputFileNameQCD_BCtoE_Pt20to30 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_partXX.root')
+
+genPhaseSpaceCutQCD_BCtoE_Pt20to30 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 fileNamesQCD_BCtoE_Pt20to30_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_1.root',
@@ -1341,46 +1028,6 @@ fileNamesQCD_BCtoE_Pt20to30_part16 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt20to30/skimElecTau_48.root'
 )
 
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-outputFileNameQCD_BCtoE_Pt20to30_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part01.root')
-outputFileNameQCD_BCtoE_Pt20to30_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part02.root')
-outputFileNameQCD_BCtoE_Pt20to30_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part03.root')
-outputFileNameQCD_BCtoE_Pt20to30_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part04.root')
-outputFileNameQCD_BCtoE_Pt20to30_part05 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part05.root')
-outputFileNameQCD_BCtoE_Pt20to30_part06 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part06.root')
-outputFileNameQCD_BCtoE_Pt20to30_part07 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part07.root')
-outputFileNameQCD_BCtoE_Pt20to30_part08 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part08.root')
-outputFileNameQCD_BCtoE_Pt20to30_part09 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part09.root')
-outputFileNameQCD_BCtoE_Pt20to30_part10 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part10.root')
-outputFileNameQCD_BCtoE_Pt20to30_part11 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part11.root')
-outputFileNameQCD_BCtoE_Pt20to30_part12 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part12.root')
-outputFileNameQCD_BCtoE_Pt20to30_part13 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part13.root')
-outputFileNameQCD_BCtoE_Pt20to30_part14 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part14.root')
-outputFileNameQCD_BCtoE_Pt20to30_part15 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part15.root')
-outputFileNameQCD_BCtoE_Pt20to30_part16 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt20to30_part16.root')
-
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part02 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part03 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part04 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part05 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part06 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part07 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part08 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part09 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part10 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part11 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part12 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part13 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part14 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part15 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt20to30_part16 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_part01  
-
 #--------------------------------------------------------------------------------
 
 
@@ -1397,6 +1044,17 @@ genPhaseSpaceCutQCD_BCtoE_Pt20to30_part16 = genPhaseSpaceCutQCD_BCtoE_Pt20to30_p
 #  654k ev, 406 files, 27 jobs, 24k ev/job, 15 files/job
 #
 intLumiQCD_BCtoE_Pt30to80 = float(8.40)
+
+patTupleOutputFileNameQCD_BCtoE_Pt30to80 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_BCtoE_Pt30to80_partXX.root')
+
+plotsOutputFileNameQCD_BCtoE_Pt30to80 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_partXX.root')
+
+genPhaseSpaceCutQCD_BCtoE_Pt30to80 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 fileNamesQCD_BCtoE_Pt30to80_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_1.root',
@@ -1858,69 +1516,6 @@ fileNamesQCD_BCtoE_Pt30to80_part27 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_405.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt30to80/skimElecTau_406.root'
 )
-
-outputFileNameQCD_BCtoE_Pt30to80_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part01.root')
-outputFileNameQCD_BCtoE_Pt30to80_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part02.root')
-outputFileNameQCD_BCtoE_Pt30to80_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part03.root')
-outputFileNameQCD_BCtoE_Pt30to80_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part04.root')
-outputFileNameQCD_BCtoE_Pt30to80_part05 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part05.root')
-outputFileNameQCD_BCtoE_Pt30to80_part06 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part06.root')
-outputFileNameQCD_BCtoE_Pt30to80_part07 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part07.root')
-outputFileNameQCD_BCtoE_Pt30to80_part08 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part08.root')
-outputFileNameQCD_BCtoE_Pt30to80_part09 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part09.root')
-outputFileNameQCD_BCtoE_Pt30to80_part10 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part10.root')
-outputFileNameQCD_BCtoE_Pt30to80_part11 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part11.root')
-outputFileNameQCD_BCtoE_Pt30to80_part12 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part12.root')
-outputFileNameQCD_BCtoE_Pt30to80_part13 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part13.root')
-outputFileNameQCD_BCtoE_Pt30to80_part14 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part14.root')
-outputFileNameQCD_BCtoE_Pt30to80_part15 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part15.root')
-outputFileNameQCD_BCtoE_Pt30to80_part16 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part16.root')
-outputFileNameQCD_BCtoE_Pt30to80_part17 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part17.root')
-outputFileNameQCD_BCtoE_Pt30to80_part18 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part18.root')
-outputFileNameQCD_BCtoE_Pt30to80_part19 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part19.root')
-outputFileNameQCD_BCtoE_Pt30to80_part20 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part20.root')
-outputFileNameQCD_BCtoE_Pt30to80_part21 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part21.root')
-outputFileNameQCD_BCtoE_Pt30to80_part22 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part22.root')
-outputFileNameQCD_BCtoE_Pt30to80_part23 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part23.root')
-outputFileNameQCD_BCtoE_Pt30to80_part24 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part24.root')
-outputFileNameQCD_BCtoE_Pt30to80_part25 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part25.root')
-outputFileNameQCD_BCtoE_Pt30to80_part26 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part26.root')
-outputFileNameQCD_BCtoE_Pt30to80_part27 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt30to80_part27.root')
-
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part02 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part03 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part04 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part05 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part06 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part07 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part08 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part09 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part10 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part11 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part12 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part13 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part14 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part15 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part16 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part17 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part18 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part19 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part20 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part21 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part22 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part23 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part24 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part25 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part26 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt30to80_part27 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_part01  
-
 #--------------------------------------------------------------------------------
 
 
@@ -1940,6 +1535,17 @@ genPhaseSpaceCutQCD_BCtoE_Pt30to80_part27 = genPhaseSpaceCutQCD_BCtoE_Pt30to80_p
 #  320k ev, 114 files, 10 files/job, 12 jobs
 #
 intLumiQCD_BCtoE_Pt30to80 = float(47.2)
+
+patTupleOutputFileNameQCD_BCtoE_Pt80to170 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_QCD_BCtoE_Pt80to170_partXX.root')
+
+plotsOutputFileNameQCD_BCtoE_Pt80to170 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_partXX.root')
+
+genPhaseSpaceCutQCD_BCtoE_Pt80to170 = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 
 fileNamesQCD_BCtoE_Pt80to170_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_1.root',
@@ -2080,38 +1686,6 @@ fileNamesQCD_BCtoE_Pt80to170_part12 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/QCD_BCtoE_Pt80to170/skimElecTau_QCD_BCtoE_Pt80to170_114.root'
 )
 
-outputFileNameQCD_BCtoE_Pt80to170_part01 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part01.root')
-outputFileNameQCD_BCtoE_Pt80to170_part02 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part02.root')
-outputFileNameQCD_BCtoE_Pt80to170_part03 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part03.root')
-outputFileNameQCD_BCtoE_Pt80to170_part04 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part04.root')
-outputFileNameQCD_BCtoE_Pt80to170_part05 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part05.root')
-outputFileNameQCD_BCtoE_Pt80to170_part06 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part06.root')
-outputFileNameQCD_BCtoE_Pt80to170_part07 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part07.root')
-outputFileNameQCD_BCtoE_Pt80to170_part08 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part08.root')
-outputFileNameQCD_BCtoE_Pt80to170_part09 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part09.root')
-outputFileNameQCD_BCtoE_Pt80to170_part10 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part10.root')
-outputFileNameQCD_BCtoE_Pt80to170_part11 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part11.root')
-outputFileNameQCD_BCtoE_Pt80to170_part12 = cms.string('plotsZtoElecTau_QCD_BCtoE_Pt80to170_part12.root')
-
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part02 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part03 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part04 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part05 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part06 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part07 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part08 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part09 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part10 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part11 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-genPhaseSpaceCutQCD_BCtoE_Pt80to170_part12 = genPhaseSpaceCutQCD_BCtoE_Pt80to170_part01  
-
 #--------------------------------------------------------------------------------
 
 
@@ -2120,7 +1694,7 @@ genPhaseSpaceCutQCD_BCtoE_Pt80to170_part12 = genPhaseSpaceCutQCD_BCtoE_Pt80to170
 
 
 #--------------------------------------------------------------------------------
-# photon + jets samples
+# photon + jets samples (PYTHIA8)
 # 500k events total, PDF set is CTEQ5L, filter on photons in central region (-2.4 < eta(gamma) < 2.4, ET(gamma) > 15 GeV/c)
 #
 # datasets = /PYTHIA8PhotonJetPtXXtoYY/Summer08_IDEAL_V11_redigi_v1/GEN-SIM-RECO
@@ -2145,7 +1719,7 @@ intLumiPhotonJets_Pt15to20 = float(1.075)
 intLumiPhotonJets_Pt20to25 = float(3.38)
 intLumiPhotonJets_Pt25to30 = float(8.95)
 intLumiPhotonJets_Pt30to35 = float(21.89)
-intLumiPhotonJets_PtGt35     = float(13.36)
+intLumiPhotonJets_PtGt35   = float(13.36)
 
 genPhaseSpaceCutPhotonJets_Pt15to20 = cms.PSet(
   name = cms.string('genPhaseSpaceCut'),
@@ -2178,11 +1752,17 @@ genPhaseSpaceCutPhotonJets_PtGt35 = cms.PSet(
   cut = cms.string('')
 )
 
-outputFileNamePhotonJets_Pt15to20 = cms.string('plotsZtoElecTau_PhotonJets_Pt15to20.root')
-outputFileNamePhotonJets_Pt20to25 = cms.string('plotsZtoElecTau_PhotonJets_Pt20to25.root')
-outputFileNamePhotonJets_Pt25to30 = cms.string('plotsZtoElecTau_PhotonJets_Pt25to30.root')
-outputFileNamePhotonJets_Pt30to35 = cms.string('plotsZtoElecTau_PhotonJets_Pt30to35.root')
-outputFileNamePhotonJets_PtGt35   = cms.string('plotsZtoElecTau_PhotonJets_PtGt35.root')
+plotsOutputFileNamePhotonJets_Pt15to20 = cms.string('plotsZtoElecTau_PhotonJets_Pt15to20.root')
+plotsOutputFileNamePhotonJets_Pt20to25 = cms.string('plotsZtoElecTau_PhotonJets_Pt20to25.root')
+plotsOutputFileNamePhotonJets_Pt25to30 = cms.string('plotsZtoElecTau_PhotonJets_Pt25to30.root')
+plotsOutputFileNamePhotonJets_Pt30to35 = cms.string('plotsZtoElecTau_PhotonJets_Pt30to35.root')
+plotsOutputFileNamePhotonJets_PtGt35   = cms.string('plotsZtoElecTau_PhotonJets_PtGt35.root')
+
+patTupleOutputFileNamePhotonJets_Pt15to20 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_PhotonJets_Pt15to20.root')
+patTupleOutputFileNamePhotonJets_Pt20to25 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_PhotonJets_Pt20to25.root')
+patTupleOutputFileNamePhotonJets_Pt25to30 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_PhotonJets_Pt25to30.root')
+patTupleOutputFileNamePhotonJets_Pt30to35 = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_PhotonJets_Pt30to35.root')
+patTupleOutputFileNamePhotonJets_PtGt35   = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_PhotonJets_PtGt35.root')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -2201,10 +1781,20 @@ outputFileNamePhotonJets_PtGt35   = cms.string('plotsZtoElecTau_PhotonJets_PtGt3
 #        the filter efficiency is already included in the cross-sections
 #        listed at https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008 !!)
 #
-#  4.7kev/file, 5 files/job, 23kev/job, 18 jobs, 89 files 
 
 intLumiWplusJets = float(242.)
 
+patTupleOutputFileNameWjets_madgraph = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Wjets_madgraph_partXX.root')
+plotsOutputFileNameWjets_madgraph = cms.string('plotsZtoElecTau_Wjets_madgraph_partXX.root')
+genPhaseSpaceCutWjets_madgraph = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
+#
+#  4.7kev/file, 5 files/job, 23kev/job, 18 jobs, 89 files 
+#
 fileNamesWjets_madgraph_part01 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_1.root',
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_2.root',
@@ -2331,49 +1921,6 @@ fileNamesWjets_madgraph_part18 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Wjets_madgraph/skimElecTau_Wjets_madgraph_89.root'
 )
 
-genPhaseSpaceCutWjets_madgraph_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-outputFileNameWjets_madgraph_part01 = cms.string('plotsZtoElecTau_Wjets_madgraph_part01.root')
-outputFileNameWjets_madgraph_part02 = cms.string('plotsZtoElecTau_Wjets_madgraph_part02.root')
-outputFileNameWjets_madgraph_part03 = cms.string('plotsZtoElecTau_Wjets_madgraph_part03.root')
-outputFileNameWjets_madgraph_part04 = cms.string('plotsZtoElecTau_Wjets_madgraph_part04.root')
-outputFileNameWjets_madgraph_part05 = cms.string('plotsZtoElecTau_Wjets_madgraph_part05.root')
-outputFileNameWjets_madgraph_part06 = cms.string('plotsZtoElecTau_Wjets_madgraph_part06.root')
-outputFileNameWjets_madgraph_part07 = cms.string('plotsZtoElecTau_Wjets_madgraph_part07.root')
-outputFileNameWjets_madgraph_part08 = cms.string('plotsZtoElecTau_Wjets_madgraph_part08.root')
-outputFileNameWjets_madgraph_part09 = cms.string('plotsZtoElecTau_Wjets_madgraph_part09.root')
-outputFileNameWjets_madgraph_part10 = cms.string('plotsZtoElecTau_Wjets_madgraph_part10.root')
-outputFileNameWjets_madgraph_part11 = cms.string('plotsZtoElecTau_Wjets_madgraph_part11.root')
-outputFileNameWjets_madgraph_part12 = cms.string('plotsZtoElecTau_Wjets_madgraph_part12.root')
-outputFileNameWjets_madgraph_part13 = cms.string('plotsZtoElecTau_Wjets_madgraph_part13.root')
-outputFileNameWjets_madgraph_part14 = cms.string('plotsZtoElecTau_Wjets_madgraph_part14.root')
-outputFileNameWjets_madgraph_part15 = cms.string('plotsZtoElecTau_Wjets_madgraph_part15.root')
-outputFileNameWjets_madgraph_part16 = cms.string('plotsZtoElecTau_Wjets_madgraph_part16.root')
-outputFileNameWjets_madgraph_part17 = cms.string('plotsZtoElecTau_Wjets_madgraph_part17.root')
-outputFileNameWjets_madgraph_part18 = cms.string('plotsZtoElecTau_Wjets_madgraph_part18.root')
-
-genPhaseSpaceCutWjets_madgraph_part02 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part03 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part04 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part05 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part06 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part07 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part08 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part09 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part10 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part11 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part12 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part13 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part14 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part15 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part16 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part17 = genPhaseSpaceCutWjets_madgraph_part01
-genPhaseSpaceCutWjets_madgraph_part18 = genPhaseSpaceCutWjets_madgraph_part01
 
 #--------------------------------------------------------------------------------
 
@@ -2396,6 +1943,14 @@ genPhaseSpaceCutWjets_madgraph_part18 = genPhaseSpaceCutWjets_madgraph_part01
 #
 intLumiZplusJets = float(341.)
 
+patTupleOutputFileNameZjets_madgraph = cms.untracked.string(patTupleOutputDirectoryName.value() + 'patTupleZtoElecTau_Zjets_madgraph_partXX.root')
+plotsOutputFileNameZjets_madgraph = cms.string('plotsZtoElecTau_Zjets_madgraph_partXX.root')
+genPhaseSpaceCutZjets_madgraph = cms.PSet(
+  name = cms.string('genPhaseSpaceCut'),
+  type = cms.string('GenPhaseSpaceEventInfoSelector'),
+  src = cms.InputTag('genPhaseSpaceEventInfo'),
+  cut = cms.string('')
+)
 # 13 jobs; 10 files/job; 128 files; ~21k ev/job
 #
 #
@@ -2554,41 +2109,10 @@ fileNamesZjets_madgraph_part13 = cms.untracked.vstring(
 	'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zjets_madgraph/skimElecTau_128.root'
 )
 
-genPhaseSpaceCutZjets_madgraph_part01 = cms.PSet(
-  name = cms.string('genPhaseSpaceCut'),
-  type = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-
-outputFileNameZjets_madgraph_part01 = cms.string('plotsZtoElecTau_Zjets_madgraph_part01.root')
-outputFileNameZjets_madgraph_part02 = cms.string('plotsZtoElecTau_Zjets_madgraph_part02.root')
-outputFileNameZjets_madgraph_part03 = cms.string('plotsZtoElecTau_Zjets_madgraph_part03.root')
-outputFileNameZjets_madgraph_part04 = cms.string('plotsZtoElecTau_Zjets_madgraph_part04.root')
-outputFileNameZjets_madgraph_part05 = cms.string('plotsZtoElecTau_Zjets_madgraph_part05.root')
-outputFileNameZjets_madgraph_part06 = cms.string('plotsZtoElecTau_Zjets_madgraph_part06.root')
-outputFileNameZjets_madgraph_part07 = cms.string('plotsZtoElecTau_Zjets_madgraph_part07.root')
-outputFileNameZjets_madgraph_part08 = cms.string('plotsZtoElecTau_Zjets_madgraph_part08.root')
-outputFileNameZjets_madgraph_part09 = cms.string('plotsZtoElecTau_Zjets_madgraph_part09.root')
-outputFileNameZjets_madgraph_part10 = cms.string('plotsZtoElecTau_Zjets_madgraph_part10.root')
-outputFileNameZjets_madgraph_part11 = cms.string('plotsZtoElecTau_Zjets_madgraph_part11.root')
-outputFileNameZjets_madgraph_part12 = cms.string('plotsZtoElecTau_Zjets_madgraph_part12.root')
-outputFileNameZjets_madgraph_part13 = cms.string('plotsZtoElecTau_Zjets_madgraph_part13.root')
-
-genPhaseSpaceCutZjets_madgraph_part02 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part03 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part04 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part05 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part06 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part07 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part08 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part09 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part10 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part11 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part12 = genPhaseSpaceCutZjets_madgraph_part01
-genPhaseSpaceCutZjets_madgraph_part13 = genPhaseSpaceCutZjets_madgraph_part01
-
 #--------------------------------------------------------------------------------
+
+
+
 
 #--------------------------------------------------------------------------------
 # TT + jets (madgraph) sample
