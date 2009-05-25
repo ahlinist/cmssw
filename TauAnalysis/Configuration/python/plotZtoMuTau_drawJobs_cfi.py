@@ -4,7 +4,7 @@ import copy
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 from TauAnalysis.DQMTools.drawJobConfigurator import *
 
-# define template for all kins of plots
+# define template for all kinds of plots
 # (specific to Z --> mu + tau-jet analysis)
 plots_ZtoMuTau = cms.PSet(
     plots = cms.PSet(  
@@ -95,57 +95,57 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )    
 
-##drawJobConfigurator_ZtoMuTau.add(
-##    afterCut = evtSelMuonPt,
-##    beforeCut = evtSelTauAntiOverlapWithMuonsVeto,
-##    plot = drawJobConfigEntry(
-##        meName = 'TauQuantities/Tau#PAR#',
-##        PAR = [ 'Pt', 'Eta', 'Phi' ],
-##        title = "Tau (after Muon P_{T} Cut)",
-##        xAxis = '#PAR#',
-##        name = "cutFlowControlPlots_tau_afterMuonPt"
-##    )
-##)
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelMuonPt,
+    beforeCut = evtSelTauAntiOverlapWithMuonsVeto,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/Tau#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Tau (after Muon P_{T} Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_tau_afterMuonPt"
+    )
+)
 
-##drawJobConfigurator_ZtoMuTau.add(
-##    afterCut = evtSelTauAntiOverlapWithMuonsVeto,
-##    beforeCut = evtSelTauEta,
-##    plots = [
-##        drawJobConfigEntry(
-##            meName = 'TauQuantities/Tau#PAR#',
-##            PAR = [ 'Pt', 'Eta', 'Phi' ],
-##            title = "Tau (after Muon-Tau overlap Veto)",
-##            xAxis = '#PAR#',
-##            name = "cutFlowControlPlots_tau_afterTauAntiOverlapWithMuonsVeto"
-##        ),
-##        drawJobConfigEntry(
-##            meName = 'TauQuantities/TauLeadTrkPt',
-##            title = "Tau lead. Track (after Muon-Tau overlap Veto)",
-##            xAxis = 'Pt',
-##            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithMuonsVeto"
-##        )
-##    ]
-##)
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelTauAntiOverlapWithMuonsVeto,
+    beforeCut = evtSelTauEta,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (after Muon-Tau overlap Veto)",
+            xAxis = '#PAR#',
+            name = "cutFlowControlPlots_tau_afterTauAntiOverlapWithMuonsVeto"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauLeadTrkPt',
+            title = "Tau lead. Track (after Muon-Tau overlap Veto)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithMuonsVeto"
+        )
+    ]
+)
 
-##drawJobConfigurator_ZtoMuTau.add(
-##    afterCut = evtSelTauEta,
-##    beforeCut = evtSelTauPt,
-##    plots = [
-##        drawJobConfigEntry(
-##            meName = 'TauQuantities/Tau#PAR#',
-##            PAR = [ 'Pt', 'Eta', 'Phi' ],
-##            title = "Tau (after Tau #eta Cut)",
-##            xAxis = '#PAR#',
-##            name = "cutFlowControlPlots_tau_afterTauEta"
-##        ),
-##        drawJobConfigEntry(
-##            meName = 'TauQuantities/TauLeadTrkPt',
-##            title = "Tau lead. Track (after Tau #eta Cut)",
-##            xAxis = 'Pt',
-##            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauEta"
-##        )
-##    ]
-##)
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelTauEta,
+    beforeCut = evtSelTauPt,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (after Tau #eta Cut)",
+            xAxis = '#PAR#',
+            name = "cutFlowControlPlots_tau_afterTauEta"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauLeadTrkPt',
+            title = "Tau lead. Track (after Tau #eta Cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauEta"
+        )
+    ]
+)
 
 drawJobConfigurator_ZtoMuTau.add(
     afterCut = evtSelTauPt,
