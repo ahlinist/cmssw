@@ -46,7 +46,7 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
     patTupleEventContent,
-    #fileName = cms.untracked.string('/data/jkolb/elecTauAnalysis/elecTauSkim_patTuple.root')
+    #fileName = cms.untracked.string('/data/jkolb/elecTauAnalysis/patTuple_elecTauSkim_Wjets_madgraph_2.root')
     fileName = cms.untracked.string('elecTauSkim_patTuple.root')
 )
 
@@ -56,13 +56,13 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(600)    
+    input = cms.untracked.int32(300)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_1.root'
+#        'file:/data/jkolb/skimElecTau_Wjets_madgraph_2.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Zee_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -120,11 +120,12 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 process.p = cms.Path( process.producePatTuple
-#                    +process.printEventContent      # uncomment to enable dump of event content after PAT-tuple production
+#                     +process.printEventContent                # uncomment to enable dump of event content after PAT-tuple production
+#                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.selectZtoElecTauEvents
-#                    +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.analyzeZtoElecTauEvents
-                     +process.saveZtoElecTauPlots )
+                     +process.saveZtoElecTauPlots 
+							)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
