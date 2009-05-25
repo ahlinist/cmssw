@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 #--------------------------------------------------------------------------------  
 # produce collections of pat::Electrons passing selection criteria
@@ -60,6 +61,25 @@ selectedLayer1ElectronsTrkIP = cms.EDFilter("PATElectronIpSelector",
     IpMax = cms.double(0.05),
     filter = cms.bool(False)                                               
 )
+
+#--------------------------------------------------------------------------------
+# define additional collections of muon candidates
+# with loose track and ECAL isolation applied
+#
+# (NOTE: to be used for the purpose of factorizing efficiencies
+#        of muon isolation from other event selection criteria,
+#        in order to avoid problems with limited Monte Carlo statistics)
+#--------------------------------------------------------------------------------
+
+selectedLayer1ElectronsTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrkIso)
+selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+
+selectedLayer1ElectronsEcalIsoLooseIsolation = copy.deepcopy(selectedLayer1ElectronsEcalIso)
+selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+
+selectedLayer1ElectronsTrkLooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrk)
+
+selectedLayer1ElectronsTrkIPlooseIsolation = copy.deepcopy(selectedLayer1ElectronsTrkIP)
 
 #--------------------------------------------------------------------------------
 # produce "summary" collection of pat::Electrons with flags added,

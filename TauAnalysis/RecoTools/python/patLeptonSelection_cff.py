@@ -40,6 +40,28 @@ patElectronSelConfigurator = objSelConfigurator(
 
 selectLayer1Electrons = patElectronSelConfigurator.configure(namespace = locals())
 
+selectedLayer1ElectronsTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+selectedLayer1ElectronsEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1ElectronsTrkLooseIsolation.cut = selectedLayer1ElectronsTrk.cut
+selectedLayer1ElectronsTrkIPlooseIsolation.vertexSource = selectedLayer1ElectronsTrkIP.vertexSource
+selectedLayer1ElectronsTrkIPlooseIsolation.IpMax = selectedLayer1ElectronsTrkIP.IpMax
+
+patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
+    [ selectedLayer1ElectronsTightId,
+      selectedLayer1ElectronsAntiCrackCut,
+      selectedLayer1ElectronsEta21,
+      selectedLayer1ElectronsPt15,
+      selectedLayer1ElectronsTrkIsoLooseIsolation,
+      selectedLayer1ElectronsEcalIsoLooseIsolation,
+      selectedLayer1ElectronsTrkLooseIsolation,
+      selectedLayer1ElectronsTrkIPlooseIsolation ],
+    src = "cleanLayer1Electrons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1ElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(namespace = locals())
+
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Muons
 # (settings made here overwrite values defined in muonPatSelector_cfi)
@@ -225,7 +247,7 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
 
 selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(namespace = locals())
 
-produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons
+produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
                                         +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
                                         +selectLayer1Taus + produceLayer1SelTaus
                                         +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau )
