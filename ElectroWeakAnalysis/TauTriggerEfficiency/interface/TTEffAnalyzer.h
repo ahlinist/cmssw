@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.24 2009/04/21 13:29:00 mkortela Exp $
+// $Id: TTEffAnalyzer.h,v 1.25 2009/05/07 10:26:09 chinhan Exp $
 //
 //
 
@@ -40,8 +40,8 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
-#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
+#include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
 
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
@@ -60,7 +60,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
-      template <class T> void loop(const edm::Event& iEvent, const T& collection) {
+      template <class T> void loop(const edm::Event& iEvent,const edm::EventSetup& iSetup, const T& collection) {
         for(typename T::const_iterator particle = collection.begin(); particle != collection.end(); ++particle) {
           // Fill common variables
 	  unsigned int i = particle - collection.begin();
@@ -68,7 +68,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
           // Call individual analyzers
           _L1analyzer.fill(iEvent, *particle);
-          _L2analyzer.fill(iEvent, *particle);
+          _L2analyzer.fill(iEvent,iSetup, *particle);
           _L25and3analyzer.fill(iEvent, *particle);
 
           // Finally, fill the entry to tree

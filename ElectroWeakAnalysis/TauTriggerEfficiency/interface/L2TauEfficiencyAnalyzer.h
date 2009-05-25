@@ -21,7 +21,27 @@
 #include "DataFormats/TauReco/interface/CaloTauFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
+//Calorimeter!!
+#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
+#include "DataFormats/DetId/interface/DetId.h"
+#include "DataFormats/EgammaReco/interface/BasicCluster.h"
+#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
+
+#include "DataFormats/CaloTowers/interface/CaloTowerDetId.h" 
+#include "DataFormats/EcalDetId/interface/EBDetId.h"
+#include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+
+
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/LorentzVectorFwd.h"
+
 #include <string>
 #include <TTree.h>
 #include <TFile.h>
@@ -37,18 +57,30 @@ class L2TauEfficiencyAnalyzer {
       ~L2TauEfficiencyAnalyzer();
 
       void Setup(const edm::ParameterSet&,TTree*);
-      void fill(const edm::Event&,const reco::PFTau&);
-      void fill(const edm::Event&,const reco::CaloTau&);
-      void fill(const edm::Event&,const LV&);
-      void fill(const edm::Event&,const reco::GsfElectron&);
+      void fill(const edm::Event&,const edm::EventSetup& ,const reco::PFTau&);
+      void fill(const edm::Event&,const edm::EventSetup& ,const reco::CaloTau&);
+      void fill(const edm::Event&,const edm::EventSetup& ,const LV&);
+      void fill(const edm::Event&,const edm::EventSetup& ,const reco::GsfElectron&);
 
    private:
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
       void matchAndFillL2(const LV& ,const L2TauInfoAssociation&);//See if this Jet Is Matched
+      math::PtEtaPhiELorentzVectorCollection getECALHits(const LV&,const edm::Event& ,const edm::EventSetup&);
+      double isolatedEt(const LV&,const math::PtEtaPhiELorentzVectorCollection& ) const;
 
       //Parameters to read
       edm::InputTag  l2TauInfoAssoc_; //Path to analyze
+      edm::InputTag  EBRecHits_;
+      edm::InputTag  EERecHits_;
+      double outerCone_; //Association Distance  for a tower/crystal
+      double innerCone_; //Association Distance  for a tower/crystal
+
+      //Thresholding
+      double crystalThresholdE_;
+      double crystalThresholdB_;
+
       std::string rootFile_;          //Output File Name
+
       double matchDR_;
 
       //L2 Variables
@@ -58,6 +90,9 @@ class L2TauEfficiencyAnalyzer {
       //PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus;
       float PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
+
+      float PFEcalIsol_Et;
+
       int hasL2Jet;	
 
 };
