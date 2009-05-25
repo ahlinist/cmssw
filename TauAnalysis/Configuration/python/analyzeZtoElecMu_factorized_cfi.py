@@ -85,7 +85,7 @@ replaceHistManagerInputTags(elecMuAnalysisSequence_factorizedWithoutElectronIsol
       ["selectedElecMuPairsAntiOverlapVetoCumulative", "selectedElecMuPairsAntiOverlapVetoLooseElectronIsolationCumulative"],
       ["selectedElecMuPairsZeroChargeCumulative", "selectedElecMuPairsZeroChargeLooseElectronIsolationCumulative"],
       ["selectedElecMuPairsMt1METcumulative", "selectedElecMuPairsMt1METlooseElectronIsolationCumulative"],
-      ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"] ]) 
-
+      ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"] ]
+) 
 elecMuAnalysisSequence_factorizedWithElectronIsolation = copy.deepcopy(elecMuAnalysisSequence)
 switchHistManagers(elecMuAnalysisSequence_factorizedWithElectronIsolation, elecMuHistManagers_factorizedWithElectronIsolation)

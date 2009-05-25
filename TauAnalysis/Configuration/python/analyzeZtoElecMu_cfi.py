@@ -497,8 +497,7 @@ elecMuAnalysisSequence = cms.VPSet(
                               'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
     ),
 
-    #selection of electron + muon combinations
-
+    # selection of electron + muon combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuAntiOverlapVeto'),
         title = cms.string('dR(Muon-Electron) > 1.57'),
@@ -510,7 +509,6 @@ elecMuAnalysisSequence = cms.VPSet(
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAntiOverlapVetoCumulative')
     ),
-
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuZeroCharge'),
         title = cms.string('Charge(Electron+Muon) = 0'),
@@ -521,9 +519,8 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
-   ),
-
- cms.PSet(
+    ),
+    cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuMt1MET'),
         title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
@@ -532,11 +529,9 @@ elecMuAnalysisSequence = cms.VPSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                             'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsMt1METcumulative')
-
-  ),
-
-   cms.PSet(
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsMt1METcumulative')
+    ),
+    cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuMt2MET'),
         title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
@@ -545,7 +540,7 @@ elecMuAnalysisSequence = cms.VPSet(
         histManagers = elecMuHistManagers,
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                             'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsMt2METcumulative')
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsMt2METcumulative')
 
     )
 )

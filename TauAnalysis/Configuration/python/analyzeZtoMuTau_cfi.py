@@ -501,7 +501,7 @@ muTauAnalysisSequence = cms.VPSet(
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative')
     ),
 
-    #selection of muon + tau-jet combinations
+    # selection of muon + tau-jet combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauAntiOverlapVeto'),
         title = cms.string('dR(Muon-Tau) > 0.7'),
