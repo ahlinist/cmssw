@@ -160,7 +160,7 @@ drawJobConfigurator_ZtoElecMu.add(
     afterCut = evtSelElectronTrkIso,
     beforeCut = evtSelElectronEcalIso,
     plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/MuonEcalIsoPt',
+        meName = 'ElectronQuantities/ElectronEcalIsoPt',
         title = "Electron ECAL iso. (after Electron Track iso. Cut)",
         xAxis = 'Pt',
         name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
@@ -172,9 +172,9 @@ drawJobConfigurator_ZtoElecMu.add(
     beforeCut = evtSelElectronTrk,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
-        PAR = [ 'Calo', 'Segment' ],
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
         title = "Electron (after Electron ECAL iso. Cut)",
-        xAxis = 'prob',
+        xAxis = '#PAR#',
         name = "cutFlowControlPlots_electron_afterElectronEcalIso"
     )
 )
