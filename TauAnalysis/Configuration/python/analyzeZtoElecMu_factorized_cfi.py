@@ -14,6 +14,7 @@ from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 elecMuHistManagers_factorizedWithoutElectronIsolation = copy.deepcopy(elecMuHistManagers)
 
 elecMuHistManagers_factorizedWithElectronIsolation = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
+                                                                  'electronHistManager',
                                                                   'muonHistManager',
                                                                   'vertexHistManager',
                                                                   'triggerHistManager' )
