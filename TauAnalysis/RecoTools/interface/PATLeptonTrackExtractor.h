@@ -9,9 +9,9 @@
  * 
  * \author Chriatian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATLeptonTrackExtractor.h,v 1.2 2009/02/06 14:18:59 veelken Exp $
+ * $Id: PATLeptonTrackExtractor.h,v 1.1 2009/04/07 08:29:02 veelken Exp $
  *
  */
 
@@ -27,7 +27,7 @@ template <typename T>
 class PATLeptonTrackExtractor
 {
  public:
-  const reco::Track* operator()(const T& lepton) 
+  const reco::Track* operator()(const T& lepton) const
   {
     //std::cout << "<PATLeptonTrackExtractor::operator()>:" << std::endl;
     return lepton.track().get();
@@ -40,7 +40,7 @@ template <>
 class PATLeptonTrackExtractor<pat::Electron>
 {
  public:
-  const reco::Track* operator()(const pat::Electron& electron) 
+  const reco::Track* operator()(const pat::Electron& electron) const
   {
     //std::cout << "<PATLeptonTrackExtractor<pat::Electron>::operator()>:" << std::endl;
     return electron.gsfTrack().get();
@@ -54,7 +54,7 @@ template <>
 class PATLeptonTrackExtractor<pat::Tau>
 {
  public:
-  const reco::Track* operator()(const pat::Tau& tau) 
+  const reco::Track* operator()(const pat::Tau& tau) const
   {
     //std::cout << "<PATLeptonTrackExtractor<pat::Tau>::operator()>:" << std::endl;
     return tau.leadTrack().get();
@@ -67,7 +67,7 @@ template <>
 class PATLeptonTrackExtractor<reco::Candidate>
 {
  public:
-  const reco::Track* operator()(const reco::Candidate& candidate) 
+  const reco::Track* operator()(const reco::Candidate& candidate) const
   {
     //std::cout << "<PATLeptonTrackExtractor<reco::Candidate>::operator()>:" << std::endl;
     return 0;
