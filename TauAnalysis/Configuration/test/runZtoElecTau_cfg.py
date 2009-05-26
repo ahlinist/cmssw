@@ -119,6 +119,7 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 #switchToPFTauShrinkingCone(process)
 switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
+
 process.p = cms.Path( process.producePatTuple
 #                     +process.printEventContent                # uncomment to enable dump of event content after PAT-tuple production
 #                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
