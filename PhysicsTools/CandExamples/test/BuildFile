@@ -5,3 +5,7 @@
 <bin file=binnedChi2Fit.cpp name=binnedChi2Fit>
   <use name=rootroofit>
 </bin> 
+
+<bin file=twoDimensionalFit.cpp name=twoDimensionalFit>
+  <use name=rootroofit>
+</bin> 
