@@ -7,10 +7,10 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring( 'Ztautau',
-#                                 'Zmumu',
-#                                 'WplusJets',
+                                 'Zee',
+                                 'WplusJets',
                                  'gammaPlusJets',
-#                                 'qcdSum'
+                                 'qcdSum'
                                  )
     ),
     xAxis = cms.string('unlabeled'),
@@ -20,10 +20,10 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring( 'Ztautau',
-#                         'Zmumu',
-#                         'WplusJets',
-                          'gammaPlusJets',                         
-#                         'qcdSum'
+                         'Zmumu',
+                         'WplusJets',
+                         'gammaPlusJets',                         
+                         'qcdSum'
                          )
 )
 
