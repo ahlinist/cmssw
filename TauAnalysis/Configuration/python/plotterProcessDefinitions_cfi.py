@@ -105,6 +105,51 @@ process_TTplusJets = cms.PSet(
 
 # electron enriched QCD generated with Pythia
 # in the range 20 GeV < Pt(hat) < 30 GeV
+process_QCD_EMenriched_Pt20to30 = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(1.),
+    dqmDirectory_store = cms.string('QCD_EMenriched_Pt20to30')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('QCD_EMenriched_Pt20to30'),
+    legendEntry = cms.string('eQCD 20 < #hat{P}_T < 30 GeV'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
+# electron enriched QCD generated with Pythia
+# in the range 30 GeV < Pt(hat) < 80 GeV
+process_QCD_EMenriched_Pt30to80 = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(1.),
+    dqmDirectory_store = cms.string('QCD_EMenriched_Pt30to80')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('QCD_EMenriched_Pt30to80'),
+    legendEntry = cms.string('eQCD 30 < #hat{P}_T < 80 GeV'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
+# electron enriched QCD generated with Pythia
+# in the range 80 GeV < Pt(hat) < 170 GeV
+process_QCD_EMenriched_Pt80to170 = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(1.),
+    dqmDirectory_store = cms.string('QCD_EMenriched_Pt80to170')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('QCD_EMenriched_Pt80to170'),
+    legendEntry = cms.string('eQCD 80 < #hat{P}_T < 170 GeV'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
+# electron from b/c QCD generated with Pythia
+# in the range 20 GeV < Pt(hat) < 30 GeV
 process_QCD_BCtoE_Pt20to30 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
     inputFileNames = cms.vstring(''),
@@ -118,7 +163,7 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
   )
 )
 
-# electron enriched QCD generated with Pythia
+# electron from b/c QCD generated with Pythia
 # in the range 30 GeV < Pt(hat) < 80 GeV
 process_QCD_BCtoE_Pt30to80 = cms.PSet(
   config_dqmFileLoader = cms.PSet(
@@ -129,6 +174,21 @@ process_QCD_BCtoE_Pt30to80 = cms.PSet(
   config_dqmHistPlotter = cms.PSet(
     dqmDirectory = cms.string('QCD_BCtoE_Pt30to80'),
     legendEntry = cms.string('eQCD 30 < #hat{P}_T < 80 GeV'),
+    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+  )
+)
+
+# electron from b/c QCD generated with Pythia
+# in the range 80 GeV < Pt(hat) < 170 GeV
+process_QCD_BCtoE_Pt80to170 = cms.PSet(
+  config_dqmFileLoader = cms.PSet(
+    inputFileNames = cms.vstring(''),
+    scaleFactor = cms.double(1.),
+    dqmDirectory_store = cms.string('QCD_BCtoE_Pt80to170')
+  ),
+  config_dqmHistPlotter = cms.PSet(
+    dqmDirectory = cms.string('QCD_BCtoE_Pt80to170'),
+    legendEntry = cms.string('eQCD 80 < #hat{P}_T < 170 GeV'),
     type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
   )
 )
