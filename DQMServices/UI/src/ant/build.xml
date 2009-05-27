@@ -9,7 +9,10 @@
     <fileset dir="lib">
       <include name="*.jar"/>  
     </fileset>  
-    <fileset dir="${os.CATALINA_BASE}/lib" >  
+    <fileset dir="${os.CATALINA_BASE}/lib" erroronmissingdir="false">  
+      <include name="*.jar"/>  
+    </fileset>  
+    <fileset dir="${os.CATALINA_BASE}/common/lib" erroronmissingdir="false">  
       <include name="*.jar"/>  
     </fileset>  
   </path>
