@@ -33,7 +33,7 @@ int main() {
   RooDataSet * data = sum.generate(x, 2000);
   x.setBins(50);
   RooDataHist hist("hist", "hist", RooArgSet(x), *data);
-  RooChi2Var chi2("chi2","chi2", sum, hist);
+  RooChi2Var chi2("chi2","chi2", sum, hist, true);
   RooMinuit minuit(chi2);
   minuit.migrad();
   minuit.hesse();
