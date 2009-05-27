@@ -1,7 +1,6 @@
 package cms.dqm.workflow;
 
 import oracle.jdbc.pool.OracleDataSource;
-import org.jasypt.util.text.BasicTextEncryptor;
 import java.sql.*; 
 import java.util.*; 
 import javax.naming.*;
@@ -9,30 +8,12 @@ import javax.naming.*;
 public class DBWorker {
 
   private Connection conn;
-  private Encoder enc;
 
   public DBWorker() throws Exception {
     this(false);
   }
 
-  public DBWorker(String url, String auth) throws Exception {
-    this(url, auth, false);
-  }
-
-  public DBWorker(String url, String auth, boolean readOnly) throws Exception {
-    enc = new Encoder();
-    OracleDataSource ds = new OracleDataSource();
-    ds.setConnectionCachingEnabled(true);
-    ds.setURL(url);
-    if (ds.getUser() == null || ds.getUser().equals("")) {
-      ds.setUser(enc.getUser(auth));
-      ds.setPassword(enc.getPassword(auth));
-    }
-    connect(ds, readOnly);
-  }
-
   public DBWorker(boolean readOnly) throws Exception {
-    enc = new Encoder();
     Context initContext = new InitialContext();
     Context envContext = (Context) initContext.lookup("java:/comp/env");
     if (envContext == null) throw new NamingException("Error: No Context");
@@ -41,12 +22,33 @@ public class DBWorker {
 
     if (ds == null) throw new Exception("Error: No DataSource");
 
-    if (ds.getUser() == null || ds.getUser().equals("")) {
-      String auth = WebUtils.GetEnv("db_auth");
-      ds.setUser(enc.getUser(auth));
-      ds.setPassword(enc.getPassword(auth));
+    String username = WebUtils.GetEnv("db_username");
+    if (username == null) throw new Exception("Error: No DB username");
+
+    if (ds.getUser() == null || !ds.getUser().equals(username)) {
+      ds.setUser(username);
+      String password = WebUtils.getPassword(username);
+      if (password == null) throw new Exception("Error: DB user credential not found");
+      ds.setPassword(password);
     }
 
+    connect(ds, readOnly);
+  }
+
+  public DBWorker(String jdbc, String username, String auth_file) throws Exception {
+    this(jdbc, username, auth_file, false);
+  }
+
+  public DBWorker(String jdbc, String username, String auth_file, boolean readOnly) throws Exception {
+    OracleDataSource ds = new OracleDataSource();
+    ds.setConnectionCachingEnabled(true);
+    ds.setURL(jdbc);
+    if (ds.getUser() == null || !ds.getUser().equals(username)) {
+      ds.setUser(username);
+      String password = WebUtils.getPassword(username, auth_file);
+      if (password == null) throw new Exception("Error: DB user credential not found");
+      ds.setPassword(password);
+    }
     connect(ds, readOnly);
   }
 
