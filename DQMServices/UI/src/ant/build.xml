@@ -1,23 +1,35 @@
 <project name="cmsdqmrunregistry" default="dist" basedir=".">
 
-  <!-- INITIALIZATION -->
-
   <property environment="os"/>
   <property name="webapps" location="${os.CATALINA_BASE}/webapps"/>
 
-  <path id="local-cp">  
-    <fileset dir="lib">
-      <include name="*.jar"/>  
-    </fileset>  
-    <fileset dir="${os.CATALINA_BASE}/lib" erroronmissingdir="false">  
-      <include name="*.jar"/>  
-    </fileset>  
-    <fileset dir="${os.CATALINA_BASE}/common/lib" erroronmissingdir="false">  
-      <include name="*.jar"/>  
-    </fileset>  
-  </path>
+  <available property="tomcat5" file="${os.CATALINA_BASE}/common/lib"/>
 
-  <target name="clean" description="clean up directory. Please use this before submitting to CVS!">
+  <target name="init-tom6" unless="tomcat5">
+    <path id="local-cp">  
+      <fileset dir="lib">
+        <include name="*.jar"/>  
+      </fileset>  
+      <fileset dir="${os.CATALINA_BASE}/lib">  
+        <include name="*.jar"/>  
+      </fileset>  
+    </path>
+    <echo message="Initialized tomcat6 libraries from ${os.CATALINA_BASE}/lib"/>
+  </target>
+
+  <target name="init-tom5" if="tomcat5">
+    <path id="local-cp">  
+      <fileset dir="lib">
+        <include name="*.jar"/>  
+      </fileset>  
+      <fileset dir="${os.CATALINA_BASE}/common/lib">  
+        <include name="*.jar"/>  
+      </fileset>  
+    </path>
+    <echo message="Initialized tomcat5 libraries from ${os.CATALINA_BASE}/common/lib"/>
+  </target>
+
+  <target name="clean" depends="init-tom5,init-tom6" description="clean up directory. Please use this before submitting to CVS!">
     <delete dir="build"/>
     <delete dir="dist"/>
     <delete file="*.war">
