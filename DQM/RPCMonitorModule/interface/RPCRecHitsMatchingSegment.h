@@ -4,8 +4,8 @@
  *
  * Class to find the RPC RecHits asociated to a segment... 
  *
- *  $Date: 2009/05/15 17:40:57 $
- *  $Revision: 1.4 $
+ *  $Date: 2009/05/19 10:47:26 $
+ *  $Revision: 1.1 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -22,6 +22,7 @@
 
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
 #include "FWCore/Framework/interface/ESHandle.h"
+
 #include <Geometry/RPCGeometry/interface/RPCGeometry.h>
 #include <Geometry/DTGeometry/interface/DTGeometry.h>
 #include <Geometry/CSCGeometry/interface/CSCGeometry.h>
@@ -39,20 +40,20 @@ class TH2F;
 class TString;
 
 
-class DTStationIndex{
+class DTStationIndex2{
 public: 
-  DTStationIndex():_region(0),_wheel(0),_sector(0),_station(0){}
-  DTStationIndex(int region, int wheel, int sector, int station) : 
+  DTStationIndex2():_region(0),_wheel(0),_sector(0),_station(0){}
+  DTStationIndex2(int region, int wheel, int sector, int station) : 
     _region(region),
     _wheel(wheel),
     _sector(sector),
     _station(station){}
-  ~DTStationIndex(){}
+  ~DTStationIndex2(){}
   int region() const {return _region;}
   int wheel() const {return _wheel;}
   int sector() const {return _sector;}
   int station() const {return _station;}
-  bool operator<(const DTStationIndex& dtind) const{
+  bool operator<(const DTStationIndex2& dtind) const{
     if(dtind.region()!=this->region())
       return dtind.region()<this->region();
     else if(dtind.wheel()!=this->wheel())
@@ -71,20 +72,20 @@ private:
 };
 
 
-class CSCStationIndex{
+class CSCStationIndex2{
 public:
-  CSCStationIndex():_region(0),_station(0),_ring(0),_chamber(0){}
-  CSCStationIndex(int region, int station, int ring, int chamber):
+  CSCStationIndex2():_region(0),_station(0),_ring(0),_chamber(0){}
+  CSCStationIndex2(int region, int station, int ring, int chamber):
     _region(region),
     _station(station),
     _ring(ring),
     _chamber(chamber){}
-  ~CSCStationIndex(){}
+  ~CSCStationIndex2(){}
   int region() const {return _region;}
   int station() const {return _station;}
   int ring() const {return _ring;}
   int chamber() const {return _chamber;}
-  bool operator<(const CSCStationIndex& cscind) const{
+  bool operator<(const CSCStationIndex2& cscind) const{
     if(cscind.region()!=this->region())
       return cscind.region()<this->region();
     else if(cscind.station()!=this->station())
@@ -114,8 +115,8 @@ class RPCRecHitsMatchingSegment : public edm::EDAnalyzer {
       virtual void endJob() ;
       std::map<std::string, MonitorElement*> bookDetUnitSeg2(RPCDetId & detId,int nstrips,float stripw,float stripl);
       virtual void endRun(const edm::Run& r, const edm::EventSetup& iSetup);
-      std::map<DTStationIndex,std::set<RPCDetId> > rollstoreDT;
-      std::map<CSCStationIndex,std::set<RPCDetId> > rollstoreCSC;
+      std::map<DTStationIndex2,std::set<RPCDetId> > rollstoreDT;
+      std::map<CSCStationIndex2,std::set<RPCDetId> > rollstoreCSC;
       std::map<int,float> alignmentinfo;
       
       edm::ESHandle<RPCGeometry> rpcGeo;
