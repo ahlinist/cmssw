@@ -28,35 +28,8 @@
 
   <target name="compile" depends="clean" description="compile the source" >
 
-    <echo message="webapps: ${webapps}"/>
     <mkdir dir="build"/>
     
-    <!-- Compile RandomGen-->
-    <javac srcdir="tmpl" destdir="build" includes="RandomGen.java">
-      <classpath>
-        <path refid="local-cp"/>
-      </classpath>
-    </javac>
-
-    <!-- Get random string -->
-    <java classname="RandomGen" outputproperty="rand">
-      <classpath>
-        <path refid="local-cp"/>
-        <pathelement location="build"/>
-      </classpath>
-    </java>
-
-    <!-- Create timestamp (aka random) properties -->
-    <tstamp>
-      <format property="compiledate" pattern="MM/dd/yyyy hh:mm aa"/>
-    </tstamp>
-
-    <!-- copy and replace key in Encoder file -->
-    <copy file="tmpl/Encoder.java" todir="src/cms/dqm/workflow"/>
-    <replace file="src/cms/dqm/workflow/Encoder.java" token="@RAND@" value="${compiledate}${rand}" />
-    <replace file="src/cms/dqm/workflow/Encoder.java" token="@COMPILEDATE@" value="${compiledate}" />
-
-    <!-- Compile -->
     <javac srcdir="src" destdir="build">
       <compilerarg value="-Xlint"/>
       <classpath>
@@ -68,9 +41,6 @@
     <copy file="tmpl/quartz.properties" todir="build" />
     <copy file="tmpl/jobs.xml" todir="build" />
 
-    <!-- Remove Encoder file -->
-    <delete file="src/cms/dqm/workflow/Encoder.java" />
-
   </target>
 
   <target name="dist" depends="compile" description="generate the distribution">
@@ -80,6 +50,11 @@
 
   <target name="deploy" depends="dist" description="deploy">
     
+    <echo message="webapps: ${webapps}"/>
+    <tstamp>
+      <format property="compiledate" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp>
+
     <!-- get information about deployment environment -->
     <input message="Application URL:" addproperty="url" defaultvalue="runregistry_dev" />
     <input message="Database jdbc name:" addproperty="dbname" defaultvalue="dqmrunregistry_dev" />
