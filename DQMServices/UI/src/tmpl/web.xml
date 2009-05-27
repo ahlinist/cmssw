@@ -20,15 +20,27 @@
     </env-entry>
 
     <env-entry>
-      <env-entry-name>db_auth</env-entry-name>
+      <env-entry-name>db_username</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>@AUTH@</env-entry-value>
+      <env-entry-value>@DB_USERNAME@</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>db_auth_file</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>@DB_AUTH_FILE@</env-entry-value>
     </env-entry>
 
     <env-entry>
       <env-entry-name>dbs_url</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value>@DBS_DQM_URL@</env-entry-value>
+      <env-entry-value>@DBSDQM_URL@</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>app_deploy_time</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <env-entry-value>@APP_DEPLOY_TIME@</env-entry-value>
     </env-entry>
 
     <!-- Servlets go below -->
@@ -183,7 +195,7 @@
       </init-param>
       <init-param>
         <param-name>start-scheduler-on-load</param-name>
-        <param-value>@START_SCHEDULER@</param-value>
+        <param-value>@APP_START_SCHEDULER@</param-value>
       </init-param>
     </servlet>
 

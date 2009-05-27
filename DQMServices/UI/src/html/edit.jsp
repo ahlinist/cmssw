@@ -20,6 +20,8 @@ $(document).ready( function () {
   var _edit_sub_offline = $("#edit_sub_offline_tab");
   var _edit_expert = $("#edit_expert_comments");
 
+  autoComplete();
+
   $(_edit).dialog({
     autoOpen: false,
     width: 880,
@@ -179,8 +181,6 @@ $(document).ready( function () {
     .change(function () { validateInfo(); })
     .unbind("keypress")
     .keypress(function () { validateInfo(); });
-  $("input[name=RUN_GLOBALNAME]", _edit_info)
-    .autocomplete([<dqm:listGlobalNamesJS/>]);
 
   $("select", _edit_sub).unbind("change").change(function () { validateSubSelect($(this).parent().parent()); });
   $("input[type=text]", _edit_sub).unbind("change").change(function () { validateSubSelect($(this).parent().parent()); });
@@ -569,7 +569,14 @@ $(document).ready( function () {
             </tr>
             <tr>
               <td><label for="RUN_GLOBALNAME"> Global name: </label></td>
-              <td class="edit_online"><input name="RUN_GLOBALNAME" type="text" value="" readonly="true" maxlength="90" /></td>
+              <td class="edit_online">
+              <input name="RUN_GLOBALNAME" type="text" value="" readonly="true" maxlength="90" class="auto-complete" />
+                <ul>
+                  <dqm:listGlobalNames>
+                    <li>${global_name}</li>
+                  </dqm:listGlobalNames>
+                </ul>
+              </td>
               <td><label for="RUN_STATUS"> Status: </label></td>
               <td>
                 <select name="RUN_STATUS" disabled="true"></select>

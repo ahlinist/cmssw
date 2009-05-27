@@ -13,7 +13,6 @@
   <title>CMS DQM Run Registry</title>
 
   <link rel="stylesheet" type="text/css" href="media/flexigrid/css/flexigrid/flexigrid.css" />
-  <!--link rel="stylesheet" type="text/css" href="media/jquery.autocomplete.css" /-->
   <link rel="stylesheet" type="text/css" href="media/index.css" />
   <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
 
@@ -24,7 +23,7 @@
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
   <script type="text/javascript" src="media/jquery.menu.min.js"></script>
   <script type="text/javascript" src="media/jquery.tooltip.js"></script>
-  <script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+  <script type="text/javascript" src="media/jquery.auto-complete-1.2.5.js"></script>
   <script type="text/javascript" src="media/jquery.json-1.3.js"></script>
   <script type="text/javascript" src="media/flexigrid/flexigrid.js"></script>
   <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
@@ -664,7 +663,7 @@
 
   <table id="flex1"></table>
   <br/>
-  <div align="right">Compiled: <%=Encoder.getCompileDate()%></div>
+  <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%></div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 

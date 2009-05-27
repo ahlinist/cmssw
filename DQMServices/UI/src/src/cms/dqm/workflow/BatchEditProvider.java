@@ -71,19 +71,17 @@ public class BatchEditProvider extends HttpServlet {
 
   public static void main(String [] args) {
 
-    String url  = args[0];
-    String auth = args[1];
-    String user = args[2];
-
-    System.out.println("url  = " + url);
-    System.out.println("auth = " + auth);
-    System.out.println("user = " + user);
+    String jdbc      = args[0];
+    String auth_file = args[1];
+    String username  = args[2];
+    String shifter   = args[3];
+    String dbs_url   = args[4];
 
     try {
 
-      DBWorker db = new DBWorker(url, auth);
+      DBWorker db = new DBWorker(jdbc, username, auth_file);
 
-      DBSWriter writer = new DBSWriter("http://localhost:9999");
+      DBSWriter writer = new DBSWriter(dbs_url);
 
       PreparedStatement pstmt1 = db.prepareSQL("select run_number, run_tag from rr_runs where run_status = 'COMPLETED' and run_number >= 82368 order by run_number");
       ResultSet res = pstmt1.executeQuery();

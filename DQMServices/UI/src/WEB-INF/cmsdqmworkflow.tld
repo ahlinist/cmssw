@@ -47,6 +47,17 @@
   </tag>
 
   <tag>
+    <description>Retrieves Unique list of Global Names</description>
+    <name>listGlobalNames</name>
+    <tag-class>cms.dqm.workflow.ListGlobalNames</tag-class>
+    <body-content>scriptless</body-content>
+    <variable>
+      <description>Global Name</description>
+      <name-given>global_name</name-given>
+    </variable>
+  </tag>
+
+  <tag>
     <description>Retrieves Unique list of Global Names for JS</description>
     <name>listGlobalNamesJS</name>
     <tag-class>cms.dqm.workflow.ListGlobalNamesJS</tag-class>
