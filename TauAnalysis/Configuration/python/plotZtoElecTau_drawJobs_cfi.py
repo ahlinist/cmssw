@@ -1,16 +1,20 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
+from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
+from TauAnalysis.DQMTools.drawJobConfigurator import *
+
 # define template for all kins of plots
-# (specific to Z --> mu + tau-jet analysis)
+# (specific to Z --> e + tau-jet analysis)
 plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring( 'Ztautau',
                                  'Zee',
                                  'WplusJets',
-                                 'gammaPlusJets',
-                                 'qcdSum'
+                                 'ZplusJets'
+#                                 'gammaPlusJets'
+#                                 'qcdSum'
                                  )
     ),
     xAxis = cms.string('unlabeled'),
@@ -20,11 +24,16 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring( 'Ztautau',
-                         'Zmumu',
+                         'Zee',
                          'WplusJets',
-                         'gammaPlusJets',                         
-                         'qcdSum'
+                         'ZplusJets'
+#                         'gammaPlusJets'                         
+#                         'qcdSum'
                          )
+)
+drawJobConfigurator_ZtoElecTau = drawJobConfigurator(
+    template = plots_ZtoElecTau,
+    dqmDirectory = '#PROCESSDIR#/zElecTauAnalyzer/'
 )
 
 #--------------------------------------------------------------------------------
@@ -33,296 +42,369 @@ plots_ZtoElecTau = cms.PSet(
 # (**before** quantity is cutted on)
 #--------------------------------------------------------------------------------
 
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelPrimaryEventVertex,
+		beforeCut = evtSelPrimaryEventVertexQuality,
+		plot = drawJobConfigEntry(
+			meName = 'VertexQuantities/VertexChi2Prob',
+			title = "P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)",
+			xAxis = 'prob',
+			name = "cutFlowControlPlots_vertexChi2Prob_afterPrimaryEventVertex"
+			)
+		)
 
-plots_ZtoElecTau_vertexChi2Prob_afterPrimaryEventVertex = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_vertexChi2Prob_afterPrimaryEventVertex.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelPrimaryEventVertex_beforeEvtSelPrimaryEventVertexQuality/VertexQuantities/VertexChi2Prob'
-)
-plots_ZtoElecTau_vertexChi2Prob_afterPrimaryEventVertex.title = cms.string('P(#Chi^{2}_{vtx} (after primary Event Vertex Cut)')
-plots_ZtoElecTau_vertexChi2Prob_afterPrimaryEventVertex.xAxis = cms.string('prob')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelPrimaryEventVertexQuality,
+		beforeCut = evtSelPrimaryEventVertexPosition,
+		plot = drawJobConfigEntry(
+			meName = 'VertexQuantities/VertexZ',
+			title = "z_{vtx} (after primary Event Vertex quality Cut)",
+			xAxis = 'posZ',
+			name = "cutFlowControlPlots_vertexZ_afterPrimaryEventVertexQuality"
+			)
+		)
 
-plots_ZtoElecTau_vertexZ_afterPrimaryEventVertexQuality = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_vertexZ_afterPrimaryEventVertexQuality.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelPrimaryEventVertexQuality_beforeEvtSelPrimaryEventVertexPosition/VertexQuantities/VertexZ'
-)
-plots_ZtoElecTau_vertexZ_afterPrimaryEventVertexQuality.title = cms.string('z_{vtx} (after primary Event Vertex quality Cut)')
-plots_ZtoElecTau_vertexZ_afterPrimaryEventVertexQuality.xAxis = cms.string('posZ')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelPrimaryEventVertexPosition,
+		beforeCut = evtSelTightElectronId,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (after primary Event Vertex position Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
+			)
+		)    
 
-plots_ZtoElecTau_electron_afterPrimaryEventVertexPosition = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_afterPrimaryEventVertexPosition.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelPrimaryEventVertexPosition_beforeEvtSelTightElectronId/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_afterPrimaryEventVertexPosition.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_afterPrimaryEventVertexPosition.title = cms.string('Electron (after primary Event Vertex position Cut)')
-plots_ZtoElecTau_electron_afterPrimaryEventVertexPosition.xAxis = cms.string('#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTightElectronId,
+		beforeCut = evtSelElectronAntiCrack,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (after Electron ID Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_electron_afterTightElectronId"
+			)
+		)
 
-plots_ZtoElecTau_electron_afterTightElectronId = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_afterTightElectronId.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTightElectronId_beforeEvtSelElectronAntiCrack/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_afterTightElectronId.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_afterTightElectronId.title = cms.string('Electron (after Electron id. Cut)')
-plots_ZtoElecTau_electron_afterTightElectronId.xAxis = cms.string('#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronAntiCrack,
+		beforeCut = evtSelElectronEta,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (after Electron anti-crack Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_electron_afterElectronAntiCrack"
+			)
+		)    
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronEta,
+		beforeCut = evtSelElectronPt,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (after Electron anti-crack Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_electron_afterElectronEta"
+			)
+		)    
 
-plots_ZtoElecTau_electron_afterElectronAntiCrack = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_afterElectronAntiCrack.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronAntiCrack_beforeEvtSelElectronEta/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_afterElectronAntiCrack.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_afterElectronAntiCrack.title = cms.string('Electron (after Electron anti-Crack Cut)')
-plots_ZtoElecTau_electron_afterElectronAntiCrack.xAxis = cms.string('#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronPt,
+		beforeCut = evtSelTauAntiOverlapWithElectronsVeto,
+		plot = drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Electron P_{T} Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterElectronPt"
+			)
+		)
 
-plots_ZtoElecTau_electron_afterElectronEta = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_afterElectronEta.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronEta_beforeEvtSelElectronPt/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_afterElectronEta.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_afterElectronEta.title = cms.string('Electron (after Electron #eta Cut)')
-plots_ZtoElecTau_electron_afterElectronEta.xAxis = cms.string('#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauAntiOverlapWithElectronsVeto,
+		beforeCut = evtSelTauEta,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Electron-Tau overlap Veto)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterTauAntiOverlapWithElectronsVeto"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauLeadTrkPt',
+			title = "Tau lead. Track (after Electron-Tau overlap Veto)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto"
+			)
+		]
+		)
 
-plots_ZtoElecTau_electronTrkIso_afterElectronPt = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electronTrkIso_afterElectronPt.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronPt_beforeEvtSelElectronTrkIso/ElectronQuantities/ElectronTrkIsoPt'
-)
-plots_ZtoElecTau_electronTrkIso_afterElectronPt.title = cms.string('Electron Track iso. (after Electron P_{T} Cut)')
-plots_ZtoElecTau_electronTrkIso_afterElectronPt.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauEta,
+		beforeCut = evtSelTauPt,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Tau #eta Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterTauEta"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauLeadTrkPt',
+			title = "Tau lead. Track (after Tau #eta Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauLeadTrkPt_afterTauEta"
+			)
+		]
+		)
 
-plots_ZtoElecTau_electronEcalIso_afterElectronTrkIso = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electronEcalIso_afterElectronTrkIso.plots.dqmMonitorElements = cms.vstring(
-       '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronTrkIso_beforeEvtSelElectronEcalIso/ElectronQuantities/ElectronEcalIsoPt'
-)
-plots_ZtoElecTau_electronEcalIso_afterElectronTrkIso.title = cms.string('Electron ECAL iso. (after Electron Track iso. Cut)')
-plots_ZtoElecTau_electronEcalIso_afterElectronTrkIso.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauPt,
+		beforeCut = evtSelElectronTrkIso,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronTrkIsoPt',
+			title = "Electron Track iso. (after Tau P_{T} Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_electronTrkIso_afterTauPt"
+			)
+		)
 
-plots_ZtoElecTau_electron_afterElectronEcalIso = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_afterElectronEcalIso.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronEcalIso_beforeEvtSelElectronTrk/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_afterElectronEcalIso.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_afterElectronEcalIso.title = cms.string('Electron (after Electron P_{T} Cut)')
-plots_ZtoElecTau_electron_afterElectronEcalIso.xAxis = cms.string('#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronTrkIso,
+		beforeCut = evtSelElectronEcalIso,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronEcalIsoPt',
+			title = "Electron ECAL iso. (after Electron Track iso. Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
+			)
+		)
 
-plots_ZtoElecTau_electronTrkIP_afterElectronTrk = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electronTrkIP_afterElectronTrk.plots.dqmMonitorElements = cms.vstring(
-       '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronTrk_beforeEvtSelElectronTrkIP/ElectronQuantities/ElectronTrackIP#PAR#'
-)
-plots_ZtoElecTau_electronTrkIP_afterElectronTrk.parameter = cms.vstring('xy', 'z')
-plots_ZtoElecTau_electronTrkIP_afterElectronTrk.title = cms.string('Electron Track IP_{#PAR#}(after Electron Track Cut)')
-plots_ZtoElecTau_electronTrkIP_afterElectronTrk.xAxis = cms.string('IP#PAR#')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronEcalIso,
+		beforeCut = evtSelElectronTrk,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (after Electron ECAL iso. Cut)",
+			xAxis = 'prob',
+			name = "cutFlowControlPlots_electron_afterElectronEcalIso"
+			)
+		)
 
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronTrk,
+		beforeCut = evtSelElectronTrkIP,
+		plot = drawJobConfigEntry(
+			meName = 'ElectronQuantities/ElectronTrackIP#PAR#',
+			PAR = [ 'xy', 'z' ],
+			title = "Electron Track IP_{#PAR#}(after Electron Track Cut)",
+			xAxis = 'IP#PAR#',
+			name = "cutFlowControlPlots_electronTrkIP_afterElectronTrk"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterElectronTrkIP = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterElectronTrkIP.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronTrkIP_beforeEvtSelTauAntiOverlapWithElectronsVeto/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterElectronTrkIP.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterElectronTrkIP.title = cms.string('Tau (after Electron Track IP_{xy} )')
-plots_ZtoElecTau_tau_afterElectronTrkIP.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_afterElectronTrkIP = copy.deepcopy(plots_ZtoElecTau)
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelElectronTrkIP,
+		beforeCut = evtSelTauLeadTrk,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Electron Track IP_{xy} Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterElectronTrkIP"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauLeadTrkPt',
+			title = "Tau lead. Track (after Electron Track IP_{xy} Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauLeadTrkPt_afterElectronTrkIP"
+			)
+		]
+		)
 
-plots_ZtoElecTau_tauLeadTrkPt_afterElectronTrkIP.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelElectronTrkIP_beforeEvtSelTauAntiOverlapWithElectronsVeto/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_afterElectronTrkIP.title = cms.string('Tau lead. Track (after Electron Track IP_{xy} Cut)')
-plots_ZtoElecTau_tauLeadTrkPt_afterElectronTrkIP.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauLeadTrk,
+		beforeCut = evtSelTauLeadTrkPt,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Tau lead. Track Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterTauLeadTrk"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauLeadTrkPt',
+			title = "Tau lead. Track (after Tau lead. Track Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauLeadTrkPt_afterTauLeadTrk"
+			)
+		]
+		)
 
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauLeadTrkPt,
+		beforeCut = evtSelTauTrkIso,
+		plot = drawJobConfigEntry(
+			meName = 'TauQuantities/TauTrkIsoPt',
+			title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterTauAntiOverlapWithElectronsVeto = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauAntiOverlapWithElectronsVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauAntiOverlapWithElectronsVeto_beforeEvtSelTauEta/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterTauAntiOverlapWithElectronsVeto.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterTauAntiOverlapWithElectronsVeto.title = cms.string('Tau (after Electron-Tau overlap Veto)')
-plots_ZtoElecTau_tau_afterTauAntiOverlapWithElectronsVeto.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauAntiOverlapWithElectronsVeto_beforeEvtSelTauEta/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto.title = cms.string('Tau lead. Track (after Electron-Tau overlap Veto)')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauAntiOverlapWithElectronsVeto.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauTrkIso,
+		beforeCut = evtSelTauEcalIso,
+		plot = drawJobConfigEntry(
+			meName = 'TauQuantities/TauEcalIsoPt',
+			title = "Tau ECAL iso. (after Tau Track iso. Cut)",
+			xAxis = 'Pt',
+			name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterTauEta = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauEta.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauEta_beforeEvtSelTauPt/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterTauEta.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterTauEta.title = cms.string('Tau (after Tau P_{T} Cut)')
-plots_ZtoElecTau_tau_afterTauEta.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauEta = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauEta.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauEta_beforeEvtSelTauPt/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauEta.title = cms.string('Tau lead. Track (after Tau P_{T} Cut)')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauEta.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauEcalIso,
+		beforeCut = evtSelTauProng,
+		plot = drawJobConfigEntry(
+			meName = 'TauQuantities/TauNumTracksSignalCone',
+			title = "Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)",
+			xAxis = 'unlabeled',
+			name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterTauPt = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauPt_beforeEvtSelTauLeadTrk/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterTauPt.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterTauPt.title = cms.string('Tau (after Tau #eta Cut)')
-plots_ZtoElecTau_tau_afterTauPt.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauPt = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauPt_beforeEvtSelTauLeadTrk/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauPt.title = cms.string('Tau lead. Track (after Tau #eta Cut)')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauPt.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauProng,
+		beforeCut = evtSelTauElectronVeto,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (after Tau 1-Prong||3-Prong Cut)",
+			xAxis = '#PAR#',
+			name = "cutFlowControlPlots_tau_afterTauProng"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
+			title = "Tau anti-Electron Discr. (after Tau 1-Prong||3-Prong Cut)",
+			xAxis = 'unlabeled',
+			name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauProng"
+			)
+		]
+		)
 
-plots_ZtoElecTau_tau_afterTauLeadTrk = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauLeadTrk.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauLeadTrk_beforeEvtSelTauLeadTrkPt/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterTauLeadTrk.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterTauLeadTrk.title = cms.string('Tau (after Tau lead. Track Cut)')
-plots_ZtoElecTau_tau_afterTauLeadTrk.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauLeadTrk = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauLeadTrk.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauLeadTrk_beforeEvtSelTauLeadTrkPt/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_afterTauLeadTrk.title = cms.string('Tau lead. Track (after Tau lead. Track Cut)')
-plots_ZtoElecTau_tauLeadTrkPt_afterTauLeadTrk.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelTauElectronVeto,
+		beforeCut = evtSelDiTauCandidateForElecTauAntiOverlapVeto,
+		plot = drawJobConfigEntry(
+			meName = 'DiTauCandidateQuantities/DR12',
+			title = "#Delta R(Electron,Tau) (after Tau electron-Veto Cut)",
+			xAxis = 'dR',
+			name = "cutFlowControlPlots_dR12_afterTauElectronVeto"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterTauLeadTrkPt = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauLeadTrkPt.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauLeadTrkPt_beforeEvtSelTauTrkIso/TauQuantities/TauTrkIsoPt'
-)
-plots_ZtoElecTau_tau_afterTauLeadTrkPt.title = cms.string('Tau Track iso. (after Tau lead. Track P_{T} Cut)')
-plots_ZtoElecTau_tau_afterTauLeadTrkPt.xAxis = cms.string('Pt')
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelDiTauCandidateForElecTauAntiOverlapVeto,
+		beforeCut = evtSelDiTauCandidateForElecTauZeroCharge,
+		plot = drawJobConfigEntry(
+			meName = 'DiTauCandidateQuantities/DiTauCandidateCharge',
+			title = "Charge(Electron + Tau) (after diTau anti-Overlap Veto)",
+			xAxis = 'unlabeled',
+			name = "cutFlowControlPlots_diTauCharge_afterAntiOverlapVeto"
+			)
+		)
 
-plots_ZtoElecTau_tau_afterTauTrkIso = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauTrkIso.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauTrkIso_beforeEvtSelTauEcalIso/TauQuantities/TauEcalIsoPt'
-)
-plots_ZtoElecTau_tau_afterTauTrkIso.title = cms.string('Tau ECAL iso. (after Tau Track iso. Cut)')
-plots_ZtoElecTau_tau_afterTauTrkIso.xAxis = cms.string('Pt')
-
-plots_ZtoElecTau_tauNumTracksSignalCone_afterTauEcalIso = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauNumTracksSignalCone_afterTauEcalIso.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauEcalIso_beforeEvtSelTauProng/TauQuantities/TauNumTracksSignalCone'
-)
-plots_ZtoElecTau_tauNumTracksSignalCone_afterTauEcalIso.title = cms.string('Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)')
-plots_ZtoElecTau_tauNumTracksSignalCone_afterTauEcalIso.xAxis = cms.string('unlabeled')
-
-plots_ZtoElecTau_tau_afterTauProng = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_afterTauProng.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauProng_beforeEvtSelTauElectronVeto/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_afterTauProng.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_afterTauProng.title = cms.string('Tau (after Tau 1-Prong||3-Prong )')
-plots_ZtoElecTau_tau_afterTauProng.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauAntiElectronDiscr_afterTauProng = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauAntiElectronDiscr_afterTauProng.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauProng_beforeEvtSelTauElectronVeto/TauQuantities/TauDiscriminatorAgainstElectrons'
-)
-plots_ZtoElecTau_tauAntiElectronDiscr_afterTauProng.title = cms.string('Tau anti-Electron Discr. (after Tau 1-Prong||3-Prong Cut)')
-plots_ZtoElecTau_tauAntiElectronDiscr_afterTauProng.xAxis = cms.string('unlabeled')
-
-plots_ZtoElecTau_dR12_afterTauElectronVeto = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_dR12_afterTauElectronVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelTauElectronVeto_beforeEvtSelDiTauCandidateForElecTauAntiOverlapVeto/DiTauCandidateQuantities/DR12'
-)
-plots_ZtoElecTau_dR12_afterTauElectronVeto.title = cms.string('#Delta R(Electron,Tau) (after Tau #mu-Veto Cut')
-plots_ZtoElecTau_dR12_afterTauElectronVeto.xAxis = cms.string('dPhi')
-
-plots_ZtoElecTau_diTauCharge_afterAntiOverlapVeto = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_diTauCharge_afterAntiOverlapVeto.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauAntiOverlapVeto_beforeEvtSelDiTauCandidateForElecTauZeroCharge/DiTauCandidateQuantities/DiTauCandidateCharge'
-)
-plots_ZtoElecTau_diTauCharge_afterAntiOverlapVeto.title = cms.string('Charge(Electron + Tau) (after Acoplanarity Cut)')
-plots_ZtoElecTau_diTauCharge_afterAntiOverlapVeto.xAxis = cms.string('unlabeled')
-
-plots_ZtoElecTau_mtElectronMET_afterZeroCharge = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mtElectronMET_afterZeroCharge.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauZeroCharge_beforeEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/Mt1MET'
-)
-plots_ZtoElecTau_mtElectronMET_afterZeroCharge.title = cms.string('M_{T}(Electron + MET) (after opposite Charge Cut)')
-plots_ZtoElecTau_mtElectronMET_afterZeroCharge.xAxis = cms.string('Mt')
-
-
-
-
-
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelDiTauCandidateForElecTauZeroCharge,
+		beforeCut = evtSelDiTauCandidateForElecTauMt1MET,
+		plot = drawJobConfigEntry(
+			meName = 'DiTauCandidateQuantities/Mt1MET',
+			title = "M_{T}(Electron + MET) (after opposite Charge Cut)",
+			xAxis = 'Mt',
+			name = "cutFlowControlPlots_mtElectronMET_afterZeroCharge"
+			)
+		)
 
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
-plots_ZtoElecTau_electron_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_electron_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-    '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/ElectronQuantities/Electron#PAR#'
-)
-plots_ZtoElecTau_electron_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_electron_finalEventSample.title = cms.string('Electron (final Event sample)')
-plots_ZtoElecTau_electron_finalEventSample.xAxis = cms.string('#PAR#')
 
+drawJobConfigurator_ZtoElecTau.add(
+		afterCut = evtSelDiTauCandidateForElecTauMt1MET,
+		plots = [
+		drawJobConfigEntry(
+			meName = 'ElectronQuantities/Electron#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Electron (final Event sample)",
+			xAxis = '#PAR#',
+			name = "finalSamplePlots_electron"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/Tau#PAR#',
+			PAR = [ 'Pt', 'Eta', 'Phi' ],
+			title = "Tau (final Event sample)",
+			xAxis = '#PAR#',
+			name = "finalSamplePlots_tau"
+			),
+		drawJobConfigEntry(
+			meName = 'TauQuantities/TauLeadTrkPt',
+			title = "Tau lead. Track (final Event sample)",
+			xAxis = 'Pt',
+			name = "finalSamplePlots_tauLeadTrkPt"
+			),
+		drawJobConfigEntry(
+				meName = 'TauQuantities/TauNumTracksSignalCone',
+				title = "Tau Tracks in Signal Cone (final Event sample)",
+				xAxis = 'unlabeled',
+				name = "finalSamplePlots_tauNumTracksSignalCone"
+				),
+		drawJobConfigEntry(
+				meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
+				title = "MET (final Event sample)",
+				xAxis = 'Pt',
+				name = "finalSamplePlots_met"
+				),
+		drawJobConfigEntry(
+				meName = 'DiTauCandidateQuantities/Mt1MET',
+				title = "M_{T}(Electron + MET) (final Event sample)",
+				xAxis = 'Mt',
+				name = "finalSamplePlots_mtElectronMET"
+				),
+		drawJobConfigEntry(
+				meName = 'DiTauCandidateQuantities/Mt2MET',
+				title = "M_{T}(Tau + MET) (final Event sample)",
+				xAxis = 'Mt',
+				name = "finalSamplePlots_mtTauMET"
+				),
+		drawJobConfigEntry(
+				meName = 'DiTauCandidateQuantities/Mt12MET',
+				title = "M_{T}(Electron + Tau + MET) (final Event sample)",
+				xAxis = 'Mt',
+				name = "finalSamplePlots_mtElectronTauMET"
+				),
+		drawJobConfigEntry(
+				meName = 'DiTauCandidateQuantities/CDFmethodMass',
+				title = "M(Electron + Tau), CDF method (final Event sample)",
+				xAxis = 'M',
+				name = "finalSamplePlots_mCDFmethod"
+				),
+		drawJobConfigEntry(
+				meName = 'DiTauCandidateQuantities/CollinearApproxMass',
+				title = "M(Electron + Tau), collinear Approx. (final Event sample)",
+				xAxis = 'M',
+				name = "finalSamplePlots_mCollApprox"
+				)
+		]
+		)                
 
-plots_ZtoElecTau_tau_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tau_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/TauQuantities/Tau#PAR#'
-)
-plots_ZtoElecTau_tau_finalEventSample.parameter = cms.vstring('Pt', 'Eta', 'Phi')
-plots_ZtoElecTau_tau_finalEventSample.title = cms.string('Tau (final Event sample)')
-plots_ZtoElecTau_tau_finalEventSample.xAxis = cms.string('#PAR#')
-plots_ZtoElecTau_tauLeadTrkPt_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauLeadTrkPt_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/TauQuantities/TauLeadTrkPt'
-)
-plots_ZtoElecTau_tauLeadTrkPt_finalEventSample.title = cms.string('Tau lead. Track (final Event sample)')
-plots_ZtoElecTau_tauLeadTrkPt_finalEventSample.xAxis = cms.string('Pt')
-plots_ZtoElecTau_tauNumTracksSignalCone_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_tauNumTracksSignalCone_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/TauQuantities/TauNumTracksSignalCone'
-)
-plots_ZtoElecTau_tauNumTracksSignalCone_finalEventSample.title = cms.string('Tau Tracks in Signal Cone (final Event sample)')
-plots_ZtoElecTau_tauNumTracksSignalCone_finalEventSample.xAxis = cms.string('unlabeled')
-
-plots_ZtoElecTau_met_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_met_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/MEtQuantities/MEtPt'
-)
-plots_ZtoElecTau_met_finalEventSample.title = cms.string('MET (final Event sample)')
-plots_ZtoElecTau_met_finalEventSample.xAxis = cms.string('Pt')
-
-plots_ZtoElecTau_mtElectronMET_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mtElectronMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/Mt1MET'
-)
-plots_ZtoElecTau_mtElectronMET_finalEventSample.title = cms.string('M_{T}(Electron + MET) (final Event sample)')
-plots_ZtoElecTau_mtElectronMET_finalEventSample.xAxis = cms.string('Mt')
-plots_ZtoElecTau_mtTauMET_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mtTauMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/Mt2MET'
-)
-plots_ZtoElecTau_mtTauMET_finalEventSample.title = cms.string('M_{T}(Tau + MET) (final Event sample)')
-plots_ZtoElecTau_mtTauMET_finalEventSample.xAxis = cms.string('Mt')
-
-plots_ZtoElecTau_mtElectronTauMET_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mtElectronTauMET_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/Mt12MET'
-)
-plots_ZtoElecTau_mtElectronTauMET_finalEventSample.title = cms.string('M_{T}(Electron + Tau + MET) (final Event sample)')
-plots_ZtoElecTau_mtElectronTauMET_finalEventSample.xAxis = cms.string('Mt')
-#plots_ZtoElecTau_mtElectronTauMET_finalEventSample.
-
-plots_ZtoElecTau_mCDFmethod_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mCDFmethod_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/CDFmethodMass'
-)
-plots_ZtoElecTau_mCDFmethod_finalEventSample.title = cms.string('M(Electron + Tau), CDF method (final Event sample)')
-plots_ZtoElecTau_mCDFmethod_finalEventSample.xAxis = cms.string('M')
-
-plots_ZtoElecTau_mCollApprox_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-plots_ZtoElecTau_mCollApprox_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/DiTauCandidateQuantities/CollinearApproxMass'
-)
-plots_ZtoElecTau_mCollApprox_finalEventSample.title = cms.string('M(Electron + Tau), collinear Approx. (final Event sample)')
-plots_ZtoElecTau_mCollApprox_finalEventSample.xAxis = cms.string('M')
-
-#plots_ZtoElecTau_numCentralJets_finalEventSample = copy.deepcopy(plots_ZtoElecTau)
-#plots_ZtoElecTau_numCentralJets_finalEventSample.plots.dqmMonitorElements = cms.vstring(
-#  '#PROCESSDIR#/zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauMt1MET/JetQuantities/numJetsEtGt#PAR#_0EtaLt2_1AlphaGt0_3'
-#)
-#plots_ZtoElecTau_numCentralJets_finalEventSample.parameter = cms.vstring('15', '20', '30')
-#plots_ZtoElecTau_numCentralJets_finalEventSample.title = cms.string('N_{jets} with E_{T} > #PAR# GeV, |#eta| < 2.1, #alpha > 0.3 (final Event sample)')
-#plots_ZtoElecTau_numCentralJets_finalEventSample.xAxis = cms.string('N')
