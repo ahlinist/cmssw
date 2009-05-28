@@ -303,6 +303,11 @@ public class DataProvider extends HttpServlet {
 
         case XML:
 
+          String [] intemplates = { };
+          if (intemplate != null) {
+            intemplates = intemplate.split(",");
+          }
+
           if (debug) {
             results.setAttribute("query", query);
             results.setAttribute("sql", sql);
@@ -314,15 +319,14 @@ public class DataProvider extends HttpServlet {
             results.setAttribute("where", where);
             results.setAttribute("avalues", filter_values);
             results.setAttribute("aoperator", filter_operator);
+            for (int i = 0; i < intemplates.length; i++) {
+              results.setAttribute("internal_template_" + String.valueOf(i), intemplates[i]);
+              results.setAttribute("internal_template_" + String.valueOf(i) + "_file", this.getClass().getResource("/templates/" + intemplates[i] + ".xsl").getPath());
+            }
           }
           results.setAttribute("total", String.valueOf(totalResultsAvailable));
           results.setAttribute("page", String.valueOf(page));
           results.setAttribute("rp", String.valueOf(page_size));
-
-          String [] intemplates = { };
-          if (intemplate != null) {
-            intemplates = intemplate.split(",");
-          }
 
           TransformerFactory tf = TransformerFactory.newInstance();
 
