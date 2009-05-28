@@ -32,12 +32,12 @@ loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
-        dqmDirectories_input = cms.vstring('QCD_BCtoE_Pt20to30'),
-		  												 'QCD_BCtoE_Pt30to80',
+        dqmDirectories_input = cms.vstring('QCD_BCtoE_Pt20to30',
+		  			   'QCD_BCtoE_Pt30to80',
                                            'QCD_BCtoE_Pt80to170',
-		  												 'QCD_EMenriched_Pt20to30',
-   	  												 'QCD_EMenriched_Pt30to80',
- 		  												 'QCD_EMenriched_Pt80to170'),
+		  			   'QCD_EMenriched_Pt20to30',
+   	  				   'QCD_EMenriched_Pt30to80',
+ 		  			   'QCD_EMenriched_Pt80to170'),
         dqmDirectory_output = cms.string('qcdSum')
     )                          
 )
