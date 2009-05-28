@@ -144,7 +144,6 @@ cfgMuonTrkIPcut = cms.PSet(
 )
 
 # di-tau candidate selection
-
 cfgDiTauCandidateForElecMuAntiOverlapVeto = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuAntiOverlapVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -152,7 +151,6 @@ cfgDiTauCandidateForElecMuAntiOverlapVeto = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsAntiOverlapVetoIndividual'),
     minNumber = cms.uint32(1)
 )
-
 cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuZeroChargeCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -160,7 +158,6 @@ cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
-
 cfgDiTauCandidateForElecMuMt1METcut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuMt1METcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -196,13 +193,13 @@ zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
       cfgElectronPtCut,
+      cfgGlobalMuonCut,
+      cfgMuonEtaCut,
+      cfgMuonPtCut,
       cfgElectronTrkIsoCut,
       cfgElectronEcalIsoCut,
       cfgElectronTrkCut,
       cfgElectronTrkIPcut,
-      cfgGlobalMuonCut,
-      cfgMuonEtaCut,
-      cfgMuonPtCut,
       cfgMuonTrkIsoCut,
       cfgMuonEcalIsoCut,
       cfgMuonAntiPionCut,
