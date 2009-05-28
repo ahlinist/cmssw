@@ -28,7 +28,7 @@ public:
     {
       // determine whether core object is an L1TEMU object
       if (o.name.find( "L1TEMU/" ) != std::string::npos &&
-          o.name.find( "L1TEMU/L1TdeRCT/" ) == std::string::npos )
+          o.name.find( "L1TdeRCT/" ) == std::string::npos )
         return true;
 
       return false;
