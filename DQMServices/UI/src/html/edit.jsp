@@ -248,7 +248,7 @@ $(document).ready( function () {
       dataType: "xml",
 
       error: function(o) {
-        messageBox(o);
+        messageBox(o, "Please contact CMS DQM expert");
       },
 
       success: function(ret) {
@@ -278,14 +278,14 @@ $(document).ready( function () {
       dataType: "json",
 
       error: function(o) {
-        messageBox(o);
+        messageBox(o, "Please contact CMS DQM expert");
         $(_edit).dialog('close');
       },
 
       success: function(json) {
 	  
         if (json.rows.length == 0) {
-          messageBox("Run not found");
+          messageBox("Run not found", "Select a run and try again. If you experience this problem constantly - please contact CMS DQM expert.");
           $(_edit).dialog('close');
           return;
         }
@@ -499,7 +499,7 @@ $(document).ready( function () {
           var err = $("#edit .error");
           if (err.length > 0) {
             $(err[0]).focus();
-            alert($(err[0]).attr("error"));
+            messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
             return;
           };
           var msg = build_xml(false);
@@ -510,7 +510,7 @@ $(document).ready( function () {
           var err = $(".error", _edit);
           if (err.length > 0) {
             $(err[0]).focus();
-            alert($(err[0]).attr("error"));
+            messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
             return;
           };
           var msg = build_xml(true);

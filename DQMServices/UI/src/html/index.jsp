@@ -45,9 +45,10 @@
 
     $("#messageBox").dialog({
       autoOpen: false,
-      width: 200,
-      height: 120,
+      width: 400,
+      height: 160,
       modal: true,
+      resizable: false,
       buttons: {
         "Close": function() { 
           $(this).dialog("close"); 
@@ -55,10 +56,12 @@
       }
     });
 
-    messageBox = function (line1, caption, line2) {
-      $("#messageBox p.line1").text(line1);  
-      $("#messageBox p.line2").text(line2);  
-      $("#messageBox").dialog("open");
+    messageBox = function (line1, line2, caption) {
+      if (line2 == undefined) line2 = ""; 
+      if (caption == "" || caption == undefined) caption = "Message"; 
+      $("#messageBox td.line1").text(line1);
+      $("#messageBox td.line2").text(line2);
+      $("#messageBox").dialog('option', 'title', caption).dialog("open");
     };
 
     logoutUser = function() {
@@ -98,7 +101,7 @@
           error: function(o) {
             $(load).hide();
             $(plus).show();
-            messageBox(o);
+            messageBox(o, "Please contact CMS DQM experts");
           },
 
           success: function(ret) {
@@ -284,7 +287,7 @@
     var editPress = function () {
       var number = parseInt($("div.button_edit").attr("run_number"));
       if (!number) {
-        alert("Run not selected.");
+        messageBox("Run not selected", "Select a run and try again.");
         return;
       }
       $.showRunEditForm(number);
@@ -293,7 +296,7 @@
     var summeryValues = function () {
       var number = parseInt($("div.button_summary").attr("run_number"));
       if (!number) {
-        alert("Run not selected.");
+        messageBox("Run not selected", "Select a run and try again.");
         return;
       }
 
@@ -303,7 +306,7 @@
     var goLink = function (l) {
       var number = parseInt($("div.button_edit").attr("run_number"));
       if (!number) {
-        alert("Run not selected.");
+        messageBox("Run not selected", "Select a run and try again.");
         return;
       }
       l = l.replace(/\{RUN_NUMBER\}/g, number);
@@ -484,7 +487,7 @@
 
       if ($.cookie("flex_multiselect") == "true") {
         if($("#flex1 .trSelected").length == 0) {
-          alert("In Multi Select mode at least one run must be selected for dumping.");
+          messageBox("In Multi Select mode at least one run must be selected for dumping", "Select at least one run and try again.");
           return;
         }
         var runs = "";
@@ -496,7 +499,7 @@
         url += "&query=^" + runs + "$";
       } else {
         if (total >= 1000) {
-          alert("Too many data: " + total + " records. \n Please narrow search and try again.");
+          messageBox("Too many data: " + total + " records", "Please narrow search and try again.");
           return;
         }
         if ($.cookie("flex_qtype")) url += "&qtype=" + escape($.cookie("flex_qtype"));
@@ -519,7 +522,7 @@
     var changeStatusTo = function(status) {
       var len = $("#flex1 .trSelected").length;
       if(len == 0) {
-        alert("At least one run must be selected for batch update.");
+        messageBox("At least one run must be selected for batch update", "Select at least one run and try again.");
         return;
       }
       var tag = '';
@@ -667,8 +670,16 @@
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 
   <div id="messageBox">
-    <p class="line1"/>
-    <p class="line2"/>
+    <table>
+      <tr>
+        <td width="20">
+          <span class="ui-icon ui-icon-alert" style="width: 16px; height: 16px;"></span></td>
+        <td class="line1" style="color: red"></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="line2"></td>
+      </tr>
+    </table>
   </div>
 
 </body>
