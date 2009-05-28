@@ -68,7 +68,7 @@
     <input message="Application URL:" addproperty="app_url" defaultvalue="runregistry_dev" />
     <input message="Database jdbc name:" addproperty="db_name" defaultvalue="dqmrunregistry_dev" />
     <input message="Database username:" addproperty="db_username" defaultvalue="cms_valdas"/>
-    <input message="Authentication file location:" addproperty="db_auth_file" defaultvalue="${os.HOME}/config/runregistry.config" />
+    <input message="Authentication file location (after $HOME):" addproperty="db_auth_file" defaultvalue="config/runregistry.config" />
     <input message="DBS DQM server url:" addproperty="dbsdqm_url" defaultvalue="http://localhost:9999" />
     <input message="Webapps path (to copy war file):" addproperty="app_path" defaultvalue="${webapps}"/>
     <input message="Start scheduler (true|false)?:" addproperty="app_start_scheduler" defaultvalue="false"/>

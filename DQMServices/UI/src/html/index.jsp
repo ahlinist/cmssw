@@ -679,4 +679,5 @@
   Certificate: <%= WebUtils.getCertInfo(request) %> 
   Roles:       <%= user.getRoles() %>
   Address:     <%= request.getRemoteAddr()%>
+  HOME:        <%= WebUtils.osenv.get("HOME")%>
 -->
