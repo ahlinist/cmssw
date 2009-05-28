@@ -20,8 +20,6 @@ $(document).ready( function () {
   var _edit_sub_offline = $("#edit_sub_offline_tab");
   var _edit_expert = $("#edit_expert_comments");
 
-  autoComplete();
-
   $(_edit).dialog({
     autoOpen: false,
     width: 880,
@@ -570,13 +568,7 @@ $(document).ready( function () {
             <tr>
               <td><label for="RUN_GLOBALNAME"> Global name: </label></td>
               <td class="edit_online">
-              <input name="RUN_GLOBALNAME" type="text" value="" readonly="true" maxlength="90" class="auto-complete" />
-                <ul>
-                  <dqm:listGlobalNames>
-                    <li>${global_name}</li>
-                  </dqm:listGlobalNames>
-                </ul>
-              </td>
+              <input name="RUN_GLOBALNAME" type="text" value="" readonly="true" maxlength="90" /></td>
               <td><label for="RUN_STATUS"> Status: </label></td>
               <td>
                 <select name="RUN_STATUS" disabled="true"></select>

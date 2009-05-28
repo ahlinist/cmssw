@@ -23,7 +23,6 @@
   <script type="text/javascript" src="media/jquery.cookie.js"></script>
   <script type="text/javascript" src="media/jquery.menu.min.js"></script>
   <script type="text/javascript" src="media/jquery.tooltip.js"></script>
-  <script type="text/javascript" src="media/jquery.auto-complete-1.2.5.js"></script>
   <script type="text/javascript" src="media/jquery.json-1.3.js"></script>
   <script type="text/javascript" src="media/flexigrid/flexigrid.js"></script>
   <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
