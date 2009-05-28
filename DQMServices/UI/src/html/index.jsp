@@ -38,7 +38,13 @@
   //jQuery.noConflict();
   $(document).ready(function() {
 
-    jQuery.fx.off = true;
+    var toggleAnimation = function (value) {
+      if (value != 0 && value != 1) value = 0;
+      jQuery.fx.off = (value == 1 ? false : true); 
+      $.cookie("animation", value);
+      $("a.animation_option").text("Turn animation " + (jQuery.fx.off ? "on" : "off"));
+      $("span.animation_value").text((jQuery.fx.off ? "OFF" : "ON"));
+    };
 
     var subsystems = [<dqm:listSubsystemsJS/>];
     var total = 0;
@@ -228,7 +234,7 @@
         }
       });
 
-			$("div.stat").parent().css("padding-top", "1px").css("padding-bottom", "1px");
+      $("div.stat").parent().css("padding-top", "1px").css("padding-bottom", "1px");
 
       $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]").unbind("click").click(function(){
         toggleRows($(this).attr("runnumber"));
@@ -474,6 +480,18 @@
       hoverOpenDelay: 200 
     });
 
+    $("#helpmenu").menu({
+      hoverOpenDelay: 200 
+    });
+
+    $("#optionsmenu").menu({
+      hoverOpenDelay: 200 
+    });
+    toggleAnimation($.cookie("animation"));
+    $("div.menu-item > a.animation_option").parent().click(function() { 
+      toggleAnimation((jQuery.fx.off ? 1 : 0));
+    });
+
     $("#batch_updater_progressbar").progressBar({ barImage: 'media/img/progressbg_red.gif', boxImage: 'media/img/progressbar.gif', showText: true});
 
     var dumpData = function(intpl, tpl, mime) {
@@ -638,11 +656,21 @@
 
         &nbsp;|&nbsp;
 
-        <a id="help" href="help.html" target="_blank">Quick Help</a>
+        <span id="optionsmenu"><a href="#">Options</a>
+          <ul>
+            <li><a href="#" class="animation_option">Animation</a></li>
+          </ul>
+        </span>
 
         &nbsp;|&nbsp;
 
-	<a id="tutorial" href="https://twiki.cern.ch/twiki/bin/view/CMS/CMSDQMRunRegistry" target="_blank">Tutorial</a>
+        <span id="helpmenu"><a href="#">Help</a>
+          <ul>
+            <li><a href="help.html" target="_blank">Quick Help</a></li>
+            <li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/CMSDQMRunRegistry" target="_blank">Tutorial</a></li>
+            <li><a href="https://twiki.cern.ch/twiki//bin/view/CMS/CMSDQMRunRegistryDev" target="_blank">Developer Notes</a></li>
+          </ul>
+        </span>
 
         &nbsp;|&nbsp;
 
@@ -665,7 +693,7 @@
 
   <table id="flex1"></table>
   <br/>
-  <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%></div>
+  <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 

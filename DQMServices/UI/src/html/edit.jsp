@@ -9,8 +9,6 @@
 
 $(document).ready( function () {
 
-  jQuery.fx.off = true;
-
   var _edit = $("#edit");
   var _edit_form = $("form", _edit);
   var _edit_info = $("td.edit_info", _edit_form);
