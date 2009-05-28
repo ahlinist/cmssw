@@ -26,4 +26,4 @@ process.makeZtoMuTauPlots = cms.Sequence( process.loadZtoMuTau
 process.p = cms.Path(process.makeZtoMuTauPlots)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()

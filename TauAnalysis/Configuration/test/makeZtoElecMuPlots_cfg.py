@@ -26,4 +26,4 @@ process.makeZtoElecMuPlots = cms.Sequence( process.loadZtoElecMu
 process.p = cms.Path(process.makeZtoElecMuPlots)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
