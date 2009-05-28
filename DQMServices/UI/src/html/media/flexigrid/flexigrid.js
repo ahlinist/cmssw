@@ -5,11 +5,9 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Date: 2009/04/14 10:18:28 $
+ * $Date: 2009/04/29 17:27:35 $
  */
 
-jQuery.fx.off = true;
- 
 (function($){
 		  
 	$.addFlex = function(t,p)

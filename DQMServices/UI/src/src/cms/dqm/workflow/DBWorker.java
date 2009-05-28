@@ -9,6 +9,8 @@ public class DBWorker {
 
   private Connection conn;
 
+  private static boolean last_connect_result = false;
+
   public DBWorker() throws Exception {
     this(false);
   }
@@ -25,7 +27,7 @@ public class DBWorker {
     String username = WebUtils.GetEnv("db_username");
     if (username == null) throw new Exception("Error: No DB username");
 
-    if (ds.getUser() == null || !ds.getUser().equals(username)) {
+    if (ds.getUser() == null || !ds.getUser().equals(username) || !last_connect_result) {
       ds.setUser(username);
       String password = WebUtils.getPassword(username);
       if (password == null) throw new Exception("Error: DB user credential not found");
@@ -33,6 +35,7 @@ public class DBWorker {
     }
 
     connect(ds, readOnly);
+    if (!conn.isClosed()) last_connect_result = true;
   }
 
   public DBWorker(String jdbc, String username, String auth_file) throws Exception {
@@ -50,6 +53,7 @@ public class DBWorker {
       ds.setPassword(password);
     }
     connect(ds, readOnly);
+    if (!conn.isClosed()) last_connect_result = true;
   }
 
   private void connect(OracleDataSource ds, boolean readOnly) throws Exception {
