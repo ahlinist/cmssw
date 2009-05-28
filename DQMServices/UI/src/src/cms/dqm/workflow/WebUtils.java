@@ -17,12 +17,19 @@ public class WebUtils {
   public static final String ONLINE = "ONLINE";
   public static final String OFFLINE = "OFFLINE";
   public static final String EXPERT = "EXPERT";
+  public static Properties osenv = new Properties();
 
   private static Pattern p1 = Pattern.compile("OU\\=\"*([a-zA-Z,]+)\"*");
   private static Pattern p2 = Pattern.compile("dqm(\\w+)");
   private static Pattern p3 = Pattern.compile("CN\\=\"*([^\",]+)\"*");
 
   private static Map<String, String> auths = new HashMap<String, String>();
+
+  static {
+    try {
+      osenv.load(Runtime.getRuntime().exec("env").getInputStream());
+    } catch (java.io.IOException e) { }
+  }
 
   public static String getLoggedUser(HttpServletRequest request) {
     if (request.isSecure() && request.getHeader("ADFS_LOGIN") != null) {
@@ -117,7 +124,7 @@ public class WebUtils {
   public static String getPassword(String username) {
 
     if (auths.containsKey(username)) return auths.get(username);
-    return WebUtils.getPassword(username, WebUtils.GetEnv("db_auth_file"));
+    return WebUtils.getPassword(username, osenv.get("HOME") + "/" + WebUtils.GetEnv("db_auth_file"));
 
   }
 
@@ -148,5 +155,6 @@ public class WebUtils {
 
     return password;
   }
+
 
 }
