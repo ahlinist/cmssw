@@ -350,7 +350,10 @@ drawOption_Zee = copy.deepcopy(drawOption_green_stacked)
 drawOption_Zmumu = copy.deepcopy(drawOption_blue_stacked)
 drawOption_WplusJets = copy.deepcopy(drawOption_cyan_stacked)
 drawOption_ZplusJets = copy.deepcopy(drawOption_magenta_stacked)
-drawOption_ttbar = copy.deepcopy(drawOption_gray_stacked)
+drawOption_ZeePlusJets = drawOption_Zee
+drawOption_ZmumuPlusJets = drawOption_Zmumu
+drawOption_ZtautauPlusJets = drawOption_Ztautau
+drawOption_TTplusJets = copy.deepcopy(drawOption_gray_stacked)
 drawOption_gammaPlusJets = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_QCD = copy.deepcopy(drawOption_magenta_stacked)
 
