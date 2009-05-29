@@ -5,8 +5,6 @@
 
 FileBlock: Properties of an input file.
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include "DataFormats/Provenance/interface/FileFormatVersion.h"
@@ -62,6 +60,7 @@ namespace edm {
 
     void setNotFastCopyable() {fastCopyable_ = false;}
     BranchChildren const& branchChildren() const { return *branchChildren_; }
+    void close () {runMetaTree_ = lumiMetaTree_ = metaTree_ = runTree_ = lumiTree_ = tree_ = 0;}
 
   private:
     FileFormatVersion fileFormatVersion_;
