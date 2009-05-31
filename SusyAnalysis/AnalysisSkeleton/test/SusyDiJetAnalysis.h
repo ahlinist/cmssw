@@ -423,6 +423,19 @@ private:
   double mTempTreeGenTauPz[50];
   //PIOPPI
 
+
+  //benedetta
+  //PF jets
+  int    mTempTreeNPFjet;
+  double mTempTreePFjetEta[50];
+  double mTempTreePFjetPhi[50];
+  double mTempTreePFjetE[50];
+  double mTempTreePFjetPx[50];
+  double mTempTreePFjetPy[50];
+  double mTempTreePFjetPz[50];
+  double mTempTreePFjetPt[50];
+  double mTempTreePFjetCharge[50];
+
   // Stoye  
   // Generated MET
   double mTempTreeMET_Gen[3];
@@ -562,7 +575,9 @@ private:
   edm::InputTag muonTag_;
   edm::InputTag tauTag_;
   edm::InputTag genTag_;
-
+  //benedetta: PFjets
+  edm::InputTag pfjetTag_;
+  bool usePfjets_;
   edm::InputTag jptTag_;
 
   edm::InputTag ccjetTag_;

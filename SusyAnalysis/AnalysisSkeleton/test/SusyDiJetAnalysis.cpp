@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.37 2009/04/26 18:48:34 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.38 2009/04/28 11:14:37 georgia Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -76,6 +76,9 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   muonTag_ = iConfig.getParameter<edm::InputTag>("muonTag");
   tauTag_ = iConfig.getParameter<edm::InputTag>("tauTag");
   vtxTag_ = iConfig.getParameter<edm::InputTag>("vtxTag"); 
+  //benedetta: PFjets
+  usePfjets_ = iConfig.getParameter<bool>("UsePfjet");
+  pfjetTag_  = iConfig.getParameter<edm::InputTag>("pfjetTag");
 
   jptTag_ = iConfig.getParameter<edm::InputTag>("jptTag");
 
@@ -1043,21 +1046,43 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     mTempTreeMPTPx=totalP3.px();
     mTempTreeMPTPy=totalP3.py();
     mTempTreeMPTPz=totalP3.pz();
-
-
-
+    
+    
+    
     //   return totalP3;
     
-
-
-
-  // get the taus
-  edm::Handle< std::vector<pat::Tau> > tauHandle;
-  iEvent.getByLabel(tauTag_, tauHandle);
-  if ( !tauHandle.isValid() ) {
-    edm::LogWarning("SusySelectorExample") << "No Tau results for InputTag " << tauTag_;
-    return;
+    //benedetta : PFjets
+    edm::Handle< std::vector<pat::Jet> > pfjetHandle;
+   if (usePfjets_) {
+     iEvent.getByLabel(pfjetTag_, pfjetHandle);
+     if(!pfjetHandle.isValid()){
+        edm::LogWarning("SusySelectorExample") << "No PFjet results for InputTag "<< pfjetTag_;
+        return;
+     }
+    
+     mTempTreeNPFjet = pfjetHandle->size();
   }
+  else mTempTreeNPFjet =0;  
+  if( mTempTreeNPFjet > 50) mTempTreeNPFjet=50;
+    for(int pf=0; pf< mTempTreeNPFjet; pf++){
+      mTempTreePFjetEta[pf]=(*pfjetHandle)[pf].eta();
+      mTempTreePFjetPhi[pf]=(*pfjetHandle)[pf].phi();
+      mTempTreePFjetE[pf]=(*pfjetHandle)[pf].energy();
+      mTempTreePFjetPx[pf]=(*pfjetHandle)[pf].px();
+      mTempTreePFjetPy[pf]=(*pfjetHandle)[pf].py();
+      mTempTreePFjetPz[pf]=(*pfjetHandle)[pf].pz();
+      mTempTreePFjetPt[pf]=(*pfjetHandle)[pf].pt();
+      mTempTreePFjetCharge[pf]=(*pfjetHandle)[pf].charge();
+
+    }
+    
+    // get the taus
+    edm::Handle< std::vector<pat::Tau> > tauHandle;
+    iEvent.getByLabel(tauTag_, tauHandle);
+    if ( !tauHandle.isValid() ) {
+      edm::LogWarning("SusySelectorExample") << "No Tau results for InputTag " << tauTag_;
+      return;
+    }
  
 
   // Add the taus
@@ -1988,6 +2013,16 @@ SusyDiJetAnalysis::initPlots() {
   //PIOPPI
   mAllData->Branch("Muon_isccMuonAssoc",mTempTreeccMuonAssoc,"mTempTreeccMuonAssoc[Nmuon]/bool");
 
+  //benedetta : PFjets
+  mAllData->Branch("NPFjet",&mTempTreeNPFjet,"NPFjet/int");
+  mAllData->Branch("PFjetEta",&mTempTreePFjetEta,"PFjetEta[NPFjet]/double");
+  mAllData->Branch("PFjetPhi",&mTempTreePFjetPhi,"PFjetPhi[NPFjet]/double");
+  mAllData->Branch("PFjetE",&mTempTreePFjetE,"PFjetE[NPFjet]/double");
+  mAllData->Branch("PFjetPx",&mTempTreePFjetPx,"PFjetPx[NPFjet]/double");
+  mAllData->Branch("PFjetPy",&mTempTreePFjetPy,"PFjetPy[NPFjet]/double");
+  mAllData->Branch("PFjetPz",&mTempTreePFjetPz,"PFjetPz[NPFjet]/double");
+  mAllData->Branch("PFjetPt",&mTempTreePFjetPt,"PFjetPt[NPFjet]/double");
+  mAllData->Branch("PFjetCharge",&mTempTreePFjetCharge,"PFjetCharge[NPFjet]/double");
 
   //add taus
   mAllData->Branch("Ntau" ,&mTempTreeNtau ,"Ntau/int");  
