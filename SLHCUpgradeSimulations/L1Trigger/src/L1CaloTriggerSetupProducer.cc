@@ -297,7 +297,7 @@ L1CaloTriggerSetupProducer::config(L1CaloTriggerSetup& rcd)
 
 }
 
-DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
+//DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
 
 
 
