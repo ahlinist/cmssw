@@ -109,7 +109,7 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
             ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
             #ZplusJets = copy.deepcopy(drawOption_ZplusJets),
-            TTplusJets = copy.deepcopy(drawOption_ttbar),
+            TTplusJets = copy.deepcopy(drawOption_TTplusJets),
             qcdSum = copy.deepcopy(drawOption_QCD)
        )
     ),
