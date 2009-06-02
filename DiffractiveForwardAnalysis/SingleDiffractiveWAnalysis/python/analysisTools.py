@@ -12,8 +12,8 @@ def addAnalyzer(process,refAnalyzer,filter="",**pars):
             analyzer += "_" + filter
             seq += "_" + filter
     for key in pars:
-        analyzer += "_" + pars[key]
-        seq += "_" + pars[key]
+        analyzer += "_" + key + "_" + str(pars[key])
+        seq += "_" + key + "_" + str(pars[key])
 
     setattr(process,analyzer,refAnalyzer.clone(**pars))
 
@@ -31,15 +31,13 @@ def addPath(process,sequence):
     path = sequence.label() + "_step"
     setattr(process,path,cms.Path(sequence))
 
-def makeAnalysis(process,refAnalyzer='edmDumpAnalysis',attributes={},filters=[]):
+def makeAnalysis(process,refAnalyzer='edmDumpAnalysis',attributes=[],filters=[]):
     analyzer = getattr(process,refAnalyzer)
     process.analysis = cms.Sequence(analyzer)
     addPath(process,process.analysis)
 
-    for attr in attributes:
-        for item in attributes[attr]:
-            replace = {attr:item}
-            addPath(process,addAnalyzer(process,analyzer,**replace))
+    for replace in attributes:
+        addPath(process,addAnalyzer(process,analyzer,**replace))
 
     for item in filters:
         addPath(process,addAnalyzer(process,analyzer,item))
