@@ -196,9 +196,9 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_BCtoE_Pt20to30')
     ),
     config_dqmHistPlotter = cms.PSet(
-       dqmDirectory = cms.string('QCD_BCtoE_Pt20to30'),
-       legendEntry = cms.string('eQCD 20 < #hat{P}_T < 30 GeV'),
-       type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+        dqmDirectory = cms.string('QCD_BCtoE_Pt20to30'),
+        legendEntry = cms.string('eQCD 20 < #hat{P}_T < 30 GeV'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
 )
 
