@@ -76,9 +76,9 @@ processZtoElecTau_WplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFa
 
 #--------------------------------------------------------------------------------
 
-processZtoElecTau_ZplusJets = copy.deepcopy(process_ZplusJets)
-processZtoElecTau_ZplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(dataPath.value() + 'plotsZtoElecTau_ZplusJets.root')
-processZtoElecTau_ZplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZplusJets*intLumiData/intLumiZplusJets)
+#processZtoElecTau_ZplusJets = copy.deepcopy(process_ZplusJets)
+#processZtoElecTau_ZplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(dataPath.value() + 'plotsZtoElecTau_ZplusJets.root')
+#processZtoElecTau_ZplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZplusJets*intLumiData/intLumiZplusJets)
 
 processZtoElecTau_ZeePlusJets = copy.deepcopy(process_ZeePlusJets)
 processZtoElecTau_ZeePlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(dataPath.value() + 'plotsZtoElecTau_ZeePlusJets.root')
