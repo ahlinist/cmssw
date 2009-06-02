@@ -87,25 +87,9 @@ typedef ES_ClusteringAlgorithm_2d<cmsUpgrades::Ref_TTHit_> ClusteringAlgorithm_2
 DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_TTHit_);
 
 
-/*
-#include "SLHCUpgradeSimulations/L1Trigger/interface/TrackTriggerHitMatchingAlgorithm_aESModule.h"
-DEFINE_FWK_EVENTSETUP_MODULE(TrackTriggerHitMatchingAlgorithm_aESModule);
 
-#include "SLHCUpgradeSimulations/L1Trigger/interface/TrackTriggerHitMatchingAlgorithm_globalgeometryESModule.h"
-DEFINE_FWK_EVENTSETUP_MODULE(TrackTriggerHitMatchingAlgorithm_globalgeometryESModule);
-
-#include "SLHCUpgradeSimulations/L1Trigger/interface/StackedTrackerTrackletBuilder.h"
-DEFINE_FWK_MODULE(StackedTrackerTrackletBuilder);
+/* - L1 CaloTrigger - */
+#include "SLHCUpgradeSimulations/L1Trigger/interface/L1CaloTriggerSetupProducer.h"
+DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
 
 
-#include "SLHCUpgradeSimulations/L1Trigger/interface/StackedTrackerDigiMatchingAlgorithm_aESModule.h"
-DEFINE_FWK_EVENTSETUP_MODULE(StackedTrackerDigiMatchingAlgorithm_aESModule);
-
-
-#include "SLHCUpgradeSimulations/L1Trigger/interface/StackedTrackerDigiMatchingAlgorithm_globalgeometryESModule.h"
-DEFINE_FWK_EVENTSETUP_MODULE(StackedTrackerDigiMatchingAlgorithm_globalgeometryESModule);
-
-
-#include "SLHCUpgradeSimulations/L1Trigger/interface/StackedTrackerDigiMatchingAlgorithm_globalgeometry2ESModule.h"
-DEFINE_FWK_EVENTSETUP_MODULE(StackedTrackerDigiMatchingAlgorithm_globalgeometry2ESModule);
-*/
