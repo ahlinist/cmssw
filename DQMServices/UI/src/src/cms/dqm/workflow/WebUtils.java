@@ -121,37 +121,40 @@ public class WebUtils {
     }
   }
 
-  public static String getPassword(String username) {
+  public static String getPassword(String username) throws Exception {
 
     if (auths.containsKey(username)) return auths.get(username);
-    return WebUtils.getPassword(username, osenv.get("HOME") + "/" + WebUtils.GetEnv("db_auth_file"));
+    String home = (String) osenv.get("HOME");
+    if (home == null) {
+      home = "/nfshome0/" + (String) osenv.get("USER");
+    }
+    return WebUtils.getPassword(username, home + "/" + WebUtils.GetEnv("db_auth_file"));
 
   }
 
-  public static String getPassword(String username, String auth_file) {
+  public static String getPassword(String username, String auth_file) throws Exception {
 
     if (auths.containsKey(username)) return auths.get(username);
     if (auth_file == null) return null;
 
     String password = null;
 
-    try {
-      FileInputStream in = new FileInputStream(auth_file);
-      BufferedReader br = new BufferedReader(new InputStreamReader(in));
-      String line;
-      Pattern p = Pattern.compile("^" + username + "/(.+)$");
-      while ((line = br.readLine()) != null) {
-        Matcher m = p.matcher(line);
-        if (m.find()) {
-          password = m.group(1);
-          break;
-        }
+    FileInputStream in;
+    in = new FileInputStream(auth_file);
+    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    String line;
+    Pattern p = Pattern.compile("^" + username + "/(.+)$");
+    while ((line = br.readLine()) != null) {
+      Matcher m = p.matcher(line);
+      if (m.find()) {
+        password = m.group(1);
+        break;
       }
-      in.close();
-      if (password != null && password != "") {
-        auths.put(username, password);
-      }
-    } catch (Exception e) { }
+    }
+    in.close();
+    if (password != null && password != "") {
+      auths.put(username, password);
+    }
 
     return password;
   }
