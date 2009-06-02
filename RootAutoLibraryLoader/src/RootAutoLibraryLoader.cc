@@ -63,7 +63,7 @@ namespace {
 // static data member definitions
 //
 //hold onto the previous autolibrary loader
-typedef int (*CallbackPtr) G__P((char*,char*));
+typedef int (*CallbackPtr)(char*,char*); 
 static CallbackPtr gPrevious = 0;
 static const char* kDummyLibName = "*dummy";
 
@@ -168,7 +168,7 @@ static int ALL_AutoLoadCallback(char *c, char *l) {
     return 0;
   }
   ULong_t varp = G__getgvp();
-  G__setgvp(G__PVOID);
+  G__setgvp((long)G__PVOID);
   int result = loadLibraryForClass(c) ? 1:0;
   G__setgvp(varp);
   //NOTE: the check for the library is done since we can have a failure
