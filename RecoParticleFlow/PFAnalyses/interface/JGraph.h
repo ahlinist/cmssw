@@ -5,20 +5,22 @@
 #include <TGraphErrors.h>
 #include <vector>
 #include <string>
+#include <ostream>
 class JGraph {
 public:
 	JGraph(std::string rootName);
-	
+
 	virtual ~JGraph();
-	
+
 	void addPoint(double x, double y);
-	
+
 	void addPoint(double x, double ex, double y, double ey);
-	
+
 	TGraph finalise();
-	
+
 	TGraphErrors finaliseWithErrors();
-	
+
+	std::ostream& operator<<(std::ostream& s);
 private:
 	bool hasErrors_;
 	std::string rootName_;

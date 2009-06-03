@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from RecoParticleFlow.PFAnalyses.RunDict import *
 
 particleFiltration = cms.EDFilter("ParticleFilter",
                             
@@ -30,7 +31,7 @@ particleFiltration = cms.EDFilter("ParticleFilter",
     noiseMode=cms.bool(False),
     
     # Global cut parameters   
-    runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310pre2.root"),
+    runinfo_cuts=cms.string(testbeam_cuts),
     
     #Normal tags
     BeamCounters=cms.InputTag("tbunpacker"),

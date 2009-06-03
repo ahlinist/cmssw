@@ -17,20 +17,42 @@ parser.add_option("-c", "--cuts", dest="cuts", metavar="FILE", help="Write testb
 parser.add_option("-p", "--python", dest="python", metavar="FILE", help="Write CMSSW python config to FILE")
 parser.add_option("-b", "--batch", dest="batchCmd", metavar="FILE", help="Write batchfile too!")
 parser.add_option("-t", action="store_true", dest="temp", help="Copy files to /tmp")
+parser.add_option("-k", action="store_true", dest="endcap", help="Endcap 2007 runs") 
+                  
+                  
 (options, args) = parser.parse_args()
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
 
+fileRoot_pt1 = '/castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000'
+fileRoot_pt2 = '.combined.OutServ_0.0-cmsswreco.root'
 specifiedE = energies[options.energy]
 
-result = []
-if not options.nostage:
-    print "Staging files..."
-    result = map(lambda x : commands.getoutput('stager_get -M /castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root'), specifiedE)
-else:
-    print "Querying files..."
-    result = map(lambda x : commands.getoutput('stager_qry -M /castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root'), specifiedE)
+if options.endcap:
+    print "Doing endcaps with runs:"
+    fileRoot_pt1 = '/castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_000'
+    fileRoot_pt2 = '.0000.root'
+    specifiedE = endcap[options.energy]
+    print specifiedE
 
+
+
+result = []
+if not options.endcap:
+    if not options.nostage:
+        print "Staging files..."
+        result = map(lambda x : commands.getoutput('stager_get -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
+    else:
+        print "Querying files..."
+        result = map(lambda x : commands.getoutput('stager_qry -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
+else:
+    files = map(lambda x : commands.getoutput('nsls /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/ | grep ' + str(x) + '.'), specifiedE)
+    print files
+    ans = []
+    map(lambda u: ans.extend(u.split('\n')), files) 
+    print ans
+    result = map(lambda y: commands.getoutput('stager_get -M /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/' + str(y)), ans)
+    
 files = []
 
 for line in result:

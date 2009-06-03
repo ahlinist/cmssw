@@ -10,14 +10,14 @@
 #include <TPaveText.h>
 #include <cmath>
 #include <TF1.h>
+#include <TText.h>
+#include <stdexcept>
 
-Color_t PlotUtil::tb_rechits = kGreen;
-Color_t PlotUtil::pf_rechits = kRed;
-Color_t PlotUtil::pf_cluster = kViolet + 7;
-
+using namespace std;
 
 PlotUtil::PlotUtil() :
-	rootFile_(0), amInitialised_(false) {
+	rootFile_(0), amInitialised_(false), autoFlush_(false), edgeSize_(0),
+			flushCount_(0) {
 
 	colors_.push_back(kBlue + 3);
 	colors_.push_back(kRed);
@@ -41,11 +41,10 @@ Color_t PlotUtil::nextColor() {
 }
 
 PlotUtil::~PlotUtil() {
-	//rootFile_->Write();
-	//	if(rootFile_ != 0) {
-	//		rootFile_->Close();
-	//		delete rootFile_;
-	//	}
+	for (vector<TObject*>::iterator del = deleteOnDestruction_.begin(); del
+			!= deleteOnDestruction_.end(); ++del)
+		delete *del;
+
 }
 
 void PlotUtil::setGraphicsFile(std::string graphicsFile) {
@@ -72,9 +71,24 @@ void PlotUtil::flushPage() {
 	flushAccumulatedObjects(macroFile_);
 }
 
+void PlotUtil::addTitle(const std::string& theTitle) {
+	//	auto_ptr<TText> title(new TText(0, 0, theTitle.c_str()));
+	TText* title = new TText(0, 0, theTitle.c_str());
+	title->SetNDC();
+	title->SetX(0.1);
+	title->SetY(0.9);
+	accumulateObjects(title, "");
+	deleteOnDestruction_.push_back(title);
+}
+
 void PlotUtil::accumulateObjects(TObject* o, std::string options) {
 	std::pair<TObject*, std::string> k(o, options);
 	accumulatedObjects_.push_back(k);
+	if (autoFlush_ && accumulatedObjects_.size() >= flushCount_) {
+		std::cout << __PRETTY_FUNCTION__ << ": autoflushing... " << std::endl;
+		flushPage();
+		newPage();
+	}
 }
 
 void PlotUtil::flushAccumulatedObjects(std::string filename) {
@@ -85,21 +99,40 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 	int optimalsX[] = { 1, 2, 2, 2, 3, 3, 3, 3, 3 };
 	int optimalsY[] = { 1, 1, 2, 2, 2, 2, 3, 3, 3 };
 	int dimX, dimY;
-	if (accumulatedObjects_.size() <= 9) {
-		dimX = optimalsX[accumulatedObjects_.size() -1];
-		dimY = optimalsY[accumulatedObjects_.size() -1];
+	if (edgeSize_ > 0) {
+		dimX = dimY = edgeSize_;
+	} else if (accumulatedObjects_.size() <= 9) {
+		dimX = optimalsX[accumulatedObjects_.size() - 1];
+		dimY = optimalsY[accumulatedObjects_.size() - 1];
 	} else {
-		dimX = dimY = static_cast<int>(ceil(sqrt(accumulatedObjects_.size())));
+		dimX = dimY = static_cast<int> (ceil(sqrt(accumulatedObjects_.size())));
 	}
-	dimX = dimY = 3;
+	//check edgeSize_; if > 0 divide canvas appropriately
+	//if more objects exist that edgeSize_^2, flush each page separately
 
 	TCanvas canv("Accumulated", "Accumulated");
 	canv.Divide(dimX, dimY);
 	canv.Update();
+	//count which subcanvas we're on
 	unsigned count(1);
+	//how many objects printed so far?
+	unsigned seen(0);
 	for (std::vector<std::pair<TObject*, std::string> >::iterator it =
 			accumulatedObjects_.begin(); it != accumulatedObjects_.end(); ++it) {
 		canv.cd(count);
+		//Auto flush when canvas gets full
+		if (seen >= edgeSize_ * edgeSize_ && edgeSize_ > 0) {
+			std::cout << "Flushing page..." << std::endl;
+			canv.cd();
+			canv.Update();
+			canv.Print(filename.c_str());
+			//D clears subpads too, allegedly
+			canv.Clear("D");
+			canv.cd();
+			canv.Divide(dimX, dimY);
+			//reset subcanvas count
+			count = 1;
+		}
 		TObject* o = (*it).first;
 		std::string options = (*it).second;
 		//gPad->UseCurrentStyle();
@@ -115,6 +148,7 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 		canv.Modified();
 		o->Write();
 		++count;
+		++seen;
 	}
 
 	canv.cd();
@@ -124,10 +158,15 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 
 TH1* PlotUtil::printHisto(const std::string& name, const std::string& title,
 		const std::string& xtitle, Color_t line = kBlack,
-		Color_t fill = kWhite, int thickness) {
+		Color_t fill = kWhite, int thickness) throw(exception) {
 	TH1* histo = formatHisto(name, title, xtitle, line, fill, thickness);
-	histo->Draw();
-	gPad->Print(graphicsFile_.c_str());
+	if (histo) {
+		histo->Draw();
+		gPad->Print(graphicsFile_.c_str());
+	} else {
+		invalid_argument e("Can't get histogram");
+		throw e;
+	}
 	return histo;
 }
 
@@ -171,16 +210,17 @@ TLegend* PlotUtil::legendForStack(THStack* stack) {
 	TList* list = stack->GetHists();
 	TIter next(list);
 	TH1* hist;
-	while (hist = (TH1*)next() )
+	while (hist = (TH1*) next())
 		legend->AddEntry(hist, "", "F");
 
 	return legend;
+	deleteOnDestruction_.push_back(legend);
 
 }
 
 TH1* PlotUtil::formatHisto(const std::string& name, const std::string& title,
 		const std::string& xtitle, Color_t line = kBlack,
-		Color_t fill = kWhite, int thickness) {
+		Color_t fill = kWhite, int thickness) throw(exception) {
 	//do things
 	TH1* histo = getHisto(name);
 	if (histo) {
@@ -197,6 +237,8 @@ TH1* PlotUtil::formatHisto(const std::string& name, const std::string& title,
 	} else {
 		std::cout << "Can't format histogram, returning null pointer!"
 				<< std::endl;
+		invalid_argument e("Can't get histogram");
+		throw e;
 	}
 	return histo;
 
@@ -233,22 +275,29 @@ TStyle* PlotUtil::makeStyle(const std::string& name) {
 	style->SetStatBorderSize(1);
 	style->SetPadGridX(true);
 	style->SetPadGridY(true);
+	deleteOnDestruction_.push_back(style);
 	return style;
 }
 
 std::pair<double, double> PlotUtil::fitStabilisedGaussian(TH1* histo) {
-	TF1 g("g", "gaus", histo->GetMean() - histo->GetRMS()/2, histo->GetMean()
-			+ histo->GetRMS()/2);
+	TF1 g("g", "gaus", histo->GetMean() - histo->GetRMS() / 2, histo->GetMean()
+			+ histo->GetRMS() / 2);
 	histo->Fit(&g, "RQ");
-	TF1 improved("imp", "gaus", g.GetParameter(1) - 5*g.GetParameter(2),
-			g.GetParameter(1) + 5*g.GetParameter(2));
+	TF1 improved("imp", "gaus", g.GetParameter(1) - 5* g .GetParameter(2),
+			g.GetParameter(1) + 5* g .GetParameter(2));
 	histo->Fit(&improved, "RQ");
 	std::pair<double, double> ans(improved.GetParameter(1),
 			improved.GetParameter(2));
-	double quality = improved.GetChisquare()/improved.GetNDF();
+	double quality = improved.GetChisquare() / improved.GetNDF();
 	if (quality > 50) {
-		std::cout << __PRETTY_FUNCTION__ << "WARNING: Fit quality is poor. Chisq/NDF = " << quality
+		std::cout << __PRETTY_FUNCTION__
+				<< "WARNING: Fit quality is poor. Chisq/NDF = " << quality
 				<< "\n";
+	}
+	double gaussianess = fabs(ans.first / histo->GetMean());
+	if (gaussianess > 2.0 || gaussianess < 0.5) {
+		std::cout << __PRETTY_FUNCTION__
+				<< "WARNING: Histogram isn't gaussian at all!\n";
 	}
 	return ans;
 }

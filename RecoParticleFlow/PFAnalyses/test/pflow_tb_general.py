@@ -5,7 +5,7 @@
 # December 2008
 
 import FWCore.ParameterSet.Config as cms
-
+import commands
 process = cms.Process("PROD")
 process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
 
@@ -15,7 +15,7 @@ from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
 outputTree = "outputtree_" + fileLabel
 outputFile = "reprocessed_" + fileLabel
-logFile = "log_" + str(options.beamEnergy) + "GeV" + options.fileSuffix + ".txt"
+logFile = "log_" + logLabel
 
 
 if options.notracks <> 0:
@@ -23,7 +23,23 @@ if options.notracks <> 0:
     print "Running in notrack mode"
 
 specifiedE = energies[options.beamEnergy]
-result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
+
+process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
+process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
+process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
+
+result = []
+if options.copyToTmp <> 0:
+    map(lambda a : commands.getoutput('rfcp ' + '/castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(a) + '.combined.OutServ_0.0-cmsswreco.root' + ' .'), specifiedE)
+    result = map(lambda x : 'file:h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
+else:    
+    result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
+    
+if options.endcapMode <> 0:
+    result = ['file:/tmp/tb07_reco_edm_run_00016031.0000.root']
+    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEB")
+    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE")
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
@@ -35,6 +51,9 @@ runs = cms.untracked.vstring(result)
 print "Input files :"
 print result
 
+print "Log file :"
+print logFile
+
 # Output tree of cleaned particles
 process.TFileService.fileName = cms.string(outputTree)
 
@@ -44,7 +63,7 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 # LogFile
 
 process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring('cout')
+    destinations=cms.untracked.vstring('cout'),
 )
 
 process.source = cms.Source("PoolSource",
@@ -52,4 +71,4 @@ process.source = cms.Source("PoolSource",
 )
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)
-#process.outpath = cms.EndPath(process.finishup)
+process.outpath = cms.EndPath(process.finishup)

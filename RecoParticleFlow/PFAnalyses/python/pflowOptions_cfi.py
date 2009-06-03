@@ -9,7 +9,7 @@ options.register ('beamEnergy',
                   "Beam energy to simulate")
 
 options.register ('kevents',
-                  1000, # default value
+                  0, # default value
                   options.multiplicity.singleton, # singleton or list
                   options.varType.int, # string, int, or float
                   "Number of events in k to simulate")
@@ -32,12 +32,26 @@ options.register ('minBeamEnergy',
                   options.varType.float,
                   "Minimum beam energy to simulate")
 
+options.register('copyToTmp',
+                '0',
+                options.multiplicity.singleton,
+                options.varType.int,
+                "Copy raw files from CASTOR to tmp first?")
+
+options.register('endcapMode',
+                 '0',
+                 options.multiplicity.singleton,
+                 options.varType.int,
+                 "Run in testbeam mode?")
+
 # setup any defaults you want
 options.minBeamEnergy = -1
 options.beamEnergy = 100
-options.kevents = 1
+options.kevents = 0
 options.fileSuffix = ''
 options.notracks = 0
+options.copyToTmp = 0
+options.endcapMode = 0
 
 # get and parse the command line arguments
 options.parseArguments()
@@ -49,9 +63,12 @@ if options.minBeamEnergy > -1.0:
     fileLabel = fileLabel + str(int(options.minBeamEnergy)) + '_'
 else:
     options.minBeamEnergy = options.beamEnergy
-    
-fileLabel = fileLabel + str(int(options.beamEnergy)) + "GeV_" + str(options.kevents) + "k" 
 
+fileLabel = fileLabel + str(int(options.beamEnergy)) + "GeV"    
+
+if options.kevents <> 0:
+    fileLabel = fileLabel + "_" + str(options.kevents) + "k"
+    
 if options.notracks <> 0:
     fileLabel = fileLabel + "_notracks"
 

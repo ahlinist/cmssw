@@ -2,11 +2,13 @@ import FWCore.ParameterSet.Config as cms
 
 masterConeDeltaR = 0.15
 
+from RecoParticleFlow.PFAnalyses.RunDict import *
+
 EventDelegate = cms.PSet(
 
     EventDelegateType=cms.string('DipionDelegate'),
     # Set up to 7 to get outrageous amounts of output
-    debug=cms.int32(4),
+    debug=cms.int32(3),
     isMC = cms.bool(True),
     useSimAsTrack=cms.bool(True),
     deltaRClustersToTrack=cms.double(masterConeDeltaR * 2),
@@ -61,7 +63,7 @@ TestbeamDelegate = cms.PSet(
     # PF photons/neutrals made Delta R away from track impact on ECAL will be considered
     # as noise:
     deltaRNeutralsToTrack=cms.double(masterConeDeltaR * 2),
-    deltaRPhotonsToTrack=cms.double(masterConeDeltaR),
+    deltaRPhotonsToTrack=cms.double(masterConeDeltaR * 2),
     
     # This should be true if you only want particles saved to the tree that 
     # pass the minimum set of vetos (i.e. at least muon + scintillator + beam halo)
@@ -71,7 +73,7 @@ TestbeamDelegate = cms.PSet(
     # Recommended: True
     saveJustPions=cms.bool(True),
     # Global cut parameters   
-    runinfo_cuts=cms.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310pre2.root"),
+    runinfo_cuts=cms.string(testbeam_cuts),
     maxEventsFromEachRun=cms.uint32(0),
     
     #Normal tags

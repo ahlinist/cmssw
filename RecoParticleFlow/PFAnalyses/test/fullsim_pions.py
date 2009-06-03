@@ -25,7 +25,8 @@ process.load("Configuration.StandardSequences.L1Emulator_cff")
 
 
 process.MessageLogger = cms.Service("MessageLogger",
-                                    destinations=cms.untracked.vstring('Dipion_' + logLabel + '.txt'),
+#    destinations=cms.untracked.vstring('Dipion_' + logLabel + '.txt'),
+    destinations=cms.untracked.vstring('cout'),
                                     FullSim=cms.untracked.PSet(
     threshold=cms.untracked.string('INFO')
     )
@@ -56,7 +57,7 @@ process.generator = cms.EDProducer("Pythia6EGun",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(100)
 )
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
