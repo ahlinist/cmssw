@@ -23,6 +23,7 @@
  * Get UserCode/JamieBallinDictionary
  * Hack DataFormats for latest calibratable
  * Install patch for PFRecHitProducer/HCAL
+ * Hack VertexReco
  * Stage files from castor
  *
  * @section Usage

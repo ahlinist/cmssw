@@ -45,10 +45,11 @@
 #include "RecoParticleFlow/PFAnalyses/interface/CandidateConverter.h"
 
 #include <iostream>
-
+#include <algorithm>
 using namespace pftools;
 using namespace edm;
 using namespace reco;
+using namespace std;
 
 EventDelegate::EventDelegate() :
 	thisEventPasses_(false), thisEventCalibs_(0), nWrites_(0), nFails_(0),
@@ -69,7 +70,7 @@ void EventDelegate::init(TTree* tree, const edm::ParameterSet& parameters) {
 	tree_->Branch("Calibratable", "pftools::Calibratable", &calib_, 32000, 2);
 	getTags(parameters);
 	initCore(parameters);
-	LogInfo("EventDelegate") <<  "Operating in tree mode.\n";
+	LogInfo("EventDelegate") << "Operating in tree mode.\n";
 	LogDebug("EventDelegate") << "EventDelegate initialisation complete.\n";
 
 }
@@ -80,7 +81,7 @@ void EventDelegate::init(const edm::ParameterSet& parameters) {
 	debug_ = parameters.getParameter<int> ("debug");
 	getTags(parameters);
 	initCore(parameters);
-	LogInfo("EventDelegate") <<  "Operating in framework mode.\n";
+	LogInfo("EventDelegate") << "Operating in framework mode.\n";
 	LogDebug("EventDelegate") << "EventDelegate initialisation complete.\n";
 }
 
@@ -223,8 +224,8 @@ void EventDelegate::extractSimParticle(const PFSimParticle& sim, unsigned index)
 			LogDebug("EventDelegate") << "\t\t rechitToSimIds " << *c << "\n";
 	}
 
-//	LogWarning("EventDelegate") << "sim rechit functionality disabled!!!"
-//			<< std::endl;
+	//	LogWarning("EventDelegate") << "sim rechit functionality disabled!!!"
+	//			<< std::endl;
 	//	PFRecHitCollection::const_iterator rhEcalIt = (*recHitsEcal_)->begin();
 	//	for (; rhEcalIt != (*recHitsEcal_)->end(); ++rhEcalIt) {
 	//		for (unsigned count(0); count < rechitsToSimIds.size(); ++count) {
@@ -286,7 +287,8 @@ void EventDelegate::extractEBRecHits(const EcalRecHitCollection& ecalRechits,
 			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
 				CalibratableElement ce(erh.energy(),
 						thisCell->getPosition().eta(),
-						thisCell->getPosition().phi(), PFLayer::ECAL_BARREL);
+						thisCell->getPosition().phi(), PFLayer::ECAL_BARREL, 0,
+						erh.time());
 				calib_->tb_ecal_.push_back(ce);
 
 			}
@@ -312,7 +314,8 @@ void EventDelegate::extractEERecHits(const EcalRecHitCollection& ecalRechits,
 			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
 				CalibratableElement ce(erh.energy(),
 						thisCell->getPosition().eta(),
-						thisCell->getPosition().phi(), PFLayer::ECAL_BARREL);
+						thisCell->getPosition().phi(), PFLayer::ECAL_BARREL, 0,
+						erh.time());
 				calib_->tb_ecal_.push_back(ce);
 
 			}
@@ -339,7 +342,8 @@ void EventDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
 			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
 				CalibratableElement ce(hrh.energy(),
 						thisCell->getPosition().eta(),
-						thisCell->getPosition().phi(), PFLayer::HCAL_BARREL1);
+						thisCell->getPosition().phi(), PFLayer::HCAL_BARREL1,
+						0, hrh.time());
 				calib_->tb_hcal_.push_back(ce);
 			}
 		} else
@@ -418,18 +422,22 @@ void EventDelegate::extractCandidate(const PFCandidate& cand) {
 	CandidateWrapper cw = converter.convert(cand);
 	calib_->cands_.push_back(cw);
 
-	if(clustersFromCandidates_) {
+	if (clustersFromCandidates_) {
 		std::vector<CalibratableElement> ecal, hcal;
 		converter.extractClustersFromCandidate(cand, ecal, hcal);
-		calib_->cluster_ecal_ = ecal;
-		calib_->cluster_hcal_ = hcal;
+		calib_->cluster_ecal_.insert(calib_->cluster_ecal_.end(), ecal.begin(),
+				ecal.end());
+		copy(hcal.begin(), hcal.end(), inserter(calib_->cluster_hcal_,
+				calib_->cluster_hcal_.end()));
 	}
 
-	if(rechitsFromCandidates_) {
+	if (rechitsFromCandidates_) {
 		std::vector<CalibratableElement> ecal, hcal;
 		converter.extractRechitsFromCandidate(cand, ecal, hcal);
-		calib_->rechits_ecal_ = ecal;
-		calib_->rechits_hcal_ = hcal;
+		calib_->rechits_ecal_.insert(calib_->rechits_ecal_.end(), ecal.begin(),
+				ecal.end());
+		copy(hcal.begin(), hcal.end(), inserter(calib_->rechits_hcal_,
+				calib_->rechits_hcal_.end()));
 	}
 
 	LogDebug("EventDelegate") << "Leaving " << __PRETTY_FUNCTION__ << std::endl;

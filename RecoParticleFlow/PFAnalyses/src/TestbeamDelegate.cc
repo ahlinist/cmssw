@@ -248,12 +248,13 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFRecHitCollection ecalRecHits = **recHitsEcal_;
 		PFRecHitCollection hcalRecHits = **recHitsHcal_;
 
-		std::vector<unsigned> matchingEcalIndicies = pftools::findObjectsInDeltaR(
-				ecalRecHits, thisRun_->ecalEta_, thisRun_->ecalPhi_,
-				deltaRRecHitsToCenterECAL_);
-		std::vector<unsigned> matchingHcalIndicies = pftools::findObjectsInDeltaR(
-				hcalRecHits, thisRun_->hcalEta_, thisRun_->hcalPhi_,
-				deltaRRecHitsToCenterHCAL_);
+		std::vector<unsigned> matchingEcalIndicies =
+				pftools::findObjectsInDeltaR(ecalRecHits, thisRun_->ecalEta_,
+						thisRun_->ecalPhi_, deltaRRecHitsToCenterECAL_);
+		//Or another way of doing it...
+		std::vector<unsigned> matchingHcalIndicies =
+				pftools::findObjectsInDeltaR(hcalRecHits, thisRun_->hcalEta_,
+						thisRun_->hcalPhi_, deltaRRecHitsToCenterHCAL_);
 
 		extractEcalPFRecHits(ecalRecHits, matchingEcalIndicies);
 		extractHcalPFRecHits(hcalRecHits, matchingHcalIndicies);
@@ -264,12 +265,12 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFClusterCollection ecalClusters = **clustersEcal_;
 		PFClusterCollection hcalClusters = **clustersHcal_;
 
-		std::vector<unsigned> ecalClusterIndicies = pftools::findObjectsInDeltaR(
-				ecalClusters, thisRun_->ecalEta_, thisRun_->ecalPhi_,
-				deltaRClustersToCenterECAL_);
-		std::vector<unsigned> hcalClusterIndicies = pftools::findObjectsInDeltaR(
-				hcalClusters, thisRun_->hcalEta_, thisRun_->hcalPhi_,
-				deltaRClustersToCenterHCAL_);
+		std::vector<unsigned> ecalClusterIndicies =
+				pftools::findObjectsInDeltaR(ecalClusters, thisRun_->ecalEta_,
+						thisRun_->ecalPhi_, deltaRClustersToCenterECAL_);
+		std::vector<unsigned> hcalClusterIndicies =
+				pftools::findObjectsInDeltaR(hcalClusters, thisRun_->hcalEta_,
+						thisRun_->hcalPhi_, deltaRClustersToCenterHCAL_);
 
 		extractEcalPFClusters(ecalClusters, ecalClusterIndicies);
 		extractHcalPFClusters(hcalClusters, hcalClusterIndicies);
@@ -278,25 +279,19 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	//Extract PFCandidates
 	PFCandidateCollection cands = **pfCandidates_;
 	for (PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
-		extractCandidate(*it);
-		if (calib_->cands_.end() != calib_->cands_.begin()) {
-			//i.e. a candidate was found successfully,
-			CandidateWrapper& cw = *(calib_->cands_.end());
-			bool noiseCandidate(false);
-			//Photon from noise
-			if (cw.type_ == 4 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_,
-					cw.phi_, thisRun_->ecalPhi_) > deltaRPhotonsToTrack_)
-				noiseCandidate = true;
-			//eta and phi defined at ECAL front surface so deltaR drawn relative to that
-			if (cw.type_ == 5 && pftools::deltaR(cw.eta_, thisRun_->ecalEta_,
-					cw.phi_, thisRun_->ecalPhi_) > deltaRNeutralsToTrack_)
-				noiseCandidate = true;
+		const PFCandidate& test = *it;
+		bool veto(false);
+		if (test.particleId() == 4 && pftools::deltaR(test.eta(),
+				thisRun_->ecalEta_, test.phi(), thisRun_->ecalPhi_)
+				> deltaRPhotonsToTrack_)
+			veto = true;
+		if (test.particleId() == 5 && pftools::deltaR(test.eta(),
+				thisRun_->hcalEta_, test.phi(), thisRun_->hcalPhi_)
+				> deltaRNeutralsToTrack_)
+			veto = true;
 
-			if (noiseCandidate) {
-				//delete the element
-				calib_->cands_.pop_back();
-			}
-		}
+		if (!veto)
+			extractCandidate(*it);
 	}
 
 	endParticle();

@@ -56,7 +56,7 @@ process.generator = cms.EDProducer("Pythia6EGun",
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(options.kevents * 1000)
+    input = cms.untracked.int32(options.kevents*1000)
 )
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
@@ -90,5 +90,13 @@ process.p1 = cms.Path(
     process.extraction
 )
 
+process.finishup = cms.OutputModule("PoolOutputModule",
+    fileName=cms.untracked.string("Dikaon_Event_" + fileLabel),
+    #outputCommands=cms.untracked.vstring('keep *'),
+    outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
+    SelectEvents=cms.untracked.PSet(
+                SelectEvents=cms.vstring('p1')
+    ) 
+)
 
-#process.outpath = cms.EndPath(process.finishup)
+process.outpath = cms.EndPath(process.finishup)

@@ -13,43 +13,67 @@
 #include <TLegend.h>
 #include <TGraphErrors.h>
 #include <TFile.h>
+#include <TText.h>
+#include <exception>
 
 #include "RecoParticleFlow/PFAnalyses/interface/PlotSpecial.h"
 
 class PlotUtil {
 public:
 
-	static Color_t tb_rechits;
-	static Color_t pf_rechits;
-	static Color_t pf_cluster;
-
-
 	PlotUtil();
+
 	virtual ~PlotUtil();
 
 	void init();
 
 	void setMacroFile(std::string s);
+
 	void setGraphicsFile(std::string s);
 
 	TStyle* makeStyle(const std::string& name);
 
+	/**
+	 * Get a histogram pointer
+	 * @param name in ROOT namespace to find
+	 * @return null pointer if histogram couln't be found
+	 */
 	TH1* getHisto(const std::string& name);
+
 	TH1* printHisto(const std::string& name, const std::string& title,
 			const std::string& xtitle, Color_t line, Color_t fill,
-			int thickness = 1);
+			int thickness = 1) throw(std::exception);
+
 	TH1* formatHisto(const std::string& name, const std::string& title,
 			const std::string& xtitle, Color_t line, Color_t fill,
-			int thickness = 1);
+			int thickness = 1) throw(std::exception);
 
 	void formatGraph(TGraph* graph, const std::string& title,
 			const std::string& xtitle, const std::string ytitle, Color_t line, int size = 1.5,
 			int thickness = 1);
 
+	void addTitle(const std::string& title);
+
+	void enableAutoFlush(bool autoFlush, unsigned count = 0) {
+		autoFlush_ = autoFlush;
+		flushCount_ = count;
+	}
+
 	void flushPage();
+
 	void newPage();
+
 	void accumulateObjects(TObject* o, std::string options = "");
+
 	void flushAccumulatedObjects(std::string filename);
+
+	unsigned numberAccumulated() {
+		return accumulatedObjects_.size();
+	}
+
+	void setSquareCanvasDimension(unsigned edgeSize) {
+		edgeSize_ = edgeSize;
+	}
 
 	void accumulateSpecial(TObject* o, TStyle* s,
 			std::string drawOptions, std::string preferredName);
@@ -72,7 +96,12 @@ private:
 	std::vector<PlotSpecial> accumulatedSpecials_;
 	std::vector<Color_t> colors_;
 
+	std::vector<TObject*> deleteOnDestruction_;
+
 	bool amInitialised_;
+	bool autoFlush_;
+	unsigned flushCount_;
+	unsigned edgeSize_;
 
 
 };
