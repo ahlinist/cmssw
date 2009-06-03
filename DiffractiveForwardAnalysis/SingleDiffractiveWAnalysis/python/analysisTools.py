@@ -17,15 +17,13 @@ def addAnalyzer(process,refAnalyzer,refSequence=None,filter="",**pars):
 
     seq = "analysis_" + analyzer
     sequence = cms.Sequence(getattr(process,analyzer))
-    filter_seq = None
     if filter:
         if filter[0] == "!":
-            filter_seq = cms.Sequence(~getattr(process,filter[1:]))
+            sequence.replace(getattr(process,analyzer),~getattr(process,filter[1:])*getattr(process,analyzer)) 
         else:
-            filter_seq = cms.Sequence(getattr(process,filter))
+            sequence.replace(getattr(process,analyzer),getattr(process,filter)*getattr(process,analyzer))
   
-    if refSequence: sequence = cms.Sequence(refSequence*sequence)
-    if filter_seq: sequence = cms.Sequence(filter_seq*sequence) 
+    if refSequence: sequence.replace(getattr(process,analyzer),refSequence*getattr(process,analyzer))
 
     setattr(process,seq,sequence)
 
@@ -35,12 +33,14 @@ def addPath(process,sequence):
     path = sequence.label() + "_step"
     setattr(process,path,cms.Path(sequence))
 
-def makeAnalysis(process,refAnalyzer='edmDumpAnalysis',refSequence=None,attributes=[],filters=[]):
+def makeAnalysis(process,refAnalyzer='edmDumpAnalysis',refSequence='',attributes=[],filters=[]):
     analyzer = getattr(process,refAnalyzer)
-    addPath(process,addAnalyzer(process,analyzer,refSequence))
+    sequence = None
+    if refSequence: sequence = getattr(process,refSequence)
+    addPath(process,addAnalyzer(process,analyzer,sequence))
 
     for replace in attributes:
-        addPath(process,addAnalyzer(process,analyzer,refSequence,**replace))
+        addPath(process,addAnalyzer(process,analyzer,sequence,**replace))
 
     for item in filters:
-        addPath(process,addAnalyzer(process,analyzer,refSequence,item))
+        addPath(process,addAnalyzer(process,analyzer,sequence,item))
