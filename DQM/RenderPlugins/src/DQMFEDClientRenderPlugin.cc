@@ -27,8 +27,9 @@ public:
   // These functions may be different that parent version
   virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
     {
-      // determine whether core object is an L1T object
-      if(o.name.find( "FED/" ) != std::string::npos)
+      // determine whether core object is an FED Client object
+      if(o.name.find( "FED/" ) != std::string::npos  || 
+         o.name.find( "FEDTest/" ) != std::string::npos )  
         return true;
 
       return false;
