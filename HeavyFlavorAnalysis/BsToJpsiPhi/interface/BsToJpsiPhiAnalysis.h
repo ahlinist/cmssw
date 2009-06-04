@@ -48,6 +48,8 @@ public:
 private:
 
 	const TrackingVertex * getSimVertex(const TrackingVertexCollection * tVC) const;
+	int JpsiKstarFlag(const TrackingVertexCollection * tVC);
+	int JpsiKsFlag(const TrackingVertexCollection * tVC);
 	double deltaRRecoSim(const reco::TransientTrack *ttk, const TrackingParticleRef *tpr);
 	
 	BsToJpsiPhiRootTree * bsRootTree_;
@@ -69,6 +71,7 @@ private:
 	int flag_3;
 	int flag_4;
 	int flag_5;
-
+	int bdjpsikstar;
+	int bdjpsiks;
 };
 #endif

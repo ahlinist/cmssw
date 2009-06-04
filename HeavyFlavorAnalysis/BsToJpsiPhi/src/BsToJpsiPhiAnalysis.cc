@@ -80,6 +80,8 @@ void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
   flag_3 = 0;
   flag_4 = 0;
   flag_5 = 0;
+  bdjpsikstar = 0;
+  bdjpsiks = 0;
 }
 
 void BsToJpsiPhiAnalysis::endJob() 
@@ -197,6 +199,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  }
 			  //end loop over muons
 
+			  ////////////////////
+			  // phi 
+			  ////////////////////
+
 			  // get the phi candidate
 			  const Candidate *phi = bit->daughter(1);
 			  TransientTrack kPlusTk;				
@@ -245,7 +251,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  //end loop over kaons
 			  
 			  //the final state muons and kaons from the Bs->J/PsiPhi->mumuKK decay
-
+			  
 			  //Creating a KinematicParticleFactory
 			  KinematicParticleFactoryFromTransientTrack pFactory;
 			  
@@ -320,7 +326,14 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  if (hltresults->accept(itrig_3)) flag_3 = 1;
 			  if (hltresults->accept(itrig_4)) flag_4 = 1;
 			  if (hltresults->accept(itrig_5)) flag_5 = 1;
+
+			  bdjpsikstar = 0 ;
+			  bdjpsikstar = JpsiKstarFlag(trackingTruthVertexCollection);
+
+			  bdjpsiks = 0 ;
+			  bdjpsiks = JpsiKsFlag(trackingTruthVertexCollection);
 			  
+			  bsRootTree_->getBdFlags(bdjpsikstar,bdjpsiks);			  
 			  bsRootTree_->getTrigBit(flag_1,flag_2,flag_3,flag_4,flag_5);			  
 			  bsRootTree_->fill();
 			}
@@ -390,6 +403,124 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
     }
   }
   return 0;
+}
+
+// flag for Jpsi K*
+
+int BsToJpsiPhiAnalysis::JpsiKstarFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
+{
+  //iterate over al SimVertices
+  for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
+    int flagbdjpsikstar = 0;
+    bool bd = false;
+    bool jpsi = false;
+    bool Kstar = false; 
+    bool kaon = false;
+    bool pion = false;
+    bool muminus = false;
+    bool muplus = false;
+    // look if the daughters of the vertex are mu+, mu-, k+/- and pi+/-
+    if (v->daughterTracks().size()==4) {
+      for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
+	if((**dt).pdgId() == -13){
+	  muplus = true;
+	}
+	if((**dt).pdgId() == 13){
+	  muminus = true;
+	}
+	if((**dt).pdgId() == 321 || (**dt).pdgId()== -321){
+	  kaon = true;
+	}
+	if((**dt).pdgId() == -211 || (**dt).pdgId()== 211){
+	  pion = true;
+	}
+      }
+    }
+    // look if the mothers of the vertex are Bs, Jpsi and Kstar
+    if (v->genVertices().size() == 3) {
+      for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
+	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 511) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -511)) ){
+	  bd = true;
+					cout << "found Bd" << endl;
+	}
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
+	  jpsi = true;
+	  cout << "found jpsi" << endl;
+	}
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 313) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -313)) ){
+	  Kstar = true;
+	  cout << "found Kstar" << endl;
+	}
+			}
+    }
+    if(bd && jpsi && Kstar){ 
+    //    if(muplus && muminus && kaon && pion){ 
+      flagbdjpsikstar = 1;
+    } else
+      flagbdjpsikstar = 0;
+
+    return flagbdjpsikstar;
+  }
+}
+
+// flag for Jpsi Ks
+
+int BsToJpsiPhiAnalysis::JpsiKsFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
+{
+  //iterate over al SimVertices
+  for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
+    int flagbdjpsiks = 0;
+    bool bd = false;
+    bool jpsi = false;
+    bool Ks = false; 
+    bool pionp = false;
+    bool pionm = false;
+    bool muminus = false;
+    bool muplus = false;
+    // look if the daughters of the vertex are mu+, mu-, k+/- and pi+/-
+    if (v->daughterTracks().size()==4) {
+      for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
+	if((**dt).pdgId() == -13){
+	  muplus = true;
+	}
+	if((**dt).pdgId() == 13){
+	  muminus = true;
+	}
+	if((**dt).pdgId() == 211){
+	  pionp = true;
+	}
+	if((**dt).pdgId() == -211){
+	  pionm = true;
+	}
+      }
+    }
+    // look if the mothers of the vertex are Bs, Jpsi and Kstar
+    if (v->genVertices().size() == 3) {
+      for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
+	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 511) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -511)) ){
+	  bd = true;
+					cout << "found Bd" << endl;
+	}
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
+	  jpsi = true;
+	  cout << "found jpsi" << endl;
+	}
+	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 310) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -310)) ){
+	  Ks = true;
+	  cout << "found Ks" << endl;
+	}
+			}
+    }
+    if(bd && jpsi && Ks){ 
+    //    if(muplus && muminus && kaon && pion){ 
+      flagbdjpsiks = 1;
+    } else
+      flagbdjpsiks = 0;
+
+    return flagbdjpsiks;
+  }
 }
 
 //

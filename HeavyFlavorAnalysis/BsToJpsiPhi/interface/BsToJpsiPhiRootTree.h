@@ -34,6 +34,7 @@ public:
 	void addSimDecay(const TrackingVertex * simVertex, const TrackingVertex * pVertex);
 	void setAssociation(const bool association);
 	void getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5);
+	void getBdFlags(const int bdjpsikstar, const int bdjpsiks);
 	bool getAssociation();
 	void fill();  //!< copy the information from memory to Ntuple
 
@@ -208,6 +209,9 @@ private:
         int triggerbit_HLTdoubleIsoMu3_;
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
+	
+	int flagBdJpsiKstar_;
+	int flagBdJpsiKs_;
 	
 	TFile* bsFile_;
 	TTree* bsTree_; 
