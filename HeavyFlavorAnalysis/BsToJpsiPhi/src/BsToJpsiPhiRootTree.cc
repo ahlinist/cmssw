@@ -59,6 +59,9 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 	triggerbit_HLTdoubleIsoMu3_ =0;
 	triggerbit_HLTdoubleMu3_ =0;
 	triggerbit_HLTdoubleMu3_JPsi_ =0;
+	
+	flagBdJpsiKstar_ =0;
+	flagBdJpsiKs_ =0;
 
 	isMatched_ = false;
 	
@@ -122,6 +125,8 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 	bsTree_->Branch("triggerbit_HLTdoubleIsoMu3", &triggerbit_HLTdoubleIsoMu3_, "triggerbit_HLTdoubleIsoMu3/I");
 	bsTree_->Branch("triggerbit_HLTdoubleMu3", &triggerbit_HLTdoubleMu3_, "triggerbit_HLTdoubleMu3/I");
 	bsTree_->Branch("triggerbit_HLTdoubleMu3_JPsi", &triggerbit_HLTdoubleMu3_JPsi_, "triggerbit_HLTdoubleMu3_JPsi/I");
+	bsTree_->Branch("flagBdJpsiKstar", &flagBdJpsiKstar_, "flagBdJpsiKstar/I");
+	bsTree_->Branch("flagBdJpsiKs", &flagBdJpsiKs_, "flagBdJpsiKs/I");
 
 }
 
@@ -187,6 +192,9 @@ void BsToJpsiPhiRootTree::resetEntries()
   triggerbit_HLTdoubleIsoMu3_ =0;
   triggerbit_HLTdoubleMu3_ =0;
   triggerbit_HLTdoubleMu3_JPsi_ =0;
+
+  flagBdJpsiKstar_ =0;
+  flagBdJpsiKs_ =0;
   
   isMatched_ = false;
 } 
@@ -446,6 +454,12 @@ void BsToJpsiPhiRootTree::getTrigBit(const int flag_1, const int flag_2, const i
   triggerbit_HLTdoubleMu3_ = flag_4;
   triggerbit_HLTdoubleMu3_JPsi_ = flag_5;
 
+}
+
+void BsToJpsiPhiRootTree::getBdFlags(const int bdjpsikstar, const int bdjpsiks)
+{
+  flagBdJpsiKstar_ = bdjpsikstar;
+  flagBdJpsiKs_ = bdjpsiks;
 }
 
 void BsToJpsiPhiRootTree::fill()
