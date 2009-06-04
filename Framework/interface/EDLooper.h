@@ -39,6 +39,11 @@ namespace edm {
       Status doDuringLoop(edm::EventPrincipal& eventPrincipal, const edm::EventSetup& es);
       Status doEndOfLoop(const edm::EventSetup& es);
       void prepareForNextLoop(eventsetup::EventSetupProvider* esp);
+      void doBeginRun(RunPrincipal&, EventSetup const&);
+      void doEndRun(RunPrincipal &, EventSetup const&);
+      void doBeginLuminosityBlock(LuminosityBlockPrincipal &, EventSetup const&);
+      void doEndLuminosityBlock(LuminosityBlockPrincipal &, EventSetup const&);
+
 
       //This interface is deprecated
       virtual void beginOfJob(const edm::EventSetup&); 
@@ -47,6 +52,11 @@ namespace edm {
       virtual Status duringLoop(const edm::Event&, const edm::EventSetup&) = 0; 
       virtual Status endOfLoop(const edm::EventSetup&, unsigned int iCounter) = 0; 
       virtual void endOfJob();
+
+      virtual void beginRun(Run const&, EventSetup const&);
+      virtual void endRun(Run const&, EventSetup const&);
+      virtual void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&);
+      virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&);
 
       void setActionTable(ActionTable* actionTable) { act_table_ = actionTable; }
 
