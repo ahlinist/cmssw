@@ -27,6 +27,24 @@ camilo.carrilloATcern.ch
 #include "TAxis.h"
 #include "TString.h"
 
+double straighter(RPCDetId rpcId){ 	 
+  
+  bool ok = true; 	 
+  RPCGeomServ rpcsrv(rpcId); 	 
+  
+  if(rpcId.station()==2||rpcId.station()==1&&rpcId.ring()==2&&rpcsrv.segment()%2==0){ 	 
+    ok=false; 	 
+  } 	 
+  
+  if(ok == false){ 	 
+    return -1.; 	 
+  }else{ 	 
+    return 1.; 	 
+  } 	 
+}
+
+
+
 void MuonSegmentEff::beginJob(){
   
 }
@@ -622,7 +640,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
 		    countRecHits++;
 		    LocalPoint recHitPos=recHit->localPosition();
-		    float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();	    
+		    float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();
 		    if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 		    if(debug) std::cout<<"DT  \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		    if(fabs(res)<fabs(minres)){
@@ -1391,7 +1409,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
 		      countRecHits++;
 		      LocalPoint recHitPos=recHit->localPosition();
-		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();
+		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x()*straighter(rollasociated->id());//Corrections to the wrong orientations
 		      if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		      if(fabs(res)<fabs(minres)){
