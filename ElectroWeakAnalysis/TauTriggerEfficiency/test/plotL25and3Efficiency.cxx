@@ -19,10 +19,13 @@ void plotL25and3Efficiency(  bool print=true) {
   h_PFTauEt_L25Match->SetMaximum(1.1);
   h_PFTauEt_L25Match->Draw("PA");
   h_PFTauEt_L25Match->SetMarkerColor(kBlack);
+  h_PFTauEt_L25Match->SetMarkerStyle(21);
   h_PFTauEt_L25PtCut->Draw("P same");
   h_PFTauEt_L25PtCut->SetMarkerColor(kRed);
+  h_PFTauEt_L25PtCut->SetMarkerStyle(20);
   h_PFTauEt_L3Iso->Draw("P same");
   h_PFTauEt_L3Iso->SetMarkerColor(kBlue);
+  h_PFTauEt_L3Iso->SetMarkerStyle(22);
   
   TLegend* leg = new TLegend(0.4,0.2,0.7,0.4);
   leg->AddEntry(h_PFTauEt_L25Match,"Track_{lead} Finding ","p");
@@ -44,10 +47,13 @@ void plotL25and3Efficiency(  bool print=true) {
   h_PFTauEta_L25Match->SetMaximum(1.1);
   h_PFTauEta_L25Match->Draw("PA");
   h_PFTauEta_L25Match->SetMarkerColor(kBlack);
+  h_PFTauEta_L25Match->SetMarkerStyle(21);
   h_PFTauEta_L25PtCut->Draw("P same");
   h_PFTauEta_L25PtCut->SetMarkerColor(kRed);
+  h_PFTauEta_L25PtCut->SetMarkerStyle(20);
   h_PFTauEta_L3Iso->Draw("P same");
   h_PFTauEta_L3Iso->SetMarkerColor(kBlue);
+  h_PFTauEta_L3Iso->SetMarkerStyle(22);
 
   leg->Draw();
   if (print) gPad->SaveAs(plotDir+"PFTauEta_L25.gif");
