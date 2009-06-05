@@ -3,19 +3,31 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/MHT.h"
 
 //__________________________________________________________________________________________________
 MHTEventSelector::MHTEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
-  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
+  //  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
+  mhtTag_( pset.getParameter<edm::InputTag>("mhtTag") ),
   minMHT_ ( pset.getParameter<double>("minMHT") ),
   minPt_ ( pset.getParameter<double>("minPt") )
 { 
 
   // Store computed MHT
-  defineVariable("MHT");
+  //  defineVariable("MHT");
+
+  // Store MHT from PAT
+  defineVariable("mht");
+  defineVariable("significance");
+  defineVariable("error");
+  defineVariable("numberOfJets");
+  defineVariable("numberOfElectrons");
+  defineVariable("numberOfMuons");
+  defineVariable("METsignificance");
 
 }
+
 
 //__________________________________________________________________________________________________
 bool
@@ -23,8 +35,11 @@ MHTEventSelector::select (const edm::Event& event) const
 {
   // reset cached variables
   resetVariables();
-  // Get the jets
-  edm::Handle< edm::View<pat::Jet> > jetHandle;
+
+
+  // Get the jets  // No need for the following. 
+  
+  /*  edm::Handle< edm::View<pat::Jet> > jetHandle;
   event.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
     edm::LogWarning("MHTEventSelector") << "No Jet results for InputTag " << jetTag_;
@@ -46,9 +61,40 @@ MHTEventSelector::select (const edm::Event& event) const
   }
   myMHT = sqrt(sumpx*sumpx+sumpy*sumpy);
 
-  setVariable("MHT",myMHT);
+  // setVariable("MHT",myMHT);
 
-  return myMHT > minMHT_;
+  */
+
+  // get the MHT
+
+  edm::Handle< edm::View<pat::MHT> > mhtHandle;
+  event.getByLabel(mhtTag_, mhtHandle);
+
+  if ( !mhtHandle.isValid() ) {
+    edm::LogWarning("MHTEventSelector") << "No MHT results for InputTag " << mhtTag_;
+    return false;
+  }
+
+  //
+  // sanity check on collection
+  //
+  if ( mhtHandle->size()!=1 ) {
+    edm::LogWarning("MHTEventSelector") << "MHT collection size is " 
+					<< mhtHandle->size() << " instead of 1";
+    return false;
+  }
+
+
+  edm::View<pat::MHT>::const_iterator iMHT = mhtHandle->begin();
+  setVariable("mht", iMHT->mht());
+  setVariable("significance", iMHT->significance());
+  setVariable("error", iMHT->error());
+  setVariable("numberOfJets", iMHT->getNumberOfJets());
+  setVariable("numberOfElectrons", iMHT->getNumberOfElectrons());
+  setVariable("numberOfMuons", iMHT->getNumberOfMuons());
+  setVariable("METsignificance", iMHT->getMETsignificance());
+
+  return iMHT->mht()  > minMHT_;
 
 }
 
