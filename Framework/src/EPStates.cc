@@ -746,8 +746,7 @@ namespace statemachine {
 
   void HandleEvent::readAndProcessEvent() {
     markNonEmpty();
-    ep_.readEvent();
-    ep_.processEvent();
+    ep_.readAndProcessEvent();
     if (ep_.shouldWeStop()) post_event(Stop());
   }
 
