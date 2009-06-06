@@ -83,46 +83,25 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/F01E4F34-BDCB-DD11-B87D-001617C3B77C.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system:
+# in case running jobs on the CERN batch system
 #
-#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
+#__process.source.fileNames = #inputFileNames#
+#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
+#__process.analyzeZtoMuTauEvents.eventSelection[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
+#__process.saveZtoMuTauPatTuple.outputFileName = #patTupleOutputFileName#
 #
-# to be replaced by e.g.
-#
-#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.maxEvents.input = cms.untracked.int32(100)"
-#
-#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
-#
-# to be replaced by e.g.
-#
-#  "extEventSelection = cms.VPSet()
-#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
-#   extEventSelection.insert(process.analyzeZtoMuTau.eventSelection)
-#   process.analyzeZtoMuTau.eventSelection = extEventSelection"
-#
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
-#
-# to be replaced by e.g.
-#  "process.saveZtoMuTauPlots.outputFileName = plotsOutputFileNameQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_fileName_Parameter_of_PoolOutputModule
-#
-# to be replaced by e.g.
-#  "process.saveZtoMuTauPatTuple.fileName = patTupleOutputFileNameQCD_BCtoE_Pt20to30"
+# import utility function for factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
+#__#factorization#
 #
 #--------------------------------------------------------------------------------
 
@@ -149,10 +128,6 @@ process.p = cms.Path( process.producePatTuple
 #                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
-
-# import utility function to enable factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
-#enableFactorization_runZtoMuTau(process)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
