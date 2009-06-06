@@ -46,9 +46,9 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #
 #--------------------------------------------------------------------------------
 
-def submitToBatch(configFile = None, channel = None, sample = None, jobType = None,
+def submitToBatch(configFile = None, channel = None, sample = None,
                   replFunction = None, replacements = "",
-                  queue = "1nd", outputDirectory = None, emailAddress = None):
+                  queue = "1nd", outputDirectory = None):
 
     # check that configFile, channel, sample and outputDirectory
     # parameters are defined and non-empty
@@ -72,13 +72,10 @@ def submitToBatch(configFile = None, channel = None, sample = None, jobType = No
     submissionDirectory = os.getcwd()
     if not submissionDirectory.endswith("/"):
         submissionDirectory += "/"
-    #print(" submissionDirectory = " + submissionDirectory)    
 
     # compose name of modified config file including the replacements
     configFile_orig = submissionDirectory + configFile
-    #print(" configFile_orig = " + configFile_orig)
     configFile_mod = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch_cfg.py")
-    #print(" configFile_mod = " + configFile_mod)
 
     if replFunction is not None:
         replacements=replFunction(channel = channel, sample = sample, replacements = replacements)
@@ -103,7 +100,6 @@ def submitToBatch(configFile = None, channel = None, sample = None, jobType = No
         cp = 'rfcp'
     else:
         cp = 'scp'
-    #print(" cp = " + cp)
     script = []
     script.append("#!/bin/csh")
     script.append("limit vmem unlim")
@@ -116,22 +112,6 @@ def submitToBatch(configFile = None, channel = None, sample = None, jobType = No
     script.append("    echo \"copying ${rootFile} to " + outputDirectory + "\"")
     script.append("    " + cp + " ${rootFile} " + outputDirectory)
     script.append("end")
-    # check if other batch jobs are still running for this channel;
-    # send email notification in case all batch jobs have finished processing
-    if emailAddress is not None:
-        print("submitToBatch: will send email notification once all batch jobs have finished processing.")
-        emailBody = "All batch jobs"
-        grepCommand = "| grep " + channel
-        if jobType is not None:
-            emailBody += " of type " + jobType
-            grepCommand += " | grep " + jobType
-        script.append("set batchJobs=(`bjobs -w " + grepCommand + "`)")
-        script.append("if ($#batchJobs <= 1) then")
-        emailBody += " for channel " + channel + " have finished processing."
-        emailSubject = channel + " batch jobs"
-        script.append("    echo \"All batch jobs have finished processing --> sending email notification.\"")
-        script.append("    echo \"" + emailBody + "\" | mail -s\"" + emailSubject + "\" " + emailAddress)
-        script.append("endif")
     fh = open(scriptFile, "w")
     for line in script:
         fh.write(line + "\n")
@@ -142,9 +122,6 @@ def submitToBatch(configFile = None, channel = None, sample = None, jobType = No
     
     # finally, submit job to the CERN batch system
     logFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.out")
-    #print(" logFile = " + logFile)
     jobName = "job" + channel + "_" + sample
-    #print(" jobName = " + jobName)
     bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile + ' < ' + scriptFile
-    #print(" bsubCommand = " + bsubCommand)
     subprocess.call(bsubCommand, shell = True)
