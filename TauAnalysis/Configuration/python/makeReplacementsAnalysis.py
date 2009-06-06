@@ -83,7 +83,6 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     # check that factorization option has been defined
     if factorization is None:
         raise ValueError("Undefined factorization option !!")
-    #print(" factorization = " + factorization)
     replaceStatements_retVal.append("factorization = " + factorization)
 
     # replace inputFileName parameter
@@ -107,10 +106,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
     replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
-    #print(" replaceStatements_retVal = ")
-    #print(replaceStatements_retVal)
 
     replacements_retVal = "; ".join(replaceStatements_retVal)
-    #print(" replacements_retVal = " + replacements_retVal)
 
     return replacements_retVal

@@ -65,9 +65,7 @@ def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod
     # activate replace statements in config file
     # by removing (replace by empty string) "#__" comment indicators
     sedArgument += "s/#__//"
-    #print(" sedArgument = " + sedArgument)
 
     # execute 'sed' to perform actual replacements
     sedCommand = 'sed -e "' + sedArgument + '" ' + configFile_orig + ' > ' + configFile_mod
-    #print(" sedCommand = " + sedCommand)
     subprocess.call(sedCommand, shell = True)
