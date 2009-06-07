@@ -67,6 +67,9 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
 
   dRisoCone_ = cfg.getParameter<double>("dRisoCone");
   
+  sumPtMin_ = cfg.exists("sumPtMin") ? cfg.getParameter<double>("sumPtMin") : -1.;
+  numMin_ = cfg.exists("numMin") ? cfg.getParameter<int>("numMin") : -1;
+
   sumPtMax_ = cfg.exists("sumPtMax") ? cfg.getParameter<double>("sumPtMax") : -1.;
   numMax_ = cfg.exists("numMax") ? cfg.getParameter<int>("numMax") : -1;
   if ( !(cfg.exists("sumPtMax") || cfg.exists("numMax")) ) {
@@ -104,6 +107,9 @@ void PATLeptonIsoDepositSelector<T>::select(const edm::Handle<collection>& patLe
       //std::cout << "sumPt = " << sumPt << std::endl;
       double num = isoDeposit->countWithin(dRisoCone_, isoParam_);
       //std::cout << "num = " << num << std::endl;
+
+      if ( sumPtMin_ >  0. && sumPt < sumPtMin_ ) continue;
+      if ( numMin_   >= 0  && num   < numMin_   ) continue;
 
       if ( sumPtMax_ >  0. && sumPt > sumPtMax_ ) continue;
       if ( numMax_   >= 0  && num   > numMax_   ) continue;

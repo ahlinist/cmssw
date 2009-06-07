@@ -11,9 +11,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATLeptonIsoDepositSelector.h,v 1.1 2009/02/25 11:42:54 veelken Exp $
+ * $Id: PATLeptonIsoDepositSelector.h,v 1.2 2009/03/12 10:47:20 veelken Exp $
  *
  */
 
@@ -53,6 +53,8 @@ class PATLeptonIsoDepositSelector
 
   double dRisoCone_;
 
+  double sumPtMin_;
+  int numMin_;
   double sumPtMax_;
   int numMax_;
   
