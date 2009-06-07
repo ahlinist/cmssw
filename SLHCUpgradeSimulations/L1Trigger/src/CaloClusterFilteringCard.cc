@@ -57,8 +57,6 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          std::ostringstream pattern;
          pattern << "OF:New Cluster Filter\n";
 
-
-
          //There is cluster- loop on the neighbors
          std::map<int,L1CaloCluster>::iterator iter2;
          L1CaloCluster origin = iter->second;
@@ -67,6 +65,13 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          pattern << "OF:Initial Cluster: "<< origin.towerE(0) <<
            " "<< origin.towerE(1) << " " << origin.towerE(2) <<" "<<
            origin.towerE(3) <<"\n";
+
+	 //CHANGES IN JUN7:
+	 //make parralel comparison while filtering and calculate weights 
+         //in parralel
+	 double originE = origin.E();
+         std::pair<int,int> posIn =  calculateClusterPosition(origin);
+
 
          //Set central bit
          bool central=true;
@@ -85,7 +90,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          neighbor.towerE(3) <<"\n";
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() <= neighbor.E())
+             if(originE <= neighbor.E())
          {
            origin.setTower(1,0);
            origin.setTower(3,0);
@@ -107,7 +112,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
          neighbor.towerE(3) <<"\n";
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() <= neighbor.E())
+             if(originE <= neighbor.E())
          {
            origin.setTower(3,0);
            central=false;
@@ -131,7 +136,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          neighbor.towerE(3) <<"\n";
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() <= neighbor.E())
+             if(originE <= neighbor.E())
          {
            origin.setTower(2,0);
            origin.setTower(3,0);
@@ -157,7 +162,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          neighbor.towerE(3) <<"\n";
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() <= neighbor.E())
+             if(originE <= neighbor.E())
          {
            origin.setTower(2,0);
            central=false;
@@ -182,7 +187,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          neighbor.towerE(3) <<"\n";
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() < neighbor.E())
+             if(originE < neighbor.E())
          {
            origin.setTower(0,0);
            origin.setTower(2,0);
@@ -210,7 +215,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() < neighbor.E())
+             if(originE < neighbor.E())
          {
            origin.setTower(0,0);
            central=false;
@@ -237,7 +242,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() < neighbor.E())
+             if(originE < neighbor.E())
          {
            origin.setTower(0,0);
            origin.setTower(1,0);
@@ -264,7 +269,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
          neighbor.towerE(3) <<"\n";
 
              //Compare the energies and prune if the neighbor has higher Et
-             if(origin.E() < neighbor.E())
+             if(originE < neighbor.E())
          {
            origin.setTower(1,0);
            central=false;
@@ -280,12 +285,10 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
            {
              origin.setCentral(central);
 
-             std::pair<int,int> p =  calculateClusterPosition(origin);
-
              pattern << "OF:Trimmed Cluster: "<< origin.towerE(0) <<
          " "<< origin.towerE(1) << " " << origin.towerE(2) <<" "<<
          origin.towerE(3) <<" Central: "<<central<<" Weights:"<<
-         p.first<<" "<<p.second;
+         posIn.first<<" "<<posIn.second;
 
 
              cleanClusters.push_back(origin);
