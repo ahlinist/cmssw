@@ -31,7 +31,7 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 #    )
 #)
 
-from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run4_cfg import *
+from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run5_cfg import *
 process.source = source
 
 #process.PFTausSelected = cms.EDFilter("PFTauSelector",
