@@ -7,6 +7,8 @@ process = cms.Process('runZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
@@ -50,13 +52,8 @@ process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('elecTauSkim_patTuple.root')
 )
 
-# control frequency of message logger print-out
-process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(300)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -69,38 +66,13 @@ process.source = cms.Source("PoolSource",
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system:
+# in case running jobs on the CERN batch system
 #
-#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.maxEvents.input = cms.untracked.int32(100)"
-#
-#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
-#
-# to be replaced by e.g.
-#
-#  "extEventSelection = cms.VPSet()
-#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
-#   extEventSelection.insert(process.analyzeZtoElecTau.eventSelection)
-#   process.analyzeZtoElecTau.eventSelection = extEventSelection"
-#
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
-#
-# to be replaced by e.g.
-#  "process.saveZtoElecTauPlots.outputFileName = plotsOutputFileNameQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_fileName_Parameter_of_PoolOutputModule
-#
-# to be replaced by e.g.
-#  "process.saveZtoElecTauPatTuple.fileName = patTupleOutputFileNameQCD_BCtoE_Pt20to30"
+#__process.source.fileNames = #inputFileNames#
+#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
+#__process.analyzeZtoElecTauEvents.eventSelection[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.saveZtoElecTauPlots.outputFileName = #plotsOutputFileName#
+#__process.saveZtoElecTauPatTuple.outputFileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
@@ -121,12 +93,24 @@ switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
-#                     +process.printEventContent                # uncomment to enable dump of event content after PAT-tuple production
-#                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
-                     +process.selectZtoElecTauEvents
+#                    +process.printEventContent      # uncomment to enable dump of event content after PAT-tuple production
+                     +process.selectZtoElecTauEvents 
+#                    +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.analyzeZtoElecTauEvents
-                     +process.saveZtoElecTauPlots 
-							)
+                     +process.saveZtoElecTauPlots )
+
+#--------------------------------------------------------------------------------
+# import utility function for factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecTau
+#
+# define "hook" for enabling/disabling factorization
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#
+# NOTE: factorization not implemented for Z --> e + tau-jet channel yet
+#
+##__#factorization#
+#--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
