@@ -8,7 +8,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 # shell script for submission of cmsRun job to the CERN batch system,
 # then submit the job
 #
-# NOTE: Function needs to be passed the following seven arguments
+# NOTE: Function needs to be passed the following eight arguments
 #
 #      (1) configFile
 #          name of the original config file (template)
@@ -34,10 +34,14 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #          in the format 'paramName1=paramValue1; paramName2=paramValue2;...';
 #          in the original config file, each occurence of any paramName
 #          will be replaced by the associated paramValue (using the 'sed' utility)
-#      (6) queue
+#      (6) job
+#          name of the job submitted to the batch system
+#          (allows to distinguish in the 'bjobs -w' output
+#           different types of jobs running simultaneously)
+#      (7) queue
 #          name of the batch queue to which is cmsRun job is to be submitted
 #          (e.g. '1nh' (1 hour), '1nd' (24 hours), '1nw' (1 week execution time limit),...)
-#      (7) outputDirectory
+#      (8) outputDirectory
 #          name of the directory (either on afs area or castor)
 #          to which all .root files produced by the cmsRun job will be copied
 #          (e.g. "/castor/cern.ch/user/v/veelken/")
@@ -48,7 +52,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
 def submitToBatch(configFile = None, channel = None, sample = None,
                   replFunction = None, replacements = "",
-                  queue = "1nd", outputDirectory = None):
+                  job = "job", queue = "1nd", outputDirectory = None):
 
     # check that configFile, channel, sample and outputDirectory
     # parameters are defined and non-empty
@@ -122,6 +126,6 @@ def submitToBatch(configFile = None, channel = None, sample = None,
     
     # finally, submit job to the CERN batch system
     logFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.out")
-    jobName = "job" + channel + "_" + sample
+    jobName = job + channel + "_" + sample
     bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile + ' < ' + scriptFile
     subprocess.call(bsubCommand, shell = True)
