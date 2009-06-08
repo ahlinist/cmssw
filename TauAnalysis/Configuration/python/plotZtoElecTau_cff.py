@@ -36,23 +36,27 @@ loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
-	dqmDirectories_input = cms.vstring('QCD_BCtoE_Pt20to30',
-					   'QCD_BCtoE_Pt30to80',
-					   'QCD_BCtoE_Pt80to170',
-					   'QCD_EMenriched_Pt20to30',
-					   'QCD_EMenriched_Pt30to80',
-					   'QCD_EMenriched_Pt80to170'),
+	dqmDirectories_input = cms.vstring(
+            'QCD_BCtoE_Pt20to30',
+            'QCD_BCtoE_Pt30to80',
+            'QCD_BCtoE_Pt80to170',
+            'QCD_EMenriched_Pt20to30',
+            'QCD_EMenriched_Pt30to80',
+            'QCD_EMenriched_Pt80to170'
+        ),
 	dqmDirectory_output = cms.string('qcdSum')
     )                          
 )
 
 addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
     gammaPlusJetsSum = cms.PSet(
-	dqmDirectories_input = cms.vstring('gammaPlusJets_Pt15to20',
-                                           'gammaPlusJets_Pt20to25',
-                                           'gammaPlusJets_Pt25to30',
-                                           'gammaPlusJets_Pt30to35',
-                                           'gammaPlusJets_PtGt35'),
+	dqmDirectories_input = cms.vstring(
+            'gammaPlusJets_Pt15to20',
+            'gammaPlusJets_Pt20to25',
+            'gammaPlusJets_Pt25to30',
+            'gammaPlusJets_Pt30to35',
+            'gammaPlusJets_PtGt35'
+        ),
 	dqmDirectory_output = cms.string('gammaPlusJetsSum')
     )                          
 )
