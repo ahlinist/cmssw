@@ -23,7 +23,7 @@
 #                TauAnalysis/Configuration/python/recoSampleDefinitionsZtoElecTau_cfi.py
 #                TauAnalysis/Configuration/python/recoSampleDefinitionsZtoMuTau_cfi.py
 #                ...
-#          (e.g. ZtautauPlusJets_part1)
+#          (e.g. ZtautauPlusJets_part01)
 #      (3) replacements
 #          list of replace statements
 #
@@ -99,10 +99,10 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     patTupleOutputFileName = "patTupleOutputFileName" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
-        plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")] + ".value()"
-        plotsOutputFileName += ".replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-        patTupleOutputFileName = "cms.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")] + ".value()"
-        patTupleOutputFileName += ".replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
+        plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        patTupleOutputFileName = "cms.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
+        patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
     replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
