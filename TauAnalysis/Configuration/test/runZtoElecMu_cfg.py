@@ -7,6 +7,8 @@ process = cms.Process('runZtoElecMu')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
@@ -62,38 +64,13 @@ process.source = cms.Source("PoolSource",
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system:
+# in case running jobs on the CERN batch system
 #
-#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.maxEvents.input = cms.untracked.int32(100)"
-#
-#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
-#
-# to be replaced by e.g.
-#
-#  "extEventSelection = cms.VPSet()
-#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
-#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
-#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
-#
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter_of_DQMSimpleFileSaver
-#
-# to be replaced by e.g.
-#  "process.saveZtoElecMuPlots.outputFileName = plotsOutputFileNameQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_fileName_Parameter_of_PoolOutputModule
-#
-# to be replaced by e.g.
-#  "process.saveZtoElecMuPatTuple.fileName = patTupleOutputFileNameQCD_BCtoE_Pt20to30"
+#__process.source.fileNames = #inputFileNames#
+#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
+#__process.analyzeZtoElecMuEvents.eventSelection[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.saveZtoElecMuPlots.outputFileName = #plotsOutputFileName#
+#__process.saveZtoElecMuPatTuple.outputFileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
@@ -129,14 +106,21 @@ replaceMETforDiTaus(process,
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
+#                    +process.printEventContent     # uncomment to enable dump of event content after PAT-tuple production
                      +process.selectZtoElecMuEvents
 #                    +process.saveZtoElecMuPatTuple # uncomment to write-out produced PAT-tuple  
                      +process.analyzeZtoElecMuEvents
                      +process.saveZtoElecMuPlots )
 
-# import utility function to enable factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecMu
-#enableFactorization_runZtoElecMu(process)
+#--------------------------------------------------------------------------------
+# import utility function for factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecMu
+#
+# define "hook" for enabling/disabling factorization
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#factorization#
+#--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
 #print process.dumpPython()

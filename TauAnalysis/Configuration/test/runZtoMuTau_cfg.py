@@ -7,6 +7,8 @@ process = cms.Process('runZtoMuTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
@@ -99,10 +101,6 @@ process.source = cms.Source("PoolSource",
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
 #__process.saveZtoMuTauPatTuple.outputFileName = #patTupleOutputFileName#
 #
-# import utility function for factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
-#__#factorization#
-#
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -128,6 +126,16 @@ process.p = cms.Path( process.producePatTuple
 #                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
+
+#--------------------------------------------------------------------------------
+# import utility function for factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
+#
+# define "hook" for enabling/disabling factorization
+# in case running jobs on the CERN batch system
+# (needs to be done after process.p has been defined)
+#__#factorization#
+#--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
