@@ -42,7 +42,6 @@ public class DataProvider extends HttpServlet {
   DocumentBuilderFactory factory = null;
   DocumentBuilder builder = null;
   TransformerFactory tf = null;
-  static HashMap<String, Templates> xsltCache  = new HashMap<String, Templates>();
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
@@ -363,17 +362,18 @@ public class DataProvider extends HttpServlet {
           results.setAttribute("page", String.valueOf(page));
           results.setAttribute("rp", String.valueOf(page_size));
 
+          CacheSyn cache = CacheSyn.getInstance();
           for (int i = 0; i < intemplates.length; i++) {
             String t = intemplates[i];
             Templates translet = null;
-            if (xsltCache.containsKey(t)) {
-              translet = xsltCache.get(t);
+            if (cache.hasTemplate(t)) {
+              translet = cache.getTemplate(t);
             } else {
               m = fieldPattern.matcher(t);
               if (m.find()) {
                 String filename = this.getClass().getResource("/templates/" + t + ".xsl").getPath();
                 translet = tf.newTemplates(new StreamSource(filename));
-                xsltCache.put(t, translet);
+                cache.setTemplate(t, translet);
               }
             }
             DOMSource domSource = new DOMSource(doc);
