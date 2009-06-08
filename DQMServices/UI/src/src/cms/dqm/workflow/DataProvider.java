@@ -10,11 +10,20 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.w3c.dom.*;
+/*
 import org.xml.sax.InputSource;
-import javax.xml.parsers.*;
 import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+*/
+import javax.xml.parsers.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 
 public class DataProvider extends HttpServlet {
 
@@ -30,6 +39,11 @@ public class DataProvider extends HttpServlet {
   Pattern fieldPattern;
   Pattern sortPattern;
 
+  DocumentBuilderFactory factory = null;
+  DocumentBuilder builder = null;
+  TransformerFactory tf = null;
+  static HashMap<String, Templates> xsltCache  = new HashMap<String, Templates>();
+
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     query = getServletConfig().getInitParameter("query");
@@ -44,6 +58,14 @@ public class DataProvider extends HttpServlet {
     }
     fieldPattern = Pattern.compile("^[a-zA-Z_0-9]+$");
     sortPattern = Pattern.compile("^(asc|desc|ASC|DESC)$");
+
+    try {
+      factory = DocumentBuilderFactory.newInstance();
+      builder = factory.newDocumentBuilder();
+      tf = TransformerFactory.newInstance();
+    } catch (Exception e) {
+      throw new ServletException(e);
+    }
   }
 
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -97,11 +119,17 @@ public class DataProvider extends HttpServlet {
       }
     }
 
-    Matcher m = sortPattern.matcher(sort_dir);
-    if (!m.find()) sort_dir = default_sort_dir;
+    Matcher m = null;
 
-    m = fieldPattern.matcher(sort_name);
-    if (!m.find()) sort_name = default_sort_name;
+    if (sort_dir != default_sort_dir) {
+      m = sortPattern.matcher(sort_dir);
+      if (!m.find()) sort_dir = default_sort_dir;
+    }
+
+    if (sort_name != default_sort_name) {
+      m = fieldPattern.matcher(sort_name);
+      if (!m.find()) sort_name = default_sort_name;
+    }
 
     if (checkParam(request.getParameter("mime"))) {
       mimeType = request.getParameter("mime");
@@ -112,16 +140,20 @@ public class DataProvider extends HttpServlet {
     boolean where_exists2 = false;
     String where = "";
  
-    if (filter_values!= null) {
+    if (filter_values != null) {
       try {
         where = "WHERE ";
         JSONArray fvalues = new JSONArray(filter_values);	
         for (int i = 0; i < fvalues.length(); i++) {
           JSONObject o = fvalues.getJSONObject(i);
-          if ((o.has("range_from")) && (o.has("range_to"))) {
-            where = where + (i > 0 ? filter_operator : "") + " ( ? < " + o.getString("field") + " and ? > " + o.getString("field") + ") ";
-          } else {
-            where = where + (i > 0 ? filter_operator : "") + " REGEXP_LIKE(" +  o.getString("field") + ", ?, 'i') ";
+          String field = o.getString("field");
+          m = fieldPattern.matcher(field);
+          if (m.find()) {
+            if ((o.has("range_from")) && (o.has("range_to"))) {
+              where = where + (i > 0 ? filter_operator : "") + " ( ? < " + field + " and ? > " + field + ") ";
+            } else {
+              where = where + (i > 0 ? filter_operator : "") + " REGEXP_LIKE(" +  field + ", ?, 'i') ";
+            }
           }
 	}
 			
@@ -142,11 +174,9 @@ public class DataProvider extends HttpServlet {
       }
     }
 
-    JSONArray arr                  = null;
-    DocumentBuilderFactory factory = null;
-    DocumentBuilder builder        = null;
-    Document doc                   = null;
-    Element results                = null;
+    JSONArray arr = null;
+    Document doc = null;
+    Element results = null;
 
     try {
 
@@ -156,8 +186,6 @@ public class DataProvider extends HttpServlet {
           arr = new JSONArray();
           break;
         case XML:
-          factory = DocumentBuilderFactory.newInstance();
-          builder = factory.newDocumentBuilder();
           doc = builder.newDocument();
           results = doc.createElement("RESULTS");
           doc.appendChild(results);
@@ -165,41 +193,42 @@ public class DataProvider extends HttpServlet {
       }
 
       DBWorker db = new DBWorker();
+      PreparedStatement pstmt = null;
+      ResultSet r = null;
 
-      String count_sql = "select count(*) from (select * from (" + query + ") "+ where + ")";
-	 
-      PreparedStatement pstmt = db.prepareSQL(count_sql);
+      long totalResultsAvailable = 0;
+      if (page_size > 0) {
+
+        String count_sql = "select count(*) from (select * from (" + query + ") "+ where + ")";
+        pstmt = db.prepareSQL(count_sql);
 
 
-      if (where_exists) {
-        pstmt.setString(1, filter_value);
-      } else {
-        if (where_exists2) {
-          try {
-            JSONArray fvalues = new JSONArray(filter_values);
-            int p = 1;
-            for (int i = 0; i < fvalues.length(); i++) {
-              JSONObject o = fvalues.getJSONObject(i);
-              if ((o.has("range_from")) && (o.has("range_to"))) {
-                pstmt.setDouble(p++, o.getDouble("range_from")); 
-                pstmt.setDouble(p++, o.getDouble("range_to"));
-              } else {
-                pstmt.setString(p++, o.getString("value"));
+        if (where_exists) {
+          pstmt.setString(1, filter_value);
+        } else {
+          if (where_exists2) {
+            try {
+              JSONArray fvalues = new JSONArray(filter_values);
+              int p = 1;
+              for (int i = 0; i < fvalues.length(); i++) {
+                JSONObject o = fvalues.getJSONObject(i);
+                if ((o.has("range_from")) && (o.has("range_to"))) {
+                  pstmt.setDouble(p++, o.getDouble("range_from")); 
+                  pstmt.setDouble(p++, o.getDouble("range_to"));
+                } else {
+                  pstmt.setString(p++, o.getString("value"));
+                }
               }
-							
+            } catch (JSONException e) {
+              throw new ServletException(e.toString() + "\nJSON Object: " + filter_values);
             }
-          } catch (JSONException e) {
-            throw new ServletException(e.toString() + "\nJSON Object: " + filter_values);
           }
         }
+        r = pstmt.executeQuery();
+        r.next();
+        totalResultsAvailable = r.getLong(1);
+        r.close();
       }
-		
-		
-      ResultSet r = pstmt.executeQuery();
-
-      r.next();
-      long totalResultsAvailable = r.getLong(1);
-      r.close();
 
       long totalResultsReturned = 0;
 
@@ -246,13 +275,16 @@ public class DataProvider extends HttpServlet {
       ResultSetMetaData rm = r.getMetaData();
       int cols = rm.getColumnCount();
 
+      String [] colnames  = new String[cols];
+      for (int i = 1; i < cols + 1; i++) colnames[i - 1] = rm.getColumnName(i);
+
       while (r.next()) {
 
         switch (format) {
           case JSON:
 
             HashMap<String, Object> map  = new HashMap<String, Object>();
-            for (int i = 1; i < cols + 1; i++) map.put(rm.getColumnName(i), r.getObject(i));
+            for (int i = 1; i < cols + 1; i++) map.put(colnames[i - 1], r.getObject(i));
             arr.put(map);
 
             break;
@@ -261,9 +293,8 @@ public class DataProvider extends HttpServlet {
             Element row = doc.createElement("ROW");
             results.appendChild(row);
             for (int i = 1; i <= cols; i++) {
-              String columnName = rm.getColumnName(i);
               Object value      = r.getObject(i);
-              Element node      = doc.createElement(columnName);
+              Element node      = doc.createElement(colnames[i - 1]);
               if (value != null) node.appendChild(doc.createTextNode(value.toString()));
               row.appendChild(node);
             }
@@ -277,8 +308,12 @@ public class DataProvider extends HttpServlet {
       r.close();
       db.close();
 
+      if (totalResultsAvailable == 0) totalResultsAvailable = totalResultsReturned;
+
       switch (format) {
+
         case JSON:
+
           HashMap<String, Object> list  = new HashMap<String, Object>();
           if (debug) {
             list.put("query", query);
@@ -328,14 +363,22 @@ public class DataProvider extends HttpServlet {
           results.setAttribute("page", String.valueOf(page));
           results.setAttribute("rp", String.valueOf(page_size));
 
-          TransformerFactory tf = TransformerFactory.newInstance();
-
           for (int i = 0; i < intemplates.length; i++) {
-            File xsltFile = new File(this.getClass().getResource("/templates/" + intemplates[i] + ".xsl").getPath());
-            Source xsltSource = new StreamSource(xsltFile);
+            String t = intemplates[i];
+            Templates translet = null;
+            if (xsltCache.containsKey(t)) {
+              translet = xsltCache.get(t);
+            } else {
+              m = fieldPattern.matcher(t);
+              if (m.find()) {
+                String filename = this.getClass().getResource("/templates/" + t + ".xsl").getPath();
+                translet = tf.newTemplates(new StreamSource(filename));
+                xsltCache.put(t, translet);
+              }
+            }
             DOMSource domSource = new DOMSource(doc);
             DOMResult result = new DOMResult();
-            Transformer transformer = tf.newTransformer(xsltSource);
+            Transformer transformer = translet.newTransformer();
             transformer.transform(domSource, result);
             doc = (Document) result.getNode();
           }
