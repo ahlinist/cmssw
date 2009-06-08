@@ -26,8 +26,10 @@ loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
 
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
-        dqmDirectories_input = cms.vstring('InclusivePPmuX',
-                                           'PPmuXptGt20'),
+        dqmDirectories_input = cms.vstring(
+            'InclusivePPmuX',
+            'PPmuXptGt20'
+        ),
         dqmDirectory_output = cms.string('qcdSum')
     )                          
 )
