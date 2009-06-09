@@ -1,4 +1,4 @@
-<%@ page import="java.sql.*,java.util.*,java.util.regex.*,cms.dqm.workflow.*,java.security.cert.*" %>
+<%@ page import="cms.dqm.workflow.*" %>
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
 
 <%
@@ -270,12 +270,12 @@
 
     var tableToggle = function () {
       if ($.cookie("flex_table_summary") == "true") {
-        $("#flex1").flexOptions({ url: "runregisterdata", newp: 1 });
+        $("#flex1").flexOptions({ url: "runregisterdata?mime=text/plain", newp: 1 });
         $("#flex1").flexReload();
         $(this).find("span").text("Run Registry Data");
         $.cookie("flex_table_summary", null);
       } else {
-        $("#flex1").flexOptions({ url: "runinfodata", newp: 1 });
+        $("#flex1").flexOptions({ url: "runinfodata?mime=text/plain", newp: 1 });
         $("#flex1").flexReload();
         $(this).find("span").text("All Run Info Data");
         $.cookie("flex_table_summary", "true");
@@ -353,7 +353,7 @@
 
     /* DataTable default preferences */
     var fp = {
-      url: 'runregisterdata?',
+      url: 'runregisterdata?mime=text/plain',
       dataType: 'json',
       method: 'get',
       colModel : [
@@ -659,6 +659,7 @@
         <span id="optionsmenu"><a href="#">Options</a>
           <ul>
             <li><a href="#" class="animation_option">Animation</a></li>
+            <li><a href="datacache" target="_blank">View cache</a></li>
           </ul>
         </span>
 
