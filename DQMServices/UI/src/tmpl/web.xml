@@ -43,6 +43,19 @@
       <env-entry-value>@APP_DEPLOY_TIME@</env-entry-value>
     </env-entry>
 
+    <env-entry>
+      <env-entry-name>cache_dir</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <!-- relative to base URL, no preceeding slash, + trailing slash -->
+      <env-entry-value>data/</env-entry-value>
+    </env-entry>
+
+    <!-- Listeners go below -->
+
+    <listener>
+      <listener-class>cms.dqm.workflow.ContextListener</listener-class>
+    </listener>
+
     <!-- Servlets go below -->
 
     <servlet>
@@ -181,11 +194,6 @@
     </servlet>
 
     <servlet>
-      <servlet-name>DataCache</servlet-name>
-      <servlet-class>cms.dqm.workflow.CacheProvider</servlet-class>
-    </servlet>
-
-    <servlet>
       <servlet-name>QuartzInitializer</servlet-name>
       <display-name>Quartz Initializer Servlet</display-name>
       <servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class>
@@ -252,11 +260,6 @@
     <servlet-mapping>
         <servlet-name>RunSummaryValues</servlet-name>
         <url-pattern>/runsummaryvalues</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>DataCache</servlet-name>
-        <url-pattern>/datacache</url-pattern>
     </servlet-mapping>
 
     <session-config>

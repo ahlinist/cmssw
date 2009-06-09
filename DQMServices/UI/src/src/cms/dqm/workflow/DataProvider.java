@@ -39,7 +39,6 @@ public class DataProvider extends HttpServlet {
   private Pattern fieldPattern;
   private Pattern sortPattern;
   private String servlet_name;
-  public static File tempDir = null;
 
   DocumentBuilderFactory factory = null;
   DocumentBuilder builder = null;
@@ -48,9 +47,6 @@ public class DataProvider extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     servlet_name = config.getServletName();
-    if (tempDir == null) {
-      tempDir = (File) getServletContext().getAttribute( "javax.servlet.context.tempdir" );
-    }
     query = config.getInitParameter("query");
     default_page_size = (config.getInitParameter("default_page_size") == null ? 0     : Integer.parseInt(getServletConfig().getInitParameter("default_page_size")));
     default_sort_name = (config.getInitParameter("default_sort_name")  == null ? "1"   : getServletConfig().getInitParameter("default_sort_name"));
@@ -100,9 +96,9 @@ public class DataProvider extends HttpServlet {
 
     PrintWriter out = response.getWriter();
     String query_string = request.getQueryString();
-    String cached_id = CacheSyn.getInstance().getCachedContent(servlet_name, query_string);
-    if (cached_id != null) {
-      response.sendRedirect("datacache?id=" + cached_id);
+    String cache_url = CacheSyn.getInstance().getCachedContent(servlet_name, query_string);
+    if (cache_url != null) {
+      response.sendRedirect(cache_url);
       return;
     }
 
@@ -339,7 +335,6 @@ public class DataProvider extends HttpServlet {
             list.put("default_sort_name", default_sort_name);
             list.put("default_sort_dir", default_sort_dir);
             list.put("where", where);
-            list.put("tempDir", tempDir.getAbsolutePath());
           }
           list.put("total", totalResultsAvailable);
           list.put("page", page);
@@ -367,7 +362,6 @@ public class DataProvider extends HttpServlet {
             results.setAttribute("default_sort_dir", default_sort_dir);
             results.setAttribute("where", where);
             results.setAttribute("avalues", filter_values);
-            results.setAttribute("tempDir", tempDir.getAbsolutePath());
             results.setAttribute("aoperator", filter_operator);
             for (int i = 0; i < intemplates.length; i++) {
               results.setAttribute("internal_template_" + String.valueOf(i), intemplates[i]);
@@ -417,7 +411,7 @@ public class DataProvider extends HttpServlet {
           break;
       }
 
-      response.sendRedirect("datacache?id=" + CacheSyn.getInstance().setCachedContent(servlet_name, query_string, content, mimeType));
+      response.sendRedirect(CacheSyn.getInstance().setCachedContent(servlet_name, query_string, content, mimeType));
 
     } catch(SQLException e) {
       throw new ServletException(e.toString() + "\nWHERE clause: " + where);

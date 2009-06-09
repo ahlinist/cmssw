@@ -33,6 +33,10 @@ public class MessageBoardSyn {
     return instance;
   }
 
+  static public void destroy() {
+    instance = null;
+  }
+
   public void loginUser(MessageUser user) {
     if (!user.isLogged()) return;
     if (!users.containsKey(user.getId())) {
