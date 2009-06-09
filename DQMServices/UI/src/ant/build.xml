@@ -72,6 +72,8 @@
     <input message="DBS DQM server url:" addproperty="dbsdqm_url" defaultvalue="http://localhost:9999" />
     <input message="Webapps path (to copy war file):" addproperty="app_path" defaultvalue="${webapps}"/>
     <input message="Start scheduler (true|false)?:" addproperty="app_start_scheduler" defaultvalue="false"/>
+    <input message="Data Cache URL:" addproperty="app_cache_url" defaultvalue="/${app_url}_data/" />
+    <input message="Media URL:" addproperty="app_media_url" defaultvalue="/${app_url}_media/" />
     
     <tstamp>
       <format property="app_deploy_time" pattern="MM/dd/yyyy hh:mm aa"/>
@@ -85,6 +87,8 @@
     <replace file="WEB-INF/web.xml" token="@DBSDQM_URL@" value="${dbsdqm_url}"/>
     <replace file="WEB-INF/web.xml" token="@APP_START_SCHEDULER@" value="${app_start_scheduler}"/>     
     <replace file="WEB-INF/web.xml" token="@APP_DEPLOY_TIME@" value="${app_deploy_time}"/>     
+    <replace file="WEB-INF/web.xml" token="@APP_CACHE_URL@" value="${app_cache_url}"/>     
+    <replace file="WEB-INF/web.xml" token="@APP_MEDIA_URL@" value="${app_media_url}"/>     
 
     <war destfile="dist/${app_url}.war" webxml="WEB-INF/web.xml">
       <fileset dir="html"/>

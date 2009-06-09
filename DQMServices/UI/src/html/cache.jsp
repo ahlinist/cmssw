@@ -1,4 +1,8 @@
 <%@ page import="java.util.*,cms.dqm.workflow.*" %>
+<%
+  String mediaurl = WebUtils.GetEnv("media_url");
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -6,8 +10,8 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <title>CMS DQM Run Registry Data Cache</title>
 
-  <link rel="stylesheet" type="text/css" href="media/index.css" />
-  <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="<%=mediaurl%>index.css" />
+  <link type="text/css" href="<%=mediaurl%>smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
 
 </head>
 <body>

@@ -21,7 +21,7 @@ public class CacheSyn {
     templates  = new HashMap<String, Templates>();
     data = new HashMap<String, CacheItem>();
     md = MessageDigest.getInstance("MD5");
-    cache_url_base = WebUtils.GetEnv("cache_dir");
+    cache_url_base = WebUtils.GetEnv("cache_url");
     dataSyn = 0;
   }
 
