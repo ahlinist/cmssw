@@ -1,29 +1,43 @@
 package cms.dqm.workflow;
 
 import javax.xml.transform.Templates;
-import java.util.HashMap;
+import java.util.*;
 import java.io.*;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
+import java.math.BigInteger;
 
 public class CacheSyn {
 
   private static CacheSyn instance;
   private HashMap<String, Templates> templates;
-  private HashMap<Integer, CacheItem> data;
+  private HashMap<String, CacheItem> data;
   private int dataSyn;
+  private static File cacheDir;
+  private MessageDigest md;
+  private static String cache_url_base;
 
-  private CacheSyn() {
+  private CacheSyn() throws java.security.NoSuchAlgorithmException {
     templates  = new HashMap<String, Templates>();
-    data = new HashMap<Integer, CacheItem>();
+    data = new HashMap<String, CacheItem>();
+    md = MessageDigest.getInstance("MD5");
+    cache_url_base = WebUtils.GetEnv("cache_dir");
     dataSyn = 0;
   }
 
   static public CacheSyn getInstance() {
     if (null == instance) {
-      instance = new CacheSyn();
+      try {
+        instance = new CacheSyn();
+      } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace(System.err);
+      }
     }
     return instance;
+  }
+
+  static public void destroy() {
+    instance = null;
   }
 
   /**
@@ -46,70 +60,97 @@ public class CacheSyn {
    * Data query cache management
    */
 
-  private int getCacheId(String servlet_name, String query_string) {
-    return servlet_name.concat("{" + (query_string == null ? "" : query_string) + "}").hashCode();
+  private String getCacheId(String servlet_name, String query_string) {
+    String s = servlet_name.concat("{" + (query_string == null ? "" : query_string) + "}"); 
+    md.update(s.getBytes(), 0, s.length());
+    return new BigInteger(1, md.digest()).toString(16);
   }
 
   public String getCachedContent(String servlet_name, String query_string) {
-    int id = getCacheId(servlet_name, query_string);
-    String ret = null;
+    String id = getCacheId(servlet_name, query_string);
     try {
+
       DBWorker db = new DBWorker();
       int currSyn = db.getFirstRowValueInt(db.prepareSQL("select datasyn from rr_cache_syn"));
       db.close();
+
       if (dataSyn == currSyn) {
-        if (data.containsKey(id)) ret = String.valueOf(id);
+        if (data.containsKey(id)) {
+          CacheItem item = data.get(id);
+          item.incReads();
+          return item.getUrl();
+        }
       } else {
         data.clear();
         dataSyn = currSyn;
       }
     } catch (Exception e) { }
-    return ret;
+    return null;
   }
 
   public String setCachedContent(String servlet_name, String query_string, String content, String mime) throws Exception {
-    int id = getCacheId(servlet_name, query_string);
-    File f = File.createTempFile("runregistry_cache", servlet_name, DataProvider.tempDir);
+    String id = getCacheId(servlet_name, query_string);
+    CacheItem item = new CacheItem(id, mime, servlet_name, query_string);
+
+    File f = new File(cacheDir, item.getFileName());
     FileWriter fw = new FileWriter(f);
     fw.write(content);
     fw.close();
-    data.put(id, new CacheItem(f, mime, servlet_name, query_string));
-    return String.valueOf(id);
+
+    data.put(id, item);
+    return item.getUrl();
   }
 
   public int getDataSyn() { return dataSyn; }
+
+  public static String getUrl(String filename) {
+    return cache_url_base + filename;
+  }  
 
   public CacheItem getCachedItem(int id) {
     return data.get(id);
   }
 
-  public HashMap<Integer, CacheItem> getCachedItems() {
+  public HashMap<String, CacheItem> getCachedItems() {
     return data;
+  }
+
+  public void setCacheDir(File dir) {
+    cacheDir = dir;
   }
 
   public class CacheItem {
     
-    private File file;
-    private int reads;
+    private String id;
+    private String file_name;
     private String mime;
     private String servlet_name;
     private String query_string;
+    private int reads;
 
-    CacheItem(File file_, String mime_, String servlet_name_, String query_string_) {
-      file = file_;
+    CacheItem(String id_, String mime_, String servlet_name_, String query_string_) {
+      id = id_;
       mime = mime_;
       servlet_name = servlet_name_;
       query_string = query_string_;
-      reads = 0;
+      if (mime.equalsIgnoreCase("text/html")) {
+        file_name = id.concat(".html");
+      } else 
+      if (mime.equalsIgnoreCase("text/xml")) {
+        file_name = id.concat(".xml");
+      } else {
+        file_name = id.concat(".txt");
+      }
+      reads = 1;
     }
-
-    public void incReads() { this.reads += 1; }
 
     public String getServletName() { return servlet_name; }
     public String getQueryString() { return query_string; }
-    public int getReads() { return reads; }
     public String getMime() { return mime; }
-    public File getFile() { return file; }    
+    public String getFileName() { return file_name; }    
+    public String getUrl() { return CacheSyn.getUrl(file_name); }    
+    public int getReads() { return reads; }    
+    public void incReads() { reads++; }    
 
   }
 

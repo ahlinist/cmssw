@@ -659,7 +659,7 @@
         <span id="optionsmenu"><a href="#">Options</a>
           <ul>
             <li><a href="#" class="animation_option">Animation</a></li>
-            <li><a href="datacache" target="_blank">View cache</a></li>
+            <li><a href="cache.jsp" target="_blank">View cache</a></li>
           </ul>
         </span>
 

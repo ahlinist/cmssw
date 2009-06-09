@@ -24,15 +24,15 @@
   </tr>
 <%
 
-  HashMap<Integer, CacheSyn.CacheItem> cache = CacheSyn.getInstance().getCachedItems();
-  Set<Integer> keys = cache.keySet();
-  Iterator<Integer> it = keys.iterator();
+  HashMap<String, CacheSyn.CacheItem> cache = CacheSyn.getInstance().getCachedItems();
+  Set<String> keys = cache.keySet();
+  Iterator<String> it = keys.iterator();
   while (it.hasNext()) {
-    Integer id = it.next();
+    String id = it.next();
     CacheSyn.CacheItem item = cache.get(id);
 %>
     <tr>
-      <td><a href="datacache?id=<%=id%>"><%=id%></a></td>
+      <td><a href="<%=item.getUrl()%>"><%=id%></a></td>
       <td><%=item.getMime()%></td>
       <td><%=item.getServletName()%></td>
       <td><%=item.getQueryString()%></td>
