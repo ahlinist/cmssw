@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.17 2009/05/15 15:23:25 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.18 2009/05/27 07:54:47 carrillo Exp $
 //
 //
 
@@ -78,49 +78,27 @@ public:
   TH2F * bxbarrel;
   TH2F * bxendcap;
   
-  TH1F * hGlobalResClu1La1;
-  TH1F * hGlobalResClu1La2;
-  TH1F * hGlobalResClu1La3;
-  TH1F * hGlobalResClu1La4;
-  TH1F * hGlobalResClu1La5;
-  TH1F * hGlobalResClu1La6;
 
-  TH1F * hGlobalResClu2La1;
-  TH1F * hGlobalResClu2La2;
-  TH1F * hGlobalResClu2La3;
-  TH1F * hGlobalResClu2La4;
-  TH1F * hGlobalResClu2La5;
-  TH1F * hGlobalResClu2La6;
 
-  TH1F * hGlobalResClu3La1;
-  TH1F * hGlobalResClu3La2;
-  TH1F * hGlobalResClu3La3;
-  TH1F * hGlobalResClu3La4;
-  TH1F * hGlobalResClu3La5;
-  TH1F * hGlobalResClu3La6;
 
   //Endcap
 
-  TH1F * hGlobalResClu1R3C;
-  TH1F * hGlobalResClu1R3B;
-  TH1F * hGlobalResClu1R3A;
-  TH1F * hGlobalResClu1R2C;
-  TH1F * hGlobalResClu1R2B;
-  TH1F * hGlobalResClu1R2A;
 
-  TH1F * hGlobalResClu2R3C;
-  TH1F * hGlobalResClu2R3B;
-  TH1F * hGlobalResClu2R3A;
-  TH1F * hGlobalResClu2R2C;
-  TH1F * hGlobalResClu2R2B;
-  TH1F * hGlobalResClu2R2A;
 
-  TH1F * hGlobalResClu3R3C;
-  TH1F * hGlobalResClu3R3B;
-  TH1F * hGlobalResClu3R3A;
-  TH1F * hGlobalResClu3R2C;
-  TH1F * hGlobalResClu3R2B;
-  TH1F * hGlobalResClu3R2A;
+
+  TH1F * residualDisk1Ring2;
+  TH1F * residualDisk1Ring3;
+  TH1F * residualDisk2Ring2;
+  TH1F * residualDisk2Ring3;
+  TH1F * residualDisk3Ring2;
+  TH1F * residualDisk3Ring3;
+
+  TH1F * residualDiskm1Ring2;
+  TH1F * residualDiskm1Ring3;
+  TH1F * residualDiskm2Ring2;
+  TH1F * residualDiskm2Ring3;
+  TH1F * residualDiskm3Ring2;
+  TH1F * residualDiskm3Ring3;
   
   TH1F * EffBarrel; //Average
   TH1F * DoubleGapBarrel; //Double Gap
@@ -575,6 +553,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   CLSW0= new TH1F ("ClusterSizeW0","Cluster Size Wheel 0 per sector",12,0.5,12.5);
   CLSW1= new TH1F ("ClusterSizeW1","Cluster Size Wheel 1 per sector",12,0.5,12.5);
   CLSW2= new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per sector",12,0.5,12.5);
+
+  residualDiskm1Ring2 = new TH1F("residualDiskm1Ring2","Residuals for Disk -1 Ring 2",101,-20.,20.);
+  residualDiskm1Ring3 = new TH1F("residualDiskm1Ring3","Residuals for Disk -1 Ring 3",101,-20.,20.);
+  residualDiskm2Ring2 = new TH1F("residualDiskm2Ring2","Residuals for Disk -2 Ring 2",101,-20.,20.);
+  residualDiskm2Ring3 = new TH1F("residualDiskm2Ring3","Residuals for Disk -2 Ring 3",101,-20.,20.);
+  residualDiskm3Ring2 = new TH1F("residualDiskm3Ring2","Residuals for Disk -3 Ring 2",101,-20.,20.);
+  residualDiskm3Ring3 = new TH1F("residualDiskm3Ring3","Residuals for Disk -3 Ring 3",101,-20.,20.);
+
+  residualDisk1Ring2  = new TH1F("residualDisk1Ring2","Residuals for Disk 1 Ring 2",101,-20.,20.);
+  residualDisk1Ring3  = new TH1F("residualDisk1Ring3","Residuals for Disk 1 Ring 3",101,-20.,20.);
+  residualDisk2Ring2  = new TH1F("residualDisk2Ring2","Residuals for Disk 2 Ring 2",101,-20.,20.);
+  residualDisk2Ring3  = new TH1F("residualDisk2Ring3","Residuals for Disk 2 Ring 3",101,-20.,20.);
+  residualDisk3Ring2  = new TH1F("residualDisk3Ring2","Residuals for Disk 3 Ring 2",101,-20.,20.);
+  residualDisk3Ring3  = new TH1F("residualDisk3Ring3","Residuals for Disk 3 Ring 3",101,-20.,20.);
 
   std::stringstream meId; 
   std::stringstream title; 
@@ -1133,7 +1125,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
-	    histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
+	    histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
 	  }
 
 	  const int n = 20;
@@ -2041,9 +2033,31 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  if(debug) std::cout<<"Checking 2D Histograms for"<<name<<std::endl;
+	  if(debug) std::cout<<"Checking 2D Histograms for "<<name<<std::endl;
 
 	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
+
+	    std::cout<<"Inside the If for "<<name<<" Integral="<<histoResidual->Integral()<<std::endl;
+   
+
+	    if(rpcId.region()==1){
+	      if(rpcId.station()==1 && rpcId.ring()==2) residualDisk1Ring2->Add(histoResidual);
+	      if(rpcId.station()==1 && rpcId.ring()==3) residualDisk1Ring3->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==2) residualDisk2Ring2->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==3) residualDisk2Ring3->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==2) residualDisk3Ring2->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==3) residualDisk3Ring3->Add(histoResidual);
+	    }
+	    if(rpcId.region()==-1){
+	      if(rpcId.station()==1 && rpcId.ring()==2) residualDiskm1Ring2->Add(histoResidual);
+	      if(rpcId.station()==1 && rpcId.ring()==3) residualDiskm1Ring3->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==2) residualDiskm2Ring2->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==3) residualDiskm2Ring3->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==2) residualDiskm3Ring2->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==3) residualDiskm3Ring3->Add(histoResidual);
+	    }
+
+
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=2*nstrips;++j){
 		ef2D=0.;
@@ -2398,6 +2412,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		if(debug) std::cout<<"histoResidual "<<std::endl;
 		histoResidual->GetXaxis()->SetTitle("cm");
 		histoResidual->Draw();
+		
 		labeltoSave = name + "/Residual.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -3180,7 +3195,37 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     AverageEffD3far->GetYaxis()->SetRangeUser(0.,100.);
     EffGlobD3far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobD3far->GetYaxis()->SetRangeUser(0.,100.);
-    
+
+    Ca4->Clear();
+
+    residualDiskm1Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm1Ring2.png"; residualDiskm1Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDiskm1Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm1Ring3.png"; residualDiskm1Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDiskm2Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm2Ring2.png"; residualDiskm2Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDiskm2Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm2Ring3.png"; residualDiskm2Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDiskm3Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring2.png"; residualDiskm3Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDiskm3Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring3.png"; residualDiskm3Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  			      
+    residualDisk1Ring2->Draw();  labeltoSave = "resEndCap/residualDisk1Ring2.png"; residualDisk1Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDisk1Ring3->Draw();  labeltoSave = "resEndCap/residualDisk1Ring3.png"; residualDisk1Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDisk2Ring2->Draw();  labeltoSave = "resEndCap/residualDisk2Ring2.png"; residualDisk2Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDisk2Ring3->Draw();  labeltoSave = "resEndCap/residualDisk2Ring3.png"; residualDisk2Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDisk3Ring2->Draw();  labeltoSave = "resEndCap/residualDisk3Ring2.png"; residualDisk3Ring2->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    residualDisk3Ring3->Draw();  labeltoSave = "resEndCap/residualDisk3Ring3.png"; residualDisk3Ring3->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+
+    residualDiskm1Ring2->Write();
+    residualDiskm1Ring3->Write();
+    residualDiskm2Ring2->Write();
+    residualDiskm2Ring3->Write();
+    residualDiskm3Ring2->Write();
+    residualDiskm3Ring3->Write();
+  
+    residualDisk1Ring2->Write(); 
+    residualDisk1Ring3->Write(); 
+    residualDisk2Ring2->Write(); 
+    residualDisk2Ring3->Write(); 
+    residualDisk3Ring2->Write(); 
+    residualDisk3Ring3->Write(); 
+      
   }
 
 
@@ -3663,23 +3708,23 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("CLS/CLS.png"); CLS->Write(); 
   Ca5->Clear(); 
     
-  CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Cluster Size");
+  CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Sector"); CLSWm2->GetYaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/Wm2.png"); CLSWm2->Write();
   Ca5->Clear(); 
 
-  CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Cluster Size");
+  CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Sector"); CLSWm1->GetYaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/Wm1.png"); CLSWm1->Write();
   Ca5->Clear(); 
 
-  CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Cluster Size");  
+  CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Sector"); CLSW0->GetYaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/W0.png"); CLSW0->Write();
   Ca5->Clear(); 
 
-  CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Cluster Size");  
+  CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Sector"); CLSW1->GetYaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/W1.png"); CLSW1->Write();
   Ca5->Clear(); 
 
-  CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Cluster Size");  
+  CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Sector"); CLSW2->GetYaxis()->SetTitle("Cluster Size");
   Ca5->SaveAs("CLS/W2.png"); CLSW2->Write();
   Ca5->Clear(); 
 
