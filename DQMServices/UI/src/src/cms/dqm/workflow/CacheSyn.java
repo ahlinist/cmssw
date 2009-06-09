@@ -63,7 +63,7 @@ public class CacheSyn {
   private String getCacheId(String servlet_name, String query_string) {
     String s = servlet_name.concat("{" + (query_string == null ? "" : query_string) + "}"); 
     md.update(s.getBytes(), 0, s.length());
-    return new BigInteger(1, md.digest()).toString(16);
+    return String.valueOf(dataSyn).concat("-").concat(new BigInteger(1, md.digest()).toString(16));
   }
 
   public String getCachedContent(String servlet_name, String query_string) {
