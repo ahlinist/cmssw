@@ -31,13 +31,15 @@ public class DataProvider extends HttpServlet {
 
   enum FormatType { JSON, XML };
 
-  String query;
-  int default_page_size;
-  String default_sort_name;
-  String default_sort_dir;
-  FormatType default_format;
-  Pattern fieldPattern;
-  Pattern sortPattern;
+  private String query;
+  private int default_page_size;
+  private String default_sort_name;
+  private String default_sort_dir;
+  private FormatType default_format;
+  private Pattern fieldPattern;
+  private Pattern sortPattern;
+  private String servlet_name;
+  public static File tempDir = null;
 
   DocumentBuilderFactory factory = null;
   DocumentBuilder builder = null;
@@ -45,13 +47,17 @@ public class DataProvider extends HttpServlet {
 
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    query = getServletConfig().getInitParameter("query");
-    default_page_size = (getServletConfig().getInitParameter("default_page_size") == null ? 0     : Integer.parseInt(getServletConfig().getInitParameter("default_page_size")));
-    default_sort_name = (getServletConfig().getInitParameter("default_sort_name")  == null ? "1"   : getServletConfig().getInitParameter("default_sort_name"));
-    default_sort_dir  = (getServletConfig().getInitParameter("default_sort_dir")  == null ? "asc" : getServletConfig().getInitParameter("default_sort_dir"));
+    servlet_name = config.getServletName();
+    if (tempDir == null) {
+      tempDir = (File) getServletContext().getAttribute( "javax.servlet.context.tempdir" );
+    }
+    query = config.getInitParameter("query");
+    default_page_size = (config.getInitParameter("default_page_size") == null ? 0     : Integer.parseInt(getServletConfig().getInitParameter("default_page_size")));
+    default_sort_name = (config.getInitParameter("default_sort_name")  == null ? "1"   : getServletConfig().getInitParameter("default_sort_name"));
+    default_sort_dir  = (config.getInitParameter("default_sort_dir")  == null ? "asc" : getServletConfig().getInitParameter("default_sort_dir"));
     default_format  = FormatType.JSON;
-    if (getServletConfig().getInitParameter("format")  != null) {
-      if (getServletConfig().getInitParameter("format").equals("xml")) {
+    if (config.getInitParameter("format")  != null) {
+      if (config.getInitParameter("format").equals("xml")) {
         default_format  = FormatType.XML;
       }
     }
@@ -91,6 +97,14 @@ public class DataProvider extends HttpServlet {
   }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+    PrintWriter out = response.getWriter();
+    String query_string = request.getQueryString();
+    String cached_id = CacheSyn.getInstance().getCachedContent(servlet_name, query_string);
+    if (cached_id != null) {
+      response.sendRedirect("datacache?id=" + cached_id);
+      return;
+    }
 
     int page = (!checkParam(request.getParameter("page")) ? 1 : Integer.parseInt(request.getParameter("page")));
     int page_size = (!checkParam(request.getParameter("rp")) ? default_page_size : Integer.parseInt(request.getParameter("rp")));
@@ -134,7 +148,6 @@ public class DataProvider extends HttpServlet {
       mimeType = request.getParameter("mime");
     }
 
-    PrintWriter out = response.getWriter();
     boolean where_exists = false;
     boolean where_exists2 = false;
     String where = "";
@@ -308,6 +321,7 @@ public class DataProvider extends HttpServlet {
       db.close();
 
       if (totalResultsAvailable == 0) totalResultsAvailable = totalResultsReturned;
+      String content = "";
 
       switch (format) {
 
@@ -325,13 +339,14 @@ public class DataProvider extends HttpServlet {
             list.put("default_sort_name", default_sort_name);
             list.put("default_sort_dir", default_sort_dir);
             list.put("where", where);
+            list.put("tempDir", tempDir.getAbsolutePath());
           }
           list.put("total", totalResultsAvailable);
           list.put("page", page);
           list.put("rp", page_size);
           list.put("rows", arr);
           JSONObject o = new JSONObject(list);
-          o.write(out);
+          content = o.toString();
 
           break;
 
@@ -352,6 +367,7 @@ public class DataProvider extends HttpServlet {
             results.setAttribute("default_sort_dir", default_sort_dir);
             results.setAttribute("where", where);
             results.setAttribute("avalues", filter_values);
+            results.setAttribute("tempDir", tempDir.getAbsolutePath());
             results.setAttribute("aoperator", filter_operator);
             for (int i = 0; i < intemplates.length; i++) {
               results.setAttribute("internal_template_" + String.valueOf(i), intemplates[i]);
@@ -389,15 +405,19 @@ public class DataProvider extends HttpServlet {
           }
 
           DOMSource domSource = new DOMSource(doc);
-          StreamResult result = new StreamResult(out);
+          StringWriter stringWriter = new StringWriter();
+          StreamResult result = new StreamResult(stringWriter);
 
           Transformer transformer = tf.newTransformer();
           transformer.setOutputProperty("media-type", mimeType);
           transformer.setOutputProperty("omit-xml-declaration", "yes");
           transformer.transform(domSource, result);
+          content = stringWriter.getBuffer().toString();
 
           break;
       }
+
+      response.sendRedirect("datacache?id=" + CacheSyn.getInstance().setCachedContent(servlet_name, query_string, content, mimeType));
 
     } catch(SQLException e) {
       throw new ServletException(e.toString() + "\nWHERE clause: " + where);
