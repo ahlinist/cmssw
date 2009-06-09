@@ -364,7 +364,7 @@
 
 
 
-<Algorithm name="track:DDPixBarStackLinear">
+<Algorithm name="track:DDPixBarStackLinearGap">
   <rParent name="pixbarladderstack7:PixelBarrelModuleBoxUp"/>
   <String name="ChildName"    value="pixbarladderstack7:PixelBarrelModuleUp"/>
   <Numeric name="Number"      value="[Modules]"/>
@@ -379,7 +379,7 @@
   <Vector name="Center" type="numeric" nEntries="3"> 
     [zero], [zero], [zero] </Vector>
 </Algorithm>
-<Algorithm name="track:DDPixBarStackLinear">
+<Algorithm name="track:DDPixBarStackLinearGap">
   <rParent name="pixbarladderstack7:PixelBarrelReadoutBox"/>
   <String name="ChildName"    value="pixbarladderstack7:PixelBarrelReadout"/>
   <Numeric name="Number"      value="[Modules]"/>
@@ -394,7 +394,7 @@
   <Vector name="Center" type="numeric" nEntries="3">
     [zero], [zero], [zero] </Vector>
 </Algorithm>
-<Algorithm name="track:DDPixBarStackLinear">
+<Algorithm name="track:DDPixBarStackLinearGap">
   <rParent name="pixbarladderstack7:PixelBarrelModuleBoxDown"/>
   <String name="ChildName"    value="pixbarladderstack7:PixelBarrelModuleDown"/>
   <Numeric name="Number"      value="[Modules]"/>
