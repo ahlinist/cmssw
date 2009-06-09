@@ -14,7 +14,15 @@ public class ContextListener implements ServletContextAttributeListener,ServletC
   public void contextInitialized(ServletContextEvent event) {
     this.context = event.getServletContext();
     //CacheSyn.getInstance().setCacheDir((File) context.getAttribute("javax.servlet.context.tempdir"));
-    CacheSyn.getInstance().setCacheDir(new File(context.getRealPath(WebUtils.GetEnv("cache_dir"))));
+    
+    // Get Cache Dir 
+    File cache_dir = new File(context.getRealPath(WebUtils.GetEnv("cache_dir")));
+    
+    // Clean cache dir
+    File[] files = cache_dir.listFiles(); 
+    for (int i = 0; i < files.length; i++) files[i].delete();
+
+    CacheSyn.getInstance().setCacheDir(cache_dir);
     MessageBoardSyn.getInstance();
   }
 
