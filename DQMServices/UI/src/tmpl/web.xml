@@ -46,8 +46,21 @@
     <env-entry>
       <env-entry-name>cache_dir</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <!-- relative to base URL, no preceeding slash, + trailing slash -->
-      <env-entry-value>data/</env-entry-value>
+      <env-entry-value>/data</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>cache_url</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <!-- can be different wrt cache_dir; make it ready for concatenation! -->
+      <env-entry-value>@APP_CACHE_URL@</env-entry-value>
+    </env-entry>
+
+    <env-entry>
+      <env-entry-name>media_url</env-entry-name>
+      <env-entry-type>java.lang.String</env-entry-type>
+      <!-- can be different wrt media/; make it ready for concatenation! -->
+      <env-entry-value>@APP_MEDIA_URL@</env-entry-value>
     </env-entry>
 
     <!-- Listeners go below -->

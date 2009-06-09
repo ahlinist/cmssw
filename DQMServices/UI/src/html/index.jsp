@@ -3,6 +3,7 @@
 
 <%
   MessageUser user = MessageUser.get(request);
+  String mediaurl = WebUtils.GetEnv("media_url");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -12,22 +13,22 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <title>CMS DQM Run Registry</title>
 
-  <link rel="stylesheet" type="text/css" href="media/flexigrid/css/flexigrid/flexigrid.css" />
-  <link rel="stylesheet" type="text/css" href="media/index.css" />
-  <link type="text/css" href="media/smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="<%=mediaurl%>flexigrid/css/flexigrid/flexigrid.css" />
+  <link rel="stylesheet" type="text/css" href="<%=mediaurl%>index.css" />
+  <link type="text/css" href="<%=mediaurl%>smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
 
 
-  <script type="text/javascript" src="media/jquery-1.3.2.min.js"></script>
-  <script type="text/javascript" src="media/jquery-ui-1.7.1.custom.min.js"></script>
-  <script type="text/javascript" src="media/jquery.timers.js"></script>
-  <script type="text/javascript" src="media/jquery.cookie.js"></script>
-  <script type="text/javascript" src="media/jquery.menu.min.js"></script>
-  <script type="text/javascript" src="media/jquery.tooltip.js"></script>
-  <script type="text/javascript" src="media/jquery.json-1.3.js"></script>
-  <script type="text/javascript" src="media/flexigrid/flexigrid.js"></script>
-  <script type="text/javascript" src="media/flot/jquery.flot.pack.js"></script>
-  <script type="text/javascript" src="media/utils.js"></script>
-  <script type="text/javascript" src="media/ui.progressbar.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery-ui-1.7.1.custom.min.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery.timers.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery.cookie.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery.menu.min.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery.tooltip.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>jquery.json-1.3.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>flexigrid/flexigrid.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>flot/jquery.flot.pack.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>utils.js"></script>
+  <script type="text/javascript" src="<%=mediaurl%>ui.progressbar.js"></script>
 
 <script type="text/javascript">
 
@@ -173,9 +174,9 @@
 
         var tags = parseInt(row["RUN_COUNT_TAGS"]) - 1;
         if (tags > 0) {
-          row["RUN_COUNT_TAGS"] = "<img runnumber=\"" + number + "\" src=\"media/plus.png\"/>" +
-                                  "<img runnumber=\"" + number + "\" style=\"display: none\" src=\"media/minus.png\"/>" +
-                                  "<img style=\"display: none\" src=\"media/tagloader.gif\"/>";
+          row["RUN_COUNT_TAGS"] = "<img runnumber=\"" + number + "\" src=\"<%=mediaurl%>plus.png\"/>" +
+                                  "<img runnumber=\"" + number + "\" style=\"display: none\" src=\"<%=mediaurl%>minus.png\"/>" +
+                                  "<img style=\"display: none\" src=\"<%=mediaurl%>tagloader.gif\"/>";
         } else {
           row["RUN_COUNT_TAGS"] = "";
         }
@@ -492,7 +493,7 @@
       toggleAnimation((jQuery.fx.off ? 1 : 0));
     });
 
-    $("#batch_updater_progressbar").progressBar({ barImage: 'media/img/progressbg_red.gif', boxImage: 'media/img/progressbar.gif', showText: true});
+    $("#batch_updater_progressbar").progressBar({ barImage: '<%=mediaurl%>img/progressbg_red.gif', boxImage: '<%=mediaurl%>img/progressbar.gif', showText: true});
 
     var dumpData = function(intpl, tpl, mime) {
 

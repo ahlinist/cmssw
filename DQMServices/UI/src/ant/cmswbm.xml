@@ -8,6 +8,8 @@
     <property name="dbsdqm_url" value="http://localhost:9999"/>
     <property name="app_start_scheduler" value="true"/>
     <property name="db_auth_file" value="test/descriptor/runregistry.config"/>
+    <property name="app_cache_url" value="data/"/>
+    <property name="app_media_url" value="media/"/>
     
     <tstamp>
       <format property="app_deploy_time" pattern="MM/dd/yyyy hh:mm aa"/>
@@ -21,6 +23,8 @@
     <replace file="WEB-INF/web.xml" token="@DBSDQM_URL@" value="${dbsdqm_url}"/>
     <replace file="WEB-INF/web.xml" token="@APP_START_SCHEDULER@" value="${app_start_scheduler}"/>     
     <replace file="WEB-INF/web.xml" token="@APP_DEPLOY_TIME@" value="${app_deploy_time}"/>     
+    <replace file="WEB-INF/web.xml" token="@APP_CACHE_URL@" value="${app_cache_url}"/>     
+    <replace file="WEB-INF/web.xml" token="@APP_MEDIA_URL@" value="${app_media_url}"/>     
 
     <war destfile="dist/${app_url}.war" webxml="WEB-INF/web.xml">
       <fileset dir="html"/>
