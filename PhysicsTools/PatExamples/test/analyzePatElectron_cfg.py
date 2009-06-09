@@ -14,7 +14,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 # source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_2_X_2008-11-03-STARTUP_V7-AODSIM.100.root')
+    fileNames = cms.untracked.vstring(
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/1E2DDC37-EC1A-DE11-BB33-0030487F933D.root'
+   #'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_2_X_2008-11-03-STARTUP_V7-AODSIM.100.root'
+    )
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
