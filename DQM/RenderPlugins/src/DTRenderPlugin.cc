@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.52 2009/05/22 19:05:23 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.53 2009/05/22 19:09:33 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.52 $
-  \date $Date: 2009/05/22 19:05:23 $
+  \version $Revision: 1.53 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -722,6 +722,22 @@ private:
 
         return;
       }
+      if( o.name.find( "ROChannel" ) != std::string::npos )
+      {
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->GetXaxis()->SetNdivisions(13,true);
+        obj->GetYaxis()->SetNdivisions(6,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        //     obj->SetOption("text,colz");
+        obj->SetMarkerSize( 2 );
+        //     gStyle->SetPaintTextFormat("2.0f");
+        c->SetGrid(1,1);
+        return;
+      }
+
+
+
       /*
         if(o.name.find("SetRange_2D") != std::string::npos)
         {
@@ -1020,30 +1036,30 @@ private:
 
   void postDrawTH2( TCanvas *, const DQMNet::CoreObject &o )
     {
-      if(o.name.find("DataIntegritySummary") != std::string::npos)
-      {
-        static TLatex *whm2Label =  new TLatex(-1.5,770.1,"(Wheel -2)");
-        whm2Label->SetTextSize(0.042);
-        whm2Label->Draw("same");
+//       if(o.name.find("DataIntegritySummary") != std::string::npos)
+//       {
+//         static TLatex *whm2Label =  new TLatex(-1.5,770.1,"(Wheel -2)");
+//         whm2Label->SetTextSize(0.042);
+//         whm2Label->Draw("same");
 
-        static TLatex *whm1Label =  new TLatex(-1.5,771.1,"(Wheel -1)");
-        whm1Label->SetTextSize(0.042);
-        whm1Label->Draw("same");
+//         static TLatex *whm1Label =  new TLatex(-1.5,771.1,"(Wheel -1)");
+//         whm1Label->SetTextSize(0.042);
+//         whm1Label->Draw("same");
 
-        static TLatex *wh0Label =  new TLatex(-1.5,772.1,"(Wheel 0)");
-        wh0Label->SetTextSize(0.042);
-        wh0Label->Draw("same");
+//         static TLatex *wh0Label =  new TLatex(-1.5,772.1,"(Wheel 0)");
+//         wh0Label->SetTextSize(0.042);
+//         wh0Label->Draw("same");
 
-        static TLatex *whp1Label =  new TLatex(-1.5,773.1,"(Wheel +1)");
-        whp1Label->SetTextSize(0.042);
-        whp1Label->Draw("same");
+//         static TLatex *whp1Label =  new TLatex(-1.5,773.1,"(Wheel +1)");
+//         whp1Label->SetTextSize(0.042);
+//         whp1Label->Draw("same");
 
-        static TLatex *whp2Label =  new TLatex(-1.5,774.1,"(Wheel +2)");
-        whp2Label->SetTextSize(0.042);
-        whp2Label->Draw("same");
+//         static TLatex *whp2Label =  new TLatex(-1.5,774.1,"(Wheel +2)");
+//         whp2Label->SetTextSize(0.042);
+//         whp2Label->Draw("same");
 
-        return;
-      }
+//         return;
+//       }
 
       if(o.name.find("ROSSummary") != std::string::npos)
       {
@@ -1228,6 +1244,7 @@ private:
 
         return;
       }
+
     }
 
   void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
