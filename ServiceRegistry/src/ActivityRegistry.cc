@@ -137,6 +137,8 @@ edm::ActivityRegistry::connect(ActivityRegistry& iOther)
    preSourceConstructionSignal_.connect(iOther.preSourceConstructionSignal_);
    postSourceConstructionSignal_.connect(iOther.postSourceConstructionSignal_);
 
+   preForkReleaseResourcesSignal_.connect(iOther.preForkReleaseResourcesSignal_);
+   postForkReaquireResourcesSignal_.connect(iOther.postForkReaquireResourcesSignal_);
 }
 
 template<class T>
@@ -259,7 +261,10 @@ edm::ActivityRegistry::copySlotsFrom(ActivityRegistry& iOther)
   
   copySlotsToFrom(preSourceConstructionSignal_,iOther.preSourceConstructionSignal_);
   copySlotsToFromReverse(postSourceConstructionSignal_,iOther.postSourceConstructionSignal_);
-  
+
+  copySlotsToFrom(preForkReleaseResourcesSignal_,iOther.preForkReleaseResourcesSignal_);
+  copySlotsToFromReverse(postForkReaquireResourcesSignal_,iOther.postForkReaquireResourcesSignal_);
+
 }
 
 //
