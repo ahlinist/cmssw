@@ -47,9 +47,9 @@ process.PFTausSelected = cms.EDFilter("PFTauSelector",
 )# Now filtered the tau collection is made 
 
 #copying the Discriminator by Isolation
-from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi import *
-process.thisPFTauDiscriminationByIsolationHighEfficiency = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
-process.thisPFTauDiscriminationByIsolationHighEfficiency.PFTauProducer = 'PFTausSelected' # this tau collection is the one just made above
+#from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi import *
+#process.thisPFTauDiscriminationByIsolationHighEfficiency = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
+#process.thisPFTauDiscriminationByIsolationHighEfficiency.PFTauProducer = 'PFTausSelected' # this tau collection is the one just made above
  
 process.CounterAllEvents = cms.EDAnalyzer("EventCounter", 
 	fileName = cms.untracked.string("skim.root"),
@@ -73,7 +73,7 @@ process.tauFilter = cms.Path(
 	process.IncludedHLTs *
 	process.CounterHTLEvents *
 	process.PFTausSelected *
-        process.thisPFTauDiscriminationByIsolationHighEfficiency *
+#        process.thisPFTauDiscriminationByIsolationHighEfficiency *
 	process.CounterOfflineEvents *
 #	process.IdentifiedTaus *
         process.IdentifiedTauFilter *

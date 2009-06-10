@@ -3,7 +3,7 @@ import copy
 process = cms.Process("TTEffAnalysis")
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(1000)
+        input = cms.untracked.int32(100)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -55,10 +55,18 @@ process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles")
 process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles")
 
 
+
+#copying the Discriminator by Isolation
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
+process.thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
+process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' # this tau collection is the one just made above
+
+
+
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection        = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
-        PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolationHighEfficiency"),
+        PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),
         # Check that Isolation collection below actually matched up with Tau Collection above
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
@@ -90,6 +98,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
 
 process.runEDAna = cms.Path(
 #    process.PFTausSelected*
+    process.thisPFTauDiscriminationByIsolation*
     process.tteffL1GTSeed*
     process.TTEffAnalysis
 ) 
