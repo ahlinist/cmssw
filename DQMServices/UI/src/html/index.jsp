@@ -4,6 +4,7 @@
 <%
   MessageUser user = MessageUser.get(request);
   String mediaurl = WebUtils.GetEnv("media_url");
+	Integer run_number = (request.getParameter("number") == null ? null : Integer.parseInt(request.getParameter("number")));
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -34,7 +35,6 @@
 
   var getTag = {};
   var logoutUser = {};
-  var messageBox = {};
 
   //jQuery.noConflict();
   $(document).ready(function() {
@@ -49,27 +49,6 @@
 
     var subsystems = [<dqm:listSubsystemsJS/>];
     var total = 0;
-
-    $("#messageBox").dialog({
-      autoOpen: false,
-      width: 400,
-      height: 160,
-      modal: true,
-      resizable: false,
-      buttons: {
-        "Close": function() { 
-          $(this).dialog("close"); 
-        },
-      }
-    });
-
-    messageBox = function (line1, line2, caption) {
-      if (line2 == undefined) line2 = ""; 
-      if (caption == "" || caption == undefined) caption = "Message"; 
-      $("#messageBox td.line1").text(line1);
-      $("#messageBox td.line2").text(line2);
-      $("#messageBox").dialog('option', 'title', caption).dialog("open");
-    };
 
     logoutUser = function() {
       frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
@@ -163,7 +142,6 @@
       total = data.total;
 
       $.each(data.rows, function(i, row) {
-
         var number = parseInt(row["RUN_NUMBER"]);
 
         row.id = number;
@@ -241,6 +219,10 @@
         toggleRows($(this).attr("runnumber"));
       }).css("cursor", "pointer");
 
+			<% if (run_number != null) { %>
+				$("#row<%=run_number%>").addClass("trSelected");
+			<% } %>
+
     };
 
     var timerToggle = function () {
@@ -297,7 +279,7 @@
         messageBox("Run not selected", "Select a run and try again.");
         return;
       }
-      $.showRunEditForm(number);
+      window.location = "edit.jsp?number=" + number;
     }
 	
     var summeryValues = function () {
@@ -351,6 +333,8 @@
 	  $("div.button_summary").attr("run_number", number);
       editPress();
     }
+
+		var max_table_height = window.innerHeight - 55;
 
     /* DataTable default preferences */
     var fp = {
@@ -418,7 +402,7 @@
       sortorder: "desc",
       rp: 20,
       rpOptions: [10,15,20,25,30,35,40,45,50],
-      height: 480,
+      height: max_table_height,
       savePrefix: 'flex',
       singleSelect: true,
       width: 'auto',
@@ -426,6 +410,7 @@
       useRp: true,
       showTableToggleBtn: true,
       title: '',
+			restoreStateOnce: <%=(run_number == null ? 0 : 1)%>,
       errormsg: 'Database error',
       buttons : [
         {name: 'Manual Refresh', bclass: 'refresh', dclass: 'button_refresh', onpress : timerToggle },
@@ -477,10 +462,6 @@
       hoverOpenDelay: 200 
     });
 
-    $("#messageboardmenu").menu({
-      hoverOpenDelay: 200 
-    });
-
     $("#helpmenu").menu({
       hoverOpenDelay: 200 
     });
@@ -488,6 +469,24 @@
     $("#optionsmenu").menu({
       hoverOpenDelay: 200 
     });
+
+		if (window.name == "rrindex") {
+			$("a.frames_option").parent().click(function() {
+				window.parent.location = "index.jsp";
+			});
+			$("a.frames_option").text("Turn frames off");
+			$("#statusbar").hide();
+			$("#messageboardmenublock").hide();
+		} else {
+			$("a.frames_option").parent().click(function() {
+				window.location = "index_frames.html";
+			});
+			$("a.frames_option").text("Turn frames on");
+			$("#messageboardmenu").menu({
+				hoverOpenDelay: 200 
+			});
+		}
+
     toggleAnimation($.cookie("animation"));
     $("div.menu-item > a.animation_option").parent().click(function() { 
       toggleAnimation((jQuery.fx.off ? 1 : 0));
@@ -607,6 +606,20 @@
       <td id="logo">CMS DQM Run Registry</td>
       <td id="login">
 
+				<span id="messageboardmenublock">
+
+					<img style="display: none; vertical-align: middle" id="chat_notification" src="<%=mediaurl%>img/attention.png" title="Messages available!"/>
+
+					<span id="messageboardmenu"><a href="#" id="chat_open_menu">Message Board</a>
+						<ul>
+							<li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
+						</ul>
+					</span>
+
+					&nbsp;|&nbsp;
+
+				</span>
+
 <% if (user.hasLoggedRole(WebUtils.EXPERT)) { %>
 
         <span id="batch_updater" style="display: none;" >
@@ -627,20 +640,11 @@
 
 <% } %>        
 
-        <span id="messageboardmenu"><a href="#" id="chat_notification"> Message Board </a>
-          <ul>
-            <li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
-          </ul>
-        </span>
-
-
-        &nbsp;|&nbsp;
-
         <a href="#" onclick="drawChart()">Plot Chart</a>
 
         &nbsp;|&nbsp;
 		
-		<a id="advanced_search" href="#" onClick="$.showSearchForm()">Advanced search</a>
+				<a id="advanced_search" href="#" onClick="$.showSearchForm()">Advanced search</a>
 
         &nbsp;|&nbsp;
 
@@ -660,6 +664,7 @@
         <span id="optionsmenu"><a href="#">Options</a>
           <ul>
             <li><a href="#" class="animation_option">Animation</a></li>
+            <li><a href="#" class="frames_option">Frames</a></li>
             <li><a href="cache.jsp" target="_blank">View cache</a></li>
           </ul>
         </span>
@@ -687,30 +692,20 @@
     </tr>
   </table>
 
+  <table id="flex1"></table>
+
   <jsp:include page="search.jsp" />
-  <jsp:include page="edit.jsp" />
   <jsp:include page="summary.jsp" />
   <jsp:include page="plot.jsp" />
   <jsp:include page="chat.jsp" />
+  <jsp:include page="messageBox.html" />
 
-  <table id="flex1"></table>
-  <br/>
-  <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
+	<div id="statusbar">
+		<br/>
+		<div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
+	</div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
-
-  <div id="messageBox">
-    <table>
-      <tr>
-        <td width="20">
-          <span class="ui-icon ui-icon-alert" style="width: 16px; height: 16px;"></span></td>
-        <td class="line1" style="color: red"></td>
-      </tr>
-      <tr>
-        <td colspan="2" class="line2"></td>
-      </tr>
-    </table>
-  </div>
 
 </body>
 </html>
