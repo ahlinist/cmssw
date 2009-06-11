@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.26 2009/05/07 10:26:10 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.27 2009/05/25 00:12:00 bachtis Exp $
 //
 //
 
@@ -99,13 +99,12 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<reco::GsfElectronCollection> electronTaus;
 
    if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-      try{
-        iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
-      }catch(...){ cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;}
-      try{
-    iEvent.getByLabel(MCTaus_, mcTaus);
-    }catch(...){}
-      loop(iEvent,iSetup,*PFTaus);
+     iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
+     if(!thePFTauDiscriminatorByIsolation.isValid()) {
+       cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
+     }
+     iEvent.getByLabel(MCTaus_, mcTaus);
+     loop(iEvent,iSetup,*PFTaus);
    }
    else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
      loop(iEvent,iSetup, *caloTaus);
