@@ -27,6 +27,9 @@ bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
 		if( o.name.find( "ESOccupancyTask" ) != std::string::npos ){
 			return true;
 		}
+		if( o.name.find( "ESIntegrityClient" ) != std::string::npos ){
+			return true;
+		}
 	}
 
 	return false;
@@ -105,12 +108,24 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 
 	//  int nbx = obj->GetNbinsX();
 	//  int nby = obj->GetNbinsY();
+	int colorbar[6] = {1,2,3,4,5,6};
 
 	gStyle->SetPaintTextFormat();
 
 	gStyle->SetOptStat(kFALSE);
 	obj->SetStats(kFALSE);
 	gPad->SetLogy(kFALSE);
+
+	if( name.find( "Integrity Summary" ) != std::string::npos ) {
+		gStyle->SetPalette(6,colorbar);
+		obj->SetMinimum(0.5);
+		obj->SetMaximum(6.5);
+		obj->SetOption("colz");
+		gPad->SetRightMargin(0.15);
+		gStyle->SetPaintTextFormat("+g");
+		return;
+	}
+
 
 	if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
 		gStyle->SetPalette(1);
