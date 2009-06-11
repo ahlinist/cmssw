@@ -34,11 +34,14 @@ struct Graphs {
 struct DataGraphs {
   DataGraphs(const char *filename, const char *plotdir, const char *format, bool print):
     plotter(new Plotter(filename)), plotDir(plotdir) {
+    std::cout << "Creating DataGraphs for file " << filename << std::endl;
     plotter->SetFormat(format);
     plotter->SetSave(print);
     this->format = format;
     this->print = print;
   }
+  DataGraphs():
+    plotter(0), plotDir(""), format(""), print(false) {}
 
   ~DataGraphs() {delete plotter;}
   Plotter *plotter;
@@ -87,9 +90,13 @@ void plotL1Efficiency(bool print=false) {
   }
   else {
     DataGraphs plots("tteffAnalysis.root", plotDir, format, print);
-    //DataGraphs plots("tteffAnalysis-ztautau-pfclusters.root", plotDir, format, print);
+    DataGraphs dummy;
 
     plots.plot();
+
+    combineDataGraphs(plots.PFTauEt, dummy.PFTauEt, plotDir, "PFTauEt", format, print); 
+    combineDataGraphs(plots.PFTauEta, dummy.PFTauEta, plotDir, "PFTauEta", format, print);
+    combineDataGraphs(plots.PFClusterRMS, dummy.PFClusterRMS, plotDir, "PFClusterRMS", format, print); 
   }
 }
 
@@ -114,13 +121,17 @@ void DataGraphs::plot() {
 
   gStyle->SetOptFit(1111);
 
-  TCut DenEtaCut = ""; //"abs(PFTauEta) < 2.5";
-  TCut DenEtCut = ""; //"PFTauEt>10.";
+  TCut DenEtaCut = "";
+  TCut DenEtCut = "";
+  TCut discriminator("PFTauIso == 1.0");
+
+  //DenEtaCut = "abs(PFTauEta) < 2.5";
+  //DenEtCut = "PFTauEt > 10.";
 
   // PFTau Et
   if(pftauet) {
     plotter->SetXTitle("PF-#tau E_{T} (GeV)");
-    PFTauEt.plotPF(plotter, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut);
+    PFTauEt.plotPF(plotter, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut && discriminator);
     PFTauEt.combinePlots("PFTauEt", plotDir, format, print);
     PFTauEt.fit("E_{T}", 5., 140., l, "PFTauEt", plotDir, format, print);
   }
@@ -128,14 +139,14 @@ void DataGraphs::plot() {
   // PFTau Eta
   if(pftaueta) {
     plotter->SetXTitle("PF-#tau #eta");
-    PFTauEta.plotPF(plotter, plotDir, "PFTauEta", "PFTauEta", 50, -2.5, 2.5, DenEtCut);
+    PFTauEta.plotPF(plotter, plotDir, "PFTauEta", "PFTauEta", 50, -2.5, 2.5, DenEtCut && discriminator);
     PFTauEta.combinePlots("PFTauEta", plotDir, format, print);
   }
 
   // PFTau Energy
   if(pftauenergy) {
     plotter->SetXTitle("PF-#tau energy (GeV)");
-    PFTauEnergy.plotPF(plotter, plotDir, "PFTauEnergy", "PFTauEnergy", 50, 0, 200, DenEtaCut);
+    PFTauEnergy.plotPF(plotter, plotDir, "PFTauEnergy", "PFTauEnergy", 50, 0, 200, DenEtaCut && discriminator);
     PFTauEnergy.combinePlots("PFTauEnergy", plotDir, format, print);
   }
 
@@ -143,17 +154,17 @@ void DataGraphs::plot() {
   TCut l2matched = "hasMatchedL2Jet";
   if(l2clusterRms) {
     plotter->SetXTitle("L2 cluster  #DeltaR RMS");
-    L2ClusterRMS.plotPF(plotter, plotDir, "L2ClusterDeltaRRMS", "L2ClusterRMS", 50, 0, 0.5, l2matched);
+    L2ClusterRMS.plotPF(plotter, plotDir, "L2ClusterDeltaRRMS", "L2ClusterRMS", 50, 0, 0.5, l2matched && disrciminator);
     L2ClusterRMS.combinePlots("L2ClusterRMS", plotDir, format, print);
   }
   if(simpleClusterRms) {
     plotter->SetXTitle("Simple cluster  #DeltaR RMS");
-    SimpleClusterRMS.plotPF(plotter, plotDir, "PFTauSimpleClusterDrRMS", "SimpleClusterRMS", 50, 0, 0.5, TCut(""));
+    SimpleClusterRMS.plotPF(plotter, plotDir, "PFTauSimpleClusterDrRMS", "SimpleClusterRMS", 50, 0, 0.5, discriminator);
     SimpleClusterRMS.combinePlots("SimpleClusterRMS", plotDir, format, print);
   }
   if(pfClusterRms) {
     plotter->SetXTitle("PFCluster  #DeltaR RMS");
-    PFClusterRMS.plotPF(plotter, plotDir, "PFClusterDrRMS", "PFClusterRMS", 50, 0, 0.25, TCut(""));
+    PFClusterRMS.plotPF(plotter, plotDir, "PFClusterDrRMS", "PFClusterRMS", 50, 0, 0.5, discriminator);
     PFClusterRMS.combinePlots("PFClusterRMS", plotDir, format, print);
   }
   
@@ -174,20 +185,30 @@ void DataGraphs::plot() {
 
 TLegend *combine2Plots(MyGraph& plot1, MyGraph& plot2,
                        const char *legend1=0, const char *legend2=0) {
-  plot1.graph->SetMinimum(0);
-  plot1.graph->SetMaximum(1.1);
-  plot1.graph->Draw("PA");
-  plot1.graph->SetMarkerColor(kBlack);
-  plot2.graph->Draw("P same");
-  plot2.graph->SetMarkerColor(kRed);
+  if(plot1.graph) {
+    plot1.graph->SetMinimum(0);
+    plot1.graph->SetMaximum(1.1);
+    plot1.graph->Draw("PA");
+    plot1.graph->SetMarkerColor(kBlack);
+    if(plot2.graph) {
+      plot2.graph->Draw("P same");
+      plot2.graph->SetMarkerColor(kRed);
+    }
+  }
+  else if (plot2.graph) {
+    plot2.graph->SetMinimum(0);
+    plot2.graph->SetMaximum(1.1);
+    plot2.graph->Draw("PA");
+    plot2.graph->SetMarkerColor(kRed);
+  }
 
   TLegend *leg = plot1.legend;
   if(!leg)
     leg = new TLegend(0.4,0.17,0.7,0.33);
   leg->SetFillColor(kWhite);
   if(legend1 || legend2) {
-    if(legend1) leg->AddEntry(plot1.graph, legend1,"p");
-    if(legend2) leg->AddEntry(plot2.graph, legend2,"p");
+    if(legend1 && plot1.graph) leg->AddEntry(plot1.graph, legend1,"p");
+    if(legend2 && plot2.graph) leg->AddEntry(plot2.graph, legend2,"p");
     leg->Draw();
   }
   return leg;
@@ -218,11 +239,11 @@ TLegend *combine4Plots(MyGraph& plot1, MyGraph& plot2, MyGraph& plot3, MyGraph& 
 }
 
 void combineDataGraphs(Graphs& ztt, Graphs& qcd, TString plotDir, const char *name, const char *format, bool print) {
-  if(!(ztt.L1Jet_Emu.graph && qcd.L1Jet_Emu.graph))
-    return;
+  //if(!(ztt.L1Jet_Emu.graph && qcd.L1Jet_Emu.graph))
+  //  return;
 
   const char *leg1 = "Z#rightarrow #tau#tau          "; // Quick&dirty: add spaces so that the text becomes smaller
-  const char *leg2 = "QCD";
+  const char *leg2 = "QCD            ";
 
   combine2Plots(ztt.L1Jet_Emu, qcd.L1Jet_Emu, leg1, leg2);
   if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Emu_Ztt_vs_QCD%s", name, format));
