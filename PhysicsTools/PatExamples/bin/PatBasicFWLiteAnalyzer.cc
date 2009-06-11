@@ -17,6 +17,14 @@
 
 int main(int argc, char* argv[]) 
 {
+  // ----------------------------------------------------------------------
+  // First Part: 
+  //
+  //  * enable the AutoLibraryLoader 
+  //  * book the histograms of interest 
+  //  * open the input file
+  // ----------------------------------------------------------------------
+
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
@@ -28,6 +36,16 @@ int main(int argc, char* argv[])
   
   // open input file (can be located on castor)
   TFile* inFile = TFile::Open( "dcap://dcache-ses-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/rwolf/ttbar/patTuple_PATv2_ttbar_madgraph_1.root" );
+
+  // ----------------------------------------------------------------------
+  // Second Part: 
+  //
+  //  * loop the events in the input file 
+  //  * receive the collections of interest via fwlite::Handle
+  //  * fill the histograms
+  //  * after the loop close the input file
+  // ----------------------------------------------------------------------
+
   // loop the events
   unsigned int iEvent=0;
   fwlite::Event event(inFile);
@@ -54,6 +72,14 @@ int main(int argc, char* argv[])
   }  
   // close input file
   inFile->Close();
+
+  // ----------------------------------------------------------------------
+  // Third Part: 
+  //
+  //  * open the output file 
+  //  * write the histograms to the output file
+  //  * close the output file
+  // ----------------------------------------------------------------------
   
   //open output file
   TFile outFile( "analyzePatBasics.root", "recreate" );
@@ -64,6 +90,12 @@ int main(int argc, char* argv[])
   muonPhi_->Write( );
   outFile.Close();
   
+  // ----------------------------------------------------------------------
+  // Fourth Part: 
+  //
+  //  * never forgett to free the memory of the histograms
+  // ----------------------------------------------------------------------
+
   // free allocated space
   delete muonPt_;
   delete muonEta_;
