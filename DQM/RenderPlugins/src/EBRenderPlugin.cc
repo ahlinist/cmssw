@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.112 2009/05/22 19:05:23 lat Exp $
+// $Id: EBRenderPlugin.cc,v 1.113 2009/05/22 19:09:33 lat Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.112 $
-  \date $Date: 2009/05/22 19:05:23 $
+  \version $Revision: 1.113 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -361,7 +361,10 @@ private:
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
 
-      if( name.find( "EBMM digi number profile" ) != std::string::npos )
+      if( name.find( "EBMM digi number profile" ) != std::string::npos ||
+          name.find( "EBLT laser L1" ) != std::string::npos ||
+          ( name.find( "EBTPT test pulse amplitude" ) != std::string::npos && name.find( "summary" ) != std::string::npos ) ||
+          name.find( "EBPOT pedestal G12 mean" ) || name.find( "EBPOT pedestal G12 rms" ) )
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
@@ -690,7 +693,7 @@ private:
       if ( nbx == 10 ) gPad->SetLogy(kFALSE);
       if ( nbx == 1700 ) gPad->SetLogy(kFALSE);
 
-      if( name.find( "EVTTYPE" ) != std::string::npos )
+      if( name.find( "EVTTYPE" ) != std::string::npos ) 
       {
         gPad->SetBottomMargin(0.4);
         obj->GetXaxis()->LabelsOption("v");
