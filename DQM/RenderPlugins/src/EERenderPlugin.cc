@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.129 2009/05/22 19:05:23 lat Exp $
+// $Id: EERenderPlugin.cc,v 1.130 2009/05/22 19:09:33 lat Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.129 $
-  \date $Date: 2009/05/22 19:05:23 $
+  \version $Revision: 1.130 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -466,7 +466,10 @@ private:
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
 
-      if( name.find( "EEMM digi number profile" ) != std::string::npos )
+      if( name.find( "EEMM digi number profile" ) != std::string::npos ||
+          name.find( "EELT laser L1" ) != std::string::npos ||
+          ( name.find( "EETPT test pulse amplitude" ) != std::string::npos && name.find( "summary" ) != std::string::npos ) ||
+          name.find( "EEPOT pedestal G12 mean" ) != std::string::npos || name.find( "EEPOT pedestal G12 rms" ) != std::string::npos )
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
