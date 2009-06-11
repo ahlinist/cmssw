@@ -15,31 +15,44 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 # source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/1E2DDC37-EC1A-DE11-BB33-0030487F933D.root'
-   #'file:/afs/cern.ch/cms/PRS/top/cmssw-data/relval200-for-pat-testing/FullSimTTBar-2_2_X_2008-11-03-STARTUP_V7-AODSIM.100.root'
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/1E2DDC37-EC1A-DE11-BB33-0030487F933D.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/32BEC84F-DE1A-DE11-9602-0030487EB003.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/32EB7039-DE1A-DE11-97EE-003048724749.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/46ECF224-E81A-DE11-99A0-0030487D7B79.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/8AC19B36-EC1A-DE11-99EA-0030487E4B8D.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/B4899F1C-E81A-DE11-92FF-0030487F1797.root',
+    '/store/mc/Summer08/Zee_M20/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0005/E6298150-E71A-DE11-A7FD-0030487F92A5.root'    
     )
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = cms.string('STARTUP_V7::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
-# PAT Layer 0+1
+# produce PAT Layer 1
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-#process.content = cms.EDAnalyzer("EventContentAnalyzer")
-# Switch off old trigger matching
+# switch old trigger matching off
 from PhysicsTools.PatAlgos.tools.trigTools import switchOffTriggerMatchingOld
 switchOffTriggerMatchingOld( process )
-
-process.load("PhysicsTools.PatExamples.PatElectronAnalyzer_cfi")
 
 process.TFileService=cms.Service("TFileService",
     fileName=cms.string("analyzePatElectron.root")
 )
 
+# uncomment this line to calcultae the efficiency 
+# for electron reconstruction from the simulation
+process.load("PhysicsTools.PatExamples.PatElectronAnalyzer_cfi")
+# analysis = cms.Sequence( analyzePatElectron )
+
+# uncomment this line to calculate the efficiency
+# for electronID from the tag and probe method
+process.load("PhysicsTools.PatExamples.tagAndProbeAnalysis_cff")
+# process.analysis = cms.Sequence( process.tagAndProbeAnalysis )
+
 process.p = cms.Path(
     process.patDefaultSequence *
-    process.analyzePatElectron
+    process.analyzePatElectron *
+    process.tagAndProbeAnalysis
 )
