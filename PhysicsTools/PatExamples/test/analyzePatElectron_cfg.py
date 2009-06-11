@@ -41,15 +41,13 @@ process.TFileService=cms.Service("TFileService",
     fileName=cms.string("analyzePatElectron.root")
 )
 
-# uncomment this line to calcultae the efficiency 
-# for electron reconstruction from the simulation
+# calcultae the efficiency for electron reconstruction
+# from the simulation
 process.load("PhysicsTools.PatExamples.PatElectronAnalyzer_cfi")
-# analysis = cms.Sequence( analyzePatElectron )
 
-# uncomment this line to calculate the efficiency
-# for electronID from the tag and probe method
+# calculate the efficiency for electronID from a tag
+# and probe method
 process.load("PhysicsTools.PatExamples.tagAndProbeAnalysis_cff")
-# process.analysis = cms.Sequence( process.tagAndProbeAnalysis )
 
 process.p = cms.Path(
     process.patDefaultSequence *
