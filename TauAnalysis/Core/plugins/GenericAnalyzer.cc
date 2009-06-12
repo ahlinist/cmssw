@@ -6,7 +6,6 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 
 #include "FWCore/Utilities/interface/InputTag.h"
 
@@ -39,13 +38,13 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
        cfgFilter.exists("src_individual") ) {
     edm::ParameterSet cfgFilter_cumulative = cfgFilter;
     cfgFilter_cumulative.addParameter<edm::InputTag>("src", cfgFilter.getParameter<edm::InputTag>("src_cumulative"));
-    filter_cumulative_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter_cumulative);
+    filterPlugin_cumulative_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter_cumulative);
     edm::ParameterSet cfgFilter_individual = cfgFilter;
     cfgFilter_individual.addParameter<edm::InputTag>("src", cfgFilter.getParameter<edm::InputTag>("src_individual"));
-    filter_individual_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter_individual);
+    filterPlugin_individual_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter_individual);
   } else {
-    filter_cumulative_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter);
-    filter_individual_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter);
+    filterPlugin_cumulative_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter);
+    filterPlugin_individual_ = EventSelectorPluginFactory::get()->create(filterType, cfgFilter);
   }
 
   ++filterId_;
@@ -55,81 +54,74 @@ GenericAnalyzer::analysisSequenceEntry_filter::analysisSequenceEntry_filter(cons
 
 GenericAnalyzer::analysisSequenceEntry_filter::~analysisSequenceEntry_filter()
 {
-  delete filter_cumulative_;
-  delete filter_individual_;
+  delete filterPlugin_cumulative_;
+  delete filterPlugin_individual_;
 }
 
 void GenericAnalyzer::analysisSequenceEntry_filter::print() const
 {
   std::cout << "<GenericAnalyzer::analysisSequenceEntry_filter::print>:" << std::endl; 
-  std::cout << " filter_cumulative = " << filter_cumulative_ << std::endl;
-  std::cout << " filter_individual = " << filter_individual_ << std::endl;
+  std::cout << " filterPlugin_cumulative = " << filterPlugin_cumulative_ << std::endl;
+  std::cout << " filterPlugin_individual = " << filterPlugin_individual_ << std::endl;
   std::cout << " filterId = " << filterId_ << std::endl;
 }
 
-bool GenericAnalyzer::analysisSequenceEntry_filter::filter_cumulative(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool GenericAnalyzer::analysisSequenceEntry_filter::filter_cumulative(const edm::Event& evt, const edm::EventSetup& es)
 {
-  edm::Event* iEvent_nonConst = const_cast<edm::Event*>(&iEvent);
-  return (*filter_cumulative_)(*iEvent_nonConst, iSetup);
+  edm::Event* evt_nonConst = const_cast<edm::Event*>(&evt);
+  return (*filterPlugin_cumulative_)(*evt_nonConst, es);
 }
 
-bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool GenericAnalyzer::analysisSequenceEntry_filter::filter_individual(const edm::Event& evt, const edm::EventSetup& es)
 {
-  edm::Event* iEvent_nonConst = const_cast<edm::Event*>(&iEvent);
-  return (*filter_individual_)(*iEvent_nonConst, iSetup);
+  edm::Event* evt_nonConst = const_cast<edm::Event*>(&evt);
+  return (*filterPlugin_individual_)(*evt_nonConst, es);
 }
 
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-GenericAnalyzer::analysisSequenceEntry_histManagers::analysisSequenceEntry_histManagers(const std::string& name , 
-											const std::list<edm::ParameterSet>& cfgHistManagers)
+GenericAnalyzer::analysisSequenceEntry_analyzer::analysisSequenceEntry_analyzer(const std::string& name , 
+										const std::list<edm::ParameterSet>& cfgAnalyzers)
   : analysisSequenceEntry(name)
 {
-  for ( std::list<edm::ParameterSet>::const_iterator cfgHistManager = cfgHistManagers.begin(); 
-	cfgHistManager != cfgHistManagers.end(); ++cfgHistManager ) {
-    std::string histManagerType = cfgHistManager->getParameter<std::string>("pluginType");
-    HistManagerBase* histManager = HistManagerPluginFactory::get()->create(histManagerType, *cfgHistManager);
-    histManagers_.push_back(histManager);
+  for ( std::list<edm::ParameterSet>::const_iterator cfgAnalyzer = cfgAnalyzers.begin(); 
+	cfgAnalyzer != cfgAnalyzers.end(); ++cfgAnalyzer ) {
+    std::string analyzerType = cfgAnalyzer->getParameter<std::string>("pluginType");
+    AnalyzerPluginBase* analyzer = AnalyzerPluginFactory::get()->create(analyzerType, *cfgAnalyzer);
+    analyzerPlugins_.push_back(analyzer);
   }
 
   //print();
 }
 
-GenericAnalyzer::analysisSequenceEntry_histManagers::~analysisSequenceEntry_histManagers()
+GenericAnalyzer::analysisSequenceEntry_analyzer::~analysisSequenceEntry_analyzer()
 {
-  for ( std::list<HistManagerBase*>::const_iterator histManager = histManagers_.begin();
-	histManager != histManagers_.end(); ++histManager ) {
-    delete (*histManager);
+  for ( std::list<AnalyzerPluginBase*>::const_iterator analyzer = analyzerPlugins_.begin();
+	analyzer != analyzerPlugins_.end(); ++analyzer ) {
+    delete (*analyzer);
   }
 }
 
-void GenericAnalyzer::analysisSequenceEntry_histManagers::print() const
+void GenericAnalyzer::analysisSequenceEntry_analyzer::print() const
 {
-  std::cout << "<GenericAnalyzer::analysisSequenceEntry_histManagers::print>:" << std::endl;
-  //vstring histManagerNames;
-  //for ( std::list<HistManagerBase*>::const_iterator histManager = histManagers_.begin();
-  //  	  histManager != histManagers_.end(); ++histManager ) {
-  //  histManagerNames.push_back(std::string(histManager));
-  //}
-  //std::cout << " histManagers = " << format_vstring(histManagerNames) << std::endl;
-  //std::cout << std::endl;
+  std::cout << "<GenericAnalyzer::analysisSequenceEntry_analyzer::print>:" << std::endl;
 }
 
-void GenericAnalyzer::analysisSequenceEntry_histManagers::beginJob(const edm::EventSetup& iSetup)
+void GenericAnalyzer::analysisSequenceEntry_analyzer::beginJob()
 {
-  for ( std::list<HistManagerBase*>::const_iterator histManager = histManagers_.begin();
-	histManager != histManagers_.end(); ++histManager ) {
-    (*histManager)->bookHistograms(iSetup);
+  for ( std::list<AnalyzerPluginBase*>::const_iterator analyzer = analyzerPlugins_.begin();
+	analyzer != analyzerPlugins_.end(); ++analyzer ) {
+    (*analyzer)->beginJob();
   }
 }
 
-void GenericAnalyzer::analysisSequenceEntry_histManagers::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
-  for ( std::list<HistManagerBase*>::const_iterator histManager = histManagers_.begin();
-	histManager != histManagers_.end(); ++histManager ) {
-    (*histManager)->fillHistograms(iEvent, iSetup);
+  for ( std::list<AnalyzerPluginBase*>::const_iterator analyzer = analyzerPlugins_.begin();
+	analyzer != analyzerPlugins_.end(); ++analyzer ) {
+    (*analyzer)->analyze(evt, es);
   }
 }
 
@@ -139,31 +131,25 @@ void GenericAnalyzer::analysisSequenceEntry_histManagers::analyze(const edm::Eve
 
 void GenericAnalyzer::addFilter(const std::string& filterName, const vstring& saveRunEventNumbers)
 {
-  //std::cout << "<GenericAnalyzer::addFilter>:" << std::endl;
-  //std::cout << " filterName = " << filterName << std::endl;
-
   std::map<std::string, edm::ParameterSet>::const_iterator it = cfgFilters_.find(filterName);
   if ( it != cfgFilters_.end() ) {
     edm::ParameterSet cfgFilter = it->second;
-
+    
     std::string filterTitle = ( cfgFilter.exists("title") ) ? cfgFilter.getParameter<std::string>("title") : filterName;
-
+    
     analysisSequenceEntry_filter* entry = new analysisSequenceEntry_filter(filterName, filterTitle, cfgFilter, cfgError_);
     analysisSequence_.push_back(entry);
   } else {
-    edm::LogError ("GenericAnalyzer::addFilter") << " Failed to access configuration parameter for filter = " << filterName
-						 << " --> skipping !!";
+    edm::LogError("GenericAnalyzer::addFilter") << " Failed to access configuration parameter for filter = " << filterName
+						<< " --> skipping !!";
     cfgError_ = 1;
   }
 }
 
 std::string capitalizeFirstCharacter(const std::string& input)
 {
-  //std::cout << "<capitalizeFirstCharacter>:" << std::endl;
-  //std::cout << " input = " << input << std::endl;
   std::string output = input;
   if ( output != "" ) std::transform(output.begin(), ++output.begin(), output.begin(), ::toupper);
-  //std::cout << " output = " << output << std::endl;
   return output;
 }
 
@@ -176,65 +162,54 @@ std::string dqmSubDirectoryName_filter(const std::string& afterFilterName, const
   return subDirName;
 }
 
-void GenericAnalyzer::addHistManagers(const vstring& histManagerNames, 
-				     const std::string& afterFilterName, const std::string& beforeFilterName,
-				     const vstring& replaceCommands)
+void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames, 
+				   const std::string& afterFilterName, const std::string& beforeFilterName,
+				   const vstring& replaceCommands)
 {
-  //std::cout << "<GenericAnalyzer::addHistManagers>:" << std::endl;
+  std::list<edm::ParameterSet> cfgAnalyzers;
 
-  std::list<edm::ParameterSet> cfgHistManagers;
+  for ( vstring::const_iterator analyzerName = analyzerNames.begin();
+	analyzerName != analyzerNames.end(); ++analyzerName ) {
 
-  for ( vstring::const_iterator histManagerName = histManagerNames.begin();
-	histManagerName != histManagerNames.end(); ++histManagerName ) {
-    //std::cout << " histManagerName = " << (*histManagerName) << std::endl;
-
-    std::map<std::string, edm::ParameterSet>::const_iterator it = cfgHistManagers_.find(*histManagerName);
-    if ( it != cfgHistManagers_.end() ) {
-      edm::ParameterSet cfgHistManager = it->second;
+    std::map<std::string, edm::ParameterSet>::const_iterator it = cfgAnalyzers_.find(*analyzerName);
+    if ( it != cfgAnalyzers_.end() ) {
+      edm::ParameterSet cfgAnalyzer = it->second;
       
       for ( vstring::const_iterator replaceCommand = replaceCommands.begin();
 	    replaceCommand != replaceCommands.end(); ++replaceCommand ) {
-	//std::cout << " replaceCommand = " << (*replaceCommand) << std::endl;
 	int errorFlag;
 	std::string replaceCommand_noWhiteSpace = replace_string(*replaceCommand, " ", "", 0, UINT_MAX, errorFlag);
-	//std::cout << " replaceCommand_noWhiteSpace = " << replaceCommand_noWhiteSpace << std::endl;
 
-	std::string keyword = std::string(*histManagerName).append(".");
-	//std::cout << " keyword = " << keyword << std::endl;
+	std::string keyword = std::string(*analyzerName).append(".");
 	if ( replaceCommand_noWhiteSpace.find(keyword) != std::string::npos ) {
 	  std::string replaceCommand_noKeyword = replace_string(replaceCommand_noWhiteSpace, keyword, "", 0, UINT_MAX, errorFlag);
-	  //std::cout << " replaceCommand_noKeyword = " << replaceCommand_noKeyword << std::endl; 
-	  //std::cout << " (replaceCommand_noKeyword.length() - 1) = " << (replaceCommand_noKeyword.length() - 1) << std::endl;
 
 	  size_t posAssignmentOperator = replaceCommand_noKeyword.find("=");
-	  //std::cout << " posAssignmentOperator = " << posAssignmentOperator << std::endl;
 	  if ( posAssignmentOperator == std::string::npos ||
 	       !(posAssignmentOperator >= 1 && posAssignmentOperator < (replaceCommand_noKeyword.length() - 1)) ) {
-	    edm::LogError ("GenericAnalyzer::addHistManagers") << " Failed to parse replaceCommand = " << (*replaceCommand)
-							      << " --> skipping !!";
+	    edm::LogError("GenericAnalyzer::addAnalyzers") << " Failed to parse replaceCommand = " << (*replaceCommand)
+							   << " --> skipping !!";
 	    cfgError_ = 1;
 	    continue;
 	  }
 	
 	  std::string leftHandSide = std::string(replaceCommand_noKeyword, 0, posAssignmentOperator);
-	  //std::cout << " leftHandSide = " << leftHandSide << std::endl;
 	  std::string rightHandSide = std::string(replaceCommand_noKeyword, posAssignmentOperator + 1);
-	  //std::cout << " rightHandSide = " << rightHandSide << std::endl;
 
 //--- check that parameter that is to be replaced
 //    exists in configuration parameter set 
 //    and is defined to be a supported type
 //    (so far, only std::string and edm::InputTag are supported types
 //     for configuration parameter replacements)
-	  if ( cfgHistManager.existsAs<std::string>(leftHandSide) ) {
-	    cfgHistManager.addParameter<std::string>(leftHandSide, rightHandSide);
-	  } else if ( cfgHistManager.existsAs<edm::InputTag>(leftHandSide) ) {
+	  if ( cfgAnalyzer.existsAs<std::string>(leftHandSide) ) {
+	    cfgAnalyzer.addParameter<std::string>(leftHandSide, rightHandSide);
+	  } else if ( cfgAnalyzer.existsAs<edm::InputTag>(leftHandSide) ) {
 	    edm::InputTag rightHandSide_inputTag = rightHandSide;
-	    cfgHistManager.addParameter<edm::InputTag>(leftHandSide, rightHandSide_inputTag);
+	    cfgAnalyzer.addParameter<edm::InputTag>(leftHandSide, rightHandSide_inputTag);
 	  } else {
-	    edm::LogError ("GenericAnalyzer::addHistManagers") << " Configuration parameter to be replaced = " << leftHandSide 
-							       << " does either not exist or is not of a supported type"
-							       << " --> skipping !!";
+	    edm::LogError("GenericAnalyzer::addAnalyzers") << " Configuration parameter to be replaced = " << leftHandSide 
+							   << " does either not exist or is not of a supported type"
+							   << " --> skipping !!";
 	    cfgError_ = 1;
 	    continue;
 	  }
@@ -242,32 +217,29 @@ void GenericAnalyzer::addHistManagers(const vstring& histManagerNames,
 //--- store modified configuration ParameterSet
 //    (NOTE: by storing the modified configuration ParameterSet,
 //           replace statements become cumulative)
-	  cfgHistManagers_[it->first] = cfgHistManager;
+	  cfgAnalyzers_[it->first] = cfgAnalyzer;
 	}
       }
 
-      cfgHistManager.addParameter<std::string>("afterFilterName", afterFilterName);
-      cfgHistManager.addParameter<std::string>("beforeFilterName", beforeFilterName);
+      cfgAnalyzer.addParameter<std::string>("afterFilterName", afterFilterName);
+      cfgAnalyzer.addParameter<std::string>("beforeFilterName", beforeFilterName);
 
-      std::string dqmDirectory_store = cfgHistManager.getParameter<std::string>("dqmDirectory_store");
-      //std::cout << " dqmDirectory_store = " << dqmDirectory_store << std::endl;
+      std::string dqmDirectory_store = cfgAnalyzer.getParameter<std::string>("dqmDirectory_store");
       std::string dirName = dqmDirectoryName(name_).append(dqmSubDirectoryName_filter(afterFilterName, beforeFilterName));
-      //std::cout << " dirName = " << dirName << std::endl;
       std::string dirName_full = dqmDirectoryName(dirName).append(dqmDirectory_store);
-      //std::cout << " dirName_full = " << dirName_full << std::endl;
-      cfgHistManager.addParameter<std::string>("dqmDirectory_store", dirName_full);
+      cfgAnalyzer.addParameter<std::string>("dqmDirectory_store", dirName_full);
 
-      cfgHistManagers.push_back(cfgHistManager);
+      cfgAnalyzers.push_back(cfgAnalyzer);
     } else {
-      edm::LogError ("GenericAnalyzer::addHistManagers") << " Failed to access configuration parameter for histManager = " << (*histManagerName)
-							<< " --> skipping !!";
+      edm::LogError("GenericAnalyzer::addAnalyzers") << " Failed to access configuration parameter for analyzer = " << (*analyzerName)
+						     << " --> skipping !!";
       cfgError_ = 1;
       return;
     }
   }
 
   std::string entryName = dqmDirectoryName(name_).append(dqmSubDirectoryName_filter(afterFilterName, beforeFilterName));
-  analysisSequenceEntry_histManagers* entry = new analysisSequenceEntry_histManagers(entryName, cfgHistManagers);
+  analysisSequenceEntry_analyzer* entry = new analysisSequenceEntry_analyzer(entryName, cfgAnalyzers);
   analysisSequence_.push_back(entry);
 }
 
@@ -282,31 +254,28 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   cfgError_ = 0;
 
   name_ = cfg.getParameter<std::string>("name");
-  //std::cout << " name = " << name_ << std::endl;
 
   typedef std::vector<edm::ParameterSet> vParameterSet;
 
 //--- store configuration parameters for filters
   //std::cout << "--> storing configuration parameters for filters..." << std::endl;
-  if ( cfg.exists("eventSelection") ) {
-    vParameterSet cfgFilters = cfg.getParameter<vParameterSet>("eventSelection");
+  if ( cfg.exists("filters") ) {
+    vParameterSet cfgFilters = cfg.getParameter<vParameterSet>("filters");
     for ( vParameterSet::const_iterator cfgFilter = cfgFilters.begin(); 
 	  cfgFilter != cfgFilters.end(); ++cfgFilter ) {
       std::string cfgFilterName = cfgFilter->getParameter<std::string>("pluginName");
-      //std::cout << " cfgFilterName = " << cfgFilterName << std::endl;
       cfgFilters_.insert(std::pair<std::string, edm::ParameterSet>(cfgFilterName, *cfgFilter)); 
     }
   }
 
-//--- store configuration parameters for histManagers
-  //std::cout << "--> storing configuration parameters for histManagers..." << std::endl;
-  if ( cfg.exists("histManagers") ) {
-    vParameterSet cfgHistManagers = cfg.getParameter<vParameterSet>("histManagers");
-    for ( vParameterSet::const_iterator cfgHistManager = cfgHistManagers.begin(); 
-	  cfgHistManager != cfgHistManagers.end(); ++cfgHistManager ) {
-      std::string cfgHistManagerName = cfgHistManager->getParameter<std::string>("pluginName");
-      //std::cout << " cfgHistManagerName = " << cfgHistManagerName << std::endl;
-      cfgHistManagers_.insert(std::pair<std::string, edm::ParameterSet>(cfgHistManagerName, *cfgHistManager));
+//--- store configuration parameters for analyzers
+  //std::cout << "--> storing configuration parameters for analyzers..." << std::endl;
+  if ( cfg.exists("analyzers") ) {
+    vParameterSet cfgAnalyzers = cfg.getParameter<vParameterSet>("analyzers");
+    for ( vParameterSet::const_iterator cfgAnalyzer = cfgAnalyzers.begin(); 
+	  cfgAnalyzer != cfgAnalyzers.end(); ++cfgAnalyzer ) {
+      std::string cfgAnalyzerName = cfgAnalyzer->getParameter<std::string>("pluginName");
+      cfgAnalyzers_.insert(std::pair<std::string, edm::ParameterSet>(cfgAnalyzerName, *cfgAnalyzer));
     }
   }
 
@@ -319,17 +288,17 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 	cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
     std::string filterName = ( cfgAnalysisSequenceEntry->exists("filter") ) ? 
       cfgAnalysisSequenceEntry->getParameter<std::string>("filter") : "";
-    vstring histManagerNames = ( cfgAnalysisSequenceEntry->exists("histManagers") ) ? 
-      cfgAnalysisSequenceEntry->getParameter<vstring>("histManagers") : vstring();
+    vstring analyzerNames = ( cfgAnalysisSequenceEntry->exists("analyzers") ) ? 
+      cfgAnalysisSequenceEntry->getParameter<vstring>("analyzers") : vstring();
 
-    if ( filterName == "" && histManagerNames.size() == 0 ) {
-      edm::LogError ("GenericAnalyzer") << " Either filter or histManagers must be specified for sequenceEntries !!";
+    if ( filterName == "" && analyzerNames.size() == 0 ) {
+      edm::LogError("GenericAnalyzer") << " Either filter or analyzers must be specified for sequenceEntries !!";
       cfgError_ = 1;
       continue;
     }
     
-    if ( filterName != "" && histManagerNames.size() != 0 ) {
-      edm::LogError ("GenericAnalyzer") << " Must not specify filter and histManagers for same sequenceEntry !!";
+    if ( filterName != "" && analyzerNames.size() != 0 ) {
+      edm::LogError("GenericAnalyzer") << " Must not specify filter and analyzers for same sequenceEntry !!";
       cfgError_ = 1;
       continue;
     }
@@ -343,7 +312,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
       lastFilterName = filterName;
     }
     
-    if ( histManagerNames.size() != 0 ) {
+    if ( analyzerNames.size() != 0 ) {
       std::string nextFilterName = "";
       for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry_nextFilter = cfgAnalysisSequenceEntry;
 	    cfgAnalysisSequenceEntry_nextFilter != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry_nextFilter ) {
@@ -357,7 +326,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 	cfgAnalysisSequenceEntry->getParameter<vstring>("replace") : vstring();
       //std::cout << " replaceCommands = " << format_vstring(replaceCommands) << std::endl;
       
-      addHistManagers(histManagerNames, lastFilterName, nextFilterName, replaceCommands);
+      addAnalyzers(analyzerNames, lastFilterName, nextFilterName, replaceCommands);
     }
   }
 
@@ -416,11 +385,8 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
     for ( vParameterSet::const_iterator cfgEventDump = cfgEventDumps.begin(); 
 	  cfgEventDump != cfgEventDumps.end(); ++cfgEventDump ) {
       std::string eventDumpName = cfgEventDump->getParameter<std::string>("pluginName");
-      //std::cout << " eventDumpName = " << eventDumpName << std::endl;
-
       std::string eventDumpType = cfgEventDump->getParameter<std::string>("pluginType");
-      //std::cout << " eventDumpType = " << eventDumpType << std::endl;
-
+ 
       EventDumpBase* entry = EventDumpPluginFactory::get()->create(eventDumpType, *cfgEventDump);
       eventDumps_.push_back(entry);
     }
@@ -439,45 +405,41 @@ GenericAnalyzer::~GenericAnalyzer()
   delete runEventNumberService_;
 }
 
-void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {  
   //std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
-    edm::LogError ("GenericAnalyzer::analyze") << " Error in Configuration ParameterSet --> skipping !!";
+    edm::LogError("GenericAnalyzer::analyze") << " Error in Configuration ParameterSet --> skipping !!";
     return;
   }
 
-  double eventWeight = 1.; // not implemented yet
+  double eventWeight = 1.; // event weights not implemented yet...
 
-//--- fill histograms
+//--- call analyze method of each analyzerPlugin
+//    (fill histograms, compute binning results,...)
   typedef std::vector<std::pair<std::string, bool> > filterResults_type;
   filterResults_type filterResults_cumulative;
   bool previousFiltersPassed = true;
   filterResults_type filterResults_individual;
   for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
 	entry != analysisSequence_.end(); ++entry ) {
-    //std::cout << " entryName = " << (*entry)->name_ << std::endl;
-    //std::cout << "  entryType = " << (*entry)->type() << std::endl;
 
     if ( (*entry)->type() == analysisSequenceEntry::kFilter ) {
-      bool filterPassed_cumulative = (*entry)->filter_cumulative(iEvent, iSetup);
-      //std::cout << "  filterPassed_cumulative = " << filterPassed_cumulative << std::endl;
+      bool filterPassed_cumulative = (*entry)->filter_cumulative(evt, es);
       
       filterResults_cumulative.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_cumulative));
       
       if ( !filterPassed_cumulative ) previousFiltersPassed = false;
-      //std::cout << "  previousFiltersPassed = " << previousFiltersPassed << std::endl;
 
-      bool filterPassed_individual = (*entry)->filter_individual(iEvent, iSetup);
-      //std::cout << "  filterPassed_individual = " << filterPassed_individual << std::endl;
+      bool filterPassed_individual = (*entry)->filter_individual(evt, es);
       
       filterResults_individual.push_back(std::pair<std::string, bool>((*entry)->name_, filterPassed_individual));
     }
 
-    if ( (*entry)->type() == analysisSequenceEntry::kHistManagers ) {
-      if ( previousFiltersPassed ) (*entry)->analyze(iEvent, iSetup);
+    if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
+      if ( previousFiltersPassed ) (*entry)->analyze(evt, es);
     }
   }
 
@@ -485,18 +447,18 @@ void GenericAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   filterStatisticsTable_->update(filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- save run & event numbers
-  runEventNumberService_->update(iEvent.id().run(), iEvent.id().event(), iEvent.luminosityBlock(),
+  runEventNumberService_->update(evt.id().run(), evt.id().event(), evt.luminosityBlock(),
 				 filterResults_cumulative, filterResults_individual, eventWeight);
 
 //--- if requested, dump event information 
   for ( std::list<EventDumpBase*>::const_iterator it = eventDumps_.begin();
 	it != eventDumps_.end(); ++it ) {
     EventDumpBase* eventDump = (*it);
-    eventDump->analyze(iEvent, iSetup, filterResults_cumulative, filterResults_individual, eventWeight);
+    eventDump->analyze(evt, es, filterResults_cumulative, filterResults_individual, eventWeight);
   }
 }
 
-void GenericAnalyzer::beginJob(const edm::EventSetup& iSetup)
+void GenericAnalyzer::beginJob(const edm::EventSetup&)
 {
   //std::cout << "<GenericAnalyzer::beginJob>:" << std::endl;
 
@@ -505,7 +467,7 @@ void GenericAnalyzer::beginJob(const edm::EventSetup& iSetup)
 //--- call beginJob method of each EDFilter/EDAnalyzer
   for ( std::list<analysisSequenceEntry*>::iterator entry = analysisSequence_.begin();
 	entry != analysisSequence_.end(); ++entry ) {
-    (*entry)->beginJob(iSetup);
+    (*entry)->beginJob();
   }
 }
 

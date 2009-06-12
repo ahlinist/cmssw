@@ -14,6 +14,7 @@
 //
 
 PFCandidateHistManager::PFCandidateHistManager(const edm::ParameterSet& cfg)
+  : dqmError_(0)
 {
   //std::cout << "<PFCandidateHistManager::PFCandidateHistManager>:" << std::endl;
 
@@ -29,26 +30,35 @@ PFCandidateHistManager::~PFCandidateHistManager()
 //--- nothing to be done yet...
 }
 
-void PFCandidateHistManager::bookHistograms(const edm::EventSetup& setup)
+void PFCandidateHistManager::bookHistograms()
 {
   //std::cout << "<PFCandidateHistManager::bookHistograms>:" << std::endl;
 
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
-
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
-
-    bookPFCandidateHistograms(dqmStore, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
-    hPFCandidatePtVsEta_ = dqmStore.book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
+    dqmError_ = 1;
+    return;
   }
+
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  
+  bookPFCandidateHistograms(dqmStore, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
+  hPFCandidatePtVsEta_ = dqmStore.book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
 }
 
-void PFCandidateHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
 {  
   //std::cout << "<PFCandidateHistManager::fillHistograms>:" << std::endl; 
 
+  if ( dqmError_ ) {
+    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
+    return;
+  }
+
   edm::Handle<std::vector<reco::PFCandidate> > pfCandidates;
-  iEvent.getByLabel(pfCandidateSrc_, pfCandidates);
+  evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
   for ( std::vector<reco::PFCandidate>::const_iterator pfCandidate = pfCandidates->begin(); 
 	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
@@ -89,6 +99,7 @@ void PFCandidateHistManager::fillPFCandidateHistograms(const reco::PFCandidate& 
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, PFCandidateHistManager, "PFCandidateHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, PFCandidateHistManager, "PFCandidateHistManager");
 
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"

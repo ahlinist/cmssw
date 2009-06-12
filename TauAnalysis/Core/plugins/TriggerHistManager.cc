@@ -14,6 +14,7 @@
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 TriggerHistManager::TriggerHistManager(const edm::ParameterSet& cfg)
+  : dqmError_(0)
 {
   //std::cout << "<TriggerHistManager::TriggerHistManager>:" << std::endl;
 
@@ -41,44 +42,53 @@ TriggerHistManager::~TriggerHistManager()
 //--- nothing to be done yet...
 }
 
-void TriggerHistManager::bookHistograms(const edm::EventSetup& setup)
+void TriggerHistManager::bookHistograms()
 {
   //std::cout << "<TriggerHistManager::bookHistograms>:" << std::endl;
 
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
+    dqmError_ = 1;
+    return;
+  }
 
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
 
 //--- book histograms for L1 trigger bits
-    for ( vstring::const_iterator l1Bit = l1Bits_.begin();
-	  l1Bit != l1Bits_.end(); ++l1Bit ) {
-      std::string meName = std::string("Trigger").append(*l1Bit);
-      MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
-      hL1triggerBits_.insert(std::pair<std::string, MonitorElement*>(*l1Bit, me));
-    }
+  for ( vstring::const_iterator l1Bit = l1Bits_.begin();
+	l1Bit != l1Bits_.end(); ++l1Bit ) {
+    std::string meName = std::string("Trigger").append(*l1Bit);
+    MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
+    hL1triggerBits_.insert(std::pair<std::string, MonitorElement*>(*l1Bit, me));
+  }
 
 //--- book histograms for HLT results
-    for ( vstring::const_iterator hltPath = hltPaths_.begin();
-	  hltPath != hltPaths_.end(); ++hltPath ) {
-      std::string meName = std::string("Trigger").append(*hltPath);
-      MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
-      hHLTresults_.insert(std::pair<std::string, MonitorElement*>(*hltPath, me));
-    }
+  for ( vstring::const_iterator hltPath = hltPaths_.begin();
+	hltPath != hltPaths_.end(); ++hltPath ) {
+    std::string meName = std::string("Trigger").append(*hltPath);
+    MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
+    hHLTresults_.insert(std::pair<std::string, MonitorElement*>(*hltPath, me));
   }
 }
 
-void TriggerHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
 
 {  
   //std::cout << "<TriggerHistManager::fillHistograms>:" << std::endl; 
 
+  if ( dqmError_ ) {
+    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
+    return;
+  }
+
 //--- fill histograms for L1 trigger bits
   if ( l1GtReadoutRecordSrc_.label() != "" && l1GtObjectMapRecordSrc_.label() != "" ) {
     edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
-    iEvent.getByLabel(l1GtReadoutRecordSrc_, l1GtReadoutRecord);
+    evt.getByLabel(l1GtReadoutRecordSrc_, l1GtReadoutRecord);
     edm::Handle<L1GlobalTriggerObjectMapRecord> l1GtObjectMapRecord;
-    iEvent.getByLabel(l1GtObjectMapRecordSrc_, l1GtObjectMapRecord);
+    evt.getByLabel(l1GtObjectMapRecordSrc_, l1GtObjectMapRecord);
     
     DecisionWord l1GtDecision = l1GtReadoutRecord->decisionWord();
     const std::vector<L1GlobalTriggerObjectMap>& l1GtObjectMaps = l1GtObjectMapRecord->gtObjectMap();
@@ -106,7 +116,7 @@ void TriggerHistManager::fillHistograms(const edm::Event& iEvent, const edm::Eve
 
 //--- fill histograms for HLT results 
   edm::Handle<edm::TriggerResults> hltResults;
-  iEvent.getByLabel(hltResultsSrc_, hltResults);
+  evt.getByLabel(hltResultsSrc_, hltResults);
 
   edm::TriggerNames triggerNames;
   triggerNames.init(*hltResults);
@@ -126,6 +136,7 @@ void TriggerHistManager::fillHistograms(const edm::Event& iEvent, const edm::Eve
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, TriggerHistManager, "TriggerHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, TriggerHistManager, "TriggerHistManager");
 
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"

@@ -15,17 +15,17 @@
 
 class JetHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit JetHistManager(const edm::ParameterSet&);
   ~JetHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private: 
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
- private:
-
-//--- private functions
+//--- auxiliary functions
   void bookJetHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillJetHistograms(const pat::Jet&, MonitorElement*, MonitorElement*, MonitorElement*);
@@ -63,6 +63,8 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hBtagDisc_;
 
   std::vector<MonitorElement*> hNumCentralJetsToBeVetoed_;
+
+  int dqmError_;
 };
 
 #endif  

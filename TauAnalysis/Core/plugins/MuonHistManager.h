@@ -15,17 +15,17 @@
 
 class MuonHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit MuonHistManager(const edm::ParameterSet&);
   ~MuonHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
- private:
-
-//--- private functions
+//--- auxiliary functions
   void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*);
@@ -110,6 +110,8 @@ class MuonHistManager : public HistManagerBase
   std::vector<MonitorElement*> hMuonPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos muonParticleFlowIsoParam_;
+
+  int dqmError_;
 };
 
 #endif  

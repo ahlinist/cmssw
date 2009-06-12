@@ -16,17 +16,17 @@
 
 class PFCandidateHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit PFCandidateHistManager(const edm::ParameterSet&);
   ~PFCandidateHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
- private:
-
-//--- private functions
+//--- auxiliary functions
   void bookPFCandidateHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillPFCandidateHistograms(const reco::PFCandidate&, MonitorElement*, MonitorElement*, MonitorElement*);
@@ -41,6 +41,8 @@ class PFCandidateHistManager : public HistManagerBase
   MonitorElement* hPFCandidateEta_;
   MonitorElement* hPFCandidatePtVsEta_;
   MonitorElement* hPFCandidatePhi_;
+
+  int dqmError_;
 };
 
 #endif  

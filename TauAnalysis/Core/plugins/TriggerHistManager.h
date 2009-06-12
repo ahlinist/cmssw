@@ -15,15 +15,15 @@
 
 class TriggerHistManager : public HistManagerBase 
 {
- public:
-  
+ public: 
   explicit TriggerHistManager(const edm::ParameterSet&);
   ~TriggerHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private: 
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
-
- private:
 
 //--- configuration parameters
   edm::InputTag l1GtReadoutRecordSrc_;
@@ -39,6 +39,8 @@ class TriggerHistManager : public HistManagerBase
 //--- histograms
   std::map<std::string, MonitorElement*> hL1triggerBits_;
   std::map<std::string, MonitorElement*> hHLTresults_;
+
+  int dqmError_;
 };
 
 #endif  

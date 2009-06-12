@@ -16,14 +16,14 @@
 class VertexHistManager : public HistManagerBase 
 {
  public:
-  
-  explicit VertexHistManager(const edm::ParameterSet&);
+    explicit VertexHistManager(const edm::ParameterSet&);
   ~VertexHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private: 
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
-
- private:
 
 //--- configuration parameters
   edm::InputTag vertexSrc_;
@@ -42,6 +42,8 @@ class VertexHistManager : public HistManagerBase
   MonitorElement* hVertexNumTracks_;
 
   MonitorElement* hVertexChi2Prob_;
+
+  int dqmError_;
 };
 
 #endif  
