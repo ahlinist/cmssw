@@ -3,13 +3,13 @@
 
 /** \class HistManagerBase
  *
- * Base-class for histogram booking and filling in physics analyses
+ * Base-class for histogram booking and filling 
  * 
  * \author Christian Veelken, UC Davis
  *
  * \version $Revision: 1.1 $
  *
- * $Id: HistManagerBase.h,v 1.1 2009/01/22 16:30:02 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
  *
  */
 
@@ -17,7 +17,9 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-class HistManagerBase
+#include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
+
+class HistManagerBase : public AnalyzerPluginBase
 {
  public:
   // constructor 
@@ -26,8 +28,13 @@ class HistManagerBase
   // destructor
   virtual ~HistManagerBase() {}
 
+  void beginJob() { bookHistograms(); }
+  void analyze(const edm::Event& evt, const edm::EventSetup& es) { fillHistograms(evt, es); }
+  void endJob() {}
+
+ protected:
   // methods for booking and filling of histograms
-  virtual void bookHistograms(const edm::EventSetup&) = 0;
+  virtual void bookHistograms() = 0;
   virtual void fillHistograms(const edm::Event&, const edm::EventSetup&) = 0;
 };
 
