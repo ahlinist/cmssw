@@ -9,7 +9,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: HistManagerAdapter.h,v 1.1 2009/01/22 16:30:02 veelken Exp $
+ * $Id: HistManagerAdapter.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
  *
  */
 
@@ -31,8 +31,8 @@ class HistManagerAdapter : public edm::EDAnalyzer
   virtual ~HistManagerAdapter() {}
     
  private:
-  void beginJob(const edm::EventSetup& es) { histManager_.bookHistograms(es); }
-  void analyze(const edm::Event& evt, const edm::EventSetup& es) { histManager_.fillHistograms(evt, es); }
+  void beginJob() { histManager_.beginJob(); }
+  void analyze(const edm::Event& evt, const edm::EventSetup& es) { histManager_.analyze(evt, es); }
   void endJob() {}
   
   T histManager_;
