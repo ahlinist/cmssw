@@ -7,7 +7,7 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     name = cms.string('zDiTauAnalyzer'), 
                             
-    eventSelection = cms.VPSet(
+    filters = cms.VPSet(
         # generator level phase-space selection
         # (NOTE: (1) to be used in case of Monte Carlo samples
         #            overlapping in simulated phase-space only !!
@@ -56,7 +56,7 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         #evtSelCentralJetVeto
     ),
   
-    histManagers = cms.VPSet(
+    analyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
         tauHistManager1,
         tauHistManager2,

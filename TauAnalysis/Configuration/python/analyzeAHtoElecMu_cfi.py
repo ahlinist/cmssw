@@ -326,7 +326,7 @@ elecMuEventDump = cms.PSet(
 elecMuAnalysisSequence = cms.VPSet(
     # fill histograms for full event sample
     cms.PSet(
-        histManagers = elecMuHistManagers
+        analyzers = elecMuHistManagers
     ),
 
     # generator level selection of Z --> e + mu events
@@ -341,7 +341,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    title = cms.string('gen. Muon'),
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers
+    #    analyzers = elecMuHistManagers
     #),
     
     # trigger selection
@@ -351,7 +351,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers
+        analyzers = elecMuHistManagers
     ),
 
     # primary event vertex selection
@@ -371,7 +371,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers
+        analyzers = elecMuHistManagers
     ),
 
     #only 1 electron and 1 muon
@@ -381,7 +381,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
     ),
     #cms.PSet(
@@ -390,7 +390,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
     #),
     cms.PSet(
@@ -399,7 +399,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
@@ -409,7 +409,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     #),
@@ -421,7 +421,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsAntiCrackCutCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
@@ -431,7 +431,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEta21Cumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsGlobalCumulative')
     ),
@@ -441,7 +441,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEta21Cumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
     ),
@@ -451,7 +451,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsPt15Cumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsEta21Cumulative')
     ),
@@ -461,7 +461,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEta21Cumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     ),
@@ -473,7 +473,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsIsoCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     ),
@@ -483,7 +483,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIsoCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     #),
@@ -493,7 +493,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsEcalIsoCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     #),
@@ -503,7 +503,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsHcalIsoCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     #),
@@ -513,7 +513,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     ),
@@ -523,7 +523,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPt15Cumulative')
     #),
@@ -535,7 +535,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsIsoCumulative')
     ),
@@ -545,7 +545,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIsoCumulative')
     #),
@@ -555,7 +555,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsEcalIsoCumulative')
     #),
@@ -565,7 +565,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsHcalIsoCumulative')
     #),
@@ -575,7 +575,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative')
     ),
@@ -585,7 +585,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative')
     #),
@@ -597,7 +597,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
@@ -608,7 +608,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative')
@@ -619,7 +619,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
     #                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsDPhiCumulative')
@@ -630,7 +630,7 @@ elecMuAnalysisSequence = cms.VPSet(
     #    saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     #),
     #cms.PSet(
-    #    histManagers = elecMuHistManagers,
+    #    analyzers = elecMuHistManagers,
     #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
     #                          'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
     #                          'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsImpParamSigCumulative')
@@ -644,7 +644,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
@@ -656,7 +656,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
@@ -668,7 +668,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',
@@ -680,7 +680,7 @@ elecMuAnalysisSequence = cms.VPSet(
         saveRunEventNumbers = cms.vstring('exclRejected', 'passed_cumulative')
     ),
     cms.PSet(
-        histManagers = elecMuHistManagers,
+        analyzers = elecMuHistManagers,
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkCumulative',
                               'muonHistManager.muonSource = selectedLayer1MuonsPionVetoCumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarityCumulative',

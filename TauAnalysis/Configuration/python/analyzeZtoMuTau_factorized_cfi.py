@@ -13,11 +13,13 @@ from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
 muTauHistManagers_factorizedWithoutMuonIsolation = copy.deepcopy(muTauHistManagers)
 
-muTauHistManagers_factorizedWithMuonIsolation = cms.vstring( 'genPhaseSpaceEventInfoHistManager',
-                                                             'muonHistManager',
-                                                             'tauHistManager',
-                                                             'vertexHistManager',
-                                                             'triggerHistManager' )
+muTauHistManagers_factorizedWithMuonIsolation = cms.vstring(
+    'genPhaseSpaceEventInfoHistManager',
+    'muonHistManager',
+    'tauHistManager',
+    'vertexHistManager',
+    'triggerHistManager'
+)
 
 #--------------------------------------------------------------------------------
 # define event selection criteria specific to factorization

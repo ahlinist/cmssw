@@ -9,10 +9,14 @@ from TauAnalysis.DQMTools.drawJobConfigurator import *
 plots_ZtoMuTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
-        processes = cms.vstring( 'Ztautau',
-                                 'Zmumu',
-                                 'WplusJets',
-                                 'qcdSum' )
+        processes = cms.vstring(
+            #'Ztautau',
+            #'Zmumu',
+            'ZtautauPlusJets',
+            'ZmumuPlusJets',
+            'WplusJets',
+            'qcdSum'
+        )
     ),
     xAxis = cms.string('unlabeled'),
     yAxis = cms.string('numEntries_linear'),
@@ -20,10 +24,14 @@ plots_ZtoMuTau = cms.PSet(
     legend = cms.string('regular'),
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
-    stack = cms.vstring( 'Ztautau',
-                         'Zmumu',
-                         'WplusJets',
-                         'qcdSum' )
+    stack = cms.vstring(
+        #'Ztautau',
+        #'Zmumu',
+        'ZtautauPlusJets',
+        'ZmumuPlusJets',
+        'WplusJets',
+        'qcdSum'
+    )
 )
 
 drawJobConfigurator_ZtoMuTau = drawJobConfigurator(

@@ -7,7 +7,7 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
 
   name = cms.string('ahElecMuAnalyzer'),
 
-  eventSelection = cms.VPSet(
+  filters = cms.VPSet(
     # generator level phase-space selection
     # (NOTE: (1) to be used in case of Monte Carlo samples
     #            overlapping in simulated phase-space only !!
@@ -69,7 +69,7 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelJetBtagMax
   ),
 
-  histManagers = cms.VPSet(
+  analyzers = cms.VPSet(
     electronHistManager,
     muonHistManager,
     diTauCandidateHistManagerForElecMu,
