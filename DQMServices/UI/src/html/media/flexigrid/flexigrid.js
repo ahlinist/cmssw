@@ -5,7 +5,7 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Date: 2009/04/29 17:27:35 $
+ * $Date: 2009/05/28 16:27:01 $
  */
 
 (function($){
@@ -688,6 +688,9 @@
 					,{ name : 'qoperator', value : p.qoperator}
 				];							 
 							 
+
+                                //if (
+
 				if (p.params)
 					{
 						for (var pi = 0; pi < p.params.length; pi++) param[param.length] = p.params[pi];

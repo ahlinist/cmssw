@@ -10,11 +10,6 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.w3c.dom.*;
-/*
-import org.xml.sax.InputSource;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
-*/
 import javax.xml.parsers.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.Templates;
@@ -94,12 +89,16 @@ public class DataProvider extends HttpServlet {
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+    int nocache  = (request.getParameter("nocache") == null ? 0 : Integer.parseInt(request.getParameter("nocache")));
     PrintWriter out = response.getWriter();
     String query_string = request.getQueryString();
-    String cache_url = CacheSyn.getInstance().getCachedContent(servlet_name, query_string);
-    if (cache_url != null) {
-      response.sendRedirect(cache_url);
-      return;
+
+    if (nocache == 0) {
+      String cache_url = CacheSyn.getInstance().getCachedContent(servlet_name, query_string);
+      if (cache_url != null) {
+        response.sendRedirect(cache_url);
+        return;
+      }
     }
 
     int page = (!checkParam(request.getParameter("page")) ? 1 : Integer.parseInt(request.getParameter("page")));
@@ -411,7 +410,12 @@ public class DataProvider extends HttpServlet {
           break;
       }
 
-      response.sendRedirect(CacheSyn.getInstance().setCachedContent(servlet_name, query_string, content, mimeType));
+      if (nocache < 2) {
+        response.sendRedirect(CacheSyn.getInstance().setCachedContent(servlet_name, query_string, content, mimeType));
+        return;
+      }
+
+      out.print(content);
 
     } catch(SQLException e) {
       throw new ServletException(e.toString() + "\nWHERE clause: " + where);
