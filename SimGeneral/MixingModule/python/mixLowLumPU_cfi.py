@@ -20,19 +20,16 @@ mix = cms.EDProducer("MixingModule",
     useCurrentProcessOnly = cms.bool(False),
                    
     input = cms.SecSource("PoolSource",
-        #type = cms.string('fixed'),
-	#nbPileupEvents = cms.PSet(
-        #averageNumber = cms.double(1.0)
-    	#),
-	
 	nbPileupEvents = cms.PSet(
             sigmaInel = cms.double(80.0),
             Lumi = cms.double(2.8)
         ),
         seed = cms.int32(1234567),
         type = cms.string('poisson'),
-        fileNames = cms.untracked.vstring(
-        'file:/data/becheva/MixingModule/dataFiles/relval/02C5A172-8203-DE11-86D7-001617C3B5D8TTBar.root')
+        fileNames = cms.untracked.vstring('/store/relval/CMSSW_3_1_0_pre9/RelValProdMinBias/GEN-SIM-RAW/IDEAL_31X_v1/0007/E067C176-D84E-DE11-BEA6-001617C3B70E.root',
+                                          '/store/relval/CMSSW_3_1_0_pre9/RelValProdMinBias/GEN-SIM-RAW/IDEAL_31X_v1/0007/84B81EF5-524F-DE11-9A48-001D09F2543D.root',
+                                          '/store/relval/CMSSW_3_1_0_pre9/RelValProdMinBias/GEN-SIM-RAW/IDEAL_31X_v1/0007/167D41FF-D44E-DE11-9F3D-001617C3B6C6.root'
+                                          )
     ),
     mixObjects = cms.PSet(
         mixCH = cms.PSet(
