@@ -18,10 +18,10 @@ process.source = cms.Source("EmptySource")
 #enableFactorization_makeZtoElecTauPlots(process)
 
 process.makeZtoElecTauPlots = cms.Sequence( process.loadZtoElecTau
-                                         +process.addZtoElecTau
-                                         +process.saveZtoElecTau
-#                                         +process.dumpZtoElecTau
-                                         +process.plotZtoElecTau )
+                                           +process.addZtoElecTau
+                                           +process.saveZtoElecTau
+                                           +process.dumpZtoElecTau
+                                           +process.plotZtoElecTau )
 
 process.p = cms.Path(process.makeZtoElecTauPlots)
 
