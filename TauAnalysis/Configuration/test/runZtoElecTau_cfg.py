@@ -70,7 +70,7 @@ process.source = cms.Source("PoolSource",
 #
 #__process.source.fileNames = #inputFileNames#
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
-#__process.analyzeZtoElecTauEvents.eventSelection[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.analyzeZtoElecTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecTauPlots.outputFileName = #plotsOutputFileName#
 #__process.saveZtoElecTauPatTuple.outputFileName = #patTupleOutputFileName#
 #
@@ -101,7 +101,7 @@ process.p = cms.Path( process.producePatTuple
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecTau
+#from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecTau
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system
