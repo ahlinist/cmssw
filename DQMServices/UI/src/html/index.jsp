@@ -4,7 +4,7 @@
 <%
   MessageUser user = MessageUser.get(request);
   String mediaurl = WebUtils.GetEnv("media_url");
-	Integer run_number = (request.getParameter("number") == null ? null : Integer.parseInt(request.getParameter("number")));
+  Integer run_number = (request.getParameter("number") == null ? null : Integer.parseInt(request.getParameter("number")));
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -140,9 +140,11 @@
 
       var st = (data.page - 1) * data.rp;
       total = data.total;
+      var numbers = [];
 
       $.each(data.rows, function(i, row) {
         var number = parseInt(row["RUN_NUMBER"]);
+        numbers[i] = number;
 
         row.id = number;
         row["RUN_EVENTS"] = formatNumber(row["RUN_EVENTS"]);
@@ -198,6 +200,8 @@
 
       });
 
+      $.cookie("flex_runs", $.toJSON(numbers));
+
       return data;
     };
 
@@ -215,13 +219,18 @@
 
       $("div.stat").parent().css("padding-top", "1px").css("padding-bottom", "1px");
 
-      $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]").unbind("click").click(function(){
-        toggleRows($(this).attr("runnumber"));
-      }).css("cursor", "pointer");
+      $("#flex1 tbody tr").each(function(i,o) {
 
-			<% if (run_number != null) { %>
-				$("#row<%=run_number%>").addClass("trSelected");
-			<% } %>
+        var n = $("td[abbr=RUN_NUMBER] div", o).text();
+        $(o).data("number", n);
+
+        <% if (run_number != null) { %> if (n == <%=run_number%>) $(o).addClass("trSelected"); <% } %>
+
+        $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]", o).unbind("click").click(function(){
+          toggleRows($(this).attr("runnumber"));
+        }).css("cursor", "pointer");
+
+      });
 
     };
 
@@ -258,38 +267,27 @@
         $(this).find("span").text("Run Registry Data");
         $.cookie("flex_table_summary", null);
       } else {
-        $("#flex1").flexOptions({ url: "runinfodata?mime=text/plain", newp: 1 });
+        $("#flex1").flexOptions({ url: "runinfodata?mime=text/plain&nocache=2", newp: 1 });
         $("#flex1").flexReload();
         $(this).find("span").text("All Run Info Data");
         $.cookie("flex_table_summary", "true");
       }
     }
 
-    var canEdit = function (status) {
-      if (status == "COMPLETED") return false;
-      if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) return true;
-      if (status == "ONLINE" && <%= user.hasLoggedRole(WebUtils.ONLINE) %>) return true;
-      if (status == "OFFLINE" && <%= user.hasLoggedRole(WebUtils.OFFLINE) %>) return true;
-      return false;
-    }
-
     var editPress = function () {
-      var number = parseInt($("div.button_edit").attr("run_number"));
-      if (!number) {
+      if (!$.cookie("run_edit")) {
         messageBox("Run not selected", "Select a run and try again.");
         return;
       }
-      window.location = "edit.jsp?number=" + number;
+      window.location = "edit.jsp";
     }
-	
-    var summeryValues = function () {
-      var number = parseInt($("div.button_summary").attr("run_number"));
-      if (!number) {
+  
+    var summaryValues = function () {
+      if (!$.cookie("run_edit")) {
         messageBox("Run not selected", "Select a run and try again.");
         return;
       }
-
-      $.showRunSummaryForm(number);
+      $.showRunSummaryForm($.cookie("run_edit"));
     }
 
     var goLink = function (l) {
@@ -303,38 +301,19 @@
     }
 
     var onRowSelected = function (row) {
-      var number = parseInt($("td[field=RUN_NUMBER] div", row).text());
-      var status = $("td[abbr=RUN_STATUS] div", row).text();
-      if (trim(status).length < 2) status = "ONLINE";
-      $("div.button_edit").attr("run_number", number);
-	  $("div.button_summary").attr("run_number", number);
-      var allow = canEdit(status);
-      if (allow) {
-        if ($("td[abbr=RUN_EVENTS] div", row).text() == "null" || 
-            $("td[abbr=RUN_START_TIME] div", row).text() == "" ||
-            $("td[abbr=RUN_RATE] div", row).text() == "null" ||
-            $("td[abbr=RUN_L1KEY] div", row).text() == "" ||
-            $("td[abbr=RUN_HLTKEY] div", row).text() == "") {
-          allow = 0;
-        }
-      }
-      if (allow) {
-        $("div.button_edit span").text("Edit #"+ number);
-      } else {
-        $("div.button_edit span").text("View #"+ number);
-      }
-	  if ($('#summary').dialog('isOpen')) summeryValues();
-
+      var number = $(row).data("number");
+      $.cookie("run_edit", number);
+      if ($('#summary').dialog('isOpen')) summaryValues();
     }
 
     var onRowDblClick = function (row) {
       var number = parseInt($("td[field=RUN_NUMBER] div", row).text());
       $("div.button_edit").attr("run_number", number);
-	  $("div.button_summary").attr("run_number", number);
+    $("div.button_summary").attr("run_number", number);
       editPress();
     }
 
-		var max_table_height = window.innerHeight - 55;
+    var max_table_height = window.innerHeight - 155;
 
     /* DataTable default preferences */
     var fp = {
@@ -410,7 +389,7 @@
       useRp: true,
       showTableToggleBtn: true,
       title: '',
-			restoreStateOnce: <%=(run_number == null ? 0 : 1)%>,
+      restoreStateOnce: <%=(run_number == null ? 0 : 1)%>,
       errormsg: 'Database error',
       buttons : [
         {name: 'Manual Refresh', bclass: 'refresh', dclass: 'button_refresh', onpress : timerToggle },
@@ -420,7 +399,7 @@
         {separator: true},
         {name: 'Reset', dclass: 'button_reset', onpress : function () { $("#flex1").flexReset(); window.location.href = window.location.href; } },  
         {separator: true},
-        {name: 'Summary values', dclass: 'button_summary', onpress : summeryValues },
+        {name: 'Summary values', dclass: 'button_summary', onpress : summaryValues },
         {separator: true},
         {name: 'Edit', dclass: 'button_edit', onpress : editPress },
         {separator: true},
@@ -470,22 +449,22 @@
       hoverOpenDelay: 200 
     });
 
-		if (window.name == "rrindex") {
-			$("a.frames_option").parent().click(function() {
-				window.parent.location = "index.jsp";
-			});
-			$("a.frames_option").text("Turn frames off");
-			$("#statusbar").hide();
-			$("#messageboardmenublock").hide();
-		} else {
-			$("a.frames_option").parent().click(function() {
-				window.location = "index_frames.html";
-			});
-			$("a.frames_option").text("Turn frames on");
-			$("#messageboardmenu").menu({
-				hoverOpenDelay: 200 
-			});
-		}
+    if (window.name == "rrindex") {
+      $("a.frames_option").parent().click(function() {
+        window.parent.location = "index.jsp";
+      });
+      $("a.frames_option").text("Turn frames off");
+      $("#statusbar").hide();
+      $("#messageboardmenublock").hide();
+    } else {
+      $("a.frames_option").parent().click(function() {
+        window.location = "index_frames.html";
+      });
+      $("a.frames_option").text("Turn frames on");
+      $("#messageboardmenu").menu({
+        hoverOpenDelay: 200 
+      });
+    }
 
     toggleAnimation($.cookie("animation"));
     $("div.menu-item > a.animation_option").parent().click(function() { 
@@ -606,19 +585,19 @@
       <td id="logo">CMS DQM Run Registry</td>
       <td id="login">
 
-				<span id="messageboardmenublock">
+        <span id="messageboardmenublock">
 
-					<img style="display: none; vertical-align: middle" id="chat_notification" src="<%=mediaurl%>img/attention.png" title="Messages available!"/>
+          <img style="display: none; vertical-align: middle" id="chat_notification" src="<%=mediaurl%>img/attention.png" title="Messages available!"/>
 
-					<span id="messageboardmenu"><a href="#" id="chat_open_menu">Message Board</a>
-						<ul>
-							<li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
-						</ul>
-					</span>
+          <span id="messageboardmenu"><a href="#" id="chat_open_menu">Message Board</a>
+            <ul>
+              <li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
+            </ul>
+          </span>
 
-					&nbsp;|&nbsp;
+          &nbsp;|&nbsp;
 
-				</span>
+        </span>
 
 <% if (user.hasLoggedRole(WebUtils.EXPERT)) { %>
 
@@ -643,8 +622,8 @@
         <a href="#" onclick="drawChart()">Plot Chart</a>
 
         &nbsp;|&nbsp;
-		
-				<a id="advanced_search" href="#" onClick="$.showSearchForm()">Advanced search</a>
+    
+        <a id="advanced_search" href="#" onClick="$.showSearchForm()">Advanced search</a>
 
         &nbsp;|&nbsp;
 
@@ -700,10 +679,10 @@
   <jsp:include page="chat.jsp" />
   <jsp:include page="messageBox.html" />
 
-	<div id="statusbar">
-		<br/>
-		<div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
-	</div>
+  <div id="statusbar">
+    <br/>
+    <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
+  </div>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 

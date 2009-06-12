@@ -4,14 +4,13 @@
 <%
   MessageUser user = MessageUser.get(request);
   String mediaurl = WebUtils.GetEnv("media_url");
-  Integer run_number = Integer.parseInt(request.getParameter("number"));
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>Run #<%=run_number%></title>
+  <title>Run</title>
 
   <link rel="stylesheet" type="text/css" href="<%=mediaurl%>index.css" />
   <link type="text/css" href="<%=mediaurl%>smoothness/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
@@ -26,12 +25,14 @@
 </head>
 <body>
 
+  <jsp:include page="messageBox.html" />
+
   <script type="text/javascript">
 
     $(document).ready( function () {
     
-      var run_number = <%=run_number%>;
-    
+      var run_list = $.evalJSON($.cookie("flex_runs"));
+
       var _edit = $("#edit");
       var _edit_form = $("form", _edit);
       var _edit_info = $("td.edit_info", _edit_form);
@@ -46,16 +47,8 @@
       var _btn_run_finish = $("#run_finish");
       var _btn_run_back   = $("#run_back");
       var _btn_run_reset  = $("#run_reset");
-    
-      $(_btn_run_back).unbind("click").click(function () {
-        window.location = "index.jsp?number=" + run_number;
-        return false;
-      });
-    
-      $(_btn_run_reset).unbind("click").click(function () {
-        window.location = "edit.jsp?number=" + run_number;
-        return false;
-      });
+      var _btn_run_prev   = $("#run_prev");
+      var _btn_run_next   = $("#run_next");
     
       $("#edit_dpg_tabs").tabs();
       $("#edit_pog_tabs").tabs();
@@ -254,8 +247,8 @@
         return msg;
       };
     
-      var sendEditMessage = function (o) {
-        var message = $.toJSON( o );
+      var sendEditMessage = function (o, run_number) {
+        var message = $.toJSON(o);
     
         $.ajax({
           type: "POST",
@@ -269,276 +262,334 @@
           },
     
           success: function(ret) {
-            window.location="index.jsp?number=" + run_number;
+            if (run_number) {
+              loadRun(run_number);
+            } else {
+              window.location = "index.jsp";
+            }
           }
     
         });
     
       };
     
-      $(_btn_run_finish).hide();
-      $(_btn_run_apply).hide();
-      $(_btn_run_delete).hide();
-    
-      $.ajax({
-        type: "GET",
-        url: "runeditdata?qtype=RUN_NUMBER&format=json&query=" + run_number,
-        processData: false,
-        async: false,
-        dataType: "json",
-    
-        error: function(o) {
-          messageBox(o, "Please contact CMS DQM expert");
-        },
-    
-        success: function(json) {
-    	
-          if (json.rows.length == 0) {
-            messageBox("Run not found", "Select a run and try again. If you experience this problem constantly - please contact CMS DQM expert.");
-            return;
-          }
-    
-          var run = json.rows[0];
-    
-          $("input", _edit).attr("readonly", "true");
-          $("select", _edit).attr("readonly", "true");
-          $("textarea", _edit).attr("readonly", "true");
-          $("textarea", _edit_l1t).attr("disabled", "true");
-          $("input[type=checkbox]", _edit_l1t).removeAttr("checked");
-          $("select > option", _edit_sub_online).remove();
-          $("select[name=RUN_STATUS]", _edit_info).empty();
-    
-          $("input[name=RUN_NUMBER]", _edit_form).val(run_number);
-    
-          jQuery.each(run, function (n, v) {
-    
-            $("select[name=sub_" + n + "]", _edit_sub).each(function (i, sel) {
-              $("textarea[name=sub_" + n + "_comment]", _edit_sub).val($(run).attr(n + "_comment"));
-            });
-    
-            $("select[name=sub_" + n + "][class=sub_online]", _edit_sub).each(function (i, sel) {
-              if (isTrue(v) && v != "EXCL") {
-                $(sel).append("<option value=\"GOOD\">GOOD</option>");
-                $(sel).append("<option value=\"BAD\">BAD</option>");
-                if (v == "BAD")
-                  $(sel).val("BAD");
-                else
-                  $(sel).val("GOOD");
-            } else {
-                $(sel).append("<option value=\"EXCL\">EXCL</option>");
-              };
-            });
-    
-            $("select[name=sub_" + n + "][class=sub_offline]", _edit_sub).each(function (i, sel) {
-              if (isTrue(v)) {
-                if (v == "BAD") $(sel).val("BAD");
-                if (v == "GOOD") $(sel).val("GOOD");
-                if (v == "NOTSET") $(sel).val("NOTSET");
+      var loadRun = function(number) {
+
+        $('#edit_overlay').show();
+      
+        $.ajax({
+          type: "GET",
+          url: "runeditdata?qtype=RUN_NUMBER&format=json&query=" + number,
+          processData: false,
+          async: true,
+          dataType: "json",
+      
+          error: function(o) {
+            messageBox(o, "Please contact CMS DQM expert");
+          },
+      
+          success: function(json) {
+        
+            if (json.rows.length == 0) {
+              messageBox("Run not found", "Select a run and try again. If you experience this problem constantly - please contact CMS DQM expert.");
+              return;
+            }
+      
+            var run = json.rows[0];
+      
+            $("input", _edit).attr("readonly", "true");
+            $("select", _edit).attr("readonly", "true");
+            $("textarea", _edit).attr("readonly", "true");
+            $("textarea", _edit_l1t).attr("disabled", "true");
+            $("input[type=checkbox]", _edit_l1t).removeAttr("checked");
+            $("select > option", _edit_sub_online).remove();
+            $("select[name=RUN_STATUS]", _edit_info).empty();
+      
+            $("input[name=RUN_NUMBER]", _edit_form).val(number);
+      
+            jQuery.each(run, function (n, v) {
+      
+              $("select[name=sub_" + n + "]", _edit_sub).each(function (i, sel) {
+                $("textarea[name=sub_" + n + "_comment]", _edit_sub).val($(run).attr(n + "_comment"));
+              });
+      
+              $("select[name=sub_" + n + "][class=sub_online]", _edit_sub).each(function (i, sel) {
+                if (isTrue(v) && v != "EXCL") {
+                  $(sel).append("<option value=\"GOOD\">GOOD</option>");
+                  $(sel).append("<option value=\"BAD\">BAD</option>");
+                  if (v == "BAD")
+                    $(sel).val("BAD");
+                  else
+                    $(sel).val("GOOD");
               } else {
-                $(sel).val("NOTSET");
-              };
-            });
-    
-            $("input[name=" +n+ "]", _edit_l1t).each(function (i, sel) {
-              if (isTrue(v)) {
-                $(sel).attr("checked", true);
-                $("textarea[name=" + n + "_comment]", _edit_l1t).val($(run).attr(n + "_comment"));
+                  $(sel).append("<option value=\"EXCL\">EXCL</option>");
+                };
+              });
+      
+              $("select[name=sub_" + n + "][class=sub_offline]", _edit_sub).each(function (i, sel) {
+                if (isTrue(v)) {
+                  if (v == "BAD") $(sel).val("BAD");
+                  if (v == "GOOD") $(sel).val("GOOD");
+                  if (v == "NOTSET") $(sel).val("NOTSET");
+                } else {
+                  $(sel).val("NOTSET");
+                };
+              });
+      
+              $("input[name=" +n+ "]", _edit_l1t).each(function (i, sel) {
+                if (isTrue(v)) {
+                  $(sel).attr("checked", true);
+                  $("textarea[name=" + n + "_comment]", _edit_l1t).val($(run).attr(n + "_comment"));
+                }
+              });
+      
+              if (n == "RUN_STATUS" && v != "" && v != null) {
+                $("select[name=RUN_STATUS]", _edit_info).append($("<option readonly=\"true\" value=\" + $(o).text() + \">" + v + "</option>"));
               }
+      
+              $("input[name=" + n + "]", _edit_info).val(v);
+              $("textarea[name=" + n + "]", _edit_info).val(v);
+      
             });
-    
-            if (n == "RUN_STATUS" && v != "" && v != null) {
-              $("select[name=RUN_STATUS]", _edit_info).append($("<option readonly=\"true\" value=\" + $(o).text() + \">" + v + "</option>"));
+          
+            document.getElementById('expertCommentSub').selectedIndex = 0;
+            var field = 'sub_CSC_comment';
+      
+            field = document.getElementById(field).value;
+            sel = document.getElementById('sub_CSC');
+            selectbox = document.getElementById('expertCommentSel');
+            selectbox.innerHTML = sel.innerHTML;
+            for (var i=0; i < selectbox.length; i++) {
+              if (selectbox[i].value == sel.value) {
+                selectbox[i].selected = true;
+              }
             }
-    
-            $("input[name=" + n + "]", _edit_info).val(v);
-            $("textarea[name=" + n + "]", _edit_info).val(v);
-    
-          });
-    		
-          document.getElementById('expertCommentSub').selectedIndex = 0;
-          var field = 'sub_CSC_comment';
-    
-          field = document.getElementById(field).value;
-          sel = document.getElementById('sub_CSC');
-          selectbox = document.getElementById('expertCommentSel');
-          selectbox.innerHTML = sel.innerHTML;
-          for (var i=0; i < selectbox.length; i++) {
-            if (selectbox[i].value == sel.value) {
-              selectbox[i].selected = true;
-            }
-          }
-          document.getElementById('expertComment').value = field;
-    
-          validateInfo();
-          $("input[type=checkbox]", _edit_l1t).each(function () { validateL1T($(this).parent().parent()); });
-          $("select", _edit_sub).each(function () { validateSubSelect($(this).parent().parent()); });
-    		
-          var real_role = "";
-          var status = $(run).attr("RUN_STATUS");
-          if (status == null) status = "";
-    		
-          $(_edit).data("current_status", status);
-    
-          if ((status == 'COMPLETED') || (status == '') || (status == null))  {
-            $(_btn_run_finish).hide();
-          } else {
-            $(_btn_run_finish).text("Finish " + status + " DQM");
-          }
-    
-          var count_tags = parseInt($(run).attr("RUN_COUNT_TAGS"));
-          count_tags--;
-    
-          if (status != "COMPLETED") {
-            if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) real_role = "EXPERT";
-            else if (<%= user.hasLoggedRole(WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
-              real_role = "ONLINE";
-            else if (<%= user.hasLoggedRole(WebUtils.OFFLINE) %> && status == "OFFLINE")
-              real_role = "OFFLINE";
-          }
-    
-          if ($(run).attr("RUN_EVENTS") == "" ||
-              $(run).attr("RUN_START_TIME") == "" ||
-              $(run).attr("RUN_RATE") == "" ||
-              $(run).attr("RUN_L1KEY") == "" ||
-              $(run).attr("RUN_HLTKEY") == "") {
-            real_role = "";
-          }
-    
-          if (real_role == "ONLINE") {
-    
-            $(".edit_online input", _edit_info).removeAttr("readonly");
-            $(".edit_online textarea", _edit_info).removeAttr("readonly");
-    
-            $("input", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
-            $("textarea", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
-    
-            $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_sub_online).removeAttr("disabled").removeAttr("readonly");
-    		
-            $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_expert).removeAttr("disabled").removeAttr("readonly");
-    
-            if (status == "") {
-              $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
-              $("input[name='RUN_ONLINE_SHIFTER']", _edit_info).val("<%=user.getName()%>");
+            document.getElementById('expertComment').value = field;
+      
+            validateInfo();
+            $("input[type=checkbox]", _edit_l1t).each(function () { validateL1T($(this).parent().parent()); });
+            $("select", _edit_sub).each(function () { validateSubSelect($(this).parent().parent()); });
+          
+            var real_role = "";
+            var status = $(run).attr("RUN_STATUS");
+            if (status == null) status = "";
+          
+            $(_edit).data("current_status", status);
+      
+            if ((status == 'COMPLETED') || (status == '') || (status == null))  {
+              $(_btn_run_finish).hide();
             } else {
-              $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
-              $(_btn_run_delete).show();
+              $(_btn_run_finish).text("Finish " + status + " DQM");
             }
-            $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
-    
-            if (status != "") $(_btn_run_finish).show();
-            $(_btn_run_apply).show();
-    
-          } else if (real_role == "OFFLINE")  {
-    
-            $(".edit_offline input", _edit_info).removeAttr("readonly");
-            $(".edit_offline textarea", _edit_info).removeAttr("readonly");
-    
-            $("textarea", _edit_sub_offline).removeAttr("readonly");
-            $("select", _edit_sub_offline).removeAttr("readonly").removeAttr("disabled");
-    
-            $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_sub_online).removeAttr("disabled").removeAttr("readonly");
-    			
-            $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_expert).removeAttr("disabled").removeAttr("readonly");
-    
-            $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
-            $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
-    
-            if (status != "") $(_btn_run_finish).show();
-            $(_btn_run_apply).show();
-    
-          } else if (real_role == "EXPERT") {
-    
-            $("input", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
-            $("textarea", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
-    
-            $(".edit_online input", _edit_info).removeAttr("readonly");
-            $(".edit_online textarea", _edit_info).removeAttr("readonly");
-    
-            $(".edit_offline input", _edit_info).removeAttr("readonly");
-            $(".edit_offline textarea", _edit_info).removeAttr("readonly");
-    
-            $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
-    		
-            $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
-            $("select", _edit_expert).removeAttr("readonly").removeAttr("disabled");
-    		
-            $("textarea", _edit_sub_offline).removeAttr("readonly");
-            $("select", _edit_sub_offline).removeAttr("readonly").removeAttr("disabled");
-    
-            if (status != "") $(_btn_run_finish).show();
-            $(_btn_run_apply).show();
-            $(_btn_run_delete).show();
-    
-            if (status == "") {
-              $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
-            } else {
-              if (status != "OFFLINE") {
+      
+            var count_tags = parseInt($(run).attr("RUN_COUNT_TAGS"));
+            count_tags--;
+      
+            if (status != "COMPLETED") {
+              if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) real_role = "EXPERT";
+              else if (<%= user.hasLoggedRole(WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
+                real_role = "ONLINE";
+              else if (<%= user.hasLoggedRole(WebUtils.OFFLINE) %> && status == "OFFLINE")
+                real_role = "OFFLINE";
+            }
+      
+            if ($(run).attr("RUN_EVENTS") == "" ||
+                $(run).attr("RUN_START_TIME") == "" ||
+                $(run).attr("RUN_RATE") == "" ||
+                $(run).attr("RUN_L1KEY") == "" ||
+                $(run).attr("RUN_HLTKEY") == "") {
+              real_role = "";
+            }
+      
+            if (real_role == "ONLINE") {
+      
+              $(".edit_online input", _edit_info).removeAttr("readonly");
+              $(".edit_online textarea", _edit_info).removeAttr("readonly");
+      
+              $("input", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
+              $("textarea", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
+      
+              $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_sub_online).removeAttr("disabled").removeAttr("readonly");
+          
+              $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_expert).removeAttr("disabled").removeAttr("readonly");
+      
+              if (status == "") {
+                $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
+                $("input[name='RUN_ONLINE_SHIFTER']", _edit_info).val("<%=user.getName()%>");
+              } else {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
+                $(_btn_run_delete).show();
               }
-              if (status != "SIGNOFF") {
-                $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
+              $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
+      
+              if (status == "") $(_btn_run_finish).hide();
+              $(_btn_run_apply).show();
+      
+            } else if (real_role == "OFFLINE")  {
+      
+              $(".edit_offline input", _edit_info).removeAttr("readonly");
+              $(".edit_offline textarea", _edit_info).removeAttr("readonly");
+      
+              $("textarea", _edit_sub_offline).removeAttr("readonly");
+              $("select", _edit_sub_offline).removeAttr("readonly").removeAttr("disabled");
+      
+              $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_sub_online).removeAttr("disabled").removeAttr("readonly");
+            
+              $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_expert).removeAttr("disabled").removeAttr("readonly");
+      
+              $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
+              $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
+      
+              if (status == "") $(_btn_run_finish).hide();
+              $(_btn_run_apply).show();
+      
+            } else if (real_role == "EXPERT") {
+      
+              $("input", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
+              $("textarea", _edit_l1t).removeAttr("readonly").removeAttr("disabled");
+      
+              $(".edit_online input", _edit_info).removeAttr("readonly");
+              $(".edit_online textarea", _edit_info).removeAttr("readonly");
+      
+              $(".edit_offline input", _edit_info).removeAttr("readonly");
+              $(".edit_offline textarea", _edit_info).removeAttr("readonly");
+      
+              $("textarea", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_sub_online).removeAttr("readonly").removeAttr("disabled");
+          
+              $("textarea", _edit_expert).removeAttr("readonly").removeAttr("disabled");
+              $("select", _edit_expert).removeAttr("readonly").removeAttr("disabled");
+          
+              $("textarea", _edit_sub_offline).removeAttr("readonly");
+              $("select", _edit_sub_offline).removeAttr("readonly").removeAttr("disabled");
+      
+              if (status == "") $(_btn_run_finish).hide();
+              $(_btn_run_apply).show();
+              $(_btn_run_delete).show();
+      
+              if (status == "") {
+                $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
+              } else {
+                if (status != "OFFLINE") {
+                  $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
+                }
+                if (status != "SIGNOFF") {
+                  $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
+                }
+                $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"COMPLETED\">to COMPLETED</option>"));
               }
-              $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"COMPLETED\">to COMPLETED</option>"));
+              $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
+      
+            } else {
+      
+              $("input[type=checkbox]", _edit_l1t).attr("disabled", true);
+              $("textarea", _edit_l1t).attr("readonly", true);
+      
+              $("select[name=RUN_STATUS]", _edit_info).attr("disabled", true);
+      
+              $("select", _edit_sub_online).attr("disabled", true);
+              $("select", _edit_sub_offline).attr("disabled", true);
+      
+              $(".edit_online textarea", _edit_info).attr("readonly", true);
+              $(".edit_offline textarea", _edit_info).attr("readonly", true);
+
+              $(_btn_run_finish).hide();
+              $(_btn_run_apply).hide();
+              $(_btn_run_delete).hide();
+
             }
-            $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
-    
-          } else {
-    
-            $("input[type=checkbox]", _edit_l1t).attr("disabled", true);
-            $("textarea", _edit_l1t).attr("readonly", true);
-    
-            $("select[name=RUN_STATUS]", _edit_info).attr("disabled", true);
-    
-            $("select", _edit_sub_online).attr("disabled", true);
-            $("select", _edit_sub_offline).attr("disabled", true);
-    
-            $(".edit_online textarea", _edit_info).attr("readonly", true);
-            $(".edit_offline textarea", _edit_info).attr("readonly", true);
+      
+            $(_btn_run_apply).unbind("click").click(function () {
+              var err = $("#edit .error");
+              if (err.length > 0) {
+                $(err[0]).focus();
+                messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
+                return false;
+              };
+              var msg = build_xml(false);
+              if (msg) sendEditMessage(msg, number);
+              return false;
+            });
+          
+            $(_btn_run_finish).unbind("click").click(function () {
+              var err = $(".error", _edit);
+              if (err.length > 0) {
+                $(err[0]).focus();
+                messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
+                return false;
+              };
+              var msg = build_xml(true);
+              if (msg) sendEditMessage(msg, number);
+              return false;
+            });
+      
+            $(_btn_run_delete).unbind("click").click(function () {
+              var message = {
+                RUN_NUMBER: $("input[name=RUN_NUMBER]", _edit_form).val(),
+                DELETE: true
+              };
+              if(!confirm("Do you really want to delete run #" + message.RUN_NUMBER +"?")) return false;
+              sendEditMessage(message, number);
+              return false;
+            });
+
+            $('#edit_overlay').hide();
+      
           }
-    
-          $(_btn_run_apply).unbind("click").click(function () {
-            var err = $("#edit .error");
-            if (err.length > 0) {
-              $(err[0]).focus();
-              messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
-              return false;
-            };
-            var msg = build_xml(false);
-            if (msg) sendEditMessage(msg);
+        });
+
+
+        var prev_run = -1;
+        var next_run = -1;
+        $.each(run_list, function(i, r){
+          if (r == number) {
+            prev_run = i + 1; 
+            next_run = i - 1; 
+          }
+        });
+
+        if (prev_run >= 0 && prev_run < run_list.length) {
+          prev_run = run_list[prev_run];
+          $(_btn_run_prev).show().text("< " + prev_run).unbind("click").click(function () {
+            loadRun(prev_run);
             return false;
           });
-    		
-          $(_btn_run_finish).unbind("click").click(function () {
-            var err = $(".error", _edit);
-            if (err.length > 0) {
-              $(err[0]).focus();
-              messageBox($(err[0]).attr("error"), "Please correct data provided and try again.");
-              return false;
-            };
-            var msg = build_xml(true);
-            if (msg) sendEditMessage(msg);
-            return false;
-          });
-    
-          $(_btn_run_delete).unbind("click").click(function () {
-            var message = {
-              RUN_NUMBER: $("input[name=RUN_NUMBER]", _edit_form).val(),
-              DELETE: true
-            };
-            if(!confirm("Do you really want to delete run #" + message.RUN_NUMBER +"?")) return false;
-            sendEditMessage(message);
-            return false;
-          });
-    
-          $('#edit_overlay').hide('fast');
-    
+        } else {
+          $(_btn_run_prev).hide();
         }
-      });
+
+        if (next_run > 0 && next_run < run_list.length) {
+          next_run = run_list[next_run];
+          $(_btn_run_next).show().text(next_run + " >").unbind("click").click(function () {
+            loadRun(next_run);
+            return false;
+          });
+        } else {
+          $(_btn_run_next).hide();
+        }
+
+        $(_btn_run_back).unbind("click").click(function () {
+          window.location = "index.jsp?number=" + number;
+          return false;
+        });
+    
+        $(_btn_run_reset).unbind("click").click(function () {
+          loadRun(run_number);
+          return false;
+        });
+  
+      };
+
+      if ($.cookie("run_edit")) {
+        loadRun($.cookie("run_edit"));
+      } else {
+        messageBox("Run not provided!", "You will be returned back to table page");
+        window.location = "index.jsp";
+      }
     
     });
 
@@ -551,15 +602,26 @@
       <tr height="10">
   
         <td class="run_number_info" valign="top" colspan="2">
-          <table border="0" width="100%">
+
+          <table border="0" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td id="logo_img"></td>
               <td id="logo">CMS DQM Run Registry</td>
-              <td class="label_col" width="50%" style="font-size: 24px; font-weight: bold; color: #999999;">Run&nbsp;number:</td>
-              <td><input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue;"/></td>
-              <td width="200"><button title="Discard changes and return to the main table" id="run_back" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Close Edit Form</button></td>
+              <td style="text-align: center">
+                <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
+                <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 100px;vertical-align: middle;"/>
+              </td>
+              <td style="text-align: right">
+                <button title="Go to previous run in the list" id="run_prev" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Prev</button>
+                <button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Finish</button>
+                <button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Apply</button>
+                <button title="Discard changes and re-read data from database" id="run_reset" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Reset</button>
+                <button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Delete</button>
+                <button title="Discard changes and return to the main table" id="run_back" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Close Edit Form</button>
+                <button title="Go to next run in the list" id="run_next" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Next</button>
+              </td>
             </tr>
           </table>
+
         </td>
   
       </tr>
@@ -568,6 +630,8 @@
         <td id="edit_info_tabs" class="edit_info" valign="top" width="70%">
           <ul>
             <li><a href="#edit_info_tab"><span>General Information</span></a></li>
+            <li><a href="#edit_comp_tab"><span>Components</span></a></li>
+            <li><a href="#edit_expert_comments" id="expertCommentTab"><span>Comments</span></a></li>
           </ul>
           <div id="edit_info_tab" width="100%" height="100%">
             <table width="100%" border="0">
@@ -624,33 +688,6 @@
   
             </table>
           </div>
-        </td>
-  
-        <td id="edit_l1t_tabs" valign="top" width="30%">
-          <ul>
-            <li><a href="#edit_l1t_tab"><span>L1 Triggers</span></a></li>
-          </ul>
-          <div class="edit_l1t" id="edit_l1t_tab" width="100%" height="100%">
-            <table width="100%" height="100%">
-              <dqm:listL1Sources>
-                <tr>
-                  <td class="label_col"><label for="l1s_${l1s_abbr}"> ${l1s_abbr} </label></td>
-                  <td class="input_col"><input name="l1s_${l1s_abbr}" type="checkbox" disabled="true" readonly="true"/></td>
-                  <td class="input_col"><textarea name="l1s_${l1s_abbr}_comment" id="l1s_${l1s_abbr}_comment" readonly="true" style="height:20px;" maxlength="90"></textarea></td>
-                </tr>
-              </dqm:listL1Sources>
-            </table>
-          </div>
-        </td>
-  
-      </tr>
-      <tr>
-  
-        <td id="edit_components_tabs" class="edit_info" valign="top">
-          <ul>
-            <li><a href="#edit_comp_tab"><span>Components</span></a></li>
-  	  <li><a href="#edit_expert_comments" id="expertCommentTab"><span>Comments</span></a></li>
-          </ul>
           <div id="edit_comp_tab" width="100%" height="100%">
             <table border="0" width="100%" height="100%">
               <tr>
@@ -659,11 +696,11 @@
                     <li><a href="#edit_sub_online_tab"><span>DPG</span></a></li>
                   </ul>
                   <div class="edit_sub edit_sub_online" id="edit_sub_online_tab" width="100%" height="100%">
-                    <table width="100%" border="0">
+                    <table width="100%" border="1">
                       <dqm:listSubsystems type="ONLINE">
                         <tr>
                           <td class="label_col"><label for="sub_${sub_abbr}"> ${sub_abbr} </label></td>
-                          <td class="input_col"><select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_online" disabled="true"></select></td>
+                          <td class="input_col" width="1px"><select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_online" disabled="true"  style="width: 150px"></select></td>
                           <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"></textarea></td>
                         </tr>
                       </dqm:listSubsystems>
@@ -679,11 +716,12 @@
                       <dqm:listSubsystems type="OFFLINE">
                         <tr>
                           <td class="label_col"><label for="sub_${sub_abbr}"> ${sub_abbr} </label></td>
-                          <td class="input_col"><select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_offline" disabled="true">
-                            <option value="NOTSET">NOTSET</option>
-                            <option value="GOOD">GOOD</option>
-                            <option value="BAD">BAD</option>
-                          </select></td>
+                          <td class="input_col" width="1px">
+                            <select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_offline" disabled="true" style="width: 150px">
+                              <option value="NOTSET">NOTSET</option>
+                              <option value="GOOD">GOOD</option>
+                              <option value="BAD">BAD</option>
+                            </select></td>
                           <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"></textarea></td>
                         </tr>
                       </dqm:listSubsystems>
@@ -701,7 +739,7 @@
                   <div class="edit_sub_expert">
                     <b>Subsystem: </b>
                     <select style="width: 80px" disabled="true" id="expertCommentSub">
-                      <dqm:listSubsystems type="ONLINE">				
+                      <dqm:listSubsystems type="ONLINE">        
                         <option  value="sub_${sub_abbr}">${sub_abbr}</option>
                       </dqm:listSubsystems>
                       <dqm:listSubsystems type="OFFLINE">
@@ -723,26 +761,23 @@
               </tr>
             </table>
           </div>
-  
         </td>
   
-        <td valign="top" align="center">
-  
-          <table width="200" border="0" cellpadding="5">
-            <tr>
-              <td><button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Finish</button></td>
-            </tr>
-            <tr>
-              <td><button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Apply</button></td>
-            </tr>
-            <tr>
-              <td><button title="Discard changes and re-read data from database" id="run_reset" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Reset</button></td>
-            </tr>
-            <tr>
-              <td><button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Delete</button></td>
-            </tr>
-          </table>
-  
+        <td id="edit_l1t_tabs" valign="top" width="30%">
+          <ul>
+            <li><a href="#edit_l1t_tab"><span>L1 Triggers</span></a></li>
+          </ul>
+          <div class="edit_l1t" id="edit_l1t_tab" width="100%" height="100%">
+            <table width="100%" height="100%">
+              <dqm:listL1Sources>
+                <tr>
+                  <td class="label_col"><label for="l1s_${l1s_abbr}"> ${l1s_abbr} </label></td>
+                  <td class="input_col"><input name="l1s_${l1s_abbr}" type="checkbox" disabled="true" readonly="true"/></td>
+                  <td class="input_col"><textarea name="l1s_${l1s_abbr}_comment" id="l1s_${l1s_abbr}_comment" readonly="true" style="height:20px;" maxlength="90"></textarea></td>
+                </tr>
+              </dqm:listL1Sources>
+            </table>
+          </div>
         </td>
   
       </tr>
@@ -751,7 +786,5 @@
   </form>
   </div>
   
-  <jsp:include page="messageBox.html" />
-
   </body>
 </html>
