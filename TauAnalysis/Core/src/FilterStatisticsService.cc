@@ -83,7 +83,7 @@ FilterStatisticsTable* FilterStatisticsService::loadFilterStatisticsTable(const 
   std::vector<std::string> dirNames = dqmStore.getSubdirs();
   for ( std::vector<std::string>::const_iterator dirName = dirNames.begin();
 	dirName != dirNames.end(); ++dirName ) {
-    std::string subDirName = dqmSubDirectoryName_merged(dqmDirectory, *dirName);
+    std::string subDirName = dqmSubDirectoryName(dqmDirectory, *dirName);
     std::string dqmDirectory_row = dqmDirectoryName(dqmDirectory).append(subDirName);
     dqmStore.setCurrentFolder(dqmDirectory_row);
 
