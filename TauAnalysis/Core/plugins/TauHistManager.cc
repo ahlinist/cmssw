@@ -35,6 +35,7 @@ bool matchesGenTau(const pat::Tau& patTau)
 //
 
 TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
+  : dqmError_(0)
 {
   //std::cout << "<TauHistManager::TauHistManager>:" << std::endl;
 
@@ -101,39 +102,44 @@ TauHistManager::~TauHistManager()
   clearIsoParam(tauParticleFlowIsoParam_);
 }
 
-void TauHistManager::bookHistograms(const edm::EventSetup& setup)
+void TauHistManager::bookHistograms()
 {
   //std::cout << "<TauHistManager::bookHistograms>:" << std::endl;
 
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
+    dqmError_ = 1;
+    return;
+  }
 
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
 
 //--- book histogram for number of tau-jets in each event
-    hNumTaus_ = dqmStore.book1D("NumTaus", "NumTaus", 10, -0.5, 9.5);
+  hNumTaus_ = dqmStore.book1D("NumTaus", "NumTaus", 10, -0.5, 9.5);
 
 //--- book histograms for Pt, eta and phi distributions
 //    of tau-jets passing all id. and isolation selections
-    bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
-    hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
-
-    hTauEnCompToGen_ = dqmStore.book1D("TauEnCompToGen", "TauEnCompToGen", 100, -2.50, +2.50);
-    hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "TauThetaCompToGen", 200, -0.050, +0.050);
-    hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "TauPhiCompToGen", 200, -0.050, +0.050);
-
-    hTauNumTracksSignalCone_ = dqmStore.book1D("TauNumTracksSignalCone", "TauNumTracksSignalCone", 10, -0.5, 9.5);
-    hTauNumTracksIsoCone_ = dqmStore.book1D("TauNumTracksIsoCone", "TauNumTracksIsoCone", 20, -0.5, 19.5);
-
-    bookTauHistograms(dqmStore, hTauLeadTrkPt_, hTauLeadTrkEta_, hTauLeadTrkPhi_, "TauLeadTrk");
-    hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
-    hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.100, 0.100);
-    hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
-
-    hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
-							 "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
-    hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
-						     "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
+  bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
+  hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
+  
+  hTauEnCompToGen_ = dqmStore.book1D("TauEnCompToGen", "TauEnCompToGen", 100, -2.50, +2.50);
+  hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "TauThetaCompToGen", 200, -0.050, +0.050);
+  hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "TauPhiCompToGen", 200, -0.050, +0.050);
+  
+  hTauNumTracksSignalCone_ = dqmStore.book1D("TauNumTracksSignalCone", "TauNumTracksSignalCone", 10, -0.5, 9.5);
+  hTauNumTracksIsoCone_ = dqmStore.book1D("TauNumTracksIsoCone", "TauNumTracksIsoCone", 20, -0.5, 19.5);
+  
+  bookTauHistograms(dqmStore, hTauLeadTrkPt_, hTauLeadTrkEta_, hTauLeadTrkPhi_, "TauLeadTrk");
+  hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
+  hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "TauLeadTrkIPxy", 100, -0.100, 0.100);
+  hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
+  
+  hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
+						       "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
+  hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
+						   "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
 
 /*
   add histograms of:
@@ -146,74 +152,73 @@ void TauHistManager::bookHistograms(const edm::EventSetup& setup)
    o reco TauDecayMode mass separately for different decay modes
  */
     
-    hTauRecDecayMode_ = dqmStore.book1D("TauRecDecayMode", "TauRecDecayMode", 25, -0.5, 24.5);
-
-    hTauTaNCoutputOneProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngNoPi0s", 
-						    "TauTaNCoutputOneProngNoPi0s", 102, -0.01, 1.01); 
-    hTauTaNCoutputOneProngOnePi0_ = dqmStore.book1D("TauTaNCoutputOneProngOnePi0", 
-						    "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
-    hTauTaNCoutputOneProngTwoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngTwoPi0s", 
-						     "TauTaNCoutputOneProngTwoPi0s", 102, -0.01, 1.01);
-    hTauTaNCoutputThreeProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputThreeProngNoPi0s", 
-						      "TauTaNCoutputThreeProngNoPi0s", 102, -0.01, 1.01);
-    hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputThreeProngOnePi0", 
-						      "TauTaNCoutputThreeProngOnePi0", 102, -0.01, 1.01);
-
-    hTauDiscriminatorTaNCfrOnePercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrOnePercent",
-							 "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
-    hTauDiscriminatorTaNCfrHalfPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrHalfPercent",
-							  "TauDiscriminatorTaNCfrHalfPercent", 102, -0.01, 1.01);
-    hTauDiscriminatorTaNCfrQuarterPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrQuarterPercent",
-							     "TauDiscriminatorTaNCfrQuarterPercent", 102, -0.01, 1.01);
-    hTauDiscriminatorTaNCfrTenthPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrTenthPercent",
-							   "TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
+  hTauRecDecayMode_ = dqmStore.book1D("TauRecDecayMode", "TauRecDecayMode", 25, -0.5, 24.5);
+  
+  hTauTaNCoutputOneProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngNoPi0s", 
+						  "TauTaNCoutputOneProngNoPi0s", 102, -0.01, 1.01); 
+  hTauTaNCoutputOneProngOnePi0_ = dqmStore.book1D("TauTaNCoutputOneProngOnePi0", 
+						  "TauTaNCoutputOneProngOnePi0", 102, -0.01, 1.01);
+  hTauTaNCoutputOneProngTwoPi0s_ = dqmStore.book1D("TauTaNCoutputOneProngTwoPi0s", 
+						   "TauTaNCoutputOneProngTwoPi0s", 102, -0.01, 1.01);
+  hTauTaNCoutputThreeProngNoPi0s_ = dqmStore.book1D("TauTaNCoutputThreeProngNoPi0s", 
+						    "TauTaNCoutputThreeProngNoPi0s", 102, -0.01, 1.01);
+  hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputThreeProngOnePi0", 
+						    "TauTaNCoutputThreeProngOnePi0", 102, -0.01, 1.01);
+  
+  hTauDiscriminatorTaNCfrOnePercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrOnePercent",
+						       "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
+  hTauDiscriminatorTaNCfrHalfPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrHalfPercent",
+							"TauDiscriminatorTaNCfrHalfPercent", 102, -0.01, 1.01);
+  hTauDiscriminatorTaNCfrQuarterPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrQuarterPercent",
+							   "TauDiscriminatorTaNCfrQuarterPercent", 102, -0.01, 1.01);
+  hTauDiscriminatorTaNCfrTenthPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrTenthPercent",
+							 "TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
     
-    hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
-    hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
-    hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
-    hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "TauIsoSumPt", 100, 0., 20.);
-
-    hTauParticleFlowIsoPt_ = dqmStore.book1D("TauParticleFlowIsoPt", "TauParticleFlowIsoPt", 100, 0., 20.);    
-    hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "TauPFChargedHadronIsoPt", 100, 0., 20.);   
-    hTauPFNeutralHadronIsoPt_ = dqmStore.book1D("TauPFNeutralHadronIsoPt", "TauPFNeutralHadronIsoPt", 100, 0., 20.);   
-    hTauPFGammaIsoPt_ = dqmStore.book1D("TauPFGammaIsoPt", "TauPFGammaIsoPt", 100, 0., 20.);  
-
-    hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "TauTrkIsoEnProfile", 100, 0., 10.);
-    hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "TauTrkIsoPtProfile", 100, 0., 10.);
-    hTauTrkIsoEtaDistProfile_ = dqmStore.book1D("TauTrkIsoEtaDistProfile", "TauTrkIsoEtaDistProfile", 15, 0., 1.5);
-    hTauTrkIsoPhiDistProfile_ = dqmStore.book1D("TauTrkIsoPhiDistProfile", "TauTrkIsoPhiDistProfile", 15, 0., 1.5);
-
-    for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
-      std::ostringstream iConeSizeString;
-      iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-
-      std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, 
-							 hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, 
-							  hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, 
-							  hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-
-      std::string hTauParticleFlowIsoPtConeSizeDepName_i 
-	= std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
-								  hTauParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
-	= std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
-								     hTauPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
-	= std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
-								     hTauPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hTauPFGammaIsoPtConeSizeDepName_i 
-	= std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
-							     hTauPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
-    }
+  hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
+  hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
+  hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
+  hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "TauIsoSumPt", 100, 0., 20.);
+  
+  hTauParticleFlowIsoPt_ = dqmStore.book1D("TauParticleFlowIsoPt", "TauParticleFlowIsoPt", 100, 0., 20.);    
+  hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "TauPFChargedHadronIsoPt", 100, 0., 20.);   
+  hTauPFNeutralHadronIsoPt_ = dqmStore.book1D("TauPFNeutralHadronIsoPt", "TauPFNeutralHadronIsoPt", 100, 0., 20.);   
+  hTauPFGammaIsoPt_ = dqmStore.book1D("TauPFGammaIsoPt", "TauPFGammaIsoPt", 100, 0., 20.);  
+  
+  hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "TauTrkIsoEnProfile", 100, 0., 10.);
+  hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "TauTrkIsoPtProfile", 100, 0., 10.);
+  hTauTrkIsoEtaDistProfile_ = dqmStore.book1D("TauTrkIsoEtaDistProfile", "TauTrkIsoEtaDistProfile", 15, 0., 1.5);
+  hTauTrkIsoPhiDistProfile_ = dqmStore.book1D("TauTrkIsoPhiDistProfile", "TauTrkIsoPhiDistProfile", 15, 0., 1.5);
+  
+  for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
+    std::ostringstream iConeSizeString;
+    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
+    
+    std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, 
+						       hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, 
+							hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, 
+							hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
+    
+    std::string hTauParticleFlowIsoPtConeSizeDepName_i 
+      = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
+								hTauParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
+      = std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
+								   hTauPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
+      = std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
+								   hTauPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hTauPFGammaIsoPtConeSizeDepName_i 
+      = std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
+							   hTauPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
   }
 }
 
@@ -239,12 +244,17 @@ void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat:
   if ( patTau.isTauIDAvailable(discrName) ) h->Fill(patTau.tauID(discrName));
 }
 
-void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
 {  
   //std::cout << "<TauHistManager::fillHistograms>:" << std::endl; 
 
+  if ( dqmError_ ) {
+    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
+    return;
+  }
+  
   edm::Handle<std::vector<pat::Tau> > patTaus;
-  iEvent.getByLabel(tauSrc_, patTaus);
+  evt.getByLabel(tauSrc_, patTaus);
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
   hNumTaus_->Fill(patTaus->size());
@@ -293,7 +303,7 @@ void TauHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSe
 
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
-	iEvent.getByLabel(vertexSrc_, recoVertices);
+	evt.getByLabel(vertexSrc_, recoVertices);
 	if ( recoVertices->size() >= 1 ) {
 	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
 	  hTauLeadTrkIPxy_->Fill(patTau->leadTrack()->dxy(thePrimaryEventVertex.position()));
@@ -447,6 +457,7 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, TauHistManager, "TauHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, TauHistManager, "TauHistManager");
 
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"

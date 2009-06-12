@@ -35,6 +35,7 @@ bool matchesGenElectron(const pat::Electron& patElectron)
 //
 
 ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
+  : dqmError_(0)
 {
   //std::cout << "<ElectronHistManager::ElectronHistManager>:" << std::endl;
 
@@ -90,108 +91,115 @@ ElectronHistManager::~ElectronHistManager()
   clearIsoParam(electronParticleFlowIsoParam_);
 }
 
-void ElectronHistManager::bookHistograms(const edm::EventSetup& setup)
+void ElectronHistManager::bookHistograms()
 {
   //std::cout << "<ElectronHistManager::bookHistograms>:" << std::endl;
 
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
+    dqmError_ = 1;
+    return;
+  }
 
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
 
 //--- book histogram for number of electrons in each event
-    hNumElectrons_ = dqmStore.book1D("NumElectrons", "NumElectrons", 10, -0.5, 9.5);
+  hNumElectrons_ = dqmStore.book1D("NumElectrons", "NumElectrons", 10, -0.5, 9.5);
 
 //--- book histograms for Pt, eta and phi distributions
 //    of electrons passing all id. and isolation selections
-    bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
-    hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "ElectronPtVsEta", 24, -3., +3., 30, 0., 150.);
-
-    hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "ElectronEnCompToGen", 100, -0.50, +0.50);
-    hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "ElectronThetaCompToGen", 200, -0.010, +0.010);
-    hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "ElectronPhiCompToGen", 200, -0.010, +0.010);
-
-    hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "ElectronTrackPt", 75, 0., 150.);
-    hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.100, 0.100);
-    hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -1.0, 1.0);
-
-    hElectronSuperclEnOverTrackMomBarrel_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomBarrel", "ElectronSuperclEnOverTrackMomBarrel", 50, 0., 5.);
-    hElectronSuperclEnOverTrackMomEndcap_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomEndcap", "ElectronSuperclEnOverTrackMomEndcap", 50, 0., 5.);
-
-    hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "ElectronIdRobust", 2, -0.5, 1.5);
-
-    hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "ElectronTrkIsoPt", 100, 0., 20.);    
-    hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "ElectronEcalIsoPt", 100, 0., 20.);
-    hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "ElectronEcalIsoPtBarrel", 100, 0., 20.);
-    hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "ElectronEcalIsoPtEndcap", 100, 0., 20.);
-    hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
-    hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
-    hElectronTrkIsoPtRel_ = dqmStore.book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
-    hElectronEcalIsoPtRel_ = dqmStore.book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
-    hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "ElectronEcalIsoPtBarrelRel", 200, 0., 2.);
-    hElectronEcalIsoPtEndcapRel_ = dqmStore.book1D("ElectronEcalIsoPtEndcapRel", "ElectronEcalIsoPtEndcapRel", 200, 0., 2.);
-    hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "ElectronHcalIsoPtRel", 200, 0., 2.);
-    hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "ElectronIsoSumPtRel", 200, 0., 2.);
-
-    hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "ElectronParticleFlowIsoPt", 100, 0., 20.);    
-    hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "ElectronPFChargedHadronIsoPt", 100, 0., 20.);   
-    hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "ElectronPFNeutralHadronIsoPt", 100, 0., 20.);   
-    hElectronPFGammaIsoPt_ = dqmStore.book1D("ElectronPFGammaIsoPt", "ElectronPFGammaIsoPt", 100, 0., 20.);  
-
-    hElectronTrkIsoValProfile_ = dqmStore.book1D("ElectronTrkIsoValProfile", "ElectronTrkIsoValProfile", 100, 0., 10.);
-    hElectronTrkIsoEtaDistProfile_ = dqmStore.book1D("ElectronTrkIsoEtaDistProfile", "ElectronTrkIsoEtaDistProfile", 15, 0., 1.5);
-    hElectronTrkIsoPhiDistProfile_ = dqmStore.book1D("ElectronTrkIsoPhiDistProfile", "ElectronTrkIsoPhiDistProfile", 15, 0., 1.5);
+  bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
+  hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "ElectronPtVsEta", 24, -3., +3., 30, 0., 150.);
+  
+  hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "ElectronEnCompToGen", 100, -0.50, +0.50);
+  hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "ElectronThetaCompToGen", 200, -0.010, +0.010);
+  hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "ElectronPhiCompToGen", 200, -0.010, +0.010);
+  
+  hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "ElectronTrackPt", 75, 0., 150.);
+  hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.100, 0.100);
+  hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -1.0, 1.0);
+  
+  hElectronSuperclEnOverTrackMomBarrel_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomBarrel", "ElectronSuperclEnOverTrackMomBarrel", 50, 0., 5.);
+  hElectronSuperclEnOverTrackMomEndcap_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomEndcap", "ElectronSuperclEnOverTrackMomEndcap", 50, 0., 5.);
+  
+  hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "ElectronIdRobust", 2, -0.5, 1.5);
+  
+  hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "ElectronTrkIsoPt", 100, 0., 20.);    
+  hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "ElectronEcalIsoPt", 100, 0., 20.);
+  hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "ElectronEcalIsoPtBarrel", 100, 0., 20.);
+  hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "ElectronEcalIsoPtEndcap", 100, 0., 20.);
+  hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
+  hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
+  hElectronTrkIsoPtRel_ = dqmStore.book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
+  hElectronEcalIsoPtRel_ = dqmStore.book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
+  hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "ElectronEcalIsoPtBarrelRel", 200, 0., 2.);
+  hElectronEcalIsoPtEndcapRel_ = dqmStore.book1D("ElectronEcalIsoPtEndcapRel", "ElectronEcalIsoPtEndcapRel", 200, 0., 2.);
+  hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "ElectronHcalIsoPtRel", 200, 0., 2.);
+  hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "ElectronIsoSumPtRel", 200, 0., 2.);
+  
+  hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "ElectronParticleFlowIsoPt", 100, 0., 20.);    
+  hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "ElectronPFChargedHadronIsoPt", 100, 0., 20.);   
+  hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "ElectronPFNeutralHadronIsoPt", 100, 0., 20.);   
+  hElectronPFGammaIsoPt_ = dqmStore.book1D("ElectronPFGammaIsoPt", "ElectronPFGammaIsoPt", 100, 0., 20.);  
+  
+  hElectronTrkIsoValProfile_ = dqmStore.book1D("ElectronTrkIsoValProfile", "ElectronTrkIsoValProfile", 100, 0., 10.);
+  hElectronTrkIsoEtaDistProfile_ = dqmStore.book1D("ElectronTrkIsoEtaDistProfile", "ElectronTrkIsoEtaDistProfile", 15, 0., 1.5);
+  hElectronTrkIsoPhiDistProfile_ = dqmStore.book1D("ElectronTrkIsoPhiDistProfile", "ElectronTrkIsoPhiDistProfile", 15, 0., 1.5);
+  
+  hElectronEcalIsoValProfile_ = dqmStore.book1D("ElectronEcalIsoValProfile", "ElectronEcalIsoValProfile", 100, 0., 10.);
+  hElectronEcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronEcalIsoEtaDistProfile", "ElectronEcalIsoEtaDistProfile", 15, 0., 1.5);
+  hElectronEcalIsoPhiDistProfile_ = dqmStore.book1D("ElectronEcalIsoPhiDistProfile", "ElectronEcalIsoPhiDistProfile", 15, 0., 1.5);
+  
+  hElectronHcalIsoValProfile_ = dqmStore.book1D("ElectronHcalIsoValProfile", "ElectronHcalIsoValProfile", 100, 0., 10.);
+  hElectronHcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronHcalIsoEtaDistProfile", "ElectronHcalIsoEtaDistProfile", 15, 0., 1.5);
+  hElectronHcalIsoPhiDistProfile_  = dqmStore.book1D("ElectronHcalIsoPhiDistProfile", "ElectronHcalIsoPhiDistProfile", 15, 0., 1.5);
+  
+  for ( unsigned iConeSize = 1; iConeSize <= numElectronIsoConeSizes_; ++iConeSize ) {
+    std::ostringstream iConeSizeString;
+    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
     
-    hElectronEcalIsoValProfile_ = dqmStore.book1D("ElectronEcalIsoValProfile", "ElectronEcalIsoValProfile", 100, 0., 10.);
-    hElectronEcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronEcalIsoEtaDistProfile", "ElectronEcalIsoEtaDistProfile", 15, 0., 1.5);
-    hElectronEcalIsoPhiDistProfile_ = dqmStore.book1D("ElectronEcalIsoPhiDistProfile", "ElectronEcalIsoPhiDistProfile", 15, 0., 1.5);
+    std::string hElectronTrkIsoPtConeSizeDepName_i = std::string("ElectronTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronTrkIsoPtConeSizeDepName_i, hElectronTrkIsoPtConeSizeDepName_i, 
+							    100, 0., 20.));
+    std::string hElectronEcalIsoPtConeSizeDepName_i = std::string("ElectronEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronEcalIsoPtConeSizeDepName_i, hElectronEcalIsoPtConeSizeDepName_i, 
+							     100, 0., 20.));
+    std::string hElectronHcalIsoPtConeSizeDepName_i = std::string("ElectronHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronHcalIsoPtConeSizeDepName_i, hElectronHcalIsoPtConeSizeDepName_i, 
+							     100, 0., 20.));
     
-    hElectronHcalIsoValProfile_ = dqmStore.book1D("ElectronHcalIsoValProfile", "ElectronHcalIsoValProfile", 100, 0., 10.);
-    hElectronHcalIsoEtaDistProfile_ = dqmStore.book1D("ElectronHcalIsoEtaDistProfile", "ElectronHcalIsoEtaDistProfile", 15, 0., 1.5);
-    hElectronHcalIsoPhiDistProfile_  = dqmStore.book1D("ElectronHcalIsoPhiDistProfile", "ElectronHcalIsoPhiDistProfile", 15, 0., 1.5);
-    
-    for ( unsigned iConeSize = 1; iConeSize <= numElectronIsoConeSizes_; ++iConeSize ) {
-      std::ostringstream iConeSizeString;
-      iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-
-      std::string hElectronTrkIsoPtConeSizeDepName_i = std::string("ElectronTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronTrkIsoPtConeSizeDepName_i, hElectronTrkIsoPtConeSizeDepName_i, 
-							      100, 0., 20.));
-      std::string hElectronEcalIsoPtConeSizeDepName_i = std::string("ElectronEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronEcalIsoPtConeSizeDepName_i, hElectronEcalIsoPtConeSizeDepName_i, 
-							       100, 0., 20.));
-      std::string hElectronHcalIsoPtConeSizeDepName_i = std::string("ElectronHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronHcalIsoPtConeSizeDepName_i, hElectronHcalIsoPtConeSizeDepName_i, 
-							       100, 0., 20.));
-
-      std::string hElectronParticleFlowIsoPtConeSizeDepName_i 
-	= std::string("ElectronParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronParticleFlowIsoPtConeSizeDepName_i, 
-								       hElectronParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hElectronPFChargedHadronIsoPtConeSizeDepName_i 
-	= std::string("ElectronChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFChargedHadronIsoPtConeSizeDepName_i, 
-									  hElectronPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hElectronPFNeutralHadronIsoPtConeSizeDepName_i 
-	= std::string("ElectronPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 
-									  hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-      std::string hElectronPFGammaIsoPtConeSizeDepName_i 
-	= std::string("ElectronPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-      hElectronPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFGammaIsoPtConeSizeDepName_i, 
-								  hElectronPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
-    }
+    std::string hElectronParticleFlowIsoPtConeSizeDepName_i 
+      = std::string("ElectronParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronParticleFlowIsoPtConeSizeDepName_i, 
+								     hElectronParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hElectronPFChargedHadronIsoPtConeSizeDepName_i 
+      = std::string("ElectronChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFChargedHadronIsoPtConeSizeDepName_i, 
+									hElectronPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hElectronPFNeutralHadronIsoPtConeSizeDepName_i 
+      = std::string("ElectronPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 
+									hElectronPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
+    std::string hElectronPFGammaIsoPtConeSizeDepName_i 
+      = std::string("ElectronPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hElectronPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hElectronPFGammaIsoPtConeSizeDepName_i, 
+								hElectronPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
   }
 }
 
-
-
-void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
 {  
   //std::cout << "<ElectronHistManager::fillHistograms>:" << std::endl; 
 
+  if ( dqmError_ ) {
+    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
+    return;
+  }
+
   edm::Handle<std::vector<pat::Electron> > patElectrons;
-  iEvent.getByLabel(electronSrc_, patElectrons);
+  evt.getByLabel(electronSrc_, patElectrons);
 
   //std::cout << " patElectrons.size = " << patElectrons->size() << std::endl;
   hNumElectrons_->Fill(patElectrons->size());
@@ -222,7 +230,7 @@ void ElectronHistManager::fillHistograms(const edm::Event& iEvent, const edm::Ev
       hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt());
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
-	iEvent.getByLabel(vertexSrc_, recoVertices);
+	evt.getByLabel(vertexSrc_, recoVertices);
 	if ( recoVertices->size() >= 1 ) {
 	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
 	  hElectronTrackIPxy_->Fill(patElectron->gsfTrack()->dxy(thePrimaryEventVertex.position()));
@@ -362,6 +370,7 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, ElectronHistManager, "ElectronHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, ElectronHistManager, "ElectronHistManager");
 
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"

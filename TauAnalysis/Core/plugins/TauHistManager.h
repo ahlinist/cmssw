@@ -15,17 +15,17 @@
 
 class TauHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit TauHistManager(const edm::ParameterSet&);
   ~TauHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
- private:
-
-//--- private functions
+//--- auxiliary functions
   void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillTauHistograms(const pat::Tau&, MonitorElement*, MonitorElement*, MonitorElement*);
@@ -118,6 +118,8 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos tauParticleFlowIsoParam_;
+
+  int dqmError_;
 };
 
 #endif  

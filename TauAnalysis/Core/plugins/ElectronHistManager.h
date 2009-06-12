@@ -16,16 +16,16 @@
 class ElectronHistManager : public HistManagerBase 
 {
  public:
-  
   explicit ElectronHistManager(const edm::ParameterSet&);
   ~ElectronHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
+ private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
- private:
-
-//--- private functions
+//--- auxiliary functions
   void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*);
@@ -114,6 +114,8 @@ class ElectronHistManager : public HistManagerBase
   std::vector<MonitorElement*> hElectronPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos electronParticleFlowIsoParam_;
+
+  int dqmError_;
 };
 
 #endif  

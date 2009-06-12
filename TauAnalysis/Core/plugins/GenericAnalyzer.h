@@ -8,7 +8,7 @@
 
 #include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
 
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
+#include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
 #include "TauAnalysis/Core/interface/EventDumpBase.h"
 #include "TauAnalysis/Core/interface/FilterStatisticsService.h"
 #include "TauAnalysis/Core/interface/RunEventNumberService.h"
@@ -32,11 +32,11 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual ~analysisSequenceEntry();
     virtual bool filter_cumulative(const edm::Event&, const edm::EventSetup&) { return true; }
     virtual bool filter_individual(const edm::Event&, const edm::EventSetup&) { return true; }
-    virtual void beginJob(const edm::EventSetup&) {}
+    virtual void beginJob() {}
     virtual void analyze(const edm::Event&, const edm::EventSetup&) {}
     virtual void endJob() {}
     virtual int type() const = 0;
-    enum { kUndefined, kFilter, kHistManagers, kEventDump };
+    enum { kUndefined, kFilter, kAnalyzer };
     std::string name_;
   };
 
@@ -48,20 +48,20 @@ class GenericAnalyzer : public edm::EDAnalyzer
     bool filter_cumulative(const edm::Event&, const edm::EventSetup&);
     bool filter_individual(const edm::Event&, const edm::EventSetup&);
     int type() const { return analysisSequenceEntry::kFilter; }
-    EventSelectorBase* filter_cumulative_;
-    EventSelectorBase* filter_individual_;
+    EventSelectorBase* filterPlugin_cumulative_;
+    EventSelectorBase* filterPlugin_individual_;
     static unsigned filterId_;
   };
 
-  struct analysisSequenceEntry_histManagers : analysisSequenceEntry
+  struct analysisSequenceEntry_analyzer : analysisSequenceEntry
   {
-    explicit analysisSequenceEntry_histManagers(const std::string&, const std::list<edm::ParameterSet>&);
-    virtual ~analysisSequenceEntry_histManagers();
+    explicit analysisSequenceEntry_analyzer(const std::string&, const std::list<edm::ParameterSet>&);
+    virtual ~analysisSequenceEntry_analyzer();
     void print() const;
-    void beginJob(const edm::EventSetup&);
+    void beginJob();
     void analyze(const edm::Event&, const edm::EventSetup&);
-    int type() const { return analysisSequenceEntry::kHistManagers; }
-    std::list<HistManagerBase*> histManagers_;
+    int type() const { return analysisSequenceEntry::kAnalyzer; }
+    std::list<AnalyzerPluginBase*> analyzerPlugins_;
   };
 
  public: 
@@ -75,12 +75,12 @@ class GenericAnalyzer : public edm::EDAnalyzer
  private:
   typedef std::vector<std::string> vstring;
   void addFilter(const std::string&, const vstring&);
-  void addHistManagers(const vstring&, const std::string&, const std::string&, const vstring&);
+  void addAnalyzers(const vstring&, const std::string&, const std::string&, const vstring&);
 
   std::string name_;
 
   std::map<std::string, edm::ParameterSet> cfgFilters_;
-  std::map<std::string, edm::ParameterSet> cfgHistManagers_;
+  std::map<std::string, edm::ParameterSet> cfgAnalyzers_;
   
   std::list<analysisSequenceEntry*> analysisSequence_;
 

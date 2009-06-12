@@ -14,29 +14,50 @@
 
 class GenPhaseSpaceEventInfoHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit GenPhaseSpaceEventInfoHistManager(const edm::ParameterSet&);
   ~GenPhaseSpaceEventInfoHistManager();
-  
-  void bookHistograms(const edm::EventSetup&);
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
  private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
+  void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
 //--- configuration parameters
-  edm::InputTag src_;
+  edm::InputTag genPhaseSpaceEventInfoSource_;
+  edm::InputTag genJetSource_;
+  edm::InputTag genParticlesFromZsSource_;
+
+  double genJetPtMin_;
+  double genJetPtMax_;
+  double genJetEtaMin_;
+  double genJetEtaMax_;   
 
   std::string dqmDirectory_store_;
 
 //--- histograms
   MonitorElement* hPtHat_;
+
   MonitorElement* hLeadingElectronPt_;
   MonitorElement* hLeadingMuonPt_;
   MonitorElement* hLeadingTauLeptonPt_;
+
   MonitorElement* hLeadingElectronPtVsPtHat_;
   MonitorElement* hLeadingMuonPtVsPtHat_;
   MonitorElement* hLeadingTauLeptonPtVsPtHat_;
+
+  MonitorElement* hNumGenJets_;
+  
+  MonitorElement* hGenZsPt_;
+  MonitorElement* hGenZsEta_;
+  MonitorElement* hGenZsMass_;
+
+  MonitorElement* hGenParticlesFromZsPt_;
+  MonitorElement* hGenParticlesFromZsEta_;
+  MonitorElement* hGenParticlesFromZsPdgId_;
+
+  int dqmError_;
 };
 
 #endif  

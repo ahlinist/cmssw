@@ -17,15 +17,15 @@
 template<typename T1, typename T2>
 class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase 
 {
- public:
-  
+ public:  
   explicit CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet&);
   ~CompositePtrCandidateT1T2MEtHistManager();
   
-  void bookHistograms(const edm::EventSetup&);
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
-
  private:
+//--- histogram booking and filling functions 
+//    inherited from HistManagerBase class
+  void bookHistograms();
+  void fillHistograms(const edm::Event&, const edm::EventSetup&);
 
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
@@ -77,6 +77,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDPhi1MET_;
   MonitorElement* hDPhi2MET_;
   MonitorElement* hDPhi1METvsDPhi2MET_;
+
+  int dqmError_;
 };
 
 #endif  

@@ -21,6 +21,7 @@ bool matchesGenJet(const pat::Jet& patJet)
 //
 
 JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
+  : dqmError_(0)
 {
   //std::cout << "<JetHistManager::JetHistManager>:" << std::endl;
 
@@ -47,49 +48,52 @@ JetHistManager::~JetHistManager()
 //--- nothing to be done yet...
 }
 
-void JetHistManager::bookHistograms(const edm::EventSetup& setup)
+void JetHistManager::bookHistograms()
 {
   //std::cout << "<JetHistManager::bookHistograms>:" << std::endl;
 
-  if ( edm::Service<DQMStore>().isAvailable() ) {
-    DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  if ( !edm::Service<DQMStore>().isAvailable() ) {
+    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
+    dqmError_ = 1;
+    return;
+  }
 
-    dqmStore.setCurrentFolder(dqmDirectory_store_);
-
-    hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 50, -0.5, 49.5);
-
-    bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
-    hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "JetPtVsEta", 24, -3., +3., 30, 0., 150.);
-
-    hJetAlpha_ = dqmStore.book1D("JetAlpha", "JetAlpha", 102, -0.01, +1.01);
-    hJetNumTracks_ = dqmStore.book1D("JetNumTracks", "JetNumTracks", 50, -0.5, 49.5);
-    hJetTrkPt_ = dqmStore.book1D("JetTrkPt", "JetTrkPt", 100, 0., 50.);
-    hJetLeadTrkPt_ = dqmStore.book1D("JetLeadTrkPt", "JetLeadTrkPt", 75, 0., 75.);
-
-    for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();
-	  etMin != centralJetsToBeVetoedEtMin_.end(); ++etMin ) {
-      for ( vdouble::const_iterator etaMax = centralJetsToBeVetoedEtaMax_.begin();
-	    etaMax != centralJetsToBeVetoedEtaMax_.end(); ++etaMax ) {
-	for ( vdouble::const_iterator alphaMin = centralJetsToBeVetoedAlphaMin_.begin();
-	      alphaMin != centralJetsToBeVetoedAlphaMin_.end(); ++alphaMin ) {
-	  std::ostringstream hName;
-	  hName.setf(std::ios::fixed);
-	  hName.precision(1);
-	  hName << "numJetsEtGt" << (*etMin) << "EtaLt" << (*etaMax) << "AlphaGt" << (*alphaMin);
-	  int errorFlag = 0;
-	  std::string hName_mod = replace_string(hName.str(), ".", "_", 0, 3, errorFlag);
-          //std::cout << "hName_mod = " << hName_mod << std::endl;
-	  
-	  hNumCentralJetsToBeVetoed_.push_back(dqmStore.book1D(hName_mod, hName_mod, 50, -0.5, 49.5));
-	}
+  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  
+  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  
+  hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 50, -0.5, 49.5);
+  
+  bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
+  hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "JetPtVsEta", 24, -3., +3., 30, 0., 150.);
+  
+  hJetAlpha_ = dqmStore.book1D("JetAlpha", "JetAlpha", 102, -0.01, +1.01);
+  hJetNumTracks_ = dqmStore.book1D("JetNumTracks", "JetNumTracks", 50, -0.5, 49.5);
+  hJetTrkPt_ = dqmStore.book1D("JetTrkPt", "JetTrkPt", 100, 0., 50.);
+  hJetLeadTrkPt_ = dqmStore.book1D("JetLeadTrkPt", "JetLeadTrkPt", 75, 0., 75.);
+  
+  for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();
+	etMin != centralJetsToBeVetoedEtMin_.end(); ++etMin ) {
+    for ( vdouble::const_iterator etaMax = centralJetsToBeVetoedEtaMax_.begin();
+	  etaMax != centralJetsToBeVetoedEtaMax_.end(); ++etaMax ) {
+      for ( vdouble::const_iterator alphaMin = centralJetsToBeVetoedAlphaMin_.begin();
+	    alphaMin != centralJetsToBeVetoedAlphaMin_.end(); ++alphaMin ) {
+	std::ostringstream hName;
+	hName.setf(std::ios::fixed);
+	hName.precision(1);
+	hName << "numJetsEtGt" << (*etMin) << "EtaLt" << (*etaMax) << "AlphaGt" << (*alphaMin);
+	int errorFlag = 0;
+	std::string hName_mod = replace_string(hName.str(), ".", "_", 0, 3, errorFlag);
+	//std::cout << "hName_mod = " << hName_mod << std::endl;
+	
+	hNumCentralJetsToBeVetoed_.push_back(dqmStore.book1D(hName_mod, hName_mod, 50, -0.5, 49.5));
       }
     }
-
-    hBtagDisc_ = dqmStore.book1D("BtagDisc", "BtagDisc", 120, -10., 50.);
-    hNumBtags_ = dqmStore.book1D("NumBtags", "NumBtags", 15, -0.5, 14.5);
-    hPtBtags_ = dqmStore.book1D("PtBtags", "PtBtags", 75, 0., 150.);
-
   }
+  
+  hBtagDisc_ = dqmStore.book1D("BtagDisc", "BtagDisc", 120, -10., 50.);
+  hNumBtags_ = dqmStore.book1D("NumBtags", "NumBtags", 15, -0.5, 14.5);
+  hPtBtags_ = dqmStore.book1D("PtBtags", "PtBtags", 75, 0., 150.);
 }
 
 double compAlpha(const pat::Jet& jet)
@@ -102,12 +106,17 @@ double compAlpha(const pat::Jet& jet)
   return ( jet.et() > 0 ) ? sumPt/jet.et() : -1.;
 }
 
-void JetHistManager::fillHistograms(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
 {  
   //std::cout << "<JetHistManager::fillHistograms>:" << std::endl; 
 
+  if ( dqmError_ ) {
+    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
+    return;
+  }
+
   edm::Handle<std::vector<pat::Jet> > patJets;
-  iEvent.getByLabel(jetSrc_, patJets);
+  evt.getByLabel(jetSrc_, patJets);
 
   //std::cout << " patJets.size = " << patJets->size() << std::endl;
 
@@ -203,6 +212,7 @@ void JetHistManager::fillNumCentralJetsToBeVetoesHistograms(const std::vector<pa
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+DEFINE_EDM_PLUGIN(AnalyzerPluginFactory, JetHistManager, "JetHistManager");
 DEFINE_EDM_PLUGIN(HistManagerPluginFactory, JetHistManager, "JetHistManager");
 
 #include "TauAnalysis/Core/interface/HistManagerAdapter.h"
