@@ -13,12 +13,6 @@ PATObjectAntiOverlapSelector<T>::PATObjectAntiOverlapSelector(const edm::Paramet
 }
 
 template <class T>
-PATObjectAntiOverlapSelector<T>::~PATObjectAntiOverlapSelector()
-{
-// nothing to be done yet...
-}
-
-template <class T>
 void PATObjectAntiOverlapSelector<T>::select(const edm::Handle<collection>& particlesToBeFiltered, 
 					     const edm::Event& evt, const edm::EventSetup& es)
 {
