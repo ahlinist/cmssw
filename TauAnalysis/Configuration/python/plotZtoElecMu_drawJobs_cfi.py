@@ -9,11 +9,16 @@ from TauAnalysis.DQMTools.drawJobConfigurator import *
 plots_ZtoElecMu = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
-        processes = cms.vstring( 'Ztautau',
-                                 'Zee',
-                                 'Zmumu',
-                                 'WplusJets',
-                                 'qcdSum' )
+        processes = cms.vstring(
+            #'Ztautau',
+            #'Zee',
+            'ZtautauPlusJets',
+            'ZmumuPlusJets',
+            'ZeePlusJets',
+            'WplusJets',
+            'TTplusJets',
+            'qcdSum'
+        )
     ),
     xAxis = cms.string('unlabeled'),
     #yAxis = cms.string('numEntries_linear'),
@@ -21,11 +26,16 @@ plots_ZtoElecMu = cms.PSet(
     legend = cms.string('regular'),
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
-    stack = cms.vstring( 'Ztautau',
-                         'Zee',
-                         'Zmumu',
-                         'WplusJets',
-                         'qcdSum' )
+    stack = cms.vstring(
+        #'Ztautau',
+        #'Zee',
+        'ZtautauPlusJets',
+        'ZmumuPlusJets',
+        'ZeePlusJets',
+        'WplusJets',
+        'TTplusJets',
+        'qcdSum'
+    )
 )
 
 drawJobConfigurator_ZtoElecMu = drawJobConfigurator(

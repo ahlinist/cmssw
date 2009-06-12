@@ -4,8 +4,9 @@ import copy
 #--------------------------------------------------------------------------------
 #
 # Plot histograms for Z --> e + tau-jet channel
-# N. Marinelli modified the Z -> mu + tau jet from Christian to get this one
+#
 # Author: Christian Veelken, UC Davis
+#         Nancy Marinelli, Notre Dame
 # 
 #--------------------------------------------------------------------------------
 
@@ -17,21 +18,21 @@ loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
     #Ztautau = copy.deepcopy(processZtoElecTau_Ztautau.config_dqmFileLoader),
     #Zee = copy.deepcopy(processZtoElecTau_Zee.config_dqmFileLoader),
     #ZplusJets = copy.deepcopy(processZtoElecTau_ZplusJets.config_dqmFileLoader),
-    ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets.config_dqmFileLoader),
-    ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets.config_dqmFileLoader),                      
-    #gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader),
-    #gammaPlusJets_Pt20to25 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader),
-    #gammaPlusJets_Pt25to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader),
+    ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJetsSum.config_dqmFileLoader),
+    ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader),                      
+    gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader),
+    gammaPlusJets_Pt20to25 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader),
+    gammaPlusJets_Pt25to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader),
     #gammaPlusJets_Pt30to35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader),
-    #gammaPlusJets_PtGt35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader),
-    WplusJets = copy.deepcopy(processZtoElecTau_WplusJets.config_dqmFileLoader),
-    #QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    #QCD_BCtoE_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    #QCD_BCtoE_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    #QCD_EMenriched_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    #QCD_EMenriched_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    #QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader),
-    TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets.config_dqmFileLoader)
+    gammaPlusJets_PtGt35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader),
+    WplusJets = copy.deepcopy(processZtoElecTau_WplusJetsSum.config_dqmFileLoader),
+    QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30Sum.config_dqmFileLoader),
+    QCD_BCtoE_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt30to80Sum.config_dqmFileLoader),
+    QCD_BCtoE_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt80to170Sum.config_dqmFileLoader),
+    QCD_EMenriched_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader),
+    QCD_EMenriched_Pt30to80 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader),
+    QCD_EMenriched_Pt80to170 = copy.deepcopy(processZtoElecTau_QCD_EMenriched_Pt80to170Sum.config_dqmFileLoader),
+    TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJetsSum.config_dqmFileLoader)
 )
 
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
@@ -54,7 +55,7 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
             'gammaPlusJets_Pt15to20',
             'gammaPlusJets_Pt20to25',
             'gammaPlusJets_Pt25to30',
-            'gammaPlusJets_Pt30to35',
+            #'gammaPlusJets_Pt30to35',
             'gammaPlusJets_PtGt35'
         ),
 	dqmDirectory_output = cms.string('gammaPlusJetsSum')
@@ -66,8 +67,8 @@ addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
         dqmDirectories_input = cms.vstring(
             #'Ztautau',
             #'Zee',
-            #'gammaPlusJetsSum',
-            #'qcdSum', 
+            'gammaPlusJetsSum',
+            'qcdSum', 
             'WplusJets',
             #'ZplusJets',
             'ZeePlusJets',
@@ -89,16 +90,16 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
         ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets.config_dqmHistPlotter),
         ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(processZtoElecTau_WplusJets.config_dqmHistPlotter),
-        #gammaPlusJetsSum = cms.PSet(
-        #    dqmDirectory = cms.string('gammaPlusJetsSum'),
-        #    legendEntry = cms.string('#gamma + Jets'),
-        #    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-	#),
-        #qcdSum = cms.PSet(
-        #    dqmDirectory = cms.string('qcdSum'),
-        #    legendEntry = cms.string('QCD'),
-        #    type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-        #),
+        gammaPlusJetsSum = cms.PSet(
+            dqmDirectory = cms.string('gammaPlusJetsSum'),
+            legendEntry = cms.string('#gamma + Jets'),
+            type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+	),
+        qcdSum = cms.PSet(
+            dqmDirectory = cms.string('qcdSum'),
+            legendEntry = cms.string('QCD'),
+            type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+        ),
         TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets.config_dqmHistPlotter)
     ),
 
@@ -139,8 +140,8 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
             ZeePlusJets = copy.deepcopy(drawOption_ZeePlusJets),
             ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
-            #gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets),
-            #qcdSum = copy.deepcopy(drawOption_QCD),
+            gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets),
+            qcdSum = copy.deepcopy(drawOption_QCD),
             TTplusJets = copy.deepcopy(drawOption_TTplusJets)
 	)
     ),

@@ -18,10 +18,10 @@ loadZtoElecMu = cms.EDAnalyzer("DQMFileLoader",
     ZeePlusJets = copy.deepcopy(processZtoElecMu_ZeePlusJets.config_dqmFileLoader),
     ZmumuPlusJets = copy.deepcopy(processZtoElecMu_ZmumuPlusJets.config_dqmFileLoader),
     ZtautauPlusJets = copy.deepcopy(processZtoElecMu_ZtautauPlusJets.config_dqmFileLoader),                           
-    WplusJets = copy.deepcopy(processZtoElecMu_WplusJets.config_dqmFileLoader),
-    TTplusJets = copy.deepcopy(processZtoElecMu_TTplusJets.config_dqmFileLoader),
+    WplusJets = copy.deepcopy(processZtoElecMu_WplusJetsSum.config_dqmFileLoader),
+    TTplusJets = copy.deepcopy(processZtoElecMu_TTplusJetsSum.config_dqmFileLoader),
     InclusivePPmuX = copy.deepcopy(processZtoElecMu_InclusivePPmuX.config_dqmFileLoader),
-    PPmuXptGt20 = copy.deepcopy(processZtoElecMu_PPmuXptGt20.config_dqmFileLoader)                
+    PPmuXptGt20 = copy.deepcopy(processZtoElecMu_PPmuXptGt20Sum.config_dqmFileLoader)                
 )
 
 addZtoElecMu_qcdSum = cms.EDAnalyzer("DQMHistAdder",
