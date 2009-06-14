@@ -11,13 +11,14 @@ const std::string rangeKeyword = "#RANGE";
 const std::string processDirKeyword = "#PROCESSDIR#";
 
 std::string dqmDirectoryName(const std::string&);
-std::string dqmSubDirectoryName_merged(const std::string&, const std::string&);
+std::string dqmSubDirectoryName(const std::string&, const std::string&);
 void dqmCopyRecursively(DQMStore&, const std::string&, const std::string&, double, int, bool);
 
 const std::string dqmSeparator = "/";
+const std::string dqmSeparator2 = std::string(dqmSeparator).append(dqmSeparator);
 //const std::string dqmRootDirectory = std::string(dqmSeparator).append("DQMData").append(dqmSeparator);
 const std::string dqmRootDirectory = "";
 
-void separateHistogramFromDirectoryName(const std::string&, std::string&, std::string&);
+void separateMonitorElementFromDirectoryName(const std::string&, std::string&, std::string&);
 
 #endif
