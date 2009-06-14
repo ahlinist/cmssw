@@ -91,7 +91,9 @@ private:
   static bool everyDebugEnabled_;
 
   static bool fjrSummaryRequested_;
-  
+  bool messageServicePSetHasBeenValidated_;
+  std::string  messageServicePSetValidatationResults_;
+   
 };  // MessageLogger
 
 
