@@ -32,7 +32,7 @@ for i in range(5):
 
 # Z --> e e jobs
 for i in range(28):
-    submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau", sample = "Zmumu_part%(i)02d" % {"i" : (i + 1)},
+    submitToBatch(configFile = "runZtoElecTau_cfg.py", channel = "ZtoElecTau", sample = "Zee_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
                   job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
 
