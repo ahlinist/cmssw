@@ -102,7 +102,7 @@ void DQMHistEffProducer::endJob()
   for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); plot != cfgEntryPlot_.end(); ++plot ) {
     //std::cout << "plot->numerator_ = " << plot->numerator_ << std::endl;
     std::string numeratorHistogramName, numeratorHistogramDirectory;
-    separateHistogramFromDirectoryName(plot->numerator_, numeratorHistogramName, numeratorHistogramDirectory);
+    separateMonitorElementFromDirectoryName(plot->numerator_, numeratorHistogramName, numeratorHistogramDirectory);
     //std::cout << "numeratorHistogramName = " << numeratorHistogramName << std::endl;
     //std::cout << "numeratorHistogramDirectory = " << numeratorHistogramDirectory << std::endl;
     MonitorElement* meNumerator = dqmStore.get(std::string(numeratorHistogramDirectory).append(dqmSeparator).append(numeratorHistogramName));
@@ -111,7 +111,7 @@ void DQMHistEffProducer::endJob()
     
     //std::cout << "plot->denominator_ = " << plot->denominator_ << std::endl;
     std::string denominatorHistogramName, denominatorHistogramDirectory;
-    separateHistogramFromDirectoryName(plot->denominator_, denominatorHistogramName, denominatorHistogramDirectory);
+    separateMonitorElementFromDirectoryName(plot->denominator_, denominatorHistogramName, denominatorHistogramDirectory);
     //std::cout << "denominatorHistogramName = " << denominatorHistogramName << std::endl;
     //std::cout << "denominatorHistogramDirectory = " << denominatorHistogramDirectory << std::endl;
     MonitorElement* meDenominator = dqmStore.get(std::string(denominatorHistogramDirectory).append(dqmSeparator).append(denominatorHistogramName));
@@ -126,8 +126,8 @@ void DQMHistEffProducer::endJob()
       //std::cout << " histoDenominator->GetName = " << histoNumerator->GetName() << std::endl;
       
       std::string effHistogramName, effHistogramDirectory, dummy;
-      separateHistogramFromDirectoryName(plot->efficiency_, effHistogramName, effHistogramDirectory);
-      if ( effHistogramDirectory == "" ) separateHistogramFromDirectoryName(numeratorHistogramName, dummy, effHistogramDirectory);
+      separateMonitorElementFromDirectoryName(plot->efficiency_, effHistogramName, effHistogramDirectory);
+      if ( effHistogramDirectory == "" ) separateMonitorElementFromDirectoryName(numeratorHistogramName, dummy, effHistogramDirectory);
       if ( effHistogramDirectory != "" ) dqmStore.setCurrentFolder(effHistogramDirectory);
       
       MonitorElement* histoEfficiency = dqmStore.book1D(effHistogramName, effHistogramName, 
