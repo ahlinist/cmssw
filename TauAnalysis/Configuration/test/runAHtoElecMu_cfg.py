@@ -78,39 +78,18 @@ process.source = cms.Source("PoolSource",
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_1.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_2.root',
 #        'rfio:/castor/cern.ch/user/c/cerati/SkimmingElecMu/elecMuSkim_AH160_tautau_2l_3.root'
-#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
 )
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
-# in case running jobs on the CERN batch system:
+# in case running jobs on the CERN batch system
 #
-#---This_is_a_Hook_for_Replacement_of_fileNames_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.source.fileNames = fileNamesQCD_BCtoE_Pt20to30"
-#
-#---This_is_a_Hook_for_Replacement_of_maxEvents_Parameter
-#
-# to be replaced by e.g.
-#
-#  "process.maxEvents.input = cms.untracked.int32(100)"
-#
-#---This_is_a_Hook_for_Replacement_of_genPhaseSpaceCut_Parameter
-#
-# to be replaced by e.g.
-#
-#  "extEventSelection = cms.VPSet()
-#   extEventSelection.insert(genPhaseSpaceCutQCD_BCtoE_Pt20to30)
-#   extEventSelection.insert(process.analyzeZtoElecMu.eventSelection)
-#   process.analyzeZtoElecMu.eventSelection = extEventSelection"
-#
-#---This_is_a_Hook_for_Replacement_of_outputFileName_Parameter
-#
-# to be replaced by e.g.
-#  "process.saveZtoElecMu.outputFileName = outputFileNameQCD_BCtoE_Pt20to30"
+#__process.source.fileNames = #inputFileNames#
+#__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
+#__process.analyzeZtoElecMuEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
+#__process.saveZtoElecMuPlots.outputFileName = #plotsOutputFileName#
+#__process.saveZtoElecMuPatTuple.outputFileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
