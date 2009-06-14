@@ -107,6 +107,8 @@ std::string dqmDirectoryName_full(const std::string& dqmDirectory, const std::st
 double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory, 
 			     const std::string& meName, const std::string& meType, int& errorFlag)
 {
+  //std::cout << "<getMonitorElementNorm>:" << std::endl;
+
   std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
   //std::cout << " meName_full = " <<  meName_full << std::endl;
 
@@ -117,8 +119,10 @@ double getMonitorElementNorm(DQMStore& dqmStore, const std::string& dqmDirectory
   dqmStore.setCurrentFolder(dqmDirectory_full);
   MonitorElement* me = dqmStore.get(meName_full);
 
-  if ( !me ) {
-    edm::LogError("getMonitorElementNorm") << " Failed to retrieve Monitor Element = " << meName 
+  if ( !me ) {						
+    std::string meName_temp, dqmDirectoryName_temp;
+    separateMonitorElementFromDirectoryName(meName, meName_temp, dqmDirectoryName_temp);
+    edm::LogError("getMonitorElementNorm") << " Failed to retrieve Monitor Element = " << meName_temp
 					   << " from dqmDirectory = " << dqmDirectory_full << " !!";
     errorFlag = 1;
     return -1.;
@@ -206,17 +210,13 @@ void DQMHistScaler::endJob()
 	  dqmSubDirectory != dqmSubDirectories_input_.end(); ++dqmSubDirectory ) {
 
       std::string inputDirectory = dqmDirectoryName_full(dqmDirectory_input_, *dqmSubDirectory);
-      //std::cout << " inputDirectory = " << inputDirectory << std::endl;
       std::string outputDirectory = dqmDirectoryName_full(dqmDirectory_output_, *dqmSubDirectory);
-      //std::cout << " outputDirectory = " << outputDirectory << std::endl;
 
       dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
     }
   } else {
     std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
-    //std::cout << " inputDirectory = " << inputDirectory << std::endl;
     std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
-    //std::cout << " outputDirectory = " << outputDirectory << std::endl;
       
     dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
   }
