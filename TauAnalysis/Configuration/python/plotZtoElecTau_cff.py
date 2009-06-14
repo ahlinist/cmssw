@@ -79,8 +79,7 @@ addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     )
 )
 
-addZtoElecTau = cms.Sequence(addZtoElecTau_smSum)
-#addZtoElecTau = cms.Sequence(addZtoElecTau_qcdSum + addZtoElecTau_gammaPlusJetsSum + addZtoElecTau_smSum)
+addZtoElecTau = cms.Sequence(addZtoElecTau_qcdSum + addZtoElecTau_gammaPlusJetsSum + addZtoElecTau_smSum)
 
 plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
