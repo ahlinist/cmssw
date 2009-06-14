@@ -31,4 +31,4 @@ process.harvestZtoElecTauPlots = cms.Sequence( process.loadZtoElecTau
 process.p = cms.Path(process.harvestZtoElecTauPlots)
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
