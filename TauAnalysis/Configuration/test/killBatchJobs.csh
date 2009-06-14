@@ -16,9 +16,8 @@
 
 set batchJobs=(`bjobs -w | grep $1 | grep $2`)
 foreach batchJob (${batchJobs})
-    echo ${batchJob}
     if (${batchJob} =~ [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) then
-	echo "killing batchJob ${batchJob}"
+	#echo "killing batchJob ${batchJob}"
 	bkill ${batchJob}
     endif
 end
