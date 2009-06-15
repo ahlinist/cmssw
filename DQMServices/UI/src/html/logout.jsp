@@ -2,13 +2,12 @@
 
 <%
 
-  MessageUser user = MessageUser.get(request);
+  User user = User.get(request);
   MessageBoardSyn.getInstance().logoutUser(user);
   
-  String url = request.getRequestURL().toString();
+  String url = request.getParameter("redirect");
+  if (url == null) url = request.getRequestURL().toString();
   url = url.replaceFirst("^https://", "http://");
-  url = url.replaceFirst("/[^/]+$", "/");
-
   response.sendRedirect(url);
   
 %>

@@ -29,6 +29,20 @@ body {
 	vertical-align: middle;
 }
 
+#login a, #login a:visited, div.menu-item a {
+	color: navy;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+div.menu-item {
+	cursor: pointer;
+}
+
+#login a:hover {
+	text-decoration: underline;
+}
+
 .flexigrid div.fbutton .refresh {
 	background: url(img/refresh.png) no-repeat center left;
 }

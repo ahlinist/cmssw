@@ -2,8 +2,8 @@
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%
-  MessageUser user = MessageUser.get(request);
-  String mediaurl = WebUtils.GetEnv("media_url");
+  User user = User.get(request);
+  String mediaurl = WebUtils.getMediaURL();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -276,7 +276,9 @@
       var loadRun = function(number) {
 
         $('#edit_overlay').show();
-      
+
+        top.document.title = "Run #" + number;
+
         $.ajax({
           type: "GET",
           url: "runeditdata?qtype=RUN_NUMBER&format=json&query=" + number,
@@ -386,10 +388,10 @@
             count_tags--;
       
             if (status != "COMPLETED") {
-              if (<%= user.hasLoggedRole(WebUtils.EXPERT) %>) real_role = "EXPERT";
-              else if (<%= user.hasLoggedRole(WebUtils.ONLINE) %> && (status == "ONLINE" || status == ""))
+              if (<%= user.hasRole(User.EXPERT) %>) real_role = "EXPERT";
+              else if (<%= user.hasRole(User.ONLINE) %> && (status == "ONLINE" || status == ""))
                 real_role = "ONLINE";
-              else if (<%= user.hasLoggedRole(WebUtils.OFFLINE) %> && status == "OFFLINE")
+              else if (<%= user.hasRole(User.OFFLINE) %> && status == "OFFLINE")
                 real_role = "OFFLINE";
             }
       
@@ -417,14 +419,18 @@
       
               if (status == "") {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
-                $("input[name='RUN_ONLINE_SHIFTER']", _edit_info).val("<%=user.getName()%>");
+                $("input[name='RUN_ONLINE_SHIFTER']", _edit_info).val("<%=user.getFullname()%>");
               } else {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"OFFLINE\">to OFFLINE</option>"));
                 $(_btn_run_delete).show();
               }
               $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
       
-              if (status == "") $(_btn_run_finish).hide();
+              if (status == "") {
+                $(_btn_run_finish).hide();
+              } else {
+                $(_btn_run_finish).show();
+              }
               $(_btn_run_apply).show();
       
             } else if (real_role == "OFFLINE")  {
@@ -444,7 +450,11 @@
               $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"SIGNOFF\">to SIGNOFF</option>"));
               $("select[name=RUN_STATUS]", _edit_info).removeAttr("disabled").removeAttr("readonly");
       
-              if (status == "") $(_btn_run_finish).hide();
+              if (status == "") {
+                $(_btn_run_finish).hide();
+              } else {
+                $(_btn_run_finish).show();
+              }
               $(_btn_run_apply).show();
       
             } else if (real_role == "EXPERT") {
@@ -467,9 +477,13 @@
               $("textarea", _edit_sub_offline).removeAttr("readonly");
               $("select", _edit_sub_offline).removeAttr("readonly").removeAttr("disabled");
       
-              if (status == "") $(_btn_run_finish).hide();
+              if (status == "") {
+                $(_btn_run_finish).hide();
+              } else {
+                $(_btn_run_finish).show();
+                $(_btn_run_delete).show();
+              }
               $(_btn_run_apply).show();
-              $(_btn_run_delete).show();
       
               if (status == "") {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option value=\"ONLINE\">ONLINE</option>"));
@@ -543,18 +557,17 @@
         });
 
 
-        var prev_run = -1;
-        var next_run = -1;
+        var curr_run = -1;
         $.each(run_list, function(i, r){
           if (r == number) {
-            prev_run = i + 1; 
-            next_run = i - 1; 
+            curr_run = i; 
+            return;
           }
         });
 
-        if (prev_run >= 0 && prev_run < run_list.length) {
-          prev_run = run_list[prev_run];
-          $(_btn_run_prev).show().text("< " + prev_run).unbind("click").click(function () {
+        if (curr_run < run_list.length - 1) {
+          prev_run = run_list[curr_run + 1];
+          $(_btn_run_prev).show().html("&laquo;" + prev_run).unbind("click").click(function () {
             loadRun(prev_run);
             return false;
           });
@@ -562,9 +575,9 @@
           $(_btn_run_prev).hide();
         }
 
-        if (next_run > 0 && next_run < run_list.length) {
-          next_run = run_list[next_run];
-          $(_btn_run_next).show().text(next_run + " >").unbind("click").click(function () {
+        if (curr_run > 0) {
+          next_run = run_list[curr_run - 1];
+          $(_btn_run_next).show().html(next_run + "&raquo;").unbind("click").click(function () {
             loadRun(next_run);
             return false;
           });
@@ -573,12 +586,13 @@
         }
 
         $(_btn_run_back).unbind("click").click(function () {
-          window.location = "index.jsp?number=" + number;
+          $.cookie("run_edit", number);
+          window.location = "index.jsp";
           return false;
         });
     
         $(_btn_run_reset).unbind("click").click(function () {
-          loadRun(run_number);
+          loadRun(number);
           return false;
         });
   
@@ -606,22 +620,21 @@
           <table border="0" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td id="logo">CMS DQM Run Registry</td>
-              <td style="text-align: center">
-                <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
-                <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 100px;vertical-align: middle;"/>
-              </td>
               <td style="text-align: right">
-                <button title="Go to previous run in the list" id="run_prev" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Prev</button>
-                <button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Finish</button>
-                <button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Apply</button>
+                <button title="Go to previous run in the list" id="run_prev" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px; display: none;">Prev</button>
+                <button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Finish</button>
+                <button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Apply</button>
                 <button title="Discard changes and re-read data from database" id="run_reset" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Reset</button>
-                <button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Delete</button>
+                <button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Delete</button>
                 <button title="Discard changes and return to the main table" id="run_back" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Close Edit Form</button>
-                <button title="Go to next run in the list" id="run_next" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Next</button>
+                <button title="Go to next run in the list" id="run_next" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px; display: none;">Next</button>
               </td>
             </tr>
           </table>
-
+          <div style="position: absolute; left: 610px; top: 10px; padding: 1em;">
+            <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
+            <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 100px;vertical-align: middle;"/>
+          </div>
         </td>
   
       </tr>
@@ -696,7 +709,7 @@
                     <li><a href="#edit_sub_online_tab"><span>DPG</span></a></li>
                   </ul>
                   <div class="edit_sub edit_sub_online" id="edit_sub_online_tab" width="100%" height="100%">
-                    <table width="100%" border="1">
+                    <table width="100%" border="0">
                       <dqm:listSubsystems type="ONLINE">
                         <tr>
                           <td class="label_col"><label for="sub_${sub_abbr}"> ${sub_abbr} </label></td>

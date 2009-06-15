@@ -372,9 +372,9 @@ public class DataProvider extends HttpServlet {
           results.setAttribute("rp", String.valueOf(page_size));
 
           CacheSyn cache = CacheSyn.getInstance();
+          Templates translet = null;
           for (int i = 0; i < intemplates.length; i++) {
             String t = intemplates[i];
-            Templates translet = null;
             if (cache.hasTemplate(t)) {
               translet = cache.getTemplate(t);
             } else {
@@ -385,11 +385,15 @@ public class DataProvider extends HttpServlet {
                 cache.setTemplate(t, translet);
               }
             }
+
+            if (i == intemplates.length - 1) break;
+
             DOMSource domSource = new DOMSource(doc);
             DOMResult result = new DOMResult();
             Transformer transformer = translet.newTransformer();
             transformer.transform(domSource, result);
             doc = (Document) result.getNode();
+
           }
 
           if (template != null) {
@@ -401,7 +405,13 @@ public class DataProvider extends HttpServlet {
           StringWriter stringWriter = new StringWriter();
           StreamResult result = new StreamResult(stringWriter);
 
-          Transformer transformer = tf.newTransformer();
+          Transformer transformer = null;
+          if (translet != null) {
+            transformer = translet.newTransformer();
+          } else {
+            transformer = tf.newTransformer();
+          }
+
           transformer.setOutputProperty("media-type", mimeType);
           transformer.setOutputProperty("omit-xml-declaration", "yes");
           transformer.transform(domSource, result);

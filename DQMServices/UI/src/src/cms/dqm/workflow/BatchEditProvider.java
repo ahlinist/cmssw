@@ -48,14 +48,14 @@ public class BatchEditProvider extends HttpServlet {
 
     try {
 
-      if (!MessageUser.get(request).hasLoggedRole(WebUtils.EXPERT)) throw new Exception("No rights!");
+      if (!User.get(request).hasRole(User.EXPERT)) throw new Exception("No rights!");
 
       db = new DBWorker();
 
       if (action.equals("changestatus")) {
         String status = request.getParameter("status");
         String tag = request.getParameter("tag");
-        batchStatusUpdate(run_number, status, db, null, MessageUser.get(request).getName(), tag);
+        batchStatusUpdate(run_number, status, db, null, User.get(request).getFullname(), tag);
       }
 
       db.close();
