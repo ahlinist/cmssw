@@ -11,11 +11,11 @@ public class MessageBoardSyn {
   private long last;
   private long lastUser;
 
-  private Hashtable<String, MessageUser> users;
-  private Hashtable<String, Long>        alive;
+  private Hashtable<String, User> users;
+  private Hashtable<String, Long> alive;
 
   private MessageBoardSyn() {
-    users = new Hashtable<String, MessageUser>();
+    users = new Hashtable<String, User>();
     alive = new Hashtable<String, Long>();
     resetLast();
     lastUser = 1;
@@ -37,22 +37,22 @@ public class MessageBoardSyn {
     instance = null;
   }
 
-  public void loginUser(MessageUser user) {
+  public void loginUser(User user) {
     if (!user.isLogged()) return;
-    if (!users.containsKey(user.getId())) {
-      users.put(user.getId(), user);
+    if (!users.containsKey(user.getMessageBoardId())) {
+      users.put(user.getMessageBoardId(), user);
       sendMessage("User " + user.getMessageLine() + " logged in", 0);
       lastUser++;
     }
-    alive.put(user.getId(), Calendar.getInstance().getTimeInMillis() + (30 * 1000));
+    alive.put(user.getMessageBoardId(), Calendar.getInstance().getTimeInMillis() + (30 * 1000));
   }
 
-  public void logoutUser(MessageUser user) {
-    logoutUser(user.getId());
+  public void logoutUser(User user) {
+    logoutUser(user.getMessageBoardId());
   }
 
   private void logoutUser(String userId) {
-    MessageUser user = users.remove(userId);
+    User user = users.remove(userId);
     if (user != null) {
       if (user.isLogged()) {
         sendMessage("User " + user.getMessageLine() + " logged out", 0);
@@ -83,15 +83,15 @@ public class MessageBoardSyn {
 
   }
 
-  public Iterator<MessageUser> getUsers() { 
+  public Iterator<User> getUsers() { 
     return users.values().iterator();
   }
 
-  public void sendMessage(MessageUser user, int priority, String text) {
+  public void sendMessage(User user, int priority, String text) {
     try {
       DBWorker db = new DBWorker();
       PreparedStatement pstmt = db.prepareSQL("select RR_MSG_BOARD.ADD_MESSAGE(?, ?, ?, ?, ?) from dual");
-      db.setStringNull(pstmt, user.getName(), 1);
+      db.setStringNull(pstmt, user.getFullname(), 1);
       db.setStringNull(pstmt, text, 2);
       pstmt.setInt(3, priority);
       db.setStringNull(pstmt, user.getRoles(), 4);

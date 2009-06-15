@@ -2,9 +2,8 @@
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
 
 <%
-  MessageUser user = MessageUser.get(request);
-  String mediaurl = WebUtils.GetEnv("media_url");
-  Integer run_number = (request.getParameter("number") == null ? null : Integer.parseInt(request.getParameter("number")));
+  User user = User.get(request);
+  String mediaurl = WebUtils.getMediaURL();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -52,15 +51,13 @@
 
     logoutUser = function() {
       frames['logout'].location.href = "https://login.cern.ch/adfs/ls/?wa=wsignout1.0";
-      setTimeout("window.location.href = 'logout.jsp';", 200);
+      setTimeout("window.top.location.href = 'logout.jsp?redirect=' + window.top.location.href;", 200);
     };
 
-    $("a:contains('Logout')").click(function(){ 
-      logoutUser(); 
-    });
+    $("#logout_link").click(function() { logoutUser(); });
 
-    $("a:contains('Login')").click(function(){
-      location.href = location.href.replace(/^http:\/\//,'https:\/\/');
+    $("#login_link").click(function(){
+      window.top.location.href = window.top.location.href.replace(/^http:\/\//,'https:\/\/');
     });
 
     getTag = function() {
@@ -219,18 +216,12 @@
 
       $("div.stat").parent().css("padding-top", "1px").css("padding-bottom", "1px");
 
-      $("#flex1 tbody tr").each(function(i,o) {
+      $("#row" + $.cookie("run_edit")).addClass("trSelected");
+      $.cookie("run_edit", null);
 
-        var n = $("td[abbr=RUN_NUMBER] div", o).text();
-        $(o).data("number", n);
-
-        <% if (run_number != null) { %> if (n == <%=run_number%>) $(o).addClass("trSelected"); <% } %>
-
-        $("td[abbr='RUN_COUNT_TAGS'] div img[runnumber]", o).unbind("click").click(function(){
-          toggleRows($(this).attr("runnumber"));
-        }).css("cursor", "pointer");
-
-      });
+      $("#flex1 td[abbr='RUN_COUNT_TAGS'] div img[runnumber]").unbind("click").click(function(){
+        toggleRows($(this).attr("runnumber"));
+      }).css("cursor", "pointer");
 
     };
 
@@ -301,7 +292,7 @@
     }
 
     var onRowSelected = function (row) {
-      var number = $(row).data("number");
+      var number = $(row).attr("id").substr(3);
       $.cookie("run_edit", number);
       if ($('#summary').dialog('isOpen')) summaryValues();
     }
@@ -313,7 +304,7 @@
       editPress();
     }
 
-    var max_table_height = window.innerHeight - 155;
+    var max_table_height = window.innerHeight - 200;
 
     /* DataTable default preferences */
     var fp = {
@@ -389,7 +380,7 @@
       useRp: true,
       showTableToggleBtn: true,
       title: '',
-      restoreStateOnce: <%=(run_number == null ? 0 : 1)%>,
+      restoreStateOnce: ($.cookie("run_edit") ? 1 : 0),
       errormsg: 'Database error',
       buttons : [
         {name: 'Manual Refresh', bclass: 'refresh', dclass: 'button_refresh', onpress : timerToggle },
@@ -589,9 +580,10 @@
 
           <img style="display: none; vertical-align: middle" id="chat_notification" src="<%=mediaurl%>img/attention.png" title="Messages available!"/>
 
-          <span id="messageboardmenu"><a href="#" id="chat_open_menu">Message Board</a>
+          <span id="messageboardmenu"><a id="chat_open_menu">Message Board</a>
             <ul>
               <li><a href="messageBoard.jsp" target="_new">..in&nbsp;Window</a></li>
+              <li><a href="index_frames.html">..in&nbsp;Frame</a></li>
             </ul>
           </span>
 
@@ -599,7 +591,7 @@
 
         </span>
 
-<% if (user.hasLoggedRole(WebUtils.EXPERT)) { %>
+<% if (user.hasRole(User.EXPERT)) { %>
 
         <span id="batch_updater" style="display: none;" >
           Updating: 
@@ -608,10 +600,10 @@
 
         <span id="batchupdatemenu"><a href="#">Update Selected</a>
           <ul>
-            <li><a href="#" change-status="ONLINE">To ONLINE</a></li>
-            <li><a href="#" change-status="OFFLINE">To OFFLINE</a></li>
-            <li><a href="#" change-status="SIGNOFF">To SIGNOFF</a></li>
-            <li><a href="#" change-status="COMPLETED">To COMPLETED</a></li>
+            <li><a change-status="ONLINE">To ONLINE</a></li>
+            <li><a change-status="OFFLINE">To OFFLINE</a></li>
+            <li><a change-status="SIGNOFF">To SIGNOFF</a></li>
+            <li><a change-status="COMPLETED">To COMPLETED</a></li>
           </ul>
         </span>
 
@@ -629,12 +621,12 @@
 
         <span id="dumpdatamenu"><a href="#">Dump Data</a>
           <ul>
-            <li><a href="#" dump-intpl="xml,elog"     dump-tpl="" dump-mime="text/plain">Email</a></li>
-            <li><a href="#" dump-intpl="xml,twiki"    dump-tpl="" dump-mime="text/plain">TWiki</a></li>
-            <li><a href="#" dump-intpl="xml,text_csv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(CSV)</a></li>
-            <li><a href="#" dump-intpl="xml,text_tsv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(TSV)</a></li>
-            <li><a href="#" dump-intpl="xml"          dump-tpl="" dump-mime="text/xml">XML</a></li>
-            <li><a href="#" dump-intpl="xml,table"    dump-tpl="" dump-mime="text/html">HTML&nbsp;Table</a></li>
+            <li><a dump-intpl="xml,elog"     dump-tpl="" dump-mime="text/plain">Email</a></li>
+            <li><a dump-intpl="xml,twiki"    dump-tpl="" dump-mime="text/plain">TWiki</a></li>
+            <li><a dump-intpl="xml,text_csv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(CSV)</a></li>
+            <li><a dump-intpl="xml,text_tsv" dump-tpl="" dump-mime="text/plain">Text&nbsp;(TSV)</a></li>
+            <li><a dump-intpl="xml"          dump-tpl="" dump-mime="text/xml">XML</a></li>
+            <li><a dump-intpl="xml,table"    dump-tpl="" dump-mime="text/html">HTML&nbsp;Table</a></li>
           </ul>
         </span>
 
@@ -642,8 +634,8 @@
 
         <span id="optionsmenu"><a href="#">Options</a>
           <ul>
-            <li><a href="#" class="animation_option">Animation</a></li>
-            <li><a href="#" class="frames_option">Frames</a></li>
+            <li><a class="animation_option">Animation</a></li>
+            <li><a class="frames_option">Frames</a></li>
             <li><a href="cache.jsp" target="_blank">View cache</a></li>
           </ul>
         </span>
@@ -661,10 +653,10 @@
         &nbsp;|&nbsp;
 
         <% if (user.isLogged()) { %>
-          Logged in as <%= user.getName() %> (<span id="roles"><%= user.getRoles() %></span>) @ <%= user.getLocation() %>
-          <a href="#">Logout</a>
+          Logged in as <b><%= user.getMessageLine() %></b>
+          <a id="logout_link">Logout</a>
         <% } else { %>
-          <a href="#">Login</a>
+          <a id="login_link">Login</a>
         <% } %>
 
       </td>
@@ -673,12 +665,6 @@
 
   <table id="flex1"></table>
 
-  <jsp:include page="search.jsp" />
-  <jsp:include page="summary.jsp" />
-  <jsp:include page="plot.jsp" />
-  <jsp:include page="chat.jsp" />
-  <jsp:include page="messageBox.html" />
-
   <div id="statusbar">
     <br/>
     <div align="right">Deployed: <%=WebUtils.GetEnv("app_deploy_time")%> | Animation: <span class="animation_value"/></div>
@@ -686,13 +672,13 @@
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 
+  <jsp:include page="search.jsp" />
+  <jsp:include page="summary.jsp" />
+  <jsp:include page="plot.jsp" />
+  <jsp:include page="chat.jsp" />
+  <jsp:include page="messageBox.html" />
+
 </body>
 </html>
 
-<!-- 
-  NICE User:   <%= user.getName() %>
-  Certificate: <%= WebUtils.getCertInfo(request) %> 
-  Roles:       <%= user.getRoles() %>
-  Address:     <%= request.getRemoteAddr()%>
-  HOME:        <%= WebUtils.osenv.get("HOME")%>
--->
+

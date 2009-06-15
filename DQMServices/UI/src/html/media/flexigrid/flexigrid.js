@@ -51,6 +51,7 @@
 			 onToggleCol: false,
 			 onChangeSort: false,
 			 onSuccess: false,
+			 restoreStateOnce: 0,
 			 onSubmit: false // using a custom populate function
 		  }, p);
 		  		
@@ -688,8 +689,12 @@
 					,{ name : 'qoperator', value : p.qoperator}
 				];							 
 							 
+        if (p.restoreStateOnce) {
+					param = $.evalJSON($.cookie("flex_state"));
+					p.restoreStateOnce = 0;
+				}
 
-                                //if (
+				$.cookie("flex_state", $.toJSON(param));
 
 				if (p.params)
 					{

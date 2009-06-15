@@ -75,7 +75,7 @@ public class EditProvider extends HttpServlet {
 
       String next_status = data.get(KEY_STATUS);
       if (next_status == null) next_status = current_status;
-      MessageUser user = MessageUser.get(request);
+      User user = User.get(request);
       boolean delete = (data.get("DELETE") != null && data.get("DELETE").equals("true") ? true : false);
 
       if (!user.isLogged()) throw new Exception("Not logged in!");
@@ -86,26 +86,26 @@ public class EditProvider extends HttpServlet {
          !data.get(KEY_STATUS).equals("SIGNOFF") && 
          !data.get(KEY_STATUS).equals("COMPLETED")) throw new Exception("Wrong status provided [" + data.get(KEY_STATUS) + "]!");
 
-      data.put(KEY_LAST_USER, user.getName());
+      data.put(KEY_LAST_USER, user.getFullname());
       data.put(KEY_CURRENT_STATUS, current_status);
 
-      if (!delete && !exists && (user.hasLoggedRole(WebUtils.ONLINE) || user.hasLoggedRole(WebUtils.EXPERT))) {
+      if (!delete && !exists && (user.hasRole(User.ONLINE) || user.hasRole(User.EXPERT))) {
 
         doInsert(run_number, data);
         MessageBoardSyn.getInstance().sendMessage(user, 2, "Run #" + String.valueOf(run_number) + " has been created in Run Registry");
 
-      } else if (delete && ((current_status.equals("ONLINE") && user.hasLoggedRole(WebUtils.ONLINE)) || user.hasLoggedRole(WebUtils.EXPERT))) {
+      } else if (delete && ((current_status.equals("ONLINE") && user.hasRole(User.ONLINE)) || user.hasRole(User.EXPERT))) {
         
         doDelete(current_id);
         MessageBoardSyn.getInstance().sendMessage(user, 2, "Run #" + String.valueOf(run_number) + " has been deleted from Run Registry");
 
       } else if (
 
-        user.hasLoggedRole(WebUtils.EXPERT) ||
-        (current_status.equals("ONLINE") && (next_status.equals("ONLINE") || next_status.equals("OFFLINE")) && user.hasLoggedRole(WebUtils.ONLINE)) ||
-        (current_status.equals("OFFLINE") && (next_status.equals("OFFLINE") || next_status.equals("SIGNOFF")) && user.hasLoggedRole(WebUtils.OFFLINE))) {
+        user.hasRole(User.EXPERT) ||
+        (current_status.equals("ONLINE") && (next_status.equals("ONLINE") || next_status.equals("OFFLINE")) && user.hasRole(User.ONLINE)) ||
+        (current_status.equals("OFFLINE") && (next_status.equals("OFFLINE") || next_status.equals("SIGNOFF")) && user.hasRole(User.OFFLINE))) {
 
-        if (user.hasLoggedRole(WebUtils.EXPERT)) {
+        if (user.hasRole(User.EXPERT)) {
 
           if (next_status.equals("COMPLETED")) {
 
@@ -135,9 +135,9 @@ public class EditProvider extends HttpServlet {
       
         String message = "current_status=" + current_status +
           ", next_status=" + next_status +
-          ", " + WebUtils.ONLINE + "=" + user.hasLoggedRole(WebUtils.ONLINE) +
-          ", " + WebUtils.OFFLINE + "=" + user.hasLoggedRole(WebUtils.OFFLINE) +
-          ", " + WebUtils.EXPERT + "=" + user.hasLoggedRole(WebUtils.EXPERT);
+          ", " + User.ONLINE + "=" + user.hasRole(User.ONLINE) +
+          ", " + User.OFFLINE + "=" + user.hasRole(User.OFFLINE) +
+          ", " + User.EXPERT + "=" + user.hasRole(User.EXPERT);
 
         throw new Exception("Bad role/status combination: " + message);
       }
@@ -303,7 +303,7 @@ public class EditProvider extends HttpServlet {
         pstmt2 = null;
 
         if (rexists) {
-          if (exist && (!WebUtils.EqualStrings(comment, rcomment) || !WebUtils.EqualStrings(value, rvalue))) {
+          if (exist && (!comment.equals(rcomment) || !value.equals(rvalue))) {
             pstmt2 = db.prepareSQL("UPDATE RR_RUN_SUBSYSTEMS SET rsu_comment = ?, rsu_value = ? WHERE rsu_sub_abbr = ? AND rsu_run_id = ? AND rsu_shift_type = ?");
           } else 
           if (!exist) {
@@ -361,7 +361,7 @@ public class EditProvider extends HttpServlet {
         pstmt2 = null;
 
         if (rexists) {
-          if (exist && !WebUtils.EqualStrings(comment, rcomment)) {
+          if (exist && !comment.equals(rcomment)) {
             pstmt2 = db.prepareSQL("UPDATE RR_RUN_L1SOURCES SET rl1_comment = ? WHERE rl1_l1s_abbr = ? AND rl1_run_id = ?");
           } else 
           if (!exist) {
