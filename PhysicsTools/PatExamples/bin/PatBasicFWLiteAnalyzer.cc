@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   TH1F* muonPhi_ = new TH1F("muonPhi","phi",   100, -5.,  5.);  
   
   // open input file (can be located on castor)
-  TFile* inFile = TFile::Open( "dcap://dcache-ses-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/rwolf/ttbar/patTuple_PATv2_ttbar_madgraph_1.root" );
+  TFile* inFile = TFile::Open( "file:PATLayer1_Output.fromAOD_full.root" );
 
   // ----------------------------------------------------------------------
   // Second Part: 
@@ -55,13 +55,13 @@ int main(int argc, char* argv[])
     if( iEvent==1000 ) break;
     
     // simple event counter
-    if(iEvent>0 && iEvent%100==0){
+    if(iEvent>0 && iEvent%1==0){
       std::cout << "  processing event: " << iEvent << std::endl;
     }
 
     // fwlite::Handle to to muon collection
     fwlite::Handle<std::vector<pat::Muon> > muons;
-    muons.getByLabel(event, "selectedLayer1Muons");
+    muons.getByLabel(event, "cleanLayer1Muons");
     
     // loop muon collection and fill histograms
     for(unsigned i=0; i<muons->size(); ++i){
