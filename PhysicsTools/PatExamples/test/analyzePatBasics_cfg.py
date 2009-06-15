@@ -4,18 +4,18 @@ process = cms.Process("Test")
 
 process.source = cms.Source("PoolSource",
   fileNames = cms.untracked.vstring(
-    '/store/user/rwolf/ttbar/patTuple_PATv2_ttbar_tauola_1.root'
+    'file:PATLayer1_Output.fromAOD_full.root'
   )
 )
 
 process.MessageLogger = cms.Service("MessageLogger")
 
 process.analyzeBasicPat = cms.EDFilter("PatBasicAnalyzer",
-  photonSrc   = cms.untracked.InputTag("selectedLayer1Photons"),
-  electronSrc = cms.untracked.InputTag("selectedLayer1Electrons"),
-  muonSrc     = cms.untracked.InputTag("selectedLayer1Muons"),                                             
-  tauSrc      = cms.untracked.InputTag("selectedLayer1Taus"),
-  jetSrc      = cms.untracked.InputTag("selectedLayer1Jets"),
+  photonSrc   = cms.untracked.InputTag("cleanLayer1Photons"),
+  electronSrc = cms.untracked.InputTag("cleanLayer1Electrons"),
+  muonSrc     = cms.untracked.InputTag("cleanLayer1Muons"),                                             
+  tauSrc      = cms.untracked.InputTag("cleanLayer1Taus"),
+  jetSrc      = cms.untracked.InputTag("cleanLayer1Jets"),
   metSrc      = cms.untracked.InputTag("layer1METs")
 )
 
