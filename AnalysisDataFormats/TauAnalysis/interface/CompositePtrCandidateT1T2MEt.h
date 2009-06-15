@@ -14,7 +14,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: CompositeRefCandidateT1T2MEt.h,v 1.1 2009/02/04 15:37:00 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.1 2009/02/04 17:30:15 veelken Exp $
  *
  */
 
@@ -48,7 +48,20 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// access to daughter particles
   const T1Ptr leg1() const { return leg1_; }
   const T2Ptr leg2() const { return leg2_; }
- 
+
+  /// return the number of source particle-like Candidates
+  /// ( the candidates used to construct this Candidate)       
+  /// MET does not count. 
+  size_t numberOfSourceCandidatePtrs() const { return 2;}
+
+  /// return a Ptr to one of the source Candidates                                                               
+  /// ( the candidates used to construct this Candidate)                                                         
+  reco::CandidatePtr sourceCandidatePtr( size_type i ) const {
+    if(i==0) return leg1();
+    else if(i==1) return leg2();
+    else assert(0);
+  }
+
   /// access to missing transverse momentum
   const reco::CandidatePtr met() const { return met_; }
 
@@ -95,6 +108,13 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
 
   /// clone  object
   CompositePtrCandidateT1T2MEt<T1,T2>* clone() const { return new CompositePtrCandidateT1T2MEt<T1,T2>(*this); }
+
+  friend std::ostream& operator<<(std::ostream& out, const CompositePtrCandidateT1T2MEt<T1,T2>& dic) {
+    if(!out) return out;
+    out<<"Di-Candidate m="<<dic.mass();
+    return out;
+  }
+
 
  private:
   
@@ -174,5 +194,8 @@ typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> PATElecTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> PATMuTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> PATDiTauPair;
 typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> PATElecMuPair;
+typedef CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> PATElecPair;
+typedef CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> PATMuPair;
+
 
 #endif

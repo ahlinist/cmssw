@@ -11,6 +11,18 @@
   <class name="edm::Ptr<pat::Muon>"/>
   <class name="edm::Ptr<pat::Tau>"/>
 
+  <!-- create dictionaries for PATElecPair objects -->
+  <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron> > >"/>
+
+  <!-- create dictionaries for PATMuPair objects -->
+  <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon>"/>
+  <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Muon> > >"/>
+
   <!-- create dictionaries for PATElecTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
