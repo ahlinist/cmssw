@@ -24,6 +24,18 @@ namespace {
     edm::Ptr<pat::Muon> dummyPATMuonPtr;
     edm::Ptr<pat::Tau> dummyPATTauPtr;
 
+    /// create dictionaries for PATElecPair objects
+    PATElecPair dummyPATElecPair;
+    edm::Wrapper<PATElecPair> dummyPATElecPairWrapper;
+    PATElecPairCollection dummyPATElecPairCollection;
+    edm::Wrapper<PATElecPairCollection> dummyPATElecPairCollectionWrapper;
+
+    /// create dictionaries for PATMuPair objects
+    PATMuPair dummyPATMuPair;
+    edm::Wrapper<PATMuPair> dummyPATMuPairWrapper;
+    PATMuPairCollection dummyPATMuPairCollection;
+    edm::Wrapper<PATMuPairCollection> dummyPATMuPairCollectionWrapper;
+
     /// create dictionaries for PATElecTauPair objects
     PATElecTauPair dummyPATElecTauPair;
     edm::Wrapper<PATElecTauPair> dummyPATElecTauPairWrapper;
