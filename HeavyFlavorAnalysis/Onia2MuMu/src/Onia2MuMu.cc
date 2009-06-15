@@ -241,7 +241,7 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_glb_d0err",    Reco_mu_glb_d0err,   "Reco_mu_glb_d0err[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_dz",       Reco_mu_glb_dz,      "Reco_mu_glb_dz[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_dzerr",    Reco_mu_glb_dzerr,   "Reco_mu_glb_dzerr[Reco_mu_glb_size]/D");
-      fTree->Branch("Reco_mu_glb_chi2",     Reco_mu_glb_chi2,    "Reco_mu_glb_chi2[Reco_mu_glb_size]/D");
+      fTree->Branch("Reco_mu_glb_normChi2",     Reco_mu_glb_normChi2,    "Reco_mu_glb_normChi2[Reco_mu_glb_size]/D");
     // fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");
       fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
@@ -267,11 +267,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_trk_d0err",    Reco_mu_trk_d0err,   "Reco_mu_trk_d0err[Reco_mu_trk_size]/D");
       fTree->Branch("Reco_mu_trk_dz",       Reco_mu_trk_dz,      "Reco_mu_trk_dz[Reco_mu_trk_size]/D");
       fTree->Branch("Reco_mu_trk_dzerr",    Reco_mu_trk_dzerr,   "Reco_mu_trk_dzerr[Reco_mu_trk_size]/D");
-      fTree->Branch("Reco_mu_trk_chi2",     Reco_mu_trk_chi2,    "Reco_mu_trk_chi2[Reco_mu_trk_size]/D");
+      fTree->Branch("Reco_mu_trk_normChi2",     Reco_mu_trk_normChi2,    "Reco_mu_trk_normChi2[Reco_mu_trk_size]/D");
     // fTree->Branch("Reco_mu_trk_ndof",     Reco_mu_trk_ndof,    "Reco_mu_trk_ndof[Reco_mu_trk_size]/D");
       fTree->Branch("Reco_mu_trk_nhitstrack",    Reco_mu_trk_nhitstrack,   "Reco_mu_trk_nhitstrack[Reco_mu_trk_size]/I");
-      fTree->Branch("Reco_mu_trk_nhitsDT",    Reco_mu_trk_nhitsDT,   "Reco_mu_trk_nhitsDT[Reco_mu_trk_size]/I");
-      fTree->Branch("Reco_mu_trk_nhitsCSC",    Reco_mu_trk_nhitsCSC,   "Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]/I");
+      // fTree->Branch("Reco_mu_trk_nhitsDT",    Reco_mu_trk_nhitsDT,   "Reco_mu_trk_nhitsDT[Reco_mu_trk_size]/I");
+      // fTree->Branch("Reco_mu_trk_nhitsCSC",    Reco_mu_trk_nhitsCSC,   "Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_PIDmask",    Reco_mu_trk_PIDmask,   "Reco_mu_trk_PIDmask[Reco_mu_trk_size]/I");
       fTree->Branch("Reco_mu_trk_caloComp",   Reco_mu_trk_caloComp,  "Reco_mu_trk_caloComp[Reco_mu_trk_size]/D"); 
       fTree->Branch("Reco_mu_trk_segmComp",   Reco_mu_trk_segmComp,  "Reco_mu_trk_segmComp[Reco_mu_trk_size]/D"); 
       fTree->Branch("Reco_mu_trk_iso",   Reco_mu_trk_iso,  "Reco_mu_trk_iso[Reco_mu_trk_size]/D");  
@@ -293,7 +294,7 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_cal_d0err",    Reco_mu_cal_d0err,   "Reco_mu_cal_d0err[Reco_mu_cal_size]/D");
       fTree->Branch("Reco_mu_cal_dz",       Reco_mu_cal_dz,      "Reco_mu_cal_dz[Reco_mu_cal_size]/D");
       fTree->Branch("Reco_mu_cal_dzerr",    Reco_mu_cal_dzerr,   "Reco_mu_cal_dzerr[Reco_mu_cal_size]/D");
-      fTree->Branch("Reco_mu_cal_chi2",     Reco_mu_cal_chi2,    "Reco_mu_cal_chi2[Reco_mu_cal_size]/D");
+      fTree->Branch("Reco_mu_cal_normChi2",     Reco_mu_cal_normChi2,    "Reco_mu_cal_normChi2[Reco_mu_cal_size]/D");
     // fTree->Branch("Reco_mu_cal_ndof",     Reco_mu_cal_ndof,    "Reco_mu_cal_ndof[Reco_mu_cal_size]/D");
       fTree->Branch("Reco_mu_cal_nhitstrack",    Reco_mu_cal_nhitstrack,   "Reco_mu_cal_nhitstrack[Reco_mu_cal_size]/I");
       fTree->Branch("Reco_mu_cal_caloComp",   Reco_mu_cal_caloComp,  "Reco_mu_cal_caloComp[Reco_mu_cal_size]/D");   
@@ -1299,7 +1300,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_glb_dz[Reco_mu_glb_size]=glbTrack->dz();
       Reco_mu_glb_dzerr[Reco_mu_glb_size]=glbTrack->dzError();
       Reco_mu_glb_charge[Reco_mu_glb_size]=glbTrack->charge();
-      Reco_mu_glb_chi2[Reco_mu_glb_size]=glbTrack->chi2();
+      Reco_mu_glb_normChi2[Reco_mu_glb_size]=glbTrack->chi2()/glbTrack->ndof();
       // Reco_mu_glb_ndof[Reco_mu_glb_size]=glbTrack->ndof();
       Reco_mu_glb_nhitstrack[Reco_mu_glb_size]=innTrack->numberOfValidHits();
  
@@ -1350,13 +1351,27 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_trk_dz[Reco_mu_trk_size]=innTrack->dz();
       Reco_mu_trk_dzerr[Reco_mu_trk_size]=innTrack->dzError();
       Reco_mu_trk_charge[Reco_mu_trk_size]=innTrack->charge();
-      Reco_mu_trk_chi2[Reco_mu_trk_size]=innTrack->chi2();
+      Reco_mu_trk_normChi2[Reco_mu_trk_size]=innTrack->chi2()/innTrack->ndof();
       // Reco_mu_trk_ndof[Reco_mu_trk_size]=innTrack->ndof();
       Reco_mu_trk_nhitstrack[Reco_mu_trk_size]=innTrack->numberOfValidHits();
  
       // std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
-      Reco_mu_trk_nhitsDT[Reco_mu_trk_size]=-1;
-      Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]=-1;
+      // Reco_mu_trk_nhitsDT[Reco_mu_trk_size]=-1;
+      // Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]=-1;
+
+      // STANDARD SELECTORS
+      int myWord = 0;
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::AllTrackerMuons))                   myWord += (int)pow(2.,0);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TrackerMuonArbitrated))             myWord += (int)pow(2.,1);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationLoose))                myWord += (int)pow(2.,2);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationTight))                myWord += (int)pow(2.,3);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TM2DCompatibilityLoose))            myWord += (int)pow(2.,4);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TM2DCompatibilityTight))            myWord += (int)pow(2.,5);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMOneStationLoose))                 myWord += (int)pow(2.,6);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMOneStationTight))                 myWord += (int)pow(2.,7);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationOptimizedLowPtLoose))  myWord += (int)pow(2.,8);
+      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationOptimizedLowPtTight))  myWord += (int)pow(2.,9);
+      Reco_mu_trk_PIDmask[Reco_mu_trk_size]=myWord;
 
       Reco_mu_trk_caloComp[Reco_mu_trk_size]=trkmuoni->caloCompatibility();
       Reco_mu_trk_segmComp[Reco_mu_trk_size]=trkmuoni->segmentCompatibility();
@@ -1401,7 +1416,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_cal_dz[Reco_mu_cal_size]=innTrack->dz();
       Reco_mu_cal_dzerr[Reco_mu_cal_size]=innTrack->dzError();
       Reco_mu_cal_charge[Reco_mu_cal_size]=innTrack->charge();
-      Reco_mu_cal_chi2[Reco_mu_cal_size]=innTrack->chi2();
+      Reco_mu_cal_normChi2[Reco_mu_cal_size]=innTrack->chi2()/innTrack->ndof();
       // Reco_mu_cal_ndof[Reco_mu_cal_size]=innTrack->ndof();
       Reco_mu_cal_nhitstrack[Reco_mu_cal_size]=innTrack->numberOfValidHits();
  
@@ -1982,11 +1997,11 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     Reco_QQ_cosTheta[Reco_QQ_size]=cos(GetTheta(mu2, mu1));
   }
   if (oniacato == 1 || oniacato == 3 || oniacato == 4 || mu1.Perp() > mu2.Perp()) {   // different muon categories 
-    Reco_QQ_muhpt[Reco_QQ_size]=mu1.Perp();
-    Reco_QQ_mulpt[Reco_QQ_size]=mu2.Perp();
+    Reco_QQ_muhpt[Reco_QQ_size]=m1;
+    Reco_QQ_mulpt[Reco_QQ_size]=m2;
   } else {
-    Reco_QQ_muhpt[Reco_QQ_size]=mu2.Perp();
-    Reco_QQ_mulpt[Reco_QQ_size]=mu1.Perp();
+    Reco_QQ_muhpt[Reco_QQ_size]=m2;
+    Reco_QQ_mulpt[Reco_QQ_size]=m1;
   }
     
   std::auto_ptr<VertexCollection> vertexCollection(new VertexCollection());

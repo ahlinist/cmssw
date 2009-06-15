@@ -53,15 +53,15 @@ process.source = cms.Source("PoolSource",
        ### Jpsi non-prompt all pthat    
 
        ### test
-       'file:/tmp/PYTHIA6_JPsi_10TeV_GEN_DIGI_L1_RAW_RECO_HLT_IDEAL_1.root'
+       'rfio:/castor/cern.ch/user/c/covarell/Jpsi-nonp-mumu/EVTGEN_inclBtoJpsiMuMu_10TeV_GEN_DIGI_L1_RAW_RECO_HLT_IDEAL_20.root'
      
     )
 )
 
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
-    # OutputFileName       = cms.string('InclusiveppToMu_pt25_225.root'),
-    OutputFileName       = cms.string('test_225.root'),
+    OutputFileName       = cms.string('InclusiveppToMu_pt25_225.root'),
+    # OutputFileName       = cms.string('test_2210.root'),
     OniaType             = cms.int32(443),
     DebugLevel           = cms.int32(0),
     genParticlesLabel    = cms.InputTag("genParticles"),

@@ -24,6 +24,7 @@
 #include "DataFormats/MuonReco/interface/MuonTrackLinks.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/MuonReco/interface/CaloMuon.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -225,7 +226,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_glb_dz[200];      // Vector of dz of global muons
       double Reco_mu_glb_dzerr[200];   // Vector of dzerr of global muons
       int Reco_mu_glb_charge[200];  // Vector of charge of global muons
-      double Reco_mu_glb_chi2[200];   // Vector of chi2 of global muons
+      double Reco_mu_glb_normChi2[200];   // Vector of chi2/ndof of global muons
       // double Reco_mu_glb_ndof[200];   // Vector of ndof of global muons
       int Reco_mu_glb_nhitsCSC[200];    // Vector of number of valid hits of global muons
       int Reco_mu_glb_nhitsDT[200];    // Vector of number of valid hits of global muons
@@ -246,10 +247,21 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_trk_dz[200];      // Vector of dz of tracker muons
       double Reco_mu_trk_dzerr[200];   // Vector of dzerr of tracker muons
       int Reco_mu_trk_charge[200];  // Vector of charge of tracker muons
-      double Reco_mu_trk_chi2[200];   // Vector of chi2 of tracker muons
+      double Reco_mu_trk_normChi2[200];   // Vector of chi2/ndof of tracker muons
       // double Reco_mu_trk_ndof[200];   // Vector of ndof of tracker muons
-      int Reco_mu_trk_nhitsCSC[200];    // Vector of number of valid hits of tracker muons
-      int Reco_mu_trk_nhitsDT[200];    // Vector of number of valid hits of tracker muons
+      // int Reco_mu_trk_nhitsCSC[200];    // Vector of number of valid hits of tracker muons
+      // int Reco_mu_trk_nhitsDT[200];    // Vector of number of valid hits of tracker muons 
+      int Reco_mu_trk_PIDmask[200];    // Bit word of TM selectors:
+                                       // 1st bit : AllTrackerMuons = checks isTrackerMuon flag
+                                       // 2nd bit : TrackerMuonArbitrated = resolve ambiguity of sharing segments
+                                       // 3rd bit : TMLastStationLoose = penetration depth loose selector
+                                       // 4th bit : TMLastStationTight = penetration depth tight selector 
+                                       // 5th bit : TM2DCompatibilityLoose = likelihood based loose selector
+                                       // 6th bit : TM2DCompatibilityTight = likelihood based tight selector
+                                       // 7th bit : TMOneStationLoose = require one well matched segment
+                                       // 8th bit : TMOneStationTight = require one well matched segment
+                                       // 9th bit : TMLastStationOptimizedLowPtLoose = combination of TMLastStation and TMOneStation
+                                       // 10th bit : TMLastStationOptimizedLowPtTight = combination of TMLastStation and TMOneStation     
       int Reco_mu_trk_nhitstrack[200];    // Vector of number of valid hits of tracker muons
       double Reco_mu_trk_caloComp[200];    // Vector of calorimeter compatibilities
       double Reco_mu_trk_segmComp[200];    // Vector of muon segment compatibilities 
@@ -267,7 +279,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_cal_dz[200];      // Vector of dz of calo muons
       double Reco_mu_cal_dzerr[200];   // Vector of dzerr of calo muons
       int Reco_mu_cal_charge[200];  // Vector of charge of calo muons
-      double Reco_mu_cal_chi2[200];   // Vector of chi2 of calo muons
+      double Reco_mu_cal_normChi2[200];   // Vector of chi2/ndof of calo muons
       // double Reco_mu_cal_ndof[200];   // Vector of ndof of calo muons
       int Reco_mu_cal_nhitstrack[200];    // Vector of number of valid hits of calo muons
       double Reco_mu_cal_caloComp[200];    // Vector of calorimeter compatibilities 
