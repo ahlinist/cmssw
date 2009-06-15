@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
   
   //open output file
   TFile outFile( "analyzePatBasics.root", "recreate" );
-  outFile.mkdir(".analyzeBasicPat");
-  outFile.cd(".analyzeBasicPat");
+  outFile.mkdir("analyzeBasicPat");
+  outFile.cd("analyzeBasicPat");
   muonPt_ ->Write( );
   muonEta_->Write( );
   muonPhi_->Write( );
