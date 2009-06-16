@@ -104,6 +104,7 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
 
 //--- copy all monitor elements in current inputDirectory to the outputDirectory
   dqmStore.setCurrentFolder(inputDirectory);
+
   std::vector<std::string> meNames = dqmStore.getMEs();
   for ( std::vector<std::string>::const_iterator meName = meNames.begin();
 	meName != meNames.end(); ++meName ) {
