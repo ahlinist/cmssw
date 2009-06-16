@@ -1,4 +1,4 @@
-#include "GeneratorInterface/HydjetInterface/interface/PYR.h"
+#include "GeneratorInterface/CharybdisInterface/interface/PYR.h"
 #include "CLHEP/Random/RandomEngine.h"
 
 CLHEP::HepRandomEngine* randomEngine;
