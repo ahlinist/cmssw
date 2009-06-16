@@ -1,7 +1,7 @@
 body {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 12px;
-	background: url(img/cms_back.gif);
+	background-color: white;
 }
 
 #helptable {
@@ -33,6 +33,10 @@ body {
 	color: navy;
 	text-decoration: none;
 	cursor: pointer;
+}
+
+div.outerbox {
+	z-index: 100000;
 }
 
 div.menu-item {
@@ -149,7 +153,7 @@ div.statEXCL {
 
 #edit button {
 	width: 150px;
-	height: 45px;
+	height: 25px;
 	font-weight: bold;
 	font-size: 13px;
 	color: blue;
@@ -365,3 +369,21 @@ tr.prevTag {
 	color: #ff0000;
 }
 
+.ui-layout-pane { /* all 'panes' */ 
+	border: none; 
+	padding: 10px; 
+	overflow: none;
+} 
+
+.ui-layout-resizer { /* all 'resizer-bars' */ 
+	background: #DDD; 
+} 
+
+.ui-layout-toggler { /* all 'toggler-buttons' */ 
+	background-color: #00A5D6; 
+} 
+
+.ui-layout-toggler-south-closed {
+	background: url(messageboard.gif) no-repeat center center;
+	background-color: #00A5D6; 
+}
