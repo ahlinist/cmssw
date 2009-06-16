@@ -25,9 +25,9 @@
 </head>
 <body>
 
-  <jsp:include page="messageBox.html" />
-
   <script type="text/javascript">
+
+		var messageBox = window.top.messageBox;
 
     $(document).ready( function () {
     
@@ -265,7 +265,7 @@
             if (run_number) {
               loadRun(run_number);
             } else {
-              window.location = "index.jsp";
+              window.location = "main.jsp";
             }
           }
     
@@ -567,7 +567,7 @@
 
         if (curr_run < run_list.length - 1) {
           prev_run = run_list[curr_run + 1];
-          $(_btn_run_prev).show().html("&laquo;" + prev_run).unbind("click").click(function () {
+          $(_btn_run_prev).show().html("&laquo; " + prev_run).unbind("click").click(function () {
             loadRun(prev_run);
             return false;
           });
@@ -577,7 +577,7 @@
 
         if (curr_run > 0) {
           next_run = run_list[curr_run - 1];
-          $(_btn_run_next).show().html(next_run + "&raquo;").unbind("click").click(function () {
+          $(_btn_run_next).show().html(next_run + " &raquo;").unbind("click").click(function () {
             loadRun(next_run);
             return false;
           });
@@ -587,7 +587,7 @@
 
         $(_btn_run_back).unbind("click").click(function () {
           $.cookie("run_edit", number);
-          window.location = "index.jsp";
+          window.location = "main.jsp";
           return false;
         });
     
@@ -602,7 +602,7 @@
         loadRun($.cookie("run_edit"));
       } else {
         messageBox("Run not provided!", "You will be returned back to table page");
-        window.location = "index.jsp";
+        window.location = "main.jsp";
       }
     
     });
@@ -617,24 +617,25 @@
   
         <td class="run_number_info" valign="top" colspan="2">
 
-          <table border="0" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td id="logo">CMS DQM Run Registry</td>
-              <td style="text-align: right">
-                <button title="Go to previous run in the list" id="run_prev" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px; display: none;">Prev</button>
-                <button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Finish</button>
-                <button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Apply</button>
-                <button title="Discard changes and re-read data from database" id="run_reset" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px">Reset</button>
-                <button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Delete</button>
-                <button title="Discard changes and return to the main table" id="run_back" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Close Edit Form</button>
-                <button title="Go to next run in the list" id="run_next" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="width: 75px; display: none;">Next</button>
-              </td>
-            </tr>
-          </table>
-          <div style="position: absolute; left: 610px; top: 10px; padding: 1em;">
+          <div style="position: absolute; left: 0px; top: 10px; padding: 1em;">
             <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
             <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 100px;vertical-align: middle;"/>
           </div>
+
+          <table border="0" width="100%" cellpadding="0" cellspacing="0">
+            <tr height="40">
+              <td style="text-align: center" valign="bottom">
+                <button title="Go to previous run in the list" id="run_prev" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none;">Prev</button>
+                <button title="Save data and move to next state" id="run_finish" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Finish</button>
+                <button title="Save changes and stay in the same state" id="run_apply" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Apply</button>
+                <button title="Discard changes and re-read data from database" id="run_reset" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Reset</button>
+                <button title="Delete run from Run Registry" id="run_delete" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none">Delete</button>
+                <button title="Discard changes and return to the main table" id="run_back" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover">Close</button>
+                <button title="Go to next run in the list" id="run_next" class="ui-state-default ui-corner-all ui-state-focus ui-state-hover" style="display: none;">Next</button>
+              </td>
+            </tr>
+          </table>
+
         </td>
   
       </tr>
