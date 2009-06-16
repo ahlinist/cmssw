@@ -80,8 +80,9 @@ void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
   flag_3 = 0;
   flag_4 = 0;
   flag_5 = 0;
-  bdjpsikstar = 0;
-  bdjpsiks = 0;
+
+  flagKstar = 0;
+  flagKs = 0;
 }
 
 void BsToJpsiPhiAnalysis::endJob() 
@@ -122,24 +123,34 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     // get the builder to transform tracks to TransientTrack
     edm::ESHandle<TransientTrackBuilder> theB;
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
+
     // is the a Bs candidate and a primary vertex?
     if(bCandCollection->size()>0 && primaryVertex != 0) {
+      
+      bsRootTree_->resetEntries();
       
       // get the simVertex collection and decay vertex
       edm::Handle<TrackingVertexCollection> trackingTruthVertexCollectionH;
       const TrackingVertexCollection *trackingTruthVertexCollection = 0;
       const TrackingVertex * simVertex = 0;
+      flagKstar = 0;
+      flagKs = 0;
+      
       if(isSim_){
 	iEvent.getByLabel("mergedtruth", trackingTruthVertexCollectionH);
 	trackingTruthVertexCollection   = trackingTruthVertexCollectionH.product();
 	// 				cout << "trackingTruthVertexCollection: " << trackingTruthVertexCollection << endl;
 	simVertex = getSimVertex(trackingTruthVertexCollection);
 	// 				cout << "simVertex: " << simVertex << endl;
+
+	// flag for peaking bkg
+	flagKstar = JpsiKstarFlag(trackingTruthVertexCollection);
+	flagKs = JpsiKsFlag(trackingTruthVertexCollection);
+	bsRootTree_->getBdFlags(flagKstar,flagKs);			  
       }
       
       // loop over Bs candidates
 			for (CandidateView::const_iterator bit=(*bCandCollection).begin();bit!=(*bCandCollection).end();bit++) {
-			  bsRootTree_->resetEntries();
 			  // are the particles associated?
 			  bool trueMuPlus = false;			
 			  bool trueMuMinus = false;
@@ -327,13 +338,6 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  if (hltresults->accept(itrig_4)) flag_4 = 1;
 			  if (hltresults->accept(itrig_5)) flag_5 = 1;
 
-			  bdjpsikstar = 0 ;
-			  bdjpsikstar = JpsiKstarFlag(trackingTruthVertexCollection);
-
-			  bdjpsiks = 0 ;
-			  bdjpsiks = JpsiKsFlag(trackingTruthVertexCollection);
-			  
-			  bsRootTree_->getBdFlags(bdjpsikstar,bdjpsiks);			  
 			  bsRootTree_->getTrigBit(flag_1,flag_2,flag_3,flag_4,flag_5);			  
 			  bsRootTree_->fill();
 			}
@@ -371,7 +375,7 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 	}
 	if((**dt).pdgId() == 321){
 	  kplus = true;
-				}
+	}
 	if((**dt).pdgId() == -321){
 	  kminus = true;
 	}
@@ -386,7 +390,7 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
 	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 531) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -531)) ){
 	  bs = true;
-					cout << "found Bs" << endl;
+	  cout << "found Bs" << endl;
 	}
 	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
 	  jpsi = true;
@@ -396,7 +400,7 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 	  phi = true;
 	  cout << "found phi" << endl;
 	}
-			}
+      }
     }
     if(kplus && kminus && muminus && muplus){ 
       return &(*v);
@@ -409,17 +413,13 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 
 int BsToJpsiPhiAnalysis::JpsiKstarFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
 {
-  //iterate over al SimVertices
+  int flagbdjpsikstar = 0;
   for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
-    int flagbdjpsikstar = 0;
-    bool bd = false;
-    bool jpsi = false;
-    bool Kstar = false; 
-    bool kaon = false;
-    bool pion = false;
+    bool kplus = false;
+    bool kminus = false;
     bool muminus = false;
     bool muplus = false;
-    // look if the daughters of the vertex are mu+, mu-, k+/- and pi+/-
+    // look if the daughters of the vertex are mu+, mu-, k+ and k-
     if (v->daughterTracks().size()==4) {
       for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
 	if((**dt).pdgId() == -13){
@@ -428,57 +428,35 @@ int BsToJpsiPhiAnalysis::JpsiKstarFlag(const TrackingVertexCollection * tracking
 	if((**dt).pdgId() == 13){
 	  muminus = true;
 	}
-	if((**dt).pdgId() == 321 || (**dt).pdgId()== -321){
-	  kaon = true;
+	if((**dt).pdgId() == 321 || (**dt).pdgId()==-321){
+	//	if((**dt).pdgId() == 321){
+	  kplus = true;
 	}
-	if((**dt).pdgId() == -211 || (**dt).pdgId()== 211){
-	  pion = true;
+	if((**dt).pdgId() == -211 || (**dt).pdgId()==211){
+	//	if((**dt).pdgId() == -321){
+	  kminus = true;
 	}
       }
     }
-    // look if the mothers of the vertex are Bs, Jpsi and Kstar
-    if (v->genVertices().size() == 3) {
-      for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
-	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 511) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -511)) ){
-	  bd = true;
-					cout << "found Bd" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
-	  jpsi = true;
-	  cout << "found jpsi" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 313) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -313)) ){
-	  Kstar = true;
-	  cout << "found Kstar" << endl;
-	}
-			}
+    if(kplus && kminus && muminus && muplus){
+      flagbdjpsikstar=1;
+    } else {
+      flagbdjpsikstar=-10;
     }
-    if(bd && jpsi && Kstar){ 
-    //    if(muplus && muminus && kaon && pion){ 
-      flagbdjpsikstar = 1;
-    } else
-      flagbdjpsikstar = 0;
-
-    return flagbdjpsikstar;
   }
+  return flagbdjpsikstar;
 }
-
 // flag for Jpsi Ks
 
 int BsToJpsiPhiAnalysis::JpsiKsFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
 {
-  //iterate over al SimVertices
+  int flagbdjpsiks = 0;
   for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
-    int flagbdjpsiks = 0;
-    bool bd = false;
-    bool jpsi = false;
-    bool Ks = false; 
-    bool pionp = false;
-    bool pionm = false;
+    bool kplus = false;
+    bool kminus = false;
     bool muminus = false;
     bool muplus = false;
-    // look if the daughters of the vertex are mu+, mu-, k+/- and pi+/-
+    // look if the daughters of the vertex are mu+, mu-, pi+ and pi-
     if (v->daughterTracks().size()==4) {
       for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
 	if((**dt).pdgId() == -13){
@@ -488,39 +466,22 @@ int BsToJpsiPhiAnalysis::JpsiKsFlag(const TrackingVertexCollection * trackingTru
 	  muminus = true;
 	}
 	if((**dt).pdgId() == 211){
-	  pionp = true;
+	//	if((**dt).pdgId() == 321){
+	  kplus = true;
 	}
 	if((**dt).pdgId() == -211){
-	  pionm = true;
+	  //	if((**dt).pdgId() == -321){
+	  kminus = true;
 	}
       }
     }
-    // look if the mothers of the vertex are Bs, Jpsi and Kstar
-    if (v->genVertices().size() == 3) {
-      for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
-	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 511) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -511)) ){
-	  bd = true;
-					cout << "found Bd" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
-	  jpsi = true;
-	  cout << "found jpsi" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 310) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -310)) ){
-	  Ks = true;
-	  cout << "found Ks" << endl;
-	}
-			}
+    if(kplus && kminus && muminus && muplus){
+      flagbdjpsiks=1;
+    } else {
+      flagbdjpsiks=-10;
     }
-    if(bd && jpsi && Ks){ 
-    //    if(muplus && muminus && kaon && pion){ 
-      flagbdjpsiks = 1;
-    } else
-      flagbdjpsiks = 0;
-
-    return flagbdjpsiks;
   }
+  return flagbdjpsiks;
 }
 
 //

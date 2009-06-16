@@ -210,8 +210,8 @@ private:
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
 	
-	int flagBdJpsiKstar_;
-	int flagBdJpsiKs_;
+	int flagKstar_;
+	int flagKs_;
 	
 	TFile* bsFile_;
 	TTree* bsTree_; 

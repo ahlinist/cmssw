@@ -71,7 +71,9 @@ private:
 	int flag_3;
 	int flag_4;
 	int flag_5;
-	int bdjpsikstar;
-	int bdjpsiks;
+	
+	int flagKstar;
+	int flagKs;
+	
 };
 #endif
