@@ -1,20 +1,43 @@
-#include "TH2F.h"
+#include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
+#include "utils.h"
 
+#include "TH1F.h"
+#include "TH2F.h"
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TGaxis.h"
 #include "TColor.h"
 #include "TROOT.h"
-
 #include "TGraph.h"
 #include "TLine.h"
 
 #include <iostream>
 #include <math.h>
 
-#include "DQM/RenderPlugins/src/utils.h"
 
-#include "DQM/RenderPlugins/src/ESRenderPlugin.h"
+class ESRenderPlugin : public DQMRenderPlugin {
+
+ public:
+
+  // virtual void initialise( int argc, char **argv );
+
+  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
+
+  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
+
+  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
+
+ private:
+
+  void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
+//  void preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o );
+
+  void postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
+//  void postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o );
+
+  double NEntries;
+
+};
 
 
 bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i ) {
@@ -170,12 +193,4 @@ void ESRenderPlugin::postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o ) {
 }
 
 
-
-
-
-
-
-
-
-
-
+static ESRenderPlugin instance;
