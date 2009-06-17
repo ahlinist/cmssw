@@ -41,7 +41,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
 )
 
@@ -78,7 +79,7 @@ process.muTauPairsLooseSelection = cms.EDProducer("PATMuTauPairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-process.muTauPairCutLooseSelection = cms.EDFilter("BoolEventSelFlagProducer",
+process.muTauPairCutLooseSelection = cms.EDProducer("BoolEventSelFlagProducer",
     selectors = cms.VPSet(
         cms.PSet(
             pluginName = cms.string("muTauPairCutLooseSelection"),
@@ -140,7 +141,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
             value = cms.string("(trackIso + ecalIso)/pt")
         ),
-
         muonCaloComp = cms.PSet(
             pluginType = cms.string("PATMuonAntiPionExtractor"),
             src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
@@ -162,7 +162,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         muonTrkIP = cms.PSet(
             pluginType = cms.string("PATMuonIpExtractor"),
             src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
-            vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
+            vertexSource = cms.InputTag("selectedPrimaryVertexPosition")
         ),
     
         diTauAbsCharge = cms.PSet(
@@ -184,6 +184,15 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsLooseSelection'),
             value = cms.string("p4Vis.mass")
+        ),
+
+        numGlobalMuons = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
+        ),
+        numCentralJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
         ),
 
         eventWeight = cms.PSet(
