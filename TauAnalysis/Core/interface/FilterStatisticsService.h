@@ -2,8 +2,7 @@
 #define TauAnalysis_Core_FilterStatisticsService_h
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
-#include "DQMServices/Core/interface/MonitorElement.h"
+#include "DQMServices/Core/interface/DQMStore.h"
 
 #include "TauAnalysis/Core/interface/FilterStatisticsTable.h"
 
