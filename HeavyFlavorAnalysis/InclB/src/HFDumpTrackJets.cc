@@ -17,7 +17,6 @@
 
 #include "DataFormats/JetReco/interface/BasicJetCollection.h"
 
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "SimDataFormats/JetMatching/interface/JetFlavour.h"
