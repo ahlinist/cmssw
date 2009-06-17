@@ -59,6 +59,10 @@ public:
   TAnaJet*            getGenJet(int n);
   virtual TAnaJet*    addGenJet();
 
+  // -- TrackJets
+  int                 nTrackJets() {return fnTrackJets;}
+  TAnaJet*            getTrackJet(int n);
+  virtual TAnaJet*    addTrackJet();
 
   // ----------------------------------------------------------------------
   int               fRunNumber, fEventNumber;
@@ -68,7 +72,14 @@ public:
   int               fL1Decision, fHLTDecision;
 
   int               fL1w1, fL1w2, fL1w3, fL1w4;
-  int               fHLTw1, fHLTw2, fHLTw3, fHLTw4;
+  int               fHLTw1, fHLTw2, fHLTw3, fHLTw4, fHLTw5, fHLTw6, fHLTw7;
+  
+  int               fProcessID;
+  double            fXsec;
+  double            fFilterEff;
+  double            fEventWeight;
+
+  int               fEventTag;
 
   TAnaVertex        fPrimaryVertex;
   TAnaVertex        fPrimaryVertex2;
@@ -91,6 +102,9 @@ private:
 
   int               fnGenJets;
   TClonesArray      *fGenJets;
+
+  int               fnTrackJets;
+  TClonesArray      *fTrackJets;
 
   int               fnCandidates;
   TClonesArray      *fCandidates;

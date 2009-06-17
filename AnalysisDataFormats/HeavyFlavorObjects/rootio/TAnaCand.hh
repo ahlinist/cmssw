@@ -24,6 +24,16 @@ public:
   int         fType;
   double      fMass;
 
+  int fMCID;
+  int fMCTag;
+  int fIndexJet;
+  int fIndexTrackJet;
+  int fIndexL1;
+  int fIndexHLTL2;
+  int fIndexHLTL3;
+  int fIndex;
+  double fv1, fv2, fv3, fv4;
+
   TAnaVertex  fVtx;
   TVector3    fPlab;
 
