@@ -163,16 +163,14 @@ void HFDumpTrackJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
     pTrackJet->fn60              = -9999;//not used
     pTrackJet->fn90              = -9999;//not used
   
-    pTrackJet->fJetFlavorHeavy   = -9999;
-    pTrackJet->fJetFlavorNear2   = -9999;
-    pTrackJet->fJetFlavorNear3   = -9999; 
     pTrackJet->fJetFlavorAlgo    = -9999;
     pTrackJet->fJetFlavorPhys    = -9999;
     pTrackJet->fJetFlavorEne     = -9999;
   
     pTrackJet->fD1               = -9999;//not used
-    pTrackJet->fD2               = -9999;//not used
-    pTrackJet->fD4               = -9999;//not used
+    pTrackJet->fD2               = -9999;//fJetFlavorNear2
+    pTrackJet->fD3               = -9999;//fJetFlavorNear3
+    pTrackJet->fD4               = -9999;//fJetFlavorHeavy
     pTrackJet->fD5               = -9999;//not used
     pTrackJet->fD6               = -9999;//not used
     pTrackJet->fD7               = -9999;//not used  
@@ -201,7 +199,7 @@ void HFDumpTrackJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       found = find(cands.begin(), cands.end(), theHeaviest.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pTrackJet->fJetFlavorHeavy = index;
+	pTrackJet->fD4 = index;
       } 
       if (fVerbose > 0) {
 	cout << "theHeaviest flav idx (p,eta,phi)= " 
@@ -218,7 +216,7 @@ void HFDumpTrackJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       found = find(cands.begin(), cands.end(), theNearest2.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pTrackJet->fJetFlavorNear2 = index;
+	pTrackJet->fD2 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat2  flav idx (p,eta,phi)= " 
@@ -235,7 +233,7 @@ void HFDumpTrackJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       found = find(cands.begin(), cands.end(), theNearest3.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pTrackJet->fJetFlavorNear3 = index;
+	pTrackJet->fD3 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat3  flav idx (p,eta,phi)= " 

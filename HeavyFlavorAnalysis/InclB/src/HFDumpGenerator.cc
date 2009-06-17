@@ -66,7 +66,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 
   // ================== Event Info ===========================
-  gHFEvent->fError        = 0;
+  gHFEvent->fEventBits    = 0;
   gHFEvent->fPtHat        = -99999;
   gHFEvent->fProcessID    = -99999; 
   gHFEvent->fXsec         = -99999;
@@ -93,8 +93,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       if (fVerbose > 0) cout << "==>HFDumpGenerator> pthat = " << gHFEvent->fPtHat << endl;
       
     } catch (cms::Exception &ex) {
-      gHFEvent->fError = gHFEvent->fError+2;
-      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventScale not found (fError=" << gHFEvent->fError << ")" << endl;
+      gHFEvent->fEventBits = gHFEvent->fEventBits+2;
+      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventScale not found (fError=" << gHFEvent->fEventBits << ")" << endl;
     }
     try {
       edm::Handle< int > genProcessID;
@@ -104,8 +104,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       if (fVerbose > 0) cout << "==>HFDumpGenerator> process ID = " << gHFEvent->fProcessID << endl;
       
     } catch (cms::Exception &ex) {
-      gHFEvent->fError = gHFEvent->fError+4;
-      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genProcessID not found (fError=" << gHFEvent->fError << ")" << endl;      
+      gHFEvent->fEventBits = gHFEvent->fEventBits+4;
+      if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genProcessID not found (fError=" << gHFEvent->fEventBits << ")" << endl;      
     } 
   } 
   try {
@@ -116,8 +116,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     if (fVerbose > 0) cout << "==>HFDumpGenerator> event weight = " << gHFEvent->fEventWeight << endl;
 
   } catch (cms::Exception &ex) {
-    gHFEvent->fError = gHFEvent->fError+8;
-    if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventWeight not found (fError=" << gHFEvent->fError << ")" << endl; 
+    gHFEvent->fEventBits = gHFEvent->fEventBits+8;
+    if (fVerbose > 0) cout << "==>HFDumpGenerator>ERROR: genEventWeight not found (fError=" << gHFEvent->fEventBits << ")" << endl; 
   } 
 
   // ======================= GENERATOR BLOCK =============================

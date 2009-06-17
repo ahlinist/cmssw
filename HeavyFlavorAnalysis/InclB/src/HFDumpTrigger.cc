@@ -108,15 +108,15 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByLabel(fGlobalTriggerLabel,l1GtRR);
 
   } catch (Exception event) { 
-    if (gHFEvent->fError < 2048) gHFEvent->fError = gHFEvent->fError + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerReadoutRecord (fError=" << gHFEvent->fError << ")" << endl;
+    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerReadoutRecord (fError=" << gHFEvent->fEventBits << ")" << endl;
   }
   try {
     iEvent.getByLabel(fL1MapLabel,l1GtOMRec);
 
   } catch (Exception event) { 
-    if (gHFEvent->fError < 2048) gHFEvent->fError = gHFEvent->fError + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerObjectMapRecord (fError=" << gHFEvent->fError << ")" << endl;
+    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1GlobalTriggerObjectMapRecord (fError=" << gHFEvent->fEventBits << ")" << endl;
   }
 
   const L1GlobalTriggerReadoutRecord& L1GTRR = *l1GtRR;
@@ -174,8 +174,8 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
   else {
-    if (gHFEvent->fError < 2048) gHFEvent->fError = gHFEvent->fError + 2048;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: L1GlobalTriggerReadoutRecord or L1GlobalTriggerObjectMapRecord not valid (fError=" << gHFEvent->fError << ")" << endl;
+    if (gHFEvent->fEventBits < 2048) gHFEvent->fEventBits = gHFEvent->fEventBits + 2048;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: L1GlobalTriggerReadoutRecord or L1GlobalTriggerObjectMapRecord not valid (fError=" << gHFEvent->fEventBits << ")" << endl;
     
   }
 
@@ -186,8 +186,8 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByLabel(fL1MuLabel,l1extmu);
 
   } catch (Exception event) { 
-    if (gHFEvent->fError < 4096) gHFEvent->fError = gHFEvent->fError + 4096;
-    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1Mu object (fError=" << gHFEvent->fError << ")" << endl;
+    if (gHFEvent->fEventBits < 4096) gHFEvent->fEventBits = gHFEvent->fEventBits + 4096;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger>ERROR: no L1Mu object (fError=" << gHFEvent->fEventBits << ")" << endl;
   }
 
   const l1extra::L1MuonParticleCollection& L1ExtMu = *l1extmu;
@@ -227,7 +227,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
   else {
-    if (gHFEvent->fError < 4096) gHFEvent->fError = gHFEvent->fError + 4096;
+    if (gHFEvent->fEventBits < 4096) gHFEvent->fEventBits = gHFEvent->fEventBits + 4096;
     if ( fVerbose ) cout << "==>HFDumpTrigger>ERROR: L1Mu object NOT valid" << endl;
   }
 
