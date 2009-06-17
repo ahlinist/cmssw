@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 genMatrixBinningZtoMuTau = cms.PSet(
-    binner = cms.string("DataBinner"),
-    binning = cms.VPSet(
+    name = cms.string("genMatrixBinningZtoMuTau"),
+    config = cms.VPSet(
         cms.PSet(
             extractor = cms.PSet(
                 pluginType = cms.string("PATMuonValExtractor"),
-                src = cms.InputTag('muonTrkIPcutLooseIsolation', 'cumulative'),
+                src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
                 value = cms.string("trackIso + ecalIso")
             ),
             branchName = cms.string('muonIso'),
@@ -19,7 +19,7 @@ genMatrixBinningZtoMuTau = cms.PSet(
         cms.PSet(
             extractor = cms.PSet(
                 pluginType = cms.string("PATMuTauPairValExtractor"),
-                src = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual'),
+                src = cms.InputTag('muTauPairsLooseSelection'),
                 value = cms.string("abs(charge)")
             ),
             branchName = cms.string('diTauAbsCharge'),
@@ -32,7 +32,7 @@ genMatrixBinningZtoMuTau = cms.PSet(
         cms.PSet(
             extractor = cms.PSet(
                 pluginType = cms.string("PATMuTauPairValExtractor"),
-                src = cms.InputTag('diTauCandidateForMuTauAntiOverlapVeto', 'individual'),
+                src = cms.InputTag('muTauPairsLooseSelection'),
                 value = cms.string("mt1MET")
             ),
             branchName = cms.string('diTauMt1MET'),
