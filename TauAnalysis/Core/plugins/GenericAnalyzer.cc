@@ -125,6 +125,14 @@ void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& 
   }
 }
 
+void GenericAnalyzer::analysisSequenceEntry_analyzer::endJob()
+{
+  for ( std::list<AnalyzerPluginBase*>::const_iterator analyzer = analyzerPlugins_.begin();
+	analyzer != analyzerPlugins_.end(); ++analyzer ) {
+    (*analyzer)->endJob();
+  }
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //

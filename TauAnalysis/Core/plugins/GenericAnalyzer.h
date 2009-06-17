@@ -60,6 +60,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
     void print() const;
     void beginJob();
     void analyze(const edm::Event&, const edm::EventSetup&);
+    void endJob();
     int type() const { return analysisSequenceEntry::kAnalyzer; }
     std::list<AnalyzerPluginBase*> analyzerPlugins_;
   };
