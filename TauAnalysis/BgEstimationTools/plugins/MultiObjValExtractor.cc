@@ -6,10 +6,8 @@ MultiObjValExtractor::MultiObjValExtractor(const edm::ParameterSet& cfg)
 {
   //std::cout << "<MultiObjValExtractor::MultiObjValExtractor>:" << std::endl; 
 
-  std::string binningType = cfg.getParameter<std::string>("binningType");
-
   typedef std::vector<edm::ParameterSet> vParameterSet;
-  vParameterSet cfgBinning = cfg.getParameter<vParameterSet>("binningConfig");
+  vParameterSet cfgBinning = cfg.getParameter<vParameterSet>("config");
   for ( vParameterSet::const_iterator cfgObjValue = cfgBinning.begin(); 
 	cfgObjValue != cfgBinning.end(); ++cfgObjValue ) {
     edm::ParameterSet cfgObjValExtractor = cfgObjValue->getParameter<edm::ParameterSet>("extractor");
