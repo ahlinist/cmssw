@@ -70,6 +70,7 @@ HFDumpGenJets::~HFDumpGenJets() {
 
 // ----------------------------------------------------------------------
 void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+
   
   nevt++;
   // -- get the collection of GenJets 
@@ -95,8 +96,8 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   if (fVerbose > 0) cout << "==>HFDumpGenJets> nGenJets =" << genJets->size() << endl;
   if (genJets->size() != theTagByRef->size()) {
-    gHFEvent->fError = gHFEvent->fError + 256;
-    if (fVerbose > 0) cout << "==>HFDumpGenJets>ERROR: Different Size of JetCollections (fError=" << gHFEvent->fError << ")" << endl;
+     gHFEvent->fEventBits =  gHFEvent->fEventBits + 2;
+    if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different Size of JetCollections (fError=" <<  gHFEvent->fEventBits << ")" << endl;
   }
   
   //Loop over GenJets (with Jet Flavor Tagging)
@@ -109,8 +110,8 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     const MatchedPartons aMatch = (*j).second;  
 
     if (gen->eta() != aJet->eta()) {
-      gHFEvent->fError = gHFEvent->fError + 512;
-      if (fVerbose > 0) cout << "==>HFDumpGenJets>ERROR: Different jets in JetCollections (fError=" << gHFEvent->fError << ")" << endl;
+       gHFEvent->fEventBits =  gHFEvent->fEventBits + 512;
+      if (fVerbose > 0) cout << "==>HFDumpGenJets> ERROR: Different jets in JetCollections (fError=" <<  gHFEvent->fEventBits << ")" << endl;
     }
 
     pGenJet = gHFEvent->addGenJet(); 
@@ -139,9 +140,10 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     pGenJet->fJetFlavorPhys    = -9999;
     pGenJet->fJetFlavorEne     = -9999;
 
-    pGenJet->fD1               = -9999; //not used
-    pGenJet->fD2               = -9999; //not used
-    pGenJet->fD4               = -9999; //not used
+    pGenJet->fD1               = -9999; //
+    pGenJet->fD2               = -9999; //fJetFalvorNear2
+    pGenJet->fD3               = -9999; //fJetFalvorNear3
+    pGenJet->fD4               = -9999; //fJetFlavorHeavy
     pGenJet->fD5               = -9999; //not used
     pGenJet->fD6               = -9999; //not used
     pGenJet->fD7               = -9999; //not used  
@@ -167,7 +169,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       found = find(cands.begin(), cands.end(), theHeaviest.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pGenJet->fJetFlavorHeavy = index;
+	pGenJet->fD4 = index;
       } 
       if (fVerbose > 0) {
 	cout << "theHeaviest flav idx (p,eta,phi)= " 
@@ -184,7 +186,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       found = find(cands.begin(), cands.end(), theNearest2.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pGenJet->fJetFlavorNear2 = index;
+	pGenJet->fD2 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat2  flav idx (p,eta,phi)= " 
@@ -201,7 +203,7 @@ void HFDumpGenJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       found = find(cands.begin(), cands.end(), theNearest3.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pGenJet->fJetFlavorNear3 = index;
+	pGenJet->fD3 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat3  flav idx (p,eta,phi)= " 

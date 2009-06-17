@@ -85,7 +85,7 @@ HFDumpJets::~HFDumpJets() {
 
 // ----------------------------------------------------------------------
 void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  
+
   nevt++;
   
   // -- get the collection of CaloJets 
@@ -111,8 +111,8 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
   if (fVerbose > 0) cout << "==>HFDumpJets> nJets =" << caloJets->size() << endl;
   if (caloJets->size() != theTagByRef->size()) {
-    gHFEvent->fError = gHFEvent->fError + 64;
-    if (fVerbose > 0) cout << "==>HFDumpJets>ERROR: Different Size of JetCollections (fError=" << gHFEvent->fError << ")" << endl; 
+    gHFEvent->fEventBits = gHFEvent->fEventBits + 64;
+    if (fVerbose > 0) cout << "==>HFDumpJets>ERROR: Different Size of JetCollections (fError=" << gHFEvent->fEventBits << ")" << endl; 
   }
   
 
@@ -126,8 +126,8 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     const MatchedPartons aMatch = (*j).second; 
 
     if (cal->eta() != aJet->eta()) {
-      gHFEvent->fError = gHFEvent->fError + 128; 
-      if (fVerbose > 0) cout << "==>HFDumpJets>ERROR: Different jets in JetCollections (fError=" << gHFEvent->fError << ")" << endl; 
+      gHFEvent->fEventBits = gHFEvent->fEventBits + 128; 
+      if (fVerbose > 0) cout << "==>HFDumpJets>ERROR: Different jets in JetCollections (fError=" << gHFEvent->fEventBits << ")" << endl; 
     }
     
     pCaloJet = gHFEvent->addCaloJet();
@@ -151,9 +151,9 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     pCaloJet->fn60              = cal->n60();
     pCaloJet->fn90              = cal->n90();
   
-    pCaloJet->fJetFlavorHeavy   = -9999;
-    pCaloJet->fJetFlavorNear2   = -9999;
-    pCaloJet->fJetFlavorNear3   = -9999; 
+    pCaloJet->fD4               = -9999; //JetFlavorHeavy 
+    pCaloJet->fD2               = -9999; //JetFlavorNear2
+    pCaloJet->fD3               = -9999; //JetFlavorNear3
     pCaloJet->fJetFlavorAlgo    = -9999;
     pCaloJet->fJetFlavorPhys    = -9999;
     pCaloJet->fJetFlavorEne     = -9999;
@@ -173,7 +173,7 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       found = find(cands.begin(), cands.end(), theHeaviest.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pCaloJet->fJetFlavorHeavy = index;
+	pCaloJet->fD4 = index;
       } 
       if (fVerbose > 0) {
 	cout << "theHeaviest flav idx (p,eta,phi)= " 
@@ -190,7 +190,7 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       found = find(cands.begin(), cands.end(), theNearest2.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pCaloJet->fJetFlavorNear2 = index;
+	pCaloJet->fD2 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat2  flav idx (p,eta,phi)= " 
@@ -207,7 +207,7 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       found = find(cands.begin(), cands.end(), theNearest3.get());
       if (found != cands.end()) {
 	index = found - cands.begin();
-	pCaloJet->fJetFlavorNear3 = index;
+	pCaloJet->fD3 = index;
       }
       if (fVerbose > 0) {
 	cout << "theNearest Stat3  flav idx (p,eta,phi)= " 

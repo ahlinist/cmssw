@@ -84,7 +84,7 @@ void HFDumpVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pVtx->fD3dE=-9999;
     pVtx->fC3d=-9999;
     gHFEvent->fPrimaryVertex = *pVtx;
-    gHFEvent->fError = gHFEvent->fError + 1024;
+    gHFEvent->fEventBits = gHFEvent->fEventBits + 1024;
   } 
   
   if (fVerbose > 0) {

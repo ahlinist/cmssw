@@ -47,7 +47,7 @@ void HFHisto::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   nevt++;
   fHisto->SetBinContent(nevt,1);
-  fErrorHisto->Fill(gHFEvent->fError);
+  fErrorHisto->Fill(gHFEvent->fEventBits);
   
 }
 

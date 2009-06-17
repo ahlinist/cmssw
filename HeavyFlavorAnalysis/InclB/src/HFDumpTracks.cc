@@ -110,8 +110,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       recSimColl = fAssociator->associateRecoToSim(tracksView, trackingParticles, &iEvent);
       tp = true;
     } catch (cms::Exception &ex) {
-      gHFEvent->fError = gHFEvent->fError + 16;
-      if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: no TrackingParticles in the event (fError=" << gHFEvent->fError << ")" << endl;  
+      gHFEvent->fEventBits = gHFEvent->fEventBits + 16;
+      if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: no TrackingParticles in the event (fError=" << gHFEvent->fEventBits << ")" << endl;  
     }
     }
 
@@ -195,8 +195,8 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	}
       } catch (Exception event) {
 	if (first) {
-	  gHFEvent->fError = gHFEvent->fError + 32;
-	  if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: matching fails (fError=" << gHFEvent->fError << ")" << endl;
+	  gHFEvent->fEventBits = gHFEvent->fEventBits + 32;
+	  if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: matching fails (fError=" << gHFEvent->fEventBits << ")" << endl;
 	}
 	first = false;
       }
