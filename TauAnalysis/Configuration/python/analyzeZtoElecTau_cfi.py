@@ -83,7 +83,7 @@ genPhaseSpaceCut = cms.PSet(
 
 # trigger selection
 #evtSelTrigger = cms.PSet(
-#    pluginName = cms.string('Trigger'),
+#    pluginName = cms.string('evtSelTrigger'),
 #    pluginType = cms.string('BoolEventSelector'),
 #    src = cms.InputTag('Trigger')
 #)
