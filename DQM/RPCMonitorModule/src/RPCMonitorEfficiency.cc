@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.19 2009/06/09 08:53:41 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.20 2009/06/12 14:18:56 carrillo Exp $
 //
 //
 
@@ -828,17 +828,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Wheel2Summary = new TH2F (os.c_str(), os.c_str(), 12, 0.5,12.5, 22, 0.5, 22.5);
   
   os="Efficiency_Roll_vs_Sector_Disk_-3";                                      
-  Diskm3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm3Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_-2";                                      
-  Diskm2Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm2Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_-1";                                      
-  Diskm1Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm1Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+1";                                      
-  Disk1Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk1Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+2";                                      
-  Disk2Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk2Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+3";                                      
-  Disk3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk3Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
   MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
@@ -1002,9 +1002,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   //Setting Labels in Summary Label Barrel.
 
-  for(int i=1;i<=6;i++){
+  for(int i=1;i<=36;i++){
     binLabel.str("");
-    binLabel<<"Sec "<<i;
+    binLabel<<i;
     //if(debug) std::cout<<"Labeling EndCaps"<<binLabel.str()<<std::endl;
     Diskm3Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm2Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
@@ -1015,16 +1015,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
 
   for(int ri=2;ri<=3;ri++){
-    for(int su=1;su<=6;su++){
+    for(int roll=1;roll<=3;roll++){
       binLabel.str("");
-      binLabel<<"Ri"<<ri<<" Su"<<su;
+      if(roll==1) binLabel<<"Ring "<<ri<<" A";
+      else if(roll==2) binLabel<<"Ring "<<ri<<" B";
+      else if(roll==3) binLabel<<"Ring "<<ri<<" C";
       //if(debug) std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
-      Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Diskm1Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk1Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
+      Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Diskm1Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk1Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk2Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk3Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
     }
   }
   
@@ -2529,16 +2531,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  //Pigi Histos
 
 
-	  int Y=((*r)->id().ring()-2)*6+(*r)->id().subsector();
+	  int Y=((*r)->id().ring()-2)*3+(*r)->id().roll();
 
 	  if(debug) std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
 
-	  if(Disk==-3) Diskm3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==-2) Diskm2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==-1) Diskm1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==1) Disk1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==2) Disk2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==3) Disk3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
+	  if(Disk==-3) Diskm3Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==-2) Diskm2Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==-1) Diskm1Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==1) Disk1Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==2) Disk2Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==3) Disk3Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
 
 
  	  //Near Side
@@ -3869,33 +3871,58 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
   Ca5->Clear(); 
+
+  int colorPalette3[20];
+
+  colorPalette3[0]= 632; // 0 red 
+  colorPalette3[1]= 632; // 5 red
+  colorPalette3[2]= 632; // 10 
+  colorPalette3[3]= 632; // 15 
+  colorPalette3[4]= 632; // 20 
+  colorPalette3[5]= 632; // 25 
+  colorPalette3[6]= 632; // 30 
+  colorPalette3[7]= 632; // 35
+  colorPalette3[8]= 632; // 40
+  colorPalette3[9]= 632; // 45
+  colorPalette3[10]= 632; // 50
+  colorPalette3[11]= 632; // 55
+  colorPalette3[12]= 632; // 60
+  colorPalette3[13]= 632; // 65
+  colorPalette3[14]= 807; // 70
+  colorPalette3[15]= 807; // 75
+  colorPalette3[16]= 400; // 80
+  colorPalette3[17]= 400; // 85
+  colorPalette3[18]= 400; // 90 
+  colorPalette3[19]= 416; // 95 % green 
   
-  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
+  gStyle->SetPalette(20,colorPalette3);
+  
+  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Segment");
   Diskm3Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm3Summary.png"); Diskm3Summary->Write();
   Ca5->Clear();
   
-  Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Sector");
+  Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Segment");
   Diskm2Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm2Summary.png");  Diskm2Summary->Write();
   Ca5->Clear();
   
-  Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Sector");
+  Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Segment");
   Diskm1Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm1Summary.png"); Diskm1Summary->Write();
   Ca5->Clear();
   
-  Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Sector");
+  Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Segment");
   Disk3Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk3Summary.png"); Disk3Summary->Write();
   Ca5->Clear();
   
-  Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Sector");
+  Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Segment");
   Disk2Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk2Summary.png"); Disk2Summary->Write(); 
   Ca5->Clear();
   
-  Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Sector");
+  Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Segment");
   Disk1Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk1Summary.png"); Disk1Summary->Write(); 
   Ca5->Clear();
