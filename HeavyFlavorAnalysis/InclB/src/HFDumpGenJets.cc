@@ -19,7 +19,6 @@
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 #include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
 
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "SimDataFormats/JetMatching/interface/JetFlavour.h"

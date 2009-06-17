@@ -29,7 +29,6 @@
 
 #include "DataFormats/Candidate/interface/CandMatchMap.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/Common/interface/RefToBase.h"

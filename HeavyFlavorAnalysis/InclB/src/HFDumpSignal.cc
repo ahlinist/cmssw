@@ -57,12 +57,21 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     pTrack            = gHFEvent->addSigTrack();
 
-    pTrack->fMuType   = 0;
-    pTrack->fMCID     = muon->charge()*-13; 
-    pTrack->fMuID     = (muon->track()).index();
-    pTrack->fIndex    = index;
-    pTrack->fGenIndex = -1; 
-    pTrack->fQ        = muon->charge();
+    pTrack->fMCID     = 0;                            //muon type: global, standalone or tracker muon
+    if (muon->isGlobalMuon())                       
+      pTrack->fMCID   = 1;          
+    else if (muon->isStandAloneMuon()) 
+      pTrack->fMCID   = 2; 
+    else if (muon->isTrackerMuon()) 
+      pTrack->fMCID   = 3; 
+    else if (muon->isCaloMuon()) 
+      pTrack->fMCID   = 4; 
+ 
+    pTrack->fMuType   = 0;                            //0=RECO, 1=L1, 2=HLTL2, 3=HLTL3 
+    pTrack->fMuID     = (muon->track()).index();      //index of muon track in RECO track block
+    pTrack->fIndex    = index;                        //index in muon block
+    pTrack->fGenIndex = -1;                           //not used
+    pTrack->fQ        = muon->charge();               //charge
     pTrack->fPlab.SetPtEtaPhi(muon->pt(),
 			      muon->eta(),
 			      muon->phi()
@@ -71,6 +80,7 @@ void HFDumpSignal::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if (fVerbose > 0) pTrack->dump(); 
     index++;
   }
+ 
 
 }
 
