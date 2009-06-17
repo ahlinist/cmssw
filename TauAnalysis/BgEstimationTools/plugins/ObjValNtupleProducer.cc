@@ -8,6 +8,7 @@
 const int branchBufferSize = 64000;
 
 ObjValNtupleProducer::ObjValNtupleProducer(const edm::ParameterSet& cfg)
+  : fileServiceError_(0)
 {
   std::cout << "<ObjValNtupleProducer::ObjValNtupleProducer>:" << std::endl;
   
@@ -56,9 +57,15 @@ ObjValNtupleProducer::~ObjValNtupleProducer()
   std::cout << "done." << std::endl;
 }
 
-void ObjValNtupleProducer::beginJob()
+void ObjValNtupleProducer::beginJob(const edm::EventSetup&)
 {
   std::cout << "<ObjValNtupleProducer::beginJob>:" << std::endl;
+
+  if ( !edm::Service<TFileService>().isAvailable() ) {
+    edm::LogError ("beginJob") << " Failed to access TFileService --> ntuple will NOT be created !!";
+    fileServiceError_ = 1;
+    return;
+  }
 
   edm::Service<TFileService> fs;
 
@@ -85,6 +92,11 @@ void ObjValNtupleProducer::beginJob()
 void ObjValNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
   std::cout << "<ObjValNtupleProducer::analyze>:" << std::endl;
+
+  if ( fileServiceError_ ) {
+    edm::LogError ("analyze") << " Failed to access TFileService --> ntuple will NOT be filled !!";
+    return;
+  }
 
 //--- compute values to be filled in ntuple
   for ( std::vector<branchEntryType*>::iterator branchEntry = branchEntries_.begin();
