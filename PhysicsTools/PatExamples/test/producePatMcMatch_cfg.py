@@ -50,6 +50,7 @@ process.load( "PhysicsTools.PatExamples.mcMatch_cfi" )   # The file to modify!
 process.patMCTruth_LeptonPhoton.remove( process.muonMatch )
 process.patMCTruth_LeptonPhoton += process.myMuonMatch
 process.allLayer1Muons.genParticleMatch = "myMuonMatch"
+process.allLayer1Muons.embedGenMatch = True
 # Own jet match to MC jets
 process.patMCTruth_Jet.remove( process.jetGenJetMatch )
 process.patMCTruth_Jet += process.myJetGenJetMatch
