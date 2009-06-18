@@ -52,12 +52,15 @@ def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod
             raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
 
         # extract name and value to be used for replacement
-        paramName = paramNameValuePair[0]
+        paramName = paramNameValuePair[0]    
         paramValue = paramNameValuePair[1]
 
         # "/" is a special character for sed
         # and needs to be escaped by a preceding backslash
-        paramValue.replace("/", "\/")
+        paramValue = paramValue.replace("/", "\/")
+
+        #print("paramName = " + paramName)
+        #print("paramValue = " + paramValue)
 
         # add sed argument for replacing paramName by paramValue
         sedArgument += "s/" + "#" + paramName + "#" + "/" + paramValue + "/; "
@@ -68,4 +71,5 @@ def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod
 
     # execute 'sed' to perform actual replacements
     sedCommand = 'sed -e "' + sedArgument + '" ' + configFile_orig + ' > ' + configFile_mod
+    #print("sedCommand = " + sedCommand)
     subprocess.call(sedCommand, shell = True)
