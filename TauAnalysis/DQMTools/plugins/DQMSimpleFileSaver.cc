@@ -55,7 +55,7 @@ void DQMSimpleFileSaver::endJob()
   }  
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  dqmStore.showDirStructure();
+  //dqmStore.showDirStructure();
   dqmStore.save(outputFileName_);      
 }
 
