@@ -119,6 +119,14 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
+#--------------------------------------------------------------------------------
+# import utility function for changing cut values
+#from TauAnalysis.Configuration.tools.changeCut import changeCut
+#
+# change muonPt cut to > 18 GeV
+#changeCut(process, "selectedLayer1MuonsPt15", "pt > 18.")
+#--------------------------------------------------------------------------------
+
 process.p = cms.Path( process.producePatTuple
 #                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
 #                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
