@@ -48,7 +48,6 @@ process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 
 process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
     patTupleEventContent,
-    #fileName = cms.untracked.string('/data/jkolb/elecTauAnalysis/patTuple_elecTauSkim_Wjets_madgraph_2.root')
     fileName = cms.untracked.string('elecTauSkim_patTuple.root')
 )
 
@@ -58,8 +57,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#        'file:/data/jkolb/skimElecTau_Wjets_madgraph_2.root'
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Zee_1.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
