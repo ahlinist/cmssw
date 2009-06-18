@@ -1,10 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
+from TauAnalysis.RecoTools.objSelConfigurator import *
+
 def changeCut(process, name, value, attribute = "cut"):
 
     cutNames = []
-    cutNames.append(name + "Cumulative")
-    cutNames.append(name + "Individual")
+    cutNames.append(objSelConfigurator._composeModuleName(name, "Cumulative"))
+    cutNames.append(objSelConfigurator._composeModuleName(name, "Individual"))
 
     for cutName in cutNames:
         if not hasattr(process, cutName):
