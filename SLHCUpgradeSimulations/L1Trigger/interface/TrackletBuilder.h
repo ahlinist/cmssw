@@ -64,6 +64,7 @@ class TrackletBuilder : public edm::EDProducer {
 
 			mPtThreshold = iConfig.getParameter<double>("minPtThreshold");
 			mIPWidth = iConfig.getParameter<double>("ipWidth");
+			mFastPhiCut = iConfig.getParameter<double>("fastPhiCut");
 			GlobalStubsInputTag  = iConfig.getParameter<edm::InputTag>("GlobalStubs");
 		}
 
@@ -71,7 +72,7 @@ class TrackletBuilder : public edm::EDProducer {
 
 	private:
 
-		bool CheckTwoStubsForCompatibility( const cmsUpgrades::Tracklet<T> &aTracklet )
+/*		bool CheckTwoStubsForCompatibility( const cmsUpgrades::Tracklet<T> &aTracklet )
 		{
 			if ( (aTracklet.stub(0).isNull()) || (aTracklet.stub(1).isNull()) ){
 				std::cout	<<"Failure!"<<std::endl;
@@ -83,22 +84,25 @@ class TrackletBuilder : public edm::EDProducer {
 
 			double outerPointRadius = aTracklet.stub(1)->position().perp();
   			double innerPointRadius = aTracklet.stub(0)->position().perp();
-  			double outerPointPhi = aTracklet.stub(1)->position().phi();
-  			double innerPointPhi = aTracklet.stub(0)->position().phi();
   			double innerPointZ, outerPointZ;
-
-  			// Rebase the angles in terms of 0-2PI, should
-  			// really have been written this way in CMSSW...
-  			if ( innerPointPhi < 0.0 ) innerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
-  			if ( outerPointPhi < 0.0 ) outerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
 
   			// Check for seed compatibility given a pt cut
   			// Threshold computed from radial location of hits
   			double deltaPhiThreshold = (outerPointRadius - innerPointRadius) * mCompatibilityScalingFactor;  
 
+  			// Rebase the angles in terms of 0-2PI, should
+  			// really have been written this way in CMSSW...
+//  			if ( innerPointPhi < 0.0 ) innerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
+//  			if ( outerPointPhi < 0.0 ) outerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
+
 			// Delta phi computed from hit phi locations
+  			double outerPointPhi = aTracklet.stub(1)->position().phi();
+  			double innerPointPhi = aTracklet.stub(0)->position().phi();
+
   			double deltaPhi = outerPointPhi - innerPointPhi;
-			if(deltaPhi<0) deltaPhi = -deltaPhi;
+			if (deltaPhi<0) deltaPhi = -deltaPhi;
+			while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+
 
 			if ( deltaPhi < deltaPhiThreshold ) {
 				//edm::LogInfo("StackedTrackerLocalStubSimBuilder")<<"compatible in phi" << flush;
@@ -117,7 +121,7 @@ class TrackletBuilder : public edm::EDProducer {
 				return false;
 			}
 			return false;
-		}
+		}*/
 
 
 		virtual void beginJob(const edm::EventSetup& iSetup)
@@ -172,9 +176,48 @@ class TrackletBuilder : public edm::EDProducer {
 				if( innerHits.size() && outerHits.size() ){
 					for( VRT_IT innerHitIter = innerHits.begin() ; innerHitIter != innerHits.end() ; ++innerHitIter ){
 						for( VRT_IT outerHitIter = outerHits.begin() ; outerHitIter != outerHits.end() ; ++outerHitIter ){
+// -----------------------------------------------------------------------------------------------------------------------
+							GlobalPoint inner = (**innerHitIter).position();
+							GlobalPoint outer = (**outerHitIter).position();
 
-							//std::cout<<"PREPARE TO MEET THY DOOM..."<<std::endl;
-							cmsUpgrades::Tracklet<T> tempShortTracklet;
+			  				double deltaPhi = inner.phi()-outer.phi();
+							if (deltaPhi<0) deltaPhi = -deltaPhi;
+							while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+
+							if( deltaPhi<mFastPhiCut ){ // rough search in phi!
+								if( (inner.z()>0&&outer.z()>-mIPWidth) || (inner.z()<0&&outer.z()<+mIPWidth)  ){  //rough search by z sector 				
+
+									double outerPointRadius = outer.perp(); 
+						  			double innerPointRadius = inner.perp();
+						  			double deltaRadius = outerPointRadius - innerPointRadius;
+
+  									double deltaPhiThreshold = deltaRadius * mCompatibilityScalingFactor;  
+									if ( deltaPhi < deltaPhiThreshold ) { // detailer search in phi!
+										double positiveZBoundary = (mIPWidth - outer.z()) * deltaRadius;
+										double negativeZBoundary = -(mIPWidth + outer.z()) * deltaRadius;
+										double multipliedLocation = (inner.z() - outer.z()) * outerPointRadius;
+
+										if ( ( multipliedLocation < positiveZBoundary ) && 	( multipliedLocation > negativeZBoundary ) ){ // detailer search in z!
+											// all agree so make a tracklet!!!
+											cmsUpgrades::Tracklet<T> tempShortTracklet;
+											tempShortTracklet.addHit( 0 , *innerHitIter );
+											tempShortTracklet.addHit( 1 , *outerHitIter );
+
+											double projected_z = outer.z() - ( outerPointRadius * (outer.z()-inner.z()) / deltaRadius );
+											tempShortTracklet.addVertex( GlobalPoint(0.0,0.0,projected_z ));
+					
+											// add tracket into event
+											ShortTrackletOutput->push_back( tempShortTracklet );
+
+										} // end detailed search in z
+									} //end if(detailed search in phi)
+
+								} //end if(rough search by z-sector)
+							} //end if(rough search in phi)
+
+// -----------------------------------------------------------------------------------------------------------------------
+
+							/*cmsUpgrades::Tracklet<T> tempShortTracklet;
 							tempShortTracklet.addHit( 0 , *innerHitIter );
 							tempShortTracklet.addHit( 1 , *outerHitIter );
 
@@ -189,24 +232,10 @@ class TrackletBuilder : public edm::EDProducer {
 								double projected_z = outer.z() - ( outer.perp() * deltaZ_ / deltaR_ );
 								tempShortTracklet.addVertex( GlobalPoint(0.0,0.0,projected_z ));
 
-								// std::cout<<"Built " << tempShortTracklet <<std::endl;
-
-								/*FreeTrajectoryState freeTrajectoryState=tempShortTracklet.VertexTrajectoryState(iSetup);
-
-								PropagatorWithMaterial thePropagator( alongMomentum , .1057 , &(*magnet_) );
-
-								Plane::PlanePointer tempPlane0 = theStackedTracker->meanPlane(tempShortTracklet.stub(0)->Id());
-								TrajectoryStateOnSurface Tsos0 = thePropagator.propagate(freeTrajectoryState, *tempPlane0 );
-								PTrajectoryStateOnDet* state0 = TrajectoryStateTransform().persistentState(Tsos0,tempShortTracklet.stub(0)->Id());
-								tempShortTracklet.addTrajectory( 0 , *state0 );
-
-								Plane::PlanePointer tempPlane1 = theStackedTracker->meanPlane(tempShortTracklet.stub(1)->Id());
-								TrajectoryStateOnSurface Tsos1 = thePropagator.propagate(Tsos0, *tempPlane1 );
-								PTrajectoryStateOnDet* state1 = TrajectoryStateTransform().persistentState(Tsos1,tempShortTracklet.stub(1)->Id());
-								tempShortTracklet.addTrajectory( 1 , *state1 );*/
 
 								ShortTrackletOutput->push_back( tempShortTracklet );
-							}
+							}*/
+
 						}
 					}
 				}
@@ -239,6 +268,8 @@ class TrackletBuilder : public edm::EDProducer {
 
 		double mPtThreshold;
 		double mIPWidth;
+
+		double mFastPhiCut;
 
 		const cmsUpgrades::classInfo *mClassInfo;
 

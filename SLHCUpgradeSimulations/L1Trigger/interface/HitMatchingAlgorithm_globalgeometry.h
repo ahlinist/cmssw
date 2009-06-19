@@ -62,8 +62,8 @@ class HitMatchingAlgorithm_globalgeometry : public HitMatchingAlgorithm<T> {
 
 			// Rebase the angles in terms of 0-2PI, should
 			// really have been written this way in CMSSW...
-			if ( innerPointPhi < 0.0 ) innerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
-			if ( outerPointPhi < 0.0 ) outerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
+			//if ( innerPointPhi < 0.0 ) innerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
+			//if ( outerPointPhi < 0.0 ) outerPointPhi += 2.0 * cmsUpgrades::KGMS_PI;
 
 			// Check for seed compatibility given a pt cut
 			// Threshold computed from radial location of hits
@@ -71,7 +71,8 @@ class HitMatchingAlgorithm_globalgeometry : public HitMatchingAlgorithm<T> {
 
 			// Delta phi computed from hit phi locations
 			double deltaPhi = outerPointPhi - innerPointPhi;
-			if(deltaPhi<0) deltaPhi = -deltaPhi;
+			if (deltaPhi<0) deltaPhi = -deltaPhi;
+			while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
 
 			if ( deltaPhi < deltaPhiThreshold ) {
 
