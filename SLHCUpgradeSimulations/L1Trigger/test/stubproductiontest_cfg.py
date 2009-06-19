@@ -148,38 +148,46 @@ process.simSiPixelDigis.killModules = False
 process.simSiPixelDigis.NumPixelBarrel = cms.int32(10)   
 process.simSiPixelDigis.NumPixelEndcap = cms.int32(3)      
 
-
 process.famosSimHits.ParticleFilter.etaMax = 3.0
 process.famosSimHits.ParticleFilter.pTMin = 0.05
 process.famosSimHits.TrackerSimHits.pTmin = 0.05
 process.famosSimHits.TrackerSimHits.firstLoop = False
 
+#######################################################################################################################
+#######################################################################################################################
+# just one way of doing this:
+# first coulmn is the choice of Clustering algorithm, second column is choice of Hit-Matching algorithm
+# Clustering algorithms choices are:
+#     *    "a" = no clustering, all hits accepted as clusters of 1
+#     *    "broadside" = 1d clustering of broadside neighbours
+#     *    "2d" = 2d clustering
+# Hit matching algorithms choices are:
+#     *    "a" = all possible combinations of hits in stack accepted. !!!Warning! With any pileup this is SLOOOOOOOOOOOW due to large combinatorials!!!
+#     *    "globalgeometry" = standard matching in the global geometry frame
+#     *    "window" = matching by delta-row, delta-column including calculation of the windows
 
-#process.load("Configuration.StandardSequences.DigiToRaw_cff")
-#process.load("Configuration.StandardSequences.RawToDigi_cff")
-
-process.load("SLHCUpgradeSimulations.L1Trigger.HitMatchingAlgorithmRegister_cfi")
-#es_prefer_HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PSimHit_")
-#es_prefer_HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
-#process.HitMatchingAlgorithm_globalgeometry_PixelDigi_.ipWidth = 100.0
+StubsFromSimHits = [ "a" , "globalgeometry" ]
+StubsFromDigis = [ "a" , "globalgeometry" ]
+StubsFromTTHits = [ "a" , "globalgeometry" ]
 
 process.load("SLHCUpgradeSimulations.L1Trigger.ClusteringAlgorithmRegister_cfi")
-#es_prefer_ClusteringAlgorithm_PSimHit_ = cms.ESPrefer("ClusteringAlgorithm_a_PSimHit_")
-#es_prefer_ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer("ClusteringAlgorithm_a_PixelDigi_")
+process.load("SLHCUpgradeSimulations.L1Trigger.HitMatchingAlgorithmRegister_cfi")
 
-#from SLHCUpgradeSimulations.L1Trigger.HitMatchingAlgorithmRegister_cfi import HitMatchingAlgorithm_globalgeometry_PSimHit_
-#process.extend(HitMatchingAlgorithm_globalgeometry_PSimHit_)
-
-#from SLHCUpgradeSimulations.L1Trigger.ClusteringAlgorithmRegister_cfi import ClusteringAlgorithm_a_PSimHit_
-#process.extend(ClusteringAlgorithm_a_PSimHit_)
+process.ClusteringAlgorithm_PSimHit_ = cms.ESPrefer("ClusteringAlgorithm_"+StubsFromSimHits[0]+"_PSimHit_")
+process.ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer("ClusteringAlgorithm_"+StubsFromDigis[0]+"_PixelDigi_")
+process.ClusteringAlgorithm_TTHit_ = cms.ESPrefer("ClusteringAlgorithm_"+StubsFromTTHits[0]+"_TTHit_")
+process.HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer("HitMatchingAlgorithm_"+StubsFromSimHits[1]+"_PSimHit_")
+process.HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer("HitMatchingAlgorithm_"+StubsFromDigis[1]+"_PixelDigi_")
+process.HitMatchingAlgorithm_TTHit_ = cms.ESPrefer("HitMatchingAlgorithm_"+StubsFromTTHits[1]+"_TTHit_")
 
 process.load("SLHCUpgradeSimulations.L1Trigger.LocalStub_cfi")
-
 process.load("SLHCUpgradeSimulations.L1Trigger.GlobalStub_cfi")
-
 process.load("SLHCUpgradeSimulations.L1Trigger.Tracklet_cfi")
 
 process.load("SLHCUpgradeSimulations.L1Trigger.TrackTriggerHitsFromPixelDigis_cfi")
+
+#######################################################################################################################
+#######################################################################################################################
 
 
 #process.load("Configuration.StandardSequences.Reconstruction_cff")
