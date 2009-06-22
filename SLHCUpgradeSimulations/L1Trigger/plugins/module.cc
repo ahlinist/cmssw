@@ -89,7 +89,7 @@ DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_TTHit_);
 
 
 /* - L1 CaloTrigger - */
-#include "SLHCUpgradeSimulations/L1Trigger/interface/L1CaloTriggerSetupProducer.h"
-DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
+//#include "SLHCUpgradeSimulations/L1Trigger/interface/L1CaloTriggerSetupProducer.h"
+//DEFINE_FWK_EVENTSETUP_MODULE(L1CaloTriggerSetupProducer);
 
 
