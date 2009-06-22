@@ -269,7 +269,7 @@ drawJobConfigurator_ZtoMuTau.add(
     plot = drawJobConfigEntry(
         meName = 'TauQuantities/TauNumTracksSignalCone',
         title = "Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)",
-        xAxis = 'unlabeled',
+        xAxis = 'N',
         name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso"
     )
 )
@@ -358,7 +358,7 @@ drawJobConfigurator_ZtoMuTau.add(
         drawJobConfigEntry(
             meName = 'TauQuantities/TauNumTracksSignalCone',
             title = "Tau Tracks in Signal Cone (final Event sample)",
-            xAxis = 'unlabeled',
+            xAxis = 'N',
             name = "finalSamplePlots_tauNumTracksSignalCone"
         ),
         drawJobConfigEntry(
@@ -388,13 +388,13 @@ drawJobConfigurator_ZtoMuTau.add(
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Muon + Tau), CDF method (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCDFmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CollinearApproxMass',
             title = "M(Muon + Tau), collinear Approx. (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
         ),
         drawJobConfigEntry(
