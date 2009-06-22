@@ -4,8 +4,8 @@
 /** \class MuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/18 15:55:17 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/06/18 16:38:18 $
+ *  $Revision: 1.1 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -55,6 +55,8 @@ private:
   TH1F *hMuSegCompatibility;
   TH1I *hChamberMatched;
   TH1I *hMuIdAlgo;
+
+  TH1F *hPtTPFMS;
 
   // Isolation
   TH1F *hMuIso03SumPt;
