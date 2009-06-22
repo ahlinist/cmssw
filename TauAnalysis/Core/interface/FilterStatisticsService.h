@@ -6,6 +6,8 @@
 
 #include "TauAnalysis/Core/interface/FilterStatisticsTable.h"
 
+#include <string>
+
 class FilterStatisticsService
 {
  public: 
