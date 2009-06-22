@@ -13,7 +13,7 @@
 //
 // Original Author:  "Keith Ulmer"
 //         Created:  Fri Mar 20 03:16:50 CDT 2009
-// $Id$
+// $Id: LayerEff.cc,v 1.1 2009/03/22 22:01:59 kaulmer Exp $
 //
 //
 
@@ -31,6 +31,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "CalibTracker/Records/interface/SiStripQualityRcd.h"
 #include "CalibFormats/SiStripObjects/interface/SiStripQuality.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 
 #include "DataFormats/SiStripDetId/interface/TIBDetId.h"
 #include "DataFormats/SiStripDetId/interface/TIDDetId.h"
@@ -39,6 +40,8 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
 #include "DataFormats/TrackingRecHit/interface/TrackingRecHit.h"
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h" 
+#include "TrackingAnalysis/Cosmics/interface/TrajectoryAtValidHit.h"
+#include "TrackingTools/PatternTools/interface/Trajectory.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -74,6 +77,8 @@ class LayerEff : public edm::EDAnalyzer {
   uint valid_;
   uint module_;
   uint qualBad_;
+  float TrajGlbX, TrajGlbY, TrajGlbZ;
+  float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY, TrajLocAngleX, TrajLocAngleY;
 };
 
 //
@@ -117,30 +122,50 @@ LayerEff::analyze(const edm::Event& e, const edm::EventSetup& es)
 
   //  edm::ParameterSet config_;
   
-  //CombinatoriaTrack
+  //Combinatorial Tracks
   Handle<reco::TrackCollection> trackCollectionCKF;
   edm::InputTag TkTagCKF = config_.getParameter<edm::InputTag>("tracks");
   e.getByLabel(TkTagCKF,trackCollectionCKF);
+
+  //Trajectories
+  edm::Handle<std::vector<Trajectory> > TrajectoryCollectionCKF;
+  edm::InputTag TkTrajCKF = config_.getParameter<edm::InputTag>("trajectories");
+  e.getByLabel(TkTrajCKF,TrajectoryCollectionCKF);
 
   // get the SiStripQuality records
   edm::ESHandle<SiStripQuality> SiStripQuality_;
   es.get<SiStripQualityRcd>().get(SiStripQuality_);
 
-  // Tracking 
+  //get tracker geometry
+  edm::ESHandle<TrackerGeometry> tracker;
+  es.get<TrackerDigiGeometryRecord>().get(tracker);
+  const TrackerGeometry * tkgeom=&(* tracker);
+
+  edm::ESHandle<MagneticField> magFieldHandle;
+  es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
+  const MagneticField* magField_ = magFieldHandle.product();
+
+
   const   reco::TrackCollection *tracksCKF=trackCollectionCKF.product();
-  cout << "number ckf tracks found = " << tracksCKF->size() << endl;
   if (tracksCKF->size() == 1 ){
-    cout << "starting checking good single track event" << endl;
     reco::TrackCollection::const_iterator iCKF=trackCollectionCKF.product()->begin();
-
-    cout << "rechit size for track is " << iCKF->recHitsSize() << endl;
-
     uint previousLayer = 0;
+
+    const Trajectory traject = *(TrajectoryCollectionCKF.product()->begin());
+    std::vector<TrajectoryMeasurement> TMeas=traject.measurements();
+    vector<TrajectoryMeasurement>::iterator itm;
+    TrajGlbX = 0.0; TrajGlbY = 0.0; TrajGlbZ = 0.0;
+    TrajLocX = 0.0; TrajLocY = 0.0; TrajLocErrX = 0.0; TrajLocErrY = 0.0; 
+    TrajLocAngleX = -999.0; TrajLocAngleY = -999.0;
     
-    for (trackingRecHit_iterator iHit = iCKF->recHitsBegin(); iHit < iCKF->recHitsEnd(); iHit++) {
+    for (itm=TMeas.begin();itm!=TMeas.end();itm++){
+      if(! itm->updatedState().isValid()) continue;
 
-      uint iidd = (*iHit)->geographicalId().rawId();
-
+      ConstReferenceCountingPointer<TransientTrackingRecHit> theHit;
+      theHit = (*itm).recHit();
+      
+      uint iidd = theHit->geographicalId().rawId();
+      
       StripSubdetector strip=StripSubdetector(iidd);
       unsigned int subid=strip.subdetId();
       uint TKlayers = 0;
@@ -167,21 +192,32 @@ LayerEff::analyze(const edm::Event& e, const edm::EventSetup& es)
 	qualBad_ = 0; 
       }
       
-    
-      cout << "rechit in layer = " << TKlayers << " with valid status = " << (*iHit)->isValid() << " and previous layer = " << previousLayer << endl;
-      
+      cout << "rechit in layer = " << TKlayers << " with valid status = " << theHit->isValid() << " and previous layer = " << previousLayer << endl;
+
+
+      // Make AnalyticalPropagator to use in TAVH constructor
+      AnalyticalPropagator propagator(magField_,anyDirection); 
+      TrajectoryAtValidHit TM(*itm,tkgeom, propagator, 1);
+
       layer_ = TKlayers;
-      valid_ = (*iHit)->isValid();
+      valid_ = theHit->isValid();
       module_ = iidd;
+
+      TrajGlbX = TM.globalX();
+      TrajGlbY = TM.globalY();
+      TrajGlbZ = TM.globalZ();
+      TrajLocX = TM.localX();
+      TrajLocY = TM.localY();
+      TrajLocErrX = TM.localErrorX();
+      TrajLocErrY = TM.localErrorY();
+      TrajLocAngleX = atan( TM.localDxDz() );
+      TrajLocAngleY = atan( TM.localDyDz() );
       
       if (TKlayers!=previousLayer)     rootTree_->Fill();
       
       previousLayer = TKlayers;
-      
     }
-    
   }
-  
 }
 
 
@@ -198,6 +234,15 @@ LayerEff::beginJob(const edm::EventSetup&)
   rootTree_->Branch("valid",&valid_,"valid/i");
   rootTree_->Branch("modules",&module_,"module/i");
   rootTree_->Branch("qualBad",&qualBad_,"qualBad/i");
+  rootTree_->Branch("TrajGlbX",&TrajGlbX,"TrajGlbX/F");
+  rootTree_->Branch("TrajGlbY",&TrajGlbY,"TrajGlbY/F");
+  rootTree_->Branch("TrajGlbZ",&TrajGlbZ,"TrajGlbZ/F");
+  rootTree_->Branch("TrajLocX",&TrajLocX,"TrajLocX/F");
+  rootTree_->Branch("TrajLocY",&TrajLocY,"TrajLocY/F");
+  rootTree_->Branch("TrajLocErrX",&TrajLocErrX,"TrajLocErrX/F");
+  rootTree_->Branch("TrajLocErrY",&TrajLocErrY,"TrajLocErrY/F");
+  rootTree_->Branch("TrajLocAngleX",&TrajLocAngleX,"TrajLocAngleX/F");
+  rootTree_->Branch("TrajLocAngleY",&TrajLocAngleY,"TrajLocAngleY/F");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

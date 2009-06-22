@@ -95,10 +95,7 @@ void HitEff::beginJob(const edm::EventSetup& c){
   traj->Branch("ResXSig",&ResXSig,"ResXSig/F");
   traj->Branch("ModIsBad",&ModIsBad,"ModIsBad/i");
   traj->Branch("SiStripQualBad",&SiStripQualBad,"SiStripQualBad/i");
-  traj->Branch("rhX",RHX,"RHX[500]/F");
-  traj->Branch("rhY",RHY,"RHY[500]/F");
-  traj->Branch("rhZ",RHZ,"RHZ[500]/F");
-  traj->Branch("rhID",RHID,"RHID[500]/F");
+  traj->Branch("withinAcceptance",&withinAcceptance, "withinAcceptance/O");
   traj->Branch("Id",&Id,"Id/i");
   traj->Branch("run",&run,"run/i");
   traj->Branch("event",&event,"event/i");
@@ -122,11 +119,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   int run_nr = e.id().run();
   int ev_nr = e.id().event();
 
-  //CombinatorialSeed
-  edm::Handle<TrajectorySeedCollection> seedcollCKF;
-  edm::InputTag seedTagCKF = conf_.getParameter<edm::InputTag>("combinatorialSeeds");
-  e.getByLabel(seedTagCKF,seedcollCKF);
-  
   //CombinatoriaTrack
   edm::Handle<reco::TrackCollection> trackCollectionCKF;
   edm::InputTag TkTagCKF = conf_.getParameter<edm::InputTag>("combinatorialTracks");
@@ -136,17 +128,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   edm::InputTag TkTrajCKF = conf_.getParameter<edm::InputTag>("trajectories");
   e.getByLabel(TkTrajCKF,TrajectoryCollectionCKF);
   
-  // RecHit
-  //rphi
-  edm::Handle<SiStripRecHit2DCollection> rphirecHits;
-  edm::InputTag rphirecHitsTag = conf_.getParameter<edm::InputTag>("rphirecHits");
-  e.getByLabel( rphirecHitsTag ,rphirecHits);
-
-  //stereo
-  edm::Handle<SiStripRecHit2DCollection> stereorecHits;
-  edm::InputTag stereorecHitsTag = conf_.getParameter<edm::InputTag>("stereorecHits");
-  e.getByLabel( stereorecHitsTag ,stereorecHits);
-
   // Clusters
   // get the SiStripClusters from the event
   edm::Handle< edmNew::DetSetVector<SiStripCluster> > theClusters;
@@ -172,10 +153,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     es.get<SiStripQualityRcd>().get(SiStripQuality_);
   }
   
-  // take from eventSetup the SiStripDetCabling object
-  edm::ESHandle<SiStripDetCabling> SiStripDetCabling_;
-  es.get<SiStripDetCablingRcd>().get(SiStripDetCabling_);  
-
   edm::ESHandle<MagneticField> magFieldHandle;
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
@@ -187,7 +164,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 
   //go through clusters to write out global position of good clusters for the layer understudy for comparison
   // Loop through clusters just to print out locations
-  int ContRH = 0;
+
   for (edmNew::DetSetVector<SiStripCluster>::const_iterator DSViter = input.begin(); DSViter != input.end(); DSViter++) {
     // DSViter is a vector of SiStripClusters located on a single module
     unsigned int ClusterId = DSViter->id();
@@ -221,23 +198,15 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	layer = TECDetId(ClusterDetId).wheel() + 13;
       }
 
-      if (layer==layers && ContRH < 500){
-	RHgpx[ContRH] = gp.x();
-	RHgpy[ContRH] = gp.y();
-	RHgpz[ContRH] = gp.z();
-	RHMod[ContRH] = ClusterId;
-      }
-      ContRH++;
-  
       if(DEBUG) cout << "Found hit in cluster collection layer = " << layer << " with id = " << ClusterId << "   local X position = " << lp.x() << " +- " << sqrt(parameters.second.xx()) << "   matched/stereo/rphi = " << ((ClusterId & 0x3)==0) << "/" << ((ClusterId & 0x3)==1) << "/" << ((ClusterId & 0x3)==2) << endl;
     }
   }
-
+  
   // Tracking 
   const   reco::TrackCollection *tracksCKF=trackCollectionCKF.product();
   if (DEBUG)  cout << "number ckf tracks found = " << tracksCKF->size() << endl;
   if (tracksCKF->size() == 1 ){
-  if (DEBUG)    cout << "starting checking good single track event" << endl;
+    if (DEBUG)    cout << "starting checking good single track event" << endl;
     reco::TrackCollection::const_iterator iCKF=trackCollectionCKF.product()->begin();
     EventTrackCKF++;  
     
@@ -252,7 +221,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     double angleY = -999.;
     double xglob,yglob,zglob;
     
-    if (DEBUG)      cout << "lenght of TMeas = " << TMeas.size() << endl;      
     for (itm=TMeas.begin();itm!=TMeas.end();itm++){
       ConstReferenceCountingPointer<TransientTrackingRecHit> theInHit;
       theInHit = (*itm).recHit();
@@ -307,8 +275,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	TMs.push_back(TrajectoryAtValidHit(*itm,tkgeom, propagator));
       }
       
-      cout << "size of TMs = " << TMs.size() << endl;
-      
       // Modules Constraints
       
       for(std::vector<TrajectoryAtValidHit>::const_iterator TM=TMs.begin();TM!=TMs.end();++TM) {
@@ -318,7 +284,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	if (DEBUG) cout << "setting iidd = " << iidd << " before checking efficiency and ";
 	
 	xloc = TM->localX();
-	cout << "setting xloc = " << xloc << endl;
 	yloc = TM->localY();
 	
 	xErr =  TM->localErrorX();
@@ -330,13 +295,11 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	xglob = TM->globalX();
 	yglob = TM->globalY();
 	zglob = TM->globalZ();
-	
-	float YINTCons = 0.;
-	if(TKlayers < 5) {
-	  YINTCons = -1.;
-	}
-	if(TKlayers >= 5) {
-	  YINTCons = 1.0;  // Bonding Region
+	withinAcceptance = TM->withinAcceptance();
+
+	float YINTCons = -1.;
+	if(TKlayers >= 5 && TKlayers < 11) {
+	  YINTCons = 1.0;  // TOB Bonding Region cut
 	}
 	
 	if (layers == TKlayers) {   // Look at the layer not used to reconstruct the track
@@ -346,9 +309,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	  run = 0; event = 0; TrajLocX = 0.0; TrajLocY = 0.0; TrajLocErrX = 0.0; TrajLocErrY = 0.0; 
 	  TrajLocAngleX = -999.0; TrajLocAngleY = -999.0;	ResX = 0.0; ResXSig = 0.0;
 	  ClusterLocX = 0.0; ClusterLocY = 0.0; ClusterLocErrX = 0.0; ClusterLocErrY = 0.0; ClusterStoN = 0.0;
-	  for (int i=0;i<500;i++){
-	    RHX[i] = 0; RHY[i] = 0; RHZ[i] = 0; RHID[i] = 0;
-	  }
+
 	  // RPhi RecHit Efficiency 
 	  
 	  if (input.size() > 0 ) {  
@@ -431,69 +392,61 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	    if (DEBUG) cout << "Checking location of trajectory: abs(yloc) = " << abs(yloc) << "  abs(xloc) = " << abs(xloc) << endl;
 	    if (DEBUG) cout << "Checking location of cluster hit: yloc = " << FinalCluster[4] << "+-" << FinalCluster[5] << "  xloc = " << FinalCluster[2] << "+-" << FinalCluster[3] << endl;
 	    if (DEBUG) cout << "Final cluster signal to noise = " << FinalCluster[6] << endl;
-
-	    // YINTCons is the bonding region absolute cut, leave this for now
-	    // xloc cut is to keep out tracks that don't pass within the study acceptance region
 	    
-	    if ( abs(yloc) > YINTCons && abs(xloc) < 1500 ) { 
+	    // YINTCons is the bonding region absolute cut
+	    if ( abs(yloc) < YINTCons ) { 
+	      withinAcceptance = false;
+	      cout << "setting withinAcceptance false from glued region and value is now = " << withinAcceptance << endl;
+	    }
+
+	    // fill ntuple varibles
+	    //get global position from module id number iidd
+	    TrajGlbX = xglob;
+	    TrajGlbY = yglob;
+	    TrajGlbZ = zglob;	  
+	    Id = iidd;
+	    run = run_nr;
+	    event = ev_nr;
+	    //if ( SiStripQuality_->IsModuleBad(iidd) ) {
+	    if ( SiStripQuality_->getBadApvs(iidd)!=0 ) {
+	      SiStripQualBad = 1; 
+	      if(DEBUG) cout << "strip is bad from SiStripQuality" << endl;
+	    } else {
+	      SiStripQualBad = 0; 
+	      if(DEBUG) cout << "strip is good from SiStripQuality" << endl;
+	    }
+	    
+	    TrajLocX = xloc;
+	    TrajLocY = yloc;
+	    TrajLocErrX = xErr;
+	    TrajLocErrY = yErr;
+	    TrajLocAngleX = angleX;
+	    TrajLocAngleY = angleY;
+	    ResX = FinalCluster[0];
+	    ResXSig = FinalResSig;
+	    if (FinalResSig != FinalCluster[1]) cout << "Problem with best cluster selection because FinalResSig = " << FinalResSig << " and FinalCluster[1] = " << FinalCluster[1] << endl;
+	    ClusterLocX = FinalCluster[2];
+	    ClusterLocY = FinalCluster[4];
+	    ClusterLocErrX = FinalCluster[3];
+	    ClusterLocErrY = FinalCluster[5];
+	    ClusterStoN = FinalCluster[6];
+	    
+	    if (DEBUG)	      cout << "before check good" << endl;
+	    
+	    if ( FinalResSig < 999.0) {  //could make requirement on track/hit consistency, but for
+	      //now take anything with a hit on the module
+	      cout << "hit being counted as good" << endl;
+	      ModIsBad = 0;
+	      traj->Fill();
+	    }
+	    else {
+	      cout << "hit being counted as bad   ######### Invalid RPhi FinalResX " << FinalCluster[0] << " FinalRecHit " << 
+		iidd << "   TKlayers  "  <<  TKlayers  << " xloc " <<  xloc << " yloc  " << yloc << " module " << iidd << 
+		"   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
+	      ModIsBad = 1;
+	      traj->Fill();
 	      
-	      // fill ntuple varibles
-	      //get global position from module id number iidd
-	      TrajGlbX = xglob;
-	      TrajGlbY = yglob;
-	      TrajGlbZ = zglob;	  
-	      Id = iidd;
-	      run = run_nr;
-	      event = ev_nr;
-	      //if ( SiStripQuality_->IsModuleBad(iidd) ) {
-	      if ( SiStripQuality_->getBadApvs(iidd)!=0 ) {
-		SiStripQualBad = 1; 
-		if(DEBUG) cout << "strip is bad from SiStripQuality" << endl;
-	      } else {
-		SiStripQualBad = 0; 
-		if(DEBUG) cout << "strip is good from SiStripQuality" << endl;
-	      }
-	      
-	      //if ( SiStripQualityForCluster_->getBadApvs(iidd)==0 ) {
-	      
-	      TrajLocX = xloc;
-	      TrajLocY = yloc;
-	      TrajLocErrX = xErr;
-	      TrajLocErrY = yErr;
-	      TrajLocAngleX = angleX;
-	      TrajLocAngleY = angleY;
-	      ResX = FinalCluster[0];
-	      ResXSig = FinalResSig;
-	      if (FinalResSig != FinalCluster[1]) cout << "Problem with best cluster selection because FinalResSig = " << FinalResSig << " and FinalCluster[1] = " << FinalCluster[1] << endl;
-	      ClusterLocX = FinalCluster[2];
-	      ClusterLocY = FinalCluster[4];
-	      ClusterLocErrX = FinalCluster[3];
-	      ClusterLocErrY = FinalCluster[5];
-	      ClusterStoN = FinalCluster[6];
-	      for (int i = 0; i < 500; i++){
-		RHX[i] = RHgpx[i];
-		RHY[i] = RHgpy[i];
-		RHZ[i] = RHgpz[i];
-		RHID[i] = RHMod[i];
-	      }
-	      
-	      if (DEBUG)	      cout << "before check good" << endl;
-	      
-	      if ( FinalResSig < 999.0) {  //could make requirement on track/hit consistency, but for
-		//now take anything with a hit on the module
-		cout << "hit being counted as good" << endl;
-		ModIsBad = 0;
-		traj->Fill();
-	      }
-	      else {
-		cout << "hit being counted as bad   ######### Invalid RPhi FinalResX " << FinalCluster[0] << " FinalRecHit " << 
-		  iidd << "   TKlayers  "  <<  TKlayers  << " xloc " <<  xloc << " yloc  " << yloc << " module " << iidd << 
-		  "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
-		ModIsBad = 1;
-		traj->Fill();
-		
-		cout << " RPhi Error " << sqrt(xErr*xErr + yErr*yErr) << " ErrorX " << xErr << " yErr " <<  yErr <<  endl;
-	      } if (DEBUG) cout << "after check good" << endl; 
+	      cout << " RPhi Error " << sqrt(xErr*xErr + yErr*yErr) << " ErrorX " << xErr << " yErr " <<  yErr <<  endl;
 	    } if (DEBUG) cout << "after good location check" << endl;
 	  } if (DEBUG) cout << "after list of clusters" << endl;
 	} if (DEBUG) cout << "After layers=TKLayers if" << endl;
@@ -563,12 +516,10 @@ bool HitEff::check2DPartner(uint iidd, std::vector<TrajectoryMeasurement> traj) 
   // first get the id of the other detector
   if ((iidd & 0x3)==1) partner_iidd = iidd+1;
   if ((iidd & 0x3)==2) partner_iidd = iidd-1;
-  cout << "setting partner id = " << partner_iidd << " from original id = " << iidd << endl;
   // next look in the trajectory measurements for a measurement from that detector
   // loop through trajectory measurements to find the partner_iidd
   for (std::vector<TrajectoryMeasurement>::const_iterator iTM=traj.begin(); iTM!=traj.end(); ++iTM) {
     if (iTM->recHit()->geographicalId().rawId()==partner_iidd) {
-      cout << "setting partner found = true with partner id = " << iTM->recHit()->geographicalId().rawId() << endl;
       found2DPartner = true;
     }
   }

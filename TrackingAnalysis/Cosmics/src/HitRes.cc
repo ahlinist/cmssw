@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.11 2009/03/03 00:48:37 kaulmer Exp $
+// $Id: HitRes.cc,v 1.12 2009/03/22 15:59:55 kaulmer Exp $
 //
 //
 
@@ -128,6 +128,8 @@ private:
   vector<bool> acceptLayer;
   int run,event;
   float momentum_;
+  uint run_;
+  uint event_;
   bool barrelOnly_;
 };
 
@@ -223,10 +225,13 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   run = iEvent.run();
   event = iEvent.id().event();
-
+  
   for ( TrajectoryCollection::const_iterator it=trajectoryCollection->begin();
 	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,*associator);
-
+  
+  run_ = iEvent.id().run();
+  event_ = iEvent.id().event();
+  
 }
 
 
@@ -619,6 +624,8 @@ HitRes::beginJob(const edm::EventSetup&)
   rootTree_->Branch("hitEY",hitErrorsY_,"hitEY[2]/F");
   rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
   rootTree_->Branch("momentum",&momentum_,"momentum/F");
+  rootTree_->Branch("run",&run_,"run/i");
+  rootTree_->Branch("event",&event_,"event/i");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

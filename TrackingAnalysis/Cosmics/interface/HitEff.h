@@ -60,30 +60,22 @@ class HitEff : public edm::EDAnalyzer {
         // ----------member data ---------------------------
 
   edm::ParameterSet conf_;
-
+  
   TTree* traj;
   int events,EventTrackCKF;
-
+  
   TrackLocalAngle* theAngleFinder;
   uint layers;
   bool DEBUG;
-  TRandom2 RanGen2;
-
-  // All RecHits (from clusters)
-  float	RHgpx[500];
-  float	RHgpy[500];
-  float	RHgpz[500];
-  int RHMod[500];
-
+  
   // Tree declarations
   // Trajectory positions for modules included in the study
   float TrajGlbX, TrajGlbY, TrajGlbZ;
   float TrajLocX, TrajLocY, TrajLocErrX, TrajLocErrY, TrajLocAngleX, TrajLocAngleY;
   float ClusterLocX, ClusterLocY, ClusterLocErrX, ClusterLocErrY, ClusterStoN;
   float ResX, ResXSig;
-  uint ModIsBad; uint Id; uint SiStripQualBad;
+  uint ModIsBad; uint Id; uint SiStripQualBad; bool withinAcceptance;
   uint run; uint event;
-  float RHX[500]; float RHY[500]; float RHZ[500]; int RHID[500];
 };
 
 

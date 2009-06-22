@@ -23,13 +23,16 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
 					    const Propagator& propagator,
 					    const uint mono)
 {
-
   theCombinedPredictedState = TrajectoryStateCombiner().combine( tm.forwardPredictedState(),
   								 tm.backwardPredictedState());
 
+  if (!theCombinedPredictedState.isValid()) {
+    cout << "found invalid combinedpredictedstate"<< endl;
+    return;
+  }
+
   theHit = tm.recHit();  
   iidd = theHit->geographicalId().rawId();
-
   StripSubdetector strip=StripSubdetector(iidd);
   unsigned int subid=strip.subdetId();
   // xB and yB are for absolute borders on the trajectories included in the study, sigmaX sigmaY are 
@@ -41,7 +44,6 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
   if (subid ==  StripSubdetector::TOB) { 
     sigmaYBond = 5.0;
   }
-
   const GeomDetUnit * monodet;
   
   // if module is from a double sided layer, write out info for either the
@@ -58,27 +60,35 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
     else  monodet=gdet->monoDet(); // this should only be mono == 2
 
     // set theCombinedPredictedState to be on the sensor surface, not the matched surface
-    //const FreeTrajectoryState &fts = *(theCombinedPredictedState.freeTrajectoryState());
     DetId mono_id = monodet->geographicalId();
     const Surface &surface = tracker->idToDet(mono_id)->surface();
-    //theCombinedPredictedState = TrajectoryStateOnSurface(fts, surface);
     theCombinedPredictedState = propagator.propagate(theCombinedPredictedState, 
 						     surface);
+
+    if (!theCombinedPredictedState.isValid()) {
+      cout << "found invalid combinedpredictedstate after propagation"<< endl;
+      return;
+    }
     
     //set module id to be mono det
     iidd = monodet->geographicalId().rawId();
-
   } else {
-    monodet = (GeomDetUnit*)theHit->det(); //this cast does something different from detUnit()    
+    monodet = (GeomDetUnit*)theHit->det();
   }
 
-  locX_temp = theCombinedPredictedState.localPosition().x();
-  locY_temp = theCombinedPredictedState.localPosition().y();
+  locX = theCombinedPredictedState.localPosition().x();
+  locY = theCombinedPredictedState.localPosition().y();
+  locZ = theCombinedPredictedState.localPosition().z();
   locXError = sqrt(theCombinedPredictedState.localError().positionError().xx());
   locYError = sqrt(theCombinedPredictedState.localError().positionError().yy());
+  locDxDz = theCombinedPredictedState.localParameters().vector()[1];
+  locDyDz = theCombinedPredictedState.localParameters().vector()[2];
+  globX = theCombinedPredictedState.globalPosition().x();
+  globY = theCombinedPredictedState.globalPosition().y();
+  globZ = theCombinedPredictedState.globalPosition().z();
   
   // this should never be a glued det, only rphi or stero
-  cout << "From TrajAtValidHit module " << iidd << "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
+  //cout << "From TrajAtValidHit module " << iidd << "   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
     
   // Restrict the bound regions for better understanding of the modul assignment. 
 
@@ -86,24 +96,22 @@ TrajectoryAtValidHit::TrajectoryAtValidHit( const TrajectoryMeasurement& tm,
   float xx, yy ,zz;
 
   // Insert the bounded values 
-  if (locX_temp < 0. ) xx = min(locX_temp - xB,locX_temp - sigmaX*locXError);
-  else  xx = max(locX_temp + xB, locX_temp + sigmaX*locXError);
+  if (locX < 0. ) xx = min(locX - xB,locX - sigmaX*locXError);
+  else  xx = max(locX + xB, locX + sigmaX*locXError);
 
-  if (locY_temp < 0. ) yy = min(locY_temp - yB,locY_temp - sigmaY*locYError);
-  else  yy = max(locY_temp + yB, locY_temp + sigmaY*locYError);
+  if (locY < 0. ) yy = min(locY - yB,locY - sigmaY*locYError);
+  else  yy = max(locY + yB, locY + sigmaY*locYError);
 
   zz = theCombinedPredictedState.localPosition().z();
 
   BoundedPoint = LocalPoint(xx,yy,zz);
   
-  if ( monodet->surface().bounds().inside(BoundedPoint) && abs(locY_temp) > sigmaYBond*locYError ){
-    locX = locX_temp;
-    locY = locY_temp;
+  if ( monodet->surface().bounds().inside(BoundedPoint) && abs(locY) > sigmaYBond*locYError ){
+    acceptance = true;
   }
   else {
     // hit is within xB, yB from the edge of the detector, so throw it out 
-    locX = 2000.;
-    locY = 2000.;
+    acceptance = false;
   }
 }
 
@@ -117,34 +125,33 @@ double TrajectoryAtValidHit::localY() const
 }
 double TrajectoryAtValidHit::localZ() const
 {
-  return theCombinedPredictedState.localPosition().z();
+  return locZ;
 }
 double TrajectoryAtValidHit::localErrorX() const
 {
-  return sqrt(theCombinedPredictedState.localError().positionError().xx());
+  return locXError;
 }
 double TrajectoryAtValidHit::localErrorY() const
 {
-  return sqrt(theCombinedPredictedState.localError().positionError().yy());
+  return locYError;
 }
 double TrajectoryAtValidHit::localDxDz() const {
-  return theCombinedPredictedState.localParameters().vector()[1];
+  return locDxDz;
 }
 double TrajectoryAtValidHit::localDyDz() const {
-  return theCombinedPredictedState.localParameters().vector()[2];
+  return locDyDz;
 }
 double TrajectoryAtValidHit::globalX() const
 {
-  return theCombinedPredictedState.globalPosition().x();
+  return globX;
 }
-
 double TrajectoryAtValidHit::globalY() const
 {
-  return theCombinedPredictedState.globalPosition().y();
+  return globY;
 }
 double TrajectoryAtValidHit::globalZ() const
 {
-  return theCombinedPredictedState.globalPosition().z();
+  return globZ;
 }
 
 uint TrajectoryAtValidHit::monodet_id() const
@@ -152,21 +159,9 @@ uint TrajectoryAtValidHit::monodet_id() const
   return iidd;
 }
 
-LocalPoint TrajectoryAtValidHit::project(const GeomDet *det,const GeomDet* projdet,LocalPoint position,LocalVector trackdirection)const
+bool TrajectoryAtValidHit::withinAcceptance() const
 {
-  
-  GlobalPoint globalpoint=(det->surface()).toGlobal(position);
-  
-  // position of the initial and final point of the strip in glued local coordinates
-  LocalPoint projposition=(projdet->surface()).toLocal(globalpoint);
-  
-  //correct the position with the track direction
-  
-  float scale=-projposition.z()/trackdirection.z();
-  
-  projposition+= scale*trackdirection;
-  
-  return projposition;
+  return acceptance;
 }
 
 bool TrajectoryAtValidHit::isDoubleSided(uint iidd) const {

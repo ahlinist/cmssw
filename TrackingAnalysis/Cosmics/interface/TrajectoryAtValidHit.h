@@ -39,18 +39,20 @@ public:
   double globalZ() const;
 
   uint monodet_id() const;
+  bool withinAcceptance() const;
 
-  LocalPoint project(const GeomDet *det, const GeomDet* projdet, LocalPoint position, LocalVector trackdirection) const; 
   bool isDoubleSided(uint iidd) const;
   TrajectoryStateOnSurface tsos() const;
 
 private:
 
   TrajectoryStateOnSurface theCombinedPredictedState;
-  float locX_temp,locY_temp;
-  float locX,locY;
+  float locX,locY, locZ;
   float locXError, locYError;
+  float locDxDz, locDyDz;
+  float globX, globY, globZ;
   uint iidd;
+  bool acceptance;
 
   ConstReferenceCountingPointer<TransientTrackingRecHit> theHit;
 };
