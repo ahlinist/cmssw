@@ -70,8 +70,9 @@ JetEventSelector::select (const edm::Event& event) const
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
     float et = jet.et();
-    if ( corrStep_ != jet.corrStep() || corrFlavour_ != jet.corrFlavour() )
-      et *= jet.corrFactor( corrStep_, corrFlavour_ );
+    std::string corrstep = corrStep_;
+    if ( corrStep_ != jet.jetCorrName() || corrFlavour_ != jet.jetCorrFlavour() )
+      et *= jet.jetCorrFactor( corrstep, corrFlavour_ );
     correctedEts.push_back(et);
   }
   std::vector<size_t> etSorted = 
