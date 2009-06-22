@@ -195,7 +195,7 @@ drawJobConfigurator_ZtoMuTau.add(
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/MuonTrackIP#PAR#',
         PAR = [ 'xy', 'z' ],
-        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto Cut)",
+        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto)",
         xAxis = 'IP#PAR#',
         name = "cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto"
     )
@@ -299,7 +299,7 @@ drawJobConfigurator_ZtoMuTau.add(
     beforeCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Muon,Tau) (after Tau #mu-Veto Cut)",
+        title = "#Delta R(Muon,Tau) (after Tau #mu-Veto)",
         xAxis = 'dR',
         name = "cutFlowControlPlots_dR12_afterTauMuonVeto"
     )
@@ -385,6 +385,12 @@ drawJobConfigurator_ZtoMuTau.add(
             xAxis = 'Mt',
             name = "finalSamplePlots_mtMuonTauMET"
         ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Muon + Tau) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisible"
+        ),        
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Muon + Tau), CDF method (final Event sample)",
