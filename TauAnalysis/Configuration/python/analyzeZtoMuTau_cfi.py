@@ -269,8 +269,8 @@ muTauEventDump = cms.PSet(
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
     
-    triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
-    #triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauMt1MET: passed_cumulative")
+    #triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
+    triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauMt1MET: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
