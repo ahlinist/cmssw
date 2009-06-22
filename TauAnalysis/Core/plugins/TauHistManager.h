@@ -72,6 +72,13 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauLeadTrkIPz_;
 
   MonitorElement* hTauDiscriminatorAgainstElectrons_;
+  MonitorElement* hTauEmFraction_;
+  MonitorElement* hTauHcalTotOverPLead_;
+  MonitorElement* hTauHcalMaxOverPLead_;
+  MonitorElement* hTauHcal3x3OverPLead_;
+  MonitorElement* hTauEcalStripSumEOverPLead_;
+  MonitorElement* hTauBremsRecoveryEOverPLead_;
+
   MonitorElement* hTauDiscriminatorAgainstMuons_;
 
   MonitorElement* hTauRecDecayMode_;
@@ -93,18 +100,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauTrkIsoPhiDistProfile_;
 
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
-  MonitorElement* hTauTrkIsoPt_;
-  MonitorElement* hTauEcalIsoPt_;
-  MonitorElement* hTauHcalIsoPt_;
-  MonitorElement* hTauIsoSumPt_;
-
-  std::vector<MonitorElement*> hTauTrkIsoPtConeSizeDep_;
-  std::vector<MonitorElement*> hTauEcalIsoPtConeSizeDep_;
-  std::vector<MonitorElement*> hTauHcalIsoPtConeSizeDep_;
-  
-  reco::isodeposit::AbsVetos tauTrkIsoParam_;
-  reco::isodeposit::AbsVetos tauEcalIsoParam_;
-  reco::isodeposit::AbsVetos tauHcalIsoParam_;
+//    (not implemented in reco::PFTau/pat::Tau yet...)
 
 //--- IsoDeposits reconstructed from Partcile Flow
   MonitorElement* hTauParticleFlowIsoPt_;
