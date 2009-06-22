@@ -57,6 +57,12 @@ DEFINE_FWK_EVENTSETUP_MODULE(HitMatchingAlgorithm_globalgeometry_PixelDigi_);
 typedef ES_HitMatchingAlgorithm_globalgeometry<cmsUpgrades::Ref_TTHit_> HitMatchingAlgorithm_globalgeometry_TTHit_;
 DEFINE_FWK_EVENTSETUP_MODULE(HitMatchingAlgorithm_globalgeometry_TTHit_);
 
+#include "SLHCUpgradeSimulations/L1Trigger/interface/HitMatchingAlgorithm_pixelray.h"
+typedef ES_HitMatchingAlgorithm_pixelray<cmsUpgrades::Ref_PixelDigi_> HitMatchingAlgorithm_pixelray_PixelDigi_;
+DEFINE_FWK_EVENTSETUP_MODULE(HitMatchingAlgorithm_pixelray_PixelDigi_);
+typedef ES_HitMatchingAlgorithm_pixelray<cmsUpgrades::Ref_TTHit_> HitMatchingAlgorithm_pixelray_TTHit_;
+DEFINE_FWK_EVENTSETUP_MODULE(HitMatchingAlgorithm_pixelray_TTHit_);
+
 
 /* - The Clustering Algorithms - */
 
