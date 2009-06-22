@@ -51,6 +51,12 @@ selectedLayer1TausElectronVeto = cms.EDFilter("PATTauSelector",
     filter = cms.bool(False)                                 
 )
 
+# require tau candidate not to be in ECAL barrel/endcap crack
+selectedLayer1TausEcalCrackVeto = cms.EDFilter("PATTauSelector",
+    cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558"),
+    filter = cms.bool(False)                                 
+)
+
 # require tau candidate to pass muon veto
 selectedLayer1TausMuonVeto = cms.EDFilter("PATTauSelector",
     cut = cms.string('tauID("againstMuon") > 0.5'),
@@ -59,37 +65,40 @@ selectedLayer1TausMuonVeto = cms.EDFilter("PATTauSelector",
 
 cleanLayer1TausSel = cms.EDProducer("PATTauSelProducer",
 
-  leptonSource = cms.InputTag("cleanLayer1Taus"),
+    leptonSource = cms.InputTag("cleanLayer1Taus"),
 
-  selFlags = cms.PSet(
-    tauAnalysisSelTauEta21 = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausEta21Individual')
-    ),
-    tauAnalysisSelTauPt20 = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausPt20Individual')
-    ),
-    tauAnalysisSelTauLeadTrk = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausLeadTrkIndividual')
-    ),
-    tauAnalysisSelTauLeadTrkPt = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausLeadTrkPtIndividual')
-    ),
-    tauAnalysisSelTauTrkIso = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausTrkIsoIndividual')
-    ),
-    tauAnalysisSelTauEcalIso = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausEcalIsoIndividual')
-    ),
-    tauAnalysisSelTauElecVeto = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausElectronVetoIndividual')
-    ),
-    tauAnalysisSelTauMuonVeto = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausMuonVetoIndividual')
-    ),
-    tauAnalysisSelTauProng = cms.PSet(
-      src = cms.InputTag('selectedLayer1TausProngIndividual')
+    selFlags = cms.PSet(
+        tauAnalysisSelTauEta21 = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausEta21Individual')
+        ),
+        tauAnalysisSelTauPt20 = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausPt20Individual')
+        ),
+        tauAnalysisSelTauLeadTrk = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausLeadTrkIndividual')
+        ),
+        tauAnalysisSelTauLeadTrkPt = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausLeadTrkPtIndividual')
+        ),
+        tauAnalysisSelTauTrkIso = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausTrkIsoIndividual')
+        ),
+        tauAnalysisSelTauEcalIso = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausEcalIsoIndividual')
+        ),
+        tauAnalysisSelTauElecVeto = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausElectronVetoIndividual')
+        ),
+        tauAnalysisSelTauEcalCrackVeto = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausEcalCrackVetoIndividual')
+        ),
+        tauAnalysisSelTauMuonVeto = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausMuonVetoIndividual')
+        ),
+        tauAnalysisSelTauProng = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausProngIndividual')
+        )
     )
-  )
 )
 
 produceLayer1SelTaus = cms.Sequence( cleanLayer1TausSel )

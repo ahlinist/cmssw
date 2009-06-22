@@ -305,16 +305,30 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "Tau anti-Electron Discr. (after Tau 1-Prong||3-Prong Cut)",
             xAxis = 'unlabeled',
             name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauProng"
-            )
+        )
     ]
 )
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauElectronVeto,
+    beforeCut = evtSelTauEcalCrackVeto,
+    plots = [
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (after Tau electron-Veto)",
+            xAxis = '#PAR#',
+            name = "cutFlowControlPlots_tau_afterTauProng"
+        )
+    ]
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelTauEcalCrackVeto,
     beforeCut = evtSelDiTauCandidateForElecTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Electron,Tau) (after Tau electron-Veto Cut)",
+        title = "#Delta R(Electron,Tau) (after Tau ECAL crack-Veto)",
         xAxis = 'dR',
         name = "cutFlowControlPlots_dR12_afterTauElectronVeto"
     )
@@ -400,6 +414,12 @@ drawJobConfigurator_ZtoElecTau.add(
             xAxis = 'Mt',
             name = "finalSamplePlots_mtElectronTauMET"
         ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Electron + Tau) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisible"
+        ),     
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Electron + Tau), CDF method (final Event sample)",
