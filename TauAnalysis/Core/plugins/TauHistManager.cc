@@ -80,15 +80,6 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   tauIsoPtThresholdIncr_ = 0.5;
 
 //--- create "veto" objects for computation of IsoDeposit sums
-  tauTrkIsoParam_.push_back(IsoDepositVetoFactory::make("0.02"));
-  tauTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-
-  tauEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  tauEcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
-
-  tauHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  tauHcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
-
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
 }
@@ -96,9 +87,6 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 TauHistManager::~TauHistManager()
 {
 //--- delete "veto" objects for computation of IsoDeposit sums
-  clearIsoParam(tauTrkIsoParam_);
-  clearIsoParam(tauEcalIsoParam_);
-  clearIsoParam(tauHcalIsoParam_);
   clearIsoParam(tauParticleFlowIsoParam_);
 }
 
@@ -137,20 +125,16 @@ void TauHistManager::bookHistograms()
   hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "TauLeadTrkIPz", 100, -1.0, 1.0);
   
   hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
-						       "TauDiscriminatorAgainstElectrons", 102, -0.01, 1.01);
+						       "TauDiscriminatorAgainstElectrons", 101, -0.005, 1.005);
+  hTauEmFraction_ = dqmStore.book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
+  hTauHcalTotOverPLead_ = dqmStore.book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
+  hTauHcalMaxOverPLead_ = dqmStore.book1D("TauHcalMaxOverPLead", "TauHcalMaxOverPLead", 101, -0.01, 2.01);
+  hTauHcal3x3OverPLead_ = dqmStore.book1D("TauHcal3x3OverPLead", "TauHcal3x3OverPLead", 101, -0.01, 2.01);
+  hTauEcalStripSumEOverPLead_ = dqmStore.book1D("TauEcalStripSumEOverPLead", "TauEcalStripSumEOverPLead", 101, -0.01, 2.01);
+  hTauBremsRecoveryEOverPLead_ = dqmStore.book1D("TauBremsRecoveryEOverPLead", "TauBremsRecoveryEOverPLead", 101, -0.01, 2.01);
+
   hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
 						   "TauDiscriminatorAgainstMuons", 102, -0.01, 1.01);
-
-/*
-  add histograms of:
-   o TauGenJet decay mode
-   o reco TauDecayMode
-   o reco TauDecayMode (y-ayis) vs. TauGenJet decay mode (x-axis)
-   o TauGenJet mass
-   o pat::Tau mass
-   o reco TauDecayMode mass
-   o reco TauDecayMode mass separately for different decay modes
- */
     
   hTauRecDecayMode_ = dqmStore.book1D("TauRecDecayMode", "TauRecDecayMode", 25, -0.5, 24.5);
   
@@ -173,11 +157,6 @@ void TauHistManager::bookHistograms()
 							   "TauDiscriminatorTaNCfrQuarterPercent", 102, -0.01, 1.01);
   hTauDiscriminatorTaNCfrTenthPercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrTenthPercent",
 							 "TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
-    
-  hTauTrkIsoPt_ = dqmStore.book1D("TauTrkIsoPt", "TauTrkIsoPt", 100, 0., 20.);    
-  hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "TauEcalIsoPt", 100, 0., 20.);
-  hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "TauHcalIsoPt", 100, 0., 20.);
-  hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "TauIsoSumPt", 100, 0., 20.);
   
   hTauParticleFlowIsoPt_ = dqmStore.book1D("TauParticleFlowIsoPt", "TauParticleFlowIsoPt", 100, 0., 20.);    
   hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "TauPFChargedHadronIsoPt", 100, 0., 20.);   
@@ -192,16 +171,6 @@ void TauHistManager::bookHistograms()
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
     std::ostringstream iConeSizeString;
     iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-    
-    std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, 
-						       hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, 
-							hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, 
-							hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
     
     std::string hTauParticleFlowIsoPtConeSizeDepName_i 
       = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
@@ -313,6 +282,13 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     }
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"));
+    hTauEmFraction_->Fill(patTau->emFraction());
+    hTauHcalTotOverPLead_->Fill(patTau->hcalTotOverPLead());
+    hTauHcalMaxOverPLead_->Fill(patTau->hcalMaxOverPLead());
+    hTauHcal3x3OverPLead_->Fill(patTau->hcal3x3OverPLead());
+    hTauEcalStripSumEOverPLead_->Fill(patTau->ecalStripSumEOverPLead());
+    hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead());
+
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
   
     int tauDecayMode = patTau->decayMode();
@@ -383,16 +359,6 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau)
 {
   //std::cout << "<TauHistManager::fillTauIsoHistograms>:" << std::endl;
     
-  hTauTrkIsoPt_->Fill(patTau.trackIso());
-  hTauEcalIsoPt_->Fill(patTau.ecalIso());
-  hTauHcalIsoPt_->Fill(patTau.hcalIso());
-  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso());
-  
-  //std::cout << " particleIso = " << patTau.particleIso() << std::endl;
-  //std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
-  //std::cout << " neutralParticleIso = " << patTau.neutralParticleIso() << std::endl;
-  //std::cout << " gammaParticleIso = " << patTau.gammaParticleIso() << std::endl;
-  
   hTauParticleFlowIsoPt_->Fill(patTau.particleIso());
   hTauPFChargedHadronIsoPt_->Fill(patTau.chargedParticleIso());
   hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralParticleIso());
@@ -413,21 +379,6 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
 
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
     double isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
-    
-    if ( patTau.trackerIsoDeposit() ) {
-      double tauTrkIsoDeposit_i = patTau.trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam_, false);
-      hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
-    }
-
-    if ( patTau.ecalIsoDeposit() ) {
-      double tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauEcalIsoParam_, false);
-      hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
-    }
-    
-    if ( patTau.hcalIsoDeposit() ) {
-      double tauHcalIsoDeposit_i = patTau.hcalIsoDeposit()->countWithin(isoConeSize_i, tauHcalIsoParam_, false);
-      hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
-    }
 
     if ( patTau.isoDeposit(pat::ParticleIso) ) {
       double tauParticleFlowIsoDeposit_i 
