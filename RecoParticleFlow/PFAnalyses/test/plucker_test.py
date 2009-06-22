@@ -18,7 +18,7 @@ process.maxEvents = cms.untracked.PSet(
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
-process.GlobalTag.globaltag = "IDEAL_30X::All"
+process.GlobalTag.globaltag = "IDEAL_31X::All"
 
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 
@@ -42,7 +42,7 @@ process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 process.famosSimHits.Calorimetry.UnfoldedMode = True
 
-process.load("RecoParticleFlow.PFBlockProducer.particleFlowSimParticle_cff")
+process.load("RecoParticleFlow.PFProducer.particleFlowSimParticle_cff")
 
 process.source = cms.Source("EmptySource")
 from Configuration.Generator.PythiaUESettings_cfi import *
@@ -67,20 +67,26 @@ process.generator = cms.EDProducer("Pythia6EGun",
 
 )
 
-process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+#process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
+#process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
+#process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+process.particleFlowRecHitHCAL.isTestbeam = cms.bool(False)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 
-process.pluckingPF = cms.EDFilter("CalibratablePlucker" ,
-    PFCandidates=cms.InputTag("particleFlow"),
-)
 
 import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
  
+process.pluckingPF = cms.EDFilter("CalibratablePlucker" ,
+    PFCandidates=cms.InputTag("particleFlow"),
+    PFSimParticles=cms.InputTag("particleFlowSimParticle"),
+    isMC = cms.bool(True),
+    LimitCandidatesPerEvent=cms.uint32(3),
+    DeltaREcalIsolation=cms.double(0.30),
+)
+
 process.extraction = cms.EDProducer("ExtractionAnalyzer",
         calibratable.EventDelegate         
 )

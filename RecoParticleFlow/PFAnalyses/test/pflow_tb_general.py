@@ -8,7 +8,7 @@ import FWCore.ParameterSet.Config as cms
 import commands
 process = cms.Process("PROD")
 process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
-
+process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 from RecoParticleFlow.PFAnalyses.RunDict import *
 
 from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
@@ -36,10 +36,10 @@ if options.copyToTmp <> 0:
 else:    
     result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
     
-if options.endcapMode <> 0:
-    result = ['file:/tmp/tb07_reco_edm_run_00016031.0000.root']
-    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEB")
-    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE")
+#if options.endcapMode <> 0:
+#    result = ['file:/tmp/tb07_reco_edm_run_00016031.0000.root']
+#    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEB")
+#    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE")
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
@@ -63,11 +63,14 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 # LogFile
 
 process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring('cout'),
+    destinations=cms.untracked.vstring(logFile),
 )
 
 process.source = cms.Source("PoolSource",
-        fileNames = runs
+        fileNames = runs,
+        inputCommands=cms.untracked.vstring('keep *', 'drop EBDataFramesSorted_*_*_*')
+
+        
 )
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)

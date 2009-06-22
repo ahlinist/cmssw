@@ -78,7 +78,7 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			"RawRecHitsHcal");
 	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
 
-	LogError("TestbeamDelegate") << "Error getting parameters." << std::endl;
+	//LogError("TestbeamDelegate") << "Error getting parameters." << std::endl;
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
