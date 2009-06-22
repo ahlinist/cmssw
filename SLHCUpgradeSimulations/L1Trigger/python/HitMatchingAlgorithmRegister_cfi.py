@@ -32,7 +32,7 @@ HitMatchingAlgorithm_globalgeometry_PixelDigi_ = cms.ESProducer(
     minPtThreshold = cms.double(2.0)
     )
 
-HitMatchingAlgorithm_globalgeometry_a_TTHit_ = cms.ESProducer(
+HitMatchingAlgorithm_globalgeometry_TTHit_ = cms.ESProducer(
     "HitMatchingAlgorithm_globalgeometry_TTHit_",
     ipWidth = cms.double(200.0),
     minPtThreshold = cms.double(2.0)
@@ -133,5 +133,4 @@ myPreferPSimHit = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PSimHit_")
 
 myPreferPixelDigi = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
 
-myPreferTTHit = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_TTHit_",
-                             "HitMatchingAlgorithm_globalgeometry_a_TTHit_")
+myPreferTTHit = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_TTHit_")
