@@ -48,6 +48,9 @@ xAxis_transMass.xAxisTitle = cms.string('M_{T} / GeV')
 xAxis_num = copy.deepcopy(xAxis)
 xAxis_num.xAxisTitle = cms.string('N')
 
+xAxis_pdgId = copy.deepcopy(xAxis)
+xAxis_pdgId.xAxisTitle = cms.string('PDG Id')
+
 xAxis_unlabeled = cms.PSet(
   xAxisTitle = cms.string(''),
   xAxisTitleOffset = cms.double(1.0),
