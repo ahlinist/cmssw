@@ -1,8 +1,8 @@
 /** \class MuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/18 15:55:17 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/06/18 16:38:18 $
+ *  $Revision: 1.1 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -56,6 +56,8 @@ void MuonAnalyzer::beginJob(const EventSetup& eventSetup){
   hMuSegCompatibility = fileService->make<TH1F>("SegmentCompatibility","Muon HP using segments only",100,0,1);
   hChamberMatched = fileService->make<TH1I>("NumMatchedChamber", "Number of matched chambers", 7, 0, 7);
   hMuIdAlgo = fileService->make<TH1I>("MuonIDSelectors", "Results of muon id selectors", 13, 0, 13);
+  
+  hPtTPFMS = fileService->make<TH1F>("pT_TPFMS","p_{T}^{rec} of Tracker Plus First Muon Station Track",250,0,120);
 
   // Isolation
   hMuIso03SumPt = fileService->make<TH1F>("MuIso03SumPt","Isolation #Delta(R)=0.3: SumPt",200,0,10);
@@ -115,6 +117,8 @@ void MuonAnalyzer::analyze(const Event & event, const EventSetup& eventSetup){
     if(muon->isGlobalMuon()){
       double diff =  muon->innerTrack()->pt() - muon->standAloneMuon()->pt();
       hPtSTATKDiff->Fill(diff);
+
+      hPtTPFMS->Fill(muon->tpfmsMuon()->pt());
     }
     
     // Muon ID quantities
