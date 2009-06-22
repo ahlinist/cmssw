@@ -156,6 +156,13 @@ cfgTauElectronVeto = cms.PSet(
     src_individual = cms.InputTag('selectedLayer1TausElectronVetoIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgTauEcalCrackVeto = cms.PSet(
+    pluginName = cms.string('tauEcalCrackVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForElecTauEcalCrackVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausEcalCrackVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 # di-tau candidate selection
 cfgDiTauCandidateForElecTauAntiOverlapVeto = cms.PSet(
@@ -210,6 +217,7 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauEcalIsoCut,
       cfgTauProngCut,
       cfgTauElectronVeto,
+      cfgTauEcalCrackVeto,
       cfgDiTauCandidateForElecTauAntiOverlapVeto,
       cfgDiTauCandidateForElecTauZeroChargeCut,
       cfgDiTauCandidateForElecTauMt1METCut ],

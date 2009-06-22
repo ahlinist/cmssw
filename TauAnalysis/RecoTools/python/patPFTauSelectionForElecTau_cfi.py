@@ -38,3 +38,6 @@ selectedLayer1TausForElecTauProng = copy.deepcopy(selectedLayer1TausProng)
 
 # require tau candidate to pass electron veto
 selectedLayer1TausForElecTauElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
+
+# require tau candidate not to be in ECAL barrel/endcap crack
+selectedLayer1TausForElecTauEcalCrackVeto = copy.deepcopy(selectedLayer1TausEcalCrackVeto)
