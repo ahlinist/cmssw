@@ -16,7 +16,8 @@ process.MessageLogger.cout = cms.untracked.PSet(
     )
 # This is also neede for printing debugs
 process.MessageLogger.debugModules = cms.untracked.vstring("IdentifiedTaus",
-                                                           "IdentifiedTauFilter")
+
+"IdentifiedTauFilter")
 
 #from ElectroWeakAnalysis.TauTriggerEfficiency.RelValQCD_Pt_80_120_GEN_SIM_DIGI_RAW_HLTDEBUG_RECO_IDEAL_V9_v2 import *
 #from ElectroWeakAnalysis.TauTriggerEfficiency.QCD_Mike_HLTExtra import *
@@ -38,28 +39,36 @@ from ElectroWeakAnalysis.TauTriggerEfficiency.OfflineTauIDFilter_cff import *
 process.IncludedHLTs = IncludedHLTs
 process.IdentifiedTauFilter = IdentifiedTauFilter
 
+
+
+
+
+process.thisPFRecoTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingPionPtCut",
+    PFTauProducer = cms.InputTag('pfRecoTauProducerHighEfficiency'),
+    MinPtLeadingPion = cms.double(3.0)
+)
+
 process.PFTausSelected = cms.EDFilter("PFTauSelector",
     src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
     discriminators = cms.VPSet(
 	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut=cms.double(0.5))
-	cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(0.5))
+	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(0.5))
+	cms.PSet( discriminator=cms.InputTag("thisPFRecoTauDiscriminationByLeadingPionPtCut"),selectionCut=cms.double(0.5))
     )
-)# Now filtered the tau collection is made 
+)# Now filtered the tau collection is made
 
-#copying the Discriminator by Isolation
-#from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolation_cfi import *
-#process.thisPFTauDiscriminationByIsolationHighEfficiency = copy.deepcopy(pfRecoTauDiscriminationByIsolation)
-#process.thisPFTauDiscriminationByIsolationHighEfficiency.PFTauProducer = 'PFTausSelected' # this tau collection is the one just made above
- 
-process.CounterAllEvents = cms.EDAnalyzer("EventCounter", 
+
+
+
+process.CounterAllEvents = cms.EDAnalyzer("EventCounter",
 	fileName = cms.untracked.string("skim.root"),
 	name = cms.string("All events")
 )
-process.CounterHTLEvents = cms.EDAnalyzer("EventCounter", 
+process.CounterHTLEvents = cms.EDAnalyzer("EventCounter",
 	fileName = cms.untracked.string("skim.root"),
 	name = cms.string("Passed HLT")
 )
-process.CounterOfflineEvents = cms.EDAnalyzer("EventCounter", 
+process.CounterOfflineEvents = cms.EDAnalyzer("EventCounter",
 	fileName = cms.untracked.string("skim.root"),
 	name = cms.string("Offline tau")
 )
@@ -72,8 +81,8 @@ process.tauFilter = cms.Path(
 	process.CounterAllEvents *
 	process.IncludedHLTs *
 	process.CounterHTLEvents *
+        process.thisPFRecoTauDiscriminationByLeadingPionPtCut*
 	process.PFTausSelected *
-#        process.thisPFTauDiscriminationByIsolationHighEfficiency *
 	process.CounterOfflineEvents *
 #	process.IdentifiedTaus *
         process.IdentifiedTauFilter *
@@ -86,8 +95,10 @@ process.tauFilter = cms.Path(
 #process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 #process.load("Geometry.CaloEventSetup.CaloTowerConstituents_cfi")
 #process.load("RecoTauTag.L1CaloSim.l1calosim_cfi")
-#process.l1CaloSim.AlgorithmSource = "RecHits" 
-#process.l1CaloSim.EmInputs = cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"), cms.InputTag("ecalRecHit","EcalRecHitsEE"))
+#process.l1CaloSim.AlgorithmSource = "RecHits"
+#process.l1CaloSim.EmInputs =
+cms.VInputTag(cms.InputTag("ecalRecHit","EcalRecHitsEB"),
+cms.InputTag("ecalRecHit","EcalRecHitsEE"))
 #process.l1CaloSim.DoBitInfo = cms.bool(True)
 #process.l1CaloSim.EMActiveLevelIso = cms.double(2.0)
 #process.l1CaloSim.HadActiveLevelIso = cms.double(2.0)
