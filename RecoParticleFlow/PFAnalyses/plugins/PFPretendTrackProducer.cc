@@ -23,6 +23,8 @@
 #include "Rtypes.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "Math/GenVector/PositionVector3D.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include <TTree.h>
 #include <TFile.h>
@@ -45,6 +47,7 @@ PFPretendTrackProducer::PFPretendTrackProducer(
 	produces<reco::PFClusterCollection> ("pfHFHAD");
 	produces<reco::PFClusterCollection>("pfHFEM");
 	produces<reco::MuonCollection> ("muons");
+	produces<reco::VertexCollection> ("offlinePrimaryVertices");
 
 	debug_ = parameters.getParameter<int> ("debug");
 
@@ -128,6 +131,7 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	std::auto_ptr<PFClusterCollection> pfHFHADColl(new PFClusterCollection());
 	std::auto_ptr<PFClusterCollection> pfHFEMColl(new PFClusterCollection());
 	std::auto_ptr<MuonCollection> muonColl(new MuonCollection());
+	std::auto_ptr<VertexCollection> vertexColl(new VertexCollection());
 	std::auto_ptr<TrackExtraCollection> trackExtrasColl(
 			new TrackExtraCollection());
 
@@ -140,6 +144,7 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 		event.put(pfHFHADColl, "pfHFHAD");
 		event.put(pfHFEMColl, "pfHFEM");
 		event.put(muonColl, "muons");
+		event.put(vertexColl, "offlinePrimaryVertices");
 		return;
 	}
 
@@ -216,7 +221,7 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	event.put(pfHFHADColl, "pfHFHAD");
 	event.put(pfHFEMColl, "pfHFEM");
 	event.put(muonColl, "muons");
-
+	event.put(vertexColl, "offlinePrimaryVertices");
 
 }
 

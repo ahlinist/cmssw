@@ -17,7 +17,7 @@ echo Script is: $SCRIPT
 
 OUTTREE="outputtree_"$ENERGY"GeV_notracks"$SUFFIX".root"
 OUTPUT="reprocessed_"$ENERGY"GeV_notracks"$SUFFIX".root"
-DESTD=/castor/cern.ch/user/b/ballin/tbv8/
+DESTD=/castor/cern.ch/user/b/ballin/tb310pre8/
 LOG="log_"$ENERGY"GeV_notracks"$SUFFIX".txt"
 
 echo Outputtree is: $OUTTREE
@@ -42,7 +42,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD
 rfcp $OUTPUT $DESTD
-cp $LOG $RUND"tbv8/"
+cp $LOG $RUND"tb310pre8/"
 
 echo Done.
 exit 0

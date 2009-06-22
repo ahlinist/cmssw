@@ -78,10 +78,10 @@
 //	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029734.combined.OutServ_0.0-cmsswreco.root", 29734);
 //
 //
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029760.combined.OutServ_0.0-cmsswreco.root", 29760);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029761.combined.OutServ_0.0-cmsswreco.root", 29761);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029762.combined.OutServ_0.0-cmsswreco.root", 29762);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030110.combined.OutServ_0.0-cmsswreco.root", 30110);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029760.combined.OutServ_0.0-cmsswreco.root", 29760);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029761.combined.OutServ_0.0-cmsswreco.root", 29761);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029762.combined.OutServ_0.0-cmsswreco.root", 29762);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030110.combined.OutServ_0.0-cmsswreco.root", 30110);
 //	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029735.combined.OutServ_0.0-cmsswreco.root", 29735);
 //	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029736.combined.OutServ_0.0-cmsswreco.root", 29736);
 //	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029763.combined.OutServ_0.0-cmsswreco.root", 29763);
@@ -101,8 +101,8 @@
 //	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030390.combined.OutServ_0.0-cmsswreco.root", 30390);
 //
 
-	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031);
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031);
 
-	process.finish("testbeam_cuts_310pre5.root");
+	process.finish("testbeam_cuts_310.root");
 
 }

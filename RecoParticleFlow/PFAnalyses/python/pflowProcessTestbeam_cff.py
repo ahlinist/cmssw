@@ -6,19 +6,19 @@ from RecoParticleFlow.PFAnalyses.pflowFaketracks_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowParticleFiltration_cfi import *
 
-
 TFileService = cms.Service("TFileService",
     fileName=cms.string("outputtree.root")
 )
 
 finishup = cms.OutputModule("PoolOutputModule",
     fileName=cms.untracked.string("reprocessed.root"),
-    #outputCommands=cms.untracked.vstring('keep *'),
-    outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
+    outputCommands=cms.untracked.vstring('keep *'),
+    #outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
 	SelectEvents=cms.untracked.PSet(
                 SelectEvents=cms.vstring('p1')
     ) 
 )
+
 
 #Clustering only
 pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCAL)
@@ -37,3 +37,4 @@ pflowProcessTestbeam = cms.Sequence(particleFiltration * faketracks *
                                     particleFlowBlock * 
                                     particleFlow *
                                     extraction )
+
