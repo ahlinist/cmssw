@@ -31,6 +31,10 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 // #include "RecoVertex/KinematicFitPrimitives/interface/"
 #include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+// #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
 #include <TFile.h>
 #include <TH1F.h>
 
@@ -48,8 +52,9 @@ public:
 private:
 
 	const TrackingVertex * getSimVertex(const TrackingVertexCollection * tVC) const;
-	int JpsiKstarFlag(const TrackingVertexCollection * tVC);
-	int JpsiKsFlag(const TrackingVertexCollection * tVC);
+	int JpsiKstarFlag(const edm::Event &iEvent);
+	int JpsiKsFlag(const edm::Event &iEvent);
+	int JpsiPhiFlag(const edm::Event &iEvent);
 	double deltaRRecoSim(const reco::TransientTrack *ttk, const TrackingParticleRef *tpr);
 	
 	BsToJpsiPhiRootTree * bsRootTree_;
@@ -59,6 +64,7 @@ private:
 	TrackAssociatorByHits * associatorByHits_;
 
 	std::string outputFile_; // output file
+	edm::InputTag thegenParticlesLabel_;
 	edm::InputTag bCandLabel_; // label of candidate producer
 	edm::InputTag trackLabel_; // label of track producer
 	edm::InputTag vertexLabel_; //label of vertex producer
@@ -74,6 +80,7 @@ private:
 	
 	int flagKstar;
 	int flagKs;
+	int flagPhi;
 	
 };
 #endif
