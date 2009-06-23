@@ -1,8 +1,8 @@
 /** \class CosmicMuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/11 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/06/18 16:38:18 $
+ *  $Revision: 1.1 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -59,7 +59,7 @@ void CosmicMuonAnalyzer::beginJob(const EventSetup& eventSetup){
   // Isolation
   hMuIso03SumPt = fileService->make<TH1F>("MuIso03SumPt","Isolation #Delta(R)=0.3: SumPt",200,0,10);
   hMuIso03CaloComb = fileService->make<TH1F>("MuIso03CaloComb","Isolation #Delta(R)=0.3: 1.2*ECAL+0.8HCAL",200,0,10);
-  TEST = fileService->make<TH1F>("TEST","TEST",200,0,10);
+
 
   // 4Mu invariant mass
   h4MuInvMass = fileService->make<TH1F>("InvMass4MuSystem","Invariant mass of the 4 muons system",200,0,500);
