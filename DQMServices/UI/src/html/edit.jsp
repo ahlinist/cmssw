@@ -27,7 +27,7 @@
 
   <script type="text/javascript">
 
-		var messageBox = window.top.messageBox;
+    var messageBox = window.top.messageBox;
 
     $(document).ready( function () {
     
@@ -381,7 +381,7 @@
             if ((status == 'COMPLETED') || (status == '') || (status == null))  {
               $(_btn_run_finish).hide();
             } else {
-              $(_btn_run_finish).text("Finish " + status + " DQM");
+              $(_btn_run_finish).text("Finish " + status);
             }
       
             var count_tags = parseInt($(run).attr("RUN_COUNT_TAGS"));

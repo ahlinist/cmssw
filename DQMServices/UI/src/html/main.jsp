@@ -31,27 +31,27 @@
 
 <script type="text/javascript">
 
-	var dumpData;
-	var messageBox = window.top.messageBox;
+  var dumpData;
+  var messageBox = window.top.messageBox;
 
   $(document).ready(function() {
 
-		top.document.title = "CMS DQM Run Registry";
+    top.document.title = "CMS DQM Run Registry";
 
     window.top.toggleAnimation($.cookie("animation"));
 
     var subsystems = [<dqm:listSubsystemsJS/>];
     var total = 0;
 
-		$('body').layout({
-			name: "layout",
-				defaults: {
-					closable: false,
-					resizable: false,
-					slidable: false,
-					size: "auto"
+    $('body').layout({
+      name: "layout",
+        defaults: {
+          closable: false,
+          resizable: false,
+          slidable: false,
+          size: "auto"
       }
-		});
+    });
 
     var toggleRows = function(number) {
     
@@ -259,7 +259,7 @@
         messageBox("Run not selected", "Select a run and try again.");
         return;
       }
-      window.location = "edit.jsp";
+      window.location = "edit.jsp?number=" + $.cookie("run_edit");
     }
   
     var summaryValues = function () {
@@ -289,7 +289,7 @@
     var onRowDblClick = function (row) {
       var number = parseInt($("td[field=RUN_NUMBER] div", row).text());
       $("div.button_edit").attr("run_number", number);
-			$("div.button_summary").attr("run_number", number);
+      $("div.button_summary").attr("run_number", number);
       editPress();
     }
 
@@ -498,7 +498,7 @@
       $("#batch_updater_progressbar").progressBar(0);
     };
 
-		$("#flex1").flexHeight();
+    $("#flex1").flexHeight();
 
   });
 
@@ -511,8 +511,8 @@
     <table id="flex1"></table>
   </div>
 
-  <jsp:include page="search.jsp" />
-  <jsp:include page="summary.jsp" />
+  <jsp:include page="WEB-INF/include/search.jsp" />
+  <jsp:include page="WEB-INF/include/summary.jsp" />
 
 </body>
 </html>

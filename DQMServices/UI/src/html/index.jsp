@@ -29,18 +29,18 @@
 
 <script type="text/javascript">
 
-  var toggleAnimation = {};
-  var logoutUser = {};
-  var getTag = {};
-  var globalResize = {};
+  var toggleAnimation;
+  var logoutUser;
+  var getTag;
+  var globalResize;
 
   $(document).ready(function() {
 
     globalResize = function() {
-      messageBoardResize();
       try {
         mainFrame.$("#flex1").flexHeight();
       } catch(e) { }
+      messageBoardResize();
     };
 
     $(window).resize(function() {
@@ -110,7 +110,14 @@
       mainFrame.dumpData(intpl, tpl, mime);
     });
 
-    $(".ui-layout-toggler-south").attr("id", "chat_notification");
+    $(".ui-layout-toggler-south").attr("id", "chat_notification").hover(
+      function() {
+        $(this).css("backgroundColor", "#5386DF");
+      },
+      function() {
+        $(this).css("backgroundColor", "#679CFB");
+      }
+    );
 
   });
 
@@ -137,9 +144,9 @@
         minSize: 200,
         size: 350,
         onresize_end: function () { globalResize(); },
-        onshow_end: function () { _chat_blink = false; },
-        onopen_end: function () { globalResize(); _chat_blink = false; },
-        onclose_end: function () { globalResize(); },
+        onshow_end: function () { doNotify(false); },
+        onopen_end: function () { globalResize(); doNotify(false); },
+        onclose_end: function () { globalResize(); doNotify(false); },
         togglerTip_open: "Hide Message Board",
         togglerTip_closed: "Open Message Board",
         resizerTip_open: "Resize Message Board",
@@ -153,7 +160,7 @@
 
 <body>
 
-  <jsp:include page="messageBox.html" />
+  <jsp:include page="WEB-INF/include/messageBox.html" />
 
   <div class="ui-layout-north">
 
@@ -165,7 +172,7 @@
   
           <a id="chat_toggler">Message Board</a>
   
-            &nbsp;|&nbsp;
+          &nbsp;|&nbsp;
   
   <% if (user.hasRole(User.EXPERT)) { %>
   
@@ -208,6 +215,14 @@
   
           &nbsp;|&nbsp;
   
+  <% if (user.isLogged() && !user.isAuthorized()) { %>
+
+          <a href="accrequest.jsp" target="mainFrame">Request Access</a>
+
+          &nbsp;|&nbsp;
+
+  <% } %>
+
           <span id="optionsmenu"><a href="#">Options</a>
             <ul>
               <li><a class="animation_option">Animation</a></li>
@@ -252,19 +267,13 @@
 
   <DIV class="ui-layout-south" style="background-color: #DDDDDD">
 
-    <jsp:include page="chat.jsp" />
+    <jsp:include page="WEB-INF/include/chat.jsp" />
     
-    <script type="text/javascript">
-      $(document).ready( function () {
-        openMessageBoard();
-      });
-    </script>
-
   </DIV>
 
   <iframe name="logout" width="1" height="1" src="" style="display:none;"></iframe>
 
-  <jsp:include page="plot.jsp" />
+  <jsp:include page="WEB-INF/include/plot.jsp" />
 
 </body>
 </html>

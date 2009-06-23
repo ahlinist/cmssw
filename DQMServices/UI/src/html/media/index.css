@@ -340,18 +340,15 @@ tr.prevTag {
 }
 
 .rr_priority0 {
-	background-color: #eeeeee;
 	font-size: 10px;
 }
 .rr_priority1 {
-	background-color: #eeeeee;
 	font-weight: bold;
 	font-size: 12px;
 }
 
 .rr_priority2 {
 	font-weight: bold;
-	background-color: #ffeeee;
 	color: #ff0000;
 }
 
@@ -365,7 +362,6 @@ tr.prevTag {
 }
 
 .chat_priority2 {
-	background-color: #ffeeee;
 	color: #ff0000;
 }
 
@@ -380,10 +376,10 @@ tr.prevTag {
 } 
 
 .ui-layout-toggler { /* all 'toggler-buttons' */ 
-	background-color: #00A5D6; 
+	background-color: #679CFB; 
 } 
 
 .ui-layout-toggler-south-closed {
 	background: url(messageboard.gif) no-repeat center center;
-	background-color: #00A5D6; 
+	background-color: #679CFB; 
 }

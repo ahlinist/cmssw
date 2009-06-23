@@ -4,6 +4,7 @@
 
   User user = User.get(request);
   MessageBoardSyn.getInstance().logoutUser(user);
+  request.getSession().removeAttribute(User.COOKIE);
   
   String url = request.getParameter("redirect");
   if (url == null) url = request.getRequestURL().toString();
