@@ -19,9 +19,6 @@ TAna00Event::TAna00Event(Int_t Option) {
   fGenJets         = new TClonesArray("TAnaJet", 1000);
   fnGenJets        = 0;
 
-  fTrackJets        = new TClonesArray("TAnaJet", 1000);
-  fnTrackJets       = 0;
-
   fCandidates      = new TClonesArray("TAnaCand", 1000);
   fnCandidates     = 0;
 
@@ -74,16 +71,6 @@ void TAna00Event::Clear(Option_t *option) {
   }
   fGenJets->Clear(option);
   fnGenJets = 0;
-  //  cout << " ... done " << endl;
-
-  TAnaJet *pTrackJet;
-  //  cout << "Starting to clear jets ";
-  for (i = 0; i < fnTrackJets; i++) {
-    pTrackJet = getTrackJet(i);
-    pTrackJet->clear();
-  }
-  fTrackJets->Clear(option);
-  fnTrackJets = 0;
   //  cout << " ... done " << endl;
 
   TAnaCand *pCand;
@@ -195,19 +182,6 @@ TAnaJet* TAna00Event::addCaloJet() {
   new(d[d.GetLast()+1]) TAnaJet(fnCaloJets);
   ++fnCaloJets;
   return (TAnaJet*)d[d.GetLast()];
-}
-
-// ----------------------------------------------------------------------
-TAnaJet* TAna00Event::getTrackJet(Int_t n) {
- return (TAnaJet*)fTrackJets->UncheckedAt(n);
-}
-
-// ----------------------------------------------------------------------
-TAnaJet* TAna00Event::addTrackJet() {
- TClonesArray& d = *fTrackJets;
- new(d[d.GetLast()+1]) TAnaJet(fnTrackJets);
- ++fnTrackJets;
- return (TAnaJet*)d[d.GetLast()];
 }
 
 // ----------------------------------------------------------------------
