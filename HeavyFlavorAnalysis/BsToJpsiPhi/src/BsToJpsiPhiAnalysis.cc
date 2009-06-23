@@ -35,6 +35,11 @@
 #include "DataFormats/Candidate/interface/CompositeCandidate.h"
 #include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+// #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
+#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
+
 // #include ""
 
 #include <iostream>
@@ -49,6 +54,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   bCandLabel_ = iConfig.getParameter<InputTag>("BCandLabel");
   trackLabel_ = iConfig.getParameter<InputTag>("TrackLabel");
   vertexLabel_ = iConfig.getParameter<InputTag>("VertexLabel");
+  thegenParticlesLabel_ = iConfig.getParameter<InputTag>("genParticlesLabel");
   outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
   kvfPSet_ = iConfig.getParameter<edm::ParameterSet>("KVFParameters");
   isSim_ = iConfig.getParameter<bool>("isSim");
@@ -83,6 +89,7 @@ void BsToJpsiPhiAnalysis::beginJob(edm::EventSetup const& setup)
 
   flagKstar = 0;
   flagKs = 0;
+  flagPhi = 0;
 }
 
 void BsToJpsiPhiAnalysis::endJob() 
@@ -124,17 +131,25 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     edm::ESHandle<TransientTrackBuilder> theB;
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
 
+    bsRootTree_->resetEntries();
+
+    /////////////////////////////////    
+    // MC info -- giordano
+    /////////////////////////////////
+    //    edm::Handle<GenParticleCollection> genParticles;
+    //    iEvent.getByLabel(thegenParticlesLabel_, genParticles );
+    flagKstar = JpsiKstarFlag(iEvent);
+    flagKs = JpsiKsFlag(iEvent);
+    flagPhi = JpsiPhiFlag(iEvent);
+    bsRootTree_->getBdFlags(flagKstar,flagKs,flagPhi);
+    
     // is the a Bs candidate and a primary vertex?
     if(bCandCollection->size()>0 && primaryVertex != 0) {
-      
-      bsRootTree_->resetEntries();
       
       // get the simVertex collection and decay vertex
       edm::Handle<TrackingVertexCollection> trackingTruthVertexCollectionH;
       const TrackingVertexCollection *trackingTruthVertexCollection = 0;
       const TrackingVertex * simVertex = 0;
-      flagKstar = 0;
-      flagKs = 0;
       
       if(isSim_){
 	iEvent.getByLabel("mergedtruth", trackingTruthVertexCollectionH);
@@ -144,11 +159,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	// 				cout << "simVertex: " << simVertex << endl;
 
 	// flag for peaking bkg
-	flagKstar = JpsiKstarFlag(trackingTruthVertexCollection);
-	flagKs = JpsiKsFlag(trackingTruthVertexCollection);
-	bsRootTree_->getBdFlags(flagKstar,flagKs);			  
+	//	flagKstar = JpsiKstarFlag();
+	//	bsRootTree_->getBdFlags(flagKstar,flagKs);			  
       }
-      
+
       // loop over Bs candidates
 			for (CandidateView::const_iterator bit=(*bCandCollection).begin();bit!=(*bCandCollection).end();bit++) {
 			  // are the particles associated?
@@ -357,9 +371,6 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 {
   //iterate over al SimVertices
   for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
-    bool bs = false;
-    bool jpsi = false;
-    bool phi = false; 
     bool kplus = false;
     bool kminus = false;
     bool muminus = false;
@@ -381,107 +392,139 @@ const TrackingVertex * BsToJpsiPhiAnalysis::getSimVertex(const TrackingVertexCol
 	}
       }
     }
-    if(kplus && kminus && muminus && muplus){
-      // 			cout << "number of genVertices: " << v->genVertices().size() << endl;
-    }
-    // look if the mothers of the vertex are Bs, Jpsi and phi 
-    if (v->genVertices().size() == 3) {
-      for (TrackingVertex::genv_iterator  dt = v->genVertices_begin(); dt!= v->genVertices_end(); ++dt){
-	if( (*dt)->particles_in_size() > 1) std::cout << "more than one in particle !!!" << endl;
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 531) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -531)) ){
-	  bs = true;
-	  cout << "found Bs" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 443) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -443)) ){
-	  jpsi = true;
-	  cout << "found jpsi" << endl;
-	}
-	if( ((*dt)->particles_in_size() == 1) && (((*(*dt)->particles_in_const_begin())->pdg_id() == 333) || ((*(*dt)->particles_in_const_begin())->pdg_id() == -333)) ){
-	  phi = true;
-	  cout << "found phi" << endl;
-	}
-      }
-    }
+
     if(kplus && kminus && muminus && muplus){ 
       return &(*v);
     }
   }
   return 0;
+
 }
 
-// flag for Jpsi K*
-
-int BsToJpsiPhiAnalysis::JpsiKstarFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
+int BsToJpsiPhiAnalysis::JpsiKstarFlag(const edm::Event &iEvent)
 {
-  int flagbdjpsikstar = 0;
-  for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
-    bool kplus = false;
-    bool kminus = false;
-    bool muminus = false;
-    bool muplus = false;
-    // look if the daughters of the vertex are mu+, mu-, k+ and k-
-    if (v->daughterTracks().size()==4) {
-      for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
-	if((**dt).pdgId() == -13){
-	  muplus = true;
-	}
-	if((**dt).pdgId() == 13){
-	  muminus = true;
-	}
-	if((**dt).pdgId() == 321 || (**dt).pdgId()==-321){
-	//	if((**dt).pdgId() == 321){
-	  kplus = true;
-	}
-	if((**dt).pdgId() == -211 || (**dt).pdgId()==211){
-	//	if((**dt).pdgId() == -321){
-	  kminus = true;
+    Handle<GenParticleCollection> genParticles;
+    iEvent.getByLabel(thegenParticlesLabel_, genParticles );
+
+    flagKstar = 0;
+    for( size_t i = 0; i < genParticles->size(); ++ i ) {
+      const Candidate & p = (*genParticles)[ i ];
+      int MC_particleID=p.pdgId();
+      if (abs(MC_particleID) == 443 && p.status()==2){
+	// Bd = 511/-511
+	const Candidate & gmo=*(p.mother());
+	int nchildrenBs=gmo.numberOfDaughters();
+	int MC_momID=gmo.pdgId();
+	// Jpsi = 443/-443	
+	const Candidate & da1=*(gmo.daughter( 0 ));
+	int nchildrenJpsi = da1.numberOfDaughters();
+	int MC_dauJpsi=da1.pdgId();
+	// kstar = 313/-313	
+	const Candidate & da2=*(gmo.daughter( 1 ));
+	int nchildrenKstar=da2.numberOfDaughters();
+	int MC_dauKstar=da2.pdgId();
+	// muons = 13/-13
+	const Candidate & gda1=*(da1.daughter( 0 ));
+	const Candidate & gda2=*(da1.daughter( 1 ));
+	// k/pi = 321/-211 || -321/211
+	const Candidate & gda3=*(da2.daughter( 0 ));
+	const Candidate & gda4=*(da2.daughter( 1 ));
+	// flag!
+	if(nchildrenBs == 2 && abs(MC_momID) == 511 && 
+	   nchildrenJpsi == 2 && abs(MC_dauJpsi) == 443 &&
+	   nchildrenKstar == 2 && abs(MC_dauKstar) == 313  &&					       
+	   abs(gda1.pdgId()) == 13 && abs(gda2.pdgId()) == 13 &&
+	   abs(gda3.pdgId()) == 321 && abs(gda4.pdgId()) == 211) { 
+	  flagKstar = 1;	  
+	  return flagKstar;
 	}
       }
     }
-    if(kplus && kminus && muminus && muplus){
-      flagbdjpsikstar=1;
-    } else {
-      flagbdjpsikstar=-10;
-    }
-  }
-  return flagbdjpsikstar;
+    return 0;
 }
-// flag for Jpsi Ks
 
-int BsToJpsiPhiAnalysis::JpsiKsFlag(const TrackingVertexCollection * trackingTruthVertexCollection)
+int BsToJpsiPhiAnalysis::JpsiKsFlag(const edm::Event &iEvent)
 {
-  int flagbdjpsiks = 0;
-  for(TrackingVertexCollection::const_iterator v=trackingTruthVertexCollection->begin(); v!=trackingTruthVertexCollection->end(); ++v){	   
-    bool kplus = false;
-    bool kminus = false;
-    bool muminus = false;
-    bool muplus = false;
-    // look if the daughters of the vertex are mu+, mu-, pi+ and pi-
-    if (v->daughterTracks().size()==4) {
-      for (TrackingVertex::tp_iterator dt = v->daughterTracks_begin(); dt!= v->daughterTracks_end(); ++dt) {
-	if((**dt).pdgId() == -13){
-	  muplus = true;
-	}
-	if((**dt).pdgId() == 13){
-	  muminus = true;
-	}
-	if((**dt).pdgId() == 211){
-	//	if((**dt).pdgId() == 321){
-	  kplus = true;
-	}
-	if((**dt).pdgId() == -211){
-	  //	if((**dt).pdgId() == -321){
-	  kminus = true;
+    Handle<GenParticleCollection> genParticles;
+    iEvent.getByLabel(thegenParticlesLabel_, genParticles );
+
+    flagKs = 0;
+    for( size_t i = 0; i < genParticles->size(); ++ i ) {
+      const Candidate & p = (*genParticles)[ i ];
+      int MC_particleID=p.pdgId();
+      if (abs(MC_particleID) == 443 && p.status()==2){
+	// Bd = 511/-511
+	const Candidate & gmo=*(p.mother());
+	int nchildrenBd=gmo.numberOfDaughters();
+	int MC_momID=gmo.pdgId();
+	// Jpsi = 443/-443	
+	const Candidate & da1=*(gmo.daughter( 0 ));
+	int nchildrenJpsi = da1.numberOfDaughters();
+	int MC_dauJpsi=da1.pdgId();
+	// Ks = 310/-310	
+	const Candidate & da2=*(gmo.daughter( 1 ));
+	int nchildrenKs=da2.numberOfDaughters();
+	int MC_dauKs=da2.pdgId();
+	// muons = 13/-13
+	const Candidate & gda1=*(da1.daughter( 0 ));
+	const Candidate & gda2=*(da1.daughter( 1 ));
+	// pions = 211/-211
+	const Candidate & gda3=*(da2.daughter( 0 ));
+	const Candidate & gda4=*(da2.daughter( 1 ));
+	// flag!
+	if(nchildrenBd == 2 && abs(MC_momID) == 511 && 
+	   nchildrenJpsi == 2 && abs(MC_dauJpsi) == 443 &&
+	   nchildrenKs == 2 && abs(MC_dauKs) == 310 &&					       
+	   abs(gda1.pdgId()) == 13 && abs(gda2.pdgId()) == 13 &&
+	   abs(gda3.pdgId()) == 211 && abs(gda4.pdgId()) == 211) { 
+	  flagKs = 1;	  
+	  return flagKs;
 	}
       }
     }
-    if(kplus && kminus && muminus && muplus){
-      flagbdjpsiks=1;
-    } else {
-      flagbdjpsiks=-10;
+    return 0;
+}
+
+int BsToJpsiPhiAnalysis::JpsiPhiFlag(const edm::Event &iEvent)
+{
+    Handle<GenParticleCollection> genParticles;
+    iEvent.getByLabel(thegenParticlesLabel_, genParticles );
+
+    flagPhi = 0;
+    for( size_t i = 0; i < genParticles->size(); ++ i ) {
+      const Candidate & p = (*genParticles)[ i ];
+      int MC_particleID=p.pdgId();
+      if (abs(MC_particleID) == 443 && p.status()==2){
+	// Bs = 531/-531
+	const Candidate & gmo=*(p.mother());
+	int nchildrenBs=gmo.numberOfDaughters();
+	int MC_momID=gmo.pdgId();
+	// Jpsi = 443/-443	
+	const Candidate & da1=*(gmo.daughter( 0 ));
+	int nchildrenJpsi = da1.numberOfDaughters();
+	int MC_dauJpsi=da1.pdgId();
+	// phi = 333/-333	
+	const Candidate & da2=*(gmo.daughter( 1 ));
+	int nchildrenPhi=da2.numberOfDaughters();
+	int MC_dauPhi=da2.pdgId();
+	// muons = 13/-13
+	const Candidate & gda1=*(da1.daughter( 0 ));
+	const Candidate & gda2=*(da1.daughter( 1 ));
+	// kaons = 321/-321
+	const Candidate & gda3=*(da2.daughter( 0 ));
+	const Candidate & gda4=*(da2.daughter( 1 ));
+	// flag!
+	if(nchildrenBs == 2 && abs(MC_momID) == 531 && 
+	   nchildrenJpsi == 2 && abs(MC_dauJpsi) == 443 &&
+	   nchildrenPhi == 2 && abs(MC_dauPhi) == 333 &&					       
+	   abs(gda1.pdgId()) == 13 && abs(gda2.pdgId()) == 13 &&
+	   abs(gda3.pdgId()) == 321 && abs(gda4.pdgId()) == 321) { 
+	  flagPhi = 1;	  
+	  return flagPhi;
+	}
+      }
     }
-  }
-  return flagbdjpsiks;
+    return 0;
 }
 
 //

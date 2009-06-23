@@ -62,6 +62,7 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 	
 	flagKstar_ =-10;
 	flagKs_ =-10;
+	flagPhi_ =-10;
 
 	isMatched_ = false;
 	
@@ -127,6 +128,7 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 	bsTree_->Branch("triggerbit_HLTdoubleMu3_JPsi", &triggerbit_HLTdoubleMu3_JPsi_, "triggerbit_HLTdoubleMu3_JPsi/I");
 	bsTree_->Branch("flagKstar", &flagKstar_, "flagKstar/I");
 	bsTree_->Branch("flagKs", &flagKs_, "flagKs/I");
+	bsTree_->Branch("flagPhi", &flagPhi_, "flagPhi/I");
 
 }
 
@@ -195,6 +197,7 @@ void BsToJpsiPhiRootTree::resetEntries()
 
   flagKstar_ =-10;
   flagKs_ =-10;
+  flagPhi_ =-10;
   
   isMatched_ = false;
 } 
@@ -456,10 +459,12 @@ void BsToJpsiPhiRootTree::getTrigBit(const int flag_1, const int flag_2, const i
 
 }
 
-void BsToJpsiPhiRootTree::getBdFlags(const int bdjpsikstar, const int bdjpsiks)
+void BsToJpsiPhiRootTree::getBdFlags(const int bdjpsikstar, const int bdjpsiks, const int bdjpsiphi)
 {
+  cout << "bdjpsiphi flag while filling: " << bdjpsiphi << endl;
   cout << "bdjpsikstar flag while filling: " << bdjpsikstar << endl;
   cout << "bdjpsiks flag while filling: " << bdjpsiks << endl;
+  flagPhi_ = bdjpsiphi;
   flagKstar_ = bdjpsikstar;
   flagKs_ = bdjpsiks;
 }
