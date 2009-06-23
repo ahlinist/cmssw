@@ -4,8 +4,8 @@
 /** \class CosmicMuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/11 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/06/18 16:38:18 $
+ *  $Revision: 1.1 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -58,10 +58,8 @@ private:
   // Isolation
   TH1F *hMuIso03SumPt;
   TH1F *hMuIso03CaloComb;
-  TH1F *TEST;
 
   TH1F *h4MuInvMass;
-
 };
 #endif
 
