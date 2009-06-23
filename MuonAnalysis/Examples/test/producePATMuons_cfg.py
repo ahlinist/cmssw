@@ -47,7 +47,7 @@ process.source = cms.Source("PoolSource",
     '/store/relval/CMSSW_2_2_1/RelValH200ZZ4L/GEN-SIM-RECO/IDEAL_V9_v1/0003/0C9A326E-F6C4-DD11-AFDD-001617E30D38.root'
     )
                             )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50000) )
 ##############################
 
 ########## Output and its Event Content ##########
@@ -72,11 +72,6 @@ process.out = cms.OutputModule("PoolOutputModule",
 #                                                               )
 #                        )
 # process.out.outputCommands.extend(RecoMuonPAT.outputCommands)
-
-precess.allLayer1Muons.embedTrack = cms.bool(True)
-process.allLayer1Muons.embedGenMatch = cms.bool(True)
-
-
 ##############################
 
 
@@ -85,6 +80,11 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 # Switch off old trigger matching
 from PhysicsTools.PatAlgos.tools.trigTools import switchOffTriggerMatchingOld
 switchOffTriggerMatchingOld( process )
+
+
+process.allLayer1Muons.embedTrack = cms.bool(True)
+process.allLayer1Muons.embedGenMatch = cms.bool(True)
+
 
 # PAT Layer 0+1
 process.p = cms.Path(
