@@ -49,10 +49,8 @@ for i in range(5):
 filters = ['singleInteractionFilter','!singleInteractionFilter','pileUpFilter','singleVertexFilter','singleInteractionTMVAFilter','singleInteractionTMVAFilterTight','singleInteractionTMVA_SingleInteraction','singleInteractionTMVATight_SingleInteraction']
 filters.extend(listFiltersPU)
 
-vertexAlgos = ['pixelVertices',
-               'offlinePrimaryVerticesFromCTFTracksAVFModified']
-
-attributes = {'VertexTag':vertexAlgos}
+attributes = [{'VertexTag':'pixelVertices'},
+              {'VertexTag':'offlinePrimaryVerticesFromCTFTracksAVFModified'}]
 
 from DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.analysisTools import *
 process.load("DiffractiveForwardAnalysis.SingleDiffractiveWAnalysis.edmDumpAnalysis_cfi")
