@@ -244,9 +244,9 @@
   
           <% if (user.isLogged()) { %>
             Logged in as <b><%= user.getMessageLine() %></b>
-            <a id="logout_link">Logout</a>
+            <a href="#" id="logout_link">Logout</a>
           <% } else { %>
-            <a id="login_link">Login</a>
+            <a href="#" id="login_link">Login</a>
           <% } %>
   
         </td>

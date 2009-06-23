@@ -263,6 +263,7 @@
     
           success: function(ret) {
             if (run_number) {
+              messageBox("Run updated.");
               loadRun(run_number);
             } else {
               window.location = "main.jsp";
@@ -291,7 +292,7 @@
           },
       
           success: function(json) {
-        
+
             if (json.rows.length == 0) {
               messageBox("Run not found", "Select a run and try again. If you experience this problem constantly - please contact CMS DQM expert.");
               return;
@@ -308,7 +309,7 @@
             $("select[name=RUN_STATUS]", _edit_info).empty();
       
             $("input[name=RUN_NUMBER]", _edit_form).val(number);
-      
+
             jQuery.each(run, function (n, v) {
       
               $("select[name=sub_" + n + "]", _edit_sub).each(function (i, sel) {
@@ -344,7 +345,7 @@
                   $("textarea[name=" + n + "_comment]", _edit_l1t).val($(run).attr(n + "_comment"));
                 }
               });
-      
+
               if (n == "RUN_STATUS" && v != "" && v != null) {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option readonly=\"true\" value=\" + $(o).text() + \">" + v + "</option>"));
               }
@@ -516,7 +517,7 @@
               $(_btn_run_delete).hide();
 
             }
-      
+
             $(_btn_run_apply).unbind("click").click(function () {
               var err = $("#edit .error");
               if (err.length > 0) {
@@ -552,7 +553,7 @@
             });
 
             $('#edit_overlay').hide();
-      
+
           }
         });
 
