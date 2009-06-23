@@ -182,7 +182,8 @@ class TrackletBuilder : public edm::EDProducer {
 
 			  				double deltaPhi = inner.phi()-outer.phi();
 							if (deltaPhi<0) deltaPhi = -deltaPhi;
-							while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+							//while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+							if (deltaPhi > cmsUpgrades::KGMS_PI) deltaPhi = 2 * cmsUpgrades::KGMS_PI - deltaPhi;
 
 							if( deltaPhi<mFastPhiCut ){ // rough search in phi!
 								if( (inner.z()>0&&outer.z()>-mIPWidth) || (inner.z()<0&&outer.z()<+mIPWidth)  ){  //rough search by z sector 				
