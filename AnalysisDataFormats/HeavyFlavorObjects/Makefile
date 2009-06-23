@@ -9,10 +9,10 @@ ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
 ROOTLIBS      = $(shell $(ROOTSYS)/bin/root-config --libs)
 ROOTGLIBS     = $(shell $(ROOTSYS)/bin/root-config --glibs)
 
-ifeq ($(SCRAM_ARCH),"")
-  CXX         = c++
-else
+ifdef ($(SCRAM_ARCH)
   CXX         = $(shell scramv1 tool info cxxcompiler | grep CXX= | sed s/CXX=//)
+else
+  CXX         = c++
 endif
 
 CXXFLAGS      = -g -Wall -fPIC
