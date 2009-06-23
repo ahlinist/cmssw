@@ -129,8 +129,14 @@ HitMatchingAlgorithm_thresholds_TTHit_ = cms.ESProducer(
 # anything. Override with process.myPreferPSimHit = ..., etc. in your
 # configuration.
 
-myPreferPSimHit = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PSimHit_")
+HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer(
+    "HitMatchingAlgorithm_globalgeometry_PSimHit_"
+    )
 
-myPreferPixelDigi = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_PixelDigi_")
+HitMatchingAlgorithm_PixelDigi_ = cms.ESPrefer(
+    "HitMatchingAlgorithm_globalgeometry_PixelDigi_"
+    )
 
-myPreferTTHit = cms.ESPrefer("HitMatchingAlgorithm_globalgeometry_TTHit_")
+HitMatchingAlgorithm_TTHit_ = cms.ESPrefer(
+    "HitMatchingAlgorithm_globalgeometry_TTHit_"
+    )
