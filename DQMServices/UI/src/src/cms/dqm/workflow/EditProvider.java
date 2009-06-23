@@ -293,6 +293,7 @@ public class EditProvider extends HttpServlet {
         String abbr = res.getString(1);
         boolean exist = (res.getInt(2) == 1 ? true : false);
         String comment = res.getString(3);
+        if (comment == null) comment = "";
         String value = res.getString(4);
 
         boolean rexists = (data.get(abbr) != null ? true : false);
@@ -349,11 +350,19 @@ public class EditProvider extends HttpServlet {
       pstmt.setInt(1, id);
       res = pstmt.executeQuery();
 
-      while (res.next()) {
+      System.err.println(id);
 
+      while (res.next()) {
         String abbr = res.getString(1);
+        System.err.println("Writing: " + abbr);
+
         boolean exist = (res.getInt(2) == 1 ? true : false);
         String comment = res.getString(3);
+        if (comment == null) comment = "";
+
+        System.err.println(exist);
+        System.err.print("comment = ");
+        System.err.println(comment);
 
         boolean rexists = (data.get("l1s_" + abbr) != null && data.get("l1s_" + abbr).equals("true") ? true : false);
         String rcomment = data.get("l1s_" + abbr + "_comment");
@@ -378,7 +387,6 @@ public class EditProvider extends HttpServlet {
           pstmt2.setInt(2, id);
         }            
         if (pstmt2 != null) pstmt2.execute();
-
       }
 
     } catch (SQLException e) {
