@@ -72,7 +72,8 @@ class HitMatchingAlgorithm_globalgeometry : public HitMatchingAlgorithm<T> {
 			// Delta phi computed from hit phi locations
 			double deltaPhi = outerPointPhi - innerPointPhi;
 			if (deltaPhi<0) deltaPhi = -deltaPhi;
-			while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+			//while( deltaPhi>2.0 * cmsUpgrades::KGMS_PI ) deltaPhi-=(2.0 * cmsUpgrades::KGMS_PI);
+			if (deltaPhi > cmsUpgrades::KGMS_PI) deltaPhi = 2 * cmsUpgrades::KGMS_PI - deltaPhi;
 
 			if ( deltaPhi < deltaPhiThreshold ) {
 
