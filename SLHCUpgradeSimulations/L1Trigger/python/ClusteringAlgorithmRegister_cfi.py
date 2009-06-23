@@ -60,8 +60,14 @@ ClusteringAlgorithm_2d_TTHit_ = cms.ESProducer(
 # Override with process.clusteringPSimHit = ..., etc. in your
 # configuration.
 
-clusteringPSimHit = cms.ESPrefer("ClusteringAlgorithm_a_PSimHit_")
+ClusteringAlgorithm_PSimHit_ = cms.ESPrefer(
+    "ClusteringAlgorithm_a_PSimHit_"
+    )
 
-clusteringPixelDigi = cms.ESPrefer("ClusteringAlgorithm_a_PixelDigi_")
+ClusteringAlgorithm_PixelDigi_ = cms.ESPrefer(
+    "ClusteringAlgorithm_a_PixelDigi_"
+    )
 
-clusteringTTHit = cms.ESPrefer("ClusteringAlgorithm_a_TTHit_")
+ClusteringAlgorithm_TTHit_ = cms.ESPrefer(
+    "ClusteringAlgorithm_a_TTHit_"
+    )
