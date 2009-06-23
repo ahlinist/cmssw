@@ -126,8 +126,8 @@ HitMatchingAlgorithm_thresholds_TTHit_ = cms.ESProducer(
 
 # Set the preferred hit matching algorithms.
 # We prefer the global geometry algorithm for now in order not to break
-# anything. Override with process.myPreferPSimHit = ..., etc. in your
-# configuration.
+# anything. Override with process.HitMatchingAlgorithm_PSimHit_ = ...,
+# etc. in your configuration.
 
 HitMatchingAlgorithm_PSimHit_ = cms.ESPrefer(
     "HitMatchingAlgorithm_globalgeometry_PSimHit_"

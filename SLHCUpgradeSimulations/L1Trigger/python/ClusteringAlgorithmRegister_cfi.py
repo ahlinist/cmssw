@@ -57,7 +57,7 @@ ClusteringAlgorithm_2d_TTHit_ = cms.ESProducer(
 
 # Set the preferred hit matching algorithms.
 # We prefer the a algorithm for now in order not to break anything.
-# Override with process.clusteringPSimHit = ..., etc. in your
+# Override with process.ClusteringAlgorithm_PSimHit_ = ..., etc. in your
 # configuration.
 
 ClusteringAlgorithm_PSimHit_ = cms.ESPrefer(
