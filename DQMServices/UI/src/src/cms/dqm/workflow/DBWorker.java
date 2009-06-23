@@ -94,7 +94,7 @@ public class DBWorker {
     PreparedStatement pstmt = prepareSQL(sql);
     pstmt.setInt(1, parameter);
     ResultSet res = pstmt.executeQuery();
-    res.next();
+    res.next(); 
     int i = res.getInt(fieldnr);
     res.close();
     return i;
@@ -119,8 +119,12 @@ public class DBWorker {
   }
 
   public Vector<String> getStringList(String sql, int fieldnr) throws SQLException {
+    return getStringList(prepareSQL(sql), fieldnr);
+  }
+
+  public Vector<String> getStringList(PreparedStatement pstmt, int fieldnr) throws SQLException {
     Vector<String> list = new Vector<String>();
-    ResultSet r = executeSQL(sql);
+    ResultSet r = pstmt.executeQuery();
     while (r.next()) list.add(r.getString(fieldnr));
     r.close();
     return list;

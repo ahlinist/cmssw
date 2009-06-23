@@ -47,6 +47,17 @@
   </tag>
 
   <tag>
+    <description>Retrieves Roles</description>
+    <name>listRoles</name>
+    <tag-class>cms.dqm.workflow.ListRoles</tag-class>
+    <body-content>scriptless</body-content>
+    <variable>
+      <description>Role Name</description>
+      <name-given>role</name-given>
+    </variable>
+  </tag>
+
+  <tag>
     <description>Retrieves Unique list of Global Names</description>
     <name>listGlobalNames</name>
     <tag-class>cms.dqm.workflow.ListGlobalNames</tag-class>

@@ -8,23 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 public class MessageBoardSyn {
 
   static private MessageBoardSyn instance = null;
+
   private long last;
   private long lastUser;
-
-  private Hashtable<String, User> users;
-  private Hashtable<String, Long> alive;
+  private Hashtable<String, UserSyn> users = new Hashtable<String, UserSyn>();
+  private Vector<User> user_list = new Vector<User>();
 
   private MessageBoardSyn() {
-    users = new Hashtable<String, User>();
-    alive = new Hashtable<String, Long>();
     resetLast();
     lastUser = 1;
   }
-
-  public long getLast() { return last; }
-  public void setLast(long last_) { last = last_; }
-  public void resetLast() { last = -1; }
-  public long getLastUser() { return lastUser; }
 
   static public MessageBoardSyn getInstance() {
     if (null == instance) {
@@ -37,39 +30,58 @@ public class MessageBoardSyn {
     instance = null;
   }
 
+  public long getLast() { return last; }
+  public void setLast(long last_) { last = last_; }
+  public void resetLast() { last = -1; }
+  public long getLastUser() { return lastUser; }
+
   public void loginUser(User user) {
     if (!user.isLogged()) return;
-    if (!users.containsKey(user.getMessageBoardId())) {
-      users.put(user.getMessageBoardId(), user);
+    String id = user.getMessageBoardId();
+    if (!users.containsKey(id)) {
+      users.put(id, new UserSyn(user));
+      user_list.add(user);
       sendMessage("User " + user.getMessageLine() + " logged in", 0);
       lastUser++;
+    } else {
+      users.get(id).loginNext();
     }
-    alive.put(user.getMessageBoardId(), Calendar.getInstance().getTimeInMillis() + (30 * 1000));
   }
 
   public void logoutUser(User user) {
     logoutUser(user.getMessageBoardId());
   }
 
-  private void logoutUser(String userId) {
-    User user = users.remove(userId);
-    if (user != null) {
-      if (user.isLogged()) {
-        sendMessage("User " + user.getMessageLine() + " logged out", 0);
+  private void logoutUser(String id) {
+    if (!users.containsKey(id)) return;
+    if (users.get(id).logoutLast()) {
+      User user = users.remove(id).getUser();
+      user_list.remove(user);
+      if (user != null) {
+        if (user.isLogged()) {
+          sendMessage("User " + user.getMessageLine() + " logged out", 0);
+        }
+        lastUser++;
       }
-      lastUser++;
     }
-    alive.remove(userId);
+  }
+
+  public void pingUser(User user) {
+    String id = user.getMessageBoardId();
+    if (id == null) return;
+    if (users.containsKey(id)) {
+      if (!user.isLogged()) logoutUser(id);
+      else users.get(id).ping();
+    }
   }
 
   public void refreshUsers() {
-    
     long now = Calendar.getInstance().getTimeInMillis();
 
-    Enumeration<String> it = alive.keys();
+    Enumeration<String> it = users.keys();
     while (it.hasMoreElements()) {
       String id = it.nextElement();
-      if (alive.get(id).longValue() < now || !users.get(id).isLogged()) {
+      if (users.get(id).getAlive() < now || !users.get(id).getUser().isLogged()) {
         logoutUser(id);
       }
     }
@@ -84,7 +96,7 @@ public class MessageBoardSyn {
   }
 
   public Iterator<User> getUsers() { 
-    return users.values().iterator();
+    return user_list.iterator();
   }
 
   public void sendMessage(User user, int priority, String text) {
@@ -111,6 +123,36 @@ public class MessageBoardSyn {
       db.close();
     } catch (Exception e) { }
   }
+
+  private class UserSyn {
+
+    private User user;
+    private int  count = 0;
+    private long alive = 0;
+
+    public UserSyn(User user_) {
+      user = user_;
+      loginNext();
+    }
+
+    public void loginNext() {
+      count++; 
+      ping();
+    }
+
+    public void ping() {
+      alive = Calendar.getInstance().getTimeInMillis() + (30 * 1000);
+    }
+
+    public boolean logoutLast() {
+      count--;
+      return (count == 0);
+    }
+
+    public long getAlive() { return alive; }
+    public User getUser()  { return user; }
+
+  };
 
 }
 

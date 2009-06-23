@@ -69,6 +69,14 @@
       <listener-class>cms.dqm.workflow.ContextListener</listener-class>
     </listener>
 
+    <listener>
+      <listener-class>cms.dqm.workflow.HibernateListener</listener-class>
+    </listener>
+
+    <listener>
+      <listener-class>cms.dqm.workflow.SessionListener</listener-class>
+    </listener>
+
     <!-- Servlets go below -->
 
     <servlet>

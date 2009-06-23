@@ -8,7 +8,7 @@
   <target name="init-tom6" unless="tomcat5">
     <path id="local-cp">  
       <fileset dir="lib">
-        <include name="*.jar"/>  
+        <include name="**/*.jar"/>  
       </fileset>  
       <fileset dir="${os.CATALINA_BASE}/lib">  
         <include name="*.jar"/>  
@@ -20,7 +20,7 @@
   <target name="init-tom5" if="tomcat5">
     <path id="local-cp">  
       <fileset dir="lib">
-        <include name="*.jar"/>  
+        <include name="**/*.jar"/>  
       </fileset>  
       <fileset dir="${os.CATALINA_BASE}/common/lib">  
         <include name="*.jar"/>  
@@ -53,12 +53,15 @@
     <copy file="tmpl/XmlRpcServlet.properties" todir="build/org/apache/xmlrpc/webserver" />
     <copy file="tmpl/quartz.properties" todir="build" />
     <copy file="tmpl/jobs.xml" todir="build" />
+    <copy file="tmpl/hibernate.cfg.xml" todir="build" />
 
   </target>
 
   <target name="dist" depends="compile" description="generate the distribution">
+
     <mkdir dir="dist" />
     <jar jarfile="dist/cmsdqmrunregistry.jar" basedir="build"/>
+
   </target>
 
   <target name="deploy" depends="dist" description="deploy">
@@ -66,12 +69,12 @@
     <echo message="webapps: ${webapps}"/>
 
     <input message="Application URL:" addproperty="app_url" defaultvalue="runregistry_dev" />
+    <input message="Authentication file location (after $HOME):" addproperty="db_auth_file" defaultvalue="config/runregistry.config" />
     <input message="Database jdbc name:" addproperty="db_name" defaultvalue="dqmrunregistry" />
     <input message="Database username:" addproperty="db_username" defaultvalue="cms_dqm_run_registry_w"/>
-    <input message="Authentication file location (after $HOME):" addproperty="db_auth_file" defaultvalue="config/runregistry.config" />
     <input message="DBS DQM server url:" addproperty="dbsdqm_url" defaultvalue="http://localhost:9999" />
     <input message="Webapps path (to copy war file):" addproperty="app_path" defaultvalue="${webapps}"/>
-    <input message="Start scheduler (true|false)?:" addproperty="app_start_scheduler" defaultvalue="false"/>
+    <input message="Start scheduler (true|false)?:" addproperty="app_start_scheduler" defaultvalue="true"/>
     <input message="Data Cache URL:" addproperty="app_cache_url" defaultvalue="/${app_url}_data/" />
     <input message="Media URL:" addproperty="app_media_url" defaultvalue="/${app_url}_media/" />
     
@@ -80,7 +83,6 @@
     </tstamp>
 
     <copy file="tmpl/web.xml" tofile="WEB-INF/web.xml" />
-
     <replace file="WEB-INF/web.xml" token="@DB_AUTH_FILE@" value="${db_auth_file}"/>
     <replace file="WEB-INF/web.xml" token="@DB_USERNAME@" value="${db_username}"/>
     <replace file="WEB-INF/web.xml" token="@DB_NAME@" value="${db_name}"/>
@@ -92,12 +94,18 @@
 
     <war destfile="dist/${app_url}.war" webxml="WEB-INF/web.xml">
       <fileset dir="html"/>
-      <lib dir="lib"/>
+      <lib dir="lib/commons"><include name="*.jar"/></lib>
+      <lib dir="lib/hibernate3"><include name="*.jar"/></lib>
+      <lib dir="lib/other"><include name="*.jar"/></lib>
+      <lib dir="lib/quartz"><include name="*.jar"/></lib>
+      <lib dir="lib/xmlrpc"><include name="*.jar"/></lib>
+      <lib dir="lib/jstl"><include name="*.jar"/></lib>
       <lib file="dist/cmsdqmrunregistry.jar"/>
       <webinf dir="WEB-INF">
         <exclude name="web.xml"/>
       </webinf>
       <classes dir="xslt" includes="**/*.xsl"/>
+      <classes file="dist/hibernate.cfg.xml"/>
     </war>
 
     <delete file="WEB-INF/web.xml" />
