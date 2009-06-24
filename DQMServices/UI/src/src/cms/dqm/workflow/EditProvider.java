@@ -350,19 +350,11 @@ public class EditProvider extends HttpServlet {
       pstmt.setInt(1, id);
       res = pstmt.executeQuery();
 
-      System.err.println(id);
-
       while (res.next()) {
         String abbr = res.getString(1);
-        System.err.println("Writing: " + abbr);
-
         boolean exist = (res.getInt(2) == 1 ? true : false);
         String comment = res.getString(3);
         if (comment == null) comment = "";
-
-        System.err.println(exist);
-        System.err.print("comment = ");
-        System.err.println(comment);
 
         boolean rexists = (data.get("l1s_" + abbr) != null && data.get("l1s_" + abbr).equals("true") ? true : false);
         String rcomment = data.get("l1s_" + abbr + "_comment");
