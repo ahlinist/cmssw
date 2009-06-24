@@ -30,4 +30,4 @@ def changeCut(process, name, value, attribute = "cut"):
             
         setattr(cut, attribute, value)
         
-        print("Replaced " + cutName + "." + attribute + ": '" + oldValue + "' => '" + value + "'")
+        print("Replaced " + cutName + "." + attribute + ": '" + str(oldValue) + "' => '" + str(value) + "'")
