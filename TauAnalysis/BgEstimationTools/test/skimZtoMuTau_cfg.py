@@ -11,9 +11,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
@@ -100,17 +99,21 @@ process.muTauPairCutLooseSelection = cms.EDFilter("BoolEventSelFlagProducer",
     )
 )                                                                             
 
-process.produceBoolEventSelFlags = cms.Sequence( process.muonEcalIsoCutLooseIsolation
-                                                +process.muTauPairsLooseSelection + process.muTauPairCutLooseSelection )
+process.produceBoolEventSelFlags = cms.Sequence(
+    process.muonEcalIsoCutLooseIsolation
+   +process.muTauPairsLooseSelection + process.muTauPairCutLooseSelection
+)
 
 process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
-    flags = cms.VInputTag( cms.InputTag('Trigger'),
-                           cms.InputTag('primaryEventVertex'),
-                           cms.InputTag('primaryEventVertexQuality'),
-                           cms.InputTag('primaryEventVertexPosition'),
-                           cms.InputTag('muonEcalIsoCutLooseIsolation', 'prodNtupleZtoMuTau'),
-                           cms.InputTag('tauMuonVeto', 'cumulative'),                                                        
-                           cms.InputTag('muTauPairCutLooseSelection', 'prodNtupleZtoMuTau') )
+    flags = cms.VInputTag(
+        cms.InputTag('Trigger'),
+        cms.InputTag('primaryEventVertex'),
+        cms.InputTag('primaryEventVertexQuality'),
+        cms.InputTag('primaryEventVertexPosition'),
+        cms.InputTag('muonEcalIsoCutLooseIsolation', 'prodNtupleZtoMuTau'),
+        cms.InputTag('tauMuonVeto', 'cumulative'),                                                        
+        cms.InputTag('muTauPairCutLooseSelection', 'prodNtupleZtoMuTau')
+    )
 )
 #--------------------------------------------------------------------------------
 
@@ -118,7 +121,7 @@ process.saveBgEstSample = cms.OutputModule("PoolOutputModule",
     tauAnalysisEventContent,
     bgEstEventSelection = cms.untracked.PSet(
         SelectEvents = cms.untracked.PSet(
-            SelectEvents = cms.vstring('selectEventsByBoolEventSelFlags')
+            SelectEvents = cms.vstring('bgEstSkimPath')
         )
     ),
     fileName = cms.untracked.string('bgEstSample.root')
@@ -155,13 +158,16 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 
-process.p = cms.Path( process.producePatTuple
-#                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-                     +process.selectZtoMuTauEvents
-                     +process.genPhaseSpaceFilter
-                     +process.produceBoolEventSelFlags
-                     +process.selectEventsByBoolEventSelFlags
-                     +process.saveBgEstSample )
+process.bgEstSkimPath = cms.Path(
+    process.producePatTuple
+#  * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+   * process.selectZtoMuTauEvents
+   * process.genPhaseSpaceFilter
+   * process.produceBoolEventSelFlags
+   * process.selectEventsByBoolEventSelFlags
+)
+
+process.o = cms.EndPath( process.saveBgEstSample )
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
