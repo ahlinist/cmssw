@@ -6,32 +6,13 @@ process = cms.Process('runAHtoElecMu')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-#process.GlobalTag.globaltag = 'IDEAL_V11::All'
-#
-# CV: 'IDEAL_V11::All' causes the following run-time error
-#
-#      %MSG-s CMSException:  AfterModuleConstruction 20-Apr-2009 09:59:31 CEST  pre-events
-#      cms::Exception caught in cmsRun
-#      ---- EventSetupConflict BEGIN
-#      two EventSetup Sources want to deliver type="CSCBadChambers" label=""
-#       from record CSCBadChambersRcd. The two providers are 
-#      1) type="PoolDBESSource" label="GlobalTag"
-#      2) type="PoolDBESSource" label="cscBadChambers"
-#      Please either
-#         remove one of these Sources
-#         or find a way of configuring one of them so it does not deliver this data
-#         or use an es_prefer statement in the configuration to choose one.
-#      ---- EventSetupConflict END
-#
-#    --> use 'IDEAL_V9::All' for the time being...
-#
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
-#process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")

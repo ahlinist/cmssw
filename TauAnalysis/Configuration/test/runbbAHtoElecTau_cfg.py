@@ -7,12 +7,13 @@ process = cms.Process('runbbAHtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+#process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 #process.load("PhysicsTools.PatAlgos.patSequences_cff")
