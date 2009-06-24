@@ -26,8 +26,7 @@ from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 
 # define DataBase source for TaNC configurations
 # (need esprefer statement in order to prevent conflict with Fake BTau conditions)
-from RecoTauTag.Configuration.RecoTauTag_FakeConditions_cff import *
-es_prefer_TauMVA = cms.ESPrefer("PoolDBESSource", "TauTagMVAComputerRecord")
+from RecoTauTag.TauTagTools.TancConditions_cff import *
 
 producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
                              + electronIdCutBased + recoElectronIsolation
