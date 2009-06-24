@@ -17,7 +17,7 @@
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 #include "PhysicsTools/JetMCUtils/interface/CandMCTag.h"
 
-#include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
+//#include "RecoBTag/MCTools/interface/JetFlavourIdentifier.h"
 //#include "PhysicsTools/JetMCAlgos/plugins/JetFlavourIdentifier.cc"
 #include "SimDataFormats/JetMatching/interface/JetMatchedPartons.h"
 
