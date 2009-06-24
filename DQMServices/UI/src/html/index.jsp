@@ -29,7 +29,6 @@
 
 <script type="text/javascript">
 
-  var toggleAnimation;
   var logoutUser;
   var getTag;
   var globalResize;
@@ -55,12 +54,17 @@
 
     var Layout = $('body').layout(layoutSettings);
 
-    toggleAnimation = function (value) {
+    var toggleAnimation = function (value) {
       if (value != 0 && value != 1) value = 0;
       jQuery.fx.off = (value == 1 ? false : true); 
       $.cookie("animation", value);
       $("a.animation_option").text("Turn animation " + (jQuery.fx.off ? "on" : "off"));
-      $("span.animation_value").text((jQuery.fx.off ? "OFF" : "ON"));
+    };
+
+    var toggleNotification = function () {
+      var value = ($.cookie("notification") == 0 ? 1 : 0);
+      $.cookie("notification", value);
+      $("a.notification_option").text("Turn notification " + (value == 1 ? "off" : "on"));
     };
 
     logoutUser = function() {
@@ -91,9 +95,13 @@
     });
 
     toggleAnimation($.cookie("animation"));
-
     $("div.menu-item > a.animation_option").parent().click(function() { 
       toggleAnimation((jQuery.fx.off ? 1 : 0));
+    });
+
+    toggleNotification();
+    $("div.menu-item > a.notification_option").parent().click(function() { 
+      toggleNotification();
     });
 
     $("#batch_updater_progressbar").progressBar({ barImage: '<%=mediaurl%>img/progressbg_red.gif', boxImage: '<%=mediaurl%>img/progressbar.gif', showText: true});
@@ -225,6 +233,7 @@
 
           <span id="optionsmenu"><a href="#">Options</a>
             <ul>
+              <li><a class="notification_option">Notification</a></li>
               <li><a class="animation_option">Animation</a></li>
               <li><a href="cache.jsp" target="_blank">View cache</a></li>
             </ul>
