@@ -8,7 +8,7 @@
     <!--property name="connection.datasource">java:comp/env/jdbc/dqmrunregistry</property-->
     <!--property name="connection.username">cms_dqm_run_registry_w</property-->
 
-    <property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>
+    <property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
 
     <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
     <property name="cache.use_query_cache">false</property>

@@ -33,6 +33,13 @@
 
     doNotify = function(run) {
       
+      if (_chat_blink && run) return;
+
+      if ($.cookie("notification") == 0) {
+        _chat_blink = false;
+        return;
+      }
+
       var last = $("#chat").data("last");
       var read = $.cookie("last_read_message");
       if (!read) read = -1;
@@ -56,6 +63,9 @@
     };
 
     var notify = function(n) {
+      if ($.cookie("notification") == 0) {
+        _chat_blink = false;
+      }
       if (_chat_notification) {
         setTimeout(function() { 
           if (top.document.title != _chat_notification_title && top.document.title != _chat_default_title) {

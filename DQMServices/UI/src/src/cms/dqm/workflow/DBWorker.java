@@ -19,8 +19,10 @@ public class DBWorker {
     Context initContext = new InitialContext();
     Context envContext = (Context) initContext.lookup("java:/comp/env");
     if (envContext == null) throw new NamingException("Error: No Context");
+
     OracleDataSource ds = (OracleDataSource) envContext.lookup(WebUtils.GetEnv("db_name"));
     ds.setConnectionCachingEnabled(true);
+    ds.setFastConnectionFailoverEnabled(true);
 
     if (ds == null) throw new Exception("Error: No DataSource");
 
@@ -45,6 +47,7 @@ public class DBWorker {
   public DBWorker(String jdbc, String username, String auth_file, boolean readOnly) throws Exception {
     OracleDataSource ds = new OracleDataSource();
     ds.setConnectionCachingEnabled(true);
+    ds.setFastConnectionFailoverEnabled(true);
     ds.setURL(jdbc);
     if (ds.getUser() == null || !ds.getUser().equals(username)) {
       ds.setUser(username);
