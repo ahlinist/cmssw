@@ -212,7 +212,8 @@ void DQMFileLoader::endJob()
 	fileSet != fileSets_.end(); ++fileSet ) {
     for ( vstring::const_iterator inputFileName = fileSet->second.inputFileNames_.begin();
 	  inputFileName != fileSet->second.inputFileNames_.end(); ++inputFileName ) {
-      if ( verbosity ) std::cout << " opening inputFile = " << (*inputFileName) << std::endl;
+      //if ( verbosity ) std::cout << " opening inputFile = " << (*inputFileName) << std::endl;
+      std::cout << " opening inputFile = " << (*inputFileName) << std::endl; 
       dqmStore.open(*inputFileName, true);
 
       if ( verbosity ) dqmStore.showDirStructure();
