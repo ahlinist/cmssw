@@ -12,9 +12,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 # import particle data table
 # needed for print-out of generator level information
@@ -125,6 +124,17 @@ switchToPFTauFixedCone(process)
 #
 # change muonPt cut to > 18 GeV
 #changeCut(process, "selectedLayer1MuonsPt15", "pt > 18.")
+#
+#changeCut(process, "selectedLayer1MuonsTrkIso", 10000., attribute = "sumPtMax")
+#changeCut(process, "selectedLayer1MuonsEcalIso", "ecalIso > -100.")
+#changeCut(process, "selectedLayer1MuonsPionVeto", -100., attribute = "AntiPionCut")
+#changeCut(process, "selectedLayer1MuonsTrkIP", 10000., attribute = "IpMax")
+#
+#changeCut(process, "selectedLayer1TausForMuTauMuonVeto", "tauID('againstMuon') > -0.5")
+#
+#changeCut(process, "selectedMuTauPairsAntiOverlapVeto", "dR12 > -1.")
+#changeCut(process, "selectedMuTauPairsZeroCharge", "charge > -1000")
+#changeCut(process, "selectedMuTauPairsMt1MET", "mt1MET < 50.")
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
@@ -146,4 +156,4 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
