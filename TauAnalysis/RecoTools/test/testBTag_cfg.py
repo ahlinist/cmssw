@@ -22,7 +22,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 process.load("TauAnalysis.Configuration.producePatLayer1_cff")
 
