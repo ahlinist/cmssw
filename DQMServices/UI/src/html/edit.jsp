@@ -620,7 +620,7 @@
 
           <div style="position: absolute; left: 0px; top: 10px; padding: 1em;">
             <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
-            <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 100px;vertical-align: middle;"/>
+            <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 200px;vertical-align: middle;"/>
           </div>
 
           <table border="0" width="100%" cellpadding="0" cellspacing="0">
@@ -753,7 +753,7 @@
                 <td class="edit_col" width="100%">
                   <div class="edit_sub_expert">
                     <b>Subsystem: </b>
-                    <select style="width: 80px" disabled="true" id="expertCommentSub">
+                    <select style="width: 80px" id="expertCommentSub">
                       <dqm:listSubsystems type="ONLINE">        
                         <option  value="sub_${sub_abbr}">${sub_abbr}</option>
                       </dqm:listSubsystems>

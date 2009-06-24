@@ -38,8 +38,6 @@
 
     top.document.title = "CMS DQM Run Registry";
 
-    window.top.toggleAnimation($.cookie("animation"));
-
     var subsystems = [<dqm:listSubsystemsJS/>];
     var total = 0;
 

@@ -152,7 +152,7 @@ div.statEXCL {
 } 
 
 #edit button {
-	width: 150px;
+	/* width: 100px; */
 	height: 25px;
 	font-weight: bold;
 	font-size: 13px;
