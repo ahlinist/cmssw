@@ -5,7 +5,7 @@
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/Common>
 <use name=DataFormats/Math>
-<use name=SimDataFormats/HepMCProduct>
+<use name=SimDataFormats/GeneratorProducts>
 <use name=SimTracker/TrackAssociation>
 <use name=DataFormats/Candidate>
 <use name=DataFormats/TrackReco>
@@ -22,8 +22,6 @@
 <use name=DataFormats/L1Trigger>
 <use name=DataFormats/L1GlobalTrigger>
 <use name=DataFormats/METReco>
-<use name=hepmc> 
-<use name=heppdt>
 <use name=root>
 <flags EDM_PLUGIN=1>
 <export>

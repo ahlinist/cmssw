@@ -1,7 +1,7 @@
 {
 
 TChain chain("T1");
-chain.Add("hfexample.root");
+chain.Add("test.root");
 
 // -- Set up for reading
 Int_t nentries(0), nb(0);
@@ -29,6 +29,9 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
   for (int ig = 0; ig < pEvent->nGenCands(); ++ig) {
     pGen = pEvent->getGenCand(ig);
     muDau = 0; 
+    if (13 == TMath::Abs(pGen->fID)) {
+      pGen->dump(); 
+    }
     if ((521 == TMath::Abs(pGen->fID)) ||
 	(531 == TMath::Abs(pGen->fID)) ||
 	(511 == TMath::Abs(pGen->fID)) ||

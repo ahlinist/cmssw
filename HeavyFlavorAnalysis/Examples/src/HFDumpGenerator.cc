@@ -5,7 +5,7 @@
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpGenerator.h"
 
 #include "HepMC/GenVertex.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/Common/interface/Handle.h"
