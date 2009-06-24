@@ -106,43 +106,43 @@ void ElectronHistManager::bookHistograms()
   dqmStore.setCurrentFolder(dqmDirectory_store_);
 
 //--- book histogram for number of electrons in each event
-  hNumElectrons_ = dqmStore.book1D("NumElectrons", "NumElectrons", 10, -0.5, 9.5);
+  hNumElectrons_ = dqmStore.book1D("NumElectrons", "Electron Count", 10, -0.5, 9.5);
 
 //--- book histograms for Pt, eta and phi distributions
 //    of electrons passing all id. and isolation selections
   bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
-  hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "ElectronPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "Electron #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
   
-  hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "ElectronEnCompToGen", 100, -0.50, +0.50);
-  hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "ElectronThetaCompToGen", 200, -0.010, +0.010);
-  hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "ElectronPhiCompToGen", 200, -0.010, +0.010);
+  hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "Electron RECO-GEN #Delta E", 100, -0.50, +0.50);
+  hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
+  hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "Electron RECO-GEN #Delta#phi", 200, -0.010, +0.010);
   
-  hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "ElectronTrackPt", 75, 0., 150.);
-  hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "ElectronTrackIPxy", 100, -0.100, 0.100);
-  hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "ElectronTrackIPz", 100, -1.0, 1.0);
+  hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "Electron Track P_{T}", 75, 0., 150.);
+  hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "Electron Track Impact Parameter (xy)", 100, -0.100, 0.100);
+  hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "Electron Track Impact Parameter (z)", 100, -1.0, 1.0);
   
-  hElectronSuperclEnOverTrackMomBarrel_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomBarrel", "ElectronSuperclEnOverTrackMomBarrel", 50, 0., 5.);
-  hElectronSuperclEnOverTrackMomEndcap_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomEndcap", "ElectronSuperclEnOverTrackMomEndcap", 50, 0., 5.);
+  hElectronSuperclEnOverTrackMomBarrel_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomBarrel", "Electron (Barrel) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
+  hElectronSuperclEnOverTrackMomEndcap_ = dqmStore.book1D("ElectronSuperclEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
   
-  hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "ElectronIdRobust", 2, -0.5, 1.5);
+  hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "Electron Id (Robust)", 2, -0.5, 1.5);
   
-  hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "ElectronTrkIsoPt", 100, 0., 20.);    
-  hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "ElectronEcalIsoPt", 100, 0., 20.);
-  hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "ElectronEcalIsoPtBarrel", 100, 0., 20.);
-  hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "ElectronEcalIsoPtEndcap", 100, 0., 20.);
-  hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "ElectronHcalIsoPt", 100, 0., 20.);
-  hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "ElectronIsoSumPt", 100, 0., 20.);
+  hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 20.);    
+  hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "Electron ECAL Isolation P_{T}", 100, 0., 20.);
+  hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "Electron (Barrel) ECAL Isolation P_{T}", 100, 0., 20.);
+  hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "Electron (Endcap) ECAL Isolation P_{T}", 100, 0., 20.);
+  hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "Electron HCAL Isolation P_{T}", 100, 0., 20.);
+  hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "Electron Isolation Sum(P_{T})", 100, 0., 20.);
   hElectronTrkIsoPtRel_ = dqmStore.book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
   hElectronEcalIsoPtRel_ = dqmStore.book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
-  hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "ElectronEcalIsoPtBarrelRel", 200, 0., 2.);
-  hElectronEcalIsoPtEndcapRel_ = dqmStore.book1D("ElectronEcalIsoPtEndcapRel", "ElectronEcalIsoPtEndcapRel", 200, 0., 2.);
-  hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "ElectronHcalIsoPtRel", 200, 0., 2.);
-  hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "ElectronIsoSumPtRel", 200, 0., 2.);
+  hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "Electron (Barrel) #frac{P_{T ECAL isolation}}{P_{T track}}", 200, 0., 2.);
+  hElectronEcalIsoPtEndcapRel_ = dqmStore.book1D("ElectronEcalIsoPtEndcapRel", "Electron (Endcap) #frac{P_{T ECAL isolation}}{P_{T track}}", 200, 0., 2.);
+  hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "Electron #frac{P_{T HCAL isolation}}{P_{T track}}", 200, 0., 2.);
+  hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "Electron #frac{#sum P_{T isolation}}{P_{T track}}", 200, 0., 2.);
   
-  hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "ElectronParticleFlowIsoPt", 100, 0., 20.);    
-  hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "ElectronPFChargedHadronIsoPt", 100, 0., 20.);   
-  hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "ElectronPFNeutralHadronIsoPt", 100, 0., 20.);   
-  hElectronPFGammaIsoPt_ = dqmStore.book1D("ElectronPFGammaIsoPt", "ElectronPFGammaIsoPt", 100, 0., 20.);  
+  hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "Electron Particle Flow Isolation P_{T}", 100, 0., 20.);    
+  hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 20.);   
+  hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 20.);   
+  hElectronPFGammaIsoPt_ = dqmStore.book1D("ElectronPFGammaIsoPt", "Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 20.);  
   
   hElectronTrkIsoValProfile_ = dqmStore.book1D("ElectronTrkIsoValProfile", "ElectronTrkIsoValProfile", 100, 0., 10.);
   hElectronTrkIsoEtaDistProfile_ = dqmStore.book1D("ElectronTrkIsoEtaDistProfile", "ElectronTrkIsoEtaDistProfile", 15, 0., 1.5);

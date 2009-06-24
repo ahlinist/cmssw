@@ -9,6 +9,8 @@
 
 #include <TMath.h>
 
+#include <assert.h>
+
 bool matchesGenJet(const pat::Jet& patJet)
 {
   bool isGenMatched = false;
@@ -39,8 +41,8 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
   centralJetsToBeVetoedEtaMax_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("etaMax");
   centralJetsToBeVetoedAlphaMin_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("alphaMin");
 
-  btaggingAlgo_ = cfg.getParameter<std::string>("btaggingAlgo");
-  discr_ = cfg.getParameter<double>("discriminator");
+  btaggingAlgos_ = cfg.getParameter<std::vector<std::string> >("btaggingAlgos");
+  discrs_ = cfg.getParameter<std::vector<double> >("discriminators");
 }
 
 JetHistManager::~JetHistManager()
@@ -65,12 +67,12 @@ void JetHistManager::bookHistograms()
   hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 50, -0.5, 49.5);
   
   bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
-  hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "JetPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "Jet #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
   
-  hJetAlpha_ = dqmStore.book1D("JetAlpha", "JetAlpha", 102, -0.01, +1.01);
-  hJetNumTracks_ = dqmStore.book1D("JetNumTracks", "JetNumTracks", 50, -0.5, 49.5);
-  hJetTrkPt_ = dqmStore.book1D("JetTrkPt", "JetTrkPt", 100, 0., 50.);
-  hJetLeadTrkPt_ = dqmStore.book1D("JetLeadTrkPt", "JetLeadTrkPt", 75, 0., 75.);
+  hJetAlpha_ = dqmStore.book1D("JetAlpha", "Jet #alpha", 102, -0.01, +1.01);
+  hJetNumTracks_ = dqmStore.book1D("JetNumTracks", "Jet Track Multiplicity", 50, -0.5, 49.5);
+  hJetTrkPt_ = dqmStore.book1D("JetTrkPt", "Jet All Tracks P_{T}", 100, 0., 50.);
+  hJetLeadTrkPt_ = dqmStore.book1D("JetLeadTrkPt", "Jet Lead Track P_{T}", 75, 0., 75.);
   
   for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();
 	etMin != centralJetsToBeVetoedEtMin_.end(); ++etMin ) {
@@ -91,9 +93,30 @@ void JetHistManager::bookHistograms()
     }
   }
   
-  hBtagDisc_ = dqmStore.book1D("BtagDisc", "BtagDisc", 120, -10., 50.);
-  hNumBtags_ = dqmStore.book1D("NumBtags", "NumBtags", 15, -0.5, 14.5);
-  hPtBtags_ = dqmStore.book1D("PtBtags", "PtBtags", 75, 0., 150.);
+  assert(btaggingAlgos_.size()==discrs_.size());
+  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+    std::ostringstream hName0;
+    std::ostringstream hTitle0;
+    hName0 << "BtagDisc_" << btaggingAlgos_[i];
+    hTitle0 << "Jet B-Tag Discriminator: " << btaggingAlgos_[i];
+  
+    hBtagDisc_.push_back(dqmStore.book1D(hName0.str(),hTitle0.str(),120,-10.,50.));
+    
+    std::ostringstream hName1;
+    std::ostringstream hTitle1;
+    hName1 << "NumBtags_" << btaggingAlgos_[i];
+    hTitle1 << "Jet B-Tag Count: " << btaggingAlgos_[i] << ">" <<discrs_[i];
+  
+    hNumBtags_.push_back(dqmStore.book1D(hName1.str(),hTitle1.str(),15,-0.5,14.5));
+    
+    std::ostringstream hName2;
+    std::ostringstream hTitle2;
+    hName2 << "PtBtags_" << btaggingAlgos_[i];
+    hTitle2 << "B-Tagged Jets P_{T}: " << btaggingAlgos_[i] << ">" <<discrs_[i];
+  
+    hPtBtags_.push_back(dqmStore.book1D(hName2.str(),hTitle2.str(),75,0.,150.));
+  }
+  
 }
 
 double compAlpha(const pat::Jet& jet)
@@ -122,7 +145,10 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
   hNumJets_->Fill(patJets->size());
 
-  unsigned int nbtags = 0;
+  std::vector<unsigned int> nbtags;
+  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+    nbtags.push_back(0);
+  }
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets->begin(); 
 	patJet != patJets->end(); ++patJet ) {
   
@@ -147,13 +173,18 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     hJetNumTracks_->Fill(numTracks);
     if ( numTracks > 0 ) hJetLeadTrkPt_->Fill(maxPt);
 
-    hBtagDisc_->Fill(patJet->bDiscriminator(btaggingAlgo_));
-    if (patJet->bDiscriminator(btaggingAlgo_)>discr_) {
-      nbtags++;
-      hPtBtags_->Fill(patJet->pt());
+    
+    for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+      hBtagDisc_[i]->Fill(patJet->bDiscriminator(btaggingAlgos_[i]));
+      if (patJet->bDiscriminator(btaggingAlgos_[i])>discrs_[i]) {
+        nbtags[i]++;
+        hPtBtags_[i]->Fill(patJet->pt());
+      }
     }
   }
-  hNumBtags_->Fill(nbtags);
+  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+    hNumBtags_[i]->Fill(nbtags[i]);
+  }
 
   int index = 0;
   for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();

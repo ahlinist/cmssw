@@ -17,6 +17,6 @@ jetHistManager = cms.PSet(
     alphaMin = cms.vdouble(0., 0.1, 0.2, 0.3, 0.4, 0.5)
   ),
   
-  btaggingAlgo = cms.string('trackCountingHighEffBJetTags'),
-  discriminator = cms.double(2.)
+  btaggingAlgos = cms.vstring('simpleSecondaryVertex','combinedSecondaryVertex','trackCountingHighEffBJetTags'),
+  discriminators = cms.vdouble(2.,0.4,2.5)
 )
