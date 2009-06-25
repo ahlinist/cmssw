@@ -263,6 +263,8 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
     while (ifin.good()){
       ifin >>name >>rawId >> offset >> rms;
       alignmentinfo[rawId]=offset;
+
+      if(debug) std::cout<<"rawId ="<<rawId<<" offset="<<offset<<std::endl;
     }
   }
   
