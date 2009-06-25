@@ -121,13 +121,11 @@ public class Run implements Serializable {
   public Date getCreated() { return created; }
   public void setCreated(Date created_) { created = created_; }
 
-/*
   @OneToMany
   @JoinColumn (name = "RSU_RUN_ID")
   Set<RunSubsystem> subsystems = new HashSet<RunSubsystem>();
   public Set<RunSubsystem> getSubsystems() { return subsystems; }
   public void setSubsystems(Set<RunSubsystem> subsystems_) { subsystems = subsystems_; }
-*/	
 
 /*
   @Column(name = "ON_CSC")

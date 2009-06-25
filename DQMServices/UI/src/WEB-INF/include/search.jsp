@@ -161,7 +161,7 @@ $(document).ready( function () {
       "Search all": function() {
 				var sv = SearchValues('AND');
 				if (sv.operator != undefined) $("#flex1").flexSearch(sv); 
-			},
+			}
     }
   });
 

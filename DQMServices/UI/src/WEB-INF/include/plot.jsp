@@ -57,7 +57,7 @@
         },
         "Query": function() { 
         $("#flex1").flexSearch(QueryValues('AND'));
-        },
+        }
       }
     });
 

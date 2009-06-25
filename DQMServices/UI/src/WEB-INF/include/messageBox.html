@@ -1,6 +1,7 @@
 <script type="text/javascript">
 
-  var messageBox = {};
+  var messageBox;
+  var messageBoxTimeout;
 
   $(document).ready( function () {
 
@@ -13,7 +14,7 @@
       buttons: {
         "Close": function() { 
           $(this).dialog("close"); 
-        },
+        }
       }
     });
 
@@ -25,6 +26,12 @@
       $("#messageBox").dialog('option', 'title', caption).dialog("open");
     };
 
+    messageBoxTimeout = function (line1, line2, caption) {
+			if (line2 == undefined) line2 = "Message will close automatically";
+			messageBox(line1, line2, caption);
+			setTimeout(function() { $("#messageBox").dialog("close"); }, 3000);
+    };
+
   });
 
 </script>
@@ -34,7 +41,7 @@
 		<tr>
 			<td width="20">
 				<span class="ui-icon ui-icon-alert" style="width: 16px; height: 16px;"></span></td>
-			<td class="line1" style="color: red"></td>
+			<td class="line1" style="color: red; font-weight: bold;"></td>
 		</tr>
 		<tr>
 			<td colspan="2" class="line2"></td>
