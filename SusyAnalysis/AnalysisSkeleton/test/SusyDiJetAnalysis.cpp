@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.38 2009/04/28 11:14:37 georgia Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.39 2009/05/31 12:46:17 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -76,8 +76,11 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   muonTag_ = iConfig.getParameter<edm::InputTag>("muonTag");
   tauTag_ = iConfig.getParameter<edm::InputTag>("tauTag");
   vtxTag_ = iConfig.getParameter<edm::InputTag>("vtxTag"); 
+  //benedetta: PFjets
+  usePfjets_ = iConfig.getParameter<bool>("UsePfjet");
+  pfjetTag_  = iConfig.getParameter<edm::InputTag>("pfjetTag");
 
-  //jptTag_ = iConfig.getParameter<edm::InputTag>("jptTag");
+  jptTag_ = iConfig.getParameter<edm::InputTag>("jptTag");
 
   ccjetTag_ = iConfig.getParameter<edm::InputTag>("ccjetTag");
   ccmetTag_ = iConfig.getParameter<edm::InputTag>("ccmetTag");
@@ -301,7 +304,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		      //nipoti neutre stabili ok!
 		      if(p.daughter(dau)->daughter(nep)->pdgId()!=113 && p.daughter(dau)->daughter(nep)->pdgId()!=223 && p.daughter(dau)->daughter(nep)->pdgId()!=221 ){
 
-			cout <<p.daughter(dau)->daughter(nep)->pdgId()<<endl;
+			//			cout <<p.daughter(dau)->daughter(nep)->pdgId()<<endl;
 			ndau_neutral++;
 			energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->energy();
 			px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->px();
@@ -314,7 +317,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			for(size_t bisnep=0; bisnep<p.daughter(dau)->daughter(nep)->numberOfDaughters(); bisnep++){
 			  //bisnipoti neutre ok!
 			  if(p.daughter(dau)->daughter(nep)->daughter(bisnep)->charge()==0){
-			    cout <<p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
+			    //			    cout <<p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
 			    ndau_neutral++;
 			    energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
 			    px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
@@ -370,7 +373,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	      else {	  
 		// figlie neutre stabili ok!
 		if(p.daughter(dau)->pdgId()!=113 && p.daughter(dau)->pdgId()!=223 && p.daughter(dau)->pdgId()!=221){
-		  cout << p.daughter(dau)->pdgId()<<endl;
+		  //		  cout << p.daughter(dau)->pdgId()<<endl;
 		  ndau_neutral++;
 		  energy_neutral=energy_neutral+p.daughter(dau)->energy();
 		  px_neutral=px_neutral+p.daughter(dau)->px();
@@ -383,7 +386,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 		  for(size_t nep=0; nep<p.daughter(dau)->numberOfDaughters(); nep++){
 		    // nipoti neutre ok!
 		    if(p.daughter(dau)->daughter(nep)->charge()==0){
-		      cout << p.daughter(dau)->daughter(nep)->pdgId() <<endl;
+		      //		      cout << p.daughter(dau)->daughter(nep)->pdgId() <<endl;
 		      ndau_neutral++;
 		      energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->energy();
 		      px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->px();
@@ -411,7 +414,7 @@ SusyDiJetAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			for(size_t bisnep=0; bisnep<p.daughter(dau)->daughter(nep)->numberOfDaughters(); bisnep++){
 			  //bisnipoti neutre ok!
 			  if(p.daughter(dau)->daughter(nep)->daughter(bisnep)->charge()==0){
-			    cout << p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
+			    //			    cout << p.daughter(dau)->daughter(nep)->daughter(bisnep)->pdgId()<<endl;
 			    ndau_neutral++;
 			    energy_neutral=energy_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->energy();
 			    px_neutral=px_neutral+p.daughter(dau)->daughter(nep)->daughter(bisnep)->px();
@@ -1043,21 +1046,44 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     mTempTreeMPTPx=totalP3.px();
     mTempTreeMPTPy=totalP3.py();
     mTempTreeMPTPz=totalP3.pz();
-
-
-
-    //   return totalP3;
     
-
-
-
-  // get the taus
-  edm::Handle< std::vector<pat::Tau> > tauHandle;
-  iEvent.getByLabel(tauTag_, tauHandle);
-  if ( !tauHandle.isValid() ) {
-    edm::LogWarning("SusySelectorExample") << "No Tau results for InputTag " << tauTag_;
-    return;
+    
+    
+    //   return totalP3;
+//     //benedetta : PFjets
+    edm::Handle< edm::View <reco::Jet> > pfjetHandle;
+   if (usePfjets_) {
+     iEvent.getByLabel(pfjetTag_, pfjetHandle);
+     if(!pfjetHandle.isValid()){
+        edm::LogWarning("SusySelectorExample") << "No PFjet results for InputTag "<< pfjetTag_;
+        return;
+     }
+    
+     mTempTreeNPFjet = pfjetHandle->size();
   }
+   else mTempTreeNPFjet =0;  
+
+
+  if( mTempTreeNPFjet > 50) mTempTreeNPFjet=50;
+    for(int pf=0; pf< mTempTreeNPFjet; pf++){
+      mTempTreePFjetEta[pf]=(*pfjetHandle)[pf].eta();
+      mTempTreePFjetPhi[pf]=(*pfjetHandle)[pf].phi();
+      mTempTreePFjetE[pf]=(*pfjetHandle)[pf].energy();
+      mTempTreePFjetPx[pf]=(*pfjetHandle)[pf].px();
+      mTempTreePFjetPy[pf]=(*pfjetHandle)[pf].py();
+      mTempTreePFjetPz[pf]=(*pfjetHandle)[pf].pz();
+      mTempTreePFjetPt[pf]=(*pfjetHandle)[pf].pt();
+      mTempTreePFjetCharge[pf]=(*pfjetHandle)[pf].charge();
+
+    }
+
+    // get the taus
+    edm::Handle< std::vector<pat::Tau> > tauHandle;
+    iEvent.getByLabel(tauTag_, tauHandle);
+    if ( !tauHandle.isValid() ) {
+      edm::LogWarning("SusySelectorExample") << "No Tau results for InputTag " << tauTag_;
+      return;
+    }
  
 
   // Add the taus
@@ -1246,7 +1272,6 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     
   }
 
-   
   // get the jets
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByLabel(jetTag_, jetHandle);
@@ -1263,14 +1288,17 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     return;
   }
 
+  /*JPT  to be fixed
+
   // get the JPT-corrected pat::Jets
-  /* edm::Handle< std::vector<pat::Jet> > jptHandle;
+  edm::Handle< std::vector<pat::Jet> > jptHandle;
   iEvent.getByLabel(jptTag_, jptHandle);
   if ( !jptHandle.isValid() ) {
     edm::LogWarning("SusySelectorExample") << "No JetCorrFactor results for InputTag " << jptTag_;
     std::cout << "No JetCorrFactor results for InputTag " << jptTag_ << std::endl;
     return;
-    }*/
+  }
+  */
 
   //get number of jets
   mTempTreeNjets = jetHandle->size();
@@ -1409,23 +1437,23 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	mTempTreeccJetAssoc_py[i] = -9999;
 	mTempTreeccJetAssoc_pz[i] = -9999;
       }
-      
+      /*JPT  to be fixed
       // Add the JPT corrs
-      /*int mTempTreeNjptjets = jptHandle->size();
+      int mTempTreeNjptjets = jptHandle->size();
       if ( mTempTreeNjptjets > 50 ) mTempTreeNjptjets = 50;
       for ( int m = 0; m < mTempTreeNjptjets; m++ ) {
 	if( (*jptHandle)[m].originalObjectRef() == (*jetHandle)[k].originalObjectRef() ) {
 	  pat::Jet jet = ((*jptHandle)[m].isCaloJet()) ? (*jptHandle)[m].correctedJet("RAW") : (*jptHandle)[m];
 	  mTempTreeJetJPTCorrFactor[i] = (jet.isCaloJet()) ? jet.jetCorrFactors().scaleDefault() : -1 ;
 	}
-	}*/
-      
+      }
+      */
       i++;
 
     } 
     
   }
-  
+   
   mTempTreeNjets = i;
 
 // Get the hemispheres
@@ -1461,7 +1489,6 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 
   }   
 
- 
  
 
   //
@@ -1509,7 +1536,6 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 
 
 
-
   edm::LogVerbatim("SusyDiJetEvent") <<  "metuncorr " <<  mTempTreeMET_Nocorr_nocc[0] << " met total " <<  mTempTreeMET_Fullcorr_nocc[0] << std::endl;
 
   // Do the MET save for muon corr no cc MET
@@ -1522,7 +1548,6 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
   mTempTreeMET_Fullcorr_nocc_significance = metHandle->front().mEtSig();
   // std::cout << "significance " << metHandle->front().mEtSig() << std::endl;
 
- 
   // get cc MET
   edm::Handle< std::vector<pat::MET> > ccmetHandle;
   iEvent.getByLabel(ccmetTag_, ccmetHandle);
@@ -1564,11 +1589,11 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 //    length = 1000;
 //   length =  myALPGENParticleId.AplGenParID(iEvent,genTag_,  ids , refs ,genE, genPx, genPy, genPz ,genPhi ,genEta ,genStatus, length);
  
-  
+
   // Fill the tree
   mAllData->Fill();
 
- 
+
 }
 
 
@@ -1988,6 +2013,16 @@ SusyDiJetAnalysis::initPlots() {
   //PIOPPI
   mAllData->Branch("Muon_isccMuonAssoc",mTempTreeccMuonAssoc,"mTempTreeccMuonAssoc[Nmuon]/bool");
 
+  //benedetta : PFjets
+  mAllData->Branch("NPFjet",&mTempTreeNPFjet,"NPFjet/int");
+  mAllData->Branch("PFjetEta",&mTempTreePFjetEta,"PFjetEta[NPFjet]/double");
+  mAllData->Branch("PFjetPhi",&mTempTreePFjetPhi,"PFjetPhi[NPFjet]/double");
+  mAllData->Branch("PFjetE",&mTempTreePFjetE,"PFjetE[NPFjet]/double");
+  mAllData->Branch("PFjetPx",&mTempTreePFjetPx,"PFjetPx[NPFjet]/double");
+  mAllData->Branch("PFjetPy",&mTempTreePFjetPy,"PFjetPy[NPFjet]/double");
+  mAllData->Branch("PFjetPz",&mTempTreePFjetPz,"PFjetPz[NPFjet]/double");
+  mAllData->Branch("PFjetPt",&mTempTreePFjetPt,"PFjetPt[NPFjet]/double");
+  mAllData->Branch("PFjetCharge",&mTempTreePFjetCharge,"PFjetCharge[NPFjet]/double");
 
   //add taus
   mAllData->Branch("Ntau" ,&mTempTreeNtau ,"Ntau/int");  
