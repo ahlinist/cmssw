@@ -12,8 +12,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring('/store/relval/CMSSW_2_2_1/RelValH200ZZ4L/GEN-SIM-RECO/IDEAL_V9_v1/0004/B492FC1B-06C5-DD11-93B9-000423D33970.root')
-                            fileNames = cms.untracked.vstring('file:PATLayer1_Output.fromAOD_full.root')
+                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/cms/Physics/muon/MPOG/Tutorial/PATLayer1_Output.fromAOD_full_HIGGS200GeV.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -21,7 +20,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.TFileService=cms.Service('TFileService',
-                                 fileName=cms.string('MyMuonPlots.root')
+                                 fileName=cms.string('MyMuonPlots_HIGGS200GeV.root')
                                  )
 
 
