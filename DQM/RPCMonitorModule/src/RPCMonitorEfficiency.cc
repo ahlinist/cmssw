@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.20 2009/06/12 14:18:56 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.21 2009/06/17 09:37:54 carrillo Exp $
 //
 //
 
@@ -435,6 +435,7 @@ private:
   std::ofstream RollYEff;
   std::ofstream efftxt;
   std::ofstream alignment;
+  std::ofstream rollZeroEff;
   bool prodimages;
   bool makehtml;
   bool cosmics;
@@ -478,6 +479,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   efftxt.open("RPCDetId_Eff.dat");
   alignment.open("Alignment.dat");
   RollYEff.open("rollYeff.txt");
+  rollZeroEff.open("rollZeroEff.txt");
 }
 
 
@@ -506,6 +508,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   TCanvas * Ca3;
   TCanvas * Ca4;
   TCanvas * Ca5;
+  TCanvas * Ca5a;
   TCanvas * Ca6;
   TCanvas * Ca7;
   TCanvas * Ca8;
@@ -517,6 +520,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca3 = new TCanvas("Ca3","Profile",1200,600);
   Ca4 = new TCanvas("Ca4","Residuals",800,600);
   Ca5 = new TCanvas("Ca5","BXbyRegions",800,600);
+  Ca5a = new TCanvas("Ca5a","Scatter Angle Plots",800,600);
   Ca6 = new TCanvas("Ca6","ClusterSize",800,600);
   Ca7 = new TCanvas("Ca7","ResidualsEndCap",800,600);
   Ca8 = new TCanvas("Ca8","DistBorders",800,600);
@@ -1627,6 +1631,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  	  
 	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
+
+	  if(o==0) rollZeroEff<<name<<std::endl;
 	  
 	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 	  
@@ -3313,18 +3319,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        y[i]=mean;
        ey[i]=error;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa1.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
-  }
+  }   
+  
+  TGraphErrors * plot1 = new TGraphErrors(n,x,y,ex,ey);	
+  plot1->SetMarkerColor(1);
+  plot1->SetMarkerStyle(20);
+  plot1->SetMarkerSize(0.5);
+  plot1->GetXaxis()->SetTitle("Angle (degree)");
+  plot1->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
+  plot1->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa1.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
 
   ScatterPlotAlphaCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa2");
   if(ScatterPlotAlphaCLSLa2){
@@ -3339,18 +3346,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        y[i]=mean;
        ey[i]=error;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa2.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
   }
+   
+  TGraphErrors * plot2 = new TGraphErrors(n,x,y,ex,ey);	
+  plot2->SetMarkerColor(2);
+  plot2->SetMarkerStyle(21);
+  plot2->SetMarkerSize(0.5);
+  plot2->GetXaxis()->SetTitle("Angle (degree)");
+  plot2->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
+  plot2->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa2.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
   
   ScatterPlotAlphaCLSLa3= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa3");
   if(ScatterPlotAlphaCLSLa3){
@@ -3365,18 +3373,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        y[i]=mean;
        ey[i]=error;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa3.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
   }
+  
+  TGraphErrors * plot3 = new TGraphErrors(n,x,y,ex,ey);	
+  plot3->SetMarkerColor(3);
+  plot3->SetMarkerStyle(22);
+  plot3->SetMarkerSize(0.5);
+  plot3->GetXaxis()->SetTitle("Angle (degree)");
+  plot3->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
+  plot3->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa3.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
   
 
   ScatterPlotAlphaCLSLa4= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa4");
@@ -3392,18 +3400,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa4.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
+  
+  TGraphErrors * plot4 = new TGraphErrors(n,x,y,ex,ey);	
+  plot4->SetMarkerColor(4);
+  plot4->SetMarkerStyle(23);
+  plot4->SetMarkerSize(0.5);
+  plot4->GetXaxis()->SetTitle("Angle (degree)");
+  plot4->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
+  plot4->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa4.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
 
   ScatterPlotAlphaCLSLa5= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa5");
   if(ScatterPlotAlphaCLSLa5){
@@ -3418,19 +3427,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa5.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
-
+  
+  TGraphErrors * plot5 = new TGraphErrors(n,x,y,ex,ey);	
+  plot5->SetMarkerColor(5);
+  plot5->SetMarkerStyle(25);
+  plot5->SetMarkerSize(0.5);
+  plot5->GetXaxis()->SetTitle("Angle (degree)");
+  plot5->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
+  plot5->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa5.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+    
   ScatterPlotAlphaCLSLa6= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa6");
   if(ScatterPlotAlphaCLSLa6){
     for(int i=0;i<n;i++){
@@ -3444,18 +3453,36 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa6.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
+  
+  TGraphErrors * plot6 = new TGraphErrors(n,x,y,ex,ey);	
+  plot6->SetMarkerColor(6);
+  plot6->SetMarkerStyle(26);
+  plot6->SetMarkerSize(0.5);
+  plot6->GetXaxis()->SetTitle("Angle (degree)");
+  plot6->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
+  plot6->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa6.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
+  Ca5a->Clear();
+  
+  plot1->SetName("gr1");
+  plot2->SetName("gr2");
+  plot3->SetName("gr3");
+  plot4->SetName("gr4");
+  plot5->SetName("gr5");
+  plot6->SetName("gr6");
+
+  plot1->Write();
+  plot2->Write();
+  plot3->Write();
+  plot4->Write();
+  plot5->Write();
+  plot6->Write();
+
+  Ca5a->SaveAs("CLS/LayersByAngle.png");
 
   //El otro angulo
 
@@ -3476,7 +3503,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
      
      TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
      plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
+     plot->SetMarkerStyle(27);
      plot->SetMarkerSize(0.5);
      plot->GetXaxis()->SetTitle("AngleParallel (degree)");
      plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
@@ -3486,6 +3513,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
      Ca5->Clear();
   }
 
+  
   ScatterPlotAlphaPCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa2");
   if(ScatterPlotAlphaPCLSLa2){
      for(int i=0;i<n;i++){
@@ -4979,6 +5007,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  Ca2->Close();
 
+ theFileOut->Write();
  theFileOut->Close();
  theFile->Close();
 
