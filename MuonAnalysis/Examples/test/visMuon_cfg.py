@@ -9,7 +9,8 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 process.load("VisFramework.VisFrameworkBase.VisConfigurationService_cff")
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RAW-RECO/CRAFT_ALL_V12_229_Tosca090322_ReReco_FromTrackerPointing_v1/0005/EEEB64C0-3E37-DE11-84A1-001A92971AA8.root')
+                            fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/E8D35F0C-03A5-DD11-85BD-003048D15E52.root')                  
+                            #fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RAW-RECO/CRAFT_ALL_V12_229_Tosca090322_ReReco_FromTrackerPointing_v1/0005/EEEB64C0-3E37-DE11-84A1-001A92971AA8.root')
 )
 process.VisConfigurationService.EnabledTwigs = ('* Muon *',
                                                 '* Track *',
