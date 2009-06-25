@@ -47,13 +47,13 @@ process.source = cms.Source("PoolSource",
     '/store/relval/CMSSW_2_2_1/RelValH200ZZ4L/GEN-SIM-RECO/IDEAL_V9_v1/0003/0C9A326E-F6C4-DD11-AFDD-001617E30D38.root'
     )
                             )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(15000) )
 ##############################
 
 ########## Output and its Event Content ##########
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent
 process.out = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string('PATLayer1_Output.fromAOD_full.root'),
+                               fileName = cms.untracked.string('PATLayer1_Output.fromAOD_full_HIGGS200GeV.root'),
                                # save only events passing the full path
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                # save PAT Layer 1 output. You need a '*' to unpack the list of commands 'patEventContent'
