@@ -135,14 +135,14 @@
         closable: true,
         resizable: true,
         slidable: true,
-        size: "auto",
+        size: "auto"
       },
       north: {
         slidable: false, 
         closable: false,
         resizable: false,
         size: 55,
-        spacing_open: 0,
+        spacing_open: 0
       },
       south: {
         slidable: true, 
@@ -159,7 +159,7 @@
         togglerTip_closed: "Open Message Board",
         resizerTip_open: "Resize Message Board",
         slideTrigger_open: "mouseover",
-        initClosed: true,
+        initClosed: true
       }
   };
 

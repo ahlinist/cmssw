@@ -22,13 +22,9 @@ $(document).ready( function () {
     buttons: {
       "Close": function() { 
         $(this).dialog("close"); 
-      },
+      }
     }
   });
-  
-
-
-
 
   var isTrue = function (s) {
     if (!s) return false;
@@ -44,8 +40,6 @@ $(document).ready( function () {
     var TAB = new RegExp("\t", "g");
     return s.replace(AMP,"&amp;").replace(LT, "&lt;").replace(GT, "&gt;").replace(TAB, "    ");
   };
-  
-  
 
 function roundNumber(number,decimals) {
 	var newString;// The new rounded number

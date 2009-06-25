@@ -1,5 +1,9 @@
-<%@ page import="cms.dqm.workflow.*" %>
+<%@ page import="cms.dqm.workflow.*,cms.dqm.workflow.model.*" %>
+
 <%@ taglib prefix="dqm" uri="/WEB-INF/cmsdqmworkflow.tld" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%
   User user = User.get(request);
@@ -28,12 +32,40 @@
   <script type="text/javascript">
 
     var messageBox = window.top.messageBox;
-    var messageBoxTimeout = window.top.messageBoxTimeout;
+
+<%
+
+  int run_number = 0;
+  try {
+    run_number = Integer.parseInt(request.getParameter("number"));
+  } catch (Exception e) { }
+
+  if (run_number == 0) {
+%>
+    Run number is not provided or is invalid.
+<%    
+    return;
+  }
+  
+  Run run = cms.dqm.workflow.Model.getRun(run_number);
+
+%>
+
+<% pageContext.setAttribute("run", run); %> 
+<% pageContext.setAttribute("user", user); %> 
+
 
     $(document).ready( function () {
     
+      var run_number = <%=run_number%>;
       var run_list = $.evalJSON($.cookie("flex_runs"));
 
+      $("#edit_dpg_tabs").tabs();
+      $("#edit_pog_tabs").tabs();
+      $("#edit_l1t_tabs").tabs();
+      $("#edit_info_tabs").tabs();
+      $("#edit_components_tabs").tabs();
+    
       var _edit = $("#edit");
       var _edit_form = $("form", _edit);
       var _edit_info = $("td.edit_info", _edit_form);
@@ -51,52 +83,89 @@
       var _btn_run_prev   = $("#run_prev");
       var _btn_run_next   = $("#run_next");
     
-      $("#edit_dpg_tabs").tabs();
-      $("#edit_pog_tabs").tabs();
-      $("#edit_l1t_tabs").tabs();
-      $("#edit_info_tabs").tabs();
-      $("#edit_components_tabs").tabs();
-   
-      var populateExpertComments = function() {
-        var name = $("#expertCommentSub", _edit_expert).val();
-        $('#expertCommentSel').html($('#' + name).html());
-        $('#expertCommentSel').val($('#' + name).val());
-        $('#expertComment').val($('#' + name + '_comment').val());
+      var expertCommentValue = function(name) {
+        var field = name + '_comment';
+        field = document.getElementById(field).value;
+        sel = document.getElementById(name);
+        selectbox = document.getElementById('expertCommentSel');
+        selectbox.innerHTML = sel.innerHTML;
+        for (var i=0; i < selectbox.length; i++) {
+          if (selectbox[i].value == sel.value) {
+            selectbox[i].selected = true;
+          }
+        }
+        document.getElementById('expertComment').value = field;
+        sel = document.getElementById(name);
       };
     
-      $("#expertCommentSub", _edit_expert)
-        .click(function(){ populateExpertComments(); })
-        .keyup(function(){ populateExpertComments(); });
-      
-      var updateExpertSubSelection = function() {
-        var name = $("#expertCommentSub", _edit_expert).val();
-        $('#' + name).val($('#expertCommentSel').val());
-      };
-
-      $("#expertCommentSel", _edit_expert)
-        .click(function(){ updateExpertSubSelection(); })
-        .keyup(function(){ updateExpertSubSelection(); });
-      
-      var updateExpertSubComment = function() {
-        var name = $("#expertCommentSub", _edit_expert).val();
-        $('#' + name + '_comment').val($('#expertComment').val());
-      };
-
-      $("#expertComment", _edit_expert)
-        .click(function(){ updateExpertSubComment(); })
-        .keyup(function(){ updateExpertSubComment(); });
-
+      $("#expertCommentSub").change(function(){
+        expertCommentValue(this.value);
+      });
+    
+      var validateSubSelectExp = function(c) {
+    
+        var sel = $(c).find("select");
+        var txa = $(c).find("textarea");
+    
+        txa.removeAttr("error")
+        txa.removeClass("error");
+        if (sel.val() == "GOOD") {
+          sel.css("color", "green");
+        } else if (sel.val() == "NOTSET") {
+          sel.css("color", "blue");
+        } else if (sel.val() == "BAD") {
+          sel.css("color", "red");
+          if (txa.val() == "") {
+            txa.attr("error", "Comment for BAD subsystem must be set.").addClass("error");
+          }
+        } else if (sel.val() == "EXCL") {
+          sel.css("color", "blue");
+        }
+      }
+    
+      var expertSel = function(value) {
+        var name = document.getElementById('expertCommentSub').value;
+        for (var i=0; i < sel.length; i++) {
+          if (sel[i].value == value) {
+            sel[i].selected = true;
+          }
+        }
+        var sell = document.getElementById(name);
+        var c = $(sell).parent().parent();
+        validateSubSelectExp(c);
+      }
+    
+      $("#expertCommentSel", _edit_expert).change(function(){
+        expertSel(this.value);
+      });
+    
+      var updateexpertComment = function(comment) {
+        var field = document.getElementById('expertCommentSub').value + '_comment';
+        document.getElementById(field).value = comment;
+        var sell = document.getElementById(field);
+        var c = $(sell).parent().parent();
+        validateSubSelectExp(c);
+      }
+    
+      $("#expertComment", _edit_expert).keyup(function(){
+        updateexpertComment(this.value);
+      });
+    
+      $("#expertCommentTab").click(function() {
+        expertCommentValue($("#expertCommentSub", _edit_expert).val());
+      });
+    
       var isTrue = function (s) {
-        if (!s || (s == "null") || (s == "")) return false;
+        if (!s) return false;
+        if ((s == "null") || (s == "")) return false;
         return true;
       }
     
       var validateInfo = function() {
         var glob = $("input[name=RUN_GLOBALNAME]", _edit_info);
+        glob.removeAttr("error").removeClass("error");
         if (!glob.val() || ( glob.val() == "")) {
           glob.attr("error", "Global Name must be set.").addClass("error");
-        } else {
-          glob.removeAttr("error").removeClass("error");
         }
       };
     
@@ -154,6 +223,7 @@
     
       $("#edit form .edit_l1t input[type=checkbox]").unbind("change").change(function () { validateL1T($(this).parent().parent()); });
     
+    /*
       var build_xml = function (next_status) {
     
         var number = $("input[name=RUN_NUMBER]", _edit_form).val();
@@ -204,7 +274,10 @@
     
         return msg;
       };
-    
+
+    */
+
+    /*
       var sendEditMessage = function (o, run_number) {
         var message = $.toJSON(o);
     
@@ -221,7 +294,6 @@
     
           success: function(ret) {
             if (run_number) {
-              messageBoxTimeout("Run updated", undefined, "Success!");
               loadRun(run_number);
             } else {
               window.location = "main.jsp";
@@ -231,7 +303,9 @@
         });
     
       };
-    
+    */
+
+    /*
       var loadRun = function(number) {
 
         $('#edit_overlay').show();
@@ -250,7 +324,7 @@
           },
       
           success: function(json) {
-
+        
             if (json.rows.length == 0) {
               messageBox("Run not found", "Select a run and try again. If you experience this problem constantly - please contact CMS DQM expert.");
               return;
@@ -267,7 +341,7 @@
             $("select[name=RUN_STATUS]", _edit_info).empty();
       
             $("input[name=RUN_NUMBER]", _edit_form).val(number);
-
+      
             jQuery.each(run, function (n, v) {
       
               $("select[name=sub_" + n + "]", _edit_sub).each(function (i, sel) {
@@ -303,7 +377,7 @@
                   $("textarea[name=" + n + "_comment]", _edit_l1t).val($(run).attr(n + "_comment"));
                 }
               });
-
+      
               if (n == "RUN_STATUS" && v != "" && v != null) {
                 $("select[name=RUN_STATUS]", _edit_info).append($("<option readonly=\"true\" value=\" + $(o).text() + \">" + v + "</option>"));
               }
@@ -313,6 +387,20 @@
       
             });
           
+            document.getElementById('expertCommentSub').selectedIndex = 0;
+            var field = 'sub_CSC_comment';
+      
+            field = document.getElementById(field).value;
+            sel = document.getElementById('sub_CSC');
+            selectbox = document.getElementById('expertCommentSel');
+            selectbox.innerHTML = sel.innerHTML;
+            for (var i=0; i < selectbox.length; i++) {
+              if (selectbox[i].value == sel.value) {
+                selectbox[i].selected = true;
+              }
+            }
+            document.getElementById('expertComment').value = field;
+      
             validateInfo();
             $("input[type=checkbox]", _edit_l1t).each(function () { validateL1T($(this).parent().parent()); });
             $("select", _edit_sub).each(function () { validateSubSelect($(this).parent().parent()); });
@@ -461,7 +549,7 @@
               $(_btn_run_delete).hide();
 
             }
-
+      
             $(_btn_run_apply).unbind("click").click(function () {
               var err = $("#edit .error");
               if (err.length > 0) {
@@ -496,9 +584,8 @@
               return false;
             });
 
-            $("#expertCommentSub").click();
             $('#edit_overlay').hide();
-
+      
           }
         });
 
@@ -531,12 +618,6 @@
           $(_btn_run_next).hide();
         }
 
-        $(_btn_run_back).unbind("click").click(function () {
-          $.cookie("run_edit", number);
-          window.location = "main.jsp";
-          return false;
-        });
-    
         $(_btn_run_reset).unbind("click").click(function () {
           loadRun(number);
           return false;
@@ -550,13 +631,19 @@
         messageBox("Run not provided!", "You will be returned back to table page");
         window.location = "main.jsp";
       }
+    */
+
+      $(_btn_run_back).unbind("click").click(function () {
+        $.cookie("run_edit", run_number);
+        window.location = "main.jsp";
+        return false;
+      });
     
     });
 
   </script>
 
   <div id="edit" title="Edit Run" align="center">
-    <div id="edit_overlay"></div>
     <form>
     <table id="edit_table" width="80%" height="100%" border="0" cellspacing="5">
       <tr height="10">
@@ -565,7 +652,7 @@
 
           <div style="position: absolute; left: 0px; top: 10px; padding: 1em;">
             <span style="font-size: 24px; font-weight: bold; color: #999999; vertical-align: middle;">Run&nbsp;number:</span>
-            <input name="RUN_NUMBER" type="text" value="" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 200px;vertical-align: middle;"/>
+            <input name="RUN_NUMBER" type="text" value="<c:out value="${run.number}"/>" readonly="true" style="border: 0; background: none; font-size: 24px; font-weight: bold; color: blue; width: 150px;vertical-align: middle;"/>
           </div>
 
           <table border="0" width="100%" cellpadding="0" cellspacing="0">
@@ -597,53 +684,57 @@
             <table width="100%" border="0">
               <tr>
                 <td class="label_col"><label for="RUN_ONLINE_SHIFTER">Online Shifter:</label></td>
-                <td class="input_col"><input name="RUN_ONLINE_SHIFTER" type="text" value="" readonly="true" /></td>
+                <td class="input_col"><input name="RUN_ONLINE_SHIFTER" type="text" value="<c:out value='${run.onlineShifter}' default='${user.fullname}'/>" readonly="true" /></td>
                 <td class="label_col"><label for="RUN_OFFLINE_SHIFTER">Offline Shifter:</label></td>
-                <td class="input_col"><input name="RUN_OFFLINE_SHIFTER" type="text" value="" readonly="true" /></td>
+                <td class="input_col"><input name="RUN_OFFLINE_SHIFTER" type="text" value="<c:out value='${run.offlineShifter}' default='${user.fullname}'/>" readonly="true" /></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_GLOBALNAME"> Global name: </label></td>
-                <td class="edit_online input_col"><input name="RUN_GLOBALNAME" type="text" value="" readonly="true" maxlength="90" /></td>
-                <td class="label_col"><label for="RUN_STATUS"> Status: </label></td>
-                <td class="input_col"><select name="RUN_STATUS" disabled="true"></select></td>
+                <td class="label_col"><label for="RUN_GLOBALNAME">Global name:</label></td>
+                <td class="edit_online input_col"><input name="RUN_GLOBALNAME" type="text" value="<c:out value='${run.globalName}' default=''/>" readonly="true" maxlength="90" /></td>
+                <td class="label_col"><label for="RUN_STATUS">Status:</label></td>
+                <td class="input_col">
+                  <select name="RUN_STATUS" disabled="true">
+                    <option value="<c:out value='${run.status}' default='ONLINE'/>"><c:out value='${run.status}' default='ONLINE'/></option>
+                  </select>
+                </td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_RATE"> Rate: </label></td>
-                <td class="input_col"><input name="RUN_RATE" type="text" value="" readonly="true" /></td>
-                <td class="label_col"><label for="RUN_START_TIME"> Started: </label></td>
-                <td class="input_col"><input name="RUN_START_TIME" type="text" value="" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_RATE">Rate:</label></td>
+                <td class="input_col"><input name="RUN_RATE" type="text" value="<c:out value='${run.rate}' default=''/>" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_START_TIME">Started:</label></td>
+                <td class="input_col"><input name="RUN_START_TIME" type="text" value="<c:out value='${run.started}' default=''/>" readonly="true" /></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_EVENTS"> Events: </label></td>
-                <td class="input_col"><input name="RUN_EVENTS" type="text" value="" readonly="true" /></td>
-                <td class="label_col"><label for="RUN_END_TIME"> Stopped: </label></td>
-                <td class="input_col"><input name="RUN_END_TIME" type="text" value="" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_EVENTS">Events:</label></td>
+                <td class="input_col"><input name="RUN_EVENTS" type="text" value="${run.events}" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_END_TIME">Stopped:</label></td>
+                <td class="input_col"><input name="RUN_END_TIME" type="text" value="<c:out value='${run.stopped}' default=''/>" readonly="true" /></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_BFIELD"> B Field (Tesla): </label></td>
-                <td class="input_col"><input name="RUN_BFIELD" type="text" value="" readonly="true" /></td>
-                <td class="label_col"><label for="RUN_BFIELD_COMMENT"> B Field Notes: </label></td>
-                <td class="edit_online input_col"><input name="RUN_BFIELD_COMMENT" type="text" value="" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_BFIELD">B Field (Tesla):</label></td>
+                <td class="input_col"><input name="RUN_BFIELD" type="text" value="<c:out value='${run.bfield}' default=''/>" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_BFIELD_COMMENT">B Field Notes:</label></td>
+                <td class="edit_online input_col"><input name="RUN_BFIELD_COMMENT" type="text" value="<c:out value='${run.bfieldComment}' default=''/>" readonly="true" /></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_L1KEY"> L1 Key: </label></td>
-                <td colspan=3 class="input_col"><input name="RUN_L1KEY" type="text" value="" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_L1KEY">L1 Key:</label></td>
+                <td colspan=3 class="input_col"><input name="RUN_L1KEY" type="text" value="<c:out value='${run.l1Key}' default=''/>" readonly="true" /></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_HLTKEY"> HLT Key: </label></td>
-                <td colspan=3 class="input_col"><input name="RUN_HLTKEY" type="text" value="" readonly="true" /></td>
+                <td class="label_col"><label for="RUN_HLTKEY">HLT Key:</label></td>
+                <td colspan=3 class="input_col"><input name="RUN_HLTKEY" type="text" value="<c:out value='${run.hltKey}' default=''/>" readonly="true" /></td>
               </tr>
                         <tr>
-                <td class="label_col"><label for="RUN_STOP_REASON"> Stop reason: </label></td>
-                <td colspan=3 class="edit_online input_col"><textarea  name="RUN_STOP_REASON" readonly="true" maxlength="90"></textarea></td>
+                <td class="label_col"><label for="RUN_STOP_REASON">Stop reason:</label></td>
+                <td colspan=3 class="edit_online input_col"><textarea  name="RUN_STOP_REASON" readonly="true" maxlength="90"><c:out value='${run.stopReason}' default=''/></textarea></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_ONLINE_COMMENT"> Online comment:  </label></td>
-                <td colspan=3 class="edit_online input_col"><textarea name="RUN_ONLINE_COMMENT" readonly="true" maxlength="90"></textarea></td>
+                <td class="label_col"><label for="RUN_ONLINE_COMMENT">Online comment:</label></td>
+                <td colspan=3 class="edit_online input_col"><textarea name="RUN_ONLINE_COMMENT" readonly="true" maxlength="90"><c:out value='${run.onlineComment}' default=''/></textarea></td>
               </tr>
               <tr>
-                <td class="label_col"><label for="RUN_OFFLINE_COMMENT"> Offline comment:  </label></td>
-                <td colspan=3 class="edit_offline input_col"><textarea name="RUN_OFFLINE_COMMENT" id="RUN_OFFLINE_COMMENT" readonly="true" maxlength="90"></textarea></td>
+                <td class="label_col"><label for="RUN_OFFLINE_COMMENT">Offline comment:</label></td>
+                <td colspan=3 class="edit_offline input_col"><textarea name="RUN_OFFLINE_COMMENT" id="RUN_OFFLINE_COMMENT" readonly="true" maxlength="90"><c:out value='${run.offlineComment}' default=''/></textarea></td>
               </tr>
   
             </table>
@@ -659,9 +750,12 @@
                     <table width="100%" border="0">
                       <dqm:listSubsystems type="ONLINE">
                         <tr>
-                          <td class="label_col"><label for="sub_${sub_abbr}"> ${sub_abbr} </label></td>
-                          <td class="input_col" width="1px"><select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_online" disabled="true"  style="width: 150px"></select></td>
-                          <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;overflow:hidden;overflow-y:hidden;overflow-x:hidden;" maxlength="90"></textarea></td>
+                          <td class="label_col"><label for="sub_${sub_abbr}">${sub_abbr}</label></td>
+                          <td class="input_col" width="1px">
+                            <select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_online" disabled="true" style="width: 150px">
+                            </select>
+                          </td>
+                          <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"></textarea></td>
                         </tr>
                       </dqm:listSubsystems>
                     </table>
@@ -675,14 +769,14 @@
                     <table width="100%" border="0">
                       <dqm:listSubsystems type="OFFLINE">
                         <tr>
-                          <td class="label_col"><label for="sub_${sub_abbr}"> ${sub_abbr} </label></td>
+                          <td class="label_col"><label for="sub_${sub_abbr}">${sub_abbr}</label></td>
                           <td class="input_col" width="1px">
                             <select name="sub_${sub_abbr}" id="sub_${sub_abbr}" class="sub_offline" disabled="true" style="width: 150px">
                               <option value="NOTSET">NOTSET</option>
                               <option value="GOOD">GOOD</option>
                               <option value="BAD">BAD</option>
                             </select></td>
-                          <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;overflow:hidden;overflow-y:hidden;overflow-x:hidden;" maxlength="90"></textarea></td>
+                          <td class="input_col"><textarea name="sub_${sub_abbr}_comment" id="sub_${sub_abbr}_comment" readonly="true"  style="height:20px;" maxlength="90"></textarea></td>
                         </tr>
                       </dqm:listSubsystems>
                     </table>
@@ -698,7 +792,7 @@
                 <td class="edit_col" width="100%">
                   <div class="edit_sub_expert">
                     <b>Subsystem: </b>
-                    <select style="width: 80px" id="expertCommentSub">
+                    <select style="width: 80px" disabled="true" id="expertCommentSub">
                       <dqm:listSubsystems type="ONLINE">        
                         <option  value="sub_${sub_abbr}">${sub_abbr}</option>
                       </dqm:listSubsystems>
