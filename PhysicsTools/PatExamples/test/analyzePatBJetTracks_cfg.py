@@ -46,7 +46,7 @@ process.analyzeBJetTracks = cms.EDAnalyzer("PatBJetTrackAnalyzer",
 	jets = cms.InputTag("selectedLayer1Jets"),
 
 	#jet cuts
-	jetPtCut = cms.double(50),
+	jetPtCut = cms.double(30),
 	jetEtaCut = cms.double(2.4),
 
 	#track cuts
