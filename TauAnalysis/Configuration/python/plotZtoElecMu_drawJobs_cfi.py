@@ -10,31 +10,33 @@ plots_ZtoElecMu = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            #'Ztautau',
-            #'Zee',
-            'ZtautauPlusJets',
             'ZmumuPlusJets',
+            #'Zmumu',
             'ZeePlusJets',
+            #'Zee',
             'WplusJets',
             'TTplusJets',
-            'qcdSum'
+            'qcdSum',
+            #'ZtautauPlusJets'
+            'Ztautau'
         )
     ),
     xAxis = cms.string('unlabeled'),
-    #yAxis = cms.string('numEntries_linear'),
-    yAxis = cms.string('numEntries_log'),
+    yAxis = cms.string('numEntries_linear'),
+    #yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        #'Ztautau',
-        #'Zee',
-        'ZtautauPlusJets',
         'ZmumuPlusJets',
+        #'Zmumu',
         'ZeePlusJets',
+        #'Zee',
         'WplusJets',
         'TTplusJets',
-        'qcdSum'
+        'qcdSum',
+        #'ZtautauPlusJets'
+        'Ztautau'
     )
 )
 
@@ -346,13 +348,13 @@ drawJobConfigurator_ZtoElecMu.add(
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Electron + Muon), CDF method (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCDFmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CollinearApproxMass',
             title = "M(Electron + Muon), collinear Approx. (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
         ),
         drawJobConfigEntry(
