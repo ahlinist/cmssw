@@ -13,8 +13,8 @@ processZtoElecTau_Ztautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part01.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part02.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part03.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part04.root'
-    #plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part05.root'
+    plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part04.root',
+    plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part05.root'
 )
 processZtoElecTau_Ztautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtautau*intLumiData/intLumiZtautau)
 
@@ -62,7 +62,7 @@ processZtoElecTau_Zee.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZe
 
 processZtoElecTau_ZeeSum = copy.deepcopy(process_Zee)
 processZtoElecTau_ZeeSum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    plotDirectoryName.value() + 'plotsZtoEprocessZtoElecTau_ZeeSum.root'
+    plotDirectoryName.value() + 'plotsZtoElecTau_ZeeSum.root'
 )
 processZtoElecTau_ZeeSum.config_dqmFileLoader.dqmDirectory_store = cms.string('')
 processZtoElecTau_ZeeSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
@@ -302,7 +302,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.inputFileNames = 
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part62.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part63.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part64.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part65.root',
+    #plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part65.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part66.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part67.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part68.root',
@@ -409,7 +409,7 @@ processZtoElecTau_WplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 processZtoElecTau_ZeePlusJets = copy.deepcopy(process_ZeePlusJets)
 processZtoElecTau_ZeePlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
-    plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part01.root',
+    #plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part01.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part02.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part03.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part04.root',
