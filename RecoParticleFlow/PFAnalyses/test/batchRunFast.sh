@@ -4,7 +4,7 @@
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 
-RUND=/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/
+RUND=/afs/cern.ch/user/b/ballin/scratch0/CMSSW_3_1_0_pre10/src/RecoParticleFlow/PFAnalyses/test/
 
 SCRIPT=$RUND"fastsim_neutrals.py"
 
@@ -13,7 +13,7 @@ echo Script is: $SCRIPT
 
 OUTTREE="Dikaon_"$1"GeV_10k_fast.root"
 OUTPUT="Dikaon_Events_"$1"GeV_10k_fast.root"
-DESTD=/castor/cern.ch/user/b/ballin/tbv8/
+DESTD=/castor/cern.ch/user/b/ballin/tb310pre10/
 LOG="Dikaon_"$1"GeV_10k_fast.txt"
 
 echo Outputtree is: $OUTTREE
@@ -22,7 +22,7 @@ echo Logfile is: $LOG
 
 echo
 
-cd /afs/cern.ch/user/b/ballin/scratch0/cmssw/src/
+cd /afs/cern.ch/user/b/ballin/scratch0/CMSSW_3_1_0_pre10/src/
 eval `scramv1 ru -sh`
 cd $WORKDIR
 
@@ -36,7 +36,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD$OUTTREE
 rfcp $OUTPUT $DESTD$OUTPUT
-cp *.txt $RUND"tbv8/"
+cp *.txt $RUND"tb310pre10/"
 
 echo Done.
 exit 0

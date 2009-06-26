@@ -11,7 +11,9 @@
 #include <utility>
 #include <THStack.h>
 #include <TLegend.h>
+#include <TGraph.h>
 #include <TGraphErrors.h>
+#include <TMultiGraph.h>
 #include <TFile.h>
 #include <TText.h>
 #include <exception>
@@ -49,8 +51,8 @@ public:
 			int thickness = 1) throw(std::exception);
 
 	void formatGraph(TGraph* graph, const std::string& title,
-			const std::string& xtitle, const std::string ytitle, Color_t line, int size = 1.5,
-			int thickness = 1);
+			const std::string& xtitle, const std::string ytitle, Color_t line,
+			int size = 1.5, int thickness = 1);
 
 	void addTitle(const std::string& title);
 
@@ -75,14 +77,20 @@ public:
 		edgeSize_ = edgeSize;
 	}
 
-	void accumulateSpecial(TObject* o, TStyle* s,
-			std::string drawOptions, std::string preferredName);
+	void accumulateSpecial(TObject* o, TStyle* s, std::string drawOptions,
+			std::string preferredName);
 
 	void flushSpecials(std::string directory = "");
 
 	TLegend* legendForStack(THStack* theStack);
 
+	TLegend* legendForMultiGraph(TMultiGraph* multi);
+
 	Color_t nextColor();
+
+	std::vector<Color_t> colorMap() {
+		return colors_;
+	}
 
 	std::pair<double, double> fitStabilisedGaussian(TH1* histo);
 
@@ -93,6 +101,7 @@ private:
 	TFile* rootFile_;
 
 	std::vector<std::pair<TObject*, std::string> > accumulatedObjects_;
+
 	std::vector<PlotSpecial> accumulatedSpecials_;
 	std::vector<Color_t> colors_;
 
@@ -102,7 +111,6 @@ private:
 	bool autoFlush_;
 	unsigned flushCount_;
 	unsigned edgeSize_;
-
 
 };
 

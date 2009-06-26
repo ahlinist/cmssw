@@ -124,7 +124,7 @@ void IsolatedParticleExtractor::estimateContamination(const std::vector<
 		const reco::PFSimParticleCollection& sims) {
 
 	vector<unsigned>::const_iterator cit = candIndices.begin();
-
+	cout << "\tConsulting sim contamination. Sim collection size = " << sims.size() << "\n";
 	for (; cit != candIndices.end(); ++cit) {
 		const PFCandidate& cand = cands[*cit];
 		PFSimParticleCollection::const_iterator sit = sims.begin();
@@ -137,7 +137,10 @@ void IsolatedParticleExtractor::estimateContamination(const std::vector<
 				<< ":\n";
 
 		for (; sit != sims.end(); ++sit) {
-			const PFSimParticle& sim = *sit;
+			PFSimParticle sim = *sit;
+			//need to call this (non-const) method on the object before
+			//calling trajectoryPoint( )
+			sim.calculatePositionREP();
 			double
 					simEta =
 							sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().eta();
@@ -145,6 +148,8 @@ void IsolatedParticleExtractor::estimateContamination(const std::vector<
 					simPhi =
 							sim.trajectoryPoint(PFTrajectoryPoint::ECALEntrance).positionREP().phi();
 			double sep = pftools::deltaR(candEta, simEta, candPhi, simPhi);
+//			cout << "\t\tSim" << " eta/phi " << simEta
+//									<< ", " << simPhi << " pdg " << sim.pdgCode() << " separation " << sep << "\n";
 			if (sep < deltaREcalIsolation_) {
 				double simE = sim.trajectoryPoint(
 						PFTrajectoryPoint::ECALEntrance).momentum().E();

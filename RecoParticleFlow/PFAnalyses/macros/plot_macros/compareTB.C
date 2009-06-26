@@ -85,8 +85,8 @@ public:
 
 private:
 
-	void doResponsePlots(std::string type, std::string qry, std::string cut =
-			"");
+	void doResponsePlots(std::string type, bool verbose, std::string qry,
+			std::string cut = "");
 
 	std::map<std::string, TTree*> trees_;
 	std::vector<int> energies_;
@@ -127,16 +127,18 @@ void compareTB() {
 	TFile* full = TFile::Open("/tmp/Dikaon_allGeV_2k_full.root");
 	TTree* fullTree = (TTree*) full->FindObjectAny("Extraction");
 
-	TFile* fast = TFile::Open("/tmp/Dikaon_allGeV_10k_fast.root");
-	TTree* fastTree = (TTree*) fast->FindObjectAny("Extraction");
+	//	TFile* fast = TFile::Open("/tmp/Dikaon_allGeV_10k_fast.root");
+	//	TTree* fastTree = (TTree*) fast->FindObjectAny("Extraction");
 
 	std::map<std::string, TTree*> source;
+
 	std::cout << "Testbeam tree is " << testbeamTree << endl;
 	std::cout << "Full tree is " << fullTree << endl;
-	std::cout << "Fast tree is " << fastTree << endl;
+	//	std::cout << "Fast tree is " << fastTree << endl;
+
 	source["Testbeam 2006 (Barrel)"] = testbeamTree;
 	source["Full sim 310-08 (Barrel)"] = fullTree;
-	source["Fast sim 310-10 (Barrel)"] = fastTree;
+	//source["Fast sim 310-10 (Barrel)"] = fastTree;
 
 	std::vector<int> energies;
 	energies.push_back(2);
@@ -238,86 +240,22 @@ void CompareTBAnalysis::evaluatePlots() {
 
 	util_.flushPage();
 
+	//RAW RESPONSE
+	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
+			"cand_type_==5");
+
 	//PF CLUSTER RESPONSE
-
-	map<string, TGraph*> sampleMeans;
-	map<string, TGraph*> gausMeans;
-	map<string, TGraph*> gausRes;
-
-	it = trees_.begin();
-	for (; it != trees_.end(); ++it) {
-		util_.newPage();
-
-		pair<const string, TTree*> item = *it;
-		string pageTitle("PF Cluster response with: ");
-		pageTitle.append(item.first);
-		util_.addTitle(pageTitle);
-
-		Comparator tbComp(item.first, item.second);
-		vector<JGraph> clusters = tbComp.getRatioResponsePlots(energies_,
-				"pf_cluster", "cluster_energyEvent_/sim_energyEvent_", &util_,
-				"cand_type_ == 5");
-
-		TGraph* gGraphRes = new TGraph(clusters[2].finalise());
-		TGraph* gGraph = new TGraph(clusters[0].finalise());
-		TGraph* sGraph = new TGraph(clusters[1].finalise());
-
-		util_.formatGraph(gGraphRes, item.first.c_str(), "E_{beam} (GeV)",
-				"#sigma/#mu", kCyan, 1);
-		util_.formatGraph(gGraph, item.first.c_str(), "E_{beam}",
-				"#mu/E_{beam}", kRed, 1);
-		util_.formatGraph(sGraph, item.first.c_str(), "E_{beam} (GeV)",
-				"<E>/E_{beam}", kBlue, 1);
-
-		gGraphRes->GetXaxis()->SetRangeUser(2, 400);
-		gGraph->GetXaxis()->SetRangeUser(2, 400);
-		sGraph->GetXaxis()->SetRangeUser(2, 400);
-
-		gGraphRes->GetYaxis()->SetRangeUser(0, 2);
-		gGraph->GetYaxis()->SetRangeUser(0, 2);
-		sGraph->GetYaxis()->SetRangeUser(0, 2);
-
-		util_.accumulateObjects(gGraphRes, "ALP");
-		util_.accumulateObjects(gGraph, "ALP");
-		util_.accumulateObjects(sGraph, "ALP");
-
-		sampleMeans[item.first] = sGraph;
-		gausRes[item.first] = gGraphRes;
-		gausMeans[item.first] = gGraph;
-
-		util_.flushPage();
-	}
-
-	cout << "Doing sample mean plots..." << endl;
-	util_.newPage();
-	util_.addTitle("Sample means for clusters");
-	rStyle->SetOptTitle(0);
-	TMultiGraph* tmg = getMultiGraph(sampleMeans, "Beam momentum (GeV/c)",
-			"E_{reco}/E_{true} (GeV)");
-	util_.accumulateObjects(tmg, "CP");
-
-	util_.addTitle("(blank)");
-	util_.addTitle("Gaussian means #mu for clusters");
-	TMultiGraph* tmg2 = getMultiGraph(gausMeans, "Beam momentum (GeV/c)",
-			"#mu_{reco}/E_{true} (GeV)");
-	util_.accumulateObjects(tmg2, "CP");
-
-	util_.addTitle("(blank)");
-	util_.addTitle("Gaussian resolutions #sigma/#mu for clusters");
-	TMultiGraph* tmg3 = getMultiGraph(gausRes, "Beam momentum (GeV/c)",
-			"#sigma_{reco}/#mu_{reco} (GeV)");
-	util_.accumulateObjects(tmg3, "CP");
-
-	util_.flushPage();
+	doResponsePlots("PF Clusters", false,
+			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
 
 	//PF CANDIDATE RESPONSE
-	doResponsePlots("PF Candidates", "cand_energyEvent_/sim_energyEvent_",
-			"cand_type_==5");
+	doResponsePlots("PF Candidates", false,
+			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
 	cout << "Leaving " << __PRETTY_FUNCTION__ << endl;
 }
 
-void CompareTBAnalysis::doResponsePlots(std::string type, std::string qry,
-		std::string cut) {
+void CompareTBAnalysis::doResponsePlots(std::string type, bool verbose,
+		std::string qry, std::string cut) {
 
 	TStyle* rStyle = util_.makeStyle("anotherStyle");
 	rStyle->SetOptLogy(false);
@@ -337,14 +275,16 @@ void CompareTBAnalysis::doResponsePlots(std::string type, std::string qry,
 	map<string, TTree*>::iterator it = trees_.begin();
 
 	for (; it != trees_.end(); ++it) {
-		util_.newPage();
 
 		pair<const string, TTree*> item = *it;
 		string pageTitle(type);
-		pageTitle.append(" response with: ");
-		pageTitle.append(item.first);
-		util_.addTitle(pageTitle);
 
+		if (verbose) {
+			util_.newPage();
+			pageTitle.append(" response with: ");
+			pageTitle.append(item.first);
+			util_.addTitle(pageTitle);
+		}
 		Comparator tbComp(item.first, item.second);
 		vector<JGraph> cands = tbComp.getRatioResponsePlots(energies_,
 				type.c_str(), qry.c_str(), &util_, cut.c_str());
@@ -368,15 +308,17 @@ void CompareTBAnalysis::doResponsePlots(std::string type, std::string qry,
 		gGraph->GetYaxis()->SetRangeUser(0, 2);
 		sGraph->GetYaxis()->SetRangeUser(0, 2);
 
-		util_.accumulateObjects(gGraphRes, "ALP");
-		util_.accumulateObjects(gGraph, "ALP");
-		util_.accumulateObjects(sGraph, "ALP");
+		if (verbose) {
+			util_.accumulateObjects(gGraphRes, "ALP");
+			util_.accumulateObjects(gGraph, "ALP");
+			util_.accumulateObjects(sGraph, "ALP");
+			util_.flushPage();
+		}
 
 		sampleMeans[item.first] = sGraph;
 		gausRes[item.first] = gGraphRes;
 		gausMeans[item.first] = gGraph;
 
-		util_.flushPage();
 	}
 
 	util_.newPage();
