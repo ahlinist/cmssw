@@ -25,7 +25,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.TFileService=cms.Service('TFileService',
-                                 fileName=cms.string('MyCosmicMuonPlots.root')
+                                 fileName=cms.string('MyCosmicMuonPlots_NAF.root')
                                  )
 
 
