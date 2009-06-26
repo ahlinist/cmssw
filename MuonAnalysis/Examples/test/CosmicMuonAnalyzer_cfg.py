@@ -12,6 +12,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = 'IDEAL_V9::All'
 
 process.source = cms.Source("PoolSource",
+                            # For NAF tutorial
                             fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/E8D35F0C-03A5-DD11-85BD-003048D15E52.root',
                                                               '/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/D2EA7D04-19A5-DD11-80D6-0030486790C2.root',
                                                               '/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/921235D9-18A5-DD11-B759-003048678B14.root',
@@ -42,6 +43,8 @@ process.source = cms.Source("PoolSource",
                                                               '/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/56DEF461-09A5-DD11-9587-003048D15F48.root',
                                                               '/store/data/Commissioning08/Cosmics/RECO/CRAFT_V3P_TrackerPointing_v1/0010/C0BDA80E-19A5-DD11-BC69-0018F3C3E3A6.root'
                                                               )
+
+                            # if you want to try it on lxplus use this instead
                             # fileNames = cms.untracked.vstring('/store/data/Commissioning08/Cosmics/RAW-RECO/CRAFT_ALL_V12_229_Tosca090322_ReReco_FromTrackerPointing_v1/0005/EEEB64C0-3E37-DE11-84A1-001A92971AA8.root')
                             )
 
