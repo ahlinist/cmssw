@@ -8,7 +8,7 @@ from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
-process.GlobalTag.globaltag = "IDEAL_30X::All"
+process.GlobalTag.globaltag = "IDEAL_31X::All"
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.famosSimHits.SimulateCalorimetry = True
 process.famosSimHits.SimulateTracking = True

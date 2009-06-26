@@ -11,6 +11,7 @@
 #include <cmath>
 #include <TF1.h>
 #include <TText.h>
+#include <TMultiGraph.h>
 #include <stdexcept>
 
 using namespace std;
@@ -42,8 +43,10 @@ Color_t PlotUtil::nextColor() {
 
 PlotUtil::~PlotUtil() {
 	for (vector<TObject*>::iterator del = deleteOnDestruction_.begin(); del
-			!= deleteOnDestruction_.end(); ++del)
-		delete *del;
+			!= deleteOnDestruction_.end(); ++del) {
+		if(!*del)
+			delete *del;
+	}
 
 }
 
@@ -140,6 +143,12 @@ void PlotUtil::flushAccumulatedObjects(std::string filename) {
 			TLegend* l = legendForStack((THStack*) o);
 			o->Draw(options.c_str());
 			l->Draw();
+		} else if (o->InheritsFrom("TMultiGraph")) {
+			TMultiGraph* g = (TMultiGraph*) o;
+			g->Draw(options.c_str());
+			TLegend* l = legendForMultiGraph(g);
+			l->Draw();
+
 		} else {
 			o->Draw(options.c_str());
 		}
@@ -211,10 +220,23 @@ TLegend* PlotUtil::legendForStack(THStack* stack) {
 	TIter next(list);
 	TH1* hist;
 	while (hist = (TH1*) next())
-		legend->AddEntry(hist, "", "F");
+		legend->AddEntry(hist, "", "LPF");
 
-	return legend;
 	deleteOnDestruction_.push_back(legend);
+	return legend;
+
+}
+
+TLegend* PlotUtil::legendForMultiGraph(TMultiGraph* multi) {
+	TLegend* legend = new TLegend(0.55, 0.7, 0.95, 0.95);
+	TList* list = multi->GetListOfGraphs();
+	TIter next(list);
+	TGraph* graph;
+	while (graph = (TGraph*) next())
+		legend->AddEntry(graph, "", "LP");
+
+	deleteOnDestruction_.push_back(legend);
+	return legend;
 
 }
 
