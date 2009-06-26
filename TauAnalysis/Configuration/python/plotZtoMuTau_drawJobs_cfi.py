@@ -10,12 +10,12 @@ plots_ZtoMuTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            #'Ztautau',
+            'ZmumuPlusJets', 
             #'Zmumu',
-            'ZtautauPlusJets',
-            'ZmumuPlusJets',
             'WplusJets',
-            'qcdSum'
+            'qcdSum',
+            #'ZtautauPlusJets',
+            'Ztautau',
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -25,12 +25,12 @@ plots_ZtoMuTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        #'Ztautau',
-        #'Zmumu',
-        'ZtautauPlusJets',
         'ZmumuPlusJets',
+        #'Zmumu',
         'WplusJets',
-        'qcdSum'
+        'qcdSum',
+        #'ZtautauPlusJets'
+        'Ztautau'
     )
 )
 

@@ -10,14 +10,14 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            #'Ztautau',
-            #'Zee',
-            'ZtautauPlusJets',
             'ZeePlusJets',
+            #'Zee',
             'WplusJets',
             'TTplusJets',
+            'qcdSum',
             'gammaPlusJetsSum',
-            'qcdSum'
+            #'ZtautauPlusJets'
+            'Ztautau'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -27,14 +27,14 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        #'Ztautau',
-        #'Zee',
-        'ZtautauPlusJets',
         'ZeePlusJets',
+        #'Zee',
         'WplusJets',
         'TTplusJets',
+        'qcdSum',
         'gammaPlusJetsSum',
-        'qcdSum'
+        #'ZtautauPlusJets'
+        'Ztautau'
     )
 )
 drawJobConfigurator_ZtoElecTau = drawJobConfigurator(
@@ -256,27 +256,27 @@ drawJobConfigurator_ZtoElecTau.add(
     ]
 )
 
-drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelTauLeadTrkPt,
-    beforeCut = evtSelTauTrkIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauTrkIsoPt',
-        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
-    )
-)
+##drawJobConfigurator_ZtoElecTau.add(
+##    afterCut = evtSelTauLeadTrkPt,
+##    beforeCut = evtSelTauTrkIso,
+##    plot = drawJobConfigEntry(
+##        meName = 'TauQuantities/TauTrkIsoPt',
+##        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
+##        xAxis = 'Pt',
+##        name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
+##    )
+##)
 
-drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelTauTrkIso,
-    beforeCut = evtSelTauEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'TauQuantities/TauEcalIsoPt',
-        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
-    )
-)
+##drawJobConfigurator_ZtoElecTau.add(
+##    afterCut = evtSelTauTrkIso,
+##    beforeCut = evtSelTauEcalIso,
+##    plot = drawJobConfigEntry(
+##        meName = 'TauQuantities/TauEcalIsoPt',
+##        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
+##        xAxis = 'Pt',
+##        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
+##    )
+##)
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauEcalIso,
@@ -423,13 +423,13 @@ drawJobConfigurator_ZtoElecTau.add(
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Electron + Tau), CDF method (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCDFmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CollinearApproxMass',
             title = "M(Electron + Tau), collinear Approx. (final Event sample)",
-            xAxis = 'M',
+            xAxis = 'Mass',
             name = "finalSamplePlots_mCollApprox"
         )
     ]
