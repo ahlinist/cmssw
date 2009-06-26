@@ -1,8 +1,8 @@
 /** \class CosmicMuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/23 16:11:20 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/06/26 05:38:14 $
+ *  $Revision: 1.3 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -129,7 +129,9 @@ void CosmicMuonAnalyzer::analyze(const Event & event, const EventSetup& eventSet
     // you can get the list of matched info using matches()
 
     // *** CAVEAT ***: starting from 310 the "isGood" method is not part of the reco::Muon object anymore
-    // but only part of the pat::Muon. This block is here for pedagogical reason and it is correct within 2XY cycle
+    // but only part of the pat::Muon. If you do not want use pat::Muon, you can access at the isGood method
+    // using an external class: DataFormats/MuonReco/interface/MuonSelectors.h (available from 310 inwards). 
+    // This block is here for pedagogical reason and it is correct within 2XY cycle
     // Muon ID selection. As described in AN-2008/098  
     if(muon->isGood(reco::Muon::All))                                // dummy options - always true
       hMuIdAlgo->Fill(0);       
