@@ -6,10 +6,10 @@ import FWCore.ParameterSet.Config as cms
 
 dumpZtoElecMu = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
-        #Ztautau = cms.string('Ztautau/zElecMuAnalyzer/FilterStatistics'),
-        #Zmumu = cms.string('Zmumu/zElecMuAnalyzer/FilterStatistics/'),
         ZtautauPlusJets = cms.string('ZtautauPlusJets/zElecMuAnalyzer/FilterStatistics'),
+        Ztautau = cms.string('Ztautau/zElecMuAnalyzer/FilterStatistics'),
         ZmumuPlusJets = cms.string('ZmumuPlusJets/zElecMuAnalyzer/FilterStatistics/'),
+        Zmumu = cms.string('Zmumu/zElecMuAnalyzer/FilterStatistics/'),
         ZeePlusJets = cms.string('ZeePlusJets/zElecMuAnalyzer/FilterStatistics/'),
         WplusJets = cms.string('WplusJets/zElecMuAnalyzer/FilterStatistics/'),
         TTplusJets = cms.string('TTplusJets/zElecMuAnalyzer/FilterStatistics/'),
