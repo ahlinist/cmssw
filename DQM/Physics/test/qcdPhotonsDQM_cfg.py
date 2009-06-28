@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("QcdPhotonsDQM")
+process.load("DQM.Physics.qcdPhotonsDQM_cfi")
 
 process.load("DQMServices.Core.DQM_cfg")
 process.load("DQMServices.Components.DQMEnvironment_cfi")
@@ -21,14 +22,5 @@ process.source = cms.Source("PoolSource",
                            )
 )
 
-# DQM monitor module for QCD-Photons: Photon+Jet
-process.QcdPhotonsAnalyzer = cms.EDAnalyzer("QcdPhotonsDQM",
-                            triggerPathToPass        = cms.string("HLT_Photon15_L1R"),
-                            triggerResultsCollection = cms.InputTag("TriggerResults", "", "HLT"),
-                            photonCollection         = cms.InputTag("photons"),
-                            caloJetCollection        = cms.InputTag("sisCone5CaloJets"),
-#                           caloJetCollection        = cms.InputTag("L2L3CorJetSC5Calo"),
-)
-
-process.p = cms.Path(process.QcdPhotonsAnalyzer+process.dqmSaver)
+process.p = cms.Path(process.qcdPhotonsDQM+process.dqmSaver)
 
