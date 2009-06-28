@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.17 $
-  \date $Date: 2009/05/22 19:09:33 $
+  \version $Revision: 1.18 $
+  \date $Date: 2009/05/25 17:34:45 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -319,8 +319,8 @@ private:
       }
 
       // Overall pedestal plots should always be colored yellow-red (no green allowed; ZS doesn't let us normalize to Nevents properly (yet) )
-      else if (   (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
-		  (o.name.find("PedestalMonitor_Hcal/problem_pedestals/")!=std::string::npos) 
+      else if (   (o.name.find("BaselineMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
+		  (o.name.find("BaselineMonitor_Hcal/problem_pedestals/")!=std::string::npos) 
 		  )
 	{
 	  double scale = obj->GetBinContent(0,0);
@@ -397,7 +397,7 @@ private:
 
       else if (
         (
-          (o.name.find("PedestalMonitor_Hcal/") != std::string::npos) &&
+          (o.name.find("BaselineMonitor_Hcal/") != std::string::npos) &&
           (o.name.find("ADC") != std::string::npos)
           )
         &&
@@ -686,8 +686,8 @@ private:
       else if ( (o.name.find("DataFormatMonitor/DCC Plots/DCC Status") != std::string::npos ) ||
                 (o.name.find("DigiMonitor_Hcal/ ProblemDigis")!= std::string::npos ) ||
                 (o.name.find("DigiMonitor_Hcal/problem_digis")!= std::string::npos ) ||
-                (o.name.find("PedestalMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
-                (o.name.find("PedestalMonitor_Hcal/problem_pedestals")!=std::string::npos) ||
+                (o.name.find("BaselineMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
+                (o.name.find("BaselineMonitor_Hcal/problem_pedestals")!=std::string::npos) ||
                 (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
                 (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
                 (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
