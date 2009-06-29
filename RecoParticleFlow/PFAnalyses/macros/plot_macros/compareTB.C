@@ -13,6 +13,7 @@
 #include "Math/SVector.h"
 #include "TCanvas.h"
 #include <TMultiGraph.h>
+#include <TPie.h>
 #include <iostream>
 #include <math.h>
 #include <algorithm>
@@ -88,6 +89,10 @@ private:
 	void doResponsePlots(std::string type, bool verbose, std::string qry,
 			std::string cut = "");
 
+	void plotMipInEcal();
+
+	void plotTypeSpectrum();
+
 	std::map<std::string, TTree*> trees_;
 	std::vector<int> energies_;
 	TStyle* defaultStyle_;
@@ -112,6 +117,10 @@ public:
 			std::string name, std::string queryToTree, PlotUtil* util_,
 			std::string additionalCut);
 
+	std::vector<JGraph> getRecoEfficiencyPlots(std::vector<int> energies,
+			std::string name, std::string queryToTree, PlotUtil* util_,
+			std::string additionalCut);
+
 private:
 	std::string name_;
 	TTree* tree_;
@@ -121,24 +130,29 @@ private:
 void compareTB() {
 	gROOT->Reset();
 
+	/*
+	 * rfcp /castor/cern.ch/user/b/ballin/tbv8/Dikaon_allGeV_2k_full.root /tmp
+	 * rfcp /castor/cern.ch/user/b/ballin/tb310pre8/outputtree_allGeV_notracks.root /tmp
+	 * rfcp /castor/cern.ch/user/b/ballin/tb310pre10/Dikaon_allGeV_10k_fast.root /tmp
+	 */
 	TFile* testbeam = TFile::Open("/tmp/outputtree_allGeV_notracks.root");
 	TTree* testbeamTree = (TTree*) testbeam->FindObjectAny("Extraction");
 
 	TFile* full = TFile::Open("/tmp/Dikaon_allGeV_2k_full.root");
 	TTree* fullTree = (TTree*) full->FindObjectAny("Extraction");
 
-	//	TFile* fast = TFile::Open("/tmp/Dikaon_allGeV_10k_fast.root");
-	//	TTree* fastTree = (TTree*) fast->FindObjectAny("Extraction");
+	TFile* fast = TFile::Open("/tmp/Dikaon_allGeV_10k_fast.root");
+	TTree* fastTree = (TTree*) fast->FindObjectAny("Extraction");
 
 	std::map<std::string, TTree*> source;
 
 	std::cout << "Testbeam tree is " << testbeamTree << endl;
 	std::cout << "Full tree is " << fullTree << endl;
-	//	std::cout << "Fast tree is " << fastTree << endl;
+	std::cout << "Fast tree is " << fastTree << endl;
 
 	source["Testbeam 2006 (Barrel)"] = testbeamTree;
 	source["Full sim 310-08 (Barrel)"] = fullTree;
-	//source["Fast sim 310-10 (Barrel)"] = fastTree;
+	source["Fast sim 310-10 (Barrel)"] = fastTree;
 
 	std::vector<int> energies;
 	energies.push_back(2);
@@ -154,7 +168,7 @@ void compareTB() {
 	energies.push_back(50);
 	energies.push_back(100);
 	energies.push_back(200);
-	energies.push_back(300);
+	//	energies.push_back(300);
 
 	CompareTBAnalysis ctba(source, energies, "ctba.ps", "ctba.C", "ctba");
 
@@ -217,7 +231,6 @@ void CompareTBAnalysis::evaluatePlots() {
 	rStyle->cd();
 
 	util_.newPage();
-	util_.addTitle("TB Analysis - statistics available");
 
 	map<string, TTree*>::iterator it = trees_.begin();
 	unsigned count(0);
@@ -229,6 +242,7 @@ void CompareTBAnalysis::evaluatePlots() {
 		name.append(obj2str(count));
 		std::string qry("sim_energyEvent_>>");
 		qry.append(name);
+		qry.append("(300, 1,300)");
 		item.second->Draw(qry.c_str());
 
 		TH1* plot = util_.formatHisto(name, item.first,
@@ -238,20 +252,214 @@ void CompareTBAnalysis::evaluatePlots() {
 		++count;
 	}
 
+	util_.addTitle("TB Analysis - statistics available");
+
 	util_.flushPage();
 
-	//RAW RESPONSE
-	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
-			"cand_type_==5");
+//	//RAW RESPONSE
+//	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
+//			"cand_type_==5");
+//
+//	//RAW RESPONSE
+//	doResponsePlots("TB Rechits MIP in ECAL", false,
+//			"tb_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+//
+//	//PF CLUSTER RESPONSE
+//	doResponsePlots("PF Clusters", false,
+//			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
+//
+//	//PF CLUSTER RESPONSE - MIP in ECAL
+//	doResponsePlots("PF Clusters ECAL MIP", false,
+//			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+//
+//	//PF CANDIDATE RESPONSE
+//	doResponsePlots("PF Candidates", false,
+//			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
+//
+//	//PF CANDIDATE RESPONSE - MIP in ECAL
+//	doResponsePlots("PF Candidates ECAL MIP", false,
+//			"cand_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
 
-	//PF CLUSTER RESPONSE
-	doResponsePlots("PF Clusters", false,
-			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
+	plotMipInEcal();
 
-	//PF CANDIDATE RESPONSE
-	doResponsePlots("PF Candidates", false,
-			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
+	plotTypeSpectrum();
+
 	cout << "Leaving " << __PRETTY_FUNCTION__ << endl;
+}
+
+void CompareTBAnalysis::plotMipInEcal() {
+	TStyle* rStyle = util_.makeStyle("ecalStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(11111);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(false);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+
+		std::string name("ecalE");
+		name.append("_");
+		name.append(obj2str(count));
+		std::string qry("tb_energyEcal_>>");
+		qry.append(name);
+		qry.append("(110, -1,10)");
+		item.second->Draw(qry.c_str());
+
+		TH1* plot = util_.formatHisto(name, item.first, "ECAL Activity (GeV)",
+				util_.nextColor(), util_.nextColor(), 2);
+		util_.accumulateObjects(plot, "");
+		++count;
+	}
+
+	util_.addTitle("TB Analysis - ECAL activity");
+
+	util_.flushPage();
+
+}
+
+void CompareTBAnalysis::plotTypeSpectrum() {
+	TStyle* rStyle = util_.makeStyle("typeStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(11111);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(false);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+
+	vector<Color_t> colorMap = util_.colorMap();
+	const int categories(3);
+	Int_t colors[categories] = { colorMap[2], colorMap[5], colorMap[6] };
+	const char* labels[categories] = { "Just n^{0}", "Just #gamma",
+			"n^{0} and #gamma" };
+	util_.addTitle("TB Analysis - Type Spectrum");
+	util_.addTitle(" ");
+	util_.addTitle(" ");
+	util_.addTitle("< 10 GeV");
+	util_.addTitle("10 GeV <= E < 100 GeV");
+	util_.addTitle("E >= 100 GeV");
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+
+		std::string name("type");
+		name.append("_");
+		name.append(obj2str(count));
+		std::string qry("cand_type_>>");
+		qry.append(name);
+		qry.append("(20, 0, 20)");
+
+		const Long64_t had0s_lowE = item.second->Draw(qry.c_str(),
+				"cand_type_ % 5 == 0 && sim_energyEvent_< 10");
+		const Long64_t no_had0s_lowE = item.second->Draw(qry.c_str(),
+				"cand_type_ % 4 == 0 && sim_energyEvent_< 10");
+		const Long64_t
+				mix_lowE =
+						item.second->Draw(qry.c_str(),
+								"cand_type_ % 4 != 0 && cand_type_ % 5 != 0 && sim_energyEvent_< 10");
+		Double_t
+				vals_lowE[categories] = { had0s_lowE, no_had0s_lowE, mix_lowE };
+		string piName(name);
+		piName.append("_low");
+		TPie* p_low = new TPie(name.c_str(), item.first.c_str(), categories,
+				vals_lowE, colors, labels);
+		p_low->SetAngularOffset(30);
+		p_low->SetRadius(.35);
+		util_.accumulateObjects(p_low, "3d");
+
+		const Long64_t
+				had0s_midE =
+						item.second->Draw(qry.c_str(),
+								"cand_type_ % 5 == 0 && sim_energyEvent_> 10 && sim_energyEvent_ < 100");
+		const Long64_t
+				no_had0s_midE =
+						item.second->Draw(qry.c_str(),
+								"cand_type_ % 4 == 0 && sim_energyEvent_> 10 && sim_energyEvent_ < 100");
+		const Long64_t
+				mix_midE =
+						item.second->Draw(
+								qry.c_str(),
+								"cand_type_ % 4 != 0 && cand_type_ % 5 != 0 && sim_energyEvent_> 10 && sim_energyEvent_ < 100");
+		Double_t
+				vals_midE[categories] = { had0s_midE, no_had0s_midE, mix_midE };
+		piName = name;
+		piName.append("_mid");
+		TPie* p_mid = new TPie(piName.c_str(), item.first.c_str(), categories,
+				vals_midE, colors, labels);
+		p_mid->SetAngularOffset(30.);
+		p_mid->SetRadius(.35);
+		util_.accumulateObjects(p_mid, "3d");
+
+		const Long64_t had0s_highE = item.second->Draw(qry.c_str(),
+				"cand_type_ % 5 == 0 && sim_energyEvent_ > 99");
+		const Long64_t no_had0s_highE = item.second->Draw(qry.c_str(),
+				"cand_type_ % 4 == 0 && sim_energyEvent_ > 99");
+		const Long64_t
+				mix_highE =
+						item.second->Draw(qry.c_str(),
+								"cand_type_ % 4 != 0 && cand_type_ % 5 != 0 && sim_energyEvent_ > 99");
+		Double_t vals_highE[categories] = { had0s_highE, no_had0s_highE,
+				mix_highE };
+		piName = name;
+		piName.append("_high");
+		TPie* p_high = new TPie(piName.c_str(), item.first.c_str(), categories,
+				vals_highE, colors, labels);
+		p_high->SetAngularOffset(30.);
+		p_high->SetRadius(.35);
+		util_.accumulateObjects(p_high, "3d");
+		p_high->Draw("3d");
+		gPad->Print("pie.C");
+
+		++count;
+	}
+
+	util_.flushPage();
+
+	util_.newPage();
+	it = trees_.begin();
+
+	map<string, TGraph*> effs;
+
+	for (; it != trees_.end(); ++it) {
+
+		pair<const string, TTree*> item = *it;
+		string title("RecoEff");
+		title.append(item.first);
+
+		Comparator tbComp(item.first, item.second);
+		vector<JGraph> eff_plots = tbComp.getRecoEfficiencyPlots(energies_,
+				title.c_str(), "cand_type_", &util_, "cand_type_ % 4 != 0");
+
+		TGraph* gEff = new TGraph(eff_plots[0].finalise());
+		effs[item.first] = gEff;
+
+	}
+
+	rStyle->SetOptTitle(0);
+
+	std::string sampleTitle("Hadronic reconstruction efficiencies ");
+	util_.addTitle(sampleTitle);
+
+	TMultiGraph* tmg = getMultiGraph(effs, "Beam momentum (GeV/c)",
+			"n^{0}/N");
+	util_.accumulateObjects(tmg, "CP");
+
+
+	util_.flushPage();
+
 }
 
 void CompareTBAnalysis::doResponsePlots(std::string type, bool verbose,
@@ -394,6 +602,44 @@ void CompareTBAnalysis::closeFiles() {
 	gPad->Print(macrocpy2.c_str());
 
 	util_.flushSpecials(directory_);
+}
+
+std::vector<JGraph> Comparator::getRecoEfficiencyPlots(
+		std::vector<int> energies, std::string name, std::string queryToTree,
+		PlotUtil* util_, std::string additionalCut) {
+
+	JGraph effGraph("effGraph");
+	for (std::vector<int>::const_iterator i = energies.begin(); i
+			!= energies.end(); ++i) {
+
+		int energy = *i;
+		//build query
+		std::string cut("int(sim_energyEvent_) == ");
+		cut.append(obj2str(energy));
+		string eCut(cut);
+		if (additionalCut != "") {
+			cut.append(" && ");
+			cut.append(additionalCut);
+		}
+		std::string histoName(name);
+		histoName.append(obj2str(energy));
+		std::string qry(queryToTree);
+		qry.append(">>");
+		qry.append(histoName);
+
+		Long64_t n_had = tree_->Draw(qry.c_str(), cut.c_str());
+		Long64_t n_poss = tree_->Draw(qry.c_str(), eCut.c_str());
+		std::cout << "Cut = " << cut << "\n";
+
+		Double_t efficiency = static_cast<double>(n_had) / n_poss;
+		cout << "Efficency at energy " << energy << " = " << efficiency << endl;
+		cout << "n_had at energy " << energy << " = " << n_had << endl;
+		effGraph.addPoint(energy, efficiency);
+	}
+	vector<JGraph> answers;
+	answers.push_back(effGraph);
+	return answers;
+
 }
 
 vector<JGraph> Comparator::getRatioResponsePlots(vector<int> energies,
