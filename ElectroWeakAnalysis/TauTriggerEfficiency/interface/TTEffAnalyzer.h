@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.25 2009/05/07 10:26:09 chinhan Exp $
+// $Id: TTEffAnalyzer.h,v 1.26 2009/05/25 00:11:59 bachtis Exp $
 //
 //
 
@@ -76,10 +76,11 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
         }
       }
       
+      virtual void fillLV(const LorentzVector&,unsigned int i = 0); // was fill() before, but was confusing
       virtual void fill(const reco::PFTau&,unsigned int i = 0); 
       virtual void fill(const reco::CaloTau&,unsigned int i = 0);
-      virtual void fill(const LorentzVector&,unsigned int i = 0);
       virtual void fill(const reco::GsfElectron&,unsigned int i = 0);
+      virtual void fill(const LorentzVector&,unsigned int i = 0); // this one is for the loop per MCtau
 
       //Helper function :RMS of the PF Candidates
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
@@ -90,6 +91,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       bool checkPos(const std::vector<math::XYZPoint>& CalPos, const math::XYZPoint& CandPos) const;
 
       // ----------member data ---------------------------
+      bool DoMCTauEfficiency_;
       edm::InputTag  PFTaus_,PFTauIso_,MCTaus_; //Path to analyze
       std::string rootFile_;
 
@@ -98,7 +100,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<std::vector<LorentzVector> > mcTaus;
 
       // PF Variables
-      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch;
+      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch;
       float MCTauE,MCTauEt,MCTauEta,MCTauPhi;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
       float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
