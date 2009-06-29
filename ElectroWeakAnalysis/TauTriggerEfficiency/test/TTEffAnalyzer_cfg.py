@@ -24,10 +24,7 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
 ## 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
-#      "file:/tmp/chinhan/hltExtra.root"
-##	"file:/tmp/chinhan/test.root"
-## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/QCDpt30_Summer08_IDEAL_V11_redigi_v1_HLT_RECO_PFTauFiltered/HLTFromDigiRaw_960_RECO_sampleProducer.root"
-## 	"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer08_IDEAL_V11_redigi_v2_HLT_RECO_PFTauFiltered_run2/HLTFromDigiRaw_91_RECO_sampleProducer.root"
+#      "file:/tmp/chinhan/skim_996_HLTextra.root"
 #    )
 #)
 
@@ -64,6 +61,7 @@ process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' # th
 
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
+        DoMCTauEfficiency       = cms.bool(False), #if true: per MCTau cand; default is false: per offline tau cand
         #PFTauCollection        = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),

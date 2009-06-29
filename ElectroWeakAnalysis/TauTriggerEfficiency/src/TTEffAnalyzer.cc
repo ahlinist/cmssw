@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.27 2009/05/25 00:12:00 bachtis Exp $
+// $Id: TTEffAnalyzer.cc,v 1.28 2009/06/11 05:45:37 mkortela Exp $
 //
 //
 
@@ -24,6 +24,7 @@
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 
 TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
+  DoMCTauEfficiency_(iConfig.getParameter<bool>("DoMCTauEfficiency")),
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
@@ -46,6 +47,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFIso = 0;
   PFIsoSum = 0;
   PFEnergy = 0;
+  PFTauMatch = 0;
   MCMatch = 0;
   MCTauEt = -1.;
   MCTauE = -1.;
@@ -64,6 +66,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFClusterEtaRMS", &PFClusterEtaRMS, "PFClusterEtaRMS/F");
   _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS, "PFClusterPhiRMS/F");
   _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS, "PFClusterDrRMS/F");
+  _TTEffTree->Branch("PFTauMatch", &PFTauMatch, "PFTauMatch/I");
   
   _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
   _TTEffTree->Branch("MCTauEt", &MCTauEt, "MCTauEt/F");
@@ -98,25 +101,32 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<CaloTauCollection> caloTaus;
    edm::Handle<reco::GsfElectronCollection> electronTaus;
 
-   if(iEvent.getByLabel(PFTaus_, PFTaus)) {
-     iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
-     if(!thePFTauDiscriminatorByIsolation.isValid()) {
-       cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
-     }
+   if( DoMCTauEfficiency_ ) { // this is to calculate efficiencies per MC tau candidate
      iEvent.getByLabel(MCTaus_, mcTaus);
-     loop(iEvent,iSetup,*PFTaus);
-   }
-   else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
-     loop(iEvent,iSetup, *caloTaus);
-   }
-   else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
-     loop(iEvent,iSetup, *electronTaus);
+     iEvent.getByLabel(PFTaus_, PFTaus);
+     loop(iEvent,iSetup, *mcTaus);
+   } 
+   else {
+     if(iEvent.getByLabel(PFTaus_, PFTaus)) {
+       iEvent.getByLabel(PFTauIso_,thePFTauDiscriminatorByIsolation);
+       if(!thePFTauDiscriminatorByIsolation.isValid()) {
+	 cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
+       }
+       iEvent.getByLabel(MCTaus_, mcTaus);
+       loop(iEvent,iSetup,*PFTaus);
+     }
+     else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
+       loop(iEvent,iSetup, *caloTaus);
+     }
+     else if(iEvent.getByLabel(PFTaus_, electronTaus)) {
+       loop(iEvent,iSetup, *electronTaus);
+     }
    }
    
    // For electron lorentzvectors, add similar clauses
 }
 
-void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
+void TTEffAnalyzer::fillLV(const LorentzVector& tau,unsigned int i) {
   PFPt = tau.Pt();
   PFEt = tau.Et();
   PFEta = tau.Eta();
@@ -124,7 +134,7 @@ void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
 }
 
 void TTEffAnalyzer::fill(const reco::GsfElectron& tau,unsigned int i) {
-  fill(tau.p4());
+  fillLV(tau.p4());
 }
 
 void
@@ -144,7 +154,7 @@ using namespace reco;
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
-      //Mike B: Changed this to ROOT ::Math since it was confised which deltaR to use
+      //Mike B: Changed this to ROOT ::Math since it was confused which deltaR to use
       if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(i).p4(),mcTaus->at(k)) < MCMatchingCone ){ // match within 0.2 cone
          MCMatch = 1;
 	 MCTauE = mcTaus->at(k).energy();
@@ -157,7 +167,7 @@ using namespace reco;
   }
   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
-  fill(PFTaus->at(i).p4());
+  fillLV(PFTaus->at(i).p4());
 
   // Fill #signal tracks, and PtSum in isolation annulus 
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
@@ -179,8 +189,56 @@ using namespace reco;
 }
 
 void TTEffAnalyzer::fill(const reco::CaloTau& tau,unsigned int i) {
-  fill(tau.p4());
+  fillLV(tau.p4());
 } 
+
+void TTEffAnalyzer::fill(const LorentzVector& tau,unsigned int i) {
+using namespace reco;
+
+  MCMatch = 0;
+  if(mcTaus.isValid()){
+    MCTauE = mcTaus->at(i).energy();
+    MCTauEt = mcTaus->at(i).Et();
+    MCTauEta = mcTaus->at(i).Eta();
+    MCTauPhi = mcTaus->at(i).Phi();
+  }
+
+  
+  PFInvPt = 0.;
+  PFIso = 0;
+  PFTauMatch = 0;
+  if(PFTaus.isValid()){
+    for(unsigned int k = 0 ; k < PFTaus->size(); k++){
+      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(k).p4(),mcTaus->at(i)) < MCMatchingCone ){
+
+	PFTauMatch = 1;	
+	const PFTauRef thisTauRef(PFTaus,k);
+	if(thePFTauDiscriminatorByIsolation.isValid()){
+	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
+	  PFIso = ds[thisTauRef];
+	}
+
+	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
+	// Fill common variables
+	fillLV(PFTaus->at(k).p4());
+
+	// Fill #signal tracks, and PtSum in isolation annulus 
+	PFProng  = PFTaus->at(k).signalPFChargedHadrCands().size(); // check config file
+	PFIsoSum = PFTaus->at(k).isolationPFChargedHadrCandsPtSum();
+	PFEnergy = PFTaus->at(k).energy();
+	
+	std::vector<double> rms;
+	clusterShape(PFTaus->at(k), rms);
+	PFClusterEtaRMS = rms[0];
+	PFClusterPhiRMS = rms[1];
+	PFClusterDrRMS = rms[2];
+	
+        break;
+      }
+    }
+  }
+
+}
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
