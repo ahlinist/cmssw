@@ -9,9 +9,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_noesprefer_cff')
-process.GlobalTag.globaltag = 'IDEAL_V9::All'
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 process.load('PhysicsTools.PatAlgos.patSequences_cff')
 
@@ -21,7 +20,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        '/store/mc/Summer08/ZJets-madgraph/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0016/84672FA2-0DEC-DD11-A868-00E08178C10F.root'
     )
 )
 
@@ -46,8 +45,7 @@ process.load('PhysicsTools.PFCandProducer.pfAllPhotons_cfi')
 process.load('RecoTauTag.Configuration.RecoPFTauTag_cff')
 process.load('RecoTauTag.TauTagTools.TauMVADiscriminator_cfi')
 process.load('RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi')
-process.load('RecoTauTag.Configuration.RecoTauTag_FakeConditions_cff')
-process.es_prefer_TauMVA = cms.ESPrefer("PoolDBESSource", "TauTagMVAComputerRecord")
+process.load('RecoTauTag.TauTagTools.TancConditions_cff')
 
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
@@ -59,6 +57,10 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
+# disable preselection on pat::Tau objects
+# (neccessary in order to make efficiency plots)
+process.cleanLayer1Taus.preselection = cms.string('')
+
 process.TFileService = cms.Service("TFileService", 
     fileName = cms.string('patTau_Histograms.root')
 )
@@ -66,7 +68,7 @@ process.TFileService = cms.Service("TFileService",
 process.p = cms.Path( process.pfAllChargedHadrons + process.pfAllNeutralHadrons + process.pfAllPhotons
                      +process.PFTau
                      +process.shrinkingConePFTauDiscriminationByTaNC + process.RunTanc
-                     +process.patDefaultSequence
+                     +process.patDefaultSequence 
                      +process.analyzePatTau )
 
 # print-out all python configuration parameter information
