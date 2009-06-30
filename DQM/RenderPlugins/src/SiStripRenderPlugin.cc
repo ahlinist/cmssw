@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.10 $
-  \date $Date: 2009/05/22 19:05:24 $
+  \version $Revision: 1.11 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -52,6 +52,10 @@ public:
       else if( dynamic_cast<TH1F*>( o.object ) )
       {
         preDrawTH1F( c, o );
+      }
+      else if( dynamic_cast<TProfile2D*>( o.object ) )
+      {
+        preDrawTProfile2D( c, o );
       }
     }
 
@@ -125,10 +129,30 @@ private:
         obj->SetOption("colztext");
         return;
       }
+      if( o.name.find( "detFractionReportMap" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetOption("colztext");
+        return;
+      }
+      if( o.name.find( "sToNReportMap" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetOption("colztext");
+        return;
+      }
       if( o.name.find( "SummaryOfCabling" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
         obj->SetOption("text");
+        return;
+      }
+      if( o.name.find( "TkHMap" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        obj->SetOption("colz");
         return;
       }
       return;
@@ -169,6 +193,37 @@ private:
       }
     }
 
+  void preDrawTProfile2D( TCanvas *, const DQMNet::CoreObject &o )
+    {
+      TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
+      assert( obj );
+
+      // This applies to all
+      gStyle->SetCanvasBorderMode( 0 );
+      gStyle->SetPadBorderMode( 0 );
+      gStyle->SetPadBorderSize( 0 );
+      //    (data->pad)->SetLogy( 0 );;
+      //  gStyle->SetOptStat( 0 );
+
+      TAxis* xa = obj->GetXaxis();
+      TAxis* ya = obj->GetYaxis();
+
+      xa->SetTitleOffset(0.7);
+      xa->SetTitleSize(0.05);
+      xa->SetLabelSize(0.04);
+
+      ya->SetTitleOffset(0.7);
+      ya->SetTitleSize(0.05);
+      ya->SetLabelSize(0.04);
+
+      if( o.name.find( "TkHMap" )  != std::string::npos)
+      {
+        obj->SetStats( kFALSE );
+        obj->SetOption("colz");
+        return;
+      }
+      return;
+    }
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
     {
       TText tt;
@@ -202,6 +257,18 @@ private:
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
       if( name.find( "reportSummaryMap" ) != std::string::npos )
+      {
+        c->SetGridx();
+        c->SetGridy();
+        return;
+      }
+      if( name.find( "detFractionReportMap" ) != std::string::npos )
+      {
+        c->SetGridx();
+        c->SetGridy();
+        return;
+      }
+      if( name.find( "sToNReportMap" ) != std::string::npos )
       {
         c->SetGridx();
         c->SetGridy();
