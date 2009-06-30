@@ -21,14 +21,14 @@ process.demo = cms.EDFilter("RPCMonitorEfficiency",
     dosD = cms.untracked.bool(True),
     CLSandBXY = cms.untracked.bool(True),
 
-    debug = cms.untracked.bool(False),
+    debug = cms.untracked.bool(True),
 
     cosmics = cms.untracked.bool(False),
     makehtml = cms.untracked.bool(True),
     prodimages = cms.untracked.bool(True),
     threshold = cms.untracked.double(80.0),
 
-    barrel = cms.untracked.bool(True),
+    barrel = cms.untracked.bool(False),
     endcap = cms.untracked.bool(True)
 )
 
