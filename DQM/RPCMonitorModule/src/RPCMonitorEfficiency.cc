@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.21 2009/06/17 09:37:54 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.22 2009/06/25 14:01:30 carrillo Exp $
 //
 //
 
@@ -155,6 +155,27 @@ public:
   TH1F * ExGregD2R3;  
   TH1F * ExGregD3R2;  
   TH1F * ExGregD3R3;  
+
+  TH1F * GregDm1R2;  
+  TH1F * GregDm1R3;  
+  TH1F * GregDm2R2;  
+  TH1F * GregDm2R3;  
+  TH1F * GregDm3R2;  
+  TH1F * GregDm3R3;  
+
+  TH1F * OcGregDm1R2;  
+  TH1F * OcGregDm1R3;  
+  TH1F * OcGregDm2R2;  
+  TH1F * OcGregDm2R3;  
+  TH1F * OcGregDm3R2;  
+  TH1F * OcGregDm3R3;  
+
+  TH1F * ExGregDm1R2;  
+  TH1F * ExGregDm1R3;  
+  TH1F * ExGregDm2R2;  
+  TH1F * ExGregDm2R3;  
+  TH1F * ExGregDm3R2;  
+  TH1F * ExGregDm3R3;  
   
   TH1F * CLSWm2;  
   TH1F * CLSWm1;  
@@ -436,6 +457,7 @@ private:
   std::ofstream efftxt;
   std::ofstream alignment;
   std::ofstream rollZeroEff;
+  std::ofstream rollZeroPrediction;
   bool prodimages;
   bool makehtml;
   bool cosmics;
@@ -480,6 +502,7 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   alignment.open("Alignment.dat");
   RollYEff.open("rollYeff.txt");
   rollZeroEff.open("rollZeroEff.txt");
+  rollZeroPrediction.open("rollZeroPrediction.txt");
 }
 
 
@@ -668,6 +691,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   ExGregD2R3= new TH1F ("ExGregDistroD2R3","Expected Distribution for Station 2 Ring 3",36,0.5,36.5);
   ExGregD3R2= new TH1F ("ExGregDistroD3R2","Expected Distribution for Station 3 Ring 2",36,0.5,36.5);
   ExGregD3R3= new TH1F ("ExGregDistroD3R3","Expected Distribution for Station 3 Ring 3",36,0.5,36.5);
+
+  GregDm1R2= new TH1F ("GregDistroDm1R2","Efficiency for Station - 1 Ring 2",36,0.5,36.5);
+  GregDm1R3= new TH1F ("GregDistroDm1R3","Efficiency for Station - 1 Ring 3",36,0.5,36.5);
+  GregDm2R2= new TH1F ("GregDistroDm2R2","Efficiency for Station - 2 Ring 2",36,0.5,36.5);
+  GregDm2R3= new TH1F ("GregDistroDm2R3","Efficiency for Station - 2 Ring 3",36,0.5,36.5);
+  GregDm3R2= new TH1F ("GregDistroDm3R2","Efficiency for Station - 3 Ring 2",36,0.5,36.5);
+  GregDm3R3= new TH1F ("GregDistroDm3R3","Efficiency for Station - 3 Ring 3",36,0.5,36.5);
+
+  OcGregDm1R2= new TH1F ("OcGregDistroDm1R2","Occupancy Distribution for Station - 1 Ring 2",36,0.5,36.5);
+  OcGregDm1R3= new TH1F ("OcGregDistroDm1R3","Occupancy Distribution for Station - 1 Ring 3",36,0.5,36.5);
+  OcGregDm2R2= new TH1F ("OcGregDistroDm2R2","Occupancy Distribution for Station - 2 Ring 2",36,0.5,36.5);
+  OcGregDm2R3= new TH1F ("OcGregDistroDm2R3","Occupancy Distribution for Station - 2 Ring 3",36,0.5,36.5);
+  OcGregDm3R2= new TH1F ("OcGregDistroDm3R2","Occupancy Distribution for Station - 3 Ring 2",36,0.5,36.5);
+  OcGregDm3R3= new TH1F ("OcGregDistroDm3R3","Occupancy Distribution for Station - 3 Ring 3",36,0.5,36.5);
+
+  ExGregDm1R2= new TH1F ("ExGregDistroDm1R2","Expected Distribution for Station - 1 Ring 2",36,0.5,36.5);
+  ExGregDm1R3= new TH1F ("ExGregDistroDm1R3","Expected Distribution for Station - 1 Ring 3",36,0.5,36.5);
+  ExGregDm2R2= new TH1F ("ExGregDistroDm2R2","Expected Distribution for Station - 2 Ring 2",36,0.5,36.5);
+  ExGregDm2R3= new TH1F ("ExGregDistroDm2R3","Expected Distribution for Station - 2 Ring 3",36,0.5,36.5);
+  ExGregDm3R2= new TH1F ("ExGregDistroDm3R2","Expected Distribution for Station - 3 Ring 2",36,0.5,36.5);
+  ExGregDm3R3= new TH1F ("ExGregDistroDm3R3","Expected Distribution for Station - 3 Ring 3",36,0.5,36.5);
 
   EffDistroDm3= new TH1F ("EffDistroDm3near","Efficiency Distribution For Near Side Disk -3",20,0.5,100.5);  
   EffDistroDm2= new TH1F ("EffDistroDm2near","Efficiency Distribution For Near Side Disk -2",20,0.5,100.5);
@@ -1632,7 +1676,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
 
-	  if(o==0) rollZeroEff<<name<<std::endl;
+
+	  if(p==0) rollZeroPrediction<<name<<std::endl;
+	  if(o==0&&p>10) rollZeroEff<<name<<std::endl;
 	  
 	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 	  
@@ -2515,6 +2561,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),p);OcGregD2R3->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),p);OcGregD3R2->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),p);OcGregD3R3->Fill(rpcsrv.segment(),o);}
+	  }else if(rpcId.region()==-1){
+	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregDm1R2->Fill(rpcsrv.segment(),p);OcGregDm1R2->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling Dm1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregDm1R3->Fill(rpcsrv.segment(),p);OcGregDm1R3->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling Dm1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregDm2R2->Fill(rpcsrv.segment(),p);OcGregDm2R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregDm2R3->Fill(rpcsrv.segment(),p);OcGregDm2R3->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregDm3R2->Fill(rpcsrv.segment(),p);OcGregDm3R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregDm3R3->Fill(rpcsrv.segment(),p);OcGregDm3R3->Fill(rpcsrv.segment(),o);}
 	  }
 	  
 
@@ -2862,6 +2915,38 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     err=0; eff=0; N=ExGregD3R3->GetBinContent(k);
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
+
+    //Negative EndCap
+
+    err=0; eff=0; N=ExGregDm1R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
+    GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+    
+    err=0; eff=0; N=ExGregDm1R3->GetBinContent(k);
+    if(N!=0.){eff = OcGregDm1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
+    
+    err=0; eff=0; N=ExGregDm2R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm2R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm3R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm3R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);
     //HeightVsEffR3->Fill(eff,h);
   }
 
@@ -3318,6 +3403,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
+       std::cout<<"Layer 1 "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
      }
   }   
   
@@ -3876,6 +3962,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("Greg/HeightVsEffR2.png"); HeightVsEffR2->Write();
   Ca5->Clear(); 
   
+  //Positive Endcap
+
   GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
   Ca5->Clear(); 
@@ -3898,6 +3986,32 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
+  Ca5->Clear(); 
+
+  //Negative Endcap
+
+  GregDm1R2->Draw(); GregDm1R2->GetXaxis()->SetTitle("Chamber"); GregDm1R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm1R2.png"); GregDm1R2->Write();
+  Ca5->Clear(); 
+  
+  GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm1R3.png"); GregDm1R3->Write();
+  Ca5->Clear(); 
+  
+  GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm2R2.png"); GregDm2R2->Write();
+  Ca5->Clear(); 
+  
+  GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm2R3.png");  GregDm2R3->Write();
+  Ca5->Clear(); 
+  
+  GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm3R2.png"); GregDm3R2->Write();
+  Ca5->Clear(); 
+  
+  GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
   Ca5->Clear(); 
 
   int colorPalette3[20];
