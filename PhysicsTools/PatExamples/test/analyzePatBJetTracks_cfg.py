@@ -27,9 +27,7 @@ switchOffTriggerMatchingOld( process )
 # source
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-#		'/store/mc/Summer08/TauolaTTbar/USER/IDEAL_V9_PAT_v2/0000/F4E0BF7B-42CD-DD11-94BB-00E08178C0F3.root',
-#		'/store/mc/Fall08/TTJets-madgraph/GEN-SIM-RECO/IDEAL_V11_redigi_v10/0000/06FC3959-4DFC-DD11-B504-00E08178C091.root',
-		'file:TTJets-madgraph-PAT.root'
+		'/store/mc/Fall08/TTJets-madgraph/GEN-SIM-RECO/IDEAL_V11_redigi_v10/0000/06FC3959-4DFC-DD11-B504-00E08178C091.root',
 	)
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
@@ -60,6 +58,6 @@ process.analyzeBJetTracks = cms.EDAnalyzer("PatBJetTrackAnalyzer",
 )
 
 process.p = cms.Path(
-#	process.patDefaultSequence *
+	process.patDefaultSequence *
 	process.analyzeBJetTracks
 )
