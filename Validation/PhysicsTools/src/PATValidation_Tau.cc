@@ -53,6 +53,10 @@ using namespace reco;
 using namespace std; 
 
 
+    int nRecoTaus=0;
+    int nPatTaus=0;
+
+
 //
 // class decleration
 //
@@ -174,9 +178,10 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     // Loop over Reco Taus
      for (int i = 0; i != RECOTAU.size(); ++i) {
         me["RecoTau_pt"]->Fill(RECOTAU[i].pt());
+        nRecoTaus++;
 	me["RecoTau_eta"]->Fill(RECOTAU[i].eta());
 	me["RecoTau_phi"]->Fill(RECOTAU[i].phi());
-      cout << "reco pt is = " << RECOTAU[i].pt() << endl; 
+       cout << "RECO tau pt is = " << RECOTAU[i].pt() << endl; 
        }
 
 
@@ -190,10 +195,14 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    // Loop over Pat Taus
      for (int i = 0; i != PATTAU.size(); ++i) {
         me["PatTau_pt"]->Fill(PATTAU[i].pt());
+       nPatTaus++;
 	me["PatTau_eta"]->Fill(PATTAU[i].eta());
 	me["PatTau_phi"]->Fill(PATTAU[i].phi());
+    cout << "PAT tau pt is = " << PATTAU[i].pt() << endl;
     }
     
+cout << "NUM OF PATTAUS = " << nPatTaus << endl;
+cout << "NUM OF RECOTAUS = " << nRecoTaus << endl;
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;

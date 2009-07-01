@@ -52,6 +52,11 @@
 using namespace reco;
 using namespace std; 
 
+    int nRecoMET=0;   
+    int nPatMET=0;
+
+
+
 
 //
 // class decleration
@@ -170,9 +175,11 @@ PATValidation_MET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     // Loop over Reco Mets
      for (int i = 0; i != RECOMET.size(); ++i) {
       me["RecoMet_pt"]->Fill(RECOMET[i].pt());
+	 nRecoMET++;
+//     cout << "RecoMET pt is = " << RECOMET[i].pt() << endl;
 	me["RecoMet_eta"]->Fill(RECOMET[i].eta());
 	me["RecoMet_phi"]->Fill(RECOMET[i].phi());
-      cout << "reco pt is = " << RECOMET[i].pt() << endl; 
+//     cout << "RecoMET pt is = " << RECOMET[i].pt() << endl; 
        }
 
 
@@ -185,10 +192,14 @@ PATValidation_MET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    // Loop over Pat Mets
      for (int i = 0; i != PATMET.size(); ++i) {
      me["PatMet_pt"]->Fill(PATMET[i].pt());
+     nPatMET++;
+  //      cout << "PatMET pt is " << PATMET[i].pt() << endl;
      me["PatMet_eta"]->Fill(PATMET[i].eta());
      me["PatMet_phi"]->Fill(PATMET[i].phi());
     }
 
+//cout << "NUM OF PATMET = " << nPatMET << endl;
+//cout << "NUM OF RECOMET = " << nRecoMET << endl;
 	
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;
