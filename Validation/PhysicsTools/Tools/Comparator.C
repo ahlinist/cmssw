@@ -100,7 +100,13 @@ public:
     TH1::AddDirectory( false );
     TH1* h0 = Histo( key, 0);
     TH1* h1 = Histo( key, 1)->Clone("h1");
-
+    int h0_entries = h0->GetEntries();
+    int h1_entries = h1->GetEntries();
+    cout << " h0_entries =" << h0_entries << " h1_entries =" <<  h1_entries << endl;
+    gStyle->SetStatColor( (h0_entries == h1_entries) ? 3 : 2); 
+ 
+ //   double pv = h1->KolmogorovTest(h0,"OU");
+ //   gStyle->SetStatColor(pv > 0.1 ? 3 : 2);
     TH1::AddDirectory( true );
     Draw( h0, h1, mode);    
   }
@@ -197,7 +203,14 @@ private:
 	FormatHisto( h0_ , s0_);
       if(s1_)
  	FormatHisto( h1_ , s1_);
+
+      gStyle->SetStatColor(2);
       h0_->Draw();
+      gPad->Update();
+      TPaveStats *st = (TPaveStats*)h0_ ->FindObject("stats");
+      st->SetY1NDC(0.68);
+      st->SetY2NDC(0.84);
+      gStyle->SetStatColor(4);
       h1_->Draw("same");
       break;
     case EFF:

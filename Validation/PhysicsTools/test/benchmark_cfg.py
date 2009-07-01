@@ -1,110 +1,97 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("TEST")
+process = cms.Process("PAT")
 process.load("DQMServices.Core.DQM_cfg")
 
-###############################
 # initialize MessageLogger and output report
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.threshold = 'INFO'
-process.MessageLogger.categories.append('PATLayer0Summary')
+process.MessageLogger.categories.append('PATSummaryTables')
 process.MessageLogger.cerr.INFO = cms.untracked.PSet(
     default          = cms.untracked.PSet( limit = cms.untracked.int32(0)  ),
-    PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(-1) )
+    PATSummaryTables = cms.untracked.PSet( limit = cms.untracked.int32(-1) )
 )
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-# Load geometry
+# source
+process.source = cms.Source("PoolSource", 
+    fileNames = cms.untracked.vstring(  
+#      '/store/relval/CMSSW_3_1_0_pre6/RelValTTbar/GEN-SIM-RECO/IDEAL_31X_v1/0002/50D4BADB-FA32-DE11-BA01-000423D98DC4.root'
+#         'file:step2_RAW2DIGI_RECO.root'
+#          'file:/uscms/home/petar/sw/CMSSW_3_1_0_pre9/src/step2_RAW2DIGI_RECO.root'
+#          'file:/uscms/home/petar/sw2/CMSSW_3_1_0_pre9/src/step2_RAW2DIGI_RECO.root'
+#           'file:/uscms_data/d2/malik/FORCHARLES/345_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
+#           'file:/uscms_data/d2/malik/FORCHARLES/432_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
+#           'file:/uscms_data/d2/malik/FORCHARLES/64_432_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
+##############################################################################################
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recominbias_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recominbias_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recottbar_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recottbar_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recoqcd_RAW2DIGI_RECO.root'
+            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recoqcd_RAW2DIGI_RECO.root' 
+#            'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recominbias_RAW2DIGI_RECO.root'
+#   	     'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recottbar_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recoqcd_RAW2DIGI_RECO.root'
+##############################################################################################	   
+
+    )
+)
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = cms.string('IDEAL_V9::All')
+process.GlobalTag.globaltag = cms.string('IDEAL_31X::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
-#############################
+# PAT Layer 0+1
+process.load("PhysicsTools.PatAlgos.patSequences_cff")
+process.content = cms.EDAnalyzer("EventContentAnalyzer")
+process.dump = cms.EDAnalyzer("EventContentAnalyzer")
+# replacements currently needed to make the jets work
+process.allLayer1Jets.addDiscriminators    = False
+process.allLayer1Jets.discriminatorSources = []
 
-
-#UNCOMMENTED THIS
-process.source = cms.Source("PoolSource",
-#                            fileNames = cms.untracked.vstring('file:aod.root'
-#                             fileNames = cms.untracked.vstring('/store/mc/Summer08/InclusiveMuPt15/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0060/0870D57E-93DE-DD11-BCD7-001A92971B08.root'
-                             fileNames = cms.untracked.vstring('/store/mc/Summer08/ZJets-madgraph/GEN-SIM-RECO/IDEAL_V11_redigi_v1/0002/88809B2F-77E4-DD11-AFF9-003048673F12.root'
-                                                              )
-                            )
-
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
-)
+from PhysicsTools.PatAlgos.tools.jetTools import *
+##Added for corrected jets
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08_cff")   
+process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff")
+process.prefer("L2L3JetCorrectorIC5Calo")
+process.prefer("L2L3JetCorrectorSC5Calo")
+process.prefer("L2L3JetCorrectorSC7Calo")
 
 # PAT Layer 0+1
-process.load("PhysicsTools.PatAlgos.patLayer0_cff")
-process.load("PhysicsTools.PatAlgos.patLayer1_cff")
-
-
-
-#process.load("Validation.RecoParticleFlow.patBenchmarkGeneric_cff")
 process.load("Validation.PhysicsTools.patObjectBenchmarkGeneric_cfi")
 
-#process.patJetTag = cms.EDAnalyzer("PATValidation",
-#    recoObject = cms.InputTag('jets'),
-#    patObject = cms.InputTag( 'selectedLayer1Jets' ),
-#    jetTag = cms.InputTag('softMuonTagInfos')
-#)
-
-
-
-
 process.p =cms.Path(
-#    process.patBenchmarkGeneric*
-    process.patLayer0*
-    process.patLayer1*
-    process.patJetTag*
-    process.patMuonTag*
-    process.patElectronTag*
-    process.patMETTag*
-    process.patTauTag*
-    process.patPhotonTag	
-   )
+    process.patDefaultSequence*  
+#    process.content*
+    process.L2L3CorJetIC5Calo*
+    process.L2L3CorJetSC5Calo*
+    process.L2L3CorJetSC7Calo*
+    process.patJetValidation*
+    process.patJetIC5Validation*
 
-# load the pat layer 1 event content
-process.load("PhysicsTools.PatAlgos.patLayer1_EventContent_cff")
+#    process.patJetSC5CorrValidation*
+#    process.patJetSC7CorrValidation*
 
-# don't apply jet corrections
-process.allLayer1Jets.addJetCorrFactors = False
+    process.patMuonValidation*
+    process.patElectronValidation*
+#    process.patMETValidation*
+#    process.patCaloMETValidation*
+    process.patTauValidation*
+    process.patPhotonValidation
 
-process.schedule = cms.Schedule(process.p)
+)
 
-# ADDED THIS
+# Output module configuration
+from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent
 process.out = cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring('keep *'),
-    fileName = cms.untracked.string('tree.root')
+    fileName = cms.untracked.string('PATLayer1_Output.fromAOD_full.root'),
+    # save only events passing the full path
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    # save PAT Layer 1 output
+    outputCommands = cms.untracked.vstring('drop *', *patEventContent ) # you need a '*' to unpack the list of commands 'patEventContent'
 )
-
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.options = cms.untracked.PSet(
-    makeTriggerResults = cms.untracked.bool(True),
-    wantSummary = cms.untracked.bool(True),
-    Rethrow = cms.untracked.vstring('Unknown', 
-        'ProductNotFound', 
-        'DictionaryNotFound', 
-        'InsertFailure', 
-        'Configuration', 
-        'LogicError', 
-        'UnimplementedFeature', 
-        'InvalidReference', 
-        'NullPointerError', 
-        'NoProductSpecified', 
-        'EventTimeout', 
-        'EventCorruption', 
-        'ModuleFailure', 
-        'ScheduleExecutionFailure', 
-        'EventProcessorFailure', 
-        'FileInPathError', 
-        'FatalRootError', 
-        'NotFound')
-)
-
-
-
-#process.MessageLogger.cerr.FwkReport.reportEvery = 100
-
+process.outpath = cms.EndPath(process.out)
 

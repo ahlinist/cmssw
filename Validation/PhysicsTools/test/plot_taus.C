@@ -10,24 +10,25 @@
   string dirRECO        = "DQMData/Benchmarks/taus/RECO";
   string dirPAT         = "DQMData/Benchmarks/taus/PAT";
 
-  const char* file = "benchmark.root";
-  
+  const char* file1 = "benchmark1.root";
+  const char* file2 = "benchmark2.root";  
+
   bool highpt = false;
   float ptMin = 0;
   float ptMax = 9999;
   sback->SetFillColor(4);
   Style* style1 = sback;
   Style* style2 = s1;
-  Comparator::Mode mode = Comparator::SCALE;
+  Comparator::Mode mode = Comparator::NORMAL;
 
 //  string outdir = "Jets";
     string outdir ="."; 
 
-  Comparator comp(file,
-		  dirRECO.c_str(),
-		  file,
-		  dirPAT.c_str());
-  comp.SetStyles(style1, style2, "RECO Objetcs", "PAT Objects");
+  Comparator comp(file1,
+		  dirPAT.c_str(),
+		  file2,
+		  dirRECO.c_str());
+  comp.SetStyles(style1, style2, "RECO Objects", "PAT Objects");
 
 
    TCanvas c0("c0", "legend", 400, 200);    
@@ -45,6 +46,12 @@
    comp.SetAxis(1, -6,6);
    TCanvas c2("c2", "eta benchmark");
    FormatPad( &c2, false );
+//    TH1* h0 = Histo( key, 0);
+//    TH1* h1 = Histo( key, 1);
+//    double pv = h1->KolmogorovTest(h0, "OU");
+//   double pv = TH1* h1->KolmogorovTest(TH1* h0, "OU");
+//   gStyle->SetStatColor(9);
+
    comp.Draw("eta", mode);
    SavePlot("tau_eta", outdir.c_str() );
    comp.SetAxis(5);
@@ -55,6 +62,5 @@
    comp.Draw("phi", mode);
    SavePlot("tau_phi", outdir.c_str() );
    comp.SetAxis(5);
-
   
 }
