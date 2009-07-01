@@ -335,7 +335,7 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
     
       for (candidateCollection::const_iterator  rjet = recojet_hnd->begin(); rjet != recojet_hnd->end(); rjet++) {
-  cout << "reco jet  is" << recoJet_ << "and reco Jet pt is = "<< rjet->pt() << endl;    
+//////  cout << "reco jet  is" << recoJet_ << "and reco Jet pt is = "<< rjet->pt() << endl;    
 //     cout << "I AM HERE 1" << endl;  
      if (rmEta) rmEta->Fill(rjet->eta());   
 //     cout << "I AM HERE 2" << endl;
@@ -497,7 +497,7 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
 
  //    for (; jet != patjet_hnd->end(); jet++, jetIndex++) {
       for (std::vector<pat::Jet>::const_iterator  jet = patjet_hnd->begin(); jet != patjet_hnd->end(); jet++) {
-     cout << "PAT jet  is" << patJet_ << "and PAT Jet pt is = "<< jet->pt() << endl;
+/////     cout << "PAT jet  is" << patJet_ << "and PAT Jet pt is = "<< jet->pt() << endl;
 //     cout << "I AM HERE 1" << endl;
      if (mEta) mEta->Fill(jet->eta());
 //     cout << "I AM HERE 2" << endl;
