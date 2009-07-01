@@ -4,6 +4,8 @@ class Style : public TH1F {
 
 Style *s1;
 Style *s2;
+Style *s3;
+
 Style *sg1;
 Style *sback;
 
@@ -11,12 +13,19 @@ void InitNicePlot() {
   s1 = new Style(); 
 
   s1->SetLineWidth(2);   
-  s1->SetLineColor(1);   
+  s1->SetLineColor(1);
+//  s1->SetLineStyle(1);   
 
   s2 = new Style(); 
 
   s2->SetLineWidth(2);   
-  s2->SetLineColor(4);   
+  s2->SetLineColor(3);   
+//  s2->SetLineStyle(2);
+
+  s3 = new Style();
+  s3->SetLineColor(4);
+  s3->SetLineWidth(1);
+//  s3->SetLineStyle(4);
 
   sg1 = new Style();
 
