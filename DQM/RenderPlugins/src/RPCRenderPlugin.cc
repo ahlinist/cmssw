@@ -1,6 +1,5 @@
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
-
 #include "TProfile2D.h"
 #include "TStyle.h"
 #include "TCanvas.h"
@@ -22,6 +21,7 @@ public:
         return false;
 
       if( (o.name.find( "/RecHits/" ) != std::string::npos )||
+	  (o.name.find( "/RPCEfficiency" ) != std::string::npos )||
           (o.name.find("/EventInfo") != std::string::npos))
         return true;
 
@@ -40,21 +40,12 @@ public:
 
   virtual void postDraw(TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
     {
-      c->cd();
-
-      TText tt;
-      tt.SetTextSize(0.12);
-
-      //  if(o.name.find("Endcap") != std::string::npos && o.name.find("Barrel") == std::string::npos  ) {
-      //     tt.SetTextColor(3);
-      //     tt.DrawTextNDC(0.5, 0.5, "OK");
-      //     return;
-      //   }
+      
       if(dynamic_cast<TH2*>( o.object ) ) postDrawTH2(c,o);
     }
 
 private:
-  void preDrawTH2( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -68,18 +59,24 @@ private:
       gStyle->SetPalette( 1 );
       obj->SetOption( "colz" );
       obj->SetStats( kFALSE );
-
+      
+      obj->GetXaxis()->SetNdivisions(-510);
+      obj->GetYaxis()->SetNdivisions(-510);
+      obj->GetXaxis()->CenterLabels();
+      obj->GetYaxis()->CenterLabels();
+      c->SetGridx();
+      c->SetGridy();
+      
+      
       if(o.name.find("reportSummaryMap") != std::string::npos)
-      {
+	{
         dqm::utils::reportSummaryMapPalette(obj);
-        // gStyle->SetPaintTextFormat("%.2f");
-        // obj->SetOption("colztext");
-        return;
+	return;
       }
 
       if( o.name.find("Occupancy") != std::string::npos )
       {
-        obj->SetStats( kTRUE );
+	obj->SetStats( kTRUE );
         return;
       }
 
@@ -92,44 +89,62 @@ private:
     }
 
   void postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o)
-    {
-      TH2* obj = dynamic_cast<TH2*>( o.object );
-      assert( obj );
-
-      if(o.name.find("Roll_vs_Sector") != std::string::npos)
-      {//roll vs sector 2Dhisto
-        obj->GetXaxis()->SetNdivisions(-510);
-        obj->GetYaxis()->SetNdivisions(-510);
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-        c->SetGridx();
-        c->SetGridy();
+  {
+    TH2* obj = dynamic_cast<TH2*>( o.object );
+    assert( obj );
+    
+    if((o.name.find("Roll_vs_Sector_Wheel") != std::string::npos && o.name.find("Occupancy") == std::string::npos) ||
+       o.name.find("VStatus_Wheel") != std::string::npos ) {
+      
+      TLine line;
+      line.SetLineWidth(2);
+      line.DrawLine(0.5, 17.5, 3.5, 17.5);
+      line.DrawLine(3.5, 17.5, 3.5, 21.5);
+      line.DrawLine(4.5, 21.5, 4.5, 17.5);
+      line.DrawLine(4.5, 17.5, 8.5, 17.5);
+      line.DrawLine(8.5, 17.5, 8.5, 15.5);
+      line.DrawLine(8.5, 15.5, 9.5, 15.5);
+      line.DrawLine(9.5, 15.5, 9.5, 17.5);
+      line.DrawLine(9.5, 17.5, 10.5, 17.5);
+      line.DrawLine(10.5, 17.5, 10.5, 15.5);
+      line.DrawLine(10.5, 15.5, 11.5, 15.5);
+      line.DrawLine(11.5, 15.5, 11.5, 17.5);
+      line.DrawLine(11.5, 17.5, 12.5, 17.5);
+      
+      for(int x=1; x<13; x++) {
+	for (int y=18; y<22; y++) {
+	  if(x!=4) obj->SetBinContent(x,y,-1);
+	}
       }
-
-      if(o.name.find("SummaryMap") != std::string::npos)
+      
+      obj->SetBinContent(9,16,-1);
+      obj->SetBinContent(9,17,-1);
+      obj->SetBinContent(11,16,-1);
+      obj->SetBinContent(11,17,-1);
+    }
+    
+    if(o.name.find("Occupancy_W") != std::string::npos) {
+      obj->GetXaxis()->SetNdivisions(510);
+    }
+    
+    if(o.name.find("SummaryMap") != std::string::npos)
       {//report summary map
-        obj->GetXaxis()->SetNdivisions(-510);
-        obj->GetYaxis()->SetNdivisions(-510);
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-        c->SetGridx();
-        c->SetGridy();
-
-        TLine line;// draw lines to delimitate Barrel and Endcaps
+	
+	TLine line;// draw lines to delimitate Barrel and Endcaps
         line.SetLineWidth(1);
         line.DrawLine(-3.5, 0.5, -3.5, 6.5);
         line.DrawLine(-7.5, 6.5,-3.5, 6.5 );
         line.DrawLine(-2.5, 0.5, -2.5, 12.5);
         line.DrawLine(2.5, 0.5, 2.5, 12.5);
         line.DrawLine(-2.5, 12.5, 2.5, 12.5);
-
+	
         line.DrawLine(3.5, 0.5, 3.5, 6.5);
         line.DrawLine(3.5, 6.5,7.5, 6.5 );
         line.DrawLine(7.5, 0.5,7.5, 6.5 );
         return;
       }
-
-      if(o.name.find("Occupancy") != std::string::npos && o.name.find("SummaryBySectors") != std::string::npos && o.name.find("Wheel") != std::string::npos  )
+    
+    if(o.name.find("Occupancy") != std::string::npos && o.name.find("SummaryBySectors") != std::string::npos && o.name.find("Wheel") != std::string::npos  )
       {
         //sector occupancy plots
         TLine line;
@@ -148,7 +163,7 @@ private:
         line.DrawLine(85, 9.5, 43, 9.5);
         //rb3
         line.DrawLine(43, 9.5, 43, 13.5);
-
+	
         gPad->Update();
         TPaletteAxis *palette;
         palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
@@ -156,17 +171,7 @@ private:
         gPad->Update();
       }
 
-      if(o.name.find("Occupancy") != std::string::npos)
-      {          //summary occupancy plots
-        obj->GetXaxis()->SetNdivisions(-510);
-        obj->GetYaxis()->SetNdivisions(-510);
-        obj->GetXaxis()->CenterLabels();
-        obj->GetYaxis()->CenterLabels();
-        c->SetGridx();
-        c->SetGridy();
-        //    return;
-      }
-
+     
       if(o.name.find("OccupancyNormByGeoAndRPCEvents")!= std::string::npos)
       {
         obj->SetMaximum(0.2);
@@ -178,10 +183,10 @@ private:
         obj->GetXaxis()->LabelsOption("v");
         obj->GetXaxis()->SetLabelSize(0.03);
         obj->GetXaxis()->SetLabelOffset(0.005);
-        obj->GetXaxis()->SetNdivisions(-510);
+        //obj->GetXaxis()->SetNdivisions(-510);
         obj->GetYaxis()->SetLabelSize(0.03);
         obj->GetYaxis()->SetLabelOffset(0.005);
-        obj->GetYaxis()->SetNdivisions(-510);
+	// obj->GetYaxis()->SetNdivisions(-510);
         return;
       }
 
@@ -262,14 +267,13 @@ private:
 
         int colorPalette3[7];
 
-        // colorPalette3[0]=416;
-        colorPalette3[0]=416; // Gren OK
+	colorPalette3[0]=416; // Gren OK
         colorPalette3[1]=860; // Blue OFF
         colorPalette3[2]= 400; // Yallow Noisily Strip
         colorPalette3[3]= 807; // Orange Noisily Chamber
         colorPalette3[4]= 616;  // Pink Partly Dead
         colorPalette3[5]= 632; // red Dead
-        colorPalette3[6]= 432;
+        colorPalette3[6]= 432; // Bad Shape
 
         gStyle->SetPalette(7, colorPalette3);
 
@@ -289,17 +293,49 @@ private:
 
       if(o.name.find("VStatus_Wheel") != std::string::npos)
       {
-        obj->SetMinimum(0.5);
-        obj->SetMaximum(3.5);
+        obj->SetMinimum(-0.5);
+        obj->SetMaximum(2.5);
 
         int colorPalette4[3];
 
-        colorPalette4[0]=416; // Blue OFF
-        colorPalette4[1]=860; // Green ON
+        colorPalette4[1]=416; // Blue OFF
+        colorPalette4[0]=860; // Green ON
         colorPalette4[2]= 400; // Yallow Error
         gStyle->SetPalette(3, colorPalette4);
-        return;
+       
+	c->cd();
+	gPad->Update();
+	
+	TPaletteAxis *palette;
+	palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+	palette->GetAxis()->SetLabelSize(0); 
+	palette->GetAxis()->SetTitle("OFF                                     ON                                 Error                    ");
+	palette->SetTitleOffset(0.3);
+	palette->SetTitleSize(0.025);
+	
+	return;
       }
+
+
+      if(o.name.find("RPCNoisyStrips_Roll_vs_Sector") != std::string::npos) {
+	
+	obj->SetMinimum(-0.5);
+	obj->SetMaximum(5.5);
+	
+	int colorPalette5[6];
+	colorPalette5[0] = 416; // G
+	colorPalette5[1] = 400; // Y
+	colorPalette5[2] = 400; // Y
+	colorPalette5[3] = 807; // O
+	colorPalette5[4] = 632; // R
+	colorPalette5[5] = 632; // R
+	
+	gStyle->SetPalette(6, colorPalette5);
+	
+	return;
+      }
+      
+
 
       if(o.name.find("NumberOfDigi_Mean_Roll_vs_Sector") != std::string::npos)
       {
@@ -317,6 +353,32 @@ private:
         gStyle->SetPalette(5, colorPalette5);
         return;
       }
+
+      //for Offline DQM
+      if(o.name.find("Efficiency_Roll") != std::string::npos)
+      {
+	//obj->Reset();
+	obj->SetMinimum(0.0);
+        obj->SetMaximum(100.0);
+	
+	obj->SetBinContent(1,1,0);
+	
+        int colorPaletteEff[10];
+	colorPaletteEff[0] = 632; // R
+	colorPaletteEff[1] = 632; // R
+	colorPaletteEff[2] = 632; // R
+	colorPaletteEff[3] = 632; // R
+	colorPaletteEff[4] = 632; // R
+	colorPaletteEff[5] = 632; // R
+	colorPaletteEff[6] = 632; // R
+	colorPaletteEff[7] = 807; // O
+	colorPaletteEff[8] = 400; // Y
+	colorPaletteEff[9] = 416; // G
+	
+	gStyle->SetPalette(10, colorPaletteEff);
+        return;
+      }
+
     }
 };
 
