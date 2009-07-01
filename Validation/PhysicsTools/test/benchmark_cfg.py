@@ -16,28 +16,22 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 # source
 process.source = cms.Source("PoolSource", 
     fileNames = cms.untracked.vstring(  
-#      '/store/relval/CMSSW_3_1_0_pre6/RelValTTbar/GEN-SIM-RECO/IDEAL_31X_v1/0002/50D4BADB-FA32-DE11-BA01-000423D98DC4.root'
+      '/store/relval/CMSSW_3_1_0_pre6/RelValTTbar/GEN-SIM-RECO/IDEAL_31X_v1/0002/50D4BADB-FA32-DE11-BA01-000423D98DC4.root'
 #         'file:step2_RAW2DIGI_RECO.root'
 #          'file:/uscms/home/petar/sw/CMSSW_3_1_0_pre9/src/step2_RAW2DIGI_RECO.root'
 #          'file:/uscms/home/petar/sw2/CMSSW_3_1_0_pre9/src/step2_RAW2DIGI_RECO.root'
 #           'file:/uscms_data/d2/malik/FORCHARLES/345_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
 #           'file:/uscms_data/d2/malik/FORCHARLES/432_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
 #           'file:/uscms_data/d2/malik/FORCHARLES/64_432_TTbar_Tauola_step2_RAW2DIGI_RECO.root'
-##############################################################################################
 #            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recominbias_RAW2DIGI_RECO.root'
 #            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recominbias_RAW2DIGI_RECO.root'
 #            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recottbar_RAW2DIGI_RECO.root'
-#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recottbar_RAW2DIGI_RECO.root'
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recottbar_RAW2DIGI_RECO.root
 #            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC4_recoqcd_RAW2DIGI_RECO.root'
-            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recoqcd_RAW2DIGI_RECO.root' 
-#            'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recominbias_RAW2DIGI_RECO.root'
-#   	     'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recottbar_RAW2DIGI_RECO.root'
-#            'file:/uscms_data/d2/malik/FORCHARLES/432_on_SLC4_recoqcd_RAW2DIGI_RECO.root'
-##############################################################################################	   
-
+#            'file:/uscms_data/d2/malik/FORCHARLES/345_on_SLC5_recoqcd_RAW2DIGI_RECO.root' 
     )
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -62,6 +56,8 @@ process.prefer("L2L3JetCorrectorSC7Calo")
 
 # PAT Layer 0+1
 process.load("Validation.PhysicsTools.patObjectBenchmarkGeneric_cfi")
+#process.load("Validation.RecoParticleFlow.tauBenchmarkGeneric_cff")
+process.load("Validation.PhysicsTools.tauBenchmarkGeneric_cff")
 
 process.p =cms.Path(
     process.patDefaultSequence*  
@@ -77,9 +73,10 @@ process.p =cms.Path(
 
     process.patMuonValidation*
     process.patElectronValidation*
-#    process.patMETValidation*
-#    process.patCaloMETValidation*
-    process.patTauValidation*
+    process.patMETValidation*
+    process.patCaloMETValidation*
+#    process.patTauValidation*
+    process.pfTauBenchmarkGeneric* 
     process.patPhotonValidation
 
 )
