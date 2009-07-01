@@ -429,6 +429,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   if(debug) std::cout <<"Digi Getting the RPC Digis"<<std::endl;
   edm::Handle<RPCDigiCollection> rpcDigis;
   iEvent.getByLabel(muonRPCDigis, rpcDigis);
+  if(debug) std::cout<<"Before the loop of the digis"<<std::endl;
   char detUnitLabel[128];
   for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
     if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
@@ -438,20 +439,27 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	RPCDetId rpcId = (*r)->id();
 	RPCGeomServ rpcsrv(rpcId);
 	std::string nameRoll = rpcsrv.name();
+	if(rpcId.region()==0 && (incldt == false || incldtMB4 == false)) continue;  
+	if(rpcId.region()!=0 && inclcsc == false ) continue;  
 	std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
+
 	sprintf(detUnitLabel ,"%s",nameRoll.c_str());
 	sprintf(layerLabel ,"%s",nameRoll.c_str());
 	RPCDigiCollection::Range rpcRangeDigi=rpcDigis->get(rpcId);
+
 	for (RPCDigiCollection::const_iterator digiIt = rpcRangeDigi.first;digiIt!=rpcRangeDigi.second;++digiIt){
 	  int stripDetected=digiIt->strip();
 	  sprintf(meIdRPC,"BXDistribution_%s",detUnitLabel);
 	  meMap[meIdRPC]->Fill(digiIt->bx());
 	  if(rpcId.region()==0){
 	    sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
+	    meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
+	    if(debug) std::cout<<"Digis for "<<meIdRPC<<meIdRPC<<std::endl;
 	  }else {
 	    sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
+	    meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
+	    if(debug) std::cout<<"Digis for "<<meIdRPC<<meIdRPC<<std::endl;
 	  }
-	  meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
 	}
       }
     }
@@ -467,6 +475,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
     edm::Handle<DTRecSegment4DCollection> all4DSegments;
     iEvent.getByLabel(dt4DSegments, all4DSegments);
+    if(debug) std::cout<<"I got the segments"<<std::cout;
+    
     if(all4DSegments->size()>0){
       if(all4DSegments->size()<=16) statistics->Fill(2);
 
@@ -1411,7 +1421,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
 		      countRecHits++;
 		      LocalPoint recHitPos=recHit->localPosition();
-		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x()*straighter(rollasociated->id());//Corrections to the wrong orientations
+		      float res=PointExtrapolatedRPCFrame.x()- recHitPos.x();//*straighter(rollasociated->id());//Corrections to the wrong orientations
 		      if(manualalignment) res = res - alignmentinfo[rpcId.rawId()];
 		      if(debug) std::cout<<"CSC  \t \t \t \t \t \t Found Rec Hit at "<<res<<"cm of the prediction."<<std::endl;
 		      if(fabs(res)<fabs(minres)){
