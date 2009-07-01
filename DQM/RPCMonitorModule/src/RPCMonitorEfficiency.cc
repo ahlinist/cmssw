@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.18 2009/05/27 07:54:47 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.23 2009/06/30 12:52:49 carrillo Exp $
 //
 //
 
@@ -78,49 +78,27 @@ public:
   TH2F * bxbarrel;
   TH2F * bxendcap;
   
-  TH1F * hGlobalResClu1La1;
-  TH1F * hGlobalResClu1La2;
-  TH1F * hGlobalResClu1La3;
-  TH1F * hGlobalResClu1La4;
-  TH1F * hGlobalResClu1La5;
-  TH1F * hGlobalResClu1La6;
 
-  TH1F * hGlobalResClu2La1;
-  TH1F * hGlobalResClu2La2;
-  TH1F * hGlobalResClu2La3;
-  TH1F * hGlobalResClu2La4;
-  TH1F * hGlobalResClu2La5;
-  TH1F * hGlobalResClu2La6;
 
-  TH1F * hGlobalResClu3La1;
-  TH1F * hGlobalResClu3La2;
-  TH1F * hGlobalResClu3La3;
-  TH1F * hGlobalResClu3La4;
-  TH1F * hGlobalResClu3La5;
-  TH1F * hGlobalResClu3La6;
 
   //Endcap
 
-  TH1F * hGlobalResClu1R3C;
-  TH1F * hGlobalResClu1R3B;
-  TH1F * hGlobalResClu1R3A;
-  TH1F * hGlobalResClu1R2C;
-  TH1F * hGlobalResClu1R2B;
-  TH1F * hGlobalResClu1R2A;
 
-  TH1F * hGlobalResClu2R3C;
-  TH1F * hGlobalResClu2R3B;
-  TH1F * hGlobalResClu2R3A;
-  TH1F * hGlobalResClu2R2C;
-  TH1F * hGlobalResClu2R2B;
-  TH1F * hGlobalResClu2R2A;
 
-  TH1F * hGlobalResClu3R3C;
-  TH1F * hGlobalResClu3R3B;
-  TH1F * hGlobalResClu3R3A;
-  TH1F * hGlobalResClu3R2C;
-  TH1F * hGlobalResClu3R2B;
-  TH1F * hGlobalResClu3R2A;
+
+  TH1F * residualDisk1Ring2;
+  TH1F * residualDisk1Ring3;
+  TH1F * residualDisk2Ring2;
+  TH1F * residualDisk2Ring3;
+  TH1F * residualDisk3Ring2;
+  TH1F * residualDisk3Ring3;
+
+  TH1F * residualDiskm1Ring2;
+  TH1F * residualDiskm1Ring3;
+  TH1F * residualDiskm2Ring2;
+  TH1F * residualDiskm2Ring3;
+  TH1F * residualDiskm3Ring2;
+  TH1F * residualDiskm3Ring3;
   
   TH1F * EffBarrel; //Average
   TH1F * DoubleGapBarrel; //Double Gap
@@ -177,6 +155,27 @@ public:
   TH1F * ExGregD2R3;  
   TH1F * ExGregD3R2;  
   TH1F * ExGregD3R3;  
+
+  TH1F * GregDm1R2;  
+  TH1F * GregDm1R3;  
+  TH1F * GregDm2R2;  
+  TH1F * GregDm2R3;  
+  TH1F * GregDm3R2;  
+  TH1F * GregDm3R3;  
+
+  TH1F * OcGregDm1R2;  
+  TH1F * OcGregDm1R3;  
+  TH1F * OcGregDm2R2;  
+  TH1F * OcGregDm2R3;  
+  TH1F * OcGregDm3R2;  
+  TH1F * OcGregDm3R3;  
+
+  TH1F * ExGregDm1R2;  
+  TH1F * ExGregDm1R3;  
+  TH1F * ExGregDm2R2;  
+  TH1F * ExGregDm2R3;  
+  TH1F * ExGregDm3R2;  
+  TH1F * ExGregDm3R3;  
   
   TH1F * CLSWm2;  
   TH1F * CLSWm1;  
@@ -457,6 +456,8 @@ private:
   std::ofstream RollYEff;
   std::ofstream efftxt;
   std::ofstream alignment;
+  std::ofstream rollZeroEff;
+  std::ofstream rollZeroPrediction;
   bool prodimages;
   bool makehtml;
   bool dosD;
@@ -498,6 +499,8 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   efftxt.open("RPCDetId_Eff.dat");
   alignment.open("Alignment.dat");
   RollYEff.open("rollYeff.txt");
+  rollZeroEff.open("rollZeroEff.txt");
+  rollZeroPrediction.open("rollZeroPrediction.txt");
 }
 
 
@@ -526,13 +529,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   TCanvas * Ca3;
   TCanvas * Ca4;
   TCanvas * Ca5;
-
+  TCanvas * Ca5a;
+  TCanvas * Ca6;
+  TCanvas * Ca7;
+  TCanvas * Ca8;
+  TCanvas * Ca9;
+  
+  Ca0 = new TCanvas("Ca0","Profile",400,300);
+  Ca1 = new TCanvas("Ca1","Efficiency",800,600);
+  Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
+  Ca3 = new TCanvas("Ca3","Profile",1200,600);
+  Ca4 = new TCanvas("Ca4","Residuals",800,600);
+  Ca5 = new TCanvas("Ca5","BXbyRegions",800,600);
+  Ca5a = new TCanvas("Ca5a","Scatter Angle Plots",800,600);
+  Ca6 = new TCanvas("Ca6","ClusterSize",800,600);
+  Ca7 = new TCanvas("Ca7","ResidualsEndCap",800,600);
+  Ca8 = new TCanvas("Ca8","DistBorders",800,600);
+  Ca9 = new TCanvas("Ca9","MeanResiduals",400,300);
+  
   bxendcap= new TH2F ("BXEndCap","BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   bxbarrel= new TH2F ("BXBarrel","BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
-  Ca5 = new TCanvas("Ca5","BX by Regions",800,600);
   
-  Ca2 = new TCanvas("Ca2","Global Efficiency",CanvaSizeX,CanvaSizeY);
-
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
   PinoBarrel = new TH1F ("PinoBarrel","Efficiency in central part For All The Barrel",51,-1,101);
@@ -573,6 +590,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   CLSW0= new TH1F ("ClusterSizeW0","Cluster Size Wheel 0 per sector",12,0.5,12.5);
   CLSW1= new TH1F ("ClusterSizeW1","Cluster Size Wheel 1 per sector",12,0.5,12.5);
   CLSW2= new TH1F ("ClusterSizeW2","Cluster Size Wheel 2 per sector",12,0.5,12.5);
+
+  residualDiskm1Ring2 = new TH1F("residualDiskm1Ring2","Residuals for Disk -1 Ring 2",101,-20.,20.);
+  residualDiskm1Ring3 = new TH1F("residualDiskm1Ring3","Residuals for Disk -1 Ring 3",101,-20.,20.);
+  residualDiskm2Ring2 = new TH1F("residualDiskm2Ring2","Residuals for Disk -2 Ring 2",101,-20.,20.);
+  residualDiskm2Ring3 = new TH1F("residualDiskm2Ring3","Residuals for Disk -2 Ring 3",101,-20.,20.);
+  residualDiskm3Ring2 = new TH1F("residualDiskm3Ring2","Residuals for Disk -3 Ring 2",101,-20.,20.);
+  residualDiskm3Ring3 = new TH1F("residualDiskm3Ring3","Residuals for Disk -3 Ring 3",101,-20.,20.);
+
+  residualDisk1Ring2  = new TH1F("residualDisk1Ring2","Residuals for Disk 1 Ring 2",101,-20.,20.);
+  residualDisk1Ring3  = new TH1F("residualDisk1Ring3","Residuals for Disk 1 Ring 3",101,-20.,20.);
+  residualDisk2Ring2  = new TH1F("residualDisk2Ring2","Residuals for Disk 2 Ring 2",101,-20.,20.);
+  residualDisk2Ring3  = new TH1F("residualDisk2Ring3","Residuals for Disk 2 Ring 3",101,-20.,20.);
+  residualDisk3Ring2  = new TH1F("residualDisk3Ring2","Residuals for Disk 3 Ring 2",101,-20.,20.);
+  residualDisk3Ring3  = new TH1F("residualDisk3Ring3","Residuals for Disk 3 Ring 3",101,-20.,20.);
 
   std::stringstream meId; 
   std::stringstream title; 
@@ -658,6 +689,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   ExGregD2R3= new TH1F ("ExGregDistroD2R3","Expected Distribution for Station 2 Ring 3",36,0.5,36.5);
   ExGregD3R2= new TH1F ("ExGregDistroD3R2","Expected Distribution for Station 3 Ring 2",36,0.5,36.5);
   ExGregD3R3= new TH1F ("ExGregDistroD3R3","Expected Distribution for Station 3 Ring 3",36,0.5,36.5);
+
+  GregDm1R2= new TH1F ("GregDistroDm1R2","Efficiency for Station - 1 Ring 2",36,0.5,36.5);
+  GregDm1R3= new TH1F ("GregDistroDm1R3","Efficiency for Station - 1 Ring 3",36,0.5,36.5);
+  GregDm2R2= new TH1F ("GregDistroDm2R2","Efficiency for Station - 2 Ring 2",36,0.5,36.5);
+  GregDm2R3= new TH1F ("GregDistroDm2R3","Efficiency for Station - 2 Ring 3",36,0.5,36.5);
+  GregDm3R2= new TH1F ("GregDistroDm3R2","Efficiency for Station - 3 Ring 2",36,0.5,36.5);
+  GregDm3R3= new TH1F ("GregDistroDm3R3","Efficiency for Station - 3 Ring 3",36,0.5,36.5);
+
+  OcGregDm1R2= new TH1F ("OcGregDistroDm1R2","Occupancy Distribution for Station - 1 Ring 2",36,0.5,36.5);
+  OcGregDm1R3= new TH1F ("OcGregDistroDm1R3","Occupancy Distribution for Station - 1 Ring 3",36,0.5,36.5);
+  OcGregDm2R2= new TH1F ("OcGregDistroDm2R2","Occupancy Distribution for Station - 2 Ring 2",36,0.5,36.5);
+  OcGregDm2R3= new TH1F ("OcGregDistroDm2R3","Occupancy Distribution for Station - 2 Ring 3",36,0.5,36.5);
+  OcGregDm3R2= new TH1F ("OcGregDistroDm3R2","Occupancy Distribution for Station - 3 Ring 2",36,0.5,36.5);
+  OcGregDm3R3= new TH1F ("OcGregDistroDm3R3","Occupancy Distribution for Station - 3 Ring 3",36,0.5,36.5);
+
+  ExGregDm1R2= new TH1F ("ExGregDistroDm1R2","Expected Distribution for Station - 1 Ring 2",36,0.5,36.5);
+  ExGregDm1R3= new TH1F ("ExGregDistroDm1R3","Expected Distribution for Station - 1 Ring 3",36,0.5,36.5);
+  ExGregDm2R2= new TH1F ("ExGregDistroDm2R2","Expected Distribution for Station - 2 Ring 2",36,0.5,36.5);
+  ExGregDm2R3= new TH1F ("ExGregDistroDm2R3","Expected Distribution for Station - 2 Ring 3",36,0.5,36.5);
+  ExGregDm3R2= new TH1F ("ExGregDistroDm3R2","Expected Distribution for Station - 3 Ring 2",36,0.5,36.5);
+  ExGregDm3R3= new TH1F ("ExGregDistroDm3R3","Expected Distribution for Station - 3 Ring 3",36,0.5,36.5);
 
   EffDistroDm3= new TH1F ("EffDistroDm3near","Efficiency Distribution For Near Side Disk -3",20,0.5,100.5);  
   EffDistroDm2= new TH1F ("EffDistroDm2near","Efficiency Distribution For Near Side Disk -2",20,0.5,100.5);
@@ -822,24 +874,23 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Wheel2Summary = new TH2F (os.c_str(), os.c_str(), 12, 0.5,12.5, 22, 0.5, 22.5);
   
   os="Efficiency_Roll_vs_Sector_Disk_-3";                                      
-  Diskm3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm3Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_-2";                                      
-  Diskm2Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm2Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_-1";                                      
-  Diskm1Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Diskm1Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+1";                                      
-  Disk1Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk1Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+2";                                      
-  Disk2Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk2Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   os="Efficiency_Roll_vs_Sector_Disk_+3";                                      
-  Disk3Summary = new TH2F (os.c_str(), os.c_str(), 6, 0.5,6.5, 12, 0.5, 12.5);
+  Disk3Summary = new TH2F (os.c_str(), os.c_str(), 36, 0.5,36.5, 6, 0.5, 6.5);
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
   MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
   
   //Producing plots for residuals and global statistics.
 
-  Ca3 = new TCanvas("Ca3","Profile",1200,600);
   
   int Stat = 0;
   if(statistics) Stat = 1;
@@ -851,6 +902,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   folder = "DQMData/Muons/MuonSegEff/";
   
   meIdRES = folder + "Statistics";
+
+  Ca3->Clear();
   
   statistics = (TH1F*)theFile->Get(meIdRES.c_str());
   statistics->GetXaxis()->LabelsOption("v");
@@ -860,77 +913,79 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   labeltoSave = "Statistics.png";
   Ca3->SetBottomMargin(0.35);
   Ca3->SaveAs(labeltoSave.c_str()); 
-  Ca3->Clear();
+  
+  Ca3->Close();
 
   folder = "DQMData/Muons/MuonSegEff/Residuals/Barrel/";
  
-  Ca4 = new TCanvas("Ca4","Residuals",800,600);
-  
-  
   command = "mkdir resBarrel"; system(command.c_str());
   
+  Ca4->Clear();
+  
   meIdRES = folder + "GlobalResidualsClu1La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu1La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu1La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu1La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu1La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu1La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
   Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
 
   meIdRES = folder + "GlobalResidualsClu2La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu2La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu2La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu2La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu2La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu2La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
 
   meIdRES = folder + "GlobalResidualsClu3La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu3La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu3La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu3La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu3La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   meIdRES = folder + "GlobalResidualsClu3La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
   
   folder = "DQMData/Muons/MuonSegEff/Residuals/EndCap/";
  
   command = "mkdir resEndCap"; system(command.c_str());
   
-  meIdRES = folder + "GlobalResidualsClu1R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  
+  meIdRES = folder + "GlobalResidualsClu1R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu1R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu1R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu1R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu1R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu1R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu1R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu2R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu2R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R2A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R2B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R2C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R2C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R3A"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3A.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R3B"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3B.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  meIdRES = folder + "GlobalResidualsClu3R3C"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resEndCap/ResidualsClu3R3C.png"; histoRES->GetXaxis()->SetTitle("(cm)");    if(histoRES->GetEntries()!=0)Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+
+  Ca4->Close();
+
   //Setting Labels in Summary Label Barrel.
   
   std::stringstream binLabel;
@@ -993,9 +1048,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   //Setting Labels in Summary Label Barrel.
 
-  for(int i=1;i<=6;i++){
+  for(int i=1;i<=36;i++){
     binLabel.str("");
-    binLabel<<"Sec "<<i;
+    binLabel<<i;
     //if(debug) std::cout<<"Labeling EndCaps"<<binLabel.str()<<std::endl;
     Diskm3Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
     Diskm2Summary->GetXaxis()->SetBinLabel(i,binLabel.str().c_str());
@@ -1006,16 +1061,18 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
 
   for(int ri=2;ri<=3;ri++){
-    for(int su=1;su<=6;su++){
+    for(int roll=1;roll<=3;roll++){
       binLabel.str("");
-      binLabel<<"Ri"<<ri<<" Su"<<su;
+      if(roll==1) binLabel<<"Ring "<<ri<<" A";
+      else if(roll==2) binLabel<<"Ring "<<ri<<" B";
+      else if(roll==3) binLabel<<"Ring "<<ri<<" C";
       //if(debug) std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
-      Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Diskm1Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk1Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk2Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
-      Disk3Summary->GetYaxis()->SetBinLabel((ri-2)*6+su,binLabel.str().c_str());
+      Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Diskm1Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk1Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk2Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
+      Disk3Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
     }
   }
   
@@ -1077,7 +1134,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   //if(debug) std::cout<<"Before Rolls Loop"<<std::endl;
   
-  Ca0 = new TCanvas("Ca0","Profile",400,300);
+
   
   theFileOut->cd();
   
@@ -1086,7 +1143,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
       RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
       std::vector< const RPCRoll*> roles = (ch->rolls());
       for(std::vector<const RPCRoll*>::const_iterator r = roles.begin();r != roles.end(); ++r){
-	
 	RPCDetId rpcId = (*r)->id();
 	RPCGeomServ rpcsrv(rpcId);
 	
@@ -1094,16 +1150,17 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	//int station = rpcId.station();
 
 	int nstrips = int((*r)->nstrips());
-
 	
 	std::string name = rpcsrv.name();
-	
-	if(debug) std::cout<<"Starting with region="<<rpcId.region()<<" "<<name<<std::endl;
-	
-	if(rpcId.region()==0 && barrel){//en esta!!!
-	  const RectangularStripTopology* topb_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
-	  float stripl = topb_->stripLength();
-	  float stripw = topb_->pitch();
+
+	if(rpcId.region()==0 && barrel == false) continue;
+	if(rpcId.region()!=0 && endcap == false ) continue;
+		
+	if(rpcId.region()==0 && barrel){  
+	  
+	  const RectangularStripTopology* top_= dynamic_cast<const RectangularStripTopology*> (&((*r)->topology()));
+	  float stripl = top_->stripLength();
+	  float stripw = top_->pitch();
 	     
 	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual,meIdCLS,meIdBXY,meIdINEF;
 	  
@@ -1133,7 +1190,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
 	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
-	    histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
+	    histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
 	  }
 
 	  const int n = 20;
@@ -1215,7 +1272,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual){
+	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual && barrel){
 	    //if(debug) std::cout<<"Leidos los histogramas 2D!"<<std::endl;
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=2*nstrips;++j){
@@ -1618,6 +1675,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  	  
 	  p=histoDT->Integral();
 	  o=histoRPC->Integral();
+
+
+	  if(p==0) rollZeroPrediction<<name<<std::endl;
+	  if(o==0&&p>10) rollZeroEff<<name<<std::endl;
 	  
 	  if(debug) std::cout<<"Integral P="<<p<<" Observed="<<o<<std::endl;
 	  
@@ -1925,17 +1986,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
               NoPredictionW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
 	    }
 	  }
-	}else if(endcap && rpcId.region()!=0){//ENDCAPs
+	}else if(endcap&& rpcId.region()!=0){//ENDCAPs
 	  if(debug) std::cout<<"In the EndCap"<<std::endl;
 	  
-	  const TrapezoidalStripTopology* tope_= dynamic_cast<const TrapezoidalStripTopology*> (&((*r)->topology()));
-
-	  if(debug) std::cout<<"I got the topology "<<std::endl;
-	  
-	  float stripl = tope_->stripLength();
-	  float stripw = tope_->pitch();
-
-	  if(debug) std::cout<<"Read strip dimensions "<<std::endl;
+	  const TrapezoidalStripTopology* top_= dynamic_cast<const TrapezoidalStripTopology*> (&((*r)->topology()));
+	  float stripl = top_->stripLength();
+	  float stripw = top_->pitch();
 	  
 	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual,meIdCLS,meIdBXY, meIdINEF;
 	 
@@ -1974,8 +2030,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float y[n];
 	  float ex[n];
 	  float ey[n];
-
-	  if(debug) std::cout<<"Before If CLSandBXY "<<std::endl;
 
 	  if(CLSandBXY){//EndCap
 	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
@@ -2048,9 +2102,28 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  if(debug) std::cout<<"Checking 2D Histograms for"<<name<<std::endl;
+	  if(debug) std::cout<<"Checking 2D Histograms for "<<name<<std::endl;
 
-	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual){
+	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual && endcap){
+
+	    if(rpcId.region()==1){
+	      if(rpcId.station()==1 && rpcId.ring()==2) residualDisk1Ring2->Add(histoResidual);
+	      if(rpcId.station()==1 && rpcId.ring()==3) residualDisk1Ring3->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==2) residualDisk2Ring2->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==3) residualDisk2Ring3->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==2) residualDisk3Ring2->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==3) residualDisk3Ring3->Add(histoResidual);
+	    }
+	    if(rpcId.region()==-1){
+	      if(rpcId.station()==1 && rpcId.ring()==2) residualDiskm1Ring2->Add(histoResidual);
+	      if(rpcId.station()==1 && rpcId.ring()==3) residualDiskm1Ring3->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==2) residualDiskm2Ring2->Add(histoResidual);
+	      if(rpcId.station()==2 && rpcId.ring()==3) residualDiskm2Ring3->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==2) residualDiskm3Ring2->Add(histoResidual);
+	      if(rpcId.station()==3 && rpcId.ring()==3) residualDiskm3Ring3->Add(histoResidual);
+	    }
+
+
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=2*nstrips;++j){
 		ef2D=0.;
@@ -2405,6 +2478,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		if(debug) std::cout<<"histoResidual "<<std::endl;
 		histoResidual->GetXaxis()->SetTitle("cm");
 		histoResidual->Draw();
+		
 		labeltoSave = name + "/Residual.png";
 		Ca0->SaveAs(labeltoSave.c_str());
 		Ca0->Clear();
@@ -2487,6 +2561,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregD2R3->Fill(rpcsrv.segment(),p);OcGregD2R3->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregD3R2->Fill(rpcsrv.segment(),p);OcGregD3R2->Fill(rpcsrv.segment(),o);}
 	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregD3R3->Fill(rpcsrv.segment(),p);OcGregD3R3->Fill(rpcsrv.segment(),o);}
+	  }else if(rpcId.region()==-1){
+	    if(rpcId.station()==1 && rpcId.ring()==2){ ExGregDm1R2->Fill(rpcsrv.segment(),p);OcGregDm1R2->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling Dm1 R2 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==1 && rpcId.ring()==3){ ExGregDm1R3->Fill(rpcsrv.segment(),p);OcGregDm1R3->Fill(rpcsrv.segment(),o); if(debug) std::cout<<name<<"GREG Filling Dm1 R3 with o="<<o<<" p="<<p<<" ef="<<ef<<std::endl;}
+	    if(rpcId.station()==2 && rpcId.ring()==2){ ExGregDm2R2->Fill(rpcsrv.segment(),p);OcGregDm2R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==2 && rpcId.ring()==3){ ExGregDm2R3->Fill(rpcsrv.segment(),p);OcGregDm2R3->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==2){ ExGregDm3R2->Fill(rpcsrv.segment(),p);OcGregDm3R2->Fill(rpcsrv.segment(),o);}
+	    if(rpcId.station()==3 && rpcId.ring()==3){ ExGregDm3R3->Fill(rpcsrv.segment(),p);OcGregDm3R3->Fill(rpcsrv.segment(),o);}
 	  }
 	  
 
@@ -2509,16 +2590,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  //Pigi Histos
 
 
-	  int Y=((*r)->id().ring()-2)*6+(*r)->id().subsector();
+	  int Y=((*r)->id().ring()-2)*3+(*r)->id().roll();
 
 	  if(debug) std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
 
-	  if(Disk==-3) Diskm3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==-2) Diskm2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==-1) Diskm1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==1) Disk1Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==2) Disk2Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
-	  else if(Disk==3) Disk3Summary->SetBinContent((*r)->id().sector(),Y,averageeff);
+	  if(Disk==-3) Diskm3Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==-2) Diskm2Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==-1) Diskm1Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==1) Disk1Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==2) Disk2Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
+	  else if(Disk==3) Disk3Summary->SetBinContent(rpcsrv.segment(),Y,averageeff);
 
 
  	  //Near Side
@@ -2835,6 +2916,38 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     if(N!=0.){ eff = OcGregD3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
     GregD3R3->SetBinContent(k,eff); GregD3R3->SetBinError(k,err);
     //HeightVsEffR3->Fill(eff,h);
+
+    //Negative EndCap
+
+    err=0; eff=0; N=ExGregDm1R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm1R2->GetBinContent(k)/N; err=sqrt(eff*(1-eff)/N);}
+    GregDm1R2->SetBinContent(k,eff); GregDm1R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+    
+    err=0; eff=0; N=ExGregDm1R3->GetBinContent(k);
+    if(N!=0.){eff = OcGregDm1R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm1R3->SetBinContent(k,eff); GregDm1R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
+    
+    err=0; eff=0; N=ExGregDm2R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm2R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm2R2->SetBinContent(k,eff); GregDm2R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm2R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm2R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm2R3->SetBinContent(k,eff); GregDm2R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm3R2->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm3R2->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm3R2->SetBinContent(k,eff); GregDm3R2->SetBinError(k,err);
+    //HeightVsEffR2->Fill(eff,h);
+
+    err=0; eff=0; N=ExGregDm3R3->GetBinContent(k);
+    if(N!=0.){ eff = OcGregDm3R3->GetBinContent(k)/N;err=sqrt(eff*(1-eff)/N);}
+    GregDm3R3->SetBinContent(k,eff); GregDm3R3->SetBinError(k,err);
+    //HeightVsEffR3->Fill(eff,h);
   }
 
   for(k=1;k<=12;k++){
@@ -2861,19 +2974,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   for(int sector = 1;sector <=12 ; sector++){
     CLSWm2->SetBinContent(sector,sectorCLSWm2[sector]->GetMean());
-    CLSWm2->SetBinError(sector,sectorCLSWm2[sector]->GetRMS()/sectorCLSWm2[sector]->GetEntries());
+    if(sectorCLSWm2[sector]->GetEntries()!=0) CLSWm2->SetBinError(sector,sectorCLSWm2[sector]->GetRMS()/sectorCLSWm2[sector]->GetEntries());
 
     CLSWm1->SetBinContent(sector,sectorCLSWm1[sector]->GetMean());
-    CLSWm1->SetBinError(sector,sectorCLSWm1[sector]->GetRMS()/sectorCLSWm1[sector]->GetEntries());
+    if(sectorCLSWm1[sector]->GetEntries()!=0) CLSWm1->SetBinError(sector,sectorCLSWm1[sector]->GetRMS()/sectorCLSWm1[sector]->GetEntries());
 
     CLSW0->SetBinContent(sector,sectorCLSW0[sector]->GetMean());
-    CLSW0->SetBinError(sector,sectorCLSW0[sector]->GetRMS()/sectorCLSW0[sector]->GetEntries());
+    if(sectorCLSW0[sector]->GetEntries()!=0) CLSW0->SetBinError(sector,sectorCLSW0[sector]->GetRMS()/sectorCLSW0[sector]->GetEntries());
 
     CLSW1->SetBinContent(sector,sectorCLSW1[sector]->GetMean());
-    CLSW1->SetBinError(sector,sectorCLSW1[sector]->GetRMS()/sectorCLSW1[sector]->GetEntries());
+    if(sectorCLSW1[sector]->GetEntries()!=0) CLSW1->SetBinError(sector,sectorCLSW1[sector]->GetRMS()/sectorCLSW1[sector]->GetEntries());
 
     CLSW2->SetBinContent(sector,sectorCLSW2[sector]->GetMean());
-    CLSW2->SetBinError(sector,sectorCLSW2[sector]->GetRMS()/sectorCLSW2[sector]->GetEntries());
+    if(sectorCLSW2[sector]->GetEntries()!=0) CLSW2->SetBinError(sector,sectorCLSW2[sector]->GetRMS()/sectorCLSW2[sector]->GetEntries());
   }
   
   Ca5->Clear();
@@ -3187,7 +3300,21 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     AverageEffD3far->GetYaxis()->SetRangeUser(0.,100.);
     EffGlobD3far->GetYaxis()->SetRangeUser(0.,100.);
     MaskedGlobD3far->GetYaxis()->SetRangeUser(0.,100.);
-    
+
+    residualDiskm1Ring2->Write();
+    residualDiskm1Ring3->Write();
+    residualDiskm2Ring2->Write();
+    residualDiskm2Ring3->Write();
+    residualDiskm3Ring2->Write();
+    residualDiskm3Ring3->Write();
+  
+    residualDisk1Ring2->Write(); 
+    residualDisk1Ring3->Write(); 
+    residualDisk2Ring2->Write(); 
+    residualDisk2Ring3->Write(); 
+    residualDisk3Ring2->Write(); 
+    residualDisk3Ring3->Write(); 
+      
   }
 
 
@@ -3276,69 +3403,74 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
-
-       std::cout<<i<<" "<<x[i]<<" "<<y[i]<<std::endl;
+       std::cout<<"Layer 1 "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa1.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
-  }
+  }   
+  
+  TGraphErrors * plot1 = new TGraphErrors(n,x,y,ex,ey);	
+  plot1->SetMarkerColor(1);
+  plot1->SetMarkerStyle(20);
+  plot1->SetMarkerSize(0.5);
+  plot1->GetXaxis()->SetTitle("Angle (degree)");
+  plot1->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
+  plot1->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa1.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
 
   ScatterPlotAlphaCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa2");
   if(ScatterPlotAlphaCLSLa2){
      for(int i=0;i<n;i++){
        float mean = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetMean();
        float entries = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetEntries();
-       float error = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       float error;
+       if(entries!=0 ) error = ScatterPlotAlphaCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       else error =0;
        x[i]=(i+1)*step;
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa2.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
   }
+   
+  TGraphErrors * plot2 = new TGraphErrors(n,x,y,ex,ey);	
+  plot2->SetMarkerColor(2);
+  plot2->SetMarkerStyle(21);
+  plot2->SetMarkerSize(0.5);
+  plot2->GetXaxis()->SetTitle("Angle (degree)");
+  plot2->GetYaxis()->SetTitle("Mean Cluster Size Layer 2");	
+  plot2->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa2.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
   
   ScatterPlotAlphaCLSLa3= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa3");
   if(ScatterPlotAlphaCLSLa3){
      for(int i=0;i<n;i++){
        float mean = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetMean();
        float entries = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetEntries();
-       float error = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       float error;
+       if(entries!=0) error = ScatterPlotAlphaCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       else error = 0;
        x[i]=(i+1)*step;
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
      }
-     
-     TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-     plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
-     plot->SetMarkerSize(0.5);
-     plot->GetXaxis()->SetTitle("Angle (degree)");
-     plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
-     plot->Draw("AP");
-     labeltoSave = "CLS/ClusterSizeVsAngleLa3.png";
-     Ca5->SaveAs(labeltoSave.c_str());
-     Ca5->Clear();
   }
+  
+  TGraphErrors * plot3 = new TGraphErrors(n,x,y,ex,ey);	
+  plot3->SetMarkerColor(3);
+  plot3->SetMarkerStyle(22);
+  plot3->SetMarkerSize(0.5);
+  plot3->GetXaxis()->SetTitle("Angle (degree)");
+  plot3->GetYaxis()->SetTitle("Mean Cluster Size Layer 3");	
+  plot3->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa3.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
   
 
   ScatterPlotAlphaCLSLa4= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa4");
@@ -3346,72 +3478,97 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error = 0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa4.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
+  
+  TGraphErrors * plot4 = new TGraphErrors(n,x,y,ex,ey);	
+  plot4->SetMarkerColor(4);
+  plot4->SetMarkerStyle(23);
+  plot4->SetMarkerSize(0.5);
+  plot4->GetXaxis()->SetTitle("Angle (degree)");
+  plot4->GetYaxis()->SetTitle("Mean Cluster Size Layer 4");	
+  plot4->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa4.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
 
   ScatterPlotAlphaCLSLa5= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa5");
   if(ScatterPlotAlphaCLSLa5){
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error = 0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa5.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
-
+  
+  TGraphErrors * plot5 = new TGraphErrors(n,x,y,ex,ey);	
+  plot5->SetMarkerColor(5);
+  plot5->SetMarkerStyle(25);
+  plot5->SetMarkerSize(0.5);
+  plot5->GetXaxis()->SetTitle("Angle (degree)");
+  plot5->GetYaxis()->SetTitle("Mean Cluster Size Layer 5");	
+  plot5->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa5.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+    
   ScatterPlotAlphaCLSLa6= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaCLSLa6");
   if(ScatterPlotAlphaCLSLa6){
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error = 0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
       ey[i]=error;
     }
-    
-    TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-    plot->SetMarkerColor(6);
-    plot->SetMarkerStyle(20);
-    plot->SetMarkerSize(0.5);
-    plot->GetXaxis()->SetTitle("Angle (degree)");
-    plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
-    plot->Draw("AP");
-    labeltoSave = "CLS/ClusterSizeVsAngleLa6.png";
-    Ca5->SaveAs(labeltoSave.c_str());
-    Ca5->Clear();
   }
+  
+  TGraphErrors * plot6 = new TGraphErrors(n,x,y,ex,ey);	
+  plot6->SetMarkerColor(6);
+  plot6->SetMarkerStyle(26);
+  plot6->SetMarkerSize(0.5);
+  plot6->GetXaxis()->SetTitle("Angle (degree)");
+  plot6->GetYaxis()->SetTitle("Mean Cluster Size Layer 6");	
+  plot6->Draw("AP");
+  labeltoSave = "CLS/ClusterSizeVsAngleLa6.png";
+  Ca5->SaveAs(labeltoSave.c_str());
+  Ca5->Clear();
+  
+  Ca5a->Clear();
+  
+  plot1->SetName("gr1");
+  plot2->SetName("gr2");
+  plot3->SetName("gr3");
+  plot4->SetName("gr4");
+  plot5->SetName("gr5");
+  plot6->SetName("gr6");
+
+  plot1->Write();
+  plot2->Write();
+  plot3->Write();
+  plot4->Write();
+  plot5->Write();
+  plot6->Write();
+
+  Ca5a->SaveAs("CLS/LayersByAngle.png");
 
   //El otro angulo
 
@@ -3420,18 +3577,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
      for(int i=0;i<n;i++){
        float mean = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetMean();
        float entries = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetEntries();
-       float error = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);         
+       float error;
+       if(entries!=0) error = ScatterPlotAlphaPCLSLa1->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);         
+       else error =0;
        x[i]=(i+1)*step;
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
 
-       std::cout<<i<<" "<<x[i]<<" "<<y[i]<<std::endl;
      }
      
      TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
      plot->SetMarkerColor(6);
-     plot->SetMarkerStyle(20);
+     plot->SetMarkerStyle(27);
      plot->SetMarkerSize(0.5);
      plot->GetXaxis()->SetTitle("AngleParallel (degree)");
      plot->GetYaxis()->SetTitle("Mean Cluster Size Layer 1");	
@@ -3441,12 +3599,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
      Ca5->Clear();
   }
 
+  
   ScatterPlotAlphaPCLSLa2= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa2");
   if(ScatterPlotAlphaPCLSLa2){
      for(int i=0;i<n;i++){
        float mean = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetMean();
        float entries = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetEntries();
-       float error = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       float error;
+       if(entries!=0) error = ScatterPlotAlphaPCLSLa2->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       else error =0;
        x[i]=(i+1)*step;
        ex[i]=step*0.5;
        y[i]=mean;
@@ -3470,7 +3631,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
      for(int i=0;i<n;i++){
        float mean = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetMean();
        float entries = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetEntries();
-       float error = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       float error;
+       if(entries!=0) error = ScatterPlotAlphaPCLSLa3->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+       else error = 0;
        x[i]=(i+1)*step;
        ex[i]=step*0.5;
        y[i]=mean;
@@ -3495,7 +3658,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaPCLSLa4->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error =0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
@@ -3519,7 +3684,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaPCLSLa5->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error =0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
@@ -3543,7 +3710,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     for(int i=0;i<n;i++){
       float mean = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetMean();
       float entries = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetEntries();
-      float error = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      float error;
+      if(entries!=0) error = ScatterPlotAlphaPCLSLa6->ProjectionY("_py",i,i+1)->GetRMS()/ sqrt(entries);   
+      else error = 0;
       x[i]=(i+1)*step;
       ex[i]=step*0.5;
       y[i]=mean;
@@ -3562,38 +3731,77 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     Ca5->Clear();
   }
   
-  Ca5->Clear();
-
   if(debug) std::cout<<"Producing Dist Border Plots"<<std::endl;
 
-  DistBorderClu1La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La1");DistBorderClu1La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 1");DistBorderClu1La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La1->Scale(1./DistBorderClu1La1->Integral());DistBorderClu1La1->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La1.png");Ca5->Clear();
-  DistBorderClu1La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La2");DistBorderClu1La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 2");DistBorderClu1La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La2->Scale(1./DistBorderClu1La2->Integral());DistBorderClu1La2->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La2.png");Ca5->Clear();
-  DistBorderClu1La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La3");DistBorderClu1La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 3");DistBorderClu1La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La3->Scale(1./DistBorderClu1La3->Integral());DistBorderClu1La3->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La3.png");Ca5->Clear();
-  DistBorderClu1La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La4");DistBorderClu1La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 4");DistBorderClu1La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La4->Scale(1./DistBorderClu1La4->Integral());DistBorderClu1La4->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La4.png");Ca5->Clear();
-  DistBorderClu1La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La5");DistBorderClu1La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 5");DistBorderClu1La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La5->Scale(1./DistBorderClu1La5->Integral());DistBorderClu1La5->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La5.png");Ca5->Clear();
-  DistBorderClu1La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La6");DistBorderClu1La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 6");DistBorderClu1La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu1La6->Scale(1./DistBorderClu1La6->Integral());DistBorderClu1La6->Draw(); Ca5->SaveAs("CLS/DistBorderClu1La6.png");Ca5->Clear();
+  Ca8->Clear();
+
+  DistBorderClu1La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La1");if(DistBorderClu1La1) { DistBorderClu1La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 1");DistBorderClu1La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La1->Integral()!=0) DistBorderClu1La1->Scale(1./DistBorderClu1La1->Integral());DistBorderClu1La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La1.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La2");if(DistBorderClu1La2) { DistBorderClu1La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 2");DistBorderClu1La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La2->Integral()!=0) DistBorderClu1La2->Scale(1./DistBorderClu1La2->Integral());DistBorderClu1La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La2.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La3");if(DistBorderClu1La3) { DistBorderClu1La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 3");DistBorderClu1La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La3->Integral()!=0) DistBorderClu1La3->Scale(1./DistBorderClu1La3->Integral());DistBorderClu1La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La3.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La4");if(DistBorderClu1La4) { DistBorderClu1La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 4");DistBorderClu1La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La4->Integral()!=0) DistBorderClu1La4->Scale(1./DistBorderClu1La4->Integral());DistBorderClu1La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La4.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La5");if(DistBorderClu1La5) { DistBorderClu1La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 5");DistBorderClu1La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La5->Integral()!=0) DistBorderClu1La5->Scale(1./DistBorderClu1La5->Integral());DistBorderClu1La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La5.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La6");if(DistBorderClu1La6) { DistBorderClu1La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 6");DistBorderClu1La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La6->Integral()!=0) DistBorderClu1La6->Scale(1./DistBorderClu1La6->Integral());DistBorderClu1La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La6.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
 
   if(debug) std::cout<<"Producing Dist Border Plots Clu2"<<std::endl;
 
-  DistBorderClu2La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La1");DistBorderClu2La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 1");DistBorderClu2La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La1->Scale(1./DistBorderClu2La1->Integral());DistBorderClu2La1->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La1.png");Ca5->Clear();
-  DistBorderClu2La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La2");DistBorderClu2La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 2");DistBorderClu2La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La2->Scale(1./DistBorderClu2La2->Integral());DistBorderClu2La2->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La2.png");Ca5->Clear();
-  DistBorderClu2La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La3");DistBorderClu2La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 3");DistBorderClu2La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La3->Scale(1./DistBorderClu2La3->Integral());DistBorderClu2La3->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La3.png");Ca5->Clear();
-  DistBorderClu2La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La4");DistBorderClu2La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 4");DistBorderClu2La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La4->Scale(1./DistBorderClu2La4->Integral());DistBorderClu2La4->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La4.png");Ca5->Clear();
-  DistBorderClu2La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La5");DistBorderClu2La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 5");DistBorderClu2La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La5->Scale(1./DistBorderClu2La5->Integral());DistBorderClu2La5->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La5.png");Ca5->Clear();
-  DistBorderClu2La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La6");DistBorderClu2La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 6");DistBorderClu2La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu2La6->Scale(1./DistBorderClu2La6->Integral());DistBorderClu2La6->Draw(); Ca5->SaveAs("CLS/DistBorderClu2La6.png");Ca5->Clear();
+  DistBorderClu2La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La1");if(DistBorderClu2La1) { DistBorderClu2La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 1");DistBorderClu2La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La1->Integral()!=0) DistBorderClu2La1->Scale(1./DistBorderClu2La1->Integral());DistBorderClu2La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La1.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La2");if(DistBorderClu2La2) { DistBorderClu2La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 2");DistBorderClu2La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La2->Integral()!=0) DistBorderClu2La2->Scale(1./DistBorderClu2La2->Integral());DistBorderClu2La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La2.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La3");if(DistBorderClu2La3) { DistBorderClu2La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 3");DistBorderClu2La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La3->Integral()!=0) DistBorderClu2La3->Scale(1./DistBorderClu2La3->Integral());DistBorderClu2La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La3.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La4");if(DistBorderClu2La4) { DistBorderClu2La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 4");DistBorderClu2La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La4->Integral()!=0) DistBorderClu2La4->Scale(1./DistBorderClu2La4->Integral());DistBorderClu2La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La4.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La5");if(DistBorderClu2La5) { DistBorderClu2La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 5");DistBorderClu2La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La5->Integral()!=0) DistBorderClu2La5->Scale(1./DistBorderClu2La5->Integral());DistBorderClu2La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La5.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La6");if(DistBorderClu2La6) { DistBorderClu2La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 6");DistBorderClu2La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La6->Integral()!=0) DistBorderClu2La6->Scale(1./DistBorderClu2La6->Integral());DistBorderClu2La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La6.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
 
   if(debug) std::cout<<"Producing Dist Border Plots Clu3"<<std::endl;
 
-  DistBorderClu3La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La1");DistBorderClu3La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 1");DistBorderClu3La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La1->Scale(1./DistBorderClu3La1->Integral());DistBorderClu3La1->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La1.png");Ca5->Clear();
-  DistBorderClu3La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La2");DistBorderClu3La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 2");DistBorderClu3La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La2->Scale(1./DistBorderClu3La2->Integral());DistBorderClu3La2->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La2.png");Ca5->Clear();
-  DistBorderClu3La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La3");DistBorderClu3La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 3");DistBorderClu3La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La3->Scale(1./DistBorderClu3La3->Integral());DistBorderClu3La3->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La3.png");Ca5->Clear();
-  DistBorderClu3La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La4");DistBorderClu3La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 4");DistBorderClu3La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La4->Scale(1./DistBorderClu3La4->Integral());DistBorderClu3La4->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La4.png");Ca5->Clear();
-  DistBorderClu3La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La5");DistBorderClu3La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 5");DistBorderClu3La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La5->Scale(1./DistBorderClu3La5->Integral());DistBorderClu3La5->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La5.png");Ca5->Clear();
-  DistBorderClu3La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La6");DistBorderClu3La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 6");DistBorderClu3La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");DistBorderClu3La6->Scale(1./DistBorderClu3La6->Integral());DistBorderClu3La6->Draw(); Ca5->SaveAs("CLS/DistBorderClu3La6.png");Ca5->Clear();
+  DistBorderClu3La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La1");if(DistBorderClu3La1) { DistBorderClu3La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 1");DistBorderClu3La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La1->Integral()!=0) DistBorderClu3La1->Scale(1./DistBorderClu3La1->Integral());DistBorderClu3La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La1.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La2");if(DistBorderClu3La2) { DistBorderClu3La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 2");DistBorderClu3La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La2->Integral()!=0) DistBorderClu3La2->Scale(1./DistBorderClu3La2->Integral());DistBorderClu3La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La2.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La3");if(DistBorderClu3La3) { DistBorderClu3La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 3");DistBorderClu3La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La3->Integral()!=0) DistBorderClu3La3->Scale(1./DistBorderClu3La3->Integral());DistBorderClu3La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La3.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La4");if(DistBorderClu3La4) { DistBorderClu3La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 4");DistBorderClu3La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La4->Integral()!=0) DistBorderClu3La4->Scale(1./DistBorderClu3La4->Integral());DistBorderClu3La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La4.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La5");if(DistBorderClu3La5) { DistBorderClu3La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 5");DistBorderClu3La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La5->Integral()!=0) DistBorderClu3La5->Scale(1./DistBorderClu3La5->Integral());DistBorderClu3La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La5.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La6");if(DistBorderClu3La6) { DistBorderClu3La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 6");DistBorderClu3La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La6->Integral()!=0) DistBorderClu3La6->Scale(1./DistBorderClu3La6->Integral());DistBorderClu3La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La6.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  
+  Ca8->Close();
+      
+  if(debug) std::cout<<"Producing Residual Plots for Disks in the End Cap"<<std::endl;
+  
+  Ca7->Clear();
 
+  residualDiskm1Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm1Ring2.png"; residualDiskm1Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDiskm1Ring2->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDiskm1Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm1Ring3.png"; residualDiskm1Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDiskm1Ring3->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDiskm2Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm2Ring2.png"; residualDiskm2Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDiskm2Ring2->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDiskm2Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm2Ring3.png"; residualDiskm2Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDiskm2Ring3->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDiskm3Ring2->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring2.png"; residualDiskm3Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDiskm3Ring2->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDiskm3Ring3->Draw(); labeltoSave = "resEndCap/residualDiskm3Ring3.png"; residualDiskm3Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDiskm3Ring3->GetEntries()!=0) Ca7->SetLogy(); Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  		       
+  residualDisk1Ring2->Draw();  labeltoSave = "resEndCap/residualDisk1Ring2.png"; residualDisk1Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk1Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDisk1Ring3->Draw();  labeltoSave = "resEndCap/residualDisk1Ring3.png"; residualDisk1Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk1Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDisk2Ring2->Draw();  labeltoSave = "resEndCap/residualDisk2Ring2.png"; residualDisk2Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk2Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDisk2Ring3->Draw();  labeltoSave = "resEndCap/residualDisk2Ring3.png"; residualDisk2Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk2Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDisk3Ring2->Draw();  labeltoSave = "resEndCap/residualDisk3Ring2.png"; residualDisk3Ring2->GetXaxis()->SetTitle("(cm)");   if(residualDisk3Ring2->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+  residualDisk3Ring3->Draw();  labeltoSave = "resEndCap/residualDisk3Ring3.png"; residualDisk3Ring3->GetXaxis()->SetTitle("(cm)");   if(residualDisk3Ring3->GetEntries()!=0) Ca7->SetLogy();   Ca7->SaveAs(labeltoSave.c_str()); Ca7->Clear();
+
+  Ca7->Close();
+
+  delete residualDiskm1Ring2;
+  delete residualDiskm1Ring3;
+  delete residualDiskm2Ring2;
+  delete residualDiskm2Ring3;
+  delete residualDiskm3Ring2;
+  delete residualDiskm3Ring3;
+  
+  delete residualDisk1Ring2;
+  delete residualDisk1Ring3;
+  delete residualDisk2Ring2;
+  delete residualDisk2Ring3;
+  delete residualDisk3Ring2;
+  delete residualDisk3Ring3;
+
+  
   std::stringstream nametosave;
   nametosave.str("");
   
+  if(debug) std::cout<<"Doing Cluster Size Per Sector"<<std::endl;
+
   for(k=1;k<=12;k++){
     sectorCLSWm2[k]->Draw(); sectorCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size");
     nametosave<<"CLS/Wm2sector"<<k<<".png"; Ca5->SaveAs(nametosave.str().c_str()); nametosave.str("");
@@ -3618,6 +3826,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   }
   
   nametosave.str("");
+
+  if(debug) std::cout<<"Doing Cluster Size Per Layer"<<std::endl;
 
   for(k=1;k<=6;k++){
     layerCLSWm2[k]->Draw(); layerCLSWm2[k]->GetXaxis()->SetTitle("Cluster Size"); 
@@ -3666,28 +3876,54 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   for(k=1;k<=6;k++) CLS->Add(CLSlayer[k]);
 
+  if(debug) std::cout<<"Doing Cluster Size for each sector"<<std::endl;
+
+  
+  if(debug) std::cout<<"Cluster Size For the barrel"<<std::endl;
+  
+  Ca5->Clear();    
   CLS->Draw(); CLS->GetXaxis()->SetTitle("Cluster Size For The Barrel");
   Ca5->SaveAs("CLS/CLS.png"); CLS->Write(); 
   Ca5->Clear(); 
     
-  CLSWm2->Draw(); CLSWm2->GetXaxis()->SetTitle("Cluster Size");
-  Ca5->SaveAs("CLS/Wm2.png"); CLSWm2->Write();
-  Ca5->Clear(); 
 
-  CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Cluster Size");
-  Ca5->SaveAs("CLS/Wm1.png"); CLSWm1->Write();
-  Ca5->Clear(); 
+  if(debug) std::cout<<"Cluster Size For Wm2"<<std::endl;
 
-  CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W0.png"); CLSW0->Write();
-  Ca5->Clear(); 
+  Ca6->Clear();
 
-  CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W1.png"); CLSW1->Write();
-  Ca5->Clear(); 
+  CLSWm2->Draw();  CLSWm2->GetXaxis()->SetTitle("Sector"); CLSWm2->GetYaxis()->SetTitle("Cluster Size");
+  Ca6->SaveAs("CLS/Wm2.png"); 
+  CLSWm2->Write(); 
+  Ca6->Clear(); 
 
-  CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Cluster Size");  
-  Ca5->SaveAs("CLS/W2.png"); CLSW2->Write();
+  if(debug) std::cout<<"Cluster Size For Wm1"<<std::endl;
+
+  CLSWm1->Draw(); CLSWm1->GetXaxis()->SetTitle("Sector"); CLSWm1->GetYaxis()->SetTitle("Cluster Size");
+  Ca6->SaveAs("CLS/Wm1.png"); CLSWm1->Write();
+  Ca6->Clear(); 
+  
+  if(debug) std::cout<<"Cluster Size For W0"<<std::endl;
+
+  CLSW0->Draw(); CLSW0->GetXaxis()->SetTitle("Sector"); CLSW0->GetYaxis()->SetTitle("Cluster Size");
+  Ca6->SaveAs("CLS/W0.png"); CLSW0->Write();
+  Ca6->Clear(); 
+
+  if(debug) std::cout<<"Cluster Size For W1"<<std::endl;
+
+  CLSW1->Draw(); CLSW1->GetXaxis()->SetTitle("Sector"); CLSW1->GetYaxis()->SetTitle("Cluster Size");
+  Ca6->SaveAs("CLS/W1.png"); CLSW1->Write();
+  Ca6->Clear(); 
+
+  if(debug) std::cout<<"Cluster Size For W2"<<std::endl;
+
+  CLSW2->Draw(); CLSW2->GetXaxis()->SetTitle("Sector"); CLSW2->GetYaxis()->SetTitle("Cluster Size");
+  Ca6->SaveAs("CLS/W2.png"); CLSW2->Write();
+  Ca6->Clear(); 
+
+  Ca6->Close();
+
+  if(debug) std::cout<<"Doing Greg Histograms Images"<<std::endl;
+  
   Ca5->Clear(); 
 
   sectorEffWm2->Draw(); sectorEffWm2->GetXaxis()->SetTitle("Sector");  sectorEffWm2->GetYaxis()->SetRangeUser(0.,1.);
@@ -3726,6 +3962,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("Greg/HeightVsEffR2.png"); HeightVsEffR2->Write();
   Ca5->Clear(); 
   
+  //Positive Endcap
+
   GregD1R2->Draw(); GregD1R2->GetXaxis()->SetTitle("Chamber"); GregD1R2->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/D1R2.png"); GregD1R2->Write();
   Ca5->Clear(); 
@@ -3749,33 +3987,84 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   GregD3R3->Draw(); GregD3R3->GetXaxis()->SetTitle("Chamber");GregD3R3->GetYaxis()->SetRangeUser(0.,1.);
   Ca5->SaveAs("Greg/D3R3.png"); GregD3R3->Write();
   Ca5->Clear(); 
+
+  //Negative Endcap
+
+  GregDm1R2->Draw(); GregDm1R2->GetXaxis()->SetTitle("Chamber"); GregDm1R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm1R2.png"); GregDm1R2->Write();
+  Ca5->Clear(); 
   
-  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Sector");
+  GregDm1R3->Draw(); GregDm1R3->GetXaxis()->SetTitle("Chamber");  GregDm1R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm1R3.png"); GregDm1R3->Write();
+  Ca5->Clear(); 
+  
+  GregDm2R2->Draw(); GregDm2R2->GetXaxis()->SetTitle("Chamber");GregDm2R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm2R2.png"); GregDm2R2->Write();
+  Ca5->Clear(); 
+  
+  GregDm2R3->Draw(); GregDm2R3->GetXaxis()->SetTitle("Chamber"); GregDm2R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm2R3.png");  GregDm2R3->Write();
+  Ca5->Clear(); 
+  
+  GregDm3R2->Draw(); GregDm3R2->GetXaxis()->SetTitle("Chamber");GregDm3R2->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm3R2.png"); GregDm3R2->Write();
+  Ca5->Clear(); 
+  
+  GregDm3R3->Draw(); GregDm3R3->GetXaxis()->SetTitle("Chamber");GregDm3R3->GetYaxis()->SetRangeUser(0.,1.);
+  Ca5->SaveAs("Greg/Dm3R3.png"); GregDm3R3->Write();
+  Ca5->Clear(); 
+
+  int colorPalette3[20];
+
+  colorPalette3[0]= 632; // 0 red 
+  colorPalette3[1]= 632; // 5 red
+  colorPalette3[2]= 632; // 10 
+  colorPalette3[3]= 632; // 15 
+  colorPalette3[4]= 632; // 20 
+  colorPalette3[5]= 632; // 25 
+  colorPalette3[6]= 632; // 30 
+  colorPalette3[7]= 632; // 35
+  colorPalette3[8]= 632; // 40
+  colorPalette3[9]= 632; // 45
+  colorPalette3[10]= 632; // 50
+  colorPalette3[11]= 632; // 55
+  colorPalette3[12]= 632; // 60
+  colorPalette3[13]= 632; // 65
+  colorPalette3[14]= 807; // 70
+  colorPalette3[15]= 807; // 75
+  colorPalette3[16]= 400; // 80
+  colorPalette3[17]= 400; // 85
+  colorPalette3[18]= 400; // 90 
+  colorPalette3[19]= 416; // 95 % green 
+  
+  gStyle->SetPalette(20,colorPalette3);
+  
+  Diskm3Summary->Draw(); Diskm3Summary->GetXaxis()->SetTitle("Segment");
   Diskm3Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm3Summary.png"); Diskm3Summary->Write();
   Ca5->Clear();
   
-  Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Sector");
+  Diskm2Summary->Draw(); Diskm2Summary->GetXaxis()->SetTitle("Segment");
   Diskm2Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm2Summary.png");  Diskm2Summary->Write();
   Ca5->Clear();
   
-  Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Sector");
+  Diskm1Summary->Draw(); Diskm1Summary->GetXaxis()->SetTitle("Segment");
   Diskm1Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Diskm1Summary.png"); Diskm1Summary->Write();
   Ca5->Clear();
   
-  Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Sector");
+  Disk3Summary->Draw(); Disk3Summary->GetXaxis()->SetTitle("Segment");
   Disk3Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk3Summary.png"); Disk3Summary->Write();
   Ca5->Clear();
   
-  Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Sector");
+  Disk2Summary->Draw(); Disk2Summary->GetXaxis()->SetTitle("Segment");
   Disk2Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk2Summary.png"); Disk2Summary->Write(); 
   Ca5->Clear();
   
-  Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Sector");
+  Disk1Summary->Draw(); Disk1Summary->GetXaxis()->SetTitle("Segment");
   Disk1Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Disk1Summary.png"); Disk1Summary->Write(); 
   Ca5->Clear();
@@ -3804,16 +4093,21 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Wheel2Summary->SetDrawOption("color");
   Ca5->SaveAs("Pigi/Wheel2Summary.png"); Wheel2Summary->Write();
   Ca5->Clear();
-  
-  Ca0->Clear();
+
+  Ca5->Close();
+
+
+  Ca9->Clear();
   MeanResiduals->Draw(); MeanResiduals->GetXaxis()->SetTitle("cm");
-  Ca0->SaveAs("MeanResiduals.png");  MeanResiduals->Write();
-  Ca0->Clear();
+  Ca9->SaveAs("MeanResiduals.png");  MeanResiduals->Write();
+  Ca9->Clear();
   
   MeanResiduals11->Draw(); MeanResiduals11->GetXaxis()->SetTitle("cm");
-  Ca0->SaveAs("MeanResiduals11.png");  MeanResiduals11->Write();
-  Ca0->Clear();
-  
+  Ca9->SaveAs("MeanResiduals11.png");  MeanResiduals11->Write();
+  Ca9->Clear();
+
+  Ca9->Close();
+
   if(endcap){
     
     Ca2->Clear();
@@ -4525,10 +4819,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca2->Clear();
 
  }
-
- Ca1 = new TCanvas("Ca1","Efficiency",800,600);
  
  if(barrel){
+  
+   Ca1->Clear();
+  
    EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png"); EffBarrel->Write();
    DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");DoubleGapBarrel->Write();
    PinoBarrel->GetXaxis()->SetTitle("%"); PinoBarrel->Draw(); Ca1->SaveAs("Distro/PinoBarrel.png"); PinoBarrel->Write(); //voy aca moviendo al root file....
@@ -4542,8 +4837,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffDistroWm2far->GetXaxis()->SetTitle("%"); EffDistroWm2far->Draw(); Ca1->SaveAs("Distro/EffDistroWm2far.png");
    EffDistroWm1far->GetXaxis()->SetTitle("%"); EffDistroWm1far->Draw(); Ca1->SaveAs("Distro/EffDistroWm1far.png");
    EffDistroW0far->GetXaxis()->SetTitle("%"); EffDistroW0far->Draw();  Ca1->SaveAs("Distro/EffDistroW0far.png");
-  EffDistroW1far->GetXaxis()->SetTitle("%"); EffDistroW1far->Draw();  Ca1->SaveAs("Distro/EffDistroW1far.png");
-  EffDistroW2far->GetXaxis()->SetTitle("%"); EffDistroW2far->Draw();  Ca1->SaveAs("Distro/EffDistroW2far.png");
+   EffDistroW1far->GetXaxis()->SetTitle("%"); EffDistroW1far->Draw();  Ca1->SaveAs("Distro/EffDistroW1far.png");
+   EffDistroW2far->GetXaxis()->SetTitle("%"); EffDistroW2far->Draw();  Ca1->SaveAs("Distro/EffDistroW2far.png");
 
   EffDistroWm2far->Write();
   EffDistroWm1far->Write();
@@ -4610,6 +4905,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffDistroD2far->Write(); 
    EffDistroD3far->Write(); 
  }
+
+ Ca1->Close();
 
  MeanResiduals11->Write();
  MeanResiduals->Write();
@@ -4823,17 +5120,33 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  MaskedGlobD3far->Write();
 
  Ca2->Close();
-  
+
+ theFileOut->Write();
  theFileOut->Close();
  theFile->Close();
 
  efftxt.close();
  alignment.close();
  RollYEff.close();
+
+ delete Ca0;
+ delete Ca1;
+ delete Ca2;
+ delete Ca3;
+ delete Ca4;
+ delete Ca5;
+ delete Ca6;
+ delete Ca7;
+ delete Ca8;
+ delete Ca9;
+
 } 
 
 void 
 RPCMonitorEfficiency::endJob(){
+
+  
+
     
 }
 
