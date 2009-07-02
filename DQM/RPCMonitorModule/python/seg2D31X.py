@@ -15,20 +15,20 @@ process.load("DQMServices.Components.MEtoEDMConverter_cfi")
 process.load("DQMServices.Core.DQM_cfg")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = 'IDEAL_31X::All'
+#process.GlobalTag.globaltag = 'IDEAL_31X::All'
+process.GlobalTag.globaltag = 'MC_31X_V1::All'
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/h/hyteng/muongun_endcap/MuonMC.999.root')
-    fileNames = cms.untracked.vstring('file:/tmp/carrillo/mcEndCap3_1_X.root')
+    fileNames = cms.untracked.vstring('-input-')
 )
 
 process.museg = cms.EDFilter("MuonSegmentEff",
 
-    incldt = cms.untracked.bool(False),
-    incldtMB4 = cms.untracked.bool(False),
+    incldt = cms.untracked.bool(True),
+    incldtMB4 = cms.untracked.bool(True),
     inclcsc = cms.untracked.bool(True),
 
     debug = cms.untracked.bool(True),
@@ -50,7 +50,7 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     dt4DSegments = cms.untracked.string('dt4DSegments'),
 
     EffSaveRootFile = cms.untracked.bool(True),
-    EffRootFileName = cms.untracked.string('/tmp/carrillo/first.root'),
+    EffRootFileName = cms.untracked.string('-output-'),
     EffSaveRootFileEventsInterval = cms.untracked.int32(100)
 )
 process.p = cms.Path(process.museg)
