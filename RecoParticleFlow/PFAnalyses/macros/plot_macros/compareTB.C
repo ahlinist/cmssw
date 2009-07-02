@@ -256,29 +256,29 @@ void CompareTBAnalysis::evaluatePlots() {
 
 	util_.flushPage();
 
-//	//RAW RESPONSE
-//	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
-//			"cand_type_==5");
-//
-//	//RAW RESPONSE
-//	doResponsePlots("TB Rechits MIP in ECAL", false,
-//			"tb_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
-//
-//	//PF CLUSTER RESPONSE
-//	doResponsePlots("PF Clusters", false,
-//			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
-//
-//	//PF CLUSTER RESPONSE - MIP in ECAL
-//	doResponsePlots("PF Clusters ECAL MIP", false,
-//			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
-//
-//	//PF CANDIDATE RESPONSE
-//	doResponsePlots("PF Candidates", false,
-//			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
-//
-//	//PF CANDIDATE RESPONSE - MIP in ECAL
-//	doResponsePlots("PF Candidates ECAL MIP", false,
-//			"cand_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+	//RAW RESPONSE
+	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
+			"cand_type_==5");
+
+	//RAW RESPONSE
+	doResponsePlots("TB Rechits MIP in ECAL", false,
+			"tb_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+
+	//PF CLUSTER RESPONSE
+	doResponsePlots("PF Clusters", false,
+			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
+
+	//PF CLUSTER RESPONSE - MIP in ECAL
+	doResponsePlots("PF Clusters ECAL MIP", false,
+			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+
+	//PF CANDIDATE RESPONSE
+	doResponsePlots("PF Candidates", false,
+			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
+
+	//PF CANDIDATE RESPONSE - MIP in ECAL
+	doResponsePlots("PF Candidates ECAL MIP", false,
+			"cand_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
 
 	plotMipInEcal();
 
@@ -432,6 +432,7 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 	it = trees_.begin();
 
 	map<string, TGraph*> effs;
+	map<string, TGraph*> energyEffs;
 
 	for (; it != trees_.end(); ++it) {
 
@@ -444,19 +445,34 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 				title.c_str(), "cand_type_", &util_, "cand_type_ % 4 != 0");
 
 		TGraph* gEff = new TGraph(eff_plots[0].finalise());
+		util_.formatGraph(gEff, item.first.c_str(), "E_{beam} (GeV)",
+				"Events with n^{0}s/N", kCyan, 1);
+		gEff->GetYaxis()->SetRangeUser(0, 1);
 		effs[item.first] = gEff;
+
+		TGraph* gEnergyEff = new TGraph(eff_plots[1].finalise());
+		util_.formatGraph(gEnergyEff, item.first.c_str(), "E_{beam} (GeV)",
+				"Energy n^{0}s/N", kCyan, 1);
+		gEnergyEff->GetYaxis()->SetRangeUser(0, 1);
+		energyEffs[item.first] = gEnergyEff;
 
 	}
 
 	rStyle->SetOptTitle(0);
+	rStyle->SetOptLogx(true);
 
 	std::string sampleTitle("Hadronic reconstruction efficiencies ");
 	util_.addTitle(sampleTitle);
 
 	TMultiGraph* tmg = getMultiGraph(effs, "Beam momentum (GeV/c)",
-			"n^{0}/N");
+			"Fraction of events with n^{0}/N");
+
 	util_.accumulateObjects(tmg, "CP");
 
+	TMultiGraph* tmg2 = getMultiGraph(energyEffs, "Beam momentum (GeV/c)",
+			"Fraction of energy associated with n^{0}/N");
+
+	util_.accumulateObjects(tmg2, "CP");
 
 	util_.flushPage();
 
@@ -609,6 +625,7 @@ std::vector<JGraph> Comparator::getRecoEfficiencyPlots(
 		PlotUtil* util_, std::string additionalCut) {
 
 	JGraph effGraph("effGraph");
+	JGraph energyEffGraph("energyEffGraph");
 	for (std::vector<int>::const_iterator i = energies.begin(); i
 			!= energies.end(); ++i) {
 
@@ -629,15 +646,24 @@ std::vector<JGraph> Comparator::getRecoEfficiencyPlots(
 
 		Long64_t n_had = tree_->Draw(qry.c_str(), cut.c_str());
 		Long64_t n_poss = tree_->Draw(qry.c_str(), eCut.c_str());
-		std::cout << "Cut = " << cut << "\n";
-
-		Double_t efficiency = static_cast<double>(n_had) / n_poss;
-		cout << "Efficency at energy " << energy << " = " << efficiency << endl;
-		cout << "n_had at energy " << energy << " = " << n_had << endl;
+		Double_t efficiency = static_cast<double> (n_had) / n_poss;
 		effGraph.addPoint(energy, efficiency);
+
+		tree_->Draw(
+				"cand_energyNeutralHad_/cand_energyEvent_>>ht(101, 0, 1.01)",
+				eCut.c_str());
+		TH1* htemp = util_->getHisto("ht");
+		if (htemp) {
+			double mean_e_had = htemp->GetMean();
+			energyEffGraph.addPoint(energy, mean_e_had);
+		} else
+			cout << __PRETTY_FUNCTION__ << ": l" << __LINE__
+					<< ": Couldn't find ht plot?!" << endl;
+
 	}
 	vector<JGraph> answers;
 	answers.push_back(effGraph);
+	answers.push_back(energyEffGraph);
 	return answers;
 
 }
