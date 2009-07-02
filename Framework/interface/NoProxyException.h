@@ -40,18 +40,14 @@ class NoProxyException : public NoDataException<T>
       // ---------- Constructors and destructor ----------------
       NoProxyException(const EventSetupRecord& iRecord,
 			  const DataKey& iDataKey) :
-	NoDataException<T>(iRecord.key(), iDataKey,"NoProxyException",standardMessage()) 
+       NoDataException<T>(iRecord.key(), iDataKey,"NoProxyException",NoDataExceptionBase::noProxyMessage()) 
        {
        }
-      virtual ~NoProxyException() throw() {}
 
       // ---------- member functions ---------------------------
 
    private:
       // ---------- const member functions ---------------------
-      std::string standardMessage()const throw() { 
-         return std::string("Please add an ESSource or ESProducer to your job which can deliver this data.\n");
-      }
 
       // ---------- static member functions --------------------
 
