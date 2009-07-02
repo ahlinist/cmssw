@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.23 2009/06/30 12:52:49 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.25 2009/07/01 17:05:59 carrillo Exp $
 //
 //
 
@@ -922,45 +922,47 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   Ca4->Clear();
   
-  meIdRES = folder + "GlobalResidualsClu1La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu1La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-
-  meIdRES = folder + "GlobalResidualsClu2La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu2La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-
-  meIdRES = folder + "GlobalResidualsClu3La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  meIdRES = folder + "GlobalResidualsClu3La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
-  if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
-  
+  if(barrel){
+    meIdRES = folder + "GlobalResidualsClu1La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu1La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu1La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu1La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu1La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu1La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu1La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    
+    meIdRES = folder + "GlobalResidualsClu2La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu2La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu2La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu2La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu2La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu2La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu2La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    
+    meIdRES = folder + "GlobalResidualsClu3La1"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La1.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu3La2"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La2.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu3La3"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La3.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu3La4"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La4.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu3La5"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La5.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+    meIdRES = folder + "GlobalResidualsClu3La6"; histoRES = (TH1F*)theFile->Get(meIdRES.c_str());  histoRES->Draw(); labeltoSave = "resBarrel/ResidualsClu3La6.png"; histoRES->GetXaxis()->SetTitle("(cm)");
+    if(histoRES->GetEntries()!=0) Ca4->SetLogy(); Ca4->SaveAs(labeltoSave.c_str()); Ca4->Clear();
+  }
+    
   folder = "DQMData/Muons/MuonSegEff/Residuals/EndCap/";
  
   command = "mkdir resEndCap"; system(command.c_str());
