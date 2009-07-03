@@ -61,6 +61,11 @@ int distsector(int sector1,int sector2){
   return distance;
 }
 
+int distwheel(int wheel1,int wheel2){
+  int distance = abs(wheel1 - wheel2);
+  return distance;
+}
+
 MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   incldt=iConfig.getUntrackedParameter<bool>("incldt",true);
   incldtMB4=iConfig.getUntrackedParameter<bool>("incldtMB4",true);
@@ -837,12 +842,13 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      DTChamberId dtid3 = segMB3->chamberId();  
 	      
 	      if(distsector(dtid3.sector(),DTId.sector())<=1 //The DT sector could be 13 or 14 and because is corrected in the calculation of the distance.
+		 && distwheel(dtid3.wheel(),DTId.wheel())<=1 //The we could have segments in neighbohr wheels in pp collisions 
 		 && dtid3.station()==3
-		 && dtid3.wheel()==DTId.wheel()
 		 && DTSegmentCounter[dtid3] == 1
 		 && segMB3->dimension()==4){
 
 		if(debug) std::cout<<"MB4  \t \t \t \t distsector ="<<distsector(dtid3.sector(),DTId.sector())<<std::endl;
+		if(debug) std::cout<<"MB4  \t \t \t \t distwheel ="<<distwheel(dtid3.wheel(),DTId.wheel())<<std::endl;
 
 		const GeomDet* gdet3=dtGeo->idToDet(segMB3->geographicalId());
 		const BoundPlane & DTSurface3 = gdet3->surface();
@@ -1150,7 +1156,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  }//loop over all the rollsasociated
 		}else{
 		  compatiblesegments=false;
-		  if(debug) std::cout<<"MB4 \t \t \t \t I found segments in MB4 and MB3 adjacent or same wheel and sector but not compatibles Diferent Directions"<<std::endl;
+		  if(debug) std::cout<<"MB4 \t \t \t \t I found segments in MB4 and MB3 adjacent wheel and/or sector but not compatibles, Diferent Directions"<<std::endl;
 		}
 	      }else{//if dtid3.station()==3&&dtid3.sector()==DTId.sector()&&dtid3.wheel()==DTId.wheel()&&segMB3->dim()==4
 		if(debug) std::cout<<"MB4 \t \t \t No the same station or same wheel or segment dim in mb3 not 4D"<<std::endl;
