@@ -113,7 +113,7 @@ private:
 
   void preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) {
     
-    
+    c->cd();
     TProfile* obj = dynamic_cast<TProfile*>( o.object );
     assert( obj );
        
