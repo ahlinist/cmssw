@@ -15,8 +15,8 @@ process.load("DQMServices.Components.MEtoEDMConverter_cfi")
 process.load("DQMServices.Core.DQM_cfg")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = 'IDEAL_31X::All'
-#process.GlobalTag.globaltag = 'MC_31X_V1::All'
+#process.GlobalTag.globaltag = 'IDEAL_31X::All'
+process.GlobalTag.globaltag = 'MC_31X_V1::All'
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100)
