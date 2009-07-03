@@ -90,7 +90,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
    int colorbar[6] = {1,2,3,4,5,6};
-   int colorbar2[5] = {0,3,800,4,2};
+   //int colorbar2[5] = {0,3,800,4,2};
 
    gStyle->SetPaintTextFormat();
 
