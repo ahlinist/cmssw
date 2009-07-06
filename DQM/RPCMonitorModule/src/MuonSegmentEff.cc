@@ -44,7 +44,6 @@ double straighter(RPCDetId rpcId){
 }
 
 
-
 void MuonSegmentEff::beginJob(){
   
 }
@@ -95,8 +94,15 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   
   std::string folder = "Muons/MuonSegEff/";
   dbe->setCurrentFolder(folder);
-  statistics = dbe->book1D("Statistics","All Statistics",33,0.5,33.5);
   
+  CosAngMB3MB4Whm2 = dbe->book1D("CosAngMB3MB4Whm2","Cosine Angle MB3 MB4 to do the cutfor Wheel -2",100,0.5,1.);
+  CosAngMB3MB4Whm1 = dbe->book1D("CosAngMB3MB4Whm1","Cosine Angle MB3 MB4 to do the cutfor Wheel -1",100,0.5,1.);
+  CosAngMB3MB4Wh0 = dbe->book1D("CosAngMB3MB4Wh0","Cosine Angle MB3 MB4 to do the cut for Wheel 0",100,0.5,1.);
+  CosAngMB3MB4Wh1 = dbe->book1D("CosAngMB3MB4Wh1","Cosine Angle MB3 MB4 to do the cut for Wheel 1",100,0.5,1.);
+  CosAngMB3MB4Wh2 = dbe->book1D("CosAngMB3MB4Wh2","Cosine Angle MB3 MB4 to do the cut for Wheel 2",100,0.5,1.);
+  
+  statistics = dbe->book1D("Statistics","All Statistics",33,0.5,33.5);
+
   if(debug) std::cout<<"booking Global histograms"<<std::endl;
   
   statistics->setBinLabel(1,"Events ",1);
@@ -875,15 +881,24 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 		if(debug) std::cout<<"MB4 \t \t \t \t cosAng"<<cosAng<<"Beetween "<<dtid3<<" and "<<DTId<<std::endl;
 		
-		if(fabs(cosAng)>1.){
-		  std::cout<<"dx="<<dx<<" dy="<<dy<<std::endl;
-		  std::cout<<"dx3="<<dx3<<" dy3="<<dy<<std::endl;
-		  std::cout<<cosAng<<std::endl;
+		if(debug){
+		  std::cout<<"MB4 \t \t \t \t dx="<<dx<<" dy="<<dy<<std::endl;
+		  std::cout<<"MB4 \t \t \t \t dx3="<<dx3<<" dy3="<<dy<<std::endl;
+		  std::cout<<"MB4 \t \t \t \t cosAng="<<cosAng<<std::endl;
 		}
-		
 
+		int wheel = DTId.wheel();
+		if(wheel==-2) CosAngMB3MB4Whm2->Fill(cosAng);
+		else if(wheel==-1) CosAngMB3MB4Whm1->Fill(cosAng);
+		else if(wheel==0) CosAngMB3MB4Wh0->Fill(cosAng);
+		else if(wheel==1) CosAngMB3MB4Wh1->Fill(cosAng);
+		else if(wheel==2) CosAngMB3MB4Wh2->Fill(cosAng);
+	
 		if(cosAng>MinCosAng){
 		  compatiblesegments=true;
+
+		  if(debug) std::cout<<"MB4 \t \t We found compatible Segments!!!"<<std::endl;
+
 		  if(dtSector==13){
 		    dtSector=4;
 		  }

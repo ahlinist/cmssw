@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.25 2009/07/01 17:05:59 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.26 2009/07/02 13:15:26 carrillo Exp $
 //
 //
 
@@ -71,6 +71,14 @@ public:
   TFile * theFileOut;
   
   TH1F * statistics;
+
+  TH1F * CosAngMB3MB4;
+  
+  TH1F * CosAngMB3MB4Whm2;
+  TH1F * CosAngMB3MB4Whm1;
+  TH1F * CosAngMB3MB4Wh0;
+  TH1F * CosAngMB3MB4Wh1;
+  TH1F * CosAngMB3MB4Wh2;
   
   TH1F * MeanResiduals;
   TH1F * MeanResiduals11;
@@ -915,6 +923,60 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca3->SaveAs(labeltoSave.c_str()); 
   
   Ca3->Close();
+
+  Ca4->Clear();
+
+  meIdRES = folder + "CosAngMB3MB4Whm2"; CosAngMB3MB4Whm2 = (TH1F*)theFile->Get(meIdRES.c_str());
+  meIdRES = folder + "CosAngMB3MB4Whm1"; CosAngMB3MB4Whm1 = (TH1F*)theFile->Get(meIdRES.c_str());
+  meIdRES = folder + "CosAngMB3MB4Wh0"; CosAngMB3MB4Wh0 = (TH1F*)theFile->Get(meIdRES.c_str());
+  meIdRES = folder + "CosAngMB3MB4Wh1"; CosAngMB3MB4Wh1 = (TH1F*)theFile->Get(meIdRES.c_str());
+  meIdRES = folder + "CosAngMB3MB4Wh2"; CosAngMB3MB4Wh2 = (TH1F*)theFile->Get(meIdRES.c_str());
+  
+  CosAngMB3MB4= new TH1F ("CosAngMB3MB4","Angle Cosine Between MB3 and MB3",100,0.5,1.);
+  CosAngMB3MB4->Add(CosAngMB3MB4Whm2);
+  CosAngMB3MB4->Add(CosAngMB3MB4Whm1);
+  CosAngMB3MB4->Add(CosAngMB3MB4Wh0);
+  CosAngMB3MB4->Add(CosAngMB3MB4Wh1);
+  CosAngMB3MB4->Add(CosAngMB3MB4Wh2);
+		    
+  if(CosAngMB3MB4->Integral()!=0){
+    CosAngMB3MB4->Draw();
+    CosAngMB3MB4->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection");
+    labeltoSave = "CosAngMB3MB4.png";
+    Ca4->SaveAs(labeltoSave.c_str()); 
+    
+    Ca4->Clear();
+    CosAngMB3MB4Whm2->Draw();
+    CosAngMB3MB4Whm2->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection Wheel -2");
+    labeltoSave = "CosAngMB3MB4Whm2.png";
+    Ca4->SaveAs(labeltoSave.c_str()); 
+
+    Ca4->Clear();
+    CosAngMB3MB4Whm1->Draw();
+    CosAngMB3MB4Whm1->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection Wheel -1");
+    labeltoSave = "CosAngMB3MB4Whm1.png";
+    Ca4->SaveAs(labeltoSave.c_str());
+
+    Ca4->Clear();
+    CosAngMB3MB4Wh0->Draw();
+    CosAngMB3MB4Wh0->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection Wheel 0");
+    labeltoSave = "CosAngMB3MB4Wh0.png";
+    Ca4->SaveAs(labeltoSave.c_str()); 
+
+    Ca4->Clear();
+    CosAngMB3MB4Wh1->Draw();
+    CosAngMB3MB4Wh1->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection Wheel 1");
+    labeltoSave = "CosAngMB3MB4Wh1.png";
+    Ca4->SaveAs(labeltoSave.c_str()); 
+
+    Ca4->Clear();
+    CosAngMB3MB4Wh2->Draw();
+    CosAngMB3MB4Wh2->GetXaxis()->SetTitle("Angle Cosine Between MB3 and MB4 in XY projection Wheel 2");
+    labeltoSave = "CosAngMB3MB4Wh2.png";
+    Ca4->SaveAs(labeltoSave.c_str()); 
+
+ 
+  }
 
   folder = "DQMData/Muons/MuonSegEff/Residuals/Barrel/";
  
@@ -3405,7 +3467,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
-       std::cout<<"Layer 1 "<<x[i]<<" "<<ex[i]<<" "<<y[i]<<" "<<ey[i]<<std::endl;
      }
   }   
   
@@ -3737,30 +3798,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   Ca8->Clear();
 
-  DistBorderClu1La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La1");if(DistBorderClu1La1) { DistBorderClu1La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 1");DistBorderClu1La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La1->Integral()!=0) DistBorderClu1La1->Scale(1./DistBorderClu1La1->Integral());DistBorderClu1La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La1.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
-  DistBorderClu1La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La2");if(DistBorderClu1La2) { DistBorderClu1La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 2");DistBorderClu1La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La2->Integral()!=0) DistBorderClu1La2->Scale(1./DistBorderClu1La2->Integral());DistBorderClu1La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La2.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
-  DistBorderClu1La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La3");if(DistBorderClu1La3) { DistBorderClu1La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 3");DistBorderClu1La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La3->Integral()!=0) DistBorderClu1La3->Scale(1./DistBorderClu1La3->Integral());DistBorderClu1La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La3.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
-  DistBorderClu1La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La4");if(DistBorderClu1La4) { DistBorderClu1La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 4");DistBorderClu1La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La4->Integral()!=0) DistBorderClu1La4->Scale(1./DistBorderClu1La4->Integral());DistBorderClu1La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La4.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
-  DistBorderClu1La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La5");if(DistBorderClu1La5) { DistBorderClu1La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 5");DistBorderClu1La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La5->Integral()!=0) DistBorderClu1La5->Scale(1./DistBorderClu1La5->Integral());DistBorderClu1La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La5.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
-  DistBorderClu1La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La6");if(DistBorderClu1La6) { DistBorderClu1La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 6");DistBorderClu1La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La6->Integral()!=0) DistBorderClu1La6->Scale(1./DistBorderClu1La6->Integral());DistBorderClu1La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La6.png");Ca8->Clear();} std::cout<<"Dist1"<<std::endl;
+  DistBorderClu1La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La1");if(DistBorderClu1La1) { DistBorderClu1La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 1");DistBorderClu1La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La1->Integral()!=0) DistBorderClu1La1->Scale(1./DistBorderClu1La1->Integral());DistBorderClu1La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La1.png");Ca8->Clear();} 
+  DistBorderClu1La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La2");if(DistBorderClu1La2) { DistBorderClu1La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 2");DistBorderClu1La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La2->Integral()!=0) DistBorderClu1La2->Scale(1./DistBorderClu1La2->Integral());DistBorderClu1La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La2.png");Ca8->Clear();} 
+  DistBorderClu1La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La3");if(DistBorderClu1La3) { DistBorderClu1La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 3");DistBorderClu1La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La3->Integral()!=0) DistBorderClu1La3->Scale(1./DistBorderClu1La3->Integral());DistBorderClu1La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La3.png");Ca8->Clear();} 
+  DistBorderClu1La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La4");if(DistBorderClu1La4) { DistBorderClu1La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 4");DistBorderClu1La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La4->Integral()!=0) DistBorderClu1La4->Scale(1./DistBorderClu1La4->Integral());DistBorderClu1La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La4.png");Ca8->Clear();} 
+  DistBorderClu1La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La5");if(DistBorderClu1La5) { DistBorderClu1La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 5");DistBorderClu1La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La5->Integral()!=0) DistBorderClu1La5->Scale(1./DistBorderClu1La5->Integral());DistBorderClu1La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La5.png");Ca8->Clear();} 
+  DistBorderClu1La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu1La6");if(DistBorderClu1La6) { DistBorderClu1La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 1 Layer 6");DistBorderClu1La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu1La6->Integral()!=0) DistBorderClu1La6->Scale(1./DistBorderClu1La6->Integral());DistBorderClu1La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu1La6.png");Ca8->Clear();} 
 
   if(debug) std::cout<<"Producing Dist Border Plots Clu2"<<std::endl;
 
-  DistBorderClu2La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La1");if(DistBorderClu2La1) { DistBorderClu2La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 1");DistBorderClu2La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La1->Integral()!=0) DistBorderClu2La1->Scale(1./DistBorderClu2La1->Integral());DistBorderClu2La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La1.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
-  DistBorderClu2La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La2");if(DistBorderClu2La2) { DistBorderClu2La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 2");DistBorderClu2La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La2->Integral()!=0) DistBorderClu2La2->Scale(1./DistBorderClu2La2->Integral());DistBorderClu2La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La2.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
-  DistBorderClu2La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La3");if(DistBorderClu2La3) { DistBorderClu2La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 3");DistBorderClu2La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La3->Integral()!=0) DistBorderClu2La3->Scale(1./DistBorderClu2La3->Integral());DistBorderClu2La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La3.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
-  DistBorderClu2La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La4");if(DistBorderClu2La4) { DistBorderClu2La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 4");DistBorderClu2La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La4->Integral()!=0) DistBorderClu2La4->Scale(1./DistBorderClu2La4->Integral());DistBorderClu2La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La4.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
-  DistBorderClu2La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La5");if(DistBorderClu2La5) { DistBorderClu2La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 5");DistBorderClu2La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La5->Integral()!=0) DistBorderClu2La5->Scale(1./DistBorderClu2La5->Integral());DistBorderClu2La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La5.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
-  DistBorderClu2La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La6");if(DistBorderClu2La6) { DistBorderClu2La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 6");DistBorderClu2La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La6->Integral()!=0) DistBorderClu2La6->Scale(1./DistBorderClu2La6->Integral());DistBorderClu2La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La6.png");Ca8->Clear();} std::cout<<"Dist2"<<std::endl;
+  DistBorderClu2La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La1");if(DistBorderClu2La1) { DistBorderClu2La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 1");DistBorderClu2La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La1->Integral()!=0) DistBorderClu2La1->Scale(1./DistBorderClu2La1->Integral());DistBorderClu2La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La1.png");Ca8->Clear();} 
+  DistBorderClu2La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La2");if(DistBorderClu2La2) { DistBorderClu2La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 2");DistBorderClu2La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La2->Integral()!=0) DistBorderClu2La2->Scale(1./DistBorderClu2La2->Integral());DistBorderClu2La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La2.png");Ca8->Clear();} 
+  DistBorderClu2La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La3");if(DistBorderClu2La3) { DistBorderClu2La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 3");DistBorderClu2La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La3->Integral()!=0) DistBorderClu2La3->Scale(1./DistBorderClu2La3->Integral());DistBorderClu2La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La3.png");Ca8->Clear();} 
+  DistBorderClu2La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La4");if(DistBorderClu2La4) { DistBorderClu2La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 4");DistBorderClu2La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La4->Integral()!=0) DistBorderClu2La4->Scale(1./DistBorderClu2La4->Integral());DistBorderClu2La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La4.png");Ca8->Clear();} 
+  DistBorderClu2La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La5");if(DistBorderClu2La5) { DistBorderClu2La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 5");DistBorderClu2La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La5->Integral()!=0) DistBorderClu2La5->Scale(1./DistBorderClu2La5->Integral());DistBorderClu2La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La5.png");Ca8->Clear();} 
+  DistBorderClu2La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu2La6");if(DistBorderClu2La6) { DistBorderClu2La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 2 Layer 6");DistBorderClu2La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu2La6->Integral()!=0) DistBorderClu2La6->Scale(1./DistBorderClu2La6->Integral());DistBorderClu2La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu2La6.png");Ca8->Clear();} 
 
   if(debug) std::cout<<"Producing Dist Border Plots Clu3"<<std::endl;
 
-  DistBorderClu3La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La1");if(DistBorderClu3La1) { DistBorderClu3La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 1");DistBorderClu3La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La1->Integral()!=0) DistBorderClu3La1->Scale(1./DistBorderClu3La1->Integral());DistBorderClu3La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La1.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
-  DistBorderClu3La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La2");if(DistBorderClu3La2) { DistBorderClu3La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 2");DistBorderClu3La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La2->Integral()!=0) DistBorderClu3La2->Scale(1./DistBorderClu3La2->Integral());DistBorderClu3La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La2.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
-  DistBorderClu3La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La3");if(DistBorderClu3La3) { DistBorderClu3La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 3");DistBorderClu3La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La3->Integral()!=0) DistBorderClu3La3->Scale(1./DistBorderClu3La3->Integral());DistBorderClu3La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La3.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
-  DistBorderClu3La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La4");if(DistBorderClu3La4) { DistBorderClu3La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 4");DistBorderClu3La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La4->Integral()!=0) DistBorderClu3La4->Scale(1./DistBorderClu3La4->Integral());DistBorderClu3La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La4.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
-  DistBorderClu3La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La5");if(DistBorderClu3La5) { DistBorderClu3La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 5");DistBorderClu3La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La5->Integral()!=0) DistBorderClu3La5->Scale(1./DistBorderClu3La5->Integral());DistBorderClu3La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La5.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
-  DistBorderClu3La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La6");if(DistBorderClu3La6) { DistBorderClu3La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 6");DistBorderClu3La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La6->Integral()!=0) DistBorderClu3La6->Scale(1./DistBorderClu3La6->Integral());DistBorderClu3La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La6.png");Ca8->Clear();} std::cout<<"Dist3"<<std::endl;
+  DistBorderClu3La1=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La1");if(DistBorderClu3La1) { DistBorderClu3La1->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 1");DistBorderClu3La1->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La1->Integral()!=0) DistBorderClu3La1->Scale(1./DistBorderClu3La1->Integral());DistBorderClu3La1->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La1.png");Ca8->Clear();} 
+  DistBorderClu3La2=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La2");if(DistBorderClu3La2) { DistBorderClu3La2->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 2");DistBorderClu3La2->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La2->Integral()!=0) DistBorderClu3La2->Scale(1./DistBorderClu3La2->Integral());DistBorderClu3La2->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La2.png");Ca8->Clear();} 
+  DistBorderClu3La3=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La3");if(DistBorderClu3La3) { DistBorderClu3La3->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 3");DistBorderClu3La3->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La3->Integral()!=0) DistBorderClu3La3->Scale(1./DistBorderClu3La3->Integral());DistBorderClu3La3->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La3.png");Ca8->Clear();} 
+  DistBorderClu3La4=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La4");if(DistBorderClu3La4) { DistBorderClu3La4->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 4");DistBorderClu3La4->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La4->Integral()!=0) DistBorderClu3La4->Scale(1./DistBorderClu3La4->Integral());DistBorderClu3La4->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La4.png");Ca8->Clear();} 
+  DistBorderClu3La5=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La5");if(DistBorderClu3La5) { DistBorderClu3La5->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 5");DistBorderClu3La5->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La5->Integral()!=0) DistBorderClu3La5->Scale(1./DistBorderClu3La5->Integral());DistBorderClu3La5->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La5.png");Ca8->Clear();} 
+  DistBorderClu3La6=(TH1F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/DistBorderClu3La6");if(DistBorderClu3La6) { DistBorderClu3La6->GetYaxis()->SetTitle("Probability for impact point Cluster Size 3 Layer 6");DistBorderClu3La6->GetXaxis()->SetTitle("Impact Point (Strip Units)");if(DistBorderClu3La6->Integral()!=0) DistBorderClu3La6->Scale(1./DistBorderClu3La6->Integral());DistBorderClu3La6->Draw(); Ca8->SaveAs("CLS/DistBorderClu3La6.png");Ca8->Clear();} 
   
   Ca8->Close();
       
