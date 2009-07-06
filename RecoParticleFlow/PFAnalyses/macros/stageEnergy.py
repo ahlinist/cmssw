@@ -31,28 +31,19 @@ specifiedE = energies[options.energy]
 if options.endcap:
     print "Doing endcaps with runs:"
     fileRoot_pt1 = '/castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_000'
-    fileRoot_pt2 = '.0000.root'
+    fileRoot_pt2 = '.root'
     specifiedE = endcap[options.energy]
     print specifiedE
 
-
-
 result = []
-if not options.endcap:
-    if not options.nostage:
-        print "Staging files..."
-        result = map(lambda x : commands.getoutput('stager_get -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
-    else:
-        print "Querying files..."
-        result = map(lambda x : commands.getoutput('stager_qry -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
+
+if not options.nostage:
+    print "Staging files..."
+    result = map(lambda x : commands.getoutput('stager_get -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
 else:
-    files = map(lambda x : commands.getoutput('nsls /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/ | grep ' + str(x) + '.'), specifiedE)
-    print files
-    ans = []
-    map(lambda u: ans.extend(u.split('\n')), files) 
-    print ans
-    result = map(lambda y: commands.getoutput('stager_get -M /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/' + str(y)), ans)
-    
+    print "Querying files..."
+    result = map(lambda x : commands.getoutput('stager_qry -M ' + fileRoot_pt1 + str(x) + fileRoot_pt2), specifiedE)
+
 files = []
 
 for line in result:
@@ -60,6 +51,9 @@ for line in result:
     item = file[1]
     staged = True
     filename = item.split(' ')
+    if filename[1] == 'SUBREQUEST_FAILED':
+            print 'Failed to stage:'
+            print filename[0]
     if options.nostage:
         if filename[2] == 'STAGED':
             files.append(filename[0])
