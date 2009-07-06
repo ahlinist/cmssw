@@ -4,8 +4,8 @@
  *
  * Class for RPC Monitoring using RPCDigi and DT and CSC Segments.
  *
- *  $Date: 2009/05/15 15:23:41 $
- *  $Revision: 1.3 $
+ *  $Date: 2009/05/15 17:40:57 $
+ *  $Revision: 1.4 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -122,6 +122,11 @@ class MuonSegmentEff : public edm::EDAnalyzer {
       edm::ESHandle<CSCGeometry> cscGeo;
 
       MonitorElement * statistics;
+      MonitorElement * CosAngMB3MB4Whm2;
+      MonitorElement * CosAngMB3MB4Whm1;
+      MonitorElement * CosAngMB3MB4Wh0;
+      MonitorElement * CosAngMB3MB4Wh1;
+      MonitorElement * CosAngMB3MB4Wh2;
       MonitorElement * bxVsy;
    
       //Distance Strip
