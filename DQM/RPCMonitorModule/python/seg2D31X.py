@@ -19,7 +19,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = 'MC_31X_V1::All'
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring('/store/relval/CMSSW_3_1_0/RelValSingleMuPt10/ALCARECO/MC_31X_V1_StreamALCARECORpcCalHLT-v1/0002/32FEE565-E266-DE11-8F9F-001D09F251CC.root')
@@ -31,7 +31,7 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     incldtMB4 = cms.untracked.bool(True),
     inclcsc = cms.untracked.bool(True),
 
-    debug = cms.untracked.bool(True),
+    debug = cms.untracked.bool(False),
     inves = cms.untracked.bool(True),
     
     DuplicationCorrection = cms.untracked.int32(1),
@@ -41,7 +41,7 @@ process.museg = cms.EDFilter("MuonSegmentEff",
 	
     rangestrips = cms.untracked.double(4.),
     rangestripsRB4 = cms.untracked.double(4.),
-    MinCosAng = cms.untracked.double(0.99),
+    MinCosAng = cms.untracked.double(0.80),
     MaxD = cms.untracked.double(80.0),
     MaxDrb4 = cms.untracked.double(150.0),
 
