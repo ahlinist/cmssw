@@ -8,7 +8,7 @@
  Description: <one line class summary>
 
  Implementation:
-    <Notes on implementation>
+     <Notes on implementation>
 */
 //
 // Original Author:  David Lopes Pegna
@@ -190,16 +190,13 @@ class JPsiMuAnalyzer2 : public edm::EDAnalyzer {
   double minDRBestMuJpsi1,minDRBestMuJpsi2,minDRBestMuSl,minDRBestElecSl,Bmass,BmassC,KstMass,Bmass2,Bmass2C;
   double Bvtxprob, Bphi,BPt1,BPx1,BPy1,Bsumpt,B1Lxy,B1Lxy2,Berrx1,Berry1,Berrxy1,kaonpt,kaoneta,kaonphi, 
   kaonchi2, BPt2,BPx2,BPy2,Bsumpt2,B2Lxy,B2Lxy2,Bphi2,Bvtxprob2,Berrx2,Berry2,Berrxy2,kst1pt,kst2pt,kst1eta,kst2eta,kst1phi,kst2phi,kst1chi2,kst2chi2;
-  int trk1muov,trk2muov,MCKid,MCKmomid,MCKGmomid,
+  int trk1muov,trk2muov,trk1nhits,trk2nhits,trk3nhits,MCKid,MCKmomid,MCKGmomid,
   MCK21id,MCK21momid,MCK21Gmomid,MCK22id,MCK22momid,MCK22Gmomid;
+  double Dmass1,Dmass2,Dsmass1,Dsmass2,DvtxProb,trkD1pt,trkD2pt,trkD3pt,trk1chi2,trk2chi2,trk3chi2;
   double MCKdr,MCK21dr,MCK22dr,MCJpsiLxy,MCBpPt,MCBpLxy,MCBpdauLxy,MCB0Pt,MCBpP,MCB0P,MCBpEta,MCB0Eta,MCB0dauLxy;
   int MCBpNdau,MCB0Ndau,MCBpdauId[30],MCB0dauId[30],MCB0Kstc,ncomb1,ncomb2,ncomb3; 
   int kaonmuov, kaonmuov2, kaonnhits,kst1nhits,kst2nhits,NevtKaon1,NevtKaon2,NevtKaon3,NevtKaon4,
   kaonpixH,kaontrkH,kst1pixH,kst1trkH,kst2pixH,kst2trkH;
-  int Dmult,Dflag[35000],trk1nhits[35000],trk2nhits[35000],trk3nhits[35000];
-  double DvtxProb[35000],Dmass1[35000],Dmass2[35000],Dsmass1[35000],trkD1pt[35000],
-  trkD2pt[35000],trkD3pt[35000],trk1chi2[35000],
-  trk2chi2[35000],trk3chi2[35000];
   int trigflag[160];
 
       TH1F * fHist2muMass; 
@@ -295,21 +292,18 @@ JPsiMuAnalyzer2::JPsiMuAnalyzer2(const edm::ParameterSet& iConfig)
   kaonpixH=-99,kaontrkH=-99,kst1pixH=-99,kst1trkH=-99,kst2pixH=-99,kst2trkH=-99;
   Bvtxprob2=-99.,BPt2=-99.,BPx2=-99.,BPy2=-99.,Bsumpt2=-99.,
   B2Lxy=-99.,B2Lxy2=-99.,Bphi2=-99.,Berrx2=-99.,Berry2=-99.,Berrxy2=-99.,KstMass=-99.,Bmass2=-99.,kst1pt=-99.,kst2pt=-99.,
-  kst1eta=-99.,kst2eta=-99.,kst1phi=-99.,kst2phi=-99.,kst1nhits=-99,kst2nhits=-99,
-  kst1chi2=-99.,kst2chi2=-99.,trk1muov=-99,trk2muov=-99,
+  kst1eta=-99.,kst2eta=-99.,kst1phi=-99.,kst2phi=-99.,kst1nhits=-99,kst2nhits=-99,DvtxProb=-99.,
+  kst1chi2=-99.,kst2chi2=-99.,Dmass1=-99.,Dmass2=-99.,Dsmass1=-99.,Dsmass2=-99.,trk1muov=-99,trk2muov=-99,trkD1pt=-99.,
+  trkD2pt=-99.,trkD3pt=-99.,trk1nhits=-99,trk2nhits=-99,trk3nhits=-99,
   MCKid=-99,MCKmomid=-99,MCKGmomid=-99,MCK21id=-99,MCK21momid=-99,MCK21Gmomid=-99,
   MCK22id=-99,MCK22momid=-99,MCK22Gmomid=-99,
+  trk1chi2=-99.,trk2chi2=-99.,trk3chi2=-99.;
   MCKdr=-99.,MCK21dr=-99.,MCK22dr=-99.,MCJpsiLxy=-99.,MCBpPt=-99.,MCBpLxy=-99.,
   MCBpdauLxy=-99.,MCB0Pt=-99.,MCBpP=-99.,MCB0P=-99.,
   MCB0Kstc=-99,ncomb1=-99,ncomb2=-99,ncomb3=-99, 
-  MCBpEta=-99.,MCB0Eta=-99.,MCBpNdau=-99,MCB0Ndau=-99, MCB0dauLxy=-99.,Dmult=-99;
+  MCBpEta=-99.,MCB0Eta=-99.,MCBpNdau=-99,MCB0Ndau=-99, MCB0dauLxy=-99.;
   for(int i=0;i<30;i++) {MCBpdauId[i]=-99; MCB0dauId[i]=-99;}
   for(int i=0;i<160;i++) trigflag[i]=-99;
-  for(int i=0;i<35000;i++){Dflag[i]=-99;trk1nhits[i]=-99;trk2nhits[i]=-99;trk3nhits[i]=-99;
-  DvtxProb[i]=-99.;Dmass1[i]=-99.;Dmass2[i]=-99.;Dsmass1[i]=-99.;trkD1pt[i]=-99.;
-  trkD2pt[i]=-99.;trkD3pt[i]=-99.;trk1chi2[i]=-99.;
-  trk2chi2[i]=-99.;trk3chi2[i]=-99.;}
-
 
   //now do what ever initialization is needed
   edm::Service<TFileService> fs;
@@ -409,20 +403,18 @@ JPsiMuAnalyzer2::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   kaonpixH=-99,kaontrkH=-99,kst1pixH=-99,kst1trkH=-99,kst2pixH=-99,kst2trkH=-99;
   Bvtxprob2=-99.,BPt2=-99.,BPx2=-99.,BPy2=-99.,Bsumpt2=-99.,
   B2Lxy=-99.,B2Lxy2=-99.,Berrx2=-99.,Berry2=-99.,Berrxy2=-99.,Bphi2=-99.,KstMass=-99.,Bmass2=-99.,kst1pt=-99.,kst2pt=-99.,
-  kst1eta=-99.,kst2eta=-99.,kst1phi=-99.,kst2phi=-99.,kst1nhits=-99,kst2nhits=-99,
-  kst1chi2=-99.,kst2chi2=-99.,trk1muov=-99,trk2muov=-99,
+  kst1eta=-99.,kst2eta=-99.,kst1phi=-99.,kst2phi=-99.,kst1nhits=-99,kst2nhits=-99,DvtxProb=-99.,
+  kst1chi2=-99.,kst2chi2=-99.,Dmass1=-99.,Dmass2=-99.,Dsmass1=-99.,Dsmass2=-99.,trk1muov=-99,trk2muov=-99,trkD1pt=-99.,
+  trkD2pt=-99.,trkD3pt=-99.,trk1nhits=-99,trk2nhits=-99,
   MCKid=-99,MCKmomid=-99,MCKGmomid=-99,MCK21id=-99,MCK21momid=-99,MCK21Gmomid=-99, 
   MCK22id=-99,MCK22momid=-99,MCK22Gmomid=-99,
+  trk3nhits=-99,trk1chi2=-99.,trk2chi2=-99.,trk3chi2=-99.;
   MCKdr=-99.,MCK21dr=-99.,MCK22dr=-99.,MCJpsiLxy=-99.,MCBpPt=-99.,MCBpLxy=-99.,
   MCBpdauLxy=-99.,MCB0Pt=-99.,MCBpP=-99.,
   MCB0Kstc=-99,ncomb1=-99,ncomb2=-99,ncomb3=-99,
-  MCB0P=-99.,MCBpEta=-99.,MCB0Eta=-99.,MCBpNdau=-99,MCB0Ndau=-99, MCB0dauLxy=-99.,Dmult=-99;
+  MCB0P=-99.,MCBpEta=-99.,MCB0Eta=-99.,MCBpNdau=-99,MCB0Ndau=-99, MCB0dauLxy=-99.;
   for(int i=0;i<30;i++) {MCBpdauId[i]=-99; MCB0dauId[i]=-99;}
   for(int i=0;i<160;i++) trigflag[i]=-99; 
-  for(int i=0;i<35000;i++){Dflag[i]=-99;trk1nhits[i]=-99;trk2nhits[i]=-99;trk3nhits[i]=-99; 
-   DvtxProb[i]=-99.;Dmass1[i]=-99.;Dmass2[i]=-99.;Dsmass1[i]=-99.;trkD1pt[i]=-99.;
-  trkD2pt[i]=-99.;trkD3pt[i]=-99.;trk1chi2[i]=-99.;
-  trk2chi2[i]=-99.;trk3chi2[i]=-99.;}
 
 
 // trigger
@@ -1176,30 +1168,17 @@ vertexBeamSpot = *recoBeamSpotHandle;
 
 ///////// D0(Kpi)+mu
 
-   int ncont=0;
-
-   double MinBVtxDsl=999.;
+   double MinBVtxDsl=-999.;
    Handle<CandidateView> AllTracksD;
    iEvent.getByLabel("allTracks2",AllTracksD);
    for(size_t j=0;j < AllTracksD->size(); ++j){
     for(size_t k=j+1; k< AllTracksD->size(); ++k){
      const Candidate & trk1 =(*AllTracksD)[j];
      const Candidate & trk2 =(*AllTracksD)[k];
-
      if(trk1.charge()==trk2.charge()) continue;
-
-      if(trk1.pt()<0.5 || trk2.pt()<0.5) continue;
-    
       double KaonMassSq=0.243717;
       double KaonE1=sqrt(KaonMassSq+trk1.px()*trk1.px()+trk1.py()*trk1.py()+trk1.pz()*trk1.pz());
       double KaonE2=sqrt(KaonMassSq+trk2.px()*trk2.px()+trk2.py()*trk2.py()+trk2.pz()*trk2.pz());
-
-    OverlapChecker overlap;
-    for(size_t kk = 0; kk < muons->size(); ++ kk) {
-    const Candidate & trkM = (*muons)[kk];
-    if(overlap(trkM,trk1)!=0 || overlap(trkM,trk2)!=0) continue;
-    if(!trkM.isGlobalMuon() && !trkM.isTrackerMuon()) continue;
-    if(trkM.pt()<3.) continue;
 
      double DmassT1  = sqrt((KaonE1+trk2.energy())*(KaonE1+trk2.energy())
    -(trk1.px()+trk2.px())*(trk1.px()+trk2.px())
@@ -1210,11 +1189,10 @@ vertexBeamSpot = *recoBeamSpotHandle;
    -(trk1.py()+trk2.py())*(trk1.py()+trk2.py())
    -(trk1.pz()+trk2.pz())*(trk1.pz()+trk2.pz()));
 
-   if(DmassT1<1.5 || DmassT1>2.5) continue;
-
-   int Flag=0;
-   if(trk1.charge()==trkM.charge()) Flag=1;
-   else Flag=2;
+    OverlapChecker overlap;
+    for(size_t kk = 0; kk < muons->size(); ++ kk) {
+    const Candidate & trkM = (*muons)[kk];
+    if(overlap(trkM,trk1)!=0 || overlap(trkM,trk2)!=0) continue;
 
    edm::ESHandle<TransientTrackBuilder> theB;
    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
@@ -1233,12 +1211,7 @@ vertexBeamSpot = *recoBeamSpotHandle;
    GlobalPoint secondaryVertex = tv.position();
    double vtxProb = TMath::Prob(vertex.chi2(),vertex.ndof());
 
-    double Dsmass1B=-99;
-    for(size_t kk=k+1; kk< AllTracksD->size(); ++kk){
-     const Candidate & trkS =(*AllTracksD)[kk];
-
-     if(trkS.pt()>0.3 && Flag==1){
-     double DsmassT1  = sqrt((KaonE1+trk2.energy()+trkS.energy())*(KaonE1+trk2.energy()+trkS.energy())
+/*     double DsmassT1  = sqrt((KaonE1+trk2.energy()+trkS.energy())*(KaonE1+trk2.energy()+trkS.energy())
    -(trk1.px()+trk2.px()+trkS.px())*(trk1.px()+trk2.px()+trkS.px())
    -(trk1.py()+trk2.py()+trkS.py())*(trk1.py()+trk2.py()+trkS.py())
    -(trk1.pz()+trk2.pz()+trkS.pz())*(trk1.pz()+trk2.pz()+trkS.pz()));
@@ -1246,32 +1219,25 @@ vertexBeamSpot = *recoBeamSpotHandle;
    -(trk1.px()+trk2.px()+trkS.px())*(trk1.px()+trk2.px()+trkS.px())
    -(trk1.py()+trk2.py()+trkS.py())*(trk1.py()+trk2.py()+trkS.py())
    -(trk1.pz()+trk2.pz()+trkS.pz())*(trk1.pz()+trk2.pz()+trkS.pz()));
-   
-    if(abs(DsmassT1-DmassT1)-0.14542<MinBVtxDsl)
-      { MinBVtxDsl=abs(DsmassT1-DmassT1)-0.14542;
-        Dsmass1B=DsmassT1;
-       }
+*/
+   int Flag=0;
+   if(abs(DmassT1-1.8645)<abs(DmassT2-1.8645)) Flag=1;
+   else Flag=2;
 
-     }
+   if(vtxProb>MinBVtxDsl){
+   MinBVtxDsl=vtxProb;
 
-     } // for slow pion track
-
-
-//   if(vtxProb>MinBVtxDsl){
-//   MinBVtxDsl=vtxProb;
-
-    Dmass1[ncont]=DmassT1; Dmass2[ncont]=DmassT2;
-    Dsmass1[ncont]=Dsmass1B;
-    Dflag[ncont]=Flag; 
-    DvtxProb[ncont]=vtxProb;
-    trkD1pt[ncont]=trk1.pt(); trkD2pt[ncont]=trk2.pt(); trkD3pt[ncont]=trkM.pt();
-    trk1chi2[ncont]=trkD1.get()->normalizedChi2();
-    trk2chi2[ncont]=trkD2.get()->normalizedChi2();
-    trk3chi2[ncont]=trkD3.get()->normalizedChi2();
-    trk1nhits[ncont]=trkD1.get()->numberOfValidHits();
-    trk2nhits[ncont]=trkD2.get()->numberOfValidHits();
-    trk3nhits[ncont]=trkD3.get()->numberOfValidHits();
-/*    trk1muov=0;
+    if(Flag==1) {Dmass1=DmassT1; Dmass2=DmassT2;}
+    if(Flag==2) {Dmass1=DmassT2; Dmass2=DmassT1;}
+    DvtxProb=vtxProb;
+    trkD1pt=trk1.pt(); trkD2pt=trk2.pt(); trkD3pt=trkM.pt();
+    trk1chi2=trkD1.get()->normalizedChi2();
+    trk2chi2=trkD2.get()->normalizedChi2();
+    trk3chi2=trkD3.get()->normalizedChi2();
+    trk1nhits=trkD1.get()->numberOfValidHits();
+    trk2nhits=trkD2.get()->numberOfValidHits();
+    trk3nhits=trkD3.get()->numberOfValidHits();
+    trk1muov=0;
     trk2muov=0;
     for(size_t kkk = 0; kkk < muons->size(); ++ kkk) {
     const Muon & mu2= (*muons)[kkk];
@@ -1281,17 +1247,13 @@ vertexBeamSpot = *recoBeamSpotHandle;
     if(overlap(mu2,trk1)!=0) trk1muov++; 
     if(overlap(mu2,trk2)!=0) trk2muov++;
        }
-    }*/
+    }
    
-//   } //best cand
-
-   ncont++;
+   } //best cand
 
   } //trk3
   } //trk2
   }//trk1
-
-  Dmult=ncont; 
 
 
 // vertex by hand
@@ -2616,24 +2578,22 @@ ntp1->Branch("JpsiTestEta",&JpsiTestEta,"JpsiTestEta/D");
 ntp1->Branch("TrackTestPt",&TrackTestPt,"TrackTestPt/D");
 ntp1->Branch("TrackTestEta",&TrackTestEta,"TrackTestEta/D");
 ntp1->Branch("NTrkStudy",&NTrkStudy,"NTrkStudy[5]/I");
-ntp1->Branch("Dmult",&Dmult,"Dmult/I");
-ntp1->Branch("Dflag",&Dflag,"Dflag[Dmult]/I");
-ntp1->Branch("Dmass1",&Dmass1,"Dmass1[Dmult]/D");
-ntp1->Branch("Dmass2",&Dmass2,"Dmass2[Dmult]/D");
-ntp1->Branch("Dsmass1",&Dsmass1,"Dsmass1[Dmult]/D");
-//ntp1->Branch("Dsmass2",&Dsmass2,"Dsmass2[Dmult]/D");
-ntp1->Branch("DvtxProb",&DvtxProb,"DvtxProb[Dmult]/D");
-ntp1->Branch("TrkD1pt",&trkD1pt,"trkD1pt[Dmult]/D");
-ntp1->Branch("TrkD2pt",&trkD2pt,"trkD2pt[Dmult]/D");
-ntp1->Branch("TrkD3pt",&trkD3pt,"trkD3pt[Dmult]/D");
-//ntp1->Branch("TrkD1muOv",&trk1muov,"trk1muov/I");
-//ntp1->Branch("TrkD2muOv",&trk2muov,"trk2muov/I");
-ntp1->Branch("trk1chi2",&trk1chi2,"trk1chi2[Dmult]/D");
-ntp1->Branch("trk2chi2",&trk2chi2,"trk2chi2[Dmult]/D");
-ntp1->Branch("trk3chi2",&trk3chi2,"trk3chi2[Dmult]/D");
-ntp1->Branch("trk1nhits",&trk1nhits,"trk1nhits[Dmult]/I");
-ntp1->Branch("trk2nhits",&trk2nhits,"trk2nhits[Dmult]/I");
-ntp1->Branch("trk3nhits",&trk3nhits,"trk3nhits[Dmult]/I");
+ntp1->Branch("Dmass1",&Dmass1,"Dmass1/D");
+ntp1->Branch("Dmass2",&Dmass2,"Dmass2/D");
+ntp1->Branch("Dsmass1",&Dsmass1,"Dsmass1/D");
+ntp1->Branch("Dsmass2",&Dsmass2,"Dsmass2/D");
+ntp1->Branch("DvtxProb",&DvtxProb,"DvtxProb/D");
+ntp1->Branch("TrkD1pt",&trkD1pt,"trkD1pt/D");
+ntp1->Branch("TrkD2pt",&trkD2pt,"trkD2pt/D");
+ntp1->Branch("TrkD3pt",&trkD3pt,"trkD3pt/D");
+ntp1->Branch("TrkD1muOv",&trk1muov,"trk1muov/I");
+ntp1->Branch("TrkD2muOv",&trk2muov,"trk2muov/I");
+ntp1->Branch("trk1chi2",&trk1chi2,"trk1chi2/D");
+ntp1->Branch("trk2chi2",&trk2chi2,"trk2chi2/D");
+ntp1->Branch("trk3chi2",&trk3chi2,"trk3chi2/D");
+ntp1->Branch("trk1nhits",&trk1nhits,"trk1nhits/I");
+ntp1->Branch("trk2nhits",&trk2nhits,"trk2nhits/I");
+ntp1->Branch("trk3nhits",&trk3nhits,"trk3nhits/I");
 ntp1->Branch("MCKid",&MCKid,"MCKid/I");
 ntp1->Branch("MCKdr",&MCKdr,"MCKdr/D");
 ntp1->Branch("MCKmomid",&MCKmomid,"MCKmomid/I");
