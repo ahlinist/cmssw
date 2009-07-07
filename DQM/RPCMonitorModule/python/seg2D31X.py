@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_3_1_0/RelValSingleMuPt10/ALCARECO/MC_31X_V1_StreamALCARECORpcCalHLT-v1/0002/32FEE565-E266-DE11-8F9F-001D09F251CC.root')
+    fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/data/Commissioning09/Cosmics/RECO/v4/000/102/196/C4751D97-A167-DE11-98B2-000423D6B48C.root')
 )
 
 process.museg = cms.EDFilter("MuonSegmentEff",
@@ -45,7 +45,6 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     MaxD = cms.untracked.double(80.0),
     MaxDrb4 = cms.untracked.double(150.0),
 
-    muonRPCDigis = cms.untracked.string('muonRPCDigis'),
     cscSegments = cms.untracked.string('cscSegments'),
     dt4DSegments = cms.untracked.string('dt4DSegments'),
 
