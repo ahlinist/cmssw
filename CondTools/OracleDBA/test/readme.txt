@@ -10,13 +10,15 @@ inputtag <inputtagname>
 tag <tagname>
 since <begin>
 till <end>
+usertext <userlog>
 
    where
 	<connectionstring> is the connection string,
 	<inputtagname> is the name of the tag in the sqlite file you want to export (leave blank if identical to tagname),
 	<tagname> is the name of the tag to be exported,
 	<begin> is the begin time (first since), optional (leave blank if not needed),
-	<end> is the end time (last till), optional (leave blank if not needed). 
+	<end> is the end time (last till), optional (leave blank if not needed), 
+	<userlog> is the text string you want to add in the exportation log in the POPCONLOG database account. 
 5. upload the sqlite file <tagname>.db into the dropbox available for your subdetector;
 6. upload the meta data file <tagname>.txt into the same dropbox.
 
