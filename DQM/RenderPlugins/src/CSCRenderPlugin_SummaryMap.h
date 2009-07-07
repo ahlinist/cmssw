@@ -19,7 +19,11 @@
  * =====================================================================================
  */
 
+#ifdef DQMLOCAL
+#include "DQM/CSCMonitorModule/interface/CSCDQM_Detector.h"
+#else
 #include "CSCDQM_Detector.h"
+#endif 
 
 class TH2;
 class TH2F;
