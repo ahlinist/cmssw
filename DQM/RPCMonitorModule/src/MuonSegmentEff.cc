@@ -79,7 +79,6 @@ MuonSegmentEff::MuonSegmentEff(const edm::ParameterSet& iConfig){
   MinCosAng=iConfig.getUntrackedParameter<double>("MinCosAng",0.95);
   MaxD=iConfig.getUntrackedParameter<double>("MaxD",80.);
   MaxDrb4=iConfig.getUntrackedParameter<double>("MaxDrb4",150.);
-  muonRPCDigis=iConfig.getUntrackedParameter<std::string>("muonRPCDigis","muonRPCDigis");
   cscSegments=iConfig.getUntrackedParameter<std::string>("cscSegments","cscSegments");
   dt4DSegments=iConfig.getUntrackedParameter<std::string>("dt4DSegments","dt4DSegments");
   
@@ -292,6 +291,7 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
 	int region=rpcId.region();
 	//booking all histograms
 	RPCGeomServ rpcsrv(rpcId);
+
 	std::string nameRoll = rpcsrv.name();
 	//std::cout<<"Booking for "<<nameRoll<<std::endl;
 
@@ -429,19 +429,19 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   statistics->Fill(1);
   using namespace edm;
-  
+
+  char detUnitLabel[128];
   char layerLabel[128];
   char meIdRPC [128];
   char meIdDT [128];
   char meIdCSC [128];
 
   //-------------Filling Other Histograms for correlations -----------
+
+  if(debug) std::cout <<"\t Getting the RPC RecHits"<<std::endl;
+  Handle<RPCRecHitCollection> rpcHits;
+  iEvent.getByType(rpcHits);
   
-  if(debug) std::cout <<"Digi Getting the RPC Digis"<<std::endl;
-  edm::Handle<RPCDigiCollection> rpcDigis;
-  iEvent.getByLabel(muonRPCDigis, rpcDigis);
-  if(debug) std::cout<<"Before the loop of the digis"<<std::endl;
-  char detUnitLabel[128];
   for (TrackingGeometry::DetContainer::const_iterator it=rpcGeo->dets().begin();it<rpcGeo->dets().end();it++){
     if(dynamic_cast< RPCChamber* >( *it ) != 0 ){
       RPCChamber* ch = dynamic_cast< RPCChamber* >( *it ); 
@@ -452,24 +452,30 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	std::string nameRoll = rpcsrv.name();
 	if(rpcId.region()==0 && (incldt == false || incldtMB4 == false)) continue;  
 	if(rpcId.region()!=0 && inclcsc == false ) continue;  
+
 	std::map<std::string, MonitorElement*> meMap=meCollection[nameRoll];
 
 	sprintf(detUnitLabel ,"%s",nameRoll.c_str());
-	sprintf(layerLabel ,"%s",nameRoll.c_str());
-	RPCDigiCollection::Range rpcRangeDigi=rpcDigis->get(rpcId);
+	
+	typedef std::pair<RPCRecHitCollection::const_iterator, RPCRecHitCollection::const_iterator> rangeRecHits;
+	rangeRecHits recHitCollection =  rpcHits->get(rpcId);
+	RPCRecHitCollection::const_iterator recHit;
+	sprintf(meIdRPC,"BXDistribution_%s",detUnitLabel);
 
-	for (RPCDigiCollection::const_iterator digiIt = rpcRangeDigi.first;digiIt!=rpcRangeDigi.second;++digiIt){
-	  int stripDetected=digiIt->strip();
-	  sprintf(meIdRPC,"BXDistribution_%s",detUnitLabel);
-	  meMap[meIdRPC]->Fill(digiIt->bx());
-	  if(rpcId.region()==0){
-	    sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
-	    meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
-	    if(debug) std::cout<<"Digis for "<<meIdRPC<<meIdRPC<<std::endl;
-	  }else {
-	    sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
-	    meMap[meIdRPC]->Fill(stripDetected); //have a look to this!
-	    if(debug) std::cout<<"Digis for "<<meIdRPC<<meIdRPC<<std::endl;
+	if(rpcId.region()==0){
+	  sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
+	}else {
+	  sprintf(meIdRPC,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
+	}
+	
+	//if(debug) std::cout<<meIdRPC<<std::endl;
+	for (recHit = recHitCollection.first; recHit != recHitCollection.second ; recHit++) {
+	  int cls = recHit->clusterSize();
+	  int firststrip = recHit->firstClusterStrip();
+	  int bx = recHit->BunchX();
+	  for(int stripDetected = firststrip; stripDetected <= firststrip+cls; stripDetected++){
+	    meMap[meIdRPC]->Fill(bx);
+	    meMap[meIdRPC]->Fill(stripDetected); 
 	  }
 	}
       }
@@ -478,15 +484,12 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   //------------------------------------------------------------------------------------
   
-  if(debug) std::cout <<"\t Getting the RPC RecHits"<<std::endl;
-  Handle<RPCRecHitCollection> rpcHits;
-  iEvent.getByType(rpcHits);
 
   if(incldt){
     if(debug) std::cout<<"\t Getting the DT Segments"<<std::endl;
     edm::Handle<DTRecSegment4DCollection> all4DSegments;
     iEvent.getByLabel(dt4DSegments, all4DSegments);
-    if(debug) std::cout<<"I got the segments"<<std::cout;
+    if(debug) std::cout<<"I got the segments"<<std::endl;
     
     if(all4DSegments->size()>0){
       if(all4DSegments->size()<=16) statistics->Fill(2);
