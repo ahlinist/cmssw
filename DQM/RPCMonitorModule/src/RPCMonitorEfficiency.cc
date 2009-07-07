@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.26 2009/07/02 13:15:26 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.27 2009/07/06 10:16:12 carrillo Exp $
 //
 //
 
@@ -1321,15 +1321,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float buffef = 0;
 	  float buffer = 0;
 	  float sumbuffef = 0;
-	  float sumbuffer = 0;
 	  float averageeff = 0.;
 	  float averageerr = 0.;
+
+	  float averageerrexp = 0.;	  
+	  float averageerrocc = 0.;
 
 	  float doublegapeff = 0;
 	  float doublegaperr = 0;
 
 	  float bufdoublegapeff = 0;
-	  float bufdoublegaperr = 0;
+	  
+	  float doublegaperrexp = 0;
+	  float doublegaperrocc = 0;
 
 	  float pinoeff = 0.;
 	  float pinoerr = 0.;
@@ -1487,19 +1491,22 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		efftxt<<"  "<<buffef;
 		
 		sumbuffef = sumbuffef + buffef;
-		sumbuffer = sumbuffer + buffer*buffer;
+		averageerrocc = averageerrocc + histoRPC->GetBinContent(i);
+		averageerrexp = averageerrexp + histoDT->GetBinContent(i);
+		  
 		NumberStripsPointed++;
-
+		
 		if(maskeffect[i]==false){
 		  bufdoublegapeff=bufdoublegapeff+buffef;
-		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
+		  doublegaperrocc = doublegaperrocc + histoRPC->GetBinContent(i);
+		  doublegaperrexp = doublegaperrexp + histoDT->GetBinContent(i);
 		}
 	      }else{
 		//if(debug) std::cout<<" NP";
 		NumberWithOutPrediction++;
 		efftxt<<"  "<<0.95;
 	      }
-
+	      
 	      histoPRO->SetBinContent(i,buffef);
 	      histoPRO->SetBinError(i,buffer);
 	    }
@@ -1515,13 +1522,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
-	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
+	      float efftmp = averageerrocc/averageerrexp;
+	      averageerr = sqrt(efftmp*(1-efftmp)/averageerrexp)*100.;
 	      
 	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
 
 	      if(withouteffect!=0){
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
-		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
+		float efftmp = doublegaperrocc/doublegaperrexp;
+		doublegaperr = sqrt(efftmp*(1-efftmp)/doublegaperrexp)*100.;
 	      }
 	      
 	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
@@ -2151,17 +2160,21 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float buffef = 0.;
 	  float buffer = 0.;
 	  float sumbuffef = 0.;
-	  float sumbuffer = 0.;
 	  float averageeff = 0.;
 	  float averageerr = 0.;
+
+	  float averageerrexp = 0.;	  
+	  float averageerrocc = 0.;
 
 	  float doublegapeff = 0;
 	  float doublegaperr = 0;
 
 	  float bufdoublegapeff = 0;
-	  float bufdoublegaperr = 0;
-
-	  float pinoeff = 0;
+	  	  
+	  float doublegaperrocc = 0;
+	  float doublegaperrexp = 0;
+	 
+ 	  float pinoeff = 0;
 	  float pinoerr = 0;
 	  
 	  int NumberStripsPointed = 0;
@@ -2339,12 +2352,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		efftxt<<"  "<<buffef;
 		
 		sumbuffef=sumbuffef+buffef;
-		sumbuffer = sumbuffer + buffer*buffer;
+		
+		averageerrocc = averageerrocc + histoRPC->GetBinContent(i);
+		averageerrexp = averageerrexp + histoCSC->GetBinContent(i);
+		
 		NumberStripsPointed++;
 
 		if(maskeffect[i]==false){
 		  bufdoublegapeff=bufdoublegapeff+buffef;
-		  bufdoublegaperr=bufdoublegaperr+buffer*buffer;
+		  doublegaperrocc = doublegaperrocc + histoRPC->GetBinContent(i);
+		  doublegaperrexp = doublegaperrexp + histoCSC->GetBinContent(i);
 		}
 	      }else{
 		if(debug) std::cout<<" NP";
@@ -2367,13 +2384,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    	    
 	    if(NumberStripsPointed!=0){
 	      averageeff = (sumbuffef/float(NumberStripsPointed))*100.;
-	      averageerr = sqrt(sumbuffer/float(NumberStripsPointed))*100.;
-
+	      float efftmp = averageerrocc/averageerrexp;
+	      averageerr = sqrt(efftmp*(1-efftmp)/averageerrexp)*100.;
+	      
 	      if(debug) std::cout<<"Filling Average Efficiency"<<std::endl;
      
 	      if(withouteffect!=0){
 		doublegapeff=(bufdoublegapeff/withouteffect)*100.;
-		doublegaperr=sqrt(bufdoublegaperr/withouteffect)*100.;
+		float efftmp = doublegaperrocc/doublegaperrexp;
+		doublegaperr = sqrt(efftmp*(1-efftmp)/doublegaperrexp)*100.;
 	      }
 	      
 	      if(doublegapeff<averageeff) doublegapeff=averageeff; //If the desentangle is not working....
