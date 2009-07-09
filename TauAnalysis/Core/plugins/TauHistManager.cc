@@ -80,15 +80,6 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   tauIsoPtThresholdIncr_ = 0.5;
 
 //--- create "veto" objects for computation of IsoDeposit sums
-  tauTrkIsoParam_.push_back(IsoDepositVetoFactory::make("0.02"));
-  tauTrkIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(1.0)"));
-
-  tauEcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  tauEcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
-
-  tauHcalIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
-  tauHcalIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.0)"));
-
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
 }
@@ -96,9 +87,6 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 TauHistManager::~TauHistManager()
 {
 //--- delete "veto" objects for computation of IsoDeposit sums
-  clearIsoParam(tauTrkIsoParam_);
-  clearIsoParam(tauEcalIsoParam_);
-  clearIsoParam(tauHcalIsoParam_);
   clearIsoParam(tauParticleFlowIsoParam_);
 }
 
@@ -192,16 +180,6 @@ void TauHistManager::bookHistograms()
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
     std::ostringstream iConeSizeString;
     iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-    
-    std::string hTauTrkIsoPtConeSizeDepName_i = std::string("TauTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauTrkIsoPtConeSizeDepName_i, 
-						       hTauTrkIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauEcalIsoPtConeSizeDepName_i = std::string("TauEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauEcalIsoPtConeSizeDepName_i, 
-							hTauEcalIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauHcalIsoPtConeSizeDepName_i = std::string("TauHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauHcalIsoPtConeSizeDepName_i, 
-							hTauHcalIsoPtConeSizeDepName_i, 100, 0., 20.));
     
     std::string hTauParticleFlowIsoPtConeSizeDepName_i 
       = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
@@ -382,6 +360,11 @@ void TauHistManager::fillTauHistograms(const pat::Tau& patTau, MonitorElement* h
 void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau)
 {
   //std::cout << "<TauHistManager::fillTauIsoHistograms>:" << std::endl;
+
+  hTauTrkIsoPt_->Fill(patTau.trackIso());
+  hTauEcalIsoPt_->Fill(patTau.ecalIso());
+  hTauHcalIsoPt_->Fill(patTau.hcalIso());
+  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso());
     
   hTauTrkIsoPt_->Fill(patTau.trackIso());
   hTauEcalIsoPt_->Fill(patTau.ecalIso());
@@ -413,21 +396,6 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau)
 
   for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
     double isoConeSize_i = iConeSize*tauIsoConeSizeIncr_;
-    
-    if ( patTau.trackerIsoDeposit() ) {
-      double tauTrkIsoDeposit_i = patTau.trackerIsoDeposit()->countWithin(isoConeSize_i, tauTrkIsoParam_, false);
-      hTauTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauTrkIsoDeposit_i);
-    }
-
-    if ( patTau.ecalIsoDeposit() ) {
-      double tauEcalIsoDeposit_i = patTau.ecalIsoDeposit()->countWithin(isoConeSize_i, tauEcalIsoParam_, false);
-      hTauEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauEcalIsoDeposit_i);
-    }
-    
-    if ( patTau.hcalIsoDeposit() ) {
-      double tauHcalIsoDeposit_i = patTau.hcalIsoDeposit()->countWithin(isoConeSize_i, tauHcalIsoParam_, false);
-      hTauHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauHcalIsoDeposit_i);
-    }
 
     if ( patTau.isoDeposit(pat::ParticleIso) ) {
       double tauParticleFlowIsoDeposit_i 
