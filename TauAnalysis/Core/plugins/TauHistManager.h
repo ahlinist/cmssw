@@ -94,6 +94,11 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauDiscriminatorTaNCfrQuarterPercent_;
   MonitorElement* hTauDiscriminatorTaNCfrTenthPercent_;
 
+  MonitorElement* hTauTrkIsoPt_;
+  MonitorElement* hTauEcalIsoPt_;
+  MonitorElement* hTauHcalIsoPt_;
+  MonitorElement* hTauIsoSumPt_;
+
   MonitorElement* hTauTrkIsoEnProfile_;
   MonitorElement* hTauTrkIsoPtProfile_;
   MonitorElement* hTauTrkIsoEtaDistProfile_;
