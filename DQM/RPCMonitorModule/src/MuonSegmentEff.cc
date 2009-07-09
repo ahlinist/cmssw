@@ -1238,10 +1238,14 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  LocalPoint segmentPosition= segment->localPosition();
 	  LocalVector segmentDirection=segment->localDirection();
 	  float dz=segmentDirection.z();
-	
+
+	  if(debug) std::cout<<"CSC \t \t \t Information about the segment" 
+			     <<"RecHits ="<<segment->nRecHits()
+			     <<"Angle ="<<acos(dz)*180/3.1415926<<std::endl;
+		      
 	  if(debug) std::cout<<"CSC \t \t Is a good Segment? dim = 4, 4 <= nRecHits <= 10 Incident angle int range 45 < "<<acos(dz)*180/3.1415926<<" < 135? "<<std::endl;
 
-	  if(segment->dimension()==4){ // && (segment->nRecHits()<=10 && segment->nRecHits()>=4)&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 160. ){ 
+	  if(segment->dimension()==4 && (segment->nRecHits()<=10 && segment->nRecHits()>=4)&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 135.){ 
 	    
 	    //&& segment->chi2()< ??)Add 3 segmentes in the endcaps???
 
