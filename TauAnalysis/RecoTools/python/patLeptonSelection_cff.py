@@ -153,7 +153,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
-    doSelCumulative = False,
+    #doSelCumulative = False,
     doSelIndividual = True
 )
 
