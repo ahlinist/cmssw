@@ -47,6 +47,12 @@
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
 
+  <!-- create dictionaries for PATTauNuPair objects -->
+  <class name="CompositePtrCandidateTMEt<pat::Tau>"/>
+  <class name="std::vector<CompositePtrCandidateTMEt<pat::Tau> >"/>
+  <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Tau> >"/>
+  <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Tau> > >"/>
+
   <!-- create dictionaries for GenPhaseSpaceEventInfo objects -->
   <class name="GenPhaseSpaceEventInfo"/>
   <class name="edm::Wrapper<GenPhaseSpaceEventInfo>"/>
