@@ -153,5 +153,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   std::string recoMode_;
   int verbosity_;
 };
+
 #endif 
 
