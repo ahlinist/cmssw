@@ -49,10 +49,15 @@ from TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff import *
 # tau-jet + tau-jet pairs passing different selection criteria
 #
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
+#
+# produce combinations of tau-jet + missing transverse momentum
+#
+from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
 
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
                                +producePostPat
                                +produceLayer1SelLeptons + selectLayer1Jets
                                +produceDiTauPairsAllKinds
-                               +selectDiTauPairsAllKinds )
+                               +selectDiTauPairsAllKinds
+                               +produceTauNuPairs )
