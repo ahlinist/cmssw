@@ -111,7 +111,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
     script.append("eval `scramv1 runtime -csh`")
     script.append("cd -")    
     script.append("cmsRun " + configFile_mod)
-    script.append("set rootFiles=(`ls *.root`)")
+    script.append("set rootFiles=(`/bin/ls *.root`)")
     script.append("foreach rootFile (${rootFiles})")
     script.append("    echo \"copying ${rootFile} to " + outputDirectory + "\"")
     script.append("    " + cp + " ${rootFile} " + outputDirectory)
