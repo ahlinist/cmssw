@@ -66,43 +66,39 @@ process.genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
     )
 )
 
-process.muonEcalIsoCutLooseIsolation = cms.EDFilter("BoolEventSelFlagProducer",
-    selectors = cms.VPSet(
-        cms.PSet(
-            pluginName = cms.string("muonEcalIsoCutLooseIsolation"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
-            minNumber = cms.uint32(1),
-            instanceName = cms.string('prodNtupleZtoMuTau')
-        )
-    )
+process.muonsBgEstPreselection = cms.EDFilter("PATMuonSelector",
+    src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),                                        
+    cut = cms.string('innerTrack.isNonnull'),
+    filter = cms.bool(False)
 )
 
-process.muTauPairsLooseSelection = cms.EDProducer("PATMuTauPairProducer",
+process.muonTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
+    pluginName = cms.string("muonTrkCutBgEstPreselection"),
+    pluginType = cms.string("PATCandViewMinEventSelector"),
+    src = cms.InputTag('muonsBgEstPreselection'),
+    minNumber = cms.uint32(1),
+)
+
+process.muTauPairsBgEstPreselection = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
+    srcLeg1 = cms.InputTag('muonsBgEstPreselection'),
+    srcLeg2 = cms.InputTag('selectedLayer1TausProngCumulative'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('layer1METs'),
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
 
-process.muTauPairCutLooseSelection = cms.EDFilter("BoolEventSelFlagProducer",
-    selectors = cms.VPSet(
-        cms.PSet(
-            pluginName = cms.string("muTauPairCutLooseSelection"),
-            pluginType = cms.string("PATCandViewMinEventSelector"),
-            src = cms.InputTag('muTauPairsLooseSelection'),
-            minNumber = cms.uint32(1),
-            instanceName = cms.string('prodNtupleZtoMuTau')
-        )
-    )
+process.muTauPairCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
+    pluginName = cms.string("muTauPairCutBgEstPreselection"),
+    pluginType = cms.string("PATCandViewMinEventSelector"),
+    src = cms.InputTag('muTauPairsBgEstPreselection'),
+    minNumber = cms.uint32(1)
 )                                                                             
 
 process.produceBoolEventSelFlags = cms.Sequence(
-    process.muonEcalIsoCutLooseIsolation
-   +process.muTauPairsLooseSelection + process.muTauPairCutLooseSelection
+    process.muonsBgEstPreselection + process.muonTrkCutBgEstPreselection
+   +process.muTauPairsBgEstPreselection + process.muTauPairCutBgEstPreselection
 )
 
 process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
@@ -111,9 +107,9 @@ process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFil
         cms.InputTag('primaryEventVertex'),
         cms.InputTag('primaryEventVertexQuality'),
         cms.InputTag('primaryEventVertexPosition'),
-        cms.InputTag('muonEcalIsoCutLooseIsolation', 'prodNtupleZtoMuTau'),
-        cms.InputTag('tauMuonVeto', 'cumulative'),                                                        
-        cms.InputTag('muTauPairCutLooseSelection', 'prodNtupleZtoMuTau')
+        cms.InputTag('muonTrkCutBgEstPreselection'),
+        cms.InputTag('tauProngCut', 'cumulative'),                                                        
+        cms.InputTag('muTauPairCutBgEstPreselection')
     )
 )
 #--------------------------------------------------------------------------------
