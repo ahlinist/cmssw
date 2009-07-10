@@ -20,7 +20,6 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 
-
 #process.source = cms.Source("PoolSource",
 #    fileNames = cms.untracked.vstring(
 ## 	"rfio:/castor/cern.ch/user/s/slehti/test.root"
@@ -56,7 +55,9 @@ process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles")
 #copying the Discriminator by Isolation
 from RecoTauTag.RecoTau.PFRecoTauDiscriminationByIsolationUsingLeadingPion_cfi import *
 process.thisPFTauDiscriminationByIsolation = copy.deepcopy(pfRecoTauDiscriminationByIsolationUsingLeadingPion)
-process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' # this tau collection is the one just made above
+process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected' 
+process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
+
 
 
 
