@@ -49,7 +49,8 @@ process.source = cms.Source("PoolSource",
         #'/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/F01E4F34-BDCB-DD11-B87D-001617C3B77C.root',
         #'/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
         #'/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     )
 )
 
@@ -117,16 +118,6 @@ process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFil
 )
 #--------------------------------------------------------------------------------
 
-process.saveBgEstSample = cms.OutputModule("PoolOutputModule",                                 
-    tauAnalysisEventContent,
-    bgEstEventSelection = cms.untracked.PSet(
-        SelectEvents = cms.untracked.PSet(
-            SelectEvents = cms.vstring('bgEstSkimPath')
-        )
-    ),
-    fileName = cms.untracked.string('bgEstSample.root')
-)
-
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
 # in case running jobs on the CERN batch system
@@ -165,6 +156,14 @@ process.bgEstSkimPath = cms.Path(
    * process.genPhaseSpaceFilter
    * process.produceBoolEventSelFlags
    * process.selectEventsByBoolEventSelFlags
+)
+
+process.saveBgEstSample = cms.OutputModule("PoolOutputModule",
+    tauAnalysisEventContent,                                        
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('bgEstSkimPath')
+    ),
+    fileName = cms.untracked.string('bgEstSample.root')
 )
 
 process.o = cms.EndPath( process.saveBgEstSample )
