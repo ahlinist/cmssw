@@ -126,19 +126,15 @@ void TauHistManager::bookHistograms()
   
   hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
 						       "Discriminator against Electrons", 102, -0.01, 1.01);
+  hTauEmFraction_ = dqmStore.book1D("TauEmFraction", "TauEmFraction", 101, -0.01, 2.01);
+  hTauHcalTotOverPLead_ = dqmStore.book1D("TauHcalTotOverPLead", "TauHcalTotOverPLead", 101, -0.01, 2.01);
+  hTauHcalMaxOverPLead_ = dqmStore.book1D("TauHcalMaxOverPLead", "TauHcalMaxOverPLead", 101, -0.01, 2.01);
+  hTauHcal3x3OverPLead_ = dqmStore.book1D("TauHcal3x3OverPLead", "TauHcal3x3OverPLead", 101, -0.01, 2.01);
+  hTauEcalStripSumEOverPLead_ = dqmStore.book1D("TauEcalStripSumEOverPLead", "TauEcalStripSumEOverPLead", 101, -0.01, 2.01);
+  hTauBremsRecoveryEOverPLead_ = dqmStore.book1D("TauBremsRecoveryEOverPLead", "TauBremsRecoveryEOverPLead", 101, -0.01, 2.01);
+
   hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
 						   "Discriminator against Muons", 102, -0.01, 1.01);
-
-/*
-  add histograms of:
-   o TauGenJet decay mode
-   o reco TauDecayMode
-   o reco TauDecayMode (y-ayis) vs. TauGenJet decay mode (x-axis)
-   o TauGenJet mass
-   o pat::Tau mass
-   o reco TauDecayMode mass
-   o reco TauDecayMode mass separately for different decay modes
- */
     
   hTauRecDecayMode_ = dqmStore.book1D("TauRecDecayMode", "decayMode()", 25, -0.5, 24.5);
   
@@ -291,6 +287,13 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     }
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"));
+    hTauEmFraction_->Fill(patTau->emFraction());
+    hTauHcalTotOverPLead_->Fill(patTau->hcalTotOverPLead());
+    hTauHcalMaxOverPLead_->Fill(patTau->hcalMaxOverPLead());
+    hTauHcal3x3OverPLead_->Fill(patTau->hcal3x3OverPLead());
+    hTauEcalStripSumEOverPLead_->Fill(patTau->ecalStripSumEOverPLead());
+    hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead());
+
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
   
     int tauDecayMode = patTau->decayMode();
