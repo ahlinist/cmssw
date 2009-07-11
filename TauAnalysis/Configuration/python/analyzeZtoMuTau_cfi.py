@@ -17,8 +17,9 @@ diTauCandidateHistManagerForMuTau.pluginName = cms.string('diTauCandidateHistMan
 diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManager')
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
 
-# import config for missing-Et histogram manager
+# import config for missing-Et histogram managers
 from TauAnalysis.Core.metHistManager_cfi import *
+from TauAnalysis.Core.metTopologyHistManager_cfi import *
 
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
@@ -46,6 +47,7 @@ muTauHistManagers = cms.vstring(
     'tauHistManager',
     'diTauCandidateHistManagerForMuTau',
     'metHistManager',
+    'metTopologyHistManager',
     'jetHistManager',
     'vertexHistManager',
     'triggerHistManager'
