@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.1 2009/02/04 17:30:15 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.2 2009/06/15 07:48:55 cbern Exp $
  *
  */
 
@@ -50,12 +50,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   const T2Ptr leg2() const { return leg2_; }
 
   /// return the number of source particle-like Candidates
-  /// ( the candidates used to construct this Candidate)       
+  /// (the candidates used to construct this Candidate)       
   /// MET does not count. 
-  size_t numberOfSourceCandidatePtrs() const { return 2;}
+  size_t numberOfSourceCandidatePtrs() const { return 2; }
 
   /// return a Ptr to one of the source Candidates                                                               
-  /// ( the candidates used to construct this Candidate)                                                         
+  /// (the candidates used to construct this Candidate)                                                         
   reco::CandidatePtr sourceCandidatePtr( size_type i ) const {
     if(i==0) return leg1();
     else if(i==1) return leg2();
@@ -106,15 +106,19 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   double dPhi1MET() const { return dPhi1MET_; }
   double dPhi2MET() const { return dPhi2MET_; }
 
+  /// get values of CDF-"zeta" variables
+  /// (indicating the consistency of the missing transverse momentum observed in an event
+  ///  with the hypothesis of originating from tau neutrinos)
+  double pZeta() const { return pZeta_; }
+  double pZetaVis() const { return pZetaVis_; }
+
   /// clone  object
   CompositePtrCandidateT1T2MEt<T1,T2>* clone() const { return new CompositePtrCandidateT1T2MEt<T1,T2>(*this); }
 
   friend std::ostream& operator<<(std::ostream& out, const CompositePtrCandidateT1T2MEt<T1,T2>& dic) {
-    if(!out) return out;
-    out<<"Di-Candidate m="<<dic.mass();
+    out << "Di-Candidate m = " << dic.mass();
     return out;
   }
-
 
  private:
   
@@ -152,6 +156,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// visible decay product and missing transverse momentum
   void setDPhi1MET(double dPhi) { dPhi1MET_ = dPhi; }
   void setDPhi2MET(double dPhi) { dPhi2MET_ = dPhi; }
+  /// set values of CDF-"zeta" variables
+  void setPzeta(double pZeta) { pZeta_ = pZeta; }
+  void setPzetaVis(double pZetaVis) { pZetaVis_ = pZetaVis; }
 
   /// references/pointers to decay products
   T1Ptr leg1_;
@@ -183,6 +190,9 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// visible decay product and missing transverse momentum
   double dPhi1MET_;
   double dPhi2MET_;
+  /// CDF-"zeta" variables
+  double pZeta_;
+  double pZetaVis_;
 };
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
