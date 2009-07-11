@@ -7,6 +7,9 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/GenPhaseSpaceEventInfo.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/MEtTopologyFwd.h"
+
 #include "DataFormats/Common/interface/Wrapper.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -72,5 +75,11 @@ namespace {
     /// create dictionaries for GenPhaseSpaceEventInfo objects
     GenPhaseSpaceEventInfo dummyGenPhaseSpaceEventInfo;
     edm::Wrapper<GenPhaseSpaceEventInfo> dummyGenPhaseSpaceEventInfoWrapper;
+
+    /// create dictionaries for MEtTopology objects
+    MEtTopology dummyMEtTopology;
+    edm::Wrapper<MEtTopology> dummyMEtTopologyWrapper;
+    MEtTopologyCollection dummyMEtTopologyCollection;
+    edm::Wrapper<MEtTopologyCollection> dummyMEtTopologyCollectionWrapper;
   };
 }

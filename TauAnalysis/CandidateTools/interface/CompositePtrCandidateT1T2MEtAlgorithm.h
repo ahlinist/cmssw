@@ -58,6 +58,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setMt2MET(compMt(leg2->p4(), met->px(), met->py()));
       compositePtrCandidate.setDPhi1MET(TMath::Abs(normalizedPhi(leg1->phi() - met->phi())));
       compositePtrCandidate.setDPhi2MET(TMath::Abs(normalizedPhi(leg2->phi() - met->phi())));
+
+      compZeta(compositePtrCandidate, leg1->p4(), leg2->p4(), met->px(), met->py());
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false);
     }
@@ -110,6 +112,55 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     } else {
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false);
     }
+  }
+  void compZeta(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
+		const reco::Candidate::LorentzVector& leg1,
+		const reco::Candidate::LorentzVector& leg2,
+		double metPx, double metPy)
+  {
+    //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::compZeta>:" << std::endl;
+    //std::cout << " leg1Phi = " << leg1.phi() << std::endl;
+    //std::cout << " leg2Phi = " << leg2.phi() << std::endl;
+
+    double leg1x = cos(leg1.phi());
+    double leg1y = sin(leg1.phi());
+    double leg2x = cos(leg2.phi());
+    double leg2y = sin(leg2.phi());
+    double zetaX = leg1x + leg2x;
+    double zetaY = leg1y + leg2y;
+    double zetaR = zetaX*zetaX + zetaY*zetaY;
+    if ( zetaR > 0. ) {
+      zetaX /= zetaR;
+      zetaY /= zetaR;
+    }
+
+    //std::cout << " zetaX = " << zetaX << std::endl;
+    //std::cout << " zetaY = " << zetaY << std::endl;
+
+    //double zetaPhi = normalizedPhi(atan2(zetaY, zetaX));
+    //std::cout << " zetaPhi = " << zetaPhi << std::endl;
+
+    double visPx = leg1.px() + leg2.px();
+    double visPy = leg1.py() + leg2.py();
+    double pZetaVis = visPx*zetaX + visPy*zetaY;
+
+    //std::cout << " visPx = " << visPx << std::endl;
+    //std::cout << " visPy = " << visPy << std::endl;
+
+    double px = visPx + metPx;
+    double py = visPy + metPy;
+    double pZeta = px*zetaX + py*zetaY;
+    
+    if ( verbosity_ ) {
+      std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::compZeta>:" << std::endl;
+      std::cout << " pZetaVis = " << pZetaVis << std::endl;
+      std::cout << " pZeta = " << pZeta << std::endl;
+    }
+
+    //assert(pZetaVis >= 0.);
+
+    compositePtrCandidate.setPzeta(pZeta);
+    compositePtrCandidate.setPzetaVis(pZetaVis);
   }
   reco::Candidate::LorentzVector compP4CDFmethod(const reco::Candidate::LorentzVector& leg1, 
 						 const reco::Candidate::LorentzVector& leg2, 

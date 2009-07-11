@@ -56,4 +56,10 @@
   <!-- create dictionaries for GenPhaseSpaceEventInfo objects -->
   <class name="GenPhaseSpaceEventInfo"/>
   <class name="edm::Wrapper<GenPhaseSpaceEventInfo>"/>
+
+  <!-- create dictionaries for MEtTopology objects -->
+  <class name="MEtTopology"/>
+  <class name="std::vector<MEtTopology>"/>
+  <class name="edm::Wrapper<MEtTopology>"/>
+  <class name="edm::Wrapper<std::vector<MEtTopology> >"/>
 </lcgdict>

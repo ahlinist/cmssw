@@ -97,6 +97,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
   hDPhi1MET_ = dqmStore.book1D("DPhi1MET", "#Delta#phi_{1,MET}", 36, -TMath::Pi(), +TMath::Pi());
   hDPhi2MET_ = dqmStore.book1D("DPhi2MET", "#Delta#phi_{2,MET}", 36, -TMath::Pi(), +TMath::Pi());
   hDPhi1METvsDPhi2MET_ = dqmStore.book2D("DPhi1METvsDPhi2MET", "#Delta#phi_{1,MET} vs #Delta#phi_{2,MET}", 18, -TMath::Pi(), +TMath::Pi(), 18, -TMath::Pi(), +TMath::Pi()); 
+
+  hPzetaCorr_ = dqmStore.book2D("ZetaCorr", "P_{#zeta} vs P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
+  hPzetaDiff_ = dqmStore.book1D("ZetaDiff", "P_{#zeta} - 1.5 #cdot P_{#zeta}^{vis}", 40, -100., +100.);
 }
 
 template<typename T1, typename T2>
@@ -175,6 +178,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     hDPhi1MET_->Fill(diTauCandidate->dPhi1MET());
     hDPhi2MET_->Fill(diTauCandidate->dPhi2MET());
     hDPhi1METvsDPhi2MET_->Fill(diTauCandidate->dPhi1MET(), diTauCandidate->dPhi2MET());
+
+    hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta());
+    hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis());
   }
 }
 
