@@ -3,7 +3,7 @@
 // Package:    RPCSeedGenerator
 // Class:      RPCSeedGenerator
 // 
-/**\class RPCSeedGenerator RecoMuon/SeedGenerator/src/RPCSeedGenerator.cc
+/**\class RPCSeedGenerator RPCSeedGenerator.cc RecoMuon/SeedGenerator/src/RPCSeedGenerator.cc
 
 Description: <one line class summary>
 
@@ -37,6 +37,7 @@ Implementation:
 #include "RecoMuon/SeedGenerator/src/RPCSeedPattern.h"
 #include "RecoMuon/SeedGenerator/src/RPCSeedFinder.h"
 #include "RecoMuon/SeedGenerator/src/RPCSeedrecHitFinder.h"
+#include "RecoMuon/SeedGenerator/src/RPCCosmicSeedrecHitFinder.h"
 #include "RecoMuon/SeedGenerator/src/RPCSeedLayerFinder.h"
 #include "RecoMuon/SeedGenerator/src/RPCSeedOverlapper.h"
 // Geometry
@@ -62,7 +63,7 @@ typedef MuonTransientTrackingRecHit::MuonRecHitPointer MuonRecHitPointer;
 typedef MuonTransientTrackingRecHit::ConstMuonRecHitPointer ConstMuonRecHitPointer;
 typedef MuonTransientTrackingRecHit::MuonRecHitContainer MuonRecHitContainer;
 typedef MuonTransientTrackingRecHit::ConstMuonRecHitContainer ConstMuonRecHitContainer;
-
+typedef RPCSeedPattern::weightedTrajectorySeed weightedTrajectorySeed;
 
 #ifndef RPCLayerNumber
 #define RPCLayerNumber 12
@@ -92,17 +93,14 @@ class RPCSeedGenerator : public edm::EDProducer {
         virtual void produce(edm::Event& iEvent, const edm::EventSetup& iSetup);
         virtual void endJob();
 
-        void CheckOverlap(const edm::EventSetup& iSetup);
-        void CheckcandidateOverlap(const edm::EventSetup& iSetup);
-        bool isShareHit(const edm::OwnVector<TrackingRecHit> RecHits, const TrackingRecHit& hit, edm::ESHandle<RPCGeometry> rpcGeometry);
-
         // ----------member data ---------------------------
         RPCSeedFinder Finder;
         RPCSeedrecHitFinder recHitFinder;
+        RPCCosmicSeedrecHitFinder CosmicrecHitFinder;
         RPCSeedLayerFinder LayerFinder;
         RPCSeedOverlapper Overlapper;
-        std::vector<TrajectorySeed> candidateSeeds;
-        std::vector<TrajectorySeed> goodSeeds;
+        std::vector<weightedTrajectorySeed> candidateweightedSeeds;
+        std::vector<weightedTrajectorySeed> goodweightedSeeds;
         edm::InputTag theRPCRecHits;
 };
 
@@ -133,6 +131,7 @@ RPCSeedGenerator::RPCSeedGenerator(const edm::ParameterSet& iConfig)
     // Configure other modules
     Finder.configure(iConfig);
     recHitFinder.configure(iConfig);
+    CosmicrecHitFinder.configure(iConfig);
     LayerFinder.configure(iConfig);
     Overlapper.configure(iConfig);
     // Register the production
@@ -179,9 +178,9 @@ RPCSeedGenerator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     iSetup.get<SetupRecord>().get(pSetup);
     */
 
-    // clear goodSeeds from last reconstruction  
-    goodSeeds.clear();
-    candidateSeeds.clear();
+    // clear weighted Seeds from last reconstruction  
+    goodweightedSeeds.clear();
+    candidateweightedSeeds.clear();
 
     // Create the pointer to the Seed container
     auto_ptr<TrajectorySeedCollection> goodCollection(new TrajectorySeedCollection());
@@ -239,19 +238,23 @@ RPCSeedGenerator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cout << "REP2 "   << recHitsRPC[10].size() << " recHits" << endl;
     cout << "REP3 "   << recHitsRPC[11].size() << " recHits" << endl;
 
-    // Set Input of RPCSeedFinder, PCSeedrecHitFinder, RPCSeedLayerFinder
+    // Set Input of RPCSeedFinder, PCSeedrecHitFinder, CosmicrecHitFinder, RPCSeedLayerFinder
     recHitFinder.setInput(recHitsRPC);
+    CosmicrecHitFinder.setInput(recHitsRPC);
     LayerFinder.setInput(recHitsRPC);
-    Overlapper.setIO(&goodSeeds, &candidateSeeds);
+    
+    // Set Magnetic Field EventSetup of RPCSeedFinder
+    Finder.setEventSetup(iSetup);
+
     // Start from filling layers to filling seeds
-    LayerFinder.fillLayers();
+    LayerFinder.fill();
     Overlapper.run();
 
     // Save seeds to event
-    for(vector<TrajectorySeed>::iterator seed = goodSeeds.begin(); seed != goodSeeds.end(); ++seed)
-        goodCollection->push_back(*seed);
-    for(vector<TrajectorySeed>::iterator seed = candidateSeeds.begin(); seed != candidateSeeds.end(); ++seed)
-        candidateCollection->push_back(*seed);
+    for(vector<weightedTrajectorySeed>::iterator weightedseed = goodweightedSeeds.begin(); weightedseed != goodweightedSeeds.end(); ++weightedseed)
+        goodCollection->push_back((*weightedseed).first);
+    for(vector<weightedTrajectorySeed>::iterator weightedseed = candidateweightedSeeds.begin(); weightedseed != candidateweightedSeeds.end(); ++weightedseed)
+        candidateCollection->push_back((*weightedseed).first);
 
     // Put the seed to event
     iEvent.put(goodCollection, "goodSeeds");
@@ -259,23 +262,28 @@ RPCSeedGenerator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // Unset the input of RPCSeedFinder, PCSeedrecHitFinder, RPCSeedLayerFinder
     recHitFinder.unsetInput();
+    CosmicrecHitFinder.unsetInput();
     LayerFinder.unsetInput();
-    Overlapper.unsetIO();
+    
 }
 
 void RPCSeedGenerator::beginJob(const edm::EventSetup& iSetup) {
 
-    // Set link and EventSetup of RPCSeedFinder, PCSeedrecHitFinder, RPCSeedLayerFinder
-    cout << "set link and EventSetup of RPCSeedFinder, PCSeedrecHitFinder, RPCSeedLayerFinder" << endl;
-    Finder.setEventSetup(iSetup);
-    Finder.setOutput(&goodSeeds, &candidateSeeds);
+    // Set link and EventSetup of RPCSeedFinder, PCSeedrecHitFinder, CosmicrecHitFinder, RPCSeedLayerFinder
+    cout << "set link and Geometry EventSetup of RPCSeedFinder, RPCSeedrecHitFinder, RPCCosmicSeedrecHitFinder, RPCSeedLayerFinder and RPCSeedOverlapper" << endl;
+    
+    Finder.setOutput(&goodweightedSeeds, &candidateweightedSeeds);
     recHitFinder.setOutput(&Finder);
-    LayerFinder.setOutput(&recHitFinder);
+    CosmicrecHitFinder.setOutput(&Finder);
+    CosmicrecHitFinder.setEdge(iSetup);
+    LayerFinder.setOutput(&recHitFinder, &CosmicrecHitFinder);
     Overlapper.setEventSetup(iSetup);
+    Overlapper.setIO(&goodweightedSeeds, &candidateweightedSeeds);
 }
 
 void RPCSeedGenerator::endJob() {
 
+    cout << "All jobs completed" << endl;
 }
 
 //define this as a plug-in

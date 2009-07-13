@@ -26,7 +26,8 @@ RPCSeedLayerFinder::~RPCSeedLayerFinder() {
 void RPCSeedLayerFinder::configure(const edm::ParameterSet& iConfig) {
 
     // Set the configuration
-    isMixBarrelwithEndcap = iConfig.getParameter<bool>("isMixBarrelwithEndcap"); // Now is not used
+    isCosmic = iConfig.getParameter<bool>("isCosmic");
+    isMixBarrelwithEndcap = iConfig.getParameter<bool>("isMixBarrelwithEndcap");
     RangeofLayersinBarrel = iConfig.getParameter< std::vector<unsigned int> >("RangeofLayersinBarrel");
     RangeofLayersinEndcap = iConfig.getParameter< std::vector<unsigned int> >("RangeofLayersinEndcap");
     isSpecialLayers = iConfig.getParameter<bool>("isSpecialLayers");
@@ -52,17 +53,17 @@ void RPCSeedLayerFinder::unsetInput() {
     isInputset = false;
 }
 
-void RPCSeedLayerFinder::setOutput(RPCSeedrecHitFinder* Ref) {
+void RPCSeedLayerFinder::setOutput(RPCSeedrecHitFinder* Ref = NULL, RPCCosmicSeedrecHitFinder* CosmicRef = NULL) {
 
     RPCrecHitFinderRef = Ref;
+    RPCCosmicrecHitFinderRef = CosmicRef;
     isOutputset = true;
 }
 
-void RPCSeedLayerFinder::fillLayers() {
+void RPCSeedLayerFinder::fill() {
 
     // Check if already configured
-    if(isConfigured == false || isInputset == false || isOutputset == false)
-    {
+    if(isConfigured == false || isInputset == false || isOutputset == false) {
         cout << "RPCSeedLayerFinder needs to be configured and set IO before running RPCSeedLayerFinder::fillLayers()" << endl;
         return;
     }
@@ -71,10 +72,24 @@ void RPCSeedLayerFinder::fillLayers() {
     LayersinRPC.clear();
 
     // Now fill the Layers
-    if(isSpecialLayers == false && isMixBarrelwithEndcap == false)
-    {
-        for(std::vector<unsigned int>::iterator NumberofLayersinBarrel = RangeofLayersinBarrel.begin(); NumberofLayersinBarrel != RangeofLayersinBarrel.end(); NumberofLayersinBarrel++)
-        {
+    if(isCosmic == true) {
+        if(RPCCosmicrecHitFinderRef != NULL)
+            fillCosmicLayers();
+        else
+            cout << "RPCCosmicrecHitFinderRef not set" << endl;
+    }
+    else {
+        if(RPCrecHitFinderRef != NULL)
+            fillLayers();
+        else
+            cout << "RPCrecHitFinderRef not set" << endl;
+    }
+}
+
+void RPCSeedLayerFinder::fillLayers() {
+
+    if(isSpecialLayers == false && isMixBarrelwithEndcap == false) {
+        for(std::vector<unsigned int>::iterator NumberofLayersinBarrel = RangeofLayersinBarrel.begin(); NumberofLayersinBarrel != RangeofLayersinBarrel.end(); NumberofLayersinBarrel++) {
             // find N layers out of 6 Barrel Layers to fill to SeedinRPC
             unsigned int NumberofLayers = *NumberofLayersinBarrel;
             if(NumberofLayers < 1 || NumberofLayers > BarrelLayerNumber)
@@ -82,10 +97,10 @@ void RPCSeedLayerFinder::fillLayers() {
             int type = 0;  // type=0 for barrel
             LayersinRPC.clear();
             SpecialLayers(-1, NumberofLayers, type);
+            LayersinRPC.clear();
         }
 
-        for(std::vector<unsigned int>::iterator NumberofLayersinEndcap = RangeofLayersinEndcap.begin(); NumberofLayersinEndcap != RangeofLayersinEndcap.end(); NumberofLayersinEndcap++)
-        {
+        for(std::vector<unsigned int>::iterator NumberofLayersinEndcap = RangeofLayersinEndcap.begin(); NumberofLayersinEndcap != RangeofLayersinEndcap.end(); NumberofLayersinEndcap++) {
             unsigned int NumberofLayers = *NumberofLayersinEndcap;
             if(NumberofLayers < 1 || NumberofLayers > EachEndcapLayerNumber)
                 continue;
@@ -93,32 +108,30 @@ void RPCSeedLayerFinder::fillLayers() {
             // for -Z layers
             LayersinRPC.clear();
             SpecialLayers(BarrelLayerNumber-1, NumberofLayers, type);
+            LayersinRPC.clear();
             //for +Z layers
             LayersinRPC.clear();
             SpecialLayers(BarrelLayerNumber+EachEndcapLayerNumber-1, NumberofLayers, type);
+            LayersinRPC.clear();
         }
     }
-    if(isSpecialLayers == true && isMixBarrelwithEndcap == false)
-    {
+
+    if(isSpecialLayers == true && isMixBarrelwithEndcap == false) {
         // Fill barrel layer for seed
         bool EnoughforBarrel = true;
         unsigned int i = 0;
         LayersinRPC.clear();
-        for(std::vector<unsigned int>::iterator it = LayersinBarrel.begin(); it != LayersinBarrel.end(); it++, i++)
-        {   
-            if((*it) != 0 && i < BarrelLayerNumber)
-            {
+        for(std::vector<unsigned int>::iterator it = LayersinBarrel.begin(); it != LayersinBarrel.end(); it++, i++) {   
+            if((*it) != 0 && i < BarrelLayerNumber) {
                 if(recHitsinLayers[i] != 0)
                     LayersinRPC.push_back(i);
-                else
-                {
+                else {
                     cout << "Not recHits in special Barrel layer " << i << endl;
                     EnoughforBarrel = false;
                 }
             }
         }
-        if(EnoughforBarrel && (LayersinRPC.size() != 0))
-        {
+        if(EnoughforBarrel && (LayersinRPC.size() != 0)) {
             // Initiate and call recHit Finder
             RPCrecHitFinderRef->setLayers(LayersinRPC);
             RPCrecHitFinderRef->fillrecHits();
@@ -132,21 +145,17 @@ void RPCSeedLayerFinder::fillLayers() {
         i = BarrelLayerNumber;
         EnoughforEndcap = true;
         LayersinRPC.clear();
-        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++)
-        {
-            if((*it) != 0 && i < (BarrelLayerNumber+EachEndcapLayerNumber))
-            {
+        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++) {
+            if((*it) != 0 && i < (BarrelLayerNumber+EachEndcapLayerNumber)) {
                 if(recHitsinLayers[i] != 0)
                     LayersinRPC.push_back(i);
-                else
-                {
+                else {
                     cout << "Not recHits in special Endcap " << (i - BarrelLayerNumber) << endl;
                     EnoughforEndcap = false;
                 }
             }
         }
-        if(EnoughforEndcap && (LayersinRPC.size() != 0))
-        {
+        if(EnoughforEndcap && (LayersinRPC.size() != 0)) {
             // Initiate and call recHit Finder
             RPCrecHitFinderRef->setLayers(LayersinRPC);
             RPCrecHitFinderRef->fillrecHits();
@@ -157,25 +166,110 @@ void RPCSeedLayerFinder::fillLayers() {
         i = BarrelLayerNumber;
         EnoughforEndcap = true;
         LayersinRPC.clear();
-        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++)
-        {
-            if((*it) != 0 && i >= (BarrelLayerNumber+EachEndcapLayerNumber) && i < (BarrelLayerNumber+EachEndcapLayerNumber*2))
-            {
+        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++) {
+            if((*it) != 0 && i >= (BarrelLayerNumber+EachEndcapLayerNumber) && i < (BarrelLayerNumber+EachEndcapLayerNumber*2)) {
                 if(recHitsinLayers[i] != 0)
                     LayersinRPC.push_back(i);
-                else
-                {
+                else {
                     cout << "Not recHits in special Endcap " << i << endl;
                     EnoughforEndcap = false;
                 }
             }
         }
-        if(EnoughforEndcap && (LayersinRPC.size() != 0))
-        {
+        if(EnoughforEndcap && (LayersinRPC.size() != 0)) {
             // Initiate and call recHit Finder
             RPCrecHitFinderRef->setLayers(LayersinRPC);
             RPCrecHitFinderRef->fillrecHits();
         }
+        LayersinRPC.clear();
+    }
+
+    if(isMixBarrelwithEndcap == true) {
+        cout <<" Mix is not ready for non-cosmic case" << endl;
+        LayersinRPC.clear();
+    }
+}
+
+void RPCSeedLayerFinder::fillCosmicLayers() {
+    
+    // For cosmic only handle the SpecialLayers case
+    if(isSpecialLayers == true && isMixBarrelwithEndcap == false) {
+
+        // Fill barrel layer for seed
+        unsigned int i = 0;
+        LayersinRPC.clear();
+        for(std::vector<unsigned int>::iterator it = LayersinBarrel.begin(); it != LayersinBarrel.end(); it++, i++) {   
+            if((*it) != 0 && i < BarrelLayerNumber)
+                if(recHitsinLayers[i] != 0)
+                    LayersinRPC.push_back(i);
+        }
+        if(LayersinRPC.size() != 0) {
+            // Initiate and call recHit Finder
+            RPCCosmicrecHitFinderRef->setLayers(LayersinRPC);
+            RPCCosmicrecHitFinderRef->fillrecHits();
+        }
+        LayersinRPC.clear();
+
+        // Fill -Z and +Z endcap layer
+
+        // Fill endcap- layer for seed
+        i = BarrelLayerNumber;
+        LayersinRPC.clear();
+        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++) {
+            if((*it) != 0 && i < (BarrelLayerNumber+EachEndcapLayerNumber))
+                if(recHitsinLayers[i] != 0)
+                    LayersinRPC.push_back(i);
+        }
+        if(LayersinRPC.size() != 0) {
+            // Initiate and call recHit Finder
+            RPCCosmicrecHitFinderRef->setLayers(LayersinRPC);
+            RPCCosmicrecHitFinderRef->fillrecHits();
+        }
+        LayersinRPC.clear();
+
+        //Fill endcap+ layer for seed
+        i = BarrelLayerNumber;
+        LayersinRPC.clear();
+        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++) {
+            if((*it) != 0 && i >= (BarrelLayerNumber+EachEndcapLayerNumber) && i < (BarrelLayerNumber+EachEndcapLayerNumber*2))
+                if(recHitsinLayers[i] != 0)
+                    LayersinRPC.push_back(i);
+        }
+        if(LayersinRPC.size() != 0) {
+            // Initiate and call recHit Finder
+            RPCCosmicrecHitFinderRef->setLayers(LayersinRPC);
+            RPCCosmicrecHitFinderRef->fillrecHits();
+        }
+        LayersinRPC.clear();
+    }
+
+    if(isSpecialLayers == true && isMixBarrelwithEndcap == true) {
+
+        // Fill all
+        unsigned int i = 0;
+        LayersinRPC.clear();
+        for(std::vector<unsigned int>::iterator it = LayersinBarrel.begin(); it != LayersinBarrel.end(); it++, i++) {   
+            if((*it) != 0 && i < BarrelLayerNumber)
+                if(recHitsinLayers[i] != 0)
+                    LayersinRPC.push_back(i);
+        }
+        i = BarrelLayerNumber;
+        for(std::vector<unsigned int>::iterator it = LayersinEndcap.begin(); it != LayersinEndcap.end(); it++, i++) {
+            if((*it) != 0 && i < (BarrelLayerNumber+EachEndcapLayerNumber*2))
+                if(recHitsinLayers[i] != 0)
+                    LayersinRPC.push_back(i);
+        }
+
+        if(LayersinRPC.size() != 0) {
+            // Initiate and call recHit Finder
+            RPCCosmicrecHitFinderRef->setLayers(LayersinRPC);
+            RPCCosmicrecHitFinderRef->fillrecHits();
+        }
+        LayersinRPC.clear();
+    }
+
+    if(isSpecialLayers == false) {
+        cout << "Not ready for not SpecialLayers for Cosmic case" << endl;
         LayersinRPC.clear();
     }
 }
@@ -185,25 +279,19 @@ void RPCSeedLayerFinder::SpecialLayers(int last, unsigned int NumberofLayers, in
     // check type, 0=barrel, 1=endcap, 2=mix
 
     // barrel has 6 layers
-    if(type == 0)
-    {
-        if(NumberofLayers > BarrelLayerNumber)
-        {
+    if(type == 0) {
+        if(NumberofLayers > BarrelLayerNumber) {
             cout << "NumberofLayers larger than max layers in barrel" << endl;
             return;
         }
-        for(int i = (last+1); i <= (BarrelLayerNumber-NumberofLayers+LayersinRPC.size()); i++)
-        {
-            if(recHitsinLayers[i] != 0)
-            {
+        for(int i = (last+1); i <= (BarrelLayerNumber-NumberofLayers+LayersinRPC.size()); i++) {
+            if(recHitsinLayers[i] != 0) {
                 LayersinRPC.push_back(i);
                 last = i;
                 if(LayersinRPC.size() < NumberofLayers)
                     SpecialLayers(last, NumberofLayers, type);
-                else
-                {
-                    if(checkConstrain())
-                    {
+                else {
+                    if(checkConstrain()) {
                         cout << "Find special barrel layers: ";
                         for(unsigned int k = 0; k < NumberofLayers; k++)
                             cout << LayersinRPC[k] <<" ";
@@ -221,26 +309,20 @@ void RPCSeedLayerFinder::SpecialLayers(int last, unsigned int NumberofLayers, in
     }
 
     // endcap has 3 layers for each -Z and +Z
-    if(type == 1)
-    {
-        if(NumberofLayers > EachEndcapLayerNumber)
-        {
+    if(type == 1) {
+        if(NumberofLayers > EachEndcapLayerNumber) {
             cout << "NumberofLayers larger than max layers in endcap" << endl;
             return;
         }
-        if(last < (BarrelLayerNumber+EachEndcapLayerNumber-1) || (last == (BarrelLayerNumber+EachEndcapLayerNumber-1) && LayersinRPC.size() != 0))
-        {
+        if(last < (BarrelLayerNumber+EachEndcapLayerNumber-1) || (last == (BarrelLayerNumber+EachEndcapLayerNumber-1) && LayersinRPC.size() != 0)) {
             // For -Z case
-            for(int i = (last+1); i <= (BarrelLayerNumber+EachEndcapLayerNumber-NumberofLayers+LayersinRPC.size()); i++)
-            {
-                if(recHitsinLayers[i] != 0)
-                {
+            for(int i = (last+1); i <= (BarrelLayerNumber+EachEndcapLayerNumber-NumberofLayers+LayersinRPC.size()); i++) {
+                if(recHitsinLayers[i] != 0) {
                     LayersinRPC.push_back(i);
                     last = i;
                     if(LayersinRPC.size() < NumberofLayers)
                         SpecialLayers(last, NumberofLayers, type);
-                    else
-                    {
+                    else {
                         cout << "Find special -Z endcap layers: ";
                         for(unsigned int k = 0; k < NumberofLayers; k++)
                             cout << LayersinRPC[k] <<" ";
@@ -256,16 +338,13 @@ void RPCSeedLayerFinder::SpecialLayers(int last, unsigned int NumberofLayers, in
         else
         {
             // For +Z case
-            for(int i = (last+1); i <= (BarrelLayerNumber+EachEndcapLayerNumber*2-NumberofLayers+LayersinRPC.size()); i++)
-            {
-                if(recHitsinLayers[i] != 0)
-                {
+            for(int i = (last+1); i <= (BarrelLayerNumber+EachEndcapLayerNumber*2-NumberofLayers+LayersinRPC.size()); i++) {
+                if(recHitsinLayers[i] != 0) {
                     LayersinRPC.push_back(i);
                     last = i;
                     if(LayersinRPC.size() < NumberofLayers)
                         SpecialLayers(last, NumberofLayers, type);
-                    else
-                    {
+                    else {
                         cout << "Find special +Z endcap layers: ";
                         for(unsigned int k = 0; k < NumberofLayers; k++)
                             cout << LayersinRPC[k] <<" ";

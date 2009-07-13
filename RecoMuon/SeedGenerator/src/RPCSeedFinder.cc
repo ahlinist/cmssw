@@ -31,10 +31,10 @@ void RPCSeedFinder::configure(const edm::ParameterSet& iConfig) {
     isConfigured = true;
 }
 
-void RPCSeedFinder::setOutput(std::vector<TrajectorySeed> *goodRef, std::vector<TrajectorySeed> *candidateRef) {
+void RPCSeedFinder::setOutput(std::vector<weightedTrajectorySeed> *goodweightedRef, std::vector<weightedTrajectorySeed> *candidateweightedRef) {
 
-    goodSeedsRef = goodRef;
-    candidateSeedsRef = candidateRef;
+    goodweightedSeedsRef = goodweightedRef;
+    candidateweightedSeedsRef = candidateweightedRef;
     isOutputset = true;
 }
 
@@ -62,20 +62,20 @@ void RPCSeedFinder::seed() {
         return;
     }
     
-    TrajectorySeed theSeed;
+    weightedTrajectorySeed theweightedSeed;
     int isGoodSeed = 0;
     const edm::EventSetup &iSetup = *eSetup;
-    theSeed = oneSeed.seed(iSetup, isGoodSeed);
+    theweightedSeed = oneSeed.seed(iSetup, isGoodSeed);
     // Push back the good seed
     if(isGoodSeed == 1)
     {
         cout << "[RPCSeedFinder] --> Seeds from " << oneSeed.nrhit() << " recHits." << endl;
-        goodSeedsRef->push_back(theSeed);
+        goodweightedSeedsRef->push_back(theweightedSeed);
     }
     // Push back cadidate seed but not the fake seed
     if(isGoodSeed >= 0)
     {
-        candidateSeedsRef->push_back(theSeed);
+        candidateweightedSeedsRef->push_back(theweightedSeed);
     }
 
     // Unset the signal
