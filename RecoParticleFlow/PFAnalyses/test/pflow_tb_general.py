@@ -25,9 +25,25 @@ if options.notracks <> 0:
 specifiedE = energies[options.beamEnergy]
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
+process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
+
+process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
+process.particleFlowClusterHCAL.thresh_Seed_Endcap = cms.double(0.8)
+process.particleFlowClusterHCAL.thresh_Endcap = cms.double(0.8)
+
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
+#process.particleFlowBlock.debug = cms.untracked.bool(True)
+#process.particleFlow.debug = cms.untracked.bool(True)
+#Uncomment this lot if you want a file of noise!
+#process.particleFiltration.noiseMode=cms.bool(True)
+#process.extraction.applyCleaningCuts=cms.bool(False)
+#process.extraction.saveJustPions=cms.bool(False)
+## Also change masterConeDeltaR in pflowCalibratable_cfi to something like 1
+
+#Need to override clustering to exclude HF components
+from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
+process.pfClusteringHCAL = cms.Sequence(particleFlowRecHitHCAL * particleFlowClusterHCAL)
 
 result = []
 if options.copyToTmp <> 0:
@@ -36,14 +52,16 @@ if options.copyToTmp <> 0:
 else:    
     result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
     
-#if options.endcapMode <> 0:
-#    result = ['file:/tmp/tb07_reco_edm_run_00016031.0000.root']
-#    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEB")
-#    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE")
+if options.endcapMode <> 0:
+    result = ['file:/tmp/tb07_reco_edm_run_00016031.0003.root']
+    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
+    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
+    process.extraction.RawRecHitsEcalEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
-        input=cms.untracked.int32(options.kevents*1000)
+        input=cms.untracked.int32(options.kevents * 1000)
         )
 
 # Files to process
@@ -63,15 +81,20 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 # LogFile
 
 process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring(logFile),
+    destinations=cms.untracked.vstring(logFile, 'cout'),
 )
 
 process.source = cms.Source("PoolSource",
-        fileNames = runs,
-        inputCommands=cms.untracked.vstring('keep *', 'drop EBDataFramesSorted_*_*_*')
+        fileNames=runs,
+        inputCommands=cms.untracked.vstring('keep *', 'drop EBDataFramesSorted_*_*_*', 'drop EEDataFramesSorted_*_*_*')
 
         
 )
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)
-process.outpath = cms.EndPath(process.finishup)
+
+if options.endcapMode <> 0:
+    process.p1 = cms.Path(process.pflowProcessEndcapTestbeam)
+
+if options.outputCollections:
+    process.outpath = cms.EndPath(process.finishup)

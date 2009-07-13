@@ -8,13 +8,14 @@ VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
 particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
 particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
+#particleFlowClusterECAL.nNeighbours = cms.int32(8)
 particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
 particleFlowRecHitECAL.crossBarrelEndcapBorder = cms.bool(False)
 particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
-particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
+particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
+particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
 
 #Change tags for PFBlock building
 from RecoParticleFlow.PFProducer.particleFlowBlock_cff import *

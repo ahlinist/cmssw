@@ -9,10 +9,16 @@
 
 	TestbeamPreprocessor process(true);
 
+
+	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031, 50);
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0001.root", 160310001, 50);
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0002.root", 160310002, 50);
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0003.root", 160310003, 50);
+	/*
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0001.root", 154980001, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0002.root", 154980002, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0003.root", 154980003, 3);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0004.root", 154980004, 3);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0004.root", 154980004, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0005.root", 154980005, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0006.root", 154980006, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0007.root", 154980007, 3);
@@ -36,7 +42,7 @@
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0018.root", 155580018, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0019.root", 155580019, 3);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0020.root", 155580020, 3);
-/*	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0001.root", 154940001, 4);
+	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0001.root", 154940001, 4);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0002.root", 154940002, 4);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0003.root", 154940003, 4);
 	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0004.root", 154940004, 4);

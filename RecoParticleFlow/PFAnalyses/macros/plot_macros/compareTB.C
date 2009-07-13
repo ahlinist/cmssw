@@ -84,6 +84,8 @@ public:
 	TMultiGraph* getMultiGraph(const map<string, TGraph*>& inputs,
 			std::string xAxisTitle = "", std::string yAxisTitle = "");
 
+	void energyWeightedPositions();
+
 private:
 
 	void doResponsePlots(std::string type, bool verbose, std::string qry,
@@ -285,6 +287,31 @@ void CompareTBAnalysis::evaluatePlots() {
 	plotTypeSpectrum();
 
 	cout << "Leaving " << __PRETTY_FUNCTION__ << endl;
+}
+
+void CompareTBAnalysis::energyWeightedPositions() {
+	TStyle* rStyle = util_.makeStyle("hitStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(11111);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(false);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+		TTree* tree = it->second;
+	}
+
+	util_.addTitle("TB Analysis");
+
+	util_.flushPage();
 }
 
 void CompareTBAnalysis::plotMipInEcal() {

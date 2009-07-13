@@ -171,6 +171,12 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		return thisEventPasses_;
 	}
 
+	if (decision.type_ == ParticleFiltrationDecision::NOISE && !saveJustPions_
+			&& !applyCleaningCuts_) {
+		//Noise mode
+		thisEventPasses_ = true;
+	}
+
 	startParticle();
 
 	/* Deal with test beam set up */
@@ -191,7 +197,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		calib_->tb_pdg_ = 2212;
 	else if (decision.type_ == ParticleFiltrationDecision::MUON)
 		calib_->tb_pdg_ = 12;
-	else if (decision.type_ == ParticleFiltrationDecision::OTHER) {
+	else if (decision.type_ == ParticleFiltrationDecision::OTHER
+			|| decision.type_ == ParticleFiltrationDecision::NOISE) {
 		calib_->tb_pdg_ = 0;
 	}
 
@@ -333,6 +340,7 @@ void TestbeamDelegate::extractHcalRecHits(
 			if (ieta == 8)
 				ietaNew = 5;
 		}
+		iphiNew += 2;
 		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
 		if (newDetId == 0) {
 			LogWarning("TestbeamDelegate")

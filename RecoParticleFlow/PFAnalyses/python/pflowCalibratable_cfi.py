@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-masterConeDeltaR = 0.15
+masterConeDeltaR = 0.5
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
 

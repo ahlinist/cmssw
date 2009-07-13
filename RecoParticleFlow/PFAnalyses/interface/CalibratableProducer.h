@@ -27,7 +27,7 @@
  * at construction, via "EventDelegateType"
  *
  * New EventDelegate currently have to be added to this class by hand;
- * there is no dynamic loading.
+ * there is no dynamic loading. (Use EventSetup perhaps?)
  *
  *
  * @author Jamie Ballin

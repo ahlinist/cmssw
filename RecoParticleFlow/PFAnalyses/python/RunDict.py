@@ -200,5 +200,5 @@ endcap0 = endcap3 + endcap4 + endcap5 + endcap6 + endcap7 + endcap8 + endcap9 + 
 
 endcap = {0:endcap0, 3:endcap3, 4:endcap4, 5:endcap5, 6:endcap6, 7:endcap7, 8:endcap8, 9:endcap9, 20:endcap20, 30:endcap30, 50:endcap50, 100:endcap100, 150:endcap150, 225:endcap225, 300:endcap300}
 
+#testbeam_cuts = "/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310_endcap.root"
 testbeam_cuts = "/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310.root"
-

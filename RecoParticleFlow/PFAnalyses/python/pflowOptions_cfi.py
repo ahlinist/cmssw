@@ -26,6 +26,12 @@ options.register ('notracks',
                   options.varType.int, # string, int, or float
                   "Disable tracking?")
 
+options.register('outputCollections',
+                 1,
+                 options.multiplicity.singleton,
+                 options.varType.int,
+                 "Write output collections?")
+
 options.register ('minBeamEnergy',
                   -1,
                   options.multiplicity.singleton,
@@ -52,6 +58,7 @@ options.fileSuffix = ''
 options.notracks = 0
 options.copyToTmp = 0
 options.endcapMode = 0
+options.outputCollections = 1
 
 # get and parse the command line arguments
 options.parseArguments()
@@ -86,5 +93,6 @@ print "kevents: " + str(options.kevents)
 print "fileSuffix: " + options.fileSuffix
 print "fileLabel: " + fileLabel
 print "logLabel: " + logLabel
+print "outputCollections?: " + str(options.outputCollections) 
 
 

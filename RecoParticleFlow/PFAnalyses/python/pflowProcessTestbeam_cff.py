@@ -30,11 +30,31 @@ extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.TestbeamDelegate
 )
 
-#The works.
-pflowProcessTestbeam = cms.Sequence(particleFiltration * faketracks * 
+pflowCalibEcalRechits = cms.EDProducer("EcalCalibRechitProducer",
+    EEUncalColl=cms.InputTag("ecal2007TBH2WeightUncalibRecHit", "EcalUncalibRecHitsEE"),
+    EENoisesFile=cms.untracked.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/EE_noises.txt"),
+    EECoeffsFile=cms.untracked.string("/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/ee_calib_test.txt"),
+)
+
+
+pflowEndcapRechitMaker=cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits)
+
+#The works for the endcap.
+pflowProcessEndcapTestbeam = cms.Sequence(particleFiltration * 
+                                    faketracks * 
+                                    pflowCalibEcalRechits *
                                     pfClusteringECAL * 
                                     pfClusteringHCAL * 
                                     particleFlowBlock * 
-                                    particleFlow *
-                                    extraction )
+                                    particleFlow * 
+                                    extraction)
+
+#The works.
+pflowProcessTestbeam = cms.Sequence(particleFiltration * 
+                                    faketracks * 
+                                    pfClusteringECAL * 
+                                    pfClusteringHCAL * 
+                                    particleFlowBlock * 
+                                    particleFlow * 
+                                    extraction)
 
