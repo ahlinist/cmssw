@@ -29,7 +29,7 @@ CaloClusterIsolationCard::populateLattice(const l1slhc::L1CaloClusterCollection&
         for(std::map<int,std::pair< int,int > >::iterator it = s.geoMap_.begin();it!=s.geoMap_.end();++it)
             if(it->second.first==cl->iEta() && it->second.second==cl->iPhi())
           {
-      lattice_[it->first] = *cl;
+	    lattice_[it->first] = *cl;
           }
 }
 
@@ -45,53 +45,52 @@ CaloClusterIsolationCard::isoDeposits(const l1slhc::L1CaloClusterCollection& clu
 
   //Loop on the Lattice
       for(int bin_phi=s.phiMin();bin_phi<=s.phiMax();++bin_phi)
-  for(int bin_eta=0;bin_eta<=s.etaMax()-1;++bin_eta)
+	for(int bin_eta=0;bin_eta<=s.etaMax()-1;++bin_eta)
           {
            //Look if there is a cluster here and if the cluster is central (not pruned)
-         std::map<int,L1CaloCluster>::iterator iter;
-         iter = lattice_.find(s.getBin(bin_eta,bin_phi));
-      if(iter!=lattice_.end())
-        if(iter->second.isCentral())
-       {
-         int iso=0;
-         int nClusters=0;
-           L1CaloCluster origin = iter->second;
+	    std::map<int,L1CaloCluster>::iterator iter;
+	    iter = lattice_.find(s.getBin(bin_eta,bin_phi));
+	    if(iter!=lattice_.end())
+	      if(iter->second.isCentral())
+		{
+		  int iso=0;
+		  int nClusters=0;
+		  L1CaloCluster origin = iter->second;
+		  
+		  //There is a cluster here:Calculate isoDeposits
+		  for(int phi=bin_phi-s.nIsoTowers();phi<=bin_phi+s.nIsoTowers()+1;++phi)
+		    for(int eta=bin_eta-s.nIsoTowers();eta<=bin_eta+s.nIsoTowers()+1;++eta)
+		      if(!(eta==bin_eta && phi==bin_phi))
+			{
+			  //Take this cluster
+			  int bin = s.getBin(eta,phi);
+			  std::map<int,L1CaloCluster>::iterator iter2= lattice_.find(bin);
+			  //If neighbor exists
+			  if(iter2!=lattice_.end())
+			    if(iter2->second.E() >= s.isoThr())
+			      {
+				iso+=iter2->second.E();
+				nClusters++;
+			      }
+			}
 
-         //There is a cluster here:Calculate isoDeposits
-         for(int phi=bin_phi-s.nIsoTowers();phi<=bin_phi+s.nIsoTowers()+1;++phi)
-           for(int eta=bin_eta-s.nIsoTowers();eta<=bin_eta+s.nIsoTowers()+1;++eta)
-             if(!(eta==bin_eta && phi==bin_phi))
-         {
-           //Take this cluster
-           int bin = s.getBin(eta,phi);
-           std::map<int,L1CaloCluster>::iterator iter2= lattice_.find(bin);
-           //If neighbor exists
-           if(iter2!=lattice_.end())
-             if(iter2->second.E() >= s.isoThr())
-               {
-           iso+=iter2->second.E();
-           nClusters++;
+		  origin.setIsoValue(iso);
+		  origin.setIsoClusters(nClusters);
+		  
+		  //Calculate Bits Tau isolation / electron Isolation
+		  if(nClusters <=(int)( s.isolationE()[0]+(double)(s.isolationE()[1]*origin.E())/1000.))
+		    {
+		      origin.setIsoEG(true);
+		    }
+		  //For the tau check if it isolated //
 
-               }
-         }
-
-         origin.setIsoValue(iso);
-         origin.setIsoClusters(nClusters);
-
-         //Calculate Bits Tau isolation / electron Isolation
-         if(nClusters <=(int)( s.isolationE()[0]+(double)(s.isolationE()[1])*origin.E()/1000.))
-           {
-             origin.setIsoEG(true);
-           }
-         //For the tau check if it isolated //
-
-         if(nClusters <=(int)( s.isolationT()[0]+(double)(s.isolationT()[1])*origin.E()/1000.))
-           {
-             origin.setIsoTau(true);
-           }
-         isoClusters.push_back(origin);
-       }
-    }
+		  if(nClusters <=(int)( s.isolationT()[0]+(double)(s.isolationT()[1]*origin.E())/1000.))
+		    {
+		      origin.setIsoTau(true);
+		    }
+		  isoClusters.push_back(origin);
+		}
+	  }
 }
 
 
