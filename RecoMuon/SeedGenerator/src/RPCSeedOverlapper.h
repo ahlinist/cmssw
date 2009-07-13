@@ -16,20 +16,22 @@
 #include <FWCore/Framework/interface/ESHandle.h>
 #include <DataFormats/Common/interface/OwnVector.h>
 #include <DataFormats/TrackingRecHit/interface/TrackingRecHit.h>
-
+#include "RecoMuon/SeedGenerator/src/RPCSeedPattern.h"
 
 class RPCSeedOverlapper {
+
+    typedef RPCSeedPattern::weightedTrajectorySeed weightedTrajectorySeed;
 
     public:
         RPCSeedOverlapper();
         ~RPCSeedOverlapper();
-        void setIO(std::vector<TrajectorySeed> *goodRef, std::vector<TrajectorySeed> *candidateRef);
+        void setIO(std::vector<weightedTrajectorySeed> *goodweightedRef, std::vector<weightedTrajectorySeed> *candidateweightedRef);
         void unsetIO();
         void run();    
         void configure(const edm::ParameterSet& iConfig);
         void setEventSetup(const edm::EventSetup& iSetup);
     private:
-        void CheckOverlap(const edm::EventSetup& iSetup, std::vector<TrajectorySeed> *SeedsRef);
+        void CheckOverlap(const edm::EventSetup& iSetup, std::vector<weightedTrajectorySeed> *SeedsRef);
         bool isShareHit(const edm::OwnVector<TrackingRecHit> &RecHits, const TrackingRecHit& hit, edm::ESHandle<RPCGeometry> rpcGeometry);
         // Signal for call run()
         bool isConfigured;
@@ -40,8 +42,8 @@ class RPCSeedOverlapper {
         bool isCheckcandidateOverlap;
         unsigned int ShareRecHitsNumberThreshold;
         // IO ref
-        std::vector<TrajectorySeed> *goodSeedsRef;
-        std::vector<TrajectorySeed> *candidateSeedsRef;
+        std::vector<weightedTrajectorySeed> *goodweightedSeedsRef;
+        std::vector<weightedTrajectorySeed> *candidateweightedSeedsRef;
         const edm::EventSetup *eSetup;
 };
 

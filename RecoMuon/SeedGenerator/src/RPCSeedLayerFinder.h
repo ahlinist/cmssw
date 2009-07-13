@@ -11,6 +11,7 @@
 
 #include <RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h>
 #include "RecoMuon/SeedGenerator/src/RPCSeedrecHitFinder.h"
+#include "RecoMuon/SeedGenerator/src/RPCCosmicSeedrecHitFinder.h"
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 
@@ -40,10 +41,12 @@ class RPCSeedLayerFinder {
         void configure(const edm::ParameterSet& iConfig);
         void setInput(MuonRecHitContainer (&recHitsRPC)[RPCLayerNumber]);
         void unsetInput();
-        void setOutput(RPCSeedrecHitFinder* Ref);
-        void fillLayers();
+        void setOutput(RPCSeedrecHitFinder* Ref, RPCCosmicSeedrecHitFinder* CosmicRef);
+        void fill();
 
     private:
+        void fillLayers();
+        void fillCosmicLayers();
         // create special N layers to fill to seeds
         void SpecialLayers(int last, unsigned int NumberofLayers, int type);
         bool checkConstrain();
@@ -52,7 +55,9 @@ class RPCSeedLayerFinder {
 
         // The ref of RPCSeedrecHitFinder which will be call after gathering a set of layers 
         RPCSeedrecHitFinder* RPCrecHitFinderRef;
+        RPCCosmicSeedrecHitFinder* RPCCosmicrecHitFinderRef;
         // The parameters for configuration
+        bool isCosmic;
         bool isMixBarrelwithEndcap;
         std::vector<unsigned int> RangeofLayersinBarrel;
         std::vector<unsigned int> RangeofLayersinEndcap;
