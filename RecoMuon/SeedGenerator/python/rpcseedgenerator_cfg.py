@@ -8,7 +8,7 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/h/hyteng/rpcseed/muongun_MC31XV2_1pair_6Gev.root')
+fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/h/hyteng/rpcseed/muongun_MC31XV2_1pair_5Gev.root')
 #fileNames = cms.untracked.vstring('file:muongun.root')
 )
 
