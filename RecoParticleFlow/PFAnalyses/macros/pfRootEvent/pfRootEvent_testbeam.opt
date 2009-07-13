@@ -4,7 +4,7 @@ root outtree 1
 
 //colin	mode 1
 
-root file ../reprocessed_100GeV.root
+root file ../../test/reprocessed_50GeV_1k.root
 print mctruthmatching 0 
 //root file ../../test/demo_reprocessed_7GeV.root
 
@@ -133,7 +133,7 @@ display drawPFBlock 0
 // clustering parameters ---------------------------------------------------
 
 // perform clustering yes/no. If no, clusters are read from the TTree
-clustering on/off 1
+clustering on/off 0
 
 // print debug printouts from the clustering algorithm
 clustering debug 1
@@ -187,11 +187,11 @@ clustering depthCor_B_preshower   4.0
 // threshold on HCAL barrel rechits
 clustering thresh_Hcal_Barrel           0.8
 // seed threshold for HCAL barrel rechits
-clustering thresh_Seed_Hcal_Barrel      1.4
+clustering thresh_Seed_Hcal_Barrel      0.8
 // threshold on HCAL endcap rechits
-clustering thresh_Hcal_Endcap           0.8
+clustering thresh_Hcal_Endcap           0.9
 // seed threshold for HCAL endcap rechits
-clustering thresh_Seed_Hcal_Endcap      1.4
+clustering thresh_Seed_Hcal_Endcap      0.9
 
 
 // number of neighbours to be considered for seed finding in HCAL. 
@@ -235,7 +235,7 @@ particle_flow chi2_ECAL_Track  500
 // chi2 maximum limit for HCAL/Track association
 particle_flow chi2_HCAL_Track  500
 // chi2 maximum limit for ECAL/HCAL assoiation
-particle_flow chi2_ECAL_HCAL	50
+particle_flow chi2_ECAL_HCAL	1000
 
 // chi2 maximum limit for PS/ECAL association
 particle_flow chi2_PS_ECAL	100
@@ -285,7 +285,7 @@ particle_flow	calib_HCAL_slope    2.17
 particle_flow 	calib_HCAL_offset   1.73
 particle_flow 	calib_HCAL_damping  2.49
 
-particle_flow  newCalib 2
+particle_flow  newCalib 1
 
 // Brand-new calibration parameters
 //Apply corrections?

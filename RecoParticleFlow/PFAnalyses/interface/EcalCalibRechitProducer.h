@@ -17,6 +17,13 @@
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
+#include <map>
+#include <utility>
+
+class DetId;
+class CaloSubdetectorGeometry;
+class CaloSubdetectorTopology;
+
 class EcalCalibRechitProducer : public edm::EDProducer {
 public:
 	EcalCalibRechitProducer(const edm::ParameterSet&);
@@ -28,11 +35,17 @@ private:
 	virtual void endJob();
 	virtual void produce(edm::Event&, const edm::EventSetup&);
 
+	  std::pair<DetId, bool> testbeamEndcapTranslation(const DetId& detid,
+	                                     const CaloSubdetectorGeometry* geom,
+	                                     const CaloSubdetectorTopology& topo);
+
 	std::map<int, float> detCalibs;
+	std::map<std::pair<int, int>, std::pair<float, float> > detNoises;
 
 	edm::Handle<EcalUncalibratedRecHitCollection>* eeUncalColl_;
 
 	edm::InputTag inputTagEEUncalColl_;
+
 
 };
 

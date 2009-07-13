@@ -67,7 +67,8 @@ for file in files:
 if options.temp:
     print 'Copying staged files to /tmp'
     for file in files:
-        commands.getoutput('rfcp ' + file + ' /tmp')
+        print 'rfcp ' + file + ' /tmp'
+#        commands.getoutput('rfcp ' + file + ' /tmp')
 
 if options.cuts:
     print 'Testbeam cut processing...'

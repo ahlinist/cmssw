@@ -41,6 +41,8 @@ void TestbeamFiltrationDelegate::startEventCore(const edm::Event& event,
 		LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
 				<< ": New run detected :" << event.run() << ".\n";
 		thisRun_ = runInfos_[event.run()];
+		if(!thisRun_)
+			runok = false;
 	}
 	if (!runok) {
 		LogError("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
@@ -166,6 +168,7 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 		thisEventPasses_ = false;
 		if (isNoiseCandidate() > UNLIKELY && isNotMuon() == DEFINITEYES
 				&& vetosPassed != 31) {
+			decision_.type_ == ParticleFiltrationDecision::NOISE;
 			++pureNoiseEvents_;
 			thisEventPasses_ = true;
 		}
