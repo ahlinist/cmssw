@@ -7,7 +7,10 @@ struct MyGraph {
 };
 
 struct Graphs {
+  MyGraph PFTauIso;
+
   MyGraph L1Jet_Emu;
+  MyGraph L1CenJet_Emu;
 
   MyGraph L1Jet10_Emu;
   MyGraph L1Jet15_Emu;
@@ -66,8 +69,8 @@ void combineDataGraphs(Graphs& ztt, Graphs& qcd, TString plotDir, const char *na
 void plotL1Efficiency(bool print=false) {
   TString plotDir = "l1plots/";
 
-  const char *format = ".C";
-  //const char *format = ".png";
+  //const char *format = ".C";
+  const char *format = ".png";
   //const char *format = ".gif";
   //const char *format = ".eps";
   //const char *format = ".pdf";
@@ -89,7 +92,10 @@ void plotL1Efficiency(bool print=false) {
     combineDataGraphs(plots_ztt.SimpleClusterRMS, plots_qcd.SimpleClusterRMS, plotDir, "SimpleClusterRMS", format, print);
   }
   else {
-    DataGraphs plots("tteffAnalysis.root", plotDir, format, print);
+    //DataGraphs plots("tteffAnalysis.root", plotDir, format, print);
+    //DataGraphs plots("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis_Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run5.root", plotDir, format, print);
+    //DataGraphs plots("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis_Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_run6_jetTriggers.root", plotDir, format, print);
+    DataGraphs plots("/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/tteffAnalysis_Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run9.root", plotDir, format, print);
     DataGraphs dummy;
 
     plots.plot();
@@ -123,15 +129,23 @@ void DataGraphs::plot() {
 
   TCut DenEtaCut = "";
   TCut DenEtCut = "";
-  TCut discriminator("PFTauIso == 1.0");
+  TCut discriminator = ""; 
 
   //DenEtaCut = "abs(PFTauEta) < 2.5";
   //DenEtCut = "PFTauEt > 10.";
+  //discriminator = "PFTauIso == 1.0";
+  //discriminator = discriminator && TCut("MCMatch == 1");
+  //disctiminator = discriminator && TCut("PFECALIsolationEt < 5.0");
+  
 
   // PFTau Et
   if(pftauet) {
     plotter->SetXTitle("PF-#tau E_{T} (GeV)");
     PFTauEt.plotPF(plotter, plotDir, "PFTauEt", "PFTauEt", 50, 0., 150., DenEtaCut && discriminator);
+    PFTauEt.L1TauVeto_Emu.legend = new TLegend(0.35, 0.82, 0.65, 0.9);
+    //PFTauEt.L1TauVeto_Emu.legend = new TLegend(0.35, 0.82-0.25, 0.65, 0.9-0.25); // MCMatch
+    //PFTauEt.L1TauVeto_Emu.legend = new TLegend(0.35+0.05, 0.82+0.04, 0.65+0.05, 0.9+0.04); // PFECALIsolationEt
+
     PFTauEt.combinePlots("PFTauEt", plotDir, format, print);
     PFTauEt.fit("E_{T}", 5., 140., l, "PFTauEt", plotDir, format, print);
   }
@@ -160,6 +174,7 @@ void DataGraphs::plot() {
   if(simpleClusterRms) {
     plotter->SetXTitle("Simple cluster  #DeltaR RMS");
     SimpleClusterRMS.plotPF(plotter, plotDir, "PFTauSimpleClusterDrRMS", "SimpleClusterRMS", 50, 0, 0.5, discriminator);
+    SimpleClusterRMS.L1Jet40_Emu.legend = new TLegend(0.4, 0.74, 0.7, 0.9);
     SimpleClusterRMS.combinePlots("SimpleClusterRMS", plotDir, format, print);
   }
   if(pfClusterRms) {
@@ -205,6 +220,7 @@ TLegend *combine2Plots(MyGraph& plot1, MyGraph& plot2,
   TLegend *leg = plot1.legend;
   if(!leg)
     leg = new TLegend(0.4,0.17,0.7,0.33);
+  leg->Clear();
   leg->SetFillColor(kWhite);
   if(legend1 || legend2) {
     if(legend1 && plot1.graph) leg->AddEntry(plot1.graph, legend1,"p");
@@ -239,14 +255,18 @@ TLegend *combine4Plots(MyGraph& plot1, MyGraph& plot2, MyGraph& plot3, MyGraph& 
 }
 
 void combineDataGraphs(Graphs& ztt, Graphs& qcd, TString plotDir, const char *name, const char *format, bool print) {
-  //if(!(ztt.L1Jet_Emu.graph && qcd.L1Jet_Emu.graph))
-  //  return;
+  if(!(ztt.L1Jet_Emu.graph || qcd.L1Jet_Emu.graph))
+    return;
 
   const char *leg1 = "Z#rightarrow #tau#tau          "; // Quick&dirty: add spaces so that the text becomes smaller
   const char *leg2 = "QCD            ";
 
   combine2Plots(ztt.L1Jet_Emu, qcd.L1Jet_Emu, leg1, leg2);
   if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1TauVeto_Emu, qcd.L1TauVeto_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Emu_Ztt_vs_QCD%s", name, format));
+  combine2Plots(ztt.L1CenJet_Emu, qcd.L1CenJet_Emu, leg1, leg2);
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1CenJet_Emu_Ztt_vs_QCD%s", name, format));
 
   combine2Plots(ztt.L1Jet10_Emu, qcd.L1Jet10_Emu, leg1, leg2);
   if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet10_Emu_Ztt_vs_QCD%s", name, format));
@@ -276,6 +296,10 @@ void Graphs::combinePlots(const char *prefix, TString plotDir, const char *forma
   combine2Plots(L1TauVeto_Emu, L1TauIsoVeto_Sim, "L1 Emulator", "L1 CaloSim");
   //combine2Plots(L1TauVeto_Emu, L1TauVeto_Sim, "L1 Emulator", "L1 CaloSim");
   if(print) gPad->SaveAs(plotDir+Form("%s_L1Tau_Emu_vs_Sim%s", prefix, format));
+
+  // Central vs. Tau jet
+  combine2Plots(L1TauVeto_Emu, L1CenJet_Emu, "Tau jet     ", "Central jet  ");
+  if(print) gPad->SaveAs(plotDir+Form("%s_L1Jet_Tau_vs_Cen%s", prefix, format));
 
   // Simulator veto bits
   combine3Plots(L1Jet_Emu, L1TauVeto_Sim, L1TauIsoVeto_Sim,
@@ -307,10 +331,18 @@ void Graphs::plotPF(Plotter *plotter, TString plotDir, const char *branch, const
 
   TCut L1JetReco("hasMatchedL1Jet==1");
   TCut L1TauReco("hasMatchedL1TauJet==1");
+  TCut L1CenJetReco("hasMatchedL1CenJet==1");
+
+  plotter->SetYTitle("PFTauIso efficiency");
+  plotter->SetFileName(plotDir+Form("PFTauIsoEff_%s", name));
+  PFTauIso.graph = plotter->DrawHistogram(draw, TCut("PFTauIso == 1.0"), selection2);
 
   plotter->SetYTitle("Level-1 efficiency");
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet", name));
   L1Jet_Emu.graph = plotter->DrawHistogram(draw, L1JetReco, selection2);
+
+  plotter->SetFileName(plotDir+Form("L1Eff_%s_L1CenJet", name));
+  L1CenJet_Emu.graph = plotter->DrawHistogram(draw, L1CenJetReco, selection2);
 
   TCut L1Jet10("L1JetEt>10.");
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet10", name));
@@ -331,9 +363,6 @@ void Graphs::plotPF(Plotter *plotter, TString plotDir, const char *branch, const
   TCut L1Jet40("L1JetEt>40.");
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1Jet40", name));
   L1Jet40_Emu.graph = plotter->DrawHistogram(draw, L1Jet40 && L1JetReco, L1JetReco && selection2);
-  if(std::strncmp(name, "SimpleClusterRMS", 17) == 0)
-    L1Jet40_Emu.legend = new TLegend(0.4,0.74,0.7,0.9);
-
 
   plotter->SetFileName(plotDir+Form("L1Eff_%s_L1TauVeto_Jet10", name));
   L1Jet10_TauVeto_Emu.graph = plotter->DrawHistogram(draw, L1TauReco && L1Jet10 && L1JetReco, L1Jet10 && L1JetReco && selection2);
