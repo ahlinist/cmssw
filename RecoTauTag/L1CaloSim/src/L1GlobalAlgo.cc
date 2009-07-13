@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.7 2009/02/09 17:01:38 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.8 2009/04/20 12:58:28 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -1380,6 +1380,8 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
   double iso_threshold =  m_IsolationEt; // arbitrarily set 	 
   int shower_shape = 0; 	 
   int et_isolation = 0; 	 
+  int et_partisolation = 0; 	 
+  unsigned int partiso_count = 0; 	 
   unsigned int iso_count = 0; 	 
 	  	 
   int nwid = m_Regions[cRgn].GetNWId(); 	 
@@ -1399,49 +1401,60 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
   if((cRgn%22)==4  || (cRgn%22)==17 ) { 	 
     // west border 	 
     if ((cRgn%22)==4) { 	 
-      if( m_Regions[neid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[sid].GetTauBit()) iso_count++;
+      
+      if( m_Regions[neid].SumEt() > iso_threshold
+	  || m_Regions[neid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBit() ){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[eid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[eid].SumEt() > iso_threshold
+	  || m_Regions[eid].GetTauBit() ){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[seid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[seid].SumEt() > iso_threshold
+	  || m_Regions[seid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
     } // west bd 	 
 	  	 
     // east border: 	 
+    if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[sid].GetTauBit()) iso_count++; 	 
     if ((cRgn%22)==17) { 	 
-      if( m_Regions[nwid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nwid].SumEt() > iso_threshold
+	  || m_Regions[nwid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[wid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[wid].SumEt() > iso_threshold
+	  || m_Regions[wid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[swid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[swid].SumEt() > iso_threshold
+	  || m_Regions[swid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
     } // east bd 	 
  	  	 
@@ -1453,46 +1466,60 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       return false; 	 
     } 	 
 	  	 
-    if( m_Regions[neid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[neid].SumEt() > iso_threshold 	 
+	|| m_Regions[neid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[nid].SumEt() > iso_threshold
+	|| m_Regions[nid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[eid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[eid].SumEt() > iso_threshold
+	|| m_Regions[eid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[seid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[seid].SumEt() > iso_threshold
+	|| m_Regions[seid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[sid].SumEt() > iso_threshold
+	|| m_Regions[sid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[nwid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[nwid].SumEt() > iso_threshold
+	|| m_Regions[nwid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[wid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[wid].SumEt() > iso_threshold
+	|| m_Regions[wid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[swid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[swid].SumEt() > iso_threshold
+	|| m_Regions[swid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
   }// non-border 	 
 	  	 
 	  	 
-  if (iso_count >= 2 ){ 	 
+  if (iso_count >= 1 ){ 	 
     et_isolation = 1; 	 
   } 	 
   else {
     et_isolation = 0;
+  } 	 
+  if (partiso_count >= 2 ){ 	 
+    et_partisolation = 1; 	 
+  } 	 
+  else {
+    et_partisolation = 0;
   } 	 
 	  	 
   if (m_DoBitInfo){ 	 
@@ -1500,14 +1527,13 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
       m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
     else
       m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
-
-    if (et_isolation >= 2) 
+    if (et_partisolation == 1) 
       m_Regions[cRgn].BitInfo.setPartialIsolationVeto (true); 	 
     else
       m_Regions[cRgn].BitInfo.setPartialIsolationVeto (false); 	 
   } 	 
 
-  if (et_isolation == 1 || shower_shape == 1) return false; 
+  if (et_partisolation == 1 ||et_isolation == 1 || shower_shape == 1) return false; 
   else return true;
   
 }//
@@ -1522,9 +1548,11 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
 	  	 
   if ((cRgn%22)<4 || (cRgn%22)>17) return; 	 
 	  	 
-  double iso_threshold =  m_IsolationEt; // arbitrarily set 	 
+  double iso_threshold =  m_IsolationEt;	 
   int shower_shape = 0; 	 
   int et_isolation = 0; 	 
+  int et_partisolation = 0; 	 
+  unsigned int partiso_count = 0; 	 
   unsigned int iso_count = 0; 	 
 	  	 
   int nwid = m_Regions[cRgn].GetNWId(); 	 
@@ -1544,49 +1572,60 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
   if((cRgn%22)==4  || (cRgn%22)==17 ) { 	 
     // west border 	 
     if ((cRgn%22)==4) { 	 
-      if( m_Regions[neid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[sid].GetTauBit()) iso_count++;
+      
+      if( m_Regions[neid].SumEt() > iso_threshold
+	  || m_Regions[neid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBit() ){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[eid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[eid].SumEt() > iso_threshold
+	  || m_Regions[eid].GetTauBit() ){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[seid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[seid].SumEt() > iso_threshold
+	  || m_Regions[seid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
     } // west bd 	 
 	  	 
     // east border: 	 
+    if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[sid].GetTauBit()) iso_count++; 	 
     if ((cRgn%22)==17) { 	 
-      if( m_Regions[nwid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nwid].SumEt() > iso_threshold
+	  || m_Regions[nwid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[wid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[wid].SumEt() > iso_threshold
+	  || m_Regions[wid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[swid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[swid].SumEt() > iso_threshold
+	  || m_Regions[swid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
-      if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-	iso_count ++; 	 
-	if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBit()){ 	 
+	partiso_count++; 	 
       } 	 
     } // east bd 	 
  	  	 
@@ -1598,50 +1637,69 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
       return; 	 
     } 	 
 	  	 
-    if( m_Regions[neid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+
+    if( m_Regions[neid].SumEt() > iso_threshold 	 
+	|| m_Regions[neid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[nid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[nid].SumEt() > iso_threshold
+	|| m_Regions[nid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[eid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[eid].SumEt() > iso_threshold
+	|| m_Regions[eid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[seid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[seid].SumEt() > iso_threshold
+	|| m_Regions[seid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[sid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[sid].SumEt() > iso_threshold
+	|| m_Regions[sid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[nwid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[nwid].SumEt() > iso_threshold
+	|| m_Regions[nwid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[wid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[wid].SumEt() > iso_threshold
+	|| m_Regions[wid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
-    if( m_Regions[swid].SumEt() > iso_threshold){ 	 
-      iso_count ++; 	 
-      if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+    if( m_Regions[swid].SumEt() > iso_threshold
+	|| m_Regions[swid].GetTauBit()){ 	 
+      partiso_count++; 	 
     } 	 
   }// non-border 	 
 	  	 
 	  	 
-  if (iso_count >= 2 ){ 	 
+  if (iso_count >= 1 ){ 	 
     et_isolation = 1; 	 
   } 	 
   else {
     et_isolation = 0;
   } 	 
+  if (partiso_count >= 2 ){ 	 
+    et_partisolation = 1; 	 
+  } 	 
+  else {
+    et_partisolation = 0;
+  } 	 
 	  	 
   if (m_DoBitInfo){ 	 
     if (et_isolation == 1) 
+      m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
+    else
+      m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
+    if (et_partisolation == 1) 
       m_Regions[cRgn].BitInfo.setPartialIsolationVeto (true); 	 
     else
       m_Regions[cRgn].BitInfo.setPartialIsolationVeto (false); 	 
