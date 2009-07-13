@@ -31,7 +31,8 @@ CaloClusteringCard::populateLattice(const L1CaloTowerCollection& towers)
       for(L1CaloTowerCollection::const_iterator Tower = towers.begin();Tower!=towers.end();++Tower)
         for(std::map<int,std::pair< int,int > >::iterator it = s.geoMap_.begin();it!=s.geoMap_.end();++it)
             if(it->second.first==Tower->iEta() && it->second.second==Tower->iPhi())
-            lattice_[it->first] = *Tower;
+		lattice_[it->first] = *Tower;
+
 }
 
 void
@@ -68,19 +69,19 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
      bin = s.getBin(eta,phi);
      if(lattice_.find(bin)!=lattice_.end() )
        {
-   pattern << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
+	 pattern << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
 
-   //Thresholding
-   if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
-     {
-       printPattern =true;
-       int et = lattice_[bin].E()+lattice_[bin].H();
-       cl.setTower(0,et);//Add the tower energy
-       E+=et;
-       ECALE+=lattice_[bin].E();
-       bitmask+=1;
-       fineGrain = fineGrain||lattice_[bin].fineGrain();
-     }
+	 //Thresholding
+	 if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
+	   {
+	     printPattern =true;
+	     int et = lattice_[bin].E()+lattice_[bin].H();
+	     cl.setTower(0,et);//Add the tower energy
+	     E+=et;
+	     ECALE+=lattice_[bin].E();
+	     bitmask+=1;
+	     fineGrain = fineGrain||lattice_[bin].fineGrain();
+	   }
        }
      else
        pattern << "0 0 0";
@@ -90,20 +91,20 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
      bin = s.getBin(eta+1,phi);
      if(lattice_.find(bin)!=lattice_.end() )
        {
-   pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
+	 pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
 
    //Thresholding
-   if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
-     {
-       printPattern =true;
-       int et = lattice_[bin].E()+lattice_[bin].H();
-       cl.setTower(1,et);//Add the tower energy
-       E+=et;
-       ECALE+=lattice_[bin].E();
-       bitmask+=2;
-       fineGrain = fineGrain||lattice_[bin].fineGrain();
+	 if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
+	   {
+	     printPattern =true;
+	     int et = lattice_[bin].E()+lattice_[bin].H();
+	     cl.setTower(1,et);//Add the tower energy
+	     E+=et;
+	     ECALE+=lattice_[bin].E();
+	     bitmask+=2;
+	     fineGrain = fineGrain||lattice_[bin].fineGrain();
 
-     }
+	   }
 
        }
      else
@@ -113,18 +114,18 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
      bin = s.getBin(eta,phi+1);
      if(lattice_.find(bin)!=lattice_.end() )
        {
-   pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
+	 pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
 
-   //Thresholding
-   if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
-     {
-       int et = lattice_[bin].E()+lattice_[bin].H();
-       cl.setTower(2,et);//Add the tower energy
-       E+=et;
-       ECALE+=lattice_[bin].E();
-       bitmask+=4;
-       fineGrain = fineGrain||lattice_[bin].fineGrain();
-     }
+	 //Thresholding
+	 if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
+	   {
+	     int et = lattice_[bin].E()+lattice_[bin].H();
+	     cl.setTower(2,et);//Add the tower energy
+	     E+=et;
+	     ECALE+=lattice_[bin].E();
+	     bitmask+=4;
+	     fineGrain = fineGrain||lattice_[bin].fineGrain();
+	   }
        }
      else
        pattern << " 0 0 0";
@@ -134,19 +135,19 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
      bin = s.getBin(eta+1,phi+1);
      if(lattice_.find(bin)!=lattice_.end() )
        {
-   pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
-
-   //Thresholding
-   if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
-     {
-       printPattern =true;
-       int et = lattice_[bin].E()+lattice_[bin].H();
-       cl.setTower(3,et);//Add the tower energy
-       E+=et;
-       ECALE+=lattice_[bin].E();
-       bitmask+=8;
-       fineGrain = fineGrain||lattice_[bin].fineGrain();
-     }
+	 pattern << " " << lattice_[bin].E() << " " << lattice_[bin].H() << " " << lattice_[bin].fineGrain();
+	 
+	 //Thresholding
+	 if(lattice_[bin].E() >=s.ecalActivityThr() || lattice_[bin].H()>=s.hcalActivityThr())
+	   {
+	     printPattern =true;
+	     int et = lattice_[bin].E()+lattice_[bin].H();
+	     cl.setTower(3,et);//Add the tower energy
+	     E+=et;
+	     ECALE+=lattice_[bin].E();
+	     bitmask+=8;
+	     fineGrain = fineGrain||lattice_[bin].fineGrain();
+	   }
        }
      else
        pattern << " 0 0 0";
@@ -161,17 +162,18 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
         int electronValue =(int)(100.*((double)ECALE)/((double)E));
 
 
-
         //Calculate Tau Lead Tower Cut
         cl.setLeadTowerTau( cl.seedTowerE() >= s.seedTowerThr());
         //Save it in the Cluster
         cl.setEGammaValue(electronValue);
         //Electron Bit Decision
-        if ( (cl.E()<=s.electronThr()[1] && electronValue>s.electronThr()[0])||
-       (cl.E()>s.electronThr()[1] && (electronValue>  s.electronThr()[0]-(s.electronThr()[2]/10.)*(cl.E()-s.electronThr()[1]))))
-      cl.setEGamma(true);
+	bool lowPtElectron  = (cl.E()<=s.electronThr()[1] && electronValue>s.electronThr()[0]);
+	bool highPtElectron = ( cl.E()>s.electronThr()[1] && electronValue>(s.electronThr()[0]-(int)(((double)s.electronThr()[2])/10.)*(cl.E()-s.electronThr()[1])));
+	
+	if(lowPtElectron ||highPtElectron)
+	  cl.setEGamma(true);
         else
-      cl.setEGamma(false);
+	  cl.setEGamma(false);
 
         //FineGrain bit
         cl.setFg(fineGrain);
@@ -188,7 +190,7 @@ CaloClusteringCard::clusterize(L1CaloClusterCollection& clusters,const L1CaloTow
      //Output Pattern
      if(printPattern)
        {
-   edm::LogInfo("ClusteringPatterns") << "CLUSTERING_PATTERN: " << pattern.str() <<endl;
+	 edm::LogInfo("ClusteringPatterns") << "CLUSTERING_PATTERN: " << pattern.str() <<endl;
        }
     }
 }
