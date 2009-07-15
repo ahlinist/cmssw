@@ -82,14 +82,17 @@ def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements 
     genPhaseSpaceCut = "genPhaseSpaceCut" + sample
     bgEstNtupleOutputFileName = "bgEstNtupleOutputFileName" + sample
     intLumi = "intLumi" + sample
+    corrFactor = "corrFactor" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
         bgEstNtupleOutputFileName = "cms.string(" + bgEstNtupleOutputFileName[:bgEstNtupleOutputFileName.rfind("_part")]
         bgEstNtupleOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
         intLumi = intLumi[:intLumi.rfind("_part")]
+        corrFactor = corrFactor[:corrFactor.rfind("_part")]
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("bgEstNtupleOutputFileName = " + bgEstNtupleOutputFileName)
     replaceStatements_retVal.append("intLumi = " + intLumi)
+    replaceStatements_retVal.append("corrFactor = " + corrFactor)
 
     replacements_retVal = "; ".join(replaceStatements_retVal)
 
