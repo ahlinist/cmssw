@@ -12,7 +12,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: TemplateHistProducer.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
  *
  */
 
@@ -38,9 +38,9 @@ class TemplateHistProducer : public edm::EDAnalyzer
   
  private:
 
-  void beginJob(const edm::EventSetup&);
+  void beginJob(const edm::EventSetup&) {}
   void analyze(const edm::Event&, const edm::EventSetup&) {}
-  void endJob() {}
+  void endJob();
 
 //--- configuration parameters
   typedef std::vector<std::string> vstring;
