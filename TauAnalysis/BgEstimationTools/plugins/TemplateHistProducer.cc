@@ -13,7 +13,7 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
   : allEventsTree_(0), selEventsTree_(0),
     cfgError_(0)
 {
-  std::cout << "<TemplateHistProducer::TemplateHistProducer>:" << std::endl;
+  //std::cout << "<TemplateHistProducer::TemplateHistProducer>:" << std::endl;
 
   fileNames_ = cfg.getParameter<vstring>("fileNames");
 
@@ -58,34 +58,36 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
     cfgError_ = 1;
   }
   
-  std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
-  std::cout << " meName = " << meName_ << std::endl;
+  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+  //std::cout << " meName = " << meName_ << std::endl;
 }
 
 TemplateHistProducer::~TemplateHistProducer()
 {
-  std::cout << "<TemplateHistProducer::~TemplateHistProducer>:" << std::endl;
+  //std::cout << "<TemplateHistProducer::~TemplateHistProducer>:" << std::endl;
 
-  std::cout << " deleting selEventsTree..." << std::endl;
+  //std::cout << " deleting selEventsTree..." << std::endl;
   if ( selEventsTree_ != allEventsTree_ ) delete selEventsTree_;
 
-  std::cout << " deleting allEventsTree..." << std::endl;
+  //std::cout << " deleting allEventsTree..." << std::endl;
   delete allEventsTree_;
 }
 
-void TemplateHistProducer::beginJob(const edm::EventSetup& es)
+void TemplateHistProducer::endJob()
 {
+  std::cout << "<TemplateHistProducer::endJob>:" << std::endl;
+
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
-    edm::LogError ("beginJob") << " Error in Configuration ParameterSet" 
+    edm::LogError ("endJob") << " Error in Configuration ParameterSet" 
 			     << " --> histogram will NOT be filled !!";
     return;
   }
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("beginJob") << " Failed to access dqmStore" 
-			       << " --> histogram will NOT be filled !!";
+    edm::LogError ("endJob") << " Failed to access dqmStore" 
+			     << " --> histogram will NOT be filled !!";
     return;
   }
 
@@ -110,6 +112,7 @@ void TemplateHistProducer::beginJob(const edm::EventSetup& es)
   allEventsTree_ = new TChain(treeName_.data());
   for ( std::vector<std::string>::const_iterator fileName = fileNames_.begin();
 	fileName != fileNames_.end(); ++fileName ) {
+    std::cout << "--> opening " << fileName->data() << "..." << std::endl;
     allEventsTree_->Add(fileName->data());
   }
 
@@ -143,6 +146,7 @@ void TemplateHistProducer::beginJob(const edm::EventSetup& es)
   }
 
   std::cout << " sum of weights = " << sumWeighted << std::endl;
+  std::cout << "done." << std::endl;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
