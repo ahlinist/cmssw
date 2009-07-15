@@ -52,9 +52,9 @@ CMSSW_ROOT_DIRECTORY=`grep RELEASETOP $CMSSW_VERSION/.SCRAM/$SCRAM_ARCH/Environm
 cd $CMSSW_ROOT_DIRECTORY/src
 install_env.pl $TOPDIR/opt/cmssw/$PRO_DEV/lib $TOPDIR/opt/cmssw/$PRO_DEV/module $TOPDIR/opt/cmssw/$PRO_DEV/env.txt $TOPDIR/opt/cmssw/$PRO_DEV/python
 
-echo "Linking .rootmap plugin entries"
-find $CMSSW_ROOT_DIRECTORY/external/$SCRAM_ARCH/lib/ -name '*.rootlib' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
-find $CMSSW_ROOT_DIRECTORY/lib/$SCRAM_ARCH/          -name '*.rootlib' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
+echo "Linking .rootmap plugin entries from $CMSSW_ROOT_DIRECTORY"
+find $CMSSW_ROOT_DIRECTORY/external/$SCRAM_ARCH/lib -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
+find $CMSSW_ROOT_DIRECTORY/lib/$SCRAM_ARCH          -name '*.rootmap' | xargs -i ln -sf {} $TOPDIR/opt/cmssw/$PRO_DEV/lib
 
 cd $TOPDIR
 for x in opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
