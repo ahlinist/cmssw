@@ -76,7 +76,14 @@ process.muonTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
     pluginName = cms.string("muonTrkCutBgEstPreselection"),
     pluginType = cms.string("PATCandViewMinEventSelector"),
     src = cms.InputTag('muonsBgEstPreselection'),
-    minNumber = cms.uint32(1),
+    minNumber = cms.uint32(1)
+)
+
+process.tauProngCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
+    pluginName = cms.string("tauProngCutBgEstPreselection"),
+    pluginType = cms.string("PATCandViewMinEventSelector"),
+    src = cms.InputTag('selectedLayer1TausProngCumulative'),
+    minNumber = cms.uint32(1)                                                
 )
 
 process.muTauPairsBgEstPreselection = cms.EDProducer("PATMuTauPairProducer",
@@ -98,6 +105,7 @@ process.muTauPairCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
 
 process.produceBoolEventSelFlags = cms.Sequence(
     process.muonsBgEstPreselection + process.muonTrkCutBgEstPreselection
+   +process.tauProngCutBgEstPreselection
    +process.muTauPairsBgEstPreselection + process.muTauPairCutBgEstPreselection
 )
 
@@ -108,11 +116,19 @@ process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFil
         cms.InputTag('primaryEventVertexQuality'),
         cms.InputTag('primaryEventVertexPosition'),
         cms.InputTag('muonTrkCutBgEstPreselection'),
-        cms.InputTag('tauProngCut', 'cumulative'),                                                        
+        cms.InputTag('tauProngCutBgEstPreselection'),
         cms.InputTag('muTauPairCutBgEstPreselection')
     )
 )
 #--------------------------------------------------------------------------------
+
+process.saveBgEstSample = cms.OutputModule("PoolOutputModule",
+    tauAnalysisEventContent,                                        
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('bgEstSkimPath')
+    ),
+    fileName = cms.untracked.string('bgEstSample.root')
+)
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
@@ -152,14 +168,6 @@ process.bgEstSkimPath = cms.Path(
    * process.genPhaseSpaceFilter
    * process.produceBoolEventSelFlags
    * process.selectEventsByBoolEventSelFlags
-)
-
-process.saveBgEstSample = cms.OutputModule("PoolOutputModule",
-    tauAnalysisEventContent,                                        
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('bgEstSkimPath')
-    ),
-    fileName = cms.untracked.string('bgEstSample.root')
 )
 
 process.o = cms.EndPath( process.saveBgEstSample )
