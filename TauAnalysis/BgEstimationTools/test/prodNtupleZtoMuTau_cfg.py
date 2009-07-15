@@ -179,15 +179,30 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             src = cms.InputTag('muTauPairsLooseSelection'),
             value = cms.string("dPhi12")
         ),
+        diTauPzetaDiff = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsLooseSelection'),
+            value = cms.string("pZeta - 1.5*pZetaVis")
+        ),
         diTauMvis12 = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsLooseSelection'),
             value = cms.string("p4Vis.mass")
         ),
 
+        tauDiscrAgainstMuons = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsLooseSelection'),
+            value = cms.string("leg2.tauID('againstMuon')")
+        ),
+
         numGlobalMuons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
+        ),
+        numTaus = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1TausProngCumulative')
         ),
         numCentralJets = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
@@ -213,7 +228,7 @@ process.TFileService = cms.Service("TFileService",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.genPhaseSpaceFilter.selector = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.TFileService.fileName = #bgEstNtupleOutputFileName#
-#__process.ntupleProducer.branches.eventWeight.value = cms.double(intLumiData/#intLumi#)
+#__process.ntupleProducer.branches.eventWeight.value = cms.double(#corrFactor#*intLumiData/#intLumi#)
 #
 #--------------------------------------------------------------------------------
 
