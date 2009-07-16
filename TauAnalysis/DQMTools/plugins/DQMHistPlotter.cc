@@ -531,6 +531,7 @@ void DQMHistPlotter::plotDefEntry::print() const
 DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name, 
 						 const std::string& name_full,
 						 const plotDefList& plotDefList, 
+						 double norm,
 						 const std::string& title,
 						 const std::string& xAxis, const std::string& yAxis, 
 						 const std::string& legend, 
@@ -544,6 +545,8 @@ DQMHistPlotter::cfgEntryDrawJob::cfgEntryDrawJob(const std::string& name,
     plots_.push_back(plotDefEntry(*it));
   }
   
+  norm_ = norm;
+
   title_ = title;
 
   xAxis_ = xAxis;
@@ -570,6 +573,7 @@ void DQMHistPlotter::cfgEntryDrawJob::print() const
     plot->print();
   }
   std::cout << "}" << std::endl;
+  std::cout << " norm = " << norm_ << std::endl;
   std::cout << " title = " << title_ << std::endl;
   std::cout << " xAxis = " << xAxis_ << std::endl;
   std::cout << " yAxis = " << yAxis_ << std::endl;
@@ -782,6 +786,8 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
       }
     }
 
+    double norm = ( drawJob.exists("norm") ) ? drawJob.getParameter<double>("norm") : -1.; 
+
     std::string title = ( drawJob.exists("title") ) ? drawJob.getParameter<std::string>("title") : ""; 
 
     std::string xAxis = drawJob.getParameter<std::string>("xAxis"); 
@@ -832,13 +838,13 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
 	  if ( errorFlag ) cfgError_ = 1;
 
 	  drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, drawJobName_full, 
-					      plot_expanded, title_expanded, xAxis_expanded, yAxis_expanded, legend, labels));
+					      plot_expanded, norm, title_expanded, xAxis_expanded, yAxis_expanded, legend, labels));
 	}
       } else {
 	std::string drawJobName_full = ( plotDefMap.size() > 1 ) ?
 	  getDrawJobName_full(*drawJobName, plot->second.begin()->dqmMonitorElement_) : (*drawJobName);
 	drawJobs_.push_back(cfgEntryDrawJob(*drawJobName, drawJobName_full, 
-					    plot->second, title, xAxis, yAxis, legend, labels));
+					    plot->second, norm, title, xAxis, yAxis, legend, labels));
       }
     }
   }
@@ -931,7 +937,7 @@ void DQMHistPlotter::endJob()
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
   if ( verbosity ) dqmStore.showDirStructure();
-  //dqmStore.showDirStructure();
+  dqmStore.showDirStructure();
 
 //--- stop ROOT from opening X-window for canvas output
 //    (in order to be able to run in batch mode) 
@@ -987,6 +993,8 @@ void DQMHistPlotter::endJob()
       }
 
       if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+
+      if ( drawJob->norm_ != -1 && histogram->Integral() != 0. ) histogram->Scale(drawJob->norm_/histogram->Integral());
 
       const cfgEntryDrawOption* drawOptionConfig = 
 	findCfgDef<cfgEntryDrawOption>(plot->drawOptionEntry_, drawOptionEntries_, "drawOptionEntry", drawJobName);
