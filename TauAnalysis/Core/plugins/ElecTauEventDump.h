@@ -24,6 +24,8 @@ class ElecTauEventDump : public GenericEventDump
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
+
+  void printZeeInfo(const edm::Event&) const;
 };
 
 #endif  
