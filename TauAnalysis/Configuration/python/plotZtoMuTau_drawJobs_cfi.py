@@ -362,10 +362,28 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_tauNumTracksSignalCone"
         ),
         drawJobConfigEntry(
+            meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
+            title = "TaNC output (fr = 0.25%) (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauCaloEOverPLead',
+            title = "E_{calo} / P_{lead. Track} (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauCaloEOverPLead"
+        ),
+        drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_met"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/PzetaDiff',
+            title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+            xAxis = 'GeV',
+            name = "finalSamplePlots_PzetaDiff"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Mt1MET',
