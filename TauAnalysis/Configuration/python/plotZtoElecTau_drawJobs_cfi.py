@@ -256,27 +256,27 @@ drawJobConfigurator_ZtoElecTau.add(
     ]
 )
 
-##drawJobConfigurator_ZtoElecTau.add(
-##    afterCut = evtSelTauLeadTrkPt,
-##    beforeCut = evtSelTauTrkIso,
-##    plot = drawJobConfigEntry(
-##        meName = 'TauQuantities/TauTrkIsoPt',
-##        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
-##        xAxis = 'Pt',
-##        name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
-##    )
-##)
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelTauLeadTrkPt,
+    beforeCut = evtSelTauTrkIso,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/TauTrkIsoPt',
+        title = "Tau Track iso. (after Tau lead. Track P_{T} Cut)",
+        xAxis = 'Pt',
+        name = "cutFlowControlPlots_tauTrkIso_afterTauLeadTrkPt"
+    )
+)
 
-##drawJobConfigurator_ZtoElecTau.add(
-##    afterCut = evtSelTauTrkIso,
-##    beforeCut = evtSelTauEcalIso,
-##    plot = drawJobConfigEntry(
-##        meName = 'TauQuantities/TauEcalIsoPt',
-##        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
-##        xAxis = 'Pt',
-##        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
-##    )
-##)
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelTauTrkIso,
+    beforeCut = evtSelTauEcalIso,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/TauEcalIsoPt',
+        title = "Tau ECAL iso. (after Tau Track iso. Cut)",
+        xAxis = 'Pt',
+        name = "cutFlowControlPlots_tauEcalIso_afterTauTrkIso"
+    )
+)
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauEcalIso,
@@ -395,6 +395,12 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "MET (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_met"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/PzetaDiff',
+            title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+            xAxis = 'GeV',
+            name = "finalSamplePlots_PzetaDiff"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Mt1MET',
