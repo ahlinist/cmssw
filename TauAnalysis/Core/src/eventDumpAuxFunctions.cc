@@ -40,6 +40,8 @@ void printEventSelectionInfo(const std::vector<std::pair<std::string, bool> >& f
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+
+
 void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticles,
 			  edm::Handle<edm::View<reco::GenJet> >& genTauJets,
 			  std::ostream* stream)
@@ -52,7 +54,7 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
   reco::Particle::LorentzVector genMissingTransverseMomentum = getGenMissingTransverseMomentum(genParticles);
   *stream << "missing transverse momentum:" 
 	  << " Pt = " << genMissingTransverseMomentum.pt() << "," 
-	  << " phi = " <<  genMissingTransverseMomentum.phi() << std::endl;
+	  << " phi = " <<  genMissingTransverseMomentum.phi()*180./TMath::Pi() << std::endl;
   *stream << std::endl;
 
   for ( edm::View<reco::GenParticle>::const_iterator genParticle = genParticles->begin(); 
@@ -65,13 +67,31 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 //    (copied over to reco::GenParticle from HepMC product)
     if ( status == 3 ) continue;
     
+    if ( pdgId == -11 || pdgId == +11 ) {
+      *stream << "electron:" 
+	      << " pdgId = " << pdgId << "," 
+	      << " status = " << status << "," 
+	      << " Pt = " << genParticleMomentum.pt() << "," 
+	      << " eta = " << genParticleMomentum.eta() << "," 
+	      << " phi = " << genParticleMomentum.phi()*180./TMath::Pi() << std::endl;
+    }
+
+    if ( pdgId == -13 || pdgId == +13 ) {
+      *stream << "muon:" 
+	      << " pdgId = " << pdgId << "," 
+	      << " status = " << status << "," 
+	      << " Pt = " << genParticleMomentum.pt() << "," 
+	      << " eta = " << genParticleMomentum.eta() << "," 
+	      << " phi = " << genParticleMomentum.phi()*180./TMath::Pi() << std::endl;
+    }
+
     if ( pdgId == -15 || pdgId == +15 ) {
       *stream << "tau:" 
 	      << " pdgId = " << pdgId << "," 
 	      << " status = " << status << "," 
 	      << " Pt = " << genParticleMomentum.pt() << "," 
 	      << " eta = " << genParticleMomentum.eta() << "," 
-	      << " phi = " << genParticleMomentum.phi() << std::endl;
+	      << " phi = " << genParticleMomentum.phi()*180./TMath::Pi() << std::endl;
 
 //--- find genTauJet associated with generated tau 
 //    (match by closest distance in eta-phi)
@@ -102,7 +122,7 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 		<< " status = " << genDecayProduct->status() << "," 
 		<< " Pt = " << genDecayProduct->pt() << "," 
 		<< " eta = " << genDecayProduct->eta() << "," 
-		<< " phi = " <<  genDecayProduct->phi() << std::endl;
+		<< " phi = " <<  genDecayProduct->phi()*180./TMath::Pi() << std::endl;
       }
 
 //--- reconstruct tau lepton decay mode
@@ -122,7 +142,7 @@ void printGenParticleInfo(edm::Handle<edm::View<reco::GenParticle> >& genParticl
 	*stream << "visible tau-jet:" 
 		<< " Pt = " << genVisibleTauMomentum.pt() << "," 
 		<< " eta = " << genVisibleTauMomentum.eta() << "," 
-		<< " phi = " <<  genVisibleTauMomentum.phi() << std::endl;
+		<< " phi = " <<  genVisibleTauMomentum.phi()*180./TMath::Pi() << std::endl;
       }
       
       *stream << std::endl;
