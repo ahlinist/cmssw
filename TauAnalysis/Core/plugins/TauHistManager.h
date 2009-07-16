@@ -78,6 +78,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauHcal3x3OverPLead_;
   MonitorElement* hTauEcalStripSumEOverPLead_;
   MonitorElement* hTauBremsRecoveryEOverPLead_;
+  MonitorElement* hTauCaloEOverPLead_;
 
   MonitorElement* hTauDiscriminatorAgainstMuons_;
 
@@ -88,7 +89,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauTaNCoutputOneProngTwoPi0s_;
   MonitorElement* hTauTaNCoutputThreeProngNoPi0s_;
   MonitorElement* hTauTaNCoutputThreeProngOnePi0_;
-  
+
   MonitorElement* hTauDiscriminatorTaNCfrOnePercent_;
   MonitorElement* hTauDiscriminatorTaNCfrHalfPercent_;
   MonitorElement* hTauDiscriminatorTaNCfrQuarterPercent_;
