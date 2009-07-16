@@ -53,6 +53,18 @@
   <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Tau> > >"/>
 
+  <!-- create dictionaries for PATLeptonRecoilEnergyFromJets objects -->
+  <class name="PATLeptonRecoilEnergy<pat::Tau, reco::Jet>"/>
+  <class name="std::vector<PATLeptonRecoilEnergy<pat::Tau, reco::Jet> >"/>
+  <class name="edm::Wrapper<PATLeptonRecoilEnergy<pat::Tau, reco::Jet> >"/>
+  <class name="edm::Wrapper<std::vector<PATLeptonRecoilEnergy<pat::Tau, reco::Jet> > >"/>
+
+  <!-- create dictionaries for PATLeptonRecoilEnergyFromCaloTowers objects -->
+  <class name="PATLeptonRecoilEnergy<pat::Tau, CaloTower>"/>
+  <class name="std::vector<PATLeptonRecoilEnergy<pat::Tau, CaloTower> >"/>
+  <class name="edm::Wrapper<PATLeptonRecoilEnergy<pat::Tau, CaloTower> >"/>
+  <class name="edm::Wrapper<std::vector<PATLeptonRecoilEnergy<pat::Tau, CaloTower> > >"/>
+
   <!-- create dictionaries for GenPhaseSpaceEventInfo objects -->
   <class name="GenPhaseSpaceEventInfo"/>
   <class name="edm::Wrapper<GenPhaseSpaceEventInfo>"/>
