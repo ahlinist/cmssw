@@ -549,6 +549,8 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralParticleIso() << std::endl;
       *outputStream_ << "  pfGammaIsolation = " << patTau->gammaParticleIso() << std::endl;
       *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
+      *outputStream_ << " EcalStripSumE/P = " << patTau->ecalStripSumEOverPLead() << std::endl;
+      *outputStream_ << " BremsRecoveryE/P = " << patTau->bremsRecoveryEOverPLead() << std::endl;
       *outputStream_ << " HCAL3x3/P = " << patTau->hcal3x3OverPLead() << std::endl;
       *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
       *outputStream_ << " vertex" << std::endl;
