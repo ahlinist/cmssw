@@ -132,6 +132,7 @@ void TauHistManager::bookHistograms()
   hTauHcal3x3OverPLead_ = dqmStore.book1D("TauHcal3x3OverPLead", "TauHcal3x3OverPLead", 101, -0.01, 2.01);
   hTauEcalStripSumEOverPLead_ = dqmStore.book1D("TauEcalStripSumEOverPLead", "TauEcalStripSumEOverPLead", 101, -0.01, 2.01);
   hTauBremsRecoveryEOverPLead_ = dqmStore.book1D("TauBremsRecoveryEOverPLead", "TauBremsRecoveryEOverPLead", 101, -0.01, 2.01);
+  hTauCaloEOverPLead_ = dqmStore.book1D("TauCaloEOverPLead", "TauCaloEOverPLead", 101, -0.01, 2.01);
 
   hTauDiscriminatorAgainstMuons_ = dqmStore.book1D("TauDiscriminatorAgainstMuons", 
 						   "Discriminator against Muons", 102, -0.01, 1.01);
@@ -293,6 +294,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     hTauHcal3x3OverPLead_->Fill(patTau->hcal3x3OverPLead());
     hTauEcalStripSumEOverPLead_->Fill(patTau->ecalStripSumEOverPLead());
     hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead());
+    hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead());
 
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"));
   
