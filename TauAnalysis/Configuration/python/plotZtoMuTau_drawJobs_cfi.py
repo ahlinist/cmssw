@@ -368,12 +368,6 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
         ),
         drawJobConfigEntry(
-            meName = 'TauQuantities/TauCaloEOverPLead',
-            title = "E_{calo} / P_{lead. Track} (final Event sample)",
-            xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauCaloEOverPLead"
-        ),
-        drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
