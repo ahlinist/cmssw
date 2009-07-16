@@ -53,6 +53,11 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 # produce combinations of tau-jet + missing transverse momentum
 #
 from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
+#
+# produce data-formats providing information
+# about Et of jets (CaloTowers) opposite in transverse plane to tau-jet
+#
+from TauAnalysis.CandidateTools.tauRecoilEnergy_cfi import *
 
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
@@ -60,4 +65,5 @@ producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "
                                +produceLayer1SelLeptons + selectLayer1Jets
                                +produceDiTauPairsAllKinds
                                +selectDiTauPairsAllKinds
-                               +produceTauNuPairs )
+                               +produceTauNuPairs
+                               +produceTauRecoilEnergy )
