@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: MEtTopology.h,v 1.1 2009/02/24 14:28:42 veelken Exp $
+ * $Id: MEtTopology.h,v 1.1 2009/07/11 15:35:01 veelken Exp $
  *
  */
 
@@ -19,6 +19,8 @@ class MEtTopology
  public:
   /// constructor 
   explicit MEtTopology() {}
+
+  /// destructor
   ~MEtTopology() {}
   
   /// get H1-like sums of calorimeter energy deposits
