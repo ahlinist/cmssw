@@ -9,16 +9,16 @@
 
 #include <vector>
 
-/// collection of CompositeRefCandidateTMEt objects
+/// collection of MEtTopology objects
 typedef std::vector<MEtTopology> MEtTopologyCollection;
 
-/// persistent reference to a CompositeRefCandidateTMEt object
+/// persistent reference to a MEtTopology object
 typedef edm::Ref<MEtTopologyCollection> MEtTopologyRef;
 
-/// references to CompositeRefCandidateTMEt collection
+/// references to MEtTopology collection
 typedef edm::RefProd<MEtTopologyCollection> MEtTopologyRefProd;
 
-/// vector of references to CompositeRefCandidateTMEt objects all in the same collection
+/// vector of references to MEtTopology objects all in the same collection
 typedef edm::RefVector<MEtTopologyCollection> MEtTopologyRefVector;
 
 #endif
