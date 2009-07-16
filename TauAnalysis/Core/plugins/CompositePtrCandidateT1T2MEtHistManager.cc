@@ -9,6 +9,8 @@
 
 #include <TMath.h>
 
+const double epsilon = 0.01;
+
 template<typename T1, typename T2>
 bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate)
 {
@@ -76,7 +78,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
   hCollinearApproxEta_ = dqmStore.book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
   hCollinearApproxMass_ = dqmStore.book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
   hCollinearApproxMassVsPt_ = dqmStore.book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs P_{T}", 30, 0., 150., 25, 0., 250.);
-  hCollinearApproxMassVsDPhi12_ = dqmStore.book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs #Delta#phi_{1,2}", 36, -TMath::Pi(), +TMath::Pi(), 25, 0., 250.);
+  hCollinearApproxMassVsDPhi12_ = dqmStore.book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon, 25, 0., 250.);
   hCollinearApproxX1_ = dqmStore.book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 51, -0.01, 1.01);
   hCollinearApproxX2_ = dqmStore.book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 51, -0.01, 1.01);
   hCollinearApproxX1vsX2_ = dqmStore.book2D("CollinearApproxX1vsX2", "Collinear Approximation X_{1} vs X_{2}", 26, -0.02, 1.02, 26, -0.02, 1.02);
@@ -88,18 +90,18 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
   hMt1MET_ = dqmStore.book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
   hMt2MET_ = dqmStore.book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
   
-  hDPhi12_ = dqmStore.book1D("DPhi12", "#Delta#phi_{1,2}", 36, -TMath::Pi(), +TMath::Pi());
+  hDPhi12_ = dqmStore.book1D("DPhi12", "#Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
   hDR12_ = dqmStore.book1D("DR12", "#Delta R_{1,2}", 51, -0.1, 10.1);
   
   hVisEtaMin_ = dqmStore.book1D("VisEtaMin", "VisEtaMin", 60, -3., +3.);
   hVisEtaMax_ = dqmStore.book1D("VisEtaMax", "VisEtaMax", 60, -3., +3.);
   
-  hDPhi1MET_ = dqmStore.book1D("DPhi1MET", "#Delta#phi_{1,MET}", 36, -TMath::Pi(), +TMath::Pi());
-  hDPhi2MET_ = dqmStore.book1D("DPhi2MET", "#Delta#phi_{2,MET}", 36, -TMath::Pi(), +TMath::Pi());
-  hDPhi1METvsDPhi2MET_ = dqmStore.book2D("DPhi1METvsDPhi2MET", "#Delta#phi_{1,MET} vs #Delta#phi_{2,MET}", 18, -TMath::Pi(), +TMath::Pi(), 18, -TMath::Pi(), +TMath::Pi()); 
+  hDPhi1MET_ = dqmStore.book1D("DPhi1MET", "#Delta#phi_{1,MET}", 36, -epsilon, TMath::Pi() + epsilon);
+  hDPhi2MET_ = dqmStore.book1D("DPhi2MET", "#Delta#phi_{2,MET}", 36, -epsilon, TMath::Pi() + epsilon);
+  hDPhi1METvsDPhi2MET_ = dqmStore.book2D("DPhi1METvsDPhi2MET", "#Delta#phi_{1,MET} vs #Delta#phi_{2,MET}", 18, -epsilon, TMath::Pi() + epsilon, 18, -epsilon, TMath::Pi() + epsilon); 
 
-  hPzetaCorr_ = dqmStore.book2D("ZetaCorr", "P_{#zeta} vs P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
-  hPzetaDiff_ = dqmStore.book1D("ZetaDiff", "P_{#zeta} - 1.5 #cdot P_{#zeta}^{vis}", 40, -100., +100.);
+  hPzetaCorr_ = dqmStore.book2D("PzetaCorr", "P_{#zeta} vs P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
+  hPzetaDiff_ = dqmStore.book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
 }
 
 template<typename T1, typename T2>
