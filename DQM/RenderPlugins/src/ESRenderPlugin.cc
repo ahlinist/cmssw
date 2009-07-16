@@ -24,6 +24,7 @@ class ESRenderPlugin : public DQMRenderPlugin {
 
    private:
 
+      void preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o );
       void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
 
       double NEntries;
@@ -74,12 +75,36 @@ void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
    gStyle->SetOptFit(kFALSE);
 
 
+   if( dynamic_cast<TH1F*>( o.object ) ) {
+      preDrawTH1F( c, o );
+   }
+
    if( dynamic_cast<TH2F*>( o.object ) ) {
       preDrawTH2F( c, o );
    }
 
 }
 
+void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o ) {
+
+   TH1F* obj = dynamic_cast<TH1F*>( o.object );
+
+   assert( obj );
+
+   std::string name = o.name.substr(o.name.rfind("/")+1);
+
+   if( name.find( "Gain used for data taking" ) != std::string::npos )
+   {
+      obj->GetXaxis()->SetBinLabel(1,"LG");
+      obj->GetXaxis()->SetBinLabel(2,"HG");
+      obj->GetXaxis()->SetLabelSize(0.1);
+   }
+
+   if( name.find( "FEDs used for data taking" ) != std::string::npos )
+   {
+      obj->SetFillColor(2);
+   }
+}
 
 void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
 
@@ -90,7 +115,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
    int colorbar[6] = {1,2,3,4,5,6};
-   //int colorbar2[5] = {0,3,800,4,2};
+   int colorbar2[5] = {0,3,800,4,2};
 
    gStyle->SetPaintTextFormat();
 
@@ -98,14 +123,24 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
    obj->SetStats(kFALSE);
    gPad->SetLogy(kFALSE);
 
+   gStyle->SetPalette(1);
+   obj->SetOption("colz");
+   gPad->SetRightMargin(0.15);
+   gStyle->SetPaintTextFormat("+g");
+
    if( name.find( "Integrity Summary" ) != std::string::npos ) {
       gStyle->SetPalette(6,colorbar);
       obj->SetMinimum(0.5);
       obj->SetMaximum(6.5);
-      obj->SetOption("colz");
-      gPad->SetRightMargin(0.15);
-      gStyle->SetPaintTextFormat("+g");
       return;
+   }
+
+   if( name.find( "Fiber Status" ) != std::string::npos )   {
+      obj->GetYaxis()->SetBinLabel(1,"Bad");
+      obj->GetYaxis()->SetBinLabel(2,"Good");
+      obj->GetYaxis()->SetLabelSize(0.08);
+      obj->GetYaxis()->SetTitle("");
+
    }
 
 
@@ -116,9 +151,6 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
       NEntries = obj->GetBinContent(40,40);
       obj->Scale(1/NEntries);
       obj->SetMaximum(33);
-      obj->SetOption("colz");
-      gPad->SetRightMargin(0.15);
-      gStyle->SetPaintTextFormat("+g");
       return;
    }
 
@@ -128,19 +160,14 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
       obj->GetYaxis()->SetRange(0,39);
       NEntries = obj->GetBinContent(40,40);
       obj->Scale(1/NEntries);
-      obj->SetOption("colz");
-      gPad->SetRightMargin(0.15);
-      gStyle->SetPaintTextFormat("+g");
       return;
    }
 
    if( name.find( "reportSummaryMap" ) != std::string::npos ) {
-      gStyle->SetPalette(6,colorbar);
+      gStyle->SetPalette(5,colorbar2);
       obj->SetMinimum(-0.5);
       obj->SetMaximum(4.5);
       obj->SetOption("col");
-      gPad->SetRightMargin(0.15);
-      gStyle->SetPaintTextFormat("+g");
       return;
    }
 
