@@ -5,7 +5,7 @@
  *  
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/01/21 16:04:59 $
+ *  $Date: 2009/01/21 17:34:57 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -146,11 +146,13 @@ class DQMHistPlotter : public edm::EDAnalyzer
   struct cfgEntryDrawJob 
   {
     cfgEntryDrawJob(const std::string&, const std::string&, 
-		    const plotDefList&, const std::string&, const std::string&, const std::string&, const std::string&, const vstring&);
+		    const plotDefList&, double,
+		    const std::string&, const std::string&, const std::string&, const std::string&, const vstring&);
     void print() const;
     std::string name_;
     std::string name_full_;
     plotDefList plots_;
+    double norm_;
     std::string title_;
     std::string xAxis_;
     std::string yAxis_;
