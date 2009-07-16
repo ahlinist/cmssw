@@ -5,6 +5,9 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEtFwd.h"
 
+#include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergyFwd.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/GenPhaseSpaceEventInfo.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/MEtTopology.h"
@@ -71,6 +74,18 @@ namespace {
     edm::Wrapper<PATTauNuPair> dummyPATTauNuPairWrapper;
     PATTauNuPairCollection dummyPATTauNuPairCollection;
     edm::Wrapper<PATTauNuPairCollection> dummyPATTauNuPairCollectionWrapper;
+
+    /// create dictionaries for PATLeptonRecoilEnergyFromJets objects
+    PATTauRecoilEnergyFromJets dummyPATTauRecoilEnergyFromJets;
+    edm::Wrapper<PATTauRecoilEnergyFromJets> dummyPATTauRecoilEnergyFromJetsWrapper;
+    PATTauRecoilEnergyFromJetsCollection dummyPATTauRecoilEnergyFromJetsCollection;
+    edm::Wrapper<PATTauRecoilEnergyFromJetsCollection> dummyPATTauRecoilEnergyFromJetsCollectionWrapper;
+
+    /// create dictionaries for PATLeptonRecoilEnergyFromCaloTowers objects
+    PATTauRecoilEnergyFromCaloTowers dummyPATTauRecoilEnergyFromCaloTowers;
+    edm::Wrapper<PATTauRecoilEnergyFromCaloTowers> dummyPATTauRecoilEnergyFromCaloTowersWrapper;
+    PATTauRecoilEnergyFromCaloTowersCollection dummyPATTauRecoilEnergyFromCaloTowersCollection;
+    edm::Wrapper<PATTauRecoilEnergyFromCaloTowersCollection> dummyPATTauRecoilEnergyFromCaloTowersCollectionWrapper;
 
     /// create dictionaries for GenPhaseSpaceEventInfo objects
     GenPhaseSpaceEventInfo dummyGenPhaseSpaceEventInfo;
