@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.12 2009/05/22 19:05:23 lat Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.13 2009/05/22 19:09:33 lat Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.12 $
-  \date $Date: 2009/05/22 19:05:23 $
+  \version $Revision: 1.13 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -152,6 +152,10 @@ public:
 
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
+      if( o.name.find( "L1TdeRCT" ) != std::string::npos )
+        return true;
+
+/*
       if( o.name.find( "L1TdeRCT/IsoEm" ) != std::string::npos )
         return true;
 
@@ -181,6 +185,7 @@ public:
 
       if( o.name.find( "L1TdeRCT/BitData/ServiceData" ) != std::string::npos )
         return true;
+*/
 
       return false;
     }
@@ -202,7 +207,7 @@ public:
       gStyle->SetOptTitle(kTRUE);
       gStyle->SetTitleBorderSize(0);
 
-      gStyle->SetOptStat(kFALSE);
+      gStyle->SetOptStat(11);
       gStyle->SetStatBorderSize(1);
 
       gStyle->SetOptFit(kFALSE);
@@ -278,10 +283,26 @@ private:
 
       gStyle->SetPaintTextFormat();
 
-      gStyle->SetOptStat(kFALSE);
+      gStyle->SetOptStat(11);
       gPad->SetLogy(kFALSE);
 
       gStyle->SetNumberContours (nContours);
+      obj->GetXaxis()->SetTitle("GCT eta");
+      obj->GetYaxis()->SetTitle("GCT phi");
+
+      if( name.find( "rctInputTPGEcalOcc" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("CAL eta");
+        obj->GetYaxis()->SetTitle("CAL phi");
+        return;
+      }
+
+      if( name.find( "rctInputTPGHcalOcc" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("CAL eta");
+        obj->GetYaxis()->SetTitle("CAL phi");
+        return;
+      }
 
       //--Iso stuff
       if( name.find( "rctIsoEmDataOcc" ) != std::string::npos )
@@ -713,8 +734,106 @@ private:
       }
     }
 
-  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
     {
+      TH1F* obj = dynamic_cast<TH1F*>( o.object );
+      assert( obj );
+     
+      std::string name = o.name.substr(o.name.rfind("/")+1);
+
+      obj->GetXaxis()->SetTitle("Channnel number");
+      gStyle->SetOptStat(11);
+
+      if( name.find( "gtTriggerAlgoNumbers" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("GT AlgoNumber");
+        return;
+      }
+
+      if( name.find( "rctInputTPGHcalSample" ) != std::string::npos )
+      {
+        obj->GetXaxis()->SetTitle("HCAL sample");
+        return;
+      }
+
+      //--Iso stuff
+      if( name.find( "rctIsoEmEff1oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctIsoEmEff2oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctIsoEmIneff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctIsoEmOvereff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      //--Niso stuff
+
+      if( name.find( "rctNisoEmEff1oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctNisoEmEff2oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctNisoEmIneff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctNisoEmOvereff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      //--Regional stuff
+
+      if( name.find( "rctRegEff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctRegSpEff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctRegIneff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctRegOvereff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+
     }
 
   void postDrawTProfile2D( TCanvas *, const DQMNet::CoreObject & )

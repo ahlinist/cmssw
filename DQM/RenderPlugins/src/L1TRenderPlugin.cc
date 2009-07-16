@@ -26,6 +26,8 @@
 
 class L1TRenderPlugin : public DQMRenderPlugin
 {
+  TH2F* dummybox;
+
 public:
   virtual void initialise (int, char **)
     {
@@ -41,6 +43,16 @@ public:
       //     color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       //   }
       //   for(int i=0; i<6; i++) cpal[i] = i + 301;
+      dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
+
+      for(int i=0; i<22; i++)
+      {
+        for(int j=0; j<18; j++)
+        {
+          dummybox->Fill(i,j,0.1);
+        }
+      }
+
     }
 
   virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
@@ -280,6 +292,24 @@ private:
 
       //gStyle->SetOptStat(0);
 
+      if(
+        o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmNonIsoEmEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmNonIsoEmOccEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
+         )
+      {
+        gPad->SetGrid(1,1);
+        gStyle->SetOptStat(11);
+        obj->GetXaxis()->SetTitle("GCT eta");
+        obj->GetYaxis()->SetTitle("GCT phi");
+        return;
+      }
+
+
+
       if(o.name.find("Summary") != std::string::npos)
       {
         obj->GetXaxis()->CenterLabels();
@@ -366,6 +396,9 @@ private:
 
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
     {
+
+
+
       /*
         // Add error/warning text to 1-D histograms.  Do we want this at this time?
         TText tt;
@@ -399,8 +432,31 @@ private:
       */
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
     {
+
+
+      TH2F* obj = dynamic_cast<TH2F*>( o.object );
+      assert( obj );
+
+
+      if(
+        o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmNonIsoEmEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctEmNonIsoEmOccEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
+        o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
+         )
+      {
+
+        dummybox->Draw("box,same");
+        return;
+      }
+
+
+
+
       // nothing to put here just yet
       // in the future, we can add text output based on error status,
       // or set bin range based on filled histograms, etc.
@@ -505,6 +561,8 @@ private:
       //   pt[i]->Draw("same");
       //to draw your text object
       //  }
+
+
     }
 };
 
