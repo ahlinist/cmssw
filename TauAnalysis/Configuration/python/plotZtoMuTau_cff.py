@@ -83,6 +83,7 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
         Mass = copy.deepcopy(xAxis_mass),
         N = copy.deepcopy(xAxis_num),
         PdgId = copy.deepcopy(xAxis_pdgId),
+        GeV = copy.deepcopy(xAxis_GeV),
         unlabeled = copy.deepcopy(xAxis_unlabeled),
     ),
 
