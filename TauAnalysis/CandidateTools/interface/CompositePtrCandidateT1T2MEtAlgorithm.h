@@ -119,8 +119,6 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 		double metPx, double metPy)
   {
     //std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::compZeta>:" << std::endl;
-    //std::cout << " leg1Phi = " << leg1.phi() << std::endl;
-    //std::cout << " leg2Phi = " << leg2.phi() << std::endl;
 
     double leg1x = cos(leg1.phi());
     double leg1y = sin(leg1.phi());
@@ -128,17 +126,19 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     double leg2y = sin(leg2.phi());
     double zetaX = leg1x + leg2x;
     double zetaY = leg1y + leg2y;
-    double zetaR = zetaX*zetaX + zetaY*zetaY;
+    double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
     if ( zetaR > 0. ) {
       zetaX /= zetaR;
       zetaY /= zetaR;
     }
 
+    //std::cout << " leg1Phi = " << leg1.phi()*180./TMath::Pi() << std::endl;
+    //std::cout << " leg2Phi = " << leg2.phi()*180./TMath::Pi() << std::endl;
+
     //std::cout << " zetaX = " << zetaX << std::endl;
     //std::cout << " zetaY = " << zetaY << std::endl;
 
-    //double zetaPhi = normalizedPhi(atan2(zetaY, zetaX));
-    //std::cout << " zetaPhi = " << zetaPhi << std::endl;
+    //std::cout << " zetaPhi = " << normalizedPhi(atan2(zetaY, zetaX))*180./TMath::Pi() << std::endl;
 
     double visPx = leg1.px() + leg2.px();
     double visPy = leg1.py() + leg2.py();
@@ -150,6 +150,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
     double px = visPx + metPx;
     double py = visPy + metPy;
     double pZeta = px*zetaX + py*zetaY;
+
+    //std::cout << " metPhi = " << normalizedPhi(atan2(metPy, metPx))*180./TMath::Pi() << std::endl;
     
     if ( verbosity_ ) {
       std::cout << "<CompositePtrCandidateT1T2MEtAlgorithm::compZeta>:" << std::endl;
