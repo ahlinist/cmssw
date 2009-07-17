@@ -292,14 +292,18 @@ private:
 
       //gStyle->SetOptStat(0);
 
-      if(
+/*      if(
         o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmNonIsoEmEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmNonIsoEmOccEtaPhi" ) != std::string::npos ||
         o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
-         )
+         ) */
+      if(
+        o.name.find( "Rct" ) != std::string::npos &&
+        o.name.find( "EtaPhi" ) != std::string::npos 
+        )
       {
         gPad->SetGrid(1,1);
         gStyle->SetOptStat(11);
@@ -440,14 +444,18 @@ private:
       assert( obj );
 
 
-      if(
+/*      if(
         o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmNonIsoEmEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmNonIsoEmOccEtaPhi" ) != std::string::npos ||
         o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
-         )
+         ) */
+      if(
+        o.name.find( "Rct" ) != std::string::npos &&
+        o.name.find( "EtaPhi" ) != std::string::npos
+         ) 
       {
 
         dummybox->Draw("box,same");
