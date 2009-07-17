@@ -519,7 +519,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         nRecoPhotons++;
 	me["RecoPhoton_eta"]->Fill(RECOPHO[i].eta());
 	me["RecoPhoton_phi"]->Fill(RECOPHO[i].phi());  
-        cout << "RECO photon pt is = " << RECOPHO[i].pt() << endl; 
+//        cout << "RECO photon pt is = " << RECOPHO[i].pt() << endl; 
 //       me["RecoTrackIso"]->Fill(RECOPHO[i].trackIso());
 //       me["RecoCaloIso"] ->Fill(RECOPHO[i].caloIso());
 
@@ -681,7 +681,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         float  dPhiTracksAtEcal=-99;
         float  dEtaTracksAtEcal=-99;
         if (conversions[iConv]-> bcMatchingWithTracks()[0].isNonnull() && conversions[iConv]->bcMatchingWithTracks()[1].isNonnull() ) {
-        cout << "SUDHIRMALIK1" << endl;  
+ //       cout << "SUDHIRMALIK1" << endl;  
           
           float recoPhi1 = conversions[iConv]->ecalImpactPosition()[0].phi();
           float recoPhi2 = conversions[iConv]->ecalImpactPosition()[1].phi();
@@ -701,18 +701,19 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
           
           me_DPhiTracksAtEcal_[type][0]->Fill(dPhiTracksAtEcal);
           me_DEtaTracksAtEcal_[type][0]->Fill( dEtaTracksAtEcal);
-                  cout << "SUDHIRMALIK2" << endl;
+                  
+       //cout << "SUDHIRMALIK2" << endl;
 
           if ( phoIsInBarrel ) {
             me_DPhiTracksAtEcal_[type][1]->Fill( dPhiTracksAtEcal);
             me_DEtaTracksAtEcal_[type][1]->Fill( dEtaTracksAtEcal);
           }
-                   cout << "SUDHIRMALIK3" << endl;
+         //          cout << "SUDHIRMALIK3" << endl;
 
           if ( phoIsInEndcap ) {
             me_DPhiTracksAtEcal_[type][2]->Fill( dPhiTracksAtEcal);
             me_DEtaTracksAtEcal_[type][2]->Fill( dEtaTracksAtEcal);
-                   cout << "SUDHIRMALIK4" << endl;
+          //         cout << "SUDHIRMALIK4" << endl;
 
           }
       }
@@ -747,7 +748,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         nPatPhotons++;
 	me["PatPhoton_eta"]->Fill(PATPHO[j].eta());
 	me["PatPhoton_phi"]->Fill(PATPHO[j].phi());  
-        cout << "PAT photon pt is = " << PATPHO[j].pt() << endl; 
+//        cout << "PAT photon pt is = " << PATPHO[j].pt() << endl; 
 //       me["PatTrackIso"]->Fill(PATPHO[j].trackIso());
 //       me["PatCaloIso"] ->Fill(PATPHO[j].caloIso());
 
@@ -909,7 +910,7 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         float  patdPhiTracksAtEcal=-99;
         float  patdEtaTracksAtEcal=-99;
         if (conversions[iConv]-> bcMatchingWithTracks()[0].isNonnull() && conversions[iConv]->bcMatchingWithTracks()[1].isNonnull() ) {
-        cout << "SUDHIRMALIK1" << endl;  
+//        cout << "SUDHIRMALIK1" << endl;  
           
           float patPhi1 = conversions[iConv]->ecalImpactPosition()[0].phi();
           float patPhi2 = conversions[iConv]->ecalImpactPosition()[1].phi();
@@ -929,18 +930,18 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
           
           me_pat_DPhiTracksAtEcal_[type][0]->Fill(patdPhiTracksAtEcal);
           me_pat_DEtaTracksAtEcal_[type][0]->Fill(patdEtaTracksAtEcal);
-                  cout << "SUDHIRMALIK2" << endl;
+          //        cout << "SUDHIRMALIK2" << endl;
 
           if ( patphoIsInBarrel ) {
             me_pat_DPhiTracksAtEcal_[type][1]->Fill( patdPhiTracksAtEcal);
             me_pat_DEtaTracksAtEcal_[type][1]->Fill( patdEtaTracksAtEcal);
           }
-                   cout << "SUDHIRMALIK3" << endl;
+          //         cout << "SUDHIRMALIK3" << endl;
 
           if ( patphoIsInEndcap ) {
             me_pat_DPhiTracksAtEcal_[type][2]->Fill( patdPhiTracksAtEcal);
             me_pat_DEtaTracksAtEcal_[type][2]->Fill( patdEtaTracksAtEcal);
-                   cout << "SUDHIRMALIK4" << endl;
+            //       cout << "SUDHIRMALIK4" << endl;
 
           }
       }
@@ -964,8 +965,8 @@ PATValidation_Photon::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
      }
 
-cout << "NUM OF PATPHOTONS = " << nPatPhotons << endl;
-cout << "NUM OF RECOPHOTONS = " << nRecoPhotons << endl;
+//cout << "NUM OF PATPHOTONS = " << nPatPhotons << endl;
+//cout << "NUM OF RECOPHOTONS = " << nRecoPhotons << endl;
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;
