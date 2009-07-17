@@ -17,8 +17,7 @@
 <use name=RecoMuon/TrackingTools>
 #<use name=DQMOffline/EGamma>
 <use name=root>
-
+<flags EDM_PLUGIN=1>
 <export>
 <lib name=ValidationPhysicsTools>
-<flags EDM_PLUGIN=1>
 </export>
