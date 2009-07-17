@@ -5,11 +5,26 @@
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate>>"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<reco::Candidate, reco::Candidate> > >"/>
 
-  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon> and edm::Ptr<pat::Tau
+  <!-- create dictionaries for edm::Ptr<pat::Electron>, edm::Ptr<pat::Muon>, edm::Ptr<pat::Tau> and edm::Ptr<pat::Jet>
        as these dictionaries are not yet created in DataFormats/PatCandidates/src/classes.h -->
   <class name="edm::Ptr<pat::Electron>"/>
   <class name="edm::Ptr<pat::Muon>"/>
   <class name="edm::Ptr<pat::Tau>"/>
+  <class name="edm::Ptr<pat::Jet>"/>
+
+  <!-- create dictionaries for edm::Ptr<reco::CaloJet> and edm::Ptr<reco::PFJet>
+       as these dictionaries are not yet created in DataFormats/JetReco/src/classes.h -->
+  <class name="edm::Ptr<reco::CaloJet>"/>
+  <class name="edm::Ptr<reco::PFJet>"/>
+
+  <!-- create dictionaries for edm::Ptr<reco::GenParticle>
+       as these dictionaries are not yet created in DataFormats/HepMCCandidate/src/classes.h -->
+  <class name="edm::Ptr<reco::GenParticle>"/>
+
+  <!-- create dictionaries for edm::Ptr<reco::Track> and edm::Ptr<reco::GsfTrack>
+       as these dictionaries are not yet created in DataFormats/TrackReco/src/classes.h (DataFormats/GsfTrackReco/src/classes.h) -->
+  <class name="edm::Ptr<reco::Track>"/>
+  <class name="edm::Ptr<reco::GsfTrack>"/>
 
   <!-- create dictionaries for PATElecPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Electron>"/>
@@ -28,30 +43,41 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
+
+  <!-- create dictionaries for PATElecTauPairZeeHypothesis objects -->
+  <class name="PATElecTauPairZeeHypothesis"/>
+  <class name="std::vector<PATElecTauPairZeeHypothesis>"/>
+  <class name="edm::Wrapper<PATElecTauPairZeeHypothesis>"/>
+  <class name="edm::Wrapper<std::vector<PATElecTauPairZeeHypothesis> >"/>
 
   <!-- create dictionaries for PATMuTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
 
   <!-- create dictionaries for PATDiTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
 
   <!-- create dictionaries for PATElecMuPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
 
   <!-- create dictionaries for PATTauNuPair objects -->
   <class name="CompositePtrCandidateTMEt<pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateTMEt<pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateTMEt<pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateTMEt<pat::Tau> > >"/>
+  <class name="edm::Ptr<CompositePtrCandidateTMEt<pat::Tau> >"/>
 
   <!-- create dictionaries for PATLeptonRecoilEnergyFromJets objects -->
   <class name="PATLeptonRecoilEnergy<pat::Tau, reco::Jet>"/>
