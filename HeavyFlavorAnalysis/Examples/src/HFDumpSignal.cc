@@ -2,7 +2,7 @@
 
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpSignal.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
@@ -36,7 +36,7 @@
 
 
 // -- Yikes!
-extern TAna00Event *gHFEvent;
+extern TAna01Event *gHFEvent;
 
 using namespace std;
 using namespace reco;
@@ -58,10 +58,10 @@ HFDumpSignal::HFDumpSignal(const edm::ParameterSet& iConfig) :
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpSignal constructor" << endl;
-  cout << "--- tracksLabel:            " << fTracksLabel.c_str() << endl;
-  cout << "--- muonsLabel:             " << fMuonsLabel << endl;
-  cout << "--- kaonPt:                 " << fKaonPt << endl;
-  cout << "--- deltaR:                 " << fDeltaR << endl;
+  cout << "---  tracksLabel:              " << fTracksLabel.c_str() << endl;
+  cout << "---  muonsLabel:               " << fMuonsLabel << endl;
+  cout << "---  kaonPt:                   " << fKaonPt << endl;
+  cout << "---  deltaR:                   " << fDeltaR << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
 }

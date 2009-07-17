@@ -2,23 +2,23 @@
 
 // -- Open file 
 TChain chain("T1");
-chain.Add("hfexample.root");
+chain.Add("test.root");
 
 Int_t nentries(0), nb(0);
 Int_t iEvent(0), it(0);
 
 // -- Set up for reading
-TAna00Event *pEvent = new TAna00Event(0);
+TAna01Event *pEvent = new TAna01Event(0);
 TAnaTrack *m1Track, *m2Track;
 TGenCand  *g1, *g2;
 TAnaCand  *pCand;
 TAnaVertex *pVtx;
 
-chain.SetBranchAddress("TAna00Event", &pEvent);
+chain.SetBranchAddress("TAna01Event", &pEvent);
 nentries = chain.GetEntries();
 
 TH1D *h0 = new TH1D("h0", "generator dimuon mass", 100, 0., 10.); 
-TH1D *h1 = new TH1D("h1", "reco dimuon mass", 100, 0., 10.); 
+TH1D *h1 = new TH1D("h1", "truth-matched dimuon mass", 100, 0., 10.); 
 TH1D *h2 = new TH1D("h2", "cand mass", 40, 4., 6.); 
 
 cout << "Found " << nentries << " entries in the chain" << endl;

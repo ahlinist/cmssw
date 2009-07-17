@@ -16,16 +16,18 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "CommonTools/Statistics/interface/ChiSquared.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaMuon.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TTrgObj.hh"
 
 #include <TVector3.h>
 
 // -- Yikes!
-extern TAna00Event *gHFEvent;
+extern TAna01Event *gHFEvent;
 
 using namespace std;
 using namespace edm;

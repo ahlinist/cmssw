@@ -11,16 +11,10 @@
 #include <TH1.h>
 
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
-
-
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 
 // -- Yikes!
-extern TAna00Event *gHFEvent;
+extern TAna01Event *gHFEvent;
 extern TFile       *gHFFile;
 
 using namespace edm;

@@ -14,7 +14,7 @@
 
 class TFile;
 class TTree;
-class TAna00Event;
+class TAna01Event;
 
 // ----------------------------------------------------------------------
 class HFTree : public edm::EDAnalyzer {
@@ -29,7 +29,7 @@ class HFTree : public edm::EDAnalyzer {
   
   TFile        *fFile; 
   TTree        *fTree;
-  TAna00Event  *fEvent;
+  TAna01Event  *fEvent;
 };
 
 #endif

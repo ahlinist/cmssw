@@ -12,14 +12,10 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 
 // -- Yikes!
-extern TAna00Event *gHFEvent;
+extern TAna01Event *gHFEvent;
 
 using namespace std;
 using namespace edm;
@@ -63,16 +59,15 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
   // ================== Print HepMC directly =================
 
-  if (fVerbose > 0)
-    {
-      cout << "=================HEPMC===================" << endl;
-      Handle<HepMCProduct> evt;
-      iEvent.getByLabel(fGenEventLabel.c_str(), evt);
-      const HepMC::GenEvent *genEvent = evt->GetEvent();
-      genEvent->print();
-      
-      cout << "=================HEPMC===================" << endl;
-    }
+  if (fVerbose > 0) {
+    cout << "=================HEPMC===================" << endl;
+    Handle<HepMCProduct> evt;
+    iEvent.getByLabel(fGenEventLabel.c_str(), evt);
+    const HepMC::GenEvent *genEvent = evt->GetEvent();
+    genEvent->print();
+    
+    cout << "=================HEPMC===================" << endl;
+  }
 
   // ======================= RECO =============================
 
@@ -98,7 +93,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     cands.push_back( & * p );
   }
 
-  if (fVerbose > 0) printf("Number of genParticles = %i\n", genParticlesH->size());
+  if (fVerbose > 0) cout << Form("Number of genParticles = %i", genParticlesH->size()) << endl;
 
   int i(-1); 
   for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
@@ -157,10 +152,12 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
       pGen->fDau2 = iDa2;
     }
 
-    if (fVerbose > 0) pGen->dump();
+    if (fVerbose > 2) pGen->dump();
   }
  
-  genParticlesH.clear();
+  genParticlesH.clear(); // WHY?
+
+  if (fVerbose > 0) cout << "==> HFDumpGenerator> dumped  " << gHFEvent->nGenCands() << " generator cands" << endl;
 
 
 //  for(size_t i = 0; i < genParticlesH->size(); ++ i) {
