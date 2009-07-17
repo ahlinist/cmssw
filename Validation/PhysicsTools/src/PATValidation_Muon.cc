@@ -376,7 +376,7 @@ dbe->setCurrentFolder("Benchmarks/muons/PAT");
   patrhAnalysis.push_back(dbe->book1D("invalidRh_Frac_inTk", "Invalid recHits / rechits_{GLB}", rhBin, rhMin, rhMax));
 
      
-cout << "MALIK1" << endl;
+//cout << "MALIK1" << endl;
   }
   return;
     
