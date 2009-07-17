@@ -14,11 +14,12 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.39 2009/05/31 12:46:17 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.41 2009/06/25 09:49:34 pioppi Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
 #include "SusyAnalysis/AnalysisSkeleton/test/SusyDiJetAnalysis.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerFwd.h"
 //#define _USE_MATH_DEFINES
 //#include <math.h>
 #include <TMath.h>
@@ -79,9 +80,10 @@ SusyDiJetAnalysis::SusyDiJetAnalysis(const edm::ParameterSet& iConfig):
   //benedetta: PFjets
   usePfjets_ = iConfig.getParameter<bool>("UsePfjet");
   pfjetTag_  = iConfig.getParameter<edm::InputTag>("pfjetTag");
-
+  
   jptTag_ = iConfig.getParameter<edm::InputTag>("jptTag");
-
+  ccJptTag_ = iConfig.getParameter<edm::InputTag>("ccjptTag");
+  
   ccjetTag_ = iConfig.getParameter<edm::InputTag>("ccjetTag");
   ccmetTag_ = iConfig.getParameter<edm::InputTag>("ccmetTag");
   ccelecTag_ = iConfig.getParameter<edm::InputTag>("ccelecTag"); 
@@ -1288,17 +1290,21 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     return;
   }
 
-  /*JPT  to be fixed
-
-  // get the JPT-corrected pat::Jets
+  // get the JPT-corrected pat::Jets (*not* cross-cleaned) 
   edm::Handle< std::vector<pat::Jet> > jptHandle;
   iEvent.getByLabel(jptTag_, jptHandle);
   if ( !jptHandle.isValid() ) {
-    edm::LogWarning("SusySelectorExample") << "No JetCorrFactor results for InputTag " << jptTag_;
-    std::cout << "No JetCorrFactor results for InputTag " << jptTag_ << std::endl;
+    edm::LogWarning("SusySelectorExample") << "No Jet results for InputTag " << jptTag_;
     return;
   }
-  */
+
+  // get the JPT-corrected *cross-cleaned* pat::Jets
+  edm::Handle< std::vector<pat::Jet> > ccJptHandle;
+  iEvent.getByLabel(ccJptTag_, ccJptHandle);
+  if ( !ccJptHandle.isValid() ) {
+    edm::LogWarning("SusySelectorExample") << "No Jet results for InputTag " << ccJptTag_;
+    return;
+  }
 
   //get number of jets
   mTempTreeNjets = jetHandle->size();
@@ -1308,8 +1314,24 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
   if ( mTempTreeNjets >50 ) mTempTreeNjets = 50;
   for (int k=0;k<mTempTreeNjets;k++){
     const pat::Jet& uncorrJet =((*jetHandle)[k].isCaloJet())? (*jetHandle)[k].correctedJet("RAW"): (*jetHandle)[k];
+    
+    mTempTreeccJetMCCorrFactor[i] = -9999.;
+    
     if ( uncorrJet.et() > 10. ){
 
+      // Add corrections for original pat::Jet collections 
+      mTempTreeJetMCCorrFactor[i] = -9999.;
+      mTempTreeJetJPTCorrFactor[i] = -9999.;
+
+      mTempTreeJetMCCorrFactor[i] = (uncorrJet.isCaloJet())? uncorrJet.jetCorrFactors().scaleDefault(): -1 ;
+
+      for ( uint16_t n = 0; n < ( jptHandle->size() > 50 ? 50 : jptHandle->size() ); n++ ) {
+	if ( matchJetsByCaloTowers( (*jptHandle)[n], (*jetHandle)[k] ) ) {
+	  pat::Jet jpt( (*jptHandle)[n] ); // no corrections by default
+	  mTempTreeJetJPTCorrFactor[i] = (jpt.isCaloJet()) ? ( jpt.energy() / uncorrJet.energy() ) : -1 ;
+	}
+      }
+      
       const reco::TrackRefVector & mrTracksInJet= (*jetHandle)[k].associatedTracks();
 
       mTempTreeJetTrackPt[k]=0;
@@ -1412,8 +1434,8 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       
       mTempTreeccJetAssoc[i] = false;
 
-      mTempTreeJetMCCorrFactor[i] = -9999.;
-      mTempTreeJetJPTCorrFactor[i] = -9999.;
+      mTempTreeccJetMCCorrFactor[i] = -9999.;
+      mTempTreeccJetJPTCorrFactor[i] = -9999.;
       
       // Add the cc jets
       int mTempTreeNccjets = ccjetHandle->size();
@@ -1426,7 +1448,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	  mTempTreeccJetAssoc_px[i] = jet.px();
 	  mTempTreeccJetAssoc_py[i] = jet.py();
 	  mTempTreeccJetAssoc_pz[i] = jet.pz();
-	  mTempTreeJetMCCorrFactor[i] = (jet.isCaloJet())? jet.jetCorrFactors().scaleDefault(): -1 ;
+	  mTempTreeccJetMCCorrFactor[i] = (jet.isCaloJet())? jet.jetCorrFactors().scaleDefault(): -1 ;
 	}
       }
       
@@ -1437,17 +1459,15 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	mTempTreeccJetAssoc_py[i] = -9999;
 	mTempTreeccJetAssoc_pz[i] = -9999;
       }
-      /*JPT  to be fixed
       // Add the JPT corrs
-      int mTempTreeNjptjets = jptHandle->size();
+      int mTempTreeNjptjets = ccJptHandle->size();
       if ( mTempTreeNjptjets > 50 ) mTempTreeNjptjets = 50;
       for ( int m = 0; m < mTempTreeNjptjets; m++ ) {
-	if( (*jptHandle)[m].originalObjectRef() == (*jetHandle)[k].originalObjectRef() ) {
-	  pat::Jet jet = ((*jptHandle)[m].isCaloJet()) ? (*jptHandle)[m].correctedJet("RAW") : (*jptHandle)[m];
-	  mTempTreeJetJPTCorrFactor[i] = (jet.isCaloJet()) ? jet.jetCorrFactors().scaleDefault() : -1 ;
+	if( (*ccJptHandle)[m].originalObjectRef() == (*jetHandle)[k].originalObjectRef() ) {
+	  pat::Jet jet = ((*ccJptHandle)[m].isCaloJet()) ? (*ccJptHandle)[m].correctedJet("RAW") : (*ccJptHandle)[m];
+	  mTempTreeccJetJPTCorrFactor[i] = (jet.isCaloJet()) ? jet.jetCorrFactors().scaleDefault() : -1 ;
 	}
       }
-      */
       i++;
 
     } 
@@ -1596,6 +1616,30 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 
 }
 
+//________________________________________________________________________________________
+bool 
+SusyDiJetAnalysis::matchJetsByCaloTowers( const pat::Jet& jet1,
+					  const pat::Jet& jet2 ) {
+  
+  std::vector< edm::Ptr<CaloTower> > towers1 = jet1.getCaloConstituents();
+  std::vector< edm::Ptr<CaloTower> > towers2 = jet2.getCaloConstituents();
+  
+  if ( towers1.empty() || 
+       towers2.empty() || 
+       towers1.size() != towers2.size() ) { return false; }
+  
+  std::vector< edm::Ptr<CaloTower> >::const_iterator ii = towers1.begin();
+  std::vector< edm::Ptr<CaloTower> >::const_iterator jj = towers1.end();
+  for ( ; ii != jj; ++ii ) {
+    std::vector< edm::Ptr<CaloTower> >::const_iterator iii = towers2.begin();
+    std::vector< edm::Ptr<CaloTower> >::const_iterator jjj = towers2.end();
+    for ( ; iii != jjj; ++iii ) { if ( *iii == *ii ) { break; } }
+    if ( iii == towers2.end() ) { return false; }
+  }
+
+  return true;
+
+}
 
 //________________________________________________________________________________________
 void 
@@ -1821,6 +1865,8 @@ SusyDiJetAnalysis::initPlots() {
   //jet correction factors
   mAllData->Branch("Jet_MCcorrFactor",mTempTreeJetMCCorrFactor,"mTempTreeJetMCCorrFactor[Njets]/double");
   mAllData->Branch("Jet_JPTcorrFactor",mTempTreeJetJPTCorrFactor,"mTempTreeJetJPTCorrFactor[Njets]/double");
+  mAllData->Branch("Jet_ccJetMCcorrFactor",mTempTreeccJetMCCorrFactor,"mTempTreeccJetMCCorrFactor[Njets]/double");
+  mAllData->Branch("Jet_ccJetJPTcorrFactor",mTempTreeccJetJPTCorrFactor,"mTempTreeccJetJPTCorrFactor[Njets]/double");
  //b-tagging information
   mAllData->Branch("JetBTag_TkCountHighEff",mTempTreeJetsBTag_TkCountHighEff,"JetBTag_TkCountHighEff[Njets]/float");
   mAllData->Branch("JetBTag_SimpleSecVtx",mTempTreeJetsBTag_SimpleSecVtx,"JetBTag_SimpleSecVtx[Njets]/float");
