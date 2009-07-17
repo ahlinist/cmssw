@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id$
+// $Id: PATValidation_Tau.cc,v 1.4 2009/07/13 17:54:11 malik Exp $
 //
 //
 
@@ -182,7 +182,7 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	me["RecoTau_eta"]->Fill(RECOTAU[i].eta());
 	me["RecoTau_phi"]->Fill(RECOTAU[i].phi());
         me["RecoTau_energy"]->Fill(RECOTAU[i].energy());
-       cout << "RECO tau pt is = " << RECOTAU[i].pt() << endl; 
+//       cout << "RECO tau pt is = " << RECOTAU[i].pt() << endl; 
        }
 
 
@@ -200,11 +200,11 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	me["PatTau_eta"]->Fill(PATTAU[i].eta());
 	me["PatTau_phi"]->Fill(PATTAU[i].phi());
         me["PatTau_energy"]->Fill(PATTAU[i].energy());
-    cout << "PAT tau pt is = " << PATTAU[i].pt() << endl;
+ //   cout << "PAT tau pt is = " << PATTAU[i].pt() << endl;
     }
     
-cout << "NUM OF PATTAUS = " << nPatTaus << endl;
-cout << "NUM OF RECOTAUS = " << nRecoTaus << endl;
+//cout << "NUM OF PATTAUS = " << nPatTaus << endl;
+//cout << "NUM OF RECOTAUS = " << nRecoTaus << endl;
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
    Handle<ExampleData> pIn;
