@@ -22,18 +22,25 @@ public:
   int            fMCID;     // MC truth ID
   int            fGenIndex; // index in generator block (if matched)
 
-  // -- Tracking parameters
-  int            fQ;                            // charge
-  int            fDof, fHits;
-  double         fChi2;
-  double         fLip, fLipE, fTip, fTipE;      // longitudinal and transverse impact parameters
-
-  // -- Particle ID
-  double         fMuID, fElID, fKaID;
-  int            fMuType;
-
   // -- Momentum
   TVector3       fPlab;
+
+  // -- Tracking parameters
+  int            fQ;                            // charge
+
+  int            fDof, fValidHits;
+  double         fChi2;
+  // ?? Add the full information? 
+  int            fHitPattern[20];               // see DataFormats/TrackReco/interface/HitPattern.h
+
+  double         fdz, fdzE, fd0, fd0E;          // the verbatim track parameters
+  double         fLip, fLipE, fTip, fTipE;      // longitudinal/transverse impact parameters wrt something
+
+  int            fMuID, fMuIndex; 
+
+  // -- to be filled
+  int            fType1, fType2, fType3, fType4, fType5;
+
 
 
 private:

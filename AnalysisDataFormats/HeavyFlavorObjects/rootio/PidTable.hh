@@ -26,20 +26,19 @@ public:
 
   // -- Constructors
   // ---------------
-  PidTable();
+  PidTable(int mode = 0);
   // Instantiation based on a PidTable in an ascii file
-  PidTable(const char *filename);
-
+  PidTable(const char *filename, int mode = 0);
 
   // -- Input 
   // --------
   // from a file containing a PidTable
-  void readFromFile(const char *filename = "bla.dat");
+  void readFromFile(const char *filename = "bla.dat", int mode = 0);
   // open a rootfile containing a 2d efficiency histogram
-  void readFromEffHist(TFile *f, const char *histname = "e6003", double fMin = -180., double fMax = 180.);
+  void readFromEffHist(TDirectory *f, const char *histname = "e6003", double fMin = -180., double fMax = 180., int mode = 0);
   // open a rootfile containing 2d histograms of 'pass' and 'total' 
-  void readFromHist(TFile *f, const char *pass = "h6003f1", const char *total = "h1003f1", 
-		    double fMin = -180., double fMax = 180.);
+  void readFromHist(TDirectory *f, const char *pass = "h6003f1", const char *total = "h1003f1", 
+		    double fMin = -180., double fMax = 180., int mode = 0);
   // define grid for PidTables with array 
   void setAxes(int nP, double *pAxis, int nT, double *tAxis, int nF, double *fAxis);
   // define regular grid for PidTables with nbins, min, and max
@@ -68,14 +67,19 @@ public:
   void     print(ostream &OUT = cout);
   void     setPidTablesDir(const char *s = "/u/ec/ursl/epidtables");
   void     setHistName(const char *s = "e6003") {fHistName = s;}
-
+  void     setHistMinMax(double min, double max) {fHistMin = min; fHistMax = max;}
+  TH2D*    get2dHist(const char *hname, const char *title);
+  void     setEffAndErrMode(int mode = 0);
+  void     recalculate();
+  TIter    next() {return TIter(fDataVector);} 
+  
   TString  getHistName() {return fHistName;}
   TString  getFileName() {return fFileName;}
   PidData* getData(double p, double t, double f);
   PidData* getDataRange(PidData);
   PidData* getDataRange(double pmin, double pmax, double tmin, double tmax, double fmin, double fmax);
 
-  TH1D*    getMomentumHist(double tmin, double tmax, double fimin, double fimax);
+  TH1D*    getMomentumHist(double tmin, double tmax, double fmin, double fmax, int absVal = 0);
 
 
   // -- Operations 
@@ -111,20 +115,20 @@ public:
   // -- 1-d Histograms of ...
   // ------------------------
   // ... efficiency
-  void effHist(TH1 *h = 0, double pmin = 0.5, double pmax = 5., double tmin = 20., double tmax = 140., 
+  void effHist(TH1 *h = 0, double pmin = 3.0, double pmax = 15., double tmin = -2.4, double tmax = 2.4, 
 	       double fmin = -180., double fmax = 180.);
 
   // ... error 
-  void errHist(TH1 *h = 0, double pmin = 0.5, double pmax = 5., double tmin = 20., double tmax = 140., 
+  void errHist(TH1 *h = 0, double pmin = 3.0, double pmax = 15., double tmin = -2.4, double tmax = 2.4, 
 	       double fmin = -180., double fmax = 180.);
 
   // ... relative error
-  void relErrHist(TH1 *h = 0, double pmin = 0.5, double pmax = 5., double tmin = 20., double tmax = 140., 
+  void relErrHist(TH1 *h = 0, double pmin = 3.0, double pmax = 15., double tmin = -2.4, double tmax = 2.4, 
 		  double fmin = -180., double fmax = 180.);
 
 
-  // -- Graphical displays of the table vs momentum-theta
-  // ----------------------------------------------------
+  // -- Graphical displays of the table vs momentum-(th)eta
+  // ------------------------------------------------------
   // efficiency 
   void eff2d(TH2 *h = 0, double fmin = -180., double fmax = 180.);
 
@@ -150,20 +154,18 @@ public:
 
   // -- Projections
   // --------------
-  void projectP(TH1 *h = 0, double tmin=20., double tmax=140., double fmin=-180., double fmax=180.);
-  void projectT(TH1 *h = 0, double pmin=0.5, double pmax=4., double fmin=-180., double fmax=180.);
-
+  void projectP(TH1 *h = 0, double tmin=-2.4, double tmax=2.4, double fmin=-180., double fmax=180., int absVal = 0);
+  void projectT(TH1 *h = 0, double pmin=3., double pmax=15., double fmin=-180., double fmax=180.);
 
   // -- Access to table contents (efficiency and error) indexes with p/theta/phi
   // ---------------------------------------------------------------------------
-
   int idD(double momentum, double theta, double phi);  
   int idR(double momentum, double theta, double phi);  
 
-  // in degrees
+  // default (think 'eta' for CMS and 'degrees' for BABAR)
   double effD(double momentum, double theta, double phi, int sigma = 0);  
   double errD(double momentum, double theta, double phi, int sigma = 0);  
-  // in radians
+  // in radians (not meaningful for CMS)
   double effR(double momentum, double theta, double phi, int sigma = 0);
   double errR(double momentum, double theta, double phi, int sigma = 0);
 
@@ -187,10 +189,19 @@ private:
   double fMaxEff, fMinEff;
   // -- maximum and minimum efficiency error
   double fMaxErr, fMinErr;
+  // -- SetMinimum and SetMaximum ranges
+  double fHistMin, fHistMax;
   // -- validity range
   long fMinRun, fMaxRun;  
-  int fVerbose;
-
+  int fVerbose, fMode;
+  
+  static const double Tmax = 2.4;  
+  static const double Tmin = -2.4;
+  static const int Tbin = 24;
+  static const double Pmax = 20.;
+  static const double Pmin = 0.;
+  static const int Pbin = 40;
+ 
   TF1 *fRandom;
   TF1 *fFlat;
   

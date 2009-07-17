@@ -10,16 +10,19 @@
 ClassImp(PidTable)
 
 // ----------------------------------------------------------------------
-PidTable::PidTable() {
+PidTable::PidTable(int mode) {
   fPidTablesDir = TString("/u/ec/ursl/pidtables");
   fMinRun = 0;
   fMaxRun = 1000000;
   fMinEff = 99.;
   fMaxEff = -1.;
+  fHistMin = 0.; 
+  fHistMax = 1.1; 
   fMinErr = 99.;
   fMaxErr = -1.;
   fVerbose = 1;
   fDataVector = new TList();
+  fMode = mode; 
 
   fRandom = new TF1("f1", "gaus", -10., 10.);
   fRandom->SetParameters(1., 0., 1.);
@@ -29,28 +32,31 @@ PidTable::PidTable() {
 
 
 // ----------------------------------------------------------------------
-PidTable::PidTable(const char *s) {
+PidTable::PidTable(const char *s, int mode) {
   fPidTablesDir = TString("/u/ec/ursl/pidtables");
   fMinRun = 0;
   fMaxRun = 1000000;
   fVerbose = 1;
   fMinEff = 99.;
   fMaxEff = -1.;
+  fHistMin = 0.; 
+  fHistMax = 1.1; 
   fMinErr = 99.;
   fMaxErr = -1.;
   fDataVector = new TList();
+  fMode = mode; 
 
   fRandom = new TF1("f1", "gaus", -10., 10.);
   fRandom->SetParameters(1., 0., 1.);
   fFlat = new TF1("fPIDTable", "pol0", 0., 1.);
   fFlat->SetParameter(0, 1.);
 
-  readFromFile(s);
+  readFromFile(s, mode);
 }
 
 
 // ----------------------------------------------------------------------
-void PidTable::readFromEffHist(TFile *f, const char *histName, double phiMin, double phiMax) {
+void PidTable::readFromEffHist(TDirectory *f, const char *histName, double phiMin, double phiMax, int mode) {
   setHistName(histName);
   
   TH2D *h     = (TH2D*)f->Get(histName);
@@ -65,7 +71,7 @@ void PidTable::readFromEffHist(TFile *f, const char *histName, double phiMin, do
 				     h->GetXaxis()->GetBinLowEdge(ix), h->GetXaxis()->GetBinLowEdge(ix+1), 
 				     phiMin, phiMax, 
 				     h->GetCellContent(ix, iy), h->GetCellError(ix, iy), 
-				     -99., -99.);
+				     -99., -99., -99., -99., mode); // ?? should this maybe be initialized to zero? 
         fDataVector->Add(datum);
       }
     }
@@ -74,7 +80,7 @@ void PidTable::readFromEffHist(TFile *f, const char *histName, double phiMin, do
 
 
 // ----------------------------------------------------------------------
-void PidTable::readFromHist(TFile *f, const char *passName, const char *totName, double phiMin, double phiMax) {
+void PidTable::readFromHist(TDirectory *f, const char *passName, const char *totName, double phiMin, double phiMax, int mode) {
   setHistName(passName);
   
   TH2D *hPass = (TH2D*)f->Get(passName);
@@ -87,16 +93,21 @@ void PidTable::readFromHist(TFile *f, const char *passName, const char *totName,
   }
   if (hTot && hPass) {
     if (fVerbose > 0) cout << "Reading from " << passName  << " and " << totName << endl; 
-    double n, N;
-
+    double n, N, nE, NE;
+    
     for (Int_t ix = 1; ix <= hPass->GetNbinsX(); ++ix) {
       for (Int_t iy = 1; iy <= hPass->GetNbinsY(); ++iy) {
+      
 	n = hPass->GetCellContent(ix, iy);
-	N = hTot->GetCellContent(ix, iy); 
+	N = hTot->GetCellContent(ix, iy);	
+
+	nE = hPass->GetCellError(ix, iy);
+	NE = hTot->GetCellError(ix, iy);	
+	 
 	PidData *datum = new PidData(hPass->GetYaxis()->GetBinLowEdge(iy), hPass->GetYaxis()->GetBinLowEdge(iy+1), 
 				     hPass->GetXaxis()->GetBinLowEdge(ix), hPass->GetXaxis()->GetBinLowEdge(ix+1), 
 				     phiMin, phiMax, 
-				     -99., -99., n, N);
+				     -99., -99., n, nE, N, NE, mode);
         fDataVector->Add(datum);
 	if (datum->getE() < fMinEff) fMinEff = datum->getE();
 	if (datum->getE() > fMaxEff) fMaxEff = datum->getE();
@@ -109,7 +120,7 @@ void PidTable::readFromHist(TFile *f, const char *passName, const char *totName,
 
 
 // ----------------------------------------------------------------------
-void PidTable::readFromFile(const char *filename) {
+void PidTable::readFromFile(const char *filename, int mode) {
   
   TString fullName;
   if (filename[0] == '/') {
@@ -123,7 +134,7 @@ void PidTable::readFromFile(const char *filename) {
   fFileName = fullName;
 
   float pmin, pmax, tmin, tmax, fmin, fmax, e, se;
-  float pass, total;
+  float pass, total, passE, totalE;
   if (fVerbose > 0) cout << "Read table contents from " << fullName << endl;
 
   char  buffer[200];
@@ -132,9 +143,9 @@ void PidTable::readFromFile(const char *filename) {
   while (is.getline(buffer, 200, '\n')) {
     if (buffer[0] == '#') {continue;}
     if (buffer[0] == '/') {continue;}
-    sscanf(buffer, "%f %f %f %f %f %f %f %f %f %f", 
-	   &pmin, &pmax, &tmin, &tmax, &fmin, &fmax, &e, &se, &pass, &total);
-    PidData *datum = new PidData(pmin, pmax, tmin, tmax, fmin, fmax, e, se, pass, total);
+    sscanf(buffer, "%f %f %f %f %f %f %f %f %f %f %f %f", 
+	   &pmin, &pmax, &tmin, &tmax, &fmin, &fmax, &e, &se, &pass, &passE, &total, &totalE);
+    PidData *datum = new PidData(pmin, pmax, tmin, tmax, fmin, fmax, e, se, pass, passE, total, totalE, mode);
     fDataVector->Add(datum);
     if (e < fMinEff)  fMinEff = e;
     if (e > fMaxEff)  fMaxEff = e;
@@ -224,6 +235,22 @@ void PidTable::print(ostream &OUT) {
 
 
 // ----------------------------------------------------------------------
+void PidTable::setEffAndErrMode(int mode) {
+  TIter next(fDataVector); PidData *iTable;
+  while ((iTable = (PidData*)next())) {
+    iTable->setEffAndErrMode(mode); 
+  }
+}
+
+// ----------------------------------------------------------------------
+void PidTable::recalculate() {
+  TIter next(fDataVector); PidData *iTable;
+  while ((iTable = (PidData*)next())) {
+    iTable->calcEffAndErr(); 
+  }
+}
+
+// ----------------------------------------------------------------------
 void PidTable::setAxes(int pA, double *pAxis, int tA, double *tAxis, int fA, double *fAxis) {
 
   clear();
@@ -232,7 +259,7 @@ void PidTable::setAxes(int pA, double *pAxis, int tA, double *tAxis, int fA, dou
     for (Int_t it = 0; it < tA; ++it) {
       for (Int_t ifi = 0; ifi < fA; ++ifi) {
 	PidData *datum = new PidData(pAxis[ip], pAxis[ip+1], tAxis[it], tAxis[it+1], fAxis[ifi],fAxis[ifi+1],
-				     0., 0., 0., 0.);
+				     0., 0., 0., 0., 0., 0.);
 	fDataVector->Add(datum);
       }
     }
@@ -255,7 +282,7 @@ void PidTable::setAxes(int nP, double pmin, double pmax, int nT, double tmin, do
 	PidData *datum = new PidData(pmin + ip*pbin, pmin + (ip+1)*pbin, 
 				     tmin + it*tbin, tmin + (it+1)*tbin, 
 				     fmin +ifi*fbin, fmin +(ifi+1)*fbin, 
-				     0., 0., 0., 0.);
+				     0., 0., 0., 0., 0., 0.);
 	fDataVector->Add(datum);
       }
     }
@@ -266,7 +293,7 @@ void PidTable::setAxes(int nP, double pmin, double pmax, int nT, double tmin, do
 // ----------------------------------------------------------------------
 void PidTable::fillTable(PidTable &b) {
   PidData *a;
-  TIter next(fDataVector); PidData *iTable;
+  TIter next = b.next(); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if (fVerbose > 1)  cout << "fillFrom: getting  " << *iTable << endl;
     a = new PidData(*iTable);
@@ -296,7 +323,6 @@ void PidTable::fillEff(PidTable &b) {
 // ----------------------------------------------------------------------
 void PidTable::smear(int mode) { 
   double bla(0.);
-  //    for (vector<PidData>::iterator iTable = fDataVector.begin(); iTable != fDataVector.end(); ++iTable) {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if (mode == 0) {
@@ -349,8 +375,6 @@ int PidTable::idD(double p, double t, double f) {
   while ((iTable = (PidData*)next())) {
     if (iTable->isCell(p, t, f)) {
       double bla = fFlat->GetRandom();
-      //        cout << fFlat->GetName() << "  rv = " << bla 
-      //           << " table value = " << iTable->getE() << " p = " << p << endl;
       if (bla < iTable->getE()) {
 	return 1;
       } else {
@@ -362,8 +386,9 @@ int PidTable::idD(double p, double t, double f) {
 }
 
 // ----------------------------------------------------------------------
+// ?? double check that phi works in CMS??
 int PidTable::idR(double p, double t, double f) { 
-  return (idD(p, t*57.2958, f*57.2958));
+  return (idD(p, t*57.2958, f*57.2958/2));
 }
 
 
@@ -397,6 +422,7 @@ double PidTable::errD(double p, double t, double f, int run) {
 // ----------------------------------------------------------------------
 double PidTable::effRange(double pmin,double pmax,double tmin,double tmax,double fmin,double fmax) {
   PidData a;
+  a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((pmin < iTable->getPmax()) && (iTable->getPmin() < pmax)
@@ -414,6 +440,7 @@ double PidTable::effRange(double pmin,double pmax,double tmin,double tmax,double
 // ----------------------------------------------------------------------
 double PidTable::effPhiRange(double momentum, double theta, double fmin, double fmax) {
   PidData a;
+  a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
@@ -430,7 +457,8 @@ double PidTable::effPhiRange(double momentum, double theta, double fmin, double 
 
 // ----------------------------------------------------------------------
 double PidTable::passPhiRange(double momentum, double theta, double fmin, double fmax) {
-  PidData a;
+  PidData a; 
+  a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
@@ -448,6 +476,7 @@ double PidTable::passPhiRange(double momentum, double theta, double fmin, double
 // ----------------------------------------------------------------------
 double PidTable::totPhiRange(double momentum, double theta, double fmin, double fmax) {
   PidData a;
+  a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
@@ -465,6 +494,7 @@ double PidTable::totPhiRange(double momentum, double theta, double fmin, double 
 // ----------------------------------------------------------------------
 double PidTable::errPhiRange(double momentum, double theta, double fmin, double fmax) {
   PidData a;
+  a.setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
@@ -499,6 +529,7 @@ void PidTable::dumpToFile(const char *psname) {
 
 
 // ----------------------------------------------------------------------
+// ?? missing implementation ??
 void PidTable::fitEmptyBins(double cut) {
   if (fVerbose > 0) cout << "continue table" << endl;
   double oldTheta(-10.);
@@ -573,6 +604,7 @@ PidData* PidTable::getData(double p, double t, double f) {
 // ----------------------------------------------------------------------
 PidData* PidTable::getDataRange(PidData d) {
   PidData *a = new PidData();
+  a->setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((d.getPmin() < iTable->getPmax()) && (iTable->getPmin() < d.getPmax())
@@ -588,8 +620,9 @@ PidData* PidTable::getDataRange(PidData d) {
 
 
 // ----------------------------------------------------------------------
-PidData* PidTable::getDataRange(double pmin,double pmax,double tmin,double tmax,double fmin,double fmax) {
+PidData* PidTable::getDataRange(double pmin, double pmax, double tmin, double tmax, double fmin, double fmax) {
   PidData *a = new PidData(pmin, pmax, tmin, tmax, fmin, fmax);
+  a->setEffAndErrMode(fMode);
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     if ((pmin < iTable->getPmax()) && (iTable->getPmin() < pmax)
@@ -606,27 +639,26 @@ PidData* PidTable::getDataRange(double pmin,double pmax,double tmin,double tmax,
 
 
 // ----------------------------------------------------------------------
-TH1D* PidTable::getMomentumHist(double tmin, double tmax, double fmin, double fmax) {
-  double PMIN(0.), PMAX(5.);
-  int PBINS(40);
+// ?? Why is this called this way??
+TH1D* PidTable::getMomentumHist(double tmin, double tmax, double fmin, double fmax, int absVal) {
   double pmin, pmax;
   char name[100];
   sprintf(name, "theta: %5.2f .. %5.2f, phi = %5.2f .. %5.2f", tmin, tmax, fmin, fmax);
-  TH1D *h = new TH1D("hPidTable", name, PBINS, PMIN, PMAX);
+  TH1D *h = new TH1D("hPidTable", name, Pbin, Pmin, Pmax);
   PidData *a;
-  for (int ibins = 1; ibins <= PBINS; ++ibins) {
-    pmin = (ibins-1)*(PMAX-PMIN)/PBINS;
-    pmax = (ibins)*(PMAX-PMIN)/PBINS;
+  for (int ibins = 1; ibins <= Pbin; ++ibins) {
+    pmin = (ibins-1)*(Pmax-Pmin)/Pbin;
+    pmax = (ibins)*(Pmax-Pmin)/Pbin;
     a = getDataRange(pmin, pmax, tmin, tmax, fmin, fmax);
     cout << *a << endl;
     cout << " p = " << pmin << "  " << pmax 
-	 << " (" << (int)(a->getPctr()/PMAX*PBINS) << ")"
+	 << " (" << (int)(a->getPctr()/Pmax*Pbin) << ")"
 	 << " (" << a->getPctr() << ")"
 	 << " t = " << tmin << "  " << tmax 
 	 << " f = " << fmin << "  " << fmax 
 	 << " e = " << a->getE() << " +/- " << a->getS() << endl;
-    h->SetBinContent((int)(a->getPctr()/PMAX*PBINS), a->getE());
-    h->SetBinError((int)(a->getPctr()/PMAX*PBINS), a->getS());
+    h->SetBinContent((int)(a->getPctr()/Pmax*Pbin), a->getE());
+    h->SetBinError((int)(a->getPctr()/Pmax*Pbin), a->getS());
     delete a;
   }
   return h;
@@ -716,7 +748,9 @@ void PidTable::flush() {
   TIter next(fDataVector); PidData *iTable;
   while ((iTable = (PidData*)next())) {
     iTable->setPass(0.);
+    iTable->setPassE(0.);
     iTable->setTot(0.);
+    iTable->setTotE(0.);
     iTable->setE(0.);
     iTable->setS(0.);
   }
@@ -749,7 +783,7 @@ void PidTable::compress() {
       t = new PidData(iTable->getPmin(), nn->getPmax(), 
 		      iTable->getTmin(), nn->getTmax(), 
 		      iTable->getFmin(), nn->getFmax(), 
-		      0., 0., 0., 0.);
+		      0., 0., 0., 0., 0., 0.);
       if (iTable != end) {
 	iTable = nn;
       }
@@ -860,7 +894,7 @@ void PidTable::relErrHist(TH1 *h, double pmin, double pmax, double tmin, double 
 
 
 // ----------------------------------------------------------------------
-void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fmax) {
+void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fmax, int absVal) {
   
   int drawIt(0);
   if (0 == h) {
@@ -870,54 +904,29 @@ void PidTable::projectP(TH1 *h, double tmin, double tmax, double fmin, double fm
     if (fMaxEff < 0.2) max = 0.2;
     if (fMaxEff < 0.1) max = 0.1;
     if (fMaxEff < 0.02) max = 0.02;
-    h = new TH1D("hpprojtmp", "", 40, 0., 5.);  h->Sumw2();
-    h->SetMinimum(min);
-    h->SetMaximum(max);
+    h = new TH1D("hpprojtmp", "", Pbin, Pmin, Pmax);  h->Sumw2();
+    h->SetMinimum(min);  h->SetMaximum(max);
   }
 
-  TH1D *n = (TH1D*)h->Clone(); n->SetName("hpprojnorm"); n->Reset();
-  TProfile *e = new TProfile("hpprojeff", "", 
-			     h->GetNbinsX(), h->GetBinLowEdge(1), h->GetBinLowEdge(h->GetNbinsX()+1));
-  h->Reset();
-
-  int ibin;
-  TIter next(fDataVector); PidData *iTable;
-  while ((iTable = (PidData*)next())) {
-    if ((tmin < iTable->getTmax()) && (iTable->getTmin() < tmax)
-	&& (fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
-	) {
-      ibin = h->FindBin(iTable->getPmin());
-      h->Fill(iTable->getPmin(), iTable->getPass());
-      n->Fill(iTable->getPmin(), iTable->getTot());
-      e->Fill(iTable->getPmin(), iTable->getEff());
+  PidData *a, *b;
+  for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {    
+    a = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
+		     tmin, tmax, fmin, fmax); 
+    if (absVal == 1) {
+      b = getDataRange(h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
+		       -tmax, -tmin, fmin, fmax); 
+      a->merge(b);
+      delete b;
     }
+    h->SetBinContent(ix, a->getEff()); 
+    h->SetBinError(ix, a->getErr()); 
+    delete a;
   }
 
-  double _tot(0.), _pass(0.), _e(0.), _s(0.), check(0.);
-  for (int i = 1; i <= h->GetNbinsX(); ++i) {
-    _pass = h->GetBinContent(i);
-    _tot  = n->GetBinContent(i);
- 
-    if (_tot > 0.) {
-      _e = (_pass+1)/(_tot+2);
-      _s = sqrt(((_pass+1)*(_tot-_pass+1))/((_tot+3)*(_tot+2)*(_tot+2)));
-    }
-    else {
-      _e = 0.;
-      _s = 0.;
-    }
-    h->SetBinContent(i, _e);
-    h->SetBinError(i, _s);
-    check += _tot;
-  }
-  delete n;
   if (drawIt) {
-    if (check) {
-      h->Draw();
-    } else {
-      e->Draw();
-    }
+    h->Draw();
   }
+  
 }
 
 
@@ -931,39 +940,21 @@ void PidTable::projectT(TH1 *h, double pmin, double pmax, double fmin, double fm
     if (fMaxEff < 0.2) max = 0.2;
     if (fMaxEff < 0.1) max = 0.1;
     if (fMaxEff < 0.02) max = 0.02;
-    h = new TH1D("htprojtmp", "", 36, 0., 180.);
+    h = new TH1D("htprojtmp", "", Tbin, Tmin, Tmax);
     h->SetMinimum(min);
     h->SetMaximum(max);
   }
 
-  TH1D *n = (TH1D*)h->Clone(); n->SetName("bla"); n->Reset();
-  h->Reset();  
-  TIter next(fDataVector); PidData *iTable;
-  while ((iTable = (PidData*)next())) {
-    if ((pmin < iTable->getPmax()) && (iTable->getPmin() < pmax)
-	&& (fmin < iTable->getFmax()) && (iTable->getFmin() < fmax)
-	) {
-      h->Fill(iTable->getTmin(), iTable->getPass());
-      n->Fill(iTable->getTmin(), iTable->getTot());
-    }
+  PidData *a;
+  for (int ix = 1; ix <= h->GetNbinsX(); ++ix) {
+    a = getDataRange(pmin, pmax, 
+		     h->GetBinLowEdge(ix), h->GetBinLowEdge(ix+1), 
+		     fmin, fmax); 
+    h->SetBinContent(ix, a->getEff()); 
+    h->SetBinError(ix, a->getErr()); 
+    delete a;
   }
 
-  double _tot(0.), _pass(0.), _e(0.), _s(0.);
-  for (int i = 1; i <= h->GetNbinsX(); ++i) {
-    _pass = h->GetBinContent(i);
-    _tot  = n->GetBinContent(i);
-    if (_tot > 0.) {
-      _e = (_pass+1)/(_tot+2);
-      _s = sqrt(((_pass+1)*(_tot-_pass+1))/((_tot+3)*(_tot+2)*(_tot+2)));
-    }
-    else {
-      _e = 0.;
-      _s = 0.;
-    }
-    h->SetBinContent(i, _e);
-    h->SetBinError(i, _s);
-  }
-  delete n;
   if (drawIt) h->Draw();
 }
 
@@ -974,7 +965,9 @@ void PidTable::eff2d(TH2 *h, double fmin, double fmax) {
   h->Reset();
   for (Int_t ix = 1; ix <= h->GetNbinsX(); ++ix) {
     for (Int_t iy = 1; iy <= h->GetNbinsY(); ++iy) {
-      e = effPhiRange(h->GetYaxis()->GetBinLowEdge(iy), h->GetXaxis()->GetBinLowEdge(ix), fmin, fmax);
+      e = effPhiRange(0.5*(h->GetYaxis()->GetBinLowEdge(iy) + h->GetYaxis()->GetBinLowEdge(iy+1)), 
+		      0.5*(h->GetXaxis()->GetBinLowEdge(ix) + h->GetXaxis()->GetBinLowEdge(ix+1)), 
+		      fmin, fmax);
       h->SetCellContent(ix, iy, e);
     }
   }
@@ -1035,25 +1028,39 @@ void PidTable::tot2d(TH2 *h, double fmin, double fmax) {
 
 
 // ----------------------------------------------------------------------
+TH2D* PidTable::get2dHist(const char *hname, const char *title) {
+  TH2D *h = new TH2D(hname, title, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
+  h->SetMinimum(fHistMin); 
+  h->SetMaximum(fHistMax); 
+  return h;
+}
+
+
+// ----------------------------------------------------------------------
 void PidTable::drawEff(const char *s, double fmin, double fmax) { 
   char name[100];
-  sprintf(name, "Eff: phi = %5.3f ... %5.3f", fmin, fmax);
-  TH2D *h = new TH2D("PidTableH2", name, 36, 0., 180., 40, 0., 5.);
+  sprintf(name, "%s", fHistName.Data());
+  TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
   eff2d(h, fmin, fmax);
+  h->SetMinimum(fHistMin);
+  h->SetMaximum(fHistMax);
   h->Draw(s);
 }
 
 
 // ----------------------------------------------------------------------
+// ?? What is this?? This is wrong!!
 void PidTable::drawTableEff(double fi, const char *s) { 
   char name[100];
   sprintf(name, "Table Eff: phi = %5.3f", fi);
-  TH2D *h = new TH2D("PidTableH2", name, 36, 0., 180., 40, 0., 5.);
+  TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
+  double bin_size_T = (Tmax + fabs(Tmin))/Tmin;
+  double bin_size_P = (Pmax + fabs(Pmin))/Pmax;
   double p, t;
-  for (int ix = 1; ix <= 36; ++ix) {
-    t = 180./36.*ix - 2.5;
-    for (int iy = 1; iy <= 40; ++iy) {
-      p = 5./40.*iy - 0.06;
+  for (int ix = -Tbin/2 + 1; ix <= Tbin/2; ++ix) {
+    t = bin_size_T*ix - bin_size_T/2.;
+    for (int iy = 1; iy <= Pbin; ++iy) {
+      p = bin_size_P*iy - bin_size_P/2.;
       if (fVerbose > 2) cout << "t = " << t << " p = " << p << " e = " << effD(p, t, fi) << endl;
       if (effD(p, t, fi) > -1.) h->SetCellContent(ix, iy, effD(p, t, fi));
     }
@@ -1066,7 +1073,7 @@ void PidTable::drawTableEff(double fi, const char *s) {
 void PidTable::drawErr(const char *s, double fmin, double fmax) { 
   char name[100];
   sprintf(name, "Err: phi = %5.3f ... %5.3f", fmin, fmax);
-  TH2D *h = new TH2D("PidTableH2", name, 36, 0., 180., 40, 0., 5.);
+  TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
   err2d(h, fmin, fmax);
   h->Draw(s);
 }
@@ -1076,7 +1083,7 @@ void PidTable::drawErr(const char *s, double fmin, double fmax) {
 void PidTable::drawTot(const char *s, double fmin, double fmax) { 
   char name[100];
   sprintf(name, "Total: phi = %5.3f ... %5.3f", fmin, fmax);
-  TH2D *h = new TH2D("PidTableH2", name, 36, 0., 180., 40, 0., 5.);
+  TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
   tot2d(h, fmin, fmax);
   h->Draw(s);
 }
@@ -1086,7 +1093,7 @@ void PidTable::drawTot(const char *s, double fmin, double fmax) {
 void PidTable::drawPass(const char *s, double fmin, double fmax) { 
   char name[100];
   sprintf(name, "Pass: phi = %5.3f ... %5.3f", fmin, fmax);
-  TH2D *h = new TH2D("PidTableH2", name, 36, 0., 180., 40, 0., 5.);
+  TH2D *h = new TH2D("PidTableH2", name, Tbin, Tmin, Tmax, Pbin, Pmin, Pmax);
   pass2d(h, fmin, fmax);
   h->Draw(s);
 }
