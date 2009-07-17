@@ -7,13 +7,13 @@ chain.Add("test.root");
 Int_t nentries(0), nb(0);
 Int_t iEvent(0), it(0);
 
-TAna00Event *pEvent = new TAna00Event(0);
+TAna01Event *pEvent = new TAna01Event(0);
 TAnaTrack *pTrack;
 TGenCand  *pGen, *pDau;
 TAnaCand  *pCand;
 TAnaVertex *pVtx;
 
-chain.SetBranchAddress("TAna00Event", &pEvent);
+chain.SetBranchAddress("TAna01Event", &pEvent);
 nentries = chain.GetEntries();
 
 cout << "Found " << nentries << " entries in the chain" << endl;

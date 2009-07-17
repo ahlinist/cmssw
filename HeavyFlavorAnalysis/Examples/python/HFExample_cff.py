@@ -6,7 +6,6 @@ from Configuration.StandardSequences.MagneticField_cff import *
 from SimTracker.TrackAssociation.TrackAssociatorByChi2_cfi import *
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 from RecoMET.Configuration.GenMETParticles_cff import *
-from RecoMET.METProducers.genMet_cfi import *
 
 goodTracks = cms.EDFilter("CandSelector",
     filter = cms.bool(False),

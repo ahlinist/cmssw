@@ -11,14 +11,16 @@
 #include <TTree.h>
 #include <TH1.h>
 
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna00Event.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TGenCand.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaMuon.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TTrgObj.hh"
 
 // -- Yikes!
-TAna00Event  *gHFEvent;
+TAna01Event  *gHFEvent;
 TFile        *gHFFile;
 
 using namespace::std;
@@ -31,8 +33,8 @@ HFTree::HFTree(const edm::ParameterSet& iConfig) {
   cout << "----------------------------------------------------------------------" << endl;
   fFile = new TFile(iConfig.getParameter<string>("fileName").c_str(), "RECREATE");
   fTree = new TTree("T1","CMSSW HF tree");
-  fEvent = new TAna00Event(0);
-  fTree->Branch("TAna00Event", "TAna00Event", &fEvent, 256000/8, 1);
+  fEvent = new TAna01Event(0);
+  fTree->Branch("TAna01Event", "TAna01Event", &fEvent, 256000/8, 1);
 
   TH1D *h1 = new TH1D("h1", "h1", 20, 0., 20.);
 

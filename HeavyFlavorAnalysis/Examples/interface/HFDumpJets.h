@@ -16,7 +16,7 @@
 
 class TFile;
 class TTree;
-class TAna00Event;
+class TAna01Event;
 
 class TrackAssociatorBase;
 
