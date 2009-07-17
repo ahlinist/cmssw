@@ -5,7 +5,7 @@
 # ======================================================================
 
 
-ifdef ($(ROOTSYS))
+ifdef ROOTSYS
   ROOTCINT      = $(ROOTSYS)/bin/rootcint
   ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
   ROOTLIBS      = $(shell $(ROOTSYS)/bin/root-config --libs)
@@ -17,10 +17,14 @@ else
   ROOTGLIBS     = $(shell root-config --glibs)
 endif
 
-ifdef ($(SCRAM_ARCH))
-  CXX         = $(shell scramv1 tool info cxxcompiler | grep CXX= | sed s/CXX=//)
-else
-  CXX         = c++
+ifdef SCRAM_ARCH
+  CXX         := $(shell scramv1 tool info cxxcompiler | grep CXX= | sed s/CXX=//)
+else 
+  ifdef CXXCOMPILER
+    CXX         := $(CXXCOMPILER)
+  else 
+    CXX         := c++
+  endif
 endif
 
 CXXFLAGS      = -g -Wall -fPIC
@@ -38,9 +42,12 @@ $(addprefix obj/,%.o) : $(addprefix rootio/,%.cc )
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
-ANA00   =    TAna00Event.o TAna00EventDict.o \
+ANA00   =    TAna01Event.o TAna01EventDict.o \
+             TAna00Event.o TAna00EventDict.o \
              TGenCand.o TGenCandDict.o \
              TAnaTrack.o TAnaTrackDict.o \
+             TAnaMuon.o TAnaMuonDict.o \
+             TTrgObj.o TTrgObjDict.o \
              TAnaCand.o TAnaCandDict.o \
              TAnaVertex.o TAnaVertexDict.o \
              TAnaJet.o TAnaJetDict.o 
@@ -55,6 +62,8 @@ UTIL       = PidTable.o PidTableDict.o \
 all: 
 # --
 	@$(MAKE) ana00
+	@$(MAKE) writeA01Event
+	@$(MAKE) readA01Event
 	@$(MAKE) writeA00Event
 	@$(MAKE) readA00Event
 	@$(MAKE) runTreeReader
@@ -66,6 +75,9 @@ ana00: $(addprefix obj/,$(ANA00))
 # ----------------------------------
 	$(CXX) $(SOFLAGS) $(addprefix obj/,$(ANA00)) -o lib/libAna00.so
 
+rootio/TAna01EventDict.cc: rootio/TAna01Event.hh 
+	cd rootio && $(ROOTCINT) -f TAna01EventDict.cc -c TAna01Event.hh && cd -
+
 rootio/TAna00EventDict.cc: rootio/TAna00Event.hh 
 	cd rootio && $(ROOTCINT) -f TAna00EventDict.cc -c TAna00Event.hh && cd -
 
@@ -75,6 +87,12 @@ rootio/TGenCandDict.cc: rootio/TGenCand.hh
 rootio/TAnaTrackDict.cc: rootio/TAnaTrack.hh 
 	cd rootio && $(ROOTCINT) -f TAnaTrackDict.cc -c TAnaTrack.hh && cd - 
 
+rootio/TAnaMuonDict.cc: rootio/TAnaMuon.hh 
+	cd rootio && $(ROOTCINT) -f TAnaMuonDict.cc -c TAnaMuon.hh && cd - 
+
+rootio/TTrgObjDict.cc: rootio/TTrgObj.hh 
+	cd rootio && $(ROOTCINT) -f TTrgObjDict.cc -c TTrgObj.hh && cd - 
+
 rootio/TAnaVertexDict.cc: rootio/TAnaVertex.hh 
 	cd rootio && $(ROOTCINT) -f TAnaVertexDict.cc -c TAnaVertex.hh && cd - 
 
@@ -83,9 +101,6 @@ rootio/TAnaCandDict.cc: rootio/TAnaCand.hh
 
 rootio/TAnaJetDict.cc: rootio/TAnaJet.hh 
 	cd rootio && $(ROOTCINT) -f TAnaJetDict.cc -c TAnaJet.hh && cd - 
-
-rootio/TAnaMuonDict.cc: rootio/TAnaMuon.hh 
-	cd rootio && $(ROOTCINT) -f TAnaMuonDict.cc -c TAnaMuon.hh && cd -
 
 rootio/TGenMuonDict.cc: rootio/TGenMuon.hh 
 	cd rootio && $(ROOTCINT) -f TGenMuonDict.cc -c TGenMuon.hh && cd - 
@@ -101,6 +116,19 @@ rootio/PidTableDict.cc: rootio/PidTable.hh
 
 rootio/PidDataDict.cc: rootio/PidData.hh 
 	cd rootio && $(ROOTCINT) -f PidDataDict.cc -c PidData.hh 
+
+
+# ======================================================================
+writeA01Event: test/writeA01Event.cc
+# ----------------------------------
+	cd test && $(CXX) $(CXXFLAGS) -c writeA01Event.cc -o ../obj/writeA01Event.o && cd - 
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/writeA01Event ../obj/writeA01Event.o $(GLIBS) ../lib/libAna00.so && cd - 
+
+# ======================================================================
+readA01Event: test/readA01Event.cc
+# --------------------------------
+	cd test && $(CXX) $(CXXFLAGS) -c readA01Event.cc -o ../obj/readA01Event.o && cd - 
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/readA01Event ../obj/readA01Event.o $(GLIBS) ../lib/libAna00.so && cd - 
 
 
 # ======================================================================

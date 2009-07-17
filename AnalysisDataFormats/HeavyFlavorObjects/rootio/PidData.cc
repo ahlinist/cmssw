@@ -7,7 +7,9 @@ ClassImp(PidData)
 
 // ----------------------------------------------------------------------
 PidData::PidData(double pmin, double pmax, double tmin, double tmax, double fmin, double fmax, 
-		 double e, double s, double pass, double tot) {
+		 double e, double s, double pass, double passError, 
+		 double tot, double totError, 
+		 int mode) {
   _pmin = pmin;
   _tmin = tmin;
   _fmin = fmin; 
@@ -20,7 +22,10 @@ PidData::PidData(double pmin, double pmax, double tmin, double tmax, double fmin
   _s = s;
 
   _pass = pass;
+  _passE = passError;
   _tot  = tot;
+  _totE = totError;
+  _mode = mode;
 
   if (_e < -1.) calcEffAndErr();
 
@@ -39,9 +44,13 @@ PidData::PidData(const PidData& orig) {
   _e = orig.getE();
   _s = orig.getS();
 
-  _pass = orig.getPass();
-  _tot  = orig.getTot();
+  _pass  = orig.getPass();
+  _passE = orig.getPassE();
 
+  _tot   = orig.getTot();
+  _totE  = orig.getTotE();
+
+  _mode  = orig.getEffAndErrMode();
 }
 
 
@@ -57,9 +66,14 @@ PidData PidData::operator = (const PidData &cmp) {
   
   setE(cmp.getE());
   setS(cmp.getS());
+  
+  setEffAndErrMode(cmp.getEffAndErrMode());
 
   setPass(cmp.getPass());
   setTot(cmp.getTot());
+
+  setPassE(cmp.getPassE());
+  setTotE(cmp.getTotE());
   
   return *this;
 }
@@ -107,11 +121,11 @@ Bool_t PidData::operator == (const PidData &cmp) const {
 // ----------------------------------------------------------------------
 void PidData::divide(PidData *other) {
   // this/other
-  _pass = 0.;
-  _tot  = 0.;
+  _pass = -1.;
+  _tot  = -1.;
   double effo = other->getE();
   double erro = other->getS();
-  double e(0.), s(0.);
+  double e(-99.), s(-99.);
   if (effo > 0.) {
     e = _e/effo;
     s = TMath::Sqrt(((_s*_s)/(effo*effo)) + ((_e*_e*erro*erro)/(effo*effo*effo*effo)));
@@ -127,11 +141,11 @@ void PidData::divide(PidData *other) {
 // ----------------------------------------------------------------------
 void PidData::subtract(PidData *other) {
   // this - other
-  _pass = 0.;
-  _tot  = 0.;
+  _pass = -1.;
+  _tot  = -1.;
   double effo = other->getE();
   double erro = other->getS();
-  double e(0.), s(0.);
+  double e(-99.), s(-99.);
   if (effo > 0.) {
     e = _e - effo;
     s = TMath::Sqrt(_s*_s + erro*erro);
@@ -147,13 +161,27 @@ void PidData::subtract(PidData *other) {
 
 // ----------------------------------------------------------------------
 void PidData::combine(double pass, double total) {
-  double p = _pass + pass;
-  double t = _tot  + total;
-  _pass = p;
-  _tot  = t;  
+  if (_pass < 0) {
+    cout << "PidData::combine> Warning: combining tables with pass < 0!" << endl;
+  }
+  _pass += pass;
+  _tot  += total;  
   calcEffAndErr();
 }
  
+
+// ----------------------------------------------------------------------
+void PidData::combine(double pass, double passE, double tot, double totE) {
+  if (_pass < 0) {
+    cout << "PidData::combine> Warning: combining tables with pass < 0!" << endl;
+  }
+  _pass += pass;
+  _tot  += tot;  
+  _passE = TMath::Sqrt(_passE*_passE + passE*passE);
+  _totE  = TMath::Sqrt(_totE*_totE + totE*totE);
+  calcEffAndErr();
+}
+
 
 // ----------------------------------------------------------------------
 void PidData::merge(PidData *other) {
@@ -165,7 +193,9 @@ void PidData::merge(PidData *other) {
   _tmax = (other->getTmax() > getTmax() ? other->getTmax() : getTmax());
 
   _pass += other->getPass();
+  _passE = TMath::Sqrt(other->getPassE()*other->getPassE() + _passE*_passE);
   _tot += other->getTot();
+  _totE  = TMath::Sqrt(other->getTotE()*other->getTotE() + _totE*_totE);
 
   double e(0.), s(0.);
   double effo = other->getEff();
@@ -189,13 +219,23 @@ void PidData::merge(PidData *other) {
 // ----------------------------------------------------------------------
 void PidData::calcEffAndErr() {
   
-  if (_tot > 0.) {
+  // do nothing for _tot < epsilon. The values have been calculated in combine() and merge()
+  if (_tot <= 0.) return; 
+    
+  if (_mode == 0) {        // d'Agostini
     _e = (_pass+1)/(_tot+2);
     _s = sqrt(((_pass+1)*(_tot-_pass+1))/((_tot+3)*(_tot+2)*(_tot+2)));
+  } else if (_mode == 1){  // binomial
+    _e = (_pass)/(_tot);
+    if (_passE > _totE) {
+      _passE = _totE;
+    }
+    _s = TMath::Sqrt( ((_tot*_tot) - (2*_pass*_tot))*_passE*_passE  + (_pass*_pass)*_totE*_totE ) / ( _tot*_tot );
+  } else if (_mode == 99){ // testing 
+    _e = (_pass)/(_tot);
+    _s = 0.;
   }
-  else {
-    // do nothing. The values have been calculated in combine() and merge()
-  }
+  
 }
 
 
@@ -226,12 +266,13 @@ Bool_t PidData::sameValue(PidData *cmp, double eps) {
 // ----------------------------------------------------------------------
 void PidData::print() {
   char line[200];
-  sprintf(line, "%6.3f%6.3f %5.0f %5.0f %5.0f %5.0f %9.6f %9.6f %11.0f %11.0f", 
+  sprintf(line, "%6.3f %6.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
 	  getPmin(), getPmax(), 
 	  getTmin(), getTmax(), 
 	  getFmin(), getFmax(), 
 	  getE(),    getS(),
-	  getPass(), getTot());
+	  getPass(), getPassE(),
+	  getTot(),  getTotE());
   cout << line << endl;
   
 }
@@ -240,12 +281,13 @@ void PidData::print() {
 // ===============================================================================
 ostream & operator << (ostream& o, const PidData& cmp) {
   char line[200];
-  sprintf(line, "%6.3f %6.3f %5.0f %5.0f %5.0f %5.0f %9.6f %9.6f %11.0f %11.0f", 
-	  cmp.getPmin(),cmp.getPmax(), 
+  sprintf(line, "%6.3f %6.3f %5.2f %5.2f %5.2f %5.2f %9.6f %9.6f %11.0f %11.0f %11.0f %11.0f", 
+	  cmp.getPmin(), cmp.getPmax(), 
 	  cmp.getTmin(), cmp.getTmax(), 
 	  cmp.getFmin(), cmp.getFmax(), 
 	  cmp.getE(), cmp.getS(),
-	  cmp.getPass(), cmp.getTot());
+	  cmp.getPass(), cmp.getPassE(),
+	  cmp.getTot(), cmp.getTotE());
   return o << line;
   
 }
