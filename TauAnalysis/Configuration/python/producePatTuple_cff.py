@@ -50,6 +50,13 @@ from TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff import *
 #
 from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 #
+# produce data-formats providing information 
+# about compatibility of an elecron + tau-jet pair
+# with the hypothesis of being a pair of electron,
+# resulting from a Z --> e+ e- decay
+#
+from TauAnalysis.CandidateTools.elecTauPairZeeHypothesis_cff import *
+#
 # produce combinations of tau-jet + missing transverse momentum
 #
 from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
@@ -65,5 +72,6 @@ producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "
                                +produceLayer1SelLeptons + selectLayer1Jets
                                +produceDiTauPairsAllKinds
                                +selectDiTauPairsAllKinds
+                               +produceElecTauPairZeeHypotheses
                                +produceTauNuPairs
                                +produceTauRecoilEnergy )
