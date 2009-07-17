@@ -78,6 +78,8 @@ private:
 
 private:
 
+  bool matchJetsByCaloTowers( const pat::Jet&, const pat::Jet& );
+  
   // Selection
   // SelectorSequence sequence_;              ///< Interface to selectors
   std::vector<std::string> plotSelection_; ///< Container for plotting selection
@@ -145,9 +147,11 @@ private:
   double mTempTreeJetTrackPt[50];
 
 
-
   double mTempTreeJetMCCorrFactor[50];
   double mTempTreeJetJPTCorrFactor[50];
+  
+  double mTempTreeccJetMCCorrFactor[50];
+  double mTempTreeccJetJPTCorrFactor[50];
 
   bool mTempTreeccJetAssoc[50];
   double  mTempTreeccJetAssoc_E[50];
@@ -579,6 +583,7 @@ private:
   edm::InputTag pfjetTag_;
   bool usePfjets_;
   edm::InputTag jptTag_;
+  edm::InputTag ccJptTag_;
 
   edm::InputTag ccjetTag_;
   edm::InputTag ccmetTag_;
