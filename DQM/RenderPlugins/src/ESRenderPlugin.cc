@@ -13,26 +13,36 @@
 #include <math.h>
 
 
-class ESRenderPlugin : public DQMRenderPlugin {
+class ESRenderPlugin : public DQMRenderPlugin 
+{
 
    public:
 
+      static const int ixES[346];
+      static const int iyES[346];
+      static const int lsES[54];
+      static const int lwES[54];
 
       virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
 
       virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
 
+      virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
+
    private:
 
       void preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o );
       void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
+      void postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
+
+      void drawBorders( int plane, float sx, float sy );
 
       double NEntries;
 
 };
 
-
-bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & ) {
+bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & ) 
+{
 
    if( o.name.find( "EcalPreshower" ) != std::string::npos ) {
       if( o.name.find( "ESOccupancyTask" ) != std::string::npos ){
@@ -53,8 +63,8 @@ bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
 
 }
 
-
-void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
+void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) 
+{
 
    c->cd();
 
@@ -85,7 +95,19 @@ void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
 
 }
 
-void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o ) {
+void ESRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+{
+   c->cd();
+
+   if( dynamic_cast<TH2F*>( o.object ) )
+   {
+      postDrawTH2F( c, o );
+   }
+}
+
+
+void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o ) 
+{
 
    TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
@@ -106,7 +128,8 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o ) {
    }
 }
 
-void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
+void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) 
+{
 
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
@@ -115,7 +138,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
    int colorbar[6] = {1,2,3,4,5,6};
-   int colorbar2[5] = {0,3,800,4,2};
+//   int colorbar2[5] = {0,3,800,4,2};
 
    gStyle->SetPaintTextFormat();
 
@@ -163,18 +186,189 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) {
       return;
    }
 
-   if( name.find( "reportSummaryMap" ) != std::string::npos ) {
-      gStyle->SetPalette(5,colorbar2);
-      obj->SetMinimum(-0.5);
-      obj->SetMaximum(4.5);
-      obj->SetOption("col");
-      return;
+   if( name.find( "reportSummaryMap" ) != std::string::npos ) 
+   {
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->SetTitle("EcalPreshower Report Summary Map");
+        return;
    }
-
-
 
 }
 
+void ESRenderPlugin::postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+{
+   TH2F* obj = dynamic_cast<TH2F*>( o.object );
+   assert( obj );
 
+   std::string name = o.name.substr(o.name.rfind("/")+1);
+
+
+   if( name.find( "ES+ P1" ) != std::string::npos ){
+      drawBorders( 1, 0.5, 0.5 );
+   }
+
+   if( name.find( "ES- P1" ) != std::string::npos ){
+      drawBorders( 2, 0.5, 0.5 );
+   }
+
+   if( name.find( "ES+ P2" ) != std::string::npos ){
+      drawBorders( 3, 0.5, 0.5 );
+   }
+
+   if( name.find( "ES- P2" ) != std::string::npos ){
+      drawBorders( 4, 0.5, 0.5 );
+   }
+
+   if( name.find( "Z 1 P 1" ) != std::string::npos ){
+      drawBorders( 1, 0.5, 0.5 );
+   }
+
+   if( name.find( "Z -1 P 1" ) != std::string::npos ){
+      drawBorders( 2, 0.5, 0.5 );
+   }
+
+   if( name.find( "Z 1 P 2" ) != std::string::npos ){
+      drawBorders( 3, 0.5, 0.5 );
+   }
+
+   if( name.find( "Z -1 P 2" ) != std::string::npos ){
+      drawBorders( 4, 0.5, 0.5 );
+   }
+
+   if( name.find( "reportSummaryMap" ) != std::string::npos ) 
+   {
+      drawBorders( 1, 0.5, 0.5 );
+      drawBorders( 2, 40.5, 0.5 );
+      drawBorders( 3, 0.5, 40.5 );
+      drawBorders( 4, 40.5, 40.5 );
+   }
+
+} 
+
+// Draw ES borders (Ming's copyright, the idea is borrowed from Giuseppe ;-))
+void ESRenderPlugin::drawBorders( int plane, float sx, float sy )
+{
+
+   TLine l;
+
+   switch (plane){
+
+      case 1:	//ES+F
+	 for ( int i=0; i<346; i=i+2) {
+	    if (i<54*2) {
+	       l.SetLineStyle(lsES[i/2]);
+	       l.SetLineWidth(lwES[i/2]);
+	    } else {
+	       l.SetLineStyle(3);
+	       l.SetLineWidth(2);
+	    } 
+	    l.DrawLine(ixES[i]+sx, iyES[i]+sy, ixES[i+1]+sx, iyES[i+1]+sy);
+	 }
+	 break;
+
+      case 2:   //ES-F
+	 for ( int i=0; i<346; i=i+2) {
+	    if (i<54*2) {
+	       l.SetLineStyle(lsES[i/2]);
+	       l.SetLineWidth(lwES[i/2]);
+	    } else {
+	       l.SetLineStyle(3);
+	       l.SetLineWidth(2);
+	    } 
+	    l.DrawLine(40-iyES[i]+sx, ixES[i]+sy, 40-iyES[i+1]+sx, ixES[i+1]+sy);
+	 }
+	 break;
+
+      case 3:    //ES+R
+	 for ( int i=0; i<346; i=i+2) {
+	    if (i<54*2) {
+	       l.SetLineStyle(lsES[i/2]);
+	       l.SetLineWidth(lwES[i/2]);
+	    } else {
+	       l.SetLineStyle(3);
+	       l.SetLineWidth(2);
+	    } 
+	    l.DrawLine(40-ixES[i]+sx, iyES[i]+sy, 40-ixES[i+1]+sx, iyES[i+1]+sy);
+	 }
+	 break;
+
+      case 4:    //ES-R
+	 for ( int i=0; i<346; i=i+2) {
+	    if (i<54*2) {
+	       l.SetLineStyle(lsES[i/2]);
+	       l.SetLineWidth(lwES[i/2]);
+	    } else {
+	       l.SetLineStyle(3);
+	       l.SetLineWidth(2);
+	    } 
+	    l.DrawLine(40-ixES[i]+sx, iyES[i]+sy, 40-ixES[i+1]+sx, iyES[i+1]+sy);
+	 }
+	 break;
+
+      default:
+	 break;
+
+   }
+}
+
+const int ESRenderPlugin::ixES[346] = {
+   1, 13,  5,  5,  5,  7,  7,  7,  7,  9,  9,  9, 11, 11, 13, 13, 13, 15, 15, 15, 
+   15, 15, 15, 19, 19, 19, 21, 21, 21, 23, 23, 23, 25, 25, 25, 27, 27, 27, 27, 29, 
+   29, 29, 29, 31, 31, 31, 31, 31, 31, 33, 33, 33, 35, 35, 39, 27, 35, 35, 35, 33, 
+   33, 33, 33, 31, 31, 31, 29, 29, 27, 27, 27, 25, 25, 25, 25, 25, 25, 21, 21, 21, 
+   19, 19, 19, 17, 17, 17, 15, 15, 15, 13, 13, 13, 13, 11, 11, 11, 11,  9,  9,  9,
+   9,  9,  9,  7,  7,  7,  5,  5, 
+
+   1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  5,  6, 
+   6,  6,  6,  7,  7,  7,  7,  9,  9,  9,  9, 10, 10, 10, 10, 13, 13, 13, 13, 15, 
+   15, 15, 15, 25, 25, 25, 25, 27, 27, 27, 27, 30, 30, 30, 30, 31, 31, 31, 31, 33, 
+   33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 
+   38, 38, 38, 39, 39, 39, 39, 38, 38, 38, 38, 37, 37, 37, 37, 36, 36, 36, 36, 35, 
+   35, 35, 35, 34, 34, 34, 34, 33, 33, 33, 33, 31, 31, 31, 31, 30, 30, 30, 30, 27, 
+   27, 27, 27, 25, 25, 25, 25, 15, 15, 15, 15, 13, 13, 13, 13, 10, 10, 10, 10,  9, 
+   9,  9,  9,  7,  7,  7,  7,  6,  6,  6,  6,  5,  5,  5,  5,  4,  4,  4,  4,  3, 
+   3,  3,  3,  2,  2,  2,  2,  1,  1,  1,
+
+   13, 13, 13, 14, 14, 14, 14, 15, 15, 16, 16, 16, 16, 18, 18, 18, 18, 22, 22, 22, 
+   22, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 26, 26, 26, 
+   26, 25, 25, 24, 24, 24, 24, 22, 22, 22, 22, 18, 18, 18, 18, 16, 16, 16, 16, 15, 
+   15, 15, 15, 14, 14, 14, 14, 13 
+};
+
+const int  ESRenderPlugin::iyES[346] = {
+   20, 20, 20, 30, 30, 30, 30, 36, 32, 32, 32, 20, 20, 38, 39, 26, 26, 26, 26, 24, 
+   40, 30, 30, 30, 40, 27, 40, 35, 35, 35, 35, 26, 24, 40, 26, 26, 26, 33, 33, 33, 
+   38, 24, 24, 24, 20, 24, 24, 28, 28, 28, 28, 36, 20, 33, 20, 20, 20, 10, 10, 10, 
+   10,  4,  8,  8,  8, 20, 20,  2,  1, 14, 14, 14, 14, 16,  0, 10, 10, 10, 13,  0, 
+   0,  5,  5,  5,  5, 14, 16,  0, 14, 14, 14,  7,  7,  7,  2, 16, 16, 16, 20, 16, 
+   16, 12, 12, 12, 12,  4,  7, 20, 
+
+   20, 26, 26, 26, 26, 28, 28, 28, 28, 31, 31, 31, 31, 32, 32, 32, 32, 33, 33, 33, 
+   33, 34, 34, 34, 34, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 
+   39, 40, 40, 40, 40, 39, 39, 39, 39, 38, 38, 38, 38, 37, 37, 37, 37, 36, 36, 36, 
+   36, 34, 34, 34, 34, 33, 33, 33, 33, 32, 32, 32, 32, 31, 31, 31, 31, 28, 28, 28, 
+   28, 26, 26, 26, 26, 14, 14, 14, 14, 12, 12, 12, 12,  9,  9,  9,  9,  8,  8,  8, 
+   8,  7,  7,  7,  7,  6,  6,  6,  6,  4,  4,  4,  4,  3,  3,  3,  3,  2,  2,  2, 
+   2,  1,  1,  1,  1,  0,  0,  0,  0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3, 
+   3,  4,  4,  4,  4,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,  9, 
+   9, 12, 12, 12, 12, 14, 14, 14, 14, 20,  
+
+   18, 22, 22, 22, 22, 24, 24, 24, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 26, 
+   26, 26, 26, 25, 25, 25, 25, 24, 24, 24, 24, 22, 22, 22, 22, 18, 18, 18, 18, 16, 
+   16, 16, 15, 15, 15, 14, 14, 14, 14, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 
+   15, 16, 16, 16, 16, 18, 18, 18
+};
+
+const int  ESRenderPlugin::lsES[54] = { // line style
+   1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 
+   1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 
+   2, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2
+};
+
+const int  ESRenderPlugin::lwES[54] = { // line width
+   2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 
+   2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 1, 1, 2, 
+   1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1
+};
 
 static ESRenderPlugin instance;
