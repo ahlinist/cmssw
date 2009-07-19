@@ -10,6 +10,7 @@
 #include "utils.h"
 
 #include "TProfile2D.h"
+#include "TProfile.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TStyle.h"
@@ -23,8 +24,9 @@ class SiStripRenderPlugin : public DQMRenderPlugin
 public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
     {
-      if (o.name.find( "SiStrip/" ) == std::string::npos)
-        return false;
+      if ((o.name.find( "SiStrip/" ) == std::string::npos) &&
+	  (o.name.find( "Tracking/" ) == std::string::npos))
+         return false;
 
       if( o.name.find( "/EventInfo/" ) != std::string::npos )
         return true;
@@ -35,7 +37,7 @@ public:
       if( o.name.find( "/ReadoutView/" ) != std::string::npos )
         return true;
 
-      if( o.name.find( "/Tracks/" ) != std::string::npos )
+      if( o.name.find( "/TrackParameters/" ) != std::string::npos )
         return true;
 
       return false;
@@ -56,6 +58,10 @@ public:
       else if( dynamic_cast<TProfile2D*>( o.object ) )
       {
         preDrawTProfile2D( c, o );
+      }
+      else if( dynamic_cast<TProfile*>( o.object ) )
+      {
+        preDrawTProfile( c, o );
       }
     }
 
@@ -222,6 +228,33 @@ private:
         obj->SetOption("colz");
         return;
       }
+      return;
+    }
+  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject &o )
+    {
+      TProfile* obj = dynamic_cast<TProfile*>( o.object );
+      assert( obj );
+
+      // This applies to all
+      gStyle->SetCanvasBorderMode( 0 );
+      gStyle->SetPadBorderMode( 0 );
+      gStyle->SetPadBorderSize( 0 );
+      //    (data->pad)->SetLogy( 0 );;
+      //  gStyle->SetOptStat( 0 );
+
+      TAxis* xa = obj->GetXaxis();
+      TAxis* ya = obj->GetYaxis();
+
+      xa->SetTitleOffset(0.7);
+      xa->SetTitleSize(0.05);
+      xa->SetLabelSize(0.04);
+
+      ya->SetTitleOffset(0.7);
+      ya->SetTitleSize(0.05);
+      ya->SetLabelSize(0.04);
+
+      obj->SetStats( kFALSE );
+      obj->SetOption("e");
       return;
     }
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
