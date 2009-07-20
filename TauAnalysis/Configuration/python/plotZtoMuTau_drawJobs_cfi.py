@@ -10,12 +10,14 @@ plots_ZtoMuTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'ZmumuPlusJets', 
-            #'Zmumu',
-            'WplusJets',
-            'qcdSum',
-            #'ZtautauPlusJets',
             'Ztautau',
+            'Zmumu',
+            #'ZtautauPlusJets',
+            #'ZmumuPlusJets',
+            'ZeePlusJets',
+            'WplusJets',
+            'TTbar',
+            'qcdSum'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -25,12 +27,14 @@ plots_ZtoMuTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        'ZmumuPlusJets',
-        #'Zmumu',
+        'Ztautau',
+        'Zmumu',
+        #'ZtautauPlusJets',
+        #'ZmumuPlusJets',
+        'ZeePlusJets',
         'WplusJets',
-        'qcdSum',
-        #'ZtautauPlusJets'
-        'Ztautau'
+        'TTbar',
+        'qcdSum'
     )
 )
 
@@ -195,7 +199,7 @@ drawJobConfigurator_ZtoMuTau.add(
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/MuonTrackIP#PAR#',
         PAR = [ 'xy', 'z' ],
-        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto)",
+        title = "Muon Track IP_{#PAR#}(after Muon #pi-Veto Cut)",
         xAxis = 'IP#PAR#',
         name = "cutFlowControlPlots_muonTrkIP_afterMuonAntiPionVeto"
     )
@@ -269,7 +273,7 @@ drawJobConfigurator_ZtoMuTau.add(
     plot = drawJobConfigEntry(
         meName = 'TauQuantities/TauNumTracksSignalCone',
         title = "Tau Tracks in Signal Cone (after Tau ECAL iso. Cut)",
-        xAxis = 'N',
+        xAxis = 'unlabeled',
         name = "cutFlowControlPlots_tauNumTracksSignalCone_afterTauEcalIso"
     )
 )
@@ -299,7 +303,7 @@ drawJobConfigurator_ZtoMuTau.add(
     beforeCut = evtSelDiTauCandidateForMuTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Muon,Tau) (after Tau #mu-Veto)",
+        title = "#Delta R(Muon,Tau) (after Tau #mu-Veto Cut)",
         xAxis = 'dR',
         name = "cutFlowControlPlots_dR12_afterTauMuonVeto"
     )
@@ -358,26 +362,14 @@ drawJobConfigurator_ZtoMuTau.add(
         drawJobConfigEntry(
             meName = 'TauQuantities/TauNumTracksSignalCone',
             title = "Tau Tracks in Signal Cone (final Event sample)",
-            xAxis = 'N',
-            name = "finalSamplePlots_tauNumTracksSignalCone"
-        ),
-        drawJobConfigEntry(
-            meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
-            title = "TaNC output (fr = 0.25%) (final Event sample)",
             xAxis = 'unlabeled',
-            name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+            name = "finalSamplePlots_tauNumTracksSignalCone"
         ),
         drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_met"
-        ),
-        drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/PzetaDiff',
-            title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
-            xAxis = 'GeV',
-            name = "finalSamplePlots_PzetaDiff"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Mt1MET',
@@ -398,21 +390,15 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_mtMuonTauMET"
         ),
         drawJobConfigEntry(
-            meName = 'DiTauCandidateQuantities/VisMass',
-            title = "M_{vis}(Muon + Tau) (final Event sample)",
-            xAxis = 'Mass',
-            name = "finalSamplePlots_mVisible"
-        ),        
-        drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Muon + Tau), CDF method (final Event sample)",
-            xAxis = 'Mass',
+            xAxis = 'M',
             name = "finalSamplePlots_mCDFmethod"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CollinearApproxMass',
             title = "M(Muon + Tau), collinear Approx. (final Event sample)",
-            xAxis = 'Mass',
+            xAxis = 'M',
             name = "finalSamplePlots_mCollApprox"
         ),
         drawJobConfigEntry(

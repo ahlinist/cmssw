@@ -14,15 +14,15 @@ from TauAnalysis.Configuration.plotZtoMuTau_drawJobs_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
-    ZtautauPlusJets = copy.deepcopy(processZtoMuTau_ZtautauPlusJetsSum.config_dqmFileLoader),             
     Ztautau = copy.deepcopy(processZtoMuTau_ZtautauSum.config_dqmFileLoader),
-    ZmumuPlusJets = copy.deepcopy(processZtoMuTau_ZmumuPlusJetsSum.config_dqmFileLoader),                          
     Zmumu = copy.deepcopy(processZtoMuTau_ZmumuSum.config_dqmFileLoader),
-    #ZeePlusJets = copy.deepcopy(processZtoMuTau_ZeePlusJetsSum.config_dqmFileLoader),
-    #Zee = copy.deepcopy(processZtoMuTau_ZeeSum.config_dqmFileLoader),                          
+    ZeePlusJets = copy.deepcopy(processZtoMuTau_ZeePlusJetsSum.config_dqmFileLoader),
+    #ZmumuPlusJets = copy.deepcopy(processZtoMuTau_ZmumuPlusJetsSum.config_dqmFileLoader),
+    #ZtautauPlusJets = copy.deepcopy(processZtoMuTau_ZtautauPlusJetsSum.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processZtoMuTau_WplusJetsSum.config_dqmFileLoader),                              
     InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmFileLoader),
-    PPmuXptGt20 = copy.deepcopy(processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader)                             
+    PPmuXptGt20 = copy.deepcopy(processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader),
+                              TTbar = copy.deepcopy(processZtoMuTau_TTbarSum.config_dqmFileLoader), 
 )
 
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
@@ -38,12 +38,13 @@ addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            #'ZtautauPlusJets',
             'Ztautau',
-            'ZmumuPlusJets',
-            #'Zmumu',
-            #'ZeePlusJets',
+            'Zmumu',
+            'ZeePlusJets',
+            #'ZmumuPlusJets',
+            #'ZtautauPlusJets',
             'WplusJets',
+            'TTbar',
             'qcdSum'
         ),
         dqmDirectory_output = cms.string('smSum')
@@ -54,12 +55,13 @@ addZtoMuTau = cms.Sequence(addZtoMuTau_qcdSum + addZtoMuTau_smSum)
 
 plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
-        ZtautauPlusJets = copy.deepcopy(processZtoMuTau_ZtautauPlusJets.config_dqmHistPlotter),
         Ztautau = copy.deepcopy(processZtoMuTau_Ztautau.config_dqmHistPlotter),
-        ZmumuPlusJets = copy.deepcopy(processZtoMuTau_ZmumuPlusJets.config_dqmHistPlotter),
         Zmumu = copy.deepcopy(processZtoMuTau_Zmumu.config_dqmHistPlotter),
-        #ZeePlusJets = copy.deepcopy(processZtoMuTau_ZeePlusJets.config_dqmHistPlotter),
+        ZeePlusJets = copy.deepcopy(processZtoMuTau_ZeePlusJets.config_dqmHistPlotter),
+        #ZmumuPlusJets = copy.deepcopy(processZtoMuTau_ZmumuPlusJets.config_dqmHistPlotter),
+        #ZtautauPlusJets = copy.deepcopy(processZtoMuTau_ZtautauPlusJets.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(processZtoMuTau_WplusJets.config_dqmHistPlotter),
+        TTbar = copy.deepcopy(processZtoMuTau_TTbar.config_dqmHistPlotter),
         InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmHistPlotter),
         PPmuXptGt20 = copy.deepcopy(processZtoMuTau_PPmuXptGt20.config_dqmHistPlotter),
         qcdSum = cms.PSet(
@@ -80,10 +82,8 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
         prob = copy.deepcopy(xAxis_prob),
         posZ = copy.deepcopy(xAxis_posZ),
         Mt = copy.deepcopy(xAxis_transMass),
-        Mass = copy.deepcopy(xAxis_mass),
+        M = copy.deepcopy(xAxis_mass),
         N = copy.deepcopy(xAxis_num),
-        PdgId = copy.deepcopy(xAxis_pdgId),
-        GeV = copy.deepcopy(xAxis_GeV),
         unlabeled = copy.deepcopy(xAxis_unlabeled),
     ),
 
@@ -102,16 +102,17 @@ plotZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 
     drawOptionSets = cms.PSet(
         default = cms.PSet(
-            ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
             Ztautau = copy.deepcopy(drawOption_Ztautau),
-            ZmumuPlusJets = copy.deepcopy(drawOption_ZmumuPlusJets),
             Zmumu = copy.deepcopy(drawOption_Zmumu),
-            #ZeePlusJets = copy.deepcopy(drawOption_ZeePlusJets),
+            ZeePlusJets = copy.deepcopy(drawOption_ZeePlusJets),
+            #ZmumuPlusJets = copy.deepcopy(drawOption_ZmumuPlusJets),
+            #ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
+            TTbar = copy.deepcopy(drawOption_TTbar),
             qcdSum = copy.deepcopy(drawOption_QCD)
         )
     ),
-
+                              
     drawJobs = drawJobConfigurator_ZtoMuTau.configure(),
 
     canvasSizeX = cms.int32(800),
