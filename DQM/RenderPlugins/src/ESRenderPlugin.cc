@@ -7,6 +7,7 @@
 #include "TCanvas.h"
 #include "TGaxis.h"
 #include "TColor.h"
+#include "TText.h"
 #include "TGraph.h"
 #include "TLine.h"
 
@@ -124,8 +125,34 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
 
    if( name.find( "FEDs used for data taking" ) != std::string::npos )
    {
-      obj->SetFillColor(2);
+      obj->SetFillColor(kGreen);
    }
+
+   if( name.find( "Z 1 P 1" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z 1 P 1" ) , 7);
+      name.insert( 2, "+F" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z -1 P 1" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z -1 P 1" ) , 8);
+      name.insert( 2, "-F" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z 1 P 2" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z 1 P 2" ) , 7);
+      name.insert( 2, "+R" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z -1 P 2" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z -1 P 2" ) , 8);
+      name.insert( 2, "-R" );
+      obj->SetTitle( name.c_str() );
+   }
+
 }
 
 void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) 
@@ -137,8 +164,15 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   int colorbar[6] = {1,2,3,4,5,6};
-//   int colorbar2[5] = {0,3,800,4,2};
+   int colorbar[6] = {0,2,3,4,5,6};
+
+   const int NRGBs = 5;
+   const int NCont = 255;
+
+   double stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+   double red[NRGBs]   = { 0.87, 1.00, 0.12, 0.00, 0.00 };
+   double green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+   double blue[NRGBs]  = { 0.00, 0.00, 0.00, 1.00, 0.87 };
 
    gStyle->SetPaintTextFormat();
 
@@ -151,47 +185,83 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
    gPad->SetRightMargin(0.15);
    gStyle->SetPaintTextFormat("+g");
 
-   if( name.find( "Integrity Summary" ) != std::string::npos ) {
+   if( name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Status" ) != std::string::npos )
+   {
+      TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+      gStyle->SetNumberContours(NCont);
+   }
+
+   if( name.find( "Z 1 P 1" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z 1 P 1" ) , 7);
+      name.insert( 2, "+F" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z -1 P 1" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z -1 P 1" ) , 8);
+      name.insert( 2, "-F" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z 1 P 2" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z 1 P 2" ) , 7);
+      name.insert( 2, "+R" );
+      obj->SetTitle( name.c_str() );
+   }
+   else if( name.find( "Z -1 P 2" ) != std::string::npos )
+   {
+      name.erase( name.find( "Z -1 P 2" ) , 8);
+      name.insert( 2, "-R" );
+      obj->SetTitle( name.c_str() );
+   }
+
+   if( name.find( "Integrity Summary" ) != std::string::npos ) 
+   {
       gStyle->SetPalette(6,colorbar);
       obj->SetMinimum(0.5);
       obj->SetMaximum(6.5);
       return;
    }
 
-   if( name.find( "Fiber Status" ) != std::string::npos )   {
+   if( name.find( "Fiber Status" ) != std::string::npos )   
+   {
       obj->GetYaxis()->SetBinLabel(1,"Bad");
       obj->GetYaxis()->SetBinLabel(2,"Good");
       obj->GetYaxis()->SetLabelSize(0.08);
       obj->GetYaxis()->SetTitle("");
-
    }
 
-
-   if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
+   /*   if( name.find( "ES OptoRX used for data taking" ) != std::string::npos )   
+	{
+	}
+    */
+   if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) 
+   {
       gStyle->SetPalette(1);
-      obj->GetXaxis()->SetRange(0,39);
-      obj->GetYaxis()->SetRange(0,39);
       NEntries = obj->GetBinContent(40,40);
+      obj->SetBinContent(40,40,0.);
       obj->Scale(1/NEntries);
       obj->SetMaximum(33);
       return;
    }
 
-   if( name.find( "DigiHit 2D Occupancy" ) != std::string::npos ) {
+   if( name.find( "DigiHit 2D Occupancy" ) != std::string::npos ) 
+   {
       gStyle->SetPalette(1);
-      obj->GetXaxis()->SetRange(0,39);
-      obj->GetYaxis()->SetRange(0,39);
       NEntries = obj->GetBinContent(40,40);
+      obj->SetBinContent(40,40,0.);
       obj->Scale(1/NEntries);
       return;
    }
 
    if( name.find( "reportSummaryMap" ) != std::string::npos ) 
    {
-        dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetTitle("EcalPreshower Report Summary Map");
-        return;
+      dqm::utils::reportSummaryMapPalette(obj);
+      obj->SetTitle("EcalPreshower Report Summary Map");
+      return;
    }
+
 
 }
 
@@ -201,23 +271,6 @@ void ESRenderPlugin::postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
    assert( obj );
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
-
-
-   if( name.find( "ES+ P1" ) != std::string::npos ){
-      drawBorders( 1, 0.5, 0.5 );
-   }
-
-   if( name.find( "ES- P1" ) != std::string::npos ){
-      drawBorders( 2, 0.5, 0.5 );
-   }
-
-   if( name.find( "ES+ P2" ) != std::string::npos ){
-      drawBorders( 3, 0.5, 0.5 );
-   }
-
-   if( name.find( "ES- P2" ) != std::string::npos ){
-      drawBorders( 4, 0.5, 0.5 );
-   }
 
    if( name.find( "Z 1 P 1" ) != std::string::npos ){
       drawBorders( 1, 0.5, 0.5 );
@@ -237,10 +290,17 @@ void ESRenderPlugin::postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    if( name.find( "reportSummaryMap" ) != std::string::npos ) 
    {
-      drawBorders( 1, 0.5, 0.5 );
-      drawBorders( 2, 40.5, 0.5 );
-      drawBorders( 3, 0.5, 40.5 );
-      drawBorders( 4, 40.5, 40.5 );
+      TText t;
+      t.SetTextAlign(22);
+      t.DrawText(21,21,"ES+R");
+      t.DrawText(61,21,"ES-R");
+      t.DrawText(21,61,"ES+F");
+      t.DrawText(61,61,"ES-F");
+
+      drawBorders( 1, 0.5, 40.5 );
+      drawBorders( 2, 40.5, 40.5 );
+      drawBorders( 3, 0.5, 0.5 );
+      drawBorders( 4, 40.5, 0.5 );
    }
 
 } 
@@ -275,7 +335,7 @@ void ESRenderPlugin::drawBorders( int plane, float sx, float sy )
 	       l.SetLineStyle(3);
 	       l.SetLineWidth(2);
 	    } 
-	    l.DrawLine(40-iyES[i]+sx, ixES[i]+sy, 40-iyES[i+1]+sx, ixES[i+1]+sy);
+	    l.DrawLine(40-ixES[i]+sx, iyES[i]+sy, 40-ixES[i+1]+sx, iyES[i+1]+sy);
 	 }
 	 break;
 
@@ -288,7 +348,7 @@ void ESRenderPlugin::drawBorders( int plane, float sx, float sy )
 	       l.SetLineStyle(3);
 	       l.SetLineWidth(2);
 	    } 
-	    l.DrawLine(40-ixES[i]+sx, iyES[i]+sy, 40-ixES[i+1]+sx, iyES[i+1]+sy);
+	    l.DrawLine(40-iyES[i]+sx, ixES[i]+sy, 40-iyES[i+1]+sx, ixES[i+1]+sy);
 	 }
 	 break;
 
@@ -301,7 +361,7 @@ void ESRenderPlugin::drawBorders( int plane, float sx, float sy )
 	       l.SetLineStyle(3);
 	       l.SetLineWidth(2);
 	    } 
-	    l.DrawLine(40-ixES[i]+sx, iyES[i]+sy, 40-ixES[i+1]+sx, iyES[i+1]+sy);
+	    l.DrawLine(iyES[i]+sx, ixES[i]+sy, iyES[i+1]+sx, ixES[i+1]+sy);
 	 }
 	 break;
 
