@@ -137,6 +137,8 @@ tar -C $TOPDIR -c opt/cmssw | tar -xC \$RPM_BUILD_ROOT
 /opt/cmssw/$PRO_DEV/patch
 /opt/cmssw/$PRO_DEV/root
 /opt/cmssw/$PRO_DEV/patches
+
+%defattr(-,root,root,-)
 EOF
 mkdir -p RPMBUILD/{RPMS/{i386,i586,i686,x86_64},SPECS,BUILD,SOURCES,SRPMS}
 rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
