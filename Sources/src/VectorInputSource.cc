@@ -26,6 +26,11 @@ namespace edm {
   }
 
   void
+  VectorInputSource::readManySequential(int number, EventPrincipalVector& result, unsigned int& fileSeqNumber) {
+    this->readManySequential_(number, result, fileSeqNumber);
+  }
+
+  void
   VectorInputSource::dropUnwantedBranches(std::vector<std::string> const& wantedBranches) {
     this->dropUnwantedBranches_(wantedBranches);
   }
