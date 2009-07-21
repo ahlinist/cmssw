@@ -123,7 +123,7 @@ elecTauEventSelection = cms.untracked.PSet(
 process.elecTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
   tauAnalysisEventContent,                                               
   elecTauEventSelection,
-  fileName = cms.untracked.string('elecTauSkim.root')
+  fileName = cms.untracked.string('skimElecTau.root')
 )
 
 process.options = cms.untracked.PSet(
