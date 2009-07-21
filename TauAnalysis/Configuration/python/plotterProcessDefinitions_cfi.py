@@ -128,7 +128,7 @@ process_gammaPlusJets = cms.PSet(
     )
 )
 
-
+# TT + jets 
 process_TTplusJets = cms.PSet(
     config_dqmFileLoader = cms.PSet(
         inputFileNames = cms.vstring(''),
@@ -262,16 +262,3 @@ process_PPmuXptGt20 = cms.PSet(
 )
 
 
-# TTbar + jets generated with Madgraph
-process_TTbar = cms.PSet(
-    config_dqmFileLoader = cms.PSet(
-        inputFileNames = cms.vstring(''),
-        scaleFactor = cms.double(1.),
-        dqmDirectory_store = cms.string('TTbar')
-    ),
-    config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('TTbar'),
-        legendEntry = cms.string('TTbar+jets'),
-        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-    )
-)

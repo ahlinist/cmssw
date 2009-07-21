@@ -16,7 +16,7 @@ plots_ZtoMuTau = cms.PSet(
             #'ZmumuPlusJets',
             'ZeePlusJets',
             'WplusJets',
-            'TTbar',
+            'TTplusJets',
             'qcdSum'
         )
     ),
@@ -33,7 +33,7 @@ plots_ZtoMuTau = cms.PSet(
         #'ZmumuPlusJets',
         'ZeePlusJets',
         'WplusJets',
-        'TTbar',
+        'TTplusJets',
         'qcdSum'
     )
 )
