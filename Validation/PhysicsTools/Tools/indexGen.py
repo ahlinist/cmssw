@@ -166,25 +166,29 @@ rootFileLink = processFile(rootFile, outputDir  )
 comments = 'no comment'
 
 
-imgTemplate = '<IMG src="%s" width="500" align="left" border="0"><br clear="ALL">'
+#imgTemplate = '<IMG src="%s" width="500" align="left" border="0"><br clear="ALL">'
+imgTemplate1 = '<a href="%s">'
+imgTemplate2 = '<img src="%s" width="200"  alt="">'
 images = ''
-
+counter = 1
 # open legend file
 
 captionsContents = open( captions )
 for line in captionsContents:
-     try:
-          (picfile, caption) = readCaption( line )
-          img = imgTemplate % os.path.basename(picfile)
-          images = "%s<h3>%s:</h3>\n%s\n" % (images, caption, img)
-          
+    	 try:
+#     	while counter <= 4:
+        	  (picfile, caption) = readCaption( line )
+#          img = imgTemplate % os.path.basename(picfile)
+#          images = "%s<h3>%s:</h3>\n%s\n" % (images, caption, img)
+	  	  img1 = imgTemplate1 % os.path.basename(picfile)
+          	  img2 = imgTemplate2 % os.path.basename(picfile)
+                  images = "%s<h3>%s:</h3>\n %s %s \n" % (images, caption, img1, img2)          
           # what to do if the file's not there? 
           # : print a warning
-          shutil.copy(picfile, outputDir) 
-	  print picfile
-     except Exception:
-          raise
-
+                  shutil.copy(picfile, outputDir) 
+	          print picfile
+         except Exception:
+                 raise
 ifile = open( indexhtml )
 indexTemplate = ifile.read()
 
