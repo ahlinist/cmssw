@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.2 2009/02/24 14:10:46 veelken Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.1 2009/06/10 09:33:09 veelken Exp $
  *
  */
 
@@ -169,7 +169,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
 	    idxLeg1 < numLeg1; ++idxLeg1 ) {
 	T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
-	for ( unsigned idxLeg2 = 0, numLeg2 = leg2Collection->size(); 
+	for ( unsigned idxLeg2 = idxLeg1+1, numLeg2 = leg2Collection->size(); 
 	      idxLeg2 < numLeg2; ++idxLeg2 ) {
 	  T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
 	  
