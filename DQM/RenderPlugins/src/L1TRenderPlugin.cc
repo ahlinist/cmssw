@@ -19,6 +19,9 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TBox.h"
+#include "TLine.h"
+#include "TLegend.h"
 #include "TPRegexp.h"
 #include <cassert>
 
@@ -27,6 +30,7 @@
 class L1TRenderPlugin : public DQMRenderPlugin
 {
   TH2F* dummybox;
+  TH2F* dummybox_zoom;
 
 public:
   virtual void initialise (int, char **)
@@ -44,12 +48,14 @@ public:
       //   }
       //   for(int i=0; i<6; i++) cpal[i] = i + 301;
       dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
+      dummybox_zoom = new  TH2F("dummy","",14,3.5,17.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
       {
         for(int j=0; j<18; j++)
         {
           dummybox->Fill(i,j,0.1);
+          dummybox_zoom->Fill(i,j,0.1);
         }
       }
 
@@ -245,23 +251,16 @@ private:
       {
         obj->SetStats( kFALSE );
         dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetOption("colz");
+
+	obj->GetXaxis()->SetBinLabel(1,"Data");
+	obj->GetXaxis()->SetBinLabel(2,"Emulator");
+	obj->GetXaxis()->SetLabelSize(0.1);
+
+        obj->SetOption("col");
         obj->SetTitle("L1T Report Summary Map");
 
-        obj->GetXaxis()->SetNdivisions(1,true);
-        obj->GetYaxis()->SetNdivisions(8,true);
         obj->GetXaxis()->CenterLabels();
         obj->GetYaxis()->CenterLabels();
-
-        gPad->SetGrid(1,1);
-
-        //gStyle->SetPaintTextFormat("+g");
-
-        //TPaveText tree(.01,.75,.15,1.00);
-        //tree.SetFillColor(18);
-        //tree.SetTextAlign(12);
-        //TText *tnt = tree.AddText("Tree");
-        //tnt.SetTextAlign(22);
 
         return;
       }
@@ -301,7 +300,9 @@ private:
         o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
          ) */
       if(
-        o.name.find( "Rct" ) != std::string::npos &&
+        ( o.name.find( "Rct" ) != std::string::npos ||
+	  o.name.find( "Jet" ) != std::string::npos ||
+	  o.name.find( "IsoEm" ) != std::string::npos ) &&
         o.name.find( "EtaPhi" ) != std::string::npos 
         )
       {
@@ -311,6 +312,7 @@ private:
         obj->GetYaxis()->SetTitle("GCT phi");
         return;
       }
+
 
 
 
@@ -349,6 +351,9 @@ private:
         obj->GetYaxis()->SetTitle("sector");
         obj->GetXaxis()->SetNdivisions(6,true);
         obj->GetYaxis()->SetNdivisions(13,true);
+
+	obj->SetTitle("DTTF Occupancy Summary");
+
         //gPad->SetGrid(1,1);
         //     obj->GetXaxis()->SetLabelSize(0.07);
         //     obj->GetYaxis()->SetLabelSize(0.07);
@@ -396,6 +401,25 @@ private:
         yBX->SetTitleOffset(1.1);
         return;
       }
+
+
+      if(o.name.find("CSCTF_Chamber_Occupancies") != std::string::npos)
+      {
+        gStyle->SetOptStat(11);
+        return;
+      }
+      if(o.name.find("CSCTF_occupancies") != std::string::npos)
+      {
+        gStyle->SetOptStat(11);
+        return;
+      }
+      if(o.name.find("GMT_etaphi") != std::string::npos)
+      {
+        gStyle->SetOptStat(11);
+        return;
+      }
+
+
     }
 
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
@@ -444,6 +468,120 @@ private:
       assert( obj );
 
 
+      TBox* b_box = new TBox();
+      TLine* l_line = new TLine();
+      TText* t_text = new TText();
+
+
+      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
+      {
+	t_text->DrawText(1.5,11.3,"GT");
+	t_text->DrawText(1.5,10.3,"Muons");
+	t_text->DrawText(1.5,9.3, "Jets");
+	t_text->DrawText(1.5,8.3, "TauJets");
+	t_text->DrawText(1.5,7.3, "IsoEM");
+	t_text->DrawText(1.5,6.3, "NonIsoEM");
+	t_text->DrawText(1.5,5.3, "MET");
+
+	t_text->DrawText(2.5,11.3,"GLT");
+	t_text->DrawText(2.5,10.3,"GMT");
+	t_text->DrawText(2.5,9.3, "RPC");
+	t_text->DrawText(2.5,8.3, "CTP");
+	t_text->DrawText(2.5,7.3, "CTF");
+	t_text->DrawText(2.5,6.3, "DTP");
+	t_text->DrawText(2.5,5.3, "DTF");
+	t_text->DrawText(2.5,4.3, "HTP");
+	t_text->DrawText(2.5,3.3, "ETP");
+	t_text->DrawText(2.5,2.3, "GCT");
+	t_text->DrawText(2.5,1.3, "RCT");
+
+	int NbinsX = obj->GetNbinsX();
+	int NbinsY = obj->GetNbinsY();
+
+	std::vector<std::vector<double> > TrigResult( NbinsY, std::vector<double>(NbinsX) );
+
+	for( int i=0; i<NbinsX; i++ ){
+	  for( int j=0; j<NbinsY; j++ ) TrigResult[j][i] = obj->GetBinContent(i+1,j+1);
+	}
+
+	char* trig_result = new char[20];
+
+	for( int j=0; j<NbinsY; j++ ){
+	  if( TrigResult[j][0]>-0.5 ){
+	    sprintf(trig_result,"%4.2f",TrigResult[j][0]);
+	    t_text->DrawText(1.2,j+1.3,trig_result);
+	  }
+	  if( TrigResult[j][1]>-0.5 ){
+	    sprintf(trig_result,"%4.2f",TrigResult[j][1]);
+	    t_text->DrawText(2.2,j+1.3,trig_result);
+	  }
+	}
+
+	b_box->SetFillColor(17);
+	b_box->DrawBox(1,1,2,5);
+
+	l_line->SetLineWidth(2);
+	l_line->DrawLine(2,1,2,12);
+
+	l_line->DrawLine(2,4,3,4);
+	l_line->DrawLine(2,3,3,3);
+	l_line->DrawLine(2,2,3,2);
+	l_line->DrawLine(2,1,3,1);
+
+	l_line->DrawLine(1,5,3,5);
+	l_line->DrawLine(1,6,3,6);
+	l_line->DrawLine(1,7,3,7);
+	l_line->DrawLine(1,8,3,8);
+	l_line->DrawLine(1,9,3,9);
+	l_line->DrawLine(1,10,3,10);
+	l_line->DrawLine(1,11,3,11);
+
+
+	TBox* b_box_w = new TBox();
+	TBox* b_box_r = new TBox();
+	TBox* b_box_y = new TBox();
+	TBox* b_box_g = new TBox();
+
+	b_box_g->SetFillColor(920);
+	b_box_y->SetFillColor(919);
+	b_box_r->SetFillColor(901);
+	b_box_w->SetFillColor(0);
+
+
+	TLegend* leg = new TLegend(0.16, 0.11, 0.44, 0.38);
+	leg->AddEntry(b_box_g,"Good",   "f");
+	leg->AddEntry(b_box_y,"Warning","f");
+	leg->AddEntry(b_box_r,"Error",  "f");
+	leg->AddEntry(b_box_w,"Masked", "f");
+	leg->Draw();
+
+	return;
+      }
+
+
+
+      if( o.name.find( "CSCTF_Chamber_Occupancies" )  != std::string::npos)
+      {
+
+	b_box->SetFillColor(23);
+
+	int Num=6;
+	for( int i=0; i<Num; i++){
+	  double x1s = double(0.25+i*0.1*9);
+	  double x1e = double(0.85+i*0.1*9);
+
+	  double y1s = 3.5;
+	  double y1e = 4.5;
+	  double y2s = -5.5;
+	  double y2e = -4.5;
+
+	  b_box->DrawBox(x1s,y1s,x1e,y1e);
+	  b_box->DrawBox(x1s,y2s,x1e,y2e);
+	}
+
+	return;
+      }
+
 /*      if(
         o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
@@ -452,16 +590,27 @@ private:
         o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
         o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
          ) */
+
       if(
-        o.name.find( "Rct" ) != std::string::npos &&
-        o.name.find( "EtaPhi" ) != std::string::npos
-         ) 
+        ( o.name.find( "Rct" ) != std::string::npos ||
+	  o.name.find( "Jet" ) != std::string::npos ||
+	  o.name.find( "IsoEm" ) != std::string::npos ) &&
+        o.name.find( "EtaPhi" ) != std::string::npos 
+        )
       {
-
-        dummybox->Draw("box,same");
-        return;
+	if( 
+	   o.name.find( "IsoEm" ) != std::string::npos ||
+	   o.name.find( "TauJet" ) != std::string::npos
+	   )
+	{
+	  dummybox_zoom->Draw("box,same");
+	  return;
+	}
+	else {
+	  dummybox->Draw("box,same");
+	  return;
+	}
       }
-
 
 
 
