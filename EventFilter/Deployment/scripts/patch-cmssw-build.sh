@@ -67,7 +67,6 @@ done
 
 echo "Updating edm plugin registry with patches"
 cd $TOPDIR/$CMSSW_VERSION
-echo "now in $PWD"
 RESPONSE=`reset_edm_cache.pl $TOPDIR/opt/cmssw/$PRO_DEV/lib $TOPDIR/opt/cmssw/$PRO_DEV/module /dev/null`
 echo "reset_edm_cache returned $RESPONSE"
 
@@ -78,7 +77,6 @@ echo "  ROOTSYS at $RT"
 
 # fix symbolic links for patched libs so it is visible after installation
 cd $TOPDIR
-echo "now in $PWD"
 for x in opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION/lib/$SCRAM_ARCH/*.so
 do
   if [ -e $x ]
@@ -88,7 +86,6 @@ do
 done
 
 cd $TOPDIR
-echo "now in $PWD"
 # remove temporary directory holding the local patches
 #rm -rf $TOPDIR/$CMSSW_VERSION
 ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                   opt/cmssw/$PRO_DEV/base
@@ -130,6 +127,7 @@ mkdir -p \$RPM_BUILD_ROOT
 tar -C $TOPDIR -c opt/cmssw | tar -xC \$RPM_BUILD_ROOT
 
 %files
+%defattr(-, root, root, -)
 /opt/cmssw/$PRO_DEV/lib
 /opt/cmssw/$PRO_DEV/python
 /opt/cmssw/$PRO_DEV/env.txt
@@ -137,8 +135,6 @@ tar -C $TOPDIR -c opt/cmssw | tar -xC \$RPM_BUILD_ROOT
 /opt/cmssw/$PRO_DEV/patch
 /opt/cmssw/$PRO_DEV/root
 /opt/cmssw/$PRO_DEV/patches
-
-%defattr(-,root,root,-)
 EOF
 mkdir -p RPMBUILD/{RPMS/{i386,i586,i686,x86_64},SPECS,BUILD,SOURCES,SRPMS}
 rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
