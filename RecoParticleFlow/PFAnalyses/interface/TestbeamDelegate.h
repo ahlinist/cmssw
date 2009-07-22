@@ -2,7 +2,7 @@
 #define TESTBEAMDELEGATE_H_
 
 #include "RecoParticleFlow/PFAnalyses/interface/EventDelegate.h"
-#include "UserCode/JamieBallinDictionary/interface/RunInfo.h"
+#include "RecoParticleFlow/PFAnalyses/interface/RunInfo.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBBeamCounters.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBEventPosition.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBRunData.h"
@@ -16,7 +16,7 @@
 #include "DataFormats/HcalRecHit/interface/HcalRecHitFwd.h"
 #include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
-#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
+#include "DataFormats/ParticleFlowReco/interface/ParticleFiltrationDecision.h"
 
 #include <map>
 

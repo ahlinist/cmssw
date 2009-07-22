@@ -8,7 +8,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
+#include "DataFormats/ParticleFlowReco/interface/ParticleFiltrationDecision.h"
 
 #include <string>
 

@@ -57,6 +57,8 @@ for line in result:
     if options.nostage:
         if filename[2] == 'STAGED':
             files.append(filename[0])
+        if filename[2] == 'STAGEIN':
+            print 'Still staging in: ' + filename[0]
     else:
         files.append(filename[0])
     

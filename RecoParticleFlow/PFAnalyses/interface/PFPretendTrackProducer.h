@@ -9,7 +9,7 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "RecoParticleFlow/PFTracking/interface/PFTrackTransformer.h"
 
-#include "UserCode/JamieBallinDictionary/interface/RunInfo.h"
+#include "RecoParticleFlow/PFAnalyses/interface/RunInfo.h"
 
 #include <map>
 #include <vector>
