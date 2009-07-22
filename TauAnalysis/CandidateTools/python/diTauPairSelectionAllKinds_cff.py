@@ -65,6 +65,21 @@ patElecTauPairSelConfigurator = objSelConfigurator(
 
 selectElecTauPairs = patElecTauPairSelConfigurator.configure(namespace = locals())
 
+selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation.cut = selectedElecTauPairsAntiOverlapVeto.cut
+selectedElecTauPairsZeroChargeLooseElectronIsolation.cut = selectedElecTauPairsZeroCharge.cut
+selectedElecTauPairsMt1METlooseElectronIsolation.cut = selectedElecTauPairsMt1MET.cut
+
+patElecTauPairSelConfiguratorLooseElectronIsolation = objSelConfigurator(
+    [ selectedElecTauPairsAntiOverlapVetoLooseElectronIsolation,
+      selectedElecTauPairsZeroChargeLooseElectronIsolation,
+      selectedElecTauPairsMt1METlooseElectronIsolation ],
+    src = "allElecTauPairsLooseElectronIsolation",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectElecTauPairsLooseElectronIsolation = patElecTauPairSelConfiguratorLooseElectronIsolation.configure(namespace = locals())
+
 #--------------------------------------------------------------------------------
 # define selection criteria for mu + tau-jet pairs
 # (settings made here overwrite values defined in muTauPairSelector_cfi)
@@ -121,6 +136,6 @@ patDiTauPairSelConfigurator = objSelConfigurator(
 selectDiTauPairs = patDiTauPairSelConfigurator.configure(namespace = locals())
 
 selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
-                                        +selectElecTauPairs
+                                        +selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
                                         +selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
                                         +selectDiTauPairs )
