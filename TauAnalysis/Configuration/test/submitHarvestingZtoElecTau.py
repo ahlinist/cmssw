@@ -5,7 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacement
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputDirectory = "/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/"
+outputDirectory = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/hists_factorized/"
 
 #--------------------------------------------------------------------------------
 #

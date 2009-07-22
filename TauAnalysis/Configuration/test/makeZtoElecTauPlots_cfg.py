@@ -14,14 +14,15 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # import utility function to enable factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoElecTauPlots
-#enableFactorization_makeZtoElecTauPlots(process)
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoElecTauPlots
+enableFactorization_makeZtoElecTauPlots(process)
 
 process.makeZtoElecTauPlots = cms.Sequence( process.loadZtoElecTau
                                            +process.addZtoElecTau
                                            +process.saveZtoElecTau
                                            +process.dumpZtoElecTau
-                                           +process.plotZtoElecTau )
+                                           +process.plotZtoElecTau 
+										   )
 
 process.p = cms.Path(process.makeZtoElecTauPlots)
 
