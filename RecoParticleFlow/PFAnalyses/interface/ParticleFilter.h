@@ -13,7 +13,7 @@
 
 #include "RecoParticleFlow/PFAnalyses/interface/ParticleFiltrationDelegate.h"
 
-#include "UserCode/JamieBallinDictionary/interface/ParticleFiltrationDecision.h"
+#include "DataFormats/ParticleFlowReco/interface/ParticleFiltrationDecision.h"
 
 /**
  * @class ParticleFilter

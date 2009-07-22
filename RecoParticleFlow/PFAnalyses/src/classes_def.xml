@@ -1,4 +1,7 @@
 <lcgdict>
+  <class name="pftools::TestbeamPreprocessor"/>
+  <class name="pftools::RunInfo"/>
+  <class name="std::vector<pftools::RunInfo>"/>
   <class name="CommonProcessing"/>
   <class name="EnergyProcessing"/>
   <class name="pftools::TreeCopy" />

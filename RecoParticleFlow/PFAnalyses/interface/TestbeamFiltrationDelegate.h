@@ -3,7 +3,7 @@
 
 #include "RecoParticleFlow/PFAnalyses/interface/ParticleFiltrationDelegate.h"
 
-#include "UserCode/JamieBallinDictionary/interface/RunInfo.h"
+#include "RecoParticleFlow/PFAnalyses/interface/RunInfo.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBBeamCounters.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBEventPosition.h"
 #include "TBDataFormats/HcalTBObjects/interface/HcalTBRunData.h"

@@ -19,7 +19,6 @@
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/TrackReco>
 <use name=Geometry/EcalAlgo>
-<use name=UserCode/JamieBallinDictionary>
 #Old stuff
 <use name=SimDataFormats/TrackingAnalysis>
 <use name=SimTracker/TrackAssociation>
@@ -27,7 +26,6 @@
 
 <export>
    <lib name=RecoParticleFlowPFAnalyses>
-   <use name=UserCode/JamieBallinDictionary>
    <use name=FWCore/Framework>
    <use name=DataFormats/ParticleFlowReco>
    <use name=DataFormats/ParticleFlowPFClusterTools>
