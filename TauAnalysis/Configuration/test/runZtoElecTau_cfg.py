@@ -51,7 +51,7 @@ process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(100)    
 )
 
 process.source = cms.Source("PoolSource",
@@ -98,15 +98,13 @@ process.p = cms.Path( process.producePatTuple
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
-#from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecTau
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoElecTau
 #
 # define "hook" for enabling/disabling factorization
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #
-# NOTE: factorization not implemented for Z --> e + tau-jet channel yet
-#
-##__#factorization#
+#__#factorization#
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
