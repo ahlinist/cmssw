@@ -10,14 +10,14 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'ZeePlusJets',
+            'Ztautau'
             #'Zee',
+            #'ZtautauPlusJets',
+            'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
-            'gammaPlusJetsSum',
-            #'ZtautauPlusJets'
-            'Ztautau'
+            'gammaPlusJetsSum'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -27,14 +27,14 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        'ZeePlusJets',
+        'Ztautau',
         #'Zee',
+        #'ZtautauPlusJets',
+        'ZeePlusJets',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
-        'gammaPlusJetsSum',
-        #'ZtautauPlusJets'
-        'Ztautau'
+        'gammaPlusJetsSum'
     )
 )
 drawJobConfigurator_ZtoElecTau = drawJobConfigurator(
@@ -312,15 +312,13 @@ drawJobConfigurator_ZtoElecTau.add(
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauElectronVeto,
     beforeCut = evtSelTauEcalCrackVeto,
-    plots = [
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Tau electron-Veto)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterTauProng"
-        )
-    ]
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/Tau#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Tau (after Tau electron-Veto cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_tau_afterTauElectronVeto"
+    )
 )
 
 drawJobConfigurator_ZtoElecTau.add(
@@ -328,9 +326,9 @@ drawJobConfigurator_ZtoElecTau.add(
     beforeCut = evtSelDiTauCandidateForElecTauAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Electron,Tau) (after Tau ECAL crack-Veto)",
+        title = "#Delta R(Electron,Tau) (after Tau ECAL Crack Veto)",
         xAxis = 'dR',
-        name = "cutFlowControlPlots_dR12_afterTauElectronVeto"
+        name = "cutFlowControlPlots_dR12_afterTauEcalCrackVeto"
     )
 )
 
