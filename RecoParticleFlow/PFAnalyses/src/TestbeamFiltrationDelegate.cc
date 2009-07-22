@@ -168,7 +168,7 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 		thisEventPasses_ = false;
 		if (isNoiseCandidate() > UNLIKELY && isNotMuon() == DEFINITEYES
 				&& vetosPassed != 31) {
-			decision_.type_ == ParticleFiltrationDecision::NOISE;
+			decision_.type_ = ParticleFiltrationDecision::NOISE;
 			++pureNoiseEvents_;
 			thisEventPasses_ = true;
 		}
@@ -416,10 +416,10 @@ Quality TestbeamFiltrationDelegate::isTOFPion() {
 	double tofS = timing.TOF1Stime() - timing.TOF2Stime();
 	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
 	double meanTOF = (tofS + tofJ) / 2.0;
-	if (debug_ > 4) {
-		LogDebug("TestbeamFiltrationDelegate") << "\tTOFS = " << tofS
+//	if (debug_ > 4) {
+		LogInfo("TestbeamFiltrationDelegate") << "\tTOFS = " << tofS
 				<< ",\tTOFJ = " << tofJ << ",\tmeanTOF: " << meanTOF << "\n";
-	}
+//	}
 	//if ((tofS > thisRun_->tofMin_ && tofS < thisRun_->tofMax_) && (tofJ > thisRun_->tofMin_ && tofJ < thisRun_->tofMax_))
 	if (meanTOF > thisRun_->tofMin_ && meanTOF < thisRun_->tofMax_)
 		tofPionQuality = DEFINITEYES;

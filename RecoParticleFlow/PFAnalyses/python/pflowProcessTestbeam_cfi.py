@@ -28,12 +28,14 @@ particleFlowBlock.RecMuons = cms.InputTag("faketracks", "muons")
 
 particleFlowBlock.verbose = cms.untracked.bool(False)
 particleFlowBlock.debug = cms.untracked.bool(False)
-particleFlowBlock.pf_DPtoverPt_Cut = cms.vdouble(100.0,1.0,0.80,0.50)
+
+particleFlowBlock.pf_DPtoverPt_Cut = cms.vdouble(1000.0,1.0,0.80,0.50)
 particleFlowBlock.pf_NHit_Cut = cms.vuint32(0,3,3,6)
 particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 #Change tags for PFAlgo
 from RecoParticleFlow.PFProducer.particleFlow_cff import *
+particleFlow.debug=cms.untracked.bool(False)
 particleFlow.vertexCollection = cms.InputTag("faketracks", "offlinePrimaryVertices")
 particleFlow.useVerticesForNeutral = cms.bool(False)
 

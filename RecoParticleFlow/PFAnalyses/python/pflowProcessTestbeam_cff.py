@@ -19,6 +19,8 @@ finishup = cms.OutputModule("PoolOutputModule",
     ) 
 )
 
+#Cleaning and tracks only
+pflowCleaning = cms.Sequence(particleFiltration)
 
 #Clustering only
 pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCAL)
@@ -43,6 +45,13 @@ pflowEndcapRechitMaker=cms.Sequence(particleFiltration * faketracks * pflowCalib
 pflowProcessEndcapTestbeam = cms.Sequence(particleFiltration * 
                                     faketracks * 
                                     pflowCalibEcalRechits *
+                                    pfClusteringECAL * 
+                                    pfClusteringHCAL * 
+                                    particleFlowBlock * 
+                                    particleFlow * 
+                                    extraction)
+
+pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks *
                                     pfClusteringECAL * 
                                     pfClusteringHCAL * 
                                     particleFlowBlock * 
