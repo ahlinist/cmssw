@@ -6,6 +6,7 @@ import copy
 # Plot histograms for Z --> e + tau-jet channel
 #
 # Author: Christian Veelken, UC Davis
+#         Jeff Kolb, Notre Dame
 #         Nancy Marinelli, Notre Dame
 # 
 #--------------------------------------------------------------------------------
@@ -15,14 +16,15 @@ from TauAnalysis.Configuration.plotZtoElecTau_drawJobs_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
-    ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader),                
     Ztautau = copy.deepcopy(processZtoElecTau_ZtautauSum.config_dqmFileLoader),
+    #Zee = copy.deepcopy(processZtoElecTau_Zee.config_dqmFileLoader),
+    #ZplusJets = copy.deepcopy(processZtoElecTau_ZplusJets.config_dqmFileLoader),
     ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJetsSum.config_dqmFileLoader),
-    Zee = copy.deepcopy(processZtoElecTau_ZeeSum.config_dqmFileLoader),
+    #ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader),                      
     gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader),
     gammaPlusJets_Pt20to25 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader),
     gammaPlusJets_Pt25to30 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader),
-    #gammaPlusJets_Pt30to35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader),
+    gammaPlusJets_Pt30to35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader),
     gammaPlusJets_PtGt35 = copy.deepcopy(processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processZtoElecTau_WplusJetsSum.config_dqmFileLoader),
     QCD_BCtoE_Pt20to30 = copy.deepcopy(processZtoElecTau_QCD_BCtoE_Pt20to30Sum.config_dqmFileLoader),
@@ -54,7 +56,7 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
             'gammaPlusJets_Pt15to20',
             'gammaPlusJets_Pt20to25',
             'gammaPlusJets_Pt25to30',
-            #'gammaPlusJets_Pt30to35',
+            'gammaPlusJets_Pt30to35',
             'gammaPlusJets_PtGt35'
         ),
 	dqmDirectory_output = cms.string('gammaPlusJetsSum')
@@ -64,8 +66,8 @@ addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            #'ZtautauPlusJets',
             'Ztautau',
+            #'ZtautauPlusJets',
             'ZeePlusJets', 
             #'Zee',
             'gammaPlusJetsSum',
@@ -81,22 +83,23 @@ addZtoElecTau = cms.Sequence(addZtoElecTau_qcdSum + addZtoElecTau_gammaPlusJetsS
 
 plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
-        ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets.config_dqmHistPlotter), 
         Ztautau = copy.deepcopy(processZtoElecTau_Ztautau.config_dqmHistPlotter),
+        #Zee = copy.deepcopy(processZtoElecTau_Zee.config_dqmHistPlotter),
+        #ZplusJets = copy.deepcopy(processZtoElecTau_ZplusJets.config_dqmHistPlotter)
         ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJets.config_dqmHistPlotter),
-        Zee = copy.deepcopy(processZtoElecTau_Zee.config_dqmHistPlotter),
+        #ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJets.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(processZtoElecTau_WplusJets.config_dqmHistPlotter),
+        TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets.config_dqmHistPlotter),
         gammaPlusJetsSum = cms.PSet(
             dqmDirectory = cms.string('gammaPlusJetsSum'),
             legendEntry = cms.string('#gamma + Jets'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-	),
+	    ),
         qcdSum = cms.PSet(
             dqmDirectory = cms.string('qcdSum'),
             legendEntry = cms.string('QCD'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
-        ),
-        TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets.config_dqmHistPlotter)
+        )
     ),
 
     xAxes = cms.PSet(
@@ -132,10 +135,11 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
                                 
     drawOptionSets = cms.PSet(
         default = cms.PSet(
-            ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets), 
             Ztautau = copy.deepcopy(drawOption_Ztautau),
+            #Zee = copy.deepcopy(drawOption_Zee),
+            #ZplusJets = copy.deepcopy(drawOption_ZplusJets)
             ZeePlusJets = copy.deepcopy(drawOption_ZeePlusJets),
-            Zee = copy.deepcopy(drawOption_Zee),
+            #ZtautauPlusJets = copy.deepcopy(drawOption_ZtautauPlusJets),
             WplusJets = copy.deepcopy(drawOption_WplusJets),
             gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets),
             qcdSum = copy.deepcopy(drawOption_QCD),
