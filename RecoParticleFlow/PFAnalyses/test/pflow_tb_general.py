@@ -28,7 +28,7 @@ if options.endcapMode <> 0:
     
 #print "Looking for specifiedE " + specifiedE
 
-process.particleFiltration.debug = cms.int32(5)
+process.particleFiltration.debug = cms.int32(1)
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
@@ -106,8 +106,8 @@ process.source = cms.Source("PoolSource",
 
         
 )
-process.p1 = cms.Path(process.pflowCleaning)
-#process.p1 = cms.Path(process.pflowProcessTestbeam)
+#process.p1 = cms.Path(process.pflowCleaning)
+process.p1 = cms.Path(process.pflowProcessTestbeam)
 
 if options.endcapMode <> 0:
     process.p1 = cms.Path(process.pflowProcessEndcapTestbeam)
