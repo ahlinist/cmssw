@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-masterConeDeltaR = 0.5
+masterConeDeltaR = 0.15
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
 
@@ -37,9 +37,9 @@ EventDelegate = cms.PSet(
     deltaREcalCaloWindow=cms.double(0.01),
     deltaRHcalCaloWindow=cms.double(0.05),
     nRingsEcalCaloWindow=cms.uint32(5),
-    nRingsHcalCaloWindow=cms.uint32(3),
+    nRingsHcalCaloWindow=cms.uint32(6),
     nPanesEcalCaloWindow=cms.uint32(1),
-    nPanesHcalCaloWindow=cms.uint32(2),
+    nPanesHcalCaloWindow=cms.uint32(1),
 )
 
 EventDelegateFullSim = EventDelegate.clone()

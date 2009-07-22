@@ -154,11 +154,11 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	//Convert beamEnergy to transverse beam momentum using cosh(eta) function:
 	//That's the mass of a pion at the end, in GeV
 	//TODO: if these eta/phi are wrong, tracks won't associate with clusters!
-	//math::PtEtaPhiMLorentzVector originVec(thisRun_->beamEnergy_ / cosh(
-	//		thisRun_->ecalEta_), thisRun_->ecalEta_, thisRun_->ecalPhi_, 0.14);
-
 	math::PtEtaPhiMLorentzVector originVec(thisRun_->beamEnergy_ / cosh(
-			thisRun_->tableEta_), thisRun_->tableEta_, thisRun_->tablePhi_, 0.14);
+			thisRun_->ecalEta_), thisRun_->ecalEta_, thisRun_->ecalPhi_, 0.14);
+
+//	math::PtEtaPhiMLorentzVector originVec(thisRun_->beamEnergy_ / cosh(
+//			thisRun_->tableEta_), thisRun_->tableEta_, thisRun_->tablePhi_, 0.14);
 
 	math::XYZTLorentzVector dirXYZ;
 	dirXYZ.SetPxPyPzE(originVec.Px(), originVec.Py(), originVec.Pz(),

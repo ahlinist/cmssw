@@ -10,251 +10,48 @@
 	TestbeamPreprocessor process(true);
 
 
-	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031, 50);
-//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0001.root", 160310001, 50);
-//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0002.root", 160310002, 50);
-//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0003.root", 160310003, 50);
-	/*
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0001.root", 154980001, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0002.root", 154980002, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0003.root", 154980003, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0004.root", 154980004, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0005.root", 154980005, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0006.root", 154980006, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015498.0007.root", 154980007, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0001.root", 155580001, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0002.root", 155580002, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0003.root", 155580003, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0004.root", 155580004, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0005.root", 155580005, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0006.root", 155580006, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0007.root", 155580007, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0008.root", 155580008, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0009.root", 155580009, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0010.root", 155580010, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0011.root", 155580011, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0012.root", 155580012, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0013.root", 155580013, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0014.root", 155580014, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0015.root", 155580015, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0016.root", 155580016, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0017.root", 155580017, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0018.root", 155580018, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0019.root", 155580019, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015558.0020.root", 155580020, 3);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0001.root", 154940001, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0002.root", 154940002, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0003.root", 154940003, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0004.root", 154940004, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0005.root", 154940005, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015494.0006.root", 154940006, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0001.root", 155540001, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0010.root", 155540010, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0011.root", 155540011, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0012.root", 155540012, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0013.root", 155540013, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0014.root", 155540014, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0015.root", 155540015, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0016.root", 155540016, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0017.root", 155540017, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0018.root", 155540018, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0019.root", 155540019, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0020.root", 155540020, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0021.root", 155540021, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0022.root", 155540022, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0023.root", 155540023, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0024.root", 155540024, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0025.root", 155540025, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0026.root", 155540026, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0027.root", 155540027, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0028.root", 155540028, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015554.0029.root", 155540029, 4);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0020.root", 155350020, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0021.root", 155350021, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0022.root", 155350022, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0023.root", 155350023, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0024.root", 155350024, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0025.root", 155350025, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0026.root", 155350026, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0027.root", 155350027, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0028.root", 155350028, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0029.root", 155350029, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0030.root", 155350030, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0031.root", 155350031, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0032.root", 155350032, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0033.root", 155350033, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0034.root", 155350034, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0035.root", 155350035, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0036.root", 155350036, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0037.root", 155350037, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0038.root", 155350038, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015535.0039.root", 155350039, 5);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0001.root", 155240001, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0002.root", 155240002, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0003.root", 155240003, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0004.root", 155240004, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0005.root", 155240005, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0006.root", 155240006, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0007.root", 155240007, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0008.root", 155240008, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0009.root", 155240009, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0010.root", 155240010, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0011.root", 155240011, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0012.root", 155240012, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0013.root", 155240013, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0014.root", 155240014, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0015.root", 155240015, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0016.root", 155240016, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0017.root", 155240017, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0018.root", 155240018, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015524.0019.root", 155240019, 6);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015518.0001.root", 155180001, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0001.root", 155200001, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0002.root", 155200002, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0003.root", 155200003, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0004.root", 155200004, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0005.root", 155200005, 7);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0006.root", 155200006, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0007.root", 155200007, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0008.root", 155200008, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0009.root", 155200009, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0010.root", 155200010, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015520.0011.root", 155200011, 7);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015514.0001.root", 155140001, 8);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015514.0002.root", 155140002, 8);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015514.0003.root", 155140003, 8);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015514.0004.root", 155140004, 8);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015514.0005.root", 155140005, 8);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015507.0011.root", 155070011, 9);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015507.0012.root", 155070012, 9);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015507.0013.root", 155070013, 9);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015507.0014.root", 155070014, 9);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015508.0015.root", 155080015, 9);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015508.0016.root", 155080016, 9);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015508.0017.root", 155080017, 9);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00015508.0018.root", 155080018, 9);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016024.0000.root", 160240000, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016024.0001.root", 160240001, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016025.0000.root", 160250000, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016025.0001.root", 160250001, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016025.0002.root", 160250002, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016025.0003.root", 160250003, 20);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016027.0000.root", 160270000, 30);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016027.0001.root", 160270001, 30);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016028.0000.root", 160280000, 30);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016028.0001.root", 160280001, 30);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016031.0000.root", 160310000, 50);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016031.0001.root", 160310001, 50);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016031.0002.root", 160310002, 50);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016031.0003.root", 160310003, 50);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016037.0000.root", 160370000, 100);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016037.0001.root", 160370001, 100);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016037.0002.root", 160370002, 100);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016038.0000.root", 160380000, 150);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016038.0001.root", 160380001, 150);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016038.0002.root", 160380002, 150);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016044.0000.root", 160440000, 225);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016044.0001.root", 160440001, 225);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016044.0002.root", 160440002, 225);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016044.0003.root", 160440003, 225);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016045.0000.root", 160450000, 300);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016045.0001.root", 160450001, 300);
-	process.processEvents("rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_00016045.0002.root", 160450002, 300);
-*/
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031, 50);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015498.0001.root", 15498, 3);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015558.0001.root", 15558, 3);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015494.0001.root", 15494, 4);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015554.0001.root", 15554, 4);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015535.0020.root", 15535, 5);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015524.0001.root", 15524, 6);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015518.0001.root", 15518, 7);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015520.0001.root", 15520, 7);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015514.0001.root", 15514, 8);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015507.0011.root", 15507, 9);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00015508.0015.root", 15508, 9);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016024.0000.root", 16024, 20);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016025.0000.root", 16025, 20);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016027.0000.root", 16027, 30);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016028.0000.root", 16028, 30);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031, 50);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016037.0000.root", 16037, 100);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016038.0000.root", 16038, 150);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016044.0000.root", 16044, 225);
+//
+//	process.processEvents("/tmp/tb07_reco_edm_run_00016045.0000.root", 16045, 300);
 
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030139.combined.OutServ_0.0-cmsswreco.root", 30139);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030140.combined.OutServ_0.0-cmsswreco.root", 30140);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030141.combined.OutServ_0.0-cmsswreco.root", 30141);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030146.combined.OutServ_0.0-cmsswreco.root", 30146);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029739.combined.OutServ_0.0-cmsswreco.root", 29739);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029740.combined.OutServ_0.0-cmsswreco.root", 29740);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029950.combined.OutServ_0.0-cmsswreco.root", 29950);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029951.combined.OutServ_0.0-cmsswreco.root", 29951);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029953.combined.OutServ_0.0-cmsswreco.root", 29953);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029954.combined.OutServ_0.0-cmsswreco.root", 29954);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029955.combined.OutServ_0.0-cmsswreco.root", 29955);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029956.combined.OutServ_0.0-cmsswreco.root", 29956);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029957.combined.OutServ_0.0-cmsswreco.root", 29957);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029958.combined.OutServ_0.0-cmsswreco.root", 29958);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029959.combined.OutServ_0.0-cmsswreco.root", 29959);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029689.combined.OutServ_0.0-cmsswreco.root", 29689);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029690.combined.OutServ_0.0-cmsswreco.root", 29690);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029691.combined.OutServ_0.0-cmsswreco.root", 29691);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029694.combined.OutServ_0.0-cmsswreco.root", 29694);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029695.combined.OutServ_0.0-cmsswreco.root", 29695);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029703.combined.OutServ_0.0-cmsswreco.root", 29703);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029704.combined.OutServ_0.0-cmsswreco.root", 29704);
-//
-//
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029705.combined.OutServ_0.0-cmsswreco.root", 29705);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029706.combined.OutServ_0.0-cmsswreco.root", 29706);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029707.combined.OutServ_0.0-cmsswreco.root", 29707);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030127.combined.OutServ_0.0-cmsswreco.root", 30127);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030128.combined.OutServ_0.0-cmsswreco.root", 30128);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030129.combined.OutServ_0.0-cmsswreco.root", 30129);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030131.combined.OutServ_0.0-cmsswreco.root", 30131);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030133.combined.OutServ_0.0-cmsswreco.root", 30133);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029976.combined.OutServ_0.0-cmsswreco.root", 29976);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029977.combined.OutServ_0.0-cmsswreco.root", 29977);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029983.combined.OutServ_0.0-cmsswreco.root", 29983);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029984.combined.OutServ_0.0-cmsswreco.root", 29984);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029986.combined.OutServ_0.0-cmsswreco.root", 29986);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029988.combined.OutServ_0.0-cmsswreco.root", 29988);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029989.combined.OutServ_0.0-cmsswreco.root", 29989);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029990.combined.OutServ_0.0-cmsswreco.root", 29990);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029991.combined.OutServ_0.0-cmsswreco.root", 29991);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029713.combined.OutServ_0.0-cmsswreco.root", 29713);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029728.combined.OutServ_0.0-cmsswreco.root", 29728);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029729.combined.OutServ_0.0-cmsswreco.root", 29729);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029730.combined.OutServ_0.0-cmsswreco.root", 29730);
-//
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029731.combined.OutServ_0.0-cmsswreco.root", 29731);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029754.combined.OutServ_0.0-cmsswreco.root", 29754);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029755.combined.OutServ_0.0-cmsswreco.root", 29755);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030114.combined.OutServ_0.0-cmsswreco.root", 30114);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030115.combined.OutServ_0.0-cmsswreco.root", 30115);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030116.combined.OutServ_0.0-cmsswreco.root", 30116);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030117.combined.OutServ_0.0-cmsswreco.root", 30117);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030120.combined.OutServ_0.0-cmsswreco.root", 30120);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029721.combined.OutServ_0.0-cmsswreco.root", 29721);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029722.combined.OutServ_0.0-cmsswreco.root", 29722);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029725.combined.OutServ_0.0-cmsswreco.root", 29725);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029726.combined.OutServ_0.0-cmsswreco.root", 29726);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029757.combined.OutServ_0.0-cmsswreco.root", 29757);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029758.combined.OutServ_0.0-cmsswreco.root", 29758);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029759.combined.OutServ_0.0-cmsswreco.root", 29759);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030111.combined.OutServ_0.0-cmsswreco.root", 30111);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030112.combined.OutServ_0.0-cmsswreco.root", 30112);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030113.combined.OutServ_0.0-cmsswreco.root", 30113);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029732.combined.OutServ_0.0-cmsswreco.root", 29732);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029733.combined.OutServ_0.0-cmsswreco.root", 29733);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029734.combined.OutServ_0.0-cmsswreco.root", 29734);
-//
-//
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029760.combined.OutServ_0.0-cmsswreco.root", 29760);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029761.combined.OutServ_0.0-cmsswreco.root", 29761);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029762.combined.OutServ_0.0-cmsswreco.root", 29762);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030110.combined.OutServ_0.0-cmsswreco.root", 30110);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029735.combined.OutServ_0.0-cmsswreco.root", 29735);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029736.combined.OutServ_0.0-cmsswreco.root", 29736);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029763.combined.OutServ_0.0-cmsswreco.root", 29763);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029764.combined.OutServ_0.0-cmsswreco.root", 29764);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00029767.combined.OutServ_0.0-cmsswreco.root", 29767);
-//	process.processEvents("/tmp/h2.00029650.combined.OutServ_0.0-cmsswreco.root", 29650);
-//	process.processEvents("/tmp/h2.00029737.combined.OutServ_0.0-cmsswreco.root", 29737);
-//	process.processEvents("/tmp/h2.00029738.combined.OutServ_0.0-cmsswreco.root", 29738);
-//	process.processEvents("/tmp/h2.00030109.combined.OutServ_0.0-cmsswreco.root", 30109);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030379.combined.OutServ_0.0-cmsswreco.root", 30379);
-//	process.processEvents("/tmp/h2.00030553.combined.OutServ_0.0-cmsswreco.root", 30553);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030384.combined.OutServ_0.0-cmsswreco.root", 30384);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030386.combined.OutServ_0.0-cmsswreco.root", 30386);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030387.combined.OutServ_0.0-cmsswreco.root", 30387);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030388.combined.OutServ_0.0-cmsswreco.root", 30388);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030389.combined.OutServ_0.0-cmsswreco.root", 30389);
-//	process.processEvents("rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.00030390.combined.OutServ_0.0-cmsswreco.root", 30390);
-//
-
-//	process.processEvents("/tmp/tb07_reco_edm_run_00016031.0000.root", 16031);
 
 	process.finish("testbeam_cuts_310_endcap.root");
 

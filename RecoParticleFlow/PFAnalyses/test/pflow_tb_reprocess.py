@@ -6,7 +6,7 @@
 
 import FWCore.ParameterSet.Config as cms
 import commands
-process = cms.Process("SKIM")
+process = cms.Process("PROD")
 process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
 process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 from RecoParticleFlow.PFAnalyses.RunDict import *
@@ -14,19 +14,12 @@ from RecoParticleFlow.PFAnalyses.RunDict import *
 from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
 outputTree = "outputtree_" + fileLabel
-outputFile = "/tmp/reprocessed_" + fileLabel
+outputFile = "/tmp/rereprocessed_" + fileLabel
 logFile = "/tmp/log_" + logLabel
 
 
-if options.notracks <> 0:
-    process.faketracks.justCreateEmptyCollections = cms.bool(True)
-    print "Running in notrack mode"
-
 specifiedE = energies[options.beamEnergy]
-if options.endcapMode <> 0:
-    specifiedE = endcap[options.beamEnergy]
-    
-#print "Looking for specifiedE " + specifiedE
+
 
 process.particleFiltration.debug = cms.int32(5)
 
@@ -39,6 +32,11 @@ process.particleFlowClusterHCAL.thresh_Seed_Endcap = cms.double(0.8)
 process.particleFlowClusterHCAL.thresh_Endcap = cms.double(0.8)
 
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
+
+#Don't create neutrals from E > p detection...
+#process.particleFlow.pf_nsigma_HCAL = cms.double(100)
+#process.particleFlow.pf_nsigma_ECAL = cms.double(100)
+
 #process.particleFlowBlock.debug = cms.untracked.bool(True)
 #process.particleFlow.debug = cms.untracked.bool(True)
 #Uncomment this lot if you want a file of noise!
@@ -50,23 +48,11 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #Need to override clustering to exclude HF components
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
 process.pfClusteringHCAL = cms.Sequence(particleFlowRecHitHCAL * particleFlowClusterHCAL)
-
-result = []
-if options.copyToTmp <> 0:
-    if options.endcapMode <> 0:
-          map(lambda a : commands.getoutput('rfcp /castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_000' + str(a) + '.root' + ' /tmp'), specifiedE)
-          result = map(lambda x : 'file:/tmp/tb07_reco_edm_run_000' + str(x) + '.root', specifiedE)
-    else:
-        map(lambda a : commands.getoutput('rfcp ' + '/castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(a) + '.combined.OutServ_0.0-cmsswreco.root' + ' /tmp'), specifiedE)
-        result = map(lambda x : 'file:/tmp/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
-else:
-    if options.endcapMode <> 0: 
-        result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/data/h2tb2007/testbeam_HCalEcalCombined/DIGI-RECO/default_v1/tb07_reco_edm_run_000' + str(x) + '.root', specifiedE)
-    else:   
-        result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
-    
+#process.extraction.clustersFromCandidates=cms.bool(True)
+#process.extraction.rechitsFromCandidates=cms.bool(True)
+process.extraction.nRingsHcalCaloWindow=cms.uint32(20)
+process.particleFlow.debug=cms.untracked.bool(True)
 if options.endcapMode <> 0:
-    #result = ['file:/tmp/tb07_reco_edm_run_00015535.0021.root']
     process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
     process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
     process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
@@ -75,12 +61,7 @@ if options.endcapMode <> 0:
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
         input=cms.untracked.int32(options.kevents * 1000)
-        )
-
-# Files to process
-runs = cms.untracked.vstring(result)
-print "Input files :"
-print result
+)
 
 print "Log file :"
 print logFile
@@ -95,22 +76,15 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 
 process.MessageLogger = cms.Service("MessageLogger",
     destinations=cms.untracked.vstring(logFile, 'cout'),
-#    debugModules=cms.untracked.vstring('particleFiltration', 'TestbeamFiltrationDelegate'),
-#    cout=cms.untracked.vstring('string threshold=DEBUG'),
-#    threshold=cms.untracked.string('DEBUG')
 )
 
 process.source = cms.Source("PoolSource",
-        fileNames=runs,
-        inputCommands=cms.untracked.vstring('keep *', 'drop EBDataFramesSorted_*_*_*', 'drop EEDataFramesSorted_*_*_*')
-
-        
+    fileNames=cms.untracked.vstring('file:/tmp/reprocessed_50GeV_justCleaned.root'),
+    inputCommands=cms.untracked.vstring('keep *', 'drop *_faketracks_*_*')
 )
-process.p1 = cms.Path(process.pflowCleaning)
-#process.p1 = cms.Path(process.pflowProcessTestbeam)
 
-if options.endcapMode <> 0:
-    process.p1 = cms.Path(process.pflowProcessEndcapTestbeam)
+process.p1 = cms.Path(process.pfAlgoAndExtractionTestbeam)
+
 
 if options.outputCollections:
     process.outpath = cms.EndPath(process.finishup)

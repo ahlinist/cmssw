@@ -301,6 +301,17 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			extractCandidate(*it);
 	}
 
+//	calib_->recompute();
+//
+//	calib_->calowindow_ecal_.init(calib_->rechits_meanEcal_.eta_,
+//			calib_->rechits_meanEcal_.phi_, nRingsEcalCaloWindow_,
+//			deltaREcalCaloWindow_, nPanesEcalCaloWindow_);
+//	calib_->calowindow_hcal_.init(calib_->rechits_meanHcal_.eta_,
+//			calib_->rechits_meanHcal_.phi_, nRingsHcalCaloWindow_,
+//			deltaRHcalCaloWindow_, nPanesHcalCaloWindow_);
+//	calib_->fillCaloWindow(calib_->rechits_ecal_, calib_->calowindow_ecal_);
+//	calib_->fillCaloWindow(calib_->rechits_hcal_, calib_->calowindow_hcal_);
+
 	endParticle();
 
 	return thisEventPasses_;
@@ -340,7 +351,7 @@ void TestbeamDelegate::extractHcalRecHits(
 			if (ieta == 8)
 				ietaNew = 5;
 		}
-		iphiNew += 2;
+		//iphiNew += 2;
 		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
 		if (newDetId == 0) {
 			LogWarning("TestbeamDelegate")

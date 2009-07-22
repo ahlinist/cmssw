@@ -49,11 +49,6 @@ template<typename K, typename R> std::ostream& operator<<(std::ostream& s,
 	return s;
 }
 
-/**
- * In my "macros", I go for the 'Java' style: write implementation for a class with
- * with its definition.
- *
- */
 class EfficiencyStudy {
 public:
 
@@ -104,45 +99,9 @@ public:
 		c->Print(macrocpy.c_str());
 	}
 
-	void drawEfficiencyPlots() {
+	void drawEfficiencyPlots();
 
-		TStyle* rStyle = util_.makeStyle("normalStyle");
-		rStyle->SetOptLogy(false);
-		rStyle->SetOptStat(1);
-		rStyle->SetOptFit(1);
-		rStyle->SetOptLogz(false);
-		rStyle->SetOptLogx(true);
-		//Supresses TGraph errors in X
-		rStyle->SetErrorX(0);
-		rStyle->cd();
-
-		util_.newPage();
-
-		map<string, TTree*>::iterator it = trees_.begin();
-		unsigned count(0);
-		for (; it != trees_.end(); ++it) {
-			pair<const string, TTree*> item = *it;
-
-			std::string name("simE");
-			name.append("_");
-			name.append(obj2str(count));
-			std::string qry("sim_energyEvent_>>");
-			qry.append(name);
-			qry.append("(300, 1,300)");
-			item.second->Draw(qry.c_str());
-
-			TH1* plot = util_.formatHisto(name, item.first,
-					"Beam momentum (GeV/c)", util_.nextColor(),
-					util_.nextColor(), 2);
-			util_.accumulateObjects(plot, "");
-			++count;
-		}
-
-		util_.addTitle("TB Analysis - statistics available");
-
-		util_.flushPage();
-
-	}
+	void drawFakeNeutralRecoPlots();
 
 	void drawClusterEnergyPlots();
 
@@ -172,6 +131,120 @@ private:
 	std::string directory_;
 
 };
+
+void EfficiencyStudy::drawHcalInteractionPlots() {
+	TStyle* rStyle = util_.makeStyle("fStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(1);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(false);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+	util_.addTitle("Hcal Interactions");
+
+	TH2F* hcalInteractionRate;
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+		TTree* tree_ = item.second;
+
+		Calibratable* calib = new Calibratable();
+		tree_->SetBranchAddress("Calibratable", &calib);
+
+
+	}
+
+	util_.flushPage();
+}
+
+void EfficiencyStudy::drawEfficiencyPlots() {
+
+	TStyle* rStyle = util_.makeStyle("normalStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(1);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(true);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+
+		std::string name("simE");
+		name.append("_");
+		name.append(obj2str(count));
+		std::string qry("sim_energyEvent_>>");
+		qry.append(name);
+		qry.append("(300, 1,300)");
+		item.second->Draw(qry.c_str());
+
+		TH1* plot = util_.formatHisto(name, item.first,
+				"Beam momentum (GeV/c)", util_.nextColor(), util_.nextColor(),
+				2);
+		util_.accumulateObjects(plot, "");
+		++count;
+	}
+
+	util_.addTitle("TB Analysis - statistics available");
+
+	util_.flushPage();
+
+}
+
+void EfficiencyStudy::drawFakeNeutralRecoPlots() {
+	TStyle* rStyle = util_.makeStyle("fStyle");
+	rStyle->SetOptLogy(false);
+	rStyle->SetOptStat(1);
+	rStyle->SetOptFit(1);
+	rStyle->SetOptLogz(false);
+	rStyle->SetOptLogx(false);
+	//Supresses TGraph errors in X
+	rStyle->SetErrorX(0);
+	rStyle->cd();
+
+	util_.newPage();
+	util_.addTitle("Fake neutrals");
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+		TTree* tree_ = item.second;
+
+		Calibratable* calib = new Calibratable();
+		tree_->SetBranchAddress("Calibratable", &calib);
+
+		//Number of n0s
+
+		//Expectation value of their energy
+
+		//Rms of their energy
+
+		//Expectation value of the sum of their energies
+
+		tree_->Draw("cand_energyNeutralHad_>>neutralHad");
+		TH1* neutralHad = util_.formatHisto("neutralHad",
+				"Energy assosciated with neutral hadrons", "E n^{0} (GeV)",
+				util_.nextColor(), util_.nextColor());
+
+		util_.accumulateObjects(neutralHad);
+
+	}
+
+	util_.flushPage();
+}
 
 void EfficiencyStudy::drawClusterEnergyPlots() {
 	TStyle* rStyle = util_.makeStyle("cStyle");
@@ -410,17 +483,22 @@ void EfficiencyStudy::drawEnergyDepositionPlots() {
 void efficiencyStudy() {
 	gROOT->Reset();
 
-	TFile
-			* study =
-					TFile::Open(
-							"/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/outputtree_50GeV_2k.root");
+	TFile * study = TFile::Open("../../test/outputtree_50GeV_2k.root");
 	TTree* studyTree = (TTree*) study->FindObjectAny("Extraction");
+
+	TFile * standard = TFile::Open("../../test/outputtree_50GeV_2k_std.root");
+	TTree* standardTree = (TTree*) standard->FindObjectAny("Extraction");
+
+	TFile * clusterRecov = TFile::Open("../../test/outputtree_50GeV_2k_jamieAlgo.root");
+	TTree* clusterRecovTree = (TTree*) standard->FindObjectAny("Extraction");
 
 	std::map<std::string, TTree*> source;
 
 	std::cout << "Study tree is " << studyTree << endl;
 
 	source["Study"] = studyTree;
+	source["Standard"] = standardTree;
+	source["Cluster recovery"] = clusterRecovTree;
 
 	std::vector<int> energies;
 	//	energies.push_back(2);
@@ -442,6 +520,7 @@ void efficiencyStudy() {
 	es.drawEfficiencyPlots();
 	es.drawEnergyDepositionPlots();
 	es.drawClusterEnergyPlots();
+	es.drawFakeNeutralRecoPlots();
 
 	es.closeFiles();
 
