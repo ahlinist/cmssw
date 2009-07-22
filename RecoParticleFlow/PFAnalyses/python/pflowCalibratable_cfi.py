@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+#Question: how to change this globally?
 masterConeDeltaR = 0.15
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
@@ -15,7 +16,7 @@ EventDelegate = cms.PSet(
     deltaRRechitsToTrack=cms.double(masterConeDeltaR),
     deltaRCandToTrack=cms.double(masterConeDeltaR * 2),
     clustersFromCandidates=cms.bool(True),
-    rechitsFromCandidates=cms.bool(False),
+    rechitsFromCandidates=cms.bool(True),
     neutralMode=cms.bool(False),
     noSimDaughters=cms.bool(True),
     particlePDG=cms.int32(211),    

@@ -14,8 +14,8 @@ particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
 particleFlowRecHitECAL.crossBarrelEndcapBorder = cms.bool(False)
 particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
-particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
+#particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
+#particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
 
 #Change tags for PFBlock building
 from RecoParticleFlow.PFProducer.particleFlowBlock_cff import *
