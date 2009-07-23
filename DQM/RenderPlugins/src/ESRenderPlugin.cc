@@ -220,7 +220,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
    {
       gStyle->SetPalette(7,colorbar);
       obj->SetMinimum(0.5);
-      obj->SetMaximum(6.5);
+      obj->SetMaximum(7.5);
       return;
    }
 
