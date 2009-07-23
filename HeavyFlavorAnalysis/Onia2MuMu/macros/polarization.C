@@ -1,7 +1,7 @@
 ////////// constants
 
 // beam energy in GeV
-const double pbeam = 10000.;
+const double pbeam = 5000.;
 
 // masses
 const double Mprot = 0.9382720;
@@ -13,8 +13,8 @@ double gPI = TMath::Pi();
 
 double Ebeam = sqrt( pbeam*pbeam + Mprot*Mprot );
 
-TLorentzVector beam1_LAB( pbeam,  0., 0., Ebeam );
-TLorentzVector beam2_LAB( -pbeam, 0., 0., Ebeam );
+TLorentzVector beam1_LAB( 0., 0., pbeam, Ebeam );
+TLorentzVector beam2_LAB( 0., 0., -pbeam, Ebeam );
 
 
       // in the event loop
