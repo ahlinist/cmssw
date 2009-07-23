@@ -49,6 +49,9 @@ bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
       if( o.name.find( "ESOccupancyTask" ) != std::string::npos ){
 	 return true;
       }
+      if( o.name.find( "ESRawDataTask" ) != std::string::npos ){
+	 return true;
+      }
       if( o.name.find( "ESIntegrityTask" ) != std::string::npos ){
 	 return true;
       }
@@ -115,6 +118,11 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
    assert( obj );
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
+
+   if( o.name.find("ESRawDataTask")!= std::string::npos)
+   {
+      obj->SetFillColor(kRed);
+   }
 
    if( name.find( "Gain used for data taking" ) != std::string::npos )
    {
@@ -184,6 +192,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
    obj->SetOption("colz");
    gPad->SetRightMargin(0.15);
    gStyle->SetPaintTextFormat("+g");
+
 
    if( name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Status" ) != std::string::npos )
    {
