@@ -55,7 +55,6 @@ namespace pftools {
  * Set thisEventPasses_ if all Calibratables found in this event should not be written to the tree/event
  * Set thisParticlePasses_ if that particular Calibratable should not be written to the tree/event.
  *
- * TODO: Needs some work if Calibratables should be written to an Event and not to a seperate tree
  *
  * @author Jamie Ballin
  * @date April 2009

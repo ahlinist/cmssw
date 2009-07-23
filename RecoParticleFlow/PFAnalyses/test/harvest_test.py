@@ -18,7 +18,7 @@ process.maxEvents = cms.untracked.PSet(
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
-process.GlobalTag.globaltag = "IDEAL_31X::All"
+process.GlobalTag.globaltag = "MC_31X_V1::All"
 
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 
@@ -70,7 +70,7 @@ process.generator = cms.EDProducer("Pythia6EGun",
 #process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 #process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
 #process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
-process.particleFlowRecHitHCAL.isTestbeam = cms.bool(False)
+#process.particleFlowRecHitHCAL.isTestbeam = cms.bool(False)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 
@@ -98,7 +98,7 @@ process.TFileService = cms.Service("TFileService",
 
 process.finishup = cms.OutputModule("PoolOutputModule",
    fileName=cms.untracked.string(outputFile),
-   outputCommands=cms.untracked.vstring('drop *', 'keep *_pluckingPF_*_*', 'keep *_extraction_*_*'),
+   outputCommands=cms.untracked.vstring('drop *', 'keep *_harvestPF_*_*', 'keep *_extraction_*_*'),
     
 )
 

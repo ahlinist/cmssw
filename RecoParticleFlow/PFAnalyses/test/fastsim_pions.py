@@ -8,7 +8,7 @@ from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
-process.GlobalTag.globaltag = "IDEAL_30X::All"
+process.GlobalTag.globaltag = "MC_31X_V1::All"
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.famosSimHits.SimulateCalorimetry = True
 process.famosSimHits.SimulateTracking = True
@@ -41,70 +41,77 @@ process.generator = cms.EDProducer("Pythia6EGun",
        MaxEta = cms.double(1.0),
        MinE = cms.double(options.minBeamEnergy),
        MaxE = cms.double(options.beamEnergy+0.0001),
-       AddAntiParticle = cms.bool(False)
+       AddAntiParticle = cms.bool(True)
      ),
     pythiaVerbosity = cms.untracked.bool(False),
     PythiaParameters = cms.PSet(
         pythiaUESettingsBlock,
-        # This is a vector of ParameterSet names to be read, in this order
         parameterSets = cms.vstring(
             'pythiaUESettings'
        )
     )
 )
 
-
-
 process.MessageLogger = cms.Service("MessageLogger",
-#    destinations=cms.untracked.vstring('Dipion_' + logLabel),
-    destinations=cms.untracked.vstring('cout'),
+    destinations=cms.untracked.vstring('Dipion_' + logLabel, 'cout'),
 )
 
+genEvents = 100
+if options.kevents <> 0:
+    genEvents = options.kevents * 1000
+else:
+    print 'Generating 100 events by default (alter with kevents=X option)'
+    
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(genEvents)
 )
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
 
-process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('Dipion_' + fileLabel)
+    fileName = cms.string('Dipion_Tree_' + fileLabel)
 )
 
-from RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi import *
+import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
 
 process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
-    EventDelegate
+    calibratable.EventDelegate
 )
 
 process.extraction.neutralMode = cms.bool(False)
 process.extraction.particlePDG=cms.int32(211)
 
+process.calibratable = cms.EDProducer("CalibratableProducer",
+    calibratable.EventDelegate         
+)
+process.calibratable.neutralMode = cms.bool(False)
+process.calibratable.particlePDG=cms.int32(211)
+
 process.finishup = cms.OutputModule("PoolOutputModule",
-    fileName=cms.untracked.string("Dipion_Events_.root"),
-    outputCommands=cms.untracked.vstring('keep *'),
-    #outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
-#    SelectEvents=cms.untracked.PSet(
-#                SelectEvents=cms.vstring('p1')
-#    ) 
+    fileName=cms.untracked.string('Dipion_Events_' + fileLabel),
+    #outputCommands=cms.untracked.vstring('keep *'),
+    outputCommands=cms.untracked.vstring('drop *', 
+                                         'keep *_particleFiltration_*_*', 
+                                         'keep recoMuons_*_*_*', 
+                                         'keep *_calibratable_*_*', 
+                                         'keep *_faketracks_*_*', 
+                                         'keep recoPFRecTracks_*_*_*', 
+                                         'keep recoPFRecHits_*_*_*', 
+                                         'keep recoPFClusters_*_*_*', 
+                                         'keep recoPFBlocks_*_*_*', 
+                                         'keep recoPFCandidates_*_*_*'),
 )
 
-process.famosSimulationSequence2 = cms.Sequence(
-    process.offlineBeamSpot+
-    process.famosPileUp+
-    process.famosSimHits+
-#    process.MuonSimHits+
-    process.mix
-)
+process.p1 = cms.Path(process.generator + 
+                      process.famosWithEverything + 
+                      process.caloJetMetGen + 
+                      process.particleFlowSimParticle + 
+                      process.calibratable + 
+                      process.extraction)
 
 
-
-#process.p1 = cms.Path(process.generator + process.famosWithEverything + process.caloJetMetGen + process.particleFlowSimParticle + process.extraction)
-process.p1 = cms.Path(process.generator + process.famosSimulationSequence2)
 process.outpath = cms.EndPath(process.finishup)
 
 
