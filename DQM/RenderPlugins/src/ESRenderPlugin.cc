@@ -246,7 +246,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
       return;
    }
 
-   if( name.find( "DigiHit 2D Occupancy" ) != std::string::npos ) 
+   if( name.find( "Digi 2D Occupancy" ) != std::string::npos ) 
    {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
