@@ -190,7 +190,7 @@ private:
         return;
       }
 
-      if(o.name.find("ClusterSizeIn1Bin_Roll_vs_Sector") != std::string::npos)
+      if(o.name.find("ClusterSizeIn1Bin") != std::string::npos)
       {
         obj->SetMinimum(-1.e-15);
         obj->SetMaximum(1.0);
@@ -210,7 +210,7 @@ private:
         return;
       }
 
-      if(o.name.find("AsymmetryLeftRight_Roll_vs_Sector") != std::string::npos)
+      if(o.name.find("AsymmetryLeftRight") != std::string::npos)
       {
         obj->SetMinimum(-1.e-15);
         obj->SetMaximum(1.0);
@@ -235,7 +235,7 @@ private:
         return;
       }
 
-      if(o.name.find("DeadChannelFraction_Roll_vs_Sector") != std::string::npos)
+      if(o.name.find("DeadChannelFraction") != std::string::npos)
       {
         obj->SetMinimum(-1.e-15);
         obj->SetMaximum(1.0);
@@ -317,7 +317,7 @@ private:
       }
 
 
-      if(o.name.find("RPCNoisyStrips_Roll_vs_Sector") != std::string::npos) {
+      if(o.name.find("RPCNoisyStrips") != std::string::npos) {
 	
 	obj->SetMinimum(-0.5);
 	obj->SetMaximum(5.5);
@@ -337,7 +337,7 @@ private:
       
 
 
-      if(o.name.find("NumberOfDigi_Mean_Roll_vs_Sector") != std::string::npos)
+      if(o.name.find("NumberOfDigi_Mean") != std::string::npos)
       {
         obj->SetMinimum(0.5);
         obj->SetMaximum(10.5);
