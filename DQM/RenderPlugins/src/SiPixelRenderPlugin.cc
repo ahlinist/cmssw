@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.10 $
-  \date $Date: 2009/05/22 19:05:24 $
+  \version $Revision: 1.11 $
+  \date $Date: 2009/05/22 19:09:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -87,6 +87,7 @@ private:
 
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
+        gPad->SetLeftMargin(0.3);
         dqm::utils::reportSummaryMapPalette(obj2);
         return;
       }
