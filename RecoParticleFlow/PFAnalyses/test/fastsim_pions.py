@@ -76,18 +76,18 @@ process.TFileService = cms.Service("TFileService",
 
 import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
 
-process.extraction = cms.EDAnalyzer("ExtractionAnalyzer",
+process.extractionToTree = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.EventDelegate
 )
 
-process.extraction.neutralMode = cms.bool(False)
-process.extraction.particlePDG=cms.int32(211)
+process.extractionToTree.neutralMode = cms.bool(False)
+process.extractionToTree.particlePDG=cms.int32(211)
 
-process.calibratable = cms.EDProducer("CalibratableProducer",
+process.extractionToEvent = cms.EDProducer("CalibratableProducer",
     calibratable.EventDelegate         
 )
-process.calibratable.neutralMode = cms.bool(False)
-process.calibratable.particlePDG=cms.int32(211)
+process.extractionToEvent.neutralMode = cms.bool(False)
+process.extractionToEvent.particlePDG=cms.int32(211)
 
 process.finishup = cms.OutputModule("PoolOutputModule",
     fileName=cms.untracked.string('Dipion_Events_' + fileLabel),
@@ -102,14 +102,17 @@ process.finishup = cms.OutputModule("PoolOutputModule",
                                          'keep recoPFClusters_*_*_*', 
                                          'keep recoPFBlocks_*_*_*', 
                                          'keep recoPFCandidates_*_*_*'),
+    SelectEvents=cms.untracked.PSet(
+         SelectEvents=cms.vstring('p1')
+    )
 )
 
 process.p1 = cms.Path(process.generator + 
                       process.famosWithEverything + 
                       process.caloJetMetGen + 
                       process.particleFlowSimParticle + 
-                      process.calibratable + 
-                      process.extraction)
+                      process.extractionToTree + 
+                      process.extractionToEvent)
 
 
 process.outpath = cms.EndPath(process.finishup)

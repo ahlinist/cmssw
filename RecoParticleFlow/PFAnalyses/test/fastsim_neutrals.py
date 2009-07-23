@@ -8,7 +8,7 @@ from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.load("FastSimulation.Configuration.CommonInputs_cff")
 process.load("FastSimulation.Configuration.FamosSequences_cff")
-process.GlobalTag.globaltag = "IDEAL_31X::All"
+process.GlobalTag.globaltag = "MC_31X_V1::All"
 process.load("FastSimulation.Configuration.RandomServiceInitialization_cff")
 process.famosSimHits.SimulateCalorimetry = True
 process.famosSimHits.SimulateTracking = True
@@ -35,6 +35,7 @@ from Configuration.Generator.PythiaUESettings_cfi import *
 process.generator = cms.EDProducer("Pythia6EGun",
     PGunParameters=cms.PSet(
        ParticleID=cms.vint32(130),
+       #Testbeam 2006 parameters
        MinPhi=cms.double(0.02),
        MaxPhi=cms.double(0.02),
        MinEta=cms.double(0.2),
@@ -63,11 +64,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
 
-process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(1.4)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.8)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
-process.particleFlowRecHitHCAL.isTestbeam=cms.bool(False)
 
 process.TFileService = cms.Service("TFileService",
     fileName=cms.string('Dikaon_' + fileLabel)
@@ -85,13 +82,24 @@ process.extractionToTree = cms.EDAnalyzer("ExtractionAnalyzer",
 
 process.extractionToTree.neutralMode = cms.bool(True)
 process.extractionToTree.particlePDG = cms.int32(130)
+
 process.extractionToEvent.neutralMode = cms.bool(True)
 process.extractionToEvent.particlePDG = cms.int32(130)
 
 process.finishup = cms.OutputModule("PoolOutputModule",
-    fileName=cms.untracked.string("Dikaon_Events_.root"),
+    fileName=cms.untracked.string('Dikaon_Events_' + fileLabel),
     #outputCommands=cms.untracked.vstring('keep *'),
-    outputCommands=cms.untracked.vstring('drop *', 'keep *_particleFiltration_*_*', 'keep recoMuons_*_*_*', 'keep *_extractionToEvent_*_*', 'keep *_calibratable_*_*', 'keep *_faketracks_*_*', 'keep recoPFRecTracks_*_*_*', 'keep recoPFRecHits_*_*_*', 'keep recoPFClusters_*_*_*', 'keep recoPFBlocks_*_*_*', 'keep recoPFCandidates_*_*_*'),
+    outputCommands=cms.untracked.vstring('drop *', 
+                                         'keep *_particleFiltration_*_*', 
+                                         'keep recoMuons_*_*_*', 
+                                         'keep *_extractionToEvent_*_*', 
+                                         'keep *_calibratable_*_*', 
+                                         'keep *_faketracks_*_*', 
+                                         'keep recoPFRecTracks_*_*_*', 
+                                         'keep recoPFRecHits_*_*_*', 
+                                         'keep recoPFClusters_*_*_*', 
+                                         'keep recoPFBlocks_*_*_*', 
+                                         'keep recoPFCandidates_*_*_*'),
     SelectEvents=cms.untracked.PSet(
                 SelectEvents=cms.vstring('p1')
     ) 
