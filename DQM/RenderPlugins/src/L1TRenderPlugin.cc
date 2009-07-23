@@ -30,7 +30,6 @@
 class L1TRenderPlugin : public DQMRenderPlugin
 {
   TH2F* dummybox;
-  TH2F* dummybox_zoom;
 
 public:
   virtual void initialise (int, char **)
@@ -48,14 +47,12 @@ public:
       //   }
       //   for(int i=0; i<6; i++) cpal[i] = i + 301;
       dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
-      dummybox_zoom = new  TH2F("dummy","",14,3.5,17.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
       {
         for(int j=0; j<18; j++)
         {
           dummybox->Fill(i,j,0.1);
-          dummybox_zoom->Fill(i,j,0.1);
         }
       }
 
@@ -563,7 +560,10 @@ private:
       if( o.name.find( "CSCTF_Chamber_Occupancies" )  != std::string::npos)
       {
 
-	b_box->SetFillColor(23);
+	b_box->SetFillColor(1);
+	b_box->SetFillStyle(3013);
+
+	l_line->SetLineWidth(1);
 
 	int Num=6;
 	for( int i=0; i<Num; i++){
@@ -575,21 +575,25 @@ private:
 	  double y2s = -5.5;
 	  double y2e = -4.5;
 
+	  // Draw boxes
 	  b_box->DrawBox(x1s,y1s,x1e,y1e);
 	  b_box->DrawBox(x1s,y2s,x1e,y2e);
+
+	  // Draw horizontal boundary lines
+	  l_line->DrawLine(x1s, y1s, x1e, y1s);
+	  l_line->DrawLine(x1s, y2e, x1e, y2e);
+
+	  // Draw vertical boundary lines
+	  l_line->DrawLine(x1s, y1s, x1s, y1e);
+	  l_line->DrawLine(x1s, y2s, x1s, y2e);
+
+	  l_line->DrawLine(x1e, y1s, x1e, y1e);
+	  l_line->DrawLine(x1e, y2s, x1e, y2e);
 	}
 
 	return;
       }
 
-/*      if(
-        o.name.find( "RctEmIsoEmEtEtaPhi" ) != std::string::npos ||
-        o.name.find( "RctEmIsoEmOccEtaPhi" ) != std::string::npos ||
-        o.name.find( "RctEmNonIsoEmEtEtaPhi" ) != std::string::npos ||
-        o.name.find( "RctEmNonIsoEmOccEtaPhi" ) != std::string::npos ||
-        o.name.find( "RctRegionsEtEtaPhi" ) != std::string::npos ||
-        o.name.find( "RctRegionsOccEtaPhi" ) != std::string::npos
-         ) */
 
       if(
         ( o.name.find( "Rct" ) != std::string::npos ||
@@ -598,18 +602,26 @@ private:
         o.name.find( "EtaPhi" ) != std::string::npos 
         )
       {
+
+	dummybox->Draw("box,same");
+
 	if( 
 	   o.name.find( "IsoEm" ) != std::string::npos ||
 	   o.name.find( "TauJet" ) != std::string::npos
 	   )
 	{
-	  dummybox_zoom->Draw("box,same");
-	  return;
+	  l_line->SetLineWidth(1);
+	  l_line->DrawLine(3.5,-0.5,3.5,17.5);
+	  l_line->DrawLine(17.5,-0.5,17.5,17.5);
+
+	  b_box->SetFillColor(1);
+	  b_box->SetFillStyle(3013);
+
+	  b_box->DrawBox(-0.5,-0.5,3.5,17.5);
+	  b_box->DrawBox(17.5,-0.5,21.5,17.5);
 	}
-	else {
-	  dummybox->Draw("box,same");
-	  return;
-	}
+
+	return;
       }
 
 
