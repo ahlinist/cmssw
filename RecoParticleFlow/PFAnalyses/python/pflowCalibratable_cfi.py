@@ -5,22 +5,35 @@ masterConeDeltaR = 0.15
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
 
+# The default EventDelegate is a DipionDelegate
 EventDelegate = cms.PSet(
-
+                         
+    # Human-readable string representing this class of event delegate
     EventDelegateType=cms.string('DipionDelegate'),
     # Set up to 7 to get outrageous amounts of output
     debug=cms.int32(3),
+    # Look for MonteCarlo particles?
     isMC = cms.bool(True),
+    # Don't use reconstructed track as main cone for searches, but the sim particle instead
     useSimAsTrack=cms.bool(True),
+    # Collect clusters from how far away?
     deltaRClustersToTrack=cms.double(masterConeDeltaR * 2),
+    # And Rechits from how far?
     deltaRRechitsToTrack=cms.double(masterConeDeltaR),
+    # And PFCandidates from how far?
     deltaRCandToTrack=cms.double(masterConeDeltaR * 2),
+    # Don't take clusters from cone, but from the PFCandidates themselves
     clustersFromCandidates=cms.bool(True),
+    # Don't take rechits from cone, but from the clusters, in turn belonging to the PFCandidates
     rechitsFromCandidates=cms.bool(True),
+    # Don't expect a charged track
     neutralMode=cms.bool(False),
+    # Require no tracker interactions (needed for full sim)
     noSimDaughters=cms.bool(True),
+    # Which sim particle type are we looking for
     particlePDG=cms.int32(211),    
     
+    # Input tag definitions
     PFSimParticles=cms.InputTag("particleFlowSimParticle"),
     PFRecHitsEcal=cms.InputTag("particleFlowRecHitECAL"),
     PFRecHitsHcal=cms.InputTag("particleFlowRecHitHCAL"),
@@ -43,15 +56,21 @@ EventDelegate = cms.PSet(
     nPanesHcalCaloWindow=cms.uint32(1),
 )
 
+# Change of tags for full sim
 EventDelegateFullSim = EventDelegate.clone()
 EventDelegateFullSim.SimCaloRecHitsEcalEB=cms.InputTag("g4SimHits", "EcalHitsEB")
 EventDelegateFullSim.SimCaloRecHitsEcalEE=cms.InputTag("g4SimHits", "EcalHitsEE")
 EventDelegateFullSim.SimCaloRecHitsHcal=cms.InputTag("g4SimHits", "HcalHits")
-    
+EventDelegateFullSim.noSimDaughters=cms.bool(True)
+
+# Specialised EventDelegate designed to work on testbeam data
 TestbeamDelegate = cms.PSet(
+    # Inherit options from the DipionDelegate
     EventDelegate,
+    
     # Reject spurious events where the HCAL has some catastrophic noise
     # = 0, don't do this, > 0 multiple of beam energy found in HCAL before event is rejected
+    # Recommended value: 6
     stripAnomalousEvents=cms.uint32(6),
     
     # 0 => ignore, > 0 implies only save raw rechits within deltaR of beam spot.
@@ -70,14 +89,17 @@ TestbeamDelegate = cms.PSet(
     # pass the minimum set of vetos (i.e. at least muon + scintillator + beam halo)
     # Recommended: True
     applyCleaningCuts=cms.bool(True),
-    #If false, only save pion (Class-31) candidates
+    # If true, only save pion (Class-31) candidates
     # Recommended: True
     saveJustPions=cms.bool(True),
-    # Global cut parameters   
+    # Global cut parameters
+    # testbeam_cuts defined  in Run_Dict.py
     runinfo_cuts=cms.string(testbeam_cuts),
+    
+    # (Deprecated)
     maxEventsFromEachRun=cms.uint32(0),
     
-    #Normal tags
+    #Normal input tags
     ParticleFiltration=cms.InputTag("particleFiltration", "particleFiltration"),
     BeamCounters=cms.InputTag("tbunpacker"),
     RunData=cms.InputTag("tbunpacker"),
@@ -86,11 +108,11 @@ TestbeamDelegate = cms.PSet(
     TriggerData=cms.InputTag("tbunpacker")   
 )
 
+# Override the DipionDelegate default options
 TestbeamDelegate.RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
-
-#Testbeam related options
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
 
+# Ignore this for now
 IsolatedParticleExtractor=cms.PSet(
     #PFCandidate types to extract
     ParticleType = cms.uint32(1),
