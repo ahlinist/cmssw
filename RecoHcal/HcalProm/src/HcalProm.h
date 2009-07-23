@@ -1,27 +1,3 @@
-// -*- C++ -*-
-//
-// Package:    HcalProm
-// Class:      HcalProm
-// 
-/**\class HcalProm HcalProm.cc RecoHcal/HcalProm/src/HcalProm.cc
-
- SIMPLE EXAMPLE CODE demonstrating the access to officially reconstructed global run data.
- The config file is under the test directory.
- The config file should read the officially reconstructed root file in castor or 
- The output from Configuration/GlobalRuns/data/recoT0.cfg (official reco cfg). 
-
- Implementation:
-     <Notes on implementation>
-*/
-//
-// Original Author:  Efe Yazgan
-// Updated        :  Taylan Yetkin (2008/05/08)
-//         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalProm.h,v 1.28 2008/12/17 15:34:38 efe Exp $
-//
-//
-
-
 // system include files
 #include <memory>
 #include <fstream>
@@ -76,6 +52,12 @@
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 #include "TrackPropagation/SteppingHelixPropagator/interface/SteppingHelixPropagator.h"
 
+//TrackAssociator
+//#include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
+//#include "TrackingTools/TrackAssociator/interface/TrackAssociatorParameters.h"
+//#include "TrackingTools/TrackAssociator/interface/TrackDetMatchInfo.h"
+//#include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
+
 //Ntuple creation
 #include "TTree.h"
 
@@ -127,14 +109,15 @@ class HcalProm : public edm::EDAnalyzer {
            // double ox, double oy, double oz, double px, double py, double pz, double ra,
            GlobalPoint pos, GlobalVector mom, int charge,double ra,
            // outputs
-           double *x_HB, double *y_HB, double *z_HB);
+           Float_t *x_HB, Float_t *y_HB, Float_t *z_HB);
 
       bool PropagateF(
            // inputs
            // double ox, double oy, double oz, double px, double py, double pz, double ra,
            GlobalPoint pos, GlobalVector mom, int charge,double ra,
            // outputs
-           double *x_HB, double *y_HB, double *z_HB);
+           Float_t *x_HB, Float_t *y_HB, Float_t *z_HB);
+
 
 
   //------- histogram bookers ----------
@@ -181,7 +164,7 @@ class HcalProm : public edm::EDAnalyzer {
 // ntuple creation:
 //     TFile*      hOutputFile ;
      TTree * myTree;
-     int run, event, TriggerBit[4], NumMuonHBphiPlane, NumHBTowersMuon[50];
+     int hbheC,run, event, TriggerBit[4], NumMuonHBphiPlane, NumHBTowersMuon[50];
      int IdTowerPhiMuonIn[50], IdTowerPhiMuonOut[50], IdTowerEtaMuonIn[50], IdTowerEtaMuonOut[50];
      float TimeAvMuonHB[50];
      float PHIoutMuonHB[50], PHIinMuonHB[50],  ETAoutMuonHB[50], ETAinMuonHB[50];
@@ -189,21 +172,11 @@ class HcalProm : public edm::EDAnalyzer {
 //     float ImpXYmuon[50], ZImpXYmuon[50],
      float PHIinTowerHB[50];
      float EmuonHB[50];
+     float EmuonHBped[50];
+     float EmuonHB5ped[50];
      float EmuonHB3[50];
      float EmuonHB4[50];
      float EmuonHB5[50];
-     float EmuonHBped[50];
-     float tk_mom[50];
-     float tk_pt[50];
-     float tk_ndof[50];
-     float tk_chi2[50];
-     float tk_lost[50];
-     float tk_dcharge[50];
-     float tk_charge[50];
-     float tk_dZ[50];
-     float tk_dXY[50];
-     float dt_mom[50];
-     float dt_pt[50];    
      int phiEmuonHB[50];
      int etaMinEmuonHB[50];
      int etaMaxEmuonHB[50];
@@ -225,6 +198,8 @@ class HcalProm : public edm::EDAnalyzer {
      float XoutPosMuonNoPlaneDT[50], YoutPosMuonNoPlaneDT[50], ZoutPosMuonNoPlaneDT[50];
      float ImpXYmuonNoPlaneDT[50], ZImpXYmuonNoPlaneDT[50], LengthMuonNoPlaneDT[50];
      int NumHitsMuonNoPlaneDTall[50];
+
+
 // end ntuple creation
 //<-kropiv
 
@@ -569,5 +544,113 @@ class HcalProm : public edm::EDAnalyzer {
       SteppingHelixPropagator* stepPropB;
       MagneticField *theMagField;
 
+      //      TrackDetectorAssociator trackAssociator_;
+      //      TrackAssociatorParameters parameters_;
+// Ntpl vars
 
+// TK
+  Float_t HBpedP[14][72];
+  Float_t HBpedM[14][72];
+  Float_t tk_mom;
+  Float_t tk_momt;
+  Int_t tk_ndof;
+  Float_t tk_chi2;
+  Int_t tk_lost;
+  Int_t tk_charge;
+  Float_t tk_d0;
+
+// DT
+  Int_t NumDTtracks;
+  Int_t DT_valid[20];
+  Float_t DT_mom[20];
+  Float_t DT_momt[20];
+  Int_t DT_ndof[20];
+  Int_t DT_lost[20];
+  Int_t DT_charge[20];
+  Float_t DT_chi2[20];
+  Float_t DT_d0[20];
+  Float_t DT_XinPos[20];
+  Float_t DT_YinPos[20];
+  Float_t DT_ZinPos[20];
+  Float_t DT_XoutPos[20];
+  Float_t DT_YoutPos[20];
+  Float_t DT_ZoutPos[20];
+  Float_t DT_XoutPosHB[20];
+  Float_t DT_YoutPosHB[20];
+  Float_t DT_ZoutPosHB[20];
+  Float_t DT_etaHB[20];
+  Float_t DT_phiHB[20];
+  Int_t DT_ietaHB[20];
+  Int_t DT_iphiHB[20];
+  Int_t DT_isTop[20];
+
+// HB top
+  Int_t NTowHBtop;
+  Int_t isValidHBtop;
+  Float_t ETowHBtop[30][3];
+  Float_t ETowHBtopCr[30][3];
+  Float_t TTowHBtop[30][3];
+  Float_t EHBtop;
+  Float_t EHBtopCr;
+  Float_t THBtop;
+  Int_t iPhiInTowHBtop;
+  Int_t iPhiOutTowHBtop;
+  Int_t iEtaInTowHBtop;
+  Int_t iEtaOutTowHBtop;
+  Float_t PhiInTowHBtop;
+  Float_t PhiOutTowHBtop;
+  Float_t EtaInTowHBtop;
+  Float_t EtaOutTowHBtop;
+  Float_t TK_XinPosHBtop;
+  Float_t TK_YinPosHBtop;
+  Float_t TK_ZinPosHBtop;
+  Float_t TK_XoutPosHBtop;
+  Float_t TK_YoutPosHBtop;
+  Float_t TK_ZoutPosHBtop;
+  Float_t TK_LengthHBtop;
+//HB Bottom
+  Int_t NTowHBbot;
+  Int_t isValidHBbot;
+  Float_t ETowHBbot[30][3];
+  Float_t ETowHBbotCr[30][3];
+  Float_t TTowHBbot[30][3];
+  Float_t EHBbot;
+  Float_t EHBbotCr;
+  Float_t THBbot;
+  Int_t iPhiInTowHBbot;
+  Int_t iPhiOutTowHBbot;
+  Int_t iEtaInTowHBbot;
+  Int_t iEtaOutTowHBbot;
+  Float_t PhiInTowHBbot;
+  Float_t PhiOutTowHBbot;
+  Float_t EtaInTowHBbot;
+  Float_t EtaOutTowHBbot;
+  Float_t TK_XinPosHBbot;
+  Float_t TK_YinPosHBbot;
+  Float_t TK_ZinPosHBbot;
+  Float_t TK_XoutPosHBbot;
+  Float_t TK_YoutPosHBbot;
+  Float_t TK_ZoutPosHBbot;
+  Float_t TK_LengthHBbot;
+  //
+  Int_t goodtopmuon;
+  Int_t CT_top_index;
+  Int_t CT_top_iphi_Muon;
+  Int_t CT_top_ieta[50];
+  Int_t CT_top_depth[50];
+  Float_t CT_top_Energy[50];
+  Int_t CT_top_pixel[50];
+  Int_t CT_top_MUON_ieta[50];
+  Int_t CT_top_MUON_pixel[50];
+
+  Int_t goodbotmuon;
+  Int_t CT_bot_index;
+  Int_t CT_bot_iphi_Muon;
+  Int_t CT_bot_ieta[50];
+  Int_t CT_bot_depth[50];
+  Float_t CT_bot_Energy[50];
+  Int_t CT_bot_pixel[50];
+  Int_t CT_bot_MUON_ieta[50];
+  Int_t CT_bot_MUON_pixel[50];
+  //
 };
