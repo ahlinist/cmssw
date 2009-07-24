@@ -45,14 +45,11 @@ fi
 
 if [ "X"${data_set} == "X" ]
     then
-    echo "INVALID DATASET! Please give a dataset, eg: "
-#	/Cosmics/Commissioning08-CRUZET4_v1/RAW"
-    echo " /Cosmics/Commissioning08-MW36_v1/RAW "
-    echo " /BeamHalo/Commissioning08-MW36_v1/RAW "
-    echo $usage
-    exit 
+    echo "using default Dataset: /TestEnables/Commissioning09-v3/RAW"
+    data_set="/TestEnables/Commissioning09-v3/RAW"
 fi
-echo 'Submitting CRAB cosmics analysis jobs for' ${data_file} 'dataset' ${data_set}
+
+echo 'Submitting CRAB cosmics analysis jobs for' ${run_num} 'dataset' ${data_set}
 
 #if [ "X"${output_dir} == "X" ]
 #    then
@@ -66,25 +63,35 @@ echo 'Submitting CRAB cosmics analysis jobs for' ${data_file} 'dataset' ${data_s
 #fi
 
 
-if [ "X"${nsplit} == "X" ]
-    then
-    nsplit=20000
-    echo " using default split of 20000 events per job"
-else
-    echo " splitting into "${nsplit} "events per job"
-fi
-
-
 
 if [ "X"${analy_type} == "X" ]
     then
-    analy_type="Laser"
-    echo " using default analysis type of Laser"
-else
-    echo " doing analysis on ${analy_type} of events  "
+    echo " Must set analysis type: Laser or Calib !!!"
+    exit
 fi
 
+if [ ${analy_type} != "Laser" ]
+    then 
+    if [ ${analy_type} != "Calib" ]
+	then 
+	echo " Must set analysis type: Laser or Calib !!!  You entered: ${analy_type} !!!"
+	exit
+    fi
+fi
 
+if [ ${analy_type} == "Laser" ]
+    then
+    if [ "X"${nsplit} == "X" ]
+	then    
+	nsplit=50000
+	echo " using default split of 50000 events per job"
+    else
+	echo " splitting into "${nsplit} "events per job"
+    fi
+else
+    nsplit=10000000000
+    echo " Calib run: all events in one job"
+fi
 
 this_dir=`pwd`;
 
@@ -113,7 +120,7 @@ mkdir -p ${analy_type}_${run_num};
 
 # set up Laser.cfg
 
-cat ${analy_type}TEMPLATE.cfg | /bin/sed "s@RUNNUMBER@${run_num}@g; s@FEDCOLLECTION@${fedcollection}@g" > ${analy_type}_${run_num}/${analy_type}Config_${run_num}.cfg
+cat ${analy_type}TEMPLATE.py | /bin/sed "s@RUNNUMBER@${run_num}@g; s@FEDCOLLECTION@${fedcollection}@g" > ${analy_type}_${run_num}/${analy_type}Config_${run_num}.py
 
 # set up crab.cfg file
 
