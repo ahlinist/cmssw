@@ -41,16 +41,16 @@
  <Constant name="SensorWidthStack8"    value="100.0*mm"/>
  <Constant name="SensorWidthStack9"    value="100.0*mm"/>
 
- <Constant name="SensorThickStack0"    value="0.285*mm"/>
- <Constant name="SensorThickStack1"    value="0.285*mm"/>
- <Constant name="SensorThickStack2"    value="0.285*mm"/>
- <Constant name="SensorThickStack3"    value="0.285*mm"/>
- <Constant name="SensorThickStack4"    value="0.285*mm"/>
- <Constant name="SensorThickStack5"    value="0.285*mm"/>
-  <Constant name="SensorThickStack6"    value="0.285*mm"/>
- <Constant name="SensorThickStack7"    value="0.285*mm"/>
- <Constant name="SensorThickStack8"    value="0.285*mm"/>
- <Constant name="SensorThickStack9"    value="0.285*mm"/>
+ <Constant name="SensorThickStack0"    value="0.200*mm"/>
+ <Constant name="SensorThickStack1"    value="0.200*mm"/>
+ <Constant name="SensorThickStack2"    value="0.200*mm"/>
+ <Constant name="SensorThickStack3"    value="0.200*mm"/>
+ <Constant name="SensorThickStack4"    value="0.200*mm"/>
+ <Constant name="SensorThickStack5"    value="0.200*mm"/>
+ <Constant name="SensorThickStack6"    value="0.200*mm"/>
+ <Constant name="SensorThickStack7"    value="0.200*mm"/>
+ <Constant name="SensorThickStack8"    value="0.200*mm"/>
+ <Constant name="SensorThickStack9"    value="0.200*mm"/>
 
  <Constant name="LaddersStack0"        value="24"/>
  <Constant name="LaddersStack1"        value="24"/>
