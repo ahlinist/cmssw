@@ -23,7 +23,7 @@ loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     TTplusJets = copy.deepcopy(processZtoMuTau_TTplusJets.config_dqmFileLoader),                           
     InclusivePPmuX = copy.deepcopy(processZtoMuTau_InclusivePPmuX.config_dqmFileLoader),
     PPmuXptGt20 = copy.deepcopy(processZtoMuTau_PPmuXptGt20Sum.config_dqmFileLoader),
-                              TTbar = copy.deepcopy(processZtoMuTau_TTbarSum.config_dqmFileLoader), 
+    TTplusJets = copy.deepcopy(processZtoMuTau_TTplusJetsSum.config_dqmFileLoader), 
 )
 
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
