@@ -389,6 +389,18 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_tauNumTracksSignalCone"
         ),
         drawJobConfigEntry(
+            meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
+            title = "TaNC output (fr = 0.25%) (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauTaNCoutputTransform',
+            title = "TaNC output (transformed) (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauTaNCtransform"
+        ),
+        drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
@@ -423,7 +435,13 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "M_{vis}(Electron + Tau) (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mVisible"
-        ),     
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateZeeHypothesisQuantities/hVisMassBestMach',
+            title = "M_{vis}(Electron + Tau, Z #rightarrow e^{+} e^{-} Mass hypothesis) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisibleZeeHypothesis"
+        ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Electron + Tau), CDF method (final Event sample)",
