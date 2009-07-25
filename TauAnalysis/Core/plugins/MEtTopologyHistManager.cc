@@ -45,7 +45,7 @@ void MEtTopologyHistManager::bookHistograms()
   
   dqmStore.setCurrentFolder(dqmDirectory_store_);
   
-  hVratio_ = dqmStore.book1D("hVratio", "V_{anti}/V_{parallel}", 102, -0.01, +1.01);
+  hVratio_ = dqmStore.book1D("Vratio", "V_{anti}/V_{parallel}", 102, -0.01, +1.01);
 }
 
 void MEtTopologyHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)

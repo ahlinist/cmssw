@@ -48,8 +48,8 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::bookHistograms()
   
   dqmStore.setCurrentFolder(dqmDirectory_store_);
   
-  hEtSum_ = dqmStore.book1D("hEtSum", "#Sigma E_{T}^{recoil}", 100, 0., 50.);
-  hNumObjects_  = dqmStore.book1D("hNumObjects", "Recoil Energy Objects", 50, -0.5, 49.5);
+  hEtSum_ = dqmStore.book1D("EtSum", "#Sigma E_{T}^{recoil}", 100, 0., 50.);
+  hNumObjects_  = dqmStore.book1D("NumObjects", "Recoil Energy Objects", 50, -0.5, 49.5);
 }
 
 template<typename T1, typename T2>
