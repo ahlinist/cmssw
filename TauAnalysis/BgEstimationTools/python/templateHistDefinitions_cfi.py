@@ -31,64 +31,31 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
 )
 
 drawJobTemplateHist = cms.PSet(
-    plots = cms.PSet(  
-        dqmMonitorElements = cms.vstring(),
-        processes = cms.vstring()
+    plots = cms.VPSet(
+        cms.PSet(
+            dqmMonitorElements = cms.vstring(''),
+            process = cms.string('bgEstData'),
+            drawOptionEntry = cms.string('bgEstData'),
+            legendEntry = cms.string('Bg. enriched Data')
+        ),
+        cms.PSet(
+            dqmMonitorElements = cms.vstring(''),
+            process = cms.string('bgEstPure'),
+            drawOptionEntry = cms.string('bgEstPure'),
+            legendEntry = cms.string('pure Bg.')
+        ),
+        cms.PSet(
+            dqmMonitorElements = cms.vstring(''),
+            process = cms.string('finalEvtSel'),
+            drawOptionEntry = cms.string('finalEvtSel'),
+            legendEntry = cms.string('final Evt. Sel.')
+        )
     ),
-    title = cms.string(""),
+    norm = cms.double(1.),
+    title = cms.string('M_{vis}(Muon + Tau)'),
     xAxis = cms.string('M'),
     yAxis = cms.string('numEntries_linear'),
-    #yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
-    labels = cms.vstring('mcNormScale'),                   
-    drawOptionSet = cms.string('default'),
+    labels = cms.vstring('')
 )
 
-plotTemplateHist = cms.EDAnalyzer("DQMHistPlotter",
-    processes = cms.PSet(
-
-    ),
-
-    xAxes = cms.PSet(
-        M = copy.deepcopy(xAxis_mass)
-    ),
-
-    yAxes = cms.PSet(                         
-        numEntries_linear = copy.deepcopy(yAxis_numEntries_linear),
-        numEntries_log = copy.deepcopy(yAxis_numEntries_log)
-    ),
-
-    legends = cms.PSet(
-        regular = cms.PSet(
-            posX = cms.double(0.45),            
-            posY = cms.double(0.69),             
-            sizeX = cms.double(0.44),        
-            sizeY = cms.double(0.20),            
-            header = cms.string(''),          
-            option = cms.string('brNDC'),       
-            borderSize = cms.int32(0),          
-            fillColor = cms.int32(0)             
-        )
-    ),
-
-    labels = cms.PSet(
-        mcNormScale = copy.deepcopy(label_mcNormScale)
-    ),
-
-    drawOptionSets = cms.PSet(
-        default = cms.PSet(
-
-        )
-    ),
-
-    drawJobs = cms.PSet(
-
-    ),
-
-    canvasSizeX = cms.int32(800),
-    canvasSizeY = cms.int32(640),                         
-
-    outputFilePath = cms.string('./plots/'),
-    #outputFileName = cms.string('plotsTemplateHist.ps')
-    indOutputFileName = cms.string('plotTemplateHist_#PLOT#.png')
-)
