@@ -149,6 +149,8 @@ void TauHistManager::bookHistograms()
 						    "TauTaNCoutputThreeProngNoPi0s", 102, -0.01, 1.01);
   hTauTaNCoutputThreeProngOnePi0_ = dqmStore.book1D("TauTaNCoutputThreeProngOnePi0", 
 						    "TauTaNCoutputThreeProngOnePi0", 102, -0.01, 1.01);
+  hTauTaNCoutputTransform_ = dqmStore.book1D("TauTaNCoutputTransform",
+					     "TauTaNCoutputTransform", 102, -0.01, 1.01);
   
   hTauDiscriminatorTaNCfrOnePercent_ = dqmStore.book1D("TauDiscriminatorTaNCfrOnePercent",
 						       "TauDiscriminatorTaNCfrOnePercent", 102, -0.01, 1.01);
@@ -327,6 +329,9 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
       fillTauDiscriminatorHistogram(hTauTaNCoutput, *patTau, "byTaNC", 
 				    discrAvailability_hasBeenChecked);
     }
+
+    fillTauDiscriminatorHistogram(hTauTaNCoutputTransform_, *patTau, "byTaNCtransform",
+				  discrAvailability_hasBeenChecked);
  
     fillTauIsoHistograms(*patTau);
     fillTauIsoConeSizeDepHistograms(*patTau);

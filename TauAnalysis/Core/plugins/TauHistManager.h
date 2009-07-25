@@ -89,6 +89,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauTaNCoutputOneProngTwoPi0s_;
   MonitorElement* hTauTaNCoutputThreeProngNoPi0s_;
   MonitorElement* hTauTaNCoutputThreeProngOnePi0_;
+  MonitorElement* hTauTaNCoutputTransform_;
 
   MonitorElement* hTauDiscriminatorTaNCfrOnePercent_;
   MonitorElement* hTauDiscriminatorTaNCfrHalfPercent_;
