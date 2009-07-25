@@ -42,7 +42,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
         'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
-    )
+    ),
+    skipEvents = cms.untracked.uint32(0)            
 )
 
 #--------------------------------------------------------------------------------
@@ -225,6 +226,7 @@ process.TFileService = cms.Service("TFileService",
 # in case running jobs on the CERN batch system
 #
 #__process.source.fileNames = #bgEstSampleFileNames#
+#__process.source.skipEvents = cms.untracked.uint32(#skipEvents#)
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.genPhaseSpaceFilter.selector = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.TFileService.fileName = #bgEstNtupleOutputFileName#
