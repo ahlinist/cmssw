@@ -331,13 +331,24 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForMuTauMt1MET,
+    beforeCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/PzetaDiff',
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after opposite Charge Cut)",
+        xAxis = 'GeV',
+        name = "cutFlowControlPlots_PzetaDiff_afterMt1MET"
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoMuTau.add(
-    afterCut = evtSelDiTauCandidateForMuTauMt1MET,
+    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
     plots = [
         drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
@@ -364,6 +375,18 @@ drawJobConfigurator_ZtoMuTau.add(
             title = "Tau Tracks in Signal Cone (final Event sample)",
             xAxis = 'unlabeled',
             name = "finalSamplePlots_tauNumTracksSignalCone"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauDiscriminatorTaNCfrQuarterPercent',
+            title = "TaNC output (fr = 0.25%) (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauDiscrTaNCfrQuarterPercent"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauTaNCoutputTransform',
+            title = "TaNC output (transformed) (final Event sample)",
+            xAxis = 'unlabeled',
+            name = "finalSamplePlots_tauTaNCtransform"
         ),
         drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
