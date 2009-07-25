@@ -40,6 +40,8 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
     meName_ = meName;
   }
 
+  norm_ = ( cfg.exists("norm") ) ? cfg.getParameter<double>("norm") : -1.;
+
   numBinsX_ = cfg.getParameter<unsigned>("numBinsX");
   xMin_ = ( cfg.exists("xMin") ) ? cfg.getParameter<double>("xMin") : 0.;
   xMax_ = ( cfg.exists("xMax") ) ? cfg.getParameter<double>("xMax") : 0.;
@@ -129,7 +131,6 @@ void TemplateHistProducer::endJob()
 
 //--- read all entries from chain;
 //    fill histogram
-//
   double sumWeighted = 0.;
 
   int numEntries = selEventsTree_->GetEntries();
@@ -146,6 +147,14 @@ void TemplateHistProducer::endJob()
   }
 
   std::cout << " sum of weights = " << sumWeighted << std::endl;
+
+//--- normalize histogram 
+//    (to unit area)
+  if ( norm_ != -1. ) {
+    TH1* histogram = hTemplate_->getTH1();
+    if ( histogram->Integral() != 0. ) histogram->Scale(norm_/histogram->Integral());
+  }
+
   std::cout << "done." << std::endl;
 }
 
