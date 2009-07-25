@@ -29,3 +29,11 @@ allHcalRecHits = cms.PSet(
     )
 )
 tauAnalysisEventContent.outputCommands.extend(allHcalRecHits.outputCommands)
+
+pfJets = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep *_iterativeCone5PFJets_*_*',
+    )
+)
+tauAnalysisEventContent.outputCommands.extend(pfJets.outputCommands)
+
