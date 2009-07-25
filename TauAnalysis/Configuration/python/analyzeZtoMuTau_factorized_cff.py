@@ -48,7 +48,8 @@ replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation,
       [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
       [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],
       [ evtSelDiTauCandidateForMuTauZeroCharge, evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation ],
-      [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ] ]
+      [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ],
+      [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ] ]
 )                       
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithoutMuonIsolation
 analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithoutMuonIsolation

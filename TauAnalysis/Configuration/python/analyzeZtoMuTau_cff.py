@@ -53,16 +53,16 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         # di-tau candidate selection
         evtSelDiTauCandidateForMuTauAntiOverlapVeto,
         evtSelDiTauCandidateForMuTauZeroCharge,
-        evtSelDiTauCandidateForMuTauMt1MET
-
-        # veto events containing additional central jets with Et > 20 GeV
-        #evtSelCentralJetVeto
+        evtSelDiTauCandidateForMuTauMt1MET,
+        evtSelDiTauCandidateForMuTauPzetaDiff
     ),
   
     analyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
         muonHistManager,
         tauHistManager,
+        tauRecoilEnergyFromJetsHistManager,
+        tauRecoilEnergyFromCaloTowersHistManager,
         diTauCandidateHistManagerForMuTau,
         metHistManager,
         metTopologyHistManager,

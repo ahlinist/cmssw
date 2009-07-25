@@ -173,14 +173,13 @@ cfgDiTauCandidateForMuTauMt1METcut = cms.PSet(
     src_individual = cms.InputTag('selectedMuTauPairsMt1METindividual'),
     minNumber = cms.uint32(1)
 )
-
-# veto events containing additional central jets with Et > 20 GeV
-#cfgCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('centralJetVeto'),
-#    pluginType = cms.string('PATCandViewMaxEventSelector'),
-#    src = cms.InputTag('selectedLayer1JetsEt20'),
-#    maxNumber = cms.uint32(0)
-#)
+cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForMuTauPzetaDiffCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsPzetaDiffCumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgTrigger,
@@ -205,7 +204,8 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauMuonVeto,
       cfgDiTauCandidateForMuTauAntiOverlapVeto,
       cfgDiTauCandidateForMuTauZeroChargeCut,
-      cfgDiTauCandidateForMuTauMt1METcut ],
+      cfgDiTauCandidateForMuTauMt1METcut,
+      cfgDiTauCandidateForMuTauPzetaDiffCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
