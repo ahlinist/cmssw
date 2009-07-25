@@ -55,6 +55,10 @@ evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation = copy.deepcopy(evtSelDiTau
 evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation.src_cumulative = cms.InputTag('diTauCandidateForMuTauMt1METcutLooseMuonIsolation', 'cumulative')
 evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation.src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcutLooseMuonIsolation', 'individual')
 
+evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation = copy.deepcopy(evtSelDiTauCandidateForMuTauPzetaDiff)
+evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation.src_cumulative = cms.InputTag('diTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation', 'cumulative')
+evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation.src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation', 'individual')
+
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -83,7 +87,8 @@ replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation
       ["selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative"],
       ["selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative"],
       ["selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative"],
-      ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"] ]
+      ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"],
+      ["selectedMuTauPairsPzetaDiffCumulative", "selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative"] ]
 ) 
 
 muTauAnalysisSequence_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence)

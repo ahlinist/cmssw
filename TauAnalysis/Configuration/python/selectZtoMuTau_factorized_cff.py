@@ -50,6 +50,11 @@ cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.pluginName = "diTauCandidat
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationIndividual')
 
+cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauPzetaDiffCut)
+cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation"
+cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative')
+cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsPzetaDiffLooseMuonIsolationIndividual')
+
 zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
     [ cfgMuonTrkIsoCutLooseIsolation,
       cfgMuonEcalIsoCutLooseIsolation,
@@ -57,7 +62,8 @@ zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
-      cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation ],
+      cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation,
+      cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
