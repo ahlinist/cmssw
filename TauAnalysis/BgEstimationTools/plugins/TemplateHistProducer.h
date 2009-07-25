@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: TemplateHistProducer.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.2 2009/07/15 09:04:59 veelken Exp $
  *
  */
 
@@ -57,6 +57,8 @@ class TemplateHistProducer : public edm::EDAnalyzer
 
   std::string dqmDirectory_store_;
   std::string meName_;
+
+  double norm_;
 
   unsigned numBinsX_;
   double xMin_;
