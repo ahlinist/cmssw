@@ -23,7 +23,7 @@ selectedElecTauPairsZeroCharge = cms.EDFilter("PATElecTauPairSelector",
 
 #require cut transverse mass of electron and MET
 selectedElecTauPairsMt1MET = cms.EDFilter("PATElecTauPairSelector",
-    cut = cms.string('mt1MET < 60.'),
+    cut = cms.string('mt1MET < 50.'),
     filter = cms.bool(False)
 )
 
