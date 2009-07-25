@@ -16,6 +16,7 @@ diTauCandidateHistManagerForElecTau = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForElecTau.pluginName = cms.string('diTauCandidateHistManagerForElecTau')
 diTauCandidateHistManagerForElecTau.pluginType = cms.string('PATElecTauPairHistManager')
 diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
+from TauAnalysis.Core.diTauCandidateZeeHypothesisHistManager_cfi import *
 
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
@@ -46,6 +47,7 @@ elecTauHistManagers = cms.vstring(
     'electronHistManager',
     'tauHistManager',
     'diTauCandidateHistManagerForElecTau',
+    'diTauCandidateZeeHypothesisHistManager',
     'metHistManager',
     'vertexHistManager',
     'triggerHistManager'
@@ -356,7 +358,7 @@ elecTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-50 < zVertex < +50 cm'),
+        title = cms.string('-25 < zVertex < +25 cm'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -545,7 +547,6 @@ elecTauAnalysisSequence = cms.VPSet(
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative')
     ),
     
-
     #selection of electron + tau-jet combinations
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecTauAntiOverlapVeto'),
@@ -571,7 +572,7 @@ elecTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecTauMt1MET'),
-        title = cms.string('M_{T}(Electron-MET) < 60 GeV'),
+        title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
@@ -579,18 +580,5 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative')  
-    #),
-
-    # veto events containing additional central jets with Et > 20 GeV
-    #cms.PSet(
-    #    filter = cms.string('evtSelCentralJetVeto'),
-    #    title = cms.string('central Jet Veto'),
-    #    saveRunEventNumbers = cms.vstring('passed_cumulative')
-    #),
-    #cms.PSet(
-    #    analyzers = elecTauHistManagers,
-    #    replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-    #                          'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
-    #                          'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
     )
 )
