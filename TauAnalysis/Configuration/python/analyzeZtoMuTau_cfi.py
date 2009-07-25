@@ -9,6 +9,7 @@ from TauAnalysis.Core.muonHistManager_cfi import *
 
 # import config for tau-jet histogram manager
 from TauAnalysis.Core.pftauHistManager_cfi import *
+from TauAnalysis.Core.pftauRecoilEnergyHistManager_cfi import *
 
 # import config for di-tau histogram manager
 from TauAnalysis.Core.diTauCandidateHistManager_cfi import *
@@ -45,6 +46,8 @@ muTauHistManagers = cms.vstring(
     'genPhaseSpaceEventInfoHistManager',
     'muonHistManager',
     'tauHistManager',
+    'tauRecoilEnergyFromJetsHistManager',
+    'tauRecoilEnergyFromCaloTowersHistManager',
     'diTauCandidateHistManagerForMuTau',
     'metHistManager',
     'metTopologyHistManager',
@@ -229,6 +232,12 @@ evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcut', 'individual')
 )
+evtSelDiTauCandidateForMuTauPzetaDiff = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForMuTauPzetaDiff'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'individual')
+)
 
 # veto events containing additional central jets with Et > 20 GeV
 #evtSelCentralJetVeto = cms.PSet(
@@ -272,7 +281,7 @@ muTauEventDump = cms.PSet(
     output = cms.string("std::cout"),
     
     #triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
-    triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauMt1MET: passed_cumulative")
+    triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauPzetaDiff: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -344,7 +353,7 @@ muTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-50 < zVertex < +50 cm'),
+        title = cms.string('-25 < zVertex < +25 cm'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -539,7 +548,7 @@ muTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
-        title = cms.string('M_{T}(Muon-MET) < 60 GeV'),
+        title = cms.string('M_{T}(Muon-MET) < 50 GeV'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
     ),
     cms.PSet(
@@ -547,18 +556,16 @@ muTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
                               'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
-    #),
-
-    # veto events containing additional central jets with Et > 20 GeV
-    #cms.PSet(
-    #    filter = cms.string('evtSelCentralJetVeto'),
-    #    title = cms.string('central Jet Veto'),
-    #    saveRunEventNumbers = cms.vstring('passed_cumulative')
-    #),
-    #cms.PSet(
-    #    analyzers = muTauHistManagers,
-    #    replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
-    #                          'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-    #                          'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsMt1METcumulative')
-    )
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForMuTauPzetaDiff'),
+        title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative')
+    ),
 )
