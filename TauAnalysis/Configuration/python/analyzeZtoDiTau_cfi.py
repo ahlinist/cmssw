@@ -349,7 +349,7 @@ diTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelPrimaryEventVertexPosition'),
-        title = cms.string('-50 < zVertex < +50 cm'),
+        title = cms.string('-25 < zVertex < +25 cm'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
