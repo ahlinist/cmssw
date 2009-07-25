@@ -141,5 +141,6 @@ rpmbuild --define "_topdir `pwd`/RPMBUILD" -bb patch-cmssw.spec
 #rm -rf patch-cmssw-tmp
 
 # copy the RPM to a local folder
-mkdir -p ~/quattor/patch
-cp $TOPDIR/RPMBUILD/RPMS/i386/patch-cmssw-$PRO_DEV-$CMSSW_VERSION_CLEAN$PATCH_ID-*.i386.rpm ~/quattor/patch
+VERSION=$(echo $CMSSW_VERSION | sed -e's/_ONLINE$//')
+mkdir -p ~/quattor/$VERSION/patch
+cp $TOPDIR/RPMBUILD/RPMS/i386/patch-cmssw-$PRO_DEV-$CMSSW_VERSION_CLEAN$PATCH_ID-*.i386.rpm ~/quattor/$VERSION/patch
