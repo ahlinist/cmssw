@@ -56,9 +56,6 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForElecTauAntiOverlapVeto,
         evtSelDiTauCandidateForElecTauZeroCharge,
         evtSelDiTauCandidateForElecTauMt1MET,
-        
-        # veto events containing additional central jets with Et > 20 GeV
-        #evtSelCentralJetVeto
     ),
   
     analyzers = cms.VPSet(
@@ -66,6 +63,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         electronHistManager,
         tauHistManager,
         diTauCandidateHistManagerForElecTau,
+        diTauCandidateZeeHypothesisHistManager,
         metHistManager,
         vertexHistManager,
         triggerHistManager
