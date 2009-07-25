@@ -67,7 +67,7 @@ def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements 
         paramName = paramNameValuePair[0]
         paramValue = paramNameValuePair[1]
 
-        if paramName == "maxEvents":
+        if paramName == "maxEvents" or paramName == "skipEvents":
             replaceStatements_retVal.append(replaceStatement)
 
     # replace bgEstSampleFileNames parameter
