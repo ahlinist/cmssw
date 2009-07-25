@@ -52,7 +52,7 @@ selectElecMuPairsLooseElectronIsolation = patElecMuPairSelConfiguratorLooseElect
 
 selectedElecTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
 selectedElecTauPairsZeroCharge.cut = cms.string('charge = 0')
-selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 60.')
+selectedElecTauPairsMt1MET.cut = cms.string('mt1MET < 50.')
 
 patElecTauPairSelConfigurator = objSelConfigurator(
     [ selectedElecTauPairsAntiOverlapVeto,
@@ -87,12 +87,14 @@ selectElecTauPairsLooseElectronIsolation = patElecTauPairSelConfiguratorLooseEle
 
 selectedMuTauPairsAntiOverlapVeto.cut = cms.string('dR12 > 0.7')
 selectedMuTauPairsZeroCharge.cut = cms.string('charge = 0')
-selectedMuTauPairsMt1MET.cut = cms.string('mt1MET < 60.')
+selectedMuTauPairsMt1MET.cut = cms.string('mt1MET < 50.')
+selectedMuTauPairsPzetaDiff.cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.')
 
 patMuTauPairSelConfigurator = objSelConfigurator(
     [ selectedMuTauPairsAntiOverlapVeto,
       selectedMuTauPairsZeroCharge,
-      selectedMuTauPairsMt1MET ],
+      selectedMuTauPairsMt1MET,
+      selectedMuTauPairsPzetaDiff ],
     src = "allMuTauPairs",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -103,11 +105,13 @@ selectMuTauPairs = patMuTauPairSelConfigurator.configure(namespace = locals())
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation.cut = selectedMuTauPairsAntiOverlapVeto.cut
 selectedMuTauPairsZeroChargeLooseMuonIsolation.cut = selectedMuTauPairsZeroCharge.cut
 selectedMuTauPairsMt1METlooseMuonIsolation.cut = selectedMuTauPairsMt1MET.cut
+selectedMuTauPairsPzetaDiffLooseMuonIsolation.cut = selectedMuTauPairsPzetaDiff.cut
 
 patMuTauPairSelConfiguratorLooseMuonIsolation = objSelConfigurator(
     [ selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation,
       selectedMuTauPairsZeroChargeLooseMuonIsolation,
-      selectedMuTauPairsMt1METlooseMuonIsolation ],
+      selectedMuTauPairsMt1METlooseMuonIsolation,
+      selectedMuTauPairsPzetaDiffLooseMuonIsolation ],
     src = "allMuTauPairsLooseMuonIsolation",
     pyModuleName = __name__,
     doSelIndividual = True
