@@ -2251,7 +2251,7 @@ fileNamesTTplusJets_part04 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_18.root',
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_19.root',
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_20.root'
-)    
+)
 fileNamesTTplusJets_part05 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_21.root',
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/TTjets_madgraph/skimElecTau_22.root',
