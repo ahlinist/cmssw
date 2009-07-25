@@ -21,9 +21,16 @@ selectedMuTauPairsZeroCharge = cms.EDFilter("PATMuTauPairSelector",
     filter = cms.bool(False)
 )
 
-#require low transverse mass of muon and MET
+# require low transverse mass of muon and MET
 selectedMuTauPairsMt1MET = cms.EDFilter("PATMuTauPairSelector",
-    cut = cms.string('mt1MET < 60.'),
+    cut = cms.string('mt1MET < 50.'),
+    filter = cms.bool(False)
+)
+
+# require missing transverse momentum to point
+# in the direction of visible tau decay products
+selectedMuTauPairsPzetaDiff = cms.EDFilter("PATMuTauPairSelector",
+    cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.'),
     filter = cms.bool(False)
 )
 
@@ -39,3 +46,4 @@ selectedMuTauPairsZeroChargeLooseMuonIsolation = copy.deepcopy(selectedMuTauPair
 
 selectedMuTauPairsMt1METlooseMuonIsolation = copy.deepcopy(selectedMuTauPairsMt1MET)
 
+selectedMuTauPairsPzetaDiffLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsPzetaDiff)
