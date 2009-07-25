@@ -172,7 +172,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   int colorbar[7] = {0,2,3,4,5,6,7};
+   int colorbar[8] = {0,2,3,4,5,6,7,800};
 
    const int NRGBs = 5;
    const int NCont = 255;
@@ -227,9 +227,9 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    if( name.find( "Integrity Summary" ) != std::string::npos ) 
    {
-      gStyle->SetPalette(7,colorbar);
+      gStyle->SetPalette(8,colorbar);
       obj->SetMinimum(0.5);
-      obj->SetMaximum(7.5);
+      obj->SetMaximum(8.5);
       return;
    }
 
