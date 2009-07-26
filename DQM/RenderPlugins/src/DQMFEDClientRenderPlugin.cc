@@ -38,10 +38,17 @@ public:
   virtual void preDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
+      gPad->SetLogy(0);
+      if ( o.name.find( "Fatal" )  != std::string::npos)
+         gPad->SetLogy(1);
+      
 
       // object is TH2 histogram
-      if( dynamic_cast<TH2F*>( o.object ) )
-        preDrawTH2F( c, o );
+      if ( dynamic_cast<TH2F*>( o.object ) ) 
+      {
+         gPad->SetLogy(0);
+         preDrawTH2F( c, o );
+      }
     }
 
 private:
