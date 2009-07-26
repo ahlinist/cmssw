@@ -77,12 +77,12 @@ run_length=2
 first_event=1
 last_event=999999
 
-from_file="false"
+from_file="False"
 from_file_name="Emptyfile.root"
 
-correct_ecal="false"
-correct_bh="false"
-bh_plus="true"
+correct_ecal="False"
+correct_bh="False"
+bh_plus="True"
 
 data_type="Laser"
 eb_radius=1.4
@@ -208,172 +208,146 @@ echo ""
 if [[ $extension == "root" ]]; then
   input_module="
 # if getting data from a .root pool file
-  source = PoolSource {
-    untracked uint32 skipEvents = $first_event
-      untracked vstring fileNames = { 'file:$data_path' }
-    untracked bool   debugFlag     = true
-   }"
+process.source = cms.Source('PoolSource',
+      skipEvents = cms.untracked.uint32($first_event),
+      fileNames = cms.untracked.vstring('file:$data_path'),
+      debugFlag = cms.untracked.bool(True),
+      debugVebosity = cms.untracked.uint32(10)
+  )"
 else
   input_module="
-     source = NewEventStreamFileReader{
-       untracked uint32 skipEvents = $first_event
-       untracked vstring fileNames = { 'file:$data_path' }
-       untracked uint32 debugVebosity = 10
-       untracked bool   debugFlag     = true
-     }" 
+     # if getting data from a .root pool file
+process.source = cms.Source('NewEventStreamFileReader',
+      skipEvents = cms.untracked.uint32($first_event),
+      fileNames = cms.untracked.vstring('file:$data_path'),
+      debugFlag = cms.untracked.bool(True),
+      debugVebosity = cms.untracked.uint32(10)
+  )"
+ 
 fi
 
 if [[ $manyfiles == "1" ]]; then
     echo "doing many files"
     input_module="
-    #source = NewEventStreamFileReader{
-	source = PoolSource{
-       untracked uint32 skipEvents = $first_event
-       untracked vstring fileNames = { 
-	   `/bin/cat $files_file` 
-	   }
-       untracked uint32 debugVebosity = 10
-       untracked bool   debugFlag     = true
-    }"
+process.source = cms.Source('PoolSource',
+      skipEvents = cms.untracked.uint32($first_event),
+      fileNames = cms.untracked.vstring(`/bin/cat $files_file`),
+      debugFlag = cms.untracked.bool(True),
+      debugVebosity = cms.untracked.uint32(10)
+  )"
 fi
 
 path="
-path p = {ecalEBunpacker, ecalDccDigis, uncalibHitMaker, timing}
+process.p = cms.Path(process.ecalEBunpacker*rocess.ecalDccDigis*process.uncalibHitMaker*process.timing)
 "
 
-if [[ $from_file == "true" ]]; then
+if [[ $from_file == "True" ]]; then
     echo "using an input file using the empty source"
 	input_module="
-	source = EmptySource{	
-	}"
+process.source = cms.Source('EmptySource')
+	"
 	path="
-    path p = {timing}
-    "
+process.p = cms.Path(process.timing)
+        "
 fi
 
 maxevnts=$(($last_event-$first_event))
 
-cat > "$cfg_path$data_file".graph.$$.cfg <<EOF
+cat > "$cfg_path$data_file".graph.$$.py <<EOF
+import FWCore.ParameterSet.Config as cms
 
+process = cms.Process("ECALTIMING")
+process.load("EventFilter.EcalRawToDigiDev.EcalUnpackerMapping_cfi")
 
-process ECALTIMING = { 
+process.load("EventFilter.EcalRawToDigiDev.EcalUnpackerData_cfi")
 
-include "EventFilter/EcalRawToDigiDev/data/EcalUnpackerMapping.cfi"
-include "EventFilter/EcalRawToDigiDev/data/EcalUnpackerData.cfi"  
+process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
-include "Geometry/CaloEventSetup/data/CaloTopology.cfi"
-include "Geometry/EcalCommonData/data/EcalOnly.cfi"
-include "Geometry/CaloEventSetup/data/CaloGeometry.cff"
+process.load("Geometry.EcalCommonData.EcalOnly_cfi")
 
-untracked PSet maxEvents = {untracked int32 input = $maxevnts }
+process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
+
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.GlobalTag.globaltag = 'GR09_31X_V4P::All'
+
+process.maxEvents = cms.untracked.PSet(
+        input = cms.untracked.int32( $maxevnts )
+        )
 
 $input_module
 
-
-es_source src1 = EcalTrivialConditionRetriever{
-     untracked vdouble amplWeights = { -0.333, -0.333, -0.333,
-                                        0.000,  0.000,  1.000,
-                                        0.000,  0.000,  0.000,  0.000 }
-     untracked vdouble pedWeights  = {  0.333,  0.333,  0.333,
-                                        0.000,  0.000,  0.000,
-                                        0.000,  0.000,  0.000,  0.000 }
-     untracked vdouble jittWeights = {  0.040,  0.040,  0.040,
-                                        0.000,  1.320, -0.050,
-                                       -0.500, -0.500, -0.400,  0.000 }
- }
-
-      
-module uncalibHitMaker =  EcalFixedAlphaBetaFitUncalibRecHitProducer{
-
-       InputTag EBdigiCollection = ecalDccDigis:ebDigiSkim
-       InputTag EEdigiCollection = ecalDccDigis:eeDigiSkim
-       #InputTag EBdigiCollection = ecalEBunpacker:ebDigis
-       #InputTag EEdigiCollection = ecalEBunpacker:eeDigis
-       string EBhitCollection  = "EcalUncalibRecHitsEB"
-       string EEhitCollection  = "EcalUncalibRecHitsEE"
-       double alphaEB  = 1.2
-   double betaEB   = 1.7
-   double alphaEE  = 1.63
-   double betaEE   = 1.37
-   double MinAmplBarrel	= 8.
-   double MinAmplEndcap	= 14.
-   bool UseDynamicPedestal = true
-   untracked string AlphaBetaFilename  = "NOFILE"
-
-  }
-  
- module ecalDccDigis = EcalDccDigiSkimer {
-   InputTag DigiUnpacker     = ecalEBunpacker
-   InputTag EBdigiCollection =  ecalEBunpacker:ebDigis
-   InputTag EEdigiCollection =  ecalEBunpacker:eeDigis
-   
-   string EBdigiCollectionOut = 'ebDigiSkim'
-   string EEdigiCollectionOut = 'eeDigiSkim'
-
-   string DigiType = "$data_type"
-}
-
- module timing = EcalTimingAnalysis {
-   string digiProducer   = "ecalEBunpacker"
-   string hitProducer   = "uncalibHitMaker"
-   string hitProducerEE   = "uncalibHitMaker"
-   string hitCollection = "EcalUncalibRecHitsEB"
-   string hitCollectionEE = "EcalUncalibRecHitsEE"
-
-   untracked string rootfile = "Timing${data_type}_$data_file.$$.root"
-   untracked string TTPeakTime = "TTPeakPositionFile${data_type}_${data_file}.$$.txt"
-   untracked string ChPeakTime = "ChPeakTime${data_type}_${data_file}.$$.txt"
-   untracked double amplThr = $threshold
-   untracked double minNumEvt = $number
-   untracked double RunStart = $start_time
-   untracked double RunLength = $run_length
-   untracked bool FromFile = $from_file
-   untracked string FromFileName = "$from_file_name"
-   untracked bool CorrectEcalReadout = $correct_ecal
-   untracked bool CorrectBH = $correct_bh
-   untracked double EBRadius = $eb_radius
-   untracked bool BeamHaloPlus = $bh_plus
-   #untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   5.2177, 5.2282,  5.1461, 5.1395, 4.8314, 4.7773, 4.8276, 4.8607, 4.9925,   5.0648, 4.837, 4.7639, 5.2952, 5.2985, 4.8695, 4.8308, 4.9181, 4.8526, 4.7157, 4.7297, 5.1266, 5.1656, 4.8872, 4.8274, 5.3140, 5.3209, 5.0342, 5.0402, 5.0712, 4.9686, 5.4509, 5.3868, 5.3950, 5.2342, 5.00, 5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}
-   
-  # untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
-   #                               6.2177, 6.2282, 6.1271, 6.1205, 5.4004, 5.3463, 5.4356, 5.4687, 5.7965,   
-#				  5.8688, 5.4250, 5.3519, 6.2762, 6.2795, 5.4385, 5.3998, 5.5411, 5.4756, 
-#				  5.3387, 5.3527, 6.1076, 6.1466, 5.4364, 5.3764, 6.3260, 6.3329, 5.6572, 
-#				  5.6632, 5.6202, 5.5176, 6.4509, 6.3868, 6.4070, 6.2462, 5.00, 5.00, 
-#				  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}
+process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
+                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
+                                             betaEE = cms.double(1.37),
+                                             alphaEE = cms.double(1.63),
+                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
+                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
+                                             betaEB = cms.double(1.7),
+                                             MinAmplEndcap = cms.double(14.0),
+                                             MinAmplBarrel = cms.double(8.0),
+                                             alphaEB = cms.double(1.2),
+                                             UseDynamicPedestal = cms.bool(True),
+                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
+                                         )
 
 
-# Laser Averages				  
- #  untracked vdouble SMAverages = {5.00, 5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,   
- #                                5.3805, 5.4358, 5.377, 5.287, 4.96, 4.9758, 4.9893, 5.0638, 5.2273,   
-#				  5.242, 4.9926, 4.9928, 5.5974, 5.4966, 5.1288, 5.127, 5.2627, 5.1177, 
-#				  5.0262, 5.0702, 5.3998, 5.5244, 5.1255, 5.0881, 5.7494, 5.6323, 5.4287, 
-#				  5.4655, 5.3829, 5.3226, 5.7801, 5.7548, 5.8181, 5.6015, 5.00, 5.00, 
-#				  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00,  5.00}	
-#				  
-  untracked vdouble SMAverages = {5.0703, 5.2278,  5.2355,  5.1548,  5.1586,  5.1912,  5.1576,  5.1625,  5.1269,   
-                                  5.643, 5.6891, 5.588, 5.5978, 5.6508, 5.6363, 5.5972, 5.6784, 5.6108,   
-				  5.6866, 5.6523, 5.6666, 5.7454, 5.729, 5.7751, 5.7546, 5.7835, 5.7529, 
-				  5.5691, 5.6677, 5.5662, 5.6308, 5.7097, 5.6773, 5.76, 5.8025, 5.9171, 
-				  5.8771, 5.8926, 5.9011, 5.8447, 5.8142,  5.8475, 5.7123,5.6216, 5.6713, 
-				  5.3747,5.3564,  5.39,  5.8081,  5.8081,   5.1818, 5.1125,  5.1334,  5.2581}	
-				  
-     untracked vdouble SMCorrections = {0.00, 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,   
-                                  0.2411, 0.2411, 0.2221, 0.2221, -0.1899, -0.1899, -0.1509, -0.1509, 0.0451,   
-				  0.0451, -0.1709,-0.1709, 0.2221, 0.2221, -0.1899, -0.1899, -0.1359, -0.1359, 
-				  -0.1359, -0.1359, 0.2221, 0.2221, -0.2099, -0.2099, 0.2531, 0.2531, -0.1359, 
-				  -0.1359, -0.2099, -0.2099, 0.2411, 0.2411, 0.2531, 0.2531, -0.1709, -0.1709, 
-				  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00}					  
-  				  
-   #
-}
+process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
+                                        EEdigiCollectionOut = cms.string('eeDigiSkim'),
+                                        EEdigiCollection = cms.InputTag("ecalEBunpacker","eeDigis"),
+                                        EBdigiCollectionOut = cms.string('ebDigiSkim'),
+                                        EBdigiCollection = cms.InputTag("ecalEBunpacker","ebDigis"),
+                                        DigiUnpacker = cms.InputTag("ecalEBunpacker"),
+                                        DigiType = cms.string('$data_type')
+                                    )
 
-      
+process.timing = cms.EDFilter("EcalTimingAnalysis",
+                                  rootfile = cms.untracked.string('Timing${data_type}_$data_file.$$.root'),
+                                  CorrectBH = cms.untracked.bool($correct_bh),
+                                  hitProducer = cms.string('uncalibHitMaker'),
+                                  minNumEvt = cms.untracked.double($number),
+                                  FromFileName = cms.untracked.string('$from_file_name'),
+                                  TTPeakTime = cms.untracked.string('TTPeakPositionFile${data_type}_${data_file}.$$.txt'),
+                                  SMAverages = cms.untracked.vdouble(5.0703, 5.2278, 5.2355, 5.1548, 5.1586,
+                                                                             5.1912, 5.1576, 5.1625, 5.1269, 5.643,
+                                                                             5.6891, 5.588, 5.5978, 5.6508, 5.6363,
+                                                                             5.5972, 5.6784, 5.6108, 5.6866, 5.6523,
+                                                                             5.6666, 5.7454, 5.729, 5.7751, 5.7546,
+                                                                             5.7835, 5.7529, 5.5691, 5.6677, 5.5662,
+                                                                             5.6308, 5.7097, 5.6773, 5.76, 5.8025,
+                                                                             5.9171, 5.8771, 5.8926, 5.9011, 5.8447,
+                                                                             5.8142, 5.8475, 5.7123, 5.6216, 5.6713,
+                                                                             5.3747, 5.3564, 5.39, 5.8081, 5.8081,
+                                                                             5.1818, 5.1125, 5.1334, 5.2581),
+                                  hitProducerEE = cms.string('uncalibHitMaker'),
+                                  amplThr = cms.untracked.double($threshold),
+                                  SMCorrections = cms.untracked.vdouble(0.0, 0.0, 0.0, 0.0, 0.0,
+                                                                                0.0, 0.0, 0.0, 0.0, 0.2411,
+                                                                                0.2411, 0.2221, 0.2221, -0.1899, -0.1899,
+                                                                                -0.1509, -0.1509, 0.0451, 0.0451, -0.1709,
+                                                                                -0.1709, 0.2221, 0.2221, -0.1899, -0.1899,
+                                                                                -0.1359, -0.1359, -0.1359, -0.1359, 0.2221,
+                                                                                0.2221, -0.2099, -0.2099, 0.2531, 0.2531,
+                                                                                -0.1359, -0.1359, -0.2099, -0.2099, 0.2411,
+                                                                                0.2411, 0.2531, 0.2531, -0.1709, -0.1709,
+                                                                                0.0, 0.0, 0.0, 0.0, 0.0,
+                                                                                0.0, 0.0, 0.0, 0.0),
+                                  BeamHaloPlus = cms.untracked.bool($bh_plus),
+                                  hitCollectionEE = cms.string('EcalUncalibRecHitsEE'),
+                                  ChPeakTime = cms.untracked.string('ChPeakTime${data_type}_${data_file}.$$.txt'),
+                                  hitCollection = cms.string('EcalUncalibRecHitsEB'),
+                                  digiProducer = cms.string('ecalEBunpacker'),
+                                  CorrectEcalReadout = cms.untracked.bool($correct_ecal),
+                                  FromFile = cms.untracked.bool($from_file),
+                                  RunStart = cms.untracked.double($start_time),
+                                  RunLength = cms.untracked.double($run_length),
+                                  EBRadius = cms.untracked.double($eb_radius)
+                              )
 
 $path
-
-}
-
 
 EOF
 
@@ -387,7 +361,7 @@ cd $cmssw_dir;
 eval `scramv1 ru -sh`;
 cd -;
 echo "... running"
-cmsRun "$cfg_path$data_file".graph.$$.cfg >& "$log_dir$data_file".$$.graph
+cmsRun "$cfg_path$data_file".graph.$$.py >& "$log_dir$data_file".$$.graph
 
 echo ""
 echo ""
