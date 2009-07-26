@@ -235,7 +235,7 @@
    TCanvas c1("c1", " EoverPTracksBarrel benchmark");
    FormatPad( &c1, false );
    comp.Draw("EoverPTracksBarrel", mode);
-   SavePlot("EoverPTracksBarel", outdir.c_str() );
+   SavePlot("EoverPTracksBarrel", outdir.c_str() );
    comp.SetAxis(5);  
 
    comp.SetAxis(1,0,5);  
