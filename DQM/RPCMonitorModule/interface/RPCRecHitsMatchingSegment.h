@@ -1,11 +1,9 @@
-
-
 /** \class RPCEfficiency
  *
  * Class to find the RPC RecHits asociated to a segment... 
  *
- *  $Date: 2009/05/19 10:47:26 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/05/27 08:09:44 $
+ *  $Revision: 1.2 $
  *
  * \author Camilo Carrillo (Uniandes)
  *
@@ -124,6 +122,7 @@ class RPCRecHitsMatchingSegment : public edm::EDAnalyzer {
       edm::ESHandle<CSCGeometry> cscGeo;
 
       MonitorElement * statistics;
+
       MonitorElement * bxVsy;
    
       //Distance Strip

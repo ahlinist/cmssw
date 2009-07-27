@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.27 2009/07/06 10:16:12 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.28 2009/07/07 13:45:25 carrillo Exp $
 //
 //
 
@@ -468,8 +468,6 @@ private:
   std::ofstream rollZeroPrediction;
   bool prodimages;
   bool makehtml;
-  bool dosD;
-  bool CLSandBXY;
   bool debug;
   bool stat;
   double threshold;
@@ -497,8 +495,6 @@ RPCMonitorEfficiency::RPCMonitorEfficiency(const edm::ParameterSet& iConfig){
   fileout=iConfig.getUntrackedParameter<std::string>("fileOut");  
   prodimages=iConfig.getUntrackedParameter<bool>("prodimages");
   makehtml=iConfig.getUntrackedParameter<bool>("makehtml");
-  dosD=iConfig.getUntrackedParameter<bool>("dosD");
-  CLSandBXY=iConfig.getUntrackedParameter<bool>("CLSandBXY",false);
   debug=iConfig.getUntrackedParameter<bool>("debug",false);
   stat=iConfig.getUntrackedParameter<bool>("statistics",false);
   threshold=iConfig.getUntrackedParameter<double>("threshold");
@@ -1127,9 +1123,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   for(int ri=2;ri<=3;ri++){
     for(int roll=1;roll<=3;roll++){
       binLabel.str("");
-      if(roll==1) binLabel<<"Ring "<<ri<<" A";
+      if(roll==3) binLabel<<"Ring "<<ri<<" A";
       else if(roll==2) binLabel<<"Ring "<<ri<<" B";
-      else if(roll==3) binLabel<<"Ring "<<ri<<" C";
+      else if(roll==1) binLabel<<"Ring "<<ri<<" C";
       //if(debug) std::cout<<"Labeling EndCaps "<<binLabel.str()<<std::endl;
       Diskm3Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
       Diskm2Summary->GetYaxis()->SetBinLabel((ri-2)*3+roll,binLabel.str().c_str());
@@ -1250,13 +1246,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
 	  meIdINEF = folder +"/Inefficiency2DFromDT_"+ name;
 
-	  if(dosD){
-	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
-	    histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
-	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
-	    histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
-	  }
-
+	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
+	  histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
+	  histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	  histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
+	  
 	  const int n = 20;
 	  
 	  float x[n];
@@ -1264,32 +1258,30 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float ex[n];
 	  float ey[n];
 	  	  
-	  if(CLSandBXY){
-	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
-
-	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
-
-	    if(histoBXY && histoCLS){
-	      if(debug) std::cout<<"the histograms exist"<<std::endl;
-	        
-	      float step = stripl/float(n);
-	      for(int i=0;i<n;i++){
-		float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
-		float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
-		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
-		
-		x[i]=(i+1)*step;
-		ex[i]=step*0.5;
-		y[i]=mean;
-		ey[i]=error;
-	      }
+	  histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
+	  
+	  histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
+	  
+	  if(histoBXY && histoCLS){
+	    if(debug) std::cout<<"the histograms exist"<<std::endl;
+	    
+	    float step = stripl/float(n);
+	    for(int i=0;i<n;i++){
+	      float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
+	      float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
+	      float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
 	      
-	    }else{
-	      if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
-	      if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
+	      x[i]=(i+1)*step;
+	      ex[i]=step*0.5;
+	      y[i]=mean;
+	      ey[i]=error;
 	    }
+	    
+	  }else{
+	    if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
+	    if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
 	  }
-
+	  
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str());
           histoDT= (TH1F*)theFile->Get(meIdDT.c_str());
           BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());
@@ -1340,7 +1332,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  if(dosD && histoRPC_2D && histoDT_2D && histoResidual && barrel){
+	  if(histoRPC_2D && histoDT_2D && histoResidual && barrel){
 	    //if(debug) std::cout<<"Leidos los histogramas 2D!"<<std::endl;
 	    for(int i=1;i<=2*nstrips;++i){
 	      for(int j=1;j<=2*nstrips;++j){
@@ -1620,84 +1612,81 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 
-	      if(CLSandBXY){//Barrel
-		histoCLS->GetXaxis()->SetTitle("Cluster Size");
-		histoCLS->Draw();
-		labeltoSave = name + "/CLS.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
+	      histoCLS->GetXaxis()->SetTitle("Cluster Size");
+	      histoCLS->Draw();
+	      labeltoSave = name + "/CLS.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
 		
-		histoBXY->GetXaxis()->SetTitle("BX");
-		histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
-		
-		TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-		plot->SetMarkerColor(6);
-		plot->SetMarkerStyle(20);
-		plot->SetMarkerSize(0.5);
-		plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
-		plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
-		plot->Draw("AP");
-		labeltoSave = name + "/BXY.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      }
-
-	      if(dosD){
-		histoRPC_2D->GetXaxis()->SetTitle("cm");
-		histoRPC_2D->GetYaxis()->SetTitle("cm");
-		histoRPC_2D->Draw();
-		histoRPC_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/RPCOccupancy_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoINEF->GetXaxis()->SetTitle("cm");
-		histoINEF->GetYaxis()->SetTitle("cm");
-		histoINEF->Draw();
-		histoINEF->SetDrawOption("COLZ");
-		labeltoSave = name + "/INEF.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-
-		histoPROY->SetTitle("Efficiency along Y");
-		histoPROY->GetXaxis()->SetTitle("cm");
-		histoPROY->GetYaxis()->SetRangeUser(0.,1.);
-		histoPROY->Draw();
-		labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-			
-		histoPROX->SetTitle("Efficiency along X");
-		histoPROX->GetXaxis()->SetTitle("cm");
-		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
-		histoPROX->Draw();
-		labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoDT_2D->GetXaxis()->SetTitle("cm");
-		histoDT_2D->GetYaxis()->SetTitle("cm");
-		histoDT_2D->Draw();
-		histoDT_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/DTOccupancy_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-
-		histoPRO_2D->GetXaxis()->SetTitle("cm");
-		histoPRO_2D->GetYaxis()->SetTitle("cm");
-		histoPRO_2D->Draw();
-		histoPRO_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/Profile_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoResidual->GetXaxis()->SetTitle("cm");
-		histoResidual->Draw();
-		labeltoSave = name + "/Residual.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      }
+	      histoBXY->GetXaxis()->SetTitle("BX");
+	      histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
+	      
+	      TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+	      plot->SetMarkerColor(6);
+	      plot->SetMarkerStyle(20);
+	      plot->SetMarkerSize(0.5);
+	      plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
+	      plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
+	      plot->Draw("AP");
+	      labeltoSave = name + "/BXY.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	    
+	      histoRPC_2D->GetXaxis()->SetTitle("cm");
+	      histoRPC_2D->GetYaxis()->SetTitle("cm");
+	      histoRPC_2D->Draw();
+	      histoRPC_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/RPCOccupancy_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoINEF->GetXaxis()->SetTitle("cm");
+	      histoINEF->GetYaxis()->SetTitle("cm");
+	      histoINEF->Draw();
+	      histoINEF->SetDrawOption("COLZ");
+	      labeltoSave = name + "/INEF.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      
+	      histoPROY->SetTitle("Efficiency along Y");
+	      histoPROY->GetXaxis()->SetTitle("cm");
+	      histoPROY->GetYaxis()->SetRangeUser(0.,1.);
+	      histoPROY->Draw();
+	      labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoPROX->SetTitle("Efficiency along X");
+	      histoPROX->GetXaxis()->SetTitle("cm");
+	      histoPROX->GetYaxis()->SetRangeUser(0.,1.);
+	      histoPROX->Draw();
+	      labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoDT_2D->GetXaxis()->SetTitle("cm");
+	      histoDT_2D->GetYaxis()->SetTitle("cm");
+	      histoDT_2D->Draw();
+	      histoDT_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/DTOccupancy_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoPRO_2D->GetXaxis()->SetTitle("cm");
+	      histoPRO_2D->GetYaxis()->SetTitle("cm");
+	      histoPRO_2D->Draw();
+	      histoPRO_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/Profile_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoResidual->GetXaxis()->SetTitle("cm");
+	      histoResidual->Draw();
+	      labeltoSave = name + "/Residual.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
 	    }
 	    
 	    delete histoPRO;
@@ -2090,13 +2079,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
 	  meIdINEF = folder +"/Inefficiency2DFromCSC_"+ name;
 
-	  if(dosD){
-	    histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
-	    histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
-	    histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
-	    histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
-	  } 
-
+	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
+	  histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
+	  histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	  histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
+	  
 	  const int n = 20;
 	  
 	  float x[n];
@@ -2104,31 +2091,29 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float ex[n];
 	  float ey[n];
 
-	  if(CLSandBXY){//EndCap
-	    histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
-	    histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
-	    
-	    if(histoBXY && histoCLS){
-	      if(debug) std::cout<<"the histograms exist"<<std::endl;
-	      
-	      float step = stripl/float(n);
-	      for(int i=0;i<n;i++){
-		float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
-		float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
-		float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
-		
-		x[i]=(i+1)*step;
-		ex[i]=step*0.5;
-		y[i]=mean;
-		ey[i]=error;
-	      }
-	    
-	    }else{
-	      if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
-	      if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
-	    }
-	  }
+	  histoCLS= (TH1F*)theFile->Get(meIdCLS.c_str());
+	  histoBXY= (TH2F*)theFile->Get(meIdBXY.c_str());
 	  
+	  if(histoBXY && histoCLS){
+	    if(debug) std::cout<<"the histograms exist"<<std::endl;
+	      
+	    float step = stripl/float(n);
+	    for(int i=0;i<n;i++){
+	      float mean = histoBXY->ProjectionX("_px",i,i+1)->GetMean();
+	      float entries = histoBXY->ProjectionX("_px",i,i+1)->GetEntries();
+	      float error = histoBXY->ProjectionX("_px",i,i+1)->GetRMS()/ sqrt(entries);
+	      
+	      x[i]=(i+1)*step;
+	      ex[i]=step*0.5;
+	      y[i]=mean;
+	      ey[i]=error;
+	    }
+	    
+	  }else{
+	    if(debug) std::cout<<"WARNING!!! one of the two histograms (histoBXY or histoCLS) doesn't exist"<<std::endl;
+	    if(debug) std::cout<<meIdBXY<<" "<<meIdCLS<<std::endl;
+	  }
+	  	  
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) if(debug) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl;
 	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)if(debug) std::cout<<meIdCSC<<"Doesn't exist"<<std::endl;
 	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)if(debug) std::cout<<BXDistribution<<"Doesn't exist"<<std::endl;
@@ -2181,7 +2166,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  if(debug) std::cout<<"Checking 2D Histograms for "<<name<<std::endl;
 
-	  if(dosD && histoRPC_2D && histoCSC_2D && histoResidual && endcap){
+	  if(histoRPC_2D && histoCSC_2D && histoResidual && endcap){
 
 	    if(rpcId.region()==1){
 	      if(rpcId.station()==1 && rpcId.ring()==2) residualDisk1Ring2->Add(histoResidual);
@@ -2485,87 +2470,83 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 		
-	      if(CLSandBXY){//EndCap
-		histoCLS->GetXaxis()->SetTitle("Cluster Size");
-		histoCLS->Draw();
-		labeltoSave = name + "/CLS.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoBXY->GetXaxis()->SetTitle("BX");
-		histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
-		
-		TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
-		plot->SetMarkerColor(6);
-		plot->SetMarkerStyle(20);
-		plot->SetMarkerSize(0.5);
-		plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
-		plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
-		plot->Draw("AP");
-		labeltoSave = name + "/BXY.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      }
+	      histoCLS->GetXaxis()->SetTitle("Cluster Size");
+	      histoCLS->Draw();
+	      labeltoSave = name + "/CLS.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
 	      
-	      if(dosD){
-		histoRPC_2D->GetXaxis()->SetTitle("cm");
-		histoRPC_2D->GetYaxis()->SetTitle("cm");
-		histoRPC_2D->Draw();
-		histoRPC_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/RPCOccupancy_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoINEF->GetXaxis()->SetTitle("cm");
-		histoINEF->GetYaxis()->SetTitle("cm");
-		histoINEF->Draw();
-		histoINEF->SetDrawOption("COLZ");
-		labeltoSave = name + "/INEF.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoPROY->SetTitle("Efficiency along Y");
-		histoPROY->GetXaxis()->SetTitle("cm");
-		histoPROY->GetYaxis()->SetRangeUser(0.,1.);
-		histoPROY->Draw();
-		labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		histoPROX->SetTitle("Efficiency along X");
-		histoPROX->GetXaxis()->SetTitle("cm");
-		histoPROX->GetYaxis()->SetRangeUser(0.,1.);
-		histoPROX->Draw();
-		labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		if(debug) std::cout<<"histoCSC_2D "<<std::endl;
-		histoCSC_2D->GetXaxis()->SetTitle("cm");
-		histoCSC_2D->GetYaxis()->SetTitle("cm");
-		histoCSC_2D->Draw();
-		histoCSC_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/DTOccupancy_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		if(debug) std::cout<<"histoPRO_2D "<<std::endl;
-		histoPRO_2D->GetXaxis()->SetTitle("cm");
-		histoPRO_2D->GetYaxis()->SetTitle("cm");
-		histoPRO_2D->Draw();
-		histoPRO_2D->SetDrawOption("COLZ");
-		labeltoSave = name + "/Profile_2D.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-		
-		if(debug) std::cout<<"histoResidual "<<std::endl;
-		histoResidual->GetXaxis()->SetTitle("cm");
-		histoResidual->Draw();
-		
-		labeltoSave = name + "/Residual.png";
-		Ca0->SaveAs(labeltoSave.c_str());
-		Ca0->Clear();
-	      }
+	      histoBXY->GetXaxis()->SetTitle("BX");
+	      histoBXY->GetYaxis()->SetTitle("Distance to the Bottom of the Chamber (cm)");
+	      
+	      TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
+	      plot->SetMarkerColor(6);
+	      plot->SetMarkerStyle(20);
+	      plot->SetMarkerSize(0.5);
+	      plot->GetXaxis()->SetTitle("Distance to the BOTTOM of the Chamber (cm)");
+	      plot->GetYaxis()->SetTitle("Mean BX (bx Units)");	
+	      plot->Draw("AP");
+	      labeltoSave = name + "/BXY.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	    	      
+	      histoRPC_2D->GetXaxis()->SetTitle("cm");
+	      histoRPC_2D->GetYaxis()->SetTitle("cm");
+	      histoRPC_2D->Draw();
+	      histoRPC_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/RPCOccupancy_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoINEF->GetXaxis()->SetTitle("cm");
+	      histoINEF->GetYaxis()->SetTitle("cm");
+	      histoINEF->Draw();
+	      histoINEF->SetDrawOption("COLZ");
+	      labeltoSave = name + "/INEF.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoPROY->SetTitle("Efficiency along Y");
+	      histoPROY->GetXaxis()->SetTitle("cm");
+	      histoPROY->GetYaxis()->SetRangeUser(0.,1.);
+	      histoPROY->Draw();
+	      labeltoSave = name + "/RPCOccupancy_2D_pfy.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      histoPROX->SetTitle("Efficiency along X");
+	      histoPROX->GetXaxis()->SetTitle("cm");
+	      histoPROX->GetYaxis()->SetRangeUser(0.,1.);
+	      histoPROX->Draw();
+	      labeltoSave = name + "/RPCOccupancy_2D_pfx.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      if(debug) std::cout<<"histoCSC_2D "<<std::endl;
+	      histoCSC_2D->GetXaxis()->SetTitle("cm");
+	      histoCSC_2D->GetYaxis()->SetTitle("cm");
+	      histoCSC_2D->Draw();
+	      histoCSC_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/DTOccupancy_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      if(debug) std::cout<<"histoPRO_2D "<<std::endl;
+	      histoPRO_2D->GetXaxis()->SetTitle("cm");
+	      histoPRO_2D->GetYaxis()->SetTitle("cm");
+	      histoPRO_2D->Draw();
+	      histoPRO_2D->SetDrawOption("COLZ");
+	      labeltoSave = name + "/Profile_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+	      
+	      if(debug) std::cout<<"histoResidual "<<std::endl;
+	      histoResidual->GetXaxis()->SetTitle("cm");
+	      histoResidual->Draw();
+	      
+	      labeltoSave = name + "/Residual.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
 	    }
 	    
 	    delete histoPRO;
@@ -2672,8 +2653,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  //Pigi Histos
 
+	  int rollY = (*r)->id().roll();
+	  if(rollY==1) rollY=3;
+	  else if(rollY==3) rollY=1;
 
-	  int Y=((*r)->id().ring()-2)*3+(*r)->id().roll();
+	  int Y=((*r)->id().ring()-2)*3+rollY;
 
 	  if(debug) std::cout<<"Pigi "<<camera<<" "<<rpcsrv.shortname()<<" "<<(*r)->id()<<" ef="<<averageeff<<" Y="<<Y<<std::endl;
 

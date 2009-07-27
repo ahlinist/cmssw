@@ -433,6 +433,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   char detUnitLabel[128];
   char layerLabel[128];
   char meIdRPC [128];
+  char meIdRPCbx [128];
   char meIdDT [128];
   char meIdCSC [128];
 
@@ -460,7 +461,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	typedef std::pair<RPCRecHitCollection::const_iterator, RPCRecHitCollection::const_iterator> rangeRecHits;
 	rangeRecHits recHitCollection =  rpcHits->get(rpcId);
 	RPCRecHitCollection::const_iterator recHit;
-	sprintf(meIdRPC,"BXDistribution_%s",detUnitLabel);
+	
+	sprintf(meIdRPCbx,"BXDistribution_%s",detUnitLabel);
 
 	if(rpcId.region()==0){
 	  sprintf(meIdRPC,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
@@ -474,7 +476,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  int firststrip = recHit->firstClusterStrip();
 	  int bx = recHit->BunchX();
 	  for(int stripDetected = firststrip; stripDetected <= firststrip+cls; stripDetected++){
-	    meMap[meIdRPC]->Fill(bx);
+	    meMap[meIdRPCbx]->Fill(bx);
 	    meMap[meIdRPC]->Fill(stripDetected); 
 	  }
 	}
@@ -1245,9 +1247,10 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      
 	  if(debug) std::cout<<"CSC \t \t Is a good Segment? dim = 4, 4 <= nRecHits <= 10 Incident angle int range 45 < "<<acos(dz)*180/3.1415926<<" < 135? "<<std::endl;
 
-	  if(segment->dimension()==4 && (segment->nRecHits()<=10 && segment->nRecHits()>=4)&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 135.){ 
-	    
+	  if((segment->dimension()==4) && (segment->nRecHits()<=10 && segment->nRecHits()>=4)){
+	    //&& acos(dz)*180/3.1415926 > 45. && acos(dz)*180/3.1415926 < 135.){ 
 	    //&& segment->chi2()< ??)Add 3 segmentes in the endcaps???
+
 
 	    if(debug) std::cout<<"CSC \t \t yes"<<std::endl;
 	    if(debug) std::cout<<"CSC \t \t CSC Segment Dimension "<<segment->dimension()<<std::endl; 
@@ -1368,7 +1371,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  
 		float extrapolatedDistance = sqrt((X-Xo)*(X-Xo)+(Y-Yo)*(Y-Yo)+(Z-Zo)*(Z-Zo));
 
-		if(debug) std::cout<<"CSC \t \t \t Is the distance of extrapolation less than MaxD? ="<<extrapolatedDistance<<"cm"<<"MaxD="<<MaxD<<"cm"<<std::endl;
+		if(debug) std::cout<<"CSC \t \t \t Is the distance of extrapolation less than MaxD? ="<<extrapolatedDistance<<"cm"<<" MaxD="<<MaxD<<"cm"<<std::endl;
 	  
 		if(extrapolatedDistance<=MaxD){ 
 
@@ -1560,7 +1563,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		}//D so big
 	      }//loop over the rolls asociated 
 	    }//Condition over the startup geometry!!!!
-	  }//Is the segment 4D?
+	  }else{
+	    if(debug) std::cout<<"CSC \t \t no, is not a good segment"<<std::endl;//Is the segment 4D?
+	  }
 	}else{
 	  if(debug) std::cout<<"CSC \t \t More than one segment in this chamber, or we are in Station Ring 1 or in Station 4"<<std::endl;
 	}
