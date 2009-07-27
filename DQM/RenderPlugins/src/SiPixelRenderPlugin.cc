@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.11 $
-  \date $Date: 2009/05/22 19:09:33 $
+  \version $Revision: 1.12 $
+  \date $Date: 2009/07/23 11:21:07 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -75,6 +75,7 @@ private:
       ya->SetTitleSize(0.05);
       ya->SetLabelSize(0.04);
 
+      if( o.name.find( "endcapOccupancyMap" ) != std::string::npos ) obj->SetTitle("Endcap Digi Occupancy Map");
       if( o.name.find( "hitmap" ) != std::string::npos  ||
           o.name.find( "Occupancy" ) != std::string::npos)
       {
@@ -82,7 +83,8 @@ private:
         obj->SetOption("colz");
         return;
       }
-
+      
+      
       TH2F* obj2 = dynamic_cast<TH2F*>( o.object );
 
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
@@ -108,7 +110,9 @@ private:
       {
         gPad->SetLogy(0);
       }
-
+      
+      if( o.name.find( "ALLMODS_chargeCOMB" ) != std::string::npos ) obj->GetXaxis()->SetRange(1,51);
+      if( o.name.find( "FEDEntries" ) != std::string::npos ) gStyle->SetOptStat(0);
       if( o.name.find( "adcCOMB" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogy(1);
       if( o.name.find( "size_siPixelClusters" ) != std::string::npos && obj->GetEntries() > 0. ) gPad->SetLogx(1);
       if( o.name.find( "OnTrack" ) != std::string::npos && o.name.find( "charge" ) != std::string::npos ) obj->SetTitle("ClusterCharge_OnTrack");
