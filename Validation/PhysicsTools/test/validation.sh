@@ -53,6 +53,7 @@ rm *.png *.eps
 #############
 cp captions_photons.photons captions.txt
 root -l -b -q plot_photons.C
+cp plot_photons.C plot.C
 ../Tools/indexGen.py
 python merge_pho.py
 cp test/merged.html test/index.html
