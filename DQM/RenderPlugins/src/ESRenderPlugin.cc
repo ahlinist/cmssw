@@ -7,6 +7,7 @@
 #include "TCanvas.h"
 #include "TGaxis.h"
 #include "TColor.h"
+#include "TROOT.h"
 #include "TText.h"
 #include "TGraph.h"
 #include "TLine.h"
@@ -23,6 +24,30 @@ class ESRenderPlugin : public DQMRenderPlugin
       static const int iyES[346];
       static const int lsES[54];
       static const int lwES[54];
+
+      int colorbar1[10];
+      int colorbar2[8];
+
+      virtual void initialise( int, char ** )
+      {
+	 float rgb[10][3] = {{0.87, 0.00, 0.00}, {0.91, 0.27, 0.00},
+	    {0.95, 0.54, 0.00}, {1.00, 0.81, 0.00},
+	    {0.56, 0.91, 0.00}, {0.12, 1.00, 0.00},
+	    {0.06, 0.60, 0.50}, {0.00, 0.20, 1.00}, 
+	    {0.00, 0.10, 0.94}, {0.00, 0.00, 0.87}};
+
+	 for( int i=0; i<10; i++ )
+	 {
+	    TColor* color = gROOT->GetColor( 951+i );
+	    if ( ! color ) color = new TColor( 951+i, 0, 0, 0, "");
+	    color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
+	 }
+
+	 for( int i=0; i<10; i++) colorbar1[i] = i+951;
+	 for( int i=0; i<8; i++) colorbar2[i] = i+1;
+	 colorbar2[0] = 0;
+	 colorbar2[7] = 800;
+      }
 
       virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
 
@@ -172,16 +197,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   int colorbar[8] = {0,2,3,4,5,6,7,800};
-
-   const int NRGBs = 5;
-   const int NCont = 255;
-
-   double stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-   double red[NRGBs]   = { 0.87, 1.00, 0.12, 0.00, 0.00 };
-   double green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
-   double blue[NRGBs]  = { 0.00, 0.00, 0.00, 1.00, 0.87 };
-
+ 
    gStyle->SetPaintTextFormat();
 
    gStyle->SetOptStat(kFALSE);
@@ -194,11 +210,10 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
    gStyle->SetPaintTextFormat("+g");
 
 
-   if( name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Status" ) != std::string::npos )
-   {
-      TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-      gStyle->SetNumberContours(NCont);
-   }
+      if( name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Status" ) != std::string::npos )
+      {
+	 gStyle->SetPalette(10,colorbar1);
+      }
 
    if( name.find( "Z 1 P 1" ) != std::string::npos )
    {
@@ -227,7 +242,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
    if( name.find( "Integrity Summary" ) != std::string::npos ) 
    {
-      gStyle->SetPalette(8,colorbar);
+      gStyle->SetPalette(8,colorbar2);
       obj->SetMinimum(0.5);
       obj->SetMaximum(8.5);
       return;
@@ -241,10 +256,6 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
       obj->GetYaxis()->SetTitle("");
    }
 
-   /*   if( name.find( "ES OptoRX used for data taking" ) != std::string::npos )   
-	{
-	}
-    */
    if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) 
    {
       gStyle->SetPalette(1);
