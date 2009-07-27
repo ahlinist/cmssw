@@ -49,7 +49,12 @@ process.layer1PFMETs = process.layer1METs.clone(
 )
 process.allLayer1Objects.replace( process.layer1METs, process.layer1METs + process.layer1PFMETs)
 
-from tauAnalysisMaker import TauAnalysisMaker, cuts, options
+from tauAnalysisMaker import TauAnalysisMaker, cuts
+options = {
+  'name':'bbAHtoElecTau',
+  'object_order':['vertex','electron','tau','jet','elecTau']
+}
+
 maker = TauAnalysisMaker(cuts, options, process)
 
 process.p = cms.Path(
@@ -59,3 +64,5 @@ process.p = cms.Path(
   maker.createObjects()+
   process.savebbAHtoElecTauPlots
 )
+
+print maker
