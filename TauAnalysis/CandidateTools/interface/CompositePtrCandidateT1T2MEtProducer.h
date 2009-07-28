@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.2 2009/07/22 10:42:47 monicava Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.3 2009/07/22 11:23:47 monicava Exp $
  *
  */
 
@@ -166,14 +166,20 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	}
       }
     } else {
+//--- check if the same collection is used on both legs;
+//    if so, skip diTau(j,i), j > i combination in order to avoid two diTau objects being produced
+//    for combinations (i,j) and (j,i) of the same pair of particles in leg1 and leg2 collections
+      bool sameCollection = (leg1Collection.id () == leg2Collection.id());
+   
       for ( unsigned idxLeg1 = 0, numLeg1 = leg1Collection->size(); 
 	    idxLeg1 < numLeg1; ++idxLeg1 ) {
 	T1Ptr leg1Ptr = leg1Collection->ptrAt(idxLeg1);
-	for ( unsigned idxLeg2 = 0, numLeg2 = leg2Collection->size(); 
-	//for ( unsigned idxLeg2 = idxLeg1+1, numLeg2 = leg2Collection->size(); 
+	
+	unsigned idxLeg2_first = ( sameCollection ) ? (idxLeg1 + 1) : 0;
+	for ( unsigned idxLeg2 = idxLeg2_first, numLeg2 = leg2Collection->size(); 
 	      idxLeg2 < numLeg2; ++idxLeg2 ) {
 	  T2Ptr leg2Ptr = leg2Collection->ptrAt(idxLeg2);
-	  
+
 //--- do not create CompositePtrCandidateT1T2MEt object 
 //    for combination of particle with itself
 	  double dR = reco::deltaR(leg1Ptr->p4(), leg2Ptr->p4());
