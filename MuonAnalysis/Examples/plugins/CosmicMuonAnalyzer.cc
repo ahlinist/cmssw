@@ -1,8 +1,8 @@
 /** \class CosmicMuonAnalyzer
  *  Analyzer of the muon objects
  *
- *  $Date: 2009/06/26 05:38:14 $
- *  $Revision: 1.3 $
+ *  $Date: 2009/06/26 05:47:34 $
+ *  $Revision: 1.4 $
  *  \author R. Bellan - CERN <riccardo.bellan@cern.ch>
  */
 
@@ -21,6 +21,7 @@
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 #include "TH1I.h"
 #include "TH1F.h"
@@ -120,7 +121,7 @@ void CosmicMuonAnalyzer::analyze(const Event & event, const EventSetup& eventSet
       hMuCaloCompatibility->Fill(muon->caloCompatibility());
 
     // The muon system can also be used just as only for ID. What is the compatibility of a muon HP using only calorimeters?
-    hMuSegCompatibility->Fill(muon->segmentCompatibility());
+    hMuSegCompatibility->Fill(muon::segmentCompatibility(*muon));
 
 
     // How many chambers have been associated to a muon track?
@@ -133,33 +134,33 @@ void CosmicMuonAnalyzer::analyze(const Event & event, const EventSetup& eventSet
     // using an external class: DataFormats/MuonReco/interface/MuonSelectors.h (available from 310 inwards). 
     // This block is here for pedagogical reason and it is correct within 2XY cycle
     // Muon ID selection. As described in AN-2008/098  
-    if(muon->isGood(reco::Muon::All))                                // dummy options - always true
+    if(muon::isGoodMuon(*muon,muon::All))                                // dummy options - always true
       hMuIdAlgo->Fill(0);       
-    if(muon->isGood(reco::Muon::AllStandAloneMuons))                 // checks isStandAloneMuon flag
+    if(muon::isGoodMuon(*muon,muon::AllStandAloneMuons))                 // checks isStandAloneMuon flag
       hMuIdAlgo->Fill(1);       
-    if(muon->isGood(reco::Muon::AllTrackerMuons))                    // checks isTrackerMuon flag
+    if(muon::isGoodMuon(*muon,muon::AllTrackerMuons))                    // checks isTrackerMuon flag
       hMuIdAlgo->Fill(2);          
-    if(muon->isGood(reco::Muon::TrackerMuonArbitrated))              // resolve ambiguity of sharing segments
+    if(muon::isGoodMuon(*muon,muon::TrackerMuonArbitrated))              // resolve ambiguity of sharing segments
       hMuIdAlgo->Fill(3);
-    if(muon->isGood(reco::Muon::AllArbitrated))                      // all muons with the tracker muon arbitrated
+    if(muon::isGoodMuon(*muon,muon::AllArbitrated))                      // all muons with the tracker muon arbitrated
       hMuIdAlgo->Fill(4);            
-    if(muon->isGood(reco::Muon::GlobalMuonPromptTight))              // global muons with tighter fit requirements
+    if(muon::isGoodMuon(*muon,muon::GlobalMuonPromptTight))              // global muons with tighter fit requirements
       hMuIdAlgo->Fill(5);    
-    if(muon->isGood(reco::Muon::TMLastStationLoose))                 // penetration depth loose selector
+    if(muon::isGoodMuon(*muon,muon::TMLastStationLoose))                 // penetration depth loose selector
       hMuIdAlgo->Fill(6);       
-    if(muon->isGood(reco::Muon::TMLastStationTight))                 // penetration depth tight selector
+    if(muon::isGoodMuon(*muon,muon::TMLastStationTight))                 // penetration depth tight selector
       hMuIdAlgo->Fill(7);       
-    if(muon->isGood(reco::Muon::TM2DCompatibilityLoose))             // likelihood based loose selector
+    if(muon::isGoodMuon(*muon,muon::TM2DCompatibilityLoose))             // likelihood based loose selector
       hMuIdAlgo->Fill(8);   
-    if(muon->isGood(reco::Muon::TM2DCompatibilityTight))             // likelihood based tight selector
+    if(muon::isGoodMuon(*muon,muon::TM2DCompatibilityTight))             // likelihood based tight selector
       hMuIdAlgo->Fill(9);   
-    if(muon->isGood(reco::Muon::TMOneStationLoose))                  // require one well matched segment
+    if(muon::isGoodMuon(*muon,muon::TMOneStationLoose))                  // require one well matched segment
       hMuIdAlgo->Fill(10);        
-    if(muon->isGood(reco::Muon::TMOneStationTight))                  // require one well matched segment
+    if(muon::isGoodMuon(*muon,muon::TMOneStationTight))                  // require one well matched segment
       hMuIdAlgo->Fill(11);        
-    if(muon->isGood(reco::Muon::TMLastStationOptimizedLowPtLoose))   // combination of TMLastStation and TMOneStation
+    if(muon::isGoodMuon(*muon,muon::TMLastStationOptimizedLowPtLoose))   // combination of TMLastStation and TMOneStation
       hMuIdAlgo->Fill(12); 
-    if(muon->isGood(reco::Muon::TMLastStationOptimizedLowPtTight))   // combination of TMLastStation and TMOneStation
+    if(muon::isGoodMuon(*muon,muon::TMLastStationOptimizedLowPtTight))   // combination of TMLastStation and TMOneStation
       hMuIdAlgo->Fill(13);  
 
 
@@ -181,8 +182,8 @@ void CosmicMuonAnalyzer::analyze(const Event & event, const EventSetup& eventSet
     // so, we can make some requirements  
     if(muon->isolationR03().sumPt< 0.2){
       if(muon->isGlobalMuon() ||
-	 muon->isGood(reco::Muon::TM2DCompatibilityLoose) || 
-	 muon->isGood(reco::Muon::TMLastStationLoose))
+	 muon::isGoodMuon(*muon,muon::TM2DCompatibilityLoose) || 
+	 muon::isGoodMuon(*muon,muon::TMLastStationLoose))
 	selectedMuons.push_back(*muon);
     }
   }
