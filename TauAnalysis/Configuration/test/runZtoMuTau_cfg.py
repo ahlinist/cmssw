@@ -84,8 +84,15 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/F01E4F34-BDCB-DD11-B87D-001617C3B77C.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
+        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'rfio:/castor/cern.ch/user/s/sdas/WTauNu/FastSim/QCDPt_15/QCD_PtTrack15_FASTSIM_1000.root'
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part01.root',
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part02.root',
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part03.root',
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part04.root',
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part05.root',
+#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part06.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -114,8 +121,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-switchToPFTauFixedCone(process)
+switchToPFTauShrinkingCone(process)
+#switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
@@ -125,6 +132,24 @@ process.p = cms.Path( process.producePatTuple
 #                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
                      +process.analyzeZtoMuTauEvents
                      +process.saveZtoMuTauPlots )
+
+#--------------------------------------------------------------------------------
+# import utility function for switching input for PAT-tuple production
+# from RECO to AOD event content
+from TauAnalysis.Configuration.tools.aodTools import *
+
+# comment-out to switch from RECO to AOD event content
+# (will disable PAT trigger matching and limit computation of ECAL recHit based IsoDeposits
+#  to cones of size dR = 0.6 around electron candidates)
+#switchToAOD(process)
+#process.selectZtoMuTauEvents.remove(process.Trigger)
+#process.analyzeZtoMuTauEvents.filters[1].src = cms.InputTag("genPhaseSpaceEventInfo")
+#process.analyzeZtoMuTauEvents.filters[1].pluginType = cms.string('GenPhaseSpaceEventInfoSelector')
+#process.analyzeZtoMuTauEvents.filters[1].cut = cms.string('')
+#process.analyzeZtoMuTauEvents.analyzers.remove(process.triggerHistManager)
+#process.analyzeZtoMuTauEvents.eventDumps[0].hltResultsSource = cms.InputTag("")
+#process.analyzeZtoMuTauEvents.analysisSequence[0].analyzers.remove('triggerHistManager')
+#--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
@@ -137,4 +162,4 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
