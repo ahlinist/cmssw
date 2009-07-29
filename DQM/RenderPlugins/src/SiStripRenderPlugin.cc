@@ -176,6 +176,17 @@ private:
       //  } else {
       //   gPad->SetLogy(0);
       //  }
+      TAxis* xa = obj->GetXaxis();
+      TAxis* ya = obj->GetYaxis();
+
+      xa->SetTitleOffset(0.7);
+      xa->SetTitleSize(0.05);
+      xa->SetLabelSize(0.04);
+
+      ya->SetTitleOffset(0.7);
+      ya->SetTitleSize(0.04);
+      ya->SetLabelSize(0.04);
+
       if( o.name.find( "Summary_MeanNumberOfDigis" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
@@ -255,6 +266,7 @@ private:
 
       obj->SetStats( kFALSE );
       obj->SetOption("e");
+
       return;
     }
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
