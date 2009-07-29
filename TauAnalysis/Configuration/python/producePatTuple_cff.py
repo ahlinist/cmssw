@@ -34,6 +34,11 @@ from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 #
 from TauAnalysis.RecoTools.patJetSelection_cff import *
 #
+# produce collections of pat::(Calo)MET objects
+# passing different selection criteria
+#
+from TauAnalysis.RecoTools.patMetSelection_cff import *
+#
 # produce TauAnalysis specific objects not related to PAT sequences
 # (reconstruction of generator level information and
 #  selection of primary event vertex)
@@ -55,7 +60,7 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 # with the hypothesis of being a pair of electron,
 # resulting from a Z --> e+ e- decay
 #
-from TauAnalysis.CandidateTools.elecTauPairZeeHypothesis_cff import *
+from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
 #
 # produce combinations of tau-jet + missing transverse momentum
 #
@@ -69,7 +74,7 @@ from TauAnalysis.CandidateTools.tauRecoilEnergy_cfi import *
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
                                +producePostPat
-                               +produceLayer1SelLeptons + selectLayer1Jets
+                               +produceLayer1SelLeptons + selectLayer1Jets + selectLayer1METs
                                +produceDiTauPairsAllKinds
                                +selectDiTauPairsAllKinds
                                +produceElecTauPairZeeHypotheses
