@@ -317,7 +317,7 @@ CaloClusterFilteringCard::calculateClusterPosition(l1slhc::L1CaloCluster& cluste
 
 
   //get et
-  double et =(double) (cluster.E()/2);
+  double et = ((double)cluster.E())/2;
 
   TriggerTowerGeometry geo;
 
