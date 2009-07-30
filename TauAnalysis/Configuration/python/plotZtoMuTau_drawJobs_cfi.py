@@ -336,7 +336,7 @@ drawJobConfigurator_ZtoMuTau.add(
     beforeCut = evtSelDiTauCandidateForMuTauPzetaDiff,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/PzetaDiff',
-        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after opposite Charge Cut)",
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after transverse Mass Cut)",
         xAxis = 'GeV',
         name = "cutFlowControlPlots_PzetaDiff_afterMt1MET"
     )
