@@ -12,6 +12,8 @@ PATLeptonIpExtractor<T>::PATLeptonIpExtractor(const edm::ParameterSet& cfg)
 {
   src_ = cfg.getParameter<edm::InputTag>("src");
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
+
+  index_ = ( cfg.exists("index") ) ? cfg.getParameter<unsigned>("index") : 0;
 }
 
 template <typename T>
@@ -27,8 +29,8 @@ double PATLeptonIpExtractor<T>::operator()(const edm::Event& evt) const
   edm::Handle<patLeptonCollectionType> patLeptons;
   evt.getByLabel(src_, patLeptons);
 
-  if ( patLeptons->size() >= 1 ) {
-    edm::Ptr<T> patLeptonPtr = patLeptons->ptrAt(0);
+  if ( patLeptons->size() > index_ ) {
+    edm::Ptr<T> patLeptonPtr = patLeptons->ptrAt(index_);
 
     edm::Handle<reco::VertexCollection> primaryEventVertexCollection;
     evt.getByLabel(vertexSrc_, primaryEventVertexCollection);

@@ -7,6 +7,8 @@ StringObjValExtractor<T>::StringObjValExtractor(const edm::ParameterSet& cfg)
   : stringObjFunction_(cfg.getParameter<std::string>("value"))
 {
   src_ = cfg.getParameter<edm::InputTag>("src");
+
+  index_ = ( cfg.exists("index") ) ? cfg.getParameter<unsigned>("index") : 0;
 }
 
 template<typename T>
@@ -22,8 +24,8 @@ double StringObjValExtractor<T>::operator()(const edm::Event& evt) const
   edm::Handle<patCollectionType> patObjects;
   evt.getByLabel(src_, patObjects);
 
-  if ( patObjects->size() >= 1 ) {
-    edm::Ptr<T> patObjectPtr = patObjects->ptrAt(0);
+  if ( patObjects->size() > index_ ) {
+    edm::Ptr<T> patObjectPtr = patObjects->ptrAt(index_);
 
     return stringObjFunction_(*patObjectPtr);
   } else {
