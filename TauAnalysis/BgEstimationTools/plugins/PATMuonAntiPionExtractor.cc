@@ -10,6 +10,8 @@ PATMuonAntiPionExtractor::PATMuonAntiPionExtractor(const edm::ParameterSet& cfg)
   coeffSegmComp_ = cfg.getParameter<double>("SegmCompCoefficient");
 
   src_ = cfg.getParameter<edm::InputTag>("src");
+
+  index_ = ( cfg.exists("index") ) ? cfg.getParameter<unsigned>("index") : 0;
 }
 
 PATMuonAntiPionExtractor::~PATMuonAntiPionExtractor()
@@ -23,8 +25,8 @@ double PATMuonAntiPionExtractor::operator()(const edm::Event& evt) const
   edm::Handle<patMuonCollectionType> patMuons;
   evt.getByLabel(src_, patMuons);
 
-  if ( patMuons->size() >= 1 ) {
-    edm::Ptr<pat::Muon> patMuonPtr = patMuons->ptrAt(0);
+  if ( patMuons->size() > index_ ) {
+    edm::Ptr<pat::Muon> patMuonPtr = patMuons->ptrAt(index_);
 
     double discriminant = coeffCaloComp_*muon::caloCompatibility(*patMuonPtr) 
                          + coeffSegmComp_*muon::segmentCompatibility(*patMuonPtr);

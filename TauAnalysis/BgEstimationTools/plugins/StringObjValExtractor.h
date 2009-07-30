@@ -6,7 +6,8 @@
  * Auxiliary class for extracting scalar values from PAT objects
  * (used for Ntuple filling)
  *
- * NOTE: the values are extracted from the **first** PAT object
+ * NOTE: the values are extracted from the PAT object
+ *       specified by the "index" configuration parameter (**first** PAT object in case "index" is not specified)
  *       contained in the collection specified by the "src" configuration parameter;
  *       in case the collection of PAT objects is empty, 
  *       a substitute value of -1. is returned by operator()
@@ -15,7 +16,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: ObjValExtractorBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: StringObjValExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
  *
  */
 
@@ -45,6 +46,8 @@ class StringObjValExtractor : public ObjValExtractorBase
   edm::InputTag src_;
 
   StringObjectFunction<T> stringObjFunction_;
+
+  unsigned index_;
 };
 
 #endif  
