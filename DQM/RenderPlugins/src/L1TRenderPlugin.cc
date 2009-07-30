@@ -483,12 +483,12 @@ private:
 	t_text->DrawText(2.5,11.3,"GLT");
 	t_text->DrawText(2.5,10.3,"GMT");
 	t_text->DrawText(2.5,9.3, "RPC");
-	t_text->DrawText(2.5,8.3, "CTP");
-	t_text->DrawText(2.5,7.3, "CTF");
-	t_text->DrawText(2.5,6.3, "DTP");
-	t_text->DrawText(2.5,5.3, "DTF");
-	t_text->DrawText(2.5,4.3, "HTP");
-	t_text->DrawText(2.5,3.3, "ETP");
+	t_text->DrawText(2.5,8.3, "CSCTPG");
+	t_text->DrawText(2.5,7.3, "CSCTF");
+	t_text->DrawText(2.5,6.3, "DTTPG");
+	t_text->DrawText(2.5,5.3, "DTTF");
+	t_text->DrawText(2.5,4.3, "HCAL");
+	t_text->DrawText(2.5,3.3, "ECAL");
 	t_text->DrawText(2.5,2.3, "GCT");
 	t_text->DrawText(2.5,1.3, "RCT");
 
