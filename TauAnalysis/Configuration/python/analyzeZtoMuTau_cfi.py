@@ -239,13 +239,6 @@ evtSelDiTauCandidateForMuTauPzetaDiff = cms.PSet(
     src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'individual')
 )
 
-# veto events containing additional central jets with Et > 20 GeV
-#evtSelCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('evtSelCentralJetVeto'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('centralJetVeto')
-#)
-
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -567,5 +560,5 @@ muTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
                               'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative')
-    ),
+    )
 )
