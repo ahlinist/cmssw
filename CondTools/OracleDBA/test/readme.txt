@@ -29,3 +29,11 @@ usertext <userlog>
 8. upload the meta data file <tagname>@${u}.txt into the same dropbox.
 
 Before putting the files into the dropbox check that both sqlite and meta data files have the same name, with the leading part (i.e. the part BEFORE the @) identical to the name of the tag you want to export, <tagname>, otherwise the payloads will not be exported and an error will be returned by the shell.
+
+renameFiles.sh is a bash script that renames automatically both the sqlite and the metadata files according to the dropbox rules. Its usage is the following:
+./renameFiles.sh <sqlitefile> <metadatafile> <tagname>
+
+where 
+      <sqlitefile> is the name of the sqlite file (.db)
+      <metadatafile> is the name of the metadata file (.txt)
+      <tagname> is the name of the tag to be exported by the dropbox.
