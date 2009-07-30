@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: ObjValNtupleProducer.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: ObjValNtupleProducer.h,v 1.2 2009/06/17 12:45:43 veelken Exp $
  *
  */
 
@@ -30,6 +30,7 @@
 #include <TH1.h>
 
 #include <string>
+#include <vector>
 
 class ObjValNtupleProducer : public edm::EDAnalyzer
 {
