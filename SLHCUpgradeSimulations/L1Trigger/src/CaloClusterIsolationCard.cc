@@ -58,8 +58,8 @@ CaloClusterIsolationCard::isoDeposits(const l1slhc::L1CaloClusterCollection& clu
 		  L1CaloCluster origin = iter->second;
 		  
 		  //There is a cluster here:Calculate isoDeposits
-		  for(int phi=bin_phi-s.nIsoTowers();phi<=bin_phi+s.nIsoTowers()+1;++phi)
-		    for(int eta=bin_eta-s.nIsoTowers();eta<=bin_eta+s.nIsoTowers()+1;++eta)
+		  for(int phi=bin_phi-s.nIsoTowers();phi<=bin_phi+s.nIsoTowers();++phi)
+		    for(int eta=bin_eta-s.nIsoTowers();eta<=bin_eta+s.nIsoTowers();++eta)
 		      if(!(eta==bin_eta && phi==bin_phi))
 			{
 			  //Take this cluster
@@ -92,6 +92,7 @@ CaloClusterIsolationCard::isoDeposits(const l1slhc::L1CaloClusterCollection& clu
 		}
 	  }
 }
+
 
 
 
