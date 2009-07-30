@@ -1,0 +1,13 @@
+#include "TauAnalysis/RecoTools/plugins/PATLeptonRecoilEnergyEventSelector.h"
+
+#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+using namespace reco;
+
+DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATTauRecoilEnergyFromJetsMinEventSelector, "PATTauRecoilEnergyFromJetsMinEventSelector");
+DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATTauRecoilEnergyFromCaloTowersMinEventSelector, "PATTauRecoilEnergyFromCaloTowersMinEventSelector");
+
+DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATTauRecoilEnergyFromJetsMaxEventSelector, "PATTauRecoilEnergyFromJetsMaxEventSelector");
+DEFINE_EDM_PLUGIN(EventSelectorPluginFactory, PATTauRecoilEnergyFromCaloTowersMaxEventSelector, "PATTauRecoilEnergyFromCaloTowersMaxEventSelector");
