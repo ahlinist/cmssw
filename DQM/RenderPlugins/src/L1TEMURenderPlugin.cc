@@ -19,6 +19,10 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TBox.h"
+#include "TLine.h"
+#include "TLegend.h"
+#include "TPRegexp.h"
 #include <cassert>
 
 class L1TEMURenderPlugin : public DQMRenderPlugin
@@ -92,18 +96,20 @@ private:
       {
         obj->SetStats( kFALSE );
         dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetOption("colz");
 
+	obj->GetXaxis()->SetBinLabel(1,"Data");
+	obj->GetXaxis()->SetBinLabel(2,"Emulator");
+	obj->GetXaxis()->SetLabelSize(0.1);
+
+        obj->SetOption("col");
         obj->SetTitle("L1TEMU Report Summary Map");
 
-        obj->GetXaxis()->SetNdivisions(1,true);
-        obj->GetYaxis()->SetNdivisions(12,true);
         obj->GetXaxis()->CenterLabels();
         obj->GetYaxis()->CenterLabels();
 
-        gPad->SetGrid(1,1);
         return;
       }
+
       gStyle->SetCanvasBorderMode( 0 );
       gStyle->SetPadBorderMode( 0 );
       gStyle->SetPadBorderSize( 0 );
@@ -164,12 +170,109 @@ private:
       */
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
     {
       // nothing to put here just yet
       // in the future, we can add text output based on error status,
       // or set bin range based on filled histograms, etc.
       // Maybe add a big "OK" sign to histograms with no entries (i.e., no errors)?
+
+
+      TH2F* obj = dynamic_cast<TH2F*>( o.object );
+      assert( obj );
+
+
+      TBox* b_box = new TBox();
+      TLine* l_line = new TLine();
+      TText* t_text = new TText();
+
+
+      if( o.name.find( "reportSummaryMap" )  != std::string::npos)
+      {
+	t_text->DrawText(1.5,11.3,"GT");
+	t_text->DrawText(1.5,10.3,"Muons");
+	t_text->DrawText(1.5,9.3, "Jets");
+	t_text->DrawText(1.5,8.3, "TauJets");
+	t_text->DrawText(1.5,7.3, "IsoEM");
+	t_text->DrawText(1.5,6.3, "NonIsoEM");
+	t_text->DrawText(1.5,5.3, "MET");
+
+	t_text->DrawText(2.5,11.3,"GLT");
+	t_text->DrawText(2.5,10.3,"GMT");
+	t_text->DrawText(2.5,9.3, "RPC");
+	t_text->DrawText(2.5,8.3, "CSCTPG");
+	t_text->DrawText(2.5,7.3, "CSCTF");
+	t_text->DrawText(2.5,6.3, "DTTPG");
+	t_text->DrawText(2.5,5.3, "DTTF");
+	t_text->DrawText(2.5,4.3, "HCAL");
+	t_text->DrawText(2.5,3.3, "ECAL");
+	t_text->DrawText(2.5,2.3, "GCT");
+	t_text->DrawText(2.5,1.3, "RCT");
+
+	int NbinsX = obj->GetNbinsX();
+	int NbinsY = obj->GetNbinsY();
+
+	std::vector<std::vector<double> > TrigResult( NbinsY, std::vector<double>(NbinsX) );
+
+	for( int i=0; i<NbinsX; i++ ){
+	  for( int j=0; j<NbinsY; j++ ) TrigResult[j][i] = obj->GetBinContent(i+1,j+1);
+	}
+
+	char* trig_result = new char[20];
+
+	for( int j=0; j<NbinsY; j++ ){
+	  if( TrigResult[j][0]>-0.5 ){
+	    sprintf(trig_result,"%4.2f",TrigResult[j][0]);
+	    t_text->DrawText(1.2,j+1.3,trig_result);
+	  }
+	  if( TrigResult[j][1]>-0.5 ){
+	    sprintf(trig_result,"%4.2f",TrigResult[j][1]);
+	    t_text->DrawText(2.2,j+1.3,trig_result);
+	  }
+	}
+
+	b_box->SetFillColor(17);
+	b_box->DrawBox(1,1,2,5);
+
+	l_line->SetLineWidth(2);
+	l_line->DrawLine(2,1,2,12);
+
+	l_line->DrawLine(2,4,3,4);
+	l_line->DrawLine(2,3,3,3);
+	l_line->DrawLine(2,2,3,2);
+	l_line->DrawLine(2,1,3,1);
+
+	l_line->DrawLine(1,5,3,5);
+	l_line->DrawLine(1,6,3,6);
+	l_line->DrawLine(1,7,3,7);
+	l_line->DrawLine(1,8,3,8);
+	l_line->DrawLine(1,9,3,9);
+	l_line->DrawLine(1,10,3,10);
+	l_line->DrawLine(1,11,3,11);
+
+
+	TBox* b_box_w = new TBox();
+	TBox* b_box_r = new TBox();
+	TBox* b_box_y = new TBox();
+	TBox* b_box_g = new TBox();
+
+	b_box_g->SetFillColor(920);
+	b_box_y->SetFillColor(919);
+	b_box_r->SetFillColor(901);
+	b_box_w->SetFillColor(0);
+
+
+	TLegend* leg = new TLegend(0.16, 0.11, 0.44, 0.38);
+	leg->AddEntry(b_box_g,"Good",   "f");
+	leg->AddEntry(b_box_y,"Warning","f");
+	leg->AddEntry(b_box_r,"Error",  "f");
+	leg->AddEntry(b_box_w,"Masked", "f");
+	leg->Draw();
+
+	return;
+      }
+
+
     }
 };
 
