@@ -25,10 +25,28 @@ ObjValNtupleProducer::ObjValNtupleProducer(const edm::ParameterSet& cfg)
 
     std::string pluginTypeObjValExtractor = cfgObjValExtractor.getParameter<std::string>("pluginType");
 
-    ObjValExtractorBase* objValExtractor = ObjValExtractorPluginFactory::get()->create(pluginTypeObjValExtractor, cfgObjValExtractor);
+    if ( cfgObjValExtractor.exists("indices") ) {
+      typedef std::vector<unsigned> vunsigned;
+      vunsigned indices = cfgObjValExtractor.getParameter<vunsigned>("indices");
+      for ( vunsigned::const_iterator index = indices.begin();
+	    index != indices.end(); ++index ) {
+	edm::ParameterSet cfgObjValExtractor_index = cfgObjValExtractor;
+	cfgObjValExtractor_index.addParameter<unsigned>("index", *index);
 
-    branchEntryType* branchEntry = new branchEntryType(*branchName, objValExtractor);
-    branchEntries_.push_back(branchEntry);
+	ObjValExtractorBase* objValExtractor_index = ObjValExtractorPluginFactory::get()->create(pluginTypeObjValExtractor, cfgObjValExtractor_index);
+
+	std::ostringstream branchName_index;
+	branchName_index << (*branchName) << "_" << (*index);
+
+	branchEntryType* branchEntry_index = new branchEntryType(branchName_index.str(), objValExtractor_index);
+	branchEntries_.push_back(branchEntry_index);
+      }
+    } else {
+      ObjValExtractorBase* objValExtractor = ObjValExtractorPluginFactory::get()->create(pluginTypeObjValExtractor, cfgObjValExtractor);
+
+      branchEntryType* branchEntry = new branchEntryType(*branchName, objValExtractor);
+      branchEntries_.push_back(branchEntry);
+    }
   }
 
   numEvents_filled_ = 0;
@@ -91,7 +109,7 @@ void ObjValNtupleProducer::beginJob(const edm::EventSetup&)
 
 void ObjValNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {
-  std::cout << "<ObjValNtupleProducer::analyze>:" << std::endl;
+  //std::cout << "<ObjValNtupleProducer::analyze>:" << std::endl;
 
   if ( fileServiceError_ ) {
     edm::LogError ("analyze") << " Failed to access TFileService --> ntuple will NOT be filled !!";
@@ -109,11 +127,11 @@ void ObjValNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup&
 
     (*branchEntry)->objValue_ = (*(*branchEntry)->objValExtractor_)(evt);
 
-    std::cout << " filling Branch = " << (*branchEntry)->branchName_ << ", objValue = " << (*branchEntry)->objValue_ << std::endl;
+    //std::cout << " filling Branch = " << (*branchEntry)->branchName_ << ", objValue = " << (*branchEntry)->objValue_ << std::endl;
   }
 
 //--- fill ntuple
-  std::cout << " filling TTree..." << std::endl;
+  //std::cout << " filling TTree..." << std::endl;
   int fillNumBytes = ntuple_->Fill();
 
 //--- fill status information histogram
@@ -128,7 +146,7 @@ void ObjValNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup&
 
   ++numEvents_filled_;
 
-  std::cout << "done." << std::endl;
+  //std::cout << "done." << std::endl;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
