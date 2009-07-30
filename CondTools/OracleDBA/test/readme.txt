@@ -25,7 +25,7 @@ usertext <userlog>
 6. rename the sqlite and metadata files by "glueing" the unique string, preceded by an @:
    mv <tagname>.db <tagname>@${u}.db
    mv <tagname>.txt <tagname>@${u}.txt 
-5. upload the sqlite file <tagname>@${u}.db into the dropbox available for your subdetector;
-6. upload the meta data file <tagname>@${u}.txt into the same dropbox.
+7. upload the sqlite file <tagname>@${u}.db into the dropbox available for your subdetector;
+8. upload the meta data file <tagname>@${u}.txt into the same dropbox.
 
 Before putting the files into the dropbox check that both sqlite and meta data files have the same name, with the leading part (i.e. the part BEFORE the @) identical to the name of the tag you want to export, <tagname>, otherwise the payloads will not be exported and an error will be returned by the shell.
