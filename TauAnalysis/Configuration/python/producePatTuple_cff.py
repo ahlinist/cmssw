@@ -69,7 +69,7 @@ from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
 # produce data-formats providing information
 # about Et of jets (CaloTowers) opposite in transverse plane to tau-jet
 #
-from TauAnalysis.CandidateTools.tauRecoilEnergy_cfi import *
+from TauAnalysis.RecoTools.tauRecoilEnergy_cff import *
 
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
