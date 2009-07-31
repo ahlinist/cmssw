@@ -17,21 +17,21 @@ if [ $# -ne "$PARAM" ]
     exit $E_ERR_ARG
 fi
 
-if [ ! -e "${PWD}/${DBFILE}" ]
+if [ ! -e "${DBFILE}" ]
     then
     echo
     echo "$DBFILE does not exist"
     exit $E_NOFILE
 fi
 
-if [ ! -e "${PWD}/$METADATAFILE" ]
+if [ ! -e "$METADATAFILE" ]
     then
     echo
     echo "$METADATAFILE does not exist"
     exit $E_NOFILE
 fi
 
-cp $DBFILE ${TAGNAME}@${UUID}.db
-cp $METADATAFILE ${TAGNAME}@${UUID}.txt
+cp $DBFILE ${PWD}/${TAGNAME}@${UUID}.db
+cp $METADATAFILE ${PWD}/${TAGNAME}@${UUID}.txt
 
 exit 0
