@@ -152,7 +152,10 @@ void TemplateHistProducer::endJob()
 //    (to unit area)
   if ( norm_ != -1. ) {
     TH1* histogram = hTemplate_->getTH1();
-    if ( histogram->Integral() != 0. ) histogram->Scale(norm_/histogram->Integral());
+    if ( histogram->Integral() != 0. ) {
+      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+      histogram->Scale(norm_/histogram->Integral());
+    }
   }
 
   std::cout << "done." << std::endl;
