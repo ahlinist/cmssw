@@ -1,4 +1,4 @@
-#include "TauAnalysis/RecoTools/interface/PATLeptonRecoilEnergyProducer.h"
+#include "TauAnalysis/RecoTools/plugins/PATLeptonRecoilEnergyProducer.h"
 
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
