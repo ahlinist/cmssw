@@ -46,7 +46,7 @@ public:
       //     color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       //   }
       //   for(int i=0; i<6; i++) cpal[i] = i + 301;
-      dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
+      dummybox = new  TH2F("dummyL1T","",22,-0.5,21.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
       {

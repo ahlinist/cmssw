@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.13 2009/05/22 19:09:33 lat Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.14 2009/07/16 14:08:53 asavin Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.13 $
-  \date $Date: 2009/05/22 19:09:33 $
+  \version $Revision: 1.14 $
+  \date $Date: 2009/07/16 14:08:53 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -139,7 +139,7 @@ public:
         pOvereff [i] = TColor::GetColor (rgb[3 * i + 0], rgb[3 * i + 1], rgb[3 * i + 2]);
       }
 
-      dummybox = new  TH2F("dummy","",22,-0.5,21.5,18,-0.5,17.5);
+      dummybox = new  TH2F("dummyL1TdeRCT","",22,-0.5,21.5,18,-0.5,17.5);
 
       for(int i=0; i<22; i++)
       {
