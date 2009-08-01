@@ -5,6 +5,8 @@
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
@@ -48,6 +50,13 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
 					   << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
+  if ( genParticleSrc_.label() == "" ) {
+    edm::LogWarning("ElectronHistManager") << " Configuration parameter 'genParticleSource' not specified" 
+					   << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  }
+  //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -117,6 +126,8 @@ void ElectronHistManager::bookHistograms()
   hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
   hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "Electron RECO-GEN #Delta#phi", 200, -0.010, +0.010);
   
+  hElectronMatchingGenParticlePdgId_ = dqmStore.book1D("hElectronMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+
   hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "Electron Track P_{T}", 75, 0., 150.);
   hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "Electron Track Impact Parameter (xy)", 100, -0.100, 0.100);
   hElectronTrackIPz_ = dqmStore.book1D("ElectronTrackIPz", "Electron Track Impact Parameter (z)", 100, -1.0, 1.0);
@@ -201,6 +212,9 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
   edm::Handle<std::vector<pat::Electron> > patElectrons;
   evt.getByLabel(electronSrc_, patElectrons);
 
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSrc_, genParticles);
+
   //std::cout << " patElectrons.size = " << patElectrons->size() << std::endl;
   hNumElectrons_->Fill(patElectrons->size());
 
@@ -219,13 +233,22 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
 //--- compare reconstructed electron to generator level one;
 //    normalize difference between reconstructed and generated energy
 //    to expected energy dependence of resolution
-     if ( patElectron->genLepton() ) {
-       hElectronEnCompToGen_->Fill((patElectron->energy() - patElectron->genLepton()->energy())
-				   /TMath::Sqrt(patElectron->genLepton()->energy()));
-       hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta());
-       hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi());
+    if ( patElectron->genLepton() ) {
+      hElectronEnCompToGen_->Fill((patElectron->energy() - patElectron->genLepton()->energy())
+				  /TMath::Sqrt(patElectron->genLepton()->energy()));
+      hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta());
+      hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi());
     }
-    
+
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles);
+    if ( matchingGenParticlePdgId == -1 ) {
+      hElectronMatchingGenParticlePdgId_->Fill(-1);
+    } else if ( abs(matchingGenParticlePdgId) > 22 ) {
+      hElectronMatchingGenParticlePdgId_->Fill(24);
+    } else {
+      hElectronMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId));
+    }
+
     if ( patElectron->gsfTrack().isAvailable() && !patElectron->gsfTrack().isNull() ) {
       hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt());
       if ( vertexSrc_.label() != "" ) {

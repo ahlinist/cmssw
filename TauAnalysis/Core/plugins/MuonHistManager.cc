@@ -6,6 +6,8 @@
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
@@ -49,6 +51,13 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 				       << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
+  if ( genParticleSrc_.label() == "" ) {
+    edm::LogWarning("MuonHistManager") << " Configuration parameter 'genParticleSource' not specified" 
+				       << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  }
+  //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -110,6 +119,8 @@ void MuonHistManager::bookHistograms()
   hMuonThetaCompToGen_ = dqmStore.book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
   hMuonPhiCompToGen_ = dqmStore.book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
   
+  hMuonMatchingGenParticlePdgId_ = dqmStore.book1D("hMuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+
   hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
   hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
   
@@ -192,6 +203,9 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
   edm::Handle<std::vector<pat::Muon> > patMuons;
   evt.getByLabel(muonSrc_, patMuons);
 
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSrc_, genParticles);
+
   //std::cout << " patMuons.size = " << patMuons->size() << std::endl;
   hNumMuons_->Fill(patMuons->size());
 
@@ -214,6 +228,15 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
       hMuonPtCompToGen_->Fill((patMuon->pt() - patMuon->genLepton()->pt())/patMuon->genLepton()->pt());
       hMuonThetaCompToGen_->Fill(patMuon->theta() - patMuon->genLepton()->theta());
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi());
+    }
+
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles);
+    if ( matchingGenParticlePdgId == -1 ) {
+      hMuonMatchingGenParticlePdgId_->Fill(-1);
+    } else if ( abs(matchingGenParticlePdgId) > 22 ) {
+      hMuonMatchingGenParticlePdgId_->Fill(24);
+    } else {
+      hMuonMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId));
     }
 
     if ( vertexSrc_.label() != "" && patMuon->track().isAvailable() && patMuon->track().isNonnull() ) {
