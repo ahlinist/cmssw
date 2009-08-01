@@ -26,7 +26,7 @@ elecTauPairZeeHypotheses = cms.EDProducer("PATElecTauPairZeeHypothesisProducer",
 
     dRmatch = cms.double(0.5),
 
-    verbosity = cms.untracked.int32(1)                                      
+    verbosity = cms.untracked.int32(0)                                      
 )
 
 selectedElecTauPairZeeHypotheses = cms.EDFilter("PATElecTauPairZeeHypothesisSelector",
@@ -52,12 +52,12 @@ elecTauPairZeeHypothesesLooseElectronIsolation = cms.EDProducer("PATElecTauPairZ
 
     dRmatch = cms.double(0.5),
 
-    verbosity = cms.untracked.int32(1)                                      
+    verbosity = cms.untracked.int32(0)                                      
 )
 
 selectedElecTauPairZeeHypothesesLooseElectronIsolation = cms.EDFilter("PATElecTauPairZeeHypothesisSelector",
      src = cms.InputTag('elecTauPairZeeHypothesesLooseElectronIsolation'),
-     cut = cms.string('p4Z0bestMatch.mass > 80. & p4Z0bestMatch.mass < 100.'),
+     cut = cms.string('p4Z0bestMatch.mass > 85. & p4Z0bestMatch.mass < 100.'),
      filter = cms.bool(False)
 )
 
