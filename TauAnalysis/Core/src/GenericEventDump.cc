@@ -479,6 +479,7 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
       *outputStream_ << " global Track" << std::endl;
       printTrackInfo(edm::RefToBase<reco::Track>(patMuon->globalTrack()), patMuon->vertex(), true, false, outputStream_);
       *outputStream_ << " trackIso = " << patMuon->trackIso() << std::endl;
+/*
       if ( recoTrackSource_.label() != "" ) {
 	edm::Handle<reco::TrackCollection> recoTracks;
 	evt.getByLabel(recoTrackSource_, recoTracks);
@@ -499,6 +500,7 @@ void GenericEventDump::printMuonInfo(const edm::Event& evt) const
 	evt.getByLabel(pfNeutralHadronSource_, pfNeutralHadrons);
 	printPFCandidateIsolationInfo(pfNeutralHadrons, "PFNeutralHadron", patMuon->momentum(), 0.01, 1.0, -1., outputStream_);
       }
+ */
       *outputStream_ << " caloIso = " << patMuon->caloIso() << std::endl;
       *outputStream_ << " ecalIso = " << patMuon->ecalIso() << std::endl;
       *outputStream_ << " hcalIso = " << patMuon->hcalIso() << std::endl;
