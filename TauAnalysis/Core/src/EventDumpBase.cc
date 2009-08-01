@@ -40,7 +40,7 @@ EventDumpBase::EventDumpBase(const edm::ParameterSet& cfg)
     isOutputFile_ = false;
   }
 
-  vstring cfgTriggerConditions = cfg.getParameter<vstring>("triggerConditions");
+  vstring cfgTriggerConditions = ( cfg.exists("triggerConditions") ) ? cfg.getParameter<vstring>("triggerConditions") : vstring();
   for ( vstring::const_iterator cfgTriggerCondition = cfgTriggerConditions.begin();
 	cfgTriggerCondition != cfgTriggerConditions.end(); ++cfgTriggerCondition ) {
     int errorFlag;
@@ -170,7 +170,8 @@ void EventDumpBase::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
-  if ( triggerConditions_fulfilled.size() >= 1 ) {
+  if ( triggerConditions_fulfilled.size() >= 1 ||
+       triggerConditions_.size() == 0 ) {
     print(iEvent, iSetup, filterResults_cumulative, filterResults_individual, eventWeight);
   }
 }
