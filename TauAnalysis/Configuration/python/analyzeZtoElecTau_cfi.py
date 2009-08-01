@@ -242,14 +242,20 @@ evtSelDiTauCandidateForElecTauMt1MET = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForElecTauMt1METCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecTauMt1METCut', 'individual')
 )
+evtSelDiTauCandidateForElecTauPzetaDiff = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecTauPzetaDiff'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForElecTauPzetaDiffCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecTauPzetaDiffCut', 'individual')
+)
 
-# veto events containing additional central jets with Et > 20 GeV
-#evtSelCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('evtSelCentralJetVeto'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src_cumulative = cms.InputTag('centralJetVeto', 'cumulative'),
-#    src_individual = cms.InputTag('centralJetVeto', 'individual')
-#)
+# veto events compatible with Z --> e+ e- hypothesis
+# (based on reconstructed (visible) invariant mass of e + tau-jet pair)
+evtSelElecTauPairZeeHypothesisVeto = cms.PSet(
+    pluginName = cms.string('evtSelElecTauPairZeeHypothesisVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('elecTauPairZeeHypothesisVeto')
+)
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -277,16 +283,17 @@ elecTauEventDump = cms.PSet(
     metSource = cms.InputTag('layer1METs'),
     genMEtSource = cms.InputTag('genMETWithMu'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    recoTrackSource = cms.InputTag('generalTracks'),
-    pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
-    pfGammaSource = cms.InputTag('pfAllPhotons'),
-    pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
+    #recoTrackSource = cms.InputTag('generalTracks'),
+    #pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
+    #pfGammaSource = cms.InputTag('pfAllPhotons'),
+    #pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
 
     #output = cms.string("elecTauEventDump.txt"),
     output = cms.string("std::cout"),
 
     #triggerConditions = cms.vstring("evtSelTightElectronId: rejected_cumulative")
-    triggerConditions = cms.vstring("evtSelDiTauCandidateForElecTauMt1MET: passed_cumulative")
+    triggerConditions = cms.vstring("evtSelElecTauPairZeeHypothesisVeto: passed_cumulative")
+    #triggerConditions = cms.vstring("evtSelDiTauCandidateForElecTauPzetaDiff: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -580,5 +587,31 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsMt1METcumulative')  
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForElecTauPzetaDiff'),
+        title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
+                              'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative')
+    ),
+
+    # veto events compatible with Z --> e+ e- hypothesis
+    # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
+    cms.PSet(
+        filter = cms.string('evtSelElecTauPairZeeHypothesisVeto'),
+        title = cms.string('not 85 < M_{vis} (Electron-Tau) < 100 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
+                              'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
+                              'diTauCandidateZeeHypothesisHistManager.ZeeHypothesisSource = selectedElecTauPairZeeHypotheses')
     )
 )

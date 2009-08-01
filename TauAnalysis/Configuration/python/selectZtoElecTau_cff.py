@@ -186,14 +186,22 @@ cfgDiTauCandidateForElecTauMt1METCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecTauPairsMt1METindividual'),
     minNumber = cms.uint32(1)
 )
+cfgDiTauCandidateForElecTauPzetaDiffCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecTauPzetaDiffCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecTauPairsPzetaDiffCumulative'),
+    src_individual = cms.InputTag('selectedElecTauPairsPzetaDiffIndividual'),
+    minNumber = cms.uint32(1)
+)
 
-# veto events containing additional central jets with Et > 20 GeV
-#cfgCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('centralJetVeto'),
-#    pluginType = cms.string('PATCandViewMaxEventSelector'),
-#    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-#    maxNumber = cms.uint32(0)
-#)
+# veto events compatible with Z --> e+ e- hypothesis
+# (based on reconstructed (visible) invariant mass of e + tau-jet pair)
+cfgElecTauPairZeeHypothesisVeto = cms.PSet(
+    pluginName = cms.string('elecTauPairZeeHypothesisVeto'),
+    pluginType = cms.string('PATElecTauPairZeeHypothesisMaxEventSelector'),
+    src = cms.InputTag('selectedElecTauPairZeeHypotheses'),
+    maxNumber = cms.uint32(0)
+)
 
 zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ #cfgTrigger,
@@ -220,7 +228,9 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauEcalCrackVeto,
       cfgDiTauCandidateForElecTauAntiOverlapVeto,
       cfgDiTauCandidateForElecTauZeroChargeCut,
-      cfgDiTauCandidateForElecTauMt1METCut ],
+      cfgDiTauCandidateForElecTauMt1METCut,
+      cfgDiTauCandidateForElecTauPzetaDiffCut,
+      cfgElecTauPairZeeHypothesisVeto ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )

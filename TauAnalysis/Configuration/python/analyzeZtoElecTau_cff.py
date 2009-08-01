@@ -56,6 +56,11 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForElecTauAntiOverlapVeto,
         evtSelDiTauCandidateForElecTauZeroCharge,
         evtSelDiTauCandidateForElecTauMt1MET,
+        evtSelDiTauCandidateForElecTauPzetaDiff,
+
+        # veto events compatible with Z --> e+ e- hypothesis
+        # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
+        evtSelElecTauPairZeeHypothesisVeto
     ),
   
     analyzers = cms.VPSet(
