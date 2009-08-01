@@ -158,6 +158,18 @@ void TemplateHistProducer::endJob()
     }
   }
 
+//--- set all bin errors to zero
+//    (including underflow and overflow bins)
+//
+//    WARNING: to be enabled for testing purposes only !!
+//
+/*
+  TH1* histogram = hTemplate_->getTH1();
+  unsigned numBins = histogram->GetNbinsX();
+  for ( unsigned iBin = 0; iBin <= numBins; ++iBin ) {
+    histogram->SetBinError(iBin, 0.);
+  }
+ */
   std::cout << "done." << std::endl;
 }
 
