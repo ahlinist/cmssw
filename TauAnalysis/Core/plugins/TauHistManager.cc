@@ -7,6 +7,8 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "PhysicsTools/Utilities/interface/deltaR.h"
 
@@ -48,6 +50,13 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 				      << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_.label() << std::endl;
+
+  genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
+  if ( genParticleSrc_.label() == "" ) {
+    edm::LogWarning("TauHistManager") << " Configuration parameter 'genParticleSource' not specified" 
+				      << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
+  }
+  //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
   if ( cfg.exists("tauIndicesToPlot") ) {
     std::string tauIndicesToPlot_string = cfg.getParameter<std::string>("tauIndicesToPlot");
@@ -116,6 +125,8 @@ void TauHistManager::bookHistograms()
   hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
   hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 200, -0.050, +0.050);
   
+  hTauMatchingGenParticlePdgId_ = dqmStore.book1D("hTauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+
   hTauNumTracksSignalCone_ = dqmStore.book1D("TauNumTracksSignalCone", "Tracks in Signal Cone", 10, -0.5, 9.5);
   hTauNumTracksIsoCone_ = dqmStore.book1D("TauNumTracksIsoCone", "Tracks in Isolation Cone", 20, -0.5, 19.5);
   
@@ -233,6 +244,9 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
   edm::Handle<std::vector<pat::Tau> > patTaus;
   evt.getByLabel(tauSrc_, patTaus);
 
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  evt.getByLabel(genParticleSrc_, genParticles);
+
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
   hNumTaus_->Fill(patTaus->size());
 
@@ -266,6 +280,15 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
       hTauEnCompToGen_->Fill((patTau->energy() - patTau->genJet()->energy())/patTau->genJet()->energy());
       hTauThetaCompToGen_->Fill(patTau->theta() - patTau->genJet()->theta());
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi());
+    }
+
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles);
+    if ( matchingGenParticlePdgId == -1 ) {
+      hTauMatchingGenParticlePdgId_->Fill(-1);
+    } else if ( abs(matchingGenParticlePdgId) > 22 ) {
+      hTauMatchingGenParticlePdgId_->Fill(24);
+    } else {
+      hTauMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId));
     }
 
     hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size());

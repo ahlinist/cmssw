@@ -35,6 +35,7 @@ class ElectronHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag electronSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag genParticleSrc_;
 
   std::string dqmDirectory_store_;
 
@@ -58,6 +59,8 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronEnCompToGen_;
   MonitorElement* hElectronThetaCompToGen_;
   MonitorElement* hElectronPhiCompToGen_;
+
+  MonitorElement* hElectronMatchingGenParticlePdgId_;
 
   MonitorElement* hElectronTrackPt_;
   MonitorElement* hElectronTrackIPxy_;

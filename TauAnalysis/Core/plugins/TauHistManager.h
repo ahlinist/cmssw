@@ -36,6 +36,7 @@ class TauHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag tauSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag genParticleSrc_;
 
   typedef std::vector<int> vint;
   vint tauIndicesToPlot_;
@@ -60,6 +61,8 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;
   MonitorElement* hTauPhiCompToGen_;
+
+  MonitorElement* hTauMatchingGenParticlePdgId_;
 
   MonitorElement* hTauNumTracksSignalCone_;
   MonitorElement* hTauNumTracksIsoCone_;
