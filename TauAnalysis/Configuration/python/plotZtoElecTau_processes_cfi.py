@@ -4,7 +4,7 @@ import copy
 from TauAnalysis.Configuration.plotterProcessDefinitions_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 
-plotDirectoryName = cms.string("rfio:/castor/cern.ch/user/j/jkolb/elecTauAnalysis/hists_factorized/")
+plotDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/")
 
 #--------------------------------------------------------------------------------
 # define for Z --> e + tau-jet analysis names of .root files containing histograms

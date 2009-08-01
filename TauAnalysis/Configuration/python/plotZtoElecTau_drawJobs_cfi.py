@@ -10,7 +10,7 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'Ztautau'
+            'Ztautau',
             #'Zee',
             #'ZtautauPlusJets',
             'ZeePlusJets',
@@ -354,13 +354,35 @@ drawJobConfigurator_ZtoElecTau.add(
     )
 )
 
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelDiTauCandidateForElecTauMt1MET,
+    beforeCut = evtSelDiTauCandidateForElecTauPzetaDiff,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/PzetaDiff',
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after transverse Mass Cut)",
+        xAxis = 'GeV',
+        name = "cutFlowControlPlots_PzetaDiff_afterMt1MET"
+    )
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelDiTauCandidateForElecTauPzetaDiff,
+    beforeCut = evtSelElecTauPairZeeHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiTauCandidateZeeHypothesisQuantities/VisMassBestMach',
+        title = "M_{vis}(Electron + Tau, Z #rightarrow e^{+} e^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mVisibleZeeHypothesis_afterPzetaDiff"
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelDiTauCandidateForElecTauMt1MET,
+    afterCut = evtSelElecTauPairZeeHypothesisVeto,
     plots = [
         drawJobConfigEntry(
             meName = 'ElectronQuantities/Electron#PAR#',
@@ -437,7 +459,7 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_mVisible"
         ),
         drawJobConfigEntry(
-            meName = 'DiTauCandidateZeeHypothesisQuantities/hVisMassBestMach',
+            meName = 'DiTauCandidateZeeHypothesisQuantities/VisMassBestMach',
             title = "M_{vis}(Electron + Tau, Z #rightarrow e^{+} e^{-} Mass hypothesis) (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mVisibleZeeHypothesis"
