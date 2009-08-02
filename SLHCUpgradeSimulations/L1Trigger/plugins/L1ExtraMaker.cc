@@ -63,7 +63,7 @@ L1ExtraMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	 //Taus
 	 if(NTau<nObjects_)
-	   if(fabs((*clusters)[i].eta())<2.5)
+	   if(abs((*clusters)[i].iEta())<=26)
 	     {
 	       l1Tau->push_back(L1JetParticle((*clusters)[i].p4()));
 	       NTau++;
@@ -72,7 +72,7 @@ L1ExtraMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	 //IsoTaus
 	 if((*clusters)[i].isTau()&&NIsoTau<nObjects_)
-	   if(fabs((*clusters)[i].eta())<2.5)
+	   if(abs((*clusters)[i].iEta())<=26)
 	     {
 	       l1IsoTau->push_back(L1JetParticle((*clusters)[i].p4()));
 	       NIsoTau++;
