@@ -11,6 +11,7 @@ SLHCCaloTriggerAccessor::SLHCCaloTriggerAccessor(const edm::ParameterSet& iConfi
   l1egamma_     (iConfig.getParameter<edm::InputTag>("L1EGamma")),
   l1isoegamma_  (iConfig.getParameter<edm::InputTag>("L1IsoEGamma")),
   l1tau_        (iConfig.getParameter<edm::InputTag>("L1Tau")),
+  l1isotau_     (iConfig.getParameter<edm::InputTag>("L1IsoTau")),
   jets_         (iConfig.getParameter<edm::InputTag>("Jets")),
   filename_     (iConfig.getParameter<std::string>("OutputFileName"))
 {
@@ -47,6 +48,11 @@ SLHCCaloTriggerAccessor::SLHCCaloTriggerAccessor(const edm::ParameterSet& iConfi
   l1tau_eta  = new float[MAXL1];
   l1tau_phi  = new float[MAXL1];
 
+  nL1IsoTau=0;
+  l1isotau_et   = new float[MAXL1];
+  l1isotau_eta  = new float[MAXL1];
+  l1isotau_phi  = new float[MAXL1];
+
   //Branches
   t->Branch("L1EG_N",&nL1EG,"L1EG_N/I");
   t->Branch("L1EG_Et",l1eg_et,"L1EG_Et[L1EG_N]/F");
@@ -62,6 +68,12 @@ SLHCCaloTriggerAccessor::SLHCCaloTriggerAccessor(const edm::ParameterSet& iConfi
   t->Branch("L1Tau_Et",l1tau_et,"L1Tau_Et[L1Tau_N]/F");
   t->Branch("L1Tau_Eta",l1tau_eta,"L1Tau_Eta[L1Tau_N]/F");
   t->Branch("L1Tau_Phi",l1tau_phi,"L1Tau_Phi[L1Tau_N]/F");
+
+  t->Branch("L1IsoTau_N",&nL1IsoTau,"L1IsoTau_N/I");
+  t->Branch("L1IsoTau_Et",l1isotau_et,"L1IsoTau_Et[L1Tau_N]/F");
+  t->Branch("L1IsoTau_Eta",l1isotau_eta,"L1IsoTau_Eta[L1Tau_N]/F");
+  t->Branch("L1IsoTau_Phi",l1isotau_phi,"L1IsoTau_Phi[L1Tau_N]/F");
+
 
   t->Branch("jet_N",&nJets,"jet_N/I");
   t->Branch("jet_Et",jet_et,"jet_Et[jet_N]/F");

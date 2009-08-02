@@ -44,6 +44,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
   //Reset and Populate the lattice
   reset();
   populateLattice(clusters);
+  int totalET=0;
 
   //Loop on the Lattice
       for(int bin_phi=s.phiMin();bin_phi<=s.phiMax();++bin_phi)
@@ -66,13 +67,10 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 		  " "<< origin.towerE(1) << " " << origin.towerE(2) <<" "<<
 		  origin.towerE(3) <<"\n";
 
-		//CHANGES IN JUN7:
-		//make parralel comparison while filtering and calculate weights 
-		//in parralel
-		double originE = origin.E();
+		//Calculate the initial energy since THIS you will compare!
+		int originE = origin.E();
 		std::pair<int,int> posIn =  calculateClusterPosition(origin);
 
-		
 		//Set central bit
 		bool central=true;
 
@@ -101,6 +99,9 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 		  {
 		    pattern << "OF:E Cluster: 0 0 0 0\n";
 		  }
+
+
+
 		//right-down
 		bin = s.getBin(bin_eta+1,bin_phi+1);
 		iter2 = lattice_.find(bin);
@@ -124,7 +125,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 		    pattern << "OF:SE Cluster: 0 0 0 0\n";
 		  }
 		
-         //down
+		//down
 		bin = s.getBin(bin_eta,bin_phi+1);
 		iter2 = lattice_.find(bin);
 		//If neighbor exists
@@ -148,7 +149,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 		  {
 		    pattern << "OF:S Cluster: 0 0 0 0\n";
 		  }
-
+		
 		//down-left
 		bin = s.getBin(bin_eta-1,bin_phi+1);
 		iter2 = lattice_.find(bin);
@@ -178,135 +179,132 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 		bin = s.getBin(bin_eta-1,bin_phi);
 		iter2 = lattice_.find(bin);
 		//If neighbor exists
-         if(iter2!=lattice_.end())
-           {
-             L1CaloCluster neighbor = iter2->second;
-
-             pattern << "OF:W Cluster: "<< neighbor.towerE(0) <<
-	       " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
-	       neighbor.towerE(3) <<"\n";
-	     
-             //Compare the energies and prune if the neighbor has higher Et
-             if(originE < neighbor.E())
-	       {
-		 origin.setTower(0,0);
-		 origin.setTower(2,0);
-		 central=false;
-
-	       }
-           }
-         else
-           {
-             pattern << "OF:W Cluster: 0 0 0 0\n";
-           }
-
-
-         //left-up
-         bin = s.getBin(bin_eta-1,bin_phi-1);
-         iter2 = lattice_.find(bin);
-         //If neighbor exists
-         if(iter2!=lattice_.end())
-           {
-             L1CaloCluster neighbor = iter2->second;
-	     
-             pattern << "OF:NW Cluster: "<< neighbor.towerE(0) <<
-	       " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
-	       neighbor.towerE(3) <<"\n";
-	     
-
-             //Compare the energies and prune if the neighbor has higher Et
-             if(originE < neighbor.E())
-	       {
-		 origin.setTower(0,0);
-		 central=false;
-		 
-	       }
-           }
-         else
-           {
-             pattern << "OF:NW Cluster: 0 0 0 0\n";
-           }
+		if(iter2!=lattice_.end())
+		  {
+		    L1CaloCluster neighbor = iter2->second;
+		    
+		    pattern << "OF:W Cluster: "<< neighbor.towerE(0) <<
+		      " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
+		      neighbor.towerE(3) <<"\n";
+		    
+		    //Compare the energies and prune if the neighbor has higher Et
+		    if(originE < neighbor.E())
+		      {
+			origin.setTower(0,0);
+			origin.setTower(2,0);
+			central=false;
+			
+		      }
+		  }
+		else
+		  {
+		    pattern << "OF:W Cluster: 0 0 0 0\n";
+		  }
+		
+		
+		//left-up
+		bin = s.getBin(bin_eta-1,bin_phi-1);
+		iter2 = lattice_.find(bin);
+		//If neighbor exists
+		if(iter2!=lattice_.end())
+		  {
+		    L1CaloCluster neighbor = iter2->second;
+		    
+		    pattern << "OF:NW Cluster: "<< neighbor.towerE(0) <<
+		      " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
+		      neighbor.towerE(3) <<"\n";
+		    
+		    
+		    //Compare the energies and prune if the neighbor has higher Et
+		    if(originE < neighbor.E())
+		      {
+			origin.setTower(0,0);
+			central=false;
+			
+		      }
+		  }
+		else
+		  {
+		    pattern << "OF:NW Cluster: 0 0 0 0\n";
+		  }
+		
 	 
-	 
-         //up
-         bin = s.getBin(bin_eta,bin_phi-1);
-         iter2 = lattice_.find(bin);
-         //If neighbor exists
-         if(iter2!=lattice_.end())
-           {
-             L1CaloCluster neighbor = iter2->second;
-	     
-             pattern << "OF:N Cluster: "<< neighbor.towerE(0) <<
-	       " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
-	       neighbor.towerE(3) <<"\n";
-	     
-
-             //Compare the energies and prune if the neighbor has higher Et
-             if(originE < neighbor.E())
-	       {
-		 origin.setTower(0,0);
-		 origin.setTower(1,0);
-		 central=false;
-		 
-	       }
-           }
-         else
-           {
-             pattern << "OF:N Cluster: 0 0 0 0\n";
-           }
-	 
-	 
-	 
-         //up-right
-         bin = s.getBin(bin_eta+1,bin_phi-1);
-         iter2 = lattice_.find(bin);
-         //If neighbor exists
-         if(iter2!=lattice_.end())
-           {
-             L1CaloCluster neighbor = iter2->second;
-             pattern << "OF:NE Cluster: "<< neighbor.towerE(0) <<
-	       " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
-	       neighbor.towerE(3) <<"\n";
-	     
-             //Compare the energies and prune if the neighbor has higher Et
-             if(originE < neighbor.E())
-	       {
-		 origin.setTower(1,0);
-		 central=false;
-	       }
-           }
-         else
-           {
-             pattern << "OF:NE Cluster: 0 0 0 0\n";
-           }
-
-         //Check if the cluster is over threshold
-         if(origin.E() >=s.clusterThr())
-           {
-             origin.setCentral(central);
-	     
-             pattern << "OF:Trimmed Cluster: "<< origin.towerE(0) <<
-	       " "<< origin.towerE(1) << " " << origin.towerE(2) <<" "<<
-	       origin.towerE(3) <<" Central: "<<central<<" Weights:"<<
-	       posIn.first<<" "<<posIn.second;
-	     
-	     
-             cleanClusters.push_back(origin);
-
-           }
-         else
-           {
-             pattern << "OF:Trimmed Cluster: 0 0 0 0 Central: 0 Weights: 0 0\n";
-	     
-           }
-	 
-	 edm::LogInfo("Overlap Filter Patterns") <<  pattern.str() <<endl;
-	 
-	 
+		//up
+		bin = s.getBin(bin_eta,bin_phi-1);
+		iter2 = lattice_.find(bin);
+		//If neighbor exists
+		if(iter2!=lattice_.end())
+		  {
+		    L1CaloCluster neighbor = iter2->second;
+		    
+		    pattern << "OF:N Cluster: "<< neighbor.towerE(0) <<
+		      " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
+		      neighbor.towerE(3) <<"\n";
+		    
+		    
+		    //Compare the energies and prune if the neighbor has higher Et
+		    if(originE < neighbor.E())
+		      {
+			origin.setTower(0,0);
+			origin.setTower(1,0);
+			central=false;
+			
+		      }
+		  }
+		else
+		  {
+		    pattern << "OF:N Cluster: 0 0 0 0\n";
+		  }
+		
+		
+		
+		//up-right
+		bin = s.getBin(bin_eta+1,bin_phi-1);
+		iter2 = lattice_.find(bin);
+		//If neighbor exists
+		if(iter2!=lattice_.end())
+		  {
+		    L1CaloCluster neighbor = iter2->second;
+		    pattern << "OF:NE Cluster: "<< neighbor.towerE(0) <<
+		      " "<< neighbor.towerE(1) << " " << neighbor.towerE(2) <<" "<<
+		      neighbor.towerE(3) <<"\n";
+		    
+		    //Compare the energies and prune if the neighbor has higher Et
+		    if(originE< neighbor.E())
+		      {
+			origin.setTower(1,0);
+			central=false;
+		      }
+		  }
+		else
+		  {
+		    pattern << "OF:NE Cluster: 0 0 0 0\n";
+		  }
+		
+		//Check if the cluster is over threshold
+		if(origin.E() >=s.clusterThr())
+		  {
+		    origin.setCentral(central);
+		    
+		    pattern << "OF:Trimmed Cluster: "<< origin.towerE(0) <<
+		      " "<< origin.towerE(1) << " " << origin.towerE(2) <<" "<<
+		      origin.towerE(3) <<" Central: "<<central<<" Weights:"<<
+		      posIn.first<<" "<<posIn.second;
+		    
+		    totalET+=origin.E();
+		    cleanClusters.push_back(origin);
+		    
+		  }
+		else
+		  {
+		    pattern << "OF:Trimmed Cluster: 0 0 0 0 Central: 0 Weights: 0 0\n";
+		    
+		  }
+		edm::LogInfo("Overlap Filter Patterns") <<  pattern.str() <<endl;
 	      }
 	    
 	  }
-      
+      printf("Filtered an ET of %d on the lattice\n",totalET);      
 }
 
 std::pair<int,int>
@@ -317,81 +315,78 @@ CaloClusterFilteringCard::calculateClusterPosition(l1slhc::L1CaloCluster& cluste
 
 
   //get et
-  double et = ((double)cluster.E())/2;
-
+    double et = ((double)cluster.E())/2.0;
+  //    double et = (double)(cluster.E()/2.0);
+  
   TriggerTowerGeometry geo;
-
+  
   double eta=0;
   double phi=0;
   double etaW=0;
   double phiW=0;
-
+  
   //eta sum;
   etaW -= cluster.towerE(0);
   etaW -= cluster.towerE(2);
   etaW += cluster.towerE(1);
   etaW += cluster.towerE(3);
-
+  
   etaW= (etaW/cluster.E())+1;
-
-
-    if(etaW<0.5)
-      {
-  eta=geo.eta(cluster.iEta())+geo.towerEtaSize(cluster.iEta())/8;
-  etaBit=0;
-      }
-    else if(etaW<1.0)
-      {
-  eta=geo.eta(cluster.iEta())+3*geo.towerEtaSize(cluster.iEta())/8;
-  etaBit=1;
-      }
-    else if(etaW<1.5)
-      {
-  eta=geo.eta(cluster.iEta())+5*geo.towerEtaSize(cluster.iEta())/8;
-  etaBit=2;
-      }
-    else if(etaW<2.0)
-      {
-  eta=geo.eta(cluster.iEta())+7*geo.towerEtaSize(cluster.iEta())/8;
-  etaBit=3;
-      }
-
+  
+  
+  if(etaW<0.5)
+    {
+      eta=geo.eta(cluster.iEta())+geo.towerEtaSize(cluster.iEta())/8;
+      etaBit=0;
+    }
+  else if(etaW<1.0)
+    {
+      eta=geo.eta(cluster.iEta())+3*geo.towerEtaSize(cluster.iEta())/8;
+      etaBit=1;
+    }
+  else if(etaW<1.5)
+    {
+      eta=geo.eta(cluster.iEta())+5*geo.towerEtaSize(cluster.iEta())/8;
+      etaBit=2;
+    }
+  else if(etaW<2.0)
+    {
+      eta=geo.eta(cluster.iEta())+7*geo.towerEtaSize(cluster.iEta())/8;
+      etaBit=3;
+    }
+  
   phiW -= cluster.towerE(0);
   phiW -= cluster.towerE(1);
   phiW += cluster.towerE(2);
   phiW += cluster.towerE(3);
-
+  
   phiW= (phiW/cluster.E())+1;
-
-    if(phiW<0.5)
+  
+  if(phiW<0.5)
       {
-  phi=geo.phi(cluster.iPhi())+geo.towerPhiSize(cluster.iPhi())/8;
-  phiBit=0;
+	phi=geo.phi(cluster.iPhi())+geo.towerPhiSize(cluster.iPhi())/8;
+	phiBit=0;
       }
-    else if(phiW<1.0)
-      {
-  phi=geo.phi(cluster.iPhi())+3*geo.towerPhiSize(cluster.iPhi())/8;
-  phiBit=1;
+  else if(phiW<1.0)
+    {
+      phi=geo.phi(cluster.iPhi())+3*geo.towerPhiSize(cluster.iPhi())/8;
+      phiBit=1;
       }
-    else if(phiW<1.5)
-      {
-  phi=geo.phi(cluster.iPhi())+5*geo.towerPhiSize(cluster.iPhi())/8;
-  phiBit=2;
-      }
-    else if(phiW<2.0)
-      {
-  phi=geo.phi(cluster.iPhi())+7*geo.towerPhiSize(cluster.iPhi())/8;
-  phiBit=3;
-      }
-
+  else if(phiW<1.5)
+    {
+      phi=geo.phi(cluster.iPhi())+5*geo.towerPhiSize(cluster.iPhi())/8;
+      phiBit=2;
+    }
+  else if(phiW<2.0)
+    {
+      phi=geo.phi(cluster.iPhi())+7*geo.towerPhiSize(cluster.iPhi())/8;
+      phiBit=3;
+    }
+  
     std::pair <int,int> p = std::make_pair(etaBit,phiBit);
-
-  math::PtEtaPhiMLorentzVector v(et,eta,phi,0.);
-
-  cluster.setPosBits(etaBit,phiBit);
-
-  cluster.setLorentzVector(v);
-
+    math::PtEtaPhiMLorentzVector v(et,eta,phi,0.);
+    cluster.setPosBits(etaBit,phiBit);
+    cluster.setLorentzVector(v);
 
   return p;
 }
