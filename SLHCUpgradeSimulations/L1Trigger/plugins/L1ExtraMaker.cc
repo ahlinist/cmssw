@@ -9,6 +9,7 @@ L1ExtraMaker::L1ExtraMaker(const edm::ParameterSet& iConfig):
   produces<l1extra::L1EmParticleCollection>("EGamma");
   produces<l1extra::L1EmParticleCollection>("IsoEGamma");
   produces<l1extra::L1JetParticleCollection>("Taus");
+  produces<l1extra::L1JetParticleCollection>("IsoTaus");
   produces<l1extra::L1JetParticleCollection>("Jets");
 
 }
@@ -32,6 +33,7 @@ L1ExtraMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::auto_ptr<L1EmParticleCollection>  l1EGamma(new L1EmParticleCollection);
    std::auto_ptr<L1EmParticleCollection>  l1IsoEGamma(new L1EmParticleCollection);
    std::auto_ptr<L1JetParticleCollection>  l1Tau(new L1JetParticleCollection);
+   std::auto_ptr<L1JetParticleCollection>  l1IsoTau(new L1JetParticleCollection);
    std::auto_ptr<L1JetParticleCollection>  l1Jet(new L1JetParticleCollection);
 
 
@@ -40,67 +42,65 @@ L1ExtraMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    {
      int NEGamma=0;
     int NIsoEGamma=0;
+    int NIsoTau=0;
     int NTau=0;
-
-
-
 
      for(size_t i = 0;i<clusters->size();++i)
        {
+	 //EGamma
+	 if((*clusters)[i].isEGamma()&&NEGamma<nObjects_)
+	   {
+	     l1EGamma->push_back(L1EmParticle((*clusters)[i].p4()));
+	     NEGamma++;
+	   }
 
-   //EGamma
-     if((*clusters)[i].isEGamma()&&NEGamma<nObjects_)
-     {
-       l1EGamma->push_back(L1EmParticle((*clusters)[i].p4()));
-       NEGamma++;
-     }
+	 //Isolated EGamma
+	 if((*clusters)[i].isIsoEGamma()&&NIsoEGamma<nObjects_)
+	   {
+	     l1IsoEGamma->push_back(L1EmParticle((*clusters)[i].p4()));
+	     NIsoEGamma++;
+	   }
 
-   //Isolated EGamma
-   if((*clusters)[i].isIsoEGamma()&&NIsoEGamma<nObjects_)
-     {
-       l1IsoEGamma->push_back(L1EmParticle((*clusters)[i].p4()));
-       NIsoEGamma++;
-     }
+	 //Taus
+	 if(NTau<nObjects_)
+	   if(fabs((*clusters)[i].eta())<2.5)
+	     {
+	       l1Tau->push_back(L1JetParticle((*clusters)[i].p4()));
+	       NTau++;
+	     }
 
-   //Taus
-   if((*clusters)[i].isTau()&&NTau<nObjects_)
-     {
-       l1Tau->push_back(L1JetParticle((*clusters)[i].p4()));
-       NTau++;
-     }
 
+	 //IsoTaus
+	 if((*clusters)[i].isTau()&&NIsoTau<nObjects_)
+	   if(fabs((*clusters)[i].eta())<2.5)
+	     {
+	       l1IsoTau->push_back(L1JetParticle((*clusters)[i].p4()));
+	       NIsoTau++;
+	     }
+	 
        }
 
      iEvent.put(l1EGamma,"EGamma");
      iEvent.put(l1IsoEGamma,"IsoEGamma");
      iEvent.put(l1Tau,"Taus");
-
-
+     iEvent.put(l1IsoTau,"IsoTaus");
    }
 
 
    if(iEvent.getByLabel(jets_,jets))
-   {
-
-     size_t N=nObjects_;
-     if(jets->size()<nObjects_)
+     {
+       
+       size_t N=nObjects_;
+       if(jets->size()<nObjects_)
        N=jets->size();
-
-     for(size_t i = 0;i<N;++i)
+       
+       for(size_t i = 0;i<N;++i)
        {
-       l1Jet->push_back(L1JetParticle((*jets)[i].p4()));
+	 l1Jet->push_back(L1JetParticle((*jets)[i].p4()));
        }
-
-     iEvent.put(l1Jet,"Jets");
-
-
-
-   }
-
-
-
-
-
+       
+       iEvent.put(l1Jet,"Jets");
+     }
 }
 
 

@@ -53,8 +53,8 @@ CaloClusterIsolationCard::isoDeposits(const l1slhc::L1CaloClusterCollection& clu
 	    if(iter!=lattice_.end())
 	      if(iter->second.isCentral())
 		{
-		  int iso=0;
-		  int nClusters=0;
+		  int nClustersEG=0;
+		  int nClustersTau=0;
 		  L1CaloCluster origin = iter->second;
 		  
 		  //There is a cluster here:Calculate isoDeposits
@@ -67,24 +67,29 @@ CaloClusterIsolationCard::isoDeposits(const l1slhc::L1CaloClusterCollection& clu
 			  std::map<int,L1CaloCluster>::iterator iter2= lattice_.find(bin);
 			  //If neighbor exists
 			  if(iter2!=lattice_.end())
-			    if(iter2->second.E() >= s.isoThr())
-			      {
-				iso+=iter2->second.E();
-				nClusters++;
-			      }
+			    {
+			      if(iter2->second.E() >= s.isoThr()[0])
+				{
+				  nClustersEG++;
+				}
+			      if(iter2->second.E() >= s.isoThr()[1])
+				{
+				  nClustersTau++;
+				}
+			    }
 			}
 
-		  origin.setIsoValue(iso);
-		  origin.setIsoClusters(nClusters);
+
+		  origin.setIsoClusters(nClustersEG,nClustersTau);
 		  
 		  //Calculate Bits Tau isolation / electron Isolation
-		  if(nClusters <=(int)( s.isolationE()[0]+(double)(s.isolationE()[1]*origin.E())/1000.))
+		  if(nClustersEG <=(int)( s.isolationE()[0]+(double)(s.isolationE()[1]*origin.E())/1000.))
 		    {
 		      origin.setIsoEG(true);
 		    }
 		  //For the tau check if it isolated //
 
-		  if(nClusters <=(int)( s.isolationT()[0]+(double)(s.isolationT()[1]*origin.E())/1000.))
+		  if(nClustersTau <=(int)( s.isolationT()[0]+(double)(s.isolationT()[1]*origin.E())/1000.))
 		    {
 		      origin.setIsoTau(true);
 		    }
