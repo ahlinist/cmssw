@@ -226,6 +226,12 @@ evtSelDiTauCandidateForMuTauZeroCharge = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCut', 'individual')
 )
+evtSelDiTauCandidateForMuTauAcoplanarity12 = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForMuTauAcoplanarity12'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForMuTauAcoplanarity12Cut', 'individual')
+)
 evtSelDiTauCandidateForMuTauMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
@@ -538,6 +544,17 @@ muTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
                               'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsZeroChargeCumulative'),
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForMuTauAcoplanarity12'),
+        title = cms.string('Acoplanarity(Muon+Tau)'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = muTauHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsAcoplanarity12Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForMuTauMt1MET'),

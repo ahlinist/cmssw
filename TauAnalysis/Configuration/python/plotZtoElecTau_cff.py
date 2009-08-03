@@ -117,7 +117,7 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
         N = copy.deepcopy(xAxis_num),
         PdgId = copy.deepcopy(xAxis_pdgId),
         GeV = copy.deepcopy(xAxis_GeV),
-        unlabeled = copy.deepcopy(xAxis_unlabeled),
+        unlabeled = copy.deepcopy(xAxis_unlabeled)
     ),
 
     yAxes = cms.PSet(                         

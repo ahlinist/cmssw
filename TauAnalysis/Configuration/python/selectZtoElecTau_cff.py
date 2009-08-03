@@ -179,6 +179,13 @@ cfgDiTauCandidateForElecTauZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecTauPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgDiTauCandidateForElecTauAcoplanarity12Cut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecTauAcoplanarity12Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecTauPairsAcoplanarity12Cumulative'),
+    src_individual = cms.InputTag('selectedElecTauPairsAcoplanarity12Individual'),
+    minNumber = cms.uint32(1)
+)
 cfgDiTauCandidateForElecTauMt1METCut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecTauMt1METCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -228,6 +235,7 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauEcalCrackVeto,
       cfgDiTauCandidateForElecTauAntiOverlapVeto,
       cfgDiTauCandidateForElecTauZeroChargeCut,
+      cfgDiTauCandidateForElecTauAcoplanarity12Cut,
       cfgDiTauCandidateForElecTauMt1METCut,
       cfgDiTauCandidateForElecTauPzetaDiffCut,
       cfgElecTauPairZeeHypothesisVeto ],

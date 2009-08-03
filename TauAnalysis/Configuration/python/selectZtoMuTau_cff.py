@@ -166,6 +166,13 @@ cfgDiTauCandidateForMuTauZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedMuTauPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgDiTauCandidateForMuTauAcoplanarity12Cut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForMuTauAcoplanarity12Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12Cumulative'),
+    src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12Individual'),
+    minNumber = cms.uint32(1)
+)
 cfgDiTauCandidateForMuTauMt1METcut = cms.PSet(
     pluginName = cms.string('diTauCandidateForMuTauMt1METcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -204,6 +211,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauMuonVeto,
       cfgDiTauCandidateForMuTauAntiOverlapVeto,
       cfgDiTauCandidateForMuTauZeroChargeCut,
+      cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
       cfgDiTauCandidateForMuTauPzetaDiffCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",

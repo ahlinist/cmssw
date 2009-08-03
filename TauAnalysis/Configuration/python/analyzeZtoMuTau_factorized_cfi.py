@@ -51,6 +51,10 @@ evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation = copy.deepcopy(evtSelD
 evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation.src_cumulative = cms.InputTag('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation', 'cumulative')
 evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation.src_individual = cms.InputTag('diTauCandidateForMuTauZeroChargeCutLooseMuonIsolation', 'individual')
 
+evtSelDiTauCandidateForMuTauAcoplanarity12LooseMuonIsolation = copy.deepcopy(evtSelDiTauCandidateForMuTauAcoplanarity12)
+evtSelDiTauCandidateForMuTauAcoplanarity12LooseMuonIsolation.src_cumulative = cms.InputTag('diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation', 'cumulative')
+evtSelDiTauCandidateForMuTauAcoplanarity12LooseMuonIsolation.src_individual = cms.InputTag('diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation', 'individual')
+
 evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation = copy.deepcopy(evtSelDiTauCandidateForMuTauMt1MET)
 evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation.src_cumulative = cms.InputTag('diTauCandidateForMuTauMt1METcutLooseMuonIsolation', 'cumulative')
 evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation.src_individual = cms.InputTag('diTauCandidateForMuTauMt1METcutLooseMuonIsolation', 'individual')
@@ -87,6 +91,7 @@ replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation
       ["selectedLayer1MuonsTrkIPcumulative", "selectedLayer1MuonsTrkIPlooseIsolationCumulative"],
       ["selectedMuTauPairsAntiOverlapVetoCumulative", "selectedMuTauPairsAntiOverlapVetoLooseMuonIsolationCumulative"],
       ["selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative"],
+      ["selectedMuTauPairsAcoplanarity12Cumulative", "selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative"],
       ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"],
       ["selectedMuTauPairsPzetaDiffCumulative", "selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative"] ]
 ) 
