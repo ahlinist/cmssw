@@ -304,7 +304,7 @@ CaloClusterFilteringCard::cleanClusters(const l1slhc::L1CaloClusterCollection& c
 	      }
 	    
 	  }
-      printf("Filtered an ET of %d on the lattice\n",totalET);      
+
 }
 
 std::pair<int,int>
