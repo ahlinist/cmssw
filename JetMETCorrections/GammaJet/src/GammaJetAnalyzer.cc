@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.6 2009/01/30 10:03:39 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.7 2009/02/12 12:13:58 delre Exp $
 //
 //
 
@@ -40,6 +40,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
@@ -63,7 +64,7 @@
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h" 
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h" 
 #include "RecoCaloTools/Selectors/interface/CaloConeSelector.h"
 #include "RecoCaloTools/MetaCollections/interface/CaloRecHitMetaCollections.h"
 
@@ -150,9 +151,12 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
    double maxptphoton1(0), maxptphoton2(0), maxptphoton3(0);
 
-   // get generated pt hat
-   Handle<double> genEventScale; 
-   iEvent.getByLabel( "genEventScale", genEventScale ); 
+   //   // get generated pt hat
+   //   Handle<double> genEventScale; 
+   //   iEvent.getByLabel( "genEventScale", genEventScale ); 
+
+   Handle<GenEventInfoProduct> hEventInfo;
+   iEvent.getByLabel("generator", hEventInfo);
 
    // get MC info from GenParticleCandidates 
    Handle<GenParticleCollection> genParticles;
@@ -286,7 +290,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // Loop over MC truth
    
-   genpt = *genEventScale;   
+   //   genpt = *genEventScale;   
+   if (hEventInfo->binningValues().size() > 0)
+     genpt = hEventInfo->binningValues()[0];
 
    for ( GenParticleCollection::const_iterator p = genParticles->begin();
 	p != genParticles->end(); ++p ) {
@@ -499,8 +505,9 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
      // cluster shape variables
      
-     BasicClusterRef tempCluster = it->superCluster()->seed();
-     
+     //     BasicClusterRef tempCluster = it->superCluster()->seed();
+     CaloClusterPtr tempCluster = it->superCluster()->seed();
+
      if(TMath::Abs(tempCluster->eta())<1.47){
        reco::ClusterShape tempShape=algo.Calculate(*tempCluster, rhits, &(*geometry_p), &(*topology_p),4.7);
        sMajMajPhot[nPhot]=tempShape.sMajMaj();
