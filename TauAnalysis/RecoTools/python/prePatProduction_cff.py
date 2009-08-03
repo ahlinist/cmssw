@@ -5,9 +5,9 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # produce particle flow based muon isolation quantities
-from PhysicsTools.PFCandProducer.pfAllChargedHadrons_cfi import *
-from PhysicsTools.PFCandProducer.pfAllNeutralHadrons_cfi import *
-from PhysicsTools.PFCandProducer.pfAllPhotons_cfi import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllChargedHadrons_cfi import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllNeutralHadrons_cfi import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllPhotons_cfi import *
 from TauAnalysis.RecoTools.recoElectronIsolation_cfi import *
 from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
 from TauAnalysis.RecoTools.recoMuonIsolation_cfi import *
@@ -32,5 +32,6 @@ producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllP
                              + electronIdCutBased + recoElectronIsolation
                              + recoMuonIsolation
                              + PFTau
-                             + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform )
+                             + shrinkingConePFTauDiscriminationByTaNC + RunTanc #MB what is it? + shrinkingConePFTauTancCVTransform
+                              )
 

@@ -3,8 +3,9 @@ import copy
 
 from PhysicsTools.PatAlgos.recoLayer0.electronId_cff import *
 from PhysicsTools.PatAlgos.recoLayer0.electronIsolation_cff import *
-from PhysicsTools.PatAlgos.recoLayer0.aodReco_cff import *
-from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
+#MB from PhysicsTools.PatAlgos.recoLayer0.aodReco_cff import *
+#MB trigger stuff has been redone with 31X, so it is commented out. It should modified to follow PAT modification
+#MB from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.electronProducer_cfi import *
 from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 
@@ -13,8 +14,9 @@ from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 #--------------------------------------------------------------------------------
 
 # add HLT electron trigger to PAT trigger match sequence
-patTrigMatchElectron = cms.Sequence( electronTrigMatchHLT1Electron )
-patTrigMatch._seq = patTrigMatch._seq * patHLT1Electron * patTrigMatchElectron
+#MB trigger stuff has been redone with 31X, so it is commented out. It should modified to follow PAT modification
+#MB patTrigMatchElectron = cms.Sequence( electronTrigMatchHLT1Electron )
+#MB patTrigMatch._seq = patTrigMatch._seq * patHLT1Electron * patTrigMatchElectron
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 electron configuration parameters
@@ -73,10 +75,11 @@ allLayer1Electrons.electronIDSources = cms.PSet(
 #
 # enable matching to HLT trigger information
 #
-allLayer1Electrons.addTrigMatch = cms.bool(True)
-allLayer1Electrons.trigPrimMatch = cms.VInputTag(
-    cms.InputTag("electronTrigMatchHLT1Electron")
-)
+#MB allLayer1Electrons.addTrigMatch = cms.bool(True)
+allLayer1Electrons.addTrigMatch = cms.bool(False)
+#MB allLayer1Electrons.trigPrimMatch = cms.VInputTag(
+#MB    cms.InputTag("electronTrigMatchHLT1Electron")
+#MB )
 #
 # enable matching to generator level information
 #

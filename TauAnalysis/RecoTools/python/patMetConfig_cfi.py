@@ -13,11 +13,11 @@ from JetMETCorrections.Type1MET.TauMetCorrections_cff import *
 # apply tau-jet specific corrections to reco::MET per default
 # (comment-out the next line in case you prefer to **not** apply the tau-jet specific MET corrections)
 
-tauMetCorr.InputCaloJetsLabel = corMetType1Icone5.inputUncorJetsLabel
-tauMetCorr.jetPTthreshold = corMetType1Icone5.jetPTthreshold
-tauMetCorr.jetEMfracLimit = corMetType1Icone5.jetEMfracLimit
-tauMetCorr.correctorLabel = corMetType1Icone5.corrector
-tauMetCorr.InputMETLabel = cms.string('corMetType1Icone5Muons')
+tauMetCorr.InputCaloJetsLabel = metJESCorIC5CaloJet.inputUncorJetsLabel
+tauMetCorr.jetPTthreshold = metJESCorIC5CaloJet.jetPTthreshold
+tauMetCorr.jetEMfracLimit = metJESCorIC5CaloJet.jetEMfracLimit
+tauMetCorr.correctorLabel = metJESCorIC5CaloJet.corrector
+tauMetCorr.InputMETLabel = cms.string('metJESCorIC5CaloJetMuons')
 
 patMETCorrections._seq = patMETCorrections._seq * MetTauCorrections
 
