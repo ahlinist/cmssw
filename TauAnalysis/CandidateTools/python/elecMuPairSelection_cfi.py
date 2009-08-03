@@ -17,6 +17,20 @@ selectedElecMuPairsZeroCharge = cms.EDFilter("PATElecMuPairSelector",
      filter = cms.bool(False)
 )
 
+# require electron and muon to be back-to-back
+#
+# NOTE:
+#  (1) this cut is introduced into the cut-flow as a place-holder only,
+#      to be used as backup in case MET cannot be relied upon in the early data
+#  (2) in case the cut on electron-muon acoplanarity is applied
+#      there will be no events left for which the invariant e + tau mass
+#      can be reonstructed by collinear approximation
+selectedElecMuPairsAcoplanarity12 = cms.EDFilter("PATElecMuPairSelector",
+    cut = cms.string('cos(dPhi12) > -1.01'),
+    #cut = cms.string('cos(dPhi12) < -0.95'),                                            
+    filter = cms.bool(False)
+)
+
 # require low transverse mass of electron and MET
 selectedElecMuPairsMt1MET = cms.EDFilter("PATElecMuPairSelector",
     cut = cms.string('mt1MET < 50.'),
@@ -26,6 +40,13 @@ selectedElecMuPairsMt1MET = cms.EDFilter("PATElecMuPairSelector",
 # require low transverse mass of muon and MET
 selectedElecMuPairsMt2MET = cms.EDFilter("PATElecMuPairSelector",    
     cut = cms.string('mt2MET < 50.'),
+    filter = cms.bool(False)
+)
+
+# require missing transverse momentum to point
+# in the direction of visible tau decay products
+selectedElecMuPairsPzetaDiff = cms.EDFilter("PATElecMuPairSelector",
+    cut = cms.string('(pZeta - 1.5*pZetaVis) > -20.'),
     filter = cms.bool(False)
 )
 
@@ -39,6 +60,10 @@ selectedElecMuPairsAntiOverlapVetoLooseElectronIsolation = copy.deepcopy(selecte
 
 selectedElecMuPairsZeroChargeLooseElectronIsolation = copy.deepcopy(selectedElecMuPairsZeroCharge)
 
+selectedElecMuPairsAcoplanarity12LooseElectronIsolation = copy.deepcopy(selectedElecMuPairsAcoplanarity12)
+
 selectedElecMuPairsMt1METlooseElectronIsolation = copy.deepcopy(selectedElecMuPairsMt1MET)
 
 selectedElecMuPairsMt2METlooseElectronIsolation = copy.deepcopy(selectedElecMuPairsMt2MET)
+
+selectedElecMuPairsPzetaDiffLooseElectronIsolation = copy.deepcopy(selectedElecMuPairsPzetaDiff)
