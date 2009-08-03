@@ -15,6 +15,10 @@ from TauAnalysis.GenSimTools.genPhaseSpaceEventInfoProducer_cff import *
 # import sequence for production of generator level tau-decay information
 from TauAnalysis.GenSimTools.tauGenJetProducer_cff import *
 
+# import sequence for production of generator level missing-Et
+# (with muons included)
+from TauAnalysis.GenSimTools.genMETWithMu_cff import *
+
 # import sequence for selection of primary event vertex candidates
 from TauAnalysis.RecoTools.eventVertexSelector_cfi import *
 
@@ -25,7 +29,8 @@ from TauAnalysis.CandidateTools.metTopology_cfi import *
 
 produceGenObjects = cms.Sequence( produceGenDecayProductsFromZs
                                  +produceGenPhaseSpaceEventInfo
-                                 +produceTauGenJets)
+                                 +produceTauGenJets
+                                 +produceGenMETwithMu )
 produceRecObjects = cms.Sequence( selectPrimaryVertex
                                  +produceMEtTopology )
 producePostPat = cms.Sequence( produceGenObjects + produceRecObjects )

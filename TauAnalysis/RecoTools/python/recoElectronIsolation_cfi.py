@@ -89,44 +89,18 @@ electronIsoDeposits = cms.Sequence( eleIsoDepositTk
 
 #--------------------------------------------------------------------------------
 # compute particle flow based IsoDeposits
-# names and settings taken from 22X, to be tuned
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PFCandProducer.Isolation.pfElectronIsolation_cff import *
-elctronCollection = "pixelMatchGsfElectrons"
-pfeleIsoDepositPFCandidates   = isoDepositReplace(elctronCollection,"particleFlow")
-pfeleIsoChDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllChargedHadrons")
-pfeleIsoNeDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllNeutralHadrons")
-pfeleIsoGaDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllPhotons")
+from PhysicsTools.PFCandProducer.pfElectronIsolation_cff import *
+pfeleIsoDepositPFCandidates.src = cms.InputTag("pixelMatchGsfElectrons")
+pfeleIsoChDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfeleIsoNeDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfeleIsoGaDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
+pfElectrons.src = pfeleIsoDepositPFCandidates.src
 
-pfElectronIsolCandidates = cms.Sequence( pfeleIsoDepositPFCandidates
-                                         * pfeleIsoChDepositPFCandidates
-                                         * pfeleIsoNeDepositPFCandidates
-                                         * pfeleIsoGaDepositPFCandidates )
+pfElectronIsol = cms.Sequence( pfeleIsoDepositPFCandidates
+                              * pfeleIsoChDepositPFCandidates
+                              * pfeleIsoNeDepositPFCandidates
+                              * pfeleIsoGaDepositPFCandidates )
 
-pfEleIsoDeposit = cms.EDProducer("CandIsolatorFromDeposits",
-    deposits = cms.VPSet(
-        cms.PSet(
-            src = cms.InputTag("pfeleIsoDepositPFCandidates"),
-            deltaR = cms.double(0.5),
-            weight = cms.string('1'),
-            vetos = cms.vstring('0.01',
-                                'Threshold(0.2)'),
-            skipDefaultVeto = cms.bool(True),
-            mode = cms.string('sum')
-        )
-    )
-)
-pfEleIsoChDeposit = pfEleIsoDeposit.clone()
-pfEleIsoChDeposit.deposits.src = 'pfeleIsoChDepositPFCandidates'
-pfEleIsoNeDeposit = pfEleIsoDeposit.clone()
-pfEleIsoNeDeposit.deposits.src = 'pfeleIsoNeDepositPFCandidates'
-pfEleIsoGaDeposit = pfEleIsoDeposit.clone()
-pfEleIsoGaDeposit.deposits.src = 'pfeleIsoGaDepositPFCandidates'
-
-electronIsoDeposits =  cms.Sequence( pfEleIsoDeposit
-                                     * pfEleIsoChDeposit
-                                     * pfEleIsoNeDeposit
-                                     * pfEleIsoGaDeposit )
-
-recoElectronIsolation = cms.Sequence( pfElectronIsolCandidates * electronIsoDeposits )
+recoElectronIsolation = cms.Sequence( electronIsoDeposits * pfElectronIsol )
