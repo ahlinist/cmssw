@@ -937,7 +937,7 @@ void DQMHistPlotter::endJob()
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
   if ( verbosity ) dqmStore.showDirStructure();
-  dqmStore.showDirStructure();
+  //dqmStore.showDirStructure();
 
 //--- stop ROOT from opening X-window for canvas output
 //    (in order to be able to run in batch mode) 
