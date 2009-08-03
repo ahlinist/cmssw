@@ -48,8 +48,10 @@ replaceEventSelections(analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation
       [ evtSelElectronTrkIP, evtSelElectronTrkIPlooseIsolation ],
       [ evtSelDiTauCandidateForElecMuAntiOverlapVeto, evtSelDiTauCandidateForElecMuAntiOverlapVetoLooseElectronIsolation ],
       [ evtSelDiTauCandidateForElecMuZeroCharge, evtSelDiTauCandidateForElecMuZeroChargeLooseElectronIsolation ],
+      [ evtSelDiTauCandidateForElecMuAcoplanarity12, evtSelDiTauCandidateForElecMuAcoplanarity12LooseElectronIsolation ],
       [ evtSelDiTauCandidateForElecMuMt1MET, evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation ],
-      [ evtSelDiTauCandidateForElecMuMt2MET, evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation ] ]
+      [ evtSelDiTauCandidateForElecMuMt2MET, evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation ],
+      [ evtSelDiTauCandidateForElecMuPzetaDiff, evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation] ]
 )                       
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation.eventDumps[0] = elecMuEventDump_factorizedWithoutElectronIsolation
 analyzeZtoElecMuEvents_factorizedWithoutElectronIsolation.analysisSequence = elecMuAnalysisSequence_factorizedWithoutElectronIsolation
