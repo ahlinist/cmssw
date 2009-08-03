@@ -273,12 +273,23 @@ drawJobConfigurator_ZtoElecMu.add(
 
 drawJobConfigurator_ZtoElecMu.add(
     afterCut = evtSelDiTauCandidateForElecMuZeroCharge,
+    beforeCut = evtSelDiTauCandidateForElecMuAcoplanarity12,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DPhi12',
+        title = "#Delta#phi(Electron-Muon) (after opposite Charge Cut)",
+        xAxis = 'dPhi',
+        name = "cutFlowControlPlots_dPhiElectronMuon_afterZeroCharge"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelDiTauCandidateForElecMuAcoplanarity12,
     beforeCut = evtSelDiTauCandidateForElecMuMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Electron + MET) (after opposite Charge Cut)",
+        title = "M_{T}(Electron + MET) (after Acoplanarity(Electron-Muon) Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtElectronMET_afterZeroCharge"
+        name = "cutFlowControlPlots_mtElectronMET_afterAcoplanarityElectronMuon"
     )
 )
 
@@ -289,7 +300,18 @@ drawJobConfigurator_ZtoElecMu.add(
         meName = 'DiTauCandidateQuantities/Mt2MET',
         title = "M_{T}(Muon + MET) (after M_{T}(Electron + MET) Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtMuonMET_aftermtElectronMET"
+        name = "cutFlowControlPlots_mtMuonMET_afterMtElectronMET"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelDiTauCandidateForElecMuMt2MET,
+    beforeCut = evtSelDiTauCandidateForElecMuPzetaDiff,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/PzetaDiff',
+        title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (after M_{T}(Muon + MET) Cut)",
+        xAxis = 'GeV',
+        name = "cutFlowControlPlots_PzetaDiff_afterMtMuonMET"
     )
 )
 
@@ -299,7 +321,7 @@ drawJobConfigurator_ZtoElecMu.add(
 #--------------------------------------------------------------------------------
 
 drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelDiTauCandidateForElecMuMt2MET,
+    afterCut = evtSelDiTauCandidateForElecMuPzetaDiff,
     plots = [
         drawJobConfigEntry(
             meName = 'ElectronQuantities/Electron#PAR#',
@@ -309,6 +331,12 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_electron"
         ),
         drawJobConfigEntry(
+            meName = 'ElectronQuantities/hElectronMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Electron (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
+        ),
+        drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Muon (final Event sample)",
@@ -316,10 +344,28 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_muon"
         ),
         drawJobConfigEntry(
+            meName = 'MuonQuantities/hMuonMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Muon (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingMuon"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/DPhi12',
+            title = "#Delta#phi(Electron-Muon) (final Event sample)",
+            xAxis = 'dPhi',
+            name = "finalSamplePlots_dPhiElectronMuon"
+        ),
+        drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_met"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/PzetaDiff',
+            title = "P_{#zeta} - 1.5*P_{#zeta}^{vis} (final Event sample)",
+            xAxis = 'GeV',
+            name = "finalSamplePlots_PzetaDiff"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/Mt1MET',

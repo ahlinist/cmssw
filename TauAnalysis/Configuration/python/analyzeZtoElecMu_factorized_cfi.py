@@ -51,6 +51,10 @@ evtSelDiTauCandidateForElecMuZeroChargeLooseElectronIsolation = copy.deepcopy(ev
 evtSelDiTauCandidateForElecMuZeroChargeLooseElectronIsolation.src_cumulative = cms.InputTag('diTauCandidateForElecMuZeroChargeCutLooseElectronIsolation', 'cumulative')
 evtSelDiTauCandidateForElecMuZeroChargeLooseElectronIsolation.src_individual = cms.InputTag('diTauCandidateForElecMuZeroChargeCutLooseElectronIsolation', 'individual')
 
+evtSelDiTauCandidateForElecMuAcoplanarity12LooseElectronIsolation = copy.deepcopy(evtSelDiTauCandidateForElecMuAcoplanarity12)
+evtSelDiTauCandidateForElecMuAcoplanarity12LooseElectronIsolation.src_cumulative = cms.InputTag('diTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation', 'cumulative')
+evtSelDiTauCandidateForElecMuAcoplanarity12LooseElectronIsolation.src_individual = cms.InputTag('diTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation', 'individual')
+
 evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation = copy.deepcopy(evtSelDiTauCandidateForElecMuMt1MET)
 evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation.src_cumulative = cms.InputTag('diTauCandidateForElecMuMt1METcutLooseElectronIsolation', 'cumulative')
 evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation.src_individual = cms.InputTag('diTauCandidateForElecMuMt1METcutLooseElectronIsolation', 'individual')
@@ -58,6 +62,10 @@ evtSelDiTauCandidateForElecMuMt1METlooseElectronIsolation.src_individual = cms.I
 evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation = copy.deepcopy(evtSelDiTauCandidateForElecMuMt2MET)
 evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation.src_cumulative = cms.InputTag('diTauCandidateForElecMuMt2METcutLooseElectronIsolation', 'cumulative')
 evtSelDiTauCandidateForElecMuMt2METlooseElectronIsolation.src_individual = cms.InputTag('diTauCandidateForElecMuMt2METcutLooseElectronIsolation', 'individual')
+
+evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation = copy.deepcopy(evtSelDiTauCandidateForElecMuPzetaDiff)
+evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation.src_cumulative = cms.InputTag('diTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation', 'cumulative')
+evtSelDiTauCandidateForElecMuPzetaDiffLooseElectronIsolation.src_individual = cms.InputTag('diTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation', 'individual')
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -87,8 +95,10 @@ replaceHistManagerInputTags(elecMuAnalysisSequence_factorizedWithoutElectronIsol
       ["selectedLayer1ElectronsTrkIPcumulative", "selectedLayer1ElectronsTrkIPlooseIsolationCumulative"],
       ["selectedElecMuPairsAntiOverlapVetoCumulative", "selectedElecMuPairsAntiOverlapVetoLooseElectronIsolationCumulative"],
       ["selectedElecMuPairsZeroChargeCumulative", "selectedElecMuPairsZeroChargeLooseElectronIsolationCumulative"],
+      ["selectedElecMuPairsAcoplanarity12Cumulative", "selectedElecMuPairsAcoplanarity12LooseElectronIsolationCumulative"],
       ["selectedElecMuPairsMt1METcumulative", "selectedElecMuPairsMt1METlooseElectronIsolationCumulative"],
-      ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"] ]
+      ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"],
+      ["selectedElecMuPairsPzetaDiffCumulative", "selectedElecMuPairsPzetaDiffLooseElectronIsolationCumulative"] ]
 ) 
 elecMuAnalysisSequence_factorizedWithElectronIsolation = copy.deepcopy(elecMuAnalysisSequence)
 switchHistManagers(elecMuAnalysisSequence_factorizedWithElectronIsolation, elecMuHistManagers_factorizedWithElectronIsolation)

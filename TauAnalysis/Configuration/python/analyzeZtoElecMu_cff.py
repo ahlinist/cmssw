@@ -52,11 +52,10 @@ analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
         # di-tau candidate selection
         evtSelDiTauCandidateForElecMuAntiOverlapVeto,
         evtSelDiTauCandidateForElecMuZeroCharge,
+        evtSelDiTauCandidateForElecMuAcoplanarity12,
         evtSelDiTauCandidateForElecMuMt1MET,
         evtSelDiTauCandidateForElecMuMt2MET,
-        
-        # veto events containing additional central jets with Et > 20 GeV
-        evtSelCentralJetVeto
+        evtSelDiTauCandidateForElecMuPzetaDiff
     ),
 
     analyzers = cms.VPSet(

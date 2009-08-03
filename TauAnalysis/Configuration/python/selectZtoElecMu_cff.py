@@ -158,6 +158,13 @@ cfgDiTauCandidateForElecMuZeroChargeCut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsZeroChargeIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgDiTauCandidateForElecMuAcoplanarity12Cut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuAcoplanarity12Cut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsAcoplanarity12Cumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsAcoplanarity12Individual'),
+    minNumber = cms.uint32(1)
+)
 cfgDiTauCandidateForElecMuMt1METcut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuMt1METcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -165,7 +172,6 @@ cfgDiTauCandidateForElecMuMt1METcut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsMt1METindividual'),
     minNumber = cms.uint32(1)
 )
-
 cfgDiTauCandidateForElecMuMt2METcut = cms.PSet(
     pluginName = cms.string('diTauCandidateForElecMuMt2METcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -173,16 +179,13 @@ cfgDiTauCandidateForElecMuMt2METcut = cms.PSet(
     src_individual = cms.InputTag('selectedElecMuPairsMt2METindividual'),
     minNumber = cms.uint32(1)
 )
-
-
-
-# veto events containing additional central jets with Et > 20 GeV
-#cfgCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('centralJetVeto'),
-#    pluginType = cms.string('PATCandViewMaxEventSelector'),
-#    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-#    maxNumber = cms.uint32(0)
-#)
+cfgDiTauCandidateForElecMuPzetaDiffCut = cms.PSet(
+    pluginName = cms.string('diTauCandidateForElecMuPzetaDiffCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedElecMuPairsPzetaDiffCumulative'),
+    src_individual = cms.InputTag('selectedElecMuPairsPzetaDiffIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgTrigger,
@@ -206,8 +209,10 @@ zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgMuonTrkIPcut,
       cfgDiTauCandidateForElecMuAntiOverlapVeto,      
       cfgDiTauCandidateForElecMuZeroChargeCut,
+      cfgDiTauCandidateForElecMuAcoplanarity12Cut,
       cfgDiTauCandidateForElecMuMt1METcut,
-      cfgDiTauCandidateForElecMuMt2METcut ],
+      cfgDiTauCandidateForElecMuMt2METcut,
+      cfgDiTauCandidateForElecMuPzetaDiffCut ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )

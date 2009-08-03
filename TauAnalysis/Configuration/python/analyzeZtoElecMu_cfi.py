@@ -221,34 +221,35 @@ evtSelDiTauCandidateForElecMuAntiOverlapVeto = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForElecMuAntiOverlapVeto', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecMuAntiOverlapVeto', 'individual')
 )
-
 evtSelDiTauCandidateForElecMuZeroCharge = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecMuZeroCharge'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecMuZeroChargeCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecMuZeroChargeCut', 'individual')
 )
-
+evtSelDiTauCandidateForElecMuAcoplanarity12 = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecMuAcoplanarity12'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForElecMuAcoplanarity12Cut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecMuAcoplanarity12Cut', 'individual')
+)
 evtSelDiTauCandidateForElecMuMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecMuMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecMuMt1METcut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecMuMt1METcut', 'individual')
 )
-
 evtSelDiTauCandidateForElecMuMt2MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecMuMt2MET'),
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('diTauCandidateForElecMuMt2METcut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecMuMt2METcut', 'individual')
 )
-
-# veto events containing additional central jets with Et > 20 GeV
-evtSelCentralJetVeto = cms.PSet(
-    pluginName = cms.string('evtSelCentralJetVeto'),
+evtSelDiTauCandidateForElecMuPzetaDiff = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecMuPzetaDiff'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('centralJetVeto', 'cumulative'),
-    src_individual = cms.InputTag('centralJetVeto', 'individual')
+    src_cumulative = cms.InputTag('diTauCandidateForElecMuPzetaDiffCut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecMuPzetaDiffCut', 'individual')
 )
 
 #--------------------------------------------------------------------------------
@@ -287,7 +288,7 @@ elecMuEventDump = cms.PSet(
     #output = cms.string("elecMuEventDump.txt"),
     output = cms.string("std::cout"),
 
-    triggerConditions = cms.vstring("evtSelDiTauCandidateForElecMuZeroCharge: passed_cumulative")
+    triggerConditions = cms.vstring("evtSelDiTauCandidateForElecMuPzetaDiff: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -542,6 +543,17 @@ elecMuAnalysisSequence = cms.VPSet(
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsZeroChargeCumulative')
     ),
     cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForElecMuAcoplanarity12'),
+        title = cms.string('Acoplanarity(Electron+Muon)'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = elecMuHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsAcoplanarity12Cumulative')
+    ),
+    cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecMuMt1MET'),
         title = cms.string('M_{T}(Electron-MET) < 50 GeV'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
@@ -563,6 +575,17 @@ elecMuAnalysisSequence = cms.VPSet(
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsMt2METcumulative')
 
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForElecMuPzetaDiff'),
+        title = cms.string('P_{#zeta} - 1.5*P_{#zeta}^{vis} > -20 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = elecMuHistManagers,
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative')
     )
 )
 
