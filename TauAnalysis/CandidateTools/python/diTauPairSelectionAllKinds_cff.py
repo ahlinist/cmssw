@@ -5,7 +5,7 @@ from TauAnalysis.CandidateTools.elecTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.muTauPairSelection_cfi import *
 from TauAnalysis.CandidateTools.diTauPairSelection_cfi import *
 
-from TauAnalysis.RecoTools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 #--------------------------------------------------------------------------------
 # define selection criteria for e + mu pairs
