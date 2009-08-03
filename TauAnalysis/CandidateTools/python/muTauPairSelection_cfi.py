@@ -21,6 +21,20 @@ selectedMuTauPairsZeroCharge = cms.EDFilter("PATMuTauPairSelector",
     filter = cms.bool(False)
 )
 
+# require muon and tau to be back-to-back
+#
+# NOTE:
+#  (1) this cut is introduced into the cut-flow as a place-holder only,
+#      to be used as backup in case MET cannot be relied upon in the early data
+#  (2) in case the cut on muon-tau-jet acoplanarity is applied
+#      there will be no events left for which the invariant e + tau mass
+#      can be reonstructed by collinear approximation
+selectedMuTauPairsAcoplanarity12 = cms.EDFilter("PATMuTauPairSelector",
+    cut = cms.string('cos(dPhi12) > -1.01'),
+    #cut = cms.string('cos(dPhi12) < -0.95'),                                            
+    filter = cms.bool(False)
+)
+
 # require low transverse mass of muon and MET
 selectedMuTauPairsMt1MET = cms.EDFilter("PATMuTauPairSelector",
     cut = cms.string('mt1MET < 50.'),
@@ -43,6 +57,8 @@ selectedMuTauPairsPzetaDiff = cms.EDFilter("PATMuTauPairSelector",
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsAntiOverlapVeto)
 
 selectedMuTauPairsZeroChargeLooseMuonIsolation = copy.deepcopy(selectedMuTauPairsZeroCharge)
+
+selectedMuTauPairsAcoplanarity12LooseMuonIsolation = copy.deepcopy(selectedMuTauPairsAcoplanarity12)
 
 selectedMuTauPairsMt1METlooseMuonIsolation = copy.deepcopy(selectedMuTauPairsMt1MET)
 
