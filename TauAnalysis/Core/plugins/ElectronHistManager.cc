@@ -126,7 +126,7 @@ void ElectronHistManager::bookHistograms()
   hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
   hElectronPhiCompToGen_ = dqmStore.book1D("ElectronPhiCompToGen", "Electron RECO-GEN #Delta#phi", 200, -0.010, +0.010);
   
-  hElectronMatchingGenParticlePdgId_ = dqmStore.book1D("hElectronMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  hElectronMatchingGenParticlePdgId_ = dqmStore.book1D("ElectronMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
 
   hElectronTrackPt_ = dqmStore.book1D("ElectronTrackPt", "Electron Track P_{T}", 75, 0., 150.);
   hElectronTrackIPxy_ = dqmStore.book1D("ElectronTrackIPxy", "Electron Track Impact Parameter (xy)", 100, -0.100, 0.100);

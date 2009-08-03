@@ -125,7 +125,7 @@ void TauHistManager::bookHistograms()
   hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
   hTauPhiCompToGen_ = dqmStore.book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 200, -0.050, +0.050);
   
-  hTauMatchingGenParticlePdgId_ = dqmStore.book1D("hTauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  hTauMatchingGenParticlePdgId_ = dqmStore.book1D("TauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
 
   hTauNumTracksSignalCone_ = dqmStore.book1D("TauNumTracksSignalCone", "Tracks in Signal Cone", 10, -0.5, 9.5);
   hTauNumTracksIsoCone_ = dqmStore.book1D("TauNumTracksIsoCone", "Tracks in Isolation Cone", 20, -0.5, 19.5);
