@@ -1,5 +1,5 @@
 //
-// $Id: DiCandidatePairEventSelector.h,v 1.1 2009/02/04 17:32:15 veelken Exp $
+// $Id: DiCandidatePairEventSelector.h,v 1.1 2009/06/10 09:33:09 veelken Exp $
 //
 
 #ifndef TauAnalysis_CandidateTools_DiCandidatePairEventSelector_h
@@ -8,7 +8,7 @@
 #include "PhysicsTools/UtilAlgos/interface/AnySelector.h"
 #include "PhysicsTools/UtilAlgos/interface/ObjectCountEventSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/MinNumberSelector.h"
-#include "PhysicsTools/PatUtils/interface/MaxNumberSelector.h"
+#include "PhysicsTools/UtilAlgos/interface/MaxNumberSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/AndSelector.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
