@@ -236,6 +236,12 @@ evtSelDiTauCandidateForElecTauZeroCharge = cms.PSet(
     src_cumulative = cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'cumulative'),
     src_individual = cms.InputTag('diTauCandidateForElecTauZeroChargeCut', 'individual')
 )
+evtSelDiTauCandidateForElecTauAcoplanarity12 = cms.PSet(
+    pluginName = cms.string('evtSelDiTauCandidateForElecTauAcoplanarity12'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('diTauCandidateForElecTauAcoplanarity12Cut', 'cumulative'),
+    src_individual = cms.InputTag('diTauCandidateForElecTauAcoplanarity12Cut', 'individual')
+)
 evtSelDiTauCandidateForElecTauMt1MET = cms.PSet(
     pluginName = cms.string('evtSelDiTauCandidateForElecTauMt1MET'),
     pluginType = cms.string('BoolEventSelector'),
@@ -293,7 +299,6 @@ elecTauEventDump = cms.PSet(
 
     #triggerConditions = cms.vstring("evtSelTightElectronId: rejected_cumulative")
     triggerConditions = cms.vstring("evtSelElecTauPairZeeHypothesisVeto: passed_cumulative")
-    #triggerConditions = cms.vstring("evtSelDiTauCandidateForElecTauPzetaDiff: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -576,6 +581,17 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsZeroChargeCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiTauCandidateForElecTauAcoplanarity12'),
+        title = cms.string('Acoplanarity(Electron+Tau)'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = elecTauHistManagers,
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
+                              'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsAcoplanarity12Cumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelDiTauCandidateForElecTauMt1MET'),

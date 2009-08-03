@@ -48,6 +48,7 @@ replaceEventSelections(analyzeZtoMuTauEvents_factorizedWithoutMuonIsolation,
       [ evtSelMuonTrkIP, evtSelMuonTrkIPlooseIsolation ],
       [ evtSelDiTauCandidateForMuTauAntiOverlapVeto, evtSelDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation ],
       [ evtSelDiTauCandidateForMuTauZeroCharge, evtSelDiTauCandidateForMuTauZeroChargeLooseMuonIsolation ],
+      [ evtSelDiTauCandidateForMuTauAcoplanarity12, evtSelDiTauCandidateForMuTauAcoplanarity12LooseMuonIsolation ],
       [ evtSelDiTauCandidateForMuTauMt1MET, evtSelDiTauCandidateForMuTauMt1METlooseMuonIsolation ],
       [ evtSelDiTauCandidateForMuTauPzetaDiff, evtSelDiTauCandidateForMuTauPzetaDiffLooseMuonIsolation ] ]
 )                       

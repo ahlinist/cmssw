@@ -345,12 +345,23 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelDiTauCandidateForElecTauZeroCharge,
+    beforeCut = evtSelDiTauCandidateForElecTauAcoplanarity12,
+    plot = drawJobConfigEntry(
+        meName = 'DiTauCandidateQuantities/DPhi12',
+        title = "#Delta#phi(Electron-Tau) (after opposite Charge Cut)",
+        xAxis = 'dPhi',
+        name = "cutFlowControlPlots_dPhiElectronTau_afterZeroCharge"
+    )
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelDiTauCandidateForElecTauAcoplanarity12,
     beforeCut = evtSelDiTauCandidateForElecTauMt1MET,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/Mt1MET',
-        title = "M_{T}(Electron + MET) (after opposite Charge Cut)",
+        title = "M_{T}(Electron + MET) (after Acoplanarity(Electron-Tau) Cut)",
         xAxis = 'Mt',
-        name = "cutFlowControlPlots_mtElectronMET_afterZeroCharge"
+        name = "cutFlowControlPlots_mtElectronMET_afterAcoplanarityElectronTau"
     )
 )
 
@@ -392,11 +403,23 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_electron"
         ),
         drawJobConfigEntry(
+            meName = 'ElectronQuantities/hElectronMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Electron (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
+        ),
+        drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Tau (final Event sample)",
             xAxis = '#PAR#',
             name = "finalSamplePlots_tau"
+        ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/hTauMatchingGenParticlePdgId',
+            title = "PdgId of gen. Particle matching Tau (final Event sample)",
+            xAxis = 'PdgId',
+            name = "finalSamplePlots_pdgIdGenParticleMatchingTau"
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
@@ -421,6 +444,12 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "TaNC output (transformed) (final Event sample)",
             xAxis = 'unlabeled',
             name = "finalSamplePlots_tauTaNCtransform"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/DPhi12',
+            title = "#Delta#phi(Electron-Tau) (final Event sample)",
+            xAxis = 'dPhi',
+            name = "finalSamplePlots_dPhiElectronTau"
         ),
         drawJobConfigEntry(
             meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
