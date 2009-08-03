@@ -119,7 +119,7 @@ void MuonHistManager::bookHistograms()
   hMuonThetaCompToGen_ = dqmStore.book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
   hMuonPhiCompToGen_ = dqmStore.book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
   
-  hMuonMatchingGenParticlePdgId_ = dqmStore.book1D("hMuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  hMuonMatchingGenParticlePdgId_ = dqmStore.book1D("MuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
 
   hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
   hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
