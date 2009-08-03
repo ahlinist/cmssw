@@ -72,6 +72,8 @@ EventDumpBase::EventDumpBase(const edm::ParameterSet& cfg)
       startTriggerCondition = endTriggerCondition + 1;
     }
   }
+
+  alwaysTriggered_ = ( cfg.exists("triggerAlways") ) ? cfg.getParameter<bool>("triggerAlways") : false;
 }
 
 EventDumpBase::~EventDumpBase()
@@ -170,8 +172,7 @@ void EventDumpBase::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
-  if ( triggerConditions_fulfilled.size() >= 1 ||
-       triggerConditions_.size() == 0 ) {
+  if ( triggerConditions_fulfilled.size() >= 1 || alwaysTriggered_ ) {
     print(iEvent, iSetup, filterResults_cumulative, filterResults_individual, eventWeight);
   }
 }

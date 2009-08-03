@@ -10,6 +10,7 @@ EventDumpAnalyzer::EventDumpAnalyzer(const edm::ParameterSet& cfg)
 
 //--- configure eventDumps
   edm::ParameterSet cfgPlugin = cfg.getParameter<edm::ParameterSet>("plugin");
+  cfgPlugin.addParameter<bool>("triggerAlways", true);
   std::string pluginType = cfgPlugin.getParameter<std::string>("pluginType");
   plugin_ = EventDumpPluginFactory::get()->create(pluginType, cfgPlugin);
 }
