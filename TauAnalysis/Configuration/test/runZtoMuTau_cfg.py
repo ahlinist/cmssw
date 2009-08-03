@@ -86,13 +86,16 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
         #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
-        'rfio:/castor/cern.ch/user/s/sdas/WTauNu/FastSim/QCDPt_15/QCD_PtTrack15_FASTSIM_1000.root'
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part01.root',
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part02.root',
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part03.root',
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part04.root',
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part05.root',
-#         'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part06.root'
+#        'rfio:/castor/cern.ch/user/s/sdas/WTauNu/FastSim/QCDPt_15/QCD_PtTrack15_FASTSIM_1000.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part01.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part02.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part03.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part04.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part05.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part06.root'
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part01.root',
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part02.root',
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part03.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -162,4 +165,4 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
