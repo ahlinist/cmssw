@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from PhysicsTools.PatAlgos.recoLayer0.muonIsolation_cff import *
-from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
+#MB from PhysicsTools.PatAlgos.recoLayer0.muonIsolation_cff import *
+#MB trigger stuff has been redone with 31X, so it is commented out. It should modified to follow PAT modification
+#MB from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
 from PhysicsTools.PatAlgos.producersLayer1.muonProducer_cfi import *
 from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 
@@ -10,7 +11,8 @@ from PhysicsTools.PatAlgos.cleaningLayer1.muonCleaner_cfi import *
 #--------------------------------------------------------------------------------
 
 # add isolated HLT muon trigger to PAT trigger match sequence
-patTrigMatch._seq = patTrigMatch._seq * patTrigMatchHLT1MuonIso
+#MB trigger stuff has been redone with 31X, so it is commented out. It should modified to follow PAT modification
+#MB patTrigMatch._seq = patTrigMatch._seq * patTrigMatchHLT1MuonIso
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 muon configuration parameters
@@ -40,11 +42,12 @@ allLayer1Muons.isoDeposits = cms.PSet(
 # enable matching to HLT trigger information;
 # match offline reconstructed muons to isolated and non-isolated HLT muon paths
 #
-allLayer1Muons.addTrigMatch = cms.bool(True)
-allLayer1Muons.trigPrimMatch = cms.VInputTag(
-    cms.InputTag("muonTrigMatchHLT1MuonNonIso"),
-    cms.InputTag("muonTrigMatchHLT1MuonIso")
-)
+#MB allLayer1Muons.addTrigMatch = cms.bool(True)
+allLayer1Muons.addTrigMatch = cms.bool(False)
+#MB allLayer1Muons.trigPrimMatch = cms.VInputTag(
+#MB    cms.InputTag("muonTrigMatchHLT1MuonNonIso"),
+#MB    cms.InputTag("muonTrigMatchHLT1MuonIso")
+#MB )
 #
 # enable matching to generator level information
 #
