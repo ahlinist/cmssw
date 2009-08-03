@@ -51,12 +51,30 @@ process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(100)    
+    input = cms.untracked.int32(-1)    
 )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part01.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part02.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part03.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part04.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part05.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part06.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part07.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part08.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part09.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part10.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part11.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part12.root',
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part13.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part01.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part02.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part03.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part04.root',
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part05.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -85,8 +103,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-switchToPFTauFixedCone(process)
+switchToPFTauShrinkingCone(process)
+#switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
