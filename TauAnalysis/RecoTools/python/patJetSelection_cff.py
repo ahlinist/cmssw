@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from TauAnalysis.RecoTools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 #--------------------------------------------------------------------------------  
 # produce collections of pat::Jets passing selection criteria

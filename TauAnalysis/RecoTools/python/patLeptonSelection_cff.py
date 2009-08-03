@@ -7,7 +7,7 @@ from TauAnalysis.RecoTools.patPFTauSelectionForElecTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForDiTau_cfi import *
 
-from TauAnalysis.RecoTools.objSelConfigurator import *
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Electrons
