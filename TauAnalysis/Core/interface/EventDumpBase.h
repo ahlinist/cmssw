@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: EventDumpBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: EventDumpBase.h,v 1.2 2009/03/26 13:31:01 veelken Exp $
  *
  */
 
@@ -50,6 +50,7 @@ class EventDumpBase
 
   typedef std::vector<std::string> vstring;
   std::map<std::string, vstring> triggerConditions_;
+  bool alwaysTriggered_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
