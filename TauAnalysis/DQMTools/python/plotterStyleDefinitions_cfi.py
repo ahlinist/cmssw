@@ -384,4 +384,12 @@ drawOption_ZtautauPlusJets = drawOption_Ztautau
 drawOption_TTplusJets = copy.deepcopy(drawOption_gray_stacked)
 drawOption_gammaPlusJets = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_QCD = copy.deepcopy(drawOption_magenta_stacked)
+drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
+drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
+drawOption_gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets)
+drawOption_qcdSum = copy.deepcopy(drawOption_QCD)
+drawOption_AH115_tautau = copy.deepcopy(drawOption_AH)
+drawOption_AH160_tautau = copy.deepcopy(drawOption_AH)
+drawOption_AH115bb_tautau = copy.deepcopy(drawOption_AHbb)
+drawOption_AH160bb_tautau = copy.deepcopy(drawOption_AHbb)
 
