@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.131 2009/06/11 21:20:20 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.132 2009/07/17 17:23:17 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.131 $
-  \date $Date: 2009/06/11 21:20:20 $
+  \version $Revision: 1.132 $
+  \date $Date: 2009/07/17 17:23:17 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -462,9 +462,10 @@ private:
 
       gStyle->SetPaintTextFormat();
 
-      gStyle->SetOptStat("euomr");
+      gStyle->SetOptStat("e");
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
+      obj->SetMinimum(0.0);
 
       if( name.find( "EEMM digi number profile" ) != std::string::npos ||
           name.find( "EELT laser L1" ) != std::string::npos ||
@@ -826,8 +827,11 @@ private:
       gPad->SetLogy(kFALSE);
 
       if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
-      if ( nbx == 10 ) gPad->SetLogy(kFALSE);
-      if ( nbx == 850 ) gPad->SetLogy(kFALSE);
+      if ( nbx == 10 || nbx == 850 ) {
+        gPad->SetLogy(kFALSE);
+        gStyle->SetOptStat("e");
+        return;
+      }
 
       if( name.find( "EVTTYPE" ) != std::string::npos )
       {
