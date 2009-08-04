@@ -6,6 +6,7 @@ from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForElecTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForMuTau_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForDiTau_cfi import *
+from TauAnalysis.RecoTools.patPFTauSelectionForWTauNu_cfi import *
 
 from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 
@@ -137,7 +138,7 @@ selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 selectedLayer1TausProng.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
 selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
-selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
+#selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
 selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
 
 patTauSelConfigurator = objSelConfigurator(
@@ -149,11 +150,11 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausEcalIso,
       selectedLayer1TausProng,
       selectedLayer1TausElectronVeto,
-      selectedLayer1TausEcalCrackVeto,
+#      selectedLayer1TausEcalCrackVeto,
       selectedLayer1TausMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
-    #doSelCumulative = False,
+  #  doSelCumulative = False,
     doSelIndividual = True
 )
 
@@ -173,7 +174,7 @@ selectedLayer1TausForElecTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForElecTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForElecTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
-selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
+#selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
 
 patTauSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto,
@@ -184,8 +185,8 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauTrkIso,
       selectedLayer1TausForElecTauEcalIso,
       selectedLayer1TausForElecTauProng,
-      selectedLayer1TausForElecTauElectronVeto,
-      selectedLayer1TausForElecTauEcalCrackVeto ],
+      selectedLayer1TausForElecTauElectronVeto],
+#      selectedLayer1TausForElecTauEcalCrackVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -251,7 +252,33 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
 
 selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(namespace = locals())
 
+selectedLayer1TausForWTauNuEta21.cut = selectedLayer1TausEta21.cut
+selectedLayer1TausForWTauNuPt20.cut = cms.string("pt > 15.")
+selectedLayer1TausForWTauNuLeadTrk.cut = selectedLayer1TausLeadTrk.cut
+selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
+selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
+selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
+selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
+selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut 
+
+patTauSelConfiguratorForWTauNu =objSelConfigurator(
+    [selectedLayer1TausForWTauNuEta21,
+     selectedLayer1TausForWTauNuPt20,
+     selectedLayer1TausForWTauNuLeadTrk,
+     selectedLayer1TausForWTauNuLeadTrkPt,
+     selectedLayer1TausForWTauNuTrkIso,
+     selectedLayer1TausForWTauNuMuonVeto,
+     selectedLayer1TausForWTauNuElectronVeto,
+     selectedLayer1TausForWTauNuProng
+     ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace = locals())
+
 produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
                                         +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
                                         +selectLayer1Taus + produceLayer1SelTaus
-                                        +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau )
+                                        +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau
+					+selectLayer1TausForWTauNu )
