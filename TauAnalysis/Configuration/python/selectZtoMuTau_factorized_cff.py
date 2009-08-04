@@ -45,6 +45,11 @@ cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.pluginName = "diTauCand
 cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative')
 cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsZeroChargeLooseMuonIsolationIndividual')
 
+cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauAcoplanarity12Cut)
+cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation"
+cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative')
+cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation.src_individual = cms.InputTag('selectedMuTauPairsAcoplanarity12LooseMuonIsolationIndividual')
+
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation = copy.deepcopy(cfgDiTauCandidateForMuTauMt1METcut)
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.pluginName = "diTauCandidateForMuTauMt1METcutLooseMuonIsolation"
 cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation.src_cumulative = cms.InputTag('selectedMuTauPairsMt1METlooseMuonIsolationCumulative')
@@ -62,6 +67,7 @@ zToMuTauEventSelConfiguratorLooseMuonIsolation = eventSelFlagProdConfigurator(
       cfgMuonTrkIPcutLooseIsolation,
       cfgDiTauCandidateForMuTauAntiOverlapVetoLooseMuonIsolation,
       cfgDiTauCandidateForMuTauZeroChargeCutLooseMuonIsolation,
+      cfgDiTauCandidateForMuTauAcoplanarity12CutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauMt1METcutLooseMuonIsolation,
       cfgDiTauCandidateForMuTauPzetaDiffCutLooseMuonIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
