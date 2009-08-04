@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.115 2009/07/14 09:15:38 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.116 2009/07/17 17:23:14 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.115 $
-  \date $Date: 2009/07/14 09:15:38 $
+  \version $Revision: 1.116 $
+  \date $Date: 2009/07/17 17:23:14 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -362,9 +362,10 @@ private:
 
       gStyle->SetPaintTextFormat();
 
-      gStyle->SetOptStat("euomr");
+      gStyle->SetOptStat("e");
       obj->SetStats(kTRUE);
       gPad->SetLogy(kFALSE);
+      obj->SetMinimum(0.0);
 
       if( name.find( "EBMM digi number profile" ) != std::string::npos ||
           name.find( "EBLT laser L1" ) != std::string::npos ||
@@ -429,8 +430,14 @@ private:
       {
         gPad->SetGridx();
         gPad->SetGridy();
-        obj->GetXaxis()->SetNdivisions(18, kFALSE);
-        obj->GetYaxis()->SetNdivisions(2, kFALSE);
+
+        if( name.find( "EBSRT DCC" ) != std::string::npos ) {
+          obj->GetXaxis()->SetNdivisions(16, kFALSE);
+          obj->GetYaxis()->SetNdivisions(8, kFALSE);
+        }else{
+          obj->GetXaxis()->SetNdivisions(18, kFALSE);
+          obj->GetYaxis()->SetNdivisions(2, kFALSE);
+        }
         if( name.find( "EBSRT event size vs DCC" ) != std::string::npos )
         {
           gPad->SetLogy(kTRUE);
@@ -700,8 +707,11 @@ private:
 
       if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
-      if ( nbx == 10 ) gPad->SetLogy(kFALSE);
-      if ( nbx == 1700 ) gPad->SetLogy(kFALSE);
+      if ( nbx == 10 || nbx == 1700 ) {
+        gPad->SetLogy(kFALSE);
+        gStyle->SetOptStat("e");
+        return;
+      }
 
       if( name.find( "EVTTYPE" ) != std::string::npos ) 
       {
