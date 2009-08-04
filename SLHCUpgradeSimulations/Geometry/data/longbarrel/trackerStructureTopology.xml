@@ -358,52 +358,52 @@
 
  <SpecPar name="PixelROCRowsPar_L0">
       <PartSelector path="//PixelBarrelActiveStack0" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L1">
       <PartSelector path="//PixelBarrelActiveStack1" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L2">
       <PartSelector path="//PixelBarrelActiveStack2" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L3">
       <PartSelector path="//PixelBarrelActiveStack3" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L4">
       <PartSelector path="//PixelBarrelActiveStack4" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L5">
       <PartSelector path="//PixelBarrelActiveStack5" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
    <SpecPar name="PixelROCRowsPar_L6">
       <PartSelector path="//PixelBarrelActiveStack6" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L7">
       <PartSelector path="//PixelBarrelActiveStack7" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L8">
       <PartSelector path="//PixelBarrelActiveStack8" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
  <SpecPar name="PixelROCRowsPar_L9">
       <PartSelector path="//PixelBarrelActiveStack9" />
-      <Parameter name="PixelROCRows" value="500"/>
+      <Parameter name="PixelROCRows" value="195"/>
   </SpecPar>
 
   <SpecPar name="PixelROCColsPar">
@@ -419,43 +419,43 @@
 
  <SpecPar name="PixelROCColsPar_L0">
             <PartSelector path="//PixelBarrelActiveStack0" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L1">
             <PartSelector path="//PixelBarrelActiveStack1" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L2">
             <PartSelector path="//PixelBarrelActiveStack2" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L3">
             <PartSelector path="//PixelBarrelActiveStack3" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L4">
             <PartSelector path="//PixelBarrelActiveStack4" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L5">
             <PartSelector path="//PixelBarrelActiveStack5" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L6">
             <PartSelector path="//PixelBarrelActiveStack6" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L7">
             <PartSelector path="//PixelBarrelActiveStack7" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L8">
             <PartSelector path="//PixelBarrelActiveStack8" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
  <SpecPar name="PixelROCColsPar_L9">
             <PartSelector path="//PixelBarrelActiveStack9" />
-            <Parameter name="PixelROCCols" value="20"/>
+            <Parameter name="PixelROCCols" value="10"/>
   </SpecPar>
 
 
