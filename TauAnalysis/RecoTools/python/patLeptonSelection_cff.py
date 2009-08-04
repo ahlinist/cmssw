@@ -138,7 +138,7 @@ selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 selectedLayer1TausProng.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
 selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
-#selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
+selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
 selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
 
 patTauSelConfigurator = objSelConfigurator(
@@ -150,7 +150,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausEcalIso,
       selectedLayer1TausProng,
       selectedLayer1TausElectronVeto,
-#      selectedLayer1TausEcalCrackVeto,
+      selectedLayer1TausEcalCrackVeto,
       selectedLayer1TausMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
@@ -174,7 +174,7 @@ selectedLayer1TausForElecTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForElecTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForElecTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
-#selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
+selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
 
 patTauSelConfiguratorForElecTau = objSelConfigurator(
     [ selectedLayer1TausForElecTauAntiOverlapWithElectronsVeto,
@@ -185,8 +185,8 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauTrkIso,
       selectedLayer1TausForElecTauEcalIso,
       selectedLayer1TausForElecTauProng,
-      selectedLayer1TausForElecTauElectronVeto],
-#      selectedLayer1TausForElecTauEcalCrackVeto ],
+      selectedLayer1TausForElecTauElectronVeto,
+      selectedLayer1TausForElecTauEcalCrackVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
