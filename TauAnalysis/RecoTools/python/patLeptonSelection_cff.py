@@ -154,7 +154,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
-  #  doSelCumulative = False,
+    doSelCumulative = False,
     doSelIndividual = True
 )
 
@@ -262,15 +262,14 @@ selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut 
 
 patTauSelConfiguratorForWTauNu =objSelConfigurator(
-    [selectedLayer1TausForWTauNuEta21,
-     selectedLayer1TausForWTauNuPt20,
-     selectedLayer1TausForWTauNuLeadTrk,
-     selectedLayer1TausForWTauNuLeadTrkPt,
-     selectedLayer1TausForWTauNuTrkIso,
-     selectedLayer1TausForWTauNuMuonVeto,
-     selectedLayer1TausForWTauNuElectronVeto,
-     selectedLayer1TausForWTauNuProng
-     ],
+    [ selectedLayer1TausForWTauNuEta21,
+      selectedLayer1TausForWTauNuPt20,
+      selectedLayer1TausForWTauNuLeadTrk,
+      selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuTrkIso,
+      selectedLayer1TausForWTauNuMuonVeto,
+      selectedLayer1TausForWTauNuElectronVeto,
+      selectedLayer1TausForWTauNuProng ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
