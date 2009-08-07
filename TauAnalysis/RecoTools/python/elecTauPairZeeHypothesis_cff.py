@@ -31,7 +31,7 @@ elecTauPairZeeHypotheses = cms.EDProducer("PATElecTauPairZeeHypothesisProducer",
 
 selectedElecTauPairZeeHypotheses = cms.EDFilter("PATElecTauPairZeeHypothesisSelector",
      src = cms.InputTag('elecTauPairZeeHypotheses'),
-     cut = cms.string('p4Z0bestMatch.mass > 80. & p4Z0bestMatch.mass < 100.'),
+     cut = cms.string('p4Z0bestMatch.mass > 85. & p4Z0bestMatch.mass < 100.'),
      filter = cms.bool(False)
 )
 
