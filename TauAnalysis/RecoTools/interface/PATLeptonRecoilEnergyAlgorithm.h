@@ -28,7 +28,7 @@ class PATLeptonRecoilEnergyAlgorithm
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
   }
   ~PATLeptonRecoilEnergyAlgorithm() {}
-
+  
   PATLeptonRecoilEnergy<T1,T2> buildRecoilEnergy(const edm::Ptr<T1> lepton, const edm::View<T2>& energyObjects)
   {
     edm::PtrVector<T2> recoilEnergyObjects;
@@ -38,7 +38,7 @@ class PATLeptonRecoilEnergyAlgorithm
 	  idxEnergyObject < numEnergyObjects; ++idxEnergyObject ) {
       edm::Ptr<T2> energyObjectPtr = energyObjects.ptrAt(idxEnergyObject);
 
-      if ( energyObjectPtr->eta() > etaMin_ && energyObjectPtr->eta() > etaMax_ &&
+      if ( energyObjectPtr->eta() > etaMin_ && energyObjectPtr->eta() < etaMax_ &&
 	   energyObjectPtr->et() > etMin_ ) {
 	double dPhi = TMath::Abs(normalizedPhi(lepton->phi() - energyObjectPtr->phi()));
 	if ( dPhi > dPhiMin_ && dPhi < dPhiMax_ ) {
@@ -46,11 +46,12 @@ class PATLeptonRecoilEnergyAlgorithm
 	  etSum += energyObjectPtr->et();
 	}
       }
+      
     }
 
     PATLeptonRecoilEnergy<T1,T2> patLeptonRecoilEnergy(lepton, recoilEnergyObjects);
     patLeptonRecoilEnergy.setEtSum(etSum);
-
+    
     if ( verbosity_ ) {
       std::cout << "pat::Lepton phi = " << lepton->phi()*180./TMath::Pi() << std::endl;
       std::cout << "recoil Et sum = " << etSum << std::endl;
