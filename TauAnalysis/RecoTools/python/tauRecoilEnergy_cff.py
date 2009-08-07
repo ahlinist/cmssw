@@ -6,13 +6,12 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 tauRecoilEnergyFromJets = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausProngCumulative'),
-    srcEnergyObjects = cms.InputTag('cleanLayer1Jets'),
-    #srcEnergyObjects = cms.InputTag('towerMaker'),
+    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
+    srcEnergyObjects = cms.InputTag('allLayer1Jets'),
     etaMin = cms.double(-2.5),
     etaMax = cms.double(+2.5),
     etMin = cms.double(0.),
-    dPhiMin = cms.double(2.89),
+    dPhiMin = cms.double(2.64),
     verbosity = cms.untracked.int32(0)
 )
 
@@ -23,12 +22,12 @@ tauRecoilEnergyFromJetsPt15 = cms.EDFilter("PATTauRecoilEnergyFromJetsSelector",
 )                                      
 
 tauRecoilEnergyFromCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowersProducer",
-    srcLeptons = cms.InputTag('selectedLayer1TausProngCumulative'),
+    srcLeptons = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
     srcEnergyObjects = cms.InputTag('towerMaker'),
     etaMin = cms.double(-5.),
     etaMax = cms.double(+5.),
     etMin = cms.double(0.5),
-    dPhiMin = cms.double(2.89),
+    dPhiMin = cms.double(2.64),
     verbosity = cms.untracked.int32(0)
 )
 
