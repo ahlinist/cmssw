@@ -41,8 +41,16 @@ JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
   centralJetsToBeVetoedEtaMax_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("etaMax");
   centralJetsToBeVetoedAlphaMin_ = cfgCentralJetsToBeVetoed.getParameter<vdouble>("alphaMin");
 
-  btaggingAlgos_ = cfg.getParameter<std::vector<std::string> >("btaggingAlgos");
-  discrs_ = cfg.getParameter<std::vector<double> >("discriminators");
+  typedef std::vector<edm::ParameterSet> vParameterSet;
+  vParameterSet cfgBTaggingDiscriminators = cfg.getParameter<vParameterSet>("bTaggingDiscriminators");
+  for ( vParameterSet::const_iterator cfgBTaggingDiscriminator = cfgBTaggingDiscriminators.begin();
+	cfgBTaggingDiscriminator != cfgBTaggingDiscriminators.end(); ++cfgBTaggingDiscriminator ) {
+    std::string bTaggingDiscrName = cfgBTaggingDiscriminator->getParameter<std::string>("name");
+    double bTaggingDiscrThreshold = cfgBTaggingDiscriminator->getParameter<double>("threshold");
+
+    bTaggingDiscriminators_.push_back(bTaggingDiscrName);
+    bTaggingDiscriminatorThresholds_.push_back(bTaggingDiscrThreshold);
+  }
 }
 
 JetHistManager::~JetHistManager()
@@ -93,26 +101,26 @@ void JetHistManager::bookHistograms()
     }
   }
   
-  assert(btaggingAlgos_.size()==discrs_.size());
-  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+  assert(bTaggingDiscriminators_.size()== bTaggingDiscriminatorThresholds_.size());
+  for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
     std::ostringstream hName0;
     std::ostringstream hTitle0;
-    hName0 << "BtagDisc_" << btaggingAlgos_[i];
-    hTitle0 << "Jet B-Tag Discriminator: " << btaggingAlgos_[i];
+    hName0 << "BtagDisc_" << bTaggingDiscriminators_[i];
+    hTitle0 << "Jet B-Tag Discriminator: " << bTaggingDiscriminators_[i];
   
     hBtagDisc_.push_back(dqmStore.book1D(hName0.str(),hTitle0.str(),120,-10.,50.));
     
     std::ostringstream hName1;
     std::ostringstream hTitle1;
-    hName1 << "NumBtags_" << btaggingAlgos_[i];
-    hTitle1 << "Jet B-Tag Count: " << btaggingAlgos_[i] << ">" <<discrs_[i];
+    hName1 << "NumBtags_" << bTaggingDiscriminators_[i];
+    hTitle1 << "Jet B-Tag Count: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
     hNumBtags_.push_back(dqmStore.book1D(hName1.str(),hTitle1.str(),15,-0.5,14.5));
     
     std::ostringstream hName2;
     std::ostringstream hTitle2;
-    hName2 << "PtBtags_" << btaggingAlgos_[i];
-    hTitle2 << "B-Tagged Jets P_{T}: " << btaggingAlgos_[i] << ">" <<discrs_[i];
+    hName2 << "PtBtags_" << bTaggingDiscriminators_[i];
+    hTitle2 << "B-Tagged Jets P_{T}: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
     hPtBtags_.push_back(dqmStore.book1D(hName2.str(),hTitle2.str(),75,0.,150.));
   }
@@ -146,7 +154,7 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
   hNumJets_->Fill(patJets->size());
 
   std::vector<unsigned int> nbtags;
-  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+  for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
     nbtags.push_back(0);
   }
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets->begin(); 
@@ -174,15 +182,15 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     if ( numTracks > 0 ) hJetLeadTrkPt_->Fill(maxPt);
 
     
-    for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
-      hBtagDisc_[i]->Fill(patJet->bDiscriminator(btaggingAlgos_[i]));
-      if (patJet->bDiscriminator(btaggingAlgos_[i])>discrs_[i]) {
+    for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
+      hBtagDisc_[i]->Fill(patJet->bDiscriminator(bTaggingDiscriminators_[i]));
+      if (patJet->bDiscriminator(bTaggingDiscriminators_[i])> bTaggingDiscriminatorThresholds_[i]) {
         nbtags[i]++;
         hPtBtags_[i]->Fill(patJet->pt());
       }
     }
   }
-  for (unsigned int i=0;i<btaggingAlgos_.size();i++) {
+  for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
     hNumBtags_[i]->Fill(nbtags[i]);
   }
 
