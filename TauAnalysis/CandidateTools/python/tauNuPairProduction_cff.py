@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 allTauNuPairs = cms.EDProducer("PATTauNuPairProducer",
-    srcVisDecayProducts = cms.InputTag('selectedLayer1TausMuonVetoCumulative'),
+    srcVisDecayProducts = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
     srcMET = cms.InputTag('layer1METs'),
     verbosity = cms.untracked.int32(0)
 )
