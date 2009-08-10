@@ -284,8 +284,10 @@ private:
         palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
         palette->GetAxis()->SetLabelSize(0);
         //   palette->GetAxis()->SetTitle("OK        OFF     NoisSt    NoisCh     Dead    ");
-        palette->GetAxis()->SetTitle("OK        OFF        Nois.St       Nois.Ch   Part.Dead       Dead    Bad.Shape");
-        palette->SetTitleOffset(0.3);
+
+	palette->GetAxis()->SetTitle("OK        OFF        Nois.St       Nois.Ch   Part.Dead       Dead    Bad.Shape");
+
+        palette->SetTitleOffset(0.25);
         palette->SetTitleSize(0.025);
         //    gPad->Update();
         return;
