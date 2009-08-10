@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.11 $
-  \date $Date: 2009/05/22 19:09:33 $
+  \version $Revision: 1.14 $
+  \date $Date: 2009/07/29 07:25:00 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -17,6 +17,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TLine.h"
 #include <cassert>
 
 class SiStripRenderPlugin : public DQMRenderPlugin
@@ -76,6 +77,10 @@ public:
       if( dynamic_cast<TH2F*>( o.object ) )
       {
         postDrawTH2F( c, o );
+      }
+      if( dynamic_cast<TProfile*>( o.object ) )
+      {
+        postDrawTProfile( c, o );
       }
     }
 
@@ -323,6 +328,41 @@ private:
       {
         c->SetGridx();
         c->SetGridy();
+        return;
+      }
+    }
+
+  void postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
+    {
+      TProfile* obj = dynamic_cast<TProfile*>( o.object );
+      assert( obj );
+
+      std::string name = o.name.substr(o.name.rfind("/")+1);
+
+      TLine tl; 
+      tl.SetLineColor(3);
+      tl.SetLineWidth(3);
+      float xmin = 0.0;
+      float xmax = obj->GetXaxis()->GetXmax();
+        
+      if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
+      {
+        c->SetLogy(1);
+        c->SetGridy();
+        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) tl.DrawLine(xmin, 900.0,  xmax, 900.0);
+        if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 2000.0, xmax, 2000.0);
+        if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) tl.DrawLine(xmin, 2250.0, xmax, 2250.0);
+        if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) tl.DrawLine(xmin, 320.0,  xmax, 320.0);
+        return;
+      }
+      if( name.find( "TotalNumberOfClusterProfile__" ) != std::string::npos )
+      {
+        c->SetLogy(1);
+        c->SetGridy();
+        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl.DrawLine(xmin, 5.0,  xmax, 5.0);
+        if (name.find( "TotalNumberOfClueterProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax, 15.0);
+        if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax,15.0);
+        if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl.DrawLine(xmin, 3.0,  xmax, 3.0);
         return;
       }
     }
