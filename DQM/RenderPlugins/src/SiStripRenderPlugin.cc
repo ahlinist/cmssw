@@ -274,8 +274,21 @@ private:
 
       return;
     }
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
     {
+     
+      TH1F* obj = dynamic_cast<TH1F*>( o.object );
+      assert( obj );
+
+      std::string name = o.name.substr(o.name.rfind("/")+1);
+
+      if( name.find( "NumberOfTracks_" ) != std::string::npos ||
+          name.find( "Chi2overDoF_" ) != std::string::npos )
+	{
+	  c->SetLogy(1);
+	  c->SetGridy();
+        }
+
       TText tt;
       tt.SetTextSize(0.12);
       if (o.flags == 0) return;
@@ -360,7 +373,7 @@ private:
         c->SetLogy(1);
         c->SetGridy();
         if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl.DrawLine(xmin, 5.0,  xmax, 5.0);
-        if (name.find( "TotalNumberOfClueterProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax, 15.0);
+        if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax, 15.0);
         if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax,15.0);
         if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl.DrawLine(xmin, 3.0,  xmax, 3.0);
         return;
