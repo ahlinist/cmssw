@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.cc,v 1.6 2009/02/09 00:26:53 chinhan Exp $
+// $Id: L1Region.cc,v 1.7 2009/02/09 17:01:38 chinhan Exp $
 //
 
 
@@ -31,6 +31,7 @@ L1Region::L1Region()
   iphi = 999;
 
   tauBit = false;
+  tauBitForPartIso = false;
   quietBit = false;
   mipBit = false;
   for(int i=0;i<16;i++) {
@@ -46,6 +47,8 @@ L1Region::L1Region()
   Config.EMSeedEnThreshold = 2.;
   Config.EMActiveLevel = 3.;
   Config.HadActiveLevel = 3.;
+  Config.EMActiveLevelIso = 4.;
+  Config.HadActiveLevelIso = 4.;
   Config.noTauVetoLevel = 10000.;	
   Config.hOeThreshold = 0.05;
   Config.FGEBThreshold = 0.8;
@@ -103,6 +106,7 @@ void
 L1Region::SetRegionBits(edm::Event const& e)
 {
   SetTauBit(e);
+  SetTauBitForPartIso(e);
   SetQuietBit();
   SetMIPBit();
 }
@@ -148,7 +152,7 @@ L1Region::FillEMCrystals(const CaloTowerConstituentsMap* theTowerConstituentsMap
 
     EBDetId detId = ecItr->detid();
 
-    int hiphi = detId.tower_iphi();
+    //int hiphi = detId.tower_iphi();
     int hieta = detId.tower_ieta();
     int eieta = detId.ieta();
     int eiphi = detId.iphi();
@@ -525,6 +529,7 @@ L1Region::SetFGBit()
 }
 
 
+
 void 
 L1Region::SetTauBit(edm::Event const& iEvent)
 {
@@ -599,6 +604,70 @@ L1Region::SetTauBit(edm::Event const& iEvent)
   }
   
   tauBit = false;
+  
+}
+
+void 
+L1Region::SetTauBitForPartIso(edm::Event const& iEvent)
+{
+  float emThres = Config.EMActiveLevelIso;
+  float hadThres = Config.HadActiveLevelIso;
+
+  if (doBitInfo) BitInfo.setTauVetoForPartIso(false);	
+
+  // init pattern containers
+  unsigned emEtaPat = 0;
+  unsigned emPhiPat = 0;
+  unsigned hadEtaPat = 0;
+  unsigned hadPhiPat = 0;
+  unsigned one = 1;
+
+
+  // fill hits as bit pattern
+  for (int i=0; i<16; i++) {
+    if(Towers[i].emEt() > emThres) {
+      emEtaPat |= (one << (unsigned)(i%4));
+      emPhiPat |= (one << (unsigned)(i/4));
+    }
+
+    if( Towers[i].hadEt() > hadThres) {
+      hadEtaPat |= (one << (unsigned)(i%4));
+      hadPhiPat |= (one << (unsigned)(i/4));
+    }
+
+  }
+
+  // Patterns with two or less contiguous bits set are passed
+  // rest are vetoed; 5=0101;7=0111;9=1001;10=1010;11=1011;13=1101;14=1110;15=1111
+  //  --- Alternate patterns
+  //  --- 9=1001;15=1111
+  static std::vector<unsigned> vetoPatterns;
+  if(vetoPatterns.size() == 0) {
+    vetoPatterns.push_back(5);
+    vetoPatterns.push_back(7);
+    vetoPatterns.push_back(9);
+    vetoPatterns.push_back(10);
+    vetoPatterns.push_back(11);
+    vetoPatterns.push_back(13);
+    vetoPatterns.push_back(14);
+    vetoPatterns.push_back(15);
+  }
+
+  for(std::vector<unsigned>::iterator i = vetoPatterns.begin();
+      i != vetoPatterns.end();  i++) {
+    unsigned etaPattern = emEtaPat | hadEtaPat;
+    unsigned phiPattern = emPhiPat | hadPhiPat;
+
+    if(etaPattern == *i || phiPattern == *i) // combined pattern
+      //if(emEtaPat == *i || emPhiPat == *i || hadEtaPat == *i || hadPhiPat == *i)
+      {
+	tauBitForPartIso = true;
+	if (doBitInfo) BitInfo.setTauVetoForPartIso(true);	
+	return;
+      }  
+  }
+  
+  tauBitForPartIso = false;
   
 }
 
@@ -1022,19 +1091,197 @@ corrEmEt(double et, int eta) {
     return et;
 }
 
+// Jet Calibration from CMSSW_2_2_13
+double 
+corrJetEt3(double et, double eta, const bool taubit)
+{
+
+  std::vector< std::vector<double> > nonTauJetCalib;
+  std::vector< std::vector<double> > tauJetCalib;
+
+  // These coefficients for non-tau jets
+  std::vector<double> nonTauJetCalib0;
+  std::vector<double> nonTauJetCalib1;
+  std::vector<double> nonTauJetCalib2;
+  std::vector<double> nonTauJetCalib3;
+  std::vector<double> nonTauJetCalib4;
+  std::vector<double> nonTauJetCalib5;
+  std::vector<double> nonTauJetCalib6;
+  std::vector<double> nonTauJetCalib7;
+  std::vector<double> nonTauJetCalib8;
+  std::vector<double> nonTauJetCalib9;
+  std::vector<double> nonTauJetCalib10;
+  
+  // These coefficients for tau jets
+  std::vector<double> tauJetCalib0;
+  std::vector<double> tauJetCalib1;
+  std::vector<double> tauJetCalib2;
+  std::vector<double> tauJetCalib3;
+  std::vector<double> tauJetCalib4;
+  std::vector<double> tauJetCalib5;
+  std::vector<double> tauJetCalib6;
+
+  // These coefficients for non-tau jets
+  nonTauJetCalib0.push_back(47.4);
+  nonTauJetCalib0.push_back(-20.7);
+  nonTauJetCalib0.push_back(0.7922);
+  nonTauJetCalib0.push_back(9.53E-5);
+  nonTauJetCalib1.push_back(49.4);
+  nonTauJetCalib1.push_back(-22.5);
+  nonTauJetCalib1.push_back(0.7867);
+  nonTauJetCalib1.push_back(9.60E-5);
+  nonTauJetCalib2.push_back(47.1);
+  nonTauJetCalib2.push_back(-22.2);
+  nonTauJetCalib2.push_back(0.7645);
+  nonTauJetCalib2.push_back(12.09E-5);
+  nonTauJetCalib3.push_back(49.3);
+  nonTauJetCalib3.push_back(-22.9);
+  nonTauJetCalib3.push_back(0.7331);
+  nonTauJetCalib3.push_back(12.21E-5);
+  nonTauJetCalib4.push_back(48.2);
+  nonTauJetCalib4.push_back(-24.5);
+  nonTauJetCalib4.push_back(0.7706);
+  nonTauJetCalib4.push_back(12.80E-5);
+  nonTauJetCalib5.push_back(42.0);
+  nonTauJetCalib5.push_back(-23.9);
+  nonTauJetCalib5.push_back(0.7945);
+  nonTauJetCalib5.push_back(14.58E-5);
+  nonTauJetCalib6.push_back(33.8);
+  nonTauJetCalib6.push_back(-22.1);
+  nonTauJetCalib6.push_back(0.8202);
+  nonTauJetCalib6.push_back(14.03E-5);
+  nonTauJetCalib7.push_back(17.1);
+  nonTauJetCalib7.push_back(-6.6);
+  nonTauJetCalib7.push_back(0.6958);
+  nonTauJetCalib7.push_back(6.88E-5);
+  nonTauJetCalib8.push_back(13.1);
+  nonTauJetCalib8.push_back(-4.5);
+  nonTauJetCalib8.push_back(0.7071);
+  nonTauJetCalib8.push_back(7.26E-5);
+  nonTauJetCalib9.push_back(12.4);
+  nonTauJetCalib9.push_back(-3.8);
+  nonTauJetCalib9.push_back(0.6558);
+  nonTauJetCalib9.push_back(48.90E-5);
+  nonTauJetCalib10.push_back(9.3);
+  nonTauJetCalib10.push_back(1.3);
+  nonTauJetCalib10.push_back(0.2719);
+  nonTauJetCalib10.push_back(341.8E-5);
+  
+  // These coefficients for tau jets
+  tauJetCalib0.push_back(47.4);
+  tauJetCalib0.push_back(-20.7);
+  tauJetCalib0.push_back(0.7922);
+  tauJetCalib0.push_back(9.53E-5);
+  tauJetCalib1.push_back(49.4);
+  tauJetCalib1.push_back(-22.5);
+  tauJetCalib1.push_back(0.7867);
+  tauJetCalib1.push_back(9.60E-5);
+  tauJetCalib2.push_back(47.1);
+  tauJetCalib2.push_back(-22.2);
+  tauJetCalib2.push_back(0.7645);
+  tauJetCalib2.push_back(12.09E-5);
+  tauJetCalib3.push_back(49.3);
+  tauJetCalib3.push_back(-22.9);
+  tauJetCalib3.push_back(0.7331);
+  tauJetCalib3.push_back(12.21E-5);
+  tauJetCalib4.push_back(48.2);
+  tauJetCalib4.push_back(-24.5);
+  tauJetCalib4.push_back(0.7706);
+  tauJetCalib4.push_back(12.80E-5);
+  tauJetCalib5.push_back(42.0);
+  tauJetCalib5.push_back(-23.9);
+  tauJetCalib5.push_back(0.7945);
+  tauJetCalib5.push_back(14.58E-5);
+  tauJetCalib6.push_back(33.8);
+  tauJetCalib6.push_back(-22.1);
+  tauJetCalib6.push_back(0.8202);
+  tauJetCalib6.push_back(14.03E-5);
+
+  // ----
+  
+  nonTauJetCalib.push_back(nonTauJetCalib0);
+  nonTauJetCalib.push_back(nonTauJetCalib1);
+  nonTauJetCalib.push_back(nonTauJetCalib2);
+  nonTauJetCalib.push_back(nonTauJetCalib3);
+  nonTauJetCalib.push_back(nonTauJetCalib4);
+  nonTauJetCalib.push_back(nonTauJetCalib5);
+  nonTauJetCalib.push_back(nonTauJetCalib6);
+  nonTauJetCalib.push_back(nonTauJetCalib7);
+  nonTauJetCalib.push_back(nonTauJetCalib8);
+  nonTauJetCalib.push_back(nonTauJetCalib9);
+  nonTauJetCalib.push_back(nonTauJetCalib10);
+
+  tauJetCalib.push_back(tauJetCalib0);
+  tauJetCalib.push_back(tauJetCalib1);
+  tauJetCalib.push_back(tauJetCalib2);
+  tauJetCalib.push_back(tauJetCalib3);
+  tauJetCalib.push_back(tauJetCalib4);
+  tauJetCalib.push_back(tauJetCalib5);
+  tauJetCalib.push_back(tauJetCalib6);
+
+
+  
+  double etabin[12] = { 0.0, 0.348, 0.696, 1.044, 1.392, 1.74, 2.172, 3.0,
+			3.33, 3.839, 4.439, 5.115};
+  int BinID = 0;
+  for(int i = 0; i < 11; i++){
+    if(std::abs(eta) >= etabin[i] && eta < etabin[i+1])
+      BinID = i;
+  }
+
+  if ((!taubit && BinID>10) || (taubit && BinID>6)) {
+    return 0.;
+  } else {
+    double result=0.;
+    if (!taubit) {
+      result=orcaStyleCorrect(et, nonTauJetCalib.at(BinID));
+    } else {
+      result=orcaStyleCorrect(et, tauJetCalib.at(BinID));
+    }
+    if (result>5.) { return result; }
+    else { return 0.; }
+  }
+  
+  return 0.;
+}
+
+
+double orcaStyleCorrect(const double Et, const std::vector<double>& coeffs)
+{
+  // The coefficients are arranged in groups of four. The first in each group is a threshold value of Et.
+  std::vector<double>::const_iterator next_coeff=coeffs.begin();
+  while (next_coeff != coeffs.end()) {
+    double threshold = *next_coeff++;
+    double A = *next_coeff++;
+    double B = *next_coeff++;
+    double C = *next_coeff++;
+    if (Et>threshold) {
+      // This function is an inverse quadratic:
+      //   (input Et) = A + B*(output Et) + C*(output Et)^2
+      return (2*(Et-A)/(B+sqrt(B*B-4*A*C+4*Et*C)));
+    }
+    // If we are below all specified thresholds (or the vector is empty), return output=input.
+  }
+  return Et;
+}
+
 
 // Rounding the Et info for simulating the regional Et resolution
 double 
 RCTEnergyTrunc(double et, double LSB, double thres) {
 
-  //return et;
+  return et;
+  if (et==0.) return 0.;
   if (et>=thres) return thres;
 
   //et += LSB/2.;
   //double ret = (int)(et / LSB) * LSB + LSB;
   int iEt = (int)(et / LSB);
-  double ret =  (double)iEt * LSB;
+  double ret =  static_cast<double>(iEt) * LSB;
 
+  if (et>ret) ret = ret + LSB;
+  //if (ret>0.) ret = ret + LSB;
+  
   return ret;
 }
 
@@ -1082,7 +1329,7 @@ GCTEnergyTrunc(double et, double LSB, bool doEM) {
 
 
   double ret = 0.;
-  for (int i=63;i>0;i--) {
+  for (int i=63;i>=0;i--) {
     if (et>=(L1CaloThresholds[i])) {
       if (i==63) {
 	ret = L1CaloThresholds[63];

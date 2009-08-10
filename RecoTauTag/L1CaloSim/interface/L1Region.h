@@ -15,7 +15,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1Region.h,v 1.5 2009/02/08 18:14:36 chinhan Exp $
+// $Id: L1Region.h,v 1.6 2009/04/20 12:58:27 chinhan Exp $
 //
 
 // user include files
@@ -150,6 +150,7 @@ class L1Region {
   void SetRegionEnergy();
 
   bool GetTauBit() { return tauBit; };
+  bool GetTauBitForPartIso() { return tauBitForPartIso; };
   bool GetQuietBit() { return quietBit; };
   bool GetMIPBit() { return mipBit; };
   bool GetFGBit(int i) { if(i>=0 && i<16) {return fgBit[i];} else { return false; } };
@@ -204,6 +205,7 @@ class L1Region {
 
  private:
   void SetTauBit(edm::Event const& e);
+  void SetTauBitForPartIso(edm::Event const& e);
   void SetFGBit();
   void SetHOEBit();
   void SetQuietBit();
@@ -232,6 +234,7 @@ class L1Region {
   int iphi;
 
   bool tauBit;
+  bool tauBitForPartIso; // this is for
   bool quietBit;
   bool mipBit;
 
@@ -257,10 +260,17 @@ corrJetEt1(double et, double eta);
 double 
 corrJetEt2(double et, double eta);
 
+// Jet Calibration from CMSSW_2_2_13
+double 
+corrJetEt3(double et, double eta, const bool tauveto);
+
 // EM correction from ORCA for cmsim 133
 double 
 corrEmEt(double et, int eta);
 //corrEmEt(double et, double eta);
+
+double
+orcaStyleCorrect(const double Et, const std::vector<double>& coeffs);
 
 double 
 RCTEnergyTrunc(double et, double Resol = 1., double thres = 1024.);
