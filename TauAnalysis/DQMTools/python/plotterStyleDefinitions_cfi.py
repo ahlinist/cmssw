@@ -373,6 +373,8 @@ drawOption_darkBlue_eff = cms.PSet(
 # (NOTE: per default, expectations of different Monte Carlo processes
 #        are stacked on top of each other)
 #--------------------------------------------------------------------------------
+drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
+drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
 drawOption_Ztautau = copy.deepcopy(drawOption_red_stacked)
 drawOption_Zee = copy.deepcopy(drawOption_green_stacked)
 drawOption_Zmumu = copy.deepcopy(drawOption_blue_stacked)
@@ -384,12 +386,23 @@ drawOption_ZtautauPlusJets = drawOption_Ztautau
 drawOption_TTplusJets = copy.deepcopy(drawOption_gray_stacked)
 drawOption_gammaPlusJets = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_QCD = copy.deepcopy(drawOption_magenta_stacked)
-drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
-drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
+drawOption_QCD_BCtoE_Pt20to30 = copy.deepcopy(drawOption_QCD)
+drawOption_QCD_BCtoE_Pt30to80 = copy.deepcopy(drawOption_QCD)
+drawOption_QCD_BCtoE_Pt80to170 = copy.deepcopy(drawOption_QCD)
+drawOption_QCD_EMenriched_Pt20to30 = copy.deepcopy(drawOption_QCD)
+drawOption_QCD_EMenriched_Pt30to80 = copy.deepcopy(drawOption_QCD)
+drawOption_QCD_EMenriched_Pt80to170 = copy.deepcopy(drawOption_QCD)
+drawOption_gammaPlusJets_Pt15to20 = copy.deepcopy(drawOption_gammaPlusJets)
+drawOption_gammaPlusJets_Pt20to25 = copy.deepcopy(drawOption_gammaPlusJets)
+drawOption_gammaPlusJets_Pt25to30 = copy.deepcopy(drawOption_gammaPlusJets)
+drawOption_gammaPlusJets_Pt30to35 = copy.deepcopy(drawOption_gammaPlusJets)
+drawOption_gammaPlusJets_PtGt35 = copy.deepcopy(drawOption_gammaPlusJets)
 drawOption_gammaPlusJetsSum = copy.deepcopy(drawOption_gammaPlusJets)
 drawOption_qcdSum = copy.deepcopy(drawOption_QCD)
 drawOption_AH115_tautau = copy.deepcopy(drawOption_AH)
 drawOption_AH160_tautau = copy.deepcopy(drawOption_AH)
 drawOption_AH115bb_tautau = copy.deepcopy(drawOption_AHbb)
 drawOption_AH160bb_tautau = copy.deepcopy(drawOption_AHbb)
+
+
 
