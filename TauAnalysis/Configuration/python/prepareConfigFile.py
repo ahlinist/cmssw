@@ -18,58 +18,47 @@ import subprocess
 #
 # Author: Christian Veelken, UC Davis
 #
+#
+# Modified by gfball to use python os.* functions and replace statements, and accept lists and dictionaries as well as formatted strings.
 #--------------------------------------------------------------------------------
 
 def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod = None):
-
     # check that configFile_orig and configFile_mod parameters are defined and non-empty
     if configFile_orig is None:
-        raise ValueError("Undefined configFile_orig Parameter !!")
+        raise ValueError("Undefined configFile_orig Parameter !")
     if configFile_mod is None:
-        raise ValueError("Undefined configFile_mod Parameter !!")
+        raise ValueError("Undefined configFile_mod Parameter !")
 
     # check that original config file (template) exists
-    if not os.access(configFile_orig, os.F_OK):
-        raise ValueError("Config file = " + configFile_orig + " does not exist !!")
+    if not os.path.exists(configFile_orig):
+        raise ValueError("Config file = " + configFile_orig + " does not exist !")
 
     # remove all white-space characters from replacements parameter string
-    replacements = replacements.replace(" ", "")
-
-    # split replacements string into list of individual replace statements
-    # (separated by ";" character)
-    replaceStatements = replacements.split(";")
-
-    # compose command-line argument for 'sed' 
-    sedArgument = ""
-
+    if isinstance(replacements,list):
+      replaceStatements = replacements
+    elif isinstance(replacements,dict):
+      replaceStatements = [[k,v] for k,v in replacements.items()]
+    elif isinstance(replacements,basestring):
+      replaceStatements = [r.split("=",1) for r in replacements.replace(" ","").split(";")]
+    else:
+      raise ValueError("No idea what your replacement option is meant to accomplish"+replacements)
+    
+    f_cfg_orig = open(configFile_orig,"r")
+    cfg_mod = f_cfg_orig.read()
+    f_cfg_orig.close()
+    
     for replaceStatement in replaceStatements:
 
-        # split replacement string into name, value pairs
-        paramNameValuePair = replaceStatement.split("=")
-
         # check that replacement string matches 'paramName=paramValue' format
-        if len(paramNameValuePair) != 2:
-            raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
+        if len(replaceStatement) != 2:
+            raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !")
 
-        # extract name and value to be used for replacement
-        paramName = paramNameValuePair[0]    
-        paramValue = paramNameValuePair[1]
+        cfg_mod = cfg_mod.replace("#%s#"%replaceStatement[0],replaceStatement[1])
 
-        # "/" is a special character for sed
-        # and needs to be escaped by a preceding backslash
-        paramValue = paramValue.replace("/", "\/")
-
-        #print("paramName = " + paramName)
-        #print("paramValue = " + paramValue)
-
-        # add sed argument for replacing paramName by paramValue
-        sedArgument += "s/" + "#" + paramName + "#" + "/" + paramValue + "/; "
+    
+    cfg_mod = cfg_mod.replace('#__','')
         
-    # activate replace statements in config file
-    # by removing (replace by empty string) "#__" comment indicators
-    sedArgument += "s/#__//"
-
-    # execute 'sed' to perform actual replacements
-    sedCommand = 'sed -e "' + sedArgument + '" ' + configFile_orig + ' > ' + configFile_mod
-    #print("sedCommand = " + sedCommand)
-    subprocess.call(sedCommand, shell = True)
+    f_cfg_mod = open(configFile_mod,"w")
+    f_cfg_mod.write(cfg_mod)
+    f_cfg_mod.close()    
+       
