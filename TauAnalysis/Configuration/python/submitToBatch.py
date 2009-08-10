@@ -85,7 +85,8 @@ def submitToBatch(configFile = None, channel = None, sample = None,
         replacements=replFunction(channel = channel, sample = sample, replacements = replacements)
 
     # delete previous version of modified config file if it exists
-    subprocess.call('rm -f ' + configFile_mod, shell = True)
+    if os.path.exists(configFile_mod):
+      os.remove(configFile_mod)
 
     # create new version of modified config file
     prepareConfigFile(configFile_orig = configFile_orig, replacements = replacements, configFile_mod = configFile_mod)
@@ -93,7 +94,8 @@ def submitToBatch(configFile = None, channel = None, sample = None,
     # if it exists, delete previous version of shell script
     # for submission of cmsRun job to the CERN batch system 
     scriptFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.csh")
-    subprocess.call('rm -f ' + scriptFile, shell = True)
+    if os.path.exists(scriptFile):
+      os.remove(scriptFile)
 
     # create shell script for submission of cmsRun job to the CERN batch system
     # (copy all .root files produced by the cmsRun job to directory specified
@@ -104,25 +106,28 @@ def submitToBatch(configFile = None, channel = None, sample = None,
         cp = 'rfcp'
     else:
         cp = 'scp'
-    script = []
-    script.append("#!/bin/csh")
-    script.append("limit vmem unlim")
-    script.append("cd " + submissionDirectory)
-    script.append("eval `scramv1 runtime -csh`")
-    script.append("cd -")    
-    script.append("cmsRun " + configFile_mod)
-    script.append("set rootFiles=(`/bin/ls *.root`)")
-    script.append("foreach rootFile (${rootFiles})")
-    script.append("    echo \"copying ${rootFile} to " + outputDirectory + "\"")
-    script.append("    " + cp + " ${rootFile} " + outputDirectory)
-    script.append("end")
-    fh = open(scriptFile, "w")
-    for line in script:
-        fh.write(line + "\n")
-    fh.close()
+        
+    script = """#!/bin/csh
+limit vmem unlim
+cd %(subDir)s
+eval `scramv1 runtime -csh`
+cd -
+cmsRun %(config)s
+set rootFiles=(`ls *.root`)
+foreach rootFile (${rootFiles})
+    echo "copying ${rootFile} to %(outDir)s"
+    %(cp)s ${rootFile} %(outDir)s
+end
+""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputDirectory, 'cp':cp}
+
+
+    scf = open(scriptFile,"w")
+    scf.write(script)
+    scf.close()
+    
 
     # make shell script executable
-    subprocess.call('chmod 744 ' + scriptFile, shell = True)
+    os.chmod(scriptFile,0744)
     
     # finally, submit job to the CERN batch system
     logFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.out")
