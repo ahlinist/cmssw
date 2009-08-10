@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.8 2009/04/20 12:58:28 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.9 2009/07/13 19:47:02 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -220,6 +220,8 @@ L1GlobalAlgo::addJet(int iRgn, bool taubit) {
 
   if (m_L1Config.DoJetCorr) {
     et = GCTEnergyTrunc(corrJetEt(et,eta), m_L1Config.JetLSB, false);
+    //et = GCTEnergyTrunc(corrJetEt3(et,eta,taubit), m_L1Config.JetLSB, false);
+    //et = corrJetEt(et,eta);
   } else {
     et = GCTEnergyTrunc(et, m_L1Config.JetLSB, false);
   }
@@ -1380,9 +1382,15 @@ L1GlobalAlgo::TauIsolation(int cRgn) {
   double iso_threshold =  m_IsolationEt; // arbitrarily set 	 
   int shower_shape = 0; 	 
   int et_isolation = 0; 	 
+<<<<<<< L1GlobalAlgo.cc
+  int et_partisolation = 0; 	 
+  int partiso_count = 0; 	 
+  int iso_count = 0; 	 
+=======
   int et_partisolation = 0; 	 
   unsigned int partiso_count = 0; 	 
   unsigned int iso_count = 0; 	 
+>>>>>>> 1.9
 	  	 
   int nwid = m_Regions[cRgn].GetNWId(); 	 
   int nid = m_Regions[cRgn].GetNorthId(); 	 
@@ -1551,9 +1559,15 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
   double iso_threshold =  m_IsolationEt;	 
   int shower_shape = 0; 	 
   int et_isolation = 0; 	 
+<<<<<<< L1GlobalAlgo.cc
+  int et_partisolation = 0; 	 
+  int partiso_count = 0; 	 
+  int iso_count = 0; 	 
+=======
   int et_partisolation = 0; 	 
   unsigned int partiso_count = 0; 	 
   unsigned int iso_count = 0; 	 
+>>>>>>> 1.9
 	  	 
   int nwid = m_Regions[cRgn].GetNWId(); 	 
   int nid = m_Regions[cRgn].GetNorthId(); 	 
@@ -1564,7 +1578,12 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
   int sid = m_Regions[cRgn].GetSouthId(); 	 
   int seid = m_Regions[cRgn].GetSEId(); 	 
 	  	 
-  if (m_Regions[cRgn].GetTauBit()) {  // check center 
+  //std::cout<<"## "<<partiso_count<<" "<<iso_count<<std::endl;
+
+  m_Regions[cRgn].BitInfo.setIsolationVeto (false); 	 
+  m_Regions[cRgn].BitInfo.setPartialIsolationVeto (false); 	 
+
+  if (m_Regions[cRgn].GetTauBitForPartIso()) {  // check center 
     shower_shape = 1;	 
     //if (m_DoBitInfo) m_Regions[cRgn].BitInfo.setTauVeto(true); 	 
   } 
@@ -1572,6 +1591,17 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
   if((cRgn%22)==4  || (cRgn%22)==17 ) { 	 
     // west border 	 
     if ((cRgn%22)==4) { 	 
+<<<<<<< L1GlobalAlgo.cc
+      if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+      if (m_Regions[sid].GetTauBit()) iso_count++;
+      
+      if( m_Regions[neid].SumEt() > iso_threshold
+	  || m_Regions[neid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if (m_Regions[neid].GetTauBit()) iso_count++; 	 
       if (m_Regions[nid].GetTauBit()) iso_count++; 	 
       if (m_Regions[eid].GetTauBit()) iso_count++; 	 
@@ -1581,22 +1611,47 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
       if( m_Regions[neid].SumEt() > iso_threshold
 	  || m_Regions[neid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBitForPartIso() ){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[nid].SumEt() > iso_threshold
 	  || m_Regions[nid].GetTauBit() ){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[eid].SumEt() > iso_threshold
+	  || m_Regions[eid].GetTauBitForPartIso() ){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[eid].SumEt() > iso_threshold
 	  || m_Regions[eid].GetTauBit() ){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[seid].SumEt() > iso_threshold
+	  || m_Regions[seid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[seid].SumEt() > iso_threshold
 	  || m_Regions[seid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[sid].SumEt() > iso_threshold
 	  || m_Regions[sid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
     } // west bd 	 
 	  	 
@@ -1607,25 +1662,55 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
     if (m_Regions[swid].GetTauBit()) iso_count++; 	 
     if (m_Regions[sid].GetTauBit()) iso_count++; 	 
     if ((cRgn%22)==17) { 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[nwid].SumEt() > iso_threshold
+	  || m_Regions[nwid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[nwid].SumEt() > iso_threshold
 	  || m_Regions[nwid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[nid].SumEt() > iso_threshold
+	  || m_Regions[nid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[nid].SumEt() > iso_threshold
 	  || m_Regions[nid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[wid].SumEt() > iso_threshold
+	  || m_Regions[wid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[wid].SumEt() > iso_threshold
 	  || m_Regions[wid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[swid].SumEt() > iso_threshold
+	  || m_Regions[swid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[swid].SumEt() > iso_threshold
 	  || m_Regions[swid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
+<<<<<<< L1GlobalAlgo.cc
+      if( m_Regions[sid].SumEt() > iso_threshold
+	  || m_Regions[sid].GetTauBitForPartIso()){ 	 
+	partiso_count++; 	 
+=======
       if( m_Regions[sid].SumEt() > iso_threshold
 	  || m_Regions[sid].GetTauBit()){ 	 
 	partiso_count++; 	 
+>>>>>>> 1.9
       } 	 
     } // east bd 	 
  	  	 
@@ -1637,6 +1722,33 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
       return; 	 
     } 	 
 	  	 
+<<<<<<< L1GlobalAlgo.cc
+    if (m_Regions[neid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[eid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[seid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[sid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[nwid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[wid].GetTauBit()) iso_count++; 	 
+    if (m_Regions[swid].GetTauBit()) iso_count++; 	 
+
+    /*
+    if (m_Regions[cRgn].SumEt()>10.) {
+      std::cout<<" "<<m_Regions[cRgn].SumEt()<<" "<<m_Regions[cRgn].GetTauBit()<<" "<<m_Regions[cRgn].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[neid].SumEt()<<" "<<m_Regions[neid].GetTauBit()<<" "<<m_Regions[neid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[eid].SumEt()<<" "<<m_Regions[eid].GetTauBit()<<" "<<m_Regions[eid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[seid].SumEt()<<" "<<m_Regions[sid].GetTauBit()<<" "<<m_Regions[sid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[sid].SumEt()<<" "<<m_Regions[sid].GetTauBit()<<" "<<m_Regions[sid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[swid].SumEt()<<" "<<m_Regions[swid].GetTauBit()<<" "<<m_Regions[swid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[wid].SumEt()<<" "<<m_Regions[wid].GetTauBit()<<" "<<m_Regions[wid].GetTauBitForPartIso()<<std::endl;
+      std::cout<<" "<<m_Regions[nwid].SumEt()<<" "<<m_Regions[nwid].GetTauBit()<<" "<<m_Regions[nwid].GetTauBitForPartIso()<<std::endl;
+    }
+    */
+    
+    if( m_Regions[neid].SumEt() > iso_threshold 	 
+	|| m_Regions[neid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if (m_Regions[neid].GetTauBit()) iso_count++; 	 
     if (m_Regions[nid].GetTauBit()) iso_count++; 	 
     if (m_Regions[eid].GetTauBit()) iso_count++; 	 
@@ -1649,34 +1761,77 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
     if( m_Regions[neid].SumEt() > iso_threshold 	 
 	|| m_Regions[neid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[nid].SumEt() > iso_threshold
+	|| m_Regions[nid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[nid].SumEt() > iso_threshold
 	|| m_Regions[nid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[eid].SumEt() > iso_threshold
+	|| m_Regions[eid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[eid].SumEt() > iso_threshold
 	|| m_Regions[eid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[seid].SumEt() > iso_threshold
+	|| m_Regions[seid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[seid].SumEt() > iso_threshold
 	|| m_Regions[seid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[sid].SumEt() > iso_threshold
+	|| m_Regions[sid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[sid].SumEt() > iso_threshold
 	|| m_Regions[sid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[nwid].SumEt() > iso_threshold
+	|| m_Regions[nwid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[nwid].SumEt() > iso_threshold
 	|| m_Regions[nwid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[wid].SumEt() > iso_threshold
+	|| m_Regions[wid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[wid].SumEt() > iso_threshold
 	|| m_Regions[wid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
+<<<<<<< L1GlobalAlgo.cc
+    if( m_Regions[swid].SumEt() > iso_threshold
+	|| m_Regions[swid].GetTauBitForPartIso()){ 	 
+      partiso_count++; 	 
+=======
     if( m_Regions[swid].SumEt() > iso_threshold
 	|| m_Regions[swid].GetTauBit()){ 	 
       partiso_count++; 	 
+>>>>>>> 1.9
     } 	 
   }// non-border 	 
 	  	 
@@ -1687,6 +1842,21 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
   else {
     et_isolation = 0;
   } 	 
+<<<<<<< L1GlobalAlgo.cc
+  if (partiso_count >= 2 ){ 	 
+    et_partisolation = 1; 	 
+  } 	 
+  else {
+    et_partisolation = 0;
+  } 	 
+
+  /*
+  if (m_Regions[cRgn].SumEt()>10.) {
+    std::cout<<"@@@@@@@ "<<partiso_count<<" "<<iso_count<<std::endl;
+  }
+  */
+  
+=======
   if (partiso_count >= 2 ){ 	 
     et_partisolation = 1; 	 
   } 	 
@@ -1694,6 +1864,7 @@ L1GlobalAlgo::checkPartialTauIsolation(int cRgn) {
     et_partisolation = 0;
   } 	 
 	  	 
+>>>>>>> 1.9
   if (m_DoBitInfo){ 	 
     if (et_isolation == 1) 
       m_Regions[cRgn].BitInfo.setIsolationVeto (true); 	 
