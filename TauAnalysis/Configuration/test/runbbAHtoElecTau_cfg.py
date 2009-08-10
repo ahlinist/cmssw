@@ -49,7 +49,7 @@ process.allLayer1Objects.replace( process.layer1METs, process.layer1METs + proce
 
 from TauAnalysis.Configuration.tools.tauAnalysisMaker import *
 
-from TauAnalysis.Configuration.cutsbbAHtoElecTau import cuts,options
+from TauAnalysis.Configuration.cutsbbAHtoElecTau_cff import cuts,options
 
 maker = TauAnalysisMaker(cuts,options,process)
 

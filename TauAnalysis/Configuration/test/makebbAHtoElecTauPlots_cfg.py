@@ -15,6 +15,8 @@ from TauAnalysis.Configuration.cutsbbAHtoElecTau_cff import cuts,options
 from TauAnalysis.Configuration.plotbbAHtoElecTau_processes_cfi import *
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
+plotDirectoryName = cms.string("/localscratch/")
+
 maker = TauAnalysisMaker(cuts,options,process)
 
 add_processes = {
@@ -41,6 +43,8 @@ direct_processes = [
   'AH160bb_tautau',
   'Ztautau',
   'Zee',
+  #'ZeePlusJets',
+  #'ZtautauPlusJets',
   'ZplusJets',
   'WplusJets',
   'TTplusJets'
@@ -56,7 +60,8 @@ process.makebbAHtoElecTauPlots = cms.Sequence(
  +maker.makeDQMFileAdd(add_processes)
  +maker.makeDQMSave()
  +maker.makeDQMDump(dump_processes)
- +maker.makeDQMPlotter(direct_processes,add_processes,globals())
+ +maker.makeDQMPlotter(direct_processes,add_processes,globals(),stack=False,normalize=True)
 )
      
 process.p = cms.Path(process.makebbAHtoElecTauPlots)
+

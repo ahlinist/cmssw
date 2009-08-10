@@ -35,7 +35,7 @@ metHistManager.metSource = cms.InputTag("layer1PFMETs")
 
 triggerHistManager.l1Bits = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
                                         'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15')
-triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I')
+triggerHistManager.hltPaths = cms.vstring('HLT_IsoEle15_L1I','HLT_Ele10_SW_L1R')
 triggerHistManager.l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT')
 triggerHistManager.l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT')
 
@@ -49,7 +49,7 @@ elecTauEventDump = cms.PSet(
                                 'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_IsoEle10_L1I'),
+    hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
