@@ -41,6 +41,7 @@ void ODCCSConfig::clear(){
    m_bc0=MY_SQL_NULL;
    m_bc0_delay=MY_SQL_NULL;
    m_te_delay=MY_SQL_NULL;
+
 }
 
 
@@ -82,11 +83,11 @@ void ODCCSConfig::prepareWrite()
     m_writeStmt = m_conn->createStatement();
     m_writeStmt->setSQL("INSERT INTO ES_CCS_CONFIGURATION ( ccs_configuration_id, ccs_tag ,"
 			" daccal, delay, gain, memgain, offset_high,offset_low,offset_mid, trg_mode, trg_filter, "
-			" clock, BGO_SOURCE, TTS_MASK, DAQ_BCID_PRESET , TRIG_BCID_PRESET, BC0_COUNTER, BC0_DELAY, TE_DELAY ) "
+			" clock, BGO_SOURCE, TTS_MASK, DAQ_BCID_PRESET , TRIG_BCID_PRESET, BC0_COUNTER, BC0_DELAY, TE_DELAY) "
 			"VALUES (  "
 			" :ccs_configuration_id, :ccs_tag,  :daccal, :delay, :gain, :memgain, :offset_high,:offset_low,"
 			" :offset_mid, :trg_mode, :trg_filter, :clock, :BGO_SOURCE, :TTS_MASK, "
-			" :DAQ_BCID_PRESET , :TRIG_BCID_PRESET, :BC0_COUNTER, :BC0_DELAY, :TE_DELAY) ");
+			" :DAQ_BCID_PRESET , :TRIG_BCID_PRESET, :BC0_COUNTER, :BC0_DELAY, :TE_DELAY ) ");
 
     m_writeStmt->setInt(1, next_id);
     m_ID=next_id;
@@ -107,6 +108,7 @@ void ODCCSConfig::setParameters(std::map<string,string> my_keys_map){
     
     if(ci->first==  "CCS_CONFIGURATION_ID") setConfigTag(ci->second);
     if(ci->first==  "DACCAL") setDaccal(atoi(ci->second.c_str()) );
+    if(ci->first==  "DELAY") setDelay(atoi(ci->second.c_str()) );
     if(ci->first==  "GAIN") setGain(ci->second);
     if(ci->first==  "MEMGAIN") setMemGain(ci->second);
     if(ci->first==  "OFFSET_HIGH") setOffsetHigh(atoi(ci->second.c_str() ));
@@ -122,7 +124,7 @@ void ODCCSConfig::setParameters(std::map<string,string> my_keys_map){
     if(ci->first==  "BC0_COUNTER") setBC0Counter(atoi(ci->second.c_str() ));
     if(ci->first==  "BC0_DELAY") setBC0Delay(atoi(ci->second.c_str() ));
     if(ci->first==  "TE_DELAY")  setTEDelay(atoi(ci->second.c_str() ));
-    
+
   }
   
 }
