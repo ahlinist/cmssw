@@ -1,5 +1,4 @@
 <flags EDM_PLUGIN=1>
-<use name=RecoVertex/KinematicFit>
 <use name=FWCore/Framework>
 <use name=DataFormats/Common>
 <use name=SimDataFormats/TrackingAnalysis>
@@ -16,6 +15,8 @@
 <use name=DataFormats/Math>
 <use name=DataFormats/TrackReco>
 <use name=DataFormats/MuonReco>
+<use name=DataFormats/Candidate>
+<use name=PhysicsTools/CandUtils>
 <export>
  <lib name=HeavyFlavorAnalysisBsToJpsiPhi>
 </export>
