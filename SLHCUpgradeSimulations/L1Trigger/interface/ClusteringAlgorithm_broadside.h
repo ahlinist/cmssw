@@ -91,7 +91,7 @@ void ClusteringAlgorithm_broadside< T >::Cluster( std::vector< std::vector< T > 
 					break;
 				}
 			}
-			if ( (mWidthCut<1) || (temp.size()<=mWidthCut) ) output.push_back(temp);
+			if ( (mWidthCut<1) || (temp.size()<=(unsigned int)mWidthCut) ) output.push_back(temp);
 			inputIterator=inputIterator2;		
 		}
 		++mapIterator;
