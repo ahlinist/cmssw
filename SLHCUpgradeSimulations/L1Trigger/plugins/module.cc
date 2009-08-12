@@ -92,6 +92,12 @@ DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_PixelDigi_);
 typedef ES_ClusteringAlgorithm_2d<cmsUpgrades::Ref_TTHit_> ClusteringAlgorithm_2d_TTHit_;
 DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_2d_TTHit_);
 
+#include "SLHCUpgradeSimulations/L1Trigger/interface/ClusteringAlgorithm_neighbor.h"
+typedef ES_ClusteringAlgorithm_neighbor<cmsUpgrades::Ref_PixelDigi_> ClusteringAlgorithm_neighbor_PixelDigi_;
+DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_neighbor_PixelDigi_);
+typedef ES_ClusteringAlgorithm_neighbor<cmsUpgrades::Ref_TTHit_> ClusteringAlgorithm_neighbor_TTHit_;
+DEFINE_FWK_EVENTSETUP_MODULE(ClusteringAlgorithm_neighbor_TTHit_);
+
 
 
 /* - L1 CaloTrigger - */

@@ -55,6 +55,17 @@ ClusteringAlgorithm_2d_TTHit_ = cms.ESProducer(
     )
 
 
+# Neighbor clustering algorithm
+
+ClusteringAlgorithm_neighbor_PixelDigi_ = cms.ESProducer(
+    "ClusteringAlgorithm_neighbor_PixelDigi_"
+    )
+
+ClusteringAlgorithm_neighbor_TTHit_ = cms.ESProducer(
+    "ClusteringAlgorithm_neighbor_TTHit_"
+    )
+
+
 # Set the preferred hit matching algorithms.
 # We prefer the a algorithm for now in order not to break anything.
 # Override with process.ClusteringAlgorithm_PSimHit_ = ..., etc. in your
