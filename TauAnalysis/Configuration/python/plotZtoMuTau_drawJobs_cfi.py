@@ -447,6 +447,12 @@ drawJobConfigurator_ZtoMuTau.add(
             xAxis = 'Mt',
             name = "finalSamplePlots_mtMuonTauMET"
         ),
+	drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMass',
+            title = "M_{vis}(Muon + Tau) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisible"
+        ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Muon + Tau), CDF method (final Event sample)",
