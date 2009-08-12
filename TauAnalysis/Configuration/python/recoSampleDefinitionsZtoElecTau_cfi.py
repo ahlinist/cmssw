@@ -13,13 +13,14 @@ intLumiData = float(200.)
 
 #--------------------------------------------------------------------------------
 # Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
+#
 #  /Ztautau/Summer08_IDEAL_V11_redigi_v2/GEN-SIM-RECO
 #  generated events = 1245500
 #  skimmed events = 131703
 #  integrated luminosity = 1146.9 pb^-1
 #
 intLumiZtautau = float(1146.9)
-corrFactorZtautau = float(1)
+corrFactorZtautau = float(1.0)
 
 patTupleOutputFileNameZtautau = cms.untracked.string('patTupleZtoElecTau_Ztautau_partXX.root')
 plotsOutputFileNameZtautau = cms.string('plotsZtoElecTau_Ztautau_partXX.root')
@@ -53,8 +54,6 @@ fileNamesZtautau_part05 = cms.untracked.vstring(
 #--------------------------------------------------------------------------------
 
 
-
-
 #--------------------------------------------------------------------------------
 # Z --> e+ e- sample generated with Pythia
 #
@@ -64,7 +63,7 @@ fileNamesZtautau_part05 = cms.untracked.vstring(
 #  integrated luminosity = 667 pb^-1
 #
 intLumiZee = float(667.)
-corrFactorZee = float(1)
+corrFactorZee = float(1.0)
 
 patTupleOutputFileNameZee = cms.untracked.string('patTupleZtoElecTau_Zee_partXX.root')
 
@@ -216,14 +215,12 @@ fileNamesZee_part28 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_82.root',
     'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Zee/skimElecTau_83.root'
 )
-
 #--------------------------------------------------------------------------------
-
-
 
 
 #--------------------------------------------------------------------------------
 # electron enriched b/c --> e QCD sample generated with Pythia (20 GeV < Pt(hat) < 30 GeV)
+#
 #  /QCD_EMenriched_Pt20to30/Summer08_IDEAL_V11_redigi_v2/GEN-SIM-RECO
 #  generated events = 20359765
 #  events passing skim = 351697
@@ -231,8 +228,7 @@ fileNamesZee_part28 = cms.untracked.vstring(
 #  filter eff = 0.008
 #  integrated lumi = 6.362 pb^-1
 #
-
-corrFactorQCD_EMenriched_Pt20to30 = float(1)
+corrFactorQCD_EMenriched_Pt20to30 = float(1.0)
 intLumiQCD_EMenriched_Pt20to30 = float(6.36)
 
 patTupleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string('patTupleZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
@@ -420,7 +416,7 @@ fileNamesQCD_EMenriched_Pt20to30_part16 = cms.untracked.vstring(
 #  filter eff = 0.047
 #  integrated lumi = 8.15 pb^-1
 #
-corrFactorQCD_EMenriched_Pt30to80 = float(1)
+corrFactorQCD_EMenriched_Pt30to80 = float(1.0)
 intLumiQCD_EMenriched_Pt30to80 = float(8.15)
 
 patTupleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string('patTupleZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
@@ -1831,7 +1827,6 @@ patTupleOutputFileNamePhotonJets_PtGt35   = cms.untracked.string('patTupleZtoEle
 #        the filter efficiency is already included in the cross-sections
 #        listed at https://twiki.cern.ch/twiki/bin/view/CMS/ProductionSummer2008 !!)
 #
-
 intLumiWplusJets = float(242.)
 corrFactorWplusJets = float(1.003)
 
