@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.15 $
-  \date $Date: 2009/07/28 11:42:32 $
+  \version $Revision: 1.16 $
+  \date $Date: 2009/08/10 14:07:24 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -78,7 +78,8 @@ private:
 
       if( o.name.find( "endcapOccupancyMap" ) != std::string::npos ) obj->SetTitle("Endcap Digi Occupancy Map");
       if( o.name.find( "hitmap" ) != std::string::npos  ||
-          o.name.find( "Occupancy" ) != std::string::npos)
+          o.name.find( "Occupancy" ) != std::string::npos ||
+	  o.name.find( "OnTrack/position_siPixelClusters_" ) != std::string::npos )
       {
         gStyle->SetPalette(1);
         obj->SetOption("colz");
@@ -91,7 +92,10 @@ private:
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
         if(obj->GetNbinsX()==7) gPad->SetLeftMargin(0.3);
-	if(obj->GetNbinsX()==40){TLine tl1; tl1.DrawLine(32.,1.,32.,37.); TLine tl2; tl2.DrawLine(32.,27.,40.,27.); }  
+	if(obj->GetNbinsX()==40){
+	  TLine tl1; tl1.SetLineColor(1); tl1.DrawLine(32.,1.,32.,37.); 
+	  TLine tl2; tl2.SetLineColor(1); tl2.DrawLine(32.,27.,40.,27.); 
+	}  
         dqm::utils::reportSummaryMapPalette(obj2);
         return;
       }
