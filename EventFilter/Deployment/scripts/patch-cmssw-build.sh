@@ -71,9 +71,9 @@ RESPONSE=`reset_edm_cache.pl $TOPDIR/opt/cmssw/$PRO_DEV/lib $TOPDIR/opt/cmssw/$P
 echo "reset_edm_cache returned $RESPONSE"
 
 ### Extract the root version from the scram runtime here before making the symbolic links
-RT=`scramv1 runtime -sh | grep ROOTSYS= | tr -d ";" | perl -p -e 's/.*=\"([^\"]*)\"$/$1/'`
+[ -n "$ROOTSYS" ] || ROOTSYS=`scramv1 runtime -sh | grep ROOTSYS= | tr -d ";" | perl -p -e 's/.*=\"([^\"]*)\"$/$1/'`
 echo "extracting symbolic link locations for root from scram runtime"
-echo "  ROOTSYS at $RT"
+echo "  ROOTSYS at $ROOTSYS"
 
 # fix symbolic links for patched libs so it is visible after installation
 cd $TOPDIR
@@ -90,7 +90,7 @@ cd $TOPDIR
 #rm -rf $TOPDIR/$CMSSW_VERSION
 ln -s /opt/cmssw/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION                   opt/cmssw/$PRO_DEV/base
 ln -s /opt/cmssw/$PRO_DEV/patches/$SCRAM_ARCH/cms/$RELEASE_TYPE/$CMSSW_VERSION  opt/cmssw/$PRO_DEV/patch
-ln -s $RT                                                                       opt/cmssw/$PRO_DEV/root
+ln -s $ROOTSYS                                                                       opt/cmssw/$PRO_DEV/root
 CMSSW_VERSION_CLEAN=`echo $CMSSW_VERSION | tr -d "-"`
 
 echo "CMSSW_VERSION now $CMSSW_VERSION"
