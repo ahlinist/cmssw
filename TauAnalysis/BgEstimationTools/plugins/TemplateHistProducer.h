@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: TemplateHistProducer.h,v 1.2 2009/07/15 09:04:59 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.3 2009/07/25 18:36:58 veelken Exp $
  *
  */
 
@@ -31,6 +31,24 @@
 
 class TemplateHistProducer : public edm::EDAnalyzer
 {
+  typedef std::vector<double> vdouble;
+
+  struct jobEntryType
+  { 
+    std::string meName_;
+    std::string dqmDirectory_store_;
+    
+    MonitorElement* me_;
+
+    std::string branchName_objValue_;
+    Float_t objValue_;
+
+    unsigned numBinsX_;
+    double xMin_;
+    double xMax_;
+    vdouble xBins_;
+  };
+
  public:
   
   explicit TemplateHistProducer(const edm::ParameterSet&);
@@ -42,6 +60,8 @@ class TemplateHistProducer : public edm::EDAnalyzer
   void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
+  void readJobEntry(const edm::ParameterSet& cfg);
+
 //--- configuration parameters
   typedef std::vector<std::string> vstring;
   vstring fileNames_;
@@ -52,26 +72,14 @@ class TemplateHistProducer : public edm::EDAnalyzer
   std::string branchName_eventWeight_;
   Float_t eventWeight_;
 
-  std::string branchName_objValue_;
-  Float_t objValue_;
-
-  std::string dqmDirectory_store_;
-  std::string meName_;
-
   double norm_;
-
-  unsigned numBinsX_;
-  double xMin_;
-  double xMax_;
-  typedef std::vector<double> vdouble;
-  vdouble xBins_;
 
 //--- internal data-members for handling branches
 //    and filling histogram
   TChain* allEventsTree_;
   TTree* selEventsTree_;
 
-  MonitorElement* hTemplate_;
+  std::vector<jobEntryType> jobs_; 
 
   int cfgError_;
 };

@@ -21,47 +21,20 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
 
   treeSelection_ = cfg.getParameter<std::string>("treeSelection");
 
-  branchName_objValue_ = cfg.getParameter<std::string>("branchName");
-  branchName_eventWeight_ = ( cfg.exists("branchNameEventWeight") ) ? cfg.getParameter<std::string>("branchNameEventWeight") : "";
-
-  std::string meName = cfg.getParameter<std::string>("meName");
-  if ( meName.find("/") != std::string::npos ) {
-    size_t posSeparator = meName.find_last_of("/");
-
-    if ( posSeparator < (meName.length() - 1) ) {
-      dqmDirectory_store_ = std::string(meName, 0, posSeparator);
-      meName_ = std::string(meName, posSeparator + 1);
-    } else {
-      edm::LogError ("TemplateHistProducer") << " Invalid Configuration Parameter 'meName' = " << meName << " !!";
-      cfgError_ = 1;
+  if ( cfg.exists("config") ) {
+    typedef std::vector<edm::ParameterSet> vParameterSet;
+    vParameterSet cfgJobs = cfg.getParameter<vParameterSet>("config");
+    for ( vParameterSet::const_iterator cfgJob = cfgJobs.begin();
+	  cfgJob != cfgJobs.end(); ++cfgJob ) {
+      readJobEntry(*cfgJob);
     }
   } else {
-    dqmDirectory_store_ = "";
-    meName_ = meName;
+    readJobEntry(cfg);
   }
+
+  branchName_eventWeight_ = ( cfg.exists("branchNameEventWeight") ) ? cfg.getParameter<std::string>("branchNameEventWeight") : "";
 
   norm_ = ( cfg.exists("norm") ) ? cfg.getParameter<double>("norm") : -1.;
-
-  numBinsX_ = cfg.getParameter<unsigned>("numBinsX");
-  xMin_ = ( cfg.exists("xMin") ) ? cfg.getParameter<double>("xMin") : 0.;
-  xMax_ = ( cfg.exists("xMax") ) ? cfg.getParameter<double>("xMax") : 0.;
-  xBins_ = ( cfg.exists("xBins") ) ? cfg.getParameter<vdouble>("xBins") : vdouble();
-
-  if ( (cfg.exists("xMin") && cfg.exists("xMax") && cfg.exists("xBins")) || 
-       (!(cfg.exists("xMin") && cfg.exists("xMax")) && !cfg.exists("xBins"))) {
-    edm::LogError ("TemplateHistProducer") << " Either Configuration Parameters 'xMin' and 'xMax'" 
-					   << " or Configuration Parameter 'xBins' must be specified !!";
-    cfgError_ = 1;
-  }
-
-  if ( cfg.exists("xBins") && xBins_.size() != (numBinsX_ + 1) ) {
-    edm::LogError ("TemplateHistProducer") << " Number of Entries in Configuration Parameter 'xBins' = " << xBins_.size() 
-					   << " does not match value of (numBinsX + 1) = " << (numBinsX_ + 1) << " !!";
-    cfgError_ = 1;
-  }
-  
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
-  //std::cout << " meName = " << meName_ << std::endl;
 }
 
 TemplateHistProducer::~TemplateHistProducer()
@@ -73,6 +46,54 @@ TemplateHistProducer::~TemplateHistProducer()
 
   //std::cout << " deleting allEventsTree..." << std::endl;
   delete allEventsTree_;
+}
+
+void TemplateHistProducer::readJobEntry(const edm::ParameterSet& cfg)
+{
+  //std::cout << "<TemplateHistProducer::readJobEntry>:" << std::endl;
+
+  jobEntryType jobEntry;
+
+  jobEntry.branchName_objValue_ = cfg.getParameter<std::string>("branchName");
+
+  std::string meName = cfg.getParameter<std::string>("meName");
+  if ( meName.find("/") != std::string::npos ) {
+    size_t posSeparator = meName.find_last_of("/");
+
+    if ( posSeparator < (meName.length() - 1) ) {
+      jobEntry.dqmDirectory_store_ = std::string(meName, 0, posSeparator);
+      jobEntry.meName_ = std::string(meName, posSeparator + 1);
+    } else {
+      edm::LogError ("readJobEntry") << " Invalid Configuration Parameter 'meName' = " << meName << " !!";
+      cfgError_ = 1;
+    }
+  } else {
+    jobEntry.dqmDirectory_store_ = "";
+    jobEntry.meName_ = meName;
+  }
+
+  jobEntry.numBinsX_ = cfg.getParameter<unsigned>("numBinsX");
+  jobEntry.xMin_ = ( cfg.exists("xMin") ) ? cfg.getParameter<double>("xMin") : 0.;
+  jobEntry.xMax_ = ( cfg.exists("xMax") ) ? cfg.getParameter<double>("xMax") : 0.;
+  jobEntry.xBins_ = ( cfg.exists("xBins") ) ? cfg.getParameter<vdouble>("xBins") : vdouble();
+
+  if ( (cfg.exists("xMin") && cfg.exists("xMax") && cfg.exists("xBins")) || 
+       (!(cfg.exists("xMin") && cfg.exists("xMax")) && !cfg.exists("xBins"))) {
+    edm::LogError ("readJobEntry") << " Either Configuration Parameters 'xMin' and 'xMax'" 
+				   << " or Configuration Parameter 'xBins' must be specified !!";
+    cfgError_ = 1;
+  }
+
+  if ( cfg.exists("xBins") && jobEntry.xBins_.size() != (jobEntry.numBinsX_ + 1) ) {
+    edm::LogError ("readJobEntry") << " Number of Entries in Configuration Parameter 'xBins' = " << jobEntry.xBins_.size() 
+				   << " does not match value of (numBinsX + 1) = " << (jobEntry.numBinsX_ + 1) << " !!";
+    cfgError_ = 1;
+  }
+  
+  //std::cout << " dqmDirectory_store = " << jobEntry.dqmDirectory_store_ << std::endl;
+  //std::cout << " meName = " << jobEntry.meName_ << std::endl;
+
+  jobs_.push_back(jobEntry);
 }
 
 void TemplateHistProducer::endJob()
@@ -95,18 +116,23 @@ void TemplateHistProducer::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  if ( dqmDirectory_store_ != "" ) dqmStore.setCurrentFolder(dqmDirectory_store_);
-
-  if ( xBins_.size() ) {
-    unsigned numBins = xBins_.size();
-    float* xBins = new float[numBins];
-    for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
-      xBins[iBin] = xBins_[iBin];
+//--- book template histograms
+  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+	jobEntry != jobs_.end(); ++jobEntry ) {
+    
+    if ( jobEntry->dqmDirectory_store_ != "" ) dqmStore.setCurrentFolder(jobEntry->dqmDirectory_store_);
+    
+    if ( jobEntry->xBins_.size() ) {
+      unsigned numBinEdges = jobEntry->xBins_.size();
+      float* xBins = new float[numBinEdges];
+      for ( unsigned iBin = 0; iBin < numBinEdges; ++iBin ) {
+	xBins[iBin] = jobEntry->xBins_[iBin];
+      }
+      jobEntry->me_ = dqmStore.book1D(jobEntry->meName_, jobEntry->meName_, numBinEdges - 1, xBins);
+      delete xBins;
+    } else {
+      jobEntry->me_ = dqmStore.book1D(jobEntry->meName_, jobEntry->meName_, jobEntry->numBinsX_, jobEntry->xMin_, jobEntry->xMax_);
     }
-    hTemplate_ = dqmStore.book1D(meName_, meName_, numBinsX_, xBins);
-    delete xBins;
-  } else {
-    hTemplate_ = dqmStore.book1D(meName_, meName_, numBinsX_, xMin_, xMax_);
   }
 
 //--- create chain of all ROOT files 
@@ -126,35 +152,45 @@ void TemplateHistProducer::endJob()
   std::cout << " entries passing selection = " << selEventsTree_->GetEntries() << std::endl;
 
 //--- set branch adresses
-  selEventsTree_->SetBranchAddress(branchName_objValue_.data(), &objValue_);
-  if ( branchName_eventWeight_ != "" ) selEventsTree_->SetBranchAddress(branchName_eventWeight_.data(), &eventWeight_);
+  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+	jobEntry != jobs_.end(); ++jobEntry ) {
+    selEventsTree_->SetBranchAddress(jobEntry->branchName_objValue_.data(), &jobEntry->objValue_);
+  }
+  
+  if ( branchName_eventWeight_ != "" ) {
+    selEventsTree_->SetBranchAddress(branchName_eventWeight_.data(), &eventWeight_);
+  } else {
+    eventWeight_ = 1.;
+  }
 
 //--- read all entries from chain;
-//    fill histogram
+//    fill template histograms
   double sumWeighted = 0.;
 
   int numEntries = selEventsTree_->GetEntries();
   for ( int iEntry = 0 ; iEntry < numEntries; ++iEntry ) {
     selEventsTree_->GetEvent(iEntry);  
 
-    if ( branchName_eventWeight_ != "" ) {
-      hTemplate_->Fill(objValue_, eventWeight_);
-      sumWeighted += eventWeight_;
-    } else {
-      hTemplate_->Fill(objValue_);
-      sumWeighted += 1.;
+    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+	  jobEntry != jobs_.end(); ++jobEntry ) {
+      jobEntry->me_->Fill(jobEntry->objValue_, eventWeight_);
     }
+
+    sumWeighted += eventWeight_;
   }
 
   std::cout << " sum of weights = " << sumWeighted << std::endl;
 
-//--- normalize histogram 
+//--- normalize template histograms
 //    (to unit area)
   if ( norm_ != -1. ) {
-    TH1* histogram = hTemplate_->getTH1();
-    if ( histogram->Integral() != 0. ) {
-      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
-      histogram->Scale(norm_/histogram->Integral());
+    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+	  jobEntry != jobs_.end(); ++jobEntry ) {
+      TH1* histogram = jobEntry->me_->getTH1();
+      if ( histogram->Integral() != 0. ) {
+	if ( !histogram->GetSumw2N() ) histogram->Sumw2();
+	histogram->Scale(norm_/histogram->Integral());
+      }
     }
   }
 
@@ -164,10 +200,13 @@ void TemplateHistProducer::endJob()
 //    WARNING: to be enabled for testing purposes only !!
 //
 /*
-  TH1* histogram = hTemplate_->getTH1();
-  unsigned numBins = histogram->GetNbinsX();
-  for ( unsigned iBin = 0; iBin <= numBins; ++iBin ) {
-    histogram->SetBinError(iBin, 0.);
+  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+        jobEntry != jobs_.end(); ++jobEntry ) {
+    TH1* histogram = jobEntry->me_->getTH1();
+    unsigned numBins = histogram->GetNbinsX();
+    for ( unsigned iBin = 0; iBin <= numBins; ++iBin ) {
+      histogram->SetBinError(iBin, 0.);
+    }
   }
  */
   std::cout << "done." << std::endl;
