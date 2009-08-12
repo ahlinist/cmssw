@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Env;
-($#ARGV >= 2) || die "Usage::reset_seal_cache.pl libdir moddir";
+($#ARGV >= 2) || die "Usage::reset_edm_cache.pl libdir moddir";
 $libdir = @ARGV[0];
 $moddir = @ARGV[1];
 $envfile = @ARGV[2];
@@ -27,7 +27,7 @@ $ENV{'SEAL_PLUGINS'}=$moddir;
 #$ENV{LOG}='stderr';
 print "working on $ENV{LD_LIBRARY_PATH}\n";
 print "removing $libdir/.edmplugincache\n";
-my $resp = `rm $libdir/.edmplugincache`;
+my $resp = `rm -f $libdir/.edmplugincache`;
 print "$resp\n";
 print "here 1\n";
 $resp = `EdmPluginRefresh`;

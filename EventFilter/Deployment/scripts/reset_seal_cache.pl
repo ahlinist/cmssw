@@ -23,7 +23,7 @@ $ENV{'LD_LIBRARY_PATH'}=$libdir;
 $ENV{'SEAL_PLUGINS'}=$moddir;
 #$ENV{LOG}='stderr';
 print "removing $moddir/.cache\n";
-$resp = `rm $moddir/.cache`;
+$resp = `rm -f $moddir/.cache`;
 print "$resp\n";
 $resp = `SealPluginRefresh`;
 print $resp;
