@@ -12,23 +12,46 @@ import copy
 
 from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
+#--------------------------------------------------------------------------------
+# define observable to be used as template
+# and histogram binning options
+#
+# NOTE: binning needs to match that of the final analysis,
+#       defined in TauAnalysis/Core/plugins/..HistManager.cc
+# --------------------------------------------------------------------------------
+
 prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
     fileNames = cms.vstring(),
     treeName = cms.string("ntupleProducer/bgEstEvents"),
 
-    treeSelection = cms.string(""),   
+    treeSelection = cms.string(""),
+
+    config = cms.VPSet(
+        cms.PSet(
+            meName = cms.string("diTauMvis12"), 
+            branchName = cms.string('selDiTauMvis12_0'),
+            numBinsX = cms.uint32(40),
+            xMin = cms.double(0.),
+            xMax = cms.double(200.)
+        ),
+        cms.PSet(
+            meName = cms.string("diTauMt1MET"),  
+            branchName = cms.string('selDiTauMt1MET_0'),
+            numBinsX = cms.uint32(40),
+            xMin = cms.double(0.),
+            xMax = cms.double(200.)
+        )
+    ),
                                                           
-    branchName = cms.string('diTauMvis12'),
-    #branchName = cms.string('diTauMt1MET'),               
     branchNameEventWeight = cms.string('eventWeight'),
 
-    meName = cms.string(""),
-    numBinsX = cms.uint32(30),
-    xMin = cms.double(0.),
-    xMax = cms.double(150.)
-    #numBinsX = cms.uint32(11),                                                      
-    #xBins = cms.vdouble( 0., 20., 30., 40., 50., 60., 70., 80., 90., 100., 120., 150. )                                        
+    norm = cms.double(1.)
 )
+
+#--------------------------------------------------------------------------------
+# define drawing options used when making control plots of distributions
+# in background enriched sample/event sample passing final selection criteria of the analysis
+# --------------------------------------------------------------------------------
 
 drawJobTemplateHist = cms.PSet(
     plots = cms.VPSet(
