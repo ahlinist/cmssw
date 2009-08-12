@@ -64,6 +64,8 @@
 // 13 mf  3/23/09   ap.get() used whenever possible suppression, to avoid
 //		    null pointer usage
 //
+// 14 mf  8/11/09   provision for control of standalone threshold and ignores
+//
 // =================================================
 
 // system include files
@@ -420,6 +422,12 @@ public:
   void GroupLogStatistics(std::string const & category);
   bool isMessageProcessingSetUp();
 
+  // Change Log 14
+  // The following two methods have no effect except in stand-alone apps
+  // that do not create a MessageServicePresence:
+  void setStandAloneMessageThreshold    (std::string const & severity);
+  void squelchStandAloneMessageCategory (std::string const & category);
+  
 }  // namespace edm
 
 
