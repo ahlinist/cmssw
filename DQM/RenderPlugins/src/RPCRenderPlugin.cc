@@ -210,6 +210,26 @@ private:
         return;
       }
 
+
+
+ if(o.name.find("ClusterSizeMean") != std::string::npos)
+      {
+        obj->SetMinimum(0.0);
+        obj->SetMaximum(5.0);
+
+        int colorPalette_m[5];
+       
+	colorPalette_m[0]=400;
+        colorPalette_m[1]= 416; // Yallow
+        colorPalette_m[2]= 416; // Orange
+        colorPalette_m[3]= 807; // Red
+        colorPalette_m[4]= 632;
+        
+
+        gStyle->SetPalette(5, colorPalette_m);
+        return;
+      }
+
       if(o.name.find("AsymmetryLeftRight") != std::string::npos)
       {
         obj->SetMinimum(-1.e-15);
