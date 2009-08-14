@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.132 2009/07/17 17:23:17 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.133 2009/08/04 17:40:57 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.132 $
-  \date $Date: 2009/07/17 17:23:17 $
+  \version $Revision: 1.133 $
+  \date $Date: 2009/08/04 17:40:57 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -682,7 +682,7 @@ private:
       }
 
       if( name.find( "EEIT" ) != std::string::npos &&
-          name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) == std::string::npos )
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
@@ -693,9 +693,9 @@ private:
       }
 
       if( name.find( "EETTT" ) != std::string::npos &&
-          name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) == std::string::npos )
       {
-        if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
+        if( name.find( "EETTT Trigger Primitives Timing" ) != std::string::npos )
         {
           obj->SetMinimum(-1.0);
           obj->SetMaximum(6.0);
@@ -705,11 +705,15 @@ private:
           obj->SetMinimum(0.0);
         }
 
-        if( name.find( "Error" ) ==std::string::npos )
+        if( name.find( "Error" ) == std::string::npos )
         {
-          if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
+          if( name.find( "EETTT Trigger Primitives Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(7, pCol6);
+          }
+          else if ( name.find( "EETTT Trigger Primitives Non Single Timing" ) != std::string::npos )
+          {
+            gStyle->SetPalette(10, pCol5);
           }
           else
           {
@@ -749,7 +753,7 @@ private:
       }
 
       if( name.find( "EESFT" ) != std::string::npos &&
-          name.find( "summary" ) ==std::string::npos )
+          name.find( "summary" ) == std::string::npos )
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
@@ -963,7 +967,7 @@ private:
         return;
       }
 
-      if ( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos )
+      if ( name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos )
         return;
 
       if( name.find( "seed" ) != std::string::npos )

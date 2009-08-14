@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.116 2009/07/17 17:23:14 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.117 2009/08/04 17:40:54 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.116 $
-  \date $Date: 2009/07/17 17:23:14 $
+  \version $Revision: 1.117 $
+  \date $Date: 2009/08/04 17:40:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -571,7 +571,7 @@ private:
       }
 
       if( name.find( "EBIT" ) != std::string::npos &&
-          name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) == std::string::npos )
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
@@ -582,7 +582,7 @@ private:
       }
 
       if( name.find( "EBTTT" ) != std::string::npos &&
-          name.find( "quality" ) ==std::string::npos )
+          name.find( "quality" ) == std::string::npos )
       {
         if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
         {
@@ -594,11 +594,15 @@ private:
           obj->SetMinimum(0.0);
         }
 
-        if( name.find( "Error" ) ==std::string::npos )
+        if( name.find( "Error" ) == std::string::npos )
         {
           if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(7, pCol6);
+          }
+          else if ( name.find( "EBTTT Trigger Primitives Non Single Timing" ) != std::string::npos )
+          {
+            gStyle->SetPalette(10, pCol5);
           }
           else
           {
@@ -617,7 +621,7 @@ private:
       }
 
       if( name.find( "EBSFT" ) != std::string::npos &&
-          name.find( "summary" ) ==std::string::npos )
+          name.find( "summary" ) == std::string::npos )
       {
         obj->SetMinimum(0.0);
         gStyle->SetPalette(10, pCol5);
