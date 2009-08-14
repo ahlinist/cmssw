@@ -640,7 +640,7 @@
    TCanvas c1("c1", " InvMassNoIsoEndcap benchmark");
    FormatPad( &c1, false );
    comp.Draw("InvMassNoIsoEndcap", mode);
-   SavePlot("InvMassEndcap", outdir.c_str() );
+   SavePlot("InvMassNoIsoEndcap", outdir.c_str() );
    comp.SetAxis(5);
 
    comp.SetAxis(1,0,1);
