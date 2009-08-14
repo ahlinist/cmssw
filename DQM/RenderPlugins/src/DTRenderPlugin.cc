@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.54 2009/06/10 12:16:29 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.55 2009/08/14 09:19:16 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.54 $
-  \date $Date: 2009/06/10 12:16:29 $
+  \version $Revision: 1.55 $
+  \date $Date: 2009/08/14 09:19:16 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -1282,12 +1282,15 @@ private:
 	
 	if(hRef != 0 && histo != 0) {
 	  double nEntries = histo->Integral();
-	  hRef->Scale(nEntries/hRef->Integral());
-	  hRef->SetLineColor(600);
-	  hRef->SetFillColor(590);
+	  if(nEntries != 0 && hRef->Integral() != 0) {
 
-	  hRef->Draw("same");
-	  histo->Draw("same");
+	    hRef->Scale(nEntries/hRef->Integral());
+	    hRef->SetLineColor(600);
+	    hRef->SetFillColor(590);
+
+	    hRef->Draw("same");
+	    histo->Draw("same");
+	  }
 	}
         return;
       }
