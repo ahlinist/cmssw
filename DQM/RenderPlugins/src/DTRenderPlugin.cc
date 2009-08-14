@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.53 2009/05/22 19:09:33 lat Exp $
+// $Id: DTRenderPlugin.cc,v 1.54 2009/06/10 12:16:29 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.53 $
-  \date $Date: 2009/05/22 19:09:33 $
+  \version $Revision: 1.54 $
+  \date $Date: 2009/06/10 12:16:29 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -736,6 +736,19 @@ private:
         return;
       }
 
+      if( o.name.find( "TimeBoxSummary" ) != std::string::npos )
+      {
+        dqm::utils::reportSummaryMapPalette(obj);
+        obj->GetXaxis()->SetNdivisions(13,true);
+        obj->GetYaxis()->SetNdivisions(6,true);
+        obj->GetXaxis()->CenterLabels();
+        obj->GetYaxis()->CenterLabels();
+        //     obj->SetOption("text,colz");
+        obj->SetMarkerSize( 2 );
+        //     gStyle->SetPaintTextFormat("2.0f");
+        c->SetGrid(1,1);
+        return;
+      }
 
 
       /*
@@ -1173,7 +1186,6 @@ private:
       {
         labelMB4Sect4and13_wheel->Draw("same");
         labelMB4Sect10and14_wheel->Draw("same");
-        return;
       }
 
       if(o.name.find("OccupancyAllHits_perCh") != std::string::npos)
@@ -1262,6 +1274,26 @@ private:
         }
         return;
       }
+
+      if( o.name.find("TimeBox_W") != std::string::npos )
+      {
+	TH1F * histo =  dynamic_cast<TH1F*>( o.object );
+	TH1F *hRef   =  dynamic_cast<TH1F*>( o.reference ); 
+	
+	if(hRef != 0 && histo != 0) {
+	  double nEntries = histo->Integral();
+	  hRef->Scale(nEntries/hRef->Integral());
+	  hRef->SetLineColor(600);
+	  hRef->SetFillColor(590);
+
+	  hRef->Draw("same");
+	  histo->Draw("same");
+	}
+        return;
+      }
+
+
+
     }
 };
 
