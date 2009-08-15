@@ -45,6 +45,11 @@ cfgDiTauCandidateForElecMuZeroChargeCutLooseElectronIsolation.pluginName = "diTa
 cfgDiTauCandidateForElecMuZeroChargeCutLooseElectronIsolation.src_cumulative = cms.InputTag('selectedElecMuPairsZeroChargeLooseElectronIsolationCumulative')
 cfgDiTauCandidateForElecMuZeroChargeCutLooseElectronIsolation.src_individual = cms.InputTag('selectedElecMuPairsZeroChargeLooseElectronIsolationIndividual')
 
+cfgDiTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation = copy.deepcopy(cfgDiTauCandidateForElecMuAcoplanarity12Cut)
+cfgDiTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation.pluginName = "diTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation"
+cfgDiTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation.src_cumulative = cms.InputTag('selectedElecMuPairsAcoplanarity12LooseElectronIsolationCumulative')
+cfgDiTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation.src_individual = cms.InputTag('selectedElecMuPairsAcoplanarity12LooseElectronIsolationIndividual')
+
 cfgDiTauCandidateForElecMuMt1METcutLooseElectronIsolation = copy.deepcopy(cfgDiTauCandidateForElecMuMt1METcut)
 cfgDiTauCandidateForElecMuMt1METcutLooseElectronIsolation.pluginName = "diTauCandidateForElecMuMt1METcutLooseElectronIsolation"
 cfgDiTauCandidateForElecMuMt1METcutLooseElectronIsolation.src_cumulative = cms.InputTag('selectedElecMuPairsMt1METlooseElectronIsolationCumulative')
@@ -54,6 +59,11 @@ cfgDiTauCandidateForElecMuMt2METcutLooseElectronIsolation.pluginName = "diTauCan
 cfgDiTauCandidateForElecMuMt2METcutLooseElectronIsolation.src_cumulative = cms.InputTag('selectedElecMuPairsMt2METlooseElectronIsolationCumulative')
 cfgDiTauCandidateForElecMuMt2METcutLooseElectronIsolation.src_individual = cms.InputTag('selectedElecMuPairsMt2METlooseElectronIsolationIndividual')
 
+cfgDiTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation = copy.deepcopy(cfgDiTauCandidateForElecMuPzetaDiffCut)
+cfgDiTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation.pluginName = "diTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation"
+cfgDiTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation.src_cumulative = cms.InputTag('selectedElecMuPairsPzetaDiffLooseElectronIsolationCumulative')
+cfgDiTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation.src_individual = cms.InputTag('selectedElecMuPairsPzetaDiffLooseElectronIsolationIndividual')
+
 zToElecMuEventSelConfiguratorLooseElectronIsolation = eventSelFlagProdConfigurator(
     [ cfgElectronTrkIsoCutLooseIsolation,
       cfgElectronEcalIsoCutLooseIsolation,
@@ -61,8 +71,10 @@ zToElecMuEventSelConfiguratorLooseElectronIsolation = eventSelFlagProdConfigurat
       cfgElectronTrkIPcutLooseIsolation,
       cfgDiTauCandidateForElecMuAntiOverlapVetoLooseElectronIsolation,
       cfgDiTauCandidateForElecMuZeroChargeCutLooseElectronIsolation,
+      cfgDiTauCandidateForElecMuAcoplanarity12CutLooseElectronIsolation,
       cfgDiTauCandidateForElecMuMt1METcutLooseElectronIsolation,
-      cfgDiTauCandidateForElecMuMt2METcutLooseElectronIsolation ],
+      cfgDiTauCandidateForElecMuMt2METcutLooseElectronIsolation,
+      cfgDiTauCandidateForElecMuPzetaDiffCutLooseElectronIsolation ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
