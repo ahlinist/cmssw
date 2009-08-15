@@ -403,7 +403,7 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_electron"
         ),
         drawJobConfigEntry(
-            meName = 'ElectronQuantities/hElectronMatchingGenParticlePdgId',
+            meName = 'ElectronQuantities/ElectronMatchingGenParticlePdgId',
             title = "PdgId of gen. Particle matching Electron (final Event sample)",
             xAxis = 'PdgId',
             name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
@@ -416,7 +416,7 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_tau"
         ),
         drawJobConfigEntry(
-            meName = 'TauQuantities/hTauMatchingGenParticlePdgId',
+            meName = 'TauQuantities/TauMatchingGenParticlePdgId',
             title = "PdgId of gen. Particle matching Tau (final Event sample)",
             xAxis = 'PdgId',
             name = "finalSamplePlots_pdgIdGenParticleMatchingTau"

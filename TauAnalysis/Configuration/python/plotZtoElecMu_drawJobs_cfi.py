@@ -331,7 +331,7 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_electron"
         ),
         drawJobConfigEntry(
-            meName = 'ElectronQuantities/hElectronMatchingGenParticlePdgId',
+            meName = 'ElectronQuantities/ElectronMatchingGenParticlePdgId',
             title = "PdgId of gen. Particle matching Electron (final Event sample)",
             xAxis = 'PdgId',
             name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
@@ -344,7 +344,7 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_muon"
         ),
         drawJobConfigEntry(
-            meName = 'MuonQuantities/hMuonMatchingGenParticlePdgId',
+            meName = 'MuonQuantities/MuonMatchingGenParticlePdgId',
             title = "PdgId of gen. Particle matching Muon (final Event sample)",
             xAxis = 'PdgId',
             name = "finalSamplePlots_pdgIdGenParticleMatchingMuon"
