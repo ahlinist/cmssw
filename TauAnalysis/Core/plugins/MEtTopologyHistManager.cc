@@ -48,7 +48,7 @@ void MEtTopologyHistManager::bookHistograms()
   hVratio_ = dqmStore.book1D("Vratio", "V_{anti}/V_{parallel}", 102, -0.01, +1.01);
 }
 
-void MEtTopologyHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void MEtTopologyHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<MEtTopologyHistManager::fillHistograms>:" << std::endl; 
 
@@ -62,7 +62,7 @@ void MEtTopologyHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
 
   for ( MEtTopologyCollection::const_iterator metTopology = metTopologyCollection->begin();
 	metTopology != metTopologyCollection->end(); ++metTopology ) {
-    if ( metTopology->Vparallel() > 0. ) hVratio_->Fill(metTopology->Vanti()/metTopology->Vparallel());
+    if ( metTopology->Vparallel() > 0. ) hVratio_->Fill(metTopology->Vanti()/metTopology->Vparallel(), evtWeight);
   }
 }
 

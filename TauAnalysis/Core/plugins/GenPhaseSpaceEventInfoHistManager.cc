@@ -80,7 +80,7 @@ void GenPhaseSpaceEventInfoHistManager::bookHistograms()
   hGenParticlesFromZsPdgId_ = dqmStore.book1D("GenParticlesFromZsPdgId", "GenParticlesFromZsPdgId", 49, -24.5, +24.5);
 }
 
-void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
   //std::cout << "<GenPhaseSpaceEventInfoHistManager::fillHistograms>:" << std::endl; 
@@ -93,18 +93,18 @@ void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, co
   edm::Handle<GenPhaseSpaceEventInfo> genPhaseSpaceEventInfo;
   evt.getByLabel(genPhaseSpaceEventInfoSource_, genPhaseSpaceEventInfo);
 
-  hPtHat_->Fill(genPhaseSpaceEventInfo->ptHat());
+  hPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), evtWeight);
 
-  hLeadingElectronPt_->Fill(genPhaseSpaceEventInfo->leadingGenElectron().pt());
-  hLeadingMuonPt_->Fill(genPhaseSpaceEventInfo->leadingGenMuon().pt());
-  hLeadingTauLeptonPt_->Fill(genPhaseSpaceEventInfo->leadingGenTauLepton().pt());
+  hLeadingElectronPt_->Fill(genPhaseSpaceEventInfo->leadingGenElectron().pt(), evtWeight);
+  hLeadingMuonPt_->Fill(genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
+  hLeadingTauLeptonPt_->Fill(genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
 
   hLeadingElectronPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-				   genPhaseSpaceEventInfo->leadingGenElectron().pt());
+				   genPhaseSpaceEventInfo->leadingGenElectron().pt(), evtWeight);
   hLeadingMuonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-			       genPhaseSpaceEventInfo->leadingGenMuon().pt());
+			       genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
   hLeadingTauLeptonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-				    genPhaseSpaceEventInfo->leadingGenTauLepton().pt());
+				    genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
 
   edm::Handle<reco::GenJetCollection> genJets;
   evt.getByLabel(genJetSource_, genJets);
@@ -119,7 +119,7 @@ void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, co
     }
   }
 
-  hNumGenJets_->Fill(numGenJets);
+  hNumGenJets_->Fill(numGenJets, evtWeight);
 
   edm::Handle<reco::GenParticleCollection> genParticlesFromZs;
   evt.getByLabel(genParticlesFromZsSource_, genParticlesFromZs);
@@ -130,21 +130,21 @@ void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, co
 	  genParticle != genParticlesFromZs->end(); ++genParticle ) {
       genZ += genParticle->p4();
       
-      hGenParticlesFromZsPt_->Fill(genParticle->pt());
-      hGenParticlesFromZsEta_->Fill(genParticle->eta());
+      hGenParticlesFromZsPt_->Fill(genParticle->pt(), evtWeight);
+      hGenParticlesFromZsEta_->Fill(genParticle->eta(), evtWeight);
 
       int pdgId = genParticle->pdgId();
       if ( pdgId >= -22 && pdgId <= +22 )
-	hGenParticlesFromZsPdgId_->Fill(pdgId);
+	hGenParticlesFromZsPdgId_->Fill(pdgId, evtWeight);
       else if ( pdgId < -22 )
-	hGenParticlesFromZsPdgId_->Fill(-24);
+	hGenParticlesFromZsPdgId_->Fill(-24, evtWeight);
       else if ( pdgId > +22 )
-	hGenParticlesFromZsPdgId_->Fill(+24);
+	hGenParticlesFromZsPdgId_->Fill(+24, evtWeight);
     }
 
-    hGenZsPt_->Fill(genZ.pt());
-    hGenZsEta_->Fill(genZ.eta());
-    hGenZsMass_->Fill(genZ.mass());
+    hGenZsPt_->Fill(genZ.pt(), evtWeight);
+    hGenZsEta_->Fill(genZ.eta(), evtWeight);
+    hGenZsMass_->Fill(genZ.mass(), evtWeight);
   }
 }
 

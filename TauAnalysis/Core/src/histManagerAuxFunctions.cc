@@ -5,14 +5,15 @@
 void fillLeptonIsoDepositHistograms(const pat::IsoDeposit* isoDeposit, 
 				    MonitorElement* isoDepositValProfile,
 				    MonitorElement* isoDepositEtaDistProfile, 
-				    MonitorElement* isoDepositPhiDistProfile)
+				    MonitorElement* isoDepositPhiDistProfile, 
+				    double evtWeight)
 {
   if ( isoDeposit ) {
     for ( pat::IsoDeposit::const_iterator it = isoDeposit->begin();
 	  it != isoDeposit->end(); ++it ) {
-      isoDepositValProfile->Fill(it->value());
-      isoDepositEtaDistProfile->Fill(TMath::Abs(it->eta() - isoDeposit->eta()));
-      isoDepositEtaDistProfile->Fill(TMath::Abs(it->phi() - isoDeposit->phi()));
+      isoDepositValProfile->Fill(it->value(), evtWeight);
+      isoDepositEtaDistProfile->Fill(TMath::Abs(it->eta() - isoDeposit->eta()), evtWeight);
+      isoDepositPhiDistProfile->Fill(TMath::Abs(it->phi() - isoDeposit->phi()), evtWeight);
     }
   }
 }

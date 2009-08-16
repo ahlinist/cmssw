@@ -23,14 +23,14 @@ class MuonHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*);
-  void fillMuonIsoHistograms(const pat::Muon&);
-  void fillMuonIsoConeSizeDepHistograms(const pat::Muon&);
+  void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*, double);
+  void fillMuonIsoHistograms(const pat::Muon&, double);
+  void fillMuonIsoConeSizeDepHistograms(const pat::Muon&, double);
 
 //--- configuration parameters
   edm::InputTag muonSrc_;

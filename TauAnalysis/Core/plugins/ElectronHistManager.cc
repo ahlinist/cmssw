@@ -200,7 +200,7 @@ void ElectronHistManager::bookHistograms()
   }
 }
 
-void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<ElectronHistManager::fillHistograms>:" << std::endl; 
 
@@ -216,7 +216,7 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
   evt.getByLabel(genParticleSrc_, genParticles);
 
   //std::cout << " patElectrons.size = " << patElectrons->size() << std::endl;
-  hNumElectrons_->Fill(patElectrons->size());
+  hNumElectrons_->Fill(patElectrons->size(), evtWeight);
 
   for ( std::vector<pat::Electron>::const_iterator patElectron = patElectrons->begin(); 
 	patElectron != patElectrons->end(); ++patElectron ) {
@@ -227,52 +227,52 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
 
     if ( requireGenElectronMatch_ && !matchesGenElectron(*patElectron) ) continue;
 
-    fillElectronHistograms(*patElectron, hElectronPt_, hElectronEta_, hElectronPhi_);
-    hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt());
+    fillElectronHistograms(*patElectron, hElectronPt_, hElectronEta_, hElectronPhi_, evtWeight);
+    hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt(), evtWeight);
 
 //--- compare reconstructed electron to generator level one;
 //    normalize difference between reconstructed and generated energy
 //    to expected energy dependence of resolution
     if ( patElectron->genLepton() ) {
       hElectronEnCompToGen_->Fill((patElectron->energy() - patElectron->genLepton()->energy())
-				  /TMath::Sqrt(patElectron->genLepton()->energy()));
-      hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta());
-      hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi());
+				  /TMath::Sqrt(patElectron->genLepton()->energy()), evtWeight);
+      hElectronThetaCompToGen_->Fill(patElectron->theta() - patElectron->genLepton()->theta(), evtWeight);
+      hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi(), evtWeight);
     }
 
     int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles);
     if ( matchingGenParticlePdgId == -1 ) {
-      hElectronMatchingGenParticlePdgId_->Fill(-1);
+      hElectronMatchingGenParticlePdgId_->Fill(-1, evtWeight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
-      hElectronMatchingGenParticlePdgId_->Fill(24);
+      hElectronMatchingGenParticlePdgId_->Fill(24, evtWeight);
     } else {
-      hElectronMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId));
+      hElectronMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), evtWeight);
     }
 
     if ( patElectron->gsfTrack().isAvailable() && !patElectron->gsfTrack().isNull() ) {
-      hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt());
+      hElectronTrackPt_->Fill(patElectron->gsfTrack()->pt(), evtWeight);
       if ( vertexSrc_.label() != "" ) {
 	edm::Handle<std::vector<reco::Vertex> > recoVertices;
 	evt.getByLabel(vertexSrc_, recoVertices);
 	if ( recoVertices->size() >= 1 ) {
 	  const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
-	  hElectronTrackIPxy_->Fill(patElectron->gsfTrack()->dxy(thePrimaryEventVertex.position()));
-	  hElectronTrackIPz_->Fill(patElectron->gsfTrack()->dz(thePrimaryEventVertex.position()));
+	  hElectronTrackIPxy_->Fill(patElectron->gsfTrack()->dxy(thePrimaryEventVertex.position()), evtWeight);
+	  hElectronTrackIPz_->Fill(patElectron->gsfTrack()->dz(thePrimaryEventVertex.position()), evtWeight);
 	}
       }
     }
 
     if ( patElectron->superCluster().isAvailable() && patElectron->superCluster().isNonnull() ) {
       if ( TMath::Abs(patElectron->superCluster()->eta()) < electronEtaMaxBarrel_ ) 
-	hElectronSuperclEnOverTrackMomBarrel_->Fill(patElectron->eSuperClusterOverP());
+	hElectronSuperclEnOverTrackMomBarrel_->Fill(patElectron->eSuperClusterOverP(), evtWeight);
       if ( TMath::Abs(patElectron->superCluster()->eta()) > electronEtaMinEndcap_ ) 
-      hElectronSuperclEnOverTrackMomEndcap_->Fill(patElectron->eSuperClusterOverP());
+	hElectronSuperclEnOverTrackMomEndcap_->Fill(patElectron->eSuperClusterOverP(), evtWeight);
     }
 
-    hElectronIdRobust_->Fill(patElectron->electronID("robust"));
+    hElectronIdRobust_->Fill(patElectron->electronID("robust"), evtWeight);
 
-    fillElectronIsoHistograms(*patElectron);
-    fillElectronIsoConeSizeDepHistograms(*patElectron);
+    fillElectronIsoHistograms(*patElectron, evtWeight);
+    fillElectronIsoConeSizeDepHistograms(*patElectron, evtWeight);
   }
 }
 
@@ -297,59 +297,60 @@ void ElectronHistManager::bookElectronHistograms(DQMStore& dqmStore, MonitorElem
 //
 
 void ElectronHistManager::fillElectronHistograms(const pat::Electron& patElectron, 
-						 MonitorElement* hElectronPt, MonitorElement* hElectronEta, MonitorElement* hElectronPhi)
+						 MonitorElement* hElectronPt, MonitorElement* hElectronEta, MonitorElement* hElectronPhi,
+						 double evtWeight)
 {
   //std::cout << "<ElectronHistManager::fillElectronHistograms>:" << std::endl;
 
-  hElectronPt->Fill(patElectron.pt());
-  hElectronEta->Fill(patElectron.eta());
-  hElectronPhi->Fill(patElectron.phi());
+  hElectronPt->Fill(patElectron.pt(), evtWeight);
+  hElectronEta->Fill(patElectron.eta(), evtWeight);
+  hElectronPhi->Fill(patElectron.phi(), evtWeight);
 }
 
-void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElectron)
+void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElectron, double evtWeight)
 {
   //std::cout << "<ElectronHistManager::fillElectronIsoHistograms>:" << std::endl;
 
-  hElectronTrkIsoPt_->Fill(patElectron.trackIso());
-  hElectronEcalIsoPt_->Fill(patElectron.ecalIso());
+  hElectronTrkIsoPt_->Fill(patElectron.trackIso(), evtWeight);
+  hElectronEcalIsoPt_->Fill(patElectron.ecalIso(), evtWeight);
   if ( patElectron.superCluster().isAvailable() && patElectron.superCluster().isNonnull() ) {
     if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
-      hElectronEcalIsoPtBarrel_->Fill(patElectron.ecalIso());
+      hElectronEcalIsoPtBarrel_->Fill(patElectron.ecalIso(), evtWeight);
     if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 
-      hElectronEcalIsoPtEndcap_->Fill(patElectron.ecalIso());
+      hElectronEcalIsoPtEndcap_->Fill(patElectron.ecalIso(), evtWeight);
   }
-  hElectronHcalIsoPt_->Fill(patElectron.hcalIso());
-  hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso());
-  hElectronTrkIsoPtRel_->Fill(patElectron.trackIso()/patElectron.pt());
-  hElectronEcalIsoPtRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+  hElectronHcalIsoPt_->Fill(patElectron.hcalIso(), evtWeight);
+  hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso(), evtWeight);
+  hElectronTrkIsoPtRel_->Fill(patElectron.trackIso()/patElectron.pt(), evtWeight);
+  hElectronEcalIsoPtRel_->Fill(patElectron.ecalIso()/patElectron.pt(), evtWeight);
   if ( patElectron.superCluster().isAvailable() && patElectron.superCluster().isNonnull() ) {
     if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
-      hElectronEcalIsoPtBarrelRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+      hElectronEcalIsoPtBarrelRel_->Fill(patElectron.ecalIso()/patElectron.pt(), evtWeight);
     if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 
-      hElectronEcalIsoPtEndcapRel_->Fill(patElectron.ecalIso()/patElectron.pt());
+      hElectronEcalIsoPtEndcapRel_->Fill(patElectron.ecalIso()/patElectron.pt(), evtWeight);
   }
-  hElectronHcalIsoPtRel_->Fill(patElectron.hcalIso()/patElectron.pt());
-  hElectronIsoSumPtRel_->Fill((patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso())/patElectron.pt());
+  hElectronHcalIsoPtRel_->Fill(patElectron.hcalIso()/patElectron.pt(), evtWeight);
+  hElectronIsoSumPtRel_->Fill((patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso())/patElectron.pt(), evtWeight);
   
   //std::cout << " particleIso = " << patElectron.particleIso() << std::endl;
   //std::cout << " chargedParticleIso = " << patElectron.chargedParticleIso() << std::endl;
   //std::cout << " neutralParticleIso = " << patElectron.neutralParticleIso() << std::endl;
   //std::cout << " gammaParticleIso = " << patElectron.gammaParticleIso() << std::endl;
   
-  hElectronParticleFlowIsoPt_->Fill(patElectron.particleIso());
-  hElectronPFChargedHadronIsoPt_->Fill(patElectron.chargedParticleIso());
-  hElectronPFNeutralHadronIsoPt_->Fill(patElectron.neutralParticleIso());
-  hElectronPFGammaIsoPt_->Fill(patElectron.gammaParticleIso());
+  hElectronParticleFlowIsoPt_->Fill(patElectron.particleIso(), evtWeight);
+  hElectronPFChargedHadronIsoPt_->Fill(patElectron.chargedParticleIso(), evtWeight);
+  hElectronPFNeutralHadronIsoPt_->Fill(patElectron.neutralParticleIso(), evtWeight);
+  hElectronPFGammaIsoPt_->Fill(patElectron.gammaParticleIso(), evtWeight);
 
   fillLeptonIsoDepositHistograms(patElectron.trackerIsoDeposit(), 
-				 hElectronTrkIsoValProfile_, hElectronTrkIsoEtaDistProfile_, hElectronTrkIsoPhiDistProfile_);
+				 hElectronTrkIsoValProfile_, hElectronTrkIsoEtaDistProfile_, hElectronTrkIsoPhiDistProfile_, evtWeight);
   fillLeptonIsoDepositHistograms(patElectron.ecalIsoDeposit(), 
-				 hElectronEcalIsoValProfile_, hElectronEcalIsoEtaDistProfile_, hElectronEcalIsoPhiDistProfile_);
+				 hElectronEcalIsoValProfile_, hElectronEcalIsoEtaDistProfile_, hElectronEcalIsoPhiDistProfile_, evtWeight);
   fillLeptonIsoDepositHistograms(patElectron.hcalIsoDeposit(), 
-				 hElectronHcalIsoValProfile_, hElectronHcalIsoEtaDistProfile_, hElectronHcalIsoPhiDistProfile_);
+				 hElectronHcalIsoValProfile_, hElectronHcalIsoEtaDistProfile_, hElectronHcalIsoPhiDistProfile_, evtWeight);
 }
 
-void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electron& patElectron)
+void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electron& patElectron, double evtWeight)
 {
   //std::cout << "<ElectronHistManager::fillElectronIsoConeSizeDepHistograms>:" << std::endl;
 
@@ -357,36 +358,36 @@ void ElectronHistManager::fillElectronIsoConeSizeDepHistograms(const pat::Electr
     float isoConeSize_i = iConeSize*electronIsoConeSizeIncr_;
     
     float electronTrkIsoDeposit_i = patElectron.trackerIsoDeposit()->countWithin(isoConeSize_i, electronTrkIsoParam_, false);
-    hElectronTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronTrkIsoDeposit_i);
+    hElectronTrkIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronTrkIsoDeposit_i, evtWeight);
     
     float electronEcalIsoDeposit_i = patElectron.ecalIsoDeposit()->countWithin(isoConeSize_i, electronEcalIsoParam_, false);
-    hElectronEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronEcalIsoDeposit_i);
+    hElectronEcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronEcalIsoDeposit_i, evtWeight);
 
     float electronHcalIsoDeposit_i = patElectron.hcalIsoDeposit()->countWithin(isoConeSize_i, electronHcalIsoParam_, false);
-    hElectronHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronHcalIsoDeposit_i);
+    hElectronHcalIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronHcalIsoDeposit_i, evtWeight);
 
     if ( patElectron.isoDeposit(pat::ParticleIso) ) {
       double electronParticleFlowIsoDeposit_i 
 	= patElectron.isoDeposit(pat::ParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
-      hElectronParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronParticleFlowIsoDeposit_i);
+      hElectronParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronParticleFlowIsoDeposit_i, evtWeight);
     }
     
     if ( patElectron.isoDeposit(pat::ChargedParticleIso) ) {
       double electronPFChargedHadronIsoDeposit_i 
 	= patElectron.isoDeposit(pat::ChargedParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
-      hElectronPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFChargedHadronIsoDeposit_i);
+      hElectronPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFChargedHadronIsoDeposit_i, evtWeight);
     }
     
     if ( patElectron.isoDeposit(pat::NeutralParticleIso) ) {
       double electronPFNeutralHadronIsoDeposit_i 
 	= patElectron.isoDeposit(pat::NeutralParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
-      hElectronPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFNeutralHadronIsoDeposit_i);
+      hElectronPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFNeutralHadronIsoDeposit_i, evtWeight);
     }
 
     if ( patElectron.isoDeposit(pat::GammaParticleIso) ) {
       double electronPFGammaIsoDeposit_i 
 	= patElectron.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, electronParticleFlowIsoParam_, false);
-      hElectronPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFGammaIsoDeposit_i);
+      hElectronPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(electronPFGammaIsoDeposit_i, evtWeight);
     }
   }
 }

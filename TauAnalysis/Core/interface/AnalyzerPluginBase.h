@@ -10,7 +10,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: AnalyzerPluginBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: AnalyzerPluginBase.h,v 1.1 2009/06/12 14:47:34 veelken Exp $
  *
  */
 
@@ -28,7 +28,7 @@ class AnalyzerPluginBase
   virtual ~AnalyzerPluginBase() {}
 
   virtual void beginJob() = 0;
-  virtual void analyze(const edm::Event&, const edm::EventSetup&) = 0;
+  virtual void analyze(const edm::Event&, const edm::EventSetup&, double) = 0;
   virtual void endJob() = 0;
 };
 

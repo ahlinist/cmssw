@@ -52,7 +52,7 @@ void VertexHistManager::bookHistograms()
   hVertexChi2Prob_ = dqmStore.book1D("VertexChi2Prob", "VertexChi2Prob", 102, -0.01, 1.01);
 }
 
-void VertexHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void VertexHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
   //std::cout << "<VertexHistManager::fillHistograms>:" << std::endl; 
@@ -67,17 +67,17 @@ void VertexHistManager::fillHistograms(const edm::Event& evt, const edm::EventSe
   if ( recoVertices->size() >= 1 ) {
     const reco::Vertex& thePrimaryEventVertex = (*recoVertices->begin());
 
-    hVertexX_->Fill(thePrimaryEventVertex.x());
-    hVertexSigmaX_->Fill(thePrimaryEventVertex.xError());
-    hVertexY_->Fill(thePrimaryEventVertex.y());
-    hVertexSigmaY_->Fill(thePrimaryEventVertex.yError());
-    hVertexXvsY_->Fill(thePrimaryEventVertex.x(), thePrimaryEventVertex.y());
-    hVertexZ_->Fill(thePrimaryEventVertex.z());
-    hVertexSigmaZ_->Fill(thePrimaryEventVertex.zError());
+    hVertexX_->Fill(thePrimaryEventVertex.x(), evtWeight);
+    hVertexSigmaX_->Fill(thePrimaryEventVertex.xError(), evtWeight);
+    hVertexY_->Fill(thePrimaryEventVertex.y(), evtWeight);
+    hVertexSigmaY_->Fill(thePrimaryEventVertex.yError(), evtWeight);
+    hVertexXvsY_->Fill(thePrimaryEventVertex.x(), thePrimaryEventVertex.y(), evtWeight);
+    hVertexZ_->Fill(thePrimaryEventVertex.z(), evtWeight);
+    hVertexSigmaZ_->Fill(thePrimaryEventVertex.zError(), evtWeight);
 
-    hVertexNumTracks_->Fill(thePrimaryEventVertex.tracksSize());
+    hVertexNumTracks_->Fill(thePrimaryEventVertex.tracksSize(), evtWeight);
 
-    hVertexChi2Prob_->Fill(TMath::Prob(thePrimaryEventVertex.chi2(), TMath::Nint(thePrimaryEventVertex.ndof())));
+    hVertexChi2Prob_->Fill(TMath::Prob(thePrimaryEventVertex.chi2(), TMath::Nint(thePrimaryEventVertex.ndof())), evtWeight);
   }
 }
 

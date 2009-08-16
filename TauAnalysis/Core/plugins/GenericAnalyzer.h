@@ -3,6 +3,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -33,7 +34,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual bool filter_cumulative(const edm::Event&, const edm::EventSetup&) { return true; }
     virtual bool filter_individual(const edm::Event&, const edm::EventSetup&) { return true; }
     virtual void beginJob() {}
-    virtual void analyze(const edm::Event&, const edm::EventSetup&) {}
+    virtual void analyze(const edm::Event&, const edm::EventSetup&, double) {}
     virtual void endJob() {}
     virtual int type() const = 0;
     enum { kUndefined, kFilter, kAnalyzer };
@@ -59,7 +60,7 @@ class GenericAnalyzer : public edm::EDAnalyzer
     virtual ~analysisSequenceEntry_analyzer();
     void print() const;
     void beginJob();
-    void analyze(const edm::Event&, const edm::EventSetup&);
+    void analyze(const edm::Event&, const edm::EventSetup&, double);
     void endJob();
     int type() const { return analysisSequenceEntry::kAnalyzer; }
     std::list<AnalyzerPluginBase*> analyzerPlugins_;
@@ -79,6 +80,9 @@ class GenericAnalyzer : public edm::EDAnalyzer
   void addAnalyzers(const vstring&, const std::string&, const std::string&, const vstring&);
 
   std::string name_;
+
+  typedef std::vector<edm::InputTag> vInputTag;
+  vInputTag eventWeightSrc_;
 
   std::map<std::string, edm::ParameterSet> cfgFilters_;
   std::map<std::string, edm::ParameterSet> cfgAnalyzers_;

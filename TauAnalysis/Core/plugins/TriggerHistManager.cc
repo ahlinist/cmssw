@@ -73,7 +73,7 @@ void TriggerHistManager::bookHistograms()
   }
 }
 
-void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
   //std::cout << "<TriggerHistManager::fillHistograms>:" << std::endl; 
@@ -102,7 +102,7 @@ void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventS
 	if ( l1Bit_i == (*l1Bit) ) {
 	  int index = (*l1GtObjectMap).algoBitNumber();
 	  bool isTriggered = l1GtDecision[index];	
-	  hL1triggerBits_[*l1Bit]->Fill(isTriggered);
+	  hL1triggerBits_[*l1Bit]->Fill(isTriggered, evtWeight);
 	  isMatch = true;
 	}
       }
@@ -126,7 +126,7 @@ void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventS
     unsigned int index = triggerNames.triggerIndex(*hltPath);
     if ( index < triggerNames.size() ) {
       bool isTriggered = ( hltResults->accept(index) ) ? true : false;
-      hHLTresults_[*hltPath]->Fill(isTriggered);
+      hHLTresults_[*hltPath]->Fill(isTriggered, evtWeight);
     } else {
       edm::LogError ("TriggerResultEventSelector::operator") << " Undefined HLT path = " << (*hltPath) << " --> skipping !!";
       continue;

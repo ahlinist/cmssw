@@ -16,12 +16,18 @@
 
 template<typename T1, typename T2>
 PATLeptonRecoilEnergyHistManager<T1,T2>::PATLeptonRecoilEnergyHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : leptonWeightExtractor_(0),
+    dqmError_(0)
 {
   //std::cout << "<PATLeptonRecoilEnergyHistManager::PATLeptonRecoilEnergyHistManager>:" << std::endl;
 
   leptonRecoilEnergySrc_ = cfg.getParameter<edm::InputTag>("leptonRecoilEnergySource");
   //std::cout << " leptonRecoilEnergySrc = " << leptonRecoilEnergySrc_ << std::endl;
+
+  if ( cfg.exists("leptonWeightSource") ) {
+    leptonWeightSrc_ = cfg.getParameter<std::string>("leptonWeightSource");
+    leptonWeightExtractor_ = new FakeRateJetWeightExtractor<T1>(leptonWeightSrc_);
+  }
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -53,7 +59,7 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::bookHistograms()
 }
 
 template<typename T1, typename T2>
-void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<PATLeptonRecoilEnergyHistManager::fillHistograms>:" << std::endl; 
 
@@ -66,10 +72,25 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& e
   edm::Handle<PATLeptonRecoilEnergyCollection> leptonRecoilEnergyCollection;
   evt.getByLabel(leptonRecoilEnergySrc_, leptonRecoilEnergyCollection);
   
+  double leptonWeightSum = 0.;
+  if ( leptonWeightExtractor_ ) {
+    for ( typename PATLeptonRecoilEnergyCollection::const_iterator leptonRecoilEnergy = leptonRecoilEnergyCollection->begin();
+	  leptonRecoilEnergy != leptonRecoilEnergyCollection->end(); ++leptonRecoilEnergy ) {
+      leptonWeightSum += (*leptonWeightExtractor_)(*leptonRecoilEnergy->lepton());
+    }
+  }
+
   for ( typename PATLeptonRecoilEnergyCollection::const_iterator leptonRecoilEnergy = leptonRecoilEnergyCollection->begin();
 	leptonRecoilEnergy != leptonRecoilEnergyCollection->end(); ++leptonRecoilEnergy ) {
-    hEtSum_->Fill(leptonRecoilEnergy->etSum());
-    hNumObjects_->Fill(leptonRecoilEnergy->recoilEnergyObjects().size());
+
+    double weight = evtWeight;
+    if ( leptonWeightExtractor_ ) {
+      double leptonWeight = (*leptonWeightExtractor_)(*leptonRecoilEnergy->lepton());
+      weight *= (leptonWeight/leptonWeightSum);
+    }
+
+    hEtSum_->Fill(leptonRecoilEnergy->etSum(), weight);
+    hNumObjects_->Fill(leptonRecoilEnergy->recoilEnergyObjects().size(), weight);
   }
 }
 

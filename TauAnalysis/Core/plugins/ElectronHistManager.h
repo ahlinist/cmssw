@@ -23,14 +23,14 @@ class ElectronHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*);
-  void fillElectronIsoHistograms(const pat::Electron&);
-  void fillElectronIsoConeSizeDepHistograms(const pat::Electron&);
+  void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
+  void fillElectronIsoHistograms(const pat::Electron&, double);
+  void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
 
 //--- configuration parameters
   edm::InputTag electronSrc_;
