@@ -10,14 +10,14 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'Ztautau',
             'Zee',
-            #'ZtautauPlusJets',
             #'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
-            'gammaPlusJetsSum'
+            'gammaPlusJetsSum',
+            'Ztautau'
+            #'ZtautauPlusJets'
         )
     ),
     xAxis = cms.string('unlabeled'),
@@ -27,14 +27,14 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-        'Ztautau',
-        'Zee',
-        #'ZtautauPlusJets',
-        #'ZeePlusJets',
-        'WplusJets',
-        'TTplusJets',
-        'qcdSum',
-        'gammaPlusJetsSum'
+         'Zee',
+         #'ZeePlusJets',
+         'WplusJets',
+         'TTplusJets',
+         'qcdSum',
+         'gammaPlusJetsSum',
+         'Ztautau'
+         #'ZtautauPlusJets' 
     )
 )
 drawJobConfigurator_ZtoElecTau = drawJobConfigurator(
