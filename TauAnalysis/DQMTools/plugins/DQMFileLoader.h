@@ -5,8 +5,8 @@
  *  
  *  Class to load DQM monitoring elements from ROOT files into DQMStore
  *
- *  $Date: 2009/01/21 17:34:57 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/03/04 10:09:27 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -36,6 +36,7 @@ class DQMFileLoader : public edm::EDAnalyzer
     vstring inputFileNames_;
     double scaleFactor_;
     std::string dqmDirectory_store_;
+    bool hasBeenHarvested_;
     int cfgError_;
   };
 

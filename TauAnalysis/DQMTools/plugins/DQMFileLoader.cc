@@ -99,6 +99,8 @@ DQMFileLoader::cfgEntryFileSet::cfgEntryFileSet(const std::string& name, const e
   dqmDirectory_store_ = ( cfg.exists("dqmDirectory_store") ) ? cfg.getParameter<std::string>("dqmDirectory_store") : "";
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
+  hasBeenHarvested_ = ( cfg.exists("hasBeenHarvested") ) ? cfg.getParameter<bool>("hasBeenHarvested") : false;
+
   if ( verbosity ) print();
 }
 
@@ -139,7 +141,8 @@ DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
 //    (otherwise histograms contained in previous file get overwritten once histograms are loaded from the next files)
   for ( std::map<std::string, cfgEntryFileSet>::const_iterator fileSet = fileSets_.begin();
 	fileSet != fileSets_.end(); ++fileSet ) {
-    if ( fileSet->second.dqmDirectory_store_ == "" && fileSet->second.inputFileNames_.size() > 1 ) {
+    if ( fileSet->second.dqmDirectory_store_ == "" && fileSet->second.inputFileNames_.size() > 1 && 
+	 (!fileSet->second.hasBeenHarvested_) ) {
       edm::LogError ("DQMFileLoader") << " dqmDirectory_store undefined for fileSet = " << fileSet->second.name_ << " !!";
       cfgError_ = 1;
     }
