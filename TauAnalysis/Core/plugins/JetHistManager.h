@@ -23,13 +23,13 @@ class JetHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   void bookJetHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillJetHistograms(const pat::Jet&, MonitorElement*, MonitorElement*, MonitorElement*);
-  void fillNumCentralJetsToBeVetoesHistograms(const std::vector<pat::Jet>&, MonitorElement*, double, double, double);
+  void fillJetHistograms(const pat::Jet&, MonitorElement*, MonitorElement*, MonitorElement*, double);
+  void fillNumCentralJetsToBeVetoesHistograms(const std::vector<pat::Jet>&, MonitorElement*, double, double, double, double);
 
 //--- configuration parameters
   edm::InputTag jetSrc_;

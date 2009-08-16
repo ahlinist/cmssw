@@ -48,7 +48,7 @@ void PFCandidateHistManager::bookHistograms()
   hPFCandidatePtVsEta_ = dqmStore.book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
 }
 
-void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<PFCandidateHistManager::fillHistograms>:" << std::endl; 
 
@@ -63,8 +63,8 @@ void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
   for ( std::vector<reco::PFCandidate>::const_iterator pfCandidate = pfCandidates->begin(); 
 	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
   
-    fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_);
-    hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt());
+    fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, evtWeight);
+    hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), evtWeight);
   }
 }
 
@@ -88,13 +88,15 @@ void PFCandidateHistManager::bookPFCandidateHistograms(DQMStore& dqmStore, Monit
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void PFCandidateHistManager::fillPFCandidateHistograms(const reco::PFCandidate& pfCandidate, MonitorElement* hPFCandidatePt, MonitorElement* hPFCandidateEta, MonitorElement* hPFCandidatePhi)
+void PFCandidateHistManager::fillPFCandidateHistograms(const reco::PFCandidate& pfCandidate, 
+						       MonitorElement* hPFCandidatePt, MonitorElement* hPFCandidateEta, MonitorElement* hPFCandidatePhi, 
+						       double evtWeight)
 {
   //std::cout << "<PFCandidateHistManager::fillPFCandidateHistograms>:" << std::endl;
 
-  hPFCandidatePt->Fill(pfCandidate.pt());
-  hPFCandidateEta->Fill(pfCandidate.eta());
-  hPFCandidatePhi->Fill(pfCandidate.phi());
+  hPFCandidatePt->Fill(pfCandidate.pt(), evtWeight);
+  hPFCandidateEta->Fill(pfCandidate.eta(), evtWeight);
+  hPFCandidatePhi->Fill(pfCandidate.phi(), evtWeight);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: HistManagerBase.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.2 2009/06/12 14:48:27 veelken Exp $
  *
  */
 
@@ -29,13 +29,13 @@ class HistManagerBase : public AnalyzerPluginBase
   virtual ~HistManagerBase() {}
 
   void beginJob() { bookHistograms(); }
-  void analyze(const edm::Event& evt, const edm::EventSetup& es) { fillHistograms(evt, es); }
+  void analyze(const edm::Event& evt, const edm::EventSetup& es, double evtWeight = 1.) { fillHistograms(evt, es, evtWeight); }
   void endJob() {}
 
  protected:
   // methods for booking and filling of histograms
   virtual void bookHistograms() = 0;
-  virtual void fillHistograms(const edm::Event&, const edm::EventSetup&) = 0;
+  virtual void fillHistograms(const edm::Event&, const edm::EventSetup&, double) = 0;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

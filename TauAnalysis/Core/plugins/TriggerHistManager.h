@@ -23,7 +23,7 @@ class TriggerHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
   edm::InputTag l1GtReadoutRecordSrc_;

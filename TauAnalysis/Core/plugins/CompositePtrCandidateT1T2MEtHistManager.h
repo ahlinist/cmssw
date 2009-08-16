@@ -8,6 +8,7 @@
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+#include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 #include "TauAnalysis/RecoTools/interface/PATLeptonTrackExtractor.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
@@ -25,15 +26,24 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
   edm::InputTag vertexSrc_;
 
+  std::string diTauLeg1WeightSrc_;
+  std::string diTauLeg2WeightSrc_;
+  
   std::string dqmDirectory_store_;
 
   bool requireGenMatch_;
+
+//--- "helper" class for accessing weight values
+//    associated to second tau decay products
+//    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
+  FakeRateJetWeightExtractor<T1>* diTauLeg1WeightExtractor_;
+  FakeRateJetWeightExtractor<T2>* diTauLeg2WeightExtractor_;
 
 //--- "helper" classes for accessing the tracks 
 //    of the two tau decay products

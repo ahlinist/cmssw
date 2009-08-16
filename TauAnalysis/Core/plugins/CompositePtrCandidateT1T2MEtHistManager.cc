@@ -25,7 +25,8 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : diTauLeg2WeightExtractor_(0),
+    dqmError_(0)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -34,6 +35,16 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  if ( cfg.exists("diTauLeg1WeightSource") ) {
+    diTauLeg1WeightSrc_ = cfg.getParameter<std::string>("diTauLeg1WeightSource");
+    diTauLeg1WeightExtractor_ = new FakeRateJetWeightExtractor<T1>(diTauLeg1WeightSrc_);
+  }
+
+  if ( cfg.exists("diTauLeg2WeightSource") ) {
+    diTauLeg2WeightSrc_ = cfg.getParameter<std::string>("diTauLeg2WeightSource");
+    diTauLeg2WeightExtractor_ = new FakeRateJetWeightExtractor<T2>(diTauLeg2WeightSrc_);
+  }
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -105,7 +116,17 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
 }
 
 template<typename T1, typename T2>
-void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate,
+			       FakeRateJetWeightExtractor<T1>* diTauLeg1WeightExtractor,
+			       FakeRateJetWeightExtractor<T2>* diTauLeg2WeightExtractor)
+{
+  double diTauLeg1Weight = ( diTauLeg1WeightExtractor ) ? (*diTauLeg1WeightExtractor)(*diTauCandidate.leg1()) : 1.;
+  double diTauLeg2Weight = ( diTauLeg2WeightExtractor ) ? (*diTauLeg2WeightExtractor)(*diTauCandidate.leg2()) : 1.;
+  return (diTauLeg1Weight*diTauLeg2Weight);
+}
+
+template<typename T1, typename T2>
+void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistograms>:" << std::endl; 
 
@@ -123,8 +144,20 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
   edm::Handle<std::vector<reco::Vertex> > recoVertices;
   evt.getByLabel(vertexSrc_, recoVertices);
 
+  double diTauCandidateWeightSum = 0.;
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
 	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
+    diTauCandidateWeightSum += getDiTauCandidateWeight(*diTauCandidate, diTauLeg1WeightExtractor_, diTauLeg2WeightExtractor_);
+  }
+
+  for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
+	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
+
+    double weight = evtWeight;
+    if ( diTauLeg1WeightExtractor_ || diTauLeg2WeightExtractor_ ) {
+      double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate, diTauLeg1WeightExtractor_, diTauLeg2WeightExtractor_);
+      weight *= (diTauCandidateWeight/diTauCandidateWeightSum);
+    }
 
     //bool isGenMatched = matchesGenCandidatePair(*diTauCandidate);
     //std::cout << " Pt = " << diTauCandidate->pt() << ", phi = " << diTauCandidate->phi() << ", visMass = " << diTauCandidate->p4Vis().mass() << std::endl;
@@ -132,11 +165,11 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
 
     if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
 
-    hDiTauCandidatePt_->Fill(diTauCandidate->pt());
-    hDiTauCandidateEta_->Fill(diTauCandidate->eta());
-    hDiTauCandidatePhi_->Fill(diTauCandidate->phi());
-    hDiTauCandidateCharge_->Fill(diTauCandidate->charge());
-    hDiTauCandidateMass_->Fill(diTauCandidate->mass());
+    hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
+    hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);
+    hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
+    hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
+    hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
 
     const reco::Track* trackLeg1 = trackExtractorLeg1_(*diTauCandidate->leg1());
     const reco::Track* trackLeg2 = trackExtractorLeg2_(*diTauCandidate->leg2());
@@ -147,42 +180,42 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
       double trackLeg1IpSig = trackLeg1->dxy(thePrimaryEventVertex.position())/trackLeg1->dxyError();
       double trackLeg2IpSig = trackLeg2->dxy(thePrimaryEventVertex.position())/trackLeg2->dxyError();
 
-      hDiTauCandidateImpParSig_->Fill(TMath::Sqrt(trackLeg1IpSig*trackLeg1IpSig + trackLeg2IpSig*trackLeg2IpSig));
+      hDiTauCandidateImpParSig_->Fill(TMath::Sqrt(trackLeg1IpSig*trackLeg1IpSig + trackLeg2IpSig*trackLeg2IpSig), weight);
     }
 
-    hVisPt_->Fill(diTauCandidate->p4Vis().pt());
-    hVisPhi_->Fill(diTauCandidate->p4Vis().phi());
-    hVisMass_->Fill(diTauCandidate->p4Vis().mass());
+    hVisPt_->Fill(diTauCandidate->p4Vis().pt(), weight);
+    hVisPhi_->Fill(diTauCandidate->p4Vis().phi(), weight);
+    hVisMass_->Fill(diTauCandidate->p4Vis().mass(), weight);
 
     if ( diTauCandidate->collinearApproxIsValid() ) {
-      hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta());
-      hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass());
-      hCollinearApproxMassVsPt_->Fill(diTauCandidate->p4CollinearApprox().mass(), diTauCandidate->p4CollinearApprox().pt());
-      hCollinearApproxMassVsDPhi12_->Fill(diTauCandidate->p4CollinearApprox().mass(), diTauCandidate->dPhi12());
-      hCollinearApproxX1_->Fill(diTauCandidate->x1CollinearApprox());
-      hCollinearApproxX2_->Fill(diTauCandidate->x2CollinearApprox());
-      hCollinearApproxX1vsX2_->Fill(diTauCandidate->x1CollinearApprox(), diTauCandidate->x2CollinearApprox());
+      hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
+      hCollinearApproxMass_->Fill(diTauCandidate->p4CollinearApprox().mass(), weight);
+      hCollinearApproxMassVsPt_->Fill(diTauCandidate->p4CollinearApprox().mass(), diTauCandidate->p4CollinearApprox().pt(), weight);
+      hCollinearApproxMassVsDPhi12_->Fill(diTauCandidate->p4CollinearApprox().mass(), diTauCandidate->dPhi12(), weight);
+      hCollinearApproxX1_->Fill(diTauCandidate->x1CollinearApprox(), weight);
+      hCollinearApproxX2_->Fill(diTauCandidate->x2CollinearApprox(), weight);
+      hCollinearApproxX1vsX2_->Fill(diTauCandidate->x1CollinearApprox(), diTauCandidate->x2CollinearApprox(), weight);
     }
 
-    hCDFmethodMass_->Fill(diTauCandidate->p4CDFmethod().mass());
+    hCDFmethodMass_->Fill(diTauCandidate->p4CDFmethod().mass(), weight);
 
-    hMt12MET_->Fill(diTauCandidate->mt12MET());
+    hMt12MET_->Fill(diTauCandidate->mt12MET(), weight);
 
-    hMt1MET_->Fill(diTauCandidate->mt1MET());
-    hMt2MET_->Fill(diTauCandidate->mt2MET());
+    hMt1MET_->Fill(diTauCandidate->mt1MET(), weight);
+    hMt2MET_->Fill(diTauCandidate->mt2MET(), weight);
 
-    hDPhi12_->Fill(diTauCandidate->dPhi12());
-    hDR12_->Fill(diTauCandidate->dR12());
+    hDPhi12_->Fill(diTauCandidate->dPhi12(), weight);
+    hDR12_->Fill(diTauCandidate->dR12(), weight);
 
-    hVisEtaMin_->Fill(diTauCandidate->visEtaMin());
-    hVisEtaMax_->Fill(diTauCandidate->visEtaMax());
+    hVisEtaMin_->Fill(diTauCandidate->visEtaMin(), weight);
+    hVisEtaMax_->Fill(diTauCandidate->visEtaMax(), weight);
 
-    hDPhi1MET_->Fill(diTauCandidate->dPhi1MET());
-    hDPhi2MET_->Fill(diTauCandidate->dPhi2MET());
-    hDPhi1METvsDPhi2MET_->Fill(diTauCandidate->dPhi1MET(), diTauCandidate->dPhi2MET());
+    hDPhi1MET_->Fill(diTauCandidate->dPhi1MET(), weight);
+    hDPhi2MET_->Fill(diTauCandidate->dPhi2MET(), weight);
+    hDPhi1METvsDPhi2MET_->Fill(diTauCandidate->dPhi1MET(), diTauCandidate->dPhi2MET(), weight);
 
-    hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta());
-    hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis());
+    hPzetaCorr_->Fill(diTauCandidate->pZetaVis(), diTauCandidate->pZeta(), weight);
+    hPzetaDiff_->Fill(diTauCandidate->pZeta() - 1.5*diTauCandidate->pZetaVis(), weight);
   }
 }
 

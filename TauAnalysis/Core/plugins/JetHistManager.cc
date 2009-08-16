@@ -137,7 +137,7 @@ double compAlpha(const pat::Jet& jet)
   return ( jet.et() > 0 ) ? sumPt/jet.et() : -1.;
 }
 
-void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es)
+void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<JetHistManager::fillHistograms>:" << std::endl; 
 
@@ -151,7 +151,7 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
   //std::cout << " patJets.size = " << patJets->size() << std::endl;
 
-  hNumJets_->Fill(patJets->size());
+  hNumJets_->Fill(patJets->size(), evtWeight);
 
   std::vector<unsigned int> nbtags;
   for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
@@ -166,32 +166,32 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     if ( requireGenJetMatch_ && !matchesGenJet(*patJet) ) continue;
 
-    fillJetHistograms(*patJet, hJetPt_, hJetEta_, hJetPhi_);
-    hJetPtVsEta_->Fill(patJet->eta(), patJet->pt());
+    fillJetHistograms(*patJet, hJetPt_, hJetEta_, hJetPhi_, evtWeight);
+    hJetPtVsEta_->Fill(patJet->eta(), patJet->pt(), evtWeight);
 
-    hJetAlpha_->Fill(compAlpha(*patJet));
+    hJetAlpha_->Fill(compAlpha(*patJet), evtWeight);
     unsigned numTracks = 0;
     double maxPt = 0.;
     for ( reco::TrackRefVector::const_iterator track = patJet->associatedTracks().begin();
 	  track != patJet->associatedTracks().end(); ++track ) {
       ++numTracks;
-      hJetTrkPt_->Fill((*track)->pt());
+      hJetTrkPt_->Fill((*track)->pt(), evtWeight);
       if ( (*track)->pt() > maxPt ) maxPt = (*track)->pt();
     }
-    hJetNumTracks_->Fill(numTracks);
-    if ( numTracks > 0 ) hJetLeadTrkPt_->Fill(maxPt);
+    hJetNumTracks_->Fill(numTracks, evtWeight);
+    if ( numTracks > 0 ) hJetLeadTrkPt_->Fill(maxPt, evtWeight);
 
     
     for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
-      hBtagDisc_[i]->Fill(patJet->bDiscriminator(bTaggingDiscriminators_[i]));
+      hBtagDisc_[i]->Fill(patJet->bDiscriminator(bTaggingDiscriminators_[i]), evtWeight);
       if (patJet->bDiscriminator(bTaggingDiscriminators_[i])> bTaggingDiscriminatorThresholds_[i]) {
         nbtags[i]++;
-        hPtBtags_[i]->Fill(patJet->pt());
+        hPtBtags_[i]->Fill(patJet->pt(), evtWeight);
       }
     }
   }
   for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
-    hNumBtags_[i]->Fill(nbtags[i]);
+    hNumBtags_[i]->Fill(nbtags[i], evtWeight);
   }
 
   int index = 0;
@@ -201,7 +201,7 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 	  etaMax != centralJetsToBeVetoedEtaMax_.end(); ++etaMax ) {
       for ( vdouble::const_iterator alphaMin = centralJetsToBeVetoedAlphaMin_.begin();
 	    alphaMin != centralJetsToBeVetoedAlphaMin_.end(); ++alphaMin ) {
-	fillNumCentralJetsToBeVetoesHistograms(*patJets, hNumCentralJetsToBeVetoed_[index], *etMin, *etaMax, *alphaMin);
+	fillNumCentralJetsToBeVetoesHistograms(*patJets, hNumCentralJetsToBeVetoed_[index], *etMin, *etaMax, *alphaMin, evtWeight);
 	++index;
       }
     }
@@ -228,24 +228,26 @@ void JetHistManager::bookJetHistograms(DQMStore& dqmStore, MonitorElement*& hJet
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void JetHistManager::fillJetHistograms(const pat::Jet& patJet, MonitorElement* hJetPt, MonitorElement* hJetEta, MonitorElement* hJetPhi)
+void JetHistManager::fillJetHistograms(const pat::Jet& patJet, 
+				       MonitorElement* hJetPt, MonitorElement* hJetEta, MonitorElement* hJetPhi,
+				       double evtWeight)
 {
   //std::cout << "<JetHistManager::fillJetHistograms>:" << std::endl;
 
-  hJetPt->Fill(patJet.pt());
-  hJetEta->Fill(patJet.eta());
-  hJetPhi->Fill(patJet.phi());
+  hJetPt->Fill(patJet.pt(), evtWeight);
+  hJetEta->Fill(patJet.eta(), evtWeight);
+  hJetPhi->Fill(patJet.phi(), evtWeight);
 }
 
 void JetHistManager::fillNumCentralJetsToBeVetoesHistograms(const std::vector<pat::Jet>& patJets, MonitorElement* hNumJets,
-							    double etMin, double etaMax, double alphaMin)
+							    double etMin, double etaMax, double alphaMin, double evtWeight)
 {
   unsigned numJets = 0;
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets.begin();
 	patJet != patJets.end(); ++patJet ) {
     if ( patJet->et() >= etMin && patJet->eta() <= etaMax && compAlpha(*patJet) >= alphaMin ) ++numJets;
   }
-  hNumJets->Fill(numJets);
+  hNumJets->Fill(numJets, evtWeight);
 }
 
 

@@ -24,12 +24,12 @@ class PFCandidateHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   void bookPFCandidateHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillPFCandidateHistograms(const reco::PFCandidate&, MonitorElement*, MonitorElement*, MonitorElement*);
+  void fillPFCandidateHistograms(const reco::PFCandidate&, MonitorElement*, MonitorElement*, MonitorElement*, double);
 
 //--- configuration parameters
   edm::InputTag pfCandidateSrc_;

@@ -117,11 +117,11 @@ void GenericAnalyzer::analysisSequenceEntry_analyzer::beginJob()
   }
 }
 
-void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
+void GenericAnalyzer::analysisSequenceEntry_analyzer::analyze(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {
   for ( std::list<AnalyzerPluginBase*>::const_iterator analyzer = analyzerPlugins_.begin();
 	analyzer != analyzerPlugins_.end(); ++analyzer ) {
-    (*analyzer)->analyze(evt, es);
+    (*analyzer)->analyze(evt, es, evtWeight);
   }
 }
 
@@ -262,6 +262,8 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   cfgError_ = 0;
 
   name_ = cfg.getParameter<std::string>("name");
+
+  eventWeightSrc_ = ( cfg.exists("eventWeightSource") ) ? cfg.getParameter<vInputTag>("eventWeightSource") : vInputTag();
 
   typedef std::vector<edm::ParameterSet> vParameterSet;
 
@@ -415,7 +417,7 @@ GenericAnalyzer::~GenericAnalyzer()
 
 void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {  
-  //std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
+  std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
@@ -423,7 +425,16 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     return;
   }
 
-  double eventWeight = 1.; // event weights not implemented yet...
+  double eventWeight = 1.;
+  for ( vInputTag::const_iterator eventWeightSrc_i = eventWeightSrc_.begin();
+	eventWeightSrc_i != eventWeightSrc_.end(); ++eventWeightSrc_i ) {
+    edm::Handle<double> eventWeight_i;
+    evt.getByLabel(*eventWeightSrc_i, eventWeight_i);
+
+    eventWeight *= (*eventWeight_i);
+  }
+
+  std::cout << "eventWeight = " << eventWeight << std::endl;
 
 //--- call analyze method of each analyzerPlugin
 //    (fill histograms, compute binning results,...)
@@ -447,7 +458,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     }
 
     if ( (*entry)->type() == analysisSequenceEntry::kAnalyzer ) {
-      if ( previousFiltersPassed ) (*entry)->analyze(evt, es);
+      if ( previousFiltersPassed ) (*entry)->analyze(evt, es, eventWeight);
     }
   }
 

@@ -8,6 +8,7 @@
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+#include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 #include <vector>
@@ -23,20 +24,22 @@ class TauHistManager : public HistManagerBase
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
   void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&);
+  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
-  void fillTauHistograms(const pat::Tau&, MonitorElement*, MonitorElement*, MonitorElement*);
-  void fillTauDiscriminatorHistogram(MonitorElement*, const pat::Tau&, const char*, std::map<std::string, bool>&);
-  void fillTauIsoHistograms(const pat::Tau&);
-  void fillTauIsoConeSizeDepHistograms(const pat::Tau&);
+  void fillTauHistograms(const pat::Tau&, MonitorElement*, MonitorElement*, MonitorElement*, double);
+  void fillTauDiscriminatorHistogram(MonitorElement*, const pat::Tau&, const char*, std::map<std::string, bool>&, double);
+  void fillTauIsoHistograms(const pat::Tau&, double);
+  void fillTauIsoConeSizeDepHistograms(const pat::Tau&, double);
 
 //--- configuration parameters
   edm::InputTag tauSrc_;
   edm::InputTag vertexSrc_;
   edm::InputTag genParticleSrc_;
+
+  std::string tauJetWeightSrc_;
 
   typedef std::vector<int> vint;
   vint tauIndicesToPlot_;
@@ -49,6 +52,11 @@ class TauHistManager : public HistManagerBase
   float tauIsoConeSizeIncr_;
   unsigned numTauIsoPtThresholds_;
   double tauIsoPtThresholdIncr_;
+
+//--- "helper" class for accessing weight values
+//    associated to second tau decay products
+//    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
+  FakeRateJetWeightExtractor<pat::Tau>* tauJetWeightExtractor_;
 
 //--- histograms
   MonitorElement* hNumTaus_;
