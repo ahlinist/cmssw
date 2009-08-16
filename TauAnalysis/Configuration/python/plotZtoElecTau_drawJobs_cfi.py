@@ -11,9 +11,9 @@ plots_ZtoElecTau = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'Ztautau',
-            #'Zee',
+            'Zee',
             #'ZtautauPlusJets',
-            'ZeePlusJets',
+            #'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
@@ -28,9 +28,9 @@ plots_ZtoElecTau = cms.PSet(
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
         'Ztautau',
-        #'Zee',
+        'Zee',
         #'ZtautauPlusJets',
-        'ZeePlusJets',
+        #'ZeePlusJets',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
