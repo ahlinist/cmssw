@@ -238,8 +238,8 @@ processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader.inputFileNames
 processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('')
 processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
-processZtoElecTau_QCD_EMenriched_Pt30to80 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
-processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.inputFileNames = cms.vstring(
+processZtoElecTau_QCD_EMenriched_Pt30to80_part01 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part01.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part01.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part02.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part03.root',
@@ -261,7 +261,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.inputFileNames = 
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part19.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part20.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part21.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part22.root',
+    #plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part22.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part23.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part24.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part25.root',
@@ -279,7 +279,12 @@ processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.inputFileNames = 
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part37.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part38.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part39.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part40.root',
+    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part40.root'
+)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt30to80*intLumiData/intLumiQCD_EMenriched_Pt30to80)
+
+processZtoElecTau_QCD_EMenriched_Pt30to80_part02 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part41.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part42.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part43.root',
@@ -324,13 +329,15 @@ processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.inputFileNames = 
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part82.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part83.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt30to80.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt30to80*intLumiData/intLumiQCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt30to80*intLumiData/intLumiQCD_EMenriched_Pt30to80)
 
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
-    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80Sum.root'
+    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part01Sum.root',
+    plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part02Sum.root'
 )
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader.dqmDirectory_store = cms.string('')
+processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader.hasBeenHarvested = cms.bool(True)
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 processZtoElecTau_QCD_EMenriched_Pt80to170 = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
