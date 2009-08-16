@@ -5,7 +5,7 @@ from TauAnalysis.Configuration.makeReplacementsHarvesting import makeReplacement
 
 # name of the directory (either on afs area or castor)
 # to which all .root files produced by the cmsRun job will be copied
-outputDirectory = "/castor/cern.ch/user/j/jkolb/elecTauAnalysis/hists_factorized/"
+outputDirectory = "/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/"
 
 #--------------------------------------------------------------------------------
 #
@@ -44,9 +44,10 @@ submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTa
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_EMenriched_Pt20to30",
               replFunction = makeReplacementsHarvesting, replacements = "",
               job = "harvesting", queue = "1nh", outputDirectory = outputDirectory)
-submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_EMenriched_Pt30to80",
-              replFunction = makeReplacementsHarvesting, replacements = "",
-              job = "harvesting", queue = "1nh", outputDirectory = outputDirectory)
+for i in range(2):
+    submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_EMenriched_Pt30to80_part%(i)02d" % {"i" : (i + 1)},
+                  replFunction = makeReplacementsHarvesting, replacements = "",
+                  job = "harvesting", queue = "1nh", outputDirectory = outputDirectory)
 submitToBatch(configFile = "harvestZtoElecTauPlots_cfg.py", channel = "ZtoElecTau", sample = "QCD_EMenriched_Pt80to170",
               replFunction = makeReplacementsHarvesting, replacements = "",
               job = "harvesting", queue = "1nh", outputDirectory = outputDirectory)
