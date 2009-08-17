@@ -13,9 +13,11 @@
 //
 // Original Author:  Gobinda MAJUMDER
 //         Created:  Sun Jul 20 09:33:01 CEST 2008
-// $Id$
+// $Id: PromptHOAnalyser.cc,v 1.1 2008/08/18 09:17:12 efe Exp $
 //
 //
+// Updated on 14th August 2009 to match with Calibration code
+// Remove timing criteria
 
 
 // system include files
@@ -141,6 +143,15 @@ int iphifit;
 vector<float>sig_reg[netamx][nphimx+1];
 vector<float>cro_ssg[netamx][nphimx+1];
 
+double tmpmom = 18.0;
+const double elosfact =  (14.9+0.96*fabs(log(tmpmom*2.8))+0.033*tmpmom*(1.0-pow(tmpmom,-0.33)));
+
+int   nval=0;
+const int nvalmx=200;
+float yval[nvalmx];
+float xval[nvalmx];
+double fitchisq;
+int  fitndof;
 
 Double_t gausX(Double_t* x, Double_t* par){
   return par[0]*(TMath::Gaus(x[0], par[1], par[2], kTRUE));
@@ -227,26 +238,54 @@ void fcnsg(Int_t &npar, Double_t* gin, Double_t &f, Double_t* par, Int_t flag) {
   f = -fval;
 }
 
+void fcnhistbg(Int_t &npar, Double_t* gin, Double_t &f, Double_t* par, Int_t flag) {
+  
+  //  double xx[2];
+  double fval = 0;
+  for (int i=0; i<nval; i++) {
+    //    xx[0] = xval[i];
+    double yy = yval[i];
+    double yer = TMath::Max(1.0,yy);
+    //    double yth = gausfunc(xx, par);
+    double yth = par[0]*TMath::Gaus(xval[i], par[1], par[2], 1);
+    fval +=pow(yy-yth,2)/yer;
+  }
+  f = fval;
+}
+
+void fcnhistsg(Int_t &npar, Double_t* gin, Double_t &f, Double_t* par, Int_t flag) {
+  
+  double xx[2];
+  double fval = 0;
+  for (int i=0; i<nval; i++) {
+    xx[0] = xval[i];
+    double yy = yval[i];
+    double yer = TMath::Max(1.0,yy);
+    double yth = totalfunc(xx, par);
+    fval +=pow(yy-yth,2)/yer;
+  }
+  f = fval;
+}
+
 void set_mean(double& x, bool mdigi) {
   if(mdigi) {
-    x = min(x, 0.5);
-    x = max(x, -0.5);
+    x = min(x, 1.5); //0.5);
+    x = max(x, -1.5); //-0.5);
   } else {
-    x = min(x, 0.1);
-    x = max(x, -0.1);
+    x = min(x, 1.0); //0.1);
+    x = max(x, -1.0); //-0.1);
   }
 }
 
 void set_sigma(double& x, bool mdigi) {
   if(mdigi) {
-    x = min(x, 1.2);
-    x = max(x, -1.2);
+    x = min(x, 2.4); //1.2);
+    x = max(x, -2.4); //-1.2);
   } else {
-    x = min(x, 0.24);
-    x = max(x, -0.24);
+    x = min(x, 1.5); //14/04/09 1.0); // 0.4); // 1.0); //0.24);
+    x = max(x, -1.5); // -1.0); // -0.4); // -1.0); //-0.24);
   }
 }
-
 
 //
 // class decleration
@@ -328,11 +367,17 @@ class PromptHOAnalyser : public edm::EDAnalyzer {
   TH2F* sig_effi[neffip];
   TH2F* mean_energy;
 
+  TH1F* comm_hpdrm[ringmx];  
+  float comm_mean[ringmx][routmx+1];
+  float comm_rms[ringmx][routmx+1];  
+
+
   int   irun, ievt, itrg1, itrg2, isect,  ndof, nmuon;
   float trkdr, trkdz, trkvx, trkvy, trkvz, trkmm, trkth, trkph, chisq, therr, pherr, 
     hodx, hody, hoang, htime, hosig[9], hocro, caloen[3];
   
   float invang[netamx][nphimx+1];
+  float invang3[netamx][nphimx+1];
 
   TH1F* sigrsg[netamx][nphimx+1];
   TH1F* crossg[netamx][nphimx+1];
@@ -349,7 +394,8 @@ class PromptHOAnalyser : public edm::EDAnalyzer {
   TH1F* com_sigrsg[ringmx][routmx+1];
   TH1F* com_crossg[ringmx][routmx+1];
   float com_invang[ringmx][routmx+1];
-
+  float com_invang3[ringmx][nphimx+1];
+  
 
   TH1F* ped_evt;
   TH1F* ped_mean;
@@ -377,8 +423,12 @@ class PromptHOAnalyser : public edm::EDAnalyzer {
   TH1F* stat_eta[netamx];
   TH1F* statmn_eta[netamx];  
   TH1F* peak_eta[netamx]; 
-  
+  TH1F* ped1_hpdrm[ringmx]; 
+  TH1F* ped2_hpdrm[ringmx];  
+
   TH1F* const_hpdrm[ringmx];
+  TProfile* pedestal_hpdrm[ringmx];  
+
   //  TH1F* stat_hpdrm[ringmx];
   //  TH1F* statmn_hpdrm[ringmx];  
   TH1F* peak_hpdrm[ringmx]; 
@@ -403,6 +453,7 @@ class PromptHOAnalyser : public edm::EDAnalyzer {
   int m_endTS;    
   double m_magscale;
   double m_sigma;
+  bool m_r0layer1; // = false; // true;  //look for signal in only one layer of ring0
   bool m_histfit;
   bool m_pedsuppr;
   bool m_constant;
@@ -477,6 +528,7 @@ PromptHOAnalyser::PromptHOAnalyser(const edm::ParameterSet& iConfig)
   if (m_endTS >9) m_endTS=9;
   m_magscale = iConfig.getUntrackedParameter<double>("m_scale", 4.0);
   m_sigma = iConfig.getUntrackedParameter<double>("sigma", 1.0);
+  m_r0layer1 = iConfig.getUntrackedParameter<bool>("r0layer1", false);
 
   mx_combined = iConfig.getUntrackedParameter<bool>("mCombined", false);
   theinputtxtFile = iConfig.getUntrackedParameter<string>("inputtxtFileName", "test_input.txt");
@@ -756,6 +808,12 @@ PromptHOAnalyser::PromptHOAnalyser(const edm::ParameterSet& iConfig)
       
       sprintf(title, "Peak_hpdrm_%i", iring);
       peak_hpdrm[ij] =  fs->make<TH1F>(title, title, iread, 0.5, iread+0.5);
+
+      sprintf(title, "Ped_mean_hpdrm_%i", iring);
+      ped1_hpdrm[ij] = fs->make<TH1F>(title, title, iread, 0.5, iread+0.5);
+      
+      sprintf(title, "Ped_rms_hpdrm_%i", iring);
+      ped2_hpdrm[ij] =  fs->make<TH1F>(title, title, iread, 0.5, iread+0.5);
     }
 
     mean_phi_hst = fs->make<TH1F>("mean_phi_hst", " ", netamx+1, -(netamx+1)/2., (netamx+1)/2.);
@@ -764,6 +822,27 @@ PromptHOAnalyser::PromptHOAnalyser(const edm::ParameterSet& iConfig)
 
     mean_eta_ave = fs->make<TH1F>("mean_eta_ave", "mean_eta_ave", nphimx, 0.5, nphimx+0.5);
 
+    for (int ij=0; ij<ringmx; ij++) {
+      if (m_r0layer1 && ij !=2) continue;
+      sprintf(title, "comm_hpdsig_ring_%i", ij-2);
+      if (ij==2) {
+	comm_hpdrm[ij] = fs->make<TH1F>(title, title, routmx, 0.5, routmx+0.5);
+      } else {
+	comm_hpdrm[ij] = fs->make<TH1F>(title, title, rout12mx, 0.5, rout12mx+0.5);
+      }
+    }
+  }
+  
+  for (int ij=0; ij<ringmx; ij++) {
+    if (m_r0layer1 && ij !=2) continue;
+    int iring = ij-2;
+    int iread = (ij==2) ? routmx : rout12mx;
+    sprintf(title, "Ped_prof_hpdrm_%i", iring);    
+    if (m_digiInput){
+      pedestal_hpdrm[ij] = fs->make<TProfile>(title, title, iread, 0.5, iread+0.5, -10., 20.);
+    } else {
+      pedestal_hpdrm[ij] = fs->make<TProfile>(title, title, iread, 0.5, iread+0.5, -4., 5.);
+    }
   }
 
 
@@ -780,13 +859,13 @@ PromptHOAnalyser::PromptHOAnalyser(const edm::ParameterSet& iConfig)
 
   for (int j=0; j<netamx; j++) {
     for (int i=0;i<nphimx+1;i++) {	       
-      invang[j][i] = 0.0;
+      invang[j][i] = invang3[j][i] =0.0;
     }
   }
 
   for (int j=0; j<ringmx; j++) {
     for (int i=0;i<routmx+1;i++) {	       
-      com_invang[j][i] = 0.0;
+      com_invang[j][i] = com_invang3[j][i] = 0.0;
     }
   }
 }
@@ -923,6 +1002,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     int hlttr = 0;
     int ntrgpas[ntrgp]={0,0,0,0,0,0,0,0,0,0};
     
+    
     //L1 trigger
     Handle<L1GlobalTriggerReadoutRecord> L1GTRR;
     bool isL1Trig=true;
@@ -964,7 +1044,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
 
     int Noccu_old = Noccu;
-
+    
     for(reco::TrackCollection::const_iterator ncosm = cosmicmuon->begin();
 	ncosm != cosmicmuon->end();  ++ncosm) {
       if ((*ncosm).ndof() < 15) continue;
@@ -1531,6 +1611,24 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	    tmproutmx =rout12mx; 
 	  }
 	  
+	  
+	  double tmpmom = fabs(trkmm);
+	  double elos = 1/max(0.1, abs(double(hoang)));
+	  double elos3 = elos;
+	  
+	  if (irun >=66550 && irun <=70675) { // CRAFT data
+	    elos *= ((14.9+0.96*fabs(log(tmpmom*2.8))+0.033*tmpmom*(1.0-pow(tmpmom,-0.33)))/elosfact);
+	  }
+	  double elos2 = 1.;
+	  
+	  //for no normalisation      
+	  elos2 = elos;
+	  elos = 1;
+	  
+
+
+
+
 	  // CRUZET1
 	  if (m_cosmic) {
 	    
@@ -1595,54 +1693,56 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  }
 
 	  if (m_digiInput) {
-	    if (htime >3.0 && htime <6.5)        {ips9=(int)pow(2.,9);ipsall +=ips9;}
+	    //	    if (htime >3.0 && htime <6.5) 
+	    {ips9=(int)pow(2.,9);ipsall +=ips9;}
 	  } else {
-	    if (htime >-40 && htime <60)         {ips9=(int)pow(2.,9);ipsall +=ips9;}
+	    //	    if (htime >-40 && htime <60)
+	    {ips9=(int)pow(2.,9);ipsall +=ips9;}
 	  } 
 
 	  
 	  if (!mx_combined) {
-	    if (ipsall-ips0==pow(2.,ncut)-pow(2.,0)-1) sigvsevt[iring2][0]->Fill(abs(ndof), hosig[4]);
-	    if (ipsall-ips1==pow(2.,ncut)-pow(2.,1)-1) sigvsevt[iring2][1]->Fill(chisq, hosig[4]);
-	    if (ipsall-ips2==pow(2.,ncut)-pow(2.,2)-1) sigvsevt[iring2][2]->Fill(trkth, hosig[4]);
-	    if (ipsall-ips3==pow(2.,ncut)-pow(2.,3)-1) sigvsevt[iring2][3]->Fill(trkph, hosig[4]);
-	    if (ipsall-ips4==pow(2.,ncut)-pow(2.,4)-1) sigvsevt[iring2][4]->Fill(therr, hosig[4]);
-	    if (ipsall-ips5==pow(2.,ncut)-pow(2.,5)-1) sigvsevt[iring2][5]->Fill(pherr, hosig[4]);
-	    if (ipsall-ips6==pow(2.,ncut)-pow(2.,6)-1) sigvsevt[iring2][6]->Fill(hoang, hosig[4]);
-	    if (ipsall-ips7==pow(2.,ncut)-pow(2.,7)-1) sigvsevt[iring2][7]->Fill(fabs(trkmm), hosig[4]);
-	    if (ipsall-ips8==pow(2.,ncut)-pow(2.,8)-1) sigvsevt[iring2][8]->Fill(nmuon, hosig[4]);
-	    if (ipsall-ips9==pow(2.,ncut)-pow(2.,9)-1) sigvsevt[iring2][9]->Fill(htime, hosig[4]);
-	    if (ipsall-ips10==pow(2.,ncut)-pow(2.,10)-1) sigvsevt[iring2][10]->Fill(hodx, hosig[4]);
-	    if (ipsall-ips11==pow(2.,ncut)-pow(2.,11)-1) sigvsevt[iring2][11]->Fill(hody, hosig[4]);
+	    if (ipsall-ips0==pow(2.,ncut)-pow(2.,0)-1) sigvsevt[iring2][0]->Fill(abs(ndof), hosig[4]/elos);
+	    if (ipsall-ips1==pow(2.,ncut)-pow(2.,1)-1) sigvsevt[iring2][1]->Fill(chisq, hosig[4]/elos);
+	    if (ipsall-ips2==pow(2.,ncut)-pow(2.,2)-1) sigvsevt[iring2][2]->Fill(trkth, hosig[4]/elos);
+	    if (ipsall-ips3==pow(2.,ncut)-pow(2.,3)-1) sigvsevt[iring2][3]->Fill(trkph, hosig[4]/elos);
+	    if (ipsall-ips4==pow(2.,ncut)-pow(2.,4)-1) sigvsevt[iring2][4]->Fill(therr, hosig[4]/elos);
+	    if (ipsall-ips5==pow(2.,ncut)-pow(2.,5)-1) sigvsevt[iring2][5]->Fill(pherr, hosig[4]/elos);
+	    if (ipsall-ips6==pow(2.,ncut)-pow(2.,6)-1) sigvsevt[iring2][6]->Fill(hoang, hosig[4]/elos);
+	    if (ipsall-ips7==pow(2.,ncut)-pow(2.,7)-1) sigvsevt[iring2][7]->Fill(fabs(trkmm), hosig[4]/elos);
+	    if (ipsall-ips8==pow(2.,ncut)-pow(2.,8)-1) sigvsevt[iring2][8]->Fill(nmuon, hosig[4]/elos);
+	    if (ipsall-ips9==pow(2.,ncut)-pow(2.,9)-1) sigvsevt[iring2][9]->Fill(htime, hosig[4]/elos);
+	    if (ipsall-ips10==pow(2.,ncut)-pow(2.,10)-1) sigvsevt[iring2][10]->Fill(hodx, hosig[4]/elos);
+	    if (ipsall-ips11==pow(2.,ncut)-pow(2.,11)-1) sigvsevt[iring2][11]->Fill(hody, hosig[4]/elos);
 	    if (!m_cosmic) {
-	      if (ipsall-ips12==pow(2.,ncut)-pow(2.,12)-1) sigvsevt[iring2][12]->Fill(caloen[0], hosig[4]);
+	      if (ipsall-ips12==pow(2.,ncut)-pow(2.,12)-1) sigvsevt[iring2][12]->Fill(caloen[0], hosig[4]/elos);
 	    }
 	    
-	    sigvsevt[iring2+5][0]->Fill(abs(ndof), hosig[4]);               
+	    sigvsevt[iring2+5][0]->Fill(abs(ndof), hosig[4]/elos);               
 	    if (ips0 >0) {
-	      sigvsevt[iring2+5][1]->Fill(chisq, hosig[4]);   
+	      sigvsevt[iring2+5][1]->Fill(chisq, hosig[4]/elos);   
 	      if (ips1 >0) {
-		sigvsevt[iring2+5][2]->Fill(trkth, hosig[4]);        
+		sigvsevt[iring2+5][2]->Fill(trkth, hosig[4]/elos);        
 		if (ips2 >0) {
-		  sigvsevt[iring2+5][3]->Fill(trkph, hosig[4]);        
+		  sigvsevt[iring2+5][3]->Fill(trkph, hosig[4]/elos);        
 		  if (ips3 >0) {
-		    sigvsevt[iring2+5][4]->Fill(therr, hosig[4]);        
+		    sigvsevt[iring2+5][4]->Fill(therr, hosig[4]/elos);        
 		    if (ips4 >0) {
-		      sigvsevt[iring2+5][5]->Fill(pherr, hosig[4]);        
+		      sigvsevt[iring2+5][5]->Fill(pherr, hosig[4]/elos);        
 		      if (ips5 >0) {
-			sigvsevt[iring2+5][6]->Fill(hoang, hosig[4]);        
+			sigvsevt[iring2+5][6]->Fill(hoang, hosig[4]/elos);        
 			if (ips6 >0) {
-			  sigvsevt[iring2+5][7]->Fill(fabs(trkmm), hosig[4]);   
+			  sigvsevt[iring2+5][7]->Fill(fabs(trkmm), hosig[4]/elos);   
 			  if (ips7 >0) {
-			    sigvsevt[iring2+5][8]->Fill(nmuon, hosig[4]); 
+			    sigvsevt[iring2+5][8]->Fill(nmuon, hosig[4]/elos); 
 			    if (ips8 >0) {
-			      sigvsevt[iring2+5][9]->Fill(htime, hosig[4]);
+			      sigvsevt[iring2+5][9]->Fill(htime, hosig[4]/elos);
 			      if (ips9 >0) {
-				sigvsevt[iring2+5][10]->Fill(hodx, hosig[4]);
+				sigvsevt[iring2+5][10]->Fill(hodx, hosig[4]/elos);
 				if (ips10>0) {
-				  sigvsevt[iring2+5][11]->Fill(hody, hosig[4]); 
+				  sigvsevt[iring2+5][11]->Fill(hody, hosig[4]/elos); 
 				  if (ips11>0) {
-				    if (!m_cosmic) sigvsevt[iring2+5][12]->Fill(caloen[0], hosig[4]);  
+				    if (!m_cosmic) sigvsevt[iring2+5][12]->Fill(caloen[0], hosig[4]/elos);  
 				  }
 				}
 			      }
@@ -1656,19 +1756,19 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	      }
 	    }
 	    
-	    sigvsevt[iring2+10][0]->Fill(abs(ndof), hosig[4]);               
-	    sigvsevt[iring2+10][1]->Fill(chisq, hosig[4]);   
-	    sigvsevt[iring2+10][2]->Fill(trkth, hosig[4]);        
-	    sigvsevt[iring2+10][3]->Fill(trkph, hosig[4]);        
-	    sigvsevt[iring2+10][4]->Fill(therr, hosig[4]);        
-	    sigvsevt[iring2+10][5]->Fill(pherr, hosig[4]);        
-	    sigvsevt[iring2+10][6]->Fill(hoang, hosig[4]);        
-	    sigvsevt[iring2+10][7]->Fill(fabs(trkmm), hosig[4]);   
-	    sigvsevt[iring2+10][8]->Fill(nmuon, hosig[4]); 
-	    sigvsevt[iring2+10][9]->Fill(htime, hosig[4]);
-	    sigvsevt[iring2+10][10]->Fill(hodx, hosig[4]);
-	    sigvsevt[iring2+10][11]->Fill(hody, hosig[4]);     
-	    if (!m_cosmic) sigvsevt[iring2+10][12]->Fill(caloen[0], hosig[4]);  
+	    sigvsevt[iring2+10][0]->Fill(abs(ndof), hosig[4]/elos);               
+	    sigvsevt[iring2+10][1]->Fill(chisq, hosig[4]/elos);   
+	    sigvsevt[iring2+10][2]->Fill(trkth, hosig[4]/elos);        
+	    sigvsevt[iring2+10][3]->Fill(trkph, hosig[4]/elos);        
+	    sigvsevt[iring2+10][4]->Fill(therr, hosig[4]/elos);        
+	    sigvsevt[iring2+10][5]->Fill(pherr, hosig[4]/elos);        
+	    sigvsevt[iring2+10][6]->Fill(hoang, hosig[4]/elos);        
+	    sigvsevt[iring2+10][7]->Fill(fabs(trkmm), hosig[4]/elos);   
+	    sigvsevt[iring2+10][8]->Fill(nmuon, hosig[4]/elos); 
+	    sigvsevt[iring2+10][9]->Fill(htime, hosig[4]/elos);
+	    sigvsevt[iring2+10][10]->Fill(hodx, hosig[4]/elos);
+	    sigvsevt[iring2+10][11]->Fill(hody, hosig[4]/elos);     
+	    if (!m_cosmic) sigvsevt[iring2+10][12]->Fill(caloen[0], hosig[4]/elos);  
 	  }
 	  
 	  int iselect = (ipsall == pow(2.,ncut) - 1) ? 1 : 0;
@@ -1679,20 +1779,24 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	  if (iselect) {
 	    Npass++;
-	    com_sigrsg[iring2][tmprout-1]->Fill(hosig[4]); 
-	    com_invang[iring2][tmprout-1] += 1./fabs(hoang);
+	    com_sigrsg[iring2][tmprout-1]->Fill(hosig[4]/elos); 
+	    com_invang[iring2][tmprout-1] += elos; // 1./fabs(hoang);
+	    com_invang3[iring2][tmprout-1] += elos3;
+	    
+	    com_sigrsg[iring2][tmproutmx]->Fill(hosig[4]/elos); 
+	    com_invang[iring2][tmproutmx] += elos; // 1./fabs(hoang);
+	    com_invang3[iring2][tmproutmx] += elos3;
 
-	    com_sigrsg[iring2][tmproutmx]->Fill(hosig[4]); 
-	    com_invang[iring2][tmproutmx] += 1./fabs(hoang);
-
-	    sigrsg[tmpeta1][nphimx]->Fill(hosig[4]);
-	    invang[tmpeta1][nphimx] += 1./fabs(hoang);
+	    sigrsg[tmpeta1][nphimx]->Fill(hosig[4]/elos);
+	    invang[tmpeta1][nphimx] += elos; //1./fabs(hoang);
+	    invang3[tmpeta1][nphimx] += elos3;
 
 	    if (sig_reg[tmpeta1][tmpphi1].size()<4000 ) { //GMA310508
-	      if (hosig[4]>alow&& hosig[4] <ahigh) {
-		sigrsg[tmpeta1][tmpphi1]->Fill(hosig[4]);  
-		if (!m_histfit && hosig[4]<=ahigh/2.) sig_reg[tmpeta1][tmpphi1].push_back(hosig[4]);
-		invang[tmpeta1][tmpphi1] += 1./fabs(hoang);
+	      if (hosig[4]/elos>alow&& hosig[4]/elos <ahigh) {
+		sigrsg[tmpeta1][tmpphi1]->Fill(hosig[4]/elos);  
+		if (!m_histfit && hosig[4]/elos<=ahigh/2.) sig_reg[tmpeta1][tmpphi1].push_back(hosig[4]/elos);
+		invang[tmpeta1][tmpphi1] += elos; // 1./fabs(hoang);
+		invang3[tmpeta1][tmpphi1] += elos3;
 	      }
 	    }
 	    
@@ -1722,6 +1826,7 @@ PromptHOAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	  com_crossg[iring2][tmprout2-1]->Fill(hocro); 
 	  com_crossg[iring2][tmproutmx]->Fill(hocro); 
+	  pedestal_hpdrm[iring2]->Fill(tmprout2, hocro);
 	  crossg[tmpeta1][nphimx]->Fill(hocro);
 
 	  if (cro_ssg[tmpeta1][tmpphi2].size()<4000) {
@@ -1759,6 +1864,12 @@ PromptHOAnalyser::beginJob(const edm::EventSetup& iSetup)
       for (int k=0; k<ncidmx; k++) {
 	pedestal[i][j][k]=0.0;
       }
+    }
+  }
+
+  for (int j=0; j<ringmx; j++) {
+    for (int i=0;i<routmx+1;i++) {	       
+      comm_mean[j][i] = comm_rms[j][i] = 0.0;
     }
   }
 
@@ -1880,23 +1991,43 @@ PromptHOAnalyser::endJob() {
 	  tmproutmx =rout12mx; 
 	}
 
+	double tmpmom = fabs(trkmm);
+	//18/04/09      double elos = ((14.9+0.96*fabs(log(tmpmom*2.8))+0.033*tmpmom*(1.0-pow(tmpmom,-0.33)))/elosfact);
+	
+	double elos = 1/max(0.1, abs(double(hoang)));
+	double elos3 = elos;
+	
+	if (irun >=66550 && irun <=70675) { // CRAFT data
+	  elos *= ((14.9+0.96*fabs(log(tmpmom*2.8))+0.033*tmpmom*(1.0-pow(tmpmom,-0.33)))/elosfact);
+	}
+	double elos2 = 1.;
+	
+	//for no normalisation      
+	elos2 = elos;
+	elos = 1;
+
 	int tmpeta1 = (ietaho>0) ? ietaho -1 : -ietaho +14; 
 	int tmpphi1 = iphiho -1 ;
 
-	com_sigrsg[iring2][tmprout-1]->Fill(hosig[4]); 
-	com_invang[iring2][tmprout-1] += 1./fabs(hoang);
+	com_sigrsg[iring2][tmprout-1]->Fill(hosig[4]/elos); 
+	com_invang[iring2][tmprout-1] += elos; //1./fabs(hoang);
+	com_invang3[iring2][tmprout-1] += elos3;
 
-	com_sigrsg[iring2][tmproutmx]->Fill(hosig[4]); 
-	com_invang[iring2][tmproutmx] += 1./fabs(hoang);
+	com_sigrsg[iring2][tmproutmx]->Fill(hosig[4]/elos); 
+	com_invang[iring2][tmproutmx] += elos; // 1./fabs(hoang);
+	com_invang3[iring2][tmproutmx] += elos3; 
 
-	sigrsg[tmpeta1][nphimx]->Fill(hosig[4]);
-	invang[tmpeta1][nphimx] += 1./fabs(hoang);
+
+	sigrsg[tmpeta1][nphimx]->Fill(hosig[4]/elos);
+	invang[tmpeta1][nphimx] += elos; // 1./fabs(hoang);
+	invang3[tmpeta1][nphimx] += elos3;
 
 	if (sig_reg[tmpeta1][tmpphi1].size()<4000 ) { //GMA310508
-	  if (hosig[4]>alow && hosig[4]<ahigh) {
-	    sigrsg[tmpeta1][tmpphi1]->Fill(hosig[4]);  
-	    if (!m_histfit) sig_reg[tmpeta1][tmpphi1].push_back(hosig[4]);//22OCT07
-	    invang[tmpeta1][tmpphi1] += 1./fabs(hoang);
+	  if (hosig[4]/elos>alow && hosig[4]/elos<ahigh) {
+	    sigrsg[tmpeta1][tmpphi1]->Fill(hosig[4]/elos);  
+	    if (!m_histfit) sig_reg[tmpeta1][tmpphi1].push_back(hosig[4]/elos);//22OCT07
+	    invang[tmpeta1][tmpphi1] += elos; // 1./fabs(hoang);
+	    invang3[tmpeta1][tmpphi1] += elos3;
 	  }
 	}
 	for (int ij=0; ij<neffip; ij++) {
@@ -2087,9 +2218,9 @@ PromptHOAnalyser::endJob() {
   gStyle->SetOptStat(1110);
 
   const int nsample =8;  
-  TF1*  gx0[nsample]={0};
+  //  TF1*  gx0[nsample]={0};
   TF1* ped0fun[nsample]={0};
-  TF1* signal[nsample]={0};
+  //  TF1* signal[nsample]={0};
   TF1* pedfun[nsample]={0};
   TF1* sigfun[nsample]={0};
   TF1* signalx[nsample]={0};
@@ -2134,6 +2265,7 @@ PromptHOAnalyser::endJob() {
 //    TPostScript ps(theoutputpsFile.c_str(),ips);
 //    ps.Range(20,28);
 
+
     xsiz = 900; //900;
     ysiz = 1200; //600;
     TCanvas *c0 = new TCanvas("c0", " Pedestal vs signal", xsiz, ysiz);
@@ -2155,16 +2287,20 @@ PromptHOAnalyser::endJob() {
     //     = 1 : Individual HPD
     //iijj = 2 : merging all phi
     //     = 3 : Individual tower
+    //  for fit with iijj==3, it must start from iijj==2, which provide
+    //  initial paramters for fit of individual tower (option iijj==3)
 
-    for (int iijj = 0; iijj <4; iijj++) {
-      if ((!mx_combined) && iijj==1) continue; //Use this only for combined data  
+    for (int iijj = 0; iijj <4; iijj++) { // 4; iijj++) {
+      //      if ((!mx_combined) && iijj==1) continue; //Use this only for combined data  
       if (iijj==0){
 	mxeta = ringmx; mxphi = 1;	mneta = 0; mnphi = 0;
+	//	if (m_r0layer1) { mneta = mxeta = 2;}
       } else if (iijj==1) {
 	mxeta = ringmx; mxphi = routmx;
 	mneta = 0; mnphi = 0;
+	//	if (m_r0layer1) { mneta = mxeta = 2;}
       } else if (iijj==2) {
-	mxeta = netamx;	mxphi = 1; mneta = 0; mnphi = 0;  
+	mxeta = netamx;	mxphi = 1; mneta = 0; mnphi = 0; 
       } else if (iijj==3) {
 	mxeta = netamx; mxphi = nphimx;
 	mneta = 0; mnphi = 0;
@@ -2172,8 +2308,14 @@ PromptHOAnalyser::endJob() {
       
       for (int jk=mneta; jk<mxeta; jk++) {
 	for (int ij=mnphi; ij<mxphi; ij++) {
-	  if (iijj==1) continue;
-	  if ((iijj==0 || iijj==1) && jk !=2 && ij >=rout12mx) continue;
+	  //	  if (iijj==1) continue;
+	  int kl = (jk<15) ? jk+1 : 14-jk;
+	  if (iijj==0 || iijj==1) { 
+	    if (jk !=2 && ((ij >=rout12mx) || m_r0layer1)) continue;
+	  } else {
+	    if (m_r0layer1 && abs(kl)>4) continue;
+	  }
+
 	  int izone = iiter%nsample;
 
 	  if (iijj==0) {
@@ -2209,39 +2351,10 @@ PromptHOAnalyser::endJob() {
 	  signall[izone]->GetXaxis()->CenterTitle(); 
 	  
 	  if (izone==0) { //iiter%8 ==0) { 
-//	    ps.NewPage();
+	    //	    ps.NewPage();
 	    c0->Divide(4,4); //c0->Divide(2,4); // c0->Divide(1,2);
 	  }
 	  c0->cd(2*izone+1); // (iiter%8)+1); //c0->cd(iiter%8+1);
-
-	  /*
-	  if (iijj==0 && izone==0) {
-//	    gStyle->SetOptLogy(1);
-	    gStyle->SetOptStat(0);
-	    gStyle->SetOptFit(0);
-	    c0->Divide(3,2);
-	  }
-
-	  if (iijj>0) {
-//	    gStyle->SetOptLogy(0);
-	    gStyle->SetOptStat(1110);
-	    gStyle->SetOptFit(101);
-	    
-	    if (iiter==0) {
-//	      int ips=111;
-//	      ps = new TPostScript(theoutputpsFile.c_str(),ips);
-//	      ps.Range(20,28);
-	      xsiz = 900; //900;
-	      ysiz = 1200; //600;
-	      c0 = new TCanvas("c0", " Pedestal vs signal", xsiz, ysiz);
-	    }
-	    if (izone==0) {
-//	      ps.NewPage();
-	      c0->Divide(4,4);
-	    }
-	  }
-	  if (iijj==0) {c0->cd(izone+1); } else { c0->cd(2*izone+1);}
-	  */
 
 	  float mean = pedstll[izone]->GetMean();
 	  float rms = pedstll[izone]->GetRMS();
@@ -2251,20 +2364,33 @@ PromptHOAnalyser::endJob() {
 	    if (mean >1.2) mean = 1.2;
 	    if (mean <-1.2) mean = -1.2;
 	  } else {
-	    if (rms <0.10) rms = 0.10;
-	    if (rms >0.15) rms=0.15;
-	    if (mean >0.20) mean = 0.20;
-	    if (mean <-0.20) mean = -0.20;
+	    //	    //	    if (rms <0.10) rms = 0.10;
+	    //	    //	    if (rms >0.15) rms=0.15;
+	    //	    //	    if (mean >0.20) mean = 0.20;
+	    //	    //	    if (mean <-0.20) mean = -0.20;
+
+	    if (rms <0.35) rms = 0.35;
+	    //14/04/09	    if (rms >1.0) rms=1.0;
+	    if (rms >1.5) rms=1.5;
+	    if (mean >1.0) mean = 1.0;
+	    if (mean <-1.0) mean = -1.0;
+
+	    //	    if (rms <0.15) rms = 0.15;
+	    //	    if (rms >0.5) rms=0.5;
+	    //	    if (mean >0.3) mean = 0.3;
+	    //	    if (mean <-0.3) mean = -0.3;
+
 	  }
 	  float xmn = mean-6.*rms;
 	  float xmx = mean+6.*rms;
 	  
-	  binwid = 	pedstll[izone]->GetBinWidth(1);
+	  double binwid = 	pedstll[izone]->GetBinWidth(1);
 	  if (xmx > pedstll[izone]->GetXaxis()->GetXmax()) xmx = pedstll[izone]->GetXaxis()->GetXmax()-0.5*binwid;
 	  if (xmn < pedstll[izone]->GetXaxis()->GetXmin()) xmn = pedstll[izone]->GetXaxis()->GetXmin()+0.5*binwid;
-	  
+
 	  float height = pedstll[izone]->GetEntries();
-	  
+	  if ((iijj!=3) || m_histfit) { height *=binwid;}
+
 	  double par[nbgpr] ={height, mean, 0.75*rms};
 
 	  double gaupr[nbgpr];
@@ -2275,11 +2401,7 @@ PromptHOAnalyser::endJob() {
 	  pedstll[izone]->GetXaxis()->SetLabelSize(.065);
 	  pedstll[izone]->GetYaxis()->SetLabelSize(.06);
 
-	  //	  if (iijj==0) {
-	  //	    pedstll[izone]->GetXaxis()->SetRangeUser(alow, ahigh);
-	  //	  } else {
-	    pedstll[izone]->GetXaxis()->SetRangeUser(xmn, xmx);
-	    //	  }
+	  pedstll[izone]->GetXaxis()->SetRangeUser(xmn, xmx);	  
 
 	  if (m_digiInput) {
 	    if (iijj==0) {
@@ -2296,8 +2418,7 @@ PromptHOAnalyser::endJob() {
 	  }
 	  pedstll[izone]->GetXaxis()->SetTitleSize(.065);
 	  pedstll[izone]->GetXaxis()->CenterTitle(); 
-	  //	  pedstll[izone]->SetLineWidth(2);
-
+	  
 	  pedstll[izone]->Draw();
 	  if (m_pedsuppr && !m_digiInput) {
 	    gaupr[0] = 0;
@@ -2305,85 +2426,96 @@ PromptHOAnalyser::endJob() {
 	    if (m_digiInput) {
 	      gaupr[2] = 0.90; //GMA need from database pedwidth[ietafit][iphifit];
 	    } else {
-	      gaupr[2] = 0.15; //GMA need from database
+	      gaupr[2] = 0.75; //0.25; //0.75; //0.15; //GMA need from database
 	    }
 	    parer[0] = parer[1] = parer[2] = 0;
 	  } else {
 	    
 	    if (pedstll[izone]->GetEntries() >5) {
 
+	      double strt[nbgpr] = {height, mean, 0.75*rms};
+	      double step[nbgpr] = {1.0, 0.001, 0.001};
+	      double alowmn[nbgpr] = {0.5*height, mean-rms, 0.3*rms};
+	      double ahighmn[nbgpr] ={1.5*height, mean+rms, 1.5*rms};
+
+	      TMinuit *gMinuit = new TMinuit(nbgpr);
+
 	      if ((iijj!=3) || m_histfit) {
-		char temp[20];
-		sprintf(temp, "gx0_%i",izone);
-		gx0[izone] = new TF1(temp, gausX, xmn, xmx, nbgpr);   
-		gx0[izone]->SetParameters(par);
-		gx0[izone]->SetLineWidth(1);
-//		pedstll[izone]->Fit(gx0[izone], "R+");
-		
-		for (int k=0; k<nbgpr; k++) {
-		  parer[k] = gx0[izone]->GetParError(k);
-		  gaupr[k] = gx0[izone]->GetParameter(k);
-		}
-	      } else {
-		double strt[nbgpr] = {height, mean, 0.75*rms};
-		double step[nbgpr] = {1.0, 0.001, 0.001};
-		double alowmn[nbgpr] = {0.5*height, mean-rms, 0.3*rms};
-		double ahighmn[nbgpr] ={1.5*height, mean+rms, 1.5*rms};
-		
-		TMinuit *gMinuit = new TMinuit(nbgpr);
-		gMinuit->SetFCN(fcnbg);
-		
-		double arglist[10];
-		int ierflg = 0;
-		arglist[0] =0.5;
-		gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
-		char name[100];
-		for (int k=0; k<nbgpr; k++) {
-		  sprintf(name, "pedpar%i",k);
-		  gMinuit->mnparm(k, name, strt[k], step[k], alowmn[k], ahighmn[k],ierflg);
-		}
-		
-		arglist[0] = 0;
-		gMinuit->mnexcm("SIMPLEX", arglist, 0, ierflg);
-		
-		arglist[0] = 0;
-		gMinuit->mnexcm("IMPROVE", arglist, 0, ierflg);
-		
-		TString chnam;
-		double parv,err,xlo,xup, plerr, mierr, eparab, gcc;
-		int iuit;
-		
-		for (int k=0; k<nbgpr; k++) {
-		  if (step[k] >-10) {
-		    gMinuit->mnpout(k, chnam, parv, err, xlo, xup, iuit);
-		    gMinuit->mnerrs(k, plerr, mierr, eparab, gcc);
-//    std::cout <<"BG  k "<< k<<" "<<chnam<<" "<<parv<<" "<<err<<" "<<xlo<<" "<<xup<<" "<<plerr<<" "<<mierr<<" "<<eparab<<std::endl;
-		    if (k==0) {
-		      gaupr[k] = parv*binwid;
-		      parer[k] = err*binwid;
-		    } else {
-		      gaupr[k] = parv;
-		      parer[k] = err;	
-		    }
-		  }
+		nval = min(nvalmx,pedstll[izone]->GetNbinsX());
+
+		for (int k=0; k<nval; k++) {
+		  xval[k] = pedstll[izone]->GetBinCenter(k+1);
+		  yval[k] = pedstll[izone]->GetBinContent(k+1);
 		}
 
-// ???
-//				gx0[izone]->SetParameters(gaupr);
-		
-		char temp[20];
-		sprintf(temp, "ped0fun_%i",izone);
-		ped0fun[izone] = new TF1(temp, gausX, xmn, xmx, nbgpr);
-		ped0fun[izone]->SetParameters(gaupr);
-		ped0fun[izone]->SetLineColor(3);
-		ped0fun[izone]->SetLineWidth(1);
-		ped0fun[izone]->Draw("same");	
-		
-		delete  gMinuit;
+		gMinuit->SetFCN(fcnhistbg);
+	      } else {
+		gMinuit->SetFCN(fcnbg);
 	      }
+
+	      double arglist[10];
+	      int ierflg = 0;
+	      arglist[0] = ((iijj!=3) || m_histfit) ? 1 : 0.5;
+	      
+	      gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
+	      char name[100];
+	      for (int k=0; k<nbgpr; k++) {
+		sprintf(name, "pedpar%i",k);
+		gMinuit->mnparm(k, name, strt[k], step[k], alowmn[k], ahighmn[k],ierflg);
+	      }
+	      
+	      arglist[0] = 0;
+	      //	      gMinuit->mnexcm("MIGRAD", arglist, 0, ierflg);
+	      gMinuit->mnexcm("MINIMIZE", arglist, 0, ierflg);	      
+
+	      arglist[0] = 0;
+	      gMinuit->mnexcm("IMPROVE", arglist, 0, ierflg);
+	      
+	      TString chnam;
+	      double parv,err,xlo,xup, plerr, mierr, eparab, gcc;
+	      int iuit;
+	      
+	      for (int k=0; k<nbgpr; k++) {
+		gMinuit->mnpout(k, chnam, parv, err, xlo, xup, iuit);
+		gMinuit->mnerrs(k, plerr, mierr, eparab, gcc);
+		//		  cout <<"khistbg "<< k<<" "<<chnam<<" "<<parv<<" "<<err<<" "<<xlo<<" "<<xup<<" "<<plerr<<" "<<mierr<<" "<<eparab<<endl;
+		gaupr[k] = parv;
+		parer[k] = err;
+	      }
+	      if ((iijj==3) && !m_histfit) {gaupr[0] *=binwid;} else {parer[0] /=binwid;}
+
+	      double  fedm, errdef;
+	      int  nparx, istat;
+	      gMinuit->mnstat(fitchisq, fedm, errdef, fitndof, nparx, istat);
+	      delete gMinuit;
+	      
+	      char temp[20];
+	      sprintf(temp, "ped0fun_%i",izone);
+	      ped0fun[izone] = new TF1(temp, gausX, xmn, xmx, nbgpr);
+	      ped0fun[izone]->SetParameters(gaupr);
+	      ped0fun[izone]->SetLineColor(3);
+	      ped0fun[izone]->SetLineWidth(1);
+	      ped0fun[izone]->Draw("same");	
+
+	      if (iijj==1) {
+		ped1_hpdrm[jk]->Fill(ij+1,gaupr[1]);
+		ped1_hpdrm[jk]->SetBinError(ped1_hpdrm[jk]->FindBin(ij+1),parer[1]);
+		
+		ped2_hpdrm[jk]->Fill(ij+1,gaupr[2]);
+		ped2_hpdrm[jk]->SetBinError(ped2_hpdrm[jk]->FindBin(ij+1),parer[2]);
+	      }
+
+	      //	      int kl = (jk<15) ? jk+1 : 14-jk;
+	      file_out<<"pedinfo "<<iijj<<" "
+		      <<std::setw(3)<< kl<<" "
+		      <<std::setw(3)<< ij+1<<" "
+		      <<gaupr[0]/binwid<<" "<< parer[0]<<" "
+		      <<gaupr[1]<<" "<< parer[1]<<" "
+		      <<gaupr[2]<<" "<< parer[2]<<endl;
+
 	    } else {
 	      for (int k=0; k<nbgpr; k++) {gaupr[k] = par[k]; }
-	      if (m_digiInput) { gaupr[2] = 0.90; } else { gaupr[2] = 0.15;}
+	      if (m_digiInput) { gaupr[2] = 0.90; } else { gaupr[2] = 0.75;} //0.25;} //0.75;} //0.15;}
 	    }
 	  }
 	  //	  if (iijj!=0) 
@@ -2394,159 +2526,164 @@ PromptHOAnalyser::endJob() {
 	    double fitres[nsgpr];
 	    double pedht = 0;
 	    
-	    char temp[20];
-	    sprintf(temp, "signal_%i",izone);
-	    xmn = signall[izone]->GetXaxis()->GetXmin();
-	    xmx = 0.5*signall[izone]->GetXaxis()->GetXmax();
-	    signal[izone] = new TF1(temp, totalfunc, xmn, xmx, nsgpr);
-	    xmx *=2.0;
-	    if ((iijj!=3) || m_histfit) {
-	      pedht = (signall[izone]->GetBinContent(nbn-1)+
-		       signall[izone]->GetBinContent(nbn)+
-		       signall[izone]->GetBinContent(nbn+1))/3.;
-	      
-	      if (m_pedsuppr && !m_digiInput) {
-		parall[1] = 0.0; // pedmean[ietafit][iphifit];
-		if (m_digiInput) { parall[2] = 0.90; } else { parall[2] = 0.15;}
-	      } else {
-		for (int i=0; i<nbgpr; i++) {parall[i] = gaupr[i];}
-	      }
-	      
-	      set_mean(parall[1], m_digiInput);
-	      set_sigma(parall[2], m_digiInput);
-
-	      parall[0] = 0.9*pedht; //GM for Z-mumu, there is almost no pedestal
-	      parall[3] = 0.14;
-	      double area = binwid*signall[izone]->GetEntries();
-	      parall[5]= area;
-	      
-	      if (iijj==3) {
-		parall[4] = fitprm[4][jk];
-		parall[6] = fitprm[6][jk];
-	      } else {
-		parall[4] = signall[izone]->GetMean();
-		parall[6]=parall[2];
-	      }
-	      signal[izone]->SetParNames("const", "mean", "sigma","Width","MP","Area","GSigma");   
-	      
-	      signal[izone]->SetParameters(parall);
-	      signal[izone]->SetParErrors(parserr);
-	      signal[izone]->FixParameter(1, parall[1]);
-	      signal[izone]->FixParameter(2, parall[2]); 
-	      signal[izone]->SetParLimits(0, 0.00, 2.0*pedht+0.1);
-	      signal[izone]->FixParameter(3, 0.14);
-	      
-	      signal[izone]->SetParLimits(5, 0.40*area, 3.15*area);
-	      //	      if (m_histfit) { //GMA
-	      if (iijj==3) {
-		signal[izone]->SetParLimits(4, 0.2*fitprm[4][jk], 2.0*fitprm[4][jk]);
-		signal[izone]->SetParLimits(6, 0.2*fitprm[6][jk], 2.0*fitprm[6][jk]);
-	      } else {
-		if (m_digiInput) {
-		  signal[izone]->SetParLimits(4, 0.6, 6.0);
-		  signal[izone]->SetParLimits(6, 0.60, 3.0);
-		} else {
-		  signal[izone]->SetParLimits(4, 0.1, 1.0); 
-		  signal[izone]->SetParLimits(6, 0.035, 0.3);
-		}
-	      }
-	      signal[izone]->SetParNames("const", "mean", "sigma","Width","MP","Area","GSigma");   
-
-          
-//	      signall[izone]->Fit(signal[izone], "0R+");
-
-	      signall[izone]->GetXaxis()->SetRangeUser(xmn,xmx);
-
-	      for (int k=0; k<nsgpr; k++) {
-		fitres[k] = fitprm[k][jk] = signal[izone]->GetParameter(k);
-                
-		parserr[k] = signal[izone]->GetParError(k);
-	      }
-	      
-	    } else {
-	      double pedhtx = 0;
-	      for (unsigned i =0; i<sig_reg[ietafit][iphifit].size(); i++) {
-		if (sig_reg[ietafit][iphifit][i] >gaupr[1]-3*gaupr[2] && sig_reg[ietafit][iphifit][i]<gaupr[1]+gaupr[2]) pedhtx++;
-	      }
-	      
-	      set_mean(gaupr[1], m_digiInput);
-	      set_sigma(gaupr[2], m_digiInput);
-
-	      TString name[nsgpr] = {"const", "mean", "sigma","Width","MP","Area","GSigma"};
-	      double strt[nsgpr] = {0.9*pedhtx, gaupr[1], gaupr[2], fitprm[3][jk], fitprm[4][jk], signall[izone]->GetEntries(), fitprm[6][jk]};
-	      double alowmn[nsgpr] = {0.1*pedhtx-0.1, gaupr[1]-0.1, gaupr[2]-0.1,0.07, 0.2*strt[4], 0.1*strt[5], 0.2*strt[6]};
-	      double ahighmn[nsgpr] ={1.2*pedhtx+0.1, gaupr[1]+0.1, gaupr[2]+0.1,0.20, 2.5*strt[4], 1.5*strt[5], 2.2*strt[6]};
-	      double step[nsgpr] = {1.0, 0.0, 0.0, 0.0, 0.001, 1.0, 0.002};
-	      
-	      TMinuit *gMinuit = new TMinuit(nsgpr);
-	      gMinuit->SetFCN(fcnsg);
-	      
-	      double arglist[10];
-	      int ierflg = 0;
-	      arglist[0] =0.5;
-	      gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
-	      
-	      for (int k=0; k<nsgpr; k++) {
-		gMinuit->mnparm(k, name[k], strt[k], step[k], alowmn[k], ahighmn[k],ierflg);
-	      }
-	      
-	      arglist[0] = 0;
-	      gMinuit->mnexcm("SIMPLEX", arglist, 0, ierflg);
-	      
-	      arglist[0] = 0;
-	      gMinuit->mnexcm("IMPROVE", arglist, 0, ierflg);
-	      
-	      TString chnam;
-	      double parv,err,xlo,xup, plerr, mierr, eparab, gcc;
-	      int iuit;
-	      
-	      for (int k=0; k<nsgpr; k++) {
-		if (step[k] >-10) {
-		  gMinuit->mnpout(k, chnam, parv, err, xlo, xup, iuit);
-		  gMinuit->mnerrs(k, plerr, mierr, eparab, gcc);
-//    std::cout <<"Sig k "<< k<<" "<<chnam<<" "<<parv<<" "<<err<<" "<<xlo<<" "<<xup<<" "<<plerr<<" "<<mierr<<" "<<eparab<<std::endl;
-		  if (k==0 || k==5) { 
-		    fitres[k] = parv*binwid;
-		    parserr[k]= err*binwid;
-		  } else {
-		    fitres[k] = parv;
-		    parserr[k]= err;
-		  }
-		  
-		}
-	      }
-	      
-	      delete gMinuit;
-	    }
-
-	    //	    if (iijj==0) {
-	    //	      signall[izone]->Draw("same");
-	    //	    } else {
-	      signall[izone]->Draw();
-	      //	    }
 	    
+	    char temp[20];
+	    xmn = signall[izone]->GetXaxis()->GetXmin();
+	    xmx = signall[izone]->GetXaxis()->GetXmax();
+	    
+	    pedht = (signall[izone]->GetBinContent(nbn-1)+
+		     signall[izone]->GetBinContent(nbn)+
+		     signall[izone]->GetBinContent(nbn+1))/3.;
+	    
+	    if (m_pedsuppr && !m_digiInput) {
+	      parall[1] = 0.0; // pedmean[ietafit][iphifit];
+	      if (m_digiInput) { parall[2] = 0.90; } else { parall[2] = 0.75;} // 0.25;} //0.75;} //0.15;}
+	    } else {
+	      for (int i=0; i<nbgpr; i++) {parall[i] = gaupr[i];}
+	    }
+	    set_mean(parall[1], m_digiInput);
+	    set_sigma(parall[2], m_digiInput);
+	    
+	    parall[3] = 0.14;
+
+	    parall[0] = 0.9*pedht; //GM for Z-mumu, there is almost no pedestal
+	    parall[5] = signall[izone]->GetEntries();
+	    if ((iijj!=3) || m_histfit) {
+	      parall[5] *=binwid;
+	    } else {
+	      parall[0]=0;
+	      for (unsigned i =0; i<sig_reg[ietafit][iphifit].size(); i++) {
+		if (sig_reg[ietafit][iphifit][i] >gaupr[1]-3*gaupr[2] && sig_reg[ietafit][iphifit][i]<gaupr[1]+gaupr[2]) parall[0]++;
+	      }
+	    }
+	    
+	    if (iijj==3) {
+	      parall[4] = fitprm[4][jk];
+	      parall[6] = fitprm[6][jk];
+	    } else {
+	      parall[4] = signall[izone]->GetMean();
+	      parall[6]=parall[2];
+
+	      //	      //	      if (abs(kl)<=4) {
+	      //	      //		parall[6] = 0.3762; //0.4410, sigma=0.08044
+	      //	      //	      } else {
+	      //	      //		parall[6] = 0.8408; 
+	      //	      // cruzet1_3 YB+-1/2 : 0.5658, sigma=.1341
+	      //	      // YB+-2 : 0.56416, s=0.1235, YB+-1 : 0.569199, s=0.134285
+	      //	      //	      }
+	      //	      if (abs(kl)<=4) { //craft
+	      //		parall[6] = 0.373655; //sigma  0.0587165
+	      //	      } else { 
+	      //		parall[6] =  0.815331;
+	      //	      }
+
+	      //	      //	      } else if (abs(kl)<=10) {
+	      //	      //		parall[6] = 0.808614; // sigma 0.189679  8.15331e-01 1.88331e-01
+	      //	      //	      } else {
+	      //	      //		parall[6] = 0.810592; //sigma 0.201858
+	      //	      //	      }
+	    }
+	    
+	    TMinuit *gMinuit = new TMinuit(nsgpr);
+	    
+	    TString name[nsgpr] = {"const", "mean", "sigma","Width","MP","Area","GSigma"};
+	    double strt[nsgpr] = {parall[0], parall[1], parall[2], parall[3], parall[4], parall[5], parall[6]}; 
+	    double alowmn[nsgpr] = {0.1*pedht-0.1, gaupr[1]-0.1, gaupr[2]-0.1,0.07, 0.5*strt[4]-0.5, 0.1*strt[5], 0.2*strt[6]};
+	    double ahighmn[nsgpr] ={2.0*pedht+0.1, gaupr[1]+0.1, gaupr[2]+0.1,0.20, 1.5*strt[4]+1.0, 1.5*strt[5], 2.2*strt[6]};
+	    double step[nsgpr] = {1.0, 0.0, 0.0, 0.0, 0.001, 1.0, 0.002};
+	    //	    //	    double step[nsgpr] = {1.0, 0.0, 0.0, 0.0, 0.001, 1.0, 0.0};
+	    //	    //	    double step[nsgpr] = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0};
+	    //	    double step[nsgpr] = {1.0, 0.0, 0.0, 0.0, 0.001, 1.0, 0.0};
+
+	    if (iijj !=3) {
+	      if (m_digiInput) {
+		alowmn[4] = 0.6; ahighmn[4] = 6.0;
+		alowmn[6] = 0.6; ahighmn[6] = 3.0;
+	      } else {
+		//14/04/09 		alowmn[4] = 0.35; ahighmn[4] = 4.5;
+		//		alowmn[6] = 0.1; ahighmn[6] = 1.5;
+		alowmn[4] = -0.35; ahighmn[4] = 4.5;
+		alowmn[6] = 0.1; ahighmn[6] = 1.5;
+
+		//		alowmn[4] = 0.15; ahighmn[4] = 2.5;
+		//		alowmn[6] = 0.1; ahighmn[6] = 1.0;
+	      }
+	    }
+	    
+	    if ((iijj!=3) || m_histfit) {
+	      nval = min(nvalmx,signall[izone]->GetNbinsX());
+	      
+	      for (int k=0; k<nval; k++) {
+		xval[k] = signall[izone]->GetBinCenter(k+1);
+		yval[k] = signall[izone]->GetBinContent(k+1);
+	      }
+	      gMinuit->SetFCN(fcnhistsg);
+	    } else {
+	      gMinuit->SetFCN(fcnsg);
+	    }
+	      
+	    double arglist[10];
+	    int ierflg = 0;
+	    arglist[0] = ((iijj!=3) || m_histfit) ? 1 : 0.5;
+	    gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
+	    
+	    for (int k=0; k<nsgpr; k++) {
+	      gMinuit->mnparm(k, name[k], strt[k], step[k], alowmn[k], ahighmn[k],ierflg);
+	    }
+	    
+	    arglist[0] = 0;
+	    //	    gMinuit->mnexcm("MIGRAD", arglist, 0, ierflg);
+	    gMinuit->mnexcm("MINIMIZE", arglist, 0, ierflg);
+
+	    arglist[0] = 0;
+	    gMinuit->mnexcm("IMPROVE", arglist, 0, ierflg);
+	    
+	    TString chnam;
+	    double parv,err,xlo,xup, plerr, mierr, eparab, gcc;
+	    int iuit;
+	    
+	    for (int k=0; k<nsgpr; k++) {
+	      gMinuit->mnpout(k, chnam, parv, err, xlo, xup, iuit);
+	      gMinuit->mnerrs(k, plerr, mierr, eparab, gcc);
+	      fitres[k] = fitprm[k][jk] = parv;
+	      parserr[k]= err; 
+	    }
+	    if ((iijj==3) && !m_histfit) {
+	      fitres[0] *=binwid;  fitres[5] *=binwid;
+	    } else {
+	      parserr[0] /=binwid;  parserr[5] /=binwid;
+	    }
+	    
+	    double  fedm, errdef;
+	    int  nparx, istat;
+	    gMinuit->mnstat(fitchisq, fedm, errdef, fitndof, nparx, istat);
+	    //	      signall[izone]->GetXaxis()->SetRangeUser(xmn,xmx);
+	    
+	    delete gMinuit;
+
+	    signall[izone]->Draw();
+
 	    sprintf(temp, "pedfun_%i",izone);
 	    pedfun[izone] = new TF1(temp, gausX, xmn, xmx, nbgpr);
 	    pedfun[izone]->SetParameters(fitres);
 	    pedfun[izone]->SetLineColor(3);
 	    pedfun[izone]->SetLineWidth(1);
 	    pedfun[izone]->Draw("same");	
-	    
 	    sprintf(temp, "signalfun_%i",izone);
 	    sigfun[izone] = new TF1(temp, langaufun, xmn, xmx, nsgpr-nbgpr);
 	    sigfun[izone]->SetParameters(&fitres[3]);
 	    sigfun[izone]->SetLineWidth(1);
 	    sigfun[izone]->SetLineColor(4);
 	    sigfun[izone]->Draw("same");
-	    
+
 	    sprintf(temp, "total_%i",izone);
 	    signalx[izone] = new TF1(temp, totalfunc, xmn, xmx, nsgpr);
 	    signalx[izone]->SetParameters(fitres);
 	    signalx[izone]->SetLineWidth(1);
 	    signalx[izone]->Draw("same");
 	    
-	    int kl = (jk<15) ? jk+1 : 14-jk;
-
+	    //	    int kl = (jk<15) ? jk+1 : 14-jk;
+	    
 	    cout<<"histinfo"<<iijj<<" fit "
 		<<std::setw(3)<< kl<<" "
 		<<std::setw(3)<< ij+1<<" "
@@ -2556,8 +2693,8 @@ PromptHOAnalyser::endJob() {
 		<<std::setw(5)<<signall[izone]->GetEntries()<<" "
 		<<std::setw(6)<<signall[izone]->GetMean()<<" "
 		<<std::setw(6)<<signall[izone]->GetRMS()<<" "
-		<<std::setw(6)<< signal[izone]->GetChisquare()<<" "
-		<<std::setw(3)<< signal[izone]->GetNDF()<<endl;
+		<<std::setw(6)<< fitchisq<<" " //signal[izone]->GetChisquare()<<" "
+		<<std::setw(3)<< fitndof<<endl; //signal[izone]->GetNDF()<<endl;
 	    
 	    file_out<<"histinfo"<<iijj<<" fit "
 		    <<std::setw(3)<< kl<<" "
@@ -2568,12 +2705,11 @@ PromptHOAnalyser::endJob() {
 		    <<std::setw(5)<<signall[izone]->GetEntries()<<" "
 		    <<std::setw(6)<<signall[izone]->GetMean()<<" "
 		    <<std::setw(6)<<signall[izone]->GetRMS()<<" "
-		    <<std::setw(6)<< signal[izone]->GetChisquare()<<" "
-		    <<std::setw(3)<< signal[izone]->GetNDF()<<endl;
+		    <<std::setw(6)<< fitchisq<<" " //signal[izone]->GetChisquare()<<" "
+		    <<std::setw(3)<< fitndof<<endl; //signal[izone]->GetNDF()<<endl;
 	    
-	    file_out <<"fitres x"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< fitres[0]<<" "<< fitres[1]<<" "<< fitres[2]<<" "<< fitres[3]<<" "<< fitres[4]<<" "<< fitres[5]<<" "<< fitres[6]<<endl;
+	    file_out <<"fitres x"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< fitres[0]/binwid<<" "<< fitres[1]<<" "<< fitres[2]<<" "<< fitres[3]<<" "<< fitres[4]<<" "<< fitres[5]/binwid<<" "<< fitres[6]<<" "<<invang[jk][ij]/signall[izone]->GetEntries()<<" "<<invang3[jk][ij]/signall[izone]->GetEntries()<<endl;
 	    file_out <<"parserr"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< parserr[0]<<" "<< parserr[1]<<" "<< parserr[2]<<" "<< parserr[3]<<" "<< parserr[4]<<" "<< parserr[5]<<" "<< parserr[6]<<endl;    
-
 	    double diff=fitres[4]-fitres[1];
 	    if (diff <=0) diff = 0.000001;
 	    double error=parserr[4]*parserr[4]+parer[2]*parer[2];
@@ -2582,14 +2718,49 @@ PromptHOAnalyser::endJob() {
 	    int ieta = (jk<15) ? (15+jk) : (29-jk);
 	    int ifl = nphimx*ieta + ij;
 	    
+	    //GM put histogram of all these variables
+	    file_out <<"table"<<iijj<<" " 
+		     <<std::setw(3)<< kl<<" "
+		     <<std::setw(3)<< ij+1<<" "
+		     <<std::setw(6)<< fitchisq<<" " //signal[izone]->GetChisquare()<<" "
+		     <<std::setw(3)<< fitndof<<" " //signal[izone]->GetNDF()<<" "
+		     <<std::setw(6)<<gaupr[2]<<" "
+		     <<std::setw(6)<<diff<<" "
+		     <<std::setw(6)<<fitres[4]<<" "
+		     <<std::setw(6)<<fitres[3]<<" "
+		     <<std::setw(6)<<fitres[5]/binwid<<" "
+		     <<std::setw(6)<<signall[izone]->GetMean()<<" "
+		     <<std::setw(6)<<signall[izone]->GetRMS()<<" "
+		     <<std::setw(5)<<signall[izone]->GetEntries()<<" "
+		     <<std::setw(7)<<invang[jk][ij]<<" "
+		     <<std::setw(7)<<error<<endl; 
+	    
+	    //GM put histogram of all these variables
+	    file_out <<"Final"<<iijj<<" " 
+		     <<std::setw(3)<< kl<<" "
+		     <<std::setw(3)<< ij+1<<" "
+		     <<std::setw(6)<< fitchisq<<" " //signal[izone]->GetChisquare()<<" "
+		     <<std::setw(5)<<pedstll[izone]->GetEntries()<<" "
+		     <<std::setw(5)<<gaupr[2]<<" "
+		     <<std::setw(5)<<parer[2]<<" "	  
+		     <<std::setw(5)<<signall[izone]->GetEntries()<<" "
+		     <<std::setw(6)<<fitres[0]/binwid<<" "
+		     <<std::setw(6)<<fitres[5]/binwid<<" "
+		     <<std::setw(7)<<diff<<" "
+		     <<std::setw(7)<<parserr[4]<<" "
+		     <<std::setw(7)<<fitres[3]<<" "
+		     <<std::setw(7)<<fitres[6]<<" "
+		     <<std::setw(7)<<100*parserr[4]/diff<<" "
+		     <<std::setw(7)<<diff/gaupr[2]<<endl;
 	    if (iijj==3) {
 	      ped_evt->Fill(ifl,pedstll[izone]->GetEntries());
 	      ped_mean->Fill(ifl,gaupr[1]);
 	      ped_width->Fill(ifl,gaupr[2]);
-	      fit_chi->Fill(ifl,signal[izone]->GetChisquare());
+	      fit_chi->Fill(ifl,fitchisq); //signal[izone]->GetChisquare());
 	      sig_evt->Fill(ifl, signall[izone]->GetEntries());
-	      fit_sigevt->Fill(ifl, fitres[5]);
-	      fit_bkgevt->Fill(ifl, fitres[0]*sqrt(2*acos(-1.))*gaupr[2]);
+	      fit_sigevt->Fill(ifl, fitres[5]/binwid);
+	      fit_bkgevt->Fill(ifl, fitres[0]/binwid);
+	      //	      fit_bkgevt->Fill(ifl, fitres[0]/binwid*sqrt(2*acos(-1.))*gaupr[2]);
 	      sig_mean->Fill(ifl, fitres[4]);
 	      sig_diff->Fill(ifl, fitres[4]-fitres[1]);
 	      sig_width->Fill(ifl, fitres[3]);
@@ -2609,27 +2780,20 @@ PromptHOAnalyser::endJob() {
 		//GMA need to put this==1 in future
 		float fact=0.812;
 		if (abs(kl)<=4) fact=0.895;
-		if (!m_digiInput) fact *=0.19; //conversion factor for GeV/fC
-                fact = 1.0000; // no rescaling !!!
+		//		if (!m_digiInput) fact *=0.19; //conversion factor for GeV/fC
 
 		float fact2 = 0;
 		if (iijj==2) fact2 = invang[jk][nphimx];
 		if (iijj==3) fact2 = invang[jk][ij];
 		if (iijj==1) fact2 = com_invang[jk][ij];
 
-// JD - for error bars, while hist fit doesn't work in 2.1.X (for now)
-                if(m_histfit) parserr[4]=signall[izone]->GetRMS()/sqrt(signall[izone]->GetEntries());
-
 		float calibc = fact*fact2/(fitres[4]*signall[izone]->GetEntries());
 		float caliberr= TMath::Abs(calibc*parserr[4]/max(0.001,fitres[4]));
-//                  std::cout<<parserr[4]<<std::endl;
 
 		if (iijj==2) {
 		  int ieta = (jk<15) ? jk+1 : 14-jk;
-//		  mean_phi_hst->Fill(ieta, calibc);
-//		  mean_phi_hst->SetBinError(mean_phi_hst->FindBin(ieta), caliberr);
-		  mean_phi_hst->Fill(ieta, 1./calibc);
-		  mean_phi_hst->SetBinError(mean_phi_hst->FindBin(ieta), caliberr/(calibc*calibc));
+		  mean_phi_hst->Fill(ieta, calibc);
+		  mean_phi_hst->SetBinError(mean_phi_hst->FindBin(ieta), caliberr);
 		  file_out<<"intieta "<<jk<<" "<<ij<<" "<<ieta<<" "<<mean_phi_hst->FindBin(double(ieta))<<" "<<calibc<<" "<<caliberr<<endl;
 		} else if (iijj==3) {
 		  const_eta[jk]->Fill(ij+1,calibc);
@@ -2639,20 +2803,47 @@ PromptHOAnalyser::endJob() {
 		  peak_eta[jk]->SetBinError(peak_eta[jk]->FindBin(ij+1),parserr[4]);
 
 		  int ieta = (jk<15) ? jk+1 : 14-jk;
-		  const_eta_phi->Fill(ieta, ij+1,1./calibc);
-
+		  const_eta_phi->Fill(ieta, ij+1,calibc);
 		  file_out<<"intietax "<<jk<<" "<<ij<<" "<<ieta<<" "<<const_eta_phi->FindBin(ieta, ij+1)<<endl;
-		  if (caliberr >0) {
-		    const_eta_phi->SetBinError(const_eta_phi->FindBin(ieta, ij+1),caliberr/(calibc*calibc));
-
-		    mean_eta[ij] +=calibc/(caliberr*caliberr);
-		    mean_phi[jk] +=calibc/(caliberr*caliberr);
-		    
-		    rms_eta[ij] +=1./(caliberr*caliberr);
-		    rms_phi[jk] +=1./(caliberr*caliberr);
-
+		  if ( fitres[5]> 2*fitres[0] && fitres[5]/binwid > 0.6*signall[izone]->GetEntries()) {
+		    if (caliberr >0) {
+		      const_eta_phi->SetBinError(const_eta_phi->FindBin(ieta, ij+1),caliberr);
+		      
+		      mean_eta[ij] +=calibc/(caliberr*caliberr);
+		      mean_phi[jk] +=calibc/(caliberr*caliberr);
+		      
+		      rms_eta[ij] +=1./(caliberr*caliberr);
+		      rms_phi[jk] +=1./(caliberr*caliberr);
+		      
+		      int iring = 0;
+		      if (ieta >=-15 && ieta <=-11) {iring = -2;}
+		      if (ieta >=-10 && ieta <=-5)  {iring = -1;}
+		      if (ieta >=  5 && ieta <= 10) {iring = 1;}
+		      if (ieta >= 11 && ieta <= 15) {iring = 2;}
+		      
+		      int iring2 = iring + 2;
+		      
+		      int tmprout = int((ij + 2)/3.) + 1;
+		      int tmproutmx =routmx; 
+		      if (iring==0) {
+			tmprout = int((ij + 2)/2.) + 1;
+			if (tmprout >routmx) tmprout = 1;
+		      } else {
+			if (tmprout >rout12mx) tmprout = 1;
+			tmproutmx =rout12mx; 
+		      }
+		      
+		      comm_mean[iring2][tmprout-1] +=calibc/(caliberr*caliberr);
+		      comm_rms[iring2][tmprout-1] +=1./(caliberr*caliberr);
+		    } else {
+		      const_eta_phi->SetBinError(const_eta_phi->FindBin(ieta, ij+1), 0.0);
+		    }
 		  } else {
 		    const_eta_phi->SetBinError(const_eta_phi->FindBin(ieta, ij+1), 0.0);
+		    file_out<<"HOerror "<<iijj<<" "<< std::setw(3)<<kl<<" "<<std::setw(3)<<ij+1<<" "
+			    <<std::setw(7)<<calibc<<" "<<std::setw(7)<<caliberr<<" "
+			    <<signall[izone]->GetEntries()<<" "
+			    <<fitres[0]/binwid<<" "<<fitres[5]/binwid<<endl; 
 		  }
 		} else if (iijj==1) {
 		  const_hpdrm[jk]->Fill(ij+1,calibc);
@@ -2660,6 +2851,7 @@ PromptHOAnalyser::endJob() {
 		  
 		  peak_hpdrm[jk]->Fill(ij+1,fitres[4]);
 		  peak_hpdrm[jk]->SetBinError(peak_hpdrm[jk]->FindBin(ij+1),parserr[4]);
+
 		}
 
 		file_out<<"HO  4 "<<iijj<<" "<< std::setw(3)<<kl<<" "<<std::setw(3)<<ij+1<<" "
@@ -2670,7 +2862,7 @@ PromptHOAnalyser::endJob() {
 	  } else {   //if (signall[izone]->GetEntries() >10) {
 	    signall[izone]->Draw();
 	    float varx = 0.000;
-	    int kl = (jk<15) ? jk+1 : 14-jk;
+	    //	    int kl = (jk<15) ? jk+1 : 14-jk;
 	    file_out<<"histinfo"<<iijj<<" nof "
 		    <<std::setw(3)<< kl<<" "
 		    <<std::setw(3)<< ij+1<<" "
@@ -2683,23 +2875,38 @@ PromptHOAnalyser::endJob() {
 		    <<std::setw(6)<< varx<<" "
 		    <<std::setw(3)<< varx<<endl;
 	    
-	    file_out <<"fitres x"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<endl;
+	    file_out <<"fitres x"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<<varx<<" "<<varx<<endl;
 	    file_out <<"parserr"<<iijj<<" "<<kl<<" "<<ij+1<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<" "<< varx<<endl;
 	    
+ 	    file_out <<"table"<<iijj<<" "
+		     <<std::setw(3)<< kl<<" "
+		     <<std::setw(3)<< ij+1<<" "
+		     <<std::setw(6)<< varx<<" "
+		     <<std::setw(6)<< varx<<" "	    
+		     <<std::setw(6)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(6)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(6)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(7)<< varx<<" "
+		     <<std::setw(7)<< varx<<endl; 
 	  }
 	  iiter++;
 	  if (iiter%nsample==0) { 
 	    c0->Update();   
 
-	    for (int kl=0; kl<nsample; kl++) {
-	      if (gx0[kl]) {delete gx0[kl];gx0[kl] = 0;}
-	      if (ped0fun[kl]) {delete ped0fun[kl];ped0fun[kl] = 0;}
-	      if (signal[kl]) {delete signal[kl];signal[kl] = 0;}
-	      if (pedfun[kl]) {delete pedfun[kl];pedfun[kl] = 0;}
-	      if (sigfun[kl]) {delete sigfun[kl];sigfun[kl] = 0;}
-	      if (signalx[kl]) {delete signalx[kl];signalx[kl] = 0;}
-	      if (signall[kl]) {delete signall[kl];signall[kl] = 0;}
-	      if (pedstll[kl]) {delete pedstll[kl];pedstll[kl] = 0;}
+	    for (int lm=0; lm<nsample; lm++) {
+	      //	      if (gx0[lm]) {delete gx0[lm];gx0[lm] = 0;}
+	      if (ped0fun[lm]) {delete ped0fun[lm];ped0fun[lm] = 0;}
+	      //	      if (signal[lm]) {delete signal[lm];signal[lm] = 0;}
+	      if (pedfun[lm]) {delete pedfun[lm];pedfun[lm] = 0;}
+	      if (sigfun[lm]) {delete sigfun[lm];sigfun[lm] = 0;}
+	      if (signalx[lm]) {delete signalx[lm];signalx[lm] = 0;}
+	      if (signall[lm]) {delete signall[lm];signall[lm] = 0;}
+	      if (pedstll[lm]) {delete pedstll[lm];pedstll[lm] = 0;}
 	    }
 
 	  }
@@ -2718,15 +2925,15 @@ PromptHOAnalyser::endJob() {
     } //end of iijj
     if (iiter%nsample!=0) { 
       c0->Update(); 
-      for (int kl=0; kl<nsample; kl++) {
-	if (gx0[kl]) {delete gx0[kl];gx0[kl] = 0;}
-	if (ped0fun[kl]) {delete ped0fun[kl];ped0fun[kl] = 0;}
-	if (signal[kl]) {delete signal[kl];signal[kl] = 0;}
-	if (pedfun[kl]) {delete pedfun[kl];pedfun[kl] = 0;}
-	if (sigfun[kl]) {delete sigfun[kl];sigfun[kl] = 0;}
-	if (signalx[kl]) {delete signalx[kl];signalx[kl] = 0;}
-	if (signall[kl]) {delete signall[kl];signall[kl] = 0;}
-	if (pedstll[kl]) {delete pedstll[kl];pedstll[kl] = 0;}
+      for (int lm=0; lm<nsample; lm++) {
+	//	if (gx0[lm]) {delete gx0[lm];gx0[lm] = 0;}
+	if (ped0fun[lm]) {delete ped0fun[lm];ped0fun[lm] = 0;}
+	//	if (signal[lm]) {delete signal[lm];signal[lm] = 0;}
+	if (pedfun[lm]) {delete pedfun[lm];pedfun[lm] = 0;}
+	if (sigfun[lm]) {delete sigfun[lm];sigfun[lm] = 0;}
+	if (signalx[lm]) {delete signalx[lm];signalx[lm] = 0;}
+	if (signall[lm]) {delete signall[lm];signall[lm] = 0;}
+	if (pedstll[lm]) {delete pedstll[lm];pedstll[lm] = 0;}
       }
     }
 
@@ -2796,6 +3003,13 @@ PromptHOAnalyser::endJob() {
     ps.Close();
     delete c1;
 */    
+
+
+
+
+
+
+
     file_out.close();
 
     if (m_figure) {
@@ -3140,6 +3354,129 @@ PromptHOAnalyser::endJob() {
       
       delete c1y;
 
+      /*      
+      TCanvas *c4y = new TCanvas("c4y", "Signal in each ring", xsiz, ysiz);
+      if (m_r0layer1) { c4y->Divide(3,1); } else { c4y->Divide(3,2);}
+      for (int jk=0; jk<ringmx; jk++) {
+	if (m_r0layer1 && jk !=2) continue;
+	ped1_hpdrm[jk]->GetXaxis()->SetTitle("RM #");
+	ped1_hpdrm[jk]->GetXaxis()->SetTitleSize(0.070);
+	ped1_hpdrm[jk]->GetXaxis()->SetTitleOffset(1.3); 
+	ped1_hpdrm[jk]->GetXaxis()->CenterTitle();
+	ped1_hpdrm[jk]->GetXaxis()->SetLabelSize(0.065);
+	ped1_hpdrm[jk]->GetXaxis()->SetLabelOffset(0.01);
+
+	if (m_digiInput) {
+	  ped1_hpdrm[jk]->GetYaxis()->SetTitle("Ped_Mean(fC)");
+	  ped1_hpdrm[jk]->SetMaximum(2.0);
+	  ped1_hpdrm[jk]->SetMinimum(-2.0);
+	} else {
+	  ped1_hpdrm[jk]->GetYaxis()->SetTitle("Ped_Mean(GeV)");
+	  ped1_hpdrm[jk]->SetMaximum(0.75);
+	  ped1_hpdrm[jk]->SetMinimum(-0.75);
+	}
+	ped1_hpdrm[jk]->GetYaxis()->SetTitleSize(0.065);
+	ped1_hpdrm[jk]->GetYaxis()->SetTitleOffset(1.3); 
+	ped1_hpdrm[jk]->GetYaxis()->CenterTitle();
+	ped1_hpdrm[jk]->GetYaxis()->SetLabelSize(0.065);
+	ped1_hpdrm[jk]->GetYaxis()->SetLabelOffset(0.01); 
+	//	ped1_hpdrm[jk]->SetLineWidth(3);  
+	//	ped1_hpdrm[jk]->SetLineColor(4);  
+	ped1_hpdrm[jk]->SetMarkerSize(0.60);
+	ped1_hpdrm[jk]->SetMarkerColor(2);
+	ped1_hpdrm[jk]->SetMarkerStyle(20);
+	if (m_r0layer1) { c4y->cd(1); } else {c4y->cd(jk+1);}
+	//	c4y->cd(jk+1); 
+	ped1_hpdrm[jk]->Draw();
+      }
+      
+      if (!m_r0layer1) {
+	sprintf(out_file, "comb_ped1_hpdrm_%i.jpg",irunold); 
+	//	c4y->SaveAs(out_file);
+      }
+      //      delete c4y;
+      //     TCanvas *c5y = new TCanvas("c5y", "Signal in each ring", xsiz, ysiz);
+      //      c5y->Divide(3,2);
+      
+      for (int jk=0; jk<ringmx; jk++) {
+	if (m_r0layer1 && jk !=2) continue;
+	pedestal_hpdrm[jk]->GetXaxis()->SetTitle("RM #");
+	pedestal_hpdrm[jk]->GetXaxis()->SetTitleSize(0.070);
+	pedestal_hpdrm[jk]->GetXaxis()->SetTitleOffset(1.3); 
+	pedestal_hpdrm[jk]->GetXaxis()->CenterTitle();
+	pedestal_hpdrm[jk]->GetXaxis()->SetLabelSize(0.065);
+	pedestal_hpdrm[jk]->GetXaxis()->SetLabelOffset(0.01);
+
+	if (m_digiInput) {
+	  pedestal_hpdrm[jk]->GetYaxis()->SetTitle("Ped_Mean(fC)");
+	  pedestal_hpdrm[jk]->SetMaximum(2.0);
+	  pedestal_hpdrm[jk]->SetMinimum(-2.0);
+	} else {
+	  pedestal_hpdrm[jk]->GetYaxis()->SetTitle("Ped_Mean(GeV)");
+	  pedestal_hpdrm[jk]->SetMaximum(0.60);
+	  pedestal_hpdrm[jk]->SetMinimum(-0.60);
+	}
+	pedestal_hpdrm[jk]->GetYaxis()->SetTitleSize(0.065);
+	pedestal_hpdrm[jk]->GetYaxis()->SetTitleOffset(1.2); 
+	pedestal_hpdrm[jk]->GetYaxis()->CenterTitle();
+	pedestal_hpdrm[jk]->GetYaxis()->SetLabelSize(0.065);
+	pedestal_hpdrm[jk]->GetYaxis()->SetLabelOffset(0.01); 
+	//	pedestal_hpdrm[jk]->SetLineWidth(3);  
+	//	pedestal_hpdrm[jk]->SetLineColor(4);  
+	pedestal_hpdrm[jk]->SetMarkerSize(0.60);
+	pedestal_hpdrm[jk]->SetMarkerColor(2);
+	pedestal_hpdrm[jk]->SetMarkerStyle(20);
+	if (m_r0layer1) { c4y->cd(2); } else {c4y->cd(jk+1);}
+	//	c5y->cd(jk+1); 
+	pedestal_hpdrm[jk]->Draw();
+      }
+
+      if (!m_r0layer1) {
+	sprintf(out_file, "comb_pedestal_hpdrm_%i.jpg",irunold); 
+	//	c4y->SaveAs(out_file);
+      }
+
+      //      delete c5y;
+      //      TCanvas *c3y = new TCanvas("c3y", "Signal in each ring", xsiz, ysiz);
+      //      c3y->Divide(3,2);
+      
+      for (int jk=0; jk<ringmx; jk++) {
+	if (m_r0layer1 && jk !=2) continue;
+	ped2_hpdrm[jk]->GetXaxis()->SetTitle("RM #");
+	ped2_hpdrm[jk]->GetXaxis()->SetTitleSize(0.070);
+	ped2_hpdrm[jk]->GetXaxis()->SetTitleOffset(1.3); 
+	ped2_hpdrm[jk]->GetXaxis()->CenterTitle();
+	ped2_hpdrm[jk]->GetXaxis()->SetLabelSize(0.065);
+	ped2_hpdrm[jk]->GetXaxis()->SetLabelOffset(0.01);
+
+	if (m_digiInput) {
+	  ped2_hpdrm[jk]->GetYaxis()->SetTitle("Ped_rms(fC)");
+	  ped2_hpdrm[jk]->SetMaximum(4.0);
+	  ped2_hpdrm[jk]->SetMinimum(0.5);
+	} else {
+	  ped2_hpdrm[jk]->GetYaxis()->SetTitle("Ped_rms(GeV)");
+	  ped2_hpdrm[jk]->SetMaximum(1.5);
+	  ped2_hpdrm[jk]->SetMinimum(0.2);
+	}
+	ped2_hpdrm[jk]->GetYaxis()->SetTitleSize(0.065);
+	ped2_hpdrm[jk]->GetYaxis()->SetTitleOffset(1.2); 
+	ped2_hpdrm[jk]->GetYaxis()->CenterTitle();
+	ped2_hpdrm[jk]->GetYaxis()->SetLabelSize(0.065);
+	ped2_hpdrm[jk]->GetYaxis()->SetLabelOffset(0.01); 
+	//	ped2_hpdrm[jk]->SetLineWidth(3);  
+	//	ped2_hpdrm[jk]->SetLineColor(4);  
+	ped2_hpdrm[jk]->SetMarkerSize(0.60);
+	ped2_hpdrm[jk]->SetMarkerColor(2);
+	ped2_hpdrm[jk]->SetMarkerStyle(20);
+	if (m_r0layer1) { c4y->cd(3); } else {c4y->cd(jk+1);}
+	//	c3y->cd(jk+1); 
+	ped2_hpdrm[jk]->Draw();
+      }
+
+      sprintf(out_file, "comb_ped2_hpdrm_%i.jpg",irunold); 
+      //      c4y->SaveAs(out_file);
+      delete c4y;
+      */
     } //if (m_figure) {
 
     //    ps.Close();
@@ -3176,126 +3513,8 @@ PromptHOAnalyser::endJob() {
 //    gStyle->SetPadRightMargin(0.01);
 //    gStyle->SetNdivisions(303,"XY");
 //    gStyle->SetOptLogy(1);
-    
-    TCanvas *c2x = new TCanvas("c2x", "runfile", xsiz, ysiz); 
-    c2x->Divide(5,3);
-    for (int side=0; side <2; side++) {
-      int nmn = 0;
-      int nmx = netamx/2;
-      if (side==1) {
-	nmn = netamx/2;
-	nmx = netamx;
-      }
-      int nzone = 0;
-      char name[200];
 
-      for (int ij=nmn; ij<nmx; ij++) {
-	int ieta = (ij<15) ? ij+1 : 14-ij;
-	c2x->cd(nzone+1); 
-	if (m_digiInput) {
-	  sprintf(name,"fC(#eta=%i)",ieta);
-	} else {
-	  sprintf(name,"GeV(#eta=%i)",ieta);
-	}
-/*
-	sigrsg[ij][nphimx]->GetXaxis()->SetTitle(name);
-	sigrsg[ij][nphimx]->GetXaxis()->SetTitleSize(.08);
-	sigrsg[ij][nphimx]->GetXaxis()->CenterTitle(); 
-	sigrsg[ij][nphimx]->GetXaxis()->SetTitleOffset(0.90);
-	sigrsg[ij][nphimx]->GetXaxis()->SetLabelSize(.08);
-	sigrsg[ij][nphimx]->GetXaxis()->SetLabelOffset(.01);
-	
-	sigrsg[ij][nphimx]->GetYaxis()->SetLabelSize(.08);
-	sigrsg[ij][nphimx]->GetYaxis()->SetLabelOffset(.01);	
-*/
-	sigrsg[ij][nphimx]->SetLineWidth(2);
-	sigrsg[ij][nphimx]->SetLineColor(4);
-	sigrsg[ij][nphimx]->Draw();
-	crossg[ij][nphimx]->SetLineWidth(2);
-	crossg[ij][nphimx]->SetLineColor(2);
-	crossg[ij][nphimx]->Draw("same");
-	nzone++;
-      } 
-      
-      sprintf(out_file, "sig_ho_%i_side%i.eps", irunold, side);
-//      c2x->SaveAs(out_file);
-      
-      sprintf(out_file, "sig_ho_%i_side%i.jpg", irunold, side);
-//      c2x->SaveAs(out_file);
-    }
 
-    gStyle->SetOptLogy(0);
-    c2x = new TCanvas("c2x", "runfile", xsiz, ysiz); 
-    c2x->Divide(5,3);
-    for (int side=0; side <2; side++) {
-      int nmn = 0;
-      int nmx = netamx/2;
-      if (side==1) {
-	nmn = netamx/2;
-	nmx = netamx;
-      }
-      int nzone = 0;
-
-      nzone = 0;
-      for (int ij=nmn; ij<nmx; ij++) {
-	c2x->cd(nzone+1); 
-	statmn_eta[ij]->SetLineWidth(2);  
-	statmn_eta[ij]->SetLineColor(4);  
-	statmn_eta[ij]->GetXaxis()->SetTitle("#phi index");	
-	statmn_eta[ij]->GetXaxis()->SetTitleSize(.08);
-	statmn_eta[ij]->GetXaxis()->CenterTitle(); 
-	statmn_eta[ij]->GetXaxis()->SetTitleOffset(0.9);
-	statmn_eta[ij]->GetYaxis()->SetLabelSize(.08);
-	statmn_eta[ij]->GetYaxis()->SetLabelOffset(.01);	
-	statmn_eta[ij]->GetXaxis()->SetLabelSize(.08);
-	statmn_eta[ij]->GetXaxis()->SetLabelOffset(.01);
-	if (m_digiInput) {
-	  statmn_eta[ij]->GetYaxis()->SetTitle("fC");
-	} else {
-	  statmn_eta[ij]->GetYaxis()->SetTitle("GeV");
-	}
-	statmn_eta[ij]->GetYaxis()->SetTitleSize(.075);
-	statmn_eta[ij]->GetYaxis()->CenterTitle(); 
-	statmn_eta[ij]->GetYaxis()->SetTitleOffset(1.30);
-	
-	statmn_eta[ij]->Draw();
-	nzone++;
-      } 
-      
-      sprintf(out_file, "statmnho_%i_side%i.eps", irunold, side);
-//      c2x->SaveAs(out_file);
-      
-      sprintf(out_file, "statmnho_%i_side%i.jpg", irunold, side);
-//      c2x->SaveAs(out_file);
-      
-//      gStyle->SetOptLogy(1);
-      gStyle->SetNdivisions(203,"XY");
-      
-      nzone = 0;
-      for (int ij=nmn; ij<nmx; ij++) {
-	c2x->cd(nzone+1); 
-	stat_eta[ij]->SetLineWidth(2);  
-	stat_eta[ij]->SetLineColor(4);  
-	stat_eta[ij]->GetXaxis()->SetTitle("#phi index");	
-	stat_eta[ij]->GetXaxis()->SetTitleSize(.08);
-	stat_eta[ij]->GetXaxis()->CenterTitle(); 
-	stat_eta[ij]->GetXaxis()->SetTitleOffset(0.80);
-	stat_eta[ij]->GetXaxis()->SetLabelSize(.08);
-	stat_eta[ij]->GetXaxis()->SetLabelOffset(.01);	
-	stat_eta[ij]->GetYaxis()->SetLabelSize(.08);
-	stat_eta[ij]->GetYaxis()->SetLabelOffset(.01);
-	
-	stat_eta[ij]->Draw();
-	nzone++;
-      } 
-      
-      sprintf(out_file, "statho_%i_side%i.eps", irunold, side);
-//      c2x->SaveAs(out_file);
-      
-      sprintf(out_file, "statho_%i_side%i.jpg", irunold, side);
-//      c2x->SaveAs(out_file);
-    }
-    delete c2x;
 
   } //if (m_figure) {
 
