@@ -39,43 +39,43 @@ loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 addZtoElecTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
 	dqmDirectories_input = cms.vstring(
-            'QCD_BCtoE_Pt20to30',
-            'QCD_BCtoE_Pt30to80',
-            'QCD_BCtoE_Pt80to170',
-            'QCD_EMenriched_Pt20to30',
-            'QCD_EMenriched_Pt30to80',
-            'QCD_EMenriched_Pt80to170'
+            'harvested/QCD_BCtoE_Pt20to30',
+            'harvested/QCD_BCtoE_Pt30to80',
+            'harvested/QCD_BCtoE_Pt80to170',
+            'harvested/QCD_EMenriched_Pt20to30',
+            'harvested/QCD_EMenriched_Pt30to80',
+            'harvested/QCD_EMenriched_Pt80to170'
         ),
-	dqmDirectory_output = cms.string('qcdSum')
+	dqmDirectory_output = cms.string('harvested/qcdSum')
     )                          
 )
 
 addZtoElecTau_gammaPlusJetsSum = cms.EDAnalyzer("DQMHistAdder",
     gammaPlusJetsSum = cms.PSet(
 	dqmDirectories_input = cms.vstring(
-            'gammaPlusJets_Pt15to20',
-            'gammaPlusJets_Pt20to25',
-            'gammaPlusJets_Pt25to30',
-            'gammaPlusJets_Pt30to35',
-            'gammaPlusJets_PtGt35'
+            'harvested/gammaPlusJets_Pt15to20',
+            'harvested/gammaPlusJets_Pt20to25',
+            'harvested/gammaPlusJets_Pt25to30',
+            'harvested/gammaPlusJets_Pt30to35',
+            'harvested/gammaPlusJets_PtGt35'
         ),
-	dqmDirectory_output = cms.string('gammaPlusJetsSum')
+	dqmDirectory_output = cms.string('harvested/gammaPlusJetsSum')
     )                          
 )
 
 addZtoElecTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'Ztautau',
-            #'ZtautauPlusJets',
-            'ZeePlusJets', 
-            #'Zee',
-            'gammaPlusJetsSum',
-            'qcdSum', 
-            'WplusJets',
-            'TTplusJets'
+            'harvested/Ztautau',
+            #'harvested/ZtautauPlusJets',
+            'harvested/ZeePlusJets', 
+            #'harvested/Zee',
+            'harvested/gammaPlusJetsSum',
+            'harvested/qcdSum', 
+            'harvested/WplusJets',
+            'harvested/TTplusJets'
 	),
-        dqmDirectory_output = cms.string('smSum')
+        dqmDirectory_output = cms.string('harvested/smSum')
     )
 )
 
@@ -90,12 +90,12 @@ plotZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
         WplusJets = copy.deepcopy(processZtoElecTau_WplusJets.config_dqmHistPlotter),
         TTplusJets = copy.deepcopy(processZtoElecTau_TTplusJets.config_dqmHistPlotter),
         gammaPlusJetsSum = cms.PSet(
-            dqmDirectory = cms.string('gammaPlusJetsSum'),
+            dqmDirectory = cms.string('harvested/gammaPlusJetsSum'),
             legendEntry = cms.string('#gamma + Jets'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
 	),
         qcdSum = cms.PSet(
-            dqmDirectory = cms.string('qcdSum'),
+            dqmDirectory = cms.string('harvested/qcdSum'),
             legendEntry = cms.string('QCD'),
             type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
         )

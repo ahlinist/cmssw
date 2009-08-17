@@ -6,14 +6,14 @@ import FWCore.ParameterSet.Config as cms
 
 dumpZtoElecTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
     dqmDirectories = cms.PSet(
-        Ztautau = cms.string('Ztautau/zElecTauAnalyzer/FilterStatistics/'),
-        #Zee = cms.string('Zee/zElecTauAnalyzer/FilterStatistics/'),
-        #ZtautauPlusJets = cms.string('ZtautauPlusJets/zElecTauAnalyzer/FilterStatistics/'),
-        ZeePlusJets = cms.string('ZeePlusJets/zElecTauAnalyzer/FilterStatistics/'),
-        WplusJets = cms.string('WplusJets/zElecTauAnalyzer/FilterStatistics/'),
-        TTplusJets = cms.string('TTplusJets/zElecTauAnalyzer/FilterStatistics/'),
-        QCD = cms.string('qcdSum/zElecTauAnalyzer/FilterStatistics/'),
-        gammaPlusJetsSum = cms.string('gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/')
+        Ztautau = cms.string('harvested/Ztautau/zElecTauAnalyzer/FilterStatistics/'),
+        #Zee = cms.string('harvested/Zee/zElecTauAnalyzer/FilterStatistics/'),
+        #ZtautauPlusJets = cms.string('harvested/ZtautauPlusJets/zElecTauAnalyzer/FilterStatistics/'),
+        ZeePlusJets = cms.string('harvested/ZeePlusJets/zElecTauAnalyzer/FilterStatistics/'),
+        WplusJets = cms.string('harvested/WplusJets/zElecTauAnalyzer/FilterStatistics/'),
+        TTplusJets = cms.string('harvested/TTplusJets/zElecTauAnalyzer/FilterStatistics/'),
+        QCD = cms.string('harvested/qcdSum/zElecTauAnalyzer/FilterStatistics/'),
+        gammaPlusJetsSum = cms.string('harvested/gammaPlusJetsSum/zElecTauAnalyzer/FilterStatistics/')
     ),
     columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "Efficiency")
 )
