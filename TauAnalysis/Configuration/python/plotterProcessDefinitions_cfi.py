@@ -27,7 +27,7 @@ process_Zmumu = cms.PSet(
         dqmDirectory_store = cms.string('Zmumu')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('Zmumu'),
+        dqmDirectory = cms.string('harvested/Zmumu'),
         legendEntry = cms.string('Z #rightarrow #mu^{+} #mu^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -41,7 +41,7 @@ process_Zee = cms.PSet(
         dqmDirectory_store = cms.string('Zee')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('Zee'),
+        dqmDirectory = cms.string('harvested/Zee'),
         legendEntry = cms.string('Z #rightarrow e^{+} e^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -55,7 +55,7 @@ process_ZplusJets = cms.PSet(
         dqmDirectory_store = cms.string('ZplusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('ZplusJets'),
+        dqmDirectory = cms.string('harvested/ZplusJets'),
         legendEntry = cms.string('Z + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -68,7 +68,7 @@ process_ZeePlusJets = cms.PSet(
         dqmDirectory_store = cms.string('ZeePlusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('ZeePlusJets'),
+        dqmDirectory = cms.string('harvested/ZeePlusJets'),
         legendEntry = cms.string('Z #rightarrow e^{+} e^{-} + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -81,7 +81,7 @@ process_ZmumuPlusJets = cms.PSet(
         dqmDirectory_store = cms.string('ZmumuPlusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('ZmumuPlusJets'),
+        dqmDirectory = cms.string('harvested/ZmumuPlusJets'),
         legendEntry = cms.string('Z #rightarrow #mu^{+} #mu^{-} + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -94,7 +94,7 @@ process_ZtautauPlusJets = cms.PSet(
         dqmDirectory_store = cms.string('ZtautauPlusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('ZtautauPlusJets'),
+        dqmDirectory = cms.string('harvested/ZtautauPlusJets'),
         legendEntry = cms.string('Z #rightarrow #tau^{+} #tau^{-} + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -108,7 +108,7 @@ process_WplusJets = cms.PSet(
         dqmDirectory_store = cms.string('WplusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('WplusJets'),
+        dqmDirectory = cms.string('harvested/WplusJets'),
         legendEntry = cms.string('W + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -122,7 +122,7 @@ process_gammaPlusJets = cms.PSet(
         dqmDirectory_store = cms.string('gammaPlusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('gammaPlusJets'),
+        dqmDirectory = cms.string('harvested/gammaPlusJets'),
         legendEntry = cms.string('gamma + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -136,7 +136,7 @@ process_TTplusJets = cms.PSet(
         dqmDirectory_store = cms.string('TTplusJets')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('TTplusJets'),
+        dqmDirectory = cms.string('harvested/TTplusJets'),
         legendEntry = cms.string('TT + jets'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -151,7 +151,7 @@ process_QCD_EMenriched_Pt20to30 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_EMenriched_Pt20to30')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_EMenriched_Pt20to30'),
+        dqmDirectory = cms.string('harvested/QCD_EMenriched_Pt20to30'),
         legendEntry = cms.string('eQCD 20 < #hat{P}_T < 30 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -166,7 +166,7 @@ process_QCD_EMenriched_Pt30to80 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_EMenriched_Pt30to80')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_EMenriched_Pt30to80'),
+        dqmDirectory = cms.string('harvested/QCD_EMenriched_Pt30to80'),
         legendEntry = cms.string('eQCD 30 < #hat{P}_T < 80 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -181,7 +181,7 @@ process_QCD_EMenriched_Pt80to170 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_EMenriched_Pt80to170')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_EMenriched_Pt80to170'),
+        dqmDirectory = cms.string('harvested/QCD_EMenriched_Pt80to170'),
         legendEntry = cms.string('eQCD 80 < #hat{P}_T < 170 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -196,7 +196,7 @@ process_QCD_BCtoE_Pt20to30 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_BCtoE_Pt20to30')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_BCtoE_Pt20to30'),
+        dqmDirectory = cms.string('harvested/QCD_BCtoE_Pt20to30'),
         legendEntry = cms.string('eQCD 20 < #hat{P}_T < 30 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -211,7 +211,7 @@ process_QCD_BCtoE_Pt30to80 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_BCtoE_Pt30to80')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_BCtoE_Pt30to80'),
+        dqmDirectory = cms.string('harvested/QCD_BCtoE_Pt30to80'),
         legendEntry = cms.string('eQCD 30 < #hat{P}_T < 80 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -226,7 +226,7 @@ process_QCD_BCtoE_Pt80to170 = cms.PSet(
         dqmDirectory_store = cms.string('QCD_BCtoE_Pt80to170')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('QCD_BCtoE_Pt80to170'),
+        dqmDirectory = cms.string('harvested/QCD_BCtoE_Pt80to170'),
         legendEntry = cms.string('eQCD 80 < #hat{P}_T < 170 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -240,7 +240,7 @@ process_InclusivePPmuX = cms.PSet(
         dqmDirectory_store = cms.string('InclusivePPmuX')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('InclusivePPmuX'),
+        dqmDirectory = cms.string('harvested/InclusivePPmuX'),
         legendEntry = cms.string('pp#muX'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
@@ -255,7 +255,7 @@ process_PPmuXptGt20 = cms.PSet(
         dqmDirectory_store = cms.string('PPmuXptGt20')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('PPmuXptGt20'),
+        dqmDirectory = cms.string('harvested/PPmuXptGt20'),
         legendEntry = cms.string('pp#muX #hat{P}_T > 20 GeV'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     ) 
