@@ -36,7 +36,6 @@ class DQMFileLoader : public edm::EDAnalyzer
     vstring inputFileNames_;
     double scaleFactor_;
     std::string dqmDirectory_store_;
-    bool hasBeenHarvested_;
     int cfgError_;
   };
 
