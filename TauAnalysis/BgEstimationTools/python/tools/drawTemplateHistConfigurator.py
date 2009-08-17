@@ -3,7 +3,7 @@ import sys
 import copy
 
 #--------------------------------------------------------------------------------
-# utility function for configurating drawJobs
+# utility function for configuring drawJobs
 # displaying template histograms including and excluding background contamination
 # compared to distributions expected after all selection criteria
 # of the final analysis are applied
