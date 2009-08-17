@@ -71,9 +71,11 @@ namespace edm {
             case MessageLoggerQ::JOBREPORT:
             case MessageLoggerQ::JOBMODE:
             case MessageLoggerQ::GROUP_STATS:
+	    {
                std::string* string_p = static_cast<std::string*> (operand);
                delete string_p;
                break;
+	    }
             default:
                break;
          }
