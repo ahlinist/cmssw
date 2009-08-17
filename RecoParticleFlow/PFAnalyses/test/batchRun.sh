@@ -15,10 +15,10 @@ SCRIPT=$RUND"pflow_tb_general.py"
 
 echo Script is: $SCRIPT
 
-OUTTREE="outputtree_"$ENERGY"GeV_notracks"$SUFFIX".root"
-OUTPUT="reprocessed_"$ENERGY"GeV_notracks"$SUFFIX".root"
-DESTD=/castor/cern.ch/user/b/ballin/tb310pre8/
-LOG="log_"$ENERGY"GeV_notracks"$SUFFIX".txt"
+OUTTREE="outputtree_"$ENERGY"GeV"$SUFFIX".root"
+OUTPUT="reprocessed_"$ENERGY"GeV"$SUFFIX".root"
+DESTD=/castor/cern.ch/user/b/ballin/tb321/
+LOG="log_"$ENERGY"GeV"$SUFFIX".txt"
 
 echo Outputtree is: $OUTTREE
 echo Reprocessed file is: $OUTPUT
@@ -31,7 +31,7 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$ENERGY kevents=0 notracks=1 copyToTmp=0
+cmsRun $SCRIPT beamEnergy=$ENERGY 
 echo cmsRun complete.
 
 tail -n 50 *.txt
@@ -42,7 +42,7 @@ ls -lh
 echo Copying files to castor...
 rfcp $OUTTREE $DESTD
 rfcp $OUTPUT $DESTD
-cp $LOG $RUND"tb310pre8/"
+cp $LOG $RUND"tb321/"
 
 echo Done.
 exit 0
