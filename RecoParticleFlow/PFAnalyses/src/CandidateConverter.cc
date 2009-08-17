@@ -38,7 +38,6 @@ CandidateConverter::~CandidateConverter() {
 	LogDebug("CandidateConverter") << __PRETTY_FUNCTION__ << std::endl;
 }
 
-
 pftools::CandidateWrapper CandidateConverter::convert(
 		const reco::PFCandidate& cand) {
 	CandidateWrapper cw;
@@ -64,17 +63,18 @@ void CandidateConverter::extractClustersFromCandidate(const PFCandidate& cand,
 		std::vector<CalibratableElement>& ecal,
 		std::vector<CalibratableElement>& hcal) {
 
-	PFCandidate::ElementsInBlocks eleInBlocks = cand.elementsInBlocks();
+	const PFCandidate::ElementsInBlocks& eleInBlocks = cand.elementsInBlocks();
 	if (debug_ > 2)
 		LogDebug("CandidateConverter") << "\tLooping over elements in blocks, "
 				<< eleInBlocks.size() << " of them." << std::endl;
-	for (PFCandidate::ElementsInBlocks::iterator bit = eleInBlocks.begin(); bit
-			!= eleInBlocks.end(); ++bit) {
+
+	PFCandidate::ElementsInBlocks::const_iterator bit = eleInBlocks.begin();
+	for (; bit != eleInBlocks.end(); ++bit) {
 
 		//Extract block reference
-		PFBlockRef blockRef((*bit).first);
+		const PFBlockRef& blockRef((*bit).first);
 		//Extract index
-		unsigned indexInBlock((*bit).second);
+		const unsigned indexInBlock((*bit).second);
 		//Dereference the block (what a palava)
 		const PFBlock& block = *blockRef;
 		//And finally get a handle on the elements
@@ -94,10 +94,11 @@ void CandidateConverter::extractClustersFromCandidate(const PFCandidate& cand,
 			if (debug_ > 3) {
 				LogInfo("CandidateConverter") << "\t\tECAL cluster: "
 						<< theRealCluster << "\n";
-				double clusterSep = pftools::deltaR(cand.eta(), d.eta_, cand.phi(),
-						d.phi_);
-				LogInfo("CandidateConverter") << "\t\tDeltaR cand to cluster = "
-						<< clusterSep << "\n";
+				double clusterSep = pftools::deltaR(cand.eta(), d.eta_,
+						cand.phi(), d.phi_);
+				LogInfo("CandidateConverter")
+						<< "\t\tDeltaR cand to cluster = " << clusterSep
+						<< "\n";
 			}
 
 			ecal.push_back(d);
@@ -106,6 +107,7 @@ void CandidateConverter::extractClustersFromCandidate(const PFCandidate& cand,
 		}
 
 		case PFBlockElement::HCAL: {
+
 			reco::PFClusterRef clusterRef = elements[indexInBlock].clusterRef();
 			const PFCluster theRealCluster = *clusterRef;
 			CalibratableElement d(theRealCluster.energy(),
@@ -115,10 +117,11 @@ void CandidateConverter::extractClustersFromCandidate(const PFCandidate& cand,
 			if (debug_ > 3) {
 				LogInfo("CandidateConverter") << "\t\tHCAL cluster: "
 						<< theRealCluster << "\n";
-				double clusterSep = pftools::deltaR(cand.eta(), d.eta_, cand.phi(),
-						d.phi_);
-				LogInfo("CandidateConverter") << "\t\tDeltaR cand to cluster = "
-						<< clusterSep << "\n";
+				double clusterSep = pftools::deltaR(cand.eta(), d.eta_,
+						cand.phi(), d.phi_);
+				LogInfo("CandidateConverter")
+						<< "\t\tDeltaR cand to cluster = " << clusterSep
+						<< "\n";
 			}
 
 			hcal.push_back(d);

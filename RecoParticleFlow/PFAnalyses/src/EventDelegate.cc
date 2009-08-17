@@ -385,6 +385,7 @@ void EventDelegate::extractHcalPFRecHits(
 void EventDelegate::extractEcalPFClusters(
 		const std::vector<reco::PFCluster>& ecalClusters, const std::vector<
 				unsigned>& ecalIndices) {
+	std::cout << "EXTRACTING CLUSTERS MANUALLY!" << endl;
 	for (std::vector<unsigned>::const_iterator eit = ecalIndices.begin(); eit
 			!= ecalIndices.end(); ++eit) {
 		const PFCluster& theCluster = ecalClusters[*eit];

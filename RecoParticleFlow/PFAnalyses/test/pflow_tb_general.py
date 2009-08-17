@@ -14,8 +14,8 @@ from RecoParticleFlow.PFAnalyses.RunDict import *
 from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
 outputTree = "outputtree_" + fileLabel
-outputFile = "/tmp/reprocessed_" + fileLabel
-logFile = "/tmp/log_" + logLabel
+outputFile = "reprocessed_" + fileLabel
+logFile = "log_" + logLabel
 
 
 if options.notracks <> 0:
@@ -25,19 +25,13 @@ if options.notracks <> 0:
 specifiedE = energies[options.beamEnergy]
 if options.endcapMode <> 0:
     specifiedE = endcap[options.beamEnergy]
-    
-#print "Looking for specifiedE " + specifiedE
 
 process.particleFiltration.debug = cms.int32(1)
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
-
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Endcap = cms.double(0.8)
-process.particleFlowClusterHCAL.thresh_Endcap = cms.double(0.8)
-
+#For calibration purposes
+process.particleFlow.pf_nsigma_HCAL = cms.double(2.0)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.particleFlowBlock.debug = cms.untracked.bool(True)
 #process.particleFlow.debug = cms.untracked.bool(True)
@@ -90,6 +84,8 @@ process.TFileService.fileName = cms.string(outputTree)
 
 # New Event file
 process.finishup.fileName = cms.untracked.string(outputFile)
+
+process.extraction.clustersFromCandidates = cms.bool(True)
 
 # LogFile
 
