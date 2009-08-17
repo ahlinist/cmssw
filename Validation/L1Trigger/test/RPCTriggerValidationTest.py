@@ -16,6 +16,8 @@ process.load("Validation/L1Trigger/RPCTriggerValidation_cfi")
 process.RPCTriggerVal.MC  = cms.InputTag("genParticles")
 #process.RPCTriggerVal.MC  = cms.InputTag("muons")
 
+#process.RPCTriggerVal.L1CandsCollections = cms.VInputTag(cms.InputTag("gtDigis:CSC"), cms.InputTag("gtDigis:DT") )
+
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
