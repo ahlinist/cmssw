@@ -101,7 +101,7 @@ namespace fwlite {
         bReg = metaDataTree->GetBranch(edm::poolNames::productDescriptionBranchName().c_str());
         bReg->SetAddress(ppReg);
         bReg->GetEntry(0);
-        (*ppReg)->setFrozen();
+        (*ppReg)->setFrozen(false);
       }
       return bReg;
     }
