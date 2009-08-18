@@ -36,7 +36,7 @@ PATLeptonRecoilEnergyHistManager<T1,T2>::PATLeptonRecoilEnergyHistManager(const 
 template<typename T1, typename T2>
 PATLeptonRecoilEnergyHistManager<T1,T2>::~PATLeptonRecoilEnergyHistManager()
 {
-//--- nothing to be done yet...
+  delete leptonWeightExtractor_;
 }
 
 template<typename T1, typename T2>

@@ -25,7 +25,8 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : diTauLeg2WeightExtractor_(0),
+  : diTauLeg1WeightExtractor_(0),
+    diTauLeg2WeightExtractor_(0),
     dqmError_(0)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
@@ -56,7 +57,8 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::~CompositePtrCandidateT1T2MEtHistManager()
 {
-//--- nothing to be done yet...
+  delete diTauLeg1WeightExtractor_;
+  delete diTauLeg2WeightExtractor_;
 }
 
 template<typename T1, typename T2>
