@@ -409,6 +409,18 @@ drawJobConfigurator_ZtoElecTau.add(
             name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
         ),
         drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronEcalIsoPtBarrel',
+            title = "Electron ECAL iso., Barrel (final Event sample)",
+            xAxis = 'Pt',
+            name = "finalSamplePlots_electronEcalIsoBarrel"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronEcalIsoPtEndcap',
+            title = "Electron ECAL iso., Endcap (final Event sample)",
+            xAxis = 'Pt',
+            name = "finalSamplePlots_electronEcalIsoEndcap"
+        ),
+        drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Tau (final Event sample)",
