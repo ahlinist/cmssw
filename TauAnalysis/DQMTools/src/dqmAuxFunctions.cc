@@ -58,8 +58,8 @@ void dqmCheckExistence(DQMStore& dqmStore, const std::string& directoryName, con
   if ( meOutput ) {
     switch ( mode ) {
     case 1: // print error message 
-      edm::LogError ("copyRecursively") << " meName = " << meName << " already exists in directoryName = " << directoryName 
-					<< " --> skipping !!";
+      edm::LogError ("dqmCheckExistence") << " meName = " << meName << " already exists in directoryName = " << directoryName 
+					  << " --> skipping !!";
       errorFlag = 1;
       break;
     case 2:
@@ -111,7 +111,6 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
     std::string meName_full = dqmDirectoryName(inputDirectory).append(*meName);
     //std::cout << " meName_full = " <<  meName_full << std::endl;
 
-    dqmStore.setCurrentFolder(inputDirectory);
     MonitorElement* meInput = dqmStore.get(meName_full);
     //std::cout << " meInput = " << meInput << std::endl;
     if ( !meInput ) {
