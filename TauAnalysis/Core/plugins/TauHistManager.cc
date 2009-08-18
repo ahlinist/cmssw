@@ -103,6 +103,8 @@ TauHistManager::~TauHistManager()
 {
 //--- delete "veto" objects for computation of IsoDeposit sums
   clearIsoParam(tauParticleFlowIsoParam_);
+
+  delete tauJetWeightExtractor_;
 }
 
 void TauHistManager::bookHistograms()
