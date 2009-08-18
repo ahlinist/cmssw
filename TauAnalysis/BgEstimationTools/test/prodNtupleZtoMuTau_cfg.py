@@ -40,11 +40,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part01.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part02.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part03.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -257,6 +253,37 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             indices = cms.vuint32(0,1)
         ),
 
+        selCentralJetEt40bTaggingDiscrSimpleSecondaryVertex = cms.PSet(
+            pluginType = cms.string("PATJetValExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            value = cms.string("bDiscriminator('simpleSecondaryVertex')"),
+            indices = cms.vuint32(0,1,2)
+        ),
+        selCentralJetEt40bTaggingDiscrCombinedSecondaryVertex = cms.PSet(
+            pluginType = cms.string("PATJetValExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            value = cms.string("bDiscriminator('combinedSecondaryVertex')"),
+            indices = cms.vuint32(0,1,2)
+        ),
+        selCentralJetEt40bTaggingDiscrTrackCountingHighEff = cms.PSet(
+            pluginType = cms.string("PATJetValExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            value = cms.string("bDiscriminator('trackCountingHighEffBJetTags')"),
+            indices = cms.vuint32(0,1,2)
+        ),
+        selCentralJetEt40bTaggingDiscrSoftElectron = cms.PSet(
+            pluginType = cms.string("PATJetValExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            value = cms.string("bDiscriminator('softElectronBJetTags')"),
+            indices = cms.vuint32(0,1,2)
+        ),
+        selCentralJetEt40bTaggingDiscrSoftMuon = cms.PSet(
+            pluginType = cms.string("PATJetValExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            value = cms.string("bDiscriminator('softMuonBJetTags')"),
+            indices = cms.vuint32(0,1,2)
+        ),
+
         numGlobalMuons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
@@ -273,9 +300,17 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('muTauPairsBgEstPreselection')
         ),        
-        numCentralJets = cms.PSet(
+        numCentralJetsEt20 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
+        ),
+        numCentralJetsEt40 = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt40Cumulative')
+        ),
+        numCentralJetsEt60 = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1JetsEt60Cumulative')
         ),
 
         eventWeight = cms.PSet(
