@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.41 2009/06/25 09:49:34 pioppi Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.42 2009/07/17 13:59:52 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -1274,7 +1274,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     
   }
 
-  // get the jets
+  // get the non-CC jets
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByLabel(jetTag_, jetHandle);
   if ( !jetHandle.isValid() ) {
@@ -1282,7 +1282,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     return;
   }
 
-  //Get the cross-cleaned Jets
+  //Get the CC Jets
   edm::Handle< std::vector<pat::Jet> > ccjetHandle;
   iEvent.getByLabel(ccjetTag_, ccjetHandle);
   if ( !ccjetHandle.isValid() ) {
@@ -1290,7 +1290,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     return;
   }
 
-  // get the JPT-corrected pat::Jets (*not* cross-cleaned) 
+  // get the non-CC JPT-corrected pat::Jets
   edm::Handle< std::vector<pat::Jet> > jptHandle;
   iEvent.getByLabel(jptTag_, jptHandle);
   if ( !jptHandle.isValid() ) {
@@ -1298,7 +1298,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     return;
   }
 
-  // get the JPT-corrected *cross-cleaned* pat::Jets
+  // get the CC JPT-corrected pat::Jets
   edm::Handle< std::vector<pat::Jet> > ccJptHandle;
   iEvent.getByLabel(ccJptTag_, ccJptHandle);
   if ( !ccJptHandle.isValid() ) {
@@ -1316,15 +1316,16 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     const pat::Jet& uncorrJet =((*jetHandle)[k].isCaloJet())? (*jetHandle)[k].correctedJet("RAW"): (*jetHandle)[k];
     
     mTempTreeccJetMCCorrFactor[i] = -9999.;
+    mTempTreeccJetJPTCorrFactor[i] = -9999.;
     
     if ( uncorrJet.et() > 10. ){
 
-      // Add corrections for original pat::Jet collections 
+      // Add MC-based corrections for original non-CC pat::Jet collection 
       mTempTreeJetMCCorrFactor[i] = -9999.;
-      mTempTreeJetJPTCorrFactor[i] = -9999.;
-
       mTempTreeJetMCCorrFactor[i] = (uncorrJet.isCaloJet())? uncorrJet.jetCorrFactors().scaleDefault(): -1 ;
 
+      // Add JPT-based corrections for original non-CC pat::Jet collection 
+      mTempTreeJetJPTCorrFactor[i] = -9999.;
       for ( uint16_t n = 0; n < ( jptHandle->size() > 50 ? 50 : jptHandle->size() ); n++ ) {
 	if ( matchJetsByCaloTowers( (*jptHandle)[n], (*jetHandle)[k] ) ) {
 	  pat::Jet jpt( (*jptHandle)[n] ); // no corrections by default
@@ -1437,7 +1438,7 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeccJetMCCorrFactor[i] = -9999.;
       mTempTreeccJetJPTCorrFactor[i] = -9999.;
       
-      // Add the cc jets
+      // Add the cc jets, MC and JPT corrections
       int mTempTreeNccjets = ccjetHandle->size();
       if ( mTempTreeNccjets > 50 ) mTempTreeNccjets = 50;
       for ( int n = 0; n < mTempTreeNccjets; n++ ) {
@@ -1449,6 +1450,12 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	  mTempTreeccJetAssoc_py[i] = jet.py();
 	  mTempTreeccJetAssoc_pz[i] = jet.pz();
 	  mTempTreeccJetMCCorrFactor[i] = (jet.isCaloJet())? jet.jetCorrFactors().scaleDefault(): -1 ;
+	  for ( uint16_t m = 0; m < ( ccJptHandle->size() > 50 ? 50 : ccJptHandle->size() ); m++ ) {
+	    if ( matchJetsByCaloTowers( (*ccJptHandle)[m], (*ccjetHandle)[n] ) ) {
+	      pat::Jet corr( (*ccJptHandle)[m] );
+	      mTempTreeccJetJPTCorrFactor[i] = ( jet.isCaloJet() && corr.isCaloJet() ) ? ( corr.energy() / jet.energy() ) : -1 ;
+	    }
+	  }
 	}
       }
       
@@ -1459,17 +1466,10 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
 	mTempTreeccJetAssoc_py[i] = -9999;
 	mTempTreeccJetAssoc_pz[i] = -9999;
       }
-      // Add the JPT corrs
-      int mTempTreeNjptjets = ccJptHandle->size();
-      if ( mTempTreeNjptjets > 50 ) mTempTreeNjptjets = 50;
-      for ( int m = 0; m < mTempTreeNjptjets; m++ ) {
-	if( (*ccJptHandle)[m].originalObjectRef() == (*jetHandle)[k].originalObjectRef() ) {
-	  pat::Jet jet = ((*ccJptHandle)[m].isCaloJet()) ? (*ccJptHandle)[m].correctedJet("RAW") : (*ccJptHandle)[m];
-	  mTempTreeccJetJPTCorrFactor[i] = (jet.isCaloJet()) ? jet.jetCorrFactors().scaleDefault() : -1 ;
-	}
-      }
+      
+      // Increment counter
       i++;
-
+      
     } 
     
   }
