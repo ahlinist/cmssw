@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.6 2009/03/04 15:58:39 santanas Exp $
+// $Id: HcalZS.cc,v 1.7 2009/03/06 08:55:24 santanas Exp $
 //
 //
 
@@ -127,7 +127,7 @@ HcalZS::~HcalZS()
 namespace ZSRealistic_impl {
 
   template <class DIGI> 
-  bool keepMe(const DIGI& inp, int threshold) {
+  bool MarkAndPassEmu(const DIGI& inp, int threshold) {
     bool keepIt=false;
 
     //determine the sum of 2 timeslices
@@ -140,7 +140,7 @@ namespace ZSRealistic_impl {
       }
       if (sum>=threshold) keepIt=true;
     }
-    return keepIt;
+    return !keepIt;
   }
 }
 
@@ -205,20 +205,22 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //-- ZS Emulation
 	 if ( id.subdet() == HcalBarrel ) 
 	   {	  
-	     h_hbdigi_zsEmulation->Fill( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) );
-	     // 	     cout << "ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_): "
-	     // 		  << ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) << endl;
+	     h_hbdigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_) );
+	     h_hbdigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	     // 	     cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_): "
+	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_) << endl;
 	     
-	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHB_) !=  digi.zsMarkAndPass() )
+	     if( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHB_) ==  digi.zsMarkAndPass() )
 	       agree = true;
 	   }
 	 else
 	   { 
-	     h_hedigi_zsEmulation->Fill( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) );
-	     // 	     cout << "ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_): "
-	     // 		  << ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) << endl;
+	     h_hedigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_) );
+	     h_hedigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	     // 	     cout << "ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_): "
+	     // 		  << ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_) << endl;
 	    
-	     if( ZSRealistic_impl::keepMe<HBHEDataFrame>(digi,thresholdHE_) !=  digi.zsMarkAndPass() )
+	     if( ZSRealistic_impl::MarkAndPassEmu<HBHEDataFrame>(digi,thresholdHE_) ==  digi.zsMarkAndPass() )
 	       agree = true;
 	   }
 
@@ -301,11 +303,12 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
 	 //-- ZS Emulation
-	 h_hodigi_zsEmulation->Fill( ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) );
-	 // 	 cout << "ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_): "
-	 // 	      << ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) << endl;
+	 h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) );
+	 h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	 // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_): "
+	 // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) << endl;
 
-	 if ( ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_) != digi.zsMarkAndPass() )
+	 if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) == digi.zsMarkAndPass() )
 	   agree = true;
 
 	 h_ZSagree->Fill(agree);
@@ -325,7 +328,7 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 // 	     {
 	 // 	       cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
 	 // 	       printf( "ieta: %i iphi: %i\n" , id.ieta(), id.iphi() ); 
-	 // 	       printf( "M&P: %i M&PEMU: %i\n", digi.zsMarkAndPass(), !(ZSRealistic_impl::keepMe<HODataFrame>(digi,thresholdHO_)) );
+	 // 	       printf( "M&P: %i M&PEMU: %i\n", digi.zsMarkAndPass(), !(ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_)) );
 	 // 	       for(int i=0;i<digi.size();i++)
 	 // 		 { 
 	 // 		   cout << i << ") ---> " << digi.sample(i).adc() << endl;
@@ -374,11 +377,12 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
 	 //-- ZS Emulation
-	 h_hfdigi_zsEmulation->Fill( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) );
-	 // 	 cout << "ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_): "
-	 // 	      << ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) << endl;
+	 h_hfdigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_) );
+	 h_hfdigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	 // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_): "
+	 // 	      << ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_) << endl;
 	 //if( digi.zsMarkAndPass() )
-	 if ( ZSRealistic_impl::keepMe<HFDataFrame>(digi,thresholdHF_) != digi.zsMarkAndPass() )
+	 if ( ZSRealistic_impl::MarkAndPassEmu<HFDataFrame>(digi,thresholdHF_) == digi.zsMarkAndPass() )
 	   agree = true;
 
 	 h_ZSagree->Fill(agree);
@@ -434,8 +438,9 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 NtotDigis++;
 
 	 //-- ZS Emulation
-	 h_calib_zsEmulation->Fill( ZSRealistic_impl::keepMe<HcalCalibDataFrame>(digi,thresholdCalib_) );
-	 if ( ZSRealistic_impl::keepMe<HcalCalibDataFrame>(digi,thresholdCalib_) != digi.zsMarkAndPass() )
+	 h_calib_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HcalCalibDataFrame>(digi,thresholdCalib_) );
+	 h_calib_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	 if ( ZSRealistic_impl::MarkAndPassEmu<HcalCalibDataFrame>(digi,thresholdCalib_) == digi.zsMarkAndPass() )
 	   agree = true;
 
 	 h_ZSagree_calib->Fill(agree);
@@ -456,25 +461,48 @@ void HcalZS::beginJob(const edm::EventSetup&)
   TFileDirectory HcalDir = fs->mkdir( "Hcal" );
 
   //## book histograms
-  h_hbdigi_zsEmulation = HcalDir.make<TH1F>("h_hbdigi_zsEmulation",
-					    "h_hbdigi_zsEmulation",
+  h_hbdigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hbdigi_MarkAndPassEmu",
+					    "h_hbdigi_MarkAndPassEmu",
 					    2, -0.5, 1.5);
 
-  h_hedigi_zsEmulation = HcalDir.make<TH1F>("h_hedigi_zsEmulation",
-					    "h_hedigi_zsEmulation",
+  h_hedigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hedigi_MarkAndPassEmu",
+					    "h_hedigi_MarkAndPassEmu",
 					    2, -0.5, 1.5);
   
-  h_hodigi_zsEmulation = HcalDir.make<TH1F>("h_hodigi_zsEmulation",
-					    "h_hodigi_zsEmulation",
+  h_hodigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hodigi_MarkAndPassEmu",
+					    "h_hodigi_MarkAndPassEmu",
 					    2, -0.5, 1.5);
   
-  h_hfdigi_zsEmulation = HcalDir.make<TH1F>("h_hfdigi_zsEmulation",
-					    "h_hfdigi_zsEmulation",
+  h_hfdigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hfdigi_MarkAndPassEmu",
+					    "h_hfdigi_MarkAndPassEmu",
 					    2, -0.5, 1.5);
 
-  h_calib_zsEmulation = HcalDir.make<TH1F>("h_calib_zsEmulation",
-					   "h_calib_zsEmulation",
+  h_calib_MarkAndPassEmu = HcalDir.make<TH1F>("h_calib_MarkAndPassEmu",
+					   "h_calib_MarkAndPassEmu",
 					   2, -0.5, 1.5);
+
+
+  h_hbdigi_MarkAndPassData = HcalDir.make<TH1F>("h_hbdigi_MarkAndPassData",
+					    "h_hbdigi_MarkAndPassData",
+					    2, -0.5, 1.5);
+
+  h_hedigi_MarkAndPassData = HcalDir.make<TH1F>("h_hedigi_MarkAndPassData",
+					    "h_hedigi_MarkAndPassData",
+					    2, -0.5, 1.5);
+  
+  h_hodigi_MarkAndPassData = HcalDir.make<TH1F>("h_hodigi_MarkAndPassData",
+					    "h_hodigi_MarkAndPassData",
+					    2, -0.5, 1.5);
+  
+  h_hfdigi_MarkAndPassData = HcalDir.make<TH1F>("h_hfdigi_MarkAndPassData",
+					    "h_hfdigi_MarkAndPassData",
+					    2, -0.5, 1.5);
+
+  h_calib_MarkAndPassData = HcalDir.make<TH1F>("h_calib_MarkAndPassData",
+					   "h_calib_MarkAndPassData",
+					   2, -0.5, 1.5);
+
+
 
   //ZS global agree
   h_ZSagree = HcalDir.make<TH1F>("h_ZSagree",
