@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.3 2009/03/03 19:31:53 santanas Exp $
+// $Id: HcalZS.h,v 1.4 2009/03/04 15:58:38 santanas Exp $
 //
 //
 
@@ -58,11 +58,17 @@ private:
 
   edm::Service<TFileService> fs;
 
-  TH1F* h_hbdigi_zsEmulation;
-  TH1F* h_hedigi_zsEmulation;
-  TH1F* h_hodigi_zsEmulation;
-  TH1F* h_hfdigi_zsEmulation;
-  TH1F* h_calib_zsEmulation;
+  TH1F* h_hbdigi_MarkAndPassEmu;
+  TH1F* h_hedigi_MarkAndPassEmu;
+  TH1F* h_hodigi_MarkAndPassEmu;
+  TH1F* h_hfdigi_MarkAndPassEmu;
+  TH1F* h_calib_MarkAndPassEmu;
+
+  TH1F* h_hbdigi_MarkAndPassData;
+  TH1F* h_hedigi_MarkAndPassData;
+  TH1F* h_hodigi_MarkAndPassData;
+  TH1F* h_hfdigi_MarkAndPassData;
+  TH1F* h_calib_MarkAndPassData;
 
   TH1F* h_hbhe_US;
   TH1F* h_ho_US;

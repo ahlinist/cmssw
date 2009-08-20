@@ -2,7 +2,7 @@
 
 gROOT->Reset();
 
-TFile f("Cosmics__Commissioning09-v1__RAW_Allrun77037.root");
+TFile f("HcalZS_111265_ZSMask0.root");
 //TFile f("HcalZS_73751.root");
 //TFile f("HcalZS_73749.root");
 
