@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.18 $
-  \date $Date: 2009/05/25 17:34:45 $
+  \version $Revision: 1.19 $
+  \date $Date: 2009/06/28 21:16:26 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -162,10 +162,10 @@ public:
       }
     }
 
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+ virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an Hcal object
-      if (o.name.find( "Hcal/" ) != std::string::npos)
+      if (o.name.find( "Hcal/" ) != std::string::npos || o.name.find( "HcalCalib/" ) != std::string::npos)
         return true;
 
       return false;
