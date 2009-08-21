@@ -27,7 +27,8 @@ class MuonHistManager : public HistManagerBase
 
 //--- auxiliary functions
   void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
-  
+  void bookMuonIsoConeSizeDepHistograms(DQMStore&);
+
   void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillMuonIsoHistograms(const pat::Muon&, double);
   void fillMuonIsoConeSizeDepHistograms(const pat::Muon&, double);
@@ -40,6 +41,8 @@ class MuonHistManager : public HistManagerBase
   std::string dqmDirectory_store_;
 
   bool requireGenMuonMatch_;
+
+  bool makeIsoPtConeSizeDepHistograms_;
 
   unsigned numMuonIsoConeSizes_;
   double muonIsoConeSizeIncr_;

@@ -23,7 +23,7 @@ bool matchesGenMuon(const pat::Muon& patMuon)
   std::vector<reco::GenParticleRef> associatedGenParticles = patMuon.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
 	it != associatedGenParticles.end(); ++it ) {
-    if ( it->ref().isNonnull() && it->ref().isValid() ) {
+    if ( it->isAvailable() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -13 || genParticle->pdgId() == +13 ) isGenMuonMatched = true;
     } else {
@@ -64,6 +64,9 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
   //std::cout << " requireGenMuonMatch = " << requireGenMuonMatch_ << std::endl;
+
+  makeIsoPtConeSizeDepHistograms_ = ( cfg.exists("makeIsoPtConeSizeDepHistograms") ) ? 
+    cfg.getParameter<bool>("makeIsoPtConeSizeDepHistograms") : false;
 
   numMuonIsoConeSizes_ = 15;
   muonIsoConeSizeIncr_ = 0.1;
@@ -158,37 +161,7 @@ void MuonHistManager::bookHistograms()
   hMuonHcalIsoEtaDistProfile_ = dqmStore.book1D("MuonHcalIsoEtaDistProfile", "MuonHcalIsoEtaDistProfile", 15, 0., 1.5);
   hMuonHcalIsoPhiDistProfile_  = dqmStore.book1D("MuonHcalIsoPhiDistProfile", "MuonHcalIsoPhiDistProfile", 15, 0., 1.5);
   
-  for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
-    std::ostringstream iConeSizeString;
-    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-    
-    std::string hMuonTrkIsoPtConeSizeDepName_i = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, hMuonTrkIsoPtConeSizeDepName_i, 
-							100, 0., 20.));
-    std::string hMuonEcalIsoPtConeSizeDepName_i = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, hMuonEcalIsoPtConeSizeDepName_i, 
-							 100, 0., 20.));
-    std::string hMuonHcalIsoPtConeSizeDepName_i = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, hMuonHcalIsoPtConeSizeDepName_i, 
-							 100, 0., 20.));
-    
-    std::string hMuonParticleFlowIsoPtConeSizeDepName_i 
-      = std::string("MuonParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonParticleFlowIsoPtConeSizeDepName_i, 
-								 hMuonParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hMuonPFChargedHadronIsoPtConeSizeDepName_i 
-      = std::string("MuonChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFChargedHadronIsoPtConeSizeDepName_i, 
-								    hMuonPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hMuonPFNeutralHadronIsoPtConeSizeDepName_i 
-      = std::string("MuonPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 
-								    hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hMuonPFGammaIsoPtConeSizeDepName_i 
-      = std::string("MuonPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFGammaIsoPtConeSizeDepName_i, 
-							    hMuonPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
-  }
+  if ( makeIsoPtConeSizeDepHistograms_ ) bookMuonIsoConeSizeDepHistograms(dqmStore);
 }
 
 void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
@@ -266,7 +239,7 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
     }
 
     fillMuonIsoHistograms(*patMuon, evtWeight);
-    fillMuonIsoConeSizeDepHistograms(*patMuon, evtWeight);
+    if ( makeIsoPtConeSizeDepHistograms_ ) fillMuonIsoConeSizeDepHistograms(*patMuon, evtWeight);
   }
 }
 
@@ -284,6 +257,48 @@ void MuonHistManager::bookMuonHistograms(DQMStore& dqmStore, MonitorElement*& hM
   
   std::string hMuonPhiName = std::string(histoSetName).append("Phi");
   hMuonPhi = dqmStore.book1D(hMuonPhiName, hMuonPhiName, 36, -TMath::Pi(), +TMath::Pi());
+}
+
+void MuonHistManager::bookMuonIsoConeSizeDepHistograms(DQMStore& dqmStore)
+{
+  for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
+    std::ostringstream iConeSizeString;
+    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
+    
+    std::string hMuonTrkIsoPtConeSizeDepName_i 
+      = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, 
+							hMuonTrkIsoPtConeSizeDepName_i, 40, 0., 10.));
+    std::string hMuonEcalIsoPtConeSizeDepName_i 
+      = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, 
+							 hMuonEcalIsoPtConeSizeDepName_i, 40, 0., 10.));
+    
+    std::string hMuonHcalIsoPtConeSizeDepName_i 
+      = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, 
+							 hMuonHcalIsoPtConeSizeDepName_i, 40, 0., 10.));
+    
+    std::string hMuonParticleFlowIsoPtConeSizeDepName_i 
+      = std::string("MuonParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonParticleFlowIsoPtConeSizeDepName_i, 
+								 hMuonParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
+    
+    std::string hMuonPFChargedHadronIsoPtConeSizeDepName_i 
+      = std::string("MuonChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFChargedHadronIsoPtConeSizeDepName_i, 
+								    hMuonPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    
+    std::string hMuonPFNeutralHadronIsoPtConeSizeDepName_i 
+      = std::string("MuonPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 
+								    hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    
+    std::string hMuonPFGammaIsoPtConeSizeDepName_i 
+      = std::string("MuonPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hMuonPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFGammaIsoPtConeSizeDepName_i, 
+							    hMuonPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
+  }
 }
 
 //
