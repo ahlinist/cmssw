@@ -10,6 +10,8 @@ muonHistManager = cms.PSet(
 
     dqmDirectory_store = cms.string('MuonQuantities'),
 
-    #requireGenMuonMatch = cms.bool(True)
-    requireGenMuonMatch = cms.bool(False)
+    #requireGenMuonMatch = cms.bool(True),
+    requireGenMuonMatch = cms.bool(False),
+
+    makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )

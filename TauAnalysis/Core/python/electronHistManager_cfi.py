@@ -10,6 +10,8 @@ electronHistManager = cms.PSet(
 
     dqmDirectory_store = cms.string('ElectronQuantities'),
 
-    #requireGenElectronMatch = cms.bool(True)
-    requireGenElectronMatch = cms.bool(False)
+    #requireGenElectronMatch = cms.bool(True),
+    requireGenElectronMatch = cms.bool(False),
+
+    makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )
