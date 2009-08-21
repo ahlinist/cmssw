@@ -214,6 +214,21 @@ void GenericAnalyzer::addAnalyzers(const vstring& analyzerNames,
 	  } else if ( cfgAnalyzer.existsAs<edm::InputTag>(leftHandSide) ) {
 	    edm::InputTag rightHandSide_inputTag = rightHandSide;
 	    cfgAnalyzer.addParameter<edm::InputTag>(leftHandSide, rightHandSide_inputTag);
+	  } else if ( cfgAnalyzer.existsAs<bool>(leftHandSide) ) {
+	    bool rightHandSide_bool;
+	    if ( rightHandSide == "True" || rightHandSide == "true" ) {
+	      rightHandSide_bool = true;
+	    } else if ( rightHandSide == "False" || rightHandSide == "false" ) {
+	      rightHandSide_bool = false;
+	    } else {
+	      edm::LogError("GenericAnalyzer::addAnalyzers") << " Invalid value = " << rightHandSide << " for replacing"
+							     << " Configuration parameter = " << leftHandSide << " of boolean type;"
+							     << " valid values for Replacement = { 'True', 'true', 'False', 'false' }"
+							     << " --> skipping !!";
+	      cfgError_ = 1;
+	      continue;
+	    }
+	    cfgAnalyzer.addParameter<bool>(leftHandSide, rightHandSide_bool);
 	  } else {
 	    edm::LogError("GenericAnalyzer::addAnalyzers") << " Configuration parameter to be replaced = " << leftHandSide 
 							   << " does either not exist or is not of a supported type"
@@ -417,7 +432,7 @@ GenericAnalyzer::~GenericAnalyzer()
 
 void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
 {  
-  std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
+  //std::cout << "<GenericAnalyzer::analyze>:" << std::endl; 
 
 //--- check that configuration parameters contain no errors
   if ( cfgError_ ) {
@@ -434,7 +449,7 @@ void GenericAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& es)
     eventWeight *= (*eventWeight_i);
   }
 
-  std::cout << "eventWeight = " << eventWeight << std::endl;
+  //std::cout << "eventWeight = " << eventWeight << std::endl;
 
 //--- call analyze method of each analyzerPlugin
 //    (fill histograms, compute binning results,...)
