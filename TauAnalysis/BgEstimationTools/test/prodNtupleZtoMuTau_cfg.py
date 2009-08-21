@@ -349,8 +349,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-switchToPFTauFixedCone(process)
+switchToPFTauShrinkingCone(process)
+#switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
