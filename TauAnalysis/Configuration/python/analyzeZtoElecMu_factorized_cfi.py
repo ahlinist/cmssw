@@ -11,16 +11,6 @@ from TauAnalysis.Configuration.analysisSequenceTools import replaceHistManagerIn
 
 from TauAnalysis.Configuration.analyzeZtoElecMu_cfi import *
 
-elecMuHistManagers_factorizedWithoutElectronIsolation = copy.deepcopy(elecMuHistManagers)
-
-elecMuHistManagers_factorizedWithElectronIsolation = cms.vstring(
-    'genPhaseSpaceEventInfoHistManager',
-    'electronHistManager',
-    'muonHistManager',
-    'vertexHistManager',
-    'triggerHistManager'
-)
-
 #--------------------------------------------------------------------------------
 # define event selection criteria specific to factorization
 #--------------------------------------------------------------------------------
@@ -87,7 +77,6 @@ elecMuEventDump_factorizedWithElectronIsolation.triggerConditions = cms.vstring(
 #--------------------------------------------------------------------------------
 
 elecMuAnalysisSequence_factorizedWithoutElectronIsolation = copy.deepcopy(elecMuAnalysisSequence)
-switchHistManagers(elecMuAnalysisSequence_factorizedWithoutElectronIsolation, elecMuHistManagers_factorizedWithoutElectronIsolation)
 replaceHistManagerInputTags(elecMuAnalysisSequence_factorizedWithoutElectronIsolation,
     [ ["selectedLayer1ElectronsTrkIsoCumulative", "selectedLayer1ElectronsTrkIsoLooseIsolationCumulative"],
       ["selectedLayer1ElectronsEcalIsoCumulative", "selectedLayer1ElectronsEcalIsoLooseIsolationCumulative"],
@@ -100,5 +89,5 @@ replaceHistManagerInputTags(elecMuAnalysisSequence_factorizedWithoutElectronIsol
       ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"],
       ["selectedElecMuPairsPzetaDiffCumulative", "selectedElecMuPairsPzetaDiffLooseElectronIsolationCumulative"] ]
 ) 
+
 elecMuAnalysisSequence_factorizedWithElectronIsolation = copy.deepcopy(elecMuAnalysisSequence)
-switchHistManagers(elecMuAnalysisSequence_factorizedWithElectronIsolation, elecMuHistManagers_factorizedWithElectronIsolation)
