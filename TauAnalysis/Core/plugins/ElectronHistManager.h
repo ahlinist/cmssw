@@ -27,7 +27,8 @@ class ElectronHistManager : public HistManagerBase
 
 //--- auxiliary functions
   void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
-  
+  void bookElectronIsoConeSizeDepHistograms(DQMStore&);
+
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillElectronIsoHistograms(const pat::Electron&, double);
   void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
@@ -40,6 +41,8 @@ class ElectronHistManager : public HistManagerBase
   std::string dqmDirectory_store_;
 
   bool requireGenElectronMatch_;
+
+  bool makeIsoPtConeSizeDepHistograms_;
 
   unsigned numElectronIsoConeSizes_;
   double electronIsoConeSizeIncr_;
@@ -68,6 +71,13 @@ class ElectronHistManager : public HistManagerBase
 
   MonitorElement* hElectronSuperclEnOverTrackMomBarrel_;
   MonitorElement* hElectronSuperclEnOverTrackMomEndcap_;
+  MonitorElement* hElectronSeedClEnOverTrackMomBarrel_;
+  MonitorElement* hElectronSeedClEnOverTrackMomEndcap_;
+  MonitorElement* hElectronHadEnOverEmEn_;
+  MonitorElement* hElectronSuperclShapeSigmaEtaEta_;
+  MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrack_;
+  MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrack_;
+  MonitorElement* hElectronBremsFraction_;
 
   MonitorElement* hElectronIdRobust_;
   
