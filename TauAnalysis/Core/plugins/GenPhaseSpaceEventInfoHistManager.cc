@@ -35,6 +35,9 @@ GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+
+  makeLeptonPtVsPtHatHistograms_ = ( cfg.exists("makeLeptonPtVsPtHatHistograms") ) ? 
+    cfg.getParameter<bool>("makeLeptonPtVsPtHatHistograms") : false;
 }
 
 GenPhaseSpaceEventInfoHistManager::~GenPhaseSpaceEventInfoHistManager()
@@ -62,13 +65,15 @@ void GenPhaseSpaceEventInfoHistManager::bookHistograms()
   hLeadingMuonPt_ = dqmStore.book1D("LeadingMuonPt", "LeadingMuonPt", 101, -0.5, +100.5);
   hLeadingTauLeptonPt_ = dqmStore.book1D("LeadingTauLeptonPt", "LeadingTauLeptonPt", 101, -0.5, +100.5);
   
-  hLeadingElectronPtVsPtHat_ = dqmStore.book2D("LeadingElectronPtVsPtHat", "LeadingElectronPtVsPtHat", 
-					       101, -0.5, +100.5, 101, -0.5, +100.5);
-  hLeadingMuonPtVsPtHat_ = dqmStore.book2D("LeadingMuonPtVsPtHat", "LeadingMuonPtVsPtHat", 
-					   101, -0.5, +100.5, 101, -0.5, +100.5);
-  hLeadingTauLeptonPtVsPtHat_ = dqmStore.book2D("LeadingTauLeptonPtVsPtHat", "LeadingTauLeptonPtVsPtHat", 
-						101, -0.5, +100.5, 101, -0.5, +100.5);
-  
+  if ( makeLeptonPtVsPtHatHistograms_ ) {
+    hLeadingElectronPtVsPtHat_ = dqmStore.book2D("LeadingElectronPtVsPtHat", 
+						 "LeadingElectronPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+    hLeadingMuonPtVsPtHat_ = dqmStore.book2D("LeadingMuonPtVsPtHat", 
+					     "LeadingMuonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+    hLeadingTauLeptonPtVsPtHat_ = dqmStore.book2D("LeadingTauLeptonPtVsPtHat", 
+						  "LeadingTauLeptonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+  }
+
   hNumGenJets_ = dqmStore.book1D("NumGenJets", "NumGenJets", 21, -0.5, +20.5);
   
   hGenZsPt_ = dqmStore.book1D("GenZsPt", "GenZsPt", 101, -0.5, +100.5);
@@ -99,12 +104,14 @@ void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, co
   hLeadingMuonPt_->Fill(genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
   hLeadingTauLeptonPt_->Fill(genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
 
-  hLeadingElectronPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-				   genPhaseSpaceEventInfo->leadingGenElectron().pt(), evtWeight);
-  hLeadingMuonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-			       genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
-  hLeadingTauLeptonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
-				    genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
+  if ( makeLeptonPtVsPtHatHistograms_ ) {
+    hLeadingElectronPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
+				     genPhaseSpaceEventInfo->leadingGenElectron().pt(), evtWeight);
+    hLeadingMuonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
+				 genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
+    hLeadingTauLeptonPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
+				      genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
+  }
 
   edm::Handle<reco::GenJetCollection> genJets;
   evt.getByLabel(genJetSource_, genJets);
