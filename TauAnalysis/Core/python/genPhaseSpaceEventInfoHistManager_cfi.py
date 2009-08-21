@@ -13,5 +13,7 @@ genPhaseSpaceEventInfoHistManager = cms.PSet(
   
   genParticlesFromZsSource = cms.InputTag('genParticlesFromZs'),
 
-  dqmDirectory_store = cms.string('GenPhaseSpaceEventInfoQuantities')
+  dqmDirectory_store = cms.string('GenPhaseSpaceEventInfoQuantities'),
+
+  makeLeptonPtVsPtHatHistograms = cms.bool(False)
 )

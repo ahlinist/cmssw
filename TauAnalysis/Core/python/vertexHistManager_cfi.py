@@ -6,5 +6,7 @@ vertexHistManager = cms.PSet(
       
   vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
 
-  dqmDirectory_store = cms.string('VertexQuantities')
+  dqmDirectory_store = cms.string('VertexQuantities'),
+
+  makeVertexXvsYhistogram = cms.bool(False)
 )

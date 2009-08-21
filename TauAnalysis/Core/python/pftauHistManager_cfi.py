@@ -12,6 +12,8 @@ tauHistManager = cms.PSet(
 
     dqmDirectory_store = cms.string('TauQuantities'),
 
-    #requireGenTauMatch = cms.bool(True)
-    requireGenTauMatch = cms.bool(False)
+    #requireGenTauMatch = cms.bool(True),
+    requireGenTauMatch = cms.bool(False),
+
+    makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )
