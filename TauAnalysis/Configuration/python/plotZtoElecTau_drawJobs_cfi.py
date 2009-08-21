@@ -10,8 +10,8 @@ plots_ZtoElecTau = cms.PSet(
     plots = cms.PSet(  
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
-            'Zee',
-            #'ZeePlusJets',
+            #'Zee',
+            'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
@@ -27,8 +27,8 @@ plots_ZtoElecTau = cms.PSet(
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
-         'Zee',
-         #'ZeePlusJets',
+         #'Zee',
+         'ZeePlusJets',
          'WplusJets',
          'TTplusJets',
          'qcdSum',
@@ -37,6 +37,7 @@ plots_ZtoElecTau = cms.PSet(
          #'ZtautauPlusJets' 
     )
 )
+
 drawJobConfigurator_ZtoElecTau = drawJobConfigurator(
     template = plots_ZtoElecTau,
     dqmDirectory = '#PROCESSDIR#/zElecTauAnalyzer/'
