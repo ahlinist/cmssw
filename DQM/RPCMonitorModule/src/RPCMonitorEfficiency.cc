@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.28 2009/07/07 13:45:25 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.29 2009/07/27 08:12:19 carrillo Exp $
 //
 //
 
@@ -111,6 +111,8 @@ public:
   TH1F * EffBarrel; //Average
   TH1F * DoubleGapBarrel; //Double Gap
   TH1F * PinoBarrel; //Central Zone
+  TH1F * BXEffBarrel; //Distribution for good synchronized chambers
+  TH1F * badBXEffBarrel; //Distribution for bad synchronized chambers
 
   TH1F * EffDistroWm2;
   TH1F * EffDistroWm1;
@@ -139,6 +141,13 @@ public:
   TH1F * EffEndCap; //Average
   TH1F * DoubleGapEndCap; //Double Gap
   TH1F * PinoEndCap; //Central Zone
+  TH1F * BXEffEndCap; //Distribution for good synchronized chambers
+  TH1F * badBXEffEndCap; //Distribution for bad synchronized chambers
+
+  TH1F * BXEffPositiveEndCap;
+  TH1F * BXEffNegativeEndCap;
+  TH1F * badBXEffPositiveEndCap;
+  TH1F * badBXEffNegativeEndCap;
 
   TH2F * HeightVsEffR2;
   TH2F * HeightVsEffR3;
@@ -557,6 +566,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
   PinoBarrel = new TH1F ("PinoBarrel","Efficiency in central part For All The Barrel",51,-1,101);
+  BXEffBarrel = new TH1F ("BXEffBarrel","Efficiency Distribution For All The Barrel with good BX",51,-1,101);
+  badBXEffBarrel = new TH1F ("badBXEffBarrel","Efficiency Distribution For All The Barrel with bad BX",51,-1,101);
 
   EffDistroWm2= new TH1F ("EffDistroWm2near","Efficiency Distribution For Near Side Wheel -2",20,0.5,100.5);
   EffDistroWm1= new TH1F ("EffDistroWm1near","Efficiency Distribution For Near Side Wheel -1",20,0.5,100.5);
@@ -585,6 +596,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffEndCap= new TH1F ("EffDistroEndCap ","Efficiency Distribution For All The EndCaps",51,-1,101);
   DoubleGapEndCap = new TH1F ("DoubleGapEndCap","Double Gap Efficiency Distribution For All The EndCaps",51,-1,101);
   PinoEndCap = new TH1F ("PinoEndCap","Efficiency in central part For All The EndCaps",51,-1,101);
+  BXEffEndCap = new TH1F ("BXEffEndCap","Efficiency Distribution For All The EndCap with good BX",51,-1,101);
+  badBXEffEndCap = new TH1F ("badBXEffEndCap","Efficiency Distribution For All The EndCap with bad BX",51,-1,101);
+
+  BXEffPositiveEndCap = new TH1F ("BXEffPositiveEndCap","Efficiency Distribution Positive EndCap with good BX",51,0.5,100.5);
+  BXEffNegativeEndCap = new TH1F ("BXEffPositiveEndCap","Efficiency Distribution Negative EndCap with good BX",51,0.5,100.5);
+
+  badBXEffPositiveEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Positive EndCap with bad BX",51,0.5,100.5);
+  badBXEffNegativeEndCap = new TH1F ("badBXEffPositiveEndCap","Efficiency Distribution Negative EndCap with bad BX",51,0.5,100.5);
 
   HeightVsEffR2 = new TH2F ("HeightVsEffR2","Height Vs Efficiency Ring 2",10,0.,1.,10,-1.,1.);
   HeightVsEffR3 = new TH2F ("HeightVsEffR3","Height Vs Efficiency Ring 3",10,0.,1.,10,-1.,1.);
@@ -1540,6 +1559,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(NumberStripsPointed!=0) PinoBarrel->Fill(pinoeff);
 	    if(NumberStripsPointed!=0) EffBarrel->Fill(averageeff);
 
+	    if(fabs(BXDistribution->GetMean())<0.5 && BXDistribution->GetRMS()<1.&& BXDistribution->GetMean()!=0) BXEffBarrel->Fill(pinoeff);
+	    else badBXEffBarrel->Fill(pinoeff);
+	      
 	    if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
 
 	    
@@ -2394,6 +2416,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    if(NumberStripsPointed!=0) DoubleGapEndCap->Fill(doublegapeff);
 	    if(NumberStripsPointed!=0) PinoEndCap->Fill(pinoeff);
 	    if(NumberStripsPointed!=0) EffEndCap->Fill(averageeff);
+	    if(fabs(BXDistribution->GetMean())<0.5 && BXDistribution->GetRMS()<1.&& BXDistribution->GetMean()!=0){
+	      BXEffEndCap->Fill(pinoeff);
+	      if(rpcId.region()==1) BXEffPositiveEndCap->Fill(pinoeff);
+	      else if(rpcId.region() ==-1) BXEffNegativeEndCap->Fill(pinoeff);
+	    }
+	    else{
+	      badBXEffEndCap->Fill(pinoeff);
+	      if(rpcId.region()==1) badBXEffPositiveEndCap->Fill(pinoeff);
+	      else if(rpcId.region() ==-1) badBXEffNegativeEndCap->Fill(pinoeff);
+	    }
 
 	    if(debug) std::cout<<name<<" Eff="<<averageeff<<" DoubleGapEff="<<doublegapeff<<" Integral Eff="<<ef<<" Pino Eff"<<pinoeff<<std::endl;
 
@@ -4893,6 +4925,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffBarrel->GetXaxis()->SetTitle("%"); EffBarrel->Draw(); Ca1->SaveAs("Distro/EffDistroBarrel.png"); EffBarrel->Write();
    DoubleGapBarrel->GetXaxis()->SetTitle("%"); DoubleGapBarrel->Draw(); Ca1->SaveAs("Distro/DoubleGapBarrel.png");DoubleGapBarrel->Write();
    PinoBarrel->GetXaxis()->SetTitle("%"); PinoBarrel->Draw(); Ca1->SaveAs("Distro/PinoBarrel.png"); PinoBarrel->Write(); //voy aca moviendo al root file....
+   BXEffBarrel->GetXaxis()->SetTitle("%"); BXEffBarrel->Draw(); Ca1->SaveAs("Distro/BXEffDistroBarrel.png"); BXEffBarrel->Write();
+   badBXEffBarrel->GetXaxis()->SetTitle("%"); badBXEffBarrel->Draw(); Ca1->SaveAs("Distro/badBXEffDistroBarrel.png"); badBXEffBarrel->Write();
    
    EffDistroWm2->GetXaxis()->SetTitle("%"); EffDistroWm2->Draw(); Ca1->SaveAs("Distro/EffDistroWm2.png");EffDistroWm2->Write(); 
    EffDistroWm1->GetXaxis()->SetTitle("%"); EffDistroWm1->Draw(); Ca1->SaveAs("Distro/EffDistroWm1.png");EffDistroWm1->Write(); 
@@ -4942,7 +4976,15 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    EffEndCap->GetXaxis()->SetTitle("%"); EffEndCap->Draw(); Ca1->SaveAs("Distro/EffDistroEndCap.png");EffEndCap->Write();
    DoubleGapEndCap->GetXaxis()->SetTitle("%"); DoubleGapEndCap->Draw(); Ca1->SaveAs("Distro/DoubleGapEndCap.png");  DoubleGapEndCap->Write();
    PinoEndCap->GetXaxis()->SetTitle("%"); PinoEndCap->Draw(); Ca1->SaveAs("Distro/PinoEndCap.png");PinoEndCap->Write();
-  
+   BXEffEndCap->GetXaxis()->SetTitle("%"); BXEffEndCap->Draw(); Ca1->SaveAs("Distro/BXEffDistroEndCap.png");BXEffEndCap->Write();
+   badBXEffEndCap->GetXaxis()->SetTitle("%"); badBXEffEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffDistroEndCap.png");badBXEffEndCap->Write();
+
+   BXEffPositiveEndCap->GetXaxis()->SetTitle("%"); BXEffPositiveEndCap->Draw(); Ca1->SaveAs("Distro/BXEffPositiveDistroEndCap.png");BXEffPositiveEndCap->Write();
+   BXEffNegativeEndCap->GetXaxis()->SetTitle("%"); BXEffNegativeEndCap->Draw(); Ca1->SaveAs("Distro/BXEffNegativeDistroEndCap.png");BXEffNegativeEndCap->Write();
+
+   badBXEffPositiveEndCap->GetXaxis()->SetTitle("%"); badBXEffPositiveEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffPositiveDistroEndCap.png");badBXEffPositiveEndCap->Write();
+   badBXEffNegativeEndCap->GetXaxis()->SetTitle("%"); badBXEffNegativeEndCap->Draw(); Ca1->SaveAs("Distro/badBXEffNegativeDistroEndCap.png");badBXEffNegativeEndCap->Write();
+     
    EffDistroDm3->GetXaxis()->SetTitle("%"); EffDistroDm3->Draw(); Ca1->SaveAs("Distro/EffDistroDm3.png");   
    EffDistroDm2->GetXaxis()->SetTitle("%"); EffDistroDm2->Draw(); Ca1->SaveAs("Distro/EffDistroDm2.png"); 
    EffDistroDm1->GetXaxis()->SetTitle("%"); EffDistroDm1->Draw(); Ca1->SaveAs("Distro/EffDistroDm1.png"); 
