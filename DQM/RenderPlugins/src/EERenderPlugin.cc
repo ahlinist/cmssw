@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.133 2009/08/04 17:40:57 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.134 2009/08/14 06:56:28 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.133 $
-  \date $Date: 2009/08/04 17:40:57 $
+  \version $Revision: 1.134 $
+  \date $Date: 2009/08/14 06:56:28 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -695,7 +695,7 @@ private:
       if( name.find( "EETTT" ) != std::string::npos &&
           name.find( "quality" ) == std::string::npos )
       {
-        if( name.find( "EETTT Trigger Primitives Timing" ) != std::string::npos )
+        if( name.find( "Trigger Primitives Timing" ) != std::string::npos )
         {
           obj->SetMinimum(-1.0);
           obj->SetMaximum(6.0);
@@ -707,11 +707,11 @@ private:
 
         if( name.find( "Error" ) == std::string::npos )
         {
-          if( name.find( "EETTT Trigger Primitives Timing" ) != std::string::npos )
+          if( name.find( "Trigger Primitives Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(7, pCol6);
           }
-          else if ( name.find( "EETTT Trigger Primitives Non Single Timing" ) != std::string::npos )
+          else if ( name.find( "Trigger Primitives Non Single Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(10, pCol5);
           }
