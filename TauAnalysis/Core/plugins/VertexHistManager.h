@@ -30,6 +30,8 @@ class VertexHistManager : public HistManagerBase
 
   std::string dqmDirectory_store_;
 
+  bool makeVertexXvsYhistogram_;
+
 //--- histograms
   MonitorElement* hVertexX_;
   MonitorElement* hVertexSigmaX_;

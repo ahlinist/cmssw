@@ -18,6 +18,9 @@ VertexHistManager::VertexHistManager(const edm::ParameterSet& cfg)
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+
+  makeVertexXvsYhistogram_ = ( cfg.exists("makeVertexXvsYhistogram") ) ? 
+    cfg.getParameter<bool>("makeVertexXvsYhistogram") : false;
 }
 
 VertexHistManager::~VertexHistManager()
@@ -43,7 +46,7 @@ void VertexHistManager::bookHistograms()
   hVertexSigmaX_ = dqmStore.book1D("VertexSigmaX", "VertexSigmaX", 200, -0.01, +0.01);
   hVertexY_ = dqmStore.book1D("VertexY", "VertexY", 200, -1., +1.);
   hVertexSigmaY_ = dqmStore.book1D("VertexSigmaY", "VertexSigmaY", 200, -0.01, +0.01);
-  hVertexXvsY_ = dqmStore.book2D("VertexXvsY", "VertexXvsY", 200, -1., +1., 200, -1, +1.);
+  if ( makeVertexXvsYhistogram_ ) hVertexXvsY_ = dqmStore.book2D("VertexXvsY", "VertexXvsY", 200, -1., +1., 200, -1, +1.);
   hVertexZ_ = dqmStore.book1D("VertexZ", "VertexZ", 100, -50., 50.);
   hVertexSigmaZ_ = dqmStore.book1D("VertexSigmaZ", "VertexSigmaZ", 200, -0.10, 0.10);
 
@@ -71,7 +74,7 @@ void VertexHistManager::fillHistograms(const edm::Event& evt, const edm::EventSe
     hVertexSigmaX_->Fill(thePrimaryEventVertex.xError(), evtWeight);
     hVertexY_->Fill(thePrimaryEventVertex.y(), evtWeight);
     hVertexSigmaY_->Fill(thePrimaryEventVertex.yError(), evtWeight);
-    hVertexXvsY_->Fill(thePrimaryEventVertex.x(), thePrimaryEventVertex.y(), evtWeight);
+    if ( makeVertexXvsYhistogram_ ) hVertexXvsY_->Fill(thePrimaryEventVertex.x(), thePrimaryEventVertex.y(), evtWeight);
     hVertexZ_->Fill(thePrimaryEventVertex.z(), evtWeight);
     hVertexSigmaZ_->Fill(thePrimaryEventVertex.zError(), evtWeight);
 
