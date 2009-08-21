@@ -11,16 +11,6 @@ from TauAnalysis.Configuration.analysisSequenceTools import replaceHistManagerIn
 
 from TauAnalysis.Configuration.analyzeZtoMuTau_cfi import *
 
-muTauHistManagers_factorizedWithoutMuonIsolation = copy.deepcopy(muTauHistManagers)
-
-muTauHistManagers_factorizedWithMuonIsolation = cms.vstring(
-    'genPhaseSpaceEventInfoHistManager',
-    'muonHistManager',
-    'tauHistManager',
-    'vertexHistManager',
-    'triggerHistManager'
-)
-
 #--------------------------------------------------------------------------------
 # define event selection criteria specific to factorization
 #--------------------------------------------------------------------------------
@@ -83,7 +73,6 @@ muTauEventDump_factorizedWithMuonIsolation.triggerConditions = cms.vstring("")
 #--------------------------------------------------------------------------------
 
 muTauAnalysisSequence_factorizedWithoutMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
-switchHistManagers(muTauAnalysisSequence_factorizedWithoutMuonIsolation, muTauHistManagers_factorizedWithoutMuonIsolation)
 replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation,
     [ ["selectedLayer1MuonsTrkIsoCumulative", "selectedLayer1MuonsTrkIsoLooseIsolationCumulative"],
       ["selectedLayer1MuonsEcalIsoCumulative", "selectedLayer1MuonsEcalIsoLooseIsolationCumulative"],
@@ -97,4 +86,3 @@ replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation
 ) 
 
 muTauAnalysisSequence_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
-switchHistManagers(muTauAnalysisSequence_factorizedWithMuonIsolation, muTauHistManagers_factorizedWithMuonIsolation)

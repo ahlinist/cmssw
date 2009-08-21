@@ -17,13 +17,6 @@ from TauAnalysis.Configuration.factorizationTools import replaceEventSelections
 
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation = copy.deepcopy(analyzeZtoMuTauEvents)
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation.name = cms.string('zMuTauAnalyzer_factorizedWithMuonIsolation')
-analyzeZtoMuTauEvents_factorizedWithMuonIsolation.histManagers = cms.VPSet(
-    genPhaseSpaceEventInfoHistManager,
-    muonHistManager,
-    tauHistManager,
-    vertexHistManager,
-    triggerHistManager
-)
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation.eventDumps[0] = muTauEventDump_factorizedWithMuonIsolation
 analyzeZtoMuTauEvents_factorizedWithMuonIsolation.analysisSequence = muTauAnalysisSequence_factorizedWithMuonIsolation
 

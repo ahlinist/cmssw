@@ -62,14 +62,11 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         genPhaseSpaceEventInfoHistManager,
         muonHistManager,
         tauHistManager,
-        tauRecoilEnergyFromJetsHistManager,
-        tauRecoilEnergyFromCaloTowersHistManager,
         diTauCandidateHistManagerForMuTau,
         metHistManager,
-        metTopologyHistManager,
-        jetHistManager,
         vertexHistManager,
-        triggerHistManager
+        triggerHistManager,
+        jetHistManager
     ),
 
     eventDumps = cms.VPSet(
