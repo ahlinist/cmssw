@@ -417,7 +417,7 @@ processZtoElecTau_WplusJetsSum.config_dqmFileLoader.scaleFactor = cms.double(1.)
 
 processZtoElecTau_ZeePlusJets = copy.deepcopy(process_ZeePlusJets)
 processZtoElecTau_ZeePlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
-    #plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part01.root',
+    plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part01.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part02.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part03.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part04.root',
@@ -428,8 +428,8 @@ processZtoElecTau_ZeePlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part09.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part10.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part11.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part12.root',
-    plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part13.root'
+    plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part12.root'
+    #plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part13.root'
 )
 processZtoElecTau_ZeePlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZeePlusJets*intLumiData/intLumiZeePlusJets)
 
