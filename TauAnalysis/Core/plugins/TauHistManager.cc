@@ -24,7 +24,7 @@ bool matchesGenTau(const pat::Tau& patTau)
   std::vector<reco::GenParticleRef> associatedGenParticles = patTau.genParticleRefs();
   for ( std::vector<reco::GenParticleRef>::const_iterator it = associatedGenParticles.begin(); 
 	it != associatedGenParticles.end(); ++it ) {
-    if ( it->ref().isNonnull() && it->ref().isValid() ) {
+    if ( it->isAvailable() ) {
       const reco::GenParticleRef& genParticle = (*it);
       if ( genParticle->pdgId() == -15 || genParticle->pdgId() == +15 ) isGenTauMatched = true;
     }
@@ -88,6 +88,9 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 
   requireGenTauMatch_ = cfg.getParameter<bool>("requireGenTauMatch");
   //std::cout << " requireGenTauMatch = " << requireGenTauMatch_ << std::endl;
+
+  makeIsoPtConeSizeDepHistograms_ = ( cfg.exists("makeIsoPtConeSizeDepHistograms") ) ? 
+    cfg.getParameter<bool>("makeIsoPtConeSizeDepHistograms") : false;
 
   numTauIsoConeSizes_ = 15;
   tauIsoConeSizeIncr_ = 0.1;
@@ -195,27 +198,7 @@ void TauHistManager::bookHistograms()
   hTauTrkIsoEtaDistProfile_ = dqmStore.book1D("TauTrkIsoEtaDistProfile", "All Isolation Tracks |#Delta#eta|", 15, 0., 1.5);
   hTauTrkIsoPhiDistProfile_ = dqmStore.book1D("TauTrkIsoPhiDistProfile", "All Isolation Tracks |#Delta#phi|", 15, 0., 1.5);
   
-  for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
-    std::ostringstream iConeSizeString;
-    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
-    
-    std::string hTauParticleFlowIsoPtConeSizeDepName_i 
-      = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
-								hTauParticleFlowIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
-      = std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
-								   hTauPFChargedHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
-      = std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
-								   hTauPFNeutralHadronIsoPtConeSizeDepName_i, 100, 0., 20.));
-    std::string hTauPFGammaIsoPtConeSizeDepName_i 
-      = std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
-							   hTauPFGammaIsoPtConeSizeDepName_i, 100, 0., 20.));
-  }
+  if ( makeIsoPtConeSizeDepHistograms_ ) bookTauIsoConeSizeDepHistograms(dqmStore);
 }
 
 void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat::Tau& patTau, const char* discrName,
@@ -389,7 +372,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 				  discrAvailability_hasBeenChecked, weight);
  
     fillTauIsoHistograms(*patTau, weight);
-    fillTauIsoConeSizeDepHistograms(*patTau, weight);
+    if ( makeIsoPtConeSizeDepHistograms_ ) fillTauIsoConeSizeDepHistograms(*patTau, weight);
   }
 }
 
@@ -407,6 +390,31 @@ void TauHistManager::bookTauHistograms(DQMStore& dqmStore, MonitorElement*& hTau
   
   std::string hTauPhiName = std::string(histoSetName).append("Phi");
   hTauPhi = dqmStore.book1D(hTauPhiName, hTauPhiName, 36, -TMath::Pi(), +TMath::Pi());
+}
+
+void TauHistManager::bookTauIsoConeSizeDepHistograms(DQMStore& dqmStore)
+{
+  for ( unsigned iConeSize = 1; iConeSize <= numTauIsoConeSizes_; ++iConeSize ) {
+    std::ostringstream iConeSizeString;
+    iConeSizeString << std::setfill('0') << std::setw(2) << iConeSize;
+    
+    std::string hTauParticleFlowIsoPtConeSizeDepName_i 
+      = std::string("TauParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauParticleFlowIsoPtConeSizeDepName_i, 
+								hTauParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
+    std::string hTauPFChargedHadronIsoPtConeSizeDepName_i 
+      = std::string("TauChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFChargedHadronIsoPtConeSizeDepName_i, 
+								   hTauPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    std::string hTauPFNeutralHadronIsoPtConeSizeDepName_i 
+      = std::string("TauPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFNeutralHadronIsoPtConeSizeDepName_i, 
+								   hTauPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    std::string hTauPFGammaIsoPtConeSizeDepName_i 
+      = std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
+    hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
+							   hTauPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
+  }
 }
 
 //
