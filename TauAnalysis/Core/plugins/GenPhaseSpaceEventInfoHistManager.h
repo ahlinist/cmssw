@@ -36,6 +36,8 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
 
   std::string dqmDirectory_store_;
 
+  bool makeLeptonPtVsPtHatHistograms_;
+
 //--- histograms
   MonitorElement* hPtHat_;
 
