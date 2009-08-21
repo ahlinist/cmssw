@@ -13,7 +13,7 @@ process_Ztautau = cms.PSet(
         dqmDirectory_store = cms.string('Ztautau')
     ),
     config_dqmHistPlotter = cms.PSet(
-        dqmDirectory = cms.string('Ztautau'),
+        dqmDirectory = cms.string('harvested/Ztautau'),
         legendEntry = cms.string('Z #rightarrow #tau^{+} #tau^{-}'),
         type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
     )
