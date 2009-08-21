@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.12 2008/10/31 19:39:08 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.13 2009/05/22 19:05:23 lat Exp $
 //
 
 // user include files
@@ -108,7 +108,7 @@ private:
 
       // Average plots for Etsum/Tower Occupancy
       obj->SetStats(kTRUE);
-      obj->GetYaxis()->SetTitleOffset(1.6);
+      obj->GetYaxis()->SetTitleOffset(1.3);
 
       if( o.name.find("EtSum") != std::string::npos &&
           o.name.find("Lumi") == std::string::npos &&
@@ -161,7 +161,7 @@ private:
 
       // Average plots for Etsum/Tower Occupancy
       obj->SetStats(kTRUE);
-      obj->GetYaxis()->SetTitleOffset(1.6);
+      obj->GetYaxis()->SetTitleOffset(1.3);
 
       if( o.name.find("Lumi") == std::string::npos )
       {
