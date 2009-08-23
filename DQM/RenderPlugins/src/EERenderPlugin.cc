@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.135 2009/08/21 02:09:07 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.136 2009/08/23 10:02:42 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.135 $
-  \date $Date: 2009/08/21 02:09:07 $
+  \version $Revision: 1.136 $
+  \date $Date: 2009/08/23 10:02:42 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -718,6 +718,7 @@ private:
           if( name.find( "Trigger Primitives Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(7, pCol6);
+            obj->SetContour(7);
           }
           else if ( name.find( "Trigger Primitives Non Single Timing" ) != std::string::npos )
           {
