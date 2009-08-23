@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.117 2009/08/04 17:40:54 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.118 2009/08/14 06:56:28 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.117 $
-  \date $Date: 2009/08/04 17:40:54 $
+  \version $Revision: 1.118 $
+  \date $Date: 2009/08/14 06:56:28 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -425,8 +425,7 @@ private:
       obj->SetStats(kFALSE);
       gPad->SetLogy(kFALSE);
 
-      if( name.find( "EBSRT" ) != std::string::npos ||
-          name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos )
+      if( name.find( "EBSRT" ) != std::string::npos )
       {
         gPad->SetGridx();
         gPad->SetGridy();
@@ -451,6 +450,15 @@ private:
 
         if ( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
 
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if( name.find( "EBCLT SC energy vs seed crystal energy" ) != std::string::npos )
+      {
         gStyle->SetPalette(1);
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);

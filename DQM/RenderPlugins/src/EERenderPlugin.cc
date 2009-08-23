@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.134 2009/08/14 06:56:28 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.135 2009/08/21 02:09:07 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.134 $
-  \date $Date: 2009/08/14 06:56:28 $
+  \version $Revision: 1.135 $
+  \date $Date: 2009/08/21 02:09:07 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -525,8 +525,7 @@ private:
       obj->SetStats(kFALSE);
       gPad->SetLogy(kFALSE);
 
-      if( name.find( "EESRT" ) != std::string::npos ||
-          name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos )
+      if( name.find( "EESRT" ) != std::string::npos )
       {
         gPad->SetGridx();
         gPad->SetGridy();
@@ -545,6 +544,15 @@ private:
 
         if ( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
 
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if (name.find( "EECLT SC energy vs seed crystal energy" ) != std::string::npos )
+      {
         gStyle->SetPalette(1);
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
