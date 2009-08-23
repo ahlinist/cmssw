@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.118 2009/08/14 06:56:28 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.119 2009/08/23 10:02:42 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.118 $
-  \date $Date: 2009/08/14 06:56:28 $
+  \version $Revision: 1.119 $
+  \date $Date: 2009/08/23 10:02:42 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -607,6 +607,7 @@ private:
           if( name.find( "EBTTT Trigger Primitives Timing" ) != std::string::npos )
           {
             gStyle->SetPalette(7, pCol6);
+            obj->SetContour(7);
           }
           else if ( name.find( "EBTTT Trigger Primitives Non Single Timing" ) != std::string::npos )
           {
