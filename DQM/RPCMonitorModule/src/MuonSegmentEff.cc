@@ -1108,9 +1108,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			    
 			    //Filling Residuals
 			    assert(rollId.station()==4);
-			    hGlobalResClu1La6->Fill(minres);
-			    hGlobalResClu2La6->Fill(minres);
-			    hGlobalResClu3La6->Fill(minres);
+			    if(cluSize==1*dupli) hGlobalResClu1La6->Fill(minres);
+			    else if(cluSize==2*dupli) hGlobalResClu2La6->Fill(minres);
+			    else if(cluSize==3*dupli) hGlobalResClu3La6->Fill(minres);
 			    
 			    if(debug) std::cout<<"MB4 \t \t \t \t \t Filling the Residuals Histogram for globals with "<<minres<<"And the angular incidence with Cos Theta="<<-1*dz<<std::endl;
 			    
