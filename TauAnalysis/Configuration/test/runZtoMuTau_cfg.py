@@ -108,7 +108,7 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoMuTauPatTuple.outputFileName = #patTupleOutputFileName#
+#__process.saveZtoMuTauPatTuple.fileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
