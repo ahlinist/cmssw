@@ -87,7 +87,7 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoElecTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecTauPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoElecTauPatTuple.outputFileName = #patTupleOutputFileName#
+#__process.saveZtoElecTauPatTuple.fileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
