@@ -11,14 +11,14 @@ plotsOutputFileNameZee = cms.string('plotsAHtoElecMu_Zee.root')
 plotsOutputFileNameZmumu = cms.string('plotsAHtoElecMu_Zmumu.root')
 plotsOutputFileNameZplusJets = cms.string('plotsAHtoElecMu_ZplusJets.root')
 plotsOutputFileNameInclusivePPmuX = cms.string('plotsAHtoElecMu_InclusivePPmuX.root')
-plotsOutputFileNamePPmuXptGt20 = cms.string('plotsAHtoElecMu_PPmuXptGt20.root')
+plotsOutputFileNamePPmuXptGt20 = cms.string('plotsAHtoElecMu_PPmuXptGt20_partXX.root')
 patTupleOutputFileNameZtautau = cms.untracked.string('patTupleAHtoElecMu_Ztautau.root')
 patTupleOutputFileNameWplusJets = cms.untracked.string('patTupleAHtoElecMu_WplusJets_partXX.root')
 patTupleOutputFileNameZee = cms.untracked.string('patTupleAHtoElecMu_Zee.root')
 patTupleOutputFileNameZmumu = cms.untracked.string('patTupleAHtoElecMu_Zmumu.root')
 patTupleOutputFileNameZplusJets = cms.untracked.string('patTupleAHtoElecMu_ZplusJets.root')
 patTupleOutputFileNameInclusivePPmuX = cms.untracked.string('patTupleAHtoElecMu_InclusivePPmuX.root')
-patTupleOutputFileNamePPmuXptGt20 = cms.untracked.string('patTupleAHtoElecMu_PPmuXptGt20.root')
+patTupleOutputFileNamePPmuXptGt20 = cms.untracked.string('patTupleAHtoElecMu_PPmuXptGt20_partXX.root')
 
 #--------------------------------------------------------------------------------
 # AH115 --> tau+ tau- sample
