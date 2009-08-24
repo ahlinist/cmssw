@@ -34,8 +34,8 @@ def addTCMet(process,):
                                      process.layer1METs + process.layer1TCMETs)
 
 def replaceMETforDiTaus(process,
-                        oldMet,# = cms.InputTag('layer1METs'),
-                        newMet):# = cms.InputTag('layer1PFMETs') ):
+                        oldMet = cms.InputTag('layer1METs'),
+                        newMet = cms.InputTag('layer1PFMETs') ):
     massSearchReplaceParam(process.produceDiTauPairsAllKinds,
                            'srcMET', oldMet, newMet)
 
