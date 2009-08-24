@@ -14,7 +14,7 @@ Implementation:Uses the EventSelector interface for event selection and TFileSer
 //
 // Original Author:  Markus Stoye
 //         Created:  Mon Feb 18 15:40:44 CET 2008
-// $Id: SusyDiJetAnalysis.cpp,v 1.42 2009/07/17 13:59:52 bainbrid Exp $
+// $Id: SusyDiJetAnalysis.cpp,v 1.43 2009/08/19 09:44:18 bainbrid Exp $
 //
 //
 //#include "SusyAnalysis/EventSelector/interface/BJetEventSelector.h"
@@ -922,7 +922,9 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
     }
 
     // MICHELE
-    if((*muonHandle)[i].isStandAloneMuon() && (*muonHandle)[i].standAloneMuon().isNonnull()){
+    //    if((*muonHandle)[i].isStandAloneMuon() && (*muonHandle)[i].standAloneMuon().isNonnull()){
+    // Bugfix
+    if ((*muonHandle)[i].standAloneMuon().isNonnull()){
       mTempTreeMuonStandValidHits[i]=(*muonHandle)[i].standAloneMuon()->found();
       mTempTreeMuonStandLostHits[i]=(*muonHandle)[i].standAloneMuon()->lost();
       mTempTreeMuonStandPt[i]=(*muonHandle)[i].standAloneMuon()->pt();
@@ -947,7 +949,9 @@ edm::LogVerbatim("SusyDiJetAnalysis") << " start reading in muons " << endl;
       mTempTreeMuonStandQOverPError[i]=999.;
     }
 
-    if((*muonHandle)[i].isTrackerMuon() && (*muonHandle)[i].track().isNonnull()){
+
+    //    if((*muonHandle)[i].isTrackerMuon() && (*muonHandle)[i].track().isNonnull()){
+    if ((*muonHandle)[i].track().isNonnull()){
       mTempTreeMuonTrkChiNorm[i] = (*muonHandle)[i].track()->normalizedChi2();
       mTempTreeMuonTrkValidHits[i]=(*muonHandle)[i].track()->found();
       mTempTreeMuonTrkLostHits[i]=(*muonHandle)[i].track()->lost();
