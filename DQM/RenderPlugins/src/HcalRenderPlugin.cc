@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.19 $
-  \date $Date: 2009/06/28 21:16:26 $
+  \version $Revision: 1.20 $
+  \date $Date: 2009/08/20 16:34:50 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -309,7 +309,10 @@ private:
       {
         gStyle->SetNumberContours(40); // should maintain reportSummaryMap color scheme, but allow for additional colors (from -1->0)
         gStyle->SetPalette(40,summaryColors);
-        obj->SetOption("textcol");
+	gStyle->SetPaintTextFormat("5.4g"); // set to %5.4f  text format in cells
+	obj->SetMarkerSize(3); // set font size to 3x normal
+        obj->SetOption("text90colz"); // draw marker at 90 degrees
+	
       }
       else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
       {
