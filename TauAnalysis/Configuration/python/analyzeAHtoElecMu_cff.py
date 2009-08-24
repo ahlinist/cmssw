@@ -35,7 +35,7 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
     #evtSelElectronIdMax,
     evtSelElectronAntiCrack,
     evtSelElectronEta, #default 2.1, switch to 2.4
-    evtSelElectronPt, #now 15
+    evtSelElectronPt, #now 10
     evtSelElectronIso,
     #evtSelElectronTrkIso,
     #evtSelElectronEcalIso,
@@ -47,7 +47,7 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
     evtSelGlobalMuonMin,
     #evtSelGlobalMuonMax,
     evtSelMuonEta, #default 2.1, switch to 2.4
-    evtSelMuonPt, #now 15
+    evtSelMuonPt, #now 10
     evtSelMuonIso,
     #evtSelMuonTrkIso,
     #evtSelMuonEcalIso,
@@ -57,9 +57,13 @@ analyzeAHtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
 
     # di-tau candidate selection
     evtSelDiTauCandidateForElecMuZeroCharge,
-    evtSelDiTauCandidateForElecMuAcoplanarity, #use it in case of no collinear approximation?
-    #evtSelDiTauCandidateForElecMuDPhi,
+    #evtSelDiTauCandidateForElecMuAcoplanarity, #use it in case of no collinear approximation?
+    evtSelDiTauCandidateForElecMuDPhi,
     #evtSelDiTauCandidateForElecMuImpParamSig,
+    evtSelDiTauCandidateForElecMuOneLegPt,
+
+    # met selection...
+    evtSelMETMax,
 
     # jet candidate selection...
     evtSelJetMin, #default eta<2.1 too tight, need 2.4 for b-tagging

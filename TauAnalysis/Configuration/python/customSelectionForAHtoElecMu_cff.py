@@ -2,29 +2,22 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from TauAnalysis.Configuration.producePatTuple_cff import *
-#from TauAnalysis.RecoTools.patLeptonSelection_cff import *
-#from TauAnalysis.CandidateTools.elecMuPairProduction_cff import *
-#from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
-#from TauAnalysis.RecoTools.patJetSelection_cff import *
 
 #------------------------------------- met --------------------------------------#
 #******* custom reco ********
-from TauAnalysis.GenSimTools.genMETWithMu_cff import *
-producePrePat.replace( pfAllChargedHadrons, produceGenMETwithMu + pfAllChargedHadrons )
-from PhysicsTools.PFCandProducer.pfMET_cfi  import *
-#pfMET.verbose = cms.untracked.bool(True)
-patAODExtraReco.replace( patJetMETCorrections, patJetMETCorrections + pfMET )
-### Use this to add the PF MET side-by-side to the PAT MET
-layer1PFMETs = layer1METs.clone(
-    metSource = cms.InputTag("pfMET"),
-    addMuonCorrections = cms.bool(False),
-    addTrigMatch = cms.bool(False),
-    genMETSource = cms.InputTag("genMETWithMu")
+layer1METs.metSource  = cms.InputTag("corMetType1Icone5Muons") #no tau jet specific correction
+#***** custom selection *****
+selectedMETMax = cms.EDFilter("PATMETSelector",
+     cut = cms.string('et < 60'),
+     filter = cms.bool(False)
 )
-layer1METs.metSource  = cms.InputTag("corMetType1Icone5Muons")
-#layer1METs.addMuonCorrections = cms.bool(True) ###this is completely dummy!!!!!!!!
-layer1METs.genMETSource = cms.InputTag("genMETWithMu")
-allLayer1Objects.replace( layer1METs, layer1METs + layer1PFMETs)
+patMETSelConfigurator = objSelConfigurator(
+    [ selectedMETMax ],
+    src = "layer1METs",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+selectLayer1METs = patMETSelConfigurator.configure(namespace = locals())
 
 #---------------------------------- electrons -----------------------------------#
 #******* custom reco ********
@@ -41,30 +34,79 @@ allLayer1Electrons.isolation.ecal.vetos = cms.vstring(
 )
 allLayer1Electrons.isolation.hcal.deltaR = cms.double(0.4)
 #***** custom selection *****
-selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
-selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.4')
-#selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
+selectedLayer1ElectronsId = selectedLayer1ElectronsTightId.clone()
+selectedLayer1ElectronsId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
+selectedLayer1ElectronsEta = selectedLayer1ElectronsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
+selectedLayer1ElectronsPt = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 10.'))
 selectedLayer1ElectronsIso = cms.EDFilter("PATElectronSelector",
-     cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.1'),
+     cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.20'),
      filter = cms.bool(False)
 )
-selectedLayer1ElectronsTrkIso = cms.EDFilter("PATElectronSelector",
-     cut = cms.string('trackIso < 1.5'),
-     filter = cms.bool(False)
-)
-selectedLayer1ElectronsEcalIso = cms.EDFilter("PATElectronSelector",
-     cut = cms.string('ecalIso < 1.5'),
-     filter = cms.bool(False)
-)
-selectedLayer1ElectronsHcalIso = cms.EDFilter("PATElectronSelector",
-     cut = cms.string('hcalIso < 1.5'),
-     filter = cms.bool(False)
-)
+#cut optimization
+selectedLayer1ElectronsPt10 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 10.'))
+selectedLayer1ElectronsPt11 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 11.'))
+selectedLayer1ElectronsPt12 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 12.'))
+selectedLayer1ElectronsPt13 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 13.'))
+selectedLayer1ElectronsPt14 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 14.'))
+selectedLayer1ElectronsPt15 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 15.'))
+selectedLayer1ElectronsPt16 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 16.'))
+selectedLayer1ElectronsPt17 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 17.'))
+selectedLayer1ElectronsPt18 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 18.'))
+selectedLayer1ElectronsPt19 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 19.'))
+selectedLayer1ElectronsPt20 = selectedLayer1ElectronsPt15.clone(cut = cms.string('pt > 20.'))
+selectedLayer1ElectronsLooseId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+selectedLayer1ElectronsTightId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("tight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("tight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+selectedLayer1ElectronsRobustId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+selectedLayer1ElectronsIso005 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.05'))
+selectedLayer1ElectronsIso010 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.10'))
+selectedLayer1ElectronsIso015 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'))
+selectedLayer1ElectronsIso020 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.20'))
+selectedLayer1ElectronsIso025 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.25'))
+selectedLayer1ElectronsIso030 = selectedLayer1ElectronsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.30'))
+selectedLayer1ElectronsLooseId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("loose") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+selectedLayer1ElectronsTightId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("tight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("tight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+selectedLayer1ElectronsRobustId = selectedLayer1ElectronsId.clone(cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'))
+###########################
+## selectedLayer1ElectronsTrkIso = cms.EDFilter("PATElectronSelector",
+##      cut = cms.string('trackIso < 1.5'),
+##      filter = cms.bool(False)
+## )
+## selectedLayer1ElectronsEcalIso = cms.EDFilter("PATElectronSelector",
+##      cut = cms.string('ecalIso < 1.5'),
+##      filter = cms.bool(False)
+## )
+## selectedLayer1ElectronsHcalIso = cms.EDFilter("PATElectronSelector",
+##      cut = cms.string('hcalIso < 1.5'),
+##      filter = cms.bool(False)
+## )
 patElectronSelConfigurator = objSelConfigurator(
-    [ selectedLayer1ElectronsTightId,
+    [
+##       ##uncomment for optimization
+##       selectedLayer1ElectronsPt10,
+##       selectedLayer1ElectronsPt11,
+##       selectedLayer1ElectronsPt12,
+##       selectedLayer1ElectronsPt13,
+##       selectedLayer1ElectronsPt14,
+##       selectedLayer1ElectronsPt15,
+##       selectedLayer1ElectronsPt16,
+##       selectedLayer1ElectronsPt17,
+##       selectedLayer1ElectronsPt18,
+##       selectedLayer1ElectronsPt19,
+##       selectedLayer1ElectronsPt20,
+##       selectedLayer1ElectronsIso005,
+##       selectedLayer1ElectronsIso010,
+##       selectedLayer1ElectronsIso015,
+##       selectedLayer1ElectronsIso020,
+##       selectedLayer1ElectronsIso025,
+##       selectedLayer1ElectronsIso030,
+##       selectedLayer1ElectronsLooseId,
+##       selectedLayer1ElectronsTightId,
+##       selectedLayer1ElectronsRobustId,
+##       ###########################
+      selectedLayer1ElectronsId,
       selectedLayer1ElectronsAntiCrackCut,
-      selectedLayer1ElectronsEta21,
-      selectedLayer1ElectronsPt15,
+      selectedLayer1ElectronsEta,
+      selectedLayer1ElectronsPt,
       selectedLayer1ElectronsIso,
       #selectedLayer1ElectronsTrkIso,
       #selectedLayer1ElectronsEcalIso,
@@ -77,17 +119,17 @@ patElectronSelConfigurator = objSelConfigurator(
 )
 selectLayer1Electrons = patElectronSelConfigurator.configure(namespace = locals())
 cleanLayer1ElectronsSel.selFlags = cms.PSet(
-    tauAnalysisSelElectronTightIdGlobal = cms.PSet(
-      src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
+    tauAnalysisSelElectronIdGlobal = cms.PSet(
+      src = cms.InputTag('selectedLayer1ElectronsIdIndividual')
     ),
     tauAnalysisSelElectronAntiCrackCut = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual')
     ),
     tauAnalysisSelElectronEta21 = cms.PSet(
-      src = cms.InputTag('selectedLayer1ElectronsEta21Individual')
+      src = cms.InputTag('selectedLayer1ElectronsEtaIndividual')
     ),
     tauAnalysisSelElectronPt15 = cms.PSet(
-      src = cms.InputTag('selectedLayer1ElectronsPt15Individual')
+      src = cms.InputTag('selectedLayer1ElectronsPtIndividual')
     ),
     tauAnalysisSelElectronIso = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsIsoIndividual')
@@ -116,10 +158,10 @@ allLayer1Muons.isolation.ecal.deltaR = cms.double(0.3)
 allLayer1Muons.isolation.hcal.deltaR = cms.double(0.3)
 allLayer1Muons.isolation.user.deltaR = cms.double(0.3)
 #***** custom selection *****
-selectedLayer1MuonsEta21.cut = cms.string('abs(eta) < 2.4')
-#selectedLayer1MuonsPt15.cut = cms.string('pt > 15.')
+selectedLayer1MuonsEta = selectedLayer1MuonsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
+selectedLayer1MuonsPt = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 10.'))
 selectedLayer1MuonsIso = cms.EDFilter("PATMuonSelector",
-     cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.1'),
+     cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'),
      filter = cms.bool(False)
 )
 selectedLayer1MuonsTrkIso.vetos = cms.vstring("0.01", "Threshold(0.9)")                          
@@ -130,10 +172,49 @@ selectedLayer1MuonsHcalIso = cms.EDFilter("PATMuonSelector",
     cut = cms.string('hcalIso < 1.'),
     filter = cms.bool(False)
 )
+##cut optimization
+selectedLayer1MuonsPt10 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 10.'))
+selectedLayer1MuonsPt11 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 11.'))
+selectedLayer1MuonsPt12 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 12.'))
+selectedLayer1MuonsPt13 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 13.'))
+selectedLayer1MuonsPt14 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 14.'))
+selectedLayer1MuonsPt15 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 14.'))
+selectedLayer1MuonsPt16 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 16.'))
+selectedLayer1MuonsPt17 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 17.'))
+selectedLayer1MuonsPt18 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 18.'))
+selectedLayer1MuonsPt19 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 19.'))
+selectedLayer1MuonsPt20 = selectedLayer1MuonsPt15.clone(cut = cms.string('pt > 20.'))
+selectedLayer1MuonsIso005 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.05'))
+selectedLayer1MuonsIso010 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.10'))
+selectedLayer1MuonsIso015 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.15'))
+selectedLayer1MuonsIso020 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.20'))
+selectedLayer1MuonsIso025 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.25'))
+selectedLayer1MuonsIso030 = selectedLayer1MuonsIso.clone(cut = cms.string('hcalIso/pt + ecalIso/pt + trackIso/pt < 0.30'))
+###########################
 patMuonSelConfigurator = objSelConfigurator(
-    [ selectedLayer1MuonsGlobal,
-      selectedLayer1MuonsEta21,
-      selectedLayer1MuonsPt15,
+    [
+##       ##uncomment for optimization
+##       selectedLayer1MuonsPt10,
+##       selectedLayer1MuonsPt11,
+##       selectedLayer1MuonsPt12,
+##       selectedLayer1MuonsPt13,
+##       selectedLayer1MuonsPt14,
+##       selectedLayer1MuonsPt15,
+##       selectedLayer1MuonsPt16,
+##       selectedLayer1MuonsPt17,
+##       selectedLayer1MuonsPt18,
+##       selectedLayer1MuonsPt19,
+##       selectedLayer1MuonsPt20,
+##       selectedLayer1MuonsIso005,
+##       selectedLayer1MuonsIso010,
+##       selectedLayer1MuonsIso015,
+##       selectedLayer1MuonsIso020,
+##       selectedLayer1MuonsIso025,
+##       selectedLayer1MuonsIso030,
+##       ############################
+      selectedLayer1MuonsGlobal,
+      selectedLayer1MuonsEta,
+      selectedLayer1MuonsPt,
       selectedLayer1MuonsIso,
       #selectedLayer1MuonsTrkIso,
       #selectedLayer1MuonsEcalIso,
@@ -150,11 +231,11 @@ cleanLayer1MuonsSel.selFlags = cms.PSet(
     tauAnalysisSelMuonGlobal = cms.PSet(
       src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
     ),
-    tauAnalysisSelMuonEta21 = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsEta21Individual')
+    tauAnalysisSelMuonEta = cms.PSet(
+      src = cms.InputTag('selectedLayer1MuonsEtaIndividual')
     ),
-    tauAnalysisSelMuonPt15 = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsPt15Individual')
+    tauAnalysisSelMuonPt = cms.PSet(
+      src = cms.InputTag('selectedLayer1MuonsPtIndividual')
     ),
     tauAnalysisSelMuonIso = cms.PSet(
       src = cms.InputTag('selectedLayer1MuonsIsoIndividual')
@@ -181,11 +262,9 @@ produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1Se
                                         +selectLayer1Muons + produceLayer1SelMuons )
 
 #----------------------------- electron + muon pairs ----------------------------#
-allElecMuPairs.srcLeg1 = cms.InputTag('selectedLayer1ElectronsTightIdCumulative')
-allElecMuPairs.srcLeg2 = cms.InputTag('selectedLayer1MuonsGlobalCumulative')
+allElecMuPairs.srcLeg1 = cms.InputTag('allLayer1Electrons')#CHECK!!!!!
+allElecMuPairs.srcLeg2 = cms.InputTag('allLayer1Muons')
 allElecMuPairs.useLeadingTausOnly = cms.bool(True)
-allElecMuPairs.srcMET = cms.InputTag('layer1PFMETs')
-#allElecMuPairs.srcMET = cms.InputTag('layer1METs')
 # require missing transverse momentum to point either in direction of the electron
 # or in direction of the muon in the transverse plane
 selectedElecMuPairsAcoplanarity = cms.EDFilter("PATElecMuPairSelector",
@@ -194,7 +273,8 @@ selectedElecMuPairsAcoplanarity = cms.EDFilter("PATElecMuPairSelector",
 )
 # require muon and tau not to be back-to-back
 selectedElecMuPairsDPhi = cms.EDFilter("PATElecMuPairSelector",
-     cut = cms.string('dPhi12 < 3.07'),
+     #cut = cms.string('dPhi12 < 3.07'),
+     cut = cms.string('dPhi12 > 2.'),
      filter = cms.bool(False)
 )
 # cut on combined impact parameter significance
@@ -203,11 +283,35 @@ selectedElecMuPairsImpParamSig = cms.EDFilter("PATElecMuIpSigSelector",
      IpMin = cms.double(1.5),
      filter = cms.bool(False)
 )
+# at least one leg with pT > cut
+selectedElecMuPairsOneLegPt = cms.EDFilter("PATElecMuPairSelector",
+    cut = cms.string('leg1.pt > 20 | leg2.pt > 20'),
+    filter = cms.bool(False)
+)
+## cut optimization
+selectedElecMuPairsOneLegPt18 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 18 | leg2.pt > 18'))
+selectedElecMuPairsOneLegPt20 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 20 | leg2.pt > 20'))
+selectedElecMuPairsOneLegPt22 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 22 | leg2.pt > 22'))
+selectedElecMuPairsOneLegPt24 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 24 | leg2.pt > 24'))
+selectedElecMuPairsOneLegPt26 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 26 | leg2.pt > 26'))
+selectedElecMuPairsOneLegPt28 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 28 | leg2.pt > 28'))
+selectedElecMuPairsOneLegPt30 = selectedElecMuPairsOneLegPt.clone(cut = cms.string('leg1.pt > 30 | leg2.pt > 30'))
+#############################
 patElecMuPairSelConfigurator = objSelConfigurator(
     [ selectedElecMuPairsZeroCharge,
-      selectedElecMuPairsAcoplanarity #,
-      #selectedElecMuPairsDPhi,
+      #selectedElecMuPairsAcoplanarity #,
+      selectedElecMuPairsDPhi,
       #selectedElecMuPairsImpParamSig
+      selectedElecMuPairsOneLegPt,
+##       ## uncomment for optimization
+##       selectedElecMuPairsOneLegPt18,
+##       selectedElecMuPairsOneLegPt20,
+##       selectedElecMuPairsOneLegPt22,
+##       selectedElecMuPairsOneLegPt24,
+##       selectedElecMuPairsOneLegPt26,
+##       selectedElecMuPairsOneLegPt28,
+##       selectedElecMuPairsOneLegPt30
+##       #############################
       ],
     src = "allElecMuPairs",
     pyModuleName = __name__,
@@ -222,7 +326,7 @@ produceDiTauPairsAllKinds = cms.Sequence( produceElecMuPairs )
 #------------------------------------- jets -------------------------------------#
 selectedLayer1JetsAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkCumulative",
                                                                                 "selectedLayer1MuonsPionVetoCumulative")
-selectedLayer1JetsEta21.cut = cms.string('abs(eta) < 2.4')
+selectedLayer1JetsEta = selectedLayer1JetsEta21.clone(cut = cms.string('abs(eta) < 2.4'))
 # select jets with b-tagging
 selectedLayer1JetsBtag = cms.EDFilter("PATJetSelector",                                                                            
      cut = cms.string('bDiscriminator("trackCountingHighEffBJetTags")>2'),
@@ -231,7 +335,7 @@ selectedLayer1JetsBtag = cms.EDFilter("PATJetSelector",
 patJetSelConfigurator = objSelConfigurator(
     [ selectedLayer1JetsEt20,
       selectedLayer1JetsAntiOverlapWithLeptonsVeto,
-      selectedLayer1JetsEta21,
+      selectedLayer1JetsEta,
       selectedLayer1JetsBtag ],
     src = "cleanLayer1Jets",
     pyModuleName = __name__,
@@ -243,6 +347,8 @@ selectLayer1Jets = patJetSelConfigurator.configure(namespace = locals())
 producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
                                +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
                                +producePostPat                               
-                               +produceLayer1SelLeptons + selectLayer1Jets
+                               +produceLayer1SelLeptons
+                               +selectLayer1Jets
+                               +selectLayer1METs
                                +produceDiTauPairsAllKinds
                                +selectDiTauPairsAllKinds )
