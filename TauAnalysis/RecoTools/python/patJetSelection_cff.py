@@ -13,7 +13,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 selectedLayer1JetsAntiOverlapWithLeptonsVeto = cms.EDFilter("PATJetAntiOverlapSelector",
     srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkIPcumulative",
                                        "selectedLayer1MuonsTrkIPcumulative",
-                                       "selectedLayer1TausForDiTauProngCumulative"),
+                                       "selectedLayer1TausProngCumulative"),
     dRmin = cms.double(0.7),
     filter = cms.bool(False)                                           
 )
@@ -30,24 +30,10 @@ selectedLayer1JetsEt20 = cms.EDFilter("PATJetSelector",
     filter = cms.bool(False)
 )
 
-# select jets with Et > 40 GeV
-selectedLayer1JetsEt40 = cms.EDFilter("PATJetSelector",
-    cut = cms.string('et > 40.'),
-    filter = cms.bool(False)
-)
-
-# select jets with Et > 60 GeV
-selectedLayer1JetsEt60 = cms.EDFilter("PATJetSelector",
-    cut = cms.string('et > 60.'),
-    filter = cms.bool(False)
-)
-
 patJetSelConfigurator = objSelConfigurator(
     [ selectedLayer1JetsAntiOverlapWithLeptonsVeto,
       selectedLayer1JetsEta21,
-      selectedLayer1JetsEt20,
-      selectedLayer1JetsEt40,
-      selectedLayer1JetsEt60 ],
+      selectedLayer1JetsEt20 ],
     src = "cleanLayer1Jets",
     pyModuleName = __name__,
     doSelIndividual = False
