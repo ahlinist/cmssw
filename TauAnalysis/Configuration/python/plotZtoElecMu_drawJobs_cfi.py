@@ -337,6 +337,18 @@ drawJobConfigurator_ZtoElecMu.add(
             name = "finalSamplePlots_pdgIdGenParticleMatchingElectron"
         ),
         drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronEcalIsoPtBarrel',
+            title = "Electron ECAL iso., Barrel (final Event sample)",
+            xAxis = 'Pt',
+            name = "finalSamplePlots_electronEcalIsoBarrel"
+        ),
+        drawJobConfigEntry(
+            meName = 'ElectronQuantities/ElectronEcalIsoPtEndcap',
+            title = "Electron ECAL iso., Endcap (final Event sample)",
+            xAxis = 'Pt',
+            name = "finalSamplePlots_electronEcalIsoEndcap"
+        ),
+        drawJobConfigEntry(
             meName = 'MuonQuantities/Muon#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
             title = "Muon (final Event sample)",
