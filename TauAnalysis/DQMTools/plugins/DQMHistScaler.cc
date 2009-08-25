@@ -71,6 +71,8 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
   dqmDirectory_output_ = cfg.getParameter<std::string>("dqmDirectory_output");
   //std::cout << " dqmDirectory_output = " << dqmDirectory_output_ << std::endl;
 
+  dqmDirectories_drop_ = cfg.exists("drop") ? cfg.getParameter<vstring>("drop") : vstring();
+
 //--- check that either:
 //     o scaleFactor
 //    or
@@ -212,6 +214,9 @@ void DQMHistScaler::endJob()
       std::string inputDirectory = dqmDirectoryName_full(dqmDirectory_input_, *dqmSubDirectory);
       std::string outputDirectory = dqmDirectoryName_full(dqmDirectory_output_, *dqmSubDirectory);
 
+      std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
+		<< " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
+      
       dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
     }
   } else {
@@ -219,6 +224,16 @@ void DQMHistScaler::endJob()
     std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
       
     dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
+  }
+
+//--- delete all MonitorElements in input directories
+//    specified to be dropped after applying scale factors and copying to output directories
+  for ( vstring::const_iterator dqmDirectory_drop = dqmDirectories_drop_.begin();
+	dqmDirectory_drop != dqmDirectories_drop_.end(); ++dqmDirectory_drop ) {
+    
+    std::cout << " dropping all MonitorElement in directory = " << (*dqmDirectory_drop) << std::endl;
+
+    dqmStore.rmdir(*dqmDirectory_drop);
   }
 
   std::cout << "done." << std::endl; 
