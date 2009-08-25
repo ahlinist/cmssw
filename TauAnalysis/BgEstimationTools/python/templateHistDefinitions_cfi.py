@@ -40,6 +40,13 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
             numBinsX = cms.uint32(40),
             xMin = cms.double(0.),
             xMax = cms.double(200.)
+        ),
+        cms.PSet(
+            meName = cms.string("numJets"),  
+            branchName = cms.string('numCentralJetsEt20'),
+            numBinsX = cms.uint32(50),
+            xMin = cms.double(-0.5),
+            xMax = cms.double(49.5)
         )
     ),
                                                           
