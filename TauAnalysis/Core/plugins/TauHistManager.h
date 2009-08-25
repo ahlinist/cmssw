@@ -49,6 +49,7 @@ class TauHistManager : public HistManagerBase
 
   bool requireGenTauMatch_;
 
+  bool makePFIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
   unsigned numTauIsoConeSizes_;
@@ -128,6 +129,9 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPFChargedHadronIsoPt_;
   MonitorElement* hTauPFNeutralHadronIsoPt_;
   MonitorElement* hTauPFGammaIsoPt_;
+
+  MonitorElement* hTauPFChargedHadronIsoPtCtrl_;
+  MonitorElement* hTauPFGammaIsoPtCtrl_;
 
   std::vector<MonitorElement*> hTauParticleFlowIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hTauPFChargedHadronIsoPtConeSizeDep_;
