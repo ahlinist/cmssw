@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: GenericEventDump.h,v 1.5 2009/03/16 10:25:22 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.6 2009/03/26 13:31:01 veelken Exp $
  *
  */
 
@@ -136,6 +136,7 @@ class GenericEventDump : public EventDumpBase
   edm::InputTag pfChargedHadronSource_;
   edm::InputTag pfGammaSource_;
   edm::InputTag pfNeutralHadronSource_;
+  edm::InputTag pfCandidateSource_;
 
 //--- count different types of particles faking reconstructed electrons,
 //    muons and tau-jets
