@@ -72,7 +72,8 @@ void JetHistManager::bookHistograms()
   
   dqmStore.setCurrentFolder(dqmDirectory_store_);
   
-  hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 50, -0.5, 49.5);
+  hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 20, -0.5, 19.5);
+  hSumEtJets_ = dqmStore.book1D("SumEtJets", "SumEtJets", 100, -0.5, 999.5);
   
   bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
   hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "Jet #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
@@ -96,7 +97,7 @@ void JetHistManager::bookHistograms()
 	std::string hName_mod = replace_string(hName.str(), ".", "_", 0, 3, errorFlag);
 	//std::cout << "hName_mod = " << hName_mod << std::endl;
 	
-	hNumCentralJetsToBeVetoed_.push_back(dqmStore.book1D(hName_mod, hName_mod, 50, -0.5, 49.5));
+	hNumCentralJetsToBeVetoed_.push_back(dqmStore.book1D(hName_mod, hName_mod, 20, -0.5, 19.5));
       }
     }
   }
@@ -108,34 +109,26 @@ void JetHistManager::bookHistograms()
     hName0 << "BtagDisc_" << bTaggingDiscriminators_[i];
     hTitle0 << "Jet B-Tag Discriminator: " << bTaggingDiscriminators_[i];
   
-    hBtagDisc_.push_back(dqmStore.book1D(hName0.str(),hTitle0.str(),120,-10.,50.));
+    hBtagDisc_.push_back(dqmStore.book1D(hName0.str(),hTitle0.str(), 120, -10., 50.));
     
     std::ostringstream hName1;
     std::ostringstream hTitle1;
     hName1 << "NumBtags_" << bTaggingDiscriminators_[i];
     hTitle1 << "Jet B-Tag Count: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
-    hNumBtags_.push_back(dqmStore.book1D(hName1.str(),hTitle1.str(),15,-0.5,14.5));
+    hNumBtags_.push_back(dqmStore.book1D(hName1.str(),hTitle1.str(), 15, -0.5, 14.5));
     
     std::ostringstream hName2;
     std::ostringstream hTitle2;
     hName2 << "PtBtags_" << bTaggingDiscriminators_[i];
     hTitle2 << "B-Tagged Jets P_{T}: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
-    hPtBtags_.push_back(dqmStore.book1D(hName2.str(),hTitle2.str(),75,0.,150.));
+    hPtBtags_.push_back(dqmStore.book1D(hName2.str(),hTitle2.str(), 75, 0., 150.));
   }
   
 }
 
-double compAlpha(const pat::Jet& jet)
-{
-  double sumPt = 0.;
-  for ( reco::TrackRefVector::const_iterator track = jet.associatedTracks().begin();
-	track != jet.associatedTracks().end(); ++track ) {
-    sumPt += (*track)->pt();
-  }
-  return ( jet.et() > 0 ) ? sumPt/jet.et() : -1.;
-}
+
 
 void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
@@ -152,11 +145,19 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
   //std::cout << " patJets.size = " << patJets->size() << std::endl;
 
   hNumJets_->Fill(patJets->size(), evtWeight);
+  
+  double sumJetEt = 0.;
+  for ( std::vector<pat::Jet>::const_iterator patJet = patJets->begin(); 
+	patJet != patJets->end(); ++patJet ) {
+    sumJetEt += patJet->et();
+  }
+  hSumEtJets_->Fill(sumJetEt, evtWeight);
 
   std::vector<unsigned int> nbtags;
   for (unsigned int i=0;i<bTaggingDiscriminators_.size();i++) {
     nbtags.push_back(0);
   }
+
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets->begin(); 
 	patJet != patJets->end(); ++patJet ) {
   
@@ -169,7 +170,7 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     fillJetHistograms(*patJet, hJetPt_, hJetEta_, hJetPhi_, evtWeight);
     hJetPtVsEta_->Fill(patJet->eta(), patJet->pt(), evtWeight);
 
-    hJetAlpha_->Fill(compAlpha(*patJet), evtWeight);
+    hJetAlpha_->Fill(jetAlphaExtractor_(*patJet), evtWeight);
     unsigned numTracks = 0;
     double maxPt = 0.;
     for ( reco::TrackRefVector::const_iterator track = patJet->associatedTracks().begin();
@@ -245,8 +246,9 @@ void JetHistManager::fillNumCentralJetsToBeVetoesHistograms(const std::vector<pa
   unsigned numJets = 0;
   for ( std::vector<pat::Jet>::const_iterator patJet = patJets.begin();
 	patJet != patJets.end(); ++patJet ) {
-    if ( patJet->et() >= etMin && patJet->eta() <= etaMax && compAlpha(*patJet) >= alphaMin ) ++numJets;
+    if ( patJet->et() >= etMin && patJet->eta() <= etaMax && jetAlphaExtractor_(*patJet) >= alphaMin ) ++numJets;
   }
+  
   hNumJets->Fill(numJets, evtWeight);
 }
 

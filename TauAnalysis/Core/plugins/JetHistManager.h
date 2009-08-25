@@ -9,6 +9,7 @@
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "TauAnalysis/RecoTools/interface/PATJetAlphaExtractor.h"
 
 #include <vector>
 #include <string>
@@ -46,8 +47,15 @@ class JetHistManager : public HistManagerBase
   std::vector<std::string>  bTaggingDiscriminators_;
   std::vector<double> bTaggingDiscriminatorThresholds_;
 
+//--- auxiliary class to compute quantity alpha,
+// defined as ratio of sum of charged particle transverse momenta 
+// to sum of charged plus neutral particle transverse momenta,
+// for a jet
+  PATJetAlphaExtractor jetAlphaExtractor_;
+
 //--- histograms
   MonitorElement* hNumJets_;
+  MonitorElement* hSumEtJets_;
 
   MonitorElement* hJetPt_;
   MonitorElement* hJetEta_;
