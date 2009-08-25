@@ -92,8 +92,21 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   trajtracks_ = iConfig.getParameter<edm::InputTag>("TrajectoryTracks");
   triggerTag_ = iConfig.getParameter<edm::InputTag>("TriggerTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
+  JpsiMassWindowBeforeFit_ = iConfig.getParameter<double>("JpsiMassWindowBeforeFit");
+
+  BsLowerMassCutBeforeFit_  = iConfig.getParameter<double>("BsLowerMassCutBeforeFit");
+  BsUpperMassCutBeforeFit_  = iConfig.getParameter<double>("BsUpperMassCutBeforeFit");
+  BsLowerMassCutAfterFit_  = iConfig.getParameter<double>("BsLowerMassCutAfterFit");
+  BsUpperMassCutAfterFit_  = iConfig.getParameter<double>("BsUpperMassCutAfterFit");
+
+  JpsiMassWindowAfterFit_ = iConfig.getParameter<double>("JpsiMassWindowAfterFit");
+  JpsiPtCut_ =  iConfig.getParameter<double>("JpsiPtCut");
+  KaonTrackPtCut_ = iConfig.getParameter<double>("KaonTrackPtCut");
+  PhiMassWindowBeforeFit_ = iConfig.getParameter<double>("PhiMassWindowBeforeFit");
+  PhiMassWindowAfterFit_ = iConfig.getParameter<double>("PhiMassWindowAfterFit");
+
   outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile");
-  
+
   edm::LogInfo("RecoVertex/BsToJpsiPhiAnalysis")<< "Initializing Bs to Jpsi Phi analyser  - Output file: " << outputFile_ <<"\n";
 
 }
@@ -180,24 +193,22 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       int MC_particleID=p.pdgId();
       if (abs(MC_particleID) == 443 && p.status()==2){
 	const Candidate & gmo=*(p.mother());
-	nBsDau=gmo.numberOfDaughters();
-	momID=gmo.pdgId();
-	if (nBsDau ==2){
+	bsRootTree_->nBsDau_ = gmo.numberOfDaughters();
+	bsRootTree_->momID_ = gmo.pdgId();
+	if (bsRootTree_->nBsDau_ == 2){
 	  const Candidate & da1=*(gmo.daughter( 0 ));
 	  const Candidate & da2=*(gmo.daughter( 1 ));
-	  dau_1_ID=da1.pdgId();
-	  dau_2_ID=da2.pdgId();
+	  bsRootTree_->dau_1_ID_ = da1.pdgId();
+	  bsRootTree_->dau_2_ID_ = da2.pdgId();
 	}
       }
     }
     
-    bsRootTree_->getParams(nBsDau,momID,dau_1_ID,dau_2_ID);
     
-    flagKstar = JpsiKstarFlag(iEvent);
-    flagKs = JpsiKsFlag(iEvent);
-    flagPhi = JpsiPhiFlag(iEvent);
-    bsRootTree_->getBdFlags(flagKstar,flagKs,flagPhi);
-  
+    bsRootTree_->flagKstar_ = JpsiKstarFlag(iEvent);
+    bsRootTree_->flagKs_ = JpsiKsFlag(iEvent);
+    bsRootTree_->flagPhi_ = JpsiPhiFlag(iEvent);
+   
     //////////////////////////////////
     //
     // HLT code for trigger bits
@@ -217,13 +228,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     edm::TriggerNames triggerNames_;
     triggerNames_.init(* hltresults);
 
-    flag_1 = 0;
-    flag_2 = 0;
-    flag_3 = 0;
-    flag_4 = 0;
-    flag_5 = 0;
-    flag_6 = 0;
-
+ 
     /*
     int hltBits[6];
     for (int i=0; i<6; i++) hltBits[i]= -10;
@@ -243,45 +248,23 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     for (int itrig = 0; itrig != ntrigs; ++itrig){
       
       TString trigName=triggerNames_.triggerName(itrig);
-      
-      if (trigName=="HLT_Mu3"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_1 = 1;	
-	}
-      
-      if (trigName=="HLT_Mu5"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_2 = 1;	
-      }
-      
-      if (trigName=="HLT_Mu9"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_3 = 1;	
-      }
-      
-      if (trigName=="HLT_DoubleIsoMu3"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_4 = 1;	
-      }
-      
-      if (trigName=="HLT_DoubleMu3"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_5 = 1;	
-      }
-      
-      if (trigName=="HLT_DoubleMu3_JPsi"){
-	bool accept = hltresults->accept(itrig);
-	if (accept) flag_6 = 1;	
-      }
-      
-      bsRootTree_->getTrigBit(flag_1,flag_2,flag_3,flag_4,flag_5,flag_6);			  
-      
+      if (trigName=="HLT_Mu3") bsRootTree_->triggerbit_HLTmu3_ = hltresults->accept(itrig);
+      if (trigName=="HLT_Mu5") bsRootTree_->triggerbit_HLTmu5_ = hltresults->accept(itrig);
+      if (trigName=="HLT_Mu9") bsRootTree_->triggerbit_HLTmu9_ = hltresults->accept(itrig);
+      if (trigName=="HLT_DoubleIsoMu3")  bsRootTree_->triggerbit_HLTdoubleIsoMu3_   = hltresults->accept(itrig);
+      if (trigName=="HLT_DoubleMu3")     bsRootTree_->triggerbit_HLTdoubleMu3_      = hltresults->accept(itrig);
+      if (trigName=="HLT_DoubleMu3_JPsi")bsRootTree_->triggerbit_HLTdoubleMu3_JPsi_ = hltresults->accept(itrig);
     }
 
-    // all muons
+    // **************************
+    // start loop over muons
    
     edm::Handle<reco::MuonCollection> allmuons;
     iEvent.getByLabel(muonTag_,allmuons);
+
+    // variables to determine minima of fit probability and mass diff.
+    double minVtxP = -99.;
+    double minJpsiM = 200.;
 
     for(size_t i=0; i < allmuons->size(); ++i){
       const Muon & trk1 = (*allmuons)[i];
@@ -298,7 +281,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	AddFourMomenta addP4;
 	addP4.set(Jpsi);
 	
-	if (abs(Jpsi.mass()-3.096916)>0.150 || Jpsi.pt()<3) continue;
+	if ( abs(Jpsi.mass()-3.096916) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
 
 	edm::ESHandle<TransientTrackBuilder> theB;
 	iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
@@ -319,23 +302,22 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 	double vtxProb_Jpsi = TMath::Prob(vertex.chi2(),(int)vertex.ndof()); 
 	
-	double minM = 200.;
-
-	if(abs(Jpsi.mass()-3.096916)<minM){
-	  minM = abs(Jpsi.mass()-3.096916);
-	  JpsiVtxProb = vtxProb_Jpsi;
+	// fill the Jpsi closest to the true Jpsi mass in the tree
+	if(abs(Jpsi.mass()-3.096916)<minJpsiM){
+	  minJpsiM = abs(Jpsi.mass()-3.096916);
+	  bsRootTree_->JpsiVtxProb_ = vtxProb_Jpsi;
 	  MuCounter1 = i;
 	  MuCounter2 = j;	  
-	  JpsiM_alone = Jpsi.mass();	  
-	  JpsiPhi_alone = Jpsi.phi();	  
-	  JpsiEta_alone = Jpsi.phi();	  
-	  JpsiPt_alone = Jpsi.pt();	  
-	  JpsiMu1Pt = trk1.pt();	  
-	  JpsiMu2Pt = trk2.pt();	  
-	  JpsiMu1Phi = trk1.phi();	  
-	  JpsiMu2Phi = trk2.phi();	  
-	  JpsiMu1Eta = trk1.eta();	  
-	  JpsiMu2Eta = trk2.eta();	  
+	  bsRootTree_->JpsiM_alone_ = Jpsi.mass();	  
+	  bsRootTree_->JpsiPhi_alone_ = Jpsi.phi();	  
+	  bsRootTree_->JpsiEta_alone_ = Jpsi.eta();	  
+	  bsRootTree_->JpsiPt_alone_ = Jpsi.pt();	  
+	  bsRootTree_->JpsiMu1Pt_ = trk1.pt();	  
+	  bsRootTree_->JpsiMu2Pt_ = trk2.pt();	  
+	  bsRootTree_->JpsiMu1Phi_ = trk1.phi();	  
+	  bsRootTree_->JpsiMu2Phi_ = trk2.phi();	  
+	  bsRootTree_->JpsiMu1Eta_ = trk1.eta();	  
+	  bsRootTree_->JpsiMu2Eta_ = trk2.eta();	  
 	  
 	  // muon categories:
 	  // 1: tracker muons
@@ -343,18 +325,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  // 3: global + tracker muon
 	  // 4: neither tracker nor global
 	  
-	  if (trk1.isTrackerMuon() && !trk1.isGlobalMuon()) JpsiMuon1Cat = 1;
-	  else if (!trk1.isTrackerMuon() && trk1.isGlobalMuon()) JpsiMuon1Cat = 2;
-	  else if (trk1.isTrackerMuon() && trk1.isGlobalMuon()) JpsiMuon1Cat = 3;
-	  else if (!trk1.isTrackerMuon() && !trk1.isGlobalMuon()) JpsiMuon1Cat = 4;
+	  if (trk1.isTrackerMuon() && !trk1.isGlobalMuon())       bsRootTree_->JpsiMuon1Cat_ = 1;
+	  else if (!trk1.isTrackerMuon() && trk1.isGlobalMuon())  bsRootTree_->JpsiMuon1Cat_ = 2;
+	  else if (trk1.isTrackerMuon() && trk1.isGlobalMuon())   bsRootTree_->JpsiMuon1Cat_ = 3;
+	  else if (!trk1.isTrackerMuon() && !trk1.isGlobalMuon()) bsRootTree_->JpsiMuon1Cat_ = 4;
 	  
-	  if (trk2.isTrackerMuon() && !trk2.isGlobalMuon()) JpsiMuon2Cat = 1;
-	  else if (!trk2.isTrackerMuon() && trk2.isGlobalMuon()) JpsiMuon2Cat = 2;
-	  else if (trk2.isTrackerMuon() && trk2.isGlobalMuon()) JpsiMuon2Cat = 3;
-	  else if (!trk2.isTrackerMuon() && !trk2.isGlobalMuon()) JpsiMuon2Cat = 4;
-	  
-	  bsRootTree_->getJpsiAlone(JpsiVtxProb,MuCounter1,MuCounter2,JpsiM_alone,JpsiPhi_alone,JpsiEta_alone,JpsiPt_alone,
-				    JpsiMu1Pt,JpsiMu2Pt,JpsiMu1Phi,JpsiMu2Phi,JpsiMu1Eta,JpsiMu2Eta,JpsiMuon1Cat,JpsiMuon2Cat);
+	  if (trk2.isTrackerMuon() && !trk2.isGlobalMuon())       bsRootTree_->JpsiMuon2Cat_ = 1;
+	  else if (!trk2.isTrackerMuon() && trk2.isGlobalMuon())  bsRootTree_->JpsiMuon2Cat_ = 2;
+	  else if (trk2.isTrackerMuon() && trk2.isGlobalMuon())   bsRootTree_->JpsiMuon2Cat_ = 3;
+	  else if (!trk2.isTrackerMuon() && !trk2.isGlobalMuon()) bsRootTree_->JpsiMuon2Cat_ = 4;
 	}
 	
 	////////////////////////////////////	
@@ -370,15 +349,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  Handle<CandidateView> allTracks;
 	  iEvent.getByLabel(trackLabelK_, allTracks);
 
-	  for (size_t i=0; i< allTracks->size(); ++i){
-	    for (size_t j=i+1; j< allTracks->size(); ++j){
+	  for (size_t k=0; k< allTracks->size(); ++k){
+	    for (size_t l=k+1; l< allTracks->size(); ++l){
 
-	      const Candidate & track1 = (*allTracks)[i];
-	      const Candidate & track2 = (*allTracks)[j];
+	      const Candidate & track1 = (*allTracks)[k];
+	      const Candidate & track2 = (*allTracks)[l];
 
 	      if (track1.charge()==track2.charge()) continue;
-	      if (track1.pt()<0.5) continue;
-	      if (track2.pt()<0.5) continue;
+	      if (track1.pt() < KaonTrackPtCut_) continue;
+	      if (track2.pt() < KaonTrackPtCut_) continue;
 
 	      // phi candidate
 
@@ -388,8 +367,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      AddFourMomenta ad;
 	      ad.set(PhiCand);
 
-	      if (abs(PhiCand.mass()-1.019)>0.05) continue;
-	      PhiMass_before = PhiCand.mass();
+	      if (abs(PhiCand.mass()-1.019) > PhiMassWindowBeforeFit_) continue;
+	  
 
 	      // jpsi candidate
 
@@ -399,8 +378,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      AddFourMomenta sum;
 	      sum.set(JpsiCand);
 
-	      if (abs(JpsiCand.mass()-3.097)>0.15) continue;	      
-	      JpsiMass_before = JpsiCand.mass();
+	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;	      
+	  
 
 	      // check on the overlap
 	      
@@ -418,9 +397,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      AddFourMomenta add4mom;
 	      add4mom.set(BCand);
 
-	      if (BCand.mass() < 4.5 || BCand.mass() > 6.) continue;
-	      BsMass_before = BCand.mass();
-	      bsRootTree_->getPar(BsMass_before,JpsiMass_before,PhiMass_before);
+	      if (BCand.mass() < BsLowerMassCutBeforeFit_ || BCand.mass() > BsUpperMassCutBeforeFit_) continue;
+	      
+	      bsRootTree_->PhiMass_before_ = PhiCand.mass();
+	      bsRootTree_->JpsiMass_before_ = JpsiCand.mass();	  
+	      bsRootTree_->BsMass_before_ = BCand.mass();
+	   
 	      
 
 	      // start fit on the B candidates
@@ -484,24 +466,29 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix(); 
 	      double vtxprob_Bs = TMath::Prob(bs->chiSquared(), (int)bs->degreesOfFreedom());
 	      
-	      double minP = -99.;
-	      if (vtxprob_Bs > minP){
-		TrkCounter1=i;
-		TrkCounter2=j;
-		minP = vtxprob_Bs;
+	   
+	      if (vtxprob_Bs > minVtxP){
+		TrkCounter1=k;
+		TrkCounter2=l;
+		minVtxP = vtxprob_Bs;
 
-		if (abs(JpsiCand.mass()-3.097)>0.1 && JpsiCand.pt()<3) continue;
-		if (abs(PhiCand.mass()-1.019)>0.02) continue;
-		if (BCand.mass()<5.2 || BCand.mass()>5.7) continue;
+		if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+		if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
+		if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
 		
-		chi2_Bs = bs->chiSquared();
-		ndof_Bs =(int)bs->degreesOfFreedom();
-		BsVtxProb = vtxprob_Bs;
-		BsM = BCand.mass();
-		BsPt = BCand.pt();
-		BsPhi = BCand.phi();
-		BsEta = BCand.eta();
-		BmassC = b_par[6];		
+		////////////////////////
+		// fill kinematic info to tree
+		//////////////////////////
+
+
+		bsRootTree_->chi2_Bs_  = bs->chiSquared();
+		bsRootTree_->ndof_Bs_   =(int)bs->degreesOfFreedom();
+		bsRootTree_->BsVtxProb_ = vtxprob_Bs;
+		bsRootTree_->BsM_ = BCand.mass();
+		bsRootTree_->BsPt_ = BCand.pt();
+		bsRootTree_->BsPhi_ = BCand.phi();
+		bsRootTree_->BsEta_ = BCand.eta();
+		bsRootTree_->BmassC_ = b_par[6];		
 
 		/*
 		bool child = myTree_Bs->movePointerToTheFirstChild();
@@ -519,49 +506,46 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		}
 		*/
 
-		JpsiM = JpsiCand.mass();
-		JpsiPhi = JpsiCand.phi();	  
-		JpsiEta = JpsiCand.phi();	  
-		JpsiPt = JpsiCand.pt();	  
-		PhiM = PhiCand.mass();
-		PhiPhi = PhiCand.phi();	  
-		PhiEta = PhiCand.phi();	  
-		PhiPt = PhiCand.pt();	  
+		bsRootTree_->JpsiM_ = JpsiCand.mass();
+		bsRootTree_->JpsiPhi_ = JpsiCand.phi();	  
+		bsRootTree_->JpsiEta_ = JpsiCand.eta();	  
+		bsRootTree_->JpsiPt_ = JpsiCand.pt();	  
+		bsRootTree_->PhiM_ = PhiCand.mass();
+		bsRootTree_->PhiPhi_ = PhiCand.phi();	  
+		bsRootTree_->PhiEta_ = PhiCand.eta();	  
+		bsRootTree_->PhiPt_ = PhiCand.pt();	  
 
-		bsRootTree_->getJpsi(JpsiM,JpsiPhi,JpsiEta,JpsiPt);
-		bsRootTree_->getPhi(PhiM,PhiPhi,PhiEta,PhiPt);
-		bsRootTree_->getBs(chi2_Bs,ndof_Bs,BsVtxProb,BsM,BsPhi,BsEta,BsPt,BmassC);
 		
-		K1Pt=track1.pt();
-		K2Pt=track2.pt();
-		K1Eta=track1.eta();
-		K2Eta=track2.eta();
-		K1Phi=track1.phi();
-		K2Phi=track2.phi();
-		K1Chi2=trk1Ref.get()->normalizedChi2();
-		K1nHits=trk1Ref.get()->numberOfValidHits();
-		K2Chi2=trk2Ref.get()->normalizedChi2();
-		K2nHits=trk2Ref.get()->numberOfValidHits();
-		
-		Mu1Pt=mu1jpsi.pt();
-		Mu2Pt=mu2jpsi.pt();
-		Mu1Eta=mu1jpsi.eta();
-		Mu2Eta=mu2jpsi.eta();
-		Mu1Phi=mu1jpsi.phi();
-		Mu2Phi=mu2jpsi.phi();
-		Mu1Chi2=Mu1Ref.get()->normalizedChi2();
-		Mu1nHits=Mu1Ref.get()->numberOfValidHits();
-		Mu2Chi2=Mu2Ref.get()->normalizedChi2();
-		Mu2nHits=Mu2Ref.get()->numberOfValidHits();
+		bsRootTree_->K1Pt_   = track1.pt();
+		bsRootTree_->K2Pt_   = track2.pt();
+		bsRootTree_->K1Eta_  = track1.eta();
+		bsRootTree_->K2Eta_  = track2.eta();
+		bsRootTree_->K1Phi_  = track1.phi();
+		bsRootTree_->K2Phi_  = track2.phi();
+		bsRootTree_->K1Chi2_ = trk1Ref.get()->normalizedChi2();
+		bsRootTree_->K1nHits_= trk1Ref.get()->numberOfValidHits();
+		bsRootTree_->K2Chi2_ = trk2Ref.get()->normalizedChi2();
+		bsRootTree_->K2nHits_= trk2Ref.get()->numberOfValidHits();
+	       
+		bsRootTree_->Mu1Pt_   = mu1jpsi.pt();
+		bsRootTree_->Mu2Pt_   = mu2jpsi.pt();
+		bsRootTree_->Mu1Eta_  = mu1jpsi.eta();
+		bsRootTree_->Mu2Eta_  = mu2jpsi.eta();
+		bsRootTree_->Mu1Phi_  = mu1jpsi.phi();
+		bsRootTree_->Mu2Phi_  = mu2jpsi.phi();
+		bsRootTree_->Mu1Chi2_ = Mu1Ref.get()->normalizedChi2();
+		bsRootTree_->Mu1nHits_= Mu1Ref.get()->numberOfValidHits();
+		bsRootTree_->Mu2Chi2_ = Mu2Ref.get()->normalizedChi2();
+		bsRootTree_->Mu2nHits_ =Mu2Ref.get()->numberOfValidHits();
 		
 		//////////////////////////
-		// vertexing
+		// fill vertex info to tree
 		//////////////////////////
 
-		if(BCand.pt()!=0) 
+		if(BCand.pt()!=0) {
 		  BLxy=((bVertex->position().x()-BSx)*BCand.px()+(bVertex->position().y()-BSy)*BCand.py())/BCand.pt();
-		if(BCand.pt()!=0) 
 		  BLxy2=((bVertex->position().x()-PVx)*BCand.px()+(bVertex->position().y()-PVy)*BCand.py())/BCand.pt();
+		}
 		
 		Bsct1 = BLxy*BCand.mass()/BCand.pt();
 		Bsct2 = BLxy2*BCand.mass()/BCand.pt();
@@ -597,7 +581,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		bsRootTree_->get1d(Dist,dDist,Time,dTime);
 
 		////////////////////////////////////
-		// angular analysis
+		// fill angular info to tree
 		////////////////////////////////////
 
 		TLorentzVector pbs;
@@ -764,14 +748,14 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  if (p.validHitFilter(hit) && p.pixelBarrelHitFilter(hit)) pixhits1++;
 		  if (p.validHitFilter(hit) && p.pixelEndcapHitFilter(hit)) pixhits1++;
 		}
-		K1pixH=pixhits1;
+		bsRootTree_->K1pixH_ = pixhits1;
 		// count the number of valid tracker *** hits ***
-		K1trkH=p.numberOfValidTrackerHits();
+		bsRootTree_->K1trkH_= p.numberOfValidTrackerHits();
 		// count the number of tracker *** layers *** with measurement
-		K1trkLay=p.trackerLayersWithMeasurement();
-		K1muDTh=p.numberOfValidMuonDTHits();      // not-null, valid, muon DT
-		K1muCSCh=p.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
-		K1muRPCh=p.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
+		bsRootTree_->K1trkLay_ =p.trackerLayersWithMeasurement();
+		bsRootTree_->K1muDTh_  =p.numberOfValidMuonDTHits();      // not-null, valid, muon DT
+		bsRootTree_->K1muCSCh_ =p.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
+		bsRootTree_->K1muRPCh_ =p.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
 		
 		int pixhits2=0;
 		const reco::HitPattern& p2 = trk2Ref.get()->hitPattern();
@@ -780,12 +764,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  if (p2.validHitFilter(hit) && p2.pixelBarrelHitFilter(hit)) pixhits2++;
 		  if (p2.validHitFilter(hit) && p2.pixelEndcapHitFilter(hit)) pixhits2++;
 		}
-		K2pixH=pixhits2;
-		K2trkH=p2.numberOfValidTrackerHits();
-                K2trkLay=p2.trackerLayersWithMeasurement();
-                K2muDTh=p2.numberOfValidMuonDTHits();      // not-null, valid, muon DT
-                K2muCSCh=p2.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
-                K2muRPCh=p2.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
+		bsRootTree_->K2pixH_   = pixhits2;
+		bsRootTree_->K2trkH_   = p2.numberOfValidTrackerHits();
+                bsRootTree_->K2trkLay_ = p2.trackerLayersWithMeasurement();
+                bsRootTree_->K2muDTh_  = p2.numberOfValidMuonDTHits();      // not-null, valid, muon DT
+                bsRootTree_->K2muCSCh_ = p2.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
+                bsRootTree_->K2muRPCh_ = p2.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
 
 
 		///////////////////////////////////////////////		
@@ -799,12 +783,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  if (p3.validHitFilter(hit) && p3.pixelBarrelHitFilter(hit)) pixhits3++;
 		  if (p3.validHitFilter(hit) && p3.pixelEndcapHitFilter(hit)) pixhits3++;
 		}
-		Mu1pixH=pixhits3;
-		Mu1trkH=p3.numberOfValidTrackerHits();
-                Mu1trkLay=p3.trackerLayersWithMeasurement();
-                Mu1muDTh=p3.numberOfValidMuonDTHits();      // not-null, valid, muon DT
-                Mu1muCSCh=p3.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
-                Mu1muRPCh=p3.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
+		bsRootTree_->Mu1pixH_   = pixhits3;
+		bsRootTree_->Mu1trkH_   = p3.numberOfValidTrackerHits();
+                bsRootTree_->Mu1trkLay_ = p3.trackerLayersWithMeasurement();
+                bsRootTree_->Mu1muDTh_  = p3.numberOfValidMuonDTHits();      // not-null, valid, muon DT
+                bsRootTree_->Mu1muCSCh_ = p3.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
+                bsRootTree_->Mu1muRPCh_ = p3.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
 
 		int pixhits4=0;
 		const reco::HitPattern& p4 = Mu2Ref.get()->hitPattern();
@@ -813,18 +797,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  if (p4.validHitFilter(hit) && p4.pixelBarrelHitFilter(hit)) pixhits4++;
 		  if (p4.validHitFilter(hit) && p4.pixelEndcapHitFilter(hit)) pixhits4++;
 		}
-		Mu2pixH=pixhits4;
-		Mu2trkH=p4.numberOfValidTrackerHits();
-                Mu2trkLay=p4.trackerLayersWithMeasurement();
-                Mu2muDTh=p4.numberOfValidMuonDTHits();      // not-null, valid, muon DT
-                Mu2muCSCh=p4.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
-                Mu2muRPCh=p4.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
-
-		
-		bsRootTree_->getK1(K1Pt,K1Eta,K1Phi,K1Chi2,K1nHits,K1pixH,K1trkH,K1trkLay,K1muDTh,K1muCSCh,K1muRPCh);
-		bsRootTree_->getK2(K2Pt,K2Eta,K2Phi,K2Chi2,K2nHits,K2pixH,K2trkH,K2trkLay,K2muDTh,K2muCSCh,K2muRPCh);
-		bsRootTree_->getMu1(Mu1Pt,Mu1Eta,Mu1Phi,Mu1Chi2,Mu1nHits,Mu1pixH,Mu1trkH,Mu1trkLay,Mu1muDTh,Mu1muCSCh,Mu1muRPCh);
-		bsRootTree_->getMu2(Mu2Pt,Mu2Eta,Mu2Phi,Mu2Chi2,Mu2nHits,Mu2pixH,Mu2trkH,Mu2trkLay,Mu2muDTh,Mu2muCSCh,Mu2muRPCh);
+		bsRootTree_->Mu2pixH_   = pixhits4;
+		bsRootTree_->Mu2trkH_   = p4.numberOfValidTrackerHits();
+                bsRootTree_->Mu2trkLay_ = p4.trackerLayersWithMeasurement();
+                bsRootTree_->Mu2muDTh_  = p4.numberOfValidMuonDTHits();      // not-null, valid, muon DT
+                bsRootTree_->Mu2muCSCh_ = p4.numberOfValidMuonCSCHits();    // not-null, valid, muon CSC
+                bsRootTree_->Mu2muRPCh_ = p4.numberOfValidMuonRPCHits();     // not-null, valid, muon RPC
 	      }
 	      
 	      // deltaR matching!
@@ -1113,7 +1091,7 @@ int BsToJpsiPhiAnalysis::JpsiKstarFlag(const edm::Event &iEvent)
     Handle<GenParticleCollection> genParticles;
     iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
 
-    flagKstar = 0;
+    int flagKstar = 0;
     for( size_t i = 0; i < genParticles->size(); ++ i ) {
       const Candidate & p = (*genParticles)[ i ];
       int MC_particleID=p.pdgId();
@@ -1155,7 +1133,7 @@ int BsToJpsiPhiAnalysis::JpsiKsFlag(const edm::Event &iEvent)
     Handle<GenParticleCollection> genParticles;
     iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
 
-    flagKs = 0;
+    int flagKs = 0;
     for( size_t i = 0; i < genParticles->size(); ++ i ) {
       const Candidate & p = (*genParticles)[ i ];
       int MC_particleID=p.pdgId();
@@ -1197,7 +1175,7 @@ int BsToJpsiPhiAnalysis::JpsiPhiFlag(const edm::Event &iEvent)
     Handle<GenParticleCollection> genParticles;
     iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
 
-    flagPhi = 0;
+    int flagPhi = 0;
     for( size_t i = 0; i < genParticles->size(); ++ i ) {
       const Candidate & p = (*genParticles)[ i ];
       int MC_particleID=p.pdgId();

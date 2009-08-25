@@ -30,24 +30,10 @@ public:
 	void resetEntries(); 
 	
 	void getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5, const int flag_6);
-	void getBdFlags(const int bdjpsikstar, const int bdjpsiks, const int bdjpsiphi);
-	void getParams(const int nBsDau, const int momID, const int dau_1_ID, const int dau_2_ID);
-	void getPar(const double aa, const double bb, const double cc);
+
 	void getMCmatch(const int aa);
-        void getJpsiAlone(const double aa, const int bb, const int cc, const double dd, const double ee,
-                     const double ff, const double gg, const double hh, const double ii, const double ll,
-                     const double mm, const double nn, const double oo, const int pp, const int qq);
-        void getBs(const double aa, const int bb, const double cc, const double dd, const double ee, const double ff, const double gg, const double hh);
-	void getJpsi(const double aa, const double bb, const double cc, const double dd);
-	void getPhi(const double aa, const double bb, const double cc, const double dd);
-	void getK1(const double aa, const double bb, const double cc, const double dd, const int ee, const int ff, const int gg,
-		   const int hh, const int ii, const int ll, const int mm);
-	void getK2(const double aa, const double bb, const double cc, const double dd, const int ee, const int ff, const int gg,
-		   const int hh, const int ii, const int ll, const int mm);
-	void getMu1(const double aa, const double bb, const double cc, const double dd, const int ee, const int ff, const int gg,
-		    const int hh, const int ii, const int ll, const int mm);
-	void getMu2(const double aa, const double bb, const double cc, const double dd, const int ee, const int ff, const int gg,
-		    const int hh, const int ii, const int ll, const int mm);
+
+ 
 	void getAngles(const double aa, const double bb, const double cc, const double dd);
 	void getVtx(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
 		    const double hh, const double ii);
@@ -64,7 +50,7 @@ public:
 	void getDeDx(const double f1, const double f2, const int f3);
 	void fill();  //!< copy the information from memory to Ntuple
 
-private:
+public:
 
         int triggerbit_HLTmu3_;
         int triggerbit_HLTmu5_;
