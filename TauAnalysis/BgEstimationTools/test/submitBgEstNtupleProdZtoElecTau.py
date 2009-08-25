@@ -95,7 +95,7 @@ for i in range(2):
                   job = "bgEstNtupleProd", queue = "1nd", outputDirectory = outputDirectory)
 
 # TT + jets jobs
-for i in range(3):
+for i in range(2):
     submitToBatch(configFile = "prodNtupleZtoElecTau_cfg.py", channel = "ZtoElecTau", sample = "TTplusJets_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsBgEstNtupleProd, replacements = "maxEvents = -1; skipEvents = 0",
                   job = "bgEstNtupleProd", queue = "1nd", outputDirectory = outputDirectory)
