@@ -89,6 +89,9 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   requireGenTauMatch_ = cfg.getParameter<bool>("requireGenTauMatch");
   //std::cout << " requireGenTauMatch = " << requireGenTauMatch_ << std::endl;
 
+  makePFIsoPtCtrlHistograms_ = ( cfg.exists("makePFIsoPtCtrlHistograms") ) ? 
+    cfg.getParameter<bool>("makePFIsoPtCtrlHistograms") : false;
+
   makeIsoPtConeSizeDepHistograms_ = ( cfg.exists("makeIsoPtConeSizeDepHistograms") ) ? 
     cfg.getParameter<bool>("makeIsoPtConeSizeDepHistograms") : false;
 
@@ -192,6 +195,17 @@ void TauHistManager::bookHistograms()
   hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "Particle Flow (Charged Hadron) Isolation P_{T}", 100, 0., 20.);   
   hTauPFNeutralHadronIsoPt_ = dqmStore.book1D("TauPFNeutralHadronIsoPt", "Particle Flow (Neutral Hadron) Isolation P_{T}", 100, 0., 20.);   
   hTauPFGammaIsoPt_ = dqmStore.book1D("TauPFGammaIsoPt", "Particle Flow (Photon) Isolation P_{T}", 100, 0., 20.);  
+
+//--- book "control" histograms to check agreement between tau isolation variables
+//    computed by PAT-level IsoDeposits with the values computed by reco::PFTau producer
+  if ( makePFIsoPtCtrlHistograms_ ) {
+    hTauPFChargedHadronIsoPtCtrl_ = dqmStore.book2D("TauPFChargedHadronIsoPtCtrl", 
+						    "Particle Flow (Charged Hadron) Isolation P_{T} (reco::PFTau vs. IsoDeposit)",
+						    40, 0., 20., 40, 0., 20.);
+    hTauPFGammaIsoPtCtrl_ = dqmStore.book2D("TauPFGammaIsoPtCtrl", 
+					    "Particle Flow (Photon) Isolation P_{T} (reco::PFTau vs. IsoDeposit)",
+					    40, 0., 20., 40, 0., 20.);
+  }
   
   hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "All Isolation Tracks #Delta P", 100, 0., 10.);
   hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "All Isolation Tracks #Delta P_{T}", 100, 0., 10.);
@@ -454,6 +468,22 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauPFChargedHadronIsoPt_->Fill(patTau.chargedParticleIso(), weight);
   hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralParticleIso(), weight);
   hTauPFGammaIsoPt_->Fill(patTau.gammaParticleIso(), weight);
+
+  if ( makePFIsoPtCtrlHistograms_ ) {
+    double sumPtIsolationConePFChargedHadrons = 0.;
+    for ( reco::PFCandidateRefVector::const_iterator pfChargedHadron = patTau.isolationPFChargedHadrCands().begin();
+	  pfChargedHadron != patTau.isolationPFChargedHadrCands().end(); ++pfChargedHadron ) {
+      if ( (*pfChargedHadron)->pt() > 1.0 ) sumPtIsolationConePFChargedHadrons += (*pfChargedHadron)->pt();
+    }
+    hTauPFChargedHadronIsoPtCtrl_->Fill(sumPtIsolationConePFChargedHadrons, patTau.chargedParticleIso(), weight); 
+    
+    double sumPtIsolationConePFGammas = 0.;
+    for ( reco::PFCandidateRefVector::const_iterator pfGamma = patTau.isolationPFGammaCands().begin();
+	  pfGamma != patTau.isolationPFGammaCands().end(); ++pfGamma ) {
+      if ( (*pfGamma)->pt() > 1.5 ) sumPtIsolationConePFGammas += (*pfGamma)->pt();
+    }
+    hTauPFGammaIsoPtCtrl_->Fill(sumPtIsolationConePFGammas, patTau.gammaParticleIso(), weight);
+  }
 
   for ( reco::TrackRefVector::const_iterator isolationTrack = patTau.isolationTracks().begin();
 	isolationTrack != patTau.isolationTracks().end(); ++isolationTrack ) {	  
