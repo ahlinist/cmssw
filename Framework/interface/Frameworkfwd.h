@@ -5,8 +5,6 @@
   
 Forward declarations of types in the EDM.
 
-$Id$
-
 ----------------------------------------------------------------------*/
 
 #include "DataFormats/Common/interface/EDProductfwd.h"
