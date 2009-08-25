@@ -102,7 +102,7 @@ for i in range(13):
                   job = "bgEstSkim", queue = "1nd", outputDirectory = outputDirectory)
 
 # TT + jets jobs
-for i in range(18):
+for i in range(10):
     submitToBatch(configFile = "skimZtoElecTau_cfg.py", channel = "ZtoElecTau", sample = "TTplusJets_part%(i)02d" % {"i" : (i + 1)},
                   replFunction = makeReplacementsBgEstSkim, replacements = "maxEvents = -1",
                   job = "bgEstSkim", queue = "1nd", outputDirectory = outputDirectory)
