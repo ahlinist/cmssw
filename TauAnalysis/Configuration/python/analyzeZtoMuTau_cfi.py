@@ -259,6 +259,7 @@ muTauEventDump = cms.PSet(
     #pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
     #pfGammaSource = cms.InputTag('pfAllPhotons'),
     #pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),
+    #pfCandidateSource = cms.InputTag('particleFlow'),
     
     #output = cms.string("muTauEventDump.txt"),
     output = cms.string("std::cout"),
