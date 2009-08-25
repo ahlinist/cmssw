@@ -7,7 +7,7 @@ import copy
 bgEstSampleDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstSkim/ZtoElecTau/")
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameZtautau = cms.string('bgEstSampleZtoElecTau_Ztautau_partXX.root')
+bgEstSampleOutputFileNameZtautau = cms.untracked.string('bgEstSampleZtoElecTau_Ztautau_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesZtautau = cms.untracked.vstring(
@@ -24,7 +24,7 @@ bgEstNtupleOutputFileNameZtautau = cms.string('bgEstNtupleZtoElecTau_Ztautau.roo
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameZee = cms.string('bgEstSampleZtoElecTau_Zee_partXX.root')
+bgEstSampleOutputFileNameZee = cms.untracked.string('bgEstSampleZtoElecTau_Zee_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesZee_part01 = cms.untracked.vstring(
@@ -70,9 +70,9 @@ bgEstNtupleOutputFileNameZee = cms.string('bgEstNtupleZtoElecTau_Zee_partXX.root
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameZtautauPlusJets = cms.string('bgEstSampleZtoElecTau_ZtautauPlusJets_partXX.root')
+bgEstSampleOutputFileNameZtautauPlusJets = cms.untracked.string('bgEstSampleZtoElecTau_ZtautauPlusJets_partXX.root')
 
-bgEstSampleOutputFileNameZeePlusJets = cms.string('bgEstSampleZtoElecTau_ZeePlusJets_partXX.root')
+bgEstSampleOutputFileNameZeePlusJets = cms.untracked.string('bgEstSampleZtoElecTau_ZeePlusJets_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesZtautauPlusJets_part01 = cms.untracked.vstring(
@@ -87,9 +87,9 @@ bgEstSampleFileNamesZtautauPlusJets_part01 = cms.untracked.vstring(
 )
 
 bgEstSampleFileNamesZtautauPlusJets_part02 = cms.untracked.vstring(
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part08.root',
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part08.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part09.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part10.root',
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part10.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part11.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part12.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_ZtautauPlusJets_part13.root'
@@ -126,7 +126,7 @@ bgEstNtupleOutputFileNameZeePlusJets = cms.string('bgEstNtupleZtoElecTau_ZeePlus
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameWplusJets = cms.string('bgEstSampleZtoElecTau_WplusJets_partXX.root')
+bgEstSampleOutputFileNameWplusJets = cms.untracked.string('bgEstSampleZtoElecTau_WplusJets_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesWplusJets_part01 = cms.untracked.vstring(
@@ -145,7 +145,7 @@ bgEstSampleFileNamesWplusJets_part01 = cms.untracked.vstring(
 bgEstSampleFileNamesWplusJets_part02 = cms.untracked.vstring(
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part11.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part12.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part13.root',
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part13.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part14.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part15.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_WplusJets_part16.root',
@@ -159,11 +159,11 @@ bgEstNtupleOutputFileNameWplusJets = cms.string('bgEstNtupleZtoElecTau_WplusJets
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNamePhotonJets_Pt15to20 = cms.string('bgEstSampleZtoElecTau_PhotonJets_Pt15to20.root')
-bgEstSampleOutputFileNamePhotonJets_Pt20to25 = cms.string('bgEstSampleZtoElecTau_PhotonJets_Pt20to25.root')
-bgEstSampleOutputFileNamePhotonJets_Pt25to30 = cms.string('bgEstSampleZtoElecTau_PhotonJets_Pt25to30.root')
-bgEstSampleOutputFileNamePhotonJets_Pt30to35 = cms.string('bgEstSampleZtoElecTau_PhotonJets_Pt30to35.root')
-bgEstSampleOutputFileNamePhotonJets_PtGt35 = cms.string('bgEstSampleZtoElecTau_PhotonJets_PtGt35.root')
+bgEstSampleOutputFileNamePhotonJets_Pt15to20 = cms.untracked.string('bgEstSampleZtoElecTau_PhotonJets_Pt15to20.root')
+bgEstSampleOutputFileNamePhotonJets_Pt20to25 = cms.untracked.string('bgEstSampleZtoElecTau_PhotonJets_Pt20to25.root')
+bgEstSampleOutputFileNamePhotonJets_Pt25to30 = cms.untracked.string('bgEstSampleZtoElecTau_PhotonJets_Pt25to30.root')
+bgEstSampleOutputFileNamePhotonJets_Pt30to35 = cms.untracked.string('bgEstSampleZtoElecTau_PhotonJets_Pt30to35.root')
+bgEstSampleOutputFileNamePhotonJets_PtGt35 = cms.untracked.string('bgEstSampleZtoElecTau_PhotonJets_PtGt35.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesPhotonJets_Pt15to20 = cms.untracked.vstring(
@@ -196,13 +196,13 @@ bgEstNtupleOutputFileNamePhotonJets_PtGt35 = cms.string('bgEstNtupleZtoElecTau_P
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameQCD_BCtoE_Pt20to30 = cms.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt20to30.root')
-bgEstSampleOutputFileNameQCD_BCtoE_Pt30to80 = cms.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt30to80.root')
-bgEstSampleOutputFileNameQCD_BCtoE_Pt80to170 = cms.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt80to170.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt20to30.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt30to80.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt80to170.root')
 
-bgEstSampleOutputFileNameQCD_EMenriched_Pt20to30 = cms.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt20to30.root')
-bgEstSampleOutputFileNameQCD_EMenriched_Pt30to80 = cms.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt30to80.root')
-bgEstSampleOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt80to170.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt20to30.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt30to80.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt80to170.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesQCD_BCtoE_Pt20to30_part01 = cms.untracked.vstring(
@@ -479,37 +479,23 @@ bgEstNtupleOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('bgEstNtupleZtoEl
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameTTplusJets = cms.string('bgEstSampleZtoElecTau_TTplusJets_partXX.root')
+bgEstSampleOutputFileNameTTplusJets = cms.untracked.string('bgEstSampleZtoElecTau_TTplusJets_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesTTplusJets_part01  = cms.untracked.vstring(
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part01.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part02.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part03.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part04.root',
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part04.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part05.root'
 )
 
 bgEstSampleFileNamesTTplusJets_part02  = cms.untracked.vstring(
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part06.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part07.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part08.root',
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part08.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part09.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part10.root'
-)
-
-bgEstSampleFileNamesTTplusJets_part03  = cms.untracked.vstring(
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part11.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part12.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part13.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part14.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part15.root'
-)
-
-bgEstSampleFileNamesTTplusJets_part04  = cms.untracked.vstring(
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part16.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part17.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part18.root'
 )
 
 # definitions for producing ntuples
