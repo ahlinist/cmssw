@@ -44,6 +44,19 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           TrajectoryTracks = cms.InputTag("generalTracks"),
                                           TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
+                                          
+                                          JpsiMassWindowBeforeFit = cms.double(0.150),
+                                          JpsiMassWindowAfterFit = cms.double(0.150),
+                                          JpsiPtCut      = cms.double(3),
+                                          KaonTrackPtCut = cms.double(0.5),
+                                          PhiMassWindowBeforeFit  = cms.double(0.05),
+                                          PhiMassWindowAfterFit  = cms.double(0.02),
+                                          BsLowerMassCutBeforeFit = cms.double(4.5),
+                                          BsUpperMassCutBeforeFit = cms.double(6),
+                                          BsLowerMassCutAfterFit  = cms.double(5.2),
+                                          BsUpperMassCutAfterFit  = cms.double(5.7),
+                                          
+
                                           outputFile = cms.untracked.string("RelVal_test.root"),
                                          )
 
@@ -53,26 +66,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                               fileNames = cms.untracked.vstring(
-                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/1/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/2/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/3/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/4/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/5/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/6/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/7/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/8/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/9/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/10/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/11/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/12/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/13/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/14/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/15/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/16/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/17/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/18/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/19/BsToJpsiPhi_full_1.root',
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/20/BsToJpsiPhi_full_1.root',
+#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/1/BsToJpsiPhi_full_1.root',
+ 
                               ),
 )
 
@@ -81,6 +76,6 @@ process.myout = cms.OutputModule("PoolOutputModule",
                                  fileName = cms.untracked.string('test.root')
                                  )
 
-process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.kTracks*process.piTracks*process.trackingParticles*process.bsVertexAnalysis)
+process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.kTracks*process.piTracks*process.bsVertexAnalysis)
 
 process.outpath = cms.EndPath(process.myout)

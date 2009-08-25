@@ -76,6 +76,17 @@ private:
 	edm::InputTag trajtracks_;
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
+	double JpsiMassWindowBeforeFit_;
+	double JpsiMassWindowAfterFit_;
+	double JpsiPtCut_;
+	double KaonTrackPtCut_;
+	double PhiMassWindowAfterFit_;
+	double PhiMassWindowBeforeFit_;
+	double BsLowerMassCutBeforeFit_;
+	double BsUpperMassCutBeforeFit_;
+	double BsLowerMassCutAfterFit_ ;
+	double BsUpperMassCutAfterFit_ ;
+
 	std::string outputFile_; // output file
 
 	int Mu1Truth;
@@ -85,21 +96,6 @@ private:
 	int isMatched;
 
 	int event_counter_;
-	int flag_1;
-	int flag_2;
-	int flag_3;
-	int flag_4;
-	int flag_5;
-	int flag_6;
-	
-	int flagKstar;
-	int flagKs;
-	int flagPhi;
-
-	int nBsDau;
-	int momID;
-	int dau_1_ID;
-	int dau_2_ID;
 
 	double BSx;
 	double BSy;
@@ -113,88 +109,10 @@ private:
 	
 	// single Jpsi
 
-	double JpsiVtxProb;
 	int MuCounter1;
 	int MuCounter2;
-	double JpsiM_alone;
-       	double JpsiPhi_alone;
-	double JpsiEta_alone;
-	double JpsiPt_alone;
-	double JpsiMu1Pt;
-	double JpsiMu2Pt;
-	double JpsiMu1Phi;
-	double JpsiMu2Phi;
-	double JpsiMu1Eta;
-	double JpsiMu2Eta;
-	int JpsiMuon1Cat;
-	int JpsiMuon2Cat;
-	
-	double BsMass_before;
-	double JpsiMass_before;
-	double PhiMass_before;
-	double chi2_Bs;
-	int ndof_Bs;
-	double BsVtxProb;
-	double JpsiM;
-       	double JpsiPhi;
-	double JpsiEta;
-	double JpsiPt;
-	double PhiM;
-       	double PhiPhi;
-	double PhiEta;
-	double PhiPt;
-	double BsM;
-       	double BsPhi;
-	double BsEta;
-	double BsPt;
-	double BmassC;
 
-	double	K1Pt;
-	double	K2Pt;
-	double	K1Eta;
-	double	K2Eta;
-	double	K1Phi;
-	double	K2Phi;
-	double	K1Chi2;
-	int	K1nHits;
-	double	K2Chi2;
-	int	K2nHits;
-	int	K1pixH;
-	int	K1trkH;
-	int	K2pixH;
-	int	K2trkH;
 
-	double	Mu1Pt;
-	double	Mu2Pt;
-	double	Mu1Eta;
-	double	Mu2Eta;
-	double	Mu1Phi;
-	double	Mu2Phi;
-	double	Mu1Chi2;
-	int	Mu1nHits;
-	double	Mu2Chi2;
-	int	Mu2nHits;
-	int	Mu1pixH;
-	int	Mu1trkH;
-	int	Mu2pixH;
-	int	Mu2trkH;
-
-	int	K1trkLay;
-	int	K1muDTh;
-	int	K1muCSCh;
-	int	K1muRPCh;
-	int	K2trkLay;
-	int	K2muDTh;
-	int	K2muCSCh;
-	int	K2muRPCh;
-	int	Mu1trkLay;
-	int	Mu1muDTh;
-	int	Mu1muCSCh;
-	int	Mu1muRPCh;
-	int	Mu2trkLay;
-	int	Mu2muDTh;
-	int	Mu2muCSCh;
-	int	Mu2muRPCh;
 
 
 	int TrkCounter1;
