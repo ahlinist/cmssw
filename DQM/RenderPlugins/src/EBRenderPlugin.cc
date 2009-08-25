@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.119 2009/08/23 10:02:42 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.120 2009/08/23 22:31:03 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.119 $
-  \date $Date: 2009/08/23 10:02:42 $
+  \version $Revision: 1.120 $
+  \date $Date: 2009/08/23 22:31:03 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -61,31 +61,31 @@ public:
                            { 0.0000, 0.4261, 0.6732}, { 0.0000, 0.3887, 0.6187},
                            { 0.0000, 0.3512, 0.5643}, { 0.0000, 0.3137, 0.5098}};
 
-      for( int i=0; i<6; i++ )
+      for(int i=0; i<6; i++)
       {
         TColor* color = gROOT->GetColor( 301+i );
         if ( ! color ) color = new TColor( 301+i, 0, 0, 0, "");
         color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
       }
-      for( int i=0; i<10; i++ )
+      for(int i=0; i<10; i++)
       {
         TColor* color = gROOT->GetColor( 401+i );
         if ( ! color ) color = new TColor( 401+i, 0, 0, 0, "");
         color->SetRGB( rgb2[i][0], rgb2[i][1], rgb2[i][2] );
       }
-      for( int i=0; i<10; i++ )
+      for(int i=0; i<10; i++)
       {
         TColor* color = gROOT->GetColor( 501+i );
         if ( ! color ) color = new TColor( 501+i, 0, 0, 0, "");
         color->SetRGB( rgb2[i][1], 0, 0 );
       }
 
-      for( short i=0; i<7; i++ ) pCol3[i]  = i+301;
-      for( short i=0; i<10; i++ ) pCol4[i] = i+401;
-      for( short i=0; i<10; i++ ) pCol5[i] = i+501;
+      for(short i=0; i<7; i++) pCol3[i]  = i+301;
+      for(short i=0; i<10; i++) pCol4[i] = i+401;
+      for(short i=0; i<10; i++) pCol5[i] = i+501;
       pCol6[0]=2;
       pCol6[1]=10;
-      for( short i=2; i<9; i++ ) pCol6[i] = i+1;
+      for(short i=2; i<9; i++) pCol6[i] = i+1;
       pCol6[9]=1;
 
       text1 = new TH2C( "eb_text1", "text1", 85, 0,  85, 20,   0, 20 );
@@ -108,26 +108,26 @@ public:
       text9->SetMinimum( -18.01 );
       text10->SetMinimum( -18.01 );
 
-      for( short i=0; i<68; i++ )
+      for(short i=0; i<68; i++)
       {
         text1->Fill( 2+(i/4)*5, 2+(i%4)*5, i+1 );
         text2->Fill( i/4, i%4, i+1 );
       }
 
-      for( short i=0; i<2; i++ )
+      for(short i=0; i<2; i++)
       {
         text3->Fill( 2+i*5, 2, i+1+68 );
         text4->Fill( i, 0., i+1+68 );
       }
 
-      for ( short i=0; i<36; i++ )
+      for(short i=0; i<36; i++)
       {
         int x = 1 + i%18;
         int y = 1 + i/18;
         text6->SetBinContent(x, y, iEB(i+1));
       }
 
-      for ( short i=0; i<36; i++ )
+      for(short i=0; i<36; i++)
       {
         int x = 1 + i%18;
         int y = 2 - i/18;
@@ -143,7 +143,7 @@ public:
         }
       }
 
-      for ( short i=0; i<36; i++ )
+      for(short i=0; i<36; i++)
       {
         int x = 1 + i%18;
         int y = 1 + i/18;
@@ -430,7 +430,8 @@ private:
         gPad->SetGridx();
         gPad->SetGridy();
 
-        if( name.find( "EBSRT DCC" ) != std::string::npos ) {
+        if( name.find( "EBSRT DCC" ) != std::string::npos )
+        {
           obj->GetXaxis()->SetNdivisions(16, kFALSE);
           obj->GetYaxis()->SetNdivisions(8, kFALSE);
         }else{
@@ -445,7 +446,7 @@ private:
           obj->GetYaxis()->SetRangeUser(0.1, 0.608*68);
         }
         obj->SetMinimum(0.0);
-        
+
         std::string zAxisTitle(obj->GetZaxis()->GetTitle());
 
         if ( zAxisTitle.find("rate") != std::string::npos ) obj->SetMaximum(1.0);
@@ -720,13 +721,14 @@ private:
 
       if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
 
-      if ( nbx == 10 || nbx == 1700 ) {
+      if ( nbx == 10 || nbx == 1700 )
+      {
         gPad->SetLogy(kFALSE);
         gStyle->SetOptStat("e");
         return;
       }
 
-      if( name.find( "EVTTYPE" ) != std::string::npos ) 
+      if( name.find( "EVTTYPE" ) != std::string::npos )
       {
         gPad->SetBottomMargin(0.4);
         obj->GetXaxis()->LabelsOption("v");
