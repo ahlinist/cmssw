@@ -7,6 +7,12 @@ from PhysicsTools.PatAlgos.cleaningLayer1.tauCleaner_cfi import *
 # PAT layer 1 (particle flow)tau-jet configuration parameters
 #--------------------------------------------------------------------------------
 
+# set Pt thresholds for PFChargedHadron (PFGamma) isolation to 1.0 (1.5) GeV,
+#  matching the thresholds used when computing the tau iso. discriminators
+#  in RecoTauTag/RecoTau/python/PFRecoTauDiscriminationByIsolation_cfi.py)
+allLayer1Taus.isolation.pfChargedHadron.threshold = cms.double(1.0)
+allLayer1Taus.isolation.pfGamma.threshold = cms.double(1.5)
+
 # add reconstructed tau decay mode
 allLayer1Taus.addDecayMode = cms.bool(True)
 
