@@ -17,9 +17,11 @@ process.GlobalTag.globaltag = 'IDEAL_V12::All'
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.BgEstimationTools.bgEstSelectLayer1Jets_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
+process.load("TauAnalysis.BgEstimationTools.bgEstPreselZtoElecTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
@@ -44,73 +46,6 @@ process.source = cms.Source("PoolSource",
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
-
-#--------------------------------------------------------------------------------
-# preselect events entering ntuple
-process.genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
-    selector = cms.PSet(
-        pluginName = cms.string('genPhaseSpaceCut'),
-        pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-        src = cms.InputTag('genPhaseSpaceEventInfo'),
-        cut = cms.string('')
-    )
-)
-
-process.electronsBgEstPreselection = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative'),                                        
-    cut = cms.string('gsfTrack.isNonnull'),
-    filter = cms.bool(False)
-)
-
-process.electronTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
-    pluginName = cms.string("electronTrkCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('electronsBgEstPreselection'),
-    minNumber = cms.uint32(1)
-)
-
-process.tauProngCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
-    pluginName = cms.string("tauProngCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('selectedLayer1TausProngCumulative'),
-    minNumber = cms.uint32(1)                                                
-)
-
-process.elecTauPairsBgEstPreselection = cms.EDProducer("PATElecTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('electronsBgEstPreselection'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausProngCumulative'),
-    dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
-    recoMode = cms.string(""),
-    verbosity = cms.untracked.int32(0)
-)
-
-process.elecTauPairCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
-    pluginName = cms.string("elecTauPairCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('elecTauPairsBgEstPreselection'),
-    minNumber = cms.uint32(1)
-)                                                                             
-
-process.produceBoolEventSelFlags = cms.Sequence(
-    process.electronsBgEstPreselection + process.electronTrkCutBgEstPreselection
-   +process.tauProngCutBgEstPreselection
-   +process.elecTauPairsBgEstPreselection + process.elecTauPairCutBgEstPreselection
-)
-
-process.selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
-    flags = cms.VInputTag(
-        #cms.InputTag('Trigger'),
-        cms.InputTag('primaryEventVertex'),
-        cms.InputTag('primaryEventVertexQuality'),
-        cms.InputTag('primaryEventVertexPosition'),
-        cms.InputTag('electronTrkCutBgEstPreselection'),
-        cms.InputTag('tauProngCutBgEstPreselection'),
-        cms.InputTag('elecTauPairCutBgEstPreselection')
-    )
-)
-#--------------------------------------------------------------------------------
 
 # event print-out
 process.eventDump = cms.EDAnalyzer("EventDumpAnalyzer",
@@ -280,6 +215,14 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
         ),
+        numCentralJetsAlpha0_1 = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1JetsAlpha0_1Cumulative')
+        ),
+        numCentralJetsAlpha0_3 = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('selectedLayer1JetsAlpha0_3Cumulative')
+        ),
         numCentralJetsEt40 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1JetsEt40Cumulative')
@@ -330,6 +273,7 @@ switchToPFTauShrinkingCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path( process.producePatTuple
+                     * process.bgEstSelectLayer1Jets
 #                    * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
                      * process.selectZtoElecTauEvents
                      * process.genPhaseSpaceFilter
