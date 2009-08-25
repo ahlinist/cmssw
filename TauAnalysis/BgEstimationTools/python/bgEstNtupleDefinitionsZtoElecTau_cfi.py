@@ -27,7 +27,7 @@ fileNames_ZtautauPlusJets = cms.vstring(
 )
 
 # Z --> e e + jets sample
-fileNames_ZmumuPlusJets = cms.vstring(
+fileNames_ZeePlusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_ZeePlusJets_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_ZeePlusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_ZeePlusJets_part03.root'
@@ -85,8 +85,7 @@ fileNames_qcdSum = cms.vstring(
 # ttbar + jets sample
 fileNames_TTplusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_part01.root',
-    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_part02.root',
-    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_part03.root'
+    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoMuTau_TTplusJets_part02.root'
 )
 
 #--------------------------------------------------------------------------------
@@ -94,7 +93,7 @@ fileNames_TTplusJets = cms.vstring(
 # (pseudo)Data sample = sum of all signal + background Monte Carlo samples
 fileNames_pseudoData = cms.vstring()
 fileNames_pseudoData.extend(fileNames_Ztautau)
-fileNames_pseudoData.extend(fileNames_ZmumuPlusJets)
+fileNames_pseudoData.extend(fileNames_ZeePlusJets)
 fileNames_pseudoData.extend(fileNames_WplusJets)
 fileNames_pseudoData.extend(fileNames_TTplusJets)
 fileNames_pseudoData.extend(fileNames_gammaPlusJetsSum)
