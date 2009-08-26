@@ -29,8 +29,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 // #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
-#include "SimDataFormats/HepMCProduct/interface/GenInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "FWCore/Framework/interface/Run.h"
 
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
@@ -56,6 +56,10 @@
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidate.h"
 #include "DataFormats/RecoCandidate/interface/RecoChargedCandidateFwd.h"
 
+#include "RecoVertex/KinematicFitPrimitives/interface/ParticleMass.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
 
 #include <memory>
 #include <iostream>
@@ -76,6 +80,7 @@
 #include <TClonesArray.h>
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/Common/interface/View.h"
 
 using namespace reco;
@@ -108,6 +113,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       template <class T, class U> double deltaR(const T & t, const U & u) const;
       double calcDeltaR(double eta1, double phi1,double eta2, double phi2);
       double GetTheta( TLorentzVector & a,  TLorentzVector & b) const;
+      bool isAbHadron( int pdgID ) const;
       void printTrack(const reco::Track& muon) const;
       TLorentzVector lorentzMomentum(const reco::Track& muon) const;
       TLorentzVector lorentzMomentum(const pat::Muon& muon) const;
@@ -130,12 +136,15 @@ class Onia2MuMu : public edm::EDAnalyzer {
       edm::InputTag thePhotonLabel;               // Photon information
       edm::InputTag theBeamSpotLabel;            // Beam Spot
       edm::InputTag thePrimaryVertexLabel;        // Primary Vertex
-      edm::InputTag thetriggerEventLabel;
+      string thetriggerEventLabel;
+      string theHLTriggerResults;                 // HLT trigger results
+      string the8e29ProcName;
+      string the1e31ProcName;
       edm::InputTag theL1GTReadoutRec;            // L1 trigger results
-      edm::InputTag theHLTriggerResults;          // HLT trigger results
       edm::InputTag theL1MuonLabel;
       edm::InputTag thePATMuonsLabel;      
 
+      bool theUseKinFit;                   // Yes or No to use of kinematic vertex fitting (T. Speer)
       bool theStoreGenFlag;                // Yes or No to store generator information
       bool theStoreHLTFlag;                // Yes or No to store HLT information
       bool theStoreL1Flag;                 // Yes or No to store L1 information
@@ -164,7 +173,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double oniaMass;
       double branch_ratio;      
       
-      static const int NTRIGGERS = 8;
+      static const int NTRIGGERS = 5;
       static const int Max_track_size = 3000;
       static const int Max_QQ_size = 100;
       static const int Max_mu_size = 100;
@@ -396,6 +405,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_QQ_lxy[3000];     // Decay length
       double Reco_QQ_lxyErr[3000];  // Decay length errors
       double Reco_QQ_normChi2[3000];// Normalized chi2 of vertex fitting 
+      double Reco_QQ_probChi2[3000];// chi2 probability of vertex fitting 
       double Reco_QQ_cosAlpha[3000];// Alpha: the angle of lxy and onia moemtum
       double Reco_QQ_ctau[3000];    // ctau: flying time
 
@@ -483,19 +493,26 @@ class Onia2MuMu : public edm::EDAnalyzer {
       TClonesArray* HLT1Mu11_L3_4mom;
       int HLT1Mu11_L3_id[20];
 
-      int HLTI2Mu3_L2_size;
-      TClonesArray* HLTI2Mu3_L2_4mom;
-      int HLTI2Mu3_L2_id[20];
-      int HLTI2Mu3_L3_size;
-      TClonesArray* HLTI2Mu3_L3_4mom;
-      int HLTI2Mu3_L3_id[20];
+      int HLT2Mu0_L2_size;
+      TClonesArray* HLT2Mu0_L2_4mom;
+      int HLT2Mu0_L2_id[20];
+      int HLT2Mu0_L3_size;
+      TClonesArray* HLT2Mu0_L3_4mom;
+      int HLT2Mu0_L3_id[20];
 
-      int HLTNoI2Mu3_L2_size;
-      TClonesArray* HLTNoI2Mu3_L2_4mom;
-      int HLTNoI2Mu3_L2_id[20];
-      int HLTNoI2Mu3_L3_size;
-      TClonesArray* HLTNoI2Mu3_L3_4mom;
-      int HLTNoI2Mu3_L3_id[20];
+      int HLT2IsoMu3_L2_size;
+      TClonesArray* HLT2IsoMu3_L2_4mom;
+      int HLT2IsoMu3_L2_id[20];
+      int HLT2IsoMu3_L3_size;
+      TClonesArray* HLT2IsoMu3_L3_4mom;
+      int HLT2IsoMu3_L3_id[20];
+
+      int HLT2Mu3_L2_size;
+      TClonesArray* HLT2Mu3_L2_4mom;
+      int HLT2Mu3_L2_id[20];
+      int HLT2Mu3_L3_size;
+      TClonesArray* HLT2Mu3_L3_4mom;
+      int HLT2Mu3_L3_id[20];
 
       int HLTJpsi2Mu_L2_size;
       TClonesArray* HLTJpsi2Mu_L2_4mom;
@@ -503,6 +520,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       int HLTJpsi2Mu_L3_size;
       TClonesArray* HLTJpsi2Mu_L3_4mom;
       int HLTJpsi2Mu_L3_id[20];
+
       int HLTUpsilon2Mu_L2_size;
       TClonesArray* HLTUpsilon2Mu_L2_4mom;
       int HLTUpsilon2Mu_L2_id[20];

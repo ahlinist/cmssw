@@ -34,11 +34,14 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   thePhotonLabel             = iConfig.getParameter<edm::InputTag>("PhotonLabel");
   theBeamSpotLabel           = iConfig.getParameter<edm::InputTag>("BeamSpotLabel");
   thePrimaryVertexLabel      = iConfig.getParameter<edm::InputTag>("PrimaryVertexLabel");
-  thetriggerEventLabel       = iConfig.getParameter<edm::InputTag>("triggerEventLabel");
+  thetriggerEventLabel       = iConfig.getParameter<string>("triggerEventLabel");
+  theHLTriggerResults        = iConfig.getParameter<string>("triggerResultsLabel");
+  the8e29ProcName            = iConfig.getParameter<string>("HLTprocessName8e29");
+  the1e31ProcName            = iConfig.getParameter<string>("HLTprocessName1e31");
   theL1GTReadoutRec          = iConfig.getParameter<edm::InputTag>("L1GTReadoutRec");
-  theHLTriggerResults        = iConfig.getParameter<edm::InputTag>("HLTriggerResults");
   theL1MuonLabel             = iConfig.getParameter<edm::InputTag>("L1MuonLabel");
   thePATMuonsLabel           = iConfig.getParameter<edm::InputTag>("PATMuonsLabel");  
+  theUseKinFit               = iConfig.getParameter<bool>("useKinFit");
   theStoreGenFlag            = iConfig.getParameter<bool>("StoreGenFlag");
   theStoreHLTFlag            = iConfig.getParameter<bool>("StoreHLTFlag");
   theStoreL1Flag             = iConfig.getParameter<bool>("StoreL1Flag");
@@ -157,8 +160,8 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   Reco_Bp_Vtx =new TClonesArray("TVector3",10000);
   Reco_PriVtx_3vec =new TClonesArray("TVector3",10000);
   L1_mu_4mom = new TClonesArray("TLorentzVector",10000);
-  //HLT_mu_L2_4mom = new TClonesArray("TLorentzVector",10000);
-  //HLT_mu_L3_4mom = new TClonesArray("TLorentzVector",10000);
+  // HLT_mu_L2_4mom = new TClonesArray("TLorentzVector",10000);
+  // HLT_mu_L3_4mom = new TClonesArray("TLorentzVector",10000);
   HLT1Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu5_L2_4mom=new TClonesArray("TLorentzVector",10000);
@@ -167,10 +170,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   HLT1Mu9_L3_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu11_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu11_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTI2Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTI2Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTNoI2Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTNoI2Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2Mu0_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2Mu0_L3_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2IsoMu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2IsoMu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  HLT2Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
   HLTJpsi2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLTJpsi2Mu_L3_4mom=new TClonesArray("TLorentzVector",10000);
   HLTUpsilon2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
@@ -431,6 +436,7 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_QQ_lxy",      Reco_QQ_lxy,     "Reco_QQ_lxy[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_lxyErr",   Reco_QQ_lxyErr,  "Reco_QQ_lxyErr[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_normChi2", Reco_QQ_normChi2,"Reco_QQ_normChi2[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_probChi2", Reco_QQ_probChi2,"Reco_QQ_probChi2[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_cosAlpha", Reco_QQ_cosAlpha,"Reco_QQ_cosAlpha[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_ctau",     Reco_QQ_ctau,    "Reco_QQ_ctau[Reco_QQ_size]/D");
     if(theStoreWSOnia){
@@ -541,19 +547,26 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("HLT1Mu11_L3_4mom",  "TClonesArray",     &HLT1Mu11_L3_4mom, 32000, 0);
     fTree->Branch("HLT1Mu11_L3_id",    HLT1Mu11_L3_id,     "HLT1Mu11_L3_id[HLT1Mu11_L3_size]/I");
 
-    /* fTree->Branch("HLTI2Mu3_L2_size",  &HLTI2Mu3_L2_size,  "HLTI2Mu3_L2_size/I");
-    fTree->Branch("HLTI2Mu3_L2_4mom",  "TClonesArray",     &HLTI2Mu3_L2_4mom, 32000, 0);
-    fTree->Branch("HLTI2Mu3_L2_id",    HLTI2Mu3_L2_id,     "HLTI2Mu3_L2_id[HLTI2Mu3_L2_size]/I"); */
-    fTree->Branch("HLTI2Mu3_L3_size",  &HLTI2Mu3_L3_size,  "HLTI2Mu3_L3_size/I");
-    fTree->Branch("HLTI2Mu3_L3_4mom",  "TClonesArray",     &HLTI2Mu3_L3_4mom, 32000, 0);
-    fTree->Branch("HLTI2Mu3_L3_id",    HLTI2Mu3_L3_id,     "HLTI2Mu3_L3_id[HLTI2Mu3_L3_size]/I");
+    /* fTree->Branch("HLT2Mu0_L2_size",  &HLT2Mu0_L2_size,  "HLT2Mu0_L2_size/I");
+    fTree->Branch("HLT2Mu0_L2_4mom",  "TClonesArray",       &HLT2Mu0_L2_4mom, 32000, 0);
+    fTree->Branch("HLT2Mu0_L2_id",    HLT2Mu0_L2_id,     "HLT2Mu0_L2_id[HLT2Mu0_L2_size]/I"); */
+    fTree->Branch("HLT2Mu0_L3_size",  &HLT2Mu0_L3_size,  "HLT2Mu0_L3_size/I");
+    fTree->Branch("HLT2Mu0_L3_4mom",  "TClonesArray",       &HLT2Mu0_L3_4mom, 32000, 0);
+    fTree->Branch("HLT2Mu0_L3_id",    HLT2Mu0_L3_id,     "HLT2Mu0_L3_id[HLT2Mu0_L3_size]/I");
 
-    /* fTree->Branch("HLTNoI2Mu3_L2_size",  &HLTNoI2Mu3_L2_size,  "HLTNoI2Mu3_L2_size/I");
-    fTree->Branch("HLTNoI2Mu3_L2_4mom",  "TClonesArray",       &HLTNoI2Mu3_L2_4mom, 32000, 0);
-    fTree->Branch("HLTNoI2Mu3_L2_id",    HLTNoI2Mu3_L2_id,     "HLTNoI2Mu3_L2_id[HLTNoI2Mu3_L2_size]/I"); */
-    fTree->Branch("HLTNoI2Mu3_L3_size",  &HLTNoI2Mu3_L3_size,  "HLTNoI2Mu3_L3_size/I");
-    fTree->Branch("HLTNoI2Mu3_L3_4mom",  "TClonesArray",       &HLTNoI2Mu3_L3_4mom, 32000, 0);
-    fTree->Branch("HLTNoI2Mu3_L3_id",    HLTNoI2Mu3_L3_id,     "HLTNoI2Mu3_L3_id[HLTNoI2Mu3_L3_size]/I");
+    /* fTree->Branch("HLT2IsoMu3_L2_size",  &HLT2IsoMu3_L2_size,  "HLT2IsoMu3_L2_size/I");
+    fTree->Branch("HLT2IsoMu3_L2_4mom",  "TClonesArray",     &HLT2IsoMu3_L2_4mom, 32000, 0);
+    fTree->Branch("HLT2IsoMu3_L2_id",    HLT2IsoMu3_L2_id,     "HLT2IsoMu3_L2_id[HLT2IsoMu3_L2_size]/I"); */
+    fTree->Branch("HLT2IsoMu3_L3_size",  &HLT2IsoMu3_L3_size,  "HLT2IsoMu3_L3_size/I");
+    fTree->Branch("HLT2IsoMu3_L3_4mom",  "TClonesArray",     &HLT2IsoMu3_L3_4mom, 32000, 0);
+    fTree->Branch("HLT2IsoMu3_L3_id",    HLT2IsoMu3_L3_id,     "HLT2IsoMu3_L3_id[HLT2IsoMu3_L3_size]/I");
+
+    /* fTree->Branch("HLT2Mu3_L2_size",  &HLT2Mu3_L2_size,  "HLT2Mu3_L2_size/I");
+    fTree->Branch("HLT2Mu3_L2_4mom",  "TClonesArray",       &HLT2Mu3_L2_4mom, 32000, 0);
+    fTree->Branch("HLT2Mu3_L2_id",    HLT2Mu3_L2_id,     "HLT2Mu3_L2_id[HLT2Mu3_L2_size]/I"); */
+    fTree->Branch("HLT2Mu3_L3_size",  &HLT2Mu3_L3_size,  "HLT2Mu3_L3_size/I");
+    fTree->Branch("HLT2Mu3_L3_4mom",  "TClonesArray",       &HLT2Mu3_L3_4mom, 32000, 0);
+    fTree->Branch("HLT2Mu3_L3_id",    HLT2Mu3_L3_id,     "HLT2Mu3_L3_id[HLT2Mu3_L3_size]/I");
 
 
     /* fTree->Branch("HLTJpsi2Mu_L2_size",  &HLTJpsi2Mu_L2_size,  "HLTJpsi2Mu_L2_size/I");
@@ -582,9 +595,9 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     hltBits[7] = 46; */
 
     HLTBits_size = NTRIGGERS;
-    string HLTbitNames[NTRIGGERS] = {"HLT_Mu3", "HLT_Mu5", "HLT_Mu9", "HLT_Mu11", "HLT_DoubleIsoMu3", "HLT_DoubleMu3", "HLT_DoubleMu3_JPsi", "HLT_DoubleMu3_Upsilon"};
+    string HLTbitNames[NTRIGGERS] = {"HLT_Mu3", "HLT_Mu5", "HLT_Mu9", "HLT_DoubleMu0", "HLT_DoubleMu3"};
 
-    if (hltConfig.init("HLT")) {
+    if (hltConfig.init(the8e29ProcName)) {
       // check if trigger name in config
       const unsigned int n(hltConfig.size());
       for (int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
@@ -599,23 +612,17 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
 	}
       }
       // Level-2 FILTERS (module names)
-      hltModules[0][0] = edm::InputTag("hltSingleMuPrescale3L2PreFiltered","","HLT");
-      hltModules[0][1] = edm::InputTag("hltSingleMuPrescale5L2PreFiltered","","HLT");
-      hltModules[0][2] = edm::InputTag("hltSingleMuNoIsoL2PreFiltered7","","HLT");
-      hltModules[0][3] = edm::InputTag("hltSingleMuNoIsoL2PreFiltered9","","HLT");
-      hltModules[0][4] = edm::InputTag("hltDiMuonIsoL2IsoFiltered","","HLT");
-      hltModules[0][5] = edm::InputTag("hltDiMuonNoIsoL2PreFiltered","","HLT");
-      hltModules[0][6] = edm::InputTag("hltJpsiMML2Filtered","","HLT");
-      hltModules[0][7] = edm::InputTag("hltUpsilonMML2Filtered","","HLT");
+      hltModules[0][0] = edm::InputTag("NotUsed","",the8e29ProcName);
+      hltModules[0][1] = edm::InputTag("NotUsed","",the8e29ProcName);
+      hltModules[0][2] = edm::InputTag("NotUsed","",the8e29ProcName);
+      hltModules[0][3] = edm::InputTag("NotUsed","",the8e29ProcName);
+      hltModules[0][4] = edm::InputTag("NotUsed","",the8e29ProcName);
       // Level-3 FILTERS (module names)
-      hltModules[1][0] = edm::InputTag("hltSingleMuPrescale3L3PreFiltered","","HLT");
-      hltModules[1][1] = edm::InputTag("hltSingleMuPrescale5L3PreFiltered","","HLT");
-      hltModules[1][2] = edm::InputTag("hltSingleMuNoIsoL3PreFiltered9","","HLT");
-      hltModules[1][3] = edm::InputTag("hltSingleMuNoIsoL3PreFiltered11","","HLT");
-      hltModules[1][4] = edm::InputTag("hltDiMuonIsoL3IsoFiltered","","HLT");
-      hltModules[1][5] = edm::InputTag("hltDiMuonNoIsoL3PreFiltered","","HLT");
-      hltModules[1][6] = edm::InputTag("hltJpsiMML3Filtered","","HLT");
-      hltModules[1][7] = edm::InputTag("hltUpsilonMML3Filtered","","HLT");
+      hltModules[1][0] = edm::InputTag("hltSingleMu3L3Filtered3","",the8e29ProcName);
+      hltModules[1][1] = edm::InputTag("hltSingleMu5L3Filtered5","",the8e29ProcName);
+      hltModules[1][2] = edm::InputTag("hltSingleMu9L3Filtered9","",the8e29ProcName);
+      hltModules[1][3] = edm::InputTag("hltDiMuonL3PreFiltered0","",the8e29ProcName);
+      hltModules[1][4] = edm::InputTag("hltDiMuonL3PreFiltered","",the8e29ProcName);
     } else {
       cout << "OniaToMuMu::beginRun:"
 	   << " HLT config extraction failure with process name HLT" << endl;
@@ -751,10 +758,12 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   HLT1Mu9_L3_4mom->Clear();
   HLT1Mu11_L2_4mom->Clear();
   HLT1Mu11_L3_4mom->Clear();
-  HLTI2Mu3_L2_4mom->Clear();
-  HLTI2Mu3_L3_4mom->Clear();
-  HLTNoI2Mu3_L2_4mom->Clear();
-  HLTNoI2Mu3_L3_4mom->Clear();
+  HLT2Mu0_L2_4mom->Clear();
+  HLT2Mu0_L3_4mom->Clear();
+  HLT2IsoMu3_L2_4mom->Clear();
+  HLT2IsoMu3_L3_4mom->Clear();
+  HLT2Mu3_L2_4mom->Clear();
+  HLT2Mu3_L3_4mom->Clear();
   HLTJpsi2Mu_L2_4mom->Clear();
   HLTJpsi2Mu_L3_4mom->Clear();
   HLTUpsilon2Mu_L2_4mom->Clear();
@@ -791,16 +800,17 @@ void Onia2MuMu::l1Report(const edm::Event &iEvent) {
 
   L1_mu_size = 0;
   Handle< l1extra::L1MuonParticleCollection > L1Muons;
-  iEvent.getByLabel(theL1MuonLabel, L1Muons);
-  l1extra::L1MuonParticleCollection::const_iterator l1muon;
-  for( l1muon = L1Muons->begin(); l1muon != L1Muons->end() && L1_mu_size<Max_mu_size; ++ l1muon ) {
-    TLorentzVector a(0.0,0.0,0.0,0.0);
-    a.SetPxPyPzE(l1muon->px(),l1muon->py(),l1muon->pz(),l1muon->energy());
-    new((*L1_mu_4mom)[L1_mu_size])TLorentzVector(a);
-    L1_mu_charge[L1_mu_size]=l1muon->charge();
-    L1_mu_size++;
+  // L1 extra particles missing in some releases...
+  if (iEvent.getByLabel(theL1MuonLabel, L1Muons)) {
+    l1extra::L1MuonParticleCollection::const_iterator l1muon;
+    for( l1muon = L1Muons->begin(); l1muon != L1Muons->end() && L1_mu_size<Max_mu_size; ++ l1muon ) {
+      TLorentzVector a(0.0,0.0,0.0,0.0);
+      a.SetPxPyPzE(l1muon->px(),l1muon->py(),l1muon->pz(),l1muon->energy());
+      new((*L1_mu_4mom)[L1_mu_size])TLorentzVector(a);
+      L1_mu_charge[L1_mu_size]=l1muon->charge();
+      L1_mu_size++;
+    }
   }
-
 }
 
 ///////////////////////////////////////////////////////////////
@@ -810,7 +820,7 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
   using namespace trigger;
   if(theDebugLevel>0) cout << "hltReport called" << endl;
   Handle<TriggerResults> HLTR;
-  iEvent.getByLabel(theHLTriggerResults, HLTR);
+  iEvent.getByLabel(InputTag(theHLTriggerResults,"",the8e29ProcName), HLTR);
   if (HLTR.isValid()) {
     HLTGlobal_wasrun=HLTR->wasrun();
     HLTGlobal_Decision=HLTR->accept();
@@ -831,11 +841,13 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
     HLT1Mu9_L3_size=0;
     HLT1Mu11_L2_size=0;
     HLT1Mu11_L3_size=0;
-    HLTI2Mu3_L2_size=0;
-    HLTI2Mu3_L3_size=0;
+    HLT2IsoMu3_L2_size=0;
+    HLT2IsoMu3_L3_size=0;
 
-    HLTNoI2Mu3_L2_size=0;
-    HLTNoI2Mu3_L3_size=0;
+    HLT2Mu0_L2_size=0;
+    HLT2Mu0_L3_size=0;
+    HLT2Mu3_L2_size=0;
+    HLT2Mu3_L3_size=0;
     HLTJpsi2Mu_L2_size=0;
     HLTJpsi2Mu_L3_size=0;
     HLTUpsilon2Mu_L2_size=0;
@@ -844,7 +856,7 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
     Handle<TriggerEvent> trgEvent;
     bool hltF = true;
     try {
-      iEvent.getByLabel(thetriggerEventLabel, trgEvent);
+      iEvent.getByLabel(InputTag(thetriggerEventLabel,"",the8e29ProcName), trgEvent);
     }
     catch (const cms::Exception& e) {
       hltF = false;
@@ -862,7 +874,7 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
             const Keys& KEYS( trgEvent->filterKeys(index) );
             muonsize = KEYS.size();
             if(theDebugLevel>0) cout<<"Muon passing filters "<<trigName.label()<< " = " <<muonsize<<endl;
-            int minNMuons = 1; if ( ipath>=4 ) minNMuons = 2;
+            int minNMuons = 1; if ( ipath>=3 ) minNMuons = 2;
             if (  muonsize < minNMuons && HLTR->accept(hltBits[ipath]) ) {  
               cout<<"Error!! Not enough HLT muons for "<<trigName.label()<<", but decision = "<<HLTR->accept(hltBits[ipath])<<endl;
             }
@@ -893,14 +905,14 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
 		  HLT1Mu11_L2_size++;      
                 }
                 if ( ipath==4 ) {
-                  new((*HLTI2Mu3_L2_4mom)[HLTI2Mu3_L2_size])TLorentzVector(a);
-                  HLTI2Mu3_L2_id[HLTI2Mu3_L2_size]=TO.id();
-		  HLTI2Mu3_L2_size++;
+                  new((*HLT2IsoMu3_L2_4mom)[HLT2IsoMu3_L2_size])TLorentzVector(a);
+                  HLT2IsoMu3_L2_id[HLT2IsoMu3_L2_size]=TO.id();
+		  HLT2IsoMu3_L2_size++;
                 }
                 if ( ipath==5 ) {
-                  new((*HLTNoI2Mu3_L2_4mom)[HLTNoI2Mu3_L2_size])TLorentzVector(a);
-                  HLTNoI2Mu3_L2_id[HLTNoI2Mu3_L2_size]=TO.id();
-                  HLTNoI2Mu3_L2_size++;
+                  new((*HLT2Mu3_L2_4mom)[HLT2Mu3_L2_size])TLorentzVector(a);
+                  HLT2Mu3_L2_id[HLT2Mu3_L2_size]=TO.id();
+                  HLT2Mu3_L2_size++;
                 }
                 if ( ipath==6 ) {
                   new((*HLTJpsi2Mu_L2_4mom)[HLTJpsi2Mu_L2_size])TLorentzVector(a);
@@ -930,22 +942,27 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
                   HLT1Mu9_L3_id[HLT1Mu9_L3_size]=TO.id();
 		  HLT1Mu9_L3_size++;      
                 }
-                if ( ipath==3 ) {
+                /* if ( ipath==3 ) {
 		  new((*HLT1Mu11_L3_4mom)[HLT1Mu11_L3_size])TLorentzVector(a);
                   HLT1Mu11_L3_id[HLT1Mu11_L3_size]=TO.id();
 		  HLT1Mu11_L3_size++;      
                 }
                 if ( ipath==4 ) {
-                  new((*HLTI2Mu3_L3_4mom)[HLTI2Mu3_L3_size])TLorentzVector(a);
-                  HLTI2Mu3_L3_id[HLTI2Mu3_L3_size]=TO.id();
-		  HLTI2Mu3_L3_size++;
+                  new((*HLT2IsoMu3_L3_4mom)[HLT2IsoMu3_L3_size])TLorentzVector(a);
+                  HLT2IsoMu3_L3_id[HLT2IsoMu3_L3_size]=TO.id();
+		  HLT2IsoMu3_L3_size++;
+		  } */
+                if ( ipath==3 ) {
+                  new((*HLT2Mu0_L3_4mom)[HLT2Mu0_L3_size])TLorentzVector(a);
+                  HLT2Mu0_L3_id[HLT2Mu0_L3_size]=TO.id();
+                  HLT2Mu0_L3_size++;
                 }
-                if ( ipath==5 ) {
-                  new((*HLTNoI2Mu3_L3_4mom)[HLTNoI2Mu3_L3_size])TLorentzVector(a);
-                  HLTNoI2Mu3_L3_id[HLTNoI2Mu3_L3_size]=TO.id();
-                  HLTNoI2Mu3_L3_size++;
+                if ( ipath==4 ) {
+                  new((*HLT2Mu3_L3_4mom)[HLT2Mu3_L3_size])TLorentzVector(a);
+                  HLT2Mu3_L3_id[HLT2Mu3_L3_size]=TO.id();
+                  HLT2Mu3_L3_size++;
                 }
-                if ( ipath==6 ) {
+                /* if ( ipath==6 ) {
                   new((*HLTJpsi2Mu_L3_4mom)[HLTJpsi2Mu_L3_size])TLorentzVector(a);
                   HLTJpsi2Mu_L3_id[HLTJpsi2Mu_L3_size]=TO.id();
                   HLTJpsi2Mu_L3_size++;
@@ -954,7 +971,7 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
                   new((*HLTUpsilon2Mu_L3_4mom)[HLTUpsilon2Mu_L3_size])TLorentzVector(a);
                   HLTUpsilon2Mu_L3_id[HLTUpsilon2Mu_L3_size]=TO.id();
                   HLTUpsilon2Mu_L3_size++;
-                }
+		  }*/
               }
             } 
           } else {
@@ -989,14 +1006,14 @@ void Onia2MuMu::PAT_hltReport(const edm::Event &iEvent) {
       ++muoni) {
     cout << "new muon " << endl;
     // Single Muon Trigger
-    std::vector<pat::TriggerPrimitive> matches1=muoni->triggerMatchesByFilter("hltSingleMuNoIsoL3PreFiltered"); 
+    const pat::TriggerObjectStandAloneCollection matches1=muoni->triggerObjectMatchesByFilter("hltSingleMu3L3Filtered3"); 
     if(matches1.empty()){
       cout << "this mu didn't pass the single mu trigger" << endl;
     }else{
       cout << "the associated single mu trigger muon has pt " << matches1[0].pt()  << endl;
     }
     // Double Muon Trigger
-    std::vector<pat::TriggerPrimitive> matches2=muoni->triggerMatchesByFilter("hltDiMuonNoIsoL3PreFiltered"); 
+    const pat::TriggerObjectStandAloneCollection matches2=muoni->triggerObjectMatchesByFilter("hltDiMuonL3PreFiltered"); 
     if(matches2.empty()){
       cout << "this mu didn't pass the double mu trigger" << endl;
     }else{
@@ -1037,19 +1054,21 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   }
   else {
     Handle< HepMCProduct > HepMCEvt;
-    if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
-	iEvent.getByLabel( "source", HepMCEvt );
-    }
+    // if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
+    //	iEvent.getByLabel( "source", HepMCEvt );
+    // }
+    iEvent.getByLabel( "generator", HepMCEvt );
     const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
     Mc_ProcessId   = myGenEvent->signal_process_id();
     Mc_EventScale  = myGenEvent->event_scale();
 
-    Handle< GenInfoProduct > gi;
-    iEvent.getRun().getByLabel( "source", gi);
-    double auto_cross_section = gi->cross_section(); // calculated at end of each RUN, in mb
+    Handle< GenRunInfoProduct > gi;
+    // iEvent.getRun().getByLabel( "source", gi);
+    iEvent.getRun().getByLabel( "generator", gi);
+    double auto_cross_section = gi->internalXSec().value(); // calculated at end of each RUN, in mb
     if(theDebugLevel>0) cout << "calculated cross-section" << auto_cross_section<<endl;
-    double external_cross_section = gi->external_cross_section(); // is the precalculated one written in the cfg file -- units is pb
-    double filter_eff = gi->filter_efficiency();
+    double external_cross_section = gi->crossSection(); // is the precalculated one written in the cfg file -- units is pb
+    double filter_eff = gi->filterEfficiency();
     //Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
     Mc_EventWeight = external_cross_section * filter_eff;
   }
@@ -1065,7 +1084,7 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
     const Candidate & p = (*genParticles)[ i ];
     int Mc_particleID=p.pdgId();
     ////// Store muon information (all muons)
-    if (abs(Mc_particleID) == 13 && p.status()==1&&Mc_mu_size<Max_mu_size){
+    if (abs(Mc_particleID) == 13 && p.status()==1 && Mc_mu_size<Max_mu_size){
       TLorentzVector a(0.0,0.0,0.0,0.0);
       a.SetPxPyPzE(p.px(),p.py(),p.pz(),p.energy());
       new((*Mc_mu_4mom)[Mc_mu_size])TLorentzVector(a);
@@ -1083,8 +1102,8 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
  
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
-    int Mc_particleID=p.pdgId();
-    if (abs(Mc_particleID) == theOniaType && p.status()==2&&Mc_QQ_size<Max_QQ_size){
+    int Mc_particleID = p.pdgId();
+    if (abs(Mc_particleID) == theOniaType && p.status()==2 && Mc_QQ_size<Max_QQ_size){
       TLorentzVector a(0.0,0.0,0.0,0.0);
       a.SetPxPyPzE(p.px(),p.py(),p.pz(),p.energy());
       new((*Mc_QQ_4mom)[Mc_QQ_size])TLorentzVector(a);
@@ -1092,22 +1111,35 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
       b.SetXYZ(p.vertex().x(),p.vertex().y(),p.vertex().z());
       new((*Mc_QQ_3vec)[Mc_QQ_size])TVector3(b);
     
-      //mother information and B
+      // mother (or B-mother) information     
       const Candidate & pmo=*(p.mother());
-      Mc_QQmoth_id[Mc_QQ_size]=pmo.pdgId();
+      const Candidate & pgmo=*(pmo.mother());
+
+      unsigned int storeWhich = 0;
+      if (!isAbHadron(pmo.pdgId()) && isAbHadron(pgmo.pdgId())) storeWhich = 1;
+
       TLorentzVector c(0.0,0.0,0.0,0.0);
-      c.SetPxPyPzE(pmo.px(),pmo.py(),pmo.pz(),pmo.energy());
-      new((*Mc_QQmoth_4mom)[Mc_QQ_size])TLorentzVector(c);
       TVector3 d(0.0,0.0,0.0);
-      d.SetXYZ(pmo.vertex().x(),pmo.vertex().y(),pmo.vertex().z());
+
+      if (storeWhich == 0) {
+	Mc_QQmoth_id[Mc_QQ_size]=pmo.pdgId();
+	c.SetPxPyPzE(pmo.px(),pmo.py(),pmo.pz(),pmo.energy());
+	d.SetXYZ(pmo.vertex().x(),pmo.vertex().y(),pmo.vertex().z());
+      } else {
+	Mc_QQmoth_id[Mc_QQ_size]=pgmo.pdgId();
+	c.SetPxPyPzE(pgmo.px(),pgmo.py(),pgmo.pz(),pgmo.energy());
+	d.SetXYZ(pgmo.vertex().x(),pgmo.vertex().y(),pgmo.vertex().z());
+      }
+	
+      new((*Mc_QQmoth_4mom)[Mc_QQ_size])TLorentzVector(c);
       new((*Mc_QQmoth_3vec)[Mc_QQ_size])TVector3(d);
 
       /////// Now loop over children and store corresponding line in muon vector
-      int nchildrenOnia=p.numberOfDaughters();
-      const Candidate & da1=*(p.daughter( 0 ));
-      const Candidate & da2=*(p.daughter( 1 ));
-       // If indeed jpsi decayong into two muons
-      if(nchildrenOnia==2&&abs(da1.pdgId())==13&&abs(da2.pdgId())==13){
+      int nchildrenOnia = p.numberOfDaughters();
+      const Candidate & da1 = *(p.daughter( 0 ));
+      const Candidate & da2 = *(p.daughter( 1 ));
+       // If indeed jpsi decaying into two muons
+      if(nchildrenOnia==2 && abs(da1.pdgId())==13 && abs(da2.pdgId())==13){
 	TLorentzVector da1_4vec(p.daughter(0)->px(),
 				p.daughter(0)->py(),
 				p.daughter(0)->pz(),
@@ -1309,7 +1341,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
 
       Reco_mu_glb_caloComp[Reco_mu_glb_size]=muoni->caloCompatibility();
-      Reco_mu_glb_segmComp[Reco_mu_glb_size]=muoni->segmentCompatibility();
+      Reco_mu_glb_segmComp[Reco_mu_glb_size]=muon::segmentCompatibility(*muoni);;
       Reco_mu_glb_iso[Reco_mu_glb_size]=muoni->isolationR03().sumPt;
 
       /* TMatrixD cov1(5,5);
@@ -1361,20 +1393,20 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
 
       // STANDARD SELECTORS
       int myWord = 0;
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::AllTrackerMuons))                   myWord += (int)pow(2.,0);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TrackerMuonArbitrated))             myWord += (int)pow(2.,1);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationLoose))                myWord += (int)pow(2.,2);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationTight))                myWord += (int)pow(2.,3);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TM2DCompatibilityLoose))            myWord += (int)pow(2.,4);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TM2DCompatibilityTight))            myWord += (int)pow(2.,5);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMOneStationLoose))                 myWord += (int)pow(2.,6);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMOneStationTight))                 myWord += (int)pow(2.,7);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationOptimizedLowPtLoose))  myWord += (int)pow(2.,8);
-      if (muon::isGoodMuon(*trkmuoni, reco::Muon::TMLastStationOptimizedLowPtTight))  myWord += (int)pow(2.,9);
+      if (muon::isGoodMuon(*trkmuoni, muon::AllTrackerMuons))                   myWord += (int)pow(2.,0);
+      if (muon::isGoodMuon(*trkmuoni, muon::TrackerMuonArbitrated))             myWord += (int)pow(2.,1);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMLastStationLoose))                myWord += (int)pow(2.,2);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMLastStationTight))                myWord += (int)pow(2.,3);
+      if (muon::isGoodMuon(*trkmuoni, muon::TM2DCompatibilityLoose))            myWord += (int)pow(2.,4);
+      if (muon::isGoodMuon(*trkmuoni, muon::TM2DCompatibilityTight))            myWord += (int)pow(2.,5);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMOneStationLoose))                 myWord += (int)pow(2.,6);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMOneStationTight))                 myWord += (int)pow(2.,7);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMLastStationOptimizedLowPtLoose))  myWord += (int)pow(2.,8);
+      if (muon::isGoodMuon(*trkmuoni, muon::TMLastStationOptimizedLowPtTight))  myWord += (int)pow(2.,9);
       Reco_mu_trk_PIDmask[Reco_mu_trk_size]=myWord;
 
       Reco_mu_trk_caloComp[Reco_mu_trk_size]=trkmuoni->caloCompatibility();
-      Reco_mu_trk_segmComp[Reco_mu_trk_size]=trkmuoni->segmentCompatibility();
+      Reco_mu_trk_segmComp[Reco_mu_trk_size]=muon::segmentCompatibility(*trkmuoni);
       Reco_mu_trk_iso[Reco_mu_trk_size]=trkmuoni->isolationR03().sumPt;
 
       /* TMatrixD cov1(5,5);
@@ -1983,7 +2015,8 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
   TLorentzVector mu2=lorentzMomentum(*muon2);
   TLorentzVector onia = mu1 + mu2;
   Reco_QQ_type[Reco_QQ_size]=oniacato;
-  new((*Reco_QQ_4mom)[Reco_QQ_size])TLorentzVector(onia);
+  if (!theUseKinFit) new((*Reco_QQ_4mom)[Reco_QQ_size])TLorentzVector(onia);
+
   Reco_QQ_DeltaR[Reco_QQ_size]=deltaR(mu1, mu2);
   Reco_QQ_s[Reco_QQ_size] = pow((muon1->d0()/muon1->d0Error()),2)+pow((muon2->d0()/muon2->d0Error()),2);
   if ( muon1->charge() == 1 ) {
@@ -2003,51 +2036,124 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     Reco_QQ_muhpt[Reco_QQ_size]=m2;
     Reco_QQ_mulpt[Reco_QQ_size]=m1;
   }
-    
-  std::auto_ptr<VertexCollection> vertexCollection(new VertexCollection());
-  vector<TransientTrack> t_tks;
-  TransientTrack ttkp1   = (*theB).build(&(*muon1));
-  t_tks.push_back(ttkp1);
-  TransientTrack ttkp2   = (*theB).build(&(*muon2));
-  t_tks.push_back(ttkp2);
-  KalmanVertexFitter kvf;
-  TransientVertex tv = kvf.vertex(t_tks);
   
-  if (  tv.isValid() ) {
-    Reco_QQ_VtxIsVal[Reco_QQ_size]=true;
-    GlobalPoint v = tv.position();
-    GlobalError err = tv.positionError();
-    TVector3 vtx(0.0,0.0,0.0);
-    vtx.SetXYZ(v.x(),v.y(),v.z());
-    new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
+  TransientTrack ttkp1   = (*theB).build(&(*muon1));
+  TransientTrack ttkp2   = (*theB).build(&(*muon2));
+
+  if (theUseKinFit) {
+    // NUOVO VERTICE
+    KinematicParticleFactoryFromTransientTrack pFactory;
+
+    // The mass of a muon and the insignificant mass sigma to avoid singularities in the covariance matrix.
+    ParticleMass muon_mass = 0.1056583;
+    float muon_sigma = 0.0000000001;
+
+    float chi = 0.;
+    float ndf = 0.;
+
+    // making particles
+    vector<RefCountedKinematicParticle> allParticles;
+    allParticles.push_back(pFactory.particle (ttkp1,muon_mass,chi,ndf,muon_sigma));
+    allParticles.push_back(pFactory.particle (ttkp2,muon_mass,chi,ndf,muon_sigma));
+
+    // fit to the vertex
+    KinematicParticleVertexFitter kvFitter;
+    RefCountedKinematicTree myTree = kvFitter.fit(allParticles);
+    // cout << "Global vertex fit done\n";
+
+    myTree->movePointerToTheTop();
+    RefCountedKinematicParticle newQQ = myTree->currentParticle();
+    RefCountedKinematicVertex QQVertex = myTree->currentDecayVertex();
+
+    if (QQVertex->vertexIsValid()) {
+      
+      Reco_QQ_VtxIsVal[Reco_QQ_size]=true;
+      TVector3 vtx(0.0,0.0,0.0);
+      GlobalPoint v = QQVertex->vertexState().position();
+      GlobalError err = QQVertex->vertexState().error();
+      vtx.SetXYZ(v.x(),v.y(),v.z());
+      new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
+      
+      Reco_QQ_VxE[Reco_QQ_size]=sqrt(err.cxx());
+      Reco_QQ_VyE[Reco_QQ_size]=sqrt(err.cyy());
+      Reco_QQ_VzE[Reco_QQ_size]=sqrt(err.czz());
+      Reco_QQ_lxy[Reco_QQ_size]= v.perp();
+      Reco_QQ_lxyErr[Reco_QQ_size]= sqrt(err.rerr(v));
+      Reco_QQ_normChi2[Reco_QQ_size]= newQQ->chiSquared()/newQQ->degreesOfFreedom();
+      Reco_QQ_probChi2[Reco_QQ_size]= TMath::Prob(newQQ->chiSquared(), (int)newQQ->degreesOfFreedom());
+      TLorentzVector oniaPostFit(0.0,0.0,0.0,0.0);
+      oniaPostFit.SetPxPyPzE(newQQ->currentState().globalMomentum().x(),
+			     newQQ->currentState().globalMomentum().y(),
+			     newQQ->currentState().globalMomentum().z(),
+			     sqrt(pow(newQQ->currentState().mass(),2) +
+		     pow(newQQ->currentState().globalMomentum().mag(),2)));
+      
+      new((*Reco_QQ_4mom)[Reco_QQ_size])TLorentzVector(oniaPostFit);
+      TVector3 pperp(oniaPostFit.Px(), oniaPostFit.Py(), 0);
+      TVector3 vperp1(v.x(), v.y(), 0);
+      TVector3 vperp = vperp1 - vperp2;
+      double cosAlpha = vperp.Dot(pperp)/(vperp.Perp()*pperp.Perp());
+      double ctau = vperp.Perp()*cosAlpha*oniaMass/onia.Perp();
+      Reco_QQ_cosAlpha[Reco_QQ_size]= cosAlpha;
+      Reco_QQ_ctau[Reco_QQ_size]= ctau;
+    } else {
+      TVector3 vtx(-1,-1,-1);
+      new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
+      Reco_QQ_VxE[Reco_QQ_size]=-1;
+      Reco_QQ_VyE[Reco_QQ_size]=-1;
+      Reco_QQ_VzE[Reco_QQ_size]=-1;
+      Reco_QQ_lxy[Reco_QQ_size]= -1;
+      Reco_QQ_lxyErr[Reco_QQ_size]= -1;
+      Reco_QQ_normChi2[Reco_QQ_size]= -1;
+      Reco_QQ_probChi2[Reco_QQ_size]= -1;
+      new((*Reco_QQ_4mom)[Reco_QQ_size])TLorentzVector(onia);
+      Reco_QQ_cosAlpha[Reco_QQ_size]= -2;
+      Reco_QQ_ctau[Reco_QQ_size]= -100;
+    }
+  } else {
+    vector<TransientTrack> t_tks;
+    t_tks.push_back(ttkp1);
+    t_tks.push_back(ttkp2);
+
+    KalmanVertexFitter kvf;
+    TransientVertex tv = kvf.vertex(t_tks);
     
-    Reco_QQ_VxE[Reco_QQ_size]=sqrt(err.cxx());
-    Reco_QQ_VyE[Reco_QQ_size]=sqrt(err.cyy());
-    Reco_QQ_VzE[Reco_QQ_size]=sqrt(err.czz());
-    Reco_QQ_lxy[Reco_QQ_size]= v.perp();
-    Reco_QQ_lxyErr[Reco_QQ_size]= sqrt(err.rerr(v));
-    Reco_QQ_normChi2[Reco_QQ_size]= tv.normalisedChiSquared();
-    
-    TVector3 pperp(onia.Px(), onia.Py(), 0);
-    TVector3 vperp1(v.x(), v.y(), 0);
-    TVector3 vperp = vperp1 - vperp2;
-    double cosAlpha = vperp.Dot(pperp)/(vperp.Perp()*pperp.Perp());
-    double ctau = vperp.Perp()*cosAlpha*oniaMass/onia.Perp();
-    Reco_QQ_cosAlpha[Reco_QQ_size]= cosAlpha;
-    Reco_QQ_ctau[Reco_QQ_size]= ctau;
-  }
-  else {
-    Reco_QQ_VtxIsVal[Reco_QQ_size]=false;
-    TVector3 vtx(-1,-1,-1);
-    new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
-    Reco_QQ_VxE[Reco_QQ_size]=-1;
-    Reco_QQ_VyE[Reco_QQ_size]=-1;
-    Reco_QQ_VzE[Reco_QQ_size]=-1;
-    Reco_QQ_lxy[Reco_QQ_size]= -1;
-    Reco_QQ_lxyErr[Reco_QQ_size]= -1;
-    Reco_QQ_normChi2[Reco_QQ_size]= -1;
-    Reco_QQ_cosAlpha[Reco_QQ_size]= -2;
-    Reco_QQ_ctau[Reco_QQ_size]= -100;
+    if (  tv.isValid() ) {
+      Reco_QQ_VtxIsVal[Reco_QQ_size]=true;
+      GlobalPoint v = tv.position();
+      GlobalError err = tv.positionError();
+      TVector3 vtx(0.0,0.0,0.0);
+      vtx.SetXYZ(v.x(),v.y(),v.z());
+      new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
+      
+      Reco_QQ_VxE[Reco_QQ_size]=sqrt(err.cxx());
+      Reco_QQ_VyE[Reco_QQ_size]=sqrt(err.cyy());
+      Reco_QQ_VzE[Reco_QQ_size]=sqrt(err.czz());
+      Reco_QQ_lxy[Reco_QQ_size]= v.perp();
+      Reco_QQ_lxyErr[Reco_QQ_size]= sqrt(err.rerr(v));
+      Reco_QQ_normChi2[Reco_QQ_size]= tv.normalisedChiSquared();
+      Reco_QQ_probChi2[Reco_QQ_size]= TMath::Prob(tv.totalChiSquared(), (int)tv.degreesOfFreedom());
+      TVector3 pperp(onia.Px(), onia.Py(), 0);
+      TVector3 vperp1(v.x(), v.y(), 0);
+      TVector3 vperp = vperp1 - vperp2;
+      double cosAlpha = vperp.Dot(pperp)/(vperp.Perp()*pperp.Perp());
+      double ctau = vperp.Perp()*cosAlpha*oniaMass/onia.Perp();
+      Reco_QQ_cosAlpha[Reco_QQ_size]= cosAlpha;
+      Reco_QQ_ctau[Reco_QQ_size]= ctau;
+    } else {
+      Reco_QQ_VtxIsVal[Reco_QQ_size]=false;
+      TVector3 vtx(-1,-1,-1);
+      new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
+      Reco_QQ_VxE[Reco_QQ_size]=-1;
+      Reco_QQ_VyE[Reco_QQ_size]=-1;
+      Reco_QQ_VzE[Reco_QQ_size]=-1;
+      Reco_QQ_lxy[Reco_QQ_size]= -1;
+      Reco_QQ_lxyErr[Reco_QQ_size]= -1;
+      Reco_QQ_normChi2[Reco_QQ_size]= -1;
+      Reco_QQ_probChi2[Reco_QQ_size]= -1;
+      Reco_QQ_cosAlpha[Reco_QQ_size]= -2;
+      Reco_QQ_ctau[Reco_QQ_size]= -100;
+    }
   }
   // Here implement onia+gamma / onia+track combos
   if (theStoreChicFlag && Reco_QQ_sign[Reco_QQ_size]==0 && oniacato<=maxCatToStoreChic) {
@@ -2099,6 +2205,16 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
 double Onia2MuMu::invMass(const reco::Track& lhs, const reco::Track& rhs) const {
 
   return (lorentzMomentum(lhs) + lorentzMomentum(rhs)).Mag();
+
+}
+
+/////////////////////////////////////////////////////////////////////
+// Check if the PDG of a long-lived B-hadron
+/////////////////////////////////////////////////////////////////////
+bool Onia2MuMu::isAbHadron(int pdgID) const {
+
+  if (abs(pdgID) == 511 || abs(pdgID) == 521 || abs(pdgID) == 531 || abs(pdgID) == 5122) return true;
+  return false;
 
 }
 
