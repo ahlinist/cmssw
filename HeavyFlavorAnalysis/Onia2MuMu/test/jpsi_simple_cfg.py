@@ -7,9 +7,7 @@ process.load('Configuration/StandardSequences/Services_cff')
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-process.load("Configuration.StandardSequences.FakeConditions_cff")
-process.load('RecoEcal/EgammaClusterProducers/geometryForClustering_cff')
-
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
 
 process.maxEvents = cms.untracked.PSet(
@@ -24,44 +22,17 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
-
-      ### Jpsi prompt 0-20
-
-      ### Jpsi prompt 20-inf
-##        '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/24A8E425-CBC4-DD11-9807-001D09F23E53.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/42291295-CBC4-DD11-AC40-0030487D1BCC.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/4824D94F-CBC4-DD11-9A41-001D09F24DA8.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/7C8D5991-CBC4-DD11-8FC7-000423D99660.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/9A51C782-CBC4-DD11-A81A-001617C3B710.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/B6535C70-CBC4-DD11-B69B-0030487D1BCC.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/BEB95B9E-CBC4-DD11-96CD-000423D9939C.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/DC12A178-CBC4-DD11-98F6-001D09F241D2.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/DE1A649C-CBC4-DD11-8099-000423D6CA6E.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0002/F04FAB7C-CBC4-DD11-8070-000423D991F0.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/0CD9824F-EFC4-DD11-A792-001D09F29619.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/44606A5D-EFC4-DD11-A3D0-000423D6A6F4.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/4895C079-CBC4-DD11-986F-001D09F23D04.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/4C18B363-EFC4-DD11-A595-001D09F25325.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/66B80D4A-EFC4-DD11-AB7A-001D09F24353.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/70F3448A-F6C4-DD11-83AD-000423D9970C.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/8C28454A-EFC4-DD11-B9CC-000423D94534.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/CEF23D68-EFC4-DD11-80A9-001D09F251FE.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0003/D4217164-EFC4-DD11-B434-001D09F2546F.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0004/0246A5EF-05C5-DD11-B522-000423D98F98.root',
-##         '/store/relval/CMSSW_2_2_1/RelValJpsiMM_Pt_20_inf/GEN-SIM-RECO/IDEAL_V9_v1/0004/3C00FA80-FEC4-DD11-83BB-001617DBCF6A.root'
-
-       ### Jpsi non-prompt all pthat    
-
        ### test
-       'rfio:/castor/cern.ch/user/c/covarell/Jpsi-nonp-mumu/EVTGEN_inclBtoJpsiMuMu_10TeV_GEN_DIGI_L1_RAW_RECO_HLT_IDEAL_20.root'
+      # '/store/mc/Summer09/JPsiMuMu/GEN-SIM-RAW/MC_31X_V3-v1/0042/FC45EB99-A98B-DE11-B3B6-001EC9AF2055.root'
+    'file:/tmp/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
      
     )
 )
 
+process.GlobalTag.globaltag = 'MC_31X_V3::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
-    OutputFileName       = cms.string('InclusiveppToMu_pt25_225.root'),
-    # OutputFileName       = cms.string('test_2210.root'),
+    OutputFileName       = cms.string('test_312.root'),
     OniaType             = cms.int32(443),
     DebugLevel           = cms.int32(0),
     genParticlesLabel    = cms.InputTag("genParticles"),
@@ -73,12 +44,15 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVertices"),
     TrackLabel           = cms.InputTag("generalTracks"),
     PhotonLabel          = cms.InputTag("particleFlow"),
-    triggerEventLabel    = cms.InputTag("hltTriggerSummaryAOD::HLT"),
+    triggerEventLabel    = cms.string("hltTriggerSummaryAOD"),
+    triggerResultsLabel  = cms.string("TriggerResults"),
+    HLTprocessName8e29   = cms.string("HLT8E29"),
+    HLTprocessName1e31   = cms.string("HLT"),  
     L1GTReadoutRec       = cms.InputTag("gtDigis"),
-    HLTriggerResults     = cms.InputTag("TriggerResults::HLT"),
-    L1MuonLabel          = cms.InputTag("hltL1extraParticles"),
+    L1MuonLabel          = cms.InputTag("l1extraParticles"),
     PATMuonsLabel        = cms.InputTag("selectedLayer1Muons"),
     # PATPhotonsLabel      = cms.InputTag("selectedLayer1Photons"),
+    useKinFit            = cms.bool(False),
     StoreGenFlag         = cms.bool(True),
     StoreHLTFlag         = cms.bool(True),
     StoreL1Flag          = cms.bool(True),
