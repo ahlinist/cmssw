@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.20 $
-  \date $Date: 2009/08/20 16:34:50 $
+  \version $Revision: 1.21 $
+  \date $Date: 2009/08/24 21:27:12 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -349,7 +349,7 @@ private:
 	c->SetFrameFillColor(18);
 	gStyle->SetFrameFillColor(18);
         double scale = obj->GetBinContent(0,0);
-        if (scale>0)
+        if (scale>0) // problem histograms don't have underflow bins filled any more
         {
           obj->Scale(1./scale);
           obj->SetMinimum(0.);
@@ -358,6 +358,12 @@ private:
           //gStyle->SetPalette(20, errorFracColors);
           setErrorColor();
         }
+	else 
+	  {
+	    obj->SetMinimum(0.);
+	    obj->SetMaximum(1.);
+	    setErrorColor();
+	  }
         obj->SetOption("colz");
       }
 
