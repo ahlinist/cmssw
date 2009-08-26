@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.138 2009/08/25 17:43:31 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.139 2009/08/25 20:47:28 dellaric Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.138 $
-  \date $Date: 2009/08/25 17:43:31 $
+  \version $Revision: 1.139 $
+  \date $Date: 2009/08/25 20:47:28 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -61,6 +61,7 @@ class EERenderPlugin : public DQMRenderPlugin
   TH2C* text12;
   TH2C* text13;
   TH2C* text14;
+  TH2C* text15;
 
   int pCol3[7];
   int pCol4[10];
@@ -122,6 +123,7 @@ public:
       text12 = new TH2C( "ee_text12", "text12", 10, 0., 20., 10, 0., 20. );
       text13 = new TH2C( "ee_text13", "text13", 10, 0., 20., 10, 0., 20. );
       text14 = new TH2C( "ee_text14", "text14", 100, 0., 100., 100, 0., 100.);
+      text15 = new TH2C( "eb_text15", "text15", 9, 0., 45., 2, -10., 10. );
 
       text1->SetMinimum(  0.01 );
       text3->SetMinimum(  0.01 );
@@ -134,6 +136,8 @@ public:
       text11->SetMinimum( -9.01 );
       text12->SetMinimum( -9.01 );
       text13->SetMinimum( +0.01 );
+      text14->SetMinimum( -9.01 );
+      text15->SetMinimum( -9.01 );
 
       text6->SetMaximum( -0.01 );
       text7->SetMaximum( +9.01 );
@@ -143,6 +147,8 @@ public:
       text11->SetMaximum( -0.01 );
       text12->SetMaximum( -0.01 );
       text13->SetMaximum( +9.01 );
+      text14->SetMaximum( +9.01 );
+      text15->SetMaximum( +9.01 );
 
       for(short j=0; j<400; j++)
       {
@@ -270,6 +276,14 @@ public:
       text13->SetBinContent(5, 2, +5);
       text13->SetBinContent(3, 3, +4);
 
+      for(short i=0; i < 720; i++)
+        text14->SetBinContent(ixLabels[i],iyLabels[i],bincontentLabels[i]);
+
+      for(int i=1; i<=9; i++) {
+        text15->SetBinContent(i, 1, -1*i);
+        text15->SetBinContent(i, 2, i);
+      }
+
       text1->SetMarkerSize( 2 );
       text3->SetMarkerSize( 2 );
       text4->SetMarkerSize( 2 );
@@ -281,10 +295,9 @@ public:
       text11->SetMarkerSize( 2 );
       text12->SetMarkerSize( 2 );
       text13->SetMarkerSize( 2 );
-
       text14->SetMarkerSize(0.9);
-      for(short i=0; i < 720; i++)
-        text14->SetBinContent(ixLabels[i],iyLabels[i],bincontentLabels[i]);
+      text15->SetMarkerSize( 2 );
+
     }
 
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
@@ -613,6 +626,14 @@ private:
         obj->GetYaxis()->SetNdivisions(10);
       }
 
+      if( nbx == 50 && nby == 50 && name.find( "EETTT" ) == std::string::npos )
+      {
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10);
+        obj->GetYaxis()->SetNdivisions(10);
+      }
+
       if( nbx == 20 && nby == 20 )
       {
         gPad->SetGridx();
@@ -657,11 +678,11 @@ private:
         obj->GetYaxis()->SetNdivisions(10);
       }
 
-      if( nbx == 90 && nby == 20 )
+      if( nbx == 45 && nby == 20 )
       {
         gPad->SetGridx();
         gPad->SetGridy();
-        obj->GetXaxis()->SetNdivisions(18);
+        obj->GetXaxis()->SetNdivisions(9);
         obj->GetYaxis()->SetNdivisions(2);
       }
 
@@ -1677,17 +1698,17 @@ private:
         return;
       }
 
-//       if( nbx == 50 && nby == 50 )
-//       {
-//         int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-//         int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-//         int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-//         int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-//         text1->GetXaxis()->SetRange(x1, x2);
-//         text1->GetYaxis()->SetRange(y1, y2);
-//         text1->Draw("text,same");
-//         return;
-//       }
+      if( nbx == 50 && nby == 50 && name.find( "EETTT" ) == std::string::npos )
+      {
+        int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text1->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text1->GetXaxis()->SetRange(x1, x2);
+        text1->GetYaxis()->SetRange(y1, y2);
+        text1->Draw("text,same");
+        return;
+      }
 
       if( nbx == 10 && ( nby == 1 || nby == 5 ) )
       {
@@ -1710,6 +1731,18 @@ private:
         text4->GetXaxis()->SetRange(x1, x2);
         text4->GetYaxis()->SetRange(y1, y2);
         text4->Draw("text,same");
+        return;
+      }
+
+      if( nbx == 45 && nby == 20 )
+      {
+        int x1 = text15->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text15->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text15->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text15->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text15->GetXaxis()->SetRange(x1, x2);
+        text15->GetYaxis()->SetRange(y1, y2);
+        text15->Draw("text,same");
         return;
       }
 
