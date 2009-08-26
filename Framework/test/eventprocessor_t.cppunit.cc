@@ -25,7 +25,7 @@ $Id$
 
 #include "FWCore/PluginManager/interface/ProblemTracker.h"
 
-#include "FWCore/ParameterSet/interface/PythonProcessDesc.h"
+#include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 
 #include "DataFormats/Provenance/interface/ModuleDescription.h"
 

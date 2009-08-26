@@ -16,7 +16,7 @@
 
 // user include files
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
-#include "FWCore/ParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
 
 //
 // constants, enums and typedefs
