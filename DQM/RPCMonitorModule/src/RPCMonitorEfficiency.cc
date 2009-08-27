@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.29 2009/07/27 08:12:19 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.30 2009/08/21 09:50:41 carrillo Exp $
 //
 //
 
@@ -83,16 +83,13 @@ public:
   TH1F * MeanResiduals;
   TH1F * MeanResiduals11;
 
+  TH1F * RMSResiduals;
+  TH1F * RMSResiduals11;
+
   TH2F * bxbarrel;
   TH2F * bxendcap;
   
-
-
-
   //Endcap
-
-
-
 
   TH1F * residualDisk1Ring2;
   TH1F * residualDisk1Ring3;
@@ -911,6 +908,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   MeanResiduals = new TH1F ("Mean_Residuals_Distribution","Mean_Residuals_Distribution",20,-5,5);
   MeanResiduals11 = new TH1F ("Mean_Residuals_Distribution_1cm","Mean_Residuals_Distribution_1cm",20,-1,1);
+
+  RMSResiduals = new TH1F ("RMS_Residuals_Distribution","RMS_Residuals_Distribution",20,-5,5);
+  RMSResiduals11 = new TH1F ("RMS_Residuals_Distribution_1cm","RMS_Residuals_Distribution_1cm",20,-1,1);
   
   //Producing plots for residuals and global statistics.
 
@@ -1805,9 +1805,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float nopredictionsratio = (float(NumberWithOutPrediction)/float(nstrips))*100.;
 
 	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
-	  
-	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
-	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
+
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70){ 
+	    MeanResiduals->Fill(histoResidual->GetMean());  
+	    RMSResiduals->Fill(histoResidual->GetRMS()); 
+	    MeanResiduals11->Fill(histoResidual->GetMean()); 
+	    RMSResiduals11->Fill(histoResidual->GetRMS());
+	  }
 	  
 	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
 			     <<" AverageEff"<<averageeff
@@ -2675,8 +2679,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  alignment<<name<<"  "<<rpcId.rawId()<<" "<<histoResidual->GetMean()<<" "<<histoResidual->GetRMS()<<std::endl;
 	  
-	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals->Fill(histoResidual->GetMean());
-	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70) MeanResiduals11->Fill(histoResidual->GetMean());
+	  
+	  if(histoResidual->GetMean()!=0. && averageeff > 10. && nopredictionsratio < 70){
+	    //MeanResiduals->Fill(histoResidual->GetMean());  
+	    //RMSResiduals->Fill(histoResidual->GetRMS()); 
+	    //MeanResiduals11->Fill(histoResidual->GetMean()); 
+	    //RMSResiduals11->Fill(histoResidual->GetRMS());
+	  }
 	  
 	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
 			     <<" AverageEff"<<averageeff
@@ -4204,6 +4213,14 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca9->SaveAs("MeanResiduals11.png");  MeanResiduals11->Write();
   Ca9->Clear();
 
+  RMSResiduals->Draw(); RMSResiduals->GetXaxis()->SetTitle("cm");
+  Ca9->SaveAs("RMSResiduals.png");  RMSResiduals->Write();
+  Ca9->Clear();
+  
+  RMSResiduals11->Draw(); RMSResiduals11->GetXaxis()->SetTitle("cm");
+  Ca9->SaveAs("RMSResiduals11.png");  RMSResiduals11->Write();
+  Ca9->Clear();
+
   Ca9->Close();
 
   if(endcap){
@@ -5018,6 +5035,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
  MeanResiduals11->Write();
  MeanResiduals->Write();
+ RMSResiduals11->Write();
+ RMSResiduals->Write();
 
  Wheelm2Summary->Write();
  Wheelm1Summary->Write();
