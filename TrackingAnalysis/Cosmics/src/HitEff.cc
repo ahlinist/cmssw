@@ -54,6 +54,10 @@
 #include "DataFormats/Common/interface/DetSetVectorNew.h"
 #include "DataFormats/SiStripCluster/interface/SiStripCluster.h" 
 
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+
+
 #include "TMath.h"
 #include "TH1F.h"
 
@@ -99,7 +103,12 @@ void HitEff::beginJob(const edm::EventSetup& c){
   traj->Branch("Id",&Id,"Id/i");
   traj->Branch("run",&run,"run/i");
   traj->Branch("event",&event,"event/i");
-  traj->Branch("layer",&layers,"layer/i");
+  traj->Branch("layer",&whatlayer,"layer/i");
+  traj->Branch("timeInOut",&timeInOut,"timeInOut/F");
+  traj->Branch("timeInOutErr",&timeInOutErr,"timeInOutErr/F");
+  traj->Branch("timeOutIn",&timeOutIn,"timeOutIn/F");
+  traj->Branch("timeOutInErr",&timeOutInErr,"timeOutInErr/F");
+  traj->Branch("timeDOF",&timeDOF,"timeDOF/F");
 
   events = 0;
   EventTrackCKF = 0;
@@ -114,6 +123,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   if (DEBUG)  cout << "beginning analyze from HitEff" << endl;
 
   using namespace edm;
+  using namespace reco;
   // Step A: Get Inputs 
 
   int run_nr = e.id().run();
@@ -156,6 +166,21 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   edm::ESHandle<MagneticField> magFieldHandle;
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
+
+  timeInOut = -999.0; timeInOutErr = -999.0; timeOutIn = -999.0; timeOutInErr = -999.0; timeDOF = -999;
+  // retrieve the muon time
+  Handle<MuonCollection> muH;
+  e.getByLabel("muonsWitht0Correction",muH);
+  const MuonCollection & muonsT0  =  *muH.product();
+  cout << "muonsT0 size = " << muonsT0.size() << endl;
+  if(muonsT0.size()<1) return;
+  MuonTime mt0 = muonsT0[0].time();
+  timeInOut = mt0.timeAtIpInOut; 
+  timeInOutErr = mt0.timeAtIpInOutErr;
+  timeOutIn = mt0.timeAtIpOutIn; 
+  timeOutInErr = mt0.timeAtIpOutInErr;
+  timeDOF = mt0.nDof;
+    cout << "timeInOut = " << timeInOut << "+-" << timeInOutErr << "    timeOutIn = " << timeOutIn << "+-" << timeOutInErr << " with dof = " << timeDOF << endl;
 
   events++;
   
@@ -302,8 +327,8 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	  YINTCons = 1.0;  // TOB Bonding Region cut
 	}
 	
-	if (layers == TKlayers) {   // Look at the layer not used to reconstruct the track
-	  
+	if ( (layers == TKlayers) || (layers == 0) ) {   // Look at the layer not used to reconstruct the track
+	  whatlayer = TKlayers;
 	  if (DEBUG)	  cout << "Looking at layer under study" << endl;
 	  TrajGlbX = 0.0; TrajGlbY = 0.0; TrajGlbZ = 0.0; ModIsBad = 0; Id = 0; SiStripQualBad = 0; 
 	  run = 0; event = 0; TrajLocX = 0.0; TrajLocY = 0.0; TrajLocErrX = 0.0; TrajLocErrY = 0.0; 
