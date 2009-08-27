@@ -67,6 +67,7 @@ class HitEff : public edm::EDAnalyzer {
   TrackLocalAngle* theAngleFinder;
   uint layers;
   bool DEBUG;
+  uint whatlayer;
   
   // Tree declarations
   // Trajectory positions for modules included in the study
@@ -76,6 +77,9 @@ class HitEff : public edm::EDAnalyzer {
   float ResX, ResXSig;
   uint ModIsBad; uint Id; uint SiStripQualBad; bool withinAcceptance;
   uint run; uint event;
+  float timeInOut, timeInOutErr;
+  float timeOutIn, timeOutInErr;
+  int timeDOF;
 };
 
 
