@@ -545,7 +545,12 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    float dx=segmentDirection.x();
 	    float dy=segmentDirection.y();
 	    float dz=segmentDirection.z();
-	    
+	    /*
+	      For cut in incident angle
+	    float cosal = dx/sqrt(dx*dx+dz*dz);
+	    float angle = acos(cosal)*180/3.1415926;
+	    if(angle<90.-20. || angle >90.+20.) continue;
+	    */
 	    std::set<RPCDetId> rollsForThisDT = rollstoreDT[DTStationIndex(0,dtWheel,dtSector,dtStation)];
 
 	    if(debug) std::cout<<"DT  \t \t Number of rolls for this DT = "<<rollsForThisDT.size()<<std::endl;
@@ -831,7 +836,17 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       
 	  LocalPoint segmentPosition= segment->localPosition();
 	  LocalVector segmentDirection=segment->localDirection();
-            
+	  
+
+	  /*for cut in incident angle
+	  float bufdx=segmentDirection.x();
+	  float bufdz=segmentDirection.z();
+  
+	  float cosal = bufdx/sqrt(bufdx*bufdx+bufdz*bufdz);
+	  float angle = acos(cosal)*180/3.1415926;
+	  if(angle<90.-20. || angle >90.+20.) continue;
+	  */
+	  
 	  //check if the dimension of the segment is 2 and the station is 4
 	  
 	  
