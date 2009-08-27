@@ -108,7 +108,7 @@ void HitEff::beginJob(const edm::EventSetup& c){
   traj->Branch("timeInOutErr",&timeInOutErr,"timeInOutErr/F");
   traj->Branch("timeOutIn",&timeOutIn,"timeOutIn/F");
   traj->Branch("timeOutInErr",&timeOutInErr,"timeOutInErr/F");
-  traj->Branch("timeDOF",&timeDOF,"timeDOF/F");
+  traj->Branch("timeDOF",&timeDOF,"timeDOF/I");
 
   events = 0;
   EventTrackCKF = 0;
