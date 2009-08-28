@@ -22,6 +22,7 @@ public:
 
       if( (o.name.find( "/RecHits/" ) != std::string::npos )||
 	  (o.name.find( "/RPCEfficiency" ) != std::string::npos )||
+	  (o.name.find( "/FEDIntegrity" ) != std::string::npos )||
           (o.name.find("/EventInfo") != std::string::npos))
         return true;
 
