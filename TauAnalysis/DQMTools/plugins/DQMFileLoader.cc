@@ -254,6 +254,7 @@ void DQMFileLoader::endJob()
 
   std::cout << "done." << std::endl; 
   if ( verbosity ) dqmStore.showDirStructure();
+  //dqmStore.showDirStructure();
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
