@@ -26,9 +26,9 @@ electronTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
     minNumber = cms.uint32(1)
 )
 
-tausBgEstPreselection = cms.EDFilter("PATTauSelector",
+tausBgEstPreselection = cms.EDFilter("PATTauAntiOverlapSelector",
     src = cms.InputTag('selectedLayer1TausProngCumulative'),    
-    srcNotToBeFiltered = cms.InputTag('electronsBgEstPreselection'),                                        
+    srcNotToBeFiltered = cms.VInputTag('electronsBgEstPreselection'),                                        
     dRmin = cms.double(0.7),                       
     filter = cms.bool(False)
 )

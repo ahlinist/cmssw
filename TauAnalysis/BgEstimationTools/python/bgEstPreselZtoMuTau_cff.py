@@ -38,9 +38,9 @@ tausBgEstPreselLooseEcalIso = cms.EDFilter("PATTauSelector",
     filter = cms.bool(False)                                   
 )
 
-tausBgEstPreselection = cms.EDFilter("PATTauSelector",
+tausBgEstPreselection = cms.EDFilter("PATTauAntiOverlapSelector",
     src = cms.InputTag('tausBgEstPreselLooseEcalIso'),    
-    srcNotToBeFiltered = cms.InputTag('muonsBgEstPreselection'),                                        
+    srcNotToBeFiltered = cms.VInputTag('muonsBgEstPreselection'),                                        
     dRmin = cms.double(0.7),                       
     filter = cms.bool(False)
 )
