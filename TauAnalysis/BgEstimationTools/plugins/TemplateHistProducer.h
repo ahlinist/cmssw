@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: TemplateHistProducer.h,v 1.3 2009/07/25 18:36:58 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.4 2009/08/12 14:34:53 veelken Exp $
  *
  */
 
@@ -32,6 +32,14 @@
 class TemplateHistProducer : public edm::EDAnalyzer
 {
   typedef std::vector<double> vdouble;
+
+  struct eventWeightEntryType
+  {
+    eventWeightEntryType(const std::string& branchName)
+      : branchName_(branchName), value_(1.) {}
+    std::string branchName_;
+    Float_t value_;
+  };
 
   struct jobEntryType
   { 
@@ -69,8 +77,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
 
   std::string treeSelection_;
 
-  std::string branchName_eventWeight_;
-  Float_t eventWeight_;
+  std::vector<eventWeightEntryType> eventWeights_;
 
   double norm_;
 

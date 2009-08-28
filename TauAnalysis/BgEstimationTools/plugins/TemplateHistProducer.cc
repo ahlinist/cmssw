@@ -32,7 +32,14 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
     readJobEntry(cfg);
   }
 
-  branchName_eventWeight_ = ( cfg.exists("branchNameEventWeight") ) ? cfg.getParameter<std::string>("branchNameEventWeight") : "";
+  vstring branchNames_eventWeight = ( cfg.exists("branchNamesEventWeight") ) ? 
+    cfg.getParameter<vstring>("branchNamesEventWeight") : vstring();
+  for ( vstring::const_iterator branchName_eventWeight = branchNames_eventWeight.begin();
+	branchName_eventWeight != branchNames_eventWeight.end(); ++branchName_eventWeight ) {
+    std::cout << "--> adding event weight branch = " << (*branchName_eventWeight) << std::endl;
+    eventWeightEntryType eventWeightEntry(*branchName_eventWeight);
+    eventWeights_.push_back(eventWeightEntry);
+  }
 
   norm_ = ( cfg.exists("norm") ) ? cfg.getParameter<double>("norm") : -1.;
 }
@@ -157,30 +164,41 @@ void TemplateHistProducer::endJob()
     selEventsTree_->SetBranchAddress(jobEntry->branchName_objValue_.data(), &jobEntry->objValue_);
   }
   
-  if ( branchName_eventWeight_ != "" ) {
-    selEventsTree_->SetBranchAddress(branchName_eventWeight_.data(), &eventWeight_);
-  } else {
-    eventWeight_ = 1.;
+  for ( std::vector<eventWeightEntryType>::iterator eventWeightEntry = eventWeights_.begin();
+	eventWeightEntry != eventWeights_.end(); ++eventWeightEntry ) {
+    std::cout << "--> setting address of event weight branch = " << eventWeightEntry->branchName_ << std::endl;
+    selEventsTree_->SetBranchAddress(eventWeightEntry->branchName_.data(), &eventWeightEntry->value_);
   }
 
 //--- read all entries from chain;
 //    fill template histograms
-  double sumWeighted = 0.;
-
+  std::map<std::string, double> numEvents;
+    
   int numEntries = selEventsTree_->GetEntries();
   for ( int iEntry = 0 ; iEntry < numEntries; ++iEntry ) {
     selEventsTree_->GetEvent(iEntry);  
 
-    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-	  jobEntry != jobs_.end(); ++jobEntry ) {
-      jobEntry->me_->Fill(jobEntry->objValue_, eventWeight_);
+    double eventWeight = 1.;
+    for ( std::vector<eventWeightEntryType>::iterator eventWeightEntry = eventWeights_.begin();
+	  eventWeightEntry != eventWeights_.end(); ++eventWeightEntry ) {
+      eventWeight *= eventWeightEntry->value_;
+
+      numEvents[eventWeightEntry->branchName_] += eventWeight;
     }
 
-    sumWeighted += eventWeight_;
+    std::cout << " eventWeight = " << eventWeight << std::endl;
+
+    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
+	  jobEntry != jobs_.end(); ++jobEntry ) {
+      jobEntry->me_->Fill(jobEntry->objValue_, eventWeight);
+    }
   }
 
-  std::cout << " sum of weights = " << sumWeighted << std::endl;
-
+  for ( std::map<std::string, double>::const_iterator numEvents_i = numEvents.begin();
+	numEvents_i != numEvents.end(); ++numEvents_i ) {
+    std::cout << " sum of weights after " << numEvents_i->first << " = " << numEvents_i->second << std::endl;
+  }
+  
 //--- normalize template histograms
 //    (to unit area)
   if ( norm_ != -1. ) {
