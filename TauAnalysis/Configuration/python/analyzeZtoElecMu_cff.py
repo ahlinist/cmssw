@@ -63,10 +63,11 @@ analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
         electronHistManager,
         muonHistManager,
         diTauCandidateHistManagerForElecMu,
+        jetHistManager,
         metHistManager,
         vertexHistManager,
         triggerHistManager,
-        jetHistManager
+        eventWeightHistManager
     ),
 
     eventDumps = cms.VPSet(
