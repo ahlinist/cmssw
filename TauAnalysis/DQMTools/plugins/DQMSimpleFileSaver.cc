@@ -18,6 +18,8 @@ DQMSimpleFileSaver::DQMSimpleFileSaver(const edm::ParameterSet& cfg)
 
   cfgError_ = 0;
 
+  dqmDirectories_drop_ = cfg.exists("drop") ? cfg.getParameter<vstring>("drop") : vstring();
+
   outputFileName_ = cfg.getParameter<std::string>("outputFileName");
   if ( outputFileName_ == "" ) {
     edm::LogError("DQMSimpleFileSaver") << " No outputFileName specified --> histograms will NOT be saved !!";
@@ -55,7 +57,19 @@ void DQMSimpleFileSaver::endJob()
   }  
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
+
+//--- delete all MonitorElements in directories specified to be dropped 
+//    before saving MonitorElements (the ones that were not dropped) into ROOT file
+  for ( vstring::const_iterator dqmDirectory_drop = dqmDirectories_drop_.begin();
+	dqmDirectory_drop != dqmDirectories_drop_.end(); ++dqmDirectory_drop ) {
+    
+    std::cout << " dropping all MonitorElement in directory = " << (*dqmDirectory_drop) << std::endl;
+
+    dqmStore.rmdir(*dqmDirectory_drop);
+  }
+
   //dqmStore.showDirStructure();
+  
   dqmStore.save(outputFileName_);      
 }
 
