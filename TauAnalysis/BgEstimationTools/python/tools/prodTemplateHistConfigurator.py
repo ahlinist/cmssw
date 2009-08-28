@@ -18,6 +18,7 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
         self.dqmDirectory = dqmDirectory
         self.fileSets = dict()
         self.selections = dict()
+        self.kineEventReweights = dict()
         self.branchNames = dict()
         self.numBinsX = dict()
         self.xMin = dict()
@@ -27,8 +28,9 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
     def addProcess(self, processName, fileNames):
         self.fileSets[processName] = fileNames
 
-    def addSelection(self, processName, treeSelection):
+    def addSelection(self, processName, treeSelection, kineEventReweight = None):
         self.selections[processName] = treeSelection
+        self.kineEventReweights[processName] = kineEventReweight
 
     def addTemplate(self, meName, branchName, numBinsX, xMin, xMax):
         self.branchNames[meName] = branchName
@@ -43,6 +45,10 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
                     
                 setattr(module, "fileNames", fileNames)
                 setattr(module, "treeSelection", treeSelection)
+
+                if self.kineEventReweights[processName_sel] is not None:
+                    branchNamesEventWeight = getattr(module, "branchNamesEventWeight")
+                    branchNamesEventWeight.append(self.kineEventReweights[processName_sel])
 
                 moduleName = self.moduleName + "_" + processName_sel + "_"
                 dqmDirectory_process = ""
