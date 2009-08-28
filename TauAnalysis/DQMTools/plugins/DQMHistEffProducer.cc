@@ -53,7 +53,7 @@ DQMHistEffProducer::DQMHistEffProducer(const edm::ParameterSet& cfg)
     edm::ParameterSet plotConfig = plots.getParameter<edm::ParameterSet>(*plotName);
 
     typedef std::vector<std::string> vstring;
-    vstring plotParameter = plotConfig.getParameter<vstring>("parameter");
+    vstring plotParameter = ( plotConfig.exists("parameter") ) ? plotConfig.getParameter<vstring>("parameter") : vstring();
     if ( plotParameter.size() == 0 ) {
       cfgEntryPlot_.push_back(cfgEntryPlot(plotConfig));
     } else {
