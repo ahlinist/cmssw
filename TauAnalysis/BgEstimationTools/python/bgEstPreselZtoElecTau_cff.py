@@ -26,17 +26,24 @@ electronTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
     minNumber = cms.uint32(1)
 )
 
+tausBgEstPreselection = cms.EDFilter("PATTauSelector",
+    src = cms.InputTag('selectedLayer1TausProngCumulative'),    
+    srcNotToBeFiltered = cms.InputTag('electronsBgEstPreselection'),                                        
+    dRmin = cms.double(0.7),                       
+    filter = cms.bool(False)
+)
+
 tauProngCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
     pluginName = cms.string("tauProngCutBgEstPreselection"),
     pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('selectedLayer1TausProngCumulative'),
+    src = cms.InputTag('tausBgEstPreselection'),
     minNumber = cms.uint32(1)                                                
 )
 
 elecTauPairsBgEstPreselection = cms.EDProducer("PATElecTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
     srcLeg1 = cms.InputTag('electronsBgEstPreselection'),
-    srcLeg2 = cms.InputTag('selectedLayer1TausProngCumulative'),
+    srcLeg2 = cms.InputTag('tausBgEstPreselection'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('layer1METs'),
     recoMode = cms.string(""),
@@ -75,7 +82,7 @@ from TauAnalysis.RecoTools.patJetSelection_cff import *
 selectedLayer1JetsAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag(
     "electronsBgEstPreselection",
     "selectedLayer1MuonsTrkIPcumulative",
-    "selectedLayer1TausProngCumulative"
+    "tausBgEstPreselection"
 )
 
 
