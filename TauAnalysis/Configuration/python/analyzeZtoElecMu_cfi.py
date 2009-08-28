@@ -52,6 +52,9 @@ triggerHistManager.hltPaths = cms.vstring(
     'HLT_IsoEle8_IsoMu7'
 )
 
+# import config for event weight histogram manager
+from TauAnalysis.Core.eventWeightHistManager_cfi import *
+
 #--------------------------------------------------------------------------------
 # define event selection criteria
 #--------------------------------------------------------------------------------
