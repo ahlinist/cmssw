@@ -215,13 +215,13 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
         ),
-        numCentralJetsAlpha0_1 = cms.PSet(
+        numCentralJetsAlpha0point1 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0_1Cumulative')
+            src = cms.InputTag('selectedLayer1JetsAlpha0point1Cumulative')
         ),
-        numCentralJetsAlpha0_3 = cms.PSet(
+        numCentralJetsAlpha0point3 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0_3Cumulative')
+            src = cms.InputTag('selectedLayer1JetsAlpha0point3Cumulative')
         ),
         numCentralJetsEt40 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
