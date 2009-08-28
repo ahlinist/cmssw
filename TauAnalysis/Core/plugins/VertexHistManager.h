@@ -5,12 +5,12 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
-#include <vector>
+#include "TauAnalysis/Core/interface/HistManagerBase.h"
+
 #include <string>
 
 class VertexHistManager : public HistManagerBase 

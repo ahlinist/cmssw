@@ -5,10 +5,11 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+
+#include "TauAnalysis/Core/interface/HistManagerBase.h"
 
 #include <vector>
 #include <string>
@@ -29,6 +30,8 @@ class ElectronHistManager : public HistManagerBase
   void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   void bookElectronIsoConeSizeDepHistograms(DQMStore&);
 
+  double getElectronWeight(const pat::Electron&);
+
   void fillElectronHistograms(const pat::Electron&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillElectronIsoHistograms(const pat::Electron&, double);
   void fillElectronIsoConeSizeDepHistograms(const pat::Electron&, double);
@@ -41,7 +44,8 @@ class ElectronHistManager : public HistManagerBase
   std::string dqmDirectory_store_;
 
   bool requireGenElectronMatch_;
-
+  
+  bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
   unsigned numElectronIsoConeSizes_;
@@ -120,6 +124,9 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPFChargedHadronIsoPt_;
   MonitorElement* hElectronPFNeutralHadronIsoPt_;
   MonitorElement* hElectronPFGammaIsoPt_;
+
+  MonitorElement* hElectronPFChargedHadronIsoPtCtrl_;
+  MonitorElement* hElectronPFGammaIsoPtCtrl_;
 
   std::vector<MonitorElement*> hElectronParticleFlowIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hElectronPFChargedHadronIsoPtConeSizeDep_;

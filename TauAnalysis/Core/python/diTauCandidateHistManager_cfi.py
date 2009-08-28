@@ -10,6 +10,9 @@ diTauCandidateHistManager = cms.PSet(
 
   dqmDirectory_store = cms.string('DiTauCandidateQuantities'),
 
-  #requireGenMatch = cms.bool(True)
-  requireGenMatch = cms.bool(False)
+  #requireGenMatch = cms.bool(True),
+  requireGenMatch = cms.bool(False),
+
+  #normalization = cms.string("diTauCandidates")
+  normalization = cms.string("events")
 )

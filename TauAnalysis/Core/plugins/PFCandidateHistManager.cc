@@ -23,6 +23,9 @@ PFCandidateHistManager::PFCandidateHistManager(const edm::ParameterSet& cfg)
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
+  
+  std::string normalization_string = cfg.getParameter<std::string>("normalization");
+  normMethod_ = getNormMethod(normalization_string, "pfCandidates");
 }
 
 PFCandidateHistManager::~PFCandidateHistManager()
@@ -60,11 +63,15 @@ void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
   edm::Handle<std::vector<reco::PFCandidate> > pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
 
+  double pfCandidateWeightSum = pfCandidates->size();
+
   for ( std::vector<reco::PFCandidate>::const_iterator pfCandidate = pfCandidates->begin(); 
 	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
+
+    double weight = ( normMethod_ == kNormEvents ) ? evtWeight/pfCandidateWeightSum : 1.;
   
-    fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, evtWeight);
-    hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), evtWeight);
+    fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
+    hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);
   }
 }
 

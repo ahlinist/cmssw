@@ -7,6 +7,9 @@ tauRecoilEnergyFromJetsHistManager = cms.PSet(
     leptonRecoilEnergySource = cms.InputTag('tauRecoilEnergyFromJets'),
 
     dqmDirectory_store = cms.string('TauRecoilEnergyFromJetsQuantities'),
+
+    #normalization = cms.string("taus")
+    normalization = cms.string("events")
 )
 
 tauRecoilEnergyFromCaloTowersHistManager = cms.PSet(    
@@ -16,4 +19,7 @@ tauRecoilEnergyFromCaloTowersHistManager = cms.PSet(
     leptonRecoilEnergySource = cms.InputTag('tauRecoilEnergyFromCaloTowers'),
 
     dqmDirectory_store = cms.string('TauRecoilEnergyFromCaloTowersQuantities'),
+
+    #normalization = cms.string("leptons")
+    normalization = cms.string("events")
 )
