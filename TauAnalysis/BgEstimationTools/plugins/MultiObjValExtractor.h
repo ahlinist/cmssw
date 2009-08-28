@@ -11,7 +11,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: MultiObjValExtractor.h,v 1.1 2009/02/04 15:53:56 veelken Exp $
+ * $Id: MultiObjValExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
  *
  */
 
@@ -27,6 +27,7 @@
 class MultiObjValExtractor : public ObjValVectorExtractorBase
 {
  public:
+
   // constructor 
   explicit MultiObjValExtractor(const edm::ParameterSet&);
   
@@ -40,6 +41,7 @@ class MultiObjValExtractor : public ObjValVectorExtractorBase
   std::vector<double> operator()(const edm::Event&) const;
 
  private:
+
   std::vector<ObjValExtractorBase*> objValExtractors_;
 };
 
