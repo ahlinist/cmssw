@@ -3,6 +3,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
@@ -89,8 +90,11 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   requireGenTauMatch_ = cfg.getParameter<bool>("requireGenTauMatch");
   //std::cout << " requireGenTauMatch = " << requireGenTauMatch_ << std::endl;
 
-  makePFIsoPtCtrlHistograms_ = ( cfg.exists("makePFIsoPtCtrlHistograms") ) ? 
-    cfg.getParameter<bool>("makePFIsoPtCtrlHistograms") : false;
+  std::string normalization_string = cfg.getParameter<std::string>("normalization");
+  normMethod_ = getNormMethod(normalization_string, "taus");
+
+  makeIsoPtCtrlHistograms_ = ( cfg.exists("makeIsoPtCtrlHistograms") ) ? 
+    cfg.getParameter<bool>("makeIsoPtCtrlHistograms") : false;
 
   makeIsoPtConeSizeDepHistograms_ = ( cfg.exists("makeIsoPtConeSizeDepHistograms") ) ? 
     cfg.getParameter<bool>("makeIsoPtConeSizeDepHistograms") : false;
@@ -198,14 +202,13 @@ void TauHistManager::bookHistograms()
 
 //--- book "control" histograms to check agreement between tau isolation variables
 //    computed by PAT-level IsoDeposits with the values computed by reco::PFTau producer
-  if ( makePFIsoPtCtrlHistograms_ ) {
-    hTauPFChargedHadronIsoPtCtrl_ = dqmStore.book2D("TauPFChargedHadronIsoPtCtrl", 
-						    "Particle Flow (Charged Hadron) Isolation P_{T} (reco::PFTau vs. IsoDeposit)",
-						    40, 0., 20., 40, 0., 20.);
-    hTauPFGammaIsoPtCtrl_ = dqmStore.book2D("TauPFGammaIsoPtCtrl", 
-					    "Particle Flow (Photon) Isolation P_{T} (reco::PFTau vs. IsoDeposit)",
-					    40, 0., 20., 40, 0., 20.);
-  }
+  if ( makeIsoPtCtrlHistograms_ ) {
+    hTauPFChargedHadronIsoPtCtrl_ = dqmStore.book2D("TauPFChargedHadronIsoPtCtrl", "Particle Flow (Charged Hadron) Isolation P_{T} (reco::PFTau vs. IsoDeposit)", 40, 0., 20., 40, 0., 20.);
+    hTauPFGammaIsoPtCtrl_ = dqmStore.book2D("TauPFGammaIsoPtCtrl", "Particle Flow (Photon) Isolation P_{T} (reco::PFTau vs. IsoDeposit)", 40, 0., 20., 40, 0., 20.);
+  } else {
+    hTauPFChargedHadronIsoPtCtrl_ = 0;
+    hTauPFGammaIsoPtCtrl_ = 0;
+  } 
   
   hTauTrkIsoEnProfile_ = dqmStore.book1D("TauTrkIsoEnProfile", "All Isolation Tracks #Delta P", 100, 0., 10.);
   hTauTrkIsoPtProfile_ = dqmStore.book1D("TauTrkIsoPtProfile", "All Isolation Tracks #Delta P_{T}", 100, 0., 10.);
@@ -252,6 +255,11 @@ bool isIndexed(int patTauIndex, const std::vector<int>& tauIndicesToPlot)
   return isIndexed;
 }
 
+double TauHistManager::getTauWeight(const pat::Tau& patTau)
+{
+  return ( tauJetWeightExtractor_ ) ? (*tauJetWeightExtractor_)(patTau) : 1.;
+}
+
 void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<TauHistManager::fillHistograms>:" << std::endl; 
@@ -269,13 +277,13 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
   double tauJetWeightSum = 0.;
   int patTauIndex = 0;
-  if ( tauJetWeightExtractor_ ) {
-    for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 
-	  patTau != patTaus->end(); ++patTau, ++patTauIndex ) {
-      if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex, tauIndicesToPlot_)) ) continue;
+  for ( std::vector<pat::Tau>::const_iterator patTau = patTaus->begin(); 
+	patTau != patTaus->end(); ++patTau, ++patTauIndex ) {
+    if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex, tauIndicesToPlot_)) ) continue;
 
-      tauJetWeightSum += (*tauJetWeightExtractor_)(*patTau);
-    }
+    if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
+
+    tauJetWeightSum += getTauWeight(*patTau);
   }
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
@@ -286,17 +294,13 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     if ( tauIndicesToPlot_.size() > 0 && (!isIndexed(patTauIndex, tauIndicesToPlot_)) ) continue;
 
-    double weight = evtWeight;
-    if ( tauJetWeightExtractor_ ) {
-      double tauJetWeight = (*tauJetWeightExtractor_)(*patTau);
-      weight *= (tauJetWeight/tauJetWeightSum);
-    }
-
     //bool isGenTauMatched = matchesGenTau(*patTau);
     //std::cout << " Pt = " << patTau->pt() << ", eta = " << patTau->eta() << ", phi = " << patTau->phi() << std::endl;
     //std::cout << " isGenTauMatched = " << isGenTauMatched << std::endl;
 
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
+
+    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(getTauWeight(*patTau)/tauJetWeightSum) : getTauWeight(*patTau);
 
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
@@ -469,7 +473,7 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralParticleIso(), weight);
   hTauPFGammaIsoPt_->Fill(patTau.gammaParticleIso(), weight);
 
-  if ( makePFIsoPtCtrlHistograms_ ) {
+  if ( makeIsoPtCtrlHistograms_ ) {
     double sumPtIsolationConePFChargedHadrons = 0.;
     for ( reco::PFCandidateRefVector::const_iterator pfChargedHadron = patTau.isolationPFChargedHadrCands().begin();
 	  pfChargedHadron != patTau.isolationPFChargedHadrCands().end(); ++pfChargedHadron ) {

@@ -52,6 +52,9 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 
   requireGenMatch_ = cfg.getParameter<bool>("requireGenMatch");
   //std::cout << " requireGenMatch = " << requireGenMatch_ << std::endl;
+
+  std::string normalization_string = cfg.getParameter<std::string>("normalization");
+  normMethod_ = getNormMethod(normalization_string, "diTauCandidates");
 }
 
 template<typename T1, typename T2>
@@ -118,12 +121,10 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
 }
 
 template<typename T1, typename T2>
-double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate,
-			       FakeRateJetWeightExtractor<T1>* diTauLeg1WeightExtractor,
-			       FakeRateJetWeightExtractor<T2>* diTauLeg2WeightExtractor)
+double CompositePtrCandidateT1T2MEtHistManager<T1,T2>::getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate)
 {
-  double diTauLeg1Weight = ( diTauLeg1WeightExtractor ) ? (*diTauLeg1WeightExtractor)(*diTauCandidate.leg1()) : 1.;
-  double diTauLeg2Weight = ( diTauLeg2WeightExtractor ) ? (*diTauLeg2WeightExtractor)(*diTauCandidate.leg2()) : 1.;
+  double diTauLeg1Weight = ( diTauLeg1WeightExtractor_ ) ? (*diTauLeg1WeightExtractor_)(*diTauCandidate.leg1()) : 1.;
+  double diTauLeg2Weight = ( diTauLeg2WeightExtractor_ ) ? (*diTauLeg2WeightExtractor_)(*diTauCandidate.leg2()) : 1.;
   return (diTauLeg1Weight*diTauLeg2Weight);
 }
 
@@ -149,23 +150,22 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
   double diTauCandidateWeightSum = 0.;
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
 	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
-    diTauCandidateWeightSum += getDiTauCandidateWeight(*diTauCandidate, diTauLeg1WeightExtractor_, diTauLeg2WeightExtractor_);
+    if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
+
+    diTauCandidateWeightSum += getDiTauCandidateWeight(*diTauCandidate);
   }
 
   for ( typename CompositePtrCandidateCollection::const_iterator diTauCandidate = diTauCandidates->begin(); 
 	diTauCandidate != diTauCandidates->end(); ++diTauCandidate ) {
-
-    double weight = evtWeight;
-    if ( diTauLeg1WeightExtractor_ || diTauLeg2WeightExtractor_ ) {
-      double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate, diTauLeg1WeightExtractor_, diTauLeg2WeightExtractor_);
-      weight *= (diTauCandidateWeight/diTauCandidateWeightSum);
-    }
 
     //bool isGenMatched = matchesGenCandidatePair(*diTauCandidate);
     //std::cout << " Pt = " << diTauCandidate->pt() << ", phi = " << diTauCandidate->phi() << ", visMass = " << diTauCandidate->p4Vis().mass() << std::endl;
     //std::cout << " isGenMatched = " << isGenMatched << std::endl;
 
     if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
+
+    double weight = ( normMethod_ == kNormEvents ) ? 
+      evtWeight*(getDiTauCandidateWeight(*diTauCandidate)/diTauCandidateWeightSum) : getDiTauCandidateWeight(*diTauCandidate);
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
     hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);

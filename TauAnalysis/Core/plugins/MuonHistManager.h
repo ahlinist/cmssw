@@ -5,10 +5,11 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+
+#include "TauAnalysis/Core/interface/HistManagerBase.h"
 
 #include <vector>
 #include <string>
@@ -29,6 +30,8 @@ class MuonHistManager : public HistManagerBase
   void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   void bookMuonIsoConeSizeDepHistograms(DQMStore&);
 
+  double getMuonWeight(const pat::Muon&);
+
   void fillMuonHistograms(const pat::Muon&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillMuonIsoHistograms(const pat::Muon&, double);
   void fillMuonIsoConeSizeDepHistograms(const pat::Muon&, double);
@@ -42,6 +45,7 @@ class MuonHistManager : public HistManagerBase
 
   bool requireGenMuonMatch_;
 
+  bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
   unsigned numMuonIsoConeSizes_;
@@ -109,6 +113,9 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPFChargedHadronIsoPt_;
   MonitorElement* hMuonPFNeutralHadronIsoPt_;
   MonitorElement* hMuonPFGammaIsoPt_;
+
+  MonitorElement* hMuonPFChargedHadronIsoPtCtrl_;
+  MonitorElement* hMuonPFGammaIsoPtCtrl_;
 
   std::vector<MonitorElement*> hMuonParticleFlowIsoPtConeSizeDep_;
   std::vector<MonitorElement*> hMuonPFChargedHadronIsoPtConeSizeDep_;

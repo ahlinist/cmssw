@@ -13,5 +13,10 @@ electronHistManager = cms.PSet(
     #requireGenElectronMatch = cms.bool(True),
     requireGenElectronMatch = cms.bool(False),
 
+    #normalization = cms.string("electrons"),
+    normalization = cms.string("events"),
+
+    #makeIsoPtCtrlHistograms = cms.bool(False),
+    makeIsoPtCtrlHistograms = cms.bool(True),
     makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )

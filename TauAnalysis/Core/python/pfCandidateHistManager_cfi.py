@@ -7,7 +7,10 @@ pfCandidateHistManager = cms.PSet(
       
   pfCandidateSource = cms.InputTag(''),
 
-  dqmDirectory_store = cms.string('PFCandidateQuantities')
+  dqmDirectory_store = cms.string('PFCandidateQuantities'),
+
+  #normalization = cms.string("pfCandidates")
+  normalization = cms.string("events")
 )
 
 allPFCandidateHistManager = copy.deepcopy(pfCandidateHistManager)

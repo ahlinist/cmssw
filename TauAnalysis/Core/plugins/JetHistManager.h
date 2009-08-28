@@ -29,6 +29,8 @@ class JetHistManager : public HistManagerBase
 //--- auxiliary functions
   void bookJetHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
+  double getJetWeight(const pat::Jet&);
+
   void fillJetHistograms(const pat::Jet&, MonitorElement*, MonitorElement*, MonitorElement*, double);
   void fillNumCentralJetsToBeVetoesHistograms(const std::vector<pat::Jet>&, MonitorElement*, double, double, double, double);
 

@@ -7,15 +7,16 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: HistManagerBase.h,v 1.2 2009/06/12 14:48:27 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.3 2009/08/16 13:57:11 veelken Exp $
  *
  */
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
 
@@ -23,7 +24,8 @@ class HistManagerBase : public AnalyzerPluginBase
 {
  public:
   // constructor 
-  explicit HistManagerBase() {}
+  explicit HistManagerBase()
+    : normMethod_(kNormUndefined) {}
   
   // destructor
   virtual ~HistManagerBase() {}
@@ -36,6 +38,16 @@ class HistManagerBase : public AnalyzerPluginBase
   // methods for booking and filling of histograms
   virtual void bookHistograms() = 0;
   virtual void fillHistograms(const edm::Event&, const edm::EventSetup&, double) = 0;
+
+  enum { kNormUndefined, kNormObjects, kNormEvents };
+  int getNormMethod(const std::string& cfgValue, std::string keywordNormObjects) const 
+  {
+    if ( cfgValue == keywordNormObjects ) return kNormObjects;
+    if ( cfgValue == "events" ) return kNormEvents;
+    edm::LogError ("getNormMethod") << " Configuration parameter 'normalization' = " << cfgValue << " invalid !!";
+    return kNormUndefined;
+  }
+  int normMethod_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

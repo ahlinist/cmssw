@@ -5,10 +5,14 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
+
+#include "TauAnalysis/Core/interface/HistManagerBase.h"
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
+
+#include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergyFwd.h"
 
 template<typename T1, typename T2>
 class PATLeptonRecoilEnergyHistManager : public HistManagerBase 
@@ -22,6 +26,9 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
 //    inherited from HistManagerBase class
   void bookHistograms();
   void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+
+//--- auxiliary functions
+  double getLeptonWeight(const PATLeptonRecoilEnergy<T1,T2>&);
 
 //--- configuration parameters
   edm::InputTag leptonRecoilEnergySrc_;
