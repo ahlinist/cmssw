@@ -50,7 +50,7 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
         )
     ),
                                                           
-    branchNameEventWeight = cms.string('eventWeight'),
+    branchNamesEventWeight = cms.vstring('eventWeight'),
 
     norm = cms.double(1.)
 )
