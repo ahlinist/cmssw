@@ -17,7 +17,7 @@ process.GlobalTag.globaltag = 'IDEAL_V12::All'
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
-process.load("TauAnalysis.BgEstimationTools.bgEstSelectLayer1Jets_cff")
+process.load("TauAnalysis.BgEstimationTools.bgEstPatJetSelection_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -77,6 +77,15 @@ process.eventDump = cms.EDAnalyzer("EventDumpAnalyzer",
 )
 
 # produce ntuple
+kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTau.root')
+kineReweight_dqmDirectory = "bgEstKineEventReweights"
+kineReweight_meName = "diTauDPhi12"
+kineVarExtractor_config = cms.PSet(
+    pluginType = cms.string("PATMuTauPairValExtractor"),
+    src = cms.InputTag('muTauPairsBgEstPreselection'),
+    value = cms.string("dPhi12"),
+    indices = cms.vuint32(0)
+)
 process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
     treeName = cms.string("bgEstEvents"),
     branches = cms.PSet(
@@ -86,48 +95,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        selMuonRelTrackIso = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            value = cms.string("leg1.trackIso/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
         selMuonEcalIso = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsBgEstPreselection'),
             value = cms.string("leg1.ecalIso"),
-            indices = cms.vuint32(0,1)
-        ),
-        selMuonRelEcalIso = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            value = cms.string("leg1.ecalIso/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
-        selMuonIso = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            value = cms.string("leg1.trackIso + leg1.ecalIso"),
-            indices = cms.vuint32(0,1)
-        ),
-        selMuonRelIso = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            value = cms.string("(leg1.trackIso + leg1.ecalIso)/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
-        selMuonCaloComp = cms.PSet(
-            pluginType = cms.string("PATMuTauPairMuonAntiPionExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            CaloCompCoefficient = cms.double(1.),
-            SegmCompCoefficient = cms.double(0.),
-            indices = cms.vuint32(0,1)
-        ),
-        selMuonSegmComp = cms.PSet(
-            pluginType = cms.string("PATMuTauPairMuonAntiPionExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            CaloCompCoefficient = cms.double(0.),
-            SegmCompCoefficient = cms.double(1.),
             indices = cms.vuint32(0,1)
         ),
         selMuonComp = cms.PSet(
@@ -141,6 +112,37 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("PATMuTauPairMuonIpExtractor"),
             src = cms.InputTag('muTauPairsBgEstPreselection'),
             vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
+            indices = cms.vuint32(0,1)
+        ),
+
+        selTauTrackIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstPreselection'),
+            value = cms.string("leg2.chargedParticleIso()"),
+            indices = cms.vuint32(0,1)
+        ),
+        selTauTrackIsoDiscr = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstPreselection'),
+            value = cms.string("leg2.tauID('trackIsolation')"),
+            indices = cms.vuint32(0,1)
+        ),
+        selTauEcalIso = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstPreselection'),
+            value = cms.string("leg2.gammaParticleIso()"),
+            indices = cms.vuint32(0,1)
+        ),
+        selTauEcalIsoDiscr = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstPreselection'),
+            value = cms.string("leg2.tauID('ecalIsolation')"),
+            indices = cms.vuint32(0,1)
+        ),
+        selTauDiscrAgainstMuons = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsBgEstPreselection'),
+            value = cms.string("leg2.tauID('againstMuon')"),
             indices = cms.vuint32(0,1)
         ),
     
@@ -172,13 +174,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsBgEstPreselection'),
             value = cms.string("p4Vis.mass"),
-            indices = cms.vuint32(0,1)
-        ),
-
-        selTauDiscrAgainstMuons = cms.PSet(
-            pluginType = cms.string("PATMuTauPairValExtractor"),
-            src = cms.InputTag('muTauPairsBgEstPreselection'),
-            value = cms.string("leg2.tauID('againstMuon')"),
             indices = cms.vuint32(0,1)
         ),
 
@@ -219,11 +214,11 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         ),
         numSelMuons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1MuonsEcalIsoLooseIsolationCumulative')
+            src = cms.InputTag('muonsBgEstPreselection')
         ),
         numSelTaus = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1TausProngCumulative')
+            src = cms.InputTag('tausBgEstPreselection')
         ),
         numSelDiTaus = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
@@ -233,13 +228,13 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
         ),
-        numCentralJetsAlpha0_1 = cms.PSet(
+        numCentralJetsAlpha0point1 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0_1Cumulative')
+            src = cms.InputTag('selectedLayer1JetsAlpha0point1Cumulative')
         ),
-        numCentralJetsAlpha0_3 = cms.PSet(
+        numCentralJetsAlpha0point3 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0_3Cumulative')
+            src = cms.InputTag('selectedLayer1JetsAlpha0point3Cumulative')
         ),
         numCentralJetsEt40 = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
@@ -253,6 +248,39 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         eventWeight = cms.PSet(
             pluginType = cms.string("ConstObjValExtractor"),
             value = cms.double(1.)
+        ),
+
+        kineEventReweight_ZtautauEnriched = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "Ztautau" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config
+        ),
+        kineEventReweight_WplusJetsEnriched = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "WplusJets" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config
+        ),
+        kineEventReweight_TTplusJetsEnriched = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "TTplusJets" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config
+        ),
+        kineEventReweight_QCDenriched = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "QCD" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config
         )
     )
 )
@@ -301,4 +329,4 @@ process.p = cms.Path( process.producePatTuple
                      * process.ntupleProducer )
 
 # print-out all python configuration parameter information
-#print process.dumpPython()
+print process.dumpPython()
