@@ -297,20 +297,18 @@ private:
 
         gStyle->SetPalette(7, colorPalette3);
 
-        c->cd();
-        gPad->Update();
+       //  c->cd();
+//         gPad->Update();
 
-        TPaletteAxis *palette;
-        palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
-        palette->GetAxis()->SetLabelSize(0);
-        //   palette->GetAxis()->SetTitle("OK        OFF     NoisSt    NoisCh     Dead    ");
+//         TPaletteAxis *palette;
+//         palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+//         palette->GetAxis()->SetLabelSize(0);
+        
+// 	palette->GetAxis()->SetTitle("OK        OFF        Nois.St       Nois.Ch   Part.Dead       Dead    Bad.Shape");
 
-	palette->GetAxis()->SetTitle("OK        OFF        Nois.St       Nois.Ch   Part.Dead       Dead    Bad.Shape");
-
-        palette->SetTitleOffset(0.25);
-        palette->SetTitleSize(0.025);
-        //    gPad->Update();
-        return;
+//         palette->SetTitleOffset(0.25);
+//         palette->SetTitleSize(0.025);
+	return;
       }
 
       if(o.name.find("VStatus_Wheel") != std::string::npos)
