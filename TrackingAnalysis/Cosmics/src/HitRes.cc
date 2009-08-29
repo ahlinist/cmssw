@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.12 2009/03/22 15:59:55 kaulmer Exp $
+// $Id: HitRes.cc,v 1.13 2009/06/22 19:44:43 kaulmer Exp $
 //
 //
 
@@ -125,11 +125,15 @@ private:
   float hitPositionsY_[2];
   float hitErrorsY_[2];
   float simHitPositions_[2];
+  float simHitPositionsY_[2];
+  float clusterWidthX_[2];
+  float clusterWidthY_[2];
+  float clusterSize_[2];
+  int edge_[2];
+  
   vector<bool> acceptLayer;
-  int run,event;
   float momentum_;
-  uint run_;
-  uint event_;
+  uint run_, event_;
   bool barrelOnly_;
 };
 
@@ -223,9 +227,6 @@ HitRes::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //
   // loop over trajectories from refit
 
-  run = iEvent.run();
-  event = iEvent.id().event();
-  
   for ( TrajectoryCollection::const_iterator it=trajectoryCollection->begin();
 	it!=trajectoryCollection->end(); ++it )  analyze(*it,propagator,*associator);
   
@@ -295,7 +296,7 @@ HitRes::analyze (const Trajectory& trajectory,
 	  edm::LogVerbatim("HitRes") << "adding pair "<< ((subDet > 2)?(SiStripDetId(id).stereo()) : 2)
 				     << " from layer = " << layer;
 	  cout << "adding pair "<< ((subDet > 2)?(SiStripDetId(id).stereo()) : 2) << " from subDet = " << subDet << " and layer = " << layer;
-	  cout << " \t"<<run<< "\t"<<event<<"\t";
+	  cout << " \t"<<run_<< "\t"<<event_<<"\t";
 	  cout << min(id.rawId(),compareId.rawId())<<"\t"<<max(id.rawId(),compareId.rawId())<<endl;
 	  if (  SiStripDetId(id).glued() == id.rawId() ) cout << "BAD GLUED: Have glued layer with id = " << id.rawId() << " and glued id = " << SiStripDetId(id).glued() << "  and stereo = " << SiStripDetId(id).stereo() << endl;
 	  if (  SiStripDetId(compareId).glued() == compareId.rawId() ) cout << "BAD GLUED: Have glued layer with id = " << compareId.rawId() << " and glued id = " << SiStripDetId(compareId).glued() << "  and stereo = " << SiStripDetId(compareId).stereo() << endl;
@@ -341,6 +342,7 @@ HitRes::analyze (const Trajectory& trajectory,
     if ( !comb1At2.isValid() )  continue;
     //distance of propagation from one surface to the next==could cut here
     overlapPath_ = tsosWithS.second;
+    if (abs(overlapPath_) > 15 ) continue; //cut to remove hit pairs > 15 cm apart
     // global position on module 1
     GlobalPoint position = comb1.globalPosition();
     predictedPositions_[0][0] = position.x();
@@ -461,7 +463,64 @@ HitRes::analyze (const Trajectory& trajectory,
 
     // get track momentum
     momentum_ = comb1.globalMomentum().mag();
+    
+    // get cluster size
+    if (subDet1>2) { //strip
+      const TransientTrackingRecHit::ConstRecHitPointer thit1=(*iol).first->recHit();
+      const SiStripRecHit2D* hit1=dynamic_cast<const SiStripRecHit2D*>((*thit1).hit());
+      if (hit1) {
+	const SiStripRecHit2D::ClusterRef & cluster1=hit1->cluster();
+	clusterSize_[0] = (cluster1->amplitudes()).size();
+	clusterWidthX_[0] = (cluster1->amplitudes()).size();
+	clusterWidthY_[0] = -1;
+      } else
+	cout << "Couldn't find sistriprechit2d first" << endl;
+      const TransientTrackingRecHit::ConstRecHitPointer thit2=(*iol).second->recHit();
+      const SiStripRecHit2D* hit2=dynamic_cast<const SiStripRecHit2D*>((*thit2).hit());
+      if (hit2) {
+	const SiStripRecHit2D::ClusterRef & cluster2=hit2->cluster();
+	clusterSize_[1] = (cluster2->amplitudes()).size();
+	clusterWidthX_[1] = (cluster2->amplitudes()).size();
+	clusterWidthY_[1] = -1;
+      } else
+	cout << "Couldn't find sistriprechit2d second" << endl;
+      cout << "strip cluster size1 = " << clusterWidthX_[0] << "  and size 2 = " << clusterWidthX_[1] << endl;
+    }
+    
+    if (subDet2<3) { //pixel
+      
+      const TransientTrackingRecHit::ConstRecHitPointer thit1=(*iol).first->recHit();
+      const SiPixelRecHit * recHitPix1 = dynamic_cast<const SiPixelRecHit *>((*thit1).hit());
+      if(recHitPix1) {
+	SiPixelRecHit::ClusterRef const& cluster1 = recHitPix1->cluster();
+	
+	clusterSize_[0] = cluster1->size();
+	clusterWidthX_[0] = cluster1->sizeX();
+	clusterWidthY_[0] = cluster1->sizeY();
+      } else {
+	cout << "didn't find pixel cluster" << endl;
+	continue;
+      }
 
+      const TransientTrackingRecHit::ConstRecHitPointer thit2=(*iol).second->recHit();
+      const SiPixelRecHit * recHitPix2 = dynamic_cast<const SiPixelRecHit *>((*thit2).hit());
+      if(recHitPix2) {
+	SiPixelRecHit::ClusterRef const& cluster2 = recHitPix2->cluster();
+	
+	clusterSize_[1] = cluster2->size();
+	clusterWidthX_[1] = cluster2->sizeX();
+	clusterWidthY_[1] = cluster2->sizeY();
+	cout << "second pixel cluster is " << clusterSize_[1] << " pixels with x width = " << clusterWidthX_[1] << " and y width = " << clusterWidthY_[1] << endl;
+      } else {
+	cout << "didn't find pixel cluster" << endl;
+	continue;
+      }
+      
+    }
+    
+
+    //also check for edge pixels
+    
     //try writing out the SimHit info (for MC only)
     if(doSimHit_){
       std::vector<PSimHit> psimHits1;
@@ -505,13 +564,16 @@ HitRes::analyze (const Trajectory& trajectory,
 	  LocalPoint projectedPos = lp + scale*direction;
           simHitPositions_[0] =	projectedPos.x();
 	  edm::LogVerbatim("HitRes") << "simhit position from matched layer = " << simHitPositions_[0];
+	  simHitPositionsY_[0] = projectedPos.y();
 	} else {
 	  simHitPositions_[0] = (*closest_simhit).localPosition().x();
+	  simHitPositionsY_[0] = (*closest_simhit).localPosition().y();
 	  edm::LogVerbatim("HitRes") << "simhit position from non-matched layer = " << simHitPositions_[0];
 	}
 	edm::LogVerbatim("HitRes") << "hit position = " << hitPositions_[0];
       } else {
 	simHitPositions_[0] = -99.;
+	simHitPositionsY_[0] = -99.;	
 	//cout << " filling simHitX: " << -99 << endl;
       }
       
@@ -540,11 +602,14 @@ HitRes::analyze (const Trajectory& trajectory,
 	  float scale = -lp.z() / direction.z();
 	  LocalPoint projectedPos = lp + scale*direction;
           simHitPositions_[1] =	projectedPos.x();
+	  simHitPositionsY_[1] =	projectedPos.y();
 	} else {
 	  simHitPositions_[1] = (*closest_simhit).localPosition().x();
+	  simHitPositionsY_[1] = (*closest_simhit).localPosition().y();
 	}
       } else {
 	simHitPositions_[1] = -99.;
+	simHitPositionsY_[1] = -99.;
       }
     }
      cout << "DiffErr for X " 
@@ -623,6 +688,11 @@ HitRes::beginJob(const edm::EventSetup&)
   rootTree_->Branch("hitY",hitPositionsY_,"hitY[2]/F");
   rootTree_->Branch("hitEY",hitErrorsY_,"hitEY[2]/F");
   rootTree_->Branch("simX",simHitPositions_,"simX[2]/F");
+  rootTree_->Branch("simY",simHitPositionsY_,"simY[2]/F");
+  rootTree_->Branch("clusterSize",clusterSize_,"clusterSize[2]/F");
+  rootTree_->Branch("clusterWidthX",clusterWidthX_,"clusterWidthX[2]/F");
+  rootTree_->Branch("clusterWidthY",clusterWidthY_,"clusterWidthY[2]/F");
+  rootTree_->Branch("edge",edge_,"edge[2]/I");
   rootTree_->Branch("momentum",&momentum_,"momentum/F");
   rootTree_->Branch("run",&run_,"run/i");
   rootTree_->Branch("event",&event_,"event/i");
