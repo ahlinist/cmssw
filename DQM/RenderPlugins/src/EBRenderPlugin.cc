@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.120 2009/08/23 22:31:03 dellaric Exp $
+// $Id: EBRenderPlugin.cc,v 1.121 2009/08/25 20:47:28 dellaric Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.120 $
-  \date $Date: 2009/08/23 22:31:03 $
+  \version $Revision: 1.121 $
+  \date $Date: 2009/08/25 20:47:28 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -455,6 +455,19 @@ private:
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if( name.find( "TCC timing" ) != std::string::npos )
+      {
+        gPad->SetGridx();
+        gPad->SetGridy();
+        gPad->SetBottomMargin(0.2); 
+        obj->GetXaxis()->SetNdivisions(36, kFALSE);
+        obj->GetYaxis()->SetNdivisions(7, kFALSE);
+        obj->GetXaxis()->LabelsOption("v");
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
         return;
       }
 

@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.139 2009/08/25 20:47:28 dellaric Exp $
+// $Id: EERenderPlugin.cc,v 1.140 2009/08/26 17:50:47 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.139 $
-  \date $Date: 2009/08/25 20:47:28 $
+  \version $Revision: 1.140 $
+  \date $Date: 2009/08/26 17:50:47 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -584,6 +584,19 @@ private:
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if( name.find( "TCC timing" ) != std::string::npos )
+      {
+        gPad->SetGridx();
+        gPad->SetGridy();
+        gPad->SetBottomMargin(0.2); 
+        obj->GetXaxis()->SetNdivisions(36, kFALSE);
+        obj->GetYaxis()->SetNdivisions(7, kFALSE);
+        obj->GetXaxis()->LabelsOption("v");
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
         return;
       }
 
@@ -1258,7 +1271,8 @@ private:
             l.DrawLine(0.2*ixSectorsEE[i], 0.2*iySectorsEE[i], 0.2*ixSectorsEE[i+1], 0.2*iySectorsEE[i+1]);
           }
           else if( name.find( " PN " ) == std::string::npos &&
-                   name.find( "EESRT event size vs DCC" ) == std::string::npos )
+                   name.find( "EESRT event size vs DCC" ) == std::string::npos &&
+                   name.find( "TCC timing" ) == std::string::npos )
           {
             l.DrawLine(ixSectorsEE[i], iySectorsEE[i], ixSectorsEE[i+1], iySectorsEE[i+1]);
           }
