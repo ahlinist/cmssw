@@ -10,6 +10,8 @@
 <use name=DataFormats/DetId>
 <use name=DataFormats/HcalDigi>
 <use name=DataFormats/HcalRecHit>
+<use name=TBDataFormats/HcalTBObjects>
+<use name=EventFilter/HcalRawToDigi>
 <use name=CondFormats/HcalObjects>
 <use name=Geometry/CaloTopology>
 <use name=Geometry/CaloGeometry>
@@ -39,4 +41,4 @@
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=RecoHcalHcalPromptAnalysis>
-</export>
+ </export>
