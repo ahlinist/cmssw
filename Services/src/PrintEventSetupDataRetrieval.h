@@ -55,6 +55,7 @@ namespace edm {
       typedef std::map<eventsetup::EventSetupRecordKey, std::pair<unsigned long long, std::map<eventsetup::DataKey,bool> > > RetrievedDataMap;
       RetrievedDataMap m_retrievedDataMap;
       std::vector<eventsetup::EventSetupRecordKey> m_recordKeys;
+      bool m_printProviders;
 };
 
    }
