@@ -186,7 +186,7 @@ void TemplateHistProducer::endJob()
       numEvents[eventWeightEntry->branchName_] += eventWeight;
     }
 
-    std::cout << " eventWeight = " << eventWeight << std::endl;
+    //std::cout << " eventWeight = " << eventWeight << std::endl;
 
     for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
 	  jobEntry != jobs_.end(); ++jobEntry ) {
