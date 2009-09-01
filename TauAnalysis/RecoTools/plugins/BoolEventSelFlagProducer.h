@@ -8,9 +8,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: BoolEventSelFlagProducer.h,v 1.1 2009/04/13 13:58:35 veelken Exp $
+ * $Id: BoolEventSelFlagProducer.h,v 1.2 2009/04/14 19:17:27 veelken Exp $
  *
  */
 
@@ -47,6 +47,8 @@ class BoolEventSelFlagProducer : public edm::EDProducer
   void produce(edm::Event&, const edm::EventSetup&);
 
   std::vector<eventSelectorEntry> eventSelectors_;
+
+  int cfgError_;
 };
 
 #endif    
