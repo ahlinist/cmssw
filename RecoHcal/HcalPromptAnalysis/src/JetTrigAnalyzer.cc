@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.cc,v 1.1 2009/07/28 19:07:53 sertac Exp $
+// $Id: JetTrigAnalyzer.cc,v 1.1 2009/09/01 20:31:00 sertac Exp $
 //
 //
 
@@ -198,7 +198,6 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    if (cjet) { // object is available
      for (CaloJetCollection::const_iterator jetiter=cjet->begin(); jetiter!=cjet->end(); jetiter++){
        ntuple_alljets->Fill(jetiter->energy(), jetiter->pt(), jetiter->eta(), jetiter->phi(), jetiter->emEnergyFraction(), lumi, orbit_no, BX);
-//       std::cout<<"Ntuple is filled"<<std::endl;
     } 
   } // end of offline Jets loop
 
@@ -208,8 +207,7 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
      for (CaloJetCollection::const_iterator jetiter=cjet->begin(); jetiter!=cjet->end(); jetiter++){
        n_jet++;
        if(n_jet>1) break;
-       ntuple_Leadingjets->Fill(jetiter->energy(), jetiter->pt(), jetiter->eta(), jetiter->phi(), jetiter->emEnergyFraction(), lumi, orbit_no, BX);
-      
+       ntuple_Leadingjets->Fill(jetiter->energy(), jetiter->pt(), jetiter->eta(), jetiter->phi(), jetiter->emEnergyFraction(), lumi, orbit_no, BX);    
     }
   } // end of offline Jets loop
    
@@ -248,7 +246,6 @@ JetTrigAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        n_jet_bit15++;
        if(n_jet_bit15>1) break;
        ntuple_Leadingjets_bit15->Fill(jetiter->energy(), jetiter->pt(), jetiter->eta(), jetiter->phi(), jetiter->emEnergyFraction(), lumi, orbit_no, BX);
-      
     }
   } // end of offline Jets loop
 
