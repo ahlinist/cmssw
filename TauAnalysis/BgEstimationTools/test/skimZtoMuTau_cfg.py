@@ -15,8 +15,8 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
-process.load("TauAnalysis.Configuration.producePatTuple_cff")
+# import sequence for production of PAT-tuple specific to data-driven background estimation methods
+process.load("TauAnalysis.BgEstimationTools.producePatTupleForBgEst_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -85,8 +85,8 @@ process.options = cms.untracked.PSet(
 )
 
 process.bgEstSkimPath = cms.Path(
-    process.producePatTuple
-#  * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+    process.producePatTupleForBgEst
+#   * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
    * process.selectZtoMuTauEvents
    * process.genPhaseSpaceFilter
    * process.produceBoolEventSelFlags
