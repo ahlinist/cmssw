@@ -23,7 +23,8 @@ FilterStatisticsRow::FilterStatisticsRow(int filterId, const std::string& filter
   columnLabels_[FilterStatisticsRow::kFilterTitle] = "Cut";
   columnLabels_[FilterStatisticsRow::kPassed_cumulative] = "Passed";
   columnLabels_[FilterStatisticsRow::kEff_cumulative] = "cumul. Efficiency";
-  columnLabels_[FilterStatisticsRow::kEff_individual] = "Efficiency";
+  columnLabels_[FilterStatisticsRow::kEff_marginal] = "margin. Efficiency";
+  columnLabels_[FilterStatisticsRow::kEff_individual] = "indiv. Efficiency";
   columnLabels_[FilterStatisticsRow::kExclRejected] = "excl. Rejection";
 }
 
@@ -58,6 +59,9 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
   } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kEff_cumulative] ) {
     return ( weighted ) ? compEff(numEvents_passed_cumulative_->numWeighted(), numEvents_processed_->numWeighted())
       : compEff(numEvents_passed_cumulative_->num(), numEvents_processed_->num());
+  } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kEff_marginal] ) {
+    return ( weighted ) ? compEff(numEvents_passed_cumulative_->numWeighted(), numEvents_processed_cumulative_->numWeighted())
+      : compEff(numEvents_passed_cumulative_->num(), numEvents_processed_cumulative_->num());
   } else if ( columnLabel == columnLabels_[FilterStatisticsRow::kEff_individual] ) {
     return ( weighted ) ? compEff(numEvents_passed_->numWeighted(), numEvents_processed_->numWeighted())
       : compEff(numEvents_passed_->num(), numEvents_processed_->num());
@@ -86,6 +90,7 @@ void FilterStatisticsRow::print(std::ostream& stream, unsigned widthNameColumn, 
   stream << std::setw(widthNameColumn) << std::left << filterTitle_;
   printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kPassed_cumulative], true));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_cumulative], true));
+  printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_marginal], true));
   printPercentage(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kEff_individual], true));
   printNumber(stream, widthNumberColumns, extractNumber(columnLabels_[FilterStatisticsRow::kExclRejected], true));
   stream << std::endl;
@@ -180,7 +185,7 @@ void FilterStatisticsTable::update(const filterResults_type& filterResults_cumul
     }
 
     bool filterPassed_individual = filterResult_individual->second;
-
+	
     FilterStatisticsRow* row = 0;
     for ( std::vector<rowEntry_type>::iterator it = rows_.begin();
 	  it != rows_.end(); ++it ) {
