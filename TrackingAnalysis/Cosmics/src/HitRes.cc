@@ -14,7 +14,7 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 //
 // Original Authors:  Wolfgang Adam, Keith Ulmer
 //         Created:  Thu Oct 11 14:53:32 CEST 2007
-// $Id: HitRes.cc,v 1.13 2009/06/22 19:44:43 kaulmer Exp $
+// $Id: HitRes.cc,v 1.14 2009/08/29 17:27:17 kaulmer Exp $
 //
 //
 
@@ -40,6 +40,14 @@ See sample cfg files in TrackingAnalysis/Cosmics/test/hitRes*cfg
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "CalibTracker/SiStripCommon/interface/SiStripDetInfoFileReader.h"
+
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
+#include "Geometry/CommonDetUnit/interface/GeomDetType.h"
+#include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
+#include "Geometry/TrackerTopology/interface/RectangularPixelTopology.h"
 
 #include  "DataFormats/TrackReco/interface/TrackFwd.h"
 #include  "DataFormats/TrackReco/interface/Track.h"
@@ -97,9 +105,10 @@ private:
   virtual void analyze(const Trajectory&, const Propagator&, TrackerHitAssociator&);
   int layerFromId (const DetId&) const;
 
-      // ----------member data ---------------------------
+  // ----------member data ---------------------------
   edm::ParameterSet config_;
   edm::InputTag trajectoryTag_;
+  SiStripDetInfoFileReader* reader;
   bool doSimHit_;
   const TrackerGeometry* trackerGeometry_;
   const MagneticField* magField_;
@@ -108,6 +117,7 @@ private:
   int overlapCounts_[3];
 
   TTree* rootTree_;
+  edm::FileInPath FileInPath_;
   float overlapPath_;
   uint layer_;
   unsigned short hitCounts_[2];
@@ -152,11 +162,14 @@ using std::endl;
 // constructors and destructor
 //
 HitRes::HitRes(const edm::ParameterSet& iConfig) :
-  config_(iConfig), rootTree_(0) {
-    //now do what ever initialization is needed
-    trajectoryTag_ = iConfig.getParameter<edm::InputTag>("trajectories");
-    doSimHit_ = iConfig.getParameter<bool>("associateStrip");
-
+  config_(iConfig), rootTree_(0),
+  FileInPath_("CalibTracker/SiStripCommon/data/SiStripDetInfo.dat")
+{
+  //now do what ever initialization is needed
+  trajectoryTag_ = iConfig.getParameter<edm::InputTag>("trajectories");
+  doSimHit_ = iConfig.getParameter<bool>("associateStrip");
+  reader=new SiStripDetInfoFileReader(FileInPath_.fullPath());
+  
   overlapCounts_[0] = 0;  // #trajectories
   overlapCounts_[1] = 0;  // #hits
   overlapCounts_[2] = 0;  // #overlap hits
@@ -469,10 +482,21 @@ HitRes::analyze (const Trajectory& trajectory,
       const TransientTrackingRecHit::ConstRecHitPointer thit1=(*iol).first->recHit();
       const SiStripRecHit2D* hit1=dynamic_cast<const SiStripRecHit2D*>((*thit1).hit());
       if (hit1) {
+	//check cluster width
 	const SiStripRecHit2D::ClusterRef & cluster1=hit1->cluster();
 	clusterSize_[0] = (cluster1->amplitudes()).size();
 	clusterWidthX_[0] = (cluster1->amplitudes()).size();
 	clusterWidthY_[0] = -1;
+
+	//check if cluster at edge of sensor
+	uint16_t firstStrip = cluster1->firstStrip();
+	uint16_t lastStrip = firstStrip + (cluster1->amplitudes()).size() -1;
+	unsigned short Nstrips;
+	Nstrips=reader->getNumberOfApvsAndStripLength(id1).first*128;
+	bool atEdge = false;
+	if (firstStrip == 0 || lastStrip == (Nstrips-1) ) atEdge = true;
+	if (atEdge) edge_[0] = 1; else edge_[0] = -1;
+	cout << "first strip is " << firstStrip << "  and last strip is " << lastStrip << " with width = " << clusterSize_[0] << "  and last strip of the module is " << Nstrips << " and value of atEdge = " << atEdge << endl;
       } else
 	cout << "Couldn't find sistriprechit2d first" << endl;
       const TransientTrackingRecHit::ConstRecHitPointer thit2=(*iol).second->recHit();
@@ -482,9 +506,18 @@ HitRes::analyze (const Trajectory& trajectory,
 	clusterSize_[1] = (cluster2->amplitudes()).size();
 	clusterWidthX_[1] = (cluster2->amplitudes()).size();
 	clusterWidthY_[1] = -1;
+
+	uint16_t firstStrip = cluster2->firstStrip();
+	uint16_t lastStrip = firstStrip + (cluster2->amplitudes()).size() -1;
+	unsigned short Nstrips;
+	Nstrips=reader->getNumberOfApvsAndStripLength(id2).first*128;
+	bool atEdge = false;
+	if (firstStrip == 0 || lastStrip == (Nstrips-1) ) atEdge = true;
+	if (atEdge) edge_[1] = 1; else edge_[1] = -1;
+	cout << "second strip is " << firstStrip << "  and last strip is " << lastStrip << " with width = " << clusterSize_[1] << "  and last strip of the module is " << Nstrips << " and value of atEdge = " << atEdge << endl;
       } else
 	cout << "Couldn't find sistriprechit2d second" << endl;
-      cout << "strip cluster size1 = " << clusterWidthX_[0] << "  and size 2 = " << clusterWidthX_[1] << endl;
+      cout << "strip cluster size2 = " << clusterWidthX_[0] << "  and size 2 = " << clusterWidthX_[1] << endl;
     }
     
     if (subDet2<3) { //pixel
@@ -492,11 +525,33 @@ HitRes::analyze (const Trajectory& trajectory,
       const TransientTrackingRecHit::ConstRecHitPointer thit1=(*iol).first->recHit();
       const SiPixelRecHit * recHitPix1 = dynamic_cast<const SiPixelRecHit *>((*thit1).hit());
       if(recHitPix1) {
+	// check for cluster size and width
 	SiPixelRecHit::ClusterRef const& cluster1 = recHitPix1->cluster();
 	
 	clusterSize_[0] = cluster1->size();
 	clusterWidthX_[0] = cluster1->sizeX();
 	clusterWidthY_[0] = cluster1->sizeY();
+	
+	// check for cluster at edge
+	const PixelGeomDetUnit * theGeomDet =
+	  dynamic_cast<const PixelGeomDetUnit*> ((*trackerGeometry_).idToDet(id1) );	
+	const RectangularPixelTopology * topol =
+	  dynamic_cast<const RectangularPixelTopology*>(&(theGeomDet->specificTopology()));
+	
+	int minPixelRow = cluster1->minPixelRow(); //x
+	int maxPixelRow = cluster1->maxPixelRow();
+	int minPixelCol = cluster1->minPixelCol(); //y
+	int maxPixelCol = cluster1->maxPixelCol();
+	
+	bool edgeHitX = (topol->isItEdgePixelInX(minPixelRow)) || 
+	  (topol->isItEdgePixelInX(maxPixelRow)); 
+	bool edgeHitY = (topol->isItEdgePixelInY(minPixelCol)) || 
+	  (topol->isItEdgePixelInY(maxPixelCol)); 
+
+	if (edgeHitX||edgeHitY) edge_[0] = 1; else edge_[0] = -1;
+
+	cout << "for pixel 1: edgeHitX = " << edgeHitX << "  edgeHitY = " << edgeHitY << "  minX = " << minPixelRow << "  maxX = " << maxPixelRow << "  minY = " << minPixelCol << "  maxY = " << maxPixelCol << endl;
+
       } else {
 	cout << "didn't find pixel cluster" << endl;
 	continue;
@@ -511,6 +566,25 @@ HitRes::analyze (const Trajectory& trajectory,
 	clusterWidthX_[1] = cluster2->sizeX();
 	clusterWidthY_[1] = cluster2->sizeY();
 	cout << "second pixel cluster is " << clusterSize_[1] << " pixels with x width = " << clusterWidthX_[1] << " and y width = " << clusterWidthY_[1] << endl;
+	
+	const PixelGeomDetUnit * theGeomDet =
+	  dynamic_cast<const PixelGeomDetUnit*> ((*trackerGeometry_).idToDet(id2) );	
+	const RectangularPixelTopology * topol =
+	  dynamic_cast<const RectangularPixelTopology*>(&(theGeomDet->specificTopology()));
+	
+	int minPixelRow = cluster2->minPixelRow(); //x
+	int maxPixelRow = cluster2->maxPixelRow();
+	int minPixelCol = cluster2->minPixelCol(); //y
+	int maxPixelCol = cluster2->maxPixelCol();
+	
+	bool edgeHitX = (topol->isItEdgePixelInX(minPixelRow)) || 
+	  (topol->isItEdgePixelInX(maxPixelRow)); 
+	bool edgeHitY = (topol->isItEdgePixelInY(minPixelCol)) || 
+	  (topol->isItEdgePixelInY(maxPixelCol)); 
+
+	if (edgeHitX||edgeHitY) edge_[1] = 1; else edge_[1] = -1;
+
+	cout << "for pixel 2: edgeHitX = " << edgeHitX << "  edgeHitY = " << edgeHitY << "  minX = " << minPixelRow << "  maxX = " << maxPixelRow << "  minY = " << minPixelCol << "  maxY = " << maxPixelCol << endl;
       } else {
 	cout << "didn't find pixel cluster" << endl;
 	continue;
