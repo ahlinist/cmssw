@@ -63,7 +63,7 @@ class FilterStatisticsRow
   void print(std::ostream&, unsigned, unsigned) const;
 
   static std::vector<std::string> columnLabels() { return columnLabels_; }
-  enum { kFilterTitle, kPassed_cumulative, kEff_cumulative, kEff_individual, kExclRejected, kNumColumns };
+  enum { kFilterTitle, kPassed_cumulative, kEff_cumulative, kEff_marginal, kEff_individual, kExclRejected, kNumColumns };
 
   double extractNumber(const std::string&, bool) const;
   
