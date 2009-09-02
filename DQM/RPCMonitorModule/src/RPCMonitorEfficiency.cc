@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.30 2009/08/21 09:50:41 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.31 2009/08/27 09:59:30 carrillo Exp $
 //
 //
 
@@ -641,7 +641,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
     meId <<"ClusterSizeW1Sector"<<k;
     title <<"Cluster Size Wheel 1 Sector "<<k;
     sectorCLSW1[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
-    meId <<"ClusterSizeWm2Sector"<<k;
+    meId <<"ClusterSizeW2Sector"<<k;
     title <<"Cluster Size Wheel 2 Sector "<<k;
     sectorCLSW2[k] = new TH1F (meId.str().c_str(),title.str().c_str(),10,0.5,10.5); meId.str(""); title.str("");
   }
