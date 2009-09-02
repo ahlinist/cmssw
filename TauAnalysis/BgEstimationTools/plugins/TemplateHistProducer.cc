@@ -46,13 +46,7 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
 
 TemplateHistProducer::~TemplateHistProducer()
 {
-  //std::cout << "<TemplateHistProducer::~TemplateHistProducer>:" << std::endl;
-
-  //std::cout << " deleting selEventsTree..." << std::endl;
-  if ( selEventsTree_ != allEventsTree_ ) delete selEventsTree_;
-
-  //std::cout << " deleting allEventsTree..." << std::endl;
-  delete allEventsTree_;
+//--- nothing to be done yet...
 }
 
 void TemplateHistProducer::readJobEntry(const edm::ParameterSet& cfg)
@@ -193,6 +187,9 @@ void TemplateHistProducer::endJob()
       jobEntry->me_->Fill(jobEntry->objValue_, eventWeight);
     }
   }
+
+  if ( selEventsTree_ != allEventsTree_ ) delete selEventsTree_;
+  delete allEventsTree_;
 
   for ( std::map<std::string, double>::const_iterator numEvents_i = numEvents.begin();
 	numEvents_i != numEvents.end(); ++numEvents_i ) {
