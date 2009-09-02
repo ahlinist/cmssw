@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Mon Feb 19 13:25:24 CST 2007
-// $Id: L1GlobalAlgo.cc,v 1.10 2009/08/10 10:10:43 chinhan Exp $
+// $Id: L1GlobalAlgo.cc,v 1.11 2009/09/02 12:33:29 chinhan Exp $
 //
 
 // No BitInfos for release versions
@@ -460,7 +460,8 @@ L1GlobalAlgo::FillMET(edm::Event const& e) {
 
   reco::Particle::LorentzVector rp4(-sum_ex,-sum_ey,0.,std::sqrt(sum_ex*sum_ex + sum_ey*sum_ey));
   //m_MET = l1extra::L1EtMissParticle(rp4,sum_et,0.);  
-  m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
+  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
+  m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
 }
 
 // ------------ Fill MET 2: loop over regions ------------
@@ -508,8 +509,9 @@ L1GlobalAlgo::FillMET() {
   reco::Particle::LorentzVector rp4(-sum_ex,-sum_ey,0.,std::sqrt(sum_ex*sum_ex + sum_ey*sum_ey));
   //edm::LogInfo("********** L1GlobalAlgo::FillMET()")<<rp4.mass()<<std::endl; 
   //m_MET = l1extra::L1EtMissParticle(rp4,sum_et,0.);  
-  m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
- 
+  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
+  m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
+
 }
 
 void 
