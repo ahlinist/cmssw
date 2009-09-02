@@ -460,8 +460,8 @@ L1GlobalAlgo::FillMET(edm::Event const& e) {
 
   reco::Particle::LorentzVector rp4(-sum_ex,-sum_ey,0.,std::sqrt(sum_ex*sum_ex + sum_ey*sum_ey));
   //m_MET = l1extra::L1EtMissParticle(rp4,sum_et,0.);  
-  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
-  m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
+  m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
+  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
 }
 
 // ------------ Fill MET 2: loop over regions ------------
@@ -509,8 +509,8 @@ L1GlobalAlgo::FillMET() {
   reco::Particle::LorentzVector rp4(-sum_ex,-sum_ey,0.,std::sqrt(sum_ex*sum_ex + sum_ey*sum_ey));
   //edm::LogInfo("********** L1GlobalAlgo::FillMET()")<<rp4.mass()<<std::endl; 
   //m_MET = l1extra::L1EtMissParticle(rp4,sum_et,0.);  
-  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
-  m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
+  m_METs.push_back(l1extra::L1EtMissParticle(rp4,l1extra::L1EtMissParticle::kMET,sum_et));  
+  //m_METs.push_back(l1extra::L1EtMissParticle(rp4,sum_et,0.));  
 
 }
 
