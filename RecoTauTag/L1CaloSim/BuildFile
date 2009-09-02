@@ -6,7 +6,7 @@
 <use name=DataFormats/CaloTowers>
 <use name=Geometry/CaloGeometry>
 <use name=Geometry/CaloTopology>
-<use name=Geometry/CaloEventSetup>
+#<use name=Geometry/CaloEventSetup>
 #<use name=Geometry/CMSCommonData>
 <use name=DataFormats/Candidate>
 <use name=DataFormats/EcalRecHit>
