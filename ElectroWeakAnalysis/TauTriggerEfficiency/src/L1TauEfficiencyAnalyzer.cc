@@ -44,6 +44,7 @@ void L1TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree *trig
   l1tree->Branch("L1EmTauVeto", &hasEmTauVeto, "L1EmTauVeto/B");
   l1tree->Branch("L1HadTauVeto", &hasHadTauVeto, "L1HadTauVeto/B");
   l1tree->Branch("L1IsolationVeto", &hasIsolationVeto, "L1IsolationVeto/B");
+  l1tree->Branch("L1TauVetoForPartIso", &hasTauVetoForPartIso, "L1TauVetoForPartIso/B");
   l1tree->Branch("L1PartialIsolationVeto", &hasPartialIsolationVeto, "L1PartialIsolationVeto/B");
   l1tree->Branch("L1SumEtBelowThreshold", &hasSumEtBelowThres, "L1SumEtBelowThrehold/B");
   l1tree->Branch("L1MaxEt", &hasMaxEt, "L1MaxEt/B");
@@ -87,6 +88,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   hasL1TauJet = 0;
   hasL1CenJet = 0;
   hasTauVeto = 0;
+  hasTauVetoForPartIso = 0;
   hasEmTauVeto = 0;
   hasHadTauVeto = 0;
   hasIsolationVeto = 0;
@@ -170,6 +172,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
          fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
 
         hasTauVeto = bitInfo->getTauVeto() ? 1 : 0;
+        hasTauVetoForPartIso = bitInfo->getTauVetoForPartIso() ? 1 : 0;
         hasEmTauVeto = bitInfo->getEmTauVeto() ? 1 : 0;
         hasHadTauVeto = bitInfo->getHadTauVeto() ? 1 : 0;
         hasIsolationVeto = bitInfo->getIsolationVeto() ? 1 : 0;

@@ -82,7 +82,7 @@ class L1TauEfficiencyAnalyzer {
         float jetPt, jetEt, jetUncorrEt, jetEta, jetPhi;
         char hasL1Jet, hasL1TauJet, hasL1CenJet;
         char hasTauVeto, hasEmTauVeto, hasHadTauVeto, hasIsolationVeto, hasPartialIsolationVeto, hasSumEtBelowThres, hasMaxEt, hasSoft, hasHard;
-
+	char hasTauVetoForPartIso;
 	char hasTriggeredL1TauJet;
  	char hasTriggeredL1CenJet;
 
