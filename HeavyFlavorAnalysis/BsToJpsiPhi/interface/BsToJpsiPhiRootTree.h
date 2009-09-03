@@ -38,15 +38,12 @@ public:
 	void getVtx(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
 		    const double hh, const double ii);
 	void getLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg);
-	void getBdPar(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
-		      const double hh, const double ii);
 	void getInfoK1(const int aa, const int bb, const int cc, const int dd);
 	void getInfoK2(const int aa, const int bb, const int cc, const int dd);
 	void getInfoMu1(const int aa, const int bb, const int cc, const int dd);
 	void getInfoMu2(const int aa, const int bb, const int cc, const int dd);
 	void get3d(const double aa, const double bb, const double cc, const double dd);
 	void get1d(const double aa, const double bb, const double cc, const double dd);
-	void getRef(const reco::TrackRef& aa);
 	void getDeDx(const double f1, const double f2, const int f3);
 	void fill();  //!< copy the information from memory to Ntuple
 
@@ -59,9 +56,6 @@ public:
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
 	
-	int flagKstar_;
-	int flagKs_;
-	int flagPhi_;
 	int momID_;
 	int nBsDau_;
 	int dau_1_ID_;
@@ -99,6 +93,8 @@ public:
         double chi2_Bs_;
         int ndof_Bs_;
         double BsVtxProb_;
+        double BsVtxProbKpi_;
+        double BsVtxProbpipi_;
         double JpsiM_;
         double JpsiPhi_;
         double JpsiEta_;
@@ -158,16 +154,6 @@ public:
 	double Bsct1_;
 	double Bsct2_;
 
-        double BdM_;
-        double BdmassC_;
-        double KstarM_;
-        double BdVtxProb_;
-        double BdPhi_;
-        double BdEta_;
-        double BdPt_;
-	double JpsiM_Bd_;
-	double AngleBdDecayLength_;
-
         int     K1trkLay_;
         int     K1muDTh_;
         int     K1muCSCh_;
@@ -211,9 +197,9 @@ public:
 	double Time_;
 	double dTime_;
 
-	double dedx_;
-	double errdedx_;
-	int numdedx_;
+	double dedxTrk_;
+	double errdedxTrk_;
+	int numdedxTrk_;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 

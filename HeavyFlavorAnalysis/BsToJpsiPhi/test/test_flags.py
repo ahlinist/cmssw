@@ -37,14 +37,9 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           genParticlesLabel  = cms.InputTag("genParticles"),
                                           TrackLabel_K = cms.InputTag("kTracks"),
                                           TrackLabel_pi = cms.InputTag("piTracks"),
-                                          Tracks1 = cms.InputTag("allKTracks"),
-                                          Tracks2 = cms.InputTag("allPiTracks"),
-                                          useStrip           = cms.bool(True),
-                                          usePixel           = cms.bool(True),
-                                          TrajectoryTracks = cms.InputTag("generalTracks"),
                                           TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
-                                          
+
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
                                           JpsiPtCut      = cms.double(3),
@@ -56,8 +51,7 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           BsLowerMassCutAfterFit  = cms.double(5.2),
                                           BsUpperMassCutAfterFit  = cms.double(5.7),
                                           
-
-                                          outputFile = cms.untracked.string("RelVal_test.root"),
+                                          outputFile = cms.untracked.string("BsToJpsiPhi.root"),
                                          )
 
 process.maxEvents = cms.untracked.PSet(
@@ -66,8 +60,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                               fileNames = cms.untracked.vstring(
-#                              'file:../../../HeavyFlavorAnalysis/Examples/python/April09_MCproduction/mc/reco/1/BsToJpsiPhi_full_1.root',
- 
+#                              'file:/test/mc/1/fromHLT/Bs2JpsiPhi_1.root',
                               ),
 )
 

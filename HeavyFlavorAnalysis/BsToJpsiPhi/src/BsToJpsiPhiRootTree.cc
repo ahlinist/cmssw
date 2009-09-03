@@ -16,9 +16,6 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("triggerbit_HLTdoubleIsoMu3", &triggerbit_HLTdoubleIsoMu3_, "triggerbit_HLTdoubleIsoMu3/I");
   bsTree_->Branch("triggerbit_HLTdoubleMu3", &triggerbit_HLTdoubleMu3_, "triggerbit_HLTdoubleMu3/I");
   bsTree_->Branch("triggerbit_HLTdoubleMu3_JPsi", &triggerbit_HLTdoubleMu3_JPsi_, "triggerbit_HLTdoubleMu3_JPsi/I");
-  bsTree_->Branch("flagKstar", &flagKstar_, "flagKstar/I");
-  bsTree_->Branch("flagKs", &flagKs_, "flagKs/I");
-  bsTree_->Branch("flagPhi", &flagPhi_, "flagPhi/I");
   bsTree_->Branch("nBsDau", &nBsDau_, "nBsDau/I");
   bsTree_->Branch("momID", &momID_, "momID/I");
   bsTree_->Branch("dau_1_ID", &dau_1_ID_, "dau_1_ID/I");
@@ -53,6 +50,8 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("chi2_Bs", &chi2_Bs_, "chi2_Bs/D");
   bsTree_->Branch("ndof_Bs", &ndof_Bs_, "ndof_Bs/I");
   bsTree_->Branch("BsVtxProb", &BsVtxProb_, "BsVtxProb/D");
+  bsTree_->Branch("BsVtxProbKpi", &BsVtxProbKpi_, "BsVtxProbKpi/D");
+  bsTree_->Branch("BsVtxProbpipi", &BsVtxProbpipi_, "BsVtxProbpipi/D");
   bsTree_->Branch("JpsiM", &JpsiM_, "JpsiM/D");
   bsTree_->Branch("JpsiPhi", &JpsiPhi_, "JpsiPhi/D");
   bsTree_->Branch("JpsiEta", &JpsiEta_, "JpsiEta/D");
@@ -128,16 +127,6 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   
   bsTree_->Branch("isMatched", &isMatched_, "isMatched/I");
   
-  bsTree_->Branch("BdVtxProb", &BdVtxProb_, "BdVtxProb/D");
-  bsTree_->Branch("BdM", &BdM_, "BdM/D");
-  bsTree_->Branch("KstarM", &KstarM_, "KstarM/D");
-  bsTree_->Branch("BdPhi", &BdPhi_, "BdPhi/D");
-  bsTree_->Branch("BdEta", &BdEta_, "BdEta/D");
-  bsTree_->Branch("BdPt", &BdPt_, "BdPt/D");
-  bsTree_->Branch("BdmassC", &BdmassC_, "BdmassC/D");
-  bsTree_->Branch("JpsiM_Bd", &JpsiM_Bd_, "JpsiM_Bd/D");
-  bsTree_->Branch("AngleBdDecayLength", &AngleBdDecayLength_, "AngleBdDecayLength/D");
-  
   bsTree_->Branch("K1mcId", &K1mcId_, "K1mcId/I");
   bsTree_->Branch("K1momId", &K1momId_, "K1momId/I");
   bsTree_->Branch("K1gmomId", &K1gmomId_, "K1gmomId/I");
@@ -163,11 +152,10 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("dDist", &dDist_, "dDist/D");
   bsTree_->Branch("Time", &Time_, "Time/D");
   bsTree_->Branch("dTime", &dTime_, "dTime/D");
-  
-  bsTree_->Branch("dedx", &dedx_, "dedx/D");
-  bsTree_->Branch("errdedx", &errdedx_, "errdedx/D");
-  bsTree_->Branch("numdedx", &numdedx_, "numdedx/I");
-  
+
+  bsTree_->Branch("dedxTrk", &dedxTrk_, "dedxTrk/D");
+  bsTree_->Branch("errdedxTrk", &errdedxTrk_, "errdedxTrk/D");
+  bsTree_->Branch("numdedxTrk", &numdedxTrk_, "numdedxTrk/I");
   
 }
 
@@ -187,10 +175,6 @@ void BsToJpsiPhiRootTree::resetEntries()
   triggerbit_HLTdoubleIsoMu3_ = -10;
   triggerbit_HLTdoubleMu3_ = -10;
   triggerbit_HLTdoubleMu3_JPsi_ = -10;
-
-  flagKstar_ = -10;
-  flagKs_ = -10;
-  flagPhi_ = -10;
 
   nBsDau_ = -10; 
   momID_ = -10;
@@ -227,6 +211,8 @@ void BsToJpsiPhiRootTree::resetEntries()
   chi2_Bs_ = -10;
   ndof_Bs_ = -10;
   BsVtxProb_ = -10;
+  BsVtxProbKpi_ = -10;
+  BsVtxProbpipi_ = -10;
   JpsiM_ = -10;
   JpsiPhi_ = -10;
   JpsiEta_ = -10;
@@ -286,16 +272,6 @@ void BsToJpsiPhiRootTree::resetEntries()
 
   isMatched_ = -10;
   
-  BdVtxProb_ = -10;
-  KstarM_ = -10;
-  BdM_ = -10;
-  BdPhi_ = -10;
-  BdEta_ = -10;
-  BdPt_ = -10;
-  BdmassC_ = -10;
-  JpsiM_Bd_ = -10;
-  AngleBsDecayLength_ = -10;
-
   K1trkLay_ = -10;
   K1muDTh_ = -10;
   K1muCSCh_ = -10;
@@ -339,17 +315,17 @@ void BsToJpsiPhiRootTree::resetEntries()
   Time_ = -10;
   dTime_ = -10;
 
-  dedx_ = -10;
-  errdedx_ = -10;
-  numdedx_ = -10;
+  dedxTrk_ = -10;
+  errdedxTrk_ = -10;
+  numdedxTrk_ = -10;
   
 } 
 
 void BsToJpsiPhiRootTree::getDeDx(const double f1, const double f2, const int f3)
 {
-  dedx_ = f1;
-  errdedx_ = f2;
-  numdedx_ = f3;
+  dedxTrk_ = f1;
+  errdedxTrk_ = f2;
+  numdedxTrk_ = f3;
 }
 
 void BsToJpsiPhiRootTree::getTrigBit(const int flag_1, const int flag_2, const int flag_3, const int flag_4, const int flag_5, const int flag_6)
@@ -387,14 +363,6 @@ void BsToJpsiPhiRootTree::getMCmatch(const int aa)
   isMatched_ = aa; 
 }
 
-void BsToJpsiPhiRootTree::getRef(const reco::TrackRef& aa)
-{
-  cout <<"ref:    "<< &aa << endl; 
-}
-
-
-
-
 void BsToJpsiPhiRootTree::getAngles(const double aa, const double bb, const double cc, const double dd)
 {
   costheta_ = aa;
@@ -412,20 +380,6 @@ void BsToJpsiPhiRootTree::getLXY(const double aa, const double bb, const double 
   BerrXY_ = ee;
   Bsct1_ = ff;
   Bsct2_ = ff;
-}
-
-void BsToJpsiPhiRootTree::getBdPar(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
-				   const double hh, const double ii)
-{
-  BdM_ = aa;
-  BdmassC_ = bb;
-  KstarM_ = cc;
-  BdVtxProb_ = dd;
-  BdPhi_ = ee;
-  BdEta_ = ff;
-  BdPt_ = gg;
-  JpsiM_Bd_ = hh;
-  AngleBdDecayLength_ = ii;
 }
 
 void BsToJpsiPhiRootTree::getInfoK1(const int aa, const int bb, const int cc, const int dd)

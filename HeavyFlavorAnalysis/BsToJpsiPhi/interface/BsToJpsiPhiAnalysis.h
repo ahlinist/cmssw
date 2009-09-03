@@ -56,10 +56,6 @@ public:
 
 private:
 
-	int JpsiKstarFlag(const edm::Event &iEvent);
-	int JpsiKsFlag(const edm::Event &iEvent);
-	int JpsiPhiFlag(const edm::Event &iEvent);
-	
 	BsToJpsiPhiRootTree * bsRootTree_;
 	
 	edm::ParameterSet theConfig_;
@@ -67,13 +63,8 @@ private:
 	const TrackerGeometry* m_tracker;
 
 	edm::InputTag thegenParticlesLabel_;
-	edm::InputTag trackLabelK_; 
-	edm::InputTag trackLabelPi_; 
-	edm::InputTag track1_;
-	edm::InputTag track2_;
-	bool usePixel_;
-	bool useStrip_;
-	edm::InputTag trajtracks_;
+	edm::InputTag trackLabelK_;
+	edm::InputTag trackLabelPi_;
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
 	double JpsiMassWindowBeforeFit_;
@@ -112,9 +103,6 @@ private:
 	int MuCounter1;
 	int MuCounter2;
 
-
-
-
 	int TrkCounter1;
 	int TrkCounter2;
 	int K1mcId;
@@ -142,16 +130,6 @@ private:
 	double angle_phi;
 	double angle_cospsi;
 	double AngleBsDecayLength;
-
-	double BdM;
-	double BdmassC;
-	double KstarM;
-	double BdVtxProb;
-	double BdPhi;
-	double BdEta;
-	double BdPt;
-	double JpsiM_Bd;       
-	double AngleBdDecayLength;
 
 };
 #endif
