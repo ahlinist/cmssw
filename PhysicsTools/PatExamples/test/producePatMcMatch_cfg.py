@@ -17,6 +17,7 @@ process.makeAllLayer1Muons += process.myMuonMatch
 process.makeAllLayer1Muons.remove( process.allLayer1Muons )
 process.makeAllLayer1Muons += process.allLayer1Muons
 process.allLayer1Muons.genParticleMatch = "myMuonMatch"
+process.allLayer1Muons.embedGenMatch = True
 # Own jet match to MC jets
 process.makeAllLayer1Jets.remove( process.jetGenJetMatch )
 process.makeAllLayer1Jets += process.myJetGenJetMatch
