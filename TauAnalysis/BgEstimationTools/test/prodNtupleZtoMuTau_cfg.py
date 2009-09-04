@@ -47,13 +47,13 @@ process.source = cms.Source("PoolSource",
 )
 
 # produce ntuple
-kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTau.root')
+kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoMuTauII.root')
 kineReweight_dqmDirectory = "DQMData/bgEstKineEventReweights"
-kineReweight_meName = "diTauDPhi12"
+kineReweight_meName = "diTauMvis"
 kineVarExtractor_config = cms.PSet(
     pluginType = cms.string("PATMuTauPairValExtractor"),
     src = cms.InputTag('muTauPairsBgEstPreselection'),
-    value = cms.string("dPhi12"),
+    value = cms.string("p4Vis.mass"),
     indices = cms.vuint32(0)
 )
 
@@ -94,7 +94,11 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
         numDiTausZmumu = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('muTauPairsForBgEstZmumuEnriched')
-        ),   
+        ),
+        numJetsAlpha0point1Zmumu = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('jetsAlpha0point1ForMuTauBgEstZmumuEnriched')
+        ),
 
         # variables specific to  selection of W + jets background enriched sample
         muonPtWplusJets = cms.PSet(
@@ -139,6 +143,12 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg2.tauID('ecalIsolation')"),
             indices = cms.vuint32(0,1)
         ),
+        tauNumSignalConeTracksWplusJets = cms.PSet(
+            pluginType = cms.string("PATMuTauPairValExtractor"),
+            src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.signalTracks.size"),
+            indices = cms.vuint32(0,1)
+        ),
         tauDiscrAgainstMuonsWplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
@@ -178,7 +188,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
             value = cms.string("leg1.ecalIso"),
             indices = cms.vuint32(0,1)
-        ),
+        ),        
         tauDiscrAgainstMuonsTTplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
