@@ -33,20 +33,6 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
             numBinsX = cms.uint32(40),
             xMin = cms.double(0.),
             xMax = cms.double(200.)
-        ),
-        cms.PSet(
-            meName = cms.string("diTauMt1MET"),  
-            branchName = cms.string('selDiTauMt1MET_0'),
-            numBinsX = cms.uint32(40),
-            xMin = cms.double(0.),
-            xMax = cms.double(200.)
-        ),
-        cms.PSet(
-            meName = cms.string("numJets"),  
-            branchName = cms.string('numCentralJetsEt20'),
-            numBinsX = cms.uint32(50),
-            xMin = cms.double(-0.5),
-            xMax = cms.double(49.5)
         )
     ),
                                                           
@@ -85,7 +71,6 @@ drawJobTemplateHist = cms.PSet(
     title = cms.string('M_{vis}(Muon + Tau)'),
     xAxis = cms.string('M'),
     yAxis = cms.string('numEntries_linear'),
-    legend = cms.string('regular'),
-    labels = cms.vstring('')
+    legend = cms.string('regular')
 )
 
