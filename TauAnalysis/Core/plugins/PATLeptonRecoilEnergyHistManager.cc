@@ -79,11 +79,9 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& e
   evt.getByLabel(leptonRecoilEnergySrc_, leptonRecoilEnergyCollection);
   
   double leptonWeightSum = 0.;
-  if ( leptonWeightExtractor_ ) {
-    for ( typename PATLeptonRecoilEnergyCollection::const_iterator leptonRecoilEnergy = leptonRecoilEnergyCollection->begin();
-	  leptonRecoilEnergy != leptonRecoilEnergyCollection->end(); ++leptonRecoilEnergy ) {
-      leptonWeightSum += getLeptonWeight(*leptonRecoilEnergy);
-    }
+  for ( typename PATLeptonRecoilEnergyCollection::const_iterator leptonRecoilEnergy = leptonRecoilEnergyCollection->begin();
+	leptonRecoilEnergy != leptonRecoilEnergyCollection->end(); ++leptonRecoilEnergy ) {
+    leptonWeightSum += getLeptonWeight(*leptonRecoilEnergy);
   }
 
   for ( typename PATLeptonRecoilEnergyCollection::const_iterator leptonRecoilEnergy = leptonRecoilEnergyCollection->begin();
