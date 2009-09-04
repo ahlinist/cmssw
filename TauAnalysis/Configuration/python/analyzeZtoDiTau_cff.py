@@ -37,6 +37,7 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelFirstTauTrkIso,
         evtSelFirstTauEcalIso,
         evtSelFirstTauProng,
+        evtSelFirstTauCharge,
         
         # selection of second tau-jet candidate
         evtSelSecondTauEta,
@@ -46,6 +47,7 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelSecondTauTrkIso,
         evtSelSecondTauEcalIso,
         evtSelSecondTauProng,
+        evtSelSecondTauCharge,
 
         # di-tau candidate selection
         evtSelDiTauCandidateForDiTauAntiOverlapVeto,

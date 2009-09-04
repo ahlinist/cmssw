@@ -84,6 +84,13 @@ cfgFirstTauProngCut = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairs1stTauProngIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgFirstTauChargeCut = cms.PSet(
+    pluginName = cms.string('firstTauChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs1stTauChargeCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs1stTauChargeIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 # selection of second tau-jet candidate
 cfgSecondTauEtaCut = cms.PSet(
@@ -135,6 +142,13 @@ cfgSecondTauProngCut = cms.PSet(
     src_individual = cms.InputTag('selectedDiTauPairs2ndTauProngIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgSecondTauChargeCut = cms.PSet(
+    pluginName = cms.string('secondTauChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedDiTauPairs2ndTauChargeCumulative'),
+    src_individual = cms.InputTag('selectedDiTauPairs2ndTauChargeIndividual'),
+    minNumber = cms.uint32(1)
+)
 
 # di-tau candidate selection
 cfgDiTauCandidateForDiTauAntiOverlapVeto = cms.PSet(
@@ -179,6 +193,7 @@ zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgFirstTauTrkIsoCut,
       cfgFirstTauEcalIsoCut,
       cfgFirstTauProngCut,
+      cfgFirstTauChargeCut,
       cfgSecondTauEtaCut,
       cfgSecondTauPtCut,
       cfgSecondTauLeadTrkCut,
@@ -186,6 +201,7 @@ zToDiTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgSecondTauTrkIsoCut,
       cfgSecondTauEcalIsoCut,
       cfgSecondTauProngCut,
+      cfgSecondTauChargeCut,
       cfgDiTauCandidateForDiTauAntiOverlapVeto,
       cfgDiTauCandidateForDiTauAcoplanarityCut,
       cfgDiTauCandidateForDiTauZeroChargeCut,
