@@ -138,6 +138,7 @@ void TauHistManager::bookHistograms()
 //    of tau-jets passing all id. and isolation selections
   bookTauHistograms(dqmStore, hTauPt_, hTauEta_, hTauPhi_, "Tau");
   hTauPtVsEta_ = dqmStore.book2D("TauPtVsEta", "TauPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hTauCharge_ = dqmStore.book1D("TauCharge", "Tau Charge (#Sigma Tracks in Signal Cone)", 11, -5.5, +5.5);
   
   hTauEnCompToGen_ = dqmStore.book1D("TauEnCompToGen", "RECO-GEN #Delta E", 100, -2.50, +2.50);
   hTauThetaCompToGen_ = dqmStore.book1D("TauThetaCompToGen", "RECO-GEN #Delta#theta", 200, -0.050, +0.050);
@@ -152,6 +153,13 @@ void TauHistManager::bookHistograms()
   hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
   hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "Lead Track Impact Parameter (xy)", 100, -0.100, 0.100);
   hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "Lead Track Impact Parameter (z)", 100, -1.0, 1.0);
+  
+  hTauDiscriminatorByIsolation_ = dqmStore.book1D("TauDiscriminatorByIsolation", 
+						  "Discriminator by Isolation (Track and ECAL)", 2, -0.5, 1.5);
+  hTauDiscriminatorByTrackIsolation_ = dqmStore.book1D("TauDiscriminatorByTrackIsolation", 
+						       "Discriminator by Track Isolation", 2, -0.5, 1.5);
+  hTauDiscriminatorByEcalIsolation_ = dqmStore.book1D("TauDiscriminatorByEcalIsolation", 
+						      "Discriminator by ECAL Isolation", 2, -0.5, 1.5);
   
   hTauDiscriminatorAgainstElectrons_ = dqmStore.book1D("TauDiscriminatorAgainstElectrons", 
 						       "Discriminator against Electrons", 102, -0.01, 1.01);
@@ -304,6 +312,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
+    hTauCharge_->Fill(patTau->charge(), weight);
 
 //--- compare reconstructed tau-jet 
 //    to visible decay products on generator level;
@@ -344,6 +353,10 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 	}
       }
     }
+
+    hTauDiscriminatorByIsolation_->Fill(patTau->tauID("byIsolation"), weight);
+    hTauDiscriminatorByTrackIsolation_->Fill(patTau->tauID("trackIsolation"), weight);
+    hTauDiscriminatorByEcalIsolation_->Fill(patTau->tauID("ecalIsolation"), weight);
 
     hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
     hTauEmFraction_->Fill(patTau->emFraction(), weight);

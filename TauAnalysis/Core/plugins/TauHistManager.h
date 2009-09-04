@@ -71,6 +71,7 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauEta_;
   MonitorElement* hTauPtVsEta_;
   MonitorElement* hTauPhi_;
+  MonitorElement* hTauCharge_;
 
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;
@@ -88,6 +89,10 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauLeadTrkIPxy_;
   MonitorElement* hTauLeadTrkIPz_;
 
+  MonitorElement* hTauDiscriminatorByIsolation_;
+  MonitorElement* hTauDiscriminatorByTrackIsolation_;
+  MonitorElement* hTauDiscriminatorByEcalIsolation_;
+  
   MonitorElement* hTauDiscriminatorAgainstElectrons_;
   MonitorElement* hTauEmFraction_;
   MonitorElement* hTauHcalTotOverPLead_;
