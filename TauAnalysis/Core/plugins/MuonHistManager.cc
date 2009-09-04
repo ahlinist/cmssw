@@ -123,6 +123,7 @@ void MuonHistManager::bookHistograms()
 //    of muons passing all id. and isolation selections
   bookMuonHistograms(dqmStore, hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
   hMuonPtVsEta_ = dqmStore.book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hMuonCharge_ = dqmStore.book1D("MuonCharge", "Muon Charge", 3, -1.5, +1.5);
   
   hMuonPtCompToGen_ = dqmStore.book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
   hMuonThetaCompToGen_ = dqmStore.book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
@@ -225,6 +226,7 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
 
     fillMuonHistograms(*patMuon, hMuonPt_, hMuonEta_, hMuonPhi_, weight);
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt(), weight);
+    hMuonCharge_->Fill(patMuon->charge(), weight);
 
 //--- compare reconstructed muon to generator level one;
 //    normalize difference between reconstructed and generated Pt
