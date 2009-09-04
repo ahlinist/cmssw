@@ -36,7 +36,6 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
     cfg.getParameter<vstring>("branchNamesEventWeight") : vstring();
   for ( vstring::const_iterator branchName_eventWeight = branchNames_eventWeight.begin();
 	branchName_eventWeight != branchNames_eventWeight.end(); ++branchName_eventWeight ) {
-    std::cout << "--> adding event weight branch = " << (*branchName_eventWeight) << std::endl;
     eventWeightEntryType eventWeightEntry(*branchName_eventWeight);
     eventWeights_.push_back(eventWeightEntry);
   }
