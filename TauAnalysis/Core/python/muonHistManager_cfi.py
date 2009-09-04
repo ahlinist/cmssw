@@ -16,7 +16,6 @@ muonHistManager = cms.PSet(
     #normalization = cms.string("muons"),
     normalization = cms.string("events"),
 
-    #makeIsoPtCtrlHistograms = cms.bool(False),
-    makeIsoPtCtrlHistograms = cms.bool(True),
+    makeIsoPtCtrlHistograms = cms.bool(False),
     makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )

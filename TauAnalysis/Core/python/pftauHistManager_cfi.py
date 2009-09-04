@@ -18,7 +18,6 @@ tauHistManager = cms.PSet(
     #normalization = cms.string("taus"),
     normalization = cms.string("events"),
 
-    #makeIsoPtCtrlHistograms = cms.bool(False),
-    makeIsoPtCtrlHistograms = cms.bool(True),
+    makeIsoPtCtrlHistograms = cms.bool(False),
     makeIsoPtConeSizeDepHistograms = cms.bool(False)
 )
