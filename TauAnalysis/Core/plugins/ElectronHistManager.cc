@@ -132,6 +132,7 @@ void ElectronHistManager::bookHistograms()
 //    of electrons passing all id. and isolation selections
   bookElectronHistograms(dqmStore, hElectronPt_, hElectronEta_, hElectronPhi_, "Electron");
   hElectronPtVsEta_ = dqmStore.book2D("ElectronPtVsEta", "Electron #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
+  hElectronCharge_ = dqmStore.book1D("ElectronCharge", "Electron Charge", 3, -1.5, +1.5);
   
   hElectronEnCompToGen_ = dqmStore.book1D("ElectronEnCompToGen", "Electron RECO-GEN #Delta E", 100, -0.50, +0.50);
   hElectronThetaCompToGen_ = dqmStore.book1D("ElectronThetaCompToGen", "Electron RECO-GEN #Delta#theta", 200, -0.010, +0.010);
@@ -242,6 +243,7 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
     
     fillElectronHistograms(*patElectron, hElectronPt_, hElectronEta_, hElectronPhi_, weight);
     hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt(), weight);
+    hElectronCharge_->Fill(patElectron->charge(), weight);
 
 //--- compare reconstructed electron to generator level one;
 //    normalize difference between reconstructed and generated energy

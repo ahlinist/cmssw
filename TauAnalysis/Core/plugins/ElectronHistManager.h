@@ -62,6 +62,7 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronEta_;
   MonitorElement* hElectronPtVsEta_;
   MonitorElement* hElectronPhi_;
+  MonitorElement* hElectronCharge_;
 
   MonitorElement* hElectronEnCompToGen_;
   MonitorElement* hElectronThetaCompToGen_;
