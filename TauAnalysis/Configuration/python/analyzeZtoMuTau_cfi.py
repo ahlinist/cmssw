@@ -193,6 +193,12 @@ evtSelTauProng = cms.PSet(
     src_cumulative = cms.InputTag('tauProngCut', 'cumulative'),
     src_individual = cms.InputTag('tauProngCut', 'individual')
 )
+evtSelTauCharge = cms.PSet(
+    pluginName = cms.string('evtSelTauCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('tauChargeCut', 'individual')
+)
 evtSelTauMuonVeto = cms.PSet(
     pluginName = cms.string('evtSelTauMuonVeto'),
     pluginType = cms.string('BoolEventSelector'),
@@ -599,6 +605,19 @@ muTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauProngCumulative')
     ),
+    cms.PSet(
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager'
+        ),
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauChargeCumulative')
+    ),    
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
         title = cms.string('Tau mu-Veto'),

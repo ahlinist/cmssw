@@ -36,5 +36,9 @@ selectedLayer1TausForMuTauEcalIso = copy.deepcopy(selectedLayer1TausEcalIso)
 # require tau candidate to have either one or three tracks within signal cone
 selectedLayer1TausForMuTauProng = copy.deepcopy(selectedLayer1TausProng)
 
+# require tau candidate to have charge either +1 or -1
+# (computed as sum of charges of tracks within signal cone)
+selectedLayer1TausForMuTauCharge = copy.deepcopy(selectedLayer1TausCharge)
+
 # require tau candidate to pass muon veto
 selectedLayer1TausForMuTauMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)

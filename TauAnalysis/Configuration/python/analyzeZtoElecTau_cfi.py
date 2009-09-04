@@ -205,6 +205,12 @@ evtSelTauProng = cms.PSet(
     src_cumulative = cms.InputTag('tauProngCut', 'cumulative'),
     src_individual = cms.InputTag('tauProngCut', 'individual')
 )
+evtSelTauCharge = cms.PSet(
+    pluginName = cms.string('evtSelTauCharge'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('tauChargeCut', 'individual')
+)
 evtSelTauElectronVeto = cms.PSet(
     pluginName = cms.string('evtSelTauElectronVeto'),
     pluginType = cms.string('BoolEventSelector'),
@@ -639,6 +645,19 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauProngCumulative')
     ),
+    cms.PSet(
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'electronHistManager',
+            'tauHistManager'
+        ),
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForElecTauChargeCumulative')
+    ),    
     cms.PSet(
         filter = cms.string('evtSelTauElectronVeto'),
         title = cms.string('Tau e-Veto'),

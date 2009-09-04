@@ -153,7 +153,7 @@ patDiTauPairSelConfigurator = objSelConfigurator(
     [ selectedDiTauPairsAntiOverlapVeto,
       selectedDiTauPairsAcoplanarity,
       selectedDiTauPairsZeroCharge ],
-    src = "selectedDiTauPairs2ndTauProngCumulative",
+    src = "selectedDiTauPairs2ndTauChargeCumulative",
     pyModuleName = __name__,
     doSelIndividual = True
 )

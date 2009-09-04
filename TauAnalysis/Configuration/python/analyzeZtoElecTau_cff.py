@@ -49,6 +49,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelTauTrkIso,
         evtSelTauEcalIso,
         evtSelTauProng,
+        evtSelTauCharge,
         evtSelTauElectronVeto,
         evtSelTauEcalCrackVeto,
         

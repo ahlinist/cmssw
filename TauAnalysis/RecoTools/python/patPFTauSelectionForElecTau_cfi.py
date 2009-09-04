@@ -36,6 +36,10 @@ selectedLayer1TausForElecTauEcalIso = copy.deepcopy(selectedLayer1TausEcalIso)
 # require tau candidate to have either one or three tracks within signal cone
 selectedLayer1TausForElecTauProng = copy.deepcopy(selectedLayer1TausProng)
 
+# require tau candidate to have charge either +1 or -1
+# (computed as sum of charges of tracks within signal cone)
+selectedLayer1TausForElecTauCharge = copy.deepcopy(selectedLayer1TausCharge)
+
 # require tau candidate to pass electron veto
 selectedLayer1TausForElecTauElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
 
