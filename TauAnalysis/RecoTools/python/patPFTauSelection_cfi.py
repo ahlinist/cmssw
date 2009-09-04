@@ -41,7 +41,14 @@ selectedLayer1TausEcalIso = cms.EDFilter("PATTauSelector",
 
 # require tau candidate to have either one or three tracks within signal cone
 selectedLayer1TausProng = cms.EDFilter("PATTauSelector",
-    cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3"),                                   
+    cut = cms.string('signalTracks.size() = 1 | signalTracks.size() = 3'),                                   
+    filter = cms.bool(False)                                 
+)
+
+# require tau candidate to have charge either +1 or -1
+# (computed as sum of charges of tracks within signal cone)
+selectedLayer1TausCharge = cms.EDFilter("PATTauSelector",
+    cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5'),
     filter = cms.bool(False)                                 
 )
 
@@ -97,6 +104,9 @@ cleanLayer1TausSel = cms.EDProducer("PATTauSelProducer",
         ),
         tauAnalysisSelTauProng = cms.PSet(
             src = cms.InputTag('selectedLayer1TausProngIndividual')
+        ),
+        tauAnalysisSelTauCharge = cms.PSet(
+            src = cms.InputTag('selectedLayer1TausChargeIndividual')
         )
     )
 )

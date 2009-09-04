@@ -143,6 +143,13 @@ cfgTauProngCut = cms.PSet(
     src_individual = cms.InputTag('selectedLayer1TausProngIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgTauChargeCut = cms.PSet(
+    pluginName = cms.string('tauChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForMuTauChargeCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausChargeIndividual'),
+    minNumber = cms.uint32(1)
+)
 cfgTauMuonVeto = cms.PSet(
     pluginName = cms.string('tauMuonVeto'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -208,6 +215,7 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgTauTrkIsoCut,
       cfgTauEcalIsoCut,
       cfgTauProngCut,
+      cfgTauChargeCut,
       cfgTauMuonVeto,
       cfgDiTauCandidateForMuTauAntiOverlapVeto,
       cfgDiTauCandidateForMuTauZeroChargeCut,

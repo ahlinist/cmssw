@@ -137,6 +137,7 @@ selectedLayer1TausLeadTrkPt.cut = cms.string('tauID("leadingTrackPtCut") > 0.5')
 selectedLayer1TausTrkIso.cut = cms.string('tauID("trackIsolation") > 0.5')
 selectedLayer1TausEcalIso.cut = cms.string('tauID("ecalIsolation") > 0.5')
 selectedLayer1TausProng.cut = cms.string("signalTracks.size() = 1 | signalTracks.size() = 3")
+selectedLayer1TausCharge.cut = cms.string('abs(charge) > 0.5 & abs(charge) < 1.5')
 selectedLayer1TausElectronVeto.cut = cms.string('tauID("againstElectron") > 0.5')
 selectedLayer1TausEcalCrackVeto.cut = cms.string("abs(eta) < 1.460 | abs(eta) > 1.558")
 selectedLayer1TausMuonVeto.cut = cms.string('tauID("againstMuon") > 0.5')
@@ -149,6 +150,7 @@ patTauSelConfigurator = objSelConfigurator(
       selectedLayer1TausTrkIso,
       selectedLayer1TausEcalIso,
       selectedLayer1TausProng,
+      selectedLayer1TausCharge,
       selectedLayer1TausElectronVeto,
       selectedLayer1TausEcalCrackVeto,
       selectedLayer1TausMuonVeto ],
@@ -173,6 +175,7 @@ selectedLayer1TausForElecTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
 selectedLayer1TausForElecTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForElecTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForElecTauProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForElecTauCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForElecTauElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 selectedLayer1TausForElecTauEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
 
@@ -185,6 +188,7 @@ patTauSelConfiguratorForElecTau = objSelConfigurator(
       selectedLayer1TausForElecTauTrkIso,
       selectedLayer1TausForElecTauEcalIso,
       selectedLayer1TausForElecTauProng,
+      selectedLayer1TausForElecTauCharge,
       selectedLayer1TausForElecTauElectronVeto,
       selectedLayer1TausForElecTauEcalCrackVeto ],
     src = "cleanLayer1Taus",
@@ -207,6 +211,7 @@ selectedLayer1TausForMuTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
 selectedLayer1TausForMuTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForMuTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForMuTauProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForMuTauCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForMuTauMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 
 patTauSelConfiguratorForMuTau = objSelConfigurator(
@@ -218,6 +223,7 @@ patTauSelConfiguratorForMuTau = objSelConfigurator(
       selectedLayer1TausForMuTauTrkIso,
       selectedLayer1TausForMuTauEcalIso,
       selectedLayer1TausForMuTauProng,
+      selectedLayer1TausForMuTauCharge,
       selectedLayer1TausForMuTauMuonVeto ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
@@ -236,6 +242,7 @@ selectedLayer1TausForDiTauLeadTrkPt.cut = selectedLayer1TausLeadTrkPt.cut
 selectedLayer1TausForDiTauTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForDiTauEcalIso.cut = selectedLayer1TausEcalIso.cut
 selectedLayer1TausForDiTauProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForDiTauCharge.cut = selectedLayer1TausCharge.cut
 
 patTauSelConfiguratorForDiTau = objSelConfigurator(
     [ selectedLayer1TausForDiTauEta21,
@@ -244,7 +251,8 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
       selectedLayer1TausForDiTauLeadTrkPt,
       selectedLayer1TausForDiTauTrkIso,
       selectedLayer1TausForDiTauEcalIso,
-      selectedLayer1TausForDiTauProng ],
+      selectedLayer1TausForDiTauProng,
+      selectedLayer1TausForDiTauCharge ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
@@ -259,7 +267,8 @@ selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().i
 selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
-selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut 
+selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForWTauNuCharge.cut = selectedLayer1TausCharge.cut
 
 patTauSelConfiguratorForWTauNu =objSelConfigurator(
     [ selectedLayer1TausForWTauNuEta21,
@@ -269,7 +278,8 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
       selectedLayer1TausForWTauNuTrkIso,
       selectedLayer1TausForWTauNuMuonVeto,
       selectedLayer1TausForWTauNuElectronVeto,
-      selectedLayer1TausForWTauNuProng ],
+      selectedLayer1TausForWTauNuProng,
+      selectedLayer1TausForWTauNuCharge ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
