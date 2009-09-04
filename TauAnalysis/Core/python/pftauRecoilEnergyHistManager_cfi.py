@@ -8,7 +8,7 @@ tauRecoilEnergyFromJetsHistManager = cms.PSet(
 
     dqmDirectory_store = cms.string('TauRecoilEnergyFromJetsQuantities'),
 
-    #normalization = cms.string("taus")
+    #normalization = cms.string("leptons")
     normalization = cms.string("events")
 )
 
