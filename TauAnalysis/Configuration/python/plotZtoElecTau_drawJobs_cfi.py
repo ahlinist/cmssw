@@ -292,20 +292,31 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTauProng,
+    beforeCut = evtSelTauCharge,
+    plot = drawJobConfigEntry(
+        meName = 'TauQuantities/TauCharge',
+        title = "Tau Charge (#Sigma Tracks in Signal Cone, after Tau 1-Prong||3-Prong Cut)",
+        xAxis = 'unlabeled',
+        name = "cutFlowControlPlots_tauCharge_afterTauProng"
+    )
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelTauCharge,
     beforeCut = evtSelTauElectronVeto,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Tau 1-Prong||3-Prong Cut)",
+            title = "Tau (after Charge(Tau) = +/-1 Cut)",
             xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterTauProng"
+            name = "cutFlowControlPlots_tau_afterTauCharge"
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauDiscriminatorAgainstElectrons',
-            title = "Tau anti-Electron Discr. (after Tau 1-Prong||3-Prong Cut)",
+            title = "Tau anti-Electron Discr. (after Charge(Tau) = +/-1 Cut)",
             xAxis = 'unlabeled',
-            name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauProng"
+            name = "cutFlowControlPlots_tauAntiElectronDiscr_afterTauCharge"
         )
     ]
 )
