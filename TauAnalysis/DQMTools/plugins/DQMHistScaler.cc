@@ -41,7 +41,7 @@ DQMHistScaler::DQMHistScaler(const edm::ParameterSet& cfg)
   } else {
     cfgScaleFactor_ = -1.;
   }
-  cfgScaleFactor_ = ( cfg.exists("scaleFactor") ) ? cfg.getParameter<double>("scaleFactor") : -1.;
+
   //std::cout << " scaleFactor = " << cfgScaleFactor_ << std::endl;
 
   if ( cfg.exists("dqmDirectory_factorizedLooseSel") &&
@@ -220,8 +220,13 @@ void DQMHistScaler::endJob()
       dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
     }
   } else {
-    std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
-    std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
+    //std::string inputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
+    std::string inputDirectory = dqmDirectoryName(dqmDirectory_input_);
+    //std::string outputDirectory = dqmDirectoryName(std::string(dqmRootDirectory));
+    std::string outputDirectory = dqmDirectoryName(dqmDirectory_output_);
+
+    std::cout << " scaling MonitorElements in input Directory = " << inputDirectory << ","
+	      << " copying scaled MonitorElements to output Directory = " << outputDirectory << std::endl;
       
     dqmCopyRecursively(dqmStore, inputDirectory, outputDirectory, scaleFactor, 1, false);
   }
