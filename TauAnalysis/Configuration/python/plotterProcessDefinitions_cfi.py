@@ -129,6 +129,63 @@ process_WplusJets = cms.PSet(
     )
 )
 
+# W -> tau nu
+process_Wtaunu = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('Wtaunu')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/Wtaunu'),
+        legendEntry = cms.string('W -> tau nu'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
+# W -> mu nu
+process_Wmunu = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('Wmunu')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/Wmunu'),
+        legendEntry = cms.string('W -> mu nu'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
+
+# W -> e nu
+process_Wenu = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('Wenu')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/Wenu'),
+        legendEntry = cms.string('W -> e nu'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
+#QCD for W->TauNu
+process_qcd_W = cms.PSet(
+    config_dqmFileLoader = cms.PSet(
+        inputFileNames = cms.vstring(''),
+        scaleFactor = cms.double(1.),
+        dqmDirectory_store = cms.string('qcd_W')
+    ),
+    config_dqmHistPlotter = cms.PSet(
+        dqmDirectory = cms.string('harvested/qcd_W'),
+        legendEntry = cms.string('QCD pt 15'),
+        type = cms.string('smMC') # 'Data' / 'smMC' / 'bsmMC' / 'smSumMC'
+    )
+)
+
 # gamma + jets 
 process_gammaPlusJets = cms.PSet(
     config_dqmFileLoader = cms.PSet(
