@@ -41,6 +41,11 @@ ObjValNtupleProducer::ObjValNtupleProducer(const edm::ParameterSet& cfg)
 	branchEntryType* branchEntry_index = new branchEntryType(branchName_index.str(), objValExtractor_index);
 	branchEntries_.push_back(branchEntry_index);
       }
+      
+    } else if ( cfgObjValExtractor.exists("vector") ) {
+      ObjValVectorExtractorBase* objValExtractor = ObjValVectorExtractorPluginFactory::get()->create(pluginTypeObjValExtractor, cfgObjValExtractor);
+      branchVectorEntryType* branchEntry = new branchVectorEntryType(*branchName, objValExtractor);
+      branchVectorEntries_.push_back(branchEntry);
     } else {
       ObjValExtractorBase* objValExtractor = ObjValExtractorPluginFactory::get()->create(pluginTypeObjValExtractor, cfgObjValExtractor);
 
@@ -103,6 +108,12 @@ void ObjValNtupleProducer::beginJob(const edm::EventSetup&)
 
     ntuple_->Branch((*branchEntry)->branchName_.data(), &(*branchEntry)->objValue_, leafList.data(), branchBufferSize);
   }
+  
+  for ( std::vector<branchVectorEntryType*>::iterator branchEntry = branchVectorEntries_.begin(); branchEntry != branchVectorEntries_.end(); ++branchEntry) {
+    std::cout << "setting address of vector Branch = " << (*branchEntry)->branchName_ << std::endl;
+    
+    ntuple_->Branch((*branchEntry)->branchName_.data(), "vector<double>", &((*branchEntry)->objValue_));
+  }
 
   std::cout << "done." << std::endl;
 }
@@ -124,10 +135,26 @@ void ObjValNtupleProducer::analyze(const edm::Event& evt, const edm::EventSetup&
 							   << " --> skipping !!";
       continue;
     }
-
+    
     (*branchEntry)->objValue_ = (*(*branchEntry)->objValExtractor_)(evt);
+    
 
     //std::cout << " filling Branch = " << (*branchEntry)->branchName_ << ", objValue = " << (*branchEntry)->objValue_ << std::endl;
+  }
+  
+  for ( std::vector<branchVectorEntryType*>::iterator branchEntry = branchVectorEntries_.begin(); branchEntry != branchVectorEntries_.end(); ++branchEntry) {
+    if ( !(*branchEntry)->objValExtractor_ ) {
+      edm::LogError ("ObjValNtupleProducer::fillBranches") << " No ObjValExtractor set for branch = " << (*branchEntry)->branchName_
+                 << " --> skipping !!";
+      continue;
+    }
+    
+    
+    (*branchEntry)->objValue_->clear();
+    std::vector<double> vals = (*(*branchEntry)->objValExtractor_)(evt);
+    for (unsigned i=0;i<vals.size();i++) {
+      (*branchEntry)->objValue_->push_back(vals[i]);
+    }
   }
 
 //--- fill ntuple
