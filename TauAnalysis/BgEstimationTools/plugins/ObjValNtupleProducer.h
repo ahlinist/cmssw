@@ -12,9 +12,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: ObjValNtupleProducer.h,v 1.2 2009/06/17 12:45:43 veelken Exp $
+ * $Id: ObjValNtupleProducer.h,v 1.3 2009/07/30 16:41:46 veelken Exp $
  *
  */
 
@@ -25,12 +25,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "TauAnalysis/BgEstimationTools/interface/ObjValExtractorBase.h"
+#include "TauAnalysis/BgEstimationTools/interface/ObjValVectorExtractorBase.h"
 
 #include <TTree.h>
 #include <TH1.h>
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class ObjValNtupleProducer : public edm::EDAnalyzer
 {
@@ -42,6 +44,16 @@ class ObjValNtupleProducer : public edm::EDAnalyzer
     std::string branchName_;
     ObjValExtractorBase* objValExtractor_;
     Float_t objValue_;
+  };
+  
+  struct branchVectorEntryType
+  {
+    branchVectorEntryType(const std::string& branchName, ObjValVectorExtractorBase* objValExtractor)
+      : branchName_(branchName), objValExtractor_(objValExtractor) {}
+    ~branchVectorEntryType() { delete objValExtractor_; }
+    std::string branchName_;
+    ObjValVectorExtractorBase* objValExtractor_;
+    std::auto_ptr<std::vector<double> > objValue_;
   };
 
  public:
@@ -61,6 +73,7 @@ class ObjValNtupleProducer : public edm::EDAnalyzer
 
 //--- internal data-members for handling branches
   std::vector<branchEntryType*> branchEntries_;
+  std::vector<branchVectorEntryType*> branchVectorEntries_;
 
   TTree* ntuple_;
   TH1* fillStatusHistogram_;
