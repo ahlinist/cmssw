@@ -77,9 +77,10 @@ class HitEff : public edm::EDAnalyzer {
   float ResX, ResXSig;
   uint ModIsBad; uint Id; uint SiStripQualBad; bool withinAcceptance;
   uint run; uint event;
-  float timeInOut, timeInOutErr;
-  float timeOutIn, timeOutInErr;
-  int timeDOF;
+  float timeDT, timeDTErr;
+  int timeDTDOF;
+  float timeECAL, dedx;
+  int dedxNOM;
 };
 
 

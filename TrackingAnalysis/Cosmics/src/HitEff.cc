@@ -42,6 +42,7 @@
 #include "DataFormats/SiStripDetId/interface/TECDetId.h"
 #include "RecoLocalTracker/ClusterParameterEstimator/interface/StripClusterParameterEstimator.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
+#include "DataFormats/TrackReco/interface/DeDxData.h"
 
 #include "AnalysisDataFormats/SiStripClusterInfo/interface/SiStripClusterInfo.h"
 #include "CalibTracker/Records/interface/SiStripDetCablingRcd.h"
@@ -104,11 +105,12 @@ void HitEff::beginJob(const edm::EventSetup& c){
   traj->Branch("run",&run,"run/i");
   traj->Branch("event",&event,"event/i");
   traj->Branch("layer",&whatlayer,"layer/i");
-  traj->Branch("timeInOut",&timeInOut,"timeInOut/F");
-  traj->Branch("timeInOutErr",&timeInOutErr,"timeInOutErr/F");
-  traj->Branch("timeOutIn",&timeOutIn,"timeOutIn/F");
-  traj->Branch("timeOutInErr",&timeOutInErr,"timeOutInErr/F");
-  traj->Branch("timeDOF",&timeDOF,"timeDOF/I");
+  traj->Branch("timeDT",&timeDT,"timeDT/F");
+  traj->Branch("timeDTErr",&timeDTErr,"timeDTErr/F");
+  traj->Branch("timeDTDOF",&timeDTDOF,"timeDTDOF/I");
+  traj->Branch("timeECAL",&timeECAL,"timeECAL/F");
+  traj->Branch("dedx",&dedx,"dedx/F");
+  traj->Branch("dedxNOM",&dedxNOM,"dedxNOM/I"); 
 
   events = 0;
   EventTrackCKF = 0;
@@ -167,20 +169,29 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
 
-  timeInOut = -999.0; timeInOutErr = -999.0; timeOutIn = -999.0; timeOutInErr = -999.0; timeDOF = -999;
+  //edm::InputTag m_dEdxCalibTag = new edm::InputTag('dedxHarmonic2CTF','','RECO');
+  //dEdxCalib = cms.InputTag('dedxHarmonic2CTF','','RECO')
+  Handle<ValueMap<DeDxData> >          dEdxCalibHandle;
+  //e.getByLabel(m_dEdxCalibTag, dEdxCalibHandle);
+  e.getByLabel("dedxHarmonic2CTF", dEdxCalibHandle);
+  const ValueMap<DeDxData> dEdxTrackCalib = *dEdxCalibHandle.product();
+  
+  timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999;
+  timeECAL = -999.0; dedx = -999.0; dedxNOM = -999;
   // retrieve the muon time
   Handle<MuonCollection> muH;
   e.getByLabel("muonsWitht0Correction",muH);
   const MuonCollection & muonsT0  =  *muH.product();
-  cout << "muonsT0 size = " << muonsT0.size() << endl;
+  //cout << "muonsT0 size = " << muonsT0.size() << endl;
   if(muonsT0.size()<1) return;
   MuonTime mt0 = muonsT0[0].time();
-  timeInOut = mt0.timeAtIpInOut; 
-  timeInOutErr = mt0.timeAtIpInOutErr;
-  timeOutIn = mt0.timeAtIpOutIn; 
-  timeOutInErr = mt0.timeAtIpOutInErr;
-  timeDOF = mt0.nDof;
-    cout << "timeInOut = " << timeInOut << "+-" << timeInOutErr << "    timeOutIn = " << timeOutIn << "+-" << timeOutInErr << " with dof = " << timeDOF << endl;
+  timeDT = mt0.timeAtIpInOut; 
+  timeDTErr = mt0.timeAtIpInOutErr;
+  timeDTDOF = mt0.nDof;
+  //cout << "timeDT = " << timeDT << "+-" << timeDTErr << " with dof = " << timeDTDOF << endl;
+
+  bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
+  if (hasCaloEnergyInfo) timeECAL = muonsT0[0].calEnergy().ecal_time;
 
   events++;
   
