@@ -19,6 +19,7 @@ wTauNuHistManagers = cms.vstring(
     'jetHistManager',
     'vertexHistManager',
     'tauRecoilEnergyFromJetsHistManager',
+    'tauRecoilEnergyFromCaloTowersHistManager',
     'metTopologyHistManager'
 )
 
@@ -105,10 +106,16 @@ evtSelTauProng = cms.PSet(
     src_individual = cms.InputTag('tauProngCut', 'individual')
 )
 
-evtSelRecoilEnergy = cms.PSet(
-    pluginName = cms.string('evtSelRecoilEnergy'),
+evtSelRecoilEnergyFromCaloTowers = cms.PSet(
+    pluginName = cms.string('evtSelRecoilEnergyFromCaloTowers'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('recoilEnergyCut')
+    src = cms.InputTag('recoilEnergyFromCaloTowersCut')
+)
+
+evtSelRecoilEnergyFromJets = cms.PSet(
+    pluginName = cms.string('evtSelRecoilEnergyFromJets'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('recoilEnergyFromJetsCut')
 )
 
 # veto events containing additional central jets with Et > 20 GeV
@@ -267,8 +274,17 @@ wTauNuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuProngCumulative')
 	),
     cms.PSet(
-	filter = cms.string('evtSelRecoilEnergy'),
-	title = cms.string('recoil energy < 15'),
+	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
+	title = cms.string('recoil energy (calotowers) < 5'),
+	saveRunEventNumbers = cms.vstring('')
+	),
+    cms.PSet(
+	analyzers = wTauNuHistManagers,
+	#replace = cms.vstring('jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
+	),
+    cms.PSet(
+	filter = cms.string('evtSelRecoilEnergyFromJets'),
+	title = cms.string('recoil energy (jets) < 1'),
 	saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
