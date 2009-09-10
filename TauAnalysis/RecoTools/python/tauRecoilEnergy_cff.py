@@ -15,9 +15,9 @@ tauRecoilEnergyFromJets = cms.EDProducer("PATTauRecoilEnergyFromJetsProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-tauRecoilEnergyFromJetsPt15 = cms.EDFilter("PATTauRecoilEnergyFromJetsSelector",
+tauRecoilEnergyFromJetsPt1 = cms.EDFilter("PATTauRecoilEnergyFromJetsSelector",
     src = cms.InputTag("tauRecoilEnergyFromJets"),
-    cut = cms.string('etSum < 15.'),
+    cut = cms.string('etSum < 1.'),
     filter = cms.bool(False)
 )                                      
 
@@ -31,11 +31,11 @@ tauRecoilEnergyFromCaloTowers = cms.EDProducer("PATTauRecoilEnergyFromCaloTowers
     verbosity = cms.untracked.int32(0)
 )
 
-tauRecoilEnergyFromCaloTowersPt15 = cms.EDFilter("PATTauRecoilEnergyFromCaloTowersSelector",
+tauRecoilEnergyFromCaloTowersPt5 = cms.EDFilter("PATTauRecoilEnergyFromCaloTowersSelector",
     src = cms.InputTag("tauRecoilEnergyFromCaloTowers"),
-    cut = cms.string('etSum < 15.'),
+    cut = cms.string('etSum < 5.'),
     filter = cms.bool(False)
 )  
 
-produceTauRecoilEnergy = cms.Sequence( tauRecoilEnergyFromJets * tauRecoilEnergyFromJetsPt15
-                                      * tauRecoilEnergyFromCaloTowers * tauRecoilEnergyFromCaloTowersPt15 )
+produceTauRecoilEnergy = cms.Sequence( tauRecoilEnergyFromJets * tauRecoilEnergyFromJetsPt1
+                                      * tauRecoilEnergyFromCaloTowers * tauRecoilEnergyFromCaloTowersPt5 )
