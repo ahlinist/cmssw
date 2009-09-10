@@ -89,7 +89,7 @@ drawJobConfigurator_WtoTauNu.add(
    
 drawJobConfigurator_WtoTauNu.add(
     afterCut = evtSelTauProng,
-    beforeCut = evtSelRecoilEnergy,
+    beforeCut = evtSelRecoilEnergyFromCaloTowers,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
@@ -120,7 +120,7 @@ drawJobConfigurator_WtoTauNu.add(
 )
 
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelRecoilEnergy,
+    afterCut = evtSelRecoilEnergyFromJets,
     beforeCut = evtSelCentralJetVeto,
     plots = [
         drawJobConfigEntry(
