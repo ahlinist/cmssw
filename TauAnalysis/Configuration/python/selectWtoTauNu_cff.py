@@ -94,21 +94,34 @@ cfgTauProngCut = cms.PSet(
     )
 
 # Recoil jet energy cut
-cfgRecoilEnergyCut = cms.PSet(
-    pluginName = cms.string('recoilEnergyCut'),
+cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
+    pluginName = cms.string('recoilEnergyFromCaloTowersCut'),
+    pluginType = cms.string('PATTauRecoilEnergyFromCaloTowersMinEventSelector'),
+    src = cms.InputTag('tauRecoilEnergyFromCaloTowersPt5'),
+    minNumber = cms.uint32(1)
+    )
+cfgRecoilEnergyFromJetsCut = cms.PSet(
+    pluginName = cms.string('recoilEnergyFromJetsCut'),
     pluginType = cms.string('PATTauRecoilEnergyFromJetsMinEventSelector'),
-    src = cms.InputTag('tauRecoilEnergyFromJetsPt15'),
+    src = cms.InputTag('tauRecoilEnergyFromJetsPt1'),
     minNumber = cms.uint32(1)
     )
 
 
-# veto events containing additional central jets with Et > 20 GeV                                       
+# veto events containing additional central jets with Et > 10 GeV                                       
 cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    src = cms.InputTag('selectedLayer1JetsEt10Cumulative'),
     maxNumber = cms.uint32(0)                                                      
     )
+#cut on met topology
+#cfgCentralJetVeto = cms.PSet(
+#    pluginName = cms.string('centralJetVeto'),
+#    pluginType = cms.string('PATCandViewMaxEventSelector'),
+#    src = cms.InputTag('selectedLayer1TausForWTauNuMetTopology'),
+#    maxNumber = cms.uint32(0)                                                      
+#    )
 
 
 wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
@@ -126,7 +139,8 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
 	cfgTauMuonVeto,
 	cfgTauElectronVeto,
 	cfgTauProngCut,
-	cfgRecoilEnergyCut,
+	cfgRecoilEnergyFromCaloTowersCut,
+	cfgRecoilEnergyFromJetsCut,
         cfgCentralJetVeto
 	],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
