@@ -13,6 +13,6 @@ dumpWtoTauNu = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
 	ZplusJets = cms.string('harvested/ZplusJets/wTauNuAnalyzer/FilterStatistics/'),
         TTplusJets = cms.string('harvested/TTplusJets/wTauNuAnalyzer/FilterStatistics')
     ),
-    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency")
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency","indiv. Efficiency")
 )
  
