@@ -27,7 +27,11 @@
 #include <sstream>
 #include <iomanip>
 
+#ifdef CSC_RENDER_PLUGIN
+#include "CSCDQM_Utility.h"
+#else
 #include "DQM/CSCMonitorModule/interface/CSCDQM_Utility.h"
+#endif
 
 namespace cscdqm {
 

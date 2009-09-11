@@ -35,23 +35,33 @@
  * @class ChamberMap
  * @brief Class that draws CSC Map diagram
  */
-class ChamberMap
-{
-public:
-  ChamberMap();
-  ~ChamberMap();
-  void draw(TH2*& me) const;
-  void drawStats(TH2*& me) const;
+class ChamberMap {
+  
+  private:
 
-private:
-  void printLegendBox(unsigned int& number, const std::string title, const int color) const;
-  const float Xmin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-  const float Xmax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-  const float Ymin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-  const float Ymax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
-  const int N_ring(const int station) const;
-  const int N_chamber(const int station, const int ring) const;
-  TBox *bBlank;
+    static const unsigned short COLOR_WHITE = 0;
+    static const unsigned short COLOR_GREEN = 3;
+    static const unsigned short COLOR_RED   = 2;
+    static const unsigned short COLOR_BLUE  = 4;
+    static const unsigned short COLOR_GREY  = 17;
+  
+  public:
+    
+    ChamberMap();
+    ~ChamberMap();
+    void draw(TH2*& me) const;
+    void drawStats(TH2*& me) const;
+
+  private:
+    
+    void printLegendBox(unsigned int& number, const std::string title, const int color) const;
+    const float Xmin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
+    const float Xmax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
+    const float Ymin_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
+    const float Ymax_local_derived_from_ChamberID(const int side, const int station, const int ring, const int chamber) const;
+    const int N_ring(const int station) const;
+    const int N_chamber(const int station, const int ring) const;
+    TBox *bBlank;
 };
 
 #endif

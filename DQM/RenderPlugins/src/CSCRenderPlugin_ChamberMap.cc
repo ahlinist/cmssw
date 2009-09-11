@@ -20,26 +20,22 @@
 
 #include "CSCRenderPlugin_ChamberMap.h"
 
-ChamberMap::ChamberMap()
-{
+ChamberMap::ChamberMap() {
   bBlank = new TBox(1.0, 0.0, 37, 18);
   bBlank->SetFillColor(0);
   bBlank->SetLineColor(1);
   bBlank->SetLineStyle(1);
 }
 
-ChamberMap::~ChamberMap()
-{
+ChamberMap::~ChamberMap() {
   delete bBlank;
 }
 
 // Transform chamber ID to local canvas coordinates
-const float ChamberMap::Xmin_local_derived_from_ChamberID(const int /* side */, const int station, const int ring, const int chamber) const
-{
+const float ChamberMap::Xmin_local_derived_from_ChamberID(const int /* side */, const int station, const int ring, const int chamber) const {
   float x;
 
-  if((station == 2 || station == 3 || station == 4) && ring == 1)
-  {
+  if((station == 2 || station == 3 || station == 4) && ring == 1) {
     x = (float)((chamber-1)*2);
   }
   else
@@ -146,7 +142,7 @@ const int ChamberMap::N_ring(const int station) const
   if(station == 1) n_ring = 3;
   if(station == 2) n_ring = 2;
   if(station == 3) n_ring = 2;
-  if(station == 4) n_ring = 1;
+  if(station == 4) n_ring = 2;
   return n_ring;
 }
 
@@ -254,8 +250,8 @@ void ChamberMap::draw(TH2*& me) const
   }
 }
 
-void ChamberMap::drawStats(TH2*& me) const
-{
+void ChamberMap::drawStats(TH2*& me) const {
+
   gStyle->SetPalette(1,0);
 
   /** Cosmetics... */
@@ -312,8 +308,14 @@ void ChamberMap::drawStats(TH2*& me) const
 
           fillColor = int(BinContent);
 
-          if (fillColor < 0 || fillColor > 4 || fillColor == 1) fillColor = 0;
+          if (fillColor < 0 || fillColor > 5) fillColor = 0;
           legend.set(fillColor);
+
+          if (fillColor == 0) fillColor = COLOR_WHITE;
+          else if (fillColor == 1) fillColor = COLOR_GREEN;
+          else if (fillColor == 2) fillColor = COLOR_RED;
+          else if (fillColor == 3) fillColor = COLOR_BLUE;
+          else if (fillColor == 4) fillColor = COLOR_GREY;
 
           b[n_side][station][n_ring][n_chamber] = new TBox(x_min_chamber + 1, y_min_chamber, x_max_chamber + 1, y_max_chamber);
           b[n_side][station][n_ring][n_chamber]->SetFillColor(fillColor);
@@ -333,10 +335,11 @@ void ChamberMap::drawStats(TH2*& me) const
   }
 
   unsigned int n = 0;
-  if (legend.test(0)) printLegendBox(n, "OK/No Data", 0);
-  if (legend.test(2)) printLegendBox(n, "Error/Hot", 2);
-  if (legend.test(3)) printLegendBox(n, "OK/Data", 3);
-  if (legend.test(4)) printLegendBox(n, "Cold", 4);
+  if (legend.test(0)) printLegendBox(n, "OK/No Data", COLOR_WHITE);
+  if (legend.test(1)) printLegendBox(n, "Error/Hot", COLOR_GREEN);
+  if (legend.test(2)) printLegendBox(n, "OK/Data", COLOR_RED);
+  if (legend.test(3)) printLegendBox(n, "Cold", COLOR_BLUE);
+  if (legend.test(4)) printLegendBox(n, "Masked", COLOR_GREY);
 }
 
 void ChamberMap::printLegendBox(unsigned int& number, const std::string title, const int color) const
