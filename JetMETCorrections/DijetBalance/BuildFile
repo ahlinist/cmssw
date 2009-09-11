@@ -1,20 +1,17 @@
 <flags EDM_PLUGIN=1>
 <use name=root>
-<use name=Geometry/CaloGeometry>
-<use name=Geometry/Records>	
+	
 <use name=FWCore/Framework>
 <use name=FWCore/ParameterSet>
 <use name=DataFormats/JetReco>
-<use name=DataFormats/HepMCCandidate>
-<use name=DataFormats/CaloTowers>
 
+<use name=HLTrigger/HLTcore>
 <export>
   <lib name=JetMETCorrections/DijetBalance>
   <use name=root>
-  <use name=Geometry/CaloGeometry>
-  <use name=Geometry/Records>
+  
   <use name=FWCore/Framework>
   <use name=FWCore/ParameterSet>
-  <use name=DataFormats/JetReco>
-  <use name=DataFormats/HepMCCandidate>
+  
+  <use name=HLTrigger/HLTcore>
 </export>

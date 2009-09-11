@@ -10,11 +10,14 @@
 #include "JetMETCorrections/DijetBalance/interface/DijetBalanceTreeProducer.h"
 #include "JetMETCorrections/DijetBalance/interface/JetUtil.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Run.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "Geometry/Records/interface/IdealGeometryRecord.h"
+//#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
@@ -35,15 +38,61 @@ namespace cms
     histogramFile_      = cfg.getParameter<std::string>("histogramFile");
     dijetPtCut_         = cfg.getParameter<double>("dijetPtCut"); 
     barrelEtaCut_       = cfg.getParameter<double>("barrelEtaCut"); 
-    m_file_             = new TFile(histogramFile_.c_str(),"RECREATE");
+    triggerNames_       = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
+    triggerProcessName_ = cfg.getParameter<std::string>("triggerProcessName"); 
+    triggerResultsTag_  = cfg.getParameter<edm::InputTag>("triggerResultsTag");
+    isMCarlo_           = cfg.getParameter<bool>("isMCarlo");
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////
+  template<class Jet>
+  void DijetBalanceTreeProducer<Jet>::beginJob(const edm::EventSetup &iSetup) 
+  {
+    if (triggerNames_.size()>6)
+      {
+        string errorMessage = "Too many trigger bits!!!! \n";
+        throw  cms::Exception("Configuration",errorMessage);
+      } 
+    m_file_             = new TFile(histogramFile_.c_str(),"RECREATE"); 
     dijetTree_          = new TTree("DijetTree","DijetTree");
-  
     dijetTree_->Branch("dphi",         &dphi_,         "dphi_/F");
     dijetTree_->Branch("ptBarrel",     &ptBarrel_,     "ptBarrel_/F");
     dijetTree_->Branch("ptProbe",      &ptProbe_,      "ptProbe_/F");
     dijetTree_->Branch("ptJet3",       &ptJet3_,       "ptJet3_/F");
     dijetTree_->Branch("etaProbe",     &etaProbe_,     "etaProbe_/F");
+    dijetTree_->Branch("HLTBits",      HLTBits_,       "HLTBits[6]_/I");
+    if (isMCarlo_)
+      {
+        dijetTree_->Branch("pthat",        &pthat_,        "pthat_/F"); 
+        dijetTree_->Branch("xsec",         &xsec_,         "xsec_/F");
+        hPtHat_             = new TH1F("ptHat","ptHat",5000,0,5000);
+      }  
+    //must be done at beginRun and not only at beginJob, because 
+    //trigger names are allowed to change by run.
+    hltConfig_.init(triggerProcessName_);
+    //selected index of chosen triggers:
+    //for(unsigned int i=0;i<hltConfig_.size();i++)
+      //std::cout<<i<<" "<<hltConfig_.triggerName(i)<<std::endl;
+    for(unsigned int i=0;i<triggerNames_.size();i++)
+      {
+        triggerIndex_.push_back(hltConfig_.triggerIndex(triggerNames_[i]));
+        if (triggerIndex_[i] == hltConfig_.size())
+          {
+            string errorMessage="Requested TriggerName does not exist! -- "+triggerNames_[i]+"\n";
+            throw  cms::Exception("Configuration",errorMessage);
+          }
+      }
   }
+  //////////////////////////////////////////////////////////////////////////////////////////
+  template<class Jet>
+  void DijetBalanceTreeProducer<Jet>::beginRun(edm::Run const& run)
+  {
+    Handle<GenRunInfoProduct> hRunInfo;
+    if (isMCarlo_)
+      { 
+        run.getByLabel("generator", hRunInfo);
+        xsec_ = hRunInfo->externalXSecLO().value();
+      }
+  } 
   //////////////////////////////////////////////////////////////////////////////////////////
   template<class Jet>
   void DijetBalanceTreeProducer<Jet>::endJob() 
@@ -60,8 +109,35 @@ namespace cms
   template<class Jet>
   void DijetBalanceTreeProducer<Jet>::analyze(edm::Event const& event, edm::EventSetup const& iSetup) 
   { 
+    ////////////// Trigger bits //////
+    edm::Handle<edm::TriggerResults> triggerResultsHandle;
+    event.getByLabel(triggerResultsTag_,triggerResultsHandle); 
+    if (!triggerResultsHandle.isValid())
+      {
+        string errorMessage="Requested TriggerResult is not present in file! -- \n";
+        throw  cms::Exception("Configuration",errorMessage);
+      }
+    //check if configuration matches trigger results:
+    assert(triggerResultsHandle->size() == hltConfig_.size());
+    for (unsigned int i=0;i<6;i++)
+      HLTBits_[i] = 0;
+    for (unsigned int i=0;i<triggerIndex_.size();i++)
+      { 
+        bool result = triggerResultsHandle->accept(triggerIndex_[i]); 
+        if (result)
+          HLTBits_[i] = 1;
+      }
+    ////////////// Pt hat //////
+    Handle<GenEventInfoProduct> hEventInfo;
+    if (isMCarlo_)
+      { 
+        event.getByLabel("generator", hEventInfo);
+        pthat_ = hEventInfo->binningValues()[0];
+        hPtHat_->Fill(pthat_);
+      }
     edm::Handle<JetCollection> jets;
     event.getByLabel (jets_,jets);
+    ////////////// Jets //////
     typename JetCollection::const_iterator i_jet;
     int barrel(-1),probe(-1),ind(0);
     std::vector<double> PtJet(3);
