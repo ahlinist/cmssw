@@ -169,12 +169,12 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
 
-  //edm::InputTag m_dEdxCalibTag = new edm::InputTag('dedxHarmonic2CTF','','RECO');
-  //dEdxCalib = cms.InputTag('dedxHarmonic2CTF','','RECO')
-  Handle<ValueMap<DeDxData> >          dEdxCalibHandle;
-  //e.getByLabel(m_dEdxCalibTag, dEdxCalibHandle);
-  e.getByLabel("dedxHarmonic2CTF", dEdxCalibHandle);
-  const ValueMap<DeDxData> dEdxTrackCalib = *dEdxCalibHandle.product();
+  //edm::InputTag m_dEdxUncalibTag = new edm::InputTag('dedxHarmonic2CTF','','RECO');
+  //dEdxUncalib = cms.InputTag('dedxHarmonic2CTF','','RECO')
+  Handle<ValueMap<DeDxData> >          dEdxUncalibHandle;
+  //e.getByLabel(m_dEdxUncalibTag, dEdxUncalibHandle);
+  e.getByLabel("dedxMedianCTF", dEdxUncalibHandle);
+  const ValueMap<DeDxData> dEdxTrackUncalib = *dEdxUncalibHandle.product();
   
   timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999;
   timeECAL = -999.0; dedx = -999.0; dedxNOM = -999;
@@ -245,6 +245,11 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     if (DEBUG)    cout << "starting checking good single track event" << endl;
     reco::TrackCollection::const_iterator iCKF=trackCollectionCKF.product()->begin();
     EventTrackCKF++;  
+    
+    //get dedx info
+    reco::TrackRef itTrack  = reco::TrackRef( trackCollectionCKF, 0 );
+    dedx = dEdxTrackUncalib[itTrack].dEdx();
+    dedxNOM  = dEdxTrackUncalib[itTrack].numberOfMeasurements();
     
     const Trajectory traject = *(TrajectoryCollectionCKF.product()->begin());
     std::vector<TrajectoryMeasurement> TMeas=traject.measurements();
