@@ -38,8 +38,7 @@ typedef std::map<std::string, bool> MapOfPatternResults;
  * @class CSCRenderPlugin
  * @brief Actual render plugin for CSCs
  */
-class CSCRenderPlugin : public DQMRenderPlugin
-{
+class CSCRenderPlugin : public DQMRenderPlugin {
   ChamberMap chamberMap;
   SummaryMap summaryMap;
   MapOfPatternResults mopr;
@@ -2569,8 +2568,8 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
-    {
+  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & ) {
+
       if(o.object == NULL)
         return;
 
@@ -2614,8 +2613,8 @@ public:
     }
 
 private:
-  bool reMatch(const std::string pat, const std::string str)
-    {
+  
+  bool reMatch(const std::string pat, const std::string str) {
       bool result = false;
 
       std::string key(pat);

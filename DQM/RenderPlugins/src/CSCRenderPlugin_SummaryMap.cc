@@ -121,7 +121,7 @@ void SummaryMap::drawDetector(TH2* me)
           break;
         case 2:
           // Swithed off (DARK GREY)
-          b[x][y]->SetFillColor(15);
+          b[x][y]->SetFillColor(17);
         }
         b[x][y]->Draw("");
 
@@ -201,7 +201,7 @@ void SummaryMap::drawStation(TH2* me, const int station)
       break;
     case 2:
       // Swithed off (DARK GREY)
-      b[p_hw]->SetFillColor(15);
+      b[p_hw]->SetFillColor(16);
       break;
     case 0:
       // No data (WHITE)

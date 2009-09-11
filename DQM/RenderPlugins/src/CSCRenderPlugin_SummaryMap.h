@@ -19,6 +19,8 @@
  * =====================================================================================
  */
 
+#define CSC_RENDER_PLUGIN
+
 #ifdef DQMLOCAL
 #include "DQM/CSCMonitorModule/interface/CSCDQM_Detector.h"
 #else

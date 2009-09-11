@@ -16,7 +16,13 @@
  * =====================================================================================
  */
 
+#define CSC_RENDER_PLUGIN
+
+#ifdef CSC_RENDER_PLUGIN
+#include "CSCDQM_Detector.h"
+#else
 #include "DQM/CSCMonitorModule/interface/CSCDQM_Detector.h"
+#endif
 
 namespace cscdqm {
 
