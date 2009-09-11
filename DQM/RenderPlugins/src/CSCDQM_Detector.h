@@ -1,6 +1,3 @@
-#ifndef CSCDQM_Detector_H
-#define CSCDQM_Detector_H
-
 /*
  * =====================================================================================
  *
@@ -19,7 +16,8 @@
  * =====================================================================================
  */
 
-#include "CSCUtility.h"
+#ifndef CSCDQM_Detector_H
+#define CSCDQM_Detector_H
 
 #include <math.h>
 #include <float.h>
@@ -29,6 +27,14 @@
 #include <sstream>
 #include <iomanip>
 
+#include "DQM/CSCMonitorModule/interface/CSCDQM_Utility.h"
+
+namespace cscdqm {
+
+/**
+ * Number of Detector Components.
+ */
+
 #define N_SIDES    2
 #define N_STATIONS 4
 #define N_RINGS    3
@@ -37,95 +43,107 @@
 #define N_CFEBS    5
 #define N_HVS      5
 
+/** Size of the address (number of components) */
 #define ADDR_SIZE  7
 
-#define N_ELEMENTS 7740
+/** Number of addressing elements in detector */
+#define N_ELEMENTS 9540
+//(7740 + 1800)
+
+/**
+ * Partition function shortcuts
+ */
 
 #define PARTITION_INDEX(x,y)  (x * partitions_y + y)
 #define PARTITION_STEP_X      (5.0 / partitions_x)
 #define PARTITION_STEP_Y      ((2.0 * 3.14159) / partitions_y)
 
-//#define P_X(i)        int(i / partitions_y)
-//#define P_Y(i,x)      (i - x * partitions_y)
+/**
+ * @brief  Mask of the address which is used to switch on and off appropriate Address fields.
+ */
+typedef struct AddressMask {
+  bool side;
+  bool station;
+  bool ring;
+  bool chamber;
+  bool layer;
+  bool cfeb;
+  bool hv;
+};
 
-namespace cscdqm
-{
-  typedef struct AddressMask
-  {
-    bool side;
-    bool station;
-    bool ring;
-    bool chamber;
-    bool layer;
-    bool cfeb;
-    bool hv;
+/**
+ * @brief  Structure to store detector addresses of any granularity: from
+ * whole detector to the single HV element.
+ */
+typedef struct Address {
+
+  unsigned int side;
+  unsigned int station;
+  unsigned int ring;
+  unsigned int chamber;
+  unsigned int layer;
+  unsigned int cfeb;
+  unsigned int hv;
+
+  AddressMask mask;
+
+  const bool operator== (const Address& a) const {
+    if (mask.side    == a.mask.side    && mask.side    == true && side    != a.side)    return false;
+    if (mask.station == a.mask.station && mask.station == true && station != a.station) return false;
+    if (mask.ring    == a.mask.ring    && mask.ring    == true && ring    != a.ring)    return false;
+    if (mask.chamber == a.mask.chamber && mask.chamber == true && chamber != a.chamber) return false;
+    if (mask.layer   == a.mask.layer   && mask.layer   == true && layer   != a.layer)   return false;
+    if (mask.cfeb    == a.mask.cfeb    && mask.cfeb    == true && cfeb    != a.cfeb)    return false;
+    if (mask.hv      == a.mask.hv      && mask.hv      == true && hv      != a.hv)      return false;
+    return true;
   };
 
-  typedef struct Address
-  {
-    unsigned int side;
-    unsigned int station;
-    unsigned int ring;
-    unsigned int chamber;
-    unsigned int layer;
-    unsigned int cfeb;
-    unsigned int hv;
-
-    AddressMask mask;
-
-    const bool operator== (const Address& a) const
-      {
-        if (mask.side    == a.mask.side    && mask.side    == true && side    != a.side)    return false;
-        if (mask.station == a.mask.station && mask.station == true && station != a.station) return false;
-        if (mask.ring    == a.mask.ring    && mask.ring    == true && ring    != a.ring)    return false;
-        if (mask.chamber == a.mask.chamber && mask.chamber == true && chamber != a.chamber) return false;
-        if (mask.layer   == a.mask.layer   && mask.layer   == true && layer   != a.layer)   return false;
-        if (mask.cfeb    == a.mask.cfeb    && mask.cfeb    == true && cfeb    != a.cfeb)    return false;
-        if (mask.hv      == a.mask.hv      && mask.hv      == true && hv      != a.hv)      return false;
-        return true;
-      }
-
-    Address* operator= (const Address& a)
-      {
-        mask.side    = a.mask.side;
-        side         = a.side;
-        mask.station = a.mask.station;
-        station      = a.station;
-        mask.ring    = a.mask.ring;
-        ring         = a.ring;
-        mask.chamber = a.mask.chamber;
-        chamber      = a.chamber;
-        mask.layer   = a.mask.layer;
-        layer        = a.layer;
-        mask.cfeb    = a.mask.cfeb;
-        cfeb         = a.cfeb;
-        mask.hv      = a.mask.hv;
-        hv           = a.hv;
-        return this;
-      }
+  const Address* operator= (const Address& a) {
+    mask.side    = a.mask.side;
+    side         = a.side;
+    mask.station = a.mask.station;
+    station      = a.station;
+    mask.ring    = a.mask.ring;
+    ring         = a.ring;
+    mask.chamber = a.mask.chamber;
+    chamber      = a.chamber;
+    mask.layer   = a.mask.layer;
+    layer        = a.layer;
+    mask.cfeb    = a.mask.cfeb;
+    cfeb         = a.cfeb;
+    mask.hv      = a.mask.hv;
+    hv           = a.hv;
+    return this;
   };
 
-  typedef struct AddressBox
-  {
-    Address adr;
-    float xmin;
-    float xmax;
-    float ymin;
-    float ymax;
-  };
+};
 
-  struct AddressBoxStationPartition
-  {
-    unsigned int from[2];
-    unsigned int to[2];
-  };
+/**
+ * @brief  Area covered by Address in eta/phy space
+ */
+typedef struct AddressBox {
+  Address adr;
+  float xmin;
+  float xmax;
+  float ymin;
+  float ymax;
+};
 
-  typedef std::map<const unsigned int, std::vector<unsigned int> > PartitionMap;
-  typedef PartitionMap::iterator PartitionMapIterator;
 
-  class Detector
-  {
+/** Map of partitions and partition covering adresses indexes type */
+typedef std::map<const unsigned int, std::vector<unsigned int> > PartitionMap;
+
+/** Iterator type of PartitionMap */
+typedef PartitionMap::iterator PartitionMapIterator;
+
+/**
+ * @class Detector
+ * @brief Detector geometry and addressing related imformation and routines
+ */
+class Detector {
+
   public:
+
     Detector(const unsigned int p_partitions_x = 0, const unsigned int p_partitions_y = 0);
 
     const bool NextAddress(unsigned int& i, const Address*& adr, const Address& mask) const;
@@ -146,6 +164,7 @@ namespace cscdqm
     const unsigned int NumberOfChamberHVs(const unsigned int station, const unsigned int ring) const;
 
   private:
+
     const float Eta(const float r, const float z) const;
     const float EtaToX(const float eta) const;
     const float PhiToY(const float phi) const;
@@ -155,17 +174,23 @@ namespace cscdqm
     const float PhiMinCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
     const float PhiMaxCFEB(const int station, const int ring, const int chamber, const int cfeb) const;
 
+    /** Address boxes in epa/phi space */
     AddressBox boxes[N_ELEMENTS];
+
+    /** Station areas precalculated */
     float station_area[N_STATIONS];
 
+    /** Number of partitions in X axis */
     unsigned int partitions_x;
-    unsigned int partitions_y;
-    unsigned int partitions_offset;
 
-    // To improve performance
+    /** Number of partitions in Y axis */
+    unsigned int partitions_y;
+
+    /** Map of partitions and list of it covering addresses indexes */
     PartitionMap partitions;
-    AddressBoxStationPartition station_partitions[N_STATIONS];
-  };
+
+};
+
 }
 
 #endif
