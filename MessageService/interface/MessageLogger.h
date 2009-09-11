@@ -120,12 +120,14 @@ public:
 private:
 
   // set up the module name in the message drop, and the enable/suppress info
-  void  establishModule   ( const ModuleDescription& desc,
-  		            std::string const & whichPhase );
-  void  unEstablishModule ( const ModuleDescription& desc,
-  		            std::string const & whichPhase );
-  void  establish         ( std::string const & whichPhase ); 
-  void  unEstablish       ( std::string const & whichPhase ); 
+  void  establishModule       ( const ModuleDescription& desc,
+  		                std::string const & whichPhase );
+  void  establishModuleCtor   ( const ModuleDescription& desc,
+  		                std::string const & whichPhase );
+  void  unEstablishModule     ( const ModuleDescription& desc,
+  		                std::string const & whichPhase );
+  void  establish             ( std::string const & whichPhase ); 
+  void  unEstablish           ( std::string const & whichPhase ); 
   
  // put an ErrorLog object here, and maybe more
 
