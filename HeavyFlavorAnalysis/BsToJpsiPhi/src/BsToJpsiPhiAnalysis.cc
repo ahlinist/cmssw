@@ -189,22 +189,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     edm::Handle<GenParticleCollection> genParticles;
     iEvent.getByLabel(thegenParticlesLabel_ , genParticles );
     
-    for( size_t i = 0; i < genParticles->size(); ++ i ) {
-      const Candidate & p = (*genParticles)[ i ];
-      int MC_particleID=p.pdgId();
-      if (abs(MC_particleID) == 443 && p.status()==2){
-	const Candidate & gmo=*(p.mother());
-	bsRootTree_->nBsDau_ = gmo.numberOfDaughters();
-	bsRootTree_->momID_ = gmo.pdgId();
-	if (bsRootTree_->nBsDau_ == 2){
-	  const Candidate & da1=*(gmo.daughter( 0 ));
-	  const Candidate & da2=*(gmo.daughter( 1 ));
-	  bsRootTree_->dau_1_ID_ = da1.pdgId();
-	  bsRootTree_->dau_2_ID_ = da2.pdgId();
-	}
-      }
-    }
+    // call function which does the job: filling MC info
+    fillMCInfo(genParticles);
     
+
     //////////////////////////////////
     //
     // HLT code for trigger bits
@@ -922,3 +910,148 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
 }
 
+
+
+void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genParticles){
+
+
+  for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    const Candidate & p = (*genParticles)[ i ];
+    int MC_particleID=p.pdgId();
+    if (abs(MC_particleID) == 443 && p.status()==2){
+      const Candidate & gmo=*(p.mother());
+      bsRootTree_->nBsDau_ = gmo.numberOfDaughters();
+      bsRootTree_->momID_ = gmo.pdgId();
+      if (bsRootTree_->nBsDau_ == 2){
+	const Candidate & da1=*(gmo.daughter( 0 ));
+	const Candidate & da2=*(gmo.daughter( 1 ));
+	bsRootTree_->dau_1_ID_ = da1.pdgId();
+	bsRootTree_->dau_2_ID_ = da2.pdgId();
+      }
+    }
+  }
+  
+  
+  
+
+  //added by Alex: check type of event
+  const Candidate * genBs, *genJpsi, *genPhi, *genMu1, *genMu2, *genK1, *genK2;
+  genBs = genJpsi = genPhi = genMu1 = genMu2 = genK1 = genK2 = 0;
+  
+  int GenNumberOfFoundBsMesons = 0;
+  
+  for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    const GenParticle & genBsCand = (*genParticles)[ i ];
+    int MC_particleID=genBsCand.pdgId();    
+    if( abs(MC_particleID == 531) ){
+      GenNumberOfFoundBsMesons++;
+      bsRootTree_->isGenBsEvent_ = 1;
+      
+      // find daughters
+      int numBsDaughters = genBsCand.numberOfDaughters();
+      bsRootTree_->GenNumberOfBsDaughters_ = numBsDaughters;
+      
+      const Candidate * candJpsi = 0;
+      const Candidate * candPhi = 0;
+      for(int j = 0; j < numBsDaughters; ++ j) {
+	const Candidate * d = genBsCand.daughter( j );
+	  int dauId = d->pdgId();
+	
+	  if(abs(dauId) == 443 ) candJpsi = d;
+	  if(abs(dauId) == 333  )candPhi = d;
+
+	}
+	bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
+	bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
+	if(bFoundJpsiPhi){
+	  // loop over jpsi daughters, check for muons
+	  const Candidate * candMu1 = 0;
+	  const Candidate * candMu2 = 0;
+	  for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+	    const Candidate * jpsiDa = candJpsi->daughter( k );
+	    if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
+	    if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
+	    //	    cout<<"      **** AS: jpsiDaughter pid = " << jpsiDa->pdgId() << endl;
+	  }
+	
+
+	  // loop over phi daughters check for Kaons
+	  const Candidate * candKaon1 = 0;
+	  const Candidate * candKaon2 = 0;
+	  for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
+	    const Candidate * candK = candPhi->daughter ( ikaon );
+	    if( candK->pdgId() == 321 ) candKaon1 = candK;
+	    if( candK->pdgId() == -321 ) candKaon2 = candK;
+	    //	    cout<<"     ****** AS phi daughter pid = " << candK -> pdgId() << endl;
+	  }
+	  // if all fulfilled, set Gen flag and set pointers to gen particles
+
+	  if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
+	    bsRootTree_->isGenBsJpsiPhiMuMuKKEvent_ = 1;
+
+	    genBs = &genBsCand;
+	    genPhi = candPhi;
+	    genJpsi = candJpsi;
+	    genMu1 = candMu1;
+	    genMu2 = candMu2;
+	    genK1 = candKaon1;
+	    genK2 = candKaon2;
+
+	    // consistency check
+	    bool Bconsistent = genBs && genPhi && genJpsi && genMu1 && genMu2 && genK1 && genK2;
+	    if( !Bconsistent ) {
+	      cout<<"    **** AS:  !Bconsistent " << endl;
+	      exit(1);
+	      
+	    }
+	  }
+	  
+	  
+	}//  end if(bFoundJpsiPhi)
+
+      }
+      
+      
+    }// AS: end loop over GenParticles
+    
+  // fill particles into tree
+  if(genBs) {
+    bsRootTree_->genBsM_   =  genBs->mass();
+    bsRootTree_->genBsPt_  =  genBs->pt();
+    bsRootTree_->genBsEta_ =  genBs->eta();
+    bsRootTree_->genBsPhi_ =  genBs->phi();
+  }
+  if(genPhi) {
+    bsRootTree_->genPhiM_   =  genPhi->mass();
+    bsRootTree_->genPhiPt_  =  genPhi->pt();
+    bsRootTree_->genPhiEta_ =  genPhi->eta();
+    bsRootTree_->genPhiPhi_ =  genPhi->phi();
+
+    bsRootTree_->genK1M_   =  genK1->mass();
+    bsRootTree_->genK1Pt_  =  genK1->pt();
+    bsRootTree_->genK1Eta_ =  genK1->eta();
+    bsRootTree_->genK1Phi_ =  genK1->phi();
+  
+    bsRootTree_->genK2M_   =  genK2->mass();
+    bsRootTree_->genK2Pt_  =  genK2->pt();
+    bsRootTree_->genK2Eta_ =  genK2->eta();
+    bsRootTree_->genK2Phi_ =  genK2->phi();
+  }
+  if(genJpsi) {
+    bsRootTree_->genJpsiM_   =  genJpsi->mass();
+    bsRootTree_->genJpsiPt_  =  genJpsi->pt();
+    bsRootTree_->genJpsiEta_ =  genJpsi->eta();
+    bsRootTree_->genJpsiPhi_ =  genJpsi->phi();
+
+    bsRootTree_->genMu1M_   =  genMu1->mass();
+    bsRootTree_->genMu1Pt_  =  genMu1->pt();
+    bsRootTree_->genMu1Eta_ =  genMu1->eta();
+    bsRootTree_->genMu1Phi_ =  genMu1->phi();
+
+    bsRootTree_->genMu2M_   =  genMu2->mass();
+    bsRootTree_->genMu2Pt_  =  genMu2->pt();
+    bsRootTree_->genMu2Eta_ =  genMu2->eta();
+    bsRootTree_->genMu2Phi_ =  genMu2->phi();
+  }
+ 
+}
