@@ -1,7 +1,8 @@
 #include "FastSimDataFormats/External/interface/FastL1BitInfo.h"
 
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+//#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TF1.h"
 
@@ -172,11 +173,11 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
          fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
 
         hasTauVeto = bitInfo->getTauVeto() ? 1 : 0;
-        hasTauVetoForPartIso = bitInfo->getTauVetoForPartIso() ? 1 : 0;
+//FIXME        hasTauVetoForPartIso = bitInfo->getTauVetoForPartIso() ? 1 : 0;
         hasEmTauVeto = bitInfo->getEmTauVeto() ? 1 : 0;
         hasHadTauVeto = bitInfo->getHadTauVeto() ? 1 : 0;
         hasIsolationVeto = bitInfo->getIsolationVeto() ? 1 : 0;
-        hasPartialIsolationVeto = bitInfo->getPartialIsolationVeto() ? 1 : 0;
+//FIXME        hasPartialIsolationVeto = bitInfo->getPartialIsolationVeto() ? 1 : 0;
         hasSumEtBelowThres = bitInfo->getSumEtBelowThres() ? 1 : 0;
         hasMaxEt = bitInfo->getMaxEt() ? 1 : 0;
         hasSoft = bitInfo->getSoft() ? 1 : 0;
