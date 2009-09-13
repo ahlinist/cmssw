@@ -201,6 +201,20 @@ public:
 	double errdedxTrk_;
 	int numdedxTrk_;
 
+	//MC info
+	int isGenBsEvent_;
+	int GenNumberOfBsDaughters_;
+	int isGenBsJpsiPhiEvent_;
+	int isGenBsJpsiPhiMuMuKKEvent_;
+
+	double genBsM_, genBsPt_, genBsEta_, genBsPhi_;
+	double genJpsiM_, genJpsiPt_, genJpsiEta_, genJpsiPhi_;
+	double genPhiM_, genPhiPt_, genPhiEta_, genPhiPhi_;
+	double genMu1M_, genMu1Pt_, genMu1Eta_, genMu1Phi_;
+	double genMu2M_, genMu2Pt_, genMu2Eta_, genMu2Phi_;
+	double genK1M_, genK1Pt_, genK1Eta_, genK1Phi_;	
+	double genK2M_, genK2Pt_, genK2Eta_, genK2Phi_;	
+
 	TFile* bsFile_;
 	TTree* bsTree_; 
 };

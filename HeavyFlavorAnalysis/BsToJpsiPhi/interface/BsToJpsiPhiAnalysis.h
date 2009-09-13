@@ -32,6 +32,7 @@
 // #include "RecoVertex/KinematicFitPrimitives/interface/"
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 // #include "DataFormats/HepMCCandidate/interface/GenParticleCandidate.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -45,6 +46,7 @@
 #include <TH1F.h>
 
 
+
 class BsToJpsiPhiAnalysis : public edm::EDAnalyzer {
 public:
 	explicit BsToJpsiPhiAnalysis(const edm::ParameterSet&);
@@ -53,6 +55,8 @@ public:
 	virtual void analyze(const edm::Event&, const edm::EventSetup&);
 	virtual void beginJob(edm::EventSetup const&);
 	virtual void endJob();
+
+	void fillMCInfo( edm::Handle<reco::GenParticleCollection> & genParticles);
 
 private:
 

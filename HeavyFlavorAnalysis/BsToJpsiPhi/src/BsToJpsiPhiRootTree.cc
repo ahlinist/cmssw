@@ -156,7 +156,43 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("dedxTrk", &dedxTrk_, "dedxTrk/D");
   bsTree_->Branch("errdedxTrk", &errdedxTrk_, "errdedxTrk/D");
   bsTree_->Branch("numdedxTrk", &numdedxTrk_, "numdedxTrk/I");
+ 
   
+  bsTree_->Branch("isGenBsEvent", &isGenBsEvent_, "isGenBsEvent/I");
+  bsTree_->Branch("GenNumberOfBsDaughters", &GenNumberOfBsDaughters_, "GenNumberOfBsDaughters/I");
+  bsTree_->Branch("isGenBsJpsiPhiEvent", &isGenBsJpsiPhiEvent_, "isGenBsJpsiPhiEvent/I");
+  bsTree_->Branch("isGenBsJpsiPhiMuMuKKEvent", & isGenBsJpsiPhiMuMuKKEvent_, " isGenBsJpsiPhiMuMuKKEvent/I");
+ 
+  bsTree_->Branch("genBsM", &genBsM_, "genBsM/D"); 
+  bsTree_->Branch("genBsPt", &genBsPt_, "genBsPt/D");
+  bsTree_->Branch("genBsEta", &genBsEta_, "genBsEta/D");
+  bsTree_->Branch("genBsPhi", &genBsPhi_, "genBsPhi/D");
+  bsTree_->Branch("genJpsiM", &genJpsiM_, "genJpsiM/D"); 
+  bsTree_->Branch("genJpsiPt", &genJpsiPt_, "genJpsiPt/D");
+  bsTree_->Branch("genJpsiEta", &genJpsiEta_, "genJpsiEta/D");
+  bsTree_->Branch("genJpsiPhi", &genJpsiPhi_, "genJpsiPhi/D");
+  bsTree_->Branch("genPhiM", &genPhiM_, "genPhiM/D"); 
+  bsTree_->Branch("genPhiPt", &genPhiPt_, "genPhiPt/D");
+  bsTree_->Branch("genPhiEta", &genPhiEta_, "genPhiEta/D");
+  bsTree_->Branch("genPhiPhi", &genPhiPhi_, "genPhiPhi/D");
+  bsTree_->Branch("genMu1M", &genMu1M_, "genMu1M/D"); 
+  bsTree_->Branch("genMu1Pt", &genMu1Pt_, "genMu1Pt/D");
+  bsTree_->Branch("genMu1Eta", &genMu1Eta_, "genMu1Eta/D");
+  bsTree_->Branch("genMu1Phi", &genMu1Phi_, "genMu1Phi/D");
+  bsTree_->Branch("genMu2M", &genMu2M_, "genMu2M/D"); 
+  bsTree_->Branch("genMu2Pt", &genMu2Pt_, "genMu2Pt/D");
+  bsTree_->Branch("genMu2Eta", &genMu2Eta_, "genMu2Eta/D");
+  bsTree_->Branch("genMu2Phi", &genMu2Phi_, "genMu2Phi/D");
+  bsTree_->Branch("genK1M", &genK1M_, "genK1M/D"); 
+  bsTree_->Branch("genK1Pt", &genK1Pt_, "genK1Pt/D");
+  bsTree_->Branch("genK1Eta", &genK1Eta_, "genK1Eta/D");
+  bsTree_->Branch("genK1Phi", &genK1Phi_, "genK1Phi/D");
+  bsTree_->Branch("genK2M", &genK2M_, "genK2M/D"); 
+  bsTree_->Branch("genK2Pt", &genK2Pt_, "genK2Pt/D");
+  bsTree_->Branch("genK2Eta", &genK2Eta_, "genK2Eta/D");
+  bsTree_->Branch("genK2Phi", &genK2Phi_, "genK2Phi/D");
+
+
 }
 
 BsToJpsiPhiRootTree::~BsToJpsiPhiRootTree()
@@ -319,6 +355,17 @@ void BsToJpsiPhiRootTree::resetEntries()
   errdedxTrk_ = -10;
   numdedxTrk_ = -10;
   
+
+  isGenBsEvent_ = GenNumberOfBsDaughters_ = isGenBsJpsiPhiEvent_ = isGenBsJpsiPhiMuMuKKEvent_ = -10;
+  
+  genBsM_ = genBsPt_ = genBsEta_ = genBsPhi_ = -10;
+  genJpsiM_ = genJpsiPt_= genJpsiEta_= genJpsiPhi_ = -10;
+  genPhiM_= genPhiPt_= genPhiEta_= genPhiPhi_ = -10;
+  genMu1M_= genMu1Pt_= genMu1Eta_= genMu1Phi_ = -10;
+  genMu2M_= genMu2Pt_= genMu2Eta_= genMu2Phi_ = -10;
+  genK1M_= genK1Pt_= genK1Eta_= genK1Phi_ = -10;
+  genK2M_= genK2Pt_= genK2Eta_= genK2Phi_ = -10;
+
 } 
 
 void BsToJpsiPhiRootTree::getDeDx(const double f1, const double f2, const int f3)
