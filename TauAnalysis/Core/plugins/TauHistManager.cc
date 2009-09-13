@@ -469,12 +469,8 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauTrkIsoPt_->Fill(patTau.trackIso(), weight);
   hTauEcalIsoPt_->Fill(patTau.ecalIso(), weight);
   hTauHcalIsoPt_->Fill(patTau.hcalIso(), weight);
-  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso(), weight);
-    
-  hTauTrkIsoPt_->Fill(patTau.trackIso(), weight);
-  hTauEcalIsoPt_->Fill(patTau.ecalIso(), weight);
-  hTauHcalIsoPt_->Fill(patTau.hcalIso(), weight);
-  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso(), weight);
+  //hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso() + patTau.hcalIso(), weight);
+  hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso(), weight);
   
   //std::cout << " particleIso = " << patTau.particleIso() << std::endl;
   //std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
