@@ -155,11 +155,14 @@ void ElectronHistManager::bookHistograms()
   hElectronIdRobust_ = dqmStore.book1D("ElectronIdRobust", "Electron Id (Robust)", 2, -0.5, 1.5);
   
   hElectronTrkIsoPt_ = dqmStore.book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 20.);    
+  hElectronTrkIsoPtVsElectronPt_ = dqmStore.book2D("ElectronTrkIsoPtVsElectronPt", "Electron Track Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);    
   hElectronEcalIsoPt_ = dqmStore.book1D("ElectronEcalIsoPt", "Electron ECAL Isolation P_{T}", 100, 0., 20.);
   hElectronEcalIsoPtBarrel_ = dqmStore.book1D("ElectronEcalIsoPtBarrel", "Electron (Barrel) ECAL Isolation P_{T}", 100, 0., 20.);
   hElectronEcalIsoPtEndcap_ = dqmStore.book1D("ElectronEcalIsoPtEndcap", "Electron (Endcap) ECAL Isolation P_{T}", 100, 0., 20.);
+  hElectronEcalIsoPtVsElectronPt_ = dqmStore.book2D("ElectronTrkIsoPtVsElectronPt", "Electron ECAL Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
   hElectronHcalIsoPt_ = dqmStore.book1D("ElectronHcalIsoPt", "Electron HCAL Isolation P_{T}", 100, 0., 20.);
   hElectronIsoSumPt_ = dqmStore.book1D("ElectronIsoSumPt", "Electron Isolation Sum(P_{T})", 100, 0., 20.);
+  hElectronIsoSumPtVsElectronPt_ = dqmStore.book2D("hElectronIsoSumPtVsElectronPt", "Electron Isolation Sum(P_{T}) vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
   hElectronTrkIsoPtRel_ = dqmStore.book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
   hElectronEcalIsoPtRel_ = dqmStore.book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
   hElectronEcalIsoPtBarrelRel_ = dqmStore.book1D("ElectronEcalIsoPtBarrelRel", "Electron (Barrel) #frac{P_{T ECAL isolation}}{P_{T track}}", 200, 0., 2.);
@@ -377,6 +380,7 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
   //std::cout << "<ElectronHistManager::fillElectronIsoHistograms>:" << std::endl;
 
   hElectronTrkIsoPt_->Fill(patElectron.trackIso(), weight);
+  hElectronTrkIsoPtVsElectronPt_->Fill(patElectron.pt(), patElectron.trackIso(), weight);
   hElectronEcalIsoPt_->Fill(patElectron.ecalIso(), weight);
   if ( patElectron.superCluster().isAvailable() && patElectron.superCluster().isNonnull() ) {
     if ( TMath::Abs(patElectron.superCluster()->eta()) < electronEtaMaxBarrel_ ) 
@@ -384,8 +388,11 @@ void ElectronHistManager::fillElectronIsoHistograms(const pat::Electron& patElec
     if ( TMath::Abs(patElectron.superCluster()->eta()) > electronEtaMinEndcap_ ) 
       hElectronEcalIsoPtEndcap_->Fill(patElectron.ecalIso(), weight);
   }
+  hElectronEcalIsoPtVsElectronPt_->Fill(patElectron.pt(), patElectron.ecalIso(), weight);
   hElectronHcalIsoPt_->Fill(patElectron.hcalIso(), weight);
-  hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso(), weight);
+  //hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso() + patElectron.hcalIso(), weight);
+  hElectronIsoSumPt_->Fill(patElectron.trackIso() + patElectron.ecalIso(), weight);
+  hElectronIsoSumPtVsElectronPt_->Fill(patElectron.pt(), patElectron.trackIso() + patElectron.ecalIso(), weight);
   hElectronTrkIsoPtRel_->Fill(patElectron.trackIso()/patElectron.pt(), weight);
   hElectronEcalIsoPtRel_->Fill(patElectron.ecalIso()/patElectron.pt(), weight);
   if ( patElectron.superCluster().isAvailable() && patElectron.superCluster().isNonnull() ) {

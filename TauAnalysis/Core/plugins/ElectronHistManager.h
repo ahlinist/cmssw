@@ -88,11 +88,14 @@ class ElectronHistManager : public HistManagerBase
   
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hElectronTrkIsoPt_;
+  MonitorElement* hElectronTrkIsoPtVsElectronPt_;
   MonitorElement* hElectronEcalIsoPt_;
   MonitorElement* hElectronEcalIsoPtBarrel_;
   MonitorElement* hElectronEcalIsoPtEndcap_;
+  MonitorElement* hElectronEcalIsoPtVsElectronPt_;
   MonitorElement* hElectronHcalIsoPt_;
   MonitorElement* hElectronIsoSumPt_;
+  MonitorElement* hElectronIsoSumPtVsElectronPt_;
   MonitorElement* hElectronTrkIsoPtRel_;
   MonitorElement* hElectronEcalIsoPtRel_;
   MonitorElement* hElectronEcalIsoPtBarrelRel_;
