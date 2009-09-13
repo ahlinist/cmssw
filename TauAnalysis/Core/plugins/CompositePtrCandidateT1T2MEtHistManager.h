@@ -1,5 +1,5 @@
-#ifndef TauAnalysis_Core_DiTauCandidateHistManager_h  
-#define TauAnalysis_Core_DiTauCandidateHistManager_h
+#ifndef TauAnalysis_Core_CompositePtrCandidateT1T2MEtHistManager_h  
+#define TauAnalysis_Core_CompositePtrCandidateT1T2MEtHistManager_h
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
