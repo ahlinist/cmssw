@@ -81,9 +81,12 @@ class MuonHistManager : public HistManagerBase
 
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hMuonTrkIsoPt_;
+  MonitorElement* hMuonTrkIsoPtVsMuonPt_;
   MonitorElement* hMuonEcalIsoPt_;
+  MonitorElement* hMuonEcalIsoPtVsMuonPt_;
   MonitorElement* hMuonHcalIsoPt_;
   MonitorElement* hMuonIsoSumPt_;
+  MonitorElement* hMuonIsoSumPtVsMuonPt_;
   MonitorElement* hMuonTrkIsoPtRel_;
   MonitorElement* hMuonEcalIsoPtRel_;
   MonitorElement* hMuonHcalIsoPtRel_;

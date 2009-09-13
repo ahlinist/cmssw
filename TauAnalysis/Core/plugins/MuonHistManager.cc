@@ -143,9 +143,12 @@ void MuonHistManager::bookHistograms()
   hMuonSegmentCompatibility_ = dqmStore.book1D("MuonSegmentCompatibility", "MuonSegmentCompatibility", 102, -0.01, 1.01);
   
   hMuonTrkIsoPt_ = dqmStore.book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 20.);    
+  hMuonTrkIsoPtVsMuonPt_ = dqmStore.book2D("MuonTrkIsoPtVsMuonPt", "MuonTrkIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
   hMuonEcalIsoPt_ = dqmStore.book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
+  hMuonEcalIsoPtVsMuonPt_ = dqmStore.book2D("MuonEcalIsoPtVsMuonPt", "MuonEcalIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
   hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
   hMuonIsoSumPt_ = dqmStore.book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
+  hMuonIsoSumPtVsMuonPt_ = dqmStore.book2D("MuonIsoSumPtVsMuonPt", "MuonIsoSumPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
   hMuonTrkIsoPtRel_ = dqmStore.book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 200, 0., 2.);    
   hMuonEcalIsoPtRel_ = dqmStore.book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 200, 0., 2.);
   hMuonHcalIsoPtRel_ = dqmStore.book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
@@ -355,9 +358,13 @@ void MuonHistManager::fillMuonIsoHistograms(const pat::Muon& patMuon, double wei
   //std::cout << "<MuonHistManager::fillMuonIsoHistograms>:" << std::endl;
 
   hMuonTrkIsoPt_->Fill(patMuon.trackIso(), weight);
+  hMuonTrkIsoPtVsMuonPt_->Fill(patMuon.pt(), patMuon.trackIso(), weight);
   hMuonEcalIsoPt_->Fill(patMuon.ecalIso(), weight);
+  hMuonEcalIsoPtVsMuonPt_->Fill(patMuon.pt(), patMuon.ecalIso(), weight);
   hMuonHcalIsoPt_->Fill(patMuon.hcalIso(), weight);
-  hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso(), weight);
+  //hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso() + patMuon.hcalIso(), weight);
+  hMuonIsoSumPt_->Fill(patMuon.trackIso() + patMuon.ecalIso(), weight);
+  hMuonIsoSumPtVsMuonPt_->Fill(patMuon.pt(), patMuon.trackIso() + patMuon.ecalIso(), weight);
   hMuonTrkIsoPtRel_->Fill(patMuon.trackIso()/patMuon.pt(), weight);
   hMuonEcalIsoPtRel_->Fill(patMuon.ecalIso()/patMuon.pt(), weight);
   hMuonHcalIsoPtRel_->Fill(patMuon.hcalIso()/patMuon.pt(), weight);
