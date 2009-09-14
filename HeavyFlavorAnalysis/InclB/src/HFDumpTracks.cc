@@ -36,6 +36,15 @@
 
 #include "CommonTools/TrackerMap/interface/TrackerMap.h"
 
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+
 
 #include <TFile.h>
 #include <TH1.h>
@@ -85,7 +94,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // -- get the collection of RecoTracks 
   edm::Handle<edm::View<reco::Track> > tracksView;
-  iEvent.getByLabel(fTracksLabel.c_str(), tracksView);
+  iEvent.getByLabel(fTracksLabel.c_str(), tracksView); 
+
+  Handle<reco::TrackCollection> recTrks;
+  iEvent.getByLabel("generalTracks", recTrks);
 
   // -- get the collection of muons and store their corresponding track indices
   vector<int> muonIndices;
@@ -111,7 +123,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       tp = true;
     } catch (cms::Exception &ex) {
       gHFEvent->fEventBits = gHFEvent->fEventBits + 16;
-      if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: no TrackingParticles in the event (fError=" << gHFEvent->fEventBits << ")" << endl;  
+      if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: no TrackingParticles in the event (fEventBits=" << gHFEvent->fEventBits << ")" << endl;  
     }
     }
 
@@ -144,12 +156,22 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     }
   }
   //*******************
-
+  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+  //signed impact parameter
+  //primary vertex
+  Handle<reco::VertexCollection> primaryVertex;
+  iEvent.getByLabel("offlinePrimaryVerticesWithBS",primaryVertex);
+  
+  edm::ESHandle<TransientTrackBuilder> builder;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",builder);
+  GlobalVector direction(1,0,0);//z-axis: fix when needed!!!!!!!!!!!!!!!
+  //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
   
   if (fVerbose > 0) cout << "===> Tracks " << tracksView->size() << endl;
   TAnaTrack *pTrack; 
 
   bool first = true;
+  reco::TrackCollection::const_iterator t=recTrks->begin();
   for (unsigned int i = 0; i < tracksView->size(); ++i){    
 
     TrackBaseRef rTrackView(tracksView,i);
@@ -161,8 +183,10 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.eta(),
 			      trackView.phi()
 			      );
-    pTrack->fTip = trackView.d0();
-    pTrack->fLip = trackView.dz();
+    // pTrack->fTip = trackView.d0();
+    //pTrack->fTipE = trackView.d0Error();
+    //pTrack->fLip = trackView.dz();
+    //pTrack->fLipE = trackView.dzError();
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
@@ -196,7 +220,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       } catch (Exception event) {
 	if (first) {
 	  gHFEvent->fEventBits = gHFEvent->fEventBits + 32;
-	  if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: matching fails (fError=" << gHFEvent->fEventBits << ")" << endl;
+	  if (fVerbose > 0) cout << "==>HFDumpTracks>ERROR: matching fails (fEventBits=" << gHFEvent->fEventBits << ")" << endl;
 	}
 	first = false;
       }
@@ -254,9 +278,23 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pTrack->fGenIndex = gen_id;
     pTrack->fMCID     = gen_pdg_id;
     if (fVerbose > 0) pTrack->dump(); 
-   }
-    
 
+   
+    const TransientTrack & transientTrack = builder->build(&(*t));
+    const  Vertex  *pv;
+    bool pvFound = (primaryVertex->size() != 0);
+    if(pvFound) {
+      pv = &(*primaryVertex->begin());
+      pTrack->fLip      = IPTools::signedImpactParameter3D(transientTrack,direction,*pv).second.value();
+      pTrack->fLipE     = IPTools::signedImpactParameter3D(transientTrack, direction, *pv).second.error();
+      pTrack->fTip      = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pv).second.value();
+      pTrack->fTipE     = IPTools::signedTransverseImpactParameter(transientTrack, direction, *pv).second.error();  // 3d and transverse impact parameters
+    }
+    
+    t++;  
+  }
+  
+  
 }
 
 // ------------ method called once each job just before starting event loop  ------------
