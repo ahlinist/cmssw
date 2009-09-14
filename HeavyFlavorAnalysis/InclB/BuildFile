@@ -21,6 +21,9 @@
 <use name=hepmc> 
 <use name=heppdt>
 <use name=root>
+<use name=TrackingTools/IPTools>
+<use name=TrackingTools/Records>
+<use name=TrackingTools/TransientTrack>
 <flags EDM_PLUGIN=1>
 <export>
    <lib name=HeavyFlavorAnalysisInclB>
@@ -46,4 +49,7 @@
    <use name=hepmc>
    <use name=heppdt> 
    <use name=clhep>
+   <use name=TrackingTools/IPTools>
+   <use name=TrackingTools/Records>
+   <use name=TrackingTools/TransientTrack>
 </export>
