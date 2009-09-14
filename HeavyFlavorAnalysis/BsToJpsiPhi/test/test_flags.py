@@ -39,7 +39,8 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           TrackLabel_pi = cms.InputTag("piTracks"),
                                           TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
-
+                                          StoreDeDxInfo = cms.bool( False ),  #needs to be false on AODSIM, can be true on RECO
+                                          
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
                                           JpsiPtCut      = cms.double(3),
@@ -61,6 +62,8 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                               fileNames = cms.untracked.vstring(
 #                              'file:/test/mc/1/fromHLT/Bs2JpsiPhi_1.root',
+'file:/nfs/data5/cms/store/mc/Summer09/BtoJPsiMuMu/AODSIM/MC_31X_V3_AODSIM-v1/0021/465107F5-E988-DE11-BA12-003048C91B0E.root'
+
                               ),
 )
 

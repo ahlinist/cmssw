@@ -71,6 +71,7 @@ private:
 	edm::InputTag trackLabelPi_;
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
+	bool StoreDeDxInfo_;
 	double JpsiMassWindowBeforeFit_;
 	double JpsiMassWindowAfterFit_;
 	double JpsiPtCut_;
