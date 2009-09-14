@@ -15,6 +15,8 @@ class TFile;
 class TTree;
 class TAna00Event;
 
+const double mmuon = 0.10565837;
+
 // ----------------------------------------------------------------------
 class HFDumpSignal : public edm::EDAnalyzer {
  public:
@@ -26,8 +28,13 @@ class HFDumpSignal : public edm::EDAnalyzer {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  int         fVerbose; 
-  std::string fMuonLabel;
+  int         fVerbose;
+  double      fJetMatch;
+  double      fJetEtMin; 
+  std::string fMuonLabel; 
+  std::string   fJetsLabel;
+  std::string   fTracksLabel;
+  std::string   fVertexLabel;
   
   int nevt;
 
