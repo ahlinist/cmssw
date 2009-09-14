@@ -1,8 +1,8 @@
 # Auto generated configuration file
 # using: 
-# Revision: 1.123 
+# Revision: 1.140 
 # Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: Configuration/Generator/python/H200ZZ4L_cfi.py -s GEN:ProductionFilterSequence,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_31X_V1::All --datatier GEN-SIM-RAW --eventcontent RAWSIM -n 10 --no_exec
+# with command line options: Configuration/Generator/python/H200ZZ4L_cfi.py -s GEN:ProductionFilterSequence,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_31X_V8::All --datatier GEN-SIM-RAW --eventcontent RAWSIM -n 10 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('HLT')
@@ -25,7 +25,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.123 $'),
+    version = cms.untracked.string('$Revision: 1.140 $'),
     annotation = cms.untracked.string('Configuration/Generator/python/H200ZZ4L_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -55,7 +55,7 @@ process.output = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 # Other statements
-process.GlobalTag.globaltag = 'MC_31X_V1::All'
+process.GlobalTag.globaltag = 'MC_31X_V8::All'
 process.generator = cms.EDFilter("Pythia6GeneratorFilter",
     pythiaPylistVerbosity = cms.untracked.int32(0),
     filterEfficiency = cms.untracked.double(1.0),
