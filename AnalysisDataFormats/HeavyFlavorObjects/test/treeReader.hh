@@ -1,5 +1,5 @@
-#ifndef TREEBMM_H
-#define TREEBMM_H
+#ifndef TREEREADER_H
+#define TREEREADER_H
 
 #include <iostream>
 

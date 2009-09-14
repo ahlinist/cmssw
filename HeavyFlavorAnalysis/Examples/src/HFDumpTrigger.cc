@@ -100,7 +100,8 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // -- L1 trigger bits
   gHFEvent->fL1Decision = 0; 
-  gHFEvent->fL1w1=0; gHFEvent->fL1w2=0; gHFEvent->fL1w3=0; gHFEvent->fL1w4=0; 
+  gHFEvent->fL1TWords[0]=0; gHFEvent->fL1TWords[1]=0; gHFEvent->fL1TWords[2]=0; gHFEvent->fL1TWords[3]=0; 
+  gHFEvent->fL1TWasRun[0]=0;gHFEvent->fL1TWasRun[1]=0;gHFEvent->fL1TWasRun[2]=0;gHFEvent->fL1TWasRun[3]=0; 
 
   Handle<L1GlobalTriggerReadoutRecord> L1GTRR;
   iEvent.getByLabel(fL1GTReadoutRecordLabel,L1GTRR);
@@ -113,13 +114,13 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       int l1flag = L1GTRR->decisionWord()[iTrig]; 
       
       if (iTrig < 32 && l1flag) {
-	gHFEvent->fL1w1 |= (0x1 << iTrig);
+	gHFEvent->fL1TWords[0] |= (0x1 << iTrig);
       } else if (iTrig < 64 && l1flag) {
-	gHFEvent->fL1w2 |= (0x1 << iTrig);
+	gHFEvent->fL1TWords[1] |= (0x1 << iTrig);
       } else if (iTrig < 96 && l1flag) {
-	gHFEvent->fL1w3 |= (0x1 << iTrig);
+	gHFEvent->fL1TWords[2] |= (0x1 << iTrig);
       } else if (iTrig < 128 && l1flag) {
-	gHFEvent->fL1w4 |= (0x1 << iTrig);
+	gHFEvent->fL1TWords[3] |= (0x1 << iTrig);
       }
     }
 
@@ -129,8 +130,9 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       const unsigned int numberTriggerBits(gtDecisionWord.size());
       const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  hL1GTmap->gtObjectMap();
       for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
-	int itrig = (*itMap).algoBitNumber();
-	cout << iq << " " << (*itMap).algoName() << "  " << itrig << endl;
+	int itrg = (*itMap).algoBitNumber();
+	cout << iq << " " << (*itMap).algoName() << "  " << itrg << endl;
+	gHFEvent->fL1TNames[itrg] = TString((*itMap).algoName()); 
 	++iq;
       }
       
@@ -138,10 +140,10 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } 
 
   cout << "L1 trigger: " << endl
-       << std::bitset<32>(gHFEvent->fL1w1) << endl
-       << std::bitset<32>(gHFEvent->fL1w2) << endl
-       << std::bitset<32>(gHFEvent->fL1w3) << endl
-       << std::bitset<32>(gHFEvent->fL1w4) << endl;
+       << std::bitset<32>(gHFEvent->fL1TWords[0]) << endl
+       << std::bitset<32>(gHFEvent->fL1TWords[1]) << endl
+       << std::bitset<32>(gHFEvent->fL1TWords[2]) << endl
+       << std::bitset<32>(gHFEvent->fL1TWords[3]) << endl;
 
   // -- L1 muons
   int L1_mu_size = 0;
@@ -162,7 +164,8 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   // -- HLT bits
   gHFEvent->fHLTDecision = 0; 
-  gHFEvent->fHLTw1=0; gHFEvent->fHLTw2=0; gHFEvent->fHLTw3=0; gHFEvent->fHLTw4=0; 
+  gHFEvent->fHLTWords[0]=0; gHFEvent->fHLTWords[1]=0; gHFEvent->fHLTWords[2]=0; gHFEvent->fHLTWords[3]=0; 
+  gHFEvent->fHLTWasRun[0]=0;gHFEvent->fHLTWasRun[1]=0;gHFEvent->fHLTWasRun[2]=0;gHFEvent->fHLTWasRun[3]=0; 
 
   Handle<TriggerResults> hHLTresults;
   iEvent.getByLabel(fHLTResultsLabel, hHLTresults);
@@ -185,39 +188,39 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       // This is the HLT name for each path: 
       cout << iTrig << " " << trigName.triggerName(iTrig) << endl;
       
+      gHFEvent->fHLTNames[iTrig] = TString(trigName.triggerName(iTrig)); 
+
       if (iTrig < 32 && hltflag) {
-	gHFEvent->fHLTw1 |= (0x1 << iTrig);
+	gHFEvent->fHLTWords[0] |= (0x1 << iTrig);
       } else if (iTrig < 64 && hltflag) {
-	gHFEvent->fHLTw2 |= (0x1 << iTrig);
+	gHFEvent->fHLTWords[1] |= (0x1 << iTrig);
       } else if (iTrig < 96 && hltflag) {
-	gHFEvent->fHLTw3 |= (0x1 << iTrig);
+	gHFEvent->fHLTWords[2] |= (0x1 << iTrig);
       } else if (iTrig < 128 && hltflag) {
-	gHFEvent->fHLTw4 |= (0x1 << iTrig);
+	gHFEvent->fHLTWords[3] |= (0x1 << iTrig);
       }
 
       if (iTrig < 32 && wasrun) {
-	HLTwasRun1 |= (0x1 << iTrig);
+	gHFEvent->fHLTWasRun[0] |= (0x1 << iTrig);
       } else if (iTrig < 64 && hltflag) {
-	HLTwasRun2 |= (0x1 << iTrig);
+	gHFEvent->fHLTWasRun[1] |= (0x1 << iTrig);
       } else if (iTrig < 96 && hltflag) {
-	HLTwasRun3 |= (0x1 << iTrig);
+	gHFEvent->fHLTWasRun[2] |= (0x1 << iTrig);
       } else if (iTrig < 128 && hltflag) {
-	HLTwasRun4 |= (0x1 << iTrig);
+	gHFEvent->fHLTWasRun[3] |= (0x1 << iTrig);
       }
     }
 
 
     cout << "HLT trigger accept/run: " << endl
-	 << std::bitset<32>(gHFEvent->fHLTw1) << endl
-	 << std::bitset<32>(HLTwasRun1) << endl << endl
-	 << std::bitset<32>(gHFEvent->fHLTw2) << endl
-	 << std::bitset<32>(HLTwasRun2) << endl<< endl
-	 << std::bitset<32>(gHFEvent->fHLTw3) << endl
-	 << std::bitset<32>(HLTwasRun3) << endl << endl
-	 << std::bitset<32>(gHFEvent->fHLTw4) << endl
-	 << std::bitset<32>(HLTwasRun4) << endl;
-
-    cout << "test: " << std::bitset<32>(10) << endl;
+	 << std::bitset<32>(gHFEvent->fHLTWords[0]) << endl
+	 << std::bitset<32>(gHFEvent->fHLTWasRun[0]) << endl << endl
+	 << std::bitset<32>(gHFEvent->fHLTWords[1]) << endl
+	 << std::bitset<32>(gHFEvent->fHLTWasRun[1]) << endl<< endl
+	 << std::bitset<32>(gHFEvent->fHLTWords[2]) << endl
+	 << std::bitset<32>(gHFEvent->fHLTWasRun[2]) << endl << endl
+	 << std::bitset<32>(gHFEvent->fHLTWords[3]) << endl
+	 << std::bitset<32>(gHFEvent->fHLTWasRun[3]) << endl;
   }   
   
   Handle<trigger::TriggerEvent> trgEvent;
@@ -234,13 +237,32 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     for (int i=0; i < trgEvent->sizeFilters(); i++){         
       Keys keys = trgEvent->filterKeys(i);
       if (keys.size() > 0) {
+
 	cout << trgEvent->filterTag(i) << endl; 
+
+	TString label = TString(trgEvent->filterTag(i).label())
+	  + TString(":") 
+	  + TString(trgEvent->filterTag(i).process())
+	  + TString(":") 
+	  + TString(trgEvent->filterTag(i).instance())
+	  + TString(":");
+
 	for (int j=0; j<keys.size(); j++){
+	  TTrgObj *pTO = gHFEvent->addTrgObj();
+	  pTO->fP.SetPtEtaPhiE(allObjects[keys[j]].pt(), 
+			  allObjects[keys[j]].eta(), 
+			  allObjects[keys[j]].phi(), 
+			  allObjects[keys[j]].energy()
+			  ); 
+	  pTO->fID     = allObjects[keys[j]].id(); 
+	  pTO->fLabel  = label;
+	  // pTO->fNumber = i;
 	  cout << " pt = " <<  allObjects[keys[j]].pt() 
 	       << " eta = " << allObjects[keys[j]].eta() 
 	       << " phi = " << allObjects[keys[j]].phi() 
 	       << " e = " << allObjects[keys[j]].energy() 
 	       << " id = " << allObjects[keys[j]].id() 
+	       << " label: " << pTO->fLabel
 	       << endl;
 	}
       }

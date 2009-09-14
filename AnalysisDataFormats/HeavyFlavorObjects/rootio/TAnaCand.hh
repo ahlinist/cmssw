@@ -4,7 +4,6 @@
 #include "TObject.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
-#include "TMatrixD.h"
 
 #include "TAnaVertex.hh"
 
@@ -18,8 +17,9 @@ public:
 
 
   // ----------------------------------------------------------------------
-  // first and last (second) index in Signal Track block
-  int         fSig1, fSig2;
+  int         fSig1, fSig2;  // first and last (second) index in Signal Track block
+  int         fMom;          // mother in Cand block
+  int         fDau1, fDau2;  // daughters in Cand block
 
   int         fType;
   double      fMass;
