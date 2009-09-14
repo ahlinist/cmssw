@@ -87,6 +87,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   trackLabelPi_ = iConfig.getParameter<edm::InputTag>("TrackLabel_pi");
   triggerTag_ = iConfig.getParameter<edm::InputTag>("TriggerTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
+  StoreDeDxInfo_ = iConfig.getParameter<bool>("StoreDeDxInfo");
   JpsiMassWindowBeforeFit_ = iConfig.getParameter<double>("JpsiMassWindowBeforeFit");
 
   BsLowerMassCutBeforeFit_  = iConfig.getParameter<double>("BsLowerMassCutBeforeFit");
@@ -133,8 +134,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     /////////////////////////
 
     Handle<DeDxDataValueMap> energyLossHandle;
-    iEvent.getByLabel("dedxMedian", energyLossHandle);
-    const DeDxDataValueMap & eloss = *energyLossHandle;
+  
+   
+    if(StoreDeDxInfo_)  iEvent.getByLabel("dedxMedian", energyLossHandle);
+ 
 
     /////////////////////////////////
     // Get primary vertices  
@@ -540,13 +543,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		bsRootTree_->Mu2Chi2_ = Mu2Ref.get()->normalizedChi2();
 		bsRootTree_->Mu2nHits_ =Mu2Ref.get()->numberOfValidHits();
 		
-                // dedx info
-                double dedxTrk = eloss[trk1Ref].dEdx();
-                double errdedxTrk = eloss[trk1Ref].dEdxError();
-                int NumdedxTrk = eloss[trk1Ref].numberOfMeasurements();
-
-		bsRootTree_->getDeDx(dedxTrk,errdedxTrk,NumdedxTrk);
-
+               //  // dedx info
+		if(StoreDeDxInfo_){
+		  const DeDxDataValueMap &  eloss  = *energyLossHandle;
+		  double dedxTrk = eloss[trk1Ref].dEdx();
+		  double errdedxTrk = eloss[trk1Ref].dEdxError();
+		  int NumdedxTrk = eloss[trk1Ref].numberOfMeasurements();
+		  
+		  bsRootTree_->getDeDx(dedxTrk,errdedxTrk,NumdedxTrk);
+		}
 		////////////////////////////////////////////////
 		// proper decay time and proper decay length
 		////////////////////////////////////////////////
