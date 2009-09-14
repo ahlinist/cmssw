@@ -22,18 +22,18 @@ void TAnaTrack::dump() {
   //        << " f = " << fPlab.Phi() 
   //        << " t = " << fPlab.Theta();
 
-  cout << Form("q =%+2d pT=%6.2f f=%+4.3f eta=%+4.3f ", fQ, fPlab.Perp(), fPlab.Phi(), fPlab.Eta());
+  cout << Form("q=%+2d pT=%6.2f f=%+4.3f eta=%+4.3f ", fQ, fPlab.Perp(), fPlab.Phi(), fPlab.Eta());
 
   if (fMCID != -99999) {
-    cout << Form(" mcid =%+6d", fMCID);
+    cout << Form(" mcid=%+6d", fMCID);
   }
 
   if (fGenIndex > -1) {
-    cout << " mcidx = " << fGenIndex;
+    cout << Form(" mcidx=%3d", fGenIndex);
   }
 
   if (fIndex > -1) {
-    cout << " idx = " << fIndex;
+    cout << Form(" idx=%3d", fIndex);
   }
     
   cout << endl;

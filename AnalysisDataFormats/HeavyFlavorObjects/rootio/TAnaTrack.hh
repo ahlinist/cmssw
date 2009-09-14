@@ -18,7 +18,7 @@ public:
   // ----------------------------------------------------------------------
 
   // ----------------------------------------------------------------------
-  int            fIndex;    // pointer into track block (e.g. in signal block)
+  int            fIndex;    // pointer into track block (for tracks in signal block)
   int            fMCID;     // MC truth ID
   int            fGenIndex; // index in generator block (if matched)
 

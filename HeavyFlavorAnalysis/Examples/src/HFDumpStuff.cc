@@ -83,12 +83,11 @@ void HFDumpStuff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     const reco::Vertex pV = vertices[0]; // ???? 
     ChiSquared chi2(pV.chi2(), pV.ndof());
  
-    TAnaVertex *pVtx = new TAnaVertex();
+    TAnaVertex *pVtx = gHFEvent->addPV();
     pVtx->setInfo(chi2.value(), int(chi2.degreesOfFreedom()), chi2.probability(), 0, 0);
     pVtx->fPoint.SetXYZ(pV.position().x(),
                         pV.position().y(),
                         pV.position().z());
-    gHFEvent->fPrimaryVertex = *pVtx;
 
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;

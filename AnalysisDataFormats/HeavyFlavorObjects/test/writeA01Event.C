@@ -4,7 +4,7 @@
   
   TTree *pTree = new TTree("T1","simple analysis tree");
   TAna01Event *pEvent = new TAna01Event(0);
-  pTree->Branch("TAna00Event", "TAna01Event", &pEvent, 256000/8, 1);
+  pTree->Branch("TAna01Event", "TAna01Event", &pEvent, 256000/8, 1);
   
   TGenCand  *pGen;
 
@@ -16,6 +16,7 @@
   TAnaVertex *pVtx;
   
   int n(0);
+  int w1, w2, w3, w4; 
   // -- Generate 100 'events' 
   int NEVENT(100);
   for (int i = 0; i < NEVENT; ++i) {
@@ -23,17 +24,57 @@
     pEvent->fRunNumber = 123;
     pEvent->fEventNumber = 1000+i;
 
-    pVtx = new TAnaVertex();
-    pVtx->setInfo(12., 10, 0.87, 1, 2);
-    pVtx->fPoint.SetXYZ(5.235*gRandom->Rndm(), 
-			-5.235*gRandom->Rndm(),
-			gRandom->Rndm()
-			);
-    
-    pEvent->fPrimaryVertex = *pVtx;
+    // -- Trigger
+    w1 = 0; 
+    w2 = 0; 
+    w3 = 0; 
+    w4 = 0; 
+    for (int j = 0; j < 32; ++j) {
+      pEvent->fL1TNames[j]   = TString(Form("L1TsingleMu%d", j));
+      pEvent->fL1TNames[32+j] = TString(Form("L1TeGamma%d", j));
+      pEvent->fL1TNames[64+j] = TString(Form("L1TjetMET%d", j));
+      pEvent->fL1TNames[96+j] = TString(Form("L1TdoubleMu%d", j));
+      if (gRandom->Rndm() > 0.5) w1 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w2 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w3 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w4 |= (0x1<<j); 
+    }
+    pEvent->fL1TWords[0] = w1; 
+    pEvent->fL1TWords[1] = w1; 
+    pEvent->fL1TWords[2] = w2; 
+    pEvent->fL1TWords[3] = w3; 
 
+    w1 = 0; 
+    w2 = 0; 
+    w3 = 0; 
+    w4 = 0; 
+    for (int j = 0; j < 32; ++j) {
+      pEvent->fHLTNames[j]   = TString(Form("HLTsingleMu%d", j));
+      pEvent->fHLTNames[32+j] = TString(Form("HLTeGamma%d", j));
+      pEvent->fHLTNames[64+j] = TString(Form("HLTjetMET%d", j));
+      pEvent->fHLTNames[96+j] = TString(Form("HLTdoubleMu%d", j));
+      if (gRandom->Rndm() > 0.5) w1 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w2 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w3 |= (0x1<<j); 
+      if (gRandom->Rndm() > 0.5) w4 |= (0x1<<j); 
+    }
+    pEvent->fHLTWords[0] = w1; 
+    pEvent->fHLTWords[1] = w1; 
+    pEvent->fHLTWords[2] = w2; 
+    pEvent->fHLTWords[3] = w3; 
+    
+    // -- Vertex
+    for (int j = 0; j < 2; ++j) {
+      pVtx = pEvent->addPV();
+      pVtx->setInfo(12., 10, 0.87, 1, 2);
+      pVtx->fPoint.SetXYZ(5.235*gRandom->Rndm(), 
+			  -5.235*gRandom->Rndm(),
+			  gRandom->Rndm()
+			  );
+    }
    
-    n = static_cast<int>(20*gRandom->Rndm());       // each event has a random number of generator candidates
+    // -- Generator cands
+    n = static_cast<int>(20*gRandom->Rndm());       
     for (int j = 0; j < n; ++j) {
       pGen = pEvent->addGenCand();
       pGen->fID = 321;
@@ -53,17 +94,22 @@
 		      10.*gRandom->Gaus(2., 0.20));
     }
     
-    
-    n = static_cast<int>(15*gRandom->Rndm());       // each event has a random number of tracks
+
+    // -- RecTracks
+    n = static_cast<int>(15*gRandom->Rndm());       
     for (int j = 0; j < n; ++j) {
       pTrack = pEvent->addRecTrack();
       pTrack->fQ = -1;
       pTrack->fPlab.SetXYZ(10.*gRandom->Gaus(2., 0.10), 10.*gRandom->Gaus(2., 0.12), 10.*gRandom->Gaus(2., 0.20));
+      for (int k = 0; k < 20; ++k) {
+	pTrack->fHitPattern[k] = gRandom->Rndm() > 0.5? 1:0;
+      }
     }
 
     int a[2] = {n-1, n-2};
     
-    n = 2;       // each event has 2 muons
+    // -- Muons
+    n = 2;     
     for (int j = 0; j < n; ++j) {
       pMuon = pEvent->addMuon();
       pMuon->fQ = (j%2 == 0? -1: +1);
@@ -74,7 +120,8 @@
       pMuon->fMuonZ    = 300. + 20*gRandom->Gaus(2., 0.10);
     }
 
-    n = 4;       // each event has 4 trigger objects
+    // -- trigger objects
+    n = 4;       
     for (int j = 0; j < n; ++j) {
       pTO = pEvent->addTrgObj();
       pTO->fID = (j%2 == 0? -13: +13);
@@ -90,22 +137,25 @@
       }
     }
     
-    n = 1;       // each event has 1 B Candidate
+    // -- Cands
+    n = 3;     
     for (int j = 0; j < n; ++j) {
       pCand = pEvent->addCand();
-      pCand->fMass = 5.235*gRandom->Rndm();
+      pCand->fMass = 5.237;
+      if (0 == j) pCand->fMass = 5.235 + gRandom->Gaus(0., 0.1);
+      if (1 == j) pCand->fMass = 3.097 + gRandom->Gaus(0., 0.05);
       pCand->fPlab.SetXYZ(10.*gRandom->Gaus(2., 0.10), 10.*gRandom->Gaus(2., 0.12), 10.*gRandom->Gaus(2., 0.20));
       
-      pVtx = new TAnaVertex();
-      pVtx->setInfo(12., 10, 0.87, 1, 2);
-      pVtx->fPoint.SetXYZ(5.235*gRandom->Rndm(), 
-			  -5.235*gRandom->Rndm(),
-			  gRandom->Rndm()
-			  );
-      pVtx->addTrack(a[j]);
-      
-      pCand->fVtx = *pVtx;
-      
+      TAnaVertex Vtx; 
+      Vtx.setInfo(12., 10, 0.87, 1, 2);
+      Vtx.fPoint.SetXYZ(5.235*gRandom->Rndm(), 
+			-5.235*gRandom->Rndm(),
+			gRandom->Rndm()
+			);
+      Vtx.addTrack(a[0]);
+      Vtx.addTrack(a[1]);
+
+      pCand->fVtx = Vtx;
     }
     
     
