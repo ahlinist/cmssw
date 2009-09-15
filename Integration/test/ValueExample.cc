@@ -8,13 +8,13 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Mon Sep  5 19:52:01 EDT 2005
-// $Id$
 //
 
 // system include files
 
 // user include files
 #include "FWCore/Integration/test/ValueExample.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 //
 // constants, enums and typedefs
