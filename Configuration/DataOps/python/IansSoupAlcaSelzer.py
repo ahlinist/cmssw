@@ -2,10 +2,10 @@
 # using: 
 # Revision: 1.123 
 # Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: promptReco -s RAW2DIGI,RECO,ALCA:MuAlCalIsolatedMu+RpcCalHLT+EcalCalPi0Calib+EcalCalEtaCalib+DQM --datatier RECO --eventcontent RECO --conditions FrontierConditions_GlobalTag,MC_31X_V1::All --no_exec --scenario=pp
+# with command line options: alCaRecoSplitting -s ALCA:MuAlCalIsolatedMu+RpcCalHLT+EcalCalPi0Calib+EcalCalEtaCalib+DQM --datatier RECO --eventcontent RECO --conditions FrontierConditions_GlobalTag,MC_31X_V1::All --no_exec --scenario=pp
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('RECO')
+process = cms.Process('ALCA')
 
 # import of standard configurations
 process.load('Configuration/StandardSequences/Services_cff')
@@ -13,8 +13,6 @@ process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/MixingNoPileUp_cff')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_38T_cff')
-process.load('Configuration/StandardSequences/RawToDigi_cff')
-process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/AlCaRecoStreams_cff')
 process.load('Configuration/StandardSequences/EndOfProcess_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
@@ -22,7 +20,7 @@ process.load('Configuration/EventContent/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.123 $'),
-    annotation = cms.untracked.string('promptReco nevts:1'),
+    annotation = cms.untracked.string('alCaRecoSplitting nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
@@ -33,18 +31,7 @@ process.options = cms.untracked.PSet(
 )
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('promptReco_DIGI2RAW.root')
-)
-
-# Output definition
-process.output = cms.OutputModule("PoolOutputModule",
-    splitLevel = cms.untracked.int32(0),
-    outputCommands = process.RECOEventContent.outputCommands,
-    fileName = cms.untracked.string('promptReco_RAW2DIGI_RECO_ALCA.root'),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('RECO'),
-        filterName = cms.untracked.string('')
-    )
+    fileNames = cms.untracked.vstring('alCaRecoSplitting_RECO.root')
 )
 
 # Additional output definition
@@ -125,8 +112,6 @@ process.ALCARECOStreamEcalCalEtaCalib = cms.OutputModule("PoolOutputModule",
 process.GlobalTag.globaltag = 'MC_31X_V1::All'
 
 # Path and EndPath definitions
-process.raw2digi_step = cms.Path(process.RawToDigi)
-process.reconstruction_step = cms.Path(process.reconstruction)
 process.pathALCARECOHcalCalHOCosmics = cms.Path(process.seqALCARECOHcalCalHOCosmics)
 process.pathALCARECOMuAlStandAloneCosmics = cms.Path(process.seqALCARECOMuAlStandAloneCosmics*process.ALCARECOMuAlStandAloneCosmicsDQM)
 process.pathALCARECOTkAlZMuMu = cms.Path(process.seqALCARECOTkAlZMuMu*process.ALCARECOTkAlZMuMuDQM)
@@ -170,11 +155,10 @@ process.pathALCARECOEcalCalPhiSym = cms.Path(process.seqALCARECOEcalCalPhiSym*pr
 process.pathALCARECOMuAlGlobalCosmics = cms.Path(process.seqALCARECOMuAlGlobalCosmics*process.ALCARECOMuAlGlobalCosmicsDQM)
 process.pathALCARECOTkAlJpsiMuMu = cms.Path(process.seqALCARECOTkAlJpsiMuMu*process.ALCARECOTkAlJpsiMuMuDQM)
 process.endjob_step = cms.Path(process.endOfProcess)
-process.out_step = cms.EndPath(process.output)
 process.ALCARECOStreamRpcCalHLTOutPath = cms.EndPath(process.ALCARECOStreamRpcCalHLT)
 process.ALCARECOStreamMuAlCalIsolatedMuOutPath = cms.EndPath(process.ALCARECOStreamMuAlCalIsolatedMu)
 process.ALCARECOStreamEcalCalPi0CalibOutPath = cms.EndPath(process.ALCARECOStreamEcalCalPi0Calib)
 process.ALCARECOStreamEcalCalEtaCalibOutPath = cms.EndPath(process.ALCARECOStreamEcalCalEtaCalib)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.pathALCARECORpcCalHLT,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECODQM,process.pathALCARECOEcalCalEtaCalib,process.pathALCARECOEcalCalPi0Calib,process.endjob_step,process.out_step,process.ALCARECOStreamRpcCalHLTOutPath,process.ALCARECOStreamMuAlCalIsolatedMuOutPath,process.ALCARECOStreamEcalCalPi0CalibOutPath,process.ALCARECOStreamEcalCalEtaCalibOutPath)
+process.schedule = cms.Schedule(process.pathALCARECORpcCalHLT,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECODQM,process.pathALCARECOEcalCalEtaCalib,process.pathALCARECOEcalCalPi0Calib,process.endjob_step,process.ALCARECOStreamRpcCalHLTOutPath,process.ALCARECOStreamMuAlCalIsolatedMuOutPath,process.ALCARECOStreamEcalCalPi0CalibOutPath,process.ALCARECOStreamEcalCalEtaCalibOutPath)
