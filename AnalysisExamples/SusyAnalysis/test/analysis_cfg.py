@@ -17,6 +17,12 @@ process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff
 # set the record's IOV. Must be defined once. Choose ANY correction service. #
 process.prefer("L2L3JetCorrectorIC5Calo") 
 
+process.TFileService = cms.Service("TFileService", 
+                                   # name of output root file with histograms
+                                   fileName = cms.string("susyanalysis.root"),
+                                   closeFileFast = cms.untracked.bool(True)
+                                   )
+
 process.myanalysis = cms.EDAnalyzer("SusyAnalyzer",
 
     # names of physics object collections
@@ -39,10 +45,7 @@ process.myanalysis = cms.EDAnalyzer("SusyAnalyzer",
 
     # debug level (0=none, 1=small, 2=extended, 3 = very extended)
     debuglvl = cms.untracked.int32(0), 
-    
-    # name of output root file with histograms
-    HistOutFile = cms.untracked.string('susyanalysis.root'),
-    
+      
     # UserAnalysis parameters  
     UserAnalysisParams = cms.PSet(
         user_metMin = cms.double(0.0)
