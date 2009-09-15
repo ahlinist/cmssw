@@ -483,9 +483,9 @@ bool ObjectCleaner::CleanElectron(int ichk)
 
 // correct sigmaee for xtal shape in endcap (wait advice from David)
   
-  if (fabs(eta) >= 1.479) {
-    sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
-  } 
+//  if (fabs(eta) >= 1.479) {
+//    sigmaee = sigmaee - 0.02*(fabs(eta) - 2.3);   //correct sigmaetaeta dependence on eta in endcap
+//  } 
   
 
     // Check that not a fake from pi0
