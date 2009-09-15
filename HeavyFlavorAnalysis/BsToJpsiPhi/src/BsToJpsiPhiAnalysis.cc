@@ -235,6 +235,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
     // variables to determine minima of fit probability and mass diff.
     double minVtxP = -99.;
+    double minVtxP2 = -99.;
+    double minVtxP3 = -99.;
     double minJpsiM = 200.;
 
     for(size_t i=0; i < allmuons->size(); ++i){
@@ -411,89 +413,96 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      float chi = 0.;
 	      float ndf = 0.;	    
 	      
-	      //making particles with the fitter KK hypothesis to charged trks
-	      vector<RefCountedKinematicParticle> allParticles;
-	      allParticles.push_back(pFactory.particle (track_MuP,muon_mass,chi,ndf,muon_sigma));
-	      allParticles.push_back(pFactory.particle (track_MuM,muon_mass,chi,ndf,muon_sigma));	    
-	      allParticles.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
-	      allParticles.push_back(pFactory.particle (track_Km,kaon_mass,chi,ndf,kaon_sigma));	      
+              vector<RefCountedKinematicParticle> allParticlesMu;
+              allParticlesMu.push_back(pFactory.particle (track_MuP,muon_mass,chi,ndf,muon_sigma));
+              allParticlesMu.push_back(pFactory.particle (track_MuM,muon_mass,chi,ndf,muon_sigma));
 
-	      //making particles with the fitter Kpi hypothesis to charged trks
-              vector<RefCountedKinematicParticle> allParticles2;
-              allParticles2.push_back(pFactory.particle (track_MuP,muon_mass,chi,ndf,muon_sigma));
-              allParticles2.push_back(pFactory.particle (track_MuM,muon_mass,chi,ndf,muon_sigma));
-              allParticles2.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
-              allParticles2.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
+              // probability for the KK hypothesis for the charged trks
+              vector<RefCountedKinematicParticle> allParticlesTrk;
+              allParticlesTrk.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
+              allParticlesTrk.push_back(pFactory.particle (track_Km,kaon_mass,chi,ndf,kaon_sigma));
 
-	      //making particles with the fitter pipi hypothesis to charged trks
-              vector<RefCountedKinematicParticle> allParticles3;
-              allParticles3.push_back(pFactory.particle (track_MuP,muon_mass,chi,ndf,muon_sigma));
-              allParticles3.push_back(pFactory.particle (track_MuM,muon_mass,chi,ndf,muon_sigma));
-              allParticles3.push_back(pFactory.particle (track_Kp,pi_mass,chi,ndf,pi_sigma));
-              allParticles3.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
+              KinematicParticleVertexFitter Fitter;
+              RefCountedKinematicTree JpsiTree = Fitter.fit(allParticlesMu);
+              KinematicParticleFitter constFitter;
 
-	      //creating the constraint for the J/Psi mass
-	      ParticleMass m_jpsi = 3.09687;
+              ParticleMass jpsiM = 3.09687;
+              float jpsiMsigma = 0.00004;
+              KinematicConstraint * jpsi_const = new MassKinematicConstraint(jpsiM,jpsiMsigma);
 
-	      //creating the two track mass constraint
- 	      MultiTrackKinematicConstraint *  j_psi_c = new  TwoTrackMassKinematicConstraint(m_jpsi);
+              JpsiTree = constFitter.fit(jpsi_const,JpsiTree);
 
-	      //creating the fitter (global fit)
-	      KinematicConstrainedVertexFitter kcvFitter;
+              JpsiTree->movePointerToTheTop();
+              RefCountedKinematicParticle Jpsi_branch = JpsiTree->currentParticle();
+              allParticlesTrk.push_back(Jpsi_branch);
 
-	      //obtaining the resulting tree for Kpi hypothesis to charged trks
-	      RefCountedKinematicTree myTree_Bs2 = kcvFitter.fit(allParticles2, j_psi_c);
+              RefCountedKinematicTree myTree_Bs = Fitter.fit(allParticlesTrk);
 
-	      myTree_Bs2->movePointerToTheTop();
-	      RefCountedKinematicParticle bs2 = myTree_Bs2->currentParticle();
-	      RefCountedKinematicVertex bVertex2 = myTree_Bs2->currentDecayVertex();
+              // probability for the Kpi hypothesis for the charged trks
+              vector<RefCountedKinematicParticle> allParticlesTrk2;
+              allParticlesTrk2.push_back(pFactory.particle (track_Kp,kaon_mass,chi,ndf,kaon_sigma));
+              allParticlesTrk2.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
+
+              JpsiTree->movePointerToTheTop();
+              RefCountedKinematicParticle Jpsi_branch2 = JpsiTree->currentParticle();
+              allParticlesTrk2.push_back(Jpsi_branch2);
+
+              RefCountedKinematicTree myTree_Bs2 = Fitter.fit(allParticlesTrk2);
+
+              myTree_Bs2->movePointerToTheTop();
+              RefCountedKinematicParticle bs2 = myTree_Bs2->currentParticle();
+              RefCountedKinematicVertex bVertex2 = myTree_Bs2->currentDecayVertex();
+
+              if (bVertex2->vertexIsValid()) {
+                AlgebraicVector7 b_par2 = bs2->currentState().kinematicParameters().vector();
+                AlgebraicSymMatrix77 bs_er2 = bs2->currentState().kinematicParametersError().matrix();
+                double vtxprob_Bs2 = TMath::Prob(bs2->chiSquared(), (int)bs2->degreesOfFreedom());
+
+                if (vtxprob_Bs2 > minVtxP2){
+                  bsRootTree_->BsVtxProbKpi_ = vtxprob_Bs2;
+                  minVtxP2 = vtxprob_Bs2;
+                }
+              }
+
+              // probability for the pipi hypothesis for the charged trks
+              vector<RefCountedKinematicParticle> allParticlesTrk3;
+              allParticlesTrk3.push_back(pFactory.particle (track_Kp,pi_mass,chi,ndf,pi_sigma));
+              allParticlesTrk3.push_back(pFactory.particle (track_Km,pi_mass,chi,ndf,pi_sigma));
+
+              JpsiTree->movePointerToTheTop();
+              RefCountedKinematicParticle Jpsi_branch3 = JpsiTree->currentParticle();
+              allParticlesTrk3.push_back(Jpsi_branch3);
+
+              RefCountedKinematicTree myTree_Bs3 = Fitter.fit(allParticlesTrk2);
+
+              myTree_Bs3->movePointerToTheTop();
+              RefCountedKinematicParticle bs3 = myTree_Bs3->currentParticle();
+              RefCountedKinematicVertex bVertex3 = myTree_Bs3->currentDecayVertex();
+
+              if (bVertex3->vertexIsValid()) {
+                AlgebraicVector7 b_par3 = bs3->currentState().kinematicParameters().vector();
+                AlgebraicSymMatrix77 bs_er3 = bs3->currentState().kinematicParametersError().matrix();
+                double vtxprob_Bs3 = TMath::Prob(bs3->chiSquared(), (int)bs3->degreesOfFreedom());
+
+                if (vtxprob_Bs3 > minVtxP3){
+                  bsRootTree_->BsVtxProbpipi_ = vtxprob_Bs3;
+                  minVtxP3 = vtxprob_Bs3;
+                }
+              }
+
+              myTree_Bs->movePointerToTheTop();
+              RefCountedKinematicParticle bs = myTree_Bs->currentParticle();
+              RefCountedKinematicVertex bVertex = myTree_Bs->currentDecayVertex();
 	      
-	      if (!bVertex2->vertexIsValid()) continue;
-	      AlgebraicVector7 b_par2 = bs2->currentState().kinematicParameters().vector();
-	      AlgebraicSymMatrix77 bs_er2 = bs2->currentState().kinematicParametersError().matrix(); 
-	      double vtxprob_Bs2 = TMath::Prob(bs2->chiSquared(), (int)bs2->degreesOfFreedom());
-
-	      if (vtxprob_Bs2 > minVtxP){
-
-		bsRootTree_->BsVtxProbKpi_ = vtxprob_Bs2;
-		
-	      }
-
-	      //obtaining the resulting tree for pipi hypothesis to charged trks
-	      RefCountedKinematicTree myTree_Bs3 = kcvFitter.fit(allParticles3, j_psi_c);
-
-	      myTree_Bs3->movePointerToTheTop();
-	      RefCountedKinematicParticle bs3 = myTree_Bs3->currentParticle();
-	      RefCountedKinematicVertex bVertex3 = myTree_Bs3->currentDecayVertex();
-	      
-	      if (!bVertex3->vertexIsValid()) continue;
-	      AlgebraicVector7 b_par3 = bs3->currentState().kinematicParameters().vector();
-	      AlgebraicSymMatrix77 bs_er3 = bs3->currentState().kinematicParametersError().matrix(); 
-	      double vtxprob_Bs3 = TMath::Prob(bs3->chiSquared(), (int)bs3->degreesOfFreedom());
-
-	      if (vtxprob_Bs3 > minVtxP){
-
-		bsRootTree_->BsVtxProbpipi_ = vtxprob_Bs3;
-		
-	      }
-
-	      //obtaining the resulting tree for KK hypothesis to charged trks
-	      RefCountedKinematicTree myTree_Bs = kcvFitter.fit(allParticles, j_psi_c);
-	      
-	      myTree_Bs->movePointerToTheTop();
-	      RefCountedKinematicParticle bs = myTree_Bs->currentParticle();
-	      RefCountedKinematicVertex bVertex = myTree_Bs->currentDecayVertex();
-	      
-	      if (!bVertex->vertexIsValid()) continue;
-	      AlgebraicVector7 b_par = bs->currentState().kinematicParameters().vector();
-	      AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix(); 
-	      double vtxprob_Bs = TMath::Prob(bs->chiSquared(), (int)bs->degreesOfFreedom());
+              if (!bVertex->vertexIsValid()) continue;
+              AlgebraicVector7 b_par = bs->currentState().kinematicParameters().vector();
+              AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix();
+              double vtxprob_Bs = TMath::Prob(bs->chiSquared(), (int)bs->degreesOfFreedom());
 	      
 	      if (vtxprob_Bs > minVtxP){
 		TrkCounter1=k;
 		TrkCounter2=l;
-		minVtxP = vtxprob_Bs;
-
+		
 		if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
 		if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
 		if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
@@ -505,6 +514,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		bsRootTree_->chi2_Bs_  = bs->chiSquared();
 		bsRootTree_->ndof_Bs_   =(int)bs->degreesOfFreedom();
 		bsRootTree_->BsVtxProb_ = vtxprob_Bs;
+		minVtxP = vtxprob_Bs;
+
 		bsRootTree_->BsM_ = BCand.mass();
 		bsRootTree_->BsPt_ = BCand.pt();
 		bsRootTree_->BsPhi_ = BCand.phi();
