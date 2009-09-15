@@ -86,7 +86,7 @@ void HFDumpMuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 void HFDumpMuons::fillMuon(const reco::Track& tr, int type) {
 
   //  TAnaMuon *pM = gHFEvent->addMuon();
-  TAnaTrack *pM = gHFEvent->addRecTrack();    
+  TAnaMuon *pM = gHFEvent->addMuon();    
 
   pM->fPlab.SetPtEtaPhi(tr.pt(), tr.eta(), tr.phi());
 
