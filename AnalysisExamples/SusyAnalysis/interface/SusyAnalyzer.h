@@ -82,7 +82,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
 
    private:
   // ----------member data ---------------------------
-     string fOutputFileName ;
+     
   // names of modules, producing object collections
      string m_calotowers;
      string m_electronSrc;
@@ -105,8 +105,7 @@ class SusyAnalyzer : public edm::EDAnalyzer {
      edm::InputTag m_reducedEndcapRecHitCollection;
      edm::InputTag m_reducedBarrelRecHitCollection;
 
-  // names of histogram output file
-     TFile*      hOutputFile ;
+  
 
 
   // Define the vectors holding pointers to MC and Reco data

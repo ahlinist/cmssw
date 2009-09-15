@@ -1,5 +1,7 @@
 
 #include "AnalysisExamples/SusyAnalysis/interface/SusyAnalyzer.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 
 using namespace std;
@@ -19,8 +21,6 @@ using namespace edm;
 //
 SusyAnalyzer::SusyAnalyzer(const edm::ParameterSet& iConfig)
 {
-  // get name of output file with histogramms
-  fOutputFileName = iConfig.getUntrackedParameter<string>("HistOutFile"); 
  
   // flag for AOD (hopefully to be removed) 
   useAODOnly = iConfig.getParameter<bool>("useAODOnly") ;
@@ -116,13 +116,14 @@ void SusyAnalyzer::beginJob( const edm::EventSetup& )
   cout << "Debug Level = " << DEBUGLVL << endl;
 
    // initialize histogram output file
-   hOutputFile   = new TFile( fOutputFileName.c_str(), "RECREATE" ) ;
+   edm::Service<TFileService> fs;
                                                                                                                                    
    // create histograms with stats
-   hEventStats= new TH1I("hEventStats","hEventStats",17,0,17); //17 bins
-   hElecMuonStats= new TH1I("hElecMuonStats","hElecMuonStats",10,0,10);//10 bins
-   hPhotonJetStats= new TH1I("hPhotonJetStats","hPhotonJetStats",10,0,10);//10 bins
-   hMiscObjStats= new TH1I("hMiscObjStats","hMiscObjStats",78,0,78); // 78 bins
+   hEventStats= fs->make<TH1I>("hEventStats","hEventStats",17,0,17); //17 bins
+   hElecMuonStats= fs->make<TH1I>("hElecMuonStats","hElecMuonStats",10,0,10);//10 bins
+   hPhotonJetStats= fs->make<TH1I>("hPhotonJetStats","hPhotonJetStats",10,0,10);//10 bins
+   hMiscObjStats= fs->make<TH1I>("hMiscObjStats","hMiscObjStats",78,0,78); // 78 bins
+   
 
    // instantiate user analysis class (incl. histogram booking)
    myUserAnalysis = new UserAnalysis(&myConfig);
@@ -281,9 +282,7 @@ void SusyAnalyzer::endJob()
    
 
 
-   // output the histograms to file
-   hOutputFile->Write() ;
-   hOutputFile->Close() ;
+   
    
    return ;
 }
