@@ -233,6 +233,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     edm::Handle<reco::MuonCollection> allmuons;
     iEvent.getByLabel(muonTag_,allmuons);
 
+
     // variables to determine minima of fit probability and mass diff.
     double minVtxP = -99.;
     double minVtxP2 = -99.;
@@ -247,6 +248,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	if(!trk2.isGlobalMuon() && !trk2.isTrackerMuon()) continue;
 
 	if(trk1.charge()==trk2.charge()) continue;
+	// passed opposite sign cut
+	if(bsRootTree_->iPassedCutIdent_   < 1 ) bsRootTree_->iPassedCutIdent_ = 1 ;
 
 	CompositeCandidate Jpsi;
 	Jpsi.addDaughter(trk1);
@@ -255,6 +258,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	addP4.set(Jpsi);
 	
 	if ( abs(Jpsi.mass()-3.096916) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
+	// passed jpsi mass and pt cut
+	if(bsRootTree_->iPassedCutIdent_   < 2 ) bsRootTree_->iPassedCutIdent_ = 2 ;
 
 	edm::ESHandle<TransientTrackBuilder> theB;
 	iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
@@ -269,6 +274,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	TransientVertex tv = kvf.vertex(trk_all);
 
 	if (!tv.isValid()) continue; 
+	// valid jpsi vertex
+	if(bsRootTree_->iPassedCutIdent_   < 3 ) bsRootTree_->iPassedCutIdent_ = 3 ;
 
 	Vertex vertex = tv;
 	GlobalPoint secondaryVertex = tv.position();
@@ -332,6 +339,9 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      if (track1.pt() < KaonTrackPtCut_) continue;
 	      if (track2.pt() < KaonTrackPtCut_) continue;
 
+	      // passed kaon opposite sign and pt cut
+	      if(bsRootTree_->iPassedCutIdent_   < 4 ) bsRootTree_->iPassedCutIdent_ = 4 ;
+
 	      // phi candidate
 
 	      CompositeCandidate PhiCand;
@@ -341,6 +351,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      ad.set(PhiCand);
 
 	      if (abs(PhiCand.mass()-1.019) > PhiMassWindowBeforeFit_) continue;
+	      // passed phi mass window before fit
+	      if(bsRootTree_->iPassedCutIdent_   < 5 ) bsRootTree_->iPassedCutIdent_ = 5 ;
 	  
 	      // jpsi candidate
 
@@ -351,13 +363,18 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      sum.set(JpsiCand);
 
 	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;	      
-	  
+	      // passed jpsi mass window before fit
+	      if(bsRootTree_->iPassedCutIdent_   < 6 ) bsRootTree_->iPassedCutIdent_ = 6 ;
 
 	      // check on the overlap
 	      
 	      OverlapChecker overlap;
 	      if (overlap(mu1jpsi,track1)!=0 || overlap(mu2jpsi,track1)!=0) continue;
 	      if (overlap(mu1jpsi,track2)!=0 || overlap(mu2jpsi,track2)!=0) continue;
+	      
+	      // passed muon - track overlap check
+	      if(bsRootTree_->iPassedCutIdent_   < 7 ) bsRootTree_->iPassedCutIdent_ = 7 ;
+
 
 	      // B candidate
 
@@ -370,6 +387,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      add4mom.set(BCand);
 
 	      if (BCand.mass() < BsLowerMassCutBeforeFit_ || BCand.mass() > BsUpperMassCutBeforeFit_) continue;
+	      // passed Bs mass cut before fit
+	      if(bsRootTree_->iPassedCutIdent_   < 8 ) bsRootTree_->iPassedCutIdent_ = 8 ;
 	      
 	      bsRootTree_->PhiMass_before_ = PhiCand.mass();
 	      bsRootTree_->JpsiMass_before_ = JpsiCand.mass();	  
@@ -391,6 +410,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      t_tracks.push_back((*theB).build(&trk2Ref));
 	      
 	      if (!Mu1Ref.isNonnull() || !Mu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk1Ref.isNonnull()) continue;
+	      // checked track references
+	      if(bsRootTree_->iPassedCutIdent_   < 9 ) bsRootTree_->iPassedCutIdent_ = 9 ;
 	      
 	      TransientTrack track_MuP = t_tracks[0];
 	      TransientTrack track_MuM = t_tracks[1];
@@ -495,6 +516,9 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
               RefCountedKinematicVertex bVertex = myTree_Bs->currentDecayVertex();
 	      
               if (!bVertex->vertexIsValid()) continue;
+	      // vertex is valid
+	      if(bsRootTree_->iPassedCutIdent_   < 10 ) bsRootTree_->iPassedCutIdent_ = 10 ;
+
               AlgebraicVector7 b_par = bs->currentState().kinematicParameters().vector();
               AlgebraicSymMatrix77 bs_er = bs->currentState().kinematicParametersError().matrix();
               double vtxprob_Bs = TMath::Prob(bs->chiSquared(), (int)bs->degreesOfFreedom());
@@ -504,9 +528,18 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		TrkCounter2=l;
 		
 		if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+		// passed jpsi mass window after fit
+		if(bsRootTree_->iPassedCutIdent_   < 11 ) bsRootTree_->iPassedCutIdent_ = 11 ;
+
 		if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
+		// passed phi mass window after fit
+		if(bsRootTree_->iPassedCutIdent_   < 12 ) bsRootTree_->iPassedCutIdent_ = 12 ;
+
 		if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
-		
+		// passed Bs mass window after fit
+		if(bsRootTree_->iPassedCutIdent_   < 13 ) bsRootTree_->iPassedCutIdent_ = 13 ;
+
+
 		////////////////////////
 		// fill kinematic info to tree
 		//////////////////////////

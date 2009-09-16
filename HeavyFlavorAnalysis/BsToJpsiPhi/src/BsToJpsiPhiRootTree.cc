@@ -157,7 +157,8 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("errdedxTrk", &errdedxTrk_, "errdedxTrk/D");
   bsTree_->Branch("numdedxTrk", &numdedxTrk_, "numdedxTrk/I");
  
-  
+  bsTree_->Branch("iPassedCutIdent", &iPassedCutIdent_, "iPassedCutIdent/I");  
+
   bsTree_->Branch("isGenBsEvent", &isGenBsEvent_, "isGenBsEvent/I");
   bsTree_->Branch("GenNumberOfBsDaughters", &GenNumberOfBsDaughters_, "GenNumberOfBsDaughters/I");
   bsTree_->Branch("isGenBsJpsiPhiEvent", &isGenBsJpsiPhiEvent_, "isGenBsJpsiPhiEvent/I");
@@ -355,6 +356,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   errdedxTrk_ = -10;
   numdedxTrk_ = -10;
   
+  iPassedCutIdent_ = -10;
 
   isGenBsEvent_ = GenNumberOfBsDaughters_ = isGenBsJpsiPhiEvent_ = isGenBsJpsiPhiMuMuKKEvent_ = -10;
   
