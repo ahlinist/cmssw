@@ -35,60 +35,67 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 )
 
 # electron candidate selection
+cfgElectronAntiOverlapWithMuonsVeto = cms.PSet(
+    pluginName = cms.string('electronAntiOverlapWithMuonsVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
 cfgTightElectronIdCut = cms.PSet(
     pluginName = cms.string('tightElectronIdCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTightIdCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTightIdCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTightIdIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronAntiCrackCut = cms.PSet(
     pluginName = cms.string('electronAntiCrackCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsAntiCrackCutCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuAntiCrackCutCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuAntiCrackCutIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronEtaCut = cms.PSet(
     pluginName = cms.string('electronEtaCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsEta21Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsEta21Individual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuEta21Cumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuEta21Individual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronPtCut = cms.PSet(
     pluginName = cms.string('electronPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsPt15Cumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsPt15Individual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuPt15Cumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuPt15Individual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkIsoCut = cms.PSet(
     pluginName = cms.string('electronTrkIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIsoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronEcalIsoCut = cms.PSet(
     pluginName = cms.string('electronEcalIsoCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsEcalIsoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsEcalIsoIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkCut = cms.PSet(
     pluginName = cms.string('electronTrkCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIndividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIndividual'),
     minNumber = cms.uint32(1)
 )
 cfgElectronTrkIPcut = cms.PSet(
     pluginName = cms.string('electronTrkIPcut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsTrkIPindividual'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPcumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecMuTrkIPindividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -192,6 +199,7 @@ zToElecMuEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
+      cfgElectronAntiOverlapWithMuonsVeto,
       cfgTightElectronIdCut,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,

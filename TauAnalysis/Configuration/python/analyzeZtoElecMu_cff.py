@@ -31,6 +31,7 @@ analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelPrimaryEventVertexPosition,
         
         # electron candidate selection
+        evtSelElectronAntiOverlapWithMuonsVeto,
         evtSelTightElectronId,
         evtSelElectronAntiCrack,
         evtSelElectronEta,

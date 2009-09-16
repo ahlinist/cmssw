@@ -75,13 +75,61 @@ drawJobConfigurator_ZtoElecMu.add(
 
 drawJobConfigurator_ZtoElecMu.add(
     afterCut = evtSelPrimaryEventVertexPosition,
+    beforeCut = evtSelGlobalMuon,
+    plot = drawJobConfigEntry(
+        meName = 'MuonQuantities/Muon#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Muon (after primary Event Vertex position Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_muon_afterPrimaryEventVertexPosition"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelGlobalMuon,
+    beforeCut = evtSelMuonEta,
+    plot = drawJobConfigEntry(
+        meName = 'MuonQuantities/Muon#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Muon (after global Muon Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_muon_afterGlobalMuon"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelMuonEta,
+    beforeCut = evtSelMuonPt,
+    plot = drawJobConfigEntry(
+        meName = 'MuonQuantities/Muon#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Muon (after Muon #eta Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_muon_afterMuonEta"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelMuonPt,
+    beforeCut = evtSelElectronAntiOverlapWithMuonsVeto,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/Electron#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Electron (after Muon P_{T} Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_electron_afterMuonPt"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelElectronAntiOverlapWithMuonsVeto,
     beforeCut = evtSelTightElectronId,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after primary Event Vertex position Cut)",
+        title = "Electron (after Muon-Electron overlap Veto)",
         xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterPrimaryEventVertexPosition"
+        name = "cutFlowControlPlots_electron_afterElectronAntiOverlapWithMuonsVeto"
     )
 )
 
@@ -123,94 +171,12 @@ drawJobConfigurator_ZtoElecMu.add(
 
 drawJobConfigurator_ZtoElecMu.add(
     afterCut = evtSelElectronPt,
-    beforeCut = evtSelGlobalMuon,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/Muon#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Muon (after Electron P_{T} Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_muon_afterElectronPt"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelGlobalMuon,
-    beforeCut = evtSelMuonEta,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/Muon#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Muon (after global Muon Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_muon_afterGlobalMuon"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelMuonEta,
-    beforeCut = evtSelMuonPt,
-    plot = drawJobConfigEntry(
-        meName = 'MuonQuantities/Muon#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Muon (after Muon #eta Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_muon_afterMuonEta"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelMuonPt,
-    beforeCut = evtSelElectronTrkIso,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/ElectronTrkIsoPt',
-        title = "Electron Track iso. (after Muon P_{T} Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_electronTrkIso_afterMuonPt"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelElectronTrkIso,
-    beforeCut = evtSelElectronEcalIso,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/ElectronEcalIsoPt',
-        title = "Electron ECAL iso. (after Electron Track iso. Cut)",
-        xAxis = 'Pt',
-        name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelElectronEcalIso,
-    beforeCut = evtSelElectronTrk,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/Electron#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after Electron ECAL iso. Cut)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterElectronEcalIso"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelElectronTrk,
-    beforeCut = evtSelElectronTrkIP,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/ElectronTrackIP#PAR#',
-        PAR = [ 'xy', 'z' ],
-        title = "Electron Track IP_{#PAR#}(after Electron Track Cut)",
-        xAxis = 'IP#PAR#',
-        name = "cutFlowControlPlots_electronTrkIP_afterElectronTrk"
-    )
-)
-
-drawJobConfigurator_ZtoElecMu.add(
-    afterCut = evtSelElectronTrkIP,
     beforeCut = evtSelMuonTrkIso,
     plot = drawJobConfigEntry(
         meName = 'MuonQuantities/MuonTrkIsoPt',
-        title = "Muon Track iso. (after Electron Track IP_{xy} Cut)",
+        title = "Muon Track iso. (after Electron P_{T} Cut)",
         xAxis = 'Pt',
-        name = "cutFlowControlPlots_muonTrkIso_afterElectronTrackIP"
+        name = "cutFlowControlPlots_muonTrkIso_afterElectronPt"
     )
 )
 
@@ -251,10 +217,56 @@ drawJobConfigurator_ZtoElecMu.add(
 
 drawJobConfigurator_ZtoElecMu.add(
     afterCut = evtSelMuonTrkIP,
+    beforeCut = evtSelElectronTrkIso,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/ElectronTrkIsoPt',
+        title = "Electron Track iso. (after Muon Track IP_{xy} Cut)",
+        xAxis = 'Pt',
+        name = "cutFlowControlPlots_electronTrkIso_afterMuonTrackIP"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelElectronTrkIso,
+    beforeCut = evtSelElectronEcalIso,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/ElectronEcalIsoPt',
+        title = "Electron ECAL iso. (after Electron Track iso. Cut)",
+        xAxis = 'Pt',
+        name = "cutFlowControlPlots_electronEcalIso_afterElectronTrkIso"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelElectronEcalIso,
+    beforeCut = evtSelElectronTrk,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/Electron#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Electron (after Electron ECAL iso. Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_electron_afterElectronEcalIso"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelElectronTrk,
+    beforeCut = evtSelElectronTrkIP,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/ElectronTrackIP#PAR#',
+        PAR = [ 'xy', 'z' ],
+        title = "Electron Track IP_{#PAR#}(after Electron Track Cut)",
+        xAxis = 'IP#PAR#',
+        name = "cutFlowControlPlots_electronTrkIP_afterElectronTrk"
+    )
+)
+
+drawJobConfigurator_ZtoElecMu.add(
+    afterCut = evtSelElectronTrkIP,
     beforeCut = evtSelDiTauCandidateForElecMuAntiOverlapVeto,
     plot = drawJobConfigEntry(
         meName = 'DiTauCandidateQuantities/DR12',
-        title = "#Delta R(Electron,Muon) (after Muon Track IP_{xy} Cut)",
+        title = "#Delta R(Electron,Muon) (after Electron Track IP_{xy} Cut)",
         xAxis = 'dR',
         name = "cutFlowControlPlots_dR12_afterMuonTrkIPcut"
     )
