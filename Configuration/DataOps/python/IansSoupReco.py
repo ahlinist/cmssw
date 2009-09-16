@@ -21,19 +21,19 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration/EventContent/EventContent_cff')
 
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.123 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('promptReco nevts:1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(50)
 )
 process.options = cms.untracked.PSet(
     Rethrow = cms.untracked.vstring('ProductNotFound')
 )
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('promptReco_DIGI2RAW.root')
+    fileNames = cms.untracked.vstring('/store/backfill/2/data/IansMagicMushroomSoup-T0Test-AnalyzeThisAndGetAFreePhD/Jet/RAW/v9_15_pre14replaythingy_v3/000/000/002/247CD8A3-60A2-DE11-B5C2-003048D2BE08.root')
 )
 
 # Output definition
@@ -48,78 +48,17 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 # Additional output definition
-process.ALCARECOStreamRpcCalHLT = cms.OutputModule("PoolOutputModule",
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECORpcCalHLT')
-    ),
-    outputCommands = cms.untracked.vstring('drop *', 
-        'keep *_muonDTDigis_*_*', 
-        'keep CSCDetIdCSCWireDigiMuonDigiCollection_*_*_*', 
-        'keep CSCDetIdCSCStripDigiMuonDigiCollection_*_*_*', 
-        'keep DTLayerIdDTDigiMuonDigiCollection_*_*_*', 
-        'keep *_dt4DSegments_*_*', 
-        'keep *_cscSegments_*_*', 
-        'keep *_rpcRecHits_*_*', 
-        'keep RPCDetIdRPCDigiMuonDigiCollection_*_*_*', 
-        'keep L1MuRegionalCands_*_RPCb_*', 
-        'keep L1MuRegionalCands_*_RPCf_*', 
-        'keep L1MuGMTCands_*_*_*', 
-        'keep L1MuGMTReadoutCollection_*_*_*'),
-    fileName = cms.untracked.string('RpcCalHLT.root'),
+
+# Combined AlCaReco output
+process.ALCARECOStreamCombined = cms.OutputModule("PoolOutputModule",
+    outputCommands = process.ALCARECOEventContent.outputCommands,
+    fileName = cms.untracked.string('ALCACombined.root'),
     dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('StreamRpcCalHLT'),
+        filterName = cms.untracked.string('StreamALCACombined'),
         dataTier = cms.untracked.string('ALCARECO')
     )
 )
-process.ALCARECOStreamMuAlCalIsolatedMu = cms.OutputModule("PoolOutputModule",
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOMuAlCalIsolatedMu')
-    ),
-    outputCommands = cms.untracked.vstring('drop *', 
-        'keep *_ALCARECOMuAlCalIsolatedMu_*_*', 
-        'keep *_muonCSCDigis_*_*', 
-        'keep *_muonDTDigis_*_*', 
-        'keep *_muonRPCDigis_*_*', 
-        'keep *_dt1DRecHits_*_*', 
-        'keep *_dt2DSegments_*_*', 
-        'keep *_dt4DSegments_*_*', 
-        'keep *_csc2DRecHits_*_*', 
-        'keep *_cscSegments_*_*', 
-        'keep *_rpcRecHits_*_*'),
-    fileName = cms.untracked.string('MuAlCalIsolatedMu.root'),
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('StreamMuAlCalIsolatedMu'),
-        dataTier = cms.untracked.string('ALCARECO')
-    )
-)
-process.ALCARECOStreamEcalCalPi0Calib = cms.OutputModule("PoolOutputModule",
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalPi0Calib')
-    ),
-    outputCommands = cms.untracked.vstring('drop *', 
-        'keep *_ecalPi0Corrected_pi0EcalRecHitsEB_*', 
-        'keep *_ecalPi0Corrected_pi0EcalRecHitsEE_*', 
-        'keep *_hltAlCaPi0RegRecHits_pi0EcalRecHitsES_*'),
-    fileName = cms.untracked.string('ALCARECOEcalCalPi0Calib.root'),
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('StreamALCARECOEcalCalPi0Calib'),
-        dataTier = cms.untracked.string('ALCARECO')
-    )
-)
-process.ALCARECOStreamEcalCalEtaCalib = cms.OutputModule("PoolOutputModule",
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalEtaCalib')
-    ),
-    outputCommands = cms.untracked.vstring('drop *', 
-        'keep *_ecalEtaCorrected_etaEcalRecHitsEB_*', 
-        'keep *_ecalEtaCorrected_etaEcalRecHitsEE_*', 
-        'keep *_hltAlCaEtaRegRecHits_etaEcalRecHitsES_*'),
-    fileName = cms.untracked.string('ALCARECOEcalCalEtaCalib.root'),
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string('StreamALCARECOEcalCalEtaCalib'),
-        dataTier = cms.untracked.string('ALCARECO')
-    )
-)
+process.ALCARECOStreamCombined.outputCommands.extend(cms.untracked.vstring('drop *_MEtoEDMConverter_*_*'))
 
 # Other statements
 process.GlobalTag.globaltag = 'MC_31X_V1::All'
@@ -171,10 +110,7 @@ process.pathALCARECOMuAlGlobalCosmics = cms.Path(process.seqALCARECOMuAlGlobalCo
 process.pathALCARECOTkAlJpsiMuMu = cms.Path(process.seqALCARECOTkAlJpsiMuMu*process.ALCARECOTkAlJpsiMuMuDQM)
 process.endjob_step = cms.Path(process.endOfProcess)
 process.out_step = cms.EndPath(process.output)
-process.ALCARECOStreamRpcCalHLTOutPath = cms.EndPath(process.ALCARECOStreamRpcCalHLT)
-process.ALCARECOStreamMuAlCalIsolatedMuOutPath = cms.EndPath(process.ALCARECOStreamMuAlCalIsolatedMu)
-process.ALCARECOStreamEcalCalPi0CalibOutPath = cms.EndPath(process.ALCARECOStreamEcalCalPi0Calib)
-process.ALCARECOStreamEcalCalEtaCalibOutPath = cms.EndPath(process.ALCARECOStreamEcalCalEtaCalib)
+process.ALCARECOStreamCombinedOutPath = cms.EndPath(process.ALCARECOStreamCombined)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.pathALCARECORpcCalHLT,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECODQM,process.pathALCARECOEcalCalEtaCalib,process.pathALCARECOEcalCalPi0Calib,process.endjob_step,process.out_step,process.ALCARECOStreamRpcCalHLTOutPath,process.ALCARECOStreamMuAlCalIsolatedMuOutPath,process.ALCARECOStreamEcalCalPi0CalibOutPath,process.ALCARECOStreamEcalCalEtaCalibOutPath)
+process.schedule = cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.pathALCARECORpcCalHLT,process.pathALCARECOMuAlCalIsolatedMu,process.pathALCARECODQM,process.pathALCARECOEcalCalEtaCalib,process.pathALCARECOEcalCalPi0Calib,process.endjob_step,process.out_step,process.ALCARECOStreamCombinedOutPath)
