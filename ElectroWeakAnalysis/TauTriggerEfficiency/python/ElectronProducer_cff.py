@@ -19,7 +19,9 @@ ElectronProducer = cms.EDProducer("ElectronProducer",
                                   EtaMax=cms.double(2.5)
                                   )
 
-from RecoEcal.EgammaClusterProducers.geometryForClustering_cff import *
+from RecoEcal.Configuration.RecoEcal_cff import *
+from Configuration.StandardSequences.Geometry_cff import *
+####from RecoEcal.EgammaClusterProducers.geometryForClustering_cff import *
 from RecoEgamma.ElectronIdentification.electronIdCutBasedExt_cfi import eidCutBasedExt
 eidCutBasedExt.electronQuality='robust'
 
