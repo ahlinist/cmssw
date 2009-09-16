@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from TauAnalysis.RecoTools.patElectronSelection_cfi import *
+from TauAnalysis.RecoTools.patElectronSelectionForElecMu_cfi import *
 from TauAnalysis.RecoTools.patMuonSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelection_cfi import *
 from TauAnalysis.RecoTools.patPFTauSelectionForElecTau_cfi import *
@@ -62,6 +63,58 @@ patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
 )
 
 selectLayer1ElectronsLooseIsolation = patElectronSelConfiguratorLooseIsolation.configure(namespace = locals())
+
+selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
+selectedLayer1ElectronsForElecMuTightId.cut = selectedLayer1ElectronsTightId.cut
+selectedLayer1ElectronsForElecMuAntiCrackCut.cut = selectedLayer1ElectronsAntiCrackCut.cut
+selectedLayer1ElectronsForElecMuEta21.cut = selectedLayer1ElectronsEta21.cut 
+selectedLayer1ElectronsForElecMuPt15.cut = selectedLayer1ElectronsPt15.cut 
+selectedLayer1ElectronsForElecMuTrkIso.cut = selectedLayer1ElectronsTrkIso.cut 
+selectedLayer1ElectronsForElecMuEcalIso.cut = selectedLayer1ElectronsEcalIso.cut
+selectedLayer1ElectronsForElecMuTrk.cut = selectedLayer1ElectronsTrk.cut 
+selectedLayer1ElectronsForElecMuTrkIP.vertexSource = selectedLayer1ElectronsTrkIP.vertexSource 
+selectedLayer1ElectronsForElecMuTrkIP.IpMax = selectedLayer1ElectronsTrkIP.IpMax 
+
+patElectronSelConfiguratorForElecMu = objSelConfigurator(
+    [ selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto,
+      selectedLayer1ElectronsForElecMuTightId,
+      selectedLayer1ElectronsForElecMuAntiCrackCut,
+      selectedLayer1ElectronsForElecMuEta21,
+      selectedLayer1ElectronsForElecMuPt15,
+      selectedLayer1ElectronsForElecMuTrkIso,
+      selectedLayer1ElectronsForElecMuEcalIso,
+      selectedLayer1ElectronsForElecMuTrk,
+      selectedLayer1ElectronsForElecMuTrkIP ],
+    src = "cleanLayer1Electrons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1ElectronsForElecMu = patElectronSelConfiguratorForElecMu.configure(namespace = locals())
+
+selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation.cut = cms.string('trackIso < 8.')
+selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation.cut = cms.string('ecalIso < 8.')
+selectedLayer1ElectronsForElecMuTrkLooseIsolation.cut = selectedLayer1ElectronsForElecMuTrk.cut
+selectedLayer1ElectronsForElecMuTrkIPlooseIsolation.vertexSource = selectedLayer1ElectronsForElecMuTrkIP.vertexSource
+selectedLayer1ElectronsForElecMuTrkIPlooseIsolation.IpMax = selectedLayer1ElectronsForElecMuTrkIP.IpMax
+
+patElectronSelConfiguratorForElecMuLooseIsolation = objSelConfigurator(
+    [ selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto,
+      selectedLayer1ElectronsForElecMuTightId,
+      selectedLayer1ElectronsForElecMuAntiCrackCut,
+      selectedLayer1ElectronsForElecMuEta21,
+      selectedLayer1ElectronsForElecMuPt15,
+      selectedLayer1ElectronsForElecMuTrkIsoLooseIsolation,
+      selectedLayer1ElectronsForElecMuEcalIsoLooseIsolation,
+      selectedLayer1ElectronsForElecMuTrkLooseIsolation,
+      selectedLayer1ElectronsForElecMuTrkIPlooseIsolation ],
+    src = "cleanLayer1Electrons",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1ElectronsForElecMuLooseIsolation = patElectronSelConfiguratorForElecMuLooseIsolation.configure(namespace = locals())
+
 
 #--------------------------------------------------------------------------------
 # define selection criteria for pat::Muons
@@ -288,6 +341,7 @@ selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace =
 
 produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
                                         +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
-                                        +selectLayer1Taus + produceLayer1SelTaus
+                                        +selectLayer1Taus + produceLayer1SelTaus                                         
+                                        +selectLayer1ElectronsForElecMu + selectLayer1ElectronsForElecMuLooseIsolation
                                         +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau
 					+selectLayer1TausForWTauNu )
