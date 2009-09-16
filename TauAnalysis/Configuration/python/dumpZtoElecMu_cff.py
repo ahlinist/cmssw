@@ -15,6 +15,6 @@ dumpZtoElecMu = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
         TTplusJets = cms.string('harvested/TTplusJets/zElecMuAnalyzer/FilterStatistics/'),
         QCD = cms.string('harvested/qcdSum/zElecMuAnalyzer/FilterStatistics/')
     ),
-    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "Efficiency")
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
 )
  
