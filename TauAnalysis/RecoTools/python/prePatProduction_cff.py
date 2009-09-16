@@ -28,9 +28,14 @@ from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 # (need esprefer statement in order to prevent conflict with Fake BTau conditions)
 from RecoTauTag.TauTagTools.TancConditions_cff import *
 
+# produce MET significance values
+from RecoMET.METProducers.CaloMETSignif_cfi import *
+
 producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
                              + electronIdCutBased + recoElectronIsolation
                              + recoMuonIsolation
                              + PFTau
-                             + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform )
+                             + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform
+                             + metsignificance )
+
 
