@@ -201,6 +201,8 @@ public:
 	double errdedxTrk_;
 	int numdedxTrk_;
 
+	int iPassedCutIdent_;
+
 	//MC info
 	int isGenBsEvent_;
 	int GenNumberOfBsDaughters_;
