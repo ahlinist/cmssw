@@ -24,6 +24,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
 {
   theOutFileName             = iConfig.getParameter<string>("OutputFileName");
   theOniaType                = iConfig.getParameter<int>("OniaType");
+  theOniaMaxCat              = iConfig.getParameter<int>("OniaMaxCat");
   theDebugLevel              = iConfig.getParameter<int>("DebugLevel");
   thegenParticlesLabel       = iConfig.getParameter<edm::InputTag>("genParticlesLabel");  
   // theStandAloneMuonsLabel    = iConfig.getParameter<edm::InputTag>("StandAloneMuonsLabel");
@@ -61,7 +62,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theStoreWSOnia             = iConfig.getParameter<bool>("StoreWSOnia");
   theBeamSpotFlag            = iConfig.getParameter<bool>("UsingBeamSpot");
   theminimumFlag             = iConfig.getParameter<bool>("minimumFlag");
-  theAODFlag                 = iConfig.getParameter<bool>("UsingAOD");
+  // theAODFlag                 = iConfig.getParameter<bool>("UsingAOD");
   theStorePATFlag            = iConfig.getParameter<bool>("StorePATFlag");
   fNevt=0;
 }
@@ -1031,7 +1032,7 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
 
   if(theDebugLevel>0) cout << "==>fillGeneratorBlocks, event: " << fNevt << endl;
  
-  if ( theAODFlag ) {
+  // if ( theAODFlag ) {
     /*
     Handle< int > genProcessID;
     iEvent.getByLabel( "genEventProcID", genProcessID );
@@ -1051,27 +1052,27 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
     //Mc_EventWeight =cross_section * filter_eff*branch_ratio;
     Mc_EventWeight =cross_section * filter_eff;
     */
-  }
-  else {
-    Handle< HepMCProduct > HepMCEvt;
-    // if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
-    //	iEvent.getByLabel( "source", HepMCEvt );
+  // }
+  // else {
+  Handle< HepMCProduct > HepMCEvt;
+  // if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
+  //	iEvent.getByLabel( "source", HepMCEvt );
+  // }
+  iEvent.getByLabel( "generator", HepMCEvt );
+  const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
+  Mc_ProcessId   = myGenEvent->signal_process_id();
+  Mc_EventScale  = myGenEvent->event_scale();
+  
+  Handle< GenRunInfoProduct > gi;
+  // iEvent.getRun().getByLabel( "source", gi);
+  iEvent.getRun().getByLabel( "generator", gi);
+  double auto_cross_section = gi->internalXSec().value(); // calculated at end of each RUN, in mb
+  if(theDebugLevel>0) cout << "calculated cross-section" << auto_cross_section<<endl;
+  double external_cross_section = gi->crossSection(); // is the precalculated one written in the cfg file -- units is pb
+  double filter_eff = gi->filterEfficiency();
+  //Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
+  Mc_EventWeight = external_cross_section * filter_eff;
     // }
-    iEvent.getByLabel( "generator", HepMCEvt );
-    const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
-    Mc_ProcessId   = myGenEvent->signal_process_id();
-    Mc_EventScale  = myGenEvent->event_scale();
-
-    Handle< GenRunInfoProduct > gi;
-    // iEvent.getRun().getByLabel( "source", gi);
-    iEvent.getRun().getByLabel( "generator", gi);
-    double auto_cross_section = gi->internalXSec().value(); // calculated at end of each RUN, in mb
-    if(theDebugLevel>0) cout << "calculated cross-section" << auto_cross_section<<endl;
-    double external_cross_section = gi->crossSection(); // is the precalculated one written in the cfg file -- units is pb
-    double filter_eff = gi->filterEfficiency();
-    //Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
-    Mc_EventWeight = external_cross_section * filter_eff;
-  }
 
   Mc_QQ_size=0; 
   Mc_mu_size=0;
@@ -1776,13 +1777,13 @@ void Onia2MuMu::findOniaCategories(const edm::Event &iEvent) {
       muon1 = nmuon1->innerTrack();    
       muon2 = nmuon2->innerTrack(); 
       m2g++;
-      fillOniaMuMuTracks(muon1, m1, muon2, m1+m2g, vperp2, 0);
+      if (theOniaMaxCat >= 0) fillOniaMuMuTracks(muon1, m1, muon2, m1+m2g, vperp2, 0);
     }
     if ( theStoreTRKMuonFlag ) {
       for( tmuon2 = theTrkMuons.begin(); tmuon2 != theTrkMuons.end()&&Reco_QQ_size<3000; tmuon2++ ) {
 	muon1 = nmuon1->innerTrack();    
 	muon2 = tmuon2->innerTrack(); 
-	fillOniaMuMuTracks(muon1, m1, muon2, m2t, vperp2, 1);
+	 if (theOniaMaxCat >= 1) fillOniaMuMuTracks(muon1, m1, muon2, m2t, vperp2, 1);
 	m2t++;
       }
     }
@@ -1790,7 +1791,7 @@ void Onia2MuMu::findOniaCategories(const edm::Event &iEvent) {
       for( cmuon2 = theCaloMuons.begin(); cmuon2 != theCaloMuons.end()&&Reco_QQ_size<3000; cmuon2++ ) {
 	muon1 = nmuon1->innerTrack();    
 	muon2 = cmuon2->track(); 
-	fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 3);
+	 if (theOniaMaxCat >= 3) fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 3);
 	m2c++;
       }
     }
@@ -1803,13 +1804,13 @@ void Onia2MuMu::findOniaCategories(const edm::Event &iEvent) {
 	muon1 = tmuon1->innerTrack();    
 	muon2 = tmuon2->innerTrack(); 
 	m2t++; 
-	fillOniaMuMuTracks(muon1, m1, muon2, m2t+m1, vperp2, 2);
+	 if (theOniaMaxCat >= 2) fillOniaMuMuTracks(muon1, m1, muon2, m2t+m1, vperp2, 2);
       }
       if ( theStoreCALMuonFlag ) {
 	for( cmuon2 = theCaloMuons.begin(); cmuon2 != theCaloMuons.end()&&Reco_QQ_size<3000; cmuon2++ ) {
 	  muon1 = tmuon1->innerTrack();    
 	  muon2 = cmuon2->track(); 
-	  fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 4);
+	   if (theOniaMaxCat >= 4) fillOniaMuMuTracks(muon1, m1, muon2, m2c, vperp2, 4);
 	  m2c++;
 	}
       }
@@ -1823,7 +1824,7 @@ void Onia2MuMu::findOniaCategories(const edm::Event &iEvent) {
 	muon1 = cmuon1->track();    
 	muon2 = cmuon2->track(); 
 	m2c++; 
-	fillOniaMuMuTracks(muon1, m1, muon2, m2c+m1, vperp2, 5);
+	 if (theOniaMaxCat >= 5) fillOniaMuMuTracks(muon1, m1, muon2, m2c+m1, vperp2, 5);
       }
       m1++;
     }
@@ -2019,6 +2020,9 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
 
   Reco_QQ_DeltaR[Reco_QQ_size]=deltaR(mu1, mu2);
   Reco_QQ_s[Reco_QQ_size] = pow((muon1->d0()/muon1->d0Error()),2)+pow((muon2->d0()/muon2->d0Error()),2);
+  // Reco_QQ_absD0Diff[Reco_QQ_size] = fabs(muon1->d0() - muon2->d0());
+  // Reco_QQ_absDzDiff[Reco_QQ_size] = fabs(muon1->dz() - muon2->dz());
+
   if ( muon1->charge() == 1 ) {
     Reco_QQ_mupl[Reco_QQ_size]=m1;
     Reco_QQ_mumi[Reco_QQ_size]=m2;
@@ -2061,11 +2065,10 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     RefCountedKinematicTree myTree = kvFitter.fit(allParticles);
     // cout << "Global vertex fit done\n";
 
-    myTree->movePointerToTheTop();
-    RefCountedKinematicParticle newQQ = myTree->currentParticle();
-    RefCountedKinematicVertex QQVertex = myTree->currentDecayVertex();
-
-    if (QQVertex->vertexIsValid()) {
+    if (myTree->isValid()) {
+      myTree->movePointerToTheTop();
+      RefCountedKinematicParticle newQQ = myTree->currentParticle();
+      RefCountedKinematicVertex QQVertex = myTree->currentDecayVertex();
       
       Reco_QQ_VtxIsVal[Reco_QQ_size]=true;
       TVector3 vtx(0.0,0.0,0.0);
