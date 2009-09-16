@@ -36,7 +36,9 @@ process.source = source
 #)
 
 process.load("L1Trigger/Configuration/L1Config_cff")
-process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
+####process.load("Configuration/StandardSequences/L1TriggerDefaultMenu_cff")
+process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = 'MC_31X_V3::All'
 #process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
 
 process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
