@@ -1,4 +1,6 @@
 #include "AnalysisExamples/SusyAnalysis/interface/UserAnalysis.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
 using namespace std;
 
@@ -22,40 +24,53 @@ myConfig(theConfig), EventData(0)
   cout << "UserAnalysis parameters:" << endl;
   cout << " user_metMin = " << user_metMin << endl;
 
-   // initialize histograms
+  
 
-  // book histograms for multiplicities of leptons and jets
-   hLeptonMult = new TH1D( "LeptonMult", "Multiplicity of leptons", 15, 0.0, 15.0);
-   hElectronMult = new TH1D( "ElectronMult", "Multiplicity of electrons", 10, 0.0, 10.0);
-   hMuonMult = new TH1D( "MuonMult", "Multiplicity of muons", 10, 0.0, 10.0);
-   hPhotonMult = new TH1D( "PhotonMult", "Multiplicity of photons", 10, 0.0, 10.0);
-   hJetMult = new TH1D( "JetMult", "Multiplicity of jets", 30, 0.0, 30.0);
-   hBJetMult = new TH1D( "BJetMult", "Multiplicity of b-jets", 15, 0.0, 15.0);
+   // initialize histograms
+   edm::Service<TFileService> fs;
+  
+   // book histograms for multiplicities of leptons and jets
+   hLeptonMult = fs->make<TH1D>( "LeptonMult", "Multiplicity of leptons", 15, 0.0, 15.0);
+   hElectronMult = fs->make<TH1D>( "ElectronMult", "Multiplicity of electrons", 10, 0.0, 10.0);
+   hMuonMult = fs->make<TH1D>( "MuonMult", "Multiplicity of muons", 10, 0.0, 10.0);
+   hPhotonMult = fs->make<TH1D>( "PhotonMult", "Multiplicity of photons", 10, 0.0, 10.0);
+   hJetMult = fs->make<TH1D>( "JetMult", "Multiplicity of jets", 30, 0.0, 30.0);
+   hBJetMult = fs->make<TH1D>( "BJetMult", "Multiplicity of b-jets", 15, 0.0, 15.0);
 
   // book histograms for PT of the leptons and the 3 leading jets
-   hPtElec = new TH1D( "PtElec", "Pt spectrum of electrons", 50, 0.0, 1000.0);
-   hPtMuon = new TH1D( "PtMuon", "Pt spectrum of muons", 50, 0.0, 1000.0);
-   hPtJet1 = new TH1D( "PtJet1", "Pt spectrum of 1st jet", 50, 0.0, 1000.0);
-   hPtJet2 = new TH1D( "PtJet2", "Pt spectrum of 2nd jet", 50, 0.0, 1000.0);
-   hPtJet3 = new TH1D( "PtJet3", "Pt spectrum of 3rd jet", 50, 0.0, 1000.0);
+   hPtElec = fs->make<TH1D>( "PtElec", "Pt spectrum of electrons", 50, 0.0, 1000.0);
+   hPtMuon = fs->make<TH1D>( "PtMuon", "Pt spectrum of muons", 50, 0.0, 1000.0);
+   hPtJet1 = fs->make<TH1D>( "PtJet1", "Pt spectrum of 1st jet", 50, 0.0, 1000.0);
+   hPtJet2 = fs->make<TH1D>( "PtJet2", "Pt spectrum of 2nd jet", 50, 0.0, 1000.0);
+   hPtJet3 = fs->make<TH1D>( "PtJet3", "Pt spectrum of 3rd jet", 50, 0.0, 1000.0);
 
   // book histograms for MET, ETSum and HT
-   hMissingETmc = new TH1D( "MissingETmc", "Missing transverse energyfrom MC", 100, 0.0, 1000.0);
-   hMissingET = new TH1D( "MissingET", "Missing transverse energy", 100, 0.0, 1000.0);
-   hETvisH1 = new TH1D( "hETvisH1", "Transverse visible energy sum Hemi1", 100, 0.0, 2000.0);
-   hETvisH2 = new TH1D( "hETvisH2", "Transverse visible energy sum Hemi2", 100, 0.0, 2000.0);
-   hEtSum = new TH1D( "ETsum", "Transverse energy sum", 100, 0.0, 2000.0);
-   hHT = new TH1D( "HT", "Transverse energy sum", 100, 0.0, 2000.0);
-   hHemiMass = new TH1D( "HemiMass", "Hemisphere mass", 100, 0.0, 1000.0);
+   hMissingETmc = fs->make<TH1D>( "MissingETmc", "Missing transverse energyfrom MC", 100, 0.0, 1000.0);
+   hMissingET = fs->make<TH1D>( "MissingET", "Missing transverse energy", 100, 0.0, 1000.0);
+   hETvisH1 = fs->make<TH1D>( "hETvisH1", "Transverse visible energy sum Hemi1", 100, 0.0, 2000.0);
+   hETvisH2 = fs->make<TH1D>( "hETvisH2", "Transverse visible energy sum Hemi2", 100, 0.0, 2000.0);
+   hEtSum = fs->make<TH1D>( "ETsum", "Transverse energy sum", 100, 0.0, 2000.0);
+   hHT = fs->make<TH1D>( "HT", "Transverse energy sum", 100, 0.0, 2000.0);
+   hHemiMass = fs->make<TH1D>( "HemiMass", "Hemisphere mass", 100, 0.0, 1000.0);
 
   // book histograms for ET distribution of jets correctly and wrongly assigned to hemispheres
-   hJetGoodEt = new TH1D( "JetGoodEt", "Et spectrum of Jets correctly ID'ed", 80, 0.0, 800.0);
-   hJetWrongEt = new TH1D( "JetWrongEt", "Et spectrum of Jets wrongly ID'ed", 80, 0.0, 800.0);
+   hJetGoodEt = fs->make<TH1D>( "JetGoodEt", "Et spectrum of Jets correctly ID'ed", 80, 0.0, 800.0);
+   hJetWrongEt = fs->make<TH1D>( "JetWrongEt", "Et spectrum of Jets wrongly ID'ed", 80, 0.0, 800.0);
 
   // book histograms for hemisphere mass
-   hAllHemiMass = new TH1D( "AllHemiMass", "Invariant mass of hemisphere", 50, 0.0, 1000.0);
+   hAllHemiMass = fs->make<TH1D>( "AllHemiMass", "Invariant mass of hemisphere", 50, 0.0, 1000.0);
 
-   
+  // book histograms for MT2 studies
+   hISRMomentum = fs->make<TH1D>( "ISRPt", "Vector Sum of all Jets", 50, 0.0, 1000.0);
+   hMT2_0 = fs->make<TH1D>( "MT2_0", "MT2 for SS di-lepton events for 0 test mass", 100, 0.0, 200.0);
+   hMT2_275 = fs->make<TH1D>( "MT2_275", "MT2 for SS di-lepton events for 275 test mass", 100, 250.0, 500.0);
+   hMT2_412 = fs->make<TH1D>( "MT2_412", "MT2 for SS di-lepton events for 412 test mass", 100, 350.0, 600.0);
+   hMT2_275_slsl = fs->make<TH1D>( "MT2_275_slsl", "MT2 for SS di-lepton events for 275 test mass, slepton slepton contribution", 100, 250.0, 500.0);
+   hMT2_275_slsn = fs->make<TH1D>( "MT2_275_slsn", "MT2 for SS di-lepton events for 275 test mass, slepton sneutrino contribution", 100, 250.0, 500.0);
+   hMT2_275_snsn = fs->make<TH1D>( "MT2_275_snsn", "MT2 for SS di-lepton events for 275 test mass, sneutrino sneutrino contribution", 100, 250.0, 500.0);
+   hMT2_vs_angle = fs->make<TH2D>( "MT2_vs_angle", "MT2 and angle(2l,pt) for SS di-lepton events", 100, 250.0, 500.0, 20,
+   -1., 1.);
+ 
   // Initialize user counters
   nTotEvtSelUser = 0;
 
