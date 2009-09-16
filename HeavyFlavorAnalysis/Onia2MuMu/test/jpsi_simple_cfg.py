@@ -23,8 +23,8 @@ process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
        ### test
-      # '/store/mc/Summer09/JPsiMuMu/GEN-SIM-RAW/MC_31X_V3-v1/0042/FC45EB99-A98B-DE11-B3B6-001EC9AF2055.root'
-    'file:/tmp/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
+      '/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
+    # 'file:/tmp/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
      
     )
 )
@@ -34,6 +34,7 @@ process.GlobalTag.globaltag = 'MC_31X_V3::All'
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     OutputFileName       = cms.string('test_312.root'),
     OniaType             = cms.int32(443),
+    OniaMaxCat           = cms.int32(1),
     DebugLevel           = cms.int32(0),
     genParticlesLabel    = cms.InputTag("genParticles"),
     # StandAloneMuonsLabel = cms.InputTag("standAloneMuons"),
@@ -52,7 +53,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     L1MuonLabel          = cms.InputTag("l1extraParticles"),
     PATMuonsLabel        = cms.InputTag("selectedLayer1Muons"),
     # PATPhotonsLabel      = cms.InputTag("selectedLayer1Photons"),
-    useKinFit            = cms.bool(False),
+    useKinFit            = cms.bool(True),
     StoreGenFlag         = cms.bool(True),
     StoreHLTFlag         = cms.bool(True),
     StoreL1Flag          = cms.bool(True),
@@ -71,7 +72,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     StoreOniaRadiation   = cms.bool(False),
     UsingBeamSpot        = cms.bool(True),
     minimumFlag          = cms.bool(False),
-    UsingAOD             = cms.bool(True),
+    # UsingAOD             = cms.bool(True),
     StorePATFlag         = cms.bool(False)
 )
 

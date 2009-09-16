@@ -385,6 +385,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
                                   // 3 = copper (1 global - 1 calo muon)
                                   // 4 = iron (1 tracker - 1 calo muon)
                                   // 5 = crap (2 calo muons)
+      int theOniaMaxCat;          // Maximum category above to store cands
       int Reco_QQ_sign[3000];     // Mu Mu combinations sign:
                                   // 0 = +/- (signal)
                                   // 1 = +/+
