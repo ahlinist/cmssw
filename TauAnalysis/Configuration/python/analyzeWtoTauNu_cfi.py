@@ -9,6 +9,7 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 from TauAnalysis.Core.vertexHistManager_cfi import *
 from TauAnalysis.Core.pftauRecoilEnergyHistManager_cfi import *
 from TauAnalysis.Core.metTopologyHistManager_cfi import*
+from TauAnalysis.Core.tauNuCandidateHistManager_cfi import*
 
 #to make plots for pfmet
 #metHistManager.metSource = cms.InputTag("layer1PFMETs") 
@@ -20,7 +21,8 @@ wTauNuHistManagers = cms.vstring(
     'vertexHistManager',
     'tauRecoilEnergyFromJetsHistManager',
     'tauRecoilEnergyFromCaloTowersHistManager',
-    'metTopologyHistManager'
+    'metTopologyHistManager',
+    'tauNuCandidateHistManager'
 )
 
 #--------------------------------------------------------------------------------
@@ -61,6 +63,8 @@ evtSelTauPt = cms.PSet(
 evtSelMetPt = cms.PSet(
     pluginName = cms.string('evtSelMetPt'),
     pluginType = cms.string('BoolEventSelector'),
+    #src_cumulative = cms.InputTag('metPtCut', 'cumulative'),
+    #src_individual = cms.InputTag('metPtCut', 'individual')
     src = cms.InputTag('metPtCut')
     )
 
@@ -99,6 +103,13 @@ evtSelTauElectronVeto = cms.PSet(
     src_individual = cms.InputTag('tauElectronVeto', 'individual')
     )
 
+evtSelTauEcalCrackVeto = cms.PSet(
+    pluginName = cms.string('evtSelTauEcalCrackVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauEcalCrackVeto', 'cumulative'),
+    src_individual = cms.InputTag('tauEcalCrackVeto', 'individual')
+    )
+
 evtSelTauProng = cms.PSet(
     pluginName = cms.string('evtSelTauProng'),
     pluginType = cms.string('BoolEventSelector'),
@@ -106,16 +117,11 @@ evtSelTauProng = cms.PSet(
     src_individual = cms.InputTag('tauProngCut', 'individual')
 )
 
-evtSelRecoilEnergyFromCaloTowers = cms.PSet(
-    pluginName = cms.string('evtSelRecoilEnergyFromCaloTowers'),
+evtSelTauCharge = cms.PSet(
+    pluginName = cms.string('evtSelTauCharge'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('recoilEnergyFromCaloTowersCut')
-)
-
-evtSelRecoilEnergyFromJets = cms.PSet(
-    pluginName = cms.string('evtSelRecoilEnergyFromJets'),
-    pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('recoilEnergyFromJetsCut')
+    src_cumulative = cms.InputTag('tauChargeCut', 'cumulative'),
+    src_individual = cms.InputTag('tauChargeCut', 'individual')
 )
 
 # veto events containing additional central jets with Et > 20 GeV
@@ -124,6 +130,19 @@ evtSelCentralJetVeto = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src = cms.InputTag('centralJetVeto')
     )
+
+evtSelRecoilEnergyFromCaloTowers = cms.PSet(
+    pluginName = cms.string('evtSelRecoilEnergyFromCaloTowers'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('recoilEnergyFromCaloTowersCut')
+)
+
+#evtSelRecoilEnergyFromJets = cms.PSet(
+#    pluginName = cms.string('evtSelRecoilEnergyFromJets'),
+#    pluginType = cms.string('BoolEventSelector'),
+#    src = cms.InputTag('recoilEnergyFromJetsCut')
+#)
+
 
 
 #--------------------------------------------------------------------------------
@@ -200,7 +219,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
-        title = cms.string('Pt(Tau) > 15 GeV'),
+        title = cms.string('Pt(Tau) > 20 GeV'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -209,7 +228,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	), 
     cms.PSet(
         filter = cms.string('evtSelMetPt'),
-        title = cms.string('MET > 15 GeV'),
+        title = cms.string('MET > 25 GeV'),
         saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -228,7 +247,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('leadtrk pt > 15 GeV'),
+        title = cms.string('leadtrk pt > 20 GeV'),
         saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -265,6 +284,15 @@ wTauNuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuElectronVetoCumulative')	
 	),
     cms.PSet(
+        filter = cms.string('evtSelTauEcalCrackVeto'),
+        title = cms.string('Ecal Crack veto'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalCrackVetoCumulative')	
+	),
+    cms.PSet(
         filter = cms.string('evtSelTauProng'),
         title = cms.string('Tau 1||3-Prong'),
         saveRunEventNumbers = cms.vstring('')
@@ -274,22 +302,13 @@ wTauNuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuProngCumulative')
 	),
     cms.PSet(
-	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
-	title = cms.string('recoil energy (calotowers) < 5'),
-	saveRunEventNumbers = cms.vstring('')
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('abs(tau charge) = 1'),
+        saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
-	analyzers = wTauNuHistManagers,
-	#replace = cms.vstring('jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
-	),
-    cms.PSet(
-	filter = cms.string('evtSelRecoilEnergyFromJets'),
-	title = cms.string('recoil energy (jets) < 1'),
-	saveRunEventNumbers = cms.vstring('')
-	),
-    cms.PSet(
-	analyzers = wTauNuHistManagers,
-	#replace = cms.vstring('jetHistManager.jetSource = selectedLayer1JetsEt20Cumulative')
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuChargeCumulative')
 	),
     cms.PSet(
 	filter = cms.string('evtSelCentralJetVeto'),
@@ -298,5 +317,22 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
 	analyzers = wTauNuHistManagers,	
+	),
+    cms.PSet(
+	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
+	title = cms.string('recoil energy (calotowers) < 5'),
+	saveRunEventNumbers = cms.vstring('')
+	),
+    cms.PSet(
+	analyzers = wTauNuHistManagers,
 	)
+  #  cms.PSet(
+  #  filter = cms.string('evtSelRecoilEnergyFromJets'),
+#	title = cms.string('recoil energy (jets) < 1'),
+#	saveRunEventNumbers = cms.vstring('')
+#	),
+ #   cms.PSet(
+#	analyzers = wTauNuHistManagers,
+#	)
     )
+

@@ -42,6 +42,8 @@ cfgMetPt = cms.PSet(
     pluginName = cms.string('metPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src = cms.InputTag('selectedLayer1METsPt15'),
+    #src_cumulative = cms.InputTag('selectedLayer1METsForWTauNuPt15Cumulative'),
+    #src_individual = cms.InputTag('selectedLayer1METsForWTauNuPt15Individual'),
     minNumber = cms.uint32(1)
 )
 
@@ -85,12 +87,36 @@ cfgTauElectronVeto = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+cfgTauEcalCrackVeto = cms.PSet(
+    pluginName = cms.string('tauEcalCrackVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
+
 cfgTauProngCut = cms.PSet(
     pluginName = cms.string('tauProngCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuProngCumulative'),
     src_individual = cms.InputTag('selectedLayer1TausForWTauNuProngIndividual'),
     minNumber = cms.uint32(1)
+    )
+
+cfgTauChargeCut = cms.PSet(
+    pluginName = cms.string('tauChargeCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuChargeCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausForWTauNuChargeIndividual'),
+    minNumber = cms.uint32(1)
+    )
+
+# veto events containing additional central jets with Et > 10 GeV                                       
+cfgCentralJetVeto = cms.PSet(
+    pluginName = cms.string('centralJetVeto'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    maxNumber = cms.uint32(0)                                                      
     )
 
 # Recoil jet energy cut
@@ -100,21 +126,14 @@ cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
     src = cms.InputTag('tauRecoilEnergyFromCaloTowersPt5'),
     minNumber = cms.uint32(1)
     )
-cfgRecoilEnergyFromJetsCut = cms.PSet(
-    pluginName = cms.string('recoilEnergyFromJetsCut'),
-    pluginType = cms.string('PATTauRecoilEnergyFromJetsMinEventSelector'),
-    src = cms.InputTag('tauRecoilEnergyFromJetsPt1'),
-    minNumber = cms.uint32(1)
-    )
+#cfgRecoilEnergyFromJetsCut = cms.PSet(
+#    pluginName = cms.string('recoilEnergyFromJetsCut'),
+#    pluginType = cms.string('PATTauRecoilEnergyFromJetsMinEventSelector'),
+#    src = cms.InputTag('tauRecoilEnergyFromJetsPt1'),
+#    minNumber = cms.uint32(1)
+#    )
 
 
-# veto events containing additional central jets with Et > 10 GeV                                       
-cfgCentralJetVeto = cms.PSet(
-    pluginName = cms.string('centralJetVeto'),
-    pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt10Cumulative'),
-    maxNumber = cms.uint32(0)                                                      
-    )
 #cut on met topology
 #cfgCentralJetVeto = cms.PSet(
 #    pluginName = cms.string('centralJetVeto'),
@@ -138,10 +157,12 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
 	cfgTauTrkIso,
 	cfgTauMuonVeto,
 	cfgTauElectronVeto,
+        cfgTauEcalCrackVeto,
 	cfgTauProngCut,
-	cfgRecoilEnergyFromCaloTowersCut,
-	cfgRecoilEnergyFromJetsCut,
-        cfgCentralJetVeto
+        cfgTauChargeCut,
+        cfgCentralJetVeto,
+	cfgRecoilEnergyFromCaloTowersCut
+#	cfgRecoilEnergyFromJetsCut,
 	],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
