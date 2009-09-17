@@ -11,27 +11,27 @@ plots_WtoTauNu = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'Wtaunu',
-            'qcd_W',
             'Wmunu',
             'Wenu',
             'ZplusJets',
-            'TTplusJets'
+            'TTplusJets',
+            'qcd_W'
             )
     ),
     xAxis = cms.string('unlabeled'),
-    yAxis = cms.string('numEntries_linear'),
-    #yAxis = cms.string('numEntries_log'),
+    #yAxis = cms.string('numEntries_linear'),
+    yAxis = cms.string('numEntries_log'),
     legend = cms.string('regular'),
     labels = cms.vstring('mcNormScale'),                   
     drawOptionSet = cms.string('default'),
-    stack = cms.vstring(
-        'Wtaunu',
-        'qcd_W',
-        'Wmunu',
-        'Wenu',
-        'ZplusJets',
-        'TTplusJets'
-    )
+  #  stack = cms.vstring(
+  #      'Wtaunu',
+  #      'Wmunu',
+  #      'Wenu',
+  #      'ZplusJets',
+  #      'TTplusJets',
+  #      'qcd_W'
+  #  )
 )
 
 drawJobConfigurator_WtoTauNu = drawJobConfigurator(
@@ -88,41 +88,96 @@ drawJobConfigurator_WtoTauNu.add(
 )
    
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelTauProng,
-    beforeCut = evtSelRecoilEnergyFromCaloTowers,
+    afterCut = evtSelTauCharge,
+    beforeCut = evtSelCentralJetVeto,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Tau prong Cut)",
+            title = "Tau (after Tau charge cut)",
             xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterTauProng"
+            name = "cutFlowControlPlots_tau_afterTauCharge"
             ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Tau prong Cut)",
+            title = "Tau lead. Track (after Tau charge Cut)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauProng"
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterTauCharge"
             ),
         drawJobConfigEntry(
             meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
-            title = "Recoil energy from Calo Towers (after Tau prong cut)",
+            title = "Recoil energy from Calo Towers (after Tau charge cut)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterTauProng"
+            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterTauCharge"
             ),
         drawJobConfigEntry(
             meName = 'TauRecoilEnergyFromJetsQuantities/EtSum',
-            title = "Recoil energy from Jets (after Tau prong cut)",
+            title = "Recoil energy from Jets (after Tau charge cut)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromJets_afterTauProng"
+            name = "cutFlowControlPlots_recoilEnergyFromJets_afterTauCharge"
             )
         ]
 )
 
 drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelRecoilEnergyFromJets,
-    beforeCut = evtSelCentralJetVeto,
+    afterCut = evtSelCentralJetVeto,
+    beforeCut = evtSelRecoilEnergyFromCaloTowers,
     plots = [
+        drawJobConfigEntry(
+            meName = 'TauQuantities/Tau#PAR#',
+            PAR = [ 'Pt', 'Eta', 'Phi' ],
+            title = "Tau (after jet veto cut)",
+            xAxis = '#PAR#',
+            name = "cutFlowControlPlots_tau_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauQuantities/TauLeadTrkPt',
+            title = "Tau lead. Track (after jet veto cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
+            title = "Recoil energy from Calo Towers (after jet veto cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauRecoilEnergyFromJetsQuantities/EtSum',
+            title = "Recoil energy from Jets (after jet veto cut)",
+            xAxis = 'Pt',
+            name = "cutFlowControlPlots_recoilEnergyFromJets_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'MEtTopologyQuantities/Vratio',
+            title = "MET topology (after jet veto cut)",
+            xAxis = 'prob',
+            name = "cutFlowControlPlots_MEtTopology_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
+            title = "m_{T} (tau + nu) (after jet veto cut)",
+            xAxis = 'Mt',
+            name = "cutFlowControlPlots_NuTauCandidateMt_afterJetVeto"
+            ),
+        drawJobConfigEntry(
+            meName = 'TauNuCandidateQuantities/NuTauCandidateDPhi',
+            title = "#Delta #Phi (after jet veto cut)",
+            xAxis = 'Phi',
+            name = "cutFlowControlPlots_NuTauCandidateDPhi_afterJetVeto"
+            )
+
+        ]
+)
+
+#--------------------------------------------------------------------------------
+# define distributions to be plotted
+# for events passing all event selection criteria
+#--------------------------------------------------------------------------------
+
+drawJobConfigurator_WtoTauNu.add(
+    afterCut = evtSelRecoilEnergyFromCaloTowers,
+    plots =  [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -152,49 +207,19 @@ drawJobConfigurator_WtoTauNu.add(
             meName = 'MEtTopologyQuantities/Vratio',
             title = "MET topology (after recoil energy cut)",
             xAxis = 'prob',
-            name = "cutFlowControlPlots_MEtTopology_afterRecoilEnergy"
-            )
-        ]
-)
-
-#--------------------------------------------------------------------------------
-# define distributions to be plotted
-# for events passing all event selection criteria
-#--------------------------------------------------------------------------------
-
-drawJobConfigurator_WtoTauNu.add(
-    afterCut = evtSelCentralJetVeto,
-    plots =  [
-        drawJobConfigEntry(
-            meName = 'TauQuantities/Tau#PAR#',
-            PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after jet veto cut)",
-            xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterJetVeto"
+            name = "cutFlowControlPlots_METtopology_afterRecoilEnergy"
+            ),
+      drawJobConfigEntry(
+            meName = 'TauNuCandidateQuantities/NuTauCandidateMt',
+            title = "m_{T} (tau + nu) (after recoil energy cut)",
+            xAxis = 'Mt',
+            name = "cutFlowControlPlots_NuTauCandidateMt_afterRecoilEnergy"
             ),
         drawJobConfigEntry(
-            meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after jet veto cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterJetVeto"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauRecoilEnergyFromCaloTowersQuantities/EtSum',
-            title = "Recoil energy from Calo Towers (after recoil jet veto cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromCaloTowers_afterJetVeto"
-            ),
-        drawJobConfigEntry(
-            meName = 'TauRecoilEnergyFromJetsQuantities/EtSum',
-            title = "Recoil energy from Jets (after jet veto cut)",
-            xAxis = 'Pt',
-            name = "cutFlowControlPlots_recoilEnergyFromJets_afterJetVeto"
-            ),
-        drawJobConfigEntry(
-            meName = 'MEtTopologyQuantities/Vratio',
-            title = "MET topology (after jet veto cut)",
-            xAxis = 'prob',
-            name = "cutFlowControlPlots_METtopology_afterJetVeto"
+            meName = 'TauNuCandidateQuantities/NuTauCandidateDPhi',
+            title = "#Delta #Phi (after recoil energy cut)",
+            xAxis = 'Phi',
+            name = "cutFlowControlPlots_NuTauCandidateDPhi_afterRecoilEnergy"
             )
         ]    
 )
