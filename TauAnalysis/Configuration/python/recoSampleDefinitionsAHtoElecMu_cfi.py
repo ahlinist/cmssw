@@ -532,38 +532,6 @@ patTupleOutputFileNameTTJets = cms.untracked.string('patTupleAHtoElecMu_TTJets_p
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-# Z + jets sample
-#
-fileNamesZplusJets = cms.untracked.vstring(
-#    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_1.root',
-#    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_2.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_3.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_4.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_5.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_6.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_7.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_8.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_9.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_10.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_11.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_12.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_13.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_14.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_15.root',
-    'rfio:/castor/cern.ch/user/s/sunil/SkimFabruary09/test2/ZJets-madgraph/elecMuSkim_16.root'
-)
-genPhaseSpaceCutZplusJets = cms.PSet(
-  pluginName = cms.string('genPhaseSpaceCut'),
-  pluginType = cms.string('GenPhaseSpaceEventInfoSelector'),
-  src = cms.InputTag('genPhaseSpaceEventInfo'),
-  cut = cms.string('')
-)
-plotsOutputFileNameZplusJets = cms.string('plotsAHtoElecMu_ZplusJets.root')
-patTupleOutputFileNameZplusJets = cms.untracked.string('patTupleAHtoElecMu_ZplusJets.root')
-#--------------------------------------------------------------------------------
-
-
-#--------------------------------------------------------------------------------
 # gamma+jets, pT > 15 GeV
 #
 fileNamesPhotonJet15 = cms.untracked.vstring(
