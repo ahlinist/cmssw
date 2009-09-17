@@ -10,5 +10,7 @@ selectedLayer1TausForWTauNuLeadTrkPt = copy.deepcopy(selectedLayer1TausLeadTrkPt
 selectedLayer1TausForWTauNuTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)
 selectedLayer1TausForWTauNuMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
 selectedLayer1TausForWTauNuElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
+selectedLayer1TausForWTauNuEcalCrackVeto = copy.deepcopy(selectedLayer1TausEcalCrackVeto)
 selectedLayer1TausForWTauNuProng = copy.deepcopy(selectedLayer1TausProng)
 selectedLayer1TausForWTauNuCharge = copy.deepcopy(selectedLayer1TausCharge)
+
