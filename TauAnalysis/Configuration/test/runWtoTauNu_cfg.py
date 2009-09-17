@@ -1,9 +1,11 @@
+
+
 import FWCore.ParameterSet.Config as cms
 import copy
 process = cms.Process('runWtoTauNu')
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 500
 
 #load geometry
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
@@ -35,13 +37,14 @@ process.DQMStore = cms.Service("DQMStore")
 process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(1000)    
+    input = cms.untracked.int32(2000)    
 )
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#    'rfio:/castor/cern.ch/user/l/liis/SkimJuly09/WtaunuSkim_PFCaloTauMet/WtaunuSkim_1.root'
-#    'file:wTauNuSkim.root'   
-    'file:QCD_PtTrack15_FASTSIM_1000.root'
+    'rfio:/castor/cern.ch/user/l/liis/SkimJuly09/WtaunuSkim_PFCaloTauMet/WtaunuSkim_1.root'
+#    'file:QCDSkim_1.root'   
+#    'file:QCD_PtTrack15_FASTSIM_1000.root'
+#    'file:/afs/cern.ch/user/l/liis/scratch0/CMSSW_2_2_13/src/TauAnalysis/Skimming/test/QCDSkim.root'
     )
 )
 
@@ -61,10 +64,18 @@ switchToPFTauShrinkingCone(process)
 
 from TauAnalysis.Configuration.tools.metTools import *
 # uncomment to add pfMET: first Boolean swich on genMET with mu's production, second swich on type-1 corrections
-#addPFMet(process, True, False)
+addPFMet(process, True, False)
 
 from TauAnalysis.Configuration.tools.changeCut import *
-changeCut(process,"selectedLayer1TausForMuTauTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20.")
+changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
+changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 20.")
+
+
+#replaceTitles(process.analyzeZtoMuTauEvents.analysisSequence,
+#              [ [cms.string('leadtrk pt > 15 GeV'), cms.string('leadtrk pt > 20 GeV')]]
+#                [cms.string('M_{T}(Muon-MET) < 60 GeV'), cms.string('M_{T}(Muon-MET) < 50 GeV')] ]
+#              )
 
 process.p = cms.Path( 
     process.producePatTuple
