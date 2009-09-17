@@ -947,6 +947,7 @@ void DQMHistPlotter::endJob()
 //    open postscript file
   TCanvas canvas("DQMHistPlotter","DQMHistPlotter", canvasSizeX_, canvasSizeY_);
   canvas.SetFillColor(10);
+  canvas.SetFrameFillColor(10);
 
 //--- restrict area in which histograms are drawn to quadratic TPad in the center of the TCanvas,
 //    in order to make space for axis labels...
