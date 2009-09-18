@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.15 $
-  \date $Date: 2009/07/28 11:42:32 $
+  \version $Revision: 1.18 $
+  \date $Date: 2009/09/18 15:14:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -105,7 +105,7 @@ Int_t getColor(TH2F* fH, Int_t i, Int_t j, Double_t zmin, Double_t zmax){
 	Int_t color;
 	const Double_t z = fH->GetBinContent(i,j);
 	
-	if (z < zmin.)
+	if (z < zmin)
 		return -1;	
 	if (fH->TestBit(TH1::kUserContour)) {
 		zc = fH->GetContourLevelPad(0);
