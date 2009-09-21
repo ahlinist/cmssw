@@ -25,6 +25,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theOutFileName             = iConfig.getParameter<string>("OutputFileName");
   theOniaType                = iConfig.getParameter<int>("OniaType");
   theOniaMaxCat              = iConfig.getParameter<int>("OniaMaxCat");
+  theSkimOnOniaMaxCat        = iConfig.getParameter<bool>("skimOnOniaMaxCat");
   theDebugLevel              = iConfig.getParameter<int>("DebugLevel");
   thegenParticlesLabel       = iConfig.getParameter<edm::InputTag>("genParticlesLabel");  
   // theStandAloneMuonsLabel    = iConfig.getParameter<edm::InputTag>("StandAloneMuonsLabel");
@@ -707,7 +708,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(theStoreBeamSpotFlag) fillBeamSpot(iEvent); 
   if(theStorePriVtxFlag)   fillPrimaryVertex(iEvent);
   if(theStoreOniaFlag)     findOniaCategories(iEvent);
-  fTree->Fill(); 
+ 
+  if(!theSkimOnOniaMaxCat || Reco_QQ_size > 0) fTree->Fill(); 
 
   // CLEAR ALL VECTORS
   pfClusters.clear();
