@@ -88,8 +88,7 @@ L1CaloTriggerSetupProducer::produce(const L1CaloTriggerSetupRcd& iRecord)
     ATT_SETTINGS_IsolationTA=XMLString::transcode("IsolationTauA");
     ATT_SETTINGS_IsolationTB=XMLString::transcode("IsolationTauB");
     ATT_SETTINGS_IsolationZone=XMLString::transcode("IsolationZone");
-    ATT_SETTINGS_IsolationPedestalEG=XMLString::transcode("IsolationThresholdElectron");
-    ATT_SETTINGS_IsolationPedestalTau=XMLString::transcode("IsolationThresholdTau");
+    ATT_SETTINGS_IsolationPedestal=XMLString::transcode("IsolationThreshold");
     ATT_SETTINGS_JetCenter=XMLString::transcode("JetCenter");
     ATT_SETTINGS_JetET=XMLString::transcode("JetEt");
 
@@ -141,8 +140,7 @@ L1CaloTriggerSetupProducer::produce(const L1CaloTriggerSetupRcd& iRecord)
    XMLString::release(&ATT_WIRE_bin);
    XMLString::release(&ATT_WIRE_eta);
    XMLString::release(&ATT_WIRE_phi);
-   XMLString::release(&ATT_SETTINGS_IsolationPedestalEG);
-   XMLString::release(&ATT_SETTINGS_IsolationPedestalTau);
+   XMLString::release(&ATT_SETTINGS_IsolationPedestal);
 
 
    edm::LogInfo ("INFO") << "Creating Setup Module"<<endl;
@@ -255,8 +253,7 @@ L1CaloTriggerSetupProducer::config(L1CaloTriggerSetup& rcd)
            int att_isoTA         =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationTA)));
            int att_isoTB         =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationTB)));
            int att_isoZone       =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationZone)));
-           int att_isoPedEG      =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationPedestalEG)));
-           int att_isoPedTau     =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationPedestalTau)));
+           int att_isoPed        =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_IsolationPedestal)));
 
            int att_jetC          =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_JetCenter)));
            int att_jetET         =atoi(XMLString::transcode(cc_el->getAttribute(ATT_SETTINGS_JetET)));
@@ -274,8 +271,7 @@ L1CaloTriggerSetupProducer::config(L1CaloTriggerSetup& rcd)
                  att_isoTA,
                  att_isoTB,
                  att_isoZone,
-                 att_isoPedEG,
-                 att_isoPedTau,
+                 att_isoPed,
                  att_jetC,
                  att_jetET);
            edm::LogInfo ("INFO") << "Thresholds Set"<<endl;

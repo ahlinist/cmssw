@@ -21,7 +21,8 @@ L1JetProducer = cms.EDProducer("L1JetMaker",
 L1ExtraMaker = cms.EDProducer("L1ExtraMaker",
     Clusters = cms.InputTag("L1CaloClusterFilter","ParticleClusters"),
     Jets = cms.InputTag("L1JetProducer"),
-    NObjects = cms.int32(8)   
+    NObjects = cms.int32(4)   
+                              
 )
 
 

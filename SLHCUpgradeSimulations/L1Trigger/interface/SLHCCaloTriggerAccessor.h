@@ -37,7 +37,6 @@ class SLHCCaloTriggerAccessor : public edm::EDAnalyzer {
       edm::InputTag l1egamma_;
       edm::InputTag l1isoegamma_;
       edm::InputTag l1tau_;
-      edm::InputTag l1isotau_;
       edm::InputTag jets_;
 
       //File
@@ -46,13 +45,11 @@ class SLHCCaloTriggerAccessor : public edm::EDAnalyzer {
       TFile *f;
       TTree *t;
 
-      int nJets,nL1EG,nL1IsoEG,nL1Tau,nL1IsoTau;
-
+      int nJets,nL1EG,nL1IsoEG,nL1Tau;
       float *jet_et,    *jet_eta,     *jet_phi;
       float *l1eg_et,   *l1eg_eta,    *l1eg_phi;
       float *l1isoeg_et,*l1isoeg_eta, *l1isoeg_phi;
       float *l1tau_et,  *l1tau_eta,   *l1tau_phi;
-      float *l1isotau_et,  *l1isotau_eta,   *l1isotau_phi;
 
 };
 
