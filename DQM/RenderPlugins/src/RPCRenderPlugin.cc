@@ -382,8 +382,6 @@ private:
 	obj->SetMinimum(0.0);
         obj->SetMaximum(100.0);
 	
-	obj->SetBinContent(1,1,0);
-	
         int colorPaletteEff[10];
 	colorPaletteEff[0] = 632; // R
 	colorPaletteEff[1] = 632; // R
