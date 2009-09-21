@@ -40,16 +40,17 @@ process.load("L1Trigger/Configuration/L1Config_cff")
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'MC_31X_V3::All'
 #process.load("L1TriggerConfig/L1GtConfigProducers/Luminosity/lumi1031/L1Menu_MC2009_v0_L1T_Scales_20080922_Imp0_Unprescaled_cff")
+process.load('L1TriggerConfig.L1GtConfigProducers.Luminosity.lumi1031.L1Menu_MC2009_v2_L1T_Scales_20090519_Imp0_Unprescaled_cff')
 
 process.load("HLTrigger/HLTfilters/hltLevel1GTSeed_cfi")
 process.tteffL1GTSeed = copy.deepcopy(process.hltLevel1GTSeed)
 process.tteffL1GTSeed.L1TechTriggerSeeding = cms.bool(False)
-process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet40")
+process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet30")
 #process.tteffL1GTSeed.L1SeedsLogicalExpression = cms.string("L1_SingleTauJet60 OR L1_SingleJet100")
-process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis","HLTextra")
-process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap","HLTextra")
-process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles","HLTextra")
-process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles","HLTextra")
+process.tteffL1GTSeed.L1GtReadoutRecordTag = cms.InputTag("hltGtDigis","","HLTextra")
+process.tteffL1GTSeed.L1GtObjectMapTag = cms.InputTag("hltL1GtObjectMap","","HLTextra")
+process.tteffL1GTSeed.L1CollectionsTag = cms.InputTag("hltL1extraParticles","","HLTextra")
+process.tteffL1GTSeed.L1MuonCollectionTag = cms.InputTag("hltL1extraParticles","","HLTextra")
 
 
 
@@ -70,11 +71,11 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         # Check that Isolation collection below actually matched up with Tau Collection above
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
-	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLT"),
-	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLT"),
+	L1extraTauJetSource	= cms.InputTag("hltL1extraParticles", "Tau", "HLTextra"),
+	L1extraCentralJetSource	= cms.InputTag("hltL1extraParticles", "Central", "HLTextra"),
         L1bitInfoSource         = cms.InputTag("l1CaloSim", "L1BitInfos"),
-        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","HLTextra"),
-        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","HLTextra"),
+        L1GtReadoutRecord       = cms.InputTag("hltGtDigis","","HLTextra"),
+        L1GtObjectMapRecord     = cms.InputTag("hltL1GtObjectMap","","HLTextra"),
         HltResults              = cms.InputTag("TriggerResults::HLTextra"),
         L1TauTriggerSource      = cms.InputTag("tteffL1GTSeed"),
 	L1JetMatchingCone	= cms.double(0.5),
