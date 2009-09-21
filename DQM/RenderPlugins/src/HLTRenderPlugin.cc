@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.6 2009/05/22 19:05:23 lat Exp $
+  $Id: HLTRenderPlugin.cc,v 1.7 2009/05/22 19:09:33 lat Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.7  2009/05/22 19:09:33  lat
+  Untabify.
+
   Revision 1.6  2009/05/22 19:05:23  lat
   Adapt to keeping render plug-ins outside server RPM. Clean up and harmonise code.
 
@@ -112,6 +115,29 @@ private:
         obj->GetXaxis()->SetRange(minRange, maxRange);
       }
 
+      // FourVector eff histograms
+      if ( o.name.find("FourVector/client") != std::string::npos)
+      {
+        gStyle->SetOptStat(10);
+        obj->SetMinimum(-0.05);
+        obj->SetMaximum(1.2);
+        obj->GetYaxis()->SetTitle("_Eff_");
+
+        if ( o.name.find("l1Et_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
+        if ( o.name.find("onEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
+        if ( o.name.find("offEt_Eff") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
+      }
+      if ( o.name.find("FourVector/source") != std::string::npos)
+      {
+
+        if ( o.name.find("l1Et") != std::string::npos) obj->GetXaxis()->SetTitle("L1 P_{T}");
+        if ( o.name.find("onEt") != std::string::npos) obj->GetXaxis()->SetTitle("HLT P_{T}");
+        if ( o.name.find("offEt") != std::string::npos) obj->GetXaxis()->SetTitle("RECO P_{T}");
+        if ( o.name.find("l1DRL1On") != std::string::npos) obj->GetXaxis()->SetTitle("L1-HLT #Delta R [rad]");
+        if ( o.name.find("offDRL1Off") != std::string::npos) obj->GetXaxis()->SetTitle("L1-RECO #Delta R [rad]");
+        if ( o.name.find("offDROnOff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT-RECO #Delta R [rad]");
+      }
+
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
       /*
         gStyle->SetOptStat(0111);
@@ -145,6 +171,7 @@ private:
       gStyle->SetPadBorderMode( 0 );
       gStyle->SetPadBorderSize( 0 );
 
+
       // I don't think we want to set stats to 0 for Hcal
       //gStyle->SetOptStat( 0 );
       //obj->SetStats( kFALSE );
@@ -164,6 +191,28 @@ private:
       // Now the important stuff -- set 2D hist drawing option to "colz"
       gStyle->SetPalette(1);
       obj->SetOption("colz");
+
+      //put in preDrawTH2F
+      if( o.name.find( "FourVector" )  != std::string::npos)
+      {
+        gStyle->SetOptStat(10);
+        obj->SetOption("colz");
+        gStyle->SetPalette(1,0);
+        //obj->GetXaxis()->CenterLabels();
+        //obj->GetYaxis()->CenterLabels();
+
+        if ( o.name.find("l1Eta") != std::string::npos) {obj->GetXaxis()->SetTitle("L1 #eta");obj->GetYaxis()->SetTitle("L1 #phi");}
+        if ( o.name.find("onEta") != std::string::npos) {obj->GetXaxis()->SetTitle("HLT #eta");obj->GetYaxis()->SetTitle("HLT #phi");}
+        if ( o.name.find("offEta") != std::string::npos) {obj->GetXaxis()->SetTitle("RECO #eta");obj->GetYaxis()->SetTitle("RECO #phi");}
+      }
+      
+      if( o.name.find( "FourVector/client" )  != std::string::npos) {
+       obj->SetMinimum(0);
+       obj->SetMaximum(1.2);
+      }
+
+      return;
+
     }
 
   void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
