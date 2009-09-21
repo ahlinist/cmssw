@@ -471,8 +471,8 @@ void testmakepset::typesTest()
    CPPUNIT_ASSERT("ESProd" == veinput2[1].module());
    CPPUNIT_ASSERT("" == veinput2[1].data());
    
-   edm::EventID eventID = test.getParameter<edm::EventID>("eventID");
-   std::vector<edm::EventID> vEventID = test.getParameter<std::vector<edm::EventID> >("vEventID");
+   edm::MinimalEventID eventID = test.getParameter<edm::MinimalEventID>("eventID");
+   std::vector<edm::MinimalEventID> vEventID = test.getParameter<std::vector<edm::MinimalEventID> >("vEventID");
    CPPUNIT_ASSERT(1 == eventID.run());
    CPPUNIT_ASSERT(1 == eventID.event());
    CPPUNIT_ASSERT(1 == vEventID[0].run());

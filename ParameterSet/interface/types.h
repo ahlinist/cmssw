@@ -104,12 +104,12 @@ namespace edm
    bool  encode(std::string &, std::vector<edm::ESInputTag> const&);
    
    // EventID
-  bool  decode(edm::EventID&, std::string const&);
-  bool  encode(std::string &, edm::EventID const&);
+  bool  decode(edm::MinimalEventID&, std::string const&);
+  bool  encode(std::string &, edm::MinimalEventID const&);
 
   // VEventID
-  bool  decode(std::vector<edm::EventID>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::EventID> const&);
+  bool  decode(std::vector<edm::MinimalEventID>&, std::string const&);
+  bool  encode(std::string &, std::vector<edm::MinimalEventID> const&);
 
   // LuminosityBlockID
   bool  decode(edm::LuminosityBlockID&, std::string const&);
