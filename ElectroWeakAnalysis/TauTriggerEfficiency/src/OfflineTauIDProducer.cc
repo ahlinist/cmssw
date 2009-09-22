@@ -1,9 +1,11 @@
+
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/OfflineTauIDProducer.h"
 
 OfflineTauIDProducer::OfflineTauIDProducer(const edm::ParameterSet& iConfig) {
-
 	produces< PFTauCollection >().setBranchAlias("identifiedPfTaus");
         produces< CaloTauCollection >().setBranchAlias("identifiedCaloTaus");
+
+	tauProducer                 = iConfig.getParameter<InputTag>("PFTauProducer");
 
 	jetPtMin		    = iConfig.getParameter<double>("JetPtMin");
 	matchingConeSize            = iConfig.getParameter<double>("MatchingCone");
@@ -32,7 +34,7 @@ void OfflineTauIDProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
         Handle<PFTauCollection> thePFTauHandle;
         try{
-          iEvent.getByLabel("pfRecoTauProducer",thePFTauHandle);
+          iEvent.getByLabel(tauProducer,thePFTauHandle);
         }catch(...) {;}
 
         if(thePFTauHandle.isValid()){
