@@ -2,6 +2,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
 
+
 using namespace std;
 
 using std::vector;
@@ -24,12 +25,10 @@ myConfig(theConfig), EventData(0)
   cout << "UserAnalysis parameters:" << endl;
   cout << " user_metMin = " << user_metMin << endl;
 
-  
-
    // initialize histograms
-   edm::Service<TFileService> fs;
-  
-   // book histograms for multiplicities of leptons and jets
+  edm::Service<TFileService> fs;
+
+  // book histograms for multiplicities of leptons and jets
    hLeptonMult = fs->make<TH1D>( "LeptonMult", "Multiplicity of leptons", 15, 0.0, 15.0);
    hElectronMult = fs->make<TH1D>( "ElectronMult", "Multiplicity of electrons", 10, 0.0, 10.0);
    hMuonMult = fs->make<TH1D>( "MuonMult", "Multiplicity of muons", 10, 0.0, 10.0);
@@ -60,17 +59,7 @@ myConfig(theConfig), EventData(0)
   // book histograms for hemisphere mass
    hAllHemiMass = fs->make<TH1D>( "AllHemiMass", "Invariant mass of hemisphere", 50, 0.0, 1000.0);
 
-  // book histograms for MT2 studies
-   hISRMomentum = fs->make<TH1D>( "ISRPt", "Vector Sum of all Jets", 50, 0.0, 1000.0);
-   hMT2_0 = fs->make<TH1D>( "MT2_0", "MT2 for SS di-lepton events for 0 test mass", 100, 0.0, 200.0);
-   hMT2_275 = fs->make<TH1D>( "MT2_275", "MT2 for SS di-lepton events for 275 test mass", 100, 250.0, 500.0);
-   hMT2_412 = fs->make<TH1D>( "MT2_412", "MT2 for SS di-lepton events for 412 test mass", 100, 350.0, 600.0);
-   hMT2_275_slsl = fs->make<TH1D>( "MT2_275_slsl", "MT2 for SS di-lepton events for 275 test mass, slepton slepton contribution", 100, 250.0, 500.0);
-   hMT2_275_slsn = fs->make<TH1D>( "MT2_275_slsn", "MT2 for SS di-lepton events for 275 test mass, slepton sneutrino contribution", 100, 250.0, 500.0);
-   hMT2_275_snsn = fs->make<TH1D>( "MT2_275_snsn", "MT2 for SS di-lepton events for 275 test mass, sneutrino sneutrino contribution", 100, 250.0, 500.0);
-   hMT2_vs_angle = fs->make<TH2D>( "MT2_vs_angle", "MT2 and angle(2l,pt) for SS di-lepton events", 100, 250.0, 500.0, 20,
-   -1., 1.);
- 
+   
   // Initialize user counters
   nTotEvtSelUser = 0;
 
@@ -511,5 +500,3 @@ float UserAnalysis::GetDeltaR(float eta1, float eta2, float phi1, float phi2)
             + DeltaPhi(phi1, phi2)*DeltaPhi(phi1, phi2) );
 
 }
-
-
