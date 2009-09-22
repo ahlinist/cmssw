@@ -42,8 +42,6 @@ cfgMetPt = cms.PSet(
     pluginName = cms.string('metPtCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src = cms.InputTag('selectedLayer1METsPt15'),
-    #src_cumulative = cms.InputTag('selectedLayer1METsForWTauNuPt15Cumulative'),
-    #src_individual = cms.InputTag('selectedLayer1METsForWTauNuPt15Individual'),
     minNumber = cms.uint32(1)
 )
 
@@ -115,7 +113,7 @@ cfgTauChargeCut = cms.PSet(
 cfgCentralJetVeto = cms.PSet(
     pluginName = cms.string('centralJetVeto'),
     pluginType = cms.string('PATCandViewMaxEventSelector'),
-    src = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
+    src = cms.InputTag('selectedLayer1JetsEt20ForWTauNuCumulative'), 
     maxNumber = cms.uint32(0)                                                      
     )
 
@@ -126,21 +124,6 @@ cfgRecoilEnergyFromCaloTowersCut = cms.PSet(
     src = cms.InputTag('tauRecoilEnergyFromCaloTowersPt5'),
     minNumber = cms.uint32(1)
     )
-#cfgRecoilEnergyFromJetsCut = cms.PSet(
-#    pluginName = cms.string('recoilEnergyFromJetsCut'),
-#    pluginType = cms.string('PATTauRecoilEnergyFromJetsMinEventSelector'),
-#    src = cms.InputTag('tauRecoilEnergyFromJetsPt1'),
-#    minNumber = cms.uint32(1)
-#    )
-
-
-#cut on met topology
-#cfgCentralJetVeto = cms.PSet(
-#    pluginName = cms.string('centralJetVeto'),
-#    pluginType = cms.string('PATCandViewMaxEventSelector'),
-#    src = cms.InputTag('selectedLayer1TausForWTauNuMetTopology'),
-#    maxNumber = cms.uint32(0)                                                      
-#    )
 
 
 wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
@@ -162,7 +145,6 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
         cfgTauChargeCut,
         cfgCentralJetVeto,
 	cfgRecoilEnergyFromCaloTowersCut
-#	cfgRecoilEnergyFromJetsCut,
 	],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
