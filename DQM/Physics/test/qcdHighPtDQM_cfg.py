@@ -8,7 +8,7 @@ process.load("DQMServices.Components.DQMEnvironment_cfi")
 process.dqmSaver.workflow = cms.untracked.string('/Physics/QCDPhysics/Jets')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(300)
+    input = cms.untracked.int32(1000)
 )
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
@@ -17,9 +17,14 @@ process.source = cms.Source("PoolSource",
                            )
                             )
 
+
 process.QcdHighPtDQM = cms.EDAnalyzer("QcdHighPtDQM",
                                      jetTag = cms.untracked.InputTag("sisCone5CaloJets"),
-                                     metTag = cms.untracked.InputTag("met")
+                                      metTag1 = cms.untracked.InputTag("met"),
+                                      metTag2 = cms.untracked.InputTag("metHO"),
+                                      metTag3 = cms.untracked.InputTag("metNoHF"),
+                                      metTag4 = cms.untracked.InputTag("metNoHFHO")
+                                     
 )
 process.p = cms.Path(process.QcdHighPtDQM+process.dqmSaver)
 
