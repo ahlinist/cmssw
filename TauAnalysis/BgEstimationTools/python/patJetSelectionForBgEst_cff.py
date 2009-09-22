@@ -41,7 +41,7 @@ selectJetsForMuTauBgEstZmumuEnriched = cms.Sequence( jetsAntiOverlapWithLeptonsV
 
 jetsAntiOverlapWithLeptonsVetoForMuTauBgEstWplusJetsEnriched = cms.EDFilter("PATJetAntiOverlapSelector",
     src = cms.InputTag("jetsEt20ForBgEst"),                                                                  
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkIPcumulative",
+   srcNotToBeFiltered = cms.VInputTag("selectedLayer1ElectronsTrkIPcumulative",
                                        "muonsTrkTightIsolationForBgEst",
                                        "tausAntiOverlapWithMuonsVetoLooseIsolationForBgEst"),
     dRmin = cms.double(0.7),

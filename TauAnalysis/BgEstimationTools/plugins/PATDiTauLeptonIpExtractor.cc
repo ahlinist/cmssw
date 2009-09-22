@@ -62,9 +62,13 @@ double PATDiTauLeptonIpExtractor<T1,T2>::operator()(const edm::Event& evt) const
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 typedef PATDiTauLeptonIpExtractor<pat::Electron, pat::Tau> PATElecTauPairElectronIpExtractor;
+typedef PATDiTauLeptonIpExtractor<pat::Electron, pat::Muon> PATElecMuPairElectronIpExtractor;
+typedef PATDiTauLeptonIpExtractor<pat::Electron, pat::Muon> PATElecMuPairMuonIpExtractor;
 typedef PATDiTauLeptonIpExtractor<pat::Muon, pat::Tau> PATMuTauPairMuonIpExtractor;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElecTauPairElectronIpExtractor, "PATElecTauPairElectronIpExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElecMuPairElectronIpExtractor, "PATElecMuPairElectronIpExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElecMuPairMuonIpExtractor, "PATElecMuPairMuonIpExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATMuTauPairMuonIpExtractor, "PATMuTauPairMuonIpExtractor");

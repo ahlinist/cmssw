@@ -41,7 +41,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'file:/tmp/sunil/bgEstSampleZtoElecMu_Zmumu.root'
     )
 )
 
@@ -148,9 +148,9 @@ from TauAnalysis.Configuration.tools.metTools import *
 addPFMet(process, True, False)
 
 # uncomment to replce caloMET by pfMET in all di-tau objects
-replaceMETforDiTaus(process,
-                    cms.InputTag('layer1METs'),
-                    cms.InputTag('layer1PFMETs'))
+#replaceMETforDiTaus(process,
+#                    cms.InputTag('layer1METs'),
+#                    cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
 from PhysicsTools.PatAlgos.tools.tauTools import * 
