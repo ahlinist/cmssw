@@ -45,6 +45,7 @@ class OfflineTauIDProducer : public edm::EDProducer {
         virtual bool tauTag(reco::PFTau&);
 
    private:
+	InputTag tauProducer;
         double jetPtMin,
                matchingConeSize,
                isolationConeSize,

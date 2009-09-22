@@ -44,12 +44,14 @@ process.IdentifiedTauFilter = IdentifiedTauFilter
 
 
 process.thisPFRecoTauDiscriminationByLeadingPionPtCut = cms.EDFilter("PFRecoTauDiscriminationByLeadingPionPtCut",
-    PFTauProducer = cms.InputTag('pfRecoTauProducerHighEfficiency'),
+#    PFTauProducer = cms.InputTag('pfRecoTauProducerHighEfficiency'),
+    PFTauProducer = cms.InputTag('shrinkingConePFTauProducer'),
     MinPtLeadingPion = cms.double(3.0)
 )
 
 process.PFTausSelected = cms.EDFilter("PFTauSelector",
-    src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+#    src = cms.InputTag("pfRecoTauProducerHighEfficiency"),
+    src = cms.InputTag("shrinkingConePFTauProducer"),
     discriminators = cms.VPSet(
 	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByTrackIsolationHighEfficiency"),selectionCut=cms.double(0.5))
 	#cms.PSet( discriminator=cms.InputTag("pfRecoTauDiscriminationByLeadingPionPtCutHighEfficiency"),selectionCut=cms.double(0.5))
@@ -119,7 +121,7 @@ process.pmc  = cms.Path(process.TauMCProducer)
 
 from ElectroWeakAnalysis.TauTriggerEfficiency.eventContent_cfi import *
 process.output = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string("file:skim.root"),
+    fileName = cms.untracked.string("skim.root"),
 ####    outputCommands = OutputCommands,
     SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('tauFilter')
