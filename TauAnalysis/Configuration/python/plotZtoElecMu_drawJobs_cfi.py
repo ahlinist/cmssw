@@ -11,13 +11,13 @@ plots_ZtoElecMu = cms.PSet(
         dqmMonitorElements = cms.vstring(''),
         processes = cms.vstring(
             'ZmumuPlusJets',
-            #'Zmumu',
+            'Zmumu',
             'ZeePlusJets',
-            #'Zee',
+            'Zee',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
-            #'ZtautauPlusJets'
+            'ZtautauPlusJets',
             'Ztautau'
         )
     ),
@@ -29,13 +29,13 @@ plots_ZtoElecMu = cms.PSet(
     drawOptionSet = cms.string('default'),
     stack = cms.vstring(
         'ZmumuPlusJets',
-        #'Zmumu',
+        'Zmumu',
         'ZeePlusJets',
-        #'Zee',
+        'Zee',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
-        #'ZtautauPlusJets'
+        'ZtautauPlusJets',
         'Ztautau'
     )
 )

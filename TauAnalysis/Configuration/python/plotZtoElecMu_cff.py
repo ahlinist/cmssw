@@ -20,14 +20,14 @@ loadZtoElecMu = cms.EDAnalyzer("DQMFileLoader",
     Zee = copy.deepcopy(processZtoElecMu_Zee.config_dqmFileLoader),
     WplusJets = copy.deepcopy(processZtoElecMu_WplusJetsSum.config_dqmFileLoader),
     TTplusJets = copy.deepcopy(processZtoElecMu_TTplusJetsSum.config_dqmFileLoader),
-    InclusivePPmuX = copy.deepcopy(processZtoElecMu_InclusivePPmuX.config_dqmFileLoader),
+#    InclusivePPmuX = copy.deepcopy(processZtoElecMu_InclusivePPmuX.config_dqmFileLoader),
     PPmuXptGt20 = copy.deepcopy(processZtoElecMu_PPmuXptGt20Sum.config_dqmFileLoader)                
 )
 
 addZtoElecMu_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/InclusivePPmuX',
+#            'harvested/InclusivePPmuX',
             'harvested/PPmuXptGt20'
         ),
         dqmDirectory_output = cms.string('harvested/qcdSum')
@@ -37,12 +37,12 @@ addZtoElecMu_qcdSum = cms.EDAnalyzer("DQMHistAdder",
 addZtoElecMu_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            #'harvested/ZtautauPlusJets',
+            'harvested/ZtautauPlusJets',
             'harvested/Ztautau',
             'harvested/ZmumuPlusJets',
-            #'harvested/Zmumu',
+            'harvested/Zmumu',
             'harvested/ZeePlusJets',
-            #'harvested/Zee',
+            'harvested/Zee',
             'harvested/WplusJets',
             'harvested/TTplusJets',
             'harvested/qcdSum'
@@ -63,7 +63,7 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
         Zee = copy.deepcopy(process_Zee.config_dqmHistPlotter),
         WplusJets = copy.deepcopy(process_WplusJets.config_dqmHistPlotter),
         TTplusJets = copy.deepcopy(process_TTplusJets.config_dqmHistPlotter), 
-        InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX.config_dqmHistPlotter),
+#        InclusivePPmuX = copy.deepcopy(process_InclusivePPmuX.config_dqmHistPlotter),
         PPmuXptGt20 = copy.deepcopy(process_PPmuXptGt20.config_dqmHistPlotter),
         qcdSum = cms.PSet(
             dqmDirectory = cms.string('harvested/qcdSum'),
@@ -128,5 +128,5 @@ plotZtoElecMu = cms.EDAnalyzer("DQMHistPlotter",
 )
 
 saveZtoElecMu = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoElecMu_all.root')
+    outputFileName = cms.string('/tmp/sunil/plotsZtoElecMu_all.root')
 )
