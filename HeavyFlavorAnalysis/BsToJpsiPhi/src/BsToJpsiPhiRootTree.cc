@@ -44,27 +44,72 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("JpsiMu2Eta", &JpsiMu2Eta_, "JpsiMu2Eta/D");
   bsTree_->Branch("JpsiMuon1Cat", &JpsiMuon1Cat_, "JpsiMuon1Cat/I");
   bsTree_->Branch("JpsiMuon2Cat", &JpsiMuon2Cat_, "JpsiMuon2Cat/I");
+
   bsTree_->Branch("BsMass_before", &BsMass_before_, "BsMass_before/D");
+  bsTree_->Branch("BsPhi_before", &BsPhi_before_, "BsPhi_before/D");
+  bsTree_->Branch("BsEta_before", &BsEta_before_, "BsEta_before/D");
+  bsTree_->Branch("BsPt_before", &BsPt_before_, "BsPt_before/D");
+  bsTree_->Branch("BsPz_before", &BsPz_before_, "BsPz_before/D");
+
   bsTree_->Branch("JpsiMass_before", &JpsiMass_before_, "JpsiMass_before/D");
+  bsTree_->Branch("JpsiPhi_before", &JpsiPhi_before_, "JpsiPhi_before/D");
+  bsTree_->Branch("JpsiEta_before", &JpsiEta_before_, "JpsiEta_before/D");
+  bsTree_->Branch("JpsiPt_before", &JpsiPt_before_, "JpsiPt_before/D");
+  bsTree_->Branch("JpsiPz_before", &JpsiPz_before_, "JpsiPz_before/D");
+
   bsTree_->Branch("PhiMass_before", &PhiMass_before_, "PhiMass_before/D");
-  bsTree_->Branch("chi2_Bs", &chi2_Bs_, "chi2_Bs/D");
-  bsTree_->Branch("ndof_Bs", &ndof_Bs_, "ndof_Bs/I");
+  bsTree_->Branch("PhiPhi_before", &PhiPhi_before_, "PhiPhi_before/D");
+  bsTree_->Branch("PhiEta_before", &PhiEta_before_, "PhiEta_before/D");
+  bsTree_->Branch("PhiPt_before", &PhiPt_before_, "PhiPt_before/D");
+  bsTree_->Branch("PhiPz_before", &PhiPz_before_, "PhiPz_before/D");
+
+  bsTree_->Branch("K1Phi_before", &K1Phi_before_, "K1Phi_before/D");
+  bsTree_->Branch("K1Eta_before", &K1Eta_before_, "K1Eta_before/D");
+  bsTree_->Branch("K1Pt_before", &K1Pt_before_, "K1Pt_before/D");
+  bsTree_->Branch("K1Pz_before", &K1Pz_before_, "K1Pz_before/D");
+  bsTree_->Branch("K2Phi_before", &K2Phi_before_, "K2Phi_before/D");
+  bsTree_->Branch("K2Eta_before", &K2Eta_before_, "K2Eta_before/D");
+  bsTree_->Branch("K2Pt_before", &K2Pt_before_, "K2Pt_before/D");
+  bsTree_->Branch("K2Pz_before", &K2Pz_before_, "K2Pz_before/D");
+
   bsTree_->Branch("BsVtxProb", &BsVtxProb_, "BsVtxProb/D");
   bsTree_->Branch("BsVtxProbKpi", &BsVtxProbKpi_, "BsVtxProbKpi/D");
   bsTree_->Branch("BsVtxProbpipi", &BsVtxProbpipi_, "BsVtxProbpipi/D");
-  bsTree_->Branch("JpsiM", &JpsiM_, "JpsiM/D");
-  bsTree_->Branch("JpsiPhi", &JpsiPhi_, "JpsiPhi/D");
-  bsTree_->Branch("JpsiEta", &JpsiEta_, "JpsiEta/D");
-  bsTree_->Branch("JpsiPt", &JpsiPt_, "JpsiPt/D");
-  bsTree_->Branch("PhiM", &PhiM_, "PhiM/D");
-  bsTree_->Branch("PhiPhi", &PhiPhi_, "PhiPhi/D");
-  bsTree_->Branch("PhiEta", &PhiEta_, "PhiEta/D");
-  bsTree_->Branch("PhiPt", &PhiPt_, "PhiPt/D");
-  bsTree_->Branch("BsM", &BsM_, "BsM/D");
-  bsTree_->Branch("BsPhi", &BsPhi_, "BsPhi/D");
-  bsTree_->Branch("BsEta", &BsEta_, "BsEta/D");
-  bsTree_->Branch("BsPt", &BsPt_, "BsPt/D");
-  bsTree_->Branch("BmassC", &BmassC_, "BmassC/D");
+
+  bsTree_->Branch("chi2_Bs", &chi2_Bs_, "chi2_Bs/D");
+  bsTree_->Branch("ndof_Bs", &ndof_Bs_, "ndof_Bs/I");
+
+  bsTree_->Branch("BFitM_KK", &BfitM_KK_, "BFitM_KK/D");
+  bsTree_->Branch("BFitM_Kpi", &BfitM_Kpi_, "BFitM_Kpi/D");
+  bsTree_->Branch("BFitM_pipi", &BfitM_pipi_, "BFitM_pipi/D");
+
+  bsTree_->Branch("BsMass_after", &BsMass_after_, "BsMass_after/D");
+  bsTree_->Branch("BsPhi_after", &BsPhi_after_, "BsPhi_after/D");
+  bsTree_->Branch("BsEta_after", &BsEta_after_, "BsEta_after/D");
+  bsTree_->Branch("BsPt_after", &BsPt_after_, "BsPt_after/D");
+  bsTree_->Branch("BsPz_after", &BsPz_after_, "BsPz_after/D");
+
+  bsTree_->Branch("JpsiMass_after", &JpsiMass_after_, "JpsiMass_after/D");
+  bsTree_->Branch("JpsiPhi_after", &JpsiPhi_after_, "JpsiPhi_after/D");
+  bsTree_->Branch("JpsiEta_after", &JpsiEta_after_, "JpsiEta_after/D");
+  bsTree_->Branch("JpsiPt_after", &JpsiPt_after_, "JpsiPt_after/D");
+  bsTree_->Branch("JpsiPz_after", &JpsiPz_after_, "JpsiPz_after/D");
+
+  bsTree_->Branch("PhiMass_after", &PhiMass_after_, "PhiMass_after/D");
+  bsTree_->Branch("PhiPhi_after", &PhiPhi_after_, "PhiPhi_after/D");
+  bsTree_->Branch("PhiEta_after", &PhiEta_after_, "PhiEta_after/D");
+  bsTree_->Branch("PhiPt_after", &PhiPt_after_, "PhiPt_after/D");
+  bsTree_->Branch("PhiPz_after", &PhiPz_after_, "PhiPz_after/D");
+
+  bsTree_->Branch("K1Phi_after", &K1Phi_after_, "K1Phi_after/D");
+  bsTree_->Branch("K1Eta_after", &K1Eta_after_, "K1Eta_after/D");
+  bsTree_->Branch("K1Pt_after", &K1Pt_after_, "K1Pt_after/D");
+  bsTree_->Branch("K1Pz_after", &K1Pz_after_, "K1Pz_after/D");
+  bsTree_->Branch("K2Phi_after", &K2Phi_after_, "K2Phi_after/D");
+  bsTree_->Branch("K2Eta_after", &K2Eta_after_, "K2Eta_after/D");
+  bsTree_->Branch("K2Pt_after", &K2Pt_after_, "K2Pt_after/D");
+  bsTree_->Branch("K2Pz_after", &K2Pz_after_, "K2Pz_after/D");
+
   bsTree_->Branch("BLxy", &BLxy_, "BLxy/D");
   bsTree_->Branch("BLxy2", &BLxy2_, "BLxy2/D");
   bsTree_->Branch("BerrX", &BerrX_, "BerrX/D");
@@ -72,33 +117,21 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("BerrXY", &BerrXY_, "BerrXY/D");
   bsTree_->Branch("Bsct1", &Bsct1_, "Bsct1/D");
   bsTree_->Branch("Bsct2", &Bsct2_, "Bsct2/D");
-  
-  bsTree_->Branch("K1Phi", &K1Phi_, "K1Phi/D");
-  bsTree_->Branch("K1Eta", &K1Eta_, "K1Eta/D");
-  bsTree_->Branch("K1Pt", &K1Pt_, "K1Pt/D");
+
   bsTree_->Branch("K1Chi2", &K1Chi2_, "K1Chi2/D");
   bsTree_->Branch("K1nHits", &K1nHits_, "K1nHits/D");
   bsTree_->Branch("K1pixH", &K1pixH_, "K1pixH/D");
   bsTree_->Branch("K1trkH", &K1trkH_, "K1trkH/D");
-  bsTree_->Branch("K2Phi", &K2Phi_, "K2Phi/D");
-  bsTree_->Branch("K2Eta", &K2Eta_, "K2Eta/D");
-  bsTree_->Branch("K2Pt", &K2Pt_, "K2Pt/D");
+
   bsTree_->Branch("K2Chi2", &K2Chi2_, "K2Chi2/D");
   bsTree_->Branch("K2nHits", &K2nHits_, "K2nHits/D");
   bsTree_->Branch("K2pixH", &K2pixH_, "K2pixH/D");
   bsTree_->Branch("K2trkH", &K2trkH_, "K2trkH/D");
   
-  bsTree_->Branch("Mu1Phi", &Mu1Phi_, "Mu1Phi/D");
-  bsTree_->Branch("Mu1Eta", &Mu1Eta_, "Mu1Eta/D");
-  bsTree_->Branch("Mu1Pt", &Mu1Pt_, "Mu1Pt/D");
   bsTree_->Branch("Mu1Chi2", &Mu1Chi2_, "Mu1Chi2/D");
   bsTree_->Branch("Mu1nHits", &Mu1nHits_, "Mu1nHits/D");
   bsTree_->Branch("Mu1pixH", &Mu1pixH_, "Mu1pixH/D");
   bsTree_->Branch("Mu1trkH", &Mu1trkH_, "Mu1trkH/D");
-  bsTree_->Branch("Mu2Phi", &Mu2Phi_, "Mu2Phi/D");
-  bsTree_->Branch("Mu2Eta", &Mu2Eta_, "Mu2Eta/D");
-  bsTree_->Branch("Mu2Pt", &Mu2Pt_, "Mu2Pt/D");
-  bsTree_->Branch("Mu2Chi2", &Mu2Chi2_, "Mu2Chi2/D");
   bsTree_->Branch("Mu2nHits", &Mu2nHits_, "Mu2nHits/D");
   bsTree_->Branch("Mu2pixH", &Mu2pixH_, "Mu2pixH/D");
   bsTree_->Branch("Mu2trkH", &Mu2trkH_, "Mu2trkH/D");
@@ -166,32 +199,138 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
  
   bsTree_->Branch("genBsM", &genBsM_, "genBsM/D"); 
   bsTree_->Branch("genBsPt", &genBsPt_, "genBsPt/D");
+  bsTree_->Branch("genBsPz", &genBsPz_, "genBsPz/D");
   bsTree_->Branch("genBsEta", &genBsEta_, "genBsEta/D");
   bsTree_->Branch("genBsPhi", &genBsPhi_, "genBsPhi/D");
   bsTree_->Branch("genJpsiM", &genJpsiM_, "genJpsiM/D"); 
   bsTree_->Branch("genJpsiPt", &genJpsiPt_, "genJpsiPt/D");
+  bsTree_->Branch("genJpsiPz", &genJpsiPz_, "genJpsiPz/D");
   bsTree_->Branch("genJpsiEta", &genJpsiEta_, "genJpsiEta/D");
   bsTree_->Branch("genJpsiPhi", &genJpsiPhi_, "genJpsiPhi/D");
   bsTree_->Branch("genPhiM", &genPhiM_, "genPhiM/D"); 
   bsTree_->Branch("genPhiPt", &genPhiPt_, "genPhiPt/D");
+  bsTree_->Branch("genPhiPz", &genPhiPz_, "genPhiPz/D");
   bsTree_->Branch("genPhiEta", &genPhiEta_, "genPhiEta/D");
   bsTree_->Branch("genPhiPhi", &genPhiPhi_, "genPhiPhi/D");
   bsTree_->Branch("genMu1M", &genMu1M_, "genMu1M/D"); 
   bsTree_->Branch("genMu1Pt", &genMu1Pt_, "genMu1Pt/D");
+  bsTree_->Branch("genMu1Pz", &genMu1Pz_, "genMu1Pz/D");
   bsTree_->Branch("genMu1Eta", &genMu1Eta_, "genMu1Eta/D");
   bsTree_->Branch("genMu1Phi", &genMu1Phi_, "genMu1Phi/D");
   bsTree_->Branch("genMu2M", &genMu2M_, "genMu2M/D"); 
   bsTree_->Branch("genMu2Pt", &genMu2Pt_, "genMu2Pt/D");
+  bsTree_->Branch("genMu2Pz", &genMu2Pz_, "genMu2Pz/D");
   bsTree_->Branch("genMu2Eta", &genMu2Eta_, "genMu2Eta/D");
   bsTree_->Branch("genMu2Phi", &genMu2Phi_, "genMu2Phi/D");
   bsTree_->Branch("genK1M", &genK1M_, "genK1M/D"); 
   bsTree_->Branch("genK1Pt", &genK1Pt_, "genK1Pt/D");
+  bsTree_->Branch("genK1Pz", &genK1Pz_, "genK1Pz/D");
   bsTree_->Branch("genK1Eta", &genK1Eta_, "genK1Eta/D");
   bsTree_->Branch("genK1Phi", &genK1Phi_, "genK1Phi/D");
   bsTree_->Branch("genK2M", &genK2M_, "genK2M/D"); 
   bsTree_->Branch("genK2Pt", &genK2Pt_, "genK2Pt/D");
+  bsTree_->Branch("genK2Pz", &genK2Pz_, "genK2Pz/D");
   bsTree_->Branch("genK2Eta", &genK2Eta_, "genK2Eta/D");
   bsTree_->Branch("genK2Phi", &genK2Phi_, "genK2Phi/D");
+
+  bsTree_->Branch("K1_par0KK", &K1_kk_par0_, "K1_par0KK/D");
+  bsTree_->Branch("K1_par1KK", &K1_kk_par1_, "K1_par1KK/D");
+  bsTree_->Branch("K1_par2KK", &K1_kk_par2_, "K1_par2KK/D");
+  bsTree_->Branch("K1_par3KK", &K1_kk_par3_, "K1_par3KK/D");
+  bsTree_->Branch("K1_par4KK", &K1_kk_par4_, "K1_par4KK/D");
+  bsTree_->Branch("K1_par5KK", &K1_kk_par5_, "K1_par5KK/D");
+  bsTree_->Branch("K1_par6KK", &K1_kk_par6_, "K1_par6KK/D");
+
+  bsTree_->Branch("K2_par0KK", &K2_kk_par0_, "K2_par0KK/D");
+  bsTree_->Branch("K2_par1KK", &K2_kk_par1_, "K2_par1KK/D");
+  bsTree_->Branch("K2_par2KK", &K2_kk_par2_, "K2_par2KK/D");
+  bsTree_->Branch("K2_par3KK", &K2_kk_par3_, "K2_par3KK/D");
+  bsTree_->Branch("K2_par4KK", &K2_kk_par4_, "K2_par4KK/D");
+  bsTree_->Branch("K2_par5KK", &K2_kk_par5_, "K2_par5KK/D");
+  bsTree_->Branch("K2_par6KK", &K2_kk_par6_, "K2_par6KK/D");
+
+  bsTree_->Branch("K1_par0Kpi", &K1_kpi_par0_, "K1_par0Kpi/D");
+  bsTree_->Branch("K1_par1Kpi", &K1_kpi_par1_, "K1_par1Kpi/D");
+  bsTree_->Branch("K1_par2Kpi", &K1_kpi_par2_, "K1_par2Kpi/D");
+  bsTree_->Branch("K1_par3Kpi", &K1_kpi_par3_, "K1_par3Kpi/D");
+  bsTree_->Branch("K1_par4Kpi", &K1_kpi_par4_, "K1_par4Kpi/D");
+  bsTree_->Branch("K1_par5Kpi", &K1_kpi_par5_, "K1_par5Kpi/D");
+  bsTree_->Branch("K1_par6Kpi", &K1_kpi_par6_, "K1_par6Kpi/D");
+
+  bsTree_->Branch("K2_par0Kpi", &K2_kpi_par0_, "K2_par0Kpi/D");
+  bsTree_->Branch("K2_par1Kpi", &K2_kpi_par1_, "K2_par1Kpi/D");
+  bsTree_->Branch("K2_par2Kpi", &K2_kpi_par2_, "K2_par2Kpi/D");
+  bsTree_->Branch("K2_par3Kpi", &K2_kpi_par3_, "K2_par3Kpi/D");
+  bsTree_->Branch("K2_par4Kpi", &K2_kpi_par4_, "K2_par4Kpi/D");
+  bsTree_->Branch("K2_par5Kpi", &K2_kpi_par5_, "K2_par5Kpi/D");
+  bsTree_->Branch("K2_par6Kpi", &K2_kpi_par6_, "K2_par6Kpi/D");
+
+  bsTree_->Branch("K1_par0pipi", &K1_pipi_par0_, "K1_par0pipi/D");
+  bsTree_->Branch("K1_par1pipi", &K1_pipi_par1_, "K1_par1pipi/D");
+  bsTree_->Branch("K1_par2pipi", &K1_pipi_par2_, "K1_par2pipi/D");
+  bsTree_->Branch("K1_par3pipi", &K1_pipi_par3_, "K1_par3pipi/D");
+  bsTree_->Branch("K1_par4pipi", &K1_pipi_par4_, "K1_par4pipi/D");
+  bsTree_->Branch("K1_par5pipi", &K1_pipi_par5_, "K1_par5pipi/D");
+  bsTree_->Branch("K1_par6pipi", &K1_pipi_par6_, "K1_par6pipi/D");
+
+  bsTree_->Branch("K2_par0pipi", &K2_pipi_par0_, "K2_par0pipi/D");
+  bsTree_->Branch("K2_par1pipi", &K2_pipi_par1_, "K2_par1pipi/D");
+  bsTree_->Branch("K2_par2pipi", &K2_pipi_par2_, "K2_par2pipi/D");
+  bsTree_->Branch("K2_par3pipi", &K2_pipi_par3_, "K2_par3pipi/D");
+  bsTree_->Branch("K2_par4pipi", &K2_pipi_par4_, "K2_par4pipi/D");
+  bsTree_->Branch("K2_par5pipi", &K2_pipi_par5_, "K2_par5pipi/D");
+  bsTree_->Branch("K2_par6pipi", &K2_pipi_par6_, "K2_par6pipi/D");
+
+  bsTree_->Branch("K1_kk_sigX_", &K1_kk_sigX_, "K1_kk_sigX/D");
+  bsTree_->Branch("K1_kk_sigY_", &K1_kk_sigY_, "K1_kk_sigY/D");
+  bsTree_->Branch("K1_kk_sigZ_", &K1_kk_sigZ_, "K1_kk_sigZ/D");
+
+  bsTree_->Branch("K1_kpi_sigX_", &K1_kpi_sigX_, "K1_kpi_sigX/D");
+  bsTree_->Branch("K1_kpi_sigY_", &K1_kpi_sigY_, "K1_kpi_sigY/D");
+  bsTree_->Branch("K1_kpi_sigZ_", &K1_kpi_sigZ_, "K1_kpi_sigZ/D");
+
+  bsTree_->Branch("K1_pipi_sigX_", &K1_pipi_sigX_, "K1_pipi_sigX/D");
+  bsTree_->Branch("K1_pipi_sigY_", &K1_pipi_sigY_, "K1_pipi_sigY/D");
+  bsTree_->Branch("K1_pipi_sigZ_", &K1_pipi_sigZ_, "K1_pipi_sigZ/D");
+
+  bsTree_->Branch("K2_kk_sigX_", &K2_kk_sigX_, "K2_kk_sigX/D");
+  bsTree_->Branch("K2_kk_sigY_", &K2_kk_sigY_, "K2_kk_sigY/D");
+  bsTree_->Branch("K2_kk_sigZ_", &K2_kk_sigZ_, "K2_kk_sigZ/D");
+
+  bsTree_->Branch("K2_kpi_sigX_", &K2_kpi_sigX_, "K2_kpi_sigX/D");
+  bsTree_->Branch("K2_kpi_sigY_", &K2_kpi_sigY_, "K2_kpi_sigY/D");
+  bsTree_->Branch("K2_kpi_sigZ_", &K2_kpi_sigZ_, "K2_kpi_sigZ/D");
+
+  bsTree_->Branch("K2_pipi_sigX_", &K2_pipi_sigX_, "K2_pipi_sigX/D");
+  bsTree_->Branch("K2_pipi_sigY_", &K2_pipi_sigY_, "K2_pipi_sigY/D");
+  bsTree_->Branch("K2_pipi_sigZ_", &K2_pipi_sigZ_, "K2_pipi_sigZ/D");
+
+  bsTree_->Branch("K1_kk_sigPX_", &K1_kk_sigPX_, "K1_kk_sigPX/D");
+  bsTree_->Branch("K1_kk_sigPY_", &K1_kk_sigPY_, "K1_kk_sigPY/D");
+  bsTree_->Branch("K1_kk_sigPZ_", &K1_kk_sigPZ_, "K1_kk_sigPZ/D");
+
+  bsTree_->Branch("K1_kpi_sigPX_", &K1_kpi_sigPX_, "K1_kpi_sigPX/D");
+  bsTree_->Branch("K1_kpi_sigPY_", &K1_kpi_sigPY_, "K1_kpi_sigPY/D");
+  bsTree_->Branch("K1_kpi_sigPZ_", &K1_kpi_sigPZ_, "K1_kpi_sigPZ/D");
+
+  bsTree_->Branch("K1_pipi_sigPX_", &K1_pipi_sigPX_, "K1_pipi_sigPX/D");
+  bsTree_->Branch("K1_pipi_sigPY_", &K1_pipi_sigPY_, "K1_pipi_sigPY/D");
+  bsTree_->Branch("K1_pipi_sigPZ_", &K1_pipi_sigPZ_, "K1_pipi_sigPZ/D");
+
+  bsTree_->Branch("K2_kk_sigPX_", &K2_kk_sigPX_, "K2_kk_sigPX/D");
+  bsTree_->Branch("K2_kk_sigPY_", &K2_kk_sigPY_, "K2_kk_sigPY/D");
+  bsTree_->Branch("K2_kk_sigPZ_", &K2_kk_sigPZ_, "K2_kk_sigPZ/D");
+
+  bsTree_->Branch("K2_kpi_sigPX_", &K2_kpi_sigPX_, "K2_kpi_sigPX/D");
+  bsTree_->Branch("K2_kpi_sigPY_", &K2_kpi_sigPY_, "K2_kpi_sigPY/D");
+  bsTree_->Branch("K2_kpi_sigPZ_", &K2_kpi_sigPZ_, "K2_kpi_sigPZ/D");
+
+  bsTree_->Branch("K2_pipi_sigPX_", &K2_pipi_sigPX_, "K2_pipi_sigPX/D");
+  bsTree_->Branch("K2_pipi_sigPY_", &K2_pipi_sigPY_, "K2_pipi_sigPY/D");
+  bsTree_->Branch("K2_pipi_sigPZ_", &K2_pipi_sigPZ_, "K2_pipi_sigPZ/D");
+
+  bsTree_->Branch("sigmaK1Pt", &K1Pt_error_, "sigmaK1Pt/D");
+  bsTree_->Branch("sigmaK2Pt", &K2Pt_error_, "sigmaK2Pt/D");
 
 
 }
@@ -243,32 +382,56 @@ void BsToJpsiPhiRootTree::resetEntries()
   JpsiMuon2Cat_ = -10;
 
   BsMass_before_ = -10;  
+  BsPhi_before_ = -10;
+  BsEta_before_ = -10;
+  BsPt_before_ = -10;
+
   JpsiMass_before_ = -10;
+  JpsiPhi_before_ = -10;
+  JpsiEta_before_ = -10;
+  JpsiPt_before_ = -10;
+
   PhiMass_before_ = -10;
+  PhiPhi_before_ = -10;
+  PhiEta_before_ = -10;
+  PhiPt_before_ = -10;
+
+  K1Pt_before_ = -10;
+  K1Phi_before_ = -10;
+  K1Eta_before_ = -10;
+  K2Pt_before_ = -10;
+  K2Phi_before_ = -10;
+  K2Eta_before_ = -10;
+
   chi2_Bs_ = -10;
   ndof_Bs_ = -10;
+
   BsVtxProb_ = -10;
   BsVtxProbKpi_ = -10;
   BsVtxProbpipi_ = -10;
-  JpsiM_ = -10;
-  JpsiPhi_ = -10;
-  JpsiEta_ = -10;
-  JpsiPt_ = -10;
-  PhiM_ = -10;
-  PhiPhi_ = -10;
-  PhiEta_ = -10;
-  PhiPt_ = -10;
-  BsM_ = -10;
-  BsPhi_ = -10;
-  BsEta_ = -10;
-  BsPt_ = -10;
-  
-  K1Pt_ = -10;
-  K2Pt_ = -10;
-  K1Eta_ = -10;
-  K2Eta_ = -10;
-  K1Phi_ = -10;
-  K2Phi_ = -10;
+
+  BsMass_after_ = -10;
+  BsPhi_after_ = -10;
+  BsEta_after_ = -10;
+  BsPt_after_ = -10;
+
+  JpsiMass_after_ = -10;
+  JpsiPhi_after_ = -10;
+  JpsiEta_after_ = -10;
+  JpsiPt_after_ = -10;
+
+  PhiMass_after_ = -10;
+  PhiPhi_after_ = -10;
+  PhiEta_after_ = -10;
+  PhiPt_after_ = -10;
+
+  K1Pt_after_ = -10;
+  K1Phi_after_ = -10;
+  K1Eta_after_ = -10;
+  K2Pt_after_ = -10;
+  K2Phi_after_ = -10;
+  K2Eta_after_ = -10;
+
   K1Chi2_ = -10;
   K1nHits_ = -10;
   K2Chi2_ = -10;
@@ -278,12 +441,6 @@ void BsToJpsiPhiRootTree::resetEntries()
   K2pixH_ = -10;
   K2trkH_ = -10;
   
-  Mu1Pt_ = -10;
-  Mu2Pt_ = -10;
-  Mu1Eta_ = -10;
-  Mu2Eta_ = -10;
-  Mu1Phi_ = -10;
-  Mu2Phi_ = -10;
   Mu1Chi2_ = -10;
   Mu1nHits_ = -10;
   Mu2Chi2_ = -10;
@@ -367,6 +524,105 @@ void BsToJpsiPhiRootTree::resetEntries()
   genMu2M_= genMu2Pt_= genMu2Eta_= genMu2Phi_ = -10;
   genK1M_= genK1Pt_= genK1Eta_= genK1Phi_ = -10;
   genK2M_= genK2Pt_= genK2Eta_= genK2Phi_ = -10;
+
+  K1_kk_par0_ = -100;
+  K1_kk_par1_ = -100;
+  K1_kk_par2_ = -100;
+  K1_kk_par3_ = -100;
+  K1_kk_par4_ = -100;
+  K1_kk_par5_ = -100;
+  K1_kk_par6_ = -100;
+
+  K2_kk_par0_ = -100;
+  K2_kk_par1_ = -100;
+  K2_kk_par2_ = -100;
+  K2_kk_par3_ = -100;
+  K2_kk_par4_ = -100;
+  K2_kk_par5_ = -100;
+  K2_kk_par6_ = -100;
+
+  K1_kpi_par0_ = -100;
+  K1_kpi_par1_ = -100;
+  K1_kpi_par2_ = -100;
+  K1_kpi_par3_ = -100;
+  K1_kpi_par4_ = -100;
+  K1_kpi_par5_ = -100;
+  K1_kpi_par6_ = -100;
+
+  K2_kpi_par0_ = -100;
+  K2_kpi_par1_ = -100;
+  K2_kpi_par2_ = -100;
+  K2_kpi_par3_ = -100;
+  K2_kpi_par4_ = -100;
+  K2_kpi_par5_ = -100;
+  K2_kpi_par6_ = -100;
+
+  K1_pipi_par0_ = -100;
+  K1_pipi_par1_ = -100;
+  K1_pipi_par2_ = -100;
+  K1_pipi_par3_ = -100;
+  K1_pipi_par4_ = -100;
+  K1_pipi_par5_ = -100;
+  K1_pipi_par6_ = -100;
+
+  K2_pipi_par0_ = -100;
+  K2_pipi_par1_ = -100;
+  K2_pipi_par2_ = -100;
+  K2_pipi_par3_ = -100;
+  K2_pipi_par4_ = -100;
+  K2_pipi_par5_ = -100;
+  K2_pipi_par6_ = -100;
+
+  K1_kk_sigX_ = -10;
+  K1_kk_sigY_ = -10;
+  K1_kk_sigZ_ = -10;
+
+  K1_kpi_sigX_ = -10;
+  K1_kpi_sigY_ = -10;
+  K1_kpi_sigZ_ = -10;
+
+  K1_pipi_sigX_ = -10;
+  K1_pipi_sigY_ = -10;
+  K1_pipi_sigZ_ = -10;
+
+  K2_kk_sigX_ = -10;
+  K2_kk_sigY_ = -10;
+  K2_kk_sigZ_ = -10;
+
+  K2_kpi_sigX_ = -10;
+  K2_kpi_sigY_ = -10;
+  K2_kpi_sigZ_ = -10;
+
+  K2_pipi_sigX_ = -10;
+  K2_pipi_sigY_ = -10;
+  K2_pipi_sigZ_ = -10;
+
+  K1_kk_sigPX_ = -10;
+  K1_kk_sigPY_ = -10;
+  K1_kk_sigPZ_ = -10;
+
+  K1_kpi_sigPX_ = -10;
+  K1_kpi_sigPY_ = -10;
+  K1_kpi_sigPZ_ = -10;
+
+  K1_pipi_sigPX_ = -10;
+  K1_pipi_sigPY_ = -10;
+  K1_pipi_sigPZ_ = -10;
+
+  K2_kk_sigPX_ = -10;
+  K2_kk_sigPY_ = -10;
+  K2_kk_sigPZ_ = -10;
+
+  K2_kpi_sigPX_ = -10;
+  K2_kpi_sigPY_ = -10;
+  K2_kpi_sigPZ_ = -10;
+
+  K2_pipi_sigPX_ = -10;
+  K2_pipi_sigPY_ = -10;
+  K2_pipi_sigPZ_ = -10;
+
+  K1Pt_error_ = -10;
+  K2Pt_error_ = -10;
 
 } 
 
@@ -487,3 +743,148 @@ void BsToJpsiPhiRootTree::fill()
 {
   bsTree_->Fill();
 }
+
+void BsToJpsiPhiRootTree::setFitParKK(RefCountedKinematicTree& myTree)
+{
+  
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  
+  K1_kk_par0_ = bs_par1[0];
+  K1_kk_par1_ = bs_par1[1];
+  K1_kk_par2_ = bs_par1[2];
+  K1_kk_par3_ = bs_par1[3];
+  K1_kk_par4_ = bs_par1[4];
+  K1_kk_par5_ = bs_par1[5];
+  K1_kk_par6_ = bs_par1[6];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  K1_kk_sigX_ = sqrt(bs_err1(0,0));
+  K1_kk_sigY_ = sqrt(bs_err1(1,1));
+  K1_kk_sigZ_ = sqrt(bs_err1(2,2));
+  K1_kk_sigX_ = sqrt(bs_err1(3,3));
+  K1_kk_sigY_ = sqrt(bs_err1(4,4));
+  K1_kk_sigZ_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  
+  K2_kk_par0_ = bs_par2[0];
+  K2_kk_par1_ = bs_par2[1];
+  K2_kk_par2_ = bs_par2[2];
+  K2_kk_par3_ = bs_par2[3];
+  K2_kk_par4_ = bs_par2[4];
+  K2_kk_par5_ = bs_par2[5];
+  K2_kk_par6_ = bs_par2[6];
+
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  K2_kk_sigX_ = sqrt(bs_err2(0,0));
+  K2_kk_sigY_ = sqrt(bs_err2(1,1));
+  K2_kk_sigZ_ = sqrt(bs_err2(2,2));
+  K2_kk_sigPX_ = sqrt(bs_err2(3,3));
+  K2_kk_sigPY_ = sqrt(bs_err2(4,4));
+  K2_kk_sigPZ_ = sqrt(bs_err2(5,5));
+  
+}
+
+void BsToJpsiPhiRootTree::setFitParKpi(RefCountedKinematicTree& myTree)
+{
+  
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  
+  K1_kpi_par0_ = bs_par1[0];
+  K1_kpi_par1_ = bs_par1[1];
+  K1_kpi_par2_ = bs_par1[2];
+  K1_kpi_par3_ = bs_par1[3];
+  K1_kpi_par4_ = bs_par1[4];
+  K1_kpi_par5_ = bs_par1[5];
+  K1_kpi_par6_ = bs_par1[6];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  K1_kpi_sigX_ = sqrt(bs_err1(0,0));
+  K1_kpi_sigY_ = sqrt(bs_err1(1,1));
+  K1_kpi_sigZ_ = sqrt(bs_err1(2,2));
+  K1_kpi_sigPX_ = sqrt(bs_err1(3,3));
+  K1_kpi_sigPY_ = sqrt(bs_err1(4,4));
+  K1_kpi_sigPZ_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  
+  K2_kpi_par0_ = bs_par2[0];
+  K2_kpi_par1_ = bs_par2[1];
+  K2_kpi_par2_ = bs_par2[2];
+  K2_kpi_par3_ = bs_par2[3];
+  K2_kpi_par4_ = bs_par2[4];
+  K2_kpi_par5_ = bs_par2[5];
+  K2_kpi_par6_ = bs_par2[6];
+
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  K2_kpi_sigX_ = sqrt(bs_err2(0,0));
+  K2_kpi_sigY_ = sqrt(bs_err2(1,1));
+  K2_kpi_sigZ_ = sqrt(bs_err2(2,2));
+  K2_kpi_sigPX_ = sqrt(bs_err2(3,3));
+  K2_kpi_sigPY_ = sqrt(bs_err2(4,4));
+  K2_kpi_sigPZ_ = sqrt(bs_err2(5,5));
+  
+}
+
+void BsToJpsiPhiRootTree::setFitParpipi(RefCountedKinematicTree& myTree)
+{
+ 
+  vector< RefCountedKinematicParticle > bs_children = myTree->finalStateParticles();
+  
+  // first particle: kaon 1   
+  
+  AlgebraicVector7 bs_par1 = bs_children[0]->currentState().kinematicParameters().vector();
+  
+  K1_pipi_par0_ = bs_par1[0];
+  K1_pipi_par1_ = bs_par1[1];
+  K1_pipi_par2_ = bs_par1[2];
+  K1_pipi_par3_ = bs_par1[3];
+  K1_pipi_par4_ = bs_par1[4];
+  K1_pipi_par5_ = bs_par1[5];
+  K1_pipi_par6_ = bs_par1[6];
+  
+  AlgebraicSymMatrix77 bs_err1 = bs_children[0]->currentState().kinematicParametersError().matrix();
+  K1_pipi_sigX_ = sqrt(bs_err1(0,0));
+  K1_pipi_sigY_ = sqrt(bs_err1(1,1));
+  K1_pipi_sigZ_ = sqrt(bs_err1(2,2));
+  K1_pipi_sigPX_ = sqrt(bs_err1(3,3));
+  K1_pipi_sigPY_ = sqrt(bs_err1(4,4));
+  K1_pipi_sigPZ_ = sqrt(bs_err1(5,5));
+  
+  // first particle: kaon 2  
+  
+    
+  AlgebraicVector7 bs_par2 = bs_children[1]->currentState().kinematicParameters().vector();
+  
+  K2_pipi_par0_ = bs_par2[0];
+  K2_pipi_par1_ = bs_par2[1];
+  K2_pipi_par2_ = bs_par2[2];
+  K2_pipi_par3_ = bs_par2[3];
+  K2_pipi_par4_ = bs_par2[4];
+  K2_pipi_par5_ = bs_par2[5];
+  K2_pipi_par6_ = bs_par2[6];
+
+  AlgebraicSymMatrix77 bs_err2 = bs_children[1]->currentState().kinematicParametersError().matrix();
+  K2_pipi_sigX_ = sqrt(bs_err2(0,0));
+  K2_pipi_sigY_ = sqrt(bs_err2(1,1));
+  K2_pipi_sigZ_ = sqrt(bs_err2(2,2));
+  K2_pipi_sigPX_ = sqrt(bs_err2(3,3));
+  K2_pipi_sigPY_ = sqrt(bs_err2(4,4));
+  K2_pipi_sigPZ_ = sqrt(bs_err2(5,5));
+  
+}
+

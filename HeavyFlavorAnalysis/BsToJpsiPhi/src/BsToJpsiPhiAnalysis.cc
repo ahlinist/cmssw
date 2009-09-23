@@ -1,3 +1,22 @@
+// -*- C++ -*-
+//
+// Package:    BsToJPsiPhiAnalysis
+// Class:      BsToJPsiPhiAnalysis
+// 
+/* class BsToJPsiPhiAnalysis BsToJPsiPhiAnalysis.cc HeavyFlavorAnalysis/BsToJpsiPhi/src/BsToJPsiPhiAnalysis.cc
+
+ Description: Reconstruction of the decay channel Bs-->J/Psi(mumu) Phi(KK)
+
+ Implementation: V01-312-04
+
+*/
+//
+// Original Author:  Giordano Cerizza
+//         Authors:  Giordano Cerizza, Alexander Schmidt, Virginia Azzolini, Barbara Mejias
+//         Created:  Mon June 15 09:16:18 EDT 2009
+// 
+//
+
 #include "HeavyFlavorAnalysis/BsToJpsiPhi/interface/BsToJpsiPhiAnalysis.h"
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -342,6 +361,15 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      // passed kaon opposite sign and pt cut
 	      if(bsRootTree_->iPassedCutIdent_   < 4 ) bsRootTree_->iPassedCutIdent_ = 4 ;
 
+	      bsRootTree_->K1Pt_before_   = track1.pt();
+	      bsRootTree_->K1Pz_before_   = track1.pz();
+	      bsRootTree_->K1Eta_before_  = track1.eta();
+	      bsRootTree_->K1Phi_before_  = track1.phi();
+	      bsRootTree_->K2Pt_before_   = track2.pt();
+	      bsRootTree_->K2Pz_before_   = track2.pz();
+	      bsRootTree_->K2Eta_before_  = track2.eta();
+	      bsRootTree_->K2Phi_before_  = track2.phi();
+
 	      // phi candidate
 
 	      CompositeCandidate PhiCand;
@@ -353,7 +381,13 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      if (abs(PhiCand.mass()-1.019) > PhiMassWindowBeforeFit_) continue;
 	      // passed phi mass window before fit
 	      if(bsRootTree_->iPassedCutIdent_   < 5 ) bsRootTree_->iPassedCutIdent_ = 5 ;
-	  
+
+	      bsRootTree_->PhiMass_before_ = PhiCand.mass();	  
+              bsRootTree_->PhiPhi_before_ = PhiCand.phi();
+              bsRootTree_->PhiEta_before_ = PhiCand.eta();
+              bsRootTree_->PhiPt_before_ = PhiCand.pt();
+              bsRootTree_->PhiPz_before_ = PhiCand.pz();
+
 	      // jpsi candidate
 
 	      CompositeCandidate JpsiCand;
@@ -365,6 +399,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowBeforeFit_) continue;	      
 	      // passed jpsi mass window before fit
 	      if(bsRootTree_->iPassedCutIdent_   < 6 ) bsRootTree_->iPassedCutIdent_ = 6 ;
+
+	      bsRootTree_->JpsiMass_before_ = JpsiCand.mass();	  
+              bsRootTree_->JpsiPhi_before_ = JpsiCand.phi();
+              bsRootTree_->JpsiEta_before_ = JpsiCand.eta();
+              bsRootTree_->JpsiPt_before_ = JpsiCand.pt();
+              bsRootTree_->JpsiPz_before_ = JpsiCand.pz();
 
 	      // check on the overlap
 	      
@@ -390,9 +430,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      // passed Bs mass cut before fit
 	      if(bsRootTree_->iPassedCutIdent_   < 8 ) bsRootTree_->iPassedCutIdent_ = 8 ;
 	      
-	      bsRootTree_->PhiMass_before_ = PhiCand.mass();
-	      bsRootTree_->JpsiMass_before_ = JpsiCand.mass();	  
 	      bsRootTree_->BsMass_before_ = BCand.mass();	   	      
+              bsRootTree_->BsPt_before_ = BCand.pt();
+              bsRootTree_->BsPz_before_ = BCand.pz();
+              bsRootTree_->BsPhi_before_ = BCand.phi();
+              bsRootTree_->BsEta_before_ = BCand.eta();
 
 	      // start fit on the B candidates
 
@@ -402,7 +444,10 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      TrackRef Mu2Ref = mu2jpsi.get<TrackRef>();
 	      TrackRef trk1Ref = track1.get<TrackRef>();
 	      TrackRef trk2Ref = track2.get<TrackRef>();
-	      
+
+	      bsRootTree_->K1Pt_error_   = trk1Ref->ptError();
+	      bsRootTree_->K2Pt_error_   = trk2Ref->ptError();
+
 	      vector<TransientTrack> t_tracks;
 	      t_tracks.push_back((*theB).build(&Mu1Ref));
 	      t_tracks.push_back((*theB).build(&Mu2Ref));
@@ -482,6 +527,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
                 if (vtxprob_Bs2 > minVtxP2){
                   bsRootTree_->BsVtxProbKpi_ = vtxprob_Bs2;
                   minVtxP2 = vtxprob_Bs2;
+		  
+		  bsRootTree_->BfitM_Kpi_ = b_par2[6];
+		  
+		  bsRootTree_->setFitParKpi(myTree_Bs2);
+
                 }
               }
 
@@ -508,6 +558,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
                 if (vtxprob_Bs3 > minVtxP3){
                   bsRootTree_->BsVtxProbpipi_ = vtxprob_Bs3;
                   minVtxP3 = vtxprob_Bs3;
+
+		  bsRootTree_->BfitM_pipi_ = b_par3[6];
+
+		  bsRootTree_->setFitParpipi(myTree_Bs3);
+
                 }
               }
 
@@ -548,46 +603,47 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		bsRootTree_->ndof_Bs_   =(int)bs->degreesOfFreedom();
 		bsRootTree_->BsVtxProb_ = vtxprob_Bs;
 		minVtxP = vtxprob_Bs;
+		bsRootTree_->BfitM_KK_ = b_par[6];		
 
-		bsRootTree_->BsM_ = BCand.mass();
-		bsRootTree_->BsPt_ = BCand.pt();
-		bsRootTree_->BsPhi_ = BCand.phi();
-		bsRootTree_->BsEta_ = BCand.eta();
-		bsRootTree_->BmassC_ = b_par[6];		
+		bsRootTree_->setFitParKK(myTree_Bs);
 
-		bsRootTree_->JpsiM_ = JpsiCand.mass();
-		bsRootTree_->JpsiPhi_ = JpsiCand.phi();	  
-		bsRootTree_->JpsiEta_ = JpsiCand.eta();	  
-		bsRootTree_->JpsiPt_ = JpsiCand.pt();	  
+		bsRootTree_->BsMass_after_ = BCand.mass();
+		bsRootTree_->BsPt_after_ = BCand.pt();
+		bsRootTree_->BsPz_after_ = BCand.pz();
+		bsRootTree_->BsPhi_after_ = BCand.phi();
+		bsRootTree_->BsEta_after_ = BCand.eta();
 
-		bsRootTree_->PhiM_ = PhiCand.mass();
-		bsRootTree_->PhiPhi_ = PhiCand.phi();	  
-		bsRootTree_->PhiEta_ = PhiCand.eta();	  
-		bsRootTree_->PhiPt_ = PhiCand.pt();	  
+		bsRootTree_->JpsiMass_after_ = JpsiCand.mass();
+		bsRootTree_->JpsiPhi_after_ = JpsiCand.phi();	  
+		bsRootTree_->JpsiEta_after_ = JpsiCand.eta();	  
+		bsRootTree_->JpsiPt_after_ = JpsiCand.pt();	  
+		bsRootTree_->JpsiPz_after_ = JpsiCand.pz();	  
+
+		bsRootTree_->PhiMass_after_ = PhiCand.mass();
+		bsRootTree_->PhiPhi_after_ = PhiCand.phi();	  
+		bsRootTree_->PhiEta_after_ = PhiCand.eta();	  
+		bsRootTree_->PhiPt_after_ = PhiCand.pt();	  
+		bsRootTree_->PhiPz_after_ = PhiCand.pz();	  
 		
-		bsRootTree_->K1Pt_   = track1.pt();
-		bsRootTree_->K2Pt_   = track2.pt();
-		bsRootTree_->K1Eta_  = track1.eta();
-		bsRootTree_->K2Eta_  = track2.eta();
-		bsRootTree_->K1Phi_  = track1.phi();
-		bsRootTree_->K2Phi_  = track2.phi();
+		bsRootTree_->K1Pt_after_   = track1.pt();
+		bsRootTree_->K1Pz_after_   = track1.pz();
+		bsRootTree_->K1Eta_after_  = track1.eta();
+		bsRootTree_->K1Phi_after_  = track1.phi();
+		bsRootTree_->K2Pt_after_   = track2.pt();
+		bsRootTree_->K2Pz_after_   = track2.pz();
+		bsRootTree_->K2Eta_after_  = track2.eta();
+		bsRootTree_->K2Phi_after_  = track2.phi();
+
 		bsRootTree_->K1Chi2_ = trk1Ref.get()->normalizedChi2();
 		bsRootTree_->K1nHits_= trk1Ref.get()->numberOfValidHits();
 		bsRootTree_->K2Chi2_ = trk2Ref.get()->normalizedChi2();
 		bsRootTree_->K2nHits_= trk2Ref.get()->numberOfValidHits();
-	       
-		bsRootTree_->Mu1Pt_   = mu1jpsi.pt();
-		bsRootTree_->Mu2Pt_   = mu2jpsi.pt();
-		bsRootTree_->Mu1Eta_  = mu1jpsi.eta();
-		bsRootTree_->Mu2Eta_  = mu2jpsi.eta();
-		bsRootTree_->Mu1Phi_  = mu1jpsi.phi();
-		bsRootTree_->Mu2Phi_  = mu2jpsi.phi();
 		bsRootTree_->Mu1Chi2_ = Mu1Ref.get()->normalizedChi2();
 		bsRootTree_->Mu1nHits_= Mu1Ref.get()->numberOfValidHits();
 		bsRootTree_->Mu2Chi2_ = Mu2Ref.get()->normalizedChi2();
 		bsRootTree_->Mu2nHits_ =Mu2Ref.get()->numberOfValidHits();
-		
-               //  // dedx info
+
+		// dedx info
 		if(StoreDeDxInfo_){
 		  const DeDxDataValueMap &  eloss  = *energyLossHandle;
 		  double dedxTrk = eloss[trk1Ref].dEdx();
@@ -596,6 +652,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  
 		  bsRootTree_->getDeDx(dedxTrk,errdedxTrk,NumdedxTrk);
 		}
+		
 		////////////////////////////////////////////////
 		// proper decay time and proper decay length
 		////////////////////////////////////////////////
@@ -962,8 +1019,8 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 
 void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genParticles){
-
-
+  
+  
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
     int MC_particleID=p.pdgId();
@@ -982,7 +1039,7 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
   
   
   
-
+  
   //added by Alex: check type of event
   const Candidate * genBs, *genJpsi, *genPhi, *genMu1, *genMu2, *genK1, *genK2;
   genBs = genJpsi = genPhi = genMu1 = genMu2 = genK1 = genK2 = 0;
@@ -1004,103 +1061,109 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
       const Candidate * candPhi = 0;
       for(int j = 0; j < numBsDaughters; ++ j) {
 	const Candidate * d = genBsCand.daughter( j );
-	  int dauId = d->pdgId();
+	int dauId = d->pdgId();
 	
-	  if(abs(dauId) == 443 ) candJpsi = d;
-	  if(abs(dauId) == 333  )candPhi = d;
-
-	}
-	bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
-	bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
-	if(bFoundJpsiPhi){
-	  // loop over jpsi daughters, check for muons
-	  const Candidate * candMu1 = 0;
-	  const Candidate * candMu2 = 0;
-	  for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
-	    const Candidate * jpsiDa = candJpsi->daughter( k );
-	    if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
-	    if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
-	    //	    cout<<"      **** AS: jpsiDaughter pid = " << jpsiDa->pdgId() << endl;
-	  }
+	if(abs(dauId) == 443 ) candJpsi = d;
+	if(abs(dauId) == 333  )candPhi = d;
 	
-
-	  // loop over phi daughters check for Kaons
-	  const Candidate * candKaon1 = 0;
-	  const Candidate * candKaon2 = 0;
-	  for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
-	    const Candidate * candK = candPhi->daughter ( ikaon );
-	    if( candK->pdgId() == 321 ) candKaon1 = candK;
-	    if( candK->pdgId() == -321 ) candKaon2 = candK;
-	    //	    cout<<"     ****** AS phi daughter pid = " << candK -> pdgId() << endl;
-	  }
-	  // if all fulfilled, set Gen flag and set pointers to gen particles
-
-	  if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
-	    bsRootTree_->isGenBsJpsiPhiMuMuKKEvent_ = 1;
-
-	    genBs = &genBsCand;
-	    genPhi = candPhi;
-	    genJpsi = candJpsi;
-	    genMu1 = candMu1;
-	    genMu2 = candMu2;
-	    genK1 = candKaon1;
-	    genK2 = candKaon2;
-
-	    // consistency check
-	    bool Bconsistent = genBs && genPhi && genJpsi && genMu1 && genMu2 && genK1 && genK2;
-	    if( !Bconsistent ) {
-	      cout<<"    **** AS:  !Bconsistent " << endl;
-	      exit(1);
-	      
-	    }
-	  }
-	  
-	  
-	}//  end if(bFoundJpsiPhi)
-
       }
+      bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
+      bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
+      if(bFoundJpsiPhi){
+	// loop over jpsi daughters, check for muons
+	const Candidate * candMu1 = 0;
+	const Candidate * candMu2 = 0;
+	for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+	  const Candidate * jpsiDa = candJpsi->daughter( k );
+	  if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
+	  if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
+	  //	    cout<<"      **** AS: jpsiDaughter pid = " << jpsiDa->pdgId() << endl;
+	}
+	
+	
+	// loop over phi daughters check for Kaons
+	const Candidate * candKaon1 = 0;
+	const Candidate * candKaon2 = 0;
+	for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
+	  const Candidate * candK = candPhi->daughter ( ikaon );
+	  if( candK->pdgId() == 321 ) candKaon1 = candK;
+	  if( candK->pdgId() == -321 ) candKaon2 = candK;
+	  //	    cout<<"     ****** AS phi daughter pid = " << candK -> pdgId() << endl;
+	}
+	// if all fulfilled, set Gen flag and set pointers to gen particles
+	
+	if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
+	  bsRootTree_->isGenBsJpsiPhiMuMuKKEvent_ = 1;
+	  
+	  genBs = &genBsCand;
+	  genPhi = candPhi;
+	  genJpsi = candJpsi;
+	  genMu1 = candMu1;
+	  genMu2 = candMu2;
+	  genK1 = candKaon1;
+	  genK2 = candKaon2;
+	  
+	  // consistency check
+	  bool Bconsistent = genBs && genPhi && genJpsi && genMu1 && genMu2 && genK1 && genK2;
+	  if( !Bconsistent ) {
+	    cout<<"    **** AS:  !Bconsistent " << endl;
+	    exit(1);
+	      
+	  }
+	}
+      	
+      }//  end if(bFoundJpsiPhi)
+
+    }
       
-      
-    }// AS: end loop over GenParticles
-    
+  }// AS: end loop over GenParticles
+  
+  
   // fill particles into tree
   if(genBs) {
     bsRootTree_->genBsM_   =  genBs->mass();
     bsRootTree_->genBsPt_  =  genBs->pt();
+    bsRootTree_->genBsPz_  =  genBs->pz();
     bsRootTree_->genBsEta_ =  genBs->eta();
     bsRootTree_->genBsPhi_ =  genBs->phi();
   }
   if(genPhi) {
     bsRootTree_->genPhiM_   =  genPhi->mass();
     bsRootTree_->genPhiPt_  =  genPhi->pt();
+    bsRootTree_->genPhiPz_  =  genPhi->pz();
     bsRootTree_->genPhiEta_ =  genPhi->eta();
     bsRootTree_->genPhiPhi_ =  genPhi->phi();
-
+    
     bsRootTree_->genK1M_   =  genK1->mass();
     bsRootTree_->genK1Pt_  =  genK1->pt();
+    bsRootTree_->genK1Pz_  =  genK1->pz();
     bsRootTree_->genK1Eta_ =  genK1->eta();
     bsRootTree_->genK1Phi_ =  genK1->phi();
-  
+    
     bsRootTree_->genK2M_   =  genK2->mass();
     bsRootTree_->genK2Pt_  =  genK2->pt();
+    bsRootTree_->genK2Pz_  =  genK2->pz();
     bsRootTree_->genK2Eta_ =  genK2->eta();
     bsRootTree_->genK2Phi_ =  genK2->phi();
   }
   if(genJpsi) {
     bsRootTree_->genJpsiM_   =  genJpsi->mass();
     bsRootTree_->genJpsiPt_  =  genJpsi->pt();
+    bsRootTree_->genJpsiPz_  =  genJpsi->pz();
     bsRootTree_->genJpsiEta_ =  genJpsi->eta();
     bsRootTree_->genJpsiPhi_ =  genJpsi->phi();
-
+    
     bsRootTree_->genMu1M_   =  genMu1->mass();
     bsRootTree_->genMu1Pt_  =  genMu1->pt();
+    bsRootTree_->genMu1Pz_  =  genMu1->pz();
     bsRootTree_->genMu1Eta_ =  genMu1->eta();
     bsRootTree_->genMu1Phi_ =  genMu1->phi();
-
+    
     bsRootTree_->genMu2M_   =  genMu2->mass();
     bsRootTree_->genMu2Pt_  =  genMu2->pt();
+    bsRootTree_->genMu2Pz_  =  genMu2->pz();
     bsRootTree_->genMu2Eta_ =  genMu2->eta();
     bsRootTree_->genMu2Phi_ =  genMu2->phi();
   }
- 
+  
 }
