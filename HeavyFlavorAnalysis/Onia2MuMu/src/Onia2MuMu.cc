@@ -63,7 +63,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theStoreWSOnia             = iConfig.getParameter<bool>("StoreWSOnia");
   theBeamSpotFlag            = iConfig.getParameter<bool>("UsingBeamSpot");
   theminimumFlag             = iConfig.getParameter<bool>("minimumFlag");
-  // theAODFlag                 = iConfig.getParameter<bool>("UsingAOD");
+  theAODFlag                 = iConfig.getParameter<bool>("UsingAOD");
   theStorePATFlag            = iConfig.getParameter<bool>("StorePATFlag");
   fNevt=0;
 }
@@ -1034,7 +1034,7 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
 
   if(theDebugLevel>0) cout << "==>fillGeneratorBlocks, event: " << fNevt << endl;
  
-  // if ( theAODFlag ) {
+  if ( theAODFlag ) {
     /*
     Handle< int > genProcessID;
     iEvent.getByLabel( "genEventProcID", genProcessID );
@@ -1054,27 +1054,26 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
     //Mc_EventWeight =cross_section * filter_eff*branch_ratio;
     Mc_EventWeight =cross_section * filter_eff;
     */
-  // }
-  // else {
-  Handle< HepMCProduct > HepMCEvt;
-  // if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
-  //	iEvent.getByLabel( "source", HepMCEvt );
-  // }
-  iEvent.getByLabel( "generator", HepMCEvt );
-  const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
-  Mc_ProcessId   = myGenEvent->signal_process_id();
-  Mc_EventScale  = myGenEvent->event_scale();
-  
-  Handle< GenRunInfoProduct > gi;
-  // iEvent.getRun().getByLabel( "source", gi);
-  iEvent.getRun().getByLabel( "generator", gi);
-  double auto_cross_section = gi->internalXSec().value(); // calculated at end of each RUN, in mb
-  if(theDebugLevel>0) cout << "calculated cross-section" << auto_cross_section<<endl;
-  double external_cross_section = gi->crossSection(); // is the precalculated one written in the cfg file -- units is pb
-  double filter_eff = gi->filterEfficiency();
-  //Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
-  Mc_EventWeight = external_cross_section * filter_eff;
+  } else {
+    Handle< HepMCProduct > HepMCEvt;
+    // if ( !iEvent.getByLabel( "evtgenproducer", HepMCEvt ) ) {
+    //	iEvent.getByLabel( "source", HepMCEvt );
     // }
+    iEvent.getByLabel( "generator", HepMCEvt );
+    const HepMC::GenEvent* myGenEvent = HepMCEvt->GetEvent();
+    Mc_ProcessId   = myGenEvent->signal_process_id();
+    Mc_EventScale  = myGenEvent->event_scale();
+    
+    Handle< GenRunInfoProduct > gi;
+    // iEvent.getRun().getByLabel( "source", gi);
+    iEvent.getRun().getByLabel( "generator", gi);
+    double auto_cross_section = gi->internalXSec().value(); // calculated at end of each RUN, in mb
+    if(theDebugLevel>0) cout << "calculated cross-section" << auto_cross_section<<endl;
+    double external_cross_section = gi->crossSection(); // is the precalculated one written in the cfg file -- units is pb
+    double filter_eff = gi->filterEfficiency();
+    //Mc_EventWeight = external_cross_section * filter_eff*branch_ratio ;  // in pb; in analyzer weight=this weight/Nr events analyzed
+    Mc_EventWeight = external_cross_section * filter_eff;
+  }
 
   Mc_QQ_size=0; 
   Mc_mu_size=0;
