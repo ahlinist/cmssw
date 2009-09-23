@@ -35,7 +35,7 @@ void GetMPV(TH1F* histo, TDirectory* Dir, double& peak, double& error, double& s
   integral = histo->Integral();
   mean = histo->GetMean();
   rms = histo->GetRMS();
-  a = 1.5;
+  a = 5;
   if (integral>0)
     { 
       lowlimit = TMath::Max(LowResponse,mean-a*rms);
@@ -43,7 +43,7 @@ void GetMPV(TH1F* histo, TDirectory* Dir, double& peak, double& error, double& s
       norm = histo->GetMaximumStored();
       peak = mean;
       sigma = rms;
-      for (k=0; k<3; k++)
+      for (k=0; k<1; k++)
        {
          g = new TF1("g","gaus",lowlimit, highlimit);
          g->SetParNames("N","#mu","#sigma");
