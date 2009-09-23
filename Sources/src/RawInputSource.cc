@@ -59,8 +59,8 @@ namespace edm {
       setLumiPrematurelyRead();
     }
     EventSourceSentry sentry(*this);
-    std::auto_ptr<EventAuxiliary> aux(new EventAuxiliary(EventID(run, event),
-      processGUID(), tstamp, lumi, true, EventAuxiliary::PhysicsTrigger));
+    std::auto_ptr<EventAuxiliary> aux(new EventAuxiliary(EventID(run, lumi, event),
+      processGUID(), tstamp, true, EventAuxiliary::PhysicsTrigger));
     eventPrincipalCache()->fillEventPrincipal(aux, luminosityBlockPrincipal());
     eventCached_ = true;
     std::auto_ptr<Event> e(new Event(*eventPrincipalCache(), moduleDescription()));

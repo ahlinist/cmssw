@@ -87,8 +87,8 @@ DoodadESSource::setIntervalFor(const edm::eventsetup::EventSetupRecordKey&,
                                 const edm::IOVSyncValue& iTime, 
                                 edm::ValidityInterval& iInterval) {
    //Be valid for 3 runs 
-   edm::EventID newTime = edm::EventID(1, (iTime.eventID().run() - 1) - ((iTime.eventID().run() - 1) %3) +1);
-   edm::EventID endTime = newTime.nextRun().nextRun().nextRun().previousRunLastEvent();
+   edm::EventID newTime = edm::EventID(1, 1, (iTime.eventID().run() - 1) - ((iTime.eventID().run() - 1) %3) +1);
+   edm::EventID endTime = newTime.nextRun(1).nextRun(1).nextRun(1).previousRunLastEvent(1);
    iInterval = edm::ValidityInterval(edm::IOVSyncValue(newTime),
                                       edm::IOVSyncValue(endTime));
 }
