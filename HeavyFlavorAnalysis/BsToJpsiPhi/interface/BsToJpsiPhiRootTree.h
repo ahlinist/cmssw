@@ -45,6 +45,9 @@ public:
 	void get3d(const double aa, const double bb, const double cc, const double dd);
 	void get1d(const double aa, const double bb, const double cc, const double dd);
 	void getDeDx(const double f1, const double f2, const int f3);
+        void setFitParKK(RefCountedKinematicTree& myTree);
+        void setFitParKpi(RefCountedKinematicTree& myTree);
+        void setFitParpipi(RefCountedKinematicTree& myTree);
 	void fill();  //!< copy the information from memory to Ntuple
 
 public:
@@ -88,32 +91,70 @@ public:
         int JpsiMuon2Cat_;
 
         double BsMass_before_;
+        double BsPhi_before_;
+        double BsEta_before_;
+        double BsPt_before_;
+        double BsPz_before_;
+
         double JpsiMass_before_;
+        double JpsiPhi_before_;
+        double JpsiEta_before_;
+        double JpsiPt_before_;
+        double JpsiPz_before_;
+
         double PhiMass_before_;
+        double PhiPhi_before_;
+        double PhiEta_before_;
+        double PhiPt_before_;
+        double PhiPz_before_;
+
+        double  K1Pt_before_;
+        double  K1Pz_before_;
+        double  K1Eta_before_;
+        double  K1Phi_before_;
+        double  K2Eta_before_;
+        double  K2Pt_before_;
+        double  K2Pz_before_;
+        double  K2Phi_before_;
+
         double chi2_Bs_;
         int ndof_Bs_;
+
         double BsVtxProb_;
         double BsVtxProbKpi_;
         double BsVtxProbpipi_;
-        double JpsiM_;
-        double JpsiPhi_;
-        double JpsiEta_;
-        double JpsiPt_;
-        double PhiM_;
-        double PhiPhi_;
-        double PhiEta_;
-        double PhiPt_;
-        double BsM_;
-        double BsPhi_;
-        double BsEta_;
-        double BsPt_;
 
-        double  K1Pt_;
-        double  K2Pt_;
-        double  K1Eta_;
-        double  K2Eta_;
-        double  K1Phi_;
-        double  K2Phi_;
+        double BfitM_KK_;
+        double BfitM_Kpi_;
+        double BfitM_pipi_;
+
+        double BsMass_after_;
+        double BsPhi_after_;
+        double BsEta_after_;
+        double BsPt_after_;
+        double BsPz_after_;
+
+        double JpsiMass_after_;
+        double JpsiPhi_after_;
+        double JpsiEta_after_;
+        double JpsiPt_after_;
+        double JpsiPz_after_;
+
+        double PhiMass_after_;
+        double PhiPhi_after_;
+        double PhiEta_after_;
+        double PhiPt_after_;
+        double PhiPz_after_;
+
+        double  K1Pt_after_;
+        double  K1Pz_after_;
+        double  K1Eta_after_;
+        double  K1Phi_after_;
+        double  K2Eta_after_;
+        double  K2Pt_after_;
+        double  K2Pz_after_;
+        double  K2Phi_after_;
+
         double  K1Chi2_;
         int     K1nHits_;
         double  K2Chi2_;
@@ -123,12 +164,6 @@ public:
         int     K2pixH_;
         int     K2trkH_;
 
-        double  Mu1Pt_;
-        double  Mu2Pt_;
-        double  Mu1Eta_;
-        double  Mu2Eta_;
-        double  Mu1Phi_;
-        double  Mu2Phi_;
         double  Mu1Chi2_;
         int     Mu1nHits_;
         double  Mu2Chi2_;
@@ -216,9 +251,110 @@ public:
 	double genMu2M_, genMu2Pt_, genMu2Eta_, genMu2Phi_;
 	double genK1M_, genK1Pt_, genK1Eta_, genK1Phi_;	
 	double genK2M_, genK2Pt_, genK2Eta_, genK2Phi_;	
+	double genBsPz_, genJpsiPz_, genPhiPz_, genMu1Pz_, genMu2Pz_, genK1Pz_, genK2Pz_;
+
+        double K1_kk_par0_;
+        double K1_kk_par1_;
+        double K1_kk_par2_;
+        double K1_kk_par3_;
+        double K1_kk_par4_;
+        double K1_kk_par5_;
+        double K1_kk_par6_;
+
+        double K2_kk_par0_;
+        double K2_kk_par1_;
+        double K2_kk_par2_;
+        double K2_kk_par3_;
+        double K2_kk_par4_;
+        double K2_kk_par5_;
+        double K2_kk_par6_;
+
+        double K1_kpi_par0_;
+        double K1_kpi_par1_;
+        double K1_kpi_par2_;
+        double K1_kpi_par3_;
+        double K1_kpi_par4_;
+        double K1_kpi_par5_;
+        double K1_kpi_par6_;
+
+	double K2_kpi_par0_;
+        double K2_kpi_par1_;
+        double K2_kpi_par2_;
+        double K2_kpi_par3_;
+        double K2_kpi_par4_;
+        double K2_kpi_par5_;
+        double K2_kpi_par6_;
+
+        double K1_pipi_par0_;
+        double K1_pipi_par1_;
+        double K1_pipi_par2_;
+        double K1_pipi_par3_;
+        double K1_pipi_par4_;
+        double K1_pipi_par5_;
+        double K1_pipi_par6_;
+
+        double K2_pipi_par0_;
+        double K2_pipi_par1_;
+        double K2_pipi_par2_;
+        double K2_pipi_par3_;
+        double K2_pipi_par4_;
+        double K2_pipi_par5_;
+        double K2_pipi_par6_;
+
+        double K1_kk_sigX_;
+        double K1_kk_sigY_;
+        double K1_kk_sigZ_;
+
+        double K1_kpi_sigX_;
+        double K1_kpi_sigY_;
+        double K1_kpi_sigZ_;
+
+        double K1_pipi_sigX_;
+        double K1_pipi_sigY_;
+        double K1_pipi_sigZ_;
+
+        double K2_kk_sigX_;
+        double K2_kk_sigY_;
+        double K2_kk_sigZ_;
+
+        double K2_kpi_sigX_;
+        double K2_kpi_sigY_;
+        double K2_kpi_sigZ_;
+
+        double K2_pipi_sigX_;
+        double K2_pipi_sigY_;
+        double K2_pipi_sigZ_;
+
+        double K1_kk_sigPX_;
+        double K1_kk_sigPY_;
+        double K1_kk_sigPZ_;
+
+        double K1_kpi_sigPX_;
+        double K1_kpi_sigPY_;
+        double K1_kpi_sigPZ_;
+
+        double K1_pipi_sigPX_;
+        double K1_pipi_sigPY_;
+        double K1_pipi_sigPZ_;
+
+        double K2_kk_sigPX_;
+        double K2_kk_sigPY_;
+        double K2_kk_sigPZ_;
+
+        double K2_kpi_sigPX_;
+        double K2_kpi_sigPY_;
+        double K2_kpi_sigPZ_;
+
+        double K2_pipi_sigPX_;
+        double K2_pipi_sigPY_;
+        double K2_pipi_sigPZ_;
+
+	double K1Pt_error_;
+	double K2Pt_error_;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 
 };
 
 #endif
+
