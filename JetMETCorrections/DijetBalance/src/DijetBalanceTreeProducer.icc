@@ -101,6 +101,8 @@ namespace cms
       {
         m_file_->cd();
         dijetTree_->Write();
+        if (isMCarlo_)
+          hPtHat_->Write();
         delete m_file_;
         m_file_ = 0;      
       }
