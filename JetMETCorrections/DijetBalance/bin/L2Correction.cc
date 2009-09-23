@@ -67,7 +67,7 @@ int main(int argc, char**argv)
    }
  for (etabin=0;etabin<NETA;etabin++)
    {
-     sprintf(name,"MeanPt_EtaBin%d",etabin);
+     sprintf(name,"MeanPt_Eta%d",etabin);
      h = (TH1F*)inf->Get(name);
      ///////////// Correction calculation for every etabin  //////////  
      auxi = 0;
@@ -171,9 +171,9 @@ int main(int argc, char**argv)
  outf = new TFile(L2ROOTFilename.c_str(),"RECREATE"); 
  for(etabin=0;etabin<NETA;etabin++)
    {
-     sprintf(name,"L2Correction_EtaBin%d",etabin);
+     sprintf(name,"L2Correction_Eta%d",etabin);
      g_L2Correction[etabin]->Write(name);
-     sprintf(name,"CovMatrix_EtaBin%d",etabin);
+     sprintf(name,"CovMatrix_Eta%d",etabin);
      COV[etabin]->Write(name);
    }
  outf->Close(); 
