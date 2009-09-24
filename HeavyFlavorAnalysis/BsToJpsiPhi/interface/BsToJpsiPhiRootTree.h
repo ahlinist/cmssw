@@ -243,6 +243,10 @@ public:
 	int GenNumberOfBsDaughters_;
 	int isGenBsJpsiPhiEvent_;
 	int isGenBsJpsiPhiMuMuKKEvent_;
+	int isGenBdEvent_;
+	int GenNumberOfBdDaughters_;
+	int isGenBdJpsiKstarEvent_;
+	int isGenBdJpsiKstarMuMuKpiEvent_;
 
 	double genBsM_, genBsPt_, genBsEta_, genBsPhi_;
 	double genJpsiM_, genJpsiPt_, genJpsiEta_, genJpsiPhi_;
@@ -351,6 +355,9 @@ public:
 
 	double K1Pt_error_;
 	double K2Pt_error_;
+
+	int isGenBsJpsiKKEvent_;
+	int BdDausId_;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 

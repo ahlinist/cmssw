@@ -213,6 +213,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     
     // call function which does the job: filling MC info
     fillMCInfo(genParticles);
+    fillMCInfoBd(genParticles);
     
 
     //////////////////////////////////
@@ -525,6 +526,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
                 double vtxprob_Bs2 = TMath::Prob(bs2->chiSquared(), (int)bs2->degreesOfFreedom());
 
                 if (vtxprob_Bs2 > minVtxP2){
+
+		  if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+		  if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
+		  if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
+
                   bsRootTree_->BsVtxProbKpi_ = vtxprob_Bs2;
                   minVtxP2 = vtxprob_Bs2;
 		  
@@ -556,6 +562,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
                 double vtxprob_Bs3 = TMath::Prob(bs3->chiSquared(), (int)bs3->degreesOfFreedom());
 
                 if (vtxprob_Bs3 > minVtxP3){
+
+		  if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+		  if (abs(PhiCand.mass()-1.019) > PhiMassWindowAfterFit_) continue;
+		  if (BCand.mass() < BsLowerMassCutAfterFit_ || BCand.mass() > BsUpperMassCutAfterFit_) continue;
+
                   bsRootTree_->BsVtxProbpipi_ = vtxprob_Bs3;
                   minVtxP3 = vtxprob_Bs3;
 
@@ -1056,6 +1067,22 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
       // find daughters
       int numBsDaughters = genBsCand.numberOfDaughters();
       bsRootTree_->GenNumberOfBsDaughters_ = numBsDaughters;
+
+      // events Bs->Jpsi KK
+      if (numBsDaughters ==3){
+	const Candidate* Jpsi = 0;
+	const Candidate* Kp = 0;
+	const Candidate* Km = 0;
+	for(int j = 0; j < numBsDaughters; ++ j) {
+	  const Candidate * d = genBsCand.daughter( j );
+	  int dauId = d->pdgId();
+	  if(abs(dauId) == 443 ) Jpsi = d;
+	  if(abs(dauId) == 321 ) Kp = d;
+	  if(abs(dauId) == 321 ) Km = d;
+	}
+	if (Jpsi && Kp && Km)
+	  bsRootTree_->isGenBsJpsiKKEvent_ = 1;
+      }
       
       const Candidate * candJpsi = 0;
       const Candidate * candPhi = 0;
@@ -1067,6 +1094,7 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	if(abs(dauId) == 333  )candPhi = d;
 	
       }
+
       bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
       bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
       if(bFoundJpsiPhi){
@@ -1167,3 +1195,98 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
   }
   
 }
+
+
+void BsToJpsiPhiAnalysis::fillMCInfoBd( edm::Handle<GenParticleCollection> & genParticles){
+
+  int GenNumberOfFoundBdMesons = 0;
+  
+  for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    const GenParticle & genBdCand = (*genParticles)[ i ];
+    int MC_particleID=genBdCand.pdgId();    
+    if( abs(MC_particleID == 511) ){
+      GenNumberOfFoundBdMesons++;
+      bsRootTree_->isGenBdEvent_ = 1;
+      
+      // find daughters
+      int numBdDaughters = genBdCand.numberOfDaughters();
+      bsRootTree_->GenNumberOfBdDaughters_ = numBdDaughters;
+      
+      const Candidate * candJpsi = 0;
+      const Candidate * candKstar = 0;
+      for(int j = 0; j < numBdDaughters; ++ j) {
+	const Candidate * d = genBdCand.daughter( j );
+	int dauId = d->pdgId();
+	
+	bsRootTree_->BdDausId_ = dauId;
+
+	if(abs(dauId) == 443 ) candJpsi = d;
+	if(abs(dauId) == 313  )candKstar = d;
+	
+      }
+      bool bFoundJpsiKstar = ((candJpsi!=0) && (candKstar!=0)); // found Bd -> Jpsi Kstar
+      bsRootTree_->isGenBdJpsiKstarEvent_ = bFoundJpsiKstar;
+      if(bFoundJpsiKstar){
+	// loop over jpsi daughters, check for muons
+	const Candidate * candMu1 = 0;
+	const Candidate * candMu2 = 0;
+	for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+	  const Candidate * jpsiDa = candJpsi->daughter( k );
+	  if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
+	  if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
+	}
+	
+	
+	// loop over kstar daughters check for Kaons
+	const Candidate * candKaon1 = 0;
+	const Candidate * candKaon2 = 0;
+	for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+	  const Candidate * candK = candKstar->daughter ( ikaon );
+	  if( candK->pdgId() == 321 ) candKaon1 = candK;
+	  if( candK->pdgId() == -211 ) candKaon2 = candK;
+	}
+	const Candidate * candKaon3 = 0;
+	const Candidate * candKaon4 = 0;
+	for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+	  const Candidate * candK = candKstar->daughter ( ikaon );
+	  if( candK->pdgId() == -321 ) candKaon3 = candK;
+	  if( candK->pdgId() == 211 ) candKaon4 = candK;
+	}
+	const Candidate * candKaon5 = 0;
+	const Candidate * candKaon6 = 0;
+	for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+	  const Candidate * candK = candKstar->daughter ( ikaon );
+	  if( candK->pdgId() == -211 ) candKaon5 = candK;
+	  if( candK->pdgId() == 321 ) candKaon6 = candK;
+	}
+	const Candidate * candKaon7 = 0;
+	const Candidate * candKaon8 = 0;
+	for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+	  const Candidate * candK = candKstar->daughter ( ikaon );
+	  if( candK->pdgId() == 211 ) candKaon7 = candK;
+	  if( candK->pdgId() == -321 ) candKaon8 = candK;
+	}
+	
+	
+	if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
+	  bsRootTree_->isGenBdJpsiKstarMuMuKpiEvent_ = 1;
+	}
+	if( candMu1 && candMu2 && candKaon3 && candKaon4 ){
+	  bsRootTree_->isGenBdJpsiKstarMuMuKpiEvent_ = 1;
+	}
+	if( candMu1 && candMu2 && candKaon5 && candKaon6 ){
+	  bsRootTree_->isGenBdJpsiKstarMuMuKpiEvent_ = 1;
+	}
+	if( candMu1 && candMu2 && candKaon7 && candKaon8 ){
+	  bsRootTree_->isGenBdJpsiKstarMuMuKpiEvent_ = 1;
+	}
+	
+	
+      }//  end if(bFoundJpsiPhi)
+      
+    }
+    
+  }// AS: end loop over GenParticles
+  
+}
+

@@ -332,7 +332,13 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("sigmaK1Pt", &K1Pt_error_, "sigmaK1Pt/D");
   bsTree_->Branch("sigmaK2Pt", &K2Pt_error_, "sigmaK2Pt/D");
 
+  bsTree_->Branch("isGenBdEvent", &isGenBdEvent_, "isGenBdEvent/I");
+  bsTree_->Branch("GenNumberOfBdDaughters", &GenNumberOfBdDaughters_, "GenNumberOfBdDaughters/I");
+  bsTree_->Branch("isGenBdJpsiKstarEvent", &isGenBdJpsiKstarEvent_, "isGenBdJpsiKstarEvent/I");
+  bsTree_->Branch("isGenBdJpsiKstarMuMuKpiEvent", & isGenBdJpsiKstarMuMuKpiEvent_, " isGenBdJpsiKstarMuMuKpiEvent/I");
 
+  bsTree_->Branch("isGenBsJpsiKKEvent", &isGenBsJpsiKKEvent_, "isGenBsJpsiKKEvent/I");
+  bsTree_->Branch("BdDausId", &BdDausId_, "BdDausId/I");
 }
 
 BsToJpsiPhiRootTree::~BsToJpsiPhiRootTree()
@@ -516,7 +522,8 @@ void BsToJpsiPhiRootTree::resetEntries()
   iPassedCutIdent_ = -10;
 
   isGenBsEvent_ = GenNumberOfBsDaughters_ = isGenBsJpsiPhiEvent_ = isGenBsJpsiPhiMuMuKKEvent_ = -10;
-  
+  isGenBdEvent_ = GenNumberOfBdDaughters_ = isGenBdJpsiKstarEvent_ = isGenBdJpsiKstarMuMuKpiEvent_ = -10;  
+
   genBsM_ = genBsPt_ = genBsEta_ = genBsPhi_ = -10;
   genJpsiM_ = genJpsiPt_= genJpsiEta_= genJpsiPhi_ = -10;
   genPhiM_= genPhiPt_= genPhiEta_= genPhiPhi_ = -10;
@@ -623,6 +630,9 @@ void BsToJpsiPhiRootTree::resetEntries()
 
   K1Pt_error_ = -10;
   K2Pt_error_ = -10;
+
+  isGenBsJpsiKKEvent_ = -10;
+  BdDausId_ = -10;
 
 } 
 
