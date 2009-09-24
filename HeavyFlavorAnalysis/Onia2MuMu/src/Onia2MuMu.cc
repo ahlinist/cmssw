@@ -224,7 +224,6 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_track_chi2",      Reco_track_chi2,     "Reco_track_chi2[Reco_track_size]/D");
     fTree->Branch("Reco_track_ndof",      Reco_track_ndof,     "Reco_track_ndof[Reco_track_size]/D");
     fTree->Branch("Reco_track_nhits",     Reco_track_nhits,    "Reco_track_nhits[Reco_track_size]/I");
-
   }
 
   if(theStorePhotFlag){
@@ -678,8 +677,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   for (CaloMuonCollection::const_iterator cmuon = allcalmuons->begin();
        cmuon != allcalmuons->end(); ++cmuon) {
     bool storeThisOne = true; 
-    for (int i = 0; i<theMuonTrkIndexes.size(); ++i) {
-      if (cmuon->track().index() == theMuonTrkIndexes.at(i)) storeThisOne = false;
+    for (int i = 0; i<(int)theMuonTrkIndexes.size(); ++i) {
+      if ((int)cmuon->track().index() == theMuonTrkIndexes.at(i)) storeThisOne = false;
     }
     if (storeThisOne) theCaloMuons.push_back(*cmuon); 
   } 
@@ -690,7 +689,7 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        thetrk != allTracks->end(); ++thetrk) {
     k++;
     bool storeThisOther = true;
-    for (int j = 0; j<theMuonTrkIndexes.size(); ++j) {
+    for (int j = 0; j<(int)theMuonTrkIndexes.size(); ++j) {
       if (k == theMuonTrkIndexes.at(j)) storeThisOther = false;
     }
     if (storeThisOther) noMuonTracks.push_back(*thetrk);
@@ -830,7 +829,7 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
     HLTGlobal_error=HLTR->error();
     
     // HLTBits_size=HLTR->size();
-    for (unsigned int i=0; i<HLTBits_size&&i<Max_trig_size; i++) {
+    for (int i=0; i<HLTBits_size && i<(int)Max_trig_size; i++) {
       HLTBits_wasrun[i]=HLTR->wasrun(hltBits[i]);
       HLTBits_accept[i]=HLTR->accept(hltBits[i]);
       HLTBits_error[i]=HLTR->error(hltBits[i]);
@@ -2160,7 +2159,7 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     }
   }
   // Here implement onia+gamma / onia+track combos
-  if (theStoreChicFlag && Reco_QQ_sign[Reco_QQ_size]==0 && oniacato<=maxCatToStoreChic) {
+  if (theStoreChicFlag && Reco_QQ_sign[Reco_QQ_size] == 0 && oniacato <= (int)maxCatToStoreChic) {
  
     int countClus = 0;
     for(PFCandidateCollection::const_iterator itePFC = pfClusters.begin();
@@ -2180,7 +2179,7 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
       }
     }
   }
-  if (theStoreBpFlag && Reco_QQ_sign[Reco_QQ_size]==0 && oniacato<=maxCatToStoreBp) {
+  if (theStoreBpFlag && Reco_QQ_sign[Reco_QQ_size]==0 && (int)oniacato<=maxCatToStoreBp) {
  
     int countTracks = 0;
     for(TrackCollection::const_iterator itTr = noMuonTracks.begin();
