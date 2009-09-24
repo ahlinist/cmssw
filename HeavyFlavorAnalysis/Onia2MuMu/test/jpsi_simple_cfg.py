@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.GlobalTag.globaltag = 'MC_31X_V3::All'
+process.GlobalTag.globaltag = 'MC_31X_V8::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     OutputFileName       = cms.string('test_312.root'),
