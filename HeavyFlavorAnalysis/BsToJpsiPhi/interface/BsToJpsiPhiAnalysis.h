@@ -57,6 +57,7 @@ public:
 	virtual void endJob();
 
 	void fillMCInfo( edm::Handle<reco::GenParticleCollection> & genParticles);
+	void fillMCInfoBd( edm::Handle<reco::GenParticleCollection> & genParticles);
 
 private:
 
