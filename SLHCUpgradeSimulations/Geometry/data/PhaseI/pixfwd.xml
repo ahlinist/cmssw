@@ -80,12 +80,9 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 <!-- Position disks inside root -->
 
 <ConstantsSection label="Disks" eval="true"> <!-- Distances from IP-side edge of PixelForwardRoot to disk centers -->
- <Constant name="InnerDisk1Z" value="[pixfwdInnerDisk:DiskHalfWidth]+2*[pixfwdOuterDisk:DiskHalfWidth]"/> 
- <Constant name="InnerDisk2Z" value="[InnerDisk1Z]+[DistDisk1and2]"/>
- <Constant name="InnerDisk3Z" value="[InnerDisk2Z]+[DistDisk2and3]"/>
-  <Constant name="OuterDisk1Z" value="[pixfwdOuterDisk:DiskHalfWidth]"/>
- <Constant name="OuterDisk2Z" value="[OuterDisk1Z]+[DistDisk1and2]"/>
- <Constant name="OuterDisk3Z" value="[OuterDisk2Z]+[DistDisk2and3]"/>
+ <Constant name="Disk1Z" value="[pixfwdInnerDisk:OuterRingHalfWidth]+[pixfwdOuterDisk:OuterRingHalfWidth]"/> 
+ <Constant name="Disk2Z" value="[Disk1Z]+[DistDisk1and2]"/>
+ <Constant name="Disk3Z" value="[Disk2Z]+[DistDisk2and3]"/>
 
 </ConstantsSection>
  
@@ -94,41 +91,22 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
   <!-- +Z endcap -->
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZPlus"/>
-    <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZPlus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[InnerDisk1Z]"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZPlus"/>
-    <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZPlus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[InnerDisk2Z]"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
    </PosPart>
   
   <PosPart copyNumber="3">
    <rParent name="PixelForwardZPlus"/>
-      <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZPlus"/>
-   <Translation x="0." y="0." z="[AnchorZ]+ [InnerDisk3Z]" />
+      <rChild name="pixfwdDisk:PixelForwardDiskZPlus"/>
+   <Translation x="0." y="0." z="[AnchorZ]+[Disk3Z]" />
   </PosPart>
 
-
-  <PosPart copyNumber="1">
-    <rParent name="PixelForwardZPlus"/>
-    <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZPlus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[OuterDisk1Z]"/>
-  </PosPart>
-
- 
-  <PosPart copyNumber="2">
-     <rParent name="PixelForwardZPlus"/>
-    <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZPlus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[OuterDisk2Z]"/>
-  </PosPart>
-
-  <PosPart copyNumber="3">
-     <rParent name="PixelForwardZPlus"/>
-      <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZPlus"/>
-   <Translation x="0." y="0." z="[AnchorZ]+ [OuterDisk3Z]" />
-  </PosPart>
 
 
 
@@ -136,41 +114,24 @@ with pixfwdCommon:Y180 rotation (180 degrees around Y axis).
 
   <PosPart copyNumber="1">
     <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZMinus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[InnerDisk1Z]"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk1Z]"/>
   </PosPart>
   
   <PosPart copyNumber="2">
     <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZMinus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[InnerDisk2Z]"/>
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk2Z]"/>
   </PosPart>
   
   <PosPart copyNumber="3">
     <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdInnerDisk:PixelForwardInnerDiskZMinus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[InnerDisk3Z]" />
+    <rChild name="pixfwdDisk:PixelForwardDiskZMinus"/>
+    <Translation x="0." y="0." z="[AnchorZ]+[Disk3Z]" />
   </PosPart>
 
 
- <PosPart copyNumber="1">
-    <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZMinus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[OuterDisk1Z]"/>
-  </PosPart>
 
- 
-  <PosPart copyNumber="2">
-     <rParent name="PixelForwardZMinus"/>
-    <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZMinus"/>
-    <Translation x="0." y="0." z="[AnchorZ]+[OuterDisk2Z]"/>
-  </PosPart>
-
-  <PosPart copyNumber="3">
-     <rParent name="PixelForwardZMinus"/>
-      <rChild name="pixfwdOuterDisk:PixelForwardOuterDiskZMinus"/>
-   <Translation x="0." y="0." z="[AnchorZ]+ [OuterDisk3Z]" />
-  </PosPart>
 
 </PosPartSection>
 
