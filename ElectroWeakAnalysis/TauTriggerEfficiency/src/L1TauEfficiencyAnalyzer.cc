@@ -106,7 +106,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   iEvent.getByLabel(L1bitInfoSource, bitInfos);
   if(!bitInfos.isValid()) {
     std::cout << "%L1TauEffAnalyzer -- No L1 Bit Info found! " << std::endl;
-    return;
+    //return;
   }
 
   Handle<L1JetParticleCollection> l1TauHandle;
@@ -167,7 +167,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   }
   
   // If match found, find the corresponding bit field
-  if(hasL1Jet) {
+  if(hasL1Jet && bitInfos.isValid()) {
     for(FastL1BitInfoCollection::const_iterator bitInfo = bitInfos->begin(); bitInfo != bitInfos->end(); ++bitInfo) {
       if(fabs(bitInfo->getEta() - jetEta) < 0.1 &&
          fabs(bitInfo->getPhi() - jetPhi) < 0.1) {
