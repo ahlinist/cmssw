@@ -22,16 +22,13 @@ process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_1.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_2.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_3.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_4.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_5.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_6.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_7.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_8.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_9.root",
-"rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run4/skim_10.root"
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1000.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1001.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1002.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1003.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1004.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1005.root",
+    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1006.root"
     )
 )
 
