@@ -100,7 +100,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             src = cms.InputTag('jetsAlpha0point1ForMuTauBgEstZmumuEnriched')
         ),
 
-        # variables specific to  selection of W + jets background enriched sample
+        # variables specific to selection of W + jets background enriched sample
         muonPtWplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
@@ -385,7 +385,7 @@ switchToPFTauShrinkingCone(process)
 
 process.p = cms.Path(
     process.producePatTupleForBgEst
-#   * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+#   * process.printEventContent   # uncomment to enable dump of event content after PAT-tuple production
    * process.selectZtoMuTauEvents
    * process.genPhaseSpaceFilter
    * process.produceBoolEventSelFlags
