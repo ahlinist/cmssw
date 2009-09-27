@@ -23,10 +23,14 @@ from RecoTauTag.TauTagTools.TauMVADiscriminator_cfi import *
 # compute discrimanators based on TaNC output
 # for different tau-jet efficiency vs. QCD-jet fake rate "working-points"
 from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
+from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
 # define DataBase source for TaNC configurations
 # (need esprefer statement in order to prevent conflict with Fake BTau conditions)
 from RecoTauTag.TauTagTools.TancConditions_cff import *
+
+# produce tau id. efficiencies & fake-rates
+from RecoTauTag.TauTagTools.PFTauEfficiencyAssociator_cfi import *
 
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
@@ -36,6 +40,7 @@ producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllP
                              + recoMuonIsolation
                              + PFTau
                              + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform
+                             + shrinkingConeEfficienciesProducerFromFile
                              + metsignificance )
 
 
