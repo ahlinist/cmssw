@@ -32,12 +32,10 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
   void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  double getTauWeight(const CompositePtrCandidateTMEt<T>&);
+  double getCandidateWeight(const CompositePtrCandidateTMEt<T>&);
 
 //--- configuration parameters
   edm::InputTag tauNuCandidateSrc_;
-
-  std::string tauJetWeightSrc_;
   
   std::string dqmDirectory_store_;
   
@@ -46,7 +44,7 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
 //--- "helper" class for accessing weight values
 //    associated to tau-jet
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
-  FakeRateJetWeightExtractor<T>* tauJetWeightExtractor_;
+  std::vector<FakeRateJetWeightExtractor<T>*> tauJetWeightExtractors_;
 
 //--- histograms
   MonitorElement* hNuTauCandidatePt_;

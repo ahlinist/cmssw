@@ -7,6 +7,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+
 #include <TMath.h>
 
 const double epsilon = 0.01;
@@ -25,9 +27,7 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : diTauLeg1WeightExtractor_(0),
-    diTauLeg2WeightExtractor_(0),
-    dqmError_(0)
+  : dqmError_(0)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -37,16 +37,9 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
 
-  if ( cfg.exists("diTauLeg1WeightSource") ) {
-    diTauLeg1WeightSrc_ = cfg.getParameter<std::string>("diTauLeg1WeightSource");
-    diTauLeg1WeightExtractor_ = new FakeRateJetWeightExtractor<T1>(diTauLeg1WeightSrc_);
-  }
-
-  if ( cfg.exists("diTauLeg2WeightSource") ) {
-    diTauLeg2WeightSrc_ = cfg.getParameter<std::string>("diTauLeg2WeightSource");
-    diTauLeg2WeightExtractor_ = new FakeRateJetWeightExtractor<T2>(diTauLeg2WeightSrc_);
-  }
-
+  diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
+  diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
+  
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
@@ -60,8 +53,15 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::~CompositePtrCandidateT1T2MEtHistManager()
 {
-  delete diTauLeg1WeightExtractor_;
-  delete diTauLeg2WeightExtractor_;
+  for ( typename std::vector<FakeRateJetWeightExtractor<T1>*>::iterator it = diTauLeg1WeightExtractors_.begin();
+	it != diTauLeg1WeightExtractors_.end(); ++it ) {
+    delete (*it);
+  }
+
+  for ( typename std::vector<FakeRateJetWeightExtractor<T2>*>::iterator it = diTauLeg2WeightExtractors_.begin();
+	it != diTauLeg2WeightExtractors_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 template<typename T1, typename T2>
@@ -123,8 +123,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
 template<typename T1, typename T2>
 double CompositePtrCandidateT1T2MEtHistManager<T1,T2>::getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>& diTauCandidate)
 {
-  double diTauLeg1Weight = ( diTauLeg1WeightExtractor_ ) ? (*diTauLeg1WeightExtractor_)(*diTauCandidate.leg1()) : 1.;
-  double diTauLeg2Weight = ( diTauLeg2WeightExtractor_ ) ? (*diTauLeg2WeightExtractor_)(*diTauCandidate.leg2()) : 1.;
+  double diTauLeg1Weight = getTauJetWeight<T1>(*diTauCandidate.leg1(), diTauLeg1WeightExtractors_);
+  double diTauLeg2Weight = getTauJetWeight<T2>(*diTauCandidate.leg2(), diTauLeg2WeightExtractors_);
   return (diTauLeg1Weight*diTauLeg2Weight);
 }
 
@@ -164,8 +164,8 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
 
     if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
 
-    double weight = ( normMethod_ == kNormEvents ) ? 
-      evtWeight*(getDiTauCandidateWeight(*diTauCandidate)/diTauCandidateWeightSum) : getDiTauCandidateWeight(*diTauCandidate);
+    double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate);
+    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(diTauCandidateWeight/diTauCandidateWeightSum) : diTauCandidateWeight;
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
     hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);

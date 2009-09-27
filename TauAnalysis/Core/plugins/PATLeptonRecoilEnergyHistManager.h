@@ -14,6 +14,9 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergy.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PATLeptonRecoilEnergyFwd.h"
 
+#include <string>
+#include <vector>
+
 template<typename T1, typename T2>
 class PATLeptonRecoilEnergyHistManager : public HistManagerBase 
 {
@@ -40,7 +43,7 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
 //--- "helper" class for accessing weight values
 //    associated to second tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
-  FakeRateJetWeightExtractor<T1>* leptonWeightExtractor_;
+  std::vector<FakeRateJetWeightExtractor<T1>*> leptonWeightExtractors_;
 
 //--- histograms
   MonitorElement* hEtSum_;

@@ -64,3 +64,25 @@ int getMatchingGenParticlePdgId(const reco::Particle::LorentzVector& recoMomentu
 
   return pdgId;
 }
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+double getDeltaRnearestJet(const reco::Particle::LorentzVector& refMomentum, 
+			   edm::Handle<pat::JetCollection>& patJetCollection, 
+			   double deltaRmin)
+{
+//--- compute eta-phi distance to nearest jet
+  double deltaRnearestJet = 1.e+3;
+  for ( std::vector<pat::Jet>::const_iterator patJet = patJetCollection->begin(); 
+	patJet != patJetCollection->end(); ++patJet ) {
+    double deltaR = reco::deltaR(patJet->p4(), refMomentum);
+    if ( deltaR > deltaRmin && deltaR < deltaRnearestJet ) deltaRnearestJet = deltaR;
+  }
+  
+  return deltaRnearestJet;
+}
+
+
+
