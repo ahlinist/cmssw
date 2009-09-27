@@ -39,6 +39,7 @@ class MuonHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag muonSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
 
   std::string dqmDirectory_store_;
@@ -91,6 +92,8 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonEcalIsoPtRel_;
   MonitorElement* hMuonHcalIsoPtRel_;
   MonitorElement* hMuonIsoSumPtRel_;
+
+  MonitorElement* hMuonDeltaRnearestJet_;
 
   MonitorElement* hMuonTrkIsoValProfile_;
   MonitorElement* hMuonTrkIsoEtaDistProfile_;

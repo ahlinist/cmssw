@@ -5,6 +5,7 @@
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
@@ -52,6 +53,9 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
 					   << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
+  //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   if ( genParticleSrc_.label() == "" ) {
@@ -170,6 +174,8 @@ void ElectronHistManager::bookHistograms()
   hElectronHcalIsoPtRel_ = dqmStore.book1D("ElectronHcalIsoPtRel", "Electron #frac{P_{T HCAL isolation}}{P_{T track}}", 200, 0., 2.);
   hElectronIsoSumPtRel_ = dqmStore.book1D("ElectronIsoSumPtRel", "Electron #frac{#sum P_{T isolation}}{P_{T track}}", 200, 0., 2.);
   
+  hElectronDeltaRnearestJet_ = dqmStore.book1D("ElectronDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
+
   hElectronParticleFlowIsoPt_ = dqmStore.book1D("ElectronParticleFlowIsoPt", "Electron Particle Flow Isolation P_{T}", 100, 0., 20.);    
   hElectronPFChargedHadronIsoPt_ = dqmStore.book1D("ElectronPFChargedHadronIsoPt", "Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 20.);   
   hElectronPFNeutralHadronIsoPt_ = dqmStore.book1D("ElectronPFNeutralHadronIsoPt", "Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 20.);   
@@ -215,8 +221,11 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
     return;
   }
 
-  edm::Handle<std::vector<pat::Electron> > patElectrons;
+  edm::Handle<pat::ElectronCollection> patElectrons;
   evt.getByLabel(electronSrc_, patElectrons);
+
+  edm::Handle<pat::JetCollection> patJets;
+  evt.getByLabel(jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
@@ -302,6 +311,7 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
     hElectronIdRobust_->Fill(patElectron->electronID("robust"), weight);
 
     fillElectronIsoHistograms(*patElectron, weight);
+    hElectronDeltaRnearestJet_->Fill(getDeltaRnearestJet(patElectron->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillElectronIsoConeSizeDepHistograms(*patElectron, weight);
   }
 }
