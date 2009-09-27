@@ -320,6 +320,7 @@ selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().i
 selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
+selectedLayer1TausForWTauNuEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
 selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForWTauNuCharge.cut = selectedLayer1TausCharge.cut
 
@@ -331,6 +332,7 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
       selectedLayer1TausForWTauNuTrkIso,
       selectedLayer1TausForWTauNuMuonVeto,
       selectedLayer1TausForWTauNuElectronVeto,
+      selectedLayer1TausForWTauNuEcalCrackVeto,
       selectedLayer1TausForWTauNuProng,
       selectedLayer1TausForWTauNuCharge ],
     src = "cleanLayer1Taus",
