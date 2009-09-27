@@ -13,55 +13,38 @@ genPhaseSpaceFilter = cms.EDFilter("EventSelPluginFilter",
     )
 )
 
-electronsBgEstPreselection = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative'),                                        
-    cut = cms.string('gsfTrack.isNonnull'),
-    filter = cms.bool(False)
-)
-
-electronTrkCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
-    pluginName = cms.string("electronTrkCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('electronsBgEstPreselection'),
-    minNumber = cms.uint32(1)
-)
-
-tausBgEstPreselection = cms.EDFilter("PATTauAntiOverlapSelector",
-    src = cms.InputTag('selectedLayer1TausProngCumulative'),    
-    srcNotToBeFiltered = cms.VInputTag('electronsBgEstPreselection'),                                        
-    dRmin = cms.double(0.7),                       
-    filter = cms.bool(False)
-)
-
-tauProngCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
-    pluginName = cms.string("tauProngCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('tausBgEstPreselection'),
-    minNumber = cms.uint32(1)                                                
-)
-
-elecTauPairsBgEstPreselection = cms.EDProducer("PATElecTauPairProducer",
-    useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('electronsBgEstPreselection'),
-    srcLeg2 = cms.InputTag('tausBgEstPreselection'),
-    dRmin12 = cms.double(0.7),
-    srcMET = cms.InputTag('layer1METs'),
-    recoMode = cms.string(""),
-    verbosity = cms.untracked.int32(0)
-)
-
-elecTauPairCutBgEstPreselection = cms.EDFilter("BoolEventSelFlagProducer",
+elecTauPairCutBgEstPreselection = cms.EDProducer("BoolEventSelFlagProducer",
     pluginName = cms.string("elecTauPairCutBgEstPreselection"),
-    pluginType = cms.string("PATCandViewMinEventSelector"),
-    src = cms.InputTag('elecTauPairsBgEstPreselection'),
-    minNumber = cms.uint32(1)
-)                                                                             
+    pluginType = cms.string("OrEventSelector"),
+    selectors = cms.VPSet(
+        cms.PSet(
+            pluginName = cms.string("elecTauPairCutBgEstPreselZee"),
+            pluginType = cms.string("PATCandViewMinEventSelector"),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
+            minNumber = cms.uint32(1)
+        ),
+        cms.PSet(
+            pluginName = cms.string("elecTauPairCutBgEstPreselWplusJets"),
+            pluginType = cms.string("PATCandViewMinEventSelector"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            minNumber = cms.uint32(1)
+        ),
+        cms.PSet(
+            pluginName = cms.string("elecTauPairCutBgEstPreselTTplusJets"),
+            pluginType = cms.string("PATCandViewMinEventSelector"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            minNumber = cms.uint32(1)
+        ),
+        cms.PSet(
+            pluginName = cms.string("elecTauPairCutBgEstPreselQCD"),
+            pluginType = cms.string("PATCandViewMinEventSelector"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
+            minNumber = cms.uint32(1)
+        )
+    )
+) 
 
-produceBoolEventSelFlags = cms.Sequence(
-    electronsBgEstPreselection + electronTrkCutBgEstPreselection
-   +tauProngCutBgEstPreselection
-   +elecTauPairsBgEstPreselection + elecTauPairCutBgEstPreselection
-)
+produceBoolEventSelFlags = cms.Sequence( elecTauPairCutBgEstPreselection )
 
 selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
     flags = cms.VInputTag(
@@ -69,20 +52,6 @@ selectEventsByBoolEventSelFlags = cms.EDFilter("MultiBoolEventSelFlagFilter",
         cms.InputTag('primaryEventVertex'),
         cms.InputTag('primaryEventVertexQuality'),
         cms.InputTag('primaryEventVertexPosition'),
-        cms.InputTag('electronTrkCutBgEstPreselection'),
-        cms.InputTag('tauProngCutBgEstPreselection'),
         cms.InputTag('elecTauPairCutBgEstPreselection')
     )
 )
-
-# exclude loosely selected electrons and tau-jets from jets collections
-# (otherwise, non-isolated electrons may get double-counted,
-#  once in the electron collection plus once in the jet collection, for example)
-from TauAnalysis.RecoTools.patJetSelection_cff import *
-selectedLayer1JetsAntiOverlapWithLeptonsVeto.srcNotToBeFiltered = cms.VInputTag(
-    "electronsBgEstPreselection",
-    "selectedLayer1MuonsTrkIPcumulative",
-    "tausBgEstPreselection"
-)
-
-

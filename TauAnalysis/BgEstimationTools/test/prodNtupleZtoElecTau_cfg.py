@@ -15,9 +15,8 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
-process.load("TauAnalysis.Configuration.producePatTuple_cff")
-process.load("TauAnalysis.BgEstimationTools.bgEstSelectLayer1Jets_cff")
+# import sequence for production of PAT-tuple specific to data-driven background estimation methods
+process.load("TauAnalysis.BgEstimationTools.producePatTupleForBgEst_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
@@ -47,194 +46,307 @@ process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0)            
 )
 
-# event print-out
-process.eventDump = cms.EDAnalyzer("EventDumpAnalyzer",
-    evtSelFlags = process.selectEventsByBoolEventSelFlags.flags,
-    plugin = cms.PSet(
-        pluginName = cms.string('elecTauEventDump'),
-        pluginType = cms.string('ElecTauEventDump'),
-
-        l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-        l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
-        l1BitsToPrint = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
-                                    'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
-    
-        hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-        hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
-    
-        genParticleSource = cms.InputTag('genParticles'),
-        genTauJetSource = cms.InputTag('tauGenJets'),
-        electronSource = cms.InputTag('electronsBgEstPreselection'),
-        muonSource = cms.InputTag('cleanLayer1MuonsSel'),
-        tauSource = cms.InputTag('selectedLayer1TausProngCumulative'),
-        diTauCandidateSource = cms.InputTag('elecTauPairsBgEstPreselection'),
-        metSource = cms.InputTag('layer1METs'),
-        genMEtSource = cms.InputTag('genMETWithMu'),
-        jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
-    
-        #output = cms.string("elecTauEventDump.txt"),
-        output = cms.string("std::cout"),
-    )
+# produce ntuple
+kineReweight_fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsZtoElecTau.root')
+kineReweight_dqmDirectory = "DQMData/bgEstKineEventReweights"
+kineReweight_meName = "diTauMvis"
+kineVarExtractor_config = cms.PSet(
+    pluginType = cms.string("PATElecTauPairValExtractor"),
+    src = cms.InputTag('elecTauPairsBgEstPreselection'),
+    value = cms.string("p4Vis.mass"),
+    indices = cms.vuint32(0)
 )
-
-
 
 # produce ntuple
 process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
     treeName = cms.string("bgEstEvents"),
     branches = cms.PSet(
-        selElectronTrackIso = cms.PSet(
+        # variables specific to selection of Z --> mu+ mu- background enriched sample
+        electronPtZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
+            value = cms.string("leg1.pt"),
+            indices = cms.vuint32(0,1)
+        ),
+        elecTrackIsoZee = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        selElectronRelTrackIso = cms.PSet(
+        electronEcalIsoZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("leg1.trackIso/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
-        selElectronEcalIso = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             value = cms.string("leg1.ecalIso"),
             indices = cms.vuint32(0,1)
         ),
-        selElectronRelEcalIso = cms.PSet(
+        tauDiscrAgainstElectronsZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("leg1.ecalIso/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
-        selElectronIso = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("leg1.trackIso + leg1.ecalIso"),
-            indices = cms.vuint32(0,1)
-        ),
-        selElectronRelIso = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("(leg1.trackIso + leg1.ecalIso)/leg1.pt"),
-            indices = cms.vuint32(0,1)
-        ),
-        selElectronTrkIP = cms.PSet(
-            pluginType = cms.string("PATElecTauPairElectronIpExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            vertexSource = cms.InputTag("selectedPrimaryVertexPosition"),
-            indices = cms.vuint32(0,1)
-        ),
-    
-        selDiTauAbsCharge = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("abs(charge)"),
-            indices = cms.vuint32(0,1)
-        ),
-        selDiTauMt1MET = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("mt1MET"),
-            indices = cms.vuint32(0,1)
-        ),
-        selDiTauDPhi12 = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("dPhi12"),
-            indices = cms.vuint32(0,1)
-        ),
-        selDiTauPzetaDiff = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("pZeta - 1.5*pZetaVis"),
-            indices = cms.vuint32(0,1)
-        ),
-        selDiTauMvis12 = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
-            value = cms.string("p4Vis.mass"),
-            indices = cms.vuint32(0,1)
-        ),
-
-        selTauDiscrAgainstElectrons = cms.PSet(
-            pluginType = cms.string("PATElecTauPairValExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection'),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             value = cms.string("leg2.tauID('againstElectron')"),
             indices = cms.vuint32(0,1)
         ),
+        diTauAbsChargeZee = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
+            value = cms.string("abs(charge)"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausZee = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched')
+        ),
+        numJetsAlpha0point1Zee = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('jetsAlpha0point1ForElecTauBgEstZeeEnriched')
+        ),
 
-        selCentralJetEt40bTaggingDiscrSimpleSecondaryVertex = cms.PSet(
+        # variables specific to selection of W + jets background enriched sample
+        electronPtWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg1.pt"),
+            indices = cms.vuint32(0,1)
+        ),
+        electronTrackIsoWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg1.trackIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        electronEcalIsoWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg1.ecalIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauTrackIsoWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.chargedParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauTrackIsoDiscrWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.tauID('trackIsolation')"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauEcalIsoWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.gammaParticleIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauEcalIsoDiscrWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.tauID('ecalIsolation')"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauNumSignalConeTracksWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.signalTracks.size"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauDiscrAgainstElectronsWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("leg2.tauID('againstElectron')"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMt1MEtWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("mt1MET"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauPzetaDiffWplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("pZeta - 1.5*pZetaVis"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausWplusJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched')
+        ), 
+        numJetsAlpha0point1WplusJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('jetsAlpha0point1ForElecTauBgEstWplusJetsEnriched')
+        ),
+        
+        # variables specific to selection of ttbar + jets background enriched sample
+        electronTrackIsoTTplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            value = cms.string("leg1.trackIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        electronEcalIsoTTplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            value = cms.string("leg1.ecalIso"),
+            indices = cms.vuint32(0,1)
+        ),        
+        tauDiscrAgainstElectronsTTplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            value = cms.string("leg2.tauID('againstElectron')"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauAbsChargeTTplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            value = cms.string("abs(charge)"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausTTplusJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched')
+        ), 
+        jetEt40bTaggingDiscrSimpleSecondaryVertexTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
             value = cms.string("bDiscriminator('simpleSecondaryVertex')"),
             indices = cms.vuint32(0,1,2)
         ),
-        selCentralJetEt40bTaggingDiscrCombinedSecondaryVertex = cms.PSet(
+        jetEt40bTaggingDiscrCombinedSecondaryVertexTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
             value = cms.string("bDiscriminator('combinedSecondaryVertex')"),
             indices = cms.vuint32(0,1,2)
         ),
-        selCentralJetEt40bTaggingDiscrTrackCountingHighEff = cms.PSet(
+        jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
             value = cms.string("bDiscriminator('trackCountingHighEffBJetTags')"),
             indices = cms.vuint32(0,1,2)
         ),
-        selCentralJetEt40bTaggingDiscrSoftElectron = cms.PSet(
+        jetEt40bTaggingDiscrSoftElectronTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
             value = cms.string("bDiscriminator('softElectronBJetTags')"),
             indices = cms.vuint32(0,1,2)
         ),
-        selCentralJetEt40bTaggingDiscrSoftMuon = cms.PSet(
+        jetEt40bTaggingDiscrSoftElectronTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative'),
-            value = cms.string("bDiscriminator('softMuonBJetTags')"),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
+            value = cms.string("bDiscriminator('softElectronBJetTags')"),
             indices = cms.vuint32(0,1,2)
         ),
+        numJetsEt40TTplusJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched')
+        ),
+        numJetsEt60TTplusJets = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('jetsEt60ForElecTauBgEstTTplusJetsEnriched')
+        ),
 
-        numTightElectrons = cms.PSet(
+        # variables for selection of QCD background enriched sample
+        electronTrackIsoQCD = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
+            value = cms.string("leg1.trackIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        electronEcalIsoQCD = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
+            value = cms.string("leg1.ecalIso"),
+            indices = cms.vuint32(0,1)
+        ),
+        tauDiscrAgainstElectronsQCD = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
+            value = cms.string("leg2.tauID('againstElectron')"),
+            indices = cms.vuint32(0,1)
+        ),
+        numDiTausQCD = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched')
+        ), 
+
+        # "global" variables not specific to any particular background
+        metPt = cms.PSet(
+            pluginType = cms.string("PATMetValExtractor"),
+            src = cms.InputTag('layer1METs'),
+            value = cms.string("pt"),
+            indices = cms.vuint32(0)
+        ),
+        numTightIdElectrons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
         ),
-        numSelElectrons = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative')
-        ),
-        numSelTaus = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1TausProngCumulative')
-        ),
-        numSelDiTaus = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('elecTauPairsBgEstPreselection')
-        ),        
-        numCentralJetsEt20 = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt20Cumulative')
-        ),
-        numCentralJetsAlpha0point1 = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0point1Cumulative')
-        ),
-        numCentralJetsAlpha0point3 = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsAlpha0point3Cumulative')
-        ),
-        numCentralJetsEt40 = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt40Cumulative')
-        ),
-        numCentralJetsEt60 = cms.PSet(
-            pluginType = cms.string("NumCandidateExtractor"),
-            src = cms.InputTag('selectedLayer1JetsEt60Cumulative')
-        ),
 
+        # variables used for template shape extraction
+        diTauMvis12Zee = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
+            value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMvis12WplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched'),
+            value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMvis12TTplusJets = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched'),
+            value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMvis12QCD = cms.PSet(
+            pluginType = cms.string("PATElecTauPairValExtractor"),
+            src = cms.InputTag('elecTauPairsForBgEstQCDenriched'),
+            value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0,1)
+        ),
+       
+        # event weight variables
+        # (accounting for different simulated luminosities of background Monte Carlo samples)
         eventWeight = cms.PSet(
             pluginType = cms.string("ConstObjValExtractor"),
             value = cms.double(1.)
+        ),
+
+        # additional event weight variables for correcting "bias"
+        # of visible invariant electron + tau-jet mass distribution
+        # caused by Mt(electron + tau-jet) transverse mass cut
+        # and cut on CDF (Pzeta - 1.5*PzetaVis) variable
+        kineEventReweightWplusJets = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "WplusJets" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config.clone(
+                src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched')
+            )
+        ),
+        kineEventReweightTTplusJets = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "TTplusJets" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config.clone(
+                src = cms.InputTag('elecTauPairsForBgEstTTplusJetsEnriched')
+            )
+        ),
+        kineEventReweightQCD = cms.PSet(
+            pluginType = cms.string("KineEventReweightExtractor"),
+            weightLookupTable = cms.PSet(
+                fileName = kineReweight_fileName,
+                meName = cms.string(kineReweight_dqmDirectory + "/" + "QCD" + "/" + kineReweight_meName)
+            ),
+            kineVarExtractor = kineVarExtractor_config.clone(
+                src = cms.InputTag('elecTauPairsForBgEstQCDenriched')
+            )
         )
     )
 )
@@ -272,15 +384,15 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatTuple
-                     * process.bgEstSelectLayer1Jets
-#                    * process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-                     * process.selectZtoElecTauEvents
-                     * process.genPhaseSpaceFilter
-                     * process.produceBoolEventSelFlags
-#                    * process.eventDump 
-                     * process.selectEventsByBoolEventSelFlags
-                     * process.ntupleProducer )
+process.p = cms.Path(
+    process.producePatTupleForBgEst
+#   * process.printEventContent   # uncomment to enable dump of event content after PAT-tuple production
+   * process.selectZtoElecTauEvents
+   * process.genPhaseSpaceFilter
+   * process.produceBoolEventSelFlags
+   * process.selectEventsByBoolEventSelFlags
+   * process.ntupleProducer
+)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
