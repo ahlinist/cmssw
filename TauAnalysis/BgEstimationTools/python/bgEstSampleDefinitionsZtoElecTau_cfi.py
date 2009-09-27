@@ -196,13 +196,13 @@ bgEstNtupleOutputFileNamePhotonJets_PtGt35 = cms.string('bgEstNtupleZtoElecTau_P
 #--------------------------------------------------------------------------------
 
 # definitions for producing skimmed samples
-bgEstSampleOutputFileNameQCD_BCtoE_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt20to30.root')
-bgEstSampleOutputFileNameQCD_BCtoE_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt30to80.root')
-bgEstSampleOutputFileNameQCD_BCtoE_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt80to170.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt20to30_partXX.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt30to80_partXX.root')
+bgEstSampleOutputFileNameQCD_BCtoE_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_BCtoE_Pt80to170_partXX.root')
 
-bgEstSampleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt20to30.root')
-bgEstSampleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt30to80.root')
-bgEstSampleOutputFileNameQCD_EMenriched_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt80to170.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt20to30 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt30to80 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
+bgEstSampleOutputFileNameQCD_EMenriched_Pt80to170 = cms.untracked.string('bgEstSampleZtoElecTau_QCD_EMenriched_Pt80to170_partXX.root')
 
 # definitions for reading skimmed samples
 bgEstSampleFileNamesQCD_BCtoE_Pt20to30_part01 = cms.untracked.vstring(
