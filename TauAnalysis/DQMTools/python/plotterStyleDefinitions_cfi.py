@@ -241,61 +241,71 @@ drawOption_black_stacked = cms.PSet(
 )
 
 drawOption_red_stacked = cms.PSet(
-    lineColor = cms.int32(2),
+    lineColor = cms.int32(628),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(2),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(628),
+    fillStyle = cms.int32(3013),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_green_stacked = cms.PSet(
-    lineColor = cms.int32(3),
+    lineColor = cms.int32(817),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(3),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(817),
+    fillStyle = cms.int32(3004),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_blue_stacked = cms.PSet(
-    lineColor = cms.int32(4),
+drawOption_darkblue_stacked = cms.PSet(
+    lineColor = cms.int32(596),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(4),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(596),
+    fillStyle = cms.int32(3005),
+    drawOption = cms.string('hist'),
+    drawOptionLegend = cms.string('f')
+)
+
+drawOption_lightblue_stacked = cms.PSet(
+    lineColor = cms.int32(856),
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(1),
+    fillColor = cms.int32(856),
+    fillStyle = cms.int32(3007),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_yellow_stacked = cms.PSet(
-    lineColor = cms.int32(5),
+    lineColor = cms.int32(396),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(5),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(396),
+    fillStyle = cms.int32(3001),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_magenta_stacked = cms.PSet(
-    lineColor = cms.int32(6),
+drawOption_orange_stacked = cms.PSet(
+    lineColor = cms.int32(797),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(6),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(797),
+    fillStyle = cms.int32(3006),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_cyan_stacked = cms.PSet(
-    lineColor = cms.int32(7),
+drawOption_violett_stacked = cms.PSet(
+    lineColor = cms.int32(877),
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(7),
-    fillStyle = cms.int32(1001),
+    fillColor = cms.int32(877),
+    fillStyle = cms.int32(3003),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
@@ -377,15 +387,18 @@ drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
 drawOption_Ztautau = copy.deepcopy(drawOption_red_stacked)
 drawOption_Zee = copy.deepcopy(drawOption_green_stacked)
-drawOption_Zmumu = copy.deepcopy(drawOption_blue_stacked)
-drawOption_WplusJets = copy.deepcopy(drawOption_cyan_stacked)
-drawOption_ZplusJets = copy.deepcopy(drawOption_magenta_stacked)
+drawOption_Zmumu = copy.deepcopy(drawOption_darkblue_stacked)
+drawOption_WplusJets = copy.deepcopy(drawOption_lightblue_stacked)
+drawOption_Wtaunu = copy.deepcopy(drawOption_red_stacked)
+drawOption_Wmunu = copy.deepcopy(drawOption_darkblue_stacked)
+drawOption_Wenu = copy.deepcopy(drawOption_green_stacked)
+drawOption_ZplusJets = copy.deepcopy(drawOption_lightblue_stacked)
 drawOption_ZeePlusJets = drawOption_Zee
 drawOption_ZmumuPlusJets = drawOption_Zmumu
 drawOption_ZtautauPlusJets = drawOption_Ztautau
-drawOption_TTplusJets = copy.deepcopy(drawOption_gray_stacked)
+drawOption_TTplusJets = copy.deepcopy(drawOption_violett_stacked)
 drawOption_gammaPlusJets = copy.deepcopy(drawOption_yellow_stacked)
-drawOption_QCD = copy.deepcopy(drawOption_magenta_stacked)
+drawOption_QCD = copy.deepcopy(drawOption_orange_stacked)
 drawOption_QCD_BCtoE_Pt20to30 = copy.deepcopy(drawOption_QCD)
 drawOption_QCD_BCtoE_Pt30to80 = copy.deepcopy(drawOption_QCD)
 drawOption_QCD_BCtoE_Pt80to170 = copy.deepcopy(drawOption_QCD)
