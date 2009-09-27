@@ -6,6 +6,7 @@
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
@@ -51,6 +52,9 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 				       << " --> Impact Parameter histograms will NOT be plotted !!";
   }
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
+
+  jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
+  //std::cout << " jetSrc = " << jetSrc_ << std::endl;
 
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   if ( genParticleSrc_.label() == "" ) {
@@ -154,6 +158,8 @@ void MuonHistManager::bookHistograms()
   hMuonHcalIsoPtRel_ = dqmStore.book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
   hMuonIsoSumPtRel_ = dqmStore.book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 200, 0., 2.);
 
+  hMuonDeltaRnearestJet_ = dqmStore.book1D("MuonDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
+
   hMuonParticleFlowIsoPt_ = dqmStore.book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
   hMuonPFChargedHadronIsoPt_ = dqmStore.book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
   hMuonPFNeutralHadronIsoPt_ = dqmStore.book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 20.);   
@@ -199,8 +205,11 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
     return;
   }
 
-  edm::Handle<std::vector<pat::Muon> > patMuons;
+  edm::Handle<pat::MuonCollection> patMuons;
   evt.getByLabel(muonSrc_, patMuons);
+
+  edm::Handle<pat::JetCollection> patJets;
+  evt.getByLabel(jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
@@ -276,6 +285,7 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
     }
 
     fillMuonIsoHistograms(*patMuon, weight);
+    hMuonDeltaRnearestJet_->Fill(getDeltaRnearestJet(patMuon->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillMuonIsoConeSizeDepHistograms(*patMuon, weight);
   }
 }

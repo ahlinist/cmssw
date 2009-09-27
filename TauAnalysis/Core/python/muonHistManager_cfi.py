@@ -6,6 +6,7 @@ muonHistManager = cms.PSet(
       
     muonSource = cms.InputTag('cleanLayer1MuonsSel'),
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
+    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
 
     dqmDirectory_store = cms.string('MuonQuantities'),
