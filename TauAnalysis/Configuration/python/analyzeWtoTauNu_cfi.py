@@ -303,8 +303,8 @@ wTauNuAnalysisSequence = cms.VPSet(
 	),
     cms.PSet(
         filter = cms.string('evtSelTauCharge'),
-        title = cms.string('abs(tau charge) = 1'),
-        saveRunEventNumbers = cms.vstring('')
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
