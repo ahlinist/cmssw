@@ -6,6 +6,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -38,8 +39,7 @@ bool matchesGenTau(const pat::Tau& patTau)
 //
 
 TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
-  : tauJetWeightExtractor_(0),
-    dqmError_(0)
+  : dqmError_(0)
 {
   //std::cout << "<TauHistManager::TauHistManager>:" << std::endl;
 
@@ -53,6 +53,9 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   }
   //std::cout << " vertexSrc = " << vertexSrc_.label() << std::endl;
 
+  jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
+  //std::cout << " jetSrc = " << jetSrc_ << std::endl;
+
   genParticleSrc_ = ( cfg.exists("genParticleSource") ) ? cfg.getParameter<edm::InputTag>("genParticleSource") : edm::InputTag();
   if ( genParticleSrc_.label() == "" ) {
     edm::LogWarning("TauHistManager") << " Configuration parameter 'genParticleSource' not specified" 
@@ -60,10 +63,7 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   }
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
 
-  if ( cfg.exists("tauJetWeightSource") ) {
-    tauJetWeightSrc_ = cfg.getParameter<std::string>("tauJetWeightSource");
-    tauJetWeightExtractor_ = new FakeRateJetWeightExtractor<pat::Tau>(tauJetWeightSrc_);
-  }
+  tauJetWeightExtractors_ = getTauJetWeightExtractors<pat::Tau>(cfg, "tauJetWeightSource");
 
   if ( cfg.exists("tauIndicesToPlot") ) {
     std::string tauIndicesToPlot_string = cfg.getParameter<std::string>("tauIndicesToPlot");
@@ -114,7 +114,10 @@ TauHistManager::~TauHistManager()
 //--- delete "veto" objects for computation of IsoDeposit sums
   clearIsoParam(tauParticleFlowIsoParam_);
 
-  delete tauJetWeightExtractor_;
+  for ( std::vector<FakeRateJetWeightExtractor<pat::Tau>*>::iterator it = tauJetWeightExtractors_.begin();
+	it != tauJetWeightExtractors_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 void TauHistManager::bookHistograms()
@@ -202,6 +205,8 @@ void TauHistManager::bookHistograms()
   hTauEcalIsoPt_ = dqmStore.book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 20.);
   hTauHcalIsoPt_ = dqmStore.book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 20.);
   hTauIsoSumPt_ = dqmStore.book1D("TauIsoSumPt", "Isolation Sum(P_{T})", 100, 0., 20.);
+
+  hTauDeltaRnearestJet_ = dqmStore.book1D("TauDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
   
   hTauParticleFlowIsoPt_ = dqmStore.book1D("TauParticleFlowIsoPt", "Particle Flow Isolation P_{T}", 100, 0., 20.);    
   hTauPFChargedHadronIsoPt_ = dqmStore.book1D("TauPFChargedHadronIsoPt", "Particle Flow (Charged Hadron) Isolation P_{T}", 100, 0., 20.);   
@@ -263,11 +268,6 @@ bool isIndexed(int patTauIndex, const std::vector<int>& tauIndicesToPlot)
   return isIndexed;
 }
 
-double TauHistManager::getTauWeight(const pat::Tau& patTau)
-{
-  return ( tauJetWeightExtractor_ ) ? (*tauJetWeightExtractor_)(patTau) : 1.;
-}
-
 void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
   //std::cout << "<TauHistManager::fillHistograms>:" << std::endl; 
@@ -277,8 +277,11 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     return;
   }
   
-  edm::Handle<std::vector<pat::Tau> > patTaus;
+  edm::Handle<pat::TauCollection> patTaus;
   evt.getByLabel(tauSrc_, patTaus);
+
+  edm::Handle<pat::JetCollection> patJets;
+  evt.getByLabel(jetSrc_, patJets);
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   evt.getByLabel(genParticleSrc_, genParticles);
@@ -291,7 +294,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
-    tauJetWeightSum += getTauWeight(*patTau);
+    tauJetWeightSum += getTauJetWeight<pat::Tau>(*patTau, tauJetWeightExtractors_);
   }
 
   //std::cout << " patTaus.size = " << patTaus->size() << std::endl;
@@ -308,7 +311,8 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(getTauWeight(*patTau)/tauJetWeightSum) : getTauWeight(*patTau);
+    double tauJetWeight = getTauJetWeight<pat::Tau>(*patTau, tauJetWeightExtractors_);
+    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(tauJetWeight/tauJetWeightSum) : tauJetWeight;
 
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);
@@ -403,6 +407,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 				  discrAvailability_hasBeenChecked, weight);
  
     fillTauIsoHistograms(*patTau, weight);
+    hTauDeltaRnearestJet_->Fill(getDeltaRnearestJet(patTau->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillTauIsoConeSizeDepHistograms(*patTau, weight);
   }
 }
