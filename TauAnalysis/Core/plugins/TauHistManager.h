@@ -40,9 +40,8 @@ class TauHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag tauSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
-
-  std::string tauJetWeightSrc_;
 
   typedef std::vector<int> vint;
   vint tauIndicesToPlot_;
@@ -62,7 +61,7 @@ class TauHistManager : public HistManagerBase
 //--- "helper" class for accessing weight values
 //    associated to second tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
-  FakeRateJetWeightExtractor<pat::Tau>* tauJetWeightExtractor_;
+  std::vector<FakeRateJetWeightExtractor<pat::Tau>*> tauJetWeightExtractors_;
 
 //--- histograms
   MonitorElement* hNumTaus_;
@@ -122,6 +121,8 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauEcalIsoPt_;
   MonitorElement* hTauHcalIsoPt_;
   MonitorElement* hTauIsoSumPt_;
+
+  MonitorElement* hTauDeltaRnearestJet_;
 
   MonitorElement* hTauTrkIsoEnProfile_;
   MonitorElement* hTauTrkIsoPtProfile_;
