@@ -7,6 +7,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
+
 #include <TMath.h>
 
 const double epsilon = 0.01;
@@ -25,18 +27,14 @@ bool matchesGenCandidate(const CompositePtrCandidateTMEt<T>& compositePtrCandida
 
 template<typename T>
 CompositePtrCandidateTMEtHistManager<T>::CompositePtrCandidateTMEtHistManager(const edm::ParameterSet& cfg)
-  : tauJetWeightExtractor_(0),
-    dqmError_(0)
+  : dqmError_(0)
 {
   //std::cout << "<CompositePtrCandidateTMEtHistManager::CompositePtrCandidateTMEtHistManager>:" << std::endl;
 
   tauNuCandidateSrc_ = cfg.getParameter<edm::InputTag>("tauNuCandidateSource");
   //std::cout << " tauNuCandidateSrc = " << tauNuCandidateSrc_ << std::endl;
 
-  if ( cfg.exists("tauJetWeightSource") ) {
-    tauJetWeightSrc_ = cfg.getParameter<std::string>("tauJetWeightSource");
-    tauJetWeightExtractor_ = new FakeRateJetWeightExtractor<pat::Tau>(tauJetWeightSrc_);
-  }
+  tauJetWeightExtractors_ = getTauJetWeightExtractors<T>(cfg, "tauJetWeightSource");
 
   dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
   //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
@@ -51,7 +49,10 @@ CompositePtrCandidateTMEtHistManager<T>::CompositePtrCandidateTMEtHistManager(co
 template<typename T>
 CompositePtrCandidateTMEtHistManager<T>::~CompositePtrCandidateTMEtHistManager()
 {
-  delete tauJetWeightExtractor_;
+  for ( typename std::vector<FakeRateJetWeightExtractor<T>*>::iterator it = tauJetWeightExtractors_.begin();
+	it != tauJetWeightExtractors_.end(); ++it ) {
+    delete (*it);
+  }
 }
 
 template<typename T>
@@ -79,9 +80,9 @@ void CompositePtrCandidateTMEtHistManager<T>::bookHistograms()
 }
 
 template<typename T>
-double CompositePtrCandidateTMEtHistManager<T>::getTauWeight(const CompositePtrCandidateTMEt<T>& tauNuCandidate)
+double CompositePtrCandidateTMEtHistManager<T>::getCandidateWeight(const CompositePtrCandidateTMEt<T>& tauNuCandidate)
 {
-  return ( tauJetWeightExtractor_ ) ? (*tauJetWeightExtractor_)(*tauNuCandidate.visDecayProducts()) : 1.;
+  return getTauJetWeight<T>(*tauNuCandidate.visDecayProducts(), tauJetWeightExtractors_);
 }
 
 template<typename T>
@@ -105,7 +106,7 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistograms(const edm::Event& e
 	tauNuCandidate != tauNuCandidates->end(); ++tauNuCandidate ) {
     if ( requireGenMatch_ && !matchesGenCandidate(*tauNuCandidate) ) continue;
 
-    tauJetWeightSum += getTauWeight(*tauNuCandidate);
+    tauJetWeightSum += getCandidateWeight(*tauNuCandidate);
   }
 
   for ( typename CompositePtrCandidateCollection::const_iterator tauNuCandidate = tauNuCandidates->begin();
@@ -116,8 +117,8 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistograms(const edm::Event& e
 
     if ( requireGenMatch_ && !matchesGenCandidate(*tauNuCandidate) ) continue;
 
-    double weight = ( normMethod_ == kNormEvents ) ? 
-      evtWeight*(getTauWeight(*tauNuCandidate)/tauJetWeightSum) : getTauWeight(*tauNuCandidate);
+    double tauJetWeight = getCandidateWeight(*tauNuCandidate);
+    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(tauJetWeight/tauJetWeightSum) : tauJetWeight;
     
     hNuTauCandidatePt_->Fill(tauNuCandidate->pt(), weight);
     hNuTauCandidatePhi_->Fill(tauNuCandidate->phi(), weight);

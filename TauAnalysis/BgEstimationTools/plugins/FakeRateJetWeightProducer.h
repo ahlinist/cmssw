@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.1 $
  *
- * $Id: FakeRateJetWeightProducer.h,v 1.4 2009/08/12 14:34:53 veelken Exp $
+ * $Id: FakeRateJetWeightProducer.h,v 1.1 2009/08/17 16:06:35 veelken Exp $
  *
  */
 
@@ -22,6 +22,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include <string>
+#include <vector>
 
 class FakeRateJetWeightProducer : public edm::EDProducer
 {
@@ -38,10 +39,17 @@ class FakeRateJetWeightProducer : public edm::EDProducer
 
 //--- configuration parameters
   edm::InputTag tauJetSource_;
-  edm::InputTag tauJetIdEffSource_;
-  edm::InputTag qcdJetFakeRateSource_;
-  edm::InputTag tauJetDiscrSource_;
-  double tauJetDiscrThreshold_;
+
+  struct tauJetDiscrEntry
+  {
+    tauJetDiscrEntry(const edm::ParameterSet&);
+    edm::InputTag tauJetIdEffSource_;
+    edm::InputTag qcdJetFakeRateSource_;
+    edm::InputTag tauJetDiscrSource_;
+    double tauJetDiscrThreshold_;
+  };
+
+  std::vector<tauJetDiscrEntry> tauJetDiscriminators_;
 };
 
 #endif  

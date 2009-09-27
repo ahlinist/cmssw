@@ -38,9 +38,6 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   edm::InputTag diTauCandidateSrc_;
   edm::InputTag vertexSrc_;
 
-  std::string diTauLeg1WeightSrc_;
-  std::string diTauLeg2WeightSrc_;
-  
   std::string dqmDirectory_store_;
   
   bool requireGenMatch_;
@@ -48,8 +45,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 //--- "helper" class for accessing weight values
 //    associated to second tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
-  FakeRateJetWeightExtractor<T1>* diTauLeg1WeightExtractor_;
-  FakeRateJetWeightExtractor<T2>* diTauLeg2WeightExtractor_;
+  std::vector<FakeRateJetWeightExtractor<T1>*> diTauLeg1WeightExtractors_;
+  std::vector<FakeRateJetWeightExtractor<T2>*> diTauLeg2WeightExtractors_;
 
 //--- "helper" classes for accessing the tracks 
 //    of the two tau decay products
