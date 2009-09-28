@@ -16,7 +16,9 @@ int main(int argc,  char * argv[]){
   cout<<"Please make sure that the peak time is expected in SAMPLE units"<<endl;
   cout<<"This program will run using the relative timing"<<endl;
 
-
+  int fromSL = 0;
+  if (argc > 4) fromSL = atoi(argv[4]);
+  
 
  ifstream FileXML(argv[1]);
   if( !(FileXML.is_open()) ){cout<<"Error: file"<<argv[1]<<" not found!!"<<endl;return -2;}
@@ -77,7 +79,7 @@ int main(int argc,  char * argv[]){
   if( !(TxtFile.is_open()) ){cout<<"Error: file"<<argv[2]<<" not found!!"<<endl;return -2;}
   int Shift[71];
   for(int i=0;i<71;i++){Shift[i]=-1000;}
-  int TTnum;
+  int TTnum,SLSMn,SLshift;
   float rms,shift,rel_shift, rel_rms;
   int HowManyShifts = 0;
   
@@ -85,19 +87,29 @@ int main(int argc,  char * argv[]){
   while( !(TxtFile.eof()) ){
     TxtFile.getline(Buffer,5000);
     if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
-      {
-	sscanf(Buffer,"%d %f %f %f %f",&TTnum,&shift,&rms,&rel_shift,&rel_rms);
-	//cout<<"TT: "<<TTnum<<endl;
-	if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
-	if(rel_shift <= -10){cout<<" shift <= 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	if(rel_rms < 0){ cout<<" rms < 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	HowManyShifts++;
-	float move = (0. - rel_shift)*25.;
-	int temp = int(move);
-	if( fabs(rel_shift*25.+temp) < fabs(rel_shift*25.+temp+1) ){Shift[TTnum]=temp;}
-	else{Shift[TTnum]=temp+1;}
-	if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }
-      }
+       {
+	   if (fromSL){
+	      sscanf(Buffer,"%d %d %d",&SLSMn,&TTnum,&SLshift);
+          if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
+	      HowManyShifts++;
+          Shift[TTnum]=-SLshift+13;//Temporary shift... PLEASE CHANGE
+       } 
+	   else{
+	      sscanf(Buffer,"%d %f %f %f %f",&TTnum,&shift,&rms,&rel_shift,&rel_rms);
+	      //cout<<"TT: "<<TTnum<<endl;
+	      if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
+	      if(rel_shift <= -10){cout<<" shift <= 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
+	      if(rel_rms < 0){ cout<<" rms < 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
+	      HowManyShifts++;
+	      float move = (0. - rel_shift)*25.;
+	      int temp = int(move);
+		  int lisi = 1;
+		  if (move >= 0 ) lisi = -1;  
+	      if( fabs(rel_shift*25.+temp) < fabs(rel_shift*25.+temp+lisi) ){Shift[TTnum]=temp;}
+	      else{Shift[TTnum]=temp+lisi;}
+	      if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }
+       }
+    }
   }//end of file
   TxtFile.close();
   cout<<"Found "<<HowManyShifts<<" tt timing while reading the file "<<argv[2]<<" (should be 68)"<<endl;
