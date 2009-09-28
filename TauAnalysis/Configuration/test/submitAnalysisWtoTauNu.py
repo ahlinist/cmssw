@@ -15,36 +15,36 @@ outputDirectory = "/castor/cern.ch/user/l/liis/WTauNuPlots"
 #--------------------------------------------------------------------------------
 
 # W --> tau nu jobs
-for i in range(3): #4
+for i in range(4): #4
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wtaunu_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-                  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+                  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
 
 #QCD jobs
-for i in range(3):
+for i in range(33): #33
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "qcd_W_part%(i)02d" % {"i" : (i+1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-                  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+                  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
 
 # W --> mu nu jobs
-for i in range(3):#13
+for i in range(13):#13
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wmunu_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-                  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+                  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
 
 # W --> e nu jobs
-for i in range(3):#10
+for i in range(10):#10
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "Wenu_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-                  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+                  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
 
 # Z + jets jobs
-for i in range(3): #10
+for i in range(10): #10
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "ZplusJets_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-                  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
-
-for i in range(3): #18
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+                  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
+# Ttbar jobs
+for i in range(18): #18
     submitToBatch(configFile = "runWtoTauNu_cfg.py", channel = "WtoTauNu", sample = "TTplusJets_part%(i)02d" % {"i" : (i + 1)},
-                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = 2000; applyFactorization = false",
-		  job = "analysis", queue = "1nh", outputDirectory = outputDirectory)
+                  replFunction = makeReplacementsAnalysis, replacements = "maxEvents = -1; applyFactorization = false",
+		  job = "analysis", queue = "1nd", outputDirectory = outputDirectory)
