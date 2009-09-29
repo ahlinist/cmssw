@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 // Package:    Onia2MuMu
 // Class:      Onia2MuMu
@@ -34,6 +34,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theCaloMuonsLabel          = iConfig.getParameter<edm::InputTag>("CaloMuonsLabel");
   theTrackLabel              = iConfig.getParameter<edm::InputTag>("TrackLabel");
   thePhotonLabel             = iConfig.getParameter<edm::InputTag>("PhotonLabel");
+  thePhotonMinE              = iConfig.getParameter<double>("PhotonMinEnergy");
   theBeamSpotLabel           = iConfig.getParameter<edm::InputTag>("BeamSpotLabel");
   thePrimaryVertexLabel      = iConfig.getParameter<edm::InputTag>("PrimaryVertexLabel");
   thetriggerEventLabel       = iConfig.getParameter<string>("triggerEventLabel");
@@ -250,6 +251,11 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_glb_normChi2",     Reco_mu_glb_normChi2,    "Reco_mu_glb_normChi2[Reco_mu_glb_size]/D");
     // fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsStrip",    Reco_mu_glb_nhitsStrip,   "Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPixB",    Reco_mu_glb_nhitsPixB,   "Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPixE",    Reco_mu_glb_nhitsPixE,   "Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPix1Hit",    Reco_mu_glb_nhitsPix1Hit,   "Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPix1HitBE",    Reco_mu_glb_nhitsPix1HitBE,   "Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]/I");
       fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
       fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
       fTree->Branch("Reco_mu_glb_caloComp",   Reco_mu_glb_caloComp,  "Reco_mu_glb_caloComp[Reco_mu_glb_size]/D"); 
@@ -431,9 +437,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_QQ_s",        Reco_QQ_s,       "Reco_QQ_s[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_VtxIsVal", Reco_QQ_VtxIsVal,"Reco_QQ_VtxIsVal[Reco_QQ_size]/B");
     fTree->Branch("Reco_QQ_Vtx",     "TClonesArray",       &Reco_QQ_Vtx, 32000, 0);
-    fTree->Branch("Reco_QQ_VxE",     Reco_QQ_VxE,    "Reco_QQ_VxE[Reco_QQ_size]/D");
-    fTree->Branch("Reco_QQ_VyE",     Reco_QQ_VyE,    "Reco_QQ_VyE[Reco_QQ_size]/D");
-    fTree->Branch("Reco_QQ_VzE",     Reco_QQ_VzE,    "Reco_QQ_VzE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VxxE",     Reco_QQ_VxxE,    "Reco_QQ_VxxE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VyyE",     Reco_QQ_VyyE,    "Reco_QQ_VyyE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VzzE",     Reco_QQ_VzzE,    "Reco_QQ_VzzE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VyxE",     Reco_QQ_VyxE,    "Reco_QQ_VyxE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VzxE",     Reco_QQ_VzxE,    "Reco_QQ_VzxE[Reco_QQ_size]/D");
+    fTree->Branch("Reco_QQ_VzyE",     Reco_QQ_VzyE,    "Reco_QQ_VzyE[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_lxy",      Reco_QQ_lxy,     "Reco_QQ_lxy[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_lxyErr",   Reco_QQ_lxyErr,  "Reco_QQ_lxyErr[Reco_QQ_size]/D");
     fTree->Branch("Reco_QQ_normChi2", Reco_QQ_normChi2,"Reco_QQ_normChi2[Reco_QQ_size]/D");
@@ -481,9 +490,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_BeamSpot_y",     &Reco_BeamSpot_y,  "Reco_BeamSpot_y/D");
     fTree->Branch("Reco_BeamSpot_z",     &Reco_BeamSpot_z,  "Reco_BeamSpot_z/D");
     if(!theminimumFlag) {
-      fTree->Branch("Reco_BeamSpot_xE",    &Reco_BeamSpot_xE, "Reco_BeamSpot_xE/D");
-      fTree->Branch("Reco_BeamSpot_yE",    &Reco_BeamSpot_yE, "Reco_BeamSpot_yE/D");
-      fTree->Branch("Reco_BeamSpot_zE",    &Reco_BeamSpot_zE, "Reco_BeamSpot_zE/D");
+      fTree->Branch("Reco_BeamSpot_xxE",    &Reco_BeamSpot_xxE, "Reco_BeamSpot_xxE/D");
+      fTree->Branch("Reco_BeamSpot_yyE",    &Reco_BeamSpot_yyE, "Reco_BeamSpot_yyE/D");
+      fTree->Branch("Reco_BeamSpot_zzE",    &Reco_BeamSpot_zzE, "Reco_BeamSpot_zzE/D");
+      fTree->Branch("Reco_BeamSpot_yxE",    &Reco_BeamSpot_yxE, "Reco_BeamSpot_yxE/D");
+      fTree->Branch("Reco_BeamSpot_zyE",    &Reco_BeamSpot_zyE, "Reco_BeamSpot_zyE/D");
+      fTree->Branch("Reco_BeamSpot_zxE",    &Reco_BeamSpot_zxE, "Reco_BeamSpot_zxE/D");
     }
   }
 
@@ -491,9 +503,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
     fTree->Branch("Reco_PriVtx_size",    &Reco_PriVtx_size,    "Reco_PriVtx_size/I"); 
     fTree->Branch("Reco_PriVtx_3vec",    "TClonesArray",       &Reco_PriVtx_3vec, 32000, 0); 
     if(!theminimumFlag) {
-      fTree->Branch("Reco_PriVtx_xE",       Reco_PriVtx_xE,      "Reco_PriVtx_xE[Reco_PriVtx_size]/D"); 
-      fTree->Branch("Reco_PriVtx_yE",       Reco_PriVtx_yE,      "Reco_PriVtx_yE[Reco_PriVtx_size]/D"); 
-      fTree->Branch("Reco_PriVtx_zE",       Reco_PriVtx_zE,      "Reco_PriVtx_zE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_xxE",       Reco_PriVtx_xxE,      "Reco_PriVtx_xxE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_yyE",       Reco_PriVtx_yyE,      "Reco_PriVtx_yyE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_zzE",       Reco_PriVtx_zzE,      "Reco_PriVtx_zzE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_yxE",       Reco_PriVtx_yxE,      "Reco_PriVtx_yxE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_zyE",       Reco_PriVtx_zyE,      "Reco_PriVtx_zyE[Reco_PriVtx_size]/D"); 
+      fTree->Branch("Reco_PriVtx_zxE",       Reco_PriVtx_zxE,      "Reco_PriVtx_zxE[Reco_PriVtx_size]/D"); 
     }
     fTree->Branch("Reco_PriVtx_trkSize" , Reco_PriVtx_trkSize, "Reco_PriVtx_trkSize[Reco_PriVtx_size]/I");
     fTree->Branch("Reco_PriVtx_chi2",     Reco_PriVtx_chi2,    "Reco_PriVtx_chi2[Reco_PriVtx_size]/D"); 
@@ -648,7 +663,7 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   pfClusters.clear();
   for(PFCandidateCollection::const_iterator itPFC = pfAll->begin();
       itPFC != pfAll->end(); ++itPFC) {
-    if (PFCandidate::ParticleType(itPFC->particleId()) == PFCandidate::gamma && itPFC->energy() > 2.0) {
+    if (PFCandidate::ParticleType(itPFC->particleId()) == PFCandidate::gamma && itPFC->energy() > thePhotonMinE) {
       pfClusters.push_back(*itPFC);
     }
   }
@@ -1306,6 +1321,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
   if ( theStoreGLBMuonFlag ) {
     Reco_mu_glb_size=0;
     if(theDebugLevel>1) cout << "SIZE Global Muons " <<  theGlobalMuons.size() << endl;
+  
     for (reco::MuonCollection::const_iterator muoni = theGlobalMuons.begin();
          muoni != theGlobalMuons.end()&&Reco_mu_glb_size<Max_mu_size; 
          muoni++) {
@@ -1337,9 +1353,25 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       // Reco_mu_glb_ndof[Reco_mu_glb_size]=glbTrack->ndof();
       Reco_mu_glb_nhitstrack[Reco_mu_glb_size]=innTrack->numberOfValidHits();
  
-      std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
-      Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theMuonHits.at(0);
-      Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
+      if ( theAODFlag ) {
+	Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]=-1;
+	Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]=-1;
+      } else {
+	std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
+	Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theMuonHits.at(0);
+	Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
+	std::vector<unsigned int> theTrackHits = this->trackStatHits(*glbTrack);
+	Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]=theTrackHits.at(0);
+	Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]=theTrackHits.at(1);
+	Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]=theTrackHits.at(2);
+	Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]=theTrackHits.at(3);
+	Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]=theTrackHits.at(4);
+      }
 
       Reco_mu_glb_caloComp[Reco_mu_glb_size]=muoni->caloCompatibility();
       Reco_mu_glb_segmComp[Reco_mu_glb_size]=muon::segmentCompatibility(*muoni);;
@@ -1361,6 +1393,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
   if ( theStoreTRKMuonFlag ) {
     Reco_mu_trk_size=0;
     if(theDebugLevel>1) cout << "SIZE Trk Muons " <<  theTrkMuons.size() << endl;
+
     for (reco::MuonCollection::const_iterator trkmuoni = theTrkMuons.begin();
          trkmuoni != theTrkMuons.end()&&Reco_mu_trk_size<Max_mu_size; 
          trkmuoni++) {
@@ -1387,7 +1420,8 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       Reco_mu_trk_normChi2[Reco_mu_trk_size]=innTrack->chi2()/innTrack->ndof();
       // Reco_mu_trk_ndof[Reco_mu_trk_size]=innTrack->ndof();
       Reco_mu_trk_nhitstrack[Reco_mu_trk_size]=innTrack->numberOfValidHits();
- 
+
+     
       // std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
       // Reco_mu_trk_nhitsDT[Reco_mu_trk_size]=-1;
       // Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]=-1;
@@ -1683,9 +1717,12 @@ void Onia2MuMu::fillPrimaryVertex(const edm::Event &iEvent) {
     TVector3 vertex(0.0,0.0,0.0);
     vertex.SetXYZ(vtx->position().x(),vtx->position().y(),vtx->position().z());
     new((*Reco_PriVtx_3vec)[Reco_PriVtx_size])TVector3(vertex);
-    Reco_PriVtx_xE[Reco_PriVtx_size]=vtx->xError();
-    Reco_PriVtx_yE[Reco_PriVtx_size]=vtx->yError();
-    Reco_PriVtx_zE[Reco_PriVtx_size]=vtx->zError();
+    Reco_PriVtx_xxE[Reco_PriVtx_size]=vtx->covariance(0,0);
+    Reco_PriVtx_yyE[Reco_PriVtx_size]=vtx->covariance(1,1);
+    Reco_PriVtx_zzE[Reco_PriVtx_size]=vtx->covariance(2,2);
+    Reco_PriVtx_yxE[Reco_PriVtx_size]=vtx->covariance(1,0);
+    Reco_PriVtx_zyE[Reco_PriVtx_size]=vtx->covariance(2,1);
+    Reco_PriVtx_zxE[Reco_PriVtx_size]=vtx->covariance(2,0);
     Reco_PriVtx_trkSize[Reco_PriVtx_size]=vtx->tracksSize();
     Reco_PriVtx_chi2[Reco_PriVtx_size]=vtx->chi2();
     Reco_PriVtx_ndof[Reco_PriVtx_size]=vtx->ndof();
@@ -1718,9 +1755,12 @@ void Onia2MuMu::fillBeamSpot(const edm::Event &iEvent) {
   Reco_BeamSpot_x=bs.x0();
   Reco_BeamSpot_y=bs.y0();
   Reco_BeamSpot_z=bs.z0();
-  Reco_BeamSpot_xE=bs.x0Error();
-  Reco_BeamSpot_yE=bs.y0Error();
-  Reco_BeamSpot_zE=bs.z0Error();
+  Reco_BeamSpot_xxE=bs.covariance(0,0);
+  Reco_BeamSpot_yyE=bs.covariance(1,1);
+  Reco_BeamSpot_zzE=bs.covariance(2,2);
+  Reco_BeamSpot_yxE=bs.covariance(1,0);
+  Reco_BeamSpot_zyE=bs.covariance(2,1);
+  Reco_BeamSpot_zxE=bs.covariance(2,0);
   if(theDebugLevel>1) cout<<"Beam Spot x="<<bs.x0()<<" y="<<bs.y0()<<endl;
 
 
@@ -2000,7 +2040,7 @@ TLorentzVector Onia2MuMu::lorentzMomentumKa(const reco::Track & tr) const {
 // Fill any onia category
 /////////////////////////////////////////////////////////////////////
 void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m2, TVector3 vperp2, int oniacato) {
-
+ 
   if (oniacato<0  ) return;
   // if ( muon1->charge() == muon2->charge() ) continue;
   Reco_QQ_sign[Reco_QQ_size]=0;
@@ -2077,9 +2117,12 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
       vtx.SetXYZ(v.x(),v.y(),v.z());
       new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
       
-      Reco_QQ_VxE[Reco_QQ_size]=sqrt(err.cxx());
-      Reco_QQ_VyE[Reco_QQ_size]=sqrt(err.cyy());
-      Reco_QQ_VzE[Reco_QQ_size]=sqrt(err.czz());
+      Reco_QQ_VxxE[Reco_QQ_size]=err.cxx();
+      Reco_QQ_VyyE[Reco_QQ_size]=err.cyy();
+      Reco_QQ_VzzE[Reco_QQ_size]=err.czz();
+      Reco_QQ_VyxE[Reco_QQ_size]=err.cyx();
+      Reco_QQ_VzxE[Reco_QQ_size]=err.czx();
+      Reco_QQ_VzyE[Reco_QQ_size]=err.czy();
       Reco_QQ_lxy[Reco_QQ_size]= v.perp();
       Reco_QQ_lxyErr[Reco_QQ_size]= sqrt(err.rerr(v));
       Reco_QQ_normChi2[Reco_QQ_size]= newQQ->chiSquared()/newQQ->degreesOfFreedom();
@@ -2102,9 +2145,12 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
     } else {
       TVector3 vtx(-1,-1,-1);
       new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
-      Reco_QQ_VxE[Reco_QQ_size]=-1;
-      Reco_QQ_VyE[Reco_QQ_size]=-1;
-      Reco_QQ_VzE[Reco_QQ_size]=-1;
+      Reco_QQ_VxxE[Reco_QQ_size]=-1;
+      Reco_QQ_VyyE[Reco_QQ_size]=-1;
+      Reco_QQ_VzzE[Reco_QQ_size]=-1;
+      Reco_QQ_VyxE[Reco_QQ_size]=-1;
+      Reco_QQ_VzxE[Reco_QQ_size]=-1;
+      Reco_QQ_VzyE[Reco_QQ_size]=-1;
       Reco_QQ_lxy[Reco_QQ_size]= -1;
       Reco_QQ_lxyErr[Reco_QQ_size]= -1;
       Reco_QQ_normChi2[Reco_QQ_size]= -1;
@@ -2129,9 +2175,12 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
       vtx.SetXYZ(v.x(),v.y(),v.z());
       new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
       
-      Reco_QQ_VxE[Reco_QQ_size]=sqrt(err.cxx());
-      Reco_QQ_VyE[Reco_QQ_size]=sqrt(err.cyy());
-      Reco_QQ_VzE[Reco_QQ_size]=sqrt(err.czz());
+      Reco_QQ_VxxE[Reco_QQ_size]=err.cxx();
+      Reco_QQ_VyyE[Reco_QQ_size]=err.cyy();
+      Reco_QQ_VzzE[Reco_QQ_size]=err.czz();
+      Reco_QQ_VyxE[Reco_QQ_size]=err.cyx();
+      Reco_QQ_VzxE[Reco_QQ_size]=err.czx();
+      Reco_QQ_VzyE[Reco_QQ_size]=err.czy();
       Reco_QQ_lxy[Reco_QQ_size]= v.perp();
       Reco_QQ_lxyErr[Reco_QQ_size]= sqrt(err.rerr(v));
       Reco_QQ_normChi2[Reco_QQ_size]= tv.normalisedChiSquared();
@@ -2147,9 +2196,12 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
       Reco_QQ_VtxIsVal[Reco_QQ_size]=false;
       TVector3 vtx(-1,-1,-1);
       new((*Reco_QQ_Vtx)[Reco_QQ_size])TVector3(vtx);
-      Reco_QQ_VxE[Reco_QQ_size]=-1;
-      Reco_QQ_VyE[Reco_QQ_size]=-1;
-      Reco_QQ_VzE[Reco_QQ_size]=-1;
+      Reco_QQ_VxxE[Reco_QQ_size]=-1;
+      Reco_QQ_VyyE[Reco_QQ_size]=-1;
+      Reco_QQ_VzzE[Reco_QQ_size]=-1;
+      Reco_QQ_VyxE[Reco_QQ_size]=-1;
+      Reco_QQ_VzxE[Reco_QQ_size]=-1;
+      Reco_QQ_VzyE[Reco_QQ_size]=-1;
       Reco_QQ_lxy[Reco_QQ_size]= -1;
       Reco_QQ_lxyErr[Reco_QQ_size]= -1;
       Reco_QQ_normChi2[Reco_QQ_size]= -1;
@@ -2179,7 +2231,7 @@ void Onia2MuMu::fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m
       }
     }
   }
-  if (theStoreBpFlag && Reco_QQ_sign[Reco_QQ_size]==0 && (int)oniacato<=maxCatToStoreBp) {
+  if (theStoreBpFlag && Reco_QQ_sign[Reco_QQ_size]==0 && oniacato<=(int)maxCatToStoreBp) {
  
     int countTracks = 0;
     for(TrackCollection::const_iterator itTr = noMuonTracks.begin();
@@ -2242,6 +2294,30 @@ std::vector<unsigned int> Onia2MuMu::muonStatHits(const reco::Track& tr) {
   theMuonHits.push_back(nRecHitCSC);
   theMuonHits.push_back(nRecHitRPC);
   return theMuonHits; 
+}
+
+std::vector<unsigned int> Onia2MuMu::trackStatHits(const reco::Track& tr) {
+  std::vector<unsigned int> theTrackHits;
+  unsigned int nRecHitPixelB(0), nRecHitPixelE(0), nRecHitStrip(0), nhits(0);
+  unsigned int firstlayer(0), firstdisk(0);
+  for(trackingRecHit_iterator recHit = tr.recHitsBegin(); recHit != tr.recHitsEnd(); ++recHit){
+     DetId detIdHit = (*recHit)->geographicalId();
+     if (detIdHit.det() == DetId::Tracker ){
+       if ((detIdHit.subdetId() == StripSubdetector::TIB)||(detIdHit.subdetId() == StripSubdetector::TOB)||(detIdHit.subdetId() == StripSubdetector::TEC)||(detIdHit.subdetId() == StripSubdetector::TIB)) nRecHitStrip++;
+	   else if (detIdHit.subdetId() == PixelSubdetector::PixelBarrel) {nhits++;nRecHitPixelB++;if (nhits==1){PixelBarrelName PixB(detIdHit);firstlayer=PixB.layerName();}}
+	   else if (detIdHit.subdetId() == PixelSubdetector::PixelEndcap) {nhits++;nRecHitPixelE++;if (nhits==1){PixelEndcapName PixE(detIdHit);firstdisk =PixE.diskName();}}
+     }
+
+   }
+
+  theTrackHits.push_back(nRecHitStrip); 
+  theTrackHits.push_back(nRecHitPixelB);
+  theTrackHits.push_back(nRecHitPixelE);
+  if (firstlayer>0) {theTrackHits.push_back(firstlayer);theTrackHits.push_back(1);}
+  if (firstdisk>0)  {theTrackHits.push_back(firstdisk);theTrackHits.push_back(2);}
+  if (firstlayer==0&&firstdisk==0) {theTrackHits.push_back(firstlayer);theTrackHits.push_back(0);}
+
+  return theTrackHits; 
 }
 
 //define this as a plug-in
