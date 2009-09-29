@@ -38,7 +38,7 @@ process.compress = cms.OutputModule("PoolOutputModule",
         'keep *_kt4PFJets_*_*',
         'keep *_kt6PFJets_*_*',
         'keep *_antikt5PFJets_*_*',
-        'keep *_iterativeCone5CaloJets_*_*',
+        'keep *_iterativeCone5PFJets_*_*',
         #------- Trigger collections ------
         'keep edmTriggerResults_TriggerResults_*_*',
         'keep *_hltTriggerSummaryAOD_*_*',
@@ -51,6 +51,7 @@ process.compress = cms.OutputModule("PoolOutputModule",
         #------- Various collections ------
         'keep *_EventAuxilary_*_*',
         'keep *_pixelVertices_*_*',
+        'keep *_hcalnoise_*_*',
         #------- MET collections ----------
         'keep *_metHO_*_*',
         'keep *_metNoHF_*_*',
