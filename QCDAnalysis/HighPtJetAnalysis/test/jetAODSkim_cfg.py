@@ -57,7 +57,7 @@ process.compress = cms.OutputModule("PoolOutputModule",
         'keep *_metNoHFHO_*_*', 
         'keep *_met_*_*'),
     SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimPath')), 
-    fileName = cms.untracked.string('/tmp/kkousour/JetAOD.root')
+    fileName = cms.untracked.string('JetAOD.root')
 )
 
 process.p = cms.EndPath(process.compress)
