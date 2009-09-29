@@ -13,7 +13,7 @@ process.source = cms.Source("PoolSource",
 #############   Trigger selection  ###################
 process.hltBit = cms.EDFilter("HLTHighLevel",
     TriggerResultsTag  = cms.InputTag("TriggerResults","","HLT"),
-    HLTPaths           = cms.vstring("HLT_Jet30"),
+    HLTPaths           = cms.vstring("HLT_L1Jet15"),
     eventSetupPathsKey = cms.string(''),
     andOr              = cms.bool(True), #----- True = OR, False = AND between the HLTPaths
     throw              = cms.bool(True)
