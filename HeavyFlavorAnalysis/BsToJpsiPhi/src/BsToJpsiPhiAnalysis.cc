@@ -1069,7 +1069,7 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
       bsRootTree_->GenNumberOfBsDaughters_ = numBsDaughters;
 
       // events Bs->Jpsi KK
-      if (numBsDaughters ==3){
+      if (numBsDaughters == 3 ){
 	const Candidate* Jpsi = 0;
 	const Candidate* Kp = 0;
 	const Candidate* Km = 0;
@@ -1084,66 +1084,68 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	  bsRootTree_->isGenBsJpsiKKEvent_ = 1;
       }
       
-      const Candidate * candJpsi = 0;
-      const Candidate * candPhi = 0;
-      for(int j = 0; j < numBsDaughters; ++ j) {
-	const Candidate * d = genBsCand.daughter( j );
-	int dauId = d->pdgId();
-	
-	if(abs(dauId) == 443 ) candJpsi = d;
-	if(abs(dauId) == 333  )candPhi = d;
-	
-      }
-
-      bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
-      bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
-      if(bFoundJpsiPhi){
-	// loop over jpsi daughters, check for muons
-	const Candidate * candMu1 = 0;
-	const Candidate * candMu2 = 0;
-	for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
-	  const Candidate * jpsiDa = candJpsi->daughter( k );
-	  if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
-	  if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
-	  //	    cout<<"      **** AS: jpsiDaughter pid = " << jpsiDa->pdgId() << endl;
+      if (numBsDaughters == 2){
+	const Candidate * candJpsi = 0;
+	const Candidate * candPhi = 0;
+	for(int j = 0; j < numBsDaughters; ++ j) {
+	  const Candidate * d = genBsCand.daughter( j );
+	  int dauId = d->pdgId();
+	  
+	  if(abs(dauId) == 443 ) candJpsi = d;
+	  if(abs(dauId) == 333  )candPhi = d;
+	  
 	}
 	
-	
-	// loop over phi daughters check for Kaons
-	const Candidate * candKaon1 = 0;
-	const Candidate * candKaon2 = 0;
-	for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
-	  const Candidate * candK = candPhi->daughter ( ikaon );
-	  if( candK->pdgId() == 321 ) candKaon1 = candK;
-	  if( candK->pdgId() == -321 ) candKaon2 = candK;
-	  //	    cout<<"     ****** AS phi daughter pid = " << candK -> pdgId() << endl;
-	}
-	// if all fulfilled, set Gen flag and set pointers to gen particles
-	
-	if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
-	  bsRootTree_->isGenBsJpsiPhiMuMuKKEvent_ = 1;
-	  
-	  genBs = &genBsCand;
-	  genPhi = candPhi;
-	  genJpsi = candJpsi;
-	  genMu1 = candMu1;
-	  genMu2 = candMu2;
-	  genK1 = candKaon1;
-	  genK2 = candKaon2;
-	  
-	  // consistency check
-	  bool Bconsistent = genBs && genPhi && genJpsi && genMu1 && genMu2 && genK1 && genK2;
-	  if( !Bconsistent ) {
-	    cout<<"    **** AS:  !Bconsistent " << endl;
-	    exit(1);
-	      
+	bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
+	bsRootTree_->isGenBsJpsiPhiEvent_ = bFoundJpsiPhi;
+	if(bFoundJpsiPhi){
+	  // loop over jpsi daughters, check for muons
+	  const Candidate * candMu1 = 0;
+	  const Candidate * candMu2 = 0;
+	  for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+	    const Candidate * jpsiDa = candJpsi->daughter( k );
+	    if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
+	    if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
+	    //	    cout<<"      **** AS: jpsiDaughter pid = " << jpsiDa->pdgId() << endl;
 	  }
-	}
-      	
-      }//  end if(bFoundJpsiPhi)
+	  
+	  
+	  // loop over phi daughters check for Kaons
+	  const Candidate * candKaon1 = 0;
+	  const Candidate * candKaon2 = 0;
+	  for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
+	    const Candidate * candK = candPhi->daughter ( ikaon );
+	    if( candK->pdgId() == 321 ) candKaon1 = candK;
+	    if( candK->pdgId() == -321 ) candKaon2 = candK;
+	    //	    cout<<"     ****** AS phi daughter pid = " << candK -> pdgId() << endl;
+	  }
+	  // if all fulfilled, set Gen flag and set pointers to gen particles
+	  
+	  if( candMu1 && candMu2 && candKaon1 && candKaon2 ){
+	    bsRootTree_->isGenBsJpsiPhiMuMuKKEvent_ = 1;
+	    
+	    genBs = &genBsCand;
+	    genPhi = candPhi;
+	    genJpsi = candJpsi;
+	    genMu1 = candMu1;
+	    genMu2 = candMu2;
+	    genK1 = candKaon1;
+	    genK2 = candKaon2;
+	    
+	    // consistency check
+	    bool Bconsistent = genBs && genPhi && genJpsi && genMu1 && genMu2 && genK1 && genK2;
+	    if( !Bconsistent ) {
+	      cout<<"    **** AS:  !Bconsistent " << endl;
+	      exit(1);
+	      
+	    }
+	  }
 
-    }
+	}//  end if(bFoundJpsiPhi)
+      }
       
+    }
+    
   }// AS: end loop over GenParticles
   
   
