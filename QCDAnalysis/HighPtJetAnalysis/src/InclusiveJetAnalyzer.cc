@@ -3,7 +3,8 @@
 #include "DataFormats/Provenance/interface/Provenance.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/JetAnaSelector.h"
-#include <SimDataFormats/HepMCProduct/interface/GenInfoProduct.h>
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 
 using namespace std;
 using namespace edm;
@@ -66,11 +67,11 @@ void InclusiveJetAnalyzer::endJob(){
 }
 
 void InclusiveJetAnalyzer::beginRun(const edm::Run &run, const edm::EventSetup &iConfig){
-  edm::Handle<edm::GenInfoProduct> genInfoProd;
+  edm::Handle<GenRunInfoProduct> genRunInfoProd;
   double gCrossSect=0;
-  run.getByLabel("source",genInfoProd);
-  if (genInfoProd.isValid()){
-    gCrossSect=genInfoProd->external_cross_section();
+  run.getByLabel("generator", genRunInfoProd);
+  if (genRunInfoProd.isValid()){
+    gCrossSect=genRunInfoProd->externalXSecLO().value();
   }
   else {
     cout<<"[InclusiveJetAnalyzer] cross section is inVALID!!!"<<endl;
@@ -100,13 +101,13 @@ void InclusiveJetAnalyzer::analyze(const edm::Event &iEvent, const edm::EventSet
     firstEvent=false;
 
   }
-  
-  edm::Handle< double > genEventScale;
+  edm::Handle<GenEventInfoProduct> hEventInfo;
+  iEvent.getByLabel("generator", hEventInfo);
   double ptHat;
-  try {  iEvent.getByLabel( "genEventScale", genEventScale ); }
+  try {  iEvent.getByLabel("generator", hEventInfo); }
   catch (...) {cerr<<"NoEventScale"<<endl;}
-  if (genEventScale.isValid()){
-    ptHat=*genEventScale;
+  if (hEventInfo.isValid()){
+    ptHat = hEventInfo->binningValues()[0];
   }
   else ptHat=-1;
 
