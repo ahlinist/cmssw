@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.GlobalTag.globaltag = 'MC_31X_V8::All'
+process.GlobalTag.globaltag = 'MC_31X_V3::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     OutputFileName       = cms.string('test_312.root'),
@@ -46,6 +46,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVertices"),
     TrackLabel           = cms.InputTag("generalTracks"),
     PhotonLabel          = cms.InputTag("particleFlow"),
+    PhotonMinEnergy      = cms.double(2.0),
     triggerEventLabel    = cms.string("hltTriggerSummaryAOD"),
     triggerResultsLabel  = cms.string("TriggerResults"),
     HLTprocessName8e29   = cms.string("HLT8E29"),

@@ -61,6 +61,10 @@
 #include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
 #include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
 
+#include "DataFormats/SiPixelDetId/interface/PixelModuleName.h"
+#include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
+#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
+
 #include <memory>
 #include <iostream>
 #include <string>
@@ -121,6 +125,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       TLorentzVector lorentzMomentumPi(const reco::Track& tr) const;
       TLorentzVector lorentzMomentumKa(const reco::Track& tr) const;
       std::vector<unsigned int> muonStatHits(const reco::Track& tr);
+      std::vector<unsigned int> trackStatHits(const reco::Track& tr);
       TLorentzVector lorentzTriObj(const trigger::TriggerObject& muon) const;
       double invMass(const reco::Track& lhs, const reco::Track& rhs) const;
 
@@ -134,6 +139,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       edm::InputTag theCaloMuonsLabel;             
       edm::InputTag theTrackLabel;                // Track information
       edm::InputTag thePhotonLabel;               // Photon information
+      double thePhotonMinE;                       // Photon Mininum Energy
       edm::InputTag theBeamSpotLabel;            // Beam Spot
       edm::InputTag thePrimaryVertexLabel;        // Primary Vertex
       string thetriggerEventLabel;
@@ -216,7 +222,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_track_chi2[3000];   // Vector of chi2 of tracks
       double Reco_track_ndof[3000];   // Vector of ndof of tracks
       int Reco_track_nhits[3000];  // Vector of nhits of tracks
-
+   
       int Reco_gamma_size;            // Number of reconstructed gammas
       TClonesArray* Reco_gamma_4mom;  // Array of 4-momentum of Reconstructed gammas
       double Reco_gamma_phi[3000];  // phi 
@@ -243,6 +249,12 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_glb_caloComp[200];    // Vector of calorimeter compatibilities
       double Reco_mu_glb_segmComp[200];    // Vector of muon segment compatibilities 
       double Reco_mu_glb_iso[200];    // Vector of isolations (NOW ONLY SUMPt OF TRACKS) 
+      int Reco_mu_glb_nhitsStrip[200];
+      int Reco_mu_glb_nhitsPixB[200];
+      int Reco_mu_glb_nhitsPixE[200];
+      int Reco_mu_glb_nhitsPix1Hit[200];
+      int Reco_mu_glb_nhitsPix1HitBE[200];
+
 
       int Reco_mu_trk_size;           // Number of reconstructed tracker muons
       TClonesArray* Reco_mu_trk_4mom; // Array of 4-momentum of Reconstructed tracker muons
@@ -401,9 +413,12 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_QQ_s[3000];       // S : the sum of the to muons impact parameter significance 
       bool Reco_QQ_VtxIsVal[3000];  // Vertex is valid or not  
       TClonesArray* Reco_QQ_Vtx;  // 3-d Vertex 
-      double Reco_QQ_VxE[3000];     // errors of x
-      double Reco_QQ_VyE[3000];     // errors of y
-      double Reco_QQ_VzE[3000];     // errors of z
+      double Reco_QQ_VxxE[3000];     // errors of x
+      double Reco_QQ_VyyE[3000];     // errors of y
+      double Reco_QQ_VzzE[3000];     // errors of 
+      double Reco_QQ_VyxE[3000];     // corr errors of x and y
+      double Reco_QQ_VzxE[3000];     // corr errors of z and x
+      double Reco_QQ_VzyE[3000];     // corr errors of z and y
       double Reco_QQ_lxy[3000];     // Decay length
       double Reco_QQ_lxyErr[3000];  // Decay length errors
       double Reco_QQ_normChi2[3000];// Normalized chi2 of vertex fitting 
@@ -435,15 +450,21 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_BeamSpot_x;
       double Reco_BeamSpot_y;
       double Reco_BeamSpot_z;
-      double Reco_BeamSpot_xE;
-      double Reco_BeamSpot_yE;
-      double Reco_BeamSpot_zE;
+      double Reco_BeamSpot_xxE;
+      double Reco_BeamSpot_yyE;
+      double Reco_BeamSpot_zzE;
+      double Reco_BeamSpot_yxE;
+      double Reco_BeamSpot_zyE;
+      double Reco_BeamSpot_zxE;
 
       int Reco_PriVtx_size;                // Number of reconstructed primary vertex
       TClonesArray* Reco_PriVtx_3vec;      // 3-d vector of primary vertex
-      double Reco_PriVtx_xE[100];           // X error
-      double Reco_PriVtx_yE[100];           // Y error
-      double Reco_PriVtx_zE[100];           // Z error
+      double Reco_PriVtx_xxE[100];           // X error
+      double Reco_PriVtx_yyE[100];           // Y error
+      double Reco_PriVtx_zzE[100];           // Z error
+      double Reco_PriVtx_yxE[100];           // X error
+      double Reco_PriVtx_zyE[100];           // Y error
+      double Reco_PriVtx_zxE[100];           // Z error
       int Reco_PriVtx_trkSize[100];      // Number of tracks in this primary vertex
       double Reco_PriVtx_chi2[100];         // chi2 of primary vertex 
       double Reco_PriVtx_ndof[100];         // number of freedom degree 
