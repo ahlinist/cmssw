@@ -1,7 +1,7 @@
 #include "FWCore/PluginManager/interface/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "QCDAnalysis/HighPtJetAnalysis/interface/DijetTreeProducer.h"
+#include "QCDAnalysis/HighPtJetAnalysis/interface/CaloDijetTreeProducer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/SimpleInclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/MultiJetAnalyzer.h"
@@ -18,6 +18,7 @@ DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(InclusiveJetAnalyzer);
 DEFINE_ANOTHER_FWK_MODULE(DijetAnalyzer);
 DEFINE_ANOTHER_FWK_MODULE(JetTriggerFilter);
+DEFINE_ANOTHER_FWK_MODULE(CaloDijetTreeProducer);
 
 typedef SimpleInclusiveJetAnalyzer<CaloJet> SimpleInclusiveCaloJetAnalyzer;
 DEFINE_ANOTHER_FWK_MODULE(SimpleInclusiveCaloJetAnalyzer);
@@ -42,9 +43,3 @@ DEFINE_ANOTHER_FWK_MODULE(MultiCaloJetFilter);
 
 typedef MultiJetFilter<GenJet> MultiGenJetFilter;
 DEFINE_ANOTHER_FWK_MODULE(MultiGenJetFilter);
-
-typedef DijetTreeProducer<CaloJet> CaloDijetTreeProducer;
-DEFINE_ANOTHER_FWK_MODULE(CaloDijetTreeProducer);
-
-typedef DijetTreeProducer<GenJet> GenDijetTreeProducer;
-DEFINE_ANOTHER_FWK_MODULE(GenDijetTreeProducer);
