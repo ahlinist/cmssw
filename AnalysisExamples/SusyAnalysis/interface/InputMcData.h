@@ -31,7 +31,7 @@
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h" 
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "AnalysisExamples/SusyAnalysis/interface/MrParticle.h"

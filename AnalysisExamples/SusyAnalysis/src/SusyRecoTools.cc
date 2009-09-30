@@ -912,9 +912,8 @@ bool SusyRecoTools::EMCaloTowerWindow(int ichk,
  float pi    = 3.141592654;
  float twopi = 6.283185307;
  float clusterEsum = 0.;
- basicCluster_iterator iCluster;
- for (iCluster = superCluster->clustersBegin(); 
-      iCluster != superCluster->clustersEnd(); ++iCluster){
+ reco::CaloCluster_iterator iCluster = superCluster->clustersBegin();
+ for (; iCluster != superCluster->clustersEnd(); ++iCluster){
    math::XYZPoint clusterXYZ = (*iCluster)->position();
    float clusterE = (*iCluster)->energy();
    clusterEsum += clusterE;
