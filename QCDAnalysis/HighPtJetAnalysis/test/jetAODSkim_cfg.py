@@ -8,7 +8,11 @@ process.maxEvents = cms.untracked.PSet(
 #############   Define the source file ###############
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-'/store/mc/Summer09/QCDDiJet_Pt15to20/AODSIM/MC_31X_V3_AODSIM-v1/0046/CEDF080D-CC8F-DE11-A831-001E682F84DE.root')
+        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0021/8A504EC5-FC84-DE11-9DF8-00151796D680.root',
+        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0020/76BC9A89-F384-DE11-BB94-0015179EDC2C.root',
+        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0015/E49D4ED3-C781-DE11-B39F-001D096B0C83.root',
+        '/store/mc/Summer09/QCD_BCtoE_Pt30to80/GEN-SIM-RECO/MC_31X_V3-v1/0015/B48A2C0B-FD83-DE11-BB2F-001D0967D567.root',
+)
 )
 #############   Trigger selection  ###################
 process.hltBit = cms.EDFilter("HLTHighLevel",
@@ -51,14 +55,15 @@ process.compress = cms.OutputModule("PoolOutputModule",
         #------- Various collections ------
         'keep *_EventAuxilary_*_*',
         'keep *_pixelVertices_*_*',
-        'keep *_hcalnoise_*_*',
+        'keep *_offlinePrimaryVertices_*_*',
+        'keep *_hcalnoise_*_*', 
         #------- MET collections ----------
         'keep *_metHO_*_*',
         'keep *_metNoHF_*_*',
         'keep *_metNoHFHO_*_*', 
         'keep *_met_*_*'),
     SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('skimPath')), 
-    fileName = cms.untracked.string('JetAOD.root')
+    fileName = cms.untracked.string('JetAOD2.root')
 )
 
 process.p = cms.EndPath(process.compress)
