@@ -73,7 +73,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     StoreWSOnia          = cms.bool(True),                                  
     StoreOniaRadiation   = cms.bool(False),
     UsingBeamSpot        = cms.bool(False),
-    minimumFlag          = cms.bool(True),
+    minimumFlag          = cms.bool(False),
     UsingAOD             = cms.bool(True),
     StorePATFlag         = cms.bool(False)
 )
