@@ -2,18 +2,19 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("myprocess")
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100
+    )
 )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/data26/papel/ttbar_2_2_3.root')
+    fileNames = cms.untracked.vstring('file:/data26/papel/ttbar_3_1_2.root')
 #    fileNames = cms.untracked.vstring('file:/data26/papel/zmumu_2_2_3.root')
 )
 
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("RecoEcal.EgammaClusterProducers.geometryForClustering_cff")
+#process.load("RecoEcal.EgammaClusterProducers.geometryForClustering_cff")
 
 #############   Include the jet corrections ##########
-process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff")
+process.load("JetMETCorrections.Configuration.L2L3Corrections_Winter09_cff")
 # set the record's IOV. Must be defined once. Choose ANY correction service. #
 process.prefer("L2L3JetCorrectorIC5Calo") 
 
@@ -30,7 +31,7 @@ process.myanalysis = cms.EDAnalyzer("SusyAnalyzer",
     tracks = cms.string('generalTracks'),
     # tracks = cms.string('gsWithMaterialTracks'),      #for FastSimulation   
     vertices = cms.string('offlinePrimaryVertices'),
-    electrons = cms.string('pixelMatchGsfElectrons'),
+    electrons = cms.string('gsfElectrons'),
     photons = cms.string('photons'),
     muons = cms.InputTag("muons"),
     # muons  =  cms.InputTag{"paramMuons:ParamGlobalMuons"),      #for FastSimulation

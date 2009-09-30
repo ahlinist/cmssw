@@ -48,7 +48,7 @@
 //#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/DetId/interface/DetId.h"
-#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 
 // needed for cluster shape in 2_2_X
 //#include "FWCore/Framework/interface/ESHandle.h"
