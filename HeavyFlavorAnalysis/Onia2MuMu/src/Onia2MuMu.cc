@@ -251,13 +251,15 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_glb_normChi2",     Reco_mu_glb_normChi2,    "Reco_mu_glb_normChi2[Reco_mu_glb_size]/D");
     // fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsStrip",    Reco_mu_glb_nhitsStrip,   "Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsPixB",    Reco_mu_glb_nhitsPixB,   "Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsPixE",    Reco_mu_glb_nhitsPixE,   "Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsPix1Hit",    Reco_mu_glb_nhitsPix1Hit,   "Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsPix1HitBE",    Reco_mu_glb_nhitsPix1HitBE,   "Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
-      fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
+      if (!theAODFlag) {
+	fTree->Branch("Reco_mu_glb_nhitsStrip",    Reco_mu_glb_nhitsStrip,   "Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsPixB",    Reco_mu_glb_nhitsPixB,   "Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsPixE",    Reco_mu_glb_nhitsPixE,   "Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsPix1Hit",    Reco_mu_glb_nhitsPix1Hit,   "Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsPix1HitBE",    Reco_mu_glb_nhitsPix1HitBE,   "Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
+	fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
+      }
       fTree->Branch("Reco_mu_glb_caloComp",   Reco_mu_glb_caloComp,  "Reco_mu_glb_caloComp[Reco_mu_glb_size]/D"); 
       fTree->Branch("Reco_mu_glb_segmComp",   Reco_mu_glb_segmComp,  "Reco_mu_glb_segmComp[Reco_mu_glb_size]/D"); 
       fTree->Branch("Reco_mu_glb_iso",   Reco_mu_glb_iso,  "Reco_mu_glb_iso[Reco_mu_glb_size]/D");  
@@ -1353,15 +1355,7 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       // Reco_mu_glb_ndof[Reco_mu_glb_size]=glbTrack->ndof();
       Reco_mu_glb_nhitstrack[Reco_mu_glb_size]=innTrack->numberOfValidHits();
  
-      if ( theAODFlag ) {
-	Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]=-1;
-	Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]=-1;
-      } else {
+      if ( !theAODFlag ) {
 	std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
 	Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theMuonHits.at(0);
 	Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
