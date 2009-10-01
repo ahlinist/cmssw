@@ -17,6 +17,14 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 #--------------------------------------------------------------------------------
 
 selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
+selectedLayer1ElectronsConversionVeto.cotThetaCut = cms.double(0.045)
+selectedLayer1ElectronsConversionVeto.dRElecTrack = cms.double(0.1)
+selectedLayer1ElectronsConversionVeto.nTrkMax = cms.double(1)
+selectedLayer1ElectronsConversionVeto.doPixCut = cms.bool(True)
+selectedLayer1ElectronsConversionVeto.doHists = cms.bool(False)
+selectedLayer1ElectronsConversionVeto.useInnerParsForElec = cms.bool(True)
+selectedLayer1ElectronsConversionVeto.useInnerParsForTrks = cms.bool(True)
+selectedLayer1ElectronsConversionVeto.useConversionColl = cms.bool(False)
 selectedLayer1ElectronsAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
@@ -28,6 +36,7 @@ selectedLayer1ElectronsTrkIP.IpMax = cms.double(0.05)
 
 patElectronSelConfigurator = objSelConfigurator(
     [ selectedLayer1ElectronsTightId,
+      selectedLayer1ElectronsConversionVeto,
       selectedLayer1ElectronsAntiCrackCut,
       selectedLayer1ElectronsEta21,
       selectedLayer1ElectronsPt15,
@@ -50,6 +59,7 @@ selectedLayer1ElectronsTrkIPlooseIsolation.IpMax = selectedLayer1ElectronsTrkIP.
 
 patElectronSelConfiguratorLooseIsolation = objSelConfigurator(
     [ selectedLayer1ElectronsTightId,
+      selectedLayer1ElectronsConversionVeto,
       selectedLayer1ElectronsAntiCrackCut,
       selectedLayer1ElectronsEta21,
       selectedLayer1ElectronsPt15,
@@ -341,9 +351,11 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
 )
 selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace = locals())
 
-produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons + produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
+produceLayer1SelLeptons = cms.Sequence ( selectLayer1Electrons 
+										+ produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
                                         +selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
                                         +selectLayer1Taus + produceLayer1SelTaus                                         
                                         +selectLayer1ElectronsForElecMu + selectLayer1ElectronsForElecMuLooseIsolation
                                         +selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau
-					+selectLayer1TausForWTauNu )
+										+selectLayer1TausForWTauNu 
+										)
