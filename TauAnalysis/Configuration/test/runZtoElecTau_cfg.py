@@ -7,7 +7,7 @@ process = cms.Process('runZtoElecTau')
 # of electrons, muons and tau-jets with non-standard isolation cones
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -28,7 +28,8 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
+# using skim samples with loose E/p selection and track extra collections
+from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
@@ -56,25 +57,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/Ztautau/skimElecTau_Ztautau_1.root'
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part01.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part02.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part03.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part04.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part05.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part06.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part07.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part08.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part09.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part10.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part11.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part12.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_ZeePlusJets_part13.root'
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part01.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part02.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part03.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part04.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoElecTau_Ztautau_part05.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_1.root'
     )
     #skipBadFiles = cms.untracked.bool(True)    
 )
@@ -110,7 +93,7 @@ switchToPFTauShrinkingCone(process)
 process.p = cms.Path( process.producePatTuple
 #                    +process.printEventContent      # uncomment to enable dump of event content after PAT-tuple production
                      +process.selectZtoElecTauEvents 
-#                    +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
+                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
                      +process.analyzeZtoElecTauEvents
                      +process.saveZtoElecTauPlots )
 
