@@ -45,6 +45,12 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #          name of the directory (either on afs area or castor)
 #          to which all .root files produced by the cmsRun job will be copied
 #          (e.g. "/castor/cern.ch/user/v/veelken/")
+#      (9) resourceRequest
+#          resource request to be passed to the -R option of 'busb', 
+#          as defined by the CERN LSF software
+#     (10) submit
+#          if "yes", jobs will be submitted to the batch system, otherwise config files
+#          and scripts are generated but no submission
 #
 # Author: Christian Veelken, UC Davis
 #
@@ -52,8 +58,8 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
 def submitToBatch(configFile = None, channel = None, sample = None,
                   replFunction = None, replacements = "",
-                  job = "job", queue = "1nd", outputDirectory = None):
-
+                  job = "job", queue = "1nd", outputDirectory = None,
+				  resourceRequest = None, submit = "yes"):
     # check that configFile, channel, sample and outputDirectory
     # parameters are defined and non-empty
     if configFile is None:
@@ -113,7 +119,7 @@ cd %(subDir)s
 eval `scramv1 runtime -csh`
 cd -
 cmsRun %(config)s
-set rootFiles=(`ls *.root`)
+set rootFiles=(`/bin/ls *.root`)
 foreach rootFile (${rootFiles})
     echo "copying ${rootFile} to %(outDir)s"
     %(cp)s ${rootFile} %(outDir)s
@@ -130,7 +136,11 @@ end
     os.chmod(scriptFile,0744)
     
     # finally, submit job to the CERN batch system
-    logFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.out")
-    jobName = job + channel + "_" + sample
-    bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile + ' < ' + scriptFile
-    subprocess.call(bsubCommand, shell = True)
+    if submit == "yes":
+		logFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.out")
+		jobName = job + channel + "_" + sample
+		bsubCommand = 'bsub -q ' + queue + ' -J ' + jobName + ' -L /bin/csh -eo ' + logFile + ' -oo ' + logFile
+		if resourceRequest != None:
+			bsubCommand += ' -R \"' + resourceRequest + '\" '
+		bsubCommand += ' < ' + scriptFile
+		subprocess.call(bsubCommand, shell = True)
