@@ -29,10 +29,6 @@
 
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-#include "DataFormats/EgammaCandidates/interface/Conversion.h"
-#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
@@ -58,7 +54,7 @@ class PATElectronConversionFinderImp
       void select(const edm::Handle<PATElectronCollection>&,edm::Event & iEvent, const edm::EventSetup & iSetup);
 
    private:
-      double GetDcaBetweenTracks(const edm::Event&, 
+      double GetDocaBetweenTracks(const edm::Event&, 
 				 const edm::EventSetup&,
 				 const MagneticField*,
 				 const reco::Track&,
@@ -67,12 +63,11 @@ class PATElectronConversionFinderImp
       
       std::vector<const pat::Electron*> selected_;
 
-      edm::InputTag elecs_,tracks_;
-      double cotTheta_,dca_,dRin_,eventWeight_;
-      bool doPXBcut_;bool doHistos_;
+      edm::InputTag tracks_;
+      
+	  double cotTheta_,dRin_,eventWeight_;
+      bool doPXBcut_;
       double nMax_;
-      TH1F *hnTracksPass, *hPXBLayer, *hPXFDisk;
-      TH2F *hDcotTheta, *hDca; 
 };
 
 #endif
