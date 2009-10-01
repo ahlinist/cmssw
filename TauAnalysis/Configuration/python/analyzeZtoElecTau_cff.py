@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import copy
 
 # import config for event selection, event print-out and analysis sequence
 from TauAnalysis.Configuration.analyzeZtoElecTau_cfi import *
@@ -32,6 +33,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         
         # electron candidate selection
         evtSelTightElectronId,
+        evtSelElectronConversionVeto,
         evtSelElectronAntiCrack,
         evtSelElectronEta,
         evtSelElectronPt,
@@ -60,6 +62,8 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForElecTauMt1MET,
         evtSelDiTauCandidateForElecTauPzetaDiff,
 
+		# acoplanarity cut not implemented
+
         # veto events compatible with Z --> e+ e- hypothesis
         # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
         evtSelElecTauPairZeeHypothesisVeto
@@ -80,7 +84,8 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
 
     eventDumps = cms.VPSet(
         elecTauEventDump
-    ),
+	),
    
     analysisSequence = elecTauAnalysisSequence
 )
+
