@@ -95,7 +95,7 @@ class FilterStatisticsTable
   typedef std::vector<std::pair<std::string, bool> > filterResults_type;
   void update(const filterResults_type&, const filterResults_type&, double);
 
-  void print(std::ostream&, unsigned = 30, unsigned = 20) const;
+  void print(std::ostream&, unsigned = 42, unsigned = 20) const;
 
   std::vector<std::string> extractFilterTitleColumn() const;
   std::vector<double> extractColumn(const std::string&, bool) const;
