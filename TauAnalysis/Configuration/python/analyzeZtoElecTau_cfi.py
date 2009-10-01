@@ -149,6 +149,12 @@ evtSelTauPt = cms.PSet(
 )
 
 # electron candidate (isolation & id.) selection
+evtSelElectronConversionVeto = cms.PSet(
+    pluginName = cms.string('evtSelElectronConversionVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('electronConversionVeto', 'cumulative'),
+    src_individual = cms.InputTag('electronConversionVeto', 'individual')
+)
 evtSelElectronTrkIso = cms.PSet(
     pluginName = cms.string('evtSelElectronTrkIso'),
     pluginType = cms.string('BoolEventSelector'),
@@ -282,10 +288,10 @@ elecTauEventDump = cms.PSet(
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
-    #electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
-    electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
-    #tauSource = cms.InputTag('cleanLayer1TausSel'),
-    tauSource = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
+    electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
+#    electronSource = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
+    tauSource = cms.InputTag('cleanLayer1TausSel'),
+#    tauSource = cms.InputTag('selectedLayer1TausForElecTauElectronVetoCumulative'),
     diTauCandidateSource = cms.InputTag('allElecTauPairs'),
     metSource = cms.InputTag('layer1METs'),
     genMEtSource = cms.InputTag('genMETWithMu'),
@@ -417,7 +423,7 @@ elecTauAnalysisSequence = cms.VPSet(
     ),
 
     # electron acceptance cuts
-     cms.PSet(
+	cms.PSet(
         filter = cms.string('evtSelTightElectronId'),
         title = cms.string('tight Electron Id.'),
         saveRunEventNumbers = cms.vstring('')
@@ -432,8 +438,22 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
     ),
     cms.PSet(
+        filter = cms.string('evtSelElectronConversionVeto'),
+        title = cms.string('Electron Track conv. veto'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
+            'electronHistManager',
+            'tauHistManager',
+            'metHistManager',
+            'vertexHistManager'
+        ),
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsConversionVetoCumulative')
+    ),
+    cms.PSet(
         filter = cms.string('evtSelElectronAntiCrack'),
-        title = cms.string('crack-Veto'),
+        title = cms.string('Electron crack-Veto'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -478,7 +498,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # tau acceptance cuts
     cms.PSet(
         filter = cms.string('evtSelTauAntiOverlapWithElectronsVeto'),
-        title = cms.string('Tau not overlapping with Electron'),
+        title = cms.string('Tau not overlapping with Elec.'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(

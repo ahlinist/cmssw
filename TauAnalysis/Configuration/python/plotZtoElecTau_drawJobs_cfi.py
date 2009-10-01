@@ -85,7 +85,7 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTightElectronId,
-    beforeCut = evtSelElectronAntiCrack,
+    beforeCut = evtSelElectronConversionVeto,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -94,6 +94,18 @@ drawJobConfigurator_ZtoElecTau.add(
         name = "cutFlowControlPlots_electron_afterTightElectronId"
     )
 )
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelElectronConversionVeto,
+    beforeCut = evtSelElectronAntiCrack,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/Electron#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Electron (after conversion veto)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_electron_afterElectronConversionVeto"
+    )
+)    
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronAntiCrack,

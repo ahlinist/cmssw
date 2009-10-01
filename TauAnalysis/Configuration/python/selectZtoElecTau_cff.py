@@ -42,6 +42,13 @@ cfgTightElectronIdCut = cms.PSet(
     src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
     minNumber = cms.uint32(1)
 )
+cfgElectronConversionVeto = cms.PSet(
+    pluginName = cms.string('electronConversionVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsConversionVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsConversionVetoIndividual'),
+    minNumber = cms.uint32(1)
+)
 cfgElectronAntiCrackCut = cms.PSet(
     pluginName = cms.string('electronAntiCrackCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -223,6 +230,7 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
       cfgTightElectronIdCut,
+      cfgElectronConversionVeto,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
       cfgElectronPtCut,
