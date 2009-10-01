@@ -70,7 +70,7 @@ double FilterStatisticsRow::extractNumber(const std::string& columnLabel, bool w
   } 
 
   edm::LogError ("FilterStatisticsRow::extractNumber") << " columnLabel = " << columnLabel << " undefined !!";
-  assert(0);
+  return -1;
 }
 
 void printNumber(std::ostream& stream, unsigned width, double number)
