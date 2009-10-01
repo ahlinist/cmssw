@@ -17,7 +17,7 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = copy.deepcopy(processZtoElecTau_ZtautauSum.config_dqmFileLoader),
-    Zee = copy.deepcopy(processZtoElecTau_Zee.config_dqmFileLoader),
+    Zee = copy.deepcopy(processZtoElecTau_ZeeSum.config_dqmFileLoader),
     ZeePlusJets = copy.deepcopy(processZtoElecTau_ZeePlusJetsSum.config_dqmFileLoader),
     ZtautauPlusJets = copy.deepcopy(processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader),                      
     gammaPlusJets_Pt15to20 = copy.deepcopy(processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader),
