@@ -83,8 +83,8 @@ process.generator = cms.EDFilter("Pythia6GeneratorFilter",
              decay_table = cms.FileInPath('GeneratorInterface/ExternalDecays/data/DECAY.DEC'),
              # decay_table = cms.FileInPath('GeneratorInterface/ExternalDecays/data/DECAY_NOLONGLIFE.DEC'),             
              particle_property_file = cms.FileInPath('GeneratorInterface/ExternalDecays/data/evt.pdl'),
-             user_decay_file = cms.FileInPath('LambdaB_LambdaJpsi.dec'),
-             list_forced_decays = cms.vstring("MyLambda_b0", "anti-MyLambda_b0")
+             user_decay_file = cms.FileInPath('HeavyFlavorAnalysis/Examples/data/Bs2MuMu.dec'),
+             list_forced_decays = cms.vstring("MyB_s0", "anti-MyB_s0")
         ),
         parameterSets = cms.vstring('EvtGen')
     )
@@ -94,31 +94,28 @@ process.HepPDTESSource = cms.ESSource("HepPDTESSource",
     pdtFileName = cms.FileInPath('SimGeneral/HepPDTESSource/data/particle.tbl')
 )
 
-process.JPsiFilter = cms.EDFilter("MCSingleParticleFilter",
-        MaxEta = cms.untracked.vdouble(2.5),
-        MinEta = cms.untracked.vdouble(-2.5),
-        Status = cms.untracked.vint32(0),
-        MinPt = cms.untracked.vdouble(0.1),
-        ParticleID = cms.untracked.vint32(443)
+process.BsFilter = cms.EDFilter(
+    "MCSingleParticleFilter",
+    MaxEta = cms.untracked.vdouble(25.),
+    MinEta = cms.untracked.vdouble(-25.),
+    Status = cms.untracked.vint32(0),
+    MinPt = cms.untracked.vdouble(-0.1),
+    ParticleID = cms.untracked.vint32(531, -531)
 )
 
-
-process.LambdaBFilter = cms.EDFilter("MCSingleParticleFilter",
-        MaxEta = cms.untracked.vdouble(25.),
-        MinEta = cms.untracked.vdouble(-25.),
-        Status = cms.untracked.vint32(0),
-        MinPt = cms.untracked.vdouble(-0.1),
-        ParticleID = cms.untracked.vint32(5122, -5122)
+process.mumugenFilter = cms.EDFilter("MCParticlePairFilter",
+    moduleLabel = cms.untracked.string('generator'),
+    Status = cms.untracked.vint32(1, 1),
+    MinPt = cms.untracked.vdouble(2.5, 2.5),
+    MaxEta = cms.untracked.vdouble(2.5, 2.5),
+    MinEta = cms.untracked.vdouble(-2.5, -2.5),
+    ParticleCharge = cms.untracked.int32(0),
+    # Use the following to require J/psi -> mu+ mu- 
+    # MaxInvMass = cms.untracked.double(3.15),
+    # MinInvMass = cms.untracked.double(3.05),
+    ParticleID1 = cms.untracked.vint32(13),
+    ParticleID2 = cms.untracked.vint32(13)
 )
-
-process.L1MuFilter = cms.EDFilter("MCSingleParticleFilter",
-        MaxEta = cms.untracked.vdouble(2.1,2.1),
-        MinEta = cms.untracked.vdouble(-2.1,-2.1),
-        Status = cms.untracked.vint32(0,0),
-        MinPt = cms.untracked.vdouble(3.0,3.0),
-        ParticleID = cms.untracked.vint32(13,-13)
-)
-
 
 
 ##########################################################################################################
@@ -181,7 +178,7 @@ process.genParticlesPlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 
 
 process.tree = cms.EDFilter("HFTree",
-    fileName = cms.string('LambdaB-10000.root')
+    fileName = cms.string('Bs2MuMu.root')
 )
 
 process.genDump = cms.EDFilter("HFDumpGenerator",
@@ -232,21 +229,24 @@ process.triggerDump = cms.EDFilter("HFDumpTrigger",
 
 )
 
-process.stuffDump = cms.EDFilter("HFDumpStuff",
+process.stuffDump = cms.EDFilter(
+    "HFDumpStuff",
     genEventScale = cms.untracked.string('generator'),
     CandidateLabel = cms.untracked.string('allMuons'),
     PrimaryVertexLabel = cms.untracked.string('offlinePrimaryVertices')
-)
+    )
 
-process.signalDump = cms.EDFilter("HFDumpSignal",
-    deltaR = cms.untracked.double(1.8),
-    verbose = cms.untracked.int32(2),
-    muonsLabel = cms.untracked.InputTag("muons"),
-    muonPt = cms.untracked.double(3.0),
-    trackPt = cms.untracked.double(0.7),
-    tracksLabel = cms.untracked.string('generalTracks'),
-    PrimaryVertexLabel = cms.untracked.string('offlinePrimaryVertices')
-)
+process.signalDump = cms.EDFilter(
+    "HFDimuons",
+    tracksLabel        = cms.untracked.string('generalTracks'),
+    PrimaryVertexLabel = cms.untracked.string('offlinePrimaryVertices'),
+    verbose            = cms.untracked.int32(0),
+    muonsLabel         = cms.untracked.InputTag("muons"),
+    muonPt             = cms.untracked.double(3.0),
+    massLow            = cms.untracked.double(4.5),
+    massHigh           = cms.untracked.double(6.5),
+    type               = cms.untracked.int32(531)
+    )
 
 
 
@@ -256,7 +256,7 @@ process.signalDump = cms.EDFilter("HFDumpSignal",
 # Path and EndPath definitions
 process.generation_step = cms.Sequence(cms.SequencePlaceholder("randomEngineStateProducer")*
                                        process.generator*
-                                       process.JPsiFilter*process.L1MuFilter
+                                       process.BsFilter*process.mumugenFilter
 )
 
 # Simulation sequence
@@ -266,7 +266,7 @@ process.HLTEndSequence = cms.Sequence(process.dummyModule)
 process.schedule = cms.Schedule()
 process.schedule.extend(process.HLTSchedule)
 
-process.outpath = cms.EndPath(process.LambdaBFilter*process.JPsiFilter*process.L1MuFilter*
+process.outpath = cms.EndPath(process.BsFilter*process.mumugenFilter*
                               process.reconstructionWithFamos*
                               process.genParticles*
                               process.genParticlesPlusGEANT*
@@ -274,7 +274,7 @@ process.outpath = cms.EndPath(process.LambdaBFilter*process.JPsiFilter*process.L
                               process.trkDump*
                               process.muonDump*
 #                              process.triggerDump*
-#                              process.stuffDump*
+                              process.stuffDump*
                               process.signalDump*
                               process.tree
 )

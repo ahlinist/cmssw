@@ -66,18 +66,18 @@ void HFDumpMuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // -- global muons
   Handle<MuonCollection> hMuons;
-  cout << "==> HFDumpTracks> " << fMuonsLabel << endl;
+  if (fVerbose > 0) cout << "==> HFDumpMuons> " << fMuonsLabel << endl;
   iEvent.getByLabel(fMuonsLabel, hMuons);
 
   for (reco::MuonCollection::const_iterator iMuon = hMuons->begin(); iMuon != hMuons->end();  iMuon++) {
     TrackRef gTrack = iMuon->globalTrack();
     TrackRef iTrack = iMuon->innerTrack();
-
-    Track trkView(*gTrack);
     
-    fillMuon(trkView, 1); 
+    if (gTrack.isNonnull()) {
+      Track trkView(*gTrack);
+      fillMuon(trkView, 1); 
+    }
   }
-
 }
 
 
