@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.31 2009/08/27 09:59:30 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.32 2009/09/02 14:56:06 carrillo Exp $
 //
 //
 
@@ -88,6 +88,9 @@ public:
 
   TH2F * bxbarrel;
   TH2F * bxendcap;
+
+  TH2F * signal_bxbarrel;
+  TH2F * signal_bxendcap;
   
   //Endcap
 
@@ -276,8 +279,13 @@ public:
   TH2F * histoPRO_2D;
   TH1F * histoRES;
   TH1F * BXDistribution;
+  TH1F * Signal_BXDistribution;
   TH1F * histoRealRPC;
   TH1F * histoResidual;
+  TH1F * histoResidual1;
+  TH1F * histoResidual2;
+  TH1F * histoResidual3;
+  TH1F * histoResidualO;
   TH1F * histoCLS;
   TH2F * histoBXY;
   TH2F * histoINEF;
@@ -317,6 +325,18 @@ public:
   TH1F * BXGlobW0far;
   TH1F * BXGlobW1far;
   TH1F * BXGlobW2far;
+
+  TH1F * Signal_BXGlobWm2;
+  TH1F * Signal_BXGlobWm1;
+  TH1F * Signal_BXGlobW0;
+  TH1F * Signal_BXGlobW1;
+  TH1F * Signal_BXGlobW2;
+
+  TH1F * Signal_BXGlobWm2far;
+  TH1F * Signal_BXGlobWm1far;
+  TH1F * Signal_BXGlobW0far;
+  TH1F * Signal_BXGlobW1far;
+  TH1F * Signal_BXGlobW2far;
 
   TH1F * MaskedGlobWm2;
   TH1F * MaskedGlobWm1;
@@ -381,6 +401,20 @@ public:
   TH1F * BXGlobD1far;
   TH1F * BXGlobD2far;
   TH1F * BXGlobD3far;
+
+  TH1F * Signal_BXGlobDm3;
+  TH1F * Signal_BXGlobDm2;
+  TH1F * Signal_BXGlobDm1;
+  TH1F * Signal_BXGlobD1;
+  TH1F * Signal_BXGlobD2;
+  TH1F * Signal_BXGlobD3;
+  
+  TH1F * Signal_BXGlobDm3far;
+  TH1F * Signal_BXGlobDm2far;
+  TH1F * Signal_BXGlobDm1far;
+  TH1F * Signal_BXGlobD1far;
+  TH1F * Signal_BXGlobD2far;
+  TH1F * Signal_BXGlobD3far;
 
   TH1F * MaskedGlobDm3;
   TH1F * MaskedGlobDm2;
@@ -559,6 +593,9 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   
   bxendcap= new TH2F ("BXEndCap","BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
   bxbarrel= new TH2F ("BXBarrel","BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
+
+  signal_bxendcap= new TH2F ("signal_BXEndCap","Signal BX Distribution for the End Cap",51,-5.0,5.0,51,0.,4.);
+  signal_bxbarrel= new TH2F ("signal_BXBarrel","Signal BX Distribution for the Barrel",51,-5.0,5.0,51,0.,4.);
   
   EffBarrel = new TH1F ("EffBarrel","Efficiency Distribution For All The Barrel",51,-1,101);
   DoubleGapBarrel = new TH1F ("DoubleGapBarrel","Double Gap Efficiency Distribution For All The Barrel",51,-1,101);
@@ -751,6 +788,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobWm2far= new TH1F ("GlobEfficiencyWheel_-2far","Efficiency Far Side Wheel -2",105,0.5,105.5);
   BXGlobWm2=  new TH1F ("GlobBXWheel_-2near","BX Near Side Wheel -2",101,0.5,101.5);
   BXGlobWm2far=  new TH1F ("GlobBXWheel_-2far","BX Far Side Wheel -2",105,0.5,105.5);
+  Signal_BXGlobWm2=  new TH1F ("Signal_GlobBXWheel_-2near","Signal BX Near Side Wheel -2",101,0.5,101.5);
+  Signal_BXGlobWm2far=  new TH1F ("Signal_GlobBXWheel_-2far","Signal BX Far Side Wheel -2",105,0.5,105.5);
   MaskedGlobWm2=  new TH1F ("GlobMaskedWheel_-2near","Masked Near Side Wheel -2",101,0.5,101.5);
   MaskedGlobWm2far=  new TH1F ("GlobMaskedWheel_-2far","Masked Far Side Wheel -2",105,0.5,105.5);
   AverageEffWm2= new TH1F ("AverageEfficiencyWheel_-2near","Average Efficiency Near Side Wheel -2 ",101,0.5,101.5);
@@ -764,6 +803,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobWm1far= new TH1F ("GlobEfficiencyWheel_-1far","Efficiency Far Side Wheel -1",105,0.5,105.5);
   BXGlobWm1=  new TH1F ("GlobBXWheel_-1near","BX Near Side Wheel -1",101,0.5,101.5);
   BXGlobWm1far=  new TH1F ("GlobBXWheel_-1far","BX Far Side Wheel -1",105,0.5,105.5);
+  Signal_BXGlobWm1=  new TH1F ("Signal_GlobBXWheel_-1near","Signal BX Near Side Wheel -1",101,0.5,101.5);
+  Signal_BXGlobWm1far=  new TH1F ("Signal_GlobBXWheel_-1far","Signal BX Far Side Wheel -1",105,0.5,105.5);
   MaskedGlobWm1=  new TH1F ("GlobMaskedWheel_-1near","Masked Near Side Wheel -1",101,0.5,101.5);
   MaskedGlobWm1far=  new TH1F ("GlobMaskedWheel_-1far","Masked Far Side Wheel -1",105,0.5,105.5);
   AverageEffWm1= new TH1F ("AverageEfficiencyWheel_-1near","Average Efficiency Near Side Wheel -1 ",101,0.5,101.5);
@@ -777,6 +818,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobW0far = new TH1F ("GlobEfficiencyWheel_0far","Efficiency Far Side Wheel 0",105,0.5,105.5);
   BXGlobW0 =  new TH1F ("GlobBXWheel_0near","BX Near Side Wheel 0",101,0.5,101.5);
   BXGlobW0far =  new TH1F ("GlobBXWheel_0far","BX Far Side Wheel 0",105,0.5,105.5);
+  Signal_BXGlobW0 =  new TH1F ("Signal_GlobBXWheel_0near","Signal BX Near Side Wheel 0",101,0.5,101.5);
+  Signal_BXGlobW0far =  new TH1F ("Signal_GlobBXWheel_0far","Signal BX Far Side Wheel 0",105,0.5,105.5);
   MaskedGlobW0 =  new TH1F ("GlobMaskedWheel_0near","Masked Near Side Wheel 0",101,0.5,101.5);
   MaskedGlobW0far =  new TH1F ("GlobMaskedWheel_0far","Masked Far Side Wheel 0",105,0.5,105.5);
   AverageEffW0= new TH1F ("AverageEfficiencyWheel_0near","Average Efficiency Near Side Wheel 0 ",101,0.5,101.5);
@@ -790,6 +833,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobW1far = new TH1F ("GlobEfficiencyWheel_1far","Efficiency Far Side Wheel 1",105,0.5,105.5);  
   BXGlobW1 =  new TH1F ("GlobBXWheel_1near","BX Near Side Wheel 1",101,0.5,101.5);
   BXGlobW1far =  new TH1F ("GlobBXWheel_1far","BX Far Side Wheel 1",105,0.5,105.5);
+  Signal_BXGlobW1 =  new TH1F ("Signal_GlobBXWheel_1near","Signal BX Near Side Wheel 1",101,0.5,101.5);
+  Signal_BXGlobW1far =  new TH1F ("Signal_GlobBXWheel_1far","Signal BX Far Side Wheel 1",105,0.5,105.5);
   MaskedGlobW1 =  new TH1F ("GlobMaskedWheel_1near","Masked Near Side Wheel 1",101,0.5,101.5);
   MaskedGlobW1far =  new TH1F ("GlobMaskedWheel_1far","Masked Far Side Wheel 1",105,0.5,105.5);
   AverageEffW1= new TH1F ("AverageEfficiencyWheel_1near","Average Efficiency Near Side Wheel 1 ",101,0.5,101.5);
@@ -803,6 +848,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobW2far = new TH1F ("GlobEfficiencyWheel_2far","Efficiency Far Side Wheel 2",105,0.5,105.5);
   BXGlobW2 =  new TH1F ("GlobBXWheel_2near","BX Near Side Wheel 2",101,0.5,101.5);
   BXGlobW2far =  new TH1F ("GlobBXWheel_2far","BX Far Side Wheel 2",105,0.5,105.5);
+  Signal_BXGlobW2 =  new TH1F ("Signal_GlobBXWheel_2near","Signal BX Near Side Wheel 2",101,0.5,101.5);
+  Signal_BXGlobW2far =  new TH1F ("Signal_GlobBXWheel_2far","Signal BX Far Side Wheel 2",105,0.5,105.5);
   MaskedGlobW2 =  new TH1F ("GlobMaskedWheel_2near","Masked Near Side Wheel 2",101,0.5,101.5);
   MaskedGlobW2far =  new TH1F ("GlobMaskedWheel_2far","Masked Far Side Wheel 2",105,0.5,105.5);
   AverageEffW2= new TH1F ("AverageEfficiencyWheel_2near","Average Efficiency Near Side Wheel 2 ",101,0.5,101.5);
@@ -816,6 +863,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobD3far =new TH1F ("GlobEfficiencyDisk_3far","Efficiency Far Side Disk 3",109,0.5,109.5);
   BXGlobD3 = new TH1F ("GlobBXDisk_3near","BX Near Side Disk 3",109,0.5,109.5);
   BXGlobD3far = new TH1F ("GlobBXDisk_3far","BX Far Side Disk 3",109,0.5,109.5);
+  Signal_BXGlobD3 = new TH1F ("Signal_GlobBXDisk_3near","Signal BX Near Side Disk 3",109,0.5,109.5);
+  Signal_BXGlobD3far = new TH1F ("Signal_GlobBXDisk_3far","Signal BX Far Side Disk 3",109,0.5,109.5);
   MaskedGlobD3 = new TH1F ("GlobMaskedDisk_3near","Masked Near Side Disk 3",109,0.5,109.5);
   MaskedGlobD3far = new TH1F ("GlobMaskedDisk_3far","Masked Far Side Disk 3",109,0.5,109.5);
   AverageEffD3=new TH1F ("AverageEfficiencyDisk_3near","Average Efficiency Near Side Disk 3 ",109,0.5,109.5);
@@ -827,6 +876,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobD2far =new TH1F ("GlobEfficiencyDisk_2far","Efficiency Far Side Disk 2",109,0.5,109.5);
   BXGlobD2 = new TH1F ("GlobBXDisk_2near","BX Near Side Disk 2",109,0.5,109.5);
   BXGlobD2far = new TH1F ("GlobBXDisk_2far","BX Far Side Disk 2",109,0.5,109.5);
+  Signal_BXGlobD2 = new TH1F ("Signal_GlobBXDisk_2near","Signal BX Near Side Disk 2",109,0.5,109.5);
+  Signal_BXGlobD2far = new TH1F ("Signal_GlobBXDisk_2far","Signal BX Far Side Disk 2",109,0.5,109.5);
   MaskedGlobD2 = new TH1F ("GlobMaskedDisk_2near","Masked Near Side Disk 2",109,0.5,109.5);
   MaskedGlobD2far = new TH1F ("GlobMaskedDisk_2far","Masked Far Side Disk 2",109,0.5,109.5);
   AverageEffD2=new TH1F ("AverageEfficiencyDisk_2near","Average Efficiency Near Side Disk 2 ",109,0.5,109.5);
@@ -838,6 +889,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobD1far =new TH1F ("GlobEfficiencyDisk_1far","Efficiency Far Side Disk 1",109,0.5,109.5);
   BXGlobD1 = new TH1F ("GlobBXDisk_1near","BX Near Side Disk 1",109,0.5,109.5);
   BXGlobD1far = new TH1F ("GlobBXDisk_1far","BX Far Side Disk 1",109,0.5,109.5);
+  Signal_BXGlobD1 = new TH1F ("Signal_GlobBXDisk_1near","Signal BX Near Side Disk 1",109,0.5,109.5);
+  Signal_BXGlobD1far = new TH1F ("Signal_GlobBXDisk_1far","Signal BX Far Side Disk 1",109,0.5,109.5);
   MaskedGlobD1 = new TH1F ("GlobMaskedDisk_1near","Masked Near Side Disk 1",109,0.5,109.5);
   MaskedGlobD1far = new TH1F ("GlobMaskedDisk_1far","Masked Far Side Disk 1",109,0.5,109.5);
   AverageEffD1=new TH1F ("AverageEfficiencyDisk_1near","Average Efficiency Near Side Disk 1 ",109,0.5,109.5);
@@ -849,6 +902,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobDm1far =new TH1F ("GlobEfficiencyDisk_m1far","Efficiency Far Side Disk -1",109,0.5,109.5);
   BXGlobDm1 = new TH1F ("GlobBXDisk_m1near","BX Near Side Disk -1",109,0.5,109.5);
   BXGlobDm1far = new TH1F ("GlobBXDisk_m1far","BX Far Side Disk -1",109,0.5,109.5);
+  Signal_BXGlobDm1 = new TH1F ("Signal_GlobBXDisk_m1near","Signal BX Near Side Disk -1",109,0.5,109.5);
+  Signal_BXGlobDm1far = new TH1F ("Signal_GlobBXDisk_m1far","Signal BX Far Side Disk -1",109,0.5,109.5);
   MaskedGlobDm1 = new TH1F ("GlobMaskedDisk_m1near","Masked Near Side Disk -1",109,0.5,109.5);
   MaskedGlobDm1far = new TH1F ("GlobMaskedDisk_m1far","Masked Far Side Disk -1",109,0.5,109.5);
   AverageEffDm1=new TH1F ("AverageEfficiencyDisk_m1near","Average Efficiency Near Side Disk -1 ",109,0.5,109.5);
@@ -860,6 +915,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobDm2far =new TH1F ("GlobEfficiencyDisk_m2far","Efficiency Far Side Disk -2",109,0.5,109.5);
   BXGlobDm2 = new TH1F ("GlobBXDisk_m2near","BX Near Side Disk -2",109,0.5,109.5);
   BXGlobDm2far = new TH1F ("GlobBXDisk_m2far","BX Far Side Disk -2",109,0.5,109.5);
+  Signal_BXGlobDm2 = new TH1F ("Signal_GlobBXDisk_m2near","Signal BX Near Side Disk -2",109,0.5,109.5);
+  Signal_BXGlobDm2far = new TH1F ("Signal_GlobBXDisk_m2far","Signal BX Far Side Disk -2",109,0.5,109.5);
   MaskedGlobDm2 = new TH1F ("GlobMaskedDisk_m2near","Masked Near Side Disk -2",109,0.5,109.5);
   MaskedGlobDm2far = new TH1F ("GlobMaskedDisk_m2far","Masked Far Side Disk -2",109,0.5,109.5);
   AverageEffDm2=new TH1F ("AverageEfficiencyDisk_m2near","Average Efficiency Near Side Disk -2 ",109,0.5,109.5);
@@ -871,6 +928,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   EffGlobDm3far =new TH1F ("GlobEfficiencyDisk_m3far","Efficiency Far Side Disk -3",109,0.5,109.5);
   BXGlobDm3 = new TH1F ("GlobBXDisk_m3near","BX Near Side Disk -3",109,0.5,109.5);
   BXGlobDm3far = new TH1F ("GlobBXDisk_m3far","BX Far Side Disk -3",109,0.5,109.5);
+  Signal_BXGlobDm3 = new TH1F ("Signal_GlobBXDisk_m3near","Signal BX Near Side Disk -3",109,0.5,109.5);
+  Signal_BXGlobDm3far = new TH1F ("Signal_GlobBXDisk_m3far","Signal BX Far Side Disk -3",109,0.5,109.5);
   MaskedGlobDm3 = new TH1F ("GlobMaskedDisk_m3near","Masked Near Side Disk -3",109,0.5,109.5);
   MaskedGlobDm3far = new TH1F ("GlobMaskedDisk_m3far","Masked Far Side Disk -3",109,0.5,109.5);
   AverageEffDm3=new TH1F ("AverageEfficiencyDisk_m3near","Average Efficiency Near Side Disk -3 ",109,0.5,109.5);
@@ -916,7 +975,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   
   int Stat = 0;
-  if(statistics) Stat = 1;
+  if(statistics) Stat = 0;
   gStyle->SetOptStat(Stat);
   gStyle->SetPalette(1);
   
@@ -1241,7 +1300,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	     
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC, meIdResidual,meIdCLS,meIdBXY,meIdINEF;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF;
 	  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
@@ -1252,6 +1311,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdDT =folder+"/ExpectedOccupancyFromDT_"+ name;
 
 	  bxDistroId =folder+"/BXDistribution_"+ name;
+	  signal_bxDistroId =folder+"/Signal_BXDistribution_"+ name;
 	  meIdRealRPC =folder+"/RealDetectedOccupancyFromDT_"+ name;  
 
 	  meIdPRO = "Profile_For_"+name;
@@ -1259,6 +1319,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
 	  meIdResidual = folder+"/RPCResidualsFromDT_"+ name;
+	  meIdResidual1 = folder+"/RPCResidualsFromDT_Clu1_"+ name;
+	  meIdResidual2 = folder+"/RPCResidualsFromDT_Clu2_"+ name;
+	  meIdResidual3 = folder+"/RPCResidualsFromDT_Clu3_"+ name;
+	  meIdResidualO = folder+"/RPCResidualsFromDT_Other_"+ name;
 	  meIdDT_2D = folder+"/ExpectedOccupancy2DFromDT_"+ name;
 	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromDT_"+ name;	
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
@@ -1267,7 +1331,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
-	  histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	  
+	  histoResidual1= (TH1F*)theFile->Get(meIdResidual1.c_str());
+	  histoResidual2= (TH1F*)theFile->Get(meIdResidual2.c_str());
+	  histoResidual3= (TH1F*)theFile->Get(meIdResidual3.c_str());
+	  histoResidualO= (TH1F*)theFile->Get(meIdResidualO.c_str());
+
+	  if(!histoResidual1 || !histoResidual2 || !histoResidual3 || !histoResidualO) std::cout<<"Warning one of the histo residuals plot doesn't exist"<<std::endl;
+	  
+	  histoResidual = new TH1F (meIdResidual.c_str(),meIdResidual.c_str(),101,-20,20);
+	  histoResidual->Add(histoResidual1);
+	  histoResidual->Add(histoResidual2);
+	  histoResidual->Add(histoResidual3);
+	  histoResidual->Add(histoResidualO);
+	  
 	  histoINEF= (TH2F*)theFile->Get(meIdINEF.c_str());
 	  
 	  const int n = 20;
@@ -1304,13 +1381,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str());
           histoDT= (TH1F*)theFile->Get(meIdDT.c_str());
           BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());
+	  Signal_BXDistribution = (TH1F*)theFile->Get(signal_bxDistroId.c_str());
           histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),
+				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
+				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 
-	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
-	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripw*nstrips,0.6*stripw*nstrips);
+	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*(int)(0.6*nstrips*stripw),-0.6*stripw*nstrips,0.6*stripw*nstrips);
 	  
 	  
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
@@ -1321,6 +1401,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  double o = 0;
 	  float mybxhisto = 0;
 	  float mybxerror = 0;
+	  float signal_mybxhisto = 0;
+	  float signal_mybxerror = 0;
 	  float ef =0;
 	  float er =0;
 	  float efY =0;
@@ -1351,10 +1433,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  int NumberStripsPointed = 0;
 	  
-	  if(histoRPC_2D && histoDT_2D && histoResidual && barrel){
+	  if(histoRPC_2D && histoDT_2D && histoResidual && barrel){ 
 	    //if(debug) std::cout<<"Leidos los histogramas 2D!"<<std::endl;
-	    for(int i=1;i<=2*nstrips;++i){
-	      for(int j=1;j<=2*nstrips;++j){
+	    for(int i=1;i<=2*(int)(0.6*nstrips*stripw);++i){
+	      for(int j=1;j<=2*(int)(0.6*stripl);++j){
 		ef2D=0.;
 		ef2D=0.;
 		if(histoDT_2D->GetBinContent(i,j) != 0){
@@ -1366,10 +1448,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      }//loop on the boxes
 	    }
 	    
-	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
-	    TH1D * profileDT_Y =  histoDT_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(0.6*nstrips*stripw)-int(nstrips*stripw*0.5),int(0.6*nstrips*stripw)+int(nstrips*stripw*0.5));
+	    TH1D *  profileDT_Y =  histoDT_2D->ProjectionY(" ",int(0.6*nstrips*stripw)-int(nstrips*stripw*0.5),int(0.6*nstrips*stripw)+int(nstrips*stripw*0.5));
 	    
-	    for(int j=1;j<=2*nstrips;j++){
+	    for(int j=1;j<=2*(int)(0.6*stripl);++j){
 	      efY=0.;
 	      erY=0.;
 	      if(profileDT_Y->GetBinContent(j) != 0){
@@ -1381,25 +1463,25 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROY->SetBinError(j,erY);
 	    }
 
-	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
-	    TH1D * profileDT_X =  histoDT_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(0.6*stripl)-int(stripl*0.5),int(0.6*stripl)+int(stripl*0.5));
+	    TH1D *  profileDT_X =  histoDT_2D->ProjectionX(" ",int(0.6*stripl)-int(stripl*0.5),int(0.6*stripl)+int(stripl*0.5));
 	    
-	    for(int j=1;j<=2*nstrips;j++){
+	    for(int i=1;i<=2*(int)(0.6*nstrips*stripw);++i){
 	      efX=0.;
 	      erX=0.;
-	      if(profileDT_X->GetBinContent(j) != 0){
-		efX = profileRPC_X->GetBinContent(j)/profileDT_X->GetBinContent(j);
-		erX = sqrt(efX*(1-efX)/profileDT_X->GetBinContent(j));
+	      if(profileDT_X->GetBinContent(i) != 0){
+		efX = profileRPC_X->GetBinContent(i)/profileDT_X->GetBinContent(i);
+		erX = sqrt(efX*(1-efX)/profileDT_X->GetBinContent(i));
 	      }	
-	      //if(debug) std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
-	      histoPROX->SetBinContent(j,efX);
-	      histoPROX->SetBinError(j,erX);
+	      //if(debug) std::cout<<"Filling X profile X="<<i<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
+	      histoPROX->SetBinContent(i,efX);
+	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int(nstrips)-int(nstrips*0.4/0.6);
-	    int lastxbin = int(nstrips)+int(nstrips*0.4/0.6);
-	    int firstybin = int(nstrips)-int(nstrips*0.4/0.6);
-	    int lastybin = int(nstrips)+int(nstrips*0.4/0.6);
+	    int firstxbin = int(0.35*nstrips*stripw);
+	    int lastxbin = int(0.85*nstrips*stripw);
+	    int firstybin = int(0.35*stripl);
+	    int lastybin = int(0.85*stripl);
 
 	    if(debug) std::cout<<" firstxbin "<<firstxbin<<" lastxbin "<<lastxbin;
 	    if(debug) std::cout<<" firstybin "<<firstybin<<" lastybin "<<lastybin;
@@ -1426,7 +1508,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
 	    
-	  if(histoRPC && histoDT && BXDistribution && histoRealRPC){
+	  if(histoRPC && histoDT && BXDistribution && histoRealRPC && Signal_BXDistribution){
 	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0 || histoDT->GetBinContent(i)==0){
 		if(debug) std::cout<<"1";
@@ -1596,6 +1678,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoPRO_2D->Write();
 	    histoCLS->Write();
 	    histoBXY->Write();
+	    BXDistribution->Write();
+	    Signal_BXDistribution->Write();
 	    
 	    if(debug) std::cout<<"Producing images"<<std::endl;
 	    if(prodimages){//BARREL
@@ -1630,6 +1714,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      BXDistribution->GetXaxis()->SetTitle("BX");
 	      BXDistribution->Draw();
+	      Signal_BXDistribution->SetFillColor(2);
+	      Signal_BXDistribution->Draw("same");
 	      labeltoSave = name + "/BXDistribution.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
@@ -1703,8 +1789,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 	      
-	      histoResidual->GetXaxis()->SetTitle("cm");
-	      histoResidual->Draw();
+	      histoResidual1->GetXaxis()->SetTitle("cm");
+	      //histoResidual->SetFillColor(1);  histoResidual->Draw();
+	      if(histoResidual1->Integral()!=0) {histoResidual1->SetFillColor(1); histoResidual1->DrawNormalized();}
+	      if(histoResidual2->Integral()!=0) {histoResidual2->SetFillColor(2); histoResidual2->DrawNormalized("same");}
+	      if(histoResidual3->Integral()!=0) {histoResidual3->SetFillColor(3); histoResidual3->DrawNormalized("same");}
+	      //histoResidualO->SetFillColor(5); histoResidualO->Draw("same");	      
 	      labeltoSave = name + "/Residual.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
@@ -1750,8 +1840,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    mybxhisto = 50.+BXDistribution->GetMean()*10;
 	    mybxerror = BXDistribution->GetRMS()*10;
+
+	    signal_mybxhisto = 50.+Signal_BXDistribution->GetMean()*10;
+	    signal_mybxerror = Signal_BXDistribution->GetRMS()*10;
 	    
 	    bxbarrel->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());
+	    signal_bxbarrel->Fill(Signal_BXDistribution->GetMean(),Signal_BXDistribution->GetRMS());  
 	  }else{
 	    if(debug) std::cout<<"One of the histograms Doesn't exist for Barrel!!!"<<std::endl;
 	    exit(1);
@@ -1779,7 +1873,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  int wheel = rpcId.ring();
 	  int sector = rpcId.sector();
 	  int region = rpcId.region();
-
 	  
 	  if(region ==0){
 	    int layer = 0;
@@ -1846,6 +1939,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm2->SetBinError(indexWheel[0],mybxerror);  
 	      BXGlobWm2->GetXaxis()->SetBinLabel(indexWheel[0],camera.c_str());
 	      
+	      Signal_BXGlobWm2->SetBinContent(indexWheel[0],signal_mybxhisto);  
+	      Signal_BXGlobWm2->SetBinError(indexWheel[0],signal_mybxerror);  
+	      Signal_BXGlobWm2->GetXaxis()->SetBinLabel(indexWheel[0],camera.c_str());
+	      
 	      MaskedGlobWm2->SetBinContent(indexWheel[0],maskedratio);  
 	      MaskedGlobWm2->GetXaxis()->SetBinLabel(indexWheel[0],camera.c_str());
 
@@ -1868,6 +1965,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm1->SetBinContent(indexWheel[1],mybxhisto);  
 	      BXGlobWm1->SetBinError(indexWheel[1],mybxerror);  
 	      BXGlobWm1->GetXaxis()->SetBinLabel(indexWheel[1],camera.c_str());
+
+	      Signal_BXGlobWm1->SetBinContent(indexWheel[1],signal_mybxhisto);  
+	      Signal_BXGlobWm1->SetBinError(indexWheel[1],signal_mybxerror);  
+	      Signal_BXGlobWm1->GetXaxis()->SetBinLabel(indexWheel[1],camera.c_str());
 	      
 	      MaskedGlobWm1->SetBinContent(indexWheel[1],maskedratio);  
 	      MaskedGlobWm1->GetXaxis()->SetBinLabel(indexWheel[1],camera.c_str());
@@ -1893,6 +1994,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW0->SetBinError(indexWheel[2],mybxerror);  
 	      BXGlobW0->GetXaxis()->SetBinLabel(indexWheel[2],camera.c_str());
 
+	      Signal_BXGlobW0->SetBinContent(indexWheel[2],signal_mybxhisto);  
+	      Signal_BXGlobW0->SetBinError(indexWheel[2],signal_mybxerror);  
+	      Signal_BXGlobW0->GetXaxis()->SetBinLabel(indexWheel[2],camera.c_str());
+
 	      MaskedGlobW0->SetBinContent(indexWheel[2],maskedratio);  
 	      MaskedGlobW0->GetXaxis()->SetBinLabel(indexWheel[2],camera.c_str());
 	      
@@ -1916,6 +2021,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW1->SetBinError(indexWheel[3],mybxerror);  
 	      BXGlobW1->GetXaxis()->SetBinLabel(indexWheel[3],camera.c_str());
 
+	      Signal_BXGlobW1->SetBinContent(indexWheel[3],signal_mybxhisto);  
+	      Signal_BXGlobW1->SetBinError(indexWheel[3],signal_mybxerror);  
+	      Signal_BXGlobW1->GetXaxis()->SetBinLabel(indexWheel[3],camera.c_str());
+	      
 	      MaskedGlobW1->SetBinContent(indexWheel[3],maskedratio);  
 	      MaskedGlobW1->GetXaxis()->SetBinLabel(indexWheel[3],camera.c_str());
 
@@ -1938,6 +2047,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW2->SetBinContent(indexWheel[4],mybxhisto);  
 	      BXGlobW2->SetBinError(indexWheel[4],mybxerror);  
 	      BXGlobW2->GetXaxis()->SetBinLabel(indexWheel[4],camera.c_str());
+	      
+	      Signal_BXGlobW2->SetBinContent(indexWheel[4],signal_mybxhisto);  
+	      Signal_BXGlobW2->SetBinError(indexWheel[4],signal_mybxerror);  
+	      Signal_BXGlobW2->GetXaxis()->SetBinLabel(indexWheel[4],camera.c_str());
 	      
 	      MaskedGlobW2->SetBinContent(indexWheel[4],maskedratio);  
 	      MaskedGlobW2->GetXaxis()->SetBinLabel(indexWheel[4],camera.c_str());
@@ -1964,20 +2077,23 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm2far->SetBinError(indexWheelf[0],mybxerror);  
 	      BXGlobWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
 	      
+	      Signal_BXGlobWm2far->SetBinContent(indexWheelf[0],signal_mybxhisto);  
+	      Signal_BXGlobWm2far->SetBinError(indexWheelf[0],signal_mybxerror);  
+	      Signal_BXGlobWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
+	      
 	      MaskedGlobWm2far->SetBinContent(indexWheelf[0],maskedratio);
 	      MaskedGlobWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
 	      
 	      AverageEffWm2far->SetBinContent(indexWheelf[0],averageeff);
               AverageEffWm2far->SetBinError(indexWheelf[0],averageerr);
               AverageEffWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
-
+	      
 	      DoubleGapWm2far->SetBinContent(indexWheelf[0],doublegapeff);
 	      DoubleGapWm2far->SetBinError(indexWheelf[0],doublegaperr);  
 	      DoubleGapWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
-
+	      
               NoPredictionWm2far->SetBinContent(indexWheelf[0],nopredictionsratio);
               NoPredictionWm2far->GetXaxis()->SetBinLabel(indexWheelf[0],camera.c_str());
-	      
 	    }else if(Ring==-1){
 	      indexWheelf[1]++;  
 	      EffGlobWm1far->SetBinContent(indexWheelf[1],ef);  
@@ -1987,6 +2103,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobWm1far->SetBinContent(indexWheelf[1],mybxhisto);  
 	      BXGlobWm1far->SetBinError(indexWheelf[1],mybxerror);  
 	      BXGlobWm1far->GetXaxis()->SetBinLabel(indexWheelf[1],camera.c_str());
+	      
+	      Signal_BXGlobWm1far->SetBinContent(indexWheelf[1],signal_mybxhisto);  
+	      Signal_BXGlobWm1far->SetBinError(indexWheelf[1],signal_mybxerror);  
+	      Signal_BXGlobWm1far->GetXaxis()->SetBinLabel(indexWheelf[1],camera.c_str());
 	      
 	      MaskedGlobWm1far->SetBinContent(indexWheelf[1],maskedratio);
 	      MaskedGlobWm1far->GetXaxis()->SetBinLabel(indexWheelf[1],camera.c_str());
@@ -2012,6 +2132,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW0far->SetBinError(indexWheelf[2],mybxerror);  
 	      BXGlobW0far->GetXaxis()->SetBinLabel(indexWheelf[2],camera.c_str());
 
+	      Signal_BXGlobW0far->SetBinContent(indexWheelf[2],signal_mybxhisto);  
+	      Signal_BXGlobW0far->SetBinError(indexWheelf[2],signal_mybxerror);  
+	      Signal_BXGlobW0far->GetXaxis()->SetBinLabel(indexWheelf[2],camera.c_str());
+	      
 	      MaskedGlobW0far->SetBinContent(indexWheelf[2],maskedratio);
 	      MaskedGlobW0far->GetXaxis()->SetBinLabel(indexWheelf[2],camera.c_str());
 
@@ -2034,6 +2158,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW1far->SetBinContent(indexWheelf[3],mybxhisto);  
 	      BXGlobW1far->SetBinError(indexWheelf[3],mybxerror);  
 	      BXGlobW1far->GetXaxis()->SetBinLabel(indexWheelf[3],camera.c_str());
+
+	      Signal_BXGlobW1far->SetBinContent(indexWheelf[3],signal_mybxhisto);  
+	      Signal_BXGlobW1far->SetBinError(indexWheelf[3],signal_mybxerror);  
+	      Signal_BXGlobW1far->GetXaxis()->SetBinLabel(indexWheelf[3],camera.c_str());
 
 	      MaskedGlobW1far->SetBinContent(indexWheelf[3],maskedratio);
 	      MaskedGlobW1far->GetXaxis()->SetBinLabel(indexWheelf[3],camera.c_str());
@@ -2058,6 +2186,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobW2far->SetBinContent(indexWheelf[4],mybxhisto);  
 	      BXGlobW2far->SetBinError(indexWheelf[4],mybxerror);  
 	      BXGlobW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
+
+	      Signal_BXGlobW2far->SetBinContent(indexWheelf[4],signal_mybxhisto);  
+	      Signal_BXGlobW2far->SetBinError(indexWheelf[4],signal_mybxerror);  
+	      Signal_BXGlobW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
 	      
 	      MaskedGlobW2far->SetBinContent(indexWheelf[4],maskedratio);
 	      MaskedGlobW2far->GetXaxis()->SetBinLabel(indexWheelf[4],camera.c_str());
@@ -2081,8 +2213,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	  
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX, meIdPRO_2D, bxDistroId, meIdRealRPC,meIdResidual,meIdCLS,meIdBXY, meIdINEF;
-	 
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF;
+		  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
 
@@ -2092,6 +2224,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdCSC =folder+"/ExpectedOccupancyFromCSC_"+ name;
 
 	  bxDistroId =folder+"/BXDistribution_"+ name;
+	  signal_bxDistroId =folder+"/Signal_BXDistribution_"+ name;
 	  meIdRealRPC =folder+"/RealDetectedOccupancyFromCSC_"+ name;
 	  
 	  meIdPRO = "Profile_For_"+name;
@@ -2099,6 +2232,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
 	  meIdResidual = folder+"/RPCResidualsFromCSC_"+ name;
+	  meIdResidual1 = folder+"/RPCResidualsFromCSC_Clu1_"+ name;
+	  meIdResidual2 = folder+"/RPCResidualsFromCSC_Clu2_"+ name;
+	  meIdResidual3 = folder+"/RPCResidualsFromCSC_Clu3_"+ name;
+	  meIdResidualO = folder+"/RPCResidualsFromCSC_Other_"+ name;
+	  
 	  meIdCSC_2D = folder+"/ExpectedOccupancy2DFromCSC_"+ name;
 	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromCSC_"+ name;
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
@@ -2107,7 +2245,20 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
-	  histoResidual= (TH1F*)theFile->Get(meIdResidual.c_str());
+	  
+	  histoResidual1= (TH1F*)theFile->Get(meIdResidual1.c_str());
+	  histoResidual2= (TH1F*)theFile->Get(meIdResidual2.c_str());
+	  histoResidual3= (TH1F*)theFile->Get(meIdResidual3.c_str());
+	  histoResidualO= (TH1F*)theFile->Get(meIdResidualO.c_str());
+
+	  if(!histoResidual1 || !histoResidual2 || !histoResidual3 || !histoResidualO) std::cout<<"Warning one of the histo residuals plot doesn't exist"<<std::endl;
+
+	  histoResidual= new TH1F (meIdResidual.c_str(),meIdResidual.c_str(),101,-20,20);
+	  histoResidual->Add(histoResidual1);
+	  histoResidual->Add(histoResidual2);
+	  histoResidual->Add(histoResidual3);
+	  histoResidual->Add(histoResidualO);
+	  
 	  histoINEF = (TH2F*)theFile->Get(meIdINEF.c_str());
 	  
 	  const int n = 20;
@@ -2143,13 +2294,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoRPC= (TH1F*)theFile->Get(meIdRPC.c_str()); if(!histoRPC) if(debug) std::cout<<meIdRPC<<"Doesn't exist"<<std::endl;
 	  histoCSC= (TH1F*)theFile->Get(meIdCSC.c_str());if(!histoCSC)if(debug) std::cout<<meIdCSC<<"Doesn't exist"<<std::endl;
 	  BXDistribution = (TH1F*)theFile->Get(bxDistroId.c_str());if(!BXDistribution)if(debug) std::cout<<BXDistribution<<"Doesn't exist"<<std::endl;
+	  Signal_BXDistribution = (TH1F*)theFile->Get(signal_bxDistroId.c_str());
 	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl;
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),2*nstrips,-0.6*nstrips*stripw,0.6*nstrips*stripw,2*nstrips,-0.6*stripl,0.6*stripl);
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),
+				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
+				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 	  
-	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*nstrips,-0.6*stripl,0.6*stripl);
-	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*nstrips,-0.6*stripw*nstrips,0.6*stripw*nstrips);
+	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
+	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*(int)(0.6*nstrips*stripw),-0.6*stripw*nstrips,0.6*stripw*nstrips);
 
 
 	  //if(debug) std::cout <<folder<<"/"<<name<<std::endl;
@@ -2160,6 +2314,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  double o = 0;
 	  float mybxhisto = 0.;
 	  float mybxerror = 0.;
+	  float signal_mybxhisto = 0.;
+	  float signal_mybxerror = 0.;
 	  float ef =0.;
 	  float er =0.;
 	  float efX =0;
@@ -2212,8 +2368,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    }
 
 
-	    for(int i=1;i<=2*nstrips;++i){
-	      for(int j=1;j<=2*nstrips;++j){
+	    for(int i=1;i<=2*(int)(0.6*nstrips*stripw);++i){
+	      for(int j=1;j<=2*(int)(0.6*stripl);++j){
 		ef2D=0.;
 		ef2D=0.;
 		if(histoCSC_2D->GetBinContent(i,j) != 0){
@@ -2227,10 +2383,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Getting Profiles"<<name<<std::endl;
 	    
-	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
-	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
+	    TH1D * profileRPC_Y =  histoRPC_2D->ProjectionY(" ",int(0.6*nstrips*stripw)-int(nstrips*stripw*0.5),int(0.6*nstrips*stripw)+int(nstrips*stripw*0.5));
+	    TH1D * profileCSC_Y =  histoCSC_2D->ProjectionY(" ",int(0.6*nstrips*stripw)-int(nstrips*stripw*0.5),int(0.6*nstrips*stripw)+int(nstrips*stripw*0.5));
 	    
-	    for(int j=1;j<=2*nstrips;++j){
+	    for(int j=1;j<=2*(int)(0.6*stripl);++j){
 	      efY=0.;
 	      erY=0.;
 	      if(profileCSC_Y->GetBinContent(j) != 0){
@@ -2242,30 +2398,31 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPROY->SetBinError(j,erY);
 	    }
 	    
-	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
-	    TH1D * profileCSC_X =  histoCSC_2D->ProjectionX(" ",int(nstrips)-int(nstrips*0.5/0.6),int(nstrips)+int(nstrips*0.5/0.6));
-	    
-	    for(int j=1;j<=2*nstrips;j++){
+	    TH1D * profileRPC_X =  histoRPC_2D->ProjectionX(" ",int(0.6*stripl)-int(stripl*0.5),int(0.6*stripl)+int(stripl*0.5));
+	    TH1D * profileCSC_X =  histoCSC_2D->ProjectionX(" ",int(0.6*stripl)-int(stripl*0.5),int(0.6*stripl)+int(stripl*0.5));
+
+
+	    for(int i=1;i<=2*(int)(0.6*nstrips*stripw);++i){
 	      efX=0.;
 	      erX=0.;
-	      if(profileCSC_X->GetBinContent(j) != 0){
-		efX = profileRPC_X->GetBinContent(j)/profileCSC_X->GetBinContent(j);
-		erX = sqrt(efX*(1-efX)/profileCSC_X->GetBinContent(j));
+	      if(profileCSC_X->GetBinContent(i) != 0){
+		efX = profileRPC_X->GetBinContent(i)/profileCSC_X->GetBinContent(i);
+		erX = sqrt(efX*(1-efX)/profileCSC_X->GetBinContent(i));
 	      }	
-	      //if(debug) std::cout<<"Filling X profile X="<<j<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
-	      histoPROX->SetBinContent(j,efX);
-	      histoPROX->SetBinError(j,erX);
+	      //if(debug) std::cout<<"Filling X profile X="<<i<<" efX="<<efX*100.<<" erX="<<erX*100.<<std::endl;
+	      histoPROX->SetBinContent(i,efX);
+	      histoPROX->SetBinError(i,erX);
 	    }
 
-	    int firstxbin = int(nstrips)-int(nstrips*0.4/0.6);
-	    int lastxbin = int(nstrips)+int(nstrips*0.4/0.6);
-	    int firstybin = int(nstrips)-int(nstrips*0.4/0.6);
-	    int lastybin = int(nstrips)+int(nstrips*0.4/0.6);
-	    
+	    int firstxbin = int(0.35*nstrips*stripw);
+	    int lastxbin = int(0.85*nstrips*stripw);
+	    int firstybin = int(0.35*stripl);
+	    int lastybin = int(0.85*stripl);
+
 	    if(debug) std::cout<<" firstxbin"<<firstxbin<<" lastxbin"<<lastxbin;
 	    if(debug) std::cout<<" firstybin"<<firstybin<<" lastybin"<<lastybin;
 	    
-	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
+	    float pinoobserved = histoRPC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);	
 	    float pinoexpected = histoCSC_2D->Integral(firstxbin,lastxbin,firstybin,lastybin);
 	    
 	    if(pinoexpected != 0){
@@ -2287,7 +2444,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  bool maskeffect[100];
 	  for(int i=0;i<100;i++) maskeffect[i]=false;
 
-	  if(histoRPC && histoCSC && BXDistribution && histoRealRPC){
+	  if(histoRPC && histoCSC && BXDistribution && histoRealRPC && Signal_BXDistribution){
 	    for(int i=1;i<=nstrips;++i){
 	      if(histoRealRPC->GetBinContent(i)==0 || histoCSC->GetBinContent(i)==0){
 		if(debug) std::cout<<"1";
@@ -2467,6 +2624,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    //histoPRO_2D->Write(); //ahora este
 	    //histoCLS->Write(); //parece este
 	    histoBXY->Write();
+	    BXDistribution->Write();
+	    Signal_BXDistribution->Write();
 
 	    if(debug) std::cout<<"Producing images"<<std::endl;
 	    if(prodimages){//ENDCAP	
@@ -2502,6 +2661,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      
 	      BXDistribution->GetXaxis()->SetTitle("BX");
 	      BXDistribution->Draw();
+	      Signal_BXDistribution->SetFillColor(2);
+	      Signal_BXDistribution->Draw("same");
 	      labeltoSave = name + "/BXDistribution.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
@@ -2577,9 +2738,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      Ca0->Clear();
 	      
 	      if(debug) std::cout<<"histoResidual "<<std::endl;
-	      histoResidual->GetXaxis()->SetTitle("cm");
-	      histoResidual->Draw();
-	      
+	      histoResidual1->GetXaxis()->SetTitle("cm");
+	      //histoResidual->SetFillColor(1);  histoResidual->Draw();
+	      if(histoResidual1->Integral()!=0) {histoResidual1->SetFillColor(1); histoResidual1->DrawNormalized();}
+	      if(histoResidual2->Integral()!=0) {histoResidual2->SetFillColor(2); histoResidual2->DrawNormalized("same");}
+	      if(histoResidual3->Integral()!=0) {histoResidual3->SetFillColor(3); histoResidual3->DrawNormalized("same");}
+	      //histoResidualO->SetFillColor(5); histoResidualO->Draw("same");	      
 	      labeltoSave = name + "/Residual.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
@@ -2628,8 +2792,13 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    
 	    mybxhisto = 50.+BXDistribution->GetMean()*10;
 	    mybxerror = BXDistribution->GetRMS()*10;
+
+	    signal_mybxhisto = 50.+Signal_BXDistribution->GetMean()*10;
+	    signal_mybxerror = Signal_BXDistribution->GetRMS()*10;
 	    
-	    bxendcap->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());
+	    bxendcap->Fill(BXDistribution->GetMean(),BXDistribution->GetRMS());   
+	    signal_bxendcap->Fill(Signal_BXDistribution->GetMean(),Signal_BXDistribution->GetRMS());   
+	    
 	  }else{
 	    if(debug) std::cout<<"One of the histograms Doesn't exist!!!"<<std::endl;
 	    exit(1);
@@ -2722,7 +2891,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm3->SetBinContent(indexDisk[0],mybxhisto);  
 	      BXGlobDm3->SetBinError(indexDisk[0],mybxerror);  
 	      BXGlobDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
-	      
+
+	      Signal_BXGlobDm3->SetBinContent(indexDisk[0],signal_mybxhisto);  
+	      Signal_BXGlobDm3->SetBinError(indexDisk[0],signal_mybxerror);  
+	      Signal_BXGlobDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
+      
 	      MaskedGlobDm3->SetBinContent(indexDisk[0],maskedratio);  
 	      MaskedGlobDm3->GetXaxis()->SetBinLabel(indexDisk[0],camera.c_str());
 
@@ -2742,6 +2915,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm2->SetBinContent(indexDisk[1],mybxhisto);  
 	      BXGlobDm2->SetBinError(indexDisk[1],mybxerror);  
 	      BXGlobDm2->GetXaxis()->SetBinLabel(indexDisk[1],camera.c_str());
+
+	      Signal_BXGlobDm2->SetBinContent(indexDisk[1],signal_mybxhisto);  
+	      Signal_BXGlobDm2->SetBinError(indexDisk[1],signal_mybxerror);  
+	      Signal_BXGlobDm2->GetXaxis()->SetBinLabel(indexDisk[1],camera.c_str());
 	      
 	      MaskedGlobDm2->SetBinContent(indexDisk[1],maskedratio);  
 	      MaskedGlobDm2->GetXaxis()->SetBinLabel(indexDisk[1],camera.c_str());
@@ -2761,6 +2938,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm1->SetBinContent(indexDisk[2],mybxhisto);  
 	      BXGlobDm1->SetBinError(indexDisk[2],mybxerror);  
 	      BXGlobDm1->GetXaxis()->SetBinLabel(indexDisk[2],camera.c_str());
+
+	      Signal_BXGlobDm1->SetBinContent(indexDisk[2],signal_mybxhisto);  
+	      Signal_BXGlobDm1->SetBinError(indexDisk[2],signal_mybxerror);  
+	      Signal_BXGlobDm1->GetXaxis()->SetBinLabel(indexDisk[2],camera.c_str());
 	      
 	      MaskedGlobDm1->SetBinContent(indexDisk[2],maskedratio);  
 	      MaskedGlobDm1->GetXaxis()->SetBinLabel(indexDisk[2],camera.c_str());
@@ -2782,6 +2963,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD1->SetBinError(indexDisk[3],mybxerror);  
 	      BXGlobD1->GetXaxis()->SetBinLabel(indexDisk[3],camera.c_str());
 
+	      Signal_BXGlobD1->SetBinContent(indexDisk[3],signal_mybxhisto);  
+	      Signal_BXGlobD1->SetBinError(indexDisk[3],signal_mybxerror);  
+	      Signal_BXGlobD1->GetXaxis()->SetBinLabel(indexDisk[3],camera.c_str());
+	      
 	      MaskedGlobD1->SetBinContent(indexDisk[3],maskedratio);  
 	      MaskedGlobD1->GetXaxis()->SetBinLabel(indexDisk[3],camera.c_str());
 
@@ -2800,7 +2985,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD2->SetBinContent(indexDisk[4],mybxhisto);  
 	      BXGlobD2->SetBinError(indexDisk[4],mybxerror);  
 	      BXGlobD2->GetXaxis()->SetBinLabel(indexDisk[4],camera.c_str());
-	      
+
+	      Signal_BXGlobD2->SetBinContent(indexDisk[4],signal_mybxhisto);  
+	      Signal_BXGlobD2->SetBinError(indexDisk[4],signal_mybxerror);  
+	      Signal_BXGlobD2->GetXaxis()->SetBinLabel(indexDisk[4],camera.c_str());
+
 	      MaskedGlobD2->SetBinContent(indexDisk[4],maskedratio);  
 	      MaskedGlobD2->GetXaxis()->SetBinLabel(indexDisk[4],camera.c_str());
 
@@ -2819,7 +3008,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD3->SetBinContent(indexDisk[5],mybxhisto);  
 	      BXGlobD3->SetBinError(indexDisk[5],mybxerror);  
 	      BXGlobD3->GetXaxis()->SetBinLabel(indexDisk[5],camera.c_str());
-	      
+
+	      Signal_BXGlobD3->SetBinContent(indexDisk[5],signal_mybxhisto);  
+	      Signal_BXGlobD3->SetBinError(indexDisk[5],signal_mybxerror);  
+	      Signal_BXGlobD3->GetXaxis()->SetBinLabel(indexDisk[5],camera.c_str());
+
 	      MaskedGlobD3->SetBinContent(indexDisk[5],maskedratio);  
 	      MaskedGlobD3->GetXaxis()->SetBinLabel(indexDisk[5],camera.c_str());
 
@@ -2842,6 +3035,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm3far->SetBinError(indexDiskf[0],mybxerror);  
 	      BXGlobDm3far->GetXaxis()->SetBinLabel(indexDiskf[0],camera.c_str());
 	      
+	      Signal_BXGlobDm3far->SetBinContent(indexDiskf[0],signal_mybxhisto);  
+	      Signal_BXGlobDm3far->SetBinError(indexDiskf[0],signal_mybxerror);  
+	      Signal_BXGlobDm3far->GetXaxis()->SetBinLabel(indexDiskf[0],camera.c_str());
+	      
 	      MaskedGlobDm3far->SetBinContent(indexDiskf[0],maskedratio);
 	      MaskedGlobDm3far->GetXaxis()->SetBinLabel(indexDiskf[0],camera.c_str());
 	      
@@ -2862,6 +3059,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm2far->SetBinContent(indexDiskf[1],mybxhisto);  
 	      BXGlobDm2far->SetBinError(indexDiskf[1],mybxerror);  
 	      BXGlobDm2far->GetXaxis()->SetBinLabel(indexDiskf[1],camera.c_str());
+
+	      Signal_BXGlobDm2far->SetBinContent(indexDiskf[1],signal_mybxhisto);  
+	      Signal_BXGlobDm2far->SetBinError(indexDiskf[1],signal_mybxerror);  
+	      Signal_BXGlobDm2far->GetXaxis()->SetBinLabel(indexDiskf[1],camera.c_str());
 	      
 	      MaskedGlobDm2far->SetBinContent(indexDiskf[1],maskedratio);
 	      MaskedGlobDm2far->GetXaxis()->SetBinLabel(indexDiskf[1],camera.c_str());
@@ -2882,6 +3083,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobDm1far->SetBinContent(indexDiskf[2],mybxhisto);  
 	      BXGlobDm1far->SetBinError(indexDiskf[2],mybxerror);  
 	      BXGlobDm1far->GetXaxis()->SetBinLabel(indexDiskf[2],camera.c_str());
+
+	      Signal_BXGlobDm1far->SetBinContent(indexDiskf[2],signal_mybxhisto);  
+	      Signal_BXGlobDm1far->SetBinError(indexDiskf[2],signal_mybxerror);  
+	      Signal_BXGlobDm1far->GetXaxis()->SetBinLabel(indexDiskf[2],camera.c_str());
 	      
 	      MaskedGlobDm1far->SetBinContent(indexDiskf[2],maskedratio);
 	      MaskedGlobDm1far->GetXaxis()->SetBinLabel(indexDiskf[2],camera.c_str());
@@ -2903,6 +3108,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD1far->SetBinError(indexDiskf[3],mybxerror);  
 	      BXGlobD1far->GetXaxis()->SetBinLabel(indexDiskf[3],camera.c_str());
 
+	      Signal_BXGlobD1far->SetBinContent(indexDiskf[3],signal_mybxhisto);  
+	      Signal_BXGlobD1far->SetBinError(indexDiskf[3],signal_mybxerror);  
+	      Signal_BXGlobD1far->GetXaxis()->SetBinLabel(indexDiskf[3],camera.c_str());
+	      
 	      MaskedGlobD1far->SetBinContent(indexDiskf[3],maskedratio);
 	      MaskedGlobD1far->GetXaxis()->SetBinLabel(indexDiskf[3],camera.c_str());
 	      
@@ -2923,6 +3132,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD2far->SetBinError(indexDiskf[4],mybxerror);  
 	      BXGlobD2far->GetXaxis()->SetBinLabel(indexDiskf[4],camera.c_str());
 	      
+	      Signal_BXGlobD2far->SetBinContent(indexDiskf[4],signal_mybxhisto);  
+	      Signal_BXGlobD2far->SetBinError(indexDiskf[4],signal_mybxerror);  
+	      Signal_BXGlobD2far->GetXaxis()->SetBinLabel(indexDiskf[4],camera.c_str());
+	      
 	      MaskedGlobD2far->SetBinContent(indexDiskf[4],maskedratio);
 	      MaskedGlobD2far->GetXaxis()->SetBinLabel(indexDiskf[4],camera.c_str());
 
@@ -2941,6 +3154,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      BXGlobD3far->SetBinContent(indexDiskf[5],mybxhisto);  
 	      BXGlobD3far->SetBinError(indexDiskf[5],mybxerror);  
 	      BXGlobD3far->GetXaxis()->SetBinLabel(indexDiskf[5],camera.c_str());
+
+	      Signal_BXGlobD3far->SetBinContent(indexDiskf[5],signal_mybxhisto);  
+	      Signal_BXGlobD3far->SetBinError(indexDiskf[5],signal_mybxerror);  
+	      Signal_BXGlobD3far->GetXaxis()->SetBinLabel(indexDiskf[5],camera.c_str());
 	      
 	      MaskedGlobD3far->SetBinContent(indexDiskf[5],maskedratio);
 	      MaskedGlobD3far->GetXaxis()->SetBinLabel(indexDiskf[5],camera.c_str());
@@ -3105,13 +3322,27 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   Ca5->SaveAs("bxbarrel.png");
   bxbarrel->Write();
   Ca5->Clear();
-  
+
+  signal_bxbarrel->Draw();
+  signal_bxbarrel->GetYaxis()->SetTitle("RMS (bx Units)");
+  signal_bxbarrel->GetXaxis()->SetTitle("Mean (bx Units)");
+  Ca5->SaveAs("signal_bxbarrel.png");
+  signal_bxbarrel->Write();
+  Ca5->Clear();
+
   bxendcap->Draw();
   bxendcap->GetYaxis()->SetTitle("RMS (bx Units)");
   bxendcap->GetXaxis()->SetTitle("Mean (bx Units)");
-  bxendcap->Write();
   Ca5->SaveAs("bxendcap.png");
+  bxendcap->Write();
+  Ca5->Clear();
     
+  signal_bxendcap->Draw();
+  signal_bxendcap->GetYaxis()->SetTitle("RMS (bx Units)");
+  signal_bxendcap->GetXaxis()->SetTitle("Mean (bx Units)");
+  Ca5->SaveAs("signal_bxendcap.png");
+  signal_bxendcap->Write();
+  Ca5->Clear();
   
   if(barrel){
     EffGlobWm2->GetXaxis()->LabelsOption("v");
@@ -3474,7 +3705,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
   bxAxisEndCap->CenterTitle();
   
   Stat = 0;
-  if(statistics) Stat = 1;
+  if(statistics) Stat = 0;
   gStyle->SetOptStat(Stat);
   gStyle->SetPalette(1);
   
@@ -4319,6 +4550,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobWm2->SetLineColor(9);
    BXGlobWm2->Draw("same");
 
+   Signal_BXGlobWm2->SetMarkerColor(2);
+   Signal_BXGlobWm2->SetLineColor(2);
+   Signal_BXGlobWm2->Draw("same");
+   
    MaskedGlobWm2->SetMarkerColor(2);
    MaskedGlobWm2->SetLineColor(2);
    MaskedGlobWm2->Draw("same");
@@ -4349,6 +4584,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobWm2far->SetLineColor(9);
    BXGlobWm2far->Draw("same");
 
+   Signal_BXGlobWm2far->SetMarkerColor(2);
+   Signal_BXGlobWm2far->SetLineColor(2);
+   Signal_BXGlobWm2far->Draw("same");
+   
    MaskedGlobWm2far->SetMarkerColor(2);
    MaskedGlobWm2far->SetLineColor(2);
    MaskedGlobWm2far->Draw("same");
@@ -4378,6 +4617,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobWm1->SetMarkerColor(9);
    BXGlobWm1->SetLineColor(9);
    BXGlobWm1->Draw("same");
+
+   Signal_BXGlobWm1->SetMarkerColor(2);
+   Signal_BXGlobWm1->SetLineColor(2);
+   Signal_BXGlobWm1->Draw("same");
 
    MaskedGlobWm1->SetMarkerColor(2);
    MaskedGlobWm1->SetLineColor(2);
@@ -4409,6 +4652,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobWm1far->SetLineColor(9);
    BXGlobWm1far->Draw("same");
 
+   Signal_BXGlobWm1far->SetMarkerColor(2);
+   Signal_BXGlobWm1far->SetLineColor(2);
+   Signal_BXGlobWm1far->Draw("same");
+   
    MaskedGlobWm1far->SetMarkerColor(2);
    MaskedGlobWm1far->SetLineColor(2);
    MaskedGlobWm1far->Draw("same");
@@ -4438,6 +4685,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW0->SetMarkerColor(9);
    BXGlobW0->SetLineColor(9);
    BXGlobW0->Draw("same");
+
+   Signal_BXGlobW0->SetMarkerColor(2);
+   Signal_BXGlobW0->SetLineColor(2);
+   Signal_BXGlobW0->Draw("same");
 
    MaskedGlobW0->SetMarkerColor(2);
    MaskedGlobW0->SetLineColor(2);
@@ -4469,6 +4720,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW0far->SetLineColor(9);
    BXGlobW0far->Draw("same");
 
+   Signal_BXGlobW0far->SetMarkerColor(2);
+   Signal_BXGlobW0far->SetLineColor(2);
+   Signal_BXGlobW0far->Draw("same");
+
    MaskedGlobW0far->SetMarkerColor(2);
    MaskedGlobW0far->SetLineColor(2);
    MaskedGlobW0far->Draw("same");
@@ -4499,6 +4754,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW1->SetLineColor(9);
    BXGlobW1->Draw("same");
 
+   Signal_BXGlobW1->SetMarkerColor(2);
+   Signal_BXGlobW1->SetLineColor(2);
+   Signal_BXGlobW1->Draw("same");
+
    MaskedGlobW1->SetMarkerColor(2);
    MaskedGlobW1->SetLineColor(2);
    MaskedGlobW1->Draw("same");
@@ -4528,6 +4787,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW1far->SetMarkerColor(9);
    BXGlobW1far->SetLineColor(9);
    BXGlobW1far->Draw("same");
+   
+   Signal_BXGlobW1far->SetMarkerColor(2);
+   Signal_BXGlobW1far->SetLineColor(2);
+   Signal_BXGlobW1far->Draw("same");
 
    MaskedGlobW1far->SetMarkerColor(2);
    MaskedGlobW1far->SetLineColor(2);
@@ -4559,6 +4822,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW2->SetLineColor(9);
    BXGlobW2->Draw("same");
 
+   Signal_BXGlobW2->SetMarkerColor(2);
+   Signal_BXGlobW2->SetLineColor(2);
+   Signal_BXGlobW2->Draw("same");
+
    MaskedGlobW2->SetMarkerColor(2);
    MaskedGlobW2->SetLineColor(2);
    MaskedGlobW2->Draw("same");
@@ -4588,6 +4855,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobW2far->SetMarkerColor(9);
    BXGlobW2far->SetLineColor(9);
    BXGlobW2far->Draw("same");
+
+   Signal_BXGlobW2far->SetMarkerColor(2);
+   Signal_BXGlobW2far->SetLineColor(2);
+   Signal_BXGlobW2far->Draw("same");
 
    MaskedGlobW2far->SetMarkerColor(2);
    MaskedGlobW2far->SetLineColor(2);
@@ -4624,6 +4895,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobD1->SetLineColor(9);
    BXGlobD1->Draw("same");
 
+   Signal_BXGlobD1->SetMarkerColor(2);
+   Signal_BXGlobD1->SetLineColor(2);
+   Signal_BXGlobD1->Draw("same");
+
    MaskedGlobD1->SetMarkerColor(2);
    MaskedGlobD1->SetLineColor(2);
    MaskedGlobD1->Draw("same");
@@ -4649,6 +4924,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobD1far->SetMarkerColor(9);
    BXGlobD1far->SetLineColor(9);
    BXGlobD1far->Draw("same");
+
+   Signal_BXGlobD1far->SetMarkerColor(2);
+   Signal_BXGlobD1far->SetLineColor(2);
+   Signal_BXGlobD1far->Draw("same");
 
    MaskedGlobD1far->SetMarkerColor(2);
    MaskedGlobD1far->SetLineColor(2);
@@ -4676,6 +4955,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobD2->SetLineColor(9);
    BXGlobD2->Draw("same");
 
+   Signal_BXGlobD2->SetMarkerColor(2);
+   Signal_BXGlobD2->SetLineColor(2);
+   Signal_BXGlobD2->Draw("same");
+
    MaskedGlobD2->SetMarkerColor(2);
    MaskedGlobD2->SetLineColor(2);
    MaskedGlobD2->Draw("same");
@@ -4702,6 +4985,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobD2far->SetLineColor(9);
    BXGlobD2far->Draw("same");
 
+   Signal_BXGlobD2far->SetMarkerColor(2);
+   Signal_BXGlobD2far->SetLineColor(2);
+   Signal_BXGlobD2far->Draw("same");
+
    MaskedGlobD2far->SetMarkerColor(2);
    MaskedGlobD2far->SetLineColor(2);
    MaskedGlobD2far->Draw("same");
@@ -4721,13 +5008,16 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    Ca2->SaveAs("Sides/SegEff_D2far.png");
    Ca2->Clear();
 
-
    EffGlobD3far->Draw();
    EffGlobD3far->GetYaxis()->SetTitle("%");
   
    BXGlobD3far->SetMarkerColor(9);
    BXGlobD3far->SetLineColor(9);
    BXGlobD3far->Draw("same");
+
+   Signal_BXGlobD3far->SetMarkerColor(2);
+   Signal_BXGlobD3far->SetLineColor(2);
+   Signal_BXGlobD3far->Draw("same");
 
    MaskedGlobD3far->SetMarkerColor(2);
    MaskedGlobD3far->SetLineColor(2);
@@ -4754,6 +5044,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobD3->SetMarkerColor(9);
    BXGlobD3->SetLineColor(9);
    BXGlobD3->Draw("same");
+
+   Signal_BXGlobD3->SetMarkerColor(2);
+   Signal_BXGlobD3->SetLineColor(2);
+   Signal_BXGlobD3->Draw("same");
 
    MaskedGlobD3->SetMarkerColor(2);
    MaskedGlobD3->SetLineColor(2);
@@ -4783,6 +5077,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm1->SetLineColor(9);
    BXGlobDm1->Draw("same");
 
+   Signal_BXGlobDm1->SetMarkerColor(2);
+   Signal_BXGlobDm1->SetLineColor(2);
+   Signal_BXGlobDm1->Draw("same");
+
    MaskedGlobDm1->SetMarkerColor(2);
    MaskedGlobDm1->SetLineColor(2);
    MaskedGlobDm1->Draw("same");
@@ -4809,6 +5107,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm1far->SetLineColor(9);
    BXGlobDm1far->Draw("same");
 
+   Signal_BXGlobDm1far->SetMarkerColor(2);
+   Signal_BXGlobDm1far->SetLineColor(2);
+   Signal_BXGlobDm1far->Draw("same");
+   
    MaskedGlobDm1far->SetMarkerColor(2);
    MaskedGlobDm1far->SetLineColor(2);
    MaskedGlobDm1far->Draw("same");
@@ -4835,6 +5137,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm2->SetLineColor(9);
    BXGlobDm2->Draw("same");
 
+   Signal_BXGlobDm2->SetMarkerColor(2);
+   Signal_BXGlobDm2->SetLineColor(2);
+   Signal_BXGlobDm2->Draw("same");
+
+
    MaskedGlobDm2->SetMarkerColor(2);
    MaskedGlobDm2->SetLineColor(2);
    MaskedGlobDm2->Draw("same");
@@ -4860,6 +5167,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm2far->SetMarkerColor(9);
    BXGlobDm2far->SetLineColor(9);
    BXGlobDm2far->Draw("same");
+
+   Signal_BXGlobDm2far->SetMarkerColor(2);
+   Signal_BXGlobDm2far->SetLineColor(2);
+   Signal_BXGlobDm2far->Draw("same");
 
    MaskedGlobDm2far->SetMarkerColor(2);
    MaskedGlobDm2far->SetLineColor(2);
@@ -4888,6 +5199,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm3far->SetLineColor(9);
    BXGlobDm3far->Draw("same");
 
+   Signal_BXGlobDm3far->SetMarkerColor(2);
+   Signal_BXGlobDm3far->SetLineColor(2);
+   Signal_BXGlobDm3far->Draw("same");
+
    MaskedGlobDm3far->SetMarkerColor(2);
    MaskedGlobDm3far->SetLineColor(2);
    MaskedGlobDm3far->Draw("same");
@@ -4914,6 +5229,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
    BXGlobDm3->SetLineColor(9);
    BXGlobDm3->Draw("same");
 
+   Signal_BXGlobDm3->SetMarkerColor(2);
+   Signal_BXGlobDm3->SetLineColor(2);
+   Signal_BXGlobDm3->Draw("same");
+   
    MaskedGlobDm3->SetMarkerColor(2);
    MaskedGlobDm3->SetLineColor(2);
    MaskedGlobDm3->Draw("same");
@@ -5131,11 +5450,23 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  BXGlobW1->Write();
  BXGlobW2->Write();
 
+ Signal_BXGlobWm2->Write();
+ Signal_BXGlobWm1->Write();
+ Signal_BXGlobW0->Write();
+ Signal_BXGlobW1->Write();
+ Signal_BXGlobW2->Write();
+
  BXGlobWm2far->Write();
  BXGlobWm1far->Write();
  BXGlobW0far->Write();
  BXGlobW1far->Write();
  BXGlobW2far->Write();
+
+ Signal_BXGlobWm2far->Write();
+ Signal_BXGlobWm1far->Write();
+ Signal_BXGlobW0far->Write();
+ Signal_BXGlobW1far->Write();
+ Signal_BXGlobW2far->Write();
 
  MaskedGlobWm2->Write();
  MaskedGlobWm1->Write();
@@ -5246,6 +5577,19 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
  BXGlobD3far->Write();
  MaskedGlobD3far->Write();
 
+ Signal_BXGlobDm3->Write();
+ Signal_BXGlobDm3far->Write();
+ Signal_BXGlobDm2->Write();
+ Signal_BXGlobDm2far->Write();
+ Signal_BXGlobDm1->Write();
+ Signal_BXGlobDm1far->Write();
+ Signal_BXGlobD1->Write();
+ Signal_BXGlobD1far->Write();
+ Signal_BXGlobD2->Write();
+ Signal_BXGlobD2far->Write();
+ Signal_BXGlobD3->Write();
+ Signal_BXGlobD3far->Write();
+
  Ca2->Close();
 
  theFileOut->Write();
@@ -5271,10 +5615,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 void 
 RPCMonitorEfficiency::endJob(){
-
   
-
-    
 }
 
 DEFINE_FWK_MODULE(RPCMonitorEfficiency);
