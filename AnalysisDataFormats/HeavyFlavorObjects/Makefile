@@ -4,7 +4,7 @@
 #
 # ======================================================================
 
- 
+
 ifdef ROOTSYS
   ROOTCINT      = $(ROOTSYS)/bin/rootcint
   ROOTCFLAGS    = $(shell $(ROOTSYS)/bin/root-config --cflags)
@@ -62,12 +62,13 @@ UTIL       = PidTable.o PidTableDict.o \
 all: 
 # --
 	@$(MAKE) ana00
+	@$(MAKE) util
 	@$(MAKE) writeA01Event
 	@$(MAKE) readA01Event
 	@$(MAKE) writeA00Event
 	@$(MAKE) readA00Event
-	@$(MAKE) runTreeReader
-	@$(MAKE) runMyReader
+	@$(MAKE) runTreeReader01
+	@$(MAKE) runMyReader01
 	@$(MAKE) links
 
 # ================================================================================
@@ -131,6 +132,25 @@ readA01Event: test/readA01Event.cc
 	cd test && $(LD) $(LDFLAGS)  -o ../bin/readA01Event ../obj/readA01Event.o $(GLIBS) ../lib/libAna00.so && cd - 
 
 
+# ================================================================================
+runTreeReader01: test/treeReader01.cc test/treeReader01.cc
+# --------------------------------------------------------
+	cd test && $(CXX) $(CXXFLAGS) -c treeReader01.cc -o ../obj/treeReader01.o  && cd ..
+	cd test && $(ROOTSYS)/bin/rootcint -f treeReader01Dict.cc -c treeReader01.hh && cd ..
+	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runTreeReader01.o -c runTreeReader01.cc && cd ..
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/runTreeReader01 $(GLIBS) ../lib/libAna00.so ../obj/runTreeReader01.o ../obj/treeReader01.o && cd ..
+
+
+# ================================================================================
+runMyReader01: test/myReader01.hh test/myReader01.cc
+# --------------------------------------------------
+	cd test && $(CXX) $(CXXFLAGS) -c myReader01.cc -o ../obj/myReader01.o  && cd ..
+	cd test && $(ROOTSYS)/bin/rootcint -f myReader01Dict.cc -c myReader01.hh && cd ..
+	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runMyReader01.o -c runMyReader01.cc && cd ..
+	cd test && $(LD) $(LDFLAGS)  -o ../bin/runMyReader01 $(GLIBS) ../lib/libAna00.so ../obj/runMyReader01.o ../obj/myReader01.o ../obj/treeReader01.o && cd ..
+
+
+
 # ======================================================================
 writeA00Event: test/writeA00Event.cc
 # ----------------------------------
@@ -172,19 +192,14 @@ ana: test/ana.cc
 
 
 # ================================================================================
-runHttReader: test/httReader.hh test/httReader.cc
-# --------------------------------------------------
-	cd test && $(CXX) $(CXXFLAGS) -c httReader.cc -o ../obj/httReader.o  && cd ..
-	cd test && $(ROOTCINT) -f httReaderDict.cc -c httReader.hh && cd ..
-	cd test && $(CXX) $(CXXFLAGS) -o ../obj/runHttReader.o -c runHttReader.cc && cd ..
-	cd test && $(LD) $(LDFLAGS)  -o ../bin/runHttReader $(GLIBS) ../lib/libAna00.so ../obj/runHttReader.o ../obj/httReader.o ../obj/treeReader.o && cd ..
-
-
-# ================================================================================
 links:
 	mkdir -p ../../../lib/$(SCRAM_ARCH)
 	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so && cd -
 	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && ln -s ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so && cd -
+
+copy:
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libAna00.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libAna00.so . && cd -
+	cd ../../../lib/$(SCRAM_ARCH)/ && rm -f libUtil.so && cp ../../src/AnalysisDataFormats/HeavyFlavorObjects/lib/libUtil.so . && cd -
 
 # ================================================================================
 clean:
