@@ -64,6 +64,7 @@ HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   cout << "---  fAssociatorLabel:        " << fAssociatorLabel.c_str() << endl;
   cout << "---  fDoTruthMatching:        " << fDoTruthMatching << endl;  // 0 = nothing, 1 = TrackingParticles, 2 = FAMOS
   cout << "---  fTrackingParticlesLabel: " << fTrackingParticlesLabel.c_str() << endl;
+  cout << "---  fMuonsLabel:             " << fMuonsLabel.encode() << endl;
   cout << "----------------------------------------------------------------------" << endl;
 }
 
@@ -77,6 +78,7 @@ HFDumpTracks::~HFDumpTracks() {
 // ----------------------------------------------------------------------
 void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
+ if (fVerbose > 0) cout << "==>HFDumpTracks> new event " << endl;
   // -- get the collection of RecoTracks 
   edm::Handle<edm::View<reco::Track> > tracksView;
   iEvent.getByLabel(fTracksLabel.c_str(), tracksView);
@@ -84,12 +86,11 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   // -- get the collection of muons and store their corresponding track indices
   vector<int> muonIndices;
   Handle<MuonCollection> hMuons;
-  cout << "==> HFDumpTracks> " << fMuonsLabel << endl;
   iEvent.getByLabel(fMuonsLabel, hMuons);
   const Track* tt = 0;
   for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
-    TrackRef track = muon->track();
-    muonIndices.push_back((muon->track()).index());
+    TrackRef track = muon->innerTrack();
+    muonIndices.push_back(track.index());
   }
   if (fVerbose > 0) cout << "==>HFDumpTracks> nMuons = " << hMuons->size() << endl;
   TH1D *h2 = (TH1D*)gHFFile->Get("h2");
@@ -137,8 +138,14 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.eta(),
 			      trackView.phi()
 			      );
-    pTrack->fTip = trackView.d0();
-    pTrack->fLip = trackView.dsz();
+    pTrack->fTip = trackView.d0(); // no
+    pTrack->fLip = trackView.dsz(); // no
+
+    pTrack->fd0  = trackView.dxy();
+    pTrack->fd0E = trackView.dxyError();
+    pTrack->fdz  = trackView.dz();
+    pTrack->fdzE = trackView.dzError();
+
     pTrack->fQ = trackView.charge();
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
@@ -155,6 +162,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     const reco::HitPattern& p = trackView.hitPattern();
     for (int i=0; i<p.numberOfHits(); i++) {
       uint32_t hit = p.getHitPattern(i);
+      if (i < 20) pTrack->fHitPattern[i] = hit; 
     }
 
     int gen_pdg_id(-99999), gen_id(-99999), gen_cnt(0);
@@ -165,23 +173,19 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       gen_id     = gHFEvent->getGenIndex(trackView.px(), trackView.py(), trackView.pz(), -1); 
       if (gen_id > -1) gen_pdg_id = gHFEvent->getGenCand(gen_id)->fID; 
       if (13 == TMath::Abs(gen_pdg_id)) {
-	cout << "Simple TM: "; pTrack->dump(); 
+	if (fVerbose > 0) cout << "Simple TM: "; pTrack->dump(); 
       }
     }
 
     // -- RECO truth matching with TrackingParticle
     if (1 == fDoTruthMatching) {
       try{ 
-	cout << "hello 1" << endl;
 	std::vector<std::pair<TrackingParticleRef, double> > tp = recSimColl[rTrackView];
-	cout << "hello 2" << endl;
  	TrackingParticleRef tpr = tp.begin()->first;  
-	cout << "hello 3" << endl;
  	const HepMC::GenParticle *genPar = 0; 
  	for (TrackingParticle::genp_iterator pit = tpr->genParticle_begin(); 
  	     pit != tpr->genParticle_end(); 
  	     ++pit){
-	  cout << "hello 4" << endl;
  	  genPar     = pit->get();
  	  gen_pdg_id = (*genPar).pdg_id();
  	  gen_id     = (*genPar).barcode()-1;
@@ -217,7 +221,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	      if (genPar) {
 		gen_pdg_id = (*genPar).pdg_id();
 		gen_id     = (*genPar).barcode()-1;  // BC(HepMC) = BC(reco)+1
-		if (fVerbose > 0) printf("id = %i, bc = %i\n", gen_pdg_id, gen_id);
+		if (fVerbose > 0) cout << Form("id = %i, bc = %i", gen_pdg_id, gen_id) << endl;
 		goto done;
 	      }
 	    }

@@ -17,6 +17,8 @@
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/VertexReco>
 <use name=RecoVertex/TrimmedKalmanVertexFinder>
+<use name=RecoVertex/KinematicFit>
+<use name=RecoVertex/KinematicFitPrimitives>
 <use name=TrackingTools/TransientTrack>
 <use name=HLTrigger/HLTcore>
 <use name=DataFormats/HLTReco>
@@ -49,6 +51,8 @@
    <use name=DataFormats/MuonReco>
    <use name=DataFormats/VertexReco>
    <use name=RecoVertex/TrimmedKalmanVertexFinder>
+   <use name=RecoVertex/KinematicFit>
+   <use name=RecoVertex/KinematicFitPrimitives>
    <use name=TrackingTools/TransientTrack>
    <use name=HLTrigger/HLTcore>
    <use name=DataFormats/HLTReco>

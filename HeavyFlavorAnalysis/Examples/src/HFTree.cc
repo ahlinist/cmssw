@@ -61,13 +61,17 @@ void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   gHFEvent->fRunNumber   = iEvent.id().run();
   gHFEvent->fEventNumber = iEvent.id().event();
     
-  cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
-       << " event: "  << gHFEvent->fEventNumber 
-       << " pthat: "  << gHFEvent->fPtHat 
-       << " MET0: "   << gHFEvent->fMET0.Mag()
-       << " genMET: " << gHFEvent->fGenMET.Mag()
-       << endl;
-  fTree->Fill();
+  if (gHFEvent->nCands() > 0){
+    cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
+	 << " event: "  << gHFEvent->fEventNumber 
+	 << " Cand: ";
+    for (int i = 0; i < gHFEvent->nCands(); ++i) {
+      cout << gHFEvent->getCand(i)->fType << " ";
+    }
+    cout << endl;
+    fTree->Fill();
+  } 
+
   gHFEvent->Clear();
 }
 

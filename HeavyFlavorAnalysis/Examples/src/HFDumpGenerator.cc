@@ -20,7 +20,6 @@ extern TAna01Event *gHFEvent;
 using namespace std;
 using namespace edm;
 using namespace reco;
-//using namespace HepMC;
 
 // ----------------------------------------------------------------------
 HFDumpGenerator::HFDumpGenerator(const ParameterSet& iConfig):
@@ -54,12 +53,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
   static int nevt(0); 
   ++nevt;
-  cout << "==> HFDumpGenerator> new  event  " << nevt << endl;
 
-
-  // ================== Print HepMC directly =================
-
-  if (fVerbose > 0) {
+  if (fVerbose > 3) {
     cout << "=================HEPMC===================" << endl;
     Handle<HepMCProduct> evt;
     iEvent.getByLabel(fGenEventLabel.c_str(), evt);
@@ -68,8 +63,6 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     
     cout << "=================HEPMC===================" << endl;
   }
-
-  // ======================= RECO =============================
 
   TGenCand  *pGen;
   // -- From PhysicsTools/HepMCCandAlgos/plugins/ParticleListDrawer.cc
@@ -82,18 +75,17 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   edm::Handle<GenParticleCollection> genParticlesH;
   genParticlesH.clear();
   try {
-    iEvent.getByLabel ("genParticles", genParticlesH);
+    // iEvent.getByLabel ("genParticles", genParticlesH);
+    iEvent.getByLabel (fGenCandidatesLabel.c_str(), genParticlesH);
   } catch(cms::Exception ce) {
     cout << "==> HFDumpGenerator caught std::exception " << ce.what() << endl;
   }
 
-  int test = 0;
   for (GenParticleCollection::const_iterator p = genParticlesH->begin(); p != genParticlesH->end(); ++p) {
-    test++;
     cands.push_back( & * p );
   }
 
-  if (fVerbose > 0) cout << Form("Number of genParticles = %i", genParticlesH->size()) << endl;
+  if (fVerbose > 1) cout << Form("Number of genParticles = %i", genParticlesH->size()) << endl;
 
   int i(-1); 
   for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
@@ -101,11 +93,8 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
     pGen = gHFEvent->addGenCand();
     pGen->fID    = p->pdgId();
     pGen->fStatus = p->status();  
-    pGen->fNumber = i; //p - particles->begin();
+    pGen->fNumber = i; 
 
-    //    printf("PDG ID = %i\n", pGen->fID);
-
-    //    double pt = p->pt(), eta = p->eta(), phi = p->phi(), mass = p->mass();
     double vx = p->vx(), vy = p->vy(), vz = p->vz();
     pGen->fP.SetXYZT(p->px(), 
 		     p->py(), 
@@ -157,166 +146,9 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
  
   genParticlesH.clear(); // WHY?
 
-  if (fVerbose > 0) cout << "==> HFDumpGenerator> dumped  " << gHFEvent->nGenCands() << " generator cands" << endl;
-
-
-//  for(size_t i = 0; i < genParticlesH->size(); ++ i) {
-//      const GenParticle & p = (*genParticlesH)[i];
-//      pGen = gHFEvent->addGenCand();
-//      pGen->fID    = p.pdgId();
-//      pGen->fStatus = p.status();  
-//      pGen->fNumber = i;
-     
-//      //    double pt = p->pt(), eta = p->eta(), phi = p->phi(), mass = p->mass();
-//      double vx = p.vx(), vy = p.vy(), vz = p.vz();
-//      pGen->fP.SetXYZT(p.px(), 
-// 		      p.py(), 
-// 		      p.pz(), 
-// 		      p.energy());
-//      pGen->fV.SetXYZ(vx, vy, vz);
-
-//      int id = p.pdgId();
-//      if (id != 443) continue;
-//      printf("id = %i\n", id);
-//      int st = p.status();  
-
-     
-//      // Particles Mothers and Daighters
-//      iMo1 = -1;
-//      iMo2 = -1;
-//      iDa1 = -1;
-//      iDa2 = -1;
-//      int nMo = p.numberOfMothers();
-//      int nDa = p.numberOfDaughters();
-     
-//      pGen->fDau1 = 99999;
-//      pGen->fDau2 = -1;
-     
-//      const Candidate * mom = p.mother();
-
-//      for(size_t j = 0; j < nDa; ++ j) {
-//        const Candidate * d = p.daughter( j );
-//        int dauId = d->pdgId();
-//        printf("dauId = %i\n", dauId);
-//        if(i == 0) pGen->fDau1 = d->begin();
-//        if(i == nDa-1) pGen->fDau2 = d->begin();
-//        // . . . 
-//      }
-
-
-
- 
-
-//   // -- Get candidates from generator block
-//   //    https://twiki.cern.ch/twiki/bin/view/CMS/WorkBookGenParticleCandidate
-//   TGenCand  *pGen;
-//   Handle<CandidateCollection> hMCCandidates;
-//   try {
-//     iEvent.getByLabel(fGenCandidatesLabel.c_str(), hMCCandidates);
-//     TGenCand  *aGen = new TGenCand;
-//     for (int i = 0; i < hMCCandidates->size(); ++ i ) {
-//       pGen = gHFEvent->addGenCand();
-//       pGen->fID    = p.pdgId();
-//       pGen->fStatus = p.status();  
-//       pGen->fNumber = i;  
-//       const Candidate *mom = p.mother();
-//       double pt = p.pt(), eta = p.eta(), phi = p.phi(), mass = p.mass();
-//       double vx = p.vx(), vy = p.vy(), vz = p.vz();
-//       pGen->fP.SetXYZT(p.px(), 
-// 		       p.py(), 
-// 		       p.pz(), 
-// 		       p.energy());
-//       pGen->fV.SetXYZ(vx, vy, vz);
-   
-//       //aGen->dump();
-   
-//     }
-//   } catch (Exception event) {
-//     //    cout << "==> HFDumpGenerator> CandidateCollection with label " << fGenCandidatesLabel.c_str() 
-//     //	 << " not found " << endl;
-//   }
-
-// ======================= HEPMC =============================
-
-//   // ----------------------------------------------------------------------
-//   // -- Get generator block directly
-
-//   Handle<HepMCProduct> evt;
-//   iEvent.getByLabel(fGenEventLabel.c_str(), evt);
-//   const HepMC::GenEvent *genEvent = evt->GetEvent();
-  
-//   TGenCand  *pGen;
-//   int gcnt(0); 
-//   double x, y, z;
-//   for (HepMC::GenEvent::particle_const_iterator p = genEvent->particles_begin();
-//        p != genEvent->particles_end();
-//        ++p) {
-//     pGen = gHFEvent->addGenCand();
-//     pGen->fNumber = (*p)->barcode() - 1;
-//     pGen->fID     = (*p)->pdg_id();
-//     pGen->fStatus = (*p)->status();
-//     pGen->fP.SetXYZT((*p)->momentum().x(), 
-// 		     (*p)->momentum().y(), 
-// 		     (*p)->momentum().z(), 
-// 		     (*p)->momentum().e());
-
-//     GenVertex* pVertex = (*p)->end_vertex();
-//     if (0 != pVertex) {
-//       x = pVertex->position().x(); 
-//       y = pVertex->position().y();
-//       z = pVertex->position().z(); 
-//     } else {
-//       x = y = z = 9999.;
-//     }
-//     pGen->fV.SetXYZ(x, y, z);
-
-//     // -- Get one mother barcode
-//     int motherBarcode = (*p)->production_vertex() && 
-//       (*p)->production_vertex()->particles_in_const_begin() !=
-//       (*p)->production_vertex()->particles_in_const_end() ?
-//       (*((*p)->production_vertex()->particles_in_const_begin()))->barcode()-1 : 0;
-//     pGen->fMom1 = motherBarcode;
-//     pGen->fMom2 = -1;
-
-//     // -- Get daughters barcodes (there must be an easier way to do this?!)
-//     pGen->fDau1 = 99999;
-//     pGen->fDau2 = -1;
-//     if (0 != pVertex) {
-//       for (std::set<GenParticle*>::const_iterator pChild = pVertex->particles_out_const_begin();
-// 	   pChild != pVertex->particles_out_const_end(); 
-// 	   pChild++) {
-
-// 	int selfBarcode = (*pChild)->production_vertex() && 
-// 	  (*pChild)->production_vertex()->particles_in_const_begin() !=
-// 	  (*pChild)->production_vertex()->particles_in_const_end() ?
-// 	  (*((*pChild)->production_vertex()->particles_in_const_begin()))->barcode()-1 : 0;
-	
-// 	if (selfBarcode == pGen->fNumber) {
-// 	  if ((*pChild)->barcode()-1 < pGen->fDau1) {
-// 	    pGen->fDau1 = (*pChild)->barcode()-1;
-// 	  }
-// 	  if ((*pChild)->barcode()-1 > pGen->fDau2) {
-// 	    pGen->fDau2 = (*pChild)->barcode()-1;
-// 	  }
-// 	}
-//       }
-//       // -- sort them
-//       if (pGen->fDau1 > pGen->fDau2) {
-// 	int bla = pGen->fDau1; 
-// 	pGen->fDau1 = pGen->fDau2; 
-// 	pGen->fDau2 = bla; 
-//       }
-//     } else {
-//       pGen->fDau1 = -1;
-//       pGen->fDau2 = -1;
-//     }
-
-//     //pGen->dump();
-//     ++gcnt; 
-//   }
-
- 
+  if (fVerbose > 0) cout << "==> HFDumpGenerator> Event " << nevt << ", dumped  " << gHFEvent->nGenCands() << " generator cands" << endl;
 }
+
 
 // ------------ method called once each job just before starting event loop  ------------
 void  HFDumpGenerator::beginJob(const EventSetup& setup) {
