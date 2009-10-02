@@ -29,6 +29,27 @@ process.hltHighLevelDev2.andOr = True # True = OR, False = AND
 process.hltHighLevelDev2.HLTPathsPrescales  = cms.vuint32(1,1)
 process.hltHighLevelDev2.HLTOverallPrescale = cms.uint32(1)
 
+## Once the hltHighLevelDev filter has been defined I can clone it and configure as needed
+#process.hltHighLevelDev3 = process.hltHighLevelDev.clone(andOr = True)
+#process.hltHighLevelDev3.HLTPaths = ("HLT_DoubleEle5_SW_L1R","HLT_DoublePhoton5_eeRes_L1R")
+#process.hltHighLevelDev3.andOr = True # True = OR, False = AND
+#process.hltHighLevelDev3.HLTPathsPrescales  = cms.vuint32(1,20)
+#process.hltHighLevelDev3.HLTOverallPrescale = cms.uint32(1)
+#
+## Once the hltHighLevelDev filter has been defined I can clone it and configure as needed
+#process.hltHighLevelDev4 = process.hltHighLevelDev.clone(andOr = True)
+#process.hltHighLevelDev4.HLTPaths = ("HLT_DoublePhoton5_Jpsi_L1R","HLT_DoublePhoton5_Upsilon_L1R")
+#process.hltHighLevelDev4.andOr = True # True = OR, False = AND
+#process.hltHighLevelDev4.HLTPathsPrescales  = cms.vuint32(1,1)
+#process.hltHighLevelDev4.HLTOverallPrescale = cms.uint32(1)
+#
+## Once the hltHighLevelDev filter has been defined I can clone it and configure as needed
+#process.hltHighLevelDev5 = process.hltHighLevelDev.clone(andOr = True)
+#process.hltHighLevelDev5.HLTPaths = ("HLT_DoublePhoton10_L1R",)
+#process.hltHighLevelDev5.andOr = True # True = OR, False = AND
+#process.hltHighLevelDev5.HLTPathsPrescales  = cms.vuint32(1,)
+#process.hltHighLevelDev5.HLTOverallPrescale = cms.uint32(1)
+#
 ##############   pt_hat Filter  #####
 #process.ptHat_filter = cms.EDFilter("MCProcessFilter",
 #    ProcessID = cms.untracked.vint32(0),
@@ -111,18 +132,63 @@ process.output2 = cms.OutputModule("PoolOutputModule",
                                       )
 )
 
+#process.output3 = cms.OutputModule("PoolOutputModule",
+#                                   splitLevel = cms.untracked.int32(0),
+#                                   outputCommands = cms.untracked.vstring('keep *'),
+#                                   fileName = cms.untracked.string('/data/rossin/CMS/Triggers/SDexercise/SD_DoubleEG5_PhotonJet_15.root'),
+#                                   dataset = cms.untracked.PSet(
+#                                      dataTier = cms.untracked.string('GEN-SIM-RECO'),
+#                                      filterName = cms.untracked.string('SD_DoubleEG5')
+#                                      ),
+#                                   SelectEvents = cms.untracked.PSet(
+#                                      SelectEvents = cms.vstring('skim3')
+#                                      )
+#)
+#
+## Yet another output definition
+#process.output4 = cms.OutputModule("PoolOutputModule",
+#                                   splitLevel = cms.untracked.int32(0),
+#                                   outputCommands = cms.untracked.vstring('keep *'),
+#                                   fileName = cms.untracked.string('/data/rossin/CMS/Triggers/SDexercise/SD_DoublePhoton5_JPsi_Upsilon_PhotonJet_15.root'),
+#                                   dataset = cms.untracked.PSet(
+#                                      dataTier = cms.untracked.string('GEN-SIM-RECO'),
+#                                      filterName = cms.untracked.string('SD_DoublePhoton5_JPsi_Upsilon')
+#                                      ),
+#                                   SelectEvents = cms.untracked.PSet(
+#                                      SelectEvents = cms.vstring('skim4')
+#                                      )
+#)
+#
+## Yet another output definition
+#process.output5 = cms.OutputModule("PoolOutputModule",
+#                                   splitLevel = cms.untracked.int32(0),
+#                                   outputCommands = cms.untracked.vstring('keep *'),
+#                                   fileName = cms.untracked.string('/data/rossin/CMS/Triggers/SDexercise/SD_DoublePhoton10_PhotonJet_15.root'),
+#                                   dataset = cms.untracked.PSet(
+#                                      dataTier = cms.untracked.string('GEN-SIM-RECO'),
+#                                      filterName = cms.untracked.string('SD_DoublePhoton10')
+#                                      ),
+#                                   SelectEvents = cms.untracked.PSet(
+#                                      SelectEvents = cms.vstring('skim5')
+#                                      )
+#)
+#
 
 # the usage of trigger bits for selection is explained here:
 ## https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideEDMPathsAndTriggerBits#Selecting_Pass_for_Some_Trigger 
 
 #process.pTfilter = cms.Path(process.ptHat_filter)
 process.hlttrigreport = cms.Path(process.hltTrigReport)
-process.skim1 = cms.Path(process.genParticlesForFilter+process.hltHighLevelDev)
-process.skim2 = cms.Path(process.genParticlesForFilter+process.hltHighLevelDev2)
+process.skim1 = cms.Path(process.hltHighLevelDev)
+process.skim2 = cms.Path(process.hltHighLevelDev2)
+#process.skim3 = cms.Path(process.hltHighLevelDev3)
+#process.skim4 = cms.Path(process.hltHighLevelDev4)
+#process.skim5 = cms.Path(process.hltHighLevelDev5)
 
 
 process.out_step = cms.EndPath(process.output1+process.output2)
 
 process.schedule = cms.Schedule(process.hlttrigreport,process.skim1,process.skim2)
 process.schedule.append(process.out_step)
+
 
