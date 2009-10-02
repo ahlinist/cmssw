@@ -9,12 +9,13 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 # ----------------------------------------------------------------------
-process.source = cms.Source("PoolSource", 
+process.source = cms.Source(
+    "PoolSource", 
     fileNames = cms.untracked.vstring(
-#310pre9        'file:/shome/ursl/root/EAF0DDC1-654E-DE11-8940-001A928116BE.root'
-    'file:/shome/ursl/root/D2A969BB-F16E-DE11-9AC4-001F2907DA48.root'
+    "/store/relval/CMSSW_3_1_0_pre9/RelValbJpsiX/GEN-SIM-RECO/STARTUP_31X_v1/0000/EAF0DDC1-654E-DE11-8940-001A928116BE.root"
     )
-)
+    )
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 
@@ -43,9 +44,11 @@ process.genDump = cms.EDFilter("HFDumpGenerator",
 
 
 # ----------------------------------------------------------------------
-process.tree = cms.EDAnalyzer("HFTree",
+process.tree = cms.EDAnalyzer(
+    "HFTree",
+    requireCand =  cms.untracked.bool(False),
     fileName = cms.string('test.root')
-)
+    )
 
 
 # ----------------------------------------------------------------------
@@ -108,7 +111,7 @@ process.p = cms.Path(
     process.genParticles* 
     process.genDump*
     process.trkDump*
-    process.muonDump*
+#    process.muonDump*
     process.triggerDump*
 #    process.signalDump*
     process.tree

@@ -284,7 +284,7 @@ process.outpath = cms.EndPath(process.BsFilter*process.JPsiFilter*process.mumuge
                               process.trkDump*
                               process.muonDump*
 #                              process.triggerDump*
-#                              process.stuffDump*
+                              process.stuffDump*
                               process.signalDump*
                               process.tree
 )

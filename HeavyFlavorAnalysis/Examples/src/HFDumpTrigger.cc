@@ -168,13 +168,20 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   gHFEvent->fHLTWasRun[0]=0;gHFEvent->fHLTWasRun[1]=0;gHFEvent->fHLTWasRun[2]=0;gHFEvent->fHLTWasRun[3]=0; 
 
   Handle<TriggerResults> hHLTresults;
-  iEvent.getByLabel(fHLTResultsLabel, hHLTresults);
-  TriggerNames trigName;
-  trigName.init(*hHLTresults);
+  bool hltF = true;
+  try {
+    iEvent.getByLabel(fHLTResultsLabel, hHLTresults);
+  } catch (cms::Exception &ex) {
+    //    cout << ex.explainSelf() << endl;
+    cout << "==>HFDumpTrigger> Triggerresults  " << fHLTResultsLabel.encode() << " not found " << endl;
+    hltF = false;
+  }
 
   int HLTwasRun1 = 0; int HLTwasRun2 = 0; int HLTwasRun3 = 0; int HLTwasRun4 = 0; 
 
-  if (hHLTresults.isValid()) {
+  if (hltF) {
+    TriggerNames trigName;
+    trigName.init(*hHLTresults);
     //    HLTGlobal_wasrun=HLTR->wasrun();
     //    HLTGlobal_error=HLTR->error();
     gHFEvent->fHLTDecision = hHLTresults->accept();
@@ -224,7 +231,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }   
   
   Handle<trigger::TriggerEvent> trgEvent;
-  bool hltF = true;
+  hltF = true;
   try {
     iEvent.getByLabel(fTriggerEventLabel, trgEvent);
   } catch (const cms::Exception& e) {

@@ -280,7 +280,7 @@ process.outpath = cms.EndPath(process.LambdaBFilter*process.JPsiFilter*process.m
                               process.trkDump*
                               process.muonDump*
 #                              process.triggerDump*
-#                              process.stuffDump*
+                              process.stuffDump*
                               process.signalDump*
                               process.tree
 )

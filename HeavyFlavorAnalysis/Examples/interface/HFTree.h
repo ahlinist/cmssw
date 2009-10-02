@@ -30,6 +30,9 @@ class HFTree : public edm::EDAnalyzer {
   TFile        *fFile; 
   TTree        *fTree;
   TAna01Event  *fEvent;
+
+  bool         fRequireCand; 
+
 };
 
 #endif
