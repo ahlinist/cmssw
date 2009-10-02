@@ -39,18 +39,22 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
     
     sprintf(meId,"ExpectedOccupancyFromDT_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancyFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0, nstrips);
     
     sprintf(meId,"RealDetectedOccupancyFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RealDetectedOccupancyFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0, nstrips);
     
     sprintf(meId,"RPCDataOccupancyFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancyFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips,0,nstrips);
     
     sprintf(meId,"BXDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
+
+    sprintf(meId,"Signal_BXDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"Signal_BXDistribution_for_%s",layerLabel);
     meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
 
     sprintf(meId,"CLSDistribution_%s",detUnitLabel);
@@ -65,37 +69,59 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"ExpectedOccupancy2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancy2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
 
     sprintf(meId,"RPCDataOccupancy2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
-
+    meMap[meId] = dbe->book2D(meId, meTitle, 
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
+    
     sprintf(meId,"Inefficiency2DFromDT_%s",detUnitLabel);
     sprintf(meTitle,"Inefficiency2DFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
+    
+    sprintf(meId,"RPCResidualsFromDT_Clu1_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromDT_Clu1_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20,20);
 
-    sprintf(meId,"RPCResidualsFromDT_%s",detUnitLabel);
-    sprintf(meTitle,"RPCResidualsFromDT_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle,101,-7.*stripw,7*stripw);
+    sprintf(meId,"RPCResidualsFromDT_Clu2_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromDT_Clu2_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20,20);
+
+    sprintf(meId,"RPCResidualsFromDT_Clu3_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromDT_Clu3_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20,20);
+    
+    sprintf(meId,"RPCResidualsFromDT_Other_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromDT_Other_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20,20);
 
   }else{
     //std::cout<<"Booking for the EndCap"<<detUnitLabel<<std::endl;
 
     sprintf(meId,"ExpectedOccupancyFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancyFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips,0,nstrips);
     
     sprintf(meId,"RealDetectedOccupancyFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RealDetectedOccupancyFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips,0, nstrips);
     
     sprintf(meId,"RPCDataOccupancyFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancyFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0.5, nstrips+0.5);
+    meMap[meId] = dbe->book1D(meId, meTitle, nstrips, 0,nstrips);
     
     sprintf(meId,"BXDistribution_%s",detUnitLabel);
     sprintf(meTitle,"BXDistribution_for_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
+
+    sprintf(meId,"Signal_BXDistribution_%s",detUnitLabel);
+    sprintf(meTitle,"Signal_BXDistribution_for_%s",layerLabel);
     meMap[meId] = dbe->book1D(meId, meTitle, 11,-5.5, 5.5);
 
     sprintf(meId,"CLSDistribution_%s",detUnitLabel);
@@ -110,18 +136,36 @@ std::map<std::string, MonitorElement*> MuonSegmentEff::bookDetUnitSeg(RPCDetId &
 
     sprintf(meId,"ExpectedOccupancy2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"ExpectedOccupancy2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
-
+    meMap[meId] = dbe->book2D(meId, meTitle, 
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
+    
     sprintf(meId,"RPCDataOccupancy2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"RPCDataOccupancy2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
-
+    meMap[meId] = dbe->book2D(meId, meTitle,
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
+    
     sprintf(meId,"Inefficiency2DFromCSC_%s",detUnitLabel);
     sprintf(meTitle,"Inefficiency2DFromCSC_for_%s",layerLabel);
-    meMap[meId] = dbe->book2D(meId, meTitle, 2*nstrips,-scale2D*nstrips*stripw,scale2D*nstrips*stripw,2*nstrips,-scale2D*stripl,scale2D*stripl);
+    meMap[meId] = dbe->book2D(meId, meTitle, 
+			      2*(int)(scale2D*nstrips*stripw),-scale2D*nstrips*stripw,scale2D*nstrips*stripw,
+			      2*(int)(scale2D*stripl),-scale2D*stripl,scale2D*stripl);
+    
+    sprintf(meId,"RPCResidualsFromCSC_Clu1_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromCSC_Clu1_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20.,20.);
 
-    sprintf(meId,"RPCResidualsFromCSC_%s",detUnitLabel);
-    sprintf(meTitle,"RPCResidualsFromCSC_for_%s",layerLabel);
+    sprintf(meId,"RPCResidualsFromCSC_Clu2_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromCSC_Clu2_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20.,20.);
+    
+    sprintf(meId,"RPCResidualsFromCSC_Clu3_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromCSC_Clu3_%s",layerLabel);
+    meMap[meId] = dbe->book1D(meId, meTitle,101,-20.,20.);
+   
+    sprintf(meId,"RPCResidualsFromCSC_Other_%s",detUnitLabel);
+    sprintf(meTitle,"RPCResidualsFromCSC_Other_%s",layerLabel);
     meMap[meId] = dbe->book1D(meId, meTitle,101,-20.,20.);
    
   }
