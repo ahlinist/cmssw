@@ -477,7 +477,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  int bx = recHit->BunchX();
 	  for(int stripDetected = firststrip; stripDetected <= firststrip+cls; stripDetected++){
 	    meMap[meIdRPCbx]->Fill(bx);
-	    meMap[meIdRPC]->Fill(stripDetected); 
+	    meMap[meIdRPC]->Fill(stripDetected-0.5); 
 	  }
 	}
       }
@@ -708,6 +708,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    sprintf(meIdDT,"BXYDistribution_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(bx,distobottom);
 
+		    sprintf(meIdDT,"Signal_BXDistribution_%s",detUnitLabel);
+		    meMap[meIdDT]->Fill(bx,cluSize);
+
 		    sprintf(meIdDT,"CLSDistribution_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(cluSize);
 		    
@@ -755,8 +758,22 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      //------------------------
 		    }
 		    
-		    sprintf(meIdRPC,"RPCResidualsFromDT_%s",detUnitLabel);
-		    meMap[meIdRPC]->Fill(minres);
+		    
+		    if(cluSize == 1*dupli){
+		      sprintf(meIdRPC,"RPCResidualsFromDT_Clu1_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(minres);
+		    }else if(cluSize == 2*dupli){
+		      sprintf(meIdRPC,"RPCResidualsFromDT_Clu2_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(minres);
+		    }else if(cluSize == 3*dupli){
+		      sprintf(meIdRPC,"RPCResidualsFromDT_Clu3_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(minres);
+		    }else{
+		      sprintf(meIdRPC,"RPCResidualsFromDT_Other_%s",detUnitLabel);
+		      meMap[meIdRPC]->Fill(minres);
+		    }
+		    
+		    if(debug) std::cout<<"DT \t \t \t \t \t Filling Residuals "<<meIdRPC<<std::endl;
 
 		    sprintf(meIdRPC,"RPCDataOccupancyFromDT_%s",detUnitLabel);
 		    meMap[meIdRPC]->Fill(stripPredicted);
@@ -1105,6 +1122,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  sprintf(meIdDT,"BXYDistribution_%s",detUnitLabel);
 			  meMap[meIdDT]->Fill(bx,distobottom);
 			  
+			  sprintf(meIdDT,"Signal_BXDistribution_%s",detUnitLabel);
+			  meMap[meIdDT]->Fill(bx,cluSize);
+			  
 			  sprintf(meIdDT,"CLSDistribution_%s",detUnitLabel);
 			  meMap[meIdDT]->Fill(cluSize);
 			  
@@ -1150,8 +1170,20 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			  }
 			  //--------------------------------
 			  
-			  sprintf(meIdRPC,"RPCResidualsFromDT_%s",detUnitLabel);
-			  meMap[meIdRPC]->Fill(minres);
+
+			  if(cluSize == 1*dupli){
+			    sprintf(meIdRPC,"RPCResidualsFromDT_Clu1_%s",detUnitLabel);
+			    meMap[meIdRPC]->Fill(minres);
+			  }else if(cluSize == 2*dupli){
+			    sprintf(meIdRPC,"RPCResidualsFromDT_Clu2_%s",detUnitLabel);
+			    meMap[meIdRPC]->Fill(minres);
+			  }else if(cluSize == 3*dupli){
+			    sprintf(meIdRPC,"RPCResidualsFromDT_Clu3_%s",detUnitLabel);
+			    meMap[meIdRPC]->Fill(minres);
+			  }else{
+			    sprintf(meIdRPC,"RPCResidualsFromDT_Other_%s",detUnitLabel);
+			    meMap[meIdRPC]->Fill(minres);
+			  }
 
 			  sprintf(meIdRPC,"RPCDataOccupancyFromDT_%s",detUnitLabel);
 			  meMap[meIdRPC]->Fill(stripPredicted);
@@ -1334,10 +1366,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		  float dfg=df*180./3.14159265;
 
 		  if(debug) std::cout<<"CSC \t \t \t z of RPC="<<CenterPointRollGlobal.z()<<"z of CSC"<<CenterPointCSCGlobal.z()<<" dfg="<<dfg<<std::endl;
-
-
+		  
 		  RPCGeomServ rpcsrv(rpcId);
-
 		  
 		  if(dr>200.||fabs(dz)>55.||dfg>1.){ 
 		    //if(rpcRegion==1&&dfg>1.&&dr>100.){  
@@ -1501,6 +1531,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		      
 		      sprintf(meIdCSC,"BXYDistribution_%s",detUnitLabel);
 		      meMap[meIdCSC]->Fill(bx,distobottom);
+
+		      sprintf(meIdDT,"Signal_BXDistribution_%s",detUnitLabel);
+		      meMap[meIdDT]->Fill(bx,cluSize);
 		      
 		      sprintf(meIdCSC,"CLSDistribution_%s",detUnitLabel);
 		      meMap[meIdCSC]->Fill(cluSize);
@@ -1536,8 +1569,22 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			
 			//------------------------
 		      }
-		      sprintf(meIdRPC,"RPCResidualsFromCSC_%s",detUnitLabel);
-		      meMap[meIdRPC]->Fill(minres);
+
+
+		      if(cluSize == 1*dupli){
+			sprintf(meIdRPC,"RPCResidualsFromCSC_Clu1_%s",detUnitLabel);
+			meMap[meIdRPC]->Fill(minres);
+		      }else if(cluSize == 2*dupli){
+			sprintf(meIdRPC,"RPCResidualsFromCSC_Clu2_%s",detUnitLabel);
+			meMap[meIdRPC]->Fill(minres);
+		      }else if(cluSize == 3*dupli){
+			sprintf(meIdRPC,"RPCResidualsFromCSC_Clu3_%s",detUnitLabel);
+			meMap[meIdRPC]->Fill(minres);
+		      }else{
+			sprintf(meIdRPC,"RPCResidualsFromCSC_Other_%s",detUnitLabel);
+			meMap[meIdRPC]->Fill(minres);
+		      }
+
 		      
 		      sprintf(meIdRPC,"RPCDataOccupancyFromCSC_%s",detUnitLabel);
 		      meMap[meIdRPC]->Fill(stripPredicted);
