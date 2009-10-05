@@ -45,13 +45,16 @@ PFPretendTrackProducer::PFPretendTrackProducer(
 	produces<GsfPFRecTrackCollection> ("gsfPfRecTracks");
 	produces<reco::PFClusterCollection> ("pfPS");
 	produces<reco::PFClusterCollection> ("pfHFHAD");
-	produces<reco::PFClusterCollection>("pfHFEM");
+	produces<reco::PFClusterCollection> ("pfHFEM");
 	produces<reco::MuonCollection> ("muons");
 	produces<reco::VertexCollection> ("offlinePrimaryVertices");
 
 	debug_ = parameters.getParameter<int> ("debug");
 
-	justCreateEmptyCollections_ = parameters.getParameter<bool>("justCreateEmptyCollections");
+	endcapMode_ = parameters.getParameter<bool> ("endcapMode");
+
+	justCreateEmptyCollections_ = parameters.getParameter<bool> (
+			"justCreateEmptyCollections");
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
@@ -135,7 +138,7 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	std::auto_ptr<TrackExtraCollection> trackExtrasColl(
 			new TrackExtraCollection());
 
-	if(justCreateEmptyCollections_) {
+	if (justCreateEmptyCollections_) {
 		event.put(trackColl, "tracks");
 		event.put(trackExtrasColl);
 		event.put(pfRecTrackColl, "pfRecTracks");
@@ -154,11 +157,16 @@ void PFPretendTrackProducer::produce(edm::Event& event,
 	//Convert beamEnergy to transverse beam momentum using cosh(eta) function:
 	//That's the mass of a pion at the end, in GeV
 	//TODO: if these eta/phi are wrong, tracks won't associate with clusters!
+	//FOR BARREL
 	math::PtEtaPhiMLorentzVector originVec(thisRun_->beamEnergy_ / cosh(
 			thisRun_->ecalEta_), thisRun_->ecalEta_, thisRun_->ecalPhi_, 0.14);
 
-//	math::PtEtaPhiMLorentzVector originVec(thisRun_->beamEnergy_ / cosh(
-//			thisRun_->tableEta_), thisRun_->tableEta_, thisRun_->tablePhi_, 0.14);
+	//FOR ENDCAPS!
+	if (endcapMode_) {
+		originVec = math::PtEtaPhiMLorentzVector(thisRun_->beamEnergy_ / cosh(
+				thisRun_->tableEta_), thisRun_->tableEta_, thisRun_->tablePhi_,
+				0.14);
+	}
 
 	math::XYZTLorentzVector dirXYZ;
 	dirXYZ.SetPxPyPzE(originVec.Px(), originVec.Py(), originVec.Pz(),

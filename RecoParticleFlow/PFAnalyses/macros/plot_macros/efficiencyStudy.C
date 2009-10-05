@@ -103,9 +103,13 @@ public:
 
 	void drawFakeNeutralRecoPlots();
 
+	void countPFCandidateTypes();
+
 	void drawClusterEnergyPlots();
 
 	void drawEnergyDepositionPlots();
+
+	void drawHcalInteractionPlots();
 
 	void closeFiles() {
 		std::string namecpy2(graphicsFile_);
@@ -157,7 +161,6 @@ void EfficiencyStudy::drawHcalInteractionPlots() {
 		Calibratable* calib = new Calibratable();
 		tree_->SetBranchAddress("Calibratable", &calib);
 
-
 	}
 
 	util_.flushPage();
@@ -203,6 +206,73 @@ void EfficiencyStudy::drawEfficiencyPlots() {
 
 }
 
+void EfficiencyStudy::countPFCandidateTypes() {
+
+	map<string, TTree*>::iterator it = trees_.begin();
+	unsigned count(0);
+	for (; it != trees_.end(); ++it) {
+		pair<const string, TTree*> item = *it;
+		TTree* tree_ = item.second;
+		cout << "Got tree..." << endl;
+		Calibratable* calib = new Calibratable();
+		tree_->SetBranchAddress("Calibratable", &calib);
+
+		unsigned entries = tree_->GetEntriesFast();
+		cout << "Tree has " << entries << " entries" << endl;
+
+		map<int, int> energiesJustNeutrals; //Charged hadron + photons
+		map<int, int> energiesJustPhotons; //Charged hadron + neutrals
+		map<int, int> energiesBoth; //Both
+
+		unsigned photons(0);
+		unsigned neutrals(0);
+
+		for (unsigned count(0); count < entries; ++count) {
+			tree_->GetEntry(count);
+			//cout << "Got entry " << count << endl;
+			//calib->recompute();
+			photons = neutrals = 0;
+			const vector<CandidateWrapper>& cands = calib->cands_;
+			vector<CandidateWrapper>::const_iterator candIt = cands.begin();
+			for (; candIt != cands.end(); ++candIt) {
+				const CandidateWrapper& cw = *candIt;
+				if (cw.type_ == 4) {
+					photons++;
+
+				}
+				if (cw.type_ == 5) {
+					neutrals++;
+
+				}
+			}
+
+			if (photons != 0 && neutrals == 0)
+				energiesJustPhotons[calib->sim_energyEvent_]++;
+			if (photons == 0 && neutrals != 0)
+				energiesJustNeutrals[calib->sim_energyEvent_]++;
+			if (photons != 0 && neutrals != 0)
+				energiesBoth[calib->sim_energyEvent_]++;
+
+		}
+
+		vector<int>::const_iterator eIt = energies_.begin();
+		cout << "Energy\tBoth\tPhotonsOnly\tNeutralsOnly\n";
+		for (; eIt != energies_.end(); ++eIt) {
+			//normalisation
+			unsigned nEvents = energiesBoth[*eIt] + energiesJustPhotons[*eIt]
+					+ energiesJustNeutrals[*eIt];
+
+			cout << *eIt << "\t" << static_cast<float> (energiesBoth[*eIt])
+					/ nEvents << "\t"
+					<< static_cast<float> (energiesJustPhotons[*eIt]) / nEvents
+					<< "\t" << static_cast<float> (energiesJustNeutrals[*eIt])
+					/ nEvents << "\n";
+		}
+
+
+	}
+
+}
 void EfficiencyStudy::drawFakeNeutralRecoPlots() {
 	TStyle* rStyle = util_.makeStyle("fStyle");
 	rStyle->SetOptLogy(false);
@@ -222,17 +292,75 @@ void EfficiencyStudy::drawFakeNeutralRecoPlots() {
 	for (; it != trees_.end(); ++it) {
 		pair<const string, TTree*> item = *it;
 		TTree* tree_ = item.second;
-
+		cout << "Got tree..." << endl;
 		Calibratable* calib = new Calibratable();
 		tree_->SetBranchAddress("Calibratable", &calib);
 
-		//Number of n0s
+		unsigned entries = tree_->GetEntriesFast();
+		cout << "Tree has " << entries << " entries" << endl;
+		map<int, int> energiesAndJustChH; //Just ONE charged hadron reco
+		map<int, int> energiesChHAndPhotons; //Charged hadron + photons
+		map<int, int> energiesChHAndNeutrals; //Charged hadron + neutrals
+		map<int, int> energiesChAndBoth; //Both
 
-		//Expectation value of their energy
+		unsigned chHad(0);
+		unsigned photons(0);
+		unsigned neutrals(0);
 
-		//Rms of their energy
+		unsigned energychHad(0);
+		unsigned energyphotons(0);
+		unsigned energyneutrals(0);
 
-		//Expectation value of the sum of their energies
+		for (unsigned count(0); count < entries; ++count) {
+			tree_->GetEntry(count);
+			//cout << "Got entry " << count << endl;
+			//calib->recompute();
+			chHad = photons = neutrals = 0;
+			const vector<CandidateWrapper>& cands = calib->cands_;
+			vector<CandidateWrapper>::const_iterator candIt = cands.begin();
+			for (; candIt != cands.end(); ++candIt) {
+				const CandidateWrapper& cw = *candIt;
+				if (cw.type_ == 1) {
+					chHad++;
+					energychHad += cw.energyEcal_ + cw.energyHcal_;
+				}
+				if (cw.type_ == 4) {
+					photons++;
+					energyphotons += cw.energyEcal_ + cw.energyHcal_;
+				}
+				if (cw.type_ == 5) {
+					neutrals++;
+					energyneutrals += cw.energyEcal_ + cw.energyHcal_;
+				}
+			}
+
+			if (photons == neutrals == 0)
+				energiesAndJustChH[calib->sim_energyEvent_]++;
+			if (photons != 0 && neutrals == 0)
+				energiesChHAndPhotons[calib->sim_energyEvent_]++;
+			if (photons == 0 && neutrals != 0)
+				energiesChHAndNeutrals[calib->sim_energyEvent_]++;
+			if (photons != 0 && neutrals != 0)
+				energiesChAndBoth[calib->sim_energyEvent_]++;
+
+		}
+
+		vector<int>::const_iterator eIt = energies_.begin();
+		cout << "Energy\tOneChHad\tChHadPhot\tChHadNeut\tChHadPhotNeut\n";
+		for (; eIt != energies_.end(); ++eIt) {
+			//normalisation
+			unsigned nEvents = energiesAndJustChH[*eIt]
+					+ energiesChAndBoth[*eIt] + energiesChHAndNeutrals[*eIt]
+					+ energiesChHAndPhotons[*eIt];
+			cout << *eIt << "\t"
+					<< static_cast<float> (energiesAndJustChH[*eIt]) / nEvents
+					<< "\t" << static_cast<float> (energiesChHAndPhotons[*eIt])
+					/ nEvents << "\t"
+					<< static_cast<float> (energiesChHAndNeutrals[*eIt])
+							/ nEvents << "\t"
+					<< static_cast<float> (energiesChAndBoth[*eIt]) / nEvents
+					<< "\n";
+		}
 
 		tree_->Draw("cand_energyNeutralHad_>>neutralHad");
 		TH1* neutralHad = util_.formatHisto("neutralHad",
@@ -481,46 +609,56 @@ void EfficiencyStudy::drawEnergyDepositionPlots() {
 }
 
 void efficiencyStudy() {
-	gROOT->Reset();
+	//gROOT->Reset();
 
-	TFile * study = TFile::Open("../../test/outputtree_50GeV_2k.root");
-	TTree* studyTree = (TTree*) study->FindObjectAny("Extraction");
-
-	TFile * standard = TFile::Open("../../test/outputtree_50GeV_2k_std.root");
-	TTree* standardTree = (TTree*) standard->FindObjectAny("Extraction");
-
-	TFile * clusterRecov = TFile::Open("../../test/outputtree_50GeV_2k_jamieAlgo.root");
-	TTree* clusterRecovTree = (TTree*) standard->FindObjectAny("Extraction");
+	//	TFile * study = TFile::Open("../../test/outputtree_50GeV_2k.root");
+	//	TTree* studyTree = (TTree*) study->FindObjectAny("Extraction");
+	//
+	//	TFile * standard = TFile::Open("../../test/outputtree_50GeV_2k_std.root");
+	//	TTree* standardTree = (TTree*) standard->FindObjectAny("Extraction");
+	//
+	//	TFile * clusterRecov = TFile::Open(
+	//			"../../test/outputtree_50GeV_2k_jamieAlgo.root");
+	//	TTree* clusterRecovTree = (TTree*) standard->FindObjectAny("Extraction");
 
 	std::map<std::string, TTree*> source;
 
-	std::cout << "Study tree is " << studyTree << endl;
+	//	std::cout << "Study tree is " << studyTree << endl;
+	//
+	//	source["Study"] = studyTree;
+	//	source["Standard"] = standardTree;
+	//	source["Cluster recovery"] = clusterRecovTree;
 
-	source["Study"] = studyTree;
-	source["Standard"] = standardTree;
-	source["Cluster recovery"] = clusterRecovTree;
 
 	std::vector<int> energies;
-	//	energies.push_back(2);
-	//	energies.push_back(3);
-	//	energies.push_back(4);
-	//	energies.push_back(5);
-	//	energies.push_back(6);
-	//	energies.push_back(7);
-	//	energies.push_back(8);
-	//	energies.push_back(9);
-	//	energies.push_back(20);
-	//	energies.push_back(30);
+	energies.push_back(2);
+	energies.push_back(3);
+	energies.push_back(4);
+	energies.push_back(5);
+	energies.push_back(6);
+	energies.push_back(7);
+	energies.push_back(8);
+	energies.push_back(9);
+	energies.push_back(20);
+	energies.push_back(30);
 	energies.push_back(50);
-	//	energies.push_back(100);
-	//	energies.push_back(200);
-	//	energies.push_back(300);
+	energies.push_back(100);
+	energies.push_back(150);
+	energies.push_back(200);
+	//energies.push_back(225);
+	energies.push_back(300);
+
+	TFile * study = TFile::Open("/tmp/PFlowTB_Tree_All_barrel.root");
+	TTree* studyTree = (TTree*) study->FindObjectAny("Extraction");
+
+	source["Testbeam"] = studyTree;
 
 	EfficiencyStudy es(source, energies, "es.ps", "es.C", "es");
-	es.drawEfficiencyPlots();
-	es.drawEnergyDepositionPlots();
-	es.drawClusterEnergyPlots();
-	es.drawFakeNeutralRecoPlots();
+	//	es.drawEfficiencyPlots();
+	//	es.drawEnergyDepositionPlots();
+	//	es.drawClusterEnergyPlots();
+	//es.drawFakeNeutralRecoPlots();
+	es.countPFCandidateTypes();
 
 	es.closeFiles();
 

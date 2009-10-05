@@ -20,7 +20,7 @@ public:
 
 	TGraphErrors finaliseWithErrors();
 
-	std::ostream& operator<<(std::ostream& s);
+	friend std::ostream& operator<<(std::ostream& s, const JGraph& q);
 private:
 	bool hasErrors_;
 	std::string rootName_;
@@ -29,5 +29,7 @@ private:
 	std::vector<double> yvals_;
 	std::vector<double> eyvals_;
 };
+
+std::ostream& operator<<(std::ostream& s, const JGraph& q);
 
 #endif /*JGRAPH_H_*/

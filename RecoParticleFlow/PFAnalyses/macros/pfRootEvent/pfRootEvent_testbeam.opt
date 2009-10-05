@@ -4,7 +4,7 @@ root outtree 1
 
 //colin	mode 1
 
-root file ../../test/reprocessed_50GeV_1k.root
+root file ../../test/PFlowTB_Events_30GeV_1k.root
 print mctruthmatching 0 
 //root file ../../test/demo_reprocessed_7GeV.root
 

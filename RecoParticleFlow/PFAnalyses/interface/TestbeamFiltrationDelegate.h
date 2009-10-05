@@ -125,6 +125,7 @@ protected:
 	bool identifyCleanParticles_;
 	bool saveAllCleanParticles_;
 	bool noiseMode_;
+	bool isEndcap2007_;
 
 	unsigned muonCands_;
 	unsigned nonMipCands_;
@@ -141,12 +142,14 @@ protected:
 	pftools::RunInfo* thisRun_;
 	Quality conservatism_;
 
+	edm::InputTag inputTagHcalRecHits_;
 	edm::InputTag inputTagBeamCounters_;
 	edm::InputTag inputTagTiming_;
 	edm::InputTag inputTagRunData_;
 	edm::InputTag inputTagEventPosition_;
 	edm::InputTag inputTagTriggerData_;
 
+	edm::Handle<HBHERecHitCollection>* hcalRecHits_;
 	edm::Handle<HcalTBBeamCounters>* beamCounters_;
 	edm::Handle<HcalTBTiming>* timing_;
 	edm::Handle<HcalTBRunData>* runData_;

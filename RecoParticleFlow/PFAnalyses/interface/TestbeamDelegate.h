@@ -74,6 +74,7 @@ private:
 
 	bool applyCleaningCuts_;
 	bool saveJustPions_;
+	bool isEndcap2007_;
 
 	unsigned stripAnomalousEvents_;
 	unsigned maxEventsFromEachRun_;
@@ -101,7 +102,8 @@ private:
 
 	edm::InputTag inputTagParticleFiltration_;
 
-	edm::InputTag inputTagRawRecHitsEcal_;
+	edm::InputTag inputTagRawRecHitsEcalEB_;
+	edm::InputTag inputTagRawRecHitsEcalEE_;
 	edm::InputTag inputTagRawRecHitsHcal_;
 
 	edm::InputTag inputTagBeamCounters_;
@@ -124,7 +126,8 @@ private:
 	edm::Handle<HcalTBEventPosition> * eventPosition_;
 	edm::Handle<HcalTBTriggerData> * triggerData_;
 
-	edm::Handle<EcalRecHitCollection>* rawRecHitsEcal_;
+	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEB_;
+	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEE_;
 	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
 
 	edm::Handle<reco::PFClusterCollection>* clustersEcal_;

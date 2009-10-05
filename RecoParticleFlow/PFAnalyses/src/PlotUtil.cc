@@ -13,6 +13,7 @@
 #include <TText.h>
 #include <TMultiGraph.h>
 #include <stdexcept>
+#include <utility>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ Color_t PlotUtil::nextColor() {
 PlotUtil::~PlotUtil() {
 	for (vector<TObject*>::iterator del = deleteOnDestruction_.begin(); del
 			!= deleteOnDestruction_.end(); ++del) {
-		if(!*del)
+		if (!*del)
 			delete *del;
 	}
 
@@ -74,6 +75,24 @@ void PlotUtil::flushPage() {
 	flushAccumulatedObjects(macroFile_);
 }
 
+void PlotUtil::accumulateTable(JGraph q, std::string title) {
+	pair<JGraph, string> p = make_pair<JGraph, string> (q, title);
+	accumulatedTables_.push_back(p);
+
+}
+
+void PlotUtil::flushTables() {
+	cout << __PRETTY_FUNCTION__ << "\n";
+	vector<pair<JGraph, string> >::const_iterator c =
+			accumulatedTables_.begin();
+	for (; c != accumulatedTables_.end(); ++c) {
+		cout << "*** PlotUtil Table ***\n";
+		cout << c->second << "\n";
+		cout << c->first << "\n";
+	}
+	accumulatedTables_.clear();
+}
+
 void PlotUtil::addTitle(const std::string& theTitle) {
 	//	auto_ptr<TText> title(new TText(0, 0, theTitle.c_str()));
 	TText* title = new TText(0, 0, theTitle.c_str());
@@ -87,7 +106,7 @@ void PlotUtil::addTitle(const std::string& theTitle) {
 void PlotUtil::accumulateObjects(TObject* o, std::string options) {
 	std::pair<TObject*, std::string> k(o, options);
 	accumulatedObjects_.push_back(k);
-	if (autoFlush_ && accumulatedObjects_.size() >= flushCount_) {
+	if (autoFlush_ && accumulatedObjects_.size() > flushCount_) {
 		std::cout << __PRETTY_FUNCTION__ << ": autoflushing... " << std::endl;
 		flushPage();
 		newPage();
@@ -197,6 +216,11 @@ void PlotUtil::flushSpecials(std::string directory) {
 			TLegend* l = legendForStack((THStack*) ps.obj_);
 			ps.obj_->Draw(ps.options_.c_str());
 			l->Draw();
+		} else if (ps.obj_->InheritsFrom("TMultiGraph")) {
+			TMultiGraph* g = (TMultiGraph*) ps.obj_;
+			g->Draw(ps.options_.c_str());
+			TLegend* l = legendForMultiGraph(g);
+			l->Draw();
 		} else {
 			ps.obj_->Draw(ps.options_.c_str());
 		}
@@ -212,6 +236,7 @@ void PlotUtil::flushSpecials(std::string directory) {
 		temp.Print(macro.c_str());
 		temp.Print(postscript.c_str());
 	}
+
 }
 
 TLegend* PlotUtil::legendForStack(THStack* stack) {
@@ -291,7 +316,8 @@ TStyle* PlotUtil::makeStyle(const std::string& name) {
 	style->SetFrameBorderMode(0);
 	style->SetTitleFillColor(kWhite);
 	style->SetStatColor(21);
-	style->SetFrameFillColor(TColor::GetColor("#e7e6ed"));
+	//style->SetFrameFillColor(TColor::GetColor("#e7e6ed"));
+	style->SetFrameFillColor(kWhite);
 	//gStyle->SetTitleX(0.08);
 	style->SetTitleY(0.97);
 	style->SetStatBorderSize(1);

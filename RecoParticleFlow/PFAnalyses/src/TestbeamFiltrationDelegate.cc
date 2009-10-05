@@ -13,13 +13,10 @@ using namespace reco;
 #include <TTree.h>
 
 TestbeamFiltrationDelegate::TestbeamFiltrationDelegate() :
-	applyCleaningCuts_(true), computeVetos_(true),
-			identifyCleanParticles_(true), saveAllCleanParticles_(true),
-			muonCands_(0), nonMipCands_(0), beamHaloCands_(0),
-			cerenkovNonPions_(0), tofNonPions_(0), electronCandidates_(0),
-			protonKaonCandidates_(0), goodPionsFound_(0), pureNoiseEvents_(0) {
-	LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
-			<< ": looking for single charged pions." << std::endl;
+	applyCleaningCuts_(true), computeVetos_(true), identifyCleanParticles_(true), saveAllCleanParticles_(true),
+			isEndcap2007_(false), muonCands_(0), nonMipCands_(0), beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
+			electronCandidates_(0), protonKaonCandidates_(0), goodPionsFound_(0), pureNoiseEvents_(0) {
+	LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__ << ": looking for single charged pions." << std::endl;
 	pdgCodes_.clear();
 	pdgCodes_.push_back(211);
 	pdgCodes_.push_back(-211);
@@ -32,32 +29,31 @@ TestbeamFiltrationDelegate::~TestbeamFiltrationDelegate() {
 
 }
 
-void TestbeamFiltrationDelegate::startEventCore(const edm::Event& event,
-		const edm::EventSetup& setup) {
+void TestbeamFiltrationDelegate::startEventCore(const edm::Event& event, const edm::EventSetup& setup) {
 
 	//first check for new run!
 	bool runok(true);
 	if (event.run() != thisRun_->runNumber_) {
-		LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
-				<< ": New run detected :" << event.run() << ".\n";
+		LogInfo("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__ << ": New run detected :" << event.run() << ".\n";
 		thisRun_ = runInfos_[event.run()];
-		if(!thisRun_)
+		if (!thisRun_)
 			runok = false;
 	}
 	if (!runok) {
-		LogError("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__
-				<< ": problem looking up run info?!" << std::endl;
+		LogError("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__ << ": problem looking up run info?!" << std::endl;
 		thisEventPasses_ = false;
 		return;
 	}
 	thisEventPasses_ = false;
 
+	hcalRecHits_ = new Handle<HBHERecHitCollection> ;
 	runData_ = new Handle<HcalTBRunData> ;
 	timing_ = new Handle<HcalTBTiming> ;
 	eventPosition_ = new Handle<HcalTBEventPosition> ;
 	beamCounters_ = new Handle<HcalTBBeamCounters> ;
 	triggerData_ = new Handle<HcalTBTriggerData> ;
 
+	getCollection(*hcalRecHits_, inputTagHcalRecHits_, event);
 	getCollection(*runData_, inputTagRunData_, event);
 	getCollection(*timing_, inputTagTiming_, event);
 	getCollection(*eventPosition_, inputTagEventPosition_, event);
@@ -74,6 +70,7 @@ bool TestbeamFiltrationDelegate::endEventCore(const edm::Event& event) {
 	else
 		++nFails_;
 
+	delete hcalRecHits_;
 	delete runData_;
 	delete timing_;
 	delete eventPosition_;
@@ -83,8 +80,8 @@ bool TestbeamFiltrationDelegate::endEventCore(const edm::Event& event) {
 
 }
 
-ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleCore(
-		edm::Event& event, const edm::EventSetup& setup) {
+ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleCore(edm::Event& event,
+		const edm::EventSetup& setup) {
 
 	LogDebug("TestbeamFiltrationDelegate") << __PRETTY_FUNCTION__ << std::endl;
 
@@ -134,21 +131,18 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 			//something's gone awry!
 			decision_.type_ = ParticleFiltrationDecision::OTHER;
 			if (debug_ > 3)
-				LogInfo("TestbeamFiltrationDelegate")
-						<< "\tCould be both an electron and a proton?\n";
+				LogInfo("TestbeamFiltrationDelegate") << "\tCould be both an electron and a proton?\n";
 		} else {
 			if (electron == DEFINITEYES) {
 				++electronCandidates_;
 				decision_.type_ = ParticleFiltrationDecision::ELECTRON;
 				if (debug_ > 4)
-					LogInfo("TestbeamFiltrationDelegate")
-							<< "\tIt's an electron.\n";
+					LogInfo("TestbeamFiltrationDelegate") << "\tIt's an electron.\n";
 			} else if (proton == DEFINITEYES) {
 				++protonKaonCandidates_;
 				decision_.type_ = ParticleFiltrationDecision::PROTON_KAON;
 				if (debug_ > 4)
-					LogInfo("TestbeamFiltrationDelegate")
-							<< "\tIt's a proton/kaon.\n";
+					LogInfo("TestbeamFiltrationDelegate") << "\tIt's a proton/kaon.\n";
 			}
 			if (electron == DEFINITEYES || proton == DEFINITEYES) {
 				if (saveAllCleanParticles_)
@@ -166,21 +160,26 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 	if (noiseMode_) {
 		//Select events where there certainly wasn't any particle!
 		thisEventPasses_ = false;
-		if (isNoiseCandidate() > UNLIKELY && isNotMuon() == DEFINITEYES
-				&& vetosPassed != 31) {
+		if (isNoiseCandidate() > UNLIKELY && isNotMuon() == DEFINITEYES && vetosPassed != 31) {
 			decision_.type_ = ParticleFiltrationDecision::NOISE;
 			++pureNoiseEvents_;
 			thisEventPasses_ = true;
 		}
 	}
 
+	//Sometimes HCAL not read out properly
+	if ((*hcalRecHits_)->size() == 0) {
+		LogInfo("TestbeamFiltrationDelegate") << "\tHCAL collection is empty; assigning noise event.\n";
+		thisEventPasses_ = false;
+		decision_.type_ = ParticleFiltrationDecision::NOISE;
+		++pureNoiseEvents_;
+	}
+
 	if (debug_ > 3 && thisEventPasses_)
-		LogInfo("TestbeamFiltrationDelegate")
-				<< "\tEvent PASSES cut criteria.\n";
+		LogInfo("TestbeamFiltrationDelegate") << "\tEvent PASSES cut criteria.\n";
 
 	if (debug_ > 3 && !thisEventPasses_)
-		LogInfo("TestbeamFiltrationDelegate")
-				<< "\tEvent FAILS cut criteria.\n";
+		LogInfo("TestbeamFiltrationDelegate") << "\tEvent FAILS cut criteria.\n";
 
 	decision_.vetosPassed_ = vetosPassed;
 	ParticleFiltrationDecisionCollection coll;
@@ -188,22 +187,18 @@ ParticleFiltrationDecisionCollection TestbeamFiltrationDelegate::isGoodParticleC
 	return coll;
 }
 
-void TestbeamFiltrationDelegate::getTagsCore(
-		const edm::ParameterSet& parameters) {
+void TestbeamFiltrationDelegate::getTagsCore(const edm::ParameterSet& parameters) {
 
 	try {
-		inputTagBeamCounters_ = parameters.getParameter<InputTag> (
-				"BeamCounters");
+		inputTagHcalRecHits_ = parameters.getParameter<InputTag>("HcalRecHits");
+		inputTagBeamCounters_ = parameters.getParameter<InputTag> ("BeamCounters");
 		inputTagTiming_ = parameters.getParameter<InputTag> ("Timing");
-		inputTagEventPosition_ = parameters.getParameter<InputTag> (
-				"EventPosition");
+		inputTagEventPosition_ = parameters.getParameter<InputTag> ("EventPosition");
 		inputTagRunData_ = parameters.getParameter<InputTag> ("RunData");
-		inputTagTriggerData_
-				= parameters.getParameter<InputTag> ("TriggerData");
+		inputTagTriggerData_ = parameters.getParameter<InputTag> ("TriggerData");
 
 	} catch (exception& e) {
-		LogError("TestbeamFiltrationDelegate") << "Error getting parameters."
-				<< std::endl;
+		LogError("TestbeamFiltrationDelegate") << "Error getting parameters." << std::endl;
 		throw e;
 	}
 
@@ -213,19 +208,18 @@ void TestbeamFiltrationDelegate::initCore(const edm::ParameterSet& parameters) {
 
 	applyCleaningCuts_ = parameters.getParameter<bool> ("applyCleaningCuts");
 	computeVetos_ = parameters.getParameter<bool> ("computeVetos");
-	identifyCleanParticles_ = parameters.getParameter<bool> (
-			"identifyCleanParticles");
-	saveAllCleanParticles_ = parameters.getParameter<bool> (
-			"saveAllCleanParticles");
+	identifyCleanParticles_ = parameters.getParameter<bool> ("identifyCleanParticles");
+	saveAllCleanParticles_ = parameters.getParameter<bool> ("saveAllCleanParticles");
 
 	noiseMode_ = parameters.getParameter<bool> ("noiseMode");
+
+	isEndcap2007_ = parameters.getParameter<bool> ("isEndcap2007");
 
 	std::string cuts = parameters.getParameter<std::string> ("runinfo_cuts");
 	TFile* file = TFile::Open(cuts.c_str());
 	TTree* tree(0);
 	thisRun_ = new RunInfo();
-	LogInfo("TestbeamFiltrationDelegate") << "Resurrecting run infos from "
-			<< cuts << "\n";
+	LogInfo("TestbeamFiltrationDelegate") << "Resurrecting run infos from " << cuts << "\n";
 
 	if (noiseMode_)
 		LogInfo("TestbeamFiltrationDelegate")
@@ -237,30 +231,25 @@ void TestbeamFiltrationDelegate::initCore(const edm::ParameterSet& parameters) {
 			//Found tree successfully... loop over entries and resurrect infos
 			tree->SetBranchAddress("RunInfo", &thisRun_);
 			if (debug_ > 3) {
-				LogInfo("TestbeamFiltrationDelegate") << "Cut file has "
-						<< tree->GetEntries() << " entries." << std::endl;
+				LogInfo("TestbeamFiltrationDelegate") << "Cut file has " << tree->GetEntries() << " entries." << std::endl;
 
 			}
 			for (unsigned entry(0); entry < tree->GetEntries(); ++entry) {
 				tree->GetEntry(entry);
 				//Copy run info
 				if (debug_ > 4) {
-					LogInfo("TestbeamFiltrationDelegate")
-							<< "Copying run info for run "
-							<< thisRun_->runNumber_ << std::endl;
+					LogInfo("TestbeamFiltrationDelegate") << "Copying run info for run " << thisRun_->runNumber_ << std::endl;
 					//LogInfo("TestbeamFiltrationDelegate") << *thisRun_;
 				}
 				RunInfo* aRun = new RunInfo(*thisRun_);
 				runInfos_[thisRun_->runNumber_] = aRun;
 			}
 		} else {
-			LogError("TestbeamFiltrationDelegate") << "Tree pointer is null!"
-					<< std::endl;
+			LogError("TestbeamFiltrationDelegate") << "Tree pointer is null!" << std::endl;
 		}
 		file->Close();
 	} else {
-		LogError("TestbeamFiltrationDelegate")
-				<< "Couldn't open run info file!" << std::endl;
+		LogError("TestbeamFiltrationDelegate") << "Couldn't open run info file!" << std::endl;
 	}
 }
 
@@ -270,17 +259,12 @@ void TestbeamFiltrationDelegate::finishCore() {
 	int total = goodPionsFound_ + protonKaonCandidates_ + electronCandidates_;
 
 	//Summarise running
-	LogInfo("TestbeamFiltrationDelegate")
-			<< "------------------------------------------------------\n"
-			<< "Summary of TestbeamFiltrationDelegate's activities:\n"
-			<< "\tPossible muons: " << muonCands_ << "\n"
-			<< "\tPossible beam halo: " << beamHaloCands_ << "\n"
-			<< "\tPossible non MIP cands: " << nonMipCands_ << "\n"
-			<< "\tPossible non Cerenkov pions: " << cerenkovNonPions_ << "\n"
-			<< "\tPossible non TOF pions: " << tofNonPions_ << "\n"
-			<< "\tPossible electrons: " << electronCandidates_ << "\n"
-			<< "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n"
-			<< "\tPossible pure noise events: " << pureNoiseEvents_ << "\n"
+	LogInfo("TestbeamFiltrationDelegate") << "------------------------------------------------------\n"
+			<< "Summary of TestbeamFiltrationDelegate's activities:\n" << "\tPossible muons: " << muonCands_ << "\n"
+			<< "\tPossible beam halo: " << beamHaloCands_ << "\n" << "\tPossible non MIP cands: " << nonMipCands_ << "\n"
+			<< "\tPossible non Cerenkov pions: " << cerenkovNonPions_ << "\n" << "\tPossible non TOF pions: " << tofNonPions_
+			<< "\n" << "\tPossible electrons: " << electronCandidates_ << "\n" << "\tPossible protons/kaons: "
+			<< protonKaonCandidates_ << "\n" << "\tPossible pure noise events: " << pureNoiseEvents_ << "\n"
 			<< "\tClass-31 pion candidates: " << goodPionsFound_ << "\n";
 
 	if (total != 0) {
@@ -288,24 +272,19 @@ void TestbeamFiltrationDelegate::finishCore() {
 		int protonPer = static_cast<int> (100 * protonKaonCandidates_ / total);
 		int elecPer = static_cast<int> (100 * electronCandidates_ / total);
 
-		LogInfo("TestbeamFiltrationDelegate")
-				<< "------------------------------------------------------\n"
-				<< "Beam composition (%): \t pion/electron/proton-kaon\n"
-				<< "\t\t" << pionPer << " / " << elecPer << " / " << protonPer
-				<< "\n";
+		LogInfo("TestbeamFiltrationDelegate") << "------------------------------------------------------\n"
+				<< "Beam composition (%): \t pion/electron/proton-kaon\n" << "\t\t" << pionPer << " / " << elecPer << " / "
+				<< protonPer << "\n";
 	} else {
-		LogProblem("TestbeamFiltrationDelegate")
-				<< "Total good particles found = 0?!\n";
+		LogProblem("TestbeamFiltrationDelegate") << "Total good particles found = 0?!\n";
 	}
 
 	if (noiseMode_)
 		LogInfo("TestbeamFiltrationDelegate")
 				<< "(polite reminder): Ran with noiseMode = true! Run on high energy (> 50 GeV) beams please.\n";
 
-	LogInfo("TestbeamFiltrationDelegate")
-			<< "------------------------------------------------------\n"
-			<< "\tnPasses: " << nPasses_ << ", nFails: " << nFails_ << "\n"
-			<< "Leaving " << __PRETTY_FUNCTION__ << std::endl;
+	LogInfo("TestbeamFiltrationDelegate") << "------------------------------------------------------\n" << "\tnPasses: "
+			<< nPasses_ << ", nFails: " << nFails_ << "\n" << "Leaving " << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Quality TestbeamFiltrationDelegate::isNotMuon() {
@@ -319,11 +298,9 @@ Quality TestbeamFiltrationDelegate::isNotMuon() {
 	//If VLE, has to pass VMX cuts too
 	//TODO: reimplement VM8 with its dodgy non gaussian pedestal
 	if (thisRun_->applyVMF_) {
-		if (counters.VM1adc() < thisRun_->vmx[0] && counters.VM2adc()
-				< thisRun_->vmx[1] && counters.VM3adc() < thisRun_->vmx[2]
-				&& counters.VM4adc() < thisRun_->vmx[3] && counters.VM5adc()
-				< thisRun_->vmx[4] && counters.VM6adc() < thisRun_->vmx[5]
-				&& counters.VM7adc() < thisRun_->vmx[6] && counters.VMFadc()
+		if (counters.VM1adc() < thisRun_->vmx[0] && counters.VM2adc() < thisRun_->vmx[1] && counters.VM3adc()
+				< thisRun_->vmx[2] && counters.VM4adc() < thisRun_->vmx[3] && counters.VM5adc() < thisRun_->vmx[4]
+				&& counters.VM6adc() < thisRun_->vmx[5] && counters.VM7adc() < thisRun_->vmx[6] && counters.VMFadc()
 				< thisRun_->vmfMax_) {
 			isNotMuonQuality = DEFINITEYES;
 			if (counters.VM8adc() > thisRun_->vmx[7]) {
@@ -335,8 +312,7 @@ Quality TestbeamFiltrationDelegate::isNotMuon() {
 	}
 
 	if (debug_ > 4) {
-		LogDebug("TestbeamFiltrationDelegate") << "\tEvent isn't a muon? :"
-				<< isNotMuonQuality << "\n";
+		LogDebug("TestbeamFiltrationDelegate") << "\tEvent isn't a muon? :" << isNotMuonQuality << "\n";
 	}
 
 	return isNotMuonQuality;
@@ -352,14 +328,12 @@ Quality TestbeamFiltrationDelegate::isCerenkovPion() {
 	HcalTBBeamCounters counters = **beamCounters_;
 
 	if (thisRun_->applyCK2_) {
-		if (counters.CK2adc() > thisRun_->ck2Max_ || counters.CK2adc()
-				< thisRun_->ck2Min_)
+		if (counters.CK2adc() > thisRun_->ck2Max_ || counters.CK2adc() < thisRun_->ck2Min_)
 			isCerenkovPion = UNLIKELY;
 	}
 
 	if (thisRun_->applyCK3_) {
-		if (counters.CK3adc() > thisRun_->ck3Max_ || counters.CK3adc()
-				< thisRun_->ck3Min_)
+		if (counters.CK3adc() > thisRun_->ck3Max_ || counters.CK3adc() < thisRun_->ck3Min_)
 			isCerenkovPion = UNLIKELY;
 	}
 
@@ -368,13 +342,13 @@ Quality TestbeamFiltrationDelegate::isCerenkovPion() {
 
 Quality TestbeamFiltrationDelegate::isCerenkovElectronCandidate() {
 
-	Quality electronQuality(DEFINITEYES);
+	Quality electronQuality(UNLIKELY);
 	HcalTBBeamCounters counters = **beamCounters_;
 
 	//CK2 uniquely determines electrons
 	if (thisRun_->applyCK2_) {
-		if (counters.CK2adc() <= thisRun_->ck2Max_)
-			electronQuality = UNLIKELY;
+		if (counters.CK2adc() > thisRun_->ck2Max_)
+			electronQuality = DEFINITEYES;
 	}
 
 	return electronQuality;
@@ -386,13 +360,14 @@ Quality TestbeamFiltrationDelegate::isCerenkovProtonKaonCandidate() {
 	Quality protonQuality(DEFINITEYES);
 	HcalTBBeamCounters counters = **beamCounters_;
 
+	//std::cout << "CK3: " << counters.CK3adc() <<  ", max: " << thisRun_->ck3Max_ << "\n";
 	if (thisRun_->applyCK3_) {
-		if (counters.CK3adc() < thisRun_->ck2Max_) {
+		if (counters.CK3adc() < thisRun_->ck3Max_) {
 			//Probably a pion
 			protonQuality = UNLIKELY;
 		}
 	}
-
+	//std::cout << "CK2: " << counters.CK2adc() <<  ", max: " << thisRun_->ck2Max_ << "\n";
 	if (thisRun_->applyCK2_) {
 		if (counters.CK2adc() >= thisRun_->ck2Max_) {
 			//Probably an electron
@@ -416,12 +391,15 @@ Quality TestbeamFiltrationDelegate::isTOFPion() {
 	double tofS = timing.TOF1Stime() - timing.TOF2Stime();
 	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
 	double meanTOF = (tofS + tofJ) / 2.0;
-//	if (debug_ > 4) {
-		LogInfo("TestbeamFiltrationDelegate") << "\tTOFS = " << tofS
-				<< ",\tTOFJ = " << tofJ << ",\tmeanTOF: " << meanTOF << "\n";
-//	}
-	//if ((tofS > thisRun_->tofMin_ && tofS < thisRun_->tofMax_) && (tofJ > thisRun_->tofMin_ && tofJ < thisRun_->tofMax_))
-	if (meanTOF > thisRun_->tofMin_ && meanTOF < thisRun_->tofMax_)
+	// For the endcaps, someone helpfully changed the cables round, IT SEEMS
+	// garrgh!!
+	// TOF pions have ADC between -545 and ~ -700
+	// So for endcaps, where tofMax = -545, we need values like 600 to pass
+	// 600 > -1.0 *-545, yes...
+	//std::cout << "meanTOF = " << meanTOF << ", veto = " << thisRun_->tofMax_ << "\n";
+	if (isEndcap2007_ && meanTOF > -1.0 * thisRun_->tofMax_)
+		tofPionQuality = DEFINITEYES;
+	else if (meanTOF > thisRun_->tofMin_ && meanTOF < thisRun_->tofMax_)
 		tofPionQuality = DEFINITEYES;
 
 	return tofPionQuality;
@@ -436,16 +414,12 @@ Quality TestbeamFiltrationDelegate::isSingleMIP() {
 
 	Quality singleMipQuality(DEFINITEYES);
 	if (debug_ > 5)
-		LogDebug("TestbeamFiltrationDelegate") << "\tS124adcs = "
-				<< counters.S1adc() << ", " << counters.S2adc() << ", "
+		LogDebug("TestbeamFiltrationDelegate") << "\tS124adcs = " << counters.S1adc() << ", " << counters.S2adc() << ", "
 				<< counters.S4adc() << "\n";
 
-	if (counters.S1adc() > thisRun_->s1Min_ && counters.S1adc()
-			< thisRun_->s1Max_) {
-		if (counters.S2adc() > thisRun_->s2Min_ && counters.S2adc()
-				< thisRun_->s2Max_) {
-			if (counters.S4adc() > thisRun_->s4Min_ && counters.S4adc()
-					< thisRun_->s4Max_) {
+	if (counters.S1adc() > thisRun_->s1Min_ && counters.S1adc() < thisRun_->s1Max_) {
+		if (counters.S2adc() > thisRun_->s2Min_ && counters.S2adc() < thisRun_->s2Max_) {
+			if (counters.S4adc() > thisRun_->s4Min_ && counters.S4adc() < thisRun_->s4Max_) {
 				singleMipQuality = DEFINITEYES;
 			} else
 				singleMipQuality = PROBABLY;
@@ -465,8 +439,7 @@ Quality TestbeamFiltrationDelegate::isSingleMIP() {
 	//		singleMipQuality = PROBABLY;
 
 	if (debug_ > 4) {
-		LogDebug("TestbeamFiltrationDelegate") << "\tEvent is a single MIP? :"
-				<< singleMipQuality << "\n";
+		LogDebug("TestbeamFiltrationDelegate") << "\tEvent is a single MIP? :" << singleMipQuality << "\n";
 	}
 	return singleMipQuality;
 }
@@ -478,8 +451,7 @@ Quality TestbeamFiltrationDelegate::isNoiseCandidate() {
 	HcalTBTiming timing = **timing_;
 	HcalTBBeamCounters counters = **beamCounters_;
 
-	if (counters.S1adc() < thisRun_->s1Min_ && counters.S2adc()
-			< thisRun_->s2Min_ && counters.S4adc() < thisRun_->s4Min_)
+	if (counters.S1adc() < thisRun_->s1Min_ && counters.S2adc() < thisRun_->s2Min_ && counters.S4adc() < thisRun_->s4Min_)
 		noiseQuality = PROBABLY;
 
 	//Test beam peculiarities!
@@ -498,20 +470,17 @@ Quality TestbeamFiltrationDelegate::noBeamHalo() {
 	Quality beamHaloAbsenceQuality(DEFINITEYES);
 
 	if (debug_ > 5)
-		LogDebug("TestbeamFiltrationDelegate") << "\tBH1234adcs = "
-				<< counters.BH1adc() << ", " << counters.BH2adc() << ", "
-				<< counters.BH3adc() << ", " << counters.BH4adc() << "\n";
+		LogDebug("TestbeamFiltrationDelegate") << "\tBH1234adcs = " << counters.BH1adc() << ", " << counters.BH2adc()
+				<< ", " << counters.BH3adc() << ", " << counters.BH4adc() << "\n";
 
-	if (counters.BH1adc() < thisRun_->bh1Max_ && counters.BH2adc()
-			< thisRun_->bh2Max_ && counters.BH3adc() < thisRun_->bh3Max_
-			&& counters.BH4adc() < thisRun_->bh4Max_)
+	if (counters.BH1adc() < thisRun_->bh1Max_ && counters.BH2adc() < thisRun_->bh2Max_ && counters.BH3adc()
+			< thisRun_->bh3Max_ && counters.BH4adc() < thisRun_->bh4Max_)
 		beamHaloAbsenceQuality = DEFINITEYES;
 	else
 		beamHaloAbsenceQuality = UNLIKELY;
 
 	if (debug_ > 4) {
-		LogDebug("TestbeamFiltrationDelegate") << "\tEvent has no beam halo? :"
-				<< beamHaloAbsenceQuality << "\n";
+		LogDebug("TestbeamFiltrationDelegate") << "\tEvent has no beam halo? :" << beamHaloAbsenceQuality << "\n";
 	}
 	return beamHaloAbsenceQuality;
 }

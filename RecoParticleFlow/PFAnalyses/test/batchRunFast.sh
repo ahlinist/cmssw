@@ -4,17 +4,11 @@
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 
-RUND=/afs/cern.ch/user/b/ballin/scratch0/CMSSW_3_1_0_pre10/src/RecoParticleFlow/PFAnalyses/test/
+RUND=/afs/cern.ch/user/b/ballin/scratch0/tbSandbox/CMSSW_3_1_2/src/RecoParticleFlow/PFAnalyses/test/
 
-SCRIPT=$RUND"fastsim_neutrals.py"
-
+SCRIPT=$RUND"fastsim_pions.py"
 echo Script is: $SCRIPT
 
-
-OUTTREE="Dikaon_"$1"GeV_10k_fast.root"
-OUTPUT="Dikaon_Events_"$1"GeV_10k_fast.root"
-DESTD=/castor/cern.ch/user/b/ballin/tb310pre10/
-LOG="Dikaon_"$1"GeV_10k_fast.txt"
 
 echo Outputtree is: $OUTTREE
 echo Reprocessed file is: $OUTPUT
@@ -22,21 +16,24 @@ echo Logfile is: $LOG
 
 echo
 
-cd /afs/cern.ch/user/b/ballin/scratch0/CMSSW_3_1_0_pre10/src/
+cd /afs/cern.ch/user/b/ballin/scratch0/tbSandbox/CMSSW_3_1_2/src
 eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$1 kevents=10 fileSuffix=fast
+cmsRun $SCRIPT beamEnergy=$1 kevents=10 fileSuffix0=slack_fast_4T 
 echo cmsRun complete.
 
 echo Directory listing of $PWD
 ls -lh
 
-echo Copying files to castor...
-rfcp $OUTTREE $DESTD$OUTTREE
-rfcp $OUTPUT $DESTD$OUTPUT
-cp *.txt $RUND"tb310pre10/"
+echo Copying all files to castor...
+
+for i in `ls | grep root`
+do
+	echo Copying ${i}
+        rfcp ${i} /castor/cern.ch/user/b/ballin/CMSSW312
+done
 
 echo Done.
 exit 0
