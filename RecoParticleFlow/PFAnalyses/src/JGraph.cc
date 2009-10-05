@@ -45,23 +45,25 @@ TGraphErrors JGraph::finaliseWithErrors() {
 
 }
 
-std::ostream& JGraph::operator<<(std::ostream& s) {
-	assert(xvals_.size() == yvals_.size());
+std::ostream& operator<<(std::ostream& s, const JGraph& q) {
+	assert(q.xvals_.size() == q.yvals_.size());
 
-	if (xvals_.size() == exvals_.size()) {
-		s << "## JGraph with errors and " << xvals_.size() << " entries\n";
+	if (q.hasErrors_) {
+		s << "## JGraph with errors and " << q.xvals_.size() << " entries\n";
 		s << "## x\tex\ty\tey\n";
-		for (unsigned u(0); u < xvals_.size(); ++u) {
-			s << xvals_[u] << "\t" << exvals_[u] << "\t" << yvals_[u] << "\t"
-					<< eyvals_[u] << "\n";
+		for (unsigned u(0); u < q.xvals_.size(); ++u) {
+			s << q.xvals_[u] << "\t" << q.exvals_[u] << "\t" << q.yvals_[u] << "\t"
+					<< q.eyvals_[u] << "\n";
 		}
 	} else {
-		s << "## JGraph with " << xvals_.size() << " entries\n";
+		s << "## JGraph with " << q.xvals_.size() << " entries\n";
 		s << "## x\ty\n";
-		for (unsigned u(0); u < xvals_.size(); ++u) {
-			s << xvals_[u] << "\t" << yvals_[u] << "\n";
+		for (unsigned u(0); u < q.xvals_.size(); ++u) {
+			s << q.xvals_[u] << "\t" << q.yvals_[u] << "\n";
 		}
 	}
 	return s;
 }
+
+
 

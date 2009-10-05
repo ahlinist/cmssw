@@ -10,8 +10,8 @@
 	// create a PFRootEventManager
 	// PFRootEventManager em("pfRootEvent.opt");
 	// create a JetPFRootEventManager to make FWLiteJets
-//	string opt = "pfRootEvent_testbeam.opt";
-	string opt = "particleFlow.opt";
+	string opt = "particleFlow_testbeam.opt";
+
 	PFRootEventManager em( opt.c_str() );
 
 	//create a DisplayManager

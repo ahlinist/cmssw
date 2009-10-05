@@ -44,6 +44,7 @@ private:
 	std::map<unsigned, pftools::RunInfo*> runInfos_;
 
 	bool justCreateEmptyCollections_;
+	bool endcapMode_;
 
 };
 

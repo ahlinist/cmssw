@@ -18,8 +18,8 @@ process.famosSimHits.VertexGenerator.BetaStar = 0.00001
 process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
+#process.load("Configuration.StandardSequences.MagneticField_0T_cff")
 process.load("Configuration.StandardSequences.MagneticField_40T_cff")
-#process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
 process.famosSimHits.MaterialEffects.PairProduction = False
@@ -37,8 +37,8 @@ process.generator = cms.EDProducer("Pythia6EGun",
        ParticleID = cms.vint32(211),
        MinPhi = cms.double(0),
        MaxPhi = cms.double(2 * 3.14),
-       MinEta = cms.double(0),
-       MaxEta = cms.double(1.0),
+       MinEta = cms.double(0.2),
+       MaxEta = cms.double(0.3),
        MinE = cms.double(options.minBeamEnergy),
        MaxE = cms.double(options.beamEnergy+0.0001),
        AddAntiParticle = cms.bool(True)
@@ -52,9 +52,9 @@ process.generator = cms.EDProducer("Pythia6EGun",
     )
 )
 
-process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring('Dipion_' + logLabel, 'cout'),
-)
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.destinations=cms.untracked.vstring('Dipion_' + logLabel, 'cout')
 
 genEvents = 100
 if options.kevents <> 0:
@@ -67,7 +67,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
-
+process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 process.TFileService = cms.Service("TFileService",
@@ -114,7 +114,7 @@ process.p1 = cms.Path(process.generator +
                       process.extractionToTree + 
                       process.extractionToEvent)
 
-
-process.outpath = cms.EndPath(process.finishup)
+if options.outputCollections <> 0:
+    process.outpath = cms.EndPath(process.finishup)
 
 

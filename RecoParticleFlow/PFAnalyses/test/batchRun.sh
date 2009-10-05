@@ -8,17 +8,15 @@ fi
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 ENERGY=$1
-SUFFIX=""
+SUFFIX="endcap_slack"
 RUND=/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/
 
 SCRIPT=$RUND"pflow_tb_general.py"
 
 echo Script is: $SCRIPT
 
-OUTTREE="outputtree_"$ENERGY"GeV"$SUFFIX".root"
-OUTPUT="reprocessed_"$ENERGY"GeV"$SUFFIX".root"
-DESTD=/castor/cern.ch/user/b/ballin/tb321/
-LOG="log_"$ENERGY"GeV"$SUFFIX".txt"
+DESTD=/castor/cern.ch/user/b/ballin/CMSSW312/
+LOG="log_"$ENERGY"GeV_"$SUFFIX".txt"
 
 echo Outputtree is: $OUTTREE
 echo Reprocessed file is: $OUTPUT
@@ -31,18 +29,21 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$ENERGY 
+cmsRun $SCRIPT beamEnergy=$ENERGY  endcapMode=1 fileSuffix=$SUFFIX outputCollections=0
 echo cmsRun complete.
 
-tail -n 50 *.txt
+#tail -n 50 *.txt
 
 echo Directory listing of $PWD
 ls -lh
 
-echo Copying files to castor...
-rfcp $OUTTREE $DESTD
-rfcp $OUTPUT $DESTD
-cp $LOG $RUND"tb321/"
+echo Copying root files to CASTOR...
+for i in `ls | grep root`
+do
+        echo Copying ${i}
+        rfcp ${i} /castor/cern.ch/user/b/ballin/CMSSW312
+done
+
 
 echo Done.
 exit 0

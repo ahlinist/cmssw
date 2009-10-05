@@ -8,6 +8,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "Geometry/EcalAlgo/interface/EcalBarrelGeometry.h"
+#include "Geometry/EcalAlgo/interface/EcalEndcapGeometry.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -27,10 +28,11 @@ using namespace reco;
 using namespace pftools;
 
 TestbeamDelegate::TestbeamDelegate() :
-	applyCleaningCuts_(true), saveJustPions_(true), stripAnomalousEvents_(0),
-			maxEventsFromEachRun_(0), eventsSeenInThisRun_(0), muonCands_(0),
-			nonMipCands_(0), beamHaloCands_(0), cerenkovNonPions_(0),
-			tofNonPions_(0), electronCandidates_(0), protonKaonCandidates_(0),
+	applyCleaningCuts_(true), saveJustPions_(true), isEndcap2007_(false),
+			stripAnomalousEvents_(0), maxEventsFromEachRun_(0),
+			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
+			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
+			electronCandidates_(0), protonKaonCandidates_(0),
 			goodPionsFound_(0), deltaRRecHitsToCenterECAL_(0.4),
 			deltaRRecHitsToCenterHCAL_(0.4), deltaRPhotonsToTrack_(0.1),
 			deltaRNeutralsToTrack_(0.3) {
@@ -40,6 +42,9 @@ TestbeamDelegate::TestbeamDelegate() :
 void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 
 	applyCleaningCuts_ = parameters.getParameter<bool> ("applyCleaningCuts");
+
+	isEndcap2007_ = parameters.getParameter<bool> ("isEndcap2007");
+
 	stripAnomalousEvents_ = parameters.getParameter<unsigned> (
 			"stripAnomalousEvents");
 	maxEventsFromEachRun_ = parameters.getParameter<unsigned> (
@@ -72,8 +77,10 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			= parameters.getParameter<InputTag> ("PFClustersHcal");
 	inputTagRecHitsEcal_ = parameters.getParameter<InputTag> ("PFRecHitsEcal");
 	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
-	inputTagRawRecHitsEcal_ = parameters.getParameter<InputTag> (
+	inputTagRawRecHitsEcalEB_ = parameters.getParameter<InputTag> (
 			"RawRecHitsEcalEB");
+	inputTagRawRecHitsEcalEE_ = parameters.getParameter<InputTag> (
+			"RawRecHitsEcalEE");
 	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> (
 			"RawRecHitsHcal");
 	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
@@ -215,6 +222,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	double tofS = timing.TOF1Stime() - timing.TOF2Stime();
 	double tofJ = timing.TOF1Jtime() - timing.TOF2Jtime();
 	calib_->tb_tof_ = (tofS + tofJ) / 2.0;
+	if (isEndcap2007_)
+		calib_->tb_tof_ = -(tofS + tofJ) / 2.0;
 
 	/* Deal with raw rec hits */
 
@@ -229,16 +238,49 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			dynamic_cast<const EcalBarrelGeometry*> (ebtmp);
 	assert(ecalBarrelGeometry);
 
+	const CaloSubdetectorGeometry* eetmp = geoHandle->getSubdetectorGeometry(
+			DetId::Ecal, EcalEndcap);
+
+	const EcalEndcapGeometry* ecalEndcapGeometry =
+			dynamic_cast<const EcalEndcapGeometry*> (eetmp);
+	assert(ecalEndcapGeometry);
+
+	//Seems to be happy with testbeam data too :-|
 	const CaloSubdetectorGeometry* hcalBarrelGeometry =
 			geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
 	assert(hcalBarrelGeometry);
 
-	extractEBRecHits(**rawRecHitsEcal_, ecalBarrelGeometry, thisRun_->ecalEta_,
-			thisRun_->ecalPhi_);
-	extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry,
-			thisRun_->hcalEta_, thisRun_->hcalPhi_);
+	const CaloSubdetectorGeometry* hcalEndcapGeometry =
+			geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalEndcap);
+	assert(hcalEndcapGeometry);
+
+
+	//Due to bonkers alignment apparent in TB2007 dataset, ECAL, HCAL and table
+	//are all over the place. Take the tableEta, tablePhi as the standard.
+	double targetEcalEta = thisRun_->ecalEta_;
+	double targetEcalPhi = thisRun_->ecalPhi_;
+	if(isEndcap2007_) {
+		targetEcalEta = thisRun_->tableEta_;
+		targetEcalPhi = thisRun_->tablePhi_;
+	}
+
+	if (!isEndcap2007_)
+		extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry,
+				targetEcalEta, targetEcalPhi);
+		extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry,
+				thisRun_->hcalEta_, thisRun_->hcalPhi_);
+	if (isEndcap2007_) {
+		//cout << "Extracting EERechits..." << (**rawRecHitsEcalEE_).size() << "\n";
+		extractEERecHits(**rawRecHitsEcalEE_, ecalEndcapGeometry,
+				targetEcalEta, targetEcalPhi);
+		extractHcalRecHits(**rawRecHitsHcal_, hcalEndcapGeometry,
+					thisRun_->hcalEta_, thisRun_->hcalPhi_);
+	}
+
+
 
 	calib_->recompute();
+
 
 	if (stripAnomalousEvents_ && fabs(calib_->tb_energyEvent_)
 			> stripAnomalousEvents_ * thisRun_->beamEnergy_) {
@@ -256,8 +298,8 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFRecHitCollection hcalRecHits = **recHitsHcal_;
 
 		std::vector<unsigned> matchingEcalIndicies =
-				pftools::findObjectsInDeltaR(ecalRecHits, thisRun_->ecalEta_,
-						thisRun_->ecalPhi_, deltaRRecHitsToCenterECAL_);
+				pftools::findObjectsInDeltaR(ecalRecHits, targetEcalEta,
+						targetEcalPhi, deltaRRecHitsToCenterECAL_);
 		//Or another way of doing it...
 		std::vector<unsigned> matchingHcalIndicies =
 				pftools::findObjectsInDeltaR(hcalRecHits, thisRun_->hcalEta_,
@@ -272,15 +314,17 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFClusterCollection ecalClusters = **clustersEcal_;
 		PFClusterCollection hcalClusters = **clustersHcal_;
 
-		std::vector<unsigned> ecalClusterIndicies =
-				pftools::findObjectsInDeltaR(ecalClusters, thisRun_->ecalEta_,
-						thisRun_->ecalPhi_, deltaRClustersToCenterECAL_);
-		std::vector<unsigned> hcalClusterIndicies =
+
+		std::vector<unsigned> ecalClusterIndices =
+				pftools::findObjectsInDeltaR(ecalClusters, targetEcalEta,
+						targetEcalPhi, deltaRClustersToCenterECAL_);
+
+		std::vector<unsigned> hcalClusterIndices =
 				pftools::findObjectsInDeltaR(hcalClusters, thisRun_->hcalEta_,
 						thisRun_->hcalPhi_, deltaRClustersToCenterHCAL_);
 
-		extractEcalPFClusters(ecalClusters, ecalClusterIndicies);
-		extractHcalPFClusters(hcalClusters, hcalClusterIndicies);
+		extractEcalPFClusters(ecalClusters, ecalClusterIndices);
+		extractHcalPFClusters(hcalClusters, hcalClusterIndices);
 	}
 
 	//Extract PFCandidates
@@ -289,7 +333,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		const PFCandidate& test = *it;
 		bool veto(false);
 		if (test.particleId() == 4 && pftools::deltaR(test.eta(),
-				thisRun_->ecalEta_, test.phi(), thisRun_->ecalPhi_)
+				targetEcalEta, test.phi(), targetEcalPhi)
 				> deltaRPhotonsToTrack_)
 			veto = true;
 		if (test.particleId() == 5 && pftools::deltaR(test.eta(),
@@ -301,16 +345,16 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 			extractCandidate(*it);
 	}
 
-//	calib_->recompute();
-//
-//	calib_->calowindow_ecal_.init(calib_->rechits_meanEcal_.eta_,
-//			calib_->rechits_meanEcal_.phi_, nRingsEcalCaloWindow_,
-//			deltaREcalCaloWindow_, nPanesEcalCaloWindow_);
-//	calib_->calowindow_hcal_.init(calib_->rechits_meanHcal_.eta_,
-//			calib_->rechits_meanHcal_.phi_, nRingsHcalCaloWindow_,
-//			deltaRHcalCaloWindow_, nPanesHcalCaloWindow_);
-//	calib_->fillCaloWindow(calib_->rechits_ecal_, calib_->calowindow_ecal_);
-//	calib_->fillCaloWindow(calib_->rechits_hcal_, calib_->calowindow_hcal_);
+	//	calib_->recompute();
+	//
+	//	calib_->calowindow_ecal_.init(calib_->rechits_meanEcal_.eta_,
+	//			calib_->rechits_meanEcal_.phi_, nRingsEcalCaloWindow_,
+	//			deltaREcalCaloWindow_, nPanesEcalCaloWindow_);
+	//	calib_->calowindow_hcal_.init(calib_->rechits_meanHcal_.eta_,
+	//			calib_->rechits_meanHcal_.phi_, nRingsHcalCaloWindow_,
+	//			deltaRHcalCaloWindow_, nPanesHcalCaloWindow_);
+	//	calib_->fillCaloWindow(calib_->rechits_ecal_, calib_->calowindow_ecal_);
+	//	calib_->fillCaloWindow(calib_->rechits_hcal_, calib_->calowindow_hcal_);
 
 	endParticle();
 
@@ -322,10 +366,13 @@ void TestbeamDelegate::extractHcalRecHits(
 		const HBHERecHitCollection& hcalRechits,
 		const CaloSubdetectorGeometry* geometry, double targetEta,
 		double targetPhi) {
+	//	std::cout << "TestbeamDelegate::extractHcalRecHit - isEndcap2007? "
+	//			<< isEndcap2007_ << "\n";
 
 	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRechits.begin(); hrIt
 			!= hcalRechits.end(); ++hrIt) {
-
+		targetEta = thisRun_->hcalEta_;
+		targetPhi = thisRun_->hcalPhi_;
 		const HBHERecHit& hrh = *hrIt;
 		const HcalDetId& detid = hrh.detid();
 		HcalDetId* newDetId = 0;
@@ -335,23 +382,34 @@ void TestbeamDelegate::extractHcalRecHits(
 		int ieta = detid.ieta();
 		int iphi = detid.iphi();
 		int depth = detid.depth();
-		int iphiNew = iphi - 12;
+
+		int iphiNew = iphi;
+		int ietaNew = ieta;
+
+		if (!isEndcap2007_) {
+			iphiNew = iphi - 12;
+			if (iphi == 13) {
+				if (ieta == 12)
+					ietaNew = 1;
+				if (ieta == 11)
+					ietaNew = 2;
+				if (ieta == 10)
+					ietaNew = 3;
+				if (ieta == 9)
+					ietaNew = 4;
+				if (ieta == 8)
+					ietaNew = 5;
+			}
+		}
+		if (isEndcap2007_) {
+			ietaNew -= 1;
+			iphiNew -= 10;
+			targetEta = thisRun_->tableEta_;
+			targetPhi = thisRun_->tablePhi_;
+		}
+
 		if (iphiNew <= 0)
 			iphiNew += 72;
-		int ietaNew = ieta;
-		if (iphi == 13) {
-			if (ieta == 12)
-				ietaNew = 1;
-			if (ieta == 11)
-				ietaNew = 2;
-			if (ieta == 10)
-				ietaNew = 3;
-			if (ieta == 9)
-				ietaNew = 4;
-			if (ieta == 8)
-				ietaNew = 5;
-		}
-		//iphiNew += 2;
 		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
 		if (newDetId == 0) {
 			LogWarning("TestbeamDelegate")
@@ -359,13 +417,17 @@ void TestbeamDelegate::extractHcalRecHits(
 			continue;
 		}
 		//const HcalDetId hDetId = hrh.id();
+
 		const CaloCellGeometry* thisCell = geometry->getGeometry(*newDetId);
 		if (thisCell) {
 
 			//compute delta R
 			double dR = pftools::deltaR(thisCell->getPosition().eta(),
-					thisRun_->hcalEta_, thisCell->getPosition().phi(),
-					thisRun_->hcalPhi_);
+					targetEta, thisCell->getPosition().phi(), targetPhi);
+			//			std::cout << "\t" << hrh.energy() << ", ["
+			//					<< thisCell->getPosition().eta() << ", "
+			//					<< thisCell->getPosition().phi() << "] -> dR = " << dR
+			//					<< ", iEta/iPhi = [" << ietaNew << ", " << iphiNew << "]\n";
 			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_
 					<= 0) {
 				CalibratableElement ce(hrh.energy(),
@@ -456,7 +518,8 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	recHitsHcal_ = new Handle<PFRecHitCollection> ;
 	pfCandidates_ = new Handle<PFCandidateCollection> ;
 
-	rawRecHitsEcal_ = new Handle<EcalRecHitCollection> ;
+	rawRecHitsEcalEB_ = new Handle<EcalRecHitCollection> ;
+	rawRecHitsEcalEE_ = new Handle<EcalRecHitCollection> ;
 	rawRecHitsHcal_ = new Handle<HBHERecHitCollection> ;
 
 	getCollection(*filtration_, inputTagParticleFiltration_, event);
@@ -467,7 +530,11 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	getCollection(*recHitsHcal_, inputTagRecHitsHcal_, event);
 	getCollection(*pfCandidates_, inputTagPFCandidates_, event);
 
-	getCollection(*rawRecHitsEcal_, inputTagRawRecHitsEcal_, event);
+	if(!isEndcap2007_)
+		getCollection(*rawRecHitsEcalEB_, inputTagRawRecHitsEcalEB_, event);
+	if(isEndcap2007_)
+		getCollection(*rawRecHitsEcalEE_, inputTagRawRecHitsEcalEE_, event);
+
 	getCollection(*rawRecHitsHcal_, inputTagRawRecHitsHcal_, event);
 
 	getCollection(*runData_, inputTagRunData_, event);
@@ -500,7 +567,8 @@ bool TestbeamDelegate::endEventCore() {
 	delete recHitsEcal_;
 	delete recHitsHcal_;
 	delete pfCandidates_;
-	delete rawRecHitsEcal_;
+	delete rawRecHitsEcalEB_;
+	delete rawRecHitsEcalEE_;
 	delete rawRecHitsHcal_;
 
 	return thisEventPasses_;

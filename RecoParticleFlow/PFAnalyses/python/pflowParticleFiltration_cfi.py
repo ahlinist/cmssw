@@ -29,11 +29,14 @@ particleFiltration = cms.EDFilter("ParticleFilter",
     # Enable this if you want just pure noise events.
     # Default/recommended: False
     noiseMode=cms.bool(False),
+    # Required for a TOF kludge
+    isEndcap2007 = cms.bool(False),
     
     # Global cut parameters   
     runinfo_cuts=cms.string(testbeam_cuts),
     
     #Normal tags
+    HcalRecHits=cms.InputTag("hbhereco"),
     BeamCounters=cms.InputTag("tbunpacker"),
     RunData=cms.InputTag("tbunpacker"),
     Timing=cms.InputTag("tbunpacker"),

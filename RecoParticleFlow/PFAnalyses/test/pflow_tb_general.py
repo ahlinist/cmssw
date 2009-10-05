@@ -13,8 +13,8 @@ from RecoParticleFlow.PFAnalyses.RunDict import *
 
 from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
-outputTree = "outputtree_" + fileLabel
-outputFile = "reprocessed_" + fileLabel
+outputTree = "PFlowTB_Tree_" + fileLabel
+outputFile = "PFlowTB_Events_" + fileLabel
 logFile = "log_" + logLabel
 
 
@@ -30,8 +30,9 @@ process.particleFiltration.debug = cms.int32(1)
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
+
 #For calibration purposes
-process.particleFlow.pf_nsigma_HCAL = cms.double(2.0)
+process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.particleFlowBlock.debug = cms.untracked.bool(True)
 #process.particleFlow.debug = cms.untracked.bool(True)
@@ -65,11 +66,18 @@ if options.endcapMode <> 0:
     process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
     process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
     process.extraction.RawRecHitsEcalEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.faketracks.endcapMode = cms.bool(True)
+    process.particleFiltration.isEndcap2007 = cms.bool(True)
+    process.particleFlowRecHitHCAL.isEndcap2007 = cms.bool(True)
+    process.extraction.isEndcap2007 = cms.bool(True)
+    
+process.extraction.clustersFromCandidates=cms.bool(False)
+process.extraction.rechitsFromCandidates=cms.bool(False)
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
         input=cms.untracked.int32(options.kevents * 1000)
-        )
+    )
 
 # Files to process
 runs = cms.untracked.vstring(result)
@@ -85,16 +93,12 @@ process.TFileService.fileName = cms.string(outputTree)
 # New Event file
 process.finishup.fileName = cms.untracked.string(outputFile)
 
-process.extraction.clustersFromCandidates = cms.bool(True)
 
 # LogFile
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.destinations=cms.untracked.vstring('PFlowTB_' + logLabel, 'cout')
 
-process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring(logFile, 'cout'),
-#    debugModules=cms.untracked.vstring('particleFiltration', 'TestbeamFiltrationDelegate'),
-#    cout=cms.untracked.vstring('string threshold=DEBUG'),
-#    threshold=cms.untracked.string('DEBUG')
-)
 
 process.source = cms.Source("PoolSource",
         fileNames=runs,

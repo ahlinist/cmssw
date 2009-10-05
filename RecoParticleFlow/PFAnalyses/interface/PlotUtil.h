@@ -18,7 +18,10 @@
 #include <TText.h>
 #include <exception>
 
+
 #include "RecoParticleFlow/PFAnalyses/interface/PlotSpecial.h"
+
+#include "RecoParticleFlow/PFAnalyses/interface/JGraph.h"
 
 class PlotUtil {
 public:
@@ -80,7 +83,15 @@ public:
 	void accumulateSpecial(TObject* o, TStyle* s, std::string drawOptions,
 			std::string preferredName);
 
+	void accumulateTable(JGraph q, std::string title);
+
+	void flushTables();
+
 	void flushSpecials(std::string directory = "");
+
+	void clearSpecials() {
+		accumulatedSpecials_.clear();
+	}
 
 	TLegend* legendForStack(THStack* theStack);
 
@@ -104,6 +115,8 @@ private:
 
 	std::vector<PlotSpecial> accumulatedSpecials_;
 	std::vector<Color_t> colors_;
+
+	std::vector<std::pair<JGraph, std::string> > accumulatedTables_;
 
 	std::vector<TObject*> deleteOnDestruction_;
 

@@ -94,8 +94,10 @@ void EventDelegate::getTags(const edm::ParameterSet& parameters) {
 	deltaRCandToTrack_ = parameters.getParameter<double> ("deltaRCandToTrack");
 	deltaRRechitsToTrack_ = parameters.getParameter<double> (
 			"deltaRRechitsToTrack");
+
 	clustersFromCandidates_ = parameters.getParameter<bool> (
 			"clustersFromCandidates");
+
 	rechitsFromCandidates_ = parameters.getParameter<bool> (
 			"rechitsFromCandidates");
 	neutralMode_ = parameters.getParameter<bool> ("neutralMode");
@@ -314,7 +316,7 @@ void EventDelegate::extractEERecHits(const EcalRecHitCollection& ecalRechits,
 			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
 				CalibratableElement ce(erh.energy(),
 						thisCell->getPosition().eta(),
-						thisCell->getPosition().phi(), PFLayer::ECAL_BARREL, 0,
+						thisCell->getPosition().phi(), PFLayer::ECAL_ENDCAP, 0,
 						erh.time());
 				calib_->tb_ecal_.push_back(ce);
 
@@ -385,7 +387,7 @@ void EventDelegate::extractHcalPFRecHits(
 void EventDelegate::extractEcalPFClusters(
 		const std::vector<reco::PFCluster>& ecalClusters, const std::vector<
 				unsigned>& ecalIndices) {
-	std::cout << "EXTRACTING CLUSTERS MANUALLY!" << endl;
+	//std::cout << "EXTRACTING CLUSTERS MANUALLY!" << endl;
 	for (std::vector<unsigned>::const_iterator eit = ecalIndices.begin(); eit
 			!= ecalIndices.end(); ++eit) {
 		const PFCluster& theCluster = ecalClusters[*eit];

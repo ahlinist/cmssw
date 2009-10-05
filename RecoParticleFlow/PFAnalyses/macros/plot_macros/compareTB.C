@@ -123,6 +123,10 @@ public:
 			std::string name, std::string queryToTree, PlotUtil* util_,
 			std::string additionalCut);
 
+	void getClusterMultiplicities(std::vector<int> energies,
+			std::string name, std::string queryToTree, PlotUtil* util_,
+			std::string additionalCut);
+
 private:
 	std::string name_;
 	TTree* tree_;
@@ -133,17 +137,17 @@ void compareTB() {
 	gROOT->Reset();
 
 	/*
+	 * rfcp /castor/cern.ch/user/b/ballin/CMSSW312/PFlowTB_Tree_All_barrel.root /tmp
 	 * rfcp /castor/cern.ch/user/b/ballin/tbv8/Dikaon_allGeV_2k_full.root /tmp
-	 * rfcp /castor/cern.ch/user/b/ballin/tb310pre8/outputtree_allGeV_notracks.root /tmp
 	 * rfcp /castor/cern.ch/user/b/ballin/tb310pre10/Dikaon_allGeV_10k_fast.root /tmp
 	 */
-	TFile* testbeam = TFile::Open("/tmp/outputtree_allGeV_notracks.root");
+	TFile* testbeam = TFile::Open("/tmp/PFlowTB_Tree_All_notracks_barrel.root");
 	TTree* testbeamTree = (TTree*) testbeam->FindObjectAny("Extraction");
 
-	TFile* full = TFile::Open("/tmp/Dikaon_allGeV_2k_full.root");
+	TFile* full = TFile::Open("/tmp/ballin/Dipion_Tree_All_2k_full_0T.root");
 	TTree* fullTree = (TTree*) full->FindObjectAny("Extraction");
 
-	TFile* fast = TFile::Open("/tmp/Dikaon_allGeV_10k_fast.root");
+	TFile* fast = TFile::Open("/tmp/Dipion_Tree_All_10k_fast_0T.root");
 	TTree* fastTree = (TTree*) fast->FindObjectAny("Extraction");
 
 	std::map<std::string, TTree*> source;
@@ -153,8 +157,8 @@ void compareTB() {
 	std::cout << "Fast tree is " << fastTree << endl;
 
 	source["Testbeam 2006 (Barrel)"] = testbeamTree;
-	source["Full sim 310-08 (Barrel)"] = fullTree;
-	source["Fast sim 310-10 (Barrel)"] = fastTree;
+	source["Full sim 312 (Barrel)"] = fullTree;
+	source["Fast sim 312 (Barrel)"] = fastTree;
 
 	std::vector<int> energies;
 	energies.push_back(2);
@@ -169,10 +173,10 @@ void compareTB() {
 	energies.push_back(30);
 	energies.push_back(50);
 	energies.push_back(100);
-	energies.push_back(200);
-	//	energies.push_back(300);
+	//energies.push_back(200);
+	//energies.push_back(300);
 
-	CompareTBAnalysis ctba(source, energies, "ctba.ps", "ctba.C", "ctba");
+	CompareTBAnalysis ctba(source, energies, "ctba.ps", "ctba.C", "plots/ctba");
 
 	ctba.evaluatePlots();
 
@@ -260,27 +264,29 @@ void CompareTBAnalysis::evaluatePlots() {
 
 	//RAW RESPONSE
 	doResponsePlots("TB Rechits", false, "tb_energyEvent_/sim_energyEvent_",
-			"cand_type_==5");
+			"tb_energyEcal_ > 0.5");
 
 	//RAW RESPONSE
-	doResponsePlots("TB Rechits MIP in ECAL", false,
-			"tb_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+	doResponsePlots("TB Rechits ECAL MIP", false,
+			"tb_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 0.5");
 
 	//PF CLUSTER RESPONSE
 	doResponsePlots("PF Clusters", false,
-			"cluster_energyEvent_/sim_energyEvent_", "cand_type_==5");
+			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ > 0.5");
 
 	//PF CLUSTER RESPONSE - MIP in ECAL
 	doResponsePlots("PF Clusters ECAL MIP", false,
-			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+			"cluster_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 0.5");
 
 	//PF CANDIDATE RESPONSE
 	doResponsePlots("PF Candidates", false,
-			"cand_energyEvent_/sim_energyEvent_", "cand_type_==5");
+			"(cand_energyEcal_ + cand_energyHcal_)/sim_energyEvent_",
+			"tb_energyEcal_ > 0.5");
 
 	//PF CANDIDATE RESPONSE - MIP in ECAL
 	doResponsePlots("PF Candidates ECAL MIP", false,
-			"cand_energyEvent_/sim_energyEvent_", "tb_energyEcal_ < 1.0");
+			"(cand_energyEcal_ + cand_energyHcal_)/sim_energyEvent_",
+			"tb_energyEcal_ < 0.5");
 
 	plotMipInEcal();
 
@@ -377,6 +383,10 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 	util_.addTitle("10 GeV <= E < 100 GeV");
 	util_.addTitle("E >= 100 GeV");
 
+	//First key is type
+	//Second is energy range and number of particles
+	map<string, map<string, int> > types;
+
 	map<string, TTree*>::iterator it = trees_.begin();
 	unsigned count(0);
 	for (; it != trees_.end(); ++it) {
@@ -401,10 +411,17 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 				vals_lowE[categories] = { had0s_lowE, no_had0s_lowE, mix_lowE };
 		string piName(name);
 		piName.append("_low");
+
+		cout << "\n*** LOW Type breakdown for:" << item.first << endl;
+		cout << "\tJust hads\tJust phot\tBoth\n";
+		cout << "\t" << had0s_lowE << "\t" << no_had0s_lowE << "\t" << mix_lowE
+				<< "\n";
+
 		TPie* p_low = new TPie(name.c_str(), item.first.c_str(), categories,
 				vals_lowE, colors, labels);
 		p_low->SetAngularOffset(30);
 		p_low->SetRadius(.35);
+		p_low->SetLabelFormat("%txt (%frac)");
 		util_.accumulateObjects(p_low, "3d");
 
 		const Long64_t
@@ -424,10 +441,17 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 				vals_midE[categories] = { had0s_midE, no_had0s_midE, mix_midE };
 		piName = name;
 		piName.append("_mid");
+
+		cout << "\n*** MID Type breakdown for:" << item.first << endl;
+		cout << "\tJust hads\tJust phot\tBoth\n";
+		cout << "\t" << had0s_midE << "\t" << no_had0s_midE << "\t" << mix_midE
+				<< "\n";
+
 		TPie* p_mid = new TPie(piName.c_str(), item.first.c_str(), categories,
 				vals_midE, colors, labels);
 		p_mid->SetAngularOffset(30.);
 		p_mid->SetRadius(.35);
+		p_mid->SetLabelFormat("%txt (%frac)");
 		util_.accumulateObjects(p_mid, "3d");
 
 		const Long64_t had0s_highE = item.second->Draw(qry.c_str(),
@@ -442,10 +466,19 @@ void CompareTBAnalysis::plotTypeSpectrum() {
 				mix_highE };
 		piName = name;
 		piName.append("_high");
+
+		cout << "\n*** HIGH Type breakdown for:" << item.first << endl;
+		cout << "\tJust hads\tJust phot\tBoth\n";
+		cout << "\t" << had0s_highE << "\t" << no_had0s_highE << "\t"
+				<< mix_highE << "\n";
+
 		TPie* p_high = new TPie(piName.c_str(), item.first.c_str(), categories,
 				vals_highE, colors, labels);
 		p_high->SetAngularOffset(30.);
 		p_high->SetRadius(.35);
+
+		p_high->SetLabelFormat("%txt (%frac)");
+
 		util_.accumulateObjects(p_high, "3d");
 		p_high->Draw("3d");
 		gPad->Print("pie.C");
@@ -583,6 +616,19 @@ void CompareTBAnalysis::doResponsePlots(std::string type, bool verbose,
 			"E_{reco}/E_{true} (GeV)");
 	util_.accumulateObjects(tmg4, "CP");
 
+	std::string fileName("name");
+	if (type == "PF Candidates")
+		fileName = "pfCandsIntEcalSampleMean";
+
+	if (type == "TB Rechits")
+		fileName = "tbRechitsIntEcalSampleMean";
+
+	if (type == "PF Candidates ECAL MIP")
+		fileName = "pfCandsMipEcalSampleMean";
+
+	if (type == "TB Rechits ECAL MIP")
+		fileName = "tbRechitsMipEcalSampleMean";
+
 	util_.addTitle("(blank)");
 	std::string gausTitle("Gaussian means for ");
 	gausTitle.append(type);
@@ -600,6 +646,11 @@ void CompareTBAnalysis::doResponsePlots(std::string type, bool verbose,
 	util_.accumulateObjects(tmg6, "CP");
 
 	util_.flushPage();
+
+	util_.accumulateSpecial(tmg4, rStyle, "CP", fileName);
+	util_.flushSpecials("specials");
+	util_.clearSpecials();
+
 	cout << "Leaving " << __PRETTY_FUNCTION__ << endl;
 }
 
@@ -695,6 +746,14 @@ std::vector<JGraph> Comparator::getRecoEfficiencyPlots(
 
 }
 
+void Comparator::getClusterMultiplicities(std::vector<int> energies,
+			std::string name, std::string queryToTree, PlotUtil* util_,
+			std::string additionalCut) {
+
+
+
+}
+
 vector<JGraph> Comparator::getRatioResponsePlots(vector<int> energies,
 		std::string name, std::string queryToTree, PlotUtil* util_,
 		std::string additionalCut) {
@@ -733,7 +792,7 @@ vector<JGraph> Comparator::getRatioResponsePlots(vector<int> energies,
 		std::string qry(queryToTree);
 		qry.append(">>");
 		qry.append(histoName);
-		qry.append("(80, 0.2, 2.2)");
+		qry.append("(170, -1.2, 2.2)");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
 		TH1* histo = util_->getHisto(histoName);
@@ -749,7 +808,7 @@ vector<JGraph> Comparator::getRatioResponsePlots(vector<int> energies,
 
 		std::cout << "Fitting for energy " << energy << " with max at "
 				<< peakVal << " and RMS of " << histo->GetRMS() << "\n";
-		histo->Fit(&gausFunc, "R");
+		histo->Fit(&gausFunc, "RQ");
 		//std::pair<double, double> gaus = util_.fitStabilisedGaussian(histo);
 		std::pair<double, double> gaus(gausFunc.GetParameter(1),
 				gausFunc.GetParameter(2));
@@ -770,7 +829,7 @@ vector<JGraph> Comparator::getRatioResponsePlots(vector<int> energies,
 					<< " and entries = " << histo->GetEntries() << endl;
 		}
 		if (sampleOk) {
-			sampleGraph.addPoint(energy, 0, histo->GetMean(), histo->GetRMS());
+			sampleGraph.addPoint(energy, histo->GetMean());
 		}
 
 	}

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 #Question: how to change this globally?
-masterConeDeltaR = 0.15
+masterConeDeltaR =0.15
 
 from RecoParticleFlow.PFAnalyses.RunDict import *
 
@@ -23,7 +23,7 @@ EventDelegate = cms.PSet(
     # And PFCandidates from how far?
     deltaRCandToTrack=cms.double(masterConeDeltaR * 2),
     # Don't take clusters from cone, but from the PFCandidates themselves
-    clustersFromCandidates=cms.bool(True),
+    clustersFromCandidates=cms.bool(False),
     # Don't take rechits from cone, but from the clusters, in turn belonging to the PFCandidates
     rechitsFromCandidates=cms.bool(True),
     # Don't expect a charged track
@@ -96,6 +96,8 @@ TestbeamDelegate = cms.PSet(
     # testbeam_cuts defined  in Run_Dict.py
     runinfo_cuts=cms.string(testbeam_cuts),
     
+    isEndcap2007 = cms.bool(False),
+    
     # (Deprecated)
     maxEventsFromEachRun=cms.uint32(0),
     
@@ -110,6 +112,7 @@ TestbeamDelegate = cms.PSet(
 
 # Override the DipionDelegate default options
 TestbeamDelegate.RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
+TestbeamDelegate.RawRecHitsEcalEE=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEE")
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
 
 # Ignore this for now
