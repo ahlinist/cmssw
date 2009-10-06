@@ -20,8 +20,8 @@ allLayer1Taus.isolation.pfGamma.threshold = cms.double(1.5)
 allLayer1Taus.addDecayMode = cms.bool(True)
 
 # add tau id. efficiencies & fake-rates
-allLayer1Taus.efficiencies = build_pat_efficiency_loader(shrinkingConeEfficienciesProducerFromFile)
-allLayer1Taus.addEfficiencies = cms.bool(True)
+#allLayer1Taus.efficiencies = build_pat_efficiency_loader(shrinkingConeEfficienciesProducerFromFile)
+#allLayer1Taus.addEfficiencies = cms.bool(True)
 
 # do not remove tau-jets failing discriminatorByIsolation
 # (instead, leave this removal to the subsequent selector stage)
