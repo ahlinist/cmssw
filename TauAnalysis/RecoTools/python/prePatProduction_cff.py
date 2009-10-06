@@ -40,7 +40,7 @@ producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllP
                              + recoMuonIsolation
                              + PFTau
                              + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform
-                             + shrinkingConeEfficienciesProducerFromFile
+                             #+ shrinkingConeEfficienciesProducerFromFile
                              + metsignificance )
 
 
