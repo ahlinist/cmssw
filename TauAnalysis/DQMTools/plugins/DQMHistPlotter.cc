@@ -136,13 +136,33 @@ const T* findCfgDef(const std::string& cfgEntryName, std::map<std::string, T>& d
 
 typedef std::pair<TH1*, std::string> histoDrawEntry;
 
-void drawHistograms(const std::list<histoDrawEntry>& histogramList, bool& isFirstHistogram)
+void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std::list<TH1*>& histogramsToDelete)
 {
-  for ( std::list<histoDrawEntry>::const_iterator it = histogramList.begin();
-	it != histogramList.end(); ++it ) {
-    std::string drawOption = ( isFirstHistogram ) ? it->second : std::string(it->second).append("same");
-    it->first->Draw(drawOption.data());
-    isFirstHistogram = false;
+  std::string drawOption = ( isFirstHistogram ) ? histogram.second : std::string(histogram.second).append("same");
+
+//--- if stacked histogram is drawn as shaded pattern on transparent background
+//    add a white histogram underneath, in order to "clear" drawing area 
+//    and avoid "interference" of shaded patterns of different histograms
+  if ( histogram.first->GetFillStyle() != 1001 ) {
+    TH1* histogram_white = dynamic_cast<TH1*>(histogram.first->Clone());
+    histogram_white->SetFillColor(10);
+    histogram_white->SetFillStyle(1001);
+    histogram_white->SetLineColor(10);
+    histogramsToDelete.push_back(histogram_white);
+    histogram_white->Draw(drawOption.data());
+    drawOption = std::string(histogram.second).append("same");
+  }
+
+  histogram.first->Draw(drawOption.data());
+
+  isFirstHistogram = false;
+}
+
+void drawHistograms(const std::list<histoDrawEntry>& histograms, bool& isFirstHistogram, std::list<TH1*>& histogramsToDelete)
+{
+  for ( std::list<histoDrawEntry>::const_iterator histogram = histograms.begin();
+	histogram != histograms.end(); ++histogram ) {
+    drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
   }
 }
 
@@ -1163,20 +1183,18 @@ void DQMHistPlotter::endJob()
 //    4. individual beyond the Standard Model processes
 //    5. data
     bool isFirstHistogram = true;
-    drawHistograms(smSumUncertaintyHistogramList, isFirstHistogram);
-    drawHistograms(smSumHistogramList, isFirstHistogram);
+    drawHistograms(smSumUncertaintyHistogramList, isFirstHistogram, histogramsToDelete);
+    drawHistograms(smSumHistogramList, isFirstHistogram, histogramsToDelete);
 
 //--- process histograms for individual Standard Model processes
 //    in reverse order, so that most stacked histogram gets drawn first
-    for ( std::list<histoDrawEntry>::reverse_iterator it = smProcessHistogramList.rbegin();
-	  it != smProcessHistogramList.rend(); ++it ) {
-      std::string drawOption = ( isFirstHistogram ) ? it->second : std::string(it->second).append("same");
-      it->first->Draw(drawOption.data());
-      isFirstHistogram = false;
+    for ( std::list<histoDrawEntry>::reverse_iterator histogram = smProcessHistogramList.rbegin();
+	  histogram != smProcessHistogramList.rend(); ++histogram ) {
+      drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
     }
 	
-    drawHistograms(bsmProcessHistogramList, isFirstHistogram);
-    drawHistograms(dataHistogramList, isFirstHistogram);
+    drawHistograms(bsmProcessHistogramList, isFirstHistogram, histogramsToDelete);
+    drawHistograms(dataHistogramList, isFirstHistogram, histogramsToDelete);
 
     legend.Draw();
 
