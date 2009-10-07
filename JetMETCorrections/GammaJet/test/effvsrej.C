@@ -18,6 +18,10 @@ void effvsrej(){
   gStyle->SetStatY(.9);
   gStyle->SetStatX(.9);
 
+  gROOT->ProcessLine(".! mkdir eps");
+  gROOT->ProcessLine(".! mkdir eps/effvsrej");
+  
+
   TH1D p1; TH1D p2; TH1D p3; TH1D p4; TH1D p5; TH1D p6; TH1D p7; TH1D p8; 
   p1.SetMarkerStyle(8); p1.SetMarkerSize(0.8);
   p2.SetMarkerColor(kRed); p2.SetFillColor(kRed);   p2.SetMarkerStyle(8); p2.SetMarkerSize(0.8);
@@ -28,11 +32,13 @@ void effvsrej(){
   p7.SetMarkerColor(7); p7.SetFillColor(7);    p7.SetMarkerStyle(8); p7.SetMarkerSize(0.8);
 
   //background file
-  TFile file_QCD_120_170("/u1/delre/mixbkg_last.root");
+  //TFile file_QCD_120_170("/u1/delre/mixbkg_last.root");
+  TFile file_QCD_120_170("output_QCD_ite/output_QCD_120.root");
   //TFile file_QCD_120_170("/u1/delre/mixsignal.root");
   //signal file
   //  TFile file_120_170("testsig.root");
-  TFile file_120_170("/u1/delre/mixsignal_last.root");
+  //TFile file_120_170("/u1/delre/mixsignal_last.root");
+  TFile file_120_170("output_PhotonJets_ite/output_PhotonJets_120.root");
 
   TH1D rejvseffecal0151d("rejvseffecal0151d","rej vs eff ecal015",50,0.,1.);
   TH2D rejvseffecal015("rejvseffecal015","rej vs eff ecal015",200,0.,1.,200,0.2,1.);
@@ -130,8 +136,8 @@ void effvsrej(){
   rejvseffecal04.SetMarkerColor(39);
   rejvseffecal04.Draw("same");
   leg->Draw();
-  c0->SaveAs("rejvseffecal.eps");
-  c0->SaveAs("rejvseffecal.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffecal.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffecal.gif");
 
   rejvseffecal0151d.SetAxisRange(.6,1.,"Y");
   rejvseffecal0151d.SetTitle("");  
@@ -141,8 +147,8 @@ void effvsrej(){
   rejvseffecal0151d.SetStats(0);
   rejvseffecal0151d.Smooth();
   rejvseffecal0151d.Draw("C");
-  c0->SaveAs("rejvseffecal1d.eps");
-  c0->SaveAs("rejvseffecal1d.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffecal1d.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffecal1d.gif");
 
   TH2D rejvseffecalrec02("rejvseffrececal02","rej vs eff ecal02",200,0.,1.,200,0.2,1.);
   TH2D rejvseffecalrec03("rejvseffrececal03","rej vs eff ecal03",200,0.,1.,200,0.2,1.);
@@ -225,8 +231,8 @@ void effvsrej(){
   rejvseffecalrec05.SetMarkerColor(kMagenta);
   rejvseffecalrec05.Draw("same");
   leg->Draw();
-  c0->SaveAs("rejvseffecalrec.eps");
-  c0->SaveAs("rejvseffecalrec.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffecalrec.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffecalrec.gif");
 
 
   TH2D ptiso02("ptiso02","rej vs eff ecal02",400,0.3,1.,400,0.6,1.);
@@ -310,8 +316,8 @@ void effvsrej(){
   ptiso04.SetMarkerColor(kMagenta);
   ptiso04.Draw("same");
   leg2->Draw();
-  c0->SaveAs("rejvseffptiso.eps");
-  c0->SaveAs("rejvseffptiso.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffptiso.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffptiso.gif");
 
   ptiso02.SetAxisRange(.9,1.,"Y");
   ptiso02.Draw("");
@@ -325,8 +331,8 @@ void effvsrej(){
   ptiso04.Draw("same");
   leg2->Draw();
   
-  c0->SaveAs("rejvseffptisozoom.eps");
-  c0->SaveAs("rejvseffptisozoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffptisozoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffptisozoom.gif");
 
   TH2D ptisoatecal02("ptisoatecal02","rej vs eff ecal02",400,0.3,1.,400,0.6,1.);
   TH2D ptisoatecal025("ptisoatecal025","rej vs eff ecal025",400,0.3,1.,400,0.6,1.);
@@ -400,8 +406,8 @@ void effvsrej(){
   ptisoatecal04.Draw("same");
   leg2->Draw();
   
-  c0->SaveAs("rejvseffptisoatecal.eps");
-  c0->SaveAs("rejvseffptisoatecal.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffptisoatecal.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffptisoatecal.gif");
 
   ptisoatecal02.SetAxisRange(.6,1.,"Y");
   ptisoatecal02.Draw("");
@@ -413,8 +419,8 @@ void effvsrej(){
   ptisoatecal035.Draw("same");
   ptisoatecal04.SetMarkerColor(kMagenta);
   ptisoatecal04.Draw("same");
-  c0->SaveAs("rejvseffptisoatecalzoom.eps");
-  c0->SaveAs("rejvseffptisoatecalzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffptisoatecalzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffptisoatecalzoom.gif");
 
   TLegendEntry *legge4;
   TLegend *leg4;
@@ -430,8 +436,8 @@ void effvsrej(){
   ptiso035.Draw("");
   ptisoatecal04.Draw("same");
   leg4->Draw();
-  c0->SaveAs("rejvseffcompnoecalecalzoom.eps");
-  c0->SaveAs("rejvseffcompnoecalecalzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffcompnoecalecalzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffcompnoecalecalzoom.gif");
 
 
   TH2D hcalovecal01("hcalovecal01","rej vs eff ecal01",400,0.,1.,400,0.6,1.);
@@ -527,8 +533,8 @@ void effvsrej(){
   hcalovecal05.SetMarkerColor(39);
   hcalovecal05.Draw("same");
   leg3->Draw();
-  c0->SaveAs("rejvseffhcalovecal.eps");
-  c0->SaveAs("rejvseffhcalovecal.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffhcalovecal.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffhcalovecal.gif");
 
   hcalovecal01.SetAxisRange(.9,1.,"Y");
   hcalovecal01.Draw("");
@@ -543,8 +549,8 @@ void effvsrej(){
   hcalovecal05.SetMarkerColor(39);
   hcalovecal05.Draw("same");
 
-  c0->SaveAs("rejvseffhcalovecalzoom.eps");
-  c0->SaveAs("rejvseffhcalovecalzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffhcalovecalzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffhcalovecalzoom.gif");
 
   TH2D ntrkiso("ntrkiso","rej vs eff ntrkiso",400,0.,1.,400,0.6,1.);
 
@@ -568,8 +574,8 @@ void effvsrej(){
   ntrkiso.SetStats(0);
   ntrkiso.Draw("");
 
-  c0->SaveAs("rejvseffntrkiso.eps");
-  c0->SaveAs("rejvseffntrkiso.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffntrkiso.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffntrkiso.gif");
 
   TH2D sMajMaj("sMajMaj","rej vs eff sMajMaj",400,0.,1.,400,0.6,1.);
 
@@ -593,14 +599,14 @@ void effvsrej(){
   sMajMaj.SetStats(0);
   sMajMaj.Draw("");
 
-  c0->SaveAs("rejvseffsMajMaj.eps");
-  c0->SaveAs("rejvseffsMajMaj.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffsMajMaj.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffsMajMaj.gif");
 
   sMajMaj.SetAxisRange(.9,1.,"Y");
   sMajMaj.Draw("");
 
-  c0->SaveAs("rejvseffsMajMajzoom.eps");
-  c0->SaveAs("rejvseffsMajMajzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffsMajMajzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffsMajMajzoom.gif");
 
   TH2D sMinMin("sMinMin","rej vs eff sMinMin",400,0.,1.,400,0.6,1.);
 
@@ -624,14 +630,14 @@ void effvsrej(){
   sMinMin.SetStats(0);
   sMinMin.Draw("");
 
-  c0->SaveAs("rejvseffsMinMin.eps");
-  c0->SaveAs("rejvseffsMinMin.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffsMinMin.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffsMinMin.gif");
 
   sMinMin.SetAxisRange(.9,1.,"Y");
   sMinMin.Draw("");
 
-  c0->SaveAs("rejvseffsMinMinzoom.eps");
-  c0->SaveAs("rejvseffsMinMinzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffsMinMinzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffsMinMinzoom.gif");
 
   TH2D nn("nn","rej vs eff nn",1000,0.,1.,1000,0.6,1.);
   TH2D nn_old("nn_old","rej vs eff nn",1000,0.,1.,1000,0.6,1.);
@@ -665,27 +671,27 @@ void effvsrej(){
   nn.SetStats(0);
   nn.Draw("");
 
-  c0->SaveAs("rejvseffnn.eps");
-  c0->SaveAs("rejvseffnn.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffnn.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffnn.gif");
 
   nn.SetAxisRange(.9,1.,"Y");
   nn.Draw("");
 
-  c0->SaveAs("rejvseffnnzoom.eps");
-  c0->SaveAs("rejvseffnnzoom.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffnnzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffnnzoom.gif");
 
  nn.SetAxisRange(.6,1.,"Y");
    nn.Draw("");
   nn_old.SetMarkerColor(kRed);
   nn_old.Draw("same");
  
-  c0->SaveAs("rejvseffnnvsold.eps");
-  c0->SaveAs("rejvseffnnvsold.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffnnvsold.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffnnvsold.gif");
   nn.SetAxisRange(.9,1.,"Y");
    nn.Draw("");
   nn_old.SetMarkerColor(kRed);
   nn_old.Draw("same");
-  c0->SaveAs("rejvseffnnvsoldzoom.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffnnvsoldzoom.eps");
 
 
   nn.SetAxisRange(.75,1.,"Y");
@@ -723,7 +729,7 @@ void effvsrej(){
 
   leg5->Draw();
 
-  c0->SaveAs("rejvseffcomp.eps");
-  c0->SaveAs("rejvseffcomp.gif");
+  c0->SaveAs("eps/effvsrej/rejvseffcomp.eps");
+  c0->SaveAs("eps/effvsrej/rejvseffcomp.gif");
 
 }

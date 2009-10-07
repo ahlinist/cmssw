@@ -72,20 +72,35 @@ public:
   //double _SystParton(const double pTprime) const;
 
   // Bias corrections
-  // Peak: difference between peak and mean in pure photon+jet MC truth
-  // Bkg: difference between mixed dijet/photon+jet and pure photon+jet MC reco
-  //      this should equal _deltaRjet, but is taken directly from fits
-  // Topo: difference between photon+jet MC truth and reco, factorize later
-  //       likely sources bin-to-bin migrations (2nd jet cut), tails
+  // Bkg: Difference between mixed dijet/photon+jet and pure photon+jet MC reco.
+  //      This should equal _deltaRjet, but is taken directly from fits.
+  //      Calculated for arithmetic means so _deltaRjet factorization works.
+  // Phot: Residual photon energy scale (summer08), make sure <Rphot>==1.000.
+  //       Calibrates arithmetic mean, and accounts for tails shifting it.
+  // Topo: Difference between photon+jet MC truth and reco, after taking out
+  //       all the other know effects. Seems to be practically all due to
+  //       ISR combined with bin-to-bin migrations for pTgamma binning. Best
+  //       seen by comparing pT,jetparton/pT,photonparton vs pThat and pTgamma
+  // Parton: Ratio of pT,GenJet/pT,jetparton. This accounts for the parton
+  //         correction, which folds underlying event, hadronization (physics
+  //         showering) and final state radiation
+  // Balance: Ratio of pT,jetparton/pT,photonparton in pThat bins. Very small,
+  //          so currently folded as part of Topo
+  // Peak: Difference between peak and mean in pure photon+jet MC truth.
+  //       Currently done in pThat bins, could change slightly for pT,GenJet
   double _Rbias(const double pTprime, const PhotonID& id) const;
   double _RbiasBkg(const double pTprime, const PhotonID& id) const;
+  double _RbiasPhot(const double pTprime, const PhotonID& id) const;
   double _RbiasTopo(const double pTprime, const PhotonID& id) const;
+  double _RbiasParton(const double pTprime, const PhotonID& id) const;
+  double _RbiasBalance(const double pTprime) const;
   double _RbiasPeak(const double pTprime) const;
+  //
   double _RjetMix(const double pTprime, const PhotonID& id) const;
   double _RjetReco(const double pTprime, const PhotonID& id) const;
   double _RjetTruth(const double pTprime) const;
   double _RjetTruthQCD(const double pTprime) const;
-
+  double _Rphoton(const double pTprime, const PhotonID& id) const;
 
 private:
   JetAlg _jetalg;

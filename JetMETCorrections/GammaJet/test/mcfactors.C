@@ -38,25 +38,29 @@ const int kDarkYellow = kYellow+50;
 const bool drawBars = false;
 const bool drawStats = false;
 const bool drawPeak = true;
-const double _ptreco = 8.;
+const double _ptreco = 5.;//8.;
 
 // Add a small minimum systematic uncertainty to the response measurement
 // Otherwise the <<1.% stat.uncert. at high pT pulls the low pT fit too much
 const double minsys = 0.002;
+const double sminsys = 0.002; // uncertainty for resolution
 inline double oplus(double a, double b) {
   return sqrt(a*a + b*b);
+}
+inline double sqr(double a) {
+  return a*a;
 }
 
 void doRatio(const TGraphErrors *a, const TGraphErrors *b, TGraphErrors *c,
 	     double xmatch=0.1);
 
-double FindPeak(TH1D* h, double &err, const double pt = 0.);
-double CorrectedMean(TH1D* h, const double pt);
+double FindPeak(TH1D* h, double &err, const double pt = 0., double *sigma = 0);
+double CorrectedMean(TH1D* h, const double pt, double *scorr = 0);
 
 TGraphErrors* divide(const TGraphErrors *g, const TF1 *f);
 
 int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
-	      const string idtype) {
+	      const string idtype, bool highstats = true) {
 
   TDirectory *curdir = gDirectory;
   gStyle->SetOptStat(0);
@@ -69,9 +73,11 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   if (_algo=="ite")   _algoname = "ICone0.5";
   if (_algo=="pfite") _algoname = "PFlow";
 
-  string dirs = "Ekin";
+  string dirs = (highstats ? "EkinID" : "EkinID");//SC";//"Ekin";
+  // Using "EkinSC" does not factorize kgam properly (although closer to 1.00?!)
   string dirsp = "EkinID";
-  string dirb = "EkinSB";
+  string dirb = (highstats ? "EkinSC" : "EkinID");//"EkinSB";
+  // "EkinSB" (and hence "Ekin") messed up for QCD kjet at least
   string dirbp = "EkinID";
   if (idtype=="loose") {
     dirsp = "EkinEM";
@@ -90,21 +96,21 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     dirbp = "EkinNN";
   }
   if (idtype=="medium05") {
-    dirs  = "Ekin05ID";
+    dirs  = "Ekin05SC";//"Ekin05ID";
     dirsp = "Ekin05ID";
-    dirb  = "Ekin05SB";
+    dirb  = "Ekin05SC";//"Ekin05SB";
     dirbp = "Ekin05ID";
   }
   if (idtype=="medium10") {
-    dirs  = "Ekin10ID";
+    dirs  = "Ekin10SC";//"Ekin10ID";
     dirsp = "Ekin10ID";
-    dirb  = "Ekin10SB";
+    dirb  = "Ekin10SC";//"Ekin10SB";
     dirbp = "Ekin10ID";
   }
   if (idtype=="medium20") {
-    dirs  = "Ekin20ID";
+    dirs  = "Ekin20SC";//"Ekin20ID";
     dirsp = "Ekin20ID";
-    dirb  = "Ekin20SB";
+    dirb  = "Ekin20SC";//"Ekin20SB";
     dirbp = "Ekin20ID";
   }
 
@@ -158,6 +164,15 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   TGraphErrors *prjets = new TGraphErrors(0); prjets->SetName("prjets");
   TGraphErrors *prjetb = new TGraphErrors(0); prjetb->SetName("prjetb");
   TGraphErrors *prjetr = new TGraphErrors(0); prjetr->SetName("prjetr");
+
+  // MC truth jet resolution mapped vs ptgen (!ptgamma)
+  TGraphErrors *gsjets = new TGraphErrors(0); gsjets->SetName("gsjets");
+  TGraphErrors *gsjetb = new TGraphErrors(0); gsjetb->SetName("gsjetb");
+  TGraphErrors *gsjetr = new TGraphErrors(0); gsjetr->SetName("gsjetr");
+  // Same with Gaussian fit values
+  TGraphErrors *psjets = new TGraphErrors(0); psjets->SetName("psjets");
+  TGraphErrors *psjetb = new TGraphErrors(0); psjetb->SetName("psjetb");
+  TGraphErrors *psjetr = new TGraphErrors(0); psjetr->SetName("psjetr");
 
   // Parton to genjet correction mapped vs ptgen (!ptgamma)
   TGraphErrors *gkjets = new TGraphErrors(0); gkjets->SetName("gkjets");
@@ -241,17 +256,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     assert(!f->IsZombie());
     cout << "." << flush;
 
-    // Get the average genjet pt and reco photon pt
-
-    string dir = (i < sigfiles.size() ? dirs : dirb);
+    // Get the average reco photon pT, after some ID cuts
+    string dir = (i < sigfiles.size() ? dirsp : dirbp); // had bug: dirb
     TH1D *hptphot = (TH1D*)f->Get((dir+"/lrp_pt").c_str());
-    TH1D *hptgen = (TH1D*)f->Get((dir+"/lgj_pt").c_str());
     //assert(hptphot);
     if (!hptphot) {
       cout << "Warning: file "<<files[i]<<" has no photons" << endl
 	   << "Skipping..." << endl;
       continue;
     }
+    // Get the average reco jet pT, no ID cuts required
+    dir = (i < sigfiles.size() ? dirs : dirb);
+    TH1D *hptgen = (TH1D*)f->Get((dir+"/lgj_pt").c_str());
     assert(hptgen);
 
 
@@ -264,7 +280,9 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
       / sqrt(max(1.,hptgen->Integral()));
 
 
-    // MC truth flavor mapped vs ptphot
+    // MC truth flavor mapped vs ptgen (ptphot)
+    // Map vs ptgen so we can use SC photons, otherwise goes to too low pT
+
     dir = (i < sigfiles.size() ? dirs : dirb);
     TH1D *hflav = (TH1D*)f->Get((dir+"/flavor").c_str());
     if (!hflav) hflav = (TH1D*)f->Get((dir+"/lrj_flavor").c_str());
@@ -273,39 +291,55 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     assert(hflav);
     //if (!hflav) hflav = new TH1D(Form("hflav%d",i),"",81,-40.5,40.5);
 
-    double total = max(1., hflav->GetEntries());
+    double total = hflav->GetEntries();
+    double norm = max(1., total);
     int zero = hflav->FindBin(0);
-    double gluonf = hflav->GetBinContent(zero+21) / total;
+    double gluonf = hflav->GetBinContent(zero+21) / norm;
     double lightf = (hflav->Integral(zero-3,zero-1) +
-		     hflav->Integral(zero+1,zero+3)) / total;
+		     hflav->Integral(zero+1,zero+3)) / norm;
     double charmf = (hflav->GetBinContent(zero-4) +
-		     hflav->GetBinContent(zero+4)) / total;
+		     hflav->GetBinContent(zero+4)) / norm;
     double bottomf = (hflav->GetBinContent(zero-5) +
-		      hflav->GetBinContent(zero+5)) / total;
+		      hflav->GetBinContent(zero+5)) / norm;
 
     if (total && ptphot && ptgen) {
  
       TGraphErrors *gfgluon = (i < sigfiles.size() ? gfgluons : gfgluonb);
       int n = gfgluon->GetN();
-      gfgluon->SetPoint(n, ptphot, gluonf);
-      gfgluon->SetPointError(n, ptphot_err, 0.);
- 
+      //gfgluon->SetPoint(n, ptphot, gluonf);
+      //gfgluon->SetPointError(n, ptphot_err, 0.);
+      gfgluon->SetPoint(n, ptgen, gluonf);
+      gfgluon->SetPointError(n, ptgen_err, 0.);
+      if (!highstats && gluonf!=0 && gluonf!=1)
+	gfgluon->SetPointError(n, ptgen_err, gluonf*(1-gluonf)/sqrt(total));
+      else if (!highstats)
+	gfgluon->SetPointError(n, ptgen_err, 1./total/sqrt(total));
+
       TGraphErrors *gflight = (i < sigfiles.size() ? gflights : gflightb);
-      gflight->SetPoint(n, ptphot, lightf);
-      gflight->SetPointError(n, ptphot_err, 0.);
+      //gflight->SetPoint(n, ptphot, lightf);
+      //gflight->SetPointError(n, ptphot_err, 0.);
+      gflight->SetPoint(n, ptgen, lightf);
+      gflight->SetPointError(n, ptgen_err, 0.);
 
       double cscale = (i < sigfiles.size() ? 1. : 10.);
       TGraphErrors *gfcharm = (i < sigfiles.size() ? gfcharms : gfcharmb);
-      gfcharm->SetPoint(n, ptphot, cscale*charmf);
-      gfcharm->SetPointError(n, ptphot_err, cscale*0.);
+      //gfcharm->SetPoint(n, ptphot, cscale*charmf);
+      //gfcharm->SetPointError(n, ptphot_err, cscale*0.);
+      gfcharm->SetPoint(n, ptgen, cscale*charmf);
+      gfcharm->SetPointError(n, ptgen_err, cscale*0.);
       
       double bscale = (i < sigfiles.size() ? 10. : 10.);
       TGraphErrors *gfbottom = (i < sigfiles.size() ? gfbottoms : gfbottomb);
-      gfbottom->SetPoint(n, ptphot, bscale*bottomf);
-      gfbottom->SetPointError(n, ptphot_err, bscale*0.);
+      //gfbottom->SetPoint(n, ptphot, bscale*bottomf);
+      //gfbottom->SetPointError(n, ptphot_err, bscale*0.);
+      gfbottom->SetPoint(n, ptgen, bscale*bottomf);
+      gfbottom->SetPointError(n, ptgen_err, bscale*0.);
     }
 
-    // MC truth flavor response mapped vs ptphot
+
+    // MC truth flavor response mapped vs ptgen (ptphot)
+    // Again, use ptgen so applicable to SC photons
+
     dir = (i < sigfiles.size() ? dirs : dirb);
     //TH2D *hrall = (TH2D*)f->Get((dir+"/lrj_dptvg2a").c_str()); // buggy plot
     TH2D *hrall = (TH2D*)f->Get((dir+"/lrj_dptvg2").c_str()); // no quark req.
@@ -323,19 +357,24 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     assert(hrbottom);
 
     // Add Gaussian fit later
-    double rall = CorrectedMean(hrall->ProjectionY(), ptphot);
+    //double rall = CorrectedMean(hrall->ProjectionY(), ptphot);
+    double rall = CorrectedMean(hrall->ProjectionY(), ptgen);
     double rall_err = max(0.1,hrall->GetRMS(2))
       / sqrt(max(1.,hrall->Integral()));
-    double rgluon = CorrectedMean(hrgluon->ProjectionY(), ptphot);
+    //double rgluon = CorrectedMean(hrgluon->ProjectionY(), ptphot);
+    double rgluon = CorrectedMean(hrgluon->ProjectionY(), ptgen);
     double rgluon_err = max(0.1,hrgluon->GetRMS(2))
       / sqrt(max(1.,hrgluon->Integral()));
-    double rlight = CorrectedMean(hrlight->ProjectionY(), ptphot);
+    //double rlight = CorrectedMean(hrlight->ProjectionY(), ptphot);
+    double rlight = CorrectedMean(hrlight->ProjectionY(), ptgen);
     double rlight_err = max(0.1,hrlight->GetRMS(2))
       / sqrt(max(1.,hrlight->Integral()));
-    double rcharm = CorrectedMean(hrcharm->ProjectionY(), ptphot);
+    //double rcharm = CorrectedMean(hrcharm->ProjectionY(), ptphot);
+    double rcharm = CorrectedMean(hrcharm->ProjectionY(), ptgen);
     double rcharm_err = max(0.1,hrcharm->GetRMS(2))
       / sqrt(max(1.,hrcharm->Integral()));
-    double rbottom = CorrectedMean(hrbottom->ProjectionY(), ptphot);
+    //double rbottom = CorrectedMean(hrbottom->ProjectionY(), ptphot);
+    double rbottom = CorrectedMean(hrbottom->ProjectionY(), ptgen);
     double rbottom_err = max(0.1,hrbottom->GetRMS(2))
       / sqrt(max(1.,hrbottom->Integral()));
 
@@ -343,29 +382,39 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
  
       TGraphErrors *grall = (i < sigfiles.size() ? gralls : grallb);
       int n = grall->GetN();
-      grall->SetPoint(n, ptphot, rall);
-      grall->SetPointError(n, ptphot_err, rall_err);
+      //grall->SetPoint(n, ptphot, rall);
+      //grall->SetPointError(n, ptphot_err, rall_err);
+      grall->SetPoint(n, ptgen, rall);
+      grall->SetPointError(n, ptgen_err, rall_err);
 
       TGraphErrors *grgluon = (i < sigfiles.size() ? grgluons : grgluonb);
-      grgluon->SetPoint(n, ptphot, rgluon);
-      grgluon->SetPointError(n, ptphot_err, rgluon_err);
+      //grgluon->SetPoint(n, ptphot, rgluon);
+      //grgluon->SetPointError(n, ptphot_err, rgluon_err);
+      grgluon->SetPoint(n, ptgen, rgluon);
+      grgluon->SetPointError(n, ptgen_err, rgluon_err);
  
       TGraphErrors *grlight = (i < sigfiles.size() ? grlights : grlightb);
-      grlight->SetPoint(n, ptphot, rlight);
-      grlight->SetPointError(n, ptphot_err, rlight_err);
+      //grlight->SetPoint(n, ptphot, rlight);
+      //grlight->SetPointError(n, ptphot_err, rlight_err);
+      grlight->SetPoint(n, ptgen, rlight);
+      grlight->SetPointError(n, ptgen_err, rlight_err);
 
       TGraphErrors *grcharm = (i < sigfiles.size() ? grcharms : grcharmb);
-      grcharm->SetPoint(n, ptphot, rcharm);
-      grcharm->SetPointError(n, ptphot_err, rcharm_err);
+      //grcharm->SetPoint(n, ptphot, rcharm);
+      //grcharm->SetPointError(n, ptphot_err, rcharm_err);
+      grcharm->SetPoint(n, ptgen, rcharm);
+      grcharm->SetPointError(n, ptgen_err, rcharm_err);
       
       TGraphErrors *grbottom = (i < sigfiles.size() ? grbottoms : grbottomb);
-      grbottom->SetPoint(n, ptphot, rbottom);
-      grbottom->SetPointError(n, ptphot_err, rbottom_err);
+      //grbottom->SetPoint(n, ptphot, rbottom);
+      //grbottom->SetPointError(n, ptphot_err, rbottom_err);
+      grbottom->SetPoint(n, ptgen, rbottom);
+      grbottom->SetPointError(n, ptgen_err, rbottom_err);
     }
 
 
     // MC truth jet response (reco jet vs genjet) mapped vs ptgen
-    
+
     dir = (i < sigfiles.size() ? dirs : dirb);
     TH1D *hrjet = (TH1D*)f->Get((dir+"/lrj_dptvg").c_str());
 
@@ -373,12 +422,16 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     assert(hrjet);
 
     // Arithmetic mean
-    double rjet = CorrectedMean(hrjet, ptphot); //hrjet->GetMean();
+    double sjet = 0;
+    //double rjet = CorrectedMean(hrjet, ptphot, &sjet);
+    double rjet = CorrectedMean(hrjet, ptgen, &sjet);
     double rjet_err = max(0.1,hrjet->GetRMS())
       / sqrt(max(1.,hrjet->Integral()));
     // Gaussian peak fit
+    double sjet2 = 0;
     double rjet2_err = 0.;
-    double rjet2 = FindPeak(hrjet, rjet2_err, ptphot);
+    //double rjet2 = FindPeak(hrjet, rjet2_err, ptphot, &sjet2);
+    double rjet2 = FindPeak(hrjet, rjet2_err, ptgen, &sjet2);
 
     if (rjet && ptphot && ptgen) {
       TGraphErrors *grjet = (i < sigfiles.size() ? grjets : grjetb);
@@ -390,13 +443,26 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
       prjet->SetPoint(n, ptgen, rjet2);
       prjet->SetPointError(n, ptgen_err, oplus(rjet2_err, minsys*rjet2));
     }
+    if (sjet && rjet && ptphot && ptgen) {
+      TGraphErrors *gsjet = (i < sigfiles.size() ? gsjets : gsjetb);
+      int n = gsjet->GetN();
+      gsjet->SetPoint(n, ptgen, sjet/rjet);
+      gsjet->SetPointError(n, ptgen_err, oplus(rjet_err/rjet*sjet/rjet,
+					       sminsys*sjet/rjet));
+      TGraphErrors *psjet = (i < sigfiles.size() ? psjets : psjetb);
+      n = psjet->GetN();
+      psjet->SetPoint(n, ptgen, sjet2/rjet2);
+      psjet->SetPointError(n, ptgen_err, oplus(rjet2_err/rjet2*sjet2/rjet2,
+					       sminsys*sjet2));
+    }
+
 
     // Genjet vs parton correction mapped vs ptgen
 
-     dir = (i < sigfiles.size() ? dirs : dirb);
-     TH1D *hkjet = (TH1D*)f->Get((dir+"/lgj_dptvq").c_str());
+    dir = (i < sigfiles.size() ? dirs : dirb);
+    TH1D *hkjet = (TH1D*)f->Get((dir+"/lgj_dptvq").c_str());
 
-     assert(hkjet);
+    assert(hkjet);
 
      // Replace with Gaussian fit later
      double kjet = hkjet->GetMean();
@@ -406,7 +472,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
      double kjet2 = FindPeak(hkjet, kjet2_err);
 
      if (kjet && ptphot && ptgen) {
-       double ms = (i < sigfiles.size() ? 0. : minsys);
+       //double ms = (i < sigfiles.size() ? 0. : minsys);
+       double ms = (i < sigfiles.size() ? minsys : minsys);
        TGraphErrors *gkjet = (i < sigfiles.size() ? gkjets : gkjetb);
        int n = gkjet->GetN();
        gkjet->SetPoint(n, ptgen, kjet);
@@ -429,7 +496,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
      double rkjet_err = max(0.05,hrkjet->GetRMS())
        / sqrt(max(1.,hrkjet->Integral()));
      double rkjet2_err = 0.;
-     double rkjet2 = FindPeak(hrkjet, rkjet2_err, ptphot);
+     //double rkjet2 = FindPeak(hrkjet, rkjet2_err, ptphot);
+     double rkjet2 = FindPeak(hrkjet, rkjet2_err, ptgen);
 
      if (rkjet && ptphot && ptgen) {
        TGraphErrors *grkjet = (i < sigfiles.size() ? grkjets : grkjetb);
@@ -549,6 +617,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
 
      // Replace with Gaussian fit later
      double ktopo = hktopo->GetMean();
+     //double ktopo = CorrectedMean(hktopo, ptgen);
      double ktopo_err = max(0.01,hktopo->GetRMS())
        / sqrt(max(1.,hktopo->Integral()));
      double ktopo2_err = 0.;
@@ -564,6 +633,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
        pktopo->SetPoint(n, ptgen, ktopo2);
        pktopo->SetPointError(n, ptgen_err, oplus(ktopo2_err, minsys*ktopo2));
      }
+
 
      // Direct method imbalance pTgenjet/pTrecogamma
 
@@ -641,10 +711,10 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   cflavs->SetLogx();
 
   TH1D *hflavs = new TH1D("hflavs","hflavs",1000,0.,2000.);
-  hflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hflavs->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hflavs->GetXaxis()->SetMoreLogLabels();
   hflavs->GetXaxis()->SetNoExponent();
-  hflavs->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
+  hflavs->GetXaxis()->SetRangeUser(10,1997.);
   hflavs->GetYaxis()->SetTitle("Flavor fraction (#gamma jet)");
   hflavs->GetYaxis()->SetRangeUser(0.0,1.10); 
   hflavs->Draw();
@@ -700,7 +770,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   tflavs1->SetTextSize(0.05);
   tflavs1->Draw();
 
-  cflavs->SaveAs("eps/mcfactors_flavor_gjet.eps");
+  cflavs->SaveAs(Form("eps/mcfactors_flavor_gjet%s.eps",
+		      highstats ? "" : "_id"));
 
 
   // More flavor physics (QCD)
@@ -708,10 +779,10 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   cflavb->SetLogx();
 
   TH1D *hflavb = new TH1D("hflavb","hflavb",1000,0.,2000.);
-  hflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hflavb->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hflavb->GetXaxis()->SetMoreLogLabels();
   hflavb->GetXaxis()->SetNoExponent();
-  hflavb->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
+  hflavb->GetXaxis()->SetRangeUser(10,1997.);
   hflavb->GetYaxis()->SetTitle("Flavor fraction (QCD dijet)");
   hflavb->GetYaxis()->SetRangeUser(0.0,1.10); 
   hflavb->Draw();
@@ -755,7 +826,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   tflavb1->SetTextSize(0.05);
   tflavb1->Draw();
 
-  cflavb->SaveAs("eps/mcfactors_flavor_qcd.eps");
+  cflavb->SaveAs(Form("eps/mcfactors_flavor_qcd%s.eps",
+		      highstats ? "" : "_id"));
 
 
   // Comparison of gluon fractions in photon+jet and QCD
@@ -764,10 +836,10 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   cfgluon->SetLogx();
 
   TH1D *hfgluon = new TH1D("hfgluon","hfgluon",1000,0.,2000.);
-  hfgluon->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hfgluon->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hfgluon->GetXaxis()->SetMoreLogLabels();
   hfgluon->GetXaxis()->SetNoExponent();
-  hfgluon->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
+  hfgluon->GetXaxis()->SetRangeUser(10,1997.);
   hfgluon->GetYaxis()->SetTitle("Gluon jet fraction");
   hfgluon->GetYaxis()->SetRangeUser(0.0,1.10); 
   hfgluon->Draw();
@@ -809,7 +881,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   tfgluon1->SetTextSize(0.05);
   tfgluon1->Draw();
 
-  cfgluon->SaveAs("eps/mcfactors_flavor_gluons.eps");
+  cfgluon->SaveAs(Form("eps/mcfactors_flavor_gluons%s.eps",
+		       highstats ? "" : "_id"));
 
 
   // Flavor physics response (gamma+jet)
@@ -817,12 +890,12 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   crflavs->SetLogx();
 
   TH1D *hrflavs = new TH1D("hrflavs","hrflavs",1000,0.,2000.);
-  hrflavs->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrflavs->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hrflavs->GetXaxis()->SetMoreLogLabels();
   hrflavs->GetXaxis()->SetNoExponent();
-  hrflavs->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
+  hrflavs->GetXaxis()->SetRangeUser(10.,1997.);
   hrflavs->GetYaxis()->SetTitle("Flavor responses (#gamma jet)");
-  hrflavs->GetYaxis()->SetRangeUser(0.3,1.10); 
+  hrflavs->GetYaxis()->SetRangeUser(0.0,1.0);//0.3,1.10); 
   if (_algo=="pfite") hrflavs->GetYaxis()->SetRangeUser(0.5,1.30); 
   hrflavs->Draw();
 
@@ -877,7 +950,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   trflavs1->SetTextSize(0.05);
   trflavs1->Draw();
 
-  crflavs->SaveAs("eps/mcfactors_flavresp_gjet.eps");
+  crflavs->SaveAs(Form("eps/mcfactors_flavresp_gjet%s.eps",
+		       highstats ? "" : "_id"));
 
 
   // More flavor physics (QCD)
@@ -885,12 +959,12 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   crflavb->SetLogx();
 
   TH1D *hrflavb = new TH1D("hrflavb","hrflavb",1000,0.,2000.);
-  hrflavb->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrflavb->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hrflavb->GetXaxis()->SetMoreLogLabels();
   hrflavb->GetXaxis()->SetNoExponent();
-  hrflavb->GetXaxis()->SetRangeUser(20.,1997.);//2000.);
+  hrflavb->GetXaxis()->SetRangeUser(10.,1997.);
   hrflavb->GetYaxis()->SetTitle("Flavor response (QCD dijet)");
-  hrflavb->GetYaxis()->SetRangeUser(0.3,1.10); 
+  hrflavb->GetYaxis()->SetRangeUser(0.0,1.0);//0.3,1.10); 
   if (_algo=="pfite") hrflavb->GetYaxis()->SetRangeUser(0.5,1.30); 
   hrflavb->Draw();
 
@@ -945,7 +1019,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   trflavb1->SetTextSize(0.05);
   trflavb1->Draw();
 
-  crflavb->SaveAs("eps/mcfactors_flavresp_qcd.eps");
+  crflavb->SaveAs(Form("eps/mcfactors_flavresp_qcd%s.eps",
+		       highstats ? "" : "_id"));
 
   // B-version to compare flavor response from gamma+jet
   hrflavb->GetYaxis()->SetTitle("Flavor response");
@@ -964,8 +1039,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   grlights->SetMarkerStyle(kOpenSquare);
   grlights->Draw("PSAME");
   
-  //TLegend *lrflavb3 = new TLegend(0.5, 0.30, 0.95, 0.43, "", "brNDC");
-  TLegend *lrflavb3 = new TLegend(0.45, 0.73, 0.90, 0.93, "", "brNDC");
+  //TLegend *lrflavb3 = new TLegend(0.45, 0.73, 0.90, 0.93, "", "brNDC");
+  TLegend *lrflavb3 = new TLegend(0.45, 0.23, 0.90, 0.43, "", "brNDC");
   lrflavb3->SetBorderSize(0);
   lrflavb3->SetFillStyle(kNone);
   lrflavb3->SetTextSize(0.05);
@@ -975,7 +1050,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   lrflavb3->AddEntry(grlights, "light (#gamma jet)", "P");
   lrflavb3->Draw();
 
-  crflavb->SaveAs("eps/mcfactors_flavresp_qcd+gjet.eps");
+  crflavb->SaveAs(Form("eps/mcfactors_flavresp_qcd+gjet%s.eps",
+		       highstats ? "" : "_id"));
 
 
 
@@ -983,12 +1059,12 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   crjet->SetLogx();
 
   TH1D *hrjet = new TH1D("hrjet","hrjet",1000,0.,2000.);
-  hrjet->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrjet->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hrjet->GetXaxis()->SetMoreLogLabels();
   hrjet->GetXaxis()->SetNoExponent();
-  hrjet->GetXaxis()->SetRangeUser(20.,2000.);
+  hrjet->GetXaxis()->SetRangeUser(10.,1997.);
   hrjet->GetYaxis()->SetTitle("R_{jet} = p_{T,calojet} / p_{T,genjet}");
-  hrjet->GetYaxis()->SetRangeUser(0.25,1.20);//0.40,1.10);
+  hrjet->GetYaxis()->SetRangeUser(0.0,1.0);//0.25,1.20);
   if (_algo=="pfite") hrjet->GetYaxis()->SetRangeUser(0.50,1.20);
   //if (!drawStats) hrjet->GetYaxis()->SetRangeUser(0.40,1.05);
 
@@ -1147,17 +1223,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     statb->SetName("stats_bkg");
     gPad->Update(); // show changes in the interactive session
   }
-  crjet->SaveAs("eps/mcfactors_rjet.eps");
+  crjet->SaveAs(Form("eps/mcfactors_rjet%s.eps",
+		     highstats ? "" : "_id"));
 
   // Same plot, but divide by gamma+jet fit
   TCanvas *crjetz = new TCanvas("crjetz","crjetz",600,600);
   crjetz->SetLogx();
 
   TH1D *hrjetz = new TH1D("hrjetz","hrjetz",1000,0.,2000.);
-  hrjetz->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrjetz->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hrjetz->GetXaxis()->SetMoreLogLabels();
   hrjetz->GetXaxis()->SetNoExponent();
-  hrjetz->GetXaxis()->SetRangeUser(20.,2000.);
+  hrjetz->GetXaxis()->SetRangeUser(10.,1997.);
   //hrjetz->GetYaxis()->SetTitle("R_{jet} over fit");
   //hrjetz->GetYaxis()->SetRangeUser(0.95,1.25); // over fprjetb
   hrjetz->GetYaxis()->SetTitle("R_{jet} over peak fits");
@@ -1213,18 +1290,194 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   int st = gStyle->GetOptFit();
   gStyle->SetOptFit(0);
   gPad->Update();
-  crjetz->SaveAs("eps/mcfactors_rjetz.eps");
+  crjetz->SaveAs(Form("eps/mcfactors_rjetz%s.eps",
+		      highstats ? "" : "_id"));
   gStyle->SetOptFit(st);
+
+
+
+  TCanvas *csjet = new TCanvas("csjet","csjet",600,600);
+  csjet->SetLogx();
+
+  TH1D *hsjet = new TH1D("hsjet","hsjet",1000,0.,2000.);
+  hsjet->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
+  hsjet->GetXaxis()->SetMoreLogLabels();
+  hsjet->GetXaxis()->SetNoExponent();
+  hsjet->GetXaxis()->SetRangeUser(10.,1997.);
+  hsjet->GetYaxis()->SetTitle("#sigma_{jet} = RMS(p_{T,calojet}/p_{T,genjet}) / R_{jet}");//<p_{T,calojet}/p_{T,genjet}>");
+  hsjet->GetYaxis()->SetRangeUser(0.,0.70);
+  if (_algo=="pfite") hsjet->GetYaxis()->SetRangeUser(0.0,0.35);
+
+  // Ugly trick to get the second stats box
+  // For some reason doesn't seem to be created for TGraphErrors
+  TH1D* hsjet2 = (TH1D*)hsjet->Clone("hsjet2");
+
+  TF1 *fsjets = 0;
+  fsjets = new TF1("fsjets","sqrt([0]*[0]/(x*x)+[1]*[1]/x+[2]*[2])",10.,14000.);
+  fsjets->SetParNames("N","S","C");
+  fsjets->SetParameters(1.,1.,0.1);
+  fsjets->SetLineColor(kRed);
+  fsjets->SetRange(25.,14000.);
+  gsjets->Fit(fsjets,"QRN");
+  fsjets->SetRange(10.,14000.);
+  hsjet->GetListOfFunctions()->Add(fsjets);
+
+  TF1 *fpsjets = 0;
+  fpsjets = new TF1("fpsjets","sqrt([0]*[0]/(x*x)+[1]*[1]/x+[2]*[2])",
+		    10.,14000.);
+  fpsjets->SetParNames("N","S","C");
+  fpsjets->SetParameters(1.,1.,0.1);
+  fpsjets->SetLineColor(kRed);
+  fpsjets->SetLineStyle(kDashed);
+  fpsjets->SetRange(50.,14000.);
+  psjets->Fit(fpsjets,"QRN");
+  fpsjets->SetRange(10.,14000.);
+ 
+  TF1 *fsjetb = 0;
+  fsjetb = new TF1("fsjetb","sqrt([0]*[0]/(x*x)+[1]*[1]/x+[2]*[2])",10.,14000.);
+  fsjetb->SetParNames("N","S","C");
+  fsjetb->SetParameters(1.,1.,0.1);
+  fsjetb->SetLineColor(kBlue);
+  fsjetb->SetRange(10.,14000.);
+  gsjetb->Fit(fsjetb,"QRN");
+  fsjetb->SetRange(10.,14000.);
+  hsjet2->GetListOfFunctions()->Add(fsjetb);
+
+  TF1 *fpsjetb = 0;
+  fpsjetb = new TF1("fpsjetb","sqrt([0]*[0]/(x*x)+[1]*[1]/x+[2]*[2])",
+		    10.,14000.);
+  fpsjetb->SetParNames("N","S","C");
+  fpsjetb->SetParameters(1.,1.,0.1);
+  fpsjetb->SetLineColor(kBlue);
+  fpsjetb->SetLineStyle(kDotted);
+  fpsjetb->SetRange(10.,14000.);
+  psjetb->Fit(fpsjetb,"QRN");
+  fpsjetb->SetRange(10.,14000.);
+
+  TLegend *lsjet = (drawPeak ? 
+		    new TLegend(0.60,0.35,0.95,0.65,_algoname.c_str(),"brNDC") :
+		    new TLegend(0.65,0.35,0.95,0.55,_algoname.c_str(),"brNDC"));
+  lsjet->SetBorderSize(0);
+  lsjet->SetFillStyle(kNone);
+  lsjet->SetTextSize(0.05);//drawPeak ? 0.05 : 0.06);
+  gsjets->SetMarkerStyle(kFullCircle);
+  gsjets->SetMarkerColor(kRed);
+  gsjets->SetMarkerSize(0.8);
+  psjets->SetMarkerStyle(kCircle);
+  psjets->SetMarkerColor(kRed);
+  psjets->SetMarkerSize(0.8);
+  gsjetb->SetMarkerStyle(kFullSquare);
+  gsjetb->SetMarkerColor(kBlue);
+  gsjetb->SetMarkerSize(0.8);
+  psjetb->SetMarkerStyle(kOpenSquare);
+  psjetb->SetMarkerColor(kBlue);
+  psjetb->SetMarkerSize(0.8);
+  lsjet->AddEntry(grjets, "#gamma jet (rms)", "LP");
+  if (drawPeak) lsjet->AddEntry(psjets, "#gamma jet (#sigma)", "LP");
+  lsjet->AddEntry(grjetb, "QCD (rms)", "LP");
+  if (drawPeak) lsjet->AddEntry(psjetb, "QCD (#sigma)", "LP");
+
+  hsjet->Draw();
+  hsjet2->Draw("SAMES");
+  fsjets->Draw("SAME");
+  if (drawPeak) fpsjets->Draw("SAME");
+  fsjetb->Draw("SAME");
+  if (drawPeak) fpsjetb->Draw("SAME");
+  gsjets->SetLineColor(kRed);
+  gsjets->Draw("SAME P");
+  psjets->SetLineColor(kRed);
+  psjets->SetLineStyle(kDashed);
+  if (drawPeak) psjets->Draw("SAME P");
+  gsjetb->SetLineColor(kBlue);
+  gsjetb->Draw("SAME P");
+  psjetb->SetLineColor(kBlue);
+  psjetb->SetLineStyle(kDotted);
+  if (drawPeak) psjetb->Draw("SAME P");
+  lsjet->Draw();
+
+  if (drawStats) {
+    gPad->Update(); // update the canvas to create the stats boxes
+    TPaveStats *stats, *statb;
+    stats = (TPaveStats*)hsjet->GetListOfFunctions()->FindObject("stats");
+    assert(stats);
+    statb = (TPaveStats*)hsjet2->GetListOfFunctions()->FindObject("stats");
+    assert(statb);
+  
+    stats->SetLineColor(kRed);
+    stats->SetTextColor(kRed);
+    stats->SetX1NDC(max(stats->GetX1NDC(),stats->GetX2NDC()-0.35));
+    
+    statb->SetLineColor(kBlue);
+    statb->SetTextColor(kBlue);
+    statb->SetX1NDC(max(stats->GetX1NDC()-0.39, 0.20));
+    statb->SetX2NDC(min(stats->GetX2NDC()-0.39, stats->GetX1NDC()));
+    statb->SetName("stats_bkg");
+    gPad->Update(); // show changes in the interactive session
+  }
+  csjet->SaveAs(Form("eps/mcfactors_sjet%s.eps",
+		     highstats ? "" : "_id"));
+
+  // Same plot, but divide by gamma+jet fit
+  TCanvas *csjetz = new TCanvas("csjetz","csjetz",600,600);
+  csjetz->SetLogx();
+
+  TH1D *hsjetz = new TH1D("hsjetz","hsjetz",1000,0.,2000.);
+  hsjetz->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
+  hsjetz->GetXaxis()->SetMoreLogLabels();
+  hsjetz->GetXaxis()->SetNoExponent();
+  hsjetz->GetXaxis()->SetRangeUser(10.,1997.);
+  hsjetz->GetYaxis()->SetTitle("#sigma_{jet} over gaussian fits");
+  hsjetz->GetYaxis()->SetRangeUser(0.50,1.5);//0.90,1.05); // over fpsjets,b
+
+  if (!gsjets->GetListOfFunctions()) {
+    gsjets->Fit("pol0","QR");
+    assert(gsjets->GetListOfFunctions());
+    gsjets->GetListOfFunctions()->Clear();
+  }
+  gsjets->GetListOfFunctions()->Add(fsjets);
+  psjets->GetListOfFunctions()->Add(fpsjets);
+  gsjetb->GetListOfFunctions()->Add(fsjetb);
+  psjetb->GetListOfFunctions()->Add(fpsjetb);
+  TGraphErrors *dsjets  = divide(gsjets, fpsjets);
+  TGraphErrors *dpsjets = divide(psjets, fpsjets);
+  TGraphErrors *dsjetb  = divide(gsjetb, fpsjetb);
+  TGraphErrors *dpsjetb = divide(psjetb, fpsjetb);
+
+  hsjetz->Draw();
+  dsjets->Draw("same P");
+  if(drawPeak) dpsjets->Draw("same P");
+  dsjetb->Draw("same P");
+  if (drawPeak) dpsjetb->Draw("same P");
+
+  TLegend *lsjetz = (drawPeak ? 
+		     new TLegend(0.60,0.2,0.95,0.5,_algoname.c_str(),"brNDC") :
+		     new TLegend(0.65,0.2,0.95,0.6,_algoname.c_str(),"brNDC"));
+  lsjetz->SetBorderSize(0);
+  lsjetz->SetFillStyle(kNone);
+  lsjetz->SetTextSize(0.05);
+  lsjetz->AddEntry(gsjets, "#gamma jet (rms)", "LP");
+  if (drawPeak) lsjetz->AddEntry(psjets, "#gamma jet (#sigma)", "LP");
+  lsjetz->AddEntry(gsjetb, "QCD (rms)", "LP");
+  if (drawPeak) lsjetz->AddEntry(psjetb, "QCD (#sigma)", "LP");
+  lsjetz->Draw();
+
+  st = gStyle->GetOptFit();
+  gStyle->SetOptFit(0);
+  gPad->Update();
+  csjetz->SaveAs(Form("eps/mcfactors_sjetz%s.eps",
+		      highstats ? "" : "_id"));
+  gStyle->SetOptFit(st);
+
 
 
   TCanvas *ckjet = new TCanvas("ckjet","ckjet",600,600);
   ckjet->SetLogx();
 
   TH1D *hkjet = new TH1D("hkjet","hkjet",2000,0.,2000.);
-  hkjet->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hkjet->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hkjet->GetXaxis()->SetMoreLogLabels();
   hkjet->GetXaxis()->SetNoExponent();
-  hkjet->GetXaxis()->SetRangeUser(20.,2000.);
+  hkjet->GetXaxis()->SetRangeUser(10.,1997.);
   hkjet->GetYaxis()->SetTitle("k_{jet} = p_{T,genjet} / p_{T,parton-jet}");
   hkjet->GetYaxis()->SetRangeUser(0.85,1.10);
   //if (!drawStats) hkjet->GetYaxis()->SetRangeUser(0.45,1.05);
@@ -1233,11 +1486,14 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   // For some reason doesn't seem to be created for TGraphErrors
   TH1D* hkjet2 = (TH1D*)hkjet->Clone("hkjet2");
 
-  TF1 *fkjets = new TF1("fkjets","[2]-[0]*pow(x,[1]-1)",10.,14000.);
-  fkjets->SetParNames("a","m","c");
+  //TF1 *fkjets = new TF1("fkjets","[2]-[0]*pow(x,[1]-1)",10.,14000.);
+  //fkjets->SetParNames("a","m","c");
+  //fkjets->SetParameters(-0.2,0.6,1.0);
+  TF1 *fkjets = new TF1("fkjets","[0]+log(0.01*x)*([1]+log(0.01*x)*[2])",
+			10.,14000.);
+  fkjets->SetParameters(1,0.001,-0.0001);
   fkjets->SetLineColor(kRed);
   fkjets->SetRange(50.,14000.);
-  fkjets->SetParameters(-0.2,0.6,1.0);
   gkjets->Fit(fkjets,"QRN");
   fkjets->SetRange(10.,14000.);
   hkjet->GetListOfFunctions()->Add(fkjets);
@@ -1252,9 +1508,12 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   fpkjets->SetRange(10.,14000.);
   //hkjet->GetListOfFunctions()->Add(fkjets);
 
-  cout << Form("double kjets = %1.4g - %1.4g * pow(y, %1.4g);",
-	       fkjets->GetParameter(2),fkjets->GetParameter(0),
-	       fkjets->GetParameter(1)-1) << endl;
+  //cout << Form("double kjets = %1.4g - %1.4g * pow(y, %1.4g);",
+  //       fkjets->GetParameter(2),fkjets->GetParameter(0),
+  //       fkjets->GetParameter(1)-1) << endl;
+  cout << Form("double kjets = %1.4g + log(0.01*x)*(%1.4g +log(0.01*x)*%1.4g);",
+	       fkjets->GetParameter(0),fkjets->GetParameter(1),
+	       fkjets->GetParameter(2)) << endl;
   cout << Form("double kjets_p = %1.4g - %1.4g * pow(y, %1.4g);",
 	       fpkjets->GetParameter(2),fpkjets->GetParameter(0),
 	       fpkjets->GetParameter(1)-1) << endl;
@@ -1347,17 +1606,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     statb->SetName("stats_bkg");
     gPad->Update(); // show changes in the interactive session
   }
-  ckjet->SaveAs("eps/mcfactors_kjet.eps");
+  ckjet->SaveAs(Form("eps/mcfactors_kjet%s.eps",
+		     highstats ? "" : "_id"));
 
 
   TCanvas *cktopo = new TCanvas("cktopo","cktopo",600,600);
   cktopo->SetLogx();
 
   TH1D *hktopo = new TH1D("hktopo","hktopo",2000,0.,2000.);
-  hktopo->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hktopo->GetXaxis()->SetTitle("<p_{T}^{#gamma}>[#hat{p}_{T}] (GeV)");
   hktopo->GetXaxis()->SetMoreLogLabels();
   hktopo->GetXaxis()->SetNoExponent();
-  hktopo->GetXaxis()->SetRangeUser(20.,2000.);
+  hktopo->GetXaxis()->SetRangeUser(10.,1997.);
   string title = "k_{topo} = p_{T,parton-jet} / p_{T,parton-#gamma}";
   hktopo->GetYaxis()->SetTitle(title.c_str());
   hktopo->GetYaxis()->SetRangeUser(0.9,1.10);
@@ -1444,17 +1704,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     statb->SetName("stats_bkg");
     gPad->Update(); // show changes in the interactive session
   }
-  cktopo->SaveAs("eps/mcfactors_ktopo.eps");
+  cktopo->SaveAs(Form("eps/mcfactors_ktopo%s.eps",
+		      		     highstats ? "" : "_id"));
 
 
   TCanvas *crpho = new TCanvas("crpho","crpho",600,600);
   crpho->SetLogx();
 
   TH1D *hrpho = new TH1D("hrpho","hrpho",1000,0.,2000.);
-  hrpho->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hrpho->GetXaxis()->SetTitle("<p_{T}^{#gamma}>[#hat{p}_{T}] (GeV)");
   hrpho->GetXaxis()->SetMoreLogLabels();
   hrpho->GetXaxis()->SetNoExponent();
-  hrpho->GetXaxis()->SetRangeUser(20.,2000.);//500.);
+  hrpho->GetXaxis()->SetRangeUser(10.,1997.);
   title = "R_{#gamma} = p_{T,calo-#gamma} / p_{T,gen-#gamma}";
   hrpho->GetYaxis()->SetTitle(title.c_str());
   hrpho->GetYaxis()->SetRangeUser(0.45,1.30);
@@ -1584,12 +1845,14 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     gPad->Update(); // show changes in the interactive session
   }
   hrpho->GetYaxis()->SetRangeUser(0.75,1.15);
-  crpho->SaveAs("eps/mcfactors_rphoz.eps");
+  crpho->SaveAs(Form("eps/mcfactors_rphoz%s.eps",
+		     highstats ? "" : "_id"));
   
   lrpho->AddEntry(fjet, "R_{jet}^{QCD} (mean)", "L");
   fjet->Draw("SAME");
   hrpho->GetYaxis()->SetRangeUser(0.45,1.30);
-  crpho->SaveAs("eps/mcfactors_rpho.eps");
+  crpho->SaveAs(Form("eps/mcfactors_rpho%s.eps",
+		     highstats ? "" : "_id"));
   
 
 
@@ -1597,10 +1860,10 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   ckpho->SetLogx();
 
   TH1D *hkpho = new TH1D("hkpho","hkpho",1000,0.,2000.);
-  hkpho->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hkpho->GetXaxis()->SetTitle("<p_{T}^{#gamma}>[#hat{p}_{T}] (GeV)");
   hkpho->GetXaxis()->SetMoreLogLabels();
   hkpho->GetXaxis()->SetNoExponent();
-  hkpho->GetXaxis()->SetRangeUser(20.,2000.);//500.);
+  hkpho->GetXaxis()->SetRangeUser(10.,1997.);
   title = "k_{#gamma} = p_{T,gen-#gamma} / p_{T,parton-#gamma}";
   hkpho->GetYaxis()->SetTitle(title.c_str());
   hkpho->GetYaxis()->SetRangeUser(0.85,1.10);//0.45,1.30);
@@ -1694,17 +1957,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     statb->SetName("stats_bkg");
     gPad->Update(); // show changes in the interactive session
   }
-  ckpho->SaveAs("eps/mcfactors_kpho.eps");
+  ckpho->SaveAs(Form("eps/mcfactors_kpho%s.eps",
+		     highstats ? "" : "_id"));
 
  
   TCanvas *ckgam = new TCanvas("ckgam","ckgam",600,600);
   ckgam->SetLogx();
 
   TH1D *hkgam = new TH1D("hkgam","hkgam",1000,0.,2000.);
-  hkgam->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hkgam->GetXaxis()->SetTitle("<p_{T}^{#gamma}>[#hat{p}_{T}] (GeV)");
   hkgam->GetXaxis()->SetMoreLogLabels();
   hkgam->GetXaxis()->SetNoExponent();
-  hkgam->GetXaxis()->SetRangeUser(20.,2000.);
+  hkgam->GetXaxis()->SetRangeUser(10.,1997.);
   title = "k_{#gamma+jet} = p_{T,genjet} / p_{T,calo-#gamma}";
   hkgam->GetYaxis()->SetTitle(title.c_str());
   hkgam->GetYaxis()->SetRangeUser(0.90,1.10);
@@ -1713,7 +1977,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   tkgam->SetNDC();
   tkgam->SetTextSize(0.06);
 
-  TF1 *fkgam = new TF1("fkgam","([2]-[0]*pow(x,[1]-1))" //kjet
+  //TF1 *fkgam = new TF1("fkgam","([2]-[0]*pow(x,[1]-1))" //kjet
+  TF1 *fkgam = new TF1("fkgam","([0]+log(0.01*x)*([1]+log(0.01*x)*[2]))" //kjet
 		       "*([3]+log(0.01*x)*([4]+log(0.01*x)*[5]))" //ktopo
 		       "/((1-[6]*pow(x,[7]-1))" //rpho
 		       "*([10]-[8]*pow(x,[9]-1)))", //kpho
@@ -1735,17 +2000,18 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   gkgams->Draw("same P");
   tkgam->Draw();
 
-  ckgam->SaveAs("eps/mcfactors_kgam.eps");
+  ckgam->SaveAs(Form("eps/mcfactors_kgam%s.eps",
+		     highstats ? "" : "_id"));
 
 
   TCanvas *ckqcd = new TCanvas("ckqcd","ckqcd",600,600);
   ckqcd->SetLogx();
 
   TH1D *hkqcd = new TH1D("hkqcd","hkqcd",1000,0.,2000.);
-  hkqcd->GetXaxis()->SetTitle("p_{T} (GeV)");
+  hkqcd->GetXaxis()->SetTitle("<p_{T}^{genjet}>[#hat{p}_{T}] (GeV)");
   hkqcd->GetXaxis()->SetMoreLogLabels();
   hkqcd->GetXaxis()->SetNoExponent();
-  hkqcd->GetXaxis()->SetRangeUser(20.,2000.);//500.);
+  hkqcd->GetXaxis()->SetRangeUser(10.,1997.);
   title = "1+#DeltaC = #DeltaR_{jet} #Deltak_{jet} / (#DeltaR_{#gamma} #Deltak_{#gamma})";
   hkqcd->GetYaxis()->SetTitle(title.c_str());
   //hkqcd->GetYaxis()->SetRangeUser(0.70,1.40);
@@ -1761,7 +2027,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   TF1 *fkqcd_jrk = new TF1("fkqcd_jrk",
 			   "((1-[0]*pow(x,[1]-1))/(1-[2]*pow(x,[3]-1)))"
 			   "*(([4]+log(0.01*x)*([5]+log(0.01*x)*[6]))"
-			   "/([9]-[7]*pow(x,[8]-1)))",
+			   "/([7]+log(0.01*x)*([8]+log(0.01*x)*[9])))",
+			   //"/([9]-[7]*pow(x,[8]-1)))",
 			   10.,14000.);
   fkqcd_jrk->SetParameters(frjetb->GetParameter(0),frjetb->GetParameter(1),
 			   frjets->GetParameter(0),frjets->GetParameter(1),
@@ -1791,7 +2058,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   TF1 *fkqcd  = new TF1("fkqcd",
 			"((1-[0]*pow(x,[1]-1))/(1-[2]*pow(x,[3]-1)))" //jr
 			"*(([4]+log(0.01*x)*([5]+log(0.01*x)*[6]))"
-			"/([9]-[7]*pow(x,[8]-1)))" //jk
+			"/([7]+log(0.01*x)*([8]+log(0.01*x)*[9])))" //jk
+			//"/([9]-[7]*pow(x,[8]-1)))" //jk
 			"/(((1-[10]*pow(x,[11]-1))/(1-[12]*pow(x,[13]-1)))"//pr
 			"*(([14]+log(0.01*x)*([15]+log(0.01*x)*[16]))"
 			"/([19]-[17]*pow(x,[18]-1))))", //pk
@@ -1905,7 +2173,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
   lkqcd2->Draw();
   //tkqcd->Draw();
 
-  ckqcd->SaveAs("eps/mcfactors_deltac.eps");
+  ckqcd->SaveAs(Form("eps/mcfactors_deltac%s.eps",
+		     highstats ? "" : "_id"));
 
 
   // Plot of combined background + photon scale/topology correction
@@ -1930,6 +2199,7 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
 
   if (gROOT->IsBatch()) {
 
+    /*
     delete hrjet;
     delete hkjet;
     delete hktopo;
@@ -1937,6 +2207,8 @@ int mcfactors(vector<string> sigfiles, vector<string> bkgfiles,
     delete hkpho;
     delete hkgam;
     delete hkqcd;
+    */
+    gROOT->Clear();
   }
 
   return 0;
@@ -1985,7 +2257,7 @@ void doRatio(const TGraphErrors *a, const TGraphErrors *b, TGraphErrors *c,
 } // doRatio
   
 
-double FindPeak(TH1D* h, double &err, double pt) {
+double FindPeak(TH1D* h, double &err, double pt, double *sigma) {
 
   double xmin = (pt ? _ptreco / pt : 0.);
   TF1 *f = new TF1("g","gaus",xmin,2.);
@@ -2010,32 +2282,61 @@ double FindPeak(TH1D* h, double &err, double pt) {
 
   double peak = f->GetParameter(1);
 
+  if (sigma) {
+    //f->SetRange(max(xmin,f->GetParameter(1)-1.*f->GetParameter(2)),
+    //	f->GetParameter(1)+3.*f->GetParameter(2));
+    //h->Fit(f, "QRN");
+    *sigma = f->GetParameter(2);
+  }
+
   delete f;
 
   return peak;
 } // FindPeak
 
 // Mean corrected for low pT bias
-double CorrectedMean(TH1D *hrjet, const double pt) {
+double CorrectedMean(TH1D *hrjet, const double pt, double *scorr) {
 
   double mean = hrjet->GetMean();
+  double sigma = hrjet->GetRMS();
+
+  // First, subtract biased region and recalculate mean and RMS
   double xmin = _ptreco / pt; // low edge of unbiased region
   int imin = hrjet->FindBin(xmin)+1; // first bin in unbiased region
   xmin = hrjet->GetBinLowEdge(imin); // round to bin edge
   double dm = 0; // biased region mean
+  double dm2 = 0;
   for (int i = 1; i != imin; ++i) {
     dm += hrjet->GetBinContent(i) * hrjet->GetBinCenter(i);
+    dm2 += sqr(hrjet->GetBinContent(i)) * hrjet->GetBinCenter(i);
   }
+  double x2old = sigma*sigma + mean*mean;
   dm /= hrjet->Integral();
+  mean -= dm;
+  dm2 /= hrjet->Integral();
+  sigma = sqrt(x2old - dm2 - mean*mean);
 
-  TF1 *f = new TF1("g","gaus",xmin, 2.);
+  // Next, correct mean and RMS for missing part of the Gaussian
+  double xlo = 0.;//-2.;
+  double xhi = +2.;
+  TF1 *f = new TF1("g","gaus",xmin, xhi);
   hrjet->Fit(f, "QRN");
-  TF1 *fx = new TF1("gx","x*gaus",0., 2.);
+  TF1 *fx = new TF1("gx","x*gaus",xlo, xhi);
   fx->SetParameters(f->GetParameter(0),f->GetParameter(1),
 		    f->GetParameter(2));
-  double corrmean = (mean - dm ) * (fx->Integral(0.,2.)/f->Integral(0.,2.))
-   / (fx->Integral(xmin,2.)/f->Integral(xmin,2.));
-  //double corrmean = mean - dm  + fx->Integral(0.,xmin)/f->Integral(0.,2.);
+  double fullx = fx->Integral(xlo,xhi) / f->Integral(xlo,xhi);
+  double truncx = fx->Integral(xmin,xhi) / f->Integral(xmin,xhi);
+  double corrmean = mean * fullx / truncx;
+
+  if (scorr) {
+    TF1 *fx2 = new TF1("gx2","x*x*gaus",xlo,xhi);
+    fx2->SetParameters(f->GetParameter(0),f->GetParameter(1),
+		       f->GetParameter(2));
+    double fullx2 = fx2->Integral(xlo,xhi) / f->Integral(xlo,xhi);
+    double truncx2 = fx2->Integral(xmin,xhi) / f->Integral(xmin,xhi);
+    *scorr = sqrt((sigma*sigma + mean*mean) * fullx2 / truncx2
+		  - corrmean*corrmean);
+  }
 
   delete f;
   delete fx;
@@ -2078,4 +2379,72 @@ TGraphErrors *divide(const TGraphErrors *g, const TF1 *f) {
   }
 
   return ng;
+}
+
+
+void fractiontest() {
+
+  //c.Draw("0*(flavor!=21&&pflavor!=21)+1*(flavor!=21&&pflavor==21)+2*(flavor==21&&pflavor!=21)+3*(flavor==21&&pflavor==21)>>hf0(4,-0.5,3.5)","photonid>=0");
+
+  double qq0 = 0.10;//0.09;
+  double qg0 = 0.20;//0.21;
+  double gq0 = 0.20;//0.19;
+  double gg0 = 0.50;//0.51;
+  // These should in principle be random so gq=qg
+  double qg = 0.5*(qg0+gq0);
+  assert(fabs(qq0+qg0+gq0+gg0-1)<0.01);
+
+  double qq1 = 0.15;//0.15;
+  double qg1 = 0.20;//0.19;
+  double gq1 = 0.30;//0.30;
+  double gg1 = 0.35;//0.36;
+  assert(fabs(qq1+qg1+gq1+gg1-1)<0.01);
+
+  double qq2 = 0.25;//0.26;
+  double qg2 = 0.15;//0.16;
+  double gq2 = 0.40;//0.41;
+  double gg2 = 0.20;//0.17;
+  assert(fabs(qq2+qg2+gq2+gg2-1)<0.01);
+
+  // total ~ 2*eq*qq0 + 2*eg*qg + 2*eq*qg + 2*eg*gg0
+  // qq1 = 2*eq*qq0 / total
+  // => qq1*(qq0 + e*qg + qg + e*gg0) = qq0, e=eg/eq
+  // => e = (qq0 - qq1*(qq0 + qg)) / (qq1*(qg + gg0))
+  double e_11 = (qq0 - qq1*(qq0 + qg)) / (qq1*(qg + gg0));
+  double e_21 = (qq0 - qq2*(qq0 + qg)) / (qq2*(qg + gg0));
+  // qg1 = 2*eg*qg / total
+  // => qg1*(qq0 + e*qg + qg + e*gg0) = e*qg, e=eg/eq
+  // => e = (qg1*(qq0 + qg)) / (qg - qg1*(qg + gg0))
+  double e_12 = (qg1*(qq0 + qg)) / (qg - qg1*(qg + gg0));
+  double e_22 = (qg2*(qq0 + qg)) / (qg - qg2*(qg + gg0));
+  // gq1 = 2*eq*qg / total
+  // => gq1*(qq0 + e*qg + qg + e*gg0) = qg, e=eg/eq
+  // => e = (qg - gq1*(qq0 + qg)) / (gq1*(qg + gg0))
+  double e_13 = (qg - gq1*(qq0 + qg)) / (gq1*(qg + gg0));
+  double e_23 = (qg - gq2*(qq0 + qg)) / (gq2*(qg + gg0));
+  // gg1 = 2*eg*gg0 / total
+  // => gg1*(qq0 + e*qg + qg + e*gg0) = e*gg0, e=eg/eq
+  // => e = (gg1*(qq0 + qg)) / (gg0 - gg1*(qg + gg0))
+  double e_14 = (gg1*(qq0 + qg)) / (gg0 - gg1*(qg + gg0));
+  double e_24 = (gg2*(qq0 + qg)) / (gg0 - gg2*(qg + gg0));
+
+  double e1 = 0.25*(e_11+e_12+e_13+e_14);
+  cout << Form("photon ID loose selection:\n"
+	       "e = %1.2f (%1.2f, %1.2f, %1.2f, %1.2f)",
+	       e1, e_11, e_12, e_13, e_14) << endl;
+  double e2 = 0.25*(e_21+e_22+e_23+e_24);
+  cout << Form("photon ID medium selection:\n"
+	       "e = %1.2f (%1.2f, %1.2f, %1.2f, %1.2f)",
+	       e2, e_21, e_22, e_23, e_24) << endl;
+
+  double n1 = 2*qq0 + 2*e1*qg + 2*qg + 2*e1*gg0;
+  cout << Form("Photon ID loose selection fractions:\n"
+	       "%1.2f, %1.2f, %1.2f, %1.2f",
+	       2*qq0/n1, 2*e1*qg/n1, 2*qg/n1, 2*e1*gg0/n1) << endl;
+  double n2 = 2*qq0 + 2*e2*qg + 2*qg + 2*e2*gg0;
+  cout << Form("Photon ID medium selection fractions:\n"
+	       "%1.2f, %1.2f, %1.2f, %1.2f",
+	       2*qq0/n2, 2*e2*qg/n2, 2*qg/n2, 2*e2*gg0/n2) << endl;
+
+  return;
 }
