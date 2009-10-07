@@ -110,11 +110,11 @@ cms.InputTag("ecalRecHit","EcalRecHitsEE"))
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
 GenParticles  = cms.untracked.InputTag("genParticles"),
-       ptMinTau      = cms.untracked.double(15),
-       ptMinMuon     = cms.untracked.double(14),
-       ptMinElectron = cms.untracked.double(12),
+       ptMinTau      = cms.untracked.double(3),
+       ptMinMuon     = cms.untracked.double(3),
+       ptMinElectron = cms.untracked.double(3),
        BosonID       = cms.untracked.vint32(23),
-       EtMax         = cms.untracked.double(2.5)
+       EtaMax         = cms.untracked.double(2.5)
 )
 
 process.pmc  = cms.Path(process.TauMCProducer)
