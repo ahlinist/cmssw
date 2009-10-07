@@ -325,6 +325,7 @@ double L3Corr::_StatErr(const double pTprime) const {
   return err;
 }
 
+// Photon+jet purity (currently for CSA07 => update)
 double L3Corr::_purity(const double pTprime, const PhotonID& id) const {
 
   double P = 1.;
@@ -332,16 +333,23 @@ double L3Corr::_purity(const double pTprime, const PhotonID& id) const {
   // The 'no deltaeta' were fitted by hand from output_mixed_all.root
   // from plots in the range 30-700 GeV
   if (id == kLoose) {
-    P = 0.6339 + x*(0.213 + x*-0.06296); // deltaeta, no rebin
+    P = 0.688 + x*(0.126 + x*-0.0265); // Summer08 - May 31 fakerate
+    //P = 0.7094 + x*(-0.03399 + x*0.06281); // Summer08 - May 31
+    //P = 0.6339 + x*(0.213 + x*-0.06296); // deltaeta, no rebin
     //P = 0.5514 + x*(0.2773 + x*-0.06944); // deltaeta, automatic
     //P = 6.11287e-01 + x*(1.80336e-01 + x*-1.69342e-02); // no deltaeta?
   }
   if (id == kMedium) {
-    P = 0.9673 + x*(-0.01242 + x*0.01187); // deltaeta, no rebin
+    P =  0.837 + x*(0.105 + x*-0.0408); // Summer08 - May 31 fakerate
+    //P = 0.984 + x*(-0.02309 + x*-0.006556); // Summer08 - May30
+    //P = 0.9673 + x*(-0.01242 + x*0.01187); // deltaeta, no rebin
     //P = 9.66655e-01 + x*(-1.28295e-02 + x*1.29304e-02); // no deltaeta?
   }
   if (id == kTight) {
-    P = 0.9797 + x*(-0.006598 + x*0.004506); // deltaeta, no rebin
+    P = 0.864 + x*(0.11 + x*-0.0477); // Summer08 - May 31 fakerate
+    //P = 0.846 + x*(0.0995 + x*-0.0392); // Summer08 - May 31 fakerate
+    //P = 0.9977 + x*(-0.001804 + x*-0.009779); // Summer08 - May 31
+    //P = 0.9797 + x*(-0.006598 + x*0.004506); // deltaeta, no rebin
     //P = 9.78925e-01 + x*(-7.17726e-03 + x*5.88710e-03); // no deltaeta?
   }
   if (id == kMedium005) {
@@ -439,17 +447,20 @@ double L3Corr::_StatPurity(const double pTprime, const PhotonID& id) const {
   double x = log(0.01*pTprime); if (x);
   double stat = 0;
   if (id == kLoose)
-    stat = 0.08077; // top of medium err.bars
+    stat = 0.07743; // top of err.bars / Summer08 - May 31
+  //stat = 0.08077; // top of medium err.bars
 //     stat = sqrt(0.0009192 + 2*-0.0002421*x + 2*-0.0002416*x*x
 // 		+ 0.002093*x*x + 2*-0.001193*x*x*x
 // 		+ 0.0009278*x*x*x*x);
   if (id == kMedium)
-    stat = 0.08077; // top of err.bars
+    stat = 0.05699; // top of err.bars, Summer08 - May 30
+    //stat = 0.08077; // top of err.bars
   //stat = sqrt(0.0003825 + 2*2.183e-05*x + 2*-0.0001547*x*x
   //	+ 0.0005671*x*x + 2*-0.0003245*x*x*x
   //	+ 0.0002734*x*x*x*x); // deltaeta, no rebin
   if (id == kTight)
-    stat = 0.08077; // top of medium err.bars
+    stat = 0.05923; // top of err.bars / Summer08 - May 31
+    //stat = 0.08077; // top of medium err.bars
 //     stat = sqrt(0.0004265 + 2*-1.484e-05*x + 2*-0.0001517*x*x
 // 		+ 0.0008268*x*x + 2*-0.0004603*x*x*x
 // 		+ 0.0003639*x*x*x*x); // deltaeta, no rebin
@@ -469,40 +480,65 @@ double L3Corr::_StatPurity(const double pTprime, const PhotonID& id) const {
   return stat;
 }
 
-// Returns deltaC and _relative_ uncertainties
+// Returns deltaC and _relative_ uncertainties (curretly for CSA07 => update)
 double L3Corr::_deltaC(const double pTprime, double& syserr,
 		       const PhotonID& id,
 		       double (*syserrs)[6]) const {
   
   double x = log(0.01*pTprime);
   double y = pTprime;
-  double rjets = 1. - 1.881 * pow(y, -0.3802);
-  double rjetb = 1. - 2.332 * pow(y, -0.4005);
-  double kjets = -4.123 + 5.135 * pow(y, -0.0006598);
-  double kjetb = 0.9239 + x * (0.0313 + x * -0.004696);
-  double kjetb_p = 0.9726 + x * (0.01841 + x * -0.003336);
-  double ktopos = 0.9973 + x * (-0.0005675 + x * 0);
-  double ktopob = 1.002 + x * (-0.005414 + x * 0.001552);
+  //double rjets = 1. - 1.881 * pow(y, -0.3802);
+  //double rjetb = 1. - 2.332 * pow(y, -0.4005);
+  //double kjets = -4.123 + 5.135 * pow(y, -0.0006598);
+  //double kjetb = 0.9239 + x * (0.0313 + x * -0.004696);
+  //double kjetb_p = 0.9726 + x * (0.01841 + x * -0.003336);
+  //double ktopos = 0.9973 + x * (-0.0005675 + x * 0);
+  //double ktopob = 1.002 + x * (-0.005414 + x * 0.001552);
+  // Summer08 - May 30
+  double rjets = 1 - 2.063 * pow(y, -0.4141);
+  double rjetb = 1 - 2.506 * pow(y, -0.4241);
+  double kjets = 0.9844 + x*(0.0007429 + x*-0.0004443);
+  //double kjets_p = 0.9984 - 26.29 * pow(y, -1.901);
+  double kjetb = 0.9357 + x * (0.04055 + x * -0.00881);
+  double kjetb_p = 0.967 + x * (0.02833 + x * -0.006476);
+  double ktopos = 0.9911 + x * (0.002791 + x * 0);
+  double ktopob = 0.9854 + x * (0.01565 + x * -0.004435);
+
   
   double rphos=1., rphob=1., kphos=1., kphob=1.;
   if (id == kLoose) {
-    rphos = 1 - 0.007997 * pow(y, 0.07654);
-    rphob = 1 - 0.8911 * pow(y, -0.4005);
-    kphos = 1 - 1.877e-12 * pow(y, -0.4549);
-    kphob = 0.9236 + x * (0.0313 + x * -0.004696);
+    //rphos = 1 - 0.007997 * pow(y, 0.07654);
+    //rphob = 1 - 0.8911 * pow(y, -0.4005);
+    //kphos = 1 - 1.877e-12 * pow(y, -0.4549);
+    //kphob = 0.9236 + x * (0.0313 + x * -0.004696);
+    // Summer08 - May30
+    rphos = 1 - 0.003092 * pow(y, 0.306);
+    rphob = 1 - 0.6651 * pow(y, -0.4241);
+    kphos = 1 - 2.538e-09 * pow(y, -0.4449);
+    kphob = 0.9381 + x * (0.04055 + x * -0.00881);
   }
   if (id == kMedium
       || id == kMedium005 || id == kMedium010 || id == kMedium020) {
-    rphos = 1 - 0.003445 * pow(y, 0.1838);
-    rphob = 1 - 0.226 * pow(y, -0.4005);
-    kphos = 1 - 1.397e-12 * pow(y, -0.4546);
-    kphob = 0.8957 + x * (0.0313 + x * -0.004696);
+    //rphos = 1 - 0.003445 * pow(y, 0.1838);
+    //rphob = 1 - 0.226 * pow(y, -0.4005);
+    //kphos = 1 - 1.397e-12 * pow(y, -0.4546);
+    //kphob = 0.8957 + x * (0.0313 + x * -0.004696);
+    // Summer08 - May 30
+    rphos = 1 - 0.002257 * pow(y, 0.3319);
+    rphob = 1 - 0.3692 * pow(y, -0.4241);
+    kphos = 1.;//1 - -1.271e-08 * pow(y, -0.4451);
+    kphob = 0.9124 + x * (0.04055 + x * -0.00881);
   }
   if (id == kTight) {
-    rphos = 1 - 0.07228 * pow(y, -0.4365);
-    rphob = 1 - 0.6667 * pow(y, -0.4005);
-    kphos = 1 - 3.707e-12 * pow(y, -0.4573);
-    kphob = 0.9313 + x * (0.0313 + x * -0.004696);
+    //rphos = 1 - 0.07228 * pow(y, -0.4365);
+    //rphob = 1 - 0.6667 * pow(y, -0.4005);
+    //kphos = 1 - 3.707e-12 * pow(y, -0.4573);
+    //kphob = 0.9313 + x * (0.0313 + x * -0.004696);
+    // Summer08 - May 30
+    rphos = 1 - 0.001986 * pow(y, 0.3362);
+    rphob = 1 - 0.2638 * pow(y, -0.4241);
+    kphos = 1 - -1.395e-08 * pow(y, -0.4443);
+    kphob = 0.8993 + x * (0.04055 + x * -0.00881);
   }
   
   double dC = ((rjetb * kjetb * ktopob) / (rphob * kphob))
@@ -616,8 +652,10 @@ double L3Corr::_parton(const double pTprime) const {
 double L3Corr::_partonFrag(const double pTprime) const {
 
   // kjets = hadronization * underlying event
-  double kjets = -4.123 + 5.135 * pow(pTprime, -0.0006598);
-  
+  //double kjets = -4.123 + 5.135 * pow(pTprime, -0.0006598);
+  double y = log(0.01*pTprime);
+  double kjets = 0.9844 + y*(0.0007429 + y*-0.0004443); // Summer 08, May 30
+
   return kjets / _partonUE(pTprime);
 }
 
@@ -662,14 +700,22 @@ double L3Corr::_eigpowerlaw(const double& pTprime, const double* par,
 
 double L3Corr::_Rbias(const double pT, const PhotonID& id) const {
   
-  return (_RbiasBkg(pT, id) * _RbiasTopo(pT, id) * _RbiasPeak(pT)); 
+  return (_RbiasBkg(pT, id) * _RbiasPhot(pT, id) * _RbiasTopo(pT, id)
+	  * _RbiasParton(pT, id) * _RbiasBalance(pT) * _RbiasPeak(pT));
 }
 
 // This equals in principle _deltaRjet, but is not factorized
 double L3Corr::_RbiasBkg(const double pT, const PhotonID& id) const {
 
-  //return (1+_deltaRjet(pT, id));
-  return (_RjetMix(pT,id) / _RjetReco(pT,id));
+  return (1+_deltaRjet(pT, id));
+  //return (_RjetMix(pT,id) / _RjetReco(pT,id));
+}
+
+// Correct for residual photon scale in summer08, to make sure Rphot==1.000
+// (This applies for the mean of the photon response, not peak)
+double L3Corr::_RbiasPhot(const double pT, const PhotonID& id) const {
+
+  return (1. / _Rphoton(pT, id) );
 }
 
 // This could be factorized more, now its just a fit of the difference
@@ -677,9 +723,38 @@ double L3Corr::_RbiasBkg(const double pT, const PhotonID& id) const {
 // Unfortunately, separate fits don't extrapolate too well at pT<60 GeV...
 double L3Corr::_RbiasTopo(const double pT, const PhotonID& id) const {
 
-  return (_RjetReco(pT,id) / _RjetTruth(pT) );
+  //return (_RjetReco(pT,id) / _RjetTruth(pT) * _Rphoton(pT,id) );
+  return ( (_RjetReco(pT,id) / _RjetTruth(pT)) / _RbiasPhot(pT,id)
+	   / _RbiasParton(pT, id) / _RbiasBalance(pT));
 }
 
+// Correct for the ratio of GenJet and jet parton pT. This folds together
+// underlying event, hadronization and final state radiation. The first
+// two are considered in the systematics for parton corrections, the
+// latter one is implicitly included in the topology bias systematics
+// through sensitivity to secondary jet cut
+double L3Corr::_RbiasParton(const double pT, const PhotonID &id) const {
+  
+  // use the medium ID value for now, will have to later update
+  // at least for different secondary jet cuts
+  if (id);
+  //double x = log(0.01*pT);
+  //double kjets = 0.9844 + x*(0.0007429 + x*-0.0004443); // Summer08 - May 30
+
+  //return kjets;
+  return _parton(pT);
+}
+
+// Ratio of jet and photon parton pT in bins of pThat
+// Leave this to 1.00 for now so the effect will be automatically
+// included in the topology bias
+double L3Corr::_RbiasBalance(const double pT) const {
+
+  if (pT);
+  return 1;
+}
+
+// Difference between peak and arithmetic mean in photon+jet MC truth
 double L3Corr::_RbiasPeak(const double pT) const {
 
   if (pT);
@@ -695,13 +770,17 @@ double L3Corr::_RjetMix(const double pT, const PhotonID& id) const {
   
   // All fits from 33 GeV upwards, with pTlead>10 GeV
   if (id==kLoose) {
-    p[0] = 0.2606; p[1] = 0.5256; p[2] = 0.9409; // pT2>8 GeV
+    //p[0] = 0.2606; p[1] = 0.5256; p[2] = 0.9409; // pT2>8 GeV
+    p[0] = 0.3512; p[1] = 0.5963; p[2] = 1.027; // Summer08 - May 31
   }
   if (id==kMedium) {
-    p[0] = 0.2986; p[1] = 0.5242; p[2] = 0.9510; // pT2>8 GeV
+    //p[0] = 0.2986; p[1] = 0.5242; p[2] = 0.9510; // pT2>8 GeV, CSA07
+    //p[0] = 0.2908; p[1] = 0.4725; p[2] = 0.9673; // Summer08
+    p[0] = 0.3201; p[1] = 0.5477; p[2] = 0.9894; // Summer08 - May 30
   }
   if (id==kTight) {
-    p[0] = 0.2811; p[1] = 0.4970; p[2] = 0.9318; // pT2>8 GeV
+    //p[0] = 0.2811; p[1] = 0.4970; p[2] = 0.9318; // pT2>8 GeV
+    p[0] = 0.3458; p[1] = 0.5786; p[2] = 1.007; // Summer08 - May 30
   }
   if (id==kMedium005) {
     p[0] = 0.3048; p[1] = 0.5616; p[2] = 0.9722; // pT2>2.5 GeV
@@ -725,22 +804,29 @@ double L3Corr::_RjetReco(const double pT, const PhotonID& id) const {
 
   // All fits from 33 GeV upwards, with pTlead>10 GeV
   if (id==kLoose) {
-    p[0] = 0.2902; p[1] = 0.5211; p[2] = 0.9466; // pT2>8 GeV
+    //p[0] = 0.2902; p[1] = 0.5211; p[2] = 0.9466; // pT2>8 GeV
+    p[0] = 0.3024; p[1] = 0.5188; p[2] = 0.9746; // Summer08 - May31
   }
   if (id==kMedium) {
-    p[0] = 0.2853; p[1] = 0.5021; p[2] = 0.9387; // pT2>8 GeV
+    //p[0] = 0.2853; p[1] = 0.5021; p[2] = 0.9387; // pT2>8 GeV, CSA07
+    //p[0] = 0.2958; p[1] = 0.4875; p[2] = 0.9724; // Summer08
+    p[0] = 0.3063; p[1] = 0.5251; p[2] = 0.9758; // Summer08 - May 30
   }
   if (id==kTight) {
-    p[0] = 0.2803; p[1] = 0.4927; p[2] = 0.9306; // pT2>8 GeV
+    //p[0] = 0.2803; p[1] = 0.4927; p[2] = 0.9306; // pT2>8 GeV
+    p[0] = 0.3202; p[1] = 0.5440; p[2] = 0.9830; // Summer08 - May 31
   }
   if (id==kMedium005) {
-    p[0] = 0.2954; p[1] = 0.5480; p[2] = 0.9630; // pT2>2.5 GeV 
+    //p[0] = 0.2954; p[1] = 0.5480; p[2] = 0.9630; // pT2>2.5 GeV 
+    p[0] = 0.281; p[1] = 0.466; p[2] = 0.961; // Summer08 - May 30
   }
   if (id==kMedium010) {
-    p[0] = 0.2958; p[1] = 0.5377; p[2] = 0.951; // pT2>2.5 GeV
+    //p[0] = 0.2958; p[1] = 0.5377; p[2] = 0.951; // pT2>2.5 GeV
+    p[0] = 0.298; p[1] = 0.500; p[2] = 0.967; // Summer08 - May 30
   }
   if (id==kMedium020) {
-    p[0] = 0.3354; p[1] = 0.5989; p[2] = 0.9732; // pT2>2.5 GeV
+    //p[0] = 0.3354; p[1] = 0.5989; p[2] = 0.9732; // pT2>2.5 GeV
+    p[0] = 0.322; p[1] = 0.540; p[2] = 0.972; // Summer08 - May 30
   }
 
   return (p[2] - p[0] * pow(0.01*pT, p[1]-1));
@@ -751,7 +837,9 @@ double L3Corr::_RjetReco(const double pT, const PhotonID& id) const {
 double L3Corr::_RjetTruth(const double pT) const {
 
   // This should be the same as inside DeltaC
-  return (1. - 1.881 * pow(pT, -0.3802));
+  //return (1. - 1.881 * pow(pT, -0.3802)); // CSA07
+  //return (1. - 2.228 * pow(pT, -0.4267)); // Summer08
+  return (1 - 2.063 * pow(pT, -0.4141)); // Summer08 - May 30
 }
 
 // Response in MC truth for QCD dijet (pThat binning, vs <pTgamma>)
@@ -759,5 +847,16 @@ double L3Corr::_RjetTruth(const double pT) const {
 double L3Corr::_RjetTruthQCD(const double pT) const {
 
   // This should be the same as inside DeltaC
-  return (1. - 2.332 * pow(pT, -0.4005));
+  //return (1. - 2.332 * pow(pT, -0.4005)); // CSA07
+  //return (1. - 2.833 * pow(pT, -0.4516)); // Summer08
+  return (1 - 2.506 * pow(pT, -0.4241)); // Summer08 - May 30
+}
+
+// Photon response in Summer08 MC
+// Currently arithmetic mean, not peak value
+double L3Corr::_Rphoton(const double pT, const PhotonID& id) const {
+
+  if (id); // Maybe use later, now only medium cuts
+  //return (1. - 0.005502 * pow(pT, 0.232));
+  return (1 - 0.002257 * pow(pT, 0.3319)); // Summer08 - May 30
 }

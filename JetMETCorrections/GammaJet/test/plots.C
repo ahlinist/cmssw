@@ -3,6 +3,7 @@
 #include "TCanvas.h"
 #include "TPaveStats.h"
 #include "TLegend.h"
+#include "TLatex.h"
 #include "TStyle.h"
 #include "TMath.h"
 #include "TROOT.h"
@@ -15,6 +16,9 @@ using namespace std;
 const bool drawStats = false;
 const int kRedHatch = 3654;
 const int kBlueHatch = 3645;
+
+const bool _pre09 = false; // Summer09
+const bool _octx = true; // Summer09 October exercise
 
 // Draw histo with max of h1, h2 in each bin
 // (helps automatic y-range setting)
@@ -31,6 +35,41 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
   assert(!f1->IsZombie());
   TFile *f2 = new TFile(file2.c_str());
   assert(!f2->IsZombie());
+
+  string legs = "#gammma jet";
+  string legb = "QCD";
+  if (_pre09) {
+    legs = "prev09-v3";
+    legb = "summer08";
+  }
+  if (_octx) {
+    legs = "OctX";
+    legb = "summer08";
+  }
+
+  // Figure out binning from the file name so can be put on the plots
+  double ptmin = -1;
+  double ptmax = -1;
+  if (TString(file1.c_str()).Contains("_30.root")) {
+    ptmin = 30.;
+    ptmax = 50;
+  }
+  if (TString(file1.c_str()).Contains("_80.root")) {
+    ptmin = 80.;
+    ptmax = 120;
+  }
+  if (TString(file1.c_str()).Contains("_300.root")) {
+    ptmin = 300.;
+    ptmax = 470;
+  }
+  if (TString(file1.c_str()).Contains("x500.root")) {
+    ptmin = 500.;
+    ptmax = 800;
+  }
+  if (TString(file1.c_str()).Contains("x80.root")) {
+    ptmin = 80.;
+    ptmax = 120;
+  }
 
   curdir->cd();
 
@@ -100,11 +139,17 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       c->SetLogy(kTRUE);
       if (j==4 || j==5) c->SetLogy(kFALSE);
 
+      //TLatex *tex = new TLatex(0.57, 0.85, Form("%1.0f<#hat{p}_{T}<%1.0f GeV",
+      TLatex *tex = new TLatex(0.57, 0.85, Form("#hat{p}_{T} %1.0f-%1.0f GeV",
+						ptmin, ptmax));
+      tex->SetNDC();
+      tex->SetTextSize(0.05);
+
       TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
       leg->SetBorderSize(0);
       leg->SetFillStyle(kNone);
-      leg->AddEntry(h1, "#gamma jet","F");
-      leg->AddEntry(h2, "QCD","F");
+      leg->AddEntry(h1, legs.c_str(), "F");
+      leg->AddEntry(h2, legb.c_str(), "F");
       if (j==4) { leg->SetX1(0.45); leg->SetX2(0.70); }
 
       if (j==0)	h1->GetXaxis()->SetRangeUser(10,1000.);
@@ -163,6 +208,7 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       }
 
       if (!drawStats) leg->Draw();
+      if (ptmin!=-1) tex->Draw();
 
       c->SaveAs((outdir+"/"+fname+".eps").c_str());
 
@@ -173,21 +219,24 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
   for (int i = 0; i != 2; ++i) { // PHOTON ID
     for (int j = 0; j != 6; ++j) {
 
-      string hname, fname, epsname;
-      if (i==0) { hname="lrp_"; fname="LeadRecoPhot"; }
-      if (i==1) { hname="srp_"; fname="SecRecoPhot"; }
+      string hname, hname2, fname, epsname;
+      if (i==0) { hname="lrp_"; hname2="lrp_"; fname="LeadRecoPhot"; }
+      if (i==1) { hname="srp_"; hname2="lrp_"; fname="SecRecoPhot"; }
       
       if (j==0) { hname += "ntrkiso"; epsname = "NtrkIso"; }
       if (j==1) { hname += "ptiso"; epsname = "PtIso"; }
-      if (j==2) { hname += "emf"; epsname = "EMF"; }
+      if (j==2) { hname += "emf"; hname2 += "hcaliso"; epsname = "HcalIso"; }
       if (j==3) { hname += "sMajMaj"; epsname = "ClusMajMaj";}
       if (j==4) { hname += "sMinMin"; epsname = "ClusMinMin"; }
       //if (j==5) { hname += "ecaliso_new"; epsname = "EcalIso"; }
       if (j==5) { hname += "ecaliso"; epsname = "EcalIso"; }
-      
+
       TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
+      if (!h1) h1 = (TH1D*)f1->Get((dirs+"/"+hname2).c_str()); //assert(h1);
       TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
+      if (!h2) h2 = (TH1D*)f2->Get((dirb+"/"+hname2).c_str()); //assert(h1);
       if (!h1) {
+	
 	cout << (file1+":"+dirs+"/"+hname)<< " not found!" << endl;
 	assert(h1);
       }
@@ -206,7 +255,8 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       if (j==0) h1->GetXaxis()->SetRangeUser(-0.5,4.5);
       if (j==0) h1->GetXaxis()->SetTitle("N_{tracks}");
       if (j==1) h1->GetXaxis()->SetRangeUser(0.,0.2);
-      if (j==1) h1->GetXaxis()->SetTitle("#sum_{tracks} p_{T} / p_{T,#gamma}");
+    //if (j==1) h1->GetXaxis()->SetTitle("#sum_{tracks} p_{T} / p_{T,#gamma}");
+      if (j==1) h1->GetXaxis()->SetTitle("track isolation / p_{T,#gamma}");
       if (j==2) h1->GetXaxis()->SetRangeUser(-0.3,0.3);
       if (j==2) h1->GetXaxis()->SetTitle("HCAL isolation / p_{T,#gamma}");
       if (j==3) h1->GetXaxis()->SetRangeUser(0.,2.0);
@@ -220,11 +270,17 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       c->SetLogx(kFALSE);
       c->SetLogy(kTRUE);
 
+      //TLatex *tex = new TLatex(0.57, 0.85, Form("%1.0f<#hat{p}_{T}<%1.0f GeV",
+      TLatex *tex = new TLatex(0.57, 0.85, Form("#hat{p}_{T} %1.0f-%1.0f GeV",
+						ptmin, ptmax));
+      tex->SetNDC();
+      tex->SetTextSize(0.05);
+    
       TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
       leg->SetBorderSize(0);
       leg->SetFillStyle(kNone);
-      leg->AddEntry(h1, "#gamma jet","F");
-      leg->AddEntry(h2, "QCD","F");
+      leg->AddEntry(h1, legs.c_str(), "F");
+      leg->AddEntry(h2, legb.c_str(), "F");
       
       DoubleDraw(h1, h2);
 
@@ -239,7 +295,8 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       h2->Draw("HFsame");
       
       leg->Draw();
-      
+      if (ptmin!=-1) tex->Draw();
+
       c->SaveAs((outdir+"/"+fname+epsname+".eps").c_str());
     } // for j
   } // for i
@@ -312,12 +369,13 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       TH1D *h1 = (TH1D*)f1->Get((dirs+"/"+hname).c_str()); //assert(h1);
       TH1D *h2 = (TH1D*)f2->Get((dirb+"/"+hname).c_str()); //assert(h2);
       // NB: replace GenPhot with Parton for signal
-      if (hname=="lrp_dptvgg") {
+      if (hname=="lrp_dptvgg" && !(_pre09 || _octx)) {
 	h1 = (TH1D*)f1->Get((dirs+"/lrp_dptvg").c_str());
-	
+	if (_pre09 || _octx) h2 = (TH1D*)f2->Get((dirb+"/lrp_dptvg").c_str());
       }
-      if (hname=="lgg_dptvg") {
+      if (hname=="lgg_dptvg" && !(_pre09 || _octx)) {
 	h1 = (TH1D*)f1->Get((dirs+"/lrp_dptvg").c_str());
+	if (_pre09 || _octx) h2 = (TH1D*)f2->Get((dirb+"/lrp_dptvg").c_str());
       }
       if (!h1) {
 	cout << (file1+":"+dirs+"/"+hname)<< " not found!" << endl;
@@ -348,11 +406,17 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       c->SetLogx(kFALSE);
       c->SetLogy(kTRUE);
       
+      //TLatex *tex = new TLatex(0.57, 0.85, Form("%1.0f<#hat{p}_{T}<%1.0f GeV",
+      TLatex *tex = new TLatex(0.57, 0.85, Form("#hat{p}_{T} %1.0f-%1.0f GeV",
+						ptmin, ptmax));
+      tex->SetNDC();
+      tex->SetTextSize(0.05);
+
       TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
       leg->SetBorderSize(0);
       leg->SetFillStyle(kNone);
-      leg->AddEntry(h1, "#gamma jet","F");
-      leg->AddEntry(h2, "QCD","F");
+      leg->AddEntry(h1, legs.c_str(), "F");
+      leg->AddEntry(h2, legb.c_str(), "F");
 
       h1->GetXaxis()->SetTitle(title.c_str());
       h2->GetXaxis()->SetTitle(title.c_str());
@@ -370,7 +434,15 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
       h2->Draw("HFsame");
 
       leg->Draw();
+      if (ptmin!=-1) tex->Draw();
       
+      if (i==2 && j==0) {
+	TLatex *tcms = new TLatex(0.58, 0.50, "CMS preliminary");
+	tcms->SetNDC();
+	tcms->SetTextSize(0.05);
+	tcms->Draw();
+      }
+
       c->SaveAs((outdir+"/"+fname+epsname+".eps").c_str());
     } // for j
   } // for i
@@ -410,11 +482,17 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
     c->SetLogx(kFALSE);
     c->SetLogy(kTRUE);
 
+    //TLatex *tex = new TLatex(0.57, 0.85, Form("%1.0f<#hat{p}_{T}<%1.0f GeV",
+    TLatex *tex = new TLatex(0.57, 0.85, Form("#hat{p}_{T} %1.0f-%1.0f GeV",
+					      ptmin, ptmax));
+    tex->SetNDC();
+    tex->SetTextSize(0.05);
+
     TLegend *leg = new TLegend(0.70, 0.65, 0.95, 0.80, "", "brNDC");
     leg->SetBorderSize(0);
     leg->SetFillStyle(kNone);
-    leg->AddEntry(h1, "#gamma jet","F");
-    leg->AddEntry(h2, "QCD","F");
+    leg->AddEntry(h1, legs.c_str(), "F");
+    leg->AddEntry(h2, legb.c_str(), "F");
 
     if (i==0) h1->GetXaxis()->SetTitle("p_{T}(calojet) / p_{T}(calo-#gamma)");
     if (i==1) h1->GetXaxis()->SetTitle("p_{T}(genjet) / p_{T}(calo-#gamma)");
@@ -433,6 +511,7 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
     h2->Draw("HFsame");
 
     leg->Draw();
+    if (ptmin!=-1) tex->Draw();
 
     c->SaveAs((outdir+"/"+fname+"PtoGam.eps").c_str());
   }
@@ -448,18 +527,36 @@ int plots(string file1, string file2, string dirs = "/", string dirb = "/",
 }
 
 
-// Draw histo with max of h1, h2 in each bin
+// Draw histo with max or min of h1, h2 in each bin
 // (helps automatic y-range setting)
 void DoubleDraw(const TH1D *h1, const TH1D *h2) {
 
-  assert(h1->GetNbinsX()==h2->GetNbinsX());
   TH1D *h3 = (TH1D*)h1->Clone(Form("h3_%s_%s",h1->GetName(),h2->GetName()));
+  double lo = 1e9;
+  double hi = -1e9;
   for (int i = 1; i != h1->GetNbinsX()+1; ++i) {
+    if (h1->GetBinContent(i)>hi) hi = h1->GetBinContent(i);
+    if (h1->GetBinContent(i)<lo && h1->GetBinContent(i)>0)
+      lo = h1->GetBinContent(i);
+  }
+  for (int i = 1; i != h2->GetNbinsX()+1; ++i) {
+    if (h2->GetBinContent(i)>hi) hi = h2->GetBinContent(i);
+    if (h2->GetBinContent(i)<lo && h2->GetBinContent(i)>0)
+    lo = h2->GetBinContent(i);
+  }
+  for (int i = 1; i != h3->GetNbinsX()+1; ++i) {
+    if (i%3==0) h3->SetBinContent(i, hi);
+    if (i%3==1) h3->SetBinContent(i, lo);
+    //if (i%3==2) h3->SetBinContent(i, 0);
+  }
+  /*
+  for (int i = 0; i != h1->GetNbinsX()+1; ++i) {
     h3->SetBinContent(i, max(h1->GetBinContent(i), h2->GetBinContent(i)));
   }
+  */
 
   h3->SetFillStyle(kNone);
-  h3->SetLineColor(kBlack);
+  h3->SetLineColor(kWhite);
   h3->Draw("H");
 
   return;

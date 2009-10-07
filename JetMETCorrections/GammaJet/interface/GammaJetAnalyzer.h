@@ -66,7 +66,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       static const int kPhoton = 22;
       static const int kElectron = 11;
 
-      static const bool _debug = true;
+      static const bool _debug = false;
 
       // ----------member data ---------------------------
       edm::InputTag MCTruthCollection_; 

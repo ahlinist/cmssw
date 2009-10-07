@@ -23,7 +23,81 @@
 #include <string>
 #include <vector>
 
-#include "deltac.C"
+// Bias corrections are defined in L3Corr.C
+#include "L3Corr.hpp"
+//#include "deltac.C"
+
+// Link this later from gjettree.h
+struct photoncandidate {
+  double e;
+  double pt;
+  double eta;
+  double phi;
+};
+
+// Container for PhotonID parameters
+// Link this later from gjettree.h
+struct photonidcuts {
+  int tracknb;
+  float trackiso_rel;
+  float trackiso_abs;
+  float trackiso_log;
+  float trackiso5;
+  float trackiso7;
+  float hcaliso_rel;
+  float hcaliso_abs;
+  float hcaliso_log;
+  float ecaliso_rel;
+  float ecaliso_abs;
+  float ecaliso_log;
+  float sminmin;
+  float smajmaj;
+  float hovere;
+  float setaeta;
+  float emf_rel;
+  float emf_abs;
+};
+
+// Histograms for making factorized efficiency/rejection plots
+// Link this later from gjettree.h
+class gjetefficiency_histos {
+
+ public:
+  int failcounter;
+  TH2D *idvars;
+
+  TH2D *id_beforetopo;
+  TH2D *idsim;
+  TH2D *id_aftertopo;
+  TH2D *topo_beforeid;
+  TH2D *toposim;
+  TH2D *topo_afterid;
+
+  TH2D *id_beforetopo_vsptgen;
+  TH2D *idsim_vsptgen;
+  TH2D *id_aftertopo_vsptgen;
+  TH2D *topo_beforeid_vsptgen;
+  TH2D *toposim_vsptgen;
+  TH2D *topo_afterid_vsptgen;
+
+  TH2D *id_beforetopo_vspthat;
+  TH2D *idsim_vspthat;
+  TH2D *id_aftertopo_vspthat;
+  TH2D *topo_beforeid_vspthat;
+  TH2D *toposim_vspthat;
+  TH2D *topo_afterid_vspthat;
+
+  /*
+  TH2D *ecid_beforetopo;
+  TH2D *ecid_aftertopo;
+  TH2D *ectopo_beforeid;
+  TH2D *ectopo_afterid;
+  */
+
+  gjetefficiency_histos(bool wide = false);
+  ~gjetefficiency_histos();
+  void Write();
+};
 
 class gjet_response {
 public :
@@ -37,8 +111,7 @@ public :
    Int_t           isgamma;
    Int_t           ismatched;
    Float_t         weight;
-   Float_t         nniso;
-   Float_t         nniso_int;
+   Float_t         pthat;
    Float_t         ptphot;
    Float_t         ptjet;
    Float_t         etaphot;
@@ -50,14 +123,33 @@ public :
    Float_t         pt2vecsum;
    Float_t         pt2phot;
    Float_t         ptphottrue;
+   Float_t         ptphotgen;
    Float_t         ptjettrue;
    Float_t         ptquarktrue;
    Float_t         phiphottrue;
    Float_t         phijettrue;
    Float_t         phiquarktrue;
+   Float_t         etaphottrue;
+   Float_t         etajettrue;
+   Float_t         etaquarktrue;
+   Float_t         mpf;
+   Float_t         mpftrue;
+
+   // Photon ID tree
+   Float_t         pt;
+   Int_t           ntrkiso;
+   Float_t         ptiso;
+   Float_t         ptiso5;
+   Float_t         ptiso7;
+   Float_t         ecaliso;
+   Float_t         hcaliso;
+   Float_t         sMajMaj;
+   Float_t         sMinMin;
+   Float_t         hovere;
+   Float_t         setaeta;
+   Float_t         r9;
 
    int XBINS, YBINS;
-   double cutnn;
    double cut2jet;
    double cutetajet;
 
@@ -66,28 +158,57 @@ public :
    TBranch        *b_isgamma;   //!
    TBranch        *b_ismatched;   //!
    TBranch        *b_weight;   //!
-   TBranch        *b_nniso;   //!
-   TBranch        *b_nniso_int;   //!
+   TBranch        *b_pthat;   //!
    TBranch        *b_ptph;   //!
    TBranch        *b_ptj;   //!
    TBranch        *b_etaph;   //!
    TBranch        *b_etaj;   //!
    TBranch        *b_phiph;   //!
    TBranch        *b_phij;   //!
+   TBranch        *b_emfj;   //! new
+   TBranch        *b_pflavor;   //! new
+   TBranch        *b_flavor;   //! new
    TBranch        *b_pt2jet;   //!
    TBranch        *b_pt2sum;   //!
    TBranch        *b_pt2vecsum;   //!
    TBranch        *b_pt2phot;   //!
    TBranch        *b_ptphottrue;   //!
+   TBranch        *b_ptphotgen;   //! new
    TBranch        *b_ptjettrue;   //!
    TBranch        *b_ptquarktrue;   //!
    TBranch        *b_phiphottrue;   //!
    TBranch        *b_phijettrue;   //!
    TBranch        *b_phiquarktrue;   //!
+   TBranch        *b_etaphottrue;   //!
+   TBranch        *b_etajettrue;   //!
+   TBranch        *b_etaquarktrue;   //!
+   TBranch        *b_mpf;   //!
+   TBranch        *b_mpftrue;   //!
+
+   // Photon ID tree
+   TBranch        *b_pt;
+   TBranch        *b_ntrkiso;
+   TBranch        *b_ptiso;
+   TBranch        *b_ptiso5;
+   TBranch        *b_ptiso7;
+   TBranch        *b_ecaliso;
+   TBranch        *b_hcaliso;
+   TBranch        *b_jetiso;
+   TBranch        *b_sMajMaj;
+   TBranch        *b_sMinMin;
+   TBranch        *b_hovere;
+   TBranch        *b_setaeta;
+   TBranch        *b_r9;
 
    TProfile *ptmean_mix;
    TProfile *ptmean_sig;
    TProfile *ptmean_bkg;
+   TProfile *ptjet_mix;
+   TProfile *ptjet_sig;
+   TProfile *ptjet_bkg;
+   TProfile *ptgen_mix;
+   TProfile *ptgen_sig;
+   TProfile *ptgen_bkg;
    TH1D *purity;
    TH1D *sovb;
    TH1D *efficiency;
@@ -95,22 +216,50 @@ public :
    TH1D *effid2;
    TH1D *rejection;
 
-   TH1D* ptphot_nocut;
+   TProfile *ptmean_mix_w;
+   TProfile *ptmean_sig_w;
+   TProfile *ptmean_bkg_w;
+   TH1D *purity_w;
+   TH1D *sovb_w;
+   TH1D *efficiency_w;
+   TH1D *rejection_w;
+
+
+   // Narrow bins
+   TH1D* ptphot_nocut_mix;
    TH1D* ptphot_mix;
-   TH1D* response_nocut;
+   TH1D* response_nocut_mix;
    TH1D* response_mix;
-   TH2D* responsevspt_nocut;
+   TH2D* responsevspt_nocut_mix;
    TH2D* responsevspt_mix;
+   TH2D* responsevsptgen_mix;
+   // Wide bins
+   TH1D* ptphot_nocut_mix_w;
+   TH1D* ptphot_mix_w;
+   TH2D* responsevspt_nocut_mix_w;
+   TH2D* responsevspt_mix_w;
+   /*
    TH1D* response_mix_reg1;
    TH1D* response_mix_reg2;
    TH1D* response_mix_reg3;
    TH1D* response_mix_reg4;
+   */
+   // Narrow bins
    TH1D* ptphot_nocut_sig;
    TH1D* ptphot_sig;
    TH1D* response_nocut_sig;
    TH1D* response_sig;
    TH2D* responsevspt_nocut_sig;
    TH2D* responsevspt_sig;
+   TH2D* responsevsptgen_sig;
+   TProfile* jetmatchvsptgen_sig;
+   TProfile* photmatchvsptgen_sig;
+   // Wide bins
+   TH1D* ptphot_nocut_sig_w;
+   TH1D* ptphot_sig_w;
+   TH2D* responsevspt_nocut_sig_w;
+   TH2D* responsevspt_sig_w;
+   /*
    TH1D* response_nocut_sig_reg1;
    TH1D* response_nocut_sig_reg2;
    TH1D* response_nocut_sig_reg3;
@@ -119,40 +268,60 @@ public :
    TH1D* response_sig_reg2;
    TH1D* response_sig_reg3;
    TH1D* response_sig_reg4;
+   */
+   // Narrow bins
    TH1D* ptphot_nocut_bkg;
    TH1D* ptphot_bkg;
    TH1D* response_nocut_bkg;
    TH1D* response_bkg;
    TH2D* responsevspt_nocut_bkg;
    TH2D* responsevspt_bkg;
-   TH1D* response_bkg_reg1;
-   TH1D* response_bkg_reg2;
-   TH1D* response_bkg_reg3;
-   TH1D* response_bkg_reg4;
+   TH2D* responsevsptgen_bkg;
+   // Wide bins
+   TH1D* ptphot_nocut_bkg_w;
+   TH1D* ptphot_bkg_w;
+   TH2D* responsevspt_nocut_bkg_w;
+   TH2D* responsevspt_bkg_w;
 
    TH1D* ptphot_topocut_sig;
    TH1D* ptphot_topocut_bkg;
    TH1D* ptphot_idcut_sig;
    TH1D* ptphot_idcut_bkg;
 
-   TH2D* sob_vs_eff_1;
-   TH2D* sob_vs_eff_2;
-   TH2D* sob_vs_eff_3;
-   TH2D* sob_vs_eff_4;
-
-   TH1D* nn_reg1_sig;
-   TH1D* nn_reg2_sig;
-   TH1D* nn_reg3_sig;
-   TH1D* nn_reg4_sig;
-
-   TH1D* nn_reg1_bkg;
-   TH1D* nn_reg2_bkg;
-   TH1D* nn_reg3_bkg;
-   TH1D* nn_reg4_bkg;
+   // photon/Z+jet combination studies
+   std::vector<int> pt2cuts;
+   std::vector<TProfile*> ptphot_pthat;
+   std::vector<TProfile*> ptphot_ptpho;
+   std::vector<TProfile*> ptresp_pthat;
+   std::vector<TProfile*> ptresp_ptpho;
+   std::vector<TH2D*> ptresp_pthat_2d;
+   std::vector<TH2D*> ptresp_ptpho_2d;
+   std::vector<TProfile*> parton_pthat;
+   std::vector<TProfile*> parton_ptpho;
+   std::vector<TProfile*> pscale_pthat;
+   std::vector<TProfile*> pscale_ptpho;
+   std::vector<TProfile*> kjet_pthat;
+   std::vector<TProfile*> kjet_ptpho;
 
    TFile* hOutputFile ;
    TDirectory* hFitDir;
    TDirectory* curdir;
+
+   // Bias corrections are defined in L3Corr
+   L3Corr *l3corr;
+   L3Corr::PhotonID phoID;
+
+   // Photon ID cut containers
+   photonidcuts _looseid;
+   photonidcuts _mediumid;
+   photonidcuts _tightid;
+
+   // Efficiency stuff
+   std::map<std::string, gjetefficiency_histos*> effs;
+   void FillEffHistos(std::string dirname);
+   void WriteHistos();
+   bool cutID(photonidcuts const& pid, std::vector<bool> *vpass = 0,
+	      std::vector<float> *vpassv = 0, bool sim = false);
 
    gjet_response(TTree *tree=0, char * outputname = "test.root", int xbin = 100, int ybin = 100, const char* cfg = "final");
    virtual ~gjet_response();
@@ -165,15 +334,13 @@ public :
    virtual Bool_t   Notify();
    virtual void     Fit(bool arithmetic=false);
    virtual void     ResetHistos(); 
-   virtual void     Optimum();  
+   //virtual void     Optimum();  
    virtual void     Show(Long64_t entry = -1);
 
    //  calculate phi1-phi2 keeping value between 0 and pi
    inline float delta_phi(float phi1, float phi2);
    // calculate eta1-eta2 keeping eta2 positive
    inline float delta_eta(float eta1, float eta2);
-   // Photon ID cuts on neural network output
-   bool NNID(float nnval);
 
    void Configure(const char *cfg = "final");
    void DumpConfig();
@@ -192,13 +359,17 @@ public :
 
    std::string _mctruthfunc;
    std::string _mctruthcsa07;
+   std::string _mctruthrmsfunc;
+   std::string _mcmeanfunc;
+   std::string _mcrmsfunc;
 
    float _lowptreco;
    bool _lowptbias;
    float _fitptmin;
 
    float _xmin, _xmax;
-   int _rebin;
+   //int _rebin;
+   std::vector<float> _rebin;
 
 };
 
@@ -283,8 +454,7 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("isgamma", &isgamma, &b_isgamma);
    fChain->SetBranchAddress("ismatched", &ismatched, &b_ismatched);
    fChain->SetBranchAddress("weight", &weight, &b_weight);
-   fChain->SetBranchAddress("nniso", &nniso, &b_nniso);
-   fChain->SetBranchAddress("nniso_int", &nniso_int, &b_nniso_int);
+   fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    fChain->SetBranchAddress("ptphot", &ptphot, &b_ptph);
    fChain->SetBranchAddress("ptjet", &ptjet, &b_ptj);
    fChain->SetBranchAddress("etaphot", &etaphot, &b_etaph);
@@ -296,11 +466,28 @@ void gjet_response::Init(TTree *tree)
    fChain->SetBranchAddress("pt2vecsum", &pt2vecsum, &b_pt2vecsum);
    fChain->SetBranchAddress("pt2phot", &pt2phot, &b_pt2phot);
    fChain->SetBranchAddress("ptphottrue", &ptphottrue, &b_ptphottrue);
+   fChain->SetBranchAddress("ptphotgen", &ptphotgen, &b_ptphotgen);
    fChain->SetBranchAddress("ptjettrue", &ptjettrue, &b_ptjettrue);
    fChain->SetBranchAddress("ptquarktrue", &ptquarktrue, &b_ptquarktrue);
    fChain->SetBranchAddress("phiphottrue", &phiphottrue, &b_phiphottrue);
    fChain->SetBranchAddress("phijettrue", &phijettrue, &b_phijettrue);
    fChain->SetBranchAddress("phiquarktrue", &phiquarktrue, &b_phiquarktrue);
+   fChain->SetBranchAddress("etaphottrue", &etaphottrue, &b_etaphottrue);
+   fChain->SetBranchAddress("etajettrue", &etajettrue, &b_etajettrue);
+   fChain->SetBranchAddress("etaquarktrue", &etaquarktrue, &b_etaquarktrue);
+
+   // PhotonID tree, added as a friend
+   fChain->SetBranchAddress("pt", &pt, &b_pt);
+   fChain->SetBranchAddress("ntrkiso", &ntrkiso, &b_ntrkiso);
+   fChain->SetBranchAddress("ptiso", &ptiso, &b_ptiso);
+   fChain->SetBranchAddress("ptiso5", &ptiso5, &b_ptiso5);
+   fChain->SetBranchAddress("ptiso7", &ptiso7, &b_ptiso7);
+   fChain->SetBranchAddress("ecaliso", &ecaliso, &b_ecaliso);
+   fChain->SetBranchAddress("hcaliso", &hcaliso, &b_hcaliso);
+   fChain->SetBranchAddress("sMajMaj", &sMajMaj, &b_sMajMaj);
+   fChain->SetBranchAddress("sMinMin", &sMinMin, &b_sMinMin);
+   fChain->SetBranchAddress("hovere", &hovere, &b_hovere);
+   fChain->SetBranchAddress("setaeta", &setaeta, &b_setaeta);
 
    Notify();
 }

@@ -67,7 +67,7 @@ void staterr() {
   bool _notemode = true;
   bool _fptalk = true;
 
-  double lumi = 10.;//10.;
+  double lumi = 1.;//10.;//10.;
   //int XBINS = 27;
   double xmin = 25.;
   double xmax = 700.;
@@ -101,16 +101,23 @@ void staterr() {
     TFile *f = new TFile("output/output_mixed_medium_ite.root","READ");
     assert(!f->IsZombie());
     h_xsec = (TH1D*)f->Get("ptphot_sig");
+    TH1D *h_xsec_bkg = (TH1D*)f->Get("ptphot_bkg");
     assert(h_xsec);
     // Normalize cross section units to 1./(25 GeV * fb)
     for (int i = 1; i != h_xsec->GetNbinsX()+1; ++i)
       h_xsec->SetBinContent(i, h_xsec->GetBinContent(i)
 			    / h_xsec->GetBinWidth(i) * 25.);
+    for (int i = 1; i != h_xsec_bkg->GetNbinsX()+1; ++i)
+      h_xsec_bkg->SetBinContent(i, h_xsec_bkg->GetBinContent(i)
+				/ h_xsec_bkg->GetBinWidth(i) * 25.);
+    // Correct for pTphot>25 threshold
+    if (h_xsec_bkg->GetBinLowEdge(1)==15. && h_xsec_bkg->GetBinLowEdge(2)==30.)
+      h_xsec_bkg->SetBinContent(1, h_xsec_bkg->GetBinContent(1)*15./5.);
     cout << "Using binned cross section" << endl;
 
     TH1D *h0 = new TH1D("h0","h0",1000,0.,1000.);
-    h0->SetMinimum(1.);
-    h0->SetMaximum(1e7);
+    h0->SetMinimum(0.1);//1.);
+    h0->SetMaximum(1e10);//1e8);//1e7);
     h0->GetXaxis()->SetTitle("p_{T}^{#gamma} (GeV)");
     h0->GetXaxis()->SetMoreLogLabels();
     h0->GetXaxis()->SetNoExponent();
@@ -118,12 +125,25 @@ void staterr() {
     h0->GetYaxis()->SetTitle("events / 25 GeV / fb^{-1}");
     h0->Draw();
 
+    TLegend *l0 = new TLegend(0.50,0.70,0.90,0.90);
+    l0->SetFillStyle(kNone);
+    l0->SetBorderSize(0);
+    l0->AddEntry(h_xsec, "#gamma + jet", "P");
+    l0->AddEntry(h_xsec_bkg, "QCD background", "P");
+    l0->Draw();
+
+    h_xsec_bkg->SetLineWidth(2);
+    h_xsec_bkg->SetLineColor(kBlack);
+    h_xsec_bkg->SetMarkerStyle(kFullCircle);
+    h_xsec_bkg->SetMarkerColor(kBlack);
+    h_xsec_bkg->Draw("SAME");
+
     h_xsec->SetLineWidth(2);
     h_xsec->SetLineColor(kRed);
     h_xsec->SetMarkerStyle(kCircle);
     h_xsec->SetMarkerColor(kRed);
     h_xsec->Draw("SAME");
-    
+
     c0->SaveAs("eps/toymc/xsec.eps");
   }
   else
@@ -204,8 +224,8 @@ void staterr() {
   TTimeStamp t;
   TRandom3 *rand = new TRandom3();
   //rand->SetSeed(t.GetNanoSec()/1000);//123456);
-  rand->SetSeed(624161); // new note default (summer08)
-  //rand->SetSeed(771156000); // note default
+  //grand->SetSeed(624161); // note default (summer08 - AN2009-012/v4)
+  rand->SetSeed(771156000); // note default
   //rand->SetSeed(293658000); // very pretty curves with chi2/NDF=1.053
   //rand->SetSeed(63900000); // representative for stat uncertainty (note)
   gRandom = rand; // can we replace this?

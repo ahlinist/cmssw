@@ -17,6 +17,7 @@
 #include "L3Corr.hpp" // => Load .cpp in mk_L3Uncertainty.C 
 
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -104,9 +105,12 @@ void L3Uncertainty() {
   L3Corr rjetGluon(jetAlg, jec::kL3HardGluon);
   L3Corr rjetFlavor(jetAlg, jec::kL3Flavor);
 
-  double erangemin = (plotLog) ? 15 : 0.01;
+  //double erangemin = (plotLog) ? 15 : 0.01;
+  double erangemin = (plotLog) ? 10 : 0.01;
   double erangemax = (plotLog) ? maxpt : maxpt;
-  double emin = (plotLog) ? 20 : 20;
+  //double emin = (plotLog) ? 20 : 20;
+  //double emin = (plotLog) ? 12 : 12;
+  double emin = (plotLog) ? 15 : 15;
   double emax = (plotLog) ? maxpt*0.8 : maxpt*0.95;
 
   TGraph* statUp = 0;
@@ -268,8 +272,8 @@ void L3Uncertainty() {
 
     TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
 			 erangemin, erangemax);
-    HE2->SetMinimum(-19.99);//-15.99);//-3.99);
-    HE2->SetMaximum(19.99);//15.99);//3.99);
+    HE2->SetMinimum(-29.99);//-19.99);//-15.99);//-3.99);
+    HE2->SetMaximum(29.99);//19.99);//15.99);//3.99);
     HE2->SetStats(kFALSE);
     HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE2->GetXaxis()->SetTitleOffset(1.1);//0.8);
@@ -311,6 +315,95 @@ void L3Uncertainty() {
     gROOT->ProcessLine(".! mkdir eps/jec_plots");
     C->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
   }
+
+  {
+    string cName = "L3UncertUp_";
+    switch (jetAlg) {
+    case L3Corr::IC5_DATA: cName += "ICone5_Data";
+      break;
+    case L3Corr::IC5_MC: cName += "ICone5_MC";
+      break;
+    default:
+      exit(0);
+      break;
+    };
+    if (plotLog) cName += "_Log";
+    
+    TCanvas* C = new TCanvas(cName.c_str(), cName.c_str(), 600, 600);
+    if (plotLog) C->SetLogx();
+
+    TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
+			 erangemin, erangemax);
+    HE2->SetMinimum(0.);//-4.99);
+    HE2->SetMaximum(39.99);//19.99);
+    HE2->SetStats(kFALSE);
+    HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
+    HE2->GetXaxis()->SetTitleOffset(0.9);
+    HE2->GetXaxis()->SetMoreLogLabels(kTRUE);
+    HE2->GetXaxis()->SetNoExponent(kTRUE);
+    HE2->GetYaxis()->SetTitle("relative uncertainty [%]");
+    HE2->GetYaxis()->SetTitleOffset(0.9);
+    HE2->Draw("AXIS");
+
+    TH1D *hErrUp = (TH1D*)hErr->Clone("hErrUp");
+    for (int i = 1; i != hErrUp->GetNbinsX()+1; ++i) {
+      hErrUp->SetBinContent(i, 0.5*hErr->GetBinError(i));
+      hErrUp->SetBinError(i, 0.5*hErr->GetBinError(i));
+    }
+
+    hErrUp->Draw("SAME E3");
+    HE2->Draw("SAME AXIS");
+
+    statUp->Draw("L");
+    phUp->Draw("L");
+    qcdUp->Draw("L");
+    partUp->Draw("L");
+    gluUp->Draw("L");
+    flavorUp->Draw("L");
+
+    /*
+    DrawLine(statUp, 0.18, 0.87, "stat. 10 pb^{-1}");
+    DrawLine(phUp, 0.18, 0.81, "photon scale");
+    DrawLine(partUp, 0.18, 0.75, "parton corr.");
+    DrawLine(flavorUp, 0.54, 0.87, "flavor mapping");
+    DrawLine(gluUp, 0.54, 0.81, "second jet");
+    DrawLine(qcdUp, 0.54, 0.75, "QCD background");
+    DrawFill(hErrUp, 0.54, 0.69, "total err.");
+    */
+    DrawFill(hErrUp, 0.45, 0.81, "total uncertainty");
+    DrawLine(flavorUp, 0.45, 0.75, "flavor mapping");
+    DrawLine(gluUp, 0.45, 0.69, "second jet cut");
+    DrawLine(partUp, 0.45, 0.63, "parton correction");
+    DrawLine(qcdUp, 0.45, 0.57, "QCD background");
+    DrawLine(statUp, 0.45, 0.51, "statistics / 10 pb^{-1}");
+    DrawLine(phUp, 0.45, 0.45, "photon scale");
+
+    TLatex *tcms = new TLatex(0.45, 0.87, "CMS preliminary");
+    tcms->SetNDC();
+    tcms->SetTextSize(0.05);
+    tcms->Draw();
+
+    C->Update();
+
+    gROOT->ProcessLine(".! mkdir eps");
+    gROOT->ProcessLine(".! mkdir eps/jec_plots");
+    C->SaveAs(("eps/jec_plots/" + cName + ".eps").c_str());
+
+    HE2->GetXaxis()->SetRangeUser(25.,752.);
+    C->Update();
+    C->SaveAs(("eps/jec_plots/" + cName + "_trunc.eps").c_str());
+  }
+
+  // Produce ASCII file of the uncertainties for CMSSW implementation
+  ofstream fout("L3Uncertainty.txt");
+  double mineta = -5;
+  double maxeta = 5;
+  int npar = 3*hErr->GetNbinsX();
+  fout << Form("%1.1f %1.1f %d", mineta, maxeta, npar);
+  for (int i = 1; i != hErr->GetNbinsX()+1; ++i)
+    fout << Form(" %1.1f %1.3g %1.3g ", hErr->GetBinCenter(i),
+		 0.01*hErr->GetBinError(i), 0.01*hErr->GetBinError(i));
+  fout << endl;
 
 }
 
@@ -780,8 +873,8 @@ void DeltaCUncertainty() {
     
     TH1F* HE3 = new TH1F((cName + "_E3").c_str(), (char*) 0, 100, 
 			 erangemin, erangemax);
-    HE3->SetMinimum(-0.30);
-    HE3->SetMaximum(0.30);
+    HE3->SetMinimum(-0.3499);//-0.30);
+    HE3->SetMaximum(0.1999);//0.30);
     HE3->SetStats(kFALSE);
     HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE3->GetXaxis()->SetTitleOffset(1.1);
@@ -792,8 +885,8 @@ void DeltaCUncertainty() {
     
     HE3->Draw("AXIS");
     hErr2->Draw("SAME E4");
-    hErr1->Draw("SAME HIST L");
     hErr2->Draw("SAME HIST L");
+    hErr1->Draw("SAME HIST L");
     hErr3->Draw("SAME HIST L");
     
     DrawLine(hErr1, 0.54, 0.31, "loose");
@@ -1032,8 +1125,8 @@ void BackgroundUncertainty() {
     
     TH1F* HE3 = new TH1F((cName + "_E3").c_str(), (char*) 0, 100, 
 			 erangemin, erangemax);
-    HE3->SetMinimum(-0.15999);
-    HE3->SetMaximum(0.15999);
+    HE3->SetMinimum(-0.1999);//-0.15999);
+    HE3->SetMaximum(0.09999);//0.15999);
     HE3->SetStats(kFALSE);
     HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE3->GetXaxis()->SetTitleOffset(1.1);
@@ -1228,8 +1321,8 @@ void PartonUncertainty() {
 
     TH1F* HE2 = new TH1F((cName + "_E2").c_str(), (char*) 0, 100, 
 			 erangemin, erangemax);
-    HE2->SetMinimum(-5.99);
-    HE2->SetMaximum(5.99);
+    HE2->SetMinimum(-6.99);//-5.99);
+    HE2->SetMaximum(6.99);//5.99);
     HE2->SetStats(kFALSE);
     HE2->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE2->GetXaxis()->SetTitleOffset(1.1);
@@ -1282,8 +1375,8 @@ void PartonUncertainty() {
 			 erangemin, erangemax);
     //HE3->SetMinimum(0.94001);
     //HE3->SetMaximum(1.05999);
-    HE3->SetMinimum(0.89001);
-    HE3->SetMaximum(1.10999);
+    HE3->SetMinimum(0.85001);//0.89001);
+    HE3->SetMaximum(1.14999);//1.10999);
     HE3->SetStats(kFALSE);
     HE3->GetXaxis()->SetTitle("p_{T} [GeV]");
     HE3->GetXaxis()->SetTitleOffset(1.1);
@@ -1562,8 +1655,10 @@ void BiasCorrections() {
   L3Corr::PhotonID id = L3Corr::kMedium;
   
   jec::ErrorTypes bias = //jec::kAll & ~jec::kL3Flavor;
-    jec::kL3QCDBackground | jec::kL3Parton | jec::kL3HardGluon;
+    //jec::kL3QCDBackground | jec::kL3Parton | jec::kL3HardGluon;
+    jec::kL3PhotonES | jec::kL3HardGluon | jec::kL3Parton;
   jec::ErrorTypes bkg = jec::kL3QCDBackground;
+  jec::ErrorTypes photon = jec::kL3PhotonES;
   jec::ErrorTypes topo = jec::kL3HardGluon;
   jec::ErrorTypes parton = jec::kL3Parton;
 
@@ -1572,6 +1667,8 @@ void BiasCorrections() {
   L3Corr rjetTopo(jetAlg, topo);
   L3Corr rjetParton(jetAlg, parton);
   L3Corr rjetPeak(jetAlg, parton);
+  L3Corr rjetBalance(jetAlg, parton);
+  L3Corr rjetPhoton(jetAlg, photon);
 
   double erangemin = (plotLog) ? 15 : 0.01;
   double erangemax = (plotLog) ? maxpt : maxpt;
@@ -1586,9 +1683,13 @@ void BiasCorrections() {
   TGraph* partonDown = 0;
   TGraph* peakUp = 0;
   TGraph* peakDown = 0;
+  TGraph* balanceUp = 0;
+  TGraph* balanceDown = 0;
+  TGraph* photonUp = 0;
+  TGraph* photonDown = 0;
   TGraph* allUp = 0;
   TGraph* allDown = 0;
-  TH1D* hErr = 0, *hErr1, *hErr2, *hErr3, *hErr4, *hAll;
+  TH1D* hErr = 0, *hErr1, *hErr2, *hErr3, *hErr4, *hErr5, *hErr6, *hAll;
   {
     const int ndiv = 100;
     double x[ndiv];
@@ -1600,6 +1701,10 @@ void BiasCorrections() {
     double peakdown[ndiv];
     double partonup[ndiv];
     double partondown[ndiv];
+    double balanceup[ndiv];
+    double balancedown[ndiv];
+    double photonup[ndiv];
+    double photondown[ndiv];
     double allup[ndiv];
     double alldown[ndiv];
 
@@ -1619,6 +1724,8 @@ void BiasCorrections() {
     hErr2 = new TH1D("hErr2", "hErr2", ndiv, xbins);
     hErr3 = new TH1D("hErr3", "hErr3", ndiv, xbins);
     hErr4 = new TH1D("hErr4", "hErr4", ndiv, xbins);
+    hErr5 = new TH1D("hErr5", "hErr5", ndiv, xbins);
+    hErr6 = new TH1D("hErr6", "hErr6", ndiv, xbins);
     hAll = new TH1D("hAll", "hAll", ndiv, xbins);
 
     for(int i = 0; i != ndiv; ++i) {
@@ -1641,6 +1748,14 @@ void BiasCorrections() {
       rjetPeak.Rjet(x[i], err);
       peakup[i] = 0.;//100 * err / r;
       peakdown[i] = 0.;//-100 * err / r;
+
+      rjetBalance.Rjet(x[i], err);
+      balanceup[i] = 0.;//100 * err / r;
+      balancedown[i] = 0.;//-100 * err / r;
+
+      rjetPhoton.Rjet(x[i], err);
+      photonup[i] = 100 * err / r;
+      photondown[i] = -100 * err / r;
 
       rjet.Rjet(x[i], err);
       allup[i] = 100 * err / r;
@@ -1666,7 +1781,7 @@ void BiasCorrections() {
       hErr2->SetBinError(ibin, err / r * dr);
 
       r = rjetParton.Rjet(x, err);
-      dr = rjetParton._parton(x);
+      dr = rjetParton._RbiasParton(x, id); // _parton(x);
       hErr3->SetBinContent(ibin, dr);
       hErr3->SetBinError(ibin, err / r * dr);
 
@@ -1675,9 +1790,23 @@ void BiasCorrections() {
       hErr4->SetBinContent(ibin, dr);
       hErr4->SetBinError(ibin, 1e-4);//err / r * (1 + dr));
 
+      r = rjetBalance.Rjet(x, err);
+      dr = rjetBalance._RbiasBalance(x);
+      hErr5->SetBinContent(ibin, dr);
+      hErr5->SetBinError(ibin, 1e-4);//err / r * (1 + dr));
+
+      r = rjetPhoton.Rjet(x, err);
+      dr = rjetPhoton._RbiasPhot(x, id);
+      hErr6->SetBinContent(ibin, dr);
+      //hErr6->SetBinError(ibin, err / r * (1 + dr));
+      hErr6->SetBinError(ibin, err / r * dr);
+
       r = rjet.Rjet(x, err);
-      dr = rjetBkg._RbiasBkg(x,id) * rjetTopo._RbiasTopo(x, id)
-	* rjetParton._parton(x) * rjetPeak._RbiasPeak(x);
+      dr = //rjetBkg._RbiasBkg(x,id) * rjetTopo._RbiasTopo(x, id)
+	rjetPhoton._RbiasPhot(x, id) * rjetTopo._RbiasTopo(x, id)
+	//* rjetParton._parton(x) * rjetPeak._RbiasPeak(x)
+	* rjetParton._RbiasParton(x, id) * rjetBalance._RbiasBalance(x)
+	* rjetPeak._RbiasPeak(x);
       hAll->SetBinContent(ibin, dr);
       hAll->SetBinError(ibin, err / r * dr);
     }
@@ -1690,6 +1819,10 @@ void BiasCorrections() {
     partonDown = new TGraph(ndiv, x, partondown);
     peakUp = new TGraph(ndiv, x, peakup);
     peakDown = new TGraph(ndiv, x, peakdown);
+    balanceUp = new TGraph(ndiv, x, balanceup);
+    balanceDown = new TGraph(ndiv, x, balancedown);
+    photonUp = new TGraph(ndiv, x, photonup);
+    photonDown = new TGraph(ndiv, x, photondown);
     allUp = new TGraph(ndiv, x, allup);
     allDown = new TGraph(ndiv, x, alldown);
   }
@@ -1736,6 +1869,24 @@ void BiasCorrections() {
   hErr4->SetMarkerColor(hErr4->GetFillColor());
   hErr4->SetMarkerSize(0);
 
+  // balance between partons
+  hErr5->SetLineStyle(kDashDotted);
+  hErr5->SetLineWidth(2);
+  hErr5->SetFillStyle(1001);
+  hErr5->SetFillColor(kBlue);
+  hErr5->SetLineColor(kBlack);
+  hErr5->SetMarkerColor(hErr5->GetFillColor());
+  hErr5->SetMarkerSize(0);
+
+  // photon scale
+  hErr6->SetLineStyle(kDashDotted);//kSolid);
+  hErr6->SetLineWidth(2);
+  hErr6->SetFillStyle(kLeftHatch);
+  hErr6->SetFillColor(kRed);
+  hErr6->SetLineColor(kBlack);
+  hErr6->SetMarkerColor(hErr6->GetFillColor());
+  hErr6->SetMarkerSize(0);
+
   hAll->SetLineStyle(kSolid);
   hAll->SetLineWidth(2);
   hAll->SetFillStyle(1001);
@@ -1763,6 +1914,16 @@ void BiasCorrections() {
   peakUp->SetLineWidth(2);
   peakDown->SetLineStyle(kDashDotted);
   peakDown->SetLineWidth(2);
+
+  balanceUp->SetLineStyle(kDashDotted);
+  balanceUp->SetLineWidth(2);
+  balanceDown->SetLineStyle(kDashDotted);
+  balanceDown->SetLineWidth(2);
+
+  photonUp->SetLineStyle(kSolid);
+  photonUp->SetLineWidth(2);
+  photonDown->SetLineStyle(kSolid);
+  photonDown->SetLineWidth(2);
 
   allUp->SetLineStyle(kDashed);
   allUp->SetLineWidth(2);
@@ -1801,20 +1962,27 @@ void BiasCorrections() {
     hErr->Draw("SAME E3");
     HE2->Draw("SAME AXIS");
 
-    bkgUp->Draw("L");
-    bkgDown->Draw("L");
+    //bkgUp->Draw("L");
+    //bkgDown->Draw("L");
     topoUp->Draw("L");
     topoDown->Draw("L");
     partonUp->Draw("L");
     partonDown->Draw("L");
     //peakUp->Draw("L");
     //peakDown->Draw("L");
+    //balanceUp->Draw("L");
+    //balanceDown->Draw("L");
+    photonUp->Draw("L");
+    photonDown->Draw("L");
 
     DrawFill(hErr, 0.54, 0.19, "total bias");
-    DrawLine(bkgUp, 0.18, 0.25, "background");
-    DrawLine(topoUp, 0.18, 0.19, "topology");
-    DrawLine(partonUp, 0.54, 0.25, "physics shower"); // was 0.54, 0.31
+    //DrawLine(bkgUp, 0.18, 0.25, "background");
+    DrawLine(photonUp, 0.18, 0.25, "photon scale");
+    DrawLine(topoUp, 0.18, 0.19, "second jet");//"topology");
+    //DrawLine(partonUp, 0.54, 0.25, "physics shower"); // was 0.54, 0.31
+    DrawLine(partonUp, 0.54, 0.25, "parton correction"); // was 0.54, 0.31
     //DrawLine(peakUp, 0.54, 0.25, "peak vs mean");
+    //DrawLine(peakUp, 0.54, 0.25, "parton balance");
 
     C->Update();
 
@@ -1871,6 +2039,14 @@ void BiasCorrections() {
     hErr4b->SetFillStyle(kNone);
     hErr4b->SetFillColor(0);
 
+    TH1D *hErr5b = (TH1D*)hErr5->Clone("HErr5b");
+    hErr5b->SetFillStyle(kNone);
+    hErr5b->SetFillColor(0);
+
+    TH1D *hErr6b = (TH1D*)hErr6->Clone("HErr6b");
+    hErr6b->SetFillStyle(kNone);
+    hErr6b->SetFillColor(0);
+
     TH1D *hAllb = (TH1D*)hAll->Clone("HAllb");
     hAllb->SetFillStyle(kNone);
     hAllb->SetFillColor(0);
@@ -1878,23 +2054,31 @@ void BiasCorrections() {
     HE3->Draw("AXIS");
     hAll->Draw("SAME E4");
     hAllb->Draw("SAME HIST L");
-    hErr1->Draw("SAME E4");
-    hErr1b->Draw("SAME HIST L");
+    //hErr1->Draw("SAME E4");
+    //hErr1b->Draw("SAME HIST L");
     hErr2->Draw("SAME E4");
     hErr2b->Draw("SAME HIST L");
     hErr3->Draw("SAME E4");
     hErr3b->Draw("SAME HIST L");
-    hErr4->Draw("SAME E4");
-    hErr4b->Draw("SAME HIST L");
-    
-    DrawFill(hErr1, 0.18, 0.25, "background");
-    DrawLine(hErr1b, 0.18, 0.25, "");
-    DrawFill(hErr2, 0.18, 0.19, "topology");
+    //hErr4->Draw("SAME E4");
+    //hErr4b->Draw("SAME HIST L");
+    //hErr5->Draw("SAME E4");
+    //hErr5b->Draw("SAME HIST L");
+    hErr6->Draw("SAME E4");
+    hErr6b->Draw("SAME HIST L");    
+
+    //DrawFill(hErr1, 0.18, 0.25, "background");
+    //DrawLine(hErr1b, 0.18, 0.25, "");
+    DrawFill(hErr6, 0.18, 0.25, "photon scale");
+    DrawLine(hErr6b, 0.18, 0.25, "");
+    DrawFill(hErr2, 0.18, 0.19, "second jet");//topology");
     DrawLine(hErr2b, 0.18, 0.19, "");
-    DrawFill(hErr3, 0.54, 0.25, "physics shower"); // was 0.54, 0.31
+    DrawFill(hErr3, 0.54, 0.25, "parton correction"); // was 0.54, 0.31
     DrawLine(hErr3b, 0.54, 0.25, ""); // was 0.54, 0.31
     //DrawFill(hErr4, 0.54, 0.25, "peak vs mean");
     //DrawLine(hErr4b, 0.54, 0.25, "");
+    //DrawFill(hErr5, 0.54, 0.25, "parton balance");
+    //DrawLine(hErr5b, 0.54, 0.25, "");
     DrawFill(hAll, 0.54, 0.19, "total");
     DrawLine(hAllb, 0.54, 0.19, "");
 
@@ -1935,7 +2119,7 @@ void TopoUncertainty() {
   TGraph* mediumDown = 0;
   TGraph* tightUp = 0;
   TGraph* tightDown = 0;
-  TH1D* hErr = 0, *hErr1, *hErr2, *hErr3;
+  TH1D* hErr = 0, *hErr0, *hErr1, *hErr2, *hErr3;
   {
     const int ndiv = 100;
     double x[ndiv];
@@ -1958,6 +2142,7 @@ void TopoUncertainty() {
     }
 
     hErr = new TH1D("hErr", "hErr", ndiv, xbins);
+    hErr0 = new TH1D("hErr0", "hErr0", ndiv, xbins);
     hErr1 = new TH1D("hErr1", "hErr1", ndiv, xbins);
     hErr2 = new TH1D("hErr2", "hErr2", ndiv, xbins);
     hErr3 = new TH1D("hErr3", "hErr3", ndiv, xbins);
@@ -1985,12 +2170,15 @@ void TopoUncertainty() {
 
       double x = hErr->GetBinCenter(ibin);
       double err = 0.;
+      double ctopo = rjet._RbiasTopo(x, L3Corr::kMedium);
       double r = rjet.Rjet(x, err);
       hErr->SetBinContent(ibin, 0);
       hErr->SetBinError(ibin, 100. * err / r);
+      hErr0->SetBinContent(ibin, ctopo);
+      hErr0->SetBinError(ibin, err / r * ctopo);
 
       r = rjetLoose.Rjet(x, err);
-      double ctopo = rjetLoose._RbiasTopo(x, L3Corr::kMedium020);
+      ctopo = rjetLoose._RbiasTopo(x, L3Corr::kMedium020);
       hErr1->SetBinContent(ibin, ctopo);
       hErr1->SetBinError(ibin, err / r * ctopo);
 
@@ -2018,6 +2206,14 @@ void TopoUncertainty() {
   hErr->SetLineColor(hErr->GetFillColor());
   hErr->SetMarkerColor(hErr->GetFillColor());
   hErr->SetMarkerSize(0);
+
+  hErr0->SetLineStyle(kSolid);
+  hErr0->SetLineWidth(2);
+  hErr0->SetFillStyle(1001);
+  hErr0->SetFillColor(kYellow);
+  hErr0->SetLineColor(kBlack);
+  hErr0->SetMarkerColor(hErr2->GetFillColor());
+  hErr0->SetMarkerSize(0);
 
   hErr1->SetLineStyle(kDashed);
   hErr1->SetLineWidth(2);
@@ -2139,6 +2335,11 @@ void TopoUncertainty() {
     HE3->GetYaxis()->SetTitle("Topology bias");
     HE3->GetYaxis()->SetTitleOffset(1.2);
 
+    TH1D *hErr0b = (TH1D*)hErr0->Clone("HErr0b");
+    hErr0b->SetFillStyle(kNone);
+    hErr0b->SetFillColor(0);
+    hErr0b->SetLineStyle(kSolid);
+
     TH1D *hErr1b = (TH1D*)hErr1->Clone("HErr1b");
     hErr1b->SetFillStyle(kNone);
     hErr1b->SetFillColor(0);
@@ -2146,27 +2347,38 @@ void TopoUncertainty() {
     TH1D *hErr2b = (TH1D*)hErr2->Clone("HErr2b");
     hErr2b->SetFillStyle(kNone);
     hErr2b->SetFillColor(0);
+    hErr2b->SetLineStyle(kDotted);
+    hErr2b->SetLineColor(kGreen+2);
 
     TH1D *hErr3b = (TH1D*)hErr3->Clone("HErr3b");
     hErr3b->SetFillStyle(kNone);
     hErr3b->SetFillColor(0);
     
     HE3->Draw("AXIS");
-    hErr2->Draw("SAME E4");
-    hErr2b->Draw("SAME HIST L");
-    //hErr1->Draw("SAME E4");
+    //hErr2->Draw("SAME E4");
+    //hErr2b->Draw("SAME HIST L");
+    ////hErr1->Draw("SAME E4");
+    //hErr1b->Draw("SAME HIST L");
+    ////hErr3->Draw("SAME E4");
+    //hErr3b->Draw("SAME HIST L");
+    hErr0->Draw("SAME E4");
     hErr1b->Draw("SAME HIST L");
-    //hErr3->Draw("SAME E4");
+    hErr2b->Draw("SAME HIST L");
     hErr3b->Draw("SAME HIST L");
-    
+    hErr0b->Draw("SAME HIST L");
+
+    DrawFill(hErr0, 0.44, 0.37, "default + unc. (10%)");
+    DrawLine(hErr0b, 0.44, 0.37, "");
+
     //DrawFill(hErr1, 0.44, 0.31, "loose topo (20%)");
     //DrawLine(hErr1b, 0.44, 0.31, "");
-    DrawLine(hErr1, 0.44, 0.31, "loose topo (20%)");
-    DrawFill(hErr2, 0.44, 0.25, "medium + unc. (10%)");
-    DrawLine(hErr2b, 0.44, 0.25, "");
+    DrawLine(hErr1b, 0.44, 0.31, "loose topo (20%)");
+    //DrawFill(hErr2, 0.44, 0.25, "medium + unc. (10%)");
+    //DrawLine(hErr2b, 0.44, 0.25, "");
+    DrawLine(hErr2b, 0.44, 0.25, "medium topo (10%)");
     //DrawFill(hErr3, 0.44, 0.19, "tight topo (5%)");
     //DrawLine(hErr3b, 0.44, 0.19, "");
-    DrawLine(hErr3, 0.44, 0.19, "tight topo (5%)");
+    DrawLine(hErr3b, 0.44, 0.19, "tight topo (5%)");
 
     C2->Update();
     

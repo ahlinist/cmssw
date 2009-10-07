@@ -100,8 +100,8 @@
   d0jesStyle->SetPaperSize(TStyle::kUSLetter);
   d0jesStyle->SetPadTopMargin(0.05);//0.1);
   d0jesStyle->SetPadBottomMargin(0.15);//0.14);
-  d0jesStyle->SetPadLeftMargin(0.17);//0.12);
-  d0jesStyle->SetPadRightMargin(0.03);//0.1);
+  d0jesStyle->SetPadLeftMargin(0.15);//0.17);//0.12);
+  d0jesStyle->SetPadRightMargin(0.05);//0.03);//0.1);
 
   //------------------------
 
@@ -121,7 +121,7 @@
   d0jesStyle->SetTitleSize(0.06,"xyz");
   //d0jesStyle->SetTitleOffset(0.9,"xyz");
   d0jesStyle->SetTitleOffset(1.0,"x");
-  d0jesStyle->SetTitleOffset(1.3,"y");
+  d0jesStyle->SetTitleOffset(1.0,"y");//1.3,"y");
   d0jesStyle->SetTitleOffset(0.9,"z");
 
   //------------------------
@@ -136,12 +136,14 @@
   d0jesStyle->SetLineStyleString(3,"[6 18]");
   d0jesStyle->SetLineStyleString(4,"[24 24 6 24]");
 //d0jesStyle->SetMarkerStyle(kPlus);
-  d0jesStyle->SetMarkerSize(1.5);
+//d0jesStyle->SetMarkerSize(1.5);
+  d0jesStyle->SetMarkerSize(1.2);
 
   //------------------------
 
   // Label settings.
-  d0jesStyle->SetLabelFont(d0jesFont,"xyz");
+  //d0jesStyle->SetLabelFont(d0jesFont,"xyz");
+  d0jesStyle->SetLabelFont(d0jesFontBold,"xyz");
   d0jesStyle->SetLabelOffset(0.015);
   d0jesStyle->SetLabelSize(0.045,"xyz");
 
