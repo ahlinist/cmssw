@@ -21,17 +21,17 @@ process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 process.load('Configuration/StandardSequences/GeometryPilot2_cff')
 
 
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1000.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1001.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1002.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1003.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1004.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1005.root",
-    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1006.root"
-    )
-)
+#process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring(
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1000.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1001.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1002.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1003.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1004.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1005.root",
+#    "rfio:/castor/cern.ch/user/s/slehti/TauTriggerEfficiencyMeasurementData/Ztautau_Summer09_MC_31X_V3_v1_GEN_SIM_RECO_Skim_run6/skim_1006.root"
+#    )
+#)
 
 #from ElectroWeakAnalysis.TauTriggerEfficiency.Ztautau_Summer08_IDEAL_V11_redigi_v2_GEN_SIM_RAW_RECO_Skim_HLT_run5_cfg import *
 #process.source = source
@@ -117,7 +117,17 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
+process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
+GenParticles  = cms.untracked.InputTag("genParticles"),
+       ptMinTau      = cms.untracked.double(3),
+       ptMinMuon     = cms.untracked.double(3),
+       ptMinElectron = cms.untracked.double(3),
+       BosonID       = cms.untracked.vint32(23),
+       EtaMax         = cms.untracked.double(2.5)
+)
+
 process.runEDAna = cms.Path(
+    process.TauMCProducer*
     process.HLT_SingleIsoTau20_Trk5*
     process.l1CaloSim*
 #    process.PFTausSelected*
