@@ -60,7 +60,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   std::string s_varexp(varexp);
 
   size_t posbegin = s_varexp.find(">>");
-  size_t posend   = s_varexp.find("(");
+  size_t posend   = s_varexp.find("(", posbegin);
 
   s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
 
@@ -105,7 +105,7 @@ TGraphAsymmErrors *Plotter::DrawHistogram(const char* varexp, const TCut& select
   std::string s_varexp(varexp);
 
   size_t posbegin = s_varexp.find(">>");
-  size_t posend   = s_varexp.find("(");
+  size_t posend   = s_varexp.find("(", posbegin);
 
   s_varexp = s_varexp.substr(0,posbegin+2) + "hden" + s_varexp.substr(posend,s_varexp.length()-posend);
 
