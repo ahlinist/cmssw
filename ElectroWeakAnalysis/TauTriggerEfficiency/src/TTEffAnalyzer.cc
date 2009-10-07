@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.28 2009/06/11 05:45:37 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.29 2009/06/29 19:35:25 chinhan Exp $
 //
 //
 
@@ -376,10 +376,12 @@ void TTEffAnalyzer::getPFClusters(const PFCandidateRefVector& pfCands, math::XYZ
 
       //element.Dump();
       //PFClusterRef foo = element.clusterRef();
-      //std::cout << "Block index " << block_index << " is available " << foo.isAvailable() << " is null " << foo.isNull() << std::endl;
+      //std::cout << " Block index " << block_index << " type " << element.type() << " is available " << foo.isAvailable() << " is null " << foo.isNull() << std::endl;
 
       // If referenced cluster is not available, ignore it
-      // This is possible source of an error
+      // It seems that the PFBlockElements without cluster ref have
+      // the type reco::PFBlockElement::TRACK, which of course
+      // shouldn't be used. So this seems to be more or less correct.
       if(!element.clusterRef().isAvailable())
         continue;
 
