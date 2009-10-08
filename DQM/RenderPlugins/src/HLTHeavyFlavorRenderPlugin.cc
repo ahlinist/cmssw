@@ -16,52 +16,47 @@
 class HLTHeavyFlavorRenderPlugin : public DQMRenderPlugin{
 public:
   virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & ){
-    if (o.name.find( "HLT/HeavyFlavor" ) != std::string::npos  )
-      return true;
-    return false;
+    return o.name.find( "HLT/HeavyFlavor" ) != std::string::npos;
   }
 
   virtual void preDraw( TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ){
     c->cd();
-    if( dynamic_cast<TH2F*>( o.object ) ){
-      preDrawTH2F( c, o );
+    TH2* h2 = dynamic_cast<TH2*>( o.object );
+    if( h2 ){
+      preDrawTH2( c, h2, o.name );
+      return;
     }
-    else if( dynamic_cast<TH1F*>( o.object ) ){
-      preDrawTH1F( c, o );
+    TH1* h1 = dynamic_cast<TH1*>( o.object );
+    if( h1 ){
+      preDrawTH1( c, h1, o.name );
+      return;
     }
   }
 
-  virtual void postDraw( TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo & ){
+  virtual void postDraw( TCanvas * , const DQMNet::CoreObject &, const VisDQMImgInfo & ){
     return;
-    if( dynamic_cast<TH2F*>( o.object ) ){
-      postDrawTH2F( c, o );
-    }
-    else if( dynamic_cast<TH1F*>( o.object ) ){
-      postDrawTH1F( c, o );
-    }
   }
 
 private:
-  void preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o ){
-    TH1F* obj = dynamic_cast<TH1F*>( o.object );
-    assert( obj );
-    if( TString(obj->GetXaxis()->GetTitle()).BeginsWith(' ') ){
-      c->SetLogx();
-    }
-    if( o.name.find("eff") != std::string::npos ){
+  void preDrawTH1( TCanvas *c, TH1* obj, const std::string &name ){
+    if( name.find("eff") != std::string::npos ){
       gStyle->SetOptStat(0);
       obj->SetOption("PE");
       obj->SetTitle("");
-      obj->Scale(100);
-      //"colz" doesn't draw zero bins so increase them a bit. If bin has 0/0 i.e. 50+-50 make it -1 to avoid drawing
-      for(int i=0; i<obj->GetSize(); i++){
-        if( obj->GetBinError(i)>49 )
-          obj->operator[](i) = -1;
+//      obj->Scale(100);
+      // "colz" doesn't draw zero bins so increase them a bit. If bin has 0/0 i.e. 50+-50 make it -1 to avoid drawing
+      for(int i=1; i<=obj->GetNbinsX(); i++){
+        if( obj->GetBinError(i) > 0.49 )
+          obj->SetBinContent(i, -1);
       }
-      obj->GetYaxis()->SetRangeUser(-0.001,100.001);
+      obj->GetYaxis()->SetRangeUser(-0.001,1.001);
       c->SetGridy();
     }else{
       gStyle->SetOptStat("e");
+    }
+    // if axis label starts with space, set log scale
+    if( TString(obj->GetXaxis()->GetTitle()).BeginsWith(' ') ){
+      c->SetLogx();
     }
     obj->SetLineColor(2);
     obj->SetLineWidth(2);
@@ -69,16 +64,8 @@ private:
     obj->SetMarkerSize(0.8);
   }
 
-  void preDrawTH2F ( TCanvas *c, const DQMNet::CoreObject &o ){
-    TH2F* obj = dynamic_cast<TH2F*>( o.object );
-    assert( obj );
-    if( TString(obj->GetXaxis()->GetTitle()).BeginsWith(' ') ){
-      c->SetLogx();
-    }
-    if( TString(obj->GetYaxis()->GetTitle()).BeginsWith(' ') ){
-      c->SetLogy();
-    }
-    if( o.name.find("eff") != std::string::npos ){
+  void preDrawTH2 ( TCanvas *c, TH2* obj, const std::string &name ){
+    if( name.find("eff") != std::string::npos ){
       gStyle->SetOptStat(0);
       gStyle->SetPaintTextFormat(".0f");
       obj->SetOption("colztexte");
@@ -86,14 +73,16 @@ private:
       //convert to percents, less digits to draw
       obj->Scale(100);
       //"colz" doesn't draw zero bins so increase them a bit. If bin has 0/0 i.e. 50+-50 make it -1 to avoid drawing
-      for(int i=0; i<obj->GetSize(); i++){
-        if( obj->operator[](i)==0 )
-          obj->operator[](i) = 0.0001;
-        if( obj->GetBinError(i)>49 )
-          obj->operator[](i) = -1;
+      for(int i=1; i<=obj->GetNbinsX(); i++){
+        for(int j=1; j<=obj->GetNbinsY(); j++){
+          if( obj->GetBinContent(i, j) == 0 )
+            obj->SetBinContent(i, j, 0.0001);
+          if( obj->GetBinError(i, j) > 49 )
+            obj->SetBinContent(i, j, -1);
+        }
       }
       obj->GetZaxis()->SetRangeUser(-0.001,100.001);
-    }else if( o.name.find("deltaEtaDeltaPhi") != std::string::npos ){
+    }else if( name.find("deltaEtaDeltaPhi") != std::string::npos ){
       gStyle->SetOptStat("emr");
       obj->SetOption("colz");
       c->SetLogz();
@@ -101,14 +90,16 @@ private:
       gStyle->SetOptStat("e");
       obj->SetOption("colztext");
     }
+    // if axis label starts with space, set log scale
+    if( TString(obj->GetXaxis()->GetTitle()).BeginsWith(' ') ){
+      c->SetLogx();
+    }
+    if( TString(obj->GetYaxis()->GetTitle()).BeginsWith(' ') ){
+      c->SetLogy();
+    }
     gStyle->SetPalette(1);
   }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & ){
-  }
-
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject & ){
-  }
 };
 
 static HLTHeavyFlavorRenderPlugin instance;
