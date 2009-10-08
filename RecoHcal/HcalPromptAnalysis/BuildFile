@@ -15,7 +15,6 @@
 <use name=CondFormats/HcalObjects>
 <use name=Geometry/CaloTopology>
 <use name=Geometry/CaloGeometry>
-<use name=Geometry/CaloEventSetup>
 <use name=DataFormats/DTRecHit>
 <use name=Geometry/DTGeometry>
 <use name=Geometry/Records>
