@@ -1,7 +1,7 @@
 // Class:      L25and3TauEfficiencyAnalyzer
 // Original Author:  Eduardo Luiggi, modified by Sho Maruyama
 //         Created:  Fri Apr  4 16:37:44 CDT 2008
-// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.1 2009/04/04 06:43:50 smaruyam Exp $
+// $Id: L25and3TauEfficiencyAnalyzer.cc,v 1.2 2009/04/24 13:59:53 chinhan Exp $
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 using namespace edm;
 using namespace reco;
@@ -63,8 +63,8 @@ void L25and3TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzV
   
   //modified to collect extra discriminator parameters
   l25Et = 0;
-  l25Phi = 0;
-  l25Eta = 0;
+  l25Phi = -999.;
+  l25Eta = -999.;
   l25Pt = 0;
   l25InvPt = 0;
   l25Depth = 0;
