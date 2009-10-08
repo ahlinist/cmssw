@@ -13,7 +13,7 @@
 //
 // Original Author:  "Sertac Ozturk"
 //         Created:  Mon Jul 27 11:09:40 CDT 2009
-// $Id: JetTrigAnalyzer.cc,v 1.1 2009/09/01 20:31:00 sertac Exp $
+// $Id: JetTrigAnalyzer.cc,v 1.2 2009/09/01 20:41:11 sertac Exp $
 //
 //
 
@@ -596,4 +596,4 @@ JetTrigAnalyzer::endJob() {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(JetTrigAnalyzer);
+//DEFINE_FWK_MODULE(JetTrigAnalyzer);
