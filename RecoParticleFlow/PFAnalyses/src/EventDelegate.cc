@@ -156,8 +156,12 @@ void EventDelegate::endParticle() {
 			Calibratable c(*calib_);
 			thisEventCalibs_->push_back(c);
 		}
-		if (tree_ != 0)
+		if (tree_ != 0) {
 			tree_->Fill();
+			if(nParticleWrites_ % 500 == 0) {
+				tree_->AutoSave("SaveSelf");
+			}
+		}
 	} else {
 		++nParticleFails_;
 	}
