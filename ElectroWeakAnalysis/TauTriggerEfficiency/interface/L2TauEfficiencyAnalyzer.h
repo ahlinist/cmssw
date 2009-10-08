@@ -66,10 +66,12 @@ class L2TauEfficiencyAnalyzer {
       std::vector<double> clusterSeparation(const reco::PFCandidateRefVector& ,const reco::PFCandidateRefVector& );
       void matchAndFillL2(const LV& ,const L2TauInfoAssociation&);//See if this Jet Is Matched
       math::PtEtaPhiELorentzVectorCollection getECALHits(const LV&,const edm::Event& ,const edm::EventSetup&);
+      math::PtEtaPhiELorentzVectorCollection getHCALTowers(const LV& jet,const edm::Event& iEvent,const edm::EventSetup& iSetup);
       double isolatedEt(const LV&,const math::PtEtaPhiELorentzVectorCollection& ) const;
 
       //Parameters to read
       edm::InputTag  l2TauInfoAssoc_; //Path to analyze
+      edm::InputTag  CaloTowers_;
       edm::InputTag  EBRecHits_;
       edm::InputTag  EERecHits_;
       double outerCone_; //Association Distance  for a tower/crystal
@@ -92,6 +94,7 @@ class L2TauEfficiencyAnalyzer {
       float PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
 
       float PFEcalIsol_Et;
+      float PFHcalIsol_Et;
 
       int hasL2Jet;	
 

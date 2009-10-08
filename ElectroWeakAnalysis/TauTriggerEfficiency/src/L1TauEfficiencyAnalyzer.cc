@@ -84,7 +84,7 @@ void L1TauEfficiencyAnalyzer::fill(const edm::Event& iEvent, const LorentzVector
   jetEt = 0.0;
   jetUncorrEt = 0.0;
   jetEta = 0.0;
-  jetPhi = 0.0;
+  jetPhi = -999.0;
   hasL1Jet = 0;
   hasL1TauJet = 0;
   hasL1CenJet = 0;

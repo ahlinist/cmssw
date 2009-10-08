@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.29 2009/06/29 19:35:25 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.30 2009/10/07 08:55:47 mkortela Exp $
 //
 //
 
@@ -41,8 +41,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFPt = 0.;
   PFInvPt = 0.;
   PFEt = 0.;
-  PFEta = 0.;
-  PFPhi = 0.;
+  PFEta = -999.;
+  PFPhi = -999.;
   PFProng = 0.;
   PFIso = 0;
   PFIsoSum = 0;
@@ -51,8 +51,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCMatch = 0;
   MCTauEt = -1.;
   MCTauE = -1.;
-  MCTauEta = -1.;
-  MCTauPhi = -1.;
+  MCTauEta = -999.;
+  MCTauPhi = -999.;
 
   _TTEffTree->Branch("PFTauPt", &PFPt, "PFTauPt/F");
   _TTEffTree->Branch("PFTauInvPt", &PFInvPt, "PFTauInvPt/F");
