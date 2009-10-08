@@ -11,8 +11,8 @@ process.load("FWCore/MessageService/MessageLogger_cfi")
 process.MessageLogger.destinations = cms.untracked.vstring("cout")
 process.MessageLogger.cout = cms.untracked.PSet(
 #    threshold = cms.untracked.string("DEBUG")    # pring LogDebugs and above
-    threshold = cms.untracked.string("INFO")     # print LogInfos and above
-#    threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
+#    threshold = cms.untracked.string("INFO")     # print LogInfos and above
+    threshold = cms.untracked.string("WARNING")  # print LogWarnings and above
     )
 process.MessageLogger.debugModules = cms.untracked.vstring("TTEffAnalyzer")
 
