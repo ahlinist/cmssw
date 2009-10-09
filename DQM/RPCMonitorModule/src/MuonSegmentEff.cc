@@ -19,6 +19,7 @@ camilo.carrilloATcern.ch
 #include <Geometry/CommonTopologies/interface/RectangularStripTopology.h>
 #include <Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h>
 
+
 #include <cmath>
 #include "TFile.h"
 #include "TH1F.h"
@@ -354,8 +355,8 @@ void MuonSegmentEff::beginRun(const edm::Run& run, const edm::EventSetup& iSetup
 	int region=rpcId.region();
 	
 	/*if(region==0&&(incldt||incldtMB4)&&rpcId.ring()!=0&&rpcId.station()!=4){
-	  //std::cout<<"--Filling the dtstore for statistics"<<rpcId<<std::endl;
-	  
+	//std::cout<<"--Filling the dtstore for statistics"<<rpcId<<std::endl;
+	
 	  int sidewheel = 0;
 	  
 	  if(rpcId.ring()==-2){
@@ -475,8 +476,9 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	  int cls = recHit->clusterSize();
 	  int firststrip = recHit->firstClusterStrip();
 	  int bx = recHit->BunchX();
+	  std::cout<<"Filling "<<detUnitLabel<<" with bx="<<bx<<" and cls="<<cls<<std::endl;
+	  meMap[meIdRPCbx]->Fill(bx,cls);
 	  for(int stripDetected = firststrip; stripDetected <= firststrip+cls; stripDetected++){
-	    meMap[meIdRPCbx]->Fill(bx);
 	    meMap[meIdRPC]->Fill(stripDetected-0.5); 
 	  }
 	}
@@ -708,6 +710,8 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 		    sprintf(meIdDT,"BXYDistribution_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(bx,distobottom);
 
+
+		    std::cout<<"Filling SIGNAL "<<detUnitLabel<<" with bx="<<bx<<" and cls="<<cluSize<<std::endl;
 		    sprintf(meIdDT,"Signal_BXDistribution_%s",detUnitLabel);
 		    meMap[meIdDT]->Fill(bx,cluSize);
 
