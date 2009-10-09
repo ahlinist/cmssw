@@ -67,6 +67,7 @@ class L2TauEfficiencyAnalyzer {
       void matchAndFillL2(const LV& ,const L2TauInfoAssociation&);//See if this Jet Is Matched
       math::PtEtaPhiELorentzVectorCollection getECALHits(const LV&,const edm::Event& ,const edm::EventSetup&);
       math::PtEtaPhiELorentzVectorCollection getHCALTowers(const LV& jet,const edm::Event& iEvent,const edm::EventSetup& iSetup);
+      math::PtEtaPhiELorentzVectorCollection getECALTowers(const LV& jet,const edm::Event& iEvent,const edm::EventSetup& iSetup);
       double isolatedEt(const LV&,const math::PtEtaPhiELorentzVectorCollection& ) const;
 
       //Parameters to read
@@ -94,7 +95,8 @@ class L2TauEfficiencyAnalyzer {
       float PFEGIsolEt,PFHighestClusterEt,PFEGEtaRMS,PFEGPhiRMS,PFEGDrRMS;
 
       float PFEcalIsol_Et;
-      float PFHcalIsol_Et;
+      float PFHcalTowIsol_Et;
+      float PFEcalTowIsol_Et;
 
       int hasL2Jet;	
 

@@ -49,7 +49,8 @@ L2TauEfficiencyAnalyzer::Setup(const edm::ParameterSet& iConfig,TTree* l2tree)
   l2tree->Branch("hasMatchedL2Jet",&hasL2Jet,"hasMatchedL2Jet/I");
   l2tree->Branch("PFEGIsolEt",&PFEGIsolEt,"PFEGIsolEt/F");
   l2tree->Branch("PFECALIsolationEt",&PFEcalIsol_Et,"PFECALIsolationEt/F");
-  l2tree->Branch("PFHCALIsolationEt",&PFHcalIsol_Et,"PFHCALIsolationEt/F");
+  l2tree->Branch("PFHCALTowIsolationEt",&PFHcalTowIsol_Et,"PFHCALTowIsolationEt/F");
+  l2tree->Branch("PFECALTowIsolationEt",&PFEcalTowIsol_Et,"PFECALTowIsolationEt/F");
   l2tree->Branch("PFNEGammaCandsAnnulus",&NEGCandsInAnnulus,"PFNEGammaCandsAnnulus/I");
   l2tree->Branch("PFNHadCandsAnnulus",&NHadCandsInAnnulus,"PFNHadCandsAnnulus/I");
   l2tree->Branch("PFHighestClusterEt",&PFHighestClusterEt,"PFHighestClusterEt/F");
@@ -98,7 +99,8 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iS
 	   PFEGPhiRMS = 0.;
 	   PFEGDrRMS = 0.;
 	   PFEcalIsol_Et = 0;
-	   PFHcalIsol_Et = 0;
+	   PFHcalTowIsol_Et = 0;
+	   PFEcalTowIsol_Et = 0;
 	   NEGCandsInAnnulus =0; 
 	   NHadCandsInAnnulus =0;
 
@@ -107,8 +109,10 @@ L2TauEfficiencyAnalyzer::fill(const edm::Event& iEvent,const edm::EventSetup& iS
 	   math::PtEtaPhiELorentzVectorCollection hits = getECALHits(tau,iEvent,iSetup);
 	   PFEcalIsol_Et = isolatedEt(tau,hits );
 
-	   math::PtEtaPhiELorentzVectorCollection towers = getHCALTowers(tau,iEvent,iSetup);
-	   PFHcalIsol_Et = isolatedEt(tau,towers);
+	   math::PtEtaPhiELorentzVectorCollection htowers = getHCALTowers(tau,iEvent,iSetup);
+	   PFHcalTowIsol_Et = isolatedEt(tau,htowers);
+	   math::PtEtaPhiELorentzVectorCollection etowers = getECALTowers(tau,iEvent,iSetup);
+	   PFEcalTowIsol_Et = isolatedEt(tau,etowers);
 
   //Now look if there is L2 Association in the evnt.If yes,match to the L2 and fill L2 Variables
   Handle<L2TauInfoAssociation> l2TauInfoAssoc; //Handle to the input (L2 Tau Info Association)
@@ -259,16 +263,37 @@ L2TauEfficiencyAnalyzer::getHCALTowers(const LV& jet,const edm::Event& iEvent,co
   edm::Handle<CaloTowerCollection> caltowers;
   iEvent.getByLabel(CaloTowers_,caltowers);
 
-  //Create a container for the hcal towers
-  math::PtEtaPhiELorentzVectorCollection jetHcaltowers;
+  //Create a container for the cal towers
+  math::PtEtaPhiELorentzVectorCollection jetHCaltowers;
   
   for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
     math::PtEtaPhiELorentzVector p(cnd->hadEt(), cnd->eta(), cnd->phi(), cnd->hadEnergy());
     if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
-      jetHcaltowers.push_back(p);
+      jetHCaltowers.push_back(p);
     }
   }
-  return jetHcaltowers;
+  return jetHCaltowers;
+}
+
+math::PtEtaPhiELorentzVectorCollection 
+L2TauEfficiencyAnalyzer::getECALTowers(const LV& jet,const edm::Event& iEvent,const edm::EventSetup& iSetup)
+{
+  using namespace edm;
+  using namespace reco;
+
+  edm::Handle<CaloTowerCollection> caltowers;
+  iEvent.getByLabel(CaloTowers_,caltowers);
+
+  //Create a container for the cal towers
+  math::PtEtaPhiELorentzVectorCollection jetEcaltowers;
+  
+  for (CaloTowerCollection::const_iterator cnd=caltowers->begin(); cnd!=caltowers->end(); cnd++) {
+    math::PtEtaPhiELorentzVector p(cnd->emEt(), cnd->eta(), cnd->phi(), cnd->emEnergy());
+    if(ROOT::Math::VectorUtil::DeltaR(p,jet) <outerCone_) {
+      jetEcaltowers.push_back(p);
+    }
+  }
+  return jetEcaltowers;
 }
 
 
