@@ -3,6 +3,9 @@
 gROOT->Reset();
 
 TFile f("HcalZS_111265_ZSMask0.root");
+//TFile f("HcalZS_111266_111268_ZSMask110000111.root");
+//TFile f("HcalZS_111272_ZSMask100000011.root");
+//TFile f("HcalZS_test.root");
 //TFile f("HcalZS_73751.root");
 //TFile f("HcalZS_73749.root");
 

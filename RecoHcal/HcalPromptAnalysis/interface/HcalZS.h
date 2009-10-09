@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.4 2009/03/04 15:58:38 santanas Exp $
+// $Id: HcalZS.h,v 1.5 2009/08/20 07:26:17 santanas Exp $
 //
 //
 
@@ -55,6 +55,8 @@ private:
   int thresholdHO_;
   int thresholdHF_;
   int thresholdCalib_;
+
+  int zs_mask[9]; //9 Sums of 2 TS
 
   edm::Service<TFileService> fs;
 

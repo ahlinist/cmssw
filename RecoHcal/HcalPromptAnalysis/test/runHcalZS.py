@@ -35,15 +35,22 @@ process.prefer("GlobalTag")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.default.limit = 10
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.myFilter = cms.EDFilter("MyFilter")
 
-process.source = cms.Source("PoolSource",   
-#process.source = cms.Source("HcalTBSource",  
+#process.source = cms.Source("PoolSource",   
+process.source = cms.Source("HcalTBSource",  
                             dropMetaData = cms.untracked.bool(True),
                             fileNames = cms.untracked.vstring(
-                            '/store/streamer/HcalLocal/RAW/000/111/265/hcal_raw_pool_111265.0.root'
+                            #'/store/streamer/HcalLocal/RAW/000/111/265/hcal_raw_pool_111265.0.root'
+                            # mask 0
+                            #'file:/tmp/USC_111265.root'
+                            # mask 110000111
+                            #'file:/tmp/USC_111266.root',
+                            #'file:/tmp/USC_111268.root'
+                            # mask 100000011
+                            'file:/tmp/USC_111272.root'
                             #'/store/data/Commissioning09/Cosmics/RAW/v1/000/077/037/0CF0E102-9009-DE11-8926-001617E30F58.root'
                             #'file:/home/santanas/Data/HCAL/LocalRuns/RAW/USC_073751.root'
                             #'file:/home/santanas/Data/HCAL/LocalRuns/RAW/USC_073740.root'
@@ -66,16 +73,30 @@ process.source = cms.Source("PoolSource",
 #                                   )
 
 process.hcalZS = cms.EDAnalyzer ("HcalZS",
+                                 ##### ZS threshold #####
                                  thresholdHB = cms.untracked.int32(7),
                                  thresholdHE = cms.untracked.int32(7),
                                  thresholdHO = cms.untracked.int32(7),
                                  thresholdHF = cms.untracked.int32(7),
-                                 thresholdCalib = cms.untracked.int32(0)
+                                 thresholdCalib = cms.untracked.int32(0),
+                                 ##### ZS mask #####
+                                 ZSmask_Sum0 = cms.untracked.int32(1),
+                                 ZSmask_Sum1 = cms.untracked.int32(0),
+                                 ZSmask_Sum2 = cms.untracked.int32(0),
+                                 ZSmask_Sum3 = cms.untracked.int32(0),
+                                 ZSmask_Sum4 = cms.untracked.int32(0),
+                                 ZSmask_Sum5 = cms.untracked.int32(0),
+                                 ZSmask_Sum6 = cms.untracked.int32(0),
+                                 ZSmask_Sum7 = cms.untracked.int32(1),
+                                 ZSmask_Sum8 = cms.untracked.int32(1)
                                  )
 
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('HcalZS_111265_ZSMask0.root')
+                                   #fileName = cms.string('HcalZS_111266_111268_ZSMask0.root')
+                                   #fileName = cms.string('HcalZS_111266_111268_ZSMask110000111.root')
+                                   fileName = cms.string('HcalZS_111272_ZSMask100000011.root')
+                                   #fileName = cms.string('HcalZS_test.root')
 )
 
 #process.p1 = cms.Path(process.hcalDigis*process.HcalZSDigis*process.hcalZS)
