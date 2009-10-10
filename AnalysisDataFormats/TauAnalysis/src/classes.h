@@ -4,6 +4,8 @@
 
 #include "AnalysisDataFormats/TauAnalysis/interface/PATElecTauPairZeeHypothesis.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/PATElecTauPairZeeHypothesisFwd.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
+#include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEtFwd.h"
@@ -85,12 +87,24 @@ namespace {
     PATElecTauPairZeeHypothesisCollection dummyPATElecTauPairZeeHypothesisCollection;
     edm::Wrapper<PATElecTauPairZeeHypothesisCollection> dummyPATElecTauPairCollectionZeeHypothesisWrapper;
     
+    /// create dictionaries for ZllHypothesisElecTau objects
+    ZllHypothesisElecTau dummyZllHypothesisElecTau;
+    edm::Wrapper<ZllHypothesisElecTau> dummyZllHypothesisElecTauWrapper;
+    ZllHypothesisElecTauCollection dummyZllHypothesisElecTauCollection;
+    edm::Wrapper<ZllHypothesisElecTauCollection> dummyZllHypothesisElecTauCollectionWrapper;
+
     /// create dictionaries for PATMuTauPair objects
     PATMuTauPair dummyPATMuTauPair;
     edm::Wrapper<PATMuTauPair> dummyPATMuTauPairWrapper;
     PATMuTauPairCollection dummyPATMuTauPairCollection;
     edm::Wrapper<PATMuTauPairCollection> dummyPATMuTauPairCollectionWrapper;
     edm::Ptr<PATMuTauPair> dummyPATMuTauPairPtr;
+
+    /// create dictionaries for ZllHypothesisMuTau objects
+    ZllHypothesisMuTau dummyZllHypothesisMuTau;
+    edm::Wrapper<ZllHypothesisMuTau> dummyZllHypothesisMuTauWrapper;
+    ZllHypothesisMuTauCollection dummyZllHypothesisMuTauCollection;
+    edm::Wrapper<ZllHypothesisMuTauCollection> dummyZllHypothesisMuTauCollectionWrapper;
     
     /// create dictionaries for PATDiTauPair objects
     PATDiTauPair dummyPATDiTauPair;
@@ -99,12 +113,24 @@ namespace {
     edm::Wrapper<PATDiTauPairCollection> dummyPATDiTauPairCollectionWrapper;
     edm::Ptr<PATDiTauPair> dummyPATDiTauPairPtr;
     
+    /// create dictionaries for ZllHypothesisDiTau objects
+    ZllHypothesisDiTau dummyZllHypothesisDiTau;
+    edm::Wrapper<ZllHypothesisDiTau> dummyZllHypothesisDiTauWrapper;
+    ZllHypothesisDiTauCollection dummyZllHypothesisDiTauCollection;
+    edm::Wrapper<ZllHypothesisDiTauCollection> dummyZllHypothesisDiTauCollectionWrapper;
+
     /// create dictionaries for PATElecMuPair objects
     PATElecMuPair dummyPATElecMuPair;
     edm::Wrapper<PATElecMuPair> dummyPATElecMuPairWrapper;
     PATElecMuPairCollection dummyPATElecMuPairCollection;
     edm::Wrapper<PATElecMuPairCollection> dummyPATElecMuPairCollectionWrapper;
     edm::Ptr<PATElecMuPair> dummyPATElecMuPairPtr;
+
+    /// create dictionaries for ZllHypothesisElecMu objects
+    ZllHypothesisElecMu dummyZllHypothesisElecMu;
+    edm::Wrapper<ZllHypothesisElecMu> dummyZllHypothesisElecMuWrapper;
+    ZllHypothesisElecMuCollection dummyZllHypothesisElecMuCollection;
+    edm::Wrapper<ZllHypothesisElecMuCollection> dummyZllHypothesisElecMuCollectionWrapper;
 
     /// create dictionaries for PATTauNuPair objects
     PATTauNuPair dummyPATTauNuPair;
