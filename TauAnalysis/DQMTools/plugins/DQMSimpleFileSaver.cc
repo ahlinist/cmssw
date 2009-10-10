@@ -63,7 +63,7 @@ void DQMSimpleFileSaver::endJob()
   for ( vstring::const_iterator dqmDirectory_drop = dqmDirectories_drop_.begin();
 	dqmDirectory_drop != dqmDirectories_drop_.end(); ++dqmDirectory_drop ) {
     
-    std::cout << " dropping all MonitorElement in directory = " << (*dqmDirectory_drop) << std::endl;
+    std::cout << " dropping all MonitorElements in directory = " << (*dqmDirectory_drop) << std::endl;
 
     dqmStore.rmdir(*dqmDirectory_drop);
   }
