@@ -51,12 +51,24 @@
   <class name="edm::Wrapper<PATElecTauPairZeeHypothesis>"/>
   <class name="edm::Wrapper<std::vector<PATElecTauPairZeeHypothesis> >"/>
 
+  <!-- create dictionaries for ZllHypothesisElecTau objects -->
+  <class name="ZllHypothesisElecTau"/>
+  <class name="std::vector<ZllHypothesisElecTau>"/>
+  <class name="edm::Wrapper<ZllHypothesisElecTau>"/>
+  <class name="edm::Wrapper<std::vector<ZllHypothesisElecTau> >"/>
+
   <!-- create dictionaries for PATMuTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> > >"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
+
+  <!-- create dictionaries for ZllHypothesisMuTau objects -->
+  <class name="ZllHypothesisMuTau"/>
+  <class name="std::vector<ZllHypothesisMuTau>"/>
+  <class name="edm::Wrapper<ZllHypothesisMuTau>"/>
+  <class name="edm::Wrapper<std::vector<ZllHypothesisMuTau> >"/>
 
   <!-- create dictionaries for PATDiTauPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau>"/>
@@ -65,12 +77,24 @@
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> > >"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
 
+  <!-- create dictionaries for ZllHypothesisDiTau objects -->
+  <class name="ZllHypothesisDiTau"/>
+  <class name="std::vector<ZllHypothesisDiTau>"/>
+  <class name="edm::Wrapper<ZllHypothesisDiTau>"/>
+  <class name="edm::Wrapper<std::vector<ZllHypothesisDiTau> >"/>
+
   <!-- create dictionaries for PATElecMuPair objects -->
   <class name="CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon>"/>
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
+
+  <!-- create dictionaries for ZllHypothesisElecMu objects -->
+  <class name="ZllHypothesisElecMu"/>
+  <class name="std::vector<ZllHypothesisElecMu>"/>
+  <class name="edm::Wrapper<ZllHypothesisElecMu>"/>
+  <class name="edm::Wrapper<std::vector<ZllHypothesisElecMu> >"/>
 
   <!-- create dictionaries for PATTauNuPair objects -->
   <class name="CompositePtrCandidateTMEt<pat::Tau>"/>
