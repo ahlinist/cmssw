@@ -37,11 +37,10 @@ cfgPrimaryEventVertexPosition = cms.PSet(
 # muon candidate selection
 cfgGlobalMuonCut = cms.PSet(
     pluginName = cms.string('globalMuonCut'),
-    pluginType = cms.string('PATCandViewCountEventSelector'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedLayer1MuonsGlobalCumulative'),
     src_individual = cms.InputTag('selectedLayer1MuonsGlobalIndividual'),
-    minNumber = cms.uint32(1),
-    maxNumber = cms.uint32(1)
+    minNumber = cms.uint32(1)
 )
 cfgMuonEtaCut = cms.PSet(
     pluginName = cms.string('muonEtaCut'),
