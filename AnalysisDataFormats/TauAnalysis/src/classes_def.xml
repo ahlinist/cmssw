@@ -45,12 +45,6 @@
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> > >"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
 
-  <!-- create dictionaries for PATElecTauPairZeeHypothesis objects -->
-  <class name="PATElecTauPairZeeHypothesis"/>
-  <class name="std::vector<PATElecTauPairZeeHypothesis>"/>
-  <class name="edm::Wrapper<PATElecTauPairZeeHypothesis>"/>
-  <class name="edm::Wrapper<std::vector<PATElecTauPairZeeHypothesis> >"/>
-
   <!-- create dictionaries for ZllHypothesisElecTau objects -->
   <class name="ZllHypothesisElecTau"/>
   <class name="std::vector<ZllHypothesisElecTau>"/>
