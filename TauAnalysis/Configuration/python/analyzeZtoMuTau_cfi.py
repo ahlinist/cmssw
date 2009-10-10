@@ -16,6 +16,12 @@ diTauCandidateHistManagerForMuTau = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForMuTau.pluginName = cms.string('diTauCandidateHistManagerForMuTau')
 diTauCandidateHistManagerForMuTau.pluginType = cms.string('PATMuTauPairHistManager')
 diTauCandidateHistManagerForMuTau.diTauCandidateSource = cms.InputTag('allMuTauPairs')
+from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
+diTauCandidateZmumuHypothesisHistManagerForMuTau = copy.deepcopy(ZllHypothesisHistManager)
+diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForMuTau')
+diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginType = cms.string('ZllHypothesisMuTauHistManager')
+diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses')
+diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.metHistManager_cfi import *
@@ -711,6 +717,7 @@ muTauAnalysisSequence = cms.VPSet(
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
+            'diTauCandidateZmumuHypothesisHistManagerForMuTau',
             'metHistManager',
             'vertexHistManager',
             'triggerHistManager',
@@ -718,6 +725,7 @@ muTauAnalysisSequence = cms.VPSet(
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
-                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative')
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative',
+                              'diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = muTauPairZmumuHypotheses')
     )
 )
