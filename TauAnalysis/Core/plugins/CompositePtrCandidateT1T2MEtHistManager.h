@@ -43,7 +43,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   bool requireGenMatch_;
 
 //--- "helper" class for accessing weight values
-//    associated to second tau decay products
+//    associated to tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
   std::vector<FakeRateJetWeightExtractor<T1>*> diTauLeg1WeightExtractors_;
   std::vector<FakeRateJetWeightExtractor<T2>*> diTauLeg2WeightExtractors_;
