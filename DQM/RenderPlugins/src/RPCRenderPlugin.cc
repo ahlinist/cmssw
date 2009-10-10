@@ -165,11 +165,11 @@ private:
         //rb3
         line.DrawLine(43, 9.5, 43, 13.5);
 	
-        gPad->Update();
-        TPaletteAxis *palette;
-        palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
-        palette->GetAxis()->SetLabelSize(0.024);
-        gPad->Update();
+       //  gPad->Update();
+//         TPaletteAxis *palette;
+//         palette = (TPaletteAxis*)obj->GetListOfFunctions()->FindObject("palette");
+//         palette->GetAxis()->SetLabelSize(0.024);
+//         gPad->Update();
       }
 
      
