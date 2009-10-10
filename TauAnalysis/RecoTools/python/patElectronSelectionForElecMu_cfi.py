@@ -7,7 +7,7 @@ from TauAnalysis.RecoTools.patElectronSelection_cfi import *
 # (in order to avoid double-counting one and the same physical particle
 #  as muon and as electron candidate)
 selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto = cms.EDFilter("PATElectronAntiOverlapSelector",
-    srcNotToBeFiltered = cms.VInputTag("selectedLayer1MuonsTrkIPcumulative"),
+    srcNotToBeFiltered = cms.VInputTag("selectedLayer1MuonsGlobalIndividual"),
     dRmin = cms.double(0.3),
     filter = cms.bool(False)                                           
 )
