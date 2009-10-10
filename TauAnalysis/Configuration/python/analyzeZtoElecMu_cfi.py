@@ -16,6 +16,12 @@ diTauCandidateHistManagerForElecMu = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForElecMu.pluginName = cms.string('diTauCandidateHistManagerForElecMu')
 diTauCandidateHistManagerForElecMu.pluginType = cms.string('PATElecMuPairHistManager')
 diTauCandidateHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
+from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
+diTauCandidateZmumuHypothesisHistManagerForElecMu = copy.deepcopy(ZllHypothesisHistManager)
+diTauCandidateZmumuHypothesisHistManagerForElecMu.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForElecMu')
+diTauCandidateZmumuHypothesisHistManagerForElecMu.pluginType = cms.string('ZllHypothesisElecMuHistManager')
+diTauCandidateZmumuHypothesisHistManagerForElecMu.ZllHypothesisSource = cms.InputTag('elecMuPairZmumuHypotheses')
+diTauCandidateZmumuHypothesisHistManagerForElecMu.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
@@ -720,6 +726,7 @@ elecMuAnalysisSequence = cms.VPSet(
             'electronHistManager',
             'muonHistManager',
             'diTauCandidateHistManagerForElecMu',
+            'diTauCandidateZmumuHypothesisHistManagerForElecMu',
             'metHistManager',
             'vertexHistManager',
             'triggerHistManager',
@@ -727,7 +734,8 @@ elecMuAnalysisSequence = cms.VPSet(
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
-                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative')
+                              'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative',
+                              'diTauCandidateZmumuHypothesisHistManagerForElecMu.ZllHypothesisSource = elecMuPairZmumuHypotheses')
     )
 )
 

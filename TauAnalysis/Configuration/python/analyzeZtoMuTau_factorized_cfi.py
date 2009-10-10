@@ -82,7 +82,8 @@ replaceHistManagerInputTags(muTauAnalysisSequence_factorizedWithoutMuonIsolation
       ["selectedMuTauPairsZeroChargeCumulative", "selectedMuTauPairsZeroChargeLooseMuonIsolationCumulative"],
       ["selectedMuTauPairsAcoplanarity12Cumulative", "selectedMuTauPairsAcoplanarity12LooseMuonIsolationCumulative"],
       ["selectedMuTauPairsMt1METcumulative", "selectedMuTauPairsMt1METlooseMuonIsolationCumulative"],
-      ["selectedMuTauPairsPzetaDiffCumulative", "selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative"] ]
+      ["selectedMuTauPairsPzetaDiffCumulative", "selectedMuTauPairsPzetaDiffLooseMuonIsolationCumulative"],
+      ["muTauPairZmumuHypotheses", "muTauPairZmumuHypothesesLooseMuonIsolation"] ]
 ) 
 
 muTauAnalysisSequence_factorizedWithMuonIsolation = copy.deepcopy(muTauAnalysisSequence)
