@@ -2,8 +2,6 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEtFwd.h"
 
-#include "AnalysisDataFormats/TauAnalysis/interface/PATElecTauPairZeeHypothesis.h"
-#include "AnalysisDataFormats/TauAnalysis/interface/PATElecTauPairZeeHypothesisFwd.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
 
@@ -81,12 +79,6 @@ namespace {
     edm::Wrapper<PATElecTauPairCollection> dummyPATElecTauPairCollectionWrapper;
     edm::Ptr<PATElecTauPair> dummyPATElecTauPairPtr;
 
-    /// create dictionaries for PATElecTauPairZeeHypothesis objects
-    PATElecTauPairZeeHypothesis dummyPATElecTauPairZeeHypothesis;
-    edm::Wrapper<PATElecTauPairZeeHypothesis> dummyPATElecTauPairZeeHypothesisWrapper;
-    PATElecTauPairZeeHypothesisCollection dummyPATElecTauPairZeeHypothesisCollection;
-    edm::Wrapper<PATElecTauPairZeeHypothesisCollection> dummyPATElecTauPairCollectionZeeHypothesisWrapper;
-    
     /// create dictionaries for ZllHypothesisElecTau objects
     ZllHypothesisElecTau dummyZllHypothesisElecTau;
     edm::Wrapper<ZllHypothesisElecTau> dummyZllHypothesisElecTauWrapper;
