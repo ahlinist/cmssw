@@ -178,6 +178,8 @@ void DQMDumpFilterStatisticsTables::endJob()
 	for ( size_t iFilter = 0; iFilter < numFilters; ++iFilter ) {
 	  if ( filterTitleColumn[iFilter] != refFilterTitleColumn[iFilter] ) {
 	    edm::LogError ("DQMDumpFilterStatisticsTables") << " Filter Title columns do not match"
+							    << " (current = " << filterTitleColumn[iFilter] << ","
+							    << " reference = " << refFilterTitleColumn[iFilter] << ")"
 							    << " --> FilterStatistics summary Tables will NOT be printed-out !!";
 	    return;
 	  }
