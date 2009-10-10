@@ -74,7 +74,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         electronHistManager,
         tauHistManager,
         diTauCandidateHistManagerForElecTau,
-        diTauCandidateZeeHypothesisHistManager,
+        diTauCandidateZeeHypothesisHistManagerForElecTau,
         jetHistManager,
         metHistManager,
         vertexHistManager,
@@ -84,7 +84,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
 
     eventDumps = cms.VPSet(
         elecTauEventDump
-	),
+    ),
    
     analysisSequence = elecTauAnalysisSequence
 )

@@ -16,7 +16,12 @@ diTauCandidateHistManagerForElecTau = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForElecTau.pluginName = cms.string('diTauCandidateHistManagerForElecTau')
 diTauCandidateHistManagerForElecTau.pluginType = cms.string('PATElecTauPairHistManager')
 diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
-from TauAnalysis.Core.diTauCandidateZeeHypothesisHistManager_cfi import *
+from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
+diTauCandidateZeeHypothesisHistManagerForElecTau = copy.deepcopy(ZllHypothesisHistManager)
+diTauCandidateZeeHypothesisHistManagerForElecTau.pluginName = cms.string('diTauCandidateZeeHypothesisHistManagerForElecTau')
+diTauCandidateZeeHypothesisHistManagerForElecTau.pluginType = cms.string('ZllHypothesisElecTauHistManager')
+diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = cms.InputTag('elecTauPairZeeHypotheses')
+diTauCandidateZeeHypothesisHistManagerForElecTau.dqmDirectory_store = cms.string('DiTauCandidateZeeHypothesisQuantities')
 
 # import config for missing-Et histogram manager
 from TauAnalysis.Core.metHistManager_cfi import *
@@ -783,11 +788,12 @@ elecTauAnalysisSequence = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateZeeHypothesisHistManager'
+            'diTauCandidateZeeHypothesisHistManagerForElecTau'
         ),
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
-                              'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative')
+                              'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
+                              'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = elecTauPairZeeHypotheses')
     ),
 
     # veto events compatible with Z --> e+ e- hypothesis
@@ -803,7 +809,7 @@ elecTauAnalysisSequence = cms.VPSet(
             'electronHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForElecTau',
-            'diTauCandidateZeeHypothesisHistManager',
+            'diTauCandidateZeeHypothesisHistManagerForElecTau',
             'metHistManager',
             'vertexHistManager',
             'triggerHistManager',
@@ -812,6 +818,6 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
-                              'diTauCandidateZeeHypothesisHistManager.ZeeHypothesisSource = selectedElecTauPairZeeHypotheses')
+                              'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses')
     )
 )
