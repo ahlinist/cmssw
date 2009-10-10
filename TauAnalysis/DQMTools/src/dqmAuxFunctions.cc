@@ -157,6 +157,8 @@ void dqmCopyRecursively(DQMStore& dqmStore, const std::string& inputDirectory, c
       }
 
       std::auto_ptr<TH1> clone(dynamic_cast<TH1*>(histogram->Clone()));
+//--- compute bin-errors before adding/scaling histogram
+      if ( !clone->GetSumw2N() ) clone->Sumw2();
       clone->Scale(scaleFactor);
 
       dqmStore.setCurrentFolder(outputDirectory);
