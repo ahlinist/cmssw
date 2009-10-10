@@ -36,8 +36,6 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag leptonRecoilEnergySrc_;
 
-  std::string leptonWeightSrc_;
-
   std::string dqmDirectory_store_;
 
 //--- "helper" class for accessing weight values

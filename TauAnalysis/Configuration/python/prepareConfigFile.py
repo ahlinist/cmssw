@@ -16,10 +16,8 @@ import subprocess
 #      (3) configFile_mod
 #          name of modified config file including replacements
 #
-# Author: Christian Veelken, UC Davis
-#
-#
-# Modified by gfball to use python os.* functions and replace statements, and accept lists and dictionaries as well as formatted strings.
+# Authors: Christian Veelken, UC Davis
+#          Gordon Ball, Imperial College
 #--------------------------------------------------------------------------------
 
 def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod = None):
