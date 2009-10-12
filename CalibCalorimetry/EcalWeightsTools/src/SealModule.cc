@@ -1,4 +1,3 @@
-#include "PluginManager/ModuleDef.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "CalibCalorimetry/EcalWeightsTools/interface/EcalProfileBuilder.h"
 #include "CalibCalorimetry/EcalWeightsTools/interface/EcalWeightsBuilder.h"

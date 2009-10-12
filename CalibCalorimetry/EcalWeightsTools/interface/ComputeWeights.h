@@ -4,8 +4,8 @@
 /** \class ComputeWeights
   *  Class used to compute weights from a pulse shape profile.
   *
-  *  $Date: 2006/04/11 15:58:06 $
-  *  $Revision: 1.1 $
+  *  $Date: 2006/07/19 22:58:42 $
+  *  $Revision: 1.2 $
   *  \author R. Bruneliere - CERN
   */
 
@@ -48,7 +48,7 @@ class ComputeWeights
   bool doFitTime_;       //< Fit time jitter or not
   int nPulseSamples_;    //< Number of samples in the pulse
   int nPrePulseSamples_; //< Number of samples in the pre-pulse
-  HepMatrix weights_;
-  HepSymMatrix chi2_;
+  CLHEP::HepMatrix weights_;
+  CLHEP::HepSymMatrix chi2_;
 };
 #endif // CalibCalorimetry_EcalWeightsTools_ComputeWeights_h

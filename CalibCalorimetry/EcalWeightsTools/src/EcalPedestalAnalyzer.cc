@@ -2,8 +2,8 @@
  * \file EcalPedestalAnalyzer.h 
  * Dump in a file values of pedestal
  * 
- * $Date: 2006/07/19 22:01:19 $
- * $Revision: 1.3 $
+ * $Date: 2007/07/13 14:42:30 $
+ * $Revision: 1.4 $
  * \author R. Bruneliere'
  *
 */
@@ -144,9 +144,9 @@ void EcalPedestalAnalyzer::analyze(const edm::Event& e,
     
     // Loop over time samples
     float delta;
-    for (int iSample = 0; iSample < digiItr->size(); ++iSample) {
-      float adc = float((*digiItr).sample(iSample).adc());
-      int gainId = (*digiItr).sample(iSample).gainId();
+    for (unsigned int iSample = 0; iSample < digiItr->size(); ++iSample) {
+      float adc = float(((EBDataFrame)*digiItr).sample(iSample).adc());
+      int gainId = ((EBDataFrame)*digiItr).sample(iSample).gainId();
       if (verbosity_ > 1) 
 	std::cout << gainId << " " << adc << " ";
       if (gainId < kFirstGainId || gainId >= kFirstGainId + kGains) {

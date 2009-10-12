@@ -378,15 +378,15 @@ void EcalProfileBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
   for (EBDigiCollection::const_iterator digiItr = digis->begin(); digiItr != digis->end(); ++digiItr)
   {
       double eMax = 0.;
-      for (int sample = 0; sample < digiItr->size(); ++sample)
+      for (unsigned int sample = 0; sample < digiItr->size(); ++sample)
       {
-          double analogSample  = digiItr->sample(sample).adc();
+          double analogSample  = ((EBDataFrame)*digiItr).sample(sample).adc();
           if ( eMax < analogSample ) eMax = analogSample;
       }//loop samples
       if(eMax > maxHit)
       {
 	  maxHit = eMax;
-	  maxHitId = digiItr->id();
+	  maxHitId = ((EBDataFrame)*digiItr).id();
       }
   }//loop digis
   if(maxHitId.ic() != xtalInBeam_.ic()) return;
@@ -399,10 +399,10 @@ void EcalProfileBuilder::analyze(const edm::Event& evt, const edm::EventSetup& e
     std::vector<double> shapeInfo;
     shapeInfo.push_back(recTDC->offset());
 
-    for (int sample = 0; sample < digiItr->size(); ++sample)
+    for (unsigned int sample = 0; sample < digiItr->size(); ++sample)
     {
-      double analogSample  = digiItr->sample(sample).adc();
-      gain_tot            += digiItr->sample(sample).gainId();
+      double analogSample  = ((EBDataFrame)*digiItr).sample(sample).adc();
+      gain_tot            += ((EBDataFrame)*digiItr).sample(sample).gainId();
       shapeInfo.push_back(analogSample);
       if(int(25.*(recTDC->offset()+sample)) > 250) std::cout << "***********Out of bin range!" << std::endl ;
       if( eMax < analogSample )	eMax = analogSample;
