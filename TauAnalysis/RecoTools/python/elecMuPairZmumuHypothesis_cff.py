@@ -34,9 +34,29 @@ elecMuPairZmumuHypotheses = cms.EDProducer("ZllHypothesisElecMuProducer",
     verbosity = cms.untracked.int32(0)                                      
 )
 
+elecMuPairVisMassHypotheses = cms.EDProducer("ZtautauVisMassHypothesisElecMuProducer",
+    diCandidatePairSource = elecMuPairZmumuHypotheses.diCandidatePairSource,
+
+    ZllHypotheses = cms.VPSet(
+        cms.PSet(
+            src = cms.InputTag('elecMuPairZmumuHypotheses'),
+            minZllMass = cms.double(85.),
+            maxZllMass = cms.double(100.)
+        )
+    )
+)
+
 elecMuPairZmumuHypothesesLooseElectronIsolation = copy.deepcopy(elecMuPairZmumuHypotheses)
 elecMuPairZmumuHypothesesLooseElectronIsolation.diCandidatePairSource = cms.InputTag('selectedElecMuPairsPzetaDiffLooseElectronIsolationCumulative')
 
-produceElecMuPairZmumuHypotheses = cms.Sequence( elecMuPairZmumuHypotheses
-                                               * elecMuPairZmumuHypothesesLooseElectronIsolation )
+elecMuPairVisMassHypothesesLooseElectronIsolation = copy.deepcopy(elecMuPairVisMassHypotheses)
+elecMuPairVisMassHypothesesLooseElectronIsolation.diCandidatePairSource = elecMuPairZmumuHypothesesLooseElectronIsolation.diCandidatePairSource
+elecMuPairVisMassHypothesesLooseElectronIsolation.ZllHypotheses[0].src = cms.InputTag('elecMuPairZmumuHypothesesLooseElectronIsolation')
+
+produceElecMuPairZmumuHypotheses = cms.Sequence(
+    elecMuPairZmumuHypotheses
+   * elecMuPairVisMassHypotheses
+   * elecMuPairZmumuHypothesesLooseElectronIsolation
+   * elecMuPairVisMassHypothesesLooseElectronIsolation
+)
                                                   

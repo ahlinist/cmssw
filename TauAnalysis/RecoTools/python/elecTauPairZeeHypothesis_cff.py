@@ -36,14 +36,32 @@ selectedElecTauPairZeeHypotheses = cms.EDFilter("ZllHypothesisElecTauSelector",
      filter = cms.bool(False)
 )
 
+elecTauPairVisMassHypotheses = cms.EDProducer("ZtautauVisMassHypothesisElecTauProducer",
+    diCandidatePairSource = elecTauPairZeeHypotheses.diCandidatePairSource,
+
+    ZllHypotheses = cms.VPSet(
+        cms.PSet(
+            src = cms.InputTag('selectedElecTauPairZeeHypotheses'),
+            minZllMass = cms.double(85.),
+            maxZllMass = cms.double(100.)
+        )
+    )
+)
+
 elecTauPairZeeHypothesesLooseElectronIsolation = copy.deepcopy(elecTauPairZeeHypotheses)
 elecTauPairZeeHypothesesLooseElectronIsolation.diCandidatePairSource = cms.InputTag('selectedElecTauPairsPzetaDiffLooseElectronIsolationCumulative')
 
 selectedElecTauPairZeeHypothesesLooseElectronIsolation = copy.deepcopy(selectedElecTauPairZeeHypotheses)
 selectedElecTauPairZeeHypothesesLooseElectronIsolation.src = cms.InputTag('elecTauPairZeeHypothesesLooseElectronIsolation')
 
-produceElecTauPairZeeHypotheses = cms.Sequence( elecTauPairZeeHypotheses
-                                               * selectedElecTauPairZeeHypotheses
-                                               * elecTauPairZeeHypothesesLooseElectronIsolation
-                                               * selectedElecTauPairZeeHypothesesLooseElectronIsolation )
+elecTauPairVisMassHypothesesLooseElectronIsolation = copy.deepcopy(elecTauPairVisMassHypotheses)
+elecTauPairVisMassHypothesesLooseElectronIsolation.diCandidatePairSource = elecTauPairZeeHypothesesLooseElectronIsolation.diCandidatePairSource
+elecTauPairVisMassHypothesesLooseElectronIsolation.ZllHypotheses[0].src = cms.InputTag('selectedElecTauPairZeeHypothesesLooseElectronIsolation')
+
+produceElecTauPairZeeHypotheses = cms.Sequence(
+    elecTauPairZeeHypotheses * selectedElecTauPairZeeHypotheses
+   * elecTauPairVisMassHypotheses
+   * elecTauPairZeeHypothesesLooseElectronIsolation * selectedElecTauPairZeeHypothesesLooseElectronIsolation
+   * elecTauPairVisMassHypothesesLooseElectronIsolation
+)
                                                   
