@@ -132,24 +132,6 @@ process.p = cms.Path( process.producePatTuple
                      +process.saveZtoMuTauPlots )
 
 #--------------------------------------------------------------------------------
-# import utility function for switching input for PAT-tuple production
-# from RECO to AOD event content
-from TauAnalysis.Configuration.tools.aodTools import *
-
-# comment-out to switch from RECO to AOD event content
-# (will disable PAT trigger matching and limit computation of ECAL recHit based IsoDeposits
-#  to cones of size dR = 0.6 around electron candidates)
-#switchToAOD(process)
-#process.selectZtoMuTauEvents.remove(process.Trigger)
-#process.analyzeZtoMuTauEvents.filters[1].src = cms.InputTag("genPhaseSpaceEventInfo")
-#process.analyzeZtoMuTauEvents.filters[1].pluginType = cms.string('GenPhaseSpaceEventInfoSelector')
-#process.analyzeZtoMuTauEvents.filters[1].cut = cms.string('')
-#process.analyzeZtoMuTauEvents.analyzers.remove(process.triggerHistManager)
-#process.analyzeZtoMuTauEvents.eventDumps[0].hltResultsSource = cms.InputTag("")
-#process.analyzeZtoMuTauEvents.analysisSequence[0].analyzers.remove('triggerHistManager')
-#--------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
 #
