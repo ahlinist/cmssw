@@ -76,6 +76,10 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("BsVtxProbKpi", &BsVtxProbKpi_, "BsVtxProbKpi/D");
   bsTree_->Branch("BsVtxProbpipi", &BsVtxProbpipi_, "BsVtxProbpipi/D");
 
+  bsTree_->Branch("BsVtx_x", &BsVtx_x_, "BsVtx_x/D");
+  bsTree_->Branch("BsVtx_y", &BsVtx_y_, "BsVtx_y/D");
+  bsTree_->Branch("BsVtx_z", &BsVtx_z_, "BsVtx_z/D");
+
   bsTree_->Branch("chi2_Bs", &chi2_Bs_, "chi2_Bs/D");
   bsTree_->Branch("ndof_Bs", &ndof_Bs_, "ndof_Bs/I");
 
@@ -415,6 +419,14 @@ void BsToJpsiPhiRootTree::resetEntries()
   BsVtxProb_ = -10;
   BsVtxProbKpi_ = -10;
   BsVtxProbpipi_ = -10;
+  BsVtx_x_ = -10;
+  BsVtx_y_ = -10;
+  BsVtx_z_ = -10;
+
+  BfitM_KK_ = -10;  
+  BfitM_Kpi_= -10;
+  BfitM_pipi_= -10;
+
 
   BsMass_after_ = -10;
   BsPhi_after_ = -10;
@@ -456,7 +468,6 @@ void BsToJpsiPhiRootTree::resetEntries()
   Mu2pixH_ = -10;
   Mu2trkH_ = -10;
 
-  BmassC_ = -10;
   BLxy_ = -10;
   BLxy2_ = -10;
   BerrX_ = -10;

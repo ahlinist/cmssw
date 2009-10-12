@@ -645,7 +645,11 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	      bsRootTree_->BfitM_KK_ = b_par[6];		
 	      
 	      bsRootTree_->setFitParKK(myTree_Bs);
-	      
+
+	      bsRootTree_->BsVtx_x_ = bVertex->position().x();
+	      bsRootTree_->BsVtx_y_ = bVertex->position().y();
+	      bsRootTree_->BsVtx_z_ = bVertex->position().z();
+
 	      bsRootTree_->BsMass_after_ = BCand.mass();
 	      bsRootTree_->BsPt_after_ = BCand.pt();
 	      bsRootTree_->BsPz_after_ = BCand.pz();

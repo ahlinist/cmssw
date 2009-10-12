@@ -128,6 +128,10 @@ public:
         double BfitM_Kpi_;
         double BfitM_pipi_;
 
+	double BsVtx_x_;
+	double BsVtx_y_;
+	double BsVtx_z_;
+
         double BsMass_after_;
         double BsPhi_after_;
         double BsEta_after_;
@@ -180,7 +184,6 @@ public:
 
 	int isMatched_;
 
-	double BmassC_;
 	double BLxy_;
 	double BLxy2_;
 	double BerrX_;
