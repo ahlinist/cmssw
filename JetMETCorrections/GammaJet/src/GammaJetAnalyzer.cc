@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.8 2009/08/03 09:57:36 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.9 2009/10/02 12:56:09 delre Exp $
 //
 //
 
@@ -496,7 +496,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiMC[nMC] = p->phi();	 
        
        mapMC[&(*p)] = nMC;
-       ++nMC;
+       ++nMC; //mikko
 
        // if stable photon/electron, find parent
        if (p->status() == 1 && motherIDMC != -1
@@ -521,7 +521,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   phiMC[nMC] = mom->phi(); 
 
 	   mapMC[mom] = nMC;
-	   ++nMC;
+	   ++nMC; //mikko
 	 }
        } // stable photon has parent
      } // keep particle
