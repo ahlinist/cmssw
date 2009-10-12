@@ -1,4 +1,7 @@
 import FWCore.ParameterSet.Config as cms
+import copy
+
+from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 
 #--------------------------------------------------------------------------------  
 # produce collections of muon + tau-jet pairs for data-driven background estimation methods
@@ -13,6 +16,13 @@ muTauPairsForBgEstZmumuEnriched = cms.EDProducer("PATMuTauPairProducer",
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
+
+muTauPairZmumuHypothesesForBgEstZmumuEnriched = copy.deepcopy(muTauPairZmumuHypotheses)
+muTauPairZmumuHypothesesForBgEstZmumuEnriched.diCandidatePairSource = cms.InputTag('muTauPairsForBgEstZmumuEnriched')
+
+muTauPairVisMassHypothesesForBgEstZmumuEnriched = copy.deepcopy(muTauPairVisMassHypotheses)
+muTauPairVisMassHypothesesForBgEstZmumuEnriched.diCandidatePairSource = muTauPairZmumuHypothesesForBgEstZmumuEnriched.diCandidatePairSource
+muTauPairVisMassHypothesesForBgEstZmumuEnriched.ZllHypotheses[0].src = cms.InputTag('muTauPairZmumuHypothesesForBgEstZmumuEnriched')
 
 muTauPairsForBgEstWplusJetsEnriched = cms.EDProducer("PATMuTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
@@ -44,7 +54,9 @@ muTauPairsForBgEstQCDenriched = cms.EDProducer("PATMuTauPairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-produceMuTauPairsForBgEst = cms.Sequence( muTauPairsForBgEstZmumuEnriched
-                                         * muTauPairsForBgEstWplusJetsEnriched
-                                         * muTauPairsForBgEstTTplusJetsEnriched
-                                         * muTauPairsForBgEstQCDenriched )
+produceMuTauPairsForBgEst = cms.Sequence(
+    muTauPairsForBgEstZmumuEnriched * muTauPairZmumuHypothesesForBgEstZmumuEnriched * muTauPairVisMassHypothesesForBgEstZmumuEnriched
+   * muTauPairsForBgEstWplusJetsEnriched
+   * muTauPairsForBgEstTTplusJetsEnriched
+   * muTauPairsForBgEstQCDenriched
+)
