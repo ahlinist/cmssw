@@ -16,6 +16,7 @@ diTauCandidateHistManagerForElecMu = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForElecMu.pluginName = cms.string('diTauCandidateHistManagerForElecMu')
 diTauCandidateHistManagerForElecMu.pluginType = cms.string('PATElecMuPairHistManager')
 diTauCandidateHistManagerForElecMu.diTauCandidateSource = cms.InputTag('allElecMuPairs')
+diTauCandidateHistManagerForElecMu.visMassHypothesisSource = cms.InputTag('')
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZmumuHypothesisHistManagerForElecMu = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZmumuHypothesisHistManagerForElecMu.pluginName = cms.string('diTauCandidateZmumuHypothesisHistManagerForElecMu')
@@ -735,6 +736,7 @@ elecMuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'diTauCandidateHistManagerForElecMu.diTauCandidateSource = selectedElecMuPairsPzetaDiffCumulative',
+                              'diTauCandidateHistManagerForElecMu.visMassHypothesisSource = elecMuPairVisMassHypotheses',
                               'diTauCandidateZmumuHypothesisHistManagerForElecMu.ZllHypothesisSource = elecMuPairZmumuHypotheses')
     )
 )

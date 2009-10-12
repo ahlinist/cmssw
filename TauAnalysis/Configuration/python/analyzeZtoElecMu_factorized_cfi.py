@@ -88,7 +88,8 @@ replaceHistManagerInputTags(elecMuAnalysisSequence_factorizedWithoutElectronIsol
       ["selectedElecMuPairsMt1METcumulative", "selectedElecMuPairsMt1METlooseElectronIsolationCumulative"],
       ["selectedElecMuPairsMt2METcumulative", "selectedElecMuPairsMt2METlooseElectronIsolationCumulative"],
       ["selectedElecMuPairsPzetaDiffCumulative", "selectedElecMuPairsPzetaDiffLooseElectronIsolationCumulative"],
-      ["elecMuPairZmumuHypotheses", "elecMuPairZmumuHypothesesLooseElectronIsolation"] ]
+      ["elecMuPairZmumuHypotheses", "elecMuPairZmumuHypothesesLooseElectronIsolation"],
+      ["elecMuPairVisMassHypotheses", "elecMuPairVisMassHypothesesLooseElectronIsolation"] ]
 ) 
 
 elecMuAnalysisSequence_factorizedWithElectronIsolation = copy.deepcopy(elecMuAnalysisSequence)
