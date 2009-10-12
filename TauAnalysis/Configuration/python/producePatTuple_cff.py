@@ -8,7 +8,6 @@ import FWCore.ParameterSet.Config as cms
 # import "official" PAT production sequences
 #
 from PhysicsTools.PatAlgos.patSequences_cff import *
-
 #
 # reconstruct objects needed by TauAnalysis customized PAT sequences
 # (AOD level electron id. and isolation)
@@ -74,12 +73,18 @@ from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
 #
 from TauAnalysis.RecoTools.tauRecoilEnergy_cff import *
 
-producePatTuple = cms.Sequence( producePrePat      # comment-out if running on "officially" produced PAT-tuples
-                               +patDefaultSequence # comment-out if running on "officially" produced PAT-tuples
+producePatTuple = cms.Sequence( producePrePat      
+                               +patDefaultSequence 
                                +producePostPat
-                               +produceLayer1SelLeptons + selectLayer1Jets + selectLayer1METs
-                               +produceDiTauPairsAllKinds
-                               +selectDiTauPairsAllKinds
-                               +produceElecTauPairZeeHypotheses + produceMuTauPairZmumuHypotheses + produceElecMuPairZmumuHypotheses
-                               +produceTauNuPairs
-                               +produceTauRecoilEnergy )
+							  )
+
+# removed producelayer1Sel* modules and pointed hist managers to 'cleanLayer1*' collections
+produceZtoElecTau = cms.Sequence( selectLayer1Electrons
+								 +selectLayer1ElectronsLooseIsolation
+								 +selectLayer1Taus
+								 +selectLayer1TausForElecTau
+                                 +produceElecTauPairs +produceElecTauPairsLooseElectronIsolation
+							     +selectElecTauPairs +selectElecTauPairsLooseElectronIsolation
+							   	 +produceElecTauPairZeeHypotheses
+							    )
+
