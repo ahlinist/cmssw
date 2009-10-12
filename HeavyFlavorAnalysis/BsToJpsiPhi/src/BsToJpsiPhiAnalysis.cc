@@ -454,7 +454,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    t_tracks.push_back((*theB).build(&trk1Ref));
 	    t_tracks.push_back((*theB).build(&trk2Ref));
 	    
-	    if (!Mu1Ref.isNonnull() || !Mu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk1Ref.isNonnull()) continue;
+	    if (!Mu1Ref.isNonnull() || !Mu2Ref.isNonnull() || !trk1Ref.isNonnull() || !trk2Ref.isNonnull()) continue;
 	    // checked track references
 	    if(bsRootTree_->iPassedCutIdent_   < 9 ) bsRootTree_->iPassedCutIdent_ = 9 ;
 	    
@@ -1100,8 +1100,8 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	  const Candidate * d = genBsCand.daughter( j );
 	  int dauId = d->pdgId();
 	  if(abs(dauId) == 443 ) Jpsi = d;
-	  if(abs(dauId) == 321 ) Kp = d;
-	  if(abs(dauId) == 321 ) Km = d;
+	  if(dauId == 321 ) Kp = d;
+	  if(dauId == -321 ) Km = d;
 	}
 	if (Jpsi && Kp && Km)
 	  bsRootTree_->isGenBsJpsiKKEvent_ = 1;
