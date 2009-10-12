@@ -119,9 +119,9 @@ bgEstSampleFileNamesZeePlusJets_part03 = cms.untracked.vstring(
 )
 
 # definitions for producing ntuples
-bgEstNtupleOutputFileNameZtautauPlusJets = cms.string('bgEstNtupleZtoElecTau_ZtautauPlusJets.root')
+bgEstNtupleOutputFileNameZtautauPlusJets = cms.string('bgEstNtupleZtoElecTau_ZtautauPlusJets_partXX.root')
 
-bgEstNtupleOutputFileNameZeePlusJets = cms.string('bgEstNtupleZtoElecTau_ZeePlusJets.root')
+bgEstNtupleOutputFileNameZeePlusJets = cms.string('bgEstNtupleZtoElecTau_ZeePlusJets_partXX.root')
 
 #--------------------------------------------------------------------------------
 
@@ -468,13 +468,13 @@ bgEstSampleFileNamesQCD_EMenriched_Pt80to170_part03 = cms.untracked.vstring(
 ) 
 
 # definitions for producing ntuples
-bgEstNtupleOutputFileNameQCD_BCtoE_Pt20to30 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt20to30.root')
-bgEstNtupleOutputFileNameQCD_BCtoE_Pt30to80 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt30to80.root')
-bgEstNtupleOutputFileNameQCD_BCtoE_Pt80to170 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt80to170.root')
+bgEstNtupleOutputFileNameQCD_BCtoE_Pt20to30 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt20to30_partXX.root')
+bgEstNtupleOutputFileNameQCD_BCtoE_Pt30to80 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt30to80_partXX.root')
+bgEstNtupleOutputFileNameQCD_BCtoE_Pt80to170 = cms.string('bgEstNtupleZtoElecTau_QCD_BCtoE_Pt80to170_partXX.root')
 
-bgEstNtupleOutputFileNameQCD_EMenriched_Pt20to30 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt20to30.root')
-bgEstNtupleOutputFileNameQCD_EMenriched_Pt30to80 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt30to80.root')
-bgEstNtupleOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt80to170.root')
+bgEstNtupleOutputFileNameQCD_EMenriched_Pt20to30 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt20to30_partXX.root')
+bgEstNtupleOutputFileNameQCD_EMenriched_Pt30to80 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt30to80_partXX.root')
+bgEstNtupleOutputFileNameQCD_EMenriched_Pt80to170 = cms.string('bgEstNtupleZtoElecTau_QCD_EMenriched_Pt80to170_partXX.root')
 
 #--------------------------------------------------------------------------------
 
