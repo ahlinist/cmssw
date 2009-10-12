@@ -4,6 +4,18 @@ import FWCore.ParameterSet.Config as cms
 # preselection of events considered in data-driven background estimation methods
 #--------------------------------------------------------------------------------
 
+electronsLooseIdForBgEst = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("cleanLayer1Electrons"),                     
+    cut = cms.string('electronID("loose") > 0'),
+    filter = cms.bool(False)
+)
+
+electronsRobustIdForBgEst = cms.EDFilter("PATElectronSelector",
+    src = cms.InputTag("cleanLayer1Electrons"),                     
+    cut = cms.string('electronID("robust") > 0'),
+    filter = cms.bool(False)
+)
+
 electronsTrkLooseIsolationForBgEst = cms.EDFilter("PATElectronSelector",
     src = cms.InputTag('selectedLayer1ElectronsEcalIsoLooseIsolationCumulative'),                                        
     cut = cms.string('gsfTrack.isNonnull'),
@@ -29,7 +41,8 @@ electronsTrkTightIsolationForBgEst = cms.EDFilter("PATElectronSelector",
 )
 
 selectElectronsForBgEst = cms.Sequence(
-    electronsTrkLooseIsolationForBgEst
+    electronsLooseIdForBgEst * electronsRobustIdForBgEst
+   * electronsTrkLooseIsolationForBgEst
    * electronsTrkIsoForBgEst * electronsEcalIsoForBgEst * electronsTrkTightIsolationForBgEst
 )
 
