@@ -76,7 +76,7 @@ bgEstEventSelection_WplusJets = (
 #    
     " && tauTrackIsoDiscrWplusJets_0 > 0.5 && tauEcalIsoDiscrWplusJets_0 > 0.5 && tauDiscrAgainstElectronsWplusJets_0 > 0.5"
     " && diTauMt1MEtWplusJets_0 > 30."
-    " && numTightIdElectrons < 2"
+    " && numLooseIdElectrons < 2"
     " && numJetsAlpha0point1WplusJets < 1"
 )
 
@@ -86,7 +86,7 @@ bgEstEventSelection_TTplusJets = (
     "numDiTausTTplusJets >= 1 && electronTrackIsoTTplusJets_0 < 2. && electronEcalIsoTTplusJets_0 < 2."
     " && tauDiscrAgainstElectronsTTplusJets_0 > 0.5"
     " && diTauAbsChargeTTplusJets_0 < 0.5"
-    " && numTightIdElectrons < 2"
+    " && numLooseIdElectrons < 2"
     " && ((numJetsEt40TTplusJets >= 1 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_0 > 4.5)"
     " || (numJetsEt40TTplusJets >= 2 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_1 > 4.5)"
     " || (numJetsEt40TTplusJets >= 3 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_2 > 4.5))"
@@ -102,7 +102,7 @@ bgEstEventSelection_gammaPlusJets = (
 bgEstEventSelection_QCD = (
     "numDiTausQCD >= 1 && electronTrackIsoQCD_0 > 4. && electronEcalIsoQCD_0 > 4."
     " && tauDiscrAgainstElectronsQCD_0 > 0.5"
-    " && numTightIdElectrons < 2"
+    " && numLooseIdElectrons < 2"
 )
 
 print("bgEstEventSelection_QCD = " + bgEstEventSelection_QCD)
@@ -248,11 +248,11 @@ prodTemplateHistConfiguratorQCDenriched.addTemplate(meName_diTauMvis12_norm, bra
 
 process.prodTemplateHistBgEstQCDenriched = prodTemplateHistConfiguratorQCDenriched.configure(process)
 
-process.prodTemplateHistZtoElecTau = cms.Sequence( process.prodTemplateHistBgEstZeeEnriched
-                                                * process.prodTemplateHistBgEstWplusJetsEnriched
-                                                * process.prodTemplateHistBgEstTTplusJetsEnriched
-                                                #* process.prodTemplateHistBgEstGammaPlusJetsEnriched
-                                                * process.prodTemplateHistBgEstQCDenriched )
+process.prodTemplateHistZtoElecTau = cms.Sequence( process.prodTemplateHistBgEstZeeEnriched 
+                                                 * process.prodTemplateHistBgEstWplusJetsEnriched
+                                                 * process.prodTemplateHistBgEstTTplusJetsEnriched
+                                                 #* process.prodTemplateHistBgEstGammaPlusJetsEnriched
+                                                 * process.prodTemplateHistBgEstQCDenriched )
 
 #--------------------------------------------------------------------------------
 # load template histogram of visible electron + tau-jet mass distribution
@@ -637,123 +637,25 @@ process.saveAllHistZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
 # in order to determine normalization factors of individual background processes
 #--------------------------------------------------------------------------------
 
-# fit W + jets, ttbar + jets, gamma + jets and QCD background templates
-# with Landau distribution convoluted with Gaussian
-diTauMvis12_smoothing = cms.PSet(
-    pluginName = cms.string("Landau convoluted with Gaussian"),
-    pluginType = cms.string("TF1landauXgausWrapper"), # defaults to TF1Wrapper
-    xMin = cms.double(20.),
-    xMax = cms.double(200.),
-    parameter = cms.PSet(
-        par0 = cms.PSet( # width (scale) parameter of Landau density
-            initial = cms.double(5.),
-            min = cms.double(0.01),
-            max = cms.double(50.)
-        ),
-        par1 = cms.PSet( # most probable (MP, location) parameter of Landau density
-            initial = cms.double(50.),
-            min = cms.double(30.),
-            max = cms.double(150.) 
-        ),
-        par2 = cms.PSet( # total area (integral from -inf to +inf, normalization constant)
-            initial = cms.double(1.),
-            min = cms.double(0.1),
-            max = cms.double(10.)
-        ),
-        par3 = cms.PSet( # width (sigma) of convoluted Gaussian function
-            initial = cms.double(10.),
-            min = cms.double(1.),
-            max = cms.double(50.)
-        )
-    )
-)
-
 process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",                                          
     processes = cms.PSet(
         Ztautau = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
                     meName = cms.string(dqmDirectory_Ztautau_ZmumuTemplate + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-                    smoothing = cms.PSet(
-                        pluginName = cms.string("diTauMvis12SmoothingZtautau"),
-                        pluginType = cms.string("TF1Wrapper"),
-                        # fit Z --> tau+ tau- peak with sum of log-normal and skewed Gaussian distribution
-                        formula = cms.string("[0]*([1]*::ROOT::Math::lognormal_pdf(x, TMath::Log([4]), [2], [3])"
-                                             "+ (1 - [1])*TMath::Gaus(x, [5], [6])*(1 + TMath::Erf([7]*x)))"),
-                        xMin = cms.double(20.),
-                        xMax = cms.double(120.),
-                        parameter = cms.PSet(
-                            par0 = cms.PSet(
-                                initial = cms.double(1.)
-                            ),
-                            par1 = cms.PSet(
-                                initial = cms.double(0.75),
-                                min = cms.double(0.),
-                                max = cms.double(1.)
-                            ),
-                            par2 = cms.PSet(
-                                initial = cms.double(0.5),
-                                min = cms.double(0.),
-                                max = cms.double(10.)
-                            ),
-                            par3 = cms.PSet(
-                                initial = cms.double(40.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par4 = cms.PSet(
-                                initial = cms.double(10.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par5 = cms.PSet(
-                                initial = cms.double(55.)
-                            ),
-                            par6 = cms.PSet(
-                                initial = cms.double(10.),
-                                min = cms.double(0.),
-                                max = cms.double(100.)
-                            ),
-                            par7 = cms.PSet(
-                                initial = cms.double(0.0001)
-                            )
-                        )
-                    )
+                    #meName = cms.string(dqmDirectory_Ztautau_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(1000.)
+                initial = cms.double(250.)
             ),
             drawOptions = drawOption_Ztautau                
         ),
         Zee = cms.PSet(
             templates = cms.PSet(
-                diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_Zee_bgEstEnriched_data + meName_diTauMvis12_norm),
-                    smoothing = cms.PSet(
-                        pluginName = cms.string("diTauMvis12SmoothingZee"),
-                        pluginType = cms.string("TF1Wrapper"),
-                        # fit Z --> e+ e- peak with Voigt function,
-                        # the convolution of a Breit-Wigner profile with a Gaussian (smearing)
-                        formula = cms.string("[0]*TMath::Voigt(x - [1], [2], [3])"),
-                        xMin = cms.double(20.),
-                        xMax = cms.double(120.),
-                        parameter = cms.PSet(
-                            par0 = cms.PSet(
-                                initial = cms.double(10.)
-                            ),
-                            par1 = cms.PSet(
-                                initial = cms.double(90.)
-                            ),
-                            par3 = cms.PSet(
-                                initial = cms.double(0.1)
-                            ),
-                            par4 = cms.PSet(
-                                initial = cms.double(2.5)
-                            )
-                        )
-                    )
+                diTauMvis12 = cms.PSet(                    
+                    #meName = cms.string(dqmDirectory_Zee_bgEstEnriched_data + meName_diTauMvis12_norm)
+                    meName = cms.string(dqmDirectory_Zee_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
                 )
             ),    
             norm = cms.PSet(
@@ -765,42 +667,33 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
                     meName = cms.string(dqmDirectory_WplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-                    smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingWplusJets")
-                    )
+                    #meName = cms.string(dqmDirectory_WplusJets_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(500.)
+                initial = cms.double(100.)
             ),
             drawOptions = drawOption_WplusJets
         ),
         TTplusJets = cms.PSet(
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
-                    meName = cms.string(dqmDirectory_TTplusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-                    smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingTTplusJets")
-                    )
+                    meName = cms.string(dqmDirectory_TTplusJets_bgEstEnriched_data + meName_diTauMvis12_norm)
                 )
             ),    
             norm = cms.PSet(
-                initial = cms.double(100.)
+                initial = cms.double(25.)
             ),
             drawOptions = drawOption_TTplusJets
         ),
         ##gammaPlusJets = cms.PSet(
         ##    templates = cms.PSet(
         ##        diTauMvis12 = cms.PSet(
-        ##            meName = cms.string(dqmDirectory_gammaPlusJets_bgEstEnriched_data + meName_diTauMvis12_norm),
-        ##            smoothing = diTauMvis12_smoothing.clone(
-        ##                pluginName = cms.string("diTauMvis12SmoothingGammaPlusJets")
-        ##            )
+        ##            meName = cms.string(dqmDirectory_gammaPlusJets_bgEstEnriched_data + meName_diTauMvis12_norm)
         ##        )
         ##    ),    
         ##    norm = cms.PSet(
-        ##        initial = cms.double(100.)
+        ##        initial = cms.double(25.)
         ##    ),
         ##    drawOptions = drawOption_gammaPlusJets
         ##),
@@ -808,10 +701,7 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",
             templates = cms.PSet(
                 diTauMvis12 = cms.PSet(
                     meName = cms.string(dqmDirectory_QCD_bgEstEnriched_data + meName_diTauMvis12_norm),
-                    #meName = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm),
-                    smoothing = diTauMvis12_smoothing.clone(
-                        pluginName = cms.string("diTauMvis12SmoothingQCD")
-                    )
+                    #meName = cms.string(dqmDirectory_QCD_finalEvtSel_norm + "DiTauCandidateQuantities" + "/" + meName_diTauMvis12_norm)
                 )
             ),    
             norm = cms.PSet(
@@ -836,8 +726,8 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",
             diTauMvis12 = cms.PSet(
                name = cms.string("diTauMvis12"),
                title = cms.string("M_{vis}^{e + #tau-jet}"),
-               xMin = cms.double(20.),
-               xMax = cms.double(200.)
+               xMin = cms.double(30.),
+               xMax = cms.double(80.)
             )
         ),
         cutUnfittedRegion = cms.bool(False),
@@ -921,14 +811,14 @@ process.loadAllHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 )
 
 process.p = cms.Path(
-    process.prodAllHistZtoElecTau
-   #process.loadAllHistZtoElecTau
+   #process.prodAllHistZtoElecTau
+    process.loadAllHistZtoElecTau
    + process.plotTemplateHistZtoElecTau
    + process.fitZtoElecTau
 )
 
 # print-out all python configuration parameter information
-print process.dumpPython()
+#print process.dumpPython()
 
 
   
