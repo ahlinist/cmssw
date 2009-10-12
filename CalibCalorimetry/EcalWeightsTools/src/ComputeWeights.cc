@@ -1,11 +1,11 @@
 /* \file ComputeWeights.cc
  *
- *  $Date: 2006/04/11 15:58:06 $
- *  $Revision: 1.1 $
+ *  $Date: 2006/07/19 22:04:42 $
+ *  $Revision: 1.2 $
  *  \author R. Bruneliere - CERN
  *
- * $Date: 2006/06/15  15:58:06 $
- * $Revision: 1.1 $
+ * $Date: 2006/07/19 22:04:42 $
+ * $Revision: 1.2 $
  * Updated by Alex Zabi.
  */
 
@@ -63,8 +63,8 @@ bool ComputeWeights::compute(const std::vector<double>& pulseShape,
 
   // INITIALIZE WEIGHTS MATRICES
   if (weights_.num_row() != nSamples) {
-    weights_ = HepMatrix(nSamples, nSamples, 0); // Fill matrices with zeros
-    chi2_ = HepSymMatrix(nSamples, 0);
+    weights_ = CLHEP::HepMatrix(nSamples, nSamples, 0); // Fill matrices with zeros
+    chi2_ = CLHEP::HepSymMatrix(nSamples, 0);
   } else {
     for (int iColumn = 0; iColumn < nSamples; iColumn++) {
       for (int iRow = 0; iRow < nParams; iRow++)
@@ -91,7 +91,7 @@ bool ComputeWeights::compute(const std::vector<double>& pulseShape,
   // Fill coef matrix
   int size = nPulseSamples_;
   if (doFitBaseline_) size += nPrePulseSamples_;
-  HepMatrix coef(size, nParams);
+  CLHEP::HepMatrix coef(size, nParams);
   for (int iRow = 0; iRow < nPulseSamples_; iRow++)
     for (int iColumn = 0; iColumn < nParams; iColumn++) {
       if (iColumn == 0)
@@ -108,14 +108,14 @@ bool ComputeWeights::compute(const std::vector<double>& pulseShape,
       else
 	coef[iRow][iColumn] = 0.;
     }
-  HepMatrix tCoef = coef.T(); // transpose coef
+  CLHEP::HepMatrix tCoef = coef.T(); // transpose coef
 
   // Covariance matrix
-  HepSymMatrix invCov(size, 1); // By default, set it to identity (1)
+  CLHEP::HepSymMatrix invCov(size, 1); // By default, set it to identity (1)
 
   // Variance matrix = [tCoef * invCov * coef]^-1
-  HepMatrix tCoeffInvCov = tCoef*invCov;
-  HepMatrix variance = tCoeffInvCov*coef;
+  CLHEP::HepMatrix tCoeffInvCov = tCoef*invCov;
+  CLHEP::HepMatrix variance = tCoeffInvCov*coef;
   int ierr;
   variance.invert(ierr);
   if (ierr) {
@@ -126,17 +126,17 @@ bool ComputeWeights::compute(const std::vector<double>& pulseShape,
   }//check inversion
 
   // Weights matrix = variance * tCoef * invCov
-  HepMatrix variancetCoef = variance*tCoef;
-  HepMatrix weights = variancetCoef*invCov;
+  CLHEP::HepMatrix variancetCoef = variance*tCoef;
+  CLHEP::HepMatrix weights = variancetCoef*invCov;
 
   // Chi2 matrix = (1 - coef * weights)^T * invCov * (1 - coef * weights)
-  HepMatrix delta = coef*weights;
+  CLHEP::HepMatrix delta = coef*weights;
   delta *= -1.;
-  HepMatrix unit(size, size, 1);
+  CLHEP::HepMatrix unit(size, size, 1);
   delta += unit;
-  HepMatrix tDelta = delta.T();
-  HepMatrix tDeltaInvCov = tDelta*invCov;
-  HepMatrix chi2 = tDeltaInvCov*delta;
+  CLHEP::HepMatrix tDelta = delta.T();
+  CLHEP::HepMatrix tDeltaInvCov = tDelta*invCov;
+  CLHEP::HepMatrix chi2 = tDeltaInvCov*delta;
 
   // Copy matrices into class members
   for (int iColumn = 0; iColumn < nPulseSamples_; iColumn++) {
