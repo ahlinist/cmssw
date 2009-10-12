@@ -126,6 +126,14 @@ class ZllHypothesisT1T2Algorithm
 	if ( !isValid2 ) continue;
 	
 	double visMass = (lepton1Momentum + lepton2Momentum).mass();
+
+	if ( verbosity_ ) {
+	  std::cout << "<ZllHypothesisT1T2Algorithm::buildZllHypothesis>:" << std::endl;
+	  std::cout << "lepton1Type = " << lepton1Type << ", lepton1Pt = " << lepton1Momentum.pt() << ";"
+		    << " lepton2Type = " << lepton2Type << ", lepton2Pt = " << lepton2Momentum.pt() << ":"
+		    << " visMass = " << visMass << std::endl;
+	}
+
 	if ( TMath::Abs(visMass - nominalZmass) < TMath::Abs(visMassBestMatch - nominalZmass) ) {
 	  p4Lepton1bestMatch = lepton1Momentum;
 	  lepton1bestMatchType = lepton1Type;
