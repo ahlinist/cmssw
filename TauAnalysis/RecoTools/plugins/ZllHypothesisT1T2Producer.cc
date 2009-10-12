@@ -10,8 +10,6 @@
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2Fwd.h"
 
-#include "TauAnalysis/CandidateTools/interface/FetchCollection.h"
-
 template<typename T1, typename T2>
 ZllHypothesisT1T2Producer<T1,T2>::ZllHypothesisT1T2Producer(const edm::ParameterSet& cfg)
   : algorithm_(cfg)

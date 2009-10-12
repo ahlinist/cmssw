@@ -99,8 +99,8 @@ class ZllHypothesisT1T2Algorithm
 
     //edm::ESHandle<HepPDT::ParticleDataTable> pdt;
     //es.getData(pdt);
-    //double nominalZmass = pdt->particle(23)->mass();
-    double nominalZmass = 91.188;
+    //const double nominalZmass = pdt->particle(23)->mass();
+    const double nominalZmass = 91.188;
 
     double visMassBestMatch = 1.e+3;
     reco::Particle::LorentzVector p4Lepton1bestMatch;
