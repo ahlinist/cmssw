@@ -37,6 +37,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag diTauCandidateSrc_;
   edm::InputTag vertexSrc_;
+  edm::InputTag visMassHypothesisSrc_;
 
   std::string dqmDirectory_store_;
   
@@ -65,6 +66,7 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hVisPt_;
   MonitorElement* hVisPhi_;
   MonitorElement* hVisMass_;
+  MonitorElement* hVisMassZllCombinedHypothesis_;
 
   MonitorElement* hCollinearApproxEta_;
   MonitorElement* hCollinearApproxMass_;
