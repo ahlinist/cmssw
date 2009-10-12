@@ -1,4 +1,7 @@
 import FWCore.ParameterSet.Config as cms
+import copy
+
+from TauAnalysis.RecoTools.elecTauPairZeeHypothesis_cff import *
 
 #--------------------------------------------------------------------------------  
 # produce collections of electron + tau-jet pairs for data-driven background estimation methods
@@ -13,6 +16,13 @@ elecTauPairsForBgEstZeeEnriched = cms.EDProducer("PATElecTauPairProducer",
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
+
+elecTauPairZeeHypothesesForBgEstZeeEnriched = copy.deepcopy(elecTauPairZeeHypotheses)
+elecTauPairZeeHypothesesForBgEstZeeEnriched.diCandidatePairSource = cms.InputTag('elecTauPairsForBgEstZeeEnriched')
+
+elecTauPairVisMassHypothesesForBgEstZeeEnriched = copy.deepcopy(elecTauPairVisMassHypotheses)
+elecTauPairVisMassHypothesesForBgEstZeeEnriched.diCandidatePairSource = elecTauPairZeeHypothesesForBgEstZeeEnriched.diCandidatePairSource
+elecTauPairVisMassHypothesesForBgEstZeeEnriched.ZllHypotheses[0].src = cms.InputTag('elecTauPairZeeHypothesesForBgEstZeeEnriched')
 
 elecTauPairsForBgEstWplusJetsEnriched = cms.EDProducer("PATElecTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
@@ -44,7 +54,9 @@ elecTauPairsForBgEstQCDenriched = cms.EDProducer("PATElecTauPairProducer",
     verbosity = cms.untracked.int32(0)
 )
 
-produceElecTauPairsForBgEst = cms.Sequence( elecTauPairsForBgEstZeeEnriched
-                                           * elecTauPairsForBgEstWplusJetsEnriched
-                                           * elecTauPairsForBgEstTTplusJetsEnriched
-                                           * elecTauPairsForBgEstQCDenriched )
+produceElecTauPairsForBgEst = cms.Sequence(
+    elecTauPairsForBgEstZeeEnriched * elecTauPairZeeHypothesesForBgEstZeeEnriched * elecTauPairVisMassHypothesesForBgEstZeeEnriched
+   * elecTauPairsForBgEstWplusJetsEnriched
+   * elecTauPairsForBgEstTTplusJetsEnriched
+   * elecTauPairsForBgEstQCDenriched
+)
