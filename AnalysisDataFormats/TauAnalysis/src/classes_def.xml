@@ -43,6 +43,9 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> > >"/>
+  <class name="edm::Ref<PATElecTauPairCollection,PATElecTauPair,edm::refhelper::FindUsingAdvance<PATElecTauPairCollection,PATElecTauPair> >"/>
+  <class name="edm::RefVector<PATElecTauPairCollection,PATElecTauPair,edm::refhelper::FindUsingAdvance<PATElecTauPairCollection,PATElecTauPair> >"/>
+  <class name="edm::RefProd<PATElecTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Tau> >"/>
 
   <!-- create dictionaries for ZllHypothesisElecTau objects -->
@@ -56,6 +59,9 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> > >"/>
+  <class name="edm::Ref<PATMuTauPairCollection,PATMuTauPair,edm::refhelper::FindUsingAdvance<PATMuTauPairCollection,PATMuTauPair> >"/>
+  <class name="edm::RefVector<PATMuTauPairCollection,PATMuTauPair,edm::refhelper::FindUsingAdvance<PATMuTauPairCollection,PATMuTauPair> >"/>
+  <class name="edm::RefProd<PATMuTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Muon, pat::Tau> >"/>
 
   <!-- create dictionaries for ZllHypothesisMuTau objects -->
@@ -69,6 +75,9 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> > >"/>
+  <class name="edm::Ref<PATDiTauPairCollection,PATDiTauPair,edm::refhelper::FindUsingAdvance<PATDiTauPairCollection,PATDiTauPair> >"/>
+  <class name="edm::RefVector<PATDiTauPairCollection,PATDiTauPair,edm::refhelper::FindUsingAdvance<PATDiTauPairCollection,PATDiTauPair> >"/>
+  <class name="edm::RefProd<PATDiTauPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Tau, pat::Tau> >"/>
 
   <!-- create dictionaries for ZllHypothesisDiTau objects -->
@@ -82,6 +91,9 @@
   <class name="std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
   <class name="edm::Wrapper<std::vector<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> > >"/>
+  <class name="edm::Ref<PATElecMuPairCollection,PATElecMuPair,edm::refhelper::FindUsingAdvance<PATElecMuPairCollection,PATElecMuPair> >"/>
+  <class name="edm::RefVector<PATElecMuPairCollection,PATElecMuPair,edm::refhelper::FindUsingAdvance<PATElecMuPairCollection,PATElecMuPair> >"/>
+  <class name="edm::RefProd<PATElecMuPairCollection>"/>
   <class name="edm::Ptr<CompositePtrCandidateT1T2MEt<pat::Electron, pat::Muon> >"/>
 
   <!-- create dictionaries for ZllHypothesisElecMu objects -->
@@ -89,6 +101,18 @@
   <class name="std::vector<ZllHypothesisElecMu>"/>
   <class name="edm::Wrapper<ZllHypothesisElecMu>"/>
   <class name="edm::Wrapper<std::vector<ZllHypothesisElecMu> >"/>
+  
+  <!-- create dictionaries for 
+      o ZtautauVisMassHypothesisElecTau 
+      o ZtautauVisMassHypothesisMuTau 
+      o ZtautauVisMassHypothesisDiTau 
+      o ZtautauVisMassHypothesisElecMu 
+       objects -->
+  <class pattern="edm::AssociationVector<*>">
+    <field name="transientVector_" transient="true"/>
+    <field name="fixed_" transient="true"/>
+  </class>
+  <class pattern="edm::Wrapper<edm::AssociationVector<*> >"/>
 
   <!-- create dictionaries for PATTauNuPair objects -->
   <class name="CompositePtrCandidateTMEt<pat::Tau>"/>
