@@ -37,6 +37,10 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
 
+  visMassHypothesisSrc_ = ( cfg.exists("visMassHypothesisSource") ) ?  
+    cfg.getParameter<edm::InputTag>("visMassHypothesisSource") : edm::InputTag();
+  //std::cout << " visMassHypothesisSrc = " << visMassHypothesisSrc_ << std::endl;
+
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
   
@@ -90,7 +94,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
   hVisPt_ = dqmStore.book1D("VisPt", "Visible P_{T}", 50, 0., 100.);
   hVisPhi_ = dqmStore.book1D("VisPhi", "Visible #phi", 36, -TMath::Pi(), +TMath::Pi());
   hVisMass_ = dqmStore.book1D("VisMass", "Visible Mass", 40, 0., 200.);
-  
+  hVisMassZllCombinedHypothesis_ = ( visMassHypothesisSrc_.label() != "" ) ?
+    dqmStore.book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
+
   hCollinearApproxEta_ = dqmStore.book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
   hCollinearApproxMass_ = dqmStore.book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
   hCollinearApproxMassVsPt_ = dqmStore.book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs P_{T}", 30, 0., 150., 25, 0., 250.);
@@ -188,6 +194,22 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     hVisPt_->Fill(diTauCandidate->p4Vis().pt(), weight);
     hVisPhi_->Fill(diTauCandidate->p4Vis().phi(), weight);
     hVisMass_->Fill(diTauCandidate->p4Vis().mass(), weight);
+    if ( visMassHypothesisSrc_.label() != "" ) {
+      typedef edm::RefProd<CompositePtrCandidateCollection> CompositePtrCandidateRefProd;
+      typedef std::vector<float> vfloat;
+      typedef edm::AssociationVector<CompositePtrCandidateRefProd, vfloat> ZtautauVisMassHypothesisCollection;
+      edm::Handle<ZtautauVisMassHypothesisCollection> visMassHypotheses;
+      evt.getByLabel(visMassHypothesisSrc_, visMassHypotheses);
+
+      unsigned numDiTauCandidates = diTauCandidates->size();
+      for ( unsigned idxDiTauCandidate = 0; idxDiTauCandidate < numDiTauCandidates; ++idxDiTauCandidate ) {
+	edm::Ref<CompositePtrCandidateCollection> diTauCandidateRef(diTauCandidates, idxDiTauCandidate);
+
+	if ( diTauCandidateRef.get() != &(*diTauCandidate) ) continue;
+
+	hVisMassZllCombinedHypothesis_->Fill((*visMassHypotheses)[diTauCandidateRef], weight);
+      }
+    }
 
     if ( diTauCandidate->collinearApproxIsValid() ) {
       hCollinearApproxEta_->Fill(diTauCandidate->p4CollinearApprox().eta(), weight);
