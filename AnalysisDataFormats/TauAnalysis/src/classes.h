@@ -77,6 +77,9 @@ namespace {
     edm::Wrapper<PATElecTauPair> dummyPATElecTauPairWrapper;
     PATElecTauPairCollection dummyPATElecTauPairCollection;
     edm::Wrapper<PATElecTauPairCollection> dummyPATElecTauPairCollectionWrapper;
+    edm::Ref<PATElecTauPairCollection> dummyPATElecTauPairRef;
+    edm::RefVector<PATElecTauPairCollection> dummyPATElecTauPairRefVector;
+    edm::RefProd<PATElecTauPairCollection> dummyPATElecTauPairRefProd;
     edm::Ptr<PATElecTauPair> dummyPATElecTauPairPtr;
 
     /// create dictionaries for ZllHypothesisElecTau objects
@@ -85,11 +88,18 @@ namespace {
     ZllHypothesisElecTauCollection dummyZllHypothesisElecTauCollection;
     edm::Wrapper<ZllHypothesisElecTauCollection> dummyZllHypothesisElecTauCollectionWrapper;
 
+    /// create dictionaries for ZtautauVisMassHypothesisElecTau objects
+    edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<float> > dummyZtautauVisMassHypothesesElecTau;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATElecTauPairCollection>, std::vector<float> > > dummyZtautauVisMassHypothesesElecTauWrapper;
+
     /// create dictionaries for PATMuTauPair objects
     PATMuTauPair dummyPATMuTauPair;
     edm::Wrapper<PATMuTauPair> dummyPATMuTauPairWrapper;
     PATMuTauPairCollection dummyPATMuTauPairCollection;
     edm::Wrapper<PATMuTauPairCollection> dummyPATMuTauPairCollectionWrapper;
+    edm::Ref<PATMuTauPairCollection> dummyPATMuTauPairRef;
+    edm::RefVector<PATMuTauPairCollection> dummyPATMuTauPairRefVector;
+    edm::RefProd<PATMuTauPairCollection> dummyPATMuTauPairRefProd;
     edm::Ptr<PATMuTauPair> dummyPATMuTauPairPtr;
 
     /// create dictionaries for ZllHypothesisMuTau objects
@@ -97,12 +107,19 @@ namespace {
     edm::Wrapper<ZllHypothesisMuTau> dummyZllHypothesisMuTauWrapper;
     ZllHypothesisMuTauCollection dummyZllHypothesisMuTauCollection;
     edm::Wrapper<ZllHypothesisMuTauCollection> dummyZllHypothesisMuTauCollectionWrapper;
-    
+
+    /// create dictionaries for ZtautauVisMassHypothesisMuTau objects
+    edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<float> > dummyZtautauVisMassHypothesesMuTau;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATMuTauPairCollection>, std::vector<float> > > dummyZtautauVisMassHypothesesMuTauWrapper;
+
     /// create dictionaries for PATDiTauPair objects
     PATDiTauPair dummyPATDiTauPair;
     edm::Wrapper<PATDiTauPair> dummyPATDiTauPairWrapper;
     PATDiTauPairCollection dummyPATDiTauPairCollection;
     edm::Wrapper<PATDiTauPairCollection> dummyPATDiTauPairCollectionWrapper;
+    edm::Ref<PATDiTauPairCollection> dummyPATDiTauPairRef;
+    edm::RefVector<PATDiTauPairCollection> dummyPATDiTauPairRefVector;
+    edm::RefProd<PATDiTauPairCollection> dummyPATDiTauPairRefProd;
     edm::Ptr<PATDiTauPair> dummyPATDiTauPairPtr;
     
     /// create dictionaries for ZllHypothesisDiTau objects
@@ -111,11 +128,18 @@ namespace {
     ZllHypothesisDiTauCollection dummyZllHypothesisDiTauCollection;
     edm::Wrapper<ZllHypothesisDiTauCollection> dummyZllHypothesisDiTauCollectionWrapper;
 
+    /// create dictionaries for ZtautauVisMassHypothesisDiTau objects
+    edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<float> > dummyZtautauVisMassHypothesesDiTau;
+    edm::Wrapper<edm::AssociationVector<edm::RefProd<PATDiTauPairCollection>, std::vector<float> > > dummyZtautauVisMassHypothesesDiTauWrapper;
+
     /// create dictionaries for PATElecMuPair objects
     PATElecMuPair dummyPATElecMuPair;
     edm::Wrapper<PATElecMuPair> dummyPATElecMuPairWrapper;
     PATElecMuPairCollection dummyPATElecMuPairCollection;
     edm::Wrapper<PATElecMuPairCollection> dummyPATElecMuPairCollectionWrapper;
+    edm::Ref<PATElecMuPairCollection> dummyPATElecMuPairRef;
+    edm::RefVector<PATElecMuPairCollection> dummyPATElecMuPairRefVector;
+    edm::RefProd<PATElecMuPairCollection> dummyPATElecMuPairRefProd;
     edm::Ptr<PATElecMuPair> dummyPATElecMuPairPtr;
 
     /// create dictionaries for ZllHypothesisElecMu objects
@@ -123,6 +147,12 @@ namespace {
     edm::Wrapper<ZllHypothesisElecMu> dummyZllHypothesisElecMuWrapper;
     ZllHypothesisElecMuCollection dummyZllHypothesisElecMuCollection;
     edm::Wrapper<ZllHypothesisElecMuCollection> dummyZllHypothesisElecMuCollectionWrapper;
+
+    /// create dictionaries for ZtautauVisMassHypothesisElecMu objects
+    //std::pair<edm::Ref<PATElecMuPairCollection>, float> dummyZtautauVisMassHypothesisElecMuEntry;
+    //std::vector<std::pair<edm::Ref<PATElecMuPairCollection>, float> > dummyZtautauVisMassHypothesisElecMuCollection;
+    edm::AssociationVector<PATElecMuPairRefProd, std::vector<float> > dummyZtautauVisMassHypothesesElecMu;
+    edm::Wrapper<edm::AssociationVector<PATElecMuPairRefProd, std::vector<float> > > dummyZtautauVisMassHypothesesElecMuWrapper;
 
     /// create dictionaries for PATTauNuPair objects
     PATTauNuPair dummyPATTauNuPair;
