@@ -16,6 +16,7 @@ diTauCandidateHistManagerForElecTau = copy.deepcopy(diTauCandidateHistManager)
 diTauCandidateHistManagerForElecTau.pluginName = cms.string('diTauCandidateHistManagerForElecTau')
 diTauCandidateHistManagerForElecTau.pluginType = cms.string('PATElecTauPairHistManager')
 diTauCandidateHistManagerForElecTau.diTauCandidateSource = cms.InputTag('allElecTauPairs')
+diTauCandidateHistManagerForElecTau.visMassHypothesisSource = cms.InputTag('')
 from TauAnalysis.Core.diTauCandidateZllHypothesisHistManager_cfi import *
 diTauCandidateZeeHypothesisHistManagerForElecTau = copy.deepcopy(ZllHypothesisHistManager)
 diTauCandidateZeeHypothesisHistManagerForElecTau.pluginName = cms.string('diTauCandidateZeeHypothesisHistManagerForElecTau')
@@ -157,8 +158,10 @@ evtSelTauPt = cms.PSet(
 evtSelElectronConversionVeto = cms.PSet(
     pluginName = cms.string('evtSelElectronConversionVeto'),
     pluginType = cms.string('BoolEventSelector'),
-    src_cumulative = cms.InputTag('electronConversionVeto', 'cumulative'),
-    src_individual = cms.InputTag('electronConversionVeto', 'individual')
+    #src_cumulative = cms.InputTag('electronConversionVeto', 'cumulative'),
+    #src_individual = cms.InputTag('electronConversionVeto', 'individual')
+    src_cumulative = cms.InputTag('tightElectronIdCut', 'cumulative'),
+    src_individual = cms.InputTag('tightElectronIdCut', 'individual')
 )
 evtSelElectronTrkIso = cms.PSet(
     pluginName = cms.string('evtSelElectronTrkIso'),
@@ -454,7 +457,8 @@ elecTauAnalysisSequence = cms.VPSet(
             'metHistManager',
             'vertexHistManager'
         ),
-        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsConversionVetoCumulative')
+        #replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsConversionVetoCumulative')
+        replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTightIdCumulative')
     ),
     cms.PSet(
         filter = cms.string('evtSelElectronAntiCrack'),
@@ -818,6 +822,7 @@ elecTauAnalysisSequence = cms.VPSet(
         replace = cms.vstring('electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
                               'tauHistManager.tauSource = selectedLayer1TausForElecTauEcalCrackVetoCumulative',
                               'diTauCandidateHistManagerForElecTau.diTauCandidateSource = selectedElecTauPairsPzetaDiffCumulative',
+                              'diTauCandidateHistManagerForElecTau.visMassHypothesisSource = elecTauPairVisMassHypotheses',
                               'diTauCandidateZeeHypothesisHistManagerForElecTau.ZllHypothesisSource = selectedElecTauPairZeeHypotheses')
     )
 )
