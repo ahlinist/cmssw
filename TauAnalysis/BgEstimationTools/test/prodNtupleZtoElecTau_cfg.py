@@ -68,7 +68,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.pt"),
             indices = cms.vuint32(0,1)
         ),
-        elecTrackIsoZee = cms.PSet(
+        electronTrackIsoZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             value = cms.string("leg1.trackIso"),
@@ -230,10 +230,10 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("bDiscriminator('softElectronBJetTags')"),
             indices = cms.vuint32(0,1,2)
         ),
-        jetEt40bTaggingDiscrSoftElectronTTplusJets = cms.PSet(
+        jetEt40bTaggingDiscrSoftMuonTTplusJets = cms.PSet(
             pluginType = cms.string("PATJetValExtractor"),
             src = cms.InputTag('jetsEt40ForElecTauBgEstTTplusJetsEnriched'),
-            value = cms.string("bDiscriminator('softElectronBJetTags')"),
+            value = cms.string("bDiscriminator('softMuonBJetTags')"),
             indices = cms.vuint32(0,1,2)
         ),
         numJetsEt40TTplusJets = cms.PSet(
@@ -275,6 +275,14 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             src = cms.InputTag('layer1METs'),
             value = cms.string("pt"),
             indices = cms.vuint32(0)
+        ),
+        numLooseIdElectrons = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('electronsLooseIdForBgEst')
+        ),
+        numRobustIdElectrons = cms.PSet(
+            pluginType = cms.string("NumCandidateExtractor"),
+            src = cms.InputTag('electronsRobustIdForBgEst')
         ),
         numTightIdElectrons = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
