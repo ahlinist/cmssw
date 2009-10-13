@@ -42,8 +42,7 @@ public:
 
 	}
 
-	CommonProcessing(TTree* t, std::string graphicsFile, std::string macroFile,
-			std::string directory_);
+	CommonProcessing(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory_);
 
 	virtual ~CommonProcessing();
 
@@ -51,7 +50,7 @@ public:
 
 	void doResponsePlots(const std::vector<int>& energies);
 
-	void evaluatePlots(const std::vector<int>& energies, bool eff, bool resp);
+	void evaluatePlots(const std::vector<int>& energies, bool eff, bool resp, bool endcapHack = false);
 
 	void doEfficiencyPlots(const std::vector<int>& energies);
 
@@ -70,6 +69,12 @@ private:
 
 	std::string directory_;
 
+	TFile* output_;
+
+	//Real data for the endcaps has high cluster multiplicity
+	//Exclude events with lots of neutral activity in addition to charged hadron
+	bool endcapHack_;
+
 };
 
 template<typename T> std::string obj2str(T n) {
@@ -79,8 +84,7 @@ template<typename T> std::string obj2str(T n) {
 	return s;
 }
 
-CommonProcessing::CommonProcessing(TTree* t, std::string graphicsFile,
-		std::string macroFile, std::string directory) :
+CommonProcessing::CommonProcessing(TTree* t, std::string graphicsFile, std::string macroFile, std::string directory) :
 	directory_(directory) {
 	util_.init();
 	util_.enableAutoFlush(true, 9);
@@ -93,8 +97,7 @@ CommonProcessing::~CommonProcessing() {
 
 }
 
-void CommonProcessing::reset(TTree* t, std::string graphicsFile,
-		std::string macroFile) {
+void CommonProcessing::reset(TTree* t, std::string graphicsFile, std::string macroFile) {
 	tree_ = t;
 	graphicsFile_ = graphicsFile;
 	macroFile_ = macroFile;
@@ -116,31 +119,13 @@ void CommonProcessing::reset(TTree* t, std::string graphicsFile,
 	util_.setMacroFile(macrocpy);
 	macrocpy.append("[");
 	c->Print(macrocpy.c_str());
+	string file(directory_);
+	file.append("/commonProcessing.root");
+	output_ = new TFile(file.c_str(), "recreate");
 }
 
 void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
-	TStyle* rStyle = util_.makeStyle("mipStyle");
-	rStyle->SetOptLogy(false);
-	rStyle->SetOptStat(0);
-	rStyle->SetOptFit(0);
-	rStyle->SetOptLogz(false);
-	rStyle->SetOptLogx(false);
-	rStyle->SetOptTitle(1);
-	rStyle->SetFrameFillColor(kWhite);
-	//Supresses TGraph errors in X
-	rStyle->SetErrorX(0);
-
-	rStyle->SetLabelSize(0.08, "xyz");
-	rStyle->SetHistLineWidth(2);
-	rStyle->SetTitleFontSize(0.1);
-	rStyle->SetTitleX(0.2);
-	//rStyle->SetStatFontSize(0.1);
-	//rStyle->SetStatH(0.15);
-	//rStyle->SetStatW(0.3);
-	rStyle->SetPadGridX(true);
-	rStyle->SetPadGridY(false);
-	rStyle->SetNdivisions(5, "xyz");
-
+	TStyle* rStyle = util_.makeSquashedStyle("mipStyle");
 	rStyle->cd();
 
 	util_.newPage();
@@ -151,26 +136,25 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 	util_.enableAutoFlush(true, 16);
 	util_.setSquareCanvasDimension(4);
 
-	JGraph tbGraph("tbGraph");
-	JGraph clusterGraph("clusterGraph");
-	JGraph candGraph("candGraph");
+	JGraph tbGraph("tbMipGraph", true);
+	JGraph clusterGraph("clusterMipGraph", true);
+	JGraph candGraph("candMipGraph", true);
 
-	JGraph tbGraphSample("tbGraphSample");
-	JGraph clusterGraphSample("clusterGraphSample");
-	JGraph candGraphSample("candGraphSample");
+	JGraph tbGraphSample("tbGraphMipSample", true);
+	JGraph clusterGraphSample("clusterMipGraphSample", true);
+	JGraph candGraphSample("candMipGraphSample", true);
 
 	util_.addTitle("Raw Rechits");
 
 	unsigned seen(1);
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
-		std::string cut("tb_energyEcal_<0.5 && int(sim_energyEvent_) == ");
+		std::string cut("tb_energyEcal_<1.0 && int(sim_energyEvent_) == ");
 		cut.append(obj2str(energy));
 
 		std::string histoName("tbNeutralENoEcal");
@@ -184,28 +168,31 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{rechits}/E_{beam}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+
+		util_.streamTH1ToGraphFile(string(directory_).append("/hits_").append(obj2str(energy)).append("GeV_mip.dat"),
+				tbNeutralENoEcal, true);
+
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal);
 		tbGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			tbGraph.addPoint(energy, gaus.first);
+			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
 
 	util_.newPage();
 
 	util_.addTitle("PFClusters");
 
 	seen = 1;
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
@@ -226,27 +213,26 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{clusters}/E_{true}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		clusterGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			clusterGraph.addPoint(energy, gaus.first);
+			clusterGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
 	util_.newPage();
 
 	util_.addTitle("PFCandidates");
 
 	seen = 1;
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
@@ -259,79 +245,78 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		std::string histoName("candNeutralENoEcal");
 		histoName.append(obj2str(energy));
 
-		std::string qry(
-				"(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
+		std::string qry("(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{reco}/E_{true}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		candGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			candGraph.addPoint(energy, gaus.first);
+			candGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
+
+	TStyle* zStyle = util_.makeStyle("zStyle");
+	zStyle->SetOptLogx(true);
+	zStyle->cd();
 
 	util_.newPage();
 
-	rStyle->SetOptLogx(true);
-
 	util_.addTitle("Gaussian means");
-	TGraph* tbG = new TGraph(tbGraph.finalise());
-	util_.formatGraph(tbG, "TB Rechit energy (MIP in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	TGraphErrors* tbG = new TGraphErrors(tbGraph.finaliseWithErrors());
+	util_.formatGraph(tbG, "TB Rechit energy (MIP in ECAL)", "E_{beam} (GeV)", "Response", util_.nextColor());
 	tbG->GetYaxis()->SetRangeUser(0, 2);
 	tbG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(tbG, "ALP");
 
-	TGraph* clusterG = new TGraph(clusterGraph.finalise());
-	util_.formatGraph(clusterG, "Cluster energy (MIP in ECAL)",
-			"E_{beam} (GeV)", "Response", util_.nextColor());
+	TGraphErrors* clusterG = new TGraphErrors(clusterGraph.finaliseWithErrors());
+	util_.formatGraph(clusterG, "Cluster energy (MIP in ECAL)", "E_{beam} (GeV)", "Response", util_.nextColor());
 	clusterG->GetYaxis()->SetRangeUser(0, 2);
 	clusterG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(clusterG, "ALP");
 
-	TGraph* candG = new TGraph(candGraph.finalise());
-	util_.formatGraph(candG, "PFCandidate energy", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	TGraphErrors* candG = new TGraphErrors(candGraph.finaliseWithErrors());
+	util_.formatGraph(candG, "PFCandidate energy", "E_{beam} (GeV)", "Response", util_.nextColor());
 	candG->GetYaxis()->SetRangeUser(0, 2);
 	candG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(candG, "ALP");
 	util_.addTitle("Arithmetic means");
 	//Sample means
 	TGraph* tbGS = new TGraph(tbGraphSample.finalise());
-	util_.formatGraph(tbGS, "TB Rechit energy (MIP in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	util_.formatGraph(tbGS, "TB Rechit energy (MIP in ECAL)", "E_{beam} (GeV)", "Response", util_.nextColor());
 	tbGS->GetYaxis()->SetRangeUser(0, 2);
 	tbGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(tbGS, "ALP");
 
 	TGraph* clusterGS = new TGraph(clusterGraphSample.finalise());
-	util_.formatGraph(clusterGS, "Cluster energy (MIP in ECAL)",
-			"E_{beam} (GeV)", "Response", util_.nextColor());
+	util_.formatGraph(clusterGS, "Cluster energy (MIP in ECAL)", "E_{beam} (GeV)", "Response", util_.nextColor());
 	clusterGS->GetYaxis()->SetRangeUser(0, 2);
 	clusterGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(clusterGS, "ALP");
 
 	TGraph* candGS = new TGraph(candGraphSample.finalise());
-	util_.formatGraph(candGS, "PFCandidate energy", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	util_.formatGraph(candGS, "PFCandidate energy", "E_{beam} (GeV)", "Response", util_.nextColor());
 	candGS->GetYaxis()->SetRangeUser(0, 2);
 	candGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(candGS, "ALP");
 
-	util_.accumulateTable(tbGraphSample, "Rechits MIP in ECAL, Sample means");
-	util_.accumulateTable(candGraphSample, "PFCands MIP in ECAL, Sample means");
+	util_.accumulateTable(tbGraph, "Rechits MIP in ECAL, Fitted means");
+	util_.accumulateTable(candGraph, "PFCands MIP in ECAL, Fitted means");
+
+	cout << "Streaming MIP JGraphs to file\n";
+	tbGraph.streamToFile(string(directory_).append("/rechits_mip.dat"), true);
+	candGraph.streamToFile(string(directory_).append("/pfcands_mip.dat"), true);
 
 	util_.flushPage();
 
@@ -356,8 +341,7 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 	JGraph typeGraph("typeGraph");
 	JGraph hadEMGraph("hadEMGraph");
 	unsigned seen(1);
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
@@ -377,16 +361,14 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 		beamE.append(obj2str(energy));
 		beamE.append(" GeV");
 
-		util_.formatHisto(histoName, beamE, "Candidate type",
-				util_.nextColor(), util_.nextColor(), 1);
+		util_.formatHisto(histoName, beamE, "Candidate type", util_.nextColor(), util_.nextColor(), 1);
 
 		util_.accumulateObjects(histo);
 
 		double nonHadrons = histo->GetBinContent(4) + histo->GetBinContent(8);
 		double total = histo->GetEntries();
 		double hadronEff = 1.0 - static_cast<double> (nonHadrons) / total;
-		std::cout << "Hadron efficiency for energy " << energy << " = "
-				<< hadronEff * 100.0 << "%" << std::endl;
+		std::cout << "Hadron efficiency for energy " << energy << " = " << hadronEff * 100.0 << "%" << std::endl;
 
 		typeGraph.addPoint(energy, hadronEff);
 
@@ -415,25 +397,21 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 	TGraph* typeG = new TGraph(typeGraph.finalise());
 	TGraph* hadEMG = new TGraph(hadEMGraph.finalise());
 
-	util_.formatGraph(typeG, "PFCandidate efficiency", "E_{beam} (GeV)",
-			"Hadron finding efficiency", util_.nextColor());
+	util_.formatGraph(typeG, "PFCandidate efficiency", "E_{beam} (GeV)", "Hadron finding efficiency", util_.nextColor());
 	typeG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(typeG, "ALP");
 
-	util_.formatGraph(hadEMG, "Hadronic energy fraction", "E_{beam} (GeV)",
-			"Hadron energy efficiency", util_.nextColor());
+	util_.formatGraph(hadEMG, "Hadronic energy fraction", "E_{beam} (GeV)", "Hadron energy efficiency", util_.nextColor());
 	hadEMG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(hadEMG, "ALP");
 
 	util_.addTitle("Frequency spectrum");
 
 	tree_->Draw("sim_energyEvent_>>simELow(10,0,10)", "sim_energyEvent_ < 10");
-	util_.accumulateObjects(util_.formatHisto("simELow", "", "p_{beam} (GeV)",
-			util_.nextColor(), util_.nextColor(), 1));
+	util_.accumulateObjects(util_.formatHisto("simELow", "", "p_{beam} (GeV)", util_.nextColor(), util_.nextColor(), 1));
 
 	tree_->Draw("sim_energyEvent_>>simE(301,0,301)", "");
-	util_.accumulateObjects(util_.formatHisto("simE", "", "p_{beam} (GeV)",
-			util_.nextColor(), util_.nextColor(), 1));
+	util_.accumulateObjects(util_.formatHisto("simE", "", "p_{beam} (GeV)", util_.nextColor(), util_.nextColor(), 1));
 
 	util_.flushPage();
 
@@ -443,18 +421,9 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 }
 
 void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
-	TStyle* rStyle = util_.makeStyle("respStyle");
-	rStyle->SetOptLogy(false);
-	rStyle->SetOptStat(0);
-	rStyle->SetOptFit(0);
-	rStyle->SetOptLogz(false);
-	rStyle->SetOptLogx(false);
-	rStyle->SetOptTitle(1);
-	rStyle->SetFrameFillColor(kWhite);
-	//Supresses TGraph errors in X
-	rStyle->SetErrorX(0);
-	rStyle->cd();
+	TStyle* rStyle = util_.makeSquashedStyle("respStyle");
 
+	rStyle->cd();
 	util_.newPage();
 	util_.addTitle("Interacting in ECAL");
 	util_.flushPage();
@@ -463,29 +432,28 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 	util_.enableAutoFlush(true, 16);
 	util_.setSquareCanvasDimension(4);
 
-	JGraph tbGraph("tbGraph");
-	JGraph clusterGraph("clusterGraph");
-	JGraph candGraph("candGraph");
+	JGraph tbGraph("tbIntGraph", true);
+	JGraph clusterGraph("clusterIntGraph", true);
+	JGraph candGraph("candIntGraph", true);
 
-	JGraph tbGraphSample("tbGraphSample");
-	JGraph clusterGraphSample("clusterGraphSample");
-	JGraph candGraphSample("candGraphSample");
+	JGraph tbGraphSample("tbIntGraphSample", true);
+	JGraph clusterGraphSample("clusterIntGraphSample", true);
+	JGraph candGraphSample("candIntGraphSample", true);
 
 	util_.addTitle("Raw Rechits");
 
 	unsigned seen(1);
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
-		std::string cut("tb_energyEcal_> 0.5 && int(sim_energyEvent_) == ");
+		std::string cut("tb_energyEcal_> 1.0 && int(sim_energyEvent_) == ");
 		cut.append(obj2str(energy));
 
-		std::string histoName("tbNeutralENoEcal");
+		std::string histoName("tbIntEcal");
 		histoName.append(obj2str(energy));
 
 		std::string qry("tb_energyEvent_/sim_energyEvent_>>");
@@ -496,28 +464,47 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{rechits}/E_{beam}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+
+		util_.streamTH1ToGraphFile(string(directory_).append("/hits_").append(obj2str(energy)).append("GeV_int.dat"),
+				tbNeutralENoEcal, true);
+
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal);
 		tbGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			tbGraph.addPoint(energy, gaus.first);
+			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
+		string histoName2D("tbIntEcal2D");
+		histoName2D.append(obj2str(energy));
+		string qry2D("tb_energyEcal_/sim_energyEvent_:tb_energyHcal_/sim_energyEvent_>>");
+		qry2D.append(histoName2D);
+		qry2D.append("(15, -0.2, 1.3, 15, -0.2, 1.3)");
+		string eCut("int(sim_energyEvent_) == ");
+		eCut.append(obj2str(energy));
+
+		tree_->Draw(qry2D.c_str(), eCut.c_str());
+		TH2* histo2D = util_.getType<TH2>(histoName2D);
+		//double maxNorm = 1.0 / histo2D->GetBinContent(histo2D->GetMaximumBin());
+		//histo2D->Scale(maxNorm);
+
+		util_.streamTH2ToGraphFile(string(directory_).append("/ecalAndHcal_").append(obj2str(energy)).append("GeV_2D.dat"),
+				histo2D, true);
+
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
 
 	util_.newPage();
 
 	util_.addTitle("PFClusters");
 
 	seen = 1;
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
@@ -527,7 +514,7 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		std::string cut("cluster_numEcal_!=0 && int(sim_energyEvent_) == ");
 		cut.append(obj2str(energy));
 
-		std::string histoName("clustersNeutralENoEcal");
+		std::string histoName("clustersIntEcal");
 		histoName.append(obj2str(energy));
 
 		std::string qry("cluster_energyEvent_/sim_energyEvent_>>");
@@ -538,119 +525,121 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{clusters}/E_{true}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		clusterGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			clusterGraph.addPoint(energy, gaus.first);
+			clusterGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
 	util_.newPage();
 
 	util_.addTitle("PFCandidates");
 
 	seen = 1;
-	for (std::vector<int>::const_iterator i = energies.begin(); i
-			!= energies.end(); ++i) {
+	for (std::vector<int>::const_iterator i = energies.begin(); i != energies.end(); ++i) {
 
 		int energy = *i;
 		//build query
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==5 && int(sim_energyEvent_) == ");
-		std::string cut("cluster_numEcal_!=0 && int(sim_energyEvent_) == ");
+
+		string cut;
+		cut.append("cand_energyNeutralEM_ < 0.05 && cluster_numEcal_!=0 && int(sim_energyEvent_) == ");
+
 		cut.append(obj2str(energy));
 
-		std::string histoName("candNeutralENoEcal");
+		std::string histoName("candIntEcal");
 		histoName.append(obj2str(energy));
 
-		std::string qry(
-				"(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
+		std::string qry("(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
 		poshHistoName.append(" GeV");
 
 		tree_->Draw(qry.c_str(), cut.c_str());
-		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName,
-				"E_{reco}/E_{true}", util_.nextColor(), kWhite, 2);
-		std::pair<double, double> gaus = util_.fitStabilisedGaussian(
-				tbNeutralENoEcal);
+		TH1* tbNeutralENoEcal = util_.formatHisto(histoName, poshHistoName, "R", util_.nextColor(), kWhite, 2);
+		//tbNeutralENoEcal->Scale(1.0/tbNeutralENoEcal->Integral());
+		double maxNorm = 1.0 / tbNeutralENoEcal->GetBinContent(tbNeutralENoEcal->GetMaximumBin());
+		tbNeutralENoEcal->Scale(maxNorm);
+		std::pair<double, double> gaus = util_.fitStabilisedGaussian(tbNeutralENoEcal, 0.1, 1.5);
 		candGraphSample.addPoint(energy, tbNeutralENoEcal->GetMean());
 		double gaussianess = fabs(gaus.first / tbNeutralENoEcal->GetMean());
 		if (gaussianess < 2 && gaussianess > 0.5) {
-			candGraph.addPoint(energy, gaus.first);
+			candGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 		}
 		util_.accumulateObjects(tbNeutralENoEcal);
 
 	}
 
-	util_.flushPage();
+	util_.flushPage(true);
+
+	TStyle* u = util_.makeStyle("uStyle");
+	u->SetOptLogx(true);
+	u->cd();
 
 	util_.newPage();
 
-	rStyle->SetOptLogx(true);
-
 	util_.addTitle("Gaussian means");
-	TGraph* tbG = new TGraph(tbGraph.finalise());
-	util_.formatGraph(tbG, "TB Rechit energy (Int in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	TGraphErrors* tbG = new TGraphErrors(tbGraph.finaliseWithErrors());
+	util_.formatGraph(tbG, "TB Rechit energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	tbG->GetYaxis()->SetRangeUser(0, 2);
 	tbG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(tbG, "ALP");
 
-	TGraph* clusterG = new TGraph(clusterGraph.finalise());
-	util_.formatGraph(clusterG, "Cluster energy (Int in ECAL)",
-			"E_{beam} (GeV)", "Response", util_.nextColor());
+	TGraphErrors* clusterG = new TGraphErrors(clusterGraph.finaliseWithErrors());
+	util_.formatGraph(clusterG, "Cluster energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	clusterG->GetYaxis()->SetRangeUser(0, 2);
 	clusterG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(clusterG, "ALP");
 
-	TGraph* candG = new TGraph(candGraph.finalise());
-	util_.formatGraph(candG, "PFCandidate energy (Int in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	TGraphErrors* candG = new TGraphErrors(candGraph.finaliseWithErrors());
+	util_.formatGraph(candG, "PFCandidate energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	candG->GetYaxis()->SetRangeUser(0, 2);
 	candG->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(candG, "ALP");
 	util_.addTitle("Arithmetic means");
 	//Sample means
 	TGraph* tbGS = new TGraph(tbGraphSample.finalise());
-	util_.formatGraph(tbGS, "TB Rechit energy (Int in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	util_.formatGraph(tbGS, "TB Rechit energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	tbGS->GetYaxis()->SetRangeUser(0, 2);
 	tbGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(tbGS, "ALP");
 
 	TGraph* clusterGS = new TGraph(clusterGraphSample.finalise());
-	util_.formatGraph(clusterGS, "Cluster energy (Int in ECAL)",
-			"E_{beam} (GeV)", "Response", util_.nextColor());
+	util_.formatGraph(clusterGS, "Cluster energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	clusterGS->GetYaxis()->SetRangeUser(0, 2);
 	clusterGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(clusterGS, "ALP");
 
 	TGraph* candGS = new TGraph(candGraphSample.finalise());
-	util_.formatGraph(candGS, "PFCandidate energy (Int in ECAL)", "E_{beam} (GeV)",
-			"Response", util_.nextColor());
+	util_.formatGraph(candGS, "PFCandidate energy (Int in ECAL)", "E_{beam} (GeV)", "R", util_.nextColor());
 	candGS->GetYaxis()->SetRangeUser(0, 2);
 	candGS->GetXaxis()->SetRangeUser(2, 400);
 	util_.accumulateObjects(candGS, "ALP");
 
-	util_.accumulateTable(tbGraphSample, "Rechits interacting in ECAL, sample mean");
-	util_.accumulateTable(candGraphSample, "PFCands interacting in ECAL, sample mean");
+	util_.accumulateTable(tbGraph, "Rechits interacting in ECAL, Fitted mean");
+	util_.accumulateTable(candGraph, "PFCands interacting in ECAL, Fitted mean");
+
+	cout << "Streaming INT JGraphs to file\n";
+	tbGraph.streamToFile(string(directory_).append("/rechits_int.dat"), true);
+	candGraph.streamToFile(string(directory_).append("/pfcands_int.dat"), true);
 
 	util_.flushPage();
 }
 
-void CommonProcessing::evaluatePlots(const std::vector<int>& energies,
-		bool eff, bool resp) {
-
+void CommonProcessing::evaluatePlots(const std::vector<int>& energies, bool eff, bool resp, bool endcapHack) {
+	endcapHack_ = endcapHack;
+	util_.setSquareCanvasDimension(4);
 	doMipInEcalPlots(energies);
 
 	if (resp)
@@ -674,6 +663,14 @@ void CommonProcessing::closeFiles() {
 	gPad->Print(macrocpy2.c_str());
 
 	util_.flushSpecials(directory_);
+	TStyle* normal = util_.makeStyle("standard");
+	normal->cd();
+	normal->Write();
+	output_->Write();
+	output_->Close();
+
+	gROOT->ProcessLine(string(".! ps2pdf plots.ps").c_str());
+	gROOT->ProcessLine(string(".! mv plots.pdf ").append(directory_).c_str());
 
 }
 
@@ -681,14 +678,11 @@ void commonProcessing() {
 
 	using namespace std;
 
-	cout
-			<< "commonProcessing.C -- Script to evaluate PFlow response at discrete energies "
-			<< "in the absence of tracking information." << endl;
+	cout << "commonProcessing.C -- Script to evaluate PFlow response at discrete energies." << endl;
 
 	string graphicsFile("plots.ps");
 	string macroFile("macro.C");
 
-	TChain* chain = new TChain("extraction/Extraction");
 
 	std::vector<int> energies;
 	energies.push_back(2);
@@ -705,21 +699,32 @@ void commonProcessing() {
 	energies.push_back(100);
 	energies.push_back(150);
 	energies.push_back(200);
-//	//energies.push_back(225);
+	//energies.push_back(225);
 	energies.push_back(300);
 
-	//chain->Add("/tmp/PFlowTB_Tree_All_notracks_barrel.root");
-	//chain->Add("/tmp/Dipion_Tree_All_10k_fast_0T.root");
-	//chain->Add("/tmp/ballin/Dipion_Tree_All_2k_full_0T.root");
-	chain->Add("/tmp/ballin/PFlowTB_Tree_All_barrel_tbCalib.root");
+//	//barrel data
+//	TChain* chain = new TChain("extraction/Extraction");
+//	chain->Add("/tmp/ballin/PFlowTB_Tree_All_barrel_tbCalib.root");
+//	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(), "plots/barrel_tbCalib");
+
+	//fast barrel data
+//	TChain* chain = new TChain("extractionToTree/Extraction");
+//	chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_slack_fast_4T.root");
+//	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(), "plots/barrel_fast");
+
+	//fast barrel data
+	TChain* chain = new TChain("extractionToTree/Extraction");
+	chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_noExcesses_full_4T.root");
+	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(), "plots/barrel_full");
+
+	//	chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_slack_fast_4T.root");
+	//chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcap_slack_fast_4T.root");
+	//chain->Add("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");
 	//chain->Add("../test/PFlow_tmp.root");
 
-	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(),
-			"plots/barrel_tbCalib");
-	cp.evaluatePlots(energies, false, true);
+	// --- standard stuff
+	cp.evaluatePlots(energies, false, true, false);
 	cp.closeFiles();
 
-	gROOT->ProcessLine(".! ps2pdf plots/barrel_tbCalib/plots.ps");
-	gROOT->ProcessLine(".! mv plots.pdf plots/barrel_tbCalib/");
 }
 
