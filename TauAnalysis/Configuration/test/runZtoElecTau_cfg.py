@@ -16,7 +16,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
+# import sequence for channel-specific production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
 # import sequence for event selection
@@ -43,24 +43,19 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-    outputFileName = cms.string('plotsZtoElecTau.root')
-)
-
-process.saveZtoElecTauPatTuple = cms.OutputModule("PoolOutputModule",
-    patTupleEventContent,
-    fileName = cms.untracked.string('elecTauSkim_patTuple.root')
-)
+		outputFileName = cms.string('plotsZtoElecTau.root')
+		)
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
-)
+		input = cms.untracked.int32(-1)    
+		)
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_1.root'
-    )
-    #skipBadFiles = cms.untracked.bool(True)    
-)
+		fileNames = cms.untracked.vstring(
+			'/castor/cern.ch/user/j/jkolb/elecTauAnalysis/patTuples/PhotonJets_Pt15to20/patTupleZtoElecTau_PhotonJets_Pt15to20_1.root"'
+			)
+		#skipBadFiles = cms.untracked.bool(True)    
+		)
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
@@ -70,32 +65,19 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoElecTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecTauPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoElecTauPatTuple.fileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------------
-# import utility function for switching pat::Tau input
-# to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import * 
+process.p = cms.Path( process.produceZtoElecTau
+		#					  +process.printEventContent
+		+process.selectZtoElecTauEvents 
+		+process.analyzeZtoElecTauEvents
+		+process.saveZtoElecTauPlots 
+		)
 
-# comment-out to take reco::CaloTaus instead of reco::PFTaus
-# as input for pat::Tau production
-#switchToCaloTau(process)
-
-# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
-# instead of fixed dR = 0.07 signal cone reco::PFTaus
-# as input for pat::Tau production
-switchToPFTauShrinkingCone(process)
-#switchToPFTauFixedCone(process)
-#--------------------------------------------------------------------------------
-
-process.p = cms.Path( process.producePatTuple
-#                    +process.printEventContent      # uncomment to enable dump of event content after PAT-tuple production
-                     +process.selectZtoElecTauEvents 
-                     +process.saveZtoElecTauPatTuple # uncomment to write-out produced PAT-tuple                      
-                     +process.analyzeZtoElecTauEvents
-                     +process.saveZtoElecTauPlots )
+#process.options = cms.untracked.PSet(
+#	wantSummary = cms.untracked.bool(True)
+#)
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
