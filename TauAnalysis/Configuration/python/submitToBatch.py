@@ -85,9 +85,9 @@ def submitToBatch(configFile = None, channel = None, sample = None,
         workingDirectory += "/"
     submissionDirectory = workingDirectory + "lxbatch/"
 
-    # compose name of modified config file including the replacements
-    configFile_orig = workingDirectory + configFile
-    configFile_mod = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch_cfg.py")
+	# compose name of modified config file including the replacements
+	configFile_orig = submissionDirectory + configFile
+	configFile_mod = submissionDirectory + configFile.replace("_cfg.py", sample + "@Batch_cfg.py")
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, replacements = replacements)
@@ -101,7 +101,7 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 
     # if it exists, delete previous version of shell script
     # for submission of cmsRun job to the CERN batch system 
-    scriptFile = submissionDirectory + configFile.replace("_cfg.py", "_" + sample + "@Batch.csh")
+    scriptFile = submissionDirectory + configFile.replace("_cfg.py", sample + "@Batch.csh")
     if os.path.exists(scriptFile):
         os.remove(scriptFile)
 
