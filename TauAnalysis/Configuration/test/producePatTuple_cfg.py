@@ -5,7 +5,7 @@ process = cms.Process('producePatTupleZtoElecTau')
 
 process.load('Configuration/StandardSequences/Services_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 #process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
@@ -17,14 +17,13 @@ process.GlobalTag.globaltag = 'IDEAL_V12::All'
 # import sequence for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
-# uncomment appropriate line to import configuration parameters for submission of 
-# jobs to CERN batch system (running over skimmed samples stored on CASTOR)
-
-#from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
-#from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
-#from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
+# define configuration parameters for submission of jobs to CERN batch system 
+# (running over skimmed samples stored on CASTOR)
+from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
-#from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
