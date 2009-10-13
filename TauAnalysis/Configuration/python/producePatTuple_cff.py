@@ -73,18 +73,20 @@ from TauAnalysis.CandidateTools.tauNuPairProduction_cff import *
 #
 from TauAnalysis.RecoTools.tauRecoilEnergy_cff import *
 
-producePatTuple = cms.Sequence( producePrePat      
-                               +patDefaultSequence 
-                               +producePostPat
-							  )
+producePatTuple = cms.Sequence(
+    producePrePat      
+   + patDefaultSequence 
+   + producePostPat
+)
 
 # removed producelayer1Sel* modules and pointed hist managers to 'cleanLayer1*' collections
-produceZtoElecTau = cms.Sequence( selectLayer1Electrons
-								 +selectLayer1ElectronsLooseIsolation
-								 +selectLayer1Taus
-								 +selectLayer1TausForElecTau
-                                 +produceElecTauPairs +produceElecTauPairsLooseElectronIsolation
-							     +selectElecTauPairs +selectElecTauPairsLooseElectronIsolation
-							   	 +produceElecTauPairZeeHypotheses
-							    )
+produceZtoElecTau = cms.Sequence(
+    selectLayer1Electrons
+   + selectLayer1ElectronsLooseIsolation
+   + selectLayer1Taus
+   + selectLayer1TausForElecTau
+   + produceElecTauPairs + produceElecTauPairsLooseElectronIsolation
+   + selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
+   + produceElecTauPairZeeHypotheses
+)
 
