@@ -85,9 +85,10 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         raise ValueError("Undefined factorization option !!")
     replaceStatements_retVal.append("factorization = " + factorization)
 
-    # replace inputFileName parameter
-    inputFileNames = "fileNames" + sample
-    replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
+    # replace inputFileName parameter by itself
+    # (effectively disabling replacement of inputFileName parameter,
+    #  as it is already being replaced by crab)
+    replaceStatements_retVal.append("inputFileNames = process.source.fileNames")
     
     # replace genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName parameters
     # (ommit "_part.." suffix of sample name in case of processes split
