@@ -33,7 +33,6 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         
         # electron candidate selection
         evtSelTightElectronId,
-        evtSelElectronConversionVeto,
         evtSelElectronAntiCrack,
         evtSelElectronEta,
         evtSelElectronPt,
@@ -41,6 +40,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelElectronEcalIso,
         evtSelElectronTrk,
         evtSelElectronTrkIP,
+        evtSelElectronConversionVeto,
 
         # tau candidate selection
         evtSelTauAntiOverlapWithElectronsVeto,
@@ -61,8 +61,6 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForElecTauAcoplanarity12,
         evtSelDiTauCandidateForElecTauMt1MET,
         evtSelDiTauCandidateForElecTauPzetaDiff,
-
-		# acoplanarity cut not implemented
 
         # veto events compatible with Z --> e+ e- hypothesis
         # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
