@@ -67,6 +67,7 @@ class HitEff : public edm::EDAnalyzer {
   TrackLocalAngle* theAngleFinder;
   uint layers;
   bool DEBUG;
+  bool doDeDx;
   uint whatlayer;
   
   // Tree declarations

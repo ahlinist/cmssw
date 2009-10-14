@@ -72,6 +72,7 @@ HitEff::HitEff(const edm::ParameterSet& conf) :
 {
   layers =conf_.getParameter<int>("Layer");
   DEBUG = conf_.getParameter<bool>("Debug");
+  doDeDx = conf_.getParameter<bool>("getDeDx");
 }
 
 // Virtual destructor needed.
@@ -169,29 +170,32 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
 
-  //edm::InputTag m_dEdxUncalibTag = new edm::InputTag('dedxHarmonic2CTF','','RECO');
-  //dEdxUncalib = cms.InputTag('dedxHarmonic2CTF','','RECO')
-  Handle<ValueMap<DeDxData> >          dEdxUncalibHandle;
-  //e.getByLabel(m_dEdxUncalibTag, dEdxUncalibHandle);
-  e.getByLabel("dedxMedianCTF", dEdxUncalibHandle);
-  const ValueMap<DeDxData> dEdxTrackUncalib = *dEdxUncalibHandle.product();
-  
-  timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999;
-  timeECAL = -999.0; dedx = -999.0; dedxNOM = -999;
-  // retrieve the muon time
-  Handle<MuonCollection> muH;
-  e.getByLabel("muonsWitht0Correction",muH);
-  const MuonCollection & muonsT0  =  *muH.product();
-  //cout << "muonsT0 size = " << muonsT0.size() << endl;
-  if(muonsT0.size()<1) return;
-  MuonTime mt0 = muonsT0[0].time();
-  timeDT = mt0.timeAtIpInOut; 
-  timeDTErr = mt0.timeAtIpInOutErr;
-  timeDTDOF = mt0.nDof;
-  //cout << "timeDT = " << timeDT << "+-" << timeDTErr << " with dof = " << timeDTDOF << endl;
-
-  bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
-  if (hasCaloEnergyInfo) timeECAL = muonsT0[0].calEnergy().ecal_time;
+  if (doDeDx) {
+    try {
+      Handle<ValueMap<DeDxData> >          dEdxUncalibHandle;
+      e.getByLabel("dedxMedianCTF", dEdxUncalibHandle);
+      const ValueMap<DeDxData> dEdxTrackUncalib = *dEdxUncalibHandle.product();
+    }
+    catch (...) {}
+    
+    timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999;
+    timeECAL = -999.0; dedx = -999.0; dedxNOM = -999;
+    // retrieve the muon time
+    Handle<MuonCollection> muH;
+    e.getByLabel("muonsWitht0Correction",muH);
+    const MuonCollection & muonsT0  =  *muH.product();
+    //cout << "muonsT0 size = " << muonsT0.size() << endl;
+    if(muonsT0.size()<1) return;
+    MuonTime mt0 = muonsT0[0].time();
+    timeDT = mt0.timeAtIpInOut; 
+    timeDTErr = mt0.timeAtIpInOutErr;
+    timeDTDOF = mt0.nDof;
+    //cout << "timeDT = " << timeDT << "+-" << timeDTErr << " with dof = " << timeDTDOF << endl;
+    
+    bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
+    if (hasCaloEnergyInfo) timeECAL = muonsT0[0].calEnergy().ecal_time;
+    
+  }
 
   events++;
   
@@ -246,10 +250,12 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     reco::TrackCollection::const_iterator iCKF=trackCollectionCKF.product()->begin();
     EventTrackCKF++;  
     
-    //get dedx info
-    reco::TrackRef itTrack  = reco::TrackRef( trackCollectionCKF, 0 );
-    dedx = dEdxTrackUncalib[itTrack].dEdx();
-    dedxNOM  = dEdxTrackUncalib[itTrack].numberOfMeasurements();
+    if (doDeDx) {
+      //get dedx info
+      //reco::TrackRef itTrack  = reco::TrackRef( trackCollectionCKF, 0 );
+      //dedx = dEdxTrackUncalib[itTrack].dEdx();
+      //dedxNOM  = dEdxTrackUncalib[itTrack].numberOfMeasurements();
+    }
     
     const Trajectory traject = *(TrajectoryCollectionCKF.product()->begin());
     std::vector<TrajectoryMeasurement> TMeas=traject.measurements();
@@ -357,7 +363,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	      if (DEBUG)      cout << "the ID from the DSViter = " << DSViter->id() << endl; 
 	      unsigned int ClusterId = DSViter->id();
 	      if (ClusterId == iidd) {
-		cout << "found  (ClusterId == iidd) with ClusterId = " << ClusterId << " and iidd = " << iidd << endl;
+		if (DEBUG) cout << "found  (ClusterId == iidd) with ClusterId = " << ClusterId << " and iidd = " << iidd << endl;
 		DetId ClusterDetId(ClusterId);
 		const StripGeomDetUnit * stripdet=(const StripGeomDetUnit*)tkgeom->idToDetUnit(ClusterDetId);
 		
@@ -383,15 +389,15 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		  cluster_info.push_back(sqrt(parameters.second.xx()));
 		  cluster_info.push_back(parameters.first.y());
 		  cluster_info.push_back(sqrt(parameters.second.yy()));
-		  cout << "before getting signal over noise" << endl;
+		  //cout << "before getting signal over noise" << endl;
 		  //cluster_info.push_back( clusterInfo.signalOverNoise() );
 		  //cluster_info.push_back( clusterInfo.getSignalOverNoise() );
-		  cout << "after getting signal over noise" << endl;
+		  //cout << "after getting signal over noise" << endl;
 		  VCluster_info.push_back(cluster_info);
 		  nClusters++;
 		  if (DEBUG) cout << "Have ID match. residual = " << VCluster_info.back()[0] << "  res sigma = " << VCluster_info.back()[1] << endl;
-		  cout << "trajectory measurement compatability estimate = " << (*itm).estimate() << endl;
-		  cout << "hit position = " << parameters.first.x() << "  hit error = " << sqrt(parameters.second.xx()) << "  trajectory position = " << xloc << "  traj error = " << xErr << endl;
+		   if (DEBUG) cout << "trajectory measurement compatability estimate = " << (*itm).estimate() << endl;
+		   if (DEBUG) cout << "hit position = " << parameters.first.x() << "  hit error = " << sqrt(parameters.second.xx()) << "  trajectory position = " << xloc << "  traj error = " << xErr << endl;
 		}
 	      }
 	    }
@@ -406,9 +412,9 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 		  if ( abs((*ires)[1]) < abs(FinalResSig)) {
 		    FinalResSig = (*ires)[1];
 		    for (uint i = 0; i<ires->size(); i++) {
-		      cout << "filling final cluster. i = " << i << " before fill FinalCluster[i]=" << FinalCluster[i] << " and (*ires)[i] =" << (*ires)[i] << endl;
-		      FinalCluster[i] = (*ires)[i];
-		      cout << "filling final cluster. i = " << i << " after fill FinalCluster[i]=" << FinalCluster[i] << " and (*ires)[i] =" << (*ires)[i] << endl;
+		      if (DEBUG) cout << "filling final cluster. i = " << i << " before fill FinalCluster[i]=" << FinalCluster[i] << " and (*ires)[i] =" << (*ires)[i] << endl;
+		      if (DEBUG) FinalCluster[i] = (*ires)[i];
+		      if (DEBUG) cout << "filling final cluster. i = " << i << " after fill FinalCluster[i]=" << FinalCluster[i] << " and (*ires)[i] =" << (*ires)[i] << endl;
 		    }
 		  }
 		  if (DEBUG) cout << "iresidual = " << (*ires)[0] << "  isigma = " << (*ires)[1] << "  and FinalRes = " << FinalCluster[0] << endl;
@@ -494,7 +500,7 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	    TrajLocAngleY = angleY;
 	    ResX = FinalCluster[0];
 	    ResXSig = FinalResSig;
-	    if (FinalResSig != FinalCluster[1]) cout << "Problem with best cluster selection because FinalResSig = " << FinalResSig << " and FinalCluster[1] = " << FinalCluster[1] << endl;
+	    if (FinalResSig != FinalCluster[1]) if (DEBUG) cout << "Problem with best cluster selection because FinalResSig = " << FinalResSig << " and FinalCluster[1] = " << FinalCluster[1] << endl;
 	    ClusterLocX = FinalCluster[2];
 	    ClusterLocY = FinalCluster[4];
 	    ClusterLocErrX = FinalCluster[3];
@@ -505,18 +511,18 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
 	    
 	    if ( FinalResSig < 999.0) {  //could make requirement on track/hit consistency, but for
 	      //now take anything with a hit on the module
-	      cout << "hit being counted as good" << endl;
+	       if (DEBUG) cout << "hit being counted as good" << endl;
 	      ModIsBad = 0;
 	      traj->Fill();
 	    }
 	    else {
-	      cout << "hit being counted as bad   ######### Invalid RPhi FinalResX " << FinalCluster[0] << " FinalRecHit " << 
+	      if (DEBUG)  cout << "hit being counted as bad   ######### Invalid RPhi FinalResX " << FinalCluster[0] << " FinalRecHit " << 
 		iidd << "   TKlayers  "  <<  TKlayers  << " xloc " <<  xloc << " yloc  " << yloc << " module " << iidd << 
 		"   matched/stereo/rphi = " << ((iidd & 0x3)==0) << "/" << ((iidd & 0x3)==1) << "/" << ((iidd & 0x3)==2) << endl;
 	      ModIsBad = 1;
 	      traj->Fill();
 	      
-	      cout << " RPhi Error " << sqrt(xErr*xErr + yErr*yErr) << " ErrorX " << xErr << " yErr " <<  yErr <<  endl;
+	      if (DEBUG) cout << " RPhi Error " << sqrt(xErr*xErr + yErr*yErr) << " ErrorX " << xErr << " yErr " <<  yErr <<  endl;
 	    } if (DEBUG) cout << "after good location check" << endl;
 	  } if (DEBUG) cout << "after list of clusters" << endl;
 	} if (DEBUG) cout << "After layers=TKLayers if" << endl;
