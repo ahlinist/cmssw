@@ -85,9 +85,9 @@ def submitToBatch(configFile = None, channel = None, sample = None,
         workingDirectory += "/"
     submissionDirectory = workingDirectory + "lxbatch/"
 
-	# compose name of modified config file including the replacements
-	configFile_orig = submissionDirectory + configFile
-	configFile_mod = submissionDirectory + configFile.replace("_cfg.py", sample + "@Batch_cfg.py")
+    # compose name of modified config file including the replacements
+    configFile_orig = configFile
+    configFile_mod = submissionDirectory + configFile.replace("_cfg.py", sample + "@Batch_cfg.py")
 
     if replFunction is not None:
         replacements = replFunction(channel = channel, sample = sample, replacements = replacements)
