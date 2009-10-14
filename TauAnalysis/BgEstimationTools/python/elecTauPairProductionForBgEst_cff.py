@@ -26,7 +26,7 @@ elecTauPairVisMassHypothesesForBgEstZeeEnriched.ZllHypotheses[0].src = cms.Input
 
 elecTauPairsForBgEstWplusJetsEnriched = cms.EDProducer("PATElecTauPairProducer",
     useLeadingTausOnly = cms.bool(False),
-    srcLeg1 = cms.InputTag('electronsTrkTightIsolationForBgEst'),
+    srcLeg1 = cms.InputTag('electronsConversionVetoForBgEst'),
     srcLeg2 = cms.InputTag('tausAntiOverlapWithElectronsVetoLooseIsolationForBgEst'),
     dRmin12 = cms.double(0.7),
     srcMET = cms.InputTag('layer1METs'),
