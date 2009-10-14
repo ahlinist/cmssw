@@ -4,7 +4,7 @@ muonHistManager = cms.PSet(
     pluginName = cms.string('muonHistManager'),
     pluginType = cms.string('MuonHistManager'),
       
-    muonSource = cms.InputTag('cleanLayer1MuonsSel'),
+    muonSource = cms.InputTag('cleanLayer1Muons'),
     vertexSource = cms.InputTag('selectedPrimaryVertexPosition'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
     genParticleSource = cms.InputTag('genParticles'),
