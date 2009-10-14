@@ -14,22 +14,6 @@ selectedLayer1ElectronsTightId = cms.EDFilter("PATElectronSelector",
     filter = cms.bool(False)
 )
 
-# require electrons not from a photon conversion
-selectedLayer1ElectronsConversionVeto = cms.EDFilter("PATElectronConversionFinder",
-	trackSource = cms.InputTag('generalTracks'),
-	conversionSource = cms.InputTag('conversions'),
-	photonSource = cms.InputTag('photons'),
-	cotThetaCut = cms.double(0.045),
-	docaElecTrack = cms.double(0),
-	dRElecTrack = cms.double(0.1),
-	doPixCut = cms.bool(True),
-	useConversionColl = cms.bool(False),
-	useInnerParsForElec = cms.bool(True),
-	useInnerParsForTrks = cms.bool(True),
-	nTrkMax = cms.double(1),
-	doHists = cms.bool(True)
-)
-
 # require electron candidate to not be within eta-crack
 # between Barrel and Encap ECAL calorimeter
 selectedLayer1ElectronsAntiCrackCut = cms.EDFilter("PATElectronSelector",
@@ -109,9 +93,6 @@ cleanLayer1ElectronsSel = cms.EDProducer("PATElectronSelProducer",
   selFlags = cms.PSet(
     tauAnalysisSelElectronTightIdGlobal = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsTightIdIndividual')
-    ),
-    tauAnalysisSelElectronConversionVeto = cms.PSet(
-      src = cms.InputTag('selectedLayer1ElectronsConversionVetoIndividual')
     ),
     tauAnalysisSelElectronAntiCrackCut = cms.PSet(
       src = cms.InputTag('selectedLayer1ElectronsAntiCrackCutIndividual')
