@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import *
 # per default, drop everything that is not specifically kept
 #--------------------------------------------------------------------------------
 patTupleEventContent = cms.PSet(
-    outputCommands = cms.untracked.vstring('drop *')
+	outputCommands = cms.untracked.vstring('drop *')
 )
 
 #--------------------------------------------------------------------------------
@@ -52,7 +52,9 @@ patTupleEventContent.outputCommands.extend(
 # used as analysis selection starting point
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-	 [ 'keep *_genPhaseSpaceEventInfo_*_*', ]
+	[ 'keep *_genPhaseSpaceEventInfo_*_*', 
+	  'keep *_genTausFromZs_*_*' 
+	]
 )
 
 #--------------------------------------------------------------------------------
