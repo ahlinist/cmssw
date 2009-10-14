@@ -24,6 +24,7 @@ process.load("TauAnalysis.BgEstimationTools.bgEstPreselZtoElecTau_cff")
 
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
+# using skim samples with loose E/p selection and track extra collections
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 from TauAnalysis.BgEstimationTools.bgEstSampleDefinitionsZtoElecTau_cfi import *
 
@@ -41,7 +42,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_Ztautau_1.root'
     )
 )
 
