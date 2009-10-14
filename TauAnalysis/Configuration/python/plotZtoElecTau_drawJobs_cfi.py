@@ -85,7 +85,7 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelTightElectronId,
-    beforeCut = evtSelElectronConversionVeto,
+    beforeCut = evtSelElectronAntiCrack,
     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/Electron#PAR#',
         PAR = [ 'Pt', 'Eta', 'Phi' ],
@@ -94,18 +94,6 @@ drawJobConfigurator_ZtoElecTau.add(
         name = "cutFlowControlPlots_electron_afterTightElectronId"
     )
 )
-
-drawJobConfigurator_ZtoElecTau.add(
-    afterCut = evtSelElectronConversionVeto,
-    beforeCut = evtSelElectronAntiCrack,
-    plot = drawJobConfigEntry(
-        meName = 'ElectronQuantities/Electron#PAR#',
-        PAR = [ 'Pt', 'Eta', 'Phi' ],
-        title = "Electron (after conversion veto)",
-        xAxis = '#PAR#',
-        name = "cutFlowControlPlots_electron_afterElectronConversionVeto"
-    )
-)    
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronAntiCrack,
@@ -220,10 +208,10 @@ drawJobConfigurator_ZtoElecTau.add(
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronTrk,
     beforeCut = evtSelElectronTrkIP,
-    plot = drawJobConfigEntry(
+     plot = drawJobConfigEntry(
         meName = 'ElectronQuantities/ElectronTrackIP#PAR#',
         PAR = [ 'xy', 'z' ],
-        title = "Electron Track IP_{#PAR#}(after Electron Track Cut)",
+        title = "Electron Track IP_{#PAR#} (after Electron Track Cut)",
         xAxis = 'IP#PAR#',
         name = "cutFlowControlPlots_electronTrkIP_afterElectronTrk"
     )
@@ -231,20 +219,32 @@ drawJobConfigurator_ZtoElecTau.add(
 
 drawJobConfigurator_ZtoElecTau.add(
     afterCut = evtSelElectronTrkIP,
+    beforeCut = evtSelElectronConversionVeto,
+    plot = drawJobConfigEntry(
+        meName = 'ElectronQuantities/Electron#PAR#',
+        PAR = [ 'Pt', 'Eta', 'Phi' ],
+        title = "Electron (after Electron (after Electron Track IP_{xy} Cut)",
+        xAxis = '#PAR#',
+        name = "cutFlowControlPlots_electron_afterElectronTrkIP"
+    )
+)
+
+drawJobConfigurator_ZtoElecTau.add(
+    afterCut = evtSelElectronConversionVeto,
     beforeCut = evtSelTauLeadTrk,
     plots = [
         drawJobConfigEntry(
             meName = 'TauQuantities/Tau#PAR#',
             PAR = [ 'Pt', 'Eta', 'Phi' ],
-            title = "Tau (after Electron Track IP_{xy} Cut)",
+            title = "Tau (after Electron #gamma-Conversion Veto)",
             xAxis = '#PAR#',
-            name = "cutFlowControlPlots_tau_afterElectronTrkIP"
+            name = "cutFlowControlPlots_tau_afterElectronConversionVeto"
         ),
         drawJobConfigEntry(
             meName = 'TauQuantities/TauLeadTrkPt',
-            title = "Tau lead. Track (after Electron Track IP_{xy} Cut)",
+            title = "Tau lead. Track (after Electron #gamma-Conversion Veto)",
             xAxis = 'Pt',
-            name = "cutFlowControlPlots_tauLeadTrkPt_afterElectronTrkIP"
+            name = "cutFlowControlPlots_tauLeadTrkPt_afterElectronConversionVeto"
             )
     ]
 )
@@ -522,6 +522,12 @@ drawJobConfigurator_ZtoElecTau.add(
             title = "M_{vis}(Electron + Tau) (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mVisible"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMassZllCombinedHypothesis',
+            title = "M_{vis}(Electron + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateZeeHypothesisQuantities/VisMassBestMach',
