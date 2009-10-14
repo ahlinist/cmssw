@@ -287,6 +287,12 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("p4Vis.mass"),
             indices = cms.vuint32(0,1)
         ),
+        diTauMvis12combinedHypothesesZmumu = cms.PSet(
+            pluginType = cms.string("ZtautauVisMassHypothesisMuTauValExtractor"),
+            src = cms.InputTag('muTauPairVisMassHypothesesForBgEstZmumuEnriched'),
+            srcDiTauCandidates = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
+            indices = cms.vuint32(0,1)
+        ),
         diTauMvis12WplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
