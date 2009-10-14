@@ -145,7 +145,7 @@ def submitToGrid(configFile = None, channel = None,
     
     # finally, submit job to the Grid
     if submit == "yes":
-        crabCreateCommand = "crab -create -cfg crabConfigFile_mod"
-        crabSubmitCommand = "crab -submit"
-        #subprocess.call(crabCreateCommand, shell = True)
-        #subprocess.call(crabSubmitCommand, shell = True)
+        crabCreateCommand = "crab -create -cfg " + crabConfigFile_mod
+        crabSubmitCommand = "crab -submit -c "+ crabDirectory
+        subprocess.call(crabCreateCommand, shell = True)
+        subprocess.call(crabSubmitCommand, shell = True)
