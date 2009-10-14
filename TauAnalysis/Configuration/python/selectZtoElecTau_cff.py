@@ -42,13 +42,6 @@ cfgTightElectronIdCut = cms.PSet(
     src_individual = cms.InputTag('selectedLayer1ElectronsTightIdIndividual'),
     minNumber = cms.uint32(1)
 )
-cfgElectronConversionVeto = cms.PSet(
-    pluginName = cms.string('electronConversionVeto'),
-    pluginType = cms.string('PATCandViewMinEventSelector'),
-    src_cumulative = cms.InputTag('selectedLayer1ElectronsConversionVetoCumulative'),
-    src_individual = cms.InputTag('selectedLayer1ElectronsConversionVetoIndividual'),
-    minNumber = cms.uint32(1)
-)
 cfgElectronAntiCrackCut = cms.PSet(
     pluginName = cms.string('electronAntiCrackCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -96,6 +89,13 @@ cfgElectronTrkIPcut = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedLayer1ElectronsTrkIPcumulative'),
     src_individual = cms.InputTag('selectedLayer1ElectronsTrkIPindividual'),
+    minNumber = cms.uint32(1)
+)
+cfgElectronConversionVeto = cms.PSet(
+    pluginName = cms.string('electronConversionVeto'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1ElectronsForElecTauConversionVetoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1ElectronsForElecTauConversionVetoIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -219,7 +219,7 @@ cfgDiTauCandidateForElecTauPzetaDiffCut = cms.PSet(
 # (based on reconstructed (visible) invariant mass of e + tau-jet pair)
 cfgElecTauPairZeeHypothesisVeto = cms.PSet(
     pluginName = cms.string('elecTauPairZeeHypothesisVeto'),
-    pluginType = cms.string('PATElecTauPairZeeHypothesisMaxEventSelector'),
+    pluginType = cms.string('ZllHypothesisElecTauMaxEventSelector'),
     src = cms.InputTag('selectedElecTauPairZeeHypotheses'),
     maxNumber = cms.uint32(0)
 )
@@ -230,7 +230,6 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,
       cfgTightElectronIdCut,
-      cfgElectronConversionVeto,
       cfgElectronAntiCrackCut,
       cfgElectronEtaCut,
       cfgElectronPtCut,
@@ -238,6 +237,7 @@ zToElecTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgElectronEcalIsoCut,
       cfgElectronTrkCut,
       cfgElectronTrkIPcut,
+      cfgElectronConversionVeto,
       cfgTauAntiOverlapWithElectronsVeto,
       cfgTauEtaCut,
       cfgTauPtCut,
