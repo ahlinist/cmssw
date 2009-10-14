@@ -465,6 +465,12 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_mVisible"
         ),
         drawJobConfigEntry(
+            meName = 'DiTauCandidateQuantities/VisMassZllCombinedHypothesis',
+            title = "M_{vis}(Muon + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
+        ),
+        drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
             title = "M(Muon + Tau), CDF method (final Event sample)",
             xAxis = 'Mass',
