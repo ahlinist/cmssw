@@ -41,7 +41,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_Ztautau_1.root'    
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -294,6 +294,12 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             value = cms.string("p4Vis.mass"),
+            indices = cms.vuint32(0,1)
+        ),
+        diTauMvis12combinedHypothesesZee = cms.PSet(
+            pluginType = cms.string("ZtautauVisMassHypothesisElecTauValExtractor"),
+            src = cms.InputTag('elecTauPairVisMassHypothesesForBgEstZeeEnriched'),
+            srcDiTauCandidates = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
             indices = cms.vuint32(0,1)
         ),
         diTauMvis12WplusJets = cms.PSet(
