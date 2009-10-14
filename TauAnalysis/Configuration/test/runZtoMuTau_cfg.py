@@ -20,8 +20,9 @@ process.GlobalTag.globaltag = 'IDEAL_V12::All'
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
+# import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -85,7 +86,7 @@ process.source = cms.Source("PoolSource",
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
 #        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        #'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
 #        'rfio:/castor/cern.ch/user/s/sdas/WTauNu/FastSim/QCDPt_15/QCD_PtTrack15_FASTSIM_1000.root'
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part01.root',
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part02.root',
@@ -93,9 +94,9 @@ process.source = cms.Source("PoolSource",
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part04.root',
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part05.root',
 #        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part06.root'
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part01.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part02.root',
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part03.root'
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part01.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part02.root',
+#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part03.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -108,7 +109,6 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoMuTauPatTuple.fileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
@@ -128,32 +128,24 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatTuple
-#                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
-#                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-                     +process.selectZtoMuTauEvents
-#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
-                     +process.analyzeZtoMuTauEvents
-                     +process.saveZtoMuTauPlots )
+process.p = cms.Path(
+    process.producePatTupleZtoMuTauSpecific
+# + process.printGenParticleList # uncomment to enable print-out of generator level particles
+# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+  + process.selectZtoMuTauEvents 
+  + process.analyzeZtoMuTauEvents
+  + process.saveZtoMuTauPlots 
+)
 
 #--------------------------------------------------------------------------------
-# import utility function for switching input for PAT-tuple production
-# from RECO to AOD event content
-from TauAnalysis.Configuration.tools.aodTools import *
-
-# comment-out to switch from RECO to AOD event content
-# (will disable PAT trigger matching and limit computation of ECAL recHit based IsoDeposits
-#  to cones of size dR = 0.6 around electron candidates)
-#switchToAOD(process)
-#process.selectZtoMuTauEvents.remove(process.Trigger)
-#process.analyzeZtoMuTauEvents.filters[1].src = cms.InputTag("genPhaseSpaceEventInfo")
-#process.analyzeZtoMuTauEvents.filters[1].pluginType = cms.string('GenPhaseSpaceEventInfoSelector')
-#process.analyzeZtoMuTauEvents.filters[1].cut = cms.string('')
-#process.analyzeZtoMuTauEvents.analyzers.remove(process.triggerHistManager)
-#process.analyzeZtoMuTauEvents.eventDumps[0].hltResultsSource = cms.InputTag("")
-#process.analyzeZtoMuTauEvents.analysisSequence[0].analyzers.remove('triggerHistManager')
+# import utility function for switching HLT InputTags when processing
+# RECO/AOD files produced by MCEmbeddingTool
+from TauAnalysis.MCEmbeddingTools.tools.switchInputTags import switchInputTags
+#
+# comment-out to switch HLT InputTags
+#switchInputTags(process)
 #--------------------------------------------------------------------------------
-
+ 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
 from TauAnalysis.Configuration.factorizationTools import enableFactorization_runZtoMuTau
@@ -162,6 +154,17 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoMuTauSpecific )
+#
+# define "hook" for enabling/disabling production of PAT-tuple event content,
+# depending on whether RECO/AOD or PAT-tuples are used as input for analysis
+#
+#__#patTupleProduction#
+process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTupleAll)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
