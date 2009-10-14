@@ -262,10 +262,10 @@ muTauEventDump = cms.PSet(
     
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
-    electronSource = cms.InputTag('cleanLayer1ElectronsSel'),
-    #muonSource = cms.InputTag('cleanLayer1MuonsSel'),
+    electronSource = cms.InputTag('cleanLayer1Electrons'),
+    #muonSource = cms.InputTag('cleanLayer1Muons'),
     muonSource = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
-    tauSource = cms.InputTag('cleanLayer1TausSel'),
+    tauSource = cms.InputTag('cleanLayer1Taus'),
     #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
     metSource = cms.InputTag('layer1METs'),
