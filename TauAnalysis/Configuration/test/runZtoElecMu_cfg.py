@@ -16,8 +16,9 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
+# import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.Configuration.producePatTupleZtoElecMuSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoElecMu_cff")
@@ -32,6 +33,26 @@ from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# print memory consumed by cmsRun
+# (for debugging memory leaks)
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#    ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
+process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+    src = cms.InputTag("genParticles"),
+    maxEventsToPrint = cms.untracked.int32(100)
+)
+
+# print event content 
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+
+# print debug information whenever plugins get loaded dynamically from libraries
+# (for debugging problems with plugin related dynamic library loading)
+#process.add_( cms.Service("PrintLoadingPlugins") )
 #--------------------------------------------------------------------------------
 
 process.DQMStore = cms.Service("DQMStore")
@@ -51,12 +72,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#
-# Z --> tau tau (all decay modes; simulated with TAUOLA)
-# 10k events RelVal sample
-#
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/elecMuSkim.root'
-#        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_7/src/TauAnalysis/Configuration/test/muTauSkim.root'    
+        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEventsZtoElecMu_Zmumu.root'
     )
     #skipBadFiles = cms.untracked.bool(True)                        
 )
@@ -69,14 +85,13 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoElecMuEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoElecMuPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoElecMuPatTuple.fileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
 # import utility function for switching pat::Tau input
 # to different reco::Tau collection stored on AOD
-from PhysicsTools.PatAlgos.tools.tauTools import *
+from PhysicsTools.PatAlgos.tools.tauTools import * 
 
 # comment-out to take reco::CaloTaus instead of reco::PFTaus
 # as input for pat::Tau production
@@ -85,8 +100,8 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
 # instead of fixed dR = 0.07 signal cone reco::PFTaus
 # as input for pat::Tau production
-#switchToPFTauShrinkingCone(process)
-switchToPFTauFixedCone(process)
+switchToPFTauShrinkingCone(process)
+#switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -98,18 +113,21 @@ from TauAnalysis.Configuration.tools.metTools import *
 # second Boolean swich on type-1 corrections
 addPFMet(process, True, False)
 
-# uncomment to replce caloMET by pfMET in all di-tau objects
+# uncomment to replace caloMET by pfMET in all di-tau objects
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
 replaceMETforDiTaus(process,
                     cms.InputTag('layer1METs'),
                     cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatTuple
-#                    +process.printEventContent     # uncomment to enable dump of event content after PAT-tuple production
-                     +process.selectZtoElecMuEvents
-#                    +process.saveZtoElecMuPatTuple # uncomment to write-out produced PAT-tuple  
-                     +process.analyzeZtoElecMuEvents
-                     +process.saveZtoElecMuPlots )
+process.p = cms.Path(
+    process.producePatTupleZtoElecMuSpecific
+# + process.printGenParticleList # uncomment to enable print-out of generator level particles
+# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+  + process.selectZtoElecMuEvents 
+  + process.analyzeZtoElecMuEvents
+  + process.saveZtoElecMuPlots 
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
@@ -119,6 +137,17 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 # in case running jobs on the CERN batch system
 # (needs to be done after process.p has been defined)
 #__#factorization#
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoElecMuSpecific )
+#
+# define "hook" for enabling/disabling production of PAT-tuple event content,
+# depending on whether RECO/AOD or PAT-tuples are used as input for analysis
+#
+#__#patTupleProduction#
+process.p.replace(process.producePatTupleZtoElecMuSpecific, process.producePatTupleAll)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information

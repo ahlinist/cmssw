@@ -16,8 +16,9 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for channel-specific production
+# import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.Configuration.producePatTupleZtoElecTauSpecific_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
@@ -29,10 +30,30 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
 # using skim samples with loose E/p selection and track extra collections
-from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
+from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# print memory consumed by cmsRun
+# (for debugging memory leaks)
+#process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
+#    ignoreTotal = cms.untracked.int32(1) # default is one
+#)
+
+process.printGenParticleList = cms.EDAnalyzer("ParticleListDrawer",
+    src = cms.InputTag("genParticles"),
+    maxEventsToPrint = cms.untracked.int32(100)
+)
+
+# print event content 
+process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
+
+# print debug information whenever plugins get loaded dynamically from libraries
+# (for debugging problems with plugin related dynamic library loading)
+#process.add_( cms.Service("PrintLoadingPlugins") )
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -43,19 +64,19 @@ process.printEventContent = cms.EDAnalyzer("EventContentAnalyzer")
 process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoElecTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
-		outputFileName = cms.string('plotsZtoElecTau.root')
-		)
+    outputFileName = cms.string('plotsZtoElecTau.root')
+)
 
 process.maxEvents = cms.untracked.PSet(            
-		input = cms.untracked.int32(-1)    
-		)
+    input = cms.untracked.int32(-1)    
+)
 
 process.source = cms.Source("PoolSource",
-		fileNames = cms.untracked.vstring(
-			'/castor/cern.ch/user/j/jkolb/elecTauAnalysis/patTuples/PhotonJets_Pt15to20/patTupleZtoElecTau_PhotonJets_Pt15to20_1.root"'
-			)
-		#skipBadFiles = cms.untracked.bool(True)    
-		)
+    fileNames = cms.untracked.vstring(
+        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_Ztautau_1.root'
+    )
+    #skipBadFiles = cms.untracked.bool(True)    
+)
 
 #--------------------------------------------------------------------------------
 # define "hooks" for replacing configuration parameters
@@ -68,12 +89,30 @@ process.source = cms.Source("PoolSource",
 #
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.produceZtoElecTau
-		#					  +process.printEventContent
-		+process.selectZtoElecTauEvents 
-		+process.analyzeZtoElecTauEvents
-		+process.saveZtoElecTauPlots 
-		)
+#--------------------------------------------------------------------------------
+# import utility function for switching pat::Tau input
+# to different reco::Tau collection stored on AOD
+from PhysicsTools.PatAlgos.tools.tauTools import * 
+
+# comment-out to take reco::CaloTaus instead of reco::PFTaus
+# as input for pat::Tau production
+#switchToCaloTau(process)
+
+# comment-out to take shrinking dR = 5.0/Et(PFTau) signal cone
+# instead of fixed dR = 0.07 signal cone reco::PFTaus
+# as input for pat::Tau production
+switchToPFTauShrinkingCone(process)
+#switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
+
+process.p = cms.Path(
+    process.producePatTupleZtoElecTauSpecific
+# + process.printGenParticleList # uncomment to enable print-out of generator level particles
+# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+  + process.selectZtoElecTauEvents 
+  + process.analyzeZtoElecTauEvents
+  + process.saveZtoElecTauPlots 
+)
 
 #process.options = cms.untracked.PSet(
 #	wantSummary = cms.untracked.bool(True)
@@ -88,6 +127,18 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 # (needs to be done after process.p has been defined)
 #
 #__#factorization#
+#enableFactorization_runZtoElecTau(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+#
+process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoElecTauSpecific )
+#
+# define "hook" for enabling/disabling production of PAT-tuple event content,
+# depending on whether RECO/AOD or PAT-tuples are used as input for analysis
+#
+#__#patTupleProduction#
+process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTupleAll)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
