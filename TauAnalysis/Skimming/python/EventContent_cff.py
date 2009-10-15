@@ -37,3 +37,15 @@ pfJets = cms.PSet(
 )
 tauAnalysisEventContent.outputCommands.extend(pfJets.outputCommands)
 
+#--------------------------------------------------------------------------------
+# keep TrackExtra objects for computation of electron anti-photon conversion vetos
+#--------------------------------------------------------------------------------
+
+generalTrackExtras = cms.PSet(
+    outputCommands = cms.untracked.vstring(
+        'keep recoTrackExtras_generalTracks_*_*',
+        'keep recoTrackExtras_pixelMatchGsfFit_*_*',
+        'keep recoGsfTrackExtras_pixelMatchGsfFit_*_*'
+    )
+)
+tauAnalysisEventContent.outputCommands.extend(generalTrackExtras.outputCommands)
