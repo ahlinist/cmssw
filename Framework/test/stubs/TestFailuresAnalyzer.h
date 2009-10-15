@@ -38,6 +38,7 @@ public:
 private:
       // ----------member data ---------------------------
       int whichFailure_;
+      unsigned eventToThrow_;
 };
 
 
