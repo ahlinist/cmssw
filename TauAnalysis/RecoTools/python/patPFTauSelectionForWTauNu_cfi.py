@@ -8,9 +8,18 @@ selectedLayer1TausForWTauNuPt20 = copy.deepcopy(selectedLayer1TausPt20)
 selectedLayer1TausForWTauNuLeadTrk = copy.deepcopy(selectedLayer1TausLeadTrk)
 selectedLayer1TausForWTauNuLeadTrkPt = copy.deepcopy(selectedLayer1TausLeadTrkPt)
 selectedLayer1TausForWTauNuTrkIso = copy.deepcopy(selectedLayer1TausTrkIso)
+selectedLayer1TausForWTauNuProng = copy.deepcopy(selectedLayer1TausProng)
+selectedLayer1TausForWTauNuCharge = copy.deepcopy(selectedLayer1TausCharge)
 selectedLayer1TausForWTauNuMuonVeto = copy.deepcopy(selectedLayer1TausMuonVeto)
 selectedLayer1TausForWTauNuElectronVeto = copy.deepcopy(selectedLayer1TausElectronVeto)
 selectedLayer1TausForWTauNuEcalCrackVeto = copy.deepcopy(selectedLayer1TausEcalCrackVeto)
-selectedLayer1TausForWTauNuProng = copy.deepcopy(selectedLayer1TausProng)
-selectedLayer1TausForWTauNuCharge = copy.deepcopy(selectedLayer1TausCharge)
+
+selectedLayer1TausForWTauNuTrkIsoLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuTrkIso)
+selectedLayer1TausForWTauNuProngLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuProng)
+selectedLayer1TausForWTauNuChargeLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuCharge)
+selectedLayer1TausForWTauNuMuonVetoLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuMuonVeto)
+selectedLayer1TausForWTauNuElectronVetoLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuElectronVeto)
+selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation = copy.deepcopy(selectedLayer1TausForWTauNuEcalCrackVeto)
+
+
 
