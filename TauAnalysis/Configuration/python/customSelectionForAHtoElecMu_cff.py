@@ -2,6 +2,11 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from TauAnalysis.Configuration.producePatTuple_cff import *
+from TauAnalysis.RecoTools.patLeptonSelection_cff import *
+from TauAnalysis.RecoTools.patJetSelection_cff import *
+from TauAnalysis.CandidateTools.elecMuPairProduction_cff import *
+from TauAnalysis.CandidateTools.elecMuPairSelection_cfi import *
+from TauAnalysis.CandidateTools.tools.objSelConfigurator import objSelConfigurator
 
 #------------------------------------- met --------------------------------------#
 #******* custom reco ********
