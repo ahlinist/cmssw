@@ -4,8 +4,8 @@ import copy
 from TauAnalysis.Configuration.plotterProcessDefinitions_cfi import *
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
 
-#plotDirectoryName = cms.string("/data/ndpc2/b/jkolb/ZtoElecTauAnalysis/data/")
 plotDirectoryName = cms.string("rfio:/castor/cern.ch/user/j/jkolb/elecTauAnalysis/hists/")
+#plotDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/plots/ZtoElecTau/")
 
 #--------------------------------------------------------------------------------
 # define for Z --> e + tau-jet analysis names of .root files containing histograms
@@ -24,7 +24,7 @@ processZtoElecTau_Ztautau.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part09.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_Ztautau_part10.root'
 )
-processZtoElecTau_Ztautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtautau*intLumiData/intLumiZtautau)
+processZtoElecTau_Ztautau.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Ztautau*intLumiZtoElecTau_Data/intLumiZtoElecTau_Ztautau)
 
 processZtoElecTau_ZtautauSum = copy.deepcopy(process_Ztautau)
 processZtoElecTau_ZtautauSum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -62,7 +62,7 @@ processZtoElecTau_Zee.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_Zee_part23.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_Zee_part24.root'
 )
-processZtoElecTau_Zee.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZee*intLumiData/intLumiZee)
+processZtoElecTau_Zee.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_Zee*intLumiZtoElecTau_Data/intLumiZtoElecTau_Zee)
 
 processZtoElecTau_ZeeSum = copy.deepcopy(process_Zee)
 processZtoElecTau_ZeeSum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -78,35 +78,35 @@ processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.inputFileNames = c
     plotDirectoryName.value() + 'plotsZtoElecTau_PhotonJets_Pt15to20.root'
 )
 processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt15to20')
-processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.scaleFactor = cms.double(corrFactorPhotonJets_Pt15to20*intLumiData/intLumiPhotonJets_Pt15to20)
+processZtoElecTau_gammaPlusJets_Pt15to20.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonJets_Pt15to20*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonJets_Pt15to20)
 
 processZtoElecTau_gammaPlusJets_Pt20to25 = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_PhotonJets_Pt20to25.root'
 )
 processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt20to25')
-processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader.scaleFactor = cms.double(corrFactorPhotonJets_Pt20to25*intLumiData/intLumiPhotonJets_Pt20to25)
+processZtoElecTau_gammaPlusJets_Pt20to25.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonJets_Pt20to25*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonJets_Pt20to25)
 
 processZtoElecTau_gammaPlusJets_Pt25to30 = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_PhotonJets_Pt25to30.root'
 )
 processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt25to30')
-processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorPhotonJets_Pt25to30*intLumiData/intLumiPhotonJets_Pt25to30)
+processZtoElecTau_gammaPlusJets_Pt25to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonJets_Pt25to30*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonJets_Pt25to30)
 
 processZtoElecTau_gammaPlusJets_Pt30to35 = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_PhotonJets_Pt30to35.root'
 )
 processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_Pt30to35')
-processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader.scaleFactor = cms.double(corrFactorPhotonJets_Pt30to35*intLumiData/intLumiPhotonJets_Pt30to35)
+processZtoElecTau_gammaPlusJets_Pt30to35.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonJets_Pt30to35*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonJets_Pt30to35)
 
 processZtoElecTau_gammaPlusJets_PtGt35 = copy.deepcopy(process_gammaPlusJets)
 processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_PhotonJets_PtGt35.root'
 )
 processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader.dqmDirectory_store = cms.string('harvested/gammaPlusJets_PtGt35')
-processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader.scaleFactor = cms.double(corrFactorPhotonJets_PtGt35*intLumiData/intLumiPhotonJets_PtGt35)
+processZtoElecTau_gammaPlusJets_PtGt35.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_PhotonJets_PtGt35*intLumiZtoElecTau_Data/intLumiZtoElecTau_PhotonJets_PtGt35)
 
 #--------------------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader.inputFileNames = cms.v
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt20to30_part27.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt20to30_part28.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_BCtoE_Pt20to30*intLumiData/intLumiQCD_BCtoE_Pt20to30)
+processZtoElecTau_QCD_BCtoE_Pt20to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt20to30*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt20to30)
 
 processZtoElecTau_QCD_BCtoE_Pt20to30Sum = copy.deepcopy(process_QCD_BCtoE_Pt20to30)
 processZtoElecTau_QCD_BCtoE_Pt20to30Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -201,7 +201,7 @@ processZtoElecTau_QCD_BCtoE_Pt30to80.config_dqmFileLoader.inputFileNames = cms.v
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt30to80_part45.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt30to80_part46.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt30to80.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_BCtoE_Pt30to80*intLumiData/intLumiQCD_BCtoE_Pt30to80)
+processZtoElecTau_QCD_BCtoE_Pt30to80.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt30to80*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt30to80)
 
 processZtoElecTau_QCD_BCtoE_Pt30to80Sum = copy.deepcopy(process_QCD_BCtoE_Pt30to80)
 processZtoElecTau_QCD_BCtoE_Pt30to80Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -241,7 +241,7 @@ processZtoElecTau_QCD_BCtoE_Pt80to170.config_dqmFileLoader.inputFileNames = cms.
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt80to170_part25.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_BCtoE_Pt80to170_part26.root'
 )
-processZtoElecTau_QCD_BCtoE_Pt80to170.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_BCtoE_Pt80to170*intLumiData/intLumiQCD_BCtoE_Pt80to170)
+processZtoElecTau_QCD_BCtoE_Pt80to170.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_BCtoE_Pt80to170*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_BCtoE_Pt80to170)
 
 processZtoElecTau_QCD_BCtoE_Pt80to170Sum = copy.deepcopy(process_QCD_BCtoE_Pt80to170)
 processZtoElecTau_QCD_BCtoE_Pt80to170Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -308,7 +308,7 @@ processZtoElecTau_QCD_EMenriched_Pt20to30.config_dqmFileLoader.inputFileNames = 
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt20to30_part52.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt20to30_part53.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt20to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt20to30*intLumiData/intLumiQCD_EMenriched_Pt20to30)
+processZtoElecTau_QCD_EMenriched_Pt20to30.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt20to30*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt20to30)
 
 processZtoElecTau_QCD_EMenriched_Pt20to30Sum = copy.deepcopy(process_QCD_EMenriched_Pt20to30)
 processZtoElecTau_QCD_EMenriched_Pt20to30Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -433,7 +433,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_part01.config_dqmFileLoader.inputFileN
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part109.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part110.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt30to80_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt30to80*intLumiData/intLumiQCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part01.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80)
 
 processZtoElecTau_QCD_EMenriched_Pt30to80_part02 = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
 processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -548,7 +548,7 @@ processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.inputFileN
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part219.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt30to80_part220.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt30to80*intLumiData/intLumiQCD_EMenriched_Pt30to80)
+processZtoElecTau_QCD_EMenriched_Pt30to80_part02.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt30to80*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt30to80)
 
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum = copy.deepcopy(process_QCD_EMenriched_Pt30to80)
 processZtoElecTau_QCD_EMenriched_Pt30to80Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -623,7 +623,7 @@ processZtoElecTau_QCD_EMenriched_Pt80to170.config_dqmFileLoader.inputFileNames =
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt80to170_part58.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_QCD_EMenriched_Pt80to170_part59.root'
 )
-processZtoElecTau_QCD_EMenriched_Pt80to170.config_dqmFileLoader.scaleFactor = cms.double(corrFactorQCD_EMenriched_Pt80to170*intLumiData/intLumiQCD_EMenriched_Pt80to170)
+processZtoElecTau_QCD_EMenriched_Pt80to170.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_QCD_EMenriched_Pt80to170*intLumiZtoElecTau_Data/intLumiZtoElecTau_QCD_EMenriched_Pt80to170)
 
 processZtoElecTau_QCD_EMenriched_Pt80to170Sum = copy.deepcopy(process_QCD_EMenriched_Pt80to170)
 processZtoElecTau_QCD_EMenriched_Pt80to170Sum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -671,7 +671,7 @@ processZtoElecTau_WplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_WplusJets_part33.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_WplusJets_part34.root'
 )
-processZtoElecTau_WplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorWplusJets*intLumiData/intLumiWplusJets)
+processZtoElecTau_WplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_WplusJets*intLumiZtoElecTau_Data/intLumiZtoElecTau_WplusJets)
 
 processZtoElecTau_WplusJetsSum = copy.deepcopy(process_WplusJets)
 processZtoElecTau_WplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -701,7 +701,7 @@ processZtoElecTau_ZeePlusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part15.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZeePlusJets_part16.root'
 )
-processZtoElecTau_ZeePlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZeePlusJets*intLumiData/intLumiZeePlusJets)
+processZtoElecTau_ZeePlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZeePlusJets*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZeePlusJets)
 
 processZtoElecTau_ZeePlusJetsSum = copy.deepcopy(process_ZeePlusJets)
 processZtoElecTau_ZeePlusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -729,7 +729,7 @@ processZtoElecTau_ZtautauPlusJets.config_dqmFileLoader.inputFileNames = cms.vstr
     plotDirectoryName.value() + 'plotsZtoElecTau_ZtautauPlusJets_part15.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_ZtautauPlusJets_part16.root'
 )
-processZtoElecTau_ZtautauPlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtautauPlusJets*intLumiData/intLumiZtautauPlusJets)
+processZtoElecTau_ZtautauPlusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_ZtautauPlusJets*intLumiZtoElecTau_Data/intLumiZtoElecTau_ZtautauPlusJets)
 
 processZtoElecTau_ZtautauPlusJetsSum = copy.deepcopy(process_ZtautauPlusJets)
 processZtoElecTau_ZtautauPlusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
@@ -775,7 +775,7 @@ processZtoElecTau_TTplusJets.config_dqmFileLoader.inputFileNames = cms.vstring(
     plotDirectoryName.value() + 'plotsZtoElecTau_TTplusJets_part11.root',
     plotDirectoryName.value() + 'plotsZtoElecTau_TTplusJets_part11.root'
 )
-processZtoElecTau_TTplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorTTplusJets*intLumiData/intLumiTTplusJets)
+processZtoElecTau_TTplusJets.config_dqmFileLoader.scaleFactor = cms.double(corrFactorZtoElecTau_TTplusJets*intLumiZtoElecTau_Data/intLumiZtoElecTau_TTplusJets)
 
 processZtoElecTau_TTplusJetsSum = copy.deepcopy(process_TTplusJets)
 processZtoElecTau_TTplusJetsSum.config_dqmFileLoader.inputFileNames = cms.vstring(
