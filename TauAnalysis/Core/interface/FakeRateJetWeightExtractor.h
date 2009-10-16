@@ -9,9 +9,9 @@
  * 
  * \author Chriatian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: FakeRateJetWeightExtractor.h,v 1.2 2009/05/26 12:36:29 veelken Exp $
+ * $Id: FakeRateJetWeightExtractor.h,v 1.1 2009/08/16 13:57:11 veelken Exp $
  *
  */
 
@@ -42,7 +42,6 @@ class FakeRateJetWeightExtractor<pat::Tau>
 
   double operator()(const pat::Tau& tau) const
   {
-    std::cout << "<FakeRateJetWeightExtractor<pat::Tau>::operator()>:" << std::endl;
     return tau.efficiency(effName_).value();
   }
 
