@@ -7,13 +7,13 @@ import copy
 bgEstNtupleDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstNtuples/ZtoElecTau_looseElectronSel/")
 
 # Z --> tau+ tau- sample
-fileNames_Ztautau = cms.vstring(
+fileNamesZtoElecTau_Ztautau = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_Ztautau_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_Ztautau_part02.root'
 )
 
 # Z --> e+ e- sample
-fileNames_Zee = cms.vstring(
+fileNamesZtoElecTau_Zee = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_Zee_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_Zee_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_Zee_part03.root'
@@ -22,14 +22,14 @@ fileNames_Zee = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # Z --> tau+ tau- + jets sample
-fileNames_ZtautauPlusJets = cms.vstring(
+fileNamesZtoElecTau_ZtautauPlusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZtautauPlusJets_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZtautauPlusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZtautauPlusJets_part03.root'
 )
 
 # Z --> e+ e- + jets sample
-fileNames_ZeePlusJets = cms.vstring(
+fileNamesZtoElecTau_ZeePlusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZeePlusJets_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZeePlusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_ZeePlusJets_part03.root'
@@ -38,7 +38,7 @@ fileNames_ZeePlusJets = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # W + jets sample
-fileNames_WplusJets = cms.vstring(
+fileNamesZtoElecTau_WplusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_WplusJets_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_WplusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_WplusJets_part03.root',
@@ -48,7 +48,7 @@ fileNames_WplusJets = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # gamma + jets samples
-fileNames_gammaPlusJetsSum = cms.vstring(
+fileNamesZtoElecTau_gammaPlusJetsSum = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_PhotonJets_Pt15to20.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_PhotonJets_Pt20to25.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_PhotonJets_Pt25to30.root',
@@ -59,7 +59,7 @@ fileNames_gammaPlusJetsSum = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # QCD b/c and em. enriched samples
-fileNames_qcdSum = cms.vstring(
+fileNamesZtoElecTau_qcdSum = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_QCD_BCtoE_Pt20to30_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_QCD_BCtoE_Pt20to30_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_QCD_BCtoE_Pt20to30_part03.root',
@@ -110,7 +110,7 @@ fileNames_qcdSum = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # ttbar + jets sample
-fileNames_TTplusJets = cms.vstring(
+fileNamesZtoElecTau_TTplusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part01.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part03.root',
@@ -123,10 +123,10 @@ fileNames_TTplusJets = cms.vstring(
 #--------------------------------------------------------------------------------
 
 # (pseudo)Data sample = sum of all signal + background Monte Carlo samples
-fileNames_pseudoData = cms.vstring()
-fileNames_pseudoData.extend(fileNames_Ztautau)
-fileNames_pseudoData.extend(fileNames_ZeePlusJets)
-fileNames_pseudoData.extend(fileNames_WplusJets)
-fileNames_pseudoData.extend(fileNames_TTplusJets)
-fileNames_pseudoData.extend(fileNames_gammaPlusJetsSum)
-fileNames_pseudoData.extend(fileNames_qcdSum)
+fileNamesZtoElecTau_pseudoData = cms.vstring()
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_Ztautau)
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_ZeePlusJets)
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_WplusJets)
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_TTplusJets)
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_gammaPlusJetsSum)
+fileNamesZtoElecTau_pseudoData.extend(fileNamesZtoElecTau_qcdSum)

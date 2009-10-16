@@ -71,7 +71,7 @@ def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements 
             replaceStatements_retVal.append(replaceStatement)
 
     # replace bgEstSampleFileNames parameter
-    bgEstSampleFileNames = "bgEstSampleFileNames" + sample
+    bgEstSampleFileNames = "bgEstSampleFileNames" + channel +"_" + sample
     replaceStatements_retVal.append("bgEstSampleFileNames = " + bgEstSampleFileNames)
     
     # replace genPhaseSpaceCut, bgEstNtupleOutputFileName and intLumi parameters
@@ -79,10 +79,10 @@ def makeReplacementsBgEstNtupleProd(channel = None, sample = None, replacements 
     #  into multiple cmsRun job parts, in order to avoid having to specify
     #   genPhaseSpaceCut, bgEstNtupleOutputFileName and intLumi
     #  again and again for each part)
-    genPhaseSpaceCut = "genPhaseSpaceCut" + sample
-    bgEstNtupleOutputFileName = "bgEstNtupleOutputFileName" + sample
-    intLumi = "intLumi" + sample
-    corrFactor = "corrFactor" + sample
+    genPhaseSpaceCut = "genPhaseSpaceCut" + channel +"_" + sample
+    bgEstNtupleOutputFileName = "bgEstNtupleOutputFileName" + channel +"_" + sample
+    intLumi = "intLumi" + channel +"_" + sample
+    corrFactor = "corrFactor" + channel +"_" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
         bgEstNtupleOutputFileName = "cms.string(" + bgEstNtupleOutputFileName[:bgEstNtupleOutputFileName.rfind("_part")]
