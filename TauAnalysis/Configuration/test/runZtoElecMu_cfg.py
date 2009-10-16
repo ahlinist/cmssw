@@ -30,9 +30,6 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecMu_cff")
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
-
-# import event-content definition of products to be stored in patTuple
-from TauAnalysis.Configuration.patTupleEventContent_cff import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -59,11 +56,6 @@ process.DQMStore = cms.Service("DQMStore")
 
 process.saveZtoElecMuPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
     outputFileName = cms.string('plotsZtoElecMu.root')
-)
-
-process.saveZtoElecMuPatTuple = cms.OutputModule("PoolOutputModule",
-    patTupleEventContent,                                                   
-    fileName = cms.untracked.string('elecMuSkim_patTuple.root')
 )
 
 process.maxEvents = cms.untracked.PSet(            
