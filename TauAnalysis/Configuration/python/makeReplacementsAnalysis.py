@@ -102,7 +102,8 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         raise ValueError("Undefined inputFileType option !!")
     if inputFileType == "RECO/AOD":
          inputFileNames = "fileNames" + channel + "_" + sample
-	 patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+         if hasattr(process, "producePatTupleAll"):
+             patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
          inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample
 	 if sample.find("_part") != -1:
@@ -113,7 +114,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
 	 raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
     inputFileNames += ".value())"
     replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
-    replaceStatements_retVal.append("patTupleProduction = " patTupleProduction)
+    replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
 
     # replace genPhaseSpaceCut and plotsOutputFileName parameters
     # (ommit "_part.." suffix of sample name in case of processes split
