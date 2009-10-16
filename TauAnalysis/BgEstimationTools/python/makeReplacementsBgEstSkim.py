@@ -71,7 +71,7 @@ def makeReplacementsBgEstSkim(channel = None, sample = None, replacements = None
             replaceStatements_retVal.append(replaceStatement)
 
     # replace inputFileName parameter
-    inputFileNames = "fileNames" + sample
+    inputFileNames = "fileNames" + channel +"_" + sample
     replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
     
     # replace genPhaseSpaceCut and bgEstSampleOutputFileName parameters
@@ -79,8 +79,8 @@ def makeReplacementsBgEstSkim(channel = None, sample = None, replacements = None
     #  into multiple cmsRun job parts, in order to avoid having to specify
     #   genPhaseSpaceCut and bgEstSampleOutputFileName
     #  again and again for each part)
-    genPhaseSpaceCut = "genPhaseSpaceCut" + sample
-    bgEstSampleOutputFileName = "bgEstSampleOutputFileName" + sample
+    genPhaseSpaceCut = "genPhaseSpaceCut" + channel +"_" + sample
+    bgEstSampleOutputFileName = "bgEstSampleOutputFileName" + channel +"_" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
         bgEstSampleOutputFileName = "cms.untracked.string(" + bgEstSampleOutputFileName[:bgEstSampleOutputFileName.rfind("_part")]
