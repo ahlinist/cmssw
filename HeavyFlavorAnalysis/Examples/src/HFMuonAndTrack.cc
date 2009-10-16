@@ -137,8 +137,8 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   std::vector<reco::TransientTrack> RecoTransientTrack;
 
   TLorentzVector dimuon, m1, m2;
-  int iMuon1(-1), iMuon2(-1); 
-  for (unsigned int imuon1 = 0; imuon1 < muonIndices.size()-1; ++imuon1) {
+  int iMuon1(-1); 
+  for (unsigned int imuon1 = 0; imuon1 < muonIndices.size(); ++imuon1) {
     TrackBaseRef mu1TrackView(hTracks, muonIndices[imuon1]);
     Track tMuon1(*mu1TrackView);
     iMuon1 = muonIndices[imuon1]; 
@@ -149,11 +149,11 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if (static_cast<int>(itrack2) == muonIndices[imuon1]) continue; 
 
       TrackBaseRef rTrackView(hTracks, itrack2);
-      Track track2(*rTrackView);
+      Track tTrack2(*rTrackView);
 
-      if (track2.pt() < fTrackPt)  continue;
+      if (tTrack2.pt() < fTrackPt)  continue;
 
-      m2.SetPtEtaPhiM(track2.pt(), track2.eta(), track2.phi(), MMUON); 
+      m2.SetPtEtaPhiM(tTrack2.pt(), tTrack2.eta(), tTrack2.phi(), MMUON); 
       dimuon = m1 + m2; 
       
       if (dimuon.M() < fMassLow || dimuon.M() > fMassHigh) {
@@ -163,8 +163,16 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	continue; 
       }
 
+      if (fVerbose > 0) {
+	cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", vertexing" << endl;
+      }
+
       RecoTransientTrack.push_back(fTTB->build(tMuon1));
-      RecoTransientTrack.push_back(fTTB->build(track2));
+      RecoTransientTrack.push_back(fTTB->build(tTrack2));
+
+      cout << " iMuon1  = " << iMuon1 << " pT = " << tMuon1.pt() << " phi = " << tMuon1.phi() << " eta = " << tMuon1.eta() << endl;
+      cout << " itrack2 = " << itrack2<< " pT = " << tTrack2.pt()<< " phi = " << tTrack2.phi()<< " eta = " << tTrack2.eta() << endl;
+
 
       // -- Do the vertexing
       KalmanVertexFitter theFitter(true);
@@ -205,7 +213,7 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 			   TransSecVtx.position().z());
       
       anaVtx.addTrack(iMuon1);
-      anaVtx.addTrack(iMuon2);
+      anaVtx.addTrack(itrack2);
       
       VertexDistanceXY axy;
       anaVtx.fDxy     = axy.distance(fPV, TransSecVtx).value();
@@ -239,9 +247,9 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       pTrack->fIndex  = iMuon1;
       
       pTrack            = gHFEvent->addSigTrack();
-      pTrack->fMCID     = track2.charge()*13; 
+      pTrack->fMCID     = tTrack2.charge()*13; 
       pTrack->fGenIndex = -1; 
-      pTrack->fQ        = track2.charge();
+      pTrack->fQ        = tTrack2.charge();
       pTrack->fPlab.SetXYZ(refT[1].px(),
 			   refT[1].py(),
 			   refT[1].pz()
