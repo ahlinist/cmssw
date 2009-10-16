@@ -38,7 +38,7 @@ patJetSelConfigurator = objSelConfigurator(
     pyModuleName = __name__,
     doSelIndividual = False
 )
-selectLayer1JetsDefault = patJetSelConfigurator.configure(namespace = locals())
+selectLayer1Jets = patJetSelConfigurator.configure(namespace = locals())
 
 # Select jets for W->tau nu analysis
 selectedLayer1JetsAntiOverlapWithTausVetoForWTauNu = cms.EDFilter("PATJetAntiOverlapSelector",
@@ -104,13 +104,5 @@ patJetSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
     doSelIndividual = False
 )
 selectLayer1JetsForWTauNuLooseIsolation =patJetSelConfiguratorForWTauNuLooseIsolation.configure(namespace = locals())
-
-#-----------------------------------------------
-
-selectLayer1Jets = cms.Sequence( selectLayer1JetsDefault
-                                 *selectLayer1JetsForWTauNu
-                                 *selectLayer1JetsForWTauNuLooseIsolation
-                                 )
-
 
 
