@@ -339,16 +339,18 @@ patTauSelConfiguratorForDiTau = objSelConfigurator(
 
 selectLayer1TausForDiTau = patTauSelConfiguratorForDiTau.configure(namespace = locals())
 
+# define collections of pat::(PF)Taus used in W->tau-jet + nu channel
+
 selectedLayer1TausForWTauNuEta21.cut = selectedLayer1TausEta21.cut
-selectedLayer1TausForWTauNuPt20.cut = cms.string("pt > 15.")
+selectedLayer1TausForWTauNuPt20.cut = selectedLayer1TausPt20.cut 
 selectedLayer1TausForWTauNuLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
 selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
+selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
+selectedLayer1TausForWTauNuCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
 selectedLayer1TausForWTauNuEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
-selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
-selectedLayer1TausForWTauNuCharge.cut = selectedLayer1TausCharge.cut
 
 patTauSelConfiguratorForWTauNu =objSelConfigurator(
     [ selectedLayer1TausForWTauNuEta21,
@@ -356,16 +358,45 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
       selectedLayer1TausForWTauNuLeadTrk,
       selectedLayer1TausForWTauNuLeadTrkPt,
       selectedLayer1TausForWTauNuTrkIso,
+      selectedLayer1TausForWTauNuProng,
+      selectedLayer1TausForWTauNuCharge, 
       selectedLayer1TausForWTauNuMuonVeto,
       selectedLayer1TausForWTauNuElectronVeto,
-      selectedLayer1TausForWTauNuEcalCrackVeto,
-      selectedLayer1TausForWTauNuProng,
-      selectedLayer1TausForWTauNuCharge ],
+      selectedLayer1TausForWTauNuEcalCrackVeto
+      ],
     src = "cleanLayer1Taus",
     pyModuleName = __name__,
     doSelIndividual = True
 )
 selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace = locals())
+
+#Loose isolation selection#
+selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
+selectedLayer1TausForWTauNuProngLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
+selectedLayer1TausForWTauNuChargeLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
+
+selectedLayer1TausForWTauNuMuonVetoLooseIsolation.cut = selectedLayer1TausForWTauNuMuonVeto.cut
+selectedLayer1TausForWTauNuElectronVetoLooseIsolation.cut = selectedLayer1TausForWTauNuElectronVeto.cut
+selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation.cut = selectedLayer1TausForWTauNuEcalCrackVeto.cut
+
+patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
+    [ selectedLayer1TausForWTauNuEta21,
+      selectedLayer1TausForWTauNuPt20,
+      selectedLayer1TausForWTauNuLeadTrk,
+      selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuTrkIsoLooseIsolation,
+      selectedLayer1TausForWTauNuProngLooseIsolation,
+      selectedLayer1TausForWTauNuChargeLooseIsolation, 
+      selectedLayer1TausForWTauNuMuonVetoLooseIsolation,
+      selectedLayer1TausForWTauNuElectronVetoLooseIsolation,
+      selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolation
+      ],
+    src = "cleanLayer1Taus",
+    pyModuleName = __name__,
+    doSelIndividual = True
+)
+
+selectLayer1TausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolation.configure(namespace = locals())
 
 produceLayer1SelLeptons = cms.Sequence (
     selectLayer1Electrons 
@@ -375,5 +406,5 @@ produceLayer1SelLeptons = cms.Sequence (
    + selectLayer1ElectronsForElecTau + selectLayer1ElectronsForElecTauLooseIsolation
    + selectLayer1ElectronsForElecMu + selectLayer1ElectronsForElecMuLooseIsolation
    + selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau
-   + selectLayer1TausForWTauNu 
+   + selectLayer1TausForWTauNu +selectLayer1TausForWTauNuLooseIsolation
 )
