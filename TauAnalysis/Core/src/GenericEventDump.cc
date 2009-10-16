@@ -581,6 +581,12 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patTau->vertex(), outputStream_);
+      *outputStream_ << " pat::Tau id. efficiencies:" 
+		     << " byIsolation = " << patTau->efficiency("effByIsolationZtautausim").value() << ","
+		     << " byEcalIsolation = " << patTau->efficiency("effByECALIsolationZtautausim").value() << std::endl;
+      *outputStream_ << " pat::Tau fake-rates:"
+		     << " byIsolation = " << patTau->efficiency("frByIsolationMuEnrichedQCDsim").value() << ","
+		     << " byEcalIsolation = " << patTau->efficiency("frByECALIsolationMuEnrichedQCDsim").value() << std::endl;
       ++iTau;
     }
 
