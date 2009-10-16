@@ -107,6 +107,11 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
 //--- create "veto" objects for computation of IsoDeposit sums
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("0.0"));
   tauParticleFlowIsoParam_.push_back(IsoDepositVetoFactory::make("Threshold(0.5)"));
+
+  makeTauIdEfficiencyHistograms_ = ( cfg.exists("makeTauIdEfficiencyHistograms") ) ? 
+    cfg.getParameter<vstring>("makeTauIdEfficiencyHistograms") : vstring();
+  makeTauFakeRateHistograms_ = ( cfg.exists("makeTauFakeRateHistograms") ) ? 
+    cfg.getParameter<vstring>("makeTauFakeRateHistograms") : vstring();
 }
 
 TauHistManager::~TauHistManager()
@@ -156,6 +161,9 @@ void TauHistManager::bookHistograms()
   hTauLeadTrkMatchDist_ = dqmStore.book1D("TauLeadTrkMatchDist", "TauLeadTrkMatchDist", 100, -0.500, 0.500);
   hTauLeadTrkIPxy_ = dqmStore.book1D("TauLeadTrkIPxy", "Lead Track Impact Parameter (xy)", 100, -0.100, 0.100);
   hTauLeadTrkIPz_ = dqmStore.book1D("TauLeadTrkIPz", "Lead Track Impact Parameter (z)", 100, -1.0, 1.0);
+  hTauLeadTrkNumHits_ = dqmStore.book1D("TauLeadTrkNumHits", "Lead Track Number of Pixel + Strip Hits", 25, -0.5, 24.5);
+  hTauLeadTrkNumPixelHits_ = dqmStore.book1D("TauLeadTrkNumPixelHits", "Lead Track Number of Pixel Hits", 5, -0.5, 4.5);
+  hTauLeadTrkNumStripHits_ = dqmStore.book1D("TauLeadTrkNumStripHits", "Lead Track Number of Strip Hits", 20, -0.5, 19.5);
   
   hTauDiscriminatorByIsolation_ = dqmStore.book1D("TauDiscriminatorByIsolation", 
 						  "Discriminator by Isolation (Track and ECAL)", 2, -0.5, 1.5);
@@ -229,6 +237,11 @@ void TauHistManager::bookHistograms()
   hTauTrkIsoPhiDistProfile_ = dqmStore.book1D("TauTrkIsoPhiDistProfile", "All Isolation Tracks |#Delta#phi|", 15, 0., 1.5);
   
   if ( makeIsoPtConeSizeDepHistograms_ ) bookTauIsoConeSizeDepHistograms(dqmStore);
+
+//--- book "control" histograms to check parametrization of 
+//    tau id. efficiency and fake-rate values stored in the pat::Tau
+  bookTauIdEfficiencyHistograms(dqmStore, hTauIdEfficiencies_, "IdEfficiency", makeTauIdEfficiencyHistograms_);
+  bookTauIdEfficiencyHistograms(dqmStore, hTauFakeRates_, "FakeRate", makeTauFakeRateHistograms_);
 }
 
 void TauHistManager::fillTauDiscriminatorHistogram(MonitorElement* h, const pat::Tau& patTau, const char* discrName,
@@ -356,6 +369,11 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 	  hTauLeadTrkIPz_->Fill(patTau->leadTrack()->dz(thePrimaryEventVertex.position()), weight);
 	}
       }
+
+      const reco::HitPattern& hitPattern = patTau->leadTrack()->hitPattern();
+      hTauLeadTrkNumHits_->Fill(hitPattern.numberOfValidTrackerHits(), weight);
+      hTauLeadTrkNumPixelHits_->Fill(hitPattern.numberOfValidPixelHits(), weight);
+      hTauLeadTrkNumStripHits_->Fill(hitPattern.numberOfValidStripHits(), weight);
     }
 
     hTauDiscriminatorByIsolation_->Fill(patTau->tauID("byIsolation"), weight);
@@ -409,6 +427,9 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     fillTauIsoHistograms(*patTau, weight);
     hTauDeltaRnearestJet_->Fill(getDeltaRnearestJet(patTau->p4(), patJets), weight);
     if ( makeIsoPtConeSizeDepHistograms_ ) fillTauIsoConeSizeDepHistograms(*patTau, weight);
+
+    fillTauIdEfficiencyHistograms(*patTau, weight, hTauIdEfficiencies_, makeTauIdEfficiencyHistograms_);
+    fillTauIdEfficiencyHistograms(*patTau, weight, hTauFakeRates_, makeTauFakeRateHistograms_);
   }
 }
 
@@ -450,6 +471,16 @@ void TauHistManager::bookTauIsoConeSizeDepHistograms(DQMStore& dqmStore)
       = std::string("TauPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
     hTauPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hTauPFGammaIsoPtConeSizeDepName_i, 
 							   hTauPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
+  }
+}
+
+void TauHistManager::bookTauIdEfficiencyHistograms(DQMStore& dqmStore, std::vector<MonitorElement*>& histograms,
+						   const char* type, const vstring& labels)
+{
+  for ( vstring::const_iterator label = labels.begin();
+	label != labels.end(); ++label ) {
+    std::string histogramName = std::string("Tau").append(type).append(" (").append(*label).append(")");
+    histograms.push_back(dqmStore.book1D(histogramName, histogramName, 102, -0.01, 1.01));
   }
 }
 
@@ -542,6 +573,17 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau, dou
 	= patTau.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFGammaIsoDeposit_i, weight);
     }
+  }
+}
+
+void TauHistManager::fillTauIdEfficiencyHistograms(const pat::Tau& patTau, double weight,
+						   std::vector<MonitorElement*>& histograms, const vstring& labels)
+{
+  assert(histograms.size() == labels.size());
+
+  unsigned numHistograms = histograms.size();
+  for ( unsigned iHistogram = 0; iHistogram < numHistograms; ++iHistogram ) {
+    histograms[iHistogram]->Fill(patTau.efficiency(labels[iHistogram].data()).value(), weight);
   }
 }
 

@@ -29,6 +29,7 @@ class TauHistManager : public HistManagerBase
 //--- auxiliary functions
   void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   void bookTauIsoConeSizeDepHistograms(DQMStore&);
+  void bookTauIdEfficiencyHistograms(DQMStore&, std::vector<MonitorElement*>&, const char*, const std::vector<std::string>&);
 
   double getTauWeight(const pat::Tau&);
 
@@ -36,6 +37,7 @@ class TauHistManager : public HistManagerBase
   void fillTauDiscriminatorHistogram(MonitorElement*, const pat::Tau&, const char*, std::map<std::string, bool>&, double);
   void fillTauIsoHistograms(const pat::Tau&, double);
   void fillTauIsoConeSizeDepHistograms(const pat::Tau&, double);
+  void fillTauIdEfficiencyHistograms(const pat::Tau&, double, std::vector<MonitorElement*>&, const std::vector<std::string>&);
 
 //--- configuration parameters
   edm::InputTag tauSrc_;
@@ -57,6 +59,10 @@ class TauHistManager : public HistManagerBase
   float tauIsoConeSizeIncr_;
   unsigned numTauIsoPtThresholds_;
   double tauIsoPtThresholdIncr_;
+
+  typedef std::vector<std::string> vstring;
+  vstring makeTauIdEfficiencyHistograms_;
+  vstring makeTauFakeRateHistograms_;
 
 //--- "helper" class for accessing weight values
 //    associated to second tau decay products
@@ -87,6 +93,9 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauLeadTrkMatchDist_;
   MonitorElement* hTauLeadTrkIPxy_;
   MonitorElement* hTauLeadTrkIPz_;
+  MonitorElement* hTauLeadTrkNumHits_;
+  MonitorElement* hTauLeadTrkNumPixelHits_;
+  MonitorElement* hTauLeadTrkNumStripHits_;
 
   MonitorElement* hTauDiscriminatorByIsolation_;
   MonitorElement* hTauDiscriminatorByTrackIsolation_;
@@ -147,6 +156,12 @@ class TauHistManager : public HistManagerBase
   std::vector<MonitorElement*> hTauPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos tauParticleFlowIsoParam_;
+
+//--- parametrized values for tau id. efficiencies and fake-rates
+//    stored in the pat::Tau
+
+  std::vector<MonitorElement*> hTauIdEfficiencies_;
+  std::vector<MonitorElement*> hTauFakeRates_;
 
   int dqmError_;
 };
