@@ -33,6 +33,7 @@ FakeRateJetWeightProducer::tauJetDiscrEntry::tauJetDiscrEntry(const edm::Paramet
 //
 
 FakeRateJetWeightProducer::FakeRateJetWeightProducer(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   tauJetSource_ = cfg.getParameter<edm::InputTag>("tauJetSource");
   
@@ -42,12 +43,21 @@ FakeRateJetWeightProducer::FakeRateJetWeightProducer(const edm::ParameterSet& cf
 	cfgTauJetDiscriminator != cfgTauJetDiscriminators.end(); ++cfgTauJetDiscriminator ) {
     tauJetDiscriminators_.push_back(tauJetDiscrEntry(*cfgTauJetDiscriminator));
   }
+
+  if ( tauJetDiscriminators_.size() == 0 ) {
+    edm::LogError("FakeRateJetWeightProducer") << " No tau-jet Discriminators defined !!";
+    cfgError_ = 1;
+  }
    
   produces<edm::ValueMap<pat::LookupTableRecord> >();
 }
 
 void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
 { 
+  //std::cout << "<FakeRateJetWeightProducer::produce>:" << std::endl;
+
+  if ( cfgError_ ) return;
+
   edm::Handle<edm::View<reco::BaseTau> > tauJets;
   evt.getByLabel(tauJetSource_, tauJets);
 
@@ -67,10 +77,14 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
       edm::Handle<LookupTableMap> tauJetIdEffMap;
       evt.getByLabel(tauJetDiscr->tauJetIdEffSource_, tauJetIdEffMap);
+      //std::cout << " tau id. efficiency (" << tauJetDiscr->tauJetIdEffSource_ << ") = " 
+      //	  << (*tauJetIdEffMap)[tauJetRef].value() << std::endl;
       tauJetIdEff *= (*tauJetIdEffMap)[tauJetRef].value();
 
       edm::Handle<LookupTableMap> qcdJetFakeRateMap;
       evt.getByLabel(tauJetDiscr->qcdJetFakeRateSource_, qcdJetFakeRateMap);
+      //std::cout << " fake-rate (" << tauJetDiscr->qcdJetFakeRateSource_ << ") = " 
+      //	  << (*qcdJetFakeRateMap)[tauJetRef].value() << std::endl;
       qcdJetFakeRate *= (*qcdJetFakeRateMap)[tauJetRef].value();
 
       double tauJetDiscr_value;
@@ -103,12 +117,13 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
       if ( !(tauJetDiscr_value > tauJetDiscr->tauJetDiscrThreshold_) ) tauJetDiscr_passed = false;
     }
 
-    double fakeRateJetWeight;
-    if ( tauJetDiscr_passed ) {
-      fakeRateJetWeight = -qcdJetFakeRate*(1 - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate);
-    } else {
-      fakeRateJetWeight = qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
+    double fakeRateJetWeight = 0.;
+    if ( tauJetIdEff > qcdJetFakeRate ) {
+      fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
+	-qcdJetFakeRate*(1 - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
     }
+
+    //std::cout << " --> jet weight = " << fakeRateJetWeight << std::endl;
 
     fakeRateJetWeights.push_back(pat::LookupTableRecord(fakeRateJetWeight));
   }

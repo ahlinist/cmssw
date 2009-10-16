@@ -33,6 +33,7 @@ FakeRateEventWeightProducer::tauJetDiscrEntry::tauJetDiscrEntry(const edm::Param
 //
 
 FakeRateEventWeightProducer::FakeRateEventWeightProducer(const edm::ParameterSet& cfg)
+  : cfgError_(0)
 {
   tauJetSource_ = cfg.getParameter<edm::InputTag>("tauJetSource");
 
@@ -43,11 +44,20 @@ FakeRateEventWeightProducer::FakeRateEventWeightProducer(const edm::ParameterSet
     tauJetDiscriminators_.push_back(tauJetDiscrEntry(*cfgTauJetDiscriminator));
   }
 
+  if ( tauJetDiscriminators_.size() == 0 ) {
+    edm::LogError("FakeRateEventWeightProducer") << " No tau-jet Discriminators defined !!";
+    cfgError_ = 1;
+  }
+
   produces<double>();
 }
 
 void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup&) 
 { 
+  //std::cout << "<FakeRateEventWeightProducer::produce>:" << std::endl;
+
+  if ( cfgError_ ) return;
+
   edm::Handle<edm::View<reco::BaseTau> > tauJets;
   evt.getByLabel(tauJetSource_, tauJets);
 
@@ -69,10 +79,14 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
       
       edm::Handle<LookupTableMap> tauJetIdEffMap;
       evt.getByLabel(tauJetDiscr->tauJetIdEffSource_, tauJetIdEffMap);
+      //std::cout << " tau id. efficiency (" << tauJetDiscr->tauJetIdEffSource_ << ") = " 
+      //	  << (*tauJetIdEffMap)[tauJetRef].value() << std::endl;
       tauJetIdEff *= (*tauJetIdEffMap)[tauJetRef].value();
       
       edm::Handle<LookupTableMap> qcdJetFakeRateMap;
       evt.getByLabel(tauJetDiscr->qcdJetFakeRateSource_, qcdJetFakeRateMap);
+      //std::cout << " fake-rate (" << tauJetDiscr->qcdJetFakeRateSource_ << ") = " 
+      //	  << (*qcdJetFakeRateMap)[tauJetRef].value() << std::endl;
       qcdJetFakeRate *= (*qcdJetFakeRateMap)[tauJetRef].value();
       
       double tauJetDiscr_value;
@@ -115,11 +129,12 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
   double frTerm = qcdJetFakeRateSum;
 
   double fakeRateEventWeight = 0.;
-  if ( numTauJetDiscrPassed > 0 ) {
-    fakeRateEventWeight = -frTerm*(1 - effTerm)/(effTerm - frTerm);
-  } else {
-    fakeRateEventWeight = frTerm*effTerm/(effTerm - frTerm);
+  if ( effTerm > frTerm ) {
+    fakeRateEventWeight = ( numTauJetDiscrPassed > 0 ) ?
+      -frTerm*(1 - effTerm)/(effTerm - frTerm) : frTerm*effTerm/(effTerm - frTerm);
   }
+
+  //std::cout << " --> event weight = " << fakeRateEventWeight << std::endl;
 
   std::auto_ptr<double> fakeRateEventWeightPtr(new double(fakeRateEventWeight));
   

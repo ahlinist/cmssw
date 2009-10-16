@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: FakeRateEventWeightProducer.h,v 1.1 2009/08/17 16:06:34 veelken Exp $
+ * $Id: FakeRateEventWeightProducer.h,v 1.2 2009/09/27 17:19:50 veelken Exp $
  *
  */
 
@@ -50,6 +50,8 @@ class FakeRateEventWeightProducer : public edm::EDProducer
   };
 
   std::vector<tauJetDiscrEntry> tauJetDiscriminators_;
+
+  int cfgError_;
 };
 
 #endif  
