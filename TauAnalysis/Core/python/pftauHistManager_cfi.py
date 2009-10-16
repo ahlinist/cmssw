@@ -20,5 +20,15 @@ tauHistManager = cms.PSet(
     normalization = cms.string("events"),
 
     makeIsoPtCtrlHistograms = cms.bool(False),
-    makeIsoPtConeSizeDepHistograms = cms.bool(False)
+    makeIsoPtConeSizeDepHistograms = cms.bool(False),
+
+    makeTauIdEfficiencyHistograms = cms.vstring(
+        "effByIsolationZtautausim",
+        "effByECALIsolationZtautausim"
+    ),
+
+    makeTauFakeRateHistograms = cms.vstring(
+        "frByIsolationMuEnrichedQCDsim",
+        "frByECALIsolationMuEnrichedQCDsim"
+    )
 )
