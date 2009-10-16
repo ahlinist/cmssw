@@ -15,8 +15,10 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'IDEAL_V12::All'
 
 #--------------------------------------------------------------------------------
-# import sequence for production of PAT-tuple specific to data-driven background estimation methods
-process.load("TauAnalysis.BgEstimationTools.producePatTupleForBgEst_cff")
+# import sequences for PAT-tuple production
+process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.Configuration.producePatTupleZtoElecTauSpecific_cff")
+process.load("TauAnalysis.BgEstimationTools.producePatTupleZtoElecTauSpecificForBgEst_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoElecTau_cff")
@@ -41,7 +43,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_Ztautau_1.root'    
+        #'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/Ztautau/skimElecTau_Ztautau_1.root'
+        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/BgEstimationTools/test/bgEstSample.root'
     ),
     skipEvents = cms.untracked.uint32(0)            
 )
@@ -61,7 +64,7 @@ kineVarExtractor_config = cms.PSet(
 process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
     treeName = cms.string("bgEstEvents"),
     branches = cms.PSet(
-        # variables specific to selection of Z --> mu+ mu- background enriched sample
+        # variables specific to selection of Z --> e+ e- background enriched sample
         electronPtZee = cms.PSet(
             pluginType = cms.string("PATElecTauPairValExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstZeeEnriched'),
@@ -378,7 +381,7 @@ process.TFileService = cms.Service("TFileService",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.genPhaseSpaceFilter.selector = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.TFileService.fileName = #bgEstNtupleOutputFileName#
-#__process.ntupleProducer.branches.eventWeight.value = cms.double(#corrFactor#*intLumiData/#intLumi#)
+#__process.ntupleProducer.branches.eventWeight.value = cms.double(#corrFactor#*intLumiZtoElecTau_Data/#intLumi#)
 #
 #--------------------------------------------------------------------------------
 
@@ -399,13 +402,15 @@ switchToPFTauShrinkingCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.producePatTupleForBgEst
-#   * process.printEventContent   # uncomment to enable dump of event content after PAT-tuple production
-   * process.selectZtoElecTauEvents
-   * process.genPhaseSpaceFilter
-   * process.produceBoolEventSelFlags
-   * process.selectEventsByBoolEventSelFlags
-   * process.ntupleProducer
+    process.producePatTuple
+   + process.producePatTupleZtoElecTauSpecific
+   + process.producePatTupleZtoElecTauSpecificForBgEst
+#   + process.printEventContent   # uncomment to enable dump of event content after PAT-tuple production
+   + process.selectZtoElecTauEvents
+   + process.genPhaseSpaceFilter
+   + process.produceBoolEventSelFlags
+   + process.selectEventsByBoolEventSelFlags
+   + process.ntupleProducer
 )
 
 # print-out all python configuration parameter information

@@ -20,8 +20,13 @@ process.GlobalTag.globaltag = 'IDEAL_V12::All'
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 #--------------------------------------------------------------------------------
-# import sequence for PAT-tuple production
+# import sequences for PAT-tuple production
 process.load("TauAnalysis.Configuration.producePatTuple_cff")
+process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
+
+# import sequence for production of event weights
+# specific to application of fake-rate technique for background estimation
+process.load("TauAnalysis.BgEstimationTools.produceFakeRateWeights_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -33,9 +38,6 @@ process.load("TauAnalysis.Configuration.analyzeZtoMuTau_cff")
 # import configuration parameters for submission of jobs to CERN batch system
 # (running over skimmed samples stored on CASTOR)
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
-
-# import event-content definition of products to be stored in patTuple
-from TauAnalysis.Configuration.patTupleEventContent_cff import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -70,27 +72,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#
-# Z --> tau tau (all decay modes; simulated with TAUOLA)
-# 10k events RelVal sample
-#
-#        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/A4A3988A-BCCB-DD11-A103-001617E30E28.root',
-#        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/D412FFFC-BCCB-DD11-8B20-000423D952C0.root',
-#        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0003/F01E4F34-BDCB-DD11-B87D-001617C3B77C.root',
-#        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/1CAA08F8-D3CB-DD11-ADF9-000423D6B358.root',
-#        '/store/relval/CMSSW_2_2_3/RelValZTT/GEN-SIM-RECO/STARTUP_V7_v4/0004/2800478C-08CC-DD11-94BB-0019B9F72BAA.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
         'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
-#        'rfio:/castor/cern.ch/user/s/sdas/WTauNu/FastSim/QCDPt_15/QCD_PtTrack15_FASTSIM_1000.root'
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part01.root',
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part02.root',
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part03.root',
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part04.root',
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part05.root',
-#        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_WplusJets_part06.root'
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part01.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part02.root',
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/selEvents_ZtoMuTau_ZmumuPlusJets_part03.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -103,7 +85,6 @@ process.source = cms.Source("PoolSource",
 #__process.maxEvents.input = cms.untracked.int32(#maxEvents#)
 #__process.analyzeZtoMuTauEvents.filters[0] = copy.deepcopy(#genPhaseSpaceCut#)
 #__process.saveZtoMuTauPlots.outputFileName = #plotsOutputFileName#
-#__process.saveZtoMuTauPatTuple.outputFileName = #patTupleOutputFileName#
 #
 #--------------------------------------------------------------------------------
 
@@ -123,13 +104,18 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatTuple
-#                    +process.printGenParticleList # uncomment to enable print-out of generator level particles
-#                    +process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
-                     +process.selectZtoMuTauEvents
-#                    +process.saveZtoMuTauPatTuple # uncomment to write-out produced PAT-tuple
-                     +process.analyzeZtoMuTauEvents
-                     +process.saveZtoMuTauPlots )
+process.produceFakeRates = cms.Sequence( process.shrinkingConeEfficienciesProducerFromFile * process.produceFakeRateWeights )
+process.producePrePat.replace(process.shrinkingConeEfficienciesProducerFromFile, process.produceFakeRates)
+
+process.p = cms.Path(
+    process.producePatTuple
+  + process.producePatTupleZtoMuTauSpecific
+# + process.printGenParticleList # uncomment to enable print-out of generator level particles
+# + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
+  + process.selectZtoMuTauEvents 
+  + process.analyzeZtoMuTauEvents
+  + process.saveZtoMuTauPlots 
+)
 
 #--------------------------------------------------------------------------------
 # import utility function for factorization
