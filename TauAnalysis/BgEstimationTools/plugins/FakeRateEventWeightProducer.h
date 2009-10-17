@@ -9,9 +9,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: FakeRateEventWeightProducer.h,v 1.2 2009/09/27 17:19:50 veelken Exp $
+ * $Id: FakeRateEventWeightProducer.h,v 1.3 2009/10/16 12:45:59 veelken Exp $
  *
  */
 
@@ -21,15 +21,14 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include <string>
-#include <vector>
+#include "TauAnalysis/BgEstimationTools/interface/FakeRateWeightProducerBase.h"
 
-class FakeRateEventWeightProducer : public edm::EDProducer
+class FakeRateEventWeightProducer : public FakeRateWeightProducerBase
 {
  public:
   
   explicit FakeRateEventWeightProducer(const edm::ParameterSet&);
-  ~FakeRateEventWeightProducer() {}
+  ~FakeRateEventWeightProducer();
   
  private:
 
@@ -37,21 +36,6 @@ class FakeRateEventWeightProducer : public edm::EDProducer
   void produce(edm::Event&, const edm::EventSetup&);
   void endJob() {}
 
-//--- configuration parameters
-  edm::InputTag tauJetSource_;
-
-  struct tauJetDiscrEntry
-  {
-    tauJetDiscrEntry(const edm::ParameterSet&);
-    edm::InputTag tauJetIdEffSource_;
-    edm::InputTag qcdJetFakeRateSource_;
-    edm::InputTag tauJetDiscrSource_;
-    double tauJetDiscrThreshold_;
-  };
-
-  std::vector<tauJetDiscrEntry> tauJetDiscriminators_;
-
-  int cfgError_;
 };
 
 #endif  
