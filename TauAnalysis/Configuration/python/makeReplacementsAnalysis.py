@@ -101,19 +101,18 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     if inputFileType is None:
         raise ValueError("Undefined inputFileType option !!")
     if inputFileType == "RECO/AOD":
-         inputFileNames = "fileNames" + channel + "_" + sample
-         #patTupleProduction = "if hasattr(process, 'producePatTupleAll'):\n"
-         #patTupleProduction += "    process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
-         patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+        inputFileNames = "fileNames" + channel + "_" + sample
+        #patTupleProduction = "if hasattr(process, 'producePatTupleAll'):\n"
+        #patTupleProduction += "    process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+        patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
-         inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample
-	 if sample.find("_part") != -1:
-	     inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
-	     inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-	 patTupleProduction = ""
+        inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
+        if sample.find("_part") != -1:
+	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
+	    inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+        patTupleProduction = ""
     else:
-	 raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
-    inputFileNames += ".value())"
+        raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
     replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
     replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
 
@@ -122,7 +121,7 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     #  into multiple cmsRun job parts, in order to avoid having to specify
     #   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
     #  again and again for each part)
-    genPhaseSpaceCut = "genPhaseSpaceCut" + sample
+    genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
     plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
