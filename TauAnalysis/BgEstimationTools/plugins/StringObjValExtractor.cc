@@ -54,6 +54,13 @@ typedef StringObjValExtractor<PATElecTauPair> PATElecTauPairValExtractor;
 typedef StringObjValExtractor<PATMuTauPair> PATMuTauPairValExtractor;
 typedef StringObjValExtractor<PATDiTauPair> PATDiTauPairValExtractor;
 
+#include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
+
+typedef StringObjValExtractor<ZllHypothesisElecTau> ZllHypothesisElecTauValExtractor;
+typedef StringObjValExtractor<ZllHypothesisMuTau> ZllHypothesisMuTauValExtractor;
+typedef StringObjValExtractor<ZllHypothesisDiTau> ZllHypothesisDiTauValExtractor;
+typedef StringObjValExtractor<ZllHypothesisElecMu> ZllHypothesisElecMuValExtractor;
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, CandidateValExtractor, "CandidateValExtractor");
@@ -68,3 +75,8 @@ DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElecMuPairValExtractor, "PATE
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATElecTauPairValExtractor, "PATElecTauPairValExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATMuTauPairValExtractor, "PATMuTauPairValExtractor");
 DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, PATDiTauPairValExtractor, "PATDiTauPairValExtractor");
+
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisElecTauValExtractor, "ZllHypothesisElecTauValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisMuTauValExtractor, "ZllHypothesisMuTauValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisDiTauValExtractor, "ZllHypothesisDiTauValExtractor");
+DEFINE_EDM_PLUGIN(ObjValExtractorPluginFactory, ZllHypothesisElecMuValExtractor, "ZllHypothesisElecMuValExtractor");
