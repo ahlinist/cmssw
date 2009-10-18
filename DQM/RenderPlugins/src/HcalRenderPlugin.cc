@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.22 $
-  \date $Date: 2009/08/26 18:28:20 $
+  \version $Revision: 1.23 $
+  \date $Date: 2009/10/17 00:03:34 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -320,13 +320,17 @@ private:
 	gStyle->SetPaintTextFormat("5.4g"); // set to %5.4f  text format in cells
 	obj->SetMarkerSize(3); // set font size to 3x normal
         obj->SetOption("text90colz"); // draw marker at 90 degrees
-	
+	// Set min, max values to -1, 1
+	obj->SetMinimum(-1.);
+	obj->SetMaximum(1.);
       }
     else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
       {
         gStyle->SetNumberContours(40);
         gStyle->SetPalette(40,summaryColors);
         obj->SetOption("colz");
+	obj->SetMinimum(-1.);
+	obj->SetMaximum(1.);
       }
 
     // Overall pedestal plots should always be colored yellow-red (no green allowed; ZS doesn't let us normalize to Nevents properly (yet) )
