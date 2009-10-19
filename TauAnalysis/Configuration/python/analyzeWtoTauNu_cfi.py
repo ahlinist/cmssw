@@ -10,12 +10,13 @@ from TauAnalysis.Core.vertexHistManager_cfi import *
 from TauAnalysis.Core.pftauRecoilEnergyHistManager_cfi import *
 from TauAnalysis.Core.metTopologyHistManager_cfi import*
 from TauAnalysis.Core.tauNuCandidateHistManager_cfi import*
-
-#to make plots for pfmet
-#metHistManager.metSource = cms.InputTag("layer1PFMETs") 
+from TauAnalysis.Core.electronHistManager_cfi import *
+from TauAnalysis.Core.muonHistManager_cfi import *
 
 wTauNuHistManagers = cms.vstring(
     'tauHistManager',
+    'muonHistManager',
+    'electronHistManager',
     'metHistManager',
     'jetHistManager',
     'vertexHistManager',
@@ -24,6 +25,7 @@ wTauNuHistManagers = cms.vstring(
     'metTopologyHistManager',
     'tauNuCandidateHistManager'
 )
+
 
 #--------------------------------------------------------------------------------
 # define event selection criteria
@@ -63,8 +65,6 @@ evtSelTauPt = cms.PSet(
 evtSelMetPt = cms.PSet(
     pluginName = cms.string('evtSelMetPt'),
     pluginType = cms.string('BoolEventSelector'),
-    #src_cumulative = cms.InputTag('metPtCut', 'cumulative'),
-    #src_individual = cms.InputTag('metPtCut', 'individual')
     src = cms.InputTag('metPtCut')
     )
 
@@ -103,6 +103,13 @@ evtSelTauElectronVeto = cms.PSet(
     src_individual = cms.InputTag('tauElectronVeto', 'individual')
     )
 
+evtSelExplicitElectronVeto = cms.PSet(
+    pluginName = cms.string('evtSelExplicitElectronVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('explicitElectronVeto')
+    )
+
+
 evtSelTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('evtSelTauEcalCrackVeto'),
     pluginType = cms.string('BoolEventSelector'),
@@ -137,13 +144,6 @@ evtSelRecoilEnergyFromCaloTowers = cms.PSet(
     src = cms.InputTag('recoilEnergyFromCaloTowersCut')
 )
 
-#evtSelRecoilEnergyFromJets = cms.PSet(
-#    pluginName = cms.string('evtSelRecoilEnergyFromJets'),
-#    pluginType = cms.string('BoolEventSelector'),
-#    src = cms.InputTag('recoilEnergyFromJetsCut')
-#)
-
-
 
 #--------------------------------------------------------------------------------
 # define event print-out
@@ -164,11 +164,12 @@ wTauNuEventDump = cms.PSet(
     pfGammaSource = cms.InputTag('pfAllPhotons'),
     pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),    
     output = cms.string("muTauEventDump.txt"),
-    #output = cms.string("std::cout"),    
     triggerConditions = cms.vstring("evtSelTauTaNC: passed_cumulative")
-    #triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauMt1MET: passed_cumulative")
 )
-wTauNuEventDump.metSource = cms.InputTag('layer1PFMETs')
+
+#replace met with pfmet for met-plots and event dump
+#metHistManager.metSource = cms.InputTag("layer1PFMETs")
+#wTauNuEventDump.metSource = cms.InputTag('layer1PFMETs')
 
 #--------------------------------------------------------------------------------
 # define analysis sequence
@@ -219,7 +220,7 @@ wTauNuAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         filter = cms.string('evtSelTauPt'),
-        title = cms.string('Pt(Tau) > 20 GeV'),
+        title = cms.string('Pt(Tau) > 15 GeV'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
@@ -228,7 +229,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 	), 
     cms.PSet(
         filter = cms.string('evtSelMetPt'),
-        title = cms.string('MET > 25 GeV'),
+        title = cms.string('MET > 15 GeV'),
         saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -247,7 +248,7 @@ wTauNuAnalysisSequence = cms.VPSet(
 
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
-        title = cms.string('leadtrk pt > 20 GeV'),
+        title = cms.string('leadtrk pt > 15 GeV'),
         saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -264,6 +265,24 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuTrkIsoCumulative')
+	),
+    cms.PSet(
+        filter = cms.string('evtSelTauProng'),
+        title = cms.string('Tau 1||3-Prong'),
+        saveRunEventNumbers = cms.vstring('')
+	),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuProngCumulative')
+	),
+    cms.PSet(
+        filter = cms.string('evtSelTauCharge'),
+        title = cms.string('Charge(Tau) = +/-1'),
+        saveRunEventNumbers = cms.vstring('')
+	),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuChargeCumulative')
 	),
     cms.PSet(
         filter = cms.string('evtSelTauMuonVeto'),
@@ -283,56 +302,51 @@ wTauNuAnalysisSequence = cms.VPSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuElectronVetoCumulative')	
 	),
+   
     cms.PSet(
         filter = cms.string('evtSelTauEcalCrackVeto'),
         title = cms.string('Ecal Crack veto'),
-        saveRunEventNumbers = cms.vstring('')
-    ),
-    cms.PSet(
-        analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalCrackVetoCumulative')	
-	),
-    cms.PSet(
-        filter = cms.string('evtSelTauProng'),
-        title = cms.string('Tau 1||3-Prong'),
-        saveRunEventNumbers = cms.vstring('')
-	),
-    cms.PSet(
-        analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuProngCumulative')
-	),
-    cms.PSet(
-        filter = cms.string('evtSelTauCharge'),
-        title = cms.string('Charge(Tau) = +/-1'),
         saveRunEventNumbers = cms.vstring('passed_cumulative')
-	),
+        ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuChargeCumulative')
-	),
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalCrackVetoCumulative',
+                              'tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
+                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
+        ),
     cms.PSet(
-	filter = cms.string('evtSelCentralJetVeto'),
+        filter = cms.string('evtSelCentralJetVeto'),
 	title = cms.string('central jet veto'),
 	saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
-	analyzers = wTauNuHistManagers,	
-	),
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
+                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
+        ),
+    cms.PSet(
+        filter = cms.string('evtSelExplicitElectronVeto'),
+        title = cms.string('Explicit Electron veto'),
+        saveRunEventNumbers = cms.vstring('')
+        ),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
+                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
+        ),
     cms.PSet(
 	filter = cms.string('evtSelRecoilEnergyFromCaloTowers'),
 	title = cms.string('recoil energy (calotowers) < 5'),
 	saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
-	analyzers = wTauNuHistManagers,
-	)
-  #  cms.PSet(
-  #  filter = cms.string('evtSelRecoilEnergyFromJets'),
-#	title = cms.string('recoil energy (jets) < 1'),
-#	saveRunEventNumbers = cms.vstring('')
-#	),
- #   cms.PSet(
-#	analyzers = wTauNuHistManagers,
-#	)
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
+                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
+                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
+        )
     )
 
