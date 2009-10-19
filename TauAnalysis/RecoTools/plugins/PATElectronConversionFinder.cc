@@ -4,7 +4,7 @@
 //
 // Updated summer 09 by Jeff Kolb
 //
-// $Id: PATElectronConversionFinder.cc,v 1.1 2009/03/26 10:20:52 kap01 Exp $
+// $Id: PATElectronConversionFinder.cc,v 1.2 2009/10/01 14:00:46 jkolb Exp $
 //
 //
 
@@ -65,7 +65,7 @@ void PATElectronConversionFinderImp::select(const edm::Handle<collection>& elecs
 					0.);
 			elecP.SetPtEtaPhiM((*elec).pt(),(*elec).eta(),
 					(*elec).phi(),0.);
-			double mTrackElec = (trackP + elecP).M();// Could also cut on Invariant Mass but its equivalent to DCotTheta
+			//double mTrackElec = (trackP + elecP).M();// KP/JK: Could also cut on Invariant Mass but its equivalent to DCotTheta
 			          
 			// check if track satisfies conversion criteria
 			if( fabs(cotTheta) < cotTheta_ && dR < dRin_ ) nTracksPass++;
