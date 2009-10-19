@@ -76,7 +76,7 @@ bgEstEventSelection_WplusJets = (
 #    
     " && tauTrackIsoDiscrWplusJets_0 > 0.5 && tauEcalIsoDiscrWplusJets_0 > 0.5 && tauDiscrAgainstElectronsWplusJets_0 > 0.5"
     " && diTauMt1MEtWplusJets_0 > 30."
-    " && numLooseIdElectrons < 2"
+    " && numLooseIdElectrons < 2 && !(diTauZeeMassHypothesisWplusJets_0 > 85. && diTauZeeMassHypothesisWplusJets_0 < 100.)"
     " && numJetsAlpha0point1WplusJets < 1"
 )
 
@@ -86,10 +86,11 @@ bgEstEventSelection_TTplusJets = (
     "numDiTausTTplusJets >= 1 && electronTrackIsoTTplusJets_0 < 2. && electronEcalIsoTTplusJets_0 < 2."
     " && tauDiscrAgainstElectronsTTplusJets_0 > 0.5"
     " && diTauAbsChargeTTplusJets_0 < 0.5"
-    " && numLooseIdElectrons < 2"
-    " && ((numJetsEt40TTplusJets >= 1 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_0 > 4.5)"
-    " || (numJetsEt40TTplusJets >= 2 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_1 > 4.5)"
-    " || (numJetsEt40TTplusJets >= 3 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_2 > 4.5))"
+#   " && numLooseIdElectrons < 2"
+    " && numTightIdElectrons < 2"    
+    " && ((numJetsEt40TTplusJets >= 1 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_0 > 2.5)"
+    " || (numJetsEt40TTplusJets >= 2 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_1 > 2.5)"
+    " || (numJetsEt40TTplusJets >= 3 && jetEt40bTaggingDiscrTrackCountingHighEffTTplusJets_2 > 2.5))"
     " && numJetsEt40TTplusJets >= 2 && numJetsEt60TTplusJets >= 1"
 )
 
@@ -175,13 +176,13 @@ branchName_diTauMvis12_QCD = "diTauMvis12QCD_0"
 prodTemplateHistConfiguratorZeeEnriched = prodTemplateHistConfigurator(
     "prodTemplateHistBgEstZeeEnriched", prodTemplateHist, dqmDirectory = processName
 )
-prodTemplateHistConfiguratorZeeEnriched.addProcess("Ztautau", filesNamesZtoElecTau_Ztautau)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("Zee", filesNamesZtoElecTau_ZeePlusJets)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("WplusJets", filesNamesZtoElecTau_WplusJets)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("TTplusJets", filesNamesZtoElecTau_TTplusJets)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("gammaPlusJets", filesNamesZtoElecTau_gammaPlusJetsSum)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("QCD", filesNamesZtoElecTau_qcdSum)
-prodTemplateHistConfiguratorZeeEnriched.addProcess("data", filesNamesZtoElecTau_pseudoData)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("WplusJets", fileNamesZtoElecTau_WplusJets)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("TTplusJets", fileNamesZtoElecTau_TTplusJets)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("gammaPlusJets", fileNamesZtoElecTau_gammaPlusJetsSum)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("QCD", fileNamesZtoElecTau_qcdSum)
+prodTemplateHistConfiguratorZeeEnriched.addProcess("data", fileNamesZtoElecTau_pseudoData)
 prodTemplateHistConfiguratorZeeEnriched.addSelection("Zee", bgEstEventSelection_Zee)
 prodTemplateHistConfiguratorZeeEnriched.addTemplate(meName_diTauMvis12_norm, branchName_diTauMvis12_Zee, 40, 0., 200.)
 
@@ -190,13 +191,13 @@ process.prodTemplateHistBgEstZeeEnriched = prodTemplateHistConfiguratorZeeEnrich
 prodTemplateHistConfiguratorWplusJetsEnriched = prodTemplateHistConfigurator(
     "prodTemplateHistBgEstWplusJetsEnriched", prodTemplateHist, dqmDirectory = processName
 )
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("Ztautau", filesNamesZtoElecTau_Ztautau)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("Zee", filesNamesZtoElecTau_ZeePlusJets)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("WplusJets", filesNamesZtoElecTau_WplusJets)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("TTplusJets", filesNamesZtoElecTau_TTplusJets)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("QCD", filesNamesZtoElecTau_qcdSum)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("gammaPlusJets", filesNamesZtoElecTau_gammaPlusJetsSum)
-prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("data", filesNamesZtoElecTau_pseudoData)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("WplusJets", fileNamesZtoElecTau_WplusJets)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("TTplusJets", fileNamesZtoElecTau_TTplusJets)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("QCD", fileNamesZtoElecTau_qcdSum)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("gammaPlusJets", fileNamesZtoElecTau_gammaPlusJetsSum)
+prodTemplateHistConfiguratorWplusJetsEnriched.addProcess("data", fileNamesZtoElecTau_pseudoData)
 prodTemplateHistConfiguratorWplusJetsEnriched.addSelection("WplusJets", bgEstEventSelection_WplusJets,
                                                            kineEventReweight = "kineEventReweightWplusJets")
 prodTemplateHistConfiguratorWplusJetsEnriched.addTemplate(meName_diTauMvis12_norm, branchName_diTauMvis12_WplusJets, 40, 0., 200.)
@@ -206,13 +207,13 @@ process.prodTemplateHistBgEstWplusJetsEnriched = prodTemplateHistConfiguratorWpl
 prodTemplateHistConfiguratorTTplusJetsEnriched = prodTemplateHistConfigurator(
     "prodTemplateHistBgEstTTplusJetsEnriched", prodTemplateHist, dqmDirectory = processName
 )
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("Ztautau", filesNamesZtoElecTau_Ztautau)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("Zee", filesNamesZtoElecTau_ZeePlusJets)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("WplusJets", filesNamesZtoElecTau_WplusJets)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("TTplusJets", filesNamesZtoElecTau_TTplusJets)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("gammaPlusJets", filesNamesZtoElecTau_gammaPlusJetsSum)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("QCD", filesNamesZtoElecTau_qcdSum)
-prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("data", filesNamesZtoElecTau_pseudoData)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("WplusJets", fileNamesZtoElecTau_WplusJets)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("TTplusJets", fileNamesZtoElecTau_TTplusJets)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("gammaPlusJets", fileNamesZtoElecTau_gammaPlusJetsSum)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("QCD", fileNamesZtoElecTau_qcdSum)
+prodTemplateHistConfiguratorTTplusJetsEnriched.addProcess("data", fileNamesZtoElecTau_pseudoData)
 prodTemplateHistConfiguratorTTplusJetsEnriched.addSelection("TTplusJets", bgEstEventSelection_TTplusJets)
 prodTemplateHistConfiguratorTTplusJetsEnriched.addTemplate(meName_diTauMvis12_norm, branchName_diTauMvis12_TTplusJets, 40, 0., 200.)
 
@@ -221,13 +222,13 @@ process.prodTemplateHistBgEstTTplusJetsEnriched = prodTemplateHistConfiguratorTT
 prodTemplateHistConfiguratorGammaPlusJetsEnriched = prodTemplateHistConfigurator(
     "prodTemplateHistBgEstGammaPlusJetsEnriched", prodTemplateHist, dqmDirectory = processName
 )
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("Ztautau", filesNamesZtoElecTau_Ztautau)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("Zee", filesNamesZtoElecTau_ZeePlusJets)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("WplusJets", filesNamesZtoElecTau_WplusJets)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("TTplusJets", filesNamesZtoElecTau_TTplusJets)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("gammaPlusJets", filesNamesZtoElecTau_gammaPlusJetsSum)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("QCD", filesNamesZtoElecTau_qcdSum)
-prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("data", filesNamesZtoElecTau_pseudoData)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("WplusJets", fileNamesZtoElecTau_WplusJets)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("TTplusJets", fileNamesZtoElecTau_TTplusJets)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("gammaPlusJets", fileNamesZtoElecTau_gammaPlusJetsSum)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("QCD", fileNamesZtoElecTau_qcdSum)
+prodTemplateHistConfiguratorGammaPlusJetsEnriched.addProcess("data", fileNamesZtoElecTau_pseudoData)
 prodTemplateHistConfiguratorGammaPlusJetsEnriched.addSelection("gammaPlusJets", bgEstEventSelection_gammaPlusJets)
 prodTemplateHistConfiguratorGammaPlusJetsEnriched.addTemplate(meName_diTauMvis12_norm, branchName_diTauMvis12_gammaPlusJets, 40, 0., 200.)
 
@@ -236,13 +237,13 @@ process.prodTemplateHistBgEstGammaPlusJetsEnriched = prodTemplateHistConfigurato
 prodTemplateHistConfiguratorQCDenriched = prodTemplateHistConfigurator(
     "prodTemplateHistBgEstWplusJetsEnriched", prodTemplateHist, dqmDirectory = processName
 )
-prodTemplateHistConfiguratorQCDenriched.addProcess("Ztautau", filesNamesZtoElecTau_Ztautau)
-prodTemplateHistConfiguratorQCDenriched.addProcess("Zee", filesNamesZtoElecTau_ZeePlusJets)
-prodTemplateHistConfiguratorQCDenriched.addProcess("WplusJets", filesNamesZtoElecTau_WplusJets)
-prodTemplateHistConfiguratorQCDenriched.addProcess("TTplusJets", filesNamesZtoElecTau_TTplusJets)
-prodTemplateHistConfiguratorQCDenriched.addProcess("gammaPlusJets", filesNamesZtoElecTau_gammaPlusJetsSum)
-prodTemplateHistConfiguratorQCDenriched.addProcess("QCD", filesNamesZtoElecTau_qcdSum)
-prodTemplateHistConfiguratorQCDenriched.addProcess("data", filesNamesZtoElecTau_pseudoData)
+prodTemplateHistConfiguratorQCDenriched.addProcess("Ztautau", fileNamesZtoElecTau_Ztautau)
+prodTemplateHistConfiguratorQCDenriched.addProcess("Zee", fileNamesZtoElecTau_ZeePlusJets)
+prodTemplateHistConfiguratorQCDenriched.addProcess("WplusJets", fileNamesZtoElecTau_WplusJets)
+prodTemplateHistConfiguratorQCDenriched.addProcess("TTplusJets", fileNamesZtoElecTau_TTplusJets)
+prodTemplateHistConfiguratorQCDenriched.addProcess("gammaPlusJets", fileNamesZtoElecTau_gammaPlusJetsSum)
+prodTemplateHistConfiguratorQCDenriched.addProcess("QCD", fileNamesZtoElecTau_qcdSum)
+prodTemplateHistConfiguratorQCDenriched.addProcess("data", fileNamesZtoElecTau_pseudoData)
 prodTemplateHistConfiguratorQCDenriched.addSelection("QCD", bgEstEventSelection_QCD)
 prodTemplateHistConfiguratorQCDenriched.addTemplate(meName_diTauMvis12_norm, branchName_diTauMvis12_QCD, 40, 0., 200.)
 
@@ -811,8 +812,8 @@ process.loadAllHistZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
 )
 
 process.p = cms.Path(
-   #process.prodAllHistZtoElecTau
-    process.loadAllHistZtoElecTau
+    process.prodAllHistZtoElecTau
+   #process.loadAllHistZtoElecTau
    + process.plotTemplateHistZtoElecTau
    + process.fitZtoElecTau
 )
