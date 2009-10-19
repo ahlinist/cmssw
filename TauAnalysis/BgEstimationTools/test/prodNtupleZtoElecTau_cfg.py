@@ -171,6 +171,12 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("pZeta - 1.5*pZetaVis"),
             indices = cms.vuint32(0,1)
         ),
+        diTauZeeMassHypothesisWplusJets = cms.PSet(
+            pluginType = cms.string("ZllHypothesisElecTauValExtractor"),
+            src = cms.InputTag('elecTauPairZeeHypothesesForBgEstWplusJetsEnriched'),
+            value = cms.string("p4ZbestMatch.mass"),
+            indices = cms.vuint32(0,1)
+        ),        
         numDiTausWplusJets = cms.PSet(
             pluginType = cms.string("NumCandidateExtractor"),
             src = cms.InputTag('elecTauPairsForBgEstWplusJetsEnriched')
