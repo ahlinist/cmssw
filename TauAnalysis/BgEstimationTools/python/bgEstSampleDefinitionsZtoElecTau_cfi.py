@@ -830,9 +830,9 @@ bgEstSampleFileNamesZtoElecTau_TTplusJets_part01  = cms.untracked.vstring(
 bgEstSampleFileNamesZtoElecTau_TTplusJets_part02  = cms.untracked.vstring(
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part06.root',
     bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part07.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part08.root',
+    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part08.root'
     #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part09.root',
-    bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part10.root'
+    #bgEstSampleDirectoryName.value() + 'bgEstSampleZtoElecTau_TTplusJets_part10.root'
 )
 
 bgEstSampleFileNamesZtoElecTau_TTplusJets_part03  = cms.untracked.vstring(

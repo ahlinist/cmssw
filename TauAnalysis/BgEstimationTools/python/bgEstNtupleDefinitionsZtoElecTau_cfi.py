@@ -4,7 +4,7 @@ import copy
 # define Ntuple files used for data-driven background estimation methods
 # in Z --> e + tau-jet channel
 
-bgEstNtupleDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstNtuples/ZtoElecTau_looseElectronSel/")
+bgEstNtupleDirectoryName = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstNtuples/ZtoElecTau_looseElectronSelII/")
 
 # Z --> tau+ tau- sample
 fileNamesZtoElecTau_Ztautau = cms.vstring(
@@ -112,7 +112,7 @@ fileNamesZtoElecTau_qcdSum = cms.vstring(
 # ttbar + jets sample
 fileNamesZtoElecTau_TTplusJets = cms.vstring(
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part01.root',
-    bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part02.root',
+    #bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part02.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part03.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part04.root',
     bgEstNtupleDirectoryName.value() + 'bgEstNtupleZtoElecTau_TTplusJets_part05.root',
