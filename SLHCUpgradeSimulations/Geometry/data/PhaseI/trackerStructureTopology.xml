@@ -51,13 +51,13 @@ July 2009
     </SpecPar>
 
     <SpecPar name="PixelEndcapDiskPar">
-      <PartSelector path="//PixelForwardDiskZMinus" />
       <PartSelector path="//PixelForwardDiskZPlus" />
+      <PartSelector path="//PixelForwardDiskZMinus" />
       <Parameter name="TkDDDStructure" value="PixelEndcapDisk"/>
     </SpecPar>
 
      <SpecPar name="PixelEndcapPanelPar">
-      <PartSelector path="//PixelForwardBlade" />
+      <PartSelector path="//PixelForwardWafer" />
        <Parameter name="TkDDDStructure" value="PixelEndcapPanel"/>
     </SpecPar>
 
