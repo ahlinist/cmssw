@@ -31,9 +31,6 @@ process.load("TauAnalysis.Configuration.analyzeZtoElecTau_cff")
 # (running over skimmed samples stored on CASTOR)
 # using skim samples with loose E/p selection and track extra collections
 from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecTau_cfi import *
-
-# import event-content definition of products to be stored in patTuple
-from TauAnalysis.Configuration.patTupleEventContent_cff import *
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -138,7 +135,7 @@ process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.pro
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTupleAll)
+process.p.replace(process.producePatTupleZtoElecTauSpecific, process.producePatTuple + process.producePatTupleZtoElecTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
