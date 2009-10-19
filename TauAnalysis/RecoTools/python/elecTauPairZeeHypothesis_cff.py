@@ -4,10 +4,8 @@ import copy
 #from SimGeneral.HepPDTESSource.pdt_cfi import *
 
 #--------------------------------------------------------------------------------
-# produce data-formats providing information 
-# about compatibility of an elecron + tau-jet pair
-# with the hypothesis of being a pair of electrons,
-# resulting from a Z --> e+ e- decay
+# produce data-formats providing information about compatibility of elecron + tau-jet pairs
+# with hypothesis of being a pair of electrons resulting from a Z --> e+ e- decay
 #--------------------------------------------------------------------------------
 
 elecTauPairZeeHypotheses = cms.EDProducer("ZllHypothesisElecTauProducer",
