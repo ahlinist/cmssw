@@ -139,7 +139,7 @@ process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.pro
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
 #__#patTupleProduction#
-process.p.replace(process.producePatTupleZtoElecMuSpecific, process.producePatTupleAll)
+process.p.replace(process.producePatTupleZtoElecMuSpecific, process.producePatTuple + process.producePatTupleZtoElecMuSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
