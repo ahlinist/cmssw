@@ -5,9 +5,15 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 allTauNuPairs = cms.EDProducer("PATTauNuPairProducer",
-    srcVisDecayProducts = cms.InputTag('selectedLayer1TausForWTauNuChargeCumulative'),
+    srcVisDecayProducts = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
     srcMET = cms.InputTag('layer1METs'),
     verbosity = cms.untracked.int32(0)
 )
 
-produceTauNuPairs = cms.Sequence( allTauNuPairs )
+allTauNuPairsLooseIsolation = cms.EDProducer("PATTauNuPairProducer",
+    srcVisDecayProducts = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoLooseIsolationCumulative'),
+    srcMET = cms.InputTag('layer1METs'),
+    verbosity = cms.untracked.int32(0)
+)
+
+produceTauNuPairs = cms.Sequence( allTauNuPairs * allTauNuPairsLooseIsolation )
