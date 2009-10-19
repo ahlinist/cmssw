@@ -44,6 +44,10 @@ def replaceMETforTauNu(process,
                         newMet = cms.InputTag('layer1PFMETs') ):
     massSearchReplaceParam(process.produceTauNuPairs,
                            'srcMET', oldMet, newMet)
-
+def replaceMETforMet(process,
+                     oldMet = cms.InputTag('Layer1METs'),
+                     newMet = cms.InputTag('layer1PFMETs')):
+    massSearchReplaceParam(process.selectLayer1METs,
+                           'src',oldMet,newMet)
 
 
