@@ -10,6 +10,7 @@ from TauAnalysis.BgEstimationTools.patPFTauSelectionForBgEst_cff import *
 #from TauAnalysis.RecoTools.patLeptonSelection_cff import *
 
 from TauAnalysis.BgEstimationTools.elecTauPairProductionForBgEst_cff import *
+from TauAnalysis.BgEstimationTools.elecTauPairZeeHypothesisForBgEst_cff import *
 
 from TauAnalysis.BgEstimationTools.patJetSelectionForBgEst_cff import *
 from TauAnalysis.BgEstimationTools.patJetSelectionForZtoElecTauBgEst_cff import *
@@ -19,5 +20,6 @@ producePatTupleZtoElecTauSpecificForBgEst = cms.Sequence(
 #   * selectLayer1MuonsLooseIsolation * selectMuonsForBgEst
    * selectTausForBgEst
    * produceElecTauPairsForBgEst
+   * produceElecTauPairZeeHypothesesForBgEst
    * selectJetsForBgEst * selectJetsForZtoElecTauBgEst
 )
