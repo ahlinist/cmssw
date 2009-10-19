@@ -4,10 +4,8 @@ import copy
 #from SimGeneral.HepPDTESSource.pdt_cfi import *
 
 #--------------------------------------------------------------------------------
-# produce data-formats providing information 
-# about compatibility of an muon + tau-jet pair
-# with the hypothesis of being a pair of muons,
-# resulting from a Z --> mu+ mu- decay
+# produce data-formats providing information about compatibility of muon + tau-jet pairs
+# with hypothesis of being a pair of muons resulting from a Z --> mu+ mu- decay
 #--------------------------------------------------------------------------------
 
 muTauPairZmumuHypotheses = cms.EDProducer("ZllHypothesisMuTauProducer",
