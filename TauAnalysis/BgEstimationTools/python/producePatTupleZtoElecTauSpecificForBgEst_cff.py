@@ -19,6 +19,5 @@ producePatTupleZtoElecTauSpecificForBgEst = cms.Sequence(
 #   * selectLayer1MuonsLooseIsolation * selectMuonsForBgEst
    * selectTausForBgEst
    * produceElecTauPairsForBgEst
-   * produceElecTauPairZeeHypothesesForBgEst
    * selectJetsForBgEst * selectJetsForZtoElecTauBgEst
 )
