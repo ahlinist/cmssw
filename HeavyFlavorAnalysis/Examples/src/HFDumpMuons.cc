@@ -172,7 +172,7 @@ vector<unsigned int> HFDumpMuons::muonStatHits(const reco::Track& tr) {
 void  HFDumpMuons::beginJob(const edm::EventSetup& setup) {
 
   gHFFile->cd();
-  TH1D *h1 = new TH1D("h2", "h2", 20, 0., 20.);
+  // H1D *h1 = new TH1D("h2", "h2", 20, 0., 20.);
 
 }
 

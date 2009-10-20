@@ -32,6 +32,7 @@ class HFTree : public edm::EDAnalyzer {
   TAna01Event  *fEvent;
 
   bool         fRequireCand; 
+  int          fVerbose; 
 
 };
 

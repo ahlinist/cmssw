@@ -29,7 +29,7 @@ for (iEvent = 0; iEvent < nentries; iEvent++) {
   for (int ic = 0; ic < pEvent->nCands(); ++ic) {
     pCand = pEvent->getCand(ic);
 
-    if (531130 == TMath::Abs(pCand->fType)) {
+    if (100443 == TMath::Abs(pCand->fType)) {
       h1->Fill(pCand->fMass); 
     }
 

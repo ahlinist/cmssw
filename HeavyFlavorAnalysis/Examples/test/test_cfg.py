@@ -212,19 +212,17 @@ process.muonDump = cms.EDFilter("HFDumpMuons",
 )
 
 
+# ----------------------------------------------------------------------
 process.triggerDump = cms.EDFilter("HFDumpTrigger",
-   verbose                 = cms.untracked.int32(1),
-   particleMap             = cms.untracked.string("l1extraParticleMap"),
+   verbose                 = cms.untracked.int32(0),
    L1GTReadoutRecordLabel  = cms.untracked.string("gtDigis"), 
    hltL1GtObjectMap        = cms.untracked.InputTag("hltL1GtObjectMap"), 
    L1MuonsLabel            = cms.untracked.InputTag("hltL1extraParticles"), 
-   HLTResultsLabel         = cms.untracked.InputTag("TriggerResults::HLT8E29"), 
-   TriggerEventLabel       = cms.untracked.InputTag("hltTriggerSummaryAOD::HLT8E29"), 
-                                   
-   L1TriggerName = cms.untracked.string("L1_DoubleMu3"), 
+   HLTResultsLabel         = cms.untracked.InputTag("TriggerResults::HLT"), 
+   TriggerEventLabel       = cms.untracked.InputTag("hltTriggerSummaryAOD::HLT"), 
    hltLabel      = cms.untracked.InputTag("TriggerResults::HLT"), 
-   HLTriggerName = cms.untracked.string("HLTBJPsiMuMu") 
 )
+
 
 process.stuffDump = cms.EDFilter("HFDumpStuff",
     genEventScale = cms.untracked.string('generator'),

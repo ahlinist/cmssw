@@ -186,7 +186,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       gen_id     = gHFEvent->getGenIndex(trackView.px(), trackView.py(), trackView.pz(), -1); 
       if (gen_id > -1) gen_pdg_id = gHFEvent->getGenCand(gen_id)->fID; 
       if (13 == TMath::Abs(gen_pdg_id)) {
-	if (fVerbose > 4) cout << "Simple TM: "; pTrack->dump(); 
+	if (fVerbose > 4) {cout << "Simple TM: "; pTrack->dump(); }
       }
     }
 

@@ -46,28 +46,20 @@ using namespace trigger;
 // ----------------------------------------------------------------------
 HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
-  fparticleMap(iConfig.getUntrackedParameter< std::string > ("particleMap")),
   fL1GTReadoutRecordLabel(iConfig.getUntrackedParameter<std::string> ("L1GTReadoutRecordLabel")),
   fL1GTmapLabel(iConfig.getUntrackedParameter<InputTag> ("hltL1GtObjectMap")),
   fL1MuonsLabel(iConfig.getUntrackedParameter<InputTag> ("L1MuonsLabel")),
   fTriggerEventLabel(iConfig.getUntrackedParameter<InputTag> ("TriggerEventLabel")),
-  fHLTResultsLabel(iConfig.getUntrackedParameter<InputTag> ("HLTResultsLabel")),
-
-  fL1TriggerName(iConfig.getUntrackedParameter<string>("L1TriggerName", string("L1_DoubleMu3"))),
-  fHLTriggerLabel(iConfig.getUntrackedParameter<edm::InputTag>("hltLabel")),
-  fHLTriggerName(iConfig.getUntrackedParameter<string>("HLTriggerName",  string("HLTBJPsiMuMu"))) {
+  fHLTResultsLabel(iConfig.getUntrackedParameter<InputTag> ("HLTResultsLabel"))
+{
 
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpTrigger constructor" << endl;
   cout << "--- Verbose                     : " << fVerbose << endl;
-  cout << "--- particle Map                : " << fparticleMap.c_str() << endl;
   cout << "--- L1 GT Readout Record Label  : " << fL1GTReadoutRecordLabel.c_str() << endl;
   cout << "--- L1 GT Object Map Label      : " << fL1GTmapLabel.encode() << endl;
   cout << "--- L1 Muons Label              : " << fL1MuonsLabel.encode() << endl;
-  cout << "--- HLT results Label           : " << fHLTResultsLabel.encode() << endl;
-  cout << "--- L1 Trigger Name             : " << fL1TriggerName.c_str() << endl;
-  cout << "--- HLT Label                   : " << fHLTriggerLabel.encode() << endl;
-  cout << "--- HLT Trigger Name            : " << fHLTriggerName.c_str() << endl;
+  cout << "--- HLTResultsLabel             : " << fHLTResultsLabel.encode() << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
   fNevt = 0; 
@@ -118,7 +110,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  hL1GTmap->gtObjectMap();
       for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
 	int itrg = (*itMap).algoBitNumber();
-	cout << iq << " " << (*itMap).algoName() << "  " << itrg << endl;
+	if (fVerbose > 2) cout << iq << " " << (*itMap).algoName() << "  " << itrg << endl;
 	gHFEvent->fL1TNames[itrg] = TString((*itMap).algoName()); 
 	++iq;
       }
@@ -126,14 +118,15 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   } 
 
-  cout << "L1 trigger: " << endl
-       << std::bitset<32>(gHFEvent->fL1TWords[0]) << endl
-       << std::bitset<32>(gHFEvent->fL1TWords[1]) << endl
-       << std::bitset<32>(gHFEvent->fL1TWords[2]) << endl
-       << std::bitset<32>(gHFEvent->fL1TWords[3]) << endl;
+  if (fVerbose > 1) {
+    cout << "L1 trigger: " << endl
+	 << std::bitset<32>(gHFEvent->fL1TWords[0]) << endl
+	 << std::bitset<32>(gHFEvent->fL1TWords[1]) << endl
+	 << std::bitset<32>(gHFEvent->fL1TWords[2]) << endl
+	 << std::bitset<32>(gHFEvent->fL1TWords[3]) << endl;
+  }
 
   // -- L1 muons
-  int L1_mu_size = 0;
   Handle<l1extra::L1MuonParticleCollection> hL1Muons;
   try {
     iEvent.getByLabel(fL1MuonsLabel, hL1Muons);
@@ -141,7 +134,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     for (l1muon = hL1Muons->begin(); l1muon != hL1Muons->end(); ++l1muon ) {
       TLorentzVector a(0.0,0.0,0.0,0.0);
       a.SetPxPyPzE(l1muon->px(),l1muon->py(),l1muon->pz(),l1muon->energy());
-      cout << "L1 muon: pT = " << a.Pt() << " phi = " << a.Phi() << " eta = " << a.Eta() << " q = " << l1muon->charge() << endl;
+      if (fVerbose > 3) cout << "L1 muon: pT = " << a.Pt() << " phi = " << a.Phi() << " eta = " << a.Eta() << " q = " << l1muon->charge() << endl;
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
@@ -170,15 +163,15 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     //    HLTGlobal_wasrun=HLTR->wasrun();
     //    HLTGlobal_error=HLTR->error();
     gHFEvent->fHLTDecision = hHLTresults->accept();
-    cout << "hHLTresults->size() = " << hHLTresults->size() << " and HLT accept = " << gHFEvent->fHLTDecision << endl;
+    if (fVerbose > 1) cout << "hHLTresults->size() = " << hHLTresults->size() << " and HLT accept = " << gHFEvent->fHLTDecision << endl;
 
     for (unsigned int iTrig = 0; iTrig < hHLTresults->size(); ++iTrig) {
       int hltflag = hHLTresults->accept(iTrig); 
       int wasrun = hHLTresults->wasrun(iTrig); 
 
       // This is the HLT name for each path: 
-      cout << iTrig << " " << trigName.triggerName(iTrig) << endl;
-      
+      if (fVerbose > 2) cout << iTrig << " " << trigName.triggerName(iTrig) << endl;
+
       gHFEvent->fHLTNames[iTrig] = TString(trigName.triggerName(iTrig)); 
 
       if (iTrig < 32 && hltflag) {
@@ -203,15 +196,15 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
 
 
-    cout << "HLT trigger accept/run: " << endl
-	 << std::bitset<32>(gHFEvent->fHLTWords[0]) << endl
-	 << std::bitset<32>(gHFEvent->fHLTWasRun[0]) << endl << endl
-	 << std::bitset<32>(gHFEvent->fHLTWords[1]) << endl
-	 << std::bitset<32>(gHFEvent->fHLTWasRun[1]) << endl<< endl
-	 << std::bitset<32>(gHFEvent->fHLTWords[2]) << endl
-	 << std::bitset<32>(gHFEvent->fHLTWasRun[2]) << endl << endl
-	 << std::bitset<32>(gHFEvent->fHLTWords[3]) << endl
-	 << std::bitset<32>(gHFEvent->fHLTWasRun[3]) << endl;
+    if (fVerbose > 1)  cout << "HLT trigger accept/run: " << endl
+			    << std::bitset<32>(gHFEvent->fHLTWords[0]) << endl
+			    << std::bitset<32>(gHFEvent->fHLTWasRun[0]) << endl << endl
+			    << std::bitset<32>(gHFEvent->fHLTWords[1]) << endl
+			    << std::bitset<32>(gHFEvent->fHLTWasRun[1]) << endl<< endl
+			    << std::bitset<32>(gHFEvent->fHLTWords[2]) << endl
+			    << std::bitset<32>(gHFEvent->fHLTWasRun[2]) << endl << endl
+			    << std::bitset<32>(gHFEvent->fHLTWords[3]) << endl
+			    << std::bitset<32>(gHFEvent->fHLTWasRun[3]) << endl;
   }   
   
   Handle<trigger::TriggerEvent> trgEvent;
@@ -229,7 +222,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       Keys keys = trgEvent->filterKeys(i);
       if (keys.size() > 0) {
 
-	cout << trgEvent->filterTag(i) << endl; 
+	if (fVerbose > 1) cout << trgEvent->filterTag(i) << endl; 
 
 	TString label = TString(trgEvent->filterTag(i).label())
 	  + TString(":") 
@@ -238,7 +231,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  + TString(trgEvent->filterTag(i).instance())
 	  + TString(":");
 
-	for (int j=0; j<keys.size(); j++){
+	for (unsigned int j=0; j<keys.size(); j++){
 	  TTrgObj *pTO = gHFEvent->addTrgObj();
 	  pTO->fP.SetPtEtaPhiE(allObjects[keys[j]].pt(), 
 			  allObjects[keys[j]].eta(), 
@@ -248,13 +241,14 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  pTO->fID     = allObjects[keys[j]].id(); 
 	  pTO->fLabel  = label;
 	  // pTO->fNumber = i;
-	  cout << " pt = " <<  allObjects[keys[j]].pt() 
-	       << " eta = " << allObjects[keys[j]].eta() 
-	       << " phi = " << allObjects[keys[j]].phi() 
-	       << " e = " << allObjects[keys[j]].energy() 
-	       << " id = " << allObjects[keys[j]].id() 
-	       << " label: " << pTO->fLabel
-	       << endl;
+	  if (fVerbose > 1) 
+	    cout << " pt = " <<  allObjects[keys[j]].pt() 
+		 << " eta = " << allObjects[keys[j]].eta() 
+		 << " phi = " << allObjects[keys[j]].phi() 
+		 << " e = " << allObjects[keys[j]].energy() 
+		 << " id = " << allObjects[keys[j]].id() 
+		 << " label: " << pTO->fLabel
+		 << endl;
 	}
       }
     }
