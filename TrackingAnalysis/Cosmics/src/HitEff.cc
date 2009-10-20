@@ -72,7 +72,6 @@ HitEff::HitEff(const edm::ParameterSet& conf) :
 {
   layers =conf_.getParameter<int>("Layer");
   DEBUG = conf_.getParameter<bool>("Debug");
-  doDeDx = conf_.getParameter<bool>("getDeDx");
 }
 
 // Virtual destructor needed.
@@ -170,33 +169,6 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
   es.get<IdealMagneticFieldRecord>().get(magFieldHandle);
   const MagneticField* magField_ = magFieldHandle.product();
 
-  if (doDeDx) {
-    try {
-      Handle<ValueMap<DeDxData> >          dEdxUncalibHandle;
-      e.getByLabel("dedxMedianCTF", dEdxUncalibHandle);
-      const ValueMap<DeDxData> dEdxTrackUncalib = *dEdxUncalibHandle.product();
-    }
-    catch (...) {}
-    
-    timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999;
-    timeECAL = -999.0; dedx = -999.0; dedxNOM = -999;
-    // retrieve the muon time
-    Handle<MuonCollection> muH;
-    e.getByLabel("muonsWitht0Correction",muH);
-    const MuonCollection & muonsT0  =  *muH.product();
-    //cout << "muonsT0 size = " << muonsT0.size() << endl;
-    if(muonsT0.size()<1) return;
-    MuonTime mt0 = muonsT0[0].time();
-    timeDT = mt0.timeAtIpInOut; 
-    timeDTErr = mt0.timeAtIpInOutErr;
-    timeDTDOF = mt0.nDof;
-    //cout << "timeDT = " << timeDT << "+-" << timeDTErr << " with dof = " << timeDTDOF << endl;
-    
-    bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
-    if (hasCaloEnergyInfo) timeECAL = muonsT0[0].calEnergy().ecal_time;
-    
-  }
-
   events++;
   
   // *************** SiStripCluster Collection
@@ -250,11 +222,33 @@ void HitEff::analyze(const edm::Event& e, const edm::EventSetup& es){
     reco::TrackCollection::const_iterator iCKF=trackCollectionCKF.product()->begin();
     EventTrackCKF++;  
     
-    if (doDeDx) {
-      //get dedx info
-      //reco::TrackRef itTrack  = reco::TrackRef( trackCollectionCKF, 0 );
-      //dedx = dEdxTrackUncalib[itTrack].dEdx();
-      //dedxNOM  = dEdxTrackUncalib[itTrack].numberOfMeasurements();
+    //get dEdx info if available
+    Handle<ValueMap<DeDxData> >          dEdxUncalibHandle;
+    if (e.getByLabel("dedxMedianCTF", dEdxUncalibHandle)) {
+      const ValueMap<DeDxData> dEdxTrackUncalib = *dEdxUncalibHandle.product();
+      
+      reco::TrackRef itTrack  = reco::TrackRef( trackCollectionCKF, 0 );
+      dedx = dEdxTrackUncalib[itTrack].dEdx();
+      dedxNOM  = dEdxTrackUncalib[itTrack].numberOfMeasurements();
+    } else {
+      dedx = -999.0; dedxNOM = -999;
+    }
+
+    //get muon and ecal timing info if available
+    Handle<MuonCollection> muH;
+    if(e.getByLabel("muonsWitht0Correction",muH)){
+      const MuonCollection & muonsT0  =  *muH.product();
+      if(muonsT0.size()!=0) {
+	MuonTime mt0 = muonsT0[0].time();
+	timeDT = mt0.timeAtIpInOut; 
+	timeDTErr = mt0.timeAtIpInOutErr;
+	timeDTDOF = mt0.nDof;
+	
+	bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
+	if (hasCaloEnergyInfo) timeECAL = muonsT0[0].calEnergy().ecal_time;
+      }
+    } else {
+      timeDT = -999.0; timeDTErr = -999.0; timeDTDOF = -999; timeECAL = -999.0;
     }
     
     const Trajectory traject = *(TrajectoryCollectionCKF.product()->begin());
