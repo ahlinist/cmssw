@@ -12,7 +12,16 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-     "file:/shome/starodumov/out/reco/reco-10010.root"
+    "file:/shome/starodumov/out/reco/reco-10000.root",
+    "file:/shome/starodumov/out/reco/reco-10001.root",
+    "file:/shome/starodumov/out/reco/reco-10002.root",
+    "file:/shome/starodumov/out/reco/reco-10004.root",
+    "file:/shome/starodumov/out/reco/reco-10005.root",
+    "file:/shome/starodumov/out/reco/reco-10006.root",
+    "file:/shome/starodumov/out/reco/reco-10007.root",
+    "file:/shome/starodumov/out/reco/reco-10008.root",
+    "file:/shome/starodumov/out/reco/reco-10009.root",
+    "file:/shome/starodumov/out/reco/reco-10010.root"
     )
     )
 
@@ -96,18 +105,13 @@ process.triggerDump = cms.EDFilter("HFDumpTrigger",
                                    
    L1TriggerName = cms.untracked.string("L1_DoubleMu3"), 
    hltLabel      = cms.untracked.InputTag("TriggerResults::HLT"), 
-   HLTriggerName = cms.untracked.string("HLTBJPsiMuMu"), 
-   HLTfiltObj0   = cms.untracked.string("muTracks"), 
-   HLTfiltObj1   = cms.untracked.string("CandFromMumu"), 
-   HLTfiltObj2   = cms.untracked.string("JpsitoMumuL1Seed"), 
-   HLTfiltObj3   = cms.untracked.string("JpsitoMumuL2Filtered"), 
-   HLTfiltObj4   = cms.untracked.string("displacedJpsitoMumuFilter")
+   HLTriggerName = cms.untracked.string("HLTBJPsiMuMu") 
 )
 
 # ----------------------------------------------------------------------
-process.signalDump = cms.EDFilter(
+process.bmtDump = cms.EDFilter(
     "HFMuonAndTrack",
-    verbose = cms.untracked.int32(2), 
+    verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
     muonPt = cms.untracked.double(3.0),
@@ -120,7 +124,7 @@ process.signalDump = cms.EDFilter(
 # ----------------------------------------------------------------------
 process.bmmDump = cms.EDFilter(
     "HFDimuons",
-    verbose = cms.untracked.int32(2), 
+    verbose = cms.untracked.int32(0), 
     muonsLabel = cms.untracked.InputTag("muons"),
     tracksLabel = cms.untracked.string('generalTracks'),
     muonPt = cms.untracked.double(3.0),
@@ -162,10 +166,10 @@ process.p = cms.Path(
     process.genParticles* 
     process.genDump*
     process.trkDump*
-#    process.muonDump*
-#    process.triggerDump*
-    process.signalDump*
+    process.muonDump*
+    process.triggerDump*
     process.bmmDump*
+    process.bmtDump*
     process.tree
 )
 

@@ -88,12 +88,7 @@ process.triggerDump = cms.EDFilter("HFDumpTrigger",
                                    
    L1TriggerName = cms.untracked.string("L1_DoubleMu3"), 
    hltLabel      = cms.untracked.InputTag("TriggerResults::HLT"), 
-   HLTriggerName = cms.untracked.string("HLTBJPsiMuMu"), 
-   HLTfiltObj0   = cms.untracked.string("muTracks"), 
-   HLTfiltObj1   = cms.untracked.string("CandFromMumu"), 
-   HLTfiltObj2   = cms.untracked.string("JpsitoMumuL1Seed"), 
-   HLTfiltObj3   = cms.untracked.string("JpsitoMumuL2Filtered"), 
-   HLTfiltObj4   = cms.untracked.string("displacedJpsitoMumuFilter")
+   HLTriggerName = cms.untracked.string("HLTBJPsiMuMu") 
 )
 
 # ----------------------------------------------------------------------

@@ -41,11 +41,5 @@ class HFDumpTrigger : public edm::EDAnalyzer {
   std::string   fL1TriggerName;
   std::string   fparticleMap;
 
-  std::string   fHLTFilterObject0;
-  std::string   fHLTFilterObject1;
-  std::string   fHLTFilterObject2;
-  std::string   fHLTFilterObject3;
-  std::string   fHLTFilterObject4;
-
 };
 

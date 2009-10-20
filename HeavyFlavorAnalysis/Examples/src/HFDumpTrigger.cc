@@ -55,12 +55,7 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
 
   fL1TriggerName(iConfig.getUntrackedParameter<string>("L1TriggerName", string("L1_DoubleMu3"))),
   fHLTriggerLabel(iConfig.getUntrackedParameter<edm::InputTag>("hltLabel")),
-  fHLTriggerName(iConfig.getUntrackedParameter<string>("HLTriggerName",  string("HLTBJPsiMuMu"))),
-  fHLTFilterObject0(iConfig.getUntrackedParameter<string>("HLTfiltObj0",  string("DiMuonNoIsoLevel1Seed"))),
-  fHLTFilterObject1(iConfig.getUntrackedParameter<string>("HLTfiltObj1",  string("DiMuonNoIsoLevel1Filtered"))),
-  fHLTFilterObject2(iConfig.getUntrackedParameter<string>("HLTfiltObj2",  string("JpsitoMumuL1Seed"))),
-  fHLTFilterObject3(iConfig.getUntrackedParameter<string>("HLTfiltObj3",  string("JpsitoMumuL2Filtered"))),
-  fHLTFilterObject4(iConfig.getUntrackedParameter<string>("HLTfiltObj4",  string("displacedJpsitoMumuFilter"))) {
+  fHLTriggerName(iConfig.getUntrackedParameter<string>("HLTriggerName",  string("HLTBJPsiMuMu"))) {
 
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFDumpTrigger constructor" << endl;
@@ -73,12 +68,6 @@ HFDumpTrigger::HFDumpTrigger(const edm::ParameterSet& iConfig):
   cout << "--- L1 Trigger Name             : " << fL1TriggerName.c_str() << endl;
   cout << "--- HLT Label                   : " << fHLTriggerLabel.encode() << endl;
   cout << "--- HLT Trigger Name            : " << fHLTriggerName.c_str() << endl;
-  cout << "--- HLT Filter Objects          : " 
-       << fHLTFilterObject0.c_str() << ", "
-       << fHLTFilterObject1.c_str() << ", "
-       << fHLTFilterObject2.c_str() << ", "
-       << fHLTFilterObject3.c_str() << " and "
-       << fHLTFilterObject4.c_str() << endl;
   cout << "----------------------------------------------------------------------" << endl;
 
   fNevt = 0; 
@@ -109,7 +98,6 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel("hltL1GtObjectMap", hL1GTmap);
   if (L1GTRR.isValid()) {
     gHFEvent->fL1Decision = (L1GTRR->decision()? 1: 0);
-    int L1TBits_size=L1GTRR->decisionWord().size(); 
     for (unsigned int iTrig = 0; iTrig < L1GTRR->decisionWord().size(); ++iTrig) {
       int l1flag = L1GTRR->decisionWord()[iTrig]; 
       
@@ -127,7 +115,6 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if (hL1GTmap.isValid()) {
       int iq(0); 
       DecisionWord gtDecisionWord = L1GTRR->decisionWord();
-      const unsigned int numberTriggerBits(gtDecisionWord.size());
       const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  hL1GTmap->gtObjectMap();
       for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin(); itMap != objMapVec.end(); ++itMap) {
 	int itrg = (*itMap).algoBitNumber();
@@ -177,8 +164,6 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     hltF = false;
   }
 
-  int HLTwasRun1 = 0; int HLTwasRun2 = 0; int HLTwasRun3 = 0; int HLTwasRun4 = 0; 
-
   if (hltF) {
     TriggerNames trigName;
     trigName.init(*hHLTresults);
@@ -189,7 +174,6 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
     for (unsigned int iTrig = 0; iTrig < hHLTresults->size(); ++iTrig) {
       int hltflag = hHLTresults->accept(iTrig); 
-      int error = hHLTresults->error(iTrig); 
       int wasrun = hHLTresults->wasrun(iTrig); 
 
       // This is the HLT name for each path: 

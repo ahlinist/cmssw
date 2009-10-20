@@ -41,7 +41,7 @@ HFGenFilter::~HFGenFilter() {
 bool HFGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   bool goodEvent(false);
 
-  TGenCand *pGen, *pDau;
+  TGenCand *pGen;
 
   ++fNtot;
   cout << "==> HFGenFilter> new  event  " << fNtot << endl;
@@ -50,7 +50,7 @@ bool HFGenFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // -- filter events with at least one muon and pT>2.5GeV
   for (int ig = 0; ig < gHFEvent->nGenCands(); ++ig) {
     pGen = gHFEvent->getGenCand(ig);
-    if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() > 5.)) {
+    if ((13 == TMath::Abs(pGen->fID)) && (pGen->fP.Perp() > 2.5)) {
       goodEvent = true;
     }
   }
