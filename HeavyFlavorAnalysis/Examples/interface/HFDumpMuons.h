@@ -14,6 +14,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 
 
 class TFile;
@@ -28,14 +29,15 @@ class HFDumpMuons : public edm::EDAnalyzer {
  public:
   explicit HFDumpMuons(const edm::ParameterSet&);
   ~HFDumpMuons();
+
+  static int           muonID(const Muon &);
   
  private:
   virtual void         beginJob(const edm::EventSetup&) ;
   virtual void         analyze(const edm::Event&, const edm::EventSetup&);
   virtual void         endJob();
-  void                 fillMuon(const Track& tr, int type);
+  void                 fillMuon(const Muon& tr, int type);
   vector<unsigned int> muonStatHits(const Track& tr);
-
   edm::InputTag        fMuonsLabel;
 
   int                  fVerbose, fDoTruthMatching; 

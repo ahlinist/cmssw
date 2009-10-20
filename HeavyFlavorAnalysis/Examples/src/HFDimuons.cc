@@ -152,6 +152,7 @@ void HFDimuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	continue; 
       }
 
+      RecoTransientTrack.clear();
       RecoTransientTrack.push_back(fTTB->build(tMuon1));
       RecoTransientTrack.push_back(fTTB->build(tMuon2));
 

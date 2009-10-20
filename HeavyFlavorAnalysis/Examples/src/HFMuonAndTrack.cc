@@ -167,12 +167,9 @@ void HFMuonAndTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	cout << "==>HFMuonAndTrack> dimuon mass = " << dimuon.M() << ", vertexing" << endl;
       }
 
+      RecoTransientTrack.clear();
       RecoTransientTrack.push_back(fTTB->build(tMuon1));
       RecoTransientTrack.push_back(fTTB->build(tTrack2));
-
-      cout << " iMuon1  = " << iMuon1 << " pT = " << tMuon1.pt() << " phi = " << tMuon1.phi() << " eta = " << tMuon1.eta() << endl;
-      cout << " itrack2 = " << itrack2<< " pT = " << tTrack2.pt()<< " phi = " << tTrack2.phi()<< " eta = " << tTrack2.eta() << endl;
-
 
       // -- Do the vertexing
       KalmanVertexFitter theFitter(true);

@@ -66,7 +66,7 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
   TGenCand  *pGen;
   // -- From PhysicsTools/HepMCCandAlgos/plugins/ParticleListDrawer.cc
-  int idx(-1), iMo1(-1), iMo2(-1), iDa1(-1), iDa2(-1); 
+  int iMo1(-1), iMo2(-1), iDa1(-1), iDa2(-1); 
 
   std::vector<const GenParticle *> cands;
   cands.clear();

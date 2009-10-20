@@ -15,11 +15,11 @@
 
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+#include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-
-#include "DataFormats/MuonDetId/interface/MuonSubdetId.h"
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
@@ -69,28 +69,83 @@ void HFDumpMuons::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if (fVerbose > 0) cout << "==> HFDumpMuons> " << fMuonsLabel << endl;
   iEvent.getByLabel(fMuonsLabel, hMuons);
 
+  int im(0);
   for (reco::MuonCollection::const_iterator iMuon = hMuons->begin(); iMuon != hMuons->end();  iMuon++) {
-    TrackRef gTrack = iMuon->globalTrack();
-    TrackRef iTrack = iMuon->innerTrack();
-    
-    if (gTrack.isNonnull()) {
-      Track trkView(*gTrack);
-      fillMuon(trkView, 1); 
+    fillMuon(*iMuon, im); 
+    ++im;
+  }
+
+  if (fVerbose > 0) {
+    for (int im = 0; im < gHFEvent->nMuons(); ++im) {
+      gHFEvent->getMuon(im)->dump();
     }
   }
+
 }
 
 
 
 // ----------------------------------------------------------------------
-void HFDumpMuons::fillMuon(const reco::Track& tr, int type) {
+void HFDumpMuons::fillMuon(const reco::Muon& rm, int im) {
 
-  //  TAnaMuon *pM = gHFEvent->addMuon();
   TAnaMuon *pM = gHFEvent->addMuon();    
+  pM->fIndex = im;
+  pM->fMuIndex = im; 
+  pM->fMuID    = muonID(rm);
 
-  pM->fPlab.SetPtEtaPhi(tr.pt(), tr.eta(), tr.phi());
+  pM->fTimeInOut  = rm.time().timeAtIpInOut; 
+  pM->fTimeInOutE = rm.time().timeAtIpInOutErr; 
+  pM->fTimeOutIn  = rm.time().timeAtIpOutIn; 
+  pM->fTimeOutInE = rm.time().timeAtIpOutInErr; 
+  pM->fTimeNdof   = rm.time().nDof;
+
+  TrackRef gTrack = rm.globalTrack();
+  TrackRef iTrack = rm.innerTrack();
+  TrackRef oTrack = rm.outerTrack();
+
+  if (gTrack.isNonnull()) {
+    Track trk(*gTrack);
+    pM->fGlobalPlab.SetPtEtaPhi(trk.pt(), trk.eta(), trk.phi());
+
+    vector<unsigned int> hits = muonStatHits(trk);
+    pM->fNhitsDT  = hits.at(0); 
+    pM->fNhitsCSC = hits.at(1); 
+    pM->fNhitsRPC = hits.at(2); 
+
+  }
+
+  if (iTrack.isNonnull()) {
+    Track trk(*iTrack);
+    pM->fInnerPlab.SetPtEtaPhi(trk.pt(), trk.eta(), trk.phi());
+  }
+
+  if (oTrack.isNonnull()) {
+    Track trk(*oTrack);
+    pM->fOuterPlab.SetPtEtaPhi(trk.pt(), trk.eta(), trk.phi());
+  }
 
 }
+
+
+// ----------------------------------------------------------------------
+int HFDumpMuons::muonID(const Muon &rm) {
+  int MuID(0); 
+  if (muon::isGoodMuon(rm, muon::AllStandAloneMuons))               MuID |= 0x1<<0; 
+  if (muon::isGoodMuon(rm, muon::AllGlobalMuons))                   MuID |= 0x1<<1; 
+  if (muon::isGoodMuon(rm, muon::AllTrackerMuons))                  MuID |= 0x1<<2; 
+  if (muon::isGoodMuon(rm, muon::TrackerMuonArbitrated))            MuID |= 0x1<<4; 
+  if (muon::isGoodMuon(rm, muon::GlobalMuonPromptTight))            MuID |= 0x1<<6; 
+  if (muon::isGoodMuon(rm, muon::TMLastStationLoose))               MuID |= 0x1<<7; 
+  if (muon::isGoodMuon(rm, muon::TMLastStationTight))               MuID |= 0x1<<8; 
+  if (muon::isGoodMuon(rm, muon::TM2DCompatibilityLoose))           MuID |= 0x1<<9; 
+  if (muon::isGoodMuon(rm, muon::TM2DCompatibilityTight))           MuID |= 0x1<<10; 
+  if (muon::isGoodMuon(rm, muon::TMOneStationLoose))                MuID |= 0x1<<11; 
+  if (muon::isGoodMuon(rm, muon::TMOneStationTight))                MuID |= 0x1<<12; 
+  if (muon::isGoodMuon(rm, muon::TMLastStationOptimizedLowPtLoose)) MuID |= 0x1<<13; 
+  if (muon::isGoodMuon(rm, muon::TMLastStationOptimizedLowPtTight)) MuID |= 0x1<<14; 
+  return MuID; 
+}
+
 
 // ----------------------------------------------------------------------
 vector<unsigned int> HFDumpMuons::muonStatHits(const reco::Track& tr) {

@@ -96,28 +96,28 @@ void HFDumpJets::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::CandMatchMap>        theGenJetPartonMapPhys;
   iEvent.getByLabel( fGenJetPartonMapPhys,theGenJetPartonMapPhys);
 
-  // -- get the b tagging jettags
-  edm::Handle<reco::JetTagCollection> bTagHandle1;
-  iEvent.getByLabel(fDisc1.c_str(), bTagHandle1);
-  const reco::JetTagCollection & bTags1 = *(bTagHandle1.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle2;
-  iEvent.getByLabel(fDisc2.c_str(), bTagHandle2);
-  const reco::JetTagCollection & bTags2 = *(bTagHandle2.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle3;
-  iEvent.getByLabel(fDisc3.c_str(), bTagHandle3);
-  const reco::JetTagCollection & bTags3 = *(bTagHandle3.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle4;
-  iEvent.getByLabel(fDisc4.c_str(), bTagHandle4);
-  const reco::JetTagCollection & bTags4 = *(bTagHandle4.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle5;
-  iEvent.getByLabel(fDisc5.c_str(), bTagHandle5);
-  const reco::JetTagCollection & bTags5 = *(bTagHandle5.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle6;
-  iEvent.getByLabel(fDisc6.c_str(), bTagHandle6);
-  const reco::JetTagCollection & bTags6 = *(bTagHandle6.product());
-  edm::Handle<reco::JetTagCollection> bTagHandle7;
-  iEvent.getByLabel(fDisc7.c_str(), bTagHandle7);
-  const reco::JetTagCollection & bTags7 = *(bTagHandle7.product());
+//   // -- get the b tagging jettags
+//   edm::Handle<reco::JetTagCollection> bTagHandle1;
+//   iEvent.getByLabel(fDisc1.c_str(), bTagHandle1);
+//   const reco::JetTagCollection & bTags1 = *(bTagHandle1.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle2;
+//   iEvent.getByLabel(fDisc2.c_str(), bTagHandle2);
+//   const reco::JetTagCollection & bTags2 = *(bTagHandle2.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle3;
+//   iEvent.getByLabel(fDisc3.c_str(), bTagHandle3);
+//   const reco::JetTagCollection & bTags3 = *(bTagHandle3.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle4;
+//   iEvent.getByLabel(fDisc4.c_str(), bTagHandle4);
+//   const reco::JetTagCollection & bTags4 = *(bTagHandle4.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle5;
+//   iEvent.getByLabel(fDisc5.c_str(), bTagHandle5);
+//   const reco::JetTagCollection & bTags5 = *(bTagHandle5.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle6;
+//   iEvent.getByLabel(fDisc6.c_str(), bTagHandle6);
+//   const reco::JetTagCollection & bTags6 = *(bTagHandle6.product());
+//   edm::Handle<reco::JetTagCollection> bTagHandle7;
+//   iEvent.getByLabel(fDisc7.c_str(), bTagHandle7);
+//   const reco::JetTagCollection & bTags7 = *(bTagHandle7.product());
   
 
   TAnaJet *pCaloJet;

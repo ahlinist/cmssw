@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "HeavyFlavorAnalysis/Examples/interface/HFDumpTracks.h"
+#include "HeavyFlavorAnalysis/Examples/interface/HFDumpMuons.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -23,6 +24,7 @@
 
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -51,20 +53,22 @@ using namespace reco;
 // ----------------------------------------------------------------------
 HFDumpTracks::HFDumpTracks(const edm::ParameterSet& iConfig):
   fTracksLabel(iConfig.getUntrackedParameter<string>("tracksLabel", string("ctfWithMaterialTracks"))),
-  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fGenEventLabel(iConfig.getUntrackedParameter<string>("generatorEventLabel", string("source"))),
   fSimTracksLabel(iConfig.getUntrackedParameter<string>("simTracksLabel", string("famosSimHits"))),
   fAssociatorLabel(iConfig.getUntrackedParameter<string>("associatorLabel", string("TrackAssociatorByChi2"))), 
   fTrackingParticlesLabel(iConfig.getUntrackedParameter<string>("trackingParticlesLabel", string("trackingParticles"))),
+  fMuonsLabel(iConfig.getUntrackedParameter<InputTag>("muonsLabel")),
   fVerbose(iConfig.getUntrackedParameter<int>("verbose", 0)),
   fDoTruthMatching(iConfig.getUntrackedParameter<int>("doTruthMatching", 1)) {
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "--- HFDumpTracks constructor" << endl;
-  cout << "---  fTracksLabel:            " << fTracksLabel.c_str() << endl;
-  cout << "---  fAssociatorLabel:        " << fAssociatorLabel.c_str() << endl;
-  cout << "---  fDoTruthMatching:        " << fDoTruthMatching << endl;  // 0 = nothing, 1 = TrackingParticles, 2 = FAMOS
-  cout << "---  fTrackingParticlesLabel: " << fTrackingParticlesLabel.c_str() << endl;
-  cout << "---  fMuonsLabel:             " << fMuonsLabel.encode() << endl;
+  cout << "--- HFDumpTracks constructor  " << endl;
+  cout << "---  tracksLabel:             " << fTracksLabel.c_str() << endl;
+  cout << "---  muonsLabel:              " << fMuonsLabel.encode() << endl;
+  cout << "---  generatorEventLabel:     " << fGenEventLabel.c_str() << endl;
+  cout << "---  simTracksLabel:          " << fSimTracksLabel.c_str() << endl;
+  cout << "---  associatorLabel:         " << fAssociatorLabel.c_str() << endl;
+  cout << "---  trackingParticlesLabel:  " << fTrackingParticlesLabel.c_str() << endl;
+  cout << "---  doTruthMatching:         " << fDoTruthMatching << endl;  // 0 = nothing, 1 = TrackingParticles, 2 = FAMOS
   cout << "----------------------------------------------------------------------" << endl;
 }
 
@@ -84,18 +88,19 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(fTracksLabel.c_str(), tracksView);
 
   // -- get the collection of muons and store their corresponding track indices
-  vector<int> muonIndices;
+  vector<unsigned int> muonIndices, muonCollectionIndices;
   Handle<MuonCollection> hMuons;
   iEvent.getByLabel(fMuonsLabel, hMuons);
-  const Track* tt = 0;
+  int muonIndex(0); 
   for (MuonCollection::const_iterator muon = hMuons->begin(); muon != hMuons->end(); ++muon) {
     TrackRef track = muon->innerTrack();
     muonIndices.push_back(track.index());
+    muonCollectionIndices.push_back(muonIndex); 
+    ++muonIndex; 
   }
   if (fVerbose > 0) cout << "==>HFDumpTracks> nMuons = " << hMuons->size() << endl;
   TH1D *h2 = (TH1D*)gHFFile->Get("h2");
   if (h2) h2->Fill(hMuons->size());
-
  
   // -- get the tracking particle collection needed for truth matching. Only on RECO data tier?
   RecoToSimCollection recSimColl;
@@ -114,7 +119,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
   // -- Get the stuff needed for FAMOS truth matching
   Handle<HepMCProduct> hepmc;
-  const HepMC::GenEvent *genEvent;
+  const HepMC::GenEvent *genEvent = 0;
   edm::Handle<std::vector<SimTrack> > simTracks;
   if (2 == fDoTruthMatching) {
     iEvent.getByLabel(fGenEventLabel.c_str(), hepmc);
@@ -138,11 +143,11 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 			      trackView.eta(),
 			      trackView.phi()
 			      );
-    pTrack->fTip = trackView.d0(); // no
+    pTrack->fTip = trackView.dxy(); // no
     pTrack->fLip = trackView.dsz(); // no
 
-    pTrack->fd0  = trackView.dxy();
-    pTrack->fd0E = trackView.dxyError();
+    pTrack->fd0  = trackView.d0();
+    pTrack->fd0E = trackView.d0Error();
     pTrack->fdz  = trackView.dz();
     pTrack->fdzE = trackView.dzError();
 
@@ -150,11 +155,19 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     pTrack->fChi2 = trackView.chi2();
     pTrack->fDof = int(trackView.ndof());
     pTrack->fValidHits = trackView.numberOfValidHits();  
-    pTrack->fMuID = 0.; 
-    for (int im = 0; im < muonIndices.size(); ++im) {
+    pTrack->fAlgorithm = trackView.algo(); 
+
+    // -- Muon ID
+    pTrack->fMuIndex = -1; 
+    pTrack->fMuID    = -1;
+    for (unsigned int im = 0; im < muonIndices.size(); ++im) {
       if (i == muonIndices[im]) {
-	pTrack->fMuID = 1.;
-	if (fVerbose > 0) cout << " ==>HFDumpTracks> Found a muon!!" << endl;
+	if (fVerbose > 3) cout << " ==>HFDumpTracks> Found a muon!!" << endl;
+	
+	const Muon &rMuon  = hMuons->at(muonCollectionIndices[im]);
+
+	pTrack->fMuIndex = muonCollectionIndices[im]; 
+	pTrack->fMuID    = HFDumpMuons::muonID(rMuon);
       }
     }
 
@@ -173,7 +186,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       gen_id     = gHFEvent->getGenIndex(trackView.px(), trackView.py(), trackView.pz(), -1); 
       if (gen_id > -1) gen_pdg_id = gHFEvent->getGenCand(gen_id)->fID; 
       if (13 == TMath::Abs(gen_pdg_id)) {
-	if (fVerbose > 0) cout << "Simple TM: "; pTrack->dump(); 
+	if (fVerbose > 4) cout << "Simple TM: "; pTrack->dump(); 
       }
     }
 
@@ -215,13 +228,13 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	       simTrack != simTracks->end(); 
 	       simTrack++)   { 
 	    
-	    if (simTrack->trackId() == currentId) {
+	    if (static_cast<int>(simTrack->trackId()) == currentId) {
 	      int igen = simTrack->genpartIndex();
 	      HepMC::GenParticle *genPar = genEvent->barcode_to_particle(igen);
 	      if (genPar) {
 		gen_pdg_id = (*genPar).pdg_id();
 		gen_id     = (*genPar).barcode()-1;  // BC(HepMC) = BC(reco)+1
-		if (fVerbose > 0) cout << Form("id = %i, bc = %i", gen_pdg_id, gen_id) << endl;
+		if (fVerbose > 4) cout << Form("id = %i, bc = %i", gen_pdg_id, gen_id) << endl;
 		goto done;
 	      }
 	    }
@@ -233,9 +246,13 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     
     pTrack->fGenIndex = gen_id;
     pTrack->fMCID     = gen_pdg_id;
-    if (fVerbose > 0) pTrack->dump(); 
    }
-  
+
+  if (fVerbose > 0) {
+    for (int it = 0; it < gHFEvent->nRecTracks(); ++it) {
+      gHFEvent->getRecTrack(it)->dump();
+    }
+  }
 
 }
 
@@ -247,7 +264,7 @@ void  HFDumpTracks::beginJob(const edm::EventSetup& setup) {
   cout << "fAssociator = " << fAssociator << endl;
 
   gHFFile->cd();
-  TH1D *h1 = new TH1D("h2", "h2", 20, 0., 20.);
+  //  TH1D *h1 = new TH1D("h2", "h2", 20, 0., 20.);
 
 }
 
