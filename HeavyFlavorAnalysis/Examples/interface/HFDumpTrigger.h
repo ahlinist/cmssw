@@ -28,18 +28,11 @@ class HFDumpTrigger : public edm::EDAnalyzer {
 
   int           fVerbose;
   int           fNevt;
-  edm::InputTag fHLTriggerLabel;
-  std::string   fHLTriggerName;
 
   std::string   fL1GTReadoutRecordLabel; 
   edm::InputTag fL1GTmapLabel;
   edm::InputTag fL1MuonsLabel;
-
   edm::InputTag fTriggerEventLabel;
   edm::InputTag fHLTResultsLabel;
-
-  std::string   fL1TriggerName;
-  std::string   fparticleMap;
-
 };
 

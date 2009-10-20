@@ -14,8 +14,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
 
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicVertex.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
@@ -33,6 +35,7 @@ class HFMuonAndTrack : public edm::EDAnalyzer {
   virtual void beginJob(const edm::EventSetup&) ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
+  void         doVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand);
 
   int           fVerbose; 
   std::string   fTracksLabel, fPrimaryVertexLabel;

@@ -14,8 +14,11 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaVertex.hh"
+#include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaCand.hh"
+
 
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicVertex.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicParticle.h"
@@ -36,12 +39,14 @@ class HFBs2JpsiPhi : public edm::EDAnalyzer {
 
 
   RefCountedKinematicTree doVertexFit(std::vector<reco::Track> &Tracks);
+  void          doJpsiVertexFit(std::vector<reco::Track> &Tracks, int iMuon1, int iMuon2, TAnaCand *pCand);
 
   int           fVerbose; 
   std::string   fTracksLabel, fPrimaryVertexLabel;
   edm::InputTag fMuonsLabel;
 
   double        fMuonPt, fTrackPt, fDeltaR;
+  int           fType; 
 
   reco::Vertex  fPV;
 

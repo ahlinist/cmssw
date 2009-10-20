@@ -27,7 +27,8 @@ using namespace::std;
 
 // ----------------------------------------------------------------------
 HFTree::HFTree(const edm::ParameterSet& iConfig) :
-  fRequireCand(iConfig.getUntrackedParameter<bool>("requireCand", true)) {
+  fRequireCand(iConfig.getUntrackedParameter<bool>("requireCand", true)), 
+  fVerbose(iConfig.getUntrackedParameter<int>("verbose", 1)) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
   cout << "--- HFTree constructor" << endl;
@@ -64,13 +65,19 @@ void HFTree::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
     
   if (fRequireCand){
     if (gHFEvent->nCands() > 0) {
-      cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
-	   << " event: "  << gHFEvent->fEventNumber 
-	   << " Cand: ";
-      for (int i = 0; i < gHFEvent->nCands(); ++i) {
-	cout << gHFEvent->getCand(i)->fType << " ";
+      if (fVerbose > 0) {
+	cout << "HFTree> filling tree for run: " << gHFEvent->fRunNumber
+	     << " event: "  << gHFEvent->fEventNumber ;
+
+	if (fVerbose > 1) {
+	  cout << " Cand: ";
+	
+	  for (int i = 0; i < gHFEvent->nCands(); ++i) {
+	    cout << gHFEvent->getCand(i)->fType << " ";
+	  }
+	}
+	cout << endl;
       }
-      cout << endl;
       fTree->Fill();
     } 
   } else {
