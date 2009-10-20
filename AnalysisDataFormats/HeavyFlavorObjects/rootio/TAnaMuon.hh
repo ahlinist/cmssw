@@ -18,14 +18,14 @@ public:
   void dump();
 
   // ----------------------------------------------------------------------
-  TVector3  fTrkPlab;
+  TVector3  fInnerPlab, fOuterPlab, fGlobalPlab; 
 
   // see AN2008_098 "Muon identification in CMS"
   double    fMuonChi2, fMuonZ, fMuonR;
   double    fCaloComp, fSegmComp, fIsolation; 
-
   int       fNhitsCSC, fNhitsDT,fNhitsRPC; 
-  int       fMuID;                           // bit mask containing the standard selectors 
+  float     fTimeInOut, fTimeInOutE, fTimeOutIn, fTimeOutInE; 
+  int       fTimeNdof;
 
 private:
 

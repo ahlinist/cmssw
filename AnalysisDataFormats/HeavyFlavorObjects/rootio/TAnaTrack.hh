@@ -31,6 +31,7 @@ public:
   int            fDof, fValidHits;
   double         fChi2;
   // ?? Add the full information? 
+  int            fAlgorithm;                    // see DataFormats/TrackReco/interface/TrackBase.h
   int            fHitPattern[20];               // see DataFormats/TrackReco/interface/HitPattern.h
 
   double         fdz, fdzE, fd0, fd0E;          // the verbatim track parameters
@@ -38,8 +39,9 @@ public:
 
   int            fMuID, fMuIndex; 
 
-  // -- to be filled
-  int            fType1, fType2, fType3, fType4, fType5;
+  // -- reserve
+  int            fInt1,    fInt2;
+  double         fDouble1, fDouble2;
 
 
 
