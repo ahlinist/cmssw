@@ -43,7 +43,6 @@ $(addprefix obj/,%.o) : $(addprefix rootio/,%.cc )
 
 
 ANA00   =    TAna01Event.o TAna01EventDict.o \
-             TAna00Event.o TAna00EventDict.o \
              TGenCand.o TGenCandDict.o \
              TAnaTrack.o TAnaTrackDict.o \
              TAnaMuon.o TAnaMuonDict.o \
@@ -65,8 +64,6 @@ all:
 	@$(MAKE) util
 	@$(MAKE) writeA01Event
 	@$(MAKE) readA01Event
-	@$(MAKE) writeA00Event
-	@$(MAKE) readA00Event
 	@$(MAKE) runTreeReader01
 	@$(MAKE) runMyReader01
 	@$(MAKE) links
@@ -78,9 +75,6 @@ ana00: $(addprefix obj/,$(ANA00))
 
 rootio/TAna01EventDict.cc: rootio/TAna01Event.hh 
 	cd rootio && $(ROOTCINT) -f TAna01EventDict.cc -c TAna01Event.hh && cd -
-
-rootio/TAna00EventDict.cc: rootio/TAna00Event.hh 
-	cd rootio && $(ROOTCINT) -f TAna00EventDict.cc -c TAna00Event.hh && cd -
 
 rootio/TGenCandDict.cc: rootio/TGenCand.hh 
 	cd rootio && $(ROOTCINT) -f TGenCandDict.cc -c TGenCand.hh  && cd - 
@@ -151,19 +145,6 @@ runMyReader01: test/myReader01.hh test/myReader01.cc
 
 
 
-# ======================================================================
-writeA00Event: test/writeA00Event.cc
-# ----------------------------------
-	cd test && $(CXX) $(CXXFLAGS) -c writeA00Event.cc -o ../obj/writeA00Event.o && cd - 
-	cd test && $(LD) $(LDFLAGS)  -o ../bin/writeA00Event ../obj/writeA00Event.o $(GLIBS) ../lib/libAna00.so && cd - 
-
-# ======================================================================
-readA00Event: test/readA00Event.cc
-# --------------------------------
-	cd test && $(CXX) $(CXXFLAGS) -c readA00Event.cc -o ../obj/readA00Event.o && cd - 
-	cd test && $(LD) $(LDFLAGS)  -o ../bin/readA00Event ../obj/readA00Event.o $(GLIBS) ../lib/libAna00.so && cd - 
-
-
 # ================================================================================
 runTreeReader: test/treeReader.cc test/treeReader.cc
 # --------------------------------------------------
@@ -208,7 +189,6 @@ clean:
 # --------------------------------------------------------------------------------
 cleanall:
 	@$(MAKE) clean
-	rm -f bin/writeA00Event bin/readA00Event
-	rm -f bin/runTreeReader bin/runTrigReader
+	rm -f bin/writeA01Event bin/readA01Event
 	rm -f ../../../lib/$(SCRAM_ARCH)/libAna00.so
 
