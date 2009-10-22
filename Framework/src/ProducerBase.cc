@@ -25,11 +25,11 @@ namespace edm {
    namespace {
      class CallbackWrapper {
        public:  
-        CallbackWrapper(boost::shared_ptr<ProducerBase> iProd,
+        CallbackWrapper(ProducerBase* iProd,
                         boost::function<void(const BranchDescription&)> iCallback,
                         ProductRegistry* iReg,
                         const ModuleDescription& iDesc):
-        prod_(&(*iProd)), callback_(iCallback), reg_(iReg), mdesc_(iDesc),
+        prod_(iProd), callback_(iCallback), reg_(iReg), mdesc_(iDesc),
         lastSize_(iProd->typeLabelList().size()) {}
         
         void operator()(const BranchDescription& iDesc) {
@@ -59,7 +59,7 @@ namespace edm {
   }
 
 
-  void ProducerBase::registerProducts(boost::shared_ptr<ProducerBase> producer,
+  void ProducerBase::registerProducts(ProducerBase* producer,
 				ProductRegistry* iReg,
 				ModuleDescription const& md)
   {

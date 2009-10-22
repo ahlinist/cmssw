@@ -29,8 +29,8 @@ namespace edm {
     /// used by the fwk to register list of products
     boost::function<void(const BranchDescription&)> registrationCallback() const;
 
-    void registerProducts(boost::shared_ptr<ProducerBase>,
-			ProductRegistry *,
+    void registerProducts(ProducerBase*,
+			ProductRegistry*,
 			ModuleDescription const&);
 
     using ProductRegistryHelper::produces;
