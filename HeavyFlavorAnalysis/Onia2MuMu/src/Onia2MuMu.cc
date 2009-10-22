@@ -250,16 +250,14 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_glb_dzerr",    Reco_mu_glb_dzerr,   "Reco_mu_glb_dzerr[Reco_mu_glb_size]/D");
       fTree->Branch("Reco_mu_glb_normChi2",     Reco_mu_glb_normChi2,    "Reco_mu_glb_normChi2[Reco_mu_glb_size]/D");
     // fTree->Branch("Reco_mu_glb_ndof",     Reco_mu_glb_ndof,    "Reco_mu_glb_ndof[Reco_mu_glb_size]/D");
-      fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");
-      if (!theAODFlag) {
-	fTree->Branch("Reco_mu_glb_nhitsStrip",    Reco_mu_glb_nhitsStrip,   "Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsPixB",    Reco_mu_glb_nhitsPixB,   "Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsPixE",    Reco_mu_glb_nhitsPixE,   "Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsPix1Hit",    Reco_mu_glb_nhitsPix1Hit,   "Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsPix1HitBE",    Reco_mu_glb_nhitsPix1HitBE,   "Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
-	fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
-      }
+      fTree->Branch("Reco_mu_glb_nhitstrack",    Reco_mu_glb_nhitstrack,   "Reco_mu_glb_nhitstrack[Reco_mu_glb_size]/I");      
+      fTree->Branch("Reco_mu_glb_nhitsStrip",    Reco_mu_glb_nhitsStrip,   "Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPixB",    Reco_mu_glb_nhitsPixB,   "Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPixE",    Reco_mu_glb_nhitsPixE,   "Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPix1Hit",    Reco_mu_glb_nhitsPix1Hit,   "Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsPix1HitBE",    Reco_mu_glb_nhitsPix1HitBE,   "Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsDT",    Reco_mu_glb_nhitsDT,   "Reco_mu_glb_nhitsDT[Reco_mu_glb_size]/I");
+      fTree->Branch("Reco_mu_glb_nhitsCSC",    Reco_mu_glb_nhitsCSC,   "Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]/I");
       fTree->Branch("Reco_mu_glb_caloComp",   Reco_mu_glb_caloComp,  "Reco_mu_glb_caloComp[Reco_mu_glb_size]/D"); 
       fTree->Branch("Reco_mu_glb_segmComp",   Reco_mu_glb_segmComp,  "Reco_mu_glb_segmComp[Reco_mu_glb_size]/D"); 
       fTree->Branch("Reco_mu_glb_iso",   Reco_mu_glb_iso,  "Reco_mu_glb_iso[Reco_mu_glb_size]/D");  
@@ -283,7 +281,12 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_trk_dzerr",    Reco_mu_trk_dzerr,   "Reco_mu_trk_dzerr[Reco_mu_trk_size]/D");
       fTree->Branch("Reco_mu_trk_normChi2",     Reco_mu_trk_normChi2,    "Reco_mu_trk_normChi2[Reco_mu_trk_size]/D");
     // fTree->Branch("Reco_mu_trk_ndof",     Reco_mu_trk_ndof,    "Reco_mu_trk_ndof[Reco_mu_trk_size]/D");
-      fTree->Branch("Reco_mu_trk_nhitstrack",    Reco_mu_trk_nhitstrack,   "Reco_mu_trk_nhitstrack[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitstrack",    Reco_mu_trk_nhitstrack,   "Reco_mu_trk_nhitstrack[Reco_mu_trk_size]/I");      
+      fTree->Branch("Reco_mu_trk_nhitsStrip",    Reco_mu_trk_nhitsStrip,   "Reco_mu_trk_nhitsStrip[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsPixB",    Reco_mu_trk_nhitsPixB,   "Reco_mu_trk_nhitsPixB[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsPixE",    Reco_mu_trk_nhitsPixE,   "Reco_mu_trk_nhitsPixE[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsPix1Hit",    Reco_mu_trk_nhitsPix1Hit,   "Reco_mu_trk_nhitsPix1Hit[Reco_mu_trk_size]/I");
+      fTree->Branch("Reco_mu_trk_nhitsPix1HitBE",    Reco_mu_trk_nhitsPix1HitBE,   "Reco_mu_trk_nhitsPix1HitBE[Reco_mu_trk_size]/I");
       // fTree->Branch("Reco_mu_trk_nhitsDT",    Reco_mu_trk_nhitsDT,   "Reco_mu_trk_nhitsDT[Reco_mu_trk_size]/I");
       // fTree->Branch("Reco_mu_trk_nhitsCSC",    Reco_mu_trk_nhitsCSC,   "Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]/I");
       fTree->Branch("Reco_mu_trk_PIDmask",    Reco_mu_trk_PIDmask,   "Reco_mu_trk_PIDmask[Reco_mu_trk_size]/I");
@@ -311,6 +314,11 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
       fTree->Branch("Reco_mu_cal_normChi2",     Reco_mu_cal_normChi2,    "Reco_mu_cal_normChi2[Reco_mu_cal_size]/D");
     // fTree->Branch("Reco_mu_cal_ndof",     Reco_mu_cal_ndof,    "Reco_mu_cal_ndof[Reco_mu_cal_size]/D");
       fTree->Branch("Reco_mu_cal_nhitstrack",    Reco_mu_cal_nhitstrack,   "Reco_mu_cal_nhitstrack[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_nhitsStrip",    Reco_mu_cal_nhitsStrip,   "Reco_mu_cal_nhitsStrip[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_nhitsPixB",    Reco_mu_cal_nhitsPixB,   "Reco_mu_cal_nhitsPixB[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_nhitsPixE",    Reco_mu_cal_nhitsPixE,   "Reco_mu_cal_nhitsPixE[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_nhitsPix1Hit",    Reco_mu_cal_nhitsPix1Hit,   "Reco_mu_cal_nhitsPix1Hit[Reco_mu_cal_size]/I");
+      fTree->Branch("Reco_mu_cal_nhitsPix1HitBE",    Reco_mu_cal_nhitsPix1HitBE,   "Reco_mu_cal_nhitsPix1HitBE[Reco_mu_cal_size]/I");
       fTree->Branch("Reco_mu_cal_caloComp",   Reco_mu_cal_caloComp,  "Reco_mu_cal_caloComp[Reco_mu_cal_size]/D");   
     }
 
@@ -1355,17 +1363,16 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       // Reco_mu_glb_ndof[Reco_mu_glb_size]=glbTrack->ndof();
       Reco_mu_glb_nhitstrack[Reco_mu_glb_size]=innTrack->numberOfValidHits();
  
-      if ( !theAODFlag ) {
-	std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
-	Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theMuonHits.at(0);
-	Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theMuonHits.at(1);
-	std::vector<unsigned int> theTrackHits = this->trackStatHits(*glbTrack);
-	Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]=theTrackHits.at(0);
-	Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]=theTrackHits.at(1);
-	Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]=theTrackHits.at(2);
-	Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]=theTrackHits.at(3);
-	Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]=theTrackHits.at(4);
-      }
+      // if ( !theAODFlag ) {
+      std::vector<unsigned int> theHits = this->trackHits(*glbTrack);
+      Reco_mu_glb_nhitsDT[Reco_mu_glb_size]=theHits.at(0);
+      Reco_mu_glb_nhitsCSC[Reco_mu_glb_size]=theHits.at(1);
+      Reco_mu_glb_nhitsStrip[Reco_mu_glb_size]=theHits.at(3);
+      Reco_mu_glb_nhitsPixB[Reco_mu_glb_size]=theHits.at(4);
+      Reco_mu_glb_nhitsPixE[Reco_mu_glb_size]=theHits.at(5);
+      Reco_mu_glb_nhitsPix1Hit[Reco_mu_glb_size]=theHits.at(6);
+      Reco_mu_glb_nhitsPix1HitBE[Reco_mu_glb_size]=theHits.at(7);
+	// }
 
       Reco_mu_glb_caloComp[Reco_mu_glb_size]=muoni->caloCompatibility();
       Reco_mu_glb_segmComp[Reco_mu_glb_size]=muon::segmentCompatibility(*muoni);;
@@ -1415,7 +1422,13 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       // Reco_mu_trk_ndof[Reco_mu_trk_size]=innTrack->ndof();
       Reco_mu_trk_nhitstrack[Reco_mu_trk_size]=innTrack->numberOfValidHits();
 
-     
+      std::vector<unsigned int> theHits = this->trackHits(*innTrack);
+      Reco_mu_trk_nhitsStrip[Reco_mu_trk_size]=theHits.at(3);
+      Reco_mu_trk_nhitsPixB[Reco_mu_trk_size]=theHits.at(4);
+      Reco_mu_trk_nhitsPixE[Reco_mu_trk_size]=theHits.at(5);
+      Reco_mu_trk_nhitsPix1Hit[Reco_mu_trk_size]=theHits.at(6);
+      Reco_mu_trk_nhitsPix1HitBE[Reco_mu_trk_size]=theHits.at(7);
+
       // std::vector<unsigned int> theMuonHits = this->muonStatHits(*glbTrack);
       // Reco_mu_trk_nhitsDT[Reco_mu_trk_size]=-1;
       // Reco_mu_trk_nhitsCSC[Reco_mu_trk_size]=-1;
@@ -1481,6 +1494,13 @@ void Onia2MuMu::fillMuons(const edm::Event &iEvent){
       // Reco_mu_cal_ndof[Reco_mu_cal_size]=innTrack->ndof();
       Reco_mu_cal_nhitstrack[Reco_mu_cal_size]=innTrack->numberOfValidHits();
  
+      std::vector<unsigned int> theHits = this->trackHits(*innTrack);
+      Reco_mu_cal_nhitsStrip[Reco_mu_cal_size]=theHits.at(3);
+      Reco_mu_cal_nhitsPixB[Reco_mu_cal_size]=theHits.at(4);
+      Reco_mu_cal_nhitsPixE[Reco_mu_cal_size]=theHits.at(5);
+      Reco_mu_cal_nhitsPix1Hit[Reco_mu_cal_size]=theHits.at(6);
+      Reco_mu_cal_nhitsPix1HitBE[Reco_mu_cal_size]=theHits.at(7);
+
       Reco_mu_cal_caloComp[Reco_mu_cal_size]=calmuoni->caloCompatibility();
 
       /* TMatrixD cov1(5,5);
@@ -2268,9 +2288,11 @@ bool Onia2MuMu::isAbHadron(int pdgID) const {
 }
 
 /////////////////////////////////////////////////////////////////////
-// Number of hits per muon
+// Number of hits per muon/track
 /////////////////////////////////////////////////////////////////////
-std::vector<unsigned int> Onia2MuMu::muonStatHits(const reco::Track& tr) {
+
+// OLD WAY (non funziona con gli aoddi')
+/* std::vector<unsigned int> Onia2MuMu::muonStatHits(const reco::Track& tr) {
 
   std::vector<unsigned int> theMuonHits;
   unsigned int nRecHitDT(0), nRecHitCSC(0), nRecHitRPC(0);
@@ -2312,6 +2334,38 @@ std::vector<unsigned int> Onia2MuMu::trackStatHits(const reco::Track& tr) {
   if (firstlayer==0&&firstdisk==0) {theTrackHits.push_back(firstlayer);theTrackHits.push_back(0);}
 
   return theTrackHits; 
+  } */
+
+// SMART WAY (Boris)
+std::vector<unsigned int> Onia2MuMu::trackHits(const reco::Track& tr) {
+
+  std::vector<unsigned int> theTrackHits;
+  const reco::HitPattern& p = tr.hitPattern();
+
+  theTrackHits.push_back(p.numberOfValidMuonDTHits()); 
+  theTrackHits.push_back(p.numberOfValidMuonCSCHits());
+  theTrackHits.push_back(p.numberOfValidMuonRPCHits());
+  theTrackHits.push_back(p.numberOfValidStripHits()); 
+  theTrackHits.push_back(p.numberOfValidPixelBarrelHits());
+  theTrackHits.push_back(p.numberOfValidPixelEndcapHits());
+
+  // do not loop over the hits of the track
+  uint32_t firsthit = p.getHitPattern(0);
+    
+  // if the hit is valid and in pixel barrel... etc. etc.
+  if (p.validHitFilter(firsthit) && p.pixelBarrelHitFilter(firsthit)) {
+    theTrackHits.push_back(p.getLayer(firsthit));
+    theTrackHits.push_back(1);
+  } else if (p.validHitFilter(firsthit) && p.pixelEndcapHitFilter(firsthit)) {
+    theTrackHits.push_back(p.getLayer(firsthit));
+    theTrackHits.push_back(2);
+  } else {
+    theTrackHits.push_back(p.getLayer(firsthit));
+    theTrackHits.push_back(0);
+  }
+
+  return theTrackHits; 
+  
 }
 
 //define this as a plug-in

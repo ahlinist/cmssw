@@ -64,6 +64,7 @@
 #include "DataFormats/SiPixelDetId/interface/PixelModuleName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
+#include "DataFormats/TrackReco/interface/HitPattern.h"
 
 #include <memory>
 #include <iostream>
@@ -124,8 +125,9 @@ class Onia2MuMu : public edm::EDAnalyzer {
       TLorentzVector lorentzMomentum(const reco::PFCandidate& pfcl) const;
       TLorentzVector lorentzMomentumPi(const reco::Track& tr) const;
       TLorentzVector lorentzMomentumKa(const reco::Track& tr) const;
-      std::vector<unsigned int> muonStatHits(const reco::Track& tr);
-      std::vector<unsigned int> trackStatHits(const reco::Track& tr);
+      // std::vector<unsigned int> muonStatHits(const reco::Track& tr);
+      // std::vector<unsigned int> trackStatHits(const reco::Track& tr);
+      std::vector<unsigned int> trackHits(const reco::Track& tr);
       TLorentzVector lorentzTriObj(const trigger::TriggerObject& muon) const;
       double invMass(const reco::Track& lhs, const reco::Track& rhs) const;
 
@@ -249,7 +251,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_glb_caloComp[200];    // Vector of calorimeter compatibilities
       double Reco_mu_glb_segmComp[200];    // Vector of muon segment compatibilities 
       double Reco_mu_glb_iso[200];    // Vector of isolations (NOW ONLY SUMPt OF TRACKS) 
-      int Reco_mu_glb_nhitsStrip[200];
+      int Reco_mu_glb_nhitsStrip[200];  // Vectors of strip/pixel hits
       int Reco_mu_glb_nhitsPixB[200];
       int Reco_mu_glb_nhitsPixE[200];
       int Reco_mu_glb_nhitsPix1Hit[200];
@@ -271,7 +273,14 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_trk_normChi2[200];   // Vector of chi2/ndof of tracker muons
       // double Reco_mu_trk_ndof[200];   // Vector of ndof of tracker muons
       // int Reco_mu_trk_nhitsCSC[200];    // Vector of number of valid hits of tracker muons
-      // int Reco_mu_trk_nhitsDT[200];    // Vector of number of valid hits of tracker muons 
+      // int Reco_mu_trk_nhitsDT[200];    // Vector of number of valid hits of tracker muons
+      int Reco_mu_trk_nhitstrack[200];    // Vector of number of valid hits of tracker muons
+      int Reco_mu_trk_nhitsStrip[200];  // Vectors of strip/pixel hits
+      int Reco_mu_trk_nhitsPixB[200];
+      int Reco_mu_trk_nhitsPixE[200];
+      int Reco_mu_trk_nhitsPix1Hit[200];
+      int Reco_mu_trk_nhitsPix1HitBE[200];
+
       int Reco_mu_trk_PIDmask[200];    // Bit word of TM selectors:
                                        // 1st bit : AllTrackerMuons = checks isTrackerMuon flag
                                        // 2nd bit : TrackerMuonArbitrated = resolve ambiguity of sharing segments
@@ -283,7 +292,6 @@ class Onia2MuMu : public edm::EDAnalyzer {
                                        // 8th bit : TMOneStationTight = require one well matched segment
                                        // 9th bit : TMLastStationOptimizedLowPtLoose = combination of TMLastStation and TMOneStation
                                        // 10th bit : TMLastStationOptimizedLowPtTight = combination of TMLastStation and TMOneStation     
-      int Reco_mu_trk_nhitstrack[200];    // Vector of number of valid hits of tracker muons
       double Reco_mu_trk_caloComp[200];    // Vector of calorimeter compatibilities
       double Reco_mu_trk_segmComp[200];    // Vector of muon segment compatibilities 
       double Reco_mu_trk_iso[200];    // Vector of isolations (NOW ONLY SUMPt OF TRACKS) 
@@ -303,6 +311,11 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double Reco_mu_cal_normChi2[200];   // Vector of chi2/ndof of calo muons
       // double Reco_mu_cal_ndof[200];   // Vector of ndof of calo muons
       int Reco_mu_cal_nhitstrack[200];    // Vector of number of valid hits of calo muons
+      int Reco_mu_cal_nhitsStrip[200];  // Vectors of strip/pixel hits
+      int Reco_mu_cal_nhitsPixB[200];
+      int Reco_mu_cal_nhitsPixE[200];
+      int Reco_mu_cal_nhitsPix1Hit[200];
+      int Reco_mu_cal_nhitsPix1HitBE[200];
       double Reco_mu_cal_caloComp[200];    // Vector of calorimeter compatibilities 
 
 /////////////////// PAT muons
