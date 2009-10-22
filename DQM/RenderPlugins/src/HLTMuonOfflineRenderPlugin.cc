@@ -5,8 +5,11 @@
   \\
 
 
-  $Id: HLTRenderPlugin.cc,v 1.8 2009/09/21 14:34:02 rekovic Exp $
-  $Log: HLTRenderPlugin.cc,v $
+  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.1 2009/10/14 11:17:53 slaunwhj Exp $
+  $Log: HLTMuonOfflineRenderPlugin.cc,v $
+  Revision 1.1  2009/10/14 11:17:53  slaunwhj
+  RenderPlugin for HLT Muon offline DQM plots
+
   Revision 1.8  2009/09/21 14:34:02  rekovic
   Fix FourVector renders
 
@@ -104,10 +107,27 @@ private:
 
       }
 
-      if (o.name.find("recPassPt") != std::string::npos)
+      if ( o.name.find("genEff") != std::string::npos)
+      {
+        
+        obj->SetMinimum(0);
+        obj->SetMaximum(1.0);
+
+      }
+
+      if (o.name.find("PassPt") != std::string::npos)
         {
           
           gPad->SetLogy();
+          
+        }
+
+      if (o.name.find("genTurnOn") != std::string::npos)
+        {
+          
+          gPad->SetLogy();
+          obj->SetMinimum(0);
+          obj->SetMaximum(1.0);
           
         }
 
