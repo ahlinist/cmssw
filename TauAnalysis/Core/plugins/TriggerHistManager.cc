@@ -115,21 +115,23 @@ void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventS
   }
 
 //--- fill histograms for HLT results 
-  edm::Handle<edm::TriggerResults> hltResults;
-  evt.getByLabel(hltResultsSrc_, hltResults);
+  if ( hltResultsSrc_.label() != "" ) {
+    edm::Handle<edm::TriggerResults> hltResults;
+    evt.getByLabel(hltResultsSrc_, hltResults);
 
-  edm::TriggerNames triggerNames;
-  triggerNames.init(*hltResults);
-
-  for ( vstring::const_iterator hltPath = hltPaths_.begin();
-	hltPath != hltPaths_.end(); ++hltPath ) {
-    unsigned int index = triggerNames.triggerIndex(*hltPath);
-    if ( index < triggerNames.size() ) {
-      bool isTriggered = ( hltResults->accept(index) ) ? true : false;
-      hHLTresults_[*hltPath]->Fill(isTriggered, evtWeight);
-    } else {
-      edm::LogError ("TriggerResultEventSelector::operator") << " Undefined HLT path = " << (*hltPath) << " --> skipping !!";
-      continue;
+    edm::TriggerNames triggerNames;
+    triggerNames.init(*hltResults);
+    
+    for ( vstring::const_iterator hltPath = hltPaths_.begin();
+	  hltPath != hltPaths_.end(); ++hltPath ) {
+      unsigned int index = triggerNames.triggerIndex(*hltPath);
+      if ( index < triggerNames.size() ) {
+	bool isTriggered = ( hltResults->accept(index) ) ? true : false;
+	hHLTresults_[*hltPath]->Fill(isTriggered, evtWeight);
+      } else {
+	edm::LogError ("TriggerResultEventSelector::operator") << " Undefined HLT path = " << (*hltPath) << " --> skipping !!";
+	continue;
+      }
     }
   }
 }
