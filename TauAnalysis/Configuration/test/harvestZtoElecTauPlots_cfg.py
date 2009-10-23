@@ -17,7 +17,8 @@ process.source = cms.Source("EmptySource")
 # in case running jobs on the CERN batch system
 #
 process.loadZtoElecTau = cms.EDAnalyzer("DQMFileLoader",
-    #process# = copy.deepcopy(#inputFileNames#)
+    #process# = copy.deepcopy(#inputFileNames#),
+    inputFilePath = cms.string(#inputFilePath#)
 )
 
 process.saveZtoElecTau = cms.EDAnalyzer("DQMSimpleFileSaver",
