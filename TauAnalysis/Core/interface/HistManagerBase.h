@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: HistManagerBase.h,v 1.3 2009/08/16 13:57:11 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.4 2009/08/28 13:14:29 veelken Exp $
  *
  */
 
@@ -48,6 +48,15 @@ class HistManagerBase : public AnalyzerPluginBase
     return kNormUndefined;
   }
   int normMethod_;
+
+  double getWeight(double evtWeight, double objWeight, double objWeightSum)
+  { 
+    if ( normMethod_ == kNormEvents ) {
+      return ( objWeightSum != 0. ) ? evtWeight*(objWeight/objWeightSum) : 0.;
+    } else {
+      return objWeight;
+    }
+  }
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
