@@ -66,7 +66,7 @@ analyzeZtoDiTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         metHistManager,
         jetHistManager,
         vertexHistManager,
-        triggerHistManager
+        triggerHistManagerForDiTau
     ),
 
     eventDumps = cms.VPSet(

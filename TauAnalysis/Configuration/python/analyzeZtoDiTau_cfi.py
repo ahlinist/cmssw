@@ -35,7 +35,9 @@ from TauAnalysis.Core.vertexHistManager_cfi import *
 
 # import config for L1 & HLT histogram manager
 from TauAnalysis.Core.triggerHistManager_cfi import *
-triggerHistManager.l1Bits = cms.vstring(
+triggerHistManagerForDiTau = copy.deepcopy(triggerHistManager)
+triggerHistManagerForDiTau.pluginName = cms.string('triggerHistManagerForDiTau')
+triggerHistManagerForDiTau.l1Bits = cms.vstring(
     'L1_SingleEG10',
     'L1_SingleEG12',
     'L1_SingleEG15',
@@ -57,7 +59,7 @@ triggerHistManager.l1Bits = cms.vstring(
     'L1_ETM50',
     'L1_ETM60'
 )
-triggerHistManager.hltPaths = cms.vstring(
+triggerHistManagerForDiTau.hltPaths = cms.vstring(
     'HLT_IsoTau_MET65_Trk20',
     'HLT_IsoTau_MET35_Trk15_L1MET',
     'HLT_DoubleIsoTau_Trk3',
@@ -76,7 +78,7 @@ diTauHistManagers = cms.vstring(
     'metHistManager',
     'jetHistManager',
     'vertexHistManager',
-    'triggerHistManager'
+    'triggerHistManagerForDiTau'
 )
 
 #--------------------------------------------------------------------------------
