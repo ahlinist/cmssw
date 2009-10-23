@@ -42,8 +42,33 @@ def makeReplacementsHarvesting(channel = None, sample = None, replacements = Non
         raise ValueError("Undefined channel Parameter !!")
     if sample is None:
         raise ValueError("Undefined sample Parameter !!")
+    if replacements is None:
+        raise ValueError("Undefined replacements Parameter !!")
+
+    # remove all white-space characters from replacements parameter string
+    replacements = replacements.replace(" ", "")
+
+    # split replacements string into list of individual replace statements
+    # (separated by ";" character)
+    replaceStatements = replacements.split(";")
 
     replaceStatements_retVal = []
+
+    for replaceStatement in replaceStatements:
+
+        # split replacement string into name, value pairs
+	paramNameValuePair = replaceStatement.split("=")
+
+	# check that replacement string matches 'paramName=paramValue' format
+	if len(paramNameValuePair) != 2:
+	    raise ValueError("Invalid format of replace Statement: " + replaceStatement + " !!")
+    
+        # extract name and value to be used for replacement
+	paramName = paramNameValuePair[0]
+	paramValue = paramNameValuePair[1]
+
+	if paramName == "inputFilePath":
+	    replaceStatements_retVal.append(paramName + " = " + "'" + paramValue + "'")
 
     # replace process parameter
     process = sample
