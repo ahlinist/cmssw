@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import sys
 import copy
 
 from TauAnalysis.DQMTools.drawJobConfigurator import *
@@ -17,21 +16,25 @@ from TauAnalysis.DQMTools.drawJobConfigurator import *
 
 class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
 
-    def __init__(self, template, dqmDirectory):
+    def __init__(self, template, dqmDirectory_prefix, dqmDirectory_suffix):
         self.template = template
-        self.dqmDirectory = dqmDirectory        
-        self.dqmDirectories_type = dict()
-        self.dqmDirectories_process = dict()
+        self.dqmDirectory_prefix = dqmDirectory_prefix.value()
+        if not self.dqmDirectory_prefix.endswith("/"):
+            self.dqmDirectory_prefix += "/"
+        self.dqmDirectory_suffix = dqmDirectory_suffix.value()
+        if not self.dqmDirectory_suffix.endswith("/"):
+            self.dqmDirectory_suffix += "/"
+        self.dqmSubDirectories_process = dict()
         self.plots_afterCut = []
         self.plots_beforeCut = []
         self.plots_configEntry = []
         self.pset = cms.PSet()
 
-    def addProcess(self, process, dqmDirectory):
-        self.dqmDirectories_process[process] = dqmDirectory.value()
+    def addProcess(self, process, dqmSubDirectory):
+        self.dqmSubDirectories_process[process] = dqmSubDirectory.value()
 
-        if not self.dqmDirectories_process[process].endswith("/"):
-            self.dqmDirectories_process[process] += "/"
+        if not self.dqmSubDirectories_process[process].endswith("/"):
+            self.dqmSubDirectories_process[process] += "/"
 
     def addPlots(self, afterCut = None, beforeCut = None, plot = None, plots = None):
         
@@ -56,28 +59,21 @@ class drawFakeRateHistConfigurator(cms._ParameterTypeBase):
 
     def configure(self):
 
-        dqmSubDirectoryStructure = self.dqmDirectory.split("/", 1)
-        dqmDirectory_part01 = dqmSubDirectoryStructure[0]
-        if not dqmDirectory_part01.endswith("/"):
-            dqmDirectory_part01 += "/"
-        dqmDirectory_part02 = dqmSubDirectoryStructure[1]
-        if not dqmDirectory_part02.endswith("/"):
-            dqmDirectory_part02 += "/"
-        
-        for processName, dqmDirectory_process in self.dqmDirectories_process.items():
+        for processName, dqmSubDirectory_process in self.dqmSubDirectories_process.items():
 
             drawJobConfigurator_process = drawJobConfigurator(
                 template = self.template,
-                dqmDirectory = dqmDirectory_part01 + dqmDirectory_process + dqmDirectory_part02
+                dqmDirectory = self.dqmDirectory_prefix + dqmSubDirectory_process + self.dqmDirectory_suffix
             )
-            
+
             for iPlot in range(len(self.plots_configEntry)):
+
                 drawJobConfigEntry_plot = copy.deepcopy(self.plots_configEntry[iPlot])
 
                 name_orig = getattr(self.plots_configEntry[iPlot], "name")
                 name_mod = name_orig.replace("#PROCESSNAME#", processName)
                 setattr(drawJobConfigEntry_plot, "name", name_mod)
-                
+
                 drawJobConfigurator_process.add(
                     afterCut = self.plots_afterCut[iPlot],
                     beforeCut = self.plots_beforeCut[iPlot],
