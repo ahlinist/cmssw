@@ -33,25 +33,26 @@ process.source = cms.Source("EmptySource")
 #--------------------------------------------------------------------------------
 process.loadBgEstFakeRateZtoMuTau_tauIdDiscr = cms.EDAnalyzer("DQMFileLoader",
     tauIdDiscr = cms.PSet(
-        inputFileNames = cms.vstring('/castor/cern.ch/user/v/veelken/plots/ZtoMuTau/plotsZtoMuTau_all.root'),
+        inputFileNames = cms.vstring('rfio:/castor/cern.ch/user/v/veelken/bgEstPlots/ZtoMuTau/plotsZtoMuTau_all_shrinkingCone.root'),
         scaleFactor = cms.double(1.),
         dqmDirectory_store = cms.string('tauIdDiscr')
     )
 )
 
 process.loadBgEstFakeRateZtoMuTau_tauFakeRate = copy.deepcopy(loadZtoMuTau)
-reconfigDQMFileLoader(process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
-                      plotDirectoryName_old = plotDirectoryName,
-                      plotDirectoryName_new = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstPlots/ZtoMuTau/"),
-                      dqmDirectory = 'tauFakeRate/#PROCESSDIR#')
+reconfigDQMFileLoader(
+    process.loadBgEstFakeRateZtoMuTau_tauFakeRate,
+    dqmDirectory = 'tauFakeRate/#PROCESSDIR#'
+)
+process.loadBgEstFakeRateZtoMuTau_tauFakeRate.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/bgEstPlots/ZtoMuTau/")
 
 process.addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'tauFakeRate/harvested/InclusivePPmuX',
-            'tauFakeRate/harvested/PPmuXptGt20'
+            'tauFakeRate/harvested/InclusivePPmuX/zMuTauAnalyzer',
+            'tauFakeRate/harvested/PPmuXptGt20/zMuTauAnalyzer'
         ),
-        dqmDirectory_output = cms.string('tauFakeRate/harvested/qcdSum')
+        dqmDirectory_output = cms.string('tauFakeRate/harvested/qcdSum/zMuTauAnalyzer')
     )                          
 )
 
@@ -74,7 +75,8 @@ drawFakeRateHistConfiguratorZtoMuTau = drawFakeRateHistConfigurator(
         labels = cms.vstring('mcNormScale'),                   
         drawOptionSet = cms.string('default')
     ),
-    dqmDirectory = '#PROCESSDIR#/zMuTauAnalyzer/'
+    dqmDirectory_prefix = cms.string('#PROCESSDIR#'),
+    dqmDirectory_suffix = cms.string('zMuTauAnalyzer')
 )
 
 drawFakeRateHistConfiguratorZtoMuTau.addProcess("Ztautau", processZtoMuTau_Ztautau.config_dqmHistPlotter.dqmDirectory)
@@ -126,12 +128,12 @@ drawFakeRateHistConfiguratorZtoMuTau.addPlots(
 process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     processes = cms.PSet(
         tauIdDiscr = cms.PSet(
-            dqmDirectory = cms.string(''),
+            dqmDirectory = cms.string('tauIdDiscr'),
             legendEntry = cms.string('tauIdDiscr'),
             type = cms.string('smMC')
         ),
         tauFakeRate = cms.PSet(
-            dqmDirectory = cms.string(''),
+            dqmDirectory = cms.string('tauFakeRate'),
             legendEntry = cms.string('tauFakeRate'),
             type = cms.string('smMC')
         )
@@ -185,11 +187,28 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
     indOutputFileName = cms.string('plotBgEstFakeRateZtoMuTau_#PLOT#.png')
 )
 #--------------------------------------------------------------------------------
-  
-process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence( process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
-                                                      + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
-                                                      + process.addBgEstFakeRateZtoMuTau_tauFakeRate
-                                                      + process.plotBgEstFakeRateZtoMuTau )
+
+#--- need to update factorization to work with "tauFakeRate" prefix
+
+# import utility function to enable factorization
+from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoMuTauPlots
+enableFactorization_makeZtoMuTauPlots(process,
+    dqmDirectoryIn_InclusivePPmuX = 'tauFakeRate/harvested/InclusivePPmuX/zMuTauAnalyzer',
+    dqmDirectoryOut_InclusivePPmuX = 'tauFakeRate/harvested/InclusivePPmuX_factorized/zMuTauAnalyzer',
+    dqmDirectoryIn_PPmuXptGt20 = 'tauFakeRate/harvested/PPmuXptGt20/zMuTauAnalyzer',
+    dqmDirectoryOut_PPmuXptGt20 = 'tauFakeRate/harvested/PPmuXptGt20_factorized/zMuTauAnalyzer',
+    seqName_addZtoMuTau_qcdSum = "addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate",
+    seqName_addZtoMuTau = "addBgEstFakeRateZtoMuTau_tauFakeRate")
+
+process.dumpZtoMuTau = cms.EDAnalyzer("DQMStoreDump")
+
+process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
+    process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
+   + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
+   + process.addBgEstFakeRateZtoMuTau_tauFakeRate
+   + process.dumpZtoMuTau
+   + process.plotBgEstFakeRateZtoMuTau
+)
 
 process.p = cms.Path(process.makeBgEstFakeRateZtoMuTauPlots)
 
