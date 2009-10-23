@@ -42,7 +42,7 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 #      (7) queue
 #          name of the batch queue to which is cmsRun job is to be submitted
 #          (e.g. '1nh' (1 hour), '1nd' (24 hours), '1nw' (1 week execution time limit),...)
-#      (8) outputDirectory
+#      (8) outputFilePath
 #          name of the directory (either on afs area or castor)
 #          to which all .root files produced by the cmsRun job will be copied
 #          (e.g. "/castor/cern.ch/user/v/veelken/")
@@ -59,9 +59,9 @@ from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
 def submitToBatch(configFile = None, channel = None, sample = None,
                   replFunction = None, replacements = "",
-                  job = "job", queue = "1nd", outputDirectory = None,
+                  job = "job", queue = "1nd", outputFilePath = None,
                   resourceRequest = None, submit = "yes"):
-    # check that configFile, channel, sample and outputDirectory
+    # check that configFile, channel, sample and outputFilePath
     # parameters are defined and non-empty
     if configFile is None:
         raise ValueError("Undefined configFile Parameter !!")
@@ -69,13 +69,13 @@ def submitToBatch(configFile = None, channel = None, sample = None,
         raise ValueError("Undefined channel Parameter !!")
     if sample is None:
         raise ValueError("Undefined sample Parameter !!")
-    if outputDirectory is None:
-        raise ValueError("Undefined outputDirectory Parameter !!")
+    if outputFilePath is None:
+        raise ValueError("Undefined outputFilePath Parameter !!")
 
-    # in case outputDirectory parameter not terminated by "/",
-    # add terminating "/" character to outputDirectory string
-    if not outputDirectory.endswith("/"):
-        outputDirectory += "/"
+    # in case outputFilePath parameter not terminated by "/",
+    # add terminating "/" character to outputFilePath string
+    if not outputFilePath.endswith("/"):
+        outputFilePath += "/"
 
     # get name of directory in which config files will be created;
     # add terminating "/" character to submissionDirectory string also,
@@ -112,10 +112,10 @@ def submitToBatch(configFile = None, channel = None, sample = None,
 
     # create shell script for submission of cmsRun job to the CERN batch system
     # (copy all .root files produced by the cmsRun job to directory specified
-    #  by outputDirectory parameter given as function argument;
+    #  by outputFilePath parameter given as function argument;
     #  use 'rfcp' for copying to castor and 'scp' for copying to afs area)
     cp = None
-    if outputDirectory.find("/castor") != -1:
+    if outputFilePath.find("/castor") != -1:
         cp = 'rfcp'
     else:
         cp = 'scp'
@@ -131,7 +131,7 @@ foreach rootFile (${rootFiles})
     echo "copying ${rootFile} to %(outDir)s"
     %(cp)s ${rootFile} %(outDir)s
 end
-""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputDirectory, 'cp':cp}
+""" % {'subDir': submissionDirectory, 'config': configFile_mod, 'outDir':outputFilePath, 'cp':cp}
 
     scf = open(scriptFile,"w")
     scf.write(script)
