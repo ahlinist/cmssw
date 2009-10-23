@@ -5,8 +5,8 @@
  *  
  *  Class to load DQM monitoring elements from ROOT files into DQMStore
  *
- *  $Date: 2009/03/04 10:09:27 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/08/17 16:07:21 $
+ *  $Revision: 1.4 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -46,6 +46,7 @@ class DQMFileLoader : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
+  std::string inputFilePath_;
   std::map<std::string, cfgEntryFileSet> fileSets_;
   std::map<std::string, sstring> subDirectoryMap_;
   int cfgError_;
