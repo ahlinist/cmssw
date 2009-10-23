@@ -123,6 +123,9 @@ DQMFileLoader::DQMFileLoader(const edm::ParameterSet& cfg)
 
 //--- configure fileSets  
   //std::cout << "--> configuring fileSets..." << std::endl;
+  inputFilePath_ = ( cfg.exists("inputFilePath") ) ? cfg.getParameter<std::string>("inputFilePath") : "";
+  if ( inputFilePath_ != "" && inputFilePath_[inputFilePath_.length() - 1] != '/' ) inputFilePath_ += '/';
+
   readCfgParameter<cfgEntryFileSet>(cfg, fileSets_);
 
 //--- check for errors in reading configuration parameters of fileSets
@@ -184,18 +187,22 @@ void DQMFileLoader::endJob()
 	fileSet != fileSets_.end(); ++fileSet ) {
     for ( vstring::const_iterator inputFileName = fileSet->second.inputFileNames_.begin();
 	  inputFileName != fileSet->second.inputFileNames_.end(); ++inputFileName ) {
-      TFile* inputFile = TFile::Open(inputFileName->data());
+      std::string inputFileName_full;
+      if ( inputFilePath_ != "" ) inputFileName_full += inputFilePath_;
+      inputFileName_full += (*inputFileName);
+
+      TFile* inputFile = TFile::Open(inputFileName_full.data());
       if ( inputFile->IsZombie() ) {
-	edm::LogError ("endJob") << " Failed to open inputFile = " << (*inputFileName) 
+	edm::LogError ("endJob") << " Failed to open inputFile = " << inputFileName_full
 				 << "--> histograms will NOT be loaded !!";
 	return;
       }
  
       TObject* obj = inputFile->Get(dqmRootDirectory_inTFile.data());
       if ( TDirectory* directory = dynamic_cast<TDirectory*>(obj) ) {
-	mapSubDirectoryStructure(directory, dqmRootDirectory, subDirectoryMap_[*inputFileName]);
+	mapSubDirectoryStructure(directory, dqmRootDirectory, subDirectoryMap_[inputFileName_full]);
       } else {
-	edm::LogError ("endJob") << " Failed to access " << dqmRootDirectory_inTFile << " in inputFile = " << (*inputFileName) 
+	edm::LogError ("endJob") << " Failed to access " << dqmRootDirectory_inTFile << " in inputFile = " << inputFileName_full
 				 << "--> histograms will NOT be loaded !!";
 	return;
       }
@@ -212,9 +219,13 @@ void DQMFileLoader::endJob()
 	fileSet != fileSets_.end(); ++fileSet ) {
     for ( vstring::const_iterator inputFileName = fileSet->second.inputFileNames_.begin();
 	  inputFileName != fileSet->second.inputFileNames_.end(); ++inputFileName ) {
-      //if ( verbosity ) std::cout << " opening inputFile = " << (*inputFileName) << std::endl;
-      std::cout << " opening inputFile = " << (*inputFileName) << std::endl; 
-      dqmStore.open(*inputFileName, true);
+      std::string inputFileName_full;
+      if ( inputFilePath_ != "" ) inputFileName_full += inputFilePath_;
+      inputFileName_full += (*inputFileName);
+
+      //if ( verbosity ) std::cout << " opening inputFile = " << inputFileName_full << std::endl;
+      std::cout << " opening inputFile = " << inputFileName_full << std::endl; 
+      dqmStore.open(inputFileName_full, true);
 
       if ( verbosity ) dqmStore.showDirStructure();
       
@@ -235,7 +246,7 @@ void DQMFileLoader::endJob()
 	  std::string subDirName = dqmSubDirectoryName(inputDirectory, *dirName);
 	  //std::cout << " subDirName = " << subDirName << std::endl;
 	  
-	  const sstring& subDirectories = subDirectoryMap_[*inputFileName];
+	  const sstring& subDirectories = subDirectoryMap_[inputFileName_full];
 	  if ( subDirectories.find(subDirName) != subDirectories.end() ) {
 	    std::string inputDirName_full = dqmDirectoryName(inputDirectory).append(subDirName);	    
 	    std::string outputDirName_full = dqmDirectoryName(outputDirectory).append(subDirName);
