@@ -33,13 +33,13 @@ def prepareConfigFile(configFile_orig = None, replacements = "",  configFile_mod
 
     # remove all white-space characters from replacements parameter string
     if isinstance(replacements,list):
-      replaceStatements = replacements
+        replaceStatements = replacements
     elif isinstance(replacements,dict):
-      replaceStatements = [[k,v] for k,v in replacements.items()]
+        replaceStatements = [[k,v] for k,v in replacements.items()]
     elif isinstance(replacements,basestring):
-      replaceStatements = [r.split("=",1) for r in replacements.replace(" ","").split(";")]
+        replaceStatements = [r.split("=",1) for r in replacements.replace(" ","").split(";")]
     else:
-      raise ValueError("No idea what your replacement option is meant to accomplish"+replacements)
+        raise ValueError("No idea what your replacement option is meant to accomplish"+replacements)
     
     f_cfg_orig = open(configFile_orig,"r")
     cfg_mod = f_cfg_orig.read()
