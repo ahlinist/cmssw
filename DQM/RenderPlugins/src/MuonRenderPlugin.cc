@@ -147,8 +147,8 @@ private:
         obj->SetMaximum(2.0);
 
         int colorErrorDI[2];
-        colorErrorDI[0] = 416;// kGreen
-        colorErrorDI[1] = 632;// kRed
+        colorErrorDI[1] = 416;// kGreen
+        colorErrorDI[0] = 632;// kRed
         gStyle->SetPalette(2, colorErrorDI);
         return;
       }
@@ -168,8 +168,8 @@ private:
         obj->SetMaximum(2.0);
 
         int colorErrorDI[2];
-        colorErrorDI[0] = 416;// kGreen
-        colorErrorDI[1] = 632;// kRed
+        colorErrorDI[1] = 416;// kGreen
+        colorErrorDI[0] = 632;// kRed
         gStyle->SetPalette(2, colorErrorDI);
         return;
       }
@@ -186,12 +186,13 @@ private:
         c->SetLeftMargin(0.15);
         c->SetRightMargin(0.12);
         obj->SetMinimum(-0.00000001);
-        obj->SetMaximum(2.0);
+        obj->SetMaximum(1.5);
 
-        int colorErrorDI[2];
-        colorErrorDI[0] = 416;// kGreen
-        colorErrorDI[1] = 632;// kRed
-        gStyle->SetPalette(2, colorErrorDI);
+        int colorErrorDI[3];
+        colorErrorDI[2] = 416;// kGreen
+        colorErrorDI[1] = 400;// kYellow
+        colorErrorDI[0] = 632;// kRed
+        gStyle->SetPalette(3, colorErrorDI);
         return;
       }
 
@@ -210,8 +211,8 @@ private:
         obj->SetMaximum(2.0);
 
         int colorErrorDI[2];
-        colorErrorDI[0] = 416;// kGreen
-        colorErrorDI[1] = 632;// kRed
+        colorErrorDI[1] = 416;// kGreen
+        colorErrorDI[0] = 632;// kRed
         gStyle->SetPalette(2, colorErrorDI);
         return;
       }
