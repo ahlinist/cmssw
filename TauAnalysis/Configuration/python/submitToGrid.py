@@ -1,7 +1,6 @@
 import os
 import subprocess
 
-#from TauAnalysis.Configuration.makeReplacementsCrab import makeReplacementsCrab
 from TauAnalysis.Configuration.prepareConfigFile import prepareConfigFile
 
 #--------------------------------------------------------------------------------
