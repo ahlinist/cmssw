@@ -15,6 +15,7 @@ from TauAnalysis.DQMTools.plotterStyleDefinitions_cfi import *
 
 loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
     Ztautau = copy.deepcopy(processZtoMuTau_ZtautauSum.config_dqmFileLoader),
+    #Ztautau_from_selZmumu = copy.deepcopy(processZtoMuTau_Ztautau_from_selZmumuSum.config_dqmFileLoader),                
     Zmumu = copy.deepcopy(processZtoMuTau_ZmumuSum.config_dqmFileLoader),
     ZeePlusJets = copy.deepcopy(processZtoMuTau_ZeePlusJetsSum.config_dqmFileLoader),
     ZmumuPlusJets = copy.deepcopy(processZtoMuTau_ZmumuPlusJetsSum.config_dqmFileLoader),
@@ -28,26 +29,26 @@ loadZtoMuTau = cms.EDAnalyzer("DQMFileLoader",
 addZtoMuTau_qcdSum = cms.EDAnalyzer("DQMHistAdder",
     qcdSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/InclusivePPmuX',
-            'harvested/PPmuXptGt20'
+            'harvested/InclusivePPmuX/zMuTauAnalyzer',
+            'harvested/PPmuXptGt20/zMuTauAnalyzer'
         ),
-        dqmDirectory_output = cms.string('harvested/qcdSum')
+        dqmDirectory_output = cms.string('harvested/qcdSum/zMuTauAnalyzer')
     )                          
 )
 
 addZtoMuTau_smSum = cms.EDAnalyzer("DQMHistAdder",
     smSum = cms.PSet(
         dqmDirectories_input = cms.vstring(
-            'harvested/Ztautau',
-            'harvested/Zmumu',
-            'harvested/ZeePlusJets',
-            #'harvested/ZmumuPlusJets',
-            #'harvested/ZtautauPlusJets',
-            'harvested/WplusJets',
-            'harvested/TTplusJets',
-            'harvested/qcdSum'
+            'harvested/Ztautau/zMuTauAnalyzer',
+            'harvested/Zmumu/zMuTauAnalyzer',
+            'harvested/ZeePlusJets/zMuTauAnalyzer',
+            #'harvested/ZmumuPlusJets/zMuTauAnalyzer',
+            #'harvested/ZtautauPlusJets/zMuTauAnalyzer',
+            'harvested/WplusJets/zMuTauAnalyzer',
+            'harvested/TTplusJets/zMuTauAnalyzer',
+            'harvested/qcdSum/zMuTauAnalyzer'
         ),
-        dqmDirectory_output = cms.string('harvested/smSum')
+        dqmDirectory_output = cms.string('harvested/smSum/zMuTauAnalyzer')
     )
 )
 
