@@ -64,7 +64,9 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/diTauSkim.root'
+        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/diTauSkim.root'
+        'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_1.root',
+        'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -112,10 +114,22 @@ process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.pro
 #
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
-# (**not implemented for ZtoDiTau channel yet**)
 #
 #__#patTupleProduction#
 process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTuple + process.producePatTupleZtoDiTauSpecific)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# restrict input for PAT-tuple production to AOD event content (instead of RECO/AOD):
+#  o use "reducedEcalRecHits" collections for computation of electron isolation variables
+#  o disable PAT trigger matching and filling of trigger information histograms
+# (necessary to process FastSim samples)
+#
+# NOTE: the 'switchToAOD' function needs to be called
+#       at the very end of configuring the process object !!
+#
+from TauAnalysis.Configuration.tools.aodTools import *
+switchToAOD(process, triggerHistManager = process.triggerHistManagerForDiTau)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
