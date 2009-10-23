@@ -171,7 +171,7 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     if ( requireGenMatch_ && !matchesGenCandidatePair(*diTauCandidate) ) continue;
 
     double diTauCandidateWeight = getDiTauCandidateWeight(*diTauCandidate);
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(diTauCandidateWeight/diTauCandidateWeightSum) : diTauCandidateWeight;
+    double weight = getWeight(evtWeight, diTauCandidateWeight, diTauCandidateWeightSum);
 
     hDiTauCandidatePt_->Fill(diTauCandidate->pt(), weight);
     hDiTauCandidateEta_->Fill(diTauCandidate->eta(), weight);

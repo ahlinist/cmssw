@@ -87,7 +87,7 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& e
 	leptonRecoilEnergy != leptonRecoilEnergyCollection->end(); ++leptonRecoilEnergy ) {
 
     double leptonWeight = getLeptonWeight(*leptonRecoilEnergy);
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(leptonWeight/leptonWeightSum) : leptonWeight;
+    double weight = getWeight(evtWeight, leptonWeight, leptonWeightSum);
 
     hEtSum_->Fill(leptonRecoilEnergy->etSum(), weight);
     hNumObjects_->Fill(leptonRecoilEnergy->recoilEnergyObjects().size(), weight);

@@ -325,7 +325,7 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     if ( requireGenTauMatch_ && !matchesGenTau(*patTau) ) continue;
 
     double tauJetWeight = getTauJetWeight<pat::Tau>(*patTau, tauJetWeightExtractors_);
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(tauJetWeight/tauJetWeightSum) : tauJetWeight;
+    double weight = getWeight(evtWeight, tauJetWeight, tauJetWeightSum);
 
     fillTauHistograms(*patTau, hTauPt_, hTauEta_, hTauPhi_, weight);
     hTauPtVsEta_->Fill(patTau->eta(), patTau->pt(), weight);

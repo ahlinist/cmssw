@@ -234,7 +234,8 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
     
     if ( requireGenMuonMatch_ && !matchesGenMuon(*patMuon) ) continue;
     
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(getMuonWeight(*patMuon)/muonWeightSum) : getMuonWeight(*patMuon);
+    double muonWeight = getMuonWeight(*patMuon);
+    double weight = getWeight(evtWeight, muonWeight, muonWeightSum);
 
     fillMuonHistograms(*patMuon, hMuonPt_, hMuonEta_, hMuonPhi_, weight);
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt(), weight);
