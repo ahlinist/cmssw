@@ -29,7 +29,7 @@ const double pointingCut = 0.8;
 const int maxNumEvents = -1;
 
 // ***************main function*****************************
-void BsAnalysisNew2() {
+void BsAnalysisNew() {
   
   TFile *f = new TFile("BtoJPsiMuMu_14Oct09.root");
   //    TFile *f = new TFile("ppmumuX.root");
