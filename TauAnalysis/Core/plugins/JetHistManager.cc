@@ -178,7 +178,8 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     if ( requireGenJetMatch_ && !matchesGenJet(*patJet) ) continue;
 
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(getJetWeight(*patJet)/jetWeightSum) : getJetWeight(*patJet);
+    double jetWeight = getJetWeight(*patJet);
+    double weight = getWeight(evtWeight, jetWeight, jetWeightSum);
 
     fillJetHistograms(*patJet, hJetPt_, hJetEta_, hJetPhi_, weight);
     hJetPtVsEta_->Fill(patJet->eta(), patJet->pt(), weight);

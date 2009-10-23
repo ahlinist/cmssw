@@ -132,7 +132,7 @@ void ZllHypothesisT1T2HistManager<T1,T2>::fillHistograms(const edm::Event& evt, 
 	ZllHypothesis != ZllHypotheses->end(); ++ZllHypothesis ) {
 
     double ZllHypothesisWeight = getZllHypothesisWeight(*ZllHypothesis);
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight*(ZllHypothesisWeight/ZllHypothesisWeightSum) : ZllHypothesisWeight;
+    double weight = getWeight(evtWeight, ZllHypothesisWeight, ZllHypothesisWeightSum);
 
     hLepton1bestMatchPt_->Fill(ZllHypothesis->p4Lepton1bestMatch().pt(), weight);
     hLepton1bestMatchEta_->Fill(ZllHypothesis->p4Lepton1bestMatch().eta(), weight);

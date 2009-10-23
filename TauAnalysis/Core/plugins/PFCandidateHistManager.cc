@@ -68,7 +68,8 @@ void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
   for ( std::vector<reco::PFCandidate>::const_iterator pfCandidate = pfCandidates->begin(); 
 	pfCandidate != pfCandidates->end(); ++pfCandidate ) {
 
-    double weight = ( normMethod_ == kNormEvents ) ? evtWeight/pfCandidateWeightSum : 1.;
+    double pfCandidateWeight = 1.;
+    double weight = getWeight(evtWeight, pfCandidateWeight, pfCandidateWeightSum);
   
     fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
     hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);

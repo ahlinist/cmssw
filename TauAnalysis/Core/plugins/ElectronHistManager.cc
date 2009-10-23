@@ -250,8 +250,8 @@ void ElectronHistManager::fillHistograms(const edm::Event& evt, const edm::Event
     
     if ( requireGenElectronMatch_ && !matchesGenElectron(*patElectron) ) continue;
     
-    double weight = ( normMethod_ == kNormEvents ) ? 
-      evtWeight*(getElectronWeight(*patElectron)/electronWeightSum) : getElectronWeight(*patElectron);
+    double electronWeight = getElectronWeight(*patElectron);
+    double weight = getWeight(evtWeight, electronWeight, electronWeightSum);
     
     fillElectronHistograms(*patElectron, hElectronPt_, hElectronEta_, hElectronPhi_, weight);
     hElectronPtVsEta_->Fill(patElectron->eta(), patElectron->pt(), weight);
