@@ -90,23 +90,21 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     #  as it is already being replaced by crab)
     replaceStatements_retVal.append("inputFileNames = process.source.fileNames")
     
-    # replace genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName parameters
+     # replace genPhaseSpaceCut and plotsOutputFileName parameters
     # (ommit "_part.." suffix of sample name in case of processes split
     #  into multiple cmsRun job parts, in order to avoid having to specify
     #   genPhaseSpaceCut, plotsOutputFileName and patTupleOutputFileName
     #  again and again for each part)
-    genPhaseSpaceCut = "genPhaseSpaceCut" + sample
-    plotsOutputFileName = "plotsOutputFileName" + sample
-    patTupleOutputFileName = "patTupleOutputFileName" + sample
+    genPhaseSpaceCut = "genPhaseSpaceCut" + channel + "_" + sample
+    plotsOutputFileName = "plotsOutputFileName" + channel + "_" + sample
     if sample.find("_part") != -1:
         genPhaseSpaceCut = genPhaseSpaceCut[:genPhaseSpaceCut.rfind("_part")]
         plotsOutputFileName = "cms.string(" + plotsOutputFileName[:plotsOutputFileName.rfind("_part")]
         plotsOutputFileName += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-        patTupleOutputFileName = "cms.untracked.string(" + patTupleOutputFileName[:patTupleOutputFileName.rfind("_part")]
-        patTupleOutputFileName += ".value().replace('_partXX', '" + sample[sample.rfind("_part"):] + "'))"
+    else:
+        plotsOutputFileName += ".value().replace(\'_partXX', '')"
     replaceStatements_retVal.append("genPhaseSpaceCut = " + genPhaseSpaceCut)
     replaceStatements_retVal.append("plotsOutputFileName = " + plotsOutputFileName)
-    replaceStatements_retVal.append("patTupleOutputFileName = " + patTupleOutputFileName)
 
     replacements_retVal = "; ".join(replaceStatements_retVal)
 
