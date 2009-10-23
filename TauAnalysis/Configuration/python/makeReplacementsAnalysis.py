@@ -102,8 +102,6 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         raise ValueError("Undefined inputFileType option !!")
     if inputFileType == "RECO/AOD":
         inputFileNames = "fileNames" + channel + "_" + sample
-        #patTupleProduction = "if hasattr(process, 'producePatTupleAll'):\n"
-        #patTupleProduction += "    process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
         patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
         inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
