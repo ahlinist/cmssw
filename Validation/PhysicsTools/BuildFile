@@ -15,6 +15,7 @@
 <use name=DataFormats/MuonReco>
 <use name=DataFormats/TrackReco>
 <use name=RecoMuon/TrackingTools>
+<use name=DataFormats/PatCandidates>
 #<use name=DQMOffline/EGamma>
 <use name=root>
 <flags EDM_PLUGIN=1>

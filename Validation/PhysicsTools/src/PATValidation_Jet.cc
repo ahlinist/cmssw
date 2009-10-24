@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id$
+// $Id: PATValidation_Jet.cc,v 1.5 2009/07/13 17:54:10 malik Exp $
 //
 //
 
@@ -110,6 +110,8 @@ PATValidation_Jet::PATValidation_Jet(const edm::ParameterSet& iConfig)
 ///patJet_      = iConfig.getParameter<edm::InputTag>("patJet");
 
 recoJet_     = iConfig.getParameter<edm::InputTag>("recoJet");
+recoJetRaw_  = iConfig.getParameter<edm::InputTag>("recoJetRaw");
+recoJetL2_   = iConfig.getParameter<edm::InputTag>("recoJetL2");
 patJet_      = iConfig.getParameter<edm::InputTag>("patJet");
 
 benchmarkLabel_ = iConfig.getParameter<std::string>("BenchmarkLabel"); 
@@ -164,6 +166,12 @@ if(dbe){
     rmPt               = dbe->book1D("Pt", "Pt", 100, 0, 50);
     rmPt_80            = dbe->book1D("Pt_80", "Pt_80", 100, 0, 140);
     rmPt_3000          = dbe->book1D("Pt_3000", "Pt_3000", 100, 0, 4000);
+    rmPtRaw            = dbe->book1D("PtRaw", "PtRaw", 100, 0, 50);
+    rmPtRaw_80         = dbe->book1D("PtRaw_80", "PtRaw_80", 100, 0, 140);
+    rmPtRaw_3000       = dbe->book1D("PtRaw_3000", "PtRaw_3000", 100, 0, 4000);
+    rmPtL2             = dbe->book1D("PtL2", "PtL2", 100, 0, 50);
+    rmPtL2_80          = dbe->book1D("PtL2_80", "PtL2_80", 100, 0, 140);
+    rmPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);
     rmMass             = dbe->book1D("Mass", "Mass", 100, 0, 25);
     rmMass_80          = dbe->book1D("Mass_80", "Mass_80", 100, 0, 120);
     rmMass_3000        = dbe->book1D("Mass_3000", "Mass_3000", 100, 0, 1500);
@@ -235,6 +243,12 @@ if(dbe){
     mPt               = dbe->book1D("Pt", "Pt", 100, 0, 50);
     mPt_80            = dbe->book1D("Pt_80", "Pt_80", 100, 0, 140);
     mPt_3000          = dbe->book1D("Pt_3000", "Pt_3000", 100, 0, 4000);
+    mPtRaw	      = dbe->book1D("PtRaw", "PtRaw", 100, 0, 50);
+    mPtRaw_80	      = dbe->book1D("PtRaw_80", "PtRaw_80", 100, 0, 140);
+    mPtRaw_3000       = dbe->book1D("PtRaw_3000", "PtRaw_3000", 100, 0, 4000);
+    mPtL2	      = dbe->book1D("PtL2", "PtL2", 100, 0, 50);
+    mPtL2_80	      = dbe->book1D("PtL2_80", "PtL2_80", 100, 0, 140);
+    mPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);
     mMass             = dbe->book1D("Mass", "Mass", 100, 0, 25);
     mMass_80          = dbe->book1D("Mass_80", "Mass_80", 100, 0, 120);
     mMass_3000        = dbe->book1D("Mass_3000", "Mass_3000", 100, 0, 1500);
@@ -332,7 +346,23 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
      int rnJet = 0;
      int rnJetF = 0;
      int rnJetC = 0;
- 
+     
+     
+     edm::Handle<candidateCollection> recojetraw_hnd;
+     iEvent.getByLabel(recoJetRaw_, recojetraw_hnd);     
+     for (candidateCollection::const_iterator  rjet = recojetraw_hnd->begin(); rjet != recojetraw_hnd->end(); rjet++) {
+	    if (rmPtRaw) rmPtRaw->Fill (rjet->pt());    
+	    if (rmPtRaw_80) rmPtRaw_80->Fill (rjet->pt());
+	    if (rmPtRaw_3000) rmPtRaw_3000->Fill(rjet->pt());
+     }
+     
+     edm::Handle<candidateCollection> recojetl2_hnd;
+     iEvent.getByLabel(recoJetL2_, recojetl2_hnd);     
+     for (candidateCollection::const_iterator  rjet = recojetl2_hnd->begin(); rjet != recojetl2_hnd->end(); rjet++) {
+	    if (rmPtL2) rmPtL2->Fill (rjet->pt());    
+	    if (rmPtL2_80) rmPtL2_80->Fill (rjet->pt());
+	    if (rmPtL2_3000) rmPtL2_3000->Fill(rjet->pt());
+     }     
     
       for (candidateCollection::const_iterator  rjet = recojet_hnd->begin(); rjet != recojet_hnd->end(); rjet++) {
 //////  cout << "reco jet  is" << recoJet_ << "and reco Jet pt is = "<< rjet->pt() << endl;    
@@ -552,6 +582,17 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
       nJet++;
       p4tmp[1] = jet->p4();
   }
+  
+  
+    if (mPtRaw) mPtRaw->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    if (mPtRaw_80) mPtRaw_80->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    if (mPtRaw_3000) mPtRaw_3000->Fill(jet->correctedJet(pat::JetCorrFactors::Raw).pt());
+    
+    if (mPtL2) mPtL2->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
+    if (mPtL2_80) mPtL2_80->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
+    if (mPtL2_3000) mPtL2_3000->Fill(jet->correctedJet(pat::JetCorrFactors::L2).pt());
+  
+  
 //    cout << "I AM HERE 5" << endl;
 
     if (mMaxEInEmTowers) mMaxEInEmTowers->Fill(jet->maxEInEmTowers());
