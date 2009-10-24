@@ -3,6 +3,15 @@ import FWCore.ParameterSet.Config as cms
 #from PhysicsTools.PatAlgos.patLayer0_cff import *
 #from PhysicsTools.PatAlgos.patLayer1_cff import *
 
+patJetAK5Validation =cms.EDAnalyzer("PATValidation_Jet",
+     OutputFile  = cms.untracked.string('benchmark.root'),
+     recoJet     = cms.InputTag('L2L3CorJetAK5Calo'),
+     recoJetRaw  = cms.InputTag('ak5CaloJets'),
+     recoJetL2   = cms.InputTag('L2CorJetAK5Calo'),
+      patJet      = cms.InputTag('selectedLayer1Jets'),
+     BenchmarkLabel =cms.string('ak5CaloJets_Corr')
+)
+
 patJetValidation = cms.EDAnalyzer("PATValidation_Jet", 
      OutputFile  = cms.untracked.string('benchmark.root'),
 
@@ -138,7 +147,7 @@ patMETValidation = cms.EDAnalyzer("PATValidation_MET",
 
 #     recoMET     = cms.InputTag('met'),
 #      recoMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
-       recoMET     = cms.InputTag('metJESCorIC5CaloJetMuons'), # CMSSW_3_1_1
+       recoMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
 #      patMET      = cms.InputTag('allLayer1METs'),
        patMET      = cms.InputTag('layer1METs'),
 #        patMET      =cms.InputTag('selectedLayer1METs'), 
@@ -166,7 +175,7 @@ patCaloMETValidation = cms.EDAnalyzer("PATValidation_CaloMET",
 
 #     recoMET     = cms.InputTag('met'),
 #      recoCaloMET     = cms.InputTag('corMetType1Icone5Muons'), #PhysicsTools/ PatAlgos/ python/ cleaningLayer0/caloMetCleaner_cfi.py
-       recoCaloMET     = cms.InputTag('metJESCorIC5CaloJetMuons'), # CMSSW_3_1_1
+       recoCaloMET     = cms.InputTag('metJESCorAK5CaloJetMuons'), # CMSSW_3_3_0_pre4
 #      patMET      = cms.InputTag('allLayer1METs'),
        patCaloMET      = cms.InputTag('layer1METs'),
 #        patMET      =cms.InputTag('selectedLayer1METs'),

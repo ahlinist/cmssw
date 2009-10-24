@@ -5,7 +5,7 @@
 // Author Sudhir Malik 20 May 2009
 // Original F. Ratnikov, Sept. 7, 2006
 // Modified by J F Novak July 10, 2008
-// $Id: CaloJetTester.h,v 1.10 2009/03/28 04:57:58 hatake Exp $
+// $Id: PATValidation_Jet.h,v 1.5 2009/07/13 17:54:10 malik Exp $
 
 #include <string>
 
@@ -45,6 +45,8 @@ private:
 
 
    edm::InputTag recoJet_;
+   edm::InputTag recoJetRaw_;
+   edm::InputTag recoJetL2_;
    edm::InputTag patJet_;
   //bool recoJetCorr_;
   //edm::InputTag patJetCorr_;
@@ -78,6 +80,12 @@ private:
   MonitorElement* rmPt;
   MonitorElement* rmPt_80;
   MonitorElement* rmPt_3000;
+  MonitorElement* rmPtRaw;
+  MonitorElement* rmPtRaw_80;
+  MonitorElement* rmPtRaw_3000;
+  MonitorElement* rmPtL2;
+  MonitorElement* rmPtL2_80;
+  MonitorElement* rmPtL2_3000;
   MonitorElement* rmMass;
   MonitorElement* rmMass_80;
   MonitorElement* rmMass_3000;
@@ -247,6 +255,12 @@ private:
   MonitorElement* mPt;
   MonitorElement* mPt_80;
   MonitorElement* mPt_3000;
+  MonitorElement* mPtRaw;
+  MonitorElement* mPtRaw_80;
+  MonitorElement* mPtRaw_3000;
+  MonitorElement* mPtL2;
+  MonitorElement* mPtL2_80;
+  MonitorElement* mPtL2_3000;
   MonitorElement* mMass;   
   MonitorElement* mMass_80;
   MonitorElement* mMass_3000;

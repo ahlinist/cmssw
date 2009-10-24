@@ -7,8 +7,8 @@
 
   gStyle->SetOptStat(1111);
 
-  string dirRECO        = "DQMData/Benchmarks/iterativeCone5CaloJets_Corr/RECO";
-  string dirPAT         = "DQMData/Benchmarks/iterativeCone5CaloJets_Corr/PAT";
+  string dirRECO        = "DQMData/Benchmarks/ak5CaloJets_Corr/RECO";
+  string dirPAT         = "DQMData/Benchmarks/ak5CaloJets_Corr/PAT";
 //   string dirRECO        = "DQMData/Benchmarks/L2L3CorJetSC5Calo/RECO";
 //   string dirPAT         = "DQMData/Benchmarks/L2L3CorJetSC5Calo/PAT";
 //  string dirRECO        = "DQMData/Benchmarks/L2L3CorJetSC7Calo/RECO";
@@ -103,6 +103,48 @@
    FormatPad( &c1, false );
    comp.Draw("Pt_3000", mode);
    SavePlot("Pt_3000", outdir.c_str() );
+   comp.SetAxis(5);
+   
+   comp.SetAxis(1,0 ,50);   
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtRaw", mode);
+   SavePlot("PtRaw", outdir.c_str() );
+   comp.SetAxis(5);
+
+   comp.SetAxis(1,0 ,140);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtRaw_80", mode);
+   SavePlot("PtRaw_80", outdir.c_str() );
+   comp.SetAxis(5);  
+   
+   comp.SetAxis(1,0 ,4000);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtRaw_3000", mode);
+   SavePlot("PtRaw_3000", outdir.c_str() );
+   comp.SetAxis(5);   
+   
+   comp.SetAxis(1,0 ,50);   
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtL2", mode);
+   SavePlot("PtL2", outdir.c_str() );
+   comp.SetAxis(5);
+
+   comp.SetAxis(1,0 ,140);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtL2_80", mode);
+   SavePlot("PtL2_80", outdir.c_str() );
+   comp.SetAxis(5);  
+   
+   comp.SetAxis(1,0 ,4000);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("PtL2_3000", mode);
+   SavePlot("PtL2_3000", outdir.c_str() );
    comp.SetAxis(5);
    
    comp.SetAxis(1,0 ,25);

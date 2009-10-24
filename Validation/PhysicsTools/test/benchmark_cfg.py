@@ -16,7 +16,8 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 # source
 process.source = cms.Source("PoolSource", 
     fileNames = cms.untracked.vstring(  
-        '/store/relval/CMSSW_3_1_1/RelValTTbar/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/1221BA1C-EB6B-DE11-9C2C-000423D94700.root'
+        'file:0600F3CC-D0A6-DE11-B0BE-001D09F24763.root'
+#        '/store/relval/CMSSW_3_1_1/RelValTTbar/GEN-SIM-RECO/STARTUP31X_V1-v2/0002/1221BA1C-EB6B-DE11-9C2C-000423D94700.root'
 #      '/store/relval/CMSSW_3_1_0_pre6/RelValTTbar/GEN-SIM-RECO/IDEAL_31X_v1/0002/50D4BADB-FA32-DE11-BA01-000423D98DC4.root'
 #         'file:step2_RAW2DIGI_RECO.root'
 #          'file:/uscms/home/petar/sw/CMSSW_3_1_0_pre9/src/step2_RAW2DIGI_RECO.root'
@@ -51,10 +52,33 @@ process.allLayer1Jets.discriminatorSources = []
 from PhysicsTools.PatAlgos.tools.jetTools import *
 ##Added for corrected jets
 #process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08_cff")   
-process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer08Redigi_cff")
-process.prefer("L2L3JetCorrectorIC5Calo")
-process.prefer("L2L3JetCorrectorSC5Calo")
-process.prefer("L2L3JetCorrectorSC7Calo")
+#process.load("JetMETCorrections.Configuration.L2L3Corrections_Summer09_cff")
+#process.prefer("L2L3JetCorrectorAK5Calo")
+
+process.L2JetCorrectorAK5Calo = cms.ESSource("L2RelativeCorrectionService",
+    tagName = cms.string('Summer09_L2Relative_AK5Calo'),
+    label = cms.string('L2RelativeJetCorrectorAK5Calo')
+)
+process.L3JetCorrectorAK5Calo = cms.ESSource("L3AbsoluteCorrectionService",
+    tagName = cms.string('Summer09_L3Absolute_AK5Calo'),
+    label = cms.string('L3AbsoluteJetCorrectorAK5Calo')
+)
+process.L2L3JetCorrectorAK5Calo = cms.ESSource("JetCorrectionServiceChain",
+    correctors = cms.vstring('L2RelativeJetCorrectorAK5Calo','L3AbsoluteJetCorrectorAK5Calo'),
+    label = cms.string('L2L3JetCorrectorAK5Calo')
+)
+process.L2CorJetAK5Calo = cms.EDProducer("CaloJetCorrectionProducer",
+    src = cms.InputTag("ak5CaloJets"),
+    correctors = cms.vstring('L2RelativeJetCorrectorAK5Calo')
+)
+process.L2L3CorJetAK5Calo = cms.EDProducer("CaloJetCorrectionProducer",
+    src = cms.InputTag("ak5CaloJets"),
+    correctors = cms.vstring('L2L3JetCorrectorAK5Calo')
+)
+
+
+#process.prefer("L2L3JetCorrectorSC5Calo")
+#process.prefer("L2L3JetCorrectorSC7Calo")
 
 # PAT Layer 0+1
 process.load("Validation.PhysicsTools.patObjectBenchmarkGeneric_cfi")
@@ -64,11 +88,12 @@ process.load("Validation.RecoParticleFlow.tauBenchmarkGeneric_cff")
 process.p =cms.Path(
     process.patDefaultSequence*  
 #    process.content*
-    process.L2L3CorJetIC5Calo*
-    process.L2L3CorJetSC5Calo*
-    process.L2L3CorJetSC7Calo*
-    process.patJetValidation*
-    process.patJetIC5Validation*
+    process.L2CorJetAK5Calo*
+    process.L2L3CorJetAK5Calo*
+#    process.L2L3CorJetSC5Calo*
+#    process.L2L3CorJetSC7Calo*
+#    process.patJetValidation*
+    process.patJetAK5Validation*
 
 #    process.patJetSC5CorrValidation*
 #    process.patJetSC7CorrValidation*
