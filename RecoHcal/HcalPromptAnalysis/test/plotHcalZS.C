@@ -2,10 +2,10 @@
 
 gROOT->Reset();
 
-TFile f("HcalZS_111265_ZSMask0.root");
+//TFile f("HcalZS_111265_ZSMask0.root");
 //TFile f("HcalZS_111266_111268_ZSMask110000111.root");
 //TFile f("HcalZS_111272_ZSMask100000011.root");
-//TFile f("HcalZS_test.root");
+TFile f("HcalZS_test.root");
 //TFile f("HcalZS_73751.root");
 //TFile f("HcalZS_73749.root");
 
@@ -25,22 +25,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd1->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hbhfd1->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hbhfd1_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hbhfd1->SetBinContent( ieta , iphi , 0. );
-  else
+  //if( thisNtotEvents == 0 ) 
+  //  h_hcal_hbhfd1->SetBinContent( ieta , iphi , 0. );
+  //else
+  //  {
+  float numDisagree = h_hcal_hbhfd1->GetBinContent(ieta,iphi);
+  //h_hcal_hbhfd1->SetBinContent( ieta , iphi , numDisagree);
+  
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hbhfd1->GetBinContent(ieta,iphi);
-      h_hcal_hbhfd1->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hbhfd1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hbhfd1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //    }
 }
 
 h_hcal_hbhfd1->Draw("colz");
@@ -56,22 +56,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hbhfd2->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hbhfd2->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hbhfd2_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hbhfd2->SetBinContent( ieta , iphi , 0. );
-  else
+//   if( thisNtotEvents == 0 ) 
+//     h_hcal_hbhfd2->SetBinContent( ieta , iphi , 0. );
+//   else
+//     {
+  float numDisagree = h_hcal_hbhfd2->GetBinContent(ieta,iphi);
+  //  h_hcal_hbhfd2->SetBinContent( ieta , iphi , numDisagree);
+  
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hbhfd2->GetBinContent(ieta,iphi);
-      h_hcal_hbhfd2->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hbhfd2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hbhfd2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //}
 }
 
 h_hcal_hbhfd2->Draw("colz");
@@ -87,22 +87,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hed1->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hed1->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hed1_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hed1->SetBinContent( ieta , iphi , 0. );
-  else
+//   if( thisNtotEvents == 0 ) 
+//     h_hcal_hed1->SetBinContent( ieta , iphi , 0. );
+//   else
+//     {
+  float numDisagree = h_hcal_hed1->GetBinContent(ieta,iphi);
+  //  h_hcal_hed1->SetBinContent( ieta , iphi , numDisagree);
+
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hed1->GetBinContent(ieta,iphi);
-      h_hcal_hed1->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hed1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hed1: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //    }
 }
 
 h_hcal_hed1->Draw("colz");
@@ -119,22 +119,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hed2->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hed2->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hed2_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hed2->SetBinContent( ieta , iphi , 0. );
-  else
+  //   if( thisNtotEvents == 0 ) 
+  //     h_hcal_hed2->SetBinContent( ieta , iphi , 0. );
+  //   else
+  //     {
+  float numDisagree = h_hcal_hed2->GetBinContent(ieta,iphi);
+  // h_hcal_hed2->SetBinContent( ieta , iphi , numDisagree);
+  
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hed2->GetBinContent(ieta,iphi);
-      h_hcal_hed2->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hed2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hed2: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //}
 }
 
 h_hcal_hed2->Draw("colz");
@@ -151,22 +151,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hed3->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hed3->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hed3_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hed3->SetBinContent( ieta , iphi , 0. );
-  else
+//   if( thisNtotEvents == 0 ) 
+//     h_hcal_hed3->SetBinContent( ieta , iphi , 0. );
+//   else
+//     {
+  float numDisagree = h_hcal_hed3->GetBinContent(ieta,iphi);
+  //      h_hcal_hed3->SetBinContent( ieta , iphi , numDisagree);
+
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hed3->GetBinContent(ieta,iphi);
-      h_hcal_hed3->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hed3: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hed3: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //}
 }
 
 h_hcal_hed3->Draw("colz");
@@ -183,22 +183,22 @@ for(int ieta = 1 ; ieta <= h_hcal_hod4->GetNbinsX() ; ieta++)
   for(int iphi = 1 ; iphi <= h_hcal_hod4->GetNbinsY() ; iphi++)
 {
   int thisNtotEvents = int(h_hcal_hod4_all->GetBinContent(ieta,iphi));
-  if( thisNtotEvents == 0 ) 
-    h_hcal_hod4->SetBinContent( ieta , iphi , 0. );
-  else
+//   if( thisNtotEvents == 0 ) 
+//     h_hcal_hod4->SetBinContent( ieta , iphi , 0. );
+//   else
+//     {
+  float numDisagree = h_hcal_hod4->GetBinContent(ieta,iphi);
+  //  h_hcal_hod4->SetBinContent( ieta , iphi , numDisagree);
+
+  if(numDisagree > 0)
     {
-      float numDisagree = thisNtotEvents - h_hcal_hod4->GetBinContent(ieta,iphi);
-      h_hcal_hod4->SetBinContent( ieta , iphi , numDisagree);
-
-      if(numDisagree > 0)
-	{
-	  cout << "%%%%%%%%%" << endl;
-	  int det_eta = ieta - 42 ; 
-	  int det_phi = iphi; 
-	  printf("hod4: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
-	}
-
+      cout << "%%%%%%%%%" << endl;
+      int det_eta = ieta - 42 ; 
+      int det_phi = iphi; 
+      printf("hod4: ieta=%i  iphi=%i  totEvents=%i  numDisagree=%i\n", det_eta, det_phi, int(thisNtotEvents), int(numDisagree));
     }
+  
+  //}
 }
 
 

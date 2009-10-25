@@ -16,7 +16,7 @@
 //
 // Original Author: Efe Yazgan
 //         Created:  Wed Apr 16 10:03:18 CEST 2008
-// $Id: HcalZS.h,v 1.5 2009/08/20 07:26:17 santanas Exp $
+// $Id: HcalZS.h,v 1.6 2009/10/09 09:17:46 santanas Exp $
 //
 //
 
@@ -31,6 +31,18 @@
 //TFile Service
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
+
+
+//Mapping stuff
+#include "DataFormats/HcalDetId/interface/HcalGenericDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalCalibDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalFrontEndId.h"
+#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
+#include "CondFormats/HcalObjects/interface/HcalElectronicsMap.h"
+#include "CondFormats/HcalObjects/interface/HcalLogicalMap.h"
+#include "CalibCalorimetry/HcalAlgos/interface/HcalLogicalMapGenerator.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
 
 class TH1F;
 class TH2F;
@@ -53,6 +65,7 @@ private:
   int thresholdHB_;
   int thresholdHE_;
   int thresholdHO_;
+  int thresholdHOSiPM_;
   int thresholdHF_;
   int thresholdCalib_;
 
@@ -97,9 +110,9 @@ private:
   int NtotEvents;
   int NtotDigis;
 
-  //   int hb_digiCounter[82][72];
-  //   int he_digiCounter[82][72];
-  //   int ho_digiCounter[82][72];
-  //   int hf_digiCounter[82][72];
+  //------------------------------
+  // HCAL logical map
+  HcalLogicalMap *lMap;
+  //------------------------------
 
 };
