@@ -15,7 +15,7 @@
 */
 //
 // Original Author:  Francesco Santanastasio, Sinjini Sengupta
-// $Id: HcalZS.cc,v 1.8 2009/08/20 07:26:18 santanas Exp $
+// $Id: HcalZS.cc,v 1.9 2009/10/09 09:17:46 santanas Exp $
 //
 //
 
@@ -55,6 +55,18 @@
 //HCAL ZS
 #include "SimCalorimetry/HcalZeroSuppressionAlgos/interface/HcalZSAlgoRealistic.h"
 #include "SimCalorimetry/HcalZeroSuppressionAlgos/interface/HcalZeroSuppressionAlgo.h"
+
+
+//Mapping stuff
+#include "DataFormats/HcalDetId/interface/HcalGenericDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalCalibDetId.h"
+#include "DataFormats/HcalDetId/interface/HcalFrontEndId.h"
+#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
+#include "CondFormats/HcalObjects/interface/HcalElectronicsMap.h"
+#include "CondFormats/HcalObjects/interface/HcalLogicalMap.h"
+#include "CalibCalorimetry/HcalAlgos/interface/HcalLogicalMapGenerator.h"
+#include "CalibFormats/HcalObjects/interface/HcalDbRecord.h"
 
 
 //TFile Service
@@ -100,14 +112,16 @@ HcalZS::HcalZS(const edm::ParameterSet& iConfig)
   thresholdHB_ = iConfig.getUntrackedParameter < int > ("thresholdHB", 9);
   thresholdHE_ = iConfig.getUntrackedParameter < int > ("thresholdHE", 9);
   thresholdHO_ = iConfig.getUntrackedParameter < int > ("thresholdHO", 9);
+  thresholdHOSiPM_ = iConfig.getUntrackedParameter < int > ("thresholdHOSiPM", 30);
   thresholdHF_ = iConfig.getUntrackedParameter < int > ("thresholdHF", 9);
   thresholdCalib_ = iConfig.getUntrackedParameter < int > ("thresholdCalib", 9);
 
-  cout << "using digi thresholdHB_ = " << thresholdHB_ << endl;
-  cout << "using digi thresholdHE_ = " << thresholdHE_ << endl;
-  cout << "using digi thresholdHO_ = " << thresholdHO_ << endl;
-  cout << "using digi thresholdHF_ = " << thresholdHF_ << endl;
-  cout << "using digi thresholdCalib_ = " << thresholdCalib_ << endl;
+  cout << "using digi thresholdHB = " << thresholdHB_ << endl;
+  cout << "using digi thresholdHE = " << thresholdHE_ << endl;
+  cout << "using digi thresholdHO = " << thresholdHO_ << endl;
+  cout << "using digi thresholdHOSiPM = " << thresholdHOSiPM_ << endl;
+  cout << "using digi thresholdHF = " << thresholdHF_ << endl;
+  cout << "using digi thresholdCalib = " << thresholdCalib_ << endl;
 
   //set ZS mask
   zs_mask[0] = iConfig.getUntrackedParameter < int > ("ZSmask_Sum0", 0);
@@ -254,7 +268,26 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
-	 if ( agree == true ){
+	 // 	 if ( agree == true ){
+	 
+	 // 	   if (id.subdet() == 1){
+	 // 	     if (id.depth() == 1)
+	 // 	       h_hbhf_d1->Fill(id.ieta(),id.iphi());
+	 // 	     if (id.depth() == 2)
+	 // 	       h_hbhf_d2->Fill(id.ieta(),id.iphi());
+	 // 	   }
+	 
+	 // 	   if (id.subdet() == 2){
+	 // 	     if (id.depth() == 1)
+	 // 	       h_he_d1->Fill(id.ieta(),id.iphi());
+	 // 	     if (id.depth() == 2)
+	 // 	       h_he_d2->Fill(id.ieta(),id.iphi());
+	 // 	     if (id.depth() == 3)
+	 // 	       h_he_d3->Fill(id.ieta(),id.iphi());
+	 // 	   }
+	 // 	 }// end fill eta-phi histograms
+
+	 if ( agree == false ){
 
 	   if (id.subdet() == 1){
 	     if (id.depth() == 1)
@@ -272,25 +305,6 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	       h_he_d3->Fill(id.ieta(),id.iphi());
 	   }
 	 }// end fill eta-phi histograms
-
-	 if ( agree == false ){
-
-	   if (id.subdet() == 1){
-	     if (id.depth() == 1)
-	       h_hbhf_d1->Fill(id.ieta(),id.iphi(),0);
-	     if (id.depth() == 2)
-	       h_hbhf_d2->Fill(id.ieta(),id.iphi(),0);
-	   }
-	 
-	   if (id.subdet() == 2){
-	     if (id.depth() == 1)
-	       h_he_d1->Fill(id.ieta(),id.iphi(),0);
-	     if (id.depth() == 2)
-	       h_he_d2->Fill(id.ieta(),id.iphi(),0);
-	     if (id.depth() == 3)
-	       h_he_d3->Fill(id.ieta(),id.iphi(),0);
-	   }
-	 }// end fill eta-phi histograms
 	
        }// end loop of HBHE digi
    }//end check if hbhe_digi exists
@@ -302,16 +316,15 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    const HODigiCollection* ho_digi = ho_digi_h.failedToGet () ? 0 : &*ho_digi_h;
 
    if (ho_digi) { // object is available 
-    
-
      //      cout << "ho_digi is available" << endl;
      //      cout << "ho_digi->size(): " << ho_digi->size() << endl;
-     
+
      for (HODigiCollection::const_iterator j=ho_digi->begin(); j!=ho_digi->end(); j++)
        {
 	 const HODataFrame digi = (const HODataFrame)(*j);
 	 HcalDetId id = digi.id();
 	 bool agree = false;
+
 
 	 //cout << "HO digi.zsUnsuppressed(): " << digi.zsUnsuppressed() << endl;
 	 h_ho_US->Fill(digi.zsUnsuppressed());
@@ -328,25 +341,45 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 //-- Mark&Pass bit in the data
 	 //	 cout << "digi.zsMarkAndPass(): " << digi.zsMarkAndPass() << endl;
 	 
+
 	 //-- ZS Emulation
-	 h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) );
-	 h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
-	 // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_): "
-	 // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) << endl;
 
-	 if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) == digi.zsMarkAndPass() )
-	   agree = true;
+	 //---------------------------------------------------
+	 //The RBX of this HO channel
+         string theRBX = (lMap->getHcalFrontEndId(id)).rbx();
+         //cout << theRBX << endl; 
+	 //---------------------------------------------------
 
+	 if( theRBX=="HO1P10" || theRBX=="HO2P12" )
+	   {//SiPM boxes
+	     h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_,zs_mask) );
+	     h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	     // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_): "
+	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_) << endl;	     
+	     if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHOSiPM_,zs_mask) == digi.zsMarkAndPass() )
+	       agree = true;	     
+	   }
+	 else
+	   {//All HO except SiPM boxes
+	     h_hodigi_MarkAndPassEmu->Fill( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) );
+	     h_hodigi_MarkAndPassData->Fill( digi.zsMarkAndPass() );
+	     // 	 cout << "ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_): "
+	     // 	      << ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_) << endl;
+	     
+	     if ( ZSRealistic_impl::MarkAndPassEmu<HODataFrame>(digi,thresholdHO_,zs_mask) == digi.zsMarkAndPass() )
+	       agree = true;
+	   }
+	     
 	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
-	 if ( agree == true ) 
-	   if (id.subdet() == 3) 
-	     h_ho_d4->Fill(id.ieta(),id.iphi());	 
+	 // 	 if ( agree == true ) 
+	 // 	   if (id.subdet() == 3) 
+	 // 	     h_ho_d4->Fill(id.ieta(),id.iphi());	 
 
 	 if ( agree == false ) 
 	   if (id.subdet() == 3) 
-	     h_ho_d4->Fill(id.ieta(),id.iphi(),0);	 
+	     h_ho_d4->Fill(id.ieta(),id.iphi());	 
 
 	 // 	 //debug for Tullio
 	 // 	 if ( agree == false ) 
@@ -414,21 +447,21 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 h_ZSagree->Fill(agree);
 
 	 //## Fill directly into Histogram?
-	 if ( agree == true ){
+	 // 	 if ( agree == true ){
+	 // 	   if (id.subdet() == 4){
+	 // 	     if (id.depth() == 1)
+	 // 	       h_hbhf_d1->Fill(id.ieta(),id.iphi());
+	 // 	     if (id.depth() == 2)
+	 // 	       h_hbhf_d2->Fill(id.ieta(),id.iphi());
+	 // 	   }
+	 // 	 }//end fill eta-phi histograms
+
+	 if ( agree == false ){
 	   if (id.subdet() == 4){
 	     if (id.depth() == 1)
 	       h_hbhf_d1->Fill(id.ieta(),id.iphi());
 	     if (id.depth() == 2)
 	       h_hbhf_d2->Fill(id.ieta(),id.iphi());
-	   }
-	 }//end fill eta-phi histograms
-
-	 if ( agree == false ){
-	   if (id.subdet() == 4){
-	     if (id.depth() == 1)
-	       h_hbhf_d1->Fill(id.ieta(),id.iphi(),0);
-	     if (id.depth() == 2)
-	       h_hbhf_d2->Fill(id.ieta(),id.iphi(),0);
 	   }
 	 }//end fill eta-phi histograms
 
@@ -484,49 +517,57 @@ HcalZS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 // ------------ method called once each job just before starting event loop  ------------
 void HcalZS::beginJob(const edm::EventSetup&)
 {
+
+  //----------------------------------------------
+  // create HCAL logical map
+  HcalLogicalMapGenerator lMapGen;
+  lMap = new HcalLogicalMap(lMapGen.createMap(3)); // IOV=3 -> May 6 2009 and onwards
+  //    lMap->checkIdFunctions();
+  //----------------------------------------------
+
   TFileDirectory HcalDir = fs->mkdir( "Hcal" );
 
   //## book histograms
   h_hbdigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hbdigi_MarkAndPassEmu",
-					    "h_hbdigi_MarkAndPassEmu",
-					    2, -0.5, 1.5);
+					       "h_hbdigi_MarkAndPassEmu",
+					       2, -0.5, 1.5);
 
   h_hedigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hedigi_MarkAndPassEmu",
-					    "h_hedigi_MarkAndPassEmu",
-					    2, -0.5, 1.5);
+					       "h_hedigi_MarkAndPassEmu",
+					       2, -0.5, 1.5);
   
   h_hodigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hodigi_MarkAndPassEmu",
-					    "h_hodigi_MarkAndPassEmu",
-					    2, -0.5, 1.5);
+					       "h_hodigi_MarkAndPassEmu",
+					       2, -0.5, 1.5);
   
   h_hfdigi_MarkAndPassEmu = HcalDir.make<TH1F>("h_hfdigi_MarkAndPassEmu",
-					    "h_hfdigi_MarkAndPassEmu",
-					    2, -0.5, 1.5);
+					       "h_hfdigi_MarkAndPassEmu",
+					       2, -0.5, 1.5);
 
   h_calib_MarkAndPassEmu = HcalDir.make<TH1F>("h_calib_MarkAndPassEmu",
-					   "h_calib_MarkAndPassEmu",
-					   2, -0.5, 1.5);
+					      "h_calib_MarkAndPassEmu",
+					      2, -0.5, 1.5);
 
 
   h_hbdigi_MarkAndPassData = HcalDir.make<TH1F>("h_hbdigi_MarkAndPassData",
-					    "h_hbdigi_MarkAndPassData",
-					    2, -0.5, 1.5);
+						"h_hbdigi_MarkAndPassData",
+						2, -0.5, 1.5);
 
   h_hedigi_MarkAndPassData = HcalDir.make<TH1F>("h_hedigi_MarkAndPassData",
-					    "h_hedigi_MarkAndPassData",
-					    2, -0.5, 1.5);
+						"h_hedigi_MarkAndPassData",
+						2, -0.5, 1.5);
   
   h_hodigi_MarkAndPassData = HcalDir.make<TH1F>("h_hodigi_MarkAndPassData",
-					    "h_hodigi_MarkAndPassData",
-					    2, -0.5, 1.5);
+						"h_hodigi_MarkAndPassData",
+						2, -0.5, 1.5);
   
   h_hfdigi_MarkAndPassData = HcalDir.make<TH1F>("h_hfdigi_MarkAndPassData",
-					    "h_hfdigi_MarkAndPassData",
-					    2, -0.5, 1.5);
+						"h_hfdigi_MarkAndPassData",
+						2, -0.5, 1.5);
 
   h_calib_MarkAndPassData = HcalDir.make<TH1F>("h_calib_MarkAndPassData",
-					   "h_calib_MarkAndPassData",
-					   2, -0.5, 1.5);
+					       "h_calib_MarkAndPassData",
+					       2, -0.5, 1.5);
 
 
 
@@ -593,38 +634,38 @@ void HcalZS::beginJob(const edm::EventSetup&)
 
   //just counting
   h_hbhf_d1_all = HcalDir.make<TH2F>("h_hcal_hbhfd1_all","HB HF Depth1",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_hbhf_d1_all->GetXaxis()->SetTitle("i#eta");
   h_hbhf_d1_all->GetYaxis()->SetTitle("i#phi");
 
   h_hbhf_d2_all = HcalDir.make<TH2F>("h_hcal_hbhfd2_all","HB HF Depth2",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_hbhf_d2_all->GetXaxis()->SetTitle("i#eta");
   h_hbhf_d2_all->GetYaxis()->SetTitle("i#phi");
 
   h_he_d3_all   = HcalDir.make<TH2F>("h_hcal_hed3_all","HE Depth3",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_he_d3_all->GetXaxis()->SetTitle("i#eta");
   h_he_d3_all->GetYaxis()->SetTitle("i#phi");
 
   h_he_d2_all   = HcalDir.make<TH2F>("h_hcal_hed2_all","HE Depth2",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_he_d2_all->GetXaxis()->SetTitle("i#eta");
   h_he_d2_all->GetYaxis()->SetTitle("i#phi");
 
   h_he_d1_all   = HcalDir.make<TH2F>("h_hcal_hed1_all","HE Depth1",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_he_d1_all->GetXaxis()->SetTitle("i#eta");
   h_he_d1_all->GetYaxis()->SetTitle("i#phi");
 
   h_ho_d4_all   = HcalDir.make<TH2F>("h_hcal_hod4_all","HO Depth4",
-				 83,-41.5,41.5,
-				 72,0.5,72.5);
+				     83,-41.5,41.5,
+				     72,0.5,72.5);
   h_ho_d4_all->GetXaxis()->SetTitle("i#eta");
   h_ho_d4_all->GetYaxis()->SetTitle("i#phi");
 
