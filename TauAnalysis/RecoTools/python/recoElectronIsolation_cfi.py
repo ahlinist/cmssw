@@ -39,7 +39,7 @@ from PhysicsTools.PatAlgos.recoLayer0.electronIsolation_cff import *
 #
 EleIsoTrackExtractorBlock.DR_Max = cms.double(1.)
 
-eleIsoDepositTk.src = cms.InputTag("pixelMatchGsfElectrons")
+eleIsoDepositTk.src = cms.InputTag("gsfElectrons")
 eleIsoDepositTk.ExtractorPSet = cms.PSet(EleIsoTrackExtractorBlock)
 
 #
@@ -47,7 +47,7 @@ eleIsoDepositTk.ExtractorPSet = cms.PSet(EleIsoTrackExtractorBlock)
 #
 EleIsoEcalFromHitsExtractorBlock.extRadius = cms.double(1.)
 
-eleIsoDepositEcalFromHits.src = cms.InputTag("pixelMatchGsfElectrons")
+eleIsoDepositEcalFromHits.src = cms.InputTag("gsfElectrons")
 eleIsoDepositEcalFromHits.ExtractorPSet = cms.PSet(EleIsoEcalFromHitsExtractorBlock)
 
 #
@@ -55,7 +55,7 @@ eleIsoDepositEcalFromHits.ExtractorPSet = cms.PSet(EleIsoEcalFromHitsExtractorBl
 #
 EleIsoHcalFromTowersExtractorBlock.extRadius = cms.double(1.)
 
-eleIsoDepositHcalFromTowers.src = cms.InputTag("pixelMatchGsfElectrons")
+eleIsoDepositHcalFromTowers.src = cms.InputTag("gsfElectrons")
 eleIsoDepositHcalFromTowers.ExtractorPSet = cms.PSet(EleIsoHcalFromTowersExtractorBlock)
 
 #electronIsoDeposits = cms.Sequence( eleIsoDepositEcalFromHits )
@@ -89,18 +89,44 @@ electronIsoDeposits = cms.Sequence( eleIsoDepositTk
 
 #--------------------------------------------------------------------------------
 # compute particle flow based IsoDeposits
+# names and settings taken from 22X, to be tuned
 #--------------------------------------------------------------------------------
 
-from PhysicsTools.PFCandProducer.pfElectronIsolation_cff import *
-pfeleIsoDepositPFCandidates.src = cms.InputTag("pixelMatchGsfElectrons")
-pfeleIsoChDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
-pfeleIsoNeDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
-pfeleIsoGaDepositPFCandidates.src = pfeleIsoDepositPFCandidates.src
-pfElectrons.src = pfeleIsoDepositPFCandidates.src
+from PhysicsTools.PFCandProducer.Isolation.pfElectronIsolation_cff import *
+elctronCollection = "gsfElectrons"
+pfeleIsoDepositPFCandidates   = isoDepositReplace(elctronCollection,"particleFlow")
+pfeleIsoChDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllChargedHadrons")
+pfeleIsoNeDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllNeutralHadrons")
+pfeleIsoGaDepositPFCandidates = isoDepositReplace(elctronCollection,"pfAllPhotons")
 
-pfElectronIsol = cms.Sequence( pfeleIsoDepositPFCandidates
-                              * pfeleIsoChDepositPFCandidates
-                              * pfeleIsoNeDepositPFCandidates
-                              * pfeleIsoGaDepositPFCandidates )
+pfElectronIsolCandidates = cms.Sequence( pfeleIsoDepositPFCandidates
+                                         * pfeleIsoChDepositPFCandidates
+                                         * pfeleIsoNeDepositPFCandidates
+                                         * pfeleIsoGaDepositPFCandidates )
 
-recoElectronIsolation = cms.Sequence( electronIsoDeposits * pfElectronIsol )
+pfEleIsoDeposit = cms.EDProducer("CandIsolatorFromDeposits",
+    deposits = cms.VPSet(
+        cms.PSet(
+            src = cms.InputTag("pfeleIsoDepositPFCandidates"),
+            deltaR = cms.double(0.5),
+            weight = cms.string('1'),
+            vetos = cms.vstring('0.01',
+                                'Threshold(0.2)'),
+            skipDefaultVeto = cms.bool(True),
+            mode = cms.string('sum')
+        )
+    )
+)
+pfEleIsoChDeposit = pfEleIsoDeposit.clone()
+pfEleIsoChDeposit.deposits.src = 'pfeleIsoChDepositPFCandidates'
+pfEleIsoNeDeposit = pfEleIsoDeposit.clone()
+pfEleIsoNeDeposit.deposits.src = 'pfeleIsoNeDepositPFCandidates'
+pfEleIsoGaDeposit = pfEleIsoDeposit.clone()
+pfEleIsoGaDeposit.deposits.src = 'pfeleIsoGaDepositPFCandidates'
+
+electronIsoDeposits =  cms.Sequence( pfEleIsoDeposit
+                                     * pfEleIsoChDeposit
+                                     * pfEleIsoNeDeposit
+                                     * pfEleIsoGaDeposit )
+
+recoElectronIsolation = cms.Sequence( pfElectronIsolCandidates * electronIsoDeposits )

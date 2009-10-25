@@ -7,7 +7,7 @@
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 
 #include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/GenSimTools/interface/genParticleAuxFunctions.h"
 

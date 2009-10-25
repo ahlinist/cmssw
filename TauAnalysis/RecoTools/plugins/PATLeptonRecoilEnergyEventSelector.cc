@@ -1,6 +1,6 @@
 #include "TauAnalysis/RecoTools/plugins/PATLeptonRecoilEnergyEventSelector.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 

@@ -1,5 +1,5 @@
 //
-// $Id: TauPairEventSelector.h,v 1.1 2009/02/04 17:32:15 veelken Exp $
+// $Id: PATTauPairEventSelector.h,v 1.1.2.1 2009/08/04 10:04:55 mbluj Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_PATTauPairEventSelector_h
@@ -8,7 +8,7 @@
 #include "PhysicsTools/UtilAlgos/interface/AnySelector.h"
 #include "PhysicsTools/UtilAlgos/interface/ObjectCountEventSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/MinNumberSelector.h"
-#include "PhysicsTools/PatUtils/interface/MaxNumberSelector.h"
+#include "PhysicsTools/UtilAlgos/interface/MaxNumberSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/AndSelector.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"

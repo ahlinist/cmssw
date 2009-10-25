@@ -7,8 +7,8 @@ from TauAnalysis.Skimming.EventContent_cff import *
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FakeConditions_cff")
+process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
-
 
 process.maxEvents = cms.untracked.PSet(
   input = cms.untracked.int32(10000)

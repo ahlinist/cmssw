@@ -1,5 +1,5 @@
 //
-// $Id: VertexEventSelector.h,v 1.1 2009/01/23 14:58:11 veelken Exp $
+// $Id: VertexEventSelector.h,v 1.1.2.1 2009/08/04 10:04:55 mbluj Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_VertexEventSelector_h
@@ -8,7 +8,7 @@
 #include "PhysicsTools/UtilAlgos/interface/AnySelector.h"
 #include "PhysicsTools/UtilAlgos/interface/ObjectCountEventSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/MinNumberSelector.h"
-#include "PhysicsTools/PatUtils/interface/MaxNumberSelector.h"
+#include "PhysicsTools/UtilAlgos/interface/MaxNumberSelector.h"
 
 #include "DataFormats/VertexReco/interface/Vertex.h"
 

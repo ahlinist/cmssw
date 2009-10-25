@@ -11,8 +11,7 @@
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
-
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
@@ -389,6 +388,15 @@ void TauHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
     hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead(), weight);
     hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead(), weight);
 
+    hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
+    hTauEmFraction_->Fill(patTau->emFraction(), weight);
+    hTauHcalTotOverPLead_->Fill(patTau->hcalTotOverPLead(), weight);
+    hTauHcalMaxOverPLead_->Fill(patTau->hcalMaxOverPLead(), weight);
+    hTauHcal3x3OverPLead_->Fill(patTau->hcal3x3OverPLead(), weight);
+    hTauEcalStripSumEOverPLead_->Fill(patTau->ecalStripSumEOverPLead(), weight);
+    hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead(), weight);
+    hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead(), weight);
+
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"), weight);
   
     int tauDecayMode = patTau->decayMode();
@@ -509,14 +517,14 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
   hTauIsoSumPt_->Fill(patTau.trackIso() + patTau.ecalIso(), weight);
   
   //std::cout << " particleIso = " << patTau.particleIso() << std::endl;
-  //std::cout << " chargedParticleIso = " << patTau.chargedParticleIso() << std::endl;
-  //std::cout << " neutralParticleIso = " << patTau.neutralParticleIso() << std::endl;
-  //std::cout << " gammaParticleIso = " << patTau.gammaParticleIso() << std::endl;
+  //std::cout << " chargedHadronIso = " << patTau.chargedHadronIso() << std::endl;
+  //std::cout << " neutralHadronIso = " << patTau.neutralHadronIso() << std::endl;
+  //std::cout << " photonIso = " << patTau.photonIso() << std::endl;
   
   hTauParticleFlowIsoPt_->Fill(patTau.particleIso(), weight);
-  hTauPFChargedHadronIsoPt_->Fill(patTau.chargedParticleIso(), weight);
-  hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralParticleIso(), weight);
-  hTauPFGammaIsoPt_->Fill(patTau.gammaParticleIso(), weight);
+  hTauPFChargedHadronIsoPt_->Fill(patTau.chargedHadronIso(), weight);
+  hTauPFNeutralHadronIsoPt_->Fill(patTau.neutralHadronIso(), weight);
+  hTauPFGammaIsoPt_->Fill(patTau.photonIso(), weight);
 
   if ( makeIsoPtCtrlHistograms_ ) {
     double sumPtIsolationConePFChargedHadrons = 0.;
@@ -524,14 +532,14 @@ void TauHistManager::fillTauIsoHistograms(const pat::Tau& patTau, double weight)
 	  pfChargedHadron != patTau.isolationPFChargedHadrCands().end(); ++pfChargedHadron ) {
       if ( (*pfChargedHadron)->pt() > 1.0 ) sumPtIsolationConePFChargedHadrons += (*pfChargedHadron)->pt();
     }
-    hTauPFChargedHadronIsoPtCtrl_->Fill(sumPtIsolationConePFChargedHadrons, patTau.chargedParticleIso(), weight); 
+    hTauPFChargedHadronIsoPtCtrl_->Fill(sumPtIsolationConePFChargedHadrons, patTau.chargedHadronIso(), weight); 
     
     double sumPtIsolationConePFGammas = 0.;
     for ( reco::PFCandidateRefVector::const_iterator pfGamma = patTau.isolationPFGammaCands().begin();
 	  pfGamma != patTau.isolationPFGammaCands().end(); ++pfGamma ) {
       if ( (*pfGamma)->pt() > 1.5 ) sumPtIsolationConePFGammas += (*pfGamma)->pt();
     }
-    hTauPFGammaIsoPtCtrl_->Fill(sumPtIsolationConePFGammas, patTau.gammaParticleIso(), weight);
+    hTauPFGammaIsoPtCtrl_->Fill(sumPtIsolationConePFGammas, patTau.photonIso(), weight);
   }
 
   for ( reco::TrackRefVector::const_iterator isolationTrack = patTau.isolationTracks().begin();
@@ -556,21 +564,21 @@ void TauHistManager::fillTauIsoConeSizeDepHistograms(const pat::Tau& patTau, dou
       hTauParticleFlowIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauParticleFlowIsoDeposit_i, weight);
     }
     
-    if ( patTau.isoDeposit(pat::ChargedParticleIso) ) {
+    if ( patTau.isoDeposit(pat::ChargedHadronIso) ) {
       double tauPFChargedHadronIsoDeposit_i 
-	= patTau.isoDeposit(pat::ChargedParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::ChargedHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFChargedHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFChargedHadronIsoDeposit_i, weight);
     }
     
-    if ( patTau.isoDeposit(pat::NeutralParticleIso) ) {
+    if ( patTau.isoDeposit(pat::NeutralHadronIso) ) {
       double tauPFNeutralHadronIsoDeposit_i 
-	= patTau.isoDeposit(pat::NeutralParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::NeutralHadronIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFNeutralHadronIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFNeutralHadronIsoDeposit_i, weight);
     }
 
-    if ( patTau.isoDeposit(pat::GammaParticleIso) ) {
+    if ( patTau.isoDeposit(pat::PhotonIso) ) {
       double tauPFGammaIsoDeposit_i 
-	= patTau.isoDeposit(pat::GammaParticleIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
+	= patTau.isoDeposit(pat::PhotonIso)->countWithin(isoConeSize_i, tauParticleFlowIsoParam_, false);
       hTauPFGammaIsoPtConeSizeDep_[iConeSize - 1]->Fill(tauPFGammaIsoDeposit_i, weight);
     }
   }

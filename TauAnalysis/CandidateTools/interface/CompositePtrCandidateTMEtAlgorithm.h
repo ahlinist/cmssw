@@ -3,7 +3,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/normalizedPhi.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateTMEt.h"

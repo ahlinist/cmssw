@@ -4,7 +4,7 @@ from PhysicsTools.PatAlgos.producersLayer1.tauProducer_cfi import *
 from PhysicsTools.PatAlgos.cleaningLayer1.tauCleaner_cfi import * 
 
 # import helper function to build the pat efficiency PSet
-from RecoTauTag.TauTagTools.PFTauEfficiencyAssociator_cfi import *
+#from RecoTauTag.TauTagTools.PFTauEfficiencyAssociator_cfi import *
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 (particle flow)tau-jet configuration parameters
@@ -20,8 +20,8 @@ allLayer1Taus.isolation.pfGamma.threshold = cms.double(1.5)
 allLayer1Taus.addDecayMode = cms.bool(True)
 
 # add tau id. efficiencies & fake-rates
-allLayer1Taus.efficiencies = build_pat_efficiency_loader(shrinkingConeEfficienciesProducerFromFile)
-allLayer1Taus.addEfficiencies = cms.bool(True)
+#allLayer1Taus.efficiencies = build_pat_efficiency_loader(shrinkingConeEfficienciesProducerFromFile)
+#allLayer1Taus.addEfficiencies = cms.bool(True)
 
 # do not remove tau-jets failing discriminatorByIsolation
 # (instead, leave this removal to the subsequent selector stage)

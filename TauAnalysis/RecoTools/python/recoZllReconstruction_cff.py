@@ -4,8 +4,8 @@ import FWCore.ParameterSet.Config as cms
 from TauAnalysis.CandidateTools.diCandidatePairProducer_cfi import diTauProducer
 recoZll = diTauProducer.clone()
 #Be careful in standard PAT_v2 'selectedLayer1Muons' are not cleaned. 
-recoZll.srcLeg1 = 'cleanLayer1Muons'
-recoZll.srcLeg2 = 'cleanLayer1Muons'
+recoZll.srcLeg1 = 'selectedLayer1Muons'
+recoZll.srcLeg2 = 'selectedLayer1Muons'
 recoZll.srcMET = ''
 recoZll.recoMode = ''
 recoZll.useLeadingTausOnly = False

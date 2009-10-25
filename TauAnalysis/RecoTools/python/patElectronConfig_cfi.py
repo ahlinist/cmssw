@@ -3,8 +3,9 @@ import copy
 
 from PhysicsTools.PatAlgos.recoLayer0.electronId_cff import *
 from PhysicsTools.PatAlgos.recoLayer0.electronIsolation_cff import *
-from PhysicsTools.PatAlgos.recoLayer0.aodReco_cff import *
-from PhysicsTools.PatAlgos.triggerLayer0.trigMatchSequences_cff import *
+from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import *
+from PhysicsTools.PatAlgos.triggerLayer1.triggerEventProducer_cfi import *
+from PhysicsTools.PatAlgos.triggerLayer1.triggerMatchEmbedder_cfi import *
 from PhysicsTools.PatAlgos.producersLayer1.electronProducer_cfi import *
 from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 
@@ -13,8 +14,9 @@ from PhysicsTools.PatAlgos.cleaningLayer1.electronCleaner_cfi import *
 #--------------------------------------------------------------------------------
 
 # add HLT electron trigger to PAT trigger match sequence
-patTrigMatchElectron = cms.Sequence( electronTrigMatchHLT1Electron )
-patTrigMatch._seq = patTrigMatch._seq * patHLT1Electron * patTrigMatchElectron
+patTriggerElectronMatcher += electronTriggerMatchHLTIsoEle15LWL1I
+patTriggerEvent.patTriggerMatches.append("electronTriggerMatchHLTIsoEle15LWL1I")
+cleanLayer1ElectronsTriggerMatch.matches = cms.VInputTag("electronTriggerMatchHLTIsoEle15LWL1I")
 
 #--------------------------------------------------------------------------------  
 # PAT layer 1 electron configuration parameters
@@ -26,7 +28,7 @@ patTrigMatch._seq = patTrigMatch._seq * patHLT1Electron * patTrigMatchElectron
 allLayer1Electrons.isolation.tracker.src = cms.InputTag("eleIsoDepositTk")
 allLayer1Electrons.isolation.tracker.deltaR = cms.double(0.6)
 allLayer1Electrons.isolation.tracker.vetos = cms.vstring(
-    '0.015',         # inner radius veto cone (was 0.015)
+    '0.015',         # inner radius veto cone 
     'Threshold(0.3)' # threshold on individual track pt
 )
 allLayer1Electrons.isolation.tracker.skipDefaultVeto = cms.bool(True)
@@ -38,9 +40,9 @@ allLayer1Electrons.isolation.ecal.deltaR = cms.double(0.6)
 allLayer1Electrons.isolation.ecal.vetos = cms.vstring(
     'EcalBarrel:0.045', 
     'EcalBarrel:RectangularEtaPhiVeto(-0.02,0.02,-0.5,0.5)',
-    'EcalEndcaps:0.1',                         #0.07
+    'EcalEndcaps:0.1',                          # default: 0.07
     'EcalEndcaps:RectangularEtaPhiVeto(-0.05,0.05,-0.5,0.5)',
-    'EcalBarrel:ThresholdFromTransverse(0.12)', #0.08
+    'EcalBarrel:ThresholdFromTransverse(0.12)', # default: 0.08
     'EcalEndcaps:ThresholdFromTransverse(0.3)'
 )
 allLayer1Electrons.isolation.ecal.skipDefaultVeto = cms.bool(True)
@@ -53,30 +55,22 @@ allLayer1Electrons.isolation.hcal.deltaR = cms.double(0.6)
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
 #
 allLayer1Electrons.isoDeposits = cms.PSet(
-   tracker         = allLayer1Electrons.isolation.tracker.src,
-   ecal            = allLayer1Electrons.isolation.ecal.src,
-   hcal            = allLayer1Electrons.isolation.hcal.src,
-   particle        = cms.InputTag("pfeleIsoDepositPFCandidates"),
-   chargedparticle = cms.InputTag("pfeleIsoChDepositPFCandidates"),
-   neutralparticle = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
-   gammaparticle   = cms.InputTag("pfeleIsoGaDepositPFCandidates")
+   tracker          = allLayer1Electrons.isolation.tracker.src,
+   ecal             = allLayer1Electrons.isolation.ecal.src,
+   hcal             = allLayer1Electrons.isolation.hcal.src,
+   particle         = cms.InputTag("pfeleIsoDepositPFCandidates"),
+   pfChargedHadrons = cms.InputTag("pfeleIsoChDepositPFCandidates"),
+   pfNeutralHadrons = cms.InputTag("pfeleIsoNeDepositPFCandidates"),
+   pfPhotons        = cms.InputTag("pfeleIsoGaDepositPFCandidates")
 )
 #
 # add electron Id. flags
 #
 allLayer1Electrons.addElectronID = cms.bool(True)
-allLayer1Electrons.electronIDSources = cms.PSet(
-   robust = cms.InputTag("elecIdCutBasedRobust"),
-   loose  = cms.InputTag("elecIdCutBasedLoose"),
-   tight  = cms.InputTag("elecIdCutBasedTight")        
-)
 #
 # enable matching to HLT trigger information
 #
-allLayer1Electrons.addTrigMatch = cms.bool(True)
-allLayer1Electrons.trigPrimMatch = cms.VInputTag(
-    cms.InputTag("electronTrigMatchHLT1Electron")
-)
+allLayer1Electrons.embedHighLevelSelection = cms.bool(True)
 #
 # enable matching to generator level information
 #

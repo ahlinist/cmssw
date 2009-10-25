@@ -21,6 +21,14 @@ from TauAnalysis.RecoTools.patElectronConfig_cfi import *
 from TauAnalysis.RecoTools.patMuonConfig_cfi import *
 from TauAnalysis.RecoTools.patPFTauConfig_cfi import *
 #
+# enable PAT trigger matching
+# (disabled per default in CMSSW_3_1_x)
+#
+from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cff import *
+from PhysicsTools.PatAlgos.patSequences_cff import *
+patDefaultSequence += patTriggerSequence
+patTrigger.onlyStandAlone = False
+#
 # produce TauAnalysis specific objects not related to PAT sequences
 # (reconstruction of generator level information and selection of primary event vertex)
 #

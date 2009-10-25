@@ -2,40 +2,50 @@
 
 import FWCore.ParameterSet.Config as cms
 
+# Choose analysis mode:
+# 0: Z->mu,mu 
+# 1: Z->tau,tau->mu,tau-jet
+mode = 1
 
 process = cms.Process("ANA")
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-
 process.source = cms.Source(
     "PoolSource",
-    #                            fileNames = cms.untracked.vstring('file:PATLayer1_ZToTaus.root')
     fileNames = cms.untracked.vstring('file:PATLayer1_fromAOD.root')
     )
 
 
 # gen level analysis
 process.load("TauAnalysis.GenSimTools.gen_cff")
-process.load("TauAnalysis.GenSimTools.genZllReconstruction_cff")
-
-process.particleListDrawer.maxEventsToPrint = cms.untracked.int32(10)
+if mode==0:
+    print "*** Z->mu,mu analysis ***"
+    process.load("TauAnalysis.GenSimTools.genZllReconstruction_cff")
+    process.genZll.verbosity = 1
+else:
+    print "*** Z->tau,tau->mu,tau-jet analysis ***"
+    process.load("TauAnalysis.GenSimTools.genDiTauReconstruction_cff")
+    process.genDiTau.verbosity = 0
+    
+    
+process.particleListDrawer.maxEventsToPrint = cms.untracked.int32(3)
 process.particleListDrawer.printOnlyHardInteraction = True
 
 
-# reco level analysis 
-# process.load("TauAnalysis.GenSimTools.recoDiTauReconstruction_cff")
-process.load("TauAnalysis.RecoTools.recoZllReconstruction_cff")
-
-
-process.recoZll.verbosity = 0
-
 process.p1 = cms.Path(
-    process.genParticlesPrint +
-#    process.recoDiTauReconstruction + 
-    process.genZllReconstruction +
-    process.recoZllReconstruction
+    process.genParticlesPrint
     )
+
+# reco level analysis 
+if mode==0:
+    process.load("TauAnalysis.RecoTools.recoZllReconstruction_cff")
+    process.p1 += ( process.genZllReconstruction +
+                    process.recoZllReconstruction )
+else:
+    process.load("TauAnalysis.RecoTools.recoDiTauReconstruction_cff")
+    process.p1 += ( process.genDiTauReconstruction +
+                    process.recoDiTauReconstruction )
 
 
 process.out = cms.OutputModule("PoolOutputModule",
@@ -55,11 +65,4 @@ process.out.outputCommands.extend( process.TauAnalysisGenSimToolsEC.outputComman
 process.outpath = cms.EndPath( process.out )
 
 
-process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.threshold = 'INFO'
-process.MessageLogger.categories.append('PATLayer0Summary')
-process.MessageLogger.cerr.INFO = cms.untracked.PSet(
-    default          = cms.untracked.PSet( limit = cms.untracked.int32(0)  ),
-    PATLayer0Summary = cms.untracked.PSet( limit = cms.untracked.int32(10) )
-)
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )

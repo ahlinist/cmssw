@@ -16,9 +16,11 @@ from TauAnalysis.BgEstimationTools.muTauPairProductionForBgEst_cff import *
 
 from TauAnalysis.BgEstimationTools.patJetSelectionForBgEst_cff import *
 
-producePatTupleForBgEst = cms.Sequence( producePatTuple
-                                       * selectElectronsForBgEst * selectMuonsForBgEst * selectTausForBgEst
-                                       * produceElecTauPairsForBgEst
-                                       * produceMuTauPairsForBgEst
-                                       #* produceElecMuPairsForBgEst
-                                       * selectJetsForBgEst )
+producePatTupleForBgEst = cms.Sequence(
+    producePatTuple
+   * selectElectronsForBgEst * selectMuonsForBgEst * selectTausForBgEst
+   * produceElecTauPairsForBgEst
+   * produceMuTauPairsForBgEst
+   #* produceElecMuPairsForBgEst
+   * selectJetsForBgEst
+)

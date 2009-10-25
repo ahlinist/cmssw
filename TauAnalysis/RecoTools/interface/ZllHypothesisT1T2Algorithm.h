@@ -22,11 +22,10 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
-
-#include "PhysicsTools/Utilities/interface/deltaR.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"

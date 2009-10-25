@@ -17,7 +17,7 @@ from TauAnalysis.CandidateTools.tools.objSelConfigurator import *
 # (settings made here overwrite values defined in electronPatSelector_cfi)
 #--------------------------------------------------------------------------------
 
-selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
+selectedLayer1ElectronsTightId.cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)')
 selectedLayer1ElectronsAntiCrackCut.cut = cms.string('abs(superCluster.eta) < 1.442 | abs(superCluster.eta) > 1.560')
 selectedLayer1ElectronsEta21.cut = cms.string('abs(eta) < 2.1')
 selectedLayer1ElectronsPt15.cut = cms.string('pt > 15.')
@@ -92,7 +92,7 @@ patElectronSelConfiguratorForElecTauLooseIsolation = objSelConfigurator(
 selectLayer1ElectronsForElecTauLooseIsolation = patElectronSelConfiguratorForElecTauLooseIsolation.configure(namespace = locals())
 
 selectedLayer1ElectronsForElecMuAntiOverlapWithMuonsVeto.dRmin = cms.double(0.3)
-selectedLayer1ElectronsForElecMuTightId.cut = cms.string('electronID("robust") > 0')
+selectedLayer1ElectronsForElecMuTightId.cut = cms.string('electronID("eidRobustTight") > 0')
 selectedLayer1ElectronsForElecMuAntiCrackCut.cut = selectedLayer1ElectronsAntiCrackCut.cut
 selectedLayer1ElectronsForElecMuEta21.cut = selectedLayer1ElectronsEta21.cut 
 selectedLayer1ElectronsForElecMuPt15.cut = selectedLayer1ElectronsPt15.cut 
