@@ -1,6 +1,6 @@
 #include "TauAnalysis/RecoTools/plugins/ZllHypothesisT1T2EventSelector.h"
 
-#include "PhysicsTools/UtilAlgos/interface/EventSelectorBase.h"
+#include "CommonTools/UtilAlgos/interface/EventSelectorBase.h"
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 

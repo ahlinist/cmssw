@@ -76,7 +76,7 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         jetHistManager,
         metHistManager,
         vertexHistManager,
-        triggerHistManager,
+        triggerHistManagerForElecTau,
         eventWeightHistManager
     ),
 

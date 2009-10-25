@@ -1,14 +1,14 @@
 //
-// $Id: ZllHypothesisT1T2EventSelector.h,v 1.1 2009/07/29 13:03:38 veelken Exp $
+// $Id: ZllHypothesisT1T2EventSelector.h,v 1.1 2009/10/10 12:32:16 veelken Exp $
 //
 
 #ifndef TauAnalysis_RecoTools_ZllHypothesisT1T2EventSelector_h
 #define TauAnalysis_RecoTools_ZllHypothesisT1T2EventSelector_h
 
-#include "PhysicsTools/UtilAlgos/interface/AnySelector.h"
-#include "PhysicsTools/UtilAlgos/interface/ObjectCountEventSelector.h"
+#include "CommonTools/Utils/interface/AnySelector.h"
+#include "CommonTools/UtilAlgos/interface/ObjectCountEventSelector.h"
 #include "PhysicsTools/UtilAlgos/interface/MinNumberSelector.h"
-#include "PhysicsTools/PatUtils/interface/MaxNumberSelector.h"
+#include "PhysicsTools/UtilAlgos/interface/MaxNumberSelector.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/ZllHypothesisT1T2.h"
 

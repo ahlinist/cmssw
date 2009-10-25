@@ -8,9 +8,9 @@ import copy
 # see https://twiki.cern.ch/twiki/bin/view/CMS/SWGuidePhysicsCutParser
 # on how to use the cut-string parser
 
-# require electron candidate to pass the tight electron id. criteria
+# require electron candidate to pass the eidRobustTight electron id. criteria
 selectedLayer1ElectronsTightId = cms.EDFilter("PATElectronSelector",
-    cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("robust") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'),
+    cut = cms.string('(abs(superCluster.eta) < 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.05 & eSuperClusterOverP > 0.95) | (abs(superCluster.eta) > 1.479 & electronID("eidRobustTight") > 0 & eSuperClusterOverP < 1.12 & eSuperClusterOverP > 0.95)'),
     filter = cms.bool(False)
 )
 

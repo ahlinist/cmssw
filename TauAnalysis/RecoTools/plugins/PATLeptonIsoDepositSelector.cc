@@ -34,11 +34,11 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
   } else if ( isoDepositType_string == "pfAllParticles" ) {
     isoDepositType_ = pat::ParticleIso;
   } else if ( isoDepositType_string == "pfChargedHadron" ) {
-    isoDepositType_ = pat::ChargedParticleIso;
+    isoDepositType_ = pat::ChargedHadronIso;
   } else if ( isoDepositType_string == "pfNeutralHadron" ) {
-    isoDepositType_ = pat::NeutralParticleIso;
+    isoDepositType_ = pat::NeutralHadronIso;
   } else if ( isoDepositType_string == "pfGamma" ) {
-    isoDepositType_ = pat::GammaParticleIso;
+    isoDepositType_ = pat::PhotonIso;
   } else {
     edm::LogError ("PATLeptonIsoDepositSelector") << " Type = " << isoDepositType_string << " not defined for IsoDeposits !!";
     cfgError_ = 1;

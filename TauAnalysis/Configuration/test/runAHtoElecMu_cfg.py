@@ -116,10 +116,7 @@ replaceMETforDiTaus(process,
 process.metHistManager.metSource = useMet
 process.elecMuEventDump.metSource = useMet
 # comment-out to add genMET with mu's to layer1MET (caloMET)  
-process.layer1METs.genMETSource = cms.InputTag('genMETWithMu')
-# note: above line works when the first Boolean in the addPFMET is True, 
-# otherwise you need comment-out the following:
-#addGenMetWithMu(process) # comment-out only when the first Boolean in the addPFMET is False
+process.layer1METs.genMETSource = cms.InputTag('genMetTrue')
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

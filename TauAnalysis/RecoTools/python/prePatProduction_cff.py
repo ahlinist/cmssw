@@ -5,9 +5,10 @@ import FWCore.ParameterSet.Config as cms
 #--------------------------------------------------------------------------------
 
 # produce particle flow based muon isolation quantities
-from PhysicsTools.PFCandProducer.pfAllChargedHadrons_cfi import *
-from PhysicsTools.PFCandProducer.pfAllNeutralHadrons_cfi import *
-from PhysicsTools.PFCandProducer.pfAllPhotons_cfi import *
+from PhysicsTools.PFCandProducer.pfNoPileUp_cff import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllChargedHadrons_cfi import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllNeutralHadrons_cfi import *
+from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllPhotons_cfi import *
 from TauAnalysis.RecoTools.recoElectronIsolation_cfi import *
 from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
 from TauAnalysis.RecoTools.recoMuonIsolation_cfi import *
@@ -23,24 +24,23 @@ from RecoTauTag.TauTagTools.TauMVADiscriminator_cfi import *
 # compute discrimanators based on TaNC output
 # for different tau-jet efficiency vs. QCD-jet fake rate "working-points"
 from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
-from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
-
-# define DataBase source for TaNC configurations
-# (need esprefer statement in order to prevent conflict with Fake BTau conditions)
-from RecoTauTag.TauTagTools.TancConditions_cff import *
+#from RecoTauTag.TauTagTools.TancCVTransform_cfi import *
 
 # produce tau id. efficiencies & fake-rates
-from RecoTauTag.TauTagTools.PFTauEfficiencyAssociator_cfi import *
+#from RecoTauTag.TauTagTools.PFTauEfficiencyAssociator_cfi import *
 
 # produce MET significance values
 from RecoMET.METProducers.CaloMETSignif_cfi import *
+metsignificance.METType = cms.string('CaloMET')
 
-producePrePat = cms.Sequence( pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
-                             + electronIdCutBased + recoElectronIsolation
-                             + recoMuonIsolation
-                             + PFTau
-                             + shrinkingConePFTauDiscriminationByTaNC + RunTanc + shrinkingConePFTauTancCVTransform
-                             + shrinkingConeEfficienciesProducerFromFile
-                             + metsignificance )
-
-
+producePrePat = cms.Sequence(
+    pfNoPileUpSequence
+   + pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
+   + recoElectronIsolation
+   + recoMuonIsolation
+   + PFTau
+   + shrinkingConePFTauDiscriminationByTaNC + RunTanc
+   #+ shrinkingConePFTauTancCVTransform
+   #+ shrinkingConeEfficienciesProducerFromFile
+   + metsignificance
+)

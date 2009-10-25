@@ -9,9 +9,9 @@
  * 
  * \authors Christian Veelken
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.1.2.1 $
  *
- * $Id: CompositePtrCandidateTMEtProducer.h,v 1.1 2009/06/10 09:33:09 veelken Exp $
+ * $Id: CompositePtrCandidateTMEtProducer.h,v 1.1.2.1 2009/08/04 09:54:39 mbluj Exp $
  *
  */
 
@@ -27,7 +27,7 @@
 
 #include "DataFormats/Common/interface/View.h"
 
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/CandidateTools/interface/FetchCollection.h"
 

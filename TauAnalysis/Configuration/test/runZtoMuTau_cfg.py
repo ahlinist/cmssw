@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'IDEAL_V12::All'
+process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 
 # import particle data table
 # needed for print-out of generator level information
@@ -68,8 +68,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/muTauSkim.root'
-        'file:/afs/cern.ch/user/v/veelken/scratch0/CMSSW_2_2_10/src/TauAnalysis/Configuration/test/muTauSkim.root'
+        '/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/A4DD1FAE-B178-DE11-B608-001D09F24EAC.root',
+        '/store/relval/CMSSW_3_1_2/RelValZTT/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/9408B54D-CB78-DE11-9AEB-001D09F2503C.root'
     )
     #skipBadFiles = cms.untracked.bool(True) 
 )
@@ -102,7 +102,7 @@ switchToPFTauShrinkingCone(process)
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
-    process.producePatTupleZtoMuTauSpecific
+   process.producePatTupleZtoMuTauSpecific
 # + process.printGenParticleList # uncomment to enable print-out of generator level particles
 # + process.printEventContent    # uncomment to enable dump of event content after PAT-tuple production
   + process.selectZtoMuTauEvents 

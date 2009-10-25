@@ -84,8 +84,6 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronDeltaPhiSuperclToExtrapolTrack_;
   MonitorElement* hElectronDeltaEtaSuperclToExtrapolTrack_;
   MonitorElement* hElectronBremsFraction_;
-
-  MonitorElement* hElectronIdRobust_;
   
 //--- IsoDeposits reconstructed from ECAL and HCAL recHits/CaloTowers and reco::Tracks
   MonitorElement* hElectronTrkIsoPt_;

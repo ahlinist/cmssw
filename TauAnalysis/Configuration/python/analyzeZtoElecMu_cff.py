@@ -68,7 +68,7 @@ analyzeZtoElecMuEvents = cms.EDAnalyzer("GenericAnalyzer",
         jetHistManager,
         metHistManager,
         vertexHistManager,
-        triggerHistManager,
+        triggerHistManagerForElecMu,
         eventWeightHistManager
     ),
 

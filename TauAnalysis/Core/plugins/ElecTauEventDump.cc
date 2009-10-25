@@ -4,10 +4,34 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/CaloJetCollection.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/TauReco/interface/CaloTau.h"
+#include "DataFormats/TauReco/interface/CaloTauFwd.h"
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFTauFwd.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 #include <TMath.h>
+
+const std::string genElectronsFromZsCollectionSource = "genElectronsFromZs";
+const std::string recoElectronCollectionSource = "pixelMatchGsfElectrons";
+const std::string recoElectronTrackCollectionSource = "pixelMatchGsfFit";
+const std::string recoCaloJetCollectionSource = "iterativeCone5CaloJets";
+const std::string recoPFJetCollectionSource = "iterativeCone5PFJets";
+const std::string recoCaloTauCollectionSource = "caloRecoTauProducer";
+const std::string recoPFTauCollectionSource = "shrinkingConePFTauProducer";
+
+const double dRmatch = 0.5;
 
 ElecTauEventDump::ElecTauEventDump(const edm::ParameterSet& cfg)
   : GenericEventDump(cfg)
@@ -55,35 +79,6 @@ void ElecTauEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iS
 
   printJetInfo(iEvent);
 }
-
-//
-//-----------------------------------------------------------------------------------------------------------------------
-//
-
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
-#include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
-#include "DataFormats/JetReco/interface/CaloJet.h"
-#include "DataFormats/JetReco/interface/CaloJetCollection.h"
-#include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/JetReco/interface/PFJetCollection.h"
-#include "DataFormats/TauReco/interface/CaloTau.h"
-#include "DataFormats/TauReco/interface/CaloTauFwd.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
-#include "DataFormats/TauReco/interface/PFTauFwd.h"
-
-#include "PhysicsTools/Utilities/interface/deltaR.h"
-
-const std::string genElectronsFromZsCollectionSource = "genElectronsFromZs";
-const std::string recoElectronCollectionSource = "pixelMatchGsfElectrons";
-const std::string recoElectronTrackCollectionSource = "pixelMatchGsfFit";
-const std::string recoCaloJetCollectionSource = "iterativeCone5CaloJets";
-const std::string recoPFJetCollectionSource = "iterativeCone5PFJets";
-const std::string recoCaloTauCollectionSource = "caloRecoTauProducer";
-const std::string recoPFTauCollectionSource = "shrinkingConePFTauProducer";
-
-const double dRmatch = 0.5;
 
 void ElecTauEventDump::printZeeInfo(const edm::Event& iEvent) const
 {

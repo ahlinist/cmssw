@@ -16,8 +16,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
-
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 #include "TauAnalysis/Core/interface/eventDumpAuxFunctions.h"
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
@@ -571,9 +570,9 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
         }
       }
  */
-      *outputStream_ << "  pfChargedHadronIsolation = " << patTau->chargedParticleIso() << std::endl;
-      *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralParticleIso() << std::endl;
-      *outputStream_ << "  pfGammaIsolation = " << patTau->gammaParticleIso() << std::endl;
+      *outputStream_ << "  pfChargedHadronIsolation = " << patTau->chargedHadronIso() << std::endl;
+      *outputStream_ << "  pfNeutralHadronIsolation = " << patTau->neutralHadronIso() << std::endl;
+      *outputStream_ << "  pfGammaIsolation = " << patTau->photonIso() << std::endl;
       *outputStream_ << " eVeto = " << patTau->tauID("againstElectron") << std::endl;
       *outputStream_ << " EcalStripSumE/P = " << patTau->ecalStripSumEOverPLead() << std::endl;
       *outputStream_ << " BremsRecoveryE/P = " << patTau->bremsRecoveryEOverPLead() << std::endl;
