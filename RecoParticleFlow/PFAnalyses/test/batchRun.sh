@@ -8,7 +8,7 @@ fi
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 ENERGY=$1
-SUFFIX="endcap_slack"
+SUFFIX="barrel_slack"
 RUND=/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/
 
 SCRIPT=$RUND"pflow_tb_general.py"
@@ -29,7 +29,7 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$ENERGY  endcapMode=1 fileSuffix=$SUFFIX outputCollections=0
+cmsRun $SCRIPT beamEnergy=$ENERGY  fileSuffix=$SUFFIX outputCollections=0
 echo cmsRun complete.
 
 #tail -n 50 *.txt
