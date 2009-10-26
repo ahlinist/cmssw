@@ -55,9 +55,9 @@ triggerHistManagerForElecMu.l1Bits = cms.vstring(
     'L1_SingleMu14'
 )
 triggerHistManagerForElecMu.hltPaths = cms.vstring(
-    'HLT_IsoEle15_LW_L1I',
-    'HLT_Mu11',
-    'HLT_IsoMu11'
+    'HLT_Ele15_LW_L1R',
+    'HLT_IsoMu3',
+    'HLT_Mu9'
 )
 
 # import config for event weight histogram manager
@@ -273,8 +273,8 @@ elecMuEventDump = cms.PSet(
                                 'L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
 
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I', 'HLT_Mu15', 'HLT_IsoMu11', 'HLT_IsoEle8_IsoMu7'),
-    
+    hltPathsToPrint = cms.vstring('HLT_IsoMu3', 'HLT_Mu9', 'HLT_Ele15_LW_L1R'),
+        
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     #electronSource = cms.InputTag('cleanLayer1Electrons'),

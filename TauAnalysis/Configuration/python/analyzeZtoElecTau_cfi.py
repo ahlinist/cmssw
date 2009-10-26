@@ -38,19 +38,19 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 triggerHistManagerForElecTau = copy.deepcopy(triggerHistManager)
 triggerHistManagerForElecTau.pluginName = cms.string('triggerHistManagerForElecTau')
 triggerHistManagerForElecTau.l1Bits = cms.vstring(
-    #'L1_SingleEG5',
-    #'L1_SingleEG8',
-    #'L1_SingleEG10',
-    #'L1_SingleEG12',
-    #'L1_SingleEG15',
-    #'L1_SingleIsoEG5',
-    #'L1_SingleIsoEG8',
-    #'L1_SingleIsoEG10',
-    #'L1_SingleIsoEG12',
-    #'L1_SingleIsoEG15'
+    'L1_SingleEG5',
+    'L1_SingleEG8',
+    'L1_SingleEG10',
+    'L1_SingleEG12',
+    'L1_SingleEG15',
+    'L1_SingleIsoEG5',
+    'L1_SingleIsoEG8',
+    'L1_SingleIsoEG10',
+    'L1_SingleIsoEG12',
+    'L1_SingleIsoEG15'
 )
 triggerHistManagerForElecTau.hltPaths = cms.vstring(
-    #'HLT_IsoEle15_LW_L1I'
+    'HLT_Ele15_LW_L1R'
 )
 
 # import config for event weight histogram manager
@@ -292,7 +292,7 @@ elecTauEventDump = cms.PSet(
                                 'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15'),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_IsoEle15_L1I'),
+    hltPathsToPrint = cms.vstring('HLT_Ele15_LW_L1R'),
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
@@ -380,7 +380,7 @@ elecTauAnalysisSequence = cms.VPSet(
     # trigger selection
     #cms.PSet(
     #    filter = cms.string('evtSelTrigger'),
-    #    title = cms.string('isoEle15 Trigger'),
+    #    title = cms.string('Ele15 Trigger'),
     #    saveRunEventNumbers = cms.vstring('')
     #),
     #cms.PSet(

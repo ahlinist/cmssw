@@ -7,12 +7,12 @@ from TauAnalysis.RecoTools.eventSelFlagProdConfigurator import *
 #--------------------------------------------------------------------------------
 
 # trigger selection
-#cfgTrigger = cms.PSet(
-#    pluginName = cms.string('Trigger'),
-#    pluginType = cms.string('TriggerResultEventSelector'),
-#    src = cms.InputTag('TriggerResults::HLT'),
-#    triggerPaths = cms.vstring('HLT_Mu11', 'HLT_IsoMu11')
-#)
+cfgTrigger = cms.PSet(
+    pluginName = cms.string('Trigger'),
+    pluginType = cms.string('TriggerResultEventSelector'),
+    src = cms.InputTag('TriggerResults::HLT'),
+    triggerPaths = cms.vstring('HLT_IsoMu3', 'HLT_Mu9')
+)
 
 # primary event vertex selection
 cfgPrimaryEventVertex = cms.PSet(
@@ -195,7 +195,7 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
 )
 
 zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
-    [ #cfgTrigger,
+    [ cfgTrigger,
       cfgPrimaryEventVertex,
       cfgPrimaryEventVertexQuality,
       cfgPrimaryEventVertexPosition,

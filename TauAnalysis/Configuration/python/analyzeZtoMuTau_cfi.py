@@ -38,15 +38,15 @@ from TauAnalysis.Core.triggerHistManager_cfi import *
 triggerHistManagerForMuTau = copy.deepcopy(triggerHistManager)
 triggerHistManagerForMuTau.pluginName = cms.string('triggerHistManagerForMuTau')
 triggerHistManagerForMuTau.l1Bits = cms.vstring(
-    #'L1_SingleMu3',
-    #'L1_SingleMu5',
-    #'L1_SingleMu7',
-    #'L1_SingleMu10',
-    #'L1_SingleMu14'
+    'L1_SingleMu3',
+    'L1_SingleMu5',
+    'L1_SingleMu7',
+    'L1_SingleMu10',
+    'L1_SingleMu14'
 )
 triggerHistManagerForMuTau.hltPaths = cms.vstring(
-    #'HLT_Mu11',
-    #'HLT_IsoMu11'
+    'HLT_IsoMu3',
+    'HLT_Mu9'
 )
 
 # import config for event weight histogram manager
@@ -85,8 +85,7 @@ genPhaseSpaceCut = cms.PSet(
 evtSelTrigger = cms.PSet(
     pluginName = cms.string('evtSelTrigger'),
     pluginType = cms.string('BoolEventSelector'),
-    #src = cms.InputTag('Trigger')
-    src = cms.InputTag('primaryEventVertex')
+    src = cms.InputTag('Trigger')
 )
 
 # primary event vertex selection
@@ -261,7 +260,7 @@ muTauEventDump = cms.PSet(
     l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_Mu15', 'HLT_IsoMu11'),
+    hltPathsToPrint = cms.vstring('HLT_IsoMu3', 'HLT_Mu9'),
     
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
@@ -351,7 +350,7 @@ muTauAnalysisSequence = cms.VPSet(
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('mu15 || isoMu11 Trigger'),
+        title = cms.string('isoMu3 || Mu9 Trigger'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
