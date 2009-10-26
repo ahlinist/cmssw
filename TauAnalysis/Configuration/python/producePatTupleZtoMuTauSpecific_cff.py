@@ -36,8 +36,8 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
 
 producePatTupleZtoMuTauSpecific = cms.Sequence(
-    selectLayer1Electrons
-   + selectLayer1Muons + selectLayer1MuonsLooseIsolation
+    selectLayer1Muons + selectLayer1MuonsLooseIsolation
+   + selectLayer1Electrons
    + selectLayer1Taus + selectLayer1TausForMuTau
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
