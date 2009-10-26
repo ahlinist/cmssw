@@ -43,10 +43,6 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.extraction.applyCleaningCuts=cms.bool(False)
 #process.extraction.saveJustPions=cms.bool(False)
 ## Also change masterConeDeltaR in pflowCalibratable_cfi to something like 1
-process.particleFiltration.noiseMode = cms.bool(True)
-process.extraction.saveJustPions = cms.bool(False)
-process.extraction.applyCleaningCuts = cms.bool(False)
-process.faketracks.justCreateEmptyCollections = cms.bool(True)
 
 #Need to override clustering to exclude HF components
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
@@ -67,7 +63,6 @@ else:
         result = map(lambda x : 'rfio:///castor/cern.ch/cms/store/h2tb2006/reco/v6/h2.000' + str(x) + '.combined.OutServ_0.0-cmsswreco.root', specifiedE)
     
 if options.endcapMode <> 0:
-    #result = ['file:/tmp/tb07_reco_edm_run_00015535.0021.root']
     process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
     process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
     process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
