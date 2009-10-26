@@ -11,7 +11,7 @@ cfgTrigger = cms.PSet(
     pluginName = cms.string('Trigger'),
     pluginType = cms.string('TriggerResultEventSelector'),
     src = cms.InputTag('TriggerResults::HLT'),
-    triggerPaths = cms.vstring('HLT_IsoEle15_LW_L1I', 'HLT_Mu11', 'HLT_IsoMu11')
+    triggerPaths = cms.vstring('HLT_Ele15_LW_L1R', 'HLT_IsoMu3', 'HLT_Mu9')
 )
 
 # primary event vertex selection
