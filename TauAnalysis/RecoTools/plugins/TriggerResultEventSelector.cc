@@ -24,17 +24,17 @@ bool TriggerResultEventSelector::operator()(edm::Event& evt, const edm::EventSet
   edm::TriggerNames triggerNames;
   triggerNames.init(*triggerResults);
 
-  /*
-    for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
-          triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
-      unsigned int index = triggerNames.triggerIndex(*triggerName);
-      if ( index < triggerNames.size() ) {
-        std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
-    
-	std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
-      }
+/*
+  for ( edm::TriggerNames::Strings::const_iterator triggerName = triggerNames.triggerNames().begin();
+	triggerName != triggerNames.triggerNames().end(); ++triggerName ) {
+    unsigned int index = triggerNames.triggerIndex(*triggerName);
+    if ( index < triggerNames.size() ) {
+      std::string triggerDecision = ( triggerResults->accept(index) ) ? "passed" : "failed";
+      
+      std::cout << " triggerName = " << (*triggerName) << " " << triggerDecision << std::endl;
     }
-  */
+  }
+ */
 
   for ( vstring::const_iterator triggerPath = triggerPaths_.begin();
 	triggerPath != triggerPaths_.end(); ++triggerPath ) {
