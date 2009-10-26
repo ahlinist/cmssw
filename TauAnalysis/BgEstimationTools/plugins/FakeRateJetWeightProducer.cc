@@ -31,21 +31,24 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
   if ( cfgError_ ) return;
 
-  edm::Handle<edm::View<reco::BaseTau> > tauJets;
-  evt.getByLabel(tauJetSource_, tauJets);
+  edm::Handle<edm::View<reco::BaseTau> > allTauJets;
+  evt.getByLabel(allTauJetSource_, allTauJets);
+
+  edm::Handle<edm::View<reco::Candidate> > preselTauJets;
+  evt.getByLabel(preselTauJetSource_, preselTauJets);
 
   std::vector<pat::LookupTableRecord> fakeRateJetWeights;
 
-  unsigned numTauJets = tauJets->size();
+  unsigned numTauJets = allTauJets->size();
   for ( unsigned iTauJet = 0; iTauJet < numTauJets; ++iTauJet ) {
-    edm::RefToBase<reco::BaseTau> tauJetRef = tauJets->refAt(iTauJet);
+    edm::RefToBase<reco::BaseTau> tauJetRef = allTauJets->refAt(iTauJet);
 
     double tauJetIdEff = 1.;
     double qcdJetFakeRate = 1.;
 
     bool tauJetDiscr_passed = true;
 
-    getTauJetProperties(evt, tauJetRef, iTauJet, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
+    getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
 
     double fakeRateJetWeight = 0.;
     if ( tauJetIdEff > qcdJetFakeRate ) {
@@ -60,7 +63,7 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
   std::auto_ptr<LookupTableMap> fakeRateJetWeightMap(new LookupTableMap());
   LookupTableMap::Filler valueMapFiller(*fakeRateJetWeightMap);
-  valueMapFiller.insert(tauJets, fakeRateJetWeights.begin(), fakeRateJetWeights.end());
+  valueMapFiller.insert(allTauJets, fakeRateJetWeights.begin(), fakeRateJetWeights.end());
   valueMapFiller.fill();
 
   evt.put(fakeRateJetWeightMap);

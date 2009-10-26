@@ -26,23 +26,26 @@ void FakeRateEventWeightProducer::produce(edm::Event& evt, const edm::EventSetup
 
   if ( cfgError_ ) return;
 
-  edm::Handle<edm::View<reco::BaseTau> > tauJets;
-  evt.getByLabel(tauJetSource_, tauJets);
+  edm::Handle<edm::View<reco::BaseTau> > allTauJets;
+  evt.getByLabel(allTauJetSource_, allTauJets);
+
+  edm::Handle<edm::View<reco::Candidate> > preselTauJets;
+  evt.getByLabel(preselTauJetSource_, preselTauJets);
 
   double tauJetIdEffSum = 0.;
   double qcdJetFakeRateSum = 0.;
   unsigned numTauJetDiscrPassed = 0;
 
-  unsigned numTauJets = tauJets->size();
+  unsigned numTauJets = allTauJets->size();
   for ( unsigned iTauJet = 0; iTauJet < numTauJets; ++iTauJet ) {
-    edm::RefToBase<reco::BaseTau> tauJetRef = tauJets->refAt(iTauJet);
+    edm::RefToBase<reco::BaseTau> tauJetRef = allTauJets->refAt(iTauJet);
 
     double tauJetIdEff = 1.;
     double qcdJetFakeRate = 1.;
 
     bool tauJetDiscr_passed = true;
 
-    getTauJetProperties(evt, tauJetRef, iTauJet, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
+    getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
 
     tauJetIdEffSum += tauJetIdEff;
     qcdJetFakeRateSum += qcdJetFakeRate;
