@@ -89,8 +89,10 @@ process.layer1METs.metSource = cms.InputTag('met')
 
 from TauAnalysis.Configuration.tools.metTools import *
 
-# comment-out the addPFMet() function to add pfMET: first Boolean switch on production of genMET with mu's, second Boolean switch on type-1 corrections
-addPFMet(process,True,False)
+# uncomment to add pfMET
+# set Boolean swich to true in order to apply type-1 corrections
+addPFMet(process, correct = False)
+
 # replace caloMET by pfMET in all tau-Nu objects
 process.load("TauAnalysis.CandidateTools.tauNuPairProduction_cff")
 replaceMETforTauNu(process,
