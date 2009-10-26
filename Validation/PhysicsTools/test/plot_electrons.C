@@ -16,7 +16,7 @@
   float ptMin = 0;
   float ptMax = 9999;
 
-  sback->SetFillColor(2);   
+  //sback->SetFillColor(2);   
   Style* style1 = sback;
   Style* style2 = s1;
 

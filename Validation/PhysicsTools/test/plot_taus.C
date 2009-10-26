@@ -15,7 +15,7 @@
   bool highpt = false;
   float ptMin = 0;
   float ptMax = 9999;
-  sback->SetFillColor(4);
+  //sback->SetFillColor(4);
   Style* style1 = sback;
   Style* style2 = s1;
   Comparator::Mode mode = Comparator::NORMAL;
