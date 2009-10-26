@@ -113,6 +113,7 @@ muTauEventSelection = cms.untracked.PSet(
         SelectEvents = cms.vstring('muPFTauSkimPath', 'muCaloTauSkimPath')
     )
 )
+
 process.muTauSkimOutputModule = cms.OutputModule("PoolOutputModule",                                 
     tauAnalysisEventContent,                                               
     muTauEventSelection,
