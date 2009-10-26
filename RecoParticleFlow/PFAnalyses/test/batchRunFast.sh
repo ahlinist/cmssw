@@ -21,7 +21,7 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun with...
-OPTIONS="$SCRIPT beamEnergy=$1 kevents=$2 zeroT=1 noZspSr=1 fileSuffix=slack_full  outputCollections=0 endcapMode=${3}"
+OPTIONS="$SCRIPT beamEnergy=$1 kevents=$2 zeroT=1 noZspSr=1 fileSuffix=final_fast  outputCollections=0 endcapMode=${3}"
 echo cmsRun $OPTIONS
 cmsRun $OPTIONS
 
