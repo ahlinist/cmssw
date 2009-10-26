@@ -38,6 +38,30 @@ options.register ('minBeamEnergy',
                   options.varType.float,
                   "Minimum beam energy to simulate")
 
+options.register('noZspSr',
+		0,
+		options.multiplicity.singleton,
+		options.varType.int,
+		"Suspend ZSR and SR effects in simulation?")
+
+options.register('zeroT',
+		0,
+		options.multiplicity.singleton,
+		options.varType.int,
+		"No magnetic field?")
+
+options.register('randSeed',
+                0,
+                options.multiplicity.singleton,
+                options.varType.int,
+                "Supply random number seed?")
+
+options.register('verbose',
+		0,
+		options.multiplicity.singleton,
+		options.varType.int,
+		"Verbose log output to cout?")
+
 options.register('copyToTmp',
                 '0',
                 options.multiplicity.singleton,
@@ -72,27 +96,45 @@ else:
     options.minBeamEnergy = options.beamEnergy
 
 fileLabel = fileLabel + str(int(options.beamEnergy)) + "GeV"    
-
+	
 if options.kevents <> 0:
     fileLabel = fileLabel + "_" + str(options.kevents) + "k"
-    
+
+if options.endcapMode<> 0:
+   fileLabel = fileLabel+ "_endcaps"
+else:
+   fileLabel = fileLabel + "_barrel"
+
 if options.notracks <> 0:
     fileLabel = fileLabel + "_notracks"
 
+if options.noZspSr <> 0:
+    fileLabel = fileLabel + "_noZspSr"
+
+if options.zeroT <> 0:
+    fileLabel = fileLabel + "_0T"
+else:
+    fileLabel = fileLabel + "_4T"
+
 if options.fileSuffix <> '':
     fileLabel = fileLabel + "_" + options.fileSuffix
+
 
 logLabel = fileLabel + ".txt"
 fileLabel = fileLabel + ".root"
 
 
-print ("Options:")
+print ("cmsRun options:")
 print "Min beam energy: " + str(options.minBeamEnergy)
 print "Beam energy: " + str(options.beamEnergy)
 print "kevents: " + str(options.kevents)
+print "zeroT?: " + str(options.zeroT)
+print "noZspSr?: " + str(options.noZspSr)
+
 print "fileSuffix: " + options.fileSuffix
 print "fileLabel: " + fileLabel
 print "logLabel: " + logLabel
+
 print "outputCollections?: " + str(options.outputCollections) 
 
 
