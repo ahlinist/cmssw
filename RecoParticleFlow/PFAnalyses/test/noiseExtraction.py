@@ -43,4 +43,5 @@ process.source = cms.Source("PoolSource",
 )
 
 process.p1 = cms.Path(process.pflowProcessTestbeam)
-process.outpath = cms.EndPath(process.finishup)
+
+#process.outpath = cms.EndPath(process.finishup)

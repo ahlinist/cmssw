@@ -18,8 +18,10 @@ process.famosSimHits.VertexGenerator.BetaStar = 0.00001
 process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
-#process.load("Configuration.StandardSequences.MagneticField_0T_cff")
-process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+if options.zeroT <> 0 :
+	process.load("Configuration.StandardSequences.MagneticField_0T_cff")
+else :
+	process.load("Configuration.StandardSequences.MagneticField_40T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
 process.famosSimHits.MaterialEffects.PairProduction = False
@@ -28,6 +30,18 @@ process.famosSimHits.MaterialEffects.EnergyLoss = False
 process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 process.famosSimHits.Calorimetry.UnfoldedMode = True
+
+if options.randSeed <> 0:
+	from random import *
+	process.RandomNumberGeneratorService.generator.initialSeed=int(random()*100000)
+
+if options.noZspSr <> 0 :
+	process.ecalRecHit.RecHitsFactory.ECALBarrel.Noise=cms.double(0.04)
+	process.ecalRecHit.RecHitsFactory.ECALBarrel.Threshold=cms.double(0.01)
+	process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold=cms.double(0.01)
+	process.ecalRecHit.RecHitsFactory.ECALBarrel.doDigis=cms.bool(False)
+	process.hcalRecHit.RechitsFactory.hbhereco=cms.vdouble(-9999,-9999)
+
 
 process.source = cms.Source("EmptySource")
 
@@ -38,7 +52,7 @@ process.generator = cms.EDProducer("Pythia6EGun",
        MinPhi = cms.double(0),
        MaxPhi = cms.double(2 * 3.14),
        MinEta = cms.double(0.2),
-       MaxEta = cms.double(0.3),
+       MaxEta = cms.double(0.2001),
        MinE = cms.double(options.minBeamEnergy),
        MaxE = cms.double(options.beamEnergy+0.0001),
        AddAntiParticle = cms.bool(True)
@@ -52,9 +66,30 @@ process.generator = cms.EDProducer("Pythia6EGun",
     )
 )
 
+if options.endcapMode <> 0:
+    process.generator = cms.EDProducer("Pythia6EGun",
+    PGunParameters = cms.PSet(
+       ParticleID = cms.vint32(211),
+       MinPhi = cms.double(0),
+       MaxPhi = cms.double(2 * 3.14),
+       MinEta = cms.double(1.6),
+       MaxEta = cms.double(1.6001),
+       MinE = cms.double(options.minBeamEnergy),
+       MaxE = cms.double(options.beamEnergy+0.0001),
+       AddAntiParticle = cms.bool(True)
+     ),
+    pythiaVerbosity = cms.untracked.bool(False),
+    PythiaParameters = cms.PSet(
+        pythiaUESettingsBlock,
+        parameterSets = cms.vstring(
+            'pythiaUESettings'
+       )
+    )
+    )
+
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.destinations=cms.untracked.vstring('Dipion_' + logLabel, 'cout')
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
+#process.MessageLogger.destinations=cms.untracked.vstring('Dipion_' + logLabel, 'cout')
 
 genEvents = 100
 if options.kevents <> 0:
@@ -67,7 +102,8 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
-process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
+process.particleFlow.pf_nsigma_HCAL = cms.double(1.0)
+process.particleFlow.pf_calibMode = cms.uint32(2)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 process.TFileService = cms.Service("TFileService",
@@ -80,14 +116,24 @@ process.extractionToTree = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.EventDelegate
 )
 
-process.extractionToTree.neutralMode = cms.bool(False)
-process.extractionToTree.particlePDG=cms.int32(211)
-
 process.extractionToEvent = cms.EDProducer("CalibratableProducer",
-    calibratable.EventDelegate         
+    calibratable.EventDelegate
 )
-process.extractionToEvent.neutralMode = cms.bool(False)
-process.extractionToEvent.particlePDG=cms.int32(211)
+
+if options.zeroT <>0 :
+        #assume we still fire pi+!
+        process.extractionToTree.neutralMode = cms.bool(True)
+        process.extractionToTree.particlePDG=cms.int32(211)
+        process.extractionToEvent.neutralMode = cms.bool(True)
+        process.extractionToEvent.particlePDG=cms.int32(211)
+
+else:
+        process.extractionToTree.neutralMode = cms.bool(False)
+        process.extractionToTree.particlePDG=cms.int32(211)
+        process.extractionToEvent.neutralMode = cms.bool(False)
+        process.extractionToEvent.particlePDG=cms.int32(211)
+
+
 
 process.finishup = cms.OutputModule("PoolOutputModule",
     fileName=cms.untracked.string('Dipion_Events_' + fileLabel),

@@ -20,8 +20,11 @@ cd /afs/cern.ch/user/b/ballin/scratch0/tbSandbox/CMSSW_3_1_2/src
 eval `scramv1 ru -sh`
 cd $WORKDIR
 
-echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$1 kevents=2 fileSuffix=full_0T
+echo Starting cmsRun with...
+OPTIONS="$SCRIPT beamEnergy=$1 kevents=$2 zeroT=1 noZspSr=1 fileSuffix=slack_full  outputCollections=0 endcapMode=${3}"
+echo cmsRun $OPTIONS
+cmsRun $OPTIONS
+
 echo cmsRun complete.
 
 echo Directory listing of $PWD
@@ -31,7 +34,7 @@ echo Copying all files to castor...
 
 for i in `ls | grep root`
 do
-		echo Copying ${i}
+	echo Copying ${i}
         rfcp ${i} /castor/cern.ch/user/b/ballin/CMSSW312
 done
 

@@ -21,7 +21,7 @@ eval `scramv1 ru -sh`
 cd $WORKDIR
 
 echo Starting cmsRun
-cmsRun $SCRIPT beamEnergy=$1 kevents=10 fileSuffix0=slack_fast_4T 
+cmsRun $SCRIPT beamEnergy=$1 kevents=10 fileSuffix=barrel_slack_fast_4T  outputCollections=0
 echo cmsRun complete.
 
 echo Directory listing of $PWD

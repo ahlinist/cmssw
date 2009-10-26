@@ -26,13 +26,15 @@ specifiedE = energies[options.beamEnergy]
 if options.endcapMode <> 0:
     specifiedE = endcap[options.beamEnergy]
 
+
 process.particleFiltration.debug = cms.int32(1)
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
 
 #For calibration purposes
-process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
+process.particleFlow.pf_nsigma_HCAL = cms.double(1.0)
+process.particleFlow.pf_calibMode = cms.uint32(1)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.particleFlowBlock.debug = cms.untracked.bool(True)
 #process.particleFlow.debug = cms.untracked.bool(True)
@@ -41,6 +43,10 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.extraction.applyCleaningCuts=cms.bool(False)
 #process.extraction.saveJustPions=cms.bool(False)
 ## Also change masterConeDeltaR in pflowCalibratable_cfi to something like 1
+process.particleFiltration.noiseMode = cms.bool(True)
+process.extraction.saveJustPions = cms.bool(False)
+process.extraction.applyCleaningCuts = cms.bool(False)
+process.faketracks.justCreateEmptyCollections = cms.bool(True)
 
 #Need to override clustering to exclude HF components
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
@@ -97,7 +103,8 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 # LogFile
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.destinations=cms.untracked.vstring('PFlowTB_' + logLabel, 'cout')
+#process.MessageLogger.destinations=cms.untracked.vstring('PFlowTB_' + logLabel, 'cout')
+process.MessageLogger.destinations=cms.untracked.vstring('cout')
 
 
 process.source = cms.Source("PoolSource",
