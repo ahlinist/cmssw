@@ -27,9 +27,9 @@ producePatTupleWtoTauNuSpecific = cms.Sequence(
     selectLayer1METs+
     selectLayer1PFMETs+
     produceTauNuPairs+
-    produceTauRecoilEnergy+    
-    selectLayer1Electrons+    
+    produceTauRecoilEnergy+
     selectLayer1Muons+
+    selectLayer1Electrons+    
     selectLayer1Taus+
     selectLayer1Jets
 )
