@@ -11,6 +11,8 @@
 #include "DataFormats/TauReco/interface/PFTauFwd.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 #include "DataFormats/Common/interface/ValueMap.h" 
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
 
@@ -58,7 +60,10 @@ FakeRateWeightProducerBase::tauJetDiscrEntry::~tauJetDiscrEntry()
 FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& cfg)
   : cfgError_(0)
 {
-  tauJetSource_ = cfg.getParameter<edm::InputTag>("tauJetSource");
+  allTauJetSource_ = cfg.getParameter<edm::InputTag>("allTauJetSource");
+  preselTauJetSource_ = cfg.getParameter<edm::InputTag>("preselTauJetSource");
+
+  dRmatch_ = cfg.getParameter<double>("dRmatch");
   
   typedef std::vector<edm::ParameterSet> vParameterSet;
   vParameterSet cfgTauJetDiscriminators = cfg.getParameter<vParameterSet>("tauJetDiscriminators");
@@ -80,11 +85,27 @@ FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
 
 void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 						     edm::RefToBase<reco::BaseTau>& tauJetRef, unsigned iTauJet,
+						     const edm::Handle<edm::View<reco::Candidate> >& preselTauJets,
 						     double& tauJetIdEff, double& qcdJetFakeRate, bool& tauJetDiscr_passed)
 { 
   //std::cout << "<FakeRateWeightProducerBase::getTauJetProperties>:" << std::endl;
 
   if ( cfgError_ ) return;
+
+  bool passesPreselection = false;
+  for ( edm::View<reco::Candidate>::const_iterator preselTauJet = preselTauJets->begin();
+	preselTauJet != preselTauJets->end(); ++preselTauJet ) {
+    if ( reco::deltaR(tauJetRef->p4(), preselTauJet->p4()) < dRmatch_ ) passesPreselection = true;
+  }
+
+  if ( !passesPreselection ) {
+    tauJetIdEff = 0.;
+    qcdJetFakeRate = 0.;
+    
+    tauJetDiscr_passed = false;
+    
+    return;
+  }
 
   tauJetIdEff = 1.;
   qcdJetFakeRate = 1.;
@@ -109,7 +130,7 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
     double tauJetDiscr_value = -1.;
     if ( typeid(*tauJetRef) == typeid(reco::CaloTau) ) {
       edm::Handle<reco::CaloTauCollection> caloTauJets;
-      evt.getByLabel(tauJetSource_, caloTauJets);
+      evt.getByLabel(allTauJetSource_, caloTauJets);
       
       edm::Ref<reco::CaloTauCollection> caloTauJetRef(caloTauJets, iTauJet);
 
@@ -123,7 +144,7 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
       }
     } else if ( typeid(*tauJetRef) == typeid(reco::PFTau) ) {
       edm::Handle<reco::PFTauCollection> pfTauJets;
-      evt.getByLabel(tauJetSource_, pfTauJets);
+      evt.getByLabel(allTauJetSource_, pfTauJets);
 
       edm::Ref<reco::PFTauCollection> pfTauJetRef(pfTauJets, iTauJet);
       

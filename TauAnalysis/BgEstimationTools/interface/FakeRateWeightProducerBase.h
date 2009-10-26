@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.1 2009/10/17 17:18:04 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.2 2009/10/25 12:38:13 veelken Exp $
  *
  */
 
@@ -38,10 +38,14 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   
  protected:
 
-  void getTauJetProperties(const edm::Event&, edm::RefToBase<reco::BaseTau>&, unsigned, double&, double&, bool&);
+  void getTauJetProperties(const edm::Event&, edm::RefToBase<reco::BaseTau>&, unsigned, 
+			   const edm::Handle<edm::View<reco::Candidate> >&, double&, double&, bool&);
 
 //--- configuration parameters
-  edm::InputTag tauJetSource_;
+  edm::InputTag allTauJetSource_;
+  edm::InputTag preselTauJetSource_;
+
+  double dRmatch_;
 
   struct tauJetDiscrEntry
   {
