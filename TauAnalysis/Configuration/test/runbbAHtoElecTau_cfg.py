@@ -42,8 +42,7 @@ process.load("PhysicsTools.PFCandProducer.pfMET_cfi")
 process.patAODExtraReco.replace( process.patJetMETCorrections, process.patJetMETCorrections + process.pfMET )
 process.layer1PFMETs = process.layer1METs.clone(
   metSource = cms.InputTag("pfMET"),
-  addMuonCorrections = cms.bool(False),
-  addTrigMatch = cms.bool(False)
+  addMuonCorrections = cms.bool(False)
 )
 process.allLayer1Objects.replace( process.layer1METs, process.layer1METs + process.layer1PFMETs)
 
