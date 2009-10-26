@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.23 $
-  \date $Date: 2009/10/17 00:03:34 $
+  \version $Revision: 1.24 $
+  \date $Date: 2009/10/18 15:44:28 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -509,37 +509,18 @@ private:
 	  }
       } // if (o.name.find("DeadCellMonitor_Hcal/"...))
 
-    /*
-    // Add error/warning text to 1-D histograms.  Do we want this at this time?
-    TText tt;
-    tt.SetTextSize(0.12);
+    if ( (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos) &&
+	 (obj->GetEntries() == 0) )
+      {
+        TText t;
+        t.SetTextSize( 0.1);
+	if (o.name.find("BCN when OrN") !=std::string::npos)
+	  t.DrawText(0, 0, "Empty == OK"); 
+	else 
+	  t.DrawText(-1*(obj->GetNbinsX() * 0.5), 0, "Empty == OK"); 
 
-    if (o.flags == 0)
-    return;
-    else
-    {
-    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
-    {
-    tt.SetTextColor(2); // error color = RED
-    tt.DrawTextNDC(0.5, 0.5, "Error");
-    } // DQM_FLAG_REPORT_ERROR
-    else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
-    {
-    tt.SetTextColor(5);
-    tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-    } // DQM_FLAG_REPORT_WARNING
-    else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
-    {
-    tt.SetTextColor(1); // other color = BLACK
-    tt.DrawTextNDC(0.5, 0.5, "Other ");
-    } // DQM_FLAG_REPORT_OTHER
-    else
-    {
-    tt.SetTextColor(3);
-    tt.DrawTextNDC(0.5, 0.5, "Ok ");
-    } //else
-    } // else (  o.flags != 0  )
-    */
+      }
+
   }
 
   void postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
@@ -560,6 +541,9 @@ private:
     // Want to move colz palette, but this crashes code, and does not move the palette.  Hmm...
     obj->GetYaxis()->SetTickLength(0.0);
     obj->GetXaxis()->SetTickLength(0.0);
+
+    if (o.name.find("DataFormatMonitor/Data Flow/DCC Data Block Size Each FED")!=std::string::npos)
+      c->SetLogy();
 
     // in the future, we can add text output based on error status,
     // or set bin range based on filled histograms, etc.
