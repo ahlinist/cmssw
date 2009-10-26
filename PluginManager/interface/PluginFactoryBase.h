@@ -43,7 +43,7 @@ class PluginFactoryBase
       // ---------- const member functions ---------------------
 
       ///return info about all plugins which are already available in the program
-      virtual std::vector<PluginInfo> available() const = 0;
+      virtual std::vector<PluginInfo> available() const;
 
       ///returns the name of the category to which this plugin factory belongs
       virtual const std::string& category() const = 0;
@@ -77,6 +77,8 @@ class PluginFactoryBase
                     std::vector<PluginInfo>& iReturn ) const;
 
       void fillAvailable(std::vector<PluginInfo>& iReturn) const;
+
+      void registerPMaker(void* iPMaker, const std::string& iName);
       
       Plugins m_plugins;
       

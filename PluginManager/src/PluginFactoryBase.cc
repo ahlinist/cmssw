@@ -154,6 +154,21 @@ PluginFactoryBase::checkProperLoadable(const std::string& iName, const std::stri
   }
 }
 
+
+void 
+PluginFactoryBase::registerPMaker(void* iPMaker, const std::string& iName) {
+  m_plugins[iName].push_back(std::pair<void*,std::string>(iPMaker,PluginManager::loadingFile()));
+  newPlugin(iName);
+}
+
+std::vector<PluginInfo> 
+PluginFactoryBase::available() const {
+  std::vector<PluginInfo> returnValue;
+  returnValue.reserve(m_plugins.size());
+  fillAvailable(returnValue);
+  return returnValue;
+}
+
 //
 // const member functions
 //
