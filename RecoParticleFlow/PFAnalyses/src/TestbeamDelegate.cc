@@ -28,13 +28,10 @@ using namespace reco;
 using namespace pftools;
 
 TestbeamDelegate::TestbeamDelegate() :
-	applyCleaningCuts_(true), saveJustPions_(true), isEndcap2007_(false),
-			stripAnomalousEvents_(0), maxEventsFromEachRun_(0),
-			eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0),
-			beamHaloCands_(0), cerenkovNonPions_(0), tofNonPions_(0),
-			electronCandidates_(0), protonKaonCandidates_(0),
-			goodPionsFound_(0), deltaRRecHitsToCenterECAL_(0.4),
-			deltaRRecHitsToCenterHCAL_(0.4), deltaRPhotonsToTrack_(0.1),
+	applyCleaningCuts_(true), saveJustPions_(true), isEndcap2007_(false), stripAnomalousEvents_(0),
+			maxEventsFromEachRun_(0), eventsSeenInThisRun_(0), muonCands_(0), nonMipCands_(0), beamHaloCands_(0),
+			cerenkovNonPions_(0), tofNonPions_(0), electronCandidates_(0), protonKaonCandidates_(0), goodPionsFound_(0),
+			deltaRRecHitsToCenterECAL_(0.4), deltaRRecHitsToCenterHCAL_(0.4), deltaRPhotonsToTrack_(0.1),
 			deltaRNeutralsToTrack_(0.3) {
 
 }
@@ -45,44 +42,29 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 
 	isEndcap2007_ = parameters.getParameter<bool> ("isEndcap2007");
 
-	stripAnomalousEvents_ = parameters.getParameter<unsigned> (
-			"stripAnomalousEvents");
-	maxEventsFromEachRun_ = parameters.getParameter<unsigned> (
-			"maxEventsFromEachRun");
-	deltaRRecHitsToCenterECAL_ = parameters.getParameter<double> (
-			"deltaRRecHitsToCenterECAL");
-	deltaRRecHitsToCenterHCAL_ = parameters.getParameter<double> (
-			"deltaRRecHitsToCenterHCAL");
-	deltaRClustersToCenterECAL_ = parameters.getParameter<double> (
-			"deltaRClustersToCenterECAL");
-	deltaRClustersToCenterHCAL_ = parameters.getParameter<double> (
-			"deltaRClustersToCenterHCAL");
-	deltaRPhotonsToTrack_ = parameters.getParameter<double> (
-			"deltaRPhotonsToTrack");
-	deltaRNeutralsToTrack_ = parameters.getParameter<double> (
-			"deltaRPhotonsToTrack");
+	stripAnomalousEvents_ = parameters.getParameter<unsigned> ("stripAnomalousEvents");
+	maxEventsFromEachRun_ = parameters.getParameter<unsigned> ("maxEventsFromEachRun");
+	deltaRRecHitsToCenterECAL_ = parameters.getParameter<double> ("deltaRRecHitsToCenterECAL");
+	deltaRRecHitsToCenterHCAL_ = parameters.getParameter<double> ("deltaRRecHitsToCenterHCAL");
+	deltaRClustersToCenterECAL_ = parameters.getParameter<double> ("deltaRClustersToCenterECAL");
+	deltaRClustersToCenterHCAL_ = parameters.getParameter<double> ("deltaRClustersToCenterHCAL");
+	deltaRPhotonsToTrack_ = parameters.getParameter<double> ("deltaRPhotonsToTrack");
+	deltaRNeutralsToTrack_ = parameters.getParameter<double> ("deltaRPhotonsToTrack");
 	saveJustPions_ = parameters.getParameter<bool> ("saveJustPions");
 
-	inputTagParticleFiltration_ = parameters.getParameter<InputTag> (
-			"ParticleFiltration");
+	inputTagParticleFiltration_ = parameters.getParameter<InputTag> ("ParticleFiltration");
 	inputTagBeamCounters_ = parameters.getParameter<InputTag> ("BeamCounters");
 	inputTagTiming_ = parameters.getParameter<InputTag> ("Timing");
-	inputTagEventPosition_
-			= parameters.getParameter<InputTag> ("EventPosition");
+	inputTagEventPosition_ = parameters.getParameter<InputTag> ("EventPosition");
 	inputTagRunData_ = parameters.getParameter<InputTag> ("RunData");
 	inputTagTriggerData_ = parameters.getParameter<InputTag> ("TriggerData");
-	inputTagClustersEcal_
-			= parameters.getParameter<InputTag> ("PFClustersEcal");
-	inputTagClustersHcal_
-			= parameters.getParameter<InputTag> ("PFClustersHcal");
+	inputTagClustersEcal_ = parameters.getParameter<InputTag> ("PFClustersEcal");
+	inputTagClustersHcal_ = parameters.getParameter<InputTag> ("PFClustersHcal");
 	inputTagRecHitsEcal_ = parameters.getParameter<InputTag> ("PFRecHitsEcal");
 	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
-	inputTagRawRecHitsEcalEB_ = parameters.getParameter<InputTag> (
-			"RawRecHitsEcalEB");
-	inputTagRawRecHitsEcalEE_ = parameters.getParameter<InputTag> (
-			"RawRecHitsEcalEE");
-	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> (
-			"RawRecHitsHcal");
+	inputTagRawRecHitsEcalEB_ = parameters.getParameter<InputTag> ("RawRecHitsEcalEB");
+	inputTagRawRecHitsEcalEE_ = parameters.getParameter<InputTag> ("RawRecHitsEcalEE");
+	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> ("RawRecHitsHcal");
 	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
 
 	//LogError("TestbeamDelegate") << "Error getting parameters." << std::endl;
@@ -100,29 +82,25 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 			//Found tree successfully... loop over entries and resurrect infos
 			tree->SetBranchAddress("RunInfo", &thisRun_);
 			if (debug_ > 3) {
-				LogInfo("TestbeamDelegate") << "Cut file has "
-						<< tree->GetEntries() << " entries." << std::endl;
+				LogInfo("TestbeamDelegate") << "Cut file has " << tree->GetEntries() << " entries." << std::endl;
 
 			}
 			for (unsigned entry(0); entry < tree->GetEntries(); ++entry) {
 				tree->GetEntry(entry);
 				//Copy run info
 				if (debug_ > 4) {
-					LogInfo("TestbeamDelegate") << "Copying run info for run "
-							<< thisRun_->runNumber_ << std::endl;
+					LogInfo("TestbeamDelegate") << "Copying run info for run " << thisRun_->runNumber_ << std::endl;
 					//LogInfo("TestbeamDelegate") << *thisRun_;
 				}
 				RunInfo* aRun = new RunInfo(*thisRun_);
 				runInfos_[thisRun_->runNumber_] = aRun;
 			}
 		} else {
-			LogError("TestbeamDelegate") << "Tree pointer is null!"
-					<< std::endl;
+			LogError("TestbeamDelegate") << "Tree pointer is null!" << std::endl;
 		}
 		file->Close();
 	} else {
-		LogError("TestbeamDelegate") << "Couldn't open run info file!"
-				<< std::endl;
+		LogError("TestbeamDelegate") << "Couldn't open run info file!" << std::endl;
 	}
 
 }
@@ -131,11 +109,9 @@ TestbeamDelegate::~TestbeamDelegate() {
 	LogInfo("TestbeamDelegate") << __PRETTY_FUNCTION__ << std::endl;
 }
 
-bool TestbeamDelegate::processEvent(const edm::Event& event,
-		const edm::EventSetup& setup) {
+bool TestbeamDelegate::processEvent(const edm::Event& event, const edm::EventSetup& setup) {
 
-	if (eventsSeenInThisRun_ >= maxEventsFromEachRun_ && maxEventsFromEachRun_
-			> 0) {
+	if (eventsSeenInThisRun_ >= maxEventsFromEachRun_ && maxEventsFromEachRun_ > 0) {
 		return false;
 	}
 
@@ -143,33 +119,28 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	ParticleFiltrationDecisionCollection decisions = **filtration_;
 
 	if (decisions.size() > 1) {
-		LogProblem("TestbeamDelegate")
-				<< "\tMore than one ParticleFiltrationDecision... I can't handle that.\n"
+		LogProblem("TestbeamDelegate") << "\tMore than one ParticleFiltrationDecision... I can't handle that.\n"
 				<< "\tI used to be indecisive. Now I'm not so sure.\n";
 		thisEventPasses_ = false;
 	}
 
 	if (decisions.size() == 0) {
-		LogProblem("TestbeamDelegate")
-				<< "\tNo ParticleFiltrationDecision found... I can't handle that.\n";
+		LogProblem("TestbeamDelegate") << "\tNo ParticleFiltrationDecision found... I can't handle that.\n";
 		thisEventPasses_ = false;
 		return false;
 	}
 
 	ParticleFiltrationDecision decision = decisions[0];
 
-	if (decision.type_ == ParticleFiltrationDecision::OTHER
-			&& applyCleaningCuts_) {
+	if (decision.type_ == ParticleFiltrationDecision::OTHER && applyCleaningCuts_) {
 		if (debug_ > 3)
-			LogInfo("TestbeamDelegate")
-					<< "\tNo clean particle found according to decision.\n";
+			LogInfo("TestbeamDelegate") << "\tNo clean particle found according to decision.\n";
 		thisEventPasses_ = false;
 	}
 
 	if (decision.type_ != ParticleFiltrationDecision::PION && saveJustPions_) {
 		if (debug_ > 3)
-			LogInfo("TestbeamDelegate")
-					<< "\tNot a pion - therefore skipping.\n";
+			LogInfo("TestbeamDelegate") << "\tNot a pion - therefore skipping.\n";
 		thisEventPasses_ = false;
 	}
 
@@ -178,8 +149,7 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		return thisEventPasses_;
 	}
 
-	if (decision.type_ == ParticleFiltrationDecision::NOISE && !saveJustPions_
-			&& !applyCleaningCuts_) {
+	if (decision.type_ == ParticleFiltrationDecision::NOISE && !saveJustPions_ && !applyCleaningCuts_) {
 		//Noise mode
 		thisEventPasses_ = true;
 	}
@@ -199,13 +169,12 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 
 	if (decision.type_ == ParticleFiltrationDecision::ELECTRON)
 		calib_->tb_pdg_ = 11;
-	else if (decision.type_ == ParticleFiltrationDecision::PROTON_KAON
-			|| decision.type_ == ParticleFiltrationDecision::PROTON)
+	else if (decision.type_ == ParticleFiltrationDecision::PROTON_KAON || decision.type_
+			== ParticleFiltrationDecision::PROTON)
 		calib_->tb_pdg_ = 2212;
 	else if (decision.type_ == ParticleFiltrationDecision::MUON)
 		calib_->tb_pdg_ = 12;
-	else if (decision.type_ == ParticleFiltrationDecision::OTHER
-			|| decision.type_ == ParticleFiltrationDecision::NOISE) {
+	else if (decision.type_ == ParticleFiltrationDecision::OTHER || decision.type_ == ParticleFiltrationDecision::NOISE) {
 		calib_->tb_pdg_ = 0;
 	}
 
@@ -231,64 +200,52 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	edm::ESHandle<CaloGeometry> geoHandle;
 	setup.get<CaloGeometryRecord> ().get(geoHandle);
 
-	const CaloSubdetectorGeometry* ebtmp = geoHandle->getSubdetectorGeometry(
-			DetId::Ecal, EcalBarrel);
+	const CaloSubdetectorGeometry* ebtmp = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
 
-	const EcalBarrelGeometry* ecalBarrelGeometry =
-			dynamic_cast<const EcalBarrelGeometry*> (ebtmp);
+	const EcalBarrelGeometry* ecalBarrelGeometry = dynamic_cast<const EcalBarrelGeometry*> (ebtmp);
 	assert(ecalBarrelGeometry);
 
-	const CaloSubdetectorGeometry* eetmp = geoHandle->getSubdetectorGeometry(
-			DetId::Ecal, EcalEndcap);
+	const CaloSubdetectorGeometry* eetmp = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
 
-	const EcalEndcapGeometry* ecalEndcapGeometry =
-			dynamic_cast<const EcalEndcapGeometry*> (eetmp);
+	const EcalEndcapGeometry* ecalEndcapGeometry = dynamic_cast<const EcalEndcapGeometry*> (eetmp);
 	assert(ecalEndcapGeometry);
 
 	//Seems to be happy with testbeam data too :-|
-	const CaloSubdetectorGeometry* hcalBarrelGeometry =
-			geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
+	const CaloSubdetectorGeometry* hcalBarrelGeometry = geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
 	assert(hcalBarrelGeometry);
 
-	const CaloSubdetectorGeometry* hcalEndcapGeometry =
-			geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalEndcap);
+	const CaloSubdetectorGeometry* hcalEndcapGeometry = geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalEndcap);
 	assert(hcalEndcapGeometry);
-
 
 	//Due to bonkers alignment apparent in TB2007 dataset, ECAL, HCAL and table
 	//are all over the place. Take the tableEta, tablePhi as the standard.
 	double targetEcalEta = thisRun_->ecalEta_;
 	double targetEcalPhi = thisRun_->ecalPhi_;
-	if(isEndcap2007_) {
+	double targetHcalEta = thisRun_->hcalEta_;
+	double targetHcalPhi = thisRun_->hcalPhi_;
+	if (isEndcap2007_) {
 		targetEcalEta = thisRun_->tableEta_;
 		targetEcalPhi = thisRun_->tablePhi_;
+		targetHcalEta = thisRun_->tableEta_;
+		targetHcalPhi = thisRun_->tablePhi_;
 	}
 
-	if (!isEndcap2007_)
-		extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry,
-				targetEcalEta, targetEcalPhi);
-		extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry,
-				thisRun_->hcalEta_, thisRun_->hcalPhi_);
+	if (!isEndcap2007_) {
+		extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry, targetEcalEta, targetEcalPhi);
+		extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry, thisRun_->hcalEta_, thisRun_->hcalPhi_);
+	}
 	if (isEndcap2007_) {
 		//cout << "Extracting EERechits..." << (**rawRecHitsEcalEE_).size() << "\n";
-		extractEERecHits(**rawRecHitsEcalEE_, ecalEndcapGeometry,
-				targetEcalEta, targetEcalPhi);
-		extractHcalRecHits(**rawRecHitsHcal_, hcalEndcapGeometry,
-					thisRun_->hcalEta_, thisRun_->hcalPhi_);
+		extractEERecHits(**rawRecHitsEcalEE_, ecalEndcapGeometry, targetEcalEta, targetEcalPhi);
+		extractHcalRecHits(**rawRecHitsHcal_, hcalEndcapGeometry, thisRun_->hcalEta_, thisRun_->hcalPhi_);
 	}
-
-
 
 	calib_->recompute();
 
-
-	if (stripAnomalousEvents_ && fabs(calib_->tb_energyEvent_)
-			> stripAnomalousEvents_ * thisRun_->beamEnergy_) {
+	if (stripAnomalousEvents_ && fabs(calib_->tb_energyEvent_) > stripAnomalousEvents_ * thisRun_->beamEnergy_) {
 		if (debug_ > 2)
-			LogInfo("TestbeamDelegate")
-					<< "Huge excess (loss) of detector energy vs. beam energy = "
-					<< calib_->tb_energyEvent_ << " vs. "
-					<< thisRun_->beamEnergy_ << "\n";
+			LogInfo("TestbeamDelegate") << "Huge excess (loss) of detector energy vs. beam energy = "
+					<< calib_->tb_energyEvent_ << " vs. " << thisRun_->beamEnergy_ << "\n";
 		thisEventPasses_ = false;
 	}
 
@@ -297,13 +254,18 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFRecHitCollection ecalRecHits = **recHitsEcal_;
 		PFRecHitCollection hcalRecHits = **recHitsHcal_;
 
-		std::vector<unsigned> matchingEcalIndicies =
-				pftools::findObjectsInDeltaR(ecalRecHits, targetEcalEta,
-						targetEcalPhi, deltaRRecHitsToCenterECAL_);
+		std::vector<unsigned> matchingEcalIndicies = pftools::findObjectsInDeltaR(ecalRecHits, targetEcalEta,
+				targetEcalPhi, deltaRRecHitsToCenterECAL_);
 		//Or another way of doing it...
-		std::vector<unsigned> matchingHcalIndicies =
-				pftools::findObjectsInDeltaR(hcalRecHits, thisRun_->hcalEta_,
-						thisRun_->hcalPhi_, deltaRRecHitsToCenterHCAL_);
+		std::vector<unsigned> matchingHcalIndicies = pftools::findObjectsInDeltaR(hcalRecHits, targetHcalEta,
+				targetHcalPhi, deltaRRecHitsToCenterHCAL_);
+
+		LogInfo("TestbeamDelegate") << "ecalRecHits size = " << ecalRecHits.size() << " of which "
+				<< matchingEcalIndicies.size() << " match.\n";
+
+
+		LogInfo("TestbeamDelegate") << "hcalRecHits size = " << hcalRecHits.size() << " of which "
+				<< matchingHcalIndicies.size() << " match.\n";
 
 		extractEcalPFRecHits(ecalRecHits, matchingEcalIndicies);
 		extractHcalPFRecHits(hcalRecHits, matchingHcalIndicies);
@@ -314,14 +276,11 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 		PFClusterCollection ecalClusters = **clustersEcal_;
 		PFClusterCollection hcalClusters = **clustersHcal_;
 
+		std::vector<unsigned> ecalClusterIndices = pftools::findObjectsInDeltaR(ecalClusters, targetEcalEta, targetEcalPhi,
+				deltaRClustersToCenterECAL_);
 
-		std::vector<unsigned> ecalClusterIndices =
-				pftools::findObjectsInDeltaR(ecalClusters, targetEcalEta,
-						targetEcalPhi, deltaRClustersToCenterECAL_);
-
-		std::vector<unsigned> hcalClusterIndices =
-				pftools::findObjectsInDeltaR(hcalClusters, thisRun_->hcalEta_,
-						thisRun_->hcalPhi_, deltaRClustersToCenterHCAL_);
+		std::vector<unsigned> hcalClusterIndices = pftools::findObjectsInDeltaR(hcalClusters, targetHcalEta, targetHcalPhi,
+				deltaRClustersToCenterHCAL_);
 
 		extractEcalPFClusters(ecalClusters, ecalClusterIndices);
 		extractHcalPFClusters(hcalClusters, hcalClusterIndices);
@@ -332,17 +291,22 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 	for (PFCandidateCollection::iterator it = cands.begin(); it != cands.end(); ++it) {
 		const PFCandidate& test = *it;
 		bool veto(false);
-		if (test.particleId() == 4 && pftools::deltaR(test.eta(),
-				targetEcalEta, test.phi(), targetEcalPhi)
+		if (test.particleId() == 4 && pftools::deltaR(test.eta(), targetEcalEta, test.phi(), targetEcalPhi)
 				> deltaRPhotonsToTrack_)
 			veto = true;
-		if (test.particleId() == 5 && pftools::deltaR(test.eta(),
-				thisRun_->hcalEta_, test.phi(), thisRun_->hcalPhi_)
+		if (test.particleId() == 5 && pftools::deltaR(test.eta(), targetHcalEta, test.phi(), targetHcalPhi)
 				> deltaRNeutralsToTrack_)
 			veto = true;
 
 		if (!veto)
 			extractCandidate(*it);
+	}
+
+	//anomalous events...
+	if (calib_->tb_numHcal_ == 0) {
+		LogError("TestbeamDelegate") << "no HCAL rechits found downstream of particle filtration - bug in rechit producer?";
+		thisParticlePasses_ = false;
+		thisEventPasses_ = false;
 	}
 
 	//	calib_->recompute();
@@ -362,15 +326,12 @@ bool TestbeamDelegate::processEvent(const edm::Event& event,
 
 }
 
-void TestbeamDelegate::extractHcalRecHits(
-		const HBHERecHitCollection& hcalRechits,
-		const CaloSubdetectorGeometry* geometry, double targetEta,
-		double targetPhi) {
+void TestbeamDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
+		const CaloSubdetectorGeometry* geometry, double targetEta, double targetPhi) {
 	//	std::cout << "TestbeamDelegate::extractHcalRecHit - isEndcap2007? "
 	//			<< isEndcap2007_ << "\n";
 
-	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRechits.begin(); hrIt
-			!= hcalRechits.end(); ++hrIt) {
+	for (std::vector<HBHERecHit>::const_iterator hrIt = hcalRechits.begin(); hrIt != hcalRechits.end(); ++hrIt) {
 		targetEta = thisRun_->hcalEta_;
 		targetPhi = thisRun_->hcalPhi_;
 		const HBHERecHit& hrh = *hrIt;
@@ -412,8 +373,7 @@ void TestbeamDelegate::extractHcalRecHits(
 			iphiNew += 72;
 		newDetId = new HcalDetId(detid.subdet(), ietaNew, iphiNew, depth);
 		if (newDetId == 0) {
-			LogWarning("TestbeamDelegate")
-					<< ": couldn't create new HcalDetId.\n";
+			LogWarning("TestbeamDelegate") << ": couldn't create new HcalDetId.\n";
 			continue;
 		}
 		//const HcalDetId hDetId = hrh.id();
@@ -422,22 +382,18 @@ void TestbeamDelegate::extractHcalRecHits(
 		if (thisCell) {
 
 			//compute delta R
-			double dR = pftools::deltaR(thisCell->getPosition().eta(),
-					targetEta, thisCell->getPosition().phi(), targetPhi);
+			double dR = pftools::deltaR(thisCell->getPosition().eta(), targetEta, thisCell->getPosition().phi(), targetPhi);
 			//			std::cout << "\t" << hrh.energy() << ", ["
 			//					<< thisCell->getPosition().eta() << ", "
 			//					<< thisCell->getPosition().phi() << "] -> dR = " << dR
 			//					<< ", iEta/iPhi = [" << ietaNew << ", " << iphiNew << "]\n";
-			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_
-					<= 0) {
-				CalibratableElement ce(hrh.energy(),
-						thisCell->getPosition().eta(),
-						thisCell->getPosition().phi(), PFLayer::HCAL_BARREL1);
+			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
+				CalibratableElement ce(hrh.energy(), thisCell->getPosition().eta(), thisCell->getPosition().phi(),
+						PFLayer::HCAL_BARREL1);
 				calib_->tb_hcal_.push_back(ce);
 			}
 		} else
-			LogWarning("TestbeamDelegate")
-					<< ": failed to decode HCAL rechit.\n";
+			LogWarning("TestbeamDelegate") << ": failed to decode HCAL rechit.\n";
 
 	}
 }
@@ -447,15 +403,11 @@ bool TestbeamDelegate::finish() {
 	int total = goodPionsFound_ + protonKaonCandidates_ + electronCandidates_;
 
 	//Make some plots
-	LogInfo("TestbeamDelegate")
-			<< "------------------------------------------------------\n"
-			<< "Summary:\n" << "\tPossible muons: " << muonCands_ << "\n"
-			<< "\tPossible beam halo: " << beamHaloCands_ << "\n"
-			<< "\tPossible non MIP cands: " << nonMipCands_ << "\n"
-			<< "\tPossible non Cerenkov pions: " << cerenkovNonPions_ << "\n"
-			<< "\tPossible non TOF pions: " << tofNonPions_ << "\n"
-			<< "\tPossible electrons: " << electronCandidates_ << "\n"
-			<< "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n"
+	LogInfo("TestbeamDelegate") << "------------------------------------------------------\n" << "Summary:\n"
+			<< "\tPossible muons: " << muonCands_ << "\n" << "\tPossible beam halo: " << beamHaloCands_ << "\n"
+			<< "\tPossible non MIP cands: " << nonMipCands_ << "\n" << "\tPossible non Cerenkov pions: " << cerenkovNonPions_
+			<< "\n" << "\tPossible non TOF pions: " << tofNonPions_ << "\n" << "\tPossible electrons: "
+			<< electronCandidates_ << "\n" << "\tPossible protons/kaons: " << protonKaonCandidates_ << "\n"
 			<< "\tClass-31 pion candidates: " << goodPionsFound_ << "\n";
 
 	if (total != 0) {
@@ -463,39 +415,32 @@ bool TestbeamDelegate::finish() {
 		int protonPer = static_cast<int> (100 * protonKaonCandidates_ / total);
 		int elecPer = static_cast<int> (100 * electronCandidates_ / total);
 
-		LogInfo("TestbeamDelegate")
-				<< "------------------------------------------------------\n"
-				<< "Beam composition (%): \t pion/electron/proton-kaon\n"
-				<< "\t\t" << pionPer << " / " << elecPer << " / " << protonPer
-				<< "\n";
+		LogInfo("TestbeamDelegate") << "------------------------------------------------------\n"
+				<< "Beam composition (%): \t pion/electron/proton-kaon\n" << "\t\t" << pionPer << " / " << elecPer << " / "
+				<< protonPer << "\n";
 	} else {
 		LogProblem("TestbeamDelegate") << "Total good particles found = 0?!\n";
 	}
-	LogInfo("TestbeamDelegate")
-			<< "------------------------------------------------------\n"
-			<< "Tree data:\n\tnEventWrites: " << nWrites_ << ", nEventFails: "
-			<< nFails_ << "\n" << "\tnParticleWrites: " << nParticleWrites_
-			<< ", nParticleFails: " << nParticleFails_ << "\n" << "Leaving "
-			<< __PRETTY_FUNCTION__ << std::endl;
+	LogInfo("TestbeamDelegate") << "------------------------------------------------------\n"
+			<< "Tree data:\n\tnEventWrites: " << nWrites_ << ", nEventFails: " << nFails_ << "\n" << "\tnParticleWrites: "
+			<< nParticleWrites_ << ", nParticleFails: " << nParticleFails_ << "\n" << "Leaving " << __PRETTY_FUNCTION__
+			<< std::endl;
 
 	return true;
 
 }
 
-void TestbeamDelegate::startEventCore(const edm::Event& event,
-		const edm::EventSetup& setup) {
+void TestbeamDelegate::startEventCore(const edm::Event& event, const edm::EventSetup& setup) {
 
 	//first check for new run!
 	bool runok(true);
 	if (event.run() != thisRun_->runNumber_) {
-		LogInfo("TestbeamDelegate") << __PRETTY_FUNCTION__
-				<< ": New run detected :" << event.run() << ".\n";
+		LogInfo("TestbeamDelegate") << __PRETTY_FUNCTION__ << ": New run detected :" << event.run() << ".\n";
 		thisRun_ = runInfos_[event.run()];
 		eventsSeenInThisRun_ = 0;
 	}
 	if (!runok) {
-		LogError("TestbeamDelegate") << __PRETTY_FUNCTION__
-				<< ": problem looking up run info?!" << std::endl;
+		LogError("TestbeamDelegate") << __PRETTY_FUNCTION__ << ": problem looking up run info?!" << std::endl;
 		thisEventPasses_ = false;
 		return;
 	}
@@ -530,9 +475,9 @@ void TestbeamDelegate::startEventCore(const edm::Event& event,
 	getCollection(*recHitsHcal_, inputTagRecHitsHcal_, event);
 	getCollection(*pfCandidates_, inputTagPFCandidates_, event);
 
-	if(!isEndcap2007_)
+	if (!isEndcap2007_)
 		getCollection(*rawRecHitsEcalEB_, inputTagRawRecHitsEcalEB_, event);
-	if(isEndcap2007_)
+	if (isEndcap2007_)
 		getCollection(*rawRecHitsEcalEE_, inputTagRawRecHitsEcalEE_, event);
 
 	getCollection(*rawRecHitsHcal_, inputTagRawRecHitsHcal_, event);

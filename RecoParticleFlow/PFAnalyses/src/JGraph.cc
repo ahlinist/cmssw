@@ -3,11 +3,13 @@
 #include <TGraphErrors.h>
 #include "RecoParticleFlow/PFAnalyses/interface/operations.h"
 #include <cassert>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
-JGraph::JGraph(std::string rootName) :
-	hasErrors_(false), rootName_(rootName) {
+JGraph::JGraph(std::string rootName, bool suppressXErrors, bool suppressYErrors) :
+	hasErrors_(false), rootName_(rootName), suppressXErrors_(suppressXErrors), suppressYErrors_(suppressYErrors) {
 }
 
 JGraph::~JGraph() {
@@ -38,11 +40,39 @@ TGraph JGraph::finalise() {
 
 TGraphErrors JGraph::finaliseWithErrors() {
 
-	TGraphErrors eGraph(xvals_.size(), vecToArr(xvals_), vecToArr(yvals_),
-			vecToArr(exvals_), vecToArr(eyvals_));
+	TGraphErrors eGraph(xvals_.size(), vecToArr(xvals_), vecToArr(yvals_), vecToArr(exvals_), vecToArr(eyvals_));
 	eGraph.SetName(rootName_.c_str());
 	return eGraph;
 
+}
+
+bool JGraph::streamToFile(const std::string& filename, bool recreate) {
+
+	//If recreate = false, check the file doesn't already exist first
+	if (!recreate) {
+		fstream fin;
+		fin.open(filename.c_str(), std::ios::in);
+		if (fin.is_open()) {
+			cout << "File already exists and recreate flag = false.\n";
+			fin.close();
+			return false;
+		}
+		fin.close();
+	}
+
+	ofstream file(filename.c_str());
+	if (file.is_open()) {
+		for (unsigned u(0); u < xvals_.size(); ++u) {
+					file << setw(6) << setprecision(5) << xvals_[u];
+					suppressXErrors_ ? file << "\t" : file << exvals_[u] << "\t";
+					file << yvals_[u];
+					suppressYErrors_ ? file << "\n" : file << "\t" << eyvals_[u] << "\n";
+		}
+		file.close();
+		return true;
+	} else
+		cout << "Unable to open file\n";
+	return false;
 }
 
 std::ostream& operator<<(std::ostream& s, const JGraph& q) {
@@ -50,10 +80,14 @@ std::ostream& operator<<(std::ostream& s, const JGraph& q) {
 
 	if (q.hasErrors_) {
 		s << "## JGraph with errors and " << q.xvals_.size() << " entries\n";
-		s << "## x\tex\ty\tey\n";
+		s << "## x";
+		q.suppressXErrors_ ? s << "\ty" : s << "\tex\ty";
+		q.suppressYErrors_ ? s << "\n" : s << "\tey\n";
 		for (unsigned u(0); u < q.xvals_.size(); ++u) {
-			s << q.xvals_[u] << "\t" << q.exvals_[u] << "\t" << q.yvals_[u] << "\t"
-					<< q.eyvals_[u] << "\n";
+			s << setw(6) << setprecision(5) << q.xvals_[u];
+			q.suppressXErrors_ ? s << "\t" : s << q.exvals_[u] << "\t";
+			s << q.yvals_[u];
+			q.suppressYErrors_ ? s << "\n" : s << "\t" << q.eyvals_[u] << "\n";
 		}
 	} else {
 		s << "## JGraph with " << q.xvals_.size() << " entries\n";
@@ -64,6 +98,4 @@ std::ostream& operator<<(std::ostream& s, const JGraph& q) {
 	}
 	return s;
 }
-
-
 
