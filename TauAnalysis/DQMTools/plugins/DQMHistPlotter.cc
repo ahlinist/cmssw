@@ -1013,8 +1013,6 @@ void DQMHistPlotter::endJob()
 	return;
       }
 
-      if ( !histogram->GetSumw2N() ) histogram->Sumw2();
-
       if ( drawJob->norm_ != -1 && histogram->Integral() != 0. ) histogram->Scale(drawJob->norm_/histogram->Integral());
 
       const cfgEntryDrawOption* drawOptionConfig = 
