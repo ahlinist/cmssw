@@ -26,7 +26,7 @@ process.load("TauAnalysis.Configuration.producePatTupleZtoMuTauSpecific_cff")
 
 # import sequence for production of event weights
 # specific to application of fake-rate technique for background estimation
-process.load("TauAnalysis.BgEstimationTools.produceFakeRateWeights_cff")
+process.load("TauAnalysis.BgEstimationTools.produceFakeRateWeightsForMuTau_cff")
 
 # import sequence for event selection
 process.load("TauAnalysis.Configuration.selectZtoMuTau_cff")
@@ -104,7 +104,7 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.produceFakeRates = cms.Sequence( process.shrinkingConeEfficienciesProducerFromFile * process.produceFakeRateWeights )
+process.produceFakeRates = cms.Sequence( process.shrinkingConeEfficienciesProducerFromFile * process.produceFakeRateWeightsForMuTau )
 process.producePrePat.replace(process.shrinkingConeEfficienciesProducerFromFile, process.produceFakeRates)
 
 process.p = cms.Path(
