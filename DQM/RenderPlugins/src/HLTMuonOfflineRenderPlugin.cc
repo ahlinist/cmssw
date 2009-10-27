@@ -39,7 +39,7 @@
 #include "TText.h"
 #include <cassert>
 
-class HLTRenderPlugin : public DQMRenderPlugin
+class HLTMuonOfflineRenderPlugin : public DQMRenderPlugin
 {
 public:
   virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
@@ -183,4 +183,4 @@ private:
     }
 };
 
-static HLTRenderPlugin instance;
+static HLTMuonOfflineRenderPlugin instance;
