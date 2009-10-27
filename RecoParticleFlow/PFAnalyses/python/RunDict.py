@@ -30,10 +30,11 @@ gev300 = [30389, 30390 ]
 
 # All runs > 10 GeV
 gev1000 = [30379, 30553, 30384, 30386, 30387, 30388, 30389, 30390, 16031]
-gev0 = gev2 + gev3 + gev4 + gev5 + gev6 + gev7 + gev8 + gev9 + gev1000
+gev10 =   gev2 + gev3 + gev4 + gev5 + gev6 + gev7 + gev8 + gev9
+gev0 =    gev10 + gev1000
 
 energies = {0:gev0, 2:gev2, 3:gev3, 4:gev4, 5:gev5, 6:gev6, 7:gev7, 8:gev8, 
-            9:gev9, 20:gev20, 30:gev30, 50:gev50, 100:gev100, 150:gev150, 
+            9:gev9, 10:gev10, 20:gev20, 30:gev30, 50:gev50, 100:gev100, 150:gev150, 
             200:gev200, 225:gev225, 300:gev300, 1000:gev1000}
 
 endcap3 = []
@@ -197,9 +198,11 @@ endcap300.append('16045.0000')
 endcap300.append('16045.0001')
 endcap300.append('16045.0002')
 
-endcap0 = endcap3 + endcap4 + endcap5 + endcap6 + endcap7 + endcap8 + endcap9 + endcap20 + endcap30 + endcap50 + endcap100 + endcap150 + endcap225 + endcap300
 
-endcap = {0:endcap0, 3:endcap3, 4:endcap4, 5:endcap5, 6:endcap6, 7:endcap7, 8:endcap8, 9:endcap9, 20:endcap20, 30:endcap30, 50:endcap50, 100:endcap100, 150:endcap150, 225:endcap225, 300:endcap300}
+endcap10 =   endcap3 + endcap4 + endcap5 + endcap6 + endcap7 + endcap8 + endcap9
+endcap1000 = endcap20 + endcap30 + endcap50 + endcap100 + endcap150 + endcap225 + endcap300
+endcap0 =    endcap10 + endcap1000
+endcap = {0:endcap0, 3:endcap3, 4:endcap4, 5:endcap5, 6:endcap6, 7:endcap7, 8:endcap8, 9:endcap9, 10:endcap10, 20:endcap20, 30:endcap30, 50:endcap50, 100:endcap100, 150:endcap150, 225:endcap225, 300:endcap300, 1000:endcap1000}
 
 #testbeam_cuts = "/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310_endcap.root"
 testbeam_cuts = "/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/macros/testbeam_cuts_310.root"
