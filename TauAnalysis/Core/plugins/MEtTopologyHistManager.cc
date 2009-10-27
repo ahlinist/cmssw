@@ -15,15 +15,12 @@
 //
 
 MEtTopologyHistManager::MEtTopologyHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<MEtTopologyHistManager::MEtTopologyHistManager>:" << std::endl;
 
   metTopologySrc_ = cfg.getParameter<edm::InputTag>("metTopologySource");
   //std::cout << " metTopologySrc = " << metTopologySrc_ << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 }
 
 MEtTopologyHistManager::~MEtTopologyHistManager()
@@ -31,31 +28,16 @@ MEtTopologyHistManager::~MEtTopologyHistManager()
 //--- nothing to be done yet...
 }
 
-void MEtTopologyHistManager::bookHistograms()
+void MEtTopologyHistManager::bookHistogramsImp()
 {
-  //std::cout << "<MEtTopologyHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  //std::cout << "<MEtTopologyHistManager::bookHistogramsImp>:" << std::endl;
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hVratio_ = dqmStore.book1D("Vratio", "V_{anti}/V_{parallel}", 102, -0.01, +1.01);
+  hVratio_ = book1D("Vratio", "V_{anti}/V_{parallel}", 102, -0.01, +1.01);
 }
 
-void MEtTopologyHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void MEtTopologyHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<MEtTopologyHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<MEtTopologyHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<MEtTopologyCollection> metTopologyCollection;
   evt.getByLabel(metTopologySrc_, metTopologyCollection);

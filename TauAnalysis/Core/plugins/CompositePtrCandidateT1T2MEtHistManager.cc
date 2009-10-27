@@ -27,7 +27,7 @@ bool matchesGenCandidatePair(const CompositePtrCandidateT1T2MEt<T1,T2>& composit
 
 template<typename T1, typename T2>
 CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::CompositePtrCandidateT1T2MEtHistManager>:" << std::endl;
 
@@ -44,9 +44,6 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::CompositePtrCandidateT1T2MEtHist
   diTauLeg1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "diTauLeg1WeightSource");
   diTauLeg2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "diTauLeg2WeightSource");
   
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
-
   requireGenMatch_ = cfg.getParameter<bool>("requireGenMatch");
   //std::cout << " requireGenMatch = " << requireGenMatch_ << std::endl;
 
@@ -69,61 +66,55 @@ CompositePtrCandidateT1T2MEtHistManager<T1,T2>::~CompositePtrCandidateT1T2MEtHis
 }
 
 template<typename T1, typename T2>
-void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistograms()
+void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::bookHistogramsImp()
 {
-  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::bookHistograms>:" << std::endl;
+  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::bookHistogramsImp>:" << std::endl;
+  
+  hDiTauCandidatePt_ = book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
+  hDiTauCandidateEta_ = book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
+  hDiTauCandidatePhi_ = book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
+  hDiTauCandidateCharge_ = book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
+  hDiTauCandidateMass_ = book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
+  
+  bookWeightHistograms(*dqmStore_, "DiTauCandidateWeight", "Composite Weight", 
+		       hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
+		       hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_);
 
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  hDiTauCandidateImpParSig_ = book1D("DiTauCandidateImpParSig", "#sqrt{#frac{dxy_{1}}{#Delta dxy_{1}}^{2}+#frac{dxy_{2}}{#Delta dxy_{2}}^{2}}", 30, 0., 15.);
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hDiTauCandidatePt_ = dqmStore.book1D("DiTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
-  hDiTauCandidateEta_ = dqmStore.book1D("DiTauCandidateEta", "Composite #eta", 100, -5., +5.);
-  hDiTauCandidatePhi_ = dqmStore.book1D("DiTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
-  hDiTauCandidateCharge_ = dqmStore.book1D("DiTauCandidateCharge", "Composite Charge", 11, -5.5, +5.5);
-  hDiTauCandidateMass_ = dqmStore.book1D("DiTauCandidateMass", "Composite Invariant Mass", 50, 0., 250.);
-  
-  hDiTauCandidateImpParSig_ = dqmStore.book1D("DiTauCandidateImpParSig", "#sqrt{#frac{dxy_{1}}{#Delta dxy_{1}}^{2}+#frac{dxy_{2}}{#Delta dxy_{2}}^{2}}", 30, 0., 15.);
-  
-  hVisPt_ = dqmStore.book1D("VisPt", "Visible P_{T}", 50, 0., 100.);
-  hVisPhi_ = dqmStore.book1D("VisPhi", "Visible #phi", 36, -TMath::Pi(), +TMath::Pi());
-  hVisMass_ = dqmStore.book1D("VisMass", "Visible Mass", 40, 0., 200.);
+  hVisPt_ = book1D("VisPt", "Visible P_{T}", 50, 0., 100.);
+  hVisPhi_ = book1D("VisPhi", "Visible #phi", 36, -TMath::Pi(), +TMath::Pi());
+  hVisMass_ = book1D("VisMass", "Visible Mass", 40, 0., 200.);
   hVisMassZllCombinedHypothesis_ = ( visMassHypothesisSrc_.label() != "" ) ?
-    dqmStore.book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
+    book1D("VisMassZllCombinedHypothesis", "Visible Mass (combined Value of different Event Hypotheses)", 40, 0., 200.) : 0;
 
-  hCollinearApproxEta_ = dqmStore.book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
-  hCollinearApproxMass_ = dqmStore.book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
-  hCollinearApproxMassVsPt_ = dqmStore.book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs P_{T}", 30, 0., 150., 25, 0., 250.);
-  hCollinearApproxMassVsDPhi12_ = dqmStore.book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon, 25, 0., 250.);
-  hCollinearApproxX1_ = dqmStore.book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 51, -0.01, 1.01);
-  hCollinearApproxX2_ = dqmStore.book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 51, -0.01, 1.01);
-  hCollinearApproxX1vsX2_ = dqmStore.book2D("CollinearApproxX1vsX2", "Collinear Approximation X_{1} vs X_{2}", 26, -0.02, 1.02, 26, -0.02, 1.02);
+  hCollinearApproxEta_ = book1D("CollinearApproxEta", "Collinear Approximation #eta", 100, -5., +5.);
+  hCollinearApproxMass_ = book1D("CollinearApproxMass", "Collinear Approximation Mass", 50, 0., 250.);
+  hCollinearApproxMassVsPt_ = book2D("CollinearApproxMassVsPt", "Collinear Approximation Mass vs P_{T}", 30, 0., 150., 25, 0., 250.);
+  hCollinearApproxMassVsDPhi12_ = book2D("CollinearApproxMassVsDPhi12", "Collinear Approximation Mass vs #Delta#phi_{1,2}", 18, -epsilon, TMath::Pi() + epsilon, 25, 0., 250.);
+  hCollinearApproxX1_ = book1D("CollinearApproxX1", "Collinear Approximation X_{1}", 51, -0.01, 1.01);
+  hCollinearApproxX2_ = book1D("CollinearApproxX2", "Collinear Approximation X_{2}", 51, -0.01, 1.01);
+  hCollinearApproxX1vsX2_ = book2D("CollinearApproxX1vsX2", "Collinear Approximation X_{1} vs X_{2}", 26, -0.02, 1.02, 26, -0.02, 1.02);
   
-  hCDFmethodMass_ = dqmStore.book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
+  hCDFmethodMass_ = book1D("CDFmethodMass", "CDF Method Mass", 50, 0., 250.);
   
-  hMt12MET_ = dqmStore.book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
+  hMt12MET_ = book1D("Mt12MET", "Mass_{T 1,2,MET}", 50, 0., 250.);
   
-  hMt1MET_ = dqmStore.book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
-  hMt2MET_ = dqmStore.book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
+  hMt1MET_ = book1D("Mt1MET", "Mass_{T 1,MET}", 40, 0., 200.);
+  hMt2MET_ = book1D("Mt2MET", "Mass_{T 2,MET}", 40, 0., 200.);
   
-  hDPhi12_ = dqmStore.book1D("DPhi12", "#Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
-  hDR12_ = dqmStore.book1D("DR12", "#Delta R_{1,2}", 51, -0.1, 10.1);
+  hDPhi12_ = book1D("DPhi12", "#Delta#phi_{1,2}", 36, -epsilon, TMath::Pi() + epsilon);
+  hDR12_ = book1D("DR12", "#Delta R_{1,2}", 51, -0.1, 10.1);
   
-  hVisEtaMin_ = dqmStore.book1D("VisEtaMin", "VisEtaMin", 60, -3., +3.);
-  hVisEtaMax_ = dqmStore.book1D("VisEtaMax", "VisEtaMax", 60, -3., +3.);
+  hVisEtaMin_ = book1D("VisEtaMin", "VisEtaMin", 60, -3., +3.);
+  hVisEtaMax_ = book1D("VisEtaMax", "VisEtaMax", 60, -3., +3.);
   
-  hDPhi1MET_ = dqmStore.book1D("DPhi1MET", "#Delta#phi_{1,MET}", 36, -epsilon, TMath::Pi() + epsilon);
-  hDPhi2MET_ = dqmStore.book1D("DPhi2MET", "#Delta#phi_{2,MET}", 36, -epsilon, TMath::Pi() + epsilon);
-  hDPhi1METvsDPhi2MET_ = dqmStore.book2D("DPhi1METvsDPhi2MET", "#Delta#phi_{1,MET} vs #Delta#phi_{2,MET}", 18, -epsilon, TMath::Pi() + epsilon, 18, -epsilon, TMath::Pi() + epsilon); 
+  hDPhi1MET_ = book1D("DPhi1MET", "#Delta#phi_{1,MET}", 36, -epsilon, TMath::Pi() + epsilon);
+  hDPhi2MET_ = book1D("DPhi2MET", "#Delta#phi_{2,MET}", 36, -epsilon, TMath::Pi() + epsilon);
+  hDPhi1METvsDPhi2MET_ = book2D("DPhi1METvsDPhi2MET", "#Delta#phi_{1,MET} vs #Delta#phi_{2,MET}", 18, -epsilon, TMath::Pi() + epsilon, 18, -epsilon, TMath::Pi() + epsilon); 
 
-  hPzetaCorr_ = dqmStore.book2D("PzetaCorr", "P_{#zeta} vs P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
-  hPzetaDiff_ = dqmStore.book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
+  hPzetaCorr_ = book2D("PzetaCorr", "P_{#zeta} vs P_{#zeta}^{vis}", 10, 0., 50., 14, -20., 50.);
+  hPzetaDiff_ = book1D("PzetaDiff", "P_{#zeta} - 1.5*P_{#zeta}^{vis}", 40, -100., +100.);
 }
 
 template<typename T1, typename T2>
@@ -135,14 +126,9 @@ double CompositePtrCandidateT1T2MEtHistManager<T1,T2>::getDiTauCandidateWeight(c
 }
 
 template<typename T1, typename T2>
-void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<CompositePtrCandidateT1T2MEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<CompositePtrCandidateT1T2MEt<T1,T2> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> diTauCandidates;
@@ -178,6 +164,9 @@ void CompositePtrCandidateT1T2MEtHistManager<T1,T2>::fillHistograms(const edm::E
     hDiTauCandidatePhi_->Fill(diTauCandidate->phi(), weight);
     hDiTauCandidateCharge_->Fill(diTauCandidate->charge(), weight);
     hDiTauCandidateMass_->Fill(diTauCandidate->mass(), weight);
+
+    fillWeightHistograms(hDiTauCandidateWeightPosUnweighted_, hDiTauCandidateWeightPosWeighted_, 
+			 hDiTauCandidateWeightNegUnweighted_, hDiTauCandidateWeightNegWeighted_, diTauCandidateWeight);
 
     const reco::Track* trackLeg1 = trackExtractorLeg1_(*diTauCandidate->leg1());
     const reco::Track* trackLeg2 = trackExtractorLeg2_(*diTauCandidate->leg2());

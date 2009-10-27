@@ -27,7 +27,7 @@ bool matchesGenCandidate(const CompositePtrCandidateTMEt<T>& compositePtrCandida
 
 template<typename T>
 CompositePtrCandidateTMEtHistManager<T>::CompositePtrCandidateTMEtHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<CompositePtrCandidateTMEtHistManager::CompositePtrCandidateTMEtHistManager>:" << std::endl;
 
@@ -35,9 +35,6 @@ CompositePtrCandidateTMEtHistManager<T>::CompositePtrCandidateTMEtHistManager(co
   //std::cout << " tauNuCandidateSrc = " << tauNuCandidateSrc_ << std::endl;
 
   tauJetWeightExtractors_ = getTauJetWeightExtractors<T>(cfg, "tauJetWeightSource");
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenMatch_ = cfg.getParameter<bool>("requireGenMatch");
   //std::cout << " requireGenMatch = " << requireGenMatch_ << std::endl;
@@ -56,27 +53,21 @@ CompositePtrCandidateTMEtHistManager<T>::~CompositePtrCandidateTMEtHistManager()
 }
 
 template<typename T>
-void CompositePtrCandidateTMEtHistManager<T>::bookHistograms()
+void CompositePtrCandidateTMEtHistManager<T>::bookHistogramsImp()
 {
-  //std::cout << "<CompositePtrCandidateTMEtHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  //std::cout << "<CompositePtrCandidateTMEtHistManager::bookHistogramsImp>:" << std::endl;
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hNuTauCandidatePt_ = dqmStore.book1D("NuTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
-  hNuTauCandidatePhi_ = dqmStore.book1D("NuTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
+  hNuTauCandidatePt_ = book1D("NuTauCandidatePt", "Composite P_{T}", 75, 0., 150.);
+  hNuTauCandidatePhi_ = book1D("NuTauCandidatePhi", "Composite #phi", 36, -TMath::Pi(), +TMath::Pi());
 
-  hNuTauCandidateDPhi_ = dqmStore.book1D("NuTauCandidateDPhi", "#Delta#phi_{T,MET}", 36, -epsilon, TMath::Pi() + epsilon);
-  hNuTauCandidateMt_ = dqmStore.book1D("NuTauCandidateMt", "Mass_{T,MET}", 40, 0., 200.);
+  bookWeightHistograms(*dqmStore_, "NuTauCandidateWeight", "Composite Weight", 
+		       hNuTauCandidateWeightPosUnweighted_, hNuTauCandidateWeightPosWeighted_, 
+		       hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_);
+
+  hNuTauCandidateDPhi_ = book1D("NuTauCandidateDPhi", "#Delta#phi_{T,MET}", 36, -epsilon, TMath::Pi() + epsilon);
+  hNuTauCandidateMt_ = book1D("NuTauCandidateMt", "Mass_{T,MET}", 40, 0., 200.);
   
-  hMEtVsTauPt_ = dqmStore.book2D("MEtVsTauPt", "P_{T}^{T} - MET", 20, 0., 100., 20, 0., 100.);
+  hMEtVsTauPt_ = book2D("MEtVsTauPt", "P_{T}^{T} - MET", 20, 0., 100., 20, 0., 100.);
 }
 
 template<typename T>
@@ -86,14 +77,9 @@ double CompositePtrCandidateTMEtHistManager<T>::getCandidateWeight(const Composi
 }
 
 template<typename T>
-void CompositePtrCandidateTMEtHistManager<T>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void CompositePtrCandidateTMEtHistManager<T>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<CompositePtrCandidateTMEtHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<CompositePtrCandidateTMEtHistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<CompositePtrCandidateTMEt<T> > CompositePtrCandidateCollection;
   edm::Handle<CompositePtrCandidateCollection> tauNuCandidates;
@@ -122,6 +108,9 @@ void CompositePtrCandidateTMEtHistManager<T>::fillHistograms(const edm::Event& e
     
     hNuTauCandidatePt_->Fill(tauNuCandidate->pt(), weight);
     hNuTauCandidatePhi_->Fill(tauNuCandidate->phi(), weight);
+    
+    fillWeightHistograms(hNuTauCandidateWeightPosUnweighted_, hNuTauCandidateWeightPosWeighted_, 
+			 hNuTauCandidateWeightNegUnweighted_, hNuTauCandidateWeightNegWeighted_, tauJetWeight);
     
     hNuTauCandidateDPhi_->Fill(tauNuCandidate->dPhi(), weight);
     hNuTauCandidateMt_->Fill(tauNuCandidate->mt(), weight);

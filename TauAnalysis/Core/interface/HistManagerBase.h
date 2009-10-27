@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: HistManagerBase.h,v 1.4 2009/08/28 13:14:29 veelken Exp $
+ * $Id: HistManagerBase.h,v 1.5 2009/10/23 14:03:59 veelken Exp $
  *
  */
 
@@ -18,14 +18,16 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
+
 #include "TauAnalysis/Core/interface/AnalyzerPluginBase.h"
 
 class HistManagerBase : public AnalyzerPluginBase
 {
  public:
   // constructor 
-  explicit HistManagerBase()
-    : normMethod_(kNormUndefined) {}
+  explicit HistManagerBase(const edm::ParameterSet&);
   
   // destructor
   virtual ~HistManagerBase() {}
@@ -36,8 +38,20 @@ class HistManagerBase : public AnalyzerPluginBase
 
  protected:
   // methods for booking and filling of histograms
-  virtual void bookHistograms() = 0;
-  virtual void fillHistograms(const edm::Event&, const edm::EventSetup&, double) = 0;
+  virtual void bookHistograms();
+  virtual void bookHistogramsImp() = 0;
+  virtual void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  virtual void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double) = 0;
+
+  virtual MonitorElement* book1D(const std::string&, const std::string&, int, double, double);
+  virtual MonitorElement* book1D(const std::string&, const std::string&, int, float*);
+  virtual MonitorElement* book2D(const std::string&, const std::string&, int, double, double, int, double, double);
+  virtual MonitorElement* book2D(const std::string&, const std::string&, int, float*, int, float*);
+  DQMStore* dqmStore_;
+  std::string dqmDirectory_store_;
+  int dqmError_;
+  bool sumWeightsTH1_;
+  bool sumWeightsTH2_;
 
   enum { kNormUndefined, kNormObjects, kNormEvents };
   int getNormMethod(const std::string& cfgValue, std::string keywordNormObjects) const 

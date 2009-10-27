@@ -3,6 +3,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -12,6 +13,9 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
+
+void bookWeightHistograms(DQMStore&, const char*, const char*, MonitorElement*&, MonitorElement*&, MonitorElement*&, MonitorElement*&);
+void fillWeightHistograms(MonitorElement*, MonitorElement*, MonitorElement*, MonitorElement*, double);
 
 void fillLeptonIsoDepositHistograms(const pat::IsoDeposit*, MonitorElement*, MonitorElement*, MonitorElement*, double);
 

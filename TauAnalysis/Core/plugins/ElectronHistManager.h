@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 
@@ -23,12 +22,12 @@ class ElectronHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  void bookElectronHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
-  void bookElectronIsoConeSizeDepHistograms(DQMStore&);
+  void bookElectronHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
+  void bookElectronIsoConeSizeDepHistograms();
 
   double getElectronWeight(const pat::Electron&);
 
@@ -42,9 +41,7 @@ class ElectronHistManager : public HistManagerBase
   edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
 
-  std::string dqmDirectory_store_;
-
-  bool requireGenElectronMatch_;
+   bool requireGenElectronMatch_;
   
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
@@ -64,6 +61,11 @@ class ElectronHistManager : public HistManagerBase
   MonitorElement* hElectronPtVsEta_;
   MonitorElement* hElectronPhi_;
   MonitorElement* hElectronCharge_;
+
+  MonitorElement* hElectronWeightPosUnweighted_;
+  MonitorElement* hElectronWeightPosWeighted_;
+  MonitorElement* hElectronWeightNegUnweighted_;
+  MonitorElement* hElectronWeightNegWeighted_;
 
   MonitorElement* hElectronEnCompToGen_;
   MonitorElement* hElectronThetaCompToGen_;
@@ -139,8 +141,6 @@ class ElectronHistManager : public HistManagerBase
   std::vector<MonitorElement*> hElectronPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos electronParticleFlowIsoParam_;
-
-  int dqmError_;
 };
 
 #endif  
