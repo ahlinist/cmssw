@@ -6,65 +6,69 @@
 
 import FWCore.ParameterSet.Config as cms
 import commands
-process = cms.Process("PROD")
+
+process = cms.Process("SKIM")
 process.load("RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cff")
 process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
-from RecoParticleFlow.PFAnalyses.RunDict import *
 
+from RecoParticleFlow.PFAnalyses.RunDict import *
 from RecoParticleFlow.PFAnalyses.pflowOptions_cfi import *
 
-outputTree = "outputtree_" + fileLabel
-outputFile = "/tmp/rereprocessed_" + fileLabel
-logFile = "/tmp/log_" + logLabel
+# Files to process
+runs = cms.untracked.vstring(options.specificInputs)
+process.source = cms.Source("PoolSource",
+        fileNames=runs
+)
 
 
-specifiedE = energies[options.beamEnergy]
+outputTree = '/tmp/ballin/PFlowTB_Tree_' + fileLabel
+outputFile = '/tmp/ballin/PFlowTB_Events_' + fileLabel
+
+if options.batchMode <> 0 :
+    outputTree = 'PFlowTB_Tree_' + fileLabel
+    outputFile = 'PFlowTB_Events_' + fileLabel
 
 
-process.particleFiltration.debug = cms.int32(5)
+if options.notracks <> 0:
+    process.faketracks.justCreateEmptyCollections = cms.bool(True)
+    print "Running in notrack mode"
+
+if options.endcapMode <> 0:
+    specifiedE = endcap[options.beamEnergy]
+    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
+    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
+    process.extraction.RawRecHitsEcalEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.faketracks.endcapMode = cms.bool(True)
+    process.particleFlowRecHitHCAL.isEndcap2007 = cms.bool(True)
+    process.extraction.isEndcap2007 = cms.bool(True)
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Barrel = cms.double(0.6)
-process.particleFlowClusterHCAL.thresh_Barrel = cms.double(0.6)
-
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
-process.particleFlowClusterHCAL.thresh_Seed_Endcap = cms.double(0.8)
-process.particleFlowClusterHCAL.thresh_Endcap = cms.double(0.8)
 
+#For calibration purposes
+process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
+process.particleFlow.pf_calibMode = cms.uint32(1)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
-#Don't create neutrals from E > p detection...
-#process.particleFlow.pf_nsigma_HCAL = cms.double(100)
-#process.particleFlow.pf_nsigma_ECAL = cms.double(100)
 
-#process.particleFlowBlock.debug = cms.untracked.bool(True)
-#process.particleFlow.debug = cms.untracked.bool(True)
 #Uncomment this lot if you want a file of noise!
 #process.particleFiltration.noiseMode=cms.bool(True)
 #process.extraction.applyCleaningCuts=cms.bool(False)
 #process.extraction.saveJustPions=cms.bool(False)
 ## Also change masterConeDeltaR in pflowCalibratable_cfi to something like 1
 
-#Need to override clustering to exclude HF components
-from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
-process.pfClusteringHCAL = cms.Sequence(particleFlowRecHitHCAL * particleFlowClusterHCAL)
-#process.extraction.clustersFromCandidates=cms.bool(True)
-#process.extraction.rechitsFromCandidates=cms.bool(True)
-process.extraction.nRingsHcalCaloWindow=cms.uint32(20)
-process.particleFlow.debug=cms.untracked.bool(True)
 if options.endcapMode <> 0:
-    process.particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
-    process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
-    process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
-    process.extraction.RawRecHitsEcalEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.extraction.isEndcap2007 = cms.bool(True)
+    
+process.extraction.clustersFromCandidates=cms.bool(False)
+process.extraction.rechitsFromCandidates=cms.bool(False)
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
         input=cms.untracked.int32(options.kevents * 1000)
-)
+    )
 
-print "Log file :"
-print logFile
 
 # Output tree of cleaned particles
 process.TFileService.fileName = cms.string(outputTree)
@@ -72,19 +76,23 @@ process.TFileService.fileName = cms.string(outputTree)
 # New Event file
 process.finishup.fileName = cms.untracked.string(outputFile)
 
-# LogFile
+#Logging and verbosity
+if options.batchMode <> 0 :
+    process.load("FWCore.MessageLogger.MessageLogger_cfi")
+    process.MessageLogger.cerr.FwkReport.reportEvery = 100
+else :
+    print 'Not running in batch mode; Verbose output enabled...'
+    process.MessageLogger = cms.Service("MessageLogger")
+    process.MessageLogger.destinations=cms.untracked.vstring('cout')
+    process.extraction.debug = cms.int32(4)
+    process.MessageLogger.debugModules=cms.untracked.vstring('*')
+    #process.particleFlowBlock.debug = cms.untracked.bool(True)
+    #process.particleFlow.debug = cms.untracked.bool(True)
 
-process.MessageLogger = cms.Service("MessageLogger",
-    destinations=cms.untracked.vstring(logFile, 'cout'),
-)
-
-process.source = cms.Source("PoolSource",
-    fileNames=cms.untracked.vstring('file:/tmp/reprocessed_50GeV_justCleaned.root'),
-    inputCommands=cms.untracked.vstring('keep *', 'drop *_faketracks_*_*')
-)
 
 process.p1 = cms.Path(process.pfAlgoAndExtractionTestbeam)
-
+if options.endcapMode <> 0:
+    process.p1 = cms.Path(process.pfAlgoAndExtractionTestbeamEndcaps)    
 
 if options.outputCollections:
     process.outpath = cms.EndPath(process.finishup)

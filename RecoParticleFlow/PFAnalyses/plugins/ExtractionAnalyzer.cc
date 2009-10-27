@@ -38,6 +38,7 @@ ExtractionAnalyzer::ExtractionAnalyzer(const edm::ParameterSet& parameters) :
 		//throw e;
 	}
 	tree_ = fileservice_->make<TTree>("Extraction", "");
+
 	ed_->init(tree_, parameters);
 }
 
