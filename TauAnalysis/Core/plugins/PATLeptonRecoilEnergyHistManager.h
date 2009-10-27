@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -27,8 +26,8 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   double getLeptonWeight(const PATLeptonRecoilEnergy<T1,T2>&);
@@ -36,18 +35,19 @@ class PATLeptonRecoilEnergyHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag leptonRecoilEnergySrc_;
 
-  std::string dqmDirectory_store_;
-
 //--- "helper" class for accessing weight values
 //    associated to second tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
   std::vector<FakeRateJetWeightExtractor<T1>*> leptonWeightExtractors_;
 
 //--- histograms
+  MonitorElement* hLeptonWeightPosUnweighted_;
+  MonitorElement* hLeptonWeightPosWeighted_;
+  MonitorElement* hLeptonWeightNegUnweighted_;
+  MonitorElement* hLeptonWeightNegWeighted_;
+
   MonitorElement* hEtSum_;
   MonitorElement* hNumObjects_;
-
-  int dqmError_;
 };
 
 #endif  

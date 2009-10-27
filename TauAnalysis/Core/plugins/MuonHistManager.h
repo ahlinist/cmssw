@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
@@ -23,12 +22,12 @@ class MuonHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  void bookMuonHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
-  void bookMuonIsoConeSizeDepHistograms(DQMStore&);
+  void bookMuonHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
+  void bookMuonIsoConeSizeDepHistograms();
 
   double getMuonWeight(const pat::Muon&);
 
@@ -41,8 +40,6 @@ class MuonHistManager : public HistManagerBase
   edm::InputTag vertexSrc_;
   edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
-
-  std::string dqmDirectory_store_;
 
   bool requireGenMuonMatch_;
 
@@ -62,6 +59,11 @@ class MuonHistManager : public HistManagerBase
   MonitorElement* hMuonPtVsEta_;
   MonitorElement* hMuonPhi_;
   MonitorElement* hMuonCharge_;
+
+  MonitorElement* hMuonWeightPosUnweighted_;
+  MonitorElement* hMuonWeightPosWeighted_;
+  MonitorElement* hMuonWeightNegUnweighted_;
+  MonitorElement* hMuonWeightNegWeighted_;
 
   MonitorElement* hMuonPtCompToGen_;
   MonitorElement* hMuonThetaCompToGen_;
@@ -130,8 +132,6 @@ class MuonHistManager : public HistManagerBase
   std::vector<MonitorElement*> hMuonPFGammaIsoPtConeSizeDep_;
 
   reco::isodeposit::AbsVetos muonParticleFlowIsoParam_;
-
-  int dqmError_;
 };
 
 #endif  

@@ -9,15 +9,12 @@
 #include <TMath.h>
 
 VertexHistManager::VertexHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<VertexHistManager::VertexHistManager>:" << std::endl;
 
   vertexSrc_ = cfg.getParameter<edm::InputTag>("vertexSource");
   //std::cout << " vertexSrc = " << vertexSrc_ << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   makeVertexXvsYhistogram_ = ( cfg.exists("makeVertexXvsYhistogram") ) ? 
     cfg.getParameter<bool>("makeVertexXvsYhistogram") : false;
@@ -28,42 +25,27 @@ VertexHistManager::~VertexHistManager()
 //--- nothing to be done yet...
 }
 
-void VertexHistManager::bookHistograms()
+void VertexHistManager::bookHistogramsImp()
 {
-  //std::cout << "<VertexHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  //std::cout << "<VertexHistManager::bookHistogramsImp>:" << std::endl;
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hVertexX_ = dqmStore.book1D("VertexX", "VertexX", 200, -1., +1.);
-  hVertexSigmaX_ = dqmStore.book1D("VertexSigmaX", "VertexSigmaX", 200, -0.01, +0.01);
-  hVertexY_ = dqmStore.book1D("VertexY", "VertexY", 200, -1., +1.);
-  hVertexSigmaY_ = dqmStore.book1D("VertexSigmaY", "VertexSigmaY", 200, -0.01, +0.01);
-  if ( makeVertexXvsYhistogram_ ) hVertexXvsY_ = dqmStore.book2D("VertexXvsY", "VertexXvsY", 200, -1., +1., 200, -1, +1.);
-  hVertexZ_ = dqmStore.book1D("VertexZ", "VertexZ", 100, -50., 50.);
-  hVertexSigmaZ_ = dqmStore.book1D("VertexSigmaZ", "VertexSigmaZ", 200, -0.10, 0.10);
+  hVertexX_ = book1D("VertexX", "VertexX", 200, -1., +1.);
+  hVertexSigmaX_ = book1D("VertexSigmaX", "VertexSigmaX", 200, -0.01, +0.01);
+  hVertexY_ = book1D("VertexY", "VertexY", 200, -1., +1.);
+  hVertexSigmaY_ = book1D("VertexSigmaY", "VertexSigmaY", 200, -0.01, +0.01);
+  if ( makeVertexXvsYhistogram_ ) hVertexXvsY_ = book2D("VertexXvsY", "VertexXvsY", 200, -1., +1., 200, -1, +1.);
+  hVertexZ_ = book1D("VertexZ", "VertexZ", 100, -50., 50.);
+  hVertexSigmaZ_ = book1D("VertexSigmaZ", "VertexSigmaZ", 200, -0.10, 0.10);
 
-  hVertexNumTracks_ = dqmStore.book1D("VertexNumTracks", "VertexNumTracks", 101, -0.5, 100.5);
+  hVertexNumTracks_ = book1D("VertexNumTracks", "VertexNumTracks", 101, -0.5, 100.5);
   
-  hVertexChi2Prob_ = dqmStore.book1D("VertexChi2Prob", "VertexChi2Prob", 102, -0.01, 1.01);
+  hVertexChi2Prob_ = book1D("VertexChi2Prob", "VertexChi2Prob", 102, -0.01, 1.01);
 }
 
-void VertexHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void VertexHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
-  //std::cout << "<VertexHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<VertexHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<std::vector<reco::Vertex> > recoVertices;
   evt.getByLabel(vertexSrc_, recoVertices);

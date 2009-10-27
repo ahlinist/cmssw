@@ -14,7 +14,7 @@
 #include "TauAnalysis/DQMTools/interface/generalAuxFunctions.h"
 
 TriggerHistManager::TriggerHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<TriggerHistManager::TriggerHistManager>:" << std::endl;
 
@@ -32,9 +32,6 @@ TriggerHistManager::TriggerHistManager(const edm::ParameterSet& cfg)
 
   hltPaths_ = cfg.getParameter<vstring>("hltPaths");
   //std::cout << " hltPaths = " << format_vstring(hltPaths_) << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 }
 
 TriggerHistManager::~TriggerHistManager()
@@ -42,25 +39,15 @@ TriggerHistManager::~TriggerHistManager()
 //--- nothing to be done yet...
 }
 
-void TriggerHistManager::bookHistograms()
+void TriggerHistManager::bookHistogramsImp()
 {
-  //std::cout << "<TriggerHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  //std::cout << "<TriggerHistManager::bookHistogramsImp>:" << std::endl;
 
 //--- book histograms for L1 trigger bits
   for ( vstring::const_iterator l1Bit = l1Bits_.begin();
 	l1Bit != l1Bits_.end(); ++l1Bit ) {
     std::string meName = std::string("Trigger").append(*l1Bit);
-    MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
+    MonitorElement* me = book1D(meName, meName, 2, -0.5, 1.5);
     hL1triggerBits_.insert(std::pair<std::string, MonitorElement*>(*l1Bit, me));
   }
 
@@ -68,20 +55,15 @@ void TriggerHistManager::bookHistograms()
   for ( vstring::const_iterator hltPath = hltPaths_.begin();
 	hltPath != hltPaths_.end(); ++hltPath ) {
     std::string meName = std::string("Trigger").append(*hltPath);
-    MonitorElement* me = dqmStore.book1D(meName, meName, 2, -0.5, 1.5);
+    MonitorElement* me = book1D(meName, meName, 2, -0.5, 1.5);
     hHLTresults_.insert(std::pair<std::string, MonitorElement*>(*hltPath, me));
   }
 }
 
-void TriggerHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void TriggerHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
-  //std::cout << "<TriggerHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<TriggerHistManager::fillHistogramsImp>:" << std::endl; 
 
 //--- fill histograms for L1 trigger bits
   if ( l1GtReadoutRecordSrc_.label() != "" && l1GtObjectMapRecordSrc_.label() != "" ) {

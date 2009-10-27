@@ -6,7 +6,6 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "TauAnalysis/Core/interface/FakeRateJetWeightExtractor.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
@@ -23,13 +22,13 @@ class TauHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  void bookTauHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
-  void bookTauIsoConeSizeDepHistograms(DQMStore&);
-  void bookTauIdEfficiencyHistograms(DQMStore&, std::vector<MonitorElement*>&, const char*, const std::vector<std::string>&);
+  void bookTauHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
+  void bookTauIsoConeSizeDepHistograms();
+  void bookTauIdEfficiencyHistograms(std::vector<MonitorElement*>&, const char*, const std::vector<std::string>&);
 
   double getTauWeight(const pat::Tau&);
 
@@ -47,8 +46,6 @@ class TauHistManager : public HistManagerBase
 
   typedef std::vector<int> vint;
   vint tauIndicesToPlot_;
-
-  std::string dqmDirectory_store_;
 
   bool requireGenTauMatch_;
 
@@ -77,6 +74,11 @@ class TauHistManager : public HistManagerBase
   MonitorElement* hTauPtVsEta_;
   MonitorElement* hTauPhi_;
   MonitorElement* hTauCharge_;
+
+  MonitorElement* hTauJetWeightPosUnweighted_;
+  MonitorElement* hTauJetWeightPosWeighted_;
+  MonitorElement* hTauJetWeightNegUnweighted_;
+  MonitorElement* hTauJetWeightNegWeighted_;
 
   MonitorElement* hTauEnCompToGen_;
   MonitorElement* hTauThetaCompToGen_;
@@ -162,8 +164,6 @@ class TauHistManager : public HistManagerBase
 
   std::vector<MonitorElement*> hTauIdEfficiencies_;
   std::vector<MonitorElement*> hTauFakeRates_;
-
-  int dqmError_;
 };
 
 #endif  

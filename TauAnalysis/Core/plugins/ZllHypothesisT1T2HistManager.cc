@@ -17,7 +17,7 @@
 
 template<typename T1, typename T2>
 ZllHypothesisT1T2HistManager<T1,T2>::ZllHypothesisT1T2HistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<ZllHypothesisT1T2HistManager::ZllHypothesisT1T2HistManager>:" << std::endl;
 
@@ -26,9 +26,6 @@ ZllHypothesisT1T2HistManager<T1,T2>::ZllHypothesisT1T2HistManager(const edm::Par
 
   lepton1WeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "lepton1WeightSource");
   lepton2WeightExtractors_ = getTauJetWeightExtractors<T2>(cfg, "lepton2WeightSource");
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "diTauCandidates");
@@ -49,55 +46,49 @@ ZllHypothesisT1T2HistManager<T1,T2>::~ZllHypothesisT1T2HistManager()
 }
 
 template<typename T1, typename T2>
-void ZllHypothesisT1T2HistManager<T1,T2>::bookHistograms()
+void ZllHypothesisT1T2HistManager<T1,T2>::bookHistogramsImp()
 {
-  //std::cout << "<ZllHypothesisT1T2HistManager::bookHistograms>:" << std::endl;
+  //std::cout << "<ZllHypothesisT1T2HistManager::bookHistogramsImp>:" << std::endl;
 
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
+  hGenLepton1Pt_ = book1D("GenLepton1Pt", "gen. P_{T}^{#ell1}", 75, 0., 150.);
+  hGenLepton1Eta_ = book1D("GenLepton1Eta", "gen. #eta_{#ell1}", 60, -3., +3.);
+  hGenLepton1Phi_ = book1D("GenLepton1Phi", "gen. #phi_{#ell1}", 36, -TMath::Pi(), +TMath::Pi());
 
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  hGenLepton2Pt_ = book1D("GenLepton2Pt", "gen. P_{T}^{#ell2}", 75, 0., 150.);
+  hGenLepton2Eta_ = book1D("GenLepton2Eta", "gen. #eta_{#ell2}", 60, -3., +3.);
+  hGenLepton2Phi_ = book1D("GenLepton2Phi", "gen. #phi_{#ell2}", 36, -TMath::Pi(), +TMath::Pi());
 
-  hGenLepton1Pt_ = dqmStore.book1D("GenLepton1Pt", "gen. P_{T}^{#ell1}", 75, 0., 150.);
-  hGenLepton1Eta_ = dqmStore.book1D("GenLepton1Eta", "gen. #eta_{#ell1}", 60, -3., +3.);
-  hGenLepton1Phi_ = dqmStore.book1D("GenLepton1Phi", "gen. #phi_{#ell1}", 36, -TMath::Pi(), +TMath::Pi());
+  hGenVisMass_ = book1D("GenVisMass", "gen. Z^{0} Mass", 40, 0., 200.);
 
-  hGenLepton2Pt_ = dqmStore.book1D("GenLepton2Pt", "gen. P_{T}^{#ell2}", 75, 0., 150.);
-  hGenLepton2Eta_ = dqmStore.book1D("GenLepton2Eta", "gen. #eta_{#ell2}", 60, -3., +3.);
-  hGenLepton2Phi_ = dqmStore.book1D("GenLepton2Phi", "gen. #phi_{#ell2}", 36, -TMath::Pi(), +TMath::Pi());
+  hLepton1bestMatchPt_ = book1D("Lepton1bestMatchPt", "P_{T} of rec. Object best matching #ell_{1}", 75, 0., 150.);
+  hLepton1bestMatchEta_= book1D("Lepton1bestMatchEta", "#eta of rec. Object best matching #ell_{1}", 60, -3., +3.);
+  hLepton1bestMatchPhi_ = book1D("Lepton1bestMatchPhi", "#phi of rec. Object best matching #ell_{1}", 36, -TMath::Pi(), +TMath::Pi());
+  hLepton1bestMatchType_ = book1D("Lepton1bestMatchType", "Type of rec. Object best matching #ell_{1}", 10, -0.5, 9.5);
 
-  hGenVisMass_ = dqmStore.book1D("GenVisMass", "gen. Z^{0} Mass", 40, 0., 200.);
+  hLepton2bestMatchPt_ = book1D("Lepton2bestMatchPt", "P_{T} of rec. Object best matching #ell_{2}", 75, 0., 150.);
+  hLepton2bestMatchEta_= book1D("Lepton2bestMatchEta", "#eta of rec. Object best matching #ell_{2}", 60, -3., +3.);
+  hLepton2bestMatchPhi_ = book1D("Lepton2bestMatchPhi", "#phi of rec. Object best matching #ell_{2}", 36, -TMath::Pi(), +TMath::Pi());
+  hLepton2bestMatchType_ = book1D("Lepton2bestMatchType", "Type of rec. Object best matching #ell_{2}", 10, -0.5, 9.5);
 
-  hLepton1bestMatchPt_ = dqmStore.book1D("Lepton1bestMatchPt", "P_{T} of rec. Object best matching #ell_{1}", 75, 0., 150.);
-  hLepton1bestMatchEta_= dqmStore.book1D("Lepton1bestMatchEta", "#eta of rec. Object best matching #ell_{1}", 60, -3., +3.);
-  hLepton1bestMatchPhi_ = dqmStore.book1D("Lepton1bestMatchPhi", "#phi of rec. Object best matching #ell_{1}", 36, -TMath::Pi(), +TMath::Pi());
-  hLepton1bestMatchType_ = dqmStore.book1D("Lepton1bestMatchType", "Type of rec. Object best matching #ell_{1}", 10, -0.5, 9.5);
+  hLepton1bestMatchPtRes_ = book1D("Lepton1bestMatchPtRes", "gen. P_{T}^{#ell1} - P_{T} of best matching rec. Object", 50, -25., +25.);
+  hLepton1bestMatchEtaRes_ = book1D("Lepton1bestMatchEtaRes", "gen. #eta_{#ell1} - #eta of best matching rec. Object", 100, -0.25, +0.25);
+  hLepton1bestMatchPhiRes_ = book1D("Lepton1bestMatchPhiRes", "gen. #phi_{#ell1} - #phi of best matching rec. Object", 100, -0.25, +0.25);
 
-  hLepton2bestMatchPt_ = dqmStore.book1D("Lepton2bestMatchPt", "P_{T} of rec. Object best matching #ell_{2}", 75, 0., 150.);
-  hLepton2bestMatchEta_= dqmStore.book1D("Lepton2bestMatchEta", "#eta of rec. Object best matching #ell_{2}", 60, -3., +3.);
-  hLepton2bestMatchPhi_ = dqmStore.book1D("Lepton2bestMatchPhi", "#phi of rec. Object best matching #ell_{2}", 36, -TMath::Pi(), +TMath::Pi());
-  hLepton2bestMatchType_ = dqmStore.book1D("Lepton2bestMatchType", "Type of rec. Object best matching #ell_{2}", 10, -0.5, 9.5);
+  hLepton2bestMatchPtRes_ = book1D("Lepton2bestMatchPtRes", "gen. P_{T}^{#ell2} - P_{T} of best matching rec. Object", 50, -25., +25.);
+  hLepton2bestMatchEtaRes_ = book1D("Lepton2bestMatchEtaRes", "gen. #eta_{#ell2} - #eta of best matching rec. Object", 100, -0.25, +0.25);
+  hLepton2bestMatchPhiRes_ = book1D("Lepton2bestMatchPhiRes", "gen. #phi_{#ell2} - #phi of best matching rec. Object", 100, -0.25, +0.25);
 
-  hLepton1bestMatchPtRes_ = dqmStore.book1D("Lepton1bestMatchPtRes", "gen. P_{T}^{#ell1} - P_{T} of best matching rec. Object", 50, -25., +25.);
-  hLepton1bestMatchEtaRes_ = dqmStore.book1D("Lepton1bestMatchEtaRes", "gen. #eta_{#ell1} - #eta of best matching rec. Object", 100, -0.25, +0.25);
-  hLepton1bestMatchPhiRes_ = dqmStore.book1D("Lepton1bestMatchPhiRes", "gen. #phi_{#ell1} - #phi of best matching rec. Object", 100, -0.25, +0.25);
+  hVisMassBestMach_ = book1D("VisMassBestMach", "Z #rightarrow #ell^{+} #ell^{-} Mass hypothesis", 40, 0., 200.);
 
-  hLepton2bestMatchPtRes_ = dqmStore.book1D("Lepton2bestMatchPtRes", "gen. P_{T}^{#ell2} - P_{T} of best matching rec. Object", 50, -25., +25.);
-  hLepton2bestMatchEtaRes_ = dqmStore.book1D("Lepton2bestMatchEtaRes", "gen. #eta_{#ell2} - #eta of best matching rec. Object", 100, -0.25, +0.25);
-  hLepton2bestMatchPhiRes_ = dqmStore.book1D("Lepton2bestMatchPhiRes", "gen. #phi_{#ell2} - #phi of best matching rec. Object", 100, -0.25, +0.25);
+  hVisMassFromCaloJets_ = book1D("VisMassFromCaloJets", "hypothetic Z^{0} Mass from calo. Jets", 40, 0., 200.);
+  hVisMassFromPFJets_ = book1D("VisMassFromPFJets", "hypothetic Z^{0} Mass from particle-flow Jets", 40, 0., 200.);
+  hVisMassFromTracks_ = book1D("VisMassFromTracks", "hypothetic Z^{0} Mass from Tracks", 40, 0., 200.);
+  hVisMassFromGsfElectrons_ = book1D("VisMassFromGsfElectrons", "hypothetic Z^{0} Mass from GSF Electrons", 40, 0., 200.);
+  hVisMassFromGsfTracks_ = book1D("VisMassFromGsfTracks", "hypothetic Z^{0} Mass from GSF Tracks", 40, 0., 200.);
 
-  hVisMassBestMach_ = dqmStore.book1D("VisMassBestMach", "Z #rightarrow #ell^{+} #ell^{-} Mass hypothesis", 40, 0., 200.);
-
-  hVisMassFromCaloJets_ = dqmStore.book1D("VisMassFromCaloJets", "hypothetic Z^{0} Mass from calo. Jets", 40, 0., 200.);
-  hVisMassFromPFJets_ = dqmStore.book1D("VisMassFromPFJets", "hypothetic Z^{0} Mass from particle-flow Jets", 40, 0., 200.);
-  hVisMassFromTracks_ = dqmStore.book1D("VisMassFromTracks", "hypothetic Z^{0} Mass from Tracks", 40, 0., 200.);
-  hVisMassFromGsfElectrons_ = dqmStore.book1D("VisMassFromGsfElectrons", "hypothetic Z^{0} Mass from GSF Electrons", 40, 0., 200.);
-  hVisMassFromGsfTracks_ = dqmStore.book1D("VisMassFromGsfTracks", "hypothetic Z^{0} Mass from GSF Tracks", 40, 0., 200.);
+  bookWeightHistograms(*dqmStore_, "ZllHypothesisWeight", "ZllHypothesis Weight", 
+		       hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
+		       hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_);
 }
 
 template<typename T1, typename T2>
@@ -109,14 +100,9 @@ double ZllHypothesisT1T2HistManager<T1,T2>::getZllHypothesisWeight(const ZllHypo
 }
 
 template<typename T1, typename T2>
-void ZllHypothesisT1T2HistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void ZllHypothesisT1T2HistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<ZllHypothesisT1T2HistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<ZllHypothesisT1T2HistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<ZllHypothesisT1T2<T1,T2> > ZllHypothesisCollection;
   edm::Handle<ZllHypothesisCollection> ZllHypotheses;
@@ -203,6 +189,9 @@ void ZllHypothesisT1T2HistManager<T1,T2>::fillHistograms(const edm::Event& evt, 
       reco::Particle::LorentzVector gsfTrack2Momentum(gsfTrack2->px(), gsfTrack2->py(), gsfTrack2->pz(), gsfTrack2->p());
       hVisMassFromTracks_->Fill((gsfTrack1Momentum + gsfTrack2Momentum).mass(), weight);
     }
+
+    fillWeightHistograms(hZllHypothesisWeightPosUnweighted_, hZllHypothesisWeightPosWeighted_, 
+			 hZllHypothesisWeightNegUnweighted_, hZllHypothesisWeightNegWeighted_, ZllHypothesisWeight);
   }
 }
 

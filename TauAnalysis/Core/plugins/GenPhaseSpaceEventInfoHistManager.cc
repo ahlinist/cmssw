@@ -15,7 +15,7 @@
 #include <TMath.h>
 
 GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager>:" << std::endl;
 
@@ -33,9 +33,6 @@ GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::
   genParticlesFromZsSource_ = cfg.getParameter<edm::InputTag>("genParticlesFromZsSource");
   //std::cout << " genParticlesFromZsSource = " << genParticlesFromZsSource_ << std::endl;
 
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
-
   makeLeptonPtVsPtHatHistograms_ = ( cfg.exists("makeLeptonPtVsPtHatHistograms") ) ? 
     cfg.getParameter<bool>("makeLeptonPtVsPtHatHistograms") : false;
 }
@@ -45,55 +42,40 @@ GenPhaseSpaceEventInfoHistManager::~GenPhaseSpaceEventInfoHistManager()
 //--- nothing to be done yet...
 }
 
-void GenPhaseSpaceEventInfoHistManager::bookHistograms()
+void GenPhaseSpaceEventInfoHistManager::bookHistogramsImp()
 {
-  //std::cout << "<GenPhaseSpaceEventInfoHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-  
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  //std::cout << "<GenPhaseSpaceEventInfoHistManager::bookHistogramsImp>:" << std::endl;
     
-  hPtHat_ = dqmStore.book1D("PtHat", "PtHat", 101, -0.5, +100.5);
+  hPtHat_ = book1D("PtHat", "PtHat", 101, -0.5, +100.5);
   
-  hLeadingElectronPt_ = dqmStore.book1D("LeadingElectronPt", "LeadingElectronPt", 101, -0.5, +100.5);
-  hLeadingMuonPt_ = dqmStore.book1D("LeadingMuonPt", "LeadingMuonPt", 101, -0.5, +100.5);
-  hLeadingTauLeptonPt_ = dqmStore.book1D("LeadingTauLeptonPt", "LeadingTauLeptonPt", 101, -0.5, +100.5);
+  hLeadingElectronPt_ = book1D("LeadingElectronPt", "LeadingElectronPt", 101, -0.5, +100.5);
+  hLeadingMuonPt_ = book1D("LeadingMuonPt", "LeadingMuonPt", 101, -0.5, +100.5);
+  hLeadingTauLeptonPt_ = book1D("LeadingTauLeptonPt", "LeadingTauLeptonPt", 101, -0.5, +100.5);
   
   if ( makeLeptonPtVsPtHatHistograms_ ) {
-    hLeadingElectronPtVsPtHat_ = dqmStore.book2D("LeadingElectronPtVsPtHat", 
-						 "LeadingElectronPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
-    hLeadingMuonPtVsPtHat_ = dqmStore.book2D("LeadingMuonPtVsPtHat", 
-					     "LeadingMuonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
-    hLeadingTauLeptonPtVsPtHat_ = dqmStore.book2D("LeadingTauLeptonPtVsPtHat", 
-						  "LeadingTauLeptonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+    hLeadingElectronPtVsPtHat_ = book2D("LeadingElectronPtVsPtHat", 
+					"LeadingElectronPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+    hLeadingMuonPtVsPtHat_ = book2D("LeadingMuonPtVsPtHat", 
+				    "LeadingMuonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
+    hLeadingTauLeptonPtVsPtHat_ = book2D("LeadingTauLeptonPtVsPtHat", 
+					 "LeadingTauLeptonPtVsPtHat", 101, -0.5, +100.5, 101, -0.5, +100.5);
   }
 
-  hNumGenJets_ = dqmStore.book1D("NumGenJets", "NumGenJets", 21, -0.5, +20.5);
+  hNumGenJets_ = book1D("NumGenJets", "NumGenJets", 21, -0.5, +20.5);
   
-  hGenZsPt_ = dqmStore.book1D("GenZsPt", "GenZsPt", 101, -0.5, +100.5);
-  hGenZsEta_ = dqmStore.book1D("GenZsEta", "GenZsEta", 200, -10., +10.);
-  hGenZsMass_ = dqmStore.book1D("GenZsMass", "GenZsMass", 151, -0.5, +150.5);
+  hGenZsPt_ = book1D("GenZsPt", "GenZsPt", 101, -0.5, +100.5);
+  hGenZsEta_ = book1D("GenZsEta", "GenZsEta", 200, -10., +10.);
+  hGenZsMass_ = book1D("GenZsMass", "GenZsMass", 151, -0.5, +150.5);
   
-  hGenParticlesFromZsPt_ = dqmStore.book1D("GenParticlesFromZsPt", "GenParticlesFromZsPt", 101, -0.5, +100.5);
-  hGenParticlesFromZsEta_ = dqmStore.book1D("GenParticlesFromZsEta", "GenParticlesFromZsEta", 200, -10., +10.);
-  hGenParticlesFromZsPdgId_ = dqmStore.book1D("GenParticlesFromZsPdgId", "GenParticlesFromZsPdgId", 49, -24.5, +24.5);
+  hGenParticlesFromZsPt_ = book1D("GenParticlesFromZsPt", "GenParticlesFromZsPt", 101, -0.5, +100.5);
+  hGenParticlesFromZsEta_ = book1D("GenParticlesFromZsEta", "GenParticlesFromZsEta", 200, -10., +10.);
+  hGenParticlesFromZsPdgId_ = book1D("GenParticlesFromZsPdgId", "GenParticlesFromZsPdgId", 49, -24.5, +24.5);
 }
 
-void GenPhaseSpaceEventInfoHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void GenPhaseSpaceEventInfoHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 
 {  
-  //std::cout << "<GenPhaseSpaceEventInfoHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<GenPhaseSpaceEventInfoHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<GenPhaseSpaceEventInfo> genPhaseSpaceEventInfo;
   evt.getByLabel(genPhaseSpaceEventInfoSource_, genPhaseSpaceEventInfo);

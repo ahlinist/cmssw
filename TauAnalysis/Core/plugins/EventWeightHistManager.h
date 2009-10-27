@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -21,11 +20,8 @@ class EventWeightHistManager : public HistManagerBase
  private: 
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
-
-//--- configuration parameters
-  std::string dqmDirectory_store_;
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- histograms
   MonitorElement* hEvtWeightPosUnweighted_;
@@ -33,8 +29,6 @@ class EventWeightHistManager : public HistManagerBase
 
   MonitorElement* hEvtWeightPosWeighted_;
   MonitorElement* hEvtWeightNegWeighted_;
-
-  int dqmError_;
 };
 
 #endif  

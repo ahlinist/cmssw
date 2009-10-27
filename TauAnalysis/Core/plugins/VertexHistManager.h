@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
@@ -22,13 +21,11 @@ class VertexHistManager : public HistManagerBase
  private: 
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
   edm::InputTag vertexSrc_;
-
-  std::string dqmDirectory_store_;
 
   bool makeVertexXvsYhistogram_;
 
@@ -44,8 +41,6 @@ class VertexHistManager : public HistManagerBase
   MonitorElement* hVertexNumTracks_;
 
   MonitorElement* hVertexChi2Prob_;
-
-  int dqmError_;
 };
 
 #endif  

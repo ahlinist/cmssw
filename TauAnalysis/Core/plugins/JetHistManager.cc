@@ -23,15 +23,12 @@ bool matchesGenJet(const pat::Jet& patJet)
 //
 
 JetHistManager::JetHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<JetHistManager::JetHistManager>:" << std::endl;
 
   jetSrc_ = cfg.getParameter<edm::InputTag>("jetSource");
   //std::cout << " jetSrc = " << jetSrc_ << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenJetMatch_ = cfg.getParameter<bool>("requireGenJetMatch");
   //std::cout << " requireGenJetMatch = " << requireGenJetMatch_ << std::endl;
@@ -58,30 +55,24 @@ JetHistManager::~JetHistManager()
 //--- nothing to be done yet...
 }
 
-void JetHistManager::bookHistograms()
+void JetHistManager::bookHistogramsImp()
 {
-  //std::cout << "<JetHistManager::bookHistograms>:" << std::endl;
+  //std::cout << "<JetHistManager::bookHistogramsImp>:" << std::endl;
+  
+  hNumJets_ = book1D("NumJets", "NumJets", 20, -0.5, 19.5);
+  hSumEtJets_ = book1D("SumEtJets", "SumEtJets", 100, -0.5, 999.5);
+  
+  bookJetHistograms(hJetPt_, hJetEta_, hJetPhi_, "Jet");
+  hJetPtVsEta_ = book2D("JetPtVsEta", "Jet #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
+  
+  bookWeightHistograms(*dqmStore_, "JetWeight", "Jet Weight", 
+		       hJetWeightPosUnweighted_, hJetWeightPosWeighted_, 
+		       hJetWeightNegUnweighted_, hJetWeightNegWeighted_);
 
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
-  
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hNumJets_ = dqmStore.book1D("NumJets", "NumJets", 20, -0.5, 19.5);
-  hSumEtJets_ = dqmStore.book1D("SumEtJets", "SumEtJets", 100, -0.5, 999.5);
-  
-  bookJetHistograms(dqmStore, hJetPt_, hJetEta_, hJetPhi_, "Jet");
-  hJetPtVsEta_ = dqmStore.book2D("JetPtVsEta", "Jet #eta vs P_{T}", 24, -3., +3., 30, 0., 150.);
-  
-  hJetAlpha_ = dqmStore.book1D("JetAlpha", "Jet #alpha", 102, -0.01, +1.01);
-  hJetNumTracks_ = dqmStore.book1D("JetNumTracks", "Jet Track Multiplicity", 50, -0.5, 49.5);
-  hJetTrkPt_ = dqmStore.book1D("JetTrkPt", "Jet All Tracks P_{T}", 100, 0., 50.);
-  hJetLeadTrkPt_ = dqmStore.book1D("JetLeadTrkPt", "Jet Lead Track P_{T}", 75, 0., 75.);
+  hJetAlpha_ = book1D("JetAlpha", "Jet #alpha", 102, -0.01, +1.01);
+  hJetNumTracks_ = book1D("JetNumTracks", "Jet Track Multiplicity", 50, -0.5, 49.5);
+  hJetTrkPt_ = book1D("JetTrkPt", "Jet All Tracks P_{T}", 100, 0., 50.);
+  hJetLeadTrkPt_ = book1D("JetLeadTrkPt", "Jet Lead Track P_{T}", 75, 0., 75.);
   
   for ( vdouble::const_iterator etMin = centralJetsToBeVetoedEtMin_.begin();
 	etMin != centralJetsToBeVetoedEtMin_.end(); ++etMin ) {
@@ -97,7 +88,7 @@ void JetHistManager::bookHistograms()
 	std::string hName_mod = replace_string(hName.str(), ".", "_", 0, 3, errorFlag);
 	//std::cout << "hName_mod = " << hName_mod << std::endl;
 	
-	hNumCentralJetsToBeVetoed_.push_back(dqmStore.book1D(hName_mod, hName_mod, 20, -0.5, 19.5));
+	hNumCentralJetsToBeVetoed_.push_back(book1D(hName_mod, hName_mod, 20, -0.5, 19.5));
       }
     }
   }
@@ -109,21 +100,21 @@ void JetHistManager::bookHistograms()
     hName0 << "BtagDisc_" << bTaggingDiscriminators_[i];
     hTitle0 << "Jet B-Tag Discriminator: " << bTaggingDiscriminators_[i];
   
-    hBtagDisc_.push_back(dqmStore.book1D(hName0.str(),hTitle0.str(), 120, -10., 50.));
+    hBtagDisc_.push_back(book1D(hName0.str(),hTitle0.str(), 120, -10., 50.));
     
     std::ostringstream hName1;
     std::ostringstream hTitle1;
     hName1 << "NumBtags_" << bTaggingDiscriminators_[i];
     hTitle1 << "Jet B-Tag Count: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
-    hNumBtags_.push_back(dqmStore.book1D(hName1.str(),hTitle1.str(), 15, -0.5, 14.5));
+    hNumBtags_.push_back(book1D(hName1.str(),hTitle1.str(), 15, -0.5, 14.5));
     
     std::ostringstream hName2;
     std::ostringstream hTitle2;
     hName2 << "PtBtags_" << bTaggingDiscriminators_[i];
     hTitle2 << "B-Tagged Jets P_{T}: " << bTaggingDiscriminators_[i] << ">" << bTaggingDiscriminatorThresholds_[i];
   
-    hPtBtags_.push_back(dqmStore.book1D(hName2.str(),hTitle2.str(), 75, 0., 150.));
+    hPtBtags_.push_back(book1D(hName2.str(),hTitle2.str(), 75, 0., 150.));
   }
   
 }
@@ -133,14 +124,9 @@ double JetHistManager::getJetWeight(const pat::Jet& patJet)
   return 1.;
 }
 
-void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void JetHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<JetHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<JetHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<pat::JetCollection> patJets;
   evt.getByLabel(jetSrc_, patJets);
@@ -183,6 +169,9 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 
     fillJetHistograms(*patJet, hJetPt_, hJetEta_, hJetPhi_, weight);
     hJetPtVsEta_->Fill(patJet->eta(), patJet->pt(), weight);
+
+    fillWeightHistograms(hJetWeightPosUnweighted_, hJetWeightPosWeighted_, 
+			 hJetWeightNegUnweighted_, hJetWeightNegWeighted_, jetWeight);
 
     hJetAlpha_->Fill(jetAlphaExtractor_(*patJet), weight);
     unsigned numTracks = 0;
@@ -228,16 +217,16 @@ void JetHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void JetHistManager::bookJetHistograms(DQMStore& dqmStore, MonitorElement*& hJetPt, MonitorElement*& hJetEta, MonitorElement*& hJetPhi, const char* histoSetName)
+void JetHistManager::bookJetHistograms(MonitorElement*& hJetPt, MonitorElement*& hJetEta, MonitorElement*& hJetPhi, const char* histoSetName)
 {
   std::string hJetPtName = std::string(histoSetName).append("Pt");
-  hJetPt = dqmStore.book1D(hJetPtName, hJetPtName, 75, 0., 150.);
+  hJetPt = book1D(hJetPtName, hJetPtName, 75, 0., 150.);
   
   std::string hJetEtaName = std::string(histoSetName).append("Eta");
-  hJetEta = dqmStore.book1D(hJetEtaName, hJetEtaName, 60, -3., +3.);
+  hJetEta = book1D(hJetEtaName, hJetEtaName, 60, -3., +3.);
   
   std::string hJetPhiName = std::string(histoSetName).append("Phi");
-  hJetPhi = dqmStore.book1D(hJetPhiName, hJetPhiName, 36, -TMath::Pi(), +TMath::Pi());
+  hJetPhi = book1D(hJetPhiName, hJetPhiName, 36, -TMath::Pi(), +TMath::Pi());
 }
 
 //

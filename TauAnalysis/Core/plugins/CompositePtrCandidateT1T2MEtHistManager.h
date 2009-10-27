@@ -6,7 +6,6 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -28,8 +27,8 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   double getDiTauCandidateWeight(const CompositePtrCandidateT1T2MEt<T1,T2>&);
@@ -39,8 +38,6 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   edm::InputTag vertexSrc_;
   edm::InputTag visMassHypothesisSrc_;
 
-  std::string dqmDirectory_store_;
-  
   bool requireGenMatch_;
 
 //--- "helper" class for accessing weight values
@@ -60,6 +57,11 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidatePhi_;
   MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
+
+  MonitorElement* hDiTauCandidateWeightPosUnweighted_;
+  MonitorElement* hDiTauCandidateWeightPosWeighted_;
+  MonitorElement* hDiTauCandidateWeightNegUnweighted_;
+  MonitorElement* hDiTauCandidateWeightNegWeighted_;
 
   MonitorElement* hDiTauCandidateImpParSig_;
 
@@ -95,8 +97,6 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hPzetaCorr_;
   MonitorElement* hPzetaDiff_;
-
-  int dqmError_;
 };
 
 #endif  

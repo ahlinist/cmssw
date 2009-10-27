@@ -2,6 +2,51 @@
 
 #include <TMath.h>
 
+void bookWeightHistograms(DQMStore& dqmStore, const char* name, const char* title, 
+			  MonitorElement*& h_posUnweighted, MonitorElement*& h_posWeighted,
+			  MonitorElement*& h_negUnweighted, MonitorElement*& h_negWeighted)
+{
+  std::string hName_posUnweighted = std::string(name).append("PosUnweighted");
+  std::string hTitle_posUnweighted = std::string("log10(|").append(title).append("|), ").append(title).append("#geq 0 (unweighted)");
+  h_posUnweighted = dqmStore.book1D(hName_posUnweighted.data(), hTitle_posUnweighted.data(), 74, -6.2, 1.2);
+
+  std::string hName_posWeighted = std::string(name).append("PosUnweighted");
+  std::string hTitle_posWeighted = std::string("log10(|").append(title).append("|), ").append(title).append("#geq 0 (weighted)");
+  h_posWeighted = dqmStore.book1D(hName_posWeighted.data(), hTitle_posWeighted.data(), 74, -6.2, 1.2);
+
+  std::string hName_negUnweighted = std::string(name).append("NegUnweighted");
+  std::string hTitle_negUnweighted = std::string("log10(|").append(title).append("|), ").append(title).append("#leq 0 (unweighted)");
+  h_negUnweighted = dqmStore.book1D(hName_negUnweighted.data(), hTitle_negUnweighted.data(), 74, -6.2, 1.2);
+
+  std::string hName_negWeighted = std::string(name).append("NegWeighted");
+  std::string hTitle_negWeighted = std::string("log10(|").append(title).append("|), ").append(title).append("#leq 0 (weighted)");
+  h_negWeighted = dqmStore.book1D(hName_negWeighted.data(), hTitle_negWeighted.data(), 74, -6.2, 1.2);
+}
+
+void fillWeightHistograms(MonitorElement* h_posUnweighted, MonitorElement* h_posWeighted, 
+			  MonitorElement* h_negUnweighted, MonitorElement* h_negWeighted, 
+			  double weight)
+{
+  if ( weight == 0. ) return;
+
+  double log10weight = TMath::Log10(TMath::Abs(weight));
+
+  if ( log10weight >  1. ) log10weight =  1.15;
+  if ( log10weight < -6. ) log10weight = -6.15;
+
+  if ( weight > 0. ) {
+    h_posUnweighted->Fill(log10weight);
+    h_posWeighted->Fill(log10weight, weight);
+  } else if ( weight < 0. ) {
+    h_negUnweighted->Fill(log10weight);
+    h_negWeighted->Fill(log10weight, weight);
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 void fillLeptonIsoDepositHistograms(const pat::IsoDeposit* isoDeposit, 
 				    MonitorElement* isoDepositValProfile,
 				    MonitorElement* isoDepositEtaDistProfile, 

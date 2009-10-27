@@ -14,15 +14,12 @@
 //
 
 PFCandidateHistManager::PFCandidateHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<PFCandidateHistManager::PFCandidateHistManager>:" << std::endl;
 
   pfCandidateSrc_ = cfg.getParameter<edm::InputTag>("pfCandidateSource");
   //std::cout << " pfCandidateSrc = " << pfCandidateSrc_ << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
   
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "pfCandidates");
@@ -33,32 +30,21 @@ PFCandidateHistManager::~PFCandidateHistManager()
 //--- nothing to be done yet...
 }
 
-void PFCandidateHistManager::bookHistograms()
+void PFCandidateHistManager::bookHistogramsImp()
 {
-  //std::cout << "<PFCandidateHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  //std::cout << "<PFCandidateHistManager::bookHistogramsImp>:" << std::endl;
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  bookPFCandidateHistograms(dqmStore, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
-  hPFCandidatePtVsEta_ = dqmStore.book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
+  bookPFCandidateHistograms(hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, "PFCandidate");
+  hPFCandidatePtVsEta_ = book2D("PFCandidatePtVsEta", "PFCandidatePtVsEta", 24, -3., +3., 30, 0., 150.);
+
+  bookWeightHistograms(*dqmStore_, "PFCandidateWeight", "PFCandidate Weight", 
+		       hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
+		       hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_);
 }
 
-void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void PFCandidateHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<PFCandidateHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<PFCandidateHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<std::vector<reco::PFCandidate> > pfCandidates;
   evt.getByLabel(pfCandidateSrc_, pfCandidates);
@@ -73,6 +59,9 @@ void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
   
     fillPFCandidateHistograms(*pfCandidate, hPFCandidatePt_, hPFCandidateEta_, hPFCandidatePhi_, weight);
     hPFCandidatePtVsEta_->Fill(pfCandidate->eta(), pfCandidate->pt(), weight);
+
+    fillWeightHistograms(hPFCandidateWeightPosUnweighted_, hPFCandidateWeightPosWeighted_, 
+			 hPFCandidateWeightNegUnweighted_, hPFCandidateWeightNegWeighted_, pfCandidateWeight);
   }
 }
 
@@ -80,16 +69,16 @@ void PFCandidateHistManager::fillHistograms(const edm::Event& evt, const edm::Ev
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void PFCandidateHistManager::bookPFCandidateHistograms(DQMStore& dqmStore, MonitorElement*& hPFCandidatePt, MonitorElement*& hPFCandidateEta, MonitorElement*& hPFCandidatePhi, const char* histoSetName)
+void PFCandidateHistManager::bookPFCandidateHistograms(MonitorElement*& hPFCandidatePt, MonitorElement*& hPFCandidateEta, MonitorElement*& hPFCandidatePhi, const char* histoSetName)
 {
   std::string hPFCandidatePtName = std::string(histoSetName).append("Pt");
-  hPFCandidatePt = dqmStore.book1D(hPFCandidatePtName, hPFCandidatePtName, 75, 0., 150.);
+  hPFCandidatePt = book1D(hPFCandidatePtName, hPFCandidatePtName, 75, 0., 150.);
   
   std::string hPFCandidateEtaName = std::string(histoSetName).append("Eta");
-  hPFCandidateEta = dqmStore.book1D(hPFCandidateEtaName, hPFCandidateEtaName, 60, -3., +3.);
+  hPFCandidateEta = book1D(hPFCandidateEtaName, hPFCandidateEtaName, 60, -3., +3.);
   
   std::string hPFCandidatePhiName = std::string(histoSetName).append("Phi");
-  hPFCandidatePhi = dqmStore.book1D(hPFCandidatePhiName, hPFCandidatePhiName, 36, -TMath::Pi(), +TMath::Pi());
+  hPFCandidatePhi = book1D(hPFCandidatePhiName, hPFCandidatePhiName, 36, -TMath::Pi(), +TMath::Pi());
 }
 
 //

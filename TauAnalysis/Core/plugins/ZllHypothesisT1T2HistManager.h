@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -27,16 +26,14 @@ class ZllHypothesisT1T2HistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
+  void bookHistogramsImp();
 
   double getZllHypothesisWeight(const ZllHypothesisT1T2<T1,T2>&);
   
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
   edm::InputTag ZllHypothesisSrc_;
-
-  std::string dqmDirectory_store_;
 
 //--- "helper" class for accessing weight values
 //    associated to tau decay products
@@ -81,7 +78,10 @@ class ZllHypothesisT1T2HistManager : public HistManagerBase
   MonitorElement* hVisMassFromGsfElectrons_;
   MonitorElement* hVisMassFromGsfTracks_;
 
-  int dqmError_;
+  MonitorElement* hZllHypothesisWeightPosUnweighted_;
+  MonitorElement* hZllHypothesisWeightPosWeighted_;
+  MonitorElement* hZllHypothesisWeightNegUnweighted_;
+  MonitorElement* hZllHypothesisWeightNegWeighted_;
 };
 
 #endif  

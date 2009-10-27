@@ -39,7 +39,7 @@ bool matchesGenMuon(const pat::Muon& patMuon)
 //
 
 MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<MuonHistManager::MuonHistManager>:" << std::endl;
 
@@ -62,9 +62,6 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
 				       << " --> matching gen. Particle PdgId histogram will NOT be plotted !!";
   }
   //std::cout << " genParticleSrc = " << genParticleSrc_ << std::endl;
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
   //std::cout << " requireGenMuonMatch = " << requireGenMuonMatch_ << std::endl;
@@ -106,89 +103,83 @@ MuonHistManager::~MuonHistManager()
   clearIsoParam(muonParticleFlowIsoParam_);
 }
 
-void MuonHistManager::bookHistograms()
+void MuonHistManager::bookHistogramsImp()
 {
-  //std::cout << "<MuonHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
-
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
+  //std::cout << "<MuonHistManager::bookHistogramsImp>:" << std::endl;
 
 //--- book histogram for number of muons in each event
-  hNumMuons_ = dqmStore.book1D("NumMuons", "NumMuons", 10, -0.5, 9.5);
+  hNumMuons_ = book1D("NumMuons", "NumMuons", 10, -0.5, 9.5);
 
 //--- book histograms for Pt, eta and phi distributions
 //    of muons passing all id. and isolation selections
-  bookMuonHistograms(dqmStore, hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
-  hMuonPtVsEta_ = dqmStore.book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
-  hMuonCharge_ = dqmStore.book1D("MuonCharge", "Muon Charge", 3, -1.5, +1.5);
+  bookMuonHistograms(hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
+  hMuonPtVsEta_ = book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
+  hMuonCharge_ = book1D("MuonCharge", "Muon Charge", 3, -1.5, +1.5);
   
-  hMuonPtCompToGen_ = dqmStore.book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
-  hMuonThetaCompToGen_ = dqmStore.book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
-  hMuonPhiCompToGen_ = dqmStore.book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
+  bookWeightHistograms(*dqmStore_, "MuonWeight", "Muon Weight", 
+		       hMuonWeightPosUnweighted_, hMuonWeightPosWeighted_, 
+		       hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_);
   
-  hMuonMatchingGenParticlePdgId_ = dqmStore.book1D("MuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
+  hMuonPtCompToGen_ = book1D("MuonPtCompToGen", "MuonPtCompToGen", 200, -0.10, +0.10);
+  hMuonThetaCompToGen_ = book1D("MuonThetaCompToGen", "MuonThetaCompToGen", 200, -0.010, +0.010);
+  hMuonPhiCompToGen_ = book1D("MuonPhiCompToGen", "MuonPhiCompToGen", 200, -0.010, +0.010);
+  
+  hMuonMatchingGenParticlePdgId_ = book1D("MuonMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
 
-  hMuonTrackIPxy_ = dqmStore.book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
-  hMuonTrackIPz_ = dqmStore.book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
+  hMuonTrackIPxy_ = book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
+  hMuonTrackIPz_ = book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
   
-  hMuonEcalDeposits_ = dqmStore.book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 20.);
-  hMuonHcalDeposits_ = dqmStore.book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 20.);
-  hMuonCaloDeposits_ = dqmStore.book1D("MuonCaloDeposits", "MuonCaloDeposits", 100, 0., 20.);
-  hMuonCaloCompatibility_ = dqmStore.book1D("MuonCaloCompatibility", "MuonCaloCompatibility", 102, -0.01, 1.01);
+  hMuonEcalDeposits_ = book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 20.);
+  hMuonHcalDeposits_ = book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 20.);
+  hMuonCaloDeposits_ = book1D("MuonCaloDeposits", "MuonCaloDeposits", 100, 0., 20.);
+  hMuonCaloCompatibility_ = book1D("MuonCaloCompatibility", "MuonCaloCompatibility", 102, -0.01, 1.01);
   
-  hMuonNumberOfChambers_ = dqmStore.book1D("MuonNumberOfChambers", "MuonNumberOfChambers", 25, -0.5, 24.5);
-  hMuonSegmentCompatibility_ = dqmStore.book1D("MuonSegmentCompatibility", "MuonSegmentCompatibility", 102, -0.01, 1.01);
+  hMuonNumberOfChambers_ = book1D("MuonNumberOfChambers", "MuonNumberOfChambers", 25, -0.5, 24.5);
+  hMuonSegmentCompatibility_ = book1D("MuonSegmentCompatibility", "MuonSegmentCompatibility", 102, -0.01, 1.01);
   
-  hMuonTrkIsoPt_ = dqmStore.book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 20.);    
-  hMuonTrkIsoPtVsMuonPt_ = dqmStore.book2D("MuonTrkIsoPtVsMuonPt", "MuonTrkIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonEcalIsoPt_ = dqmStore.book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
-  hMuonEcalIsoPtVsMuonPt_ = dqmStore.book2D("MuonEcalIsoPtVsMuonPt", "MuonEcalIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonHcalIsoPt_ = dqmStore.book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
-  hMuonIsoSumPt_ = dqmStore.book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
-  hMuonIsoSumPtVsMuonPt_ = dqmStore.book2D("MuonIsoSumPtVsMuonPt", "MuonIsoSumPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonTrkIsoPtRel_ = dqmStore.book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 200, 0., 2.);    
-  hMuonEcalIsoPtRel_ = dqmStore.book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 200, 0., 2.);
-  hMuonHcalIsoPtRel_ = dqmStore.book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
-  hMuonIsoSumPtRel_ = dqmStore.book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 200, 0., 2.);
+  hMuonTrkIsoPt_ = book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 20.);    
+  hMuonTrkIsoPtVsMuonPt_ = book2D("MuonTrkIsoPtVsMuonPt", "MuonTrkIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
+  hMuonEcalIsoPt_ = book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
+  hMuonEcalIsoPtVsMuonPt_ = book2D("MuonEcalIsoPtVsMuonPt", "MuonEcalIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
+  hMuonHcalIsoPt_ = book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
+  hMuonIsoSumPt_ = book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
+  hMuonIsoSumPtVsMuonPt_ = book2D("MuonIsoSumPtVsMuonPt", "MuonIsoSumPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
+  hMuonTrkIsoPtRel_ = book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 200, 0., 2.);    
+  hMuonEcalIsoPtRel_ = book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 200, 0., 2.);
+  hMuonHcalIsoPtRel_ = book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
+  hMuonIsoSumPtRel_ = book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 200, 0., 2.);
 
-  hMuonDeltaRnearestJet_ = dqmStore.book1D("MuonDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
+  hMuonDeltaRnearestJet_ = book1D("MuonDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
 
-  hMuonParticleFlowIsoPt_ = dqmStore.book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
-  hMuonPFChargedHadronIsoPt_ = dqmStore.book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
-  hMuonPFNeutralHadronIsoPt_ = dqmStore.book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 20.);   
-  hMuonPFGammaIsoPt_ = dqmStore.book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 20.);  
+  hMuonParticleFlowIsoPt_ = book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
+  hMuonPFChargedHadronIsoPt_ = book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
+  hMuonPFNeutralHadronIsoPt_ = book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 20.);   
+  hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 20.);  
   
 //--- book "control" histograms to check agreement between muon isolation variables
 //    computed by PAT-level IsoDeposits based on particle flow 
 //    with values computed on AOD level, based on ECAL recHits/CaloTowers and reco::Tracks
   if ( makeIsoPtCtrlHistograms_ ) {
-    hMuonPFChargedHadronIsoPtCtrl_ = dqmStore.book2D("MuonPFChargedHadronIsoPtCtrl", "PFChargedHadron vs. reco::Track Isolation P_{T}", 40, 0., 20., 40, 0., 20.);
-    hMuonPFGammaIsoPtCtrl_ = dqmStore.book2D("MuonPFGammaIsoPtCtrl", "PFGamma vs. ECAL recHit/CaloTower Isolation P_{T}", 40, 0., 20., 40, 0., 20.);
+    hMuonPFChargedHadronIsoPtCtrl_ = book2D("MuonPFChargedHadronIsoPtCtrl", "PFChargedHadron vs. reco::Track Isolation P_{T}", 40, 0., 20., 40, 0., 20.);
+    hMuonPFGammaIsoPtCtrl_ = book2D("MuonPFGammaIsoPtCtrl", "PFGamma vs. ECAL recHit/CaloTower Isolation P_{T}", 40, 0., 20., 40, 0., 20.);
   } else {
     hMuonPFChargedHadronIsoPtCtrl_ = 0;
     hMuonPFGammaIsoPtCtrl_ = 0;
   } 
 
-  hMuonTrkIsoValProfile_ = dqmStore.book1D("MuonTrkIsoValProfile", "MuonTrkIsoValProfile", 100, 0., 10.);
-  hMuonTrkIsoEtaDistProfile_ = dqmStore.book1D("MuonTrkIsoEtaDistProfile", "MuonTrkIsoEtaDistProfile", 15, 0., 1.5);
-  hMuonTrkIsoPhiDistProfile_ = dqmStore.book1D("MuonTrkIsoPhiDistProfile", "MuonTrkIsoPhiDistProfile", 15, 0., 1.5);
+  hMuonTrkIsoValProfile_ = book1D("MuonTrkIsoValProfile", "MuonTrkIsoValProfile", 100, 0., 10.);
+  hMuonTrkIsoEtaDistProfile_ = book1D("MuonTrkIsoEtaDistProfile", "MuonTrkIsoEtaDistProfile", 15, 0., 1.5);
+  hMuonTrkIsoPhiDistProfile_ = book1D("MuonTrkIsoPhiDistProfile", "MuonTrkIsoPhiDistProfile", 15, 0., 1.5);
   
-  hMuonEcalIsoValProfile_ = dqmStore.book1D("MuonEcalIsoValProfile", "MuonEcalIsoValProfile", 100, 0., 10.);
-  hMuonEcalIsoEtaDistProfile_ = dqmStore.book1D("MuonEcalIsoEtaDistProfile", "MuonEcalIsoEtaDistProfile", 15, 0., 1.5);
-  hMuonEcalIsoPhiDistProfile_ = dqmStore.book1D("MuonEcalIsoPhiDistProfile", "MuonEcalIsoPhiDistProfile", 15, 0., 1.5);
+  hMuonEcalIsoValProfile_ = book1D("MuonEcalIsoValProfile", "MuonEcalIsoValProfile", 100, 0., 10.);
+  hMuonEcalIsoEtaDistProfile_ = book1D("MuonEcalIsoEtaDistProfile", "MuonEcalIsoEtaDistProfile", 15, 0., 1.5);
+  hMuonEcalIsoPhiDistProfile_ = book1D("MuonEcalIsoPhiDistProfile", "MuonEcalIsoPhiDistProfile", 15, 0., 1.5);
   
-  hMuonHcalIsoValProfile_ = dqmStore.book1D("MuonHcalIsoValProfile", "MuonHcalIsoValProfile", 100, 0., 10.);
-  hMuonHcalIsoEtaDistProfile_ = dqmStore.book1D("MuonHcalIsoEtaDistProfile", "MuonHcalIsoEtaDistProfile", 15, 0., 1.5);
-  hMuonHcalIsoPhiDistProfile_  = dqmStore.book1D("MuonHcalIsoPhiDistProfile", "MuonHcalIsoPhiDistProfile", 15, 0., 1.5);
+  hMuonHcalIsoValProfile_ = book1D("MuonHcalIsoValProfile", "MuonHcalIsoValProfile", 100, 0., 10.);
+  hMuonHcalIsoEtaDistProfile_ = book1D("MuonHcalIsoEtaDistProfile", "MuonHcalIsoEtaDistProfile", 15, 0., 1.5);
+  hMuonHcalIsoPhiDistProfile_  = book1D("MuonHcalIsoPhiDistProfile", "MuonHcalIsoPhiDistProfile", 15, 0., 1.5);
   
-  if ( makeIsoPtConeSizeDepHistograms_ ) bookMuonIsoConeSizeDepHistograms(dqmStore);
+  if ( makeIsoPtConeSizeDepHistograms_ ) bookMuonIsoConeSizeDepHistograms();
 }
 
 double MuonHistManager::getMuonWeight(const pat::Muon& patMuon)
@@ -196,14 +187,9 @@ double MuonHistManager::getMuonWeight(const pat::Muon& patMuon)
   return 1.;
 }
 
-void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<MuonHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<MuonHistManager::fillHistogramsImp>:" << std::endl; 
 
   edm::Handle<pat::MuonCollection> patMuons;
   evt.getByLabel(muonSrc_, patMuons);
@@ -240,6 +226,9 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
     fillMuonHistograms(*patMuon, hMuonPt_, hMuonEta_, hMuonPhi_, weight);
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt(), weight);
     hMuonCharge_->Fill(patMuon->charge(), weight);
+
+    fillWeightHistograms(hMuonWeightPosUnweighted_, hMuonWeightPosWeighted_, 
+			 hMuonWeightNegUnweighted_, hMuonWeightNegWeighted_, muonWeight);
 
 //--- compare reconstructed muon to generator level one;
 //    normalize difference between reconstructed and generated Pt
@@ -295,19 +284,19 @@ void MuonHistManager::fillHistograms(const edm::Event& evt, const edm::EventSetu
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-void MuonHistManager::bookMuonHistograms(DQMStore& dqmStore, MonitorElement*& hMuonPt, MonitorElement*& hMuonEta, MonitorElement*& hMuonPhi, const char* histoSetName)
+void MuonHistManager::bookMuonHistograms(MonitorElement*& hMuonPt, MonitorElement*& hMuonEta, MonitorElement*& hMuonPhi, const char* histoSetName)
 {
   std::string hMuonPtName = std::string(histoSetName).append("Pt");
-  hMuonPt = dqmStore.book1D(hMuonPtName, hMuonPtName, 75, 0., 150.);
+  hMuonPt = book1D(hMuonPtName, hMuonPtName, 75, 0., 150.);
   
   std::string hMuonEtaName = std::string(histoSetName).append("Eta");
-  hMuonEta = dqmStore.book1D(hMuonEtaName, hMuonEtaName, 60, -3., +3.);
+  hMuonEta = book1D(hMuonEtaName, hMuonEtaName, 60, -3., +3.);
   
   std::string hMuonPhiName = std::string(histoSetName).append("Phi");
-  hMuonPhi = dqmStore.book1D(hMuonPhiName, hMuonPhiName, 36, -TMath::Pi(), +TMath::Pi());
+  hMuonPhi = book1D(hMuonPhiName, hMuonPhiName, 36, -TMath::Pi(), +TMath::Pi());
 }
 
-void MuonHistManager::bookMuonIsoConeSizeDepHistograms(DQMStore& dqmStore)
+void MuonHistManager::bookMuonIsoConeSizeDepHistograms()
 {
   for ( unsigned iConeSize = 1; iConeSize <= numMuonIsoConeSizes_; ++iConeSize ) {
     std::ostringstream iConeSizeString;
@@ -315,37 +304,37 @@ void MuonHistManager::bookMuonIsoConeSizeDepHistograms(DQMStore& dqmStore)
     
     std::string hMuonTrkIsoPtConeSizeDepName_i 
       = std::string("MuonTrkIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonTrkIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonTrkIsoPtConeSizeDepName_i, 
-							hMuonTrkIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonTrkIsoPtConeSizeDep_.push_back(book1D(hMuonTrkIsoPtConeSizeDepName_i, 
+					       hMuonTrkIsoPtConeSizeDepName_i, 40, 0., 10.));
     std::string hMuonEcalIsoPtConeSizeDepName_i 
       = std::string("MuonEcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonEcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonEcalIsoPtConeSizeDepName_i, 
-							 hMuonEcalIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonEcalIsoPtConeSizeDep_.push_back(book1D(hMuonEcalIsoPtConeSizeDepName_i, 
+						hMuonEcalIsoPtConeSizeDepName_i, 40, 0., 10.));
     
     std::string hMuonHcalIsoPtConeSizeDepName_i 
       = std::string("MuonHcalIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonHcalIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonHcalIsoPtConeSizeDepName_i, 
-							 hMuonHcalIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonHcalIsoPtConeSizeDep_.push_back(book1D(hMuonHcalIsoPtConeSizeDepName_i, 
+						hMuonHcalIsoPtConeSizeDepName_i, 40, 0., 10.));
     
     std::string hMuonParticleFlowIsoPtConeSizeDepName_i 
       = std::string("MuonParticleFlowIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonParticleFlowIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonParticleFlowIsoPtConeSizeDepName_i, 
-								 hMuonParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonParticleFlowIsoPtConeSizeDep_.push_back(book1D(hMuonParticleFlowIsoPtConeSizeDepName_i, 
+							hMuonParticleFlowIsoPtConeSizeDepName_i, 40, 0., 10.));
     
     std::string hMuonPFChargedHadronIsoPtConeSizeDepName_i 
       = std::string("MuonChargedHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFChargedHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFChargedHadronIsoPtConeSizeDepName_i, 
-								    hMuonPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonPFChargedHadronIsoPtConeSizeDep_.push_back(book1D(hMuonPFChargedHadronIsoPtConeSizeDepName_i, 
+							   hMuonPFChargedHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
     
     std::string hMuonPFNeutralHadronIsoPtConeSizeDepName_i 
       = std::string("MuonPFNeutralHadronIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFNeutralHadronIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 
-								    hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonPFNeutralHadronIsoPtConeSizeDep_.push_back(book1D(hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 
+							   hMuonPFNeutralHadronIsoPtConeSizeDepName_i, 40, 0., 10.));
     
     std::string hMuonPFGammaIsoPtConeSizeDepName_i 
       = std::string("MuonPFGammaIsoPtConeSizeDep").append("_").append(iConeSizeString.str());
-    hMuonPFGammaIsoPtConeSizeDep_.push_back(dqmStore.book1D(hMuonPFGammaIsoPtConeSizeDepName_i, 
-							    hMuonPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
+    hMuonPFGammaIsoPtConeSizeDep_.push_back(book1D(hMuonPFGammaIsoPtConeSizeDepName_i, 
+						   hMuonPFGammaIsoPtConeSizeDepName_i, 40, 0., 10.));
   }
 }
 

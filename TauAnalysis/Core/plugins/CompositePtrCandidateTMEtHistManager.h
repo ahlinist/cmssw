@@ -6,7 +6,6 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -28,16 +27,14 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
   double getCandidateWeight(const CompositePtrCandidateTMEt<T>&);
 
 //--- configuration parameters
   edm::InputTag tauNuCandidateSrc_;
-  
-  std::string dqmDirectory_store_;
   
   bool requireGenMatch_;
 
@@ -50,12 +47,15 @@ class CompositePtrCandidateTMEtHistManager : public HistManagerBase
   MonitorElement* hNuTauCandidatePt_;
   MonitorElement* hNuTauCandidatePhi_;
 
+  MonitorElement* hNuTauCandidateWeightPosUnweighted_;
+  MonitorElement* hNuTauCandidateWeightPosWeighted_;
+  MonitorElement* hNuTauCandidateWeightNegUnweighted_;
+  MonitorElement* hNuTauCandidateWeightNegWeighted_;
+
   MonitorElement* hNuTauCandidateDPhi_;
   MonitorElement* hNuTauCandidateMt_;
   
   MonitorElement* hMEtVsTauPt_;
-
-  int dqmError_;
 };
 
 #endif  

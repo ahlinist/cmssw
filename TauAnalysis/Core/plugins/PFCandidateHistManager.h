@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
@@ -24,11 +23,11 @@ class PFCandidateHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  void bookPFCandidateHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
+  void bookPFCandidateHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   double getPFCandidateWeight(const reco::PFCandidate&);
 
@@ -37,15 +36,16 @@ class PFCandidateHistManager : public HistManagerBase
 //--- configuration parameters
   edm::InputTag pfCandidateSrc_;
 
-  std::string dqmDirectory_store_;
-
 //--- histograms
   MonitorElement* hPFCandidatePt_;
   MonitorElement* hPFCandidateEta_;
   MonitorElement* hPFCandidatePtVsEta_;
   MonitorElement* hPFCandidatePhi_;
 
-  int dqmError_;
+  MonitorElement* hPFCandidateWeightPosUnweighted_;
+  MonitorElement* hPFCandidateWeightPosWeighted_;
+  MonitorElement* hPFCandidateWeightNegUnweighted_;
+  MonitorElement* hPFCandidateWeightNegWeighted_;
 };
 
 #endif  

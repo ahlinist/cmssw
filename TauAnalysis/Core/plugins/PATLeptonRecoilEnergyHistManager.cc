@@ -13,7 +13,7 @@
 
 template<typename T1, typename T2>
 PATLeptonRecoilEnergyHistManager<T1,T2>::PATLeptonRecoilEnergyHistManager(const edm::ParameterSet& cfg)
-  : dqmError_(0)
+  : HistManagerBase(cfg)
 {
   //std::cout << "<PATLeptonRecoilEnergyHistManager::PATLeptonRecoilEnergyHistManager>:" << std::endl;
 
@@ -21,9 +21,6 @@ PATLeptonRecoilEnergyHistManager<T1,T2>::PATLeptonRecoilEnergyHistManager(const 
   //std::cout << " leptonRecoilEnergySrc = " << leptonRecoilEnergySrc_ << std::endl;
 
   leptonWeightExtractors_ = getTauJetWeightExtractors<T1>(cfg, "leptonWeightSource");
-
-  dqmDirectory_store_ = cfg.getParameter<std::string>("dqmDirectory_store");
-  //std::cout << " dqmDirectory_store = " << dqmDirectory_store_ << std::endl;
 
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "leptons");
@@ -39,22 +36,16 @@ PATLeptonRecoilEnergyHistManager<T1,T2>::~PATLeptonRecoilEnergyHistManager()
 }
 
 template<typename T1, typename T2>
-void PATLeptonRecoilEnergyHistManager<T1,T2>::bookHistograms()
+void PATLeptonRecoilEnergyHistManager<T1,T2>::bookHistogramsImp()
 {
-  //std::cout << "<PATLeptonRecoilEnergyHistManager::bookHistograms>:" << std::endl;
-
-  if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("bookHistograms") << " Failed to access dqmStore --> histograms will NOT be booked !!";
-    dqmError_ = 1;
-    return;
-  }
-
-  DQMStore& dqmStore = (*edm::Service<DQMStore>());
+  //std::cout << "<PATLeptonRecoilEnergyHistManager::bookHistogramsImp>:" << std::endl;
   
-  dqmStore.setCurrentFolder(dqmDirectory_store_);
-  
-  hEtSum_ = dqmStore.book1D("EtSum", "#Sigma E_{T}^{recoil}", 100, 0., 50.);
-  hNumObjects_  = dqmStore.book1D("NumObjects", "Recoil Energy Objects", 50, -0.5, 49.5);
+  bookWeightHistograms(*dqmStore_, "LeptonWeight", "Lepton Weight", 
+		       hLeptonWeightPosUnweighted_, hLeptonWeightPosWeighted_, 
+		       hLeptonWeightNegUnweighted_, hLeptonWeightNegWeighted_);
+
+  hEtSum_ = book1D("EtSum", "#Sigma E_{T}^{recoil}", 100, 0., 50.);
+  hNumObjects_  = book1D("NumObjects", "Recoil Energy Objects", 50, -0.5, 49.5);
 }
 
 template<typename T1, typename T2>
@@ -64,14 +55,9 @@ double PATLeptonRecoilEnergyHistManager<T1,T2>::getLeptonWeight(const PATLeptonR
 }
 
 template<typename T1, typename T2>
-void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
+void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistogramsImp(const edm::Event& evt, const edm::EventSetup& es, double evtWeight)
 {  
-  //std::cout << "<PATLeptonRecoilEnergyHistManager::fillHistograms>:" << std::endl; 
-
-  if ( dqmError_ ) {
-    edm::LogError ("fillHistograms") << " Failed to access dqmStore --> histograms will NOT be filled !!";
-    return;
-  }
+  //std::cout << "<PATLeptonRecoilEnergyHistManager::fillHistogramsImp>:" << std::endl; 
 
   typedef std::vector<PATLeptonRecoilEnergy<T1,T2> > PATLeptonRecoilEnergyCollection;
   edm::Handle<PATLeptonRecoilEnergyCollection> leptonRecoilEnergyCollection;
@@ -88,6 +74,9 @@ void PATLeptonRecoilEnergyHistManager<T1,T2>::fillHistograms(const edm::Event& e
 
     double leptonWeight = getLeptonWeight(*leptonRecoilEnergy);
     double weight = getWeight(evtWeight, leptonWeight, leptonWeightSum);
+
+    fillWeightHistograms(hLeptonWeightPosUnweighted_, hLeptonWeightPosWeighted_, 
+			 hLeptonWeightNegUnweighted_, hLeptonWeightNegWeighted_, leptonWeight);
 
     hEtSum_->Fill(leptonRecoilEnergy->etSum(), weight);
     hNumObjects_->Fill(leptonRecoilEnergy->recoilEnergyObjects().size(), weight);

@@ -6,7 +6,6 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "TauAnalysis/RecoTools/interface/PATJetAlphaExtractor.h"
@@ -23,11 +22,11 @@ class JetHistManager : public HistManagerBase
  private: 
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- auxiliary functions
-  void bookJetHistograms(DQMStore&, MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
+  void bookJetHistograms(MonitorElement*&, MonitorElement*&, MonitorElement*&, const char*);
   
   double getJetWeight(const pat::Jet&);
 
@@ -36,8 +35,6 @@ class JetHistManager : public HistManagerBase
 
 //--- configuration parameters
   edm::InputTag jetSrc_;
-
-  std::string dqmDirectory_store_;
 
   bool requireGenJetMatch_;
 
@@ -63,6 +60,11 @@ class JetHistManager : public HistManagerBase
   MonitorElement* hJetEta_;
   MonitorElement* hJetPtVsEta_;
   MonitorElement* hJetPhi_;
+
+  MonitorElement* hJetWeightPosUnweighted_;
+  MonitorElement* hJetWeightPosWeighted_;
+  MonitorElement* hJetWeightNegUnweighted_;
+  MonitorElement* hJetWeightNegWeighted_;
   
   MonitorElement* hJetAlpha_;
   MonitorElement* hJetNumTracks_;
@@ -74,8 +76,6 @@ class JetHistManager : public HistManagerBase
   std::vector<MonitorElement*> hBtagDisc_;
 
   std::vector<MonitorElement*> hNumCentralJetsToBeVetoed_;
-
-  int dqmError_;
 };
 
 #endif  

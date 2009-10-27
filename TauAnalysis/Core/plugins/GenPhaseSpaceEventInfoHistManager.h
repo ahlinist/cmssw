@@ -5,7 +5,6 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DQMServices/Core/interface/DQMStore.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TauAnalysis/Core/interface/HistManagerBase.h"
@@ -21,8 +20,8 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
  private:
 //--- histogram booking and filling functions 
 //    inherited from HistManagerBase class
-  void bookHistograms();
-  void fillHistograms(const edm::Event&, const edm::EventSetup&, double);
+  void bookHistogramsImp();
+  void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
   edm::InputTag genPhaseSpaceEventInfoSource_;
@@ -33,8 +32,6 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   double genJetPtMax_;
   double genJetEtaMin_;
   double genJetEtaMax_;   
-
-  std::string dqmDirectory_store_;
 
   bool makeLeptonPtVsPtHatHistograms_;
 
@@ -58,8 +55,6 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   MonitorElement* hGenParticlesFromZsPt_;
   MonitorElement* hGenParticlesFromZsEta_;
   MonitorElement* hGenParticlesFromZsPdgId_;
-
-  int dqmError_;
 };
 
 #endif  
