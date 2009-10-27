@@ -8,7 +8,7 @@
 #include <ostream>
 class JGraph {
 public:
-	JGraph(std::string rootName);
+	JGraph(std::string rootName, bool suppressXErrors = false, bool suppressYErrors = false);
 
 	virtual ~JGraph();
 
@@ -20,6 +20,13 @@ public:
 
 	TGraphErrors finaliseWithErrors();
 
+	void suppressPrintErrors(bool xErrorsSuppressed, bool yErrorsSuppressed) {
+		suppressXErrors_ = xErrorsSuppressed;
+		suppressYErrors_ = yErrorsSuppressed;
+	}
+
+	bool streamToFile(const std::string& filename, bool recreate);
+
 	friend std::ostream& operator<<(std::ostream& s, const JGraph& q);
 private:
 	bool hasErrors_;
@@ -28,6 +35,9 @@ private:
 	std::vector<double> exvals_;
 	std::vector<double> yvals_;
 	std::vector<double> eyvals_;
+
+	bool suppressXErrors_;
+	bool suppressYErrors_;
 };
 
 std::ostream& operator<<(std::ostream& s, const JGraph& q);
