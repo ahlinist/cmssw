@@ -165,23 +165,23 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
   L1_mu_4mom = new TClonesArray("TLorentzVector",10000);
   // HLT_mu_L2_4mom = new TClonesArray("TLorentzVector",10000);
   // HLT_mu_L3_4mom = new TClonesArray("TLorentzVector",10000);
-  HLT1Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT1Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT1Mu5_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT1Mu5_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu5_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT1Mu9_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT1Mu9_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu9_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT1Mu11_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT1Mu11_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT1Mu11_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT2Mu0_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT2Mu0_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT2Mu0_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT2IsoMu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT2IsoMu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT2IsoMu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLT2Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLT2Mu3_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLT2Mu3_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTJpsi2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLTJpsi2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLTJpsi2Mu_L3_4mom=new TClonesArray("TLorentzVector",10000);
-  HLTUpsilon2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
+  // HLTUpsilon2Mu_L2_4mom=new TClonesArray("TLorentzVector",10000);
   HLTUpsilon2Mu_L3_4mom=new TClonesArray("TLorentzVector",10000);
 
 
@@ -777,23 +777,23 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Reco_mu_glb_CovM->Clear();
   // Reco_mu_sta_CovM->Clear();
   L1_mu_4mom->Clear();
-  HLT1Mu3_L2_4mom->Clear();
+  // HLT1Mu3_L2_4mom->Clear();
   HLT1Mu3_L3_4mom->Clear();
-  HLT1Mu5_L2_4mom->Clear();
+  // HLT1Mu5_L2_4mom->Clear();
   HLT1Mu5_L3_4mom->Clear();
-  HLT1Mu9_L2_4mom->Clear();
+  // HLT1Mu9_L2_4mom->Clear();
   HLT1Mu9_L3_4mom->Clear();
-  HLT1Mu11_L2_4mom->Clear();
+  // HLT1Mu11_L2_4mom->Clear();
   HLT1Mu11_L3_4mom->Clear();
-  HLT2Mu0_L2_4mom->Clear();
+  // HLT2Mu0_L2_4mom->Clear();
   HLT2Mu0_L3_4mom->Clear();
-  HLT2IsoMu3_L2_4mom->Clear();
+  // HLT2IsoMu3_L2_4mom->Clear();
   HLT2IsoMu3_L3_4mom->Clear();
-  HLT2Mu3_L2_4mom->Clear();
+  // HLT2Mu3_L2_4mom->Clear();
   HLT2Mu3_L3_4mom->Clear();
-  HLTJpsi2Mu_L2_4mom->Clear();
+  // HLTJpsi2Mu_L2_4mom->Clear();
   HLTJpsi2Mu_L3_4mom->Clear();
-  HLTUpsilon2Mu_L2_4mom->Clear();
+  // HLTUpsilon2Mu_L2_4mom->Clear();
   HLTUpsilon2Mu_L3_4mom->Clear();
 
 }
@@ -860,24 +860,24 @@ void Onia2MuMu::hltReport(const edm::Event &iEvent) {
       HLTBits_error[i]=HLTR->error(hltBits[i]);
     }
    
-    HLT1Mu3_L2_size=0;
+    // HLT1Mu3_L2_size=0;
     HLT1Mu3_L3_size=0;
-    HLT1Mu5_L2_size=0;
+    // HLT1Mu5_L2_size=0;
     HLT1Mu5_L3_size=0;
-    HLT1Mu9_L2_size=0;
+    // HLT1Mu9_L2_size=0;
     HLT1Mu9_L3_size=0;
-    HLT1Mu11_L2_size=0;
+    // HLT1Mu11_L2_size=0;
     HLT1Mu11_L3_size=0;
-    HLT2IsoMu3_L2_size=0;
+    // HLT2IsoMu3_L2_size=0;
     HLT2IsoMu3_L3_size=0;
 
-    HLT2Mu0_L2_size=0;
+    // HLT2Mu0_L2_size=0;
     HLT2Mu0_L3_size=0;
-    HLT2Mu3_L2_size=0;
+    // HLT2Mu3_L2_size=0;
     HLT2Mu3_L3_size=0;
-    HLTJpsi2Mu_L2_size=0;
+    // HLTJpsi2Mu_L2_size=0;
     HLTJpsi2Mu_L3_size=0;
-    HLTUpsilon2Mu_L2_size=0;
+    // HLTUpsilon2Mu_L2_size=0;
     HLTUpsilon2Mu_L3_size=0;
 
     Handle<TriggerEvent> trgEvent;
