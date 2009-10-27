@@ -1036,7 +1036,7 @@ computeBarrelCoefficients(const char* calibFile) {
 	NTuple* ntuple = new NTuple(TT);
 	unsigned nEntries = TT->GetEntriesFast();
 
-	if (!isEndcaps) {
+	//if (!isEndcaps) {
 		double rmsMaxE0 = 300.;
 		for (double te0 = 0.; te0 < 10; te0 = te0 + 0.1) {
 			double rmsCoeff = findABC(fits, te0, threshE, threshH);
@@ -1070,7 +1070,7 @@ computeBarrelCoefficients(const char* calibFile) {
 				break;
 			}
 		}
-	}
+	//}
 
 	cout << "the thresholds are " << threshE0 << ", " << threshE << " and " << threshH << endl;
 	findABC(fits, threshE0, threshE, threshH);
@@ -1163,7 +1163,7 @@ computeBarrelCoefficients(const char* calibFile) {
 	//fa->SetParameters(1.15,0.2,-0.8,100,1.0,70); // 3.0
 	//fa->SetParameters(1.4, 1.24, -1.44, 67.5, -770.5, 162); //noExcesses testbeam endcap
 	gra->Fit("fa", "", "", 2, 301);
-	//gra->Fit("fa", "W", "", 2, 301);
+	gra->Fit("fa", "W", "", 2, 301);
 
 	TF1* fb = new TF1("fb", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
 	fb->SetParameters(1.2, 0.3, 2, 50, 1.5, 10); // 0.0
@@ -1794,9 +1794,9 @@ void tbCalib() {
 	//computeBarrelCoefficients("../../PFClusterTools/test/TBPions_endcap_noExcesses_manyCands.csv");
 
 	isEndcaps = true;
-	threshE = 1.5;
-	threshH = 0.6;
-	computeBarrelCoefficients("../../PFClusterTools/test/FullPions_endcap_noExcesses.csv");
+//	threshE = 1.5;
+//	threshH = 0.6;
+	computeBarrelCoefficients("../../PFClusterTools/test/TBPions_endcap_tbCalib_manyCands.csv");
 
 //	isEndcaps = true;
 //	threshE = 0.9;

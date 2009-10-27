@@ -8,6 +8,12 @@ options.register ('beamEnergy',
                   options.varType.float, # string, int, or float
                   "Beam energy to simulate")
 
+options.register('specificInputs',
+                 '',
+                 options.multiplicity.list,
+                 options.varType.string,
+                 "Specific file as input source?")
+
 options.register ('kevents',
                   0, # default value
                   options.multiplicity.singleton, # singleton or list
@@ -50,6 +56,12 @@ options.register('zeroT',
 		options.varType.int,
 		"No magnetic field?")
 
+options.register('batchMode',
+        1,
+        options.multiplicity.singleton,
+        options.varType.int,
+        "Batch mode?")
+
 options.register('randSeed',
                 0,
                 options.multiplicity.singleton,
@@ -83,6 +95,8 @@ options.notracks = 0
 options.copyToTmp = 0
 options.endcapMode = 0
 options.outputCollections = 1
+options.batchMode = 1
+options.specificInputs = ''
 
 # get and parse the command line arguments
 options.parseArguments()
@@ -125,6 +139,8 @@ fileLabel = fileLabel + ".root"
 
 
 print ("cmsRun options:")
+if options.specificInputs <> '' :
+    print "Files specified as sources."
 print "Min beam energy: " + str(options.minBeamEnergy)
 print "Beam energy: " + str(options.beamEnergy)
 print "kevents: " + str(options.kevents)
@@ -134,6 +150,8 @@ print "noZspSr?: " + str(options.noZspSr)
 print "fileSuffix: " + options.fileSuffix
 print "fileLabel: " + fileLabel
 print "logLabel: " + logLabel
+
+print "Batch mode?:" + str(options.batchMode)
 
 print "outputCollections?: " + str(options.outputCollections) 
 

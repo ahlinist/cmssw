@@ -5,6 +5,10 @@ import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
 from RecoParticleFlow.PFAnalyses.pflowFaketracks_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowProcessTestbeam_cfi import *
 from RecoParticleFlow.PFAnalyses.pflowParticleFiltration_cfi import *
+#Need to override clustering to exclude HF components
+
+from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
+pfClusteringHCALTB = cms.Sequence(particleFlowRecHitHCAL * particleFlowClusterHCAL)
 
 TFileService = cms.Service("TFileService",
     fileName=cms.string("PFlowTB_Tree.root")
@@ -19,14 +23,22 @@ finishup = cms.OutputModule("PoolOutputModule",
     ) 
 )
 
-#Cleaning and tracks only
+cleanDump = cms.OutputModule("PoolOutputModule",
+    fileName=cms.untracked.string("CleanTB_Events.root"),
+    outputCommands=cms.untracked.vstring('keep *'),
+    SelectEvents=cms.untracked.PSet(
+                SelectEvents=cms.vstring('p1')
+    ) 
+)
+
+#Cleaning only
 pflowCleaning = cms.Sequence(particleFiltration)
 
 #Clustering only
-pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCAL)
+pflowClusteringTestbeam = cms.Sequence(pfClusteringECAL * pfClusteringHCALTB)
 
 #Tracking, clustering, pflow - no cleaning
-pflowNoCleaning = cms.Sequence(faketracks * pfClusteringECAL * pfClusteringHCAL * particleFlowBlock * particleFlow)
+pflowNoCleaning = cms.Sequence(faketracks * pfClusteringECAL * pfClusteringHCALTB * particleFlowBlock * particleFlow)
 
 extraction = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.TestbeamDelegate
@@ -39,31 +51,29 @@ pflowCalibEcalRechits = cms.EDProducer("EcalCalibRechitProducer",
 )
 
 
-pflowEndcapRechitMaker=cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits)
+pflowEndcapRechitMaker = cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits)
 
-#The works for the endcap.
-pflowProcessEndcapTestbeam = cms.Sequence(particleFiltration * 
-                                    faketracks * 
-                                    pflowCalibEcalRechits *
+
+pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks * 
                                     pfClusteringECAL * 
-                                    pfClusteringHCAL * 
+                                    pfClusteringHCALTB * 
                                     particleFlowBlock * 
                                     particleFlow * 
                                     extraction)
 
-pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks *
+pfAlgoAndExtractionTestbeamEndcaps = cms.Sequence(faketracks * 
+                                    pflowCalibEcalRechits *
                                     pfClusteringECAL * 
-                                    pfClusteringHCAL * 
+                                    pfClusteringHCALTB * 
                                     particleFlowBlock * 
                                     particleFlow * 
                                     extraction)
 
 #The works.
 pflowProcessTestbeam = cms.Sequence(particleFiltration * 
-                                    faketracks * 
-                                    pfClusteringECAL * 
-                                    pfClusteringHCAL * 
-                                    particleFlowBlock * 
-                                    particleFlow * 
-                                    extraction)
+                                    pfAlgoAndExtractionTestbeam)
+
+#The works for the endcap.
+pflowProcessEndcapTestbeam = cms.Sequence(particleFiltration * 
+                                   pfAlgoAndExtractionTestbeamEndcaps)
 
