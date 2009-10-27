@@ -90,6 +90,8 @@ void TemplateHistProducer::readJobEntry(const edm::ParameterSet& cfg)
     cfgError_ = 1;
   }
   
+  jobEntry.sumWeights_ = ( cfg.exists("sumWeights") ) ? cfg.getParameter<bool>("sumWeights") : true;
+
   //std::cout << " dqmDirectory_store = " << jobEntry.dqmDirectory_store_ << std::endl;
   //std::cout << " meName = " << jobEntry.meName_ << std::endl;
 
@@ -133,6 +135,8 @@ void TemplateHistProducer::endJob()
     } else {
       jobEntry->me_ = dqmStore.book1D(jobEntry->meName_, jobEntry->meName_, jobEntry->numBinsX_, jobEntry->xMin_, jobEntry->xMax_);
     }
+
+    if ( jobEntry->sumWeights_ ) jobEntry->me_->getTH1()->Sumw2();
   }
 
 //--- create chain of all ROOT files 

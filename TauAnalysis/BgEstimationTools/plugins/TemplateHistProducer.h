@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.4 $
+ * \version $Revision: 1.5 $
  *
- * $Id: TemplateHistProducer.h,v 1.4 2009/08/12 14:34:53 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.5 2009/08/28 13:23:20 veelken Exp $
  *
  */
 
@@ -55,6 +55,8 @@ class TemplateHistProducer : public edm::EDAnalyzer
     double xMin_;
     double xMax_;
     vdouble xBins_;
+
+    bool sumWeights_;
   };
 
  public:
