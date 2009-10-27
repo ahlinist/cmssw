@@ -89,7 +89,6 @@ class GctValidation : public edm::EDAnalyzer
 		DQMStore * dbe_;
 
 		bool verbose_;
-		std::string hOutputFileName;
 		std::string outputFile_;
 
 		// Gct stuff
@@ -146,12 +145,11 @@ class GctValidation : public edm::EDAnalyzer
 GctValidation::GctValidation(const edm::ParameterSet& iConfig)
 {
 	verbose_        = iConfig.getUntrackedParameter<bool>("verbose", false);
-	hOutputFileName = iConfig.getUntrackedParameter<std::string>("outputFile");
+	outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile", "");
 	rctEmTag        = iConfig.getParameter<edm::InputTag>("rctEmTag"); 
 	gctIsoEmTag     = iConfig.getParameter<edm::InputTag>("gctIsoEmTag");
 	gctNonIsoEmTag  = iConfig.getParameter<edm::InputTag>("gctNonIsoEmTag");
 
-	outputFile_ = iConfig.getUntrackedParameter<std::string>("outputFile", "");
 
 	if(outputFile_.size() != 0)
 	{
@@ -178,7 +176,6 @@ GctValidation::GctValidation(const edm::ParameterSet& iConfig)
 	}
 	
 	dbe_->setCurrentFolder("L1Trigger/GCTVal");
-	
 
 }
 
@@ -293,7 +290,12 @@ void GctValidation::beginJob()
 
 void GctValidation::endJob()
 {
+	if(outputFile_.size() != 0 && dbe_)
+	{
+		dbe_->save(outputFile_);
+	}
 	
+	return;
 }
 
 std::vector<L1GctEmCand> GctValidation::SelectGctEm(edm::Handle<std::vector<L1GctEmCand> > tempGctEm)
