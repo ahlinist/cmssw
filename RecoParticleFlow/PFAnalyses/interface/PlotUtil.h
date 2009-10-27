@@ -7,6 +7,7 @@
 #include <string>
 #include <TColor.h>
 #include <TH1.h>
+#include <TH2.h>
 #include <TStyle.h>
 #include <utility>
 #include <THStack.h>
@@ -16,8 +17,8 @@
 #include <TMultiGraph.h>
 #include <TFile.h>
 #include <TText.h>
+#include <TCanvas.h>
 #include <exception>
-
 
 #include "RecoParticleFlow/PFAnalyses/interface/PlotSpecial.h"
 
@@ -38,6 +39,8 @@ public:
 
 	TStyle* makeStyle(const std::string& name);
 
+	TStyle* makeSquashedStyle(const std::string& name);
+
 	/**
 	 * Get a histogram pointer
 	 * @param name in ROOT namespace to find
@@ -45,17 +48,16 @@ public:
 	 */
 	TH1* getHisto(const std::string& name);
 
-	TH1* printHisto(const std::string& name, const std::string& title,
-			const std::string& xtitle, Color_t line, Color_t fill,
-			int thickness = 1) throw(std::exception);
+	template <typename T> T* getType(const std::string& name);
 
-	TH1* formatHisto(const std::string& name, const std::string& title,
-			const std::string& xtitle, Color_t line, Color_t fill,
-			int thickness = 1) throw(std::exception);
+	TH1* printHisto(const std::string& name, const std::string& title, const std::string& xtitle, Color_t line,
+			Color_t fill, int thickness = 1) throw(std::exception);
 
-	void formatGraph(TGraph* graph, const std::string& title,
-			const std::string& xtitle, const std::string ytitle, Color_t line,
-			int size = 1.5, int thickness = 1);
+	TH1* formatHisto(const std::string& name, const std::string& title, const std::string& xtitle, Color_t line,
+			Color_t fill, int thickness = 1) throw(std::exception);
+
+	void formatGraph(TGraph* graph, const std::string& title, const std::string& xtitle, const std::string ytitle,
+			Color_t line, int size = 1.5, int thickness = 1);
 
 	void addTitle(const std::string& title);
 
@@ -64,13 +66,13 @@ public:
 		flushCount_ = count;
 	}
 
-	void flushPage();
+	void flushPage(bool squashedTogether = false);
 
 	void newPage();
 
 	void accumulateObjects(TObject* o, std::string options = "");
 
-	void flushAccumulatedObjects(std::string filename);
+	void flushAccumulatedObjects(std::string filename, bool squashedTogether = false);
 
 	unsigned numberAccumulated() {
 		return accumulatedObjects_.size();
@@ -80,8 +82,7 @@ public:
 		edgeSize_ = edgeSize;
 	}
 
-	void accumulateSpecial(TObject* o, TStyle* s, std::string drawOptions,
-			std::string preferredName);
+	void accumulateSpecial(TObject* o, TStyle* s, std::string drawOptions, std::string preferredName);
 
 	void accumulateTable(JGraph q, std::string title);
 
@@ -103,7 +104,13 @@ public:
 		return colors_;
 	}
 
-	std::pair<double, double> fitStabilisedGaussian(TH1* histo);
+	std::pair<double, double> fitStabilisedGaussian(TH1* histo, double lowRange = 0.0, double highRange = 0.0);
+
+	//Loops over histogram and writes out literal entries of the form
+	//<Bin center>	|	<Content>
+	bool streamTH1ToGraphFile(std::string filename, TH1* histo, bool recreate = true);
+
+	bool streamTH2ToGraphFile(std::string filename, TH2* histo, bool recreate = true);
 
 	//void closeFiles();
 private:
@@ -125,6 +132,14 @@ private:
 	unsigned flushCount_;
 	unsigned edgeSize_;
 
+	unsigned pageCount_;
+	TCanvas* workPad_;
+
 };
+
+template <typename T> T* PlotUtil::getType(const std::string& name) {
+	T* o = (T*) gDirectory->FindObjectAny(name.c_str());
+	return o;
+}
 
 #endif /*PLOTUTIL_H_*/
