@@ -69,15 +69,16 @@ analyzeZtoElecTauEvents = cms.EDAnalyzer("GenericAnalyzer",
   
     analyzers = cms.VPSet(
         genPhaseSpaceEventInfoHistManager,
+        eventWeightHistManager,
         electronHistManager,
         tauHistManager,
         diTauCandidateHistManagerForElecTau,
         diTauCandidateZeeHypothesisHistManagerForElecTau,
         jetHistManager,
         metHistManager,
+        particleMultiplicityHistManager,
         vertexHistManager,
-        triggerHistManagerForElecTau,
-        eventWeightHistManager
+        triggerHistManagerForElecTau
     ),
 
     eventDumps = cms.VPSet(
