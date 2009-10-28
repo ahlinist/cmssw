@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 bgEstFakeRateJetWeights = cms.EDProducer("FakeRateJetWeightProducer",
+    method = cms.string("CDF"), # "simple"/"CDF"                                     
     allTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
     preselTauJetSource = cms.InputTag('shrinkingConePFTauProducer'),
     dRmatch = cms.double(0.3),                                         
