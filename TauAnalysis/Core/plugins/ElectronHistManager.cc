@@ -141,6 +141,8 @@ void ElectronHistManager::bookHistogramsImp()
   
   hElectronSuperclEnOverTrackMomBarrel_ = book1D("ElectronSuperclEnOverTrackMomBarrel", "Electron (Barrel) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
   hElectronSuperclEnOverTrackMomEndcap_ = book1D("ElectronSuperclEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Supercluster}}{P_{Track}}", 50, 0., 5.);
+  hElectronSeedClEnOverTrackMomBarrel_ = book1D("ElectronSeedClEnOverTrackMomBarrel", "Electron (Barrel) #frac{E_{Seed-Cluster}}{P_{Track}}", 50, 0., 5.);
+  hElectronSeedClEnOverTrackMomEndcap_ = book1D("ElectronSeedClEnOverTrackMomEndcap", "Electron (Endcap) #frac{E_{Seed-Cluster}}{P_{Track}}", 50, 0., 5.);
   hElectronHadEnOverEmEn_ = book1D("ElectronHadEnOverEmEn", "Electron #frac{E_{had}}{E_{em}}", 102, -0.01, 1.01);
   hElectronSuperclShapeSigmaEtaEta_ = book1D("ElectronSuperclShapeSigmaEtaEta", "Electron #sigma_{#eta#eta}^{Supercluster}", 102, -0.001, 0.101);
   hElectronDeltaPhiSuperclToExtrapolTrack_ = book1D("ElectronDeltaPhiSuperclToExtrapolTrack", "Electron #Delta#phi_{in}", 22, -0.001, 0.021);
