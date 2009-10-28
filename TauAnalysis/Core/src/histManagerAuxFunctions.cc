@@ -10,7 +10,7 @@ void bookWeightHistograms(DQMStore& dqmStore, const char* name, const char* titl
   std::string hTitle_posUnweighted = std::string("log10(|").append(title).append("|), ").append(title).append("#geq 0 (unweighted)");
   h_posUnweighted = dqmStore.book1D(hName_posUnweighted.data(), hTitle_posUnweighted.data(), 74, -6.2, 1.2);
 
-  std::string hName_posWeighted = std::string(name).append("PosUnweighted");
+  std::string hName_posWeighted = std::string(name).append("PosWeighted");
   std::string hTitle_posWeighted = std::string("log10(|").append(title).append("|), ").append(title).append("#geq 0 (weighted)");
   h_posWeighted = dqmStore.book1D(hName_posWeighted.data(), hTitle_posWeighted.data(), 74, -6.2, 1.2);
 
