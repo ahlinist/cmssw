@@ -53,9 +53,10 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 
 
       virtual void analyze(  edm::Event const&,   edm::EventSetup const& );
-      virtual void beginJob(edm::EventSetup const&);
+      virtual void beginJob();
+      virtual void beginRun(edm::EventSetup const&);
       virtual void endJob();
-	  double timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id);
+      double timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id);
  private:
       
       std::string rootfile_;

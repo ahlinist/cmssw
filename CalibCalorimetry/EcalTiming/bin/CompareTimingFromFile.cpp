@@ -19,11 +19,14 @@ int main(int argc,  char * argv[]){
   cout<<"Please make sure that the peak time is expected in SAMPLE units"<<endl;
   cout<<"This program will run using the relative timing"<<endl;
 
-  int fromSL = 0;
+  int fromSL1 = 0;
+  int fromSL2 = 0;
   if (argc > 4) { 
-     fromSL = atoi(argv[4]); 
+     fromSL1 = atoi(argv[4]); 
   }
-  
+  if (argc > 5) { 
+     fromSL2 = atoi(argv[5]); 
+  }  
 
   char Buffer[5000];
   int SMn =0;
@@ -43,15 +46,11 @@ int main(int argc,  char * argv[]){
     TxtFile1.getline(Buffer,5000);
     if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
        {
-	   sscanf(Buffer,"%d %f %f %f %f",&TTnum,&shift,&rms,&rel_shift,&rel_rms);
-	   //cout<<"TT: "<<TTnum<<endl;
-	   if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
-	   if(rel_shift <= -10){cout<<" shift <= 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	   if(rel_rms < 0){ cout<<" rms < 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	   HowManyShifts++;
-	   float move = (0. - rel_shift)*25.;
-	   Shift1[TTnum] = move;
-	   if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }   
+             if (fromSL1) sscanf(Buffer,"%d %d %d",&SLSMn,&TTnum,&SLshift);
+             else sscanf(Buffer," %d %d",&TTnum,&SLshift);
+              if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
+	         HowManyShifts++;
+              Shift1[TTnum]=-SLshift;//
     }
   }//end of file
   TxtFile1.close();
@@ -66,20 +65,16 @@ int main(int argc,  char * argv[]){
     TxtFile2.getline(Buffer,5000);
     if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
        {
-	   sscanf(Buffer,"%d %f %f %f %f",&TTnum,&shift,&rms,&rel_shift,&rel_rms);
-	   //cout<<"TT: "<<TTnum<<endl;
-	   if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
-	   if(rel_shift <= -10){cout<<" shift <= 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	   if(rel_rms < 0){ cout<<" rms < 0! in TT: "<<TTnum<<" skipped"<<endl;continue;}
-	   HowManyShifts++;
-	   float move = (0. - rel_shift)*25.;
-	   Shift2[TTnum] = move;
-	   if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }   
-    }
+             if (fromSL2) sscanf(Buffer,"%d %d %d",&SLSMn,&TTnum,&SLshift);
+             else sscanf(Buffer," %d %d",&TTnum,&SLshift);
+              if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
+	         HowManyShifts++;
+              Shift2[TTnum]=-SLshift;//
+      }
   }//end of file
   TxtFile2.close();
   cout<<"Found "<<HowManyShifts<<" tt timing while reading the file "<<argv[1]<<" (should be up to 68)"<<endl;
-  
+  /*
   if (fromSL){
      HowManyShifts = 0;
      ifstream AveFile1(argv[5]);
@@ -127,6 +122,7 @@ int main(int argc,  char * argv[]){
      AveFile2.close();
      cout<<"Found "<<HowManyShifts<<" SM's while reading the file "<<argv[6]<<" (should be up to 54)"<<endl;
    }
+
   //Perform the average over the SM's
   double average1 = 0.0;
   double number1 = 0.0;
@@ -142,11 +138,16 @@ int main(int argc,  char * argv[]){
   if (number2 > 0.0) average2 /= number2;
   std::cout << " Average of 1 " << average1 << std::endl;
   std::cout << " Average of 2 " << average2 << std::endl;
+*/
   TH1F *diffHist = new TH1F("DifferenceHist","DifferenceHist",500,-25.,25.);
   
   // calculate the differences between the two files
   for(int i=1;i<69;i++){
-    if(Shift1[i]>-1000. && Shift2[i] > -1000.){diffHist->Fill(Shift2[i]-Shift1[i]-average1 + average2);}
+    if(Shift1[i]>-1000. && Shift2[i] > -1000.){
+            int diff = Shift2[i]-Shift1[i];
+            diffHist->Fill(diff);
+            if ( diff < -5 || diff > 5 ) std::cout << "NONONO TT " << i << " is more than 5 ns off: " << diff << std::endl;
+            }
   }
   
   string rootFileName = argv[3]; 

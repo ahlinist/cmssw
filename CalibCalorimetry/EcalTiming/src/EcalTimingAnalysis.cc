@@ -96,10 +96,20 @@ EcalTimingAnalysis::~EcalTimingAnalysis()
   // (e.g. close files, deallocate resources etc.)
 
 }
+//========================================================================
+void
+EcalTimingAnalysis::beginRun(edm::EventSetup const& eventSetup ) {
+//========================================================================
+   edm::ESHandle< EcalElectronicsMapping > handle;
+   eventSetup.get< EcalMappingRcd >().get(handle);
+   ecalElectronicsMap_ = handle.product();
+}
+//========================================================================
+
 
 //========================================================================
 void
-EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
+EcalTimingAnalysis::beginJob( ) {
 //========================================================================
   char profName[150];char profTit[150];
  
@@ -238,10 +248,7 @@ EcalTimingAnalysis::beginJob(edm::EventSetup const& eventSetup ) {
   fullAmpProfileEB_  = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEB"))  : (new TProfile2D("fullAmpProfileEB", " Average Amplitude EB ;i#phi;i#eta",360,1.,361.,171,-85.,86.,0.0,50000.));
   fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
   fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
-  
-   edm::ESHandle< EcalElectronicsMapping > handle;
-   eventSetup.get< EcalMappingRcd >().get(handle);
-   ecalElectronicsMap_ = handle.product();
+ 
 
 
 }
