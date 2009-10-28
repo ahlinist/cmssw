@@ -24,11 +24,14 @@ diTauCandidateZmumuHypothesisHistManagerForElecMu.pluginType = cms.string('ZllHy
 diTauCandidateZmumuHypothesisHistManagerForElecMu.ZllHypothesisSource = cms.InputTag('elecMuPairZmumuHypotheses')
 diTauCandidateZmumuHypothesisHistManagerForElecMu.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
-# import config for missing-Et histogram manager
-from TauAnalysis.Core.metHistManager_cfi import *
-
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
+
+# import config for missing-Et histogram managers
+from TauAnalysis.Core.metHistManager_cfi import *
+
+# import config for particle multiplicity histogram manager
+from TauAnalysis.Core.particleMultiplicityHistManager_cfi import *
 
 # import config for primary event vertex histogram manager
 from TauAnalysis.Core.vertexHistManager_cfi import *
@@ -54,6 +57,7 @@ triggerHistManagerForElecMu.l1Bits = cms.vstring(
     'L1_SingleMu10',
     'L1_SingleMu14'
 )
+
 triggerHistManagerForElecMu.hltPaths = cms.vstring(
     'HLT_Ele15_LW_L1R',
     'HLT_IsoMu3',
@@ -729,10 +733,11 @@ elecMuAnalysisSequence = cms.VPSet(
             'muonHistManager',
             'diTauCandidateHistManagerForElecMu',
             'diTauCandidateZmumuHypothesisHistManagerForElecMu',
+            'jetHistManager',
             'metHistManager',
+            'particleMultiplicityHistManager',
             'vertexHistManager',
-            'triggerHistManagerForElecMu',
-            'jetHistManager'
+            'triggerHistManagerForElecMu'
         ),
         replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
                               'electronHistManager.electronSource = selectedLayer1ElectronsTrkIPcumulative',
