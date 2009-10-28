@@ -45,27 +45,32 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
 
     double tauJetIdEff = 1.;
     double qcdJetFakeRate = 1.;
-
+    
     bool tauJetDiscr_passed = true;
-
+    
     getTauJetProperties(evt, tauJetRef, iTauJet, preselTauJets, tauJetIdEff, qcdJetFakeRate, tauJetDiscr_passed);
-
+    
     double fakeRateJetWeight = 0.;
-    if ( tauJetIdEff > qcdJetFakeRate ) {
-      fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
-	-qcdJetFakeRate*(1 - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
+    
+    if ( method_ == "simple" ) {
+      fakeRateJetWeight = qcdJetFakeRate;
+    } else if ( method_ == "CDF" ) {
+      if ( tauJetIdEff > qcdJetFakeRate ) {
+	fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
+	  -qcdJetFakeRate*(1 - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
+      }
     }
 
     //std::cout << " --> jet weight = " << fakeRateJetWeight << std::endl;
-
+      
     fakeRateJetWeights.push_back(pat::LookupTableRecord(fakeRateJetWeight));
   }
-
+    
   std::auto_ptr<LookupTableMap> fakeRateJetWeightMap(new LookupTableMap());
   LookupTableMap::Filler valueMapFiller(*fakeRateJetWeightMap);
   valueMapFiller.insert(allTauJets, fakeRateJetWeights.begin(), fakeRateJetWeights.end());
   valueMapFiller.fill();
-
+  
   evt.put(fakeRateJetWeightMap);
 }
 
