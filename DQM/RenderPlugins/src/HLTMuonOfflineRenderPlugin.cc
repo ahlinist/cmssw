@@ -5,8 +5,11 @@
   \\
 
 
-  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.1 2009/10/14 11:17:53 slaunwhj Exp $
+  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.3 2009/10/27 17:50:52 slaunwhj Exp $
   $Log: HLTMuonOfflineRenderPlugin.cc,v $
+  Revision 1.3  2009/10/27 17:50:52  slaunwhj
+  Changed class name to resolve conflict with HLTRenderPlugin
+
   Revision 1.1  2009/10/14 11:17:53  slaunwhj
   RenderPlugin for HLT Muon offline DQM plots
 
@@ -37,6 +40,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TPRegexp.h"
 #include <cassert>
 
 class HLTMuonOfflineRenderPlugin : public DQMRenderPlugin
@@ -98,38 +102,54 @@ private:
       gStyle->SetOptStat(10);
       
       // FourVector eff histograms
-      if ( o.name.find("recEff") != std::string::npos)
+
+      // If the plot is contained directly inside a folder called HLT_*,
+      // then it is a RelVal plot, otherwise, it's in an offline plot
+      // contained in a subfolder.
+      TPRegexp relvalPathPattern("HLT/Muon/.*/HLT_[^/]*/[^/]*$");
+      bool isRelValPlot = TString(o.name).Contains(relvalPathPattern);
+
+      if (isRelValPlot) 
       {
+
+        if (o.name.find("Eff")    != std::string::npos ||
+            o.name.find("TurnOn") != std::string::npos)
+          {
         
-        obj->SetMinimum(0);
-        obj->SetMaximum(1.0);
-        obj->GetYaxis()->SetTitle("_Eff_");
+            obj->SetMinimum(0);
+            obj->SetMaximum(1.0);
+
+          }
+
+        if (o.name.find("PassMaxPt") != std::string::npos ||
+            o.name.find("TurnOn")    != std::string::npos)
+          {
+          
+            gPad->SetLogx();
+            obj->GetXaxis()->SetRangeUser(2., 300.);
+          
+          }
 
       }
 
-      if ( o.name.find("genEff") != std::string::npos)
+      else
       {
+        if (o.name.find("recEff") != std::string::npos)
+          {
         
-        obj->SetMinimum(0);
-        obj->SetMaximum(1.0);
+            obj->SetMinimum(0);
+            obj->SetMaximum(1.0);
+            obj->GetYaxis()->SetTitle("_Eff_");
 
+          }
+
+        if (o.name.find("recPassPt") != std::string::npos)
+          {
+          
+            gPad->SetLogy();
+          
+          }
       }
-
-      if (o.name.find("PassPt") != std::string::npos)
-        {
-          
-          gPad->SetLogy();
-          
-        }
-
-      if (o.name.find("genTurnOn") != std::string::npos)
-        {
-          
-          gPad->SetLogy();
-          obj->SetMinimum(0);
-          obj->SetMaximum(1.0);
-          
-        }
 
     }
 
