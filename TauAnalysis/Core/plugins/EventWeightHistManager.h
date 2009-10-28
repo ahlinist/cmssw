@@ -14,7 +14,7 @@
 class EventWeightHistManager : public HistManagerBase 
 {
  public:
-    explicit EventWeightHistManager(const edm::ParameterSet&);
+  explicit EventWeightHistManager(const edm::ParameterSet&);
   ~EventWeightHistManager();
   
  private: 
