@@ -102,8 +102,13 @@ void fit_usingTFractionFitter(const TString& inputFileName,
     canvas->SetBorderSize(2);
 
     TH1* me_smSum = (TH1*)fit->GetPlot();
-    me_Data->Draw("Ep");
-    me_smSum->Draw("same");
+    me_smSum->SetLineWidth(2);
+    me_smSum->SetLineColor(2);
+    me_smSum->Draw("hist");
+
+    me_Data->SetLineWidth(2);
+    me_Data->SetMarkerStyle(20);
+    me_Data->Draw("Epsame");
 
     canvas->Update();
     canvas->Print(outputFileName);
