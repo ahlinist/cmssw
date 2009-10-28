@@ -30,7 +30,6 @@ from TauAnalysis.Core.jetHistManager_cfi import *
 # import config for missing-Et histogram managers
 from TauAnalysis.Core.metHistManager_cfi import *
 
-<<<<<<< analyzeZtoElecTau_cfi.py
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
 
