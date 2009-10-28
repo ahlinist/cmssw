@@ -188,8 +188,6 @@ process.plotBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMHistPlotter",
 )
 #--------------------------------------------------------------------------------
 
-#--- need to update factorization to work with "tauFakeRate" prefix
-
 # import utility function to enable factorization
 from TauAnalysis.Configuration.factorizationTools import enableFactorization_makeZtoMuTauPlots
 enableFactorization_makeZtoMuTauPlots(process,
@@ -200,13 +198,31 @@ enableFactorization_makeZtoMuTauPlots(process,
     seqName_addZtoMuTau_qcdSum = "addBgEstFakeRateZtoMuTau_qcdSum_tauFakeRate",
     seqName_addZtoMuTau = "addBgEstFakeRateZtoMuTau_tauFakeRate")
 
-process.dumpZtoMuTau = cms.EDAnalyzer("DQMStoreDump")
+#process.dumpZtoMuTau = cms.EDAnalyzer("DQMStoreDump")
+
+process.dumpZtoMuTau = cms.EDAnalyzer("DQMDumpFilterStatisticsTables",
+    dqmDirectories = cms.PSet(
+        Ztautau = cms.string('tauFakeRate/harvested/Ztautau/zMuTauAnalyzer/FilterStatistics'),
+        Zmumu = cms.string('tauFakeRate/harvested/Zmumu/zMuTauAnalyzer/FilterStatistics/'),
+        #ZtautauPlusJets = cms.string('tauFakeRate/harvested/ZtautauPlusJets/zMuTauAnalyzer/FilterStatistics'),
+        #ZmumuPlusJets = cms.string('tauFakeRate/harvested/ZmumuPlusJets/zMuTauAnalyzer/FilterStatistics/'),
+        WplusJets = cms.string('tauFakeRate/harvested/WplusJets/zMuTauAnalyzer/FilterStatistics/'),
+        QCD = cms.string('tauFakeRate/harvested/qcdSum/zMuTauAnalyzer/FilterStatistics/'),
+        TTplusJets = cms.string('tauFakeRate/harvested/TTplusJets/zMuTauAnalyzer/FilterStatistics')
+    ),
+    columnsSummaryTable = cms.vstring("Passed", "cumul. Efficiency", "margin. Efficiency", "indiv. Efficiency")
+)
+ 
+process.saveBgEstFakeRateZtoMuTau = cms.EDAnalyzer("DQMSimpleFileSaver",
+    outputFileName = cms.string('plotsZtoMuTau_bgEstFakeRate.root')
+)
 
 process.makeBgEstFakeRateZtoMuTauPlots = cms.Sequence(
     process.loadBgEstFakeRateZtoMuTau_tauIdDiscr
    + process.loadBgEstFakeRateZtoMuTau_tauFakeRate
    + process.addBgEstFakeRateZtoMuTau_tauFakeRate
    + process.dumpZtoMuTau
+   + process.saveBgEstFakeRateZtoMuTau
    + process.plotBgEstFakeRateZtoMuTau
 )
 
