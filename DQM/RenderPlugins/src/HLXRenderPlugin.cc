@@ -197,23 +197,30 @@ private:
 
       if( o.name.find("HistInstantLumi") != std::string::npos || o.name.find("HistIntegratedLumi") != std::string::npos  )
       {
-        obj->SetMarkerStyle(kFullCircle);
-        obj->SetMarkerSize(0.8);
-        obj->SetLineColor(kBlack);
-        // Loop over the bins and find the first empty one
-        int firstEmptyBin = obj->GetNbinsX();
-        for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
-        {
-          if( obj->GetBinContent(iBin) == 0 )
-          {
-            firstEmptyBin = iBin;
-            break;
-          }
-        }
-        if( firstEmptyBin < 2 ) firstEmptyBin = 2;
-        // Now set the new range
-        obj->GetXaxis()->SetRange(0,firstEmptyBin-1);
-        obj->SetOption("e0");
+	 if( o.name.find("Error") == std::string::npos ){
+	    obj->SetMarkerStyle(kFullCircle);
+	    obj->SetMarkerSize(0.8);
+	    obj->SetLineColor(kBlack);
+	    obj->SetOption("e0");
+	 } else {
+	    obj->SetMarkerStyle(21);
+	    obj->SetMarkerColor(kRed);
+	    obj->SetMarkerSize(1.2);
+	    obj->SetOption("p");
+	 }
+	 // Loop over the bins and find the first empty one
+	 int firstEmptyBin = obj->GetNbinsX();
+	 for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
+	 {
+	    if( obj->GetBinContent(iBin) == 0 )
+	    {
+	       firstEmptyBin = iBin;
+	       break;
+	    }
+	 }
+	 if( firstEmptyBin < 2 ) firstEmptyBin = 2;
+	 // Now set the new range
+	 obj->GetXaxis()->SetRange(0,firstEmptyBin-1);
       }
     }
 
@@ -257,8 +264,13 @@ private:
         obj->SetMinimum(-.001);
         obj->SetMaximum(1.02);
 
+        gStyle->SetPaintTextFormat("5.4g");
         dqm::utils::reportSummaryMapPalette(obj);
-        obj->SetOption("colztext");
+        obj->SetMarkerSize(3);
+        obj->GetYaxis()->SetLabelSize(0.07);
+        obj->GetXaxis()->SetTitleSize(0.05);
+        obj->GetXaxis()->SetTitleOffset(0.8);
+        obj->SetOption("colztext90");
       }
       //    //gStyle->SetPalette(1);
     }
