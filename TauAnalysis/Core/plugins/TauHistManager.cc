@@ -377,15 +377,6 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead(), weight);
     hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead(), weight);
 
-    hTauDiscriminatorAgainstElectrons_->Fill(patTau->tauID("againstElectron"), weight);
-    hTauEmFraction_->Fill(patTau->emFraction(), weight);
-    hTauHcalTotOverPLead_->Fill(patTau->hcalTotOverPLead(), weight);
-    hTauHcalMaxOverPLead_->Fill(patTau->hcalMaxOverPLead(), weight);
-    hTauHcal3x3OverPLead_->Fill(patTau->hcal3x3OverPLead(), weight);
-    hTauEcalStripSumEOverPLead_->Fill(patTau->ecalStripSumEOverPLead(), weight);
-    hTauBremsRecoveryEOverPLead_->Fill(patTau->bremsRecoveryEOverPLead(), weight);
-    hTauCaloEOverPLead_->Fill(patTau->ecalStripSumEOverPLead() + patTau->hcalTotOverPLead(), weight);
-
     hTauDiscriminatorAgainstMuons_->Fill(patTau->tauID("againstMuon"), weight);
   
     int tauDecayMode = patTau->decayMode();
