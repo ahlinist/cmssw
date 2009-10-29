@@ -55,5 +55,37 @@
    comp.Draw("phi", mode);
    SavePlot("tau_phi", outdir.c_str() );
    comp.SetAxis(5);
+
+   comp.SetAxis(1, 0,450);
+   TCanvas c3("c3", "energy benchmark");
+   FormatPad( &c3, false );
+   comp.Draw("energy", mode);
+   SavePlot("tau_energy", outdir.c_str() );
+   comp.SetAxis(5);
+
+
+   comp.SetAxis(1, 0,500);
+   TCanvas c3("c3", "PF Pt of Highest Pt charged particle within the tau-jet benchmark");
+   FormatPad( &c3, false );
+   comp.Draw("PF Pt of Highest Pt charged particle within the tau-jet", mode);
+   SavePlot("PF_Pt_of_Highest_Pt_charged_particle_within_the_tau-jet", outdir.c_str() );
+   comp.SetAxis(5);
+
+
+   comp.SetAxis(1, 0,500);
+   TCanvas c3("c3", "PF Pt of the highest Pt photon within the tau-jet");
+   FormatPad( &c3, false );
+   comp.Draw("PF Pt of the highest Pt photon within the tau-jet", mode);
+   SavePlot("PF_Pt_of_the_highest_Pt_photon_within_the_tau-jet", outdir.c_str() );
+   comp.SetAxis(5);
+
+   comp.SetAxis(1, 0,500);
+   TCanvas c3("c3", "PF Pt of the highest Pt particle (of any type) within the tau-jet");
+   FormatPad( &c3, false );
+   comp.Draw("PF Pt of the highest Pt particle (of any type) within the tau-jet", mode);
+   SavePlot("PF_Pt_of_the_highest_Pt_particle_of_any_type_within_the_tau-jet", outdir.c_str() );
+   comp.SetAxis(5);
+
+
   
 }
