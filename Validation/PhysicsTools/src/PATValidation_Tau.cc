@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Tau.cc,v 1.4 2009/07/13 17:54:11 malik Exp $
+// $Id: PATValidation_Tau.cc,v 1.5 2009/07/17 20:26:03 malik Exp $
 //
 //
 
@@ -37,7 +37,8 @@
 #include "FWCore/ParameterSet/interface/InputTag.h"
 
 #include "DataFormats/PatCandidates/interface/Tau.h"
-
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"   
@@ -46,6 +47,7 @@
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TH1.h"
+#include "PATValidation_Tau.h"
 
 
 
@@ -57,35 +59,6 @@ using namespace std;
     int nPatTaus=0;
 
 
-//
-// class decleration
-//
-
-class PATValidation_Tau : public edm::EDAnalyzer {
-   public:
-      explicit PATValidation_Tau(const edm::ParameterSet&);
-      ~PATValidation_Tau();
-
-
-   private:
-      virtual void beginJob(const edm::EventSetup&) ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-       DQMStore* dbe;
-      std::map<std::string, MonitorElement*> me;
-
-      // ----------member data ---------------------------
-
-edm::InputTag recoTau_;
-edm::InputTag patTau_;
-
-
-std::string outputFile_;
-
-//TH1D *histo_Tagged_NumJets;
-};
-
-//
 // constants, enums and typedefs
 //
 
@@ -103,8 +76,6 @@ PATValidation_Tau::PATValidation_Tau(const edm::ParameterSet& iConfig)
 
 recoTau_     = iConfig.getParameter<edm::InputTag>("recoTau");
 patTau_      = iConfig.getParameter<edm::InputTag>("patTau");
-
-
 outputFile_ = iConfig.getUntrackedParameter<std::string>("OutputFile");
 
 
@@ -140,18 +111,34 @@ if(dbe){
 
       dbe->setCurrentFolder(path.c_str());
 
+
+//PAT
       dbe->setCurrentFolder("Benchmarks/taus/PAT");
       me["PatTau_pt"]  = dbe->book1D("pt", "PatTau", 50, 0, 200);
       me["PatTau_eta"]  = dbe->book1D("eta", "PatTau", 50, -6, 6);
       me["PatTau_phi"]  = dbe->book1D("phi", "PatTau", 50, -4, 4);
       me["PatTau_energy"]=dbe->book1D("energy","PatEnergy",50, 0.,450.); 
 
+// Newly added plots
+      me["PatLeadPFChargedHadrCand_Pt"]=dbe->book1D("PF Pt of Highest Pt charged particle within the tau-jet","Pt of Highest Ptcharged particle within the tau-jet",50,0,500);
+      me["PatLeadPFNeutralCand_Pt"]=dbe->book1D("PF Pt of the highest Pt photon within the tau-jet","Pt of the highest Pt photon within the tau-jet",50,0,500);
+      me["PatLeadPFCand_Pt"]=dbe->book1D("PF Pt of the highest Pt particle (of any type) within the tau-jet","Pt of the highest Pt particle (of any type) within the tau-jet",50,0,500);
+
+
+///RECO
       dbe->setCurrentFolder("Benchmarks/taus/RECO");
       me["RecoTau_pt"] = dbe->book1D("pt", "RecoTau", 50, 0, 200);
       me["RecoTau_eta"]  = dbe->book1D("eta", "RecoTau", 50, -6, 6);
       me["RecoTau_phi"]  = dbe->book1D("phi", "RecoTau", 50, -4, 4);
       me["RecoTau_energy"]=dbe->book1D("energy","RecoEnergy",50, 0.,450.);
     
+
+// Newly added plots
+      me["RecoLeadPFChargedHadrCand_Pt"]=dbe->book1D("PF Pt of Highest Pt charged particle within the tau-jet","Pt of Highest Ptcharged particle within the tau-jet",50,0,500);
+      me["RecoLeadPFNeutralCand_Pt"]=dbe->book1D("PF Pt of the highest Pt photon within the tau-jet","Pt of the highest Pt photon within the tau-jet",50,0,500);
+      me["RecoLeadPFCand_Pt"]=dbe->book1D("PF Pt of the highest Pt particle (of any type) within the tau-jet","Pt of the highest Pt particle (of any type) within the tau-jet",50,0,500);
+
+
 
   }
   return;
@@ -169,7 +156,8 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    // Typedefs to use views
 
 //====================================RECO TAU=====================================
-    typedef edm::View<reco::Candidate> candidateCollection ;
+//    typedef edm::View<reco::Candidate> candidateCollection ;
+      typedef edm::View<reco::PFTau> candidateCollection ;
 
    //get reco tau collection
      edm::Handle<candidateCollection> recotau_hnd;
@@ -182,7 +170,25 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	me["RecoTau_eta"]->Fill(RECOTAU[i].eta());
 	me["RecoTau_phi"]->Fill(RECOTAU[i].phi());
         me["RecoTau_energy"]->Fill(RECOTAU[i].energy());
+
+        if ( RECOTAU[i].leadPFChargedHadrCand().isAvailable() ) {
+        reco::PFCandidateRef ref = RECOTAU[i].leadPFChargedHadrCand();
+        me["RecoLeadPFChargedHadrCand_Pt"]->Fill(ref->pt());
+        }
+      
+       if ( RECOTAU[i].leadPFNeutralCand().isAvailable() ) {
+        reco::PFCandidateRef ref = RECOTAU[i].leadPFNeutralCand();
+        me["RecoLeadPFNeutralCand_Pt"]->Fill(ref->pt());
+        }
+      
+      if ( RECOTAU[i].leadPFCand().isAvailable() ) {
+        reco::PFCandidateRef ref = RECOTAU[i].leadPFCand();
+        me["RecoLeadPFCand_Pt"]->Fill(ref->pt());
+        }
+
+
 //       cout << "RECO tau pt is = " << RECOTAU[i].pt() << endl; 
+
        }
 
 
@@ -190,7 +196,9 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 
     //get pat tau collection
-     edm::Handle <std::vector<pat::Tau> >  pattau_hnd;
+//     edm::Handle <std::vector<pat::Tau> >  pattau_hnd;
+       edm::Handle<pat::TauCollection>  pattau_hnd;
+
      iEvent.getByLabel(patTau_, pattau_hnd);
      std::vector<pat::Tau> const & PATTAU = *pattau_hnd;
    // Loop over Pat Taus
@@ -200,6 +208,22 @@ PATValidation_Tau::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	me["PatTau_eta"]->Fill(PATTAU[i].eta());
 	me["PatTau_phi"]->Fill(PATTAU[i].phi());
         me["PatTau_energy"]->Fill(PATTAU[i].energy());
+
+        if ( PATTAU[i].leadPFChargedHadrCand().isAvailable() ) {
+        reco::PFCandidateRef ref = PATTAU[i].leadPFChargedHadrCand();
+        me["PatLeadPFChargedHadrCand_Pt"]->Fill(ref->pt());
+        }
+
+       if ( PATTAU[i].leadPFNeutralCand().isAvailable() ) {
+        reco::PFCandidateRef ref = PATTAU[i].leadPFNeutralCand();
+        me["PatLeadPFNeutralCand_Pt"]->Fill(ref->pt());
+        }
+
+      if ( PATTAU[i].leadPFCand().isAvailable() ) {
+        reco::PFCandidateRef ref = PATTAU[i].leadPFCand();
+        me["PatLeadPFCand_Pt"]->Fill(ref->pt());
+        }
+
  //   cout << "PAT tau pt is = " << PATTAU[i].pt() << endl;
     }
     
