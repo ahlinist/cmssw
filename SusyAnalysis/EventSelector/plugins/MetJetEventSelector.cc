@@ -3,8 +3,10 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "PhysicsTools/Utilities/interface/deltaPhi.h"
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+//#include "PhysicsTools/Utilities/interface/deltaPhi.h"
+//#include "PhysicsTools/Utilities/interface/deltaR.h" 
+#include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/Math/interface/deltaR.h"
 #include "TMath.h"
 #include <vector>
 

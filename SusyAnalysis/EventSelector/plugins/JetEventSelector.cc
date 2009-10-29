@@ -1,5 +1,4 @@
 #include "SusyAnalysis/EventSelector/interface/JetEventSelector.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 #include <vector>
@@ -63,16 +62,16 @@ JetEventSelector::select (const edm::Event& event) const
   setVariable(0,jetHandle->size());
   if ( jetHandle->size()<minEt_.size() )  return false;
   //
-  // sort jets by corrected Et
-  //
+  // sort jets by corrected Et,
+  // 
   std::vector<float> correctedEts;
   correctedEts.reserve(jetHandle->size());
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
     float et = jet.et();
     std::string corrstep = corrStep_;
-    if ( corrStep_ != jet.jetCorrName() || corrFlavour_ != jet.jetCorrFlavour() )
-      et *= jet.jetCorrFactor( corrstep, corrFlavour_ );
+    if ( corrStep_ != jet.corrStep() || corrFlavour_ != jet.corrFlavour() )
+      et *= jet.corrFactor( corrstep, corrFlavour_ );
     correctedEts.push_back(et);
   }
   std::vector<size_t> etSorted = 

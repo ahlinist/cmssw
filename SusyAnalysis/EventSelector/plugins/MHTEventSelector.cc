@@ -10,7 +10,8 @@ MHTEventSelector::MHTEventSelector (const edm::ParameterSet& pset) :
   SusyEventSelector(pset),
   //  jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   mhtTag_( pset.getParameter<edm::InputTag>("mhtTag") ),
-  minMHT_ ( pset.getParameter<double>("minMHT") ),
+  minMHT_( pset.getParameter<double>("minMHT") ),
+  //minHT_ ( pset.getParameter<double>("minHT") ),
   minPt_ ( pset.getParameter<double>("minPt") )
 { 
 
@@ -21,10 +22,12 @@ MHTEventSelector::MHTEventSelector (const edm::ParameterSet& pset) :
   defineVariable("mht");
   defineVariable("significance");
   defineVariable("error");
-  defineVariable("numberOfJets");
-  defineVariable("numberOfElectrons");
-  defineVariable("numberOfMuons");
-  defineVariable("METsignificance");
+  defineVariable("ht");
+  defineVariable("phi");
+  //defineVariable("numberOfJets");
+  //defineVariable("numberOfElectrons");
+  //defineVariable("numberOfMuons");
+  //defineVariable("METsignificance");
 
 }
 
@@ -89,12 +92,14 @@ MHTEventSelector::select (const edm::Event& event) const
   setVariable("mht", iMHT->mht());
   setVariable("significance", iMHT->significance());
   setVariable("error", iMHT->error());
-  setVariable("numberOfJets", iMHT->getNumberOfJets());
-  setVariable("numberOfElectrons", iMHT->getNumberOfElectrons());
-  setVariable("numberOfMuons", iMHT->getNumberOfMuons());
-  setVariable("METsignificance", iMHT->getMETsignificance());
+  setVariable("ht", iMHT->ht() );
+  setVariable("phi", iMHT->phi() );
+  //setVariable("numberOfJets", iMHT->getNumberOfJets());
+  //setVariable("numberOfElectrons", iMHT->getNumberOfElectrons());
+  //setVariable("numberOfMuons", iMHT->getNumberOfMuons());
+  //setVariable("METsignificance", iMHT->getMETsignificance());
 
-  return iMHT->mht()  > minMHT_;
+  return iMHT->mht()>minMHT_;
 
 }
 
