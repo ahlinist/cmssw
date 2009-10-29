@@ -828,8 +828,8 @@ void commonProcessing() {
 		}
 		else if(fast) {
 			chain = new TChain("extractionToTree/Extraction");
-			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_slack_fast_4T.root");
-			directory = "plots/barrel_fast";
+			chain->Add("/vols/cms_scratch/jballin/data/Dipion_Tree_fast_All_10k_barrel_noZspSr_0T.root");
+			directory = "plots/barrel_fast_noZspSr_0T";
 		}
 	}
 
