@@ -10,17 +10,17 @@ JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
   jetTag_( pset.getParameter<edm::InputTag>("jetTag") ),
   corrStep_(    pset.getParameter<std::string>("correction") ),
   corrFlavour_( pset.getParameter<std::string>("flavour")    ),
-  minEt_(  pset.getParameter< std::vector<double> >("minEt"        ) ),
+  minPt_(  pset.getParameter< std::vector<double> >("minPt"        ) ),
   maxEta_( pset.getParameter< std::vector<double> >("maxEta"       ) ),
   maxFem_( pset.getParameter< std::vector<double> >("maxEMFraction") )
 {
 
   /// definition of variables to be cached
   defineVariable("NumberOfJets");
-  for ( size_t i=0; i<minEt_.size(); ++i ) {
-    std::ostringstream strEt;
-    strEt << "Jet" << i << "Et";
-    defineVariable(strEt.str());
+  for ( size_t i=0; i<minPt_.size(); ++i ) {
+    std::ostringstream strPt;
+    strPt << "Jet" << i << "Pt";
+    defineVariable(strPt.str());
     std::ostringstream strEta;
     strEta << "Jet" << i << "Eta";
     defineVariable(strEta.str());
@@ -31,7 +31,7 @@ JetEventSelector::JetEventSelector (const edm::ParameterSet& pset) :
 
   edm::LogInfo("JetEventSelector") << "constructed with \n"
 				   << "  jetTag    = " << jetTag_ << "\n"
-				   << "  min #jets = " << minEt_.size();
+				   << "  min #jets = " << minPt_.size();
 }
 
 
@@ -43,7 +43,7 @@ JetEventSelector::select (const edm::Event& event) const
   resetVariables();
 
   //FIXME: what about checking at construction time?
-  if ( minEt_.size()!=maxEta_.size() ||
+  if ( minPt_.size()!=maxEta_.size() ||
        maxFem_.size()!=maxEta_.size() ) {
     edm::LogError("JetEventSelector") << "Inconsistent length of vector of cut values";
     return false;
@@ -60,39 +60,39 @@ JetEventSelector::select (const edm::Event& event) const
   // check number of jets
   //
   setVariable(0,jetHandle->size());
-  if ( jetHandle->size()<minEt_.size() )  return false;
+  if ( jetHandle->size()<minPt_.size() )  return false;
   //
   // sort jets by corrected Et,
   // 
-  std::vector<float> correctedEts;
-  correctedEts.reserve(jetHandle->size());
+  std::vector<float> correctedPts;
+  correctedPts.reserve(jetHandle->size());
   for ( size_t i=0; i<jetHandle->size(); ++i ) {
     const pat::Jet& jet = (*jetHandle)[i];
-    float et = jet.et();
+    float pt = jet.pt();
     std::string corrstep = corrStep_;
     if ( corrStep_ != jet.corrStep() || corrFlavour_ != jet.corrFlavour() )
-      et *= jet.corrFactor( corrstep, corrFlavour_ );
-    correctedEts.push_back(et);
+      pt *= jet.corrFactor( corrstep, corrFlavour_ );
+    correctedPts.push_back(pt);
   }
-  std::vector<size_t> etSorted = 
-    IndexSorter< std::vector<float> >(correctedEts,true)();
+  std::vector<size_t> ptSorted = 
+    IndexSorter< std::vector<float> >(correctedPts,true)();
   //
   // check cuts (assume that jets are sorted by Et)
   //
   bool result(true);
-  for ( unsigned int i=0; i<minEt_.size(); ++i ) {
-    unsigned int j = etSorted[i];
+  for ( unsigned int i=0; i<minPt_.size(); ++i ) {
+    unsigned int j = ptSorted[i];
     float EMFRAC=0;
     if ((*jetHandle)[j].isCaloJet()) EMFRAC=(*jetHandle)[j].emEnergyFraction();
     if ((*jetHandle)[j].isPFJet()) EMFRAC=(*jetHandle)[j].neutralEmEnergyFraction()+
       (*jetHandle)[j].chargedEmEnergyFraction();
-    if ( correctedEts[j]<minEt_[i] ||
+    if ( correctedPts[j]<minPt_[i] ||
 	 fabs((*jetHandle)[j].eta())>maxEta_[i]||
 	 EMFRAC>maxFem_[i] ) {
       LogTrace("JetEventSelector") << "JetEventSelector: failed at jet " << (i+1);
       result = false;
      }
-    setVariable(3*i+1,correctedEts[j]);
+    setVariable(3*i+1,correctedPts[j]);
     setVariable(3*i+2,(*jetHandle)[j].eta());
     setVariable(3*i+3,EMFRAC);
    }
