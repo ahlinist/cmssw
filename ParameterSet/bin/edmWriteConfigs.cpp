@@ -18,9 +18,9 @@
 //
 // Original Author:  W. David Dagenhart
 //         Created:  10 December 2008
-// $Id$
 
 #include "FWCore/Utilities/interface/Exception.h"
+#include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescriptionFillerPluginFactory.h"

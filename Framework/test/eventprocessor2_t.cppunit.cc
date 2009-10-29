@@ -2,14 +2,13 @@
 
 Test of the EventProcessor class.
 
-$Id$
-
 ----------------------------------------------------------------------*/  
 #include <exception>
 #include <iostream>
 #include <string>
 #include <stdexcept>
 #include "FWCore/Framework/interface/EventProcessor.h"
+#include "FWCore/Utilities/interface/Exception.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 
