@@ -30,14 +30,14 @@
 #include <TStyle.h>
 #include <utility>
 #include <THStack.h>
-#include <TLegend.h>
+//#include <TLegend.h>
 #include <TChain.h>
 
 #include "RecoParticleFlow/PFAnalyses/interface/PlotUtil.h"
 
-bool endcap(false);
-int data(1);
-int full(0);
+bool endcap(true);
+int data(0);
+int full(1);
 int fast(0);
 
 class CommonProcessing {
@@ -163,6 +163,8 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
 		std::string cut("tb_energyEcal_<2.0 && int(sim_energyEvent_) == ");
+		if(endcap)
+			cut ="tb_energyEcal_<3.0 && int(sim_energyEvent_) == ";	
 		cut.append(obj2str(energy));
 
 		std::string histoName("tbNeutralENoEcal");
@@ -496,7 +498,10 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
-		std::string cut("tb_energyEcal_> 2.0 && int(sim_energyEvent_) == ");
+		std::string cut("tb_energyEcal_>2.0 && int(sim_energyEvent_) == ");
+		if(endcap)
+			cut = "tb_energyEcal_>3.0 && int(sim_energyEvent_) == ";	
+			
 		cut.append(obj2str(energy));
 
 		std::string histoName("tbIntEcal");
@@ -804,7 +809,7 @@ void commonProcessing() {
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
-			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcaps_noZspSr_0T_slack_full.root");
+			chain->Add("/tmp/ballin/Dipion_Tree_full_All_endcaps_noZspSr_0T.root");
 			directory = "plots/endcap_full_noZspSr_0T";
 		}
 		else if(fast) {
