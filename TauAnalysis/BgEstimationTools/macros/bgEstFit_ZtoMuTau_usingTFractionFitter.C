@@ -1,8 +1,4 @@
 
-//Int_t lineColors[] = { 15, 13, 1 };
-Int_t lineColors[] = { 8, 4, 1 };
-Int_t lineStyles[] = { 4, 2, 1 };
-
 void bgEstFit_ZtoMuTau_usingTFractionFitter()
 {
   TString inputFileName = "../test/bgEstTemplatesZtoMuTau.root";
