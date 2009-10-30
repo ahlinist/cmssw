@@ -19,8 +19,8 @@ elecMuPairZmumuHypotheses = cms.EDProducer("ZllHypothesisElecMuProducer",
     caloJetSource = cms.InputTag('iterativeCone5CaloJets'),
     pfJetSource = cms.InputTag('iterativeCone5PFJets'),                                       
     trackSource = cms.InputTag('generalTracks'),
-    gsfElectronSource = cms.InputTag('pixelMatchGsfElectrons'),
-    gsfTrackSource = cms.InputTag('pixelMatchGsfFit'),
+    gsfElectronSource = cms.InputTag('gsfElectrons'),
+    gsfTrackSource = cms.InputTag('electronGsfTracks'),
 
     # combined (inner) tracks only                                      
     #trackSource = cms.InputTag('generalTracks'),
