@@ -44,8 +44,8 @@ tauAnalysisEventContent.outputCommands.extend(pfJets.outputCommands)
 generalTrackExtras = cms.PSet(
     outputCommands = cms.untracked.vstring(
         'keep recoTrackExtras_generalTracks_*_*',
-        'keep recoTrackExtras_pixelMatchGsfFit_*_*',
-        'keep recoGsfTrackExtras_pixelMatchGsfFit_*_*'
+        'keep recoTrackExtras_electronGsfTracks_*_*',
+        'keep recoGsfTrackExtras_electronGsfTracks_*_*'
     )
 )
 tauAnalysisEventContent.outputCommands.extend(generalTrackExtras.outputCommands)
