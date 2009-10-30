@@ -52,8 +52,10 @@ triggerHistManagerForMuTau.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForMuTau.hltPaths = cms.vstring(
-    'HLT_IsoMu3',
-    'HLT_Mu9'
+    'HLT_Mu9',
+    'HLT_IsoMu9',
+    'HLT_Mu11',
+    'HLT_Mu15'
 )
 
 # import config for event weight histogram manager
@@ -262,13 +264,18 @@ muTauEventDump = cms.PSet(
     pluginName = cms.string('muTauEventDump'),
     pluginType = cms.string('MuTauEventDump'),
 
-    l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-    l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    # L1 trigger bits not contained in AOD;
+    # in order to process Monte Carlo samples produced by FastSimulation,
+    # disable histogram filling for now
+    #l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+    #l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    l1GtReadoutRecordSource = cms.InputTag(''),
+    l1GtObjectMapRecordSource = cms.InputTag(''),
     l1BitsToPrint = cms.vstring('L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
     
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_IsoMu3', 'HLT_Mu9'),
-    
+    hltPathsToPrint = cms.vstring('HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
+        
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
     electronSource = cms.InputTag('cleanLayer1Electrons'),
@@ -357,7 +364,7 @@ muTauAnalysisSequence = cms.VPSet(
     # trigger selection
     cms.PSet(
         filter = cms.string('evtSelTrigger'),
-        title = cms.string('isoMu3 || Mu9 Trigger'),
+        title = cms.string('Muon Trigger'),
         saveRunEventNumbers = cms.vstring('')
     ),
     cms.PSet(
