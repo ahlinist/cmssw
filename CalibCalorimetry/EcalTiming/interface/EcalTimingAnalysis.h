@@ -157,6 +157,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       double EBradius_;
 	  
       double allave_;
+      double allshift_;
 	  
       bool writetxtfiles_;
 	  

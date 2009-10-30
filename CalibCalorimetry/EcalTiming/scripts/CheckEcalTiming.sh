@@ -51,6 +51,9 @@ echo "      -cet|--correct_ecal   correct_ecal    Correct For Ecal Readout Timin
 echo "      -cbh|--correct_bh     correct_bh      Correct For BeamHalo Readout Timing; default is false"
 echo "      -bhp|--bh_plus        bh_plus         Is Direction of BeamHalo Plus; default is true"
 echo "      -ebr|--eb_radius      eb_radius       Correct EB radius in Readout Timing; default is 1.4(m)"
+echo "      -wf|--write_files     write_files     Write Output files (default is false)"
+echo "      -aa|--all_average     all_average     This is the input average number defaults to 5.7"
+echo "      -as|--all_shift     all_shift     This is the timing shift for all values default of 1.5"
 echo ""
 echo "To specify multiple fed_id's/ieb_id's/cry's to mask use a comma-separated list in between double quotes, e.g., \"1,2,3\" "
 exit
@@ -83,9 +86,12 @@ from_file_name="Emptyfile.root"
 correct_ecal="False"
 correct_bh="False"
 bh_plus="True"
+write_files="False"
 
 data_type="Laser"
 eb_radius=1.4
+all_average=5.7
+all_shift=1.5
 
 manyfiles="0"
 
@@ -167,7 +173,19 @@ manyfiles="0"
       -bhp|--bh_plus)
 				bh_plus=$2
 				;;	
-				
+			
+      -wf|--write_files)
+                                write_files=$2
+                                ;;
+	
+      -aa|--all_average)
+                                all_average=$2
+                                ;;
+
+      -as|--all_shift)
+                                all_shift=$2
+                                ;;
+
     esac
     shift       # Verifica la serie successiva di parametri.
 
@@ -200,7 +218,9 @@ echo "correct for ecal readout:                     $correct_ecal"
 echo "correct for beam halo:                        $correct_bh"
 echo "Beam halo direction plus:                     $bh_plus"
 echo "EB Radius:                                    $eb_radius m"
-
+echo "Writing txt files:                            $write_files"
+echo "Overall Average Change:                       $all_average" 
+echo "All shift:                                    $all_shift" 
 
 echo ""
 echo ""
@@ -238,7 +258,7 @@ process.source = cms.Source('PoolSource',
 fi
 
 path="
-process.p = cms.Path(process.ecalEBunpacker*rocess.ecalDccDigis*process.uncalibHitMaker*process.timing)
+process.p = cms.Path(process.ecalEBunpacker*process.ecalDccDigis*process.uncalibHitMaker*process.timing)
 "
 
 if [[ $from_file == "True" ]]; then
@@ -344,6 +364,9 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                   FromFile = cms.untracked.bool($from_file),
                                   RunStart = cms.untracked.double($start_time),
                                   RunLength = cms.untracked.double($run_length),
+                                  WriteTxtFiles = cms.untracked.bool($write_files),
+                                  AllAverage = cms.untracked.double($all_average), 
+                                  AllShift = cms.untracked.double($all_shift),
                                   EBRadius = cms.untracked.double($eb_radius)
                               )
 

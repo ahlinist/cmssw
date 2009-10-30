@@ -72,6 +72,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
    bhplus_             = iConfig.getUntrackedParameter<bool>("BeamHaloPlus",true);
    allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
+   allshift_           = iConfig.getUntrackedParameter<double>("AllShift",1.5);   
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -623,14 +624,18 @@ void EcalTimingAnalysis::endJob() {
 void
 EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& iSetup ) {
 //========================================================================
-   if (fromfile_) return;
-   using namespace edm;
-   using namespace cms;
-   ievt_++;
-
    edm::ESHandle< EcalElectronicsMapping > handle;
    iSetup.get< EcalMappingRcd >().get(handle);
    ecalElectronicsMap_ = handle.product();
+
+   using namespace edm;
+   using namespace cms;
+   if (fromfile_) return;
+   ievt_++;
+
+   //edm::ESHandle< EcalElectronicsMapping > handle;
+   //iSetup.get< EcalMappingRcd >().get(handle);
+   //ecalElectronicsMap_ = handle.product();
 
 
    edm::Handle<EcalRawDataCollection> DCCHeaders;
@@ -944,7 +949,7 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
 
    }
 
-   return (time/25.-1.5);
+   return (time/25.-allshift_);
 }
 
 
