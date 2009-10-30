@@ -432,7 +432,7 @@ void GenericEventDump::printElectronInfo(const edm::Event& evt) const
       *outputStream_ << " gsf Track" << std::endl;
       printTrackInfo(edm::RefToBase<reco::Track>(patElectron->gsfTrack()), patElectron->vertex(), true, false, outputStream_);
       *outputStream_ << " Supercluster Energy/Track Momentum = " << patElectron->eSuperClusterOverP() << std::endl;
-      *outputStream_ << " electronID('robust') = " << patElectron->electronID("robust") << std::endl;
+      *outputStream_ << " electronID('eidRobustTight') = " << patElectron->electronID("eidRobustTight") << std::endl;
       *outputStream_ << " trackIso = " << patElectron->trackIso() << std::endl;
       *outputStream_ << " ecalIso = " << patElectron->ecalIso() << std::endl;
       *outputStream_ << " hcalIso = " << patElectron->hcalIso() << std::endl;
@@ -580,12 +580,16 @@ void GenericEventDump::printTauInfo(const edm::Event& evt) const
       *outputStream_ << " muVeto = " << patTau->tauID("againstMuon") << std::endl;
       *outputStream_ << " vertex" << std::endl;
       printVertexInfo(patTau->vertex(), outputStream_);
+/*
+  CV: tau id. efficiencies and fake-rates not available in CMSSW_3_1_x yet
+
       *outputStream_ << " pat::Tau id. efficiencies:" 
 		     << " byIsolation = " << patTau->efficiency("effByIsolationZtautausim").value() << ","
 		     << " byEcalIsolation = " << patTau->efficiency("effByECALIsolationZtautausim").value() << std::endl;
       *outputStream_ << " pat::Tau fake-rates:"
 		     << " byIsolation = " << patTau->efficiency("frByIsolationMuEnrichedQCDsim").value() << ","
 		     << " byEcalIsolation = " << patTau->efficiency("frByECALIsolationMuEnrichedQCDsim").value() << std::endl;
+ */
       ++iTau;
     }
 
