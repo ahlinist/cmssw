@@ -110,40 +110,48 @@ private:
       obj->SetStats(kTRUE);
       obj->GetYaxis()->SetTitleOffset(1.3);
 
-      if( o.name.find("EtSum") != std::string::npos &&
-          o.name.find("Lumi") == std::string::npos &&
-          o.name.find("Hist") == std::string::npos )
-      {
-        int maxBin = obj->GetMaximumBin();
-        int minBin = obj->GetMinimumBin();
+      if( (o.name.find("AvgEtSum") != std::string::npos || 
+	   o.name.find("AvgOcc")   != std::string::npos) &&
+	  (o.name.find("Lumi") == std::string::npos &&
+	   o.name.find("Hist") == std::string::npos) ){
 
-        double objMax = obj->GetBinContent(maxBin);
-        double objMin = obj->GetBinContent(minBin);
-        if( objMax > 0 && objMin > 0 )
-        {
-          if( (objMax/objMin) > 1e4 ) gPad->SetLogy();
-        }
-        obj->SetMaximum(objMax*1.02);
-        obj->SetMinimum(objMin*0.98);
+	 // If there isn't a big range we need more room for the
+	 // fractions ... 
+	 if( (obj->GetMaximum() - obj->GetMinimum()) < 0.001 && 
+	     obj->GetMaximum() > 0.1 ){
+	    gPad->SetLeftMargin(0.20);
+	    obj->GetYaxis()->SetLabelSize(0.03);
+	    obj->GetYaxis()->SetTitleOffset(2.2);
+	 }
+
+	 if( o.name.find("AvgEtSum") != std::string::npos ){
+	    gPad->SetTopMargin(0.15);
+	 }else{
+	    obj->SetErrorOption("");
+	 }
+
+	 obj->SetMarkerStyle(21);
+	 obj->SetMarkerSize(0.6);
+	 obj->SetMarkerColor(kBlue);
       }
 
-      if( o.name.find("SumAllOcc") != std::string::npos )
-      {
+      // Sum All Occupancy plots (check sums)
+      if( o.name.find("SumAllOcc") != std::string::npos ){
         obj->SetMaximum( 1.25*obj->GetMaximum() );
         obj->SetMinimum( 0.75*obj->GetMinimum() );
+        obj->SetMarkerStyle(21);
+        obj->SetMarkerSize(0.6);
+	obj->SetMarkerColor(6);
       }
 
       // History histograms ...
-      if( o.name.find("Hist") != std::string::npos )
-      {
+      if( o.name.find("Hist") != std::string::npos ){
         obj->SetMarkerStyle(kFullCircle);
         obj->SetMarkerSize(0.8);
         // Loop over the bins and find the first empty one
         int firstEmptyBin = obj->GetNbinsX();
-        for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin )
-        {
-          if( obj->GetBinContent(iBin) == 0 )
-          {
+        for( int iBin = 1; iBin<=obj->GetNbinsX(); ++iBin ){
+          if( obj->GetBinContent(iBin) == 0 ){
             firstEmptyBin = iBin;
             break;
           }
@@ -168,6 +176,25 @@ private:
         obj->SetFillColor(kBlue);
         obj->SetLineColor(kBlue);
         obj->SetFillStyle(1001);
+      }
+
+      // HF comparison histograms
+      if( o.name.find("HFCompareOcc") != std::string::npos ){
+	 if( (obj->GetMaximum() - obj->GetMinimum()) < 0.001 && 
+	     obj->GetMaximum() > 0.1 ){
+	    gPad->SetLeftMargin(0.20);
+	    obj->GetYaxis()->SetLabelSize(0.03);
+	    obj->GetYaxis()->SetTitleOffset(2.2);
+	 }
+      }
+
+      // Wedge by wedge histograms 
+      if( o.name.find("ETSum") != std::string::npos || 
+	  o.name.find("Set1_") != std::string::npos ||
+	  o.name.find("Set2_") != std::string::npos ){
+	    gPad->SetLeftMargin(0.15);
+	    //obj->GetYaxis()->SetLabelSize(0.03);
+	    obj->GetYaxis()->SetTitleOffset(1.7);
       }
 
       if( (o.name.find("EtSum") != std::string::npos && o.name.find("Lumi") == std::string::npos) ||
