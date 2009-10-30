@@ -59,9 +59,12 @@ triggerHistManagerForElecMu.l1Bits = cms.vstring(
 )
 
 triggerHistManagerForElecMu.hltPaths = cms.vstring(
-    'HLT_Ele15_LW_L1R',
-    'HLT_IsoMu3',
-    'HLT_Mu9'
+    'HLT_Ele15_SW_EleId_L1R',
+    'HLT_Ele15_SW_LooseTrackIso_L1R'
+    'HLT_Mu9',
+    'HLT_IsoMu9',
+    'HLT_Mu11',
+    'HLT_Mu15'
 )
 
 # import config for event weight histogram manager
@@ -270,14 +273,20 @@ elecMuEventDump = cms.PSet(
     pluginName = cms.string('elecMuEventDump'),
     pluginType = cms.string('ElecMuEventDump'),
 
-    l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
-    l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    # L1 trigger bits not contained in AOD;
+    # in order to process Monte Carlo samples produced by FastSimulation,
+    # disable histogram filling for now
+    #l1GtReadoutRecordSource = cms.InputTag('hltGtDigis::HLT'),
+    #l1GtObjectMapRecordSource = cms.InputTag('hltL1GtObjectMap::HLT'),
+    l1GtReadoutRecordSource = cms.InputTag(''),
+    l1GtObjectMapRecordSource = cms.InputTag(''),
     l1BitsToPrint = cms.vstring('L1_SingleEG5', 'L1_SingleEG8', 'L1_SingleEG10', 'L1_SingleEG12', 'L1_SingleEG15',
                                 'L1_SingleIsoEG5', 'L1_SingleIsoEG8', 'L1_SingleIsoEG10', 'L1_SingleIsoEG12', 'L1_SingleIsoEG15',
                                 'L1_SingleMu3', 'L1_SingleMu5', 'L1_SingleMu7', 'L1_SingleMu10', 'L1_SingleMu14'),
 
     hltResultsSource = cms.InputTag('TriggerResults::HLT'),
-    hltPathsToPrint = cms.vstring('HLT_IsoMu3', 'HLT_Mu9', 'HLT_Ele15_LW_L1R'),
+    hltPathsToPrint = cms.vstring('HLT_Ele15_SW_EleId_L1R', 'HLT_Ele15_SW_LooseTrackIso_L1R',
+                                  'HLT_Mu9', 'HLT_IsoMu9', 'HLT_Mu11', 'HLT_Mu15'),
         
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
