@@ -60,6 +60,12 @@ FakeRateWeightProducerBase::tauJetDiscrEntry::~tauJetDiscrEntry()
 FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& cfg)
   : cfgError_(0)
 {
+  method_ = cfg.getParameter<std::string>("method");
+  if ( !(method_ == "simple" || method_ == "CDF") ) {
+    edm::LogError("FakeRateWeightProducerBase") << " Configuration parameter 'method' = " << method_ << " invalid !!";
+    cfgError_ = 1;
+  }
+
   allTauJetSource_ = cfg.getParameter<edm::InputTag>("allTauJetSource");
   preselTauJetSource_ = cfg.getParameter<edm::InputTag>("preselTauJetSource");
 
