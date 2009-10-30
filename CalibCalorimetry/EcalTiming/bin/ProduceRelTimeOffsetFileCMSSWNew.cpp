@@ -103,10 +103,12 @@ int main(int argc,  char * argv[]){
 	      HowManyShifts++;
 	      float move = (0. - rel_shift)*25.;
 	      int temp = int(move);
-		  int lisi = 1;
-		  if (move >= 0 ) lisi = -1;  
+	        int lisi = 1;
+	        if (move >= 0 ) lisi = -1;  
 	      if( fabs(rel_shift*25.+temp) < fabs(rel_shift*25.+temp+lisi) ){Shift[TTnum]=temp;}
 	      else{Shift[TTnum]=temp+lisi;}
+              //if( fabs(rel_shift*25.+temp) < fabs(rel_shift*25.+temp+1) ){Shift[TTnum]=temp;}
+	      //else{Shift[TTnum]=temp+1;}
 	      if( fabs(move)> 10.){cout<<"!! Large shift ( "<<move<<" ns) required for TT: "<<TTnum<<endl; }
        }
     }
