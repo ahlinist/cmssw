@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.18 $
-  \date $Date: 2009/09/18 15:14:52 $
+  \version $Revision: 1.19 $
+  \date $Date: 2009/09/18 15:18:27 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -25,7 +25,7 @@
 class SiPixelRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "Pixel/" ) != std::string::npos )
         return true;
@@ -33,7 +33,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       c->cd();
       if( dynamic_cast<TH2*>( o.object ) )
@@ -46,7 +46,7 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
 
@@ -188,7 +188,7 @@ color, Int_t npts, std::string title){
 	return grP;
 }
 
-  void preDrawTH2( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2( TCanvas *, const VisDQMObject &o )
     {
       TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
@@ -239,7 +239,7 @@ color, Int_t npts, std::string title){
       }
     }
 
-  void preDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1( TCanvas *, const VisDQMObject &o )
     {
       TH1* obj = dynamic_cast<TH1*>( o.object );
       assert( obj );
@@ -287,24 +287,24 @@ color, Int_t npts, std::string title){
 	  o.name.find( "SUMOFF_size_" ) != std::string::npos ) gPad->SetLogy(0);
     }
 
-  void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH1( TCanvas *, const VisDQMObject &o )
     {
       TText tt;
       tt.SetTextSize(0.12);
       if (o.flags == 0) return;
       else
       {
-        /*    if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+        /*    if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
               {
               tt.SetTextColor(2);
               tt.DrawTextNDC(0.5, 0.5, "Error");
               }
-              else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+              else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
               {
               tt.SetTextColor(5);
               tt.DrawTextNDC(0.5, 0.5, "Warning");
               }
-              else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+              else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
               {
               tt.SetTextColor(1);
               tt.DrawTextNDC(0.5, 0.5, "Other ");
@@ -356,7 +356,7 @@ color, Int_t npts, std::string title){
       
     }
 
-  void postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH2( TCanvas *c, const VisDQMObject &o )
 {
 
       TH2* obj = dynamic_cast<TH2*>( o.object );

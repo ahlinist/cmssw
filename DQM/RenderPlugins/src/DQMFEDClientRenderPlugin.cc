@@ -25,7 +25,7 @@ class DQMFEDClientRenderPlugin : public DQMRenderPlugin
 {
 public:
   // These functions may be different that parent version
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an FED Client object
       if(o.name.find( "FED/" ) != std::string::npos  || 
@@ -35,7 +35,7 @@ public:
       return false;
     }
 
-  virtual void preDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
       gPad->SetLogy(0);
@@ -52,7 +52,7 @@ public:
     }
 
 private:
-  void preDrawTH2F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );

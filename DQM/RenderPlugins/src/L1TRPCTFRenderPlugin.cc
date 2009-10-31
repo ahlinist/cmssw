@@ -23,7 +23,7 @@
 class L1TRPCTFRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       if (o.name.find( "L1TRPCTF/" ) != std::string::npos )
         return true;
@@ -31,7 +31,7 @@ public:
       return false;
     }
 
-  virtual void preDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
 
@@ -47,7 +47,7 @@ public:
       }
     }
 
-  virtual void postDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // object is TH2 histogram
       if( dynamic_cast<TH2F*>( o.object ) )
@@ -62,7 +62,7 @@ public:
     }
 
 private:
-  void preDrawTH1F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
     {
       // Do we want to do anything special yet with TH1F histograms?
 
@@ -70,7 +70,7 @@ private:
       assert (obj); // checks that object indeed exists
     }
 
-  void preDrawTH2F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -82,12 +82,12 @@ private:
       }
     }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
       // Add error/warning text to 1-D histograms.  Do we want this at this time?
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );

@@ -17,7 +17,7 @@ class EGammaRenderPlugin : public DQMRenderPlugin
 
 
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if (o.name.find( "PhotonAnalyzer/" )   == std::string::npos)
         return false;
@@ -37,7 +37,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       c->cd();
 
@@ -55,7 +55,7 @@ public:
 
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
       if( dynamic_cast<TH1F*>( o.object ) )
@@ -69,7 +69,7 @@ public:
     }
 
 private:
-  void preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -79,7 +79,7 @@ private:
       obj->SetOption( "colz" );
     }
 
-  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -111,7 +111,7 @@ private:
         gStyle->SetOptStat("e");
     }
 
-  void preDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o ) {
+  void preDrawTProfile( TCanvas *c, const VisDQMObject &o ) {
     
     c->cd();
     TProfile* obj = dynamic_cast<TProfile*>( o.object );
@@ -123,7 +123,7 @@ private:
 
 
 
-  void postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH1F( TCanvas *c, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -155,7 +155,7 @@ private:
 
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );

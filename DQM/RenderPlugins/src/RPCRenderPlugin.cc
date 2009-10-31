@@ -15,7 +15,7 @@
 class RPCRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if (o.name.find("RPC/") == std::string::npos)
         return false;
@@ -29,7 +29,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       c->cd();
 
@@ -39,14 +39,14 @@ public:
       }
     }
 
-  virtual void postDraw(TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw(TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       
       if(dynamic_cast<TH2*>( o.object ) ) postDrawTH2(c,o);
     }
 
 private:
-  void preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH2( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -89,7 +89,7 @@ private:
       }
     }
 
-  void postDrawTH2(TCanvas *c, const DQMNet::CoreObject &o)
+  void postDrawTH2(TCanvas *c, const VisDQMObject &o)
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
