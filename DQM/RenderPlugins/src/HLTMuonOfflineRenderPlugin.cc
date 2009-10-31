@@ -5,8 +5,11 @@
   \\
 
 
-  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.3 2009/10/27 17:50:52 slaunwhj Exp $
+  $Id: HLTMuonOfflineRenderPlugin.cc,v 1.4 2009/10/28 20:12:16 klukas Exp $
   $Log: HLTMuonOfflineRenderPlugin.cc,v $
+  Revision 1.4  2009/10/28 20:12:16  klukas
+  Added TPRegexp to distinguish between RelVal and Offline; added some RelVal-specific content
+
   Revision 1.3  2009/10/27 17:50:52  slaunwhj
   Changed class name to resolve conflict with HLTRenderPlugin
 
@@ -46,7 +49,7 @@
 class HLTMuonOfflineRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an HLT object
       if (o.name.find( "HLT/Muon" ) != std::string::npos  )
@@ -55,7 +58,7 @@ public:
       return false;
     }
 
-  virtual void preDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
 
@@ -71,7 +74,7 @@ public:
       }
     }
 
-  virtual void postDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // object is TH2 histogram
       if( dynamic_cast<TH2F*>( o.object ) )
@@ -86,7 +89,7 @@ public:
     }
 
 private:
-  void preDrawTH1F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
     {
       // Do we want to do anything special yet with TH1F histograms?
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
@@ -153,7 +156,7 @@ private:
 
     }
 
-  void preDrawTH2F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -185,7 +188,7 @@ private:
 
     }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
 
       // No special actions necessary right now
@@ -194,7 +197,7 @@ private:
 
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH2F( TCanvas *, const VisDQMObject & )
     {
       // nothing to put here just yet
       // in the future, we can add text output based on error status,

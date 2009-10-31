@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.14 $
-  \date $Date: 2009/07/29 07:25:00 $
+  \version $Revision: 1.16 $
+  \date $Date: 2009/08/10 17:36:04 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -23,7 +23,7 @@
 class SiStripRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if ((o.name.find( "SiStrip/" ) == std::string::npos) &&
 	  (o.name.find( "Tracking/" ) == std::string::npos))
@@ -44,7 +44,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       c->cd();
 
@@ -66,7 +66,7 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
 
@@ -85,7 +85,7 @@ public:
     }
 
 private:
-  void preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -169,7 +169,7 @@ private:
       return;
     }
 
-  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -215,7 +215,7 @@ private:
       }
     }
 
-  void preDrawTProfile2D( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTProfile2D( TCanvas *, const VisDQMObject &o )
     {
       TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
       assert( obj );
@@ -246,7 +246,7 @@ private:
       }
       return;
     }
-  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTProfile( TCanvas *, const VisDQMObject &o )
     {
       TProfile* obj = dynamic_cast<TProfile*>( o.object );
       assert( obj );
@@ -274,7 +274,7 @@ private:
 
       return;
     }
-  void postDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH1F( TCanvas *c, const VisDQMObject &o )
     {
      
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
@@ -294,17 +294,17 @@ private:
       if (o.flags == 0) return;
       else
       {
-        if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+        if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
         {
           tt.SetTextColor(2);
           tt.DrawTextNDC(0.5, 0.5, "Error");
         }
-        else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+        else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
         {
           tt.SetTextColor(5);
           tt.DrawTextNDC(0.5, 0.5, "Warning");
         }
-        else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+        else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
         {
           tt.SetTextColor(1);
           tt.DrawTextNDC(0.5, 0.5, "Other ");
@@ -312,7 +312,7 @@ private:
       }
     }
 
-  void postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH2F( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -345,7 +345,7 @@ private:
       }
     }
 
-  void postDrawTProfile( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTProfile( TCanvas *c, const VisDQMObject &o )
     {
       TProfile* obj = dynamic_cast<TProfile*>( o.object );
       assert( obj );

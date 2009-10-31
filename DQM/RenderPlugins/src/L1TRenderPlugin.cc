@@ -58,7 +58,7 @@ public:
 
     }
 
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an L1T object
       if (o.name.find( "L1T/" ) != std::string::npos )
@@ -67,7 +67,7 @@ public:
       return false;
     }
 
-  virtual void preDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
 
@@ -83,7 +83,7 @@ public:
       }
     }
 
-  virtual void postDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // object is TH2 histogram
       if( dynamic_cast<TH2F*>( o.object ) )
@@ -98,7 +98,7 @@ public:
     }
 
 private:
-  void preDrawTH1F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
     {
       // Do we want to do anything special yet with TH1F histograms?
 
@@ -238,7 +238,7 @@ private:
       */
     }
 
-  void preDrawTH2F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -419,7 +419,7 @@ private:
 
     }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
 
 
@@ -433,21 +433,21 @@ private:
           return;
         else
         {
-          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
           {
             tt.SetTextColor(2); // error color = RED
             tt.DrawTextNDC(0.5, 0.5, "Error");
-          } // DQM_FLAG_REPORT_ERROR
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          } // DQM_PROP_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
           {
             tt.SetTextColor(5);
             tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-          } // DQM_FLAG_REPORT_WARNING
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          } // DQM_PROP_REPORT_WARN
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
           {
             tt.SetTextColor(1); // other color = BLACK
             tt.DrawTextNDC(0.5, 0.5, "Other ");
-          } // DQM_FLAG_REPORT_OTHER
+          } // DQM_PROP_REPORT_OTHER
           else
           {
             tt.SetTextColor(3);
@@ -457,7 +457,7 @@ private:
       */
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
 
 

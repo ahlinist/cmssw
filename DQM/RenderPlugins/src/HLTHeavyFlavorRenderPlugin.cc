@@ -15,11 +15,11 @@
 
 class HLTHeavyFlavorRenderPlugin : public DQMRenderPlugin{
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & ){
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & ){
     return o.name.find( "HLT/HeavyFlavor" ) != std::string::npos;
   }
 
-  virtual void preDraw( TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ){
+  virtual void preDraw( TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ){
     c->cd();
     TH2* h2 = dynamic_cast<TH2*>( o.object );
     if( h2 ){
@@ -33,7 +33,7 @@ public:
     }
   }
 
-  virtual void postDraw( TCanvas * , const DQMNet::CoreObject &, const VisDQMImgInfo & ){
+  virtual void postDraw( TCanvas * , const VisDQMObject &, const VisDQMImgInfo & ){
     return;
   }
 

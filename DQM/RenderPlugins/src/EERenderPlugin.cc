@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.140 2009/08/26 17:50:47 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.141 2009/08/31 10:48:46 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.140 $
-  \date $Date: 2009/08/26 17:50:47 $
+  \version $Revision: 1.141 $
+  \date $Date: 2009/08/31 10:48:46 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -300,7 +300,7 @@ public:
 
     }
 
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if( o.name.find( "EcalEndcap/EE" ) != std::string::npos )
         return true;
@@ -323,7 +323,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r )
     {
       c->cd();
 
@@ -371,7 +371,7 @@ public:
       r.drawOptions = "";
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
 
@@ -394,7 +394,7 @@ public:
     }
 
 private:
-  void preDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTProfile2D( TCanvas *c, const VisDQMObject &o )
     {
       TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
       assert( obj );
@@ -489,7 +489,7 @@ private:
       gPad->SetRightMargin(0.15);
     }
 
-  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTProfile( TCanvas *, const VisDQMObject &o )
     {
       TProfile* obj = dynamic_cast<TProfile*>( o.object );
       assert( obj );
@@ -531,7 +531,7 @@ private:
       }
     }
 
-  void preDrawTH3F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH3F( TCanvas *, const VisDQMObject &o )
     {
       TH3F* obj = dynamic_cast<TH3F*>( o.object );
       assert( obj );
@@ -545,7 +545,7 @@ private:
       gPad->SetLogy(kFALSE);
     }
 
-  void preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -883,7 +883,7 @@ private:
       }
     }
 
-  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -961,7 +961,7 @@ private:
       }
     }
 
-  void postDrawTProfile2D( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTProfile2D( TCanvas *c, const VisDQMObject &o )
     {
       TProfile2D* obj = dynamic_cast<TProfile2D*>( o.object );
       assert( obj );
@@ -1224,11 +1224,11 @@ private:
 
     }
 
-  void postDrawTH3F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH3F( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH2F( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -1787,7 +1787,7 @@ private:
       }
     }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
     }
 };

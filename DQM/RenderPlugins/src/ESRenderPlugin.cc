@@ -49,17 +49,17 @@ class ESRenderPlugin : public DQMRenderPlugin
 	 colorbar2[7] = 800;
       }
 
-      virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
+      virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &i );
 
-      virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
+      virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
 
-      virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &i );
+      virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i );
 
    private:
 
-      void preDrawTH1F( TCanvas *c, const DQMNet::CoreObject &o );
-      void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
-      void postDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o );
+      void preDrawTH1F( TCanvas *c, const VisDQMObject &o );
+      void preDrawTH2F( TCanvas *c, const VisDQMObject &o );
+      void postDrawTH2F( TCanvas *c, const VisDQMObject &o );
 
       void drawBorders( int plane, float sx, float sy );
 
@@ -67,7 +67,7 @@ class ESRenderPlugin : public DQMRenderPlugin
 
 };
 
-bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & ) 
+bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & ) 
 {
 
    if( o.name.find( "EcalPreshower" ) != std::string::npos ) {
@@ -92,7 +92,7 @@ bool ESRenderPlugin::applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &
 
 }
 
-void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) 
+void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) 
 {
 
    c->cd();
@@ -124,7 +124,7 @@ void ESRenderPlugin::preDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vis
 
 }
 
-void ESRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
 {
    c->cd();
 
@@ -135,7 +135,7 @@ void ESRenderPlugin::postDraw( TCanvas *c, const DQMNet::CoreObject &o, const Vi
 }
 
 
-void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o ) 
+void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o ) 
 {
 
    TH1F* obj = dynamic_cast<TH1F*>( o.object );
@@ -188,7 +188,7 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
 
 }
 
-void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o ) 
+void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) 
 {
 
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
@@ -285,7 +285,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
 
 }
 
-void ESRenderPlugin::postDrawTH2F( TCanvas *, const DQMNet::CoreObject &o )
+void ESRenderPlugin::postDrawTH2F( TCanvas *, const VisDQMObject &o )
 {
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
    assert( obj );

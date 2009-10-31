@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.24 $
-  \date $Date: 2009/10/18 15:44:28 $
+  \version $Revision: 1.25 $
+  \date $Date: 2009/10/26 23:09:01 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -164,7 +164,7 @@ public:
       }
   }
 
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
   {
     // determine whether core object is an Hcal object
     if (o.name.find( "Hcal/" ) != std::string::npos || o.name.find( "HcalCalib/" ) != std::string::npos)
@@ -173,7 +173,7 @@ public:
     return false;
   }
 
-  virtual void preDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
   {
     c->cd();
 
@@ -208,7 +208,7 @@ public:
       }
   }
 
-  virtual void postDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
   {
     // object is TH2 histogram
     if( dynamic_cast<TH2*>( o.object ) )
@@ -227,7 +227,7 @@ public:
   }
 
 private:
-  void preDrawTH1 ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1 ( TCanvas *, const VisDQMObject &o )
   {
     // Do we want to do anything special yet with TH1 histograms?
     TH1* obj = dynamic_cast<TH1*>( o.object );
@@ -285,7 +285,7 @@ private:
       }
   }
 
-  void preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH2 ( TCanvas *c, const VisDQMObject &o )
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
@@ -463,7 +463,7 @@ private:
       }
   }
 
-  void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH1( TCanvas *, const VisDQMObject &o )
   {
     TH1* obj = dynamic_cast<TH1*>( o.object ); 
     assert( obj ); 
@@ -523,7 +523,7 @@ private:
 
   }
 
-  void postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
+  void postDrawTH2( TCanvas *c, const VisDQMObject &o )
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );

@@ -29,7 +29,7 @@ public:
       label_staHO = new TLatex(3.5,3.5,"NA");
     }
 
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & )
     {
       if((o.name.find( "Muons/E" ) != std::string::npos) ||
          (o.name.find( "Muons/M" ) != std::string::npos) ||
@@ -44,7 +44,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & )
     {
       c->cd();
 
@@ -66,7 +66,7 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo & )
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
     {
       c->cd();
 
@@ -89,15 +89,15 @@ public:
     }
 
 private:
-  void preDrawTProfile2D( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTProfile2D( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTProfile( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH2( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -218,22 +218,22 @@ private:
       }
     }
 
-  void preDrawTH1( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTH1( TCanvas *, const VisDQMObject & )
     {
       return;
     }
 
-  void postDrawTProfile2D( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTProfile2D( TCanvas *, const VisDQMObject & )
     {
       return;
     }
 
-  void postDrawTProfile( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTProfile( TCanvas *, const VisDQMObject & )
     {
       return;
     }
 
-  void postDrawTH2( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH2( TCanvas *, const VisDQMObject &o )
     {
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
@@ -251,7 +251,7 @@ private:
       }
     }
 
-  void postDrawTH1( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1( TCanvas *, const VisDQMObject & )
     {
     }
 };

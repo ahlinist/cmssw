@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.7 2009/05/22 19:09:33 lat Exp $
+  $Id: HLTRenderPlugin.cc,v 1.8 2009/09/21 14:34:02 rekovic Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.8  2009/09/21 14:34:02  rekovic
+  Fix FourVector renders
+
   Revision 1.7  2009/05/22 19:09:33  lat
   Untabify.
 
@@ -38,7 +41,7 @@
 class HLTRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // determine whether core object is an HLT object
       if (o.name.find( "HLT/" ) != std::string::npos  )
@@ -47,7 +50,7 @@ public:
       return false;
     }
 
-  virtual void preDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
 
@@ -63,7 +66,7 @@ public:
       }
     }
 
-  virtual void postDraw (TCanvas * c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       // object is TH2 histogram
       if( dynamic_cast<TH2F*>( o.object ) )
@@ -78,7 +81,7 @@ public:
     }
 
 private:
-  void preDrawTH1F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F ( TCanvas *, const VisDQMObject &o )
     {
       // Do we want to do anything special yet with TH1F histograms?
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
@@ -148,7 +151,7 @@ private:
       */
     }
 
-  void preDrawTH2F ( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH2F ( TCanvas *, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -215,7 +218,7 @@ private:
 
     }
 
-  void postDrawTH1F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH1F( TCanvas *, const VisDQMObject & )
     {
       /*
         // Add error/warning text to 1-D histograms.  Do we want this at this time?
@@ -227,21 +230,21 @@ private:
 
         else
         {
-          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
           {
                   tt.SetTextColor(2); // error color = RED
                   tt.DrawTextNDC(0.5, 0.5, "Error");
-          } // DQM_FLAG_REPORT_ERROR
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          } // DQM_PROP_REPORT_ERROR
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
           {
                   tt.SetTextColor(5);
                   tt.DrawTextNDC(0.5, 0.5, "Warning"); // warning color = YELLOW
-          } // DQM_FLAG_REPORT_WARNING
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          } // DQM_PROP_REPORT_WARN
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
           {
                   tt.SetTextColor(1); // other color = BLACK
                   tt.DrawTextNDC(0.5, 0.5, "Other ");
-          } // DQM_FLAG_REPORT_OTHER
+          } // DQM_PROP_REPORT_OTHER
           else
           {
                   tt.SetTextColor(3);
@@ -251,7 +254,7 @@ private:
       */
     }
 
-  void postDrawTH2F( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTH2F( TCanvas *, const VisDQMObject & )
     {
       // nothing to put here just yet
       // in the future, we can add text output based on error status,

@@ -1,11 +1,11 @@
-// $Id: DTRenderPlugin.cc,v 1.55 2009/08/14 09:19:16 cerminar Exp $
+// $Id: DTRenderPlugin.cc,v 1.56 2009/08/14 09:51:53 cerminar Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Masetti
-  \version $Revision: 1.55 $
-  \date $Date: 2009/08/14 09:19:16 $
+  \version $Revision: 1.56 $
+  \date $Date: 2009/08/14 09:51:53 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -33,7 +33,7 @@ public:
       labelMB4Sect10and14_wheel = new TLatex(9.85,4.5,"10/14");
     }
 
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
     {
       if((o.name.find( "DT/R" ) != std::string::npos) ||
          (o.name.find( "DT/0" ) != std::string::npos) ||
@@ -49,7 +49,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
     {
       c->cd();
 
@@ -76,7 +76,7 @@ public:
       }
     }
 
-  virtual void postDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
     {
       c->cd();
 
@@ -100,15 +100,15 @@ public:
 
 private:
   // private functions...
-  void preDrawTProfile2D( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTProfile2D( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject & )
+  void preDrawTProfile( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void preDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH2( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
       assert( obj );
@@ -814,7 +814,7 @@ private:
       */
     }
 
-  void preDrawTH1( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH1( TCanvas *c, const VisDQMObject &o )
     {
       TH1* obj = dynamic_cast<TH1*>( o.object );
 
@@ -910,15 +910,15 @@ private:
 
         if (line)
         {
-          if (o.flags & DQMNet::DQM_FLAG_REPORT_ERROR)
+          if (o.flags & DQMNet::DQM_PROP_REPORT_ERROR)
           {
             line->SetLineColor(TColor::GetColor("#CC0000"));
           }
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_WARNING)
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_WARN)
           {
             line->SetLineColor(TColor::GetColor("#993300"));
           }
-          else if (o.flags & DQMNet::DQM_FLAG_REPORT_OTHER)
+          else if (o.flags & DQMNet::DQM_PROP_REPORT_OTHER)
           {
             line->SetLineColor(TColor::GetColor("#FFCC00"));
           }
@@ -1039,15 +1039,15 @@ private:
       }
     }
 
-  void postDrawTProfile2D( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTProfile2D( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void postDrawTProfile( TCanvas *, const DQMNet::CoreObject & )
+  void postDrawTProfile( TCanvas *, const VisDQMObject & )
     {
     }
 
-  void postDrawTH2( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH2( TCanvas *, const VisDQMObject &o )
     {
 //       if(o.name.find("DataIntegritySummary") != std::string::npos)
 //       {
@@ -1259,7 +1259,7 @@ private:
 
     }
 
-  void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
+  void postDrawTH1( TCanvas *, const VisDQMObject &o )
     {
       if( o.name.find("EventLenght") != std::string::npos )
       {
