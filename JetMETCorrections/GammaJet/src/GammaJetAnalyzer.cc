@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.10 2009/10/12 20:08:09 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.11 2009/11/01 00:11:40 pandolf Exp $
 //
 //
 
@@ -428,8 +428,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    for (GenParticleCollection::const_iterator p = genParticles->begin();
 	p != genParticles->end(); ++p) {
      
-     //     if (nMC>=2000) {cout << "number of MC particle is larger than 2000. Skipping" << endl; continue;}
-     if (nMC>=nMaxMC) {continue;}  // to reduce the root file size
+     if (nMC>=(nMaxMC-1)) {continue;}  // to reduce the root file size
+     // need space for the mom, eventually
 
      // Find the stable photon
      if (p->pdgId()==22 && p->status()==1){
@@ -462,9 +462,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   motherIDMC = j;
 	 }
        }
-     }// else {
-     //motherIDMC[nMC] = -1;
-     //}
+     }
 
      // Select only a subset of particles to reduce size:
      // All the partons (8)
@@ -496,7 +494,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        phiMC[nMC] = p->phi();	 
        
        mapMC[&(*p)] = nMC;
-       ++nMC; //mikko
+       ++nMC; 
 
        // if stable photon/electron, find parent
        if (p->status() == 1 && motherIDMC != -1
@@ -521,7 +519,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   phiMC[nMC] = mom->phi(); 
 
 	   mapMC[mom] = nMC;
-	   ++nMC; //mikko
+	   ++nMC; 
 	 }
        } // stable photon has parent
      } // keep particle
