@@ -2,14 +2,16 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.25 $
-  \date $Date: 2009/10/26 23:09:01 $
+  \version $Revision: 1.26 $
+  \date $Date: 2009/10/31 23:18:54 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
+
+  // DQMNet::CoreObject replaced by VisDQMObject in Lassi's Oct. 31 revision 
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -18,6 +20,8 @@
 #include "TROOT.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
 #include "TStyle.h"
 #include "TCanvas.h"
 #include "TGaxis.h"
@@ -179,7 +183,6 @@ public:
 
     gStyle->Reset("Default");
     defNCont_=gStyle->GetNumberContours(); // test this later
-
     gStyle->SetCanvasColor(10);
     gStyle->SetPadColor(10);
     gStyle->SetFillColor(10);
@@ -195,23 +198,30 @@ public:
     gStyle->SetStatBorderSize(1);
 
     gROOT->ForceStyle();
+    
+    // Ay yi yi -- need to remember that other histogram types
+    // inherit from TH1, so we can't do the TH1 check first.
+    if( dynamic_cast<TProfile2D*>( o.object ) )
+      {      }
+    else if ( dynamic_cast<TProfile*>( o.object ) )
+	preDrawTProfile( c, o );
 
     // object is TH2 histogram
-    if( dynamic_cast<TH2*>( o.object ) )
-      {
+    else if( dynamic_cast<TH2*>( o.object ) )
         preDrawTH2( c, o );
-      }
     // object is TH1 histogram
     else if( dynamic_cast<TH1*>( o.object ) )
-      {
         preDrawTH1( c, o );
-      }
   }
 
   virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
   {
+    if( dynamic_cast<TProfile2D*>( o.object ) )
+      {      }
+    else if( dynamic_cast<TProfile*>( o.object ) )
+      {      }
     // object is TH2 histogram
-    if( dynamic_cast<TH2*>( o.object ) )
+    else if( dynamic_cast<TH2*>( o.object ) )
       {
         postDrawTH2( c, o );
       }
@@ -220,10 +230,6 @@ public:
       {
         postDrawTH1( c, o );
       }
-
-    // reset number of contours -- to be tested
-    gStyle->SetNumberContours(defNCont_);
-    gStyle->UseCurrentStyle();
   }
 
 private:
@@ -245,7 +251,8 @@ private:
 	  (o.name.find("DataFormatMonitor/Diagnostics/HTR Fiber Orbit")                !=std::string::npos) ||
 	  (o.name.find("DataFormatMonitor/Diagnostics/HTR Status Word H")              !=std::string::npos) ||
 	  (o.name.find("DataFormatMonitor/Diagnostics/HTR UnSupp")                     !=std::string::npos) ||
-	  (o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")                           !=std::string::npos) 
+	  (o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")                           !=std::string::npos) ||
+	  (o.name.find("DigiMonitor_Hcal/good_digis/# of Good Digis") !=std::string::npos)
 	  ) 
       if (obj->GetMaximum()>0) gPad->SetLogy(1);
 
@@ -299,23 +306,18 @@ private:
     obj->SetStats( kFALSE );
 
     // Default coloring scheme
-    setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
+    setRainbowColor(obj); // sets to rainbow color with finer gradations than setPalette(1)
     obj->SetOption("colz");
+    c->SetRightMargin(2*c->GetRightMargin()); // double right margin
 
     // Set default color scheme
-
-    // Always use most up-to-date color scheme for reportSummaryMap,
-    // so that it's consistent with other maps.
-    // Set reportSummary Map color with dqm::utils::reportSummaryMapPalette(obj);
-
-    // I don't think we want to do this yet, because reportSummaryMap doesn't
-    // yet provide useful colors when value = -1?
-    // Instead, use the summaryColors defined within this code
+    
+    // For reportSummary plots, use the summaryColors defined within this code
     // green when =1, red when = 0, grey when = -1
 
     if (o.name.find("reportSummaryMap" ) != std::string::npos)
       {
-        gStyle->SetNumberContours(40); // should maintain reportSummaryMap color scheme, but allow for additional colors (from -1->0)
+	obj->SetContour(40);
         gStyle->SetPalette(40,summaryColors);
 	gStyle->SetPaintTextFormat("5.4g"); // set to %5.4f  text format in cells
 	obj->SetMarkerSize(3); // set font size to 3x normal
@@ -326,26 +328,13 @@ private:
       }
     else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
       {
-        gStyle->SetNumberContours(40);
+	obj->SetContour(40);
         gStyle->SetPalette(40,summaryColors);
         obj->SetOption("colz");
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
       }
 
-    // Overall pedestal plots should always be colored yellow-red (no green allowed; ZS doesn't let us normalize to Nevents properly (yet) )
-    else if (   (o.name.find("BaselineMonitor_Hcal/ ProblemPedestals")!=std::string::npos) ||
-		(o.name.find("BaselineMonitor_Hcal/problem_pedestals/")!=std::string::npos) 
-		)
-      {
-	double scale = obj->GetBinContent(0,0);
-	obj->Scale(1./scale);
-	obj->SetMinimum(0.);
-	obj->SetMaximum(1.); 
-	// Make special color scheme for pedestals at some point?
-      }
-      
-      
     // Overall problem hot cells are plotted with error Fraction colors (0 = green, 1 = red)
     else if ( (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/problem_rechits/")!= std::string::npos ) ||
@@ -354,33 +343,29 @@ private:
 	      (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")!= std::string::npos ) ||
 	      (o.name.find("HotCellMonitor_Hcal/problem_hotcells/") != std::string::npos) ||
 	      (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
-	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos )
+	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos ) 
 	      )
 		
       {
-	c->SetFrameFillColor(18);
-	gStyle->SetFrameFillColor(18);
+	//c->SetFrameFillColor(16);
+	gStyle->SetFrameFillColor(16);
         double scale = obj->GetBinContent(0,0);
         if (scale>0) // problem histograms don't have underflow bins filled any more
-	  {
-	    obj->Scale(1./scale);
-	    obj->SetMinimum(0.);
-	    obj->SetMaximum(1.);
-	    //Set error palette just for normalized histograms?
-	    //gStyle->SetPalette(20, errorFracColors);
-	    setErrorColor();
-	  }
-	else 
-	  {
-	    obj->SetMinimum(0.);
-	    obj->SetMaximum(1.);
-	    setErrorColor();
-	  }
+	  obj->Scale(1./scale);
+
+	obj->SetMinimum(0.);
+	if (o.name.find("HotCellMonitor_Hcal/")!=std::string::npos)
+	  obj->SetMinimum(0.01); // cells satisfying hot criterion in <1% of events not shown by default
+	obj->SetMaximum(1.);
+	//Set error palette just for normalized histograms?
+	setErrorColor(obj);
         obj->SetOption("colz");
       }
 
     // Do we want these plots to show error fractions (0-1) as well?
-    // I think it's useful to have raw number of events plotted here; don't renormalize (yet)
+    // I think it's usef ul to have raw number of events plotted here; don't renormalize (yet)
 
     else if (// Hot Cell subdirectories
 	     (o.name.find("HotCellMonitor_Hcal/hot_pedestaltest/") != std::string::npos) ||
@@ -390,7 +375,15 @@ private:
 	     // Dead Cell subdirectories
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing/")!= std::string::npos ) ||
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present/")!= std::string::npos ) ||
-	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos )
+	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest/")!= std::string::npos ) ||
+	     // Digi Subdirectories
+	     (o.name.find("DigiMonitor_Hcal/bad_digis/bad_digi_occupancy/")!=std::string::npos) ||
+	     (o.name.find("DigiMonitor_Hcal/bad_digis/bad_reportUnpackerErrors/")!=std::string::npos) ||
+	     (o.name.find("DigiMonitor_Hcal/bad_digis/baddigisize/")!=std::string::npos) ||
+	     (o.name.find("DigiMonitor_Hcal/bad_digis/badfibBCNoff/")!=std::string::npos) ||
+	     //(o.name.find("DigiMonitor_Hcal/good_digis/digi_occupancy/")!=std::string::npos) // don't want to apply error color here
+	     (o.name.find("BeamMonitor_Hcal/Lumi/HFlumi_total_")!=std::string::npos) 
+	     //(o.name.find("BeamMonitor_Hcal/Lumi/Abnormal PMT events")!=std::string::npos) // not sure we want to normalize this one yet -- raw # of errors may still be useful
 	     )
       {
 	gPad->SetGridx();
@@ -400,22 +393,13 @@ private:
 	  {
 	    obj->SetMaximum(obj->GetBinContent(0,0));
 	    obj->SetMinimum(0.);
-	    if (o.name.find("dead_digi_never_present/") != std::string::npos && scale > 1000) 
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-	      }
-	    else if (scale>10000)
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-	      }
+	    obj->SetStats(0);
 	  }
-        setErrorColor();
-        //gStyle->SetPalette(20, errorFracColors);
+        setErrorColor(obj);
         obj->SetOption("colz");
       }
 
+    // Soon will be removed, as pedestal checking now done elsewhere
     else if (
 	     (
 	      (o.name.find("BaselineMonitor_Hcal/") != std::string::npos) &&
@@ -439,7 +423,7 @@ private:
 		  )
 	  obj->SetMaximum(2.);
 
-        setRainbowColor(); // sets to rainbow color with finer gradations than setPalette(1)
+        setRainbowColor(obj); // sets to rainbow color with finer gradations than setPalette(1)
         obj->SetOption("colz");
       }
 
@@ -457,10 +441,31 @@ private:
     else   // default color is rainbow
       {
         gStyle->SetPalette(1);
-        //gStyle->SetPalette(20, errorFracColors);
         obj->SetOption("colz");
-
       }
+  } // void preDrawTH2
+
+  void preDrawTProfile ( TCanvas *, const VisDQMObject &o )
+  {
+    TProfile* obj = dynamic_cast<TProfile*>( o.object ); 
+    assert( obj ); 
+    // Set TProfile boundaries to first/last bins that have non-zero content
+    bool foundfirst=false;
+    int firstnonzerobin=1;
+    int lastnonzerobin=1;
+    for (int i=1;i<=obj->GetNbinsX();++i)
+      {
+	if (foundfirst==false && obj->GetBinContent(i)!=0)
+	  {
+	    foundfirst=true;
+	    firstnonzerobin=i;
+	  }
+	if (obj->GetBinContent(i)!=0)
+	  lastnonzerobin=i+1;
+      }
+    if (lastnonzerobin-firstnonzerobin>1)
+      obj->GetXaxis()->SetRange(firstnonzerobin,lastnonzerobin-1);
+    return;
   }
 
   void postDrawTH1( TCanvas *, const VisDQMObject &o )
@@ -767,6 +772,8 @@ private:
 	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor")!= std::string::npos ) ||
 	      (o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos) ||
 	      ((o.name.find("DataFormatMonitor") !=std::string::npos) && (o.name.find("Hardware Watch Cells") !=std::string::npos))
 	      )
@@ -836,15 +843,15 @@ private:
 
   }
 
-  void setRainbowColor(void)
+  void setRainbowColor(TH2*obj)
   {
-    gStyle->SetNumberContours(NCont_rainbow); // will this affect other histograms that don't use this palette?  Shouldn't -- Ncontours gets reset to default in post
+    obj->SetContour(NCont_rainbow);
     gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
   }
 
-  void setErrorColor(void)
+  void setErrorColor(TH2* obj)
   {
-    gStyle->SetNumberContours(NCont_hcalError);
+    obj->SetContour(NCont_hcalError);
     gStyle->SetPalette(NCont_hcalError,hcalErrorColors);
   }
 
