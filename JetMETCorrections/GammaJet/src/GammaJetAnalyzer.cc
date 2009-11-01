@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.9 2009/10/02 12:56:09 delre Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.10 2009/10/12 20:08:09 pandolf Exp $
 //
 //
 
@@ -1477,31 +1477,34 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
        if (fabs(partPdgId)==13) { //muons
          nMuonsGen += 1;
-	 p4MuonsGen += p4;
+	   p4MuonsGen += p4;
        } else if (fabs(partPdgId)==11) { //electrons
-	 nElectronsGen += 1;
-	 p4ElectronsGen += p4;
+	   nElectronsGen += 1;
+	   p4ElectronsGen += p4;
        } else if ((*iPart)->charge() != 0) { // charged hadrons
-	 nTracksGen += 1;
-	 p4TracksGen += p4;
+	   nTracksGen += 1;
+	   p4TracksGen += p4;
        } else if (partPdgId==22) { //photons
-	 nPhotonsGen += 1;
-	 p4PhotonsGen += p4;
+	   //nPhotonsGen += 1;
+	   //p4PhotonsGen += p4;
+	   //save photons and later check for conversions:
+	   shortPtcls.push_back(*iPart);
        } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
 		  && (fabs(partPdgId) != 16)) { // veto neutrinos
 
-	 nNeutralHadronsGen += 1;
-	 p4NeutralHadronsGen += p4;
+	   // Decay K0S and Lambda later and correct fractions
+	   if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
+	     shortPtcls.push_back(*iPart);
+	   } else {
+	     nNeutralHadronsGen += 1;
+	     p4NeutralHadronsGen += p4;
+         }
       
-	 // Decay K0S and Lambda later and correct fractions
-	 if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
-	   shortPtcls.push_back(*iPart);
-	 }
        }
     
      } //for jetParticles
   
-     // ------------------ BEGIN short decays
+     // ------------------ BEGIN short decays (photons, K0S's and lambdas)
 
      for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
 	  iGen != shortPtcls.end(); ++iGen) {
@@ -1510,17 +1513,18 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        if (decayedSims.find(*iGen) != decayedSims.end()) {
 
 	 // Check that the SimTrack Decay products were stored
-	 // then subtract the original GenParticle four-momentum
 	 const SimTrack *trk = decayedSims[*iGen];
 	 if (promptDecays.find(trk) != promptDecays.end()) {
 
+         //FP, 31-10-09: this seems useless, added if-else at line 1497:
 	   // Convert track momentum to normal TLorentzVector, wrong type :(
-	   math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
-	   TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	   p4NeutralHadronsGen -= p4;
+	   //math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
+	   //TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+	   //p4NeutralHadronsGen -= p4;
 
 	   set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
       
+
 	   for (set<const SimTrack*>::const_iterator iSim = kids.begin();
 		iSim != kids.end(); ++iSim) {
 
@@ -1532,28 +1536,37 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	     double vertR = vtx->position().Rho();
 	     double vertZ = vtx->position().z();
-	     double trkEta = trk->momentum().eta();
-	     bool decayedBeforeCalo =  ((fabs(trkEta) < 1.4 && vertR < 129.) ||
-					(fabs(trkEta) >= 1.4 && vertZ < 304.));
+	     //double trkEta = trk->momentum().eta();
+	     bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
 
 	     // Check if the decay happened early enough for the
 	     // charged track to be reconstructed
+	     // FP, 31-10-09: minimum track pt requirement shouldn't be included
 	     bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
-				    && (*iSim)->charge() != 0 && p4.Pt() > 0.1);
-	     //min it tracking (4 step) pt = 100 mev? it's 75MeV, but that's ok
-        
+				    && (*iSim)->charge() != 0 /*&& p4.Pt() > 0.1*/);
+
 	     if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
 	       nPhotonsGen += 2;  //both
 	       p4PhotonsGen += p4;
 	     }
 	     else if (decayTrackable) {
-	       nTracksGen += 1;
-	       p4TracksGen += p4;
+             if( fabs((*iSim)->type())==11 ) { //electrons
+	         nElectronsGen += 1;
+	         p4ElectronsGen += p4;
+             } else {
+	         nTracksGen += 1;
+	         p4TracksGen += p4;
+             }
 	     } else {
-	       nNeutralHadronsGen += 1;
-	       p4NeutralHadronsGen += p4;
-	     }
-	   } // for iSim
+             if( (*iGen)->pdgId()==22 ) { //photons
+	         nPhotonsGen += 1;
+	         p4PhotonsGen += p4;
+             } else {
+	         nNeutralHadronsGen += 1;
+	         p4NeutralHadronsGen += p4;
+             } //if-else photons
+	     } //if-else decay trackable
+	   } // for iSim loop on kids
 	 } // has promptDecays
        } // has decayedSims
      } // for iGen
