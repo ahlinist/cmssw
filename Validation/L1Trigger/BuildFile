@@ -10,6 +10,7 @@
 <use name=CalibFormats/CaloTPG>
 <use name=CalibCalorimetry/EcalTPGTools>
 <use name=PhysicsTools/UtilAlgos>
+<use name=DataFormats/HepMCCandidate>
 <use name=root>
 <export>
    <lib name=ValidationL1Trigger>
