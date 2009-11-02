@@ -95,12 +95,10 @@ private:
   MonitorElement* egamma_eta_eff_denom;
 
   MonitorElement* isoegamma_et_eff_num;
-  MonitorElement* isoegamma_et_eff_denom;
   MonitorElement* isoegamma_eta_eff_num;
-  MonitorElement* isoegamma_eta_eff_denom;
-
 
   MonitorElement* region_rank;
+
 
 
   
