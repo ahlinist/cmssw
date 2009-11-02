@@ -57,7 +57,7 @@ void FakeRateJetWeightProducer::produce(edm::Event& evt, const edm::EventSetup&)
     } else if ( method_ == "CDF" ) {
       if ( tauJetIdEff > qcdJetFakeRate ) {
 	fakeRateJetWeight = ( tauJetDiscr_passed ) ? 
-	  -qcdJetFakeRate*(1 - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
+	  -qcdJetFakeRate*(1. - tauJetIdEff)/(tauJetIdEff - qcdJetFakeRate) : qcdJetFakeRate*tauJetIdEff/(tauJetIdEff - qcdJetFakeRate);
       }
     }
 
