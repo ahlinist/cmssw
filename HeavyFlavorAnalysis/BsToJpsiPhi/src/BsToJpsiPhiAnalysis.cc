@@ -1087,7 +1087,7 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const GenParticle & genBsCand = (*genParticles)[ i ];
     int MC_particleID=genBsCand.pdgId();    
-    if( abs(MC_particleID == 531) ){
+    if( abs(MC_particleID) == 531 ){
       GenNumberOfFoundBsMesons++;
       bsRootTree_->isGenBsEvent_ = 1;
       
@@ -1233,7 +1233,7 @@ void BsToJpsiPhiAnalysis::fillMCInfoBd( edm::Handle<GenParticleCollection> & gen
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const GenParticle & genBdCand = (*genParticles)[ i ];
     int MC_particleID=genBdCand.pdgId();    
-    if( abs(MC_particleID == 511) ){
+    if( abs(MC_particleID) == 511 ){
       GenNumberOfFoundBdMesons++;
       bsRootTree_->isGenBdEvent_ = 1;
       
