@@ -30,7 +30,7 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       egamma_et = store->book1D("rctEgammaEt","Rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       egamma_eta = store->book1D("rctEgammaEta","Rct e/#gamma #eta",binsEta_,-3.,3.);
       egamma_phi = store->book1D("rctEgammaPhi","Rct e/#gamma #phi",binsPhi_,0.,3.2);
-      egamma_deltaEt = store->book1D("rctEgammaDeltaEt","Rct e/#gamma #ET-MC e/#gamma E_[T}/MC e/#gamma E_{T} ",100,-1.,1.);
+      egamma_deltaEt = store->book1D("rctEgammaDeltaEt","Rct e/#gamma ET-MC e/#gamma E_[T}/MC e/#gamma E_{T} ",100,-1.,1.);
       
       egamma_et_eff_num = store->book1D("rctEgammaEtEffNum","Rct e/#gamma E_{T}",binsEt_,0.,maxEt_);
       egamma_et_eff_num->getTH1F()->Sumw2();
@@ -47,16 +47,11 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
       isoegamma_et_eff_num = store->book1D("rctIsoEgammaEtEffNum","Rct isolated e/#gamma E_{T}",binsEt_,0.,maxEt_);
       isoegamma_et_eff_num->getTH1F()->Sumw2();
 
-      isoegamma_et_eff_denom = store->book1D("rctIsoEgammaEtEffDenom","Rct isolated e/#gamma E_{T}",binsEt_,0.,maxEt_);
-      isoegamma_et_eff_denom->getTH1F()->Sumw2();
-      
       isoegamma_eta_eff_num = store->book1D("rctIsoEgammaEtaEffNum","Rct isolated e/#gamma #eta",binsEta_,-3.,3.);
       isoegamma_eta_eff_num->getTH1F()->Sumw2();
 
-      isoegamma_eta_eff_denom = store->book1D("rctIsoEgammaEtaEffDenom","Rct isolated e/#gamma #eta",binsEta_,-3.,3.);
-      isoegamma_eta_eff_denom->getTH1F()->Sumw2();
       
-      region_rank=store->book1D("rctRegionRank","Rct region rank",64,0,128);
+      region_rank=store->book1D("rctRegionRank","Rct region ET",64,0,128);
     }
 
 }
@@ -176,6 +171,15 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	    }
 	}
       }
+
+  //Now regions
+  edm::Handle<L1CaloRegionCollection> regions;
+  if(iEvent.getByLabel(egamma_,regions))
+    for(unsigned int i=0;i<regions->size();++i)
+      if(regions->at(i).et()>0)
+	region_rank->Fill(regions->at(i).et());
+     
+
 }
 
 
