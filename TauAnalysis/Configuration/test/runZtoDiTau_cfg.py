@@ -13,7 +13,7 @@ process.load('Configuration/StandardSequences/GeometryIdeal_cff')
 process.load('Configuration/StandardSequences/MagneticField_cff')
 process.load('Configuration/StandardSequences/Reconstruction_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'IDEAL_V12::All'
+process.GlobalTag.globaltag = cms.string('MC_31X_V2::All')
 
 #--------------------------------------------------------------------------------
 # import sequence for PAT-tuple production
@@ -64,9 +64,10 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'rfio:/castor/cern.ch/user/v/veelken/CMSSW_2_2_3/diTauSkim.root'
-        'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_1.root',
-        'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_2.root'
+        #'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_1.root',
+        #'rfio:/castor/cern.ch/user/r/rahmat/hk/rahmat/QCDPt15_GenTrack12_FASTSIM/RAHMAT_QCD/972a8d071c1d3694edbf11929c935ed9/qcdpt15Skim_2.root'
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
+        'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_2.root'
     )
     #skipBadFiles = cms.untracked.bool(True)
 )
@@ -129,7 +130,7 @@ process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTup
 #       at the very end of configuring the process object !!
 #
 from TauAnalysis.Configuration.tools.aodTools import *
-switchToAOD(process, triggerHistManager = process.triggerHistManagerForDiTau)
+switchToAOD(process, triggerHistManager = process.triggerHistManagerForDiTau, eventDumpPlugin = process.diTauEventDump)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
