@@ -12,6 +12,15 @@ from TauAnalysis.Core.metTopologyHistManager_cfi import*
 from TauAnalysis.Core.tauNuCandidateHistManager_cfi import*
 from TauAnalysis.Core.electronHistManager_cfi import *
 from TauAnalysis.Core.muonHistManager_cfi import *
+from TauAnalysis.Core.eventShapeVarsHistManager_cfi import *
+caloEventShapeVarsHistManager = copy.deepcopy(eventShapeVarsHistManager)
+caloEventShapeVarsHistManager.pluginName = cms.string('caloEventShapeVarsHistManager')
+caloEventShapeVarsHistManager.src = cms.InputTag('caloEventShapeVars')
+caloEventShapeVarsHistManager.dqmDirectory_store = cms.string('CaloEventShapeVars')
+pfEventShapeVarsHistManager = copy.deepcopy(eventShapeVarsHistManager)
+pfEventShapeVarsHistManager.pluginName = cms.string('pfEventShapeVarsHistManager')
+pfEventShapeVarsHistManager.src = cms.InputTag('pfEventShapeVars')
+pfEventShapeVarsHistManager.dqmDirectory_store = cms.string('PFEventShapeVars')
 
 wTauNuHistManagers = cms.vstring(
     'tauHistManager',
@@ -23,7 +32,9 @@ wTauNuHistManagers = cms.vstring(
     'tauRecoilEnergyFromJetsHistManager',
     'tauRecoilEnergyFromCaloTowersHistManager',
     'metTopologyHistManager',
-    'tauNuCandidateHistManager'
+    'tauNuCandidateHistManager',
+    'caloEventShapeVarsHistManager',
+    'pfEventShapeVarsHistManager'
 )
 
 
@@ -106,7 +117,8 @@ evtSelTauElectronVeto = cms.PSet(
 evtSelExplicitElectronVeto = cms.PSet(
     pluginName = cms.string('evtSelExplicitElectronVeto'),
     pluginType = cms.string('BoolEventSelector'),
-    src = cms.InputTag('explicitElectronVeto')
+    #src = cms.InputTag('explicitElectronVeto') # CV: temporarily disabled to avoid exception
+    src = cms.InputTag('primaryEventVertexQuality')
     )
 
 
