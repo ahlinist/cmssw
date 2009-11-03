@@ -62,7 +62,8 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #    'rfio:/castor/cern.ch/user/l/liis/SelEvents/qcdEvents_passedEcalCrack.root'
-   'rfio:/castor/cern.ch/user/l/liis/SelEvents/selEvents_WtoTauNu_Wtaunu_part01.root'
+   #'rfio:/castor/cern.ch/user/l/liis/SelEvents/selEvents_WtoTauNu_Wtaunu_part01.root'
+    'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZmumuSkimMT314_1/muTauSkim_1.root'
 #    'rfio:/castor/cern.ch/user/l/liis/SelEvents/selEvents_WtoTauNu_Wenu_part02.root'    
 #    'rfio:/castor/cern.ch/user/l/liis/SelEvents/qcdEvents_passedEcalCrack.root'
 #    'file:QCDSkim_1.root'   
@@ -107,8 +108,7 @@ from TauAnalysis.Configuration.tools.changeCut import *
 changeCut(process,"selectedLayer1TausForWTauNuPt20","pt > 20.")
 changeCut(process,"selectedLayer1TausForWTauNuTrkIso","tauID('byTaNCfrQuarterPercent') > 0.5")
 changeCut(process, "selectedLayer1TausForWTauNuLeadTrkPt","leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 20.")
-changeCut(process, "selectedLayer1ElectronsTightId","electronID('robust') > 0")
-
+changeCut(process, "selectedLayer1ElectronsTightId","electronID('eidRobustTight') > 0")
 
 process.p = cms.Path( 
     process.producePatTupleWtoTauNuSpecific
@@ -140,7 +140,7 @@ process.p.replace(process.producePatTupleWtoTauNuSpecific, process.producePatTup
 
 #replace reco->aod. Necessary for fast-sim produced qcd sample
 from TauAnalysis.Configuration.tools.aodTools import *
-switchToAOD(process)
+#switchToAOD(process, eventDumpPlugin = process.wTauNuEventDump)
 
 # print-out all python configuration parameter information
 #print process.dumpPython()
