@@ -345,18 +345,20 @@ selectedLayer1TausForWTauNuEta21.cut = selectedLayer1TausEta21.cut
 selectedLayer1TausForWTauNuPt20.cut = selectedLayer1TausPt20.cut 
 selectedLayer1TausForWTauNuLeadTrk.cut = selectedLayer1TausLeadTrk.cut
 selectedLayer1TausForWTauNuLeadTrkPt.cut = cms.string("leadPFChargedHadrCand().isNonnull() & leadPFChargedHadrCand().pt() > 15.")
+selectedLayer1TausForWTauNuEcalIso.cut = cms.string('tauID("byIsolation") > 0.5')
 selectedLayer1TausForWTauNuTrkIso.cut = selectedLayer1TausTrkIso.cut
 selectedLayer1TausForWTauNuProng.cut = selectedLayer1TausProng.cut
 selectedLayer1TausForWTauNuCharge.cut = selectedLayer1TausCharge.cut
 selectedLayer1TausForWTauNuMuonVeto.cut = selectedLayer1TausMuonVeto.cut
 selectedLayer1TausForWTauNuElectronVeto.cut = selectedLayer1TausElectronVeto.cut
-selectedLayer1TausForWTauNuEcalCrackVeto.cut =  selectedLayer1TausEcalCrackVeto.cut
+selectedLayer1TausForWTauNuEcalCrackVeto.cut = selectedLayer1TausEcalCrackVeto.cut
 
 patTauSelConfiguratorForWTauNu =objSelConfigurator(
     [ selectedLayer1TausForWTauNuEta21,
       selectedLayer1TausForWTauNuPt20,
       selectedLayer1TausForWTauNuLeadTrk,
       selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuEcalIso,
       selectedLayer1TausForWTauNuTrkIso,
       selectedLayer1TausForWTauNuProng,
       selectedLayer1TausForWTauNuCharge, 
@@ -371,6 +373,7 @@ patTauSelConfiguratorForWTauNu =objSelConfigurator(
 selectLayer1TausForWTauNu = patTauSelConfiguratorForWTauNu.configure(namespace = locals())
 
 #Loose isolation selection#
+selectedLayer1TausForWTauNuEcalIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
 selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut = cms.string("isolationPFChargedHadrCandsPtSum()<10")
 selectedLayer1TausForWTauNuProngLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
 selectedLayer1TausForWTauNuChargeLooseIsolation.cut = selectedLayer1TausForWTauNuTrkIsoLooseIsolation.cut
@@ -384,6 +387,7 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
       selectedLayer1TausForWTauNuPt20,
       selectedLayer1TausForWTauNuLeadTrk,
       selectedLayer1TausForWTauNuLeadTrkPt,
+      selectedLayer1TausForWTauNuEcalIsoLooseIsolation,
       selectedLayer1TausForWTauNuTrkIsoLooseIsolation,
       selectedLayer1TausForWTauNuProngLooseIsolation,
       selectedLayer1TausForWTauNuChargeLooseIsolation, 
