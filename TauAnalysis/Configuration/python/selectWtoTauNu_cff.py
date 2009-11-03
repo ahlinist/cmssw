@@ -45,6 +45,13 @@ cfgMetPt = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+cfgPFMetPt = cms.PSet(
+    pluginName = cms.string('PFmetPtCut'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src = cms.InputTag('selectedLayer1PFMETsPt25'),
+    minNumber = cms.uint32(1)
+)
+
 cfgTauLeadTrk = cms.PSet(
     pluginName = cms.string('tauLeadTrkCut'),
     pluginType = cms.string('PATCandViewMinEventSelector'),
@@ -58,6 +65,14 @@ cfgTauLeadTrkPt = cms.PSet(
     pluginType = cms.string('PATCandViewMinEventSelector'),
     src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtCumulative'),
     src_individual = cms.InputTag('selectedLayer1TausForWTauNuLeadTrkPtIndividual'),
+    minNumber = cms.uint32(1)
+)
+
+cfgTauEcalIso = cms.PSet(
+    pluginName = cms.string('tauEcalIso'),
+    pluginType = cms.string('PATCandViewMinEventSelector'),
+    src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoCumulative'),
+    src_individual = cms.InputTag('selectedLayer1TausForWTauNuEcalIsoIndividual'),
     minNumber = cms.uint32(1)
 )
 
@@ -83,7 +98,7 @@ cfgTauElectronVeto = cms.PSet(
     src_cumulative = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoCumulative'),
     src_individual = cms.InputTag('selectedLayer1TausForWTauNuElectronVetoIndividual'),
     minNumber = cms.uint32(1)
-)
+    )
 
 cfgTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('tauEcalCrackVeto'),
@@ -132,15 +147,17 @@ wToTauNuEventSelConfigurator = eventSelFlagProdConfigurator(
 	cfgPrimaryEventVertexPosition,
 	cfgTauEtaCut,
 	cfgTauPtCut,
+	cfgPFMetPt,
 	cfgMetPt,
 	cfgTauLeadTrk,
 	cfgTauLeadTrkPt,
+        cfgTauEcalIso,
 	cfgTauTrkIso,
+	cfgTauProngCut,
+        cfgTauChargeCut,
 	cfgTauMuonVeto,
 	cfgTauElectronVeto,
         cfgTauEcalCrackVeto,
-	cfgTauProngCut,
-        cfgTauChargeCut,
         cfgCentralJetVeto,
 	cfgRecoilEnergyFromCaloTowersCut
     ],
