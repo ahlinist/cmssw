@@ -58,6 +58,8 @@
 //#include "TrackingTools/TrackAssociator/interface/TrackDetMatchInfo.h"
 //#include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
 
+#include "FWCore/Framework/interface/ESWatcher.h"
+
 //Ntuple creation
 #include "TTree.h"
 
@@ -82,7 +84,7 @@ class HcalProm : public edm::EDAnalyzer {
 
 
    private:
-      virtual void beginJob(const edm::EventSetup&) ;
+//      virtual void beginJob(const edm::EventSetup&) ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
       
@@ -164,7 +166,7 @@ class HcalProm : public edm::EDAnalyzer {
 // ntuple creation:
 //     TFile*      hOutputFile ;
      TTree * myTree;
-     int hbheC,run, event, TriggerBit[4], NumMuonHBphiPlane, NumHBTowersMuon[50];
+     int hbheC,run, event, lumi, TriggerBit[4], NumMuonHBphiPlane, NumHBTowersMuon[50];
      int IdTowerPhiMuonIn[50], IdTowerPhiMuonOut[50], IdTowerEtaMuonIn[50], IdTowerEtaMuonOut[50];
      float TimeAvMuonHB[50];
      float PHIoutMuonHB[50], PHIinMuonHB[50],  ETAoutMuonHB[50], ETAinMuonHB[50];
@@ -588,6 +590,7 @@ class HcalProm : public edm::EDAnalyzer {
   Int_t NTowHBtop;
   Int_t isValidHBtop;
   Float_t ETowHBtop[30][3];
+//  Int_t CTowHBtop[30][3];
   Float_t ETowHBtopCr[30][3];
   Float_t TTowHBtop[30][3];
   Float_t EHBtop;
@@ -612,6 +615,7 @@ class HcalProm : public edm::EDAnalyzer {
   Int_t NTowHBbot;
   Int_t isValidHBbot;
   Float_t ETowHBbot[30][3];
+//  Int_t CTowHBbot[30][3];
   Float_t ETowHBbotCr[30][3];
   Float_t TTowHBbot[30][3];
   Float_t EHBbot;
@@ -653,4 +657,6 @@ class HcalProm : public edm::EDAnalyzer {
   Int_t CT_bot_MUON_ieta[50];
   Int_t CT_bot_MUON_pixel[50];
   //
+  edm::ESWatcher<IdealMagneticFieldRecord> idealMagRcdWatcher_;
+
 };
