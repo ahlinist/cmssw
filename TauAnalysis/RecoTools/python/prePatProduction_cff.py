@@ -33,6 +33,9 @@ from RecoTauTag.TauTagTools.TauNeuralClassifiers_cfi import *
 from RecoMET.METProducers.CaloMETSignif_cfi import *
 metsignificance.METType = cms.string('CaloMET')
 
+# produce event-shape variables
+from PhysicsTools.CandAlgos.EventShapeVars_cff import *
+
 producePrePat = cms.Sequence(
     pfNoPileUpSequence
    + pfAllChargedHadrons + pfAllNeutralHadrons + pfAllPhotons
@@ -43,4 +46,5 @@ producePrePat = cms.Sequence(
    #+ shrinkingConePFTauTancCVTransform
    #+ shrinkingConeEfficienciesProducerFromFile
    + metsignificance
+   + produceEventShapeVars
 )
