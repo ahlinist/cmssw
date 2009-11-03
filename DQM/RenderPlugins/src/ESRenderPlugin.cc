@@ -210,31 +210,23 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o )
    gStyle->SetPaintTextFormat("+g");
 
 
-      if( name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Status" ) != std::string::npos )
-      {
-	 gStyle->SetPalette(10,colorbar1);
-      }
-
-   if( name.find( "Z 1 P 1" ) != std::string::npos )
-   {
+   if (name.find( "OptoRX" ) != std::string::npos||name.find( "KChip" ) != std::string::npos||name.find( "Fiber Bad Status" ) != std::string::npos || name.find( "Fiber Off" ) != std::string::npos) {
+     gStyle->SetPalette(10,colorbar1);
+   }
+   
+   if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 1" ) , 7);
       name.insert( 2, "+F" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z -1 P 1" ) != std::string::npos )
-   {
+   } else if( name.find( "Z -1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 1" ) , 8);
       name.insert( 2, "-F" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z 1 P 2" ) != std::string::npos )
-   {
+   } else if( name.find( "Z 1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 2" ) , 7);
       name.insert( 2, "+R" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z -1 P 2" ) != std::string::npos )
-   {
+   } else if( name.find( "Z -1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 2" ) , 8);
       name.insert( 2, "-R" );
       obj->SetTitle( name.c_str() );
