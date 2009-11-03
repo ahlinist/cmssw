@@ -73,6 +73,12 @@ evtSelTauPt = cms.PSet(
     src_individual = cms.InputTag('tauPtCut', 'individual')
 )
 
+evtSelPFMetPt = cms.PSet(
+    pluginName = cms.string('evtSelPFMetPt'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('PFmetPtCut')
+    )
+
 evtSelMetPt = cms.PSet(
     pluginName = cms.string('evtSelMetPt'),
     pluginType = cms.string('BoolEventSelector'),
@@ -91,6 +97,13 @@ evtSelTauLeadTrkPt = cms.PSet(
     pluginType = cms.string('BoolEventSelector'),
     src_cumulative = cms.InputTag('tauLeadTrkPtCut', 'cumulative'), 
     src_individual = cms.InputTag('tauLeadTrkPtCut', 'individual')
+    )
+
+evtSelTauIso = cms.PSet(
+    pluginName = cms.string('evtSelTauIso'),
+    pluginType = cms.string('BoolEventSelector'),
+    src_cumulative = cms.InputTag('tauEcalIso', 'cumulative'),
+    src_individual = cms.InputTag('tauEcalIso', 'individual')
     )
 
 evtSelTauTaNC = cms.PSet(
@@ -113,14 +126,6 @@ evtSelTauElectronVeto = cms.PSet(
     src_cumulative = cms.InputTag('tauElectronVeto', 'cumulative'),
     src_individual = cms.InputTag('tauElectronVeto', 'individual')
     )
-
-evtSelExplicitElectronVeto = cms.PSet(
-    pluginName = cms.string('evtSelExplicitElectronVeto'),
-    pluginType = cms.string('BoolEventSelector'),
-    #src = cms.InputTag('explicitElectronVeto') # CV: temporarily disabled to avoid exception
-    src = cms.InputTag('primaryEventVertexQuality')
-    )
-
 
 evtSelTauEcalCrackVeto = cms.PSet(
     pluginName = cms.string('evtSelTauEcalCrackVeto'),
@@ -163,20 +168,20 @@ evtSelRecoilEnergyFromCaloTowers = cms.PSet(
 
 wTauNuEventDump = cms.PSet(
     pluginName = cms.string('wTauNuEventDump'),
-    pluginType = cms.string('MuTauEventDump'),
+    pluginType = cms.string('wTauNuEventDump'),
 
     genParticleSource = cms.InputTag('genParticles'),
     genTauJetSource = cms.InputTag('tauGenJets'),
-    tauSource = cms.InputTag('cleanLayer1Taus'),
+    tauSource = cms.InputTag('selectedLayer1TausForWTauNuEcalCrackVetoCumulative'),
     metSource = cms.InputTag('layer1METs'),
+    jetSource = cms.InputTag('selectedLayer1JetsEt20ForWTauNuCumulative'),
     genMEtSource = cms.InputTag('genMetTrue'),
-    jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
     recoTrackSource = cms.InputTag('generalTracks'),
     pfChargedHadronSource = cms.InputTag('pfAllChargedHadrons'),
     pfGammaSource = cms.InputTag('pfAllPhotons'),
     pfNeutralHadronSource = cms.InputTag('pfAllNeutralHadrons'),    
-    output = cms.string("muTauEventDump.txt"),
-    triggerConditions = cms.vstring("evtSelTauTaNC: passed_cumulative")
+    output = cms.string("wTauNuEventDump.txt"),
+    triggerConditions = cms.vstring("evtSelRecoilEnergyFromCaloTowers: passed_cumulative")
 )
 
 #replace met with pfmet for met-plots and event dump
@@ -240,8 +245,17 @@ wTauNuAnalysisSequence = cms.VPSet(
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuPt20Cumulative')
 	), 
     cms.PSet(
+        filter = cms.string('evtSelPFMetPt'),
+        title = cms.string('PF-MET > 25 GeV'),
+        saveRunEventNumbers = cms.vstring('')
+	),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('')
+	), 
+    cms.PSet(
         filter = cms.string('evtSelMetPt'),
-        title = cms.string('MET > 15 GeV'),
+        title = cms.string('MET > 25 GeV'),
         saveRunEventNumbers = cms.vstring('')
 	),
     cms.PSet(
@@ -251,13 +265,12 @@ wTauNuAnalysisSequence = cms.VPSet(
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrk'),
         title = cms.string('with leadtrk'),
-        saveRunEventNumbers = cms.vstring('')
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
 	),
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuLeadTrkCumulative')
 	), 
-
     cms.PSet(
         filter = cms.string('evtSelTauLeadTrkPt'),
         title = cms.string('leadtrk pt > 15 GeV'),
@@ -267,8 +280,15 @@ wTauNuAnalysisSequence = cms.VPSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuLeadTrkPtCumulative')
 	), 
-
-
+    cms.PSet(
+        filter = cms.string('evtSelTauIso'),
+        title = cms.string('discriminator by Isolation'),
+        saveRunEventNumbers = cms.vstring('')
+    ),
+    cms.PSet(
+        analyzers = wTauNuHistManagers,
+        replace = cms.vstring('tauHistManager.tauSource = selectedLayer1TausForWTauNuEcalIsoCumulative')
+	),
     cms.PSet(
         filter = cms.string('evtSelTauTaNC'),
         title = cms.string('TaNC discriminator'),
@@ -332,17 +352,6 @@ wTauNuAnalysisSequence = cms.VPSet(
 	title = cms.string('central jet veto'),
 	saveRunEventNumbers = cms.vstring('')
 	),
-    cms.PSet(
-        analyzers = wTauNuHistManagers,
-        replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
-                              'tauRecoilEnergyFromCaloTowersHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromCaloTowers',
-                              'tauNuCandidateHistManager.tauNuCandidateSource = allTauNuPairs')	
-        ),
-    cms.PSet(
-        filter = cms.string('evtSelExplicitElectronVeto'),
-        title = cms.string('Explicit Electron veto'),
-        saveRunEventNumbers = cms.vstring('')
-        ),
     cms.PSet(
         analyzers = wTauNuHistManagers,
         replace = cms.vstring('tauRecoilEnergyFromJetsHistManager.leptonRecoilEnergySource = tauRecoilEnergyFromJets', 
