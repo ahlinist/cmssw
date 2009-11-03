@@ -38,7 +38,9 @@ analyzeWtoTauNuEvents = cms.EDAnalyzer("GenericAnalyzer",
         metTopologyHistManager,
         tauNuCandidateHistManager,
         muonHistManager,
-        electronHistManager
+        electronHistManager,
+        caloEventShapeVarsHistManager,
+        pfEventShapeVarsHistManager
     ),
 
     eventDumps = cms.VPSet(
