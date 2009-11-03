@@ -49,7 +49,6 @@ RctValidation::RctValidation( const edm::ParameterSet& iConfig ) :
 
       isoegamma_eta_eff_num = store->book1D("rctIsoEgammaEtaEffNum","Rct isolated e/#gamma #eta",binsEta_,-3.,3.);
       isoegamma_eta_eff_num->getTH1F()->Sumw2();
-
       
       region_rank=store->book1D("rctRegionRank","Rct region ET",64,0,128);
     }
@@ -95,7 +94,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
   iSetup.get< L1EmEtScaleRcd >().get( emScale ) ;
   
   //Get MC electrons
-  edm::Handle<GenParticleCollection> genEGamma;
+  edm::Handle<edm::View<reco::Candidate> > genEGamma;
   bool isMC = iEvent.getByLabel(genEGamma_,genEGamma) && !genEGamma.failedToGet();
 
   //Fill Denominator Histograms
@@ -138,7 +137,8 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 
 	//Now match to the nearest!For reducing double counting do it for only e/gammas>15 GeV
 	double deltaR = 100.0;
-	GenParticle nearest;
+	
+	math::XYZTLorentzVector nearest;
 
 	if(isMC&&et>15) {
 	  for(unsigned int j=0;j<genEGamma->size();++j)
@@ -146,7 +146,7 @@ RctValidation::analyze(const Event& iEvent, const EventSetup& iSetup )
 	      double dr =ROOT::Math::VectorUtil::DeltaR(v,genEGamma->at(j).p4());
 	      if(dr<deltaR) {
 		deltaR = dr;
-		nearest = genEGamma->at(j);
+		nearest = genEGamma->at(j).p4();
 	      }
 	    }
 	  //ok now match and do it over 10 GeV
