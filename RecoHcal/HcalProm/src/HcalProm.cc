@@ -167,7 +167,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   time_t a = (iEvent.time().value()) >> 32;
   event = iEvent.id().event();
   run = iEvent.id().run();
-  int lumi = iEvent.luminosityBlock();
+  lumi = iEvent.luminosityBlock();
   if(run==67647&&event>34000000)return;// Mag. went down
   if(run==67838&&event>43500000)return;// Mag. went down
   if(run==67126&&event<150000) return;// bad ped - unstable HCAL?
@@ -209,8 +209,14 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   Handle < HBHERecHitCollection > hbhe;
   iEvent.getByLabel("hbhereco", hbhe);
   const HBHERecHitCollection Hithbhe = *(hbhe.product());
-
-  if(Hithbhe.size()<4800) return; // removes ZS data
+/*
+   //hcal digis
+   Handle<HBHEDigiCollection> hbhe_digi_h;
+   iEvent.getByLabel("hcalDigis",hbhe_digi_h);
+   const HBHEDigiCollection* hbhe_digi = hbhe_digi_h.failedToGet () ? 0 : &*hbhe_digi_h;
+*/
+  if(run==67124)return;// bad ped
+//  if(run<110441&&Hithbhe.size()<4800) return; // removes ZS data
 
   const HBHERecHitCollection *HBHERecHits = 0;
   iEvent.getByLabel("hbhereco", hbhe);
@@ -219,6 +225,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   string errMsg("");
 
   int hasresp=0;
+/*
   const HcalRespCorrs* myRecalib;
   try{
   edm::ESHandle <HcalRespCorrs> recalibCorrs;
@@ -228,7 +235,7 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   }catch(const cms::Exception & e) {
     errMsg = errMsg + "  -- No  recalibrate\n" + e.what();
   }
-
+*/
   // ecal rechits
   Handle < EcalRecHitCollection > ebrechit;
   iEvent.getByLabel("ecalRecHit", "EcalRecHitsEB", ebrechit);
@@ -238,6 +245,16 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
   edm::ESHandle<MagneticField> theMagField;
   iSetup.get<IdealMagneticFieldRecord>().get(theMagField );
 
+  if(idealMagRcdWatcher_.check(iSetup)){
+
+   stepPropF  = new SteppingHelixPropagator(&*theMagField,alongMomentum);
+   stepPropF->setMaterialMode(false);
+   stepPropF->applyRadX0Correction(true);
+
+   stepPropB  = new SteppingHelixPropagator(&*theMagField,oppositeToMomentum);
+   stepPropB->setMaterialMode(false);
+   stepPropB->applyRadX0Correction(true);
+  }
 
   Handle < reco::BasicClusterCollection > bccHandle;
   iEvent.getByLabel("cosmicBasicClusters", "CosmicBarrelBasicClusters", bccHandle);
@@ -469,20 +486,24 @@ void HcalProm::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup
       tk_lost = ctftrk->lost();
       tk_charge = ctftrk->charge();
       tk_d0 = ctftrk->d0();
-cout<<"NDOF "<<tk_ndof<<"\t"<<ctftrk->ndof()<<"\t"<<ctftrk->lost()<<endl;
+//cout<<"NDOF "<<tk_ndof<<"\t"<<ctftrk->ndof()<<"\t"<<ctftrk->lost()<<endl;
       isValidHBtop=1;
       isValidHBbot=1;
+      TK_LengthHBbot=1;
       GlobalPoint gposB( ctftrk->outerPosition().X(), ctftrk->outerPosition().Y(), ctftrk->outerPosition().Z());
       GlobalVector gmomB( ctftrk->outerMomentum().X(), ctftrk->outerMomentum().Y(), ctftrk->outerMomentum().Z());
-//cout<<"before ctftrk PropagateF"<<endl;
+//cout<<"before ctftrk PropagateF eta="<<ctftrk->eta()<<endl;
       isValid=PropagateF( gposB, gmomB ,tk_charge,InRadiusHB,
 			 &TK_XinPosHBbot,&TK_YinPosHBbot,&TK_ZinPosHBbot);	
+//cout<<"before ctftrk PropagateF P="<<tk_mom<<endl;
       isValid=PropagateF( gposB, gmomB ,tk_charge,OutRadiusHB,
 			 &TK_XoutPosHBbot,&TK_YoutPosHBbot,&TK_ZoutPosHBbot);	
+      if(isValid)
       TK_LengthHBbot=sqrt(pow((TK_XinPosHBbot-TK_XoutPosHBbot),2)+pow((TK_YinPosHBbot-TK_YoutPosHBbot),2)+
            pow((TK_ZinPosHBbot-TK_ZoutPosHBbot),2))/(OutRadiusHB-InRadiusHB);
 
       isValidHBbot=isValid;
+      TK_LengthHBtop=1;
       GlobalPoint  gposT( ctftrk->innerPosition().X(), ctftrk->innerPosition().Y(), ctftrk->innerPosition().Z());
       GlobalVector gmomT( ctftrk->innerMomentum().X(), ctftrk->innerMomentum().Y(), ctftrk->innerMomentum().Z());
 //cout<<"before ctftrk PropagateB"<<endl;
@@ -490,6 +511,7 @@ cout<<"NDOF "<<tk_ndof<<"\t"<<ctftrk->ndof()<<"\t"<<ctftrk->lost()<<endl;
 			 &TK_XinPosHBtop,&TK_YinPosHBtop,&TK_ZinPosHBtop);	
       isValid=PropagateB( gposT, gmomT ,tk_charge,OutRadiusHB,
 			 &TK_XoutPosHBtop,&TK_YoutPosHBtop,&TK_ZoutPosHBtop);	
+      if(isValid)
       TK_LengthHBtop=sqrt(pow((TK_XinPosHBtop-TK_XoutPosHBtop),2)+pow((TK_YinPosHBtop-TK_YoutPosHBtop),2)+
            pow((TK_ZinPosHBtop-TK_ZoutPosHBtop),2))/(OutRadiusHB-InRadiusHB);
 
@@ -537,10 +559,11 @@ cout<<"NDOF "<<tk_ndof<<"\t"<<ctftrk->ndof()<<"\t"<<ctftrk->lost()<<endl;
       if(iEtaInTowHBbot*iEtaOutTowHBbot<0)isValidHBbot=0;
 
   } // end TK loop
+  if((isValidHBtop+isValidHBbot)==0)return;
 
 //cout<<"after ctftrk loop"<<endl;
 //cout<<"before cmTrack loop"<<endl;
-cout<<"NDOF1 "<<tk_ndof<<endl;
+//cout<<"NDOF1 "<<tk_ndof<<endl;
 
   // Make matching between Muon Track and HBCal 
   NumDTtracks =0;
@@ -611,13 +634,15 @@ cout<<"NDOF1 "<<tk_ndof<<endl;
 //cout<<"after cmTrack loop"<<endl;
 //cout<<NumDTtracks<<endl;
 
-cout<<"NDOF2 "<<tk_ndof<<endl;
+//cout<<"NDOF2 "<<tk_ndof<<endl;
 
     for(int i=0;i<30;i++)
     for(int j=0;j<3;j++)
      {
        ETowHBtop[i][j]=0;
+//       CTowHBtop[i][j]=-1;
        ETowHBbot[i][j]=0;
+//       CTowHBbot[i][j]=-1;
        ETowHBtopCr[i][j]=0;
        ETowHBbotCr[i][j]=0;
        TTowHBtop[i][j]=-200;
@@ -676,14 +701,12 @@ cout<<"NDOF2 "<<tk_ndof<<endl;
 
       float icalconst=1.;
       DetId mydetid = hhit->id().rawId();
-      if(hasresp)
-      icalconst=myRecalib->getValues(mydetid)->getValue();
-
-//cout<<"myRecalib  : "<<hieta<<"\t"<<hiphi<<"\t"<<icalconst<<endl;
+//      if(hasresp)
+//      icalconst=myRecalib->getValues(mydetid)->getValue();
 
       if(hiphi<=37||hiphi==72) //top
        {
-         if(isValidHBtop==0)continue;
+        if(isValidHBtop!=0){
          if(hieta>0&&abs(iPhiInTowHBtop-hiphi)>3)HBpedP[hieta-1][hiphi-1]=hhit->energy();
          if(hieta<0&&abs(iPhiInTowHBtop-hiphi)>3)HBpedM[-hieta-1][hiphi-1]=hhit->energy();
          if(hiphi==72)hiphi=0;
@@ -694,11 +717,12 @@ cout<<"NDOF2 "<<tk_ndof<<endl;
          EHBtop+=hhit->energy();
          EHBtopCr+=hhit->energy()*icalconst;
          THBtop+=hhit->energy()*hhit->time();
+        }
        }
       hiphi=hhit->id().iphi();
       if(hiphi>=35||hiphi==1)  // bottom
       {
-         if(isValidHBbot==0)continue;
+        if(isValidHBbot!=0){
          if(hieta>0&&abs(iPhiInTowHBbot-hiphi)>3)HBpedP[hieta-1][hiphi-1]=hhit->energy();
          if(hieta<0&&abs(iPhiInTowHBbot-hiphi)>3)HBpedM[-hieta-1][hiphi-1]=hhit->energy();
          if(hiphi==1)hiphi=73;
@@ -709,22 +733,57 @@ cout<<"NDOF2 "<<tk_ndof<<endl;
          EHBbot+=hhit->energy();
          EHBbotCr+=hhit->energy()*icalconst;
          THBbot+=hhit->energy()*hhit->time();
+        }
        }
     }  //end cicle for HB Towers hhit
-cout<<"NDOF3 "<<tk_ndof<<endl;
 
+
+/*
+     for (HBHEDigiCollection::const_iterator j=hbhe_digi->begin(); j!=hbhe_digi->end(); j++){
+       const HBHEDataFrame digi = (const HBHEDataFrame)(*j);
+       HcalDetId id = digi.id();
+      int hieta=id.ieta();
+      int hiphi=id.iphi();
+      if(abs(hieta)>14)continue;
+
+      int capid =-1;
+      float dEmax=-999;
+      for(int di=0;di<10;di++)
+       if(digi[di].nominal_fC()>dEmax){capid=digi[di].capid();dEmax=digi[di].nominal_fC();}
+
+      if(hiphi<=37||hiphi==72) //top
+       {
+        if(isValidHBtop!=0) {
+         if(hiphi==72)hiphi=0;
+         if(hieta>EtaMaxTop||hieta<EtaMinTop||abs(iPhiInTowHBtop-hiphi)>1)continue;
+         CTowHBtop[hieta-EtaMinTop][hiphi+1-iPhiInTowHBtop]=capid;
+        }
+       }
+      hiphi=id.iphi();
+      if(hiphi>=35||hiphi==1)  // bottom
+      {
+        if(isValidHBbot!=0){
+         if(hiphi==1)hiphi=73;
+         if(hieta>EtaMaxBot||hieta<EtaMinBot||abs(iPhiInTowHBbot-hiphi)>1)continue;
+         CTowHBbot[hieta-EtaMinBot][hiphi+1-iPhiInTowHBbot]=capid;
+        }
+       }
+    }  //end cicle for HB Towers digi
+*/
     if(fabs(EHBtop)>0.001)THBtop/=EHBtop;
     if(fabs(EHBbot)>0.001)THBbot/=EHBbot;
 //cout<<"after hhit loop"<<endl;
 //cout<<NumDTtracks<<endl;
   myTree->Fill();
-cout<<"NDOF4 "<<tk_ndof<<endl;
 //cout<<"after myTree"<<endl;
   ++evtNo;
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
+/*  
+//beginJob has mag. field init problem ...
+
 void HcalProm::beginJob(const edm::EventSetup & iSetup) {
   edm::ESHandle<MagneticField> bField;
   iSetup.get<IdealMagneticFieldRecord>().get(bField);
@@ -737,6 +796,7 @@ void HcalProm::beginJob(const edm::EventSetup & iSetup) {
   stepPropB->applyRadX0Correction(true);
 }
 
+*/
 TH1F *HcalProm::book1DHistogram(TFileDirectory & fDir, const std::string & fName, const std::string & fTitle,
 				int fNbins, double fXmin, double fXmax) const {
   char title[1024];
@@ -774,6 +834,7 @@ void HcalProm::bookHistograms() {
   // ntuple inicialization
   myTree = new TTree("muonHB","muonHB Tree");
   myTree->Branch("run",  &run, "run/I");
+  myTree->Branch("lumi", &lumi, "lumi/I");
   myTree->Branch("event",  &event, "event/I");
   myTree->Branch("hbheC",  &hbheC, "hbheC/I");
   myTree->Branch("TriggerBit",  TriggerBit, "TriggerBit[4]/I");
@@ -819,6 +880,7 @@ void HcalProm::bookHistograms() {
   myTree->Branch("NTowHBtop",&NTowHBtop,"NTowHBtop/I");
   myTree->Branch("isValidHBtop",&isValidHBtop,"isValidHBtop/I");
   myTree->Branch("ETowHBtop",  ETowHBtop, "ETowHBtop[NTowHBtop][3]/F");
+//  myTree->Branch("CTowHBtop",  CTowHBtop, "CTowHBtop[NTowHBtop][3]/I");
   myTree->Branch("ETowHBtopCr",  ETowHBtopCr, "ETowHBtopCr[NTowHBtop][3]/F");
   myTree->Branch("TTowHBtop",  TTowHBtop, "TTowHBtop[NTowHBtop][3]/F");
   myTree->Branch("EHBtop",  &EHBtop, "EHBtop/F");
@@ -844,6 +906,7 @@ void HcalProm::bookHistograms() {
   myTree->Branch("NTowHBbot",&NTowHBbot,"NTowHBbot/I");
   myTree->Branch("isValidHBbot",&isValidHBbot,"isValidHBbot/I");
   myTree->Branch("ETowHBbot",  ETowHBbot, "ETowHBbot[NTowHBbot][3]/F");
+//  myTree->Branch("CTowHBbot",  CTowHBbot, "CTowHBbot[NTowHBbot][3]/I");
   myTree->Branch("ETowHBbotCr",  ETowHBbotCr, "ETowHBbotCr[NTowHBbot][3]/F");
   myTree->Branch("TTowHBbot",  TTowHBbot, "TTowHBbot[NTowHBbot][3]/F");
   myTree->Branch("EHBbot",  &EHBbot, "EHBbot/F");
@@ -904,20 +967,25 @@ bool HcalProm::PropagateF(
   *y_HB=-10000.;
   *z_HB=-10000.;
 
-
+//cout<<"propF1"<<endl;
   const FreeTrajectoryState *freetrajectorystate_ =new FreeTrajectoryState(pos, mom ,charge , &(*theMagField));
 
+//cout<<"propF2"<<endl;
   Cylinder *cylinder = new Cylinder(Surface::PositionType(0,0,0),
 				    Surface::RotationType(), ra);
 
+//cout<<"propF3"<<endl;
   TrajectoryStateOnSurface steppingHelixstateinfo_ = stepPropF->propagate(*freetrajectorystate_, (*cylinder));
 
+//cout<<"propF4"<<endl;
   isValid = steppingHelixstateinfo_.isValid();
+//cout<<"propF5"<<endl;
   if (steppingHelixstateinfo_.isValid()) {
     *x_HB=steppingHelixstateinfo_.freeState()->position().x();        
     *y_HB=steppingHelixstateinfo_.freeState()->position().y();        
     *z_HB=steppingHelixstateinfo_.freeState()->position().z();        
   }
+//cout<<"propF6"<<endl;
   return isValid;
 }
 
