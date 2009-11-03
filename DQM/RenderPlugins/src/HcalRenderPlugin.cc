@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.26 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.27 $
+  \date $Date: 2009/11/01 17:56:24 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -12,7 +12,7 @@
   \\ or TH2, and call a private method appropriate for the histogram type
 
   // DQMNet::CoreObject replaced by VisDQMObject in Lassi's Oct. 31 revision 
-*/
+  */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
@@ -168,7 +168,7 @@ public:
       }
   }
 
-  virtual bool applies(const VisDQMObject &o, const VisDQMImgInfo &)
+  virtual bool applies(const DQMNet::CoreObject &o, const VisDQMImgInfo &)
   {
     // determine whether core object is an Hcal object
     if (o.name.find( "Hcal/" ) != std::string::npos || o.name.find( "HcalCalib/" ) != std::string::npos)
@@ -177,7 +177,7 @@ public:
     return false;
   }
 
-  virtual void preDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
+  virtual void preDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &)
   {
     c->cd();
 
@@ -204,17 +204,17 @@ public:
     if( dynamic_cast<TProfile2D*>( o.object ) )
       {      }
     else if ( dynamic_cast<TProfile*>( o.object ) )
-	preDrawTProfile( c, o );
+      preDrawTProfile( c, o );
 
     // object is TH2 histogram
     else if( dynamic_cast<TH2*>( o.object ) )
-        preDrawTH2( c, o );
+      preDrawTH2( c, o );
     // object is TH1 histogram
     else if( dynamic_cast<TH1*>( o.object ) )
-        preDrawTH1( c, o );
+      preDrawTH1( c, o );
   }
 
-  virtual void postDraw (TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &)
+  virtual void postDraw (TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &)
   {
     if( dynamic_cast<TProfile2D*>( o.object ) )
       {      }
@@ -233,7 +233,7 @@ public:
   }
 
 private:
-  void preDrawTH1 ( TCanvas *, const VisDQMObject &o )
+  void preDrawTH1 ( TCanvas *, const DQMNet::CoreObject &o )
   {
     // Do we want to do anything special yet with TH1 histograms?
     TH1* obj = dynamic_cast<TH1*>( o.object );
@@ -292,7 +292,7 @@ private:
       }
   }
 
-  void preDrawTH2 ( TCanvas *c, const VisDQMObject &o )
+  void preDrawTH2 ( TCanvas *c, const DQMNet::CoreObject &o )
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
@@ -345,7 +345,7 @@ private:
 	      (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
 	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos ) 
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  
 	      )
 		
       {
@@ -382,7 +382,9 @@ private:
 	     (o.name.find("DigiMonitor_Hcal/bad_digis/baddigisize/")!=std::string::npos) ||
 	     (o.name.find("DigiMonitor_Hcal/bad_digis/badfibBCNoff/")!=std::string::npos) ||
 	     //(o.name.find("DigiMonitor_Hcal/good_digis/digi_occupancy/")!=std::string::npos) // don't want to apply error color here
-	     (o.name.find("BeamMonitor_Hcal/Lumi/HFlumi_total_")!=std::string::npos) 
+	     (o.name.find("BeamMonitor_Hcal/Lumi/HFlumi_total_")!=std::string::npos) ||
+	     (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos ) ||
+	     (o.name.find("DataFormatMonitor/H")!= std::string::npos) 
 	     //(o.name.find("BeamMonitor_Hcal/Lumi/Abnormal PMT events")!=std::string::npos) // not sure we want to normalize this one yet -- raw # of errors may still be useful
 	     )
       {
@@ -427,17 +429,6 @@ private:
         obj->SetOption("colz");
       }
 
-    else if ((o.name.find("HTR Plots/ Channel Data Integrity/FED 7") != std::string::npos )            ||
-	     (o.name.find("HTR Plots/Channel Integrity Summarized by Spigot") != std::string::npos )   ||
-	     (o.name.find("HTR Plots/Half-HTR DataIntegrity Check") != std::string::npos )               )
-      {
-        gStyle->SetPalette(1);
-        obj->SetOption("colz");
-        c->SetBottomMargin(0.200);
-        if (obj->GetMaximum()>0) gPad->SetLogz();
-      }
-
-
     else   // default color is rainbow
       {
         gStyle->SetPalette(1);
@@ -445,7 +436,7 @@ private:
       }
   } // void preDrawTH2
 
-  void preDrawTProfile ( TCanvas *, const VisDQMObject &o )
+  void preDrawTProfile ( TCanvas *, const DQMNet::CoreObject &o )
   {
     TProfile* obj = dynamic_cast<TProfile*>( o.object ); 
     assert( obj ); 
@@ -468,7 +459,7 @@ private:
     return;
   }
 
-  void postDrawTH1( TCanvas *, const VisDQMObject &o )
+  void postDrawTH1( TCanvas *, const DQMNet::CoreObject &o )
   {
     TH1* obj = dynamic_cast<TH1*>( o.object ); 
     assert( obj ); 
@@ -528,7 +519,7 @@ private:
 
   }
 
-  void postDrawTH2( TCanvas *c, const VisDQMObject &o )
+  void postDrawTH2( TCanvas *c, const DQMNet::CoreObject &o )
   {
     TH2* obj = dynamic_cast<TH2*>( o.object );
     assert( obj );
@@ -773,9 +764,8 @@ private:
 	      (o.name.find("RecHitMonitor_Hcal/ ProblemRecHits")!= std::string::npos ) ||
 	      (o.name.find("RecHitMonitor_Hcal/problem_rechits")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor")!= std::string::npos ) ||
-	      (o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos) ||
-	      ((o.name.find("DataFormatMonitor") !=std::string::npos) && (o.name.find("Hardware Watch Cells") !=std::string::npos))
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor")!= std::string::npos ) //||
+	      //(o.name.find("DataFormatMonitor/ HardwareWatchCells") != std::string::npos)
 	      )
       {
         if ((obj->GetEntries()==0) ||
