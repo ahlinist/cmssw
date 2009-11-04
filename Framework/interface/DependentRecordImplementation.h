@@ -60,7 +60,7 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
 	    //rethrow but this time with dependent information.
 	    throw NoRecordException<DepRecordT>(this->key());
 	 } catch(cms::Exception& e) {  
-	    e<<"Exception occured while getting dependent record from record \""<<
+	    e<<"Exception occurred while getting dependent record from record \""<<
 	       this->key().type().name()<<"\""<<std::endl;
 	    throw;
 	 }
