@@ -43,6 +43,9 @@ class MuonHistManager : public HistManagerBase
 
   bool requireGenMuonMatch_;
 
+  typedef std::vector<int> vint;
+  vint skipPdgIdsGenParticleMatch_;
+
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 
