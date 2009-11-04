@@ -39,11 +39,11 @@ void wTauNuEventDump::print(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<reco::GenJet> > genJetCollection;
   iEvent.getByLabel("iterativeCone5GenJets", genJetCollection);
 
- # edm::Handle<pat::JetCollection> patJets;
- # iEvent.getByLabel(patJetSource_, patJets);
+// edm::Handle<pat::JetCollection> patJets;
+// iEvent.getByLabel(patJetSource_, patJets);
 
   printGenParticleInfo(genParticleCollection, genTauJetCollection, outputStream_);
-#  printGenJetInfo(genJetCollection,outputStream_);
+// printGenJetInfo(genJetCollection,outputStream_);
 
   *outputStream_ << ">>RECONSTRUCTION LEVEL INFORMATION<<" << std::endl;
 
