@@ -890,6 +890,18 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 {
   ++nSamples_["analyzed"];
 
+  int debug = 0; // for manual debugging
+
+  // a rather elaborate calculation to limit printing (from OPAL code)
+  unsigned int eventDumpReason = 0;
+  int jentry = nSamples_["analyzed"];
+  int JTEMP = TMath::Nint (TMath::Power (10., Double_t (TMath::Floor (TMath::Log10 ( Double_t (1+jentry) )))));
+  if(  ((1+jentry)%JTEMP) == 0) {
+    cout<<"entry #"<<jentry<<"..."<<endl; 
+    if( debug > 9 ) eventDumpReason |= 0x40;
+  }
+ 
+
   // get the per-event inputs
   // ------------------------
   // trigger
@@ -969,7 +981,6 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
   // track jets stuff taken from https://twiki.cern.ch/twiki/bin/view/CMS/TrackJets (but modified for optional use)
   edm::Handle<BasicJetCollection> trackJets; 
   bool useTrackJets = useTracking_ && ! (srcTrackJets_ == std::string("") );
-  cout<<"AHDBG useTracking_: "<<useTracking_<<" srcTrackJets_: "<<srcTrackJets_<<" == \"\"? "<<useTrackJets<<endl;
   if( useTrackJets ) event.getByLabel (srcTrackJets_, trackJets);
 
   LogDebug("Flow")<<"read event inputs (except caloJets)";
@@ -1557,8 +1568,8 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 			   E_bad_tower,  E_bad_ecal,  E_bad_hcal,
 			   E_recovered_tower,  E_recovered_ecal,  E_recovered_hcal,
 			   E_prob_tower,  E_prob_ecal,  E_prob_hcal,
-			   1 );
-	cout<<"DBG - n_bad_towers: "<<n_bad_towers<<", st: "<<n_bad_subtowers<<endl; 
+			   debug ? 1 : 0 );
+	
 	jtnbt_ [njt_] = n_bad_towers;
 	jtnbst_[njt_] = n_bad_subtowers;
 	jtnbh_ [njt_] = n_bad_hcal_cells;
@@ -1600,7 +1611,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       vector< int > EB_problem_counts, EE_problem_counts;
       double pTrel = -666;
       unsigned int hn50 = 0, hn90 = 0, nSD = 0, nHadHits = 0, nEMHits = 0, nHadTowers = 0, nEMTowers = 0;
-      unsigned int dumpReason = 0;
+      unsigned int dumpReason = eventDumpReason;
       getCalComponents( event, probe, HPD_energies, RBX_energies, HBEF_energies, HO_energies, ECal_energies,
 			HB_problem_energies, HB_problem_counts, 
 			HE_problem_energies, HE_problem_counts,
@@ -1609,7 +1620,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
 			EB_problem_energies, EB_problem_counts,
 			EE_problem_energies, EE_problem_counts,
 			pTrel, hn50, hn90, nHadHits, nEMHits, nHadTowers, nEMTowers, 
-			nSD, 0); // normally, off:  );
+			nSD, 0); // normally, debug printing is off:  );
       if( HPD_energies.size() > 0 ) jtf1hpd_[njt_] = HPD_energies[0] / probe.energy();
       if( HPD_energies.size() > 1 ) jtf2hpd_[njt_] = HPD_energies[1] / probe.energy();
       if( RBX_energies.size() > 0 ) jtf1rbx_[njt_] = RBX_energies[0] / probe.energy();
@@ -1711,12 +1722,7 @@ void CaloJetIDAnalyzer::analyze(const edm::Event& event,const edm::EventSetup& e
       jtaodrbx_[njt_] = idh.approximatefRBX();
       jtnhn90_[njt_] = idh.hitsInN90();
 
-      // a rather elaborate calculation to limit printing (from OPAL code)
-      int jentry = nSamples_["analyzed"];
-      int JTEMP = TMath::Nint (TMath::Power (10., Double_t (TMath::Floor (TMath::Log10 ( Double_t (1+jentry) )))));
-      if(  ((1+jentry)%JTEMP) == 0) {cout<<"entry #"<<jentry<<"..."<<endl; dumpReason |= 0x40;} // tmp debug
- 
-      if( dumpReason > 0) {
+      if( debug && dumpReason > 0) {
 	//edm::LogWarning("PossibleBug")<<"DumpReason:"<<dumpReason;
 	cout<<"Possible bug - dump reason: "<<dumpReason<<" rerunning calculation..."<<endl;
 	jet_ID_helper_.calculate( event, probe, 5 ); //dynamic_cast<reco::CaloJet const &> probe );
@@ -2053,8 +2059,8 @@ void CaloJetIDAnalyzer::getCalComponents( const edm::Event& event, const reco::C
     
     const vector<DetId>& cellIDs = towers[iTower]->constituents();  // cell == recHit
     int nCells = cellIDs.size();
-    if( iDbg) cout<<"tower #"<<iTower<<" has "<<nCells<<" cells. "
-		  <<"It's at iEta: "<<towers[iTower]->ieta()<<", iPhi: "<<towers[iTower]->iphi()<<endl;
+    if( iDbg ) cout<<"tower #"<<iTower<<" has "<<nCells<<" cells. "
+		   <<"It's at iEta: "<<towers[iTower]->ieta()<<", iPhi: "<<towers[iTower]->iphi()<<endl;
     
     bool towerContainsHad = false, towerContainsEM = false;
     
@@ -2110,7 +2116,7 @@ void CaloJetIDAnalyzer::getCalComponents( const edm::Event& event, const reco::C
 	  raw_flags = theRecHit->flags();
 	  my_flags = HBHE2jetIDflags( raw_flags );
 	  if( TMath::Abs( myIEta ) <= 16 ) {
-	    cout<<"AHDBG HB problem: "<<my_flags<<" / "<<n_HF_flags<<endl;
+	    if( iDbg ) cout<<"AHDBG HB problem: "<<my_flags<<" / "<<n_HF_flags<<endl;
 	    markFlags( HB_problem_counts, HB_problem_energies, n_HBHE_flags, my_flags, hitE );
 	  } else {
 	    markFlags( HE_problem_counts, HE_problem_energies, n_HBHE_flags, my_flags, hitE );
