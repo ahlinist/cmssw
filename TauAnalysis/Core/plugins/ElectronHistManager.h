@@ -41,8 +41,11 @@ class ElectronHistManager : public HistManagerBase
   edm::InputTag jetSrc_;
   edm::InputTag genParticleSrc_;
 
-   bool requireGenElectronMatch_;
-  
+  bool requireGenElectronMatch_;
+
+  typedef std::vector<int> vint;
+  vint skipPdgIdsGenParticleMatch_;
+
   bool makeIsoPtCtrlHistograms_;
   bool makeIsoPtConeSizeDepHistograms_;
 

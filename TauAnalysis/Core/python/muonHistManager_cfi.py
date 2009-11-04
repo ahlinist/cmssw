@@ -14,6 +14,8 @@ muonHistManager = cms.PSet(
     #requireGenMuonMatch = cms.bool(True),
     requireGenMuonMatch = cms.bool(False),
 
+    skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
+
     #normalization = cms.string("muons"),
     normalization = cms.string("events"),
 

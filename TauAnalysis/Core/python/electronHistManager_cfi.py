@@ -14,6 +14,8 @@ electronHistManager = cms.PSet(
     #requireGenElectronMatch = cms.bool(True),
     requireGenElectronMatch = cms.bool(False),
 
+    skipPdgIdsGenParticleMatch = cms.vint32( 12, 14, 16 ),
+
     #normalization = cms.string("electrons"),
     normalization = cms.string("events"),
 

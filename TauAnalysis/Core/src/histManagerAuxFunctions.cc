@@ -76,7 +76,8 @@ void clearIsoParam(reco::isodeposit::AbsVetos& isoParam)
 //
 
 int getMatchingGenParticlePdgId(const reco::Particle::LorentzVector& recoMomentum,
-				edm::Handle<reco::GenParticleCollection>& genParticleCollection)
+				edm::Handle<reco::GenParticleCollection>& genParticleCollection,
+				const std::vector<int>* skipPdgIds)
 {
 //--- select genParticles matching direction of reconstructed particle
 //    within cone of size dR = 0.5;
@@ -88,6 +89,21 @@ int getMatchingGenParticlePdgId(const reco::Particle::LorentzVector& recoMomentu
 //--- skip "documentation line" entries
 //    (copied over to reco::GenParticle from HepMC product)
     if ( genParticle->status() == 3 ) continue;
+
+//--- skip "invisible" particles (e.g. neutrinos);
+//    configurable via list of pdgIds given as function argument
+    bool skip = false;
+    if ( skipPdgIds ) {
+      for ( std::vector<int>::const_iterator skipPdgId = skipPdgIds->begin();
+	    skipPdgId != skipPdgIds->end(); ++skipPdgId ) {
+	if ( TMath::Abs(*skipPdgId) == TMath::Abs(genParticle->pdgId()) ) skip = true;
+      }
+    } else {
+      if ( TMath::Abs(genParticle->pdgId()) == 12 ||
+	   TMath::Abs(genParticle->pdgId()) == 14 ||
+	   TMath::Abs(genParticle->pdgId()) == 16 ) skip = true;
+    }
+    if ( skip ) continue;
 
     if ( genParticle->pt() > 0.50*recoMomentum.pt() &&
 	 reco::deltaR(genParticle->p4(), recoMomentum) < 0.5 ) {
