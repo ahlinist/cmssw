@@ -53,7 +53,7 @@ class DependentRecordImplementation : public EventSetupRecordImplementation<Reco
 	 EventSetup const& eventSetupT = this->eventSetup();
 	 //can't do the following because of a compiler error in gcc 3.*
 	 // return eventSetupT.get<DepRecordT>();
-	 const DepRecordT* temp;
+	 const DepRecordT* temp = 0;
 	 try { 
 	    eventSetupT.getAvoidCompilerBug(temp);
 	 } catch(NoRecordException<DepRecordT>&) {

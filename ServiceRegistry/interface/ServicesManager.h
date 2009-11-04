@@ -79,8 +79,10 @@ public:
                //do on demand building of the service
                if(0 == type2Maker_.get() || 
                    type2Maker_->end() == (itFoundMaker = type2Maker_->find(TypeIDBase(typeid(T))))) {
-                      throw edm::Exception(edm::errors::NotFound,"Service Request") 
-                      <<" unable to find requested service with compiler type name '"<<typeid(T).name() <<"'.\n";
+                      Exception::throwThis(errors::NotFound,
+			"Service Request unable to find requested service with compiler type name '",
+			typeid(T).name(),
+			"'.\n");
                } else {
                   itFoundMaker->second.add(const_cast<ServicesManager&>(*this));
                   itFound = type2Service_.find(TypeIDBase(typeid(T)));
