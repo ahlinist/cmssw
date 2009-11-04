@@ -8,7 +8,6 @@
 //
 // Original Author:  Chris Jones
 //         Created:  Mon Sep  5 13:33:19 EDT 2005
-// $Id$
 //
 
 // system include files
@@ -273,7 +272,7 @@ ServicesManager::createServices()
          itMaker->second.add(*this);
        }
        catch(cms::Exception& iException) {
-         edm::Exception toThrow(edm::errors::Configuration,"Error occured while creating ");
+         edm::Exception toThrow(edm::errors::Configuration,"Error occurred while creating ");
          toThrow<<itMaker->second.pset_->getParameter<std::string>("@service_type")<<"\n";
          toThrow.append(iException);
          throw toThrow;
