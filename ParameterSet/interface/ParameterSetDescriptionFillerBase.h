@@ -18,7 +18,6 @@ and query the component for its allowed ParameterSetDescription.
 //
 // Original Author:  Chris Jones
 //         Created:  Wed Aug  1 16:46:53 EDT 2007
-// $Id$
 //
 
 // system include files

@@ -2,8 +2,6 @@
 #define FWCore_ParameterSet_types_h
 
 // ----------------------------------------------------------------------
-// $Id$
-//
 // declaration of type encoding/decoding functions
 // ----------------------------------------------------------------------
 
