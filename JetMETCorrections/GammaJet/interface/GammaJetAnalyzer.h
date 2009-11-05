@@ -80,6 +80,7 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       //edm::InputTag Jetsrcakt7_; 
       edm::InputTag Jetsrcsis5_; 
       edm::InputTag Jetsrcsis7_; 
+      edm::InputTag JetJPTsrcak5_;
       edm::InputTag JetPFsrcite_;
       edm::InputTag JetPFsrckt4_;
       edm::InputTag JetPFsrcakt5_;
@@ -303,6 +304,13 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       Float_t etaJet_sis7[100];
       Float_t phiJet_sis7[100];
       Float_t emfJet_sis7[100];
+
+      Int_t nJet_jptak5;
+      Float_t ptJet_jptak5[100];
+      Float_t eJet_jptak5[100];
+      Float_t etaJet_jptak5[100];
+      Float_t phiJet_jptak5[100];
+      Float_t emfJet_jptak5[100];
 
       Int_t nJet_pfite;
       Float_t ptJet_pfite[100];
