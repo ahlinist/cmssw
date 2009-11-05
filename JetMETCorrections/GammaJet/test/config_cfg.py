@@ -29,7 +29,7 @@ process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
 
 process.load("Geometry.CaloEventSetup.CaloGeometry_cfi")
 
-process.load("MagneticField.Engine.uniformMagneticField_cfi")
+#process.load("MagneticField.Engine.uniformMagneticField_cfi")
 
 process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
 
@@ -37,15 +37,23 @@ process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 
 process.load("Geometry.CaloEventSetup.CaloTopology_cfi")
 
+# produce JPT jets
+process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
+process.load("JetMETCorrections.Configuration.ZSPJetCorrections219_cff")
+process.load("JetMETCorrections.Configuration.JetPlusTrackCorrections_cff")
+
 process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck")
 
 process.source = cms.Source("PoolSource",
     skipEvents = cms.untracked.uint32(0),
 # fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
 #    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/pandolf/eventi_PhotonJetPt170_Summer09_10TeV.root')
-    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/delre/7A62C541-37A0-DE11-BF0C-00215E221098.root')
+#    fileNames = cms.untracked.vstring('file:/cmsrm/pc17/delre/7A62C541-37A0-DE11-BF0C-00215E221098.root')
 # fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/cms/store/relval/CMSSW_3_1_0_pre11/RelValZmumuJets_Pt_20_300_GEN/GEN-SIM-RECO/MC_31X_V1_LowLumiPileUp-v1/0001/FE549F7D-2C65-DE11-9B82-001D09F2AF1E.root')
-#    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
+    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/PhotonJet_Pt80to120_Summer09-MC_31X_V3-v1_x100.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_Pt80_Summer09-MC_31X_V3-v1_x100.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_EMEnriched_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
 #    fileNames = cms.untracked.vstring('file:/tmp/voutila/Cern/data/summer09/raw/QCD_BCtoE_Pt80to170_Summer09-MC_31X_V3-v1_x100.root')
@@ -75,6 +83,7 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
     jetsakt5 = cms.untracked.InputTag("antikt5CaloJets"),
     jetssis5 = cms.untracked.InputTag("sisCone5CaloJets"),
     jetssis7 = cms.untracked.InputTag("sisCone7CaloJets"),
+    jetsjptak5 = cms.untracked.InputTag("JetPlusTrackZSPCorJetIcone5"),
     jetspfite = cms.untracked.InputTag("iterativeCone5PFJets"),
     jetspfkt4 = cms.untracked.InputTag("kt4PFJets"),
     jetspfkt6 = cms.untracked.InputTag("kt6PFJets"),
@@ -96,5 +105,6 @@ process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('output.root')
 )
-process.p = cms.Path(process.myanalysis)
-
+#process.p = cms.Path(process.myanalysis)
+# produce JPT jets before running analysis
+process.p = cms.Path(process.ZSPJetCorrections*process.JetPlusTrackCorrections*process.myanalysis)

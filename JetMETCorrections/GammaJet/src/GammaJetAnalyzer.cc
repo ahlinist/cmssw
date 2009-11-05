@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.11 2009/11/01 00:11:40 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.12 2009/11/01 10:32:28 pandolf Exp $
 //
 //
 
@@ -148,6 +148,7 @@ GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
   //Jetsrcakt7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsakt7");
   Jetsrcsis5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis5");
   Jetsrcsis7_ = iConfig.getUntrackedParameter<edm::InputTag>("jetssis7");
+  JetJPTsrcak5_ = iConfig.getUntrackedParameter<edm::InputTag>("jetsjptak5");
   //Pfjetsrc_ = iConfig.getUntrackedParameter<edm::InputTag>("pfjets");
   JetPFsrcite_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfite");
   JetPFsrckt4_ = iConfig.getUntrackedParameter<edm::InputTag>("jetspfkt4");
@@ -194,7 +195,7 @@ GammaJetAnalyzer::~GammaJetAnalyzer()
 void
 GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_akt5 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_pfite = nJet_pfkt4 = nJet_pfakt5 = nJet_pfsis5 = nJet_pfkt6 = nJet_pfsis7 = nJetGen_ite = nJetGen_kt4 = nJetGen_akt5 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
+   nMC = nPhot = nconvPhot = nJet_ite = nJet_kt4 = nJet_akt5 = nJet_sis5 = nJet_kt6 = nJet_sis7 = nJet_jptak5 = nJet_pfite = nJet_pfkt4 = nJet_pfakt5 = nJet_pfsis5 = nJet_pfkt6 = nJet_pfsis7 = nJetGen_ite = nJetGen_kt4 = nJetGen_akt5 = nJetGen_sis5 = nJetGen_kt6 = nJetGen_sis7 = 0;
    //nJet_akt7 = nJetGen_akt7 = 0;
    nSIM = nPF = 0;
 
@@ -264,6 +265,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    iEvent.getByLabel(Jetsrcsis5_, jetssis5);
    Handle<CaloJetCollection> jetssis7;
    iEvent.getByLabel(Jetsrcsis7_, jetssis7);
+
+   // get JPT collection
+   Handle<CaloJetCollection> jptjetsak5;
+   iEvent.getByLabel(JetJPTsrcak5_, jptjetsak5);
 
    // get PF jets collection
    Handle<PFJetCollection> pfjetsite;
@@ -384,7 +389,7 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  tempnames += HLTNames.triggerName(i) + ":";
 	  //aHLTResults[i] = hltTriggerResultHandle->accept(i);
 	  //cout << i <<"....." << HLTNames.triggerName(i).c_str() << ".... : " << hltTriggerResultHandle->accept(i) << endl;
-       
+
 	  map<string, int>::const_iterator it 
 	    = hltTriggers.find(HLTNames.triggerName(i));
 	  if (it != hltTriggers.end()) {
@@ -854,8 +859,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    */
 
    const double calojetptthr = 3.;
+   const double jptjetptthr = 5.;
    const double pfjetptthr = 5.;//6.;
    //const int pfminconst = 1; // minimum constituents for low pT
+   const int jptjetnmin = 4;
    const int pfjetnmin = 4;
    const double genjetptthr = 5.; // already implicit in GenJet reco
    const int genjetnmin = 4;
@@ -976,6 +983,22 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
      }
    }
    
+   for (CaloJetCollection::const_iterator it = jptjetsak5->begin(); 
+	 it != jptjetsak5->end(); ++it) {
+     
+     if (nJet_jptak5>=100) {cout << "number of reco jets jptakt 05 is larger than 100. Skipping" << endl; continue;}
+     if (nJet_jptak5 < jptjetnmin || it->pt() > jptjetptthr) {
+       
+       ptJet_jptak5[nJet_jptak5] = it->pt();	 
+       eJet_jptak5[nJet_jptak5] = it->energy();	 
+       etaJet_jptak5[nJet_jptak5] = it->eta();	 
+       phiJet_jptak5[nJet_jptak5] = it->phi();	      
+       emfJet_jptak5[nJet_jptak5] = fixEMF(it->emEnergyFraction(), it->eta());
+       
+       nJet_jptak5++;
+     }
+   }
+
    for (PFJetCollection::const_iterator it = pfjetsite->begin(); 
 	 it != pfjetsite->end(); ++it) {
      
@@ -1483,21 +1506,20 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	   nTracksGen += 1;
 	   p4TracksGen += p4;
        } else if (partPdgId==22) { //photons
-	   //nPhotonsGen += 1;
-	   //p4PhotonsGen += p4;
+	   nPhotonsGen += 1;
+	   p4PhotonsGen += p4;
 	   //save photons and later check for conversions:
 	   shortPtcls.push_back(*iPart);
        } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
 		  && (fabs(partPdgId) != 16)) { // veto neutrinos
 
-	   // Decay K0S and Lambda later and correct fractions
-	   if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
-	     shortPtcls.push_back(*iPart);
-	   } else {
-	     nNeutralHadronsGen += 1;
-	     p4NeutralHadronsGen += p4;
-         }
-      
+	 nNeutralHadronsGen += 1;
+	 p4NeutralHadronsGen += p4;
+
+	 // Decay K0S and Lambda later and correct fractions
+	 if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
+	   shortPtcls.push_back(*iPart);
+	 }
        }
     
      } //for jetParticles
@@ -1514,14 +1536,19 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	 const SimTrack *trk = decayedSims[*iGen];
 	 if (promptDecays.find(trk) != promptDecays.end()) {
 
-         //FP, 31-10-09: this seems useless, added if-else at line 1497:
 	   // Convert track momentum to normal TLorentzVector, wrong type :(
-	   //math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
-	   //TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	   //p4NeutralHadronsGen -= p4;
+	   math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
+	   TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+	   if ((*iGen)->pdgId()==22) {
+	     nPhotonsGen -= 1;
+	     p4PhotonsGen -= p4mom;
+	   }
+	   else {
+	     nNeutralHadronsGen -= 1;
+	     p4NeutralHadronsGen -= p4mom;
+	   }
 
 	   set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
-      
 
 	   for (set<const SimTrack*>::const_iterator iSim = kids.begin();
 		iSim != kids.end(); ++iSim) {
@@ -1539,9 +1566,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	     // Check if the decay happened early enough for the
 	     // charged track to be reconstructed
-	     // FP, 31-10-09: minimum track pt requirement shouldn't be included
 	     bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
-				    && (*iSim)->charge() != 0 /*&& p4.Pt() > 0.1*/);
+				    && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
 
 	     if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
 	       nPhotonsGen += 2;  //both
@@ -1929,6 +1955,13 @@ GammaJetAnalyzer::beginJob(const edm::EventSetup&)
   m_tree->Branch("phiJet_sis7",&phiJet_sis7,"phiJet_sis7[nJet_sis7]/F");
   m_tree->Branch("emfJet_sis7",&emfJet_sis7,"emfJet_kt4[nJet_sis7]/F");
 
+  m_tree->Branch("nJet_jptak5",&nJet_jptak5,"nJet_jptak5/I");
+  m_tree->Branch("ptJet_jptak5 ",&ptJet_jptak5 ,"ptJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("eJet_jptak5  ",&eJet_jptak5  ,"eJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("etaJet_jptak5",&etaJet_jptak5,"etaJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("phiJet_jptak5",&phiJet_jptak5,"phiJet_jptak5[nJet_jptak5]/F");
+  m_tree->Branch("emfJet_jptak5",&emfJet_jptak5,"emfJet_jptak5[nJet_jptak5]/F");
+
   m_tree->Branch("nJet_pfite",&nJet_pfite,"nJet_pfite/I");
   m_tree->Branch("ptJet_pfite ",&ptJet_pfite ,"ptJet_pfite[nJet_pfite]/F");
   m_tree->Branch("eJet_pfite  ",&eJet_pfite  ,"eJet_pfite[nJet_pfite]/F");
@@ -2159,10 +2192,10 @@ void GammaJetAnalyzer::endJob() {
 //   PtPhotonMC2st->Write();
 //   PtPhotonMC3st->Write();
   
-//   m_tree->Write();
+//  m_tree->Write();
   
 //   //avoid writing the tree second time (automatically)
-//   m_tree->Delete();
+//  m_tree->Delete();
 
 //   PtPhoton1st->Delete();
 //   PtPhoton2st->Delete();
