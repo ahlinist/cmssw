@@ -52,20 +52,20 @@ namespace edm
   bool  encode(std::string           &, std::vector<unsigned> const&);
 
   // Int64
-  bool  decode(boost::int64_t     &, std::string const&);
-  bool  encode(std::string &, boost::int64_t);
+  bool  decode(long long     &, std::string const&);
+  bool  encode(std::string &, long long);
 
   // vInt64
-  bool  decode(std::vector<boost::int64_t> &, std::string      const&);
-  bool  encode(std::string      &, std::vector<boost::int64_t> const&);
+  bool  decode(std::vector<long long> &, std::string      const&);
+  bool  encode(std::string      &, std::vector<long long> const&);
 
   // Uint64
-  bool  decode(boost::uint64_t    &, std::string const&);
-  bool  encode(std::string &, boost::uint64_t);
+  bool  decode(unsigned long long    &, std::string const&);
+  bool  encode(std::string &, unsigned long long);
 
   // vUint64
-  bool  decode(std::vector<boost::uint64_t> &, std::string           const&);
-  bool  encode(std::string           &, std::vector<boost::uint64_t> const&);
+  bool  decode(std::vector<unsigned long long> &, std::string           const&);
+  bool  encode(std::string           &, std::vector<unsigned long long> const&);
 
   // Double
   bool  decode(double      &, std::string const&);

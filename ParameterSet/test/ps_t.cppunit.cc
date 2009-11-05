@@ -413,7 +413,7 @@ void testps::testEmbeddedPSet()
   psEmbedded.registerIt();
   ps.addParameter<edm::ParameterSet>("psEmbedded", psEmbedded);
   ps.addParameter<double>("topLevel", 1.);
-  ps.addUntrackedParameter<boost::uint64_t>("u64", 64);
+  ps.addUntrackedParameter<unsigned long long>("u64", 64);
 
   std::vector<edm::ParameterSet> vpset;
   edm::ParameterSet pset1;
@@ -439,7 +439,7 @@ void testps::testEmbeddedPSet()
   CPPUNIT_ASSERT(trackedPart.getParameterSet("psEmbedded").exists("p2"));
   CPPUNIT_ASSERT(!trackedPart.getParameterSet("psEmbedded").exists("p1"));
   CPPUNIT_ASSERT(trackedPart.getParameterSet("psEmbedded").getParameterSet("psDeeper").getParameter<int>("deepest") == 6);
-  CPPUNIT_ASSERT(ps.getUntrackedParameter<boost::uint64_t>("u64") == 64);
+  CPPUNIT_ASSERT(ps.getUntrackedParameter<unsigned long long>("u64") == 64);
   CPPUNIT_ASSERT(!trackedPart.exists("u64"));
   std::vector<edm::ParameterSet> vpset1 = trackedPart.getParameter<std::vector<edm::ParameterSet> >("psVPset");
   CPPUNIT_ASSERT(vpset1[0].getParameter<int>("int1") == 1);
@@ -464,7 +464,7 @@ void testps::testRegistration()
   psEmbedded.registerIt();
   ps.addParameter<edm::ParameterSet>("psEmbedded", psEmbedded);
   ps.addParameter<double>("topLevel", 1.);
-  ps.addUntrackedParameter<boost::uint64_t>("u64", 64);
+  ps.addUntrackedParameter<unsigned long long>("u64", 64);
   ps.registerIt();
   CPPUNIT_ASSERT(ps.isRegistered());
   CPPUNIT_ASSERT(psEmbedded.isRegistered());
