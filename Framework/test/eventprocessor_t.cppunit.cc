@@ -2,8 +2,6 @@
 
 Test of the EventProcessor class.
 
-$Id$
-
 ----------------------------------------------------------------------*/  
 #include <exception>
 #include <iostream>
