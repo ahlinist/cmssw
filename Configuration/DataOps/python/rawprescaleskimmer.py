@@ -13,7 +13,8 @@ process.maxEvents = cms.untracked.PSet(  input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
 #process.source = cms.Source("NewEventStreamFileReader",
     fileNames = cms.untracked.vstring(
-        '/store/data/Commissioning09/Test/RECO/v1/000/084/127/6CE9285A-A33A-DE11-8219-001D09F24600.root'
+        '/store/data/BeamCommissioning09/RandomTriggers/RAW/v1/000/119/805/443B111A-A0CA-DE11-848B-001617C3B77C.root'
+#        '/store/data/Commissioning09/Test/RECO/v1/000/084/127/6CE9285A-A33A-DE11-8219-001D09F24600.root'
 #       '/store/data/MWGR_21/Express/000/096/890/MWGR_21.00096890.0010.Express.storageManager.07.0000.dat'
 #        '/store/data/MWGR_19/Express/000/084/127/MWGR_19.00084127.0082.Express.storageManager.03.0000.dat'
     )
@@ -27,7 +28,7 @@ process.load("Configuration.EventContent.EventContentCosmics_cff")
 
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.1 $'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/DataOps/python/prescaleskimmer.py,v $'),
+    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/DataOps/python/rawprescaleskimmer.py,v $'),
     annotation = cms.untracked.string('Test Skim Thingy')
 )
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) ) ## default is false
@@ -98,7 +99,7 @@ process.fakeSkimOut3 = cms.OutputModule("PoolOutputModule",
 process.fakeSkimOut4 = cms.OutputModule("PoolOutputModule",
     process.AODEventContent,
     SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('prescalepath500')
+        SelectEvents = cms.vstring('prescalepath50')
     ),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string('PreScaleThingy50'),
