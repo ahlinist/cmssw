@@ -80,7 +80,7 @@ TestFailuresAnalyzer::~TestFailuresAnalyzer()
 
 // ------------ method called to produce the data  ------------
 void
-TestFailuresAnalyzer::beginJob(const edm::EventSetup&)
+TestFailuresAnalyzer::beginJob()
 {
    if(whichFailure_ == kBeginOfJob){
       throw cms::Exception("Test") <<" beginJob";

@@ -34,7 +34,7 @@ class TestPSetAnalyzer : public edm::EDAnalyzer {
 
 
    private:
-      virtual void beginJob(const edm::EventSetup&) ;
+      virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
 
@@ -130,7 +130,7 @@ TestPSetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-TestPSetAnalyzer::beginJob(const edm::EventSetup&)
+TestPSetAnalyzer::beginJob()
 {
 }
 

@@ -32,7 +32,7 @@ public:
    
    virtual void analyze(const edm::Event&, const edm::EventSetup&);
    
-   virtual void beginJob(edm::EventSetup const&);
+   virtual void beginJob();
    virtual void endJob();
    virtual void beginRun(edm::Run const&, edm::EventSetup const&);
    virtual void endRun(edm::Run const&, edm::EventSetup const&);

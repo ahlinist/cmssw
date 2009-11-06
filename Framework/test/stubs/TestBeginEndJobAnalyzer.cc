@@ -38,7 +38,7 @@ bool TestBeginEndJobAnalyzer::endLumiCalled = false;
 bool TestBeginEndJobAnalyzer::destructorCalled = false;
 
 void 
-TestBeginEndJobAnalyzer::beginJob(const edm::EventSetup&) {
+TestBeginEndJobAnalyzer::beginJob() {
   beginJobCalled = true;
 }
 
