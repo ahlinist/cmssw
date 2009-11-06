@@ -8,16 +8,16 @@
 -->
 
 
- <Constant name="RadiusStack0"         value="34.0*cm"/>
- <Constant name="RadiusStack1"         value="38.0*cm"/>
- <Constant name="RadiusStack2"         value="50.0*cm"/>
- <Constant name="RadiusStack3"         value="54.0*cm"/>
- <Constant name="RadiusStack4"         value="66.3*cm"/>
- <Constant name="RadiusStack5"         value="70.3*cm"/>
- <Constant name="RadiusStack6"         value="82.3*cm"/>
- <Constant name="RadiusStack7"         value="86.3*cm"/>
- <Constant name="RadiusStack8"         value="100.5*cm"/>
- <Constant name="RadiusStack9"         value="104.0*cm"/>
+ <Constant name="RadiusStack0"         value="32.0*cm"/>
+ <Constant name="RadiusStack1"         value="36.0*cm"/>
+ <Constant name="RadiusStack2"         value="48.0*cm"/>
+ <Constant name="RadiusStack3"         value="52.0*cm"/>
+ <Constant name="RadiusStack4"         value="64.3*cm"/>
+ <Constant name="RadiusStack5"         value="68.3*cm"/>
+ <Constant name="RadiusStack6"         value="80.3*cm"/>
+ <Constant name="RadiusStack7"         value="84.3*cm"/>
+ <Constant name="RadiusStack8"         value="98.5*cm"/>
+ <Constant name="RadiusStack9"         value="102.5*cm"/>
 
  <Constant name="SeparationStack0"     value="1.0*mm"/>
  <Constant name="SeparationStack1"     value="1.0*mm"/>
@@ -54,14 +54,14 @@
 
  <Constant name="LaddersStack0"        value="24"/>
  <Constant name="LaddersStack1"        value="24"/>
- <Constant name="LaddersStack2"        value="38"/>
- <Constant name="LaddersStack3"        value="38"/>
- <Constant name="LaddersStack4"        value="52"/>
- <Constant name="LaddersStack5"        value="52"/>
- <Constant name="LaddersStack6"        value="64"/>
- <Constant name="LaddersStack7"        value="64"/>
- <Constant name="LaddersStack8"        value="76"/>
- <Constant name="LaddersStack9"        value="76"/>
+ <Constant name="LaddersStack2"        value="34"/>
+ <Constant name="LaddersStack3"        value="34"/>
+ <Constant name="LaddersStack4"        value="46"/>
+ <Constant name="LaddersStack5"        value="46"/>
+ <Constant name="LaddersStack6"        value="56"/>
+ <Constant name="LaddersStack7"        value="56"/>
+ <Constant name="LaddersStack8"        value="68"/>
+ <Constant name="LaddersStack9"        value="68"/>
 
  <Constant name="PhiOffsetStack0"      value="0*deg"/>
  <Constant name="PhiOffsetStack1"      value="0*deg"/>
@@ -95,12 +95,6 @@
  <Constant name="ModulesStack7"        value="54"/>
  <Constant name="ModulesStack8"        value="54"/>
  <Constant name="ModulesStack9"        value="54"/>
-
- <Constant name="RingModules"        value="6"/>
- <Constant name="RingModules4"        value="[RingModules]"/>
- <Constant name="RingModules5"        value="[RingModules]"/>
- <Constant name="RingModules6"        value="[RingModules]"/>
- <Constant name="RingModules7"        value="[RingModules]"/>
 
  <Constant name="LayerDzStack0"        value="420.0*cm"/>
  <Constant name="LayerDzStack1"        value="420.0*cm"/>
