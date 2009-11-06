@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/45
 //         Created:  Tue May 13 12:23:34 CEST 2008
-// $Id: RPCMonitorEfficiency.cc,v 1.32 2009/09/02 14:56:06 carrillo Exp $
+// $Id: RPCMonitorEfficiency.cc,v 1.33 2009/10/02 16:20:47 carrillo Exp $
 //
 //
 
@@ -277,6 +277,7 @@ public:
   TH1F * histoPROY;
   TH1F * histoPROX;
   TH2F * histoPRO_2D;
+  TH1F * histoCellDistro;
   TH1F * histoRES;
   TH1F * BXDistribution;
   TH1F * Signal_BXDistribution;
@@ -1300,34 +1301,36 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	     
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdDT, meIdDT_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF,meIdCEll_2D;
 	  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
 
 	  delete folderStr;
 
-	  meIdRPC = folder +"/RPCDataOccupancyFromDT_"+ name;	
-	  meIdDT =folder+"/ExpectedOccupancyFromDT_"+ name;
+	  meIdRPC = folder +"/RPCDataOccupancy_"+ name;	
+	  meIdDT =folder+"/ExpectedOccupancy_"+ name;
 
 	  bxDistroId =folder+"/BXDistribution_"+ name;
 	  signal_bxDistroId =folder+"/Signal_BXDistribution_"+ name;
-	  meIdRealRPC =folder+"/RealDetectedOccupancyFromDT_"+ name;  
+	  meIdRealRPC =folder+"/RealDetectedOccupancy_"+ name;  
 
 	  meIdPRO = "Profile_For_"+name;
 	  meIdPROY = "Y_Profile_For_"+name;
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
-	  meIdResidual = folder+"/RPCResidualsFromDT_"+ name;
-	  meIdResidual1 = folder+"/RPCResidualsFromDT_Clu1_"+ name;
-	  meIdResidual2 = folder+"/RPCResidualsFromDT_Clu2_"+ name;
-	  meIdResidual3 = folder+"/RPCResidualsFromDT_Clu3_"+ name;
-	  meIdResidualO = folder+"/RPCResidualsFromDT_Other_"+ name;
-	  meIdDT_2D = folder+"/ExpectedOccupancy2DFromDT_"+ name;
-	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromDT_"+ name;	
+	  meIdCEll_2D = "Efficiency_Cells_Distribution_For"+name;
+	  meIdResidual = folder+"/RPCResiduals_"+ name;
+	  meIdResidual1 = folder+"/RPCResiduals_Clu1_"+ name;
+	  meIdResidual2 = folder+"/RPCResiduals_Clu2_"+ name;
+	  meIdResidual3 = folder+"/RPCResiduals_Clu3_"+ name;
+	  meIdResidualO = folder+"/RPCResiduals_Other_"+ name;
+
+	  meIdDT_2D = folder+"/ExpectedOccupancy2D_"+ name;
+	  meIdRPC_2D = folder +"/RPCDataOccupancy2D_"+ name;	
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
-	  meIdINEF = folder +"/Inefficiency2DFromDT_"+ name;
+	  meIdINEF = folder +"/Inefficiency2D_"+ name;
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoDT_2D= (TH2F*)theFile->Get(meIdDT_2D.c_str());
@@ -1389,6 +1392,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
 				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 
+	  histoCellDistro = new TH1F (meIdCEll_2D.c_str(),meIdCEll_2D.c_str(),0,100,100);
+
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*(int)(0.6*nstrips*stripw),-0.6*stripw*nstrips,0.6*stripw*nstrips);
 	  
@@ -1442,7 +1447,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		if(histoDT_2D->GetBinContent(i,j) != 0){
 		  ef2D = histoRPC_2D->GetBinContent(i,j)/histoDT_2D->GetBinContent(i,j);
 		  er2D = sqrt(ef2D*(1-ef2D)/histoDT_2D->GetBinContent(i,j));
-		}	
+		}
+		histoCellDistro->Fill(ef2D*100);
 		histoPRO_2D->SetBinContent(i,j,ef2D*100.);
 		histoPRO_2D->SetBinError(i,j,er2D*100.);
 	      }//loop on the boxes
@@ -1676,6 +1682,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    histoPROY->Write();
 	    histoPROX->Write();
 	    histoPRO_2D->Write();
+	    histoCellDistro->Write();
 	    histoCLS->Write();
 	    histoBXY->Write();
 	    BXDistribution->Write();
@@ -1788,6 +1795,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      labeltoSave = name + "/Profile_2D.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
+
+	      histoCellDistro->GetXaxis()->SetTitle("Efficiency(%)");
+	      histoCellDistro->Draw();
+	      labeltoSave = name + "/CellDistro.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
 	      
 	      histoResidual1->GetXaxis()->SetTitle("cm");
 	      //histoResidual->SetFillColor(1);  histoResidual->Draw();
@@ -1805,6 +1818,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	    delete histoPROY;
 	    delete histoPROX;
 	    delete histoPRO_2D;
+	    delete histoCellDistro;
 	    delete histoBXY;
 	    delete histoINEF;
 
@@ -1908,7 +1922,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
 			     <<" AverageEff"<<averageeff
-			     <<" No Prediction Ration"<<nopredictionsratio
+			     <<" No Prediction Ratio"<<nopredictionsratio
 			     <<std::endl;
 	  
 	  //Pigi Histos
@@ -2213,35 +2227,36 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  float stripl = top_->stripLength();
 	  float stripw = top_->pitch();
 	  
-	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF;
+	  std::string detUnitLabel, meIdRPC, meIdRPC_2D, meIdCSC, meIdCSC_2D, meIdPRO, meIdPROY, meIdPROX,  signal_bxDistroId, bxDistroId, meIdRealRPC, meIdPRO_2D, meIdResidual, meIdResidual1, meIdResidual2, meIdResidual3, meIdResidualO, meIdCLS,meIdBXY,meIdINEF,meIdCEll_2D;
 		  
 	  RPCBookFolderStructure *  folderStr = new RPCBookFolderStructure(); //Anna
 	  std::string folder = "DQMData/Muons/MuonSegEff/" +  folderStr->folderStructure(rpcId);
 
 	  delete folderStr;
 	
-	  meIdRPC = folder +"/RPCDataOccupancyFromCSC_"+ name;	
-	  meIdCSC =folder+"/ExpectedOccupancyFromCSC_"+ name;
+	  meIdRPC = folder +"/RPCDataOccupancy_"+ name;	
+	  meIdCSC =folder+"/ExpectedOccupancy_"+ name;
 
 	  bxDistroId =folder+"/BXDistribution_"+ name;
 	  signal_bxDistroId =folder+"/Signal_BXDistribution_"+ name;
-	  meIdRealRPC =folder+"/RealDetectedOccupancyFromCSC_"+ name;
+	  meIdRealRPC =folder+"/RealDetectedOccupancy_"+ name;
 	  
 	  meIdPRO = "Profile_For_"+name;
 	  meIdPROY = "Y_Profile_For_"+name;
 	  meIdPROX = "X_Profile_For_"+name;
 	  meIdPRO_2D = "Profile2D_For_"+name;
-	  meIdResidual = folder+"/RPCResidualsFromCSC_"+ name;
-	  meIdResidual1 = folder+"/RPCResidualsFromCSC_Clu1_"+ name;
-	  meIdResidual2 = folder+"/RPCResidualsFromCSC_Clu2_"+ name;
-	  meIdResidual3 = folder+"/RPCResidualsFromCSC_Clu3_"+ name;
-	  meIdResidualO = folder+"/RPCResidualsFromCSC_Other_"+ name;
+	  meIdCEll_2D = "Efficiency_Cells_Distribution_For"+name;
+	  meIdResidual = folder+"/RPCResiduals_"+ name;
+	  meIdResidual1 = folder+"/RPCResiduals_Clu1_"+ name;
+	  meIdResidual2 = folder+"/RPCResiduals_Clu2_"+ name;
+	  meIdResidual3 = folder+"/RPCResiduals_Clu3_"+ name;
+	  meIdResidualO = folder+"/RPCResiduals_Other_"+ name;
 	  
-	  meIdCSC_2D = folder+"/ExpectedOccupancy2DFromCSC_"+ name;
-	  meIdRPC_2D = folder +"/RPCDataOccupancy2DFromCSC_"+ name;
+	  meIdCSC_2D = folder+"/ExpectedOccupancy2D_"+ name;
+	  meIdRPC_2D = folder +"/RPCDataOccupancy2D_"+ name;
 	  meIdCLS = folder +"/CLSDistribution_"+ name;	
 	  meIdBXY = folder +"/BXYDistribution_"+ name;
-	  meIdINEF = folder +"/Inefficiency2DFromCSC_"+ name;
+	  meIdINEF = folder +"/Inefficiency2D_"+ name;
 
 	  histoRPC_2D= (TH2F*)theFile->Get(meIdRPC_2D.c_str());
 	  histoCSC_2D= (TH2F*)theFile->Get(meIdCSC_2D.c_str());
@@ -2298,9 +2313,11 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  histoRealRPC = (TH1F*)theFile->Get(meIdRealRPC.c_str());if(!histoRealRPC)if(debug) std::cout<<meIdRealRPC<<"Doesn't exist"<<std::endl;
 	  
 	  histoPRO= new TH1F (meIdPRO.c_str(),meIdPRO.c_str(),nstrips,0.5,nstrips+0.5);
-	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO.c_str(),
+	  histoPRO_2D= new TH2F (meIdPRO_2D.c_str(),meIdPRO_2D.c_str(),
 				 2*(int)(0.6*nstrips*stripw),-0.6*nstrips*stripw,0.6*nstrips*stripw,
 				 2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
+
+	  histoCellDistro = new TH1F (meIdCEll_2D.c_str(),meIdCEll_2D.c_str(),0,100,100);
 	  
 	  histoPROY = new TH1F (meIdPROY.c_str(),meIdPROY.c_str(),2*(int)(0.6*stripl),-0.6*stripl,0.6*stripl);
 	  histoPROX = new TH1F (meIdPROX.c_str(),meIdPROX.c_str(),2*(int)(0.6*nstrips*stripw),-0.6*stripw*nstrips,0.6*stripw*nstrips);
@@ -2376,6 +2393,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 		  ef2D = histoRPC_2D->GetBinContent(i,j)/histoCSC_2D->GetBinContent(i,j);
 		  er2D = sqrt(ef2D*(1-ef2D)/histoCSC_2D->GetBinContent(i,j));
 		}	
+		histoCellDistro->Fill(ef2D*100);
 		histoPRO_2D->SetBinContent(i,j,ef2D*100.);
 		histoPRO_2D->SetBinError(i,j,er2D*100.);
 	      }//loop on the boxes
@@ -2620,9 +2638,10 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
 	    if(debug) std::cout<<"Writing histograms"<<std::endl;
 	    histoPRO->Write();
-	    //histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
-	    //histoPRO_2D->Write(); //ahora este
-	    //histoCLS->Write(); //parece este
+	    histoPROY->Write(); //parece este Cuando se descomentan estos histogramas aparece el problema en la visualizacion con TBRowser 
+	    histoPRO_2D->Write(); //ahora este
+	    histoCLS->Write(); //parece este
+	    histoCellDistro->Write();
 	    histoBXY->Write();
 	    BXDistribution->Write();
 	    Signal_BXDistribution->Write();
@@ -2734,6 +2753,12 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	      histoPRO_2D->Draw();
 	      histoPRO_2D->SetDrawOption("COLZ");
 	      labeltoSave = name + "/Profile_2D.png";
+	      Ca0->SaveAs(labeltoSave.c_str());
+	      Ca0->Clear();
+
+	      histoCellDistro->GetXaxis()->SetTitle("Efficiency(%)");
+	      histoCellDistro->Draw();
+	      labeltoSave = name + "/CellDistro.png";
 	      Ca0->SaveAs(labeltoSave.c_str());
 	      Ca0->Clear();
 	      
@@ -2858,7 +2883,7 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 	  
 	  if(debug) std::cout<<"Super offsets in  "<<name<<" mean="<<histoResidual->GetMean()
 			     <<" AverageEff"<<averageeff
-			     <<" No Prediction Ration"<<nopredictionsratio
+			     <<" No Prediction Ratio"<<nopredictionsratio
 			     <<std::endl;
 	  
 	  //Pigi Histos
@@ -3910,6 +3935,8 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
 
   //El otro angulo
 
+  Ca5->Clear();
+
   ScatterPlotAlphaPCLSLa1= (TH2F*)theFile->Get("DQMData/Muons/MuonSegEff/Residuals/Investigation/ScatterPlotAlphaPCLSLa1");
   if(ScatterPlotAlphaPCLSLa1){
      for(int i=0;i<n;i++){
@@ -3922,7 +3949,6 @@ void RPCMonitorEfficiency::analyze(const edm::Event& iEvent, const edm::EventSet
        ex[i]=step*0.5;
        y[i]=mean;
        ey[i]=error;
-
      }
      
      TGraphErrors * plot = new TGraphErrors(n,x,y,ex,ey);	
