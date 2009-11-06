@@ -172,8 +172,8 @@ void testmakepset::usingBlockAux()
   CPPUNIT_ASSERT(m1Params.getParameter<int>("i") == 1);
   CPPUNIT_ASSERT(m2Params.getParameter<int>("i") == 2);
   CPPUNIT_ASSERT(m2Params.getParameter<int>("j") == 3);
-  CPPUNIT_ASSERT(m2Params.getParameter<boost::int64_t>("l") == 101010);
-  CPPUNIT_ASSERT(m2Params.getParameter<boost::uint64_t>("u") == 1011);
+  CPPUNIT_ASSERT(m2Params.getParameter<long long>("l") == 101010);
+  CPPUNIT_ASSERT(m2Params.getParameter<unsigned long long>("u") == 1011);
 
   CPPUNIT_ASSERT(m1Params.getParameter<std::string>("s") == "original");
   CPPUNIT_ASSERT(m2Params.getParameter<std::string>("s") == "original");
