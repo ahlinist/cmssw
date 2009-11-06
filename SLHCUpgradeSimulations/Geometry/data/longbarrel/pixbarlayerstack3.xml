@@ -32,6 +32,7 @@
   <Numeric name="LadderThick"      value="[pixbarladderstack3:LadderThick]"/>
   <Numeric name="ModuleOffset"     value="[pixbarlayerstack3:PhiOffset]"/>
   <Numeric name="LayoutType"       value="[pixbarlayerstack3:Layout]"/>
+  <Numeric name="ActiveWidth"      value="[pixbarladderstack3:ActiveWidth]"/>
 </Algorithm>
 
 </DDDefinition>
