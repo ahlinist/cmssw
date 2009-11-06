@@ -13,7 +13,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.cc,v 1.1 2009/08/05 14:47:46 fruboes Exp $
+// $Id: RPCTriggerValidation.cc,v 1.2 2009/08/17 15:42:09 fruboes Exp $
 //
 //
 
@@ -31,6 +31,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "Validation/L1Trigger/interface/RPCTriggerValidation.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -56,7 +58,18 @@ RPCTriggerValidation::RPCTriggerValidation(const edm::ParameterSet& iConfig) :
       m_inColMC(iConfig.getParameter<edm::InputTag >("MCCollection")),
       m_outputDirectory(iConfig.getParameter<std::string >("outputDirectory"))
 {
+          DQMStore* dqm = 0;
+          dqm = edm::Service<DQMStore>().operator->();
+          if ( dqm ) {
+               dqm->setCurrentFolder(m_outputDirectory);
+               nomEta = dqm->book1D("nomEta","RPCTrigger: Efficieny vs  #eta",100,-2.5,2.5);
+               denomEta = dqm->book1D("denomEta","RPCTrigger: Efficiency vs  #eta - denom",100,-2.5,2.5);
+          }  else {
+            throw cms::Exception("RPCTriggerValidation") << "Cannot get DQMStore \n";
+          }
+                                                    
 
+  
 }
 
 
@@ -115,12 +128,13 @@ RPCTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& i
    for (;itGen!=itGenE;++itGen)
    {
        std::cout << *itGen << std::endl;
+       /*
        std::vector<L1MuonCandLocalInfo>::iterator it = itGen->_l1cands.begin();
        std::vector<L1MuonCandLocalInfo>::iterator itE = itGen->_l1cands.end();
        for (;it!=itE;++it) {
          std::cout << *it << std::endl;
 
-       }
+       }*/
    }
 
 
@@ -177,7 +191,7 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
     for (;itGen!=itGenE;++itGen)
     {
        double dr = reco::deltaR(*itGen,*it);
-       std::cout << "))))))))))->" << drMin  << " " << dr << std::endl; 
+       //std::cout << "))))))))))->" << drMin  << " " << dr << std::endl; 
        if (dr < drMin || drMin < 0) { 
          drMin = dr;
          itGenMin = itGen;
@@ -187,8 +201,8 @@ void RPCTriggerValidation::assignCandidatesToGens( std::vector<GenMuonLocalInfo>
     // TODO check if there is no genCandidate close to choosen one, if so choose the one with proper pt
     // Problem:  {a,b} - L1 cands, {C,D} - Gens, what if both a and b got assigned to C? How to handle this
     // TODO make this configurable
-    std::cout << "))))))))))->" << drMin << std::endl; 
-    if (drMin < 0.3 && drMin > 0 ) {
+    //  std::cout << "))))))))))->" << drMin << std::endl; 
+    if (drMin < 0.5 && drMin > 0 ) {
        itGenMin->_l1cands.push_back(*it);
        it = l1cands.erase(it);
     } else {
@@ -209,6 +223,9 @@ RPCTriggerValidation::beginJob()
 
 void 
 RPCTriggerValidation::endJob() {
+
+  nomEta->getTH1F()->Divide(denomEta->getTH1F());
+                  
 }
 
 
@@ -217,6 +234,13 @@ std::ostream& operator<<( std::ostream& os, const RPCTriggerValidation::GenMuonL
                  << " eta "  << g1.eta()
                  << " pt " << g1.pt()
                  << " ch " << g1.charge();
+              if (g1._l1cands.size()>0){
+                 os << "   first assigned l1: " << *(g1._l1cands.begin());
+              
+              }
+                
+            
+              
               return os;
 }
 
