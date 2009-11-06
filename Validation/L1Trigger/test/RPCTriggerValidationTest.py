@@ -8,8 +8,11 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(1000)
 )
+
+process.load("DQMServices.Core.DQM_cfg")
+process.load("DQMServices.Components.test.dqm_onlineEnv_cfi")
 
 process.load("Validation/L1Trigger/RPCTriggerValidation_cfi")
 
@@ -21,9 +24,16 @@ process.RPCTriggerVal.MC  = cms.InputTag("genParticles")
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-            '/store/relval/CMSSW_3_1_1/RelValSingleMuPt10/GEN-SIM-RECO/MC_31X_V2-v1/0002/E43E73F7-D56B-DE11-9610-001D09F291D2.root'
+            '/store/relval/CMSSW_3_3_2/RelValSingleMuPt10/GEN-SIM-DIGI-RAW-HLTDEBUG/MC_31X_V9-v2/0000/8E588A2F-BCC7-DE11-A4E0-003048678BF4.root'
     )
 )
 
-process.a = cms.Path(process.RPCTriggerVal)
+process.dqmSaver.convention = 'Online'
+process.dqmSaver.dirName = '.'
+process.dqmSaver.producer = 'DQM'
+process.dqmEnv.subSystemFolder = 'L1T'
 
+process.a = cms.Path(process.RPCTriggerVal*process.dqmEnv*process.dqmSaver)
+
+
+  

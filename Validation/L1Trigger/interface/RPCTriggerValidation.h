@@ -15,7 +15,7 @@
 //
 // Original Author:  Tomasz Maciej Frueboes
 //         Created:  Wed Aug  5 16:03:51 CEST 2009
-// $Id: RPCTriggerValidation.h,v 1.1 2009/08/05 14:47:45 fruboes Exp $
+// $Id: RPCTriggerValidation.h,v 1.2 2009/08/17 15:42:08 fruboes Exp $
 //
 //
 
@@ -33,6 +33,12 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 //#include "DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "DQMServices/Core/interface/DQMStore.h"
+#include "DQMServices/Core/interface/MonitorElement.h"
+
+
 
 #include <vector>
 //
@@ -99,6 +105,8 @@ class RPCTriggerValidation : public edm::EDAnalyzer {
 
       void assignCandidatesToGens( std::vector<GenMuonLocalInfo> & gens, 
                                    std::vector<L1MuonCandLocalInfo> & l1cands);
+
+      MonitorElement * nomEta, * denomEta;
 
       std::vector<edm::InputTag > m_l1CollectionsVec; 
       edm::InputTag m_inColMC;       /// input tag for reco::muon (DQMOffline) or genParticles (Validation)
