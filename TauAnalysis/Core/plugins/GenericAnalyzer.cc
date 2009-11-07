@@ -311,24 +311,24 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
   std::string lastFilterName = "";
   for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry = cfgAnalysisSequenceEntries.begin();
 	cfgAnalysisSequenceEntry != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry ) {
-    std::string filterName = ( cfgAnalysisSequenceEntry->exists("filter") ) ? 
-      cfgAnalysisSequenceEntry->getParameter<std::string>("filter") : "";
-    vstring analyzerNames = ( cfgAnalysisSequenceEntry->exists("analyzers") ) ? 
-      cfgAnalysisSequenceEntry->getParameter<vstring>("analyzers") : vstring();
-
-    if ( filterName == "" && analyzerNames.size() == 0 ) {
+//--- check that analysisSequenceEntry is either a filter or an analyzer
+    if ( !(cfgAnalysisSequenceEntry->exists("filter")    ||
+	   cfgAnalysisSequenceEntry->exists("analyzers")) ) {
       edm::LogError("GenericAnalyzer") << " Either filter or analyzers must be specified for sequenceEntries !!";
       cfgError_ = 1;
       continue;
     }
-    
-    if ( filterName != "" && analyzerNames.size() != 0 ) {
+ 
+    if ( cfgAnalysisSequenceEntry->exists("filter")      &&
+	 cfgAnalysisSequenceEntry->exists("analyzers") ) {
       edm::LogError("GenericAnalyzer") << " Must not specify filter and analyzers for same sequenceEntry !!";
       cfgError_ = 1;
       continue;
     }
 
-    if ( filterName != "" ) {
+    if ( cfgAnalysisSequenceEntry->exists("filter") ) {
+      std::string filterName = cfgAnalysisSequenceEntry->getParameter<std::string>("filter");
+
       vstring saveRunEventNumbers = cfgAnalysisSequenceEntry->exists("saveRunEventNumbers") ? 
 	cfgAnalysisSequenceEntry->getParameter<vstring>("saveRunEventNumbers") : vstring();
       
@@ -336,8 +336,14 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
       
       lastFilterName = filterName;
     }
-    
-    if ( analyzerNames.size() != 0 ) {
+
+    if ( cfgAnalysisSequenceEntry->exists("analyzers") ) {
+      vstring analyzerNames = cfgAnalysisSequenceEntry->getParameter<vstring>("analyzers");
+
+      if ( analyzerNames.size() == 0 ) {
+	edm::LogWarning("GenericAnalyzer") << " List of analyzers is empty !!";
+      }
+
       std::string nextFilterName = "";
       for ( vParameterSet::const_iterator cfgAnalysisSequenceEntry_nextFilter = cfgAnalysisSequenceEntry;
 	    cfgAnalysisSequenceEntry_nextFilter != cfgAnalysisSequenceEntries.end(); ++cfgAnalysisSequenceEntry_nextFilter ) {
