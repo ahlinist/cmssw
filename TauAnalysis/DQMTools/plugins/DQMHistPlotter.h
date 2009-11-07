@@ -5,8 +5,8 @@
  *  
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/01/21 17:34:57 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/07/16 16:51:00 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -58,7 +58,8 @@ class DQMHistPlotter : public edm::EDAnalyzer
   {
     explicit cfgEntryAxisY(const std::string&, const edm::ParameterSet&);
     void print() const;
-    static void setNorm(double yAxisNorm) { yAxisNorm_ = yAxisNorm; }
+    static void setNorm_min(double yAxisNorm_min) { yAxisNorm_min_ = yAxisNorm_min; }
+    static void setNorm_max(double yAxisNorm_max) { yAxisNorm_max_ = yAxisNorm_max; }
     void applyTo(TH1*) const;
     std::string name_;
     double minY_linear_;
@@ -69,7 +70,8 @@ class DQMHistPlotter : public edm::EDAnalyzer
     std::string yAxisTitle_;
     double yAxisTitleOffset_;
     double yAxisTitleSize_;
-    static double yAxisNorm_;
+    static double yAxisNorm_min_;
+    static double yAxisNorm_max_;
   };
 
   struct cfgEntryLegend

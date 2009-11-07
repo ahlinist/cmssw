@@ -44,10 +44,13 @@ const std::string yScale_log = "log";
 const std::string defaultYscale = yScale_linear;
 const double defaultYaxisTitleOffset = 1.0;
 const double defaultYaxisTitleSize = 0.05;
+const double defaultYaxisMinimumScaleFactor_linear = 1.2;
+const double defaultYaxisMinimumScaleFactor_log = 5.e+0;
 const double defaultYaxisMaximumScaleFactor_linear = 1.6;
 const double defaultYaxisMaximumScaleFactor_log = 5.e+2;
 
-double DQMHistPlotter::cfgEntryAxisY::yAxisNorm_ = 0.;
+double DQMHistPlotter::cfgEntryAxisY::yAxisNorm_min_ = 0.;
+double DQMHistPlotter::cfgEntryAxisY::yAxisNorm_max_ = 0.;
 
 // defaults for cfgEntryLegend
 const double defaultLegendPosX = 0.50;
@@ -300,8 +303,20 @@ void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
 {
   if ( histogram ) {
     bool yLogScale = ( yScale_ == yScale_log ) ? true : false;
+
     double minY = ( yLogScale ) ? minY_log_ : minY_linear_;
-    histogram->SetMinimum(minY);
+    double defaultMinY = ( yLogScale ) ? defaultMinY_log : defaultMinY_linear;
+    if ( minY != defaultMinY ) {
+//--- normalize y-axis range using given configuration parameter
+      histogram->SetMinimum(minY);
+    } else {
+//--- in case configuration parameter for y-axis range not explicitely given,
+//    normalize y-axis range to minimum of any histogram included in drawJob
+//    times defaultYaxisMinimumScaleFactor 
+      double defaultYaxisMinimumScaleFactor = ( yLogScale ) ? defaultYaxisMinimumScaleFactor_log : defaultYaxisMinimumScaleFactor_linear;
+      histogram->SetMinimum(defaultYaxisMinimumScaleFactor*yAxisNorm_min_);
+    }
+
     double maxY = ( yLogScale ) ? maxY_log_ : maxY_linear_;
     double defaultMaxY = ( yLogScale ) ? defaultMaxY_log : defaultMaxY_linear;
     if ( maxY != defaultMaxY ) {
@@ -312,8 +327,9 @@ void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
 //    normalize y-axis range to maximum of any histogram included in drawJob
 //    times defaultYaxisMaximumScaleFactor (apply scale factor in order to make space for legend)
       double defaultYaxisMaximumScaleFactor = ( yLogScale ) ? defaultYaxisMaximumScaleFactor_log : defaultYaxisMaximumScaleFactor_linear;
-      histogram->SetMaximum(defaultYaxisMaximumScaleFactor*yAxisNorm_);
+      histogram->SetMaximum(defaultYaxisMaximumScaleFactor*yAxisNorm_max_);
     }
+
     histogram->GetYaxis()->SetTitle(yAxisTitle_.data());
     histogram->GetYaxis()->SetTitleOffset(yAxisTitleOffset_);
     histogram->GetYaxis()->SetTitleSize(yAxisTitleSize_);
@@ -1079,13 +1095,16 @@ void DQMHistPlotter::endJob()
 
 //--- determine normalization of y-axis
 //    (maximum of any of the histograms included in drawJob)
-    double yAxisNorm = 0.;
+    double yAxisNorm_min = 0.;
+    double yAxisNorm_max = 0.;
     for ( std::list<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
 	  it != allHistograms.end(); ++it ) {
-      yAxisNorm = TMath::Max(yAxisNorm, it->first->GetMaximum());
+      yAxisNorm_min = TMath::Min(yAxisNorm_min, it->first->GetMinimum());
+      yAxisNorm_max = TMath::Max(yAxisNorm_max, it->first->GetMaximum());
     }
-    //std::cout << " yAxisNorm = " << yAxisNorm << std::endl;
-    cfgEntryAxisY::setNorm(yAxisNorm);
+    //std::cout << " yAxisNorm: min = " << yAxisNorm_min << ", max = " << yAxisNorm_max << std::endl;
+    cfgEntryAxisY::setNorm_min(yAxisNorm_min);
+    cfgEntryAxisY::setNorm_max(yAxisNorm_max);
 
 //--- prepare histograms for drawing
     const cfgEntryAxisX* xAxisConfig = findCfgDef<cfgEntryAxisX>(drawJob->xAxis_, xAxes_, "xAxis", drawJobName);
