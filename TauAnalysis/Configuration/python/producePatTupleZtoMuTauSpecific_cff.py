@@ -34,6 +34,11 @@ from TauAnalysis.CandidateTools.diTauPairSelectionAllKinds_cff import *
 # of being an muon pair resulting from a Z --> mu+ mu- decay
 #
 from TauAnalysis.RecoTools.muTauPairZmumuHypothesis_cff import *
+#
+# produce combinations of muon + muon pairs,
+# the hypothesis being that the pair of muons results from a Z --> mu+ mu- decay
+#
+from TauAnalysis.RecoTools.diMuPairZmumuHypothesis_cff import *
 
 producePatTupleZtoMuTauSpecific = cms.Sequence(
     selectLayer1Muons + selectLayer1MuonsLooseIsolation
@@ -42,5 +47,6 @@ producePatTupleZtoMuTauSpecific = cms.Sequence(
    + produceMuTauPairs + produceMuTauPairsLooseMuonIsolation
    + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
    + produceMuTauPairZmumuHypotheses
+   + produceDiMuPairs
    + selectLayer1Jets
 )
