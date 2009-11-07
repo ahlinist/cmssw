@@ -56,7 +56,10 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         evtSelDiTauCandidateForMuTauZeroCharge,
         evtSelDiTauCandidateForMuTauAcoplanarity12,
         evtSelDiTauCandidateForMuTauMt1MET,
-        evtSelDiTauCandidateForMuTauPzetaDiff
+        evtSelDiTauCandidateForMuTauPzetaDiff,
+
+        # Z --> mu+ mu- hypothesis veto (based on combinations of muon pairs)
+        evtSelDiMuPairZmumuHypothesisVeto
     ),
   
     analyzers = cms.VPSet(
@@ -66,6 +69,7 @@ analyzeZtoMuTauEvents = cms.EDAnalyzer("GenericAnalyzer",
         tauHistManager,
         diTauCandidateHistManagerForMuTau,
         diTauCandidateZmumuHypothesisHistManagerForMuTau,
+        muPairHistManager,
         jetHistManager,
         metHistManager,
         particleMultiplicityHistManager,
