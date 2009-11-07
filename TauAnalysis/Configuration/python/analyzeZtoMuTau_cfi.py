@@ -27,6 +27,13 @@ diTauCandidateZmumuHypothesisHistManagerForMuTau.pluginType = cms.string('ZllHyp
 diTauCandidateZmumuHypothesisHistManagerForMuTau.ZllHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses')
 diTauCandidateZmumuHypothesisHistManagerForMuTau.dqmDirectory_store = cms.string('DiTauCandidateZmumuHypothesisQuantities')
 
+# import config for Zmumu veto histogram manager
+muPairHistManager = copy.deepcopy(diTauCandidateHistManager)
+muPairHistManager.pluginName = cms.string('muPairHistManager')
+muPairHistManager.pluginType = cms.string('DiCandidatePairHistManager')
+muPairHistManager.diTauCandidateSource = cms.InputTag('allDiMuPairZmumuHypotheses')
+muPairHistManager.dqmDirectory_store = cms.string('DiMuZmumuHypothesisQuantities')
+
 # import config for central jet veto histogram manager
 from TauAnalysis.Core.jetHistManager_cfi import *
 
@@ -256,6 +263,14 @@ evtSelDiTauCandidateForMuTauPzetaDiff = cms.PSet(
     src_individual = cms.InputTag('diTauCandidateForMuTauPzetaDiffCut', 'individual')
 )
 
+# veto events compatible with Z --> mu+ mu- hypothesis
+# (based on reconstructed (visible) invariant mass of muon + muon pairs)
+evtSelDiMuPairZmumuHypothesisVeto = cms.PSet(
+    pluginName = cms.string('evtSelDiMuPairZmumuHypothesisVeto'),
+    pluginType = cms.string('BoolEventSelector'),
+    src = cms.InputTag('diMuPairZmumuHypothesisVeto')
+)
+
 #--------------------------------------------------------------------------------
 # define event print-out
 #--------------------------------------------------------------------------------
@@ -284,6 +299,8 @@ muTauEventDump = cms.PSet(
     tauSource = cms.InputTag('selectedLayer1TausPt20Cumulative'),
     #tauSource = cms.InputTag('selectedLayer1TausForMuTauMuonVetoCumulative'),
     diTauCandidateSource = cms.InputTag('allMuTauPairs'),
+    muTauZmumuHypothesisSource = cms.InputTag('muTauPairZmumuHypotheses'),
+    diMuZmumuHypothesisSource = cms.InputTag('allDiMuPairZmumuHypotheses'),
     metSource = cms.InputTag('layer1METs'),
     genMEtSource = cms.InputTag('genMetTrue'),
     jetSource = cms.InputTag('selectedLayer1JetsEt20Cumulative'),
@@ -297,7 +314,7 @@ muTauEventDump = cms.PSet(
     output = cms.string("std::cout"),
     
     #triggerConditions = cms.vstring("evtSelTauTrkIso: rejected_cumulative")
-    triggerConditions = cms.vstring("evtSelDiTauCandidateForMuTauPzetaDiff: passed_cumulative")
+    triggerConditions = cms.vstring("evtSelDiMuPairZmumuHypothesisVeto: passed_cumulative")
 )
 
 #--------------------------------------------------------------------------------
@@ -730,12 +747,28 @@ muTauAnalysisSequence = cms.VPSet(
     ),
     cms.PSet(
         analyzers = cms.vstring(
+            'muonHistManager',
+            'tauHistManager',
+            'diTauCandidateHistManagerForMuTau'
+        ),
+        replace = cms.vstring('muonHistManager.muonSource = selectedLayer1MuonsTrkIPcumulative',
+                              'tauHistManager.tauSource = selectedLayer1TausForMuTauMuonVetoCumulative',
+                              'diTauCandidateHistManagerForMuTau.diTauCandidateSource = selectedMuTauPairsPzetaDiffCumulative')
+    ),
+    cms.PSet(
+        filter = cms.string('evtSelDiMuPairZmumuHypothesisVeto'),
+        title = cms.string('not 80 < M (Muon-Muon) < 100 GeV'),
+        saveRunEventNumbers = cms.vstring('passed_cumulative')
+    ),
+    cms.PSet(
+        analyzers = cms.vstring(
             'genPhaseSpaceEventInfoHistManager',
             'eventWeightHistManager',
             'muonHistManager',
             'tauHistManager',
             'diTauCandidateHistManagerForMuTau',
             'diTauCandidateZmumuHypothesisHistManagerForMuTau',
+            'muPairHistManager',
             'jetHistManager',
             'metHistManager',
             'particleMultiplicityHistManager',

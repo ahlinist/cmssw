@@ -194,6 +194,15 @@ cfgDiTauCandidateForMuTauPzetaDiffCut = cms.PSet(
     minNumber = cms.uint32(1)
 )
 
+# veto events compatible with Z --> mu+ mu- hypothesis
+# (based on reconstructed (visible) invariant mass of muon + muon pairs)
+cfgDiMuPairZmumuHypothesisVeto = cms.PSet(
+    pluginName = cms.string('diMuPairZmumuHypothesisVeto'),
+    pluginType = cms.string('PATCandViewMaxEventSelector'),
+    src = cms.InputTag('selectedDiMuPairZmumuHypotheses'),
+    maxNumber = cms.uint32(0)
+)
+
 zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
     [ cfgTrigger,
       cfgPrimaryEventVertex,
@@ -220,7 +229,8 @@ zToMuTauEventSelConfigurator = eventSelFlagProdConfigurator(
       cfgDiTauCandidateForMuTauZeroChargeCut,
       cfgDiTauCandidateForMuTauAcoplanarity12Cut,
       cfgDiTauCandidateForMuTauMt1METcut,
-      cfgDiTauCandidateForMuTauPzetaDiffCut ],
+      cfgDiTauCandidateForMuTauPzetaDiffCut,
+      cfgDiMuPairZmumuHypothesisVeto ],
     boolEventSelFlagProducer = "BoolEventSelFlagProducer",
     pyModuleName = __name__
 )
