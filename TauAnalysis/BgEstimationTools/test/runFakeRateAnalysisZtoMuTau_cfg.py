@@ -134,7 +134,7 @@ from TauAnalysis.BgEstimationTools.tools.fakeRateTools import enableFakeRates_ru
 # disable cuts on tau id. discriminators;
 # instead, weight events passing all selection criteria except tau id. discriminators
 # by fake-rates
-enableFakeRates_runZtoMuTau(process, method = "simple") # "simple"/"CDF"
+enableFakeRates_runZtoMuTau(process, frTypes = [ "qcdMuEnriched", ], method = "simple") # "simple"/"CDF"
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
