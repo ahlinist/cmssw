@@ -8,9 +8,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.3 $
+ * \version $Revision: 1.4 $
  *
- * $Id: FakeRateWeightProducerBase.h,v 1.3 2009/10/26 16:54:44 veelken Exp $
+ * $Id: FakeRateWeightProducerBase.h,v 1.4 2009/10/30 13:24:27 veelken Exp $
  *
  */
 
@@ -38,17 +38,6 @@ class FakeRateWeightProducerBase : public edm::EDProducer
   
  protected:
 
-  void getTauJetProperties(const edm::Event&, edm::RefToBase<reco::BaseTau>&, unsigned, 
-			   const edm::Handle<edm::View<reco::Candidate> >&, double&, double&, bool&);
-
-//--- configuration parameters
-  std::string method_; // "simple"/"CDF"
-
-  edm::InputTag allTauJetSource_;
-  edm::InputTag preselTauJetSource_;
-
-  double dRmatch_;
-
   struct tauJetDiscrEntry
   {
     tauJetDiscrEntry(const edm::ParameterSet&);
@@ -67,7 +56,29 @@ class FakeRateWeightProducerBase : public edm::EDProducer
     int cfgError_;
   };
 
-  std::vector<tauJetDiscrEntry> tauJetDiscriminators_;
+  struct fakeRateTypeEntry
+  {
+    fakeRateTypeEntry(const edm::ParameterSet&);
+    ~fakeRateTypeEntry();
+
+    std::vector<tauJetDiscrEntry> tauJetDiscriminators_;
+
+    int cfgError_;
+  };
+
+  void getTauJetProperties(const edm::Event&, edm::RefToBase<reco::BaseTau>&, unsigned, 
+			   const edm::Handle<edm::View<reco::Candidate> >&, const fakeRateTypeEntry&, double&, double&, bool&);
+
+//--- configuration parameters
+  std::string method_; // "simple"/"CDF"
+
+  edm::InputTag allTauJetSource_;
+  edm::InputTag preselTauJetSource_;
+
+  double dRmatch_;
+
+  typedef std::map<std::string, fakeRateTypeEntry> fakeRateTypeMap;
+  fakeRateTypeMap fakeRateTypes_;
 
   int cfgError_;
 
