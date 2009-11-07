@@ -12,7 +12,7 @@ plots_ZtoMuTau = cms.PSet(
         processes = cms.vstring(
             'Zmumu',
             #'ZmumuPlusJets',
-            'ZeePlusJets',
+            #'ZeePlusJets',
             'WplusJets',
             'TTplusJets',
             'qcdSum',
@@ -29,7 +29,7 @@ plots_ZtoMuTau = cms.PSet(
     stack = cms.vstring(
         'Zmumu',
         #'ZmumuPlusJets',
-        'ZeePlusJets',
+        #'ZeePlusJets',
         'WplusJets',
         'TTplusJets',
         'qcdSum',
@@ -364,6 +364,17 @@ drawJobConfigurator_ZtoMuTau.add(
     )
 )
 
+drawJobConfigurator_ZtoMuTau.add(
+    afterCut = evtSelDiTauCandidateForMuTauPzetaDiff,
+    beforeCut = evtSelDiMuPairZmumuHypothesisVeto,
+    plot = drawJobConfigEntry(
+	meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+        title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (after P_{#zeta} Cut)",
+        xAxis = 'Mass',
+        name = "cutFlowControlPlots_mZmumuHypothesis_afterPzetaDiff"
+    )
+)
+
 #--------------------------------------------------------------------------------
 # define distributions to be plotted
 # for events passing all event selection criteria
@@ -469,6 +480,12 @@ drawJobConfigurator_ZtoMuTau.add(
             title = "M_{vis}(Muon + Tau), Z #rightarrow #ell^{+} #ell^{-} combined Hypothesis (final Event sample)",
             xAxis = 'Mass',
             name = "finalSamplePlots_mVisibleZllCombinedHypothesis"
+        ),
+        drawJobConfigEntry(
+            meName = 'DiMuZmumuHypothesisQuantities/VisMass',
+            title = "M(Muon + Muon, Z #rightarrow #mu^{+} #mu^{-} Mass hypothesis) (final Event sample)",
+            xAxis = 'Mass',
+            name = "finalSamplePlots_mZmumuHypothesis"
         ),
         drawJobConfigEntry(
             meName = 'DiTauCandidateQuantities/CDFmethodMass',
