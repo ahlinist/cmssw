@@ -86,6 +86,8 @@ TauHistManager::TauHistManager(const edm::ParameterSet& cfg)
   requireGenTauMatch_ = cfg.getParameter<bool>("requireGenTauMatch");
   //std::cout << " requireGenTauMatch = " << requireGenTauMatch_ << std::endl;
 
+  skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "taus");
 
@@ -329,7 +331,7 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
       hTauPhiCompToGen_->Fill(patTau->phi() - patTau->genJet()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles);
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patTau->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hTauMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {

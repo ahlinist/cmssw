@@ -67,6 +67,8 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet& cfg)
   requireGenElectronMatch_ = cfg.getParameter<bool>("requireGenElectronMatch");
   //std::cout << " requireGenElectronMatch = " << requireGenElectronMatch_ << std::endl;
 
+  skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "electrons");
 
@@ -256,7 +258,7 @@ void ElectronHistManager::fillHistogramsImp(const edm::Event& evt, const edm::Ev
       hElectronPhiCompToGen_->Fill(patElectron->phi() - patElectron->genLepton()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles);
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patElectron->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hElectronMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {

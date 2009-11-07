@@ -66,6 +66,8 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet& cfg)
   requireGenMuonMatch_ = cfg.getParameter<bool>("requireGenMuonMatch");
   //std::cout << " requireGenMuonMatch = " << requireGenMuonMatch_ << std::endl;
 
+  skipPdgIdsGenParticleMatch_ = cfg.getParameter<vint>("skipPdgIdsGenParticleMatch");
+
   std::string normalization_string = cfg.getParameter<std::string>("normalization");
   normMethod_ = getNormMethod(normalization_string, "muons");
 
@@ -239,7 +241,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       hMuonPhiCompToGen_->Fill(patMuon->phi() - patMuon->genLepton()->phi(), weight);
     }
 
-    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles);
+    int matchingGenParticlePdgId = getMatchingGenParticlePdgId(patMuon->p4(), genParticles, &skipPdgIdsGenParticleMatch_);
     if ( matchingGenParticlePdgId == -1 ) {
       hMuonMatchingGenParticlePdgId_->Fill(-1, weight);
     } else if ( abs(matchingGenParticlePdgId) > 22 ) {
