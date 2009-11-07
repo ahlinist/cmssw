@@ -53,6 +53,27 @@ FakeRateWeightProducerBase::tauJetDiscrEntry::~tauJetDiscrEntry()
   delete pfTauSelector_;
 }
 
+FakeRateWeightProducerBase::fakeRateTypeEntry::fakeRateTypeEntry(const edm::ParameterSet& cfg)
+  : cfgError_(0)
+{
+  typedef std::vector<edm::ParameterSet> vParameterSet;
+  vParameterSet cfgTauJetDiscriminators = cfg.getParameter<vParameterSet>("tauJetDiscriminators");
+  for ( vParameterSet::const_iterator cfgTauJetDiscriminator = cfgTauJetDiscriminators.begin();
+	cfgTauJetDiscriminator != cfgTauJetDiscriminators.end(); ++cfgTauJetDiscriminator ) {
+    tauJetDiscriminators_.push_back(tauJetDiscrEntry(*cfgTauJetDiscriminator));
+  }
+  
+  if ( tauJetDiscriminators_.size() == 0 ) {
+    edm::LogError("FakeRateWeightProducerBase::fakeRateTypeEntry") << " No tau-jet Discriminators defined !!";
+    cfgError_ = 1;
+  }
+}
+
+FakeRateWeightProducerBase::fakeRateTypeEntry::~fakeRateTypeEntry()
+{
+//--- nothing to be done yet...
+}
+
 //
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -70,17 +91,15 @@ FakeRateWeightProducerBase::FakeRateWeightProducerBase(const edm::ParameterSet& 
   preselTauJetSource_ = cfg.getParameter<edm::InputTag>("preselTauJetSource");
 
   dRmatch_ = cfg.getParameter<double>("dRmatch");
-  
-  typedef std::vector<edm::ParameterSet> vParameterSet;
-  vParameterSet cfgTauJetDiscriminators = cfg.getParameter<vParameterSet>("tauJetDiscriminators");
-  for ( vParameterSet::const_iterator cfgTauJetDiscriminator = cfgTauJetDiscriminators.begin();
-	cfgTauJetDiscriminator != cfgTauJetDiscriminators.end(); ++cfgTauJetDiscriminator ) {
-    tauJetDiscriminators_.push_back(tauJetDiscrEntry(*cfgTauJetDiscriminator));
-  }
 
-  if ( tauJetDiscriminators_.size() == 0 ) {
-    edm::LogError("FakeRateWeightProducerBase") << " No tau-jet Discriminators defined !!";
-    cfgError_ = 1;
+  edm::ParameterSet cfgFakeRateTypes = cfg.getParameter<edm::ParameterSet>("frTypes");
+  typedef std::vector<std::string> vstring;
+  vstring frTypeNames = cfgFakeRateTypes.getParameterNamesForType<edm::ParameterSet>();
+  for ( vstring::const_iterator frTypeName = frTypeNames.begin(); 
+	frTypeName != frTypeNames.end(); ++frTypeName ) {
+    edm::ParameterSet cfgFakeRateType = cfgFakeRateTypes.getParameter<edm::ParameterSet>(*frTypeName);
+
+    fakeRateTypes_.insert(std::pair<std::string, fakeRateTypeEntry>(*frTypeName, cfgFakeRateType));
   }
 }
 
@@ -92,6 +111,7 @@ FakeRateWeightProducerBase::~FakeRateWeightProducerBase()
 void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 						     edm::RefToBase<reco::BaseTau>& tauJetRef, unsigned iTauJet,
 						     const edm::Handle<edm::View<reco::Candidate> >& preselTauJets,
+						     const fakeRateTypeEntry& frType,
 						     double& tauJetIdEff, double& qcdJetFakeRate, bool& tauJetDiscr_passed)
 { 
   //std::cout << "<FakeRateWeightProducerBase::getTauJetProperties>:" << std::endl;
@@ -118,8 +138,8 @@ void FakeRateWeightProducerBase::getTauJetProperties(const edm::Event& evt,
 
   tauJetDiscr_passed = true;
 
-  for ( std::vector<tauJetDiscrEntry>::const_iterator tauJetDiscr = tauJetDiscriminators_.begin();
-	tauJetDiscr != tauJetDiscriminators_.end(); ++tauJetDiscr ) {
+  for ( std::vector<tauJetDiscrEntry>::const_iterator tauJetDiscr = frType.tauJetDiscriminators_.begin();
+	tauJetDiscr != frType.tauJetDiscriminators_.end(); ++tauJetDiscr ) {
 
     edm::Handle<LookupTableMap> tauJetIdEffMap;
     evt.getByLabel(tauJetDiscr->tauJetIdEffSource_, tauJetIdEffMap);
