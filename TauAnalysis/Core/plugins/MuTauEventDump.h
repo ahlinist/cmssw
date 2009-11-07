@@ -24,6 +24,12 @@ class MuTauEventDump : public GenericEventDump
  protected:
   void print(const edm::Event&, const edm::EventSetup&, 
 	     const filterResults_type&, const filterResults_type&, double) const;
+
+  void printMuTauZmumuHypothesisInfo(const edm::Event&) const;
+  void printDiMuZmumuHypothesisInfo(const edm::Event&) const;
+
+  edm::InputTag muTauZmumuHypothesisSource_;
+  edm::InputTag diMuZmumuHypothesisSource_;
 };
 
 #endif  
