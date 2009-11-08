@@ -3,7 +3,8 @@ import FWCore.ParameterSet.Config as cms
 genPhaseSpaceEventInfoHistManager = cms.PSet(
   pluginName = cms.string('genPhaseSpaceEventInfoHistManager'),
   pluginType = cms.string('GenPhaseSpaceEventInfoHistManager'),
-      
+
+  generatorInfoSource = cms.InputTag('generator'),
   genPhaseSpaceEventInfoSource = cms.InputTag('genPhaseSpaceEventInfo'),
 
   genJetSource = cms.InputTag('iterativeCone5GenJets'),
@@ -15,5 +16,6 @@ genPhaseSpaceEventInfoHistManager = cms.PSet(
 
   dqmDirectory_store = cms.string('GenPhaseSpaceEventInfoQuantities'),
 
+  makeBjorkenXratioHistogram = cms.bool(False),
   makeLeptonPtVsPtHatHistograms = cms.bool(False)
 )

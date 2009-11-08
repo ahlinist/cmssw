@@ -8,6 +8,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include "AnalysisDataFormats/TauAnalysis/interface/GenPhaseSpaceEventInfo.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
@@ -18,6 +20,9 @@ GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::
   : HistManagerBase(cfg)
 {
   //std::cout << "<GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager>:" << std::endl;
+
+  generatorInfoSource_ = cfg.getParameter<edm::InputTag>("generatorInfoSource");
+  //std::cout << " generatorInfoSource = " << generatorInfoSource_ << std::endl;
 
   genPhaseSpaceEventInfoSource_ = cfg.getParameter<edm::InputTag>("genPhaseSpaceEventInfoSource");
   //std::cout << " genPhaseSpaceEventInfoSource = " << genPhaseSpaceEventInfoSource_ << std::endl;
@@ -33,6 +38,9 @@ GenPhaseSpaceEventInfoHistManager::GenPhaseSpaceEventInfoHistManager(const edm::
   genParticlesFromZsSource_ = cfg.getParameter<edm::InputTag>("genParticlesFromZsSource");
   //std::cout << " genParticlesFromZsSource = " << genParticlesFromZsSource_ << std::endl;
 
+  makeBjorkenXratioHistogram_ = ( cfg.exists("makeBjorkenXratioHistogram") ) ? 
+    cfg.getParameter<bool>("makeBjorkenXratioHistogram") : false;
+
   makeLeptonPtVsPtHatHistograms_ = ( cfg.exists("makeLeptonPtVsPtHatHistograms") ) ? 
     cfg.getParameter<bool>("makeLeptonPtVsPtHatHistograms") : false;
 }
@@ -46,11 +54,18 @@ void GenPhaseSpaceEventInfoHistManager::bookHistogramsImp()
 {
   //std::cout << "<GenPhaseSpaceEventInfoHistManager::bookHistogramsImp>:" << std::endl;
     
+  hProcessId_ = book1D("ProcessId", "ProcessId", 201, -100.5, +100.5);
   hPtHat_ = book1D("PtHat", "PtHat", 101, -0.5, +100.5);
+  hBjorkenX1_ = book1D("hBjorkenX1", "hBjorkenX1", 101, -0.05, +1.05);
+  hBjorkenX2_ = book1D("hBjorkenX2", "hBjorkenX2", 101, -0.05, +1.05);
+  if ( makeBjorkenXratioHistogram_ ) hBjorkenXratio_ = book1D("hBjorkenXratio", "hBjorkenXratio", 10001, -0.00005, +1.00005);
   
   hLeadingElectronPt_ = book1D("LeadingElectronPt", "LeadingElectronPt", 101, -0.5, +100.5);
+  hLeadingElectronEta_ = book1D("LeadingElectronEta", "LeadingElectronEta", 150, -7.5, +7.5);
   hLeadingMuonPt_ = book1D("LeadingMuonPt", "LeadingMuonPt", 101, -0.5, +100.5);
+  hLeadingMuonEta_ = book1D("LeadingMuonEta", "LeadingMuonEta", 150, -7.5, +7.5);
   hLeadingTauLeptonPt_ = book1D("LeadingTauLeptonPt", "LeadingTauLeptonPt", 101, -0.5, +100.5);
+  hLeadingTauLeptonEta_ = book1D("LeadingTauLeptonEta", "LeadingTauLeptonEta", 150, -7.5, +7.5);
   
   if ( makeLeptonPtVsPtHatHistograms_ ) {
     hLeadingElectronPtVsPtHat_ = book2D("LeadingElectronPtVsPtHat", 
@@ -77,14 +92,28 @@ void GenPhaseSpaceEventInfoHistManager::fillHistogramsImp(const edm::Event& evt,
 {  
   //std::cout << "<GenPhaseSpaceEventInfoHistManager::fillHistogramsImp>:" << std::endl; 
 
+  edm::Handle<GenEventInfoProduct> generatorInfo;
+  evt.getByLabel(generatorInfoSource_, generatorInfo);
+
   edm::Handle<GenPhaseSpaceEventInfo> genPhaseSpaceEventInfo;
   evt.getByLabel(genPhaseSpaceEventInfoSource_, genPhaseSpaceEventInfo);
 
+  hProcessId_->Fill(generatorInfo->signalProcessID(), evtWeight);
   hPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), evtWeight);
+  if ( generatorInfo->hasPDF() ) {
+    double x1 = generatorInfo->pdf()->x.first;
+    double x2 = generatorInfo->pdf()->x.second;
+    hBjorkenX1_->Fill(x1, evtWeight);
+    hBjorkenX2_->Fill(x2, evtWeight);
+    if ( makeBjorkenXratioHistogram_ && (x1 + x2) != 0. ) hBjorkenXratio_->Fill(x1/(x1 + x2), evtWeight);
+  }
 
   hLeadingElectronPt_->Fill(genPhaseSpaceEventInfo->leadingGenElectron().pt(), evtWeight);
+  hLeadingElectronEta_->Fill(genPhaseSpaceEventInfo->leadingGenElectron().eta(), evtWeight);
   hLeadingMuonPt_->Fill(genPhaseSpaceEventInfo->leadingGenMuon().pt(), evtWeight);
+  hLeadingMuonEta_->Fill(genPhaseSpaceEventInfo->leadingGenMuon().eta(), evtWeight);
   hLeadingTauLeptonPt_->Fill(genPhaseSpaceEventInfo->leadingGenTauLepton().pt(), evtWeight);
+  hLeadingTauLeptonEta_->Fill(genPhaseSpaceEventInfo->leadingGenTauLepton().eta(), evtWeight);
 
   if ( makeLeptonPtVsPtHatHistograms_ ) {
     hLeadingElectronPtVsPtHat_->Fill(genPhaseSpaceEventInfo->ptHat(), 
