@@ -24,6 +24,7 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   void fillHistogramsImp(const edm::Event&, const edm::EventSetup&, double);
 
 //--- configuration parameters
+  edm::InputTag generatorInfoSource_;
   edm::InputTag genPhaseSpaceEventInfoSource_;
   edm::InputTag genJetSource_;
   edm::InputTag genParticlesFromZsSource_;
@@ -33,14 +34,22 @@ class GenPhaseSpaceEventInfoHistManager : public HistManagerBase
   double genJetEtaMin_;
   double genJetEtaMax_;   
 
+  bool makeBjorkenXratioHistogram_;
   bool makeLeptonPtVsPtHatHistograms_;
 
 //--- histograms
+  MonitorElement* hProcessId_;
   MonitorElement* hPtHat_;
+  MonitorElement* hBjorkenX1_;
+  MonitorElement* hBjorkenX2_;
+  MonitorElement* hBjorkenXratio_;
 
   MonitorElement* hLeadingElectronPt_;
+  MonitorElement* hLeadingElectronEta_;
   MonitorElement* hLeadingMuonPt_;
+  MonitorElement* hLeadingMuonEta_;
   MonitorElement* hLeadingTauLeptonPt_;
+  MonitorElement* hLeadingTauLeptonEta_;
 
   MonitorElement* hLeadingElectronPtVsPtHat_;
   MonitorElement* hLeadingMuonPtVsPtHat_;
