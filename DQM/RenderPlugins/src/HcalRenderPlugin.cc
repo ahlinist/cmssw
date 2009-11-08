@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.28 $
-  \date $Date: 2009/11/03 20:29:38 $
+  \version $Revision: 1.29 $
+  \date $Date: 2009/11/04 14:10:46 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -345,7 +345,7 @@ private:
 	      (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
 	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos ) 
 	      )
 		
       {
@@ -384,7 +384,7 @@ private:
 	     //(o.name.find("DigiMonitor_Hcal/good_digis/digi_occupancy/")!=std::string::npos) // don't want to apply error color here
 	     (o.name.find("BeamMonitor_Hcal/Lumi/HFlumi_total_")!=std::string::npos) ||
 	     (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos ) ||
-	     (o.name.find("DataFormatMonitor/H")!= std::string::npos) 
+	     (o.name.find("DataFormatMonitor/H")!= std::string::npos)
 	     //(o.name.find("BeamMonitor_Hcal/Lumi/Abnormal PMT events")!=std::string::npos) // not sure we want to normalize this one yet -- raw # of errors may still be useful
 	     )
       {
@@ -693,7 +693,15 @@ private:
     else if ( (o.name.find("Corruption/07") != std::string::npos ) ||
 	      (o.name.find("Corruption/08") != std::string::npos )   )
       {
-	obj->SetMaximum(1);
+        double scale = obj->GetBinContent(0,0);
+        if (scale>0)
+	  {
+	    obj->SetMaximum(obj->GetBinContent(0,0));
+	    obj->SetMinimum(0.);
+	    obj->SetStats(0);
+	  }
+        setErrorColor(obj);
+
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<32; i++)
