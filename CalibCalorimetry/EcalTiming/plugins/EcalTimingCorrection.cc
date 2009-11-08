@@ -193,6 +193,13 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
    }
    //std::cout << " ok 0.020 " << std::endl;
    //endcaps are not as easy to do
+   //double eepn = 0;
+   //double eemn = 0;
+   //EEDetId detIde = EEDetId(50,10,-1);
+   //EEDetId detIde = EEDetId(50,10,1);
+   //std::cout << " ix " << detIde.ix() << " iy " << detIde.iy() << " iz " << detIde.zside() << std::endl; 
+  
+ 
    for(int cry=1;cry<numXtals;cry++)
    {
      //std::cout << " ok 0.021 " << std::endl;
@@ -217,19 +224,20 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
      std::cout << " ok 0.0 " << std::endl;
      ofstream txt_file;
      txt_file.open(Form("SM_%d.txt",FED),std::ios::out);
-     std::cout << " ok 0.1 " << std::endl;
+     //std::cout << " ok 0.1 " << std::endl;
      for (int itt = 0; itt < 68; ++itt)
      {
-     std::cout << " ok 0 " << std::endl;
+       //std::cout << " ok 0 " << std::endl;
        if (ETT_[idcc][itt] > -100)
        {
-         std::cout << " ok 1 dcc " << idcc << " itt " << itt << std::endl;
+         //std::cout << " ok 1 dcc " << idcc << " itt " << itt << std::endl;
          // ETT_[idcc][itt]=-100;
          txt_file << std::setw(8)<< std::setprecision(4) << itt+1 << "   " << std::setw(8)<<std::setprecision(0) << fixed << ETT_[idcc][itt]<< std::endl;
        } 
      }
      //close the text file
    }
+   std::cout << " The EE+ number is " << EETTVals_[1] << " The EE- Number is " << EETTVals_[0] <<  std::endl;
 }
 
 double EcalTimingCorrection::timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id)

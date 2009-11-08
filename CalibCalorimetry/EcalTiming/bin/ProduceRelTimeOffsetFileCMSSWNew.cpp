@@ -18,7 +18,12 @@ int main(int argc,  char * argv[]){
 
   int fromSL = 0;
   if (argc > 4) fromSL = atoi(argv[4]);
-  
+
+  int correctinp = 0;
+  if (argc > 5) correctinp = atoi(argv[5]); 
+
+  int dofrominput = 0;
+  if (argc > 6) dofrominput = atoi(argv[6]);  
 
  ifstream FileXML(argv[1]);
   if( !(FileXML.is_open()) ){cout<<"Error: file"<<argv[1]<<" not found!!"<<endl;return -2;}
@@ -89,10 +94,13 @@ int main(int argc,  char * argv[]){
     if (!strstr(Buffer,"#") && !(strspn(Buffer," ") == strlen(Buffer)))
        {
 	   if (fromSL){
-	      sscanf(Buffer,"%d %d %d",&SLSMn,&TTnum,&SLshift);
-          if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
+	     if (fromSL == 1 ) sscanf(Buffer,"%d %d %d",&SLSMn,&TTnum,&SLshift);
+	     if (fromSL == 2 )  sscanf(Buffer," %d %d",&TTnum,&SLshift);
+           if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
 	      HowManyShifts++;
-          Shift[TTnum]=-SLshift+13;//Temporary shift... PLEASE CHANGE
+	      if (dofrominput) {SLshift = dofrominput;}
+              if (correctinp) {SLshift -= correctinp;}
+          Shift[TTnum]=SLshift;//This is now positive, as we subtract this value from the current value
        } 
 	   else{
 	      sscanf(Buffer,"%d %f %f %f %f",&TTnum,&shift,&rms,&rel_shift,&rel_rms);
