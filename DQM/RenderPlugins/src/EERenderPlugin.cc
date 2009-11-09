@@ -1,19 +1,21 @@
-// $Id: EERenderPlugin.cc,v 1.141 2009/08/31 10:48:46 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.142 2009/10/31 23:18:54 lat Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.141 $
-  \date $Date: 2009/08/31 10:48:46 $
+  \version $Revision: 1.142 $
+  \date $Date: 2009/10/31 23:18:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
 #include "utils.h"
 
 #include "TH1F.h"
+#include "TH1D.h"
 #include "TH2F.h"
+#include "TH2D.h"
 #include "TH3F.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
@@ -360,13 +362,13 @@ public:
       {
         preDrawTH3F( c, o );
       }
-      else if( dynamic_cast<TH2F*>( o.object ) )
+      else if( dynamic_cast<TH2F*>( o.object ) || dynamic_cast<TH2D*>( o.object ) )
       {
-        preDrawTH2F( c, o );
+        preDrawTH2( c, o );
       }
-      else if( dynamic_cast<TH1F*>( o.object ) )
+      else if( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object ) )
       {
-        preDrawTH1F( c, o );
+        preDrawTH1( c, o );
       }
       r.drawOptions = "";
     }
@@ -383,13 +385,13 @@ public:
       {
         postDrawTH3F( c, o );
       }
-      else if( dynamic_cast<TH2F*>( o.object ) )
+      else if( dynamic_cast<TH2F*>( o.object ) || dynamic_cast<TH2D*>( o.object ) )
       {
-        postDrawTH2F( c, o );
+        postDrawTH2( c, o );
       }
-      else if( dynamic_cast<TH1F*>( o.object ) )
+      else if( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object ) )
       {
-        postDrawTH1F( c, o );
+        postDrawTH1( c, o );
       }
     }
 
@@ -545,9 +547,9 @@ private:
       gPad->SetLogy(kFALSE);
     }
 
-  void preDrawTH2F( TCanvas *, const VisDQMObject &o )
+  void preDrawTH2( TCanvas *, const VisDQMObject &o )
     {
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
+      TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
 
       std::string name = o.name.substr(o.name.rfind("/")+1);
@@ -883,9 +885,9 @@ private:
       }
     }
 
-  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
+  void preDrawTH1( TCanvas *, const VisDQMObject &o )
     {
-      TH1F* obj = dynamic_cast<TH1F*>( o.object );
+      TH1* obj = dynamic_cast<TH1*>( o.object );
       assert( obj );
 
       std::string name = o.name.substr(o.name.rfind("/")+1);
@@ -1228,9 +1230,9 @@ private:
     {
     }
 
-  void postDrawTH2F( TCanvas *c, const VisDQMObject &o )
+  void postDrawTH2( TCanvas *c, const VisDQMObject &o )
     {
-      TH2F* obj = dynamic_cast<TH2F*>( o.object );
+      TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
 
       std::string name = o.name.substr(o.name.rfind("/")+1);
@@ -1787,7 +1789,7 @@ private:
       }
     }
 
-  void postDrawTH1F( TCanvas *, const VisDQMObject & )
+  void postDrawTH1( TCanvas *, const VisDQMObject & )
     {
     }
 };
