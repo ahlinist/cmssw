@@ -1,21 +1,21 @@
-// $Id: utils.cc,v 1.2 2008/06/02 18:09:55 dellaric Exp $
+// $Id: utils.cc,v 1.3 2009/05/22 19:05:24 lat Exp $
 
 /*!
   \file utils.cc
-  \version $Revision: 1.2 $
-  \date $Date: 2008/06/02 18:09:55 $
+  \version $Revision: 1.3 $
+  \date $Date: 2009/05/22 19:05:24 $
 */
 
 #include "utils.h"
 
-#include "TH2F.h"
+#include "TH2.h"
 #include "TStyle.h"
 #include "TColor.h"
 #include "TROOT.h"
 
 using namespace dqm;
 bool utils::init = false;
-void utils::reportSummaryMapPalette(TH2F* obj)
+void utils::reportSummaryMapPalette(TH2* obj)
 {
   static int pcol[20];
 
