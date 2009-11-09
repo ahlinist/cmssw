@@ -152,9 +152,12 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
          {
             const Handle<CandViewMatchMap> *matchView = matchViewManager_->get();
             string func_expr = matched_expressionsConfig.getParameter<string>(*matched_expression);
-            TauFunction *matched_func;
+
+            TauFunction *matched_func = 
+               TauHelpers::tauMatchStringFuncFromType(matchedType, func_expr, matchView);
 
             // Make the function specialized to our data type
+            /*
             if( matchedType == "Candidate" )
                matched_func = new MatchedToCandidateStringFunction(func_expr, matchView);
             else if(matchedType == "PFTau")
@@ -168,6 +171,7 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
             else
                throw cms::Exception("BadMatchedDataType") << "Bad/unsupported matchedType \"" 
                   << matchedType << "\" passed to TauNtuple producer";
+            */
 
             // Set name
             string function_name = alias + "ref#";
@@ -195,8 +199,9 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
          // The expression to be evaluated (ie 'pt()')
          string func_expr = expressionsConfig.getParameter<string>(*expression);
          // The generalized abstract base class
-         TauFunction* func;
+         TauFunction* func = TauHelpers::tauStringFuncFromType(dataType, func_expr);
          // Get the specific type of Tau Function for the given data type
+         /*
          if (dataType == "PFTau" )
             func = new PFTauStringFunction(func_expr);
          else if (dataType == "CaloTau")
@@ -209,6 +214,7 @@ TauNtupleProducer::TauNtupleProducer(const ParameterSet& pset)
             func = new PATTauStringFunction(func_expr);
          else
             throw cms::Exception("BadDataType") << "Unsupported string func datatype passed";
+         */
          func->setName(alias + *expression);
          tauFunctions_.push_back(func);
       }
