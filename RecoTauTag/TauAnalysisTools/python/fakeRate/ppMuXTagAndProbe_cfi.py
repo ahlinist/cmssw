@@ -10,7 +10,7 @@ Tag and probe tau ntuple production for Heavy Flavor QCD fake rate studies
 Author: Evan Friis, UC Davis (friis@physics.ucdavis.edu)
 
 Strategy: Unbias trigger selection by requiring an HLT moun, matched to a
-global muon, with pt > 15
+global muon, with pt > 9
 
 '''
 
@@ -21,7 +21,7 @@ muonTrigger.HLTPaths = cms.vstring('HLT_Mu9')
 
 tagMuons = cms.EDFilter("MuonRefSelector",
       src = cms.InputTag("muons"),
-      cut = cms.string('isGlobalMuon > 0 && pt > 20.0 && abs(eta) < 2.1')
+      cut = cms.string('isGlobalMuon > 0 && pt > 9.0 && abs(eta) < 2.1')
 )
 
 # temp test
