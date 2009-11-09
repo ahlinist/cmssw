@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.142 2009/10/31 23:18:54 lat Exp $
+// $Id: EERenderPlugin.cc,v 1.143 2009/11/09 11:06:20 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.142 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.143 $
+  \date $Date: 2009/11/09 11:06:20 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -530,6 +530,12 @@ private:
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
+      }
+
+      if( name.find( "EETMT timing" ) != std::string::npos )
+      {
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");        
       }
     }
 

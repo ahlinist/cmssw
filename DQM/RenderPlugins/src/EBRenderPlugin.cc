@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.123 2009/10/31 23:18:54 lat Exp $
+// $Id: EBRenderPlugin.cc,v 1.124 2009/11/09 11:06:20 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.123 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.124 $
+  \date $Date: 2009/11/09 11:06:20 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -391,6 +391,12 @@ private:
       }
 
       if( name.find( "EBSRT DCC event size" ) != std::string::npos )
+      {
+        gPad->SetBottomMargin(0.2);
+        obj->GetXaxis()->LabelsOption("v");
+      }
+
+      if( name.find( "EBTMT timing" ) != std::string::npos )
       {
         gPad->SetBottomMargin(0.2);
         obj->GetXaxis()->LabelsOption("v");
