@@ -96,6 +96,12 @@
  <Constant name="ModulesStack8"        value="54"/>
  <Constant name="ModulesStack9"        value="54"/>
 
+ <Constant name="RingModules"        value="6"/>
+ <Constant name="RingModules4"        value="[RingModules]"/>
+ <Constant name="RingModules5"        value="[RingModules]"/>
+ <Constant name="RingModules6"        value="[RingModules]"/>
+ <Constant name="RingModules7"        value="[RingModules]"/>
+
  <Constant name="LayerDzStack0"        value="420.0*cm"/>
  <Constant name="LayerDzStack1"        value="420.0*cm"/>
  <Constant name="LayerDzStack2"        value="540.0*cm"/>
