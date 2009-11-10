@@ -23,10 +23,10 @@ enableFactorization_makeZtoMuTauPlots(process)
 
 process.makeZtoMuTauPlots = cms.Sequence(
     process.loadZtoMuTau
-   + process.addZtoMuTau
-   + process.saveZtoMuTau
+   ##+ process.addZtoMuTau
+   ##+ process.saveZtoMuTau
    + process.dumpZtoMuTau
-   + process.plotZtoMuTau
+   ##+ process.plotZtoMuTau
 )
 
 process.p = cms.Path(process.makeZtoMuTauPlots)
