@@ -298,21 +298,38 @@ process.maxEvents = cms.untracked.PSet(
 
 $input_module
 
+#process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
+#                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
+#                                             betaEE = cms.double(1.37),
+#                                             alphaEE = cms.double(1.63),
+#                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
+#                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+#                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
+#                                             betaEB = cms.double(1.7),
+#                                             MinAmplEndcap = cms.double(14.0),
+#                                             MinAmplBarrel = cms.double(8.0),
+#                                             alphaEB = cms.double(1.2),
+#                                             UseDynamicPedestal = cms.bool(True),
+#                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+#                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
+#                                         )
+
 process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
-                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
-                                             betaEE = cms.double(1.37),
-                                             alphaEE = cms.double(1.63),
                                              EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
+                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
+                                             EBhitCollection = cms.string("EcalUncalibRecHitsEB"),
                                              EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
-                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
-                                             betaEB = cms.double(1.7),
-                                             MinAmplEndcap = cms.double(14.0),
-                                             MinAmplBarrel = cms.double(8.0),
-                                             alphaEB = cms.double(1.2),
-                                             UseDynamicPedestal = cms.bool(True),
-                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
-                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
+                                             EBtimeFitParameters = cms.vdouble(-2.015452e+00, 3.130702e+00, -1.234730e+01, 4.188921e+01, -8.283944e+01, 9.101147e+01, -5.035761e+01, 1.105621e+01),
+                                             EEtimeFitParameters = cms.vdouble(-2.390548e+00, 3.553628e+00, -1.762341e+01, 6.767538e+01, -1.332130e+02, 1.407432e+02, -7.541106e+01, 1.620277e+01),
+                                             EBamplitudeFitParameters = cms.vdouble(1.138,1.652),
+                                             EEamplitudeFitParameters = cms.vdouble(1.890,1.400),
+                                             EBtimeFitLimits_Lower = cms.double(0.2),
+                                             EBtimeFitLimits_Upper = cms.double(1.4),
+                                             EEtimeFitLimits_Lower = cms.double(0.2),
+                                             EEtimeFitLimits_Upper = cms.double(1.4),
+                                             algo = cms.string("EcalUncalibRecHitWorkerRatio")
                                          )
+
 
 
 process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
