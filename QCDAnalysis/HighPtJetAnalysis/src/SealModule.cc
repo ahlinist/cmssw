@@ -2,6 +2,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "QCDAnalysis/HighPtJetAnalysis/interface/CaloDijetTreeProducer.h"
+#include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetTreeProducer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/SimpleInclusiveJetAnalyzer.h"
 #include "QCDAnalysis/HighPtJetAnalysis/interface/MultiJetAnalyzer.h"
@@ -15,6 +16,7 @@
 using namespace reco;
 
 DEFINE_SEAL_MODULE();
+DEFINE_ANOTHER_FWK_MODULE(InclusiveJetTreeProducer);
 DEFINE_ANOTHER_FWK_MODULE(InclusiveJetAnalyzer);
 DEFINE_ANOTHER_FWK_MODULE(DijetAnalyzer);
 DEFINE_ANOTHER_FWK_MODULE(JetTriggerFilter);
