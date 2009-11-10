@@ -71,6 +71,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    corrtimeEcal        = iConfig.getUntrackedParameter<bool>("CorrectEcalReadout",false);
    corrtimeBH          = iConfig.getUntrackedParameter<bool>("CorrectBH",false);
    bhplus_             = iConfig.getUntrackedParameter<bool>("BeamHaloPlus",true);
+   splash09cor_        = iConfig.getUntrackedParameter<bool>("Splash09Cor",false);
    allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
    allshift_           = iConfig.getUntrackedParameter<double>("AllShift",1.5);   
 
@@ -254,6 +255,29 @@ EcalTimingAnalysis::beginJob( ) {
   fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
   fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
  
+ 
+if (fromfile_) 
+{
+ eventTimingInfoTree_ = ((TTree*) tf->Get("eventTimingInfoTree"));
+
+}
+else{
+eventTimingInfoTree_ = new TTree("eventTimingInfoTree","Timing info of events in all crys");
+eventTimingInfoTree_->SetDirectory(0);
+eventTimingInfoTree_->Branch("numberOfEBcrys",&numEBcrys_,"numEBcrys/I");
+eventTimingInfoTree_->Branch("numberOfEEcrys",&numEEcrys_,"numEEcrys/I");
+eventTimingInfoTree_->Branch("crystalHashedIndicesEB",cryHashesEB_,"cryHashesEB[61200]/I");
+eventTimingInfoTree_->Branch("crystalHashedIndicesEE",cryHashesEE_,"cryHashesEE[14648]/I");
+eventTimingInfoTree_->Branch("crystalTimesEB",cryTimesEB_,"cryTimesEB[61200]/F");
+eventTimingInfoTree_->Branch("crystalTimesEE",cryTimesEE_,"cryTimesEE[14648]/F");
+eventTimingInfoTree_->Branch("crystalTimeErrorsEB",cryTimeErrorsEB_,"cryTimeErrorsEB[61200]/F");
+eventTimingInfoTree_->Branch("crystalTimeErrorsEE",cryTimeErrorsEE_,"cryTimeErrorsEE[14648]/F");
+eventTimingInfoTree_->Branch("crystalAmplitudesEB",cryAmpsEB_,"cryAmpsEB[61200]/F");
+eventTimingInfoTree_->Branch("crystalAmplitudesEE",cryAmpsEE_,"cryAmpsEE[14648]/F");
+eventTimingInfoTree_->Branch("correctionToSampleEB",&correctionToSample5EB_,"correctionToSample5EB/F");
+eventTimingInfoTree_->Branch("correctionToSampleEEP",&correctionToSample5EEP_,"correctionToSample5EEP/F");
+eventTimingInfoTree_->Branch("correctionToSampleEEM",&correctionToSample5EEM_,"correctionToSample5EEM/F");
+}
 
 
 }
@@ -262,7 +286,7 @@ EcalTimingAnalysis::beginJob( ) {
 void EcalTimingAnalysis::endJob() {
 //========================================================================
 // produce offsets for each TT 
-  
+
   float mean[68],x2[68],nCry[68], RMS[68]; //Variables for Absolute Timing
   TH1F* absTT[54];
   TH1F* absCh[54];
@@ -596,6 +620,7 @@ void EcalTimingAnalysis::endJob() {
   fullAmpProfileEEP_->Write();
   fullAmpProfileEEM_->Write();
   
+  eventTimingInfoTree_->Write();
   
   f.Close();
 
@@ -651,6 +676,24 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    const CaloSubdetectorGeometry *geometry_pEB = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalBarrel);
    const CaloSubdetectorGeometry *geometry_pEE = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalEndcap);
    
+   //Empty the TTree stuff
+   numEBcrys_=0;
+   numEEcrys_=0;
+   correctionToSample5EB_=0;
+   correctionToSample5EEP_ =0;
+   correctionToSample5EEM_ = 0;
+   for ( int ji = 0 ; ji < 61200; ++ji){
+      if ( ji < 14648) {
+	     cryHashesEE_[ji]=0;
+		 cryTimesEE_[ji]=-1000;
+		 cryTimeErrorsEE_[ji]=-1000;
+	     cryAmpsEE_[ji]=-1000;
+	  }
+      cryHashesEB_[ji]=0;
+	  cryTimesEB_[ji]=-1000;
+	  cryTimeErrorsEB_[ji]=-1000;
+	  cryAmpsEB_[ji]=-1000;
+	}
    
    //Timing information
    unsigned int  timeStampLow = ( 0xFFFFFFFF & iEvent.time().value() );
@@ -686,25 +729,31 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    //Add the ability to calculate the average for each event, _ONLY_ if desired as this takes time
    double averagetimeEB = 0.0;
    int numberinaveEB = 0;
-   if (correctAVE_) {
-      for(EcalUncalibratedRecHitCollection::const_iterator ithit = hits->begin(); ithit != hits->end(); ++ithit) {
+   
+   for(EcalUncalibratedRecHitCollection::const_iterator ithit = hits->begin(); ithit != hits->end(); ++ithit) {
      
-        EBDetId anid(ithit->id()); 
-	    EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(anid);
-        int DCCid = elecId.dccId();
-        int SMind = anid.ic();
+     EBDetId anid(ithit->id()); 
+	 EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(anid);
+     int DCCid = elecId.dccId();
+     int SMind = anid.ic();
      
-	    if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
-	     double extrajit = timecorr(geometry_pEB,anid);
-	     double mytime = ithit->jitter() + extrajit+5.0;
-         averagetimeEB += mytime;
-		 numberinaveEB++;
-	    }  
-      }//end of loop over hits
-      if (numberinaveEB > 0 ) averagetimeEB /= double (numberinaveEB); 
-   }//End EB loop to calculate average
+	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+	  double extrajit = timecorr(geometry_pEB,anid);
+	  double mytime = ithit->jitter() + extrajit+5.0;
+      averagetimeEB += mytime;
+	  numberinaveEB++;
+	 }  
+   }//end of loop over hits
+   if (numberinaveEB > 0 ) averagetimeEB /= double (numberinaveEB); 
+   //End EB loop to calculate average
+   
+   //ADDED BY JASON HACK just to get the in-timed values
+   if ( averagetimeEB < 4.5 || averagetimeEB > 5.5) return; //just don't allow the out of time events 
 
-    
+   if (!correctAVE_) averagetimeEB = 0.0;
+   
+   if (numberinaveEB < 20000) return; //JUST TEMPORARY I will put this as a parameter 
+   
    for(EcalUncalibratedRecHitCollection::const_iterator ithit = hits->begin(); ithit != hits->end(); ++ithit) {
      
      EBDetId anid(ithit->id()); 
@@ -715,9 +764,15 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if (DCCid == 644 || DCCid == 645) std::cout << "SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
 	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+
 	  double extrajit = timecorr(geometry_pEB,anid);
 	  double mytime = ithit->jitter() + extrajit+5.0;
 	  if (correctAVE_) mytime += 5.0 - averagetimeEB;
+	  numEBcrys_++;
+	  cryHashesEB_[anid.hashedIndex()]=1;
+	  cryTimesEB_[anid.hashedIndex()]=mytime;
+      cryTimeErrorsEB_[anid.hashedIndex()]=ithit->chi2();
+	  cryAmpsEB_[anid.hashedIndex()]=ithit->amplitude();
       fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),ithit->amplitude());
       lasersPerEvt->Fill(ievt_);
 	  amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
@@ -802,7 +857,13 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 	 if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
 	  double extrajit = timecorr(geometry_pEE,anid);
 	  double mytime = ithit->jitter() + extrajit+5.0;
-	  if (correctAVE_) mytime += 5.0 - averagetimeEE;
+	  //if (correctAVE_) mytime += 5.0 - averagetimeEE;
+	  if (correctAVE_) mytime += 5.0 - averagetimeEB; //ACK, a HACK by Jason to make things work 'his' way.
+	  numEEcrys_++;
+	  cryHashesEE_[ SMind]=1;
+	  cryTimesEE_[ SMind]=mytime;
+      cryTimeErrorsEE_[ SMind]=ithit->chi2();
+	  cryAmpsEE_[SMind]=ithit->amplitude();
       lasersPerEvt->Fill(ievt_);
 	  amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
        absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
@@ -875,7 +936,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        }
      }
    }
-   
+   eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
 }
 
 double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id)
@@ -941,14 +1002,62 @@ double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, D
 	  //std::cout << " Woohoo... z is " << z << " ieta is " << (EBDetId(id)).ieta() << std::endl;
 	  //std::cout << " Subtracting " << change << std::endl;
    }
+   
+   	//std::cout << " time afer EcalReadoutCor " << time << std::endl;
+
    ///speedlight = (0.299792458*(1.0-.08));
    //Correct out the BH or Beam-shot assumption
    if (corrtimeBH){
       time += ((bhplus_) ? (z/speedlight) :  (-z/speedlight) );
+	  //std::cout << " time afer beamHalo cor " << time << std::endl;
+
 	  //std::cout << " Adding " << z/speedlight << std::endl;
 
    }
-
+   
+   if (splash09cor_){
+		//New stuff Added to correct for splash09
+		int SplashNegative[36] = {-17, //EE- 
+		                     -14, -12, -11, -10, -9, -7, -6, -6, -5, -4, -3, -3, -2, -2, -1, -1, 0, //EB-
+							   0,   1,   1,   1,  1,  2,  2,  2,  2,  3,  3,  3,  3,  3,  3,  3, 3, //EB+
+	                          4 }; //EE+ 
+		double SplashNegativePerfect[36] = {-17.2043, //EE- 
+		                     -13.8665, -12.3648, -10.988, -9.72687, -8.50268, -7.44834, -6.48284, -5.59686, -4.73861, -3.99919, -3.32184,
+							  -2.69855, -2.09278, -1.56539, -1.08165, -0.637269, -0.215171, //EB-
+							   0.205693, 0.560748, 0.878232, 1.17239, 1.44515, 1.71026, 1.94109, 2.1543, 2.352, 2.54577, 2.71451,  
+							   2.8703, 3.01434, 3.15512, 3.27712, 3.38969, 3.49341, //EB+
+	                           4.24689 }; //EE+ 
+		int SplashPositive[36];
+		int SplashTTvals[36];
+		double SplashTTvalsD[36];
+		double SplashPositivePerfect[36]; 
+	    
+		for (int i = -18, j = 0; i < 19 ; ++i,++j)
+		{
+			if ( i == 0 ) i++;
+			SplashTTvals[j]=i;
+			SplashTTvalsD[j]= double (i);
+			SplashPositive[j]=SplashNegative[35-j];
+			SplashPositivePerfect[j]=SplashNegativePerfect[35-j];
+		}	
+	
+		int ieta = 0;
+		int myieta = 0;
+	
+		if ( inEB ) {
+			ieta = (EBDetId(id)).ieta() ;
+			//myieta = (ieta > 0 ) ? ((ieta-1)/5 + 1) : ((ieta+1)/5 - 1) ;
+			myieta = (ieta > 0 ) ? ((ieta-1)/5 ) : ((ieta+1)/5 - 1) ;
+			myieta += 18; //It goes from index 1 to index 34
+		}
+		else {
+			myieta = ((EEDetId(id)).zside() > 0 ) ? (35) : (0);
+		}
+	
+		time += ((bhplus_) ? (SplashPositive[myieta]):(SplashNegative[myieta])); 
+		//std::cout << " time afer splash09 cor " << time << std::endl;
+	}
+	
    return (time/25.-allshift_);
 }
 

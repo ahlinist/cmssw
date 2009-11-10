@@ -33,6 +33,7 @@
 #include "TGraph.h"
 #include "TH1F.h"
 #include "TH3F.h"
+#include "TTree.h"
 #include <vector>
 
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
@@ -155,6 +156,21 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       bool corrtimeBH;
       bool bhplus_;
       double EBradius_;
+	  bool splash09cor_;
+	  TTree* eventTimingInfoTree_;
+	  int numEBcrys_;
+	  int numEEcrys_;
+	  int cryHashesEB_[61200];
+	  int cryHashesEE_[14648];
+	  float cryTimesEB_[61200];
+	  float cryTimesEE_[14648];
+	  float cryTimeErrorsEB_[61200];
+	  float cryTimeErrorsEE_[14648];
+	  float cryAmpsEB_[61200];
+	  float cryAmpsEE_[14648];
+	  float correctionToSample5EB_;
+	  float correctionToSample5EEP_;
+	  float correctionToSample5EEM_;
 	  
       double allave_;
       double allshift_;
