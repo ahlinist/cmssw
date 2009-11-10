@@ -26,19 +26,19 @@ PATLeptonIsoDepositSelector<T>::PATLeptonIsoDepositSelector(const edm::Parameter
 //           PhysicsTools/PatAlgos/src/MultiIsolator.cc )
   std::string isoDepositType_string = cfg.getParameter<std::string>("type");
   if ( isoDepositType_string == "tracker" ) {
-    isoDepositType_ = pat::TrackerIso;
+    isoDepositType_ = pat::TrackIso;
   } else if ( isoDepositType_string == "ecal" ) {
-    isoDepositType_ = pat::ECalIso;
+    isoDepositType_ = pat::EcalIso;
   } else if ( isoDepositType_string == "hcal" ) {
-    isoDepositType_ = pat::HCalIso;
+    isoDepositType_ = pat::HcalIso;
   } else if ( isoDepositType_string == "pfAllParticles" ) {
-    isoDepositType_ = pat::ParticleIso;
+    isoDepositType_ = pat::PfAllParticleIso;
   } else if ( isoDepositType_string == "pfChargedHadron" ) {
-    isoDepositType_ = pat::ChargedHadronIso;
+    isoDepositType_ = pat::PfChargedHadronIso;
   } else if ( isoDepositType_string == "pfNeutralHadron" ) {
-    isoDepositType_ = pat::NeutralHadronIso;
+    isoDepositType_ = pat::PfNeutralHadronIso;
   } else if ( isoDepositType_string == "pfGamma" ) {
-    isoDepositType_ = pat::PhotonIso;
+    isoDepositType_ = pat::PfGammaIso;
   } else {
     edm::LogError ("PATLeptonIsoDepositSelector") << " Type = " << isoDepositType_string << " not defined for IsoDeposits !!";
     cfgError_ = 1;
