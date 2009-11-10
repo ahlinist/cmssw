@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import copy
 
 from RecoTauTag.TauAnalysisTools.TauNtupleProducer_cfi import *
+from RecoTauTag.Configuration.RecoPFTauTag_cff import *
 
 '''
 
@@ -20,9 +21,15 @@ jetTrigger = hltHighLevel.clone()
 jetTrigger.HLTPaths = cms.vstring('HLT_L1Jet15')
 
 # Simple selection on the potential probe taus
-probeTauJets = cms.EDProducer("PFTauRefSelector",
+# No PFTauRef dictionary??
+#probeTauJets = cms.EDProducer("PFTauRefSelector",
+#      src = cms.InputTag('shrinkingConePFTauProducer'),
+#      cut = cms.string('abs(eta) < 2.5 && pfTauTagInfoRef().pfjetRef().pt() > 5.0')
+#)
+
+probeTauJets = cms.EDProducer("CandViewRefSelector",
       src = cms.InputTag('shrinkingConePFTauProducer'),
-      cut = cms.string('abs(eta) < 2.5 && pfTauTagInfoRef().pfjetRef().pt() > 5.0')
+      cut = cms.string('abs(eta) < 2.5 && pt() > 5')
 )
 
 atLeastTwoProbeTaus = cms.EDFilter("CandViewCountFilter",
@@ -60,8 +67,9 @@ secondProbeJetNtupleProducer.expressions = cms.PSet(common_expressions,
 secondProbeJetNtupleProducer.discriminators = cms.PSet(pftau_discriminators,
       pftau_discriminators_extra)
 
-heavyFlavorNtupleSequence = cms.Sequence(
-      jetTrigger
+dijetFakeRateNtupleSequence = cms.Sequence(
+      PFTau
+      *jetTrigger
       *probeTauJets
       *atLeastTwoProbeTaus # two, before the tag selection
       *dijetTagAndProbes
