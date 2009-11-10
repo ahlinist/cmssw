@@ -145,3 +145,6 @@ TauFakeRateDijetProbesProducer::produce(Event &evt, const EventSetup &es)
    evt.put(secondHighestPt, "secondHighestPtProbe");
 
 }
+
+#include "FWCore/Framework/interface/MakerMacros.h"
+DEFINE_FWK_MODULE(TauFakeRateDijetProbesProducer);

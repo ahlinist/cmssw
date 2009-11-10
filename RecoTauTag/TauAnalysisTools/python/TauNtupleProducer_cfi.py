@@ -25,7 +25,7 @@ protoRecoTauNtupleProducer = cms.EDProducer("TauNtupleProducer",
 
       # If matched or unmatched is specified
       matchingSource = cms.InputTag("protoMatcher"),
-      matchingDataType = cms.string("Candidate"),
+      matchedType = cms.string("Candidate"),
 
       # Iff option is 'matched', evaluate the following expressions on the truth 
       #  collection
