@@ -9,7 +9,7 @@
  <Constant name="Layout"            value="[pixbar:LayoutStack9]"/>     
  <Constant name="CoolDz"            value="[pixbar:LayerDzStack9]"/>
  <Constant name="CoolSide"          value="[pixbarladderstack9:LadderWidth]/2-[pixbarladderstack9:HybridWidth]/2-[pixbarladderstack9:HybridOffset]"/>
- <Constant name="CoolThick"         value="0.05*mm"/>
+ <Constant name="CoolThick"         value="0.1*mm"/>
  <Constant name="CoolWidth"         value="[pixbarladderstack9:ModuleThick]*2"/>
 </ConstantsSection>
 
@@ -24,8 +24,8 @@
   <Numeric name="CoolSide"         value="[pixbarlayerstack9:CoolSide]"/>
   <Numeric name="CoolThick"        value="[pixbarlayerstack9:CoolThick]"/>
   <Numeric name="ModuleRadius"     value="[pixbarlayerstack9:ModuleRadius]"/>
-  <String name="CoolMaterial"      value="pixbarmaterial:Pix_Bar_Cool"/>
-  <String name="CoolTubeMaterial"  value="materials:Aluminium"/>
+  <String name="CoolMaterial"      value="materials:CO2_Upgrade"/>
+  <String name="CoolTubeMaterial"  value="materials:Steel_Upgrade"/>
   <String name="LadderNameUp"      value="pixbarladderstack9:PixelBarrelLadderUpStack9"/>
   <String name="LadderNameDown"    value="pixbarladderstack9:PixelBarrelLadderDownStack9"/>
   <Numeric name="LadderWidth"      value="[pixbarladderstack9:LadderWidth]"/>
