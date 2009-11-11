@@ -90,6 +90,8 @@
            [HybridThick])/2"/>
  <Constant name="RCChipY"            value="[HybridTopY]-
            ([HybridThick]+[RCChipThick])/2"/>
+ <Constant name="HybridTopOffset"       value="[HybridWidth]/2+
+           [HybridOffset]-[HybridWidth]/8"/>
 
  <Constant name="RCChipOffset"       value="[HybridWidth]/2+
 	   [HybridOffset]-[RCChipDx]/2"/>
@@ -301,7 +303,7 @@
  <PosPart copyNumber="1">
    <rParent name="pixbarladderstack6:PixelBarrelReadout"/>
    <rChild name="pixbarladderstack6:PixelBarrelHybridTop"/>
-   <Translation x="[RCChipOffset]" y="[HybridTopY]" z="[zero]" />  
+   <Translation x="[HybridTopOffset]" y="[HybridTopY]" z="[zero]" />
  </PosPart>
 
 
