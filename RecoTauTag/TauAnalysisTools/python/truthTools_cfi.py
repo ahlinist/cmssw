@@ -5,6 +5,10 @@ Various modules that will produce collections of MC objects
 useful for TauAnalysis
 '''
 
+from PhysicsTools.HepMCCandAlgos.genParticles_cfi import *
+from RecoJets.Configuration.RecoGenJets_cff import *
+from RecoJets.Configuration.GenJetParticles_cff import *
+
 from PhysicsTools.JetMCAlgos.TauGenJets_cfi import tauGenJets
 
 trueHadronicTaus = cms.EDFilter("TauGenJetDecayModeSelector",
@@ -44,6 +48,6 @@ trueMuons = cms.EDProducer("GenParticlePruner",
       )
 )
 
-makeTruthCollections = cms.Sequence(tauGenJets*trueHadronicTaus*trueMuonicTaus*trueElectronicTaus*
+makeTruthCollections = cms.Sequence(genParticlesForJets*iterativeCone5GenJets*tauGenJets*trueHadronicTaus*trueMuonicTaus*trueElectronicTaus*
       trueElectrons*trueMuons)
       
