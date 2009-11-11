@@ -33,7 +33,7 @@ MetEventSelector::select (const edm::Event& event) const
   //
   // get the MET result
   //
-  edm::Handle< edm::View<pat::MET> > metHandle;
+  edm::Handle< edm::View<reco::MET> > metHandle;
   event.getByLabel(metTag_, metHandle);
   if ( !metHandle.isValid() ) {
     edm::LogWarning("MetEventSelector") << "No Met results for InputTag " << metTag_;
@@ -51,15 +51,16 @@ MetEventSelector::select (const edm::Event& event) const
   }
 
   //get the uncorrected/corrected MET
-  float myMET = -10;
-  
-  myMET = uncorrType_==pat::MET::uncorrMAXN ?
-    metHandle->front().et() : metHandle->front().uncorrectedPt(uncorrType_);
+  //check if we are dealing with pat::MET and 
+  //if a specific corrected MET is requested:
+  double myMET = metHandle->front().et();
+  const pat::MET * pm = static_cast<const pat::MET*>( &(metHandle->front()) );
+  if (!pm && uncorrType_!=pat::MET::uncorrMAXN) 
+    myMET = pm->uncorrectedPt(uncorrType_);
 
   //
   // apply cut
   //
- 
   setVariable(0,myMET);
   LogTrace("MetEventSelector") << "result = " << (myMET > minMet_);
   return myMET > minMet_;

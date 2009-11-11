@@ -2,6 +2,8 @@
 #include "SusyAnalysis/EventSelector/interface/uncorrectionTypeMET.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "DataFormats/JetReco/interface/CaloJet.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 //#include "PhysicsTools/Utilities/interface/deltaPhi.h"
 //#include "PhysicsTools/Utilities/interface/deltaR.h" 
@@ -42,7 +44,7 @@ MetJetEventSelector::select (const edm::Event& event) const
   resetVariables();
 
   // Get the MET result
-  edm::Handle< edm::View<pat::MET> > metHandle;
+  edm::Handle< edm::View<reco::MET> > metHandle;
   event.getByLabel(metTag_, metHandle);
   if ( !metHandle.isValid() ) {
     edm::LogWarning("MetJetEventSelector") << "No Met results for InputTag " << metTag_;
@@ -56,38 +58,41 @@ MetJetEventSelector::select (const edm::Event& event) const
   const pat::MET& met = metHandle->front(); // For simplicity...
 
   // Get the jets
-  edm::Handle< edm::View<pat::Jet> > jetHandle;
-  event.getByLabel(jetTag_, jetHandle);
-  if ( !jetHandle.isValid() ) {
+  edm::Handle< edm::View<reco::Jet> > jets;
+  event.getByLabel(jetTag_, jets);
+  if ( !jets.isValid() ) {
     edm::LogWarning("MetJetEventSelector") << "No Jet results for InputTag " << jetTag_;
     return false;
   }
-  const edm::View<pat::Jet>& jets = (*jetHandle); // For simplicity...
 
   //
   // Preselection: number of jets (need at least 3(?) to make sense out of these variables)
   // 
-  setVariable("numberOfJets",jets.size());
-  if ( jets.size()<3 ) return false;
+  setVariable("numberOfJets",jets->size());
+  if ( jets->size()<3 ) return false;
 
   //
   // Compute variables
   //
+  //check if we are dealing with pat::MET and 
+  //if a specific corrected MET is requested:
+  double metPhi = met.phi();
+  const pat::MET * pm = static_cast<const pat::MET*>( &met );
+  if (!pm && uncorrType_!=pat::MET::uncorrMAXN) 
+    metPhi = met.uncorrectedPhi(uncorrType_);
 
   // MET "isolation" (calculated on at most nJetsMetIso_ jets)
   float metIso = 100.;
-  double metPhi =  uncorrType_==pat::MET::uncorrMAXN ?
-    met.phi() : met.uncorrectedPhi(uncorrType_);
-  for ( unsigned int iJet=0; iJet<nJetsMetIso_ && iJet<jets.size(); ++iJet) {
-    double deltaPhiAbs = fabs( reco::deltaPhi(jets[iJet].phi(),metPhi) );
+  for ( unsigned int iJet=0; iJet<nJetsMetIso_ && iJet<jets->size(); ++iJet) {
+    double deltaPhiAbs = fabs( reco::deltaPhi((*jets)[iJet].phi(),metPhi) );
     if ( metIso > deltaPhiAbs ) metIso = deltaPhiAbs;
   }
   setVariable("metDphi",metIso);
 
   // MET and leading jets deltaPhi
-  double dPhiJet1Met = fabs( reco::deltaPhi(jets[0].phi(),metPhi) ); 
+  double dPhiJet1Met = fabs( reco::deltaPhi( (*jets)[0].phi(),metPhi) ); 
   setVariable("dPhiJet1Met",dPhiJet1Met); 
-  double dPhiJet2Met = fabs( reco::deltaPhi(jets[1].phi(),metPhi) ); 
+  double dPhiJet2Met = fabs( reco::deltaPhi( (*jets)[1].phi(),metPhi) ); 
   setVariable("dPhiJet2Met",dPhiJet2Met); 
 
   // R1 & R2
