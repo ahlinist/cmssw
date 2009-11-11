@@ -31,6 +31,9 @@ protoRecoTauNtupleProducer = cms.EDProducer("TauNtupleProducer",
       #  collection
       matched_expressions = cms.PSet(
          pt = cms.string("pt()"),
+         eta = cms.string("eta()"),
+         mass = cms.string("mass()"),
+         charge = cms.string("charge()"),
       ),
 
       # The C++ class type
