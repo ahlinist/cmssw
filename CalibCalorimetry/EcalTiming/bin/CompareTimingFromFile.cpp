@@ -21,22 +21,27 @@ int main(int argc,  char * argv[]){
 
   int fromSL1 = 0;
   int fromSL2 = 0;
+  int noCompare =0;
   if (argc > 4) { 
      fromSL1 = atoi(argv[4]); 
   }
   if (argc > 5) { 
      fromSL2 = atoi(argv[5]); 
   }  
+  if (argc > 6) {
+     noCompare = atoi(argv[6]);
+  }
+
 
   char Buffer[5000];
-  int SMn =0;
-  int HowManyTT =0;
+  //int SMn =0;
+  //int HowManyTT =0;
 
   // reading the peak file
   double Shift1[71], Shift2[71], SMave1[71], SMave2[71];
   for(int i=0;i<71;i++){Shift1[i]=-1000.; Shift2[i]=-1000.; SMave1[i] = -1000.; SMave2[i] = -1000.;}
-  int TTnum,SLSMn,SLshift,SMnum;
-  float rms,shift,rel_shift, rel_rms;
+  int TTnum,SLSMn,SLshift;
+  //float rms,shift,rel_shift, rel_rms;
   int HowManyShifts = 0;
   
   ifstream TxtFile1(argv[2]);
@@ -70,6 +75,7 @@ int main(int argc,  char * argv[]){
               if(TTnum < 1 || TTnum >68){cout<<"Wrong TT in txt file: "<<TTnum<<endl;continue;}
 	         HowManyShifts++;
               Shift2[TTnum]=-SLshift;//
+	      if (noCompare) Shift2[TTnum]=0;
       }
   }//end of file
   TxtFile2.close();
@@ -144,7 +150,7 @@ int main(int argc,  char * argv[]){
   // calculate the differences between the two files
   for(int i=1;i<69;i++){
     if(Shift1[i]>-1000. && Shift2[i] > -1000.){
-            int diff = Shift2[i]-Shift1[i];
+            double diff = Shift2[i]-Shift1[i];
             diffHist->Fill(diff);
             if ( diff < -5 || diff > 5 ) std::cout << "NONONO TT " << i << " is more than 5 ns off: " << diff << std::endl;
             }
