@@ -90,7 +90,10 @@ private:
 	int Mu2Truth;
 	int K1Truth;
 	int K2Truth;
+	int K3Truth;
+	int K4Truth;
 	int isMatched;
+	int isMatchedBd;
 
 	int event_counter_;
 

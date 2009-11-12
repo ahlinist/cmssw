@@ -163,6 +163,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   int VtxIndex=-99;
   double minVtxProb=-999.;
+  double MinBVtx=-999.;
   
   reco::BeamSpot vertexBeamSpot;
   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
@@ -269,6 +270,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if(trk1.charge()==trk2.charge()) continue;
       // passed opposite sign cut
       if(bsRootTree_->iPassedCutIdent_   < 1 ) bsRootTree_->iPassedCutIdent_ = 1 ;
+      if(bsRootTree_->iPassedCutIdentBd_   < 1 ) bsRootTree_->iPassedCutIdentBd_ = 1 ;
       
       CompositeCandidate Jpsi;
       Jpsi.addDaughter(trk1);
@@ -279,6 +281,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if ( abs(Jpsi.mass()-3.096916) > JpsiMassWindowBeforeFit_ || Jpsi.pt() < JpsiPtCut_) continue;
       // passed jpsi mass and pt cut
       if(bsRootTree_->iPassedCutIdent_   < 2 ) bsRootTree_->iPassedCutIdent_ = 2 ;
+      if(bsRootTree_->iPassedCutIdentBd_   < 2 ) bsRootTree_->iPassedCutIdentBd_ = 2 ;
       
       edm::ESHandle<TransientTrackBuilder> theB;
       iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);	
@@ -295,6 +298,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if (!tv.isValid()) continue; 
       // valid jpsi vertex
       if(bsRootTree_->iPassedCutIdent_   < 3 ) bsRootTree_->iPassedCutIdent_ = 3 ;
+      if(bsRootTree_->iPassedCutIdentBd_   < 3 ) bsRootTree_->iPassedCutIdentBd_ = 3 ;
       
       Vertex vertex = tv;
       GlobalPoint secondaryVertex = tv.position();
@@ -334,7 +338,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	else if (trk2.isTrackerMuon() && trk2.isGlobalMuon())   bsRootTree_->JpsiMuon2Cat_ = 3;
 	else if (!trk2.isTrackerMuon() && !trk2.isGlobalMuon()) bsRootTree_->JpsiMuon2Cat_ = 4;
       }
-      
+
       ////////////////////////////////////	
       ////////////////////////////////////
       ////           Phi
@@ -963,92 +967,375 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	    }
 	    
 	    // deltaR MC matching!
-	    
-	    K1Truth = 0;
-	    if(TrkCounter1!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK1 = TMath::Sqrt((p.eta()-track1.eta())*(p.eta()-track1.eta())+
-					      (p.phi()-track1.phi())*(p.phi()-track1.phi()));
-		if(DeltaRK1<MinDRK && DeltaRK1<0.05){
-		  MinDRK=DeltaRK1;
-		  K1mcId=p.pdgId();
-		  if(p.mother()!=0) K1momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K1gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(K1momId)==333 && abs(K1gmomId)==531) K1Truth = 1;
-		}
-	      }
-	    }
-	    
-	    bsRootTree_->getInfoK1(K1mcId,K1momId,K1gmomId,K1Truth);
-	    
-	    K2Truth = 0;
-	    if(TrkCounter2!=-10){
-	      double MinDRK=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRK2 = TMath::Sqrt((p.eta()-track2.eta())*(p.eta()-track2.eta())+
-					      (p.phi()-track2.phi())*(p.phi()-track2.phi()));
-		if(DeltaRK2<MinDRK && DeltaRK2<0.05){
-		  MinDRK=DeltaRK2;
-		  K2mcId=p.pdgId();
-		  if(p.mother()!=0) K2momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) K2gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(K2momId)==333 && abs(K2gmomId)==531) K2Truth = 1;
-		}
-	      }
-	    }
-	    
-	    bsRootTree_->getInfoK2(K2mcId,K2momId,K2gmomId,K2Truth);
-	    
-	    Mu1Truth = 0;
-	    if(MuCounter1!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu1 = TMath::Sqrt((p.eta()-mu1jpsi.eta())*(p.eta()-mu1jpsi.eta())+
-					       (p.phi()-mu1jpsi.phi())*(p.phi()-mu1jpsi.phi()));
-		if(DeltaRMu1<MinDRMu && DeltaRMu1<0.05){
-		  MinDRMu=DeltaRMu1;
-		  Mu1mcId=p.pdgId();
-		  if(p.mother()!=0) Mu1momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu1gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(Mu1momId)==443 && abs(Mu1gmomId)==531) Mu1Truth = 1;
-		}
-	      }
-	    }
-	    
-	    bsRootTree_->getInfoMu1(Mu1mcId,Mu1momId,Mu1gmomId,Mu1Truth);
-	    
-	    Mu2Truth = 0;
-	    if(MuCounter2!=-10){
-	      double MinDRMu=999.;
-	      for(size_t i = 0; i < genParticles->size(); ++ i) {
-		const GenParticle & p = (*genParticles)[i];
-		double DeltaRMu2 = TMath::Sqrt((p.eta()-mu2jpsi.eta())*(p.eta()-mu2jpsi.eta())+
-					       (p.phi()-mu2jpsi.phi())*(p.phi()-mu2jpsi.phi()));
-		if(DeltaRMu2<MinDRMu && DeltaRMu2<0.05){
-		  MinDRMu=DeltaRMu2;
-		  Mu2mcId=p.pdgId();
-		  if(p.mother()!=0) Mu2momId=p.mother()->pdgId();
-		  if(p.mother()!=0 && p.mother()->mother()!=0) Mu2gmomId=p.mother()->mother()->pdgId(); 
-		  if (abs(Mu2momId)==443 && abs(Mu2gmomId)==531) Mu2Truth= 1;
-		}
-	      }
-	    }
-	    
-	    bsRootTree_->getInfoMu2(Mu2mcId,Mu2momId,Mu2gmomId,Mu2Truth);
-	    
-	    isMatched = -10;
-	    if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1) isMatched = 1;
-	    bsRootTree_->getMCmatch(isMatched);
-	    
+
+            for( size_t i = 0; i < genParticles->size(); ++ i ) {
+              const GenParticle & genBsCand = (*genParticles)[ i ];
+              int MC_particleID=genBsCand.pdgId();
+              K1Truth = 0;
+              K2Truth = 0;
+              Mu1Truth = 0;
+              Mu2Truth = 0;
+              isMatched = -10;
+              if( abs(MC_particleID) == 531 ){
+                int numBsDaughters = genBsCand.numberOfDaughters();
+                if (numBsDaughters == 2){
+                  const Candidate * candJpsi = 0;
+                  const Candidate * candPhi = 0;
+                  for(int j = 0; j < numBsDaughters; ++ j) {
+                    const Candidate * d = genBsCand.daughter( j );
+                    int dauId = d->pdgId();
+                    if(abs(dauId) == 443 ) candJpsi = d;
+                    if(abs(dauId) == 333  )candPhi = d;
+                  }
+                  bool bFoundJpsiPhi = ((candJpsi!=0) && (candPhi!=0)); // found Bs -> Jpsi Phi
+                  if(bFoundJpsiPhi){
+                    // loop over phi daughters check for Kaons
+                    const Candidate * candKaon1 = 0;
+                    const Candidate * candKaon2 = 0;
+                    for(unsigned int ikaon=0 ; ikaon < candPhi->numberOfDaughters(); ikaon++){
+                      const Candidate * candK = candPhi->daughter ( ikaon );
+                      if( candK->pdgId() == 321 ) candKaon1 = candK;
+                      if( candK->pdgId() == -321 ) candKaon2 = candK;
+                    }
+                    if(TrkCounter1!=-10){
+                      double DeltaRK1 = TMath::Sqrt((candKaon1->eta()-track1.eta())*(candKaon1->eta()-track1.eta())+
+                                                    (candKaon1->phi()-track1.phi())*(candKaon1->phi()-track1.phi()));
+                      if(DeltaRK1<0.05){
+                        if (candKaon1->charge() == track1.charge()) K1Truth = 1;
+                      }
+                    }
+                    if(TrkCounter2!=-10){
+                      double DeltaRK2 = TMath::Sqrt((candKaon2->eta()-track2.eta())*(candKaon2->eta()-track2.eta())+
+                                                    (candKaon2->phi()-track2.phi())*(candKaon2->phi()-track2.phi()));
+                      if(DeltaRK2<0.05){
+                        if (candKaon2->charge() == track2.charge()) K2Truth = 1;
+                      }
+                    }
+		    // loop over jpsi daughters, check for muons
+                    const Candidate * candMu1 = 0;
+                    const Candidate * candMu2 = 0;
+                    for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+                      const Candidate * jpsiDa = candJpsi->daughter( k );
+                      if(  jpsiDa->pdgId() == 13 ) candMu1  = jpsiDa;
+                      if(  jpsiDa->pdgId() == -13 ) candMu2 = jpsiDa;
+                    }
+                    if(MuCounter1!=-10){
+                      double DeltaRMu1 = TMath::Sqrt((candMu1->eta()-mu1jpsi.eta())*(candMu1->eta()-mu1jpsi.eta())+
+                                                     (candMu1->phi()-mu1jpsi.phi())*(candMu1->phi()-mu1jpsi.phi()));
+                      if(DeltaRMu1<0.05){
+                        if (candMu1->charge() == mu1jpsi.charge()) Mu1Truth= 1;
+                      }
+                    }
+                    if(MuCounter2!=-10){
+                      double DeltaRMu2 = TMath::Sqrt((candMu2->eta()-mu2jpsi.eta())*(candMu2->eta()-mu2jpsi.eta())+
+                                                     (candMu2->phi()-mu2jpsi.phi())*(candMu2->phi()-mu2jpsi.phi()));
+                      if(DeltaRMu2<0.05){
+                        if (candMu2->charge() == mu2jpsi.charge()) Mu2Truth= 1;
+                      }
+                    }
+                    if (K1Truth==1 && K2Truth==1 && Mu1Truth==1 & Mu2Truth==1) isMatched = 1;
+                    bsRootTree_->getMCmatch(isMatched);
+                  }
+                }
+              }
+            } // end deltaR
+
 	  } // trk2 loop
 	} // trk1 loop
-      } // loop on muons
+      } // mu counter
+      
+      ////////////////////////////////////
+      ////////////////////////////////////
+      ////           Kstar
+      ////////////////////////////////////
+      ////////////////////////////////////
+      
+      if (MuCounter1!=-10 && MuCounter2!=-10){
+	const Candidate & mu1jpsi2 = (*allmuons)[MuCounter1];
+	const Candidate & mu2jpsi2 = (*allmuons)[MuCounter2];
+	
+	Handle<CandidateView> allTracks;
+	iEvent.getByLabel(trackLabelPi_, allTracks);
+	
+	for (size_t i=0; i< allTracks->size(); ++i){
+	  for (size_t j=i+1; j< allTracks->size(); ++j){
+	    const Candidate & track1 = (*allTracks)[i];
+	    const Candidate & track2 = (*allTracks)[j];
+	    if (track1.charge()==track2.charge()) continue;
+	    if (track1.pt()<0.5) continue;
+	    if (track2.pt()<0.5) continue;
+	    
+	    if(bsRootTree_->iPassedCutIdentBd_   < 4 ) bsRootTree_->iPassedCutIdentBd_ = 4 ;
+	    
+	    // kstar candidate
+	    
+	    double KaonMassSq=0.243717;
+	    double KaonE1=sqrt(KaonMassSq+track1.px()*track1.px()+track1.py()*track1.py()+track1.pz()*track1.pz());
+	    double KaonE2=sqrt(KaonMassSq+track2.px()*track2.px()+track2.py()*track2.py()+track2.pz()*track2.pz());
+	    int K1flag=0;
+	    int K2flag=0;
+	    double Kstmass1  = sqrt((KaonE1+track2.energy())*(KaonE1+track2.energy())
+				    -(track1.px()+track2.px())*(track1.px()+track2.px())
+				    -(track1.py()+track2.py())*(track1.py()+track2.py())
+				    -(track1.pz()+track2.pz())*(track1.pz()+track2.pz()));
+	    double Kstmass2  = sqrt((KaonE2+track1.energy())*(KaonE2+track1.energy())
+				    -(track1.px()+track2.px())*(track1.px()+track2.px())
+				    -(track1.py()+track2.py())*(track1.py()+track2.py())
+				    -(track1.pz()+track2.pz())*(track1.pz()+track2.pz()));
+	    
+	    if(abs(Kstmass1-0.892) < abs(Kstmass2-0.892)){
+	      if(abs(Kstmass1-0.892)>0.12) continue;
+	      K1flag=1;
+	    } else{
+	      if(abs(Kstmass2-0.892)>0.12) continue;
+	      K2flag=1;
+	    }
+	    if(bsRootTree_->iPassedCutIdentBd_   < 5 ) bsRootTree_->iPassedCutIdentBd_ = 5 ;
+	    
+	    // jpsi candidate
+	    
+	    CompositeCandidate JpsiCand;
+	    JpsiCand.addDaughter(mu1jpsi2);
+	    JpsiCand.addDaughter(mu2jpsi2);
+	    AddFourMomenta sum;
+	    sum.set(JpsiCand);
+	    
+	    if (abs(JpsiCand.mass()-3.097)>0.15) continue;
+	    if(bsRootTree_->iPassedCutIdentBd_   < 6 ) bsRootTree_->iPassedCutIdentBd_ = 6 ;
+	    
+	    // check on the overlap
+	    
+	    OverlapChecker overlap;
+	    if (overlap(mu1jpsi2,track1)!=0 || overlap(mu2jpsi2,track1)!=0) continue;
+	    if (overlap(mu1jpsi2,track2)!=0 || overlap(mu2jpsi2,track2)!=0) continue;
+	    
+	    if(bsRootTree_->iPassedCutIdentBd_   < 7 ) bsRootTree_->iPassedCutIdentBd_ = 7 ;
+	    
+	    // B candidate
+	    
+	    CompositeCandidate BdCand;
+	    BdCand.addDaughter(mu1jpsi2);
+	    BdCand.addDaughter(mu2jpsi2);
+	    BdCand.addDaughter(track1);
+	    BdCand.addDaughter(track2);
+	    AddFourMomenta add4mom;
+	    add4mom.set(BdCand);
+	  
+	    if (BdCand.mass() < 4.5 || BdCand.mass() > 6.) continue;
+	    
+	    if(bsRootTree_->iPassedCutIdentBd_   < 8 ) bsRootTree_->iPassedCutIdentBd_ = 8 ;
+	    
+	    ///////////////////////////////////////////////////////////////////////////////
+	    // list of particle for sequential kinematic vertex fitter - new giordano
+	    ///////////////////////////////////////////////////////////////////////////////
+	    
+	    edm::ESHandle<TransientTrackBuilder> theB;
+	    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
+	    TrackRef trkMu1Ref = mu1jpsi2.get<TrackRef>();
+	    TrackRef trkMu2Ref = mu2jpsi2.get<TrackRef>();
+	    TrackRef trkkst1 = track1.get<TrackRef>();
+	    TrackRef trkkst2 = track2.get<TrackRef>();
+	    
+	    vector<TransientTrack> t_tks;
+	    t_tks.push_back((*theB).build(&trkMu1Ref));
+	    t_tks.push_back((*theB).build(&trkMu2Ref));
+	    t_tks.push_back((*theB).build(&trkkst1));
+	    t_tks.push_back((*theB).build(&trkkst2));
+	    
+	    if(!trkMu1Ref.isNonnull() || !trkMu2Ref.isNonnull() || !trkkst1.isNonnull() || !trkkst2.isNonnull() ) continue;
+	    if(bsRootTree_->iPassedCutIdentBd_   < 9 ) bsRootTree_->iPassedCutIdentBd_ = 9 ;
+	    
+	    TransientTrack ttMuP= t_tks[0];
+	    TransientTrack ttMuM= t_tks[1];
+	    TransientTrack ttK = t_tks[2];
+	    TransientTrack ttP = t_tks[3];
+	    KinematicParticleFactoryFromTransientTrack pFactory;
+	    
+	    ParticleMass muon_mass = 0.1056583;
+	    ParticleMass kaon_mass = 0.493677;
+	    ParticleMass pi_mass = 0.139570;
+	    
+	    float muon_sigma = 0.0000001;
+	    float kaon_sigma = 0.000016;
+	    float pi_sigma = 0.000016;
+	    float chi = 0.;
+	    float ndf = 0.;
+	    
+	    vector<RefCountedKinematicParticle> allMuons;
+	    allMuons.push_back(pFactory.particle (ttMuP,muon_mass,chi,ndf,muon_sigma));
+	    allMuons.push_back(pFactory.particle (ttMuM,muon_mass,chi,ndf,muon_sigma));
+	    vector<RefCountedKinematicParticle> KpiParticles;
+	    if(K1flag==1) {
+	      KpiParticles.push_back(pFactory.particle (ttK,kaon_mass,chi,ndf,kaon_sigma));
+	      KpiParticles.push_back(pFactory.particle (ttP,pi_mass,chi,ndf,pi_sigma));
+	    }
+	    else{
+	      KpiParticles.push_back(pFactory.particle (ttP,kaon_mass,chi,ndf,kaon_sigma));
+	      KpiParticles.push_back(pFactory.particle (ttK,pi_mass,chi,ndf,pi_sigma));
+	    }
+	    
+	    KinematicParticleVertexFitter Fitter;
+	    RefCountedKinematicTree JpsiTree = Fitter.fit(allMuons);
+	    
+	    // if the fit fails, do not consider this as candidate
+	    if(JpsiTree->isEmpty()) continue;
+	    
+	    KinematicParticleFitter constFitter;
+	    
+	    ParticleMass jpsiM = 3.09687;
+	    float jpsiMsigma = 0.00004;
+	    KinematicConstraint * jpsi_const = new MassKinematicConstraint(jpsiM,jpsiMsigma);
+	    
+	    JpsiTree = constFitter.fit(jpsi_const,JpsiTree);
+	    
+	    // if the fit fails, do not consider this as candidate
+	    if(JpsiTree->isEmpty()) continue;
+	    
+	    JpsiTree->movePointerToTheTop();
+	    RefCountedKinematicParticle Jpsi_branch = JpsiTree->currentParticle();
+	    KpiParticles.push_back(Jpsi_branch);
+	    
+	    RefCountedKinematicTree myTree = Fitter.fit(KpiParticles);
+	    
+	    // if the fit fails, do not consider this as candidate
+	    if(myTree->isEmpty())  continue;
+	    myTree->movePointerToTheTop();
+	    RefCountedKinematicParticle bmes = myTree->currentParticle();
+	    RefCountedKinematicVertex bVertex = myTree->currentDecayVertex();
+	    
+	    if (!bVertex->vertexIsValid()) continue;
+	    if(bsRootTree_->iPassedCutIdentBd_   < 10 ) bsRootTree_->iPassedCutIdentBd_ = 10 ;
+	    
+	    AlgebraicVector7 b_par = bmes->currentState().kinematicParameters().vector();
+	    AlgebraicSymMatrix77 bd_er = bmes->currentState().kinematicParametersError().matrix();
+	    double vtxProb = TMath::Prob(bmes->chiSquared(),(int)bmes->degreesOfFreedom());
+	    
+	    if(vtxProb>MinBVtx){
+	      
+	      if (abs(JpsiCand.mass()-3.097) > JpsiMassWindowAfterFit_ || JpsiCand.pt() < JpsiPtCut_) continue;
+	      // passed jpsi mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 11 ) bsRootTree_->iPassedCutIdentBd_ = 11 ;
+	      
+	      if (K1flag == 1){
+		if(abs(Kstmass1-0.892)>0.12) continue;
+	      }
+	      if (K2flag == 1){
+		if(abs(Kstmass2-0.892)>0.12) continue;
+	      }
+	      // passed jpsi kstar window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 12 ) bsRootTree_->iPassedCutIdentBd_ = 12 ;
+	      if (BdCand.mass() < BsLowerMassCutAfterFit_ || BdCand.mass() > BsUpperMassCutAfterFit_) continue;
+	      // passed Bd mass window after fit
+	      if(bsRootTree_->iPassedCutIdentBd_   < 13 ) bsRootTree_->iPassedCutIdentBd_ = 13 ;
+	    }
+	    
+	    // deltaR matching!
+	    /*
+	    for( size_t i = 0; i < genParticles->size(); ++ i ) {
+	      const GenParticle & genBsCand = (*genParticles)[ i ];
+	      int MC_particleID=genBsCand.pdgId();
+	      K1Truth = 0; K2Truth = 0;
+	      K3Truth = 0; K4Truth = 0;
+	      Mu1Truth = 0; Mu2Truth = 0;
+	      isMatchedBd = -10;
+	      if( abs(MC_particleID) == 511 ){
+		int numBsDaughters = genBsCand.numberOfDaughters();
+		if (numBsDaughters == 2){
+		  const Candidate * candJpsi = 0;
+		const Candidate * candKstar = 0;
+		for(int j = 0; j < numBsDaughters; ++ j) {
+		  const Candidate * d = genBsCand.daughter( j );
+		  int dauId = d->pdgId();
+		  if(abs(dauId) == 443 ) candJpsi = d;
+		  if(abs(dauId) == 313  )candKstar = d;
+		}
+		bool bFoundJpsiPhi = ((candJpsi!=0) && (candKstar!=0)); // found Bs -> Jpsi Phi
+		if(bFoundJpsiPhi){
+		  // loop over phi daughters check for Kaons
+		  const Candidate * candKaon1 = 0;
+		  const Candidate * candKaon2 = 0;
+		  for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+		    const Candidate * candK = candKstar->daughter ( ikaon );
+		    if( abs(candK->pdgId()) == 321 ) candKaon1 = candK;
+		    if( abs(candK->pdgId()) == 211 ) candKaon2 = candK;
+		  }
+		  if(TrkCounter1!=-10){
+		    double DeltaRK1 = TMath::Sqrt((candKaon1->eta()-track1.eta())*(candKaon1->eta()-track1.eta())+
+						  (candKaon1->phi()-track1.phi())*(candKaon1->phi()-track1.phi()));
+		    if(DeltaRK1<0.05){
+		      if (candKaon1->charge() == track1.charge()) K1Truth = 1;
+		    }
+		  }
+		  if(TrkCounter2!=-10){
+		    double DeltaRK2 = TMath::Sqrt((candKaon2->eta()-track2.eta())*(candKaon2->eta()-track2.eta())+
+						  (candKaon2->phi()-track2.phi())*(candKaon2->phi()-track2.phi()));
+		    if(DeltaRK2<0.05){
+		      if (candKaon2->charge() == track2.charge()) K2Truth = 1;
+		    }
+		  }
+		  const Candidate * candKaon3 = 0;
+		  const Candidate * candKaon4 = 0;
+		  for(unsigned int ikaon=0 ; ikaon < candKstar->numberOfDaughters(); ikaon++){
+		    const Candidate * candK = candKstar->daughter ( ikaon );
+		    if( abs(candK->pdgId()) == 211 ) candKaon3 = candK;
+		    if( abs(candK->pdgId()) == 321 ) candKaon4 = candK;
+		  }
+		  if(TrkCounter1!=-10){
+		    double DeltaRK1 = TMath::Sqrt((candKaon3->eta()-track1.eta())*(candKaon3->eta()-track1.eta())+
+						  (candKaon3->phi()-track1.phi())*(candKaon3->phi()-track1.phi()));
+		    if(DeltaRK1<0.05){
+		      if (candKaon3->charge() == track1.charge()) K3Truth = 1;
+		    }
+		  }
+		  if(TrkCounter2!=-10){
+		    double DeltaRK2 = TMath::Sqrt((candKaon4->eta()-track2.eta())*(candKaon4->eta()-track2.eta())+
+						  (candKaon4->phi()-track2.phi())*(candKaon4->phi()-track2.phi()));
+		    if(DeltaRK2<0.05){
+		      if (candKaon4->charge() == track2.charge()) K4Truth = 1;
+		    }
+		  }
+		  // loop over jpsi daughters, check for muons
+		  const Candidate * candMu1a = 0;
+		  const Candidate * candMu2a = 0;
+		  for(unsigned int k=0; k < candJpsi->numberOfDaughters(); k++){
+		    const Candidate * jpsiDa = candJpsi->daughter( k );
+		    if(  jpsiDa->pdgId() == 13 ) candMu1a  = jpsiDa;
+		    if(  jpsiDa->pdgId() == -13 ) candMu2a = jpsiDa;
+		  }
+		  if(MuCounter1!=-10){
+		    double DeltaRMu1 = candMu1a->pdgId();
+		    //		    double DeltaRMu1 = TMath::Sqrt(mu1jpsi2.eta());
+		    double DeltaRMu1 = TMath::Sqrt((candMu1->eta()-mu1jpsi2.eta())*(candMu1->eta()-mu1jpsi2.eta())+
+						   (candMu1->phi()-mu1jpsi2.phi())*(candMu1->phi()-mu1jpsi2.phi()));
+						   if(DeltaRMu1<0.05){
+		      if (candMu1->charge() == mu1jpsi2.charge()) Mu1Truth= 1;
+		      
+		      }
+		  }
+		  if(MuCounter2!=-10){
+		    double DeltaRMu2 = TMath::Sqrt((candMu2->eta()-mu2jpsi2.eta())*(candMu2->eta()-mu2jpsi2.eta())+
+						   (candMu2->phi()-mu2jpsi2.phi())*(candMu2->phi()-mu2jpsi2.phi()));
+		    if(DeltaRMu2<0.05){
+                      if (candMu2->charge() == mu2jpsi2.charge()) Mu2Truth= 1;
+		    }
+		  }
+		  if (Mu1Truth==1 && Mu2Truth==1 &&
+		      ((K1Truth == 1 && K2Truth == 1) || (K3Truth == 1 && K4Truth == 1))) isMatchedBd = 1;
+		  bsRootTree_->isMatchedBd_  = isMatchedBd;
+		}
+		} 
+	      }
+	    } // end deltaR
+	    */
+	    
+	    
+	} // trk2 loop
+      } // trk1 loop
     } // end muCounter1 and muCounter2 if statement
-  } // loop on muons
+
+
+    } // loop on muons2
+  } // loop on muons1
   
   bsRootTree_->fill();
 
@@ -1057,7 +1344,120 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 
 void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genParticles){
-  
+
+
+  for( size_t i = 0; i < genParticles->size(); ++ i ) {
+    const GenParticle & genBsCand = (*genParticles)[ i ];
+    int MC_particleID=genBsCand.pdgId();
+
+    if (abs(MC_particleID) == 5 ||   // b quark
+        // bottom mesons
+        abs(MC_particleID) == 511 ||   // Bd
+        abs(MC_particleID) == 521 ||   // B+
+        abs(MC_particleID) == 10511 ||    // B_0*0
+        abs(MC_particleID) == 10521 ||    // B_0*+
+        abs(MC_particleID) == 513 ||   // B*d
+        abs(MC_particleID) == 523 ||   // B*d+
+        abs(MC_particleID) == 10513 ||   // B1(L)0
+        abs(MC_particleID) == 10523 ||   // B1(L)+
+        abs(MC_particleID) == 20513 ||   // B1(H)0
+        abs(MC_particleID) == 20523 ||   // B1(H)+
+        abs(MC_particleID) == 515 ||    // B2*_0
+        abs(MC_particleID) == 525 ||    // B2*_+
+        abs(MC_particleID) == 531 ||   // Bs
+        abs(MC_particleID) == 10531 ||    // B_s0*_0
+        abs(MC_particleID) == 533 ||   // B*s
+        abs(MC_particleID) == 10533 ||   // Bs1(L)0
+        abs(MC_particleID) == 20533 ||   // Bs1(H)0
+        abs(MC_particleID) == 535 ||    // Bs2*_0
+        abs(MC_particleID) == 541 ||   // Bc+
+        abs(MC_particleID) == 10541 ||   // B*c0+
+        abs(MC_particleID) == 543 ||   // B*c+
+        abs(MC_particleID) == 10543 ||   // Bc1(L)+
+        abs(MC_particleID) == 20543 ||   // Bc1(H)+
+        abs(MC_particleID) == 545 ||    // Bc2*_0
+        // bb mesons
+        abs(MC_particleID) == 551 ||   // etab(1S)
+        abs(MC_particleID) == 10551 ||   // chib(1P)
+        abs(MC_particleID) == 100551 ||   // etab(2S)
+        abs(MC_particleID) == 110551 ||   // chib(2P)
+        abs(MC_particleID) == 200551 ||   // etab(3S)
+        abs(MC_particleID) == 210551 ||   // chib(3P)
+        abs(MC_particleID) == 553 ||   // upsilon(1S)
+        abs(MC_particleID) == 10553 ||   // hb(1P)
+        abs(MC_particleID) == 20553 ||   // chib1(1P)
+        abs(MC_particleID) == 30553 ||   // upsilon1(1D)
+        abs(MC_particleID) == 100553 ||   // upsilon(2S)
+        abs(MC_particleID) == 110553 ||   // hb(2P)
+        abs(MC_particleID) == 120553 ||   // chib1(2P)
+        abs(MC_particleID) == 130553 ||   // upsilon1(2D)
+        abs(MC_particleID) == 200553 ||   // upsilon(3S)
+        abs(MC_particleID) == 210553 ||   // hb(3P)
+        abs(MC_particleID) == 220553 ||   // chib1(3P)
+        abs(MC_particleID) == 300553 ||   // upsilon(4S)
+        abs(MC_particleID) == 9000553 ||   // upsilon(10860)
+        abs(MC_particleID) == 9010553 ||   // upsilon(11020)
+        abs(MC_particleID) == 555 ||   // chib2(1P)
+        abs(MC_particleID) == 10555 ||   // etab2(1D)
+        abs(MC_particleID) == 20555 ||   // upsilon2(1D)
+        abs(MC_particleID) == 100555 ||   // chib2(2P)
+        abs(MC_particleID) == 110555 ||   // etab2(2D)
+        abs(MC_particleID) == 120555 ||   // upsilon2(2D)
+        abs(MC_particleID) == 200555 ||   // chib2(3P)
+        abs(MC_particleID) == 557 ||   // upsilon3(1D)
+        abs(MC_particleID) == 100557 ||   // upsilon3(2D)
+        // bottom barions
+        abs(MC_particleID) == 5122 ||   // lambda_b0
+        abs(MC_particleID) == 5112 ||   // sigma_b-
+        abs(MC_particleID) == 5212 ||   // sigma_b0
+        abs(MC_particleID) == 5222 ||   // sigma_b+
+        abs(MC_particleID) == 5114 ||   // sigma*_b-
+        abs(MC_particleID) == 5214 ||   // sigma*_b0
+        abs(MC_particleID) == 5224 ||   // sigma*_b+
+        abs(MC_particleID) == 5132 ||   // Xi_b-
+        abs(MC_particleID) == 5232 ||   // Xi_b0
+        abs(MC_particleID) == 5312 ||   // Xi'_b-
+        abs(MC_particleID) == 5322 ||   // Xi'_b0
+        abs(MC_particleID) == 5314 ||   // Xi*_b-
+        abs(MC_particleID) == 5324 ||   // Xi*_b0
+        abs(MC_particleID) == 5332 ||   // Omega_b-
+        abs(MC_particleID) == 5334 ||   // Omega*_b-
+        abs(MC_particleID) == 5142 ||   // Xi_bc0
+        abs(MC_particleID) == 5242 ||   // Xi_bc+
+        abs(MC_particleID) == 5412 ||   // Xi'_bc0
+        abs(MC_particleID) == 5422 ||   // Xi'_bc+
+        abs(MC_particleID) == 5414 ||   // Xi*_bc0
+        abs(MC_particleID) == 5424 ||   // Xi*_bc+
+        abs(MC_particleID) == 5342 ||   // Omega_bc0
+        abs(MC_particleID) == 5432 ||   // Omega'_bc0
+        abs(MC_particleID) == 5434 ||   // Omega*_bc0
+        abs(MC_particleID) == 5442 ||   // Omega_bcc+
+        abs(MC_particleID) == 5444 ||   // Omega*_bcc+
+        abs(MC_particleID) == 5512 ||   // Xi_bb-
+        abs(MC_particleID) == 5522 ||   // Xi_bb0
+        abs(MC_particleID) == 5514 ||   // Xi*_bb-
+        abs(MC_particleID) == 5524 ||   // Xi*_bb0
+        abs(MC_particleID) == 5532 ||   // Omega_bb-
+        abs(MC_particleID) == 5524 ||   // Omega*_bb-
+        abs(MC_particleID) == 5542 ||   // Omega_bbc0
+        abs(MC_particleID) == 5544 ||   // Omega*_bbc0
+        abs(MC_particleID) == 5554 )   // Omega_bbb-
+      {
+        bsRootTree_->BmesonsId_ = MC_particleID;
+	
+        int numBsDaughters = genBsCand.numberOfDaughters();
+        bsRootTree_->GenNumberOfDaughters_ = numBsDaughters;
+	
+        for(int j = 0; j < numBsDaughters; ++ j) {
+          const Candidate * Bsdau = genBsCand.daughter( j );
+          bsRootTree_->BDauIdMC_[j] = Bsdau->pdgId();
+        }
+      }
+  }
+
+
+
+  // old stuff
   
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
@@ -1074,9 +1474,6 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
       }
     }
   }
-  
-  
-  
   
   //added by Alex: check type of event
   const Candidate * genBs, *genJpsi, *genPhi, *genMu1, *genMu2, *genK1, *genK2;

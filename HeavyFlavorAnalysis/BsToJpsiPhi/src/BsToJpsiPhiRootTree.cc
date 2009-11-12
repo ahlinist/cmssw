@@ -163,6 +163,7 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("AngleBsDecayLength", &AngleBsDecayLength_, "AngleBsDecayLength/D");
   
   bsTree_->Branch("isMatched", &isMatched_, "isMatched/I");
+  bsTree_->Branch("isMatchedBd", &isMatchedBd_, "isMatchedBd/I");
   
   bsTree_->Branch("K1mcId", &K1mcId_, "K1mcId/I");
   bsTree_->Branch("K1momId", &K1momId_, "K1momId/I");
@@ -195,6 +196,7 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("numdedxTrk", &numdedxTrk_, "numdedxTrk/I");
  
   bsTree_->Branch("iPassedCutIdent", &iPassedCutIdent_, "iPassedCutIdent/I");  
+  bsTree_->Branch("iPassedCutIdentBd", &iPassedCutIdentBd_, "iPassedCutIdentBd/I");  
 
   bsTree_->Branch("isGenBsEvent", &isGenBsEvent_, "isGenBsEvent/I");
   bsTree_->Branch("GenNumberOfBsDaughters", &GenNumberOfBsDaughters_, "GenNumberOfBsDaughters/I");
@@ -343,6 +345,12 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
 
   bsTree_->Branch("isGenBsJpsiKKEvent", &isGenBsJpsiKKEvent_, "isGenBsJpsiKKEvent/I");
   bsTree_->Branch("BdDausId", &BdDausId_, "BdDausId/I");
+
+  // for bkg studies gio
+  bsTree_->Branch("BmesonsId",&BmesonsId_,"BmesonsId/I");
+  bsTree_->Branch("GenNumberOfDaughters", &GenNumberOfDaughters_, "GenNumberOfDaughters/I");
+  bsTree_->Branch("BDauIdMC",&BDauIdMC_,"BDauIdMC[15]/I");
+
 }
 
 BsToJpsiPhiRootTree::~BsToJpsiPhiRootTree()
@@ -482,6 +490,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   AngleBsDecayLength_ = -10;
 
   isMatched_ = -10;
+  isMatchedBd_ = -10;
   
   K1trkLay_ = -10;
   K1muDTh_ = -10;
@@ -531,6 +540,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   numdedxTrk_ = -10;
   
   iPassedCutIdent_ = -10;
+  iPassedCutIdentBd_ = -10;
 
   isGenBsEvent_ = GenNumberOfBsDaughters_ = isGenBsJpsiPhiEvent_ = isGenBsJpsiPhiMuMuKKEvent_ = -10;
   isGenBdEvent_ = GenNumberOfBdDaughters_ = isGenBdJpsiKstarEvent_ = isGenBdJpsiKstarMuMuKpiEvent_ = -10;  
@@ -644,6 +654,12 @@ void BsToJpsiPhiRootTree::resetEntries()
 
   isGenBsJpsiKKEvent_ = -10;
   BdDausId_ = -10;
+
+  // gio
+  BmesonsId_  = -6666;
+  GenNumberOfDaughters_ = -6666;
+  for(int i=0;i<15;i++) {BDauIdMC_[i]=-6666;}
+
 
 } 
 

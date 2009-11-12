@@ -183,6 +183,7 @@ public:
 	double AngleBsDecayLength_;
 
 	int isMatched_;
+	int isMatchedBd_;
 
 	double BLxy_;
 	double BLxy2_;
@@ -240,6 +241,7 @@ public:
 	int numdedxTrk_;
 
 	int iPassedCutIdent_;
+	int iPassedCutIdentBd_;
 
 	//MC info
 	int isGenBsEvent_;
@@ -361,6 +363,11 @@ public:
 
 	int isGenBsJpsiKKEvent_;
 	int BdDausId_;
+
+	// gio
+	int BDauIdMC_[15];
+        int BmesonsId_;
+	int GenNumberOfDaughters_;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 
