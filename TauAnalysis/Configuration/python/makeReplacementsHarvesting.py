@@ -69,6 +69,8 @@ def makeReplacementsHarvesting(channel = None, sample = None, replacements = Non
 
 	if paramName == "inputFilePath":
 	    replaceStatements_retVal.append(paramName + " = " + "'" + paramValue + "'")
+        if paramName == "recoSampleDefinitionsFile":
+	    replaceStatements_retVal.append(paramName + " = " + paramValue)
 
     # replace process parameter
     process = sample
