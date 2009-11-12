@@ -139,7 +139,7 @@ const T* findCfgDef(const std::string& cfgEntryName, std::map<std::string, T>& d
 
 typedef std::pair<TH1*, std::string> histoDrawEntry;
 
-void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std::list<TH1*>& histogramsToDelete)
+void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std::vector<TH1*>& histogramsToDelete)
 {
   std::string drawOption = ( isFirstHistogram ) ? histogram.second : std::string(histogram.second).append("same");
 
@@ -161,9 +161,9 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
   isFirstHistogram = false;
 }
 
-void drawHistograms(const std::list<histoDrawEntry>& histograms, bool& isFirstHistogram, std::list<TH1*>& histogramsToDelete)
+void drawHistograms(const std::vector<histoDrawEntry>& histograms, bool& isFirstHistogram, std::vector<TH1*>& histogramsToDelete)
 {
-  for ( std::list<histoDrawEntry>::const_iterator histogram = histograms.begin();
+  for ( std::vector<histoDrawEntry>::const_iterator histogram = histograms.begin();
 	histogram != histograms.end(); ++histogram ) {
     drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
   }
@@ -886,7 +886,7 @@ DQMHistPlotter::DQMHistPlotter(const edm::ParameterSet& cfg)
   }
 
 //--- check that all information neccessary to process drawJob is defined;
-  for ( std::list<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin();
+  for ( std::vector<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin();
 	drawJob != drawJobs_.end(); ++drawJob ) {
     for ( plotDefList::const_iterator plot = drawJob->plots_.begin();
 	  plot != drawJob->plots_.end(); ++plot ) {
@@ -1000,18 +1000,18 @@ void DQMHistPlotter::endJob()
   }
     
 //--- process drawJobs
-  for ( std::list<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin(); 
+  for ( std::vector<cfgEntryDrawJob>::const_iterator drawJob = drawJobs_.begin(); 
 	drawJob != drawJobs_.end(); ++drawJob ) {
     const std::string& drawJobName = drawJob->name_;
     std::cout << "--> processing drawJob " << drawJobName << "..." << std::endl;
 
 //--- prepare internally used histogram data-structures
     TH1* stackedHistogram_sum = NULL;
-    std::list<TH1*> histogramsToDelete;
-    std::list<plotDefEntry*> drawOptionsToDelete;
+    std::vector<TH1*> histogramsToDelete;
+    std::vector<plotDefEntry*> drawOptionsToDelete;
 
     typedef std::pair<TH1*, const plotDefEntry*> histogram_drawOption_pair;
-    std::list<histogram_drawOption_pair> allHistograms;
+    std::vector<histogram_drawOption_pair> allHistograms;
 
     for ( plotDefList::const_iterator plot = drawJob->plots_.begin();
 	  plot != drawJob->plots_.end(); ++plot ) {
@@ -1097,7 +1097,7 @@ void DQMHistPlotter::endJob()
 //    (maximum of any of the histograms included in drawJob)
     double yAxisNorm_min = 0.;
     double yAxisNorm_max = 0.;
-    for ( std::list<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
+    for ( std::vector<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
 	  it != allHistograms.end(); ++it ) {
       yAxisNorm_min = TMath::Min(yAxisNorm_min, it->first->GetMinimum());
       yAxisNorm_max = TMath::Max(yAxisNorm_max, it->first->GetMaximum());
@@ -1116,19 +1116,13 @@ void DQMHistPlotter::endJob()
       return;
     }
 
-//--- WARNING: need to call 
-//              TLegend::TLegend(Double_t, Double_t,Double_t, Double_t, const char* = "", Option_t* = "brNDC")
-//             constructor, as TLegend::TLegend default constructor causes the created TLegend object to behave differently !!
-    TLegend legend(defaultLegendPosX, defaultLegendPosY, defaultLegendPosX + defaultLegendSizeX, defaultLegendPosY + defaultLegendSizeY);
-    legendConfig->applyTo(&legend);
+    std::vector<histoDrawEntry> smProcessHistogramList;
+    std::vector<histoDrawEntry> bsmProcessHistogramList;
+    std::vector<histoDrawEntry> smSumHistogramList;
+    std::vector<histoDrawEntry> smSumUncertaintyHistogramList;
+    std::vector<histoDrawEntry> dataHistogramList;
 
-    std::list<histoDrawEntry> smProcessHistogramList;
-    std::list<histoDrawEntry> bsmProcessHistogramList;
-    std::list<histoDrawEntry> smSumHistogramList;
-    std::list<histoDrawEntry> smSumUncertaintyHistogramList;
-    std::list<histoDrawEntry> dataHistogramList;
-
-    for ( std::list<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
+    for ( std::vector<histogram_drawOption_pair>::const_iterator it = allHistograms.begin();
 	  it != allHistograms.end(); ++it ) {
       TH1* histogram = it->first;
       const plotDefEntry* drawOption = it->second;
@@ -1168,6 +1162,34 @@ void DQMHistPlotter::endJob()
 	  dataHistogramList.push_back(histoDrawEntry(histogram, drawOptionConfig->drawOption_.data()));
 	} 
       }
+    }
+
+//--- create legend;
+//    add legend entries in "reverse" order
+//    so that legend and stacked plots appear in same order (from top to bottom)
+//
+//    WARNING: need to call 
+//              TLegend::TLegend(Double_t, Double_t,Double_t, Double_t, const char* = "", Option_t* = "brNDC")
+//             constructor, as TLegend::TLegend default constructor causes the created TLegend object to behave differently !!
+//
+//    NOTE: cannot use const_reverse_iterator due to compiler bug in gcc3.4 series
+//
+    TLegend legend(defaultLegendPosX, defaultLegendPosY, defaultLegendPosX + defaultLegendSizeX, defaultLegendPosY + defaultLegendSizeY);
+    legendConfig->applyTo(&legend);
+
+    for ( std::vector<histogram_drawOption_pair>::reverse_iterator rit = allHistograms.rbegin();
+	  rit != allHistograms.rend(); ++rit ) {
+      TH1* histogram = rit->first;
+      const plotDefEntry* drawOption = rit->second;
+
+      const cfgEntryDrawOption* drawOptionConfig = 
+	findCfgDef<cfgEntryDrawOption>(drawOption->drawOptionEntry_, drawOptionEntries_, "drawOptionEntry", drawJobName);
+      const cfgEntryProcess* processConfig = findCfgDef<cfgEntryProcess>(drawOption->process_, processes_, "process", drawJobName);
+      if ( drawOptionConfig == NULL || processConfig == NULL ) {
+	edm::LogError ("endJob") << " Failed to access information needed by drawJob = " << drawJobName 
+				 << " --> histograms will NOT be plotted !!";
+	return;
+      }
 
       std::string legendEntry, legendDrawOption;
       if ( drawOption->isErrorBand_ ) {
@@ -1177,11 +1199,11 @@ void DQMHistPlotter::endJob()
 	legendEntry = ( drawOption->legendEntry_ != "" ) ? drawOption->legendEntry_ : processConfig->legendEntry_;
 	legendDrawOption = drawOptionConfig->drawOptionLegend_;
       } 
-
+      
       legend.AddEntry(histogram, legendEntry.data(), legendDrawOption.data());
     }
 
-    std::list<TPaveText> labels;
+    std::vector<TPaveText> labels;
     for ( vstring::const_iterator labelName = drawJob->labels_.begin();
 	  labelName != drawJob->labels_.end(); ++labelName ) {
       const cfgEntryLabel* labelConfig = findCfgDef<cfgEntryLabel>(*labelName, labels_, "label", drawJobName);
@@ -1205,7 +1227,7 @@ void DQMHistPlotter::endJob()
 
 //--- process histograms for individual Standard Model processes
 //    in reverse order, so that most stacked histogram gets drawn first
-    for ( std::list<histoDrawEntry>::reverse_iterator histogram = smProcessHistogramList.rbegin();
+    for ( std::vector<histoDrawEntry>::reverse_iterator histogram = smProcessHistogramList.rbegin();
 	  histogram != smProcessHistogramList.rend(); ++histogram ) {
       drawHistogram(*histogram, isFirstHistogram, histogramsToDelete);
     }
@@ -1215,7 +1237,7 @@ void DQMHistPlotter::endJob()
 
     legend.Draw();
 
-    for ( std::list<TPaveText>::iterator label = labels.begin();
+    for ( std::vector<TPaveText>::iterator label = labels.begin();
 	  label != labels.end(); ++label ) {
       label->Draw();
     }
@@ -1242,12 +1264,12 @@ void DQMHistPlotter::endJob()
     if ( ps ) ps->NewPage();
 
 //--- delete temporarily created histogram and drawOption objects
-    for ( std::list<TH1*>::const_iterator histogram = histogramsToDelete.begin();
+    for ( std::vector<TH1*>::const_iterator histogram = histogramsToDelete.begin();
 	  histogram != histogramsToDelete.end(); ++histogram ) {
       delete (*histogram);
     }
 
-    for ( std::list<plotDefEntry*>::const_iterator drawOption = drawOptionsToDelete.begin();
+    for ( std::vector<plotDefEntry*>::const_iterator drawOption = drawOptionsToDelete.begin();
           drawOption != drawOptionsToDelete.end(); ++drawOption ) {
       delete (*drawOption);
     }
