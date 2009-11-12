@@ -5,8 +5,8 @@
  *  
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/07/16 16:51:00 $
- *  $Revision: 1.2 $
+ *  $Date: 2009/11/07 14:19:51 $
+ *  $Revision: 1.3 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -143,7 +143,7 @@ class DQMHistPlotter : public edm::EDAnalyzer
     bool isErrorBand_;
   };
   
-  typedef std::list<plotDefEntry> plotDefList;
+  typedef std::vector<plotDefEntry> plotDefList;
 
   struct cfgEntryDrawJob 
   {
@@ -175,7 +175,7 @@ private:
   std::map<std::string, cfgEntryLegend> legends_;
   std::map<std::string, cfgEntryLabel> labels_;
   std::map<std::string, cfgEntryDrawOption> drawOptionEntries_;
-  std::list<cfgEntryDrawJob> drawJobs_;
+  std::vector<cfgEntryDrawJob> drawJobs_;
   int canvasSizeX_;
   int canvasSizeY_;
   std::string outputFilePath_;
