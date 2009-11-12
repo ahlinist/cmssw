@@ -158,6 +158,8 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       double EBradius_;
 	  bool splash09cor_;
 	  TTree* eventTimingInfoTree_;
+	  
+	  struct TTreeMembers {
 	  int numEBcrys_;
 	  int numEEcrys_;
 	  int cryHashesEB_[61200];
@@ -171,7 +173,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  float correctionToSample5EB_;
 	  float correctionToSample5EEP_;
 	  float correctionToSample5EEM_;
-	  
+	  } TTreeMembers_; 
       double allave_;
       double allshift_;
 	  
