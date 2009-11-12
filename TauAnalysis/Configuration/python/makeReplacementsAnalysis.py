@@ -87,13 +87,6 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
     if factorization is None:
         raise ValueError("Undefined factorization option !!")
     replaceStatements_retVal.append("factorization = " + factorization)
-	
-    # check that the input filename path option has been defined
-    if inputFilePath is None:
-        raise ValueError("Undefined inputFilePath option !!")
-    # check that the input filename path ends with "/"
-    if not inputFilePath.endswith("/"):
-        inputFilePath += "/"
 
     # check that the input file type option has been defined
     inputFileNames = None
@@ -104,6 +97,13 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         inputFileNames = "fileNames" + channel + "_" + sample
         patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
+        # check that the input filename path option has been defined
+        if inputFilePath is None:
+            raise ValueError("Undefined inputFilePath option !!")
+        # check that the input filename path ends with "/"
+        if not inputFilePath.endswith("/"):
+            inputFilePath += "/"
+        
         inputFileNames = "cms.untracked.vstring('rfio:" + inputFilePath + "' + patTupleOutputFileName" + channel + "_" + sample + ")"
         if sample.find("_part") != -1:
 	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
