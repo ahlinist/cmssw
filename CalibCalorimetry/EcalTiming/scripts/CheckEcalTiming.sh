@@ -53,7 +53,9 @@ echo "      -bhp|--bh_plus        bh_plus         Is Direction of BeamHalo Plus;
 echo "      -ebr|--eb_radius      eb_radius       Correct EB radius in Readout Timing; default is 1.4(m)"
 echo "      -wf|--write_files     write_files     Write Output files (default is false)"
 echo "      -aa|--all_average     all_average     This is the input average number defaults to 5.7"
-echo "      -as|--all_shift     all_shift     This is the timing shift for all values default of 1.5"
+echo "      -as|--all_shift       all_shift       This is the timing shift for all values default of 1.5"
+echo "      -dr|--do_ratios       do_ratios       Allows one to use the ratios for amplitude and time; default is False"
+echo "      -s09|--splash_09      splash_09       Allows one apply the Splash09 corrections; default is False"
 echo ""
 echo "To specify multiple fed_id's/ieb_id's/cry's to mask use a comma-separated list in between double quotes, e.g., \"1,2,3\" "
 exit
@@ -87,6 +89,8 @@ correct_ecal="False"
 correct_bh="False"
 bh_plus="True"
 write_files="False"
+do_ratios="False"
+splash_09="False"
 
 data_type="Laser"
 eb_radius=1.4
@@ -173,18 +177,26 @@ manyfiles="0"
       -bhp|--bh_plus)
 				bh_plus=$2
 				;;	
-			
+				
+	  -dr|--do_ratios)
+				do_ratios=$2
+				;;	
+							
+	  -s09|--splash_09)
+				splash_09=$2
+				;;	
+				
       -wf|--write_files)
-                                write_files=$2
-                                ;;
+                write_files=$2
+                ;;
 	
       -aa|--all_average)
-                                all_average=$2
-                                ;;
+                all_average=$2
+                ;;
 
       -as|--all_shift)
-                                all_shift=$2
-                                ;;
+                all_shift=$2
+                ;;
 
     esac
     shift       # Verifica la serie successiva di parametri.
@@ -221,7 +233,8 @@ echo "EB Radius:                                    $eb_radius m"
 echo "Writing txt files:                            $write_files"
 echo "Overall Average Change:                       $all_average" 
 echo "All shift:                                    $all_shift" 
-
+echo "Using Ratios:                                 $do_ratios"
+echo "Correction Splash09:                          $splash_09"
 echo ""
 echo ""
 
@@ -271,6 +284,45 @@ process.p = cms.Path(process.timing)
         "
 fi
 
+recomethod="
+process.uncalibHitMaker = cms.EDProducer('EcalUncalibRecHitProducer',
+                                             EEdigiCollection = cms.InputTag('ecalDccDigis','eeDigiSkim'),
+                                             betaEE = cms.double(1.37),
+                                             alphaEE = cms.double(1.63),
+                                             EBdigiCollection = cms.InputTag('ecalDccDigis','ebDigiSkim'),
+                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
+                                             betaEB = cms.double(1.7),
+                                             MinAmplEndcap = cms.double(14.0),
+                                             MinAmplBarrel = cms.double(8.0),
+                                             alphaEB = cms.double(1.2),
+                                             UseDynamicPedestal = cms.bool(True),
+                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+                                             algo = cms.string('EcalUncalibRecHitWorkerFixedAlphaBetaFit')
+                                         )
+
+
+"
+if [[ $do_ratios == "True" ]]; then
+  recomethod="
+  process.uncalibHitMaker = cms.EDProducer('EcalUncalibRecHitProducer',
+                                             EBdigiCollection = cms.InputTag('ecalDccDigis','ebDigiSkim'),
+                                             EEdigiCollection = cms.InputTag('ecalDccDigis','eeDigiSkim'),
+                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+                                             EBtimeFitParameters = cms.vdouble(-2.015452e+00, 3.130702e+00, -1.234730e+01, 4.188921e+01, -8.283944e+01, 9.101147e+01, -5.035761e+01, 1.105621e+01),
+                                             EEtimeFitParameters = cms.vdouble(-2.390548e+00, 3.553628e+00, -1.762341e+01, 6.767538e+01, -1.332130e+02, 1.407432e+02, -7.541106e+01, 1.620277e+01),
+                                             EBamplitudeFitParameters = cms.vdouble(1.138,1.652),
+                                             EEamplitudeFitParameters = cms.vdouble(1.890,1.400),
+                                             EBtimeFitLimits_Lower = cms.double(0.2),
+                                             EBtimeFitLimits_Upper = cms.double(1.4),
+                                             EEtimeFitLimits_Lower = cms.double(0.2),
+                                             EEtimeFitLimits_Upper = cms.double(1.4),
+                                             algo = cms.string('EcalUncalibRecHitWorkerRatio')
+                                         )
+"
+fi
+
 maxevnts=$(($last_event-$first_event))
 
 cat > "$cfg_path$data_file".graph.$$.py <<EOF
@@ -290,7 +342,7 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR09_31X_V4P::All'
+process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32( $maxevnts )
@@ -298,38 +350,8 @@ process.maxEvents = cms.untracked.PSet(
 
 $input_module
 
-#process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
-#                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
-#                                             betaEE = cms.double(1.37),
-#                                             alphaEE = cms.double(1.63),
-#                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
-#                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
-#                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
-#                                             betaEB = cms.double(1.7),
-#                                             MinAmplEndcap = cms.double(14.0),
-#                                             MinAmplBarrel = cms.double(8.0),
-#                                             alphaEB = cms.double(1.2),
-#                                             UseDynamicPedestal = cms.bool(True),
-#                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
-#                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
-#                                         )
 
-process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
-                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
-                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
-                                             EBhitCollection = cms.string("EcalUncalibRecHitsEB"),
-                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
-                                             EBtimeFitParameters = cms.vdouble(-2.015452e+00, 3.130702e+00, -1.234730e+01, 4.188921e+01, -8.283944e+01, 9.101147e+01, -5.035761e+01, 1.105621e+01),
-                                             EEtimeFitParameters = cms.vdouble(-2.390548e+00, 3.553628e+00, -1.762341e+01, 6.767538e+01, -1.332130e+02, 1.407432e+02, -7.541106e+01, 1.620277e+01),
-                                             EBamplitudeFitParameters = cms.vdouble(1.138,1.652),
-                                             EEamplitudeFitParameters = cms.vdouble(1.890,1.400),
-                                             EBtimeFitLimits_Lower = cms.double(0.2),
-                                             EBtimeFitLimits_Upper = cms.double(1.4),
-                                             EEtimeFitLimits_Lower = cms.double(0.2),
-                                             EEtimeFitLimits_Upper = cms.double(1.4),
-                                             algo = cms.string("EcalUncalibRecHitWorkerRatio")
-                                         )
-
+$recomethod
 
 
 process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
@@ -381,6 +403,7 @@ process.timing = cms.EDFilter("EcalTimingAnalysis",
                                   FromFile = cms.untracked.bool($from_file),
                                   RunStart = cms.untracked.double($start_time),
                                   RunLength = cms.untracked.double($run_length),
+					              Splash09Cor = cms.untracked.bool($splash_09),
                                   WriteTxtFiles = cms.untracked.bool($write_files),
                                   AllAverage = cms.untracked.double($all_average), 
                                   AllShift = cms.untracked.double($all_shift),
