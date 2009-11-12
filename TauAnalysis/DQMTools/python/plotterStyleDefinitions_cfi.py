@@ -355,6 +355,17 @@ drawOption_red_eff = cms.PSet(
     drawOptionLegend = cms.string('p')
 )
 
+drawOption_magenta_eff = cms.PSet(
+    markerColor = cms.int32(6),
+    markerSize = cms.double(1.),
+    markerStyle = cms.int32(24),
+    lineColor = cms.int32(6),
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(2),
+    drawOption = cms.string('e1p'),
+    drawOptionLegend = cms.string('p')
+)
+
 drawOption_lightBlue_eff = cms.PSet(
     markerColor = cms.int32(7),
     markerSize = cms.double(1.),
