@@ -1,4 +1,4 @@
-# $Id: qcdLowPtDQM_cfg.py,v 1.1 2009/11/06 16:56:57 loizides Exp $
+# $Id: qcdLowPtDQM_cfg.py,v 1.2 2009/11/11 16:01:00 loizides Exp $
 
 import FWCore.ParameterSet.Config as cms
 
@@ -23,8 +23,11 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-DIGI-RAW-HLTDEBUG-MC_31X_V9-v1.root'
+#        'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-DIGI-RAW-HLTDEBUG-MC_31X_V9-v1.root'
+        'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-RECO-MC_31X_V9-v2.root'
     )
 )
+
+process.siPixelDigis.InputLabel = cms.InputTag("source")
 
 process.p = cms.Path(process.myRecoSequence*process.QcdLowPtDQM+process.dqmSaver)
