@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.19 $
-  \date $Date: 2009/09/18 15:18:27 $
+  \version $Revision: 1.20 $
+  \date $Date: 2009/10/31 23:18:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -321,37 +321,37 @@ color, Int_t npts, std::string title){
       assert( obj );
       
       if( o.name.find( "SUMOFF_adc_Barrel" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,80.,192.,80.); 
-	TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,120.,192.,120.); 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,20.,192.,20.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,80.,192.,80.); 
       }
-      if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,80.,96.,80.); 
-	TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,120.,96.,120.); 
+      else if( o.name.find( "SUMOFF_adc_Endcap" ) != std::string::npos ){ 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,70.,96.,70.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,130.,96.,130.); 
       }
-      if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ 
-        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,20.,192.,20.); 
+      else if( o.name.find( "SUMOFF_ndigis_Barrel" ) != std::string::npos ){ 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,7.,192.,7.); 
       }
-      if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ 
-        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,20.,96.,20.); 
+      else if( o.name.find( "SUMOFF_ndigis_Endcap" ) != std::string::npos ){ 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(0.,8.,96.,8.); 
       }
-      if( o.name.find( "SUMOFF_charge_Barrel" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,15.,192.,15.); 
-	TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,30.,192.,30.); 
+      else if( o.name.find( "SUMOFF_charge_Barrel" ) != std::string::npos ){ 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0., 4.,192., 4.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,40.,192.,40.); 
       }
-      if( o.name.find( "SUMOFF_charge_Endcap" ) != std::string::npos ){ 
-        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0.,15.,96.,15.); 
-	TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,30.,96.,30.); 
+      else if( o.name.find( "SUMOFF_charge_Endcap" ) != std::string::npos ){ 
+        TLine tl1; tl1.SetLineColor(4); tl1.DrawLine(0., 7.,96., 7.); 
+        TLine tl2; tl2.SetLineColor(4); tl2.DrawLine(0.,50.,96.,50.); 
       }
-      if( o.name.find( "OnTrack/charge_siPixelClusters" ) != std::string::npos ){ 
+      else if( o.name.find( "OnTrack/charge_siPixelClusters" ) != std::string::npos ){ 
         Int_t ibin = obj->GetMaximumBin(); 
-	Double_t val = obj->GetBinContent(ibin); 
-	TLine tl; tl.SetLineColor(4); tl.DrawLine(21.,0.,21.,val); 
+        Double_t val = obj->GetBinContent(ibin); 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(21.,0.,21.,val); 
       }
-      if( o.name.find( "OnTrack/size_siPixelClusters" ) != std::string::npos ||
-          o.name.find( "OffTrack/size_siPixelClusters" ) != std::string::npos ){ 
+      else if( o.name.find( "OnTrack/size_siPixelClusters" ) != std::string::npos ||
+               o.name.find( "OffTrack/size_siPixelClusters" ) != std::string::npos ){ 
         Int_t ibin = obj->GetMaximumBin(); 
-	Double_t val = obj->GetBinContent(ibin); 
-	TLine tl; tl.SetLineColor(4); tl.DrawLine(10.,0.,10.,val); 
+        Double_t val = obj->GetBinContent(ibin); 
+        TLine tl; tl.SetLineColor(4); tl.DrawLine(10.,0.,10.,val); 
       }
       
     }
