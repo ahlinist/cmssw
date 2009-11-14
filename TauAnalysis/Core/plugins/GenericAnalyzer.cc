@@ -412,6 +412,7 @@ GenericAnalyzer::GenericAnalyzer(const edm::ParameterSet& cfg)
 
 //--- configure eventDumps
   if ( cfg.exists("eventDumps") ) {
+    //std::cout << "--> configuring eventDumps..." << std::endl;
     vParameterSet cfgEventDumps = cfg.getParameter<vParameterSet>("eventDumps");
     for ( vParameterSet::const_iterator cfgEventDump = cfgEventDumps.begin(); 
 	  cfgEventDump != cfgEventDumps.end(); ++cfgEventDump ) {
