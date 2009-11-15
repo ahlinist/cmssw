@@ -1,4 +1,4 @@
-# $Id: qcdLowPtDQM_cfg.py,v 1.2 2009/11/11 16:01:00 loizides Exp $
+# $Id: qcdLowPtDQM_cfg.py,v 1.3 2009/11/13 09:59:18 loizides Exp $
 
 import FWCore.ParameterSet.Config as cms
 
@@ -14,20 +14,32 @@ process.load('DQM/Physics/qcdLowPtDQM_cfi')
 
 process.GlobalTag.globaltag = 'MC_31X_V9::All'
 
-process.dqmSaver.workflow = cms.untracked.string('/Physics/QCDPhysics/LowPt')
+process.options = cms.untracked.PSet(
+    FailPath = cms.untracked.vstring("ProductNotFound")
+)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-#    input = cms.untracked.int32(500)
+    input = cms.untracked.int32(1000)
 )
+
+process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-#        'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-DIGI-RAW-HLTDEBUG-MC_31X_V9-v1.root'
         'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-RECO-MC_31X_V9-v2.root'
     )
 )
 
-process.siPixelDigis.InputLabel = cms.InputTag("source")
+# uncomment if you run on MC raw
+#process.p1 = cms.Path(
+#    process.myRecoSeq1
+#)
+#process.siPixelDigis.InputLabel = cms.InputTag("rawDataCollector")
 
-process.p = cms.Path(process.myRecoSequence*process.QcdLowPtDQM+process.dqmSaver)
+process.p2 = cms.Path(
+    process.myRecoSeq2  *
+    process.QcdLowPtDQM +
+    process.dqmSaver
+)
+
+process.dqmSaver.workflow = cms.untracked.string('/Physics/QCDPhysics/LowPt')
