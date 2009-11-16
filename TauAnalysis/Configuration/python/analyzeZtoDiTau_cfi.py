@@ -322,9 +322,12 @@ diTauAnalysisSequence = cms.VPSet(
         analyzers = diTauHistManagers
     ),
 
-    # generator level selection of Z --> mu + tau-jet events
-    # passing basic acceptance and kinematic cuts
-    # (NOTE: to be used for efficiency studies only !!)
+    # generator level phase-space selection
+    # (NOTE: (1) to be used in case of Monte Carlo samples
+    #            overlapping in simulated phase-space only !!
+    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
+    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
+    #            to the CERN batch system will not work !!)
     #cms.PSet(
     #    filter = cms.string('genDiTauCut'),
     #    title = cms.string('gen. Tau Pair'),
