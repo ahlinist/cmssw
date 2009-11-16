@@ -7,7 +7,7 @@ from PhysicsTools.PatAlgos.patEventContent_cff import *
 # per default, drop everything that is not specifically kept
 #--------------------------------------------------------------------------------
 patTupleEventContent = cms.PSet(
-	outputCommands = cms.untracked.vstring('drop *')
+    outputCommands = cms.untracked.vstring('drop *')
 )
 
 #--------------------------------------------------------------------------------
@@ -26,10 +26,10 @@ patTupleEventContent.outputCommands.extend(
 patTupleEventContent.outputCommands.extend(
      [ 'keep *_iterativeCone5CaloJets_*_*',
        'keep *_iterativeCone5PFJets_*_*',
-	   'keep *_generalTracks_*_*', 
-	   'keep *_genElectronsFromZs_*_*', 
-	   'keep *_pixelMatchGsfElectrons_*_*', 
-	   'keep *_pixelMatchGsfFit_*_*' ]
+       'keep *_generalTracks_*_*', 
+       'keep *_genElectronsFromZs_*_*', 
+       'keep *_pixelMatchGsfElectrons_*_*', 
+       'keep *_pixelMatchGsfFit_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
       [ 'keep *_generalTracks_*_*',
-	    'keep recoTrackExtras_pixelMatchGsfFit_*_*']
+	'keep recoTrackExtras_pixelMatchGsfFit_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
@@ -45,26 +45,26 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_pfAll*_*_*', 
-	  'keep *_particleFlow_*_*',]
+      'keep *_particleFlow_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
 # used as analysis selection starting point
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-	[ 'keep *_genPhaseSpaceEventInfo_*_*', 
-	  'keep *_genTausFromZs_*_*' 
-	]
+    [ 'keep *_genPhaseSpaceEventInfo_*_*', 
+      'keep *_genElectronsFromZs_*_*',
+      'keep *_genMuonsFromZs_*_*',
+      'keep *_genTausFromZs_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
 # used as analysis selection variables
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-	[ 'keep *_selectedPrimaryVertexHighestPtTrackSum_*_*',
-	  'keep *_selectedPrimaryVertexQuality_*_*',
-	  'keep *_selectedPrimaryVertexPosition_*_*'
-	]
+    [ 'keep *_selectedPrimaryVertexHighestPtTrackSum_*_*',
+      'keep *_selectedPrimaryVertexQuality_*_*',
+      'keep *_selectedPrimaryVertexPosition_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
@@ -72,40 +72,52 @@ patTupleEventContent.outputCommands.extend(
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_iterativeCone5GenJets_*_*', 
-      'keep *_genParticlesFromZs_*_*'
-	]
+      'keep *_genParticlesFromZs_*_*' ]
 )
 
 #--------------------------------------------------------------------------------
 # required by jetHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_selectedLayer1JetsAntiOverlapWithLeptonsVetoCumulative_*_*' ] )
+    [ 'keep *_selectedLayer1JetsAntiOverlapWithLeptonsVetoCumulative_*_*' ]
+)
 
 #--------------------------------------------------------------------------------
 # required by metHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_layer1METs_*_*' ] )
+    [ 'keep *_layer1METs_*_*',
+      'keep *_layer1PFMETs_*_*',
+      'keep *_metsignificance_*_*' ]
+)
 
 #--------------------------------------------------------------------------------
 # required by metTopologyHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-    [ 'keep *_metTopologies_*_*' ] )
+    [ 'keep *_metTopologies_*_*' ]
+)
 
 #--------------------------------------------------------------------------------
 # required by lepton histogram managers
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
     [ 'keep *_genParticles_*_*',
-	  'keep *_tauGenJets_*_*' ] 
+      'keep *_tauGenJets_*_*' ] 
 )
 
 #--------------------------------------------------------------------------------
 # required by triggerHistManager
 #--------------------------------------------------------------------------------
 patTupleEventContent.outputCommands.extend(
-     [ 'keep *_TriggerResults_*_*' ] )
+     [ 'keep *_TriggerResults_*_*',
+       'keep *_hltGtDigis_*_*',
+       'keep *_hltL1GtObjectMap_*_*' ]
+)
 
-
+#--------------------------------------------------------------------------------
+# required by event-dump plugins (to be removed for 3_1_x)
+#--------------------------------------------------------------------------------
+patTupleEventContent.outputCommands.extend(
+     [ 'keep *_genMETWithMu_*_*' ]
+)
