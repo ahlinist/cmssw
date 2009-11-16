@@ -1175,11 +1175,11 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
 				p.daughter(1)->pz(),
 				p.daughter(1)->energy());
 	for( int j=0; j<Mc_mu_size; j++){
-	  if((p.daughter(0)->pdgId())== Mc_mu_id[j] && da1_4vec.Pt() == ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()){
+	  if((p.daughter(0)->pdgId())== Mc_mu_id[j] && fabs(da1_4vec.Pt() - ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()) < 0.001){
 	    if(Mc_mu_id[j]==13) Mc_QQmumi_indx[Mc_QQ_size]=j;
 	    if(Mc_mu_id[j]==-13)Mc_QQmupl_indx[Mc_QQ_size]=j;
 	  }
-	  if((p.daughter(1)->pdgId())== Mc_mu_id[j] && da2_4vec.Pt() == ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()){
+	  if((p.daughter(1)->pdgId())== Mc_mu_id[j] && fabs(da2_4vec.Pt() - ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()) < 0.001){
 	    if(Mc_mu_id[j]==13) Mc_QQmumi_indx[Mc_QQ_size]=j;
 	    if(Mc_mu_id[j]==-13)Mc_QQmupl_indx[Mc_QQ_size]=j;
 	  } 
