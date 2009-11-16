@@ -90,12 +90,12 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
 
     # check that the input file type option has been defined
     inputFileNames = None
-    patTupleProduction = None
+    patTupleProduction_line01 = None
     if inputFileType is None:
         raise ValueError("Undefined inputFileType option !!")
     if inputFileType == "RECO/AOD":
         inputFileNames = "fileNames" + channel + "_" + sample
-        patTupleProduction = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
+        patTupleProduction_line01 = "process.p.replace(process.producePatTuple" + channel + "Specific, process.producePatTupleAll)"
     elif inputFileType == "PATTuple":
         # check that the input filename path option has been defined
         if inputFilePath is None:
@@ -108,11 +108,12 @@ def makeReplacementsAnalysis(channel = None, sample = None, replacements = None)
         if sample.find("_part") != -1:
 	    inputFileNames = "cms.untracked.vstring(" + inputFileNames[:inputFileNames.rfind("_part")]
 	    inputFileNames += ".value().replace(\'_partXX', '" + sample[sample.rfind("_part"):] + "'))"
-        patTupleProduction = ""
+        patTupleProduction_line01 = ""
     else:
         raise ValueError("Invalid inputFileType parameter = " + inputFileType + " !!")
     replaceStatements_retVal.append("inputFileNames = " + inputFileNames)
-    replaceStatements_retVal.append("patTupleProduction = " + patTupleProduction)
+    replaceStatements_retVal.append("patTupleProduction_line01 = " + patTupleProduction_line01)
+    replaceStatements_retVal.append("patTupleProduction_line02 = setattr(process, 'batchMode', cms.PSet())")
 
     # replace genPhaseSpaceCut and plotsOutputFileName parameters
     # (ommit "_part.." suffix of sample name in case of processes split
