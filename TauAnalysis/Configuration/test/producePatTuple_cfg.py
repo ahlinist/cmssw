@@ -19,11 +19,12 @@ process.load("TauAnalysis.Configuration.producePatTuple_cff")
 
 # define configuration parameters for submission of jobs to CERN batch system 
 # (running over skimmed samples stored on CASTOR)
-from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
-from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
-from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
-from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
+#from TauAnalysis.Configuration.recoSampleDefinitionsAHtoElecMu_cfi import *
+#from TauAnalysis.Configuration.recoSampleDefinitionsWtoTauNu_cfi import *
+#from TauAnalysis.Configuration.recoSampleDefinitionsZtoElecMu_cfi import *
+#from TauAnalysis.Configuration.recoSampleDefinitionsLooseZtoElecTau_cfi import *
+#from TauAnalysis.Configuration.recoSampleDefinitionsZtoMuTau_cfi import *
+from TauAnalysis.BgEstimationTools.recoSampleDefinitionsTauIdEffZtoMuTau_cfi import *
 
 # import event-content definition of products to be stored in patTuple
 from TauAnalysis.Configuration.patTupleEventContent_cff import *
@@ -47,7 +48,7 @@ process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
 		'rfio:/castor/cern.ch/user/j/jkolb/eTauSkims/bgEst/PhotonJets_Pt15to20/skimElecTau_PhotonJets_Pt15to20_1.root'
 	)
-#skipBadFiles = cms.untracked.bool(True)    
+        #skipBadFiles = cms.untracked.bool(True)    
 )
 
 #--------------------------------------------------------------------------------
@@ -76,9 +77,23 @@ switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
 #--------------------------------------------------------------------------------
 
-process.p = cms.Path( process.producePatTuple
-#                    +process.printEventContent      
-			 		 +process.savePatTuple
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::METs
+from TauAnalysis.Configuration.tools.metTools import *
+
+# uncomment to add pfMET
+# (set boolean parameter to true/false to enable/disable type-1 MET corrections)
+addPFMet(process, False)
+
+# uncomment to replace caloMET by pfMET in all di-tau objects
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
+replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
+#--------------------------------------------------------------------------------
+
+process.p = cms.Path(
+    process.producePatTuple
+#  + process.printEventContent      
+   + process.savePatTuple
 )
 
 #process.options = cms.untracked.PSet(
