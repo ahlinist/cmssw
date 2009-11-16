@@ -29,9 +29,11 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
 {
   mJetsName           = cfg.getParameter<std::string>              ("jets");
   mMetName            = cfg.getParameter<std::string>              ("met");
+  mMetNoHFName        = cfg.getParameter<std::string>              ("metNoHF");
   mFileName           = cfg.getParameter<std::string>              ("fileName");
   mJetExtender        = cfg.getParameter<std::string>              ("jetExtender");
   mTriggerNames       = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
+  mL1TriggerNames     = cfg.getParameter<std::vector<std::string> >("l1TriggerNames");
   mTriggerProcessName = cfg.getParameter<std::string>              ("triggerProcessName"); 
   mTriggerResultsTag  = cfg.getParameter<edm::InputTag>            ("triggerResultsTag");
   mEtaMax             = cfg.getParameter<double>                   ("etaMax"); 
@@ -43,9 +45,6 @@ void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup)
   mFile = new TFile(mFileName.c_str(),"RECREATE");
   mTree = new TTree("InclusiveJetTree","InclusiveJetTree");
   
-  mTree->Branch("px"       ,mPx       ,"mPx[20]/F");
-  mTree->Branch("py"       ,mPy       ,"mPy[20]/F");
-  mTree->Branch("pz"       ,mPz       ,"mPz[20]/F");
   mTree->Branch("pt"       ,mPt       ,"mPt[20]/F");
   mTree->Branch("eta"      ,mEta      ,"mEta[20]/F");
   mTree->Branch("phi"      ,mPhi      ,"mPhi[20]/F");
@@ -64,10 +63,13 @@ void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup)
   mTree->Branch("emf"      ,mEmf      ,"mEmf[20]/F");
   mTree->Branch("nTrkVx"   ,mNtrkVx   ,"mNtrkVx[20]/F");
   mTree->Branch("nTrkCalo" ,mNtrkCalo ,"mNtrkCalo[20]/F");
-  mTree->Branch("met"      ,&mMET     ,"mMET/F");
-  mTree->Branch("sumet"    ,&mSumET   ,"mSumET/F");
+  mTree->Branch("met"      ,mMET     ,"mMET[2]/F");
+  mTree->Branch("sumet"    ,mSumET   ,"mSumET[2]/F");
   mTree->Branch("HLTBits"  ,mHLTBits  ,"mHLTBits[6]/I");
+  mTree->Branch("L1Bits"   ,mL1Bits   ,"mL1Bits[5]/I");
   mTree->Branch("jetSize"  ,&mJetSize ,"mJetSize/I");
+  mTree->Branch("event"    ,&mEvent   ,"mEvent/I");
+  mTree->Branch("run"      ,&mRun     ,"mRun/I");
 
   //must be done at beginRun and not only at beginJob, because 
     //trigger names are allowed to change by run.
@@ -97,6 +99,22 @@ void InclusiveJetTreeProducer::endJob()
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup const& iSetup) 
 { 
+  mRun = event.id().run();
+  mEvent = event.id().event();
+
+  edm::ESHandle<L1GtTriggerMenu> menuRcd;
+  iSetup.get<L1GtTriggerMenuRcd>().get(menuRcd) ;
+  const L1GtTriggerMenu* menu = menuRcd.product();
+
+  edm::Handle< L1GlobalTriggerReadoutRecord > gtReadoutRecord;
+  event.getByLabel( edm::InputTag("gtDigis"), gtReadoutRecord);
+  const  DecisionWord& gtDecisionWordBeforeMask = gtReadoutRecord->decisionWord();
+  for(int i = 0; i < 5; i++){
+    mL1Bits[i] = 0;}
+  for(int j = 0; j < 5; j++){
+    bool result = menu->gtAlgorithmResult( mL1TriggerNames[j], gtDecisionWordBeforeMask);
+    if(result) mL1Bits[j] = 1;
+  }
 
   ////////////Vertices//////////////
   Handle<reco::VertexCollection> recVtxs;
@@ -125,9 +143,6 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
     {
       if(((*jets)[ind].pt() > mPtMin) && (abs((*jets)[ind].eta()) < mEtaMax  && counter < 20)){
 	counter++;
-	mPx[ind]       = (*jets)[ind].px();
-	mPy[ind]       = (*jets)[ind].py(); 
-	mPz[ind]       = (*jets)[ind].pz();
 	mPt[ind]       = (*jets)[ind].pt();
 	mEta[ind]      = (*jets)[ind].eta();
 	mPhi[ind]      = (*jets)[ind].phi();
@@ -164,18 +179,34 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       if (result)
         mHLTBits[i] = 1;
     }
+
+
+
+
   ////////////// MET //////
   Handle<CaloMETCollection> met;
   event.getByLabel(mMetName,met);
   if (met->size() == 0)
     {
-      mMET   = -1;
-      mSumET = -1;
+      mMET[0]   = -1;
+      mSumET[0] = -1;
     }
   else
     {
-      mMET   = (*met)[0].et();
-      mSumET = (*met)[0].sumEt();
+      mMET[0]   = (*met)[0].et();
+      mSumET[0] = (*met)[0].sumEt();
+    }
+  Handle<CaloMETCollection> metNoHF;
+  event.getByLabel(mMetNoHFName,metNoHF);
+  if (metNoHF->size() == 0)
+    {
+      mMET[1]   = -1;
+      mSumET[1] = -1;
+    }
+  else
+    {
+      mMET[1]   = (*metNoHF)[0].et();
+      mSumET[1] = (*metNoHF)[0].sumEt();
     }
   mTree->Fill();
 }
