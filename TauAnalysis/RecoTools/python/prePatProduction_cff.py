@@ -10,8 +10,11 @@ from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllChargedHadrons_cfi impor
 from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllNeutralHadrons_cfi import *
 from PhysicsTools.PFCandProducer.ParticleSelectors.pfAllPhotons_cfi import *
 from TauAnalysis.RecoTools.recoElectronIsolation_cfi import *
-from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
 from TauAnalysis.RecoTools.recoMuonIsolation_cfi import *
+
+# compute electron and tau id. quantities specific to EWK-tau analyses
+from TauAnalysis.RecoTools.recoElectronIdentification_cfi import *
+from TauAnalysis.RecoTools.recoPFTauIdentification_cfi import *
 
 # produce collections of dR = 0.07 and dR = 0.15 fixed
 # and dR = 5.0/Et shrinking signal cone taus using latest tags
@@ -45,6 +48,7 @@ producePrePat = cms.Sequence(
    + shrinkingConePFTauDiscriminationByTaNC + RunTanc
    #+ shrinkingConePFTauTancCVTransform
    #+ shrinkingConeEfficienciesProducerFromFile
+   + ewkTauId 
    + metsignificance
    + produceEventShapeVars
 )
