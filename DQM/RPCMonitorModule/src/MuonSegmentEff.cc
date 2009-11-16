@@ -390,17 +390,19 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       double dy=0;
       double dz=0;
 
-      bool found = false;
       DTRecSegment4DCollection::const_iterator segment;  
       for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
 	DTChamberId DTId = segment->chamberId();
-	if(DTId.wheel()==rpcId.ring() && DTId.station()==rpcId.station() && DTId.sector()==rpcId.sector()){
-	  assert(!found);
+	int dtSector = DTId.sector(); 
+	if(dtSector==13) dtSector=4;
+	if(dtSector==14)  dtSector=10;
+	if(DTId.wheel()==rpcId.ring() && DTId.station()==rpcId.station() && dtSector==rpcId.sector()){
+	  if(debug) std::cout<<DTId<<std::endl;
 	  LocalVector segmentDirection=segment->localDirection();
 	  dx=segmentDirection.x();
 	  dy=segmentDirection.y();
 	  dz=segmentDirection.z();
-	  found = true;
+	  continue;
 	}
       }
       
@@ -503,7 +505,7 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	meMap[meIdDT]->Fill(bx,distobottom);
 
 
-	std::cout<<"Filling SIGNAL "<<detUnitLabel<<" with bx="<<bx<<" and cls="<<cluSize<<std::endl;
+	//std::cout<<"Filling SIGNAL "<<detUnitLabel<<" with bx="<<bx<<" and cls="<<cluSize<<std::endl;
 	sprintf(meIdDT,"Signal_BXDistribution_%s",detUnitLabel);
 	meMap[meIdDT]->Fill(bx,cluSize);
 
@@ -638,7 +640,6 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       double dy=0;
       double dz=0;
 
-      bool found = false;
       CSCSegmentCollection::const_iterator segment;  
 
       CSCDetId CSCId;
@@ -648,12 +649,11 @@ void MuonSegmentEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 	int rpcRing = CSCId.ring();
 	if(rpcRing==4)rpcRing =1;
 	if(rpcRegion==rpcId.region() && CSCId.station()==rpcId.station() && rpcRing == rpcId.ring() && CSCId.chamber()==rpcsrv.segment()){
-	  assert(!found);
 	  LocalVector segmentDirection=segment->localDirection();
 	  dx=segmentDirection.x();
 	  dy=segmentDirection.y();
 	  dz=segmentDirection.z();
-	  found = true;
+	  continue;
 	}
       }
       

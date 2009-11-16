@@ -21,7 +21,26 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('rfio:/castor/cern.ch/user/c/carrillo//PointProducer/ZMUMU/Summer09_MinBias_41.root')
+    fileNames = cms.untracked.vstring('/store/data/CRAFT09/Cosmics/RECO/v1/000/111/125/8A62785E-158D-DE11-884B-0030486730C6.root')
+)
+
+process.rpcPointProducer = cms.EDProducer('RPCPointProducer',
+  incldt = cms.untracked.bool(True),
+  inclcsc = cms.untracked.bool(True),
+
+  debug = cms.untracked.bool(False),
+
+  rangestrips = cms.untracked.double(4.),
+  rangestripsRB4 = cms.untracked.double(4.),
+  MinCosAng = cms.untracked.double(0.85),
+  MaxD = cms.untracked.double(80.0),
+  MaxDrb4 = cms.untracked.double(150.0),
+  ExtrapolatedRegion = cms.untracked.double(0.6), #in stripl/2 in Y and stripw*nstrips/2 in X
+
+##  cscSegments = cms.untracked.string('hltCscSegments'),
+##  dt4DSegments = cms.untracked.string('hltDt4DSegments'),
+  cscSegments = cms.untracked.string('cscSegments'),
+  dt4DSegments = cms.untracked.string('dt4DSegments')
 )
 
 process.museg = cms.EDFilter("MuonSegmentEff",
@@ -30,12 +49,12 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     incldtMB4 = cms.untracked.bool(True),
     inclcsc = cms.untracked.bool(True),
 
-    debug = cms.untracked.bool(True),
+    debug = cms.untracked.bool(False),
     inves = cms.untracked.bool(True),
     
     DuplicationCorrection = cms.untracked.int32(1),
 
-    manualalignment = cms.untracked.bool(False),
+    manualalignment = cms.untracked.bool(True),
     AliFileName = cms.untracked.string('/afs/cern.ch/user/c/carrillo/endcap/CMSSW_3_0_0_pre10/src/DQM/RPCMonitorModule/data/Alignment69912.dat'),
 	
     rangestrips = cms.untracked.double(4.),
@@ -45,6 +64,8 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     cscSegments = cms.untracked.InputTag('cscSegments'),
     dt4DSegments = cms.untracked.InputTag('dt4DSegments'),
 
+
+## is missing the hltrpcRecHits
     rpcRecHits = cms.InputTag("rpcRecHits"),
     rpcDTPoints = cms.InputTag("rpcPointProducer","RPCDTExtrapolatedPoints"),
     rpcCSCPoints = cms.InputTag("rpcPointProducer","RPCCSCExtrapolatedPoints"),
@@ -53,7 +74,8 @@ process.museg = cms.EDFilter("MuonSegmentEff",
     EffRootFileName = cms.untracked.string('/tmp/carrillo/eff111125.FEEFDE56-288D-DE11-9A6E-0030486780B8.root'),
     EffSaveRootFileEventsInterval = cms.untracked.int32(100)
 )
-process.p = cms.Path(process.museg)
+
+process.p = cms.Path(process.rpcPointProducer*process.museg)
 
 process.DQM.collectorHost = ''
 process.DQM.collectorPort = 9090
