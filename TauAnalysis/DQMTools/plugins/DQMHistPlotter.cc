@@ -146,7 +146,8 @@ void drawHistogram(const histoDrawEntry& histogram, bool& isFirstHistogram, std:
 //--- if stacked histogram is drawn as shaded pattern on transparent background
 //    add a white histogram underneath, in order to "clear" drawing area 
 //    and avoid "interference" of shaded patterns of different histograms
-  if ( histogram.first->GetFillStyle() != 1001 ) {
+  if ( histogram.first->GetFillStyle() != 0   &&
+       histogram.first->GetFillStyle() != 1001 ) {
     TH1* histogram_white = dynamic_cast<TH1*>(histogram.first->Clone());
     histogram_white->SetFillColor(10);
     histogram_white->SetFillStyle(1001);
