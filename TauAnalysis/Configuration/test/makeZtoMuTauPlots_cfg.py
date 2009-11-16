@@ -14,7 +14,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("EmptySource")
 
 # define directory from which .root files containing the histograms get loaded
-process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/plots/ZtoMuTau/")
+process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/v/veelken/CMSSW_3_1_2/plots/ZtoMuTau/")
 #process.loadZtoMuTau.inputFilePath = cms.string("rfio:/castor/cern.ch/user/l/lusito/ZtoMuTauAnalysis/")
 
 # import utility function to enable factorization

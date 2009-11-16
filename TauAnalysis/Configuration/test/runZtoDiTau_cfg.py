@@ -116,8 +116,10 @@ process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.pro
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
-#__#patTupleProduction#
-process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTuple + process.producePatTupleZtoDiTauSpecific)
+#__#patTupleProduction_line01#
+#__#patTupleProduction_line02#
+if not hasattr(process, "batchMode"):
+    process.p.replace(process.producePatTupleZtoDiTauSpecific, process.producePatTuple + process.producePatTupleZtoDiTauSpecific)
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------

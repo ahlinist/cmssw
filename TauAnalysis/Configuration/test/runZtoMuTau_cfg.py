@@ -136,13 +136,15 @@ from TauAnalysis.Configuration.factorizationTools import enableFactorization_run
 
 #--------------------------------------------------------------------------------
 #
-process.producePatTupleAll = cms.Sequence( process.producePatTuple + process.producePatTupleZtoMuTauSpecific )
+process.producePatTupleAll = cms.Sequence(process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #
 # define "hook" for enabling/disabling production of PAT-tuple event content,
 # depending on whether RECO/AOD or PAT-tuples are used as input for analysis
 #
-#__#patTupleProduction#
-process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
+#__#patTupleProduction_line01#
+#__#patTupleProduction_line02#
+if not hasattr(process, "batchMode"):
+    process.p.replace(process.producePatTupleZtoMuTauSpecific, process.producePatTuple + process.producePatTupleZtoMuTauSpecific)
 #--------------------------------------------------------------------------------
 
 # print-out all python configuration parameter information
