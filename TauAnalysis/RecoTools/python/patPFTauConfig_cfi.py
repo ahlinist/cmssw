@@ -16,6 +16,12 @@ from PhysicsTools.PatAlgos.cleaningLayer1.tauCleaner_cfi import *
 allLayer1Taus.userIsolation.pfChargedHadron.threshold = cms.double(1.0)
 allLayer1Taus.userIsolation.pfGamma.threshold = cms.double(1.5)
 
+# embed track references in pat::Tau
+# (so that analysis can access track information if running on PAT-tuples)
+allLayer1Taus.embedLeadTrack = cms.bool(True)
+allLayer1Taus.embedSignalTracks = cms.bool(True)
+allLayer1Taus.embedIsolationTracks = cms.bool(True)
+
 # add reconstructed tau decay mode
 allLayer1Taus.addDecayMode = cms.bool(True)
 
