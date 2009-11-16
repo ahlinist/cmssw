@@ -32,7 +32,7 @@ process.source = cms.Source("PoolSource",
 process.GlobalTag.globaltag = 'MC_31X_V3::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
-    OutputFileName       = cms.string('test.root'),
+    OutputFileName       = cms.string('promptJpsiAOD.root'),
     OniaType             = cms.int32(443),
     OniaMaxCat           = cms.int32(2),
     skimOnOniaMaxCat     = cms.bool(True),
