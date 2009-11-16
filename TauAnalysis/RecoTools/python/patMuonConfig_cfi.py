@@ -27,9 +27,8 @@ allLayer1Muons.userIsolation.ecal.deltaR = cms.double(0.6)
 allLayer1Muons.userIsolation.hcal.deltaR = cms.double(0.6)
 
 allLayer1Muons.userIsolation.user.deltaR = cms.double(0.6)
-#
+
 # add IsoDeposit objects for Track, ECAL and HCAL based isolation
-#
 allLayer1Muons.isoDeposits = cms.PSet(
    tracker          = allLayer1Muons.userIsolation.tracker.src,
    ecal             = allLayer1Muons.userIsolation.ecal.src,
@@ -39,12 +38,16 @@ allLayer1Muons.isoDeposits = cms.PSet(
    pfNeutralHadrons = cms.InputTag("pfmuIsoNeDepositPFCandidates"),
    pfPhotons        = cms.InputTag("pfmuIsoGaDepositPFCandidates")
 )
-#
+
+# embed Pixel + SiStrip track reference in pat::Muon
+# (so that analysis can access "inner" track information if running on PAT-tuples)
+allLayer1Muons.embedTrack = cms.bool(True)
+
 # enable matching to HLT trigger information;
 # match offline reconstructed muons to isolated and non-isolated HLT muon paths
-#
 allLayer1Muons.embedHighLevelSelection = cms.bool(True)
-#
+
 # enable matching to generator level information
-#
 allLayer1Muons.addGenMatch = cms.bool(True)
+
+
