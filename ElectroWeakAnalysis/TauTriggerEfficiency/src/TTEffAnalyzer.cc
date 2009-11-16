@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.30 2009/10/07 08:55:47 mkortela Exp $
+// $Id: TTEffAnalyzer.cc,v 1.31 2009/10/08 21:22:53 chinhan Exp $
 //
 //
 
@@ -47,7 +47,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFIso = 0;
   PFIsoSum = 0;
   PFEnergy = 0;
+  PFMuonMatch = 0;
   PFTauMatch = 0;
+  PFElectronMatch = 0;
   MCMatch = 0;
   MCTauEt = -1.;
   MCTauE = -1.;
@@ -67,7 +69,9 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   _TTEffTree->Branch("PFClusterPhiRMS", &PFClusterPhiRMS, "PFClusterPhiRMS/F");
   _TTEffTree->Branch("PFClusterDrRMS", &PFClusterDrRMS, "PFClusterDrRMS/F");
   _TTEffTree->Branch("PFTauMatch", &PFTauMatch, "PFTauMatch/I");
-  
+  _TTEffTree->Branch("PFMuonMatch", &PFMuonMatch, "PFMuonMatch/I");  
+  _TTEffTree->Branch("PFElectronMatch", &PFElectronMatch, "PFElectronMatch/I");
+
   _TTEffTree->Branch("MCMatch", &MCMatch, "MCMatch/I");
   _TTEffTree->Branch("MCTauEt", &MCTauEt, "MCTauEt/F");
   _TTEffTree->Branch("MCTauE", &MCTauE, "MCTauE/F");
@@ -211,7 +215,7 @@ using namespace reco;
     for(unsigned int k = 0 ; k < PFTaus->size(); k++){
       if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(k).p4(),mcTaus->at(i)) < MCMatchingCone ){
 
-	PFTauMatch = 1;	
+	PFTauMatch = 1;
 	const PFTauRef thisTauRef(PFTaus,k);
 	if(thePFTauDiscriminatorByIsolation.isValid()){
 	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
@@ -227,6 +231,9 @@ using namespace reco;
 	PFIsoSum = PFTaus->at(k).isolationPFChargedHadrCandsPtSum();
 	PFEnergy = PFTaus->at(k).energy();
 	
+	PFMuonMatch = PFTaus->at(k).muonDecision();
+//	PFElectronMatch =
+
 	std::vector<double> rms;
 	clusterShape(PFTaus->at(k), rms);
 	PFClusterEtaRMS = rms[0];

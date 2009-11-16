@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.26 2009/05/25 00:11:59 bachtis Exp $
+// $Id: TTEffAnalyzer.h,v 1.27 2009/06/29 19:35:25 chinhan Exp $
 //
 //
 
@@ -100,7 +100,7 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
       edm::Handle<std::vector<LorentzVector> > mcTaus;
 
       // PF Variables
-      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch;
+      int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch,PFMuonMatch,PFElectronMatch;
       float MCTauE,MCTauEt,MCTauEta,MCTauPhi;
       float PFPt,PFInvPt,PFEt,PFEta,PFPhi,PFProng,PFIso,PFIsoSum,PFEnergy;
       float PFClusterEtaRMS, PFClusterPhiRMS, PFClusterDrRMS;
