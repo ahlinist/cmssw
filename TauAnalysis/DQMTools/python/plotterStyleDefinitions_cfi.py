@@ -132,6 +132,20 @@ label_mcNormScale = cms.PSet(
 )
 
 #--------------------------------------------------------------------------------
+# define colors
+#--------------------------------------------------------------------------------
+
+color_black = cms.int32(1)
+color_red = cms.int32(628)
+color_green = cms.int32(817)
+color_darkBlue = cms.int32(596)
+color_lightBlue = cms.int32(856)
+color_yellow = cms.int32(396)
+color_orange = cms.int32(797)
+color_violett = cms.int32(877)
+color_gray = cms.int32(15)
+
+#--------------------------------------------------------------------------------
 # define drawOptions
 #--------------------------------------------------------------------------------
 
@@ -139,90 +153,111 @@ label_mcNormScale = cms.PSet(
 # for different processes + total Standard Model expecation with error band on top
 # (H1 style)
 drawOption_black_separate = cms.PSet(
-    lineColor = cms.int32(1),        
+    lineColor = color_black,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(1),        
-    fillStyle = cms.int32(3001), # use 1001 for solid 
+    fillColor = color_black,        
+    fillStyle = cms.int32(0),
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
 drawOption_red_separate = cms.PSet(
-    lineColor = cms.int32(2),        
+    lineColor = color_red,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(2),        
-    fillStyle = cms.int32(3002),      
+    fillColor = color_red,        
+    fillStyle = cms.int32(0),
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
 drawOption_green_separate = cms.PSet(
-    lineColor = cms.int32(3),        
+    lineColor = color_green,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(3),        
-    fillStyle = cms.int32(3003),      
+    fillColor = color_green,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
-drawOption_blue_separate = cms.PSet(
-    lineColor = cms.int32(4),        
+drawOption_lightBlue_separate = cms.PSet(
+    lineColor = color_lightBlue,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(4),        
-    fillStyle = cms.int32(3004),      
+    fillColor = color_lightBlue,        
+    fillStyle = cms.int32(0),      
+    drawOption = cms.string('hist'),  
+    drawOptionLegend = cms.string('f') 
+)
+
+drawOption_darkBlue_separate = cms.PSet(
+    lineColor = color_darkBlue,        
+    lineStyle = cms.int32(1),         
+    lineWidth = cms.int32(2),         
+    fillColor = color_darkBlue,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
 drawOption_yellow_separate = cms.PSet(
-    lineColor = cms.int32(5),        
+    lineColor = color_yellow,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(5),        
-    fillStyle = cms.int32(3005),      
+    fillColor = color_yellow,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
-drawOption_magenta_separate = cms.PSet(
-    lineColor = cms.int32(6),        
+drawOption_orange_separate = cms.PSet(
+    lineColor = color_orange,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(6),        
-    fillStyle = cms.int32(3006),      
+    fillColor = color_orange,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
-drawOption_cyan_separate = cms.PSet(
-    lineColor = cms.int32(7),        
+drawOption_green_separate = cms.PSet(
+    lineColor = color_green,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(7),        
-    fillStyle = cms.int32(3007),      
+    fillColor = color_green,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
+)
+
+drawOption_violett_separate = cms.PSet(
+    lineColor = color_violett,
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(2),
+    fillColor = color_violett,
+    fillStyle = cms.int32(0),
+    drawOption = cms.string('hist'),
+    drawOptionLegend = cms.string('f')
 )
 
 drawOption_gray_separate = cms.PSet(
-    lineColor = cms.int32(15),        
+    lineColor = color_gray,        
     lineStyle = cms.int32(1),         
     lineWidth = cms.int32(2),         
-    fillColor = cms.int32(15),        
-    fillStyle = cms.int32(3013),      
+    fillColor = color_gray,        
+    fillStyle = cms.int32(0),      
     drawOption = cms.string('hist'),  
     drawOptionLegend = cms.string('f') 
 )
 
 drawOption_sum_separate = cms.PSet(
-    lineColor = cms.int32(1),
+    lineColor = color_black,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
-    fillColor = cms.int32(3),
+    fillColor = color_green,
+    fillStyle = cms.int32(0),  
     drawOption = cms.string('eBand'),
     drawOptionLegend = cms.string('l')
 )
@@ -231,90 +266,90 @@ drawOption_sum_separate = cms.PSet(
 # stacked on top of each other
 # (CDF style)      
 drawOption_black_stacked = cms.PSet(
-    lineColor = cms.int32(1),
+    lineColor = color_black,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(1),
+    fillColor = color_black,
     fillStyle = cms.int32(1001),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_red_stacked = cms.PSet(
-    lineColor = cms.int32(628),
+    lineColor = color_red,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(628),
+    fillColor = color_red,
     fillStyle = cms.int32(3013),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_green_stacked = cms.PSet(
-    lineColor = cms.int32(817),
+    lineColor = color_green,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(817),
+    fillColor = color_green,
     fillStyle = cms.int32(3004),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_darkblue_stacked = cms.PSet(
-    lineColor = cms.int32(596),
+drawOption_darkBlue_stacked = cms.PSet(
+    lineColor = color_darkBlue,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(596),
+    fillColor = color_darkBlue,
     fillStyle = cms.int32(3005),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
-drawOption_lightblue_stacked = cms.PSet(
-    lineColor = cms.int32(856),
+drawOption_lightBlue_stacked = cms.PSet(
+    lineColor = color_lightBlue,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(856),
+    fillColor = color_lightBlue,
     fillStyle = cms.int32(3007),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_yellow_stacked = cms.PSet(
-    lineColor = cms.int32(396),
+    lineColor = color_yellow,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(396),
+    fillColor = color_yellow,
     fillStyle = cms.int32(3001),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_orange_stacked = cms.PSet(
-    lineColor = cms.int32(797),
+    lineColor = color_orange,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(797),
+    fillColor = color_orange,
     fillStyle = cms.int32(3006),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_violett_stacked = cms.PSet(
-    lineColor = cms.int32(877),
+    lineColor = color_violett,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(877),
+    fillColor = color_violett,
     fillStyle = cms.int32(3003),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
 )
 
 drawOption_gray_stacked = cms.PSet(
-    lineColor = cms.int32(15),
+    lineColor = color_gray,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(1),
-    fillColor = cms.int32(15),
+    fillColor = color_gray,
     fillStyle = cms.int32(1001),
     drawOption = cms.string('hist'),
     drawOptionLegend = cms.string('f')
@@ -322,10 +357,10 @@ drawOption_gray_stacked = cms.PSet(
 
 # for Data (black points with error bars)
 drawOption_black_points = cms.PSet(
-    markerColor = cms.int32(1),
+    markerColor = color_black,
     markerSize = cms.double(1.),
     markerStyle = cms.int32(8),
-    lineColor = cms.int32(1),
+    lineColor = color_black,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
@@ -334,10 +369,21 @@ drawOption_black_points = cms.PSet(
 
 # for efficiency plots
 drawOption_black_eff = cms.PSet(
-    markerColor = cms.int32(1),
+    markerColor = color_black,
     markerSize = cms.double(1.),
     markerStyle = cms.int32(20),
-    lineColor = cms.int32(1),
+    lineColor = color_black,
+    lineStyle = cms.int32(1),
+    lineWidth = cms.int32(2),
+    drawOption = cms.string('e1p'),
+    drawOptionLegend = cms.string('p')
+)
+
+drawOption_orange_eff = cms.PSet(
+    markerColor = color_orange,
+    markerSize = cms.double(1.),
+    markerStyle = cms.int32(20),
+    lineColor = color_orange,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
@@ -345,21 +391,10 @@ drawOption_black_eff = cms.PSet(
 )
 
 drawOption_red_eff = cms.PSet(
-    markerColor = cms.int32(2),
-    markerSize = cms.double(1.),
-    markerStyle = cms.int32(20),
-    lineColor = cms.int32(2),
-    lineStyle = cms.int32(1),
-    lineWidth = cms.int32(2),
-    drawOption = cms.string('e1p'),
-    drawOptionLegend = cms.string('p')
-)
-
-drawOption_magenta_eff = cms.PSet(
-    markerColor = cms.int32(6),
+    markerColor = color_red,
     markerSize = cms.double(1.),
     markerStyle = cms.int32(24),
-    lineColor = cms.int32(6),
+    lineColor = color_red,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
@@ -367,21 +402,21 @@ drawOption_magenta_eff = cms.PSet(
 )
 
 drawOption_lightBlue_eff = cms.PSet(
-    markerColor = cms.int32(7),
+    markerColor = color_lightBlue,
     markerSize = cms.double(1.),
-    markerStyle = cms.int32(25),
-    lineColor = cms.int32(7),
+    markerStyle = cms.int32(21),
+    lineColor = color_lightBlue,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
     drawOptionLegend = cms.string('p')
 )
 
-drawOption_darkBlue_eff = cms.PSet(
-    markerColor = cms.int32(4),
+drawOption_green_eff = cms.PSet(
+    markerColor = color_green,
     markerSize = cms.double(1.),
-    markerStyle = cms.int32(21),
-    lineColor = cms.int32(4),
+    markerStyle = cms.int32(25),
+    lineColor = color_green,
     lineStyle = cms.int32(1),
     lineWidth = cms.int32(2),
     drawOption = cms.string('e1p'),
@@ -398,12 +433,12 @@ drawOption_AH = copy.deepcopy(drawOption_yellow_stacked)
 drawOption_AHbb = copy.deepcopy(drawOption_black_stacked)
 drawOption_Ztautau = copy.deepcopy(drawOption_red_stacked)
 drawOption_Zee = copy.deepcopy(drawOption_green_stacked)
-drawOption_Zmumu = copy.deepcopy(drawOption_darkblue_stacked)
-drawOption_WplusJets = copy.deepcopy(drawOption_lightblue_stacked)
+drawOption_Zmumu = copy.deepcopy(drawOption_darkBlue_stacked)
+drawOption_WplusJets = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_Wtaunu = copy.deepcopy(drawOption_red_stacked)
-drawOption_Wmunu = copy.deepcopy(drawOption_darkblue_stacked)
+drawOption_Wmunu = copy.deepcopy(drawOption_darkBlue_stacked)
 drawOption_Wenu = copy.deepcopy(drawOption_green_stacked)
-drawOption_ZplusJets = copy.deepcopy(drawOption_lightblue_stacked)
+drawOption_ZplusJets = copy.deepcopy(drawOption_lightBlue_stacked)
 drawOption_ZeePlusJets = drawOption_Zee
 drawOption_ZmumuPlusJets = drawOption_Zmumu
 drawOption_ZtautauPlusJets = drawOption_Ztautau
