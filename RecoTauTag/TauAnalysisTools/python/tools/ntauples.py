@@ -6,6 +6,7 @@ from PhysicsTools.PythonAnalysis import *
 gSystem.Load("libFWCoreFWLite.so")
 AutoLibraryLoader.enable()
 
+
 class TauNtuple(object):
    def __init__(self, name):
       self.name = name
@@ -45,7 +46,6 @@ class TauNtuple(object):
          output += "matched#ref#"
       output += expression
       return output
-
    def __repr__(self):
       output =  ' * %s\n' % self.name
       for col, exprs in self.expressions.iteritems():
@@ -126,7 +126,18 @@ class TauNtupleManager(object):
          for match_option, collection in to_fill:
             for alias in split_items('#', collection):
                ntuple.registerExpression(alias[-1], match_option)
-         print ntuple.dictionary()
+
+class TauNtupleSelection(object):
+   def __init__(self, cut):
+      self.cut = cut
+   def negate(self):
+      return TauNtupleSelection("!(%s)" % self.cut)
+   def __add__(self, other):
+      return TauNtupleSelection("(%s) || (%s)" % (self.cut, other.cut))
+   def __mul__(self, other):
+      return TauNtupleSelection("(%s) && (%s)" % (self.cut, other.cut))
+   def __str__(self):
+      return self.cut
 
 def draw(events, ntuple=None, expr=None, selection="", output_hist="", binning=(), options="goff"): 
    # Return value when we are returning the temp histogram
@@ -141,17 +152,21 @@ def draw(events, ntuple=None, expr=None, selection="", output_hist="", binning=(
    expr = string.Template(expr).substitute(ntuple_dict)
    selection = string.Template(selection).substitute(ntuple_dict)
 
+   #print expr
+   #print selection
+
    # Check if we are writing this to an output histogram
    output_hist_str = ""
    if len(output_hist):
       # Set the function to get this histogram from the current dir.
       return_func = lambda: gDirectory.Get(output_hist)
-      output_hist_str = ">>%s(%s)" % (output_hist, ','.join(str(x) for x in binning))
+      output_hist_str = ">>%s" % output_hist
+      if len(binning):
+         output_hist_str += "(%s)" % ','.join(str(x) for x in binning)
 
    # Draw the histogram
    expr = "%s%s" % (expr, output_hist_str)
-   print expr
-   print events.Draw(expr, "%s" % selection, options) 
+   events.Draw(expr, "%s" % selection, options) 
 
    return return_func()
 
