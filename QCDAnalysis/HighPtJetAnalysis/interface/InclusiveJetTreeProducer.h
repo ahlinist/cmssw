@@ -13,6 +13,13 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include <DataFormats/VertexReco/interface/VertexFwd.h>
+#include "CondFormats/L1TObjects/interface/L1GtTriggerMenu.h"
+#include "CondFormats/DataRecord/interface/L1GtTriggerMenuRcd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetupFwd.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+
+
 
 class InclusiveJetTreeProducer : public edm::EDAnalyzer 
 {
@@ -28,7 +35,9 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::string mJetsName;
     std::string mJetExtender;
     std::string mMetName;
+    std::string mMetNoHFName;
     std::vector<std::string> mTriggerNames;
+    std::vector<std::string> mL1TriggerNames;
     std::string mTriggerProcessName;
     std::vector<unsigned int> mTriggerIndex;
     edm::InputTag mTriggerResultsTag;
@@ -38,11 +47,13 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     TFile* mFile;
     TTree* mTree;
     ///// Jet Variables //////
-    float mPx[20],mPy[20],mPz[20],mE[20],mEmf[20],mNtrkVx[20],mNtrkCalo[20],mPt[20],mEta[20],mPhi[20],mN90[20],mCTPt[20],mCTEta[20],mCTPhi[20],mVTPt[20],mVTEta[20],mVTPhi[20];
+    float mE[20],mEmf[20],mNtrkVx[20],mNtrkCalo[20],mPt[20],mEta[20],mPhi[20],mN90[20],mCTPt[20],mCTEta[20],mCTPhi[20],mVTPt[20],mVTEta[20],mVTPhi[20];
     ///// Event Variables ////
-    float mMET,mSumET;
+    float mMET[2],mSumET[2];
     double mNPV, mPVx, mPVy, mPVz;
     int mHLTBits[6];
+    int mL1Bits[5];
     int mJetSize;
+    int mRun, mEvent;
 };
 #endif
