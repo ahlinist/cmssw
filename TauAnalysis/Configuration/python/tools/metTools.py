@@ -19,7 +19,7 @@ def addPFMet(process,correct=False):
     process.layer1PFMETs.genMETSource = cms.InputTag('genMetTrue')
     process.makeLayer1METs += process.makeLayer1PFMETs
 
-def addTCMet(process,):
+def addTCMet(process):
     process.layer1TCMETs = process.layer1METs.clone()
     process.layer1TCMETs.addMuonCorrections = False
     process.layer1TCMETs.metSource = cms.InputTag('tcMet')
