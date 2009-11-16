@@ -8,11 +8,11 @@ intLumiZtoMuTau_Data = float(200.)
 
 #--------------------------------------------------------------------------------
 # Z --> tau+ tau- sample generated with Pythia + Tauola (all decay modes)
-#  integrated luminosity = 1135 pb^-1
-# (no files missing ?)
+#  integrated luminosity = 1063.9 pb^-1
+# (corrected by scale factor of 1.12 for missing files)
 #
-intLumiZtoMuTau_Ztautau = float(1135.4)
-corrFactorZtoMuTau_Ztautau = float(1.)
+intLumiZtoMuTau_Ztautau = float(1063.9)
+corrFactorZtoMuTau_Ztautau = float(1.12)
 
 fileNamesZtoMuTau_Ztautau_part01 = cms.untracked.vstring(
     'rfio:/castor/cern.ch/user/l/lusito/SkimOctober09/ZtautauSkimMT314_3/muTauSkim_1.root',
