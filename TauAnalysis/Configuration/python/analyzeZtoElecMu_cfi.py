@@ -329,8 +329,11 @@ elecMuAnalysisSequence = cms.VPSet(
     ),
 
     # generator level phase-space selection
-    # (NOTE: to be used in case of Monte Carlo samples
-    #        overlapping in simulated phase-space only !!)
+    # (NOTE: (1) to be used in case of Monte Carlo samples
+    #            overlapping in simulated phase-space only !!
+    #        (2) genPhaseSpaceCut needs to be **always** the first entry in the list of cuts
+    #           - otherwise the script submitToBatch.csh for submission of cmsRun jobs
+    #            to the CERN batch system will not work !!)
     cms.PSet(
         filter = cms.string('genPhaseSpaceCut'),
         title = cms.string('gen. Phase-Space'),
