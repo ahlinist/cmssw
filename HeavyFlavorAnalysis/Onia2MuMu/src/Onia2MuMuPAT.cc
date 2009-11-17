@@ -1,11 +1,11 @@
 #include "HeavyFlavorAnalysis/Onia2MuMu/interface/Onia2MuMuPAT.h"
 
 //Headers for the data items
-#include <DataFormats/TrackReco/interface/Track.h>
 #include <DataFormats/TrackReco/interface/TrackFwd.h>
-#include <DataFormats/MuonReco/interface/Muon.h>
+#include <DataFormats/TrackReco/interface/Track.h>
 #include <DataFormats/MuonReco/interface/MuonFwd.h>
-#include <DataFormats/Candidate/interface/LeafCandidate.h>
+#include <DataFormats/MuonReco/interface/Muon.h>
+#include <DataFormats/Common/interface/View.h>
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
@@ -22,9 +22,14 @@
 
 
 Onia2MuMuPAT::Onia2MuMuPAT(const edm::ParameterSet& iConfig):
+  muons_(iConfig.getParameter<edm::InputTag>("muons")),
   selectionType1_(iConfig.getParameter<int>("higherPuritySelection")),
-  selectionType2_(iConfig.getParameter<int>("lowerPuritySelection"))
-{  produces<pat::CompositeCandidateCollection>();  }
+  selectionType2_(iConfig.getParameter<int>("lowerPuritySelection")),
+  addCommonVertex_(iConfig.getParameter<bool>("addCommonVertex")),
+  addMCTruth_(iConfig.getParameter<bool>("addMCTruth"))
+{  
+    produces<pat::CompositeCandidateCollection>();  
+}
 
 
 Onia2MuMuPAT::~Onia2MuMuPAT()
@@ -61,8 +66,8 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //Handle< vector<Track> > tracks;
   //iEvent.getByLabel("generalTracks",tracks);
 
-  Handle< vector<Muon> > muons;
-  iEvent.getByLabel("muons",muons);
+  Handle< View<pat::Muon> > muons;
+  iEvent.getByLabel(muons_,muons);
 
   
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
@@ -71,9 +76,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   // JPsi candidates only from muons
-  for(vector<Muon>::const_iterator it = muons->begin(); it!=muons->end();++it){
+  for(View<pat::Muon>::const_iterator it = muons->begin(), itend = muons->end(); it != itend; ++it){
     if(!selectionMuons(*it,1)) continue;
-    for(vector<Muon>::const_iterator it2 = it+1; it2!=muons->end();++it2){
+    for(View<pat::Muon>::const_iterator it2 = it+1; it2 != itend;++it2){
       if(!selectionMuons(*it2,2)) continue;
 
       
@@ -82,35 +87,14 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       pat::CompositeCandidate myCand;
 
-
-      // ---- fit vertex using Tracker tracks ----
-      vector<TransientTrack> t_tks;
-      t_tks.push_back(theTTBuilder->build(it->track().get()));
-      t_tks.push_back(theTTBuilder->build(it2->track().get()));
-      TransientVertex myVertex = vtxFitter.vertex(t_tks);
-
-      float vChi2 = myVertex.totalChiSquared();
-      float vNDF  = myVertex.degreesOfFreedom();
-      float vProb(TMath::Prob(vChi2,(int)vNDF));
-
-      myCand.addUserFloat("vNChi2",vChi2/vNDF);
-      myCand.addUserFloat("vProb",vProb);
-      //qh.setRecoVertex(myVertex);      
-
-
-
-      // ---- define PAT::Muons and add them to the candidate ----
-      pat::Muon myMuonA(*it);  myMuonA.embedTrack();
-      pat::Muon myMuonB(*it2); myMuonB.embedTrack();
-
+      // ---- define children ----
       if(it->pt()<it2->pt()){
-	myCand.addDaughter(myMuonA,"muon1");
-	myCand.addDaughter(myMuonB,"muon2");
+	myCand.addDaughter(*it, "muon1");
+	myCand.addDaughter(*it2,"muon2");
       }else{
-	myCand.addDaughter(myMuonA,"muon2");
-	myCand.addDaughter(myMuonB,"muon1");	
+	myCand.addDaughter(*it, "muon2");
+	myCand.addDaughter(*it2,"muon1");	
       }
-
 
       // ---- define and set candidate's 4momentum  ----
       LorentzVector jpsi = it->p4() + it2->p4();
@@ -119,6 +103,43 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       //cout << "jpsi: " << jpsi.mass() << endl;
       myCand.setP4(jpsi);
       
+
+      // ---- fit vertex using Tracker tracks ----
+      vector<TransientTrack> t_tks;
+      t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
+      t_tks.push_back(theTTBuilder->build(*it2->track())); // otherwise the vertex will have transient refs inside.
+      TransientVertex myVertex = vtxFitter.vertex(t_tks);
+      if (myVertex.isValid()) {
+          float vChi2 = myVertex.totalChiSquared();
+          float vNDF  = myVertex.degreesOfFreedom();
+          float vProb(TMath::Prob(vChi2,(int)vNDF));
+
+          myCand.addUserFloat("vNChi2",vChi2/vNDF);
+          myCand.addUserFloat("vProb",vProb);
+          if (addCommonVertex_) {
+              myCand.addUserData("commonVertex",reco::Vertex(myVertex));
+          }
+      } else {
+          myCand.addUserFloat("vNChi2",-1);
+          myCand.addUserFloat("vProb", -1);
+      }
+     
+      // ---- MC Truth, if enabled ----
+      if (addMCTruth_) {
+          reco::GenParticleRef genMu1 = it->genParticleRef();
+          reco::GenParticleRef genMu2 = it2->genParticleRef();
+          if (genMu1.isNonnull() && genMu2.isNonnull()) {
+              reco::GenParticleRef mom1 = genMu1->motherRef();
+              reco::GenParticleRef mom2 = genMu2->motherRef();
+              if (mom1.isNonnull() && (mom1 == mom2)) {
+                  if (mom1.isTransient()) std::cerr << "Mom1 is transient???" << std::endl;
+                  myCand.setGenParticleRef(mom1); // set
+                  myCand.embedGenParticle();      // and embed
+              }
+          }
+      }
+
+      // ---- Push back output ----  
       oniaOutput->push_back(myCand);
     }
   }
