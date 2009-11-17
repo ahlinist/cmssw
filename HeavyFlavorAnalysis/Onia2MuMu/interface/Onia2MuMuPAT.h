@@ -32,8 +32,11 @@ class Onia2MuMuPAT : public edm::EDProducer {
   
   // ----------member data ---------------------------
  private:
+  edm::InputTag muons_;
   int selectionType1_;
   int selectionType2_;
+  bool addCommonVertex_;
+  bool addMCTruth_;
 
 };
 
