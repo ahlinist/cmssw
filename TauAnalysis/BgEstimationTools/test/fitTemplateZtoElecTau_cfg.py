@@ -521,7 +521,7 @@ process.plotTemplateHistZtoElecTau = cms.EDAnalyzer("DQMHistPlotter",
     ),
 
     drawOptionEntries = cms.PSet(
-        bgEstData = copy.deepcopy(drawOption_darkBlue_eff),
+        bgEstData = copy.deepcopy(drawOption_green_eff),
         bgEstPure = copy.deepcopy(drawOption_lightBlue_eff),
         finalEvtSel = copy.deepcopy(drawOption_red_eff)
     ),
@@ -722,7 +722,7 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",
     ),
 
     fit = cms.PSet(
-        mode = cms.string("Nd"),
+        algorithm = cms.string("RooFit"), # either "RooFit" or "TFractionFitter"
         variables = cms.PSet(
             diTauMvis12 = cms.PSet(
                name = cms.string("diTauMvis12"),
@@ -788,6 +788,9 @@ process.fitZtoElecTau = cms.EDAnalyzer("TemplateBgEstFit",
     output = cms.PSet(
         controlPlots = cms.PSet(
             fileName = cms.string("./plots/fitTemplateZtoElecTau_#PLOT#.eps")
+        ),
+        fitResults = cms.PSet(
+            dqmDirectory = cms.string("fitTemplateZtoElecTau/fitResults/")
         )
     )                                      
 )                          
