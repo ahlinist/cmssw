@@ -1,11 +1,11 @@
-// $Id: L1TdeRCTRenderPlugin.cc,v 1.15 2009/08/01 19:18:25 dellaric Exp $
+// $Id: L1TdeRCTRenderPlugin.cc,v 1.16 2009/10/31 23:18:54 lat Exp $
 
 /*!
   \file L1TdeRCTRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author A.Savin
-  \version $Revision: 1.15 $
-  \date $Date: 2009/08/01 19:18:25 $
+  \version $Revision: 1.16 $
+  \date $Date: 2009/10/31 23:18:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -46,25 +46,25 @@ public:
         rgb[3 * i + 1] = 0.8;
         rgb[3 * i + 2] = 0.0;
 
-        if (i <= 98)
+        if (i <= 97)
         {
           rgb[3 * i + 0] = 0.5;
+          rgb[3 * i + 1] = 1.0;
+          rgb[3 * i + 2] = 0.0;
+        }
+        if (i <= 96)
+        {
+          rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 1.0;
           rgb[3 * i + 2] = 0.0;
         }
         if (i <= 94)
         {
           rgb[3 * i + 0] = 1.0;
-          rgb[3 * i + 1] = 1.0;
-          rgb[3 * i + 2] = 0.0;
-        }
-        if (i <= 89)
-        {
-          rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 0.5;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i <= 84)
+        if (i <= 89)
         {
           rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 0.0;
@@ -79,25 +79,25 @@ public:
         rgb[3 * i + 1] = 0.0;
         rgb[3 * i + 2] = 0.0;
 
-        if (i <= 14)
+        if (i <= 9)
         {
           rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 0.5;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i <= 9)
+        if (i <= 4)
         {
           rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 1.0;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i <= 4)
+        if (i <= 2)
         {
           rgb[3 * i + 0] = 0.5;
           rgb[3 * i + 1] = 1.0;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i < 1)
+        if (i <= 1)
         {
           rgb[3 * i + 0] = 0.0;
           rgb[3 * i + 1] = 0.8;
@@ -112,25 +112,25 @@ public:
         rgb[3 * i + 1] = 0.0;
         rgb[3 * i + 2] = 0.0;
 
-        if (i <= 14)
+        if (i <= 9)
         {
           rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 0.5;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i <= 9)
+        if (i <= 4)
         {
           rgb[3 * i + 0] = 1.0;
           rgb[3 * i + 1] = 1.0;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i <= 4)
+        if (i <= 2)
         {
           rgb[3 * i + 0] = 0.5;
           rgb[3 * i + 1] = 1.0;
           rgb[3 * i + 2] = 0.0;
         }
-        if (i < 1)
+        if (i <= 1)
         {
           rgb[3 * i + 0] = 0.0;
           rgb[3 * i + 1] = 0.8;
@@ -292,15 +292,19 @@ private:
 
       if( name.find( "rctInputTPGEcalOcc" ) != std::string::npos )
       {
+        gStyle->SetPalette(1);
         obj->GetXaxis()->SetTitle("CAL eta");
         obj->GetYaxis()->SetTitle("CAL phi");
+        obj->SetOption("colz");
         return;
       }
 
       if( name.find( "rctInputTPGHcalOcc" ) != std::string::npos )
       {
+        gStyle->SetPalette(1);
         obj->GetXaxis()->SetTitle("CAL eta");
         obj->GetYaxis()->SetTitle("CAL phi");
+        obj->SetOption("colz");
         return;
       }
 
@@ -330,6 +334,12 @@ private:
       }
 
       if( name.find( "rctIsoEmIneffOcc" ) != std::string::npos )
+      {
+        obj->SetOption("box");
+        return;
+      }
+
+      if( name.find( "rctIsoEmIneff2Occ" ) != std::string::npos )
       {
         obj->SetOption("box");
         return;
@@ -407,6 +417,12 @@ private:
       }
 
       if( name.find( "rctNisoEmIneffOcc" ) != std::string::npos )
+      {
+        obj->SetOption("box");
+        return;
+      }
+
+      if( name.find( "rctNisoEmIneff2Occ" ) != std::string::npos )
       {
         obj->SetOption("box");
         return;
@@ -495,6 +511,18 @@ private:
         return;
       }
 
+      if( name.find( "rctRegSpEffOcc2D" ) != std::string::npos )
+      {
+        obj->SetOption("box");
+        return;
+      }
+
+      if( name.find( "rctRegSpIneffOcc2D" ) != std::string::npos )
+      {
+        obj->SetOption("box");
+        return;
+      }
+
       if( name.find( "rctRegEff2D" ) != std::string::npos )
       {
         gStyle->SetPalette(paletteSize, pEff);
@@ -516,6 +544,16 @@ private:
       }
 
       if( name.find( "rctRegIneff2D" ) != std::string::npos )
+      {
+        gStyle->SetPalette(paletteSize, pIneff);
+        obj->SetMinimum(0.0002);
+        obj->SetMaximum(1.0);
+        obj->SetStats(kFALSE);
+        obj->SetOption("colz");
+        return;
+      }
+
+      if( name.find( "rctRegSpIneff2D" ) != std::string::npos )
       {
         gStyle->SetPalette(paletteSize, pIneff);
         obj->SetMinimum(0.0002);
@@ -775,6 +813,12 @@ private:
         return;
       }
 
+      if( name.find( "rctIsoEmIneff2oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
       if( name.find( "rctIsoEmOvereff1D" ) != std::string::npos )
       {
         obj->SetStats(kFALSE);
@@ -801,6 +845,12 @@ private:
         return;
       }
 
+      if( name.find( "rctNisoEmIneff2oneD" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
       if( name.find( "rctNisoEmOvereff1D" ) != std::string::npos )
       {
         obj->SetStats(kFALSE);
@@ -822,6 +872,12 @@ private:
       }
 
       if( name.find( "rctRegIneff1D" ) != std::string::npos )
+      {
+        obj->SetStats(kFALSE);
+        return;
+      }
+
+      if( name.find( "rctRegSpIneff1D" ) != std::string::npos )
       {
         obj->SetStats(kFALSE);
         return;
@@ -866,7 +922,8 @@ private:
       }
 
       if( name.find( "rctIsoEmIneff" ) != std::string::npos &&
-          name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneffOcc" ) )
+          name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneffOcc" ) &&
+          name.find( "rctIsoEmIneff" ) != name.find( "rctIsoEmIneff2Occ" ) )
       {
         dummybox->Draw("box,same");
         return;
@@ -894,7 +951,8 @@ private:
       }
 
       if( name.find( "rctNisoEmIneff" ) != std::string::npos &&
-          name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneffOcc" ) )
+          name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneffOcc" ) &&
+          name.find( "rctNisoEmIneff" ) != name.find( "rctNisoEmIneff2Occ" ) )
       {
         dummybox->Draw("box,same");
         return;
@@ -914,6 +972,12 @@ private:
       }
 
       if( name.find( "rctRegIneff2D" ) != std::string::npos )
+      {
+        dummybox->Draw("box,same");
+        return;
+      }
+
+      if( name.find( "rctRegSpIneff2D" ) != std::string::npos )
       {
         dummybox->Draw("box,same");
         return;
