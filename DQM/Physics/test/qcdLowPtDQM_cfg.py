@@ -1,4 +1,4 @@
-# $Id: qcdLowPtDQM_cfg.py,v 1.3 2009/11/13 09:59:18 loizides Exp $
+# $Id: qcdLowPtDQM_cfg.py,v 1.4 2009/11/15 19:45:55 loizides Exp $
 
 import FWCore.ParameterSet.Config as cms
 
@@ -8,7 +8,7 @@ process.load("DQMServices.Core.DQM_cfg")
 process.load("DQMServices.Components.DQMEnvironment_cfi")
 process.load('FWCore/MessageService/MessageLogger_cfi')
 process.load('Configuration/StandardSequences/GeometryIdeal_cff')
-process.load('Configuration/StandardSequences/MagneticField_38T_cff')
+process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('DQM/Physics/qcdLowPtDQM_cfi')
 
@@ -19,18 +19,18 @@ process.options = cms.untracked.PSet(
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/opt/data/cms/CMSSW_3_3_2/RelValMinBias-GEN-SIM-RECO-MC_31X_V9-v2.root'
+        'file:/d1/loizides/data/cms/CMSSW_3_3_3/BeamCommissioning09-Calo-RECO-121457-v2.root'
     )
 )
 
-# uncomment if you run on MC raw
+##uncomment if you run on MC raw
 #process.p1 = cms.Path(
 #    process.myRecoSeq1
 #)
