@@ -28,6 +28,7 @@
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/EcalAlgo/interface/EcalEndcapGeometry.h"
 #include "Geometry/EcalAlgo/interface/EcalBarrelGeometry.h"
+#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
 
 #include "DataFormats/ParticleFlowReco/interface/Calibratable.h"
 #include "PhysicsTools/UtilAlgos/interface/TFileService.h"
@@ -171,6 +172,10 @@ protected:
 	virtual void extractEERecHits(const EcalRecHitCollection& ecalRechits,
 			const EcalEndcapGeometry* geometry, double targetEta = 0.,
 			double targetPhi = 0.);
+			
+	virtual void extractESRecHits(const EcalRecHitCollection& ecalRechits,
+			const EcalPreshowerGeometry* geometry, double targetEta = 0.,
+			double targetPhi = 0., double optionalDR = -1.0);
 
 	virtual void extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
 			const CaloSubdetectorGeometry* geometry, double targetEta = 0.,

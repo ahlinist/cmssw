@@ -28,6 +28,9 @@ if options.batchMode <> 0 :
     outputTree = 'PFlowTB_Tree_' + fileLabel
     outputFile = 'PFlowTB_Events_' + fileLabel
 
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.Services_cff")
+process.GlobalTag.globaltag = "MC_31X_V1::All"
 
 if options.notracks <> 0:
     process.faketracks.justCreateEmptyCollections = cms.bool(True)
@@ -39,9 +42,13 @@ if options.endcapMode <> 0:
     process.particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
     process.extraction.RawRecHitsEcalEB = cms.InputTag("pflowCalibEcalRechits", "ecalEBRechitsCalib")
     process.extraction.RawRecHitsEcalEE = cms.InputTag("pflowCalibEcalRechits", "ecalEERechitsCalib")
+    process.extraction.RawRecHitsEcalES = cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
     process.faketracks.endcapMode = cms.bool(True)
     process.particleFlowRecHitHCAL.isEndcap2007 = cms.bool(True)
     process.extraction.isEndcap2007 = cms.bool(True)
+    process.extraction.stripAnomalousEvents =cms.uint32(0)
+    process.particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("")
+    process.particleFlowRecHitHCAL.caloTowers = cms.InputTag("towerMakerPF")
 
 process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
@@ -58,11 +65,9 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.extraction.saveJustPions=cms.bool(False)
 ## Also change masterConeDeltaR in pflowCalibratable_cfi to something like 1
 
-if options.endcapMode <> 0:
-    process.extraction.isEndcap2007 = cms.bool(True)
-    
 process.extraction.clustersFromCandidates=cms.bool(False)
 process.extraction.rechitsFromCandidates=cms.bool(False)
+
 
 if options.kevents <> 0:
     process.maxEvents = cms.untracked.PSet(
@@ -79,7 +84,7 @@ process.finishup.fileName = cms.untracked.string(outputFile)
 #Logging and verbosity
 if options.batchMode <> 0 :
     process.load("FWCore.MessageLogger.MessageLogger_cfi")
-    process.MessageLogger.cerr.FwkReport.reportEvery = 100
+    process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 else :
     print 'Not running in batch mode; Verbose output enabled...'
     process.MessageLogger = cms.Service("MessageLogger")

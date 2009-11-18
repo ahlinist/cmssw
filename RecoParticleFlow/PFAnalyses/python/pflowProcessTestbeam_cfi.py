@@ -8,7 +8,9 @@ VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
 particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
 particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
-#particleFlowClusterECAL.nNeighbours = cms.int32(8)
+# Don't use PS for PFlow - the calibration scale is unknown and the rechits are not aligned
+#particleFlowRecHitPS.ecalRecHitsES =  cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
+
 particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")
 particleFlowRecHitHCAL.isTestbeam = cms.bool(True)
@@ -21,6 +23,7 @@ particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 from RecoParticleFlow.PFProducer.particleFlowBlock_cff import *
 particleFlowBlock.RecTracks = cms.InputTag("faketracks", "pfRecTracks")
 particleFlowBlock.GsfRecTracks = cms.InputTag("faketracks", "gsfPfRecTracks")
+# Don't use PS for PFlow - the calibration scale is unknown and the rechits are not aligned
 particleFlowBlock.PFClustersPS = cms.InputTag("faketracks", "pfPS")
 particleFlowBlock.PFClustersHFEM = cms.InputTag("faketracks", "pfHFHAD")
 particleFlowBlock.PFClustersHFHAD = cms.InputTag("faketracks", "pfHFEM")

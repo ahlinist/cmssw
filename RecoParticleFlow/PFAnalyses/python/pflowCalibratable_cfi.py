@@ -46,6 +46,7 @@ EventDelegate = cms.PSet(
     SimCaloRecHitsHcal=cms.InputTag("famosSimHits", "HcalHits"),
     RawRecHitsEcalEB=cms.InputTag("ecalRecHit","EcalRecHitsEB"),
     RawRecHitsEcalEE=cms.InputTag("ecalRecHit","EcalRecHitsEE"),
+	RawRecHitsEcalES=cms.InputTag("ecalRecHit","EcalRecHitsES"),
     RawRecHitsHcal=cms.InputTag("hbhereco"),
     
     deltaREcalCaloWindow=cms.double(0.01),
@@ -113,6 +114,7 @@ TestbeamDelegate = cms.PSet(
 # Override the DipionDelegate default options
 TestbeamDelegate.RawRecHitsEcalEB=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
 TestbeamDelegate.RawRecHitsEcalEE=cms.InputTag("ecalRecHitMaker", "EcalRecHitsEE")
+TestbeamDelegate.RawRecHitsEcalES=cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
 TestbeamDelegate.EventDelegateType=cms.string('TestbeamDelegate')
 
 # Ignore this for now

@@ -8,8 +8,11 @@ void ecalActivity() {
 
 	using namespace std;
 //
-	TFile::Open("/tmp/ballin/Dipion_Tree_50GeV_10k_barrel_slack_full_noSrZsp_0T.root");
-	string dest("plots/barrel_full_0T_noSrZsp/");
+//	TFile::Open("/tmp/ballin/Dipion_Tree_50GeV_10k_barrel_noZspSr_0T_slack_full.root");
+	//string dest("plots/barrel_full_noZspSr_0T/");
+//
+//	TFile::Open("/tmp/ballin/Dipion_Tree_50GeV_10k_endcaps_noZspSr_0T_slack_full.root");
+//	string dest("plots/endcap_full_noZspSr_0T/");
 
 
 //		TFile::Open("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");

@@ -39,7 +39,7 @@ bool endcap(true);
 int data(0);
 int full(1);
 int fast(0);
-
+using namespace std;
 class CommonProcessing {
 public:
 
@@ -151,6 +151,9 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 
 	JGraph tbReso("tbResMip", true);
 	JGraph candReso("candResMip", true);
+	
+	JGraph tbResBoth("tbResBoth", true);
+	JGraph candResBoth("tbResBoth", true);
 
 	util_.addTitle("Raw Rechits");
 
@@ -193,8 +196,25 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 			tbReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
 		}
+		
+		
 		util_.accumulateObjects(tbNeutralENoEcal);
+		
+		qry = "tb_energyEvent_/sim_energyEvent_>>reso(170, -2.2, 2.2)";
+		cut = "int(sim_energyEvent_)==";
+		cut.append(obj2str(energy));
+		tree_->Draw(qry.c_str(), cut.c_str());
+		
+		TH1* reso = util_.getType<TH1>("reso");
+		maxNorm = 1.0 / reso->GetBinContent(reso->GetMaximumBin());
+		reso->Scale(maxNorm);
+		
+		pair<double, double> resgaus = util_.fitStabilisedGaussian(reso);
 
+		gaussianess = fabs(resgaus.first / reso->GetMean());
+		if (gaussianess < 2 && gaussianess > 0.5) {
+			tbResBoth.addPoint(energy, 0, resgaus.second, reso->GetFunction("stableGaus")->GetParError(2));
+		}
 	}
 
 	util_.flushPage(true);
@@ -336,6 +356,7 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 	candGraph.streamToFile(string(directory_).append("/pfcands_mip.dat"), true);
 	tbReso.streamToFile(string(directory_).append("/rechits_mip_reso.dat"), true);
 	candReso.streamToFile(string(directory_).append("/pfcands_mip_reso.dat"), true);
+	tbResBoth.streamToFile(string(directory_).append("/rechits_both_reso.dat"), true);
 
 	util_.flushPage();
 
@@ -498,10 +519,11 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//		std::string
 		//				cut(
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
-		std::string cut("tb_energyEcal_>2.0 && int(sim_energyEvent_) == ");
-		if(endcap)
-			cut = "tb_energyEcal_>3.0 && int(sim_energyEvent_) == ";	
-			
+// 		std::string cut("tb_energyEcal_>2.0 && int(sim_energyEvent_) == ");
+// 		if(endcap)
+// 			cut = "tb_energyEcal_>3.0 && int(sim_energyEvent_) == ";	
+// 			
+		string cut("int(sim_energyEvent_) == ");
 		cut.append(obj2str(energy));
 
 		std::string histoName("tbIntEcal");
@@ -619,14 +641,16 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//						"tb_energyEcal_ < 0.5 && cand_type_==5 && int(sim_energyEvent_) == ");
 
 		string cut;
-		cut.append("cluster_numEcal_!=0 && int(sim_energyEvent_) == ");
+		cut.append("cluster_numEcal_>0 && int(sim_energyEvent_) == ");
 
 		cut.append(obj2str(energy));
 
 		std::string histoName("candIntEcal");
 		histoName.append(obj2str(energy));
-
-		std::string qry("(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>");
+		//Use cut to just compute energy associated with charged hadrons
+		std::string qry("(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralEM_ - cand_energyNeutralHad_)/sim_energyEvent_>>");
+		//ALL PF candidate contribute
+		qry = "(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>";
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
@@ -840,7 +864,7 @@ void commonProcessing() {
 
 	// --- standard stuff
 	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(), directory);
-	cp.evaluatePlots(energies, true, true, false);
+	cp.evaluatePlots(energies, false, true, false);
 	cp.closeFiles();
 
 }
