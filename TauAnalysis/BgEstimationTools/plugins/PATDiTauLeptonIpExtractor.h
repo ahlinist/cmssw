@@ -19,7 +19,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: PATDiTauLeptonIpExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: PATDiTauLeptonIpExtractor.h,v 1.1 2009/07/30 16:06:52 veelken Exp $
  *
  */
 
@@ -47,11 +47,15 @@ class PATDiTauLeptonIpExtractor : public ObjValExtractorBase
 //--- configuration parameters
   edm::InputTag src_;
   edm::InputTag vertexSrc_;
+  unsigned leg_;
 
 //--- "helper" class for accessing the track
 //    of pat::Electrons and pat::Muons 
 //    and the "leading" (i.e. highest Pt) track of pat::Taus
-  PATLeptonTrackExtractor<T1> trackExtractor_;  
+  PATLeptonTrackExtractor<T1> trackExtractorLeg1_;  
+  PATLeptonTrackExtractor<T2> trackExtractorLeg2_;
+
+  int error_;
 
   unsigned index_;
 };
