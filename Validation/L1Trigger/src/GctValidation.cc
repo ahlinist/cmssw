@@ -547,9 +547,14 @@ void GctValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		}
 	}
 
-	// get data from EventSetup
+	// Convert rank to et
     edm::ESHandle< L1CaloEtScale > etScale ;
     iSetup.get< L1JetEtScaleRcd >().get( etScale ) ;
+
+	// A constant used to get RCT region's et in GeV
+	edm::ESHandle< L1GctJetFinderParams > jfPars ;
+	iSetup.get< L1GctJetFinderParamsRcd >().get( jfPars ) ;
+	double lsbForEt = jfPars.product()->getRgnEtLsbGeV();
 	
 	/*** Code testing ***/
 	/*
@@ -590,30 +595,45 @@ void GctValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	// Fill histograms.
 	for(unsigned int i = 0; i <= 3; ++i)
 	{
-		h_eta_isoEm.at(i)     -> Fill(rctIsoEm.at(i).regionId().ieta(),    gctIsoEm.at(i).regionId().ieta());
-		h_phi_isoEm.at(i)     -> Fill(rctIsoEm.at(i).regionId().iphi(),    gctIsoEm.at(i).regionId().iphi());
-		h_rank_isoEm.at(i)    -> Fill(rctIsoEm.at(i).rank(),               gctIsoEm.at(i).rank());
-		h_eta_nonIsoEm.at(i)  -> Fill(rctNonIsoEm.at(i).regionId().ieta(), gctNonIsoEm.at(i).regionId().ieta());
-		h_phi_nonIsoEm.at(i)  -> Fill(rctNonIsoEm.at(i).regionId().iphi(), gctNonIsoEm.at(i).regionId().iphi());
-		h_rank_nonIsoEm.at(i) -> Fill(rctNonIsoEm.at(i).rank(),            gctNonIsoEm.at(i).rank());
+		if(rctIsoEm.at(i).rank() != 0 && gctIsoEm.at(i).rank() != 0)
+		{
+			h_eta_isoEm.at(i) -> Fill(rctIsoEm.at(i).regionId().ieta(), gctIsoEm.at(i).regionId().ieta());
+			h_phi_isoEm.at(i) -> Fill(rctIsoEm.at(i).regionId().iphi(), gctIsoEm.at(i).regionId().iphi());
+		}
+		if(rctNonIsoEm.at(i).rank() != 0 && gctNonIsoEm.at(i).rank() != 0)
+		{
+			h_eta_nonIsoEm.at(i) -> Fill(rctNonIsoEm.at(i).regionId().ieta(), gctNonIsoEm.at(i).regionId().ieta());
+			h_phi_nonIsoEm.at(i) -> Fill(rctNonIsoEm.at(i).regionId().iphi(), gctNonIsoEm.at(i).regionId().iphi());
+		}
+		h_rank_isoEm.at(i)    -> Fill(rctIsoEm.at(i).rank(),    gctIsoEm.at(i).rank());
+		h_rank_nonIsoEm.at(i) -> Fill(rctNonIsoEm.at(i).rank(), gctNonIsoEm.at(i).rank());
 
 		if(i < rctCenJets.size())  // In some events, there are less than 4 central jets.
 		{
-			h_eta_cenJet.at(i)    -> Fill(rctCenJets.at(i).eta, gctCenJet.at(i).regionId().ieta());
-			h_phi_cenJet.at(i)    -> Fill(rctCenJets.at(i).phi, gctCenJet.at(i).regionId().iphi());
-			h_et_cenJet.at(i)     -> Fill(rctCenJets.at(i).et,  etScale->et(gctCenJet.at(i).rank()));
+			if(rctCenJets.at(i).et != 0 &&  etScale->et(gctCenJet.at(i).rank()) != 0)
+			{
+				h_eta_cenJet.at(i)    -> Fill(rctCenJets.at(i).eta, gctCenJet.at(i).regionId().ieta());
+				h_phi_cenJet.at(i)    -> Fill(rctCenJets.at(i).phi, gctCenJet.at(i).regionId().iphi());
+			}
+			h_et_cenJet.at(i)     -> Fill(lsbForEt*rctCenJets.at(i).et,  etScale->et(gctCenJet.at(i).rank()));
 		}
 		if(i < rctForJets.size())  // In some events, there are less than 4 forward jets.
 		{
-			h_eta_forJet.at(i)    -> Fill(rctForJets.at(i).eta, gctForJet.at(i).regionId().ieta());
-			h_phi_forJet.at(i)    -> Fill(rctForJets.at(i).phi, gctForJet.at(i).regionId().iphi());
-			h_et_forJet.at(i)     -> Fill(rctForJets.at(i).et,  etScale->et(gctForJet.at(i).rank()));
+			if(rctForJets.at(i).et != 0 &&  etScale->et(gctForJet.at(i).rank()) != 0)
+			{
+				h_eta_forJet.at(i)    -> Fill(rctForJets.at(i).eta, gctForJet.at(i).regionId().ieta());
+				h_phi_forJet.at(i)    -> Fill(rctForJets.at(i).phi, gctForJet.at(i).regionId().iphi());
+			}
+			h_et_forJet.at(i)     -> Fill(lsbForEt*rctForJets.at(i).et,  etScale->et(gctForJet.at(i).rank()));
 		}
 		if(i < rctTauJets.size())  // In some events, there are less than 4 tau jets.
 		{
-			h_eta_tauJet.at(i)    -> Fill(rctTauJets.at(i).eta, gctTauJet.at(i).regionId().ieta());
-			h_phi_tauJet.at(i)    -> Fill(rctTauJets.at(i).phi, gctTauJet.at(i).regionId().iphi());
-			h_et_tauJet.at(i)     -> Fill(rctTauJets.at(i).et,  etScale->et(gctTauJet.at(i).rank()));
+			if(rctTauJets.at(i).et != 0 &&  etScale->et(gctTauJet.at(i).rank()) != 0)
+			{
+				h_eta_tauJet.at(i)    -> Fill(rctTauJets.at(i).eta, gctTauJet.at(i).regionId().ieta());
+				h_phi_tauJet.at(i)    -> Fill(rctTauJets.at(i).phi, gctTauJet.at(i).regionId().iphi());
+			}
+			h_et_tauJet.at(i)     -> Fill(lsbForEt*rctTauJets.at(i).et,  etScale->et(gctTauJet.at(i).rank()));
 		}
 		
 	}
@@ -623,26 +643,26 @@ void GctValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 void GctValidation::beginJob()
 {
-	h_eta0_isoEm      = dbe_->book2D("h_eta0_isoem",     "eta0  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
-	h_eta1_isoEm      = dbe_->book2D("h_eta1_isoem",     "eta1  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
-	h_eta2_isoEm      = dbe_->book2D("h_eta2_isoem",     "eta2  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
-	h_eta3_isoEm      = dbe_->book2D("h_eta3_isoem",     "eta3  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
-	h_eta0_nonIsoEm   = dbe_->book2D("h_eta0_nonIsoem",  "eta0  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
-	h_eta1_nonIsoEm   = dbe_->book2D("h_eta1_nonIsoem",  "eta1  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
-	h_eta2_nonIsoEm   = dbe_->book2D("h_eta2_nonIsoem",  "eta2  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
-	h_eta3_nonIsoEm   = dbe_->book2D("h_eta3_nonIsoem",  "eta3  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
-	h_phi0_isoEm      = dbe_->book2D("h_phi0_isoem",     "phi0  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
-	h_phi1_isoEm      = dbe_->book2D("h_phi1_isoem",     "phi1  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
-	h_phi2_isoEm      = dbe_->book2D("h_phi2_isoem",     "phi2  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
-	h_phi3_isoEm      = dbe_->book2D("h_phi3_isoem",     "phi3  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
-	h_phi0_nonIsoEm   = dbe_->book2D("h_phi0_nonIsoem",  "phi0  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
-	h_phi1_nonIsoEm   = dbe_->book2D("h_phi1_nonIsoem",  "phi1  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
-	h_phi2_nonIsoEm   = dbe_->book2D("h_phi2_nonIsoem",  "phi2  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
-	h_phi3_nonIsoEm   = dbe_->book2D("h_phi3_nonIsoem",  "phi3  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
-	h_rank0_isoEm     = dbe_->book2D("h_rank0_isoem",    "rank0  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
-	h_rank1_isoEm     = dbe_->book2D("h_rank1_isoem",    "rank1  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
-	h_rank2_isoEm     = dbe_->book2D("h_rank2_isoem",    "rank2  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
-	h_rank3_isoEm     = dbe_->book2D("h_rank3_isoem",    "rank3  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
+	h_eta0_isoEm      = dbe_->book2D("h_eta0_isoEm",     "eta0  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
+	h_eta1_isoEm      = dbe_->book2D("h_eta1_isoEm",     "eta1  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
+	h_eta2_isoEm      = dbe_->book2D("h_eta2_isoEm",     "eta2  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
+	h_eta3_isoEm      = dbe_->book2D("h_eta3_isoEm",     "eta3  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
+	h_eta0_nonIsoEm   = dbe_->book2D("h_eta0_nonIsoEm",  "eta0  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
+	h_eta1_nonIsoEm   = dbe_->book2D("h_eta1_nonIsoEm",  "eta1  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
+	h_eta2_nonIsoEm   = dbe_->book2D("h_eta2_nonIsoEm",  "eta2  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
+	h_eta3_nonIsoEm   = dbe_->book2D("h_eta3_nonIsoEm",  "eta3  of non-isolated e/gammar",  22, 0, 22, 22, 0, 22);
+	h_phi0_isoEm      = dbe_->book2D("h_phi0_isoEm",     "phi0  of isolated e/gammar",      22, 0, 22, 22, 0, 22);
+	h_phi1_isoEm      = dbe_->book2D("h_phi1_isoEm",     "phi1  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
+	h_phi2_isoEm      = dbe_->book2D("h_phi2_isoEm",     "phi2  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
+	h_phi3_isoEm      = dbe_->book2D("h_phi3_isoEm",     "phi3  of isolated e/gammar",      18, 0, 18, 18, 0, 18);
+	h_phi0_nonIsoEm   = dbe_->book2D("h_phi0_nonIsoEm",  "phi0  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
+	h_phi1_nonIsoEm   = dbe_->book2D("h_phi1_nonIsoEm",  "phi1  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
+	h_phi2_nonIsoEm   = dbe_->book2D("h_phi2_nonIsoEm",  "phi2  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
+	h_phi3_nonIsoEm   = dbe_->book2D("h_phi3_nonIsoEm",  "phi3  of non-isolated e/gammar",  18, 0, 18, 18, 0, 18);
+	h_rank0_isoEm     = dbe_->book2D("h_rank0_isoEm",    "rank0  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
+	h_rank1_isoEm     = dbe_->book2D("h_rank1_isoEm",    "rank1  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
+	h_rank2_isoEm     = dbe_->book2D("h_rank2_isoEm",    "rank2  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
+	h_rank3_isoEm     = dbe_->book2D("h_rank3_isoEm",    "rank3  of isolated e/gammar",     100, 0, 100, 100, 0, 100);
 	h_rank0_nonIsoEm  = dbe_->book2D("h_rank0_nonIsoEm", "rank0  of non-isolated e/gammar", 100, 0, 100, 100, 0, 100);
 	h_rank1_nonIsoEm  = dbe_->book2D("h_rank1_nonIsoEm", "rank1  of non-isolated e/gammar", 100, 0, 100, 100, 0, 100);
 	h_rank2_nonIsoEm  = dbe_->book2D("h_rank2_nonIsoEm", "rank2  of non-isolated e/gammar", 100, 0, 100, 100, 0, 100);
