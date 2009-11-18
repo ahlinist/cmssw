@@ -4,8 +4,7 @@
 /** \class PATLeptonIpExtractor
  *
  * Auxiliary class for extracting transverse impact parameter
- * of electrons, muons and tau-jets based
- * with respect to primary event vertex
+ * of electrons, muons and tau-jets with respect to primary event vertex
  * (used for Ntuple filling)
  *
  * NOTE: the values are extracted from the PAT lepton
@@ -17,9 +16,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: PATLeptonIpExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: PATLeptonIpExtractor.h,v 1.2 2009/07/30 16:08:12 veelken Exp $
  *
  */
 
