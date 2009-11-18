@@ -331,6 +331,33 @@ void EventDelegate::extractEERecHits(const EcalRecHitCollection& ecalRechits,
 
 }
 
+void EventDelegate::extractESRecHits(const EcalRecHitCollection& ecalRechits,
+		const EcalPreshowerGeometry* geometry, double targetEta, double targetPhi, double optionalDR) {
+
+	for (std::vector<EcalRecHit>::const_iterator erIt = ecalRechits.begin(); erIt
+			!= ecalRechits.end(); ++erIt) {
+
+		const EcalRecHit& erh = *erIt;
+		const CaloCellGeometry* thisCell = geometry->getGeometry(erh.detid());
+
+		if (thisCell) {
+			//compute delta R
+			double dR = pftools::deltaR(thisCell->getPosition().eta(),
+					targetEta, thisCell->getPosition().phi(), targetPhi);
+			if (dR < deltaRRechitsToTrack_ || deltaRRechitsToTrack_ <= 0) {
+				CalibratableElement ce(erh.energy(),
+						thisCell->getPosition().eta(),
+						thisCell->getPosition().phi(), PFLayer::PS1, 0,
+						erh.time());
+				calib_->tb_ps_.push_back(ce);
+
+			}
+		} else
+			LogWarning("EventDelegate") << ": failed to decode PS rechit.\n";
+	}
+
+}
+
 void EventDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechits,
 		const CaloSubdetectorGeometry* geometry, double targetEta,
 		double targetPhi) {

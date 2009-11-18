@@ -33,7 +33,7 @@ process.particleFlowRecHitHCAL.thresh_Barrel = cms.double(0.0)
 process.particleFlowRecHitHCAL.thresh_Endcap = cms.double(0.0)
 
 #For calibration purposes
-process.particleFlow.pf_nsigma_HCAL = cms.double(1.0)
+process.particleFlow.pf_nsigma_HCAL = cms.double(5.0)
 process.particleFlow.pf_calibMode = cms.uint32(1)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 #process.particleFlowBlock.debug = cms.untracked.bool(True)

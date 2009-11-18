@@ -1796,7 +1796,7 @@ void tbCalib() {
 	isEndcaps = true;
 //	threshE = 1.5;
 //	threshH = 0.6;
-	computeBarrelCoefficients("../../PFClusterTools/test/TBPions_endcap_tbCalib_manyCands.csv");
+	computeBarrelCoefficients("../../../PFClusterTools/test/TBPions_endcaps_slack.csv");
 
 //	isEndcaps = true;
 //	threshE = 0.9;

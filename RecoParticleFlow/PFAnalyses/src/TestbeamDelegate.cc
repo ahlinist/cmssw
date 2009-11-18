@@ -9,6 +9,7 @@
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "Geometry/EcalAlgo/interface/EcalBarrelGeometry.h"
 #include "Geometry/EcalAlgo/interface/EcalEndcapGeometry.h"
+#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -64,6 +65,7 @@ void TestbeamDelegate::initCore(const edm::ParameterSet& parameters) {
 	inputTagRecHitsHcal_ = parameters.getParameter<InputTag> ("PFRecHitsHcal");
 	inputTagRawRecHitsEcalEB_ = parameters.getParameter<InputTag> ("RawRecHitsEcalEB");
 	inputTagRawRecHitsEcalEE_ = parameters.getParameter<InputTag> ("RawRecHitsEcalEE");
+	inputTagRawRecHitsEcalES_ = parameters.getParameter<InputTag> ("RawRecHitsEcalES");
 	inputTagRawRecHitsHcal_ = parameters.getParameter<InputTag> ("RawRecHitsHcal");
 	inputTagPFCandidates_ = parameters.getParameter<InputTag> ("PFCandidates");
 
@@ -209,6 +211,11 @@ bool TestbeamDelegate::processEvent(const edm::Event& event, const edm::EventSet
 
 	const EcalEndcapGeometry* ecalEndcapGeometry = dynamic_cast<const EcalEndcapGeometry*> (eetmp);
 	assert(ecalEndcapGeometry);
+	
+	const CaloSubdetectorGeometry* estmp = geoHandle->getSubdetectorGeometry(DetId::Ecal, EcalPreshower);
+
+	const EcalPreshowerGeometry* ecalPreshowerGeometry = dynamic_cast<const EcalPreshowerGeometry*> (estmp);
+	assert(ecalPreshowerGeometry);
 
 	//Seems to be happy with testbeam data too :-|
 	const CaloSubdetectorGeometry* hcalBarrelGeometry = geoHandle->getSubdetectorGeometry(DetId::Hcal, HcalBarrel);
@@ -231,11 +238,14 @@ bool TestbeamDelegate::processEvent(const edm::Event& event, const edm::EventSet
 	}
 
 	if (!isEndcap2007_) {
-		extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry, targetEcalEta, targetEcalPhi);
+		//extractEBRecHits(**rawRecHitsEcalEB_, ecalBarrelGeometry, targetEcalEta, targetEcalPhi);
 		extractHcalRecHits(**rawRecHitsHcal_, hcalBarrelGeometry, thisRun_->hcalEta_, thisRun_->hcalPhi_);
 	}
 	if (isEndcap2007_) {
-		//cout << "Extracting EERechits..." << (**rawRecHitsEcalEE_).size() << "\n";
+		//NB: Preshower rechits have NOT been realigned. In TB2007, they get the right eta,
+		//but the phi needs to be moved from an average of 0.278 to the common coordinate of
+		//0.37. Adjust cone collection accordingly...
+		extractESRecHits(**rawRecHitsEcalES_, ecalPreshowerGeometry, targetEcalEta, targetEcalPhi-0.1);
 		extractEERecHits(**rawRecHitsEcalEE_, ecalEndcapGeometry, targetEcalEta, targetEcalPhi);
 		extractHcalRecHits(**rawRecHitsHcal_, hcalEndcapGeometry, thisRun_->hcalEta_, thisRun_->hcalPhi_);
 	}
@@ -363,7 +373,7 @@ void TestbeamDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechit
 			}
 		}
 		if (isEndcap2007_) {
-			ietaNew -= 1;
+
 			iphiNew -= 10;
 			targetEta = thisRun_->tableEta_;
 			targetPhi = thisRun_->tablePhi_;
@@ -465,6 +475,7 @@ void TestbeamDelegate::startEventCore(const edm::Event& event, const edm::EventS
 
 	rawRecHitsEcalEB_ = new Handle<EcalRecHitCollection> ;
 	rawRecHitsEcalEE_ = new Handle<EcalRecHitCollection> ;
+	rawRecHitsEcalES_ = new Handle<EcalRecHitCollection> ;
 	rawRecHitsHcal_ = new Handle<HBHERecHitCollection> ;
 
 	getCollection(*filtration_, inputTagParticleFiltration_, event);
@@ -477,8 +488,10 @@ void TestbeamDelegate::startEventCore(const edm::Event& event, const edm::EventS
 
 	if (!isEndcap2007_)
 		getCollection(*rawRecHitsEcalEB_, inputTagRawRecHitsEcalEB_, event);
-	if (isEndcap2007_)
+	if (isEndcap2007_) {
 		getCollection(*rawRecHitsEcalEE_, inputTagRawRecHitsEcalEE_, event);
+		getCollection(*rawRecHitsEcalES_, inputTagRawRecHitsEcalES_, event);
+	}
 
 	getCollection(*rawRecHitsHcal_, inputTagRawRecHitsHcal_, event);
 
@@ -514,6 +527,7 @@ bool TestbeamDelegate::endEventCore() {
 	delete pfCandidates_;
 	delete rawRecHitsEcalEB_;
 	delete rawRecHitsEcalEE_;
+	delete rawRecHitsEcalES_;
 	delete rawRecHitsHcal_;
 
 	return thisEventPasses_;

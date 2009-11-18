@@ -15,7 +15,7 @@
 using namespace std;
 using namespace pftools;
 	
-bool endcap(false);
+bool endcap(true);
 int data(1);
 int full(0);
 int fast(0);
@@ -45,6 +45,8 @@ void studyTypes(TTree* tree_, PlotUtil& util_, std::string dest, const std::vect
 	map<int, double> extraEnergyContribution;
 	map<int, int> extraNormalization;
 	
+	map<int, double> chargedHadCaloEnergyContribution;
+	
 	for(unsigned entry(0); entry < entries; ++entry) {
 		if (entry % 10000 == 0)
 			cout << "Processing entry " << entry << "\n";
@@ -70,6 +72,9 @@ void studyTypes(TTree* tree_, PlotUtil& util_, std::string dest, const std::vect
 				case 5:
 					++nNeutrons;
 					eNeutrons += wrap.energy_;
+					break;
+				case 1:
+					chargedHadCaloEnergyContribution[energy] += wrap.energyEcal_ + wrap.energyHcal_;
 					break;
 			}
 		}
@@ -111,6 +116,14 @@ void studyTypes(TTree* tree_, PlotUtil& util_, std::string dest, const std::vect
 	for(; i != extraNormalization.end(); ++i) {
 		int e = i->first;
 		cout << e << "\t" << (extraEnergyContribution[e] / extraNormalization[e])/e << "\n";
+	}
+	
+	cout << "\n** Extra candidate energy transportation, as fraction of charged hadron energy:\n";
+	cout << "Energy\tEContrib/E\n";
+	i = extraNormalization.begin();
+	for(; i != extraNormalization.end(); ++i) {
+		int e = i->first;
+		cout << e << "\t" << (extraEnergyContribution[e] / chargedHadCaloEnergyContribution[e]) << "\n";
 	}
 
 
@@ -167,8 +180,9 @@ void candType() {
 	if(endcap) {
 		energies = endcap_energies;
 		if(data) {
-			chain->Add("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");
-			directory = "plots/endcap_tbCalib";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib.root");
+			directory = "plots/endcap_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
@@ -182,8 +196,9 @@ void candType() {
 		}
 	} else {
 		if(data) {
-			chain->Add("/tmp/ballin/PFlowTB_Tree_All_barrel_tbCalib.root");
-			directory = "plots/barrel_tbCalib";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_barrel_0T_tbCalib.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_barrel_0T_tbCalib.root");
+			directory = "plots/barrel_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");

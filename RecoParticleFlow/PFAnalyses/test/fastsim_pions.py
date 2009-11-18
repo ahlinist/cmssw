@@ -18,10 +18,8 @@ process.famosSimHits.VertexGenerator.BetaStar = 0.00001
 process.famosSimHits.VertexGenerator.SigmaZ = 0.00001
 # Parametrized magnetic field (new mapping, 4.0 and 3.8T)
 #from Configuration.StandardSequences.MagneticField_cff import *
-if options.zeroT <> 0 :
-	process.load("Configuration.StandardSequences.MagneticField_0T_cff")
-else :
-	process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+#process.load("Configuration.StandardSequences.MagneticField_0T_cff")
+process.load("Configuration.StandardSequences.MagneticField_40T_cff")
 process.VolumeBasedMagneticFieldESProducer.useParametrizedTrackerField = True
 
 process.famosSimHits.MaterialEffects.PairProduction = False
@@ -31,17 +29,14 @@ process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 process.famosSimHits.Calorimetry.UnfoldedMode = True
 
-if options.randSeed <> 0:
-	from random import *
-	process.RandomNumberGeneratorService.generator.initialSeed=int(random()*100000)
-
-if options.noZspSr <> 0 :
-	process.ecalRecHit.RecHitsFactory.ECALBarrel.Noise=cms.double(0.04)
-	process.ecalRecHit.RecHitsFactory.ECALBarrel.Threshold=cms.double(0.01)
-	process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold=cms.double(0.01)
-	process.ecalRecHit.RecHitsFactory.ECALBarrel.doDigis=cms.bool(False)
-	process.hcalRecHit.RechitsFactory.hbhereco=cms.vdouble(-9999,-9999)
-
+#process.load("SimCalorimetry.HcalZeroSuppressionProducers.hcalDigisRealistic_cfi")
+#process.load("SimCalorimetry.EcalSelectiveReadoutProducers.ecalDigis_cfi")
+process.simEcalDigis.srpBarrelLowInterestChannelZS = cms.double(-1.e9)
+process.simEcalDigis.srpEndcapLowInterestChannelZS = cms.double(-1.e9)
+#process.simHcalDigis.HBlevel = cms.int32(-8000)
+#process.simHcalDigis.HElevel = cms.int32(-8000)
+#process.simHcalDigis.HOlevel = cms.int32(-8000)
+#process.simHcalDigis.HFlevel = cms.int32(-9000)
 
 process.source = cms.Source("EmptySource")
 
@@ -107,7 +102,7 @@ process.particleFlow.pf_calibMode = cms.uint32(2)
 process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('Dipion_Tree_' + fileLabel)
+    fileName = cms.string('Dipion_Tree_fast' + fileLabel)
 )
 
 import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
@@ -116,27 +111,17 @@ process.extractionToTree = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.EventDelegate
 )
 
+process.extractionToTree.neutralMode = cms.bool(False)
+process.extractionToTree.particlePDG=cms.int32(211)
+
 process.extractionToEvent = cms.EDProducer("CalibratableProducer",
-    calibratable.EventDelegate
+    calibratable.EventDelegate         
 )
-
-if options.zeroT <>0 :
-        #assume we still fire pi+!
-        process.extractionToTree.neutralMode = cms.bool(True)
-        process.extractionToTree.particlePDG=cms.int32(211)
-        process.extractionToEvent.neutralMode = cms.bool(True)
-        process.extractionToEvent.particlePDG=cms.int32(211)
-
-else:
-        process.extractionToTree.neutralMode = cms.bool(False)
-        process.extractionToTree.particlePDG=cms.int32(211)
-        process.extractionToEvent.neutralMode = cms.bool(False)
-        process.extractionToEvent.particlePDG=cms.int32(211)
-
-
+process.extractionToEvent.neutralMode = cms.bool(False)
+process.extractionToEvent.particlePDG=cms.int32(211)
 
 process.finishup = cms.OutputModule("PoolOutputModule",
-    fileName=cms.untracked.string('Dipion_Events_' + fileLabel),
+    fileName=cms.untracked.string('Dipion_Events_fast' + fileLabel),
     #outputCommands=cms.untracked.vstring('keep *'),
     outputCommands=cms.untracked.vstring('drop *', 
                                          'keep *_particleFiltration_*_*', 

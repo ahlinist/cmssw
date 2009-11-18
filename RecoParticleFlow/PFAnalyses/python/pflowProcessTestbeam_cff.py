@@ -51,7 +51,15 @@ pflowCalibEcalRechits = cms.EDProducer("EcalCalibRechitProducer",
 )
 
 
-pflowEndcapRechitMaker = cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits)
+towerMakerPF.ecalInputs = cms.VInputTag(
+    cms.InputTag("pflowCalibEcalRechits","EcalRecHitsEB"), 
+    cms.InputTag("pflowCalibEcalRechits","EcalRecHitsEE"))
+towerMakerPF.hfInput=cms.InputTag("");
+towerMakerPF.hoInput=cms.InputTag("");
+towerMakerPF.UseHO = cms.bool(False)
+towerMakerPF.AllowMissingInputs=cms.bool(True)
+
+pflowEndcapRechitMaker = cms.Sequence(particleFiltration * faketracks * pflowCalibEcalRechits * towerMakerPF)
 
 
 pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks * 
@@ -63,7 +71,9 @@ pfAlgoAndExtractionTestbeam = cms.Sequence(faketracks *
 
 pfAlgoAndExtractionTestbeamEndcaps = cms.Sequence(faketracks * 
                                     pflowCalibEcalRechits *
+                                    towerMakerPF *
                                     pfClusteringECAL * 
+									pfClusteringPS *
                                     pfClusteringHCALTB * 
                                     particleFlowBlock * 
                                     particleFlow * 

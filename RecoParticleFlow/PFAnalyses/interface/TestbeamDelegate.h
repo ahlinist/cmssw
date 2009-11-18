@@ -104,6 +104,7 @@ private:
 
 	edm::InputTag inputTagRawRecHitsEcalEB_;
 	edm::InputTag inputTagRawRecHitsEcalEE_;
+	edm::InputTag inputTagRawRecHitsEcalES_;
 	edm::InputTag inputTagRawRecHitsHcal_;
 
 	edm::InputTag inputTagBeamCounters_;
@@ -128,6 +129,7 @@ private:
 
 	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEB_;
 	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalEE_;
+	edm::Handle<EcalRecHitCollection>* rawRecHitsEcalES_;
 	edm::Handle<HBHERecHitCollection>* rawRecHitsHcal_;
 
 	edm::Handle<reco::PFClusterCollection>* clustersEcal_;
