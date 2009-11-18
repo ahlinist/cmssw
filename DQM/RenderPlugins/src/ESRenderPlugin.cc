@@ -14,61 +14,56 @@
 
 #include <math.h>
 
+class ESRenderPlugin : public DQMRenderPlugin {
 
-class ESRenderPlugin : public DQMRenderPlugin 
-{
-
-   public:
-
-      static const int ixES[346];
-      static const int iyES[346];
-      static const int lsES[54];
-      static const int lwES[54];
-
-      int colorbar1[10];
-      int colorbar2[8];
-
-      virtual void initialise( int, char ** )
-      {
-	 float rgb[10][3] = {{0.87, 0.00, 0.00}, {0.91, 0.27, 0.00},
-	    {0.95, 0.54, 0.00}, {1.00, 0.81, 0.00},
-	    {0.56, 0.91, 0.00}, {0.12, 1.00, 0.00},
-	    {0.06, 0.60, 0.50}, {0.00, 0.20, 1.00}, 
-	    {0.00, 0.10, 0.94}, {0.00, 0.00, 0.87}};
-
-	 for( int i=0; i<10; i++ )
-	 {
-	    TColor* color = gROOT->GetColor( 951+i );
-	    if ( ! color ) color = new TColor( 951+i, 0, 0, 0, "");
-	    color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
-	 }
-
-	 for( int i=0; i<10; i++) colorbar1[i] = i+951;
-	 for( int i=0; i<8; i++) colorbar2[i] = i+1;
-	 colorbar2[0] = 0;
-	 colorbar2[7] = 800;
-      }
-
-      virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &i );
-
-      virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
-
-      virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i );
-
-   private:
-
-      void preDrawTH1F( TCanvas *c, const VisDQMObject &o );
-      void preDrawTH2F( TCanvas *c, const VisDQMObject &o );
-      void postDrawTH2F( TCanvas *c, const VisDQMObject &o );
-
-      void drawBorders( int plane, float sx, float sy );
-
-      double NEntries;
-
+  public:
+  
+  static const int ixES[346];
+  static const int iyES[346];
+  static const int lsES[54];
+  static const int lwES[54];
+  
+  int colorbar1[10];
+  int colorbar2[8];
+  
+  virtual void initialise( int, char ** ) {
+    float rgb[10][3] = {{0.87, 0.00, 0.00}, {0.91, 0.27, 0.00},
+			{0.95, 0.54, 0.00}, {1.00, 0.81, 0.00},
+			{0.56, 0.91, 0.00}, {0.12, 1.00, 0.00},
+			{0.06, 0.60, 0.50}, {0.00, 0.20, 1.00}, 
+			{0.00, 0.10, 0.94}, {0.00, 0.00, 0.87}};
+    
+    for( int i=0; i<10; i++ ) {
+      TColor* color = gROOT->GetColor( 951+i );
+      if ( ! color ) color = new TColor( 951+i, 0, 0, 0, "");
+      color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
+    }
+    
+    for( int i=0; i<10; i++) colorbar1[i] = i+951;
+    for( int i=0; i<8; i++) colorbar2[i] = i+1;
+    colorbar2[0] = 0;
+    colorbar2[7] = 800;
+  }
+  
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &i );
+  
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i, VisDQMRenderInfo&  r);
+  
+  virtual void postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &i );
+  
+private:
+  
+  void preDrawTH1F( TCanvas *c, const VisDQMObject &o );
+  void preDrawTH2F( TCanvas *c, const VisDQMObject &o );
+  void postDrawTH2F( TCanvas *c, const VisDQMObject &o );
+  
+  void drawBorders( int plane, float sx, float sy );
+  
+  double NEntries;
+  
 };
 
-bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & ) 
-{
+bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
 
    if( o.name.find( "EcalPreshower" ) != std::string::npos ) {
       if( o.name.find( "ESOccupancyTask" ) != std::string::npos ){
@@ -92,8 +87,7 @@ bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & )
 
 }
 
-void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) 
-{
+void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
 
    c->cd();
 
@@ -113,7 +107,6 @@ void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImg
    gStyle->SetStatBorderSize(1);
    gStyle->SetOptFit(kFALSE);
 
-
    if( dynamic_cast<TH1F*>( o.object ) ) {
       preDrawTH1F( c, o );
    }
@@ -124,8 +117,7 @@ void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImg
 
 }
 
-void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & )
-{
+void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
    c->cd();
 
    if( dynamic_cast<TH2F*>( o.object ) )
@@ -134,9 +126,7 @@ void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMIm
    }
 }
 
-
-void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o ) 
-{
+void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o ) {
 
    TH1F* obj = dynamic_cast<TH1F*>( o.object );
 
@@ -144,43 +134,33 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o )
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   if( o.name.find("ESRawDataTask")!= std::string::npos)
-   {
+   if( o.name.find("ESRawDataTask")!= std::string::npos) {
       obj->SetFillColor(kRed);
    }
 
-   if( name.find( "Gain used for data taking" ) != std::string::npos )
-   {
+   if( name.find( "Gain used for data taking" ) != std::string::npos ) {
       obj->GetXaxis()->SetBinLabel(1,"LG");
       obj->GetXaxis()->SetBinLabel(2,"HG");
       obj->GetXaxis()->SetLabelSize(0.1);
    }
 
-   if( name.find( "FEDs used for data taking" ) != std::string::npos )
-   {
+   if( name.find( "FEDs used for data taking" ) != std::string::npos ) {
       obj->SetFillColor(kGreen);
    }
 
-   if( name.find( "Z 1 P 1" ) != std::string::npos )
-   {
+   if( name.find( "Z 1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 1" ) , 7);
       name.insert( 2, "+F" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z -1 P 1" ) != std::string::npos )
-   {
+   } else if( name.find( "Z -1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 1" ) , 8);
       name.insert( 2, "-F" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z 1 P 2" ) != std::string::npos )
-   {
+   } else if( name.find( "Z 1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 2" ) , 7);
       name.insert( 2, "+R" );
       obj->SetTitle( name.c_str() );
-   }
-   else if( name.find( "Z -1 P 2" ) != std::string::npos )
-   {
+   } else if( name.find( "Z -1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 2" ) , 8);
       name.insert( 2, "-R" );
       obj->SetTitle( name.c_str() );
@@ -188,15 +168,13 @@ void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o )
 
 }
 
-void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) 
-{
+void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
 
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
    assert( obj );
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
-
  
    gStyle->SetPaintTextFormat();
 
@@ -240,16 +218,48 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o )
       return;
    }
 
-   if( name.find( "Fiber Status" ) != std::string::npos )   
-   {
-      obj->GetYaxis()->SetBinLabel(1,"Bad");
-      obj->GetYaxis()->SetBinLabel(2,"Good");
-      obj->GetYaxis()->SetLabelSize(0.08);
+   if ( name.find( "Fiber Bad Status" ) != std::string::npos ) {
       obj->GetYaxis()->SetTitle("");
+      NEntries = obj->GetBinContent(56,36);
+      if (NEntries != 0) {
+	obj->SetBinContent(56,36,0.);
+	obj->Scale(1/NEntries);
+	obj->SetMaximum(1);
+      }
+      return;
    }
 
-   if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) 
-   {
+   if ( name.find( "Fiber Off" ) != std::string::npos ) {
+      NEntries = obj->GetBinContent(56,36);
+      if (NEntries != 0) {
+	obj->SetBinContent(56,36,0.);
+	obj->Scale(1/NEntries);
+	obj->SetMaximum(1);
+      }
+      return;
+   }
+
+   if ( name.find( "Event Dropped" ) != std::string::npos ) {
+      NEntries = obj->GetBinContent(56,36);
+      if (NEntries != 0) {
+	obj->SetBinContent(56,36,0.);
+	obj->Scale(1/NEntries);
+	obj->SetMaximum(1);
+      }
+      return;
+   }
+
+   if ( name.find( "DCC" ) != std::string::npos || name.find( "OptoRX" ) != std::string::npos) {
+      NEntries = obj->GetBinContent(56,3);
+      if (NEntries != 0) {
+	obj->SetBinContent(56, 3, 0.);
+	obj->Scale(1/NEntries);
+	obj->SetMaximum(1);
+      }
+      return;
+   }
+
+   if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
       obj->SetBinContent(40,40,0.);
@@ -258,8 +268,15 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o )
       return;
    }
 
-   if( name.find( "Digi 2D Occupancy" ) != std::string::npos ) 
-   {
+   if( name.find( "Digi 2D Occupancy" ) != std::string::npos ) {
+      gStyle->SetPalette(1);
+      NEntries = obj->GetBinContent(40,40);
+      obj->SetBinContent(40,40,0.);
+      obj->Scale(1/NEntries);
+      return;
+   }
+
+   if( name.find( "Energy Density" ) != std::string::npos ) {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
       obj->SetBinContent(40,40,0.);
