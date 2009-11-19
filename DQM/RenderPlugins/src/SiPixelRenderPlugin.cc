@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.20 $
-  \date $Date: 2009/10/31 23:18:54 $
+  \version $Revision: 1.21 $
+  \date $Date: 2009/11/13 15:39:44 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -216,7 +216,10 @@ color, Int_t npts, std::string title){
       if( o.name.find( "hitmap" ) != std::string::npos  ||
           o.name.find( "Occupancy" ) != std::string::npos ||
 	  o.name.find( "position_siPixelClusters" ) != std::string::npos ||
-	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos))
+	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos) ||
+	  o.name.find( "FedChLErrArray" ) != std::string::npos ||
+	  o.name.find( "FedChNErrArray" ) != std::string::npos ||
+	  o.name.find( "FedETypeNErrArray" ) != std::string::npos ) 
       {
         gStyle->SetPalette(1);
         obj->SetOption("colz");
