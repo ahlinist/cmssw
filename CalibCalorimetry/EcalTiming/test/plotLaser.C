@@ -1,4 +1,3 @@
-
 int Wait() {
      cout << " Continue [<RET>|q]?  "; 
      char x;
@@ -103,8 +102,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   gStyle->SetOptStat(1111);
   TProfile *timeTTAllFEDsEta = (TProfile*) f->Get("timeTTAllFEDsEta");
   timeTTAllFEDsEta->Draw();
-  timeTTAllFEDsEta->SetMinimum(4.95);
-  timeTTAllFEDsEta->SetMaximum(5.05);
+  //timeTTAllFEDsEta->SetMinimum(4.95);
+  //timeTTAllFEDsEta->SetMaximum(5.05);
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEta->GetTitle()); 
   timeTTAllFEDsEta->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEta_%i.%s",dirName,mType,runNumber,fileType); c[5]->Print(name); }
@@ -113,8 +112,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   gStyle->SetOptStat(1111);
   TProfile *timeTTAllFEDsEtaEEP = (TProfile*) f->Get("timeTTAllFEDsEtaEEP");
   timeTTAllFEDsEtaEEP->Draw();
-  timeTTAllFEDsEtaEEP->SetMinimum(4.5);
-  timeTTAllFEDsEtaEEP->SetMaximum(5.5);
+  //timeTTAllFEDsEtaEEP->SetMinimum(4.5);
+  //timeTTAllFEDsEtaEEP->SetMaximum(5.5);
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEtaEEP->GetTitle()); 
   timeTTAllFEDsEtaEEP->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEP_%i.%s",dirName,mType,runNumber,fileType); c[6]->Print(name); }
@@ -123,8 +122,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   gStyle->SetOptStat(1111);
   TProfile *timeTTAllFEDsEtaEEM = (TProfile*) f->Get("timeTTAllFEDsEtaEEM");
   timeTTAllFEDsEtaEEM->Draw();
-  timeTTAllFEDsEtaEEM->SetMinimum(4.5);
-  timeTTAllFEDsEtaEEM->SetMaximum(5.5);
+  //timeTTAllFEDsEtaEEM->SetMinimum(4.5);
+  //timeTTAllFEDsEtaEEM->SetMaximum(5.5);
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTAllFEDsEtaEEM->GetTitle()); 
   timeTTAllFEDsEtaEEM->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEM_%i.%s",dirName,mType,runNumber,fileType); c[7]->Print(name); }
@@ -134,8 +133,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   gStyle->SetOptStat(1111);
   TProfile *timeCHAllFEDsEta = (TProfile*) f->Get("timeCHAllFEDsEta");
   timeCHAllFEDsEta->Draw();
-  timeCHAllFEDsEta->SetMinimum(4.8);
-  timeCHAllFEDsEta->SetMaximum(5.2);
+  //timeCHAllFEDsEta->SetMinimum(4.8);
+  //timeCHAllFEDsEta->SetMaximum(5.2);
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeCHAllFEDsEta->GetTitle()); 
   timeCHAllFEDsEta->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEta_%i.%s",dirName,mType,runNumber,fileType); c[8]->Print(name); }
@@ -154,7 +153,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   gStyle->SetOptStat(111110);
   TH1F *XtalsPerEvt = (TH1F*) f->Get("XtalsPerEvt");
   XtalsPerEvt->Draw();
-  XtalsPerEvt->GetXaxis()->SetRangeUser(0,100);
+  //XtalsPerEvt->GetXaxis()->SetRangeUser(0,100);
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,XtalsPerEvt->GetTitle()); 
   XtalsPerEvt->SetTitle(mytitle);
   //c[10]->SetLogy(1);
@@ -185,7 +184,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TGraph *TTMeanWithRMS_All_FEDS = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS->GetTitle()); 
   TTMeanWithRMS_All_FEDS->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
+  TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(0.,9.);
+  //TTMeanWithRMS_All_FEDS->GetYaxis()->SetLimits(4.,6.);
   TTMeanWithRMS_All_FEDS->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS->Draw("AP*");
   //c[13]->SetLogy(1);
@@ -196,7 +196,8 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TGraph *TTMeanWithRMS_All_FEDS_CHANGED = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS_CHANGED");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS_CHANGED->GetTitle()); 
   TTMeanWithRMS_All_FEDS_CHANGED->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(4.,6.);
+  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(0.,9.);
+  //TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(4.,6.);
   TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS_CHANGED->Draw("AP*");
   //c[13]->SetLogy(1);
@@ -210,8 +211,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   timeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeCHProfile->GetTitle()); 
   timeCHProfile->SetTitle(mytitle);
-  timeCHProfile->SetMinimum(4.5);
-  timeCHProfile->SetMaximum(5.5);
+  timeCHProfile->SetMinimum(4.0);
+  //timeCHProfile->SetMinimum(4.5);
+  //timeCHProfile->SetMaximum(5.5);
   timeCHProfile->GetXaxis()->SetNdivisions(-18);
   timeCHProfile->GetYaxis()->SetNdivisions(2);
   c[15]->SetLogy(0);
@@ -228,8 +230,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   timeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTProfile->GetTitle()); 
   timeTTProfile->SetTitle(mytitle);
-  timeTTProfile->SetMinimum(4.8);
-  timeTTProfile->SetMaximum(5.2);
+  timeTTProfile->SetMinimum(4.0);
+  //timeTTProfile->SetMinimum(4.8);
+  //timeTTProfile->SetMaximum(5.2);
   timeTTProfile->GetXaxis()->SetNdivisions(-18);
   timeTTProfile->GetYaxis()->SetNdivisions(2);
   c[16]->SetLogy(0);
@@ -245,8 +248,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEPtimeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEPtimeCHProfile->GetTitle()); 
   EEPtimeCHProfile->SetTitle(mytitle);
-  EEPtimeCHProfile->SetMinimum(4.5);
-  EEPtimeCHProfile->SetMaximum(5.5);
+  EEPtimeCHProfile->SetMinimum(4.0);
+  //EEPtimeCHProfile->SetMinimum(4.5);
+  //EEPtimeCHProfile->SetMaximum(5.5);
   EEPtimeCHProfile->GetXaxis()->SetNdivisions(18);
   c[17]->SetLogy(0);
   c[17]->SetLogz(0);
@@ -261,8 +265,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEMtimeCHProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEMtimeCHProfile->GetTitle()); 
   EEMtimeCHProfile->SetTitle(mytitle);
-  EEMtimeCHProfile->SetMinimum(4.5);
-  EEMtimeCHProfile->SetMaximum(5.5);
+  EEMtimeCHProfile->SetMinimum(4.);
+  //EEMtimeCHProfile->SetMinimum(4.5);
+  //EEMtimeCHProfile->SetMaximum(5.5);
   EEMtimeCHProfile->GetXaxis()->SetNdivisions(18);
   c[18]->SetLogy(0);
   c[18]->SetLogz(0);
@@ -277,8 +282,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEPtimeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEPtimeTTProfile->GetTitle()); 
   EEPtimeTTProfile->SetTitle(mytitle);
-  EEPtimeTTProfile->SetMinimum(4.5);
-  EEPtimeTTProfile->SetMaximum(5.5);
+  EEPtimeTTProfile->SetMinimum(4.);
+  //EEPtimeTTProfile->SetMinimum(4.5);
+  //EEPtimeTTProfile->SetMaximum(5.5);
   EEPtimeTTProfile->GetXaxis()->SetNdivisions(18);
   c[19]->SetLogy(0);
   c[19]->SetLogz(0);
@@ -292,8 +298,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   EEMtimeTTProfile->Draw("colz");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,EEMtimeTTProfile->GetTitle()); 
   EEMtimeTTProfile->SetTitle(mytitle);
-  EEMtimeTTProfile->SetMinimum(4.5);
-  EEMtimeTTProfile->SetMaximum(5.5);
+  EEMtimeTTProfile->SetMinimum(4.);
+  //EEMtimeTTProfile->SetMinimum(4.5);
+  //EEMtimeTTProfile->SetMaximum(5.5);
   EEMtimeTTProfile->GetXaxis()->SetNdivisions(18);
   c[20]->SetLogy(0);
   c[20]->SetLogz(0);
@@ -377,10 +384,11 @@ void drawEELines() {
 }
 
 void customizeTProfile (TProfile* myTProfile) {
-  myTProfile->SetLineWidth(2);
-  myTProfile->SetMarkerStyle(kFullCircle);
-  myTProfile->SetMarkerSize(0.7);
+  if (myTProfile) {
+    myTProfile->SetLineWidth(2);
+    myTProfile->SetMarkerStyle(kFullCircle);
+    myTProfile->SetMarkerSize(0.7);
+  }
 }
-
 
 
