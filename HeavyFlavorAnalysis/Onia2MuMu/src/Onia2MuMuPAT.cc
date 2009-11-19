@@ -163,7 +163,7 @@ Onia2MuMuPAT::selectionMuons(const reco::Muon& muon,int selectionType) const{
     return muon.isGlobalMuon();
     break;
   case 2:  //select tracker muon
-    return muon.isTrackerMuon();;
+    return muon.isTrackerMuon() && !muon.isGlobalMuon();;
     break;
   case 3:  //select calo muon
     return muon.isCaloMuon();;
