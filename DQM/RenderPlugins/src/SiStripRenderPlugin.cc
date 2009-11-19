@@ -2,8 +2,8 @@
   \file SiStripRenderPlugin
   \brief Display Plugin for SiStrip DQM Histograms
   \author S. Dutta
-  \version $Revision: 1.16 $
-  \date $Date: 2009/08/10 17:36:04 $
+  \version $Revision: 1.17 $
+  \date $Date: 2009/10/31 23:18:54 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -352,30 +352,80 @@ private:
 
       std::string name = o.name.substr(o.name.rfind("/")+1);
 
-      TLine tl; 
-      tl.SetLineColor(3);
-      tl.SetLineWidth(3);
+      TLine tl1;
+      tl1.SetLineColor(3);
+      tl1.SetLineWidth(3);
+
+      TLine tl2;
+      tl2.SetLineColor(4);
+      tl2.SetLineWidth(3);
+
       float xmin = 0.0;
       float xmax = obj->GetXaxis()->GetXmax();
-        
+      float ymax = obj->GetMaximum()*1.2;
+
+      float TIBLimit1 = 900.0;
+      float TOBLimit1 = 2000.0;
+      float TECLimit1 = 2250.0;
+      float TIDLimit1 = 320.0;
+
+      float TIBLimit2 = 1787904.0;
+      float TOBLimit2 = 3303936.0;
+      float TECLimit2 = 3866624.0;
+      float TIDLimit2 = 565248.0;
+
       if( name.find( "TotalNumberOfDigiProfile__" ) != std::string::npos )
       {
         c->SetLogy(1);
         c->SetGridy();
-        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) tl.DrawLine(xmin, 900.0,  xmax, 900.0);
-        if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 2000.0, xmax, 2000.0);
-        if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) tl.DrawLine(xmin, 2250.0, xmax, 2250.0);
-        if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) tl.DrawLine(xmin, 320.0,  xmax, 320.0);
+        if (name.find( "TotalNumberOfDigiProfile__TIB" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, TIBLimit1,  xmax, TIBLimit1);
+          tl2.DrawLine(xmin, TIBLimit2*0.0005, xmax, TIBLimit2*0.0005);
+          tl2.DrawLine(xmin, TIBLimit2*0.01,  xmax, TIBLimit2*0.01);
+          obj->SetMinimum(TIBLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIBLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TOB" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, TOBLimit1,  xmax, TOBLimit1);
+          tl2.DrawLine(xmin, TOBLimit2*0.0005, xmax, TOBLimit2*0.0005);
+          tl2.DrawLine(xmin, TOBLimit2*0.01,  xmax, TOBLimit2*0.01);
+          obj->SetMinimum(TOBLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TOBLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TEC" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, TECLimit1,  xmax, TECLimit1);
+          tl2.DrawLine(xmin, TECLimit2*0.0005, xmax, TECLimit2*0.0005);
+          tl2.DrawLine(xmin, TECLimit2*0.01,  xmax, TECLimit2*0.01);
+          obj->SetMinimum(TECLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TECLimit1*50));
+        } else if (name.find( "TotalNumberOfDigiProfile__TID" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, TIDLimit1,  xmax, TIDLimit1);
+          tl2.DrawLine(xmin, TIDLimit2*0.0005, xmax, TIDLimit2*0.0005);
+          tl2.DrawLine(xmin, TIDLimit2*0.01,  xmax, TIDLimit2*0.01);
+          obj->SetMinimum(TIDLimit1*0.1);
+          obj->SetMaximum(TMath::Max(ymax, TIDLimit1*50));
+       }
         return;
       }
       if( name.find( "TotalNumberOfClusterProfile__" ) != std::string::npos )
       {
         c->SetLogy(1);
         c->SetGridy();
-        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) tl.DrawLine(xmin, 5.0,  xmax, 5.0);
-        if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax, 15.0);
-        if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) tl.DrawLine(xmin, 15.0, xmax,15.0);
-        if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) tl.DrawLine(xmin, 3.0,  xmax, 3.0);
+        if (name.find( "TotalNumberOfClusterProfile__TIB" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, 5.0,  xmax, 5.0);
+          tl2.DrawLine(xmin, TIBLimit2*0.0001, xmax, TIBLimit2*0.0001);
+          tl2.DrawLine(xmin, TIBLimit2*5*0.00001,  xmax, TIBLimit2*5*0.00001);
+        } else if (name.find( "TotalNumberOfClusterProfile__TOB" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, 15.0, xmax, 15.0);
+          tl2.DrawLine(xmin, TOBLimit2*0.0001, xmax, TOBLimit2*0.0001);
+          tl2.DrawLine(xmin, TOBLimit2*5*0.00001,  xmax, TOBLimit2*5*0.00001);
+        } else if (name.find( "TotalNumberOfClusterProfile__TEC" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, 15.0, xmax,15.0);
+          tl2.DrawLine(xmin, TECLimit2*0.0001, xmax, TECLimit2*0.0001);
+          tl2.DrawLine(xmin, TECLimit2*5*0.00001,  xmax, TECLimit2*5*0.00001);
+        } else if (name.find( "TotalNumberOfClusterProfile__TID" ) != std::string::npos) {
+	  //          tl1.DrawLine(xmin, 3.0,  xmax, 3.0);
+          tl2.DrawLine(xmin, TIDLimit2*0.0001, xmax, TIDLimit2*0.0001);
+          tl2.DrawLine(xmin, TIDLimit2*5*0.00001,  xmax, TIDLimit2*5*0.00001);
+        }
         return;
       }
     }
