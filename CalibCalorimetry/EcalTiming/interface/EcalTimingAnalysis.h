@@ -178,7 +178,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       double allshift_;
 	  
       bool writetxtfiles_;
-	  
+      bool timingTree_;	  
       bool correctAVE_;
       std::map<int, double> eta2zmap_;
 

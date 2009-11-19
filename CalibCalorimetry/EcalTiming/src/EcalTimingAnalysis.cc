@@ -74,6 +74,7 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    splash09cor_        = iConfig.getUntrackedParameter<bool>("Splash09Cor",false);
    allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
    allshift_           = iConfig.getUntrackedParameter<double>("AllShift",1.5);   
+   timingTree_         = iConfig.getUntrackedParameter<bool>("BeamHaloPlus",false);
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -255,29 +256,31 @@ EcalTimingAnalysis::beginJob( ) {
   fullAmpProfileEEP_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEP")) : (new TProfile2D("fullAmpProfileEEP"," Average Amplitude EE+;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
   fullAmpProfileEEM_ = fromfile_ ? ((TProfile2D*) tf->Get("fullAmpProfileEEM")) : (new TProfile2D("fullAmpProfileEEM"," Average Amplitude EE-;ix;iy",100,1.,101.,100,1.,101.,0.0,50000.));
  
- 
-if (fromfile_) 
-{
- eventTimingInfoTree_ = ((TTree*) tf->Get("eventTimingInfoTree"));
+  if ( timingTree_)
+    { 
+      if (fromfile_) 
+	{
+	  eventTimingInfoTree_ = ((TTree*) tf->Get("eventTimingInfoTree"));
 
-}
-else{
-eventTimingInfoTree_ = new TTree("eventTimingInfoTree","Timing info of events in all crys");
-eventTimingInfoTree_->SetDirectory(0);
-eventTimingInfoTree_->Branch("numberOfEBcrys",&TTreeMembers_.numEBcrys_,"numberOfEBcrys/I");
-eventTimingInfoTree_->Branch("numberOfEEcrys",&TTreeMembers_.numEEcrys_,"numberOfEEcrys/I");
-eventTimingInfoTree_->Branch("crystalHashedIndicesEB",TTreeMembers_.cryHashesEB_,"crystalHashedIndicesEB[numberOfEBcrys]/I");
-eventTimingInfoTree_->Branch("crystalHashedIndicesEE",TTreeMembers_.cryHashesEE_,"crystalHashedIndicesEE[numberOfEEcrys]/I");
-eventTimingInfoTree_->Branch("crystalTimesEB",TTreeMembers_.cryTimesEB_,"crystalTimesEB[numberOfEBcrys]/F");
-eventTimingInfoTree_->Branch("crystalTimesEE",TTreeMembers_.cryTimesEE_,"crystalTimesEE[numberOfEEcrys]/F");
-eventTimingInfoTree_->Branch("crystalTimeErrorsEB",TTreeMembers_.cryTimeErrorsEB_,"crystalTimeErrorsEB[numberOfEBcrys]/F");
-eventTimingInfoTree_->Branch("crystalTimeErrorsEE",TTreeMembers_.cryTimeErrorsEE_,"crystalTimeErrorsEE[numberOfEEcrys]/F");
-eventTimingInfoTree_->Branch("crystalAmplitudesEB",TTreeMembers_.cryAmpsEB_,"crystalAmplitudesEB[numberOfEBcrys]/F");
-eventTimingInfoTree_->Branch("crystalAmplitudesEE",TTreeMembers_.cryAmpsEE_,"crystalAmplitudesEE[numberOfEEcrys]/F");
-eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
-eventTimingInfoTree_->Branch("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_,"correctionToSample5EEP/F");
-eventTimingInfoTree_->Branch("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_,"correctionToSample5EEM/F");
-}
+	}
+      else{
+	eventTimingInfoTree_ = new TTree("eventTimingInfoTree","Timing info of events in all crys");
+	eventTimingInfoTree_->SetDirectory(0);
+	eventTimingInfoTree_->Branch("numberOfEBcrys",&TTreeMembers_.numEBcrys_,"numberOfEBcrys/I");
+	eventTimingInfoTree_->Branch("numberOfEEcrys",&TTreeMembers_.numEEcrys_,"numberOfEEcrys/I");
+	eventTimingInfoTree_->Branch("crystalHashedIndicesEB",TTreeMembers_.cryHashesEB_,"crystalHashedIndicesEB[numberOfEBcrys]/I");
+	eventTimingInfoTree_->Branch("crystalHashedIndicesEE",TTreeMembers_.cryHashesEE_,"crystalHashedIndicesEE[numberOfEEcrys]/I");
+	eventTimingInfoTree_->Branch("crystalTimesEB",TTreeMembers_.cryTimesEB_,"crystalTimesEB[numberOfEBcrys]/F");
+	eventTimingInfoTree_->Branch("crystalTimesEE",TTreeMembers_.cryTimesEE_,"crystalTimesEE[numberOfEEcrys]/F");
+	eventTimingInfoTree_->Branch("crystalTimeErrorsEB",TTreeMembers_.cryTimeErrorsEB_,"crystalTimeErrorsEB[numberOfEBcrys]/F");
+	eventTimingInfoTree_->Branch("crystalTimeErrorsEE",TTreeMembers_.cryTimeErrorsEE_,"crystalTimeErrorsEE[numberOfEEcrys]/F");
+	eventTimingInfoTree_->Branch("crystalAmplitudesEB",TTreeMembers_.cryAmpsEB_,"crystalAmplitudesEB[numberOfEBcrys]/F");
+	eventTimingInfoTree_->Branch("crystalAmplitudesEE",TTreeMembers_.cryAmpsEE_,"crystalAmplitudesEE[numberOfEEcrys]/F");
+	eventTimingInfoTree_->Branch("correctionToSampleEB",&TTreeMembers_.correctionToSample5EB_,"correctionToSample5EB/F");
+	eventTimingInfoTree_->Branch("correctionToSampleEEP",&TTreeMembers_.correctionToSample5EEP_,"correctionToSample5EEP/F");
+	eventTimingInfoTree_->Branch("correctionToSampleEEM",&TTreeMembers_.correctionToSample5EEM_,"correctionToSample5EEM/F");
+      }
+    }
 
 
 }
@@ -619,9 +622,11 @@ void EcalTimingAnalysis::endJob() {
   fullAmpProfileEB_->Write();
   fullAmpProfileEEP_->Write();
   fullAmpProfileEEM_->Write();
-  eventTimingInfoTree_->SetDirectory(f);  
-  eventTimingInfoTree_->Write();
-  
+  if ( timingTree_)
+    {
+      eventTimingInfoTree_->SetDirectory(f);  
+      eventTimingInfoTree_->Write();
+    }
   f->Close();
 
     ofstream new_outfile;
@@ -752,7 +757,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
 
    // if (!correctAVE_) averagetimeEB = 0.0;
    
-   if (numberinaveEB < 20000) return; //JUST TEMPORARY I will put this as a parameter 
+   //if (numberinaveEB < 20000) return; //JUST TEMPORARY I will put this as a parameter 
    
    for(EcalUncalibratedRecHitCollection::const_iterator ithit = hits->begin(); ithit != hits->end(); ++ithit) {
      
@@ -768,11 +773,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
        if (correctAVE_) mytime += 5.0 - averagetimeEB;
-       TTreeMembers_.cryHashesEB_[TTreeMembers_.numEBcrys_]=anid.hashedIndex();
-       TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=mytime;
-       TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
-       TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=ithit->amplitude();
-       TTreeMembers_.numEBcrys_++;
+       if (timingTree_)
+	 { 
+	   TTreeMembers_.cryHashesEB_[TTreeMembers_.numEBcrys_]=anid.hashedIndex();
+	   TTreeMembers_.cryTimesEB_[TTreeMembers_.numEBcrys_]=mytime;
+	   TTreeMembers_.cryTimeErrorsEB_[TTreeMembers_.numEBcrys_]=ithit->chi2();
+	   TTreeMembers_.cryAmpsEB_[TTreeMembers_.numEBcrys_]=ithit->amplitude();
+	   TTreeMembers_.numEBcrys_++;
+	 }
        fullAmpProfileEB_->Fill(anid.iphi(),anid.ieta(),ithit->amplitude());
        lasersPerEvt->Fill(ievt_);
        amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
@@ -859,11 +867,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
        double mytime = ithit->jitter() + extrajit+5.0;
        //if (correctAVE_) mytime += 5.0 - averagetimeEE;
        if (correctAVE_) mytime += 5.0 - averagetimeEB; //ACK, a HACK by Jason to make things work 'his' way.
-       TTreeMembers_.cryHashesEE_[TTreeMembers_.numEEcrys_]=SMind;
-       TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=mytime;
-       TTreeMembers_.cryTimeErrorsEE_[TTreeMembers_.numEEcrys_]=ithit->chi2();
-       TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=ithit->amplitude();
-       TTreeMembers_.numEEcrys_++;
+       if (timingTree_)
+	 {
+	   TTreeMembers_.cryHashesEE_[TTreeMembers_.numEEcrys_]=SMind;
+	   TTreeMembers_.cryTimesEE_[TTreeMembers_.numEEcrys_]=mytime;
+	   TTreeMembers_.cryTimeErrorsEE_[TTreeMembers_.numEEcrys_]=ithit->chi2();
+	   TTreeMembers_.cryAmpsEE_[TTreeMembers_.numEEcrys_]=ithit->amplitude();
+	   TTreeMembers_.numEEcrys_++;
+	 }
        lasersPerEvt->Fill(ievt_);
        amplProfileConv_[DCCid-1][lambda]->Fill(SMind,ithit->amplitude());
        absoluteTimingConv_[DCCid-1][lambda]->Fill(SMind,mytime);
@@ -938,11 +949,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    }
    //numEBcrys_=numberinaveEB;
    //numEEcrys_=numberinaveEE;
-   TTreeMembers_.correctionToSample5EB_= averagetimeEB;
-   TTreeMembers_.correctionToSample5EEP_ = averagetimeEB;
-   TTreeMembers_.correctionToSample5EEM_ = averagetimeEB ;
-
-   eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
+   if (timingTree_)
+     {
+       TTreeMembers_.correctionToSample5EB_= averagetimeEB;
+       TTreeMembers_.correctionToSample5EEP_ = averagetimeEB;
+       TTreeMembers_.correctionToSample5EEM_ = averagetimeEB ;
+     
+       eventTimingInfoTree_->Fill(); //Filling the TTree for Seth
+     }
 }
 
 double EcalTimingAnalysis::timecorr(const CaloSubdetectorGeometry *geometry_p, DetId id)
