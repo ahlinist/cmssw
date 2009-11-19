@@ -336,8 +336,8 @@ void ChamberMap::drawStats(TH2*& me) const {
 
   unsigned int n = 0;
   if (legend.test(0)) printLegendBox(n, "OK/No Data", COLOR_WHITE);
-  if (legend.test(1)) printLegendBox(n, "Error/Hot", COLOR_GREEN);
-  if (legend.test(2)) printLegendBox(n, "OK/Data", COLOR_RED);
+  if (legend.test(1)) printLegendBox(n, "OK/Data", COLOR_GREEN);
+  if (legend.test(2)) printLegendBox(n, "Error/Hot", COLOR_RED);
   if (legend.test(3)) printLegendBox(n, "Cold", COLOR_BLUE);
   if (legend.test(4)) printLegendBox(n, "Masked", COLOR_GREY);
 }
