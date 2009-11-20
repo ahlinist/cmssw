@@ -5,38 +5,38 @@ from ROOT import *
 cuts = {}
 
 #Individual discriminators
-cuts['byLeadTrackPt']               =  TauNtupleSelection("$ByLeadTrackPt")
-cuts['byLeadPionPt']                =  TauNtupleSelection("$ByLeadPionPt")
-cuts['byIsolation']                 =  TauNtupleSelection("$ByIsolation")
-cuts['againstMuon']                 =  TauNtupleSelection("$AgainstMuon")
-cuts['againstElectron']             =  TauNtupleSelection("$AgainstElectron")
-cuts['charge']                      =  TauNtupleSelection("$charge == 1")
-cuts['nTracks']                     =  TauNtupleSelection("$nTrks == 1 || $nTrks == 3")
-cuts['byTaNCfrOne']                 =  TauNtupleSelection('$ByTaNCfrOne')
-cuts['byTaNCfrHalf']                =  TauNtupleSelection('$ByTaNCfrHalf')
-cuts['byTaNCfrQuarter']             =  TauNtupleSelection('$ByTaNCfrQuarter')
-cuts['byTaNCfrTenth']               =  TauNtupleSelection('$ByTaNCfrTenth')
+cuts['ByLeadTrackPt']               =  TauNtupleSelection("$ByLeadTrackPt")
+cuts['ByLeadPionPt']                =  TauNtupleSelection("$ByLeadPionPt")
+cuts['ByIsolation']                 =  TauNtupleSelection("$ByIsolation")
+cuts['AgainstMuon']                 =  TauNtupleSelection("$AgainstMuon")
+cuts['AgainstElectron']             =  TauNtupleSelection("$AgainstElectron")
+cuts['Charge']                      =  TauNtupleSelection("$charge == 1")
+cuts['NTracks']                     =  TauNtupleSelection("$nTrks == 1 || $nTrks == 3")
+cuts['ByTaNCfrOne']                 =  TauNtupleSelection('$ByTaNCfrOne')
+cuts['ByTaNCfrHalf']                =  TauNtupleSelection('$ByTaNCfrHalf')
+cuts['ByTaNCfrQuarter']             =  TauNtupleSelection('$ByTaNCfrQuarter')
+cuts['ByTaNCfrTenth']               =  TauNtupleSelection('$ByTaNCfrTenth')
 
-cuts['chargeAndTracks']             =  cuts['charge']*cuts['nTracks']
+cuts['ChargeAndTracks']             =  cuts['Charge']*cuts['NTracks']
 
-cuts['standardChain']               =  cuts['byLeadPionPt']*cuts['byIsolation']*cuts['chargeAndTracks']
-cuts['standardChainNoMuon']         =  cuts['standardChain']*cuts['againstMuon']
-cuts['standardChainNoElectron']     =  cuts['standardChain']*cuts['againstElectron']
+cuts['StandardChain']               =  cuts['ByLeadPionPt']*cuts['ByIsolation']*cuts['ChargeAndTracks']
+cuts['StandardChainNoMuon']         =  cuts['StandardChain']*cuts['AgainstMuon']
+cuts['StandardChainNoElectron']     =  cuts['StandardChain']*cuts['AgainstElectron']
 
-cuts['tancChainOne']                =  cuts['chargeAndTracks']*cuts['byTaNCfrOne']
-cuts['tancChainHalf']               =  cuts['chargeAndTracks']*cuts['byTaNCfrHalf']
-cuts['tancChainQuarter']            =  cuts['chargeAndTracks']*cuts['byTaNCfrQuarter']
-cuts['tancChainTenth']              =  cuts['chargeAndTracks']*cuts['byTaNCfrTenth']
+cuts['TancChainOne']                =  cuts['ChargeAndTracks']*cuts['ByTaNCfrOne']
+cuts['TancChainHalf']               =  cuts['ChargeAndTracks']*cuts['ByTaNCfrHalf']
+cuts['TancChainQuarter']            =  cuts['ChargeAndTracks']*cuts['ByTaNCfrQuarter']
+cuts['TancChainTenth']              =  cuts['ChargeAndTracks']*cuts['ByTaNCfrTenth']
 
-cuts['tancChainOneNoMuon']          =  cuts['chargeAndTracks']*cuts['byTaNCfrOne']*cuts['againstMuon']
-cuts['tancChainHalfNoMuon']         =  cuts['chargeAndTracks']*cuts['byTaNCfrHalf']*cuts['againstMuon']
-cuts['tancChainQuarterNoMuon']      =  cuts['chargeAndTracks']*cuts['byTaNCfrQuarter']*cuts['againstMuon']
-cuts['tancChainTenthNoMuon']        =  cuts['chargeAndTracks']*cuts['byTaNCfrTenth']*cuts['againstMuon']
+cuts['TancChainOneNoMuon']          =  cuts['ChargeAndTracks']*cuts['ByTaNCfrOne']*cuts['AgainstMuon']
+cuts['TancChainHalfNoMuon']         =  cuts['ChargeAndTracks']*cuts['ByTaNCfrHalf']*cuts['AgainstMuon']
+cuts['TancChainQuarterNoMuon']      =  cuts['ChargeAndTracks']*cuts['ByTaNCfrQuarter']*cuts['AgainstMuon']
+cuts['TancChainTenthNoMuon']        =  cuts['ChargeAndTracks']*cuts['ByTaNCfrTenth']*cuts['AgainstMuon']
 
-cuts['tancChainOneNoElectron']      =  cuts['chargeAndTracks']*cuts['byTaNCfrOne']*cuts['againstElectron']
-cuts['tancChainHalfNoElectron']     =  cuts['chargeAndTracks']*cuts['byTaNCfrHalf']*cuts['againstElectron']
-cuts['tancChainQuarterNoElectron']  =  cuts['chargeAndTracks']*cuts['byTaNCfrQuarter']*cuts['againstElectron']
-cuts['tancChainTenthNoElectron']    =  cuts['chargeAndTracks']*cuts['byTaNCfrTenth']*cuts['againstElectron']
+cuts['TancChainOneNoElectron']      =  cuts['ChargeAndTracks']*cuts['ByTaNCfrOne']*cuts['AgainstElectron']
+cuts['TancChainHalfNoElectron']     =  cuts['ChargeAndTracks']*cuts['ByTaNCfrHalf']*cuts['AgainstElectron']
+cuts['TancChainQuarterNoElectron']  =  cuts['ChargeAndTracks']*cuts['ByTaNCfrQuarter']*cuts['AgainstElectron']
+cuts['TancChainTenthNoElectron']    =  cuts['ChargeAndTracks']*cuts['ByTaNCfrTenth']*cuts['AgainstElectron']
 
 
 def make_plots(files_and_weights, 

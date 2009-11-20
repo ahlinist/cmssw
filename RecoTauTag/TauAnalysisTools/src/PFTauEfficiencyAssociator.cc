@@ -15,6 +15,13 @@ PFTauEfficiencyAssociator::PFTauEfficiencyAssociator(const ParameterSet& iConfig
 
    PFTauProducer_    = iConfig.getParameter<InputTag>("PFTauProducer");
 
+   xAxisFn_ = PFTauStringFuncPtr(new PFTauStringFunc(
+            iConfig.getParameter<string>("xAxisFunction")));
+   yAxisFn_ = PFTauStringFuncPtr(new PFTauStringFunc(
+            iConfig.getParameter<string>("yAxisFunction")));
+   zAxisFn_ = PFTauStringFuncPtr(new PFTauStringFunc(
+            iConfig.getParameter<string>("zAxisFunction")));
+
    size_t nSources = efficiencySources_.size();
    for(size_t iSource = 0; iSource < nSources; ++iSource)
    {
@@ -33,13 +40,6 @@ PFTauEfficiencyAssociator::beginJob(const edm::EventSetup& es)
 void
 PFTauEfficiencyAssociator::beginJob()
 {
-   // Pass pointers to the kinematic variables
-   KineVarPtrs temp_ptrs;
-   temp_ptrs.pt = &pt_;
-   temp_ptrs.eta = &eta_;
-   temp_ptrs.width = &jetwidth_;
-   
-   setupEfficiencySources(effSourcesPSet_, temp_ptrs);
 }
 
 void 
@@ -98,46 +98,12 @@ PFTauEfficiencyAssociator::produce(Event& event, const EventSetup& iSetup)
    }
 }
 
-const reco::PFJetRef& pfJetFromPFTau(const reco::PFTauRef& tauRef)
-{
-   if( tauRef->pfTauTagInfoRef().isNull() )
-   {
-      throw cms::Exception("PFTauEfficiencyAssociator") << " attempting to get the PFJet from a PFTau that has a null PFTauTagInfo reference!";
-   }
-
-   return tauRef->pfTauTagInfoRef()->pfjetRef();
-}
-
-double PFJetWidthExtractor(const reco::PFJetRef& pfJetRef, const reco::Candidate::Point& pv)
-{
-   // get constituents
-   typedef Candidate::LorentzVector FourVector;
-   typedef vector<const Candidate*> daughterCollection;
-   daughterCollection daughters     = pfJetRef->getJetConstituentsQuick();
-   // in 31X plus move to PV corrected physicsP4(pv).pt()
-   FourVector jetAxis = pfJetRef->p4();
-
-   double etWeightedDeltaRSum = 0.;
-   double sumEt               = 0.;
-
-   for(daughterCollection::const_iterator daughter = daughters.begin(); daughter != daughters.end(); ++daughter)
-   {
-      etWeightedDeltaRSum += deltaR<FourVector, FourVector>( (*daughter)->p4(), jetAxis );
-      sumEt += (*daughter)->et();
-   }
-
-   return (sumEt > 0) ? etWeightedDeltaRSum/sumEt : -1;
-}
-
 void
 PFTauEfficiencyAssociator::loadTau(const reco::PFTauRef& tauRef, const PrimaryVertex& pv)
 {
-   // get underlying PFJet
-   const reco::PFJetRef& jet = pfJetFromPFTau(tauRef);
-
-   pt_ = jet->pt();
-   eta_ = fabs(reco::PFJet::physicsEta(pv.Z(), jet->eta())); // correct for DZ
-   jetwidth_ = PFJetWidthExtractor(jet, pv);
+   xAxisValue_ = (*xAxisFn_)(*tauRef);
+   yAxisValue_ = (*yAxisFn_)(*tauRef);
+   zAxisValue_ = (*zAxisFn_)(*tauRef);
 }
 
 
