@@ -87,35 +87,35 @@ process.addMuMu = cms.EDAnalyzer("DQMHistAdder",
 #          muons tested
 #
 process.compEffMuon = cms.EDAnalyzer("DQMHistEffProducer",
-  plots = cms.PSet(
-    muonHLTmatchEff = cms.PSet(
-      numerator = cms.string('/DQMData/MuonQuantities/MuonHLTmatchSel#PAR#'),
-      denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
-      efficiency = cms.string('MuonHLTmatchEff#PAR#'),
+  config = cms.VPSet(
+    cms.PSet(
+      meName_numerator = cms.string('/DQMData/MuonQuantities/MuonHLTmatchSel#PAR#'),
+      meName_denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
+      meName_efficiency = cms.string('MuonHLTmatchEff#PAR#'),
       parameter = cms.vstring('Pt', 'Eta', 'Phi')
     ),
-    muonTrkIsoEff = cms.PSet(
-      numerator = cms.string('/DQMData/MuonQuantities/MuonTrkIsoSel#PAR#'),
-      denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
-      efficiency = cms.string('MuonTrkIsoEff#PAR#'),
+    cms.PSet(
+      meName_numerator = cms.string('/DQMData/MuonQuantities/MuonTrkIsoSel#PAR#'),
+      meName_denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
+      meName_efficiency = cms.string('MuonTrkIsoEff#PAR#'),
       parameter = cms.vstring('Pt', 'Eta', 'Phi')
     ),
-    muonEcalIsoEff = cms.PSet(
-      numerator = cms.string('/DQMData/MuonQuantities/MuonEcalIsoSel#PAR#'),
-      denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
-      efficiency = cms.string('MuonEcalIsoEff#PAR#'),
+    cms.PSet(
+      meName_numerator = cms.string('/DQMData/MuonQuantities/MuonEcalIsoSel#PAR#'),
+      meName_denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
+      meName_efficiency = cms.string('MuonEcalIsoEff#PAR#'),
       parameter = cms.vstring('Pt', 'Eta', 'Phi')
     ),
-    muonHcalIsoEff = cms.PSet(
-      numerator = cms.string('/DQMData/MuonQuantities/MuonHcalIsoSel#PAR#'),
-      denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
-      efficiency = cms.string('MuonHcalIsoEff#PAR#'),
+    cms.PSet(
+      meName_numerator = cms.string('/DQMData/MuonQuantities/MuonHcalIsoSel#PAR#'),
+      meName_denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
+      meName_efficiency = cms.string('MuonHcalIsoEff#PAR#'),
       parameter = cms.vstring('Pt', 'Eta', 'Phi')
     ),
-    muonIdEff = cms.PSet(
-      numerator = cms.string('/DQMData/MuonQuantities/MuonIdSel#PAR#'),
-      denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
-      efficiency = cms.string('MuonIdEff#PAR#'),
+    cms.PSet(
+      meName_numerator = cms.string('/DQMData/MuonQuantities/MuonIdSel#PAR#'),
+      meName_denominator = cms.string('/DQMData/MuonQuantities/MuonKineSel#PAR#'),
+      meName_efficiency = cms.string('MuonIdEff#PAR#'),
       parameter = cms.vstring('Pt', 'Eta', 'Phi')
     )
   )
