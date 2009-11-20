@@ -38,26 +38,26 @@ meName_numerator = 'zElecTauAnalyzer/afterEvtSelElecTauPairZeeHypothesisVeto/' +
 meName_denominator = 'zElecTauAnalyzer/afterEvtSelDiTauCandidateForElecTauAcoplanarity12_beforeEvtSelDiTauCandidateForElecTauMt1MET/' + meName
 
 process.prodKineEventReweightsZtoElecTau = cms.EDAnalyzer("DQMHistEffProducer",
-    plots = cms.PSet(
-        diTauDPhi12Reweight_Ztautau = cms.PSet(
-            numerator = cms.string('harvested/Ztautau/' + meName_numerator),
-            denominator = cms.string('harvested/Ztautau/' + meName_denominator),
-            efficiency = cms.string("bgEstKineEventReweights/Ztautau/diTauMvis")
+    config = cms.VPSet(
+        cms.PSet(
+            meName_numerator = cms.string('harvested/Ztautau/' + meName_numerator),
+            meName_denominator = cms.string('harvested/Ztautau/' + meName_denominator),
+            meName_efficiency = cms.string("bgEstKineEventReweights/Ztautau/diTauMvis")
         ),
-        diTauDPhi12Reweight_WplusJets = cms.PSet(
-            numerator = cms.string('harvested/WplusJets/' + meName_numerator),
-            denominator = cms.string('harvested/WplusJets/' + meName_denominator),
-            efficiency = cms.string("bgEstKineEventReweights/WplusJets/diTauMvis")
+        cms.PSet(
+            meName_numerator = cms.string('harvested/WplusJets/' + meName_numerator),
+            meName_denominator = cms.string('harvested/WplusJets/' + meName_denominator),
+            meName_efficiency = cms.string("bgEstKineEventReweights/WplusJets/diTauMvis")
         ),
-        diTauDPhi12Reweight_TTplusJets = cms.PSet(
-            numerator = cms.string('harvested/TTplusJets/' + meName_numerator),
-            denominator = cms.string('harvested/TTplusJets/' + meName_denominator),
-            efficiency = cms.string("bgEstKineEventReweights/TTplusJets/diTauMvis")
+        cms.PSet(
+            meName_numerator = cms.string('harvested/TTplusJets/' + meName_numerator),
+            meName_denominator = cms.string('harvested/TTplusJets/' + meName_denominator),
+            meName_efficiency = cms.string("bgEstKineEventReweights/TTplusJets/diTauMvis")
         ),
-        diTauDPhi12Reweight_QCD = cms.PSet(
-            numerator = cms.string('harvested/qcdSum/' + meName_numerator),
-            denominator = cms.string('harvested/qcdSum/' + meName_denominator),
-            efficiency = cms.string("bgEstKineEventReweights/QCD/diTauMvis")
+        cms.PSet(
+            meName_numerator = cms.string('harvested/qcdSum/' + meName_numerator),
+            meName_denominator = cms.string('harvested/qcdSum/' + meName_denominator),
+            meName_efficiency = cms.string("bgEstKineEventReweights/QCD/diTauMvis")
         )
     )                                                     
 )
