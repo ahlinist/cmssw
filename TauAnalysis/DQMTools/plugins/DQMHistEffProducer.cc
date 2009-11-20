@@ -16,27 +16,29 @@
 
 #include <iostream>
 
+typedef std::vector<std::string> vstring;
+
 DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
 {
   //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
 
-  numerator_ = cfg.getParameter<std::string>("numerator");
-  //std::cout << " numerator = " << numerator_ << std::endl;
+  meName_numerator_ = cfg.getParameter<std::string>("meName_numerator");
+  //std::cout << " meName_numerator = " << meName_numerator_ << std::endl;
 
-  denominator_ = cfg.getParameter<std::string>("denominator");
-  //std::cout << " denominator = " << denominator_ << std::endl;
+  meName_denominator_ = cfg.getParameter<std::string>("meName_denominator");
+  //std::cout << " meName_denominator = " << meName_denominator_ << std::endl;
 
-  efficiency_ = cfg.getParameter<std::string>("efficiency");
-  //std::cout << " efficiency = " << efficiency_ << std::endl;
+  meName_efficiency_ = cfg.getParameter<std::string>("meName_efficiency");
+  //std::cout << " meName_efficiency = " << meName_efficiency_ << std::endl;
 }
 
-DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const std::string& numerator, const std::string& denominator, const std::string& efficiency)
-  : numerator_(numerator), denominator_(denominator), efficiency_(efficiency)
+DQMHistEffProducer::cfgEntryPlot::cfgEntryPlot(const std::string& meName_numerator, const std::string& meName_denominator, const std::string& meName_efficiency)
+  : meName_numerator_(meName_numerator), meName_denominator_(meName_denominator), meName_efficiency_(meName_efficiency)
 {
   //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
-  //std::cout << " numerator = " << numerator_ << std::endl;
-  //std::cout << " denominator = " << denominator_ << std::endl;
-  //std::cout << " efficiency = " << efficiency_ << std::endl;
+  //std::cout << " meName_numerator = " << meName_numerator_ << std::endl;
+  //std::cout << " meName_denominator = " << meName_denominator_ << std::endl;
+  //std::cout << " meName_efficiency = " << meName_efficiency_ << std::endl;
 }
 
 //
@@ -47,32 +49,33 @@ DQMHistEffProducer::DQMHistEffProducer(const edm::ParameterSet& cfg)
 {
   //std::cout << "<DQMHistEffProducer::DQMHistEffProducer>:" << std::endl;
   
-  edm::ParameterSet plots = cfg.getParameter<edm::ParameterSet>("plots");
-  std::vector<std::string> plotNames = plots.getParameterNamesForType<edm::ParameterSet>();
-  for ( std::vector<std::string>::const_iterator plotName = plotNames.begin(); plotName != plotNames.end(); ++plotName ) {
-    edm::ParameterSet plotConfig = plots.getParameter<edm::ParameterSet>(*plotName);
+  typedef std::vector<edm::ParameterSet> vParameterSet;
+  vParameterSet cfgPlots = cfg.getParameter<vParameterSet>("config");
+  for ( vParameterSet::const_iterator cfgPlot = cfgPlots.begin();
+	cfgPlot != cfgPlots.end(); ++cfgPlot ) {
+    if ( cfgPlot->exists("parameter") ) {
+      std::string meName_numerator = cfgPlot->getParameter<std::string>("meName_numerator");
+      std::string meName_denominator = cfgPlot->getParameter<std::string>("meName_denominator");
+      std::string meName_efficiency = cfgPlot->getParameter<std::string>("meName_efficiency");
 
-    typedef std::vector<std::string> vstring;
-    vstring plotParameter = ( plotConfig.exists("parameter") ) ? plotConfig.getParameter<vstring>("parameter") : vstring();
-    if ( plotParameter.size() == 0 ) {
-      cfgEntryPlot_.push_back(cfgEntryPlot(plotConfig));
-    } else {
-      std::string numerator = plotConfig.getParameter<std::string>("numerator");
-      std::string denominator = plotConfig.getParameter<std::string>("denominator");
-      std::string efficiency = plotConfig.getParameter<std::string>("efficiency");
-      for ( vstring::const_iterator parameter = plotParameter.begin(); parameter != plotParameter.end(); ++parameter ) {
+      vstring parameter = cfgPlot->getParameter<vstring>("parameter");
+      
+      for ( vstring::const_iterator parameter_i = parameter.begin();
+	    parameter_i != parameter.end(); ++parameter_i ) {
+
 	int errorFlag = 0;
-	std::string modNumerator = replace_string(numerator, parKeyword, *parameter, 1, 1, errorFlag);
-	std::string modDenominator = replace_string(denominator, parKeyword, *parameter, 1, 1, errorFlag);
-	std::string modEfficiency = replace_string(efficiency, parKeyword, *parameter, 1, 1, errorFlag);
+	std::string modNumerator = replace_string(meName_numerator, parKeyword, *parameter_i, 1, 1, errorFlag);
+	std::string modDenominator = replace_string(meName_denominator, parKeyword, *parameter_i, 1, 1, errorFlag);
+	std::string modEfficiency = replace_string(meName_efficiency, parKeyword, *parameter_i, 1, 1, errorFlag);
 
 	if ( !errorFlag ) {
 	  cfgEntryPlot_.push_back(cfgEntryPlot(modNumerator, modDenominator, modEfficiency));
 	} else {
-	  edm::LogError("DQMHistEffProducer") << " Failed to decode histogram names for plotName = " << (*plotName) 
-					      << " --> skipping !!";
+	  edm::LogError("DQMHistEffProducer") << " Failed to decode histogram names --> skipping !!";
 	}
       }
+    } else {
+      cfgEntryPlot_.push_back(cfgEntryPlot(*cfgPlot));
     }
   }
 }
@@ -93,40 +96,30 @@ void DQMHistEffProducer::endJob()
 
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
-    edm::LogError ("endJob") << " Failed to access dqmStore --> histograms will NOT be plotted !!";
+    edm::LogError ("endJob") << " Failed to access dqmStore --> efficiency histograms will NOT be produced !!";
     return;
   }
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); plot != cfgEntryPlot_.end(); ++plot ) {
-    //std::cout << "plot->numerator_ = " << plot->numerator_ << std::endl;
+  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); 
+        plot != cfgEntryPlot_.end(); ++plot ) {
     std::string numeratorHistogramName, numeratorHistogramDirectory;
-    separateMonitorElementFromDirectoryName(plot->numerator_, numeratorHistogramName, numeratorHistogramDirectory);
-    //std::cout << "numeratorHistogramName = " << numeratorHistogramName << std::endl;
-    //std::cout << "numeratorHistogramDirectory = " << numeratorHistogramDirectory << std::endl;
+    separateMonitorElementFromDirectoryName(plot->meName_numerator_, numeratorHistogramName, numeratorHistogramDirectory);
     MonitorElement* meNumerator = dqmStore.get(std::string(numeratorHistogramDirectory).append(dqmSeparator).append(numeratorHistogramName));
-    //std::cout << "meNumerator = " << meNumerator << std::endl;
     TH1* histoNumerator = ( meNumerator != NULL ) ? meNumerator->getTH1() : NULL;
     
-    //std::cout << "plot->denominator_ = " << plot->denominator_ << std::endl;
     std::string denominatorHistogramName, denominatorHistogramDirectory;
-    separateMonitorElementFromDirectoryName(plot->denominator_, denominatorHistogramName, denominatorHistogramDirectory);
-    //std::cout << "denominatorHistogramName = " << denominatorHistogramName << std::endl;
-    //std::cout << "denominatorHistogramDirectory = " << denominatorHistogramDirectory << std::endl;
+    separateMonitorElementFromDirectoryName(plot->meName_denominator_, denominatorHistogramName, denominatorHistogramDirectory);
     MonitorElement* meDenominator = dqmStore.get(std::string(denominatorHistogramDirectory).append(dqmSeparator).append(denominatorHistogramName));
-    //std::cout << "meDenominator = " << meDenominator << std::endl;
     TH1* histoDenominator = ( meDenominator != NULL ) ? meDenominator->getTH1() : NULL;
     
     if ( histoNumerator != NULL && histoDenominator != NULL ) {
-      if ( !histoNumerator->GetSumw2N() ) histoNumerator->Sumw2();
-      //std::cout << " histoNumerator->GetName = " << histoNumerator->GetName() << std::endl;
-      
+      if ( !histoNumerator->GetSumw2N()   ) histoNumerator->Sumw2();
       if ( !histoDenominator->GetSumw2N() ) histoDenominator->Sumw2();
-      //std::cout << " histoDenominator->GetName = " << histoNumerator->GetName() << std::endl;
       
       std::string effHistogramName, effHistogramDirectory, dummy;
-      separateMonitorElementFromDirectoryName(plot->efficiency_, effHistogramName, effHistogramDirectory);
+      separateMonitorElementFromDirectoryName(plot->meName_efficiency_, effHistogramName, effHistogramDirectory);
       if ( effHistogramDirectory == "" ) separateMonitorElementFromDirectoryName(numeratorHistogramName, dummy, effHistogramDirectory);
       if ( effHistogramDirectory != "" ) dqmStore.setCurrentFolder(effHistogramDirectory);
       
@@ -135,9 +128,9 @@ void DQMHistEffProducer::endJob()
       
       histoEfficiency->getTH1F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
     } else {
-      edm::LogError("endJob") << " Failed to produce efficiency histogram = " << plot->efficiency_ << " !!";
-      if ( histoNumerator   == NULL ) edm::LogError("endJob") << "  numerator = " << plot->numerator_ << " does not exist.";
-      if ( histoDenominator == NULL ) edm::LogError("endJob") << "  denominator = " << plot->denominator_ << " does not exist.";
+      edm::LogError("endJob") << " Failed to produce efficiency Histogram = " << plot->meName_efficiency_ << " !!";
+      if ( histoNumerator   == NULL ) edm::LogError("endJob") << "  numerator = " << plot->meName_numerator_ << " does not exist.";
+      if ( histoDenominator == NULL ) edm::LogError("endJob") << "  denominator = " << plot->meName_denominator_ << " does not exist.";
     }
   }
 }

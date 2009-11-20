@@ -5,7 +5,7 @@
  *  
  *  Class to produce efficiency histograms by dividing nominator by denominator histograms
  *
- *  $Date: 2009/01/21 16:04:59 $
+ *  $Date: 2009/01/21 17:34:57 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -25,9 +25,9 @@ class DQMHistEffProducer : public edm::EDAnalyzer
   {
     explicit cfgEntryPlot(const edm::ParameterSet&);
     explicit cfgEntryPlot(const std::string&, const std::string&, const std::string&);
-    std::string numerator_;
-    std::string denominator_;
-    std::string efficiency_;
+    std::string meName_numerator_;
+    std::string meName_denominator_;
+    std::string meName_efficiency_;
   };
 
  public:
