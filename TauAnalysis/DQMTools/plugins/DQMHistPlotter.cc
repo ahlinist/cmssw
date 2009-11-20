@@ -270,15 +270,28 @@ void DQMHistPlotter::cfgEntryAxisX::applyTo(TH1* histogram) const
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+void readYcfg(const edm::ParameterSet& cfg, const char* yAxisLabel, double& yAxisValue, double yAxisDefaultValue, bool& yAxisSet)
+{
+  if ( cfg.exists(yAxisLabel) ) {
+    yAxisValue = cfg.getParameter<double>(yAxisLabel);
+    yAxisSet = true;
+  } else {
+    yAxisValue = yAxisDefaultValue;
+    yAxisSet = false;
+  }
+}
+
 DQMHistPlotter::cfgEntryAxisY::cfgEntryAxisY(const std::string& name, const edm::ParameterSet& cfg)
 {
   name_ = name;
 
-  minY_linear_ = ( cfg.exists("minY_linear") ) ? cfg.getParameter<double>("minY_linear") : defaultMinY_linear;
-  minY_log_ = ( cfg.exists("minY_log") ) ? cfg.getParameter<double>("minY_log") : defaultMinY_log;
-  maxY_linear_ = ( cfg.exists("maxY_linear") ) ? cfg.getParameter<double>("maxY_linear") : defaultMaxY_linear;
-  maxY_log_ = ( cfg.exists("maxY_log") ) ? cfg.getParameter<double>("maxY_log") : defaultMaxY_log;
+  readYcfg(cfg, "minY_linear", minY_linear_, defaultMinY_linear, minYset_linear_);
+  readYcfg(cfg, "minY_log", minY_log_, defaultMinY_log, minYset_log_);
+  readYcfg(cfg, "maxY_linear", maxY_linear_, defaultMaxY_linear, maxYset_linear_);
+  readYcfg(cfg, "maxY_log", maxY_log_, defaultMaxY_log, maxYset_log_);
+
   yScale_ = ( cfg.exists("yScale") ) ? cfg.getParameter<std::string>("yScale") : defaultYscale;
+
   yAxisTitle_ = cfg.getParameter<std::string>("yAxisTitle");
   yAxisTitleOffset_ = ( cfg.exists("yAxisTitleOffset") ) ? cfg.getParameter<double>("yAxisTitleOffset") : defaultYaxisTitleOffset;
   yAxisTitleSize_ = ( cfg.exists("yAxisTitleSize") ) ? cfg.getParameter<double>("yAxisTitleSize") : defaultYaxisTitleSize;
@@ -302,13 +315,15 @@ void DQMHistPlotter::cfgEntryAxisY::print() const
 
 void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
 {
+std::cout << "<cfgEntryAxisY::applyTo>:" << std::endl; 
+
   if ( histogram ) {
     bool yLogScale = ( yScale_ == yScale_log ) ? true : false;
 
-    double minY = ( yLogScale ) ? minY_log_ : minY_linear_;
-    double defaultMinY = ( yLogScale ) ? defaultMinY_log : defaultMinY_linear;
-    if ( minY != defaultMinY ) {
+    bool minYset = ( yLogScale ) ? minYset_log_ : minYset_linear_;
+    if ( minYset ) {
 //--- normalize y-axis range using given configuration parameter
+      double minY = ( yLogScale ) ? minY_log_ : minY_linear_;
       histogram->SetMinimum(minY);
     } else {
 //--- in case configuration parameter for y-axis range not explicitely given,
@@ -318,10 +333,10 @@ void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
       histogram->SetMinimum(defaultYaxisMinimumScaleFactor*yAxisNorm_min_);
     }
 
-    double maxY = ( yLogScale ) ? maxY_log_ : maxY_linear_;
-    double defaultMaxY = ( yLogScale ) ? defaultMaxY_log : defaultMaxY_linear;
-    if ( maxY != defaultMaxY ) {
+    bool maxYset = ( yLogScale ) ? maxYset_log_ : maxYset_linear_;
+    if ( maxYset ) {
 //--- normalize y-axis range using given configuration parameter
+      double maxY = ( yLogScale ) ? maxY_log_ : maxY_linear_;
       histogram->SetMaximum(maxY);
     } else {
 //--- in case configuration parameter for y-axis range not explicitely given,
