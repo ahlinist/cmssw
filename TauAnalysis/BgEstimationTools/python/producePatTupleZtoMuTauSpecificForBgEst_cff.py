@@ -14,8 +14,8 @@ from TauAnalysis.BgEstimationTools.muTauPairProductionForBgEst_cff import *
 from TauAnalysis.BgEstimationTools.patJetSelectionForBgEst_cff import *
 from TauAnalysis.BgEstimationTools.patJetSelectionForZtoMuTauBgEst_cff import *
 
-producePatTupleForBgEst = cms.Sequence(
-#    selectLayer1ElectronsLooseIsolation * selectElectronsForBgEst 
+producePatTupleZtoMuTauSpecificForBgEst = cms.Sequence(
+   #selectLayer1ElectronsLooseIsolation * selectElectronsForBgEst 
     selectMuonsForBgEst
    * selectTausForBgEst
    * produceMuTauPairsForBgEst
