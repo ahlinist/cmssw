@@ -366,8 +366,24 @@ public:
 
 	// gio
 	int BDauIdMC_[15];
+	int BDauDauIdMC_[15];
         int BmesonsId_;
 	int GenNumberOfDaughters_;
+
+	double BDauMMC_[15];
+	double BDauPtMC_[15];
+	double BDauPzMC_[15];
+	double BDauEtaMC_[15];
+	double BDauPhiMC_[15];
+
+	double BMMC_;
+	double BPtMC_;
+	double BPzMC_;
+	double BEtaMC_;
+	double BPhiMC_;
+
+        double genBsVtx_z_, genBsVtx_y_, genBsVtx_x_ ;
+        double genBsSVtx_z_, genBsSVtx_y_, genBsSVtx_x_ ;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 

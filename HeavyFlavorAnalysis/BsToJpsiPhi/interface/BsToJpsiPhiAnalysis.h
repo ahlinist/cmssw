@@ -126,6 +126,19 @@ private:
 	int Mu2mcId;
 	int Mu2momId;
 	int Mu2gmomId;
+
+	int K1mcIdBd;
+	int K1momIdBd;
+	int K1gmomIdBd;
+	int K2mcIdBd;
+	int K2momIdBd;
+	int K2gmomIdBd;
+	int Mu1mcIdBd;
+	int Mu1momIdBd;
+	int Mu1gmomIdBd;
+	int Mu2mcIdBd;
+	int Mu2momIdBd;
+	int Mu2gmomIdBd;
 	
 	double BLxy;
 	double BLxy2;
