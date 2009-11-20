@@ -5,7 +5,7 @@
  * \class PFTauEfficiencyAssociator created : Wed Aug  5 11:34:55 PDT 2009
  * revised : , \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.1.2.1 $
+ * \version $Revision: 1.1 $
  *
  * Set of classes to produce a set of ValueMaps mapping pat::LookupTableRecords
  * containing estimated efficiency/fake rate to PFTaus for a collection of
@@ -13,7 +13,7 @@
  * jet width.  The methods to access the efficiencySource are abstract, and
  * must be implemented in the subclass. 
  *
- * $Id: PFTauEfficiencyAssociator.h,v 1.1.2.1 2009/09/23 03:41:47 friis Exp $
+ * $Id: PFTauEfficiencyAssociator.h,v 1.1 2009/11/04 21:53:12 friis Exp $
  *
  */
 
@@ -26,6 +26,7 @@
 #include "DataFormats/Common/interface/ValueMap.h" 
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/PatCandidates/interface/LookupTableRecord.h"
+#include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include <memory>
 
 using namespace edm;
@@ -35,13 +36,8 @@ class PFTauEfficiencyAssociator : public EDProducer {
 
       typedef reco::Candidate::Point PrimaryVertex;
       typedef ValueMap<pat::LookupTableRecord> EfficiencyMap;
-
-      // struct to hold the current state of the tau
-      struct KineVarPtrs {
-         const double* pt;
-         const double* eta;
-         const double* width;
-      };
+      typedef StringObjectFunction<reco::PFTau> PFTauStringFunc;
+      typedef boost::shared_ptr<PFTauStringFunc> PFTauStringFuncPtr;
 
       explicit PFTauEfficiencyAssociator(const ParameterSet&);
       virtual ~PFTauEfficiencyAssociator(){}
@@ -50,22 +46,29 @@ class PFTauEfficiencyAssociator : public EDProducer {
       void beginJob(const EventSetup&); //22X compability 
       void produce(Event&, const EventSetup&);
 
-      // Abstract functions to access the desired efficiency source.
-      virtual void setupEfficiencySources(const ParameterSet& effSources, const KineVarPtrs& vars) = 0;
       // Retrieve the expected efficiency for source _i given the kinematic variables.
       virtual pat::LookupTableRecord getEfficiency(size_t iSource) = 0;            
 
       const std::vector<std::string>& efficiencySourceNames() const { return efficiencySources_; };
+
+      // Get the x, y and z axis values for the current tau
+      double x() const {return xAxisValue_;};
+      double y() const {return yAxisValue_;};
+      double z() const {return zAxisValue_;};
 
    private:
       // need to cache this, as we can't call virtual functions from the constructor
       ParameterSet effSourcesPSet_;
 
       void loadTau(const reco::PFTauRef&, const PrimaryVertex&);
-      // Kinematic variables that paremterize eff. for current tau
-      double pt_;
-      double eta_;
-      double jetwidth_;
+
+      PFTauStringFuncPtr xAxisFn_;
+      PFTauStringFuncPtr yAxisFn_;
+      PFTauStringFuncPtr zAxisFn_;
+
+      double xAxisValue_;
+      double yAxisValue_;
+      double zAxisValue_;
 
       InputTag PFTauProducer_;
       InputTag PVProducer_;

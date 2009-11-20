@@ -3,13 +3,13 @@
  * \created : Mon Sep 21 17:46:35 PDT 2009 
  * \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.1.2.2 $
+ * \version $Revision: 1.1 $
  *
  * Implements PFTauEfficiencyAssociator to produce a mapping of efficiencies
  * (parameterizied by pt, eta, and jet widht) stored in a ROOT TH3 histograms
  * to reco::PFTaus
  *
- * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.1.2.2 2009/10/09 00:00:52 friis Exp $
+ * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.1 2009/11/04 21:53:12 friis Exp $
  *
  */
 
@@ -21,7 +21,7 @@
 class PFTauEfficiencyAssociatorFromTH3 : public PFTauEfficiencyAssociator {
    public:
 
-     explicit PFTauEfficiencyAssociatorFromTH3(const ParameterSet& pset):PFTauEfficiencyAssociator(pset){};
+     explicit PFTauEfficiencyAssociatorFromTH3(const ParameterSet& pset);
 
      ~PFTauEfficiencyAssociatorFromTH3(){}
 
@@ -29,16 +29,13 @@ class PFTauEfficiencyAssociatorFromTH3 : public PFTauEfficiencyAssociator {
      virtual pat::LookupTableRecord getEfficiency(size_t iEff);
 
      /// setup the efficiency sources
-     virtual void setupEfficiencySources(const ParameterSet& effSources, const KineVarPtrs& vars);
+     //virtual void setupEfficiencySources(const ParameterSet& effSources, const KineVarPtrs& vars);
 
      // contains the histogram object, and the functors to retrieve the lookup values for x,y and z
      struct Histogram {
         std::string name;
         std::string location;           // location (in root file/database) of TH3
         TH3F* histogram;  
-        const double* xAxis;            // pointers to internal kinematic quantities (pt, eta, ..)
-        const double* yAxis;
-        const double* zAxis;
      };
 
    private:
@@ -46,24 +43,11 @@ class PFTauEfficiencyAssociatorFromTH3 : public PFTauEfficiencyAssociator {
      TFile* file_;
 };
 
-
-const double *
-translateNameToKineVarPtr(const std::string& varName, const PFTauEfficiencyAssociator::KineVarPtrs& vars)
+PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const ParameterSet& pset):
+   PFTauEfficiencyAssociator(pset)
 {
-   if( varName == "pt" )
-      return vars.pt;
-   if( varName == "eta" )
-      return vars.eta;
-   if( varName == "width" )
-      return vars.width;
+   const ParameterSet& effSources = pset.getParameter<ParameterSet>("efficiencySources");
 
-   //edm::LogError("PFTauEfficiencyAssociatorFromTH3") << " error - cannot find kinematic quantity for variable " << varName << ", histograms will not be produced!";
-   return NULL;
-}
-
-void
-PFTauEfficiencyAssociatorFromTH3::setupEfficiencySources(const ParameterSet& effSources, const KineVarPtrs& vars)
-{
    typedef std::vector<std::string> vstring;
    const vstring& effNames = efficiencySourceNames();
 
@@ -101,16 +85,6 @@ PFTauEfficiencyAssociatorFromTH3::setupEfficiencySources(const ParameterSet& eff
          throw cms::Exception("InputFileError") << "can't retieve histogram " << container.name << " from location: " << container.location;
       }
 
-      // get axis information
-      const ParameterSet& xAxis = sourcePSet.getParameter<ParameterSet>("xAxis");
-      const ParameterSet& yAxis = sourcePSet.getParameter<ParameterSet>("yAxis");
-      const ParameterSet& zAxis = sourcePSet.getParameter<ParameterSet>("zAxis");
-
-      // associate axis to correct kinematic variables
-      container.xAxis = translateNameToKineVarPtr(xAxis.getParameter<std::string>("varName"), vars);
-      container.yAxis = translateNameToKineVarPtr(yAxis.getParameter<std::string>("varName"), vars);
-      container.zAxis = translateNameToKineVarPtr(zAxis.getParameter<std::string>("varName"), vars);
-
       // store this efficiency source
       efficiencies_.push_back(container);
    }
@@ -131,7 +105,7 @@ PFTauEfficiencyAssociatorFromTH3::getEfficiency(size_t iEff)
    //   const_cast - for some reason TH1::FindBin is not const???
    //   (this->*(effSource.xAxis)) effSource.xAxis is a pointer to the either pt, eta, or width() member fuctions of this producer
    //   and returns the value of the of the current tau for the variable associated to the xAxis
-   Int_t globalBin = effSource.histogram->FindBin( *(effSource.xAxis), *(effSource.yAxis), *(effSource.zAxis));
+   Int_t globalBin = effSource.histogram->FindBin( this->x(), this->y(), this->z());
 
    double efficiency = effSource.histogram->GetBinContent(globalBin);
    double error = effSource.histogram->GetBinError(globalBin);
