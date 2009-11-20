@@ -5,8 +5,8 @@
  *  
  *  Class to plot histograms and create a postscript file
  *
- *  $Date: 2009/11/07 14:19:51 $
- *  $Revision: 1.3 $
+ *  $Date: 2009/11/12 15:39:12 $
+ *  $Revision: 1.4 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -63,9 +63,13 @@ class DQMHistPlotter : public edm::EDAnalyzer
     void applyTo(TH1*) const;
     std::string name_;
     double minY_linear_;
+    bool minYset_linear_;
     double minY_log_;
+    bool minYset_log_;
     double maxY_linear_;
+    bool maxYset_linear_;
     double maxY_log_;
+    bool maxYset_log_;
     std::string yScale_;
     std::string yAxisTitle_;
     double yAxisTitleOffset_;
