@@ -68,7 +68,7 @@ drawJobTemplateHist = cms.PSet(
         )
     ),
     norm = cms.double(1.),
-    title = cms.string('M_{vis}(Muon + Tau)'),
+    title = cms.string('M_{vis} (Muon + Tau)'),
     xAxis = cms.string('M'),
     yAxis = cms.string('numEntries_linear'),
     legend = cms.string('regular')
