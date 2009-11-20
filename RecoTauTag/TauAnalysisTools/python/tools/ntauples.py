@@ -27,7 +27,7 @@ class TauNtuple(object):
       return len(self.expressions['ref']) > 0
 
    def set_collection(self, collection='matched'):
-      self.current_collection = 'matched'
+      self.current_collection = collection
 
    def registerExpression(self, expression, matching_option='matched'):
       # Add to our expressions list

@@ -67,7 +67,7 @@ def makeTauNtuple(process,
    setattr(process, module_name, new_ntuple)
    process.buildTauNtuple += new_ntuple
 
-def makeStandardTauNtuples(process, matchingSource = "trueHadronicTaus"):
+def makeStandardTauNtuples(process, matchingCollection = "trueHadronicTaus"):
    # Shrinking cone
    makeTauNtuple(process, 
          input_collection = 'shrinkingConePFTauProducer',
@@ -75,12 +75,12 @@ def makeStandardTauNtuples(process, matchingSource = "trueHadronicTaus"):
          expressions = cms.PSet(common_expressions, pftau_expressions),
          discriminators = cms.PSet(pftau_discriminators, pftau_discriminators_extra),
          matchingOption = "matched",
-         matchingCollection = matchingSource)
+         matchingCollection = matchingCollection)
    makeTauNtuple(process, 
          input_collection = 'fixedConePFTauProducer',
          tauType = 'fixedConePFTau',
          expressions = cms.PSet(common_expressions, pftau_expressions),
          discriminators = cms.PSet(pftau_discriminators),
          matchingOption = "matched",
-         matchingCollection = matchingSource)
+         matchingCollection = matchingCollection)
 

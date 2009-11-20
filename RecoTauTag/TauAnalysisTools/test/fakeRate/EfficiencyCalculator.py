@@ -40,6 +40,8 @@ def divideNumeratorsInDirectory(directory):
    # compute the efficiencies for all numerators in this directory
    if denominator:
 
+      print "Found denominator histogram"
+
       histogramType = "TH%i" % denominator.GetDimension()
 
       # loop over numerators and make efficiency 'histograms'
@@ -50,10 +52,12 @@ def divideNumeratorsInDirectory(directory):
          #tgraphMitErrors = TGraphAsymmErrors(numerator, denominator)
 
          # Make a new histogram w/ the efficiency computed for each bin
-         efficiencyHistogram = numerator.Clone()
-         efficiencyHistogram.SetName(numerator.GetName() + "_efficiency")
+         efficiencyHistogram = numerator.Clone(
+	       numerator.GetName() + "_efficiency")
          efficiencyHistogram.Divide(denominator)
-         #efficiencyHistogram.Write()
+	 efficiencyHistogram.SetDirectory(directory)
+         efficiencyHistogram.Write()
+	 del efficiencyHistogram
          #print "Made eff histo", efficiencyHistogram.GetName()
 
 

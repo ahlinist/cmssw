@@ -40,7 +40,9 @@ cuts['tancChainTenthNoElectron']    =  cuts['chargeAndTracks']*cuts['byTaNCfrTen
 
 
 def make_plots(files_and_weights, 
-      output_file = "fakeWeights.root",
+      output_file = "fakeRateHistograms.root",
+      ntuple_name = "shrinking",
+      ntuple_setup = lambda ntuple: ntuple.set_collection("matched"),
       x_expr="$jetPt", y_expr="$eta", z_expr="$jetWidth", 
       x_bins=[], y_bins=[], z_bins=[], selections=cuts):
 
@@ -75,10 +77,13 @@ def make_plots(files_and_weights,
       my_file = TFile(file, "READ")
       events = my_file.Get("Events")
       ntuples = TauNtupleManager(events)
+      ntuple = getattr(ntuples, ntuple_name)
+      ntuple_setup(ntuple)
+      print ntuple
       for name, histo_info in histograms.iteritems():
          print "Filling ", name
          output.cd()
-         draw(events, ntuples.shrinkingConePFTau,
+         draw(events, ntuple,
             # Yes, it actually does go z, y, x :/
             expr = '%s:%s:%s' % (z_expr, y_expr, x_expr),
             selection = histo_info["selection"],
