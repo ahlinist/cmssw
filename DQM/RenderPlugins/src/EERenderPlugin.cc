@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.143 2009/11/09 11:06:20 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.144 2009/11/09 16:39:35 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.143 $
-  \date $Date: 2009/11/09 11:06:20 $
+  \version $Revision: 1.144 $
+  \date $Date: 2009/11/09 16:39:35 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -463,6 +463,10 @@ private:
       {
         obj->GetXaxis()->SetNdivisions(10);
         obj->GetYaxis()->SetNdivisions(10);
+        if(name.find( "EETTT" ) == std::string::npos ) {
+          gPad->SetGridx();
+          gPad->SetGridy();          
+        }
       }
 
       if( nbx == 100 && nby == 100 )
@@ -1219,7 +1223,7 @@ private:
         return;
       }
 
-      if( !( nbx == 50 && nby == 50 ) )
+      if( nbx == 50 && nby == 50 && name.find( "EETTT" ) == std::string::npos )
       {
         int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
         int x2 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
