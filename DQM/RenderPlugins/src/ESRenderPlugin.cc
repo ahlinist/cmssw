@@ -11,6 +11,8 @@
 #include "TText.h"
 #include "TGraph.h"
 #include "TLine.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
 
 #include <math.h>
 
@@ -56,6 +58,7 @@ private:
   void preDrawTH1F( TCanvas *c, const VisDQMObject &o );
   void preDrawTH2F( TCanvas *c, const VisDQMObject &o );
   void postDrawTH2F( TCanvas *c, const VisDQMObject &o );
+  void preDrawTProfile( TCanvas *c, const VisDQMObject &o );
   
   void drawBorders( int plane, float sx, float sy );
   
@@ -65,26 +68,20 @@ private:
 
 bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
 
-   if( o.name.find( "EcalPreshower" ) != std::string::npos ) {
-      if( o.name.find( "ESOccupancyTask" ) != std::string::npos ){
+   if ( o.name.find( "EcalPreshower" ) != std::string::npos ) {
+     if ( o.name.find( "ESOccupancyTask" ) != std::string::npos )
 	 return true;
-      }
-      if( o.name.find( "ESRawDataTask" ) != std::string::npos ){
-	 return true;
-      }
-      if( o.name.find( "ESIntegrityTask" ) != std::string::npos ){
-	 return true;
-      }
-      if( o.name.find( "ESIntegrityClient" ) != std::string::npos ){
-	 return true;
-      }
-      if( o.name.find( "EventInfo" ) != std::string::npos ){
-	 return true;
-      }
+     if ( o.name.find( "ESRawDataTask" ) != std::string::npos ) 
+       return true;
+     if ( o.name.find( "ESIntegrityTask" ) != std::string::npos )
+       return true;
+     if ( o.name.find( "ESIntegrityClient" ) != std::string::npos )
+       return true;
+     if ( o.name.find( "EventInfo" ) != std::string::npos )
+       return true;
    }
 
    return false;
-
 }
 
 void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
@@ -99,68 +96,86 @@ void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImg
    gStyle->SetFrameFillColor(10);
    gStyle->SetStatColor(10);
    gStyle->SetTitleFillColor(10);
-
    gStyle->SetOptTitle(kTRUE);
    gStyle->SetTitleBorderSize(0);
-
    gStyle->SetOptStat(kFALSE);
    gStyle->SetStatBorderSize(1);
    gStyle->SetOptFit(kFALSE);
 
-   if( dynamic_cast<TH1F*>( o.object ) ) {
-      preDrawTH1F( c, o );
-   }
-
-   if( dynamic_cast<TH2F*>( o.object ) ) {
-      preDrawTH2F( c, o );
-   }
-
+   if ( dynamic_cast<TProfile*>( o.object ) ) 
+     preDrawTProfile( c, o );
+   else if ( dynamic_cast<TH1F*>( o.object ) ) 
+     preDrawTH1F( c, o );
+   else if ( dynamic_cast<TH2F*>( o.object ) ) 
+     preDrawTH2F( c, o );
+   
 }
 
 void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
+
    c->cd();
 
-   if( dynamic_cast<TH2F*>( o.object ) )
-   {
-      postDrawTH2F( c, o );
-   }
+   if ( dynamic_cast<TH2F*>( o.object ) ) 
+     postDrawTH2F( c, o );
+  
 }
 
-void ESRenderPlugin::preDrawTH1F( TCanvas *, const VisDQMObject &o ) {
+void ESRenderPlugin::preDrawTProfile(TCanvas *, const VisDQMObject &o) {
+
+  TProfile* obj = dynamic_cast<TProfile*>( o.object );
+  assert( obj );
+
+  gStyle->SetPaintTextFormat();
+  
+  gStyle->SetOptStat(kFALSE);
+  obj->SetStats(kFALSE);
+  gPad->SetLogy(kFALSE);
+  obj->SetMinimum(0.0);  
+
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+  if ( o.name.find("Trending") != std::string::npos ) {
+    obj->SetLineColor(4);
+    return;
+  }
+  
+}
+
+void ESRenderPlugin::preDrawTH1F(TCanvas *, const VisDQMObject &o) {
 
    TH1F* obj = dynamic_cast<TH1F*>( o.object );
-
    assert( obj );
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   if( o.name.find("ESRawDataTask")!= std::string::npos) {
+   if ( o.name.find("ESRawDataTask")!= std::string::npos ) {
       obj->SetFillColor(kRed);
    }
 
-   if( name.find( "Gain used for data taking" ) != std::string::npos ) {
+   if ( name.find( "Gain used for data taking" ) != std::string::npos ) {
       obj->GetXaxis()->SetBinLabel(1,"LG");
       obj->GetXaxis()->SetBinLabel(2,"HG");
       obj->GetXaxis()->SetLabelSize(0.1);
+      obj->SetLineColor(6);
+      obj->SetLineWidth(2);
    }
 
-   if( name.find( "FEDs used for data taking" ) != std::string::npos ) {
+   if ( name.find( "FEDs used for data taking" ) != std::string::npos ) {
       obj->SetFillColor(kGreen);
    }
 
-   if( name.find( "Z 1 P 1" ) != std::string::npos ) {
+   if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 1" ) , 7);
       name.insert( 2, "+F" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z -1 P 1" ) != std::string::npos ) {
+   } else if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 1" ) , 8);
       name.insert( 2, "-F" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z 1 P 2" ) != std::string::npos ) {
+   } else if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 2" ) , 7);
       name.insert( 2, "+R" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z -1 P 2" ) != std::string::npos ) {
+   } else if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 2" ) , 8);
       name.insert( 2, "-R" );
       obj->SetTitle( name.c_str() );
@@ -196,21 +211,21 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       name.erase( name.find( "Z 1 P 1" ) , 7);
       name.insert( 2, "+F" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z -1 P 1" ) != std::string::npos ) {
+   } else if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 1" ) , 8);
       name.insert( 2, "-F" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z 1 P 2" ) != std::string::npos ) {
+   } else if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z 1 P 2" ) , 7);
       name.insert( 2, "+R" );
       obj->SetTitle( name.c_str() );
-   } else if( name.find( "Z -1 P 2" ) != std::string::npos ) {
+   } else if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
       name.erase( name.find( "Z -1 P 2" ) , 8);
       name.insert( 2, "-R" );
       obj->SetTitle( name.c_str() );
    }
 
-   if( name.find( "Integrity Summary" ) != std::string::npos ) 
+   if ( name.find( "Integrity Summary" ) != std::string::npos ) 
    {
       gStyle->SetPalette(8,colorbar2);
       obj->SetMinimum(0.5);
@@ -259,7 +274,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       return;
    }
 
-   if( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
+   if ( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
       obj->SetBinContent(40,40,0.);
@@ -268,7 +283,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       return;
    }
 
-   if( name.find( "Digi 2D Occupancy" ) != std::string::npos ) {
+   if ( name.find( "Digi 2D Occupancy" ) != std::string::npos ) {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
       obj->SetBinContent(40,40,0.);
@@ -276,7 +291,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       return;
    }
 
-   if( name.find( "Energy Density" ) != std::string::npos ) {
+   if ( name.find( "Energy Density" ) != std::string::npos ) {
       gStyle->SetPalette(1);
       NEntries = obj->GetBinContent(40,40);
       obj->SetBinContent(40,40,0.);
@@ -284,7 +299,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       return;
    }
 
-   if( name.find( "reportSummaryMap" ) != std::string::npos ) 
+   if ( name.find( "reportSummaryMap" ) != std::string::npos ) 
    {
       dqm::utils::reportSummaryMapPalette(obj);
       obj->SetTitle("EcalPreshower Report Summary Map");
@@ -301,24 +316,23 @@ void ESRenderPlugin::postDrawTH2F( TCanvas *, const VisDQMObject &o )
 
    std::string name = o.name.substr(o.name.rfind("/")+1);
 
-   if( name.find( "Z 1 P 1" ) != std::string::npos ){
+   if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
       drawBorders( 1, 0.5, 0.5 );
    }
 
-   if( name.find( "Z -1 P 1" ) != std::string::npos ){
+   if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
       drawBorders( 2, 0.5, 0.5 );
    }
 
-   if( name.find( "Z 1 P 2" ) != std::string::npos ){
+   if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
       drawBorders( 3, 0.5, 0.5 );
    }
 
-   if( name.find( "Z -1 P 2" ) != std::string::npos ){
+   if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
       drawBorders( 4, 0.5, 0.5 );
    }
 
-   if( name.find( "reportSummaryMap" ) != std::string::npos ) 
-   {
+   if ( name.find( "reportSummaryMap" ) != std::string::npos ) {
       TText t;
       t.SetTextAlign(22);
       t.DrawText(21,21,"ES+R");
