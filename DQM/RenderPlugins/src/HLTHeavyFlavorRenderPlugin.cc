@@ -11,6 +11,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TText.h"
+#include "TLegend.h"
 #include <cassert>
 
 class HLTHeavyFlavorRenderPlugin : public DQMRenderPlugin{
@@ -20,6 +21,8 @@ public:
   }
 
   virtual void preDraw( TCanvas * c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ){
+    if(o.name.find( "effPathGlob_recoPt" ) != std::string::npos)
+      return;
     c->cd();
     TH2* h2 = dynamic_cast<TH2*>( o.object );
     if( h2 ){
@@ -33,8 +36,15 @@ public:
     }
   }
 
-  virtual void postDraw( TCanvas * , const VisDQMObject &, const VisDQMImgInfo & ){
-    return;
+  virtual void postDraw( TCanvas *c , const VisDQMObject &o, const VisDQMImgInfo & ){
+    if(o.name.find( "effPathGlob_recoPt" ) == std::string::npos)
+      return;
+    c->cd();
+    TH2* h2 = dynamic_cast<TH2*>( o.object );
+    if( h2 ){
+      postDrawTH2( c, h2, o.name );
+      return;
+    }
   }
 
 private:
@@ -98,6 +108,49 @@ private:
       c->SetLogy();
     }
     gStyle->SetPalette(1);
+  }
+
+  void postDrawTH2 ( TCanvas *c, TH2* h, const std::string & ){
+    gStyle->SetOptStat(0);
+    c->SetGridy();
+    // if axis label starts with space, set log scale
+    if( TString(h->GetXaxis()->GetTitle()).BeginsWith(' ') ){
+      c->SetLogx();
+    }
+    static std::vector<TH1F*> h1;
+    for(size_t i=0; i<h1.size(); i++){
+      delete h1[i];
+    }
+    h1.clear();
+    TLegend *l =  new TLegend(0.01,.92,0.99,0.99);
+    l->SetFillColor(0);
+    l->SetNColumns(h->GetNbinsY());
+    TH1F * tmp = (h->GetXaxis()->GetXbins()->GetSize()==0) ?
+      new TH1F("tmp","tmp",h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax()):
+      new TH1F("tmp","tmp",h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXbins()->GetArray());
+    for(int i=1; i<=h->GetNbinsY(); i++){
+      h1.push_back( (TH1F*)tmp->Clone(TString::Format("tmp%d",i)) );
+      for(int j=1; j<=h->GetNbinsX(); j++){
+        h1[i-1]->SetBinContent(j,h->GetBinContent(j,i));
+        h1[i-1]->SetBinError(j,h->GetBinError(j,i));
+      }
+      h1[i-1]->SetLineColor(1+i);
+      h1[i-1]->SetLineWidth(2);
+      h1[i-1]->SetMarkerStyle(19+i);
+      h1[i-1]->SetMarkerSize(0.8);
+      l->AddEntry(h1[i-1],h->GetYaxis()->GetBinLabel(i),"lp");
+      if(i==1){
+        h1[i-1]->GetXaxis()->SetTitle(h->GetXaxis()->GetTitle());
+        h1[i-1]->GetYaxis()->SetRangeUser(-0.001,1.001);
+        h1[i-1]->GetYaxis()->SetTitle("Efficiency");
+        h1[i-1]->SetTitle("");
+        h1[i-1]->Draw("PE");
+      }else{
+        h1[i-1]->Draw("PEsame");
+      }
+    }
+    l->Draw();
+    delete tmp;
   }
 
 };
