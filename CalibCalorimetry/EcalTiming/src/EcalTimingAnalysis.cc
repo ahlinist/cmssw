@@ -74,7 +74,8 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    splash09cor_        = iConfig.getUntrackedParameter<bool>("Splash09Cor",false);
    allave_             = iConfig.getUntrackedParameter<double>("AllAverage",5.7);
    allshift_           = iConfig.getUntrackedParameter<double>("AllShift",1.5);   
-   timingTree_         = iConfig.getUntrackedParameter<bool>("BeamHaloPlus",false);
+   timingTree_         = iConfig.getUntrackedParameter<bool>("TimingTree",false);
+   minxtals_           = iConfig.getUntrackedParameter<int>("MinEBXtals",-1); 
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -357,10 +358,10 @@ void EcalTimingAnalysis::endJob() {
     for(int cry=1; cry < numXtals; cry++){
 	  double numents = absoluteTimingConv_[dcc-1][0]->GetBinEntries(cry);
       if( numents  > min_num_ev_ ){
-	    DetId mydet = (ebdcc ? DetId(EBDetId(dcc-9,cry,EBDetId::SMCRYSTALMODE)) : DetId(EEDetId::unhashIndex(cry)) );
-		EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
-		TT = elecId.towerId();
-		int TTi = TT -1;
+	DetId mydet = (ebdcc ? DetId(EBDetId(dcc-9,cry,EBDetId::SMCRYSTALMODE)) : DetId(EEDetId::unhashIndex(cry)) );
+	EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
+	TT = elecId.towerId();
+	int TTi = TT -1;
         if(TTi>=0 && TTi<68){
         float time = absoluteTimingConv_[dcc-1][0]->GetBinContent(cry);
 	    float trel = relativeTimingBlueConv_[dcc-1]->GetBinContent(cry);
@@ -385,19 +386,19 @@ void EcalTimingAnalysis::endJob() {
 	  double numents = absoluteTimingConv_[dcc-1][0]->GetBinEntries(cry);
       if( numents > min_num_ev_ ){
 	    DetId mydet = (ebdcc ? DetId(EBDetId(dcc-9,cry,EBDetId::SMCRYSTALMODE)) : DetId(EEDetId::unhashIndex(cry)) );
-		EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
-		TT = elecId.towerId();
-        int TTi = TT -1;	
+	    EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(mydet);
+	    TT = elecId.towerId();
+	    int TTi = TT -1;	
 	
-        if(TTi>=0 && TTi<68){
+	    if(TTi>=0 && TTi<68){
 	      float time = absoluteTimingConv_[dcc-1][0]->GetBinContent(cry);
 	      float trel = relativeTimingBlueConv_[dcc-1]->GetBinContent(cry);
 	      mean[TTi] += time;
 	      x2[TTi] += time*time;
-          ttTime[dcc-1]->Fill((elecId.stripId()-1)*5+elecId.xtalId(),time - ttStart[TTi]);
-          ttRTime[dcc-1]->Fill((elecId.stripId()-1)*5+elecId.xtalId(),trel - ttRStart[TTi]);
-          fullttTime->Fill((elecId.stripId()-1)*5+elecId.xtalId(),time - ttStart[TTi]);
-          fullttRTime->Fill((elecId.stripId()-1)*5+elecId.xtalId(),trel - ttRStart[TTi]);
+	      ttTime[dcc-1]->Fill((elecId.stripId()-1)*5+elecId.xtalId(),time - ttStart[TTi]);
+	      ttRTime[dcc-1]->Fill((elecId.stripId()-1)*5+elecId.xtalId(),trel - ttRStart[TTi]);
+	      fullttTime->Fill((elecId.stripId()-1)*5+elecId.xtalId(),time - ttStart[TTi]);
+	      fullttRTime->Fill((elecId.stripId()-1)*5+elecId.xtalId(),trel - ttRStart[TTi]);
 	      fullLMTime->Fill(ecalElectronicsMap_->getLMNumber(mydet),time);
 	      fullLMTimeCorr->Fill(ecalElectronicsMap_->getLMNumber(mydet),time-sMCorr_[dcc-1]);
 	      fullSMTime->Fill(fed,time);
@@ -704,33 +705,35 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    unsigned int  timeStampLow = ( 0xFFFFFFFF & iEvent.time().value() );
    unsigned int  timeStampHigh = ( iEvent.time().value() >> 32 );
    double eventtime = ( double)(timeStampHigh)+((double )(timeStampLow)/1000000.) - timerunstart_;
-   std::cout << "Event Time " << eventtime << " High " <<timeStampHigh<< " low"<<timeStampLow <<" value " <<iEvent.time().value() << std::endl;
-   
+   //std::cout << "Event Time " << eventtime << " High " <<timeStampHigh<< " low"<<timeStampLow <<" value " <<iEvent.time().value() << std::endl;
+   // std::cout << " i0 " << std::endl; 
    int lambda = -1;
   for ( EcalRawDataCollection::const_iterator headerItr= DCCHeaders->begin();headerItr != DCCHeaders->end(); 
 	  ++headerItr ) {
     EcalDCCHeaderBlock::EcalDCCEventSettings settings = headerItr->getEventSettings();
-   
+    //std::cout << " i1 " << std::endl;
     //std::cout << " Lambda 0 " << settings.wavelength  << std::endl; 
     lambda= settings.wavelength;
+    //std::cout << " i2 " << std::endl;
     LogDebug("EcalTimingAnalysis") << " Lambda " << lambda; //hmm... this isn't good, I should keep a record of the wavelength in the headers as an inactive SM might have a different wavelength for this field and make this not go through.
   }
+  ///std::cout << " i3 " << std::endl;
   ///if(lambda <0 || lambda > 3){LogDebug ("EcalTimingAnalysis")<<"Stopping: Wrong value for laser wavelength: "<<lambda<<std::endl; return;}//TAKEN OUT TO RUN ON TEST PULSES
-    lambda=0; ///ADDED TO USE TESTPULSES
-   Handle<EcalUncalibratedRecHitCollection> phits;
-   float absTime[54][numXtals];
-   for(int dcc=1;dcc<55;++dcc){for(int i=0;i<numXtals;i++){absTime[dcc-1][i]=-10;}}
-   
-   iEvent.getByLabel( hitProducer_, hitCollection_,phits);
+  lambda=0; ///ADDED TO USE TESTPULSES
+  Handle<EcalUncalibratedRecHitCollection> phits;
+  float absTime[54][numXtals];
+  for(int dcc=1;dcc<55;++dcc){for(int i=0;i<numXtals;i++){absTime[dcc-1][i]=-10;}}
+  ///std::cout << " i4 " << std::endl;
+  iEvent.getByLabel( hitProducer_, hitCollection_,phits);
    if (!phits.isValid()){
 	edm::LogError("EcalTimingAnalysis") << "can't get the product for " << hitCollection_;
    }
-   
+   //std::cout << " i5 " << std::endl;
    // loop over hits
    const EcalUncalibratedRecHitCollection* hits = phits.product(); // get a ptr to the product
    
    if(ievt_%100 ==0){LogInfo("EcalTimingAnalysis") <<"Event: "<<ievt_<< "# of EcalUncalibratedRecHits hits: " << hits->size();}
-
+   //std::cout <<  "# of EcalUncalibratedRecHits hits: " << hits->size() << std::endl;
    //Add the ability to calculate the average for each event, _ONLY_ if desired as this takes time
    double averagetimeEB = 0.0;
    int numberinaveEB = 0;
@@ -754,11 +757,11 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    
    //ADDED BY JASON HACK just to get the in-timed values
    //if ( averagetimeEB < 5.85 || averagetimeEB > 6.2) return; //just don't allow the out of time events 
-
+   //std::cout << " numberinaveEB " << numberinaveEB << " min " << minxtals_ << std::endl; 
    // if (!correctAVE_) averagetimeEB = 0.0;
-   
+   if (numberinaveEB < minxtals_) return; //This allows for a minimum number of xtals to be set   
    //if (numberinaveEB < 20000) return; //JUST TEMPORARY I will put this as a parameter 
-   
+   //std::cout << " Did I make it here " << std::endl;
    for(EcalUncalibratedRecHitCollection::const_iterator ithit = hits->begin(); ithit != hits->end(); ++ithit) {
      
      EBDetId anid(ithit->id()); 
