@@ -28,7 +28,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     virtual void beginJob(edm::EventSetup const& iSetup);
     virtual void analyze(edm::Event const& evt, edm::EventSetup const& iSetup);
     virtual void endJob();
-    InclusiveJetTreeProducer();
+    ~InclusiveJetTreeProducer();
 
   private:
     std::string mFileName;
@@ -44,16 +44,18 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     HLTConfigProvider mHltConfig;
     double mEtaMax;
     double mPtMin; 
+    bool   mIsMCarlo;
     TFile* mFile;
     TTree* mTree;
     ///// Jet Variables //////
-    float mE[20],mEmf[20],mNtrkVx[20],mNtrkCalo[20],mPt[20],mEta[20],mPhi[20],mN90[20],mCTPt[20],mCTEta[20],mCTPhi[20],mVTPt[20],mVTEta[20],mVTPhi[20];
+    float mE[20],mEmf[20], mPt[20],mEta[20],mPhi[20],mN90[20],mCTPt[20],mCTEta[20],mCTPhi[20],mVTPt[20],mVTEta[20],mVTPhi[20];
     ///// Event Variables ////
     float mMET[2],mSumET[2];
-    double mNPV, mPVx, mPVy, mPVz;
+    float mPVx, mPVy, mPVz, mPtHat;
     int mHLTBits[6];
     int mL1Bits[5];
-    int mJetSize;
+    int mJetSize, mNPV;
     int mRun, mEvent;
+    int mNtrkVx[5],mNtrkCalo[5];
 };
 #endif
