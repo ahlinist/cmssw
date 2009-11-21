@@ -231,8 +231,9 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,timeTTProfile->GetTitle()); 
   timeTTProfile->SetTitle(mytitle);
   timeTTProfile->SetMinimum(4.0);
+  //timeTTProfile->SetMinimum(5.85);
   //timeTTProfile->SetMinimum(4.8);
-  //timeTTProfile->SetMaximum(5.2);
+  //timeTTProfile->SetMaximum(6.45);
   timeTTProfile->GetXaxis()->SetNdivisions(-18);
   timeTTProfile->GetYaxis()->SetNdivisions(2);
   c[16]->SetLogy(0);

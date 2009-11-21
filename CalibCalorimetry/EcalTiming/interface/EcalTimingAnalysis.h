@@ -176,7 +176,7 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
 	  } TTreeMembers_; 
       double allave_;
       double allshift_;
-	  
+      int minxtals_;
       bool writetxtfiles_;
       bool timingTree_;	  
       bool correctAVE_;

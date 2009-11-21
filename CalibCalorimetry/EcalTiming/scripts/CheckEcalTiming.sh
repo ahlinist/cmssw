@@ -318,7 +318,15 @@ if [[ $do_ratios == "True" ]]; then
                                              EBtimeFitLimits_Upper = cms.double(1.4),
                                              EEtimeFitLimits_Lower = cms.double(0.2),
                                              EEtimeFitLimits_Upper = cms.double(1.4),
-                                             algo = cms.string('EcalUncalibRecHitWorkerRatio')
+					     outOfTimeThreshold = cms.double(0.25),
+					     amplitudeThresholdEB = cms.double(20 * 1),
+					     amplitudeThresholdEE = cms.double(20 * 1),
+
+					     ebPulseShape = cms.vdouble( 5.2e-05,-5.26e-05 , 6.66e-05, 0.1168, 0.7575, 1.,  0.8876, 0.6732, 0.4741,  0.3194 ),
+					     eePulseShape = cms.vdouble( 5.2e-05,-5.26e-05 , 6.66e-05, 0.1168, 0.7575, 1.,  0.8876, 0.6732, 0.4741,  0.3194 ),
+					     
+
+                                             algo = cms.string('EcalUncalibRecHitWorkerGlobal')
                                          )
 "
 fi
