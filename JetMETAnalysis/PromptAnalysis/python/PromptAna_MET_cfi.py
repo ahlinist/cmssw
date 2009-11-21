@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 promptanamet = cms.EDProducer( "PromptAna_MET"
                             , InputTag  = cms.InputTag('met')
-                            , Prefix    = cms.string('CaloMET')
+                            , Prefix    = cms.string('calomet')
                             , Suffix    = cms.string('')
                             )
 
