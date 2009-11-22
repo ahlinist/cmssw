@@ -27,10 +27,12 @@ DEFINE_SEAL_MODULE();
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Event.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_MET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Jet.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_BeamHalo.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CaloTowers.h"
 
 DEFINE_ANOTHER_FWK_MODULE(PromptAnaTree);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Event);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_MET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Jet);
+DEFINE_ANOTHER_FWK_MODULE(PromptAna_BeamHalo);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_CaloTowers);
