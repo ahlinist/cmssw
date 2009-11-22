@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 from JetMETAnalysis.PromptAnalysis.PromptAna_Event_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_MET_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_Jet_cfi import *
-from JetMETAnalysis.PromptAnalysis.PromptAna_CaloTowers_cfi import *
 
 promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     outputCommands = cms.untracked.vstring(
@@ -13,7 +12,8 @@ promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptananohf_*_*',
     'keep *_promptanaic5calojet_*_*',
     'keep *_promptanakt4calojet_*_*',
-    'keep *_promptanacalotowers_*_*'
+    'keep *_promptanasc5calojet_*_*',
+#    'keep *_promptanaakt5calojet_*_*'
     ))
 
 theBigNtuple = cms.Sequence( (
@@ -22,5 +22,6 @@ theBigNtuple = cms.Sequence( (
     promptananohf  +
     promptanaic5calojet +
     promptanakt4calojet +
-    promptanacalotowers
+    promptanasc5calojet #+
+#    promptanaakt5calojet
     ) * promptanaTree )

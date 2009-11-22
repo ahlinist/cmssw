@@ -10,8 +10,8 @@
  *  tree of the selected variables, which it obtains from the EDM
  *  tree.  
  *
- *  $Date: 2009/10/23 14:14:19 $
- *  $Revision: 1.3 $
+ *  $Date: 2009/11/19 18:21:35 $
+ *  $Revision: 1.1 $
  *  \author Burt Betchart - University of Rochester <burton.andrew.betchart@cern.ch>
  */
 
@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <TTree.h>
+#include <TH1I.h>
 
 class PromptAnaTree : public edm::EDAnalyzer {
 private:    
@@ -52,6 +53,7 @@ private:
 
   edm::Service<TFileService> fs;
   TTree * tree;
+
   std::vector<BranchConnector*> connectors;
   edm::ParameterSet pset;
 
@@ -62,7 +64,8 @@ public:
 		 SHORT,   SHORT_V,           U_SHORT, U_SHORT_V,       
 		 INT,     INT_V,             U_INT,   U_INT_V,
 		 FLOAT,   FLOAT_V,           DOUBLE,  DOUBLE_V,
-		 LONG,    LONG_V,	     U_LONG,  U_LONG_V
+		 LONG,    LONG_V,	     U_LONG,  U_LONG_V, 
+		 STRING,  STRING_V
 		 };
 };
 
