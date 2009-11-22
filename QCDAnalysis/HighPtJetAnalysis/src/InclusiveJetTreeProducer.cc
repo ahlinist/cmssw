@@ -1,3 +1,4 @@
+// contains the older method to get the HLT information
 #include <iostream>
 #include <sstream>
 #include <istream>
@@ -30,133 +31,61 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mJetsName           = cfg.getParameter<std::string>              ("jets");
   mMetName            = cfg.getParameter<std::string>              ("met");
   mMetNoHFName        = cfg.getParameter<std::string>              ("metNoHF");
-  mFileName           = cfg.getParameter<std::string>              ("fileName");
   mJetExtender        = cfg.getParameter<std::string>              ("jetExtender");
   mTriggerNames       = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
   mL1TriggerNames     = cfg.getParameter<std::vector<std::string> >("l1TriggerNames");
   mTriggerProcessName = cfg.getParameter<std::string>              ("triggerProcessName"); 
   mTriggerResultsTag  = cfg.getParameter<edm::InputTag>            ("triggerResultsTag");
   mEtaMax             = cfg.getParameter<double>                   ("etaMax"); 
-  mPtMin              = cfg.getParameter<double>                   ("ptMin");     
-  mIsMCarlo           = cfg.getParameter<bool>                     ("isMCarlo");   
+  mPtMin              = cfg.getParameter<double>                   ("ptMin");                 
+  L1GTReadoutRcdSource_  = cfg.getParameter<edm::InputTag>("L1GTReadoutRcdSource");
+  L1GTObjectMapRcdSource_= cfg.getParameter<edm::InputTag>("L1GTObjectMapRcdSource");
+  
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup) 
 {
-  mFile = new TFile(mFileName.c_str(),"RECREATE");
-  mTree = new TTree("InclusiveJetTree","InclusiveJetTree");
-  
-  mTree->Branch("pt"       ,&mPt       ,"mPt[20]/F");
-  mTree->Branch("eta"      ,&mEta      ,"mEta[20]/F");
-  mTree->Branch("phi"      ,&mPhi      ,"mPhi[20]/F");
-  mTree->Branch("n90"      ,&mN90      ,"mN90[20]/F");
-  mTree->Branch("e"        ,&mE        ,"mE[20]/F");
-  mTree->Branch("ctpt"     ,&mCTPt     ,"mCTPt[20]/F");
-  mTree->Branch("cteta"    ,&mCTEta    ,"mCTEta[20]/F");
-  mTree->Branch("ctphi"    ,&mCTPhi    ,"mCTPhi[20]/F");
-  mTree->Branch("vtpt"     ,&mVTPt     ,"mVTPt[20]/F");
-  mTree->Branch("vteta"    ,&mVTEta    ,"mVTEta[20]/F");
-  mTree->Branch("vtphi"    ,&mVTPhi    ,"mVTPhi[20]/F");
-  mTree->Branch("nPV"      ,&mNPV      ,"mNPV/I");
-  mTree->Branch("nPVx"     ,&mPVx      ,"mPVx/F");
-  mTree->Branch("nPVy"     ,&mPVy      ,"mPVy/F");
-  mTree->Branch("nPVz"     ,&mPVz      ,"mPVy/F");
-  mTree->Branch("emf"      ,&mEmf      ,"mEmf[20]/F");
-  mTree->Branch("nTrkVx"   ,&mNtrkVx   ,"mNtrkVx[20]/I");
-  mTree->Branch("nTrkCalo" ,&mNtrkCalo ,"mNtrkCalo[20]/I");
-  mTree->Branch("met"      ,&mMET     ,"mMET[2]/F");
-  mTree->Branch("sumet"    ,&mSumET   ,"mSumET[2]/F");
-  mTree->Branch("HLTBits"  ,&mHLTBits  ,"mHLTBits[6]/I");
-  mTree->Branch("L1Bits"   ,&mL1Bits   ,"mL1Bits[5]/I");
-  mTree->Branch("jetSize"  ,&mJetSize ,"mJetSize/I");
-  mTree->Branch("event"    ,&mEvent   ,"mEvent/I");
-  mTree->Branch("run"      ,&mRun     ,"mRun/I");
-  
-  if (mIsMCarlo)
-    {
-      mTree->Branch("pthat"     ,&mPtHat       ,"mPtHat/F"); 
+  mTree = fs->make<TTree>("InclusiveJetTree","InclusiveJetTree");
 
-    }
+  buildTree();
   
   //must be done at beginRun and not only at beginJob, because 
-    //trigger names are allowed to change by run.
+  //trigger names are allowed to change by run.
   mHltConfig.init(mTriggerProcessName);
-
-  for(unsigned int i=0;i<mTriggerNames.size();i++)
-    {
-      mTriggerIndex.push_back(mHltConfig.triggerIndex(mTriggerNames[i]));
-      if (mTriggerIndex[i] == mHltConfig.size())
-        {
-          string errorMessage = "Requested TriggerName does not exist! -- "+mTriggerNames[i]+"\n";
-          throw  cms::Exception("Configuration",errorMessage);
-        }
-    }
+  for(unsigned int i=0;i<mTriggerNames.size();i++)  {
+    mTriggerIndex.push_back(mHltConfig.triggerIndex(mTriggerNames[i]));
+    if (mTriggerIndex[i] == mHltConfig.size())
+      {
+	string errorMessage = "Requested TriggerName does not exist! -- "+mTriggerNames[i]+"\n";
+	throw  cms::Exception("Configuration",errorMessage);
+      }
+  }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::endJob() 
 {
-
-  if (mFile != 0) 
-    {
-      mFile->cd();
-      mTree->Write();
-      delete mFile;
-      mFile = 0;      
-    }
-
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup const& iSetup) 
 { 
-  Handle<GenEventInfoProduct> hEventInfo;
+  
+  //Clear all the vectors stored in tree
+  clearTreeVectors();
 
-  //add pt Hat if Monte Carlo
-    if (mIsMCarlo)
-    { 
-      event.getByLabel("generator", hEventInfo);
-      mPtHat = hEventInfo->binningValues()[0];
-    }
-    // get Run and Event info
   mRun = event.id().run();
   mEvent = event.id().event();
 
-  // get L1 Trigger menu record
-  edm::ESHandle<L1GtTriggerMenu> menuRcd;
-  iSetup.get<L1GtTriggerMenuRcd>().get(menuRcd);
-  const L1GtTriggerMenu* menu = menuRcd.product();
-  // get L1 Trigger Readout Record
-  edm::Handle< L1GlobalTriggerReadoutRecord > gtReadoutRecord;
-  event.getByLabel( edm::InputTag("gtDigis"), gtReadoutRecord);
-  const  DecisionWord& gtDecisionWordBeforeMask = gtReadoutRecord->decisionWord();
-  
-  int L1Tsize = mL1TriggerNames.size();
-  // fill L1 bits
-  for(int i = 0; i < 5; i++){
-	mL1Bits[i] = 0;}
-   for(int j = 0; j < L1Tsize; j++){
-    bool result = menu->gtAlgorithmResult( mL1TriggerNames[j], gtDecisionWordBeforeMask);
-    if(result) {mL1Bits[j] = 1;}
-    }
-  
-
-  
-   
   ////////////Vertices//////////////
   Handle<reco::VertexCollection> recVtxs;
   event.getByLabel("offlinePrimaryVertices",recVtxs);
-  mNPV = 0;
-  mPVx = 0;
-  mPVy = 0;
-  mPVz = 0;
-  for(unsigned int ind=0;ind<recVtxs->size();ind++)
-    if (!((*recVtxs)[ind].isFake()))
-     mNPV++; 
-  if (mNPV>0)
-    {
-      mPVx = (*recVtxs)[0].x();
-      mPVy = (*recVtxs)[0].y(); 
-      mPVz = (*recVtxs)[0].z();  
-    }
+  for(unsigned int ind=0;ind<recVtxs->size();ind++) {
+    if (!((*recVtxs)[ind].isFake())) 
+      {
+	mPVx ->push_back( (*recVtxs)[ind].x() );
+	mPVy ->push_back( (*recVtxs)[ind].y() );
+	mPVz ->push_back( (*recVtxs)[ind].z() );
+      }
+  }
 
   ////////////// Jets //////
   edm::Handle<CaloJetCollection> jets;
@@ -165,55 +94,30 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   event.getByLabel(mJetExtender,jetExtender);
   int counter = 0;
 
-  // get Jet Size (need to know this since we're stopping at 20 jets)
-  mJetSize = (*jets).size();
-
-  // Initialize jet variables with unphysical non-zero values
-  for(int jin = 0; jin < 20; jin++){
-	mPt[jin] = -1;
-	mEta[jin] = -100;
-	mPhi[jin] = -100;
-	mE[jin] = -1;
-	mEmf[jin] = -100;
-	mNtrkVx[jin] = -1;
-	mNtrkCalo[jin] = -1;
-	mCTPt[jin] = -1;
-	mCTEta[jin] = -100;
-	mCTPhi[jin] = -100;
-	mVTPt[jin] = -1;
-	mVTEta[jin] = -100;
-	mVTPhi[jin] = -100;
-	mN90[jin] = -1;
-  }
-  
-  // fill jet variables
-  for(int ind=0; ind < mJetSize; ind++) 
+  for(unsigned int ind=0;ind<(*jets).size();ind++) 
     {
-      // cut on pt and eta (specified in config file)
-      if(((*jets)[ind].pt() > mPtMin) && (abs((*jets)[ind].eta()) < mEtaMax)  && (counter < 20)){
-	// fill Energy 4-vector, jet ID quantities
-	mPt[counter]       = (*jets)[ind].pt();
-	mEta[counter]      = (*jets)[ind].eta();
-	mPhi[counter]      = (*jets)[ind].phi();
-	mE[counter]        = (*jets)[ind].energy();
-	mEmf[counter]      = (*jets)[ind].emEnergyFraction();
-        mN90[counter]      = (*jets)[ind].n90();
-	mNtrkVx[counter]   = JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]);
-	mNtrkCalo[counter] = JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind]);
-	// get Tracks at Calorimeter and Vertex
+      if(((*jets)[ind].pt() > mPtMin) && (abs((*jets)[ind].eta()) < mEtaMax  && counter < 20)){
+	counter++;
+	mPt       ->push_back( (*jets)[ind].pt()     );
+	mEta      ->push_back( (*jets)[ind].eta()    );
+	mPhi      ->push_back( (*jets)[ind].phi()    );
+	mE        ->push_back( (*jets)[ind].energy() );
+	
+	mEmf      ->push_back( (*jets)[ind].emEnergyFraction() ); 
+	mNtrkVx   ->push_back( JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]) );
+	mNtrkCalo ->push_back( JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind])   ); 
+
 	reco::JetExtendedAssociation::LorentzVector TracksatCalo = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
 	reco::JetExtendedAssociation::LorentzVector TracksatVx = JetExtendedAssociation::tracksAtVertexP4(*jetExtender, (*jets)[ind]);
-	mCTPt[counter] = TracksatCalo.pt();
-	mCTEta[counter] = TracksatCalo.eta();
-	mCTPhi[counter] = TracksatCalo.phi();
-	mVTPt[counter] = TracksatVx.pt();
-	mVTEta[counter] = TracksatVx.eta();
-	mVTPhi[counter] = TracksatVx.phi();
-	// increment counter (stop at 20 jets)
-	counter++;
+	mCTPt     ->push_back( TracksatCalo.pt()     );
+	mCTEta    ->push_back( TracksatCalo.eta()    );
+	mCTPhi    ->push_back( TracksatCalo.phi()    );
+	mVTPt     ->push_back( TracksatVx.pt()       );
+	mVTEta    ->push_back( TracksatVx.eta()      );
+	mVTPhi    ->push_back( TracksatVx.phi()      );
       }
     }
-  counter = 0;
+
   ////////////// Trigger bits //////
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
   event.getByLabel(mTriggerResultsTag,triggerResultsHandle); 
@@ -222,46 +126,153 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       string errorMessage = "Requested TriggerResult is not present in file! -- \n";
       throw  cms::Exception("Configuration",errorMessage);
     }
-  //check if configuration matches trigger results:
-  assert(triggerResultsHandle->size() == mHltConfig.size());
-  for (unsigned int i=0;i<6;i++)  mHLTBits[i] = 0;
-  for (unsigned int i=0;i<mTriggerIndex.size();i++)
-    { 
-      bool result = triggerResultsHandle->accept(mTriggerIndex[i]); 
-      if (result)
-        mHLTBits[i] = 1;
+
+  for(unsigned int i=0;i<mTriggerNames.size();i++) {
+    bool accept = triggerResultsHandle->accept( mHltConfig.triggerIndex(mTriggerNames[i]) );
+    //std::cout << mTriggerNames[i] << " " << mHltConfig.triggerIndex(mTriggerNames[i]) << " " << triggerResultsHandle->accept(mHltConfig.triggerIndex(mTriggerNames[i]) ) << std::endl;
+    if( accept ) mHLTNames->push_back( mTriggerNames[i] );
+  }
+
+
+  //===================== save L1 Trigger information ======================= 
+  // get L1TriggerReadout records
+  edm::Handle<L1GlobalTriggerReadoutRecord>   gtRecord;
+  event.getByLabel(L1GTReadoutRcdSource_,   gtRecord);
+
+  edm::Handle<L1GlobalTriggerObjectMapRecord> gtOMRec;
+  event.getByLabel(L1GTObjectMapRcdSource_, gtOMRec);
+
+  // sanity check on L1 Trigger Records
+  if (!gtRecord.isValid()) {
+    std::cout << "\nL1GlobalTriggerReadoutRecord with \n \nnot found"
+      "\n  --> returning false by default!\n" << std::endl;
+  }
+  if (!gtOMRec.isValid()) {
+    std::cout << "\nL1GlobalTriggerObjectMapRecord with \n \nnot found"
+      "\n  --> returning false by default!\n" << std::endl;
+  }
+
+  // L1 decision word
+  const DecisionWord dWord = gtRecord->decisionWord();
+
+  std::map<std::string, int> l1map;
+  const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  gtOMRec->gtObjectMap();
+  for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();
+       itMap != objMapVec.end(); ++itMap) {
+    l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
+    //std::cout << " *** " << (*itMap).algoName() << " " << (*itMap).algoBitNumber() << " " << dWord[ (*itMap).algoBitNumber() ] <<std::endl;
+  }
+  for(unsigned int i=0; i<mL1TriggerNames.size(); i++) {
+    std::map<std::string, int>::const_iterator itr = l1map.find( mL1TriggerNames[i] );
+    if( itr != l1map.end() ) {
+      //if( dWord[itr->second] ) std::cout <<"-----> "<< itr->second << " " << itr->first << std::endl;
+      if( dWord[itr->second] ) mL1Names->push_back( itr->first );
     }
-
-
+  }
 
   ////////////// MET //////
   Handle<CaloMETCollection> met;
   event.getByLabel(mMetName,met);
-  mMET[0]   = -1;
-  mSumET[0] = -1;
-  if (met->size() == 0) 
+  if (met->size() == 0)
     {
-      mMET[0]   = (*met)[0].et();
-      mSumET[0] = (*met)[0].sumEt();
+      mMET   = -1;
+      mSumET = -1;
     }
-  // 2nd flavor of MET
+  else
+    {
+      mMET   = (*met)[0].et();
+      mSumET = (*met)[0].sumEt();
+    }
+
   Handle<CaloMETCollection> metNoHF;
   event.getByLabel(mMetNoHFName,metNoHF);
-  mMET[1]   = -1;
-  mSumET[1] = -1;    
-  if (metNoHF->size() != 0)
+  if (metNoHF->size() == 0)
     {
-      mMET[1]   = (*metNoHF)[0].et();
-      mSumET[1] = (*metNoHF)[0].sumEt();
+      mMETnoHF   = -1;
+      mSumETnoHF = -1;
     }
-//  mTree->Fill();
+  else
+    {
+      mMETnoHF   = (*metNoHF)[0].et();
+      mSumETnoHF = (*metNoHF)[0].sumEt();
+    }
+
+  mTree->Fill();
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
+InclusiveJetTreeProducer::InclusiveJetTreeProducer() 
 {
-  // close the file and tree
-  if(mFile != 0){
-    mFile = 0;}
-  if(mTree != 0){
-    mTree = 0;}
+  mTree = 0;
+}
+
+void InclusiveJetTreeProducer::buildTree() {
+
+  mPt       = new std::vector<double>();
+  mEta      = new std::vector<double>();
+  mPhi      = new std::vector<double>();
+  mE        = new std::vector<double>();
+  mEmf      = new std::vector<double>();
+  mNtrkVx   = new std::vector<double>();
+  mNtrkCalo = new std::vector<double>();
+  mCTPt     = new std::vector<double>();
+  mCTEta    = new std::vector<double>();
+  mCTPhi    = new std::vector<double>();
+  mVTPt     = new std::vector<double>();
+  mVTEta    = new std::vector<double>();
+  mVTPhi    = new std::vector<double>();
+  mN90      = new std::vector<double>();
+  mPVx      = new std::vector<double>();
+  mPVy      = new std::vector<double>();
+  mPVz      = new std::vector<double>();
+  mHLTNames = new std::vector<std::string>();
+  mL1Names  = new std::vector<std::string>();
+
+  mTree->Branch("pt"        ,"vector<double>"      ,&mPt);
+  mTree->Branch("eta"       ,"vector<double>"      ,&mEta);
+  mTree->Branch("phi"       ,"vector<double>"      ,&mPhi);
+  mTree->Branch("e"         ,"vector<double>"      ,&mE);
+  mTree->Branch("emf"       ,"vector<double>"      ,&mEmf);
+  mTree->Branch("nTrkVx"    ,"vector<double>"      ,&mNtrkVx);
+  mTree->Branch("nTrkCalo"  ,"vector<double>"      ,&mNtrkCalo);
+  mTree->Branch("ctpt"      ,"vector<double>"      ,&mCTPt);
+  mTree->Branch("cteta"     ,"vector<double>"      ,&mCTEta);
+  mTree->Branch("ctphi"     ,"vector<double>"      ,&mCTPhi);
+  mTree->Branch("vtpt"      ,"vector<double>"      ,&mVTPt);
+  mTree->Branch("vteta"     ,"vector<double>"      ,&mVTEta);
+  mTree->Branch("vtphi"     ,"vector<double>"      ,&mVTPhi);
+  mTree->Branch("n90"       ,"vector<double>"      ,&mN90);
+  mTree->Branch("nPVx"      ,"vector<double>"      ,&mPVx);
+  mTree->Branch("nPVy"      ,"vector<double>"      ,&mPVy);
+  mTree->Branch("nPVz"      ,"vector<double>"      ,&mPVz);
+  mTree->Branch("hltNames"  ,"vector<string>"      ,&mHLTNames);
+  mTree->Branch("l1Names"   ,"vector<string>"      ,&mL1Names);
+
+  mTree->Branch("event"     ,&mEvent               ,"mEvent/I");
+  mTree->Branch("run"       ,&mRun                 ,"mRun/I");
+  mTree->Branch("met"       ,&mMET                 ,"mMET/D");
+  mTree->Branch("sumet"     ,&mSumET               ,"mSumET/D");
+  mTree->Branch("metNoHF"   ,&mMETnoHF             ,"mMETnoHF/D");
+  mTree->Branch("sumetNoHF" ,&mSumETnoHF           ,"mSumETnoHF/D");
+}
+
+void InclusiveJetTreeProducer::clearTreeVectors() {
+  mPt       ->clear();
+  mEta      ->clear();
+  mPhi      ->clear();
+  mE        ->clear();
+  mEmf      ->clear();
+  mNtrkVx   ->clear();
+  mNtrkCalo ->clear();
+  mCTPt     ->clear();
+  mCTEta    ->clear();
+  mCTPhi    ->clear();
+  mVTPt     ->clear();
+  mVTEta    ->clear();
+  mVTPhi    ->clear();
+  mN90      ->clear();
+  mPVx      ->clear();
+  mPVy      ->clear();
+  mPVz      ->clear();
+  mHLTNames ->clear();
+  mL1Names  ->clear();
 }
