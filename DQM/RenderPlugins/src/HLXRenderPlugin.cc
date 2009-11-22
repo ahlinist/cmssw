@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.16 2009/10/30 16:41:11 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.13 2009/05/22 19:05:23 lat Exp $
 //
 
 // user include files
@@ -30,7 +30,7 @@
 class HLXRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
+  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &)
     {
       if( o.name.find( "HLX/Luminosity" )  != std::string::npos )
         return true;
@@ -59,7 +59,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r)
+  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r)
     {
       c->cd();
 
@@ -98,7 +98,7 @@ public:
     }
 
 private:
-  void preDrawTProfile( TCanvas *, const VisDQMObject &o )
+  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject &o )
     {
       //std::cout << "NADIA: Here in predraw PROFILE!!!!" << std::endl;
 
@@ -135,6 +135,11 @@ private:
 	 obj->SetMarkerColor(kBlue);
       }
 
+      if( o.name.find("LumiAvg") != std::string::npos ){
+	 obj->SetMarkerStyle(kPlus);
+	 obj->SetMarkerColor(kBlue);
+      }
+
       // Sum All Occupancy plots (check sums)
       if( o.name.find("SumAllOcc") != std::string::npos ){
         obj->SetMaximum( 1.25*obj->GetMaximum() );
@@ -162,7 +167,7 @@ private:
       }
     }
 
-  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
+  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -192,9 +197,16 @@ private:
       if( o.name.find("ETSum") != std::string::npos || 
 	  o.name.find("Set1_") != std::string::npos ||
 	  o.name.find("Set2_") != std::string::npos ){
-	    gPad->SetLeftMargin(0.15);
-	    //obj->GetYaxis()->SetLabelSize(0.03);
-	    obj->GetYaxis()->SetTitleOffset(1.7);
+	 gPad->SetLeftMargin(0.15);
+	 //obj->GetYaxis()->SetLabelSize(0.03);
+	 obj->GetYaxis()->SetTitleOffset(1.7);
+	 
+	 if( (obj->GetMaximum() - obj->GetMinimum()) < 0.001 && 
+	     obj->GetMaximum() > 0.1 ){
+	    gPad->SetLeftMargin(0.20);
+	    obj->GetYaxis()->SetLabelSize(0.03);
+	    obj->GetYaxis()->SetTitleOffset(2.2);
+	 }
       }
 
       if( (o.name.find("EtSum") != std::string::npos && o.name.find("Lumi") == std::string::npos) ||
@@ -219,7 +231,12 @@ private:
       {
         obj->SetLineColor(kBlack);
         obj->SetMarkerStyle(kPlus);
-        obj->SetMarkerColor(kRed);
+	
+	if( o.name.find("LumiInstant") != std::string::npos )
+	   obj->SetMarkerColor(8);
+	else if( o.name.find("LumiIntegrated") != std::string::npos )
+	   obj->SetMarkerColor(kRed);
+  
       }
 
       if( o.name.find("HistInstantLumi") != std::string::npos || o.name.find("HistIntegratedLumi") != std::string::npos  )
@@ -251,7 +268,7 @@ private:
       }
     }
 
-  void preDrawTH2F( TCanvas *c, const VisDQMObject &o )
+  void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
