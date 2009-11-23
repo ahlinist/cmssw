@@ -40,7 +40,8 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mPtMin              = cfg.getParameter<double>                   ("ptMin");                 
   L1GTReadoutRcdSource_  = cfg.getParameter<edm::InputTag>("L1GTReadoutRcdSource");
   L1GTObjectMapRcdSource_= cfg.getParameter<edm::InputTag>("L1GTObjectMapRcdSource");
-  
+   mIsMCarlo           = cfg.getParameter<bool>                     ("isMCarlo");
+
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup) 
@@ -87,6 +88,14 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       }
   }
 
+  ////////Get PtHat///////////////
+  Handle<GenEventInfoProduct> hEventInfo;
+  if (mIsMCarlo)
+    { 
+      event.getByLabel("generator", hEventInfo);
+      mPtHat = hEventInfo->binningValues()[0];
+    }
+
   ////////////// Jets //////
   edm::Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -102,7 +111,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
 	mEta      ->push_back( (*jets)[ind].eta()    );
 	mPhi      ->push_back( (*jets)[ind].phi()    );
 	mE        ->push_back( (*jets)[ind].energy() );
-	
+	mN90      ->push_back( (*jets)[ind].n90()    );	
 	mEmf      ->push_back( (*jets)[ind].emEnergyFraction() ); 
 	mNtrkVx   ->push_back( JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]) );
 	mNtrkCalo ->push_back( JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind])   ); 
@@ -129,7 +138,6 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
 
   for(unsigned int i=0;i<mTriggerNames.size();i++) {
     bool accept = triggerResultsHandle->accept( mHltConfig.triggerIndex(mTriggerNames[i]) );
-    //std::cout << mTriggerNames[i] << " " << mHltConfig.triggerIndex(mTriggerNames[i]) << " " << triggerResultsHandle->accept(mHltConfig.triggerIndex(mTriggerNames[i]) ) << std::endl;
     if( accept ) mHLTNames->push_back( mTriggerNames[i] );
   }
 
@@ -160,7 +168,7 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();
        itMap != objMapVec.end(); ++itMap) {
     l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
-    //std::cout << " *** " << (*itMap).algoName() << " " << (*itMap).algoBitNumber() << " " << dWord[ (*itMap).algoBitNumber() ] <<std::endl;
+
   }
   for(unsigned int i=0; i<mL1TriggerNames.size(); i++) {
     std::map<std::string, int>::const_iterator itr = l1map.find( mL1TriggerNames[i] );
@@ -253,6 +261,9 @@ void InclusiveJetTreeProducer::buildTree() {
   mTree->Branch("sumet"     ,&mSumET               ,"mSumET/D");
   mTree->Branch("metNoHF"   ,&mMETnoHF             ,"mMETnoHF/D");
   mTree->Branch("sumetNoHF" ,&mSumETnoHF           ,"mSumETnoHF/D");
+  if(mIsMCarlo){
+    mTree->Branch("pthat"   ,&mPtHat               ,"mPtHat/D");
+  }
 }
 
 void InclusiveJetTreeProducer::clearTreeVectors() {
