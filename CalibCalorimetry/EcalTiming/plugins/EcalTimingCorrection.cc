@@ -199,6 +199,32 @@ EcalTimingCorrection::analyze(  edm::Event const& iEvent,  edm::EventSetup const
    //EEDetId detIde = EEDetId(50,10,1);
    //std::cout << " ix " << detIde.ix() << " iy " << detIde.iy() << " iz " << detIde.zside() << std::endl; 
   
+   //NEW EE stuff.... Jason TEST TEST TEST
+   //_+_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_++_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_++_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_+
+   for (int iy = 65; iy < 96; iy += 5)
+   {
+      int iz = 1;
+      int ix = 50;
+      EEDetId detId = EEDetId(ix,iy,iz,EEDetId::XYMODE); 
+      double extrajit = timecorr(geometry_pEE,detId);
+      const CaloCellGeometry *thisCell = geometry_pEE->getGeometry(detId);
+      GlobalPoint position = thisCell->getPosition();
+      std::cout << " ix: " << ix << " iy: " << iy << " iz: " << iz << std::endl;
+      std::cout << " x: " << position.x() << " y: " << position.y() << " z: " << position.z() << " TimeCorr: " << extrajit << std::endl; 
+   }
+   for (int ix = 65; ix < 96; ix += 5)
+   {
+      int iz = 1;
+      int iy = 50;
+      EEDetId detId = EEDetId(ix,iy,iz,EEDetId::XYMODE); 
+      double extrajit = timecorr(geometry_pEE,detId);
+      const CaloCellGeometry *thisCell = geometry_pEE->getGeometry(detId);
+      GlobalPoint position = thisCell->getPosition();
+      std::cout << " ix: " << ix << " iy: " << iy << " iz: " << iz << std::endl;
+      std::cout << " x: " << position.x() << " y: " << position.y() << " z: " << position.z() << " TimeCorr: " << extrajit << std::endl; 
+   }
+    //_+_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_++_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_++_+_+_+_+_+__+_+_+_+_+_+_+_+_+_+_+_+
+   //------------__END OF TEST TEST TEST
  
    for(int cry=1;cry<numXtals;cry++)
    {
