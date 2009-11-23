@@ -40,7 +40,7 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
     {
       emEt                -> push_back(it->emEt());
       hadEt               -> push_back(it->hadEt());
-      outerEt             -> push_back(it->hadEt());
+      outerEt             -> push_back(it->outerEt());
       eta                 -> push_back(it->p4().eta());
       phi                 -> push_back(it->p4().phi());
       ieta                -> push_back(it->ieta());
