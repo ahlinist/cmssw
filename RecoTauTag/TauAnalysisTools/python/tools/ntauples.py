@@ -1,11 +1,10 @@
 import re
 import string
 
-from ROOT import *
-from PhysicsTools.PythonAnalysis import *
-gSystem.Load("libFWCoreFWLite.so")
-AutoLibraryLoader.enable()
-
+from ROOT import gROOT, TFile, TTree, TH1F, TH3F
+#from PhysicsTools.PythonAnalysis import *
+#gSystem.Load("libFWCoreFWLite.so")
+#AutoLibraryLoader.enable()
 
 class TauNtuple(object):
    def __init__(self, name):
@@ -126,18 +125,6 @@ class TauNtupleManager(object):
          for match_option, collection in to_fill:
             for alias in split_items('#', collection):
                ntuple.registerExpression(alias[-1], match_option)
-
-class TauNtupleSelection(object):
-   def __init__(self, cut):
-      self.cut = cut
-   def negate(self):
-      return TauNtupleSelection("!(%s)" % self.cut)
-   def __add__(self, other):
-      return TauNtupleSelection("(%s) || (%s)" % (self.cut, other.cut))
-   def __mul__(self, other):
-      return TauNtupleSelection("(%s) && (%s)" % (self.cut, other.cut))
-   def __str__(self):
-      return self.cut
 
 def draw(events, ntuple=None, expr=None, selection="", output_hist="", binning=(), options="goff"): 
    # Return value when we are returning the temp histogram

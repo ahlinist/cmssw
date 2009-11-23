@@ -3,13 +3,13 @@
  * \created : Mon Sep 21 17:46:35 PDT 2009 
  * \author Evan K. Friis, (UC Davis)
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
  * Implements PFTauEfficiencyAssociator to produce a mapping of efficiencies
  * (parameterizied by pt, eta, and jet widht) stored in a ROOT TH3 histograms
  * to reco::PFTaus
  *
- * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.1 2009/11/04 21:53:12 friis Exp $
+ * $Id: PFTauEfficiencyAssociatorFromTH3.cc,v 1.2 2009/11/20 23:18:21 friis Exp $
  *
  */
 
@@ -17,6 +17,8 @@
 #include "TH3F.h"
 #include "TFile.h"
 #include <memory>
+
+using namespace std;
 
 class PFTauEfficiencyAssociatorFromTH3 : public PFTauEfficiencyAssociator {
    public:
@@ -61,9 +63,11 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
    {
       throw cms::Exception("PFTauEfficiencyAssociatorFromFile") << "Can't open ROOT file: " << filename;
    }
+   cout << "Got file " << endl;
 
    for(vstring::const_iterator iSource = effNames.begin(); iSource != effNames.end(); ++iSource)
    {
+      cout << "Building source " << *iSource << endl;
       // get the associated pset
       const ParameterSet& sourcePSet = effSources.getParameter<ParameterSet>(*iSource);
 
@@ -80,7 +84,7 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
       // set the user as the object owner (to prevent deletion when the file is closed)
       container.histogram->SetDirectory(0);
 
-      if( !container.histogram )
+      if( !(container.histogram) )
       {
          throw cms::Exception("InputFileError") << "can't retieve histogram " << container.name << " from location: " << container.location;
       }
@@ -89,9 +93,11 @@ PFTauEfficiencyAssociatorFromTH3::PFTauEfficiencyAssociatorFromTH3(const Paramet
       efficiencies_.push_back(container);
    }
 
+   cout << "Closing up " << endl;
    // Restore the previous directory state.
    file_->Close();
    old_dir->cd();
+   cout << "Done" << endl;
 }
 
 pat::LookupTableRecord

@@ -11,7 +11,7 @@
 '''
 import FWCore.ParameterSet.Config as cms
 from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import pftau_expressions
-from RecoTauTag.TauAnalysisTools.fakeRate.makeHistograms import cuts as disc_configs
+from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import cuts as disc_configs
 from RecoTauTag.TauAnalysisTools.fakeRate.associatorTools import *
 
 
