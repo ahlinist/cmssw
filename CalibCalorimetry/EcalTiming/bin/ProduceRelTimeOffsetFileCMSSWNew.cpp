@@ -24,6 +24,9 @@ int main(int argc,  char * argv[]){
 
   int dofrominput = 0;
   if (argc > 6) dofrominput = atoi(argv[6]);  
+ 
+  int pncorrection = 0;
+  if (argc > 7) pncorrection = atoi(argv[7]);  
 
  ifstream FileXML(argv[1]);
   if( !(FileXML.is_open()) ){cout<<"Error: file"<<argv[1]<<" not found!!"<<endl;return -2;}
@@ -157,14 +160,14 @@ int main(int argc,  char * argv[]){
      xml_outfile<<"   <DELAY_OFFSET>\n";
      xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
      xml_outfile<<"             <TRIGGERTOWER>69</TRIGGERTOWER>\n";
-     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[69]<<"</TIME_OFFSET>\n";
+     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[69]+pncorrection<<"</TIME_OFFSET>\n";
      xml_outfile<<"    </DELAY_OFFSET>"<<endl;
   }
   if (is70){
      xml_outfile<<"   <DELAY_OFFSET>\n";
      xml_outfile<<"             <SUPERMODULE>"<<SMn <<"</SUPERMODULE>\n";
      xml_outfile<<"             <TRIGGERTOWER>70</TRIGGERTOWER>\n";
-     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[70]<<"</TIME_OFFSET>\n";
+     xml_outfile<<"             <TIME_OFFSET>"<< TimeOffset[70]+pncorrection<<"</TIME_OFFSET>\n";
      xml_outfile<<"    </DELAY_OFFSET>"<<endl;
   }
   
