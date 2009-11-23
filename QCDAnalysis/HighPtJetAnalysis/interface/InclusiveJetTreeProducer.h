@@ -51,6 +51,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     edm::InputTag mTriggerResultsTag;
     double mEtaMax;
     double mPtMin; 
+    bool mIsMCarlo;
     edm::InputTag L1GTReadoutRcdSource_, L1GTObjectMapRcdSource_;    
     HLTConfigProvider mHltConfig;
 
@@ -66,7 +67,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
     
-    double mMET, mMETnoHF, mSumET, mSumETnoHF;
+    double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat;
     int mRun, mEvent;
 };
 #endif
