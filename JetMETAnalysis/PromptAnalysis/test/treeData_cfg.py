@@ -4,6 +4,23 @@ import HLTrigger.HLTfilters.hltHighLevel_cfi as hlt
 process = cms.Process('TEST')
 process.load('JetMETAnalysis.PromptAnalysis.ntuple_cff')
 
+process.load("Configuration/StandardSequences/Geometry_cff")
+process.load("Configuration/StandardSequences/MagneticField_cff")
+process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
+process.load("Configuration/StandardSequences/RawToDigi_Data_cff")
+process.load("L1Trigger/Configuration/L1RawToDigi_cff")
+process.load("RecoMET/Configuration/RecoMET_BeamHaloId_cff")
+process.load("RecoMET/METProducers/BeamHaloSummary_cfi")
+process.load("RecoMET/METProducers/CSCHaloData_cfi")
+process.load("RecoMET/METProducers/EcalHaloData_cfi")
+process.load("RecoMET/METProducers/HcalHaloData_cfi")
+process.load("RecoMET/METProducers/GlobalHaloData_cfi")
+process.GlobalTag.globaltag ='STARTUP31X_V7::All'
+
+process.load("Configuration/StandardSequences/ReconstructionCosmics_cff")
+
+process.load("RecoMuon/Configuration/RecoMuon_cff")
+
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
@@ -12,7 +29,7 @@ process.add_( cms.Service( "TFileService",
 
 #baseLocation="/store/data/Commissioning09/Calo/RECO/v8/000/116/736"
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 process.source = cms.Source (
     "PoolSource",
     fileNames = cms.untracked.vstring(
@@ -93,3 +110,34 @@ process.MessageLogger = cms.Service("MessageLogger",
     reportEvery = cms.untracked.int32(100)
     )
                                     )
+process.halo = cms.Path( process.gtDigis
+                      * process.l1GtRecord
+                      * process.BeamHaloId
+                      * process.CSCHaloData
+                      * process.EcalHaloData
+                      * process.HcalHaloData
+                      * process.GlobalHaloData
+                      * process.BeamHaloSummary
+                      )
+
+process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
+    outputCommands = cms.untracked.vstring(
+    'drop *',
+    'keep *_promptanaevent_*_*',
+    'keep *_promptanamet_*_*',
+    'keep *_promptananohf_*_*',
+    'keep *_promptanaic5calojet_*_*',
+    'keep *_promptanakt4calojet_*_*',
+    'keep *_promptanahalo_*_*'
+    ))
+
+process.theBigNtuple = cms.Path( (
+    process.promptanaevent +
+    process.promptanamet   +
+    process.promptananohf  +
+    process.promptanaic5calojet +
+    process.promptanakt4calojet +
+    process.promptanahalo
+    ) * process.promptanaTree )
+
+schedule = cms.Schedule( process.halo, process.theBigNtuple )
