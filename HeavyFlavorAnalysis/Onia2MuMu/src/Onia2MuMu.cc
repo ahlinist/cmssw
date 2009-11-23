@@ -671,12 +671,14 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // -- 2 - get the collection of PF Photons
   iEvent.getByLabel(thePhotonLabel, pfAll);
   pfClusters.clear();
+  cout << "PF candidate size = " << pfAll->size() << endl;
   for(PFCandidateCollection::const_iterator itPFC = pfAll->begin();
       itPFC != pfAll->end(); ++itPFC) {
     if (PFCandidate::ParticleType(itPFC->particleId()) == PFCandidate::gamma && itPFC->energy() > thePhotonMinE) {
       pfClusters.push_back(*itPFC);
     }
   }
+  cout << "PF photon size = " << pfClusters.size() << endl;
 
   // -- 3 - Get NON-OVERLAPPING collections of muons
   Handle<reco::MuonCollection> allmuons;
@@ -684,7 +686,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<reco::CaloMuonCollection> allcalmuons;
   iEvent.getByLabel(theCaloMuonsLabel, allcalmuons);
-  
+  cout << "All calo muon size = " << allcalmuons->size() << endl;
+
   std::vector<int> theMuonTrkIndexes;
 
   for (MuonCollection::const_iterator nmuon = allmuons->begin();
@@ -707,6 +710,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     if (storeThisOne) theCaloMuons.push_back(*cmuon); 
   } 
+  cout << "Selected calo muon size = " << theCaloMuons.size() << endl;
+  
 
   // -- 4 - Get track collection of NON-muons
   int k = 0;
@@ -1105,6 +1110,7 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
   Handle<GenParticleCollection> genParticles;
   iEvent.getByLabel( thegenParticlesLabel, genParticles );
 
+
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
     int Mc_particleID=p.pdgId();
@@ -1124,8 +1130,6 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
       Mc_mu_size++;
     }
   }
-
-  int a = Mc_mu_size;
  
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const Candidate & p = (*genParticles)[ i ];
@@ -1175,13 +1179,10 @@ void Onia2MuMu::fillGeneratorBlock(const edm::Event &iEvent) {
 				p.daughter(1)->py(),
 				p.daughter(1)->pz(),
 				p.daughter(1)->energy());
-        int b = Mc_mu_size;
-        if (a != b) cout << "eh?" << endl; 
 	for( int j=0; j<Mc_mu_size; j++){
 	  if((p.daughter(0)->pdgId())== Mc_mu_id[j] && fabs(da1_4vec.Pt() - ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()) < 0.001){
 	    if(Mc_mu_id[j]==13) Mc_QQmumi_indx[Mc_QQ_size]=j;
 	    if(Mc_mu_id[j]==-13)Mc_QQmupl_indx[Mc_QQ_size]=j;
-            if (j >= b) cout << "come?" << endl; 
 	  }
 	  if((p.daughter(1)->pdgId())== Mc_mu_id[j] && fabs(da2_4vec.Pt() - ((TLorentzVector*)Mc_mu_4mom->At(j))->Pt()) < 0.001){
 	    if(Mc_mu_id[j]==13) Mc_QQmumi_indx[Mc_QQ_size]=j;
