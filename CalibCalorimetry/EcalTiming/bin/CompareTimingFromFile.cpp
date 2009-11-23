@@ -152,7 +152,7 @@ int main(int argc,  char * argv[]){
     if(Shift1[i]>-1000. && Shift2[i] > -1000.){
             double diff = Shift2[i]-Shift1[i];
             diffHist->Fill(diff);
-            if ( diff < -5 || diff > 5 ) std::cout << "NONONO TT " << i << " is more than 5 ns off: " << diff << std::endl;
+            if ( diff < -2 || diff > 2 ) std::cout << "NONONO TT " << i << " is more than 5 ns off: " << diff << std::endl;
             }
   }
   
