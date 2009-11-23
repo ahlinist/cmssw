@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.h,v 1.27 2009/06/29 19:35:25 chinhan Exp $
+// $Id: TTEffAnalyzer.h,v 1.28 2009/11/16 16:34:23 slehti Exp $
 //
 //
 
@@ -42,6 +42,8 @@
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L1TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L25and3TauEfficiencyAnalyzer.h"
 #include "ElectroWeakAnalysis/TauTriggerEfficiency/interface/L2TauEfficiencyAnalyzer.h"
+
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 //
 class TTEffAnalyzer : public edm::EDAnalyzer {
@@ -92,12 +94,13 @@ class TTEffAnalyzer : public edm::EDAnalyzer {
 
       // ----------member data ---------------------------
       bool DoMCTauEfficiency_;
-      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_; //Path to analyze
+      edm::InputTag  PFTaus_,PFTauIso_,MCTaus_,MCParticles_; //Path to analyze
       std::string rootFile_;
 
       edm::Handle<PFTauCollection> PFTaus;
       edm::Handle<PFTauDiscriminator> thePFTauDiscriminatorByIsolation;
       edm::Handle<std::vector<LorentzVector> > mcTaus;
+      edm::Handle<reco::GenParticleCollection> mcParticles;
 
       // PF Variables
       int NEGCandsInAnnulus,NHadCandsInAnnulus,MCMatch,PFTauMatch,PFMuonMatch,PFElectronMatch;

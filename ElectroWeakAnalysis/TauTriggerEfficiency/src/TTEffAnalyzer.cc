@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.31 2009/10/08 21:22:53 chinhan Exp $
+// $Id: TTEffAnalyzer.cc,v 1.32 2009/11/16 16:34:24 slehti Exp $
 //
 //
 
@@ -28,6 +28,7 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   PFTaus_(iConfig.getParameter<edm::InputTag>("PFTauCollection")),
   PFTauIso_(iConfig.getParameter<edm::InputTag>("PFTauIsoCollection")),
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
+  MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
   MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
 {
@@ -117,6 +118,7 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
        }
        iEvent.getByLabel(MCTaus_, mcTaus);
+       iEvent.getByLabel(MCParticles_, mcParticles);
        loop(iEvent,iSetup,*PFTaus);
      }
      else if(iEvent.getByLabel(PFTaus_, caloTaus)) {
@@ -169,6 +171,15 @@ using namespace reco;
       }
     }
   }
+  if(mcParticles.isValid()){
+    for(unsigned int k = 0 ; k < mcParticles->size(); k++){
+      if(abs(mcParticles->at(k).pdgId()) != 11 && abs(mcParticles->at(k).pdgId()) != 13) continue;
+      if( ROOT::Math::VectorUtil::DeltaR(PFTaus->at(i).p4(),mcParticles->at(k).p4()) < MCMatchingCone ) {
+	if(abs(mcParticles->at(k).pdgId()) == 11 ) MCMatch = 11;
+	if(abs(mcParticles->at(k).pdgId()) == 13 ) MCMatch = 13;
+      }
+    }
+  }
   if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
   // Fill common variables
   fillLV(PFTaus->at(i).p4());
@@ -177,6 +188,9 @@ using namespace reco;
   PFProng  = PFTaus->at(i).signalPFChargedHadrCands().size(); // check config file
   PFIsoSum = PFTaus->at(i).isolationPFChargedHadrCandsPtSum();
   PFEnergy = PFTaus->at(i).energy();
+
+  PFMuonMatch = PFTaus->at(i).muonDecision();
+//PFElectronMatch = PFTaus->at(i).electronPreIDDecision();?
 
   /*
   //get RMS Values of Candidates

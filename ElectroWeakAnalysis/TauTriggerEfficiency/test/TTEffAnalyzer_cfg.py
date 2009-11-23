@@ -109,6 +109,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         MCMatchingCone         = cms.double(0.2),
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
+	GenParticleCollection	= cms.InputTag("genParticles"),
         outputFileName          = cms.string("tteffAnalysis.root")
 )
 
