@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.1 2009/10/09 13:02:15 mangano Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.1 2009/11/19 18:34:52 covarell Exp $
 //
 //
 
@@ -63,6 +63,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
+      pair<unsigned int, pat::CompositeCandidate> theBestQQ();
 
       // histos
       TH1F *QQMass2Glob_passmu3;
@@ -169,14 +170,35 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       TH2F *heffMuTrk;
       TH2F *heffMuHLT;
 
-      // dataset
+      // dataset and RooRealVars
       RooDataSet* data;
+      RooRealVar* JpsiMass;      
+      RooRealVar* JpsiPt;
+      RooRealVar* JpsiEta; 
+      RooRealVar* Jpsict;
+      RooRealVar* JpsictTrue;
+      RooRealVar* TNPeff;
+      RooRealVar* TNPefferr;       			
+      RooCategory* JpsiType;
+      RooCategory* JpsiPtType;
+      RooCategory* JpsiEtaType;
+      RooCategory* matchType;
+
+      // categories
+      Handle<pat::CompositeCandidateCollection > collGG;
+      Handle<pat::CompositeCandidateCollection > collGT;
+      Handle<pat::CompositeCandidateCollection > collTT;
+      Handle<pat::CompositeCandidateCollection > collGC;
 
       // data members
       string _histfilename;      
       string _datasetname;
+      vector<double> _ptbinranges;
+      vector<double> _etabinranges;
       bool _onlythebest;
       bool _storeefficiency;
+
+      unsigned int nEvents;
 
 };    
       
@@ -194,10 +216,66 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _histfilename(iConfig.getParameter<string>("histFileName")),
   _datasetname(iConfig.getParameter<string>("dataSetName")),
+  _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),
+  _etabinranges(iConfig.getParameter< vector<double> >("etaBinRanges")),
   _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),
   _storeefficiency(iConfig.getParameter<bool>("storeEfficiency"))
 {
    //now do what ever initialization is needed
+  nEvents = 0;
+
+  // mass-lifetime limits
+  const float JpsiMassMin = 2.6;
+  const float JpsiMassMax = 3.6;
+  const float JpsiCtMin = -1.0;
+  const float JpsiCtMax = 3.5;
+  float JpsiPtMin = 0.0;           // SET BY 
+  float JpsiPtMax = 0.0;           // DEFINITION
+  float JpsiEtaMin = 0.0;          // OF BIN
+  float JpsiEtaMax = 0.0;          // LIMITS NOW
+  
+  JpsiPtType = new RooCategory("JpsiPtType","Category of Pt");
+  JpsiEtaType = new RooCategory("JpsiEtaType","Category of Eta");
+
+  JpsiPtMin = _ptbinranges[0];  cout << "Pt min = " << JpsiPtMin << endl;
+  JpsiPtMax = _ptbinranges[_ptbinranges.size()-1];  cout << "Pt max = " << JpsiPtMax << endl;
+
+  for(unsigned int i=0;i<_ptbinranges.size()-1;i++){
+    char catname[100];
+    sprintf(catname,"P%d",i+1);
+    JpsiPtType->defineType(catname,i+1); 
+    cout << "Pt bin " << i+1 << ": Min = " << _ptbinranges[i] << " Max = " << _ptbinranges[i+1] << endl;   
+  }
+
+  JpsiEtaMin = _etabinranges[0];  cout << "Eta min = " << JpsiEtaMin << endl;
+  JpsiEtaMax = _etabinranges[_etabinranges.size()-1];  cout << "Eta max = " << JpsiEtaMax << endl;
+
+  for(unsigned int i=0;i<_etabinranges.size()-1;i++){
+    char catname[100];
+    sprintf(catname,"E%d",i+1);
+    JpsiEtaType->defineType(catname,i+1); 
+    cout << "Eta bin " << i+1 << ": Min = " << _etabinranges[i] << " Max = " << _etabinranges[i+1] << endl;   
+  }
+
+  JpsiType = new RooCategory("JpsiType","Category of Jpsi");
+  matchType = new RooCategory("matchType","Category of matching");
+
+  JpsiType->defineType("GG",0);
+  JpsiType->defineType("GT",1);
+  JpsiType->defineType("TT",2);
+  JpsiType->defineType("GC",3);
+
+  matchType->defineType("matched",0);
+  matchType->defineType("unmatched",1);
+
+  JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");process.HLTBeginSequenceBPTX = cms.Sequence( process.hltTriggerType + process.hltL1EventNumber + process.hltGtDigis + process.hltGctDigis + process.hltL1GtObjectMap + process.hltL1extraParticles + process.hltOfflineBeamSpot )
+  JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
+  JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
+  Jpsict = new RooRealVar("Jpsict","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
+  JpsictTrue = new RooRealVar("JpsictTrue","J/psi ctau true",JpsiCtMin,JpsiCtMax,"mm");
+  TNPeff = new RooRealVar("TNPeff","Tag and probe efficiency",0.,1.);
+  TNPefferr = new RooRealVar("TNPefferr","Tag and probe efficiency uncertainty",0.,1.);  		
+
 }
 
 
@@ -218,30 +296,38 @@ JPsiAnalyzerPAT::~JPsiAnalyzerPAT()
 void
 JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+   nEvents++;
 
-   Handle<pat::CompositeCandidateCollection > collH;
-   iEvent.getByLabel("myJPsiAnalysisPAT",collH);
+   if (!iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG)) cout << "Global-global J/psi not present in event!";
+   
+   if (!iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT)) cout << "Global-tracker J/psi not present in event!";
 
-   cout << "analyze event" << endl;
-   for(vector<pat::CompositeCandidate>::const_iterator it=collH->begin();
-       it!=collH->end();++it){
-     
-     bool step1(true),step2(true),step3(true),step4(true),step5(true),step6(true);
+   if (!iEvent.getByLabel("onia2MuMuPatTrkTrk",collTT)) cout << "Tracker-tracker J/psi not present in event!";
 
+   if (!iEvent.getByLabel("onia2MuMuPatGlbCal",collGC)) cout << "Global-calo J/psi not present in event!";
+
+   if (nEvents%10000 == 0) cout << "analyze event # " << nEvents << endl;
+
+   // STEP 1 - Global-Global
+   for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
+       it!=collGG->end();++it){
 
      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
      
      if(muon1==0 || muon2==0) {cout << "ERROR: dynamic cast failed" << endl; continue;}
+     if(!(muon1->isGlobalMuon() && muon2->isGlobalMuon())) {cout << "ERROR: No global muons in the GG category..." << endl; continue;}
+
+     // Right-sign J/psi
+     if(muon1->charge()*muon2->charge() < 0) {
+     }
+
+     // if(!(muon1->innerTrack()->found() >11  && muon2->innerTrack()->found() >=11 )) step3=false;
+     // if( muon1->innerTrack()->pt()< 2.5 || muon2->innerTrack()->pt()<2.5 ) step4=false;
+     // if( it->userFloat("vNChi2") > 4.) step5=false;
+     // if( it->mass()<2.6 || it->mass()>3.5) step6=false;
      
-     if(muon1->charge() == muon2->charge()) step1=false;
-     if(!(muon1->isGlobalMuon() && muon2->isGlobalMuon())) step2=false;
-     if(!(muon1->innerTrack()->found() >11  && muon2->innerTrack()->found() >=11 )) step3=false;
-     if( muon1->innerTrack()->pt()< 2.5 || muon2->innerTrack()->pt()<2.5 ) step4=false;
-     if( it->userFloat("vNChi2") > 4.) step5=false;
-     if( it->mass()<2.6 || it->mass()>3.5) step6=false;
-     
-     cout << "analyze candidate" << endl;
+     // cout << "analyze candidate" << endl;
      
    }
 
