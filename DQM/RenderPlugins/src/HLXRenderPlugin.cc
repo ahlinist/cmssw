@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.13 2009/05/22 19:05:23 lat Exp $
+// $Id: HLXRenderPlugin.cc,v 1.18 2009/11/22 14:54:03 neadam Exp $
 //
 
 // user include files
@@ -30,7 +30,7 @@
 class HLXRenderPlugin : public DQMRenderPlugin
 {
 public:
-  virtual bool applies( const DQMNet::CoreObject &o, const VisDQMImgInfo &)
+  virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo &)
     {
       if( o.name.find( "HLX/Luminosity" )  != std::string::npos )
         return true;
@@ -59,7 +59,7 @@ public:
       return false;
     }
 
-  virtual void preDraw( TCanvas *c, const DQMNet::CoreObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r)
+  virtual void preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo &r)
     {
       c->cd();
 
@@ -98,7 +98,7 @@ public:
     }
 
 private:
-  void preDrawTProfile( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTProfile( TCanvas *, const VisDQMObject &o )
     {
       //std::cout << "NADIA: Here in predraw PROFILE!!!!" << std::endl;
 
@@ -167,7 +167,7 @@ private:
       }
     }
 
-  void preDrawTH1F( TCanvas *, const DQMNet::CoreObject &o )
+  void preDrawTH1F( TCanvas *, const VisDQMObject &o )
     {
       TH1F* obj = dynamic_cast<TH1F*>( o.object );
       assert( obj );
@@ -268,7 +268,7 @@ private:
       }
     }
 
-  void preDrawTH2F( TCanvas *c, const DQMNet::CoreObject &o )
+  void preDrawTH2F( TCanvas *c, const VisDQMObject &o )
     {
       TH2F* obj = dynamic_cast<TH2F*>( o.object );
 
