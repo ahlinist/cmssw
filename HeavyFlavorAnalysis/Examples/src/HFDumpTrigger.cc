@@ -138,7 +138,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpTrigger>  l1extra::L1MuonParticleCollection " << fL1MuonsLabel.encode() << " not found " << endl;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger>  l1extra::L1MuonParticleCollection " << fL1MuonsLabel.encode() << " not found " << endl;
   }
 
 
@@ -153,7 +153,7 @@ void HFDumpTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByLabel(fHLTResultsLabel, hHLTresults);
   } catch (cms::Exception &ex) {
     //    cout << ex.explainSelf() << endl;
-    cout << "==>HFDumpTrigger> Triggerresults  " << fHLTResultsLabel.encode() << " not found " << endl;
+    if (fVerbose > 0) cout << "==>HFDumpTrigger> Triggerresults  " << fHLTResultsLabel.encode() << " not found " << endl;
     hltF = false;
   }
 

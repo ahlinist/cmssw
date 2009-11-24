@@ -91,9 +91,10 @@ void HFDumpGenerator::analyze(const Event& iEvent, const EventSetup& iSetup) {
   for(GenParticleCollection::const_iterator p  = genParticlesH->begin(); p != genParticlesH->end();  p++) {
     ++i; 
     pGen = gHFEvent->addGenCand();
-    pGen->fID    = p->pdgId();
+    pGen->fID     = p->pdgId();
     pGen->fStatus = p->status();  
     pGen->fNumber = i; 
+    pGen->fQ      = p->charge(); 
 
     double vx = p->vx(), vy = p->vy(), vz = p->vz();
     pGen->fP.SetXYZT(p->px(), 
