@@ -31,7 +31,7 @@
 
  <Constant name="LadderWidth"       value="[CFStripWidth]"/>
  <Constant name="LadderThick"       value="[CFStripThick]+
-           [ModuleThick]+[ReadoutBoxThick]"/>
+           [ModuleThick]+[CableBoxThick]"/>
  <Constant name="ModuleThick"       value="[SensorSeparation]/2+[SensorThick]"/>
  <Constant name="ModulesPerSide"    value="[Modules]/2"/>
  <Constant name="CFStripThick"      value="0.35*mm"/>
