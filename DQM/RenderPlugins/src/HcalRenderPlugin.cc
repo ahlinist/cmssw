@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.29 $
-  \date $Date: 2009/11/04 14:10:46 $
+  \version $Revision: 1.31 $
+  \date $Date: 2009/11/24 09:41:06 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -474,6 +474,8 @@ private:
         obj->SetOption("colz");
       }
 
+    else if (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos)
+      obj->SetMaximum(1); // useful for offline running, where multiple entries fill the occupancy hist more than once
     // Soon will be removed, as pedestal checking now done elsewhere
     else if (
 	     (o.name.find("ReferencePedestalMonitor_Hcal/adc/unsubtracted") != std::string::npos)  ||
@@ -806,6 +808,8 @@ private:
 	  }
         else
 	  {
+	    gStyle->SetOptStat(0);
+	    obj->SetStats(0);
 	    gPad->SetGridx();
 	    gPad->SetGridy();
 	  }
@@ -817,13 +821,12 @@ private:
 	if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos) ||
 	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")      !=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) 
+	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) ||
+	     (o.name.find("HotCellMonitor_Hcal/ ProblemHotCells")        !=std::string::npos)
 	     )
 	  {
 	    TText t;
-	    t.DrawTextNDC(0.05,0.01,"Histogram updates every Luminosity Section");
-	    gStyle->SetOptStat(1111);
-	    obj->SetStats(1111); 
+	    t.DrawTextNDC(0.05,0.01,"Histogram updates every L.S. (min 1000 events)");
 	  }
       } // if (o.name.find("DeadCellMonitor_Hcal/"...)
       
