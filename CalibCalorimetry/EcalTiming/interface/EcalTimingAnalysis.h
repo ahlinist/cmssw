@@ -67,6 +67,9 @@ class EcalTimingAnalysis : public edm::EDAnalyzer {
       std::string hitProducerEE_;
       std::string digiProducer_;
       float ampl_thr_;
+      float ampl_thrEE_;
+	  double mintime_;
+	  double maxtime_;
       int min_num_ev_;
       int sm_;
       std::string txtFileName_;

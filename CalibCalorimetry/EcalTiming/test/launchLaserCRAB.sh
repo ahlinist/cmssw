@@ -45,8 +45,10 @@ fi
 
 if [ "X"${data_set} == "X" ]
     then
-    echo "using default Dataset: /TestEnables/Commissioning09-v3/RAW"
-    data_set="/TestEnables/Commissioning09-v3/RAW"
+#    echo "using default Dataset: /TestEnables/Commissioning09-v3/RAW"
+#    data_set="/TestEnables/Commissioning09-v3/RAW"
+    echo "using default Dataset: /TestEnables/BeamCommissioning09-v1/RAW"
+    data_set="/TestEnables/BeamCommissioning09-v1/RAW"
 fi
 
 echo 'Submitting CRAB cosmics analysis jobs for' ${run_num} 'dataset' ${data_set}

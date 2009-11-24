@@ -64,6 +64,8 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    txtFileName_        = iConfig.getUntrackedParameter<std::string>("TTPeakTime","TTPeakPositionFile.txt");
    txtFileForChGroups_ = iConfig.getUntrackedParameter<std::string>("ChPeakTime","ChPeakTime.txt");
    ampl_thr_           = (float)(iConfig.getUntrackedParameter<double>("amplThr", 500.)); 
+   ampl_thrEE_         = (float)(iConfig.getUntrackedParameter<double>("amplThrEE", ampl_thr_)); 
+
    min_num_ev_         = (int) (iConfig.getUntrackedParameter<double>("minNumEvt", 100.)); 
    timerunstart_       = iConfig.getUntrackedParameter<double>("RunStart",1220192037.);
    timerunlength_       = iConfig.getUntrackedParameter<double>("RunLength",2.);
@@ -76,6 +78,8 @@ EcalTimingAnalysis::EcalTimingAnalysis( const edm::ParameterSet& iConfig )
    allshift_           = iConfig.getUntrackedParameter<double>("AllShift",1.5);   
    timingTree_         = iConfig.getUntrackedParameter<bool>("TimingTree",false);
    minxtals_           = iConfig.getUntrackedParameter<int>("MinEBXtals",-1); 
+   mintime_           = iConfig.getUntrackedParameter<double>("MinTime",3.0);
+   maxtime_           = iConfig.getUntrackedParameter<double>("MaxTime",9.0);     
 
    fromfile_           = iConfig.getUntrackedParameter<bool>("FromFile",false);  
    if (fromfile_) fromfilename_ = iConfig.getUntrackedParameter<std::string>("FromFileName","EMPTYFILE.root");
@@ -746,6 +750,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      //int SMind = anid.ic();
      
      if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
        averagetimeEB += mytime;
@@ -772,7 +777,7 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if (DCCid == 644 || DCCid == 645) std::cout << "SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
-
+       if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEB,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
        if (correctAVE_) mytime += 5.0 - averagetimeEB;
@@ -832,13 +837,14 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
    int numberinaveEE = 0;
    if (correctAVE_) {
      for(EcalUncalibratedRecHitCollection::const_iterator ithit = hitsEE->begin(); ithit != hitsEE->end(); ++ithit) {
-     
+       
        EEDetId anid(ithit->id()); 
        EcalElectronicsId elecId = ecalElectronicsMap_->getElectronicsId(anid);
        //int DCCid = elecId.dccId();
        //int SMind = anid.hashedIndex();
 
-       if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+       if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
+	if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
 	 double extrajit = timecorr(geometry_pEE,anid);
 	 double mytime = ithit->jitter() + extrajit+5.0;
 	 averagetimeEE += mytime;
@@ -865,7 +871,8 @@ EcalTimingAnalysis::analyze(  edm::Event const& iEvent,  edm::EventSetup const& 
      
      LogInfo("EcalTimingAnalysis")<<"SM " << DCCid+600 <<" SMind " << SMind << " Chi sq " << ithit->chi2() << " ampl " << ithit->amplitude() << " lambda " << lambda << " jitter " << ithit->jitter();
      
-     if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thr_ ) { // make sure fit has converged 
+     if(ithit->chi2()> -1. && ithit->chi2()<10000. && ithit->amplitude()> ampl_thrEE_ ) { // make sure fit has converged 
+	   if (ithit->jitter()+5 < mintime_ || ithit->jitter()+5 > maxtime_ ) continue; 
        double extrajit = timecorr(geometry_pEE,anid);
        double mytime = ithit->jitter() + extrajit+5.0;
        //if (correctAVE_) mytime += 5.0 - averagetimeEE;
