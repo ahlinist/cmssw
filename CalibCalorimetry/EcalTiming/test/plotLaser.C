@@ -29,7 +29,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   char name[100];  
 
-  const int nHists1=25;
+  const int nHists1=50;
   const int nHists = nHists1;
   //  const int nHists = 9;
   cout << nHists1 << " " << nHists << endl;;
@@ -62,11 +62,13 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   c[1]->cd();
   gStyle->SetOptStat(10);
-  TProfile *SM_timingCorrected = (TProfile*) f->Get("SM_timingCorrected");
-  customizeTProfile(SM_timingCorrected);
-  SM_timingCorrected->Draw();
-  char mytitle[100]; sprintf(mytitle,"%s %s",runChar,SM_timingCorrected->GetTitle()); 
-  SM_timingCorrected->SetTitle(mytitle);
+  TH1F *SM_timingh = CorrectProfToHist(SM_timing,"SM_timingh",-5,25.0);
+  customizeTHist(SM_timingh);
+  SM_timingh->Draw("p");
+  char mytitle[100]; sprintf(mytitle,"%s %s to optimal;FED;Time (ns)",runChar,SM_timing->GetTitle()); 
+  SM_timingh->SetMinimum(-25.);
+  SM_timingh->SetMaximum(25.);
+  SM_timingh->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_SM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[1]->Print(name); }
 
   //Timing by LM
@@ -81,12 +83,15 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
 
   c[3]->cd();
   gStyle->SetOptStat(10);
-  TProfile *LM_timingCorrected = (TProfile*) f->Get("LM_timingCorrected");
-  customizeTProfile(LM_timingCorrected);
-  LM_timingCorrected->Draw();
-  char mytitle[100]; sprintf(mytitle,"%s %s",runChar,LM_timingCorrected->GetTitle()); 
-  LM_timingCorrected->SetTitle(mytitle);
+  TH1F *LM_timingh = CorrectProfToHist(LM_timing,"LM_timingh",-5,25.0);
+  customizeTHist(LM_timingh);
+  LM_timingh->Draw("p");
+  char mytitle[100]; sprintf(mytitle,"%s %s to optimal;FED;Time (ns)",runChar,LM_timing->GetTitle()); 
+  LM_timingh->SetMinimum(-25.);
+  LM_timingh->SetMaximum(25.);
+  LM_timingh->SetTitle(mytitle);
   if (printPics) { sprintf(name,"%s/%sAnalysis_LM_timingCorrected_%i.%s",dirName,mType,runNumber,fileType); c[3]->Print(name); }
+ 
 
   //Timing within the towers
   c[4]->cd();
@@ -196,7 +201,7 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   TGraph *TTMeanWithRMS_All_FEDS_CHANGED = (TGraph*) f->Get("TTMeanWithRMS_All_FEDS_CHANGED");
   char mytitle[100]; sprintf(mytitle,"%s %s",runChar,TTMeanWithRMS_All_FEDS_CHANGED->GetTitle()); 
   TTMeanWithRMS_All_FEDS_CHANGED->SetTitle(mytitle);
-  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(0.,9.);
+  TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(-5.,5.);
   //TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->SetLimits(4.,6.);
   TTMeanWithRMS_All_FEDS_CHANGED->GetYaxis()->UnZoom();
   TTMeanWithRMS_All_FEDS_CHANGED->Draw("AP*");
@@ -222,7 +227,26 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[15]->SetGridy(1);
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
- 
+  
+   c[15]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *timeCHProfilep = TProfToRelProf2D(timeCHProfile,"timeCHProfilep", -5., 25.);
+  timeCHProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",timeCHProfile->GetTitle()); 
+  timeCHProfilep->SetTitle(mytitle);
+  timeCHProfilep->SetMinimum(-25.);
+  timeCHProfilep->SetMaximum(25.);
+  //timeTTProfile->SetMinimum(5.85);
+  //timeTTProfile->SetMinimum(4.8);
+  //timeTTProfile->SetMaximum(6.45);
+  timeCHProfilep->GetXaxis()->SetNdivisions(-18);
+  timeCHProfilep->GetYaxis()->SetNdivisions(2);
+  c[15]->SetLogy(0);
+  c[15]->SetLogz(0);
+  c[15]->SetGridx(1);
+  c[15]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[15]->Print(name); }
   //TT by TT timing profile
   c[16]->cd();
   gStyle->SetOptStat(10);
@@ -242,6 +266,26 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[16]->SetGridy(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[16]->Print(name); }
  
+  c[16]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *timeTTProfilep = TProfToRelProf2D(timeTTProfile,"timeTTProfilep", -5., 25.);
+  timeTTProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",timeTTProfile->GetTitle()); 
+  timeTTProfilep->SetTitle(mytitle);
+  timeTTProfilep->SetMinimum(-25.);
+  timeTTProfilep->SetMaximum(25.);
+  //timeTTProfile->SetMinimum(5.85);
+  //timeTTProfile->SetMinimum(4.8);
+  //timeTTProfile->SetMaximum(6.45);
+  timeTTProfilep->GetXaxis()->SetNdivisions(-18);
+  timeTTProfilep->GetYaxis()->SetNdivisions(2);
+  c[16]->SetLogy(0);
+  c[16]->SetLogz(0);
+  c[16]->SetGridx(1);
+  c[16]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[16]->Print(name); }
+ 
   //Ch by Ch timing profile EE+
   c[17]->cd();
   gStyle->SetOptStat(10);
@@ -258,6 +302,24 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   drawEELines();
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[17]->Print(name); }
+  
+  c[17]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *EEPtimeCHProfilep = TProfToRelProf2D(EEPtimeCHProfile,"EEPtimeCHProfilep", -5., 25.);
+  EEPtimeCHProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",EEPtimeCHProfilep->GetTitle()); 
+  EEPtimeCHProfilep->SetTitle(mytitle);
+  EEPtimeCHProfilep->SetMinimum(-25.);
+  EEPtimeCHProfilep->SetMaximum(25.);
+  //EEPtimeCHProfile->SetMinimum(4.5);
+  //EEPtimeCHProfile->SetMaximum(5.5);
+  EEPtimeCHProfilep->GetXaxis()->SetNdivisions(18);
+  c[17]->SetLogy(0);
+  c[17]->SetLogz(0);
+  drawEELines();
+  //c[15]->SetLogz(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[17]->Print(name); }
    
   //Ch by Ch timing profile EE+
   c[18]->cd();
@@ -275,6 +337,24 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   drawEELines();
   //c[15]->SetLogz(1);
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfile_%i.%s",dirName,mType,runNumber,fileType); c[18]->Print(name); }
+ 
+ c[18]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *EEMtimeCHProfilep = TProfToRelProf2D(EEMtimeCHProfile,"EEMtimeCHProfilep", -5., 25.);
+  EEMtimeCHProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",EEMtimeCHProfilep->GetTitle()); 
+  EEMtimeCHProfilep->SetTitle(mytitle);
+  EEMtimeCHProfilep->SetMinimum(-25.);
+  EEMtimeCHProfilep->SetMaximum(25.);
+  //EEPtimeCHProfile->SetMinimum(4.5);
+  //EEPtimeCHProfile->SetMaximum(5.5);
+  EEMtimeCHProfilep->GetXaxis()->SetNdivisions(18);
+  c[18]->SetLogy(0);
+  c[18]->SetLogz(0);
+  drawEELines();
+  //c[15]->SetLogz(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeCHProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[18]->Print(name); } 
   
   //TT by TT timing profile EE+
   c[19]->cd();
@@ -291,6 +371,28 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   c[19]->SetLogz(0);
   drawEELines();
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[19]->Print(name); }
+ 
+
+  c[19]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *EEPtimeTTProfilep = TProfToRelProf2D(EEPtimeTTProfile,"EEPtimeTTProfilep", -5., 25.);
+  EEPtimeTTProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",EEPtimeTTProfile->GetTitle()); 
+  EEPtimeTTProfilep->SetTitle(mytitle);
+  EEPtimeTTProfilep->SetMinimum(-25.);
+  EEPtimeTTProfilep->SetMaximum(25.);
+  //timeTTProfile->SetMinimum(5.85);
+  //timeTTProfile->SetMinimum(4.8);
+  //timeTTProfile->SetMaximum(6.45);
+  EEPtimeTTProfilep->GetXaxis()->SetNdivisions(18);
+  //EEPtimeTTProfilep->GetYaxis()->SetNdivisions(2);
+  drawEELines();
+  c[19]->SetLogy(0);
+  c[19]->SetLogz(0);
+  // c[19]->SetGridx(1);
+  //c[19]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEPtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[19]->Print(name); }
   
   //TT by TT timing profile EE-
   c[20]->cd();
@@ -308,6 +410,26 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   drawEELines();
   if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfile_%i.%s",dirName,mType,runNumber,fileType); c[20]->Print(name); }
   
+  c[20]->cd();
+  gStyle->SetOptStat(10);
+  TProfile2D *EEMtimeTTProfilep = TProfToRelProf2D(EEMtimeTTProfile,"EEMtimeTTProfilep", -5., 25.);
+  EEMtimeTTProfilep->Draw("colz");
+  char mytitle[100]; sprintf(mytitle,"%s in ns",EEMtimeTTProfile->GetTitle()); 
+  EEMtimeTTProfilep->SetTitle(mytitle);
+  EEMtimeTTProfilep->SetMinimum(-25.);
+  EEMtimeTTProfilep->SetMaximum(25.);
+  //timeTTProfile->SetMinimum(5.85);
+  //timeTTProfile->SetMinimum(4.8);
+  //timeTTProfile->SetMaximum(6.45);
+  EEMtimeTTProfilep->GetXaxis()->SetNdivisions(18);
+  //EEMtimeTTProfilep->GetYaxis()->SetNdivisions(2);
+  c[20]->SetLogy(0);
+  c[20]->SetLogz(0);
+  drawEELines();
+  //c[20]->SetGridx(1);
+  //c[20]->SetGridy(1);
+  gStyle->SetOptStat(0);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEMtimeTTProfileRel_%i.%s",dirName,mType,runNumber,fileType); c[20]->Print(name); }
   
   //Amplitude Profiles
   c[21]->cd();
@@ -351,6 +473,169 @@ void DrawLaserPlots(Char_t* infile = 0, Int_t runNum=0, Bool_t printPics = kTRUE
   drawEELines();
   if (printPics) { sprintf(name,"%s/%sAnalysis_fullAmpProfileEEM_%i.%s",dirName,mType,runNumber,fileType); c[23]->Print(name); }
    
+   
+  //Eta Profiles by TT Normalized
+  c[24]->cd();
+  TProfile *timeTTAllFEDsEtap =  TProfToRelProf(timeTTAllFEDsEta,"timeTTAllFEDsEtap",-5,25.);
+  customizeTProfile(timeTTAllFEDsEtap);
+  timeTTAllFEDsEtap->Draw("p");
+  timeTTAllFEDsEtap->SetMinimum(-25.);
+  timeTTAllFEDsEtap->SetMaximum(25.);
+  char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEta->GetTitle()); 
+  timeTTAllFEDsEtap->SetTitle(mytitle);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaRel_%i.%s",dirName,mType,runNumber,fileType); c[24]->Print(name); }
+  
+  c[25]->cd();
+  TProfile *timeTTAllFEDsEtaEEPp =  TProfToRelProf(timeTTAllFEDsEtaEEP,"timeTTAllFEDsEtaEEPp",-5,25.);
+  customizeTProfile(timeTTAllFEDsEtaEEPp);
+  timeTTAllFEDsEtaEEPp->Draw("p");
+  timeTTAllFEDsEtaEEPp->SetMinimum(-25.);
+  timeTTAllFEDsEtaEEPp->SetMaximum(25.);
+  char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEtaEEP->GetTitle()); 
+  timeTTAllFEDsEtaEEPp->SetTitle(mytitle);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEPRel_%i.%s",dirName,mType,runNumber,fileType); c[25]->Print(name); }
+  
+  c[26]->cd();
+  TProfile *timeTTAllFEDsEtaEEMp =  TProfToRelProf(timeTTAllFEDsEtaEEM,"timeTTAllFEDsEtaEEMp",-5,25.);
+  customizeTProfile(timeTTAllFEDsEtaEEMp);
+  timeTTAllFEDsEtaEEMp->Draw("p");
+  timeTTAllFEDsEtaEEMp->SetMinimum(-25.);
+  timeTTAllFEDsEtaEEMp->SetMaximum(25.);
+  char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeTTAllFEDsEtaEEM->GetTitle()); 
+  timeTTAllFEDsEtaEEMp->SetTitle(mytitle);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeTTAllFEDsEtaEEMRel_%i.%s",dirName,mType,runNumber,fileType); c[26]->Print(name); }
+  
+  //Eta profile by Ch
+  c[27]->cd();
+  gStyle->SetOptStat(1111);
+  TProfile *timeCHAllFEDsEta = (TProfile*) f->Get("timeCHAllFEDsEta");
+  timeCHAllFEDsEta->Draw();
+  TProfile *timeCHAllFEDsEtap =  TProfToRelProf(timeCHAllFEDsEta,"timeCHAllFEDsEtap",-5,25.);
+  customizeTProfile(timeCHAllFEDsEtap);
+  timeCHAllFEDsEtap->Draw("p");
+  timeCHAllFEDsEtap->SetMinimum(-25.);
+  timeCHAllFEDsEtap->SetMaximum(25.);
+  char mytitle[100]; sprintf(mytitle,"%s to optimal;i#eta;Time (ns)",timeCHAllFEDsEta->GetTitle()); 
+  timeCHAllFEDsEtap->SetTitle(mytitle);
+  gStyle->SetOptStat(100);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_timeCHAllFEDsEtaRel_%i.%s",dirName,mType,runNumber,fileType); c[27]->Print(name); }
+ 
+ 
+  //Now it is time to see if the timing tree is there and use the individual ntuple information
+  TTree* eventTimingInfoTree = ((TTree*) f->Get("eventTimingInfoTree"));
+  if (!eventTimingInfoTree) { std::cout << " No TTree in the event, probalby expected" << std::endl; cout << name << endl; return;} 
+  //Now, we will only do the below if there is a TTree in the event.
+  c[28]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimesEB-5.)*25. >> hctEB(52,-26.,26.)");
+  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times;Time (ns);Number of Crystals",runChar); 
+  hctEB->SetTitle(mytitle);
+  hctEB->GetXaxis()->SetNdivisions(512);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMES_%i.%s",dirName,mType,runNumber,fileType); c[28]->Print(name); }
+
+  
+  c[29]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimesEE-5.)*25. >> hctEE(52,-26.,26.)");
+  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times;Time (ns);Number of Crystals",runChar); 
+  hctEE->SetTitle(mytitle);
+  hctEE->GetXaxis()->SetNdivisions(512);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMES_%i.%s",dirName,mType,runNumber,fileType); c[29]->Print(name); }
+  
+  //Time to average event time
+  c[30]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(correctionToSampleEB-5.)*25.:(crystalTimesEE-5.)*25. >> hctEEtoAve(52,-26.,26.,52,-26.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar); 
+  //hctEEtoAve->Draw;
+  hctEEtoAve->SetTitle(mytitle);
+  hctEEtoAve->GetXaxis()->SetNdivisions(512);
+  hctEEtoAve->GetYaxis()->SetNdivisions(512);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[30]->Print(name); }
+  c[31]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(correctionToSampleEB-5.)*25.:(crystalTimesEB-5.)*25. >> hctEBtoAve(52,-26.,26.,52,-26.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times to Average Time;Crystal Time (ns);Average EB Event Time (ns)",runChar); 
+  //hctEEtoAve->Draw;
+  hctEBtoAve->SetTitle(mytitle);
+  hctEBtoAve->GetXaxis()->SetNdivisions(512);
+  hctEBtoAve->GetYaxis()->SetNdivisions(512);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAverage_%i.%s",dirName,mType,runNumber,fileType); c[31]->Print(name); }
+  
+  //Time to Time error
+  c[32]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:(crystalTimesEB-5.)*25. >> hctEBtoTerr(52,-26.,26.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar); 
+  hctEBtoTerr->SetTitle(mytitle);
+  hctEBtoTerr->GetXaxis()->SetNdivisions(512);
+  hctEBtoTerr->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[32]->Print(name); }
+  c[33]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:(crystalTimesEE-5.)*25. >> hctEEtoTerr(52,-26.,26.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times to Time Error;Crystal Time (ns);Crystal Time Error (ns)",runChar); 
+  hctEEtoTerr->SetTitle(mytitle);
+  hctEEtoTerr->GetXaxis()->SetNdivisions(512);
+  hctEEtoTerr->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoTERR_%i.%s",dirName,mType,runNumber,fileType); c[33]->Print(name); }
+  
+  //Amplitude to time
+  c[34]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("crystalAmplitudesEE:(crystalTimesEE-5.)*25. >> hctEEtoAmp(52,-26.,26.,24,0.,150.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (ADC)",runChar); 
+  hctEEtoAmp->SetTitle(mytitle);
+  hctEEtoAmp->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmp->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[34]->Print(name); } 
+  c[35]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("crystalAmplitudesEB:(crystalTimesEB-5.)*25. >> hctEBtoAmp(52,-26.,26.,24,0.,150.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Crystal Times to Amplitdue;Crystal Time (ns);Crystal Amplitude (ADC)",runChar); 
+  hctEBtoAmp->SetTitle(mytitle);
+  hctEBtoAmp->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmp->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[35]->Print(name); } 
+  
+  //Amplitdue to ave event time
+  c[36]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("crystalAmplitudesEB:(correctionToSampleEB-5.0)*25. >> hctEBtoAmpEvt(52,-26.,26.,24,0.,150.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (ADC)",runChar); 
+  hctEBtoAmpEvt->SetTitle(mytitle);
+  hctEBtoAmpEvt->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[36]->Print(name); } 
+  c[37]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("crystalAmplitudesEE:(correctionToSampleEB-5.0)*25. >> hctEEtoAmpEvt(52,-26.,26.,24,0.,150.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Event Time to Crystal Amplitudes;Average EB Event Time (ns);Crystal Amplitude (ADC)",runChar); 
+  hctEEtoAmpEvt->SetTitle(mytitle);
+  hctEEtoAmpEvt->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmpEvt->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EEEvtTIMEStoAMP_%i.%s",dirName,mType,runNumber,fileType); c[37]->Print(name); } 
+  
+  //Amplitude to time error.
+  c[38]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEE)*25.:crystalAmplitudesEE >> hctEEtoAmpErr(24,0.,150.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EE Time Error to Crystal Amplitudes;Crystal Amplitude (ADC);Time Error (ns)",runChar); 
+  hctEEtoAmpErr->SetTitle(mytitle);
+  hctEEtoAmpErr->GetXaxis()->SetNdivisions(512);
+  hctEEtoAmpErr->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EETIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[38]->Print(name); } 
+  c[39]->cd();
+  gStyle->SetOptStat(1110);
+  eventTimingInfoTree->Draw("(crystalTimeErrorsEB)*25.:crystalAmplitudesEB >> hctEBtoAmpErr(24,0.,150.,26,0.,26.)","","COLZ");
+  char mytitle[100]; sprintf(mytitle,"%s EB Time Error to Crystal Amplitudes;Crystal Amplitude (ADC);Time Error (ns)",runChar); 
+  hctEBtoAmpErr->SetTitle(mytitle);
+  hctEBtoAmpErr->GetXaxis()->SetNdivisions(512);
+  hctEBtoAmpErr->GetYaxis()->SetNdivisions(507);
+  if (printPics) { sprintf(name,"%s/%sAnalysis_EBTIMESErrtoAMP_%i.%s",dirName,mType,runNumber,fileType); c[39]->Print(name); } 
 cout << name << endl;
 
 
@@ -392,4 +677,74 @@ void customizeTProfile (TProfile* myTProfile) {
   }
 }
 
+void customizeTHist (TH1F* myTHist) {
+  if (myTHist) {
+    myTHist->SetLineWidth(2);
+    myTHist->SetMarkerStyle(kFullCircle);
+    myTHist->SetMarkerSize(0.7);
+  }
+}
+
+
+TH1F* CorrectProfToHist(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0 )
+{
+  TH1F *temphist = new TH1F(histname,histname,prof->GetNbinsX(),prof->GetXaxis()->GetXmin(),prof->GetXaxis()->GetXmax());
+  for (int i = 1; i < prof->GetNbinsX()+1; ++i)
+  {
+    //std::cout << " bin " << i << " is " << temphist->GetBinContent(i) << std::endl;
+    if (prof->GetBinEntries(i) > 0 )
+        {
+          temphist->SetBinContent(i,prof->GetBinContent(i)+numb);
+          temphist->SetBinError(i,prof->GetBinError(i));
+        }
+	else {temphist->SetBinContent(i,-100.);}
+        //std::cout << " bin " << i  << " bin content before " << prof->GetBinContent(i) << " bin entries " << prof->GetBinEntries(i)  << " new bi\ncontent " << temphist->GetBinContent(i) << std::endl;
+  }
+  temphist->Sumw2();
+  temphist->Scale(myScale);
+  return temphist;
+}
+
+void ScaleTProfile2D(TProfile2D* myprof, Double_t myfac, Double_t myscale)
+{
+int nxbins = myprof->GetNbinsX();
+int nybins = myprof->GetNbinsY();
+
+for (int i=0; i<=(nxbins+2)*(nybins+2); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1); }
+       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
+}
+}
+
+TProfile2D* TProfToRelProf2D(TProfile2D *prof, const char * histname, double numb=0, double myScale = 1.0)
+{
+TProfile2D *myprof = prof->Clone(histname);
+ScaleTProfile2D(myprof,numb,myScale);
+
+return myprof;
+}
+
+TProfile* TProfToRelProf(TProfile *prof, const char * histname, double numb=0, double myScale = 1.0)
+{
+TProfile *myprof = prof->Clone(histname);
+ScaleTProfile(myprof,numb,myScale);
+
+return myprof;
+}
+
+void ScaleTProfile(TProfile* myprof, Double_t myfac, Double_t myscale)
+{
+int nxbins = myprof->GetNbinsX();
+
+for (int i=1; i<(nxbins+1); i++ ) {   
+       Double_t oldcont = myprof->GetBinContent(i);
+       Double_t binents = myprof->GetBinEntries(i);
+       if (binents == 0 ) {binents =1.;myprof->SetBinEntries(i,1); }
+       myprof->SetBinContent(i,myscale*(oldcont+myfac)*binents);
+	   Double_t newentries = myprof->GetBinEntries(i);
+	   //if (newentries != binents) {std::cout << "NONONO" << std::endl;}
+}
+}
 

@@ -14,7 +14,7 @@ process.load("Geometry.CaloEventSetup.CaloGeometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
-process.GlobalTag.globaltag = 'GR09_31X_V4P::All'
+process.GlobalTag.globaltag = 'GR09_31X_V6P::All'
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -23,6 +23,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                                 debugFlag = cms.untracked.bool(True),
                                 debugVebosity = cms.untracked.uint32(10),
+#                                skipEvents = cms.untracked.uint32(1200000),
                                 skipEvents = cms.untracked.uint32(0),
                                 fileNames = cms.untracked.vstring('/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/8868E0F8-8594-DD11-9EC6-000423D98930.root',
                                                                           '/store/data/Commissioning08/TestEnables/RAW/v1/000/064/735/9A01DEFD-8794-DD11-A1F5-001617E30F48.root',
@@ -38,21 +39,46 @@ process.source = cms.Source("PoolSource",
 #                                                                            1.0, 0.0, 0.0, 0.0, 0.0)
 #                            )
 
+
 process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
-                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
-                                             betaEE = cms.double(1.37),
-                                             alphaEE = cms.double(1.63),
-                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
-                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
-                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
-                                             betaEB = cms.double(1.7),
-                                             MinAmplEndcap = cms.double(14.0),
-                                             MinAmplBarrel = cms.double(8.0),
-                                             alphaEB = cms.double(1.2),
-                                             UseDynamicPedestal = cms.bool(True),
-                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
-                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
-                                         )
+                                         EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
+                                         EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
+                                         EBhitCollection = cms.string("EcalUncalibRecHitsEB"),
+                                         EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+                                         EBtimeFitParameters = cms.vdouble(-2.015452e+00, 3.130702e+00, -1.234730e+01, 4.188921e+01, -8.283944e+01, 9.101147e+01, -5.035761e+01, 1.105621e+01),
+                                         EEtimeFitParameters = cms.vdouble(-2.390548e+00, 3.553628e+00, -1.762341e+01, 6.767538e+01, -1.332130e+02, 1.407432e+02, -7.541106e+01, 1.620277e+01),
+                                         EBamplitudeFitParameters = cms.vdouble(1.138,1.652),
+                                         EEamplitudeFitParameters = cms.vdouble(1.890,1.400),
+                                         EBtimeFitLimits_Lower = cms.double(0.2),
+                                         EBtimeFitLimits_Upper = cms.double(1.4),
+                                         EEtimeFitLimits_Lower = cms.double(0.2),
+                                         EEtimeFitLimits_Upper = cms.double(1.4),
+
+                                         outOfTimeThreshold = cms.double(0.25),
+                                         amplitudeThresholdEB = cms.double(20 * 1),
+                                         amplitudeThresholdEE = cms.double(20 * 1),
+
+                                         ebPulseShape = cms.vdouble( 5.2e-05,-5.26e-05 , 6.66e-05, 0.1168, 0.7575, 1.,  0.8876, 0.6732, 0.4741,  0.3194 ),
+                                         eePulseShape = cms.vdouble( 5.2e-05,-5.26e-05 , 6.66e-05, 0.1168, 0.7575, 1.,  0.8876, 0.6732, 0.4741,  0.3194 ),
+                                         algo = cms.string("EcalUncalibRecHitWorkerGlobal")
+                                                                                  )
+
+#
+#process.uncalibHitMaker = cms.EDProducer("EcalUncalibRecHitProducer",
+#                                             EEdigiCollection = cms.InputTag("ecalDccDigis","eeDigiSkim"),
+#                                             betaEE = cms.double(1.37),
+#                                             alphaEE = cms.double(1.63),
+#                                             EBdigiCollection = cms.InputTag("ecalDccDigis","ebDigiSkim"),
+#                                             EEhitCollection = cms.string('EcalUncalibRecHitsEE'),
+#                                             AlphaBetaFilename = cms.untracked.string('NOFILE'),
+#                                             betaEB = cms.double(1.7),
+#                                             MinAmplEndcap = cms.double(14.0),
+#                                             MinAmplBarrel = cms.double(8.0),
+#                                             alphaEB = cms.double(1.2),
+#                                             UseDynamicPedestal = cms.bool(True),
+#                                             EBhitCollection = cms.string('EcalUncalibRecHitsEB'),
+#                                             algo = cms.string("EcalUncalibRecHitWorkerFixedAlphaBetaFit")
+#                                         )
 
 process.ecalDccDigis = cms.EDFilter("EcalDccDigiSkimer",
                                         EEdigiCollectionOut = cms.string('eeDigiSkim'),
