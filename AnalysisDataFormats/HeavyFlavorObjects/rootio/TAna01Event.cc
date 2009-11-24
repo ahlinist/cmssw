@@ -174,10 +174,7 @@ int TAna01Event::getGenIndex(double px, double py, double pz, int charge, double
 
   for (int i = 0; i < fnGenCands; i++) {
     pGenCand = getGenCand(i);
-   // if (id != -1) {
-   //   if (pGenCand->fID != id) continue;
-   // }
-    if ( pGenCand->fQ * charge < 0 ) continue;
+    if (pGenCand->fQ * charge < 0) continue;
     if ((TMath::Abs((pGenCand->fP.X() - px))/px) > precision) continue;
     if ((TMath::Abs((pGenCand->fP.Y() - py))/py) > precision) continue;
     if ((TMath::Abs((pGenCand->fP.Z() - pz))/pz) > precision) continue;
@@ -199,53 +196,50 @@ int TAna01Event::getGenIndexWithDeltaR(double pt, double eta, double phi, double
   int tmp_index[30];
   TLorentzVector track, gencand;
   int count(0);
-  track.SetPtEtaPhiM(pt,
-		     eta,
-	   	     phi,
-		     0.);
+  track.SetPtEtaPhiM(pt, eta, phi, 0.);
 				       
-    for (int i = 0; i < fnGenCands; i++) {
+  for (int i = 0; i < fnGenCands; i++) {
     pGenCand = getGenCand(i);
-    if ( pGenCand->fStatus == 1 ){
-    	if ( charge * pGenCand->fQ > 0 ){
-		    /*   
-	    	    gencand.SetXYZM(pGenCand->fP.X(),
-			            pGenCand->fP.Y(),
-	   		       	    pGenCand->fP.Z(),
-		  	    	    pGenCand->fMass);
-    */
-	  	    double dR = track.DeltaR(pGenCand->fP);
-	    	    double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
-	    
-	   	    if ( dR < 0.12 && dpt < 0.3  && count < 30) {
-		    	tmp_index[count] = i;
-			count++; 
-	            }
+    if (pGenCand->fStatus == 1) {
+      if (charge * pGenCand->fQ > 0) {
+	/*   
+	     gencand.SetXYZM(pGenCand->fP.X(),
+	     pGenCand->fP.Y(),
+	     pGenCand->fP.Z(),
+	     pGenCand->fMass);
+	*/
+	double dR = track.DeltaR(pGenCand->fP);
+	double dpt = TMath::Abs((track.Perp() - pGenCand->fP.Perp())/track.Perp());
+	
+	if (dR < 0.12 && dpt < 0.3  && count < 30) {
+	  tmp_index[count] = i;
+	  count++; 
 	}
+      }
     }
-   
+    
   }
-
+  
   double deltaR_min(0.12);
   int  i_min(-1); 	
-  if ( count == 1 ) index = tmp_index[0];	
-  if ( count > 1 ){ 
-	for (int i = 0; i < count; i++) {
-		pGenCand = getGenCand(tmp_index[i]);;
-	/*	       
-	    	gencand.SetXYZM(pGenCand->fP.X(),
-			        pGenCand->fP.Y(),
-	   		   	pGenCand->fP.Z(),
-		  	    	pGenCand->fMass);
-    */
-	  	if(track.DeltaR(pGenCand->fP) < deltaR_min) {
-			deltaR_min = track.DeltaR(pGenCand->fP);			
-			i_min = i;
-		}
-	}
-	
-	index = i_min;
-	
+  if (count == 1) index = tmp_index[0];	
+  if (count > 1) { 
+    for (int i = 0; i < count; i++) {
+      pGenCand = getGenCand(tmp_index[i]);;
+      /*	       
+		      gencand.SetXYZM(pGenCand->fP.X(),
+		      pGenCand->fP.Y(),
+		      pGenCand->fP.Z(),
+		      pGenCand->fMass);
+      */
+      if (track.DeltaR(pGenCand->fP) < deltaR_min) {
+	deltaR_min = track.DeltaR(pGenCand->fP);			
+	i_min = i;
+      }
+    }
+    
+    index = i_min;
+    
   }
   
   return index;

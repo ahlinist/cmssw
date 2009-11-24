@@ -33,7 +33,7 @@ public:
   virtual TGenCand*   addGenCand();
   void                dumpGenBlock();
   // For a given 'SimTrack', find the index in the generator block by doing a (p,id) matching
-  int                 getGenIndex(double px, double py, double pz, int id, double precision = 0.005);
+  int                 getGenIndex(double px, double py, double pz, int charge, double precision = 0.05);
   int                 getGenIndexWithDeltaR(double pt, double eta, double phi, double charge);
   // Check whether a RecTrack/TAnaTrack has mother with ID in the generator block
   //  int                 isDescendant(TAnaTrack *pTrk, int ID, int matchCharge = 0);
