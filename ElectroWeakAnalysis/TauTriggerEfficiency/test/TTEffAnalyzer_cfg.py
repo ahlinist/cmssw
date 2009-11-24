@@ -4,7 +4,7 @@ import copy
 process = cms.Process("TTEff")
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(100)
+        input = cms.untracked.int32(1000)
 )
 
 process.load("FWCore/MessageService/MessageLogger_cfi")
@@ -75,6 +75,12 @@ process.thisPFTauDiscriminationByIsolation.PFTauProducer = 'PFTausSelected'
 process.thisPFTauDiscriminationByIsolation.MinPtLeadingPion = cms.double(3.0)
 
 
+#copying the Discriminator against Muon
+from RecoTauTag.RecoTau.PFRecoTauDiscriminationAgainstMuon_cfi import *
+process.thisPFTauDiscriminationAgainstMuon = copy.deepcopy(pfRecoTauDiscriminationAgainstMuon)
+process.thisPFTauDiscriminationAgainstMuon.PFTauProducer = 'PFTausSelected' 
+
+
 
 
 process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
@@ -82,6 +88,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         #PFTauCollection        = cms.InputTag("IdentifiedTaus"),
         PFTauCollection         = cms.InputTag("PFTausSelected"),
         PFTauIsoCollection      = cms.InputTag("thisPFTauDiscriminationByIsolation"),
+        PFTauMuonRejectionCollection      = cms.InputTag("thisPFTauDiscriminationAgainstMuon"),
         # Check that Isolation collection below actually matched up with Tau Collection above
         #PFTauCollection         = cms.InputTag("pfRecoTauProducerHighEfficiency"),
         #PFTauIsoCollection      = cms.InputTag("pfRecoTauDiscriminationByIsolationHighEfficiency"),
@@ -110,7 +117,7 @@ process.TTEffAnalysis = cms.EDAnalyzer("TTEffAnalyzer",
         HLTPFTau                = cms.bool(False),
         MCTauCollection         = cms.InputTag("TauMCProducer:HadronicTauOneAndThreeProng"),
 	GenParticleCollection	= cms.InputTag("genParticles"),
-        outputFileName          = cms.string("tteffAnalysis.root")
+        outputFileName          = cms.string("/tmp/chinhan/tteffAnalysis.root")
 )
 
 process.TauMCProducer = cms.EDProducer("HLTTauMCProducer",
@@ -128,6 +135,7 @@ process.runEDAna = cms.Path(
     process.l1CaloSim*
 #    process.PFTausSelected*
     process.thisPFTauDiscriminationByIsolation*
+    process.thisPFTauDiscriminationAgainstMuon*
     process.tteffL1GTSeed*
     process.TTEffAnalysis
 ) 

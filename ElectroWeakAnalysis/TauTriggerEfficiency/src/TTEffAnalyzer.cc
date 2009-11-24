@@ -13,7 +13,7 @@
 //
 // Original Author:  Chi Nhan Nguyen
 //         Created:  Wed Oct  1 13:04:54 CEST 2008
-// $Id: TTEffAnalyzer.cc,v 1.32 2009/11/16 16:34:24 slehti Exp $
+// $Id: TTEffAnalyzer.cc,v 1.33 2009/11/23 13:25:26 slehti Exp $
 //
 //
 
@@ -30,7 +30,8 @@ TTEffAnalyzer::TTEffAnalyzer(const edm::ParameterSet& iConfig):
   MCTaus_(iConfig.getParameter<edm::InputTag>("MCTauCollection")),
   MCParticles_(iConfig.getParameter<edm::InputTag>("GenParticleCollection")),
   rootFile_(iConfig.getParameter<std::string>("outputFileName")),
-  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone"))
+  MCMatchingCone(iConfig.getParameter<double>("MCMatchingCone")),
+  PFTauMuonRej_(iConfig.getParameter<edm::InputTag>("PFTauMuonRejectionCollection"))
 {
   // File setup
   _TTEffFile = TFile::Open(rootFile_.c_str(), "RECREATE");
@@ -117,6 +118,12 @@ TTEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        if(!thePFTauDiscriminatorByIsolation.isValid()) {
 	 cout<<"No DiscriminatorByIsolation with label "<<PFTauIso_<<" found!"<<endl;
        }
+       iEvent.getByLabel(PFTauMuonRej_,thePFTauDiscriminatorAgainstMuon);
+       if(!thePFTauDiscriminatorAgainstMuon.isValid()) {
+	 cout<<"No DiscriminatorAgainstMuon with label "<<PFTauMuonRej_<<" found!"<<endl;
+       }
+       
+	 
        iEvent.getByLabel(MCTaus_, mcTaus);
        iEvent.getByLabel(MCParticles_, mcParticles);
        loop(iEvent,iSetup,*PFTaus);
@@ -157,6 +164,15 @@ using namespace reco;
 	PFIso = ds[thisTauRef];// it should crash if CMSSW cannot find a match between TauRef and Iso collection
                             // Then check configuration files to make sure a correct pair is being fed into TTEFF
   }
+  if(thePFTauDiscriminatorAgainstMuon.isValid()){
+    const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstMuon.product());
+    if (ds[thisTauRef]>0.5) {
+      PFMuonMatch = 1;
+    } else {
+      PFMuonMatch = 0;
+    }
+  }
+   
   MCMatch = 0;
   if(mcTaus.isValid()){
     for(unsigned int k = 0 ; k < mcTaus->size(); k++){
@@ -189,8 +205,7 @@ using namespace reco;
   PFIsoSum = PFTaus->at(i).isolationPFChargedHadrCandsPtSum();
   PFEnergy = PFTaus->at(i).energy();
 
-  PFMuonMatch = PFTaus->at(i).muonDecision();
-//PFElectronMatch = PFTaus->at(i).electronPreIDDecision();?
+  //PFElectronMatch = PFTaus->at(i).electronPreIDDecision();?
 
   /*
   //get RMS Values of Candidates
@@ -235,6 +250,14 @@ using namespace reco;
 	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorByIsolation.product());
 	  PFIso = ds[thisTauRef];
 	}
+	if(thePFTauDiscriminatorAgainstMuon.isValid()){
+	  const PFTauDiscriminator & ds = *(thePFTauDiscriminatorAgainstMuon.product());
+	  if (ds[thisTauRef]>0.5) {
+	    PFMuonMatch = 1;
+	  } else {
+	    PFMuonMatch = 0;
+	  }
+	}
 
 	if(thisTauRef->leadPFChargedHadrCand().isNonnull()) PFInvPt = 1./thisTauRef->leadPFChargedHadrCand()->pt();
 	// Fill common variables
@@ -245,7 +268,6 @@ using namespace reco;
 	PFIsoSum = PFTaus->at(k).isolationPFChargedHadrCandsPtSum();
 	PFEnergy = PFTaus->at(k).energy();
 	
-	PFMuonMatch = PFTaus->at(k).muonDecision();
 //	PFElectronMatch =
 
 	std::vector<double> rms;
