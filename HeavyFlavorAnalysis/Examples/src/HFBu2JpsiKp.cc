@@ -148,10 +148,11 @@ void HFBu2JpsiKp::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
       m1.SetPtEtaPhiM(muon1.pt(), muon1.eta(), muon1.phi(), MMUON); 
       m2.SetPtEtaPhiM(muon2.pt(), muon2.eta(), muon2.phi(), MMUON); 
-      psi = m1 + m2; 
+      cpsi = m1 + m2; 
       if ((TMath::Abs(psi.M()-MJPSI) < dmass) 
-	  && (muon1.charge()*muon2.charge() < 0) 
+	  //&& (muon1.charge()*muon2.charge() < 0) 
 	  ) {
+	psi    = cpsi;
 	dmass  = TMath::Abs(psi.M()-MJPSI);
 	tMuon1 = muon1;
 	iMuon1 = muonIndices[imuon1]; 
@@ -162,11 +163,11 @@ void HFBu2JpsiKp::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   }
 
   if (iMuon1 < 0 || iMuon2 < 0) {
-    if (fVerbose > 0) cout << " --> HFLambdaB2JpsiLambda: No unlike charge dimuons found, dmass = " << dmass << endl;
+    // if (fVerbose > 0) cout << " --> HFBu2JpsiKp: No unlike charge dimuons found, dmass = " << dmass << endl;
     return;
   }
-  if (TMath::Abs(psi.M() - MJPSI) >  0.5) {
-    if (fVerbose > 0) cout << " --> HFBu2JpsiKp: No J/Psi candidate found."<<endl;
+  if (dmass > 0.5) {
+    if (fVerbose > 0) cout << " --> HFBu2JpsiKp: No J/Psi candidate found, dmass = " << dmass << endl;
     return;
   }
 

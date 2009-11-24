@@ -12,16 +12,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-    "file:/shome/starodumov/out/reco/reco-10000.root",
-    "file:/shome/starodumov/out/reco/reco-10001.root",
-    "file:/shome/starodumov/out/reco/reco-10002.root",
-    "file:/shome/starodumov/out/reco/reco-10004.root",
-    "file:/shome/starodumov/out/reco/reco-10005.root",
-    "file:/shome/starodumov/out/reco/reco-10006.root",
-    "file:/shome/starodumov/out/reco/reco-10007.root",
-    "file:/shome/starodumov/out/reco/reco-10008.root",
-    "file:/shome/starodumov/out/reco/reco-10009.root",
-    "file:/shome/starodumov/out/reco/reco-10010.root"
+    "file:/shome/starodumov/out/reco/root/reco-10094.root"
     )
     )
 

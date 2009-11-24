@@ -151,11 +151,12 @@ void HFLambdaB2JpsiLambda::analyze(const edm::Event& iEvent, const edm::EventSet
 		      muon2.eta(),
 		      muon2.phi(),
 		      MMUON); 
-      psi = m1 + m2; 
+      cpsi = m1 + m2; 
 
       if ((TMath::Abs(psi.M()-MJPSI) < dmass) 
 	  && (muon1.charge()*muon2.charge() < 0) 
 	  ) {
+	psi    = cpsi;
 	dmass  = TMath::Abs(psi.M()-MJPSI);
 	tMuon1 = muon1;
 	iMuon1 = muonIndices[imuon1]; 
@@ -169,7 +170,7 @@ void HFLambdaB2JpsiLambda::analyze(const edm::Event& iEvent, const edm::EventSet
     if (fVerbose > 0) cout << " --> HFLambdaB2JpsiLambda: No unlike charge dimuons found, dmass = " << dmass << endl;
     return;
   }
-  if (TMath::Abs(psi.M() - MJPSI) >  0.5) {
+  if (dmass >  0.5) {
     if (fVerbose > 0) cout << " --> HFLambdaB2JpsiLambda: No J/Psi candidate found: " << psi.M() << endl;
     return;
   }
