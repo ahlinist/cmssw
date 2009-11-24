@@ -103,7 +103,7 @@ process.trkDump = cms.EDFilter(
     muonsLabel = cms.untracked.InputTag("muons"),
     trackingParticlesLabel = cms.untracked.string('trackingParticles'),
     associatorLabel = cms.untracked.string('TrackAssociatorByHits'),
-    doTruthMatching = cms.untracked.int32(0),
+    doTruthMatching = cms.untracked.int32(3),
     tracksLabel = cms.untracked.string('generalTracks'),
     simTracksLabel = cms.untracked.string('allLayer1TrackCands')
     )

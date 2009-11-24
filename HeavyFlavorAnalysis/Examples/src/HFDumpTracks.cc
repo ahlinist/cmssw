@@ -183,7 +183,7 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     // -- simple truth matching
     //    this procedure can be redone offline on the ntuple level!
     if (0 == fDoTruthMatching) {
-      gen_id     = gHFEvent->getGenIndex(trackView.px(), trackView.py(), trackView.pz(), -1); 
+      gen_id     = gHFEvent->getGenIndex(trackView.px(), trackView.py(), trackView.pz(), trackView.charge()); 
       if (gen_id > -1) gen_pdg_id = gHFEvent->getGenCand(gen_id)->fID; 
       if (13 == TMath::Abs(gen_pdg_id)) {
 	if (fVerbose > 4) {cout << "Simple TM: "; pTrack->dump(); }
@@ -244,6 +244,16 @@ void HFDumpTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     done:;
     }            
     
+    // -- truth matching with deltaR comparision
+    if (3 == fDoTruthMatching) {    
+      gen_id     = gHFEvent->getGenIndexWithDeltaR(trackView.pt(), trackView.eta(), trackView.phi(), trackView.charge()); 
+      if (gen_id > -1) gen_pdg_id = gHFEvent->getGenCand(gen_id)->fID; 
+      if (13 == TMath::Abs(gen_pdg_id)) {
+	if (fVerbose > 4) {cout << "Simple TM: "; pTrack->dump(); }
+      }
+    }
+
+
     pTrack->fGenIndex = gen_id;
     pTrack->fMCID     = gen_pdg_id;
    }
