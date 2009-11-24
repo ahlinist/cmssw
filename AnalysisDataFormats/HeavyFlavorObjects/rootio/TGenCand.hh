@@ -27,7 +27,7 @@ public:
   int            fMom1, fMom2;          // mothers
   int            fDau1, fDau2;          // daughters
   int            fTag;
-
+  int 		 fQ;
 
   TLorentzVector fP;
   double         fMass;
