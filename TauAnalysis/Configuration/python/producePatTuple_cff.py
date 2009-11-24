@@ -8,7 +8,6 @@ import FWCore.ParameterSet.Config as cms
 # import "official" PAT production sequences
 #
 from PhysicsTools.PatAlgos.patSequences_cff import *
-patAODCoreReco.remove(jptCaloJets)
 #
 # reconstruct objects needed by TauAnalysis customized PAT sequences
 # (AOD level electron id. and isolation)
