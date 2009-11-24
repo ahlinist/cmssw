@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.144 2009/11/09 16:39:35 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.145 2009/11/20 22:00:50 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.144 $
-  \date $Date: 2009/11/09 16:39:35 $
+  \version $Revision: 1.145 $
+  \date $Date: 2009/11/20 22:00:50 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -447,16 +447,30 @@ private:
 
       if( name.find( "EECLT" ) != std::string::npos )
       {
-        gPad->SetGridx();
-        gPad->SetGridy();
-        obj->GetXaxis()->SetNdivisions(10, kFALSE);
-        obj->GetYaxis()->SetNdivisions(10, kFALSE);
-        obj->SetMinimum(0.0);
-        gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
-        gPad->SetRightMargin(0.15);
-        gStyle->SetPaintTextFormat("+g");
-        return;
+        if( name.find( "seed crystal timing" ) != std::string::npos ) {
+          gPad->SetGridx();
+          gPad->SetGridy();
+          obj->GetXaxis()->SetNdivisions(10, kFALSE);
+          obj->GetYaxis()->SetNdivisions(10, kFALSE);
+          obj->SetMinimum(0.0);
+          obj->SetMaximum(10.0);
+          gStyle->SetPalette(1);
+          obj->SetOption("colz");
+          gPad->SetRightMargin(0.15);
+          gStyle->SetPaintTextFormat("+g");
+          return;          
+        } else {
+          gPad->SetGridx();
+          gPad->SetGridy();
+          obj->GetXaxis()->SetNdivisions(10, kFALSE);
+          obj->GetYaxis()->SetNdivisions(10, kFALSE);
+          obj->SetMinimum(0.0);
+          gStyle->SetPalette(10, pCol4);
+          obj->SetOption("colz");
+          gPad->SetRightMargin(0.15);
+          gStyle->SetPaintTextFormat("+g");
+          return;
+        }
       }
 
       if( nbx == 50 && nby == 50 )

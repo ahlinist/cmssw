@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.124 2009/11/09 11:06:20 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.125 2009/11/09 16:39:35 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.124 $
-  \date $Date: 2009/11/09 11:06:20 $
+  \version $Revision: 1.125 $
+  \date $Date: 2009/11/09 16:39:35 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -299,16 +299,30 @@ private:
 
       if( name.find( "EBCLT" ) != std::string::npos )
       {
-        gPad->SetGridx();
-        gPad->SetGridy();
-        obj->GetXaxis()->SetNdivisions(40118, kFALSE);
-        obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-        obj->SetMinimum(0.0);
-        gStyle->SetPalette(10, pCol4);
-        obj->SetOption("colz");
-        gPad->SetRightMargin(0.15);
-        gStyle->SetPaintTextFormat("+g");
-        return;
+        if( name.find( "seed crystal timing" ) != std::string::npos ) {
+          gPad->SetGridx();
+          gPad->SetGridy();
+          obj->GetXaxis()->SetNdivisions(40118, kFALSE);
+          obj->GetYaxis()->SetNdivisions(170102, kFALSE);
+          obj->SetMinimum(0.0);
+          obj->SetMaximum(10.0);
+          gStyle->SetPalette(1);
+          obj->SetOption("colz");
+          gPad->SetRightMargin(0.15);
+          gStyle->SetPaintTextFormat("+g");
+          return;
+        } else {
+          gPad->SetGridx();
+          gPad->SetGridy();
+          obj->GetXaxis()->SetNdivisions(40118, kFALSE);
+          obj->GetYaxis()->SetNdivisions(170102, kFALSE);
+          obj->SetMinimum(0.0);
+          gStyle->SetPalette(10, pCol4);
+          obj->SetOption("colz");
+          gPad->SetRightMargin(0.15);
+          gStyle->SetPaintTextFormat("+g");
+          return;
+        }
       }
 
       if( name.find( "EBSRT" ) != std::string::npos )
