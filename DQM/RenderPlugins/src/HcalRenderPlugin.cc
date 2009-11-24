@@ -58,11 +58,13 @@ using std::endl;
 class HcalRenderPlugin : public DQMRenderPlugin
 {
   // Color schemes
-  int summaryColors[40];
   int errorFracColors[20];
   int standardColors[20];
+  int summaryColors[80];
   int hcalErrorColors[100];
   int hcalRainbowColors[100];
+  Int_t NRGBs_summary;
+  Int_t NCont_summary;
   Int_t NRGBs_rainbow;
   Int_t NCont_rainbow;
   Int_t NRGBs_hcalError;
@@ -80,10 +82,6 @@ public:
 
     for( int i=0; i<20; ++i )
       {
-        if (i<2)
-          summaryColors[i]=17;
-        else summaryColors[i]=0;
-
         if ( i < 17 )
 	  {
 	    rgb[i][0] = 0.80+0.01*i;
@@ -105,7 +103,6 @@ public:
         // flip colors from standard values (1=bad, 0=good)
         errorFracColors[19-i] = 901+i;
         standardColors[i]=901+i;
-        summaryColors[20+i]=901+i;
         TColor* color = gROOT->GetColor( 901+i );
         if( ! color ) color = new TColor( 901+i, 0, 0, 0, "" );
         color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
@@ -144,7 +141,7 @@ public:
     NCont_hcalError = 100; // specify number of contours for hcalError
     Double_t stops_hcalError[] = { 0.00, 0.05, 0.40, 0.75, 0.95, 1.00};
     Double_t red_hcalError[]   = { 0.00, 1.00, 1.00, 1.00, 1.00, 0.60};
-    Double_t green_hcalError[] = { 1.00, 1.00, 0.67, 0.33, 0.00, 0.00};
+    Double_t green_hcalError[] = { 0.80, 1.00, 0.67, 0.33, 0.00, 0.00};
     Double_t blue_hcalError[]  = { 0.00, 0.00, 0.00, 0.00, 0.00, 0.00};
     nColorsGradient=0;
     highestIndex=0;
@@ -161,6 +158,35 @@ public:
 				 red_hcalError[g-1] + c * (red_hcalError[g] - red_hcalError[g-1])/ nColorsGradient,
 				 green_hcalError[g-1] + c * (green_hcalError[g] - green_hcalError[g-1])/ nColorsGradient,
 				 blue_hcalError[g-1] + c * (blue_hcalError[g] - blue_hcalError[g-1])/ nColorsGradient,
+				 "  ");
+
+	    highestIndex++;
+	  }
+      }
+
+    //make summaryColors, with a value of -1 indicated in gray, values >-1 and <0 in white,
+    // values 0-0.98 scaling from red to yellow, and values > 0.98 in green.
+    NRGBs_summary=6;
+    NCont_summary=80;
+    Double_t stops_summary[] = {0.00,0.025,0.4999,0.50,0.98,1.00}; // set limits for color transitions
+    Double_t red_summary[]   = {0.6,1.00,1.00,1.00,1.00,0.00};
+    Double_t green_summary[] = {0.6,1.00,1.00,0.00,1.00,0.80};
+    Double_t blue_summary[]  = {0.6,1.00,1.00,0.00,0.00,0.00};
+    nColorsGradient=0;
+    highestIndex=0;
+    for (int g=1;g<NRGBs_summary;++g)
+      {
+	nColorsGradient = (Int_t) (floor(NCont_summary*stops_summary[g]) - floor(NCont_summary*stops_summary[g-1])); // specify number of gradients between stops (g-1) and (g)
+        for (int c = 0; c < nColorsGradient; c++)
+	  {
+	    summaryColors[highestIndex]=1301+highestIndex;
+	    TColor* color = gROOT->GetColor(1301+highestIndex);
+	    // Make new color only if old color does not exist
+	    if (!color)
+	      color = new TColor(1301+highestIndex,
+				 red_summary[g-1] + c * (red_summary[g] - red_summary[g-1])/ nColorsGradient,
+				 green_summary[g-1] + c * (green_summary[g] - green_summary[g-1])/ nColorsGradient,
+				 blue_summary[g-1] + c * (blue_summary[g] - blue_summary[g-1])/ nColorsGradient,
 				 "  ");
 
 	    highestIndex++;
@@ -233,64 +259,107 @@ public:
   }
 
 private:
-  void preDrawTH1 ( TCanvas *, const VisDQMObject &o )
+  void preDrawTH1 ( TCanvas * c, const VisDQMObject &o )
   {
     // Do we want to do anything special yet with TH1 histograms?
     TH1* obj = dynamic_cast<TH1*>( o.object );
     assert (obj); // checks that object indeed exists
-
+    
     // o.name is a std::string object
     // Add in list of names of histograms for which we want log plotting here.
-    if (  (o.name.find("DataFormatMonitor/Corruption/03 OrN Difference")               !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Corruption/04 HTR BCN when")                 !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Corruption/05 BCN Difference")               !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Corruption/06 EvN Difference")               !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Data Flow/BCN from")                         !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Data Flow/DCC Data Block Size Distribution") !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Data Flow/DCC Event Counts")                 !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Diagnostics/HTR Fiber Orbit")                !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Diagnostics/HTR Status Word H")              !=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Diagnostics/HTR UnSupp")                     !=std::string::npos) ||
-	  (o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")                           !=std::string::npos) ||
-	  (o.name.find("DigiMonitor_Hcal/good_digis/# of Good Digis") !=std::string::npos)
-	  ) 
-      if (obj->GetMaximum()>0) gPad->SetLogy(1);
 
-    if (  (o.name.find("DataFormatMonitor/Data Flow/DCC Data Block Size Distribution")!=std::string::npos) ||
-	  (o.name.find("DataFormatMonitor/Diagnostics/HTR Fiber Orbit")!=std::string::npos)  
-	  ) 
-      if (obj->GetMaximum()>0) 
-	gPad->SetLogx(1);
-    
-    if (o.name.find("Problem_Total_DeadCells_") != std::string::npos ||
-	o.name.find("rechit_1D_plots")!= std::string::npos)
+    if (o.name.find("DataFormatMonitor/") !=std::string::npos)
       {
-        gStyle->SetOptStat("iourmen");
-        obj->SetStats( kTRUE );
-      }
+	if (  (o.name.find("Corruption/03 OrN Difference")               !=std::string::npos) ||
+	      (o.name.find("Corruption/04 HTR BCN when")                 !=std::string::npos) ||
+	      (o.name.find("Corruption/05 BCN Difference")               !=std::string::npos) ||
+	      (o.name.find("Corruption/06 EvN Difference")               !=std::string::npos) ||
+	      (o.name.find("Data Flow/BCN from")                         !=std::string::npos) ||
+	      (o.name.find("Data Flow/DCC Data Block Size Distribution") !=std::string::npos) ||
+	      (o.name.find("Data Flow/DCC Event Counts")                 !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR Fiber Orbit")                !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR Status Word H")              !=std::string::npos) ||
+	      (o.name.find("Diagnostics/HTR UnSupp")                     !=std::string::npos)
+	      ) 
+	  {
+	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	  }
 
-    if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
-      obj->SetMinimum(0);
+	else if (  (o.name.find("Data Flow/DCC Data Block Size Distribution")!=std::string::npos) ||
+		   (o.name.find("Diagnostics/HTR Fiber Orbit")!=std::string::npos)  
+		   ) 
+	  {
+	    if (obj->GetMaximum()>0) 
+	      gPad->SetLogx(1);
+	  }
+      } // DataFormatMonitor/ search
 
-    if (  ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
-	   (o.name.find(" CapID") != std::string::npos)) ||
-	  ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
-	   (o.name.find(" Digi Shape") != std::string::npos))
-	  )
+    else if (o.name.find("DigiMonitor_Hcal/") !=std::string::npos)
       {
-        obj->SetMinimum(0.);
-      }
+	if  (o.name.find("DigiMonitor_Hcal/good_digis/# of Good Digis") !=std::string::npos)
+	  {if (obj->GetMaximum()>0) gPad->SetLogy(1);}
+	
+	else if (  (o.name.find("Digi Shape - over thresh")!=std::string::npos)  )
+	  obj->SetMinimum(0);
+	
+	else if (  ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
+		    (o.name.find(" CapID") != std::string::npos)) ||
+		   ((o.name.find("DigiMonitor_Hcal/digi_info/") !=std::string::npos) &&
+		    (o.name.find(" Digi Shape") != std::string::npos))
+		   )
+	  {
+	    obj->SetMinimum(0.);
+	  }
+	else if (o.name.find("digi_info/# of Digis") !=std::string::npos)
+	  {
+	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	    gStyle->SetOptStat("iourmen");
+	    obj->SetStats(kTRUE);
+	  }
 
-    if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
-      if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	else if (o.name.find(" Capid 1st Time Slice") !=std::string::npos)
+	  {
+	    if (obj->GetMaximum()>0) gPad->SetLogy(1);
+	  }
+	else if (o.name.find("bad_digis") !=std::string::npos)
+	  {
+	    gStyle->SetOptStat("iourmen");
+	    obj->SetStats(kTRUE);
+	    if ((o.name.find("# Bad Qual Digis")  != std::string::npos) ||
+		(o.name.find("Bad Digi Fraction") != std::string::npos) ||
+		(o.name.find("Unpacker Bad Digi Fraction") != std::string::npos) ||
+		(o.name.find("Unpacker Error Count") != std::string::npos) 
+		)
+	      gPad->SetLogx(1);
+	  } // bad digi folder
+      } // DigiMonitor_Hcal/ search
 
-    if (o.name.find("DigiMonitor_Hcal/digi_info/# of Digis") !=std::string::npos)
+    else if (o.name.find("RecHitMonitor_Hcal/") !=std::string::npos)
       {
-        if (obj->GetMaximum()>0) gPad->SetLogy(1);
-        gStyle->SetOptStat("iourmen");
-        obj->SetStats(kTRUE);
-      }
-  }
+	if (o.name.find("RecHitMonitor_Hcal/rechit_1D_plots")                           !=std::string::npos) 
+	  {
+	    if (obj->GetMaximum()>0) 
+	      gPad->SetLogy(1);
+	    gStyle->SetOptStat("iourmen");
+	    obj->SetStats( kTRUE );
+	  }
+	else if (o.name.find("AnomalousCellFlags") !=std::string::npos)
+	  {
+	    c->SetBottomMargin(0.30);
+	    if (obj->GetMaximum()>0)
+	      gPad->SetLogy(1);
+	  }
+      } // RecHitMonitor
+
+    else if (o.name.find("DeadCellMonitor_Hcal/") !=std::string::npos)
+      {
+	if (o.name.find("Problem_Total_DeadCells_") != std::string::npos )
+	  {
+	    gStyle->SetOptStat("iourmen");
+	    obj->SetStats( kTRUE );
+	  }
+      } // DeadCellMonitor
+  } // void preDrawTH1(...)
 
   void preDrawTH2 ( TCanvas *c, const VisDQMObject &o )
   {
@@ -310,6 +379,10 @@ private:
     obj->SetOption("colz");
     c->SetRightMargin(2*c->GetRightMargin()); // double right margin
 
+    if ((o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos) ||
+	(o.name.find("DataFormatMonitor/H")!= std::string::npos))
+      gStyle->SetFrameFillColor(16);
+    
     // Set default color scheme
     
     // For reportSummary plots, use the summaryColors defined within this code
@@ -318,7 +391,7 @@ private:
     if (o.name.find("reportSummaryMap" ) != std::string::npos)
       {
 	obj->SetContour(40);
-        gStyle->SetPalette(40,summaryColors);
+        setSummaryColor(obj);
 	gStyle->SetPaintTextFormat("5.4g"); // set to %5.4f  text format in cells
 	obj->SetMarkerSize(3); // set font size to 3x normal
         obj->SetOption("text90colz"); // draw marker at 90 degrees
@@ -329,7 +402,7 @@ private:
     else if (o.name.find("advancedReportSummaryMap" ) != std::string::npos)
       {
 	obj->SetContour(40);
-        gStyle->SetPalette(40,summaryColors);
+        setSummaryColor(obj);
         obj->SetOption("colz");
 	obj->SetMinimum(-1.);
 	obj->SetMaximum(1.);
@@ -345,14 +418,14 @@ private:
 	      (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")!= std::string::npos ) ||
 	      (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/")!= std::string::npos ) ||
 	      (o.name.find("BeamMonitor_Hcal/ ProblemBeamMonitor")!= std::string::npos ) ||
-	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos ) 
+	      (o.name.find("BeamMonitor_Hcal/problem_beammonitor/")!= std::string::npos )  
 	      )
 		
       {
 	//c->SetFrameFillColor(16);
 	gStyle->SetFrameFillColor(16);
         double scale = obj->GetBinContent(0,0);
-        if (scale>0) // problem histograms don't have underflow bins filled any more
+        if (scale>1) // problem histograms don't have underflow bins filled any more
 	  obj->Scale(1./scale);
 
 	obj->SetMinimum(0.);
@@ -384,7 +457,7 @@ private:
 	     //(o.name.find("DigiMonitor_Hcal/good_digis/digi_occupancy/")!=std::string::npos) // don't want to apply error color here
 	     (o.name.find("BeamMonitor_Hcal/Lumi/HFlumi_total_")!=std::string::npos) ||
 	     (o.name.find("DataFormatMonitor/ HardwareWatchCells")!= std::string::npos ) ||
-	     (o.name.find("DataFormatMonitor/H")!= std::string::npos)
+	     (o.name.find("DataFormatMonitor/H")!= std::string::npos) 
 	     //(o.name.find("BeamMonitor_Hcal/Lumi/Abnormal PMT events")!=std::string::npos) // not sure we want to normalize this one yet -- raw # of errors may still be useful
 	     )
       {
@@ -403,25 +476,19 @@ private:
 
     // Soon will be removed, as pedestal checking now done elsewhere
     else if (
-	     (
-	      (o.name.find("BaselineMonitor_Hcal/") != std::string::npos) &&
-	      (o.name.find("ADC") != std::string::npos)
-	      )
-	     &&
-	     (o.name.find("Subtracted") == std::string::npos)
+	     (o.name.find("ReferencePedestalMonitor_Hcal/adc/unsubtracted") != std::string::npos)  ||
+	     (o.name.find("ReferencePedestalMonitor_Hcal/reference_pedestals/adc") != std::string::npos) 
 	     )
       {
         // ADC pedestals should be centered at 3; set maximum to 2*3=6
         obj->SetMinimum(0.);
         if ( (obj->GetMaximum()<6.) &&
-	     ((o.name.find("Pedestal Mean Map") != std::string::npos) ||
-	      (o.name.find("Pedestal Values Map") != std::string::npos))
+	     (o.name.find("Pedestal Values ") != std::string::npos)
 	     )
 	  obj->SetMaximum(6.);
 
         else if ( (obj->GetMaximum()<2.) &&
-		  ((o.name.find("Pedestal RMS Map") != std::string::npos) ||
-		   (o.name.find("Pedestal Widths Map") != std::string::npos))
+		  (o.name.find("Pedestal Widths ") != std::string::npos)
 		  )
 	  obj->SetMaximum(2.);
 
@@ -464,47 +531,6 @@ private:
     TH1* obj = dynamic_cast<TH1*>( o.object ); 
     assert( obj ); 
     
-    // Dead Cell check -- warn that plots need many events before they update
-    if (o.name.find("DeadCellMonitor_Hcal/" )!=std::string::npos)
-      {
-	if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells") != std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/Problem_") != std::string::npos) 
-	     )
-	  {
-	    if (obj->GetBinContent(0)<10000)
-	      {
-		TText t;
-		t.DrawTextNDC(0.05,0.01,"Histogram updates every 10,000 events");
-		gStyle->SetOptStat(1111);
-		obj->SetStats(1111); 
-	      }
-	    else
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-	      }
-	  } 
-	else if ( (o.name.find("Problem_NeverPresentCells_") != std::string::npos) 		
-		  ) 
-	  {
-	    if (obj->GetBinContent(0)<1000)
-	      {
-		TText t;
-		t.DrawTextNDC(0.05,0.01,"Histogram updates every 1,000 events");
-		
-	      }
-	    else
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-		gPad->SetGridx();
-		gPad->SetGridy(); 
-	      }
-	  }
-      } // if (o.name.find("DeadCellMonitor_Hcal/"...))
-
     if ( (o.name.find("DataFormatMonitor/Corruption")      != std::string::npos) &&
 	 (obj->GetEntries() == 0) )
       {
@@ -595,7 +621,8 @@ private:
       }
     else if ( (o.name.find("Data Flow/01") != std::string::npos )         )
       {
-	obj->SetMaximum(1);
+	if (obj->GetBinContent(0)>0)
+	  obj->SetMaximum(obj->GetBinContent(0));
         c->SetBottomMargin(0.200);
         TLine line;
         line.SetLineWidth(1);
@@ -693,15 +720,7 @@ private:
     else if ( (o.name.find("Corruption/07") != std::string::npos ) ||
 	      (o.name.find("Corruption/08") != std::string::npos )   )
       {
-        double scale = obj->GetBinContent(0,0);
-        if (scale>0)
-	  {
-	    obj->SetMaximum(obj->GetBinContent(0,0));
-	    obj->SetMinimum(0.);
-	    obj->SetStats(0);
-	  }
-        setErrorColor(obj);
-
+	obj->SetMaximum(1);
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<32; i++)
@@ -783,7 +802,8 @@ private:
 	    gStyle->SetOptStat(1111);
 	    obj->SetStats(1111);
 	    TText t;
-	    t.DrawText(1,1,"No News is Good News."); }
+	    t.DrawText(1,1,"No News is Good News."); 
+	  }
         else
 	  {
 	    gPad->SetGridx();
@@ -795,56 +815,32 @@ private:
     if (o.name.find("DeadCellMonitor_Hcal/" )!=std::string::npos)
       {
 	if ( (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing")!=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/dead_energytest")!=std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells") != std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/Problem_") != std::string::npos) ||
-	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_often_missing/Problem_") != std::string::npos) 
+	     (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present")!=std::string::npos) ||
+	     (o.name.find("DeadCellMonitor_Hcal/problem_deadcells")      !=std::string::npos) ||
+	     (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells")      !=std::string::npos) 
 	     )
 	  {
-	    if (obj->GetBinContent(0)<10000)
-	      {
-		TText t;
-		t.DrawTextNDC(0.05,0.01,"Histogram updates every 10,000 events");
-		gStyle->SetOptStat(1111);
-		obj->SetStats(1111); 
-	      }
-	    else
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-		gPad->SetGridx();
-		gPad->SetGridy(); 
-	      }
-	  } 
-	else if ( (o.name.find("Problem_NeverPresentCells_") != std::string::npos) ||
-		  (o.name.find("DeadCellMonitor_Hcal/ ProblemDeadCells") != std::string::npos) ||
-		  (o.name.find("DeadCellMonitor_Hcal/problem_deadcells/") != std::string::npos) ||
-		  (o.name.find("DeadCellMonitor_Hcal/dead_digi_never_present") != std::string::npos)
-		  )
-	  {
-	    if (obj->GetBinContent(0)<1000)
-	      {
-		TText t;
-		t.DrawTextNDC(0.05,0.01,"Histogram updates every 1,000 events");
-	      }
-	    else
-	      {
-		gStyle->SetOptStat(0);
-		obj->SetStats(0);
-		gPad->SetGridx();
-		gPad->SetGridy(); 
-	      }
+	    TText t;
+	    t.DrawTextNDC(0.05,0.01,"Histogram updates every Luminosity Section");
+	    gStyle->SetOptStat(1111);
+	    obj->SetStats(1111); 
 	  }
-      } // if (o.name.find(" DeadCellMonitor_Hcal/"...)
+      } // if (o.name.find("DeadCellMonitor_Hcal/"...)
       
     //drawEtaPhiLines(obj);
 
   }
 
-  void setRainbowColor(TH2*obj)
+  void setRainbowColor(TH2* obj)
   {
     obj->SetContour(NCont_rainbow);
     gStyle->SetPalette(NCont_rainbow,hcalRainbowColors);
+  }
+
+  void setSummaryColor(TH2* obj)
+  {
+    obj->SetContour(NCont_summary);
+    gStyle->SetPalette(NCont_summary,summaryColors);
   }
 
   void setErrorColor(TH2* obj)
