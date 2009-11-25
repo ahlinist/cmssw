@@ -99,7 +99,8 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanakt4calojet_*_*',
     'keep *_promptanahalo_*_*',
     'keep *_promptanacalotowers_*_*',
-    'keep *_promptanatrigger_*_*'
+    'keep *_promptanatrigger_*_*',
+    'keep *_promptanacleanup_*_*'
     ))
 
 process.theBigNtuple = cms.Path( (
@@ -110,7 +111,8 @@ process.theBigNtuple = cms.Path( (
     process.promptanakt4calojet +
     process.promptanahalo +
     process.promptanacalotowers +
-    process.promptanatrigger   
+    process.promptanatrigger +
+    process.promptanacleanup
     ) * process.promptanaTree )
 
 schedule = cms.Schedule( process.halo, process.theBigNtuple )
