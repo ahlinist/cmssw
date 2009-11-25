@@ -11,10 +11,11 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "CommonTools/Utils/interface/PtComparator.h"
 
 // DataFormat includes
 #include <DataFormats/MuonReco/interface/Muon.h>
-
+#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 //
 // class decleration
 //
@@ -37,6 +38,7 @@ class Onia2MuMuPAT : public edm::EDProducer {
   int selectionType2_;
   bool addCommonVertex_;
   bool addMCTruth_;
+  GreaterByPt<pat::CompositeCandidate> pTComparator_;
 
 };
 
