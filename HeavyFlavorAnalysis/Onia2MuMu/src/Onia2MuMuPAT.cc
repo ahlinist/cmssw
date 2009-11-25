@@ -7,7 +7,6 @@
 #include <DataFormats/MuonReco/interface/Muon.h>
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
-#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
 #include <DataFormats/PatCandidates/interface/Muon.h>
 
 
@@ -69,11 +68,9 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle< View<pat::Muon> > muons;
   iEvent.getByLabel(muons_,muons);
 
-  
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   KalmanVertexFitter vtxFitter;
-
 
   // JPsi candidates only from muons
   for(View<pat::Muon>::const_iterator it = muons->begin(), itend = muons->end(); it != itend; ++it){
@@ -81,8 +78,7 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     for(View<pat::Muon>::const_iterator it2 = it+1; it2 != itend;++it2){
       if(!selectionMuons(*it2,2)) continue;
 
-      
-      // require Tracker track. It will not work with CaloMuon (TOBE FIXED)
+      // require Tracker track. It will not work with CaloMuon (TO BE FIXED)
       if(!(it->track().get() && it2->track().get())) continue; 
 
       pat::CompositeCandidate myCand;
@@ -96,14 +92,13 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	myCand.addDaughter(*it2,"muon1");	
       }
 
-      // ---- define and set candidate's 4momentum  ----
+      // ---- define and set candidate's 4momentum  ----  (TO BE FIXED)
       LorentzVector jpsi = it->p4() + it2->p4();
       //LorentzVector jpsi = it->track()->p4() + it2->track()->p4();
       //qh.setRecoJPsi(jpsi);
       //cout << "jpsi: " << jpsi.mass() << endl;
       myCand.setP4(jpsi);
       
-
       // ---- fit vertex using Tracker tracks ----
       vector<TransientTrack> t_tks;
       t_tks.push_back(theTTBuilder->build(*it->track()));  // pass the reco::Track, not  the reco::TrackRef (which can be transient)
@@ -143,12 +138,12 @@ Onia2MuMuPAT::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       oniaOutput->push_back(myCand);
     }
   }
-  
+
+  std::sort(oniaOutput->begin(),oniaOutput->end(),pTComparator_);
 
   iEvent.put(oniaOutput);
 
-  
- 
+
 }
 
 bool
