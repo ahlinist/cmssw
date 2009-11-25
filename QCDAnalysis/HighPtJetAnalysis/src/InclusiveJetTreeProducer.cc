@@ -10,16 +10,17 @@
 
 #include "QCDAnalysis/HighPtJetAnalysis/interface/InclusiveJetTreeProducer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/JetReco/interface/CaloJet.h"
 #include "DataFormats/JetReco/interface/CaloJetCollection.h"
+#include "DataFormats/JetReco/interface/JetExtendedAssociation.h"
+#include "DataFormats/JetReco/interface/JetID.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
-#include "DataFormats/JetReco/interface/JetExtendedAssociation.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 using namespace edm;
@@ -29,6 +30,7 @@ typedef math::PtEtaPhiELorentzVectorF LorentzVector;
 InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg) 
 {
   mJetsName               = cfg.getParameter<std::string>              ("jets");
+  mJetsIDName             = cfg.getParameter<std::string>              ("jetsID");
   mMetName                = cfg.getParameter<std::string>              ("met");
   mMetNoHFName            = cfg.getParameter<std::string>              ("metNoHF");
   mJetExtender            = cfg.getParameter<std::string>              ("jetExtender");
@@ -103,18 +105,23 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   event.getByLabel(mJetsName,jets);
   Handle<JetExtendedAssociation::Container> jetExtender;
   event.getByLabel(mJetExtender,jetExtender);
+  edm::Handle<edm::ValueMap<reco::JetID> > jetsID;
+  event.getByLabel(mJetsIDName,jetsID);
   if ((*jets).size() < 1) return;
   for(unsigned int ind=0;ind<(*jets).size();ind++) 
     {
       LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
-      LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender, (*jets)[ind]); 
+      LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender, (*jets)[ind]);
+      RefToBase<Jet> jetRef(Ref<CaloJetCollection>(jets,ind));
       mPt        ->push_back((*jets)[ind].pt());
       mEta       ->push_back((*jets)[ind].eta());
       mEtaD      ->push_back((*jets)[ind].detectorP4().eta());
       mY         ->push_back((*jets)[ind].y()); 
       mPhi       ->push_back((*jets)[ind].phi());
       mE         ->push_back((*jets)[ind].energy());
-      mN90       ->push_back((*jets)[ind].n90());	
+      mN90       ->push_back((*jets)[ind].n90());
+      mfHPD      ->push_back((*jetsID)[jetRef].fHPD);
+      mfRBX      ->push_back((*jetsID)[jetRef].fRBX); 	
       mEmf       ->push_back((*jets)[ind].emEnergyFraction() ); 
       mNtrkVtx   ->push_back(JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]));
       mNtrkCalo  ->push_back(JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind])); 
@@ -220,15 +227,17 @@ void InclusiveJetTreeProducer::buildTree()
   mPhi        = new std::vector<double>();
   mE          = new std::vector<double>();
   mEmf        = new std::vector<double>();
-  mNtrkVtx    = new std::vector<double>();
-  mNtrkCalo   = new std::vector<double>();
+  mNtrkVtx    = new std::vector<int>   ();
+  mNtrkCalo   = new std::vector<int>   ();
   mTrkCaloPt  = new std::vector<double>();
   mTrkCaloEta = new std::vector<double>();
   mTrkCaloPhi = new std::vector<double>();
   mTrkVtxPt   = new std::vector<double>();
   mTrkVtxEta  = new std::vector<double>();
   mTrkVtxPhi  = new std::vector<double>();
-  mN90        = new std::vector<double>();
+  mN90        = new std::vector<int>   ();
+  mfHPD       = new std::vector<double>();
+  mfRBX       = new std::vector<double>();
   mPVx        = new std::vector<double>();
   mPVy        = new std::vector<double>();
   mPVz        = new std::vector<double>();
@@ -242,15 +251,17 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("phi"        ,"vector<double>"      ,&mPhi);
   mTree->Branch("e"          ,"vector<double>"      ,&mE);
   mTree->Branch("emf"        ,"vector<double>"      ,&mEmf);
-  mTree->Branch("nTrkVtx"    ,"vector<double>"      ,&mNtrkVtx);
-  mTree->Branch("nTrkCalo"   ,"vector<double>"      ,&mNtrkCalo);
+  mTree->Branch("nTrkVtx"    ,"vector<int>"         ,&mNtrkVtx);
+  mTree->Branch("nTrkCalo"   ,"vector<int>"         ,&mNtrkCalo);
   mTree->Branch("TrkCaloPt"  ,"vector<double>"      ,&mTrkCaloPt);
   mTree->Branch("TrkCaloEta" ,"vector<double>"      ,&mTrkCaloEta);
   mTree->Branch("TrkCaloPhi" ,"vector<double>"      ,&mTrkCaloPhi);
   mTree->Branch("TrkVtxPt"   ,"vector<double>"      ,&mTrkVtxPt);
   mTree->Branch("TrkVtxEta"  ,"vector<double>"      ,&mTrkVtxEta);
   mTree->Branch("TrkVtxPhi"  ,"vector<double>"      ,&mTrkVtxPhi);
-  mTree->Branch("n90"        ,"vector<double>"      ,&mN90);
+  mTree->Branch("n90"        ,"vector<int>"         ,&mN90);
+  mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
+  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);
   mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
   mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
   mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
@@ -287,7 +298,9 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mTrkVtxPt  ->clear();
   mTrkVtxEta ->clear();
   mTrkVtxPhi ->clear();
-  mN90       ->clear();
+  mN90       ->clear(); 
+  mfHPD      ->clear();
+  mfRBX      ->clear();
   mPVx       ->clear();
   mPVy       ->clear();
   mPVz       ->clear();

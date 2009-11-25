@@ -43,6 +43,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     bool mIsMCarlo;
     double mEtaMax,mPtMin;
     std::string mJetsName;
+    std::string mJetsIDName;
     std::string mJetExtender;
     std::string mMetName;
     std::string mMetNoHFName;
@@ -57,12 +58,12 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     edm::Service<TFileService> fs;                                                                                                                        
     TTree *mTree;
 
-    std::vector<double> *mE,   *mPt,     *mEta,      *mEtaD,     *mPhi,     *mY;
-    std::vector<double> *mEmf, *mNtrkVtx, *mNtrkCalo;
-    std::vector<double> *mTrkCaloPt,*mTrkCaloEta,  *mTrkCaloPhi;
-    std::vector<double> *mTrkVtxPt,*mTrkVtxEta,  *mTrkVtxPhi;
-    std::vector<double> *mN90;
-    std::vector<double> *mPVx, *mPVy,    *mPVz;
+    std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90;
+    std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
+    std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
+    std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
+    std::vector<double> *mfHPD,*mfRBX;
+    std::vector<double> *mPVx,*mPVy,*mPVz;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
     
