@@ -9,6 +9,13 @@ def parametersOfType(type, pset):
       if isinstance(value, type):
          yield (name, getattr(pset, name))
 
+def addToSequence(process, sequence, toAdd):
+   ''' Add toAdd to sequence in process if it exists, otherwise create it '''
+   if hasattr(process, sequence):
+      getattr(process, sequence).append(toAdd)
+   else:
+      setattr(process, sequence, cms.Sequence(toAdd))
+
 def makeTauNtuple(process, 
       input_collection="shrinkingConePFTauProducer",
       tauType='shrinkingConePFTau',
@@ -40,8 +47,12 @@ def makeTauNtuple(process,
 
       # Register in process
       setattr(process, matching_name, new_matching)
-      # Add to sequence
-      process.buildTauNtuple += new_matching
+      # Ensure truth production is in sequence
+      addToSequence(process, "buildTauNtuple", 
+	    	    getattr(process, "matchingCollection"))
+      # Add matching to sequence
+      addToSequence(process, "buildTauNtuple", new_matching)
+      #process.buildTauNtuple += new_matching
       # Add in ntuple proudcer
       new_ntuple.matchingSource = matching_name
 
@@ -65,7 +76,8 @@ def makeTauNtuple(process,
    # Register in process & add to default sequence
    module_name = tauType + 'NtupleProducer'
    setattr(process, module_name, new_ntuple)
-   process.buildTauNtuple += new_ntuple
+   addToSequence(process, "buildTauNtuple", new_ntuple)
+   #process.buildTauNtuple += new_ntuple
 
 def makeStandardTauNtuples(process, matchingCollection = "trueHadronicTaus"):
    # Shrinking cone

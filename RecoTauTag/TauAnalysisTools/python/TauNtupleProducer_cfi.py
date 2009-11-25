@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from RecoTauTag.TauAnalysisTools.truthTools_cfi import *
 from RecoTauTag.TauAnalysisTools.tools.ntupleDefinitions import *
 
-buildTauNtuple = cms.Sequence(makeTruthCollections)
+#buildTauNtuple = cms.Sequence(makeTruthCollections)
 
 # Match to GenJets composing visible decay products of hadronic taus
 protoMatcher = cms.EDProducer("TrivialDeltaRViewMatcher",
