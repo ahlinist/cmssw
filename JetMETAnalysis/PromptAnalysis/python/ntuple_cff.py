@@ -6,3 +6,4 @@ from JetMETAnalysis.PromptAnalysis.PromptAna_Jet_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_BeamHalo_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_CaloTowers_cfi import *
 from JetMETAnalysis.PromptAnalysis.PromptAna_Trigger_cfi import *
+from JetMETAnalysis.PromptAnalysis.PromptAna_CleanUp_cfi import *
