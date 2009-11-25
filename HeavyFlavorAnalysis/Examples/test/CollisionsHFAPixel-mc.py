@@ -20,14 +20,15 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("RecoVertex.BeamSpotProducer.BeamSpot_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "MC_31X_V5::All"
+process.GlobalTag.globaltag = "STARTUP3X_V8E::All"
 
 
 # ----------------------------------------------------------------------
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-    "file:/shome/starodumov/out/reco/root/reco-10094.root"
+#    "file:/shome/starodumov/out/reco/root/reco-10094.root"
+    "/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4B3A7BE-3AD7-DE11-9230-002618943939.root"
     )
     )
 
