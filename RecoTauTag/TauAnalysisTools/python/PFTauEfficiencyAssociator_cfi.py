@@ -26,8 +26,11 @@ protoEffciencyAssociator = cms.EDProducer("PFTauEfficiencyAssociatorFromTH3",
        )
 )
 
-MuEnrichedQCDEffSources = add_eff_sources(prefix="fr", disc_configs=disc_configs.keys(), 
-                                          suffix="MuEnrichedQCDsim")
+# Build the list of efficiency sources from the histogram production
+# configuration disc_configs
+MuEnrichedQCDEffSources = add_eff_sources(prefix="fr",
+        disc_configs=disc_configs.keys(), suffix="MuEnrichedQCDsim")
+
 shrinkingConeMuEnrichedQCDAssociator = protoEffciencyAssociator.clone()
 shrinkingConeMuEnrichedQCDAssociator.efficiencySources = cms.PSet(
         MuEnrichedQCDEffSources,

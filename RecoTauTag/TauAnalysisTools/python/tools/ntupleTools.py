@@ -10,11 +10,12 @@ def parametersOfType(type, pset):
          yield (name, getattr(pset, name))
 
 def addToSequence(process, sequence, toAdd):
-   ''' Add toAdd to sequence in process if it exists, otherwise create it '''
-   if hasattr(process, sequence):
-      getattr(process, sequence).append(toAdd)
-   else:
-      setattr(process, sequence, cms.Sequence(toAdd))
+    ''' Add toAdd to sequence in process if it exists, otherwise create it '''
+    if hasattr(process, sequence):
+        my_seq = getattr(process, sequence)
+        my_seq += (toAdd)
+    else:
+        setattr(process, sequence, cms.Sequence(toAdd))
 
 def makeTauNtuple(process, 
       input_collection="shrinkingConePFTauProducer",
@@ -49,7 +50,7 @@ def makeTauNtuple(process,
       setattr(process, matching_name, new_matching)
       # Ensure truth production is in sequence
       addToSequence(process, "buildTauNtuple", 
-	    	    getattr(process, "matchingCollection"))
+	    	    getattr(process, matchingCollection))
       # Add matching to sequence
       addToSequence(process, "buildTauNtuple", new_matching)
       #process.buildTauNtuple += new_matching
