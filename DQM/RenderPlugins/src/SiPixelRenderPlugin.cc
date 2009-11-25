@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.21 $
-  \date $Date: 2009/11/13 15:39:44 $
+  \version $Revision: 1.22 $
+  \date $Date: 2009/11/19 15:24:09 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -105,7 +105,7 @@ Int_t getColor(TH2F* fH, Int_t i, Int_t j, Double_t zmin, Double_t zmax){
 	Int_t color;
 	const Double_t z = fH->GetBinContent(i,j);
 	
-	if (z < zmin)
+	if (z < zmin || z==0.)
 		return -1;	
 	if (fH->TestBit(TH1::kUserContour)) {
 		zc = fH->GetContourLevelPad(0);
@@ -232,11 +232,8 @@ color, Int_t npts, std::string title){
 
       if( o.name.find( "reportSummaryMap" ) != std::string::npos )
       {
+        gPad->SetGrid();
         if(obj->GetNbinsX()==7) gPad->SetLeftMargin(0.3);
-	if(obj->GetNbinsX()==40){
-	  TLine tl1; tl1.SetLineColor(1); tl1.DrawLine(32.,1.,32.,37.); 
-	  TLine tl2; tl2.SetLineColor(1); tl2.DrawLine(32.,27.,40.,27.); 
-	}  
         dqm::utils::reportSummaryMapPalette(obj2);
         return;
       }
@@ -355,6 +352,13 @@ color, Int_t npts, std::string title){
         Int_t ibin = obj->GetMaximumBin(); 
         Double_t val = obj->GetBinContent(ibin); 
         TLine tl; tl.SetLineColor(4); tl.DrawLine(10.,0.,10.,val); 
+      }
+      else if( o.name.find( "reportSummaryMap" ) != std::string::npos )
+      {
+	if(obj->GetNbinsX()==40){
+	  TLine tl1; tl1.SetLineWidth(1); tl1.SetLineColor(1); tl1.DrawLine(32.,27.,32.,37.); 
+	  TLine tl2; tl2.SetLineWidth(1); tl2.SetLineColor(1); tl2.DrawLine(32.,27.,40.,27.); 
+	}  
       }
       
     }
