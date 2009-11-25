@@ -173,7 +173,7 @@ foreach $inputListLine(@inputListFile)
     my $outputfile = $datasetName.""."\.root"; 
     if($runNumber != -999 )
     {
-	my $outputfile = $datasetName."____run".$runNumber.""."\.root"; 
+	$outputfile = $datasetName."\_\_\_\_run".$runNumber.""."\.root"; 
     }
     #print "outputfilename : $outputfile ... \n";
 
@@ -284,8 +284,14 @@ foreach $inputListLine(@inputListFile)
 
 	if($templateCrabFileLine=~/THISRUNNUMBER/)
 	{
-	    $templateCrabFileLine = "runselection = $runNumber";
-	    #print("$templateCrabFileLine\n");
+	    if($runNumber != -999 ){
+		$templateCrabFileLine = "runselection = $runNumber";
+		#print("$templateCrabFileLine\n");
+	    }
+	    else
+	    {
+		$templateCrabFileLine = "  "
+	    }
 	}
 
 	print NEWCRABCONFIG "$templateCrabFileLine\n";
