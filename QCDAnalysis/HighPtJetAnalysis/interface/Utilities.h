@@ -14,6 +14,17 @@ void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
 int  getBin(double x, vector<double> boundaries);
+bool findName(string ss, vector<string> vv);
+//////////////////////////////////////////////////////////////////////////////////////////
+bool FindName(string ss, vector<string> vv)
+{
+  for(unsigned i=0;i<vv.size();i++)
+    {
+      if (vv[i] == ss)
+        return true;
+    }
+  return false;
+}
 //////////////////////////////////////////////////////////////////////////////////////////
 void FillHist(const TString& histName, map<TString, TH1*> HistNames, const double& x) 
 {
