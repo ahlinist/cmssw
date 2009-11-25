@@ -208,7 +208,7 @@ close(STATUSREPORT);
 
 print "\n";
 print ">>>>>> full output from the commands \"crab -status\" at $fullCrabStatusOutput\n";
-print ">>>>>> summary status report on the full production at $statusReport\n";
+#print ">>>>>> summary status report on the full production at $statusReport\n";
 
 
 
