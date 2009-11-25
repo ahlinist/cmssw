@@ -33,41 +33,40 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     virtual void beginJob(edm::EventSetup const& iSetup);
     virtual void analyze(edm::Event const& evt, edm::EventSetup const& iSetup);
     virtual void endJob();
-    InclusiveJetTreeProducer();
+    virtual ~InclusiveJetTreeProducer();
 
   private:
     
     void buildTree();
     void clearTreeVectors();
-
+    
+    bool mIsMCarlo;
+    double mEtaMax,mPtMin;
     std::string mJetsName;
     std::string mJetExtender;
     std::string mMetName;
     std::string mMetNoHFName;
+    std::string mTriggerProcessName;
     std::vector<std::string> mTriggerNames;
     std::vector<std::string> mL1TriggerNames;
-    std::string mTriggerProcessName;
     std::vector<unsigned int> mTriggerIndex;
-    edm::InputTag mTriggerResultsTag;
-    double mEtaMax;
-    double mPtMin; 
-    bool mIsMCarlo;
-    edm::InputTag L1GTReadoutRcdSource_, L1GTObjectMapRcdSource_;    
-    HLTConfigProvider mHltConfig;
+  
+    edm::InputTag mTriggerResultsTag, mL1GTReadoutRcdSource, mL1GTObjectMapRcdSource;    
+    HLTConfigProvider mHltConfig;     
 
-    edm::Service<TFileService> fs;                                                                                                                       
-    TTree* mTree;
+    edm::Service<TFileService> fs;                                                                                                                        
+    TTree *mTree;
 
-    std::vector<double> *mE,   *mPt,     *mEta,      *mPhi;
-    std::vector<double> *mEmf, *mNtrkVx, *mNtrkCalo;
-    std::vector<double> *mCTPt,*mCTEta,  *mCTPhi;
-    std::vector<double> *mVTPt,*mVTEta,  *mVTPhi;
+    std::vector<double> *mE,   *mPt,     *mEta,      *mEtaD,     *mPhi,     *mY;
+    std::vector<double> *mEmf, *mNtrkVtx, *mNtrkCalo;
+    std::vector<double> *mTrkCaloPt,*mTrkCaloEta,  *mTrkCaloPhi;
+    std::vector<double> *mTrkVtxPt,*mTrkVtxEta,  *mTrkVtxPhi;
     std::vector<double> *mN90;
     std::vector<double> *mPVx, *mPVy,    *mPVz;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
     
-    double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat;
-    int mRun, mEvent;
+    double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
+    int mRunNo, mEvtNo, mLumi;
 };
 #endif
