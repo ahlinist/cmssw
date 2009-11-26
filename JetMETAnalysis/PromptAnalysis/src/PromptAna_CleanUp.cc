@@ -58,9 +58,9 @@ void PromptAna_CleanUp::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
       if (fabs(cal->eta())<=2.6 && 
 	  cal->emEnergyFraction()<=0.01) bJetIDMinimal=false;
     }
+    f_jetID_Minimal -> push_back(bJetIDMinimal);
   }
 
-  f_jetID_Minimal -> push_back(bJetIDMinimal);
 
   //
   // --- Loose cuts
@@ -87,9 +87,9 @@ void PromptAna_CleanUp::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 	}
       } // forward vs non-forward
     }   // pt>10 GeV/c
+    f_jetID_Loose -> push_back(bJetIDLoose);
   }     // calor-jets loop
 
-  f_jetID_Loose -> push_back(bJetIDLoose);
 
   //
   // --- Tight cuts
@@ -133,9 +133,9 @@ void PromptAna_CleanUp::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
                                              && cal->emEnergyFraction()>=0.70) bJetIDTight=false; 
       }
     }   // pt>10 GeV/c
+    f_jetID_Tight -> push_back(bJetIDTight);
   }     // calor-jets loop
 
-  f_jetID_Tight -> push_back(bJetIDTight);
 
   // ==========================================================
   // HCAL Noise filter
