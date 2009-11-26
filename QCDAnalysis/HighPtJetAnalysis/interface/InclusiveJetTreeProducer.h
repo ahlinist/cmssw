@@ -62,7 +62,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
     std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
     std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
-    std::vector<double> *mfHPD,*mfRBX;
+    std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<double> *mPVx,*mPVy,*mPVz;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
