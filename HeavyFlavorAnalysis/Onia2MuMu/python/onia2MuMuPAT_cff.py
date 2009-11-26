@@ -31,7 +31,7 @@ patMuonsWithoutTrigger = allLayer1Muons.clone(
     embedTpfmsMuon = False, 
     isolation = cms.PSet(),   # no extra isolation beyond what's in reco::Muon itself
     isoDeposits = cms.PSet(), # no heavy isodeposits
-    addGenMatch = True,      # no mc: T&P doesn't take it from here anyway.
+    addGenMatch = True,       # no mc: T&P doesn't take it from here anyway.
     embedGenMatch = True,
     genParticleMatch = 'muonMatch'
 )
@@ -47,6 +47,7 @@ patMuonsWithoutTrigger = allLayer1Muons.clone(
 from PhysicsTools.PatAlgos.triggerLayer1.triggerProducer_cfi import patTrigger
 patTrigger.onlyStandAlone = True
 patTrigger.processName    = "HLT8E29"
+
 ### ==== Then perform a match for all HLT triggers of interest
 from PhysicsTools.PatAlgos.triggerLayer1.triggerMatcher_cfi import muonTriggerMatchHLT1MuonIso
 muonMatchHLTL1MuOpen  = muonTriggerMatchHLT1MuonIso.clone(src = 'patMuonsWithoutTrigger',pathNames = [ "HLT_L1MuOpen" ])
