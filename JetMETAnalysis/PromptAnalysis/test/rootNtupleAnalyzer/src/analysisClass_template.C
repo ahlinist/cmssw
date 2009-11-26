@@ -32,6 +32,7 @@ void analysisClass::Loop()
    //////////book histos here
 
    // number of electrons
+   TH1F *h_towersEta = new TH1F ("h_towersEta","",200,-5.,5.);
    //    TH1F *h_calometPt = new TH1F ("h_calometPt","",11,-0.5,10.5);
    //    h_nEleFinal->Sumw2();
 
@@ -94,6 +95,8 @@ void analysisClass::Loop()
      fillVariableWithValue("my_calometPt", my_Met);
      fillVariableWithValue("my_calometPhi", my_MetPhi);
     
+     for (int ii=0; ii<CaloTowersEta->size(); ii++)
+       h_towersEta->Fill( CaloTowersEta->at(ii));
      // Evaluate cuts (but do not apply them)
      evaluateCuts();
      
@@ -125,6 +128,7 @@ void analysisClass::Loop()
 
    //TH1F * h_example = new TH1F ("h_example","", getHistoNBins("my_calometPt"), getHistoMin("my_calometPt"), getHistoMax("my_calometPt"));
    //h_example->Add( & getHisto_noCuts_or_skim("my_calometPt") ); // all histos can be retrieved, see other getHisto_xxxx methods in baseClass.h
+   h_towersEta->Write();
 
    std::cout << "analysisClass::Loop() ends" <<std::endl;   
 }
