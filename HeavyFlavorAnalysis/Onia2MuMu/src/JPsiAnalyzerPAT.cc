@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.3 2009/11/23 18:45:53 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.4 2009/11/25 16:34:46 covarell Exp $
 //
 //
 
@@ -44,9 +44,10 @@
 
 #include <DataFormats/PatCandidates/interface/Muon.h>
 #include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+#include <DataFormats/Common/interface/TriggerResults.h>
+#include <DataFormats/Math/interface/deltaR.h>
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
-#include "DataFormats/Common/interface/TriggerResults.h"
 
 using namespace std;
 using namespace edm;
@@ -381,12 +382,12 @@ JPsiAnalyzerPAT::beginJob()
   QQMass2Glob_pass2mu0              = new TH1F("QQMass2Glob_pass2mu0",  "Invariant mass (2 global muons)", 100, 0.,15.);
   QQMass1Glob1Trk_pass2mu0          = new TH1F("QQMass1Glob1Trk_pass2mu0",  "Invariant mass (1 global + 1 tracker muon)", 100, 0.,15.);
   QQMass1Glob1Cal_pass2mu0          = new TH1F("QQMass1Glob1Cal_pass2mu0",  "Invariant mass (1 global + 1 calo muon)", 100, 0.,15.);
-
-  // deltaR
+  			       
+  // deltaR		       
   hMcRecoGlobMuDeltaR               = new TH1F("hMcRecoGlobMuDeltaR",  "MC-reco matching #Delta R (global muons)", 100, 0.,0.5);
   hMcRecoTrkMuDeltaR                = new TH1F("hMcRecoTrkMuDeltaR",  "MC-reco matching #Delta R (tracker muons)", 100, 0.,0.5);
   hMcRecoCalMuDeltaR                = new TH1F("hMcRecoCalMuDeltaR",  "MC-reco matching #Delta R (calo muons)", 100, 0.,0.5);
-
+  			       
   // mc-truth matching (global)
   hMcRightGlbMunPixHits            = new TH1F("hMcRightGlbMunPixHits",  "number of pixel hits - MC matched (global muons)", 8, -0.5, 7.5);
   hMcWrongGlbMunPixHits            = new TH1F("hMcWrongGlbMunPixHits",  "number of pixel hits - MC unmatched (global muons)", 8, -0.5, 7.5);
@@ -396,7 +397,7 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbMudz                  = new TH1F("hMcWrongGlbMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
   hMcRightGlbMuFirstLayer          = new TH1F("hMcRightGlbMuFirstLayer",  "first pixel layer hit - MC matched (global muons)", 4, -0.5, 3.5);
   hMcWrongGlbMuFirstLayer          = new TH1F("hMcWrongGlbMuFirstLayer",  "first pixel layer hit - MC unmatched (global muons)", 4, -0.5, 3.5);
-
+  			       
   // mc truth matching - global + global
   hMcRightGlbGlbMuMass             = new TH1F("hMcRightGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
   hMcWrongGlbGlbMuMass             = new TH1F("hMcWrongGlbGlbMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
@@ -404,8 +405,8 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongGlbGlbMuLife             = new TH1F("hMcWrongGlbGlbMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
   hMcRightGlbGlbMuVtxProb          = new TH1F("hMcRightGlbGlbMuVtxProb",  "Vertex probability - MC matched (global+global muons)", 1000, 0.0,1.0);
   hMcWrongGlbGlbMuVtxProb          = new TH1F("hMcWrongGlbGlbMuVtxProb",  "Vertex probability - MC unmatched (global+global muons)", 1000, 0.0,1.0);
- 
-  // mc truth matching - trk
+  			       
+  // mc truth matching - trk   
   hMcRightTrkMuPt                  = new TH1F("hMcRightTrkMuPt",  "pT  - MC matched (tracker muons)", 50, 0.,5.0);
   hMcWrongTrkMuPt                  = new TH1F("hMcWrongTrkMuPt",  "pT - MC unmatched (tracker muons)", 50, 0.,5.0);
   hMcRightTrkMuChi2                = new TH1F("hMcRightTrkMuChi2",  "chi2  - MC matched (tracker muons)", 50, -0.5, 6.5);
@@ -424,16 +425,16 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongTrkMud0                  = new TH1F("hMcWrongTrkMud0",  "d0 - MC unmatched (global muons)", 100, 0., 30.);
   hMcRightTrkMudz                  = new TH1F("hMcRightTrkMudz",  "dz - MC matched (global muons)", 100, 0., 50.);
   hMcWrongTrkMudz                  = new TH1F("hMcWrongTrkMudz",  "dz - MC unmatched (global muons)", 100, 0., 50.);
-
+  			       
   // mc truth matching - global + trk
-  hMcRightGlbTrkMuMass             = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
-  hMcWrongGlbTrkMuMass             = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC matched (global+global muons)", 100, 2.6,3.6);
-  hMcRightGlbTrkMuLife             = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
-  hMcWrongGlbTrkMuLife             = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC matched (global+global muons)", 90, -1.0,3.5);
+  hMcRightGlbTrkMuMass            = new TH1F("hMcRightGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, 2.6,3.6);
+  hMcWrongGlbTrkMuMass            = new TH1F("hMcWrongGlbTrkMuMass",  "Inv. mass - MC matched (global+tracker muons)", 100, 2.6,3.6);
+  hMcRightGlbTrkMuLife            = new TH1F("hMcRightGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
+  hMcWrongGlbTrkMuLife            = new TH1F("hMcWrongGlbTrkMuLife",  "c #tau - MC matched (global+tracker muons)", 90, -1.0,3.5);
   hMcRightGlbTrkMuVtxProb          = new TH1F("hMcRightGlbTrkMuVtxProb",  "Vertex probability - MC matched (global+tracker muons)", 1000, 0.0,1.0);
   hMcWrongGlbTrkMuVtxProb          = new TH1F("hMcWrongGlbTrkMuVtxProb",  "Vertex probability - MC unmatched (global+tracker muons)", 1000, 0.0,1.0);
-
-  // mc truth matching - calo
+  			       
+  // mc truth matching - calo  
   hMcRightCalMuPt                  = new TH1F("hMcRightCalMuPt",  "pT  - MC matched (calo muons)", 50, 0.,5.0);
   hMcWrongCalMuPt                  = new TH1F("hMcWrongCalMuPt",  "pT - MC unmatched (calo muons)", 50, 0.,5.0);
   hMcRightCalMuCaloComp            = new TH1F("hMcRightCalMuCaloComp",  "pT  - MC matched (calo muons)", 60, 0.5,1.1);
@@ -442,7 +443,7 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongCalMuChi2                = new TH1F("hMcWrongCalMuChi2",  "chi2 - MC unmatched (calo muons)", 50, -0.5,6.5);
   hMcRightCalMuNhits               = new TH1F("hMcRightCalMuNhits",  "chi2  - MC matched (calo muons)", 30, 0.5, 30.5);
   hMcWrongCalMuNhits               = new TH1F("hMcWrongCalMuNhits",  "chi2 - MC unmatched (calo muons)", 30, 0.5,30.5);
-
+  			       
   // mc truth matching - global + calo
   hMcRightCalGlbMuDeltaR           = new TH1F("hMcRightCalGlbMuDeltaR",  " DeltaR - MC matched (calo+global muons)", 80, 0.,5.0);
   hMcWrongCalGlbMuDeltaR           = new TH1F("hMcWrongCalGlbMuDeltaR",  " DeltaR - MC unmatched (calo+global muons)", 80, 0.,5.0);
@@ -454,11 +455,11 @@ JPsiAnalyzerPAT::beginJob()
   hMcWrongCalGlbMuS                = new TH1F("hMcWrongCalGlbMuS",  "Significance of muon IPs - MC unmatched (calo+global muons)", 80, 0.0,100.0);
   hMcRightCalGlbMucosAlpha         = new TH1F("hMcRightCalGlbMucosAlpha",  "cos #alpha - MC matched (calo+global muons)", 100, -1.0,1.0);
   hMcWrongCalGlbMucosAlpha         = new TH1F("hMcWrongCalGlbMucosAlpha",  "cos #alpha - MC unmatched (calo+global muons)", 100, -1.0,1.0);
-
-  // all
+  			       
+  // all		       
   hMcRightAllMuIso                 = new TH1F("hMcRightAllMuIso",  "Isolation - MC matched (all muons)", 50, -1.0,15.0);
- 
-  // correction factors
+  			       
+  // correction factors	       
   gammaFactor_GGnonprompt          = new TH1F("gammaFactorGG_nonprompt",  "MC correction for non-prompt decays", 100, 0.,3.);
   gammaFactor_GTnonprompt          = new TH1F("gammaFactorGT_nonprompt",  "MC correction for non-prompt decays", 100, 0.,3.);
 
@@ -532,7 +533,12 @@ JPsiAnalyzerPAT::endJob() {
   hMcRightTrkMuChi2             -> Write();   
   hMcWrongTrkMuChi2             -> Write(); 
   hMcRightTrkMuNhits            -> Write(); 
-  hMcWrongTrkMuNhits            -> Write(); 
+  hMcWrongTrkMuNhits            -> Write();
+
+  hMcRightGlbTrkMuMass          -> Write();
+  hMcWrongGlbTrkMuMass        	-> Write();
+  hMcRightGlbTrkMuLife        	-> Write();
+  hMcWrongGlbTrkMuLife        	-> Write();
   hMcRightGlbTrkMuVtxProb       -> Write();   
   hMcWrongGlbTrkMuVtxProb       -> Write(); 
   			     
@@ -585,7 +591,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   if (hltConfig.init(_triggerresults.process())) {
     // check if trigger name in config
     const unsigned int n(hltConfig.size());
-    for (int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
+    for (unsigned int ihlt = 0; ihlt < NTRIGGERS; ihlt++) {
       hltBits[ihlt] = 0;
       unsigned int triggerIndex( hltConfig.triggerIndex(HLTbitNames[ihlt]) );
       if (triggerIndex>=n) {
@@ -596,95 +602,162 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
     }
   }
 
-  /* QQMass2Glob_passmu3          
-  QQMass1Glob1Trk_passmu3    
-  QQMass1Glob1Cal_passmu3    
-  QQMass2GlobPT6_passmu3     
-  QQMass1Glob1TrkPT6_passmu3 
-  QQMass1Glob1CalPT6_passmu3 
-  WSMass2Glob_passmu3        
-  WSMass1Glob1Trk_passmu3    
-  WSMass1Glob1Cal_passmu3    
-  QQMass2Glob_passmu5        
-  QQMass1Glob1Trk_passmu5    
-  QQMass1Glob1Cal_passmu5    
-  QQMass2GlobPT6_passmu5     
-  QQMass1Glob1TrkPT6_passmu5 
-  QQMass1Glob1CalPT6_passmu5 
-  // QQMass2Glob_passmu9     
-  // QQMass1Glob1Trk_passmu9 
-  // QQMass1Glob1Cal_passmu9 
-  QQMass2Glob_pass2mu3       
-  QQMass1Glob1Trk_pass2mu3   
-  QQMass1Glob1Cal_pass2mu3   
-  WSMass2Glob_pass2mu3       
-  WSMass1Glob1Trk_pass2mu3   
-  WSMass1Glob1Cal_pass2mu3   
-  QQMass2Glob_pass2mu0       
-  QQMass1Glob1Trk_pass2mu0   
-  QQMass1Glob1Cal_pass2mu0   
-  			     
-  hMcRecoGlobMuDeltaR        
-  hMcRecoTrkMuDeltaR         
-  hMcRecoCalMuDeltaR         
-  			     
-  hMcRightGlbMunPixHits      
-  hMcWrongGlbMunPixHits      
-  hMcRightGlbMud0            
-  hMcWrongGlbMud0            
-  hMcRightGlbMudz            
-  hMcWrongGlbMudz            
-  hMcRightGlbMuFirstLayer    
-  hMcWrongGlbMuFirstLayer    
-  			     
-  hMcRightGlbGlbMuMass       
-  hMcWrongGlbGlbMuMass       
-  hMcRightGlbGlbMuLife       
-  hMcWrongGlbGlbMuLife       
-  hMcRightGlbGlbMuVtxProb    
-  hMcWrongGlbGlbMuVtxProb    
-  			     
-  hMcRightTrkMuPt            
-  hMcWrongTrkMuPt            
-  hMcRightTrkBit4            
-  hMcWrongTrkBit4            
-  hMcRightTrkBit5            
-  hMcWrongTrkBit5            
-  hMcRightTrkBit8            
-  hMcWrongTrkBit8            
-  hMcRightTrkBit9            
-  hMcWrongTrkBit9            
-  hMcRightTrkMuChi2          
-  hMcWrongTrkMuChi2          
-  hMcRightTrkMuNhits         
-  hMcWrongTrkMuNhits         
-  hMcRightGlbTrkMuVtxProb    
-  hMcWrongGlbTrkMuVtxProb    
-  			     
-  hMcRightCalMuChi2          
-  hMcWrongCalMuChi2          
-  hMcRightCalMuNhits         
-  hMcWrongCalMuNhits         
-  hMcRightTrkMud0            
-  hMcWrongTrkMud0            
-  hMcRightTrkMudz            
-  hMcWrongTrkMudz            
-  hMcRightCalMuCaloComp      
-  hMcWrongCalMuCaloComp      
-  hMcRightCalMuPt            
-  hMcWrongCalMuPt            
-  hMcRightAllMuIso           
-  hMcRightCalGlbMuDeltaR     
-  hMcWrongCalGlbMuDeltaR     
-  hMcRightCalGlbMuMass       
-  hMcWrongCalGlbMuMass       
-  hMcRightCalGlbMuVtxChi2    
-  hMcWrongCalGlbMuVtxChi2    
-  hMcRightCalGlbMuS          
-  hMcWrongCalGlbMuS          
-  hMcRightCalGlbMucosAlpha   
-  hMcWrongCalGlbMucosAlpha   */
+  // MC matching
+  reco::GenParticleRef genJpsi = aCand.genParticleRef();
+  bool isMatched = (genJpsi.isNonnull() && genJpsi->pdgId() == 443);
 
+  // Trigger passed
+
+  if (trigger.isValid()) {
+    if (trigger->accept(hltBits[1])) { // pass Mu3
+      if (muon1->charge()*muon2->charge() < 0) {
+	if (theCat == 0) QQMass2Glob_passmu3->Fill(aCand.mass());          
+	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(aCand.mass());
+	if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(aCand.mass());    
+	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(aCand.mass());     
+	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(aCand.mass());
+	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(aCand.mass());
+      } else {
+	if (theCat == 0) WSMass2Glob_passmu3->Fill(aCand.mass());          
+	if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(aCand.mass());
+	if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(aCand.mass());       
+      }
+    }
+    if (trigger->accept(hltBits[2])) { // pass Mu5
+      if (muon1->charge()*muon2->charge() < 0) {
+	if (theCat == 0) QQMass2Glob_passmu5->Fill(aCand.mass());          
+	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(aCand.mass());
+	if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(aCand.mass());    
+	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(aCand.mass());     
+	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(aCand.mass());
+	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(aCand.mass());
+      } 
+    }
+    if (trigger->accept(hltBits[3])) { // pass 2Mu3
+      if (muon1->charge()*muon2->charge() < 0) {
+	if (theCat == 0) QQMass2Glob_pass2mu3->Fill(aCand.mass());          
+	if (theCat == 1) QQMass1Glob1Trk_pass2mu3->Fill(aCand.mass());
+	if (theCat == 3) QQMass1Glob1Cal_pass2mu3->Fill(aCand.mass());    
+      } else {
+	if (theCat == 0) WSMass2Glob_pass2mu3->Fill(aCand.mass());          
+	if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(aCand.mass());
+	if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(aCand.mass());       
+      }
+    }
+    if (trigger->accept(hltBits[4])) { // pass 2Mu0
+      if (muon1->charge()*muon2->charge() < 0) {
+	if (theCat == 0) QQMass2Glob_pass2mu0->Fill(aCand.mass());          
+	if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(aCand.mass());
+	if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(aCand.mass());    
+      }
+    }  
+  } 	
+	
+  // Signal / background J/psi 	
+  if (muon1->charge()*muon2->charge() < 0) {   
+    if (isMatched) {
+
+      if (theCat == 0) {
+	hMcRightGlbGlbMuMass->Fill(aCand.mass());       
+	hMcRightGlbGlbMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcRightGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
+      } else if (theCat == 1) {
+        hMcRightGlbTrkMuMass->Fill(aCand.mass());       
+	hMcRightGlbTrkMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcRightGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
+      } else if (theCat == 3) {
+        hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
+	hMcRightCalGlbMuMass->Fill(aCand.mass());           
+	hMcRightCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
+	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
+	hMcRightCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
+      }   
+
+    } else {
+    
+      if (theCat == 0) {
+	hMcWrongGlbGlbMuMass->Fill(aCand.mass());       
+	hMcWrongGlbGlbMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcWrongGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
+      } else if (theCat == 1) {
+        hMcWrongGlbTrkMuMass->Fill(aCand.mass());       
+	hMcWrongGlbTrkMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcWrongGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
+      } else if (theCat == 3) {
+        hMcWrongCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
+	hMcWrongCalGlbMuMass->Fill(aCand.mass());           
+	hMcWrongCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
+	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
+	hMcWrongCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
+      }  
+
+    }
+  
+    // Signal / background muons
+    char whichMuon[6];
+    for(unsigned int i = 1; i<=2; i++) {
+      
+      sprintf(whichMuon,"muon%d",i);
+      const pat::Muon* thisMuon = dynamic_cast<const pat::Muon*>(aCand.daughter(whichMuon));
+ 	
+      reco::GenParticleRef genMu = thisMuon->genParticleRef();
+      TrackRef iTrack = thisMuon->innerTrack();
+      const reco::HitPattern& p = iTrack->hitPattern();
+
+      if (isMatched) {
+	if (thisMuon->isGlobalMuon()) { 
+	  if (genMu.isNonnull()) hMcRecoGlobMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
+	  hMcRightGlbMunPixHits->Fill(p.numberOfValidPixelHits());
+	  hMcRightGlbMud0->Fill(iTrack->d0());
+	  hMcRightGlbMudz->Fill(iTrack->dz());
+	  hMcRightGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
+	} else if (thisMuon->isTrackerMuon()) {     // notice exclusivity!  
+	  if (genMu.isNonnull()) hMcRecoTrkMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
+          hMcRightTrkMuPt->Fill(thisMuon->pt());
+          hMcRightTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
+          hMcRightTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
+	  hMcRightTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
+	  hMcRightTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
+          hMcRightTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
+          hMcRightTrkMuNhits->Fill(iTrack->found());
+          hMcRightTrkMud0->Fill(iTrack->d0());
+	  hMcRightTrkMudz->Fill(iTrack->dz());
+	}         
+	if (thisMuon->isCaloMuon()) {
+	  if (genMu.isNonnull()) hMcRecoCalMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
+	  hMcRightCalMuPt->Fill(thisMuon->pt());
+          hMcRightCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
+          hMcRightCalMuNhits->Fill(iTrack->found());    
+	  hMcRightCalMuCaloComp->Fill(thisMuon->caloCompatibility());                    
+	}
+      } else {
+	if (thisMuon->isGlobalMuon()) { 
+	  hMcWrongGlbMunPixHits->Fill(p.numberOfValidPixelHits());
+	  hMcWrongGlbMud0->Fill(iTrack->d0());
+	  hMcWrongGlbMudz->Fill(iTrack->dz());
+	  hMcWrongGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
+	} else if (thisMuon->isTrackerMuon()) {     // notice exclusivity!  
+          hMcWrongTrkMuPt->Fill(thisMuon->pt());
+          hMcWrongTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
+          hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
+	  hMcWrongTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
+	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
+          hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
+          hMcWrongTrkMuNhits->Fill(iTrack->found());
+          hMcWrongTrkMud0->Fill(iTrack->d0());
+	  hMcWrongTrkMudz->Fill(iTrack->dz());
+	}         
+	if (thisMuon->isCaloMuon()) {
+	  hMcWrongCalMuPt->Fill(thisMuon->pt());
+          hMcWrongCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
+          hMcWrongCalMuNhits->Fill(iTrack->found());    
+	  hMcWrongCalMuCaloComp->Fill(thisMuon->caloCompatibility());                    
+	}
+      }
+    }
+  }
+
+  // Now the RooDataSet
 }
 
 pair< unsigned int, pat::CompositeCandidate > 
@@ -754,7 +827,7 @@ JPsiAnalyzerPAT::theBestQQ() {
     }
   }
 
-  pair< unsigned int, pat::CompositeCandidate > result = make_pair(99, *(new pat::CompositeCandidate()) );
+  pair< unsigned int, pat::CompositeCandidate > result = make_pair(99, pat::CompositeCandidate() );
   return result;	  
 
 }

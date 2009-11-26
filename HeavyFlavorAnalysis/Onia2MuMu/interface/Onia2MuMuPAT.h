@@ -30,10 +30,13 @@ class Onia2MuMuPAT : public edm::EDProducer {
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   bool selectionMuons(const reco::Muon& muon,int selectionType) const;
-  
+  bool isAbHadron(int pdgID) const;
+
   // ----------member data ---------------------------
  private:
   edm::InputTag muons_;
+  edm::InputTag thebeamspot_;
+  edm::InputTag thePVs_;
   int selectionType1_;
   int selectionType2_;
   bool addCommonVertex_;
