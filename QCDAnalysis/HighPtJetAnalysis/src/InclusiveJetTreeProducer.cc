@@ -121,8 +121,10 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mE         ->push_back((*jets)[ind].energy());
       mN90       ->push_back((*jets)[ind].n90());
       mfHPD      ->push_back((*jetsID)[jetRef].fHPD);
-      mfRBX      ->push_back((*jetsID)[jetRef].fRBX); 	
-      mEmf       ->push_back((*jets)[ind].emEnergyFraction() ); 
+      mfRBX      ->push_back((*jetsID)[jetRef].fRBX); 
+      mEmf       ->push_back((*jets)[ind].emEnergyFraction()); 	
+      mEtaMoment ->push_back((*jets)[ind].etaetaMoment()); 
+      mPhiMoment ->push_back((*jets)[ind].phiphiMoment());
       mNtrkVtx   ->push_back(JetExtendedAssociation::tracksAtVertexNumber(*jetExtender,(*jets)[ind]));
       mNtrkCalo  ->push_back(JetExtendedAssociation::tracksAtCaloNumber(*jetExtender,(*jets)[ind])); 
       mTrkCaloPt ->push_back(TrkCaloP4.pt());
@@ -227,6 +229,8 @@ void InclusiveJetTreeProducer::buildTree()
   mPhi        = new std::vector<double>();
   mE          = new std::vector<double>();
   mEmf        = new std::vector<double>();
+  mEtaMoment  = new std::vector<double>();
+  mPhiMoment  = new std::vector<double>();
   mNtrkVtx    = new std::vector<int>   ();
   mNtrkCalo   = new std::vector<int>   ();
   mTrkCaloPt  = new std::vector<double>();
@@ -251,6 +255,8 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("phi"        ,"vector<double>"      ,&mPhi);
   mTree->Branch("e"          ,"vector<double>"      ,&mE);
   mTree->Branch("emf"        ,"vector<double>"      ,&mEmf);
+  mTree->Branch("etaMoment"  ,"vector<double>"      ,&mEtaMoment);
+  mTree->Branch("phiMoment"  ,"vector<double>"      ,&mPhiMoment);
   mTree->Branch("nTrkVtx"    ,"vector<int>"         ,&mNtrkVtx);
   mTree->Branch("nTrkCalo"   ,"vector<int>"         ,&mNtrkCalo);
   mTree->Branch("TrkCaloPt"  ,"vector<double>"      ,&mTrkCaloPt);
@@ -290,6 +296,8 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mPhi       ->clear();
   mE         ->clear();
   mEmf       ->clear();
+  mEtaMoment ->clear();
+  mPhiMoment ->clear();
   mNtrkVtx   ->clear();
   mNtrkCalo  ->clear();
   mTrkCaloPt ->clear();
