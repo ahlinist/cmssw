@@ -20,7 +20,11 @@
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapFwd.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerDetId.h"
 
+//Hcal Noise Objects
+#include "RecoMET/METAlgorithms/interface/HcalNoiseRBXArray.h"
+#include "DataFormats/METReco/interface/HcalNoiseHPD.h"
 
 //TFile Service 
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -51,7 +55,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<std::string> mTriggerNames;
     std::vector<std::string> mL1TriggerNames;
     std::vector<unsigned int> mTriggerIndex;
-  
+    edm::InputTag mHcalNoiseTag;
     edm::InputTag mTriggerResultsTag, mL1GTReadoutRcdSource, mL1GTObjectMapRcdSource;    
     HLTConfigProvider mHltConfig;     
 
@@ -64,6 +68,7 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
     std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
     std::vector<double> *mPVx,*mPVy,*mPVz;
+    std::vector<double> *mfHcalNoise;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
     

@@ -34,6 +34,7 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mMetName                = cfg.getParameter<std::string>              ("met");
   mMetNoHFName            = cfg.getParameter<std::string>              ("metNoHF");
   mJetExtender            = cfg.getParameter<std::string>              ("jetExtender");
+  mHcalNoiseTag           = cfg.getParameter<edm::InputTag>            ("hcalNoiseTag");
   mTriggerNames           = cfg.getParameter<std::vector<std::string> >("jetTriggerNames");
   mL1TriggerNames         = cfg.getParameter<std::vector<std::string> >("l1TriggerNames");   
   mTriggerProcessName     = cfg.getParameter<std::string>              ("triggerProcessName"); 
@@ -100,6 +101,29 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mWeight = hEventInfo->weight();
     }
 
+  //////////////Hcal Noise Collection //////////////                                                                               
+  Handle<HcalNoiseRBXCollection> rbxColl;
+  event.getByLabel(mHcalNoiseTag,rbxColl);
+  if(!rbxColl.isValid()) {
+    throw edm::Exception(edm::errors::ProductNotFound)
+      << " could not find HcalNoiseRBXCollection named " << "hcalnoise" << ".\n";
+    return;
+  }
+
+  // loop over the RBXs 
+  std::map<CaloTowerDetId, double> hcalNoise;
+  for(HcalNoiseRBXCollection::const_iterator rit=rbxColl->begin(); rit!=rbxColl->end(); ++rit) {
+    HcalNoiseRBX rbx    = (*rit);
+    const std::vector<HcalNoiseHPD> hpds = rbx.HPDs();
+    for(int ihpd=0; ihpd<hpds.size(); ihpd++){
+      const edm::RefVector<CaloTowerCollection> noiseCTowers = hpds[ihpd].caloTowers();
+      for(unsigned int itow=0; itow<noiseCTowers.size(); itow++){
+        hcalNoise.insert( std::pair<CaloTowerDetId, double>( noiseCTowers[itow]->id(), noiseCTowers[itow]->hadEnergy()) );
+      }
+    }
+  }
+
+
   ////////////// Jets //////
   edm::Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
@@ -133,8 +157,17 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mTrkVtxPt  ->push_back(TrkVtxP4.pt());
       mTrkVtxEta ->push_back(TrkVtxP4.eta());
       mTrkVtxPhi ->push_back(TrkVtxP4.phi());
-    }
-  ////////////// Trigger bits //////
+      
+      double jetEneNoise=0.0;
+      std::vector< CaloTowerPtr >jTowers = (*jets)[ind].getCaloConstituents ();
+      for(unsigned int itow=0; itow<jTowers.size(); itow++) {
+	std::map<CaloTowerDetId, double>::iterator thisTow = hcalNoise.find(jTowers[itow]->id());
+	if( thisTow != hcalNoise.end() ) jetEneNoise += jTowers[itow]->energy();
+      }
+      mfHcalNoise->push_back( jetEneNoise/(*jets)[ind].energy() );
+    } 
+
+  ////////////// Trigger //////
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
   event.getByLabel(mTriggerResultsTag,triggerResultsHandle); 
   if (!triggerResultsHandle.isValid())
@@ -242,6 +275,7 @@ void InclusiveJetTreeProducer::buildTree()
   mN90        = new std::vector<int>   ();
   mfHPD       = new std::vector<double>();
   mfRBX       = new std::vector<double>();
+  mfHcalNoise = new std::vector<double>();
   mPVx        = new std::vector<double>();
   mPVy        = new std::vector<double>();
   mPVz        = new std::vector<double>();
@@ -267,7 +301,8 @@ void InclusiveJetTreeProducer::buildTree()
   mTree->Branch("TrkVtxPhi"  ,"vector<double>"      ,&mTrkVtxPhi);
   mTree->Branch("n90"        ,"vector<int>"         ,&mN90);
   mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
-  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);
+  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);  
+  mTree->Branch("fHcalNoise" ,"vector<double>"      ,&mfHcalNoise);
   mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
   mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
   mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
@@ -309,6 +344,7 @@ void InclusiveJetTreeProducer::clearTreeVectors()
   mN90       ->clear(); 
   mfHPD      ->clear();
   mfRBX      ->clear();
+  mfHcalNoise->clear();
   mPVx       ->clear();
   mPVy       ->clear();
   mPVz       ->clear();
