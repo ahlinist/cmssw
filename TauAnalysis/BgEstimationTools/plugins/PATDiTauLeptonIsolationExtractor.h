@@ -30,9 +30,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.1 $
  *
- * $Id: PATDiTauLeptonIsolationExtractor.h,v 1.2 2009/07/30 16:08:12 veelken Exp $
+ * $Id: PATDiTauLeptonIsolationExtractor.h,v 1.1 2009/11/18 14:33:04 veelken Exp $
  *
  */
 
@@ -44,8 +44,7 @@
 #include "PhysicsTools/IsolationAlgos/interface/IsoDepositVetoFactory.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 
-#include "PhysicsTools/Utilities/interface/StringObjectFunction.h" // for CMSSW_2_2_x
-//#include "CommonTools/Utils/interface/StringObjectFunction.h"    // for CMSSW_3_1_x
+#include "CommonTools/Utils/interface/StringObjectFunction.h"
 
 #include "AnalysisDataFormats/TauAnalysis/interface/CompositePtrCandidateT1T2MEt.h"
 
