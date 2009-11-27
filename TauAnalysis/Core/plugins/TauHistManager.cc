@@ -12,6 +12,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "PhysicsTools/JetMCUtils/interface/JetMCTag.h"
 
 #include "TauAnalysis/Core/interface/histManagerAuxFunctions.h"
 
@@ -145,7 +146,21 @@ void TauHistManager::bookHistogramsImp()
   hTauPhiCompToGen_ = book1D("TauPhiCompToGen", "RECO-GEN #Delta#phi", 200, -0.050, +0.050);
   
   hTauMatchingGenParticlePdgId_ = book1D("TauMatchingGenParticlePdgId", "matching gen. Particle PdgId", 26, -1.5, 24.5);
-
+  hTauMatchingGenTauDecayMode_ = book1D("TauMatchingGenTauDecayMode", "matching gen. Tau decay mode", 20, -0.5, 19.5);
+  // CV: set labels for gen. tau decay modes
+  //     as defined in PhysicsTools/JetMCUtils/src/JetMCTag.cc
+  TAxis* xAxisTauMatchingGenTauDecayMode = hTauMatchingGenTauDecayMode_->getTH1()->GetXaxis();
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(2, "electron");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(4, "muon");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(6, "oneProng0Pi0");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(7, "oneProng1Pi0");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(8, "oneProng2Pi0");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(9, "oneProngOther");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(11, "threeProng0Pi0");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(12, "threeProng1Pi0");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(13, "threeProngOther");
+  xAxisTauMatchingGenTauDecayMode->SetBinLabel(15, "rare");
+  
   hTauNumTracksSignalCone_ = book1D("TauNumTracksSignalCone", "Tracks in Signal Cone", 10, -0.5, 9.5);
   hTauNumTracksIsoCone_ = book1D("TauNumTracksIsoCone", "Tracks in Isolation Cone", 20, -0.5, 19.5);
   
@@ -339,6 +354,9 @@ void TauHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventSe
     } else {
       hTauMatchingGenParticlePdgId_->Fill(abs(matchingGenParticlePdgId), weight);
     }
+
+    if ( patTau->genJet() != 0 ) 
+      hTauMatchingGenTauDecayMode_->getTH1()->Fill(JetMCTagUtils::genTauDecayMode(*patTau->genJet()).data(), weight);
 
     hTauNumTracksSignalCone_->Fill(patTau->signalTracks().size(), weight);
     hTauNumTracksIsoCone_->Fill(patTau->isolationTracks().size(), weight);
