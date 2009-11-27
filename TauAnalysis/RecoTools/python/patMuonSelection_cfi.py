@@ -92,39 +92,3 @@ selectedLayer1MuonsPionVetoLooseIsolation = copy.deepcopy(selectedLayer1MuonsPio
 selectedLayer1MuonsTrkLooseIsolation = copy.deepcopy(selectedLayer1MuonsTrk)
 
 selectedLayer1MuonsTrkIPlooseIsolation = copy.deepcopy(selectedLayer1MuonsTrkIP)
-
-#--------------------------------------------------------------------------------
-# produce "summary" collection of pat::Muons with flags added,
-# indicating whether or not muons passed individual selection criteria
-#--------------------------------------------------------------------------------
-
-cleanLayer1MuonsSel = cms.EDProducer("PATMuonSelProducer",
-
-  leptonSource = cms.InputTag("cleanLayer1Muons"),
-
-  selFlags = cms.PSet(
-    tauAnalysisSelMuonGlobal = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsGlobalIndividual')
-    ),
-    tauAnalysisSelMuonEta21 = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsEta21Individual')
-    ),
-    tauAnalysisSelMuonPt15 = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsPt15Individual')
-    ),
-    tauAnalysisSelMuonTrkIso = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsTrkIsoIndividual')
-    ),
-    tauAnalysisSelMuonEcalIso = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsEcalIsoIndividual')
-    ),
-    tauAnalysisSelMuonPionVeto = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsPionVetoIndividual')
-    ),
-    tauAnalysisSelMuonTrkIP = cms.PSet(
-      src = cms.InputTag('selectedLayer1MuonsTrkIPindividual')
-    )
-  )
-)
-
-produceLayer1SelMuons = cms.Sequence( cleanLayer1MuonsSel )
