@@ -2,7 +2,7 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "TauAnalysis/BgEstimationTools/interface/BgEstCovMatrix.h"
+#include "TauAnalysis/FittingTools/interface/RunningCovMatrix.h"
 
 #include <TMath.h>
 
@@ -56,7 +56,7 @@ void ObjValCorrelationAnalyzer::beginJob(const edm::EventSetup& es)
 //    compute correlation of observables stored in different branches
   unsigned numVar = branchEntries_.size();
   TVectorD value(numVar);
-  BgEstCovMatrix cov(numVar);
+  RunningCovMatrix cov(numVar);
 
   int numEntries = chain.GetEntries();
   for ( int iEntry = 0 ; iEntry < numEntries; ++iEntry ) {
