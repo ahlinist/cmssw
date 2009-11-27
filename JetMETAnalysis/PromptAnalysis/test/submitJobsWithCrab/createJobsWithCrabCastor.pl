@@ -319,8 +319,8 @@ foreach $inputListLine(@inputListFile)
 #---------------------------------------------------------#
 
 sub help(){
-    print "Usage: ./createJobsWithCrab.pl -d <storageDir> -v <tagname> -i <inputList> -t <templateCrab> -c <myCMSSWconfig> [-r <runNumber> optional] [-h <help?>] \n";
-    print "Example: ./createJobsWithCrab.pl -d /home/santanas/test -v Ntuples -i inputList.txt -t template_crab_caf_copyToCastor.cfg -c treeData_cfg.py -n santanas -u myMETdir/MyMETrooTuples -r 122314\n";
+    print "Usage: ./createJobsWithCrabCastor.pl -d <storageDir> -v <tagname> -i <inputList> -t <templateCrab> -c <myCMSSWconfig> [-r <runNumber> optional] [-h <help?>] \n";
+    print "Example: ./createJobsWithCrabCastor.pl -d /home/santanas/test -v Ntuples -i inputList.txt -t template_crab_caf_copyToCastor.cfg -c treeData_cfg.py -n santanas -u myMETdir/MyMETrooTuples -r 122314\n";
     print "Options:\n";
     print "-d <storageDir>:           choose the local storage directory\n";
     print "-v <tagname>:              choose the tagname of RootNtupleMaker\n";
