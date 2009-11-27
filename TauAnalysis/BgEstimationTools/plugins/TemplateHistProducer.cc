@@ -9,6 +9,18 @@
 
 const float epsilon = 1.e-3;
 
+TemplateHistProducer::histEntryType::~histEntryType()
+{
+  for ( std::vector<axisEntryType>::iterator it = axisEntries_.begin();
+	it != axisEntries_.end(); ++it ) {
+    delete[] it->binEdges_;
+  }
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
 TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
   : allEventsTree_(0), selEventsTree_(0),
     cfgError_(0)
@@ -23,13 +35,13 @@ TemplateHistProducer::TemplateHistProducer(const edm::ParameterSet& cfg)
 
   if ( cfg.exists("config") ) {
     typedef std::vector<edm::ParameterSet> vParameterSet;
-    vParameterSet cfgJobs = cfg.getParameter<vParameterSet>("config");
-    for ( vParameterSet::const_iterator cfgJob = cfgJobs.begin();
-	  cfgJob != cfgJobs.end(); ++cfgJob ) {
-      readJobEntry(*cfgJob);
+    vParameterSet cfgHistograms = cfg.getParameter<vParameterSet>("config");
+    for ( vParameterSet::const_iterator cfgHistogram = cfgHistograms.begin();
+	  cfgHistogram != cfgHistograms.end(); ++cfgHistogram ) {
+      readHistEntry(*cfgHistogram);
     }
   } else {
-    readJobEntry(cfg);
+    readHistEntry(cfg);
   }
 
   vstring branchNames_eventWeight = ( cfg.exists("branchNamesEventWeight") ) ? 
@@ -48,54 +60,80 @@ TemplateHistProducer::~TemplateHistProducer()
 //--- nothing to be done yet...
 }
 
-void TemplateHistProducer::readJobEntry(const edm::ParameterSet& cfg)
+void TemplateHistProducer::readHistEntry(const edm::ParameterSet& cfg)
 {
-  //std::cout << "<TemplateHistProducer::readJobEntry>:" << std::endl;
+  //std::cout << "<TemplateHistProducer::readHistEntry>:" << std::endl;
 
-  jobEntryType jobEntry;
+  histEntryType histEntry;
 
-  jobEntry.branchName_objValue_ = cfg.getParameter<std::string>("branchName");
+  typedef std::vector<edm::ParameterSet> vParameterSet;
+  vParameterSet cfgVariables = cfg.getParameter<vParameterSet>("variables");
+  for ( vParameterSet::const_iterator cfgVariable = cfgVariables.begin();
+	cfgVariable != cfgVariables.end(); ++cfgVariable ) {
+    histEntryType::axisEntryType axisEntry;
 
+    axisEntry.branchName_ = cfgVariable->getParameter<std::string>("branchName");
+
+    axisEntry.numBins_ = cfgVariable->getParameter<unsigned>("numBins");
+    axisEntry.binEdges_ = new float[axisEntry.numBins_];
+    
+    if ( cfgVariable->exists("min") && cfgVariable->exists("max") && cfgVariable->exists("binEdges") ) {
+      edm::LogError ("readHistEntry") << " Configuration Parameters 'min' and 'max'" 
+				      << " and Configuration Parameter 'binEdges' are mutually exclusive !!";
+      cfgError_ = 1;
+    } else if ( cfgVariable->exists("min") && cfgVariable->exists("max") ) {
+      double min = cfgVariable->getParameter<double>("min");
+      double max = cfgVariable->getParameter<double>("max");
+
+      double binWidth = (max - min)/axisEntry.numBins_;
+
+      for ( unsigned iBin = 0; iBin <= axisEntry.numBins_; ++iBin ) {
+	axisEntry.binEdges_[iBin] = min + iBin*binWidth;
+      }
+    } else if ( cfgVariable->exists("binEdges") ) {
+      typedef std::vector<double> vdouble;
+      vdouble binEdges = cfgVariable->getParameter<vdouble>("binEdges");
+
+      if ( binEdges.size() == (axisEntry.numBins_ + 1) ) {
+	for ( unsigned iBin = 0; iBin <= axisEntry.numBins_; ++iBin ) {
+	  axisEntry.binEdges_[iBin] = binEdges[iBin];
+	}
+      } else {
+	edm::LogError ("readHistEntry") << " Number of Entries in Configuration Parameter 'binEdges' = " << binEdges.size() 
+					<< " does not match value of (numBins + 1) = " << (axisEntry.numBins_ + 1) << " !!";
+	cfgError_ = 1;
+      }
+    } else {
+      edm::LogError ("readHistEntry") << " Either Configuration Parameters 'min' and 'max'" 
+				      << " or Configuration Parameter 'binEdges' must be specified !!";
+      cfgError_ = 1;
+    } 
+
+    histEntry.axisEntries_.push_back(axisEntry);
+  }
+  
   std::string meName = cfg.getParameter<std::string>("meName");
   if ( meName.find("/") != std::string::npos ) {
     size_t posSeparator = meName.find_last_of("/");
 
     if ( posSeparator < (meName.length() - 1) ) {
-      jobEntry.dqmDirectory_store_ = std::string(meName, 0, posSeparator);
-      jobEntry.meName_ = std::string(meName, posSeparator + 1);
+      histEntry.dqmDirectory_store_ = std::string(meName, 0, posSeparator);
+      histEntry.meName_ = std::string(meName, posSeparator + 1);
     } else {
-      edm::LogError ("readJobEntry") << " Invalid Configuration Parameter 'meName' = " << meName << " !!";
+      edm::LogError ("readHistEntry") << " Invalid Configuration Parameter 'meName' = " << meName << " !!";
       cfgError_ = 1;
     }
   } else {
-    jobEntry.dqmDirectory_store_ = "";
-    jobEntry.meName_ = meName;
-  }
-
-  jobEntry.numBinsX_ = cfg.getParameter<unsigned>("numBinsX");
-  jobEntry.xMin_ = ( cfg.exists("xMin") ) ? cfg.getParameter<double>("xMin") : 0.;
-  jobEntry.xMax_ = ( cfg.exists("xMax") ) ? cfg.getParameter<double>("xMax") : 0.;
-  jobEntry.xBins_ = ( cfg.exists("xBins") ) ? cfg.getParameter<vdouble>("xBins") : vdouble();
-
-  if ( (cfg.exists("xMin") && cfg.exists("xMax") && cfg.exists("xBins")) || 
-       (!(cfg.exists("xMin") && cfg.exists("xMax")) && !cfg.exists("xBins"))) {
-    edm::LogError ("readJobEntry") << " Either Configuration Parameters 'xMin' and 'xMax'" 
-				   << " or Configuration Parameter 'xBins' must be specified !!";
-    cfgError_ = 1;
-  }
-
-  if ( cfg.exists("xBins") && jobEntry.xBins_.size() != (jobEntry.numBinsX_ + 1) ) {
-    edm::LogError ("readJobEntry") << " Number of Entries in Configuration Parameter 'xBins' = " << jobEntry.xBins_.size() 
-				   << " does not match value of (numBinsX + 1) = " << (jobEntry.numBinsX_ + 1) << " !!";
-    cfgError_ = 1;
+    histEntry.dqmDirectory_store_ = "";
+    histEntry.meName_ = meName;
   }
   
-  jobEntry.sumWeights_ = ( cfg.exists("sumWeights") ) ? cfg.getParameter<bool>("sumWeights") : true;
+  histEntry.sumWeights_ = ( cfg.exists("sumWeights") ) ? cfg.getParameter<bool>("sumWeights") : true;
 
-  //std::cout << " dqmDirectory_store = " << jobEntry.dqmDirectory_store_ << std::endl;
-  //std::cout << " meName = " << jobEntry.meName_ << std::endl;
+  //std::cout << " dqmDirectory_store = " << histEntry.dqmDirectory_store_ << std::endl;
+  //std::cout << " meName = " << histEntry.meName_ << std::endl;
 
-  jobs_.push_back(jobEntry);
+  histograms_.push_back(histEntry);
 }
 
 void TemplateHistProducer::endJob()
@@ -112,31 +150,32 @@ void TemplateHistProducer::endJob()
 //--- check that DQMStore service is available
   if ( !edm::Service<DQMStore>().isAvailable() ) {
     edm::LogError ("endJob") << " Failed to access dqmStore" 
-			     << " --> histogram will NOT be filled !!";
+			     << " --> histograms will NOT be filled !!";
     return;
   }
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
 //--- book template histograms
-  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-	jobEntry != jobs_.end(); ++jobEntry ) {
+  for ( std::vector<histEntryType>::iterator histEntry = histograms_.begin();
+	histEntry != histograms_.end(); ++histEntry ) {
     
-    if ( jobEntry->dqmDirectory_store_ != "" ) dqmStore.setCurrentFolder(jobEntry->dqmDirectory_store_);
+    if ( histEntry->dqmDirectory_store_ != "" ) dqmStore.setCurrentFolder(histEntry->dqmDirectory_store_);
     
-    if ( jobEntry->xBins_.size() ) {
-      unsigned numBinEdges = jobEntry->xBins_.size();
-      float* xBins = new float[numBinEdges];
-      for ( unsigned iBin = 0; iBin < numBinEdges; ++iBin ) {
-	xBins[iBin] = jobEntry->xBins_[iBin];
-      }
-      jobEntry->me_ = dqmStore.book1D(jobEntry->meName_, jobEntry->meName_, numBinEdges - 1, xBins);
-      delete xBins;
+    if ( histEntry->axisEntries_.size() == 1 ) {
+      dqmStore.book1D(histEntry->meName_, histEntry->meName_, 
+		      histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_); 
+    } else if ( histEntry->axisEntries_.size() == 2 ) {
+      dqmStore.book2D(histEntry->meName_, histEntry->meName_, 
+		      histEntry->axisEntries_[0].numBins_, histEntry->axisEntries_[0].binEdges_,
+		      histEntry->axisEntries_[1].numBins_, histEntry->axisEntries_[1].binEdges_);
     } else {
-      jobEntry->me_ = dqmStore.book1D(jobEntry->meName_, jobEntry->meName_, jobEntry->numBinsX_, jobEntry->xMin_, jobEntry->xMax_);
+      edm::LogError ("endJob") << " Invalid dimension = " << histEntry->axisEntries_.size() 
+			       << " requested for histogram = " << histEntry->meName_ << " --> skipping !!";
+      continue;
     }
 
-    if ( jobEntry->sumWeights_ ) jobEntry->me_->getTH1()->Sumw2();
+    if ( histEntry->sumWeights_ ) histEntry->me_->getTH1()->Sumw2();
   }
 
 //--- create chain of all ROOT files 
@@ -156,9 +195,12 @@ void TemplateHistProducer::endJob()
   std::cout << " entries passing selection = " << selEventsTree_->GetEntries() << std::endl;
 
 //--- set branch adresses
-  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-	jobEntry != jobs_.end(); ++jobEntry ) {
-    selEventsTree_->SetBranchAddress(jobEntry->branchName_objValue_.data(), &jobEntry->objValue_);
+  for ( std::vector<histEntryType>::iterator histEntry = histograms_.begin();
+	histEntry != histograms_.end(); ++histEntry ) {
+    for ( std::vector<histEntryType::axisEntryType>::iterator axisEntry = histEntry->axisEntries_.begin();
+	  axisEntry != histEntry->axisEntries_.end(); ++axisEntry ) {
+      selEventsTree_->SetBranchAddress(axisEntry->branchName_.data(), &axisEntry->value_);
+    }
   }
   
   for ( std::vector<eventWeightEntryType>::iterator eventWeightEntry = eventWeights_.begin();
@@ -185,12 +227,16 @@ void TemplateHistProducer::endJob()
 
     //std::cout << " eventWeight = " << eventWeight << std::endl;
 
-    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-	  jobEntry != jobs_.end(); ++jobEntry ) {
-      jobEntry->me_->Fill(jobEntry->objValue_, eventWeight);
+    for ( std::vector<histEntryType>::iterator histEntry = histograms_.begin();
+	  histEntry != histograms_.end(); ++histEntry ) {
+      if ( histEntry->axisEntries_.size() == 1 ) {
+	histEntry->me_->Fill(histEntry->axisEntries_[0].value_, eventWeight);
+      } else if ( histEntry->axisEntries_.size() == 2 ) {
+	histEntry->me_->Fill(histEntry->axisEntries_[0].value_, histEntry->axisEntries_[1].value_, eventWeight);
+      }
     }
   }
-
+  
   if ( selEventsTree_ != allEventsTree_ ) delete selEventsTree_;
   delete allEventsTree_;
 
@@ -202,9 +248,9 @@ void TemplateHistProducer::endJob()
 //--- normalize template histograms
 //    (to unit area)
   if ( norm_ != -1. ) {
-    for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-	  jobEntry != jobs_.end(); ++jobEntry ) {
-      TH1* histogram = jobEntry->me_->getTH1();
+    for ( std::vector<histEntryType>::iterator histEntry = histograms_.begin();
+	  histEntry != histograms_.end(); ++histEntry ) {
+      TH1* histogram = histEntry->me_->getTH1();
       if ( histogram->Integral() != 0. ) {
 	if ( !histogram->GetSumw2N() ) histogram->Sumw2();
 	histogram->Scale(norm_/histogram->Integral());
@@ -212,21 +258,6 @@ void TemplateHistProducer::endJob()
     }
   }
 
-//--- set all bin errors to zero
-//    (including underflow and overflow bins)
-//
-//    WARNING: to be enabled for testing purposes only !!
-//
-/*
-  for ( std::vector<jobEntryType>::iterator jobEntry = jobs_.begin();
-        jobEntry != jobs_.end(); ++jobEntry ) {
-    TH1* histogram = jobEntry->me_->getTH1();
-    unsigned numBins = histogram->GetNbinsX();
-    for ( unsigned iBin = 0; iBin <= numBins; ++iBin ) {
-      histogram->SetBinError(iBin, 0.);
-    }
-  }
- */
   std::cout << "done." << std::endl;
 }
 

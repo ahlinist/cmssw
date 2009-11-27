@@ -10,9 +10,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.5 $
+ * \version $Revision: 1.6 $
  *
- * $Id: TemplateHistProducer.h,v 1.5 2009/08/28 13:23:20 veelken Exp $
+ * $Id: TemplateHistProducer.h,v 1.6 2009/10/27 16:44:21 veelken Exp $
  *
  */
 
@@ -41,20 +41,27 @@ class TemplateHistProducer : public edm::EDAnalyzer
     Float_t value_;
   };
 
-  struct jobEntryType
+  struct histEntryType
   { 
+    histEntryType() 
+      : me_(0) {}
+    ~histEntryType();
+
+    struct axisEntryType
+    {
+      std::string branchName_;
+      Float_t value_;
+
+      unsigned numBins_;
+      float* binEdges_;
+    };
+
     std::string meName_;
     std::string dqmDirectory_store_;
     
     MonitorElement* me_;
 
-    std::string branchName_objValue_;
-    Float_t objValue_;
-
-    unsigned numBinsX_;
-    double xMin_;
-    double xMax_;
-    vdouble xBins_;
+    std::vector<axisEntryType> axisEntries_;
 
     bool sumWeights_;
   };
@@ -70,7 +77,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
   void analyze(const edm::Event&, const edm::EventSetup&) {}
   void endJob();
 
-  void readJobEntry(const edm::ParameterSet& cfg);
+  void readHistEntry(const edm::ParameterSet& cfg);
 
 //--- configuration parameters
   typedef std::vector<std::string> vstring;
@@ -88,7 +95,7 @@ class TemplateHistProducer : public edm::EDAnalyzer
   TChain* allEventsTree_;
   TTree* selEventsTree_;
 
-  std::vector<jobEntryType> jobs_; 
+  std::vector<histEntryType> histograms_; 
 
   int cfgError_;
 };
