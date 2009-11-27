@@ -315,8 +315,6 @@ void DQMHistPlotter::cfgEntryAxisY::print() const
 
 void DQMHistPlotter::cfgEntryAxisY::applyTo(TH1* histogram) const
 {
-std::cout << "<cfgEntryAxisY::applyTo>:" << std::endl; 
-
   if ( histogram ) {
     bool yLogScale = ( yScale_ == yScale_log ) ? true : false;
 
