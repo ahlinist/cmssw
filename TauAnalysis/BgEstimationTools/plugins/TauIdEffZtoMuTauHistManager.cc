@@ -59,10 +59,12 @@ void TauIdEffZtoMuTauHistManager::bookHistogramsImp()
   hTauExtPFNeutralHadronIsoPt_ = book1D("TauExtPFNeutralHadronIsoPt", "TauExtPFNeutralHadronIsoPt", 100, 0., 25.);  
   hTauExtPFGammaIsoPt_ = book1D("TauExtPFGammaIsoPt", "TauExtPFGammaIsoPt", 100, 0., 25.);  
 
-  float muonPtBinning[] = { 15., 20., 25., 30., 35., 40., 50., 60., 80., 120. };
-  hMuonPt_ = book1D("MuonPt", "MuonPt", 9, muonPtBinning);  
-  //hMuonPt_ = book1D("MuonPt", "MuonPt", 21, 15., 120.); 
+  float muonPtBinning1d[] = { 15., 20., 25., 30., 35., 40., 50., 60., 80., 120. };
+  hMuonPt_ = book1D("MuonPt", "MuonPt", 9, muonPtBinning1d);  
   hMuonAbsEta_ = book1D("MuonAbsEta", "MuonAbsEta", 14, 0., 2.1);  
+  float muonAbsEtaBinning2d[] = { 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1 };
+  float muonPtBinning2d[] = { 15., 20., 25., 30., 40., 60., 120. };
+  hMuonPtVsAbsEta_ = book2D("MuonPtVsAbsEta", "MuonPtVsAbsEta", 7, muonAbsEtaBinning2d, 6, muonPtBinning2d);
   hMuonExtTrkIsoPt_ = book1D("MuonExtTrkIsoPt", "MuonExtTrkIsoPt", 100, 0., 25.); 
   hMuonExtEcalIsoPt_ = book1D("MuonExtEcalIsoPt", "MuonExtEcalIsoPt", 100, 0., 25.); 
   hMuonExtHcalIsoPt_ = book1D("MuonExtHcalIsoPt", "MuonExtHcalIsoPt", 100, 0., 25.); 
@@ -127,6 +129,7 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
 	patMuon != patMuons->end(); ++patMuon ) {
     hMuonPt_->Fill(patMuon->pt(), evtWeight); 
     hMuonAbsEta_->Fill(TMath::Abs(patMuon->eta()), evtWeight); 
+    hMuonPtVsAbsEta_->Fill(TMath::Abs(patMuon->eta()), patMuon->pt(), evtWeight); 
 
     hMuonExtTrkIsoPt_->Fill(getMuonExtIso(*patMuon, pat::TrackerIso), evtWeight);
     hMuonExtEcalIsoPt_->Fill(getMuonExtIso(*patMuon, pat::ECalIso), evtWeight);
@@ -140,9 +143,9 @@ void TauIdEffZtoMuTauHistManager::fillHistogramsImp(const edm::Event& evt, const
     hTauDiscriminatorByEwkTauId_->Fill(patTau->tauID(tauIdDiscriminator_), evtWeight);
 
     hTauExtParticleFlowIsoPt_->Fill(getTauExtIso(*patTau, pat::ParticleIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFChargedHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::ChargedParticleIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFNeutralHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::NeutralParticleIso, tauIsolationVetos_), evtWeight);
-    hTauExtPFGammaIsoPt_->Fill(getTauExtIso(*patTau, pat::GammaParticleIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFChargedHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::ChargedHadronIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFNeutralHadronIsoPt_->Fill(getTauExtIso(*patTau, pat::NeutralHadronIso, tauIsolationVetos_), evtWeight);
+    hTauExtPFGammaIsoPt_->Fill(getTauExtIso(*patTau, pat::PhotonIso, tauIsolationVetos_), evtWeight);
   }
 
   double diTauChargeSign = (*diTauChargeSignExtractor_)(evt);

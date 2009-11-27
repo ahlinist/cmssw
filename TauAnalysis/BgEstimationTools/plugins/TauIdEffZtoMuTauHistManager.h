@@ -46,6 +46,7 @@ class TauIdEffZtoMuTauHistManager : public HistManagerBase
 
   MonitorElement* hMuonPt_;
   MonitorElement* hMuonAbsEta_;
+  MonitorElement* hMuonPtVsAbsEta_;
   MonitorElement* hMuonExtTrkIsoPt_;
   MonitorElement* hMuonExtEcalIsoPt_;
   MonitorElement* hMuonExtHcalIsoPt_;
