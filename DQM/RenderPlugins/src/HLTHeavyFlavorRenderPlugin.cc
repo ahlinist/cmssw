@@ -117,43 +117,35 @@ private:
     if( TString(h->GetXaxis()->GetTitle()).BeginsWith(' ') ){
       c->SetLogx();
     }
-    static std::vector<TH1F*> h1;
-    for(size_t i=0; i<h1.size(); i++){
-      delete h1[i];
-    }
-    h1.clear();
-    static TLegend *l;
-    if(l)
-      delete l;
-    l = new TLegend(0.01,.92,0.99,0.99);
+    TLegend* l = new TLegend(0.01,.92,0.99,0.99);
+    l->SetBit(kCanDelete);
     l->SetFillColor(0);
     l->SetNColumns(h->GetNbinsY());
-    TH1F * tmp = (h->GetXaxis()->GetXbins()->GetSize()==0) ?
-      new TH1F("tmp","tmp",h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax()):
-      new TH1F("tmp","tmp",h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXbins()->GetArray());
     for(int i=1; i<=h->GetNbinsY(); i++){
-      h1.push_back( (TH1F*)tmp->Clone(TString::Format("tmp%d",i)) );
+      TH1F * h1 = (h->GetXaxis()->GetXbins()->GetSize()==0) ?
+        new TH1F(TString::Format("tmp%d",i),TString::Format("tmp%d",i),h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax()):
+        new TH1F(TString::Format("tmp%d",i),TString::Format("tmp%d",i),h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXbins()->GetArray());
+      h1->SetBit(kCanDelete);
       for(int j=1; j<=h->GetNbinsX(); j++){
-        h1[i-1]->SetBinContent(j,h->GetBinContent(j,i));
-        h1[i-1]->SetBinError(j,h->GetBinError(j,i));
+        h1->SetBinContent(j,h->GetBinContent(j,i));
+        h1->SetBinError(j,h->GetBinError(j,i));
       }
-      h1[i-1]->SetLineColor(1+i);
-      h1[i-1]->SetLineWidth(2);
-      h1[i-1]->SetMarkerStyle(19+i);
-      h1[i-1]->SetMarkerSize(0.8);
-      l->AddEntry(h1[i-1],h->GetYaxis()->GetBinLabel(i),"lp");
+      h1->SetLineColor(1+i);
+      h1->SetLineWidth(2);
+      h1->SetMarkerStyle(19+i);
+      h1->SetMarkerSize(0.8);
+      l->AddEntry(h1,h->GetYaxis()->GetBinLabel(i),"lp");
       if(i==1){
-        h1[i-1]->GetXaxis()->SetTitle(h->GetXaxis()->GetTitle());
-        h1[i-1]->GetYaxis()->SetRangeUser(-0.001,1.001);
-        h1[i-1]->GetYaxis()->SetTitle("Efficiency");
-        h1[i-1]->SetTitle("");
-        h1[i-1]->Draw("PE");
+        h1->GetXaxis()->SetTitle(h->GetXaxis()->GetTitle());
+        h1->GetYaxis()->SetRangeUser(-0.001,1.001);
+        h1->GetYaxis()->SetTitle("Efficiency");
+        h1->SetTitle("");
+        h1->Draw("PE");
       }else{
-        h1[i-1]->Draw("PEsame");
+        h1->Draw("PEsame");
       }
     }
     l->Draw();
-    delete tmp;
   }
 
 };
