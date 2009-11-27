@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.4 2009/11/25 16:34:46 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.5 2009/11/26 17:47:01 covarell Exp $
 //
 //
 
@@ -72,6 +72,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
+      int getJpsiVarType(const double jpsivar, vector<double> vectbin);
 
       // histos
       TH1F *QQMass2Glob_passmu3;
@@ -207,9 +208,22 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool _onlythebest;
       bool _applycuts;
       bool _storeefficiency;
+      bool _useBS;
       InputTag _triggerresults;
 
+      // number of events
       unsigned int nEvents;
+      unsigned int passedCandidates;
+
+      // limits 
+      float JpsiMassMin;
+      float JpsiMassMax;
+      float JpsiCtMin;
+      float JpsiCtMax;
+      float JpsiPtMin;           // SET BY 
+      float JpsiPtMax;           // DEFINITION
+      float JpsiEtaMin;          // OF BIN
+      float JpsiEtaMax;          // LIMITES 
 
 };    
       
@@ -225,28 +239,25 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
 // constructors and destructor
 //
 JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
-  _histfilename(iConfig.getParameter<string>("histFileName")),
-  _datasetname(iConfig.getParameter<string>("dataSetName")),
-  _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),
+  _histfilename(iConfig.getParameter<string>("histFileName")),		
+  _datasetname(iConfig.getParameter<string>("dataSetName")),		
+  _ptbinranges(iConfig.getParameter< vector<double> >("pTBinRanges")),	
   _etabinranges(iConfig.getParameter< vector<double> >("etaBinRanges")),
-  _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),
-  _applycuts(iConfig.getParameter<bool>("applyCuts")),
-  _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),
+  _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),		
+  _applycuts(iConfig.getParameter<bool>("applyCuts")),			
+  _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),	
+  _useBS(iConfig.getParameter<bool>("useBeamSpot")),			
   _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
   nEvents = 0;
+  passedCandidates = 0;
 
-  // mass-lifetime limits
-  const float JpsiMassMin = 2.6;
-  const float JpsiMassMax = 3.6;
-  const float JpsiCtMin = -1.0;
-  const float JpsiCtMax = 3.5;
-  float JpsiPtMin = 0.0;           // SET BY 
-  float JpsiPtMax = 0.0;           // DEFINITION
-  float JpsiEtaMin = 0.0;          // OF BIN
-  float JpsiEtaMax = 0.0;          // LIMITS NOW
-  
+  JpsiMassMin = 2.6;
+  JpsiMassMax = 3.6;
+  JpsiCtMin = -1.0;
+  JpsiCtMax = 3.5;
+
   JpsiPtType = new RooCategory("JpsiPtType","Category of Pt");
   JpsiEtaType = new RooCategory("JpsiEtaType","Category of Eta");
 
@@ -278,8 +289,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   JpsiType->defineType("TT",2);
   JpsiType->defineType("GC",3);
 
-  matchType->defineType("matched",0);
-  matchType->defineType("unmatched",1);
+  matchType->defineType("unmatched",0);
+  matchType->defineType("matched",1);
 
   JpsiMass = new RooRealVar("JpsiMass","J/psi mass",JpsiMassMin,JpsiMassMax,"GeV/c^{2}");
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
@@ -313,13 +324,17 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    iEvent.getByLabel(_triggerresults,trigger);
 
-   if (!iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG)) cout << "Global-global J/psi not present in event!" << endl;
+   try {iEvent.getByLabel("onia2MuMuPatGlbGlb",collGG);} 
+   catch (...) {cout << "Global-global J/psi not present in event!" << endl;}
    
-   if (!iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT)) cout << "Global-tracker J/psi not present in event!" << endl;
+   try {iEvent.getByLabel("onia2MuMuPatGlbTrk",collGT);}
+   catch (...) {cout << "Global-tracker J/psi not present in event!" << endl;}
 
-   if (!iEvent.getByLabel("onia2MuMuPatTrkTrk",collTT)) cout << "Tracker-tracker J/psi not present in event!" << endl;
+   try {iEvent.getByLabel("onia2MuMuPatTrkTrk",collTT);} 
+   catch (...) {cout << "Tracker-tracker J/psi not present in event!" << endl;}
 
-   if (!iEvent.getByLabel("onia2MuMuPatGlbCal",collGC)) cout << "Global-calo J/psi not present in event!" << endl;
+   try {iEvent.getByLabel("onia2MuMuPatGlbCal",collGC);} 
+   catch (...) {cout << "Global-calo J/psi not present in event!" << endl;}
 
    if (nEvents%10000 == 0) cout << "analyze event # " << nEvents << endl;
 
@@ -580,6 +595,10 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   
   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand.daughter("muon1"));
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand.daughter("muon2"));
+  float theMass = aCand.mass();
+  float theCtau; 
+  if (_useBS) {theCtau = aCand.userFloat("ppdlBS");}
+  else {theCtau = aCand.userFloat("ppdlPV");}
 
   // Trigger Results inspection
   
@@ -611,63 +630,65 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   if (trigger.isValid()) {
     if (trigger->accept(hltBits[1])) { // pass Mu3
       if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_passmu3->Fill(aCand.mass());          
-	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(aCand.mass());
-	if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(aCand.mass());    
-	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(aCand.mass());     
-	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(aCand.mass());
-	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(aCand.mass());
+	if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
+	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
+	if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(theMass);    
+	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
+	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
+	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
       } else {
-	if (theCat == 0) WSMass2Glob_passmu3->Fill(aCand.mass());          
-	if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(aCand.mass());
-	if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(aCand.mass());       
+	if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
+	if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
+	if (theCat == 3) WSMass1Glob1Cal_passmu3->Fill(theMass);       
       }
     }
     if (trigger->accept(hltBits[2])) { // pass Mu5
       if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_passmu5->Fill(aCand.mass());          
-	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(aCand.mass());
-	if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(aCand.mass());    
-	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(aCand.mass());     
-	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(aCand.mass());
-	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(aCand.mass());
+	if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
+	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
+	if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(theMass);    
+	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
+	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
+	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
       } 
     }
     if (trigger->accept(hltBits[3])) { // pass 2Mu3
       if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_pass2mu3->Fill(aCand.mass());          
-	if (theCat == 1) QQMass1Glob1Trk_pass2mu3->Fill(aCand.mass());
-	if (theCat == 3) QQMass1Glob1Cal_pass2mu3->Fill(aCand.mass());    
+	if (theCat == 0) QQMass2Glob_pass2mu3->Fill(theMass);          
+	if (theCat == 1) QQMass1Glob1Trk_pass2mu3->Fill(theMass);
+	if (theCat == 3) QQMass1Glob1Cal_pass2mu3->Fill(theMass);    
       } else {
-	if (theCat == 0) WSMass2Glob_pass2mu3->Fill(aCand.mass());          
-	if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(aCand.mass());
-	if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(aCand.mass());       
+	if (theCat == 0) WSMass2Glob_pass2mu3->Fill(theMass);          
+	if (theCat == 1) WSMass1Glob1Trk_pass2mu3->Fill(theMass);
+	if (theCat == 3) WSMass1Glob1Cal_pass2mu3->Fill(theMass);       
       }
     }
     if (trigger->accept(hltBits[4])) { // pass 2Mu0
       if (muon1->charge()*muon2->charge() < 0) {
-	if (theCat == 0) QQMass2Glob_pass2mu0->Fill(aCand.mass());          
-	if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(aCand.mass());
-	if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(aCand.mass());    
+	if (theCat == 0) QQMass2Glob_pass2mu0->Fill(theMass);          
+	if (theCat == 1) QQMass1Glob1Trk_pass2mu0->Fill(theMass);
+	if (theCat == 3) QQMass1Glob1Cal_pass2mu0->Fill(theMass);    
       }
     }  
-  } 	
+  } else {
+    cout << "TriggerResults not valid!" << endl;	
+  }
 	
   // Signal / background J/psi 	
   if (muon1->charge()*muon2->charge() < 0) {   
     if (isMatched) {
 
       if (theCat == 0) {
-	hMcRightGlbGlbMuMass->Fill(aCand.mass());       
-	hMcRightGlbGlbMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcRightGlbGlbMuMass->Fill(theMass);       
+	hMcRightGlbGlbMuLife->Fill(theCtau);            
 	hMcRightGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
       } else if (theCat == 1) {
-        hMcRightGlbTrkMuMass->Fill(aCand.mass());       
-	hMcRightGlbTrkMuLife->Fill(aCand.userFloat("ppdlPV"));            
+        hMcRightGlbTrkMuMass->Fill(theMass);       
+	hMcRightGlbTrkMuLife->Fill(theCtau);            
 	hMcRightGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
       } else if (theCat == 3) {
         hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
-	hMcRightCalGlbMuMass->Fill(aCand.mass());           
+	hMcRightCalGlbMuMass->Fill(theMass);           
 	hMcRightCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
 	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
 	hMcRightCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
@@ -676,16 +697,16 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
     } else {
     
       if (theCat == 0) {
-	hMcWrongGlbGlbMuMass->Fill(aCand.mass());       
-	hMcWrongGlbGlbMuLife->Fill(aCand.userFloat("ppdlPV"));            
+	hMcWrongGlbGlbMuMass->Fill(theMass);       
+	hMcWrongGlbGlbMuLife->Fill(theCtau);            
 	hMcWrongGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
       } else if (theCat == 1) {
-        hMcWrongGlbTrkMuMass->Fill(aCand.mass());       
-	hMcWrongGlbTrkMuLife->Fill(aCand.userFloat("ppdlPV"));            
+        hMcWrongGlbTrkMuMass->Fill(theMass);       
+	hMcWrongGlbTrkMuLife->Fill(theCtau);            
 	hMcWrongGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
       } else if (theCat == 3) {
         hMcWrongCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
-	hMcWrongCalGlbMuMass->Fill(aCand.mass());           
+	hMcWrongCalGlbMuMass->Fill(theMass);           
 	hMcWrongCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
 	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
 	hMcWrongCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
@@ -711,7 +732,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
 	  hMcRightGlbMud0->Fill(iTrack->d0());
 	  hMcRightGlbMudz->Fill(iTrack->dz());
 	  hMcRightGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
-	} else if (thisMuon->isTrackerMuon()) {     // notice exclusivity!  
+	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
 	  if (genMu.isNonnull()) hMcRecoTrkMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
           hMcRightTrkMuPt->Fill(thisMuon->pt());
           hMcRightTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
@@ -736,7 +757,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
 	  hMcWrongGlbMud0->Fill(iTrack->d0());
 	  hMcWrongGlbMudz->Fill(iTrack->dz());
 	  hMcWrongGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
-	} else if (thisMuon->isTrackerMuon()) {     // notice exclusivity!  
+	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
           hMcWrongTrkMuPt->Fill(thisMuon->pt());
           hMcWrongTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
           hMcWrongTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
@@ -758,8 +779,55 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   }
 
   // Now the RooDataSet
-}
 
+  RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
+  varlist.add(*JpsictTrue);
+  varlist.add(*JpsiPtType);
+  varlist.add(*JpsiEtaType);
+
+  float tnpeff = 0.;
+  float tnpefferr = 0.;
+
+  if (_storeefficiency) {
+    // to be done
+  }
+
+  if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
+      theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
+      aCand.pt() > JpsiPtMin && aCand.pt() < JpsiPtMax && 
+      fabs(aCand.eta()) > JpsiEtaMin && fabs(aCand.eta()) < JpsiEtaMax) {
+	
+    passedCandidates++;
+    
+    JpsiPt->setVal(aCand.pt()); 
+    JpsiEta->setVal(aCand.eta()); 
+    JpsiMass->setVal(theMass);
+    Jpsict->setVal(theCtau);
+    // cout << "life = " << theCtau << " trueLife = " << trueLife << endl;
+    JpsictTrue->setVal(aCand.userFloat("ppdlTrue"));
+    JpsiType->setIndex(theCat,kTRUE);
+    matchType->setIndex((int)isMatched,kTRUE);
+    
+    if (_storeefficiency) {
+      // to be done
+	}
+    TNPeff->setVal(tnpeff);
+    TNPefferr->setVal(tnpefferr);
+    
+    JpsiPtType->setIndex(getJpsiVarType(aCand.pt(),_ptbinranges),kTRUE);
+    JpsiEtaType->setIndex(getJpsiVarType(fabs(aCand.eta()),_etabinranges),kTRUE);
+    
+    // Fill RooDataSet
+    RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
+    varlist_tmp.add(*JpsictTrue);
+    varlist_tmp.add(*JpsiPtType);
+    varlist_tmp.add(*JpsiEtaType);
+    
+    data->add(varlist_tmp);
+    
+  }
+}
+        
 pair< unsigned int, pat::CompositeCandidate > 
 JPsiAnalyzerPAT::theBestQQ() {
 
@@ -876,6 +944,16 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
 	  iTrack->d0() < 5.0 &&
           iTrack->dz() < 20.0 );
+}
+
+int 
+JPsiAnalyzerPAT::getJpsiVarType(const double jpsivar, vector<double> vectbin) {
+
+  for(unsigned int i=0;i<vectbin.size()-1;i++) {
+    if(jpsivar > vectbin[i] && jpsivar < vectbin[i+1]) return i+1;
+  }
+
+  return -999;
 }
 
 //define this as a plug-in

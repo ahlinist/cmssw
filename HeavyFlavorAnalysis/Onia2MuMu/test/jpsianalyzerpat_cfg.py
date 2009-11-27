@@ -9,11 +9,26 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:/hadoop/cms/store/group/tracker-pog/JPsiMuMu/TRK-JPsi_JPsiMuMu-SKIM_test4/b6694ead8530d72ae99d3d30b3d3cb8b/myOutputFile_16.root'
+        'file:SkimmingOnia2MuMuPAT_output.root'
     )
 )
 
-process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT'
+# process.options = cms.untracked.PSet(
+#    IgnoreCompletely = cms.untracked.vstring( "ProductNotFound" )
+# )
+
+process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
+
+    histFileName = cms.string("Histos.root"),		
+    dataSetName = cms.string("DataSet.root"),
+                              
+    pTBinRanges = cms.vdouble(3.0, 5.0, 6.0, 7.0, 8.0, 9.0, 11.0, 14.0, 18.0, 25.0, 35.0, 60.0),
+    etaBinRanges = cms.vdouble(0.0, 1.1, 2.5), 
+    onlyTheBest = cms.bool(True),		
+    applyCuts = cms.bool(True),			
+    storeEfficiency = cms.bool(False),	
+    useBeamSpot = cms.bool(False),				
+    TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
 )
 
 
