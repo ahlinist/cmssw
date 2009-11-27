@@ -2,8 +2,8 @@
   \File BeamRenderPlugin
   \Display Plugin for BeamSpot DQM Histograms
   \author 
-  \version $Revision:  $
-  \date $Date:  $
+  \version $Revision: 1.2 $
+  \date $Date: 2009/11/19 04:43:33 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -23,7 +23,8 @@ class BeamRenderPlugin : public DQMRenderPlugin {
 
 public:
   virtual bool applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
-    if (o.name.find( "BeamMonitor/" ) == std::string::npos)
+    if ((o.name.find( "BeamMonitor/" ) == std::string::npos) &&
+	(o.name.find( "BeamMonitor_PixelLess/" ) == std::string::npos))
       return false;
       
     if( o.name.find( "/EventInfo/" ) != std::string::npos )
