@@ -122,7 +122,10 @@ private:
       delete h1[i];
     }
     h1.clear();
-    TLegend *l =  new TLegend(0.01,.92,0.99,0.99);
+    static TLegend *l;
+    if(l)
+      delete l;
+    l = new TLegend(0.01,.92,0.99,0.99);
     l->SetFillColor(0);
     l->SetNColumns(h->GetNbinsY());
     TH1F * tmp = (h->GetXaxis()->GetXbins()->GetSize()==0) ?
