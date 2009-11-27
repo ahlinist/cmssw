@@ -152,7 +152,7 @@ DQMHistRebinner::DQMHistRebinner(const edm::ParameterSet& cfg)
   vParameterSet cfgPlots = cfg.getParameter<vParameterSet>("config");
   for ( vParameterSet::const_iterator cfgPlot = cfgPlots.begin();
 	cfgPlot != cfgPlots.end(); ++cfgPlot ) {
-    cfgEntryPlot_.push_back(cfgEntryPlot(*cfgPlot));
+    cfgEntriesPlots_.push_back(cfgEntryPlot(*cfgPlot));
   }
 
   if ( cfg.exists("combineBinsX") ) {
@@ -196,8 +196,8 @@ void DQMHistRebinner::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntryPlot_.begin(); 
-	plot != cfgEntryPlot_.end(); ++plot ) {
+  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntriesPlots_.begin(); 
+	plot != cfgEntriesPlots_.end(); ++plot ) {
     std::string originalHistogramName, originalHistogramDirectory;
     separateMonitorElementFromDirectoryName(plot->meName_original_, originalHistogramName, originalHistogramDirectory);
     MonitorElement* meOriginal = dqmStore.get(std::string(originalHistogramDirectory).append(dqmSeparator).append(originalHistogramName));
