@@ -403,10 +403,9 @@ patTauSelConfiguratorForWTauNuLooseIsolation = objSelConfigurator(
 selectLayer1TausForWTauNuLooseIsolation = patTauSelConfiguratorForWTauNuLooseIsolation.configure(namespace = locals())
 
 produceLayer1SelLeptons = cms.Sequence (
-    selectLayer1Electrons 
-   + produceLayer1SelElectrons + selectLayer1ElectronsLooseIsolation
-   + selectLayer1Muons + produceLayer1SelMuons + selectLayer1MuonsLooseIsolation
-   + selectLayer1Taus + produceLayer1SelTaus
+    selectLayer1Electrons + selectLayer1ElectronsLooseIsolation
+   + selectLayer1Muons + selectLayer1MuonsLooseIsolation
+   + selectLayer1Taus
    + selectLayer1ElectronsForElecTau + selectLayer1ElectronsForElecTauLooseIsolation
    + selectLayer1ElectronsForElecMu + selectLayer1ElectronsForElecMuLooseIsolation
    + selectLayer1TausForElecTau + selectLayer1TausForMuTau + selectLayer1TausForDiTau
