@@ -8,7 +8,7 @@
  *  the only requirement is that all bin-boundaries of the new histogram 
  *  match a bin-boundary (any one) of the old histogram
  *
- *  $Date: 2009/01/21 17:34:57 $
+ *  $Date: 2009/11/20 15:28:02 $
  *  $Revision: 1.1 $
  *  \author Christian Veelken, UC Davis
  */
@@ -38,7 +38,7 @@ class DQMHistRebinner : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
-  std::vector<cfgEntryPlot> cfgEntryPlot_;
+  std::vector<cfgEntryPlot> cfgEntriesPlots_;
 
   unsigned combineBinsX_;
   unsigned numBinsX_;
