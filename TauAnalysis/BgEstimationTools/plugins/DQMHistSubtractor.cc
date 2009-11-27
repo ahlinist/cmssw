@@ -1,7 +1,7 @@
 #include "TauAnalysis/BgEstimationTools/plugins/DQMHistSubtractor.h"
 
 #include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
-#include "TauAnalysis/BgEstimationTools/interface/histogramAuxFunctions.h"
+#include "TauAnalysis/DQMTools/interface/histogramAuxFunctions.h"
 
 // framework & common header files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
