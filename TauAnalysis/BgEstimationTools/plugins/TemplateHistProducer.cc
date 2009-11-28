@@ -229,9 +229,9 @@ void TemplateHistProducer::endJob()
 
     for ( std::vector<histEntryType>::iterator histEntry = histograms_.begin();
 	  histEntry != histograms_.end(); ++histEntry ) {
-      if ( histEntry->axisEntries_.size() == 1 ) {
+      if ( histEntry->me_->getTH1()->GetDimension() == 1 ) {
 	histEntry->me_->Fill(histEntry->axisEntries_[0].value_, eventWeight);
-      } else if ( histEntry->axisEntries_.size() == 2 ) {
+      } else if ( histEntry->me_->getTH1()->GetDimension() == 2 ) {
 	histEntry->me_->Fill(histEntry->axisEntries_[0].value_, histEntry->axisEntries_[1].value_, eventWeight);
       }
     }
