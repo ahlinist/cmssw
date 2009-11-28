@@ -107,6 +107,7 @@ BsToJpsiPhiAnalysis::BsToJpsiPhiAnalysis(const edm::ParameterSet& iConfig) : the
   triggerTag_ = iConfig.getParameter<edm::InputTag>("TriggerTag");
   muonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
   StoreDeDxInfo_ = iConfig.getParameter<bool>("StoreDeDxInfo");
+  saveDoubleMu3TriggeredOnly_ = iConfig.getParameter<bool>("saveDoubleMu3TriggeredOnly");
   JpsiMassWindowBeforeFit_ = iConfig.getParameter<double>("JpsiMassWindowBeforeFit");
 
   BsLowerMassCutBeforeFit_  = iConfig.getParameter<double>("BsLowerMassCutBeforeFit");
@@ -245,6 +246,12 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if (trigName=="HLT_DoubleMu3_JPsi")bsRootTree_->triggerbit_HLTdoubleMu3_JPsi_ = hltresults->accept(itrig);
   }
   
+  // continue only if it is a  triggered event
+  if(saveDoubleMu3TriggeredOnly_ == true)
+    if(bsRootTree_->triggerbit_HLTdoubleMu3_ != 1 ) return;
+
+  std::cout<<" is Triggered" << std::endl;
+
   // **************************
   // start loop over muons
   
@@ -1320,114 +1327,135 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genParticles){
 
+  int iNumberOfBdecays = 0;
 
+  // this is a list of all the PDG ids of B mesons
+  std::set<int> listOfBmesonIds;
+  listOfBmesonIds.insert(511 );   // Bd
+  listOfBmesonIds.insert(521 );   // B+
+  listOfBmesonIds.insert(10511 );    // B_0*0
+  listOfBmesonIds.insert(10521 );    // B_0*+
+  listOfBmesonIds.insert(513 );   // B*d
+  listOfBmesonIds.insert(523 );   // B*d+
+  listOfBmesonIds.insert(10513 );   // B1(L)0
+  listOfBmesonIds.insert(10523 );   // B1(L)+
+  listOfBmesonIds.insert(20513 );   // B1(H)0
+  listOfBmesonIds.insert(20523 );   // B1(H)+
+  listOfBmesonIds.insert(515 );    // B2*_0
+  listOfBmesonIds.insert(525 );    // B2*_+
+  listOfBmesonIds.insert(531 );   // Bs
+  listOfBmesonIds.insert(10531 );    // B_s0*_0
+  listOfBmesonIds.insert(533 );   // B*s
+  listOfBmesonIds.insert(10533 );   // Bs1(L)0
+  listOfBmesonIds.insert(20533 );   // Bs1(H)0
+  listOfBmesonIds.insert(535 );    // Bs2*_0
+  listOfBmesonIds.insert(541 );   // Bc+
+  listOfBmesonIds.insert(10541 );   // B*c0+
+  listOfBmesonIds.insert(543 );   // B*c+
+  listOfBmesonIds.insert(10543 );   // Bc1(L)+
+  listOfBmesonIds.insert(20543 );   // Bc1(H)+
+  listOfBmesonIds.insert(545 );    // Bc2*_0
+  
+  listOfBmesonIds.insert(551 );   // etab(1S)
+  listOfBmesonIds.insert(10551 );   // chib(1P)
+  listOfBmesonIds.insert(100551 );   // etab(2S)
+  listOfBmesonIds.insert(110551 );   // chib(2P)
+  listOfBmesonIds.insert(200551 );   // etab(3S)
+  listOfBmesonIds.insert(210551 );   // chib(3P)
+  listOfBmesonIds.insert(553 );   // upsilon(1S)
+  listOfBmesonIds.insert(10553 );   // hb(1P)
+  listOfBmesonIds.insert(20553 );   // chib1(1P)
+  listOfBmesonIds.insert(30553 );   // upsilon1(1D)
+  listOfBmesonIds.insert(100553 );   // upsilon(2S)
+  listOfBmesonIds.insert(110553 );   // hb(2P)
+  listOfBmesonIds.insert(120553 );   // chib1(2P)
+  listOfBmesonIds.insert(130553 );   // upsilon1(2D)
+  listOfBmesonIds.insert(200553 );   // upsilon(3S)
+  listOfBmesonIds.insert(210553 );   // hb(3P)
+  listOfBmesonIds.insert(220553 );   // chib1(3P)
+  listOfBmesonIds.insert(300553 );   // upsilon(4S)
+  listOfBmesonIds.insert(9000553 );   // upsilon(10860)
+  listOfBmesonIds.insert(9010553 );   // upsilon(11020)
+  listOfBmesonIds.insert(555 );   // chib2(1P)
+  listOfBmesonIds.insert(10555 );   // etab2(1D)
+  listOfBmesonIds.insert(20555 );   // upsilon2(1D)
+  listOfBmesonIds.insert(100555 );   // chib2(2P)
+  listOfBmesonIds.insert(110555 );   // etab2(2D)
+  listOfBmesonIds.insert(120555 );   // upsilon2(2D)
+  listOfBmesonIds.insert(200555 );   // chib2(3P)
+  listOfBmesonIds.insert(557 );   // upsilon3(1D)
+  listOfBmesonIds.insert(100557 );   // upsilon3(2D)
+  
+  listOfBmesonIds.insert(5122 );   // lambda_b0
+  listOfBmesonIds.insert(5112 );   // sigma_b-
+  listOfBmesonIds.insert(5212 );   // sigma_b0
+  listOfBmesonIds.insert(5222 );   // sigma_b+
+  listOfBmesonIds.insert(5114 );   // sigma*_b-
+  listOfBmesonIds.insert(5214 );   // sigma*_b0
+  listOfBmesonIds.insert(5224 );   // sigma*_b+
+  listOfBmesonIds.insert(5132 );   // Xi_b-
+  listOfBmesonIds.insert(5232 );   // Xi_b0
+  listOfBmesonIds.insert(5312 );   // Xi'_b-
+  listOfBmesonIds.insert(5322 );   // Xi'_b0
+  listOfBmesonIds.insert(5314 );   // Xi*_b-
+  listOfBmesonIds.insert(5324 );   // Xi*_b0
+  listOfBmesonIds.insert(5332 );   // Omega_b-
+  listOfBmesonIds.insert(5334 );   // Omega*_b-
+  listOfBmesonIds.insert(5142 );   // Xi_bc0
+  listOfBmesonIds.insert(5242 );   // Xi_bc+
+  listOfBmesonIds.insert(5412 );   // Xi'_bc0
+  listOfBmesonIds.insert(5422 );   // Xi'_bc+
+  listOfBmesonIds.insert(5414 );   // Xi*_bc0
+  listOfBmesonIds.insert(5424 );   // Xi*_bc+
+  listOfBmesonIds.insert(5342 );   // Omega_bc0
+  listOfBmesonIds.insert(5432 );   // Omega'_bc0
+  listOfBmesonIds.insert(5434 );   // Omega*_bc0
+  listOfBmesonIds.insert(5442 );   // Omega_bcc+
+  listOfBmesonIds.insert(5444 );   // Omega*_bcc+
+  listOfBmesonIds.insert(5512 );   // Xi_bb-
+  listOfBmesonIds.insert(5522 );   // Xi_bb0
+  listOfBmesonIds.insert(5514 );   // Xi*_bb-
+  listOfBmesonIds.insert(5524 );   // Xi*_bb0
+  listOfBmesonIds.insert(5532 );   // Omega_bb-
+  listOfBmesonIds.insert(5524 );   // Omega*_bb-
+  listOfBmesonIds.insert(5542 );   // Omega_bbc0
+  listOfBmesonIds.insert(5544 );   // Omega*_bbc0
+  listOfBmesonIds.insert(554 );   // Omega_bbb-
+  
+  // loop over all particles
   for( size_t i = 0; i < genParticles->size(); ++ i ) {
     const GenParticle & genBsCand = (*genParticles)[ i ];
     int MC_particleID=genBsCand.pdgId();
+    int absMC_particleID = abs(MC_particleID);
 
-    if (abs(MC_particleID) == 5 ||   // b quark
-        // bottom mesons
-        abs(MC_particleID) == 511 ||   // Bd
-        abs(MC_particleID) == 521 ||   // B+
-        abs(MC_particleID) == 10511 ||    // B_0*0
-        abs(MC_particleID) == 10521 ||    // B_0*+
-        abs(MC_particleID) == 513 ||   // B*d
-        abs(MC_particleID) == 523 ||   // B*d+
-        abs(MC_particleID) == 10513 ||   // B1(L)0
-        abs(MC_particleID) == 10523 ||   // B1(L)+
-        abs(MC_particleID) == 20513 ||   // B1(H)0
-        abs(MC_particleID) == 20523 ||   // B1(H)+
-        abs(MC_particleID) == 515 ||    // B2*_0
-        abs(MC_particleID) == 525 ||    // B2*_+
-        abs(MC_particleID) == 531 ||   // Bs
-        abs(MC_particleID) == 10531 ||    // B_s0*_0
-        abs(MC_particleID) == 533 ||   // B*s
-        abs(MC_particleID) == 10533 ||   // Bs1(L)0
-        abs(MC_particleID) == 20533 ||   // Bs1(H)0
-        abs(MC_particleID) == 535 ||    // Bs2*_0
-        abs(MC_particleID) == 541 ||   // Bc+
-        abs(MC_particleID) == 10541 ||   // B*c0+
-        abs(MC_particleID) == 543 ||   // B*c+
-        abs(MC_particleID) == 10543 ||   // Bc1(L)+
-        abs(MC_particleID) == 20543 ||   // Bc1(H)+
-        abs(MC_particleID) == 545 ||    // Bc2*_0
-        // bb mesons
-        abs(MC_particleID) == 551 ||   // etab(1S)
-        abs(MC_particleID) == 10551 ||   // chib(1P)
-        abs(MC_particleID) == 100551 ||   // etab(2S)
-        abs(MC_particleID) == 110551 ||   // chib(2P)
-        abs(MC_particleID) == 200551 ||   // etab(3S)
-        abs(MC_particleID) == 210551 ||   // chib(3P)
-        abs(MC_particleID) == 553 ||   // upsilon(1S)
-        abs(MC_particleID) == 10553 ||   // hb(1P)
-        abs(MC_particleID) == 20553 ||   // chib1(1P)
-        abs(MC_particleID) == 30553 ||   // upsilon1(1D)
-        abs(MC_particleID) == 100553 ||   // upsilon(2S)
-        abs(MC_particleID) == 110553 ||   // hb(2P)
-        abs(MC_particleID) == 120553 ||   // chib1(2P)
-        abs(MC_particleID) == 130553 ||   // upsilon1(2D)
-        abs(MC_particleID) == 200553 ||   // upsilon(3S)
-        abs(MC_particleID) == 210553 ||   // hb(3P)
-        abs(MC_particleID) == 220553 ||   // chib1(3P)
-        abs(MC_particleID) == 300553 ||   // upsilon(4S)
-        abs(MC_particleID) == 9000553 ||   // upsilon(10860)
-        abs(MC_particleID) == 9010553 ||   // upsilon(11020)
-        abs(MC_particleID) == 555 ||   // chib2(1P)
-        abs(MC_particleID) == 10555 ||   // etab2(1D)
-        abs(MC_particleID) == 20555 ||   // upsilon2(1D)
-        abs(MC_particleID) == 100555 ||   // chib2(2P)
-        abs(MC_particleID) == 110555 ||   // etab2(2D)
-        abs(MC_particleID) == 120555 ||   // upsilon2(2D)
-        abs(MC_particleID) == 200555 ||   // chib2(3P)
-        abs(MC_particleID) == 557 ||   // upsilon3(1D)
-        abs(MC_particleID) == 100557 ||   // upsilon3(2D)
-        // bottom barions
-        abs(MC_particleID) == 5122 ||   // lambda_b0
-        abs(MC_particleID) == 5112 ||   // sigma_b-
-        abs(MC_particleID) == 5212 ||   // sigma_b0
-        abs(MC_particleID) == 5222 ||   // sigma_b+
-        abs(MC_particleID) == 5114 ||   // sigma*_b-
-        abs(MC_particleID) == 5214 ||   // sigma*_b0
-        abs(MC_particleID) == 5224 ||   // sigma*_b+
-        abs(MC_particleID) == 5132 ||   // Xi_b-
-        abs(MC_particleID) == 5232 ||   // Xi_b0
-        abs(MC_particleID) == 5312 ||   // Xi'_b-
-        abs(MC_particleID) == 5322 ||   // Xi'_b0
-        abs(MC_particleID) == 5314 ||   // Xi*_b-
-        abs(MC_particleID) == 5324 ||   // Xi*_b0
-        abs(MC_particleID) == 5332 ||   // Omega_b-
-        abs(MC_particleID) == 5334 ||   // Omega*_b-
-        abs(MC_particleID) == 5142 ||   // Xi_bc0
-        abs(MC_particleID) == 5242 ||   // Xi_bc+
-        abs(MC_particleID) == 5412 ||   // Xi'_bc0
-        abs(MC_particleID) == 5422 ||   // Xi'_bc+
-        abs(MC_particleID) == 5414 ||   // Xi*_bc0
-        abs(MC_particleID) == 5424 ||   // Xi*_bc+
-        abs(MC_particleID) == 5342 ||   // Omega_bc0
-        abs(MC_particleID) == 5432 ||   // Omega'_bc0
-        abs(MC_particleID) == 5434 ||   // Omega*_bc0
-        abs(MC_particleID) == 5442 ||   // Omega_bcc+
-        abs(MC_particleID) == 5444 ||   // Omega*_bcc+
-        abs(MC_particleID) == 5512 ||   // Xi_bb-
-        abs(MC_particleID) == 5522 ||   // Xi_bb0
-        abs(MC_particleID) == 5514 ||   // Xi*_bb-
-        abs(MC_particleID) == 5524 ||   // Xi*_bb0
-        abs(MC_particleID) == 5532 ||   // Omega_bb-
-        abs(MC_particleID) == 5524 ||   // Omega*_bb-
-        abs(MC_particleID) == 5542 ||   // Omega_bbc0
-        abs(MC_particleID) == 5544 ||   // Omega*_bbc0
-        abs(MC_particleID) == 5554 )   // Omega_bbb-
-      {
-        bsRootTree_->BmesonsId_ = MC_particleID;
-	
-        int numBsDaughters = genBsCand.numberOfDaughters();
-        bsRootTree_->GenNumberOfDaughters_ = numBsDaughters;
+    // if this particle id is in the list (i.e. if it is a B meson)
+    if( listOfBmesonIds.find( absMC_particleID ) != listOfBmesonIds.end()){
+      
+      // check if this particle has no daughter which is a B meson (cascade decays)
+      // loop over daughters
+      bool hasBDaughter=0;
+      int numBsDaughters = genBsCand.numberOfDaughters();      
+      for(int idau=0; idau < numBsDaughters; idau++) 
+	if( listOfBmesonIds.find( abs(genBsCand.daughter(idau)->pdgId())) != listOfBmesonIds.end() ) hasBDaughter=1;
+
+      // if this is a real B decay (no B mesons as daughters
+      if(hasBDaughter == 0){
+	//count the number of B decays, should be equal two, for bbbar events
+	iNumberOfBdecays++;
+	int arrayIndex = iNumberOfBdecays - 1; // array index starts at zero
+
+	// protect array bounds
+	if(arrayIndex>=9) break;
+
+        bsRootTree_->BmesonsId_[arrayIndex] = MC_particleID;
+		
+        bsRootTree_->GenNumberOfDaughters_[arrayIndex] = numBsDaughters;
 	// generator variables
-	bsRootTree_->BMMC_ = genBsCand.mass();
-	bsRootTree_->BPtMC_ = genBsCand.pt();
-	bsRootTree_->BPzMC_ = genBsCand.pz();
-	bsRootTree_->BEtaMC_ = genBsCand.eta();
-	bsRootTree_->BPhiMC_ = genBsCand.phi();
+	bsRootTree_->BMMC_[arrayIndex] = genBsCand.mass();
+	bsRootTree_->BPtMC_[arrayIndex] = genBsCand.pt();
+	bsRootTree_->BPzMC_[arrayIndex] = genBsCand.pz();
+	bsRootTree_->BEtaMC_[arrayIndex] = genBsCand.eta();
+	bsRootTree_->BPhiMC_[arrayIndex] = genBsCand.phi();
 	//generated primary vertex
 	if (abs(MC_particleID)== 531){
 	  bsRootTree_->genBsVtx_x_= genBsCand.mother(0)->vx();
@@ -1436,21 +1464,47 @@ void BsToJpsiPhiAnalysis::fillMCInfo( edm::Handle<GenParticleCollection> & genPa
 	}
 	
         for(int j = 0; j < numBsDaughters; ++ j) {
+	  if(j>=14) break; // protect array bounds
 	  const Candidate * Bsdau = genBsCand.daughter( j );
-	  bsRootTree_->BDauIdMC_[j] = Bsdau->pdgId();
+	  bsRootTree_->BDauIdMC_[arrayIndex][j] = Bsdau->pdgId();
 	  // generator variables
-	  bsRootTree_->BDauMMC_[j] = Bsdau->mass();
-	  bsRootTree_->BDauPtMC_[j] = Bsdau->pt();
-	  bsRootTree_->BDauPzMC_[j] = Bsdau->pz();
-	  bsRootTree_->BDauEtaMC_[j] = Bsdau->eta();
-	  bsRootTree_->BDauPhiMC_[j] = Bsdau->phi();
+	  bsRootTree_->BDauMMC_[arrayIndex][j] = Bsdau->mass();
+	  bsRootTree_->BDauPtMC_[arrayIndex][j] = Bsdau->pt();
+	  bsRootTree_->BDauPzMC_[arrayIndex][j] = Bsdau->pz();
+	  bsRootTree_->BDauEtaMC_[arrayIndex][j] = Bsdau->eta();
+	  bsRootTree_->BDauPhiMC_[arrayIndex][j] = Bsdau->phi();
 	  //Generated secondary vertex.
-	  if (Bsdau->pdgId()== 333){
+	  if ( abs(Bsdau->pdgId())== 333){
 	    bsRootTree_->genBsSVtx_x_= Bsdau->vx();
 	    bsRootTree_->genBsSVtx_y_= Bsdau->vy();
 	    bsRootTree_->genBsSVtx_z_= Bsdau->vz();
 	  }
+
+	  // daughter of daughter (muons, kaons in case of jpsi phi)
+	  int numBsDaughtersDaughters = Bsdau->numberOfDaughters();
+	  bsRootTree_->GenNumberOfDaughtersDaughters_[arrayIndex][j] = numBsDaughtersDaughters;
+	  for(int k=0; k< numBsDaughtersDaughters; k++){
+	    if(k>=9) break; //protect array bounds
+	    const Candidate * Bsdaudau = Bsdau->daughter(k);
+
+	    bsRootTree_->BDauDauIdMC_[arrayIndex][j][k] = Bsdaudau->pdgId();
+	    // generator variables
+	    bsRootTree_->BDauDauMMC_[arrayIndex][j][k] = Bsdaudau->mass();
+	    bsRootTree_->BDauDauPtMC_[arrayIndex][j][k] = Bsdaudau->pt();
+	    bsRootTree_->BDauDauPzMC_[arrayIndex][j][k] = Bsdaudau->pz();
+	    bsRootTree_->BDauDauEtaMC_[arrayIndex][j][k] = Bsdaudau->eta();
+	    bsRootTree_->BDauDauPhiMC_[arrayIndex][j][k] = Bsdaudau->phi();
+
+	  }// loop Bs daughters daughters
 	} // loop Bs daughters
       }
+    }
+  
+    // check if there is a Jpsi (prompt or non-prompt) in the event
+    if(absMC_particleID == 443 ) bsRootTree_->isGenJpsiEvent_ = 1;
+    
   }
+
+  bsRootTree_->GenNumberOfBdecays_ = iNumberOfBdecays;
+
 }
