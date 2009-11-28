@@ -8,8 +8,8 @@
  *  the only requirement is that all bin-boundaries of the new histogram 
  *  match a bin-boundary (any one) of the old histogram
  *
- *  $Date: 2009/11/20 15:28:02 $
- *  $Revision: 1.1 $
+ *  $Date: 2009/11/27 18:32:52 $
+ *  $Revision: 1.2 $
  *  \author Christian Veelken, UC Davis
  */
 
@@ -24,11 +24,19 @@
 
 class DQMHistRebinner : public edm::EDAnalyzer
 {
-  struct cfgEntryPlot
+  struct plotEntryType
   {
-    explicit cfgEntryPlot(const edm::ParameterSet&);
+    explicit plotEntryType(const edm::ParameterSet&);
     std::string meName_original_;
     std::string meName_rebinned_;
+  };
+
+  struct axisEntryType
+  {
+    explicit axisEntryType(const edm::ParameterSet&);
+    unsigned combineBins_;
+    unsigned numBins_;
+    std::vector<double> binEdges_;
   };
 
  public:
@@ -38,13 +46,8 @@ class DQMHistRebinner : public edm::EDAnalyzer
   virtual void endJob();  
 
 private:
-  std::vector<cfgEntryPlot> cfgEntriesPlots_;
-
-  unsigned combineBinsX_;
-  unsigned numBinsX_;
-  double xMin_;
-  double xMax_;
-  std::vector<double> xBins_;
+  std::vector<plotEntryType> plotEntries_;
+  std::vector<axisEntryType> axisEntries_;
 };
 
 #endif
