@@ -165,7 +165,6 @@ class TauHistManager : public HistManagerBase
 
 //--- parametrized values for tau id. efficiencies and fake-rates
 //    stored in the pat::Tau
-
   std::vector<MonitorElement*> hTauIdEfficiencies_;
   std::vector<MonitorElement*> hTauFakeRates_;
 };
