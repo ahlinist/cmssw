@@ -11,7 +11,7 @@
  *
  * \version $Revision: 1.1 $
  *
- * $Id: KineEventReweightExtractor.h,v 1.1 2009/06/11 07:23:29 veelken Exp $
+ * $Id: KineEventReweightExtractor.h,v 1.1 2009/10/14 14:02:38 veelken Exp $
  *
  */
 
@@ -49,7 +49,7 @@ class KineEventReweightExtractor : public ObjValExtractorBase
 
 //--- plugin to extract for each event
 //    value of kinematic variable used for reweighting 
-  ObjValExtractorBase* kineVarExtractor_;
+  std::vector<ObjValExtractorBase*> kineVarExtractors_;
 
   int error_;
 };
