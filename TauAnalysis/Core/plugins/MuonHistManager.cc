@@ -134,32 +134,32 @@ void MuonHistManager::bookHistogramsImp()
   hMuonTrackIPxy_ = book1D("MuonTrackIPxy", "MuonTrackIPxy", 100, -0.100, 0.100);
   hMuonTrackIPz_ = book1D("MuonTrackIPz", "MuonTrackIPz", 100, -1.0, 1.0);
   
-  hMuonEcalDeposits_ = book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 20.);
-  hMuonHcalDeposits_ = book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 20.);
-  hMuonCaloDeposits_ = book1D("MuonCaloDeposits", "MuonCaloDeposits", 100, 0., 20.);
+  hMuonEcalDeposits_ = book1D("MuonEcalDeposits", "MuonEcalDeposits", 100, 0., 10.);
+  hMuonHcalDeposits_ = book1D("MuonHcalDeposits", "MuonHcalDeposits", 100, 0., 10.);
+  hMuonCaloDeposits_ = book1D("MuonCaloDeposits", "MuonCaloDeposits", 100, 0., 10.);
   hMuonCaloCompatibility_ = book1D("MuonCaloCompatibility", "MuonCaloCompatibility", 102, -0.01, 1.01);
   
   hMuonNumberOfChambers_ = book1D("MuonNumberOfChambers", "MuonNumberOfChambers", 25, -0.5, 24.5);
   hMuonSegmentCompatibility_ = book1D("MuonSegmentCompatibility", "MuonSegmentCompatibility", 102, -0.01, 1.01);
   
-  hMuonTrkIsoPt_ = book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 20.);    
+  hMuonTrkIsoPt_ = book1D("MuonTrkIsoPt", "MuonTrkIsoPt", 100, 0., 10.);    
   hMuonTrkIsoPtVsMuonPt_ = book2D("MuonTrkIsoPtVsMuonPt", "MuonTrkIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonEcalIsoPt_ = book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 20.);
+  hMuonEcalIsoPt_ = book1D("MuonEcalIsoPt", "MuonEcalIsoPt", 100, 0., 10.);
   hMuonEcalIsoPtVsMuonPt_ = book2D("MuonEcalIsoPtVsMuonPt", "MuonEcalIsoPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonHcalIsoPt_ = book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 20.);
-  hMuonIsoSumPt_ = book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 20.);
+  hMuonHcalIsoPt_ = book1D("MuonHcalIsoPt", "MuonHcalIsoPt", 100, 0., 10.);
+  hMuonIsoSumPt_ = book1D("MuonIsoSumPt", "MuonIsoSumPt", 100, 0., 10.);
   hMuonIsoSumPtVsMuonPt_ = book2D("MuonIsoSumPtVsMuonPt", "MuonIsoSumPtVsMuonPt", 20, 0., 100., 20, 0., 10.); 
-  hMuonTrkIsoPtRel_ = book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 200, 0., 2.);    
-  hMuonEcalIsoPtRel_ = book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 200, 0., 2.);
-  hMuonHcalIsoPtRel_ = book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 200, 0., 2.);
-  hMuonIsoSumPtRel_ = book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 200, 0., 2.);
+  hMuonTrkIsoPtRel_ = book1D("MuonTrkIsoPtRel", "MuonTrkIsoPtRel", 100, 0., 1.);    
+  hMuonEcalIsoPtRel_ = book1D("MuonEcalIsoPtRel", "MuonEcalIsoPtRel", 100, 0., 1.);
+  hMuonHcalIsoPtRel_ = book1D("MuonHcalIsoPtRel", "MuonHcalIsoPtRel", 100, 0., 1.);
+  hMuonIsoSumPtRel_ = book1D("MuonIsoSumPtRel", "MuonIsoSumPtRel", 100, 0., 1.);
 
   hMuonDeltaRnearestJet_ = book1D("MuonDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
 
-  hMuonParticleFlowIsoPt_ = book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 20.);    
-  hMuonPFChargedHadronIsoPt_ = book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 20.);   
-  hMuonPFNeutralHadronIsoPt_ = book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 20.);   
-  hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 20.);  
+  hMuonParticleFlowIsoPt_ = book1D("MuonParticleFlowIsoPt", "MuonParticleFlowIsoPt", 100, 0., 10.);    
+  hMuonPFChargedHadronIsoPt_ = book1D("MuonPFChargedHadronIsoPt", "MuonPFChargedHadronIsoPt", 100, 0., 10.);   
+  hMuonPFNeutralHadronIsoPt_ = book1D("MuonPFNeutralHadronIsoPt", "MuonPFNeutralHadronIsoPt", 100, 0., 10.);   
+  hMuonPFGammaIsoPt_ = book1D("MuonPFGammaIsoPt", "MuonPFGammaIsoPt", 100, 0., 10.);  
   
 //--- book "control" histograms to check agreement between muon isolation variables
 //    computed by PAT-level IsoDeposits based on particle flow 
@@ -264,21 +264,16 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
       }
     }
 
-    const reco::Muon* recoMuon = dynamic_cast<const reco::Muon*>(patMuon->originalObject());
-    if ( recoMuon != NULL ) {
-      if ( recoMuon->isEnergyValid() ) {
-	hMuonEcalDeposits_->Fill(recoMuon->calEnergy().em, weight);
-	hMuonHcalDeposits_->Fill(recoMuon->calEnergy().had + recoMuon->calEnergy().ho, weight);
-	hMuonCaloDeposits_->Fill(recoMuon->calEnergy().em + recoMuon->calEnergy().had + recoMuon->calEnergy().ho, weight);
-      }
-      if ( recoMuon->isCaloCompatibilityValid() ) hMuonCaloCompatibility_->Fill(recoMuon->caloCompatibility(), weight);
-      
-      hMuonNumberOfChambers_->Fill(recoMuon->numberOfChambers(), weight);
-      double segmentCompatibility = muon::segmentCompatibility(*recoMuon);
-      hMuonSegmentCompatibility_->Fill(segmentCompatibility, weight);
-    } else {
-      edm::LogError("analyze") << " Failed to access reco::Muon linked to pat::Muon object --> some histograms will NOT be filled !!";
+    if ( patMuon->isEnergyValid() ) {
+      hMuonEcalDeposits_->Fill(patMuon->calEnergy().em, weight);
+      hMuonHcalDeposits_->Fill(patMuon->calEnergy().had + patMuon->calEnergy().ho, weight);
+      hMuonCaloDeposits_->Fill(patMuon->calEnergy().em + patMuon->calEnergy().had + patMuon->calEnergy().ho, weight);
     }
+    if ( patMuon->isCaloCompatibilityValid() ) hMuonCaloCompatibility_->Fill(patMuon->caloCompatibility(), weight);
+      
+    hMuonNumberOfChambers_->Fill(patMuon->numberOfChambers(), weight);
+    double segmentCompatibility = muon::segmentCompatibility(*patMuon);
+    hMuonSegmentCompatibility_->Fill(segmentCompatibility, weight);
 
     fillMuonIsoHistograms(*patMuon, weight);
     hMuonDeltaRnearestJet_->Fill(getDeltaRnearestJet(patMuon->p4(), patJets), weight);
