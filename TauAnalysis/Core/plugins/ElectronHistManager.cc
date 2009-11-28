@@ -151,28 +151,28 @@ void ElectronHistManager::bookHistogramsImp()
   hElectronDeltaEtaSuperclToExtrapolTrack_ = book1D("ElectronDeltaEtaSuperclToExtrapolTrack", "Electron #Delta#eta_{in}", 102, -0.001, 0.101);
   hElectronBremsFraction_ = book1D("ElectronBremsFraction", "Electron f_{Brems}", 80, -2., +2.);
   
-  hElectronTrkIsoPt_ = book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 20.);    
+  hElectronTrkIsoPt_ = book1D("ElectronTrkIsoPt", "Electron Track Isolation P_{T}", 100, 0., 10.);    
   hElectronTrkIsoPtVsElectronPt_ = book2D("ElectronTrkIsoPtVsElectronPt", "Electron Track Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);    
-  hElectronEcalIsoPt_ = book1D("ElectronEcalIsoPt", "Electron ECAL Isolation P_{T}", 100, 0., 20.);
-  hElectronEcalIsoPtBarrel_ = book1D("ElectronEcalIsoPtBarrel", "Electron (Barrel) ECAL Isolation P_{T}", 100, 0., 20.);
-  hElectronEcalIsoPtEndcap_ = book1D("ElectronEcalIsoPtEndcap", "Electron (Endcap) ECAL Isolation P_{T}", 100, 0., 20.);
+  hElectronEcalIsoPt_ = book1D("ElectronEcalIsoPt", "Electron ECAL Isolation P_{T}", 100, 0., 10.);
+  hElectronEcalIsoPtBarrel_ = book1D("ElectronEcalIsoPtBarrel", "Electron (Barrel) ECAL Isolation P_{T}", 100, 0., 10.);
+  hElectronEcalIsoPtEndcap_ = book1D("ElectronEcalIsoPtEndcap", "Electron (Endcap) ECAL Isolation P_{T}", 100, 0., 10.);
   hElectronEcalIsoPtVsElectronPt_ = book2D("ElectronTrkIsoPtVsElectronPt", "Electron ECAL Isolation P_{T} vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
-  hElectronHcalIsoPt_ = book1D("ElectronHcalIsoPt", "Electron HCAL Isolation P_{T}", 100, 0., 20.);
-  hElectronIsoSumPt_ = book1D("ElectronIsoSumPt", "Electron Isolation Sum(P_{T})", 100, 0., 20.);
+  hElectronHcalIsoPt_ = book1D("ElectronHcalIsoPt", "Electron HCAL Isolation P_{T}", 100, 0., 10.);
+  hElectronIsoSumPt_ = book1D("ElectronIsoSumPt", "Electron Isolation Sum(P_{T})", 100, 0., 10.);
   hElectronIsoSumPtVsElectronPt_ = book2D("hElectronIsoSumPtVsElectronPt", "Electron Isolation Sum(P_{T}) vs Electron P_{T}", 20, 0., 100., 20, 0., 10.);   
-  hElectronTrkIsoPtRel_ = book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 200, 0., 2.);    
-  hElectronEcalIsoPtRel_ = book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 200, 0., 2.);
-  hElectronEcalIsoPtBarrelRel_ = book1D("ElectronEcalIsoPtBarrelRel", "Electron (Barrel) #frac{P_{T ECAL isolation}}{P_{T track}}", 200, 0., 2.);
-  hElectronEcalIsoPtEndcapRel_ = book1D("ElectronEcalIsoPtEndcapRel", "Electron (Endcap) #frac{P_{T ECAL isolation}}{P_{T track}}", 200, 0., 2.);
-  hElectronHcalIsoPtRel_ = book1D("ElectronHcalIsoPtRel", "Electron #frac{P_{T HCAL isolation}}{P_{T track}}", 200, 0., 2.);
-  hElectronIsoSumPtRel_ = book1D("ElectronIsoSumPtRel", "Electron #frac{#sum P_{T isolation}}{P_{T track}}", 200, 0., 2.);
+  hElectronTrkIsoPtRel_ = book1D("ElectronTrkIsoPtRel", "ElectronTrkIsoPtRel", 100, 0., 2.);    
+  hElectronEcalIsoPtRel_ = book1D("ElectronEcalIsoPtRel", "ElectronEcalIsoPtRel", 100, 0., 2.);
+  hElectronEcalIsoPtBarrelRel_ = book1D("ElectronEcalIsoPtBarrelRel", "Electron (Barrel) #frac{P_{T ECAL isolation}}{P_{T track}}", 100, 0., 1.);
+  hElectronEcalIsoPtEndcapRel_ = book1D("ElectronEcalIsoPtEndcapRel", "Electron (Endcap) #frac{P_{T ECAL isolation}}{P_{T track}}", 100, 0., 1.);
+  hElectronHcalIsoPtRel_ = book1D("ElectronHcalIsoPtRel", "Electron #frac{P_{T HCAL isolation}}{P_{T track}}", 100, 0., 1.);
+  hElectronIsoSumPtRel_ = book1D("ElectronIsoSumPtRel", "Electron #frac{#sum P_{T isolation}}{P_{T track}}", 100, 0., 1.);
   
   hElectronDeltaRnearestJet_ = book1D("ElectronDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
 
-  hElectronParticleFlowIsoPt_ = book1D("ElectronParticleFlowIsoPt", "Electron Particle Flow Isolation P_{T}", 100, 0., 20.);    
-  hElectronPFChargedHadronIsoPt_ = book1D("ElectronPFChargedHadronIsoPt", "Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 20.);   
-  hElectronPFNeutralHadronIsoPt_ = book1D("ElectronPFNeutralHadronIsoPt", "Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 20.);   
-  hElectronPFGammaIsoPt_ = book1D("ElectronPFGammaIsoPt", "Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 20.);  
+  hElectronParticleFlowIsoPt_ = book1D("ElectronParticleFlowIsoPt", "Electron Particle Flow Isolation P_{T}", 100, 0., 10.);    
+  hElectronPFChargedHadronIsoPt_ = book1D("ElectronPFChargedHadronIsoPt", "Electron Particle Flow (Charged Hadrons) Isolation P_{T}", 100, 0., 10.);   
+  hElectronPFNeutralHadronIsoPt_ = book1D("ElectronPFNeutralHadronIsoPt", "Electron Particle Flow (Neutral Hadrons) Isolation P_{T}", 100, 0., 10.);   
+  hElectronPFGammaIsoPt_ = book1D("ElectronPFGammaIsoPt", "Electron Particle Flow (Photons) Isolation P_{T}", 100, 0., 10.);  
   
 //--- book "control" histograms to check agreement between electron isolation variables
 //    computed by PAT-level IsoDeposits based on particle flow 
