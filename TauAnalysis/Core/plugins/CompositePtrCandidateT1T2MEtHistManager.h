@@ -40,6 +40,15 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   bool requireGenMatch_;
 
+  double maxDPhi12collinearApprox_;
+  bool makeCollinearApproxMassDepHistograms_;
+
+  double collinearApproxMassDPhi12Incr_;
+  unsigned numCollinearApproxMassDiTauPtBins_;
+  double collinearApproxMassDiTauPtIncr_;
+  unsigned numCollinearApproxMassMEtPtBins_;
+  double collinearApproxMassMEtPtIncr_;
+
 //--- "helper" class for accessing weight values
 //    associated to tau decay products
 //    (efficiency/fake-rate with which the tau-jet passes the tau id. criteria)
@@ -58,6 +67,9 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hDiTauCandidateCharge_;
   MonitorElement* hDiTauCandidateMass_;
 
+  MonitorElement* hLeg1PtVsLeg2Pt_;
+  MonitorElement* hLeg1EtaVsLeg2Eta_;
+
   MonitorElement* hDiTauCandidateWeightPosUnweighted_;
   MonitorElement* hDiTauCandidateWeightPosWeighted_;
   MonitorElement* hDiTauCandidateWeightNegUnweighted_;
@@ -69,6 +81,10 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
   MonitorElement* hVisPhi_;
   MonitorElement* hVisMass_;
   MonitorElement* hVisMassZllCombinedHypothesis_;
+
+  MonitorElement* hCollinearApproxEffDPhi12dep_;
+  MonitorElement* hCollinearApproxEffDiTauPtDep_;
+  MonitorElement* hCollinearApproxEffMEtDep_;
 
   MonitorElement* hCollinearApproxEta_;
   MonitorElement* hCollinearApproxMass_;
@@ -97,6 +113,13 @@ class CompositePtrCandidateT1T2MEtHistManager : public HistManagerBase
 
   MonitorElement* hPzetaCorr_;
   MonitorElement* hPzetaDiff_;
+
+//--- distributions of invariant mass of the two tau leptons
+//    reconstructed via collinear approximation
+//    for different acoplanarity angles/Pt values of the visible decay products
+  std::vector<MonitorElement*> hCollinearApproxMassDPhi12dep_;
+  std::vector<MonitorElement*> hCollinearApproxMassDiTauPtDep_;
+  std::vector<MonitorElement*> hCollinearApproxMassMEtPtDep_;
 };
 
 #endif  
