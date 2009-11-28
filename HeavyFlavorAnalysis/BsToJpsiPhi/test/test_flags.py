@@ -40,7 +40,7 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
                                           StoreDeDxInfo = cms.bool( False ),  #needs to be false on AODSIM, can be true on RECO
-                                          
+                                          saveDoubleMu3TriggeredOnly = cms.bool( False ),
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
                                           JpsiPtCut      = cms.double(3),
