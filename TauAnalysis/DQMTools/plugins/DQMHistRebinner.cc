@@ -21,61 +21,26 @@ typedef std::vector<double> vdouble;
 
 const double epsilonBinMatching = 1.e-2;
 
-void getBinning(const TH1* histoOriginal, unsigned combineBinsX, unsigned numBinsX, vdouble& xBins, double xMin, double xMax)
-{
-  if ( combineBinsX != 0 ) {
-    int numBins_original = histoOriginal->GetNbinsX();
-
-    if ( (numBins_original % combineBinsX) != 0 ) {
-      edm::LogError("DQMHistEffProducer") << " Histogram = " << histoOriginal->GetName() << " has " << numBins_original << " Bins,"
-					  << " cannot combined " << combineBinsX << " into 1 !!";
-      return;
-    }
-
-    const TAxis* xAxis = histoOriginal->GetXaxis();
-
-    int numBins_rebinned = (numBins_original / combineBinsX);
-
-    for ( int iBin = 0; iBin < numBins_rebinned; ++iBin ) {
-      xBins[iBin] = xAxis->GetBinLowEdge(iBin*combineBinsX + 1);
-    }
-    
-    xBins[numBins_rebinned] = xAxis->GetBinUpEdge(numBins_rebinned*combineBinsX);
-  } else if ( xBins.size() == 0 ) {
-    xBins.resize(numBinsX + 1);
-    
-    double binWidthX = (xMax - xMin)/numBinsX;
-    
-    for ( unsigned iBin = 0; iBin < numBinsX; ++iBin ) {
-      xBins[iBin] = (xMin + iBin*binWidthX);
-    }
-    
-    xBins[numBinsX] = xMax;
-  }
-}
-
-bool checkBinning(const TH1* histoOriginal, unsigned numBins_rebinned, const vdouble& xBins_rebinned)
+bool checkBinning(const TAxis* axis_original, unsigned numBins_rebinned, const vdouble& binEdges_rebinned)
 {
   bool isBinningCompatible = true;
-
-  const TAxis* xAxis_original = histoOriginal->GetXaxis();
 
   for ( unsigned iBin_rebinned = 0; iBin_rebinned <= numBins_rebinned; ++iBin_rebinned ) {
 
     bool bin_isMatched = false;
     
-    int numBins_original = histoOriginal->GetNbinsX();
+    int numBins_original = axis_original->GetNbins();
     for ( int iBin_original = 1; iBin_original <= numBins_original; ++iBin_original ) {
-      double binEdgeLow = xAxis_original->GetBinLowEdge(iBin_original);
-      double binEdgeUp = xAxis_original->GetBinUpEdge(iBin_original);
+      double binEdgeLow = axis_original->GetBinLowEdge(iBin_original);
+      double binEdgeUp = axis_original->GetBinUpEdge(iBin_original);
 
-      if ( TMath::Abs(binEdgeLow - xBins_rebinned[iBin_rebinned]) < epsilonBinMatching ) bin_isMatched = true;
-      if ( TMath::Abs(binEdgeUp  - xBins_rebinned[iBin_rebinned]) < epsilonBinMatching ) bin_isMatched = true;
+      if ( TMath::Abs(binEdgeLow - binEdges_rebinned[iBin_rebinned]) < epsilonBinMatching ) bin_isMatched = true;
+      if ( TMath::Abs(binEdgeUp  - binEdges_rebinned[iBin_rebinned]) < epsilonBinMatching ) bin_isMatched = true;
     }
 
     if ( !bin_isMatched ) {
-      edm::LogError("DQMHistEffProducer") << " Failed to match Bin-edge at x = " << xBins_rebinned[iBin_rebinned]
-					  << " with Histogram = " << histoOriginal->GetName() << " !!";
+      edm::LogError("DQMHistEffProducer") << " Failed to match Bin-edge at position = " << binEdges_rebinned[iBin_rebinned]
+					  << " with Axis = " << axis_original->GetName() << " !!";
       isBinningCompatible = false;
     }
   }
@@ -83,58 +48,151 @@ bool checkBinning(const TH1* histoOriginal, unsigned numBins_rebinned, const vdo
   return isBinningCompatible;
 }
 
-TH1F* getRebinnedHistogram(const TH1* histoOriginal, unsigned numBins_rebinned, const vdouble& xBins_rebinned)
+float* getBinning(const TAxis* axis_original, unsigned combineBins, unsigned numBins, const vdouble& binEdges)
+{
+  float* binEdges_float = new float[numBins + 1];
+
+  if ( combineBins > 0 ) {
+    int numBins_original = axis_original->GetNbins();
+
+    if ( (numBins_original % combineBins) != 0 ) {
+      edm::LogError("DQMHistEffProducer") << " Axis = " << axis_original->GetName() << " has " << numBins_original << " Bins,"
+					  << " cannot combined " << combineBins << " into 1 !!";
+      return binEdges_float;
+    }
+
+    int numBins_rebinned = (numBins_original / combineBins);
+
+    for ( int iBin = 0; iBin < numBins_rebinned; ++iBin ) {
+      binEdges_float[iBin] = axis_original->GetBinLowEdge(iBin*combineBins + 1);
+    }
+    
+    binEdges_float[numBins_rebinned] = axis_original->GetBinUpEdge(numBins_rebinned*combineBins);
+  } else {
+    for ( unsigned iBin = 0; iBin <= numBins; ++iBin ) {
+      binEdges_float[iBin] = binEdges[iBin];
+    }
+  }
+
+  return binEdges_float;
+}
+
+TH1F* getRebinnedHistogram1d(const TH1* histoOriginal, 
+			     unsigned combineBins, unsigned numBins_rebinned, const vdouble& binEdges_rebinned)
 {
   std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("rebinned");
-  float* xBins_float = new float[numBins_rebinned];
-  for ( unsigned iBin = 0; iBin <= numBins_rebinned; ++iBin ) {
-    xBins_float[iBin] = xBins_rebinned[iBin];
-  }
-  TH1F* histoRebinned = new TH1F(histoRebinnedName.data(), histoOriginal->GetTitle(), numBins_rebinned, xBins_float);
+  float* binEdges_float = getBinning(histoOriginal->GetXaxis(), combineBins, numBins_rebinned, binEdges_rebinned);
+  TH1F* histoRebinned = new TH1F(histoRebinnedName.data(), histoOriginal->GetTitle(), numBins_rebinned, binEdges_float);
   histoRebinned->Sumw2();
-  delete xBins_float;
+  delete binEdges_float;
 
-  double binContentSum = 0.;
-  double binError2Sum = 0.;
+  TAxis* axis_original = histoOriginal->GetXaxis();
 
-  int lastBinIndex_rebinned = -1;
-
-  int numBins_original = histoOriginal->GetNbinsX();
+  int numBins_original = axis_original->GetNbins();
   for ( int iBin = 1; iBin <= numBins_original; ++iBin ) {
-    double binCenter_original = histoOriginal->GetBinCenter(iBin);
+    double binContent_original = histoOriginal->GetBinContent(iBin);
+    double binError_original = histoOriginal->GetBinError(iBin);
+
+    double binCenter_original = axis_original->GetBinCenter(iBin);
 
     int binIndex_rebinned = histoRebinned->FindBin(binCenter_original);
 
-    if ( binIndex_rebinned != lastBinIndex_rebinned ) {
-      if ( lastBinIndex_rebinned != -1 ) {
-	histoRebinned->SetBinContent(lastBinIndex_rebinned, binContentSum);
-	histoRebinned->SetBinError(lastBinIndex_rebinned, TMath::Sqrt(binError2Sum));
-      }
-
-      binContentSum = 0.;
-      binError2Sum = 0.;
-    }
-
-    binContentSum += histoOriginal->GetBinContent(iBin);
-    double binError = histoOriginal->GetBinError(iBin);
-    binError2Sum += (binError*binError);
-
-    lastBinIndex_rebinned = binIndex_rebinned;
+    double binContent_rebinned = histoRebinned->GetBinContent(binIndex_rebinned);
+    binContent_rebinned += binContent_original;
+    histoRebinned->SetBinContent(binIndex_rebinned, binContent_rebinned);
+    
+    double binError_rebinned = histoRebinned->GetBinError(binIndex_rebinned);
+    binError_rebinned = TMath::Sqrt(binError_rebinned*binError_rebinned + binError_original*binError_original);
+    histoRebinned->SetBinError(binIndex_rebinned, binError_rebinned);
   }
-
-  histoRebinned->SetBinContent(numBins_rebinned, binContentSum);
-  histoRebinned->SetBinError(numBins_rebinned, TMath::Sqrt(binError2Sum));
 
   return histoRebinned;
 }
 
-DQMHistRebinner::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
+TH2F* getRebinnedHistogram2d(const TH1* histoOriginal, 
+			     unsigned combineBinsX, unsigned numBinsX_rebinned, const vdouble& binEdgesX_rebinned,
+			     unsigned combineBinsY, unsigned numBinsY_rebinned, const vdouble& binEdgesY_rebinned)
 {
-  //std::cout << "<cfgEntryPlot::cfgEntryPlot>:" << std::endl;
+  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("rebinned");
+  float* binEdgesX_float = getBinning(histoOriginal->GetXaxis(), combineBinsX, numBinsX_rebinned, binEdgesX_rebinned);
+  float* binEdgesY_float = getBinning(histoOriginal->GetYaxis(), combineBinsY, numBinsY_rebinned, binEdgesY_rebinned);
+  TH2F* histoRebinned = new TH2F(histoRebinnedName.data(), histoOriginal->GetTitle(), 
+				 numBinsX_rebinned, binEdgesX_float, numBinsY_rebinned, binEdgesY_float);
+  histoRebinned->Sumw2();
+  delete binEdgesX_float;
+  delete binEdgesY_float;
+
+  TAxis* xAxis_original = histoOriginal->GetXaxis();
+  TAxis* yAxis_original = histoOriginal->GetYaxis();
+
+  int numBinsX_original = xAxis_original->GetNbins();
+  for ( int iBinX = 1; iBinX <= numBinsX_original; ++iBinX ) {
+
+    int numBinsY_original = yAxis_original->GetNbins();
+    for ( int iBinY = 1; iBinY <= numBinsY_original; ++iBinY ) {
+      double binContent_original = histoOriginal->GetBinContent(iBinX, iBinY);
+      double binError_original = histoOriginal->GetBinError(iBinX, iBinY);
+      
+      double binCenterX_original = xAxis_original->GetBinCenter(iBinX);
+      double binCenterY_original = yAxis_original->GetBinCenter(iBinY);
+
+      int binIndex_rebinned = histoRebinned->FindBin( binCenterX_original, binCenterY_original);
+
+      double binContent_rebinned = histoRebinned->GetBinContent(binIndex_rebinned);
+      binContent_rebinned += binContent_original;
+      histoRebinned->SetBinContent(binIndex_rebinned, binContent_rebinned);
+    
+      double binError_rebinned = histoRebinned->GetBinError(binIndex_rebinned);
+      binError_rebinned = TMath::Sqrt(binError_rebinned*binError_rebinned + binError_original*binError_original);
+      histoRebinned->SetBinError(binIndex_rebinned, binError_rebinned);
+    }
+  }
+
+  return histoRebinned;
+}
+   
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+DQMHistRebinner::axisEntryType::axisEntryType(const edm::ParameterSet& cfg)
+{
+  if ( cfg.exists("combineBins") ) {
+    combineBins_ = cfg.getParameter<unsigned>("combineBins");
+  } else {
+    numBins_ = cfg.getParameter<unsigned>("numBins");
+    if ( cfg.exists("binEdges") ) {
+      binEdges_ = cfg.getParameter<vdouble>("binEdges");
+    } else {
+      binEdges_.resize(numBins_ + 1);
+
+      double min = cfg.getParameter<double>("min");
+      double max = cfg.getParameter<double>("max");
+      
+      double binWidth = (max - min)/numBins_;
+    
+      for ( unsigned iBin = 0; iBin <= numBins_; ++iBin ) {
+	binEdges_[iBin] = (min + iBin*binWidth);
+      }
+    }
+  }
+
+  //std::cout << " combineBins = " << combineBins_ << std::endl;
+  //std::cout << " numBins = " << numBins_ << std::endl;
+  //std::cout << " binEdges = " << format_vdouble(binEdges_) << std::endl;
+}
+
+//
+//-----------------------------------------------------------------------------------------------------------------------
+//
+
+DQMHistRebinner::plotEntryType::plotEntryType(const edm::ParameterSet& cfg)
+{
+  //std::cout << "<plotEntryType::plotEntryType>:" << std::endl;
 
   meName_original_ = cfg.getParameter<std::string>("meName_original");
   //std::cout << " meName_original = " << meName_original_ << std::endl;
-
+  
   meName_rebinned_ = cfg.getParameter<std::string>("meName_rebinned");
   //std::cout << " meName_rebinned = " << meName_rebinned_ << std::endl;
 }
@@ -144,7 +202,6 @@ DQMHistRebinner::cfgEntryPlot::cfgEntryPlot(const edm::ParameterSet& cfg)
 //
 
 DQMHistRebinner::DQMHistRebinner(const edm::ParameterSet& cfg)
-  :  combineBinsX_(0), numBinsX_(0), xMin_(0.), xMax_(0.)
 {
   //std::cout << "<DQMHistRebinner::DQMHistRebinner>:" << std::endl;
   
@@ -152,26 +209,23 @@ DQMHistRebinner::DQMHistRebinner(const edm::ParameterSet& cfg)
   vParameterSet cfgPlots = cfg.getParameter<vParameterSet>("config");
   for ( vParameterSet::const_iterator cfgPlot = cfgPlots.begin();
 	cfgPlot != cfgPlots.end(); ++cfgPlot ) {
-    cfgEntriesPlots_.push_back(cfgEntryPlot(*cfgPlot));
+    plotEntries_.push_back(plotEntryType(*cfgPlot));
   }
 
-  if ( cfg.exists("combineBinsX") ) {
-    combineBinsX_ = cfg.getParameter<unsigned>("combineBinsX");
-  } else {
-    numBinsX_ = cfg.getParameter<unsigned>("numBinsX");
-    if ( cfg.exists("xBins") ) {
-      xBins_ = cfg.getParameter<vdouble>("xBins");
-    } else {
-      xMin_ = cfg.getParameter<double>("xMin");
-      xMax_ = cfg.getParameter<double>("xMax");
-    }
+  edm::ParameterSet cfgBinning = cfg.getParameter<edm::ParameterSet>("binning");
+  std::vector<std::string> axisLabels;
+  axisLabels.push_back("x");
+  axisLabels.push_back("y");
+  unsigned numAxisLabels = axisLabels.size();
+  for ( unsigned iAxis = 0; iAxis < numAxisLabels; ++iAxis ) {
+    const char* axisLabel = axisLabels[iAxis].data();
+    if ( cfgBinning.exists(axisLabel) ) 
+      axisEntries_.push_back(axisEntryType(cfgBinning.getParameter<edm::ParameterSet>(axisLabel)));
+    else
+      break;
   }
 
-  //std::cout << " combineBinsX = " << combineBinsX_ << std::endl;
-  //std::cout << " numBinsX = " << numBinsX_ << std::endl;
-  //std::cout << " xBins = " << format_vdouble(xBins_) << std::endl;
-  //std::cout << " xMin = " << xMin_ << std::endl;
-  //std::cout << " xMax = " << xMax_ << std::endl;
+  if ( axisEntries_.size() == 0 ) axisEntries_.push_back(axisEntryType(cfgBinning));
 }
 
 DQMHistRebinner::~DQMHistRebinner() 
@@ -196,8 +250,8 @@ void DQMHistRebinner::endJob()
 
   DQMStore& dqmStore = (*edm::Service<DQMStore>());
 
-  for ( std::vector<cfgEntryPlot>::const_iterator plot = cfgEntriesPlots_.begin(); 
-	plot != cfgEntriesPlots_.end(); ++plot ) {
+  for ( std::vector<plotEntryType>::const_iterator plot = plotEntries_.begin(); 
+	plot != plotEntries_.end(); ++plot ) {
     std::string originalHistogramName, originalHistogramDirectory;
     separateMonitorElementFromDirectoryName(plot->meName_original_, originalHistogramName, originalHistogramDirectory);
     MonitorElement* meOriginal = dqmStore.get(std::string(originalHistogramDirectory).append(dqmSeparator).append(originalHistogramName));
@@ -206,26 +260,57 @@ void DQMHistRebinner::endJob()
     if ( histoOriginal != NULL ) {
       if ( !histoOriginal->GetSumw2N() ) histoOriginal->Sumw2();
 
-      getBinning(histoOriginal, combineBinsX_, numBinsX_, xBins_, xMin_, xMax_);
-      bool isCompatibleBinning = checkBinning(histoOriginal, numBinsX_, xBins_);
+      if ( histoOriginal->GetDimension() != (int)axisEntries_.size() ) {
+	edm::LogError ("endJob") << " Mismatch between dimensionality of Histogram = " << histoOriginal->GetDimension() 
+				 << " and number of Axis definitions = " << axisEntries_.size() << " --> skipping !!";
+	continue;
+      }
+
+      bool isCompatibleBinning = true;
+      for ( int iDimension = 0; iDimension < histoOriginal->GetDimension(); ++iDimension ) {
+	const TAxis* axis = 0;
+	switch ( iDimension ) {
+	  case 0: 
+	    axis = histoOriginal->GetXaxis();
+	    break;
+	  case 1: 
+	    axis = histoOriginal->GetYaxis();
+	    break; 
+	}
+
+        const axisEntryType& axisEntry = axisEntries_[0];
+
+	isCompatibleBinning = isCompatibleBinning && checkBinning(axis, axisEntry.numBins_, axisEntry.binEdges_);
+      }
 
       if ( isCompatibleBinning ) {
-	TH1F* histoRebinned = getRebinnedHistogram(histoOriginal, numBinsX_, xBins_);
-
 	std::string rebinnedHistogramName, rebinnedHistogramDirectory, dummy;
 	separateMonitorElementFromDirectoryName(plot->meName_rebinned_, rebinnedHistogramName, rebinnedHistogramDirectory);
 	if ( rebinnedHistogramDirectory == "" ) separateMonitorElementFromDirectoryName(originalHistogramName, dummy, rebinnedHistogramDirectory);
 	if ( rebinnedHistogramDirectory != "" ) dqmStore.setCurrentFolder(rebinnedHistogramDirectory);
-      
-	dqmStore.book1D(rebinnedHistogramName, histoRebinned);
+	
+	if ( histoOriginal->GetDimension() == 1 ) {
+	  const axisEntryType& axisEntry = axisEntries_[0];
+	  TH1F* histoRebinned = getRebinnedHistogram1d(histoOriginal, 
+						       axisEntry.combineBins_, axisEntry.numBins_, axisEntry.binEdges_);
+	  dqmStore.book1D(rebinnedHistogramName, histoRebinned);
+	} 
+
+	if ( histoOriginal->GetDimension() == 2 ) {
+	  const axisEntryType& axisEntryX = axisEntries_[0];
+	  const axisEntryType& axisEntryY = axisEntries_[1];
+	  TH2F* histoRebinned = getRebinnedHistogram2d(histoOriginal, 
+						       axisEntryX.combineBins_, axisEntryX.numBins_, axisEntryX.binEdges_,
+						       axisEntryY.combineBins_, axisEntryY.numBins_, axisEntryY.binEdges_);
+	  dqmStore.book2D(rebinnedHistogramName, histoRebinned);
+	}
       } else {
-	edm::LogError("DQMHistEffProducer") << " Histogram = " << histoOriginal->GetName() << " has Binning not compatible with"
-					    << " numBinsX = " << numBinsX_ << ", xBins = " << format_vdouble(xBins_)
-					    << " --> skipping !!";
+	edm::LogError("DQMHistEffProducer") << " Histogram = " << histoOriginal->GetName() << " has Binning not compatible"
+					    << " with Axis definitions --> skipping !!";
       }
     } else {
-      edm::LogError("endJob") << " Failed to produce rebinned Histogram = " << plot->meName_rebinned_ << " !!";
-      edm::LogError("endJob") << " original Histogram = " << plot->meName_original_ << " does not exist.";
+      edm::LogError("endJob") << " Failed to produce rebinned Histogram = " << plot->meName_rebinned_ << ";"
+			      << " original Histogram = " << plot->meName_original_ << " does not exist !!";
     }
   }
 }
