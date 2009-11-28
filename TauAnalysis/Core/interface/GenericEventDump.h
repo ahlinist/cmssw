@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.6 $
+ * \version $Revision: 1.7 $
  *
- * $Id: GenericEventDump.h,v 1.6 2009/03/26 13:31:01 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.7 2009/08/25 14:05:19 veelken Exp $
  *
  */
 
@@ -89,9 +89,10 @@ class GenericEventDump : public EventDumpBase
 		       << " (eta = " << diTauCandidate->leg2()->eta() << ")" << std::endl;
 	*outputStream_ << "  phi = " << diTauCandidate->leg2()->phi()*180./TMath::Pi() << std::endl;
 	*outputStream_ << "  pdgId = " << diTauCandidate->leg2()->pdgId() << std::endl;
+	*outputStream_ << " dPhi(Leg1,Leg2) = " << diTauCandidate->dPhi12()*180./TMath::Pi() << std::endl;
 	*outputStream_ << " M(visible) = " << diTauCandidate->p4Vis().mass() << std::endl;
-	*outputStream_ << " Mt(Leg1-MET) = " << diTauCandidate->mt1MET() << std::endl;
-	*outputStream_ << " Mt(Leg2-MET) = " << diTauCandidate->mt2MET() << std::endl;
+	*outputStream_ << " Mt(Leg1+MET) = " << diTauCandidate->mt1MET() << std::endl;
+	*outputStream_ << " Mt(Leg2+MET) = " << diTauCandidate->mt2MET() << std::endl;
 	*outputStream_ << " M(CDF method) = " << diTauCandidate->p4CDFmethod().mass() << std::endl;
 	*outputStream_ << " M(collinear Approx.) = " << diTauCandidate->p4CollinearApprox().mass() << std::endl;
 	*outputStream_ << "  x1 = " << diTauCandidate->x1CollinearApprox() << std::endl;
@@ -125,8 +126,11 @@ class GenericEventDump : public EventDumpBase
 
   edm::InputTag diTauCandidateSource_;
 
-  edm::InputTag patMEtSource_;
+  edm::InputTag patCaloMEtSource_;
+  edm::InputTag patPFMEtSource_;
   edm::InputTag genMEtSource_;
+
+  std::vector<int> skipPdgIdsGenParticleMatch_;
 
   edm::InputTag patJetSource_;
 
