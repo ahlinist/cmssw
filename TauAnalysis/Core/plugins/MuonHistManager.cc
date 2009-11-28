@@ -116,6 +116,9 @@ void MuonHistManager::bookHistogramsImp()
 //    of muons passing all id. and isolation selections
   bookMuonHistograms(hMuonPt_, hMuonEta_, hMuonPhi_, "Muon");
   hMuonPtVsEta_ = book2D("MuonPtVsEta", "MuonPtVsEta", 24, -3., +3., 30, 0., 150.);
+  float muonAbsEtaBinning2d[] = { 0., 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1 };
+  float muonPtBinning2d[] = { 15., 20., 25., 30., 40., 60., 120. };
+  hMuonPtVsAbsEta_ = book2D("MuonPtVsAbsEta", "MuonPtVsAbsEta", 7, muonAbsEtaBinning2d, 6, muonPtBinning2d);
   hMuonCharge_ = book1D("MuonCharge", "Muon Charge", 3, -1.5, +1.5);
   
   bookWeightHistograms(*dqmStore_, "MuonWeight", "Muon Weight", 
@@ -227,6 +230,7 @@ void MuonHistManager::fillHistogramsImp(const edm::Event& evt, const edm::EventS
 
     fillMuonHistograms(*patMuon, hMuonPt_, hMuonEta_, hMuonPhi_, weight);
     hMuonPtVsEta_->Fill(patMuon->eta(), patMuon->pt(), weight);
+    hMuonPtVsAbsEta_->Fill(TMath::Abs(patMuon->eta()), patMuon->pt(), weight); 
     hMuonCharge_->Fill(patMuon->charge(), weight);
 
     fillWeightHistograms(hMuonWeightPosUnweighted_, hMuonWeightPosWeighted_, 
