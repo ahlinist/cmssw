@@ -293,23 +293,32 @@ BsToJpsiPhiRootTree::BsToJpsiPhiRootTree(const std::string filename)
   bsTree_->Branch("sigmaK1Pt", &K1Pt_error_, "sigmaK1Pt/D");
   bsTree_->Branch("sigmaK2Pt", &K2Pt_error_, "sigmaK2Pt/D");
 
-  // for bkg studies gio
-  bsTree_->Branch("BmesonsId",&BmesonsId_,"BmesonsId/I");
-  bsTree_->Branch("GenNumberOfDaughters", &GenNumberOfDaughters_, "GenNumberOfDaughters/I");
-  bsTree_->Branch("BDauIdMC",&BDauIdMC_,"BDauIdMC[15]/I");
-  bsTree_->Branch("BDauDauIdMC",&BDauDauIdMC_,"BDauDauIdMC[15]/I");
+  bsTree_->Branch("GenNumberOfBdecays", &GenNumberOfBdecays_, "GenNumberOfBdecays/I");
+  bsTree_->Branch("BmesonsId",BmesonsId_,"BmesonsId[10]/I");
+  bsTree_->Branch("GenNumberOfDaughters", GenNumberOfDaughters_, "GenNumberOfDaughters[10]/I");
+  bsTree_->Branch("GenNumberOfDaughtersDaughters", GenNumberOfDaughtersDaughters_, "GenNumberOfDaughtersDaughters[10][15]/I");
+  bsTree_->Branch("BDauIdMC",BDauIdMC_,"BDauIdMC[10][15]/I");
+  bsTree_->Branch("BDauDauIdMC",BDauDauIdMC_,"BDauDauIdMC[10][15][10]/I");
 
-  bsTree_->Branch("BMMC",&BMMC_,"BMMC/D");
-  bsTree_->Branch("BPtMC",&BPtMC_,"BPtMC/D");
-  bsTree_->Branch("BPzMC",&BPzMC_,"BPzMC/D");
-  bsTree_->Branch("BEtaMC",&BEtaMC_,"BEtaMC/D");
-  bsTree_->Branch("BPhiMC",&BPhiMC_,"BPhiMC/D");
+  bsTree_->Branch("isGenJpsiEvent_", &isGenJpsiEvent_, "isGenJpsiEvent/I");
 
-  bsTree_->Branch("BDauMMC",&BDauMMC_,"BDauMMC[15]/D");
-  bsTree_->Branch("BDauPtMC",&BDauPtMC_,"BDauPtMC[15]/D");
-  bsTree_->Branch("BDauPzMC",&BDauPzMC_,"BDauPzMC[15]/D");
-  bsTree_->Branch("BDauEtaMC",&BDauEtaMC_,"BDauEtaMC[15]/D");
-  bsTree_->Branch("BDauPhiMC",&BDauPhiMC_,"BDauPhiMC[15]/D");
+  bsTree_->Branch("BMMC",BMMC_,"BMMC[10]/D");
+  bsTree_->Branch("BPtMC",BPtMC_,"BPtMC[10]/D");
+  bsTree_->Branch("BPzMC",BPzMC_,"BPzMC[10]/D");
+  bsTree_->Branch("BEtaMC",BEtaMC_,"BEtaMC[10]/D");
+  bsTree_->Branch("BPhiMC",BPhiMC_,"BPhiMC[10]/D");
+
+  bsTree_->Branch("BDauMMC",BDauMMC_,"BDauMMC[10][15]/D");
+  bsTree_->Branch("BDauPtMC",BDauPtMC_,"BDauPtMC[10][15]/D");
+  bsTree_->Branch("BDauPzMC",BDauPzMC_,"BDauPzMC[10][15]/D");
+  bsTree_->Branch("BDauEtaMC",BDauEtaMC_,"BDauEtaMC[10][15]/D");
+  bsTree_->Branch("BDauPhiMC",BDauPhiMC_,"BDauPhiMC[10][15]/D");
+
+ bsTree_->Branch("BDauDauMMC",BDauDauMMC_,"BDauDauMMC[10][15][10]/D");
+  bsTree_->Branch("BDauDauPtMC",BDauDauPtMC_,"BDauDauPtMC[10][15][10]/D");
+  bsTree_->Branch("BDauDauPzMC",BDauDauPzMC_,"BDauDauPzMC[10][15][10]/D");
+  bsTree_->Branch("BDauDauEtaMC",BDauDauEtaMC_,"BDauDauEtaMC[10][15][10]/D");
+  bsTree_->Branch("BDauDauPhiMC",BDauDauPhiMC_,"BDauDauPhiMC[10][15][10]/D");
 
   bsTree_->Branch("genBsSVtx_x", &genBsSVtx_x_, "genBsSVtx_x/D");
   bsTree_->Branch("genBsSVtx_y", &genBsSVtx_y_, "genBsSVtx_y/D");
@@ -338,10 +347,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   triggerbit_HLTdoubleMu3_ = -10;
   triggerbit_HLTdoubleMu3_JPsi_ = -10;
 
-  nBsDau_ = -10; 
-  momID_ = -10;
-  dau_1_ID_ = -10;
-  dau_2_ID_ = -10;
+
 
   BSx_ = -10;
   BSy_ = -10;
@@ -510,16 +516,7 @@ void BsToJpsiPhiRootTree::resetEntries()
   iPassedCutIdent_ = -10;
   iPassedCutIdentBd_ = -10;
 
-  isGenBsEvent_ = GenNumberOfBsDaughters_ = isGenBsJpsiPhiEvent_ = isGenBsJpsiPhiMuMuKKEvent_ = -10;
-  isGenBdEvent_ = GenNumberOfBdDaughters_ = isGenBdJpsiKstarEvent_ = isGenBdJpsiKstarMuMuKpiEvent_ = -10;  
-
-  genBsM_ = genBsPt_ = genBsEta_ = genBsPhi_ = -10;
-  genJpsiM_ = genJpsiPt_= genJpsiEta_= genJpsiPhi_ = -10;
-  genPhiM_= genPhiPt_= genPhiEta_= genPhiPhi_ = -10;
-  genMu1M_= genMu1Pt_= genMu1Eta_= genMu1Phi_ = -10;
-  genMu2M_= genMu2Pt_= genMu2Eta_= genMu2Phi_ = -10;
-  genK1M_= genK1Pt_= genK1Eta_= genK1Phi_ = -10;
-  genK2M_= genK2Pt_= genK2Eta_= genK2Phi_ = -10;
+ 
 
   K1_kk_par0_ = -100;
   K1_kk_par1_ = -100;
@@ -620,27 +617,46 @@ void BsToJpsiPhiRootTree::resetEntries()
   K1Pt_error_ = -10;
   K2Pt_error_ = -10;
 
-  isGenBsJpsiKKEvent_ = -10;
-  BdDausId_ = -10;
 
-  // gio
-  BmesonsId_  = -6666;
-  GenNumberOfDaughters_ = -6666;
-  for(int i=0;i<15;i++) {BDauIdMC_[i]=-6666;}
-  for(int j=0;j<15;j++) {BDauDauIdMC_[j]=-6666;}
+  GenNumberOfBdecays_ = -10;
+  isGenJpsiEvent_ = -10;
+  
+  for(int i=0; i<10; i++){ 
+    BmesonsId_[i]  = -6666;
+  
+    BMMC_[i] = -10;
+    BPtMC_[i] = -10;
+    BPzMC_[i] = -10;
+    BEtaMC_[i] = -10;
+    BPhiMC_[i] = -10;
 
-  for(int i=0;i<15;i++) {BDauMMC_[i]=-6666;}
-  for(int i=0;i<15;i++) {BDauPtMC_[i]=-6666;}
-  for(int i=0;i<15;i++) {BDauPzMC_[i]=-6666;}
-  for(int i=0;i<15;i++) {BDauEtaMC_[i]=-6666;}
-  for(int i=0;i<15;i++) {BDauPhiMC_[i]=-6666;}
+    GenNumberOfDaughters_[i] = -10;
 
-  BMMC_ = -10;
-  BPtMC_ = -10;
-  BPzMC_ = -10;
-  BEtaMC_ = -10;
-  BPhiMC_ = -10;
+    for(int j=0;j<15;j++){
+      BDauIdMC_[i][j]=-6666;       
+	
+      BDauMMC_[i][j]=-6666;  
+      BDauPtMC_[i][j]=-6666; 
+      BDauPzMC_[i][j]=-6666; 
+      BDauEtaMC_[i][j]=-6666;
+      BDauPhiMC_[i][j]=-6666;
+      
+      GenNumberOfDaughtersDaughters_[i][j] = -10;
+      
+      for(int k=0; k<10; k++){
+	BDauDauIdMC_[i][j][k]=-6666;
+	
+	BDauDauMMC_[i][j][k]=-6666;  
+	BDauDauPtMC_[i][j][k]=-6666; 
+	BDauDauPzMC_[i][j][k]=-6666; 
+	BDauDauEtaMC_[i][j][k]=-6666;
+	BDauDauPhiMC_[i][j][k]=-6666;
+      }
+    }
+  }
 
+ 
+ 
   genBsSVtx_x_=-10;
   genBsSVtx_y_=-10;
   genBsSVtx_z_=-10;

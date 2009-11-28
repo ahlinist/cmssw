@@ -59,10 +59,7 @@ public:
         int triggerbit_HLTdoubleMu3_;
         int triggerbit_HLTdoubleMu3_JPsi_;
 	
-	int momID_;
-	int nBsDau_;
-	int dau_1_ID_;
-	int dau_2_ID_;
+
 
 	double	BSx_ ;
 	double	BSy_ ;
@@ -75,8 +72,7 @@ public:
 	double	PVerrz_ ;
 
         double JpsiVtxProb_;
-        int MuCounter1_;
-        int MuCounter2_;
+    
         double JpsiM_alone_;
         double JpsiPhi_alone_;
         double JpsiEta_alone_;
@@ -243,24 +239,6 @@ public:
 	int iPassedCutIdent_;
 	int iPassedCutIdentBd_;
 
-	//MC info
-	int isGenBsEvent_;
-	int GenNumberOfBsDaughters_;
-	int isGenBsJpsiPhiEvent_;
-	int isGenBsJpsiPhiMuMuKKEvent_;
-	int isGenBdEvent_;
-	int GenNumberOfBdDaughters_;
-	int isGenBdJpsiKstarEvent_;
-	int isGenBdJpsiKstarMuMuKpiEvent_;
-
-	double genBsM_, genBsPt_, genBsEta_, genBsPhi_;
-	double genJpsiM_, genJpsiPt_, genJpsiEta_, genJpsiPhi_;
-	double genPhiM_, genPhiPt_, genPhiEta_, genPhiPhi_;
-	double genMu1M_, genMu1Pt_, genMu1Eta_, genMu1Phi_;
-	double genMu2M_, genMu2Pt_, genMu2Eta_, genMu2Phi_;
-	double genK1M_, genK1Pt_, genK1Eta_, genK1Phi_;	
-	double genK2M_, genK2Pt_, genK2Eta_, genK2Phi_;	
-	double genBsPz_, genJpsiPz_, genPhiPz_, genMu1Pz_, genMu2Pz_, genK1Pz_, genK2Pz_;
 
         double K1_kk_par0_;
         double K1_kk_par1_;
@@ -361,29 +339,36 @@ public:
 	double K1Pt_error_;
 	double K2Pt_error_;
 
-	int isGenBsJpsiKKEvent_;
-	int BdDausId_;
+      
+	int GenNumberOfBdecays_;
+	int BmesonsId_[10];
+	int BDauIdMC_[10][15];
+	int BDauDauIdMC_[10][15][10];
+    	int GenNumberOfDaughters_[10];
+	int GenNumberOfDaughtersDaughters_[10][15];
 
-	// gio
-	int BDauIdMC_[15];
-	int BDauDauIdMC_[15];
-        int BmesonsId_;
-	int GenNumberOfDaughters_;
+	double BDauMMC_[10][15];
+	double BDauPtMC_[10][15];
+	double BDauPzMC_[10][15];
+	double BDauEtaMC_[10][15];
+	double BDauPhiMC_[10][15];
 
-	double BDauMMC_[15];
-	double BDauPtMC_[15];
-	double BDauPzMC_[15];
-	double BDauEtaMC_[15];
-	double BDauPhiMC_[15];
+	double BDauDauMMC_[10][15][10];
+	double BDauDauPtMC_[10][15][10];
+	double BDauDauPzMC_[10][15][10];
+	double BDauDauEtaMC_[10][15][10];
+	double BDauDauPhiMC_[10][15][10];
 
-	double BMMC_;
-	double BPtMC_;
-	double BPzMC_;
-	double BEtaMC_;
-	double BPhiMC_;
+	double BMMC_[10];
+	double BPtMC_[10];
+	double BPzMC_[10];
+	double BEtaMC_[10];
+	double BPhiMC_[10];
 
         double genBsVtx_z_, genBsVtx_y_, genBsVtx_x_ ;
         double genBsSVtx_z_, genBsSVtx_y_, genBsSVtx_x_ ;
+
+	int isGenJpsiEvent_;
 
 	TFile* bsFile_;
 	TTree* bsTree_; 

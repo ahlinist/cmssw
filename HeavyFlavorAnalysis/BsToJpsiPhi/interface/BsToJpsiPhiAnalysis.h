@@ -73,6 +73,7 @@ private:
 	edm::InputTag triggerTag_; 
 	edm::InputTag muonTag_; 
 	bool StoreDeDxInfo_;
+	bool saveDoubleMu3TriggeredOnly_;
 	double JpsiMassWindowBeforeFit_;
 	double JpsiMassWindowAfterFit_;
 	double JpsiPtCut_;
