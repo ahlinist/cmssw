@@ -216,17 +216,17 @@ void TauHistManager::bookHistogramsImp()
   hTauDiscriminatorTaNCfrTenthPercent_ = book1D("TauDiscriminatorTaNCfrTenthPercent",
 						"TauDiscriminatorTaNCfrTenthPercent", 102, -0.01, 1.01);
   
-  hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 20.);    
-  hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 20.);
-  hTauHcalIsoPt_ = book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 20.);
-  hTauIsoSumPt_ = book1D("TauIsoSumPt", "Isolation Sum(P_{T})", 100, 0., 20.);
+  hTauTrkIsoPt_ = book1D("TauTrkIsoPt", "Track Isolation P_{T}", 100, 0., 10.);    
+  hTauEcalIsoPt_ = book1D("TauEcalIsoPt", "ECAL Isolation P_{T}", 100, 0., 10.);
+  hTauHcalIsoPt_ = book1D("TauHcalIsoPt", "HCAL Isolation P_{T}", 100, 0., 10.);
+  hTauIsoSumPt_ = book1D("TauIsoSumPt", "Isolation Sum(P_{T})", 100, 0., 10.);
   
   hTauDeltaRnearestJet_ = book1D("TauDeltaRnearestJet", "#DeltaR(nearest Jet)", 102, -0.1, 10.1);
   
-  hTauParticleFlowIsoPt_ = book1D("TauParticleFlowIsoPt", "Particle Flow Isolation P_{T}", 100, 0., 20.);    
-  hTauPFChargedHadronIsoPt_ = book1D("TauPFChargedHadronIsoPt", "Particle Flow (Charged Hadron) Isolation P_{T}", 100, 0., 20.);   
-  hTauPFNeutralHadronIsoPt_ = book1D("TauPFNeutralHadronIsoPt", "Particle Flow (Neutral Hadron) Isolation P_{T}", 100, 0., 20.);   
-  hTauPFGammaIsoPt_ = book1D("TauPFGammaIsoPt", "Particle Flow (Photon) Isolation P_{T}", 100, 0., 20.);  
+  hTauParticleFlowIsoPt_ = book1D("TauParticleFlowIsoPt", "Particle Flow Isolation P_{T}", 100, 0., 10.);    
+  hTauPFChargedHadronIsoPt_ = book1D("TauPFChargedHadronIsoPt", "Particle Flow (Charged Hadron) Isolation P_{T}", 100, 0., 10.);   
+  hTauPFNeutralHadronIsoPt_ = book1D("TauPFNeutralHadronIsoPt", "Particle Flow (Neutral Hadron) Isolation P_{T}", 100, 0., 10.);   
+  hTauPFGammaIsoPt_ = book1D("TauPFGammaIsoPt", "Particle Flow (Photon) Isolation P_{T}", 100, 0., 10.);  
   
 //--- book "control" histograms to check agreement between tau isolation variables
 //    computed by PAT-level IsoDeposits with the values computed by reco::PFTau producer
