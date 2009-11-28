@@ -5,7 +5,7 @@
 // Author Sudhir Malik 20 May 2009
 // Original F. Ratnikov, Sept. 7, 2006
 // Modified by J F Novak July 10, 2008
-// $Id: PATValidation_Jet.h,v 1.5 2009/07/13 17:54:10 malik Exp $
+// $Id: PATValidation_Jet.h,v 1.6 2009/10/24 04:16:19 kfjack Exp $
 
 #include <string>
 
@@ -42,11 +42,12 @@ private:
   std::string METType_;
   std::string inputGenMETLabel_;
   std::string inputCaloMETLabel_;
-
+  std::string uncertainty_file_;
 
    edm::InputTag recoJet_;
    edm::InputTag recoJetRaw_;
    edm::InputTag recoJetL2_;
+  
    edm::InputTag patJet_;
   //bool recoJetCorr_;
   //edm::InputTag patJetCorr_;
@@ -85,7 +86,10 @@ private:
   MonitorElement* rmPtRaw_3000;
   MonitorElement* rmPtL2;
   MonitorElement* rmPtL2_80;
-  MonitorElement* rmPtL2_3000;
+  MonitorElement* rmPtL2_3000;  
+  MonitorElement* rmPtuncert;
+  MonitorElement* rmPtuncert_80;
+  MonitorElement* rmPtuncert_3000;
   MonitorElement* rmMass;
   MonitorElement* rmMass_80;
   MonitorElement* rmMass_3000;
@@ -260,7 +264,10 @@ private:
   MonitorElement* mPtRaw_3000;
   MonitorElement* mPtL2;
   MonitorElement* mPtL2_80;
-  MonitorElement* mPtL2_3000;
+  MonitorElement* mPtL2_3000;  
+  MonitorElement* mPtuncert;
+  MonitorElement* mPtuncert_80;
+  MonitorElement* mPtuncert_3000;
   MonitorElement* mMass;   
   MonitorElement* mMass_80;
   MonitorElement* mMass_3000;
@@ -413,4 +420,5 @@ private:
 
 
 #endif
+
 

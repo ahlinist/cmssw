@@ -146,6 +146,27 @@
    comp.Draw("PtL2_3000", mode);
    SavePlot("PtL2_3000", outdir.c_str() );
    comp.SetAxis(5);
+
+   comp.SetAxis(1,0 ,50);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("Ptuncert", mode);
+   SavePlot("Ptuncert", outdir.c_str() );
+   comp.SetAxis(5);
+
+   comp.SetAxis(1,0 ,140);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("Ptuncert_80", mode);
+   SavePlot("Ptuncert_80", outdir.c_str() );
+   comp.SetAxis(5);
+
+   comp.SetAxis(1,0 ,4000);
+   TCanvas c1("c1", "benchmark");
+   FormatPad( &c1, false );
+   comp.Draw("Ptuncert_3000", mode);
+   SavePlot("Ptuncert_3000", outdir.c_str() );
+   comp.SetAxis(5);
    
    comp.SetAxis(1,0 ,25);
    TCanvas c1("c1", "benchmark");

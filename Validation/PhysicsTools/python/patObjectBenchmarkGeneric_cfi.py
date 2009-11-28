@@ -8,7 +8,8 @@ patJetAK5Validation =cms.EDAnalyzer("PATValidation_Jet",
      recoJet     = cms.InputTag('L2L3CorJetAK5Calo'),
      recoJetRaw  = cms.InputTag('ak5CaloJets'),
      recoJetL2   = cms.InputTag('L2CorJetAK5Calo'),
-      patJet      = cms.InputTag('selectedLayer1Jets'),
+     JetUncertaintyFile = cms.string('jetCorrFactorsL1.txt'),
+     patJet      = cms.InputTag('selectedLayer1Jets'),
      BenchmarkLabel =cms.string('ak5CaloJets_Corr')
 )
 
