@@ -2,8 +2,8 @@
   \file HcalRenderPlugin.cc
   \brief Display Plugin for Hcal DQM Histograms
   \author J. Temple
-  \version $Revision: 1.31 $
-  \date $Date: 2009/11/24 09:41:06 $
+  \version $Revision: 1.32 $
+  \date $Date: 2009/11/24 13:54:05 $
   \\
   \\ Code shamelessly borrowed from S. Dutta's SiStripRenderPlugin.cc code,
   \\ G. Della Ricca and B. Gobbo's EBRenderPlugin.cc, and other existing
@@ -575,6 +575,7 @@ private:
 	 (o.name.find("DataFormatMonitor/Corruption/F")      != std::string::npos) )
       {
         TText t;
+	setErrorColor(obj);
         t.SetTextSize( 0.1);
         if (obj->GetEntries() == 0)
 	  t.DrawText(1, 1, "Empty == OK"); 
@@ -712,6 +713,7 @@ private:
 	 (o.name.find("DataFormatMonitor/Diagnostics/DCC Stat") != std::string::npos)    )
       {
         obj->SetStats(0);
+	setErrorColor(obj);
         c->SetLeftMargin( 0.350); // in fractions of a TCanvas... ?
       }
     else  if ( (o.name.find("DataFormatMonitor/Diagnostics/HTR Status Word") != std::string::npos)    )
@@ -722,7 +724,8 @@ private:
     else if ( (o.name.find("Corruption/07") != std::string::npos ) ||
 	      (o.name.find("Corruption/08") != std::string::npos )   )
       {
-	obj->SetMaximum(1);
+	obj->SetMaximum(obj->GetBinContent(0,0));
+	setErrorColor(obj);
         TLine line;
         line.SetLineWidth(1);
         for (int i=0; i<32; i++)
