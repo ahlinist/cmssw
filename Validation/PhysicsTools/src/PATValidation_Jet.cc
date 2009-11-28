@@ -13,7 +13,7 @@
 //
 // Original Author:  Sudhir_Malik
 //         Created:  Fri Mar 13 09:52:17 CDT 2009
-// $Id: PATValidation_Jet.cc,v 1.5 2009/07/13 17:54:10 malik Exp $
+// $Id: PATValidation_Jet.cc,v 1.6 2009/10/24 04:16:19 kfjack Exp $
 //
 //
 
@@ -61,88 +61,35 @@
 
 #include "RecoJets/JetAlgorithms/interface/JetMatchingTools.h"
 #include <cmath>
-
-//#include "TH1.h"
+//Jet uncertainties
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 using namespace reco;
 using namespace std; 
 
 
-//
-// class decleration
-//
-/*
-class PATValidation_Jet : public edm::EDAnalyzer {
-   public:
-      explicit PATValidation_Jet(const edm::ParameterSet&);
-      ~PATValidation_Jet();
-
-
-   private:
-      virtual void beginJob(const edm::EventSetup&) ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-       DQMStore* dbe;
-      std::map<std::string, MonitorElement*> me;
-
-      // ----------member data ---------------------------
-};
-*/
-
-
-//
-// constants, enums and typedefs
-//
-
-//
-// static data member definitions
-//
-
-//
-// constructors and destructor
-//
 PATValidation_Jet::PATValidation_Jet(const edm::ParameterSet& iConfig)
 
 {
-   //now do what ever initialization is needed
-
-///recoJet_     = iConfig.getParameter<edm::InputTag>("recoJet");
-///patJet_      = iConfig.getParameter<edm::InputTag>("patJet");
-
-recoJet_     = iConfig.getParameter<edm::InputTag>("recoJet");
-recoJetRaw_  = iConfig.getParameter<edm::InputTag>("recoJetRaw");
-recoJetL2_   = iConfig.getParameter<edm::InputTag>("recoJetL2");
-patJet_      = iConfig.getParameter<edm::InputTag>("patJet");
-
-benchmarkLabel_ = iConfig.getParameter<std::string>("BenchmarkLabel"); 
-//recoJetCorr_     =  iConfig.getParameter<bool> ("recoJetCorr");
-//patJetCorr_      = iConfig.getParameter<edm::InputTag>("patJetCorr");
-//recoJetCorrSource_  = iConfig.getParameter<edm::InputTag>("recoJetCorrSource");
-
-outputFile_ = iConfig.getUntrackedParameter<std::string>("OutputFile");
-
+ recoJet_          = iConfig.getParameter<edm::InputTag>("recoJet");
+ recoJetRaw_  	   = iConfig.getParameter<edm::InputTag>("recoJetRaw");
+ recoJetL2_   	   = iConfig.getParameter<edm::InputTag>("recoJetL2");
+ patJet_           = iConfig.getParameter<edm::InputTag>("patJet");
+ benchmarkLabel_   = iConfig.getParameter<std::string>("BenchmarkLabel"); 
+ outputFile_       = iConfig.getUntrackedParameter<std::string>("OutputFile");
+ uncertainty_file_ = iConfig.getParameter<std::string>("JetUncertaintyFile");
 
  if (outputFile_.size() > 0)
-    edm::LogInfo("OutputInfo") << " PAT/RECOhistograms will be saved to '" << outputFile_.c_str()<< "'";
-    else edm::LogInfo("OutputInfo") << " PAT Validation histograms will NOT be saved";
+   edm::LogInfo("OutputInfo") << " PAT/RECOhistograms will be saved to '" << outputFile_.c_str()<< "'";
+ else 
+   edm::LogInfo("OutputInfo") << " PAT Validation histograms will NOT be saved";
      
 }
 
 PATValidation_Jet::~PATValidation_Jet()
 {
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-
 }
 
-
-//
-// member functions
-//
-
-
-// ------------ method called once each job just before starting event loop  ------------
 void
 PATValidation_Jet::beginJob(const edm::EventSetup&)
 {
@@ -166,17 +113,21 @@ if(dbe){
     rmPt               = dbe->book1D("Pt", "Pt", 100, 0, 50);
     rmPt_80            = dbe->book1D("Pt_80", "Pt_80", 100, 0, 140);
     rmPt_3000          = dbe->book1D("Pt_3000", "Pt_3000", 100, 0, 4000);
-    rmPtRaw            = dbe->book1D("PtRaw", "PtRaw", 100, 0, 50);
+    rmPtRaw	       = dbe->book1D("PtRaw", "PtRaw", 100, 0, 50);
     rmPtRaw_80         = dbe->book1D("PtRaw_80", "PtRaw_80", 100, 0, 140);
     rmPtRaw_3000       = dbe->book1D("PtRaw_3000", "PtRaw_3000", 100, 0, 4000);
-    rmPtL2             = dbe->book1D("PtL2", "PtL2", 100, 0, 50);
-    rmPtL2_80          = dbe->book1D("PtL2_80", "PtL2_80", 100, 0, 140);
-    rmPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);
+    rmPtL2	       = dbe->book1D("PtL2", "PtL2", 100, 0, 50);
+    rmPtL2_80	       = dbe->book1D("PtL2_80", "PtL2_80", 100, 0, 140);
+    rmPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);    
+    rmPtuncert         = dbe->book1D("Ptuncert", "Pt uncertainty", 100, 0, 50);
+    rmPtuncert_80      = dbe->book1D("Ptuncert_80", "Pt_80 uncertainty", 100, 0, 140);
+    rmPtuncert_3000    = dbe->book1D("Ptuncert_3000", "Pt_3000 uncertainty", 100, 0, 4000);
     rmMass             = dbe->book1D("Mass", "Mass", 100, 0, 25);
     rmMass_80          = dbe->book1D("Mass_80", "Mass_80", 100, 0, 120);
     rmMass_3000        = dbe->book1D("Mass_3000", "Mass_3000", 100, 0, 1500);
     rmConstituents     = dbe->book1D("Constituents", "# of Constituents", 100, 0, 100);
     rmConstituents_80  = dbe->book1D("Constituents_80", "# of Constituents_80", 40, 0, 40);
+   
     //
     rmEta              = dbe->book1D("Eta", "Eta", 100, -5, 5);
     rmEtaFirst         = dbe->book1D("EtaFirst", "EtaFirst", 100, -5, 5);
@@ -227,9 +178,6 @@ if(dbe){
     rmHFShort_3000     = dbe->book1D("HFShort_3000", "HFShort_3000", 100, 0, 1500);
     rmN90              = dbe->book1D("N90", "N90", 50, 0, 50);
 
-
-
-
 /////////////////////Defining PAT histograms///////////////////////
 
    dbe->setCurrentFolder("Benchmarks/" + benchmarkLabel_ + "/"+ "PAT");
@@ -248,12 +196,16 @@ if(dbe){
     mPtRaw_3000       = dbe->book1D("PtRaw_3000", "PtRaw_3000", 100, 0, 4000);
     mPtL2	      = dbe->book1D("PtL2", "PtL2", 100, 0, 50);
     mPtL2_80	      = dbe->book1D("PtL2_80", "PtL2_80", 100, 0, 140);
-    mPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);
+    mPtL2_3000        = dbe->book1D("PtL2_3000", "PtL2_3000", 100, 0, 4000);    
+    mPtuncert         = dbe->book1D("Ptuncert", "Pt uncertainty ", 100, 0, 50);
+    mPtuncert_80      = dbe->book1D("Ptuncert_80", "Pt_80 uncertainty", 100, 0, 140);
+    mPtuncert_3000    = dbe->book1D("Ptuncert_3000", "Pt_3000 uncertainty", 100, 0, 4000);
     mMass             = dbe->book1D("Mass", "Mass", 100, 0, 25);
     mMass_80          = dbe->book1D("Mass_80", "Mass_80", 100, 0, 120);
     mMass_3000        = dbe->book1D("Mass_3000", "Mass_3000", 100, 0, 1500);
     mConstituents     = dbe->book1D("Constituents", "# of Constituents", 100, 0, 100);
     mConstituents_80  = dbe->book1D("Constituents_80", "# of Constituents_80", 40, 0, 40);
+    //
     //
     mEta	      = dbe->book1D("Eta", "Eta", 100, -5, 5);
     mEtaFirst         = dbe->book1D("EtaFirst", "EtaFirst", 100, -5, 5);
@@ -303,11 +255,6 @@ if(dbe){
     mHFShort_80       = dbe->book1D("HFShort_80", "HFShort_80", 100, 0, 200);
     mHFShort_3000     = dbe->book1D("HFShort_3000", "HFShort_3000", 100, 0, 1500);
     mN90              = dbe->book1D("N90", "N90", 50, 0, 50);
-
-
-
-
-
   }
   return;
     
@@ -319,56 +266,53 @@ if(dbe){
 void
 PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
- //   using namespace edm;
-   
-   // Typedefs to use views
+  
 //====================================RECO JETS=====================================
+//get corrected reco jet collection
+  math::XYZTLorentzVector rp4tmp[2];    
+  typedef edm::View<reco::CaloJet> candidateCollection ;
+  
+  edm::Handle<candidateCollection> recojet_hnd;
+  iEvent.getByLabel(recoJet_, recojet_hnd);
+  
+  edm::Handle<candidateCollection> recojetraw_hnd;
+  iEvent.getByLabel(recoJetRaw_, recojetraw_hnd);
 
-//    typedef edm::View<reco::Candidate> candidateCollection ;
+  edm::Handle<candidateCollection> recojetl2_hnd;
+  iEvent.getByLabel(recoJetL2_, recojetl2_hnd);
+  
+  // Prepare access to the uncertainty class
+  double uncertainty = 1.;//dummy value
+  JetCorrectionUncertainty * jtuncrt = 
+        new JetCorrectionUncertainty( uncertainty_file_ );  
+
+  for (candidateCollection::const_iterator  rjet = recojetraw_hnd->begin(); rjet != recojetraw_hnd->end(); rjet++) {
+    if (rmPtRaw) rmPtRaw->Fill (rjet->pt());
+    if (rmPtRaw_80) rmPtRaw_80->Fill (rjet->pt());
+    if (rmPtRaw_3000) rmPtRaw_3000->Fill(rjet->pt());
+	    
+    uncertainty = jtuncrt->uncertaintyPtEta( rjet->pt(), rjet->eta(), "UP"); 
+
+    if (rmPtuncert) rmPtuncert->Fill ( rjet->pt()*(uncertainty+1.0) );//, uncertainty );    
+    if (rmPtuncert_80) rmPtuncert_80->Fill (rjet->pt()*(uncertainty+1.0));
+    if (rmPtuncert_3000) rmPtuncert_3000->Fill(rjet->pt()*(uncertainty+1.0));	    
+  }  
     
+  for (candidateCollection::const_iterator  rjet = recojetl2_hnd->begin(); rjet != recojetl2_hnd->end(); rjet++) {
+    if (rmPtL2) rmPtL2->Fill (rjet->pt());
+    if (rmPtL2_80) rmPtL2_80->Fill (rjet->pt());
+    if (rmPtL2_3000) rmPtL2_3000->Fill(rjet->pt());
+  }
 
-     //get reco jet collection
-////     edm::Handle<candidateCollection> recojet_hnd;
-//////     iEvent.getByLabel(recoJet_, recojet_hnd);
-///     const candidateCollection & RECOJET =*recojet_hnd;
-//      const candidateCollection & RECOJET =*recojet_hnd;
-
-    math::XYZTLorentzVector rp4tmp[2];    
-    typedef edm::View<reco::CaloJet> candidateCollection ;
-    edm::Handle<candidateCollection> recojet_hnd;
-    iEvent.getByLabel(recoJet_, recojet_hnd);
-
-//////reverse pat reco///     edm::Handle<std::vector<pat::Jet> >  recojet_hnd;
-//////reverse pat reco///     iEvent.getByLabel(recoJet_, recojet_hnd);
-////reverse pat reco///     for (std::vector<pat::Jet>::const_iterator  recojet = recojet_hnd->begin(); recojet != recojet_hnd->end(); recojet++) {
-
-     int rjetIndex = 0;
-     int rnJet = 0;
-     int rnJetF = 0;
-     int rnJetC = 0;
-     
-     
-     edm::Handle<candidateCollection> recojetraw_hnd;
-     iEvent.getByLabel(recoJetRaw_, recojetraw_hnd);     
-     for (candidateCollection::const_iterator  rjet = recojetraw_hnd->begin(); rjet != recojetraw_hnd->end(); rjet++) {
-	    if (rmPtRaw) rmPtRaw->Fill (rjet->pt());    
-	    if (rmPtRaw_80) rmPtRaw_80->Fill (rjet->pt());
-	    if (rmPtRaw_3000) rmPtRaw_3000->Fill(rjet->pt());
-     }
-     
-     edm::Handle<candidateCollection> recojetl2_hnd;
-     iEvent.getByLabel(recoJetL2_, recojetl2_hnd);     
-     for (candidateCollection::const_iterator  rjet = recojetl2_hnd->begin(); rjet != recojetl2_hnd->end(); rjet++) {
-	    if (rmPtL2) rmPtL2->Fill (rjet->pt());    
-	    if (rmPtL2_80) rmPtL2_80->Fill (rjet->pt());
-	    if (rmPtL2_3000) rmPtL2_3000->Fill(rjet->pt());
-     }     
+  int rjetIndex = 0;
+  int rnJet = 0;
+  int rnJetF = 0;
+  int rnJetC = 0;
     
-      for (candidateCollection::const_iterator  rjet = recojet_hnd->begin(); rjet != recojet_hnd->end(); rjet++) {
-//////  cout << "reco jet  is" << recoJet_ << "and reco Jet pt is = "<< rjet->pt() << endl;    
-//     cout << "I AM HERE 1" << endl;  
-     if (rmEta) rmEta->Fill(rjet->eta());   
-//     cout << "I AM HERE 2" << endl;
+  for (candidateCollection::const_iterator  rjet = recojet_hnd->begin(); rjet != recojet_hnd->end(); rjet++) {
+    
+   
+    if (rmEta) rmEta->Fill(rjet->eta());   
     
     if (rjet->pt() > 10.) {
       if (fabs(rjet->eta()) > 1.3)
@@ -376,19 +320,7 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       else
         rnJetC++;
     }
-//    cout << "I AM HERE 3" << endl;
-/*    if (rjet->pt() > 10.) {
-      if (rmEtaFineBin) rmEtaFineBin->Fill (rjet->eta());   
-      if (rmEtaFineBin1p) rmEtaFineBin1p->Fill(rjet->eta()); 
-      if (rmEtaFineBin2p) rmEtaFineBin2p->Fill(rjet->eta());
-      if (rmEtaFineBin3p) rmEtaFineBin3p->Fill(rjet->eta());
-      if (rmEtaFineBin1m) rmEtaFineBin1m->Fill(rjet->eta());
-      if (rmEtaFineBin2m) rmEtaFineBin2m->Fill(rjet->eta());
-      if (rmEtaFineBin3m) rmEtaFineBin3m->Fill(rjet->eta());
-      if (rmPhiFineBin) rmPhiFineBin->Fill (rjet->phi());
-    }
-*/
-//    cout << "I AM HERE 4" << endl;
+
     if (rmPhi) rmPhi->Fill(rjet->phi());
     if (rmE) rmE->Fill (rjet->energy());
     if (rmE_80) rmE_80->Fill(rjet->energy());
@@ -420,9 +352,8 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       rnJet++;
       rp4tmp[1] = rjet->p4();
   }
-//    cout << "I AM HERE 5" << endl;
 
-  if (rmMaxEInEmTowers) rmMaxEInEmTowers->Fill(rjet->maxEInEmTowers());
+    if (rmMaxEInEmTowers) rmMaxEInEmTowers->Fill(rjet->maxEInEmTowers());
     if (rmMaxEInHadTowers) rmMaxEInHadTowers->Fill(rjet->maxEInHadTowers());
     if (rmHadEnergyInHO) rmHadEnergyInHO->Fill(rjet->hadEnergyInHO());
     if (rmHadEnergyInHO_80)   rmHadEnergyInHO_80->Fill(rjet->hadEnergyInHO());
@@ -455,14 +386,9 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if (rmHFShort_3000) rmHFShort_3000->Fill(rjet->hadEnergyInHF()*0.5);
     
     if (rmN90) rmN90->Fill(rjet->n90());
- //   rmJetEnergyProfile->Fill(rjet->eta(), rjet->phi(), rjet->energy());
-//    rmHadJetEnergyProfile->Fill(rjet->eta(), rjet->phi(), rjet->hadEnergyInHO()+rjet->hadEnergyInHB()+rjet->hadEnergyInHF()+rjet->hadEnergyInHE());
-//    rmEMJetEnergyProfile->Fill(rjet->eta(), rjet->phi(), rjet->emEnergyInEB()+rjet->emEnergyInEE()+rjet->emEnergyInHF());
+
   }
 
-//  if (rmNJetsEtaC) rmNJetsEtaC->Fill( nJetC );
-//  if (rmNJetsEtaF) rmNJetsEtaF->Fill( nJetF );
-    
   if (rnJet == 2) {
     if (rmMjj) rmMjj->Fill( (rp4tmp[0]+rp4tmp[1]).mass() );
     if (rmMjj_3000) rmMjj_3000->Fill( (rp4tmp[0]+rp4tmp[1]).mass() );
@@ -475,11 +401,10 @@ PATValidation_Jet::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     float rptStep = (ristep * (200./100.));
     
     
-for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != recojet_hnd->end(); ++ rcal ) {
+  for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != recojet_hnd->end(); ++ rcal ) {
 
       if ( rcal->pt() > rptStep ) rnjet++;
     }
-//    rmNJets1->Fill( rptStep, rnjet );
   }
   
   for (int ristep = 0; ristep < 100; ++ristep) {
@@ -487,15 +412,13 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
         float rptStep = (ristep * (4000./100.));
 
     
-for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != recojet_hnd->end(); ++ rcal ) {
+  for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != recojet_hnd->end(); ++ rcal ) {
     
                 if ( rcal->pt() > rptStep ) rnjet++;
         }
-//      rmNJets2->Fill( rptStep, rnjet );
   }
-    
-    
-
+  //normalize uncertainty histograms
+  double norm=1;
 
 //=============================PAT JET====================================
 
@@ -503,34 +426,19 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
   //***********************************
   //*** Get the Jet collection
   //***********************************
+  math::XYZTLorentzVector p4tmp[2];
+  edm::Handle<std::vector<pat::Jet> >  patjet_hnd;
+  iEvent.getByLabel(patJet_, patjet_hnd);
+  int jetIndex = 0;
+  int nJet = 0;
+  int nJetF = 0;
+  int nJetC = 0;
+  
+  for (std::vector<pat::Jet>::const_iterator  jet = patjet_hnd->begin(); jet != patjet_hnd->end(); jet++) {
 
+    uncertainty = jet->relCorrUncert( "UP" ); 
 
-     math::XYZTLorentzVector p4tmp[2];
-//
-//     typedef edm::View<std::vector<pat::Jet> > patCollection ;
-//      edm::Handle<patCollection>  patjet_hnd;
-//     std::vector<pat::Jet> const & jets = *patjet_hnd;
-
-	edm::Handle<std::vector<pat::Jet> >  patjet_hnd;
-	iEvent.getByLabel(patJet_, patjet_hnd);
-
-///////reverse pat reco///        typedef edm::View<reco::CaloJet> candidateCollection ;
-///////reverse pat reco///        edm::Handle<candidateCollection> patjet_hnd;
-///////reverse pat reco/// iEvent.getByLabel(patJet_, patjet_hnd);
-////reverse pat reco///     for (candidateCollection::const_iterator  jet = patjet_hnd->begin(); jet != patjet_hnd->end(); jet++) {
-
-     int jetIndex = 0;
-     int nJet = 0;
-     int nJetF = 0;
-     int nJetC = 0;
-
-
- //    for (; jet != patjet_hnd->end(); jet++, jetIndex++) {
-      for (std::vector<pat::Jet>::const_iterator  jet = patjet_hnd->begin(); jet != patjet_hnd->end(); jet++) {
-/////     cout << "PAT jet  is" << patJet_ << "and PAT Jet pt is = "<< jet->pt() << endl;
-//     cout << "I AM HERE 1" << endl;
-     if (mEta) mEta->Fill(jet->eta());
-//     cout << "I AM HERE 2" << endl;
+    if (mEta) mEta->Fill(jet->eta());
     
     if (jet->pt() > 10.) {
       if (fabs(jet->eta()) > 1.3)
@@ -538,19 +446,8 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
       else
         nJetC++;
     }
-//    cout << "I AM HERE 3" << endl;
-/*    if (jet->pt() > 10.) {
-      if (mEtaFineBin) mEtaFineBin->Fill (jet->eta());
-      if (mEtaFineBin1p) mEtaFineBin1p->Fill(jet->eta());
-      if (mEtaFineBin2p) mEtaFineBin2p->Fill(jet->eta());
-      if (mEtaFineBin3p) mEtaFineBin3p->Fill(jet->eta());
-      if (mEtaFineBin1m) mEtaFineBin1m->Fill(jet->eta());
-      if (mEtaFineBin2m) mEtaFineBin2m->Fill(jet->eta());
-      if (mEtaFineBin3m) mEtaFineBin3m->Fill(jet->eta());
-      if (mPhiFineBin) mPhiFineBin->Fill (jet->phi());
-    }
-*/
-//    cout << "I AM HERE 4" << endl;
+    if (jet->mass()<0)
+	 
     if (mPhi) mPhi->Fill(jet->phi()); 
     if (mE) mE->Fill (jet->energy());
     if (mE_80) mE_80->Fill(jet->energy());
@@ -561,6 +458,10 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
     if (mPt) mPt->Fill (jet->pt());
     if (mPt_80) mPt_80->Fill (jet->pt());
     if (mPt_3000) mPt_3000->Fill(jet->pt());
+    if (mPtuncert) mPtuncert->Fill ( jet->correctedJet("RAW").pt()*(uncertainty+1.0) );    
+    if (mPtuncert_80) mPtuncert_80->Fill (jet->correctedJet("RAW").pt()*(uncertainty+1.0));
+    if (mPtuncert_3000) mPtuncert_3000->Fill(jet->correctedJet("RAW").pt()*(uncertainty+1.0));
+
     if (mMass) mMass->Fill (jet->mass());
     if (mMass_80) mMass_80->Fill(jet->mass());
     if (mMass_3000) mMass_3000->Fill(jet->mass());
@@ -581,19 +482,15 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
     if (jetIndex == 1) {
       nJet++;
       p4tmp[1] = jet->p4();
-  }
-  
-  
+    }
+
     if (mPtRaw) mPtRaw->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
     if (mPtRaw_80) mPtRaw_80->Fill (jet->correctedJet(pat::JetCorrFactors::Raw).pt());
     if (mPtRaw_3000) mPtRaw_3000->Fill(jet->correctedJet(pat::JetCorrFactors::Raw).pt());
-    
+
     if (mPtL2) mPtL2->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
     if (mPtL2_80) mPtL2_80->Fill (jet->correctedJet(pat::JetCorrFactors::L2).pt());
     if (mPtL2_3000) mPtL2_3000->Fill(jet->correctedJet(pat::JetCorrFactors::L2).pt());
-  
-  
-//    cout << "I AM HERE 5" << endl;
 
     if (mMaxEInEmTowers) mMaxEInEmTowers->Fill(jet->maxEInEmTowers());
     if (mMaxEInHadTowers) mMaxEInHadTowers->Fill(jet->maxEInHadTowers());
@@ -628,14 +525,7 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
     if (mHFShort_3000) mHFShort_3000->Fill(jet->hadEnergyInHF()*0.5); 
     
     if (mN90) mN90->Fill(jet->n90());
- //   mJetEnergyProfile->Fill(jet->eta(), jet->phi(), jet->energy());
-//    mHadJetEnergyProfile->Fill(jet->eta(), jet->phi(), jet->hadEnergyInHO()+jet->hadEnergyInHB()+jet->hadEnergyInHF()+jet->hadEnergyInHE());
-//    mEMJetEnergyProfile->Fill(jet->eta(), jet->phi(), jet->emEnergyInEB()+jet->emEnergyInEE()+jet->emEnergyInHF());
   }
-    
-//  if (mNJetsEtaC) mNJetsEtaC->Fill( nJetC );
-//  if (mNJetsEtaF) mNJetsEtaF->Fill( nJetF );
-    
   if (nJet == 2) {
     if (mMjj) mMjj->Fill( (p4tmp[0]+p4tmp[1]).mass() );
     if (mMjj_3000) mMjj_3000->Fill( (p4tmp[0]+p4tmp[1]).mass() );
@@ -646,40 +536,20 @@ for (candidateCollection::const_iterator rcal = recojet_hnd->begin(); rcal != re
     int     njet = 0;
     float ptStep = (istep * (200./100.));
     
-for ( std::vector<pat::Jet>::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
-
-///reverse pat reco////        for (candidateCollection::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
-
+    for ( std::vector<pat::Jet>::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
       if ( cal->pt() > ptStep ) njet++;
     }
-//    mNJets1->Fill( ptStep, njet );
   }
     
   for (int istep = 0; istep < 100; ++istep) {
-    	int     njet = 0;
-    	float ptStep = (istep * (4000./100.));
- for ( std::vector<pat::Jet>::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
-
-///reverse pat reco////    for (candidateCollection::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
+     int     njet = 0;
+     float ptStep = (istep * (4000./100.));
+     for ( std::vector<pat::Jet>::const_iterator cal = patjet_hnd->begin(); cal != patjet_hnd->end(); ++ cal ) {
           
       		if ( cal->pt() > ptStep ) njet++;
-    	}
-//    	mNJets2->Fill( ptStep, njet );
+     }
   }
     
-
-
-     
-
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
-   
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
 }
 
 
@@ -696,3 +566,4 @@ PATValidation_Jet::endJob() {
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(PATValidation_Jet);
+
