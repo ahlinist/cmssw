@@ -84,7 +84,7 @@ TH1F* getRebinnedHistogram1d(const TH1* histoOriginal,
   float* binEdges_float = getBinning(histoOriginal->GetXaxis(), combineBins, numBins_rebinned, binEdges_rebinned);
   TH1F* histoRebinned = new TH1F(histoRebinnedName.data(), histoOriginal->GetTitle(), numBins_rebinned, binEdges_float);
   histoRebinned->Sumw2();
-  delete binEdges_float;
+  delete[] binEdges_float;
 
   TAxis* axis_original = histoOriginal->GetXaxis();
 
@@ -119,8 +119,8 @@ TH2F* getRebinnedHistogram2d(const TH1* histoOriginal,
   TH2F* histoRebinned = new TH2F(histoRebinnedName.data(), histoOriginal->GetTitle(), 
 				 numBinsX_rebinned, binEdgesX_float, numBinsY_rebinned, binEdgesY_float);
   histoRebinned->Sumw2();
-  delete binEdgesX_float;
-  delete binEdgesY_float;
+  delete[] binEdgesX_float;
+  delete[] binEdgesY_float;
 
   TAxis* xAxis_original = histoOriginal->GetXaxis();
   TAxis* yAxis_original = histoOriginal->GetYaxis();
@@ -294,9 +294,7 @@ void DQMHistRebinner::endJob()
 	  TH1F* histoRebinned = getRebinnedHistogram1d(histoOriginal, 
 						       axisEntry.combineBins_, axisEntry.numBins_, axisEntry.binEdges_);
 	  dqmStore.book1D(rebinnedHistogramName, histoRebinned);
-	} 
-
-	if ( histoOriginal->GetDimension() == 2 ) {
+	} else if ( histoOriginal->GetDimension() == 2 ) {
 	  const axisEntryType& axisEntryX = axisEntries_[0];
 	  const axisEntryType& axisEntryY = axisEntries_[1];
 	  TH2F* histoRebinned = getRebinnedHistogram2d(histoOriginal, 
