@@ -15,6 +15,7 @@
 #include <TH1.h>
 
 #include <iostream>
+#include <iomanip>
 
 typedef std::vector<std::string> vstring;
 
@@ -90,6 +91,21 @@ void DQMHistEffProducer::analyze(const edm::Event&, const edm::EventSetup&)
 //--- nothing to be done yet
 }
 
+float* getBinning(const TAxis* axis)
+{
+  unsigned numBins = axis->GetNbins();
+
+  float* binEdges_float = new float[numBins + 1];
+
+  for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
+    binEdges_float[iBin] = axis->GetBinLowEdge(iBin + 1);
+  }
+
+  binEdges_float[numBins] = axis->GetBinUpEdge(numBins);
+
+  return binEdges_float;
+}
+
 void DQMHistEffProducer::endJob()
 {
   //std::cout << "<DQMHistEffProducer::endJob>:" << std::endl;
@@ -123,14 +139,35 @@ void DQMHistEffProducer::endJob()
       if ( effHistogramDirectory == "" ) separateMonitorElementFromDirectoryName(numeratorHistogramName, dummy, effHistogramDirectory);
       if ( effHistogramDirectory != "" ) dqmStore.setCurrentFolder(effHistogramDirectory);
       
-      MonitorElement* histoEfficiency = dqmStore.book1D(effHistogramName, effHistogramName, 
-							histoNumerator->GetNbinsX(), histoNumerator->GetXaxis()->GetXmin(), histoNumerator->GetXaxis()->GetXmax());
-      
-      histoEfficiency->getTH1F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
+      if ( histoNumerator->GetDimension() == 1 && histoDenominator->GetDimension() == 1 ) {
+	unsigned numBins = histoNumerator->GetXaxis()->GetNbins();
+	float* binEdges = getBinning(histoNumerator->GetXaxis());
+	MonitorElement* histoEfficiency = dqmStore.book1D(effHistogramName, effHistogramName, 
+							  numBins, binEdges);
+	histoEfficiency->getTH1F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
+	delete[] binEdges;
+      } else if ( histoNumerator->GetDimension() == 2 && histoDenominator->GetDimension() == 2 ) {
+	unsigned numBinsX = histoNumerator->GetXaxis()->GetNbins();
+	float* binEdgesX = getBinning(histoNumerator->GetXaxis());
+	unsigned numBinsY = histoNumerator->GetYaxis()->GetNbins();
+	float* binEdgesY = getBinning(histoNumerator->GetYaxis());
+	MonitorElement* histoEfficiency = dqmStore.book2D(effHistogramName, effHistogramName, 
+							  numBinsX, binEdgesX, numBinsY, binEdgesY);
+	histoEfficiency->getTH2F()->Divide(histoNumerator, histoDenominator, 1., 1., "B");
+	delete[] binEdgesX;
+	delete[] binEdgesY;
+      } else {
+	edm::LogError("endJob") << " Unsupported dimensionality of numerator = " << histoNumerator->GetDimension()
+				<< " and denominator = " << histoDenominator->GetDimension() << " Histograms !!";
+      }
     } else {
-      edm::LogError("endJob") << " Failed to produce efficiency Histogram = " << plot->meName_efficiency_ << " !!";
-      if ( histoNumerator   == NULL ) edm::LogError("endJob") << "  numerator = " << plot->meName_numerator_ << " does not exist.";
-      if ( histoDenominator == NULL ) edm::LogError("endJob") << "  denominator = " << plot->meName_denominator_ << " does not exist.";
+      std::ostringstream message;
+      message << " Failed to produce efficiency Histogram = " << plot->meName_efficiency_ << ";";
+      if ( histoNumerator   == NULL ) message << " numerator = " << plot->meName_numerator_ << " does not exist";
+      if ( histoNumerator   == NULL && histoDenominator == NULL ) message << ",";
+      if ( histoDenominator == NULL ) message << " denominator = " << plot->meName_denominator_ << " does not exist";
+      message << " !!";
+      edm::LogError("endJob") << message.str();
     }
   }
 }
