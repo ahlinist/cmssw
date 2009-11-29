@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.125 2009/11/09 16:39:35 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.126 2009/11/24 16:18:52 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.125 $
-  \date $Date: 2009/11/09 16:39:35 $
+  \version $Revision: 1.126 $
+  \date $Date: 2009/11/24 16:18:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -299,30 +299,16 @@ private:
 
       if( name.find( "EBCLT" ) != std::string::npos )
       {
-        if( name.find( "seed crystal timing" ) != std::string::npos ) {
-          gPad->SetGridx();
-          gPad->SetGridy();
-          obj->GetXaxis()->SetNdivisions(40118, kFALSE);
-          obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-          obj->SetMinimum(0.0);
-          obj->SetMaximum(10.0);
-          gStyle->SetPalette(1);
-          obj->SetOption("colz");
-          gPad->SetRightMargin(0.15);
-          gStyle->SetPaintTextFormat("+g");
-          return;
-        } else {
-          gPad->SetGridx();
-          gPad->SetGridy();
-          obj->GetXaxis()->SetNdivisions(40118, kFALSE);
-          obj->GetYaxis()->SetNdivisions(170102, kFALSE);
-          obj->SetMinimum(0.0);
-          gStyle->SetPalette(10, pCol4);
-          obj->SetOption("colz");
-          gPad->SetRightMargin(0.15);
-          gStyle->SetPaintTextFormat("+g");
-          return;
-        }
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(40118, kFALSE);
+        obj->GetYaxis()->SetNdivisions(170102, kFALSE);
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( name.find( "EBSRT" ) != std::string::npos )
@@ -332,6 +318,26 @@ private:
         obj->GetXaxis()->SetNdivisions(18, kFALSE);
         obj->GetYaxis()->SetNdivisions(2, kFALSE);
         obj->SetMinimum(0.0);
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if( name.find( "EBTMT" ) != std::string::npos )
+      {
+        gPad->SetGridx();
+        gPad->SetGridy();
+        if ( nbx == 72 && nby == 34 ) {
+          obj->GetXaxis()->SetNdivisions(18, kFALSE);
+          obj->GetYaxis()->SetNdivisions(2, kFALSE);
+        } else if ( nbx == 85 && nby == 20 ) {
+          obj->GetXaxis()->SetNdivisions(17);
+          obj->GetYaxis()->SetNdivisions(4);
+        }
+        obj->SetMinimum(4.0);
+        obj->SetMaximum(7.0);
         gStyle->SetPalette(1);
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
@@ -520,7 +526,7 @@ private:
       {
         if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
         obj->SetMinimum(0.0);
-        gStyle->SetPalette(10, pCol4);
+        gStyle->SetPalette(1);
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         return;
@@ -840,28 +846,14 @@ private:
 
       if( name.find( "EBCLT" ) != std::string::npos )
       {
-        if( name.find( "seed" ) == std::string::npos )
-        {
-          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-          text7->GetXaxis()->SetRange(x1, x2);
-          text7->GetYaxis()->SetRange(y1, y2);
-          text7->Draw("text,same");
-          return;
-        }
-        else
-        {
-          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-          text6->GetXaxis()->SetRange(x1, x2);
-          text6->GetYaxis()->SetRange(y1, y2);
-          text6->Draw("text,same");
-          return;
-        }
+        int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text7->GetXaxis()->SetRange(x1, x2);
+        text7->GetYaxis()->SetRange(y1, y2);
+        text7->Draw("text,same");
+        return;
       }
 
       if( nbx == 17 && nby == 4 )
@@ -878,14 +870,25 @@ private:
 
       if( nbx == 72 && nby == 34 )
       {
-        int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-        int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-        int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-        int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-        text8->GetXaxis()->SetRange(x1, x2);
-        text8->GetYaxis()->SetRange(y1, y2);
-        text8->Draw("text,same");
-        return;
+        if( name.find( "EBTMT" ) == std::string::npos ) {
+          int x1 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text8->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text8->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text8->GetXaxis()->SetRange(x1, x2);
+          text8->GetYaxis()->SetRange(y1, y2);
+          text8->Draw("text,same");
+          return;
+        } else {
+          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+          text6->GetXaxis()->SetRange(x1, x2);
+          text6->GetYaxis()->SetRange(y1, y2);
+          text6->Draw("text,same");
+          return;          
+        }
       }
 
       int x1 = text1->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
@@ -913,28 +916,14 @@ private:
 
       if( name.find( "EBCLT" ) != std::string::npos )
       {
-        if( name.find( "seed" ) == std::string::npos )
-        {
-          int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-          int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-          int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-          int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-          text7->GetXaxis()->SetRange(x1, x2);
-          text7->GetYaxis()->SetRange(y1, y2);
-          text7->Draw("text,same");
-          return;
-        }
-        else
-        {
-          int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
-          int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
-          int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
-          int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
-          text6->GetXaxis()->SetRange(x1, x2);
-          text6->GetYaxis()->SetRange(y1, y2);
-          text6->Draw("text,same");
-          return;
-        }
+        int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+        int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+        int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+        int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+        text7->GetXaxis()->SetRange(x1, x2);
+        text7->GetYaxis()->SetRange(y1, y2);
+        text7->Draw("text,same");
+        return;
       }
 
       if( name.find( "EBOT MEM" ) != std::string::npos )
