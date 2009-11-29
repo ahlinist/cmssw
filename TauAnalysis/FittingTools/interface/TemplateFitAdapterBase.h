@@ -25,9 +25,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.1 $
  *
- * $Id: TemplateFitAdapterBase.h,v 1.13 2009/11/17 15:12:19 veelken Exp $
+ * $Id: TemplateFitAdapterBase.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
  *
  */
 
@@ -53,6 +53,12 @@ class TemplateFitAdapterBase
   explicit TemplateFitAdapterBase(const edm::ParameterSet&);
   virtual ~TemplateFitAdapterBase();
 
+  struct fitRangeEntryType
+  {
+    double min_;
+    double max_;
+  };
+
   struct fitResultType
   {
     struct normEntryType
@@ -66,8 +72,7 @@ class TemplateFitAdapterBase
     {
       std::map<std::string, const TH1*> templates_; // key = processName
       const TH1* data_;
-      double xMinFit_;
-      double xMaxFit_;
+      std::vector<fitRangeEntryType> fitRanges_;
     };
 
     int status_;
@@ -114,7 +119,7 @@ class TemplateFitAdapterBase
 //--- auxiliary data-structures
   struct data1dType
   {
-    data1dType(const std::string&, const std::string&, const std::string&, double, double, bool);
+    data1dType(const std::string&, const std::string&, const std::string&, const std::vector<fitRangeEntryType>&);
     virtual ~data1dType();
 
     virtual void initialize();
@@ -126,9 +131,7 @@ class TemplateFitAdapterBase
     std::string meName_;
     MonitorElement* me_;
 
-    double xMinFit_;
-    double xMaxFit_;
-    bool cutUnfittedRegion_;
+    std::vector<fitRangeEntryType> fitRanges_;
 
     TH1* histogram_;    
     TH1* fluctHistogram_;
@@ -144,7 +147,7 @@ class TemplateFitAdapterBase
     dataNdType();
     ~dataNdType();
 
-    void addVar(const std::string&, const std::string&, double, double, bool);
+    void addVar(const std::string&, const std::string&, const std::vector<fitRangeEntryType>&);
     void initialize();
     void fluctuate(bool, bool);
 
@@ -171,7 +174,7 @@ class TemplateFitAdapterBase
       int fluctMode_;
     };
 
-    model1dType(const std::string&, const std::string&, const std::string&, double, double, bool);
+    model1dType(const std::string&, const std::string&, const std::string&, const std::vector<fitRangeEntryType>&);
     virtual ~model1dType();
 
     void initialize();
@@ -185,7 +188,7 @@ class TemplateFitAdapterBase
     modelNdType(const std::string&);
     ~modelNdType();
 
-    void addVar(const std::string&, const std::string&, double, double, bool);
+    void addVar(const std::string&, const std::string&, const std::vector<fitRangeEntryType>&);
     void initialize();
     void fluctuate(bool, bool);   
 

@@ -22,22 +22,22 @@ double getSampledPull(double, double, double);
 void sampleHistogram_stat(const TH1*, TH1*);
 void sampleHistogram_sys(TH1*, const TH1*, double, double, double, int);
 
-TArrayD getBinning(const TH1*);
+TArrayD getBinning(const TAxis*, const TemplateFitAdapterBase::fitRangeEntryType* = 0);
 
-double getIntegral(const TH1*);
-double getIntegral(const TH1*, double, double);
+double getIntegral(const TH1*, const std::vector<TemplateFitAdapterBase::fitRangeEntryType>* = 0);
 
 void makeHistogramPositive(TH1*);
 
-TH1* makeConcatenatedHistogram(const std::string&, const std::vector<const TH1*>&, 
-			       const std::vector<double_pair>&, const std::vector<double>*);
+TH1* makeSubrangeHistogram(const TH1*, const std::vector<TemplateFitAdapterBase::fitRangeEntryType>*);
+TH1* makeSerializedHistogram(const TH1*);
+TH1* makeConcatenatedHistogram(const std::string&, const std::vector<const TH1*>&, const std::vector<double>*);
 
 void saveMonitorElement_float(DQMStore&, const char*, float);
 void saveFitParameter(DQMStore&, const std::string&, const std::string&, const std::string&, double, double, double);
 
-void makeControlPlotsObsDistribution(const TemplateFitAdapterBase::fitResultType*,
-				     const std::map<std::string, TemplateFitAdapterBase::drawOptionsType*>&,
-				     const std::string&);
+void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultType*,
+				       const std::map<std::string, TemplateFitAdapterBase::drawOptionsType*>&,
+				       const std::string&);
 void makeControlPlotsCovariance(const TVectorD&, const TVectorD&, const TMatrixD&, 
 				const std::vector<std::string>&, const std::string&, const char*);
 

@@ -110,7 +110,7 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
     bool isFirstFit = (!pdfCoeffCollection_);
 
     if ( isFirstFit ) {
-      pdfBinning_ = new TArrayD(getBinning(model1dEntryBase_->fluctHistogram_));
+      pdfBinning_ = new TArrayD(getBinning(model1dEntryBase_->fluctHistogram_->GetXaxis()));
       pdfCoeffCollection_ = new TObjArray();
 
       const RooAbsBinning& xRange = varRef_->getBinning();

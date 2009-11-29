@@ -94,7 +94,6 @@ void TemplateFitAdapter_TFractionFitter::fitImp(int, int)
 
 //--- build single concatenated histogram of all distribution observed in (pseudo)data
   std::vector<const TH1*> data1dHistograms;
-  std::vector<double_pair> xRanges;
   std::vector<double> dataNormCorrFactors;
   
   unsigned numVariables = varNames_.size();
@@ -104,14 +103,13 @@ void TemplateFitAdapter_TFractionFitter::fitImp(int, int)
     const TemplateFitAdapterBase::data1dType* data1dEntryBase = dataNdEntry_->data1dEntries_[varName];
 
     data1dHistograms.push_back(data1dEntryBase->fluctHistogram_);
-    xRanges.push_back(double_pair(data1dEntryBase->xMinFit_, data1dEntryBase->xMaxFit_));
     double normCorrFactor = ( data1dEntryBase->fittedFraction_ > 0. ) ? (1./data1dEntryBase->fittedFraction_) : 0.;
     dataNormCorrFactors.push_back(normCorrFactor);
   }
 
   delete dataNdEntryImpSpecific_->auxConcatenatedHistogram_;
   dataNdEntryImpSpecific_->auxConcatenatedHistogram_ 
-    = makeConcatenatedHistogram("auxConcatenatedHistogram_data", data1dHistograms, xRanges, &dataNormCorrFactors);
+    = makeConcatenatedHistogram("auxConcatenatedHistogram_data", data1dHistograms, &dataNormCorrFactors);
   std::cout << "integral(auxConcatenatedHistogram_data) = " 
 	    << dataNdEntryImpSpecific_->auxConcatenatedHistogram_->Integral() << std::endl;
 
@@ -141,7 +139,7 @@ void TemplateFitAdapter_TFractionFitter::fitImp(int, int)
     delete modelNdEntriesImpSpecific_[processName]->auxConcatenatedHistogram_;
     std::string auxConcatenatedHistogramName_model = std::string("auxConcatenatedHistogram_").append(processName);
     modelNdEntriesImpSpecific_[processName]->auxConcatenatedHistogram_
-      = makeConcatenatedHistogram(auxConcatenatedHistogramName_model, model1dHistograms, xRanges, &modelNormCorrFactors);
+      = makeConcatenatedHistogram(auxConcatenatedHistogramName_model, model1dHistograms, &modelNormCorrFactors);
     std::cout << "integral(auxConcatenatedHistogram_model, process = " << processName << ")" 
 	      << " = " << modelNdEntriesImpSpecific_[processName]->auxConcatenatedHistogram_->Integral() << std::endl;
     

@@ -20,9 +20,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.13 $
+ * \version $Revision: 1.1 $
  *
- * $Id: TemplateFitAdapter_RooFit.h,v 1.13 2009/11/17 15:12:19 veelken Exp $
+ * $Id: TemplateFitAdapter_RooFit.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
  *
  */
 
@@ -104,7 +104,7 @@ class TemplateFitAdapter_RooFit : public TemplateFitAdapterBase
 
 //--- data-members for simultaneous fits 
 //    of templates and distributions observed in data
-//    via RooParametrixStepFunctions
+//    via RooParametricStepFunctions
     TArrayD* pdfBinning_;
     TObjArray* pdfCoeffCollection_;
     RooArgList* pdfCoeffArgs_;
