@@ -136,7 +136,6 @@ void ESRenderPlugin::preDrawTProfile(TCanvas *, const VisDQMObject &o) {
   std::string name = o.name.substr(o.name.rfind("/")+1);
   if ( o.name.find("Trending") != std::string::npos ) {
     obj->SetLineColor(4);
-    return;
   }
   
 }
@@ -251,8 +250,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
       obj->SetTitle( name.c_str() );
    }
 
-   if ( name.find( "Integrity Summary" ) != std::string::npos ) 
-   {
+   if ( name.find( "Integrity Summary" ) != std::string::npos ) {
       gStyle->SetPalette(8,colorbar2);
       obj->SetMinimum(0.5);
       obj->SetMaximum(8.5);
@@ -306,6 +304,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
      obj->SetBinContent(40,40,0.);
      obj->Scale(1/NEntries);
      obj->SetMaximum(32);
+     obj->GetZaxis()->SetNdivisions(8, kFALSE);
      return;
    }
    
