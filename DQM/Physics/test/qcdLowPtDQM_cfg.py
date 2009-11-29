@@ -1,4 +1,4 @@
-# $Id: qcdLowPtDQM_cfg.py,v 1.4 2009/11/15 19:45:55 loizides Exp $
+# $Id: qcdLowPtDQM_cfg.py,v 1.5 2009/11/18 22:32:22 loizides Exp $
 
 import FWCore.ParameterSet.Config as cms
 
@@ -12,7 +12,7 @@ process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('DQM/Physics/qcdLowPtDQM_cfi')
 
-process.GlobalTag.globaltag = 'MC_31X_V9::All'
+process.GlobalTag.globaltag = 'STARTUP3X_V8D::All'
 
 process.options = cms.untracked.PSet(
     FailPath = cms.untracked.vstring("ProductNotFound")
@@ -25,8 +25,9 @@ process.maxEvents = cms.untracked.PSet(
 process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        'file:/d1/loizides/data/cms/CMSSW_3_3_3/BeamCommissioning09-Calo-RECO-121457-v2.root'
+   duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
+   fileNames = cms.untracked.vstring(
+        'file:/putfilehere.root'
     )
 )
 
