@@ -18,12 +18,10 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
         self.dqmDirectory = dqmDirectory
         self.fileSets = dict()
         self.selections = dict()
-        self.kineEventReweights = dict()
+        self.kineEventReweights = dict()        
         self.branchNames = dict()
-        self.numBinsX = dict()
-        self.xMin = dict()
-        self.xMax = dict()
-        self.xBins = dict()
+        self.numBins = dict()
+        self.binEdges = dict()
         self.sequence = None
 
     def addProcess(self, processName, fileNames):
@@ -33,20 +31,57 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
         self.selections[processName] = treeSelection
         self.kineEventReweights[processName] = kineEventReweight
 
-    def addTemplate(self, meName, branchName, numBinsX, xMin = None, xMax = None, xBins = None):
-        # check that either xMin and xMax or xBins parameters (but not all) are specified
-        if (xMin is None or xMax is None) and xBins is None:
-            raise ValueError("Definition of either 'xMin' and 'xMax' Parameters or 'xBins' Parameter missing !!")
-        if (xMin is not None or xMax is not None) and xBins is not None:
-            raise ValueError("Duplicate definition of 'xMin', 'xMax' and 'xBins' Parameters !!")
+    @staticmethod
+    def _getBinEdges(numBins, min, max):
+
+        binEdges = []
+
+        binWidth = (max - min)/numBins
+        
+        for iBin in range(0,numBins + 1):
+            binEdge = min + (iBin)*binWidth
+            binEdges.append(binEdge)
+
+        return binEdges
+
+    def addTemplate(self, meName,
+                    branchName, numBins, min = None, max = None, binEdges = None):
+        # check that either min and max or binEdges parameters (but not all) are specified
+        if (min is None or max is None) and binEdges is None:
+            raise ValueError("Definition of either 'min' and 'max' Parameters or 'binEdges' Parameter missing !!")
+        if (min is not None or max is not None) and binEdges is not None:
+            raise ValueError("Duplicate definition of 'min', 'max' and 'binEdges' Parameters !!")
         
         self.branchNames[meName] = branchName
-        self.numBinsX[meName] = numBinsX       
+        self.numBins[meName] = [ numBins, ]
+        if min is not None and max is not None:
+            self.binEdges[meName] = [ getBinEdges(numBins, min, max), ]
+        if binEdges is not None:
+            self.binEdges[meName] = [ binEdges, ]
+
+    def addTemplate(self, meName,
+                    branchNameX, numBinsX, xMin = None, xMax = None, binEdgesX = None,
+                    branchNameY, numBinsY, yMin = None, yMax = None, binEdgesY = None):
+        # check that either xMin and xMax or binEdgesX parameters (but not all) are specified
+        if (xMin is None or xMax is None) and binEdgesX is None:
+            raise ValueError("Definition of either 'xMin' and 'xMax' Parameters or 'binEdgesX' Parameter missing !!")
+        if (xMin is not None or xMax is not None) and binEdgesX is not None:
+            raise ValueError("Duplicate definition of 'xMin', 'xMax' and 'binEdgesX' Parameters !!")
+        if (yMin is None or yMax is None) and binEdgesY is None:
+            raise ValueError("Definition of either 'yMin' and 'yMax' Parameters or 'binEdgesY' Parameter missing !!")
+        if (yMin is not None or yMax is not None) and binEdgesY is not None:
+            raise ValueError("Duplicate definition of 'yMin', 'yMax' and 'binEdgesY' Parameters !!")
+        
+        self.branchNames[meName] = [ branchNameX, branchNameY ]  
+        self.numBins[meName] = [ numBinsX, numBinsY ]
         if xMin is not None and xMax is not None:
-            self.xMin[meName] = xMin
-            self.xMax[meName] = xMax
-        if xBins is not None:
-            self.xBins[meName] = xBins
+            self.binEdges[meName] = [ getBinEdges(numBinsX, xMin, xMax), ]
+        if binEdges is not None:
+            self.binEdges[meName] = [ binEdgesX, ]
+        if yMin is not None and yMax is not None:
+            self.binEdges[meName].append(getBinEdges(numBinsY, yMin, yMax))
+        if binEdges is not None:
+            self.binEdges[meName].append(binEdgesY)
 
     def configure(self, process):
         for processName_sel, treeSelection in self.selections.items():
@@ -76,17 +111,32 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
 
                 config = cms.VPSet()
                 
-                for meName, branchName in self.branchNames.items():
+                for meName in self.branchNames.keys():
+
                     configEntry = cms.PSet()
 
                     setattr(configEntry, "meName", cms.string(dqmDirectory_process + "/" + meName))
-                    setattr(configEntry, "branchName", cms.string(branchName))
-                    setattr(configEntry, "numBinsX", cms.uint32(self.numBinsX[meName]))
-                    if self.xMin.get(meName) is not None and self.xMax.get(meName) is not None:
-                        setattr(configEntry, "xMin", cms.double(self.xMin[meName]))
-                        setattr(configEntry, "xMax", cms.double(self.xMax[meName]))
-                    if self.xBins.get(meName) is not None:
-                        setattr(configEntry, "xBins", cms.vdouble(self.xBins[meName]))
+
+                    numVariables = len(self.branchNames[meName])
+                    if numVariables > 2:
+                        ValueError("Maximum supported dimensionality is two right now !!")
+
+                    for iVariable in range(len(self.branchNames[meName])):
+
+                        varEntry = cms.PSet()
+                        
+                        setattr(varEntry, "branchName", cms.string(self.branchNames[meName][iVariable]))
+                        setattr(varEntry, "numBins", cms.uint32(self.numBins[meName][iVariable]))
+                        setattr(varEntry, "binEdges", cms.vdouble(self.binEdges[meName][iVariable]))
+
+                        varEntryName = None
+                        if iVariable == 1:
+                            varEntryName = "x"
+                        elif iVariable == 2:
+                            varEntryName = "y"
+                        elif iVariable == 3:
+                            varEntryName = "z"    
+                        setattr(configEntry, "varEntryName", varEntry)
 
                     config.append(configEntry)
 
@@ -100,9 +150,10 @@ class prodTemplateHistConfigurator(cms._ParameterTypeBase):
 
         return cms.Sequence(self.sequence)                 
 
-def makeTemplateHistProdSequence(process, moduleTemplate, dataSets, bgEstEventSelections, branchNames, kineEventReweights,
-                                 dqmDirectory, meName, numBinsX, xMin = None, xMax = None, xBins = None):
-    
+def makeTemplateHistProdSequence(process, moduleTemplate, dataSets, bgEstEventSelections, kineEventReweights,
+                                 dqmDirectory, meName,
+                                 branchNames, numBins, min = None, max = None, binEdges = None):
+        
     sequence = None
     isFirstModule = True
 
@@ -122,7 +173,51 @@ def makeTemplateHistProdSequence(process, moduleTemplate, dataSets, bgEstEventSe
         configurator.addSelection(processName, bgEstEventSelection, kineEventReweight)
 
         branchName = branchNames[processName]
-        configurator.addTemplate(meName, branchName, numBinsX, xMin = xMin, xMax = xMax, xBins = xBins)
+        configurator.addTemplate(meName,
+                                 branchName, numBins, min = min, max = max, binEdges = binEdges)
+
+        module = configurator.configure(process)
+        setattr(process, moduleName, module)
+
+        if isFirstModule:
+            sequence = cms.Sequence( module )
+            isFirstModule = False
+        else:    
+            sequence._seq = sequence._seq * module
+
+    return sequence
+
+def makeTemplateHistProdSequence(process, moduleTemplate, dataSets, bgEstEventSelections, kineEventReweights,
+                                 dqmDirectory, meName,
+                                 branchNamesX, numBinsX, xMin = None, xMax = None, binEdgesX = None,
+                                 branchNamesY, numBinsY, yMin = None, yMax = None, binEdgesY = None):
+
+    sequence = None
+    isFirstModule = True
+
+    if len(branchNamesX) != len(branchNamesY):
+        raise ValueError("Mismatch in number of entries in 'branchNamesX' and 'branchNamesY' Parameters !!")
+
+    for processName in branchNamesX.keys():
+ 
+        moduleName = "prodTemplateHistBgEst" + processName + "Enriched" + "_" + meName
+
+        configurator = prodTemplateHistConfigurator(
+            moduleName, moduleTemplate, dqmDirectory
+        )
+
+        for dataSetName, fileNames in dataSets.items():
+            configurator.addProcess(dataSetName, fileNames)
+
+        bgEstEventSelection = bgEstEventSelections[processName]
+        kineEventReweight = kineEventReweights[processName]
+        configurator.addSelection(processName, bgEstEventSelection, kineEventReweight)
+
+        branchNameX = branchNamesX[processName]
+        branchNameY = branchNamesY[processName]
+        configurator.addTemplate(meName,
+                                 branchNameX, numBinsX, xMin = xMin, xMax = xMax, binEdgesX = binEdgesX,
+                                 branchNameY, numBinsY, yMin = yMin, yMax = yMax, binEdgesY = binEdgesY)
 
         module = configurator.configure(process)
         setattr(process, moduleName, module)
