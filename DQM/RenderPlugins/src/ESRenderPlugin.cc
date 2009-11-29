@@ -2,6 +2,7 @@
 #include "utils.h"
 
 #include "TH1F.h"
+#include "TH1D.h"
 #include "TH2F.h"
 #include "TStyle.h"
 #include "TCanvas.h"
@@ -35,14 +36,14 @@ class ESRenderPlugin : public DQMRenderPlugin {
 			{0.06, 0.60, 0.50}, {0.00, 0.20, 1.00}, 
 			{0.00, 0.10, 0.94}, {0.00, 0.00, 0.87}};
     
-    for( int i=0; i<10; i++ ) {
+    for (int i=0; i<10; ++i) {
       TColor* color = gROOT->GetColor( 951+i );
       if ( ! color ) color = new TColor( 951+i, 0, 0, 0, "");
       color->SetRGB( rgb[i][0], rgb[i][1], rgb[i][2] );
     }
     
-    for( int i=0; i<10; i++) colorbar1[i] = i+951;
-    for( int i=0; i<8; i++) colorbar2[i] = i+1;
+    for (int i=0; i<10; ++i) colorbar1[i] = i+951;
+    for (int i=0; i<8; ++i) colorbar2[i] = i+1;
     colorbar2[0] = 0;
     colorbar2[7] = 800;
   }
@@ -55,7 +56,7 @@ class ESRenderPlugin : public DQMRenderPlugin {
   
 private:
   
-  void preDrawTH1F( TCanvas *c, const VisDQMObject &o );
+  void preDrawTH1( TCanvas *c, const VisDQMObject &o );
   void preDrawTH2F( TCanvas *c, const VisDQMObject &o );
   void postDrawTH2F( TCanvas *c, const VisDQMObject &o );
   void preDrawTProfile( TCanvas *c, const VisDQMObject &o );
@@ -67,21 +68,21 @@ private:
 };
 
 bool ESRenderPlugin::applies( const VisDQMObject &o, const VisDQMImgInfo & ) {
-
-   if ( o.name.find( "EcalPreshower" ) != std::string::npos ) {
-     if ( o.name.find( "ESOccupancyTask" ) != std::string::npos )
-	 return true;
-     if ( o.name.find( "ESRawDataTask" ) != std::string::npos ) 
-       return true;
-     if ( o.name.find( "ESIntegrityTask" ) != std::string::npos )
-       return true;
-     if ( o.name.find( "ESIntegrityClient" ) != std::string::npos )
-       return true;
-     if ( o.name.find( "EventInfo" ) != std::string::npos )
-       return true;
-   }
-
-   return false;
+  
+  if ( o.name.find( "EcalPreshower" ) != std::string::npos ) {
+    if ( o.name.find( "ESOccupancyTask" ) != std::string::npos )
+      return true;
+    if ( o.name.find( "ESRawDataTask" ) != std::string::npos ) 
+      return true;
+    if ( o.name.find( "ESIntegrityTask" ) != std::string::npos )
+      return true;
+    if ( o.name.find( "ESIntegrityClient" ) != std::string::npos )
+      return true;
+    if ( o.name.find( "EventInfo" ) != std::string::npos )
+      return true;
+  }
+  
+  return false;
 }
 
 void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo &, VisDQMRenderInfo & ) {
@@ -104,27 +105,27 @@ void ESRenderPlugin::preDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImg
 
    if ( dynamic_cast<TProfile*>( o.object ) ) 
      preDrawTProfile( c, o );
-   else if ( dynamic_cast<TH1F*>( o.object ) ) 
-     preDrawTH1F( c, o );
+   else if ( dynamic_cast<TH1F*>( o.object ) || dynamic_cast<TH1D*>( o.object )) 
+     preDrawTH1( c, o );
    else if ( dynamic_cast<TH2F*>( o.object ) ) 
      preDrawTH2F( c, o );
    
 }
 
 void ESRenderPlugin::postDraw( TCanvas *c, const VisDQMObject &o, const VisDQMImgInfo & ) {
-
-   c->cd();
-
-   if ( dynamic_cast<TH2F*>( o.object ) ) 
-     postDrawTH2F( c, o );
+  
+  c->cd();
+  
+  if ( dynamic_cast<TH2F*>( o.object ) ) 
+    postDrawTH2F( c, o );
   
 }
 
 void ESRenderPlugin::preDrawTProfile(TCanvas *, const VisDQMObject &o) {
-
+  
   TProfile* obj = dynamic_cast<TProfile*>( o.object );
   assert( obj );
-
+  
   gStyle->SetPaintTextFormat();
   
   gStyle->SetOptStat(kFALSE);
@@ -140,47 +141,72 @@ void ESRenderPlugin::preDrawTProfile(TCanvas *, const VisDQMObject &o) {
   
 }
 
-void ESRenderPlugin::preDrawTH1F(TCanvas *, const VisDQMObject &o) {
+void ESRenderPlugin::preDrawTH1(TCanvas *, const VisDQMObject &o) {
+  
+  TH1* obj = dynamic_cast<TH1*>( o.object );
+  assert( obj );
+  
+  std::string name = o.name.substr(o.name.rfind("/")+1);
+  
+  if ( o.name.find("ESRawDataTask") != std::string::npos ) {
+    obj->SetFillColor(kRed);
+  }
+  
+  if ( name.find( "Gain used for data taking" ) != std::string::npos ) {
+    obj->GetXaxis()->SetBinLabel(1,"LG");
+    obj->GetXaxis()->SetBinLabel(2,"HG");
+    obj->GetXaxis()->SetLabelSize(0.1);
+    obj->SetLineColor(6);
+    obj->SetLineWidth(2);
+  }
+  
+  if ( name.find( "FEDs used for data taking" ) != std::string::npos ) {
+    obj->SetFillColor(kGreen);
+  }
+  
+  if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
+    name.erase( name.find( "Z 1 P 1" ) , 7);
+    name.insert( 2, "+F" );
+    obj->SetTitle( name.c_str() );
+  } else if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
+    name.erase( name.find( "Z -1 P 1" ) , 8);
+    name.insert( 2, "-F" );
+    obj->SetTitle( name.c_str() );
+  } else if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
+    name.erase( name.find( "Z 1 P 2" ) , 7);
+    name.insert( 2, "+R" );
+    obj->SetTitle( name.c_str() );
+  } else if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
+    name.erase( name.find( "Z -1 P 2" ) , 8);
+    name.insert( 2, "-R" );
+    obj->SetTitle( name.c_str() );
+  }  
 
-   TH1F* obj = dynamic_cast<TH1F*>( o.object );
-   assert( obj );
+  if ( name.find( "Num of RecHits" ) != std::string::npos ) {
+    gPad->SetLogy(kTRUE);
+    obj->SetLineColor(4);
+    obj->SetLineWidth(2);
+  }
 
-   std::string name = o.name.substr(o.name.rfind("/")+1);
+  if ( name.find( "Num of Good RecHits" ) != std::string::npos ) {
+    gPad->SetLogy(kTRUE);
+    obj->SetLineColor(2);
+    obj->SetLineWidth(2);
+  }
 
-   if ( o.name.find("ESRawDataTask")!= std::string::npos ) {
-      obj->SetFillColor(kRed);
-   }
+  if ( name.find( "Event Energy" ) != std::string::npos ) {
+    gPad->SetLogy(kTRUE);
+    obj->SetLineColor(3);
+    obj->SetLineWidth(2);
+  }
 
-   if ( name.find( "Gain used for data taking" ) != std::string::npos ) {
-      obj->GetXaxis()->SetBinLabel(1,"LG");
-      obj->GetXaxis()->SetBinLabel(2,"HG");
-      obj->GetXaxis()->SetLabelSize(0.1);
-      obj->SetLineColor(6);
-      obj->SetLineWidth(2);
-   }
-
-   if ( name.find( "FEDs used for data taking" ) != std::string::npos ) {
-      obj->SetFillColor(kGreen);
-   }
-
-   if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
-      name.erase( name.find( "Z 1 P 1" ) , 7);
-      name.insert( 2, "+F" );
-      obj->SetTitle( name.c_str() );
-   } else if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
-      name.erase( name.find( "Z -1 P 1" ) , 8);
-      name.insert( 2, "-F" );
-      obj->SetTitle( name.c_str() );
-   } else if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
-      name.erase( name.find( "Z 1 P 2" ) , 7);
-      name.insert( 2, "+R" );
-      obj->SetTitle( name.c_str() );
-   } else if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
-      name.erase( name.find( "Z -1 P 2" ) , 8);
-      name.insert( 2, "-R" );
-      obj->SetTitle( name.c_str() );
-   }
-
+  if ( name.find( "RecHit Energy" ) != std::string::npos ) {
+    gPad->SetLogy(kTRUE);
+    obj->GetXaxis()->SetNdivisions(5, kFALSE);
+    obj->SetLineColor(6);
+    obj->SetLineWidth(2);
+  }
+  
 }
 
 void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
@@ -275,86 +301,83 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
    }
 
    if ( name.find( "RecHit 2D Occupancy" ) != std::string::npos ) {
-      gStyle->SetPalette(1);
-      NEntries = obj->GetBinContent(40,40);
-      obj->SetBinContent(40,40,0.);
-      obj->Scale(1/NEntries);
-      obj->SetMaximum(33);
-      return;
+     gStyle->SetPalette(1);
+     NEntries = obj->GetBinContent(40,40);
+     obj->SetBinContent(40,40,0.);
+     obj->Scale(1/NEntries);
+     obj->SetMaximum(32);
+     return;
    }
-
+   
    if ( name.find( "Digi 2D Occupancy" ) != std::string::npos ) {
-      gStyle->SetPalette(1);
-      NEntries = obj->GetBinContent(40,40);
-      obj->SetBinContent(40,40,0.);
-      obj->Scale(1/NEntries);
-      return;
+     gStyle->SetPalette(1);
+     NEntries = obj->GetBinContent(40,40);
+     obj->SetBinContent(40,40,0.);
+     obj->Scale(1/NEntries);
+     return;
    }
-
+   
    if ( name.find( "Energy Density" ) != std::string::npos ) {
-      gStyle->SetPalette(1);
-      NEntries = obj->GetBinContent(40,40);
-      obj->SetBinContent(40,40,0.);
-      obj->Scale(1/NEntries);
-      return;
+     gStyle->SetPalette(1);
+     NEntries = obj->GetBinContent(40,40);
+     obj->SetBinContent(40,40,0.);
+     obj->Scale(1/NEntries);
+     return;
    }
-
-   if ( name.find( "reportSummaryMap" ) != std::string::npos ) 
-   {
-      dqm::utils::reportSummaryMapPalette(obj);
-      obj->SetTitle("EcalPreshower Report Summary Map");
-      return;
+   
+   if ( name.find( "reportSummaryMap" ) != std::string::npos ) {
+     dqm::utils::reportSummaryMapPalette(obj);
+     obj->SetTitle("EcalPreshower Report Summary Map");
+     return;
    }
-
 
 }
 
-void ESRenderPlugin::postDrawTH2F( TCanvas *, const VisDQMObject &o )
-{
+void ESRenderPlugin::postDrawTH2F( TCanvas *, const VisDQMObject &o ) {
+
    TH2F* obj = dynamic_cast<TH2F*>( o.object );
    assert( obj );
-
+   
    std::string name = o.name.substr(o.name.rfind("/")+1);
-
+   
    if ( name.find( "Z 1 P 1" ) != std::string::npos ) {
-      drawBorders( 1, 0.5, 0.5 );
+     drawBorders( 1, 0.5, 0.5 );
    }
-
+   
    if ( name.find( "Z -1 P 1" ) != std::string::npos ) {
-      drawBorders( 2, 0.5, 0.5 );
+     drawBorders( 2, 0.5, 0.5 );
    }
-
+   
    if ( name.find( "Z 1 P 2" ) != std::string::npos ) {
-      drawBorders( 3, 0.5, 0.5 );
+     drawBorders( 3, 0.5, 0.5 );
    }
-
+   
    if ( name.find( "Z -1 P 2" ) != std::string::npos ) {
-      drawBorders( 4, 0.5, 0.5 );
+     drawBorders( 4, 0.5, 0.5 );
    }
-
+   
    if ( name.find( "reportSummaryMap" ) != std::string::npos ) {
-      TText t;
-      t.SetTextAlign(22);
-      t.DrawText(21,21,"ES+R");
-      t.DrawText(61,21,"ES-R");
-      t.DrawText(21,61,"ES+F");
-      t.DrawText(61,61,"ES-F");
-
-      drawBorders( 1, 0.5, 40.5 );
-      drawBorders( 2, 40.5, 40.5 );
-      drawBorders( 3, 0.5, 0.5 );
-      drawBorders( 4, 40.5, 0.5 );
+     TText t;
+     t.SetTextAlign(22);
+     t.DrawText(21,21,"ES+R");
+     t.DrawText(61,21,"ES-R");
+     t.DrawText(21,61,"ES+F");
+     t.DrawText(61,61,"ES-F");
+     
+     drawBorders( 1, 0.5, 40.5 );
+     drawBorders( 2, 40.5, 40.5 );
+     drawBorders( 3, 0.5, 0.5 );
+     drawBorders( 4, 40.5, 0.5 );
    }
-
+   
 } 
 
 // Draw ES borders (Ming's copyright, the idea is borrowed from Giuseppe ;-))
-void ESRenderPlugin::drawBorders( int plane, float sx, float sy )
-{
+void ESRenderPlugin::drawBorders( int plane, float sx, float sy ) {
 
    TLine l;
 
-   switch (plane){
+   switch (plane) {
 
       case 1:	//ES+F
 	 for ( int i=0; i<346; i=i+2) {
