@@ -35,13 +35,11 @@ TemplateFitAdapterBase::drawOptionsType::drawOptionsType(const edm::ParameterSet
 //
 
 TemplateFitAdapterBase::data1dType::data1dType(const std::string& processName, const std::string& varName, 
-					       const std::string& meName, double xMinFit, double xMaxFit, bool cutUnfittedRegion)
+					       const std::string& meName, const std::vector<fitRangeEntryType>& fitRanges)
   : processName_(processName),
     varName_(varName),
     meName_(meName),
-    xMinFit_(xMinFit),
-    xMaxFit_(xMaxFit),
-    cutUnfittedRegion_(cutUnfittedRegion),
+    fitRanges_(fitRanges),
     histogram_(0),
     fluctHistogram_(0),
     error_(0)
@@ -68,29 +66,10 @@ void TemplateFitAdapterBase::data1dType::initialize()
 
   std::cout << " integral = " << getIntegral(me_->getTH1()) << std::endl;
 
-//--- make sure that x-axis range excluded from fit
-//    does really have no effect on fit results
-//    (differences between the event selection criteria
-//     applied in the final analysis and the background enriched samples
-//     may cause sizeable deviations between the templates obtained from the background enriched samples 
-//     and the distributions observed in the final analysis;
-//     even in case regions with deviations are not within the fitted region,
-//     they may affect the fit results via differences in the fractions of events 
-//     that are outside of the region included in the fit,
-//     because the normalization of PDFs depends on these fractions)
-  histogram_ = (TH1*)me_->getTH1()->Clone();
-  if ( cutUnfittedRegion_ ) {
-    int numBins = histogram_->GetNbinsX();
-    for ( int iBin = 0; iBin < (numBins + 2); ++iBin ) {
-      double binCenter = histogram_->GetBinCenter(iBin);
-      
-      if ( !(binCenter > xMinFit_ && binCenter < xMaxFit_) ) {
-	histogram_->SetBinContent(iBin, 0.);
-	histogram_->SetBinError(iBin, 0.);
-      }
-    }
-  }
-
+  TH1* histogram_subrange = makeSubrangeHistogram(me_->getTH1(), &fitRanges_);
+  histogram_ = makeSerializedHistogram(histogram_subrange);
+  delete histogram_subrange;
+  
   fluctHistogram_ = (TH1*)histogram_->Clone();
 
   compFittedFraction(fluctHistogram_);
@@ -101,7 +80,7 @@ void TemplateFitAdapterBase::data1dType::compFittedFraction(const TH1* histogram
 {
   integral_ = getIntegral(me_->getTH1());
   
-  fittedIntegral_ = getIntegral(histogram, xMinFit_, xMaxFit_);
+  fittedIntegral_ = getIntegral(histogram, &fitRanges_);
 
   fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
 }
@@ -131,12 +110,12 @@ TemplateFitAdapterBase::dataNdType::~dataNdType()
   }
 }
 
-void TemplateFitAdapterBase::dataNdType::addVar(const std::string& varName, const std::string& meName,
-						double xMinFit, double xMaxFit, bool cutUnfittedRegion)
+void TemplateFitAdapterBase::dataNdType::addVar(const std::string& varName, 
+						const std::string& meName, const std::vector<fitRangeEntryType>& fitRanges)
 {
   varNames_.push_back(varName);
   
-  data1dType* data1dEntry = new data1dType("data", varName, meName, xMinFit, xMaxFit, cutUnfittedRegion);
+  data1dType* data1dEntry = new data1dType("data", varName, meName, fitRanges);
   if ( data1dEntry->error_ ) error_ = 1;
   data1dEntries_[varName] = data1dEntry;
 }
@@ -162,9 +141,9 @@ void TemplateFitAdapterBase::dataNdType::fluctuate(bool, bool)
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
-TemplateFitAdapterBase::model1dType::model1dType(const std::string& processName, const std::string& varName,
-						 const std::string& meName, double xMinFit, double xMaxFit, bool cutUnfittedRegion)
-  : data1dType(processName, varName, meName, xMinFit, xMaxFit, cutUnfittedRegion)
+TemplateFitAdapterBase::model1dType::model1dType(const std::string& processName, const std::string& varName, 
+						 const std::string& meName, const std::vector<fitRangeEntryType>& fitRanges)
+  : data1dType(processName, varName, meName, fitRanges)
 {}
 
 TemplateFitAdapterBase::model1dType::~model1dType()
@@ -245,12 +224,12 @@ TemplateFitAdapterBase::modelNdType::~modelNdType()
   }
 }
 
-void TemplateFitAdapterBase::modelNdType::addVar(const std::string& varName, const std::string& meName,
-						 double xMinFit, double xMaxFit, bool cutUnfittedRegion)
+void TemplateFitAdapterBase::modelNdType::addVar(const std::string& varName, 
+						 const std::string& meName, const std::vector<fitRangeEntryType>& fitRanges)
 {
   varNames_.push_back(varName);
   
-  model1dType* model1dEntry = new model1dType(processName_, varName, meName, xMinFit, xMaxFit, cutUnfittedRegion);
+  model1dType* model1dEntry = new model1dType(processName_, varName, meName, fitRanges);
   if ( model1dEntry->error_ ) error_ = 1;
   model1dEntries_[varName] = model1dEntry;
 }
@@ -276,6 +255,30 @@ void TemplateFitAdapterBase::modelNdType::fluctuate(bool fluctStat, bool fluctSy
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+std::vector<TemplateFitAdapterBase::fitRangeEntryType> getFitRanges(const edm::ParameterSet& cfg)
+{
+  std::vector<TemplateFitAdapterBase::fitRangeEntryType> fitRanges;
+
+  std::vector<std::string> axisLabels;
+  axisLabels.push_back("x");
+  axisLabels.push_back("y");
+  unsigned numAxisLabels = axisLabels.size();
+  for ( unsigned iAxis = 0; iAxis < numAxisLabels; ++iAxis ) {
+    const char* axisLabel = axisLabels[iAxis].data();
+    if ( cfg.exists(axisLabel) ) {
+      edm::ParameterSet cfgFitRange = cfg.getParameter<edm::ParameterSet>(axisLabel);
+      TemplateFitAdapterBase::fitRangeEntryType fitRangeEntry;
+      fitRangeEntry.min_ = cfgFitRange.getParameter<double>("min");
+      fitRangeEntry.max_ = cfgFitRange.getParameter<double>("max");
+      fitRanges.push_back(fitRangeEntry);
+    } else {
+      break;
+    }
+  }
+
+  return fitRanges;
+}
+
 TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
   : isFirstFit_(true),
     error_(0)
@@ -283,8 +286,6 @@ TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
   std::cout << "<TemplateFitAdapterBase::TemplateFitAdapterBase>:" << std::endl;
 
   edm::ParameterSet cfgFit = cfg.getParameter<edm::ParameterSet>("fit");
-
-  bool cutUnfittedRegion = ( cfgFit.exists("cutUnfittedRegion") ) ? cfgFit.getParameter<bool>("cutUnfittedRegion") : false;
 
 //--- read list of variables to be used in fit
 //    (for each variable: name, title and range to be fitted)
@@ -328,11 +329,9 @@ TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
       std::string meName = cfgTemplate.getParameter<std::string>("meName");
 
       edm::ParameterSet cfgVariable = cfgVariables.getParameter<edm::ParameterSet>(*varName);
+      std::vector<fitRangeEntryType> fitRanges = getFitRanges(cfgVariable);
 
-      double xMinFit = cfgVariable.getParameter<double>("xMin");
-      double xMaxFit = cfgVariable.getParameter<double>("xMax");
-
-      modelNdEntry->addVar(*varName, meName, xMinFit, xMaxFit, cutUnfittedRegion);
+      modelNdEntry->addVar(*varName, meName, fitRanges);
     }
 
     modelNdEntries_[*processName] = modelNdEntry;
@@ -363,11 +362,9 @@ TemplateFitAdapterBase::TemplateFitAdapterBase(const edm::ParameterSet& cfg)
     std::string meName = cfgDistribution.getParameter<std::string>("meName");
 
     edm::ParameterSet cfgVariable = cfgVariables.getParameter<edm::ParameterSet>(*varName);
+    std::vector<fitRangeEntryType> fitRanges = getFitRanges(cfgVariable);
 
-    double xMinFit = cfgVariable.getParameter<double>("xMin");
-    double xMaxFit = cfgVariable.getParameter<double>("xMax");
-
-    dataNdEntry_->addVar(*varName, meName, xMinFit, xMaxFit, cutUnfittedRegion);
+    dataNdEntry_->addVar(*varName, meName, fitRanges);
   }
 
 //--- read configuration parameters specifying options for making control plots
@@ -519,8 +516,7 @@ void TemplateFitAdapterBase::unpackFitResults()
 
     fitResult_->distributions_[*varName].data_ = data1dEntry->me_->getTH1();
 
-    fitResult_->distributions_[*varName].xMinFit_ = data1dEntry->xMinFit_;
-    fitResult_->distributions_[*varName].xMaxFit_ = data1dEntry->xMaxFit_;
+    fitResult_->distributions_[*varName].fitRanges_ = data1dEntry->fitRanges_;
 
     for ( vstring::const_iterator processName = processNames_.begin();
 	  processName != processNames_.end(); ++processName ) {
@@ -599,7 +595,7 @@ void TemplateFitAdapterBase::makeControlPlots()
 //--- produce control plots of distributions observed in (pseudo)data
 //    compared to sum of signal and background templates
 //    scaled by normalization factors determined by the fit
-  makeControlPlotsObsDistribution(fitResult_, drawOptions_, controlPlotsFileName_);
+  makeControlPlotsNdObsDistribution(fitResult_, drawOptions_, controlPlotsFileName_);
 
 //--- produce additional control plots specific to algorithm 
 //    being used to perform the actual fitting
