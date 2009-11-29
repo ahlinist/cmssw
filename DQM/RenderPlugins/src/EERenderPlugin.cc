@@ -1,12 +1,12 @@
-// $Id: EERenderPlugin.cc,v 1.145 2009/11/20 22:00:50 emanuele Exp $
+// $Id: EERenderPlugin.cc,v 1.146 2009/11/24 16:18:52 emanuele Exp $
 
 /*!
   \file EERenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.145 $
-  \date $Date: 2009/11/20 22:00:50 $
+  \version $Revision: 1.146 $
+  \date $Date: 2009/11/24 16:18:52 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -447,30 +447,31 @@ private:
 
       if( name.find( "EECLT" ) != std::string::npos )
       {
-        if( name.find( "seed crystal timing" ) != std::string::npos ) {
-          gPad->SetGridx();
-          gPad->SetGridy();
-          obj->GetXaxis()->SetNdivisions(10, kFALSE);
-          obj->GetYaxis()->SetNdivisions(10, kFALSE);
-          obj->SetMinimum(0.0);
-          obj->SetMaximum(10.0);
-          gStyle->SetPalette(1);
-          obj->SetOption("colz");
-          gPad->SetRightMargin(0.15);
-          gStyle->SetPaintTextFormat("+g");
-          return;          
-        } else {
-          gPad->SetGridx();
-          gPad->SetGridy();
-          obj->GetXaxis()->SetNdivisions(10, kFALSE);
-          obj->GetYaxis()->SetNdivisions(10, kFALSE);
-          obj->SetMinimum(0.0);
-          gStyle->SetPalette(10, pCol4);
-          obj->SetOption("colz");
-          gPad->SetRightMargin(0.15);
-          gStyle->SetPaintTextFormat("+g");
-          return;
-        }
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10, kFALSE);
+        obj->GetYaxis()->SetNdivisions(10, kFALSE);
+        obj->SetMinimum(0.0);
+        gStyle->SetPalette(10, pCol4);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
+      }
+
+      if( name.find( "EETMT" ) != std::string::npos )
+      {
+        gPad->SetGridx();
+        gPad->SetGridy();
+        obj->GetXaxis()->SetNdivisions(10, kFALSE);
+        obj->GetYaxis()->SetNdivisions(10, kFALSE);
+        obj->SetMinimum(4.0);
+        obj->SetMaximum(7.0);
+        gStyle->SetPalette(1);
+        obj->SetOption("colz");
+        gPad->SetRightMargin(0.15);
+        gStyle->SetPaintTextFormat("+g");
+        return;
       }
 
       if( nbx == 50 && nby == 50 )
@@ -653,7 +654,7 @@ private:
       {
         if ( obj->GetMaximum() > 0. ) gPad->SetLogz(kTRUE);
         obj->SetMinimum(0.0);
-        gStyle->SetPalette(10, pCol4);
+        gStyle->SetPalette(1);
         obj->SetOption("colz");
         gPad->SetRightMargin(0.15);
         return;
@@ -1247,6 +1248,32 @@ private:
         text1->GetYaxis()->SetRange(y1, y2);
         text1->Draw("text,same");
       }
+      
+      if( nbx == 20 && nby == 20 && name.find( "EETMT" ) != std::string::npos )
+        {
+          if( name.find( "EE -" ) != std::string::npos )
+          {
+            int x1 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text6->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text6->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text6->GetXaxis()->SetRange(x1, x2);
+            text6->GetYaxis()->SetRange(y1, y2);
+            text6->Draw("text,same");
+          }
+
+          if( name.find( "EE +" ) != std::string::npos )
+          {
+            int x1 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmin());
+            int x2 = text7->GetXaxis()->FindFixBin(obj->GetXaxis()->GetXmax());
+            int y1 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmin());
+            int y2 = text7->GetYaxis()->FindFixBin(obj->GetYaxis()->GetXmax());
+            text7->GetXaxis()->SetRange(x1, x2);
+            text7->GetYaxis()->SetRange(y1, y2);
+            text7->Draw("text,same");
+          }
+          return;
+        }
 
     }
 
