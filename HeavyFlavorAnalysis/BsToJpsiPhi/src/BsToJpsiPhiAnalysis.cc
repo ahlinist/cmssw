@@ -250,8 +250,7 @@ BsToJpsiPhiAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   if(saveDoubleMu3TriggeredOnly_ == true)
     if(bsRootTree_->triggerbit_HLTdoubleMu3_ != 1 ) return;
 
-  std::cout<<" is Triggered" << std::endl;
-
+ 
   // **************************
   // start loop over muons
   
