@@ -281,6 +281,19 @@ private:
         return;
       }
 
+       if(o.name.find("RPC_System_Quality_Overview") != std::string::npos)
+      {
+	gStyle->SetPaintTextFormat(".2f");
+	
+	obj->GetXaxis()->SetTitle("% of RPC States");
+	obj->SetOption("text");
+	obj->SetStats( kTRUE );
+	return;
+	
+	
+	}
+
+
       if(o.name.find("RPCChamberQuality") != std::string::npos)
       {
         obj->SetMinimum(0.5);
@@ -311,6 +324,10 @@ private:
 //         palette->SetTitleSize(0.025);
 	return;
       }
+
+
+
+
 
       if(o.name.find("VStatus_Wheel") != std::string::npos)
       {
