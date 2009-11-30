@@ -88,7 +88,7 @@ TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::~model1dTypeRooFitSpecific
 
 void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
 {
-  //std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
+  std::cout << "<model1dTypeRooFitSpecific::buildPdf>:" << std::endl;
 
   if ( applySmoothing_ ) {
     bool isFirstFit = (!auxTF1Wrapper_);
@@ -116,7 +116,7 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
       const RooAbsBinning& xRange = varRef_->getBinning();
       double xMin = xRange.lowBound();
       double xMax = xRange.highBound();
-      //std::cout << "pdfName = " << pdfName_ << ": xMin = " << xMin << ", xMax = " << xMax << std::endl;
+      std::cout << "pdfName = " << pdfName_ << ": xMin = " << xMin << ", xMax = " << xMax << std::endl;
 
       unsigned numBins = pdfBinning_->GetSize() - 1;
       for ( unsigned iBin = 0; iBin < numBins; ++iBin ) {
@@ -163,7 +163,7 @@ void TemplateFitAdapter_RooFit::model1dTypeRooFitSpecific::buildPdf()
   double fittedFraction = model1dEntryBase_->fittedFraction_;
   fittedEventFraction_ = new RooConstVar(fittedEventFractionName_.data(), fittedEventFractionName_.data(), fittedFraction);
 
-  std::string numEventsFittedName_;
+  delete numEventsFitted_;
   numEventsFitted_ = new RooFormulaVar(numEventsFittedName_.data(), numEventsFittedName_.data(), 
 				       "@0*@1", RooArgList(*normRef_, *fittedEventFraction_));
 }
@@ -257,10 +257,10 @@ TemplateFitAdapter_RooFit::TemplateFitAdapter_RooFit(const edm::ParameterSet& cf
 
     std::string name = cfgVariable.getParameter<std::string>("name");
     std::string title = cfgVariable.getParameter<std::string>("title");
-    double xMin = cfgVariable.getParameter<double>("xMin");
-    double xMax = cfgVariable.getParameter<double>("xMax");
     
-    fitVariables_[*varName] = new RooRealVar(name.data(), title.data(), xMin, xMax);
+    // CV: use dummy range for now, to be initialized with correct values later,
+    //     once histograms that are fitted have been retrieved from DQMStore
+    fitVariables_[*varName] = new RooRealVar(name.data(), title.data(), 0., 1.);
   }
 
 //--- read configuration parameters specifying signal and background templates
@@ -384,6 +384,8 @@ std::string getCategoryName_template(const std::string& processName, const std::
 
 void TemplateFitAdapter_RooFit::buildFitData()
 {
+  std::cout << "<TemplateFitAdapter_RooFit::buildFitData>:" << std::endl;
+
   std::string fitDataName = "fitData";
 
   if ( fitCategories_->numTypes() == 1 ) {
@@ -420,7 +422,19 @@ void TemplateFitAdapter_RooFit::buildFitData()
       std::cout << "histMap[" << histMapEntry->first << "] = " << histMapEntry->second->GetName() << ":"
 		<< " dimension = " << histMapEntry->second->GetDimension() << std::endl;
     }
-    
+
+    // CV: RooFit seems to produce error message
+    //    "ERROR: dimension of input histogram must match number of continuous variables"
+    //     and aborts with an assert statement in case more than one histogram is fitted simultaneously
+    //     and the histograms depend on different variables/are fitted in different ranges ?!
+    //
+    //    (see posting in http://root.cern.ch/phpBB2/viewtopic.php?t=9518 RootTalk forum)
+    //
+    if ( varCollection.GetEntries() > 1 ) {
+      edm::LogError ("buildFitData") << " Simultaneous fits of more than one variable not supported yet !!";
+      assert(0);
+    }
+
     delete fitData_;
     fitData_ = new RooDataHist(fitDataName.data(), fitDataName.data(), RooArgList(varCollection), *fitCategories_, histMap); 
   }
@@ -428,6 +442,8 @@ void TemplateFitAdapter_RooFit::buildFitData()
 
 void TemplateFitAdapter_RooFit::buildFitModel()
 {
+  std::cout << "<TemplateFitAdapter_RooFit::buildFitModel>:" << std::endl;
+
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
     std::string pdfModelSumName = std::string(*varName).append("_pdfModelSum");
@@ -509,8 +525,20 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
 // to distribution observed in (pseudo)data using RooFit algorithms
 //-------------------------------------------------------------------------------
 
-//--- configure RooFit structure;
-//    print-out structure once configuration finished
+//--- initialize ranges of variables used in fit
+  for ( vstring::const_iterator varName = varNames_.begin();
+	varName != varNames_.end(); ++varName ) {
+    const TAxis* axis = dataNdEntry_->data1dEntries_[*varName]->histogram_->GetXaxis();
+    double min = axis->GetXmin();
+    double max = axis->GetXmax();
+    if ( printLevel > 0 ) {
+      std::cout << " range fitted for variable = " << (*varName) << ": " << min << ".." << max << std::endl;
+    }
+    
+    fitVariables_[*varName]->setRange(min, max);
+  }
+  
+//--- configure categories used in simultaneous fits
   fitCategories_ = new RooCategory("fitCategories", "fitCategories");
   for ( vstring::const_iterator varName = varNames_.begin();
 	varName != varNames_.end(); ++varName ) {
@@ -526,37 +554,43 @@ void TemplateFitAdapter_RooFit::fitImp(int printLevel, int printWarnings)
     }
   }
   
-  std::cout << "number of Categories = " << fitCategories_->numTypes() << std::endl;
-  unsigned numCategories = fitCategories_->numTypes();
-  for ( unsigned iCategory = 0; iCategory < numCategories; ++iCategory ) {
-    std::cout << "Category[" << iCategory << "] = " << fitCategories_->lookupType(iCategory)->GetName() << std::endl;
+  if ( printLevel > 0 ) {
+    std::cout << "number of Categories = " << fitCategories_->numTypes() << std::endl;
+    unsigned numCategories = fitCategories_->numTypes();
+    for ( unsigned iCategory = 0; iCategory < numCategories; ++iCategory ) {
+      std::cout << "Category[" << iCategory << "] = " << fitCategories_->lookupType(iCategory)->GetName() << std::endl;
+    }
   }
   
+//--- configure RooFit model and data structures
   buildFitData();
 
   buildFitModel();
 
-  std::cout << ">>> RootFit model used for Template method Fit <<<" << std::endl;
-  fitModel_->printCompactTree();
+//--- print-out structure of RooFit model
+  if ( printLevel > 0 ) {
+    std::cout << ">>> RootFit model used for Template method Fit <<<" << std::endl;
+    fitModel_->printCompactTree();
 
-  std::cout << ">>> RootFit Parameters <<<" << std::endl;
-  for ( vstring::const_iterator varName = varNames_.begin();
-	varName != varNames_.end(); ++varName ) {
-    std::cout << "for Variable = " << (*varName) << ":" << std::endl;
-    RooAbsPdf* pdfModelSum = pdfModelSums_[*varName];
-    RooArgSet* pdfModelSumParameters = pdfModelSum->getParameters(*pdfModelSum->getComponents());
-    pdfModelSumParameters->Print("v");
-    delete pdfModelSumParameters;
-  }
-  
-  std::cout << ">>> RootFit Observables <<<" << std::endl;
-  for ( vstring::const_iterator varName = varNames_.begin();
-	varName != varNames_.end(); ++varName ) {
-    std::cout << "for Variable = " << (*varName) << ":" << std::endl;
-    RooAbsPdf* pdfModelSum = pdfModelSums_[*varName];
-    RooArgSet* pdfModelSumObservables = pdfModelSum->getObservables(*pdfModelSum->getComponents());
-    pdfModelSumObservables->Print("v");
-    delete pdfModelSumObservables;
+    std::cout << ">>> RootFit Parameters <<<" << std::endl;
+    for ( vstring::const_iterator varName = varNames_.begin();
+	  varName != varNames_.end(); ++varName ) {
+      std::cout << "for Variable = " << (*varName) << ":" << std::endl;
+      RooAbsPdf* pdfModelSum = pdfModelSums_[*varName];
+      RooArgSet* pdfModelSumParameters = pdfModelSum->getParameters(*pdfModelSum->getComponents());
+      pdfModelSumParameters->Print("v");
+      delete pdfModelSumParameters;
+    }
+    
+    std::cout << ">>> RootFit Observables <<<" << std::endl;
+    for ( vstring::const_iterator varName = varNames_.begin();
+	  varName != varNames_.end(); ++varName ) {
+      std::cout << "for Variable = " << (*varName) << ":" << std::endl;
+      RooAbsPdf* pdfModelSum = pdfModelSums_[*varName];
+      RooArgSet* pdfModelSumObservables = pdfModelSum->getObservables(*pdfModelSum->getComponents());
+      pdfModelSumObservables->Print("v");
+      delete pdfModelSumObservables;
+    }
   }
   
 //--- build list of fit options
