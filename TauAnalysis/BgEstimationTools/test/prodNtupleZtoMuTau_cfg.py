@@ -81,16 +81,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        muonExtTrackIsoZmumu = cms.PSet(
-            pluginType = cms.string("PATMuTauPairLeptonIsolationExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
-            sum = cms.vstring("TrackIso"),
-            dR = cms.double(1.0),
-            vetos = cms.vstring(""),
-            scale = cms.string("1."),
-            leg = cms.uint32(1),
-            indices = cms.vuint32(0,1)
-        ),
         muonEcalIsoZmumu = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstZmumuEnriched'),
@@ -135,16 +125,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
             value = cms.string("leg1.trackIso"),
-            indices = cms.vuint32(0,1)
-        ),
-        muonExtTrackIsoWplusJets = cms.PSet(
-            pluginType = cms.string("PATMuTauPairLeptonIsolationExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched'),
-            sum = cms.vstring("TrackIso"),
-            dR = cms.double(1.0),
-            vetos = cms.vstring(""),
-            scale = cms.string("1."),
-            leg = cms.uint32(1),
             indices = cms.vuint32(0,1)
         ),
         muonEcalIsoWplusJets = cms.PSet(
@@ -229,16 +209,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        muonExtTrackIsoTTplusJets = cms.PSet(
-            pluginType = cms.string("PATMuTauPairLeptonIsolationExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
-            sum = cms.vstring("TrackIso"),
-            dR = cms.double(1.0),
-            vetos = cms.vstring(""),
-            scale = cms.string("1."),
-            leg = cms.uint32(1),
-            indices = cms.vuint32(0,1)
-        ),
         muonEcalIsoTTplusJets = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched'),
@@ -319,16 +289,6 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
             value = cms.string("leg1.trackIso"),
             indices = cms.vuint32(0,1)
         ),
-        muonExtTrackIsoQCD = cms.PSet(
-            pluginType = cms.string("PATMuTauPairLeptonIsolationExtractor"),
-            src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
-            sum = cms.vstring("TrackIso"),
-            dR = cms.double(1.0),
-            vetos = cms.vstring(""),
-            scale = cms.string("1."),
-            leg = cms.uint32(1),
-            indices = cms.vuint32(0,1)
-        ),
         muonEcalIsoQCD = cms.PSet(
             pluginType = cms.string("PATMuTauPairValExtractor"),
             src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
@@ -407,7 +367,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
                 fileName = kineReweight_fileName,
                 meName = cms.string(kineReweight_dqmDirectory + "/" + "WplusJets" + "/" + kineReweight_meName)
             ),
-            kineVarExtractor = kineVarExtractor_config.clone(
+            variables = kineVarExtractor_config.clone(
                 src = cms.InputTag('muTauPairsForBgEstWplusJetsEnriched')
             )
         ),
@@ -417,7 +377,7 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
                 fileName = kineReweight_fileName,
                 meName = cms.string(kineReweight_dqmDirectory + "/" + "TTplusJets" + "/" + kineReweight_meName)
             ),
-            kineVarExtractor = kineVarExtractor_config.clone(
+            variables = kineVarExtractor_config.clone(
                 src = cms.InputTag('muTauPairsForBgEstTTplusJetsEnriched')
             )
         ),
@@ -427,10 +387,40 @@ process.ntupleProducer = cms.EDAnalyzer("ObjValNtupleProducer",
                 fileName = kineReweight_fileName,
                 meName = cms.string(kineReweight_dqmDirectory + "/" + "QCD" + "/" + kineReweight_meName)
             ),
-            kineVarExtractor = kineVarExtractor_config.clone(
+            variables = kineVarExtractor_config.clone(
                 src = cms.InputTag('muTauPairsForBgEstQCDenriched')
             )
-        )
+        ),
+
+        # additional event weight variable for correcting "bias"
+        # of muon |eta| distribution caused by cuts on muon track and ECAL isolation variables
+        # in QCD background events
+        #
+        # NOTE: this event weight variable is specific to the tau iso. && id. efficiency analysis
+        #       and **not** used for determining the background contributions to the Z --> mu + tau-jet
+        #       cross-section analysis via the template technique
+        #
+        ##kineEventReweightTauIdEffQCD = cms.PSet(
+##            pluginType = cms.string("KineEventReweightExtractor"),
+##            weightLookupTable = cms.PSet(
+##                fileName = cms.string('rfio:/castor/cern.ch/user/v/veelken/bgEstKineReweights/bgEstKineEventReweightsTauIdEffZtoMuTau.root')
+##                meName = cms.string("bgEstKineEventReweights/QCD/muonPtVsAbsEta"),
+##            ),
+##            variables = cms.PSet(
+##                x = cms.PSet(
+##                    pluginType = cms.string("PATMuTauPairValExtractor"),
+##                    src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+##                    value = cms.string("abs(leg1.eta)"),
+##                    indices = cms.vuint32(0)
+##                ),
+##                y = cms.PSet(
+##                    pluginType = cms.string("PATMuTauPairValExtractor"),
+##                    src = cms.InputTag('muTauPairsForBgEstQCDenriched'),
+##                    value = cms.string("leg1.pt"),
+##                    indices = cms.vuint32(0)
+##                )
+##            )
+##        )
     )
 )
 
