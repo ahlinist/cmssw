@@ -71,7 +71,6 @@ namespace HCAL_HLX {
       void CalcETSumLumi(HCAL_HLX::LUMI_SECTION& localSection);
       void PrepETSumError( HCAL_HLX::LUMI_SECTION &localSection );
       void CalcETSumError( HCAL_HLX::LUMI_SECTION &localSection, BXType type, float *error, float *frac );
-      //void CalcETSumErrorPerBX( HCAL_HLX::LUMI_SECTION &localSection, int iBX, float &error );
       void CalcETSumNoiseError( HCAL_HLX::LUMI_SECTION &localSection, float *error );
       void CalcLHCLumi(HCAL_HLX::LUMI_SECTION& localSection);
       void CalcOccLumi(HCAL_HLX::LUMI_SECTION& localSection);
@@ -108,6 +107,8 @@ namespace HCAL_HLX {
       uint32_t numActiveTowersEt_[HCAL_HLX_NUM_HLXS][HCAL_HLX_NUM_BUNCHES];
       uint32_t numActiveTowersBXEt_[HCAL_HLX_NUM_BUNCHES];
       uint32_t TotalActiveTowersEt_;
+      float    avNumActiveTowersEtNoise_[NUM_CAP_BANKS];
+      float    nCap2_;
 
       bool Block( unsigned short int iBX, unsigned short int numBlock);
       bool isBunch( unsigned short int iBX, unsigned short int scheme = 1 );  
