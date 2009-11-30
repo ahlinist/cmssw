@@ -116,7 +116,6 @@ namespace HCAL_HLX {
       uint32_t iBXNoise_;
       uint32_t BXCapId_[HCAL_HLX_NUM_BUNCHES];
       uint32_t BXMask_[HCAL_HLX_NUM_BUNCHES];
-      uint32_t BXMaskBool_[HCAL_HLX_NUM_BUNCHES];
       uint32_t HLXMask_[HCAL_HLX_NUM_HLXS];
 
       // Make an array to store the previous averages, this way we can calculate 
