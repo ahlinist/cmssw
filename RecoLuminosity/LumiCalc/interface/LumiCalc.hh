@@ -90,7 +90,7 @@ namespace HCAL_HLX {
       uint32_t etSumNoiseNorm_[NUM_CAP_BANKS];
       float totalOccNoise_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
       uint32_t occNoiseNorm_[HCAL_HLX_NUM_HLXS][2][NUM_CAP_BANKS];
-      uint32_t numBX_, numBXActive_, numBXInactive_, numHLX_; 
+      uint32_t numBX_, numBXActive_, numBXInactive_, numBXOther_, numHLX_; 
       float normNumBX_, normNumBXActive_, normNumBXInactive_, normNumHLX_;
 
       // Should only be called once per run
