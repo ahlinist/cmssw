@@ -755,7 +755,7 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 
     if ( numDimensions == 1 ) {
 
-      const char* xAxisLabel = varName.data();
+      const char* xAxisLabel = var->second.fitRanges_[0].title_.data();
 
       int errorFlag = 0;
       std::string fileName = replace_string(controlPlotsFileName, plotKeyword, varName, 1, 1, errorFlag);
@@ -840,25 +840,25 @@ void makeControlPlotsNdObsDistribution(const TemplateFitAdapterBase::fitResultTy
 	return;
       }
 
-      std::string xAxisLabelProjX = std::string(varName).append(".X");
-      std::string xAxisLabelProjY = std::string(varName).append(".Y");
+      const char* xAxisLabelProjX = var->second.fitRanges_[0].title_.data();
+      const char* xAxisLabelProjY = var->second.fitRanges_[1].title_.data();
 
       makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX, processNormalizations, drawOptions_vector, 
-				       dataHistogramProjX, "", xAxisLabelProjX.data(), fileNameProjX);
+				       dataHistogramProjX, "", xAxisLabelProjX, fileNameProjX);
       unsigned numSlicesProjX = fittedTemplateHistogramsProjX_sliced.size();
       for ( unsigned iSliceProjX = 0; iSliceProjX < numSlicesProjX; ++iSliceProjX ) {
 	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjX_sliced[iSliceProjX],
 					 processNormalizations, drawOptions_vector, dataHistogramsProjX_sliced[iSliceProjX], 
-					 histogramLabelsProjX_sliced[iSliceProjX].data(), xAxisLabelProjX.data(), 
+					 histogramLabelsProjX_sliced[iSliceProjX].data(), xAxisLabelProjX, 
 					 fileNamesProjX_sliced[iSliceProjX]);
       }	
       makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY, processNormalizations, drawOptions_vector, 
-				       dataHistogramProjY, "", xAxisLabelProjY.data(), fileNameProjY);
+				       dataHistogramProjY, "", xAxisLabelProjY, fileNameProjY);
       unsigned numSlicesProjY = fittedTemplateHistogramsProjY_sliced.size();
       for ( unsigned iSliceProjY = 0; iSliceProjY < numSlicesProjY; ++iSliceProjY ) {
 	makeControlPlot1dObsDistribution(processNames, fittedTemplateHistogramsProjY_sliced[iSliceProjY],
 					 processNormalizations, drawOptions_vector, dataHistogramsProjY_sliced[iSliceProjY], 
-					 histogramLabelsProjY_sliced[iSliceProjY].data(), xAxisLabelProjY.data(), 
+					 histogramLabelsProjY_sliced[iSliceProjY].data(), xAxisLabelProjY, 
 					 fileNamesProjY_sliced[iSliceProjY]);
       }	
     } 
