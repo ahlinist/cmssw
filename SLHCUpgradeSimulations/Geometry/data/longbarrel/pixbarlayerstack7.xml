@@ -6,14 +6,17 @@
  <Constant name="ModuleRadius"      value="[pixbar:RadiusStack7]"/>
  <Constant name="LayerDz"           value="[pixbar:LayerDzStack7]"/>
  <Constant name="PhiOffset"         value="[pixbar:PhiOffsetStack7]"/>
- <Constant name="Layout"            value="[pixbar:LayoutStack7]"/>     
- <Constant name="CoolDz"            value="[pixbar:LayerDzStack7]"/>
- <Constant name="CoolSide"          value="[pixbarladderstack7:LadderWidth]/2-[pixbarladderstack7:HybridWidth]/2-[pixbarladderstack7:HybridOffset]"/>
+ <Constant name="Layout"            value="[pixbar:LayoutStack7]"/>
+ <Constant name="CoolDz"            value="[pixbarladderstack7:CFWrapDz]"/>
+ <Constant name="CoolSide"          value="[pixbarladderstack7:CoolWidth]"/>
  <Constant name="CoolThick"         value="0.1*mm"/>
- <Constant name="CoolWidth"         value="[pixbarladderstack7:ModuleThick]*2"/>
+ <Constant name="CoolWidth"         value="[pixbarladderstack7:CoolThick]"/>
+ <Constant name="CoolNumber"        value="[pixbarladderstack7:CoolNumber]"/>
+ <Constant name="CoolZ"             value="[pixbarladderstack7:CoolZ]"/>
+ <Constant name="HybridThick"       value="[pixbarladderstack7:HybridThick]"/>
 </ConstantsSection>
 
-<Algorithm name="track:DDPixBarStackLayerAlgo">
+<Algorithm name="track:DDPixBarTPGStackLayerAlgo">
   <rParent name="pixbarlayerstack7:PixelBarrelLayerStack7"/>
   <String name="VolumeMaterial"    value="materials:Air"/>
   <Numeric name="Ladders"          value="[pixbarlayerstack7:Ladders]"/>
@@ -23,9 +26,12 @@
   <Numeric name="CoolWidth"        value="[pixbarlayerstack7:CoolWidth]"/>
   <Numeric name="CoolSide"         value="[pixbarlayerstack7:CoolSide]"/>
   <Numeric name="CoolThick"        value="[pixbarlayerstack7:CoolThick]"/>
+  <Numeric name="CoolNumber"       value="[pixbarlayerstack7:CoolNumber]"/>
+  <Numeric name="CoolZ"            value="[pixbarlayerstack7:CoolZ]"/>
+  <Numeric name="HybridThick"      value="[pixbarlayerstack7:HybridThick]"/>
   <Numeric name="ModuleRadius"     value="[pixbarlayerstack7:ModuleRadius]"/>
   <String name="CoolMaterial"      value="materials:CO2_Upgrade"/>
-  <String name="CoolTubeMaterial"  value="materials:Steel_Upgrade"/>
+  <String name="CoolTubeMaterial"  value="materials:Ctube_Upgrade"/>
   <String name="LadderNameUp"      value="pixbarladderstack7:PixelBarrelLadderUpStack7"/>
   <String name="LadderNameDown"    value="pixbarladderstack7:PixelBarrelLadderDownStack7"/>
   <Numeric name="LadderWidth"      value="[pixbarladderstack7:LadderWidth]"/>
