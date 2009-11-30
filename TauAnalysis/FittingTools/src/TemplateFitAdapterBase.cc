@@ -147,7 +147,12 @@ TemplateFitAdapterBase::model1dType::model1dType(const std::string& processName,
 {}
 
 TemplateFitAdapterBase::model1dType::~model1dType()
-{}
+{
+  for ( std::vector<sysErrType>::iterator it = sysErrFluctuations_.begin();
+	it != sysErrFluctuations_.end(); ++it ) {
+    delete it->histogram_;
+  }
+}
 
 void TemplateFitAdapterBase::model1dType::initialize()
 {
@@ -168,9 +173,13 @@ void TemplateFitAdapterBase::model1dType::initialize()
       continue;
     }
 
+    TH1* histogram_subrange = makeSubrangeHistogram(me_->getTH1(), &fitRanges_);
+    sysErrFluctuation->histogram_ = makeSerializedHistogram(histogram_subrange);
+    delete histogram_subrange;
+
 //--- check that histograms representing systematic uncertainties have the same binning
 //    as that representing expectation
-    if ( !isCompatibleBinning(histogram_, sysErrFluctuation->me_->getTH1()) ) {
+    if ( !isCompatibleBinning(histogram_, sysErrFluctuation->histogram_) ) {
       edm::LogError ("model1dType") << " Incompatible binning of histograms " << meName_ 
 				    << " and " << sysErrFluctuation->meName_ << " !!";
       error_ = 1;
@@ -197,7 +206,7 @@ void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSy
   if ( fluctSys ) {
     for ( std::vector<sysErrType>::const_iterator sysErrFluctuation = sysErrFluctuations_.begin();
 	  sysErrFluctuation != sysErrFluctuations_.end(); ++sysErrFluctuation ) {
-      sampleHistogram_sys(fluctHistogram_, sysErrFluctuation->me_->getTH1(),  
+      sampleHistogram_sys(fluctHistogram_, sysErrFluctuation->histogram_,  
 			  sysErrFluctuation->pullRMS_, sysErrFluctuation->pullMin_, sysErrFluctuation->pullMax_, 
 			  sysErrFluctuation->fluctMode_);
     }
@@ -259,6 +268,8 @@ std::vector<TemplateFitAdapterBase::fitRangeEntryType> getFitRanges(const edm::P
 {
   std::vector<TemplateFitAdapterBase::fitRangeEntryType> fitRanges;
 
+  std::string name = cfg.getParameter<std::string>("name");
+
   std::vector<std::string> axisLabels;
   axisLabels.push_back("x");
   axisLabels.push_back("y");
@@ -268,12 +279,23 @@ std::vector<TemplateFitAdapterBase::fitRangeEntryType> getFitRanges(const edm::P
     if ( cfg.exists(axisLabel) ) {
       edm::ParameterSet cfgFitRange = cfg.getParameter<edm::ParameterSet>(axisLabel);
       TemplateFitAdapterBase::fitRangeEntryType fitRangeEntry;
+      fitRangeEntry.name_ = name;
+      fitRangeEntry.title_ = cfgFitRange.getParameter<std::string>("title");
       fitRangeEntry.min_ = cfgFitRange.getParameter<double>("min");
       fitRangeEntry.max_ = cfgFitRange.getParameter<double>("max");
       fitRanges.push_back(fitRangeEntry);
     } else {
       break;
     }
+  }
+
+  if ( fitRanges.size() == 0 ) {
+    TemplateFitAdapterBase::fitRangeEntryType fitRangeEntry;
+    fitRangeEntry.name_ = name;
+    fitRangeEntry.title_ = cfg.getParameter<std::string>("title");
+    fitRangeEntry.min_ = cfg.getParameter<double>("min");
+    fitRangeEntry.max_ = cfg.getParameter<double>("max");
+    fitRanges.push_back(fitRangeEntry);
   }
 
   return fitRanges;

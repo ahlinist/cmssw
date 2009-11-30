@@ -25,9 +25,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.1 $
+ * \version $Revision: 1.2 $
  *
- * $Id: TemplateFitAdapterBase.h,v 1.1 2009/11/27 15:46:33 veelken Exp $
+ * $Id: TemplateFitAdapterBase.h,v 1.2 2009/11/29 15:25:15 veelken Exp $
  *
  */
 
@@ -55,6 +55,8 @@ class TemplateFitAdapterBase
 
   struct fitRangeEntryType
   {
+    std::string name_;
+    std::string title_;
     double min_;
     double max_;
   };
@@ -166,6 +168,7 @@ class TemplateFitAdapterBase
 
       std::string meName_;
       MonitorElement* me_;
+      TH1* histogram_;
 
       double pullRMS_;
       double pullMin_;
