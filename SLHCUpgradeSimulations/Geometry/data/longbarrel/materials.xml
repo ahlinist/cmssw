@@ -198,6 +198,18 @@
     </MaterialFraction>
   </CompositeMaterial>
 
+  <CompositeMaterial name="Ctube_Upgrade" density="7.83*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:AISI-1018-Steel"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="TPG_Upgrade" density="2.265*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="1.00000000">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
   <CompositeMaterial name="AISI-1045-Steel" density="7.87*g/cm3" symbol=" " method="mixture by weight">
     <MaterialFraction fraction="0.005">
       <rMaterial name="materials:Carbon"/>
@@ -1068,6 +1080,18 @@
     </MaterialFraction>
     <MaterialFraction fraction="0.3529466">
       <rMaterial name="materials:Hydrogen"/>
+    </MaterialFraction>
+  </CompositeMaterial>
+
+  <CompositeMaterial name="Carbon_fibre_str." density="1.69*g/cm3" symbol=" " method="mixture by weight">
+    <MaterialFraction fraction="0.84491305">
+      <rMaterial name="materials:Carbon"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.042542086">
+      <rMaterial name="materials:Hydrogen"/>
+    </MaterialFraction>
+    <MaterialFraction fraction="0.11254487">
+      <rMaterial name="materials:Oxygen"/>
     </MaterialFraction>
   </CompositeMaterial>
 
