@@ -27,13 +27,15 @@ prodTemplateHist = cms.EDAnalyzer("TemplateHistProducer",
     treeSelection = cms.string(""),
 
     config = cms.VPSet(
-        cms.PSet(
-            meName = cms.string("diTauMvis12"), 
-            branchName = cms.string('selDiTauMvis12_0'),
-            numBinsX = cms.uint32(40),
-            xMin = cms.double(0.),
-            xMax = cms.double(200.)
-        )
+        variables = cms.VPSet(
+            cms.PSet(
+                branchName = cms.string('selDiTauMvis12_0'),
+                numBins = cms.uint32(40),
+                min = cms.double(0.),
+                max = cms.double(200.)
+            )
+        ),
+        meName = cms.string("diTauMvis12"),
     ),
                                                           
     branchNamesEventWeight = cms.vstring('eventWeight'),
