@@ -66,6 +66,7 @@ class DependentRecordIntervalFinder : public EventSetupRecordIntervalFinder
       Providers providers_;
       
       boost::shared_ptr<EventSetupRecordIntervalFinder> alternate_;
+      IOVSyncValue m_previousSyncTo;
 };
 
    }
