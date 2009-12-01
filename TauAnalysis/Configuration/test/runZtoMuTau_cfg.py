@@ -64,7 +64,7 @@ process.saveZtoMuTauPlots = cms.EDAnalyzer("DQMSimpleFileSaver",
 )
 
 process.maxEvents = cms.untracked.PSet(            
-    input = cms.untracked.int32(-1)    
+    input = cms.untracked.int32(-1)
 )
 
 process.source = cms.Source("PoolSource",
@@ -104,6 +104,19 @@ from PhysicsTools.PatAlgos.tools.tauTools import *
 # as input for pat::Tau production
 switchToPFTauShrinkingCone(process)
 #switchToPFTauFixedCone(process)
+#--------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------
+# import utility function for managing pat::METs
+from TauAnalysis.Configuration.tools.metTools import *
+
+# uncomment to add pfMET
+# set Boolean swich to true in order to apply type-1 corrections
+addPFMet(process, correct = False)
+
+# uncomment to replace caloMET by pfMET in all di-tau objects
+process.load("TauAnalysis.CandidateTools.diTauPairProductionAllKinds_cff")
+replaceMETforDiTaus(process, cms.InputTag('layer1METs'), cms.InputTag('layer1PFMETs'))
 #--------------------------------------------------------------------------------
 
 process.p = cms.Path(
