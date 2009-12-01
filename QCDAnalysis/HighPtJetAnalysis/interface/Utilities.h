@@ -14,6 +14,7 @@ void fillHist(const TString& histName,map<TString, TH1*> HistNames, const double
 void fillHist(const TString& histName,map<TString, TH2*> HistNames, const double& x, const double& y);
 void BinNormalization(TH1F *h);
 int  getBin(double x, vector<double> boundaries);
+int  getBin(float x, vector<float> boundaries);
 bool findName(string ss, vector<string> vv);
 //////////////////////////////////////////////////////////////////////////////////////////
 bool FindName(string ss, vector<string> vv)
@@ -59,6 +60,20 @@ void BinNormalization(TH1F *h)
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 int getBin(double x, std::vector<double> boundaries)
+{
+  int i;
+  int n = boundaries.size()-1;
+  if (x<boundaries[0] || x>=boundaries[n])
+    return -1;
+  for(i=0;i<n;i++)
+   {
+     if (x>=boundaries[i] && x<boundaries[i+1])
+       return i;
+   }
+  return 0; 
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+int getBin(float x, std::vector<float> boundaries)
 {
   int i;
   int n = boundaries.size()-1;

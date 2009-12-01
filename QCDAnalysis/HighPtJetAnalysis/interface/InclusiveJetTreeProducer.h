@@ -45,7 +45,6 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     void clearTreeVectors();
     
     bool mIsMCarlo;
-    double mEtaMax,mPtMin;
     std::string mJetsName;
     std::string mJetsIDName;
     std::string mJetExtender;
@@ -63,16 +62,16 @@ class InclusiveJetTreeProducer : public edm::EDAnalyzer
     TTree *mTree;
 
     std::vector<int>    *mNtrkVtx,*mNtrkCalo,*mN90;
-    std::vector<double> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
-    std::vector<double> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
-    std::vector<double> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
-    std::vector<double> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
-    std::vector<double> *mPVx,*mPVy,*mPVz;
-    std::vector<double> *mfHcalNoise;
+    std::vector<float> *mE,*mPt,*mEta,*mEtaD,*mPhi,*mY,*mEmf;
+    std::vector<float> *mTrkCaloPt,*mTrkCaloEta,*mTrkCaloPhi;
+    std::vector<float> *mTrkVtxPt,*mTrkVtxEta,*mTrkVtxPhi;
+    std::vector<float> *mfHPD,*mfRBX,*mEtaMoment,*mPhiMoment;
+    std::vector<float> *mPVx,*mPVy,*mPVz;
+    std::vector<float> *mfHcalNoise;
     std::vector<std::string> *mHLTNames;
     std::vector<std::string> *mL1Names;
     
-    double mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
+    float mMET, mMETnoHF, mSumET, mSumETnoHF, mPtHat, mWeight;
     int mRunNo, mEvtNo, mLumi;
 };
 #endif
