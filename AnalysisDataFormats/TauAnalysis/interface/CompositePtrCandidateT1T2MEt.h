@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: CompositePtrCandidateT1T2MEt.h,v 1.2 2009/06/15 07:48:55 cbern Exp $
+ * $Id: CompositePtrCandidateT1T2MEt.h,v 1.3 2009/07/11 15:35:01 veelken Exp $
  *
  */
 
@@ -48,7 +48,25 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// access to daughter particles
   const T1Ptr leg1() const { return leg1_; }
   const T2Ptr leg2() const { return leg2_; }
+  
+  /// access to gen. momenta
+  reco::Candidate::LorentzVector p4gen() const { return p4Leg1gen() + p4Leg2gen(); }
+  reco::Candidate::LorentzVector p4VisGen() const { return p4VisLeg1gen() + p4VisLeg2gen(); }
 
+  /// access to gen. mother particles
+  /// (undecayed tau leptons)
+  const reco::Candidate::LorentzVector& p4Leg1gen() const { return p4Leg1gen_; }
+  const reco::Candidate::LorentzVector& p4Leg2gen() const { return p4Leg2gen_; }
+
+  /// access to visible gen. daughter particles
+  /// (electrons, muons, kaons, charged and neutral pions produced in tau decay)
+  const reco::Candidate::LorentzVector& p4VisLeg1gen() const { return p4VisLeg1gen_; }
+  const reco::Candidate::LorentzVector& p4VisLeg2gen() const { return p4VisLeg2gen_; }
+
+  /// energy ratio of visible gen. daughter/mother particles
+  double x1gen() const { return ( p4Leg1gen_.energy() > 0. ) ? p4VisLeg1gen_.energy()/p4Leg1gen_.energy() : -1.; }
+  double x2gen() const { return ( p4Leg2gen_.energy() > 0. ) ? p4VisLeg2gen_.energy()/p4Leg2gen_.energy() : -1.; }
+  
   /// return the number of source particle-like Candidates
   /// (the candidates used to construct this Candidate)       
   /// MET does not count. 
@@ -125,6 +143,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   /// allow only CompositePtrCandidateT1T2MEtAlgorithm to change values of data-members
   template<typename T1_type, typename T2_type> friend class CompositePtrCandidateT1T2MEtAlgorithm; 
 
+  /// set gen. four-momenta
+  void setP4Leg1gen(const reco::Candidate::LorentzVector& p4) { p4Leg1gen_ = p4; }
+  void setP4Leg2gen(const reco::Candidate::LorentzVector& p4) { p4Leg2gen_ = p4; }
+  void setP4VisLeg1gen(const reco::Candidate::LorentzVector& p4) { p4VisLeg1gen_ = p4; }
+  void setP4VisLeg2gen(const reco::Candidate::LorentzVector& p4) { p4VisLeg2gen_ = p4; }
+
   /// set four-momentum of visible decay products
   void setP4Vis(const reco::Candidate::LorentzVector& p4) { p4Vis_ = p4; } 
   /// set four-momentum and scaling factors for momenta of visible decay products
@@ -164,6 +188,12 @@ class CompositePtrCandidateT1T2MEt : public reco::LeafCandidate
   T1Ptr leg1_;
   T2Ptr leg2_;
   reco::CandidatePtr met_;
+
+  /// gen. four-momenta
+  reco::Candidate::LorentzVector p4Leg1gen_;
+  reco::Candidate::LorentzVector p4Leg2gen_;
+  reco::Candidate::LorentzVector p4VisLeg1gen_;
+  reco::Candidate::LorentzVector p4VisLeg2gen_;
 
   /// four-momentum of visible decay products
   reco::Candidate::LorentzVector p4Vis_;
