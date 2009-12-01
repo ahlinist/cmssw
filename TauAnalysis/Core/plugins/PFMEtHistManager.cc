@@ -38,7 +38,7 @@ void PFMEtHistManager::bookHistogramsImp()
   hMEtSignificance_ = book1D("MEtSignificance", "MEtSignificance", 101, -0.5, 100.05);
   
   hMEtPtDiffGen_ = book1D("MEtPtDiffGen", "MEtPtDiffGen", 100, -50., +50.);
-  hMEtPtResGen_ = book1D("MEtPtDiffGen", "MEtPtDiffGen", 100, -5.0, +5.0);
+  hMEtPtResGen_ = book1D("MEtPtResGen", "MEtPtResGen", 100, -5.0, +5.0);
   hMEtPtRecVsGen_ = book2D("MEtPtRecVsGen", "MEtPtRecVsGen", 30, 0., 150., 30, 0., 150.);
   hMEtPhiDiffGen_ = book1D("MEtPhiDiffGen", "MEtPhiDiffGen", 72, -TMath::Pi(), +TMath::Pi());
   hMEtPhiRecVsGen_ = book2D("MEtPhiRecVsGen", "MEtPhiRecVsGen", 36, -TMath::Pi(), +TMath::Pi(), 36, -TMath::Pi(), +TMath::Pi());
