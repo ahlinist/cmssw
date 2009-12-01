@@ -1,6 +1,6 @@
 #include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
-#include "PhysicsTools/Utilities/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 const reco::GenParticle* findGenParticle(const reco::Candidate::LorentzVector& direction, 
 					 const reco::GenParticleCollection& genParticles, double dRmax, int status)
