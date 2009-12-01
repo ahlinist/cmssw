@@ -39,14 +39,8 @@ process.hltHighLevelDev2.HLTPathsPrescales  = cms.vuint32(
     )
 process.hltHighLevelDev2.HLTOverallPrescale = cms.uint32 (10)
 
-
-
-process.MessageLogger = cms.Service("MessageLogger",
-    destinations = cms.untracked.vstring('log/skimMinBias900GeV_PhysicsDeclaredRequest.log')
-    )
-
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.123 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('skim'),
     name = cms.untracked.string('skim')
 )
