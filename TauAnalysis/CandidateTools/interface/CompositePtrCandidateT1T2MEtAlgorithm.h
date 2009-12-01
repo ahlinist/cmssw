@@ -10,6 +10,10 @@
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h" 
 #include "DataFormats/Candidate/interface/Candidate.h" 
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+#include "TauAnalysis/CandidateTools/interface/candidateAuxFunctions.h"
 
 #include <TMath.h>
 
@@ -30,7 +34,8 @@ class CompositePtrCandidateT1T2MEtAlgorithm
 
   CompositePtrCandidateT1T2MEt<T1,T2> buildCompositePtrCandidate(const T1Ptr leg1, 
 								 const T2Ptr leg2, 
-								 const reco::CandidatePtr met)
+								 const reco::CandidatePtr met,
+								 const reco::GenParticleCollection* genParticles)
   {
     CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate(leg1, leg2, met);
   
@@ -64,6 +69,11 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false);
     }
  
+//--- compute gen. level quantities
+    if ( genParticles ) {
+      compGenQuantities(compositePtrCandidate, genParticles);
+    }
+
 //--- set compositePtr four-momentum
 //    (depending on recoMode configuration parameter)
     if ( recoMode_ == "collinearApprox" ) {
@@ -91,7 +101,25 @@ class CompositePtrCandidateT1T2MEtAlgorithm
   }
 
  private: 
+  
+  void compGenQuantities(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate, const reco::GenParticleCollection* genParticles)
+  {
+    const reco::GenParticle* genLeg1 = findGenParticle(compositePtrCandidate.leg1()->p4(), *genParticles, 0.5, -1);
+    if ( genLeg1 ) {
+      compositePtrCandidate.setP4Leg1gen(genLeg1->p4());
+      std::vector<const reco::GenParticle*> stableDaughters;
+      findDaughters(genLeg1, stableDaughters, 1);
+      compositePtrCandidate.setP4VisLeg1gen(getVisMomentum(stableDaughters));
+    }
 
+    const reco::GenParticle* genLeg2 = findGenParticle(compositePtrCandidate.leg2()->p4(), *genParticles, 0.5, -1);
+    if ( genLeg2 ) {
+      compositePtrCandidate.setP4Leg2gen(genLeg2->p4());
+      std::vector<const reco::GenParticle*> stableDaughters;
+      findDaughters(genLeg2, stableDaughters, 1);
+      compositePtrCandidate.setP4VisLeg2gen(getVisMomentum(stableDaughters));
+    }
+  }
   void compCollinearApprox(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
 			   const reco::Candidate::LorentzVector& leg1,
 			   const reco::Candidate::LorentzVector& leg2,
@@ -110,7 +138,7 @@ class CompositePtrCandidateT1T2MEtAlgorithm
       reco::Candidate::LorentzVector p4 = leg1/x1 + leg2/x2;
       compositePtrCandidate.setCollinearApproxQuantities(p4, x1, x2, true);
     } else {
-      compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), -1, -1, false);
+      compositePtrCandidate.setCollinearApproxQuantities(reco::Candidate::LorentzVector(0,0,0,0), x1, x2, false);
     }
   }
   void compZeta(CompositePtrCandidateT1T2MEt<T1,T2>& compositePtrCandidate,
