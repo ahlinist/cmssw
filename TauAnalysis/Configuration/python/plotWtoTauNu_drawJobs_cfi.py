@@ -85,7 +85,7 @@ drawJobConfigurator_WtoTauNu.add(
             name = "cutFlowControlPlots_tauLeadTrkPt_afterJetVeto"
             ),
         drawJobConfigEntry(
-            meName = 'MEtQuantities/RAW_MEtPt',
+            meName = 'CaloMEtQuantities/RAW_MEtPt',
             title = "MET (after jet veto cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_MET_afterJetVeto"
@@ -121,7 +121,7 @@ drawJobConfigurator_WtoTauNu.add(
             name = "cutFlowControlPlots_NuTauCandidateDPhi_afterJetVeto"
             ),
         drawJobConfigEntry(
-            meName = 'MEtQuantities/RAW_MEtSignificance',
+            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
             title = "MET significance (after jet veto cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_MEtSignificance_afterJetVeto"
@@ -152,7 +152,7 @@ drawJobConfigurator_WtoTauNu.add(
             name = "cutFlowControlPlots_tauLeadTrkPt_afterRecoilEnergy"
             ),
           drawJobConfigEntry(
-            meName = 'MEtQuantities/RAW_MEtPt',
+            meName = 'CaloMEtQuantities/RAW_MEtPt',
             title = "MET (after recoil energy cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_MET_afterRecoilEnergy"
@@ -188,7 +188,7 @@ drawJobConfigurator_WtoTauNu.add(
             name = "cutFlowControlPlots_NuTauCandidateDPhi_afterRecoilEnergy"
             ),
         drawJobConfigEntry(
-            meName = 'MEtQuantities/RAW_MEtSignificance',
+            meName = 'CaloMEtQuantities/RAW_MEtSignificance',
             title = "MET significance (after recoil energy cut)",
             xAxis = 'Pt',
             name = "cutFlowControlPlots_MEtSignificance_afterRecoilEnergy"
