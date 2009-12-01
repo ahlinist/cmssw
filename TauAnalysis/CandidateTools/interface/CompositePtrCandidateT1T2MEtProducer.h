@@ -12,9 +12,9 @@
  *          Michal Bluj,
  *          Christian Veelken
  *
- * \version $Revision: 1.4.2.1 $
+ * \version $Revision: 1.5 $
  *
- * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.4.2.1 2009/08/04 09:54:39 mbluj Exp $
+ * $Id: CompositePtrCandidateT1T2MEtProducer.h,v 1.5 2009/10/25 12:38:15 veelken Exp $
  *
  */
 
@@ -39,6 +39,9 @@
 
 #include "TauAnalysis/CandidateTools/interface/CompositePtrCandidateT1T2MEtAlgorithm.h"
 
+#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
 #include <string>
 
 template<typename T1, typename T2>
@@ -59,6 +62,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
     srcLeg2_ = cfg.getParameter<edm::InputTag>("srcLeg2");
     dRmin12_ = cfg.getParameter<double>("dRmin12");
     srcMET_ = ( cfg.exists("srcMET") ) ? cfg.getParameter<edm::InputTag>("srcMET") : edm::InputTag();
+    srcGenParticles_ = ( cfg.exists("srcGenParticles") ) ? cfg.getParameter<edm::InputTag>("srcGenParticles") : edm::InputTag();
     recoMode_ = cfg.getParameter<std::string>("recoMode");
     verbosity_ = cfg.getUntrackedParameter<int>("verbosity", 0);
 
@@ -113,6 +117,13 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
       }
     } 
 
+    const reco::GenParticleCollection* genParticles = 0;
+    if ( srcGenParticles_.label() != "" ) {
+      edm::Handle<reco::GenParticleCollection> genParticleCollection;
+      pf::fetchCollection(genParticleCollection, srcGenParticles_, evt);
+      genParticles = genParticleCollection.product();
+    }
+
 //--- check if only one combination of tau decay products 
 //    (the combination of highest Pt object in leg1 collection + highest Pt object in leg2 collection)
 //    shall be produced, or all possible combinations of leg1 and leg2 objects
@@ -157,7 +168,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	T2Ptr leadingLeg2Ptr = leg2Collection->ptrAt(idxLeadingLeg2);
 	
 	CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	  algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr);
+	  algorithm_.buildCompositePtrCandidate(leadingLeg1Ptr, leadingLeg2Ptr, metPtr, genParticles);
 	compositePtrCandidateCollection->push_back(compositePtrCandidate);
       } else {
 	if ( verbosity_ >= 1 ) {
@@ -186,7 +197,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
 	  if ( dR < dRmin12_ ) continue;
 	  
 	  CompositePtrCandidateT1T2MEt<T1,T2> compositePtrCandidate = 
-	    algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr);
+	    algorithm_.buildCompositePtrCandidate(leg1Ptr, leg2Ptr, metPtr, genParticles);
 	  compositePtrCandidateCollection->push_back(compositePtrCandidate);
 	}
       }
@@ -205,6 +216,7 @@ class CompositePtrCandidateT1T2MEtProducer : public edm::EDProducer
   edm::InputTag srcLeg2_;
   double dRmin12_;
   edm::InputTag srcMET_;
+  edm::InputTag srcGenParticles_;
   std::string recoMode_;
   int verbosity_;
 
