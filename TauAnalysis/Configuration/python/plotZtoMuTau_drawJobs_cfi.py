@@ -440,7 +440,7 @@ drawJobConfigurator_ZtoMuTau.add(
             name = "finalSamplePlots_dPhiMuonTau"
         ),
         drawJobConfigEntry(
-            meName = 'MEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
+            meName = 'CaloMEtQuantities/RAWplusJESplusMUONplusTAU_MEtPt',
             title = "MET (final Event sample)",
             xAxis = 'Pt',
             name = "finalSamplePlots_met"
