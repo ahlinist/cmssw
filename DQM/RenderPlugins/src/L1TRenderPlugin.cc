@@ -13,6 +13,7 @@
 #include "utils.h"
 
 #include "TProfile2D.h"
+#include "TROOT.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TStyle.h"
@@ -30,6 +31,13 @@
 class L1TRenderPlugin : public DQMRenderPlugin
 {
   TH2F* dummybox;
+  TBox* b_box_w;
+  TBox* b_box_r;
+  TBox* b_box_y;
+  TBox* b_box_g;
+  TBox* b_box_b;
+  int l1t_pcol[60];
+  float l1t_rgb[60][3];
 
 public:
   virtual void initialise (int, char **)
@@ -37,7 +45,7 @@ public:
       // same as RenderPlugin default for now (no special action taken)
 
       //summaryText = new TH2C( "summaryText", "summaryText", 5, 1, 6, 4, 1, 5);
-      //  float rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
+      //  float l1t_rgb[6][3] = {{1.00, 0.00, 0.00}, {0.00, 1.00, 0.00},
       //                     {1.00, 0.96, 0.00}, {0.50, 0.00, 0.00},
       //                     {0.00, 0.40, 0.00}, {0.94, 0.78, 0.00}};
       //   for( int i=0; i<6; i++ ) {
@@ -55,6 +63,60 @@ public:
           dummybox->Fill(i,j,0.1);
         }
       }
+
+
+      for( int i=0; i<60; i++ ){
+
+	if ( i < 15 ){
+	  l1t_rgb[i][0] = 1.00;
+	  l1t_rgb[i][1] = 1.00;
+	  l1t_rgb[i][2] = 1.00;
+	}
+	else if ( i < 30 ){
+	  l1t_rgb[i][0] = 0.50;
+	  l1t_rgb[i][1] = 0.80;
+	  l1t_rgb[i][2] = 1.00;
+	}
+	else if ( i < 40 ){
+	  l1t_rgb[i][0] = 1.00;
+	  l1t_rgb[i][1] = 1.00;
+	  l1t_rgb[i][2] = 1.00;
+	}
+	else if ( i < 57 ){
+	  l1t_rgb[i][0] = 0.80+0.01*(i-40);
+	  l1t_rgb[i][1] = 0.00+0.03*(i-40);
+	  l1t_rgb[i][2] = 0.00;
+	}
+	else if ( i < 59 ){
+	  l1t_rgb[i][0] = 0.80+0.01*(i-40);
+	  l1t_rgb[i][1] = 0.00+0.03*(i-40)+0.15+0.10*(i-17-40);
+	  l1t_rgb[i][2] = 0.00;
+	}
+	else if ( i == 59 ){
+	  l1t_rgb[i][0] = 0.00;
+	  l1t_rgb[i][1] = 0.80;
+	  l1t_rgb[i][2] = 0.00;
+	}
+
+	l1t_pcol[i] = 1901+i;
+
+	TColor* color = gROOT->GetColor( 1901+i );
+	if( ! color ) color = new TColor( 1901+i, 0, 0, 0, "" );
+	color->SetRGB( l1t_rgb[i][0], l1t_rgb[i][1], l1t_rgb[i][2] );
+      }
+
+      b_box_w = new TBox();
+      b_box_r = new TBox();
+      b_box_y = new TBox();
+      b_box_g = new TBox();
+      b_box_b = new TBox();
+
+      b_box_g->SetFillColor(1960);
+      b_box_y->SetFillColor(1959);
+      b_box_r->SetFillColor(1941);
+      b_box_w->SetFillColor(0);
+      b_box_b->SetFillColor(1923);
+
 
     }
 
@@ -247,7 +309,10 @@ private:
       if( o.name.find( "reportSummaryMap" )  != std::string::npos)
       {
         obj->SetStats( kFALSE );
-        dqm::utils::reportSummaryMapPalette(obj);
+//         dqm::utils::reportSummaryMapPalette(obj);
+	obj->SetMaximum(1.0+1e-15);
+	obj->SetMinimum(-2-1e-15);
+	gStyle->SetPalette(60, l1t_pcol);
 
 	obj->GetXaxis()->SetBinLabel(1,"Data");
 	obj->GetXaxis()->SetBinLabel(2,"Emulator");
@@ -513,6 +578,7 @@ private:
 	    t_text->DrawText(2.2,j+1.3,trig_result);
 	  }
 	}
+	delete [] trig_result;
 
 	b_box->SetFillColor(17);
 	b_box->DrawBox(1,1,2,5);
@@ -534,21 +600,12 @@ private:
 	l_line->DrawLine(1,11,3,11);
 
 
-	TBox* b_box_w = new TBox();
-	TBox* b_box_r = new TBox();
-	TBox* b_box_y = new TBox();
-	TBox* b_box_g = new TBox();
-
-	b_box_g->SetFillColor(920);
-	b_box_y->SetFillColor(919);
-	b_box_r->SetFillColor(901);
-	b_box_w->SetFillColor(0);
-
 
 	TLegend* leg = new TLegend(0.16, 0.11, 0.44, 0.38);
 	leg->AddEntry(b_box_g,"Good",   "f");
-	leg->AddEntry(b_box_y,"Warning","f");
+// 	leg->AddEntry(b_box_y,"Warning","f");
 	leg->AddEntry(b_box_r,"Error",  "f");
+	leg->AddEntry(b_box_b,"Waiting","f");
 	leg->AddEntry(b_box_w,"Masked", "f");
 	leg->Draw();
 
