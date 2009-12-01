@@ -2,6 +2,8 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "TauAnalysis/DQMTools/interface/dqmAuxFunctions.h"
+
 HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
   : dqmStore_(0), 
     dqmError_(0),
@@ -55,10 +57,25 @@ void HistManagerBase::fillHistograms(const edm::Event& evt, const edm::EventSetu
 //-----------------------------------------------------------------------------------------------------------------------
 //
 
+bool checkExistence(const DQMStore& dqmStore, const std::string& dqmDirectory, const std::string& meName)
+{
+  //std::cout << "<checkExistence>:" << std::endl;
+
+  std::string meName_full = dqmDirectoryName(dqmDirectory).append(meName);
+  //std::cout << " meName_full = " << meName_full << std::endl;
+
+  if ( dqmStore.get(meName_full) != 0 ) {
+    edm::LogError ("checkExistence") << " Monitor element = " << meName << " does already exist --> skipping !!";
+    return true;
+  } else {
+    return false;
+  }
+}
+
 MonitorElement* HistManagerBase::book1D(const std::string& name, const std::string& title, 
 					int numBinsX, double xMin, double xMax)
 {
-  if ( dqmError_ ) return 0;
+  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
 
   MonitorElement* me = dqmStore_->book1D(name, title, numBinsX, xMin, xMax);
   if ( sumWeightsTH1_ ) me->getTH1()->Sumw2();
@@ -69,7 +86,7 @@ MonitorElement* HistManagerBase::book1D(const std::string& name, const std::stri
 MonitorElement* HistManagerBase::book1D(const std::string& name, const std::string& title, 
 					int numBinsX, float* xBinning)
 {
-  if ( dqmError_ ) return 0;
+  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
 
   MonitorElement* me = dqmStore_->book1D(name, title, numBinsX, xBinning);
   if ( sumWeightsTH1_ ) me->getTH1()->Sumw2();
@@ -80,7 +97,7 @@ MonitorElement* HistManagerBase::book1D(const std::string& name, const std::stri
 MonitorElement* HistManagerBase::book2D(const std::string& name, const std::string& title, 
 					int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax)
 {
-  if ( dqmError_ ) return 0;
+  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
 
   MonitorElement* me = dqmStore_->book2D(name, title, numBinsX, xMin, xMax, numBinsY, yMin, yMax);
   if ( sumWeightsTH2_ ) me->getTH1()->Sumw2();
@@ -91,7 +108,7 @@ MonitorElement* HistManagerBase::book2D(const std::string& name, const std::stri
 MonitorElement* HistManagerBase::book2D(const std::string& name, const std::string& title, 
 					int numBinsX, float* xBinning, int numBinsY, float* yBinning)
 {
-  if ( dqmError_ ) return 0;
+  if ( dqmError_ || checkExistence(*dqmStore_, dqmDirectory_store_, name) ) return 0;
 
   MonitorElement* me = dqmStore_->book2D(name, title, numBinsX, xBinning, numBinsY, yBinning);
   if ( sumWeightsTH2_ ) me->getTH1()->Sumw2();
