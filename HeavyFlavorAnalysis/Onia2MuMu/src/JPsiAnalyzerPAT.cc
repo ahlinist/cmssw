@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.5 2009/11/26 17:47:01 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.6 2009/11/27 17:34:30 covarell Exp $
 //
 //
 
@@ -67,8 +67,8 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       virtual void beginJob() ;
       virtual void analyze(const edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      pair< unsigned int, pat::CompositeCandidate > theBestQQ();
-      void fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aCand);
+      pair< unsigned int, const pat::CompositeCandidate* > theBestQQ();
+      void fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand);
       bool selGlobalMuon(const pat::Muon* aMuon);
       bool selTrackerMuon(const pat::Muon* aMuon);
       bool selCaloMuon(const pat::Muon* aMuon);
@@ -201,15 +201,16 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       Handle<TriggerResults> trigger;
 
       // data members
-      string _histfilename;      
-      string _datasetname;
+      string         _histfilename;      
+      string         _datasetname;
       vector<double> _ptbinranges;
       vector<double> _etabinranges;
-      bool _onlythebest;
-      bool _applycuts;
-      bool _storeefficiency;
-      bool _useBS;
-      InputTag _triggerresults;
+      bool           _onlythebest;
+      bool           _applycuts;
+      bool           _storeefficiency;
+      bool           _useBS;
+      bool           _useCalo;
+      InputTag       _triggerresults;
 
       // number of events
       unsigned int nEvents;
@@ -246,7 +247,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _onlythebest(iConfig.getParameter<bool>("onlyTheBest")),		
   _applycuts(iConfig.getParameter<bool>("applyCuts")),			
   _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),	
-  _useBS(iConfig.getParameter<bool>("useBeamSpot")),			
+  _useBS(iConfig.getParameter<bool>("useBeamSpot")),
+  _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),			
   _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -333,8 +335,10 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    try {iEvent.getByLabel("onia2MuMuPatTrkTrk",collTT);} 
    catch (...) {cout << "Tracker-tracker J/psi not present in event!" << endl;}
 
-   try {iEvent.getByLabel("onia2MuMuPatGlbCal",collGC);} 
-   catch (...) {cout << "Global-calo J/psi not present in event!" << endl;}
+   if (_useCalo) {
+     try {iEvent.getByLabel("onia2MuMuPatGlbCal",collGC);} 
+     catch (...) {cout << "Global-calo J/psi not present in event!" << endl;}
+   }
 
    if (nEvents%10000 == 0) cout << "analyze event # " << nEvents << endl;
 
@@ -342,24 +346,26 @@ JPsiAnalyzerPAT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
    if (_onlythebest) {  // yes, fill simply the best
 
-     pair< unsigned int, pat::CompositeCandidate > theBest = theBestQQ();
+     pair< unsigned int, const pat::CompositeCandidate* > theBest = theBestQQ();
      if (theBest.first < 10) fillHistosAndDS(theBest.first, theBest.second);
 
    } else {   // no, fill all
 
      for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
-	 it!=collGG->end();++it) { fillHistosAndDS(0, *it); }
+	 it!=collGG->end();++it) { fillHistosAndDS(0, &(*it)); }
 
      for(vector<pat::CompositeCandidate>::const_iterator it=collGT->begin();
-	 it!=collGT->end();++it) { fillHistosAndDS(1, *it); }
+	 it!=collGT->end();++it) { fillHistosAndDS(1, &(*it)); }
 
      for(vector<pat::CompositeCandidate>::const_iterator it=collTT->begin();
-	 it!=collTT->end();++it) { fillHistosAndDS(2, *it); }
+	 it!=collTT->end();++it) { fillHistosAndDS(2, &(*it)); }
 
-     for(vector<pat::CompositeCandidate>::const_iterator it=collGC->begin();
-	 it!=collGC->end();++it) { fillHistosAndDS(3, *it); }
+     if (_useCalo) {
+       for(vector<pat::CompositeCandidate>::const_iterator it=collGC->begin();
+	   it!=collGC->end();++it) { fillHistosAndDS(3, &(*it)); }
+     }
+
    }
-
 }
 
 
@@ -591,14 +597,15 @@ JPsiAnalyzerPAT::endJob() {
 }
 
 void 
-JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aCand){
+JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand){
   
-  const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand.daughter("muon1"));
-  const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand.daughter("muon2"));
-  float theMass = aCand.mass();
+  cout << "Test 1: " << theCat << " " << aCand->pt() << endl;
+  const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
+  const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
+  float theMass = aCand->mass();
   float theCtau; 
-  if (_useBS) {theCtau = aCand.userFloat("ppdlBS");}
-  else {theCtau = aCand.userFloat("ppdlPV");}
+  if (_useBS) {theCtau = aCand->userFloat("ppdlBS");}
+  else {theCtau = aCand->userFloat("ppdlPV");}
 
   // Trigger Results inspection
   
@@ -622,7 +629,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   }
 
   // MC matching
-  reco::GenParticleRef genJpsi = aCand.genParticleRef();
+  reco::GenParticleRef genJpsi = aCand->genParticleRef();
   bool isMatched = (genJpsi.isNonnull() && genJpsi->pdgId() == 443);
 
   // Trigger passed
@@ -633,9 +640,9 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
 	if (theCat == 0) QQMass2Glob_passmu3->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_passmu3->Fill(theMass);
 	if (theCat == 3) QQMass1Glob1Cal_passmu3->Fill(theMass);    
-	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
-	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
-	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
+	if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu3->Fill(theMass);     
+	if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu3->Fill(theMass);
+	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu3->Fill(theMass);
       } else {
 	if (theCat == 0) WSMass2Glob_passmu3->Fill(theMass);          
 	if (theCat == 1) WSMass1Glob1Trk_passmu3->Fill(theMass);
@@ -647,9 +654,9 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
 	if (theCat == 0) QQMass2Glob_passmu5->Fill(theMass);          
 	if (theCat == 1) QQMass1Glob1Trk_passmu5->Fill(theMass);
 	if (theCat == 3) QQMass1Glob1Cal_passmu5->Fill(theMass);    
-	if (theCat == 0 && aCand.pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
-	if (theCat == 1 && aCand.pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
-	if (theCat == 3 && aCand.pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
+	if (theCat == 0 && aCand->pt() < 6.0) QQMass2GlobPT6_passmu5->Fill(theMass);     
+	if (theCat == 1 && aCand->pt() < 6.0) QQMass1Glob1TrkPT6_passmu5->Fill(theMass);
+	if (theCat == 3 && aCand->pt() < 6.0) QQMass1Glob1CalPT6_passmu5->Fill(theMass);
       } 
     }
     if (trigger->accept(hltBits[3])) { // pass 2Mu3
@@ -681,17 +688,17 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
       if (theCat == 0) {
 	hMcRightGlbGlbMuMass->Fill(theMass);       
 	hMcRightGlbGlbMuLife->Fill(theCtau);            
-	hMcRightGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
+	hMcRightGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcRightGlbTrkMuMass->Fill(theMass);       
 	hMcRightGlbTrkMuLife->Fill(theCtau);            
-	hMcRightGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
+	hMcRightGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb"));   
       } else if (theCat == 3) {
         hMcRightCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
 	hMcRightCalGlbMuMass->Fill(theMass);           
-	hMcRightCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
+	hMcRightCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
 	hMcRightCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
-	hMcRightCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
+	hMcRightCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
       }   
 
     } else {
@@ -699,17 +706,17 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
       if (theCat == 0) {
 	hMcWrongGlbGlbMuMass->Fill(theMass);       
 	hMcWrongGlbGlbMuLife->Fill(theCtau);            
-	hMcWrongGlbGlbMuVtxProb->Fill(aCand.userFloat("vProb")); 
+	hMcWrongGlbGlbMuVtxProb->Fill(aCand->userFloat("vProb")); 
       } else if (theCat == 1) {
         hMcWrongGlbTrkMuMass->Fill(theMass);       
 	hMcWrongGlbTrkMuLife->Fill(theCtau);            
-	hMcWrongGlbTrkMuVtxProb->Fill(aCand.userFloat("vProb"));   
+	hMcWrongGlbTrkMuVtxProb->Fill(aCand->userFloat("vProb"));   
       } else if (theCat == 3) {
         hMcWrongCalGlbMuDeltaR->Fill(deltaR(muon1->eta(),muon1->phi(),muon2->eta(),muon2->phi()));     
 	hMcWrongCalGlbMuMass->Fill(theMass);           
-	hMcWrongCalGlbMuVtxChi2->Fill(aCand.userFloat("vNChi2"));  
+	hMcWrongCalGlbMuVtxChi2->Fill(aCand->userFloat("vNChi2"));  
 	hMcWrongCalGlbMuS->Fill(sqrt(pow(muon1->track()->d0()/muon1->track()->d0Error(),2) + pow(muon2->track()->d0()/muon2->track()->d0Error(),2)));
-	hMcWrongCalGlbMucosAlpha->Fill(aCand.userFloat("cosAlpha"));
+	hMcWrongCalGlbMucosAlpha->Fill(aCand->userFloat("cosAlpha"));
       }  
 
     }
@@ -719,7 +726,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
     for(unsigned int i = 1; i<=2; i++) {
       
       sprintf(whichMuon,"muon%d",i);
-      const pat::Muon* thisMuon = dynamic_cast<const pat::Muon*>(aCand.daughter(whichMuon));
+      const pat::Muon* thisMuon = dynamic_cast<const pat::Muon*>(aCand->daughter(whichMuon));
  	
       reco::GenParticleRef genMu = thisMuon->genParticleRef();
       TrackRef iTrack = thisMuon->innerTrack();
@@ -794,17 +801,17 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
 
   if (theMass > JpsiMassMin && theMass < JpsiMassMax && 
       theCtau > JpsiCtMin && theCtau < JpsiCtMax && 
-      aCand.pt() > JpsiPtMin && aCand.pt() < JpsiPtMax && 
-      fabs(aCand.eta()) > JpsiEtaMin && fabs(aCand.eta()) < JpsiEtaMax) {
+      aCand->pt() > JpsiPtMin && aCand->pt() < JpsiPtMax && 
+      fabs(aCand->eta()) > JpsiEtaMin && fabs(aCand->eta()) < JpsiEtaMax) {
 	
     passedCandidates++;
     
-    JpsiPt->setVal(aCand.pt()); 
-    JpsiEta->setVal(aCand.eta()); 
+    JpsiPt->setVal(aCand->pt()); 
+    JpsiEta->setVal(aCand->eta()); 
     JpsiMass->setVal(theMass);
     Jpsict->setVal(theCtau);
     // cout << "life = " << theCtau << " trueLife = " << trueLife << endl;
-    JpsictTrue->setVal(aCand.userFloat("ppdlTrue"));
+    JpsictTrue->setVal(aCand->userFloat("ppdlTrue"));
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
     
@@ -814,8 +821,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
     TNPeff->setVal(tnpeff);
     TNPefferr->setVal(tnpefferr);
     
-    JpsiPtType->setIndex(getJpsiVarType(aCand.pt(),_ptbinranges),kTRUE);
-    JpsiEtaType->setIndex(getJpsiVarType(fabs(aCand.eta()),_etabinranges),kTRUE);
+    JpsiPtType->setIndex(getJpsiVarType(aCand->pt(),_ptbinranges),kTRUE);
+    JpsiEtaType->setIndex(getJpsiVarType(fabs(aCand->eta()),_etabinranges),kTRUE);
     
     // Fill RooDataSet
     RooArgSet varlist_tmp(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
@@ -828,7 +835,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, pat::CompositeCandidate aC
   }
 }
         
-pair< unsigned int, pat::CompositeCandidate > 
+pair< unsigned int, const pat::CompositeCandidate* > 
 JPsiAnalyzerPAT::theBestQQ() {
 
   for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
@@ -841,7 +848,7 @@ JPsiAnalyzerPAT::theBestQQ() {
       if (!_applycuts || (selGlobalMuon(muon1) &&
 			  selGlobalMuon(muon2) &&
 			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, pat::CompositeCandidate > result = make_pair(0,*it);
+	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,&(*it));
 	return result;
       }
     }
@@ -857,7 +864,7 @@ JPsiAnalyzerPAT::theBestQQ() {
       if (!_applycuts || (selGlobalMuon(muon1) &&
 			  selTrackerMuon(muon2) &&
 			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, pat::CompositeCandidate > result = make_pair(1,*it);
+	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,&(*it));
 	return result;
       }
     }
@@ -873,29 +880,31 @@ JPsiAnalyzerPAT::theBestQQ() {
       if (!_applycuts || (selTrackerMuon(muon1) &&
 			  selTrackerMuon(muon2) &&
 			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, pat::CompositeCandidate > result = make_pair(2,*it);
+	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,&(*it));
 	return result;
       }
     }
   } 
 
-  for(vector<pat::CompositeCandidate>::const_iterator it=collGC->begin();
-	 it!=collGC->end();++it) {
+  if (_useCalo) {
+    for(vector<pat::CompositeCandidate>::const_iterator it=collGC->begin();
+	   it!=collGC->end();++it) {
 
-    const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
-    const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
      
-    if(muon1->charge()*muon2->charge() < 0) {
-      if (!_applycuts || (selGlobalMuon(muon1) &&
-			  selCaloMuon(muon2) &&
-			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, pat::CompositeCandidate > result = make_pair(3,*it);
-	return result;
+      if(muon1->charge()*muon2->charge() < 0) {
+        if (!_applycuts || (selGlobalMuon(muon1) &&
+	  		    selCaloMuon(muon2) &&
+			    it->userFloat("vProb") > 0.001 )) {
+	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,&*(it));
+	  return result;
+        }
       }
     }
   }
 
-  pair< unsigned int, pat::CompositeCandidate > result = make_pair(99, pat::CompositeCandidate() );
+  pair< unsigned int, pat::CompositeCandidate* > result = make_pair(99, new pat::CompositeCandidate() );
   return result;	  
 
 }
