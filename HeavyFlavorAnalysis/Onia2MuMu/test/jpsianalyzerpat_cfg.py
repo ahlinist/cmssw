@@ -27,7 +27,8 @@ process.demo = cms.EDAnalyzer('JPsiAnalyzerPAT',
     onlyTheBest = cms.bool(True),		
     applyCuts = cms.bool(True),			
     storeEfficiency = cms.bool(False),	
-    useBeamSpot = cms.bool(False),				
+    useBeamSpot = cms.bool(False),
+    useCaloMuons = cms.untracked.bool(False), 				
     TriggerResultsLabel = cms.InputTag("TriggerResults","","HLT8E29")
 )
 
