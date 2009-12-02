@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.14 2009/12/02 10:27:25 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.15 2009/12/02 11:36:46 pandolf Exp $
 //
 //
 
@@ -414,6 +414,8 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //--------------------------------------------------------------------------------------------------------------------------------------
 
    // Loop over MC truth
+
+   genpt = 0.;
 
    if( isMC ) {
      
