@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.13 2009/11/05 18:53:54 voutila Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.14 2009/12/02 10:27:25 pandolf Exp $
 //
 //
 
@@ -216,24 +216,31 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    run = iEvent.id().run(); // unique ID - part 1
    event = iEvent.id().event(); // unique ID - part 2
 
+
    Handle<GenEventInfoProduct> hEventInfo;
-   iEvent.getByLabel("generator", hEventInfo);
+   if( isMC ) iEvent.getByLabel("generator", hEventInfo);
+
+
+   // ------ MC INFORMATION:
 
    // get MC info from GenParticleCandidates 
    Handle<GenParticleCollection> genParticles;
-   iEvent.getByLabel("genParticles", genParticles);
+   if( isMC ) iEvent.getByLabel("genParticles", genParticles);
    
    // get GEANT sim tracks and vertices (includes conversions)
    Handle<SimTrackContainer> simTracks_h;
    const SimTrackContainer* simTracks;
-   iEvent.getByLabel("g4SimHits", simTracks_h);
-   simTracks = simTracks_h.product();
+   if( isMC ) iEvent.getByLabel("g4SimHits", simTracks_h);
+   simTracks = (simTracks_h.isValid()) ? simTracks_h.product() : 0;
    
    Handle<SimVertexContainer> simVert_h;
    const SimVertexContainer* simVertices;
-   iEvent.getByLabel("g4SimHits", simVert_h);
-   simVertices = simVert_h.product();
+   if( isMC ) iEvent.getByLabel("g4SimHits", simVert_h);
+   simVertices = (simVert_h.isValid()) ? simVert_h.product() : 0;
    
+
+   // ------ RECO INFORMATION:
+
    // get tracks
    Handle<TrackCollection> tracks;
    iEvent.getByLabel(trackTags_,tracks);
@@ -287,19 +294,19 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // get gen jet collection
    Handle<GenJetCollection> jetsgenite;
-   iEvent.getByLabel(JetGensrcite_, jetsgenite);
+   if( isMC ) iEvent.getByLabel(JetGensrcite_, jetsgenite);
    Handle<GenJetCollection> jetsgenkt4;
-   iEvent.getByLabel(JetGensrckt4_, jetsgenkt4);
+   if( isMC ) iEvent.getByLabel(JetGensrckt4_, jetsgenkt4);
    Handle<GenJetCollection> jetsgenkt6;
-   iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
+   if( isMC ) iEvent.getByLabel(JetGensrckt6_, jetsgenkt6);
    Handle<GenJetCollection> jetsgenakt5;
-   iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
+   if( isMC ) iEvent.getByLabel(JetGensrcakt5_, jetsgenakt5);
    //Handle<GenJetCollection> jetsgenakt7;
    //iEvent.getByLabel(JetGensrcakt7_, jetsgenakt7);
    Handle<GenJetCollection> jetsgensis5;
-   iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
+   if( isMC ) iEvent.getByLabel(JetGensrcsis5_, jetsgensis5);
    Handle<GenJetCollection> jetsgensis7;
-   iEvent.getByLabel(JetGensrcsis7_, jetsgensis7);
+   if( isMC ) iEvent.getByLabel(JetGensrcsis7_, jetsgensis7);
 
    // get caloMET
    Handle<CaloMETCollection> calomethandle;
@@ -315,10 +322,10 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    // get gen MET
    Handle<GenMETCollection> genmethandle;
-   iEvent.getByLabel(METGensrc_, genmethandle);
+   if( isMC ) iEvent.getByLabel(METGensrc_, genmethandle);
 
    Handle<GenMETCollection> genmethandle2;
-   iEvent.getByLabel("genMetCalo", genmethandle2);
+   if( isMC ) iEvent.getByLabel("genMetCalo", genmethandle2);
   
    // get HCAL info
    Handle<HBHERecHitCollection> hbhe;
@@ -407,130 +414,600 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 //--------------------------------------------------------------------------------------------------------------------------------------
 
    // Loop over MC truth
-   
-   //   genpt = *genEventScale;   
-   if (hEventInfo->binningValues().size() > 0)
-     genpt = hEventInfo->binningValues()[0];
 
-   // Figure out the true vertex from the partons:
-   // Each event has exactly eight partons (status==3);
-   // 0-1: incoming protons (pdgId==2212),
-   // 2-3: ISR partons (|pdgId|<=21, udsg only, no c/b),
-   // 4-5: incoming partons (|pdgId|<=21, udscg, no b?),
-   // 6-7: outgoing partons (|pdgId|<=22, udscg, photons)
-   // Every parton 2-7 has the same production vertex (0 for 0-1)
-   assert(genParticles->at(2).status()==3);
-   assert(fabs(genParticles->at(2).pdgId())<100); //<25-><100 to include Z,W
-   vxMC = genParticles->at(2).vx();
-   vyMC = genParticles->at(2).vy();
-   vzMC = genParticles->at(2).vz();
-
-   // Momentum conservation in px (py, pt?): 
-   // outgoing + ISR - incoming ~ 0 (couple of GeV)
-   // Is the small discrepancy due to the virtual mass of the partons?
-   set<int> mothers;
-   map<const GenParticle*, int> mapMC;
-
-   for (GenParticleCollection::const_iterator p = genParticles->begin();
-	p != genParticles->end(); ++p) {
+   if( isMC ) {
      
-     if (nMC>=(nMaxMC-1)) {continue;}  // to reduce the root file size
-     // need space for the mom, eventually
+     //   genpt = *genEventScale;   
+     if (hEventInfo->binningValues().size() > 0)
+       genpt = hEventInfo->binningValues()[0];
 
-     // Find the stable photon
-     if (p->pdgId()==22 && p->status()==1){
+     // Figure out the true vertex from the partons:
+     // Each event has exactly eight partons (status==3);
+     // 0-1: incoming protons (pdgId==2212),
+     // 2-3: ISR partons (|pdgId|<=21, udsg only, no c/b),
+     // 4-5: incoming partons (|pdgId|<=21, udscg, no b?),
+     // 6-7: outgoing partons (|pdgId|<=22, udscg, photons)
+     // Every parton 2-7 has the same production vertex (0 for 0-1)
+     assert(genParticles->at(2).status()==3);
+     assert(fabs(genParticles->at(2).pdgId())<100); //<25-><100 to include Z,W
+     vxMC = genParticles->at(2).vx();
+     vyMC = genParticles->at(2).vy();
+     vzMC = genParticles->at(2).vz();
+
+     // Momentum conservation in px (py, pt?): 
+     // outgoing + ISR - incoming ~ 0 (couple of GeV)
+     // Is the small discrepancy due to the virtual mass of the partons?
+     set<int> mothers;
+     map<const GenParticle*, int> mapMC;
+
+     for (GenParticleCollection::const_iterator p = genParticles->begin();
+          p != genParticles->end(); ++p) {
        
-       double etaTrue = p->eta();
-       double etTrue  = p->energy()/cosh(etaTrue);  
+       if (nMC>=(nMaxMC-1)) {continue;}  // to reduce the root file size
+       // need space for the mom, eventually
+
+       // Find the stable photon
+       if (p->pdgId()==22 && p->status()==1){
+         
+         double etaTrue = p->eta();
+         double etTrue  = p->energy()/cosh(etaTrue);  
+         
+         if (etTrue>maxptphoton1) {
+    	 maxptphoton1 = etTrue;
+         }
+         if (etTrue>maxptphoton2 && etTrue<maxptphoton1) maxptphoton2 = etTrue;
+         if (etTrue>maxptphoton3 && etTrue<maxptphoton2) maxptphoton3 = etTrue;
+       } // stable photon
        
-       if (etTrue>maxptphoton1) {
-  	 maxptphoton1 = etTrue;
+
+       int motherIDMC = -1;
+       if (p->numberOfMothers() > 0) { 
+         const Candidate * mom = p->mother();
+         for (size_t j = 0; j != genParticles->size(); ++j) {
+         const Candidate * ref = &((*genParticles)[j]);
+         //if (mom->px() == ref->px() && mom->py() == ref->py()
+         //&& mom->pz() == ref->pz() && mom->status() == ref->status()
+         //&& mom->pdgId()==ref->pdgId()) {
+
+           //assert(mom==ref); // address of the candidate is the same?
+           //above works in about 99.7% of events
+
+         if (mom==ref) {
+           //motherIDMC[nMC] = j;
+           motherIDMC = j;
+         }
+         }
        }
-       if (etTrue>maxptphoton2 && etTrue<maxptphoton1) maxptphoton2 = etTrue;
-       if (etTrue>maxptphoton3 && etTrue<maxptphoton2) maxptphoton3 = etTrue;
-     } // stable photon
+
+       // Select only a subset of particles to reduce size:
+       // All the partons (8)
+       // All the stable (status==1) particles within deltaR<1.0
+       // around outgoing partons
+       // Parents (status==2) of the stable photons and electrons in above
      
+       double deltaR = 0;
+       if (p->status() == 1) {
+         double deltaR1 = oplus(delta_eta(p->eta(),etaMC[6]),
+                          delta_phi(p->phi(),phiMC[6]));
+         double deltaR2 = oplus(delta_eta(p->eta(),etaMC[7]),
+                          delta_phi(p->phi(),phiMC[7]));
+         deltaR = min(deltaR1, deltaR2);
+       }
 
-     int motherIDMC = -1;
-     if (p->numberOfMothers() > 0) { 
-       const Candidate * mom = p->mother();
-       for (size_t j = 0; j != genParticles->size(); ++j) {
-	 const Candidate * ref = &((*genParticles)[j]);
-	 //if (mom->px() == ref->px() && mom->py() == ref->py()
-	 //&& mom->pz() == ref->pz() && mom->status() == ref->status()
-	 //&& mom->pdgId()==ref->pdgId()) {
+       // Neutral particles kept with >200 MeV (ECAL ZS threshold)
+       // Charged particles kept with >75 MeV (tracking threshold)
+       if (p->status()==3 || (p->status()==1 && deltaR<1.0 &&
+                             (p->pt()>0.200 ||
+                             (p->charge()!=0 && p->pt()>0.075))) ) {
 
-	   //assert(mom==ref); // address of the candidate is the same?
-	   //above works in about 99.7% of events
+         pdgIdMC[nMC] = p->pdgId();
+         statusMC[nMC] = p->status();
+         //massMC[nMC] = p->mass();
+         ptMC[nMC] = p->pt();
+         eMC[nMC] = p->energy();	 
+         etaMC[nMC] = p->eta();	 
+         phiMC[nMC] = p->phi();	 
+         
+         mapMC[&(*p)] = nMC;
+         ++nMC; 
 
-	 if (mom==ref) {
-	   //motherIDMC[nMC] = j;
-	   motherIDMC = j;
-	 }
+         // if stable photon/electron, find parent
+         if (p->status() == 1 && motherIDMC != -1
+             //&& (pdgIdMC[nMC] == kPhoton || pdgIdMC[nMC] == kElectron)) {//bug
+             && (p->pdgId() == kPhoton || p->pdgId() == kElectron)) {
+             
+           //const Candidate * mom = p->mother();
+           const GenParticle *mom = (const GenParticle*)p->mother();
+           if (mom->status() == 2
+               && (mom->pdgId()<81 || mom->pdgId()>100) // remove MC internal 
+               && mothers.find(motherIDMC) == mothers.end()) {
+
+           mothers.insert(motherIDMC);
+           
+           if (nMC>=nMaxMC) {continue;}  // to reduce the root file size
+           pdgIdMC[nMC] = mom->pdgId();
+           statusMC[nMC] = mom->status();
+           //massMC[nMC] = mom->mass();
+           ptMC[nMC] = mom->pt();
+           eMC[nMC] = mom->energy();
+           etaMC[nMC] = mom->eta();
+           phiMC[nMC] = mom->phi(); 
+
+           mapMC[mom] = nMC;
+           ++nMC; 
+         }
+         } // stable photon has parent
+       } // keep particle
+
+     } // loop particles
+
+   
+     const double genjetptthr = 5.; // already implicit in GenJet reco
+     const int genjetnmin = 4;
+     // Loop over gen Jets
+
+     for (GenJetCollection::const_iterator it = jetsgenite->begin(); 
+        it != jetsgenite->end(); ++it) {
+
+       if (nJetGen_ite>=100) {cout << "number of gen jets ite is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_ite < genjetnmin || it->pt() > genjetptthr) {
+
+         ptJetGen_ite[nJetGen_ite] = it->pt();
+         eJetGen_ite[nJetGen_ite] = it->energy();	 
+         etaJetGen_ite[nJetGen_ite] = it->eta();	 
+         phiJetGen_ite[nJetGen_ite] = it->phi();	      
+       
+         nJetGen_ite++;
        }
      }
 
-     // Select only a subset of particles to reduce size:
-     // All the partons (8)
-     // All the stable (status==1) particles within deltaR<1.0
-     // around outgoing partons
-     // Parents (status==2) of the stable photons and electrons in above
-   
-     double deltaR = 0;
-     if (p->status() == 1) {
-       double deltaR1 = oplus(delta_eta(p->eta(),etaMC[6]),
-			      delta_phi(p->phi(),phiMC[6]));
-       double deltaR2 = oplus(delta_eta(p->eta(),etaMC[7]),
-			      delta_phi(p->phi(),phiMC[7]));
-       deltaR = min(deltaR1, deltaR2);
+     for (GenJetCollection::const_iterator it = jetsgenkt4->begin(); 
+        it != jetsgenkt4->end(); ++it) {
+
+       if (nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_kt4 < genjetnmin || it->pt() > genjetptthr) {
+
+         ptJetGen_kt4[nJetGen_kt4] = it->pt();
+         eJetGen_kt4[nJetGen_kt4] = it->energy();	 
+         etaJetGen_kt4[nJetGen_kt4] = it->eta();	 
+         phiJetGen_kt4[nJetGen_kt4] = it->phi();	      
+         
+         nJetGen_kt4++;
+       }
      }
 
-     // Neutral particles kept with >200 MeV (ECAL ZS threshold)
-     // Charged particles kept with >75 MeV (tracking threshold)
-     if (p->status()==3 || (p->status()==1 && deltaR<1.0 &&
-			    (p->pt()>0.200 ||
-			     (p->charge()!=0 && p->pt()>0.075))) ) {
+     for (GenJetCollection::const_iterator it = jetsgenkt6->begin(); 
+        it != jetsgenkt6->end(); ++it) {
 
-       pdgIdMC[nMC] = p->pdgId();
-       statusMC[nMC] = p->status();
-       //massMC[nMC] = p->mass();
-       ptMC[nMC] = p->pt();
-       eMC[nMC] = p->energy();	 
-       etaMC[nMC] = p->eta();	 
-       phiMC[nMC] = p->phi();	 
+       if (nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_kt6 < genjetnmin || it->pt() > genjetptthr) {
+
+         ptJetGen_kt6[nJetGen_kt6] = it->pt();
+         eJetGen_kt6[nJetGen_kt6] = it->energy();	 
+         etaJetGen_kt6[nJetGen_kt6] = it->eta();	 
+         phiJetGen_kt6[nJetGen_kt6] = it->phi();	      
+         
+         nJetGen_kt6++;
+       }
+     }
+
+
+     //----- Figure out the particle decays in tracker volume BEGIN ------
+
+     if (_debug)
+       cout << Form("Figuring out the particle decays for event %d", event)
+        << endl << flush;
+
+     // Vertices only return trackID of their parent SimTrack
+     // Figure out the mapping from trackID to SimTrack
+     map<unsigned int, const SimTrack*> trackMap;
+     for (SimTrackContainer::const_iterator iSim = simTracks->begin();
+        iSim != simTracks->end(); ++iSim) {
+       if (!iSim->noVertex()) {
+         assert(trackMap.find(iSim->trackId())==trackMap.end());
+         trackMap[iSim->trackId()] = &(*iSim);
+       }
+     }
+
+     if (_debug)
+       cout << "Found mapping TrackID->ParentSimTrack" << endl << flush;
+
+     // Find all SimTracks that come from decays before the ECAL
+     // and find their parent SimTracks
+     map<const SimTrack*, const SimTrack*> promptParent; // daughter->mother
+     map<const SimTrack*, set<const SimTrack*> > promptDecays; // m->ds
+     map<const SimTrack*, const SimVertex*> promptVertex; // daughter->vertex
+
+     for (SimTrackContainer::const_iterator iSim = simTracks->begin();
+        iSim != simTracks->end(); ++iSim) {
+    
+       if (!iSim->noVertex()) {
+      
+         // Find the parent vertex and see if it classifies as an early decay
+         // Exclude the primary vertex (noParent)
+         SimVertex const& vtx = (*simVertices)[iSim->vertIndex()];
+         if (!vtx.noParent() && vtx.position().Rho() < 129 &&
+        fabs(vtx.position().z()) < 304) {
+        
+        // Find parent SimParticle that produced this vertex
+        // vtx->parentIndex is NOT a vector index :( so use trackMap
+        assert(trackMap.find(vtx.parentIndex())!=trackMap.end());
+        const SimTrack* p = trackMap[vtx.parentIndex()];
+        promptParent[&(*iSim)] = p;
+        promptDecays[p].insert(&(*iSim));
+        //promptVertex[p] = &vtx;
+        promptVertex[&(*iSim)] = &vtx;
+         } // early decay
+       } // has vertex
+     } // for simTracks
+
+     if (_debug)
+       cout << "Found mapping DaughterSimTracks<-(Vertex)->ParentSimTrack"
+        << endl << flush;
+
+     // Find grandparent SimTracks all the way up the chain
+     map<const SimTrack*, const SimTrack*> chainParents;// g.daughter->grandma
+     map<const SimTrack*, set<const SimTrack*> > chainDecays; // gm->gds
+
+     for (map<const SimTrack*, const SimTrack*>::const_iterator iSim
+         = promptParent.begin(); iSim != promptParent.end(); ++iSim) {
+    
+       // Check that the SimTrack has no daughters itself (=grandchild)
+       if (promptDecays.find(iSim->first)==promptDecays.end()) {
+         // Find the first SimTrack in the parentage chain (=grandparent)
+         const SimTrack *p = iSim->second;
+         while (promptParent.find(p) != promptParent.end())
+         p = promptParent[p];
+         chainParents[iSim->first] = p;
+         chainDecays[p].insert(iSim->first);
+       } // is grandchild
+     } // for promptParent
+
+     if (_debug)
+       cout << "Found mapping GrandDaughterSimTracks<->GrandParentSimTrack"
+          << " (i.e. identified decay chains)" << endl << flush;
+
+     // Prune the decay chains to enrich useful information:
+     // - truncate (electron) brems
+     // - truncate non-primary photon conversions
+
+     for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
+         = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
+
+       // iteratively go down the chain and remove decays
+       pruneKids(iSim->first, promptDecays, promptParent, promptVertex, 0);
+     }
+
+     if (_debug)
+       cout << "Pruned the decay chains" << endl << flush;
+
+     // Associate grandParents to GenParticles
+     map<const GenParticle*, const SimTrack*> decayedSims;
+     map<const SimTrack*, const GenParticle*> decayedGens;
+
+     for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
+          = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
+    
+       if (iSim->first->noGenpart()) {
+         if (_debug)
+         cout << Form("Error: no GenPart found for %d (%1.3g)",
+                    iSim->first->type(),
+                    iSim->first->momentum().pt()) << endl;
+         //assert(!iSim->first->noGenpart());
+         continue;
+       }
+    
+       // Make sure the decay chain wasn't already pruned out
+       if (promptDecays.find(iSim->first)!=promptDecays.end() &&
+         promptDecays[iSim->first].size()!=0) {
+      
+         // NB: genpartIndex offset by 1
+         const GenParticle* iGen =
+         &(*genParticles)[iSim->first->genpartIndex()-1];
+         assert(iGen->pdgId()==iSim->first->type());
+         decayedSims[iGen] = iSim->first;
+         decayedGens[iSim->first] = iGen;
+       }
+     } // for chainParents 
+
+     if (_debug)
+       cout << "Found mappings GrandParentSimTracks<->GenParticles" << endl;
+
+     // Save the particles (conversion) for the primary photon
+     for (map<const GenParticle*, const SimTrack*>::const_iterator iGen
+         = decayedSims.begin(); iGen != decayedSims.end(); ++iGen) {
+
+       const GenParticle *p = iGen->first;
+       if (p->pdgId()==22 && p->mother()->status()==3
+         && p->mother()->pdgId()==22) {
+
+         if (_debug)
+         cout << "Decay chain for primary photon Gen id 22:" << endl;
+         bool saved = printChildren(decayedSims[p], promptDecays,
+                       promptVertex, 0, true);
+         if (saved && mapMC.find(p)!=mapMC.end()) {
+            statusMC[mapMC[p]] *= -1;
+         }
+       } // is primary photon
+     } // for iGen 
+
+     if (_debug)
+       cout << "Found mappings for primary photon (if any)" << endl;
        
-       mapMC[&(*p)] = nMC;
-       ++nMC; 
+     //----- Figure out the particle decays in tracker volume END ------
 
-       // if stable photon/electron, find parent
-       if (p->status() == 1 && motherIDMC != -1
-	   //&& (pdgIdMC[nMC] == kPhoton || pdgIdMC[nMC] == kElectron)) {//bug
-	   && (p->pdgId() == kPhoton || p->pdgId() == kElectron)) {
-	   
-	 //const Candidate * mom = p->mother();
-	 const GenParticle *mom = (const GenParticle*)p->mother();
-	 if (mom->status() == 2
-	     && (mom->pdgId()<81 || mom->pdgId()>100) // remove MC internal 
-	     && mothers.find(motherIDMC) == mothers.end()) {
 
-	   mothers.insert(motherIDMC);
-	   
-	   if (nMC>=nMaxMC) {continue;}  // to reduce the root file size
-	   pdgIdMC[nMC] = mom->pdgId();
-	   statusMC[nMC] = mom->status();
-	   //massMC[nMC] = mom->mass();
-	   ptMC[nMC] = mom->pt();
-	   eMC[nMC] = mom->energy();
-	   etaMC[nMC] = mom->eta();
-	   phiMC[nMC] = mom->phi(); 
+     for (GenJetCollection::const_iterator it = jetsgenakt5->begin(); 
+        it != jetsgenakt5->end(); ++it) {
+       
+       if (nJetGen_akt5>=100) {cout << "number of gen jets kt 05 is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_akt5 < genjetnmin || it->pt() > genjetptthr) {
+         
+       ptJetGen_akt5[nJetGen_akt5] = it->pt();	 
+       eJetGen_akt5[nJetGen_akt5] = it->energy();	 
+       etaJetGen_akt5[nJetGen_akt5] = it->eta();	 
+       phiJetGen_akt5[nJetGen_akt5] = it->phi();	      
+       
+       // Extra variables for PFlow
+       Int_t nMuonsGen = 0;
+       TLorentzVector p4MuonsGen;
 
-	   mapMC[mom] = nMC;
-	   ++nMC; 
-	 }
-       } // stable photon has parent
-     } // keep particle
+       Int_t nElectronsGen = 0;
+       TLorentzVector p4ElectronsGen;
+    
+       Int_t nPhotonsGen = 0;
+       TLorentzVector p4PhotonsGen;
+    
+       Int_t nTracksGen = 0;
+       TLorentzVector p4TracksGen;
+    
+       Int_t nNeutralHadronsGen = 0;
+       TLorentzVector p4NeutralHadronsGen;
+    
+       vector<const GenParticle*> jetParticles = it->getGenConstituents();
+       vector<const GenParticle*> shortPtcls;
 
-   } // loop particles
+       //----- Select the particle decays in tracker volume BEGIN ------      
+
+       const int ijet = it - jetsgenakt5->begin();
+       if (_debug)
+         cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
+                  " for jet %d of pT=%1.3f eta=%1.3g",
+                  ijet, it->pt(), it->eta())
+        << endl << flush;
+
+       // Print out decay chains for this jet iteratively
+       // NB: this method will also save the SIM particles when asked
+       for (vector< const GenParticle* >::const_iterator iGen
+             = jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
+      
+         if (_debug)
+         cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
+        	      (*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
+        
+         if (decayedSims.find(*iGen) != decayedSims.end()) {
+        
+         if (_debug)
+           cout << " decay chain:" << endl;
+         assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
+         bool saved = printChildren(decayedSims[*iGen],
+        			    promptDecays, promptVertex, 0,
+        			    (ijet<2 ? true : false)); // save to file?
+         if (saved && mapMC.find(*iGen)!=mapMC.end()) {
+           //assert(statusMC[mapMC[*iGen]]!=2);
+           //assert(mapMC.find(*iGen)!=mapMC.end());
+           statusMC[mapMC[*iGen]] *= -1;
+         }
+         }
+         else
+         if (_debug)
+           cout << endl;
+       }
+
+       //----- Select out the particle decays in tracker volume END------
+
+       // Sum up the different types of GenParticle energy
+       for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
+          iPart != jetParticles.end(); ++iPart) {
+        
+         Int_t partPdgId = (*iPart)->pdgId();
+         // Convert particle momentum to normal TLorentzVector, wrong type :(
+         math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
+         TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+        
+         if (fabs(partPdgId)==13) { //muons
+           nMuonsGen += 1;
+           p4MuonsGen += p4;
+         } else if (fabs(partPdgId)==11) { //electrons
+           nElectronsGen += 1;
+           p4ElectronsGen += p4;
+         } else if ((*iPart)->charge() != 0) { // charged hadrons
+           nTracksGen += 1;
+           p4TracksGen += p4;
+         } else if (partPdgId==22) { //photons
+           nPhotonsGen += 1;
+           p4PhotonsGen += p4;
+           //save photons and later check for conversions:
+           shortPtcls.push_back(*iPart);
+         } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
+        	  && (fabs(partPdgId) != 16)) { // veto neutrinos
+        
+         nNeutralHadronsGen += 1;
+         p4NeutralHadronsGen += p4;
+        
+         // Decay K0S and Lambda later and correct fractions
+         if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
+           shortPtcls.push_back(*iPart);
+         }
+         }
+        
+       } //for jetParticles
+    
+       // ------------------ BEGIN short decays (photons, K0S's and lambdas)
+
+       for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
+          iGen != shortPtcls.end(); ++iGen) {
+        
+         // Check if GenParticle corresponds to a decayed SimTrack
+         if (decayedSims.find(*iGen) != decayedSims.end()) {
+        
+         // Check that the SimTrack Decay products were stored
+         const SimTrack *trk = decayedSims[*iGen];
+         if (promptDecays.find(trk) != promptDecays.end()) {
+        
+           // Convert track momentum to normal TLorentzVector, wrong type :(
+           math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
+           TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+           if ((*iGen)->pdgId()==22) {
+             nPhotonsGen -= 1;
+             p4PhotonsGen -= p4mom;
+           }
+           else {
+             nNeutralHadronsGen -= 1;
+             p4NeutralHadronsGen -= p4mom;
+           }
+        
+           set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
+        
+           for (set<const SimTrack*>::const_iterator iSim = kids.begin();
+        	iSim != kids.end(); ++iSim) {
+        
+             // Convert track momentum to normal TLorentzVector, wrong type :(
+             math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
+             TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
+          
+             const SimVertex *vtx = promptVertex[*iSim];
+        
+             double vertR = vtx->position().Rho();
+             double vertZ = vtx->position().z();
+             //double trkEta = trk->momentum().eta();
+             bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
+        
+             // Check if the decay happened early enough for the
+             // charged track to be reconstructed
+             bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
+        			    && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
+        
+             if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
+               nPhotonsGen += 2;  //both
+               p4PhotonsGen += p4;
+             }
+             else if (decayTrackable) {
+               if( fabs((*iSim)->type())==11 ) { //electrons
+                 nElectronsGen += 1;
+                 p4ElectronsGen += p4;
+               } else {
+                 nTracksGen += 1;
+                 p4TracksGen += p4;
+               }
+             } else {
+               if( (*iGen)->pdgId()==22 ) { //photons
+                 nPhotonsGen += 1;
+                 p4PhotonsGen += p4;
+               } else {
+                 nNeutralHadronsGen += 1;
+                 p4NeutralHadronsGen += p4;
+               } //if-else photons
+             } //if-else decay trackable
+           } // for iSim loop on kids
+         } // has promptDecays
+         } // has decayedSims
+       } // for iGen
+
+       // ------------------ END short decays
+    
+       const TLorentzVector *p = 0;
+
+       nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
+       p = &p4MuonsGen;
+       eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptMuonsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiMuonsGen_akt5[nJetGen_akt5] = (p->Pt() ?
+                                    delta_phi(p->Phi(), it->phi()) : 0);
+       etaMuonsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
+    
+       nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
+       p = &p4ElectronsGen;
+       eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptElectronsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiElectronsGen_akt5[nJetGen_akt5] = (p->Pt() ?
+                                    delta_phi(p->Phi(), it->phi()) : 0);
+       etaElectronsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
+    
+       nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
+       p = &p4PhotonsGen;
+       ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptPhotonsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiPhotonsGen_akt5[nJetGen_akt5] = (p->Pt() ? 
+                                   delta_phi(p->Phi(), it->phi()) : 0);
+       etaPhotonsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
+    
+       nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
+       p = &p4TracksGen;
+       eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptTracksGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiTracksGen_akt5[nJetGen_akt5] = (p->Pt() ?
+                                  delta_phi(p->Phi(), it->phi()) : 0);
+       etaTracksGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
+
+       nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
+       p = &p4NeutralHadronsGen;
+       eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
+       ptNeutralHadronsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
+       phiNeutralHadronsGen_akt5[nJetGen_akt5] = (p->Pt() ?
+                                     delta_phi(p->Phi(), it->phi()) : 0);
+       etaNeutralHadronsGen_akt5[nJetGen_akt5] =(p->Pt() ?
+                                         p->Eta() - it->eta() : 0);
+       
+       nJetGen_akt5++;
+     } // if >genjetptthr
+     } // gen_akt5
+
+     //for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
+     //it != jetsgenakt7->end(); ++it) {
+
+     //if (nJetGen_akt7>=100) {cout << "number of gen jets kt 07 is larger than 100. Skipping" << endl; continue;}
+     //ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
+     //eJetGen_akt7[nJetGen_akt7] = it->energy();	 
+     //etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
+     //phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
+       
+     //nJetGen_akt7++;
+     //}
+
+     for (GenJetCollection::const_iterator it = jetsgensis5->begin(); 
+        it != jetsgensis5->end(); ++it) {
+
+       if (nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_sis5 < genjetnmin || it->pt() > genjetptthr) {
+
+         ptJetGen_sis5[nJetGen_sis5] = it->pt();
+         eJetGen_sis5[nJetGen_sis5] = it->energy();	 
+         etaJetGen_sis5[nJetGen_sis5] = it->eta();	 
+         phiJetGen_sis5[nJetGen_sis5] = it->phi();	      
+         
+         nJetGen_sis5++;
+       }
+     }
+
+     for (GenJetCollection::const_iterator it = jetsgensis7->begin(); 
+        it != jetsgensis7->end(); ++it) {
+
+       if (nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
+       if (nJetGen_sis7 < genjetnmin || it->pt() > genjetptthr) {
+
+         ptJetGen_sis7[nJetGen_sis7] = it->pt();
+         eJetGen_sis7[nJetGen_sis7] = it->energy();	 
+         etaJetGen_sis7[nJetGen_sis7] = it->eta();	 
+         phiJetGen_sis7[nJetGen_sis7] = it->phi();	      
+         
+         nJetGen_sis7++;
+       }
+     }
+
+  } //if(isMC)
+
+
 
 //    if (maxptphoton1>-900.) PtPhotonMC1st->Fill(maxptphoton1);
 //    if (maxptphoton2>-900.) PtPhotonMC2st->Fill(maxptphoton2);
@@ -865,8 +1342,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    //const int pfminconst = 1; // minimum constituents for low pT
    const int jptjetnmin = 4;
    const int pfjetnmin = 4;
-   const double genjetptthr = 5.; // already implicit in GenJet reco
-   const int genjetnmin = 4;
 
    for (CaloJetCollection::const_iterator it = jetsite->begin(); 
 	 it != jetsite->end(); ++it) {
@@ -1225,468 +1700,6 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        nJet_pfsis7++;
      }
    }
-   
-   // Loop over gen Jets
-
-   for (GenJetCollection::const_iterator it = jetsgenite->begin(); 
-	it != jetsgenite->end(); ++it) {
-
-     if (nJetGen_ite>=100) {cout << "number of gen jets ite is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_ite < genjetnmin || it->pt() > genjetptthr) {
-
-       ptJetGen_ite[nJetGen_ite] = it->pt();
-       eJetGen_ite[nJetGen_ite] = it->energy();	 
-       etaJetGen_ite[nJetGen_ite] = it->eta();	 
-       phiJetGen_ite[nJetGen_ite] = it->phi();	      
-     
-       nJetGen_ite++;
-     }
-   }
-
-   for (GenJetCollection::const_iterator it = jetsgenkt4->begin(); 
-	it != jetsgenkt4->end(); ++it) {
-
-     if (nJetGen_kt4>=100) {cout << "number of gen jets kt 04 is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_kt4 < genjetnmin || it->pt() > genjetptthr) {
-
-       ptJetGen_kt4[nJetGen_kt4] = it->pt();
-       eJetGen_kt4[nJetGen_kt4] = it->energy();	 
-       etaJetGen_kt4[nJetGen_kt4] = it->eta();	 
-       phiJetGen_kt4[nJetGen_kt4] = it->phi();	      
-       
-       nJetGen_kt4++;
-     }
-   }
-
-   for (GenJetCollection::const_iterator it = jetsgenkt6->begin(); 
-	it != jetsgenkt6->end(); ++it) {
-
-     if (nJetGen_kt6>=100) {cout << "number of gen jets kt 06 is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_kt6 < genjetnmin || it->pt() > genjetptthr) {
-
-       ptJetGen_kt6[nJetGen_kt6] = it->pt();
-       eJetGen_kt6[nJetGen_kt6] = it->energy();	 
-       etaJetGen_kt6[nJetGen_kt6] = it->eta();	 
-       phiJetGen_kt6[nJetGen_kt6] = it->phi();	      
-       
-       nJetGen_kt6++;
-     }
-   }
-
-
-   //----- Figure out the particle decays in tracker volume BEGIN ------
-
-   if (_debug)
-     cout << Form("Figuring out the particle decays for event %d", event)
-	  << endl << flush;
-
-   // Vertices only return trackID of their parent SimTrack
-   // Figure out the mapping from trackID to SimTrack
-   map<unsigned int, const SimTrack*> trackMap;
-   for (SimTrackContainer::const_iterator iSim = simTracks->begin();
-	iSim != simTracks->end(); ++iSim) {
-     if (!iSim->noVertex()) {
-       assert(trackMap.find(iSim->trackId())==trackMap.end());
-       trackMap[iSim->trackId()] = &(*iSim);
-     }
-   }
-
-   if (_debug)
-     cout << "Found mapping TrackID->ParentSimTrack" << endl << flush;
-
-   // Find all SimTracks that come from decays before the ECAL
-   // and find their parent SimTracks
-   map<const SimTrack*, const SimTrack*> promptParent; // daughter->mother
-   map<const SimTrack*, set<const SimTrack*> > promptDecays; // m->ds
-   map<const SimTrack*, const SimVertex*> promptVertex; // daughter->vertex
-
-   for (SimTrackContainer::const_iterator iSim = simTracks->begin();
-	iSim != simTracks->end(); ++iSim) {
-  
-     if (!iSim->noVertex()) {
-    
-       // Find the parent vertex and see if it classifies as an early decay
-       // Exclude the primary vertex (noParent)
-       SimVertex const& vtx = (*simVertices)[iSim->vertIndex()];
-       if (!vtx.noParent() && vtx.position().Rho() < 129 &&
-	   fabs(vtx.position().z()) < 304) {
-      
-	 // Find parent SimParticle that produced this vertex
-	 // vtx->parentIndex is NOT a vector index :( so use trackMap
-	 assert(trackMap.find(vtx.parentIndex())!=trackMap.end());
-	 const SimTrack* p = trackMap[vtx.parentIndex()];
-	 promptParent[&(*iSim)] = p;
-	 promptDecays[p].insert(&(*iSim));
-	 //promptVertex[p] = &vtx;
-	 promptVertex[&(*iSim)] = &vtx;
-       } // early decay
-     } // has vertex
-   } // for simTracks
-
-   if (_debug)
-     cout << "Found mapping DaughterSimTracks<-(Vertex)->ParentSimTrack"
-	  << endl << flush;
-
-   // Find grandparent SimTracks all the way up the chain
-   map<const SimTrack*, const SimTrack*> chainParents;// g.daughter->grandma
-   map<const SimTrack*, set<const SimTrack*> > chainDecays; // gm->gds
-
-   for (map<const SimTrack*, const SimTrack*>::const_iterator iSim
-	  = promptParent.begin(); iSim != promptParent.end(); ++iSim) {
-  
-     // Check that the SimTrack has no daughters itself (=grandchild)
-     if (promptDecays.find(iSim->first)==promptDecays.end()) {
-       // Find the first SimTrack in the parentage chain (=grandparent)
-       const SimTrack *p = iSim->second;
-       while (promptParent.find(p) != promptParent.end())
-	 p = promptParent[p];
-       chainParents[iSim->first] = p;
-       chainDecays[p].insert(iSim->first);
-     } // is grandchild
-   } // for promptParent
-
-   if (_debug)
-     cout << "Found mapping GrandDaughterSimTracks<->GrandParentSimTrack"
-	  << " (i.e. identified decay chains)" << endl << flush;
-
-   // Prune the decay chains to enrich useful information:
-   // - truncate (electron) brems
-   // - truncate non-primary photon conversions
-
-   for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
-	  = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
-
-     // iteratively go down the chain and remove decays
-     pruneKids(iSim->first, promptDecays, promptParent, promptVertex, 0);
-   }
-
-   if (_debug)
-     cout << "Pruned the decay chains" << endl << flush;
-
-   // Associate grandParents to GenParticles
-   map<const GenParticle*, const SimTrack*> decayedSims;
-   map<const SimTrack*, const GenParticle*> decayedGens;
-
-   for (map<const SimTrack*, set<const SimTrack*> >::const_iterator iSim
-	  = chainDecays.begin(); iSim != chainDecays.end(); ++iSim) {
-  
-     if (iSim->first->noGenpart()) {
-       if (_debug)
-	 cout << Form("Error: no GenPart found for %d (%1.3g)",
-		      iSim->first->type(),
-		      iSim->first->momentum().pt()) << endl;
-       //assert(!iSim->first->noGenpart());
-       continue;
-     }
-  
-     // Make sure the decay chain wasn't already pruned out
-     if (promptDecays.find(iSim->first)!=promptDecays.end() &&
-	 promptDecays[iSim->first].size()!=0) {
-    
-       // NB: genpartIndex offset by 1
-       const GenParticle* iGen =
-	 &(*genParticles)[iSim->first->genpartIndex()-1];
-       assert(iGen->pdgId()==iSim->first->type());
-       decayedSims[iGen] = iSim->first;
-       decayedGens[iSim->first] = iGen;
-     }
-   } // for chainParents 
-
-   if (_debug)
-     cout << "Found mappings GrandParentSimTracks<->GenParticles" << endl;
-
-   // Save the particles (conversion) for the primary photon
-   for (map<const GenParticle*, const SimTrack*>::const_iterator iGen
-	  = decayedSims.begin(); iGen != decayedSims.end(); ++iGen) {
-
-     const GenParticle *p = iGen->first;
-     if (p->pdgId()==22 && p->mother()->status()==3
-	 && p->mother()->pdgId()==22) {
-
-       if (_debug)
-	 cout << "Decay chain for primary photon Gen id 22:" << endl;
-       bool saved = printChildren(decayedSims[p], promptDecays,
-				  promptVertex, 0, true);
-       if (saved && mapMC.find(p)!=mapMC.end()) {
-	   statusMC[mapMC[p]] *= -1;
-       }
-     } // is primary photon
-   } // for iGen 
-
-   if (_debug)
-     cout << "Found mappings for primary photon (if any)" << endl;
-     
-   //----- Figure out the particle decays in tracker volume END ------
-
-
-   for (GenJetCollection::const_iterator it = jetsgenakt5->begin(); 
-	it != jetsgenakt5->end(); ++it) {
-     
-     if (nJetGen_akt5>=100) {cout << "number of gen jets kt 05 is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_akt5 < genjetnmin || it->pt() > genjetptthr) {
-       
-     ptJetGen_akt5[nJetGen_akt5] = it->pt();	 
-     eJetGen_akt5[nJetGen_akt5] = it->energy();	 
-     etaJetGen_akt5[nJetGen_akt5] = it->eta();	 
-     phiJetGen_akt5[nJetGen_akt5] = it->phi();	      
-     
- //     // Extra variables for PFlow
-     Int_t nMuonsGen = 0;
-     TLorentzVector p4MuonsGen;
-
-     Int_t nElectronsGen = 0;
-     TLorentzVector p4ElectronsGen;
-  
-     Int_t nPhotonsGen = 0;
-     TLorentzVector p4PhotonsGen;
-  
-     Int_t nTracksGen = 0;
-     TLorentzVector p4TracksGen;
-  
-     Int_t nNeutralHadronsGen = 0;
-     TLorentzVector p4NeutralHadronsGen;
-  
-     vector<const GenParticle*> jetParticles = it->getGenConstituents();
-     vector<const GenParticle*> shortPtcls;
-
-     //----- Select the particle decays in tracker volume BEGIN ------      
-
-     const int ijet = it - jetsgenakt5->begin();
-     if (_debug)
-       cout << Form("Found mappings GenParticles<->GrandParentSimTracks"
-		    " for jet %d of pT=%1.3f eta=%1.3g",
-		    ijet, it->pt(), it->eta())
-	    << endl << flush;
-
-     // Print out decay chains for this jet iteratively
-     // NB: this method will also save the SIM particles when asked
-     for (vector< const GenParticle* >::const_iterator iGen
-	    = jetParticles.begin(); iGen != jetParticles.end(); ++iGen) {
-    
-       if (_debug)
-	 cout << Form("Gen id %d (pT=%1.3g GeV, eta=%1.3g)",
-		      (*iGen)->pdgId(), (*iGen)->pt(), (*iGen)->eta());
-
-       if (decayedSims.find(*iGen) != decayedSims.end()) {
-
-	 if (_debug)
-	   cout << " decay chain:" << endl;
-	 assert((*iGen)->pdgId()==decayedSims[*iGen]->type());
-	 bool saved = printChildren(decayedSims[*iGen],
-				    promptDecays, promptVertex, 0,
-				    (ijet<2 ? true : false)); // save to file?
-	 if (saved && mapMC.find(*iGen)!=mapMC.end()) {
-	   //assert(statusMC[mapMC[*iGen]]!=2);
-	   //assert(mapMC.find(*iGen)!=mapMC.end());
-	   statusMC[mapMC[*iGen]] *= -1;
-	 }
-       }
-       else
-	 if (_debug)
-	   cout << endl;
-     }
-
-     //----- Select out the particle decays in tracker volume END------
-
-     // Sum up the different types of GenParticle energy
-     for (vector< const GenParticle* >::iterator iPart = jetParticles.begin();
-	  iPart != jetParticles.end(); ++iPart) {
-    
-       Int_t partPdgId = (*iPart)->pdgId();
-       // Convert particle momentum to normal TLorentzVector, wrong type :(
-       math::XYZTLorentzVectorD const& p4t = (*iPart)->p4();
-       TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-
-       if (fabs(partPdgId)==13) { //muons
-         nMuonsGen += 1;
-	   p4MuonsGen += p4;
-       } else if (fabs(partPdgId)==11) { //electrons
-	   nElectronsGen += 1;
-	   p4ElectronsGen += p4;
-       } else if ((*iPart)->charge() != 0) { // charged hadrons
-	   nTracksGen += 1;
-	   p4TracksGen += p4;
-       } else if (partPdgId==22) { //photons
-	   nPhotonsGen += 1;
-	   p4PhotonsGen += p4;
-	   //save photons and later check for conversions:
-	   shortPtcls.push_back(*iPart);
-       } else if ((fabs(partPdgId) != 12) && (fabs(partPdgId) != 14)
-		  && (fabs(partPdgId) != 16)) { // veto neutrinos
-
-	 nNeutralHadronsGen += 1;
-	 p4NeutralHadronsGen += p4;
-
-	 // Decay K0S and Lambda later and correct fractions
-	 if (abs(partPdgId)==310 || abs(partPdgId)==3122) {
-	   shortPtcls.push_back(*iPart);
-	 }
-       }
-    
-     } //for jetParticles
-  
-     // ------------------ BEGIN short decays (photons, K0S's and lambdas)
-
-     for (vector<const GenParticle*>::const_iterator iGen = shortPtcls.begin();
-	  iGen != shortPtcls.end(); ++iGen) {
-
-       // Check if GenParticle corresponds to a decayed SimTrack
-       if (decayedSims.find(*iGen) != decayedSims.end()) {
-
-	 // Check that the SimTrack Decay products were stored
-	 const SimTrack *trk = decayedSims[*iGen];
-	 if (promptDecays.find(trk) != promptDecays.end()) {
-
-	   // Convert track momentum to normal TLorentzVector, wrong type :(
-	   math::XYZTLorentzVectorD const& p4t = (*iGen)->p4();
-	   TLorentzVector p4mom(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-	   if ((*iGen)->pdgId()==22) {
-	     nPhotonsGen -= 1;
-	     p4PhotonsGen -= p4mom;
-	   }
-	   else {
-	     nNeutralHadronsGen -= 1;
-	     p4NeutralHadronsGen -= p4mom;
-	   }
-
-	   set<const SimTrack*> const& kids = promptDecays.find(trk)->second;
-
-	   for (set<const SimTrack*>::const_iterator iSim = kids.begin();
-		iSim != kids.end(); ++iSim) {
-
-	     // Convert track momentum to normal TLorentzVector, wrong type :(
-	     math::XYZTLorentzVectorD const& p4t = (*iSim)->momentum();
-	     TLorentzVector p4(p4t.px(), p4t.py(), p4t.pz(), p4t.energy());
-        
-	     const SimVertex *vtx = promptVertex[*iSim];
-
-	     double vertR = vtx->position().Rho();
-	     double vertZ = vtx->position().z();
-	     //double trkEta = trk->momentum().eta();
-	     bool decayedBeforeCalo =  ((vertR < 129.) && ( vertZ < 304.));
-
-	     // Check if the decay happened early enough for the
-	     // charged track to be reconstructed
-	     bool decayTrackable = (vertR < 30. && fabs(p4.Eta()) < 2.5
-				    && (*iSim)->charge() != 0 && p4.Pt() > 0.075);
-
-	     if (decayedBeforeCalo && (*iSim)->type()==111) { //pizeros
-	       nPhotonsGen += 2;  //both
-	       p4PhotonsGen += p4;
-	     }
-	     else if (decayTrackable) {
-             if( fabs((*iSim)->type())==11 ) { //electrons
-	         nElectronsGen += 1;
-	         p4ElectronsGen += p4;
-             } else {
-	         nTracksGen += 1;
-	         p4TracksGen += p4;
-             }
-	     } else {
-             if( (*iGen)->pdgId()==22 ) { //photons
-	         nPhotonsGen += 1;
-	         p4PhotonsGen += p4;
-             } else {
-	         nNeutralHadronsGen += 1;
-	         p4NeutralHadronsGen += p4;
-             } //if-else photons
-	     } //if-else decay trackable
-	   } // for iSim loop on kids
-	 } // has promptDecays
-       } // has decayedSims
-     } // for iGen
-
-     // ------------------ END short decays
-  
-     const TLorentzVector *p = 0;
-
-     nMuonsGen_akt5[nJetGen_akt5] = nMuonsGen;
-     p = &p4MuonsGen;
-     eMuonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-     ptMuonsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
-     phiMuonsGen_akt5[nJetGen_akt5] = (p->Pt() ?
-				       delta_phi(p->Phi(), it->phi()) : 0);
-     etaMuonsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
-  
-     nElectronsGen_akt5[nJetGen_akt5] = nElectronsGen;
-     p = &p4ElectronsGen;
-     eElectronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-     ptElectronsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
-     phiElectronsGen_akt5[nJetGen_akt5] = (p->Pt() ?
-					   delta_phi(p->Phi(), it->phi()) : 0);
-     etaElectronsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
-  
-     nPhotonsGen_akt5[nJetGen_akt5] = nPhotonsGen;
-     p = &p4PhotonsGen;
-     ePhotonsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-     ptPhotonsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
-     phiPhotonsGen_akt5[nJetGen_akt5] = (p->Pt() ? 
-					 delta_phi(p->Phi(), it->phi()) : 0);
-     etaPhotonsGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
-  
-     nTracksGen_akt5[nJetGen_akt5] = nTracksGen;
-     p = &p4TracksGen;
-     eTracksGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-     ptTracksGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
-     phiTracksGen_akt5[nJetGen_akt5] = (p->Pt() ?
-					delta_phi(p->Phi(), it->phi()) : 0);
-     etaTracksGen_akt5[nJetGen_akt5] = (p->Pt() ? p->Eta() - it->eta() : 0);
-
-     nNeutralHadronsGen_akt5[nJetGen_akt5] = nNeutralHadronsGen;
-     p = &p4NeutralHadronsGen;
-     eNeutralHadronsGen_akt5[nJetGen_akt5] = p->E() / it->energy();
-     ptNeutralHadronsGen_akt5[nJetGen_akt5] = p->Pt() / it->pt();
-     phiNeutralHadronsGen_akt5[nJetGen_akt5] = (p->Pt() ?
-					   delta_phi(p->Phi(), it->phi()) : 0);
-     etaNeutralHadronsGen_akt5[nJetGen_akt5] =(p->Pt() ?
-					       p->Eta() - it->eta() : 0);
-     
-     nJetGen_akt5++;
-   } // if >genjetptthr
-   } // gen_akt5
-
-   //for (GenJetCollection::const_iterator it = jetsgenakt7->begin(); 
-   //it != jetsgenakt7->end(); ++it) {
-
-   //if (nJetGen_akt7>=100) {cout << "number of gen jets kt 07 is larger than 100. Skipping" << endl; continue;}
-   //ptJetGen_akt7[nJetGen_akt7] = it->pt();	 
-   //eJetGen_akt7[nJetGen_akt7] = it->energy();	 
-   //etaJetGen_akt7[nJetGen_akt7] = it->eta();	 
-   //phiJetGen_akt7[nJetGen_akt7] = it->phi();	      
-     
-   //nJetGen_akt7++;
-   //}
-
-   for (GenJetCollection::const_iterator it = jetsgensis5->begin(); 
-	it != jetsgensis5->end(); ++it) {
-
-     if (nJetGen_sis5>=100) {cout << "number of gen jets sis 05 is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_sis5 < genjetnmin || it->pt() > genjetptthr) {
-
-       ptJetGen_sis5[nJetGen_sis5] = it->pt();
-       eJetGen_sis5[nJetGen_sis5] = it->energy();	 
-       etaJetGen_sis5[nJetGen_sis5] = it->eta();	 
-       phiJetGen_sis5[nJetGen_sis5] = it->phi();	      
-       
-       nJetGen_sis5++;
-     }
-   }
-
-   for (GenJetCollection::const_iterator it = jetsgensis7->begin(); 
-	it != jetsgensis7->end(); ++it) {
-
-     if (nJetGen_sis7>=100) {cout << "number of gen jets sis 07 is larger than 100. Skipping" << endl; continue;}
-     if (nJetGen_sis7 < genjetnmin || it->pt() > genjetptthr) {
-
-       ptJetGen_sis7[nJetGen_sis7] = it->pt();
-       eJetGen_sis7[nJetGen_sis7] = it->energy();	 
-       etaJetGen_sis7[nJetGen_sis7] = it->eta();	 
-       phiJetGen_sis7[nJetGen_sis7] = it->phi();	      
-       
-       nJetGen_sis7++;
-     }
-   }
-
    // Fill caloMET
 
    const CaloMETCollection *calometcol = calomethandle.product();
@@ -1714,21 +1727,32 @@ GammaJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
    epfMet = pfmet.energy();
    phipfMet = pfmet.phi();
 
-   // Fill gen MET
+   sMetGen = 0.;
+   eMetGen = 0.;
+   phiMetGen = 0.;
 
-   const GenMETCollection *genmetcol = genmethandle.product();
-   GenMET const& genmet = genmetcol->front();
+   sMetGen2 = 0.;
+   eMetGen2 = 0.;
+   phiMetGen2 = 0.;
 
-   sMetGen = genmet.sumEt();
-   eMetGen = genmet.energy();
-   phiMetGen = genmet.phi();
+   if( isMC ) {
+     // Fill gen MET
 
-   const GenMETCollection *genmetcol2 = genmethandle2.product();
-   GenMET const& genmet2 = genmetcol2->front();
+     const GenMETCollection *genmetcol = genmethandle.product();
+     GenMET const& genmet = genmetcol->front();
 
-   sMetGen2 = genmet2.sumEt();
-   eMetGen2 = genmet2.energy();
-   phiMetGen2 = genmet2.phi();
+     sMetGen = genmet.sumEt();
+     eMetGen = genmet.energy();
+     phiMetGen = genmet.phi();
+
+     const GenMETCollection *genmetcol2 = genmethandle2.product();
+     GenMET const& genmet2 = genmetcol2->front();
+
+     sMetGen2 = genmet2.sumEt();
+     eMetGen2 = genmet2.energy();
+     phiMetGen2 = genmet2.phi();
+
+   } //if is MC
    
    //event++;  
    m_tree->Fill();
