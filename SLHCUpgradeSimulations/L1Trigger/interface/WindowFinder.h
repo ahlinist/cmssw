@@ -16,10 +16,10 @@ class StackedTrackerWindow{
 		StackedTrackerWindow(){}
 
 		StackedTrackerWindow( double aMinrow , double aMaxrow , double aMincol , double aMaxcol):	mMinrow(aMinrow),
-																									mMaxrow(aMaxrow),
-																									mMincol(aMincol),
-																									mMaxcol(aMaxcol)
-																									{}
+														mMaxrow(aMaxrow),
+														mMincol(aMincol),
+														mMaxcol(aMaxcol)
+													{}
 
 		virtual ~StackedTrackerWindow(){}
 
