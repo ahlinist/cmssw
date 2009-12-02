@@ -25,6 +25,13 @@ DEFINE_FWK_MODULE(TrackletBuilder_PixelDigi_);
 typedef TrackletBuilder<cmsUpgrades::Ref_TTHit_> TrackletBuilder_TTHit_;
 DEFINE_FWK_MODULE(TrackletBuilder_TTHit_);
 
+#include "SLHCUpgradeSimulations/L1Trigger/interface/TrackletChainBuilder.h"
+typedef TrackletChainBuilder<cmsUpgrades::Ref_PSimHit_> TrackletChainBuilder_PSimHit_;
+DEFINE_FWK_MODULE(TrackletChainBuilder_PSimHit_);
+typedef TrackletChainBuilder<cmsUpgrades::Ref_PixelDigi_> TrackletChainBuilder_PixelDigi_;
+DEFINE_FWK_MODULE(TrackletChainBuilder_PixelDigi_);
+typedef TrackletChainBuilder<cmsUpgrades::Ref_TTHit_> TrackletChainBuilder_TTHit_;
+DEFINE_FWK_MODULE(TrackletChainBuilder_TTHit_);
 
 /* - The Hit Matching Algorithms - */
 

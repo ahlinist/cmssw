@@ -59,17 +59,17 @@ HitMatchingAlgorithm_pixelray_TTHit_ = cms.ESProducer(
 HitMatchingAlgorithm_window_PixelDigi_ = cms.ESProducer(
     "HitMatchingAlgorithm_window_PixelDigi_",
     ipWidth = cms.double(15.0),
-    minPtThreshold = cms.double(5.0),
-    RowResolution = cms.double(0.5),
-    ColResolution = cms.double(0.5)
+    minPtThreshold = cms.double(2.0),
+    RowResolution = cms.double(1.0),
+    ColResolution = cms.double(1.0)
     )
 
 HitMatchingAlgorithm_window_TTHit_ = cms.ESProducer(
     "HitMatchingAlgorithm_window_TTHit_",
     ipWidth = cms.double(15.0),
-    minPtThreshold = cms.double(5.0),
-    RowResolution = cms.double(0.5),
-    ColResolution = cms.double(0.5)
+    minPtThreshold = cms.double(2.0),
+    RowResolution = cms.double(1.0),
+    ColResolution = cms.double(1.0)
     )
 
 

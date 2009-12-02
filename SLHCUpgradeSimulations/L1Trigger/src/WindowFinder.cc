@@ -22,9 +22,12 @@ cmsUpgrades::WindowFinder::~WindowFinder()
 
 void cmsUpgrades::WindowFinder::dumphit( const StackedTrackerDetId & anId , unsigned int hitIdentifier , const double & aInnerRow , const double & aInnerColumn )
 {
+	const PixelGeomDetUnit* detunit = reinterpret_cast< const PixelGeomDetUnit* > (mGeometry -> idToDetUnit( anId , hitIdentifier ));
+
 	MeasurementPoint mp	( aInnerRow + (0.5*mRowResolution), aInnerColumn + (0.5*mColResolution) ); // Centre of the pixel.
-	LocalPoint LP_INNER 	= reinterpret_cast< const PixelGeomDetUnit* > (mGeometry	-> idToDetUnit( anId , hitIdentifier ))->topology().localPosition( mp )  ;
-	std::cout<< LP_INNER << std::endl;
+	LocalPoint LP  = detunit->topology().localPosition( mp )  ;
+	GlobalPoint GP = detunit->surface().toGlobal( LP );
+	std::cout << (hitIdentifier?"INNER":"OUTER") << " -> eta = " << GP.eta() << std::endl;
 }
 
 
@@ -62,7 +65,7 @@ cmsUpgrades::StackedTrackerWindow cmsUpgrades::WindowFinder::getWindow( const St
 	double 							PixelAngle			=		acos(  sin(	mInnerDetPhi - GP_INNER.phi() ) * mInnerDetRadius / LP_INNER.x() );
 //calculate the deviation in the r-phi direction
 	double							deltaXminus		=		( mSeparation * tan( PixelAngle - PHI ));	
-	double							deltaXplus			=		( mSeparation * tan( PixelAngle + PHI ));	
+	double							deltaXplus		=		( mSeparation * tan( PixelAngle + PHI ));	
 
 //inner pixel z-bounds
 	double							PIXEL_Z_PLUS		=		GP_INNER.z()+mHalfPixelLength;
@@ -77,7 +80,7 @@ cmsUpgrades::StackedTrackerWindow cmsUpgrades::WindowFinder::getWindow( const St
 	if (R_SEPARATION<0)	R_SEPARATION	=		-R_SEPARATION;
 //calculate the deviation in the z direction
 	double							deltaZminus		=		(PIXEL_Z_MINUS-IP_Z_PLUS) * R_SEPARATION / GP_INNER.perp();	
-	double							deltaZplus			=		(PIXEL_Z_PLUS-IP_Z_MINUS) * R_SEPARATION / GP_INNER.perp();		
+	double							deltaZplus		=		(PIXEL_Z_PLUS-IP_Z_MINUS) * R_SEPARATION / GP_INNER.perp();		
 //	std::cout << deltaZminus << " , " << deltaZplus << std::endl;
 
 // --- make boundary points in the inner reference frame --- //
@@ -96,7 +99,7 @@ cmsUpgrades::StackedTrackerWindow cmsUpgrades::WindowFinder::getWindow( const St
 	mMinrow	= mRowResolution * floor( PLUS.first / mRowResolution ); 
 	mMincol	= mColResolution * floor( PLUS.second / mColResolution );
 	mMaxrow	= mRowResolution * floor( MINUS.first / mRowResolution );
-	mMaxcol 	= mColResolution * floor( MINUS.second / mColResolution ); 
+	mMaxcol = mColResolution * floor( MINUS.second / mColResolution ); 
 
 	if(mMinrow>mMaxrow)std::swap(mMinrow,mMaxrow);
 	if(mMincol>mMaxcol)std::swap(mMincol,mMaxcol);
