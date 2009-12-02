@@ -23,9 +23,10 @@ process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
        ### test
-      '/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
-    # 'file:/tmp/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
-     
+      #'/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
+ #   #2.36 GeV files:
+    'file:/tmp/hwoehri/0E8FD2DA-76DB-DE11-8657-001F296BC5BA.root',
+    'file:/tmp/hwoehri/0CE5AD13-73DB-DE11-8B4F-00237DA15C96.root'
     )
 )
 
@@ -34,7 +35,7 @@ process.GlobalTag.globaltag = 'MC_31X_V3::All'
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     OutputFileName       = cms.string('MinBias900GeV.root'),
     OniaType             = cms.int32(443),
-    OniaMaxCat           = cms.int32(4),
+    OniaMaxCat           = cms.int32(6),
     skimOnOniaMaxCat     = cms.bool(False),
     DebugLevel           = cms.int32(0),
     genParticlesLabel    = cms.InputTag("genParticles"),
@@ -60,7 +61,7 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     StoreHLTFlag         = cms.bool(True),
     StoreL1Flag          = cms.bool(True),
     StoreTrkFlag         = cms.bool(True),
-    StorePhotonFlag      = cms.bool(True),
+    StorePhotonFlag      = cms.bool(False),
     # StorePFMuonFlag      = cms.bool(True),
     StoreTRKMuonFlag     = cms.bool(True),
     StoreGLBMuonFlag     = cms.bool(True),
