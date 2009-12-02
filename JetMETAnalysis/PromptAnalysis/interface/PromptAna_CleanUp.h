@@ -26,27 +26,18 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
-#include "RecoMET/METAlgorithms/interface/HcalNoiseRBXArray.h"
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"
-#include "DataFormats/METReco/interface/BeamHaloSummary.h"
-#include "RecoJets/JetAlgorithms/interface/JetIDHelper.h"
 
 class PromptAna_CleanUp : public edm::EDProducer{
  public: 
   explicit PromptAna_CleanUp(const edm::ParameterSet&);
   //virtual void beginJob();
-  virtual void endJob();
+  //virtual void endJob();
 
  private: 
   void produce( edm::Event &, const edm::EventSetup & );
   
-  edm::InputTag HcalNoiseRBXCollectionTag;
   edm::InputTag HcalNoiseSummaryTag;
-  edm::InputTag theJetCollectionLabel;
-  edm::InputTag BeamHaloSummaryTag;
-
-  // JetID helper
-  reco::helper::JetIDHelper *jetID;
 
   std::string     prefix,suffix;
 };
