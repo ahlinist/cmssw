@@ -373,7 +373,7 @@ void TestbeamDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechit
 			}
 		}
 		if (isEndcap2007_) {
-
+			ietaNew -= 1;
 			iphiNew -= 10;
 			targetEta = thisRun_->tableEta_;
 			targetPhi = thisRun_->tablePhi_;
@@ -399,7 +399,7 @@ void TestbeamDelegate::extractHcalRecHits(const HBHERecHitCollection& hcalRechit
 			//					<< ", iEta/iPhi = [" << ietaNew << ", " << iphiNew << "]\n";
 			if (dR < deltaRRecHitsToCenterHCAL_ || deltaRRecHitsToCenterHCAL_ <= 0) {
 				CalibratableElement ce(hrh.energy(), thisCell->getPosition().eta(), thisCell->getPosition().phi(),
-						PFLayer::HCAL_BARREL1);
+						depth);
 				calib_->tb_hcal_.push_back(ce);
 			}
 		} else

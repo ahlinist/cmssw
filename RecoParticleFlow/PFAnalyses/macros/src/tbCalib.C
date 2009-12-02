@@ -1071,6 +1071,7 @@ computeBarrelCoefficients(const char* calibFile) {
 			}
 		}
 	//}
+	//threshE = threshH=0.1;
 
 	cout << "the thresholds are " << threshE0 << ", " << threshE << " and " << threshH << endl;
 	findABC(fits, threshE0, threshE, threshH);
@@ -1156,23 +1157,35 @@ computeBarrelCoefficients(const char* calibFile) {
 	 gra0->Fit("fa0","W","",3,50);
 	 */
 
-	TF1* fa = new TF1("fa", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
+	//TF1* fa = new TF1("fa", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
+	string func = "max([0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5]), 0.1)";
+	TF1* fa = new TF1("fa", func.c_str(), 1, 301);
 	//fa->SetParameters(1.15,0.2,0.,50,0.5,100); // 0.0
-	fa->SetParameters(1.15, 0.2, -0.3, 50, 0.5, 300); // 1.0
+	//fa->SetParameters(1.15, 0.2, -0.3, 50, 0.5, 300); // 1.0 STANDARD
 	//fa->SetParameters(1.15,0.2,-0.5,100,1.0,70); // 2.5
 	//fa->SetParameters(1.15,0.2,-0.8,100,1.0,70); // 3.0
 	//fa->SetParameters(1.4, 1.24, -1.44, 67.5, -770.5, 162); //noExcesses testbeam endcap
+	if(isEndcaps)
+ 		fa->SetParameters(1.3, 0.9, 0.0, 75, 1.1, 30); // NEW
+ 	else
+		fa->SetParameters(1.1, 0.76, 0, 61, 6.8, 1.7); // NEW
+	fa->FixParameter(2, 0.0);
 	gra->Fit("fa", "", "", 2, 301);
-	gra->Fit("fa", "W", "", 2, 301);
+	//gra->Fit("fa", "W", "", 2, 301);
 
-	TF1* fb = new TF1("fb", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
-	fb->SetParameters(1.2, 0.3, 2, 50, 1.5, 10); // 0.0
+	//TF1* fb = new TF1("fb", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
+	TF1* fb = new TF1("fb", func.c_str(), 1, 301);
+	//fb->SetParameters(1.2, 0.3, 2, 50, 1.5, 10); // 0.0 STANDARD
 	//fb->SetParameters(1.2,0.5,-1,50,1.2,30); // 2.5
 	//fb->SetParameters(1.2,0.5,-1.5,40,1.2,30); // 3.0
+	fb->SetParameters(1.0, 0.2, 0.0, 60, 0.4, 53); // NEW
+	fb->FixParameter(2, 0.0);
 	grb->Fit("fb", "", "", 2, 301);
 	grb->Fit("fb", "W", "", 2, 301);
 
-	TF1* fc = new TF1("fc", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
+	//func = "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])";
+	//TF1* fc = new TF1("fc", "[0]+([1]+[2]/sqrt(x))*exp(-x/[3])-[4]*exp(-x*x/[5])", 1, 301);
+	TF1* fc = new TF1("fc", func.c_str(), 1, 301);
 	fc->SetParameters(1.15, 0.2, 2, 50, 0.5, 100); // 0
 	//fc->SetParameters(1.1,0.01,0.6,120,1.0,20); // 1
 	//fc->SetParameters(1.1,0.005,0.3,90,1.0,22); // 1.5
@@ -1787,23 +1800,11 @@ computeBarrelCoefficients(const char* calibFile) {
 
 void tbCalib() {
 
-	//	isEndcaps = false;
-	//	computeBarrelCoefficients("../../PFClusterTools/test/TBPions_endcap_slackCalib.csv");
-
-	//isEndcaps = true;
-	//computeBarrelCoefficients("../../PFClusterTools/test/TBPions_endcap_noExcesses_manyCands.csv");
-
 	isEndcaps = true;
-//	threshE = 1.5;
-//	threshH = 0.6;
-	computeBarrelCoefficients("../../../PFClusterTools/test/TBPions_endcaps_slack.csv");
+	computeBarrelCoefficients("../../../PFClusterTools/test/FullPions_endcap_noExcesses.csv");
 
-//	isEndcaps = true;
-//	threshE = 0.9;
-//	threshH = 0.4;
-//	computeBarrelCoefficients("../../PFClusterTools/test/FastPions_endcap_noExcesses.csv");
-//
-
+	//isEndcaps=true;
+	//computeBarrelCoefficients("../../../PFClusterTools/test/FastPions_endcap_noExcesses.csv");
 	gROOT->ProcessLine(".! sed -i 's:nan:0:' ecalHcalCoeff.C");
 	gROOT->ProcessLine(".! sed -i 's:nan:0:' hcalOnlyCoeff.C");
 }

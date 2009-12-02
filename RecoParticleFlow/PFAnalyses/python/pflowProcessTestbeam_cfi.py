@@ -9,7 +9,7 @@ from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
 particleFlowRecHitECAL.ecalRecHitsEB = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
 particleFlowRecHitECAL.ecalRecHitsEE = cms.InputTag("ecalRecHitMaker", "EcalRecHitsEB")
 # Don't use PS for PFlow - the calibration scale is unknown and the rechits are not aligned
-#particleFlowRecHitPS.ecalRecHitsES =  cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
+particleFlowRecHitPS.ecalRecHitsES =  cms.InputTag("esDigiToRecHitTB", "EcalRecHitsES")
 
 particleFlowRecHitHCAL.hcalRecHitsHBHE = cms.InputTag("hbhereco")
 particleFlowRecHitHCAL.caloTowers = cms.InputTag("")

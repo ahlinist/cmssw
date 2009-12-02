@@ -73,7 +73,6 @@ pfAlgoAndExtractionTestbeamEndcaps = cms.Sequence(faketracks *
                                     pflowCalibEcalRechits *
                                     towerMakerPF *
                                     pfClusteringECAL * 
-									pfClusteringPS *
                                     pfClusteringHCALTB * 
                                     particleFlowBlock * 
                                     particleFlow * 

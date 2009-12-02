@@ -8,7 +8,7 @@ fi
 WORKDIR=$PWD
 echo Working directory: $WORKDIR
 ENERGY=$1
-SUFFIX="tbCalib"
+SUFFIX="tbCalib_BlockEcalKludge"
 RUND=/afs/cern.ch/user/b/ballin/scratch0/cmssw/src/RecoParticleFlow/PFAnalyses/test/
 
 SCRIPT=$RUND"pflow_tb_reprocess.py"

@@ -1,6 +1,7 @@
 #include "RecoParticleFlow/PFAnalyses/interface/PlotUtil.h"
 #include "DataFormats/ParticleFlowReco/interface/Calibratable.h"
 #include <TH1.h>
+#include <TH1D.h>
 #include <TH2.h>
 #include <TFile.h>
 #include <TTree.h>
@@ -14,9 +15,9 @@
 using namespace std;
 using namespace pftools;
 	
-bool endcap(true);
-int data(1);
-int full(0);
+bool endcap(false);
+int data(0);
+int full(1);
 int fast(0);
 
 bool operator<(const CalibratableElement& ce1, const CalibratableElement& ce2) {
@@ -36,7 +37,9 @@ void studyClusters(TTree* tree_, PlotUtil& util_, std::string dest, const std::v
 	cout << "Tree has " << entries << " entries" << endl;
 	
 	TH2F* otherFrac = new TH2F("otherFrac", "otherFrac", 300, 1, 301, 101, 0, 101);
-	TH2F* numClust = new TH2F("numClust", "numClust", 300, 1, 301, 5, 0, 5);
+	//EVILS OF root histogramming - make sure place bin center at the discrete value!!
+	//Otherwise you'll get the wrong mean (from a TProfile)
+	TH2F* numClust = new TH2F("numClust", "numClust", 300, 1, 301, 5, -0.5, 4.5);
 	TH2F* deltaR = new TH2F("deltaR", "deltaR", 300, 1, 301, 16, 0, 0.16);
 	
 	for(unsigned entry(0); entry < entries; ++entry) {
@@ -46,6 +49,8 @@ void studyClusters(TTree* tree_, PlotUtil& util_, std::string dest, const std::v
 		numClust->Fill(calib->sim_energyEvent_, calib->cluster_hcal_.size());
 		
 		if(calib->cluster_hcal_.size() < 2)
+			continue;
+		if(calib->cluster_numEcal_ > 1)
 			continue;
 		
 		vector<CalibratableElement> hcalClusters = calib->cluster_hcal_;
@@ -77,7 +82,7 @@ void studyClusters(TTree* tree_, PlotUtil& util_, std::string dest, const std::v
 	otherFrac->ProfileX();
 	deltaR->ProfileX();
 	TProfile* pfx = util_.getType<TProfile>("otherFrac_pfx");
-	TProfile* numClust_pfx = util_.getType<TProfile>("numClust_pfx");
+	//TProfile* numClust_pfx = util_.getType<TProfile>("numClust_pfx");
 	TProfile* deltaR_pfx = util_.getType<TProfile>("deltaR_pfx");
 	
 	std::vector<int>::const_iterator eit = energies.begin();
@@ -86,7 +91,8 @@ void studyClusters(TTree* tree_, PlotUtil& util_, std::string dest, const std::v
 	JGraph drtemp("dr", true);
 	for(; eit != energies.end(); ++eit) {
 		temp.addPoint(*eit, 0,  pfx->GetBinContent(*eit), pfx->GetBinError(*eit));
-		num.addPoint(*eit, 0,  numClust_pfx->GetBinContent(*eit), numClust_pfx->GetBinError(*eit));
+		TH1D* proj = numClust->ProjectionY("clust_py", *eit);
+		num.addPoint(*eit, 0,  proj->GetMean(), proj->GetRMS());
 		drtemp.addPoint(*eit, 0,  deltaR_pfx->GetBinContent(*eit), deltaR_pfx->GetBinError(*eit));
 	}
 	
@@ -160,8 +166,9 @@ void clusterMultiplicity() {
 	if(endcap) {
 		energies = endcap_energies;
 		if(data) {
-			chain->Add("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");
-			directory = "plots/endcap_tbCalib";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
+			directory = "plots/endcap_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
@@ -175,8 +182,9 @@ void clusterMultiplicity() {
 		}
 	} else {
 		if(data) {
-			chain->Add("/tmp/ballin/PFlowTB_Tree_All_barrel_tbCalib.root");
-			directory = "plots/barrel_tbCalib";
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_barrel_0T_tbCalib_BlockEcalKludge.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_barrel_0T_tbCalib_BlockEcalKludge.root");
+			directory = "plots/barrel_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
