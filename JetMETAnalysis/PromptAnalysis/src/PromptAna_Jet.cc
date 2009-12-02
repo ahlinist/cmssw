@@ -3,11 +3,14 @@
 
 
 PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig) 
+  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))
+  , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
+  , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
 {
   //Get Input Tags
-  inputTag       = iConfig.getParameter<edm::InputTag>("InputTag");
-  prefix         = iConfig.getParameter<std::string>  ("Prefix"  );
-  suffix         = iConfig.getParameter<std::string>  ("Suffix"  );
+  //  inputTag       = iConfig.getParameter<edm::InputTag>("InputTag");
+  //prefix         = iConfig.getParameter<std::string>  ("Prefix"  );
+  //suffix         = iConfig.getParameter<std::string>  ("Suffix"  );
   // Jet ID helper
   jetIDHelper = reco::helper::JetIDHelper(iConfig.getParameter<edm::ParameterSet>("jetID")  );
 
