@@ -20,23 +20,29 @@
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
 
-
 DEFINE_SEAL_MODULE();
 
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAnaTree.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Event.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_MET.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_TcMET.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Jet.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_BeamHalo.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CaloTowers.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Trigger.h"
 #include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_CleanUp.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Vertex.h"
+#include "JetMETAnalysis/PromptAnalysis/interface/PromptAna_Track.h"
 
 DEFINE_ANOTHER_FWK_MODULE(PromptAnaTree);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Event);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_MET);
+DEFINE_ANOTHER_FWK_MODULE(PromptAna_TcMET);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Jet);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_BeamHalo);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_CaloTowers);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_Trigger);
 DEFINE_ANOTHER_FWK_MODULE(PromptAna_CleanUp);
+DEFINE_ANOTHER_FWK_MODULE(PromptAna_Vertex);
+DEFINE_ANOTHER_FWK_MODULE(PromptAna_Track);
+
