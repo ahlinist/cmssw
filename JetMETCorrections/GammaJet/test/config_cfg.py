@@ -70,6 +70,7 @@ process.printTree = cms.EDFilter("ParticleTreeDrawer",
 )
 
 process.myanalysis = cms.EDAnalyzer("GammaJetAnalyzer",
+    debug = cms.bool(False),
     recoProducer = cms.string('ecalRecHit'),
     MCTruthCollection = cms.untracked.InputTag("source"),
     genMet = cms.untracked.InputTag("genMetTrue"),
