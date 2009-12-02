@@ -66,9 +66,10 @@ class GammaJetAnalyzer : public edm::EDAnalyzer {
       static const int kPhoton = 22;
       static const int kElectron = 11;
 
-      static const bool _debug = false;
 
       // ----------member data ---------------------------
+      bool _debug;
+
       edm::InputTag MCTruthCollection_; 
       edm::InputTag triggerTag_;
       edm::InputTag Vertexsrc_;

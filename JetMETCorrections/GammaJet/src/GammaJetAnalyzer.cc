@@ -13,7 +13,7 @@
 //
 // Original Author:  Daniele del Re
 //         Created:  Thu Sep 13 16:00:15 CEST 2007
-// $Id: GammaJetAnalyzer.cc,v 1.12 2009/11/01 10:32:28 pandolf Exp $
+// $Id: GammaJetAnalyzer.cc,v 1.13 2009/11/05 18:53:54 voutila Exp $
 //
 //
 
@@ -136,6 +136,7 @@ inline double GammaJetAnalyzer::fixEMF(double emf, double eta) {
 
 GammaJetAnalyzer::GammaJetAnalyzer(const edm::ParameterSet& iConfig)
 {
+  _debug = iConfig.getParameter<bool>("debug");
   MCTruthCollection_ = iConfig.getUntrackedParameter<edm::InputTag>("MCTruthCollection");
   triggerTag_ = iConfig.getUntrackedParameter<edm::InputTag>("TriggerTag");
   trackTags_ = iConfig.getUntrackedParameter<edm::InputTag>("tracks");
