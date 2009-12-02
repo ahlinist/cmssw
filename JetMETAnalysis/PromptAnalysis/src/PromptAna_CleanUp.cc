@@ -8,153 +8,149 @@ using namespace reco;
 PromptAna_CleanUp::PromptAna_CleanUp(const edm::ParameterSet& iConfig) 
 {
   //Get Input Tags
-  HcalNoiseRBXCollectionTag = iConfig.getParameter<edm::InputTag>("HcalNoiseRBXCollection");
-  HcalNoiseSummaryTag       = iConfig.getParameter<edm::InputTag>("HcalNoiseSummary");
-  theJetCollectionLabel     = iConfig.getParameter<edm::InputTag>("JetCollectionLabel");
-  prefix                    = iConfig.getParameter<std::string>  ("Prefix"  );
-  suffix                    = iConfig.getParameter<std::string>  ("Suffix"  );
+  HcalNoiseSummaryTag  = iConfig.getParameter<edm::InputTag>("HcalNoiseSummary");
+  prefix               = iConfig.getParameter<std::string>  ("Prefix"  );
+  suffix               = iConfig.getParameter<std::string>  ("Suffix"  );
 
-  produces <std::vector<bool> >   ( prefix + "JetIDMinimal"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "JetIDLoose"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "JetIDTight"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "HcalNoiseFilterTight"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "HcalNoiseFilterLoose"  + suffix );
+  produces < bool>   ( prefix + "HcalNoiseFilterHighLevel"  + suffix );
+  produces < bool>   ( prefix + "HcalNoiseFilterTight"  + suffix );
+  produces < bool>   ( prefix + "HcalNoiseFilterLoose"  + suffix );
+
+  // the status with which the filter failed, 0 means no failure
+  produces <int>   ( prefix + "NoiseFilterStatus" + suffix);
+  produces <int>   ( prefix + "NoiseType" + suffix);
+
+  // quantities to calculate EM fraction and charge fraction
+  // of the event (|eta|<3.0)
+  produces <double> ( prefix + "EventEMEnergy" + suffix);
+  produces <double> ( prefix + "EventHadEnergy" + suffix);
+  produces <double> ( prefix + "EventTrackEnergy" + suffix);
+  produces <double> ( prefix + "EventEMFraction" + suffix);
+  produces <double> ( prefix + "EventChargeFraction" + suffix);
   
-  jetID = new reco::helper::JetIDHelper(iConfig.getParameter<ParameterSet>("JetIDParams"));
+  // minimum/maximum/RMS rechit time
+  // rechit energy>10 GeV or 25 GeV
+  produces <double> ( prefix + "Min10GeVHitTime" + suffix);
+  produces <double> ( prefix + "Max10GeVHitTime" + suffix);
+  produces <double> ( prefix + "Rms10GeVHitTime" + suffix);
+  produces <double> ( prefix + "Min25GeVHitTime" + suffix);
+  produces <double> ( prefix + "Max25GeVHitTime" + suffix);
+  produces <double> ( prefix + "Rms25GeVHitTime" + suffix);
+
+  // # of hits with E>10 GeV or 25 GeV
+  produces <int>   ( prefix + "Num10GeVHits" + suffix);
+  produces <int>   ( prefix + "Num25GeVHits" + suffix);
+  
+  // E(2TS), E(10TS), and E(2TS)/E(10TS) for the minimum E(2TS)/E(10TS) found in an RBX in the event
+  // the total energy in the RBX must be > 20 GeV
+  produces <double> ( prefix + "MinE2TS" + suffix);
+  produces <double> ( prefix + "MinE10TS" + suffix);
+  produces <double> ( prefix + "MinE2Over10TS" + suffix);
+  
+  // largest number of zeros found in a single RBX in the event
+  produces <int>   ( prefix + "MaxZeros" + suffix);
+  
+  // largest number of hits in a single HPD/RBX in the event
+  produces <int>   ( prefix + "MaxHPDHits" + suffix);
+  produces <int>   ( prefix + "MaxRBXHits" + suffix);
+  
+  // smallest EMF found in an HPD/RBX in the event
+  // the total energy in the HPD/RBX must be >20 GeV
+  produces <double> ( prefix + "MinHPDEMF" + suffix);
+  produces <double> ( prefix + "MinRBXEMF" + suffix);
+  
+  // number of "problematic" RBXs
+  produces <int>   ( prefix + "NumProblematicRBXs" + suffix);
 }
 
 void PromptAna_CleanUp::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 {
-  std::auto_ptr<std::vector<bool> >  f_jetID_Minimal                                ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >  f_jetID_Loose                                  ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >  f_jetID_Tight                                  ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >  f_hcalnoise_Tight                              ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >  f_hcalnoise_Loose                              ( new std::vector<bool>()  ) ;
-
-  // ==========================================================
-  //
-  edm::Handle<HcalNoiseRBXCollection> HRBXCollection;
-  iEvent.getByLabel(HcalNoiseRBXCollectionTag,HRBXCollection);
-  
-  edm::Handle<HcalNoiseSummary> HNoiseSummary;
-  iEvent.getByLabel(HcalNoiseSummaryTag,HNoiseSummary);
-
-  edm::Handle<reco::CaloJetCollection> caloJets;
-  iEvent.getByLabel(theJetCollectionLabel, caloJets);
-  // ==========================================================
-  // JetID 
-
-  //
-  // --- Minimal cuts
-  //
-  bool bJetIDMinimal=true;
-  int nj=0;
-  for (reco::CaloJetCollection::const_iterator cal = caloJets->begin(); 
-       cal!=caloJets->end(); ++cal){
-    
-    jetID->calculate(iEvent, *cal);
-    nj++;
-    if (cal->pt()>10.){
-      if (fabs(cal->eta())<=2.6 && 
-	  cal->emEnergyFraction()<=0.01) bJetIDMinimal=false;
-    }
-    f_jetID_Minimal -> push_back(bJetIDMinimal);
-  }
-
-
-  //
-  // --- Loose cuts
-  //
-  bool bJetIDLoose=true;
-  for (reco::CaloJetCollection::const_iterator cal = caloJets->begin(); 
-       cal!=caloJets->end(); ++cal){
-    jetID->calculate(iEvent, *cal);
-    if (cal->pt()>10.){
-      //
-      // for all regions
-      if (jetID->n90Hits()<2)  bJetIDLoose=false; 
-      if (jetID->fHPD()>=0.98) bJetIDLoose=false; 
-      //
-      // for non-forward
-      if (fabs(cal->eta())<2.55){
-	if (cal->emEnergyFraction()<=0.01) bJetIDLoose=false; 
-      }
-      // for forward
-      else {
-	if (cal->emEnergyFraction()<=-0.9) bJetIDLoose=false; 
-	if (cal->pt()>80.){
-	if (cal->emEnergyFraction()>= 1.0) bJetIDLoose=false; 
-	}
-      } // forward vs non-forward
-    }   // pt>10 GeV/c
-    f_jetID_Loose -> push_back(bJetIDLoose);
-  }     // calor-jets loop
-
-
-  //
-  // --- Tight cuts
-  //
-  bool bJetIDTight=true;
-  bJetIDTight=bJetIDLoose;
-  for (reco::CaloJetCollection::const_iterator cal = caloJets->begin(); 
-       cal!=caloJets->end(); ++cal){
-    jetID->calculate(iEvent, *cal);
-    if (cal->pt()>25.){
-      //
-      // for all regions
-      if (jetID->fHPD()>=0.95) bJetIDTight=false; 
-      //
-      // for 1.0<|eta|<1.75
-      if (fabs(cal->eta())>=1.00 && fabs(cal->eta())<1.75){
-	if (cal->pt()>80. && cal->emEnergyFraction()>=1.) bJetIDTight=false; 
-      }
-      //
-      // for 1.75<|eta|<2.55
-      else if (fabs(cal->eta())>=1.75 && fabs(cal->eta())<2.55){
-	if (cal->pt()>80. && cal->emEnergyFraction()>=1.) bJetIDTight=false; 
-      }
-      //
-      // for 2.55<|eta|<3.25
-      else if (fabs(cal->eta())>=2.55 && fabs(cal->eta())<3.25){
-	if (cal->pt()< 50.                   && cal->emEnergyFraction()<=-0.3) bJetIDTight=false; 
-	if (cal->pt()>=50. && cal->pt()< 80. && cal->emEnergyFraction()<=-0.2) bJetIDTight=false; 
-	if (cal->pt()>=80. && cal->pt()<340. && cal->emEnergyFraction()<=-0.1) bJetIDTight=false; 
-	if (cal->pt()>=340.                  && cal->emEnergyFraction()<=-0.1 
-                                             && cal->emEnergyFraction()>=0.95) bJetIDTight=false; 
-      }
-      //
-      // for 3.25<|eta|
-      else if (fabs(cal->eta())>=3.25){
-	if (cal->pt()< 50.                   && cal->emEnergyFraction()<=-0.3
-                                             && cal->emEnergyFraction()>=0.90) bJetIDTight=false; 
-	if (cal->pt()>=50. && cal->pt()<130. && cal->emEnergyFraction()<=-0.2
-                                             && cal->emEnergyFraction()>=0.80) bJetIDTight=false; 
-	if (cal->pt()>=130.                  && cal->emEnergyFraction()<=-0.1 
-                                             && cal->emEnergyFraction()>=0.70) bJetIDTight=false; 
-      }
-    }   // pt>10 GeV/c
-    f_jetID_Tight -> push_back(bJetIDTight);
-  }     // calor-jets loop
-
+  std::auto_ptr<bool>  f_hcalnoise_HighLevel  ( new bool()  );
+  std::auto_ptr<bool>  f_hcalnoise_Tight      ( new bool()  );
+  std::auto_ptr<bool>  f_hcalnoise_Loose      ( new bool()  );
+  std::auto_ptr<int>   f_noiseFilterStatus ( new int() );
+  std::auto_ptr<int>   f_noiseType ( new int() );
+  std::auto_ptr<double> f_eventEMEnergy ( new double() );
+  std::auto_ptr<double> f_eventHadEnergy ( new double() );
+  std::auto_ptr<double> f_eventTrackEnergy ( new double() );
+  std::auto_ptr<double> f_eventEMFraction ( new double() );
+  std::auto_ptr<double> f_eventChargeFraction ( new double() );
+  std::auto_ptr<double> f_min10GeVHitTime ( new double() );
+  std::auto_ptr<double> f_max10GeVHitTime ( new double() );
+  std::auto_ptr<double> f_rms10GeVHitTime ( new double() );
+  std::auto_ptr<double> f_min25GeVHitTime ( new double() );
+  std::auto_ptr<double> f_max25GeVHitTime ( new double() );
+  std::auto_ptr<double> f_rms25GeVHitTime ( new double() );
+  std::auto_ptr<int>   f_num10GeVHits ( new int() );
+  std::auto_ptr<int>   f_num25GeVHits ( new int() );
+  std::auto_ptr<double> f_minE2TS ( new double() );
+  std::auto_ptr<double> f_minE10TS ( new double() );
+  std::auto_ptr<double> f_minE2Over10TS ( new double() );
+  std::auto_ptr<int>   f_maxZeros ( new int() );
+  std::auto_ptr<int>   f_maxHPDHits ( new int() );
+  std::auto_ptr<int>   f_maxRBXHits ( new int() );
+  std::auto_ptr<double> f_minHPDEMF ( new double() );
+  std::auto_ptr<double> f_minRBXEMF ( new double() );
+  std::auto_ptr<int>   f_numProblematicRBXs ( new int() );
 
   // ==========================================================
   // HCAL Noise filter
+  edm::Handle<HcalNoiseSummary> HNoiseSummary;
+  iEvent.getByLabel(HcalNoiseSummaryTag,HNoiseSummary);
 
-  f_hcalnoise_Loose -> push_back(HNoiseSummary->passLooseNoiseFilter());
-  f_hcalnoise_Tight -> push_back(HNoiseSummary->passTightNoiseFilter());
+  *f_hcalnoise_HighLevel.get() = HNoiseSummary->passHighLevelNoiseFilter();
+  *f_hcalnoise_Tight.get()     = HNoiseSummary->passTightNoiseFilter();
+  *f_hcalnoise_Loose.get()     = HNoiseSummary->passLooseNoiseFilter();
+  *f_noiseFilterStatus.get()=HNoiseSummary->noiseFilterStatus();
+  *f_noiseType.get()=HNoiseSummary->noiseType();
+  *f_eventEMEnergy.get()=HNoiseSummary->eventEMEnergy();
+  *f_eventHadEnergy.get()=HNoiseSummary->eventHadEnergy();
+  *f_eventTrackEnergy.get()=HNoiseSummary->eventTrackEnergy();
+  *f_eventEMFraction.get()=HNoiseSummary->eventEMFraction();
+  *f_eventChargeFraction.get()=HNoiseSummary->eventChargeFraction();
+  *f_min10GeVHitTime.get()=HNoiseSummary->min10GeVHitTime();
+  *f_max10GeVHitTime.get()=HNoiseSummary->max10GeVHitTime();
+  *f_rms10GeVHitTime.get()=HNoiseSummary->rms10GeVHitTime();
+  *f_min25GeVHitTime.get()=HNoiseSummary->min25GeVHitTime();
+  *f_max25GeVHitTime.get()=HNoiseSummary->max25GeVHitTime();
+  *f_rms25GeVHitTime.get()=HNoiseSummary->rms25GeVHitTime();
+  *f_num10GeVHits.get()=HNoiseSummary->num10GeVHits();
+  *f_num25GeVHits.get()=HNoiseSummary->num25GeVHits();
+  *f_minE2TS.get()=HNoiseSummary->minE2TS();
+  *f_minE10TS.get()=HNoiseSummary->minE10TS();
+  *f_minE2Over10TS.get()=HNoiseSummary->minE2Over10TS();
+  *f_maxZeros.get()=HNoiseSummary->maxZeros();
+  *f_maxHPDHits.get()=HNoiseSummary->maxHPDHits();
+  *f_maxRBXHits.get()=HNoiseSummary->maxRBXHits();
+  *f_minHPDEMF.get()=HNoiseSummary->minHPDEMF();
+  *f_minRBXEMF.get()=HNoiseSummary->minRBXEMF();
+  *f_numProblematicRBXs.get()=HNoiseSummary->numProblematicRBXs();
   
-  // ==========================================================
-
-
-  iEvent.put(  f_jetID_Minimal                                          ,      prefix + "JetIDMinimal"  + suffix );
-  iEvent.put(  f_jetID_Loose                                            ,      prefix + "JetIDLoose"  + suffix );
-  iEvent.put(  f_jetID_Tight                                            ,      prefix + "JetIDTight"  + suffix );
-  iEvent.put(  f_hcalnoise_Loose                                        ,      prefix + "HcalNoiseFilterLoose"  + suffix );
-  iEvent.put(  f_hcalnoise_Tight                                        ,      prefix + "HcalNoiseFilterTight"  + suffix );
-}
-// ***********************************************************
-void PromptAna_CleanUp::endJob() {
-
-  delete jetID;
-
+  iEvent.put( f_hcalnoise_HighLevel         ,   prefix + "HcalNoiseFilterHighLevel"  + suffix );
+  iEvent.put( f_hcalnoise_Tight             ,   prefix + "HcalNoiseFilterTight"  + suffix );
+  iEvent.put( f_hcalnoise_Loose             ,   prefix + "HcalNoiseFilterLoose"  + suffix );
+  iEvent.put( f_noiseFilterStatus           ,   prefix + "NoiseFilterStatus" + suffix );
+  iEvent.put( f_noiseType                   ,   prefix + "NoiseType" + suffix );
+  iEvent.put( f_eventEMEnergy               ,   prefix + "EventEMEnergy" + suffix );
+  iEvent.put( f_eventHadEnergy              ,   prefix + "EventHadEnergy" + suffix );
+  iEvent.put( f_eventTrackEnergy            ,   prefix + "EventTrackEnergy" + suffix );
+  iEvent.put( f_eventEMFraction             ,   prefix + "EventEMFraction" + suffix );
+  iEvent.put( f_eventChargeFraction         ,   prefix + "EventChargeFraction" + suffix );
+  iEvent.put( f_min10GeVHitTime             ,   prefix + "Min10GeVHitTime" + suffix );
+  iEvent.put( f_max10GeVHitTime             ,   prefix + "Max10GeVHitTime" + suffix );
+  iEvent.put( f_rms10GeVHitTime             ,   prefix + "Rms10GeVHitTime" + suffix );
+  iEvent.put( f_min25GeVHitTime             ,   prefix + "Min25GeVHitTime" + suffix );
+  iEvent.put( f_max25GeVHitTime             ,   prefix + "Max25GeVHitTime" + suffix );
+  iEvent.put( f_rms25GeVHitTime             ,   prefix + "Rms25GeVHitTime" + suffix );
+  iEvent.put( f_num10GeVHits                ,   prefix + "Num10GeVHits" + suffix );
+  iEvent.put( f_num25GeVHits                ,   prefix + "Num25GeVHits" + suffix );
+  iEvent.put( f_minE2TS                     ,   prefix + "MinE2TS" + suffix );
+  iEvent.put( f_minE10TS                    ,   prefix + "MinE10TS" + suffix );
+  iEvent.put( f_minE2Over10TS               ,   prefix + "MinE2Over10TS" + suffix );
+  iEvent.put( f_maxZeros                    ,   prefix + "MaxZeros" + suffix );
+  iEvent.put( f_maxHPDHits                  ,   prefix + "MaxHPDHits" + suffix );
+  iEvent.put( f_maxRBXHits                  ,   prefix + "MaxRBXHits" + suffix );
+  iEvent.put( f_minHPDEMF                   ,   prefix + "MinHPDEMF" + suffix );
+  iEvent.put( f_minRBXEMF                   ,   prefix + "MinRBXEMF" + suffix );
+  iEvent.put( f_numProblematicRBXs          ,   prefix + "NumProblematicRBXs" + suffix );
 }

@@ -109,3 +109,4 @@ void PromptAna_MET::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( hadEtInHF         ,  prefix + "HadEtInHF"  + suffix );
   iEvent.put( hadEtInHO         ,  prefix + "HadEtInHO"  + suffix );
 }
+

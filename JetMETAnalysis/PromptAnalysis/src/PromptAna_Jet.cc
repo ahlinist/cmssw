@@ -3,12 +3,14 @@
 
 
 PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig) 
-  : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))
-  , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
-  , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
 {
+  //Get Input Tags
+  inputTag       = iConfig.getParameter<edm::InputTag>("InputTag");
+  prefix         = iConfig.getParameter<std::string>  ("Prefix"  );
+  suffix         = iConfig.getParameter<std::string>  ("Suffix"  );
   // Jet ID helper
   jetIDHelper = reco::helper::JetIDHelper(iConfig.getParameter<edm::ParameterSet>("jetID")  );
+
   produces <std::vector<int> > ( prefix + "NJets"  + suffix );
   produces <std::vector<int> > ( prefix + "NcleanedJets"  + suffix );
   produces <std::vector<double> > ( prefix + "pT"  + suffix );
@@ -130,7 +132,7 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     n90->push_back(it->n90()); 
   }
   ncleanedjets->push_back(clj);
-  
+
   iEvent.put( njets,  prefix + "NJets"  + suffix );
   iEvent.put( ncleanedjets,  prefix + "NcleanedJets"  + suffix );
   iEvent.put( pt,  prefix + "pT"  + suffix );
