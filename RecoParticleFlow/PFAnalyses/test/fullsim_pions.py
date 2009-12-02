@@ -20,9 +20,10 @@ process.GlobalTag.globaltag = "MC_31X_V1::All"
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 if options.zeroT <> 0:
-        process.load("Configuration.StandardSequences.MagneticField_0T_cff")
+	process.load("Configuration.StandardSequences.MagneticField_0T_cff")
 else:
-        process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+	process.load("Configuration.StandardSequences.MagneticField_40T_cff")
+
 
 process.load("Configuration.StandardSequences.Geometry_cff")
 #Trigger
@@ -30,7 +31,7 @@ process.load("Configuration.StandardSequences.L1Emulator_cff")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-process.MessageLogger.destinations=cms.untracked.vstring('cout')
+#process.MessageLogger.destinations=cms.untracked.vstring('cout')
 
 process.source = cms.Source("EmptySource")
 
@@ -38,27 +39,13 @@ from Configuration.Generator.PythiaUESettings_cfi import *
 #process.load("SimCalorimetry.HcalZeroSuppressionProducers.hcalDigisRealistic_cfi")
 #process.load("SimCalorimetry.EcalSelectiveReadoutProducers.ecalDigis_cfi")
 	
-#if options.noZspOrZr :
-	# switch OFF ECAL SR
-
-# simEcalDigis.symetricZS = cms.bool(True)
-process.simEcalDigis.srpBarrelLowInterestChannelZS = cms.double(-1.e9)
-process.simEcalDigis.srpEndcapLowInterestChannelZS = cms.double(-1.e9)
-
-#from RecoLocalCalo.EcalRecProducers.ecalGlobalUncalibRecHit_cfi import *
-	#from RecoLocalCalo.EcalRecProducers.ecalDetIdToBeRecovered_cfi import *
-# from RecoLocalCalo.EcalRecProducers.ecalRecHit_cfi import *
-# ecalGlobalUncalibRecHit.EBdigiCollection =cms.InputTag("simEcalDigis","ebDigis")
-# ecalGlobalUncalibRecHit.EEdigiCollection =cms.InputTag("simEcalDigis","eeDigis")
-#
-
-
-#from SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi import *
-#from SimCalorimetry.HcalZeroSuppressionProducers.hcalDigisRealistic_cfi import *
-process.simHcalDigis.HBlevel = cms.int32(-8000)
-process.simHcalDigis.HElevel = cms.int32(-8000)
-process.simHcalDigis.HOlevel = cms.int32(-8000)
-process.simHcalDigis.HFlevel = cms.int32(-9000)
+if options.noZspSr :
+	process.simEcalDigis.srpBarrelLowInterestChannelZS = cms.double(-1.e9)
+	process.simEcalDigis.srpEndcapLowInterestChannelZS = cms.double(-1.e9)
+	process.simHcalDigis.HBlevel = cms.int32(-8000)
+	process.simHcalDigis.HElevel = cms.int32(-8000)
+	process.simHcalDigis.HOlevel = cms.int32(-8000)
+	process.simHcalDigis.HFlevel = cms.int32(-9000)
 
 process.generator = cms.EDProducer("Pythia6EGun",
     PGunParameters = cms.PSet(
@@ -101,6 +88,9 @@ if options.endcapMode <> 0:
     )
     )
 
+if options.randSeed <> 0:
+	from random import *
+	process.RandomNumberGeneratorService.generator.initialSeed=int(random()*100000)
 
 genEvents=10
 if options.kevents <>0:
@@ -119,7 +109,7 @@ process.particleFlowBlock.pf_chi2_ECAL_HCAL = cms.double(100.0)
 process.particleFlow.pf_calibMode = cms.uint32(3)
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('Dipion_Tree_full_' + fileLabel)
+    fileName = cms.string('Dipion_Tree_' + fileLabel)
 )
 
 import RecoParticleFlow.PFAnalyses.pflowCalibratable_cfi as calibratable
@@ -128,18 +118,27 @@ process.extractionToTree = cms.EDAnalyzer("ExtractionAnalyzer",
     calibratable.EventDelegateFullSim
 )
 
-process.extractionToTree.neutralMode = cms.bool(False)
-process.extractionToTree.particlePDG=cms.int32(211)
 
 process.extractionToEvent = cms.EDProducer("CalibratableProducer",
     calibratable.EventDelegateFullSim      
 )
-process.extractionToEvent.neutralMode = cms.bool(False)
-process.extractionToEvent.particlePDG=cms.int32(211)
+
+if options.zeroT <>0 :
+	#assume we still fire pi+!
+	process.extractionToTree.neutralMode = cms.bool(True)
+	process.extractionToTree.particlePDG=cms.int32(211)
+	process.extractionToEvent.neutralMode = cms.bool(True)
+	process.extractionToEvent.particlePDG=cms.int32(211)
+
+else:
+	process.extractionToTree.neutralMode = cms.bool(False)
+	process.extractionToTree.particlePDG=cms.int32(211)
+	process.extractionToEvent.neutralMode = cms.bool(False)
+	process.extractionToEvent.particlePDG=cms.int32(211)
 
 
 process.finishup = cms.OutputModule("PoolOutputModule",
-    fileName=cms.untracked.string('Dipion_Events_full_' + fileLabel),
+    fileName=cms.untracked.string('Dipion_Events_' + fileLabel),
     #outputCommands=cms.untracked.vstring('keep *'),
     outputCommands=cms.untracked.vstring('drop *', 
                                          'keep *_particleFiltration_*_*', 

@@ -36,8 +36,8 @@
 #include "RecoParticleFlow/PFAnalyses/interface/PlotUtil.h"
 
 bool endcap(true);
-int data(0);
-int full(1);
+int data(1);
+int full(0);
 int fast(0);
 using namespace std;
 class CommonProcessing {
@@ -151,7 +151,7 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 
 	JGraph tbReso("tbResMip", true);
 	JGraph candReso("candResMip", true);
-	
+
 	JGraph tbResBoth("tbResBoth", true);
 	JGraph candResBoth("tbResBoth", true);
 
@@ -167,7 +167,7 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
 		std::string cut("tb_energyEcal_<2.0 && int(sim_energyEvent_) == ");
 		if(endcap)
-			cut ="tb_energyEcal_<3.0 && int(sim_energyEvent_) == ";	
+			cut ="tb_energyEcal_<3.0 && int(sim_energyEvent_) == ";
 		cut.append(obj2str(energy));
 
 		std::string histoName("tbNeutralENoEcal");
@@ -196,19 +196,19 @@ void CommonProcessing::doMipInEcalPlots(const std::vector<int>& energies) {
 			tbGraph.addPoint(energy, 0, gaus.first, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(1));
 			tbReso.addPoint(energy, 0, gaus.second, tbNeutralENoEcal->GetFunction("stableGaus")->GetParError(2));
 		}
-		
-		
+
+
 		util_.accumulateObjects(tbNeutralENoEcal);
-		
+
 		qry = "tb_energyEvent_/sim_energyEvent_>>reso(170, -2.2, 2.2)";
 		cut = "int(sim_energyEvent_)==";
 		cut.append(obj2str(energy));
 		tree_->Draw(qry.c_str(), cut.c_str());
-		
+
 		TH1* reso = util_.getType<TH1>("reso");
 		maxNorm = 1.0 / reso->GetBinContent(reso->GetMaximumBin());
 		reso->Scale(maxNorm);
-		
+
 		pair<double, double> resgaus = util_.fitStabilisedGaussian(reso);
 
 		gaussianess = fabs(resgaus.first / reso->GetMean());
@@ -430,20 +430,23 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 		std::cout << "Hadronic energy fraction = " << 1.0 - photFrac << "\n";
 		hadEMGraph.addPoint(energy, 1.0 - photFrac);
 
-		string qryc("1.0-(cand_energyNeutralHad_ + cand_energyNeutralEM_)/cand_energyEvent_>>");
+		string qryc("(cand_energyNeutralHad_+cand_energyNeutralEM_)/cand_energyEvent_>>");
 		string hadFracName("hadFrac");
 		hadFracName.append(obj2str(energy));
 		qryc.append(hadFracName);
 		tree_->Draw(qryc.c_str(), cut.c_str());
 		TH1* hadEFrac = util_.getType<TH1>(hadFracName);
 		double mean = hadEFrac->GetMean();
-		chargedHadEFraction.addPoint(energy, 0, hadEFrac->GetMean(), hadEFrac->GetRMS());
+		chargedHadEFraction.addPoint(energy, 0, hadEFrac->GetMean()*100.0, hadEFrac->GetRMS()*100.0);
 
 		string qryd("cluster_numHcal_>>");
 		string clusterName("clusterMult");
 		clusterName.append(obj2str(energy));
 		qryd.append(clusterName);
 		qryd.append("(10, 0, 10)"); //changing this will affect the mode below
+		cut = "cluster_numEcal_==0&&int(sim_energyEvent_) == ";
+		cut.append(obj2str(energy));
+
 		tree_->Draw(qryd.c_str(), cut.c_str());
 		TH1* clusters = util_.getType<TH1>(clusterName);
 		double mode = clusters->GetMean(); //note that for the binning specified, this is the number of clusters
@@ -451,9 +454,9 @@ void CommonProcessing::doEfficiencyPlots(const std::vector<int>& energies) {
 
 	}
 
-	chargedHadEFraction.streamToFile(string(directory_).append("/chargedHadEFrac.dat"), true);
+	chargedHadEFraction.streamToFile(string(directory_).append("/neutralHadEFrac.dat"), true);
 	hcalClusterMultiplicity.streamToFile(string(directory_).append("/hcalClusterMultiplicity.dat"), true);
-	cout << "HCAl cluster mulitplicities: \n" << hcalClusterMultiplicity << "\n";
+	cout << "HCAL cluster mulitplicities: \n" << hcalClusterMultiplicity << "\n";
 	util_.flushPage();
 	util_.newPage();
 
@@ -521,8 +524,8 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//						"tb_energyEcal_ < 0.5 && cand_type_==1 && int(sim_energyEvent_) == ");
 // 		std::string cut("tb_energyEcal_>2.0 && int(sim_energyEvent_) == ");
 // 		if(endcap)
-// 			cut = "tb_energyEcal_>3.0 && int(sim_energyEvent_) == ";	
-// 			
+// 			cut = "tb_energyEcal_>3.0 && int(sim_energyEvent_) == ";
+//
 		string cut("int(sim_energyEvent_) == ");
 		cut.append(obj2str(energy));
 
@@ -641,16 +644,16 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 		//						"tb_energyEcal_ < 0.5 && cand_type_==5 && int(sim_energyEvent_) == ");
 
 		string cut;
-		cut.append("cluster_numEcal_>0 && int(sim_energyEvent_) == ");
+		cut.append("cluster_numEcal_>0 && cluster_numHcal_>0 && int(sim_energyEvent_) == ");
 
 		cut.append(obj2str(energy));
 
 		std::string histoName("candIntEcal");
 		histoName.append(obj2str(energy));
 		//Use cut to just compute energy associated with charged hadrons
-		std::string qry("(cand_energyHcal_ + cand_energyEcal_ - cand_energyNeutralEM_ - cand_energyNeutralHad_)/sim_energyEvent_>>");
+		//std::string qry("(cand_energyHcal_ + cand_energyEcal_-cand_energyNeutralEM_-cand_energyNeutralHad_)/sim_energyEvent_>>");
 		//ALL PF candidate contribute
-		qry = "(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>";
+		string qry = "(cand_energyHcal_ + cand_energyEcal_)/sim_energyEvent_>>";
 		qry.append(histoName);
 		qry.append("(170, -1.2, 2.2)");
 		std::string poshHistoName(obj2str(energy));
@@ -737,7 +740,7 @@ void CommonProcessing::doResponsePlots(const std::vector<int>& energies) {
 void CommonProcessing::evaluatePlots(const std::vector<int>& energies, bool eff, bool resp, bool endcapHack) {
 	endcapHack_ = endcapHack;
 	util_.setSquareCanvasDimension(4);
-	
+
 	doMipInEcalPlots(energies);
 
 	if (resp)
@@ -826,15 +829,15 @@ void commonProcessing() {
 		if(data) {
 // 			chain->Add("/tmp/ballin/PFlowTB_Tree_All_endcap_tbCalib.root");
 // 			directory = "plots/endcap_tbCalib";
-			
-			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib.root");
-			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib.root");
+
+			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
+			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_endcaps_0T_tbCalib_BlockEcalKludge.root");
 			directory = "plots/endcap_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
-			chain->Add("/tmp/ballin/Dipion_Tree_full_All_endcaps_noZspSr_0T.root");
-			directory = "plots/endcap_full_noZspSr_0T";
+			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_endcap_noExcesses_full_4T.root");
+			directory = "plots/endcap_full";
 		}
 		else if(fast) {
 			chain = new TChain("extractionToTree/Extraction");
@@ -845,15 +848,16 @@ void commonProcessing() {
 		if(data) {
 // 			chain->Add("/tmp/ballin/PFlowTB_Tree_All_barrel_tbCalib.root");
 // 			directory = "plots/barrel_tbCalib";
-						
+
 			chain->Add("/tmp/ballin/PFlowTB_Tree_1000GeV_barrel_0T_tbCalib.root");
 			chain->Add("/tmp/ballin/PFlowTB_Tree_10GeV_barrel_0T_tbCalib.root");
 			directory = "plots/barrel_data";
 		}
 		else if(full) {
 			chain = new TChain("extractionToTree/Extraction");
-			chain->Add("/tmp/ballin/Dipion_Tree_full_All_barrel_noZspSr_0T.root");
-			directory = "plots/barrel_full_noZspSr_0T";
+			//chain->Add("/tmp/ballin/Dipion_Tree_full_All_barrel_noZspSr_4T.root");
+			chain->Add("/tmp/ballin/Dipion_Tree_All_10k_barrel_noExcesses_full_4T.root");
+			directory = "plots/barrel_full";
 		}
 		else if(fast) {
 			chain = new TChain("extractionToTree/Extraction");
@@ -864,7 +868,7 @@ void commonProcessing() {
 
 	// --- standard stuff
 	CommonProcessing cp(chain, graphicsFile.c_str(), macroFile.c_str(), directory);
-	cp.evaluatePlots(energies, false, true, false);
+	cp.evaluatePlots(energies, true, true, false);
 	cp.closeFiles();
 
 }

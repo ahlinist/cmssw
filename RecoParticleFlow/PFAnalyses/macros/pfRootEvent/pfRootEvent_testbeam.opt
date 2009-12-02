@@ -1,12 +1,12 @@
 
-root outfile pfRootEvent_testbeam.root
+root outfile /tmp/ballin/pfRootEvent_testbeam.root
 root outtree 1
 
 //colin	mode 1
 
-root file ../../test/PFlowTB_Events_30GeV_1k.root
+root file /tmp/ballin/PFlowTB_Events_100GeV_barrel_tbCalib.root
 print mctruthmatching 0 
-//root file ../../test/demo_reprocessed_7GeV.root
+
 
 // filter ------------------------------------------------------------
 
@@ -18,32 +18,32 @@ filter   nparticles  1
 // name of the branches of the input TTree. 
 
 // ECAL rechits branch
-root rechits_ECAL_branch  recoPFRecHits_particleFlowRecHitECAL__PROD.obj
+root rechits_ECAL_branch  recoPFRecHits_particleFlowRecHitECAL__SKIM.obj
 // HCAL rechits branch
-root rechits_HCAL_branch  recoPFRecHits_particleFlowRecHitHCAL__PROD.obj
+root rechits_HCAL_branch  recoPFRecHits_particleFlowRecHitHCAL__SKIM.obj
 // PS rechits branch
-//root rechits_PS_branch    recoPFRecHits_particleFlowRecHitPS__PROD.obj
+//root rechits_PS_branch    recoPFRecHits_particleFlowRecHitPS__SKIM.obj
 
 // ECAL clusters branch
-root clusters_ECAL_branch  recoPFClusters_particleFlowClusterECAL__PROD.obj
+root clusters_ECAL_branch  recoPFClusters_particleFlowClusterECAL__SKIM.obj
 // HCAL clusters branch
-root clusters_HCAL_branch  recoPFClusters_particleFlowClusterHCAL__PROD.obj
+root clusters_HCAL_branch  recoPFClusters_particleFlowClusterHCAL__SKIM.obj
 // PS clusters branch
-//root clusters_PS_branch    recoPFClusters_particleFlowClusterPS__PROD.obj
+//root clusters_PS_branch    recoPFClusters_particleFlowClusterPS__SKIM.obj
 // HepMCProduct branch
 //root MCTruth_branch  edmHepMCProduct_source__PROD.obj
 
-root gsfrecTracks_branch   recoGsfPFRecTracks_faketracks_gsfPfRecTracks_PROD.obj
+root gsfrecTracks_branch   recoGsfPFRecTracks_faketracks_gsfPfRecTracks_SKIM.obj
 
 // root clusters_island_barrel_branch recoBasicClusters_islandBasicClusters_islandBarrelBasicClusters_PROD.obj
 
-//root caloTowers_branch     CaloTowersSorted_towerMaker__PROD.obj
+//root caloTowers_branch     CaloTowersSorted_towerMaker__SKIM.obj
 
 // reconstructed tracks branch
 
-root recTracks_branch      recoPFRecTracks_faketracks_pfRecTracks_PROD.obj
+root recTracks_branch      recoPFRecTracks_faketracks_pfRecTracks_SKIM.obj
 //root stdTracks_branch      recoTracks_iterativeGSWithMaterialTracks__PROD.obj
-root stdTracks_branch      recoTracks_faketracks_tracks_PROD.obj
+root stdTracks_branch      recoTracks_faketracks_tracks_SKIM.obj
 
 // true particles branch
 
@@ -67,7 +67,7 @@ root genParticleforJets_branch	recoGenParticlesRefs_genParticlesForJets__PROD.ob
 root caloTowerBaseCandidates_branch  recoCandidatesOwned_caloTowers__PROD.obj
 
 // Particle Flow Candidates
-root ParticleFlowCandbranch    recoPFCandidates_particleFlow__PROD.obj
+root ParticleFlowCandbranch    recoPFCandidates_particleFlow__SKIM.obj
 
 
 //---------------
