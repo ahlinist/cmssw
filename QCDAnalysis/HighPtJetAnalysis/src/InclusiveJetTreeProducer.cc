@@ -42,6 +42,10 @@ InclusiveJetTreeProducer::InclusiveJetTreeProducer(edm::ParameterSet const& cfg)
   mL1GTReadoutRcdSource   = cfg.getParameter<edm::InputTag>            ("L1GTReadoutRcdSource");
   mL1GTObjectMapRcdSource = cfg.getParameter<edm::InputTag>            ("L1GTObjectMapRcdSource");
   mIsMCarlo               = cfg.getParameter<bool>                     ("isMCarlo");
+  mJetPtMin               = cfg.getParameter<double>                   ("minJetPt");
+
+  mFillHLT = (!mTriggerNames.empty());
+  mFillL1  = (!mL1TriggerNames.empty());
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup) 
@@ -52,7 +56,7 @@ void InclusiveJetTreeProducer::beginJob(EventSetup const& iSetup)
   
   //must be done at beginRun and not only at beginJob, because 
   //trigger names are allowed to change by run.
-  if (mTriggerProcessName != "")
+  if (mFillHLT)
     {
       mHltConfig.init(mTriggerProcessName);
       for(unsigned int i=0;i<mTriggerNames.size();i++)  
@@ -107,36 +111,38 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
   ///////// HcalNoiseCollection //////////////                                                                               
   Handle<HcalNoiseRBXCollection> rbxColl;
   event.getByLabel(mHcalNoiseTag,rbxColl);
-  if(!rbxColl.isValid()) {
-    throw edm::Exception(edm::errors::ProductNotFound)
+  if (!rbxColl.isValid()) 
+    {
+      throw edm::Exception(edm::errors::ProductNotFound)
       << " could not find HcalNoiseRBXCollection named " << "hcalnoise" << ".\n";
-    return;
-  }
-
-  // loop over the RBXs 
-  std::map<CaloTowerDetId, double> hcalNoise;
-  for(HcalNoiseRBXCollection::const_iterator rit=rbxColl->begin(); rit!=rbxColl->end(); ++rit) {
-    HcalNoiseRBX rbx    = (*rit);
-    const std::vector<HcalNoiseHPD> hpds = rbx.HPDs();
-    for(unsigned ihpd=0; ihpd<hpds.size(); ihpd++){
-      const edm::RefVector<CaloTowerCollection> noiseCTowers = hpds[ihpd].caloTowers();
-      for(unsigned int itow=0; itow<noiseCTowers.size(); itow++){
-        hcalNoise.insert( std::pair<CaloTowerDetId, double>( noiseCTowers[itow]->id(), noiseCTowers[itow]->hadEnergy()) );
-      }
+      return;
     }
-  }
+  // loop over the RBXs 
+  map<CaloTowerDetId, double> hcalNoise;
+  for(HcalNoiseRBXCollection::const_iterator rit=rbxColl->begin(); rit!=rbxColl->end(); ++rit) 
+    {
+      HcalNoiseRBX rbx = (*rit);
+      const vector<HcalNoiseHPD> hpds = rbx.HPDs();
+      for(unsigned ihpd=0; ihpd<hpds.size(); ihpd++)
+        {
+          const RefVector<CaloTowerCollection> noiseCTowers = hpds[ihpd].caloTowers();
+          for(unsigned int itow=0; itow<noiseCTowers.size(); itow++)
+            hcalNoise.insert(pair<CaloTowerDetId, double>(noiseCTowers[itow]->id(),noiseCTowers[itow]->hadEnergy()));
+        }
+    }
   ////////////// Jets //////
-  edm::Handle<CaloJetCollection> jets;
+  Handle<CaloJetCollection> jets;
   event.getByLabel(mJetsName,jets);
   Handle<JetExtendedAssociation::Container> jetExtender;
   event.getByLabel(mJetExtender,jetExtender);
-  edm::Handle<edm::ValueMap<reco::JetID> > jetsID;
+  Handle<ValueMap<reco::JetID> > jetsID;
   event.getByLabel(mJetsIDName,jetsID);
   if ((*jets).size() < 1) return;
   for(unsigned int ind=0;ind<(*jets).size();ind++) 
-    {
+    {       
+      if ((*jets)[ind].pt() < mJetPtMin) continue;
       LorentzVector TrkCaloP4 = JetExtendedAssociation::tracksAtCaloP4(*jetExtender,(*jets)[ind]);
-      LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender, (*jets)[ind]);
+      LorentzVector TrkVtxP4  = JetExtendedAssociation::tracksAtVertexP4(*jetExtender,(*jets)[ind]);
       RefToBase<Jet> jetRef(Ref<CaloJetCollection>(jets,ind));
       mPt        ->push_back((*jets)[ind].pt());
       mEta       ->push_back((*jets)[ind].eta());
@@ -160,60 +166,64 @@ void InclusiveJetTreeProducer::analyze(edm::Event const& event, edm::EventSetup 
       mTrkVtxPhi ->push_back(TrkVtxP4.phi());
       
       double jetEneNoise=0.0;
-      std::vector< CaloTowerPtr >jTowers = (*jets)[ind].getCaloConstituents ();
-      for(unsigned int itow=0; itow<jTowers.size(); itow++) {
-	std::map<CaloTowerDetId, double>::iterator thisTow = hcalNoise.find(jTowers[itow]->id());
-	if( thisTow != hcalNoise.end() ) jetEneNoise += jTowers[itow]->energy();
-      }
-      mfHcalNoise->push_back( jetEneNoise/(*jets)[ind].energy() );
+      vector< CaloTowerPtr >jTowers = (*jets)[ind].getCaloConstituents();
+      for (unsigned int itow=0; itow<jTowers.size(); itow++) 
+        {
+	  map<CaloTowerDetId, double>::iterator thisTow = hcalNoise.find(jTowers[itow]->id());
+	  if(thisTow != hcalNoise.end()) jetEneNoise += jTowers[itow]->energy();
+        }
+      mfHcalNoise->push_back(jetEneNoise/(*jets)[ind].energy());
     } 
 
   ////////////// Trigger //////
-  edm::Handle<edm::TriggerResults> triggerResultsHandle;
-  event.getByLabel(mTriggerResultsTag,triggerResultsHandle); 
-  if (!triggerResultsHandle.isValid())
+  //===================== save HLT Trigger information =======================
+  Handle<TriggerResults> triggerResultsHandle;
+  if (mFillHLT)
     {
-      string errorMessage = "Requested TriggerResult is not present in file! -- \n";
-      throw  cms::Exception("Configuration",errorMessage);
+      event.getByLabel(mTriggerResultsTag,triggerResultsHandle); 
+      if (!triggerResultsHandle.isValid())
+        {
+          string errorMessage = "Requested TriggerResult is not present in file! -- \n";
+          throw  cms::Exception("Configuration",errorMessage);
+        }
+      for(unsigned int i=0;i<mTriggerNames.size();i++) 
+        {
+          bool accept = triggerResultsHandle->accept(mHltConfig.triggerIndex(mTriggerNames[i]));
+          if (accept) 
+            mHLTNames->push_back(mTriggerNames[i]);
+        }
     }
-  for(unsigned int i=0;i<mTriggerNames.size();i++) 
-    {
-      bool accept = triggerResultsHandle->accept( mHltConfig.triggerIndex(mTriggerNames[i]) );
-      if( accept ) mHLTNames->push_back( mTriggerNames[i] );
-    }
-
   //===================== save L1 Trigger information ======================= 
   // get L1TriggerReadout records
-  edm::Handle<L1GlobalTriggerReadoutRecord> gtRecord;
-  event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
-
-  edm::Handle<L1GlobalTriggerObjectMapRecord> gtOMRec;
-  event.getByLabel(mL1GTObjectMapRcdSource, gtOMRec);
-
-  // sanity check on L1 Trigger Records
-  if (!gtRecord.isValid()) 
+  Handle<L1GlobalTriggerReadoutRecord> gtRecord;
+  Handle<L1GlobalTriggerObjectMapRecord> gtOMRec;
+  if (mFillL1)
     {
-      std::cout << "\nL1GlobalTriggerReadoutRecord with \n \nnot found"
-      "\n  --> returning false by default!\n" << std::endl;
-    }
-  if (!gtOMRec.isValid()) 
-    {
-      std::cout << "\nL1GlobalTriggerObjectMapRecord with \n \nnot found"
-      "\n  --> returning false by default!\n" << std::endl;
-    }
-  // L1 decision word
-  const DecisionWord dWord = gtRecord->decisionWord();
-  std::map<std::string, int> l1map;
-  const std::vector<L1GlobalTriggerObjectMap>& objMapVec =  gtOMRec->gtObjectMap();
-  for (std::vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();itMap != objMapVec.end(); ++itMap) 
-    l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
-  for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
-    {
-      std::map<std::string, int>::const_iterator itr = l1map.find( mL1TriggerNames[i] );
-      if ( itr != l1map.end() ) 
+      event.getByLabel(mL1GTObjectMapRcdSource, gtOMRec);
+      event.getByLabel(mL1GTReadoutRcdSource,gtRecord);
+      // sanity check on L1 Trigger Records
+      if (!gtRecord.isValid()) 
         {
-          //if( dWord[itr->second] ) std::cout <<"-----> "<< itr->second << " " << itr->first << std::endl;
-          if( dWord[itr->second] ) mL1Names->push_back( itr->first );
+          cout << "\nL1GlobalTriggerReadoutRecord with \n \n not found"
+          "\n  --> returning false by default!\n" << endl;
+        }
+      if (!gtOMRec.isValid()) 
+        {
+          cout << "\nL1GlobalTriggerObjectMapRecord with \n \n not found"
+          "\n  --> returning false by default!\n" << endl;
+        }
+      // L1 decision word
+      const DecisionWord dWord = gtRecord->decisionWord();
+      map<string, int> l1map;
+      const vector<L1GlobalTriggerObjectMap>& objMapVec = gtOMRec->gtObjectMap();
+      for(vector<L1GlobalTriggerObjectMap>::const_iterator itMap = objMapVec.begin();itMap != objMapVec.end(); ++itMap) 
+        l1map.insert( std::pair<std::string, int> ((*itMap).algoName(), (*itMap).algoBitNumber()) );
+      for(unsigned int i=0; i<mL1TriggerNames.size(); i++) 
+        {
+          map<string, int>::const_iterator itr = l1map.find(mL1TriggerNames[i]);
+          if (itr != l1map.end()) 
+            if (dWord[itr->second]) 
+              mL1Names->push_back( itr->first );
         }
     }
   ////////////// MET //////
@@ -252,70 +262,70 @@ InclusiveJetTreeProducer::~InclusiveJetTreeProducer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void InclusiveJetTreeProducer::buildTree() 
 {
-  mPt         = new std::vector<float>();
-  mEta        = new std::vector<float>();
-  mEtaD       = new std::vector<float>();
-  mY          = new std::vector<float>();
-  mPhi        = new std::vector<float>();
-  mE          = new std::vector<float>();
-  mEmf        = new std::vector<float>();
-  mEtaMoment  = new std::vector<float>();
-  mPhiMoment  = new std::vector<float>();
+  mPt         = new std::vector<double>();
+  mEta        = new std::vector<double>();
+  mEtaD       = new std::vector<double>();
+  mY          = new std::vector<double>();
+  mPhi        = new std::vector<double>();
+  mE          = new std::vector<double>();
+  mEmf        = new std::vector<double>();
+  mEtaMoment  = new std::vector<double>();
+  mPhiMoment  = new std::vector<double>();
   mNtrkVtx    = new std::vector<int>   ();
   mNtrkCalo   = new std::vector<int>   ();
-  mTrkCaloPt  = new std::vector<float>();
-  mTrkCaloEta = new std::vector<float>();
-  mTrkCaloPhi = new std::vector<float>();
-  mTrkVtxPt   = new std::vector<float>();
-  mTrkVtxEta  = new std::vector<float>();
-  mTrkVtxPhi  = new std::vector<float>();
+  mTrkCaloPt  = new std::vector<double>();
+  mTrkCaloEta = new std::vector<double>();
+  mTrkCaloPhi = new std::vector<double>();
+  mTrkVtxPt   = new std::vector<double>();
+  mTrkVtxEta  = new std::vector<double>();
+  mTrkVtxPhi  = new std::vector<double>();
   mN90        = new std::vector<int>   ();
-  mfHPD       = new std::vector<float>();
-  mfRBX       = new std::vector<float>();
-  mfHcalNoise = new std::vector<float>();
-  mPVx        = new std::vector<float>();
-  mPVy        = new std::vector<float>();
-  mPVz        = new std::vector<float>();
+  mfHPD       = new std::vector<double>();
+  mfRBX       = new std::vector<double>();
+  mfHcalNoise = new std::vector<double>();
+  mPVx        = new std::vector<double>();
+  mPVy        = new std::vector<double>();
+  mPVz        = new std::vector<double>();
   mHLTNames   = new std::vector<std::string>();
   mL1Names    = new std::vector<std::string>();
 
-  mTree->Branch("pt"         ,"vector<float>"      ,&mPt);
-  mTree->Branch("eta"        ,"vector<float>"      ,&mEta);
-  mTree->Branch("etaDetector","vector<float>"      ,&mEtaD);
-  mTree->Branch("y"          ,"vector<float>"      ,&mY);
-  mTree->Branch("phi"        ,"vector<float>"      ,&mPhi);
-  mTree->Branch("e"          ,"vector<float>"      ,&mE);
-  mTree->Branch("emf"        ,"vector<float>"      ,&mEmf);
-  mTree->Branch("etaMoment"  ,"vector<float>"      ,&mEtaMoment);
-  mTree->Branch("phiMoment"  ,"vector<float>"      ,&mPhiMoment);
-  mTree->Branch("nTrkVtx"    ,"vector<int>"        ,&mNtrkVtx);
-  mTree->Branch("nTrkCalo"   ,"vector<int>"        ,&mNtrkCalo);
-  mTree->Branch("TrkCaloPt"  ,"vector<float>"      ,&mTrkCaloPt);
-  mTree->Branch("TrkCaloEta" ,"vector<float>"      ,&mTrkCaloEta);
-  mTree->Branch("TrkCaloPhi" ,"vector<float>"      ,&mTrkCaloPhi);
-  mTree->Branch("TrkVtxPt"   ,"vector<float>"      ,&mTrkVtxPt);
-  mTree->Branch("TrkVtxEta"  ,"vector<float>"      ,&mTrkVtxEta);
-  mTree->Branch("TrkVtxPhi"  ,"vector<float>"      ,&mTrkVtxPhi);
-  mTree->Branch("n90"        ,"vector<int>"        ,&mN90);
-  mTree->Branch("fHPD"       ,"vector<float>"      ,&mfHPD);
-  mTree->Branch("fRBX"       ,"vector<float>"      ,&mfRBX);  
-  mTree->Branch("fHcalNoise" ,"vector<float>"      ,&mfHcalNoise);
-  mTree->Branch("PVx"        ,"vector<float>"      ,&mPVx);
-  mTree->Branch("PVy"        ,"vector<float>"      ,&mPVy);
-  mTree->Branch("PVz"        ,"vector<float>"      ,&mPVz);
-  mTree->Branch("hltNames"   ,"vector<string>"     ,&mHLTNames);
-  mTree->Branch("l1Names"    ,"vector<string>"     ,&mL1Names);
-  mTree->Branch("evtNo"      ,&mEvtNo              ,"mEvtNo/I");
-  mTree->Branch("runNo"      ,&mRunNo              ,"mRunNo/I");
-  mTree->Branch("lumi"       ,&mLumi               ,"mLumi/I");
-  mTree->Branch("met"        ,&mMET                ,"mMET/F");
-  mTree->Branch("sumet"      ,&mSumET              ,"mSumET/F");
-  mTree->Branch("metNoHF"    ,&mMETnoHF            ,"mMETnoHF/F");
-  mTree->Branch("sumetNoHF"  ,&mSumETnoHF          ,"mSumETnoHF/F");
+  mTree->Branch("pt"         ,"vector<double>"      ,&mPt);
+  mTree->Branch("eta"        ,"vector<double>"      ,&mEta);
+  mTree->Branch("etaDetector","vector<double>"      ,&mEtaD);
+  mTree->Branch("y"          ,"vector<double>"      ,&mY);
+  mTree->Branch("phi"        ,"vector<double>"      ,&mPhi);
+  mTree->Branch("e"          ,"vector<double>"      ,&mE);
+  mTree->Branch("emf"        ,"vector<double>"      ,&mEmf);
+  mTree->Branch("etaMoment"  ,"vector<double>"      ,&mEtaMoment);
+  mTree->Branch("phiMoment"  ,"vector<double>"      ,&mPhiMoment);
+  mTree->Branch("nTrkVtx"    ,"vector<int>"         ,&mNtrkVtx);
+  mTree->Branch("nTrkCalo"   ,"vector<int>"         ,&mNtrkCalo);
+  mTree->Branch("TrkCaloPt"  ,"vector<double>"      ,&mTrkCaloPt);
+  mTree->Branch("TrkCaloEta" ,"vector<double>"      ,&mTrkCaloEta);
+  mTree->Branch("TrkCaloPhi" ,"vector<double>"      ,&mTrkCaloPhi);
+  mTree->Branch("TrkVtxPt"   ,"vector<double>"      ,&mTrkVtxPt);
+  mTree->Branch("TrkVtxEta"  ,"vector<double>"      ,&mTrkVtxEta);
+  mTree->Branch("TrkVtxPhi"  ,"vector<double>"      ,&mTrkVtxPhi);
+  mTree->Branch("n90"        ,"vector<int>"         ,&mN90);
+  mTree->Branch("fHPD"       ,"vector<double>"      ,&mfHPD);
+  mTree->Branch("fRBX"       ,"vector<double>"      ,&mfRBX);  
+  mTree->Branch("fHcalNoise" ,"vector<double>"      ,&mfHcalNoise);
+  mTree->Branch("PVx"        ,"vector<double>"      ,&mPVx);
+  mTree->Branch("PVy"        ,"vector<double>"      ,&mPVy);
+  mTree->Branch("PVz"        ,"vector<double>"      ,&mPVz);
+  mTree->Branch("hltNames"   ,"vector<string>"      ,&mHLTNames);
+  mTree->Branch("l1Names"    ,"vector<string>"      ,&mL1Names);
+  mTree->Branch("evtNo"      ,&mEvtNo               ,"mEvtNo/I");
+  mTree->Branch("runNo"      ,&mRunNo               ,"mRunNo/I");
+  mTree->Branch("lumi"       ,&mLumi                ,"mLumi/I");
+  mTree->Branch("met"        ,&mMET                 ,"mMET/D");
+  mTree->Branch("sumet"      ,&mSumET               ,"mSumET/D");
+  mTree->Branch("metNoHF"    ,&mMETnoHF             ,"mMETnoHF/D");
+  mTree->Branch("sumetNoHF"  ,&mSumETnoHF           ,"mSumETnoHF/D");
   if(mIsMCarlo)
     {
-      mTree->Branch("pthat"  ,&mPtHat              ,"mPtHat/F");
-      mTree->Branch("weight" ,&mWeight             ,"mWeight/F");
+      mTree->Branch("pthat"  ,&mPtHat               ,"mPtHat/D");
+      mTree->Branch("weight" ,&mWeight              ,"mWeight/D");
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
