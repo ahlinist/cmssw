@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.23 $
-  \date $Date: 2009/11/25 08:18:11 $
+  \version $Revision: 1.24 $
+  \date $Date: 2009/12/01 12:29:46 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -200,6 +200,10 @@ color, Int_t npts, std::string title){
       //    (data->pad)->SetLogy( 0 );;
       gStyle->SetOptStat( 0 );
       obj->SetStats( kFALSE );
+      if(o.name.find( "sizeYvsEta" ) != std::string::npos){
+        gStyle->SetOptStat( 1111111 );
+	obj->SetStats( kTRUE ); gPad->SetLogz(1);
+      }
 
       if( o.name.find( "reportSummaryMap" ) == std::string::npos){
         TAxis* xa = obj->GetXaxis();
@@ -219,7 +223,8 @@ color, Int_t npts, std::string title){
 	  (o.name.find( "TRKMAP" ) != std::string::npos && o.name.find( "Layer" ) != std::string::npos) ||
 	  o.name.find( "FedChLErrArray" ) != std::string::npos ||
 	  o.name.find( "FedChNErrArray" ) != std::string::npos ||
-	  o.name.find( "FedETypeNErrArray" ) != std::string::npos ) 
+	  o.name.find( "FedETypeNErrArray" ) != std::string::npos || 
+	  o.name.find( "sizeYvsEta" ) != std::string::npos) 
       {
         gStyle->SetPalette(1);
         obj->SetOption("colz");
