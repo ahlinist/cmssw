@@ -32,7 +32,7 @@ class PromptAna_CleanUp : public edm::EDProducer{
  public: 
   explicit PromptAna_CleanUp(const edm::ParameterSet&);
   //virtual void beginJob();
-  //virtual void endJob();
+  virtual void endJob() {}
 
  private: 
   void produce( edm::Event &, const edm::EventSetup & );
