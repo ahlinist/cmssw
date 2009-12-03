@@ -1,12 +1,12 @@
-// $Id: EBRenderPlugin.cc,v 1.126 2009/11/24 16:18:52 emanuele Exp $
+// $Id: EBRenderPlugin.cc,v 1.127 2009/11/29 23:28:09 emanuele Exp $
 
 /*!
   \file EBRenderPlugin
   \brief Display Plugin for Quality Histograms
   \author G. Della Ricca
   \author B. Gobbo
-  \version $Revision: 1.126 $
-  \date $Date: 2009/11/24 16:18:52 $
+  \version $Revision: 1.127 $
+  \date $Date: 2009/11/29 23:28:09 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -761,6 +761,9 @@ private:
       gPad->SetLogy(kFALSE);
 
       if ( obj->GetMaximum() > 0. ) gPad->SetLogy(kTRUE);
+
+      if ( name.find( "timing" ) != std::string::npos ||
+           name.find( "rec hit thr" ) != std::string::npos ) gPad->SetLogy(kFALSE);
 
       if ( nbx == 10 || nbx == 1700 )
       {
