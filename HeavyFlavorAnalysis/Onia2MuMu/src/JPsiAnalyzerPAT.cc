@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.6 2009/11/27 17:34:30 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.7 2009/12/01 10:45:51 covarell Exp $
 //
 //
 
@@ -298,9 +298,16 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   JpsiPt = new RooRealVar("JpsiPt","J/psi pt",JpsiPtMin,JpsiPtMax,"GeV/c");
   JpsiEta = new RooRealVar("JpsiEta","J/psi eta",-JpsiEtaMax,JpsiEtaMax);
   Jpsict = new RooRealVar("Jpsict","J/psi ctau",JpsiCtMin,JpsiCtMax,"mm");
-  JpsictTrue = new RooRealVar("JpsictTrue","J/psi ctau true",JpsiCtMin,JpsiCtMax,"mm");
+  JpsictTrue = new RooRealVar("JpsictTrue","J/psi ctau true",-100.,JpsiCtMax,"mm");
   TNPeff = new RooRealVar("TNPeff","Tag and probe efficiency",0.,1.);
   TNPefferr = new RooRealVar("TNPefferr","Tag and probe efficiency uncertainty",0.,1.);  		
+
+  RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
+  varlist.add(*JpsictTrue);
+  varlist.add(*JpsiPtType);
+  varlist.add(*JpsiEtaType);
+  
+  data = new RooDataSet("data","A sample",varlist);
 
 }
 
@@ -599,9 +606,9 @@ JPsiAnalyzerPAT::endJob() {
 void 
 JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandidate* aCand){
   
-  cout << "Test 1: " << theCat << " " << aCand->pt() << endl;
   const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon1"));
   const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(aCand->daughter("muon2"));
+  
   float theMass = aCand->mass();
   float theCtau; 
   if (_useBS) {theCtau = aCand->userFloat("ppdlBS");}
@@ -630,7 +637,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 
   // MC matching
   reco::GenParticleRef genJpsi = aCand->genParticleRef();
-  bool isMatched = (genJpsi.isNonnull() && genJpsi->pdgId() == 443);
+  bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
 
   // Trigger passed
 
@@ -727,7 +734,7 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       
       sprintf(whichMuon,"muon%d",i);
       const pat::Muon* thisMuon = dynamic_cast<const pat::Muon*>(aCand->daughter(whichMuon));
- 	
+
       reco::GenParticleRef genMu = thisMuon->genParticleRef();
       TrackRef iTrack = thisMuon->innerTrack();
       const reco::HitPattern& p = iTrack->hitPattern();
@@ -736,22 +743,21 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	if (thisMuon->isGlobalMuon()) { 
 	  if (genMu.isNonnull()) hMcRecoGlobMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
 	  hMcRightGlbMunPixHits->Fill(p.numberOfValidPixelHits());
-	  hMcRightGlbMud0->Fill(iTrack->d0());
-	  hMcRightGlbMudz->Fill(iTrack->dz());
+	  hMcRightGlbMud0->Fill(fabs(iTrack->d0()));
+	  hMcRightGlbMudz->Fill(fabs(iTrack->dz()));
 	  hMcRightGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
 	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
 	  if (genMu.isNonnull()) hMcRecoTrkMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
           hMcRightTrkMuPt->Fill(thisMuon->pt());
-          hMcRightTrkBit4->Fill((int)thisMuon->muonID("TM2DCompatibilityLoose"));
-          hMcRightTrkBit5->Fill((int)thisMuon->muonID("TM2DCompatibilityTight"));
-	  hMcRightTrkBit8->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtLoose"));
-	  hMcRightTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
+          hMcRightTrkBit4->Fill(int(thisMuon->muonID("TM2DCompatibilityLoose")));
+          hMcRightTrkBit5->Fill(int(thisMuon->muonID("TM2DCompatibilityTight")));
+	  hMcRightTrkBit8->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtLoose")));
+	  hMcRightTrkBit9->Fill(int(thisMuon->muonID("TMLastStationOptimizedLowPtTight")));
           hMcRightTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcRightTrkMuNhits->Fill(iTrack->found());
-          hMcRightTrkMud0->Fill(iTrack->d0());
-	  hMcRightTrkMudz->Fill(iTrack->dz());
-	}         
-	if (thisMuon->isCaloMuon()) {
+          hMcRightTrkMud0->Fill(fabs(iTrack->d0()));
+	  hMcRightTrkMudz->Fill(fabs(iTrack->dz()));
+	} else if (thisMuon->isCaloMuon()) {
 	  if (genMu.isNonnull()) hMcRecoCalMuDeltaR->Fill(deltaR(thisMuon->eta(),thisMuon->phi(),genMu->eta(),genMu->phi()));
 	  hMcRightCalMuPt->Fill(thisMuon->pt());
           hMcRightCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
@@ -761,8 +767,8 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       } else {
 	if (thisMuon->isGlobalMuon()) { 
 	  hMcWrongGlbMunPixHits->Fill(p.numberOfValidPixelHits());
-	  hMcWrongGlbMud0->Fill(iTrack->d0());
-	  hMcWrongGlbMudz->Fill(iTrack->dz());
+	  hMcWrongGlbMud0->Fill(fabs(iTrack->d0()));
+	  hMcWrongGlbMudz->Fill(fabs(iTrack->dz()));
 	  hMcWrongGlbMuFirstLayer->Fill(p.getLayer(p.getHitPattern(0)));
 	} else if (thisMuon->isTrackerMuon()) {     // notice exclusiveness!  
           hMcWrongTrkMuPt->Fill(thisMuon->pt());
@@ -772,10 +778,9 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 	  hMcWrongTrkBit9->Fill((int)thisMuon->muonID("TMLastStationOptimizedLowPtTight"));
           hMcWrongTrkMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcWrongTrkMuNhits->Fill(iTrack->found());
-          hMcWrongTrkMud0->Fill(iTrack->d0());
-	  hMcWrongTrkMudz->Fill(iTrack->dz());
-	}         
-	if (thisMuon->isCaloMuon()) {
+          hMcWrongTrkMud0->Fill(fabs(iTrack->d0()));
+	  hMcWrongTrkMudz->Fill(fabs(iTrack->dz()));
+	} else if (thisMuon->isCaloMuon()) {
 	  hMcWrongCalMuPt->Fill(thisMuon->pt());
           hMcWrongCalMuChi2->Fill(iTrack->chi2()/iTrack->ndof());
           hMcWrongCalMuNhits->Fill(iTrack->found());    
@@ -786,11 +791,6 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   }
 
   // Now the RooDataSet
-
-  RooArgList varlist(*JpsiMass,*Jpsict,*JpsiPt,*JpsiEta,*TNPeff,*TNPefferr,*JpsiType,*matchType);
-  varlist.add(*JpsictTrue);
-  varlist.add(*JpsiPtType);
-  varlist.add(*JpsiEtaType);
 
   float tnpeff = 0.;
   float tnpefferr = 0.;
@@ -811,13 +811,14 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
     JpsiMass->setVal(theMass);
     Jpsict->setVal(theCtau);
     // cout << "life = " << theCtau << " trueLife = " << trueLife << endl;
-    JpsictTrue->setVal(aCand->userFloat("ppdlTrue"));
     JpsiType->setIndex(theCat,kTRUE);
     matchType->setIndex((int)isMatched,kTRUE);
-    
+    JpsictTrue->setVal(aCand->userFloat("ppdlTrue"));
+     
     if (_storeefficiency) {
       // to be done
-	}
+    }
+
     TNPeff->setVal(tnpeff);
     TNPefferr->setVal(tnpefferr);
     
@@ -838,73 +839,87 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
 pair< unsigned int, const pat::CompositeCandidate* > 
 JPsiAnalyzerPAT::theBestQQ() {
 
-  for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
-	 it!=collGG->end();++it) {
+  if (collGG.isValid()) {
+    for(vector<pat::CompositeCandidate>::const_iterator it=collGG->begin();
+	it!=collGG->end();++it) {
 
-    const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
-    const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
-     
-    if(muon1->charge()*muon2->charge() < 0) {
-      if (!_applycuts || (selGlobalMuon(muon1) &&
-			  selGlobalMuon(muon2) &&
-			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,&(*it));
-	return result;
+      const pat::CompositeCandidate* cand = &(*it);  
+      
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+      
+      if(muon1->charge()*muon2->charge() < 0) {
+	if (!_applycuts || (selGlobalMuon(muon1) &&
+			    selGlobalMuon(muon2) &&
+			    cand->userFloat("vProb") > 0.001 )) {
+	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(0,cand);
+	  return result;
+	}
       }
-    }
-  } 
+    } 
+  }
 
-  for(vector<pat::CompositeCandidate>::const_iterator it=collGT->begin();
-	 it!=collGT->end();++it) {
+  if (collGT.isValid()) {
+    for(vector<pat::CompositeCandidate>::const_iterator it=collGT->begin();
+	it!=collGT->end();++it) {
 
-    const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
-    const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
-     
-    if(muon1->charge()*muon2->charge() < 0) {
-      if (!_applycuts || (selGlobalMuon(muon1) &&
-			  selTrackerMuon(muon2) &&
-			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,&(*it));
-	return result;
+      const pat::CompositeCandidate* cand = &(*it);
+      
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+      
+      if(muon1->charge()*muon2->charge() < 0) {
+	if (!_applycuts || (selGlobalMuon(muon1) &&
+			    selTrackerMuon(muon2) &&
+			    cand->userFloat("vProb") > 0.001 )) {
+	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(1,cand);
+	  return result;
+	}
       }
-    }
-  } 
+    } 
+  }
 
-  for(vector<pat::CompositeCandidate>::const_iterator it=collTT->begin();
+  if (collTT.isValid()) {
+    for(vector<pat::CompositeCandidate>::const_iterator it=collTT->begin();
 	 it!=collTT->end();++it) {
-
-    const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
-    const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
-     
-    if(muon1->charge()*muon2->charge() < 0) {
-      if (!_applycuts || (selTrackerMuon(muon1) &&
-			  selTrackerMuon(muon2) &&
-			  it->userFloat("vProb") > 0.001 )) {
-	pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,&(*it));
-	return result;
+  
+      const pat::CompositeCandidate* cand = &(*it);
+    
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
+      
+      if(muon1->charge()*muon2->charge() < 0) {
+	if (!_applycuts || (selTrackerMuon(muon1) &&
+			    selTrackerMuon(muon2) &&
+			    cand->userFloat("vProb") > 0.001 )) {
+	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(2,cand);
+	  return result;
+	}
       }
-    }
-  } 
+    } 
+  }
 
-  if (_useCalo) {
+  if (_useCalo && collGC.isValid()) {
     for(vector<pat::CompositeCandidate>::const_iterator it=collGC->begin();
 	   it!=collGC->end();++it) {
 
-      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(it->daughter("muon1"));
-      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(it->daughter("muon2"));
+      const pat::CompositeCandidate* cand = &(*it);
+
+      const pat::Muon* muon1 = dynamic_cast<const pat::Muon*>(cand->daughter("muon1"));
+      const pat::Muon* muon2 = dynamic_cast<const pat::Muon*>(cand->daughter("muon2"));
      
       if(muon1->charge()*muon2->charge() < 0) {
         if (!_applycuts || (selGlobalMuon(muon1) &&
 	  		    selCaloMuon(muon2) &&
-			    it->userFloat("vProb") > 0.001 )) {
-	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,&*(it));
+			    cand->userFloat("vProb") > 0.001 )) {
+	  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(3,cand);
 	  return result;
         }
       }
     }
   }
 
-  pair< unsigned int, pat::CompositeCandidate* > result = make_pair(99, new pat::CompositeCandidate() );
+  pair< unsigned int, const pat::CompositeCandidate* > result = make_pair(99, new pat::CompositeCandidate() );
   return result;	  
 
 }
@@ -919,8 +934,8 @@ JPsiAnalyzerPAT::selGlobalMuon(const pat::Muon* aMuon) {
 	  aMuon->globalTrack()->chi2()/aMuon->globalTrack()->ndof() < 20.0 &&
 	  (p.numberOfValidPixelHits() > 2 || 
 	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
-	  iTrack->d0() < 5.0 &&
-          iTrack->dz() < 20.0 );
+	  fabs(iTrack->d0()) < 5.0 &&
+          fabs(iTrack->dz()) < 20.0 );
 }
 
 bool 
@@ -936,8 +951,8 @@ JPsiAnalyzerPAT::selTrackerMuon(const pat::Muon* aMuon) {
 	  aMuon->muonID("TM2DCompatibilityTight")) &&
 	  (p.numberOfValidPixelHits() > 2 || 
 	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
-	  iTrack->d0() < 5.0 &&
-          iTrack->dz() < 20.0 );
+	  fabs(iTrack->d0()) < 5.0 &&
+          fabs(iTrack->dz()) < 20.0 );
 }
 
 bool 
@@ -951,8 +966,8 @@ JPsiAnalyzerPAT::selCaloMuon(const pat::Muon* aMuon) {
 	  iTrack->chi2()/iTrack->ndof() < 5.0 &&
 	  (p.numberOfValidPixelHits() > 2 || 
 	   (p.numberOfValidPixelHits() > 1 && p.getLayer(p.getHitPattern(0)) == 1)) &&
-	  iTrack->d0() < 5.0 &&
-          iTrack->dz() < 20.0 );
+	  fabs(iTrack->d0()) < 5.0 &&
+          fabs(iTrack->dz()) < 20.0 );
 }
 
 int 
