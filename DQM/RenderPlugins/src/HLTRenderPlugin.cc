@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.8 2009/09/21 14:34:02 rekovic Exp $
+  $Id: HLTRenderPlugin.cc,v 1.9 2009/10/31 23:18:54 lat Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.9  2009/10/31 23:18:54  lat
+  Update for DQM GUI 5.1.0
+
   Revision 1.8  2009/09/21 14:34:02  rekovic
   Fix FourVector renders
 
@@ -139,6 +142,26 @@ private:
         if ( o.name.find("l1DRL1On") != std::string::npos) obj->GetXaxis()->SetTitle("L1-HLT #Delta R [rad]");
         if ( o.name.find("offDRL1Off") != std::string::npos) obj->GetXaxis()->SetTitle("L1-RECO #Delta R [rad]");
         if ( o.name.find("offDROnOff") != std::string::npos) obj->GetXaxis()->SetTitle("HLT-RECO #Delta R [rad]");
+      }
+
+      if ( o.name.find("FourVector/PathsSummary") != std::string::npos)
+      {
+	if ( (o.name.find("HLT_Egamma_Pass_Any") != std::string::npos ||
+	      o.name.find("HLT_JetMET_Pass_Any") != std::string::npos ||
+	      o.name.find("HLT_Muon_Pass_Any") != std::string::npos ||
+	      o.name.find("HLT_Rest_Pass_Any") != std::string::npos ||
+	      o.name.find("HLT_Special_Pass_Any") != std::string::npos)
+	     ) {
+	  gPad->SetLogy(1);
+	  
+	  if ( (o.name.find("HLT_Egamma_Pass_Any") != std::string::npos ||
+		o.name.find("HLT_JetMET_Pass_Any") != std::string::npos ||
+		o.name.find("HLT_Muon_Pass_Any") != std::string::npos)
+	       ) {
+	    gPad->SetBottomMargin(0.16);
+	    gPad->SetRightMargin(0.14);
+	  }
+	}
       }
 
       // Code used in SiStripRenderPlugin -- do we want similar defaults?
