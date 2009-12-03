@@ -17,6 +17,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load("RecoTauTag.TauAnalysisTools.PFTauEfficiencyAssociator_cfi")
 
-process.path = cms.Path(process.shrinkingConeMuEnrichedQCDAssociator)
+process.path = cms.Path(process.shrinkingConeMuEnrichedQCDAssociator
+      			*process.shrinkingConeZTTEffSimAssociator)
 
 
