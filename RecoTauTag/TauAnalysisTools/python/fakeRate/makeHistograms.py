@@ -3,7 +3,7 @@ from array import array
 from ROOT import *
 
 # Get our configuration
-from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfigurations import cuts
+from RecoTauTag.TauAnalysisTools.fakeRate.histogramConfiguration import cuts
 
 def make_plots(files_and_weights, 
       output_file = "fakeRateHistograms.root",

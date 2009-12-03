@@ -1,7 +1,7 @@
 import re
 import string
 
-from ROOT import gROOT, TFile, TTree, TH1F, TH3F
+from ROOT import gROOT, TFile, TTree, TH1F, TH3F, gDirectory, TChain
 #from PhysicsTools.PythonAnalysis import *
 #gSystem.Load("libFWCoreFWLite.so")
 #AutoLibraryLoader.enable()
@@ -80,8 +80,21 @@ def split_items(delimiter, collection):
    for item in collection:
       yield item.split(delimiter)
 
+def copy_aliases(tchain):
+   ''' Ensure the TChain has aliases set correctly '''
+   # Get the first ttree in the chain
+   tchain.LoadTree(0)
+   temp_tree = tchain.GetTree()
+   # Copy the aliases
+   aliases = [ alias.GetName() \
+	 for alias in temp_tree.GetListOfAliases() ]
+   for alias in aliases:
+      tchain.SetAlias(alias, temp_tree.GetAlias(alias))
+
 class TauNtupleManager(object):
    def __init__(self, events, grep="NtupleProducer"):
+      if isinstance(events, TChain):
+	 copy_aliases(events)
       # Populate list of available aliases
       aliases = [ alias.GetName() for alias in events.GetListOfAliases() ]
       # Ensure these are all from Ntuple producers
