@@ -48,10 +48,10 @@ shrinkingConeZTTEffSimAssociator.efficiencySources = cms.PSet(
    
 if __name__ == '__main__':
    # Print all the available efficiencies
-   testProcess = cms.Process("FAKE")
-   testProcess.MuEnrichedQCD = shrinkingConeMuEnrichedQCDAssociator 
-   print build_pat_efficiency_loader(testProcess.MuEnrichedQCD)
-
-   testProcess.ZTTEffSimAssociator = shrinkingConeZTTEffSimAssociator
-   print build_pat_efficiency_loader(testProcess.ZTTEffSimAssociator)
+   my_pat_effs = cms.PSet()
+   build_pat_efficiency_loader(shrinkingConeZTTEffSimAssociator, 
+	 namespace=locals(), append_to=my_pat_effs)
+   build_pat_efficiency_loader(shrinkingConeMuEnrichedQCDAssociator, 
+	 namespace=locals(), append_to=my_pat_effs)
+   print my_pat_effs
 
