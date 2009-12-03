@@ -36,10 +36,22 @@ shrinkingConeMuEnrichedQCDAssociator.efficiencySources = cms.PSet(
         MuEnrichedQCDEffSources,
         filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ppMuX_histograms.root")
 )
+
+ZTTEffSimSources = add_eff_sources(prefix="eff",
+        disc_configs=disc_configs.keys(), suffix="ZTTsim")
+
+shrinkingConeZTTEffSimAssociator = protoEffciencyAssociator.clone()
+shrinkingConeZTTEffSimAssociator.efficiencySources = cms.PSet(
+        ZTTEffSimSources,
+        filename=cms.string("/afs/cern.ch/user/f/friis/public/tauFakeRateHistograms/ZTT_histograms.root")
+)
    
 if __name__ == '__main__':
+   # Print all the available efficiencies
    testProcess = cms.Process("FAKE")
-   testProcess.fakeTest = shrinkingConeMuEnrichedQCDAssociator 
-   print testProcess.fakeTest
-   print build_pat_efficiency_loader(testProcess.fakeTest)
+   testProcess.MuEnrichedQCD = shrinkingConeMuEnrichedQCDAssociator 
+   print build_pat_efficiency_loader(testProcess.MuEnrichedQCD)
+
+   testProcess.ZTTEffSimAssociator = shrinkingConeZTTEffSimAssociator
+   print build_pat_efficiency_loader(testProcess.ZTTEffSimAssociator)
 
