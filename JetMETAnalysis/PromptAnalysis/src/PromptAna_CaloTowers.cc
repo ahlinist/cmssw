@@ -8,6 +8,8 @@ PromptAna_CaloTowers::PromptAna_CaloTowers(const edm::ParameterSet& iConfig)
 {
   produces <std::vector<double> > ( prefix + "EmEt"  + suffix );
   produces <std::vector<double> > ( prefix + "HadEt"  + suffix );
+  produces <std::vector<double> > ( prefix + "EmEtVtx0"  + suffix );
+  produces <std::vector<double> > ( prefix + "HadEtVtx0"  + suffix );
   produces <std::vector<double> > ( prefix + "OuterEt"  + suffix );
   produces <std::vector<double> > ( prefix + "Eta"  + suffix );
   produces <std::vector<double> > ( prefix + "Phi"  + suffix );
@@ -22,6 +24,8 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
 {
   std::auto_ptr<std::vector<double> >  emEt               ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  hadEt              ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  emEtVtx0           ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> >  hadEtVtx0          ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  outerEt            ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  eta                ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  phi                ( new std::vector<double>()  ) ;
@@ -40,6 +44,8 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
     {
       emEt                -> push_back(it->emEt());
       hadEt               -> push_back(it->hadEt());
+      emEtVtx0            -> push_back(it->emEt(0.0));
+      hadEtVtx0           -> push_back(it->hadEt(0.0));
       outerEt             -> push_back(it->outerEt());
       eta                 -> push_back(it->p4().eta());
       phi                 -> push_back(it->p4().phi());
@@ -52,6 +58,8 @@ void PromptAna_CaloTowers::produce(edm::Event& iEvent, const edm::EventSetup& iS
 
   iEvent.put( emEt                   ,  prefix + "EmEt" + suffix );
   iEvent.put( hadEt                  ,  prefix + "HadEt" + suffix );
+  iEvent.put( emEtVtx0               ,  prefix + "EmEtVtx0" + suffix );
+  iEvent.put( hadEtVtx0              ,  prefix + "HadEtVtx0" + suffix );
   iEvent.put( outerEt                ,  prefix + "OuterEt" + suffix );
   iEvent.put( eta                    ,  prefix + "Eta" + suffix );
   iEvent.put( phi                    ,  prefix + "Phi" + suffix );
