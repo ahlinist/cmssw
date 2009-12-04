@@ -55,6 +55,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanaevent_*_*',
     'keep *_promptanamet_*_*',
     'keep *_promptanatcmet_*_*',
+    'keep *_promptanapfmet_*_*',
     'keep *_promptananohf_*_*',
     'keep *_promptanaic5calojet_*_*',
     'keep *_promptanasc5calojet_*_*',
@@ -72,6 +73,7 @@ process.theBigNtuple = cms.Path( (
     process.promptanaevent +
     process.promptanamet   +
     process.promptanatcmet   +
+    process.promptanapfmet   +
     process.promptananohf  +
     process.promptanaic5calojet +
     process.promptanasc5calojet +
