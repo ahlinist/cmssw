@@ -8,7 +8,7 @@
 //
 // Original Author:
 //         Created:  Sat Apr 19 20:02:57 CEST 2008
-// $Id: HLXRenderPlugin.cc,v 1.18 2009/11/22 14:54:03 neadam Exp $
+// $Id: HLXRenderPlugin.cc,v 1.19 2009/11/24 17:00:32 neadam Exp $
 //
 
 // user include files
@@ -48,6 +48,9 @@ public:
         return true;
 
       if( o.name.find( "HLX/CheckSums" ) != std::string::npos )
+        return true;
+
+      if( o.name.find( "HLX/SigBkgLevels" ) != std::string::npos )
         return true;
 
       if( o.name.find( "HLX/History" ) != std::string::npos )
@@ -183,6 +186,13 @@ private:
         obj->SetFillStyle(1001);
       }
 
+      if( o.name.find("MaxInstLumiBXNum") != std::string::npos )
+      {
+        obj->SetFillColor(kBlue);
+        obj->SetLineColor(kBlue);
+        obj->SetFillStyle(1001);
+      }
+
       // HF comparison histograms
       if( o.name.find("HFCompareOcc") != std::string::npos ){
 	 if( (obj->GetMaximum() - obj->GetMinimum()) < 0.001 && 
@@ -237,6 +247,15 @@ private:
 	else if( o.name.find("LumiIntegrated") != std::string::npos )
 	   obj->SetMarkerColor(kRed);
   
+      }
+
+      if( o.name.find("MaxInstLumiBX") != std::string::npos &&
+	  o.name.find("MaxInstLumiBXNum") == std::string::npos ){
+	 obj->SetLineColor(kBlack);
+	 obj->SetMarkerStyle(21);
+	 obj->SetMarkerSize(0.6);
+	 obj->SetMarkerColor(kBlue);
+	 obj->SetOption("e0");
       }
 
       if( o.name.find("HistInstantLumi") != std::string::npos || o.name.find("HistIntegratedLumi") != std::string::npos  )
