@@ -48,86 +48,166 @@ PromptAna_BeamHalo::PromptAna_BeamHalo(const edm::ParameterSet& iConfig)
   IT_GlobalHaloData = iConfig.getParameter<edm::InputTag>("GlobalHaloDataLabel");
   IT_BeamHaloSummary = iConfig.getParameter<edm::InputTag>("BeamHaloSummaryLabel");
 
-  produces <std::vector<bool> >   ( prefix + "CSCTrackPlus"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "CSCTrackMinus"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "CSCSegmentPlus"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "CSCSegmentMinus"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "CSCRecHitPlus"  + suffix );
-  produces <std::vector<bool> >   ( prefix + "CSCRecHitMinus"  + suffix );
-  produces <std::vector<int> >    ( prefix + "EcalToFieta"  + suffix );
-  produces <std::vector<int> >    ( prefix + "HcalToFieta"  + suffix );
-  produces <std::vector<int> >    ( prefix + "CSCHaloDataCaloPointingHaloTrackMultiplicity"  + suffix );
-  produces <std::vector<int> >    ( prefix + "TheHaloOrigin"  + suffix );
+  //CSCHaloData quantities
+  // Global X-position of the central most constituent rechit of any CSC standalone cosmic tracks in the event
+  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitX"  + suffix );
+  // Global Y-position of the central most constituent rechit of any CSC standalone cosmic tracks in the event
+  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitY"  + suffix );
+  // Global R-position of the central most constituent rechit of any CSC standalone cosmic tracks in the event
+  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitR"  + suffix );
+  // Global Hcal iPhi position of the central most constituent rechit of any CSC standalone cosmic tracks in the event (converted from global Phi)
+  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitiPhi"  + suffix );
+
+  //produces <std::vector<bool> >   ( prefix + "CSCTrackPlus"  + suffix );
+  //produces <std::vector<bool> >   ( prefix + "CSCTrackMinus"  + suffix );
+  //produces <std::vector<bool> >   ( prefix + "CSCSegmentPlus"  + suffix );
+  //produces <std::vector<bool> >   ( prefix + "CSCSegmentMinus"  + suffix );
+  //produces <std::vector<bool> >   ( prefix + "CSCRecHitPlus"  + suffix );
+  //produces <std::vector<bool> >   ( prefix + "CSCRecHitMinus"  + suffix );
+
+  //produces <std::vector<int> >    ( prefix + "CSCHaloDataCaloPointingHaloTrackMultiplicity"  + suffix );
+  //produces <std::vector<int> >    ( prefix + "TheHaloOrigin"  + suffix );
+
+  
+  // Number of L1 CSC Halo triggers in +/- endcap
   produces <std::vector<int> >    ( prefix + "CSCHaloDataHaloTriggersMEPlus"  + suffix );
   produces <std::vector<int> >    ( prefix + "CSCHaloDataHaloTriggersMEMinus"  + suffix );
-  produces <std::vector<int> >    ( prefix + "CSCHaloDataHaloTriggers"  + suffix );
+  //produces <std::vector<int> >    ( prefix + "CSCHaloDataHaloTriggers"  + suffix );  // redundant
+
+  // Number of CSC stand alone tracks built by cosmic reconstruction in +/- endcaps
   produces <std::vector<int> >    ( prefix + "CSCHaloDataTrackMultiplicityMEPlus"  + suffix );
   produces <std::vector<int> >    ( prefix + "CSCHaloDataTrackMultiplicityMEMinus"  + suffix );
-  produces <std::vector<int> >    ( prefix + "CSCHaloDataTrackMultiplicity"  + suffix );
+ 
+  //produces <std::vector<int> >    ( prefix + "CSCHaloDataTrackMultiplicity"  + suffix ); // redundant
+
+  //EcalHaloData quantities
+
+  // Number of constituent Rechits in the reconstructed Ecal PhiWedge 
   produces <std::vector<int> >    ( prefix + "EcalHaloDataPhiWedgeConstituents"  + suffix );
+  // Logical phi index of the Ecal PhiWedge (goes from 1-360) 
   produces <std::vector<int> >    ( prefix + "EcalHaloDataPhiWedgeiPhi"  + suffix );
+  // Number of Ecal PhiWedges reconstructed in the event, probably redundant... 
   produces <std::vector<int> >    ( prefix + "EcalHaloDataPhiWedgeMultiplicity"  + suffix );
-  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeConstituents"  + suffix );
-  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeiPhi"  + suffix );
-  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeMultiplicity"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMultiplicity"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeiPhi"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeConstituents"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMultiplicity"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeiPhi"  + suffix );
-  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeConstituents"  + suffix );
-  produces <std::vector<int> >    ( prefix + "ExtraHcalToFHaloIdieta"  + suffix );
-  produces <std::vector<int> >    ( prefix + "ExtraEcalToFHaloIdieta"  + suffix );
-  produces <std::vector<int> >    ( prefix + "BeamHaloSummaryId"  + suffix );
-  produces <std::vector<double> > ( prefix + "EcalToFtime"  + suffix );
-  produces <std::vector<double> > ( prefix + "HcalToFtime"  + suffix );
-  produces <std::vector<double> > ( prefix + "ExtraHcalToFHaloIdtime"  + suffix );
-  produces <std::vector<double> > ( prefix + "ExtraEcalToFHaloIdtime"  + suffix );
-  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitX"  + suffix );
-  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitY"  + suffix );
-  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitR"  + suffix );
-  produces <std::vector<double> > ( prefix + "CSCHaloDataInnerMostTrackHitiPhi"  + suffix );
+  // Sum Energy in the Ecal PhiWedge
   produces <std::vector<double> > ( prefix + "EcalHaloDataPhiWedgeEnergy"  + suffix );
+  // Maximum time recorded by a constituent rechit in the Ecal PhiWedge
   produces <std::vector<double> > ( prefix + "EcalHaloDataPhiWedgeMinTime"  + suffix );
+  // Minimum time recorded by a constituent rechit in the Ecal PhiWedge 
   produces <std::vector<double> > ( prefix + "EcalHaloDataPhiWedgeMaxTime"  + suffix );
-  produces <std::vector<double> > ( prefix + "EcalHaloDataPhiWedgePlusZDirectionConfidence"  + suffix );
+  // Confidence of halo trajectory based on the simultaneous time-ordering and z-ordering of the rechits.  Quantity is bounded by -1 and +1.  For halos from beam 1, the quantity should be closer to  -1. For halos from beam 2, this quantity should be closer to +1.  For non-halos, this quantity should be closer to zero. 
+  produces <std::vector<double> > ( prefix + "EcalHaloDataPhiWedgeZDirectionConfidence"  + suffix );
+  // Angle between the principal axis and z-axis of the EB Supercluster (see:  RecoEcal/EgammaCoreTools/src/EcalClusterTools.cc)
   produces <std::vector<double> > ( prefix + "EcalHaloDataSuperClusterShowerShapesAngle"  + suffix );
+  // Roundness of the EB supercluster
   produces <std::vector<double> > ( prefix + "EcalHaloDataSuperClusterShowerShapesRoundness"  + suffix );
+
+  // HcalHaloData quantities
+
+  // Number of constituent Rechits in the reconstructed Hcal PhiWedge
+  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeConstituents"  + suffix );
+  // Logical phi index of the Hcal PhiWedges (goes from 1-72) 
+  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeiPhi"  + suffix );
+  // Number of Hcal PhiWedges reconstructed in the event, probably redundant
+  produces <std::vector<int> >    ( prefix + "HcalHaloDataPhiWedgeMultiplicity"  + suffix );
+  // Sum Energy of the Hcal PhiWedge
   produces <std::vector<double> > ( prefix + "HcalHaloDataPhiWedgeEnergy"  + suffix );
+  // Minimum time recorded by the rechits in the Hcal PhiWedge 
   produces <std::vector<double> > ( prefix + "HcalHaloDataPhiWedgeMinTime"  + suffix );
+  // Maximum time recorded by the rechits in the Hcal PhiWedge 
   produces <std::vector<double> > ( prefix + "HcalHaloDataPhiWedgeMaxTime"  + suffix );
-  produces <std::vector<double> > ( prefix + "HcalHaloDataPhiWedgePlusZDirectionConfidence"  + suffix );
+  //Confidence of halo trajectory based on the simultaneous time-ordering and z-ordering of the rechits.  Quantity is bounded by -1 and +1.  For halos from beam 1, the quantity should be closer to  -1. For halos from beam 2, this quantity should be closer to +1.  For non-halos, this quantity should be closer to zero. 
+  produces <std::vector<double> > ( prefix + "HcalHaloDataPhiWedgeZDirectionConfidence"  + suffix );
+
+
+  // GlobalHaloData quantities
+  // Number of Hcal PhiWedges matched to a CSC Cosmic track ,  probably redundant
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMultiplicity"  + suffix );
+  // Logical phi index of the matched Hcal PhiWedges
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeiPhi"  + suffix );
+  // Number of constituent rechits of the matched Hcal PhiWedges
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeConstituents"  + suffix );
+  // SumEnergy of matched Hcal PhiWedge
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeEnergy"  + suffix );
+  // Minimum time recorded by the rechits in the matched Hcal PhiWedge 
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMinTime"  + suffix );
+  // Maximum time recorded by the rechits in the matched Hcal PhiWedge 
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMaxTime"  + suffix );
+  // Number of Ecal PhiWedges matched to a CSC cosmic track, probably redundant
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMultiplicity"  + suffix );
+  // Logical phi index of the matched Ecal PhiWedge
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeiPhi"  + suffix );
+  // Number of constituent rechits in the matched Ecal PhiWedge
+  produces <std::vector<int> >    ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeConstituents"  + suffix );
+  // SumEnergy of matched Ecal PhiWedge
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeEnergy"  + suffix );
+  // Minimum time recorded by the rechits in the matched Ecal PhiWedge 
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMinTime"  + suffix );
+  // Maximum time recorded by the rechits in the matched Ecal PhiWedge 
+  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMaxTime"  + suffix );                          
+  // Correction to the CaloMET, done by removing barrel calotowers that were within CSC-matched PhiWedges
   produces <std::vector<double> > ( prefix + "GlobalHaloDataMExCorrection"  + suffix );
   produces <std::vector<double> > ( prefix + "GlobalHaloDataMEyCorrection"  + suffix );
   produces <std::vector<double> > ( prefix + "GlobalHaloDataHaloCorrectedMET"  + suffix );
+  // Delta (Raw CaloMET - Halo Corrected CaloMET)
   produces <std::vector<double> > ( prefix + "GlobalHaloDataRawMETMinusHaloCorrectedMET"  + suffix );
+  // CaloMET/SumET
   produces <std::vector<double> > ( prefix + "GlobalHaloDataRawMETOverSumEt"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeEnergy"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMinTime"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedHcalPhiWedgeMaxTime"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeEnergy"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMinTime"  + suffix );
-  produces <std::vector<double> > ( prefix + "GlobalHaloDataMatchedEcalPhiWedgeMaxTime"  + suffix );                          
+
+  
+  // Beam Halo Summary Id    
+  // 1: CSC Loose Id 
+  // 2: CSC Tight Id
+  // 3: Ecal Loose Id
+  // 4: Ecal Tight Id
+  // 5: Hcal Loose Id
+  // 6: Hcal Tight Id
+  // 7: Global Loose Id
+  // 8: Global Tight Id
+  // 9: Event Loose Id ( the "or" of all 4 loose criteria)
+  // 10: Event Tight Id ( the "or" of all 4 tight criteria)
+  // 11: Nothing
+  produces <std::vector<int> >    ( prefix + "BeamHaloSummaryId"  + suffix );
+  
+  //Extra quantities  
+
+  //Ecal rechit timing
+  produces <std::vector<double> > ( prefix + "EcalToFtime"  + suffix );
+  //Hcal rechit timing
+  produces <std::vector<double> > ( prefix + "HcalToFtime"  + suffix );
+  //Ecal rechit ieta
+  produces <std::vector<int> >    ( prefix + "EcalToFieta"  + suffix );
+  //Hcal rechit ieta
+  produces <std::vector<int> >    ( prefix + "HcalToFieta"  + suffix );
+  
+  //Hcal rechit timing for rechits which belong to matched Hcal PhiWedges 
+  produces <std::vector<double> > ( prefix + "HcalToFHaloIdtime"  + suffix );
+  //EHcal rechit timing for rechits which belong to matched Ecal PhiWedges 
+  produces <std::vector<double> > ( prefix + "EcalToFHaloIdtime"  + suffix );
+  //Hcal rechit ieta for rechits which belong to matched Hcal PhiWedges 
+  produces <std::vector<int> >    ( prefix + "HcalToFHaloIdieta"  + suffix );
+  //Ecal rechit ieta for rechits which belong to matched Ecal PhiWedges 
+  produces <std::vector<int> >    ( prefix + "EcalToFHaloIdieta"  + suffix );
+
 }
 
 void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 {
-  std::auto_ptr<std::vector<bool> >   f_CSCTrackPlus                                   ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >   f_CSCTrackMinus                                  ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >   f_CSCSegmentPlus                                 ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >   f_CSCSegmentMinus                                ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >   f_CSCRecHitPlus                                  ( new std::vector<bool>()  ) ;
-  std::auto_ptr<std::vector<bool> >   f_CSCRecHitMinus                                 ( new std::vector<bool>()  ) ;
+  //  std::auto_ptr<std::vector<bool> >   f_CSCTrackPlus                                   ( new std::vector<bool>()  ) ;
+  //std::auto_ptr<std::vector<bool> >   f_CSCTrackMinus                                  ( new std::vector<bool>()  ) ;
+  //std::auto_ptr<std::vector<bool> >   f_CSCSegmentPlus                                 ( new std::vector<bool>()  ) ;
+  //std::auto_ptr<std::vector<bool> >   f_CSCSegmentMinus                                ( new std::vector<bool>()  ) ;
+  //std::auto_ptr<std::vector<bool> >   f_CSCRecHitPlus                                  ( new std::vector<bool>()  ) ;
+  //std::auto_ptr<std::vector<bool> >   f_CSCRecHitMinus                                 ( new std::vector<bool>()  ) ;
   std::auto_ptr<std::vector<int> >    f_Ecal_ToF_ieta                                  ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_Hcal_ToF_ieta                                  ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_CSCHaloData_CaloPointingHaloTrackMultiplicity  ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_TheHaloOrigin                                  ( new std::vector<int>()  ) ;
+  //std::auto_ptr<std::vector<int> >    f_CSCHaloData_CaloPointingHaloTrackMultiplicity  ( new std::vector<int>()  ) ;
+  //std::auto_ptr<std::vector<int> >    f_TheHaloOrigin                                  ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_CSCHaloData_HaloTriggersMEPlus                 ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_CSCHaloData_HaloTriggersMEMinus                ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_CSCHaloData_HaloTriggers                       ( new std::vector<int>()  ) ;
+  //std::auto_ptr<std::vector<int> >    f_CSCHaloData_HaloTriggers                       ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_CSCHaloData_TrackMultiplicityMEPlus            ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_CSCHaloData_TrackMultiplicityMEMinus           ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_CSCHaloData_TrackMultiplicity                  ( new std::vector<int>()  ) ;
+  //std::auto_ptr<std::vector<int> >    f_CSCHaloData_TrackMultiplicity                  ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_EcalHaloData_PhiWedgeConstituents              ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_EcalHaloData_PhiWedgeiPhi                      ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_EcalHaloData_PhiWedgeMultiplicity              ( new std::vector<int>()  ) ;
@@ -140,13 +220,13 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   std::auto_ptr<std::vector<int> >    f_GlobalHaloData_MatchedEcalPhiWedgeMultiplicity ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_GlobalHaloData_MatchedEcalPhiWedgeConstituents ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_GlobalHaloData_MatchedEcalPhiWedgeiPhi         ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_Extra_HcalToF_HaloId_ieta                      ( new std::vector<int>()  ) ;
-  std::auto_ptr<std::vector<int> >    f_Extra_EcalToF_HaloId_ieta                      ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<int> >    f_HcalToF_HaloId_ieta                      ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<int> >    f_EcalToF_HaloId_ieta                      ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<int> >    f_BeamHaloSummary_Id                             ( new std::vector<int>()  ) ;
   std::auto_ptr<std::vector<double> > f_Ecal_ToF_time                                  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_Hcal_ToF_time                                  ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<double> > f_Extra_EcalToF_HaloId_time                      ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<double> > f_Extra_HcalToF_HaloId_time                      ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> > f_EcalToF_HaloId_time                      ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> > f_HcalToF_HaloId_time                      ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_CSCHaloData_InnerMostTrackHitX                 ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_CSCHaloData_InnerMostTrackHitY                 ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_CSCHaloData_InnerMostTrackHitR                 ( new std::vector<double>()  ) ;
@@ -154,13 +234,13 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   std::auto_ptr<std::vector<double> > f_EcalHaloData_PhiWedgeEnergy                    ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_EcalHaloData_PhiWedgeMinTime                   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_EcalHaloData_PhiWedgeMaxTime                   ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<double> > f_EcalHaloData_PhiWedgePlusZDirectionConfidence  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> > f_EcalHaloData_PhiWedgeZDirectionConfidence  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_EcalHaloData_SuperClusterShowerShapes_angle    ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_EcalHaloData_SuperClusterShowerShapes_roundness( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_HcalHaloData_PhiWedgeEnergy                    ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_HcalHaloData_PhiWedgeMinTime                   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_HcalHaloData_PhiWedgeMaxTime                   ( new std::vector<double>()  ) ;
-  std::auto_ptr<std::vector<double> > f_HcalHaloData_PhiWedgePlusZDirectionConfidence  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<double> > f_HcalHaloData_PhiWedgeZDirectionConfidence  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_GlobalHaloData_MExCorrection                   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_GlobalHaloData_MEyCorrection                   ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> > f_GlobalHaloData_HaloCorrectedMET                ( new std::vector<double>()  ) ;
@@ -182,82 +262,16 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   edm::ESHandle<CaloGeometry> TheCaloGeometry;
   iSetup.get<CaloGeometryRecord>().get(TheCaloGeometry);
   
+  /*
   //Get Stand-alone Muons from Cosmic Muon Reconstruction
   edm::Handle<reco::TrackCollection > TheCosmics;
   iEvent.getByLabel(IT_CosmicStandAloneMuon, TheCosmics);
-  bool CSCTrackPlus = false; 
-  bool CSCTrackMinus = false;
-  
-  if( TheCosmics.isValid() )
-    {
-      for( reco::TrackCollection::const_iterator cosmic = TheCosmics ->begin() ; cosmic != TheCosmics->end() ; cosmic++ )
-	{
-	  if( !CSCTrackPlus || !CSCTrackMinus)
-            {
-              if( cosmic->eta() > 0 || cosmic->outerPosition().z() > 0  || cosmic->innerPosition().z() > 0 ) CSCTrackPlus = true ;
-	      else if( cosmic->eta() < 0 || cosmic->outerPosition().z() < 0 || cosmic->innerPosition().z() < 0) CSCTrackMinus = true;
-	      
-	      f_CSCTrackPlus ->push_back(CSCTrackPlus);
-	      f_CSCTrackMinus->push_back(CSCTrackMinus);
-            }
-	}
-    }
 
   //Get CSC Segments
   edm::Handle<CSCSegmentCollection> TheCSCSegments;
   iEvent.getByLabel(IT_CSCSegment, TheCSCSegments);
+  */
 
-
-  // Group segments according to endcaps
-  std::vector< CSCSegment> vCSCSegments_Plus;
-  std::vector< CSCSegment> vCSCSegments_Minus;
-
-  bool CSCSegmentPlus = false; 
-  bool CSCSegmentMinus=false;
-  if( TheCSCSegments.isValid() ) 
-    {
-      for(CSCSegmentCollection::const_iterator iSegment = TheCSCSegments->begin(); iSegment != TheCSCSegments->end(); iSegment++) 
-	{
-	  const std::vector<CSCRecHit2D> vCSCRecHits = iSegment->specificRecHits();
-	  CSCDetId iDetId  = (CSCDetId)(*iSegment).cscDetId();
-	  
-	  if ( iDetId.endcap() == 1 ) vCSCSegments_Plus.push_back( *iSegment );
-	  else vCSCSegments_Minus.push_back( *iSegment );
-	}
-    }
-  
-  // Are there segments on the plus/minus side?  
-  if( vCSCSegments_Plus.size() ) CSCSegmentPlus = true;
-  if( vCSCSegments_Minus.size() ) CSCSegmentMinus = true;
-
-  f_CSCSegmentPlus  ->push_back(CSCSegmentPlus);
-  f_CSCSegmentMinus ->push_back(CSCSegmentMinus);
-  
-
-  //Get CSC RecHits
-  Handle<CSCRecHit2DCollection> TheCSCRecHits;
-  iEvent.getByLabel(IT_CSCRecHit, TheCSCRecHits);
-  bool CSCRecHitPlus = false; 
-  bool CSCRecHitMinus = false;
-  if( TheCSCRecHits.isValid() )
-    {
-      for(CSCRecHit2DCollection::const_iterator iCSCRecHit = TheCSCRecHits->begin();   iCSCRecHit != TheCSCRecHits->end(); iCSCRecHit++ )
-	{
-	  DetId TheDetUnitId(iCSCRecHit->geographicalId());
-	  const GeomDetUnit *TheUnit = (*TheCSCGeometry).idToDetUnit(TheDetUnitId);
-	  LocalPoint TheLocalPosition = iCSCRecHit->localPosition();
-	  const BoundPlane& TheSurface = TheUnit->surface();
-	  GlobalPoint TheGlobalPosition = TheSurface.toGlobal(TheLocalPosition);
-
-	  //Are there hits on the plus/minus side?
-	  if ( TheGlobalPosition.z() > 0 ) CSCRecHitPlus = true;
-	  else CSCRecHitMinus = true;
-	}
-    }
-  
-  f_CSCRecHitPlus ->push_back(CSCRecHitPlus);
-  f_CSCRecHitMinus->push_back(CSCRecHitMinus);
-  
   //Get  EB RecHits
   edm::Handle<EBRecHitCollection> TheEBRecHits;
   iEvent.getByLabel(IT_EBRecHit, TheEBRecHits);
@@ -296,18 +310,9 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   //Get CSCHaloData
   edm::Handle<reco::CSCHaloData> TheCSCDataHandle;
   iEvent.getByLabel(IT_CSCHaloData,TheCSCDataHandle);
-  int TheHaloOrigin = 0;
   if (TheCSCDataHandle.isValid())
     {
       const CSCHaloData CSCData = (*TheCSCDataHandle.product());
-
-      f_CSCHaloData_CaloPointingHaloTrackMultiplicity->push_back(CSCData.GetCSCTrackImpactPositions().size());
-      
-      if( CSCData.NumberOfHaloTriggers(1) && !CSCData.NumberOfHaloTriggers(-1) ) TheHaloOrigin = 1;
-      else if ( CSCData.NumberOfHaloTriggers(-1) && !CSCData.NumberOfHaloTriggers(1) ) TheHaloOrigin = -1 ;
-      
-      f_TheHaloOrigin->push_back(TheHaloOrigin);
-      
       for( std::vector<GlobalPoint>::const_iterator i=CSCData.GetCSCTrackImpactPositions().begin();  i != CSCData.GetCSCTrackImpactPositions().end() ; i++ )   
 	{    
 	  f_CSCHaloData_InnerMostTrackHitX    -> push_back(i->x());
@@ -317,11 +322,9 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	}                   
       f_CSCHaloData_HaloTriggersMEPlus  -> push_back(CSCData.NumberOfHaloTriggers(1));
       f_CSCHaloData_HaloTriggersMEMinus -> push_back( CSCData.NumberOfHaloTriggers(-1));
-      f_CSCHaloData_HaloTriggers        -> push_back( CSCData.NumberOfHaloTriggers());
 
       f_CSCHaloData_TrackMultiplicityMEPlus -> push_back( CSCData.NumberOfHaloTracks(1) );
       f_CSCHaloData_TrackMultiplicityMEMinus-> push_back( CSCData.NumberOfHaloTracks(-1) );
-      f_CSCHaloData_TrackMultiplicity       -> push_back( CSCData.GetTracks().size() );
     }
 
   //Get EcalHaloData 
@@ -337,7 +340,7 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	  f_EcalHaloData_PhiWedgeConstituents->push_back( iWedge->NumberOfConstituents() );
 	  f_EcalHaloData_PhiWedgeMinTime->push_back( iWedge->MinTime() );
 	  f_EcalHaloData_PhiWedgeMaxTime->push_back( iWedge->MaxTime() );
-	  f_EcalHaloData_PhiWedgePlusZDirectionConfidence->push_back( iWedge->PlusZDirectionConfidence() );
+	  f_EcalHaloData_PhiWedgeZDirectionConfidence->push_back( iWedge->ZDirectionConfidence() );
 	  f_EcalHaloData_PhiWedgeiPhi->push_back(iWedge->iPhi() ) ;
 	}
 
@@ -372,7 +375,7 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	  f_HcalHaloData_PhiWedgeiPhi->push_back( iWedge->iPhi() );
 	  f_HcalHaloData_PhiWedgeMinTime->push_back( iWedge->MinTime() );
 	  f_HcalHaloData_PhiWedgeMaxTime->push_back( iWedge->MaxTime() );
-	  f_HcalHaloData_PhiWedgePlusZDirectionConfidence->push_back( iWedge->PlusZDirectionConfidence() );
+	  f_HcalHaloData_PhiWedgeZDirectionConfidence->push_back( iWedge->ZDirectionConfidence() );
 	}
     }
   
@@ -420,8 +423,8 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 		  
 		  float time = iHBHERecHit->time();
 		  int ieta = id.ieta();
-		  f_Extra_HcalToF_HaloId_ieta->push_back( ieta );
-		  f_Extra_HcalToF_HaloId_time->push_back( time );
+		  f_HcalToF_HaloId_ieta->push_back( ieta );
+		  f_HcalToF_HaloId_time->push_back( time );
 		}
 	    }
 	}
@@ -445,10 +448,9 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 		  DetId id = DetId( iEBRecHit->id() ) ;
 		  EBDetId EcalId ( id.rawId() );
 		  int iPhi = EcalId.iphi() ;
-		  iPhi = (iPhi-1)/5 + 1;
 		  if( iPhi != iWedge->iPhi() ) continue;
-		  f_Extra_EcalToF_HaloId_ieta->push_back( EcalId.ieta() );
-		  f_Extra_EcalToF_HaloId_time->push_back( iEBRecHit->time() );
+		  f_EcalToF_HaloId_ieta->push_back( EcalId.ieta() );
+		  f_EcalToF_HaloId_time->push_back( iEBRecHit->time() );
 		}
 	    }
 	}
@@ -487,22 +489,22 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 	f_BeamHaloSummary_Id->push_back(11);
     }  
 
-  iEvent.put(  f_CSCTrackPlus                                            ,      prefix + "CSCTrackPlus"  + suffix );
-  iEvent.put(  f_CSCTrackMinus                                  	 ,      prefix + "CSCTrackMinus"  + suffix );						       
-  iEvent.put(  f_CSCSegmentPlus                                 	 ,      prefix + "CSCSegmentPlus"  + suffix );						       
-  iEvent.put(  f_CSCSegmentMinus                                	 ,      prefix + "CSCSegmentMinus"  + suffix );						       
-  iEvent.put(  f_CSCRecHitPlus                                  	 ,      prefix + "CSCRecHitPlus"  + suffix );						       
-  iEvent.put(  f_CSCRecHitMinus                                 	 ,      prefix + "CSCRecHitMinus"  + suffix );						       
+  //iEvent.put(  f_CSCTrackPlus                                            ,      prefix + "CSCTrackPlus"  + suffix );
+  //iEvent.put(  f_CSCTrackMinus                                  	 ,      prefix + "CSCTrackMinus"  + suffix );						       
+  //iEvent.put(  f_CSCSegmentPlus                                 	 ,      prefix + "CSCSegmentPlus"  + suffix );						       
+  //iEvent.put(  f_CSCSegmentMinus                                	 ,      prefix + "CSCSegmentMinus"  + suffix );						       
+  //iEvent.put(  f_CSCRecHitPlus                                  	 ,      prefix + "CSCRecHitPlus"  + suffix );						       
+  //iEvent.put(  f_CSCRecHitMinus                                 	 ,      prefix + "CSCRecHitMinus"  + suffix );						       
   iEvent.put(  f_Ecal_ToF_ieta                                   	 ,      prefix + "EcalToFieta"  + suffix );						       
   iEvent.put(  f_Hcal_ToF_ieta                                   	 ,      prefix + "HcalToFieta"  + suffix );						       
-  iEvent.put(  f_CSCHaloData_CaloPointingHaloTrackMultiplicity  	 ,      prefix + "CSCHaloDataCaloPointingHaloTrackMultiplicity"  + suffix );		     
-  iEvent.put(  f_TheHaloOrigin                                  	 ,      prefix + "TheHaloOrigin"  + suffix );						     
+  //iEvent.put(  f_CSCHaloData_CaloPointingHaloTrackMultiplicity  	 ,      prefix + "CSCHaloDataCaloPointingHaloTrackMultiplicity"  + suffix );		     
+  //iEvent.put(  f_TheHaloOrigin                                  	 ,      prefix + "TheHaloOrigin"  + suffix );						     
   iEvent.put(  f_CSCHaloData_HaloTriggersMEPlus                 	 ,      prefix + "CSCHaloDataHaloTriggersMEPlus"  + suffix );				     
   iEvent.put(  f_CSCHaloData_HaloTriggersMEMinus                	 ,      prefix + "CSCHaloDataHaloTriggersMEMinus"  + suffix );				     
-  iEvent.put(  f_CSCHaloData_HaloTriggers                       	 ,      prefix + "CSCHaloDataHaloTriggers"  + suffix );					       
+  //iEvent.put(  f_CSCHaloData_HaloTriggers                       	 ,      prefix + "CSCHaloDataHaloTriggers"  + suffix );					       
   iEvent.put(  f_CSCHaloData_TrackMultiplicityMEPlus            	 ,      prefix + "CSCHaloDataTrackMultiplicityMEPlus"  + suffix );			     
   iEvent.put(  f_CSCHaloData_TrackMultiplicityMEMinus           	 ,      prefix + "CSCHaloDataTrackMultiplicityMEMinus"  + suffix );			     
-  iEvent.put(  f_CSCHaloData_TrackMultiplicity                  	 ,      prefix + "CSCHaloDataTrackMultiplicity"  + suffix );				        
+  //iEvent.put(  f_CSCHaloData_TrackMultiplicity                  	 ,      prefix + "CSCHaloDataTrackMultiplicity"  + suffix );				        
   iEvent.put(  f_EcalHaloData_PhiWedgeConstituents              	 ,      prefix + "EcalHaloDataPhiWedgeConstituents"  + suffix );			        
   iEvent.put(  f_EcalHaloData_PhiWedgeiPhi                      	 ,      prefix + "EcalHaloDataPhiWedgeiPhi"  + suffix );				        
   iEvent.put(  f_EcalHaloData_PhiWedgeMultiplicity              	 ,      prefix + "EcalHaloDataPhiWedgeMultiplicity"  + suffix );			        
@@ -515,13 +517,13 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.put(  f_GlobalHaloData_MatchedEcalPhiWedgeMultiplicity 	 ,      prefix + "GlobalHaloDataMatchedEcalPhiWedgeMultiplicity"  + suffix );		     
   iEvent.put(  f_GlobalHaloData_MatchedEcalPhiWedgeiPhi 	         ,      prefix + "GlobalHaloDataMatchedEcalPhiWedgeiPhi"  + suffix );			     
   iEvent.put(  f_GlobalHaloData_MatchedEcalPhiWedgeConstituents          ,      prefix + "GlobalHaloDataMatchedEcalPhiWedgeConstituents"  + suffix );		        
-  iEvent.put(  f_Extra_HcalToF_HaloId_ieta       	                 ,      prefix + "ExtraHcalToFHaloIdieta"  + suffix );				        
-  iEvent.put(  f_Extra_EcalToF_HaloId_ieta	       	                 ,      prefix + "ExtraEcalToFHaloIdieta"  + suffix );				        
+  iEvent.put(  f_HcalToF_HaloId_ieta       	                 ,      prefix + "HcalToFHaloIdieta"  + suffix );				        
+  iEvent.put(  f_EcalToF_HaloId_ieta	       	                 ,      prefix + "EcalToFHaloIdieta"  + suffix );				        
   iEvent.put(  f_BeamHaloSummary_Id                             	 ,      prefix + "BeamHaloSummaryId"  + suffix );					     
   iEvent.put(  f_Ecal_ToF_time                                   	 ,      prefix + "EcalToFtime"  + suffix );						     
   iEvent.put(  f_Hcal_ToF_time                                   	 ,      prefix + "HcalToFtime"  + suffix );						        
-  iEvent.put(  f_Extra_HcalToF_HaloId_time                      	 ,      prefix + "ExtraHcalToFHaloIdtime"  + suffix );				        
-  iEvent.put(  f_Extra_EcalToF_HaloId_time	                         ,      prefix + "ExtraEcalToFHaloIdtime"  + suffix );				     
+  iEvent.put(  f_HcalToF_HaloId_time                      	 ,      prefix + "HcalToFHaloIdtime"  + suffix );				        
+  iEvent.put(  f_EcalToF_HaloId_time	                         ,      prefix + "EcalToFHaloIdtime"  + suffix );				     
   iEvent.put(  f_CSCHaloData_InnerMostTrackHitX                  	 ,      prefix + "CSCHaloDataInnerMostTrackHitX"  + suffix );				     
   iEvent.put(  f_CSCHaloData_InnerMostTrackHitY                  	 ,      prefix + "CSCHaloDataInnerMostTrackHitY"  + suffix );				     
   iEvent.put(  f_CSCHaloData_InnerMostTrackHitR                  	 ,      prefix + "CSCHaloDataInnerMostTrackHitR"  + suffix );				        
@@ -529,13 +531,13 @@ void PromptAna_BeamHalo::produce(edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.put(  f_EcalHaloData_PhiWedgeEnergy                     	 ,      prefix + "EcalHaloDataPhiWedgeEnergy"  + suffix );				     
   iEvent.put(  f_EcalHaloData_PhiWedgeMinTime                    	 ,      prefix + "EcalHaloDataPhiWedgeMinTime"  + suffix );				     
   iEvent.put(  f_EcalHaloData_PhiWedgeMaxTime                    	 ,      prefix + "EcalHaloDataPhiWedgeMaxTime"  + suffix );				     
-  iEvent.put(  f_EcalHaloData_PhiWedgePlusZDirectionConfidence   	 ,      prefix + "EcalHaloDataPhiWedgePlusZDirectionConfidence"  + suffix );		        
+  iEvent.put(  f_EcalHaloData_PhiWedgeZDirectionConfidence   	         ,      prefix + "EcalHaloDataPhiWedgeZDirectionConfidence"  + suffix );		        
   iEvent.put(  f_EcalHaloData_SuperClusterShowerShapes_angle     	 ,      prefix + "EcalHaloDataSuperClusterShowerShapesAngle"  + suffix );		     
   iEvent.put(  f_EcalHaloData_SuperClusterShowerShapes_roundness 	 ,      prefix + "EcalHaloDataSuperClusterShowerShapesRoundness"  + suffix );		        
   iEvent.put(  f_HcalHaloData_PhiWedgeEnergy                     	 ,      prefix + "HcalHaloDataPhiWedgeEnergy"  + suffix );				     
   iEvent.put(  f_HcalHaloData_PhiWedgeMinTime                    	 ,      prefix + "HcalHaloDataPhiWedgeMinTime"  + suffix );				     
   iEvent.put(  f_HcalHaloData_PhiWedgeMaxTime                    	 ,      prefix + "HcalHaloDataPhiWedgeMaxTime"  + suffix );				     
-  iEvent.put(  f_HcalHaloData_PhiWedgePlusZDirectionConfidence   	 ,      prefix + "HcalHaloDataPhiWedgePlusZDirectionConfidence"  + suffix );		     
+  iEvent.put(  f_HcalHaloData_PhiWedgeZDirectionConfidence   	         ,      prefix + "HcalHaloDataPhiWedgeZDirectionConfidence"  + suffix );		     
   iEvent.put(  f_GlobalHaloData_MExCorrection                    	 ,      prefix + "GlobalHaloDataMExCorrection"  + suffix );				     
   iEvent.put(  f_GlobalHaloData_MEyCorrection                    	 ,      prefix + "GlobalHaloDataMEyCorrection"  + suffix );				     
   iEvent.put(  f_GlobalHaloData_HaloCorrectedMET                 	 ,      prefix + "GlobalHaloDataHaloCorrectedMET"  + suffix );				        
