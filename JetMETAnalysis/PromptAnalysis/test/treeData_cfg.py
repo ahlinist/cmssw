@@ -24,7 +24,7 @@ process.load("RecoMuon/Configuration/RecoMuon_cff")
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.Services_cff')
 process.add_( cms.Service( "TFileService",
-                           fileName = cms.string( 'BeamCommissioning09__ExpressPhysics_123151_new.root' ),
+                           fileName = cms.string( 'your_output.root' ),
                            closeFileFast = cms.untracked.bool(True)  ) )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
@@ -40,7 +40,7 @@ process.source = cms.Source (
 
 process.MessageLogger = cms.Service("MessageLogger",
                                     default = cms.untracked.PSet(
-    reportEvery = cms.untracked.int32(100)
+    reportEvery = cms.untracked.int32(1000)
     )
                                     )
 
@@ -59,6 +59,7 @@ process.promptanaTree = cms.EDAnalyzer("PromptAnaTree",
     'keep *_promptanaic5calojet_*_*',
     'keep *_promptanasc5calojet_*_*',
     'keep *_promptanakt4calojet_*_*',
+    'keep *_promptanaak5calojet_*_*',
     'keep *_promptanahalo_*_*',
     'keep *_promptanacalotowers_*_*',
     'keep *_promptanatrigger_*_*',
@@ -75,6 +76,7 @@ process.theBigNtuple = cms.Path( (
     process.promptanaic5calojet +
     process.promptanasc5calojet +
     process.promptanakt4calojet +
+    process.promptanaak5calojet +
     process.promptanahalo +
     process.promptanacalotowers +
     process.promptanatrigger +
