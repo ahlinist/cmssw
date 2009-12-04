@@ -2,8 +2,8 @@
   \file SiPixelRenderPlugin
   \brief Display Plugin for Pixel DQM Histograms
   \author P.Merkel
-  \version $Revision: 1.24 $
-  \date $Date: 2009/12/01 12:29:46 $
+  \version $Revision: 1.25 $
+  \date $Date: 2009/12/03 17:51:42 $
 */
 
 #include "VisMonitoring/DQMServer/interface/DQMRenderPlugin.h"
@@ -188,7 +188,7 @@ color, Int_t npts, std::string title){
 	return grP;
 }
 
-  void preDrawTH2( TCanvas *, const VisDQMObject &o )
+void preDrawTH2( TCanvas *, const VisDQMObject &o )
     {
       TH2* obj = dynamic_cast<TH2*>( o.object );
       assert( obj );
@@ -201,8 +201,9 @@ color, Int_t npts, std::string title){
       gStyle->SetOptStat( 0 );
       obj->SetStats( kFALSE );
       if(o.name.find( "sizeYvsEta" ) != std::string::npos){
-        gStyle->SetOptStat( 1111111 );
-	obj->SetStats( kTRUE ); gPad->SetLogz(1);
+        obj->SetStats( kTRUE ); 
+	gStyle->SetOptStat( 1111111 );
+	if(obj->GetEntries() > 0.) gPad->SetLogz(1);
       }
 
       if( o.name.find( "reportSummaryMap" ) == std::string::npos){
