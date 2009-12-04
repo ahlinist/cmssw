@@ -316,7 +316,7 @@ void ESRenderPlugin::preDrawTH2F( TCanvas *, const VisDQMObject &o ) {
      return;
    }
    
-   if ( name.find( "Energy Density" ) != std::string::npos ) {
+   if ( name.find( "Energy Density" ) != std::string::npos || name.find( "Occupancy with" ) != std::string::npos) {
      gStyle->SetPalette(1);
      NEntries = obj->GetBinContent(40,40);
      obj->SetBinContent(40,40,0.);
