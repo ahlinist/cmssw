@@ -50,8 +50,8 @@ HFB2muD0::HFB2muD0(const edm::ParameterSet& iConfig) :
   fPionPt(iConfig.getUntrackedParameter<double>("pionPt", 0.4)),
   fDeltaR(iConfig.getUntrackedParameter<double>("deltaR", 99.)),
   fTrackPt(iConfig.getUntrackedParameter<double>("trackPt", 1.0)),
-  fDeltaMD0(iConfig.getUntrackedParameter<double>("deltaMD0", 0.1)),
-  fDeltaMDs(iConfig.getUntrackedParameter<double>("deltaMDs", 0.1)),
+  fDeltaMD0(iConfig.getUntrackedParameter<double>("deltaMD0", 0.4)),
+  fDeltaMDs(iConfig.getUntrackedParameter<double>("deltaMDs", 0.4)),
   fSlowPt(iConfig.getUntrackedParameter<double>("slowPt", 0.1)) {
   using namespace std;
   cout << "----------------------------------------------------------------------" << endl;
