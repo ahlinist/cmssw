@@ -5,9 +5,8 @@
 #include "CondFormats/L1TObjects/interface/L1MuTriggerPtScale.h"
 #include "L1Trigger/DTTrackFinder/interface/L1MuDTTrack.h"
 #include "L1Trigger/GlobalMuonTrigger/src/L1MuGMTConfig.h"
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTUtils.h"
 
-#include "SLHCUpgradeSimulations/L1Trigger/interface/L1DTSimOperation.h"
+#include "SLHCUpgradeSimulations/L1Trigger/interface/DTL1SimOperation.h"
 
 
 void L1DTSimOperation::getDTSimTrigger(edm::Event& event, 
@@ -47,7 +46,6 @@ void L1DTSimOperation::getDTSimTrigger(edm::Event& event,
   vector<DTChambPhSegm> theTSPhTrigs = theTrigger->TSPhTrigs();
   vector<DTChambPhSegm>::const_iterator tsphi;
   //DTTSphiTrigger* aTSphiTrig;
-  int itsphi = 0; 
   if(debug_tsphi)
     outAscii << "\n[DTTrigger]: " << theTSPhTrigs.size() << " TSPhi triggers found" 
 	     << endl;
@@ -72,8 +70,8 @@ void L1DTSimOperation::getDTSimTrigger(edm::Event& event,
 	//if( match(*bti, *aTSphiTrig) )
 	if( match(*bti, *tsphi) )
 	  // Add DTMatch to DTStubCollection
-	  //DTStubs->addDT(*bti, *aTSphiTrig, debug_dttrackmatch_extrapolation);
-	  DTStubs->addDT(*bti, *tsphi, debug_dttrackmatch_extrapolation);
+	  //DTStubMatches->addDT(*bti, *aTSphiTrig, debug_dttrackmatch_extrapolation);
+	  DTStubMatches->addDT(*bti, *tsphi, debug_dttrackmatch_extrapolation);
     }
     // *** end match TSphi-BTItheta ***
     //delete aTSphiTrig; 
@@ -81,22 +79,22 @@ void L1DTSimOperation::getDTSimTrigger(edm::Event& event,
   if(debug_dtmatch) {
     outAscii 
       << "\n=========================================================="
-      << "\nNumber of DTMatch: " <<  DTStubs->numDt()
-      << "; in station 1: " << DTStubs->numDt(1)
-      << "; in station 2: " << DTStubs->numDt(2)
+      << "\nNumber of DTMatch: " <<  DTStubMatches->numDt()
+      << "; in station 1: " << DTStubMatches->numDt(1)
+      << "; in station 2: " << DTStubMatches->numDt(2)
       << endl;
-    for (int idtmatch = 0; idtmatch < DTStubs->numDt(); idtmatch++)
+    for (int idtmatch = 0; idtmatch < DTStubMatches->numDt(); idtmatch++)
       outAscii 
 	<< " " << idtmatch << ")"
-	<< " bx " << DTStubs->dtmatch(idtmatch)->bx()
-	<< " st " << DTStubs->dtmatch(idtmatch)->station()
-	<< " wh " << DTStubs->dtmatch(idtmatch)->wheel()
-	<< " se " << DTStubs->dtmatch(idtmatch)->sector()
-	<< " code " << DTStubs->dtmatch(idtmatch)->code()
-	<< "\n    phi_glo " <<  DTStubs->dtmatch(idtmatch)->phi_glo()
-	<< " phi_ts " <<  DTStubs->dtmatch(idtmatch)->phi_ts()
-	<< " phib " <<  DTStubs->dtmatch(idtmatch)->phib_ts()
-	<< " theta " << DTStubs->dtmatch(idtmatch)->theta()
+	<< " bx " << DTStubMatches->dtmatch(idtmatch)->bx()
+	<< " st " << DTStubMatches->dtmatch(idtmatch)->station()
+	<< " wh " << DTStubMatches->dtmatch(idtmatch)->wheel()
+	<< " se " << DTStubMatches->dtmatch(idtmatch)->sector()
+	<< " code " << DTStubMatches->dtmatch(idtmatch)->code()
+	<< "\n    phi_glo " <<  DTStubMatches->dtmatch(idtmatch)->phi_glo()
+	<< " phi_ts " <<  DTStubMatches->dtmatch(idtmatch)->phi_ts()
+	<< " phib " <<  DTStubMatches->dtmatch(idtmatch)->phib_ts()
+	<< " theta " << DTStubMatches->dtmatch(idtmatch)->theta_ts()
 	<< endl;
     outAscii 
       << "==========================================================" 
