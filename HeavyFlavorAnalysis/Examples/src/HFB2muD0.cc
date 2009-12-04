@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "HFB2muD0.hh"
+#include "HeavyFlavorAnalysis/Examples/interface/HFB2muD0.hh"
 
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAna01Event.hh"
 #include "AnalysisDataFormats/HeavyFlavorObjects/rootio/TAnaTrack.hh"
