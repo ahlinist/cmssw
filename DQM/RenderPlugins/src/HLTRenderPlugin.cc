@@ -7,8 +7,11 @@
   \\ subdetector plugins
   \\ preDraw and postDraw methods now check whether histogram was a TH1
   \\ or TH2, and call a private method appropriate for the histogram type
-  $Id: HLTRenderPlugin.cc,v 1.9 2009/10/31 23:18:54 lat Exp $
+  $Id: HLTRenderPlugin.cc,v 1.10 2009/12/03 19:13:11 puigh Exp $
   $Log: HLTRenderPlugin.cc,v $
+  Revision 1.10  2009/12/03 19:13:11  puigh
+  use log scale and make axes readable
+
   Revision 1.9  2009/10/31 23:18:54  lat
   Update for DQM GUI 5.1.0
 
@@ -152,7 +155,7 @@ private:
 	      o.name.find("HLT_Rest_Pass_Any") != std::string::npos ||
 	      o.name.find("HLT_Special_Pass_Any") != std::string::npos)
 	     ) {
-	  gPad->SetLogy(1);
+	 // gPad->SetLogy(1);
 	  
 	  if ( (o.name.find("HLT_Egamma_Pass_Any") != std::string::npos ||
 		o.name.find("HLT_JetMET_Pass_Any") != std::string::npos ||
