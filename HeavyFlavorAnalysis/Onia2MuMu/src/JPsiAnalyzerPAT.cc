@@ -13,7 +13,7 @@
 //
 // Original Author: Roberto Covarelli 
 //         Created:  Fri Oct  9 04:59:40 PDT 2009
-// $Id: JPsiAnalyzerPAT.cc,v 1.7 2009/12/01 10:45:51 covarell Exp $
+// $Id: JPsiAnalyzerPAT.cc,v 1.8 2009/12/03 10:33:26 covarell Exp $
 //
 //
 
@@ -210,6 +210,7 @@ class JPsiAnalyzerPAT : public edm::EDAnalyzer {
       bool           _storeefficiency;
       bool           _useBS;
       bool           _useCalo;
+      bool           _removeSignal;
       InputTag       _triggerresults;
 
       // number of events
@@ -248,7 +249,8 @@ JPsiAnalyzerPAT::JPsiAnalyzerPAT(const edm::ParameterSet& iConfig):
   _applycuts(iConfig.getParameter<bool>("applyCuts")),			
   _storeefficiency(iConfig.getParameter<bool>("storeEfficiency")),	
   _useBS(iConfig.getParameter<bool>("useBeamSpot")),
-  _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),			
+  _useCalo(iConfig.getUntrackedParameter<bool>("useCaloMuons",false)),
+  _removeSignal(iConfig.getUntrackedParameter<bool>("removeSignalEvents",false)),
   _triggerresults(iConfig.getParameter<InputTag>("TriggerResultsLabel"))
 {
    //now do what ever initialization is needed
@@ -614,6 +616,11 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
   if (_useBS) {theCtau = aCand->userFloat("ppdlBS");}
   else {theCtau = aCand->userFloat("ppdlPV");}
 
+  // MC matching
+  reco::GenParticleRef genJpsi = aCand->genParticleRef();
+  bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
+  if (isMatched && _removeSignal) return;
+
   // Trigger Results inspection
   
   static const unsigned int NTRIGGERS = 5;
@@ -634,10 +641,6 @@ JPsiAnalyzerPAT::fillHistosAndDS(unsigned int theCat, const pat::CompositeCandid
       }
     }
   }
-
-  // MC matching
-  reco::GenParticleRef genJpsi = aCand->genParticleRef();
-  bool isMatched = (genJpsi.isAvailable() && genJpsi->pdgId() == 443);
 
   // Trigger passed
 
