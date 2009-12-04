@@ -33,6 +33,7 @@
 <use name=SimDataFormats/Vertex>
 <use name=SimDataFormats/TrackingHit>
 <use name=SimDataFormats/SLHC>
+<use name=DataFormats/SiPixelDetId>
 
 <use name=TrackingTools/Records>
 <use name=TrackingTools/PatternTools>

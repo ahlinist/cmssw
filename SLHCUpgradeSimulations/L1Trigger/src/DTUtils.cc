@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <math.h>
-#include "SLHCUpgradeSimulations/L1Trigger/interface/DTUtils.h"
+#include "DTUtils.h"
 
 using namespace std;
 
