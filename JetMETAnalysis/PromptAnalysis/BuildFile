@@ -28,6 +28,8 @@
    <use name=RecoEcal/EgammaClusterAlgos>
    <use name=RecoEgamma/EgammaMCTools>
    <use name=RecoEgamma/EgammaTools>	
+   <use name=CondFormats/L1TObjects>
+   <use name=CondFormats/DataRecord>
    <use name=RecoMET/METAlgorithms>
    <use name=RecoMuon/MuonIsolation>
    <use name=RecoMuon/TrackingTools>
@@ -43,6 +45,8 @@
    <use name=DataFormats/Common>
    <use name=DataFormats/CSCDigi>
    <use name=DataFormats/CSCRecHit>
+   <use name=CondFormats/L1TObjects>
+   <use name=CondFormats/DataRecord>
    <use name=DataFormats/DetId>
    <use name=DataFormats/EcalDetId>
    <use name=DataFormats/EcalRecHit>	
