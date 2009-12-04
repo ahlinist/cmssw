@@ -15,6 +15,7 @@
 #include "HeavyFlavorAnalysis/Examples/interface/HFBs2JpsiPhi.h"
 #include "HeavyFlavorAnalysis/Examples/interface/HFDimuons.h"
 #include "HeavyFlavorAnalysis/Examples/interface/HFMuonAndTrack.h"
+#include "HeavyFlavorAnalysis/Examples/interface/HFB2muD0.hh"
 
 DEFINE_SEAL_MODULE();
 DEFINE_ANOTHER_FWK_MODULE(HFTree);
@@ -32,3 +33,4 @@ DEFINE_ANOTHER_FWK_MODULE(HFBu2JpsiKp);
 DEFINE_ANOTHER_FWK_MODULE(HFBs2JpsiPhi);
 DEFINE_ANOTHER_FWK_MODULE(HFDimuons);
 DEFINE_ANOTHER_FWK_MODULE(HFMuonAndTrack);
+DEFINE_ANOTHER_FWK_MODULE(HFB2muD0);

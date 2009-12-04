@@ -12,7 +12,8 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-    "file:/shome/starodumov/out/reco/root/reco-10094.root"
+    "/store/user/starodumov/bsmm/reco/reco-10000.root", 
+    "/store/user/starodumov/bsmm/reco/reco-10001.root"
     )
     )
 
@@ -22,8 +23,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 # ----------------------------------------------------------------------
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = cms.string('IDEAL_31X::All')
-process.GlobalTag.globaltag = cms.string('MC_31X_V3::All')
+process.GlobalTag.globaltag = cms.string('MC_31X_V5::All')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # ----------------------------------------------------------------------
@@ -120,33 +120,6 @@ process.bmmDump = cms.EDFilter(
     massLow  = cms.untracked.double(4.0), 
     massHigh = cms.untracked.double(6.0)
 )
-
-
-# ----------------------------------------------------------------------
-process.bfilter = cms.EDFilter("PythiaFilter",
-	ParticleID = cms.untracked.int32(553)		#upsilon(1S)
-	#ParticleID = cms.untracked.int32(100553)	#upsilon(2S)
-	#ParticleID = cms.untracked.int32(100553)	#upsilon(3S)  !!??
-	
-)
-
-# ----------------------------------------------------------------------
-process.cfilter = cms.EDFilter("PythiaFilter",
-	ParticleID = cms.untracked.int32(443)	#j/Psi
-)
-    
-# ----------------------------------------------------------------------
-process.mumugenfilter = cms.EDFilter("MCParticlePairFilter",
-    Status = cms.untracked.vint32(1, 1),
-    MinPt = cms.untracked.vdouble(2.5, 2.5),
-    MaxEta = cms.untracked.vdouble(2.5, 2.5),
-    MinEta = cms.untracked.vdouble(-2.5, -2.5),
-    ParticleCharge = cms.untracked.int32(-1),
-    ParticleID1 = cms.untracked.vint32(13),
-    ParticleID2 = cms.untracked.vint32(13)
-)
-
-
 
 
 # ----------------------------------------------------------------------
