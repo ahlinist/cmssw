@@ -45,9 +45,9 @@ promptanasc5calojet = cms.EDProducer("PromptAna_Jet",
                             )
                             )
 
-promptanaakt5calojet = cms.EDProducer("PromptAna_Jet",
-                            InputTag = cms.InputTag('antikt5CaloJets'),
-                            Prefix = cms.string('akt5Jet'),
+promptanaak5calojet = cms.EDProducer("PromptAna_Jet",
+                            InputTag = cms.InputTag('ak5CaloJets'),
+                            Prefix = cms.string('ak5Jet'),
                             Suffix = cms.string(''),
                             # Jet ID configuration
                             jetID = cms.PSet(
