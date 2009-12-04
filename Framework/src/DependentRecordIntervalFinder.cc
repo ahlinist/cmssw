@@ -129,6 +129,7 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey& iKey,
        newInterval.setLast(IOVSyncValue::invalidIOVSyncValue());
      }
      oInterval = newInterval;
+     m_previousSyncTo = iTime;
      return;
    }
    //handle the case where some providers use time and others use run/lumi/event
