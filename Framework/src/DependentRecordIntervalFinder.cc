@@ -85,6 +85,7 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey& iKey,
       return;
    }
    bool haveAValidDependentRecord = false;
+   bool allRecordsValid = true;
    ValidityInterval newInterval(IOVSyncValue::beginOfTime(), IOVSyncValue::endOfTime());
    
    if (alternate_.get() != 0) {
@@ -112,12 +113,20 @@ DependentRecordIntervalFinder::setIntervalFor(const EventSetupRecordKey& iKey,
          if(newInterval.last() > providerInterval.last()) {
             newInterval.setLast(providerInterval.last());
          }
+      } else {
+	allRecordsValid = false;
       }
    }
    if(intervalsWereComparible) {
      if(!haveAValidDependentRecord) {
        //If no Finder has no valid time, then this record is also invalid for this time
        newInterval = ValidityInterval::invalidInterval();
+     }
+     if(!allRecordsValid) {
+       //since some of the dependent providers do not have a valid IOV for this syncvalue
+       // we do not know what the true end IOV is.  Therefore we must make it open ended
+       // so that we can check each time to see if those providers become valid.
+       newInterval.setLast(IOVSyncValue::invalidIOVSyncValue());
      }
      oInterval = newInterval;
      return;
