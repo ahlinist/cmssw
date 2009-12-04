@@ -14,6 +14,7 @@
 #include <RooAbsBinning.h>
 
 #include <TROOT.h>
+#include <TRandom3.h>
 
 #include <iostream>
 #include <fstream>
@@ -22,6 +23,11 @@ const std::string fluctMode_coherent = "coherent";
 const std::string fluctMode_incoherent = "incoherent";
 
 typedef std::pair<double, double> double_pair;
+
+namespace templateFitAdapterBase
+{
+  TRandom3 gRndNum;
+}
 
 TemplateFitAdapterBase::drawOptionsType::drawOptionsType(const edm::ParameterSet& cfg)
 {
@@ -85,9 +91,9 @@ void TemplateFitAdapterBase::data1dType::compFittedFraction(const TH1* histogram
   fittedFraction_ = ( integral_ > 0. ) ? (fittedIntegral_/integral_) : 1.;
 }
 
-void TemplateFitAdapterBase::data1dType::fluctuate(bool, bool)
+void TemplateFitAdapterBase::data1dType::fluctuate(bool, bool, double numEntries)
 {  
-  sampleHistogram_stat(histogram_, fluctHistogram_);
+  sampleHistogram_stat(histogram_, fluctHistogram_, numEntries);
   makeHistogramPositive(fluctHistogram_);
   compFittedFraction(fluctHistogram_);
 }
@@ -131,9 +137,17 @@ void TemplateFitAdapterBase::dataNdType::initialize()
 
 void TemplateFitAdapterBase::dataNdType::fluctuate(bool, bool)
 {
+  double numEntries = 0.;
+  bool isFirstFluctuation = true;
+
   for ( std::map<std::string, data1dType*>::iterator data1dEntry = data1dEntries_.begin();
 	data1dEntry != data1dEntries_.end(); ++data1dEntry ) {
-    data1dEntry->second->fluctuate(true, false);
+    if ( isFirstFluctuation ) {
+      numEntries = templateFitAdapterBase::gRndNum.PoissonD(data1dEntry->second->me_->getTH1()->Integral());
+      isFirstFluctuation = false;
+    }
+
+    data1dEntry->second->fluctuate(true, false, numEntries*data1dEntry->second->fittedFraction_);
   }
 }
 
@@ -188,10 +202,10 @@ void TemplateFitAdapterBase::model1dType::initialize()
   }
 }
 
-void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSys)
+void TemplateFitAdapterBase::model1dType::fluctuate(bool fluctStat, bool fluctSys, double numEntries)
 {
   if ( fluctStat ) {
-    sampleHistogram_stat(histogram_, fluctHistogram_);
+    sampleHistogram_stat(histogram_, fluctHistogram_, numEntries);
   } else {
     int numBins = histogram_->GetNbinsX();
     for ( int iBin = 0; iBin < (numBins + 2); ++iBin ) {
@@ -254,9 +268,17 @@ void TemplateFitAdapterBase::modelNdType::initialize()
 
 void TemplateFitAdapterBase::modelNdType::fluctuate(bool fluctStat, bool fluctSys)
 {
+  double numEntries = 0.;
+  bool isFirstFluctuation = true;
+
   for ( std::map<std::string, model1dType*>::iterator model1dEntry = model1dEntries_.begin();
 	model1dEntry != model1dEntries_.end(); ++model1dEntry ) {
-    model1dEntry->second->fluctuate(fluctStat, fluctSys);
+    if ( isFirstFluctuation ) {
+      numEntries = templateFitAdapterBase::gRndNum.PoissonD(model1dEntry->second->me_->getTH1()->Integral());
+      isFirstFluctuation = false;
+    }
+
+    model1dEntry->second->fluctuate(fluctStat, fluctSys, numEntries*model1dEntry->second->fittedFraction_);
   }
 }
 

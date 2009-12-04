@@ -28,7 +28,10 @@ typedef std::vector<TemplateFitAdapterBase::fitRangeEntryType> fitRangeEntryColl
 typedef std::vector<const TH1*> histogramPtrCollection;
 typedef std::vector<std::string> vstring;
 
-TRandom3 gRndNum;
+namespace templateFitAuxFunctions
+{
+  TRandom3 gRndNum;
+}
 
 const int defaultCanvasSizeX = 800;
 const int defaultCanvasSizeY = 600;
@@ -41,7 +44,7 @@ double getSampledPull(double pullRMS, double pullMin, double pullMax)
   bool fluctPull_isValid = false;
 
   while ( !fluctPull_isValid ) {
-    double x = gRndNum.Gaus(0., pullRMS);
+    double x = templateFitAuxFunctions::gRndNum.Gaus(0., pullRMS);
     if ( x >= pullMin && x <= pullMax ) {
       fluctPull = x;
       fluctPull_isValid = true;
@@ -51,7 +54,7 @@ double getSampledPull(double pullRMS, double pullMin, double pullMax)
   return fluctPull;
 }
 
-void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram)
+void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram, double fluctHistogramNumEntries)
 {
 //--- fluctuate bin-contents by Gaussian distribution
 //    with zero mean and standard deviation given by bin-errors
@@ -73,6 +76,11 @@ void sampleHistogram_stat(const TH1* origHistogram, TH1* fluctHistogram)
     
     fluctHistogram->SetBinContent(iBin, fluctBinContent);
     fluctHistogram->SetBinError(iBin, origBinError);
+  }
+
+  double fluctHistogramIntegral = getIntegral(fluctHistogram);
+  if ( fluctHistogramNumEntries != -1. && fluctHistogramIntegral != 0. ) {
+    fluctHistogram->Scale(fluctHistogramNumEntries/fluctHistogramIntegral);
   }
 }
 

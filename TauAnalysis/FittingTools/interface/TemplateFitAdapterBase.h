@@ -25,9 +25,9 @@
  *
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.2 $
+ * \version $Revision: 1.3 $
  *
- * $Id: TemplateFitAdapterBase.h,v 1.2 2009/11/29 15:25:15 veelken Exp $
+ * $Id: TemplateFitAdapterBase.h,v 1.3 2009/11/30 11:39:32 veelken Exp $
  *
  */
 
@@ -125,7 +125,7 @@ class TemplateFitAdapterBase
     virtual ~data1dType();
 
     virtual void initialize();
-    virtual void fluctuate(bool, bool);
+    virtual void fluctuate(bool, bool, double);
     virtual void compFittedFraction(const TH1*);
 
     std::string processName_;
@@ -181,7 +181,7 @@ class TemplateFitAdapterBase
     virtual ~model1dType();
 
     void initialize();
-    void fluctuate(bool, bool);
+    void fluctuate(bool, bool, double);
 
     std::vector<sysErrType> sysErrFluctuations_;
   };
