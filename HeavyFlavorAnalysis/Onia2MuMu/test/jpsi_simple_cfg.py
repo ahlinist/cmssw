@@ -11,7 +11,7 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load("PhysicsTools.HepMCCandAlgos.allMuonsGenParticlesMatch_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
 )
 
 process.options = cms.untracked.PSet(
@@ -22,18 +22,19 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
      
     fileNames = cms.untracked.vstring(
+
        ### test
-      #'/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
+      '/store/relval/CMSSW_3_1_2/RelValZMM/GEN-SIM-RECO/STARTUP31X_V2-v1/0007/EECE7AB6-CC78-DE11-805C-0019B9F709A4.root'
  #   #2.36 GeV files:
-    'file:/tmp/hwoehri/0E8FD2DA-76DB-DE11-8657-001F296BC5BA.root',
-    'file:/tmp/hwoehri/0CE5AD13-73DB-DE11-8B4F-00237DA15C96.root'
-    )
+    #'file:/tmp/hwoehri/0E8FD2DA-76DB-DE11-8657-001F296BC5BA.root',
+    #'file:/tmp/hwoehri/0CE5AD13-73DB-DE11-8B4F-00237DA15C96.root'
+      )
 )
 
 process.GlobalTag.globaltag = 'MC_31X_V3::All'
 
 process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
-    OutputFileName       = cms.string('MinBias900GeV.root'),
+    OutputFileName       = cms.string('test.root'),
     OniaType             = cms.int32(443),
     OniaMaxCat           = cms.int32(6),
     skimOnOniaMaxCat     = cms.bool(False),
@@ -44,7 +45,8 @@ process.MuonAnalysis = cms.EDAnalyzer("Onia2MuMu",
     MuonsLabel           = cms.InputTag("muons"),
     CaloMuonsLabel       = cms.InputTag("calomuons"),
     BeamSpotLabel        = cms.InputTag("offlineBeamSpot"),
-    PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVertices"),
+    PrimaryVertexLabel   = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    UsePrimaryNoMuons    = cms.bool(True),
     TrackLabel           = cms.InputTag("generalTracks"),
     PhotonLabel          = cms.InputTag("particleFlow"),
     PhotonMinEnergy      = cms.double(2.0),

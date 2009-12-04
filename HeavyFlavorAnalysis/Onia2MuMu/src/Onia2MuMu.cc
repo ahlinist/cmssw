@@ -44,6 +44,7 @@ Onia2MuMu::Onia2MuMu(const edm::ParameterSet& iConfig)
   theL1GTReadoutRec          = iConfig.getParameter<edm::InputTag>("L1GTReadoutRec");
   theL1MuonLabel             = iConfig.getParameter<edm::InputTag>("L1MuonLabel");
   thePATMuonsLabel           = iConfig.getParameter<edm::InputTag>("PATMuonsLabel");  
+  theUsePrimaryNoMuons       = iConfig.getParameter<bool>("UsePrimaryNoMuons");
   theUseKinFit               = iConfig.getParameter<bool>("useKinFit");
   theStoreGenFlag            = iConfig.getParameter<bool>("StoreGenFlag");
   theStoreHLTFlag            = iConfig.getParameter<bool>("StoreHLTFlag");
@@ -83,6 +84,8 @@ Onia2MuMu::~Onia2MuMu()
 ////////////////////////////////////////////////////////////////////////
 void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
 {
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB); 
+
   outFile = new TFile(theOutFileName.c_str(), "RECREATE", "");
   outFile->cd();
   fTree = new TTree ("T1", "CMSSW Quarkonia tree");
@@ -186,6 +189,9 @@ void Onia2MuMu::beginJob(const edm::EventSetup& iSetup)
 
 
   if(theStoreGenFlag){
+    fTree->Branch("eventNb",             &eventNb,             "eventNb/I");
+    fTree->Branch("runNb",               &runNb,               "runNb/I");
+    fTree->Branch("lumiBlock",           &lumiBlock,           "lumiBlock/I"); 
     fTree->Branch("Mc_ProcessId",        &Mc_ProcessId,        "Mc_ProcessId/I");
     fTree->Branch("Mc_EventScale",       &Mc_EventScale,       "Mc_EventScale/D");
     fTree->Branch("Mc_EventWeight",      &Mc_EventWeight,      "Mc_EventWeight/D");
@@ -671,14 +677,12 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // -- 2 - get the collection of PF Photons
   iEvent.getByLabel(thePhotonLabel, pfAll);
   pfClusters.clear();
-  cout << "PF candidate size = " << pfAll->size() << endl;
   for(PFCandidateCollection::const_iterator itPFC = pfAll->begin();
       itPFC != pfAll->end(); ++itPFC) {
     if (PFCandidate::ParticleType(itPFC->particleId()) == PFCandidate::gamma && itPFC->energy() > thePhotonMinE) {
       pfClusters.push_back(*itPFC);
     }
   }
-  cout << "PF photon size = " << pfClusters.size() << endl;
 
   // -- 3 - Get NON-OVERLAPPING collections of muons
   Handle<reco::MuonCollection> allmuons;
@@ -686,7 +690,6 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<reco::CaloMuonCollection> allcalmuons;
   iEvent.getByLabel(theCaloMuonsLabel, allcalmuons);
-  cout << "All calo muon size = " << allcalmuons->size() << endl;
 
   std::vector<int> theMuonTrkIndexes;
 
@@ -709,9 +712,7 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if ((int)cmuon->track().index() == theMuonTrkIndexes.at(i)) storeThisOne = false;
     }
     if (storeThisOne) theCaloMuons.push_back(*cmuon); 
-  } 
-  cout << "Selected calo muon size = " << theCaloMuons.size() << endl;
-  
+  }   
 
   // -- 4 - Get track collection of NON-muons
   int k = 0;
@@ -735,7 +736,8 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(theStorePATFlag)      PAT_l1Report(iEvent);
   if(theStorePATFlag)      PAT_hltReport(iEvent);
   if(theStoreBeamSpotFlag) fillBeamSpot(iEvent); 
-  if(theStorePriVtxFlag)   fillPrimaryVertex(iEvent);
+  if(theStorePriVtxFlag&&!theUsePrimaryNoMuons)   fillPrimaryVertex(iEvent);
+  if(theStorePriVtxFlag&&theUsePrimaryNoMuons)    fillPrimaryVertex2m(iEvent);
   if(theStoreOniaFlag)     findOniaCategories(iEvent);
  
   if(!theSkimOnOniaMaxCat || Reco_QQ_size > 0) fTree->Fill(); 
@@ -800,6 +802,12 @@ void Onia2MuMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   HLTJpsi2Mu_L3_4mom->Clear();
   // HLTUpsilon2Mu_L2_4mom->Clear();
   HLTUpsilon2Mu_L3_4mom->Clear();
+
+  eventNb = iEvent.id().event();
+  runNb = iEvent.id().run();
+  lumiBlock = iEvent.luminosityBlock();
+
+  
 
 }
 
@@ -1761,6 +1769,109 @@ void Onia2MuMu::fillPrimaryVertex(const edm::Event &iEvent) {
   } 
 
 }
+
+//////////////////////////////////////////////////////////////
+// Get Primary vertex info without muons tracks
+///////////////////////////////////////////////////////////////
+void Onia2MuMu::fillPrimaryVertex2m(const edm::Event &iEvent) {
+  Reco_PriVtx_size=0;
+  bool ismuon=false;
+  vector<TransientTrack> ttcoll;
+  AdaptiveVertexFitter avf;
+  GlobalError errv1;
+
+  ttcoll.clear();
+  vector<double> glmuontag;
+  glmuontag.clear();
+  for (reco::MuonCollection::const_iterator muoni = theGlobalMuons.begin();
+         muoni != theGlobalMuons.end()&&Reco_mu_glb_size<Max_mu_size; 
+         muoni++) {
+    
+    TrackRef innTrack = muoni->innerTrack();
+
+    glmuontag.push_back(innTrack->p());
+  }
+  vector<double> tkmuontag;
+  tkmuontag.clear();
+  for (reco::MuonCollection::const_iterator trkmuoni = theTrkMuons.begin();
+       trkmuoni != theTrkMuons.end()&&Reco_mu_trk_size<Max_mu_size; 
+         trkmuoni++) {
+    
+      TrackRef innTrack = trkmuoni->innerTrack();
+
+      tkmuontag.push_back(innTrack->p());
+  }
+
+  Handle<reco::VertexCollection> privtxs;
+  iEvent.getByLabel(thePrimaryVertexLabel, privtxs);
+
+  for ( reco::VertexCollection::const_iterator vtx=privtxs->begin();
+	vtx!=privtxs->end()&&Reco_PriVtx_size<Max_PriVtx_size; 
+	++vtx) { 
+
+    for (Vertex::trackRef_iterator t = vtx->tracks_begin();t !=vtx->tracks_end(); t++) {
+      ismuon=false;
+      double pref=(**t).p();
+
+      for (unsigned int i=0;i<glmuontag.size();++i){if (pref==glmuontag[i]) ismuon=true;}
+      for (unsigned int i=0;i<tkmuontag.size();++i){if (pref==tkmuontag[i]&&(glmuontag.size()<2)) ismuon=true;}
+ 
+      if (!ismuon) {TransientTrack t1   = (*theB).build(&(**t));ttcoll.push_back(t1);}
+ 
+    }
+    TVector3 vertex(0.0,0.0,0.0);
+    TransientVertex tv1;
+
+    if (ttcoll.size()>=2){
+
+      if (thePrimaryVertexLabel.label()=="offlinePrimaryVerticesWithBS"){
+	reco::BeamSpot BSpot;
+	edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
+	iEvent.getByLabel(theBeamSpotLabel ,recoBeamSpotHandle);
+	if (recoBeamSpotHandle.isValid()){
+	  BSpot = *recoBeamSpotHandle;
+	  tv1 = avf.vertex(ttcoll,BSpot);
+	}
+	
+      }
+      else tv1 = avf.vertex(ttcoll);
+
+      if (tv1.isValid()) {
+	errv1 = tv1.positionError();
+
+	vertex.SetXYZ(tv1.position().x(),tv1.position().y(),tv1.position().z());
+	new((*Reco_PriVtx_3vec)[Reco_PriVtx_size])TVector3(vertex);
+	Reco_PriVtx_xxE[Reco_PriVtx_size]=errv1.cxx();
+	Reco_PriVtx_yyE[Reco_PriVtx_size]=errv1.cyy();
+	Reco_PriVtx_zzE[Reco_PriVtx_size]=errv1.czz();
+	Reco_PriVtx_yxE[Reco_PriVtx_size]=errv1.cyx();
+	Reco_PriVtx_zyE[Reco_PriVtx_size]=errv1.czy();
+	Reco_PriVtx_zxE[Reco_PriVtx_size]=errv1.czx();
+	Reco_PriVtx_trkSize[Reco_PriVtx_size]=ttcoll.size();
+	Reco_PriVtx_chi2[Reco_PriVtx_size]=tv1.totalChiSquared();
+	Reco_PriVtx_ndof[Reco_PriVtx_size]=tv1.degreesOfFreedom();
+	
+	if(theDebugLevel>1) cout<<Reco_PriVtx_size<<" Primary Vtx x="<<tv1.position().x()<<" y="<<tv1.position().y()<<endl;
+      }
+      Reco_PriVtx_size++;
+    }
+  }      
+	
+  if (theStoreOniaRadiation) { 
+    reco::VertexCollection::const_iterator vtx=privtxs->begin();  
+    Reco_PriVtx_1st_trkSize=0;
+    for (Vertex::trackRef_iterator iter = vtx->tracks_begin(); 
+         iter!=vtx->tracks_end();
+         ++iter ) {
+      Reco_PriVtx_1st_trkindex[Reco_PriVtx_1st_trkSize]=(*iter).key();
+      Reco_PriVtx_1st_trkSize++;
+    } 
+  } 
+
+}
+
+
+
 
 //////////////////////////////////////////////////////////////
 // Fill BeamSpot info

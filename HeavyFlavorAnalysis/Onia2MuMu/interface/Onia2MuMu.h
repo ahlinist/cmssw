@@ -60,6 +60,7 @@
 #include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
 #include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
 #include "RecoVertex/KinematicFit/interface/KinematicParticleFitter.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h" 
 
 #include "DataFormats/SiPixelDetId/interface/PixelModuleName.h"
 #include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
@@ -111,6 +112,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       virtual void PAT_hltReport(const edm::Event &iEvent);
       virtual void fillBeamSpot(const edm::Event &iEvent);
       virtual void fillPrimaryVertex(const edm::Event &iEvent);
+      virtual void fillPrimaryVertex2m(const edm::Event &iEvent);
       virtual void findOniaCategories(const edm::Event &iEvent);
       virtual void fillOniaMuMuTracks(TrackRef muon1, int m1, TrackRef muon2, int m2, TVector3 vperp2, int oniacato);
 
@@ -132,6 +134,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       double invMass(const reco::Track& lhs, const reco::Track& rhs) const;
 
       string theOutFileName;               // Filename
+      int runNb, eventNb, lumiBlock;       // run number, event number and lumi section
       int theOniaType;                     // 443 for Jpsi, 553 for Upsilon, etc
       int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
       edm::InputTag thegenParticlesLabel;
@@ -166,6 +169,7 @@ class Onia2MuMu : public edm::EDAnalyzer {
       // bool theStoreAllMuonFlag;
       bool theStoreBeamSpotFlag; 
       bool theStorePriVtxFlag;             // Yes or No to store primary vertex
+      bool theUsePrimaryNoMuons;           // Yes or No to remove muons from PV calculation
       bool theStoreOniaFlag;               // Yes or No to store Onium info
       bool theStoreChicFlag;               // Yes or No to store Onium + gamma combinations
       bool theStoreBpFlag;                 // Yes or No to store Onium + track combinations
