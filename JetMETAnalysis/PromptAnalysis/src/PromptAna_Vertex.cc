@@ -14,6 +14,7 @@ PromptAna_Vertex::PromptAna_Vertex(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > ( prefix + "ZErr"  + suffix );
   produces <std::vector<double> > ( prefix + "Chi2"  + suffix );
   produces <std::vector<int> >    ( prefix + "NDF"  + suffix );
+  produces <std::vector<int> >    ( prefix + "NTracks"  + suffix );
 }
 
 void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
@@ -26,6 +27,7 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   std::auto_ptr<std::vector<double> >  zErr             ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  chi2             ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<int> >  ndf                 ( new std::vector<int>()  ) ;
+  std::auto_ptr<std::vector<int> >     ntracks      ( new std::vector<int>()   ) ;
 
   //Get the Vertex Collection
   edm::Handle<std::vector<reco::Vertex> > verticies;  
@@ -42,6 +44,7 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       zErr -> push_back(it->zError());
       chi2 -> push_back(it->chi2());
       ndf  -> push_back(it->ndof());
+      ntracks->push_back(int(it->tracksSize()));
     }
   
   iEvent.put( x               ,  prefix + "X" + suffix );
@@ -52,4 +55,5 @@ void PromptAna_Vertex::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.put( zErr            ,  prefix + "ZErr" + suffix );
   iEvent.put( chi2            ,  prefix + "Chi2" + suffix );
   iEvent.put( ndf             ,  prefix + "NDF" + suffix );
+  iEvent.put( ntracks         ,  prefix + "NTracks"  + suffix );
 }
