@@ -20,15 +20,14 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("Configuration.StandardSequences.Geometry_cff")
 process.load("RecoVertex.BeamSpotProducer.BeamSpot_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "STARTUP3X_V8E::All"
+process.GlobalTag.globaltag = "MC_31X_V5::All"
 
 
 # ----------------------------------------------------------------------
 process.source = cms.Source(
     "PoolSource", 
     fileNames = cms.untracked.vstring(
-#    "file:/shome/starodumov/out/reco/root/reco-10094.root"
-    "/store/mc/Summer09/MinBias/GEN-SIM-RECO/STARTUP3X_V8D_900GeV-v1/0005/E4B3A7BE-3AD7-DE11-9230-002618943939.root"
+    "/store/mc/Summer09/MinBias900GeV/GEN-SIM-RECO/MC_31X_V3-v1/0017/00EEC933-8888-DE11-9954-00304865C456.root"
     )
     )
 
@@ -193,18 +192,18 @@ process.bspsiphiDump = cms.EDFilter(
 # ----------------------------------------------------------------------
 process.p = cms.Path(
     process.TrackRefitter*
-    process.PixelTree*
-    process.genParticles* 
-    process.genDump*
-    process.trkDump*
-    process.muonDump*
-    process.triggerDump*
-    process.bmmDump*
-    process.bmtDump*
-    process.bupsikpDump*
-    process.bdpsikstarDump*
-    process.bspsiphiDump*
-    process.tree
+    process.PixelTree
+#    process.genParticles* 
+#    process.genDump*
+#    process.trkDump*
+#    process.muonDump*
+#    process.triggerDump*
+#    process.bmmDump*
+#    process.bmtDump*
+#    process.bupsikpDump*
+#    process.bdpsikstarDump*
+#    process.bspsiphiDump*
+#    process.tree
 )
 
 
