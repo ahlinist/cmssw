@@ -334,20 +334,34 @@
   int iBsOtherEvents = 0;
   int iBdOtherEvents = 0;
   int iOtherEvents = 0;
-  
+int iBsJpsiEtaEvents = 0;
+int iBdJpsiK10Events = 0;
+int iBdJpsiK0Events = 0;
+int iBpJpsiKpEvents =0;
+
+
   int iTriggered_DoubleMu3_BsJPsiPhiSignalEvents = 0;
   int iTriggered_DoubleMu3_BdJpsiKstar = 0;
   int iTriggered_DoubleMu3_BsJpsiKK = 0;
   int iTriggered_DoubleMu3_BsOtherEvents = 0;
   int iTriggered_DoubleMu3_BdOtherEvents = 0;
   int iTriggered_DoubleMu3_OtherEvents = 0;
-  
+ int iTriggered_DoubleMu3_BsJpsiEtaEvents   = 0;
+ int iTriggered_DoubleMu3_BdJpsiK10Events = 0;
+ int iTriggered_DoubleMu3_BdJpsiK0Events  = 0;
+ int iTriggered_DoubleMu3_BpJpsiKpEvents  = 0;
+
+
   int iBsJPsiPhiSignalEventsPreKinFit = 0;
   int iBsJPsiKKSignalEventsPreKinFit = 0;
   int iBdJPsiKstarSignalEventsPreKinFit = 0;
   int iBsOtherEventsPreKinFit = 0;
   int iBdOtherEventsPreKinFit = 0;
   int iOtherEventsPreKinFit = 0;
+int iBsJpsiEtaEventsPreKinFit= 0;
+int iBdJpsiK10EventsPreKinFit= 0;
+int iBdJpsiK0EventsPreKinFit= 0;
+int iBpJpsiKpEventsPreKinFit= 0;
   
   int iBsJPsiPhiSignalEventsOfflineSel1 = 0;
   int iBsJPsiKKSignalEventsOfflineSel1 = 0;
@@ -355,19 +369,32 @@
   int iBsOtherEventsOfflineSel1 = 0;
   int iBdOtherEventsOfflineSel1 = 0;
   int iOtherEventsOfflineSel1 = 0;
+int iBsJpsiEtaEventsOfflineSel1 = 0;
+int iBdJpsiK10EventsOfflineSel1 = 0;
+int iBdJpsiK0EventsOfflineSel1 = 0;
+int iBpJpsiKpEventsOfflineSel1 = 0;
+
  int iBsJPsiPhiSignalEventsProbVertex = 0;
   int iBsJPsiKKSignalEventsProbVertex = 0;
   int iBdJPsiKstarSignalEventsProbVertex = 0;
   int iBsOtherEventsProbVertex = 0;
   int iBdOtherEventsProbVertex = 0;
   int iOtherEventsProbVertex = 0;
-  
+int iBsJpsiEtaEventsProbVertex = 0;
+int iBdJpsiK10EventsProbVertex = 0;
+int iBdJpsiK0EventsProbVertex = 0;
+int iBpJpsiKpEventsProbVertex = 0;
+
   int iBsJPsiPhiSignalEventsKaonPtCut = 0;
   int iBsJPsiKKSignalEventsKaonPtCut = 0;
   int iBdJPsiKstarSignalEventsKaonPtCut = 0;
   int iBsOtherEventsKaonPtCut = 0;
   int iBdOtherEventsKaonPtCut = 0;
   int iOtherEventsKaonPtCut = 0;
+int iBsJpsiEtaEventsKaonPtCut = 0;
+int iBdJpsiK10EventsKaonPtCut = 0;
+int iBdJpsiK0EventsKaonPtCut = 0;
+int iBpJpsiKpEventsKaonPtCut = 0;
 
   int iBsJPsiPhiSignalEventsPhiMassCut = 0;
   int iBsJPsiKKSignalEventsPhiMassCut = 0;
@@ -375,6 +402,10 @@
   int iBsOtherEventsPhiMassCut = 0;
   int iBdOtherEventsPhiMassCut = 0;
   int iOtherEventsPhiMassCut = 0;
+int iBsJpsiEtaEventsPhiMassCut = 0;
+int iBdJpsiK10EventsPhiMassCut = 0;
+int iBdJpsiK0EventsPhiMassCut = 0;
+int iBpJpsiKpEventsPhiMassCut = 0;
 
   int iBsJPsiPhiSignalEventsDecayLengthCut = 0;
   int iBsJPsiKKSignalEventsDecayLengthCut = 0;
@@ -382,12 +413,21 @@
   int iBsOtherEventsDecayLengthCut = 0;
   int iBdOtherEventsDecayLengthCut = 0;
   int iOtherEventsDecayLengthCut = 0;
+int iBsJpsiEtaEventsDecayLengthCut = 0;
+int iBdJpsiK10EventsDecayLengthCut = 0;
+int iBdJpsiK0EventsDecayLengthCut = 0;
+int iBpJpsiKpEventsDecayLengthCut = 0;
+
  int iBsJPsiPhiSignalEventsPointingCut = 0;
   int iBsJPsiKKSignalEventsPointingCut = 0;
   int iBdJPsiKstarSignalEventsPointingCut = 0;
   int iBsOtherEventsPointingCut = 0;
   int iBdOtherEventsPointingCut = 0;
   int iOtherEventsPointingCut = 0;
+int iBsJpsiEtaEventsPointingCut = 0;
+int iBdJpsiK10EventsPointingCut = 0;
+int iBdJpsiK0EventsPointingCut = 0;
+int iBpJpsiKpEventsPointingCut = 0;
 
   int HLT = 0;
 
@@ -395,47 +435,58 @@
 //declaration of histograms
 //********************
 
- TH1F * hJPsiMass_BsJpsiSignal            ;
+vector<TH1F*> vhJPsiMass;
+TH1F * hJPsiMass_BsJpsiSignal            ;
  TH1F * hJPsiMass_BsOther                 ;
  TH1F * hJPsiMass_Other                   ;
-                                      
+             
+vector<TH1F*> vhPhiMass    ;                     
  TH1F * hPhiMass_BsJpsiSignal             ;
  TH1F * hPhiMass_BsOther                  ;
  TH1F * hPhiMass_Other                    ;
-                                 
+                      
+vector<TH1F*> vhPhiMassFinal;           
  TH1F * hPhiMassFinal_BsJpsiSignal        ;
  TH1F * hPhiMassFinal_BsOther             ;
  TH1F * hPhiMassFinal_Other               ;
-                                       
+                             
+vector<TH1F*> vhBsMassFinal;          
  TH1F * hBsMassFinal_BsJpsiSignal         ;
  TH1F * hBsMassFinal_BsOther              ;
  TH1F * hBsMassFinal_Other                ;
-                                        
+                            
+vector<TH1F*> vhBsMassFinalAfterFit;            
  TH1F * hBsMassFinalAfterFit_BsJpsiSignal ;
  TH1F * hBsMassFinalAfterFit_BsOther      ;
  TH1F * hBsMassFinalAfterFit_Other        ;
  TH1F * hBsMassFinalAfterFit_BsJpsiKK     ;
-                                   
+                    
+vector<TH1F*> vhK1Pt;               
  TH1F * hK1Pt_BsJpsiSignal                ;
  TH1F * hK1Pt_BsOther                     ;
  TH1F * hK1Pt_Other                       ;
-                               
+                     
+vector<TH1F*> vhK2Pt;          
  TH1F * hK2Pt_BsJpsiSignal                ;
  TH1F * hK2Pt_BsOther                     ;
  TH1F * hK2Pt_Other                       ;
-                                    
+                     
+vector<TH1F*> vhDist3D;               
 TH1F * hDist3D_BsJpsiSignal              ;
  TH1F * hDist3D_BsOther                   ;
  TH1F * hDist3D_Other                     ;
-                              
+                       
+vector<TH1F*> vhDistSign3D;       
  TH1F * hDistSign3D_BsJpsiSignal          ;
  TH1F * hDistSign3D_BsOther               ;
  TH1F * hDistSign3D_Other                 ;
-                                     
+                           
+vector<TH1F*> vhDistSign1D;
  TH1F * hDistSign1D_BsJpsiSignal          ;
  TH1F * hDistSign1D_BsOther               ;
  TH1F * hDistSign1D_Other                 ;
-                                       
+                           
+vector<TH1F*> vhPointingAngle;            
  TH1F *hPointingAngle_BsJpsiSignal        ;
  TH1F *hPointingAngle_BsOther             ;
  TH1F *hPointingAngle_Other               ;
@@ -445,7 +496,11 @@ TH1F * hDist3D_BsJpsiSignal              ;
                                          
  TH1F * hNEvents_vsGenJPsiPt              ;
  TH1F * hNTrigEvents_vsGenJPsiPt          ;
-                                        
+                      
+vector<TH1F*> vhChi2;
+vector<TH1F*> vhChi2Ndof;
+vector<TH1F*> vhBsVtxProb;
+                  
  TH1F *hChi2_BsJpsiSignal                 ;
  TH1F *hChi2Ndof_BsJpsiSignal             ;
  TH1F *hBsVtxProb_BsJpsiSignal            ;
@@ -464,3 +519,7 @@ TH1F * hDist3D_BsJpsiSignal              ;
   bool isGenBdJpsiKstarMuMuKpiEvent_;
   bool isGenBsEvent_;
   bool isGenBdEvent_;
+bool isGenBsJpsiEtaEvent_ ;
+bool isGenBdJpsiK10Event_ ;
+bool isGenBdJpsiK0Event_  ;
+bool isGenBpJpsiKpEvent_  ;
