@@ -4,13 +4,10 @@
 
 PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig) 
   : inputTag(iConfig.getParameter<edm::InputTag>("InputTag"))
+  , tracksinputTag(iConfig.getParameter<edm::InputTag>("TracksInputTag"))
   , prefix  (iConfig.getParameter<std::string>  ("Prefix"  ))
   , suffix  (iConfig.getParameter<std::string>  ("Suffix"  ))
 {
-  //Get Input Tags
-  //  inputTag       = iConfig.getParameter<edm::InputTag>("InputTag");
-  //prefix         = iConfig.getParameter<std::string>  ("Prefix"  );
-  //suffix         = iConfig.getParameter<std::string>  ("Suffix"  );
   // Jet ID helper
   jetIDHelper = reco::helper::JetIDHelper(iConfig.getParameter<edm::ParameterSet>("jetID")  );
 
@@ -47,6 +44,19 @@ PromptAna_Jet::PromptAna_Jet(const edm::ParameterSet& iConfig)
   produces <std::vector<double> > ( prefix + "EnergyFirst"  + suffix );
   produces <std::vector<double> > ( prefix + "EtaFirst"  + suffix );
   produces <std::vector<double> > ( prefix + "PhiFirst"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksAll"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrkspx"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrkspy"  + suffix );
+  produces <std::vector<double> > ( prefix + "AllAssoTrkspz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksLoose"  + suffix );
+  produces <std::vector<double> > ( prefix + "LooseAssoTrkspx"  + suffix );
+  produces <std::vector<double> > ( prefix + "LooseAssoTrkspy"  + suffix );
+  produces <std::vector<double> > ( prefix + "LooseAssoTrkspz"  + suffix );
+  produces <std::vector<int> > ( prefix + "NAssoTrksTight"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrkspx"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrkspy"  + suffix );
+  produces <std::vector<double> > ( prefix + "TightAssoTrkspz"  + suffix );
+
 
 }
 
@@ -85,14 +95,40 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> >  energyfirst  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  etafirst  ( new std::vector<double>()  ) ;
   std::auto_ptr<std::vector<double> >  phifirst  ( new std::vector<double>()  ) ;
-  
+  std::auto_ptr<std::vector<int> >  nAssoTrksAll  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrkspx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrkspy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  allAssoTrkspz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksLoose  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  looseAssoTrkspx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  looseAssoTrkspy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  looseAssoTrkspz  ( new std::vector<double>()  ) ;
+  std::auto_ptr<std::vector<int> >  nAssoTrksTight  ( new std::vector<int>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrkspx  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrkspy  ( new std::vector<double>()  ) ; 
+  std::auto_ptr<std::vector<double> >  tightAssoTrkspz  ( new std::vector<double>()  ) ;
+
   //Get the Jets Collection
   edm::Handle<reco::CaloJetCollection> jetcollection;
   iEvent.getByLabel(inputTag, jetcollection);
+  //
+	//Get Tracks collection
+  edm::Handle<reco::TrackCollection> tracks;
+  iEvent.getByLabel(tracksinputTag, tracks);
 
+  // Get Transient Track Builder
+  edm::ESHandle<TransientTrackBuilder> theB;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
+  
+  /*  edm::Handle<reco::VertexCollection> vertices;   
+  iEvent.getByLabel(primaryVertexTag, vertices);
+  */
+  //
 
   int clj=0;
-
+  /*  //get the primary vertex 
+  const reco::Vertex PrimaryVertex = vertices->front();
+  */
   //Fill the variables
   for(reco::CaloJetCollection::const_iterator it = jetcollection->begin(); it != jetcollection->end() ; ++it ){
     
@@ -133,6 +169,62 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     emEnergyInHF->push_back(it->emEnergyInHF());
     n60->push_back(it->n60()); 
     n90->push_back(it->n90()); 
+    //associated tracks
+    int    tnAssoTrksAll=0;
+    int    tnAssoTrksLoose=0;
+    int    tnAssoTrksTight=0;
+
+    double tallAssoTrkspx=0.;
+    double tallAssoTrkspy=0.;
+    double tallAssoTrkspz=0.;
+    double tlooseAssoTrkspx=0.;
+    double tlooseAssoTrkspy=0.;
+    double tlooseAssoTrkspz=0.;
+    double ttightAssoTrkspx=0.;
+    double ttightAssoTrkspy=0.;
+    double ttightAssoTrkspz=0.;
+
+    if(fabs(it->eta())<2.9){//when the cone of dR=0.5 around the jet is (at least partially) inside the tracker acceptance
+    std::vector<const reco::Track*> AssociatedTracks = FindAssociatedTracks(&(*it), tracks.product());
+    std::vector<reco::TransientTrack> AssociatedTTracks;
+    //    for (reco::TrackRefVector::iterator trk = it->associatedTracks().begin(); trk != it->associatedTracks().end(); ++trk) {
+      //(*trk)->pt()>minPttrk && (*trk)->pt()<maxPttrk && fabs((*trk)->dxy(PrimaryVertex.position()))<maxD0trk && (*trk)->chi2()<maxChi2trk){
+	  //all tracks
+    for(size_t t = 0; t < AssociatedTracks.size(); ++t){
+      AssociatedTTracks.push_back(theB->build(AssociatedTracks[t]));
+	  tnAssoTrksAll++;
+	  tallAssoTrkspx+=AssociatedTracks[t]->px();
+	  tallAssoTrkspy+=AssociatedTracks[t]->py();
+	  tallAssoTrkspz+=AssociatedTracks[t]->pz();
+	  if(AssociatedTracks[t]->quality(reco::Track::loose)) {
+	    tnAssoTrksLoose++;
+	  tlooseAssoTrkspx+=AssociatedTracks[t]->px();
+	  tlooseAssoTrkspy+=AssociatedTracks[t]->py();
+	  tlooseAssoTrkspz+=AssociatedTracks[t]->pz();
+	  }
+	  if(AssociatedTracks[t]->quality(reco::Track::tight)) {
+	    tnAssoTrksTight++;
+	  ttightAssoTrkspx+=AssociatedTracks[t]->px();
+	  ttightAssoTrkspy+=AssociatedTracks[t]->py();
+	  ttightAssoTrkspz+=AssociatedTracks[t]->pz();
+	  }
+	  //	}
+    }
+    }
+    nAssoTrksAll->push_back(tnAssoTrksAll);
+    allAssoTrkspx->push_back(tallAssoTrkspx);
+    allAssoTrkspy->push_back(tallAssoTrkspy);
+    allAssoTrkspz->push_back(tallAssoTrkspz);
+    nAssoTrksLoose->push_back(tnAssoTrksLoose);
+    looseAssoTrkspx->push_back(tlooseAssoTrkspx);
+    looseAssoTrkspy->push_back(tlooseAssoTrkspy);
+    looseAssoTrkspz->push_back(tlooseAssoTrkspz);
+    nAssoTrksTight->push_back(tnAssoTrksTight);
+    tightAssoTrkspx->push_back(ttightAssoTrkspx);
+    tightAssoTrkspy->push_back(ttightAssoTrkspy);
+    tightAssoTrkspz->push_back(ttightAssoTrkspz);
+
+      //
   }
   ncleanedjets->push_back(clj);
 
@@ -169,4 +261,32 @@ void PromptAna_Jet::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put( energyfirst,  prefix + "EnergyFirst"  + suffix );
   iEvent.put( etafirst,  prefix + "EtaFirst"  + suffix );
   iEvent.put( phifirst,  prefix + "PhiFirst"  + suffix );
+  iEvent.put(nAssoTrksAll,  prefix + "NAssoTrksAll"  + suffix );
+  iEvent.put(allAssoTrkspx,  prefix + "AllAssoTrkspx"  + suffix );
+  iEvent.put(allAssoTrkspy,  prefix + "AllAssoTrkspy"  + suffix );
+  iEvent.put(allAssoTrkspz,  prefix + "AllAssoTrkspz"  + suffix );
+  iEvent.put(nAssoTrksLoose,  prefix + "NAssoTrksLoose"  + suffix );
+  iEvent.put(looseAssoTrkspx,  prefix + "LooseAssoTrkspx"  + suffix );
+  iEvent.put(looseAssoTrkspy,  prefix + "LooseAssoTrkspy"  + suffix );
+  iEvent.put(looseAssoTrkspz,  prefix + "LooseAssoTrkspz"  + suffix );
+  iEvent.put(nAssoTrksTight,  prefix + "NAssoTrksTight"  + suffix );
+  iEvent.put(tightAssoTrkspx,  prefix + "TightAssoTrkspx"  + suffix );
+  iEvent.put(tightAssoTrkspy,  prefix + "TightAssoTrkspy"  + suffix );
+  iEvent.put(tightAssoTrkspz,  prefix + "TightAssoTrkspz"  + suffix );
+
+}
+
+
+std::vector<const reco::Track*> PromptAna_Jet::FindAssociatedTracks(const reco::CaloJet *jet, const reco::TrackCollection *tracks){
+//returns a list of tracks associated to a given jet
+	std::vector<const reco::Track*> AssociatedTracks;
+	double jeteta=jet->eta();
+	double jetphi=jet->phi();
+	for(reco::TrackCollection::const_iterator itk = tracks->begin(); itk!=tracks->end(); ++itk){
+		if(sqrt(pow(itk->eta()-jeteta,2) + pow(itk->phi()-jetphi,2))<0.5) {
+			const reco::Track *t = new reco::Track(*itk);
+			AssociatedTracks.push_back(t);
+		}
+	}
+	return AssociatedTracks;
 }
