@@ -11,6 +11,7 @@ allElecMuPairs = cms.EDProducer("PATElecMuPairProducer",
     srcLeg2 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     dRmin12 = cms.double(-1.),
     srcMET = cms.InputTag('layer1METs'),
+    srcGenParticles = cms.InputTag('genParticles'),                                  
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )
@@ -29,6 +30,7 @@ allElecMuPairsLooseElectronIsolation = cms.EDProducer("PATElecMuPairProducer",
     srcLeg2 = cms.InputTag('selectedLayer1MuonsTrkIPcumulative'),
     dRmin12 = cms.double(-1.),
     srcMET = cms.InputTag('layer1METs'),
+    srcGenParticles = cms.InputTag('genParticles'),                                                        
     recoMode = cms.string(""),
     verbosity = cms.untracked.int32(0)
 )

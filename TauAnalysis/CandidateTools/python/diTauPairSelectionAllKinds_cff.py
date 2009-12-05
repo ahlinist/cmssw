@@ -119,6 +119,19 @@ patMuTauPairSelConfigurator = objSelConfigurator(
     doSelIndividual = True
 )
 
+selectedMuTauPairsCollinearApproxFailedCumulative = cms.EDFilter("PATMuTauPairSelector",
+    src = cms.InputTag('selectedMuTauPairsAntiBackToBackCumulative'),
+    cut = cms.string('!collinearApproxIsValid'),                                                       
+    filter = cms.bool(False)
+)
+
+selectedMuTauPairsCollinearApproxFailedIndividual = cms.EDFilter("PATMuTauPairSelector",
+    src = cms.InputTag('allMuTauPairs'),
+    cut = cms.string('!collinearApproxIsValid'),                                                       
+    filter = cms.bool(False)
+)
+
+
 selectMuTauPairs = patMuTauPairSelConfigurator.configure(namespace = locals())
 
 selectedMuTauPairsAntiOverlapVetoLooseMuonIsolation.cut = selectedMuTauPairsAntiOverlapVeto.cut
@@ -160,7 +173,9 @@ patDiTauPairSelConfigurator = objSelConfigurator(
 
 selectDiTauPairs = patDiTauPairSelConfigurator.configure(namespace = locals())
 
-selectDiTauPairsAllKinds = cms.Sequence( selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
-                                        +selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
-                                        +selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
-                                        +selectDiTauPairs )
+selectDiTauPairsAllKinds = cms.Sequence(
+    selectElecMuPairs + selectElecMuPairsLooseElectronIsolation
+   + selectElecTauPairs + selectElecTauPairsLooseElectronIsolation
+   + selectMuTauPairs + selectMuTauPairsLooseMuonIsolation
+   + selectDiTauPairs
+)
