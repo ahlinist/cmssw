@@ -84,6 +84,12 @@ private:
 	double BsUpperMassCutBeforeFit_;
 	double BsLowerMassCutAfterFit_ ;
 	double BsUpperMassCutAfterFit_ ;
+	double KstarMassWindowBeforeFit_;
+	double KstarMassWindowAfterFit_;
+	double BdLowerMassCutBeforeFit_;
+	double BdUpperMassCutBeforeFit_;
+	double BdLowerMassCutAfterFit_;
+	double BdUpperMassCutAfterFit_;
 
 	std::string outputFile_; // output file
 

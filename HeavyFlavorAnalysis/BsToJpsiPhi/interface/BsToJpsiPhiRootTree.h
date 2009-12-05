@@ -38,12 +38,15 @@ public:
 	void getVtx(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg, 
 		    const double hh, const double ii);
 	void getLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg);
+	void getBdLXY(const double aa, const double bb, const double cc, const double dd, const double ee, const double ff, const double gg);
 	void getInfoK1(const int aa, const int bb, const int cc, const int dd);
 	void getInfoK2(const int aa, const int bb, const int cc, const int dd);
 	void getInfoMu1(const int aa, const int bb, const int cc, const int dd);
 	void getInfoMu2(const int aa, const int bb, const int cc, const int dd);
 	void get3d(const double aa, const double bb, const double cc, const double dd);
+	void getBd3d(const double aa, const double bb, const double cc, const double dd);
 	void get1d(const double aa, const double bb, const double cc, const double dd);
+	void getBd1d(const double aa, const double bb, const double cc, const double dd);
 	void getDeDx(const double f1, const double f2, const int f3);
         void setFitParKK(RefCountedKinematicTree& myTree);
         void setFitParKpi(RefCountedKinematicTree& myTree);
@@ -369,6 +372,54 @@ public:
         double genBsSVtx_z_, genBsSVtx_y_, genBsSVtx_x_ ;
 
 	int isGenJpsiEvent_;
+
+
+	// for the Bd->Kstar analysis
+	double chi2_Bd_  ; 
+	double ndof_Bd_  ;
+	double BdVtxProb_;
+
+	double BdfitM_Kpi_;
+
+	double BdVtx_x_ ;
+	double BdVtx_y_;
+	double BdVtx_z_;
+
+	double BdMass_after_ ;
+	double BdPt_after_    ;
+	double BdPz_after_    ;
+	double BdPhi_after_   ;
+	double BdEta_after_   ;
+
+	double KstarMass_after_ ;
+
+
+	double BdK1Pt_after_  ; 
+	double BdK1Pz_after_  ; 
+	double BdK1Eta_after_ ; 
+	double BdK1Phi_after_ ; 
+	double BdK2Pt_after_  ; 
+	double BdK2Pz_after_  ; 
+	double BdK2Eta_after_ ; 
+	double BdK2Phi_after_ ; 
+
+	double BdLxy_;
+	double BdLxy2_;
+	double BderrX_;
+	double BderrY_;
+	double BderrXY_;
+	double Bdsct1_;
+	double Bdsct2_;
+
+	double BdDist3d_;
+	double BddDist3d_;
+	double BdTime3d_;
+	double BddTime3d_;
+	double BdDist_;
+	double BddDist_;
+	double BdTime_;
+	double BddTime_;         
+
 
 	TFile* bsFile_;
 	TTree* bsTree_; 

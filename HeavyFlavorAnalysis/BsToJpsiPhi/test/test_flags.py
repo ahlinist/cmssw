@@ -40,7 +40,7 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           TriggerTag = cms.InputTag("TriggerResults::HLT"),
                                           MuonTag = cms.InputTag("muons"),
                                           StoreDeDxInfo = cms.bool( False ),  #needs to be false on AODSIM, can be true on RECO
-                                          saveDoubleMu3TriggeredOnly = cms.bool( False ),
+                                          saveDoubleMu3TriggeredOnly = cms.bool( True ),
                                           JpsiMassWindowBeforeFit = cms.double(0.150),
                                           JpsiMassWindowAfterFit = cms.double(0.150),
                                           JpsiPtCut      = cms.double(3),
@@ -51,27 +51,29 @@ process.bsVertexAnalysis = cms.EDAnalyzer("BsToJpsiPhiAnalysis",
                                           BsUpperMassCutBeforeFit = cms.double(6),
                                           BsLowerMassCutAfterFit  = cms.double(5.2),
                                           BsUpperMassCutAfterFit  = cms.double(5.7),
+                                          KstarMassWindowBeforeFit =cms.double(0.2),
+                                          KstarMassWindowAfterFit =cms.double(0.2),
+                                          BdLowerMassCutBeforeFit = cms.double(4.5),
+                                          BdUpperMassCutBeforeFit = cms.double(6),
+                                          BdLowerMassCutAfterFit = cms.double(4.9),
+                                          BdUpperMassCutAfterFit = cms.double(5.7),
                                           
-                                          outputFile = cms.untracked.string("BsToJpsiPhi.root"),
+                                          outputFile = cms.untracked.string("outputfile.root"),
                                          )
 
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(-1)
         )
 
-process.source = cms.Source("PoolSource",
-                              fileNames = cms.untracked.vstring(
-#                              'file:/test/mc/1/fromHLT/Bs2JpsiPhi_1.root',
-'file:/nfs/data5/cms/store/mc/Summer09/BtoJPsiMuMu/AODSIM/MC_31X_V3_AODSIM-v1/0021/465107F5-E988-DE11-BA12-003048C91B0E.root'
 
-                              ),
-)
 
-process.myout = cms.OutputModule("PoolOutputModule",
-                                 outputCommands = cms.untracked.vstring('drop *', 'keep *_*_*_ANALYSIS', 'keep *_muons_*_*'),
-                                 fileName = cms.untracked.string('test.root')
-                                 )
+
 
 process.p = cms.Path(process.mix*process.allPiTracks*process.allKTracks*process.kTracks*process.piTracks*process.bsVertexAnalysis)
 
-process.outpath = cms.EndPath(process.myout)
+
+
+
+process.source = cms.Source("PoolSource",
+                              fileNames = cms.untracked.vstring(
+                        
