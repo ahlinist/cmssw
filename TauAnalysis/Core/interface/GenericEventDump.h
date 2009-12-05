@@ -7,9 +7,9 @@
  * 
  * \author Christian Veelken, UC Davis
  *
- * \version $Revision: 1.7 $
+ * \version $Revision: 1.8 $
  *
- * $Id: GenericEventDump.h,v 1.7 2009/08/25 14:05:19 veelken Exp $
+ * $Id: GenericEventDump.h,v 1.8 2009/11/28 10:15:04 veelken Exp $
  *
  */
 
@@ -95,8 +95,12 @@ class GenericEventDump : public EventDumpBase
 	*outputStream_ << " Mt(Leg2+MET) = " << diTauCandidate->mt2MET() << std::endl;
 	*outputStream_ << " M(CDF method) = " << diTauCandidate->p4CDFmethod().mass() << std::endl;
 	*outputStream_ << " M(collinear Approx.) = " << diTauCandidate->p4CollinearApprox().mass() << std::endl;
-	*outputStream_ << "  x1 = " << diTauCandidate->x1CollinearApprox() << std::endl;
-	*outputStream_ << "  x2 = " << diTauCandidate->x2CollinearApprox() << std::endl;
+	*outputStream_ << "  x1 = " << diTauCandidate->x1CollinearApprox() 
+		       << " (gen. = " << diTauCandidate->x1gen() << ")" << std::endl;
+	*outputStream_ << "  x2 = " << diTauCandidate->x2CollinearApprox() 
+		       << " (gen. = " << diTauCandidate->x2gen() << ")" << std::endl;
+	std::string collinearApproxStatus = ( diTauCandidate->collinearApproxIsValid() ) ? "valid" : "invalid";
+	*outputStream_ << " (collinear Approx. " << collinearApproxStatus << ")" << std::endl;
 	++iDiTauCandidate;
       }
 
@@ -118,6 +122,7 @@ class GenericEventDump : public EventDumpBase
   vstring hltPathsToPrint_;
 
   edm::InputTag genParticleSource_;
+  edm::InputTag genJetSource_;
   edm::InputTag genTauJetSource_;
 
   edm::InputTag patElectronSource_;
