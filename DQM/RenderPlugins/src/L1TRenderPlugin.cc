@@ -253,8 +253,12 @@ private:
         return;
       }
       // rate histograms
-      if ( o.name.find("rate_algobit") != std::string::npos ||
-           o.name.find("rate_ttbit") != std::string::npos)
+      if ( (o.name.find("rate_algobit") != std::string::npos ||
+	    o.name.find("rate_ttbit") != std::string::npos ||
+	    o.name.find("Rate_TechBit") != std::string::npos ||
+	    o.name.find("Rate_AlgoBit") != std::string::npos ||
+	    o.name.find("Integral_TechBit") != std::string::npos ||
+	    o.name.find("Integral_AlgoBit") != std::string::npos) )
       {
         gStyle->SetOptStat(11);
         obj->GetXaxis()->SetTitle("Luminosity Segment Number");
@@ -278,7 +282,17 @@ private:
             break;
           }
         }
+	minRange = ( minRange>0 ) ? minRange-1 : 0;
+	maxRange = ( nbins>maxRange ) ? maxRange+1 : nbins;
+
         obj->GetXaxis()->SetRange(minRange, maxRange);
+
+	if ( (o.name.find("Integral_TechBit") != std::string::npos ||
+	      o.name.find("Integral_AlgoBit") != std::string::npos) )
+	  {
+	    obj->GetYaxis()->SetTitle("");
+	  }
+
       }
       //  if( o.name.find( "dttf_p_q_" )  != std::string::npos) {
       //     //dqm::utils::reportSummaryMapPalette(obj);
